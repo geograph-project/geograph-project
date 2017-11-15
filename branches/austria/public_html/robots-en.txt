@@ -351,5 +351,5 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?
 Disallow: /stuff/kmltest
 
-#Sitemap: http://geo-en.hlipp.de/sitemap-en.xml
-Sitemap: http://geo.hlipp.de/sitemap.xml
+#Sitemap: http://atgeo-en.hlipp.de/sitemap-en.xml
+Sitemap: http://atgeo.hlipp.de/sitemap.xml

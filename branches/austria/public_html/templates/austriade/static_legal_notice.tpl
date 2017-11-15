@@ -3,7 +3,7 @@
 
 <h2>Kontakt / Impressum</h2>
 
-<i><small><a href="http://geo-en.hlipp.de/help/legal_notice">(Click here for English version.)</a></small></i>
+<i><small><a href="http://atgeo-en.hlipp.de/help/legal_notice">(Click here for English version.)</a></small></i>
 
 <p>
 	Wenn Sie ein Anliegen zur Seite haben, können Sie sich über das
