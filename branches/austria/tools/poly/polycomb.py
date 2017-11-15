@@ -14,7 +14,7 @@
 
 from math import sqrt,ceil
 import re,sys
-from coord import CoordsGeographD,UTM
+from coord import CoordsGeographA,UTM
 
 def parseosm(file):
 	# returns [ [[x11, y11],[x12,y12],...,[x11, y11]], [[x21, y21],[x22,y22],...,[x21, y21]], ... ]
@@ -34,6 +34,7 @@ def parseosm(file):
 	# ( <member type="way" ref="4096487" role=""/>  )
 	#   <member type="relation" ref="4096487" role=""/>
 	#   <tag k="created_by" v="almien_coastlines"/>
+	#   <member type="node" ref="17328659" role="admin_centre"/>
 	# </relation ...>							10->11				10	11	7
 	#</osm>									8,11->0				8,11	0
 	#EOF									0->X				0	X	X
@@ -47,6 +48,7 @@ def parseosm(file):
 	rerelstr = re.compile(r"^ *<relation id=\"([0-9]+)\"[^>]*>$")
 	rerelend = re.compile(r"^ *</relation>$")
 	retaglin = re.compile(r"^ *<tag [^>]*/>$")
+	rembrndlin = re.compile(r"^ *<member type=\"node\" ref=\"[0-9]+\" role=\"(admin_centre|label)\"/>$")
 	rendXlin = re.compile(r"^ *<nd ref=\"([0-9]+)\"/>$")
 	remmblin = re.compile(r"^ *<member type=\"way\" ref=\"([0-9]+)\" role=\"([a-z]*)\"/>$")
 	#remmblin = re.compile(r"^ *<member type=\"way\" ref=\"([0-9]+)\" role=\"([a-z]+)\"/>$")
@@ -58,6 +60,7 @@ def parseosm(file):
 	         [[4],            renodend,  3,  0],
 	         [[6,7],          rendXlin,  7,  3],
 	         [[2,4,6,7,9,10], retaglin, -1,  0],
+		 [[9,10],         rembrndlin,-1,  0],
 	         [[3,8],          rewaystr,  6,  2],
 	         [[7],            rewayend,  8,  4],
 	         [[9,10],         remmblin, 10,  6],
@@ -529,7 +532,7 @@ def polydoubcheck(polygons, eps):
 #			poly[0].reverse()
 
 def convertpoly(filename, outfile, zone, x1, y1, x2, y2, cx1, cy1, cx2, cy2, ds, eps, graylow, grayhigh, epscomb, epspoly):
-	coord = CoordsGeographD()
+	coord = CoordsGeographA()
 	#coord = UTM()
 	print >> sys.stderr, "parse input file"
 	if filename is None:

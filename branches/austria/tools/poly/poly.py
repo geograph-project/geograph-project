@@ -14,7 +14,7 @@
 
 from math import sqrt,ceil
 import re,sys
-from coord import CoordsGeographD,UTM
+from coord import CoordsGeographA,UTM
 
 def parseosm(file):
 	# returns [ [[x11, y11],[x12,y12],...,[x11, y11]], [[x21, y21],[x22,y22],...,[x21, y21]], ... ]
@@ -389,7 +389,7 @@ def polycomb(polygons, eps):
 #			poly[0].reverse()
 
 def convertpoly(filename, outfile, zone, x1, y1, x2, y2, cx1, cy1, cx2, cy2, ds, eps, graylow, grayhigh, epscomb):
-	coord = CoordsGeographD()
+	coord = CoordsGeographA()
 	#coord = UTM()
 	print >> sys.stderr, "parse input file"
 	if filename is None:
