@@ -9,7 +9,7 @@
  <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;top:-30px">
  <h3>Help and Info...</h3>
  <ul style="margin-top:0;padding:0 0 0 1em;">
- <li><a href="/article/Anleitung">Guide (German)</a></li>
+ <li><a href="//geo.hlipp.de/article/Anleitung">Guide (German)</a></li>
  <li><a href="/help/guide">Geograph Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Geograph-or-supplemental">Moderation Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Which-Square">Locating your Image</a></li>
