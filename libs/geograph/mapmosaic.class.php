@@ -182,8 +182,8 @@ class GeographMapMosaic
 			$ym = 262143-$CONF['ymrange'][1];
 			$xo = 0;
 			$yo = -10;
-			$xl = -210;
-			$yl = -15;
+			$xl = -50;//-210;
+			$yl = -150;
 		} else {
 			$xm = $xcenter;
 			$ym = $ycenter;
@@ -197,19 +197,19 @@ class GeographMapMosaic
 		{
 			case 'full_t':
 				$this->mosaictype = 2;
-				$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
-				$this->initTiles(200,$xl,$yl,400,400,0.3,false,false,false,!is_null($ycenter));
+				$this->scales = array(0 => 0.5, 1 => 1, 2 => 4, 3 => 40);
+				$this->initTiles(200,$xl,$yl,400,400,0.5,false,false,false,!is_null($ycenter));
 				break;
 			case 'full_tm':
 				$this->mosaictype = 2;
-				$this->scales = array(0 => 5, 1 => 7, 2 => 9, 3 => 12);
-				$this->initTiles(256,$xm,$ym,400,400,5,true,false,false,!is_null($ycenter));#FIXME
+				$this->scales = array(0 => 6, 1 => 7, 2 => 9, 3 => 12);
+				$this->initTiles(256,$xm,$ym,400,400,6,true,false,false,!is_null($ycenter));#FIXME
 				break;
 			case 'full':
 				$this->mosaictype = 2;
-				$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
+				$this->scales = array(0 => 0.5, 1 => 1, 2 => 4, 3 => 40);
 				$this->setMosaicSize(400,400);
-				$this->setScale(0.3);
+				$this->setScale(0.5);
 				$this->setMosaicFactor(3);
 				if (is_null($ycenter))
 					$this->setOrigin($xl,$yl);
@@ -218,8 +218,8 @@ class GeographMapMosaic
 				break;
 			case 'overview_t':
 				$this->mosaictype = 1;
-				$this->scales = array(0 => 0.13, 1 => 0.13, 2 => 0.13, 3 => 1);
-				$this->initTiles(200,$xo,$yo,120,170,0.13,false,false,false,!is_null($ycenter));
+				$this->scales = array(0 => 0.16, 1 => 0.16, 2 => 0.16, 3 => 1);
+				$this->initTiles(200,$xo,$yo,120,170,0.16,false,false,false,!is_null($ycenter));
 				break;
 			case 'overview_tm':
 				$this->mosaictype = 1;
@@ -228,9 +228,9 @@ class GeographMapMosaic
 				break;
 			case 'overview':
 				$this->mosaictype = 1;
-				$this->scales = array(0 => 0.13, 1 => 0.13, 2 => 0.13, 3 => 1);
+				$this->scales = array(0 => 0.16, 1 => 0.16, 2 => 0.16, 3 => 1);
 				$this->setMosaicSize(120,170);
-				$this->setScale(0.13);
+				$this->setScale(0.16);
 				$this->setMosaicFactor(1);
 				if (is_null($ycenter))
 					$this->setOrigin($xo,$yo);
@@ -239,17 +239,17 @@ class GeographMapMosaic
 				break;
 			case 'zoomedin_t':
 				$this->mosaictype = 2;
-				$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
+				$this->scales = array(0 => 0.5, 1 => 1, 2 => 4, 3 => 40);
 				$this->initTiles(200,$xl,$yl,400,400,40,false,false,!is_null($ycenter),!is_null($ycenter));
 				break;
 			case 'zoomedin_tm':
 				$this->mosaictype = 2;
-				$this->scales = array(0 => 5, 1 => 7, 2 => 9, 3 => 12);
+				$this->scales = array(0 => 6, 1 => 7, 2 => 9, 3 => 12);
 				$this->initTiles(256,$xm,$ym,400,400,12,true,false,!is_null($ycenter),!is_null($ycenter));#FIXME
 				break;
 			case 'zoomedin':
 				$this->mosaictype = 2;
-				$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
+				$this->scales = array(0 => 0.5, 1 => 1, 2 => 4, 3 => 40);
 				$this->setMosaicSize(400,400);
 				$this->setScale(40);
 				$this->setMosaicFactor(2);
@@ -292,8 +292,8 @@ class GeographMapMosaic
 				break;
 			case 'homepage_tm':
 				$this->mosaictype = 0;
-				$this->scales = array(0 => 5);
-				$this->initTiles(256,$xm,$ym,$CONF['home_map_width_tm'],$CONF['home_map_height_tm'],5,true,false,false,!is_null($ycenter));
+				$this->scales = array(0 => 6);
+				$this->initTiles(256,$xm,$ym,$CONF['home_map_width_tm'],$CONF['home_map_height_tm'],6,true,false,false,!is_null($ycenter));
 				# FIXME overlay -> overlay_type
 				#       false   -> 0             == normal map
 				#       true    -> 1             == as used as googlemaps tile overlays
@@ -652,16 +652,16 @@ class GeographMapMosaic
 				$this->mercator = $token->hasValue("m") && $token->getValue("m");
 				if (!$this->mercator) {
 					if ($this->mosaictype == 1) #FIXME conf
-						$this->scales = array(0 => 0.13, 1 => 0.13, 2 => 0.13, 3 => 1);
+						$this->scales = array(0 => 0.16, 1 => 0.16, 2 => 0.16, 3 => 1);
 					elseif ($this->mosaictype == 2)
-						$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
+						$this->scales = array(0 => 0.5, 1 => 1, 2 => 4, 3 => 40);
 					else
 						$this->scales = array(0 => $token->getValue("s"));
 				} else {
 					if ($this->mosaictype == 1) #FIXME conf
 						$this->scales = array(0 => 4, 1 => 4, 2 => 4, 3 => 7);
 					elseif ($this->mosaictype == 2)
-						$this->scales =  array(0 => 5, 1 => 7, 2 => 9, 3 => 12);
+						$this->scales =  array(0 => 6, 1 => 7, 2 => 9, 3 => 12);
 					else
 						$this->scales = array(0 => $token->getValue("s"));
 				}
@@ -677,9 +677,9 @@ class GeographMapMosaic
 			elseif ($ok1)
 			{
 				if ($this->mosaictype == 1) #FIXME conf
-					$this->scales = array(0 => 0.13, 1 => 0.13, 2 => 0.13, 3 => 1);
+					$this->scales = array(0 => 0.16, 1 => 0.16, 2 => 0.16, 3 => 1);
 				elseif ($this->mosaictype == 2)
-					$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
+					$this->scales = array(0 => 0.5, 1 => 1, 2 => 4, 3 => 40);
 				else
 					$this->scales = array($token->getValue("s"));
 				$this->setOrigin($token->getValue("x"), $token->getValue("y"));

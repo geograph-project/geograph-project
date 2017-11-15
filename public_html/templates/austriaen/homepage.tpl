@@ -13,7 +13,9 @@ We use <a href="http://en.wikipedia.org/wiki/Military_grid_reference_system">MGR
 </p>
 </div>
 
-<div style="width:35%;float:left;position:relative;margin-right:10px">
+{*<div style="width:35%;float:left;position:relative;margin-right:10px">*}
+{*<div style="width:{$overview2_width}px;float:left;position:relative;margin-right:10px">*}
+<div style="width:50%;float:left;position:relative;margin-right:10px">
 {if $overview2}
 
 	<h3 style="margin-bottom:4px;margin-top:8px;text-align:center">Coverage Map</h3>

@@ -13,7 +13,9 @@ Dabei werden für die Planquadrate  <a href="http://de.wikipedia.org/wiki/MGRS">M
 </p>
 </div>
 
-<div style="width:35%;float:left;position:relative;margin-right:10px">
+{*<div style="width:35%;float:left;position:relative;margin-right:10px">*}
+{*<div style="width:{$overview2_width}px;float:left;position:relative;margin-right:10px">*}
+<div style="width:50%;float:left;position:relative;margin-right:10px">
 {if $overview2}
 
 	<h3 style="margin-bottom:4px;margin-top:8px;text-align:center">Abdeckung</h3>

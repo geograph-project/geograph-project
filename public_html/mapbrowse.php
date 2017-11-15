@@ -244,7 +244,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 	} else { #FIXME
 		//set it back incase we come from a largeoverview
-		$overview->setScale(0.13);
+		$overview->setScale(0.16);
 		$overview->setOrigin(0,-10);		
 	}
 	
