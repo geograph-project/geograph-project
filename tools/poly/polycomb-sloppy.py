@@ -158,12 +158,15 @@ def parseosm(file):
 		tmppolystart = {}
 		tmppolyend = {}
 
-		for member in members:
-			if member[0] not in ways:
-				print >> sys.stderr, "invalid member", member[0], member[1]
-				sys.exit(1)
+		#for member in members:
+		#	if member[0] not in ways:
+		#		print >> sys.stderr, "invalid member", member[0], member[1]
+		#		sys.exit(1)
 
 		for member in members:
+			if member[0] not in ways:
+				print >> sys.stderr, "invalid member", member[0], member[1], "-- skipping"
+				continue
 			way = ways[member[0]][:]
 			outer = member[1]
 			if   way[0][2] in tmppolystart:
