@@ -103,9 +103,8 @@
 		<p>[WGS84: {$latdm} {$longdm}]</p>
 		<p><b>Datum</b>: {if $datum == "osgb36"}Ordnance Survey Great Britain 1936{/if}
 			{if $datum == "irish"}Irish Grid OSNI/OSI{/if}
-			{if $datum == "german31"}MGRS (Zone 31){/if}
-			{if $datum == "german32"}MGRS (Zone 32){/if}
-			{if $datum == "german33"}MGRS (Zone 33){/if}</p>
+			{if $datum == "austrian32"}MGRS (Zone 32){/if}
+			{if $datum == "austrian33"}MGRS (Zone 33){/if}</p>
 		<p><b>Ostwert/Nordwert:</b> {$e|string_format:"%d"},{$n|string_format:"%d"}{if $datum == "irish"} OSI{/if}
 		<!--small><br/><b>Exact: Easting</b>: {$e} <b>Northing:</b>{$n}</small--></p>
 		

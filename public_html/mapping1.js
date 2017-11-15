@@ -36,18 +36,13 @@ function doMove(obj,e,n) {
 		if (grid.parseGridRef(gridref)) {
 			ok = true;
 		} else {*/
-			grid=new GT_German32();
-			if (grid.parseGridRef(gridref)) {
-				ok = true;
-			} else {
-				grid=new GT_German33();
+				grid=new GT_Austrian32();
 				if (grid.parseGridRef(gridref)) {
 					ok = true;
 				} else {
-					grid=new GT_German31();
+					grid=new GT_Austrian33();
 					ok = grid.parseGridRef(gridref)
 				}
-			}
 		/*}
 	}*/
 	
@@ -77,18 +72,13 @@ function doMove2(e,n) {
 		if (grid.parseGridRef(gridref)) {
 			ok = true;
 		} else {*/
-			grid=new GT_German32();
-			if (grid.parseGridRef(gridref)) {
-				ok = true;
-			} else {
-				grid=new GT_German33();
+				grid=new GT_Austrian32();
 				if (grid.parseGridRef(gridref)) {
 					ok = true;
 				} else {
-					grid=new GT_German31();
+					grid=new GT_Austrian33();
 					ok = grid.parseGridRef(gridref)
 				}
-			}
 		/*}
 	}*/
 	

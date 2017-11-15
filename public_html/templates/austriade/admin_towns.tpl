@@ -430,6 +430,10 @@ function tomap(that,num) {
 		ogrid=new GT_German33();
 	else if (or == 5)
 		ogrid=new GT_German31();
+	else if (or == 6)
+		ogrid=new GT_Austrian32();
+	else if (or == 7)
+		ogrid=new GT_Austrian33();
 	else return;
 	if (nr == 1) //FIXME ->function in geotools2.js?
 		ngrid=new GT_OSGB();
@@ -441,6 +445,10 @@ function tomap(that,num) {
 		ngrid=new GT_German33();
 	else if (nr == 5)
 		ngrid=new GT_German31();
+	else if (nr == 6)
+		ngrid=new GT_Austrian32();
+	else if (nr == 7)
+		ngrid=new GT_Austrian33();
 	else return;
 	ogrid.setGridCoordinates(oe, on);
 	ngrid.setGridCoordinates(ne, nn);
@@ -455,33 +463,19 @@ function tomap(that,num) {
 
 function frommap(that,num) {
 	var gridref = theForm.grid_reference.value.trim().toUpperCase();
-	var grid=new GT_OSGB();
 	var ok = false;
 	var nr;
-	if (grid.parseGridRef(gridref)) {//FIXME ->function in geotools2.js?
+	var grid;
+	grid=new GT_Austrian32();
+	if (grid.parseGridRef(gridref)) {
 		ok = true;
-		nr = 1;
+		nr = 6;
 	} else {
-		grid=new GT_Irish();
+		grid=new GT_Austrian33();
 		if (grid.parseGridRef(gridref)) {
 			ok = true;
-			nr = 2;
+			nr = 7;
 		} else {
-			grid=new GT_German32();
-			if (grid.parseGridRef(gridref)) {
-				ok = true;
-				nr = 3;
-			} else {
-				grid=new GT_German33();
-				if (grid.parseGridRef(gridref)) {
-					ok = true;
-					nr = 4;
-				} else {
-					grid=new GT_German31();
-					ok = grid.parseGridRef(gridref)
-					nr = 5;
-				}
-			}
 		}
 	}
 	if (!ok)
