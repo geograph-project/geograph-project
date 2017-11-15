@@ -1,7 +1,7 @@
 {assign var="page_title" value="Statistik"}
 {include file="_std_begin.tpl"}
  
-    <h2>Statistik für Geograph Deutschland</h2>
+    <h2>Statistik für Geograph Österreich</h2>
 
 <ul>
 <li><b>{$users_submitted}</b> Teilnehmer haben Bilder eingereicht.</li>

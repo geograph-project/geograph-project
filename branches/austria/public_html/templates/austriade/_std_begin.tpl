@@ -2,8 +2,8 @@
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"{if $rastermap->service == 'Google'} xmlns:v="urn:schemas-microsoft-com:vml"{/if} xml:lang="de" id="geograph">
 <head>
-{if $page_title}<title>{$page_title|escape:'html'} :: Geograph Deutschland</title>
-{else}<title>Geograph Deutschland</title>{/if}
+{if $page_title}<title>{$page_title|escape:'html'} :: Geograph Österreich</title>
+{else}<title>Geograph Österreich</title>{/if}
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... more"}" />
 {else}<meta name="description" content="Das Geograph-Projekt hat das Ziel, geographisch repräsentative Photos für jeden Quadratkilometer der Region zu sammeln."/>{/if}

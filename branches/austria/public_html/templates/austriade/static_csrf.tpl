@@ -5,7 +5,7 @@
 <h2>Formulare und Schutz vor Cross-Site-Request-Forgery</h2>
 
 <p>Hin und wieder kann es vorkommen, dass ein Eingabeformular, das auf einer der
-Seiten von Geograph Deutschland ausgefüllt wird, nicht auf Anhieb akzeptiert wird:
+Seiten von Geograph Österreich ausgefüllt wird, nicht auf Anhieb akzeptiert wird:
 Es erscheint die Bitte, die Daten zu überprüfen und das Formular gegebenenfalls
 erneut abzusenden.</p>
 

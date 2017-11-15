@@ -24,7 +24,7 @@ Bild: © Copyright {$image->realname} und lizenziert unter dieser Creative Common
 http://creativecommons.org/licenses/by-sa/2.0/
 --------------------------------
 
-Diese Nachricht wurde von einem Besucher von Geograph Deutschland geschickt,
+Diese Nachricht wurde von einem Besucher von Geograph Österreich geschickt,
 sollte dies missbräuchlich geschehen sein, wenden Sie sich bitte an: {$contactmail}
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40
@@ -49,7 +49,7 @@ href="http://{$http_host}/"\>
       src="http://{$http_host}/templates/austriade/img/logode3.gif" width=350 border=0></A></TD>
     <TD vAlign=top align=center bgColor=#000066><A 
       href="http://{$http_host}/"><FONT face=Georgia color=#ffffff 
-      size=+2>{$http_host}</FONT></A><BR><FONT face=Georgia color=#ffffff><I>Geograph Deutschland hat das Ziel, geographisch repräsentative Photos für<BR>jeden Quadratkilometer Deutschlands zu sammeln.</I></FONT></TD>
+      size=+2>{$http_host}</FONT></A><BR><FONT face=Georgia color=#ffffff><I>Geograph Österreich hat das Ziel, geographisch repräsentative Photos für<BR>jeden Quadratkilometer Österreichs zu sammeln.</I></FONT></TD>
     <TD bgColor=#000066>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
@@ -94,7 +94,7 @@ href="http://{$http_host}/"\>
     <TD>&nbsp;</TD></TR>
 </TBODY></TABLE>
 </TD></TR></TBODY></TABLE>
-<P align=center><FONT face=Georgia size=-1>Diese Nachricht wurde von einem Besucher von Geograph Deutschland geschickt, <BR>
+<P align=center><FONT face=Georgia size=-1>Diese Nachricht wurde von einem Besucher von Geograph Österreich geschickt, <BR>
 sollte dies missbräuchlich geschehen sein, wenden Sie sich bitte an: 
 {$contactmail}</FONT><!-- {$user->user_id} --></P></BODY></HTML>
 

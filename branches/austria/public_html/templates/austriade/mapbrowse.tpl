@@ -1,7 +1,7 @@
 {if $token_zoomout}
         {assign var="page_title" value="Kartenansicht :: $gridref"}
 {else}
-        {assign var="page_title" value="Kartenansicht :: Deutschland"}
+        {assign var="page_title" value="Kartenansicht :: Österreich"}
 {/if}
 {if $token_zoomout}
 	{assign var="canonicalreq" value="/map/`$mosaic_token`"}
@@ -10,7 +10,7 @@
 {*FIXME?else}
 	{assign var="canonicalreq" value="/mapbrowse.php"*}
 {/if}
-{assign var="meta_description" value="Geograph-Abdeckungskarte Deutschlands, grüne Quadrate sind noch zu fotografieren"}
+{assign var="meta_description" value="Geograph-Abdeckungskarte Österreichs, grüne Quadrate sind noch zu fotografieren"}
 {assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\"/>"}
 {include file="_std_begin.tpl"}
  
@@ -134,7 +134,7 @@
 	{foreach from=$overview key=y item=maprow}
 		<div style="position:absolute;top:0px;left:0px;">
 		{foreach from=$maprow key=x item=mapcell}
-		<img alt="Übersichtskarte Deutschland" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
+		<img alt="Übersichtskarte Österreich" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
 		{/foreach}
 		</div>
 	{/foreach}

@@ -23,7 +23,7 @@ We hope you enjoy using and contributing to the site
 
 Kind Regards,
 
-The Geograph Deutschland Team
+The Geograph Austria Team
 EOT
 ,
 	'mailsubject_register'    => 'Confirm registration',
@@ -40,7 +40,7 @@ If you do not wish to change your password, simply disregard this message.
 
 Kind Regards,
 
-The Geograph Deutschland Team
+The Geograph Austria Team
 EOT
 ,
 	'mailsubject_reminder'    => 'New password for %s',
@@ -66,7 +66,7 @@ If you do not wish to change your address, simply disregard this message.
 
 Kind Regards,
 
-The Geograph Deutschland Team
+The Geograph Austria Team
 EOT
 ,
 	'mailsubject_mail_change' => 'Please confirm your email address change for %s',

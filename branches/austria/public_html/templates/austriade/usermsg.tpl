@@ -55,7 +55,7 @@
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Warnung" width="50" height="44" align="left" style="margin-right:10px"/>
 			Wir haben keine gültigen Kontaktinformationen für diesen Teilnehmer. Die Nachricht wird daher
-			an das Geograph-Deutschland-Team geschickt werden, das vielleicht weiterhelfen kann.
+			an das Geograph-Österreich-Team geschickt werden, das vielleicht weiterhelfen kann.
 		</div>
 		<br/><br/><br/>
 		{/if}

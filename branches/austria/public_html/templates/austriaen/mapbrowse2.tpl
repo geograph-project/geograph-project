@@ -1,7 +1,7 @@
 {if $token_zoomout}
         {assign var="page_title" value="Map Browsing :: $gridref"}
 {else}
-        {assign var="page_title" value="Map Browsing :: Germany"}
+        {assign var="page_title" value="Map Browsing :: Austria"}
 {/if}
 {if $token_zoomout}
 	{assign var="canonicalreq" value="/map2/`$mosaic_token`"}
@@ -11,7 +11,7 @@
 {*FIXME?else}
 	{assign var="canonicalreq" value="/mapbrowse2.php"*}
 {/if}
-{assign var="meta_description" value="Geograph coverage map of Germany, showing where we have photos, green squares are yet to be photographed."}
+{assign var="meta_description" value="Geograph coverage map of Austria, showing where we have photos, green squares are yet to be photographed."}
 {assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\"/>"}
 {include file="_std_begin.tpl"}
  
@@ -172,7 +172,7 @@
 		<div style="float:left;position:relative;height:{$mapcell->image_h-$mapcell->cliptop-$mapcell->clipbottom}px;width:{$mapcell->image_w-$mapcell->clipleft-$mapcell->clipright}px;overflow:hidden">
 		<div style="position:absolute;clip:rect({$mapcell->cliptop}px,{$mapcell->image_w-$mapcell->clipright}px,{$mapcell->image_h-$mapcell->clipbottom}px,{$mapcell->clipleft}px);top:-{$mapcell->cliptop}px;left:-{$mapcell->clipleft}px">
 		{/if}
-		<img alt="Germany Overview Map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
+		<img alt="Austria Overview Map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
 		{if $mosaic_clip}</div></div>{/if}
 		{/foreach}
 		</div>

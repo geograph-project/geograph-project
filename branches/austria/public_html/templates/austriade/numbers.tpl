@@ -1,5 +1,5 @@
 {assign var="page_title" value="Aktueller Stand"}
-{assign var="meta_description" value="Kurzübersicht über den aktuellen Stand beim Fotografieren jedes Quadratkilometers Deutschlands."}
+{assign var="meta_description" value="Kurzübersicht über den aktuellen Stand beim Fotografieren jedes Quadratkilometers Österreichs."}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
@@ -7,7 +7,7 @@
 	&lt; <a href="/statistics.php">Mehr Statistik</a> | <a href="/statistics/moversboard.php">Rangliste</a> &gt;
 </div>
 
-<h2>Geograph Deutschland</h2>
+<h2>Geograph Österreich</h2>
 
 <div class="greenbar">{* for 33-66% coverage *}
 	<div class="righttextbox">

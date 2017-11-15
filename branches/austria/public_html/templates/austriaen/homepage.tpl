@@ -2,14 +2,14 @@
 {include file="_std_begin.tpl"}
 
 
-<h2>Welcome to Geograph Deutschland</h2>
+<h2>Welcome to Geograph Austria</h2>
 
 <div style="position:relative;background-color:white;">
 
 <div style="background-color:#eeeeee;padding:2px; text-align:justify">
 <p>
-The Geograph project aims to collect geographically representative photographs and information for every square kilometre of Germany.
-We use <a href="http://en.wikipedia.org/wiki/Military_grid_reference_system">MGRS coordinates</a> (<a href="http://upload.wikimedia.org/wikipedia/commons/1/19/Utmzonenugitterp.png">grid in Germany</a>) in UTM zones 31, 32, and 33.
+The Geograph project aims to collect geographically representative photographs and information for every square kilometre of Austria.
+We use <a href="http://en.wikipedia.org/wiki/Military_grid_reference_system">MGRS coordinates</a> in UTM zones 32 and 33.
 </p>
 </div>
 

@@ -5,7 +5,7 @@
 	 
 {if !$e && !$n}
 	<p>Auf dieser Seite können Geographische Koordinaten (Länge/Breite auf dem WGS84-Ellipsoid) oder Gauß-Krüger-Koordinaten in die MGRS-Koordinaten umgewandelt werden,
-	die auf Geograph Deutschland eingesetzt werden.</p> 
+	die auf Geograph Österreich eingesetzt werden.</p> 
 {/if}
 
 	<div style="float:left;position:relative;width:200px;height:200px;margin-left:10px;margin-right:10px;text-align:center;background:#dddddd;">

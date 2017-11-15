@@ -54,7 +54,7 @@
  </ul>
 <b>Browsing</b> the site:
  <ul>
- <li><a href="#coordinates">Why is Germany divided, again? What <b>coordinates</b> do you use?</a></li>
+ <li><a href="#coordinates">Why is Austria divided? What <b>coordinates</b> do you use?</a></li>
  <li><a href="#use">I would be interested in <b>reusing</b> Geograph content, is that possible?</a></li>
  <li><a href="#change">I <b>disagree</b> with the location or title of an image - what can I do?</a></li>
  <li><a href="#concern">I'm <b>concerned</b> about a photo or comment I have seen on the site.</a></li>
@@ -298,9 +298,9 @@ the English version, too: we'll put it at the end of the title or description, e
 
 <div id="coordinates">
 <a name="coordinates"></a>
-<h3>Why is Germany divided, again? What coordinates do you use?</h3>
+<h3>Why is Austria divided? What coordinates do you use?</h3>
 	<p>We basically use <a href="http://de.wikipedia.org/wiki/MGRS">MGRS/UTMREF coordinates</a>
-	which means that Germany is divided into the three UTM zones 31, 32, 33. More details about this topic can be
+	which means that Austria is divided into the UTM zones 32 and 33. More details about this topic can be
 	found in the German <a href="http://geo-en.hlipp.de/article/Koordinaten">article about coordinates</a>.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
