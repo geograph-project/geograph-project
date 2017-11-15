@@ -3,14 +3,14 @@
 
 {dynamic}
 {if $message_sent}
-	<h3>Thank you for contacting the Geograph Deutschland team.</h3>
+	<h3>Thank you for contacting the Geograph Austria team.</h3>
 	<p>Your message has been sent - you should hear back from us soon.</p>
 {else}
     <h2>Contact Us</h2>
  
  	<div style="background-color:#eeeeee;padding:2px; text-align:center">
-	The Geograph Deutschland project aims to collect geographically
-	representative photographs and information for every square kilometre of Germany.
+	The Geograph Austria project aims to collect geographically
+	representative photographs and information for every square kilometre of Austria.
 	</div>
  
 	<p>Got something to tell us? Then fire away - we try to respond within 24 hours, often much quicker.</p>

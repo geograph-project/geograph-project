@@ -2,14 +2,14 @@
 {include file="_std_begin.tpl"}
 
 
-<h2>Willkommen bei Geograph Deutschland</h2>
+<h2>Willkommen bei Geograph Österreich</h2>
 
 <div style="position:relative;background-color:white;">
 
 <div style="background-color:#eeeeee;padding:2px; text-align:justify">
 <p>
-Das Geograph-Projekt hat das Ziel, geographisch repräsentative Photos für jeden Quadratkilometer Deutschlands zu sammeln.
-Dabei werden für die Planquadrate  <a href="http://de.wikipedia.org/wiki/MGRS">MGRS-Koordinaten</a> für die UTM-Zonen 31, 32 und 33 verwendet.
+Das Geograph-Projekt hat das Ziel, geographisch repräsentative Photos für jeden Quadratkilometer Österreichs zu sammeln.
+Dabei werden für die Planquadrate  <a href="http://de.wikipedia.org/wiki/MGRS">MGRS-Koordinaten</a> für die UTM-Zonen 32 und 33 verwendet.
 </p>
 </div>
 

@@ -24,7 +24,7 @@ Image © Copyright {$image->realname} and licensed for reuse under this Creative 
 http://creativecommons.org/licenses/by-sa/2.0/
 --------------------------------
 
-This message was sent to you by site visitor to Geograph Deutschland,
+This message was sent to you by site visitor to Geograph Austria,
 forward abuse complaints to: {$contactmail}
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40
@@ -49,7 +49,7 @@ href="http://{$http_host}/"\>
       src="http://{$http_host}/templates/austriaen/img/logode3.gif" width=350 border=0></A></TD>
     <TD vAlign=top align=center bgColor=#000066><A 
       href="http://{$http_host}/"><FONT face=Georgia color=#ffffff 
-      size=+2>{$http_host}</FONT></A><BR><FONT face=Georgia color=#ffffff><I>The Geograph Deutschland project aims to collect a geographically representative<BR> photograph for every square kilometre of Germany and you can be part of it.</I></FONT></TD>
+      size=+2>{$http_host}</FONT></A><BR><FONT face=Georgia color=#ffffff><I>The Geograph Austria project aims to collect a geographically representative<BR> photograph for every square kilometre of Austria and you can be part of it.</I></FONT></TD>
     <TD bgColor=#000066>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
@@ -96,7 +96,7 @@ href="http://{$http_host}/"\>
 </TBODY></TABLE>
 </TD></TR></TBODY></TABLE>
 <P align=center><FONT face=Georgia size=-1>This message was sent to you by site 
-visitor to Geograph Deutschland, <BR>forward abuse complaints to: 
+visitor to Geograph Austria, <BR>forward abuse complaints to: 
 {$contactmail}</FONT><!-- {$user->user_id} --></P></BODY></HTML>
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40--

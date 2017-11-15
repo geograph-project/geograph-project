@@ -23,7 +23,7 @@ Wir wünschen viel Freude an der Teilnahme am Projekt!
 
 Mit freundlichen Grüßen
 
-Das Geograph-Deutschland-Team
+Das Geograph-Österreich-Team
 EOT
 ,
 	'mailsubject_register'    => 'Registrierungsbestätigung',
@@ -40,7 +40,7 @@ Wenn das Passwort nicht geändert werden soll, kann diese Mail einfach ignoriert 
 
 Mit freundlichen Grüßen
 
-Das Geograph-Deutschland-Team
+Das Geograph-Österreich-Team
 EOT
 ,
 	'mailsubject_reminder'    => 'Neues Passwort für %s',
@@ -66,7 +66,7 @@ Wenn die Adresse nicht geändert werden soll, kann diese Mail einfach ignoriert w
 
 Mit freundlichen Grüßen
 
-Das Geograph-Deutschland-Team
+Das Geograph-Österreich-Team
 EOT
 ,
 	'mailsubject_mail_change' => 'Bestätigung der neuen E-Mail-Adresse für %s',

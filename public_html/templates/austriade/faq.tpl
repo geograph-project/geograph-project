@@ -54,7 +54,7 @@
  </ul>
 <b>Betrachten</b> der Seite:
  <ul>
- <li><a href="#coordinates">Warum ist Deutschland wieder geteilt? Welche <b>Koordinaten</b> werden benutzt?</a></li>
+ <li><a href="#coordinates">Warum ist Österreich geteilt? Welche <b>Koordinaten</b> werden benutzt?</a></li>
  <li><a href="#use">Ich würde gerne Geograph-Inhalte <b>verwerten</b>, ist das möglich?</a></li>
  <li><a href="#change">Ich bin mit den Positionsangaben oder der Beschreibung eines Bildes <b>nicht einverstanden</b> &ndash; was kann ich tun?</a></li>
  <li><a href="#concern">Ich habe <b>Bedenken</b> wegen eines Fotos oder Kommentars.</a></li>
@@ -305,9 +305,9 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 
 <div id="coordinates">
 <a name="coordinates"></a>
-<h3>Warum ist Deutschland wieder geteilt? Welche Koordinaten werden benutzt?</h3>
+<h3>Warum ist Österreich geteilt? Welche Koordinaten werden benutzt?</h3>
 	<p>Wir verwenden im Wesentlichen <a href="http://de.wikipedia.org/wiki/MGRS">MGRS/UTMREF-Koordinaten</a>,
-	was zur Folge hat, dass Deutschland in die UTM-Zonen 31, 32 und 33 aufgeteilt ist. Näheres dazu
+	was zur Folge hat, dass Österreich in die UTM-Zonen 32 und 33 aufgeteilt ist. Näheres dazu
 	kann im <a href="http://geo.hlipp.de/article/Koordinaten">Artikel über Koordinaten</a> nachgelesen werden.</p>
 </div>
 <div class="top"><a href="#top">nach oben</a></div>

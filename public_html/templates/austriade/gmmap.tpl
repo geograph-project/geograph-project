@@ -293,7 +293,7 @@ OpacityControl.prototype.getDefaultPosition = function() {
 				var copyrightCollectionOSMm = new GCopyrightCollection('(c) OSM (CC)');
 				//var copyrightCollectionTopoH = new GCopyrightCollection('Hoehen CIAT');
 				//var copyrightCollectionOG = new GCopyrightCollection();
-				var copyrightCollectionO = new GCopyrightCollection('Geograph Deutschland (CC)');
+				var copyrightCollectionO = new GCopyrightCollection('Geograph Österreich (CC)');
 				var copyrightCollectionGeoH = new GCopyrightCollection("Hoehen CIAT");
 				copyrightCollectionOSMm.addCopyright(copyright1);
 				//copyrightCollectionTopoH.addCopyright(copyright2);

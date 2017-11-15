@@ -253,13 +253,13 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 			$file = str_replace("kmz",'html',$file);
 			
 			if (!empty($list)) {
-				$s = "Photos in ".$list." :: Geograph Germany";
+				$s = "Photos in ".$list." :: Geograph Austria";
 			} elseif (!empty($gr) && $level == 5) {
-				$s = "Photos in ".$gr." :: Geograph Germany";
+				$s = "Photos in ".$gr." :: Geograph Austria";
 			} elseif (isset($square->grid_reference)) {
-				$s = "Photos in {$square->grid_reference} :: Geograph Germany";
+				$s = "Photos in {$square->grid_reference} :: Geograph Austria";
 			} elseif (!empty($gr)) {
-				$s = "Photos near ".$gr." :: Geograph Germany";
+				$s = "Photos near ".$gr." :: Geograph Austria";
 			} else {
 				$s = "Photos in ".$CONF['references_all'][0];
 			}
@@ -273,7 +273,7 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 			
 			$html = "<html><head><title>{$s}</title></head>\n".
 			"<body>".
-			"<h3>Geograph Germany</h3>".
+			"<h3>Geograph Austria</h3>".
 			"<p><a href=\"/\">Homepage</a> | <a href=\"/sitemap/\">Sitemap</a> | <a href=\"$file1\">Up one level</a> | $s</p>".
 			"<ul>\n$html</ul>".
 			"</body></html>";

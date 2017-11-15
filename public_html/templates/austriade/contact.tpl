@@ -3,13 +3,13 @@
 
 {dynamic}
 {if $message_sent}
-	<h3>Danke für die Nachricht an das Geograph-Deutschland-Team.</h3>
+	<h3>Danke für die Nachricht an das Geograph-Österreich-Team.</h3>
 	<p>Die Nachricht wurde versandt, wir versuchen bald zu antworten.</p>
 {else}
     <h2>Kontakt-Formular</h2>
  
  	<div style="background-color:#eeeeee;padding:2px; text-align:center">
-	Das Geograph-Projekt hat das Ziel, geographisch repräsentative Photos für jeden Quadratkilometer Deutschlands zu sammeln.
+	Das Geograph-Projekt hat das Ziel, geographisch repräsentative Photos für jeden Quadratkilometer Österreichs zu sammeln.
 	</div>
  
 	<p>Wenn Sie ein Anliegen haben, können Sie sich über dieses Formular an uns wenden. Wir versuchen, innerhalb von 24 Stunden zu antworten.</p>
