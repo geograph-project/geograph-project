@@ -204,38 +204,38 @@ GT_OSGB.prototype.getWGS84 = function()
 
 /*****************************************************************************
 *
-* GT_German32 holds German grid coordinates (Zone 32)
+* GT_Austrian32 holds Austrian grid coordinates (Zone 32)
 *
 *****************************************************************************/
 
-function GT_German32()
+function GT_Austrian32()
 {
 	this.northings=0;
 	this.eastings=0;
 	this.status="Undefined";
 }
 
-GT_German32.prefixes = new Array (
-	new Array("TKT", "UKU", "UKV", "UKA", "UKB", "UKC", "UKD", "UKE", "UKF", "UKG"),
-	new Array("TLT", "ULU", "ULV", "ULA", "ULB", "ULC", "ULD", "ULE", "ULF", "ULG"),
-	new Array("TMT", "UMU", "UMV", "UMA", "UMB", "UMC", "UMD", "UME", "UMF", "UMG"),
-	new Array("TNT", "UNU", "UNV", "UNA", "UNB", "UNC", "UND", "UNE", "UNF", "UNG"),
-	new Array("TPT", "UPU", "UPV", "UPA", "UPB", "UPC", "UPD", "UPE", "UPF", "UPG"),
-	new Array("TQT", "UQU", "UQV", "UQA", "UQB", "UQC", "UQD", "UQE", "UQF", "UQG"));
+GT_Austrian32.prefixes = new Array (
+	new Array("KS", "KT", "KU", "KV", "KA", "KB", "KC", "KD", "KE", "KF", "KG"),
+	new Array("LS", "LT", "LU", "LV", "LA", "LB", "LC", "LD", "LE", "LF", "LG"),
+	new Array("MS", "MT", "MU", "MV", "MA", "MB", "MC", "MD", "ME", "MF", "MG"),
+	new Array("NS", "NT", "NU", "NV", "NA", "NB", "NC", "ND", "NE", "NF", "NG"),
+	new Array("PS", "PT", "PU", "PV", "PA", "PB", "PC", "PD", "PE", "PF", "PG"),
+	new Array("QS", "QT", "QU", "QV", "QA", "QB", "QC", "QD", "QE", "QF", "QG"));
 
-GT_German32.prototype.setGridCoordinates = function(eastings,northings)
+GT_Austrian32.prototype.setGridCoordinates = function(eastings,northings)
 {
 	this.northings=northings;
 	this.eastings=eastings;
 	this.status="OK";
 }
 
-GT_German32.prototype.setError = function(msg)
+GT_Austrian32.prototype.setError = function(msg)
 {
 	this.status=msg;
 }
 
-GT_German32.prototype._zeropad = function(num, len)
+GT_Austrian32.prototype._zeropad = function(num, len)
 {
 	var str=new String(num);
 	while (str.length<len)
@@ -245,7 +245,7 @@ GT_German32.prototype._zeropad = function(num, len)
 	return str;
 }
 
-GT_German32.prototype.getGridRef = function(precision)
+GT_Austrian32.prototype.getGridRef = function(precision)
 {
 	
 	
@@ -267,19 +267,19 @@ GT_German32.prototype.getGridRef = function(precision)
 
 		var y=Math.floor(nr / rfactor);
 		var x=Math.floor(er / rfactor);
-		y -= 52;
+		y -= 51;
 		x -= 2;
 
 		var e=(er % rfactor);
 		var n=(nr % rfactor);
 	} //FIXME else: x, y =?
 	
-	var prefix=GT_German32.prefixes[x][y];
+	var prefix=GT_Austrian32.prefixes[x][y];
 	
     return prefix+" "+this._zeropad(e, precision)+" "+this._zeropad(n, precision);
 }
 
-GT_German32.prototype.parseGridRef = function(landranger)
+GT_Austrian32.prototype.parseGridRef = function(landranger)
 {
 	var ok=false;
 
@@ -291,7 +291,7 @@ GT_German32.prototype.parseGridRef = function(landranger)
 
 	for (precision=5; precision>=1; precision--)
 	{
-		var pattern = new RegExp("^([A-Z]{3})\\s*(\\d{"+precision+"})\\s*(\\d{"+precision+"})$", "i")
+		var pattern = new RegExp("^([A-Z]{2})\\s*(\\d{"+precision+"})\\s*(\\d{"+precision+"})$", "i")
 		var gridRef = landranger.match(pattern);
 		if (gridRef)
 		{
@@ -308,12 +308,12 @@ GT_German32.prototype.parseGridRef = function(landranger)
 			}
 			
 			var x,y;
-			search: for(x=0; x<GT_German32.prefixes.length; x++) 
+			search: for(x=0; x<GT_Austrian32.prefixes.length; x++) 
 			{
-				for(y=0; y<GT_German32.prefixes[x].length; y++)
-					if (GT_German32.prefixes[x][y] == gridSheet) {
+				for(y=0; y<GT_Austrian32.prefixes[x].length; y++)
+					if (GT_Austrian32.prefixes[x][y] == gridSheet) {
 						this.eastings = ((x + 2) * 100000)+gridEast;
-						this.northings = ((y + 52) * 100000)+gridNorth;
+						this.northings = ((y + 51) * 100000)+gridNorth;
 						ok=true;
 						break search;
 					}
@@ -329,7 +329,7 @@ GT_German32.prototype.parseGridRef = function(landranger)
 }
 
 
-GT_German32.prototype.getWGS84 = function(uselevel2)
+GT_Austrian32.prototype.getWGS84 = function(uselevel2)
 {
 	var coord = GT_Math.utm_to_wgs84(this.eastings, this.northings, 32);
 
@@ -340,36 +340,37 @@ GT_German32.prototype.getWGS84 = function(uselevel2)
 
 /*****************************************************************************
 *
-* GT_German33 holds German grid coordinates (Zone 33)
+* GT_Austrian33 holds Austrian grid coordinates (Zone 33)
 *
 *****************************************************************************/
 
-function GT_German33()
+function GT_Austrian33()
 {
 	this.northings=0;
 	this.eastings=0;
 	this.status="Undefined";
 }
 
-GT_German33.prefixes = new Array (
-	new Array("TTN", "UTP", "UTQ", "UTR", "UTS", "UTT", "UTU", "UTV", "UTA", "UTB"),
-	new Array("TUN", "UUP", "UUQ", "UUR", "UUS", "UUT", "UUU", "UUV", "UUA", "UUB"),
-	new Array("TVN", "UVP", "UVQ", "UVR", "UVS", "UVT", "UVU", "UVV", "UVA", "UVB"),
-	new Array("TWN", "UWP", "UWQ", "UWR", "UWS", "UWT", "UWU", "UWV", "UWA", "UWB"));
+GT_Austrian33.prefixes = new Array (
+	new Array("TM", "TN", "TP", "TQ", "TR", "TS", "TT", "TU", "TV", "TA", "TB"),
+	new Array("UM", "UN", "UP", "UQ", "UR", "US", "UT", "UU", "UV", "UA", "UB"),
+	new Array("VM", "VN", "VP", "VQ", "VR", "VS", "VT", "VU", "VV", "VA", "VB"),
+	new Array("WM", "WN", "WP", "WQ", "WR", "WS", "WT", "WU", "WV", "WA", "WB"),
+	new Array("XM", "XN", "XP", "XQ", "XR", "XS", "XT", "XU", "XV", "XA", "XB"));
 
-GT_German33.prototype.setGridCoordinates = function(eastings,northings)
+GT_Austrian33.prototype.setGridCoordinates = function(eastings,northings)
 {
 	this.northings=northings;
 	this.eastings=eastings;
 	this.status="OK";
 }
 
-GT_German33.prototype.setError = function(msg)
+GT_Austrian33.prototype.setError = function(msg)
 {
 	this.status=msg;
 }
 
-GT_German33.prototype._zeropad = function(num, len)
+GT_Austrian33.prototype._zeropad = function(num, len)
 {
 	var str=new String(num);
 	while (str.length<len)
@@ -379,7 +380,7 @@ GT_German33.prototype._zeropad = function(num, len)
 	return str;
 }
 
-GT_German33.prototype.getGridRef = function(precision)
+GT_Austrian33.prototype.getGridRef = function(precision)
 {
 	
 	
@@ -401,19 +402,19 @@ GT_German33.prototype.getGridRef = function(precision)
 
 		var y=Math.floor(nr / rfactor);
 		var x=Math.floor(er / rfactor);
-		y -= 52;
+		y -= 51;
 		x -= 2;
 
 		var e=(er % rfactor);
 		var n=(nr % rfactor);
 	} //FIXME else: x, y =?
 	
-	var prefix=GT_German33.prefixes[x][y];
+	var prefix=GT_Austrian33.prefixes[x][y];
 	
     return prefix+" "+this._zeropad(e, precision)+" "+this._zeropad(n, precision);
 }
 
-GT_German33.prototype.parseGridRef = function(landranger)
+GT_Austrian33.prototype.parseGridRef = function(landranger)
 {
 	var ok=false;
 
@@ -425,7 +426,7 @@ GT_German33.prototype.parseGridRef = function(landranger)
 
 	for (precision=5; precision>=1; precision--)
 	{
-		var pattern = new RegExp("^([A-Z]{3})\\s*(\\d{"+precision+"})\\s*(\\d{"+precision+"})$", "i")
+		var pattern = new RegExp("^([A-Z]{2})\\s*(\\d{"+precision+"})\\s*(\\d{"+precision+"})$", "i")
 		var gridRef = landranger.match(pattern);
 		if (gridRef)
 		{
@@ -442,12 +443,12 @@ GT_German33.prototype.parseGridRef = function(landranger)
 			}
 			
 			var x,y;
-			search: for(x=0; x<GT_German33.prefixes.length; x++) 
+			search: for(x=0; x<GT_Austrian33.prefixes.length; x++) 
 			{
-				for(y=0; y<GT_German33.prefixes[x].length; y++)
-					if (GT_German33.prefixes[x][y] == gridSheet) {
+				for(y=0; y<GT_Austrian33.prefixes[x].length; y++)
+					if (GT_Austrian33.prefixes[x][y] == gridSheet) {
 						this.eastings = ((x + 2) * 100000)+gridEast;
-						this.northings = ((y + 52) * 100000)+gridNorth;
+						this.northings = ((y + 51) * 100000)+gridNorth;
 						ok=true;
 						break search;
 					}
@@ -463,141 +464,9 @@ GT_German33.prototype.parseGridRef = function(landranger)
 }
 
 
-GT_German33.prototype.getWGS84 = function(uselevel2)
+GT_Austrian33.prototype.getWGS84 = function(uselevel2)
 {
 	var coord = GT_Math.utm_to_wgs84(this.eastings, this.northings, 33);
-
-	var wgs84=new GT_WGS84();
-	wgs84.setDegrees(coord[0],coord[1]);
-	return wgs84;
-}
-
-/*****************************************************************************
-*
-* GT_German31 holds German grid coordinates (Zone 31)
-*
-*****************************************************************************/
-
-function GT_German31()
-{
-	this.northings=0;
-	this.eastings=0;
-	this.status="Undefined";
-}
-
-GT_German31.prefixes = new Array (
-	new Array("TFN", "UFP", "UFQ", "UFR", "UFS", "UFT", "UFU", "UFV", "UFA", "UFB"),
-	new Array("TGN", "UGP", "UGQ", "UGR", "UGS", "UGT", "UGU", "UGV", "UGA", "UGB"));
-
-GT_German31.prototype.setGridCoordinates = function(eastings,northings)
-{
-	this.northings=northings;
-	this.eastings=eastings;
-	this.status="OK";
-}
-
-GT_German31.prototype.setError = function(msg)
-{
-	this.status=msg;
-}
-
-GT_German31.prototype._zeropad = function(num, len)
-{
-	var str=new String(num);
-	while (str.length<len)
-	{
-		str='0'+str;
-	}
-	return str;
-}
-
-GT_German31.prototype.getGridRef = function(precision)
-{
-	
-	
-
-	if (precision<0)
-		precision=0;
-	if (precision>5)
-		precision=5;
-		
-	var e="";
-
-	var n="";
-	if (precision>0)
-	{
-		var factor = Math.pow(10, 5-precision);
-		var rfactor = Math.pow(10, precision);
-		var nr = Math.floor(this.northings / factor);
-		var er = Math.floor(this.eastings / factor);
-
-		var y=Math.floor(nr / rfactor);
-		var x=Math.floor(er / rfactor);
-		y -= 52;
-		x -= 6;
-
-		var e=(er % rfactor);
-		var n=(nr % rfactor);
-	} //FIXME else: x, y =?
-	
-	var prefix=GT_German31.prefixes[x][y];
-	
-    return prefix+" "+this._zeropad(e, precision)+" "+this._zeropad(n, precision);
-}
-
-GT_German31.prototype.parseGridRef = function(landranger)
-{
-	var ok=false;
-
-	
-	this.northings=0;
-	this.eastings=0;
-	
-	var precision;
-
-	for (precision=5; precision>=1; precision--)
-	{
-		var pattern = new RegExp("^([A-Z]{3})\\s*(\\d{"+precision+"})\\s*(\\d{"+precision+"})$", "i")
-		var gridRef = landranger.match(pattern);
-		if (gridRef)
-		{
-			var gridSheet = gridRef[1];
-			var gridEast=0;
-			var gridNorth=0;
-			
-			//5x1 4x10 3x100 2x1000 1x10000 
-			if (precision>0)
-			{
-				var mult=Math.pow(10, 5-precision);
-				gridEast=parseInt(gridRef[2],10) * mult;
-				gridNorth=parseInt(gridRef[3],10) * mult;
-			}
-			
-			var x,y;
-			search: for(x=0; x<GT_German31.prefixes.length; x++) 
-			{
-				for(y=0; y<GT_German31.prefixes[x].length; y++)
-					if (GT_German31.prefixes[x][y] == gridSheet) {
-						this.eastings = ((x + 6) * 100000)+gridEast;
-						this.northings = ((y + 52) * 100000)+gridNorth;
-						ok=true;
-						break search;
-					}
-			
-			}
-		
-		}
-	}
-
-	
-
-	return ok;
-}
-
-
-GT_German31.prototype.getWGS84 = function(uselevel2)
-{
-	var coord = GT_Math.utm_to_wgs84(this.eastings, this.northings, 31);
 
 	var wgs84=new GT_WGS84();
 	wgs84.setDegrees(coord[0],coord[1]);
@@ -823,31 +692,22 @@ GT_WGS84.prototype.isGreatBritain = function()
 		this.longitude < 2.3;
 }
 
-GT_WGS84.prototype.isGermany32 = function(sloppy)
+GT_WGS84.prototype.isAustria32 = function(sloppy)
 {
 	var delta = (sloppy == null || !sloppy) ? 0 : 1;
-	return this.latitude > 47 &&
-		this.latitude < 56 &&
-		this.longitude >= 6 - delta &&
+	return this.latitude > 46.1/*45*/ &&
+		this.latitude < 52 &&
+		this.longitude > 7 &&
 		this.longitude <= 12 + delta; //FIXME
 }
 
-GT_WGS84.prototype.isGermany33 = function(sloppy)
+GT_WGS84.prototype.isAustria33 = function(sloppy)
 {
 	var delta = (sloppy == null || !sloppy) ? 0 : 1;
-	return this.latitude > 47 &&
-		this.latitude < 56 &&
+	return this.latitude > 46.1 /*45*/ &&
+		this.latitude < 52 &&
 		this.longitude > 12 - delta &&
-		this.longitude < 16; //FIXME
-}
-
-GT_WGS84.prototype.isGermany31 = function(sloppy)
-{
-	var delta = (sloppy == null || !sloppy) ? 0 : 1;
-	return this.latitude > 47 &&
-		this.latitude < 56 &&
-		this.longitude > 4 &&
-		this.longitude < 6 + delta; //FIXME
+		this.longitude < 18; //FIXME
 }
 
 GT_WGS84.prototype.isIreland = function()
@@ -902,52 +762,36 @@ GT_WGS84.prototype.getIrish = function(uselevel2, sloppy, nocheck)
 	return irish;
 }
 
-GT_WGS84.prototype.getGerman32 = function(uselevel2, sloppy, nocheck)
+GT_WGS84.prototype.getAustrian32 = function(uselevel2, sloppy, nocheck)
 {
-	var german=new GT_German32();
-	if (nocheck || this.isGermany32(sloppy))
+	var austrian=new GT_Austrian32();
+	if (nocheck || this.isAustria32(sloppy))
 	{
 		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 32);
-		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
+		austrian.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
 	}
 	else 
 	{
-		german.setError("Coordinate not within Germany (Zone 32)");
+		austrian.setError("Coordinate not within Austria (Zone 32)");
 	}
 
-	return german;
+	return austrian;
 }
 
-GT_WGS84.prototype.getGerman33 = function(uselevel2, sloppy, nocheck)
+GT_WGS84.prototype.getAustrian33 = function(uselevel2, sloppy, nocheck)
 {
-	var german=new GT_German33();
-	if (nocheck || this.isGermany33(sloppy))
+	var austrian=new GT_Austrian33();
+	if (nocheck || this.isAustria33(sloppy))
 	{
 		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 33);
-		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
+		austrian.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
 	}
 	else 
 	{
-		german.setError("Coordinate not within Germany (Zone 33)");
+		austrian.setError("Coordinate not within Austria (Zone 33)");
 	}
 
-	return german;
-}
-
-GT_WGS84.prototype.getGerman31 = function(uselevel2, sloppy, nocheck)
-{
-	var german=new GT_German31();
-	if (nocheck || this.isGermany31(sloppy))
-	{
-		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 31);
-		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
-	}
-	else 
-	{
-		german.setError("Coordinate not within Germany (Zone 31)");
-	}
-
-	return german;
+	return austrian;
 }
 
 GT_WGS84.prototype.getOSGB = function(uselevel2, sloppy, nocheck)

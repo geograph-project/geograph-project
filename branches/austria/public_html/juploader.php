@@ -110,8 +110,8 @@ function UploadPicture() {
 		returnXML();
 	}
 
-	$_POST['subject'] = gridref3hack($_POST['subject']);
-	$_POST['photographer'] = gridref3hack($_POST['photographer']);
+	//$_POST['subject'] = gridref3hack($_POST['subject']);
+	//$_POST['photographer'] = gridref3hack($_POST['photographer']);
 
 	// validate the grid square - we may be going back to the user
 	// quickly here :-)

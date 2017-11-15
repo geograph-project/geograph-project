@@ -100,9 +100,11 @@ function wgs84_to_national($lat,$long,$usehermert = true,$ri=-1) {
 	$conv = new ConversionsLatLong;
 	$ire = ($ri == 2 || $ri == -1 && $lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
 	$uk = ($ri == 1 || $ri == -1 && $lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
-	$ger32 = ($ri == 3 || $ri == -1 && $lat > 47 && $lat < 56 && $long >= 6 && $long <= 12); #FIXME
-	$ger33 = ($ri == 4 || $ri == -1 && $lat > 47 && $lat < 56 && $long > 12 && $long < 16); #FIXME
-	$ger31 = ($ri == 5 || $ri == -1 && $lat > 47 && $lat < 56 && $long > 4 && $long < 6); #FIXME
+	//$ger32 = ($ri == 3 /*|| $ri == -1 && $lat > 47 && $lat < 56 && $long >= 6 && $long <= 12*/); #FIXME
+	//$ger33 = ($ri == 4 /*|| $ri == -1 && $lat > 47 && $lat < 56 && $long > 12 && $long < 16*/); #FIXME
+	//$ger31 = ($ri == 5 /*|| $ri == -1 && $lat > 47 && $lat < 56 && $long > 4 && $long < 6*/); #FIXME
+	$aut32 = ($ri == 6 || $ri == -1 && $lat > 45 && $lat < 50 && $long >  9 && $long <= 12); #FIXME
+	$aut33 = ($ri == 7 || $ri == -1 && $lat > 45 && $lat < 50 && $long > 12 && $long < 18); #FIXME
 	
 	if ($uk && $ire) {
 		//rough border for ireland
@@ -122,12 +124,10 @@ function wgs84_to_national($lat,$long,$usehermert = true,$ri=-1) {
 		return array_merge($conv->wgs84_to_irish($lat,$long,$usehermert),array(2));
 	} else if ($uk) {
 		return array_merge($conv->wgs84_to_osgb36($lat,$long),array(1));
-	} else if($ger32) {
-		return array_merge($conv->wgs84_to_utm($lat,$long,32),array(3));
-	} else if($ger33) {
-		return array_merge($conv->wgs84_to_utm($lat,$long,33),array(4));
-	} else if($ger31) {
-		return array_merge($conv->wgs84_to_utm($lat,$long,31),array(5));
+	} else if($aut32) {
+		return array_merge($conv->wgs84_to_utm($lat,$long,32),array(6));
+	} else if($aut33) {
+		return array_merge($conv->wgs84_to_utm($lat,$long,33),array(7));
 	}
 	return array();
 }
@@ -153,12 +153,16 @@ function national_to_wgs84($e,$n,$reference_index,$usehermert = true) {
 		$latlong = $conv->osgb36_to_wgs84($e,$n);
 	} else if ($reference_index == 2) {
 		$latlong = $conv->irish_to_wgs84($e,$n,$usehermert);
-	} else if ($reference_index == 3) {
+	} else if ($reference_index == 6) {
 		$latlong = $conv->utm_to_wgs84($e,$n,32);
-	} else if ($reference_index == 4) {
+	} else if ($reference_index == 7) {
 		$latlong = $conv->utm_to_wgs84($e,$n,33);
-	} else if ($reference_index == 5) {
-		$latlong = $conv->utm_to_wgs84($e,$n,31);
+	//} else if ($reference_index == 3) {
+	//	$latlong = $conv->utm_to_wgs84($e,$n,32);
+	//} else if ($reference_index == 4) {
+	//	$latlong = $conv->utm_to_wgs84($e,$n,33);
+	//} else if ($reference_index == 5) {
+	//	$latlong = $conv->utm_to_wgs84($e,$n,31);
 	}
 	return $latlong;
 }

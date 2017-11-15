@@ -66,27 +66,22 @@
 			} else if (wgs84.isGreatBritain()) {
 				//convert to OSGB
 				var grid=wgs84.getOSGB();
-			} else if (wgs84.isGermany32()) {
-				//convert to German
-				var grid=wgs84.getGerman32();
-			} else if (wgs84.isGermany33()) {
-				//convert to German
-				var grid=wgs84.getGerman33();
-			} else if (wgs84.isGermany31()) {
-				//convert to German
-				var grid=wgs84.getGerman31();
+			} else if (wgs84.isAustria32()) {
+				//convert to Austrian
+				var grid=wgs84.getAustrian32();
+			} else if (wgs84.isAustria33()) {
+				//convert to Austrian
+				var grid=wgs84.getAustrian33();
 			}
 			}
 			else if (ri == 1)
 				var grid=wgs84.getOSGB();
 			else if (ri == 2)
 				var grid=wgs84.getIrish();
-			else if (ri == 3)
-				var grid=wgs84.getGerman32(true, false);
-			else if (ri == 4)
-				var grid=wgs84.getGerman33(true, false);
-			else if (ri == 5)
-				var grid=wgs84.getGerman31(true, false);
+			else if (ri == 6)
+				var grid=wgs84.getAustrian32(true, false);
+			else if (ri == 7)
+				var grid=wgs84.getAustrian33(true, false);
 
 			var curzoom = map.getZoom();
 			if (curzoom >= 19) {
@@ -319,43 +314,26 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	var ok = false;
 	
 	if (ri == -1 || issubmit) {
-	
-	grid=new GT_OSGB();
-	if (grid.parseGridRef(gridref)) {
-		ok = true;
-	} else {
-		grid=new GT_Irish();
+		grid=new GT_Austrian32();
 		if (grid.parseGridRef(gridref)) {
 			ok = true;
 		} else {
-			grid=new GT_German32();
-			if (grid.parseGridRef(gridref)) {
-				ok = true;
-			} else {
-				grid=new GT_German33();
-				if (grid.parseGridRef(gridref)) {
-					ok = true;
-				} else {
-					grid=new GT_German31();
-					ok = grid.parseGridRef(gridref)
-				}
-			}
+			grid=new GT_Austrian33();
+			ok = grid.parseGridRef(gridref)
 		}
+	} else {
+		if (ri == 1)
+			grid=new GT_OSGB();
+		else if (ri == 2)
+			grid=new GT_Irish();
+		else if (ri == 6)
+			grid=new GT_Austrian32();
+		else if (ri == 7)
+			grid=new GT_Austrian33();
+		else
+			return;
+		ok = grid.parseGridRef(gridref);
 	}
-	}
-	else if (ri == 1)
-		grid=new GT_OSGB();
-	else if (ri == 2)
-		grid=new GT_Irish();
-	else if (ri == 3)
-		grid=new GT_German32();
-	else if (ri == 4)
-		grid=new GT_German33();
-	else if (ri == 5)
-		grid=new GT_German31();
-	else
-		return;
-	ok = grid.parseGridRef(gridref); // FIXME needed?
 	
 	if (ok) {
 		//convert to a wgs84 coordinate
