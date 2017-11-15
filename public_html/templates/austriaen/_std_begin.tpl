@@ -21,7 +21,7 @@
 {/if}
 {if $ogauthor}<meta property="og:description" content="&copy; {$ogauthor|escape:'html'} (CC BY-SA){if $ogdescription} &ndash; {$ogdescription|escape:'html'}{/if}"/>{/if}
 {$extra_meta}
-<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/germany32/css/basic.css"|revision}" media="screen" />
+<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/austriaen/css/basic.css"|revision}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 {if $rss_url}
 <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}"/>

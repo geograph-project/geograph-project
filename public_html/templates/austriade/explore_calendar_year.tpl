@@ -1,5 +1,5 @@
 {assign var="page_title" value="$year :: Kalender"}
-{assign var="extra_css" value="/templates/germanyde/css/calendar.css"}
+{assign var="extra_css" value="/templates/austriade/css/calendar.css"}
 {include file="_std_begin.tpl"}
 
 <h2>Geograph-Kalender :: {$year}</h2>

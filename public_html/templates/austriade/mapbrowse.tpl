@@ -156,49 +156,49 @@
 <table class="navtable" border="0" cellpadding="0" cellspacing="0" width="143">
 
   <tr><!-- Shim row, height 1. -->
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="12" height="1"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="30" height="1"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="30" height="1"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="30" height="1"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="30" height="1"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="11" height="1"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="1" height="1"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="12" height="1"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="30" height="1"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="30" height="1"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="30" height="1"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="30" height="1"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="11" height="1"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="1" height="1"/></td>
   </tr>
 
   <tr><!-- row 1 -->
-   <td colspan="6"><img alt="" src="//{$static_host}/templates/germanyde/mapnav/top.gif" width="143" height="9"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="1" height="9"/></td>
+   <td colspan="6"><img alt="" src="//{$static_host}/templates/austriade/mapnav/top.gif" width="143" height="9"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="1" height="9"/></td>
   </tr>
 
   <tr><!-- row 2 -->
-   <td rowspan="6"><img alt="" src="//{$static_host}/templates/germanyde/mapnav/left.gif" width="12" height="211"/></td>
-   <td>{if $token_zoomin}<a accesskey="S" title="Vergrößern (Alt+S)" href="/map/{$token_zoomin}" onmouseout="di20('zoomin','/templates/germanyde/mapnav/zoomin.gif');"  onmouseover="di20('zoomin','/templates/germanyde/mapnav/zoomin_F2.gif');" ><img alt="Hereinzoomen" id="zoomin" src="//{$static_host}/templates/germanyde/mapnav/zoomin.gif" width="30" height="29"/></a>{else}<img alt="Hereinzoomen" title="Weiter vergrößern nicht möglich!" id="zoomin" src="//{$static_host}/templates/germanyde/mapnav/zoomin_F3.gif" width="30" height="29"/>{/if}</td>
-   <td><img alt="" id="fill1" src="//{$static_host}/templates/germanyde/mapnav/fill1.gif" width="30" height="29"/></td>
-   <td>{if $token_zoomout}<a accesskey="W" title="Nach Norden (Alt+W)" href="/map/{$token_north}" onmouseout="di20('north','/templates/germanyde/mapnav/north.gif');"  onmouseover="di20('north','/templates/germanyde/mapnav/north_F2.gif');" ><img id="north" alt="Nach Norden" src="//{$static_host}/templates/germanyde/mapnav/north.gif" width="30" height="29"/></a>{else}<img alt="Norden" title="Norden" id="north" src="//{$static_host}/templates/germanyde/mapnav/north_F3.gif" width="30" height="29"/>{/if}</td>
-   <td><img alt="" id="fill2" src="//{$static_host}/templates/germanyde/mapnav/fill2.gif" width="30" height="29"/></td>
-   <td rowspan="6"><img alt="" src="//{$static_host}/templates/germanyde/mapnav/right.gif" width="11" height="211"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="1" height="29"/></td>
+   <td rowspan="6"><img alt="" src="//{$static_host}/templates/austriade/mapnav/left.gif" width="12" height="211"/></td>
+   <td>{if $token_zoomin}<a accesskey="S" title="Vergrößern (Alt+S)" href="/map/{$token_zoomin}" onmouseout="di20('zoomin','/templates/austriade/mapnav/zoomin.gif');"  onmouseover="di20('zoomin','/templates/austriade/mapnav/zoomin_F2.gif');" ><img alt="Hereinzoomen" id="zoomin" src="//{$static_host}/templates/austriade/mapnav/zoomin.gif" width="30" height="29"/></a>{else}<img alt="Hereinzoomen" title="Weiter vergrößern nicht möglich!" id="zoomin" src="//{$static_host}/templates/austriade/mapnav/zoomin_F3.gif" width="30" height="29"/>{/if}</td>
+   <td><img alt="" id="fill1" src="//{$static_host}/templates/austriade/mapnav/fill1.gif" width="30" height="29"/></td>
+   <td>{if $token_zoomout}<a accesskey="W" title="Nach Norden (Alt+W)" href="/map/{$token_north}" onmouseout="di20('north','/templates/austriade/mapnav/north.gif');"  onmouseover="di20('north','/templates/austriade/mapnav/north_F2.gif');" ><img id="north" alt="Nach Norden" src="//{$static_host}/templates/austriade/mapnav/north.gif" width="30" height="29"/></a>{else}<img alt="Norden" title="Norden" id="north" src="//{$static_host}/templates/austriade/mapnav/north_F3.gif" width="30" height="29"/>{/if}</td>
+   <td><img alt="" id="fill2" src="//{$static_host}/templates/austriade/mapnav/fill2.gif" width="30" height="29"/></td>
+   <td rowspan="6"><img alt="" src="//{$static_host}/templates/austriade/mapnav/right.gif" width="11" height="211"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="1" height="29"/></td>
   </tr>
 
   <tr><!-- row 3 -->
-   <td><img alt="" id="fill3" src="//{$static_host}/templates/germanyde/mapnav/fill3.gif" width="30" height="29"/></td>
-   <td>{if $token_zoomout}<a accesskey="A" title="Nach Westen (Alt+A)" href="/map/{$token_west}" onmouseout="di20('west','/templates/germanyde/mapnav/west.gif');"  onmouseover="di20('west','/templates/germanyde/mapnav/west_F2.gif');"><img id="west" alt="Nach Westen" src="//{$static_host}/templates/germanyde/mapnav/west.gif" width="30" height="29"/></a>{else}<img alt="Westen" title="Westen" id="west" src="//{$static_host}/templates/germanyde/mapnav/west_F3.gif" width="30" height="29"/>{/if}</td>
-   <td><img alt="" id="fill4" src="//{$static_host}/templates/germanyde/mapnav/fill4.gif" width="30" height="29"/></td>
-   <td>{if $token_zoomout}<a accesskey="D" title="Nach Osten (Alt+D)" href="/map/{$token_east}" onmouseout="di20('east','/templates/germanyde/mapnav/east.gif');"  onmouseover="di20('east','/templates/germanyde/mapnav/east_F2.gif');" ><img id="east" alt="Nach Osten" src="//{$static_host}/templates/germanyde/mapnav/east.gif" width="30" height="29"/></a>{else}<img alt="Osten" title="Osten" id="east" src="//{$static_host}/templates/germanyde/mapnav/east_F3.gif" width="30" height="29"/>{/if}</td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="1" height="29"/></td>
+   <td><img alt="" id="fill3" src="//{$static_host}/templates/austriade/mapnav/fill3.gif" width="30" height="29"/></td>
+   <td>{if $token_zoomout}<a accesskey="A" title="Nach Westen (Alt+A)" href="/map/{$token_west}" onmouseout="di20('west','/templates/austriade/mapnav/west.gif');"  onmouseover="di20('west','/templates/austriade/mapnav/west_F2.gif');"><img id="west" alt="Nach Westen" src="//{$static_host}/templates/austriade/mapnav/west.gif" width="30" height="29"/></a>{else}<img alt="Westen" title="Westen" id="west" src="//{$static_host}/templates/austriade/mapnav/west_F3.gif" width="30" height="29"/>{/if}</td>
+   <td><img alt="" id="fill4" src="//{$static_host}/templates/austriade/mapnav/fill4.gif" width="30" height="29"/></td>
+   <td>{if $token_zoomout}<a accesskey="D" title="Nach Osten (Alt+D)" href="/map/{$token_east}" onmouseout="di20('east','/templates/austriade/mapnav/east.gif');"  onmouseover="di20('east','/templates/austriade/mapnav/east_F2.gif');" ><img id="east" alt="Nach Osten" src="//{$static_host}/templates/austriade/mapnav/east.gif" width="30" height="29"/></a>{else}<img alt="Osten" title="Osten" id="east" src="//{$static_host}/templates/austriade/mapnav/east_F3.gif" width="30" height="29"/>{/if}</td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="1" height="29"/></td>
   </tr>
 
   <tr><!-- row 4 -->
-   <td>{if $token_zoomout}<a accesskey="Q" title="Verkleinern (Alt+Q)" href="/map/{$token_zoomout}" onmouseout="di20('zoomout','/templates/germanyde/mapnav/zoomout.gif');"  onmouseover="di20('zoomout','/templates/germanyde/mapnav/zoomout_F2.gif');"><img id="zoomout" src="//{$static_host}/templates/germanyde/mapnav/zoomout.gif" width="30" height="29" alt="Herauszoomen"/></a>{else}<img alt="Herauszoomen" title="Weiter verkleinern nicht möglich!" id="zoomout" src="//{$static_host}/templates/germanyde/mapnav/zoomout_F3.gif" width="30" height="29"/>{/if}</td>
-   <td><img alt="" id="fill5" src="//{$static_host}/templates/germanyde/mapnav/fill5.gif" width="30" height="29"/></td>
-   <td>{if $token_zoomout}<a accesskey="X" title="Nach Süden (Alt+X)" href="/map/{$token_south}" onmouseout="di20('south','/templates/germanyde/mapnav/south.gif');"  onmouseover="di20('south','/templates/germanyde/mapnav/south_F2.gif');"><img id="south" alt="Nach Süden" src="//{$static_host}/templates/germanyde/mapnav/south.gif" width="30" height="29"/></a>{else}<img alt="Süden" title="Süden" id="south" src="//{$static_host}/templates/germanyde/mapnav/south_F3.gif" width="30" height="29"/>{/if}</td>
-   <td><img alt="" id="fill6" src="//{$static_host}/templates/germanyde/mapnav/fill6.gif" width="30" height="29"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="1" height="29"/></td>
+   <td>{if $token_zoomout}<a accesskey="Q" title="Verkleinern (Alt+Q)" href="/map/{$token_zoomout}" onmouseout="di20('zoomout','/templates/austriade/mapnav/zoomout.gif');"  onmouseover="di20('zoomout','/templates/austriade/mapnav/zoomout_F2.gif');"><img id="zoomout" src="//{$static_host}/templates/austriade/mapnav/zoomout.gif" width="30" height="29" alt="Herauszoomen"/></a>{else}<img alt="Herauszoomen" title="Weiter verkleinern nicht möglich!" id="zoomout" src="//{$static_host}/templates/austriade/mapnav/zoomout_F3.gif" width="30" height="29"/>{/if}</td>
+   <td><img alt="" id="fill5" src="//{$static_host}/templates/austriade/mapnav/fill5.gif" width="30" height="29"/></td>
+   <td>{if $token_zoomout}<a accesskey="X" title="Nach Süden (Alt+X)" href="/map/{$token_south}" onmouseout="di20('south','/templates/austriade/mapnav/south.gif');"  onmouseover="di20('south','/templates/austriade/mapnav/south_F2.gif');"><img id="south" alt="Nach Süden" src="//{$static_host}/templates/austriade/mapnav/south.gif" width="30" height="29"/></a>{else}<img alt="Süden" title="Süden" id="south" src="//{$static_host}/templates/austriade/mapnav/south_F3.gif" width="30" height="29"/>{/if}</td>
+   <td><img alt="" id="fill6" src="//{$static_host}/templates/austriade/mapnav/fill6.gif" width="30" height="29"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="1" height="29"/></td>
   </tr>
 
   <tr><!-- row 5 -->
-   <td colspan="4"><img alt="" id="middle" src="//{$static_host}/templates/germanyde/mapnav/middle.gif" width="120" height="11"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="1" height="11"/></td>
+   <td colspan="4"><img alt="" id="middle" src="//{$static_host}/templates/austriade/mapnav/middle.gif" width="120" height="11"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="1" height="11"/></td>
   </tr>
 
   <tr><!-- row 6 -->
@@ -243,12 +243,12 @@
  
  <br/>
    </td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="1" height="103"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="1" height="103"/></td>
   </tr>
 
   <tr><!-- row 7 -->
-   <td colspan="4"><img alt="" src="//{$static_host}/templates/germanyde/mapnav/bottom.gif" width="120" height="10"/></td>
-   <td><img alt="" src="//{$static_host}/templates/germanyde/mapnav/shim.gif" width="1" height="10"/></td>
+   <td colspan="4"><img alt="" src="//{$static_host}/templates/austriade/mapnav/bottom.gif" width="120" height="10"/></td>
+   <td><img alt="" src="//{$static_host}/templates/austriade/mapnav/shim.gif" width="1" height="10"/></td>
   </tr>
 
 </table>
@@ -257,12 +257,12 @@
 <script type="text/javascript">
 <!-- 
 if (document.images) {
-zoomin_F2 = new Image(30,29); zoomin_F2.src = "/templates/germanyde/mapnav/zoomin_F2.gif";
-north_F2 = new Image(30,29); north_F2.src = "/templates/germanyde/mapnav/north_F2.gif";
-west_F2 = new Image(30,29); west_F2.src = "/templates/germanyde/mapnav/west_F2.gif";
-east_F2 = new Image(30,29); east_F2.src = "/templates/germanyde/mapnav/east_F2.gif";
-zoomout_F2 = new Image(30,29); zoomout_F2.src = "/templates/germanyde/mapnav/zoomout_F2.gif";
-south_F2 = new Image(30,29); south_F2.src = "/templates/germanyde/mapnav/south_F2.gif";
+zoomin_F2 = new Image(30,29); zoomin_F2.src = "/templates/austriade/mapnav/zoomin_F2.gif";
+north_F2 = new Image(30,29); north_F2.src = "/templates/austriade/mapnav/north_F2.gif";
+west_F2 = new Image(30,29); west_F2.src = "/templates/austriade/mapnav/west_F2.gif";
+east_F2 = new Image(30,29); east_F2.src = "/templates/austriade/mapnav/east_F2.gif";
+zoomout_F2 = new Image(30,29); zoomout_F2.src = "/templates/austriade/mapnav/zoomout_F2.gif";
+south_F2 = new Image(30,29); south_F2.src = "/templates/austriade/mapnav/south_F2.gif";
 }
 -->
 </script>
