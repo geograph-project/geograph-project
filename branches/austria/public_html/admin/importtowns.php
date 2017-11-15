@@ -37,11 +37,17 @@ $checkname = !empty($_POST['checkname']);
 if (   isset($_POST['submit'])
     && isset($_POST['mincid'])
     && isset($_POST['maxcid'])
+    && isset($_POST['cidzero'])
+    && isset($_POST['cidremove'])
+    && preg_match('/^\s*\d+\s*$/', $_POST['cidzero'])
+    && preg_match('/^\s*\d+\s*$/', $_POST['cidremove'])
     && preg_match('/^\s*\d+\s*$/', $_POST['mincid'])
     && preg_match('/^\s*\d+\s*$/', $_POST['maxcid'])) {
 
 	$mincid = intval($_POST['mincid']);
 	$maxcid = intval($_POST['maxcid']);
+	$cidzero = intval($_POST['cidzero']);
+	$cidremove = intval($_POST['cidremove']);
 
 	set_time_limit(3600*24);
 
@@ -74,6 +80,12 @@ if (   isset($_POST['submit'])
 	$prev = null;
 	$skip = false;
 	foreach ($dbarr as &$row) {
+		if ($cidremove) {
+			$row['cid'] = (int)($row['cid'] / pow(10, $cidremove));
+		}
+		if ($cidzero) {
+			$row['cid'] = $row['cid'] * pow(10, $cidzero);
+		}
 		if (is_null($prev)) {
 			$prev = $row;
 			continue;
@@ -96,6 +108,7 @@ if (   isset($_POST['submit'])
 		}
 		$prev = $row;
 	}
+	unset($row);
 	if (!is_null($prev)) {
 		if ($skip) {
 			$duplicaterows[] = $prev;
@@ -131,6 +144,7 @@ if (   isset($_POST['submit'])
 			$invalidrows[] = $row;
 		}
 	}
+	unset($row);
 	$dbarr = $arr;
 	$arr = array();
 	foreach ($dbarr as &$row) {
@@ -145,10 +159,11 @@ if (   isset($_POST['submit'])
 			$oldrows[] = $row;
 		}
 	}
+	unset($row);
 	if ($checkname) {
 		$dbarr = $arr;
 		$arr = array();
-		foreach ($dbarr as &$row) {
+		foreach ($dbarr as &$row) { # FIXME change mincid,maxcid according to cidzero, cidremove
 			$dbrow = $db->GetRow("select * from loc_towns where community_id between '$mincid' and '$maxcid' and short_name='{$row['shortname']}' order by s+0 limit 1");
 			if ($dbrow === false)
 				die('database error');
@@ -228,12 +243,14 @@ if (   isset($_POST['submit'])
 		$sql = 'INSERT INTO loc_towns ('.implode(',',$sqlcolumns).') VALUES ('.implode(',',$sqlvalues).')';
 		$row['sql'] = $sql;
 	}
+	unset($row);
 
 	if (!$dryrun) {
 		foreach ($arr as &$row) {
 			$db->Execute($row['sql']);
 			$mosaic->expirePosition(floor($row['x']/1000),floor($row['y']/1000),0,true);
 		}
+		unset($row);
 	}
 
 	$smarty->assign_by_ref('towns',          $arr);
@@ -245,6 +262,8 @@ if (   isset($_POST['submit'])
 	$smarty->assign('dryrun', $dryrun);
 	$smarty->assign('mincid', $mincid);
 	$smarty->assign('maxcid', $maxcid);
+	$smarty->assign('cidzero', $cidzero);
+	$smarty->assign('cidremove', $cidremove);
 	$smarty->assign('submit', 1);
 }
 
