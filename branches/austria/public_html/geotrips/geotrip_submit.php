@@ -346,17 +346,17 @@ and there need to be at least three images matching these criteria in your searc
         
         $query='insert into geotrips values(null,';
         $query=$query.intval($USER->user_id).',';
-        $query=$query."'".mysql_real_escape_string($USER->realname)."',";
-        $query=$query."'".mysql_real_escape_string($type)."',";
-        $query=$query."'".mysql_real_escape_string($_POST['loc'])."',";
-        $query=$query."'".mysql_real_escape_string($_POST['start'])."',";
-        $query=$query."'".mysql_real_escape_string($_POST['title'])."',";
+        $query=$query.$db->Quote($USER->realname).",";
+        $query=$query.$db->Quote($type).",";
+        $query=$query.$db->Quote($_POST['loc']).",";
+        $query=$query.$db->Quote($_POST['start']).",";
+        $query=$query.$db->Quote($_POST['title']).",";
         $query=$query."'".$geograph[0]['imagetaken']."',";
         $query=$query."'".$bbox."',";
         $query=$query."'".$trk."',";
         $query=$query.$search.",";
         $query=$query.$img.",";
-        $query=$query."'".mysql_real_escape_string($_POST['descr'])."',";
+        $query=$query.$db->Quote($_POST['descr']).",";
         $query=$query."CURRENT_TIMESTAMP(),";
         $query=$query."CURRENT_TIMESTAMP(),";
         $query=$query.$contfrom.",";
