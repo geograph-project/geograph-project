@@ -157,7 +157,7 @@ The following is the recommended template for using on the photo page. You shoul
 {literal}{{{/literal}Location dec|{$lat|string_format:"%.5f"}|{$long|string_format:"%.5f"}{if $image->view_direction > -1}|heading:{$image->view_direction}{/if}{literal}}}{/literal}
 {/if}
 == [[Commons:Copyright tags|Licensing]]: ==
-{literal}{{{/literal}geograph-de|{$image->gridimage_id}|{$image->realname|escape:'html'}{literal}}}{/literal}</textarea><br/>
+{literal}{{{/literal}geograph-at|{$image->gridimage_id}|{$image->realname|escape:'html'}{literal}}}{/literal}</textarea><br/>
 <small>This template includes the {external href="http://commons.wikimedia.org/wiki/Template:Information" text="information box"} with the relevent data (title, links and licence), {external href="http://commons.wikimedia.org/wiki/Template:Location" text="geotags the image"}, as well as the specific {external href="http://commons.wikimedia.org/wiki/Template:Geograph" text="Geograph Template"}</small></form>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
