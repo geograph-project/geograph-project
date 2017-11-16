@@ -177,6 +177,7 @@ if (   isset($_POST['submit'])
 			}
 		}
 	}
+	unset($row);
 
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;
