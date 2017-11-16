@@ -60,13 +60,7 @@
 			wgs84=new GT_WGS84();
 			wgs84.setDegrees(pp.lat(), pp.lng());
 			if (ri == -1||issubmit) {
-			if (wgs84.isIreland()) {
-				//convert to Irish
-				var grid=wgs84.getIrish(true);
-			} else if (wgs84.isGreatBritain()) {
-				//convert to OSGB
-				var grid=wgs84.getOSGB();
-			} else if (wgs84.isAustria32()) {
+			if (wgs84.isAustria32()) {
 				//convert to Austrian
 				var grid=wgs84.getAustrian32();
 			} else if (wgs84.isAustria33()) {
@@ -74,10 +68,6 @@
 				var grid=wgs84.getAustrian33();
 			}
 			}
-			else if (ri == 1)
-				var grid=wgs84.getOSGB();
-			else if (ri == 2)
-				var grid=wgs84.getIrish();
 			else if (ri == 6)
 				var grid=wgs84.getAustrian32(true, false);
 			else if (ri == 7)
@@ -322,11 +312,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 			ok = grid.parseGridRef(gridref)
 		}
 	} else {
-		if (ri == 1)
-			grid=new GT_OSGB();
-		else if (ri == 2)
-			grid=new GT_Irish();
-		else if (ri == 6)
+		if (ri == 6)
 			grid=new GT_Austrian32();
 		else if (ri == 7)
 			grid=new GT_Austrian33();

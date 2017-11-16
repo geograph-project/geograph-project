@@ -420,32 +420,12 @@ function tomap(that,num) {
 	var ogrid;
 	var ngrid;
 	//alert(""+nr+"_"+or);
-	if (or == 1) //FIXME ->function in geotools2.js?
-		ogrid=new GT_OSGB();
-	else if (or == 2)
-		ogrid=new GT_Irish();
-	else if (or == 3)
-		ogrid=new GT_German32();
-	else if (or == 4)
-		ogrid=new GT_German33();
-	else if (or == 5)
-		ogrid=new GT_German31();
-	else if (or == 6)
+	if (or == 6)
 		ogrid=new GT_Austrian32();
 	else if (or == 7)
 		ogrid=new GT_Austrian33();
 	else return;
-	if (nr == 1) //FIXME ->function in geotools2.js?
-		ngrid=new GT_OSGB();
-	else if (nr == 2)
-		ngrid=new GT_Irish();
-	else if (nr == 3)
-		ngrid=new GT_German32();
-	else if (nr == 4)
-		ngrid=new GT_German33();
-	else if (nr == 5)
-		ngrid=new GT_German31();
-	else if (nr == 6)
+	if (nr == 6)
 		ngrid=new GT_Austrian32();
 	else if (nr == 7)
 		ngrid=new GT_Austrian33();
