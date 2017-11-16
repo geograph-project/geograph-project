@@ -8,16 +8,16 @@ fi
 
 case "$1" in
 	process)
-		exec /usr/bin/wget -q -O /dev/null 'http://geo.hlipp.de/_scripts/process_events.php?start=1&max_execution=290&max_load=0.7'
+		exec /usr/bin/wget -q -O /dev/null 'http://atgeo.hlipp.de/_scripts/process_events.php?start=1&max_execution=290&max_load=0.7'
 		;;
 	day)
-		exec /usr/bin/wget -q -O /dev/null 'http://geo.hlipp.de/_scripts/fire_event.php?event=every_day&priority=80&param='
+		exec /usr/bin/wget -q -O /dev/null 'http://atgeo.hlipp.de/_scripts/fire_event.php?event=every_day&priority=80&param='
 		;;
 	week)
-		exec /usr/bin/wget -q -O /dev/null 'http://geo.hlipp.de/_scripts/fire_event.php?event=every_week&priority=85&param='
+		exec /usr/bin/wget -q -O /dev/null 'http://atgeo.hlipp.de/_scripts/fire_event.php?event=every_week&priority=85&param='
 		;;
 	hour)
-		exec /usr/bin/wget -q -O /dev/null 'http://geo.hlipp.de/_scripts/fire_event.php?event=every_hour&priority=75&param='
+		exec /usr/bin/wget -q -O /dev/null 'http://atgeo.hlipp.de/_scripts/fire_event.php?event=every_hour&priority=75&param='
 		;;
 esac
 
