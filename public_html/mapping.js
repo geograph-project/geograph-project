@@ -84,7 +84,7 @@ griddeln = 0;
 	//	mult = 1;
 	//}
 
-	gridly = 10
+	gridly = 10;
 	gridlx = 6;
 	gridpreflen = 3;
 	griddele = 2;
@@ -111,7 +111,7 @@ griddeln = 0;
 	//	mult = 1;
 	//}
 
-	gridly = 10
+	gridly = 10;
 	gridlx = 4;
 	gridpreflen = 3;
 	griddele = 2;
@@ -136,11 +136,69 @@ griddeln = 0;
 	//	mult = 1;
 	//}
 
-	gridly = 10
+	gridly = 10;
 	gridlx = 2;
 	gridpreflen = 3;
 	griddele = 6;
 	griddeln = 52;
+/////
+} else if (ri == 6) {
+	var GridLetters = new Array (2);
+	// --> north
+	// |
+	// V east
+	GridLetters[0] = ["KS", "KT", "KU", "KV", "KA", "KB", "KC", "KD", "KE", "KF", "KG"];
+	GridLetters[1] = ["LS", "LT", "LU", "LV", "LA", "LB", "LC", "LD", "LE", "LF", "LG"];
+	GridLetters[2] = ["MS", "MT", "MU", "MV", "MA", "MB", "MC", "MD", "ME", "MF", "MG"];
+	GridLetters[3] = ["NS", "NT", "NU", "NV", "NA", "NB", "NC", "ND", "NE", "NF", "NG"];
+	GridLetters[4] = ["PS", "PT", "PU", "PV", "PA", "PB", "PC", "PD", "PE", "PF", "PG"];
+	GridLetters[5] = ["QS", "QT", "QU", "QV", "QA", "QB", "QC", "QD", "QE", "QF", "QG"];
+
+	//if (mapb > 100) {
+	//	grlen = 3;
+	//	mult = 100;
+	//} else if (mapb > 50) {
+		grlen = 4;
+		mult = 10;
+	//} else {
+	//	grlen = 5;
+	//	mult = 1;
+	//}
+
+	gridly = 11;
+	gridlx = 6;
+	gridpreflen = 2;
+	griddele = 2;
+	griddeln = 51;
+
+} else if (ri == 7) {
+	var GridLetters = new Array (2);
+	// --> north
+	// |
+	// V east
+	GridLetters[0] = ["TM", "TN", "TP", "TQ", "TR", "TS", "TT", "TU", "TV", "TA", "TB"];
+	GridLetters[1] = ["UM", "UN", "UP", "UQ", "UR", "US", "UT", "UU", "UV", "UA", "UB"];
+	GridLetters[2] = ["VM", "VN", "VP", "VQ", "VR", "VS", "VT", "VU", "VV", "VA", "VB"];
+	GridLetters[3] = ["WM", "WN", "WP", "WQ", "WR", "WS", "WT", "WU", "WV", "WA", "WB"];
+	GridLetters[4] = ["XM", "XN", "XP", "XQ", "XR", "XS", "XT", "XU", "XV", "XA", "XB"];
+
+	//if (mapb > 100) {
+	//	grlen = 3;
+	//	mult = 100;
+	//} else if (mapb > 50) {
+		grlen = 4;
+		mult = 10;
+	//} else {
+	//	grlen = 5;
+	//	mult = 1;
+	//}
+
+	gridly = 11;
+	gridlx = 5;
+	gridpreflen = 2;
+	griddele = 2;
+	griddeln = 51;
+
 }
 
 var marker1left = 14;

@@ -9,7 +9,7 @@
 
 <dl style="float:right; margin:0px; position:relative">
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $square->reference_index eq 1}OSGB36{elseif $square->reference_index eq 2}Irish{elseif $square->reference_index eq 6}Austria, MGRS 32{elseif $square->reference_index eq 5}Austria, MGRS 33{/if}: {$gridrefraw} [{$square->precision}m precision]<br/>
+{if $square->reference_index eq 1}OSGB36{elseif $square->reference_index eq 2}Irish{elseif $square->reference_index eq 6}Austria, MGRS 32{elseif $square->reference_index eq 7}Austria, MGRS 33{/if}: {$gridrefraw} [{$square->precision}m precision]<br/>
 WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude" 
 title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </dd>
