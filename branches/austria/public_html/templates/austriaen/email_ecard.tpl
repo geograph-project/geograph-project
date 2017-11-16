@@ -44,13 +44,13 @@ href="http://{$http_host}/"\>
 <TABLE cellSpacing=0 cellPadding=4 width="100%">
   <TBODY>
   <TR>
-    <TD bgColor=#000066>&nbsp;</TD>
-    <TD bgColor=#000066><A href="http://{$http_host}/"><IMG height=74 
-      src="http://{$http_host}/templates/austriaen/img/logode3.gif" width=350 border=0></A></TD>
-    <TD vAlign=top align=center bgColor=#000066><A 
+    <TD bgColor=#990000>&nbsp;</TD>
+    <TD bgColor=#990000><A href="http://{$http_host}/"><IMG height=74 
+      src="http://{$http_host}/templates/austriaen/img/logoat3.gif" width=350 border=0></A></TD>
+    <TD vAlign=top align=center bgColor=#990000><A 
       href="http://{$http_host}/"><FONT face=Georgia color=#ffffff 
       size=+2>{$http_host}</FONT></A><BR><FONT face=Georgia color=#ffffff><I>The Geograph Austria project aims to collect a geographically representative<BR> photograph for every square kilometre of Austria and you can be part of it.</I></FONT></TD>
-    <TD bgColor=#000066>&nbsp;</TD></TR>
+    <TD bgColor=#990000>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
     <TD COLSPAN="2" ALIGN="CENTER">
