@@ -194,7 +194,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	if ($sql) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		
 		
 		$result = $db->Execute($sql) or die ("Couldn't select query : $sql " . $db->ErrorMsg() . "\n");
@@ -248,7 +248,7 @@ function didYouMean($q,$cl) {
 
 		$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 
-		$db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
+		$db=GeographDatabaseConnection(false, !empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
 
 		$ids = array_keys($res["matches"]);
 

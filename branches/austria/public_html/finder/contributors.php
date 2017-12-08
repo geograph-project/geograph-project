@@ -56,7 +56,7 @@ if (!empty($_GET['q']) && !empty($CONF['sphinx_host'])) {
 		if (count($ids)) {
 			$where = "user_id IN(".join(",",$ids).")";
 
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection();
 
 			$limit = 25;
 

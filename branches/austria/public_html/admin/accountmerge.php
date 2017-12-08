@@ -30,8 +30,8 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
-$dbUpdate = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
+$dbUpdate = GeographDatabaseConnection();
 
 $from=isset($_POST['from'])?$_POST['from']:'';
 $to=isset($_POST['to'])?$_POST['to']:'';

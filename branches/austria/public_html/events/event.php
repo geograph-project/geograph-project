@@ -33,7 +33,7 @@ if (empty($_GET['id']) || preg_match('/[^\d]/',$_GET['id'])) {
 
 $event_id = intval($_GET['id']);
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 
 $isadmin=$USER->hasPerm('moderator')?1:0;
 

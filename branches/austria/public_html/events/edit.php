@@ -40,7 +40,7 @@ $cacheid = '';
 
 
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if ($_REQUEST['id'] == 'new') {
 		$smarty->assign('id', "new");
 		$smarty->assign('title', "New Event");

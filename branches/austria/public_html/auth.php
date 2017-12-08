@@ -35,7 +35,7 @@ $token=new Token;
 if (isset($_GET['a']) && $token->parse($_GET['a']) && $token->hasValue('i')) {
 	$id = $token->getValue('i');
 	
-	$db = NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');  
 	
 	if (!($apikey = $db->GetOne("select apikey from apikeys where enabled = 1 and id = ".$db->Quote($id)))) {

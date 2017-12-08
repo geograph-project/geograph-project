@@ -39,7 +39,7 @@ $template = 'article_diff.tpl';
 $cacheid = 'articles|'.$_GET['page'];
 $cacheid .= '|'.$isadmin;
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 
 $page = $db->getRow("
 select article.article_id,title,url,article.user_id,extract,licence,approved,realname

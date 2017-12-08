@@ -79,7 +79,7 @@ $_SERVER['HTTP_HOST'] = $param['config'];
 
 require_once('geograph/global.inc.php');
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 //this upper limit is set by google
 //divided by two as we about to produce two links

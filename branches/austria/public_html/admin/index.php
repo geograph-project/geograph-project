@@ -43,7 +43,7 @@ $smarty->caching=0;
 
 
 	//lets get some stats
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');  
 
 if ($USER->hasPerm("ticketmod")) {

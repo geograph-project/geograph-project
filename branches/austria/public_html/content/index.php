@@ -39,7 +39,7 @@ if (isset($_REQUEST['inner'])) {
 	$template = 'content.tpl';
 }
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 
 $data = $db->getRow("show table status like 'content'");
 

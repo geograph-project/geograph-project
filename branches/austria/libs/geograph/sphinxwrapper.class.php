@@ -450,7 +450,7 @@ class sphinxwrapper {
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-			$db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
+			$db=GeographDatabaseConnection(false, !empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
 
 			$ids = array_keys($res["matches"]);
 
@@ -496,7 +496,7 @@ class sphinxwrapper {
 	function &_getDB()
 	{
 		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
+			$this->db=GeographDatabaseConnection();
 		if (!$this->db) die('Database connection failed'); 
 		return $this->db;
 	}

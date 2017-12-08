@@ -45,7 +45,7 @@ $smarty->assign_by_ref('from_email', $from_email);
 $smarty->assign_by_ref('to_name', $to_name);
 $smarty->assign_by_ref('to_email', $to_email);
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 if (empty($db)) die('Database connection failed');
 
 if ($db->getOne("select count(*) from throttle where used > date_sub(now(), interval 1 hour) and user_id={$USER->user_id} AND feature = 'ecard'") > 8) {

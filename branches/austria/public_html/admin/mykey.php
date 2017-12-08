@@ -40,7 +40,7 @@ function smarty_block_highlight($params, $content, &$smarty, &$repeat)
 $smarty->register_block('highlight', 'smarty_block_highlight');
 
 
-	$db = NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');  
 
 	if (!empty($_GET['apikey'])) {

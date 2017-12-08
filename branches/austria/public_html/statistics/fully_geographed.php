@@ -40,7 +40,7 @@ $smarty->assign_by_ref('references_real',$CONF['references']);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 

@@ -31,7 +31,7 @@ $mosaic=new GeographMapMosaic;
 $mosaic->pixels_per_km = 40;
 
 if (isset($_GET['random'])) {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	
 	$count = $db->cacheGetOne(86400,"SELECT COUNT(*) FROM gridsquare WHERE reference_index=1 AND percent_land = 100");
 	

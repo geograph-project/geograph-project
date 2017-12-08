@@ -38,7 +38,7 @@ function print_rp(&$in,$exit = false) {
 		exit;
 }
 if ($_POST['add']) {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 	
@@ -67,7 +67,7 @@ function smarty_modifier_glossary($input) {
 	$plain = strtolower(preg_replace('/[^a-zA-Z0-9]+/',' ',str_replace("'",'',strip_tags($input))));
 	$words = preg_split('/ +/',$plain);
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');
 	
 	print "<pre>$plain</pre>";
@@ -117,7 +117,7 @@ $smarty->register_modifier("glossary", "smarty_modifier_glossary");
 if (!$smarty->is_cached($template, $cacheid))
 {
 	if (!$db) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		if (!$db) die('Database connection failed');  
 		#$db->debug = true;
 	}

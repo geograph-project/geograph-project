@@ -27,7 +27,7 @@ init_session();
 $smarty = new GeographPage;
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 
 $data = $db->getRow("show table status like 'content_group'");
 

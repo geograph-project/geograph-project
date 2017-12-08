@@ -52,7 +52,7 @@ if (!$smarty->templateExists($template))
 }
 
 if ($page == "sitemap" && !$smarty->is_cached($template)) { #FIXME?
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');
 
 	if (count($CONF['hier_statlevels'])) {

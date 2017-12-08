@@ -48,7 +48,7 @@ $u = $USER->user_id;
 if (!empty($_GET['user_id']) && preg_match('/^\d+/',$_GET['user_id']))
 	$u = intval($_GET['user_id']);
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 if (!$db) die('Database connection failed');  
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 

@@ -93,7 +93,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/map.class.php');
 require_once('geograph/image.inc.php');
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 	echo "Checking Folders...\n\n";
 	flush();

@@ -118,7 +118,7 @@ if (isset($_REQUEST['edit']))
 #	{
 #		$profile=new GeographUser($USER->user_id);
 #		
-#		$db = NewADOConnection($GLOBALS['DSN']);
+#		$db = GeographDatabaseConnection();
 #		if (!$db) die('Database connection failed');  
 #
 #		$subs = $db->getAll("select topic_id,topic_title from geobb_send_mails Ts inner join geobb_topics Tt using (topic_id) where user_id = {$USER->user_id}");		

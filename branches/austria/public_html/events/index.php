@@ -35,7 +35,7 @@ $template = 'events.tpl';
 
 if ($isadmin) {
 	if (!empty($_GET['id']) && preg_match('/^\d+$/',$_GET['id'])) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		
 		$a = intval($_GET['approve']);	
 		
@@ -51,7 +51,7 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	$smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;

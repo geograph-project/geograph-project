@@ -30,7 +30,7 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 $from=isset($_POST['from'])?$_POST['from']:$CONF['photo_hashing_secret'];
 $to=isset($_POST['to'])?$_POST['to']:$CONF['photo_hashing_secret'];

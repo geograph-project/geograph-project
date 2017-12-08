@@ -144,7 +144,7 @@ require_once('geograph/global.inc.php');
 $tmpdir = $CONF['photo_upload_dir'];
 $deltime = time() - 3*24*3600; // delete files older than 3 days
 
-#$db = NewADOConnection($GLOBALS['DSN']);
+#$db = GeographDatabaseConnection();
 
 $start_time = time();
 
@@ -153,7 +153,7 @@ $end_time = $start_time + (60*$param['timeout']);
 #$map=new GeographMap;
 
 #while (1) {
-	#$db = NewADOConnection($GLOBALS['DSN']);
+	#$db = GeographDatabaseConnection();
 	#$invalid_maps = $db->GetOne("select SQL_NO_CACHE count(*) from kmlcache where rendered != 1");
 	$dh = opendir($tmpdir);
 

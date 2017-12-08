@@ -32,7 +32,7 @@ init_session();
 
 
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 if (!$db) die('Database connection failed');   
 
 $smarty = new GeographPage;
