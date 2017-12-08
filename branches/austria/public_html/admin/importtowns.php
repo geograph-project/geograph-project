@@ -38,15 +38,15 @@ if (   isset($_POST['submit'])
     && isset($_POST['maxcid'])
     && isset($_POST['cidzero'])
     && isset($_POST['cidremove'])
-    && preg_match('/^\s*\d+\s*$/', $_POST['cidzero'])
-    && preg_match('/^\s*\d+\s*$/', $_POST['cidremove'])
+    && preg_match('/^\s*\d*\s*$/', $_POST['cidzero'])
+    && preg_match('/^\s*\d*\s*$/', $_POST['cidremove'])
     && preg_match('/^\s*\d+\s*$/', $_POST['mincid'])
     && preg_match('/^\s*\d+\s*$/', $_POST['maxcid'])) {
 
 	$mincid = intval($_POST['mincid']);
 	$maxcid = intval($_POST['maxcid']);
-	$cidzero = intval($_POST['cidzero']);
-	$cidremove = intval($_POST['cidremove']);
+	$cidzero = trim($_POST['cidzero']) === '' ? 0 : intval($_POST['cidzero']);
+	$cidremove = trim($_POST['cidremove']) === '' ? 0 : intval($_POST['cidremove']);
 
 	set_time_limit(3600*24);
 
@@ -64,6 +64,17 @@ if (   isset($_POST['submit'])
 	$oldrowsname = array();
 	$arr = array();
 
+	/* reverse $dbcid -> remvove $cidremove digits -> add $cidzero 0s -> $cid for $mincid and $maxcid */
+	$dbmincid = $mincid;
+	$dbmaxcid = $maxcid;
+	if ($cidzero) {
+		$dbmincid = (int) ceil($dbmincid / pow(10, $cidzero));
+		$dbmaxcid = (int) floor($dbmaxcid / pow(10, $cidzero));
+	}
+	if ($cidremove) {
+		$dbmincid = $dbmincid * pow(10, $cidremove));
+		$dbmaxcid = ($dbmaxcid + 1) * pow(10, $cidremove)) - 1;
+	}
 	$sql = "SELECT gt.text_val AS name, co.lat, co.lon, CAST(gt2.text_val AS SIGNED INTEGER) AS cid
 		FROM geodb_textdata as gt
 		INNER JOIN geodb_locations gl ON gl.loc_id = gt.loc_id
@@ -72,7 +83,7 @@ if (   isset($_POST['submit'])
 		WHERE gl.loc_type = 100600000
 		AND gt.text_type = 500100000
 		AND gt2.text_type = 500600000
-		AND CAST(gt2.text_val AS SIGNED INTEGER) BETWEEN '$mincid' AND '$maxcid'
+		AND CAST(gt2.text_val AS SIGNED INTEGER) BETWEEN '$dbmincid' AND '$dbmaxcid'
 		ORDER BY CAST(gt2.text_val AS SIGNED INTEGER)";
 	$dbarr = $ogdb->GetArray($sql);
 	$prev = null;
