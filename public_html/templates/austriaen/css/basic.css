@@ -1163,7 +1163,7 @@ div.map div.cnr
 	float:left;
 	width:10px;
 	height:10px;
-	background:#000066;
+	background:#0c0c0c;
 	font-size:0;
 }
 
@@ -1172,7 +1172,7 @@ div.map div.side
 	float:left;
 	height:10px;
 	width:10px;
-	background:#000066;
+	background:#0c0c0c;
 	line-height:0;
 	text-align:center;
 }
@@ -1186,7 +1186,7 @@ div.map div.side a
 
 div.map div.side a:hover
 {
-	background-color:#660066;
+	background-color:#999999;
 }
 
 div.map div.inner
