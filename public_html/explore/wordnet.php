@@ -68,7 +68,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	exit;
 	
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (empty($db)) die('Database connection failed');  
 	
 	$sql_crit = '';

@@ -39,7 +39,7 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	$smarty->assign('gamelist',array('0'=>'-all games-','1'=>'Mark It','2'=>'Place Memory'));
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 

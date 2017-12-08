@@ -55,7 +55,7 @@ class PictureOfTheDay
 	function initToday()
 	{
 		global $CONF;
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		if (!$db) die('Database connection failed');  
 		$upper=$CONF['potd_daysperimage']-1;
 	

@@ -40,7 +40,7 @@ if ($smarty->caching) {
 $db = null;
 
 if ($USER->user_id) {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');
 
 	$uid=$db->getOne("select uid from geotrips where id=$trip_id");
@@ -51,7 +51,7 @@ if ($USER->user_id) {
 
 if (!$smarty->is_cached($template, $cacheid)) {
 	if (is_null($db)) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		if (!$db) die('Database connection failed');
 	}
 

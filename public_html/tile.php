@@ -369,7 +369,7 @@ if (isset($_GET['map']))
 			
 			list($x,$y) = $conv->national_to_internal($e,$n,$reference_index);
 			
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection();
 			
 			$scanleft=$x;
 			$scanright=$x+$stepdist;

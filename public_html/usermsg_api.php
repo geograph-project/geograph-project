@@ -26,7 +26,7 @@ require_once('geograph/global.inc.php');
 $smarty = new GeographPage;
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 
 if (empty($_REQUEST['key']) || preg_match("/[^\w\.]/",$_REQUEST['key']) )
 	die("ERROR: no api key");

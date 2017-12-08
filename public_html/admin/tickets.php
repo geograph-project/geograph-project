@@ -29,7 +29,7 @@ $USER->mustHavePerm("ticketmod");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 if (!empty($_GET['relinqush'])) {
 	$db->Execute("UPDATE user SET rights = REPLACE(rights,'ticketmod','') WHERE user_id = {$USER->user_id}");

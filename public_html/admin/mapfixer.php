@@ -39,7 +39,7 @@ $USER->hasPerm("admin") || $USER->mustHavePerm("mapmod");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 if (isset($_GET['redo_basemap']) && preg_match('/^[\w]+$/',$_GET['redo_basemap'])) 
 {

@@ -104,7 +104,7 @@ if ($grid_ok)
 		ORDER BY $sql_order
 		LIMIT 250"; ##limt just to make sure
 
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		if (!$db) die('Database connection failed');  
 
 		$data = $db->getAssoc($sql);

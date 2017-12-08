@@ -28,8 +28,8 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
-$db2 = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
+$db2 = GeographDatabaseConnection();
 
 require_once('geograph/conversions.class.php');
 $conv = new Conversions;

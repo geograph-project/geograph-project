@@ -40,7 +40,7 @@ $cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SE
 $smarty->assign_by_ref('isadmin', $isadmin);
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 
 $page = $db->getRow("
 select article.article_id,title,url,article.user_id,extract,licence,approved,realname,update_time

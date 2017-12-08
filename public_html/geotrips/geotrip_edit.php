@@ -33,7 +33,7 @@ $USER->mustHavePerm("basic");
 include('./geotrip_func.php');
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 if (!$db) die('Database connection failed');  
 
 

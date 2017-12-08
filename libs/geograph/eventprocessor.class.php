@@ -71,8 +71,8 @@ class EventProcessor
 	{
 		$this->event_handler_dir=realpath($_SERVER["DOCUMENT_ROOT"]."/../libs/event_handlers");
 		
-		$this->db=NewADOConnection($GLOBALS['DSN']);
-		$this->logdb=NewADOConnection($GLOBALS['DSN']);
+		$this->db=GeographDatabaseConnection();
+		$this->logdb=GeographDatabaseConnection();
 	
 	}
 	function EventProcessor()

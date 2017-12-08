@@ -169,7 +169,7 @@ if (isset($_REQUEST['id']))
 			
 		} else {
 			
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection();
 					
 			$exif = $db->getOne("SELECT exif FROM gridimage_exif WHERE gridimage_id = ".$image->gridimage_id);
 			#if (empty($exif)) {

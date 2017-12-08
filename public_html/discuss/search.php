@@ -50,7 +50,7 @@ if (!empty($_GET['gridsquare']) || !empty($_GET['u'])) {
  	
  	//should never fail?? - but display form 'in case'
  	
- 	$db=NewADOConnection($GLOBALS['DSN']);
+ 	$db=GeographDatabaseConnection();
 	if (empty($db)) die('Database connection failed');
 
 	advanced_form($smarty,$db);
@@ -88,7 +88,7 @@ if (!empty($_GET['gridsquare']) || !empty($_GET['u'])) {
 		$smarty->display('search_multiple.tpl');
 	} else {
 		if ($i) {
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection();
 			if (empty($db)) die('Database connection failed');
 		
 			$query = $db->GetRow("SELECT searchq FROM queries WHERE id = $i");
@@ -193,7 +193,7 @@ if (!empty($_GET['gridsquare']) || !empty($_GET['u'])) {
 	// -------------------------------
 	
 	if (is_int($i)) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		if (!$db) die('Database connection failed');
 	
 		$query = $db->GetRow("SELECT searchq,orderby FROM queries WHERE id = $i");

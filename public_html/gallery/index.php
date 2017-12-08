@@ -32,7 +32,7 @@ $cacheid = 0;
 
 $template = 'gallery.tpl';
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 
 $data = $db->getRow("show table status like 'content'"); //we use content as it should only update when galleries update
 

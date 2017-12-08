@@ -79,7 +79,7 @@ if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 $rss = new UniversalFeedCreator();
 $rss->useCached($format,$rssfile);
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 

@@ -1737,7 +1737,7 @@ class GeographUser
 	function &_getDB()
 	{
 		if (!isset($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
+			$this->db=GeographDatabaseConnection();
 		if (!$this->db) die('Database connection failed'); 
 		return $this->db;
 	}	

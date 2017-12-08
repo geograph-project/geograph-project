@@ -29,7 +29,7 @@ $USER->hasPerm("mapmod") || $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 $default_x1=$db->GetOne("select min(x) from gridsquare where percent_land > 0");
 $default_y1=$db->GetOne("select min(y) from gridsquare where percent_land > 0");

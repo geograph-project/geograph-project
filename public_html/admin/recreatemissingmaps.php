@@ -34,7 +34,7 @@ $USER->mustHavePerm("admin");
 $smarty = new GeographPage;
 
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 if (isset($_GET['check2']))
 {

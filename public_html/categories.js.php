@@ -46,7 +46,7 @@ if (isset($_GET['days'])) {
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (empty($db)) die('Database connection failed');
 
 	if ($u) {

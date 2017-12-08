@@ -25,7 +25,7 @@ init_session();
 $action = isset($_GET['action']) ? $_GET['action'] : "";
 
 $xml = "";
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 if (empty($db)) {
 	$xml['status'] = 'Server Error: Unable to connect to database';
 	returnXML();

@@ -48,7 +48,7 @@ $cacheid=$when.'|'.$where;
 if (!$smarty->is_cached($template,$cacheid))
 {
 	if (!isset($db)) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		if (!$db) die('Database connection failed');
 	}
 	$andwhere = '';

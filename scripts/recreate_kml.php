@@ -143,7 +143,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/map.class.php');
 require_once('geograph/image.inc.php');
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 $start_time = time();
 
@@ -152,7 +152,7 @@ $end_time = $start_time + (60*$param['timeout']);
 $map=new GeographMap;
 
 while (1) {
-	#$db = NewADOConnection($GLOBALS['DSN']);
+	#$db = GeographDatabaseConnection();
 	$invalid_maps = $db->GetOne("select SQL_NO_CACHE count(*) from kmlcache where rendered != 1");
 
 	if ($invalid_maps) {

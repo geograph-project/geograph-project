@@ -44,7 +44,7 @@ $smarty->caching = 2;
 if (!$smarty->is_cached($template, $cacheid))
 {
 
-	$db = NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection();
 	$table = array();
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table = $db->getAll("
