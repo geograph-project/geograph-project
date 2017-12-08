@@ -122,7 +122,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			$maxdate=$date;
 		
 		fprintf($fh,"<url>".
-			"<loc>http://{$param['config']}/snippet/%d</loc>".
+			"<loc>https://{$param['config']}/snippet/%d</loc>".
 			"<lastmod>%s</lastmod>".
 			"</url>\n",
 			$recordSet->fields['snippet_id'],
@@ -171,7 +171,7 @@ for ($s=1; $s<=$sitemaps; $s++)
 	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
 	
-	fprintf($fh, "<loc>http://{$param['config']}/%s</loc>", $fname);
+	fprintf($fh, "<loc>https://{$param['config']}/%s</loc>", $fname);
 	fprintf($fh, "<lastmod>$mtimestr</lastmod>", $fname);
 	fprintf($fh, "</sitemap>\n");
 }
