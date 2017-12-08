@@ -165,12 +165,16 @@ class GridImage
 	/**
 	* constructor
 	*/
-	function GridImage($id = null)
+	public function __construct($id = null)
 	{
 		$this->ext = false;
 		if (!empty($id)) {
 			$this->loadFromId($id);
 		}
+	}
+	function GridImage($id = null)
+	{
+		self::__construct($id);
 	}
 	
 	/**

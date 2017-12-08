@@ -52,10 +52,14 @@ class ImageList
 	/**
 	* constructor - can be used to build a basic list (See getImages)
 	*/
-	function ImageList($statuses=null, $sort=null, $count=null,$advanced = false)
+	public function __construct($statuses=null, $sort=null, $count=null,$advanced = false)
 	{
 		if (!is_null($statuses))
 			$this->getImages($statuses, $sort, $count,$advanced);
+	}
+	function ImageList($statuses=null, $sort=null, $count=null,$advanced = false)
+	{
+		self::__construct($statuses, $sort, $count, $advanced);
 	}
 	
 	/**
@@ -438,7 +442,8 @@ class RecentImageList extends ImageList {
 	/**
 	* constructor - used to build a basic list (See getImages)
 	*/
-	function RecentImageList(&$smarty,$reference_index = 0) {
+	public function __construct(&$smarty,$reference_index = 0)
+	{
 		global $memcache, $ADODB_FETCH_MODE;
 		
 		$mkey = rand(1,10).'.'.$reference_index;
@@ -519,6 +524,10 @@ class RecentImageList extends ImageList {
 		$memcache->name_set('ril',$mkey,$this->images,$memcache->compress,$memcache->period_short);
 		
 		return $i;
+	}
+	function RecentImageList(&$smarty,$reference_index = 0)
+	{
+		self::__construct($smarty, $reference_index);
 	}
 
 }

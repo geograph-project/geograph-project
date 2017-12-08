@@ -65,12 +65,16 @@ define('PRIORITY_LOW', 100);
 
 class Event
 {
-	function Event($event_name="", $event_param="", $priority=50)
+	public function __construct($event_name="", $event_param="", $priority=50)
 	{
 		if (strlen($event_name))
 		{
 			Event::fire($event_name, $event_param, $priority);
 		}
+	}
+	function Event($event_name="", $event_param="", $priority=50)
+	{
+		self::__construct($event_name, $event_param, $priority);
 	}
 	
 	/**

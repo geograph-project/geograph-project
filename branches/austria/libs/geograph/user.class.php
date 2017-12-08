@@ -75,7 +75,7 @@ class GeographUser
 	* Constructor doesn't normally do anything, but if supplied with a user id
 	* can be used to create an instance for a particular user. 
 	*/
-	function GeographUser($uid=0)
+	public function __construct($uid=0)
 	{
 		if (($uid>0) && preg_match('/^[0-9]+$/' , $uid))
 		{
@@ -101,6 +101,10 @@ class GeographUser
 
 			}
 		}
+	}
+	function GeographUser($uid=0)
+	{
+		self::__construct($uid);
 	}
 	
 	function loadByNickname($nickname=0)
