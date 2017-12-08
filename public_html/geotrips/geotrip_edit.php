@@ -34,7 +34,6 @@ include('./geotrip_func.php');
 
 
 $db=GeographDatabaseConnection();
-if (!$db) die('Database connection failed');  
 
 
   // get track from database

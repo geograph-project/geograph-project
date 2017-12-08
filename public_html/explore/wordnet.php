@@ -69,7 +69,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	
 	$db=GeographDatabaseConnection();
-	if (empty($db)) die('Database connection failed');  
 	
 	$sql_crit = '';
 	$extra_link = '&amp;len='.$len;

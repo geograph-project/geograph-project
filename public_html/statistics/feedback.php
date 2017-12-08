@@ -53,7 +53,6 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	dieUnderHighLoad();
 	
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
 	$tables = array();

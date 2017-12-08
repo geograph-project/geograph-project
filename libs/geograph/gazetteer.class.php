@@ -813,7 +813,6 @@ class Gazetteer
 	{
 		if (!is_object($this->db))
 			$this->db=GeographDatabaseConnection(false, !empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed');  
 		return $this->db;
 	}
 

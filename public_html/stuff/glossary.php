@@ -39,7 +39,6 @@ function print_rp(&$in,$exit = false) {
 }
 if ($_POST['add']) {
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 	
 
@@ -68,7 +67,6 @@ function smarty_modifier_glossary($input) {
 	$words = preg_split('/ +/',$plain);
 	
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');
 	
 	print "<pre>$plain</pre>";
 	
@@ -118,7 +116,6 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	if (!$db) {
 		$db=GeographDatabaseConnection();
-		if (!$db) die('Database connection failed');  
 		#$db->debug = true;
 	}
 	if (isset($_GET['add']) && $USER->hasPerm("basic")) {

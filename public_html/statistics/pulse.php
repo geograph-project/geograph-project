@@ -45,7 +45,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	dieUnderHighLoad(5);
 	
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed'); 	
 
 	$title = "Geograph Pulse";
 

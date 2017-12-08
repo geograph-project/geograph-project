@@ -36,7 +36,6 @@ if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 && strpos($_SERV
 customGZipHandlerStart();
 
 $db = GeographDatabaseConnection();
-if (!$db) die('Database connection failed');   
 
 $smarty = new GeographPage;
 

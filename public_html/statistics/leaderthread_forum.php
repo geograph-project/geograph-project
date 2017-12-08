@@ -51,7 +51,6 @@ $cacheid='statistics|leaderthread_forum'.$u.$type;
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 
 	$title = "Top Forum Threads";
 

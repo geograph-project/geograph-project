@@ -41,7 +41,6 @@ $smarty->register_block('highlight', 'smarty_block_highlight');
 
 
 	$db = GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 
 	if (!empty($_GET['apikey'])) {
 		//load the info for editing the record

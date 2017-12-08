@@ -29,7 +29,6 @@ $USER->mustHavePerm("admin");
 $smarty = new GeographPage;
 
 $db = GeographDatabaseConnection();
-if (!$db) die('Database connection failed');  
 	
 	if ($_POST['submit'] && $_POST['apikey'] && $_POST['id']) {
 		//we have a record to insert/update
