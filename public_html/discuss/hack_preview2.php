@@ -58,8 +58,12 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:
 }
 
 if (empty($CONF['disable_discuss_thumbs'])) {
-	$postText2 = preg_replace('/\[image id=(\d+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '{description}'))",$postText2,5);
-	$postText2 = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$postText2,5);
+	$postText2 = preg_replace_callback('/\[image id=(\d+)\]/', function($m) {
+		return smarty_function_gridimage(array('id' => $m[1],'extra' => '{description}'));
+	},$postText2,5);
+	$postText2 = preg_replace_callback('/\[image id=(\d+) text=([^\]]+)\]/', function($m) {
+		return smarty_function_gridimage(array('id' => $m[1],'extra' => $m[2]));
+	},$postText2,5);
 }
 
 echo ParseTpl(makeUp('hack_preview2'));
