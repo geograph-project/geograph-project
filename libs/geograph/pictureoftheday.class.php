@@ -42,10 +42,14 @@ class PictureOfTheDay
 	var $width=381; #FIXME width/height not used?
 	var $height=255;
 	
-	function PictureOfTheDay($w=381,$h=255) #FIXME width/height not used?
+	public function __construct($w=381,$h=255) #FIXME width/height not used?
 	{
 		$this->width=$w;
 		$this->height=$h;
+	}
+	function PictureOfTheDay($w=381,$h=255)
+	{
+		self::__construct($w, $h);
 	}
 	
 	function initToday()

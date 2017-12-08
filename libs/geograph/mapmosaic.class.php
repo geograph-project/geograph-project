@@ -161,11 +161,15 @@ class GeographMapMosaic
 	#setScale():
 	# ./public_html/maplarge.php
 	# ./public_html/mapprint.php
-	function GeographMapMosaic($preset='full', $xcenter=null, $ycenter=null)
+	public function __construct($preset='full', $xcenter=null, $ycenter=null)
 	{
 		global $CONF;
 		$this->enableCaching($CONF['smarty_caching']);
 		$this->setPreset($preset, $xcenter, $ycenter);
+	}
+	function GeographMapMosaic($preset='full', $xcenter=null, $ycenter=null)
+	{
+		self::__construct($preset, $xcenter, $ycenter);
 	}
 
 	/**
