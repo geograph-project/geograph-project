@@ -23,7 +23,7 @@ $userTitle=$l_newUserRegister;
 switch($step) {
 case 1:
 if(isset($closeRegister) and $closeRegister==1) {
-$_POST['passwd']=substr(ereg_replace("[^0-9A-Za-z]", "A", md5(uniqid(rand()))),0,8);
+$_POST['passwd']=substr(preg_replace("#[^0-9A-Za-z]#", "A", md5(uniqid(rand()))),0,8);
 $_POST['passwd2']=$_POST['passwd'];
 }
 
