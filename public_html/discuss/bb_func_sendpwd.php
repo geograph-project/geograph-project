@@ -26,7 +26,7 @@ echo load_header(); echo ParseTpl(makeUp('main_warning')); return;
 }
 else {
 
-${$dbUserNp}=substr(ereg_replace("[^0-9A-Za-z]", "A", md5(uniqid(rand()))),0,8); $newPasswd=${$dbUserNp};
+${$dbUserNp}=substr(preg_replace("#[^0-9A-Za-z]#", "A", md5(uniqid(rand()))),0,8); $newPasswd=${$dbUserNp};
 ${$dbUserNk}=substr(md5(uniqid(rand())),0,32); $confirmCode=${$dbUserNk};
 
 $updArr=array($dbUserNp,$dbUserNk);
