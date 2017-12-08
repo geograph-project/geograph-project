@@ -301,8 +301,12 @@ if (!function_exists('mb_ucfirst') && function_exists('mb_substr')) {
 }
 
 function recaps($in) {
-	$out = preg_replace('/(^|[ \/-])([^ \/-]{3,})/e','"$1".mb_ucfirst("$2")',mb_strtolower($in));
-	return stripslashes(preg_replace('/(^|\/)([^ \/-])/e','"$1".mb_strtoupper("$2")',$out));
+	$out = preg_replace_callback('/(^|[ \/-])([^ \/-]{3,})/',
+		function($m) { return $m[1].mb_ucfirst($m[2]); },
+		mb_strtolower($in));
+	return stripslashes(preg_replace_callback('/(^|\/)([^ \/-])/',
+		function($m) { return $m[1].mb_strtoupper($m[2]); },
+		$out));
 }
 
 /**
@@ -635,9 +639,13 @@ function GeographLinks($posterText, $thumbs = false, $short = false, $newwindow 
 
 	# TODO we probably should introduce something like [[:url:href|text]] and [[:url:href]] which would become <a href="href">text</a> or <a href="href">Link</a>
 	#      would make parsing easier, no assumptions about probable urls needed... could easily introduce [[:whatever:...]] using the same code...
-	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"$targetstr))",$posterText);
+	$posterText = preg_replace_callback('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/', function($m) use ($targetstr) {
+		return smarty_function_external(array('href'=>$m[1],'text'=>'Link','nofollow'=>1,'title'=>$m[1].$targetstr));
+	}, $posterText);
 
-	$posterText = preg_replace('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"http://\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"$targetstr))",$posterText);
+	$posterText = preg_replace_callback('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/', function($m) use ($targetstr) {
+		return smarty_function_external(array('href'=>"http://".$m[1],'text'=>'Link','nofollow'=>1,'title'=>$m[1].$targetstr));
+	}, $posterText);
 
 	return $posterText;
 }
@@ -920,7 +928,9 @@ function htmlspecialchars_latin( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8
 }
   
 function htmlnumericentities($myXML){
-  return preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars_latin($myXML));
+	return preg_replace_callback('/[^!-%\x27-;=?-~ ]/',
+	       function($m) { return '&#'.ord($m[0]).';'; },
+	       htmlspecialchars_latin($myXML));
 }
 
 function xmlentities($s) {
