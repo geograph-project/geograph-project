@@ -42,7 +42,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	dieUnderHighLoad();
 	
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed'); 	
 
 	$title = "Geograph Images";
 

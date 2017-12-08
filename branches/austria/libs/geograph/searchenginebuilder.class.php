@@ -488,7 +488,6 @@ class SearchEngineBuilder extends SearchEngine
 
 		if (isset($searchclass)) {
 			$db=GeographDatabaseConnection();
-			if (empty($db)) die('Database connection failed'); 
 
 			
 			

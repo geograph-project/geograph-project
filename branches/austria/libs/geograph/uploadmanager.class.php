@@ -62,7 +62,6 @@ class UploadManager
 	{
 		global $CONF;
 		$this->db = GeographDatabaseConnection();
-		if (!$this->db) die('Database connection failed');
 		
 		$this->tmppath=isset($CONF['photo_upload_dir'])?$CONF['photo_upload_dir']:'/tmp';
 		 

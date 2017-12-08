@@ -52,7 +52,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/imagelist.class.php');
 
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 	$column = 'signup_date';
 	if (isset($_GET['week'])) {
 		$from_date = "date(min($column))";

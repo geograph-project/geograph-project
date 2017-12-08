@@ -88,7 +88,6 @@ $smarty->assign_by_ref('breakdowns', $breakdowns);
 		
 		if (empty($db)) {
 			$db=GeographDatabaseConnection();
-			if (!$db) die('Database connection failed');
 		}
 		
 		$sql = "UPDATE queries SET searchdesc = ".$db->Quote($dataarray['searchdesc']);

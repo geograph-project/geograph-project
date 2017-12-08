@@ -44,7 +44,6 @@ $smarty->caching=0;
 
 	//lets get some stats
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 
 if ($USER->hasPerm("ticketmod")) {
 		

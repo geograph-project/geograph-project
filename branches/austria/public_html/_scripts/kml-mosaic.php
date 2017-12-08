@@ -35,7 +35,6 @@ if (!isLocalIPAddress())
 }
 
 $db=GeographDatabaseConnection();
-if (!$db) die('Database connection failed');  
 
 require_once('geograph/conversions.class.php');
 $conv = new Conversions;

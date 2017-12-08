@@ -45,7 +45,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/imagelist.class.php');
 
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 		
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
