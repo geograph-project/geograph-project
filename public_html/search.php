@@ -1116,7 +1116,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign_by_ref('featured',$arr2);
 	}
 	if ($USER->registered) {
-		if (!$db) {
+		if (empty($db)) {
 			$db=GeographDatabaseConnection();
 		}
 		if (isset($_GET['all'])) {
@@ -1216,7 +1216,7 @@ if (isset($_GET['fav']) && $i) {
 			$template = 'search_cluster2.tpl';
 		} elseif ($_GET['form'] == 'check') {
 			$template = 'search_check.tpl';
-			if (!$_GET['i']) {
+			if (empty($_GET['i'])) {
 				$smarty->assign('user_name', "{$USER->user_id}:{$USER->realname}");
 				$smarty->assign('glue', 'or');
 				$smarty->assign('displayclass', 'spelling');
