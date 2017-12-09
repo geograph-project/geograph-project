@@ -150,6 +150,7 @@ if (!empty($CONF['memcache']['sessions'])) {
 
 function GeographDatabaseConnection($allow_readonly = false, $dsn = null)
 {
+	global $CONF;
 	if (is_null($dsn)) {
 		$dsn = $GLOBALS['DSN'];
 	}
