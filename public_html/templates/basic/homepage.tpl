@@ -143,7 +143,7 @@ and <a href="/article/Ways-to-view-Geograph-Images">even more ways to view image
 	This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948">UK Web Archive</a> project.
 </div>
 
-<p align="center"><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 49 Station Road, Polegate, East Sussex, BN26 6EA.</i></small></p>
+<p align="center"><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</i></small></p>
 
 &nbsp;
 
