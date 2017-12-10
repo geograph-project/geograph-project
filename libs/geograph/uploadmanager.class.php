@@ -44,9 +44,12 @@ class UploadManager
 	var $upload_width=0;
 	var $upload_height=0;
 	var $square=null;
-	
+
+	var $imageclass=''; //we specifically initialize these, as they are rarely set on new uploads any more.
+	var $user_status='';
+
 	var $tmppath="";
-	
+
 	/**
 	* Constructor
 	*/
@@ -54,13 +57,11 @@ class UploadManager
 	{
 		global $CONF;
 		$this->db = NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed: '.mysql_error());   
-		
+		if (!$this->db) die('Database connection failed: '.mysql_error());
+
 		$this->tmppath=isset($CONF['photo_upload_dir'])?$CONF['photo_upload_dir']:'/tmp';
-		 
 	}
-	
-	
+
 	/**
 	* Store the GridSquare we are uploading
 	*/
@@ -68,7 +69,7 @@ class UploadManager
 	{
 		$this->square=&$square;
 	}
-	
+
 	/**
 	* return full path to temporary image file
 	*/
@@ -155,7 +156,15 @@ class UploadManager
 	{
 		$this->subject=$subject;
 	}
-	
+
+	/**
+	* set tags
+	*/
+	function setContexts($contexts)
+	{
+		$this->contexts=$contexts;
+	}
+
 	/**
 	* set image taken date
 	*/
@@ -397,7 +406,7 @@ class UploadManager
 			//playing silly buggers?
 			$this->error("We where unable to fetch that image - please contact us");
 		}
-		
+
 	split_timer('upload','processURL',$url); //logs the wall time
 
 		return $ok;
@@ -812,13 +821,15 @@ class UploadManager
 		if (!empty($this->subject)) {
 			$tags->addSubject($this->subject);
 		}
+		if (!empty($this->contexts)) {
+			$tags->addTags($this->contexts,'top');
+		}
 		if (!empty($this->tags) || !empty($this->subject)) {
 			$tags->commit($gridimage_id,true);
 		}
-		
-		
+
 		$this->gridimage_id = $gridimage_id;
-		
+
 		if (!empty($method)) {
 			if (!empty($GLOBALS['STARTTIME'])) {
 				

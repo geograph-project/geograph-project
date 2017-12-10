@@ -324,7 +324,7 @@ class GeographUser
 	function register(&$form, &$errors)
 	{
 		global $CONF;
-		
+
 		//get the inputs
 		$name=stripslashes(trim($form['name']));
 		$email=stripslashes(trim($form['email']));
@@ -1452,18 +1452,17 @@ class GeographUser
 			}
 		}
 	}
-	
+
 	/**
 	* Updates forum profile to keep the forum software in sync with us
 	*/
 	function _forumUpdateProfile()
 	{
 		$db = $this->_getDB();
-	
-		//we maintain a direct user_id to user_id mapping with the minibb 
+
+		//we maintain a direct user_id to user_id mapping with the minibb
 		//forum software....
-	
-		
+
 		//do we have a forum user?
 		$existing=$db->GetRow("select user_id from geobb_users where user_id='{$this->user_id}' limit 1");
 		if (count($existing))
@@ -1476,8 +1475,8 @@ class GeographUser
 				", user_viewemail=".$this->public_email.
 				(isset($this->sortBy)?', user_sorttopics = '.$this->sortBy:'').
 				" where user_id={$this->user_id}";
-				
-			$db->Execute($sql);	
+
+			$db->Execute($sql);
 		}
 		else
 		{
@@ -1491,13 +1490,8 @@ class GeographUser
 				$db->Quote($this->website).",".
 				$this->public_email.")";
 
-			
-			
-			$db->Execute($sql);		
-				
+			$db->Execute($sql);
 		}
-		
-		
 	}
 
 	/**
@@ -1506,15 +1500,15 @@ class GeographUser
 	function _forumLogin()
 	{
 		$this->_forumUpdateProfile();
-		
+
 		$passmd5=$this->password;
 		$expiry=time()+108000;
-		
+
 		//we don't need a permanent cookie
-		//setcookie('geographbb', 
-		//	$this->nickname.'|'.$passmd5.'|'.$expiry, 
+		//setcookie('geographbb',
+		//	$this->nickname.'|'.$passmd5.'|'.$expiry,
 		//	$expiry);
-			
+
 		$_SESSION['minimalistBBSession']=$this->nickname.'|'.$passmd5.'|'.$expiry;
 	}
 
@@ -1528,7 +1522,7 @@ class GeographUser
 		setcookie('geographbb', '', time()-108000);
 		unset($_SESSION['minimalistBBSession']);
 	}
-	
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
@@ -1536,12 +1530,12 @@ class GeographUser
 	function &_getDB($allow_readonly = false)
 	{
 		//check we have a db object or if we need to 'upgrade' it
-		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+		if (empty($this->db) || !is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
 			$this->db=GeographDatabaseConnection($allow_readonly);
-		} 
+		}
 		return $this->db;
-	}	
-	
+	}
+
 	/**
 	 * remove the stored db object ready to serialize
 	 * @access private
@@ -1551,9 +1545,9 @@ class GeographUser
 			#$this->db->Close();
 			unset($this->db);
 		}
-		
+
 		$vars =& get_object_vars($this);
 		return array_keys($vars);
 	}
 }
-?>
+
