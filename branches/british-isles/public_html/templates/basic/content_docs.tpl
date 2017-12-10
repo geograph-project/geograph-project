@@ -63,7 +63,7 @@
 
 	<div class="interestBox" style="font-size:1.3em;margin-bottom:20px">Can't find what you looking for? <a href="/ask.php">Ask us</a>!</div>
 
-	<p align="center">Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967.<br> Registered office: 49 Station Road, Polegate, East Sussex, BN26 6EA. <a href="/article/About-Geograph-page">About Geograph Project</a>.</p>
+	<p align="center">Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967.<br> Registered office: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA. <a href="/article/About-Geograph-page">About Geograph Project</a>.</p>
 
 
 {include file="_std_end.tpl"}

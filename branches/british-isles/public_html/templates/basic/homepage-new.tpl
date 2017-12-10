@@ -166,7 +166,7 @@ representative photographs and information for every square kilometre of <a href
 	<div style="position:relative;float:left;width:550px;text-align:center">
 		<p>This site is archived for preservation by the <a href="https://www.webarchive.org.uk/ukwa/target/31653948">UK Web Archive</a> project.</p>
 
-		<p style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg;</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. <br> The registered office is 49 Station Road, Polegate, East Sussex, BN26 6EA.</p>
+		<p style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg;</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. <br> The registered office is Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
 	</div>
 	<br style="clear:both"/>
 </div>
