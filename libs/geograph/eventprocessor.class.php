@@ -50,7 +50,7 @@ class EventProcessor
 	var $logdb=null;
 	var $handlers=array();
 	var $event_handler_dir="";
-	
+
 	//formatting for each level of trace output
 	var $fmt=array(
 		1=>array("<font color='#ff0000'><b>", "</b></font>"),
@@ -62,7 +62,7 @@ class EventProcessor
 	//currently processed event id
 
 	var $current_event_id=0;
-	
+
 	/**
 	* Constructor
 	* @public
@@ -70,12 +70,20 @@ class EventProcessor
 	function EventProcessor()
 	{
 		$this->event_handler_dir=realpath($_SERVER["DOCUMENT_ROOT"]."/../libs/event_handlers");
-		
+
 		$this->db=NewADOConnection($GLOBALS['DSN']);
-		$this->logdb=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
-	
+
+		if (!empty($GLOBALS['DSN2'])) {
+			$this->logdb=NewADOConnection($GLOBALS['DSN2']);
+
+		} elseif (!empty($CONF['db_tempdb'])) {
+			$this->logdb=NewADOConnection(str_replace('/'.$CONF['db_db'],'/'.$CONF['db_tempdb'],$GLOBALS['DSN']));
+
+		} else {
+			$this->logdb=NewADOConnection($GLOBALS['DSN']);
+		}
 	}
-	
+
 	/**
 	* set up test mode
 	* @public
