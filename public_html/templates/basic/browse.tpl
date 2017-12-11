@@ -74,7 +74,7 @@
 	{if $square->percent_land < 50 && $square->percent_land != -1}
 	<form action="/mapfixer.php" method="get">
 		<p align="right"><input type="submit" name="save" value="Bring this square to the attention of a moderator"/>
-		<input type="hidden" name="gridref" value="{$gridref}"/>
+		<input type="hidden" name="gridref" value="{$gridref|escape:'html'}"/>
 		</p>
 	</form>
 	{/if}
