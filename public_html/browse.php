@@ -136,14 +136,14 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 			print "<a href='/gridref/$gr'>Go here</a>";
 			exit;
 		}
-	
-		$smarty->assign('gridrefraw', stripslashes($_GET['gridref']));
+
+		$smarty->assign('gridrefraw', preg_replace('/[^\w]+/',' ',$_GET['gridref']));
 	}
 	else
 	{
 		//preserve the input at least
-		$smarty->assign('gridref', stripslashes($_GET['gridref']));
-	}	
+		$smarty->assign('gridref', preg_replace('/[^\w]+/',' ',$_GET['gridref']));
+	}
 }
 
 $cacheid='';
@@ -390,7 +390,7 @@ if ($grid_given)
 				$custom_where .= " and ((natnorthings div 100) mod 10) = ".$matches[2];
 				
 				$grid_ok=$square->setByFullGridRef($_GET['centi'],false,true);
-				$smarty->assign('gridrefraw', stripslashes($_GET['centi']));
+				$smarty->assign('gridrefraw', preg_replace('/[^\w]+/',' ',$_GET['centi']));
 			}
 			$filtered_title .= " in ".htmlentities2($_GET['centi'])." Centisquare<a href=\"/help/squares\">?</a>";
 			$smarty->assign("bby",'centi');
@@ -413,7 +413,7 @@ if ($grid_given)
 				$n = intval($square->natnorthings /1000);
 				$custom_where .= " and viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n";
 				
-				$smarty->assign('gridrefraw', stripslashes($_GET['viewcenti']));
+				$smarty->assign('gridrefraw', preg_replace('/[^\w]+/',' ',$_GET['viewcenti']));
 			}
 			$filtered_title .= " camera in ".htmlentities2($_GET['viewcenti'])." Centisquare<a href=\"/help/squares\">?</a>";
 			$smarty->assign("bby",'viewcenti');
