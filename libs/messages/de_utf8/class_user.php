@@ -2,79 +2,79 @@
 
 $MESSAGES['class_user'] = array (
 	'name_missing'            => 'Es wurde kein Name angegeben!',
-	'name_chars'              => 'Der Name enthält ungültige Zeichen!',
-	'email_invalid'           => 'Bitte gültige E-Mail-Adresse eingeben!',
+	'name_chars'              => 'Der Name enthÃ¤lt ungÃ¼ltige Zeichen!',
+	'email_invalid'           => 'Bitte gÃ¼ltige E-Mail-Adresse eingeben!',
 	'password1'               => 'Das Passwort ist zu einfach oder zu kurz!',
-	'password2'               => 'Passwörter stimmen nicht überein!',
+	'password2'               => 'PasswÃ¶rter stimmen nicht Ã¼berein!',
 	'already_registered'      => 'E-Mail-Adresse schon registriert!',
 	'error_dbupdate'          => 'Datenbank-Update fehlgeschlagen: ',
 	'error_dbinsert'          => 'Datenbank-Insert fehlgeschlagen: ',
 	'mailbody_register'       => <<<EOT
-Danke für die Registrierung bei %s !
+Danke fÃ¼r die Registrierung bei %s !
 
 Vor dem ersten Einloggen muss die Registrierung durch Aufrufen des Links
 
 %s
 
-bestätigt werden. Nach erfolgter Bestätigung ist das Einloggen durch Eingabe von
-E-Mail-Adresse (%s) und Passwort möglich.
+bestÃ¤tigt werden. Nach erfolgter BestÃ¤tigung ist das Einloggen durch Eingabe von
+E-Mail-Adresse (%s) und Passwort mÃ¶glich.
 
-Wir wünschen viel Freude an der Teilnahme am Projekt!
+Wir wÃ¼nschen viel Freude an der Teilnahme am Projekt!
 
-Mit freundlichen Grüßen
+Mit freundlichen GrÃ¼ÃŸen
 
-Das Geograph-Österreich-Team
+Das Geograph-Ã–sterreich-Team
 EOT
 ,
-	'mailsubject_register'    => 'Registrierungsbestätigung',
-	'reminder_email_invalid'  => 'Ungültige E-Mail-Adresse',
+	'mailsubject_register'    => 'RegistrierungsbestÃ¤tigung',
+	'reminder_email_invalid'  => 'UngÃ¼ltige E-Mail-Adresse',
 	'mailbody_reminder'       => <<<EOT
 Hallo,
 
-wir wurden aufgefordert, das Passwort für den Account %s bei %s zu ändern.
-Um das neue Passwort zu bestätigen bitte folgenden Link aufrufen:
+wir wurden aufgefordert, das Passwort fÃ¼r den Account %s bei %s zu Ã¤ndern.
+Um das neue Passwort zu bestÃ¤tigen bitte folgenden Link aufrufen:
 
 %s
 
-Wenn das Passwort nicht geändert werden soll, kann diese Mail einfach ignoriert werden.
+Wenn das Passwort nicht geÃ¤ndert werden soll, kann diese Mail einfach ignoriert werden.
 
-Mit freundlichen Grüßen
+Mit freundlichen GrÃ¼ÃŸen
 
-Das Geograph-Österreich-Team
+Das Geograph-Ã–sterreich-Team
 EOT
 ,
-	'mailsubject_reminder'    => 'Neues Passwort für %s',
+	'mailsubject_reminder'    => 'Neues Passwort fÃ¼r %s',
 	'not_registered'          => 'Diese E-Mail-Adresse ist nicht registriert!',
 
 
 	'realname'                => 'Es wurde kein Name angegeben!',
-	'website'                 => 'Die Adresse scheint ungültig zu sein.',
+	'website'                 => 'Die Adresse scheint ungÃ¼ltig zu sein.',
 	'nickname_in_use'         => 'Dieser Kurzname ist schon vergeben!',
-	'oldpassword'             => 'Bitte aktuelles Passwort angeben, wenn ein Passwortwechsel gewünscht ist!',
+	'oldpassword'             => 'Bitte aktuelles Passwort angeben, wenn ein Passwortwechsel gewÃ¼nscht ist!',
 	'mail_change'             => 'Um den E-Mail-Adressen-Wechsel '.
-				     'zu bestätigen, bitte die Anweisungen in der E-Mail befolgen, '.
+				     'zu bestÃ¤tigen, bitte die Anweisungen in der E-Mail befolgen, '.
 				     'die wir an %s geschickt haben!',
 	'mailbody_mail_change'    => <<<EOT
 Hallo,
 
-wir wurden aufgefordert, die E-Mail-Adresse für den Account bei %s zu %s zu ändern.
-Um die neue E-Mail-Adresse zu bestätigen bitte folgenden Link aufrufen:
+wir wurden aufgefordert, die E-Mail-Adresse fÃ¼r den Account bei %s zu %s zu Ã¤ndern.
+Um die neue E-Mail-Adresse zu bestÃ¤tigen bitte folgenden Link aufrufen:
 
 %s
 
-Wenn die Adresse nicht geändert werden soll, kann diese Mail einfach ignoriert werden.
+Wenn die Adresse nicht geÃ¤ndert werden soll, kann diese Mail einfach ignoriert werden.
 
-Mit freundlichen Grüßen
+Mit freundlichen GrÃ¼ÃŸen
 
-Das Geograph-Österreich-Team
+Das Geograph-Ã–sterreich-Team
 EOT
 ,
-	'mailsubject_mail_change' => 'Bestätigung der neuen E-Mail-Adresse für %s',
-	'new_email_invalid'       => 'Ungültige E-Mail-Adresse!',
-	'must_confirm'            => 'Vor dem ersten Einloggen muss der Link aus der Bestätigungsmail an %s aufgerufen werden!',
+	'mailsubject_mail_change' => 'BestÃ¤tigung der neuen E-Mail-Adresse fÃ¼r %s',
+	'new_email_invalid'       => 'UngÃ¼ltige E-Mail-Adresse!',
+	'must_confirm'            => 'Vor dem ersten Einloggen muss der Link aus der BestÃ¤tigungsmail an %s aufgerufen werden!',
 	'invalid_password'        => 'Falsches Passwort oder Zugangssperre',
 	'user_unknown'            => 'E-Mail-Adresse bzw. Benutzername ist nicht registriert',
-	'user_invalid'            => 'E-Mail-Adresse bzw. Benutzername ungültig',
+	'user_invalid'            => 'E-Mail-Adresse bzw. Benutzername ungÃ¼ltig',
 );
 
 ?>

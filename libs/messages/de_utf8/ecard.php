@@ -1,9 +1,9 @@
 <?php
 
 $MESSAGES['ecard'] = array (
-	'message_template'        => "Hallo,\r\n\r\nich habe dieses Bild entdeckt und dachte, es könnte Dir gefallen.\r\n\r\nViele Grüße,\r\n\r\n",
-	'email_invalid'           => 'Bitte gültige E-Mail-Adresse eingeben!',
-	'name_chars'              => 'Der Name enthält ungültige Zeichen!',
+	'message_template'        => "Hallo,\r\n\r\nich habe dieses Bild entdeckt und dachte, es kÃ¶nnte Dir gefallen.\r\n\r\nViele GrÃ¼ÃŸe,\r\n\r\n",
+	'email_invalid'           => 'Bitte gÃ¼ltige E-Mail-Adresse eingeben!',
+	'name_chars'              => 'Der Name enthÃ¤lt ungÃ¼ltige Zeichen!',
 	'empty_message'           => "Bitte Nachricht eingeben!",
 	'mail_subject'            => "%s schickt eine elektronische Postkarte",
 	'preview_title'           => "<title>Postkarte: Vorschau</title>",
