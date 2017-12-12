@@ -2,7 +2,7 @@
 
 $MESSAGES['contact'] = array (
 		'empty_message' => 'Bitte Nachricht eingeben!',
-		'email_invalid' => 'Bitte gültige E-Mail-Adresse eingeben!',
+		'email_invalid' => 'Bitte gÃ¼ltige E-Mail-Adresse eingeben!',
 );
 
 ?>

@@ -1,7 +1,7 @@
 <?php
 
 $MESSAGES['latlong'] = array (
-	'outside_area'              => 'Dieser Ort scheint außerhalb des unterstützten Gebiets zu liegen.',
+	'outside_area'              => 'Dieser Ort scheint auÃŸerhalb des unterstÃ¼tzten Gebiets zu liegen.',
 );
 
 ?>

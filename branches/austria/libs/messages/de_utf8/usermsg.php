@@ -2,13 +2,13 @@
 
 $MESSAGES['usermsg'] = array (
 
-	'email_invalid'           => 'Bitte gültige E-Mail-Adresse eingeben!',
-	'name_chars'              => 'Der Name enthält ungültige Zeichen!',
+	'email_invalid'           => 'Bitte gÃ¼ltige E-Mail-Adresse eingeben!',
+	'name_chars'              => 'Der Name enthÃ¤lt ungÃ¼ltige Zeichen!',
 	'empty_message'           => "Bitte Nachricht eingeben!",
 	'spam'                    => "Die Nachricht sieht wie SPAM aus.",
-	'mail_subject'            => "%s kontaktiert Sie über %s",
+	'mail_subject'            => "%s kontaktiert Sie Ã¼ber %s",
 	'copy_subject'            => "Kopie der Nachricht an %s",
-	'message_template'        => "Betrifft Bild für",
+	'message_template'        => "Betrifft Bild fÃ¼r",
 
 );
 
