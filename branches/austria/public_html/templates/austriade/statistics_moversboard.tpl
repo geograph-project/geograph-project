@@ -11,12 +11,12 @@
 
 <p>Liste aller Teilnehmer, die in den letzten sieben Tagen Bilder eingereicht haben, sortiert nach
 {$desc} (siehe <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
-für Details). {if $pending}Die Spalte "Unmoderiert" ist ein Anhaltspunkt, wie weit ein Teilnehmer nach der Moderation
+fÃ¼r Details). {if $pending}Die Spalte "Unmoderiert" ist ein Anhaltspunkt, wie weit ein Teilnehmer nach der Moderation
 aufsteigen kann.{/if}</p>
 
 <p>Es gibt auch eine <a href="/statistics/leaderboard.php{if $type != 'points'}?type={$type}{/if}">Gesamt-Rangliste</a>.</p>
 
-<p>Die Liste wurde zuletzt um {$smarty.now|date_format:"%H:%M"} erstellt und enthält alle Einreichungen seit
+<p>Die Liste wurde zuletzt um {$smarty.now|date_format:"%H:%M"} erstellt und enthÃ¤lt alle Einreichungen seit
 {$cutoff_time|date_format:"%A, %d.%m. um %H:%M"}</p>
 
 <table class="report"> 
@@ -48,7 +48,7 @@ aufsteigen kann.{/if}</p>
 
 
 <h2 style="margin-top:2em;margin-bottom:0"><a name="rate_graph"></a>Einreichungen pro Tag</h2>
-<p>Schaubild der durchschnittlichen Einreichungen pro Tag für die letzten Wochen:<br/>
+<p>Schaubild der durchschnittlichen Einreichungen pro Tag fÃ¼r die letzten Wochen:<br/>
 <img src="/img/rate.png" width="480" height="161" alt="Schaubild der Einreichungen pro Tag"/>
 </p>
 
