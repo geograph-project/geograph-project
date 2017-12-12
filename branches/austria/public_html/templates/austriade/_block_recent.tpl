@@ -35,12 +35,12 @@
   	{foreach from=$recent item=image}
   
   	  <div style="text-align:center;padding-bottom:1em;">
-  	  <a title="{$image->title|escape:'html'} - Zum Vergrößern anklicken" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,false,'src',3)}</a>
+  	  <a title="{$image->title|escape:'html'} - Zum Vergr&ouml;&szlig;ern anklicken" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,false,'src',3)}</a>
   	  
   	  <div>
   	  <a title="Vollbild" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
   	  von <a title="Profil anzeigen" href="{$image->profile_link}">{$image->realname}</a>
-	  für Planquadrat <a title="Seite für {$image->grid_reference} anzeigen" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
+	  f&uuml;r Planquadrat <a title="Seite f&uuml;r {$image->grid_reference} anzeigen" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 	  
 	  </div>
   	  

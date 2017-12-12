@@ -21,8 +21,16 @@
  */
 
  
-function smarty_modifier_escape($string, $esc_type = 'html', $char_set = 'ISO-8859-1')
+function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null) # 'ISO-8859-1'
 {
+    global $CHARSETINFO; # FIXME better solution needed
+    if (is_null($char_set)) {
+	if (isset($CHARSETINFO) && isset($CHARSETINFO['default_charset'])) {
+		$char_set = $CHARSETINFO['default_charset'];
+	} else {
+		$char_set = 'ISO-8859-1';
+	}
+    }
     switch ($esc_type) {
         case 'html':
             return htmlspecialchars2($string, ENT_QUOTES, $char_set);

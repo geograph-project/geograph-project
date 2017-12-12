@@ -1,6 +1,32 @@
 <?php
 
 setlocale(LC_ALL,'C'); //to match online servers...
+/* it can be useful to adjust LC_TIME and LC_CTYPE,
+ * but LC_NUMERIC and LC_COLLATE should set to "C" */
+mb_internal_encoding("iso-8859-1"); // this can be removed if $CHARSETINFO['internal_encoding'] is used
+
+/* default charset settings */
+$CHARSETINFO_8BIT = array(
+	'msg_suffix' => '',                                // search message strings in "libs/messages/$LANGUAGE$SUFFIX"
+	'smarty_utf8' => 0,                                // goes to {$utf8page} in smarty templates, should be 0 or 1
+	'default_charset' => 'ISO-8859-1',                 // charset used when escaping strings before final output
+	'session_convert' => true,                         // convert session to utf-8? needed if both utf-8 and latin pages are used
+	'session_charset' => 'Windows-1252',               // charset used when converting session data to/from utf-8
+	'db_charset' => 'latin1', // latin1 utf8 utf8mb4   // charset used in mysql connection
+	'header_charset' => null,                          // use in Content-Type header; null: use default header
+	'internal_encoding' => 'iso-8859-1',               // set via mb_internal_encoding(); null: don't change internal encoding
+);
+/* charset settings used if $UTF8PAGE is set or if $CHARSETINFO_8BIT is null */
+$CHARSETINFO_UTF8 = null; /*array(
+	'msg_suffix' => '_utf8',
+	'smarty_utf8' => 1,
+	'default_charset' => 'UTF-8',
+	'session_convert' => false,
+	'session_charset' => 'Windows-1252',
+	'db_charset' => 'utf8mb4', // FIXME 'utf8'?
+	'header_charset' => 'utf-8',
+	'internal_encoding' => 'UTF-8',
+);*/
 
 //domain specific configuration file
 $CONF=array();
@@ -46,7 +72,6 @@ $CONF['db_user']='geograph';
 $CONF['db_pwd']='banjo';
 $CONF['db_db']='geograph';
 $CONF['db_persist']=''; #'?persist';
-#$CONF['db_charset']='latin1'; # 'utf8', 'utf8mb4'
 
 $CONF['ogdb_db']=''; # database for OpenGeoDB if available, '' otherwise
 

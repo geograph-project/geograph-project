@@ -10,7 +10,7 @@ $DBhost=$CONF['db_connect'];
 $DBname=$CONF['db_db'];
 $DBusr=$CONF['db_user'];
 $DBpwd=$CONF['db_pwd'];
-$DBcharset=isset($CONF['db_charset'])?$CONF['db_charset']:null;
+$DBcharset=isset($CHARSETINFO['db_charset'])?$CHARSETINFO['db_charset']:null;
 
 $Tf='geobb_forums';
 $Tp='geobb_posts';
