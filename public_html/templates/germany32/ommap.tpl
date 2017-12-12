@@ -342,6 +342,16 @@ ommap.tpl, rastermap.class.php:
 				},
 				16, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
 			);
+			var mapnik2 = new OpenLayers.Layer.XYrZ(
+				"New Mapnik (Static + OSM)",
+				"/tile/osm2/${z}/${x}/${y}.png",
+				0, 18, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
+				{
+					attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+					sphericalMercator : true
+				},
+				17, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
+			);
 
 			// FIXME numZoomLevels: are these values sensible?
 			var osmmapnik = new OpenLayers.Layer.OSM(
@@ -488,6 +498,7 @@ ommap.tpl, rastermap.class.php:
 			initMarkersLayer();
 
 			mapnik.gmaxz = mapnik.maxZoomLevel;//mapnik.numZoomLevels-1;
+			mapnik2.gmaxz = mapnik2.maxZoomLevel;//mapnik.numZoomLevels-1;
 			osmmapnik.gmaxz = osmmapnik.numZoomLevels-1;
 			//osmarender.gmaxz = osmarender.numZoomLevels-1;
 			topobase.gmaxz = topobase.maxZoomLevel;
@@ -522,6 +533,7 @@ ommap.tpl, rastermap.class.php:
 				'g' : geo,
 				'o' : osmmapnik,
 				'r' : mapnik,
+				'n' : mapnik2,
 				'w' : topobase,
 				'c' : cycle
 				//'t' : osmarender
@@ -623,6 +635,7 @@ ommap.tpl, rastermap.class.php:
 				geo,
 				cycle,
 				topobase, //topotrails, topohills,
+				mapnik2,
 				hills,
 				geosq, geogr,
 {/literal}
