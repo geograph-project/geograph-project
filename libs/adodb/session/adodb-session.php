@@ -577,11 +577,96 @@ class ADODB_Session {
 		return true;
 	}
 
+	/* Convert serialised session data to utf-8.
+	 * Using urlencoded utf-8 data, both utf-8 and latin pages can share the same session data.
+	 * This function converts any string contained in the session data and adjusts the string length accordingly.
+	 */
+	static function _adjust_latin_write($serialized)
+	{
+		global $CHARSETINFO;
+		$rest = $serialized;
+		$result = '';
+
+		while (true) {
+			$res = preg_match('/^(.*?)([0-9]+):"(.*)$/', $rest, $matches);
+			if (!$res) {
+				// not found or error
+				$result .= $rest;
+				if ($res === false) {
+					trigger_error("invalid session string ($rest)", E_USER_WARNING);
+				}
+				break;
+			}
+			$prefix = $matches[1];
+			$num = intval($matches[2]);
+			$rest = $matches[3];
+
+			$result .= $prefix;
+			if (strpos($prefix, '"') !== false) {
+				trigger_error("invalid session string ($rest)", E_USER_WARNING);
+			}
+
+			$strval = mb_convert_encoding(substr($rest, 0, $num), 'UTF-8', $CHARSETINFO['session_charset']);
+			$newnum = strlen($strval);
+			if ($num >= strlen($rest) || $rest[$num] !== '"') {
+				trigger_error("invalid session string ($rest)", E_USER_WARNING);
+				$result .= $num . ':"' . $rest;
+				break;
+			}
+			$rest = substr($rest, $num+1);
+
+			$result .= $newnum . ':"' . $strval . '"';
+		}
+		return $result;
+	}
+	/* Adjust urldecoded session data to the system character set.
+	 * Using urlencoded utf-8 data, both utf-8 and latin pages can share the same session data.
+	 * This function converts any string contained in the session data and adjusts the string length accordingly.
+	 */
+	static function _adjust_latin_read($dbstring)
+	{
+		global $CHARSETINFO;
+		$rest = $dbstring;
+		$result = '';
+
+		while (true) {
+			$res = preg_match('/^(.*?)([0-9]+):"(.*)$/', $rest, $matches);
+			if (!$res) {
+				// not found or error
+				$result .= $rest;
+				if ($res === false) {
+					trigger_error("invalid session string ($rest)", E_USER_WARNING);
+				}
+				break;
+			}
+			$prefix = $matches[1];
+			$num = intval($matches[2]);
+			$rest = $matches[3];
+
+			$result .= $prefix;
+			if (strpos($prefix, '"') !== false) {
+				trigger_error("invalid session string ($rest)", E_USER_WARNING);
+			}
+
+			$strval = mb_convert_encoding(substr($rest, 0, $num), $CHARSETINFO['session_charset'], 'UTF-8');
+			$newnum = strlen($strval);
+			if ($num >= strlen($rest) || $rest[$num] !== '"') {
+				trigger_error("invalid session string ($rest)", E_USER_WARNING);
+				$result .= $num . ':"' . $rest;
+				break;
+			}
+			$rest = substr($rest, $num+1);
+
+			$result .= $newnum . ':"' . $strval . '"';
+		}
+		return $result;
+	}
 	/*
 		Slurp in the session variables and return the serialized string
 	*/
 	static function read($key) 
 	{
+		global $CHARSETINFO;
 		$conn	= ADODB_Session::_conn();
 		$data	= ADODB_Session::dataFieldName();
 		$filter	= ADODB_Session::filter();
@@ -618,6 +703,9 @@ class ADODB_Session {
 					}
 				}
 				$v = rawurldecode($v);
+				if (isset($CHARSETINFO) && !empty($CHARSETINFO['session_convert'])) {
+					$v = ADODB_Session::_adjust_latin_read($v);
+				}
 			}
 
 			$rs->Close();
@@ -637,6 +725,7 @@ class ADODB_Session {
 	static function write($key, $val) 
 	{
 	global $ADODB_SESSION_READONLY;
+	global $CHARSETINFO;
 	
 		if (!empty($ADODB_SESSION_READONLY)) return;
 		
@@ -682,6 +771,9 @@ class ADODB_Session {
 			$sql = "UPDATE $table SET expiry = ".$conn->Param('0').",expireref=".$conn->Param('1')." WHERE $binary sesskey = ".$conn->Param('2')." AND expiry >= ".$conn->Param('3');
 			$rs = $conn->Execute($sql,array($expiry,$expirevar,$key,time()));
 			return true;
+		}
+		if (isset($CHARSETINFO) && !empty($CHARSETINFO['session_convert'])) {
+			$val = ADODB_Session::_adjust_latin_write($val);
 		}
 		$val = rawurlencode($val);
 		foreach ($filter as $f) {

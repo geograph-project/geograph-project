@@ -115,8 +115,30 @@ if (!empty($CONF['memcache']['adodb'])) {
 	}
 }
 
+$UTF8PAGE = !empty($UTF8PAGE) || empty($CHARSETINFO_8BIT) && !empty($CHARSETINFO_UTF8);
+
+if ($UTF8PAGE) {
+	$CHARSETINFO =& $CHARSETINFO_UTF8;
+} else {
+	$CHARSETINFO =& $CHARSETINFO_8BIT;
+}
+if (!empty($CHARSETINFO['header_charset'])) {
+	header('Content-Type: text/html; charset='.$CHARSETINFO['header_charset']);
+}
+if (!empty($CHARSETINFO['internal_encoding'])) {
+	mb_internal_encoding($CHARSETINFO['internal_encoding']);
+}
+#mb_http_output('UTF-8'); 
+#mb_http_input('UTF-8'); 
+#mb_regex_encoding('UTF-8');
+
+#setlocale(LC_NUMERIC,'C'); # currently in config file
+#setlocale(LC_COLLATE,'C'); # currently in config file
+
 
 if (!empty($CONF['memcache']['sessions'])) {
+	// FIXME how to allow clients/pages with different encodings?
+	// Would $memchache->setOption(Memcached::OPT_SERIALIZER, Memcached::SERIALIZER_JSON); help? can't test that...
 
 	if ($CONF['memcache']['sessions'] != $CONF['memcache']['app']) {
 		$memcachesession = new MultiServerMemcache($CONF['memcache']['sessions']);
@@ -150,7 +172,7 @@ if (!empty($CONF['memcache']['sessions'])) {
 
 function GeographDatabaseConnection($allow_readonly = false, $dsn = null)
 {
-	global $CONF;
+	global $CHARSETINFO;
 	if (is_null($dsn)) {
 		$dsn = $GLOBALS['DSN'];
 	}
@@ -159,10 +181,10 @@ function GeographDatabaseConnection($allow_readonly = false, $dsn = null)
 		die('Database connection failed');
 	}
 	$db->readonly = false;
-	if (isset($CONF['db_charset']) && !is_null($CONF['db_charset'])) {
+	if (isset($CHARSETINFO['db_charset']) && !is_null($CHARSETINFO['db_charset'])) {
 		#$sql = "SET names '".$CONF['db_charset']."'";
 		#$db->Execute($sql);
-		$db->SetCharSet($CONF['db_charset']);
+		$db->SetCharSet($CHARSETINFO['db_charset']);
 	}
 	return $db;
 }
@@ -261,7 +283,7 @@ class GeographPage extends Smarty
 	*/
 	public function __construct()
 	{
-		global $CONF;
+		global $CONF, $CHARSETINFO;
 
 		//base constructor
 		$this->Smarty();
@@ -355,6 +377,7 @@ class GeographPage extends Smarty
 		$this->assign('forum_devel',            $CONF['forum_devel']);
 		$this->assign('forum_privacy',          $CONF['forum_privacy']);
 
+		$this->assign('utf8page',               $CHARSETINFO['smarty_utf8']);
 
 		$this->assign('session_id', session_id());
 

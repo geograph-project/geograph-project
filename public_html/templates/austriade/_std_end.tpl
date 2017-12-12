@@ -8,8 +8,8 @@
      <li><a title="Bildersuche" href="/search.php">Suche</a></li>
      <li><a title="Karte aller Bilder anzeigen" href="/mapbrowse.php">Karte</a>
         (<a title="Karte ohne Zonen" href="/mapbrowse2.php?mt=tm">zonenlos</a>)</li>
-     <li><a title="Verschieden Zusammenstellungen von Bildern" href="/explore/">Stöbern</a></li>
-     <li><a title="Nutzerbeiträge" href="/content/">Beiträge</a></li>
+     <li><a title="Verschieden Zusammenstellungen von Bildern" href="/explore/">St&ouml;bern</a></li>
+     <li><a title="Nutzerbeitr&auml;ge" href="/content/">Beitr&auml;ge</a></li>
     </ul></li>
     <li>Interaktion<ul>
      <li><a title="Forum" href="/discuss/">Forum</a></li>

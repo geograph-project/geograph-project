@@ -908,22 +908,30 @@ function customGZipHandlerEnd() {
 	echo $contents;
 }
  
-function htmlspecialchars2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+function htmlspecialchars2( $myHTML,$quotes = ENT_COMPAT,$char_set = null)
 {
+    global $CHARSETINFO;
+    if (is_null($char_set)) $char_set = $CHARSETINFO['default_charset'];
     return preg_replace( "/&amp;([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,4};|#x[0-9a-fA-F]{2,4};)/", '&$1' ,htmlspecialchars($myHTML,$quotes,$char_set));
 } 
  
-function htmlentities2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+function htmlentities2( $myHTML,$quotes = ENT_COMPAT,$char_set = null)
 {
+    global $CHARSETINFO;
+    if (is_null($char_set)) $char_set = $CHARSETINFO['default_charset'];
     return preg_replace( "/&amp;([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,4};|#x[0-9a-fA-F]{2,4};)/", '&$1' ,htmlentities($myHTML,$quotes,$char_set));
 } 
 
-function htmlentities_latin( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+function htmlentities_latin( $myHTML,$quotes = ENT_COMPAT,$char_set = null)
 {
+	global $CHARSETINFO;
+	if (is_null($char_set)) $char_set = $CHARSETINFO['default_charset'];
 	return htmlentities($myHTML,$quotes,$char_set);
 }
-function htmlspecialchars_latin( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+function htmlspecialchars_latin( $myHTML,$quotes = ENT_COMPAT,$char_set = null)
 {
+	global $CHARSETINFO;
+	if (is_null($char_set)) $char_set = $CHARSETINFO['default_charset'];
 	return htmlspecialchars($myHTML,$quotes,$char_set);
 }
   
@@ -1027,8 +1035,10 @@ function smarty_modifier_floatformat($val, $format='%.14G')
 
 function include_messages($id)
 {
-	global $MESSAGES, $CONF;
-	include_once('messages/'.$CONF['lang'].'/'.$id.'.php');
+	global $MESSAGES, $CONF, $CHARSETINFO;
+	$suffix = isset($CHARSETINFO) && isset($CHARSETINFO['msg_suffix']) ? $CHARSETINFO['msg_suffix'] : '';
+	@include_once('messages/'.$CONF['lang'].$suffix.'/'.$id.'.php');
+	if (!isset($MESSAGES[$id]) && $suffix !== '') include_once('messages/'.$CONF['lang'].'/'.$id.'.php');
 	if (!isset($MESSAGES[$id])) require_once('messages/en/'.$id.'.php');
 }
 
