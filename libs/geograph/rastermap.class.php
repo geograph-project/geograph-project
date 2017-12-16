@@ -102,7 +102,7 @@ class RasterMap
 	/**
 	* setup the values
 	*/
-	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false,$epoch = 'latest',$serviceid = -1,$iscmap=false)
+	public function __construct(&$square,$issubmit = false, $useExact = true,$includeSecondService = false,$epoch = 'latest',$serviceid = -1,$iscmap=false)
 	{
 		global $CONF;
 		$this->enabled = false;
@@ -184,6 +184,10 @@ class RasterMap
 			}
 		}
 	} 
+	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false,$epoch = 'latest',$serviceid = -1,$iscmap=false)
+	{
+		self::__construct($square, $issubmit, $useExact, $includeSecondService, $epoch, $serviceid, $iscmap);
+	}
 	
 	function addLatLong($lat,$long) {
 		if ($this->service == 'Google' || $this->service == 'OLayers') {
