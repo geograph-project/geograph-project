@@ -5,7 +5,7 @@
 <h2>Regionalstatistik{if $regionname} von {$regionname|escape:'html'}{/if}</h2>
 
 {if $hstats}
-<p>Die Sortierung kann durch Anklicken der Spaltentitel ge‰ndert werden.</p>
+<p>Die Sortierung kann durch Anklicken der Spaltentitel ge√§ndert werden.</p>
 <!--table border="1" cellpadding="4" cellspacing="0" class="statstable"-->
 <table class="report sortable" id="regionstat" style="font-size:8pt;">
 <thead>

@@ -125,7 +125,7 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 	<div class="content2" id="footer_block">
 {/if}
   <div id="footer" class="no_print">
-     <p style="color:#AAAABB;float:left">Letzte Änderung: {$smarty.now|date_format:"%H:%M"}</p>
+     <p style="color:#AAAABB;float:left">Letzte &Auml;nderung: {$smarty.now|date_format:"%H:%M"}</p>
    <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>
        <span class="sep">|</span>
        <a href="/help/credits" title="Who built this and how?">Credits</a>

@@ -15,10 +15,10 @@
 
 <h3 style="color:black"><img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Abgelehnt</h3>
 
-<p>Dieses Bild wurde von den Moderatoren abgelehnt und ist für andere nicht sichtbar.</p>
+<p>Dieses Bild wurde von den Moderatoren abgelehnt und ist fÃ¼r andere nicht sichtbar.</p>
 
-<p>Mitteilungen zu diesem Bild können auf der <a title="Bildinformationen ändern" href="/editimage.php?id={$image->gridimage_id}">Editier-Seite</a> angesehen werden, wo auch
-Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allgemeine Informationen über Ablehnungsgründe sind im englischen Artikel <a href="http://www.geograph.org.uk/article/Reasons-for-rejection">Reasons for rejection</a> beschrieben.
+<p>Mitteilungen zu diesem Bild kÃ¶nnen auf der <a title="Bildinformationen Ã¤ndern" href="/editimage.php?id={$image->gridimage_id}">Editier-Seite</a> angesehen werden, wo auch
+Fragen der Moderatoren beantwortet oder RÃ¼ckfragen gestellt werden kÃ¶nnen. Allgemeine Informationen Ã¼ber AblehnungsgrÃ¼nde sind im englischen Artikel <a href="http://www.geograph.org.uk/article/Reasons-for-rejection">Reasons for rejection</a> beschrieben.
 
 </div>
 <br/>
@@ -32,11 +32,11 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
 			<span style="color:silver" title="erstes Bild">&lt; Voriges Bild</span>
 		{/if} |
 		<a href="/search.php?i={$searchid}&amp;page={$searchpg}"><b>Suchergebnisse</b></a> |
-		<a href="/results/browse/{$searchid}/{$searchidx+1}" >Nächstes Bild &gt;</a>
+		<a href="/results/browse/{$searchid}/{$searchidx+1}" >NÃ¤chstes Bild &gt;</a>
 	</div>
 {elseif $search_keywords && $search_count}
 	<div class="interestBox" style="text-align:center; font-size:0.9em">
-		Es gibt mindestens <b>{$search_count} Bilder</b>, die die Anfrage [{$search_keywords|escape:'html'}] im Gebiet erfüllen! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">Jetzt ansehen</a>
+		Es gibt mindestens <b>{$search_count} Bilder</b>, die die Anfrage [{$search_keywords|escape:'html'}] im Gebiet erfÃ¼llen! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">Jetzt ansehen</a>
 	</div>
 {/if}
 {/dynamic}
@@ -45,15 +45,15 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
         {if $image->original_width || $user->user_id eq $image->user_id || $notes || $altimg neq '' || $user->registered}
 	<div class="caption640" style="text-align:right;">
 	{if $notes || $altimg neq ''}
-		Mauszeiger über Bild bewegen um <a href="/geonotes.php?id={$image->gridimage_id}&amp;size=original">Beschriftungen</a> zu zeigen
+		Mauszeiger Ã¼ber Bild bewegen um <a href="/geonotes.php?id={$image->gridimage_id}&amp;size=original">Beschriftungen</a> zu zeigen
 	{elseif $user->registered}
 		<a href="/geonotes.php?id={$image->gridimage_id}">Bildteil beschriften</a>
 	{/if}
 	{if ($image->original_width || $user->user_id eq $image->user_id) && ($notes || $altimg neq '' || $user->registered)}|{/if}
 	{if $image->original_width}
-		<a href="/more.php?id={$image->gridimage_id}">Andere Größen</a>
+		<a href="/more.php?id={$image->gridimage_id}">Andere GrÃ¶ÃŸen</a>
 	{elseif $user->user_id eq $image->user_id}
-		<a href="/resubmit.php?id={$image->gridimage_id}">Größere Version hochladen</a>
+		<a href="/resubmit.php?id={$image->gridimage_id}">GrÃ¶ÃŸere Version hochladen</a>
 	{/if}
 	</div>
 	{/if}
@@ -141,14 +141,14 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 
 <table style="width:100%">
 <tr>
-	<td colspan="6" align="center" style="background-color:#c0c0c0;font-size:0.7em;"><b><a href="/reuse.php?id={$image->gridimage_id}">Wie kann dieses Bild verwertet werden</a></b>, beispielsweise für Webseiten, Blogs, Foren, Wikipedia?</td>
+	<td colspan="6" align="center" style="background-color:#c0c0c0;font-size:0.7em;"><b><a href="/reuse.php?id={$image->gridimage_id}">Wie kann dieses Bild verwertet werden</a></b>, beispielsweise fÃ¼r Webseiten, Blogs, Foren, Wikipedia?</td>
 </tr>
 <tr>
 {if $enable_forums}
 <td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="//{$static_host}/templates/basic/img/icon_discuss.gif" alt="Forum" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 {if $discuss}
-	Es gibt {if $totalcomments == 1}einen Beitrag{else}{$totalcomments} Beiträge{/if}
+	Es gibt {if $totalcomments == 1}einen Beitrag{else}{$totalcomments} BeitrÃ¤ge{/if}
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">im Forum<br/>zu {$image->grid_reference}</a> (Vorschau links)
 {else}
 	<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Diskussion zu {$image->grid_reference} beginnen</a>
@@ -156,13 +156,13 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 </td>
 {/if}
 
-<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Ändern" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Ã„ndern" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 	{if $user->user_id eq $image->user_id}
-		<big><a href="/editimage.php?id={$image->gridimage_id}"><b>Bildinformationen ändern</b></a></big><br/>
+		<big><a href="/editimage.php?id={$image->gridimage_id}"><b>Bildinformationen Ã¤ndern</b></a></big><br/>
 		(oder Frage an einen Moderator richten)
 	{else}
-		<a href="/editimage.php?id={$image->gridimage_id}">Änderung für dieses Bild vorschlagen</a>
+		<a href="/editimage.php?id={$image->gridimage_id}">Ã„nderung fÃ¼r dieses Bild vorschlagen</a>
 	{/if}
 </td>
 {if $user->user_id ne $image->user_id}
@@ -211,7 +211,7 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 
 
 <dt>Planquadrat</dt>
- <dd><a title="Planquadrat {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} Bilder{/if} &nbsp; (<a title="Mehr Bilder in der Nähe von {$image->grid_reference}" href="/search.php?q={$image->grid_reference}" rel="nofollow">Weitere in der Nähe</a>) 
+ <dd><a title="Planquadrat {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} Bilder{/if} &nbsp; (<a title="Mehr Bilder in der NÃ¤he von {$image->grid_reference}" href="/search.php?q={$image->grid_reference}" rel="nofollow">Weitere in der NÃ¤he</a>) 
 </dd>
 
 {if $image->credit_realname}
@@ -219,15 +219,15 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 	 <dd>{$image->realname|escape:'html'}</dd>
 
 	<dt>Eingereicht von</dt>
-	 <dd><a title="View profile" href="/profile/{$image->user_id}">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="Bilder um {$image->grid_reference} von {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">Weitere in der Nähe</a>)</dd>
+	 <dd><a title="View profile" href="/profile/{$image->user_id}">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="Bilder um {$image->grid_reference} von {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">Weitere in der NÃ¤he</a>)</dd>
 {else}
 	<dt>Fotograf</dt>
-	 <dd><a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="Bilder um {$image->grid_reference} von {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">Weitere in der Nähe</a>)</dd>
+	 <dd><a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="Bilder um {$image->grid_reference} von {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">Weitere in der NÃ¤he</a>)</dd>
 {/if}
 
 <dt>Klassifikation</dt>
 <dd>{if $image->ftf}
-	Geobild (Erstes für {$image->grid_reference})
+	Geobild (Erstes fÃ¼r {$image->grid_reference})
 {else}
 	{if $image->moderation_status eq "rejected"}
 	Abgelehnt
@@ -246,7 +246,7 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 
 {if $image_taken}
 <dt>Aufgenommen</dt>
- <dd>{$image_taken} &nbsp; (<a title="Bilder um {$image->grid_reference} vom {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">Weitere in der Nähe</a>)</dd>
+ <dd>{$image_taken} &nbsp; (<a title="Bilder um {$image->grid_reference} vom {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">Weitere in der NÃ¤he</a>)</dd>
 {/if}
 <dt>Eingereicht</dt>
 	<dd>{$image->submitted|date_format:"%a, %e. %B %Y"}</dd>
@@ -254,7 +254,7 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 <dt>Kategorie</dt>
 
 <dd>{if $image->imageclass}
-	{$image->imageclass} &nbsp; (<a title="Bilder um {$image->grid_reference} von {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">Weitere in der Nähe</a>)
+	{$image->imageclass} &nbsp; (<a title="Bilder um {$image->grid_reference} von {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">Weitere in der NÃ¤he</a>)
 {else}
 	<i>n/a</i>
 {/if}</dd>
@@ -278,17 +278,17 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
 {*{if     $view_direction eq "Southeast"}
-Südost
+SÃ¼dost
 {elseif $view_direction eq "South-southeast"}
-Südsüdost
+SÃ¼dsÃ¼dost
 {elseif $view_direction eq "South"}
-Süd
+SÃ¼d
 {elseif $view_direction eq "South-southwest"}
-Südsüdwest
+SÃ¼dsÃ¼dwest
 {elseif $view_direction eq "Southwest"}
-Südwest
+SÃ¼dwest
 {elseif $view_direction eq "West-southwest"}
-Westsüdwest
+WestsÃ¼dwest
 {elseif $view_direction eq "West"}
 West
 {elseif $view_direction eq "West-northwest"}
@@ -308,7 +308,7 @@ Ostnordost
 {elseif $view_direction eq "East"}
 Ost
 {elseif $view_direction eq "East-southeast"}
-Ostsüdost
+OstsÃ¼dost
 {else}
 {$view_direction}
 {/if}*}
@@ -340,12 +340,12 @@ Ostsüdost
 
 {if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
 
-<small><a title="In Google Earth öffnen" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</small>, 
-{external title="In Bing Maps öffnen" href="http://www.bing.com/maps/default.aspx?v=2&amp;mapurl=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Bing Maps"}, 
+<small><a title="In Google Earth Ã¶ffnen" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</small>, 
+{external title="In Bing Maps Ã¶ffnen" href="http://www.bing.com/maps/default.aspx?v=2&amp;mapurl=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Bing Maps"}, 
 
 {/if}
 
-{external title="In OpenStreetmap öffnen" href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14" text="OSM"},
+{external title="In OpenStreetmap Ã¶ffnen" href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14" text="OSM"},
 
 {if $rastermap->reference_index == 1}<a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a>, {/if}
 
@@ -367,7 +367,7 @@ Ostsüdost
 {literal}
 function addStyleLinks() {
 {/literal}
-	document.getElementById('styleLinks').innerHTML = 'Hintergrundfarbe: {if $maincontentclass eq "content_photowhite"}<b>weiß</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">weiß</a>{/if}/{if $maincontentclass eq "content_photoblack"}<b>schwarz</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">schwarz</a>{/if}/{if $maincontentclass eq "content_photogray"}<b>grau</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">grau</a>{/if}';
+	document.getElementById('styleLinks').innerHTML = 'Hintergrundfarbe: {if $maincontentclass eq "content_photowhite"}<b>weiÃŸ</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">weiÃŸ</a>{/if}/{if $maincontentclass eq "content_photoblack"}<b>schwarz</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">schwarz</a>{/if}/{if $maincontentclass eq "content_photogray"}<b>grau</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">grau</a>{/if}';
 {literal}
 }
  AttachEvent(window,'load',addStyleLinks,false);
@@ -455,33 +455,33 @@ AttachEvent(window,"load",gn.init);
 			<h4 style="margin-top:0px">Bild-Bewertung</h4>
 			<p>
 			Bitte im Vorfeld <a href="/discuss/index.php?&amp;action=vthread&amp;forum=2&amp;topic=126">diesen Foren-Thread</a> lesen um
-			näheres zu dieser Funktion zu erfahren. Das ist auch deshalb wichtig, weil es zu Anfang Missverständnisse bezüglich
+			nÃ¤heres zu dieser Funktion zu erfahren. Das ist auch deshalb wichtig, weil es zu Anfang MissverstÃ¤ndnisse bezÃ¼glich
 			der Bewertung des Informationsgehalts gab, die sowohl die Bildbeschreibung als auch die Wahl eines interessanten Motivs
-			berücksichtigen sollte.
+			berÃ¼cksichtigen sollte.
 			</p>
 			<div class="votebox">
 				Allgemeiner Eindruck: <span class="votebuttons">
-				<span class="invisible"  >[</span><a id="vote{$imageid}like1" class="voteneg{if $vote.like==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 1); return false;" title="Das Bild gefällt mir überhaupt nicht"><b>--</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}like2" class="voteneg{if $vote.like==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 2); return false;" title="Das Bild gefällt mir nicht"><b>-</b></a>
+				<span class="invisible"  >[</span><a id="vote{$imageid}like1" class="voteneg{if $vote.like==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 1); return false;" title="Das Bild gefÃ¤llt mir Ã¼berhaupt nicht"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like2" class="voteneg{if $vote.like==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 2); return false;" title="Das Bild gefÃ¤llt mir nicht"><b>-</b></a>
 				<span class="invisible">] [</span><a id="vote{$imageid}like3" class="voteneu{if $vote.like==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 3); return false;" title="Das Bild ist durchschnittlich"><b>o</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}like4" class="votepos{if $vote.like==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 4); return false;" title="Das Bild gefällt mir"><b>+</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}like5" class="votepos{if $vote.like==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 5); return false;" title="Das Bild gefällt mir sehr"><b>++</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like4" class="votepos{if $vote.like==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 4); return false;" title="Das Bild gefÃ¤llt mir"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like5" class="votepos{if $vote.like==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 5); return false;" title="Das Bild gefÃ¤llt mir sehr"><b>++</b></a>
 				<span class="invisible">]</span></span>
 			</div><div class="votebox">
 				Ort oder Landschaft: <span class="votebuttons">
-				<span class="invisible"  >[</span><a id="vote{$imageid}site1" class="voteneg{if $vote.site==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 1); return false;" title="Dort gefällt es mir überhaupt nicht"><b>--</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}site2" class="voteneg{if $vote.site==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 2); return false;" title="Dort gefällt es mir nicht"><b>-</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}site3" class="voteneu{if $vote.site==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 3); return false;" title="Dort ist es durchschnittlich schön"><b>o</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}site4" class="votepos{if $vote.site==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 4); return false;" title="Dort gefällt es mir"><b>+</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}site5" class="votepos{if $vote.site==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 5); return false;" title="Dort gefällt es mir sehr"><b>++</b></a>
+				<span class="invisible"  >[</span><a id="vote{$imageid}site1" class="voteneg{if $vote.site==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 1); return false;" title="Dort gefÃ¤llt es mir Ã¼berhaupt nicht"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site2" class="voteneg{if $vote.site==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 2); return false;" title="Dort gefÃ¤llt es mir nicht"><b>-</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site3" class="voteneu{if $vote.site==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 3); return false;" title="Dort ist es durchschnittlich schÃ¶n"><b>o</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site4" class="votepos{if $vote.site==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 4); return false;" title="Dort gefÃ¤llt es mir"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site5" class="votepos{if $vote.site==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 5); return false;" title="Dort gefÃ¤llt es mir sehr"><b>++</b></a>
 				<span class="invisible">]</span></span>
 			</div><div class="votebox">
-				Qualität: <span class="votebuttons">
-				<span class="invisible"  >[</span><a id="vote{$imageid}qual1" class="voteneg{if $vote.qual==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 1); return false;" title="Dies ist ein Bild sehr geringer Qualität"><b>--</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}qual2" class="voteneg{if $vote.qual==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 2); return false;" title="Dies ist ein Bild geringer Qualität"><b>-</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}qual3" class="voteneu{if $vote.qual==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 3); return false;" title="Dies ist ein Bild durchschnittlicher Qualität"><b>o</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}qual4" class="votepos{if $vote.qual==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 4); return false;" title="Dies ist ein Bild hoher Qualität"><b>+</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}qual5" class="votepos{if $vote.qual==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 5); return false;" title="Dies ist ein Bild sehr hoher Qualität"><b>++</b></a>
+				QualitÃ¤t: <span class="votebuttons">
+				<span class="invisible"  >[</span><a id="vote{$imageid}qual1" class="voteneg{if $vote.qual==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 1); return false;" title="Dies ist ein Bild sehr geringer QualitÃ¤t"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual2" class="voteneg{if $vote.qual==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 2); return false;" title="Dies ist ein Bild geringer QualitÃ¤t"><b>-</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual3" class="voteneu{if $vote.qual==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 3); return false;" title="Dies ist ein Bild durchschnittlicher QualitÃ¤t"><b>o</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual4" class="votepos{if $vote.qual==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 4); return false;" title="Dies ist ein Bild hoher QualitÃ¤t"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual5" class="votepos{if $vote.qual==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 5); return false;" title="Dies ist ein Bild sehr hoher QualitÃ¤t"><b>++</b></a>
 				<span class="invisible">]</span></span>
 			</div><div class="votebox">
 				Informationsgehalt: <span class="votebuttons">
@@ -509,9 +509,9 @@ AttachEvent(window,"load",gn.init);
 	{$rastermap->getFooterTag()}
 {/if}
 {else}
-<h2>Bild nicht verfügbar</h2>
-<p>Das gewünschte Bild ist nicht vorhanden. Das kann an einem Softwarefehler liegen oder daran, dass
-das Bild nach dem Einreichen abgelehnt oder zurückgezogen wurde - Fragen dazu können über das <a title="Contact Us" href="/contact.php">Kontaktformular</a>
+<h2>Bild nicht verfÃ¼gbar</h2>
+<p>Das gewÃ¼nschte Bild ist nicht vorhanden. Das kann an einem Softwarefehler liegen oder daran, dass
+das Bild nach dem Einreichen abgelehnt oder zurÃ¼ckgezogen wurde - Fragen dazu kÃ¶nnen Ã¼ber das <a title="Contact Us" href="/contact.php">Kontaktformular</a>
 gestellt werden.</p>
 {/if}
 

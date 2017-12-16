@@ -26,7 +26,7 @@
 </form>
 
 {if !$blank}
-<p class="no_print">Für jeden Tag wird ein Beispielbild angezeigt. Über den "mehr"-Link kann eine Auflistung aller an diesem Tag aufgenommenen Bilder erreicht werden.
+<p class="no_print">FÃ¼r jeden Tag wird ein Beispielbild angezeigt. Ãœber den "mehr"-Link kann eine Auflistung aller an diesem Tag aufgenommenen Bilder erreicht werden.
 <br/><a href="/search.php?taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}{if $uid}&amp;user_id={$uid}{/if}&amp;orderby=imagetaken&amp;do=1">Alle Bilder vom {$month_name} {$year} suchen</a>		
 &nbsp;&nbsp;&nbsp;&nbsp; Legende: <span style="font-family:arial;color:green;">G: Geobilder, <small style="color:blue">(E: Extrabilder)</small></span>.</p>
 {/if}
@@ -65,7 +65,7 @@
 				(<a href="/search.php?taken_endDay={$day.number}&amp;taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startDay={$day.number}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}{if $uid}&amp;user_id={$uid}{/if}&amp;orderby=imagetaken&amp;do=1">mehr</a>)</div>
 				
 				<div style="text-align:center;width:120px;height:120px;vertical-align:middle">
-					<a title="{$day.image->grid_reference} : {$day.image->title|escape:'html'} von {$day.image->realname|escape:'html'} - zum Vergrößern anklicken" href="/photo/{$day.image->gridimage_id}">{$day.image->getThumbnail(120,120,false,false,'src',3)}</a>
+					<a title="{$day.image->grid_reference} : {$day.image->title|escape:'html'} von {$day.image->realname|escape:'html'} - zum VergrÃ¶ÃŸern anklicken" href="/photo/{$day.image->gridimage_id}">{$day.image->getThumbnail(120,120,false,false,'src',3)}</a>
 				</div>
 
 				<div align="center" style="font-family:arial;color:green;">G: {$day.image->images-$day.image->supps}
@@ -87,6 +87,6 @@
 </table>
  	
 <ul class="no_print">
-	<li><a href="/statistics/leaderboard.php?when={$year}-{$month}&amp;date=taken" rel="nofollow">Rangliste für {$month_name} {$year}</a> {if $year >= 2005}(<a href="/statistics/leaderboard.php?when={$year}-{$month}">Einreichdatum</a>){/if}</li>
+	<li><a href="/statistics/leaderboard.php?when={$year}-{$month}&amp;date=taken" rel="nofollow">Rangliste fÃ¼r {$month_name} {$year}</a> {if $year >= 2005}(<a href="/statistics/leaderboard.php?when={$year}-{$month}">Einreichdatum</a>){/if}</li>
 </ul>
 {include file="_std_end.tpl"}

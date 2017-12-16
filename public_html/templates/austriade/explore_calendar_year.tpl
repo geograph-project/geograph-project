@@ -25,7 +25,7 @@
 {/if}
 </form>
 
-<p class="no_print">Anklicken der Monatsnamen führt zu einer detaillierteren Ansicht. Legende: <span style="font-family:arial;font-size:0.7em;color:green;">Geobilder</span>.</p>
+<p class="no_print">Anklicken der Monatsnamen fÃ¼hrt zu einer detaillierteren Ansicht. Legende: <span style="font-family:arial;font-size:0.7em;color:green;">Geobilder</span>.</p>
 
 {if $image}
 	<div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
@@ -80,6 +80,6 @@
 {/foreach}
 <br style="clear:both"/>
 <ul class="no_print">
-	<li><a href="/statistics/leaderboard.php?when={$year}&amp;date=taken">Rangliste für {$year}</a> {if $year >= 2005}(<a href="/statistics/leaderboard.php?when={$year}">Einreichdatum</a>){/if}</li>
+	<li><a href="/statistics/leaderboard.php?when={$year}&amp;date=taken">Rangliste fÃ¼r {$year}</a> {if $year >= 2005}(<a href="/statistics/leaderboard.php?when={$year}">Einreichdatum</a>){/if}</li>
 </ul>
 {include file="_std_end.tpl"}

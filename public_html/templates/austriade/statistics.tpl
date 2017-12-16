@@ -1,7 +1,7 @@
 {assign var="page_title" value="Statistik"}
 {include file="_std_begin.tpl"}
  
-    <h2>Statistik für Geograph Österreich</h2>
+    <h2>Statistik fÃ¼r Geograph Ã–sterreich</h2>
 
 <ul>
 <li><b>{$users_submitted}</b> Teilnehmer haben Bilder eingereicht.</li>
@@ -87,7 +87,7 @@
 	<div>
 	{foreach from=$maprow key=x item=mapcell}
 	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
-	alt="Klickbare Karte" ismap="ismap" title="zum Vergrößern anklicken" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+	alt="Klickbare Karte" ismap="ismap" title="zum VergrÃ¶ÃŸern anklicken" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 	{/foreach}
 	</div>
 {/foreach}
@@ -117,21 +117,21 @@ In {$ref} <a href="/gridref/{$centergr[$ri]}" title="Planquadrat {$centergr[$ri]
 	<p><b><a href="/statistics/regions.php">Regionale Statistik</a>{if $regionlistlevel > -1} (<a href="/statistics/regions.php?level={$regionlistlevel}">lange Liste</a>){/if}</b></p>
 	{/if}
 
-   <p><b>Ranglisten</b>: <a href="/statistics/moversboard.php">Wöchentlich</a>, <a href="/statistics/leaderboard.php">Gesamt</a>, <a href="/statistics/monthlyleader.php">Nach Monat</a>, <a href="/statistics/leaderhectad.php">Hectads (bzgl. der ersten Geobilder)</a>,  <a href="/statistics/leaderallhectad.php">Hectads</a>, <a href="/statistics/leaderboard.php?type=images&when=1989&timerel=dbefore&date=taken">Historische Bilder</a> und <a href="/statistics/busyday.php?users=1">Bilder je Tag</a></p>
+   <p><b>Ranglisten</b>: <a href="/statistics/moversboard.php">WÃ¶chentlich</a>, <a href="/statistics/leaderboard.php">Gesamt</a>, <a href="/statistics/monthlyleader.php">Nach Monat</a>, <a href="/statistics/leaderhectad.php">Hectads (bzgl. der ersten Geobilder)</a>,  <a href="/statistics/leaderallhectad.php">Hectads</a>, <a href="/statistics/leaderboard.php?type=images&when=1989&timerel=dbefore&date=taken">Historische Bilder</a> und <a href="/statistics/busyday.php?users=1">Bilder je Tag</a></p>
 
    <p><b>Abdeckung von Quadraten</b><a href="/help/squares">?</a>:<br/><br/>
    Ohne Bilder: <a href="/statistics/not_geographed.php">Hectads</a> (10km&times;10km-Quadrate)<br/><br/>
    Mit Bildern: <a href="/statistics/most_geographed.php">Planquadrate und Hectads</a> sowie <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100km&times;100km-Quadrate)</small>.<br/><br/>
-   <b>Alle Planquadrate: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10km&times;10km-Quadrate)</small> &ndash; mit großem Mosaik!</b><br/><br/>
+   <b>Alle Planquadrate: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10km&times;10km-Quadrate)</small> &ndash; mit groÃŸem Mosaik!</b><br/><br/>
    Diagramm: Abeckung der <a href="/statistics/photos_per_square.php">Planquadrate</a> und <a href="/statistics/hectads.php">Hectads</a></p>
 
-   <p><b>Aktivität</b><br/><br/>
-   Diagramme: <a href="/statistics/moversboard.php#rate_graph">Wöchentliche Einreichungen</a>, <a href="/statistics/contributors.php">Teilnehmer</a>.<br/><br/>
-   Monatliche aufgeschlüsselt: <a href="/statistics/overtime.php">Einreichungen</a>, <a href="/statistics/overtime.php?date=taken">Aufnahmedatum</a>, <a href="/statistics/overtime_users.php">Teilnehmer-Registrierungen</a>, <a href="/statistics/overtime_forum.php">Foren-Beiträge</a> und <a href="/statistics/overtime_tickets.php">Änderungsvorschläge</a>.<br/><br/>
-   Aufgeschlüsselt nach Stunde, Wochentag und Monat: <a href="/statistics/date_graphs.php">Einreichungen</a>, <a href="/statistics/date_graphs.php?date=taken">Aufnahmedatum</a>, <a href="/statistics/date_users_graphs.php">Teilnehmer-Registrierungen</a> und <a href="/statistics/date_forum_graphs.php">Foren-Beiträge</a>.<br/><br/>
-   Tage hoher Aktivität: <a href="/statistics/busyday.php?date=submitted">Einreichungen</a>, <a href="/statistics/busyday.php">aufgenommene Bilder</a>, <a href="/statistics/busyday_users.php">Teilnehmer-Registrierungen</a> und <a href="/statistics/busyday_forum.php">Foren-Beiträge</a> (<a href="/statistics/busyday_forum.php?users=1">Teilnehmer</a>,<a href="/statistics/busyday_forum.php?threads=1">Themen</a>).<br/><br/>
-   Jährliche Aktivität: <a href="/statistics/years.php?date=submitted">Einreichungen</a>, <a href="/statistics/years.php">aufgenommene Bilder</a> und <a href="/statistics/years_forum.php">Foren-Beiträge</a>.<br/><br/>
-   Foren-Aktivität: <a href="/statistics/leaderthread_forum.php">Beliebteste Themen</a> und
+   <p><b>AktivitÃ¤t</b><br/><br/>
+   Diagramme: <a href="/statistics/moversboard.php#rate_graph">WÃ¶chentliche Einreichungen</a>, <a href="/statistics/contributors.php">Teilnehmer</a>.<br/><br/>
+   Monatliche aufgeschlÃ¼sselt: <a href="/statistics/overtime.php">Einreichungen</a>, <a href="/statistics/overtime.php?date=taken">Aufnahmedatum</a>, <a href="/statistics/overtime_users.php">Teilnehmer-Registrierungen</a>, <a href="/statistics/overtime_forum.php">Foren-BeitrÃ¤ge</a> und <a href="/statistics/overtime_tickets.php">Ã„nderungsvorschlÃ¤ge</a>.<br/><br/>
+   AufgeschlÃ¼sselt nach Stunde, Wochentag und Monat: <a href="/statistics/date_graphs.php">Einreichungen</a>, <a href="/statistics/date_graphs.php?date=taken">Aufnahmedatum</a>, <a href="/statistics/date_users_graphs.php">Teilnehmer-Registrierungen</a> und <a href="/statistics/date_forum_graphs.php">Foren-BeitrÃ¤ge</a>.<br/><br/>
+   Tage hoher AktivitÃ¤t: <a href="/statistics/busyday.php?date=submitted">Einreichungen</a>, <a href="/statistics/busyday.php">aufgenommene Bilder</a>, <a href="/statistics/busyday_users.php">Teilnehmer-Registrierungen</a> und <a href="/statistics/busyday_forum.php">Foren-BeitrÃ¤ge</a> (<a href="/statistics/busyday_forum.php?users=1">Teilnehmer</a>,<a href="/statistics/busyday_forum.php?threads=1">Themen</a>).<br/><br/>
+   JÃ¤hrliche AktivitÃ¤t: <a href="/statistics/years.php?date=submitted">Einreichungen</a>, <a href="/statistics/years.php">aufgenommene Bilder</a> und <a href="/statistics/years_forum.php">Foren-BeitrÃ¤ge</a>.<br/><br/>
+   Foren-AktivitÃ¤t: <a href="/statistics/leaderthread_forum.php">Beliebteste Themen</a> und
    <a href="/statistics/forum_image_breakdown.php">eingebundene Bilder</a><br/><br/></p>
 
     <form method="get" action="/statistics/breakdown.php">
@@ -154,21 +154,21 @@ In {$ref} <a href="/gridref/{$centergr[$ri]}" title="Planquadrat {$centergr[$ri]
     {if $user->registered}
 	<select name="u">
 		{if $u && $u != $user->user_id}
-			<option value="{$u}">nur für {$profile->realname}</option>
+			<option value="{$u}">nur fÃ¼r {$profile->realname}</option>
 		{/if}
-		<option value="{$user->user_id}">nur für {$user->realname}</option>
-		<option value="" {if !$u} selected{/if}>für alle</option>
+		<option value="{$user->user_id}">nur fÃ¼r {$user->realname}</option>
+		<option value="" {if !$u} selected{/if}>fÃ¼r alle</option>
 	</select>
     {else}
 	{if $u}
 	<select name="u">
-		<option value="{$u}" selected>nur für {$profile->realname}</option>
-		<option value="">für alle</option>
+		<option value="{$u}" selected>nur fÃ¼r {$profile->realname}</option>
+		<option value="">fÃ¼r alle</option>
 	</select>
 	{/if}
     {/if}
     {/dynamic}
-    aufschlüsseln:
+    aufschlÃ¼sseln:
     <input type="submit" value="Los"/></p></form>
 
    <p><b>Technischere Datenbank-Statistiken:</b><br/>
