@@ -65,6 +65,8 @@
 				zoom: zoom,
 				mapTypeId: mapTypeId,
 				streetViewControl: false, //true,
+				fullscreenControl: false,
+				gestureHandling: 'greedy',
 				mapTypeControlOptions: {
 					mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN],
 					style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
