@@ -154,7 +154,7 @@ function makeUneditable() {
 	<select name="licence">
 	{html_options options=$licences selected=$licence}
 	</select> by
-	<a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>
+	<a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>
 	
 
 	{if $errors.licence}</div>{/if}

@@ -27,8 +27,8 @@ ul.explore li {	padding:3px; }
 {foreach from=$list item=item}
 
 
-	<li><b><a  href="/gallery/{$item.url}">{$item.topic_title}</a></b><br/>
-	<small><small style="color:gray">started by <a href="/profile/{$item.topic_poster}" title="View Geograph Profile for {$item.topic_poster_name}"  style="color:#6699CC">{$item.topic_poster_name}</a>, with {$item.posts_count} posts, {$item.images_count} images and viewed {$item.topic_views} times.</small></small>
+	<li><b><a  href="/gallery/{$item.url}">{$item.topic_title|escape:'html'}</a></b><br/>
+	<small><small style="color:gray">started by <a href="/profile/{$item.topic_poster}" title="View Geograph Profile for {$item.topic_poster_name|escape:'html'}"  style="color:#6699CC">{$item.topic_poster_name|escape:'html'}</a>, with {$item.posts_count} posts, {$item.images_count} images and viewed {$item.topic_views} times.</small></small>
 
 	</li>
 
