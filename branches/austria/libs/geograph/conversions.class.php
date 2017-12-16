@@ -23,6 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+include_messages('class_conversions');
+
 function FractionToDecimal($fraction) {
 	$parts = explode("/", $fraction, 2);
 	if (count($parts) == 1)
@@ -321,7 +323,7 @@ function internal_to_national($x,$y,$reference_index = 0,$doshift = true) {
 			// this is used when we have a dataset in osgb and need to convert it to irish national (eg loc_placenames etc)
 
 function wgs84_to_friendly($lat,$long) {
-	global $CONF;
+	global $CONF, $MESSAGES;
 
 	$xd = intval(abs($long));
 	$xm = intval((abs($long)-$xd)*60);
@@ -337,29 +339,24 @@ function wgs84_to_friendly($lat,$long) {
 	$xs = str_replace('.', $CONF['decimal_sep'], sprintf("%.2F",$xs));
 	$ys = str_replace('.', $CONF['decimal_sep'], sprintf("%.2F",$ys));
 
-	if ($CONF['lang'] == 'de') {
-		$el = ($long > 0)?'O':'W';
-		$nl = ($lat > 0)?'N':'S';
-	
-		return array("{$yd}°$ym'$ys\"$nl","{$xd}°$xm'$xs\"$el");
+	$el = $MESSAGES['class_conversions']['directions'][($long > 0)?1:3]; // 'E','W'
+	$nl = $MESSAGES['class_conversions']['directions'][($lat > 0)?0:2]; // 'N','S'
+	if ($MESSAGES['class_conversions']['displayseconds']) {
+		return array(
+			sprintf($MESSAGES['class_conversions']['coordformat'], $yd, $ym, $ys, $nl),
+			sprintf($MESSAGES['class_conversions']['coordformat'], $xd, $xm, $xs, $el));
 	} else {
-		$el = ($long > 0)?'E':'W';
-		$nl = ($lat > 0)?'N':'S';
-
-		return array("$yd:$ymd$nl","$xd:$xmd$el");
+		return array(
+			sprintf($MESSAGES['class_conversions']['coordformat'], $yd, $ymd, $nl),
+			sprintf($MESSAGES['class_conversions']['coordformat'], $xd, $xmd, $el));
 	}
 }
 
 function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
-	global $CONF;
+	global $CONF, $MESSAGES;
 
-	if ($CONF['lang'] == 'de') {
-		$el = ($long > 0)?'O':'W';
-		$nl = ($lat > 0)?'N':'S';
-	} else {
-		$el = ($long > 0)?'E':'W';
-		$nl = ($lat > 0)?'N':'S';
-	}
+	$el = $MESSAGES['class_conversions']['directions'][($long > 0)?1:3]; // 'E','W'
+	$nl = $MESSAGES['class_conversions']['directions'][($lat > 0)?0:2]; // 'N','S'
 	
 	$along = abs($long);
 	$alat = abs($lat);
@@ -381,12 +378,12 @@ function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
 	foreach (array('el','nl','along','alat','xd','xm','xs','yd','ym','ys','ymd','xmd') as $name) {
 		$smarty->assign($name, $$name);
 	}
-	if ($CONF['lang'] == 'de') {
-		$smarty->assign('latdm', "{$yd}°$ymd'$nl");
-		$smarty->assign('longdm', "{$xd}°$xmd'$el");
+	if ($MESSAGES['class_conversions']['displayseconds']) {
+		$smarty->assign('latdm',  sprintf($MESSAGES['class_conversions']['coordformat'], $yd, $ym, $ys, $nl));
+		$smarty->assign('longdm', sprintf($MESSAGES['class_conversions']['coordformat'], $xd, $xm, $xs, $el));
 	} else {
-		$smarty->assign('latdm', "$yd:$ymd$nl");
-		$smarty->assign('longdm', "$xd:$xmd$el");
+		$smarty->assign('latdm',  sprintf($MESSAGES['class_conversions']['coordformat'], $yd, $ymd, $nl));
+		$smarty->assign('longdm', sprintf($MESSAGES['class_conversions']['coordformat'], $xd, $xmd, $el));
 	}
 }
 
