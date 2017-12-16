@@ -163,6 +163,7 @@ Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
+Disallow: /files/
 
 User-Agent: Slurp
 Crawl-delay: 50
@@ -227,6 +228,7 @@ Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
+Disallow: /files/
 
 User-Agent: MSNBot
 Crawl-Delay: 25
@@ -291,6 +293,7 @@ Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
+Disallow: /files/
 
 User-agent: *
 Crawl-Delay: 50
@@ -353,6 +356,7 @@ Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /syndicator.php?
 Disallow: /stuff/kmltest
+Disallow: /files/
 
 #Sitemap: http://geo-en.hlipp.de/sitemap-en.xml
 Sitemap: http://geo.hlipp.de/sitemap.xml

@@ -134,7 +134,9 @@ init_session();
 			# http://geo.hlipp.de/imagemap.php?dedates=1&refresh=2&year=0&Z=7
 			# http://geo.hlipp.de/imagemap.php?dedates=1&refresh=2&year=0&step=week
 			# http://geo.hlipp.de/imagemap.php?dedates=1&refresh=2&year=0&t=-1
-			# test: ffmpeg -i map_ddate_z7_l7_o0_t0.gif -movflags faststart -pix_fmt yuv420p  ~/geo/map_ddate_z7_l7_o0_t0.mp4
+			# test:             ffmpeg -i map_ddate_z7_l7_o0_t0.gif -movflags faststart -pix_fmt yuv420p  ~/geo/map_ddate_z7_l7_o0_t0.mp4
+			# better but large: ffmpeg -i map_ddate_z7_l7_o0_t0_w.gif -c:v libx264 -preset veryslow -qp 0 map_ddate_z7_l7_o0_t0_w.mp4
+			# seems okay:       ffmpeg -i map_ddate_z7_l7_o0_t0_w.gif -c:v libx264 -preset veryslow -qp 0 -pix_fmt yuv420p -movflags faststart map_ddate_z7_l7_o0_t0_w.yuv420p.mp4
 			$zoom = intval($_GET['Z']);
 			if ($zoom == 7) {
 				$xmin = 66;
@@ -177,6 +179,7 @@ init_session();
 				#$t = strtotime('2008-07-07'); // monday before image 1
 				$t = mktime(12, 0, 0, 7, 7, 2008); # try noon, reducing possible error sources (time jumps from monday to sunday for some reason...)
 				                                   #                             ^^^^^^^^^^^^^ (such as time zones, dst, leap seconds, ...)
+				                                   # this is only for the loop, we actually only use the date part for queries and file names.
 				$defdelay = 20;
 				$gifsuffix .= '_w';
 			} else { /* default: month */
@@ -194,7 +197,9 @@ init_session();
 				$gifsuffix .= "_d$delay";
 			}
 
-			$n = time()-(60*60*24*3); /* three days for the moderators;-) */
+			// have to add 12 hours as we also add 12 hours to the actual time to avoid DST issues
+			//$n = time()-(60*60*24*3) + (60*60*12); /* three days for the moderators;-) */
+			$n = time()- (60*60*16) + (60*60*12); /* 16 hours for the admin to moderate;-) */
 
 			$w = 256;
 			$h = 256;
@@ -269,13 +274,18 @@ init_session();
 					} else {
 						$month++;
 					}
-					$t = mktime(0, 0, 0, $month, 1, $year);
+					$t = mktime(12, 0, 0, $month, 1, $year);
 				}
 			}
 			/* create animated gif */
 			if ($CONF['imagemagick_path'] !== '' && count($frames)) {
 				$gifname = $root."/maps/special/map_ddate_z{$zoom}_l{$layers}_o{$overlay}_t{$typeuser}{$gifsuffix}.gif";
-				$cmd = "\"{$CONF['imagemagick_path']}\"convert -delay $delay ".implode(' ', $frames)." -loop 0 {$gifname}";
+				if (isset($CONF['imagemagick_tmpdir']) && $CONF['imagemagick_tmpdir'] !== '') {
+					$imenv = "MAGICK_TEMPORARY_PATH=\"{$CONF['imagemagick_tmpdir']}\" ";
+				} else {
+					$imenv = '';
+				}
+				$cmd = "$imenv\"{$CONF['imagemagick_path']}\"convert -delay $delay ".implode(' ', $frames)." -loop 0 {$gifname}";
 				passthru($cmd);
 			}
 			exit;
