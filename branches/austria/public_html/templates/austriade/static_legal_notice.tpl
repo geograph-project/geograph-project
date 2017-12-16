@@ -6,11 +6,11 @@
 <i><small><a href="http://atgeo-en.hlipp.de/help/legal_notice">(Click here for English version.)</a></small></i>
 
 <p>
-	Wenn Sie ein Anliegen zur Seite haben, können Sie sich über das
+	Wenn Sie ein Anliegen zur Seite haben, kÃ¶nnen Sie sich Ã¼ber das
 	<a href="/contact.php">Kontaktformular</a> an das Geograph-Team oder
-	per Mail an <a href="mailto:hjlipp@web.de">Hansjörg&nbsp;Lipp&nbsp;&lt;hjlipp@web.de&gt;</a>
-	wenden. Da Mitteilungen über das <a href="/contact.php">Kontaktformular</a> mehrere Leute erreichen,
-	empfiehlt sich selbiges insbesondere auch für dringende Anliegen!
+	per Mail an <a href="mailto:hjlipp@web.de">HansjÃ¶rg&nbsp;Lipp&nbsp;&lt;hjlipp@web.de&gt;</a>
+	wenden. Da Mitteilungen Ã¼ber das <a href="/contact.php">Kontaktformular</a> mehrere Leute erreichen,
+	empfiehlt sich selbiges insbesondere auch fÃ¼r dringende Anliegen!
 </p>
 	
 <h3>F&uuml;r Berufsgruppen, die es gerne mal genauer haben</h3>

@@ -26,6 +26,7 @@ if (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by'])) {
 	exit;
 }
 
+$UTF8PAGE=true;
 require_once('geograph/global.inc.php');
 require_once('geograph/mapmosaic.class.php');
 init_session();

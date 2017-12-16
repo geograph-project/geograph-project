@@ -27,6 +27,7 @@ if (isset($_SERVER['REDIRECT_SCRIPT_URL']) && preg_match('/120_(ie|ff).gif$/',$_
 	exit;
 }
 
+$UTF8PAGE=true;
 require_once('geograph/global.inc.php');
 init_session();
 

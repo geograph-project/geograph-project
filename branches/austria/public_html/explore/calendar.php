@@ -21,6 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+$UTF8PAGE=true;
 require_once('geograph/global.inc.php');
 init_session();
 
@@ -224,7 +225,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$smarty->assign_by_ref("weeks",$weeks);
 	
-		$smarty->assign("month_name",strftime("%B", $timeStamp));
+		$smarty->assign("month_name",dateconvert(strftime("%B", $timeStamp)));
 	} else {
 		$months = array();
 		
@@ -297,7 +298,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				$weeks[] = $week;
 				$w++;		
 			}
-			$name = strftime('%B',mktime(0,0,0,$month,1,2005)); 
+			$name = dateconvert(strftime('%B',mktime(0,0,0,$month,1,2005))); 
 			$months[$name] = $weeks;			
 		}
 		$month = 0;
@@ -308,7 +309,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	//array of day names to use
 	$days = array();
 	for($i=1; $i<=7; $i++) {
-		$days[] = strftime('%a', mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday
+		$days[] = dateconvert(strftime('%a', mktime(0,0,0,8,$i,2005)));//just a month that happens to start on a monday
 	}
 	$smarty->assign_by_ref("days",$days);
 	$month = sprintf("%02d",$month);

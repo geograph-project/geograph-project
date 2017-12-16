@@ -6,58 +6,58 @@
     <h2>Dank</h2>
 
     <p>
-    Die Idee für diese Seite ist entstanden, als ich im Web nach Bildern eines Küstenabschnitts Cornwalls suchte
-    und so auf <a href="http://www.geograph.org.uk/">Geograph British Isles</a> stieß. Die Philosophie hinter diesem
-    Projekt hat mich sofort begeistert, so dass ich mich immer öfter fragte, warum es ein solches Projekt nicht für meine
+    Die Idee fÃ¼r diese Seite ist entstanden, als ich im Web nach Bildern eines KÃ¼stenabschnitts Cornwalls suchte
+    und so auf <a href="http://www.geograph.org.uk/">Geograph British Isles</a> stieÃŸ. Die Philosophie hinter diesem
+    Projekt hat mich sofort begeistert, so dass ich mich immer Ã¶fter fragte, warum es ein solches Projekt nicht fÃ¼r meine
     Region gibt.
     </p>
     <p>
-    Allerdings wäre ich selbst nie in der Lage gewesen, etwas ähnliches auf die Beine zu stellen, hätten uns die
-    Betreiber von <a href="http://www.geograph.org.uk/">www.geograph.org.uk</a> nicht den Quelltext zur Verfügung gestellt.
-    Auch standen sie uns bei Problemen und Fragen mit Tat und Rat zu Seite. Herzlichen Dank dafür insbesondere an
+    Allerdings wÃ¤re ich selbst nie in der Lage gewesen, etwas Ã¤hnliches auf die Beine zu stellen, hÃ¤tten uns die
+    Betreiber von <a href="http://www.geograph.org.uk/">www.geograph.org.uk</a> nicht den Quelltext zur VerfÃ¼gung gestellt.
+    Auch standen sie uns bei Problemen und Fragen mit Tat und Rat zu Seite. Herzlichen Dank dafÃ¼r insbesondere an
     Barry Hunter.
     </p>
     <p>
-    Für Anregungen und Mithilfe beim deutschen Projekt danke ich <a href="http://geo.hlipp.de/profile/2">Stephen Hocker</a> 
+    FÃ¼r Anregungen und Mithilfe beim deutschen Projekt danke ich <a href="http://geo.hlipp.de/profile/2">Stephen Hocker</a> 
     und <a href="http://geo.hlipp.de/profile/3">Christian Lipp</a>. <a href="http://geo.hlipp.de/profile/325">Ulrich Meier</a>
-    hat sich unter anderem viel Arbeit mit den Karten (Seen in Bayern, Küsten) gemacht. Auch beim Erfassen der Städte und
-    insbesondere der Landkreise hat er einen großen Teil der Arbeit geleistet. Ohne seinen und
-    <a href="http://geo.hlipp.de/profile/32">Sebastian Ballards</a> Einsatz bei der Moderation hätte ich noch weniger Zeit
-    für die Weiterentwicklung der Seite.
+    hat sich unter anderem viel Arbeit mit den Karten (Seen in Bayern, KÃ¼sten) gemacht. Auch beim Erfassen der StÃ¤dte und
+    insbesondere der Landkreise hat er einen groÃŸen Teil der Arbeit geleistet. Ohne seinen und
+    <a href="http://geo.hlipp.de/profile/32">Sebastian Ballards</a> Einsatz bei der Moderation hÃ¤tte ich noch weniger Zeit
+    fÃ¼r die Weiterentwicklung der Seite.
     </p>
 
     <h3>Grenzen</h3>
 
     <p>
-    Die Grenzen stammen größtenteils von <a href="http://www.openstreetmap.org">OpenStreetMap</a>.
-    Vielen Dank auch an <a href=http://www.geoclub.de/>geoclub</a>-User "flopp" für seine Mithilfe.
+    Die Grenzen stammen grÃ¶ÃŸtenteils von <a href="http://www.openstreetmap.org">OpenStreetMap</a>.
+    Vielen Dank auch an <a href=http://www.geoclub.de/>geoclub</a>-User "flopp" fÃ¼r seine Mithilfe.
     </p>
 
-    <h3>Städte</h3>
+    <h3>StÃ¤dte</h3>
 
     <p>
-    Ein Teil der Städtekoordinaten wurde der <a href="http://opengeodb.hoppe-media.com/">OpenGeoDB</a> entnommen.
+    Ein Teil der StÃ¤dtekoordinaten wurde der <a href="http://opengeodb.hoppe-media.com/">OpenGeoDB</a> entnommen.
     </p>
 
     <h3>Karten</h3>
 
     <p>
-    Vielen Dank "Nop" für die Erlaubnis, die <a href="http://www.wanderreitkarte.de/">Wanderreitkarte</a> einbinden zu dürfen,
-    sowie Andy Allan für die Erlaubnis, die <a href="http://opencyclemap.org/">OpenCycleMap</a> einbinden zu dürfen.
+    Vielen Dank "Nop" fÃ¼r die Erlaubnis, die <a href="http://www.wanderreitkarte.de/">Wanderreitkarte</a> einbinden zu dÃ¼rfen,
+    sowie Andy Allan fÃ¼r die Erlaubnis, die <a href="http://opencyclemap.org/">OpenCycleMap</a> einbinden zu dÃ¼rfen.
     </p>
 
     <h3>Kartendaten</h3>
 
     <p>
-    Die statischen Mapnik-Kartenkacheln für die <a href="/ommap.php?z=12&t=rH&ll=47.565501449273,10.788951873778">verschiebbare Karte</a> wurden
+    Die statischen Mapnik-Kartenkacheln fÃ¼r die <a href="/ommap.php?z=12&t=rH&ll=47.565501449273,10.788951873778">verschiebbare Karte</a> wurden
     aus <a href="http://www.openstreetmap.org">OpenStreetMap-Daten</a> erstellt, die von der <a href="http://download.geofabrik.de/">GEOFABRIK</a>
-    als Deutschland-Auszug zur Verfügung gestellt werden.
+    als Deutschland-Auszug zur VerfÃ¼gung gestellt werden.
     </p>
 
-    <h3>Digitales Höhenmodell</h3>
+    <h3>Digitales HÃ¶henmodell</h3>
 
     <p>
-    Die "Relief"-Kartenkacheln für die <a href="/ommap.php?z=12&t=rH&ll=47.565501449273,10.788951873778">verschiebbare Karte</a> wurden
+    Die "Relief"-Kartenkacheln fÃ¼r die <a href="/ommap.php?z=12&t=rH&ll=47.565501449273,10.788951873778">verschiebbare Karte</a> wurden
     aus <a href="http://srtm.csi.cgiar.org/">CIAT-Daten</a> erstellt. Zum Erstellen der Kacheln hat "Nop"
     von der <a href="http://www.wanderreitkarte.de/">Wanderreitkarte</a> hilfreiche Tipps gegeben.
     </p>

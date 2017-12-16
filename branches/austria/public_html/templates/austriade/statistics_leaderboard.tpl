@@ -8,11 +8,11 @@
 [{if $t == $type}<b>{$typenames.$key}</b>{else}<a href="/statistics/leaderboard.php?type={$t}{$extralink}">{$typenames.$key}</a>{/if}]
 {/foreach} <a href="/help/sitemap#users">weitere...</a></p>
 
-<p>Die Liste enthält die {$limit}  besten Teilnehmer bezüglich
+<p>Die Liste enthÃ¤lt die {$limit}  besten Teilnehmer bezÃ¼glich
 {$desc}. Siehe <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
-für Details.</p>
+fÃ¼r Details.</p>
 
-<p>Es gibt auch eine <a href="/statistics/moversboard.php?type={$type}">Wochen-Rangliste</a>, die die besten Teilnehmer für
+<p>Es gibt auch eine <a href="/statistics/moversboard.php?type={$type}">Wochen-Rangliste</a>, die die besten Teilnehmer fÃ¼r
 diese Woche zeigt.</p>
 
 <table class="report">

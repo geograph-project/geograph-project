@@ -1,5 +1,5 @@
 {assign var="page_title" value="Aktueller Stand"}
-{assign var="meta_description" value="Kurzübersicht über den aktuellen Stand beim Fotografieren jedes Quadratkilometers Österreichs."}
+{assign var="meta_description" value="KurzÃ¼bersicht Ã¼ber den aktuellen Stand beim Fotografieren jedes Quadratkilometers Ã–sterreichs."}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
@@ -7,7 +7,7 @@
 	&lt; <a href="/statistics.php">Mehr Statistik</a> | <a href="/statistics/moversboard.php">Rangliste</a> &gt;
 </div>
 
-<h2>Geograph Österreich</h2>
+<h2>Geograph Ã–sterreich</h2>
 
 <div class="greenbar">{* for 33-66% coverage *}
 	<div class="righttextbox">
@@ -69,10 +69,10 @@
 	</div>
 
 	<div class="recentbox">
-		<h4>Zuletzt vervollständigte<br/> 10km-Quadrate (<a href="/statistics/fully_geographed.php" title="Vollständige 10km-Quadrate">alle anzeigen ...</a>)</h4>
+		<h4>Zuletzt vervollstÃ¤ndigte<br/> 10km-Quadrate (<a href="/statistics/fully_geographed.php" title="VollstÃ¤ndige 10km-Quadrate">alle anzeigen ...</a>)</h4>
 		<div class="halvebox">
 			{foreach from=$hectads key=id item=obj name="hectads"}
-				<a title="Mosaik für {$obj.hectad_ref}, seit {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a><br/>
+				<a title="Mosaik fÃ¼r {$obj.hectad_ref}, seit {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a><br/>
 				{if $smarty.foreach.hectads.iteration eq 5}
 		</div><div class="halvebox">
 				{/if}

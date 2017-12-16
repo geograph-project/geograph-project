@@ -34,6 +34,7 @@ if (isset($_GET['order']) && in_array($_GET['order'], array('squares_total','squ
 	$ordersgn = +1;
 }
 
+$UTF8PAGE=true;
 require_once('geograph/global.inc.php');
 //require_once('geograph/mapmosaic.class.php');
 init_session();
