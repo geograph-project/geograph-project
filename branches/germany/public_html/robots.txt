@@ -5,6 +5,9 @@ User-agent: OpenStreetMap
 Allow: /photo/
 Allow: /photos/
 
+User-agent: BUbiNG
+Disallow: /
+
 User-agent: SemrushBot
 Disallow: /
 
