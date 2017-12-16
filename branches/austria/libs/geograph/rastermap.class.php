@@ -1268,7 +1268,7 @@ EOF;
 					attribution: $attr_static,
 					sphericalMercator : true
 				},
-				16, \"http://tile.openstreetmap.org/\${z}/\${x}/\${y}.png\"
+				17, \"http://tile.openstreetmap.org/\${z}/\${x}/\${y}.png\"
 			);
 			var osmmapnik = new OpenLayers.Layer.OSM();
 

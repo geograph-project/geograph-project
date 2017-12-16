@@ -340,7 +340,7 @@ ommap.tpl, rastermap.class.php:
 					attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 					sphericalMercator : true
 				},
-				16, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
+				17, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
 			);
 
 			// FIXME numZoomLevels: are these values sensible?
