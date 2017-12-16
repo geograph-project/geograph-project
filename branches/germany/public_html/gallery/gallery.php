@@ -26,7 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-if (empty($_GET['url']) || preg_match('/[^\w]/',$_GET['url'])) {
+if (empty($_GET['url']) || !preg_match('#^[^\s.?&%/\'"<>]+_(\d+)$#',$_GET['url'])) {
 	$smarty->display('static_404.tpl');
 	exit;
 }
@@ -54,7 +54,7 @@ if (count($page)) {
 	//when this page was modified
 	$mtime = strtotime($page['post_time']);
 
-	$page['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$page['topic_title'])))),'_').'_'.$page['topic_id'];
+	$page['url'] = rawurlencode(trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$page['topic_title'])))),'_')).'_'.$page['topic_id'];
 
 	
 	if (!isset($_GET['dontcount']) && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE) {

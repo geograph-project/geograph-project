@@ -26,7 +26,8 @@ init_session();
 
 $smarty = new GeographPage;
 
-if (empty($_GET['page']) || preg_match('/[^\w\.\,-]/',$_GET['page'])) {
+if (empty($_GET['page']) || !preg_match('#^[^\s.?&%/\'"<>]+$#',$_GET['page'])) {
+	trigger_error("invalid page: <{$_GET['page']}>", E_USER_WARNING);
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
 	$smarty->display('static_404.tpl');
@@ -34,6 +35,30 @@ if (empty($_GET['page']) || preg_match('/[^\w\.\,-]/',$_GET['page'])) {
 }
 
 $isadmin=$USER->hasPerm('moderator')?1:0;
+
+$db=NewADOConnection($GLOBALS['DSN']);
+
+$page = $db->getRow("
+select article.*,realname,gs.grid_reference,category_name
+from article 
+	left join user using (user_id)
+	left join article_cat c on (article.article_cat_id = c.article_cat_id)
+	left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
+where ( (licence != 'none' and approved > 0) 
+	or user.user_id = {$USER->user_id}
+	or $isadmin )
+	and url = ".$db->Quote($_GET['page']).'
+limit 1');
+
+if (!count($page)) {
+	trigger_error("page not found: <{$_GET['page']}>", E_USER_WARNING);
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
+	$smarty->display('static_404.tpl');
+	exit;
+}
+
+$_GET['page'] = rawurlencode($_GET['page']); /* make it usable as cache id etc. */
 
 $template = 'article_article.tpl';
 $cacheid = 'articles|'.$_GET['page'];
@@ -238,20 +263,6 @@ function smarty_function_articletext($input) {
 
 $smarty->register_modifier("articletext", "smarty_function_articletext");
 
-$db=NewADOConnection($GLOBALS['DSN']);
-
-$page = $db->getRow("
-select article.*,realname,gs.grid_reference,category_name
-from article 
-	left join user using (user_id)
-	left join article_cat c on (article.article_cat_id = c.article_cat_id)
-	left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
-where ( (licence != 'none' and approved > 0) 
-	or user.user_id = {$USER->user_id}
-	or $isadmin )
-	and url = ".$db->Quote($_GET['page']).'
-limit 1');
-if (count($page)) {
 	$cacheid .= '|'.$page['update_time'];
 	
 	if ($page['user_id'] == $USER->user_id) {
@@ -268,11 +279,6 @@ if (count($page)) {
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
-} else {
-	header("HTTP/1.0 404 Not Found");
-	header("Status: 404 Not Found");
-	$template = 'static_404.tpl';
-}
 
 if (!$smarty->is_cached($template, $cacheid))
 {

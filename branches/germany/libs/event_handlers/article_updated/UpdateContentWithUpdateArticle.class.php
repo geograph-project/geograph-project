@@ -60,7 +60,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			
 			
 			$updates[] = "`title` = ".$db->Quote($page['title']);
-			$updates[] = "`url` = ".$db->Quote("/article/".$page['url']);
+			$updates[] = "`url` = ".$db->Quote("/article/".rawurlencode($page['url']));
 			$updates[] = "`user_id` = {$page['user_id']}";
 			
 			

@@ -52,11 +52,11 @@
 <ul class="content">
 {assign var="lastname" value=""}
 {/if}
-	<li><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'|escape:'html'}" href="/article/{$item.url}">{$item.title|escape:'html'}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}<br/>
+	<li><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'|escape:'html'}" href="/article/{$item.url|escape:'url'}">{$item.title|escape:'html'}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}<br/>
 	<small id="att{$lastid+1}"><small style="color:lightgrey">by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}"  style="color:#6699CC">{$item.realname|escape:'html'}</a>
 		{if (($item.user_id == $user->user_id) || $item.approved == 2) && !$item.locked_user}
 			&nbsp;&nbsp;&nbsp;&nbsp; 
-			[<a title="Edit {$item.title|escape:'html'}" href="/article/edit.php?page={$item.url}">Edit</a>] [<a title="Edit History for {$item.title|escape:'html'}" href="/article/history.php?page={$item.url}">History</a>]
+			[<a title="Edit {$item.title|escape:'html'}" href="/article/edit.php?page={$item.url|escape:'url'}">Edit</a>] [<a title="Edit History for {$item.title|escape:'html'}" href="/article/history.php?page={$item.url|escape:'url'}">History</a>]
 		{/if} 
 		
 		</small></small>

@@ -44,7 +44,7 @@ if (isset($_GET['table'])) {
 }
 
 if ($isadmin) {
-	if (!empty($_GET['page']) && preg_match('/^[\w-]+$/',$_GET['page'])) {
+	if (!empty($_GET['page']) && preg_match('#^[^\s.?&%/\'"<>]+$#',$_GET['page'])) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		
 		$a = intval($_GET['approve']);	
