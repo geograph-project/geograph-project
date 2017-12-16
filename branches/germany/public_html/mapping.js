@@ -84,7 +84,7 @@ griddeln = 0;
 	//	mult = 1;
 	//}
 
-	gridly = 10
+	gridly = 10;
 	gridlx = 6;
 	gridpreflen = 3;
 	griddele = 2;
@@ -111,7 +111,7 @@ griddeln = 0;
 	//	mult = 1;
 	//}
 
-	gridly = 10
+	gridly = 10;
 	gridlx = 4;
 	gridpreflen = 3;
 	griddele = 2;
@@ -136,7 +136,7 @@ griddeln = 0;
 	//	mult = 1;
 	//}
 
-	gridly = 10
+	gridly = 10;
 	gridlx = 2;
 	gridpreflen = 3;
 	griddele = 6;
