@@ -10,11 +10,11 @@
 
 <div style="text-align:right">
 {if $licence == 'copyright'}
-	Text <small>&copy;</small> Copyright <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B %Y"}
+	Text <small>&copy;</small> Copyright <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>, {$publish_date|date_format:" %B %Y"}
 {elseif $licence == 'cc-by-sa/2.0'}
 	<!-- Creative Commons Licence -->
 		<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Text &copy; Copyright {$publish_date|date_format:" %B %Y"}, <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>; 
+		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Text &copy; Copyright {$publish_date|date_format:" %B %Y"}, <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>; 
 		licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 	<!-- /Creative Commons Licence -->
 
@@ -24,7 +24,7 @@
 
 {else}
 	 <div class="ccmessage">{if $licence == 'pd'}<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">
-	<img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/publicdomain/88x31.png" /></a> {/if} Text by <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B %Y"}
+	<img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/publicdomain/88x31.png" /></a> {/if} Text by <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>, {$publish_date|date_format:" %B %Y"}
 	</a>{if $licence == 'pd'}; This work is dedicated to the 
 	<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">Public Domain</a>.{/if}</div>
 {/if}
@@ -58,7 +58,7 @@
 		
 		<td><input type="radio" name="2" value="{$item.article_revision_id}" {if ($item.approved < 1 || $item.licence == 'none') && !$isadmin && ($item.user_id != $user->user_id)} disabled="disabled"{/if}/></td>
 		
-		<td sortvalue="{$item.title}"><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}hidden{/if}){/if}</td>
+		<td sortvalue="{$item.title|escape:'html'}"><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'|escape:'html'}" href="/article/{$item.url}">{$item.title|escape:'html'}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}hidden{/if}){/if}</td>
 		
 		<td><small>{$item.category_name|truncate:30}</small></td>
 		<td align="right">{$item.content_length}</td>
@@ -66,7 +66,7 @@
 		
 		<td sortvalue="{$item.update_time}" style="font-size:0.8em">{if $item.update_time|date_format:"%a, %e %b %Y" eq $smarty.now|date_format:"%a, %e %b %Y"}Today {$item.update_time|date_format:"%H:%M"}{else}{$item.update_time|date_format:"%a, %e %b %Y"}{/if}</td>
 		
-		<td style="font-size:0.9em"><a href="/profile/{$item.modifier}" title="View Geograph Profile for {$item.modifier_realname}">{$item.modifier_realname}</a></td>
+		<td style="font-size:0.9em"><a href="/profile/{$item.modifier}" title="View Geograph Profile for {$item.modifier_realname|escape:'html'}">{$item.modifier_realname|escape:'html'}</a></td>
 		
 	</tr>
 	{/foreach}

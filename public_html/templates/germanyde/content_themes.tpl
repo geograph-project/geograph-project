@@ -31,8 +31,8 @@ Version
 <ul class="content">
 {assign var="lastname" value=""}
 {/if}
-	<li><b><a title="{$item.extract|default:'View Content'}" href="{$item.url}">{$item.title}</a></b><br/>
-	<small id="att{$lastid+1}"><small style="color:lightgrey">by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a></small></small>
+	<li><b><a title="{$item.extract|default:'View Content'}" href="{$item.url}">{$item.title|escape:'html'}</a></b><br/>
+	<small id="att{$lastid+1}"><small style="color:lightgrey">by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}"  style="color:#6699CC">{$item.realname|escape:'html'}</a></small></small>
 
 	</li>
 	{if $lastname == $item.realname && $user->realname != $lastname}

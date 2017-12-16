@@ -36,16 +36,16 @@
 <h3>{$item.category_name}</h3>
 <ul class="content">
 {/if}
-	<li><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}
-	<small>by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}">{$item.realname}</a></small>
+	<li><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'|escape:'html'}" href="/article/{$item.url}">{$item.title|escape:'html'}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}
+	<small>by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}">{$item.realname|escape:'html'}</a></small>
 		{if $isadmin || $item.user_id == $user->user_id}
 			<small><small><br/>&nbsp;&nbsp;&nbsp;&nbsp; 
 			{if $item.locked_user} 
 				Locked
 			{else}
-				[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>]
+				[<a title="Edit {$item.title|escape:'html'}" href="/article/edit.php?page={$item.url}">Edit</a>]
 			{/if}
-			[<a title="Edit History for {$item.title}" href="/article/history.php?page={$item.url}">History</a>]
+			[<a title="Edit History for {$item.title|escape:'html'}" href="/article/history.php?page={$item.url}">History</a>]
 		{/if} 
 		{if $isadmin}
 			{if $item.approved > 0}
@@ -53,7 +53,7 @@
 			{else}
 				[<a href="/article/?page={$item.url}&amp;approve=1">Approve</a>{if $item.approved == 0 and $item.licence != 'none'} <b>Ready to be Approved</b>{/if}]
 			{/if}
-			-- Version {$item.version}{if $item.modifier_id != $item.user_id} by <a href="/profile/{$item.modifier_id}" title="View Geograph Profile for {$item.modifier_realname}">{$item.modifier_realname}</a>{/if}, updated {$item.update_time}
+			-- Version {$item.version}{if $item.modifier_id != $item.user_id} by <a href="/profile/{$item.modifier_id}" title="View Geograph Profile for {$item.modifier_realname|escape:'html'}">{$item.modifier_realname|escape:'html'}</a>{/if}, updated {$item.update_time}
 		{/if}
 		{if $isadmin || $item.user_id == $user->user_id}
 			</small></small>

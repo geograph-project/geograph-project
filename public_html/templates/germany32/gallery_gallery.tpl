@@ -32,7 +32,7 @@
 }
 </style>{/literal}
 
-<div style="float:right"><a title="RSS Feed for {$topic_title}" href="/discuss/syndicator.php?forum={$forum_gallery}&amp;topic={$topic_id}" class="xml-rss">RSS</a></div>
+<div style="float:right"><a title="RSS Feed for {$topic_title|escape:'html'}" href="/discuss/syndicator.php?forum={$forum_gallery}&amp;topic={$topic_id}" class="xml-rss">RSS</a></div>
 
 <h1 style="margin-bottom:0px;">{$topic_title}</h1>
 <div style="margin-top:0px"> 
@@ -47,7 +47,7 @@
 {foreach from=$list item=item}
 	<tr bgcolor="{cycle values="#E9EFF4,#F6F9FB"}">
 		<th valign="top">{$item.post_time|date_format:"%a, %e %b %Y %H:%M"}<br/>
-		<a href="/profile/{$item.poster_id}" title="View Geograph Profile for {$item.poster_name}" style="color:#6699CC">{$item.poster_name}</a></th>
+		<a href="/profile/{$item.poster_id}" title="View Geograph Profile for {$item.poster_name|escape:'html'}" style="color:#6699CC">{$item.poster_name|escape:'html'}</a></th>
 		<td valign="top">{$item.post_text|GeographLinks:true}</td>
 	</tr>
 {foreachelse}
