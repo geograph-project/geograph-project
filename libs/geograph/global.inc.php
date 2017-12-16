@@ -192,6 +192,8 @@ function GeographDatabaseConnection($allow_readonly = false, $dsn = null)
 //global routines
 require_once('geograph/functions.inc.php');
 
+include_messages('geograph');
+
 //smarty needed everywhere too
 require_once('smarty/libs/Smarty.class.php');
 

@@ -351,7 +351,7 @@ function smarty_function_place($params) {
 		if ($place['distance'] > 3)
 			$t .= ($place['distance']-0.01)." km entfernt von ";
 		elseif (empty($place['isin']))
-			$t .= "<span title=\"etwa ".($place['distance']-0.01)." km entfernt\">in der Nähe</span> von ";
+			$t .= "<span title=\"etwa ".($place['distance']-0.01)." km entfernt\">in der N&auml;he</span> von ";
 	} else {
 		if ($place['distance'] > 3)
 			$t .= ($place['distance']-0.01)." km from ";
@@ -696,6 +696,15 @@ function datetimeToTimestamp($datetime) {
 	return mktime(0, 0, 0, intval($p[1]), intval($p[2]), intval($p[0]));
 }
 
+function dateconvert($input)
+{
+	global $CHARSETINFO;
+	if (empty($CHARSETINFO['date_convert'])) {
+		return $input;
+	}
+	return mb_convert_encoding($input, 'UTF-8', $CHARSETINFO['date_charset']);
+}
+
 function getFormattedDate($input) {
 	global $CONF;
 	@list($y,$m,$d)=explode('-', $input);
@@ -705,24 +714,24 @@ function getFormattedDate($input) {
 			//we can use strftime
 			$t=strtotime($input." 0:0:0");//stop a warning
 			if ($CONF['lang'] == 'de')
-				$date=strftime("%a, %e. %B %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
+				$date=dateconvert(strftime("%a, %e. %B %Y", $t));   //%e doesnt work on WINDOWS!  (could use %d)
 			else
-				$date=strftime("%A, %e %B, %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
+				$date=dateconvert(strftime("%A, %e %B, %Y", $t));   //%e doesnt work on WINDOWS!  (could use %d)
 		} else {
 			//oh my!
 			$t=strtotime("2000-$m-$d");
 			if ($CONF['lang'] == 'de')
-				$date=strftime("%e. %B", $t)." $y";
+				$date=dateconvert(strftime("%e. %B", $t))." $y";
 			else
-				$date=strftime("%e %B", $t)." $y";
+				$date=dateconvert(strftime("%e %B", $t))." $y";
 		}
 	} elseif ($m>0) {
 		//well, it saves having an array of months...
 		$t=strtotime("2000-$m-01");
 		if ($y > 0) {
-			$date=strftime("%B", $t)." $y";
+			$date=dateconvert(strftime("%B", $t))." $y";
 		} else {
-			$date=strftime("%B", $t);
+			$date=dateconvert(strftime("%B", $t));
 		}
 	} elseif ($y>0) {
 		$date=$y;
@@ -982,14 +991,9 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
  * returns a standard textual representation of a number
  */
 function heading_string($deg) {
-	global $CONF;
-	if ($CONF['lang'] == 'de') {
-		$dirs = array('nord','ost','süd','west');
-		$sep = '';
-	} else {
-		$dirs = array('north','east','south','west');
-		$sep = '-';
-	}
+	global $MESSAGES;
+	$dirs = $MESSAGES['geograph']['directions'];
+	$sep = $MESSAGES['geograph']['directionsep'];
 	$rounded = round($deg / 22.5) % 16;
 	if ($rounded < 0)
 		$rounded += 16;
