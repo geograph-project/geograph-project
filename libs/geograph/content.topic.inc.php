@@ -60,7 +60,7 @@ function add_topic_to_content($topic_id,& $db) {
 		
 		$updates[] = "`title` = ".$db->Quote($topic['topic_title']);
 
-		$url = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$topic['topic_title'])))),'_').'_'.$topic_id;
+		$url = rawurlencode(trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$topic['topic_title'])))),'_')).'_'.$topic_id;
 		if ($topic['forum_id'] == $CONF['forum_gallery']) {
 			$updates[] = "`url` = ".$db->Quote("/gallery/".$url);
 		} else {

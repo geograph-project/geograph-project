@@ -26,7 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-if (empty($_GET['page']) || preg_match('/[^\w-\.]/',$_GET['page'])) {
+if (empty($_GET['page']) || !preg_match('#^[^\s.?&%/\'"<>]+$#',$_GET['page'])) {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
 	$smarty->display('static_404.tpl');
@@ -34,10 +34,6 @@ if (empty($_GET['page']) || preg_match('/[^\w-\.]/',$_GET['page'])) {
 }
 
 $isadmin=$USER->hasPerm('moderator')?1:0;
-
-$template = 'article_diff.tpl';
-$cacheid = 'articles|'.$_GET['page'];
-$cacheid .= '|'.$isadmin;
 
 $db=NewADOConnection($GLOBALS['DSN']);
 
@@ -51,7 +47,19 @@ where ( (licence != 'none' and approved >0)
 	and url = ".$db->Quote($_GET['page']).'
 limit 1');
 
-if (count($page)) {
+if (!count($page)) {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
+	$smarty->display('static_404.tpl');
+	exit;
+}
+
+$_GET['page'] = rawurlencode($_GET['page']); /* make it usable as cache id etc. */
+
+$template = 'article_diff.tpl';
+$cacheid = 'articles|'.$_GET['page'];
+$cacheid .= '|'.$isadmin;
+
 	if ($page['user_id'] == $USER->user_id) {
 		$cacheid .= '|'.$USER->user_id;
 	}
@@ -64,7 +72,6 @@ if (count($page)) {
 	} else {
 		$cacheid = '';
 	}
-}
 
 if (!$smarty->is_cached($template, $cacheid))
 {

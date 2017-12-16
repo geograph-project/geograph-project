@@ -29,7 +29,7 @@ $smarty = new GeographPage;
 $USER->mustHavePerm('basic');
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
-if (empty($_REQUEST['article_id']) && (empty($_REQUEST['page']) || preg_match('/[^\w\.\,-]/',$_REQUEST['page']))) {
+if (empty($_REQUEST['article_id']) && (empty($_REQUEST['page']) || !preg_match('#^[^\s.?&%/\'"<>]+$#',$_REQUEST['page']))) {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
 	$smarty->display('static_404.tpl');
@@ -81,7 +81,7 @@ $cacheid = '';
 					header("Content-Length: 0");
 					flush();
 				} else {
-					header("Location: /article/".$page['url']);
+					header("Location: /article/".rawurlencode($page['url']));
 				}
 				exit;
 			} 
@@ -211,10 +211,10 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE article_id = ".$db->Quote($_REQUEST['article_id']);
 		$db->Execute($sql);
 
-		$smarty->clear_cache('', 'article|'.$_POST['url'].'|');
+		$smarty->clear_cache('', 'article|'.rawurlencode($_POST['url']).'|');
 		$smarty->clear_cache('article.tpl');
 		
-		header("Location: /article/".(empty($_POST['url'])?$page['url']:$_POST['url']));
+		header("Location: /article/".rawurlencode((empty($_POST['url'])?$page['url']:$_POST['url'])));
 		flush();
 		
 		$db->Execute("DELETE FROM article_lock WHERE user_id = {$USER->user_id} AND article_id = {$_REQUEST['article_id']}");

@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	order by topic_last_post_id desc");
 	
 	foreach ($list as $i => $row) {
-		$list[$i]['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$row['topic_title'])))),'_').'_'.$row['topic_id'];
+		$list[$i]['url'] = rawurlencode(trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$row['topic_title'])))),'_')).'_'.$row['topic_id'];
 	}
 	
 	$smarty->assign_by_ref('list', $list);
