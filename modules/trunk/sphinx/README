@@ -1,4 +1,4 @@
-Small SphinxSearch UDF function to enable, get X within GROUP type situations. 
+Small SphinxSearch/Manticore UDF function to enable, get X within GROUP type situations. 
 
 For example:
 SELECT * FROM gridimage GROUP BY auser_id;
@@ -23,7 +23,10 @@ INSTALLATION STEPS
 
 wget http://svn.geograph.org.uk/svn/modules/trunk/sphinx/withinfirstx.cpp
 
-wget http://sphinxsearch.googlecode.com/svn/trunk/src/sphinxudf.h
+wget https://github.com/sphinxsearch/sphinx/raw/master/src/sphinxudf.h
+or
+wget https://github.com/manticoresoftware/manticore/raw/master/src/sphinxudf.h
+
 
 ------------
 # Compile!
