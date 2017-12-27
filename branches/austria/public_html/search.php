@@ -38,6 +38,25 @@ if (!empty($_GET['style'])) {
 	exit;
 }
 
+if (isset($_GET['q']) && !empty($CHARSETINFO['search_alternative'])) {
+	if (isset($_GET['charset'])) {
+		$_GET['charset'] = strtolower($_GET['charset']);
+		if ($_GET['charset'] === $CHARSETINFO['search_alternative']) {
+			$_GET['q'] = mb_convert_encoding($_GET['q'], $CHARSETINFO['mb_to'], $CHARSETINFO['search_from']);
+		} else {
+			$_GET['charset'] = $CHARSETINFO['search_default'];
+		}
+	} else {
+		$_GET['charset'] = $CHARSETINFO['search_default'];
+	}
+}
+// validate input character encoding // FIXME probably needed for other pages, too
+if (!empty($CHARSETINFO['mb_check']) && !mb_check_encoding($_GET['q'], $CHARSETINFO['mb_check'])) {
+	header("HTTP/1.1 422 Unprocessable Entity"); // FIXME right return code? // https://www.bennadel.com/blog/2434-http-status-codes-for-invalid-data-400-vs-422.htm
+	trigger_error("Invalid query string <{$CHARSETINFO['mb_check']}>: <{$_GET['q']}>", E_USER_WARNING);
+	die("Invalid query string!"); // FIXME what to do?
+}
+
 $smarty = new GeographPage;
 $smarty->assign('noSphinx', empty($CONF['sphinx_host']));
 

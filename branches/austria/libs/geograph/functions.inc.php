@@ -702,7 +702,7 @@ function dateconvert($input)
 	if (empty($CHARSETINFO['date_convert'])) {
 		return $input;
 	}
-	return mb_convert_encoding($input, 'UTF-8', $CHARSETINFO['date_charset']);
+	return mb_convert_encoding($input, $CHARSETINFO['mb_to'], $CHARSETINFO['date_charset']);
 }
 
 function getFormattedDate($input) {

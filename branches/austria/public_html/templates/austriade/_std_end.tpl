@@ -90,6 +90,7 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
     <form method="get" action="/search.php">
     <div id="searchfield"><label for="searchterm">Suche</label> 
     <input type="hidden" name="form" value="simple"/>
+    {dynamic}<input type="hidden" name="charset" value="{if $utf8page}utf-8{else}iso-8859-1{/if}"/>{/dynamic}
     {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Suche Bilder nach Text oder Koordinaten"/>{/dynamic}
     <input id="searchbutton" type="submit" name="go" value="los"/></div>
     </form>
