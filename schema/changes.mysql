@@ -849,3 +849,26 @@ ALTER TABLE `geotrips` ADD  `created` timestamp NOT NULL AFTER `updated`; # <- !
 #INSERT INTO geotrips_bak SELECT * FROM geotrips;
 ###
 ALTER TABLE `geotrips` ADD `userlist` varchar(128) NOT NULL DEFAULT '';
+
+### utf conversion ###
+
+ALTER TABLE  gridimage CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE  gridimage DEFAULT CHARACTER SET utf8mb4;
+
+ALTER TABLE `gridimage_search` DROP KEY `title_2`;
+ALTER TABLE `gridimage_search` ADD KEY `texts` (`imageclass`, `notes`(150));
+ALTER TABLE `gridimage_search` ADD KEY `comment` (`comment`(250));
+ALTER TABLE `gridimage_search` ADD KEY `comment2` (`comment2`(250));
+# check if there are long titles:
+#SELECT * FROM `gridimage_search` WHERE LENGTH(`title`)>125;
+#SELECT * FROM `gridimage_search` WHERE LENGTH(`title2`)>125;
+ALTER TABLE `gridimage_search` MODIFY `title` VARCHAR(125);
+ALTER TABLE `gridimage_search` MODIFY `title2` VARCHAR(125);
+
+ALTER TABLE  gridimage_search CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE  gridimage_search DEFAULT CHARACTER SET utf8mb4;
+
+ALTER TABLE  queries CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE  queries DEFAULT CHARACTER SET utf8mb4;
+ALTER TABLE  queries_archive CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE  queries_archive DEFAULT CHARACTER SET utf8mb4;

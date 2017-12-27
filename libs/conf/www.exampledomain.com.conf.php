@@ -14,9 +14,14 @@ $CHARSETINFO_8BIT = array(
 	'session_charset' => 'Windows-1252',               // charset used when converting session data to/from utf-8
 	'date_convert' => false,                           // convert strftime output to utf-8?
 	'date_charset' => 'Windows-1252',                  // charset used when converting strftime output to utf-8
+	'mb_to' => 'Windows-1252',                         // destination charset used when converting using strftime output, search queries, ...
 	'db_charset' => 'latin1', // latin1 utf8 utf8mb4   // charset used in mysql connection
 	'header_charset' => null,                          // use in Content-Type header; null: use default header
 	'internal_encoding' => 'iso-8859-1',               // set via mb_internal_encoding(); null: don't change internal encoding
+	'search_alternative' => 'utf-8',                   // charset parameter for pages with charset differing from search.php's charset; null: don't convert
+	'search_default' => 'iso-8859-1',                  // charset parameter for pages with charset equal to search.php's charset
+	'search_from' => 'utf-8',                          // charset used when converting search queries
+	'mb_check' => null,                                // charset used when validating the encoding of query strings; null: don't validate
 );
 /* charset settings used if $UTF8PAGE is set or if $CHARSETINFO_8BIT is null */
 $CHARSETINFO_UTF8 = null; /*array(
@@ -27,9 +32,14 @@ $CHARSETINFO_UTF8 = null; /*array(
 	'session_charset' => 'Windows-1252',
 	'date_convert' => true,
 	'date_charset' => 'Windows-1252',
+	'mb_to' => 'UTF-8',
 	'db_charset' => 'utf8mb4', // FIXME 'utf8'?
 	'header_charset' => 'utf-8',
 	'internal_encoding' => 'UTF-8',
+	'search_alternative' => 'iso-8859-1',
+	'search_default' => 'utf-8',
+	'search_from' => 'Windows-1252',
+	'mb_check' => 'utf-8',
 );*/
 
 //domain specific configuration file
