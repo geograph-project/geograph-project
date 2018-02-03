@@ -527,7 +527,7 @@ class GridImageTroubleTicket
 					} else {
 						$comment = $this->suggester_name;
 					}
-					
+
 					$comment .= " has suggested$ttype changes to this photo submission. ".
 						"The changes will be reviewed by site moderators, who may need to contact you ".
 						"if further information is required. If you wish, you can review and comment on these ".
@@ -540,13 +540,13 @@ class GridImageTroubleTicket
 					if (!empty($this->notes)) {
 						$comment.="\n\nComment: {$this->notes}";
 					}
-				
+
 					$owner=new GeographUser($img->user_id);
 					$msg =& $this->_buildEmail($comment,$owner->realname);
-					if ( ($owner->ticket_option == 'all') || 
+					if ( ($owner->ticket_option == 'all') ||
 							( ($this->type=='normal') && $owner->ticket_option == 'major')
 						)
-						$this->_sendMail($owner->email, $msg);
+						$this->_sendMail($owner->email, $msg); //notifing contributor of new ticket
 				}
 			}
 			elseif ($this->status=="closed")
@@ -569,22 +569,18 @@ class GridImageTroubleTicket
 					}
 					if (strlen($this->notes))
 						$comment.="\n\nModerator Comment: {$this->notes}";
-						
+
 					$owner=new GeographUser($img->user_id);
-					if ( ($owner->ticket_option == 'all') || 
+					if ( ($owner->ticket_option == 'all') ||
 							( ($this->type=='normal') && $owner->ticket_option == 'major')
 						) {
 						$msg =& $this->_buildEmail($comment,$owner->realname);
-						$this->_sendMail($owner->email, $msg);
+						$this->_sendMail($owner->email, $msg); //notifying contributor of automatically applied change
 					}
 				}
-				
 			}
-			
 		}
-		
-		
-		
+
 		//return ticket status
 		return $this->status;
 	}
@@ -652,12 +648,11 @@ class GridImageTroubleTicket
 		$msg['body'].="---------------------------------------\n\n";
 		$msg['body'].=$comment."\n";
 		$msg['body'].="---------------------------------------\n\n";
-		
+
 		$msg['body'].="To respond to this message, please visit\n";
 		$msg['body'].="{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}\n";
 		$msg['body'].="Please, do NOT reply by email";
-		
-		
+
 		return $msg;
 	}
 
@@ -681,8 +676,8 @@ class GridImageTroubleTicket
 	function _sendModeratorMail(&$msg)
 	{
 		global $CONF;
-		
-		//if moderator_id is set, just send there, otherwise 
+
+		//if moderator_id is set, just send there, otherwise
 		//we send to all users with moderator status
 		$mods=array();
 		if ($this->moderator_id)
@@ -693,7 +688,7 @@ class GridImageTroubleTicket
 		else
 		{
 			if (isset($CONF['tickets_notify_all'])) {
-			
+
 				//no moderator has handled this ticket yet, so lets forward to message to all of them
 				$db=&$this->_getDB(true);
 				$mods=$db->GetCol("select email from user where FIND_IN_SET('ticketmod',rights)>0;");
@@ -702,12 +697,10 @@ class GridImageTroubleTicket
 				return;
 			}
 		}
-		
-		
-		$this->_sendMail(implode(',',$mods), $msg);	
+
+		$this->_sendMail(implode(',',$mods), $msg); //sending message to all mods
 	}
-	
-	
+
 	/**
 	 * add a moderator comment to existing ticket
 	 * moderator comment is added to ticket and emailed to photo owner
@@ -718,14 +711,14 @@ class GridImageTroubleTicket
 		$db=&$this->_getDB();
 		if (!$this->isValid())
 			die("addModeratorComment - bad ticket");
-	
+
 		$comment=trim($comment);
 		if (strlen($comment)==0)
 			return;
-		
+
 		//add database comment
 		$this->_addComment($user_id, $comment);
-		
+
 		if ($claim || empty($this->moderator_id)) {
 			//associate this moderator with the ticket
 			$this->moderator_id=$user_id;
@@ -734,27 +727,26 @@ class GridImageTroubleTicket
 			$sets = '';
 		}
 		$db->Execute("update gridimage_ticket set status='open', notify = '{$this->notify}' $sets where gridimage_ticket_id={$this->gridimage_ticket_id}");
-		
+
 		$moderator=new GeographUser($user_id);
 		$comment.="\n\n".$moderator->realname."\nGeograph Moderator\n";
-		
+
 		//email comment to owner
 		$image=& $this->_getImage();
 		$owner=new GeographUser($image->user_id);
-		
+
 		$msg =& $this->_buildEmail($comment,$owner->realname);
-		$this->_sendMail($owner->email, $msg);
-		
+		$this->_sendMail($owner->email, $msg); //sending contributor notification of moderator comment
+
 		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
 			//email comment to suggestor
 			$suggestor=new GeographUser($this->user_id);
-				
+
 			$msg =& $this->_buildEmail($comment,$suggestor->realname);
-			$this->_sendMail($suggestor->email, $msg);
+			$this->_sendMail($suggestor->email, $msg); //sending suggestor notification of moderator comment
 		}
-		
 	}
-	
+
 	/**
 	 * add a owner comment to existing ticket
 	 * owner comment is added to ticket and emailed to photo moderators
@@ -769,27 +761,27 @@ class GridImageTroubleTicket
 		$comment=trim($comment);
 		if (strlen($comment)==0)
 			return;
-		
+
 		$this->_addComment($user_id, $comment);
-		
+
 		$owner=new GeographUser($user_id);
 		$comment.="\n\n".$owner->realname."\nPhoto owner\n";
-		
+
 		//email comment to moderators
 		$msg =& $this->_buildEmail($comment);
 		$this->_sendModeratorMail($msg);
-	
+
 		$db->Execute("update gridimage_ticket set notify = '{$this->notify}' where gridimage_ticket_id={$this->gridimage_ticket_id}");
-			
+
 		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
 			//email comment to suggestor
 			$suggestor=new GeographUser($this->user_id);
-				
+
 			$msg =& $this->_buildEmail($comment,$suggestor->realname);
-			$this->_sendMail($suggestor->email, $msg);
+			$this->_sendMail($suggestor->email, $msg); //sending suggestor a contributor comment
 		}
 	}
-	
+
 	/**
 	 * add a suggestor comment to existing ticket
 	 * owner comment is added to ticket and emailed to photo moderators
@@ -799,33 +791,34 @@ class GridImageTroubleTicket
 	{
 		if (!$this->isValid())
 			die("addSuggestorComment - bad ticket");
-	
+
 		$comment=trim($comment);
 		if (strlen($comment)==0)
 			return;
-		
+
 		$this->_addComment($user_id, $comment);
-		
+
 		if ($this->public != 'no') {
 			$suggestor=new GeographUser($user_id);
 			$comment.="\n\n".$suggestor->realname."\nSuggestor\n";
 		}
-		
+
 		//email comment to moderators
 		$msg =& $this->_buildEmail($comment);
 		$this->_sendModeratorMail($msg);
-		
+
 		$image=& $this->_getImage();
-		$owner=new GeographUser($image->user_id);		
-		
-		if ( ($owner->ticket_option == 'all') || 
+
+		$owner=new GeographUser($image->user_id);
+
+		if ( ($owner->ticket_option == 'all') ||
 			( ($this->type=='normal') && $owner->ticket_option == 'major')
 			) {
 			$msg =& $this->_buildEmail($comment,$owner->realname);
-			$this->_sendMail($owner->email, $msg);
+			$this->_sendMail($owner->email, $msg); //sending contributor comment from suggestor
 		}
-	}	
-	
+	}
+
 	/**
 	 * ticket is closed, the comment is sent to owner and suggester
 	 * aChanges should map item ids to boolean acceptance flag
@@ -833,12 +826,9 @@ class GridImageTroubleTicket
 	 */
 	function closeTicket($user_id,$comment, $aChanges=null)
 	{
-	
 		$db=&$this->_getDB();
 		if (!$this->isValid())
 			die("closeTicket - bad ticket");
-
-
 
 		//add comment to ticket
 		$comment=trim($comment);
@@ -899,11 +889,9 @@ class GridImageTroubleTicket
 			}
 
 			$suggester=new GeographUser($this->user_id);
-			
+
 			$msg =& $this->_buildEmail($suggester_msg,$suggester->realname);
-			$this->_sendMail($suggester->email, $msg);
-
-
+			$this->_sendMail($suggester->email, $msg);    //notifying suggestor that ticket closed
 		}
 
 		//message to owner
@@ -920,10 +908,9 @@ class GridImageTroubleTicket
 		}
 		$owner=new GeographUser($image->user_id);
 		$msg =& $this->_buildEmail($owner_msg,$owner->realname);
-		$this->_sendMail($owner->email, $msg);
-		
-		$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$this->moderator_id} AND gridimage_id = {$this->gridimage_id}");
+		$this->_sendMail($owner->email, $msg);  //notifying contributor that ticket closed
 
+		$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$this->moderator_id} AND gridimage_id = {$this->gridimage_id}");
 	}
 
 	/**
