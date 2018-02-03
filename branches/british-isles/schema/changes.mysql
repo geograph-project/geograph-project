@@ -2469,3 +2469,10 @@ CREATE TABLE `subjects` (
 #################################################
 
 
+alter table user modify `ticket_option` enum('all','major','digest','none','off') NOT NULL DEFAULT 'all';
+
+
+#################################################
+
+
+

@@ -86,7 +86,8 @@ if (isset($_REQUEST['edit']))
 	'all' => 'Notifications for all suggestions' ,
 	'major' => 'Only Major suggestions',
 	//'digest' => 'Receive Digest emails Once per Day',
-	'none' => 'No Initial Notifications' ));
+	'none' => 'No Initial Notifications',
+	'off' => 'No emails at all, even when closed'));
 
 	$profile->getStats();
 
