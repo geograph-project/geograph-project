@@ -8,7 +8,7 @@
 </div>
 
 	<div id="map_message" style="width:800px; height:10px; position:relative;; left:0; margin-bottom:3px; padding:3px;"></div>
-	<div id="map" style="width:800px; height:600px; position:relative;"></div>
+	<div id="map" style="width:800px; height:600px; position:relative; float:left;"></div>
 	<div id="thumbs"></div>
 	<br style="clear:both"/>
 
@@ -26,11 +26,21 @@
         <script src="{"/ol/osgb-layer.js"|revision}"></script>
         <script src="{"/js/nls.tileserver.com-api.js"|revision}"></script>
         <script src="{"/ol/geograph-openlayers.js"|revision}"></script>
+	<script src="/preview.js.php?d=preview" type="text/javascript"></script>
 	
         <script src="https://maps.google.com/maps/api/js?v=3"></script>
 
 {literal}
 <style>
+div.thumbs_under {
+  width:800px;
+}
+div.thumbs_side {
+  float:left;
+  width:380px;
+  padding-left:20px;
+}
+
 div#thumbs div.thumb {
   float:left;
   width:120px;
@@ -129,6 +139,7 @@ function clickEvent(e) {
     }
 
     $('#thumbs').html('<div style="height:260px">Loading thumbnails.... please wait.</div>');
+    $('#thumbs').addClass(($('#maincontent').width()<1200)?'thumbs_under':'thumbs_side');
     
     _call_cors_api(
       endpoint,
@@ -153,6 +164,9 @@ function clickEvent(e) {
 		'<b><a href="/near/'+gridref+'">More Images</a></b>, '+
 		'<a href="/browser/#!/loc='+gridref+'/dist=2000/display=map_dots/pagesize=100">Image Browser</a><br/>'+
 		'<a href="/gridref/'+gridref+'">Grid Square Page</a></div>');
+            if (typeof initHover == 'function') {
+               initHover();
+	    }
           }
         }
       }
