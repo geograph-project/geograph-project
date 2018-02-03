@@ -2,22 +2,22 @@
 /**
  * $Project: GeoGraph $
  * $Id$
- * 
+ *
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
  *
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -31,9 +31,9 @@
 * @version $Revision$
 */
 
-/** 
+/**
 
-moderated changes system 
+moderated changes system
 
 the principle here is the a picture owner can make immediate changes
 a moderator can make immediate changes, and anyone else can make
@@ -58,9 +58,9 @@ create table gridimage_ticket
 	updated datetime,
 	status enum('pending', 'open', 'closed'),
 	type enum('normal', 'minor') default 'normal',
-	
+
 	notes text,
-	
+
 	primary key(gridimage_ticket_id),
 	index(gridimage_id)
 );
@@ -72,14 +72,13 @@ create table gridimage_ticket_item
 	gridimage_ticket_id int not null,
 
 	approver_id int,
-	
-	
+
 	field varchar(64),
 	oldvalue text,
 	newvalue text,
-	
+
 	status enum('pending', 'immediate', 'approved', 'rejected'),
-	
+
 	primary key(gridimage_ticket_item_id),
 	index(gridimage_ticket_id)
 );
@@ -165,26 +164,24 @@ class GridImageTroubleTicket
 	* commit count - number of changes yet to be commit
 	*/
 	var $commit_count;
-	
+
 	/**
 	* array of gridimage_ticket_item records yet to be written
 	*/
 	var $changes=array();
-	
-	
 
 	/**
 	* array of comment records, including realname
 	*/
 	var $comments=array();
-	
+
 	/**
 	* Constructor, call load a tick if given an ID, otherwise prepares a new ticket
 	* (without committng anything to the database)
 	* @access public
 	*/
 	function GridImageTroubleTicket($id=null)
-	{	
+	{
 		if (!is_null($id))
 		{
 			$this->loadFromId($id);
@@ -193,11 +190,10 @@ class GridImageTroubleTicket
 		{
 			$this->_newTicket();
 		}
-		
 	}
-	
+
 	/**
-	* Clears the instance in preparation for a new ticket 
+	* Clears the instance in preparation for a new ticket
 	* @access private
 	*/
 	function _newTicket()
@@ -212,7 +208,6 @@ class GridImageTroubleTicket
 	 	$this->notes="";
 	 	$this->type='normal';
 	 	$this->notify='suggestor';
-	 	
 	}
 
 	/**
@@ -235,7 +230,7 @@ class GridImageTroubleTicket
 	{
 		$this->moderator_id=intval($user_id);
 	}
-	
+
 	/**
 	* set image
 	* @access public
@@ -244,7 +239,7 @@ class GridImageTroubleTicket
 	{
 		$this->gridimage_id=intval($gridimage_id);
 	}
-	
+
 	/**
 	* set ticket type
 	* @access public
@@ -253,8 +248,7 @@ class GridImageTroubleTicket
 	{
 		$this->type=$type;
 	}
-	
-	
+
 	/**
 	* set notify setting
 	* @access public
@@ -263,7 +257,7 @@ class GridImageTroubleTicket
 	{
 		$this->notify=$notify;
 	}
-	
+
 	/**
 	* set public setting
 	* @access public
@@ -281,7 +275,7 @@ class GridImageTroubleTicket
 	{
 		$this->notes=$notes;
 	}
-	
+
 	/**
 	* set moderator notes
 	* @access public
@@ -291,12 +285,12 @@ class GridImageTroubleTicket
 		$sql="update gridimage_ticket set updated='{$this->updated}', deferred=$when where gridimage_ticket_id={$this->gridimage_ticket_id}";
 		$db->Execute($sql);
 	}
-	
+
 	/**
 	* set back to a pending ticket
 	* @access public
 	*/
-	
+
 	function removeModerator() {
 		$db=&$this->_getDB();
 		//update ticket status
@@ -304,7 +298,7 @@ class GridImageTroubleTicket
 		$db->Execute($sql);
 		$this->moderator_id = 0;
 	}
-	
+
 	/**
 	* Updates a given field of the image, holding it for moderation if necessary
 	* A series of calls to this function should be followed up with a call
@@ -314,17 +308,16 @@ class GridImageTroubleTicket
 	function updateField($fieldname, $oldvalue, $newvalue, $moderated)
 	{
 		$ok=true;
-		
-		
+
 		//no change?
 		if ($oldvalue==$newvalue)
 			return $ok;
-	
+
 		if (!$moderated)
 		{
 			//make the changes right away...
 			$img=&$this->_getImage();
-			
+
 			if ($fieldname=="grid_reference")
 			{
 				$err="";
@@ -332,8 +325,8 @@ class GridImageTroubleTicket
 				if ($ok)
 				{
 					$this->commit_count++;
-				} 
-				else 
+				}
+				else
 				{
 					die("Sorry, wasn't expecting reassignGridsquare to fail ($err) please contact us for assistance");
 				}
@@ -355,17 +348,15 @@ class GridImageTroubleTicket
 					$img->viewpoint_grlen=0;
 					$this->commit_count++;
 				}
-				
 			}
 			else
 			{
 				$img->$fieldname=$newvalue;
-				
+
 				//we'll do this commit later
 				$this->commit_count++;
-				
 			}
-			
+
 			$status="immediate";
 			$approver_id=$this->user_id;
 		}
@@ -374,7 +365,7 @@ class GridImageTroubleTicket
 			$status="pending";
 			$approver_id=0;
 		}
-		
+
 		//have we already got a change record?
 		$found=false;
 		foreach($this->changes as $c)
@@ -382,7 +373,7 @@ class GridImageTroubleTicket
 			if ($c['field']==$fieldname)
 				$found=true;
 		}
-		
+
 		if (!$found)
 		{
 			//create a change record
@@ -393,11 +384,11 @@ class GridImageTroubleTicket
 				"status"=>$status,
 				"approver_id"=>$approver_id
 			);
-			
+
 			$this->changes[]=$change;
 		}
 	}
-	
+
 	/**
 	* Updates the ticket and commits any necessary changes
 	* @access public
@@ -405,19 +396,18 @@ class GridImageTroubleTicket
 	function commit($ticket_status=null)
 	{
 		$db=&$this->_getDB();
-		
+
 		//commit changes to image
 		if ($this->commit_count)
 		{
 			$img=&$this->_getImage();
 			$img->commitChanges();
 			$this->commit_count=0;
-			
 		}
-		
+
 		//write a trouble ticket
 		$this->updated=strftime("%Y-%m-%d %H:%M:%S", time());
-		
+
 		$newticket=$this->gridimage_ticket_id==0;
 		if ($newticket)
 		{
@@ -438,19 +428,19 @@ class GridImageTroubleTicket
 		}
 		else
 		{
-			//update ticket 
+			//update ticket
 			$sql="update gridimage_ticket set updated='{$this->updated}', moderator_id='{$this->moderator_id}' where gridimage_ticket_id={$this->gridimage_ticket_id}";
 			$db->Execute($sql);
 		}
-		
+
 		//write the change records
 		$statuscount=array("pending"=>0, "immediate"=>0);
-		if (count($this->changes)) 
+		if (count($this->changes))
 			foreach($this->changes as $change)
 			{
 				if ($change['gridimage_ticket_item_id'])
 				{
-					//we're updating	
+					//we're updating
 					$sql=sprintf("update gridimage_ticket_item set status='%s', approver_id='%d' where gridimage_ticket_item_id=%d",
 						$change["status"],
 						$change["approver_id"],
@@ -474,25 +464,24 @@ class GridImageTroubleTicket
 
 				$statuscount[$change["status"]]++;
 			}
-		
+
 		//should we close the ticket?
 		if (is_null($ticket_status))
 		{
 			$ticket_status="pending";
 			if (($statuscount["pending"]==0) && ($statuscount["immediate"]>0))
 			{
-				//there are no pending changes, and some immediate ones were made, which 
+				//there are no pending changes, and some immediate ones were made, which
 				//most likely means the comment can be ignored and we can close the ticket...
 				$ticket_status="closed";
 			}
 		}
-		
+
 		//update ticket status
 		$sql="update gridimage_ticket set status='$ticket_status' where gridimage_ticket_id={$this->gridimage_ticket_id}";
 		$db->Execute($sql);
 		$this->status=$ticket_status;
-		
-		
+
 		//if ticket is open and a new ticket, we should alert moderators
 		if ($newticket)
 		{
@@ -507,18 +496,18 @@ class GridImageTroubleTicket
 					$changes.=" {$item['field']} changed from \"{$item['oldvalue']}\" to \"{$item['newvalue']}\"\n";
 				}
 			}
-		
+
 			if ($this->status=="pending" || $this->status=="open")
 			{
 				$ttype = ($this->type == 'minor')?' Minor':'';
-					
+
 				if ($this->status=="pending")  //A open ticker can only be created by moderators so no need to notify
 				{
 					//email alert to moderators
 					$msg =& $this->_buildEmail("A new$ttype change request has been submitted.\n\n".$this->notes);
 					$this->_sendModeratorMail($msg);
 				}
-				
+
 				//if suggester isn't the owner of the image, alert the owner too
 				if ($this->user_id != $img->user_id)
 				{
@@ -591,11 +580,11 @@ class GridImageTroubleTicket
 	*/
 	function _touch()
 	{
-		//we're updating	
+		//we're updating
 		$db=&$this->_getDB();
 		$db->Execute("update gridimage_ticket set updated=now() where gridimage_ticket_id={$this->gridimage_ticket_id}");
 	}
-	
+
 	/**
 	* Add a comment to the ticket
 	* @access private
@@ -614,10 +603,10 @@ class GridImageTroubleTicket
 			$user_id,
 			$db->Quote($comment));
 		$db->Execute($sql);
-		
+
 		$this->_touch();
 	}
-	
+
 	/**
 	* returns an array containing email body and subject
 	* @access private
@@ -626,12 +615,12 @@ class GridImageTroubleTicket
 	{
 		$msg=array();
 		global $CONF;
-		
+
 		$image=& $this->_getImage();
-		
+
 		$ttype = ($this->type == 'minor')?' Minor':'';
 		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
-		
+
 		$msg['body']="To respond to this message, please visit\n";
                 $msg['body'].="{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}\n";
        	        $msg['body'].="Please, do NOT reply by email\n";
@@ -757,7 +746,7 @@ class GridImageTroubleTicket
 		$db=&$this->_getDB();
 		if (!$this->isValid())
 			die("addOwnerComment - bad ticket");
-	
+
 		$comment=trim($comment);
 		if (strlen($comment)==0)
 			return;
@@ -923,10 +912,10 @@ class GridImageTroubleTicket
 		{
 			$this->gridimage=new GridImage();
 			$this->gridimage->loadFromId($this->gridimage_id);
-		}	
+		}
 		return $this->gridimage;
 	}
-	
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
@@ -936,7 +925,7 @@ class GridImageTroubleTicket
 		//check we have a db object or if we need to 'upgrade' it
 		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
 			$this->db=GeographDatabaseConnection($allow_readonly);
-		} 
+		}
 		return $this->db;
 	}
 
@@ -965,7 +954,7 @@ class GridImageTroubleTicket
 		$this->commit_count=0;
 		$this->changes=array();
 	}
-	
+
 	/**
 	* assign members from array containing required members
 	* @access private
@@ -976,10 +965,9 @@ class GridImageTroubleTicket
 		{
 			if (!is_numeric($name))
 				$this->$name=$value;
-													
 		}
 	}
-	
+
 	/**
 	* return true if instance references a valid grid image tic
 	* @access public
@@ -988,7 +976,7 @@ class GridImageTroubleTicket
 	{
 		return isset($this->gridimage_ticket_id) && ($this->gridimage_ticket_id>0);
 	}
-	
+
 	/**
 	* assign members from recordset containing required members
 	* @access public
@@ -1028,7 +1016,6 @@ class GridImageTroubleTicket
 				}
 			}
 		}
-		
 	}
 
 	/**
@@ -1047,12 +1034,8 @@ class GridImageTroubleTicket
 			if ($n = count($this->comments))
 				$this->lastcomment =& $this->comments[$n-1];
 		}
-		
 	}
 
-
-
-	
 	/**
 	* assign members from gridimage_ticket_id
 	* @access public
@@ -1060,7 +1043,7 @@ class GridImageTroubleTicket
 	function loadFromId($gridimage_ticket_id)
 	{
 		$db=&$this->_getDB(5);
-		
+
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_ticket_id))
 		{
@@ -1071,5 +1054,5 @@ class GridImageTroubleTicket
 			}
 		}
 		return $this->isValid();
-	}	
+	}
 }
