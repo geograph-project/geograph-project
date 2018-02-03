@@ -425,6 +425,13 @@
 			<input class="accept" type="button" id="defer" value="Defer 24 hours" onclick="deferTicket({$ticket->gridimage_ticket_id},24)"/>
 	 		<input class="accept" type="button" id="defer" value="Defer 7 days" onclick="deferTicket({$ticket->gridimage_ticket_id},168)"/>
 	 		<span class="caption" id="modinfo{$ticket->gridimage_ticket_id}"></span>
+
+			{if $owner_ticket_option == 'off' && $ticket->user_id ne $user->user_id}
+				<br>The image contributor does not receive notifications for this suggestion
+			{elseif $owner_ticket_option == 'major' && $ticket->type == 'minor'}
+				<br>The image contributor did not receive an initial notification, but will receive follow up replies. 
+			{/if}
+			
 		{/if}
 
 	</div>

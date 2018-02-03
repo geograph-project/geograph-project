@@ -722,6 +722,8 @@ if (isset($_REQUEST['id']))
 				$image->tags = array();
 			}
 
+			$owner=new GeographUser($image->user_id);
+			$smarty->assign('owner_ticket_option', $owner->ticket_option);
 		}
 
 
