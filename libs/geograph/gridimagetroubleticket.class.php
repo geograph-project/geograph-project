@@ -724,8 +724,10 @@ class GridImageTroubleTicket
 		$image=& $this->_getImage();
 		$owner=new GeographUser($image->user_id);
 
-		$msg =& $this->_buildEmail($comment,$owner->realname);
-		$this->_sendMail($owner->email, $msg); //sending contributor notification of moderator comment
+		if ($owner->ticket_option != 'off') { // the message IS send in case of 'none'!
+			$msg =& $this->_buildEmail($comment,$owner->realname);
+			$this->_sendMail($owner->email, $msg); //sending contributor notification of moderator comment
+		}
 
 		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
 			//email comment to suggestor
@@ -896,8 +898,10 @@ class GridImageTroubleTicket
 			$owner_msg.=$dbcomment;
 		}
 		$owner=new GeographUser($image->user_id);
-		$msg =& $this->_buildEmail($owner_msg,$owner->realname);
-		$this->_sendMail($owner->email, $msg);  //notifying contributor that ticket closed
+		if ($owner->ticket_option != 'off') { // the message IS send in case of 'none'!
+			$msg =& $this->_buildEmail($owner_msg,$owner->realname);
+			$this->_sendMail($owner->email, $msg);  //notifying contributor that ticket closed
+		}
 
 		$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$this->moderator_id} AND gridimage_id = {$this->gridimage_id}");
 	}

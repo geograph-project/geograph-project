@@ -339,7 +339,7 @@
 		{html_options options=$ticket_options selected=$profile->ticket_option}
 	</select>
 	 
-	<div class="fieldnotes">Allows opting out of receiving initial notification of certain suggestions. You will, however, receive follow-up comments and notification of the closure in case there is information needed by a moderator.</div>
+	<div class="fieldnotes">Allows opting out of receiving initial notification of certain suggestions. You will, however, receive follow-up comments and notification of the closure in case there is information needed by a moderator (unless select the 'No emails at all').</div>
 </div>
 
 
