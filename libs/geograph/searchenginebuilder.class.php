@@ -457,11 +457,11 @@ class SearchEngineBuilder extends SearchEngine
 			if (!isset($dataarray[$key]))
 				$dataarray[$key] = '';
 		}
-		if (!preg_match('/^[-+A-Za-z0-9()_ ,.]*$/', $dataarray['orderby'])) { #FIXME verify regex
+		if (!preg_match('/^[A-Za-z0-9()_ ,.]*$/', $dataarray['orderby'])) { #FIXME verify regex
 			trigger_error("orderby '{$dataarray['orderby']}' blocked", E_USER_WARNING);
 			$dataarray['orderby'] = '';
 		}
-		if (!preg_match('/^[-+A-Za-z0-9()_ ,.]*$/', $dataarray['breakby'])) { #FIXME verify regex
+		if (!preg_match('/^[+A-Za-z0-9_ ,.]*$/', $dataarray['breakby'])) { #FIXME verify regex
 			trigger_error("breakby '{$dataarray['breakby']}' blocked", E_USER_WARNING);
 			$dataarray['breakby'] = '';
 		}
@@ -484,6 +484,23 @@ class SearchEngineBuilder extends SearchEngine
 		if (isset($dataarray['region']) && !preg_match('/^\s*(\d+_\d+)?\s*$/',$dataarray['region'])) {
 			trigger_error("region '{$dataarray['region']}' blocked", E_USER_WARNING);
 			$dataarray['region'] = '';
+		}
+		$displayclasses =  array( // FIXME must be consistent with search.php
+					'full' => 'full listing',
+					'more' => 'full listing + links',
+					'thumbs' => 'thumbnails only',
+					'thumbsmore' => 'thumbnails + links',
+					'gmap' => 'on a map',
+					'slide' => 'slideshow - fullsize',
+					'reveal' => 'slideshow - map imagine',
+					'cooliris' => 'cooliris 3d wall',
+					'mooflow' => 'cover flow',
+					'text' => 'text list only',
+					'spelling' => 'spelling utility'
+				);
+		if (isset($dataarray['displayclass']) && !isset($displayclasses[$dataarray['displayclass']])) {
+			trigger_error("displayclass '{$dataarray['displayclass']}' blocked", E_USER_WARNING);
+			$dataarray['displayclass'] = '';
 		}
 
 		if (isset($searchclass)) {

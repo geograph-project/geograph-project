@@ -868,7 +868,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 
 	$display = $engine->getDisplayclass();
-	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass'])) {
+	if (isset($_GET['displayclass']) && isset($displayclasses[$_GET['displayclass']])) {
 		$display = $_GET['displayclass'];
 		if ($USER->registered && $USER->user_id == $engine->criteria->user_id && $_GET['displayclass'] != 'search' && $_GET['displayclass'] != 'searchtext') {
 			$engine->setDisplayclass($_GET['displayclass']);
@@ -876,7 +876,7 @@ if (isset($_GET['fav']) && $i) {
 			//don't store search override permently
 			$engine->temp_displayclass = $display;
 		}
-	} elseif (isset($_GET['temp_displayclass']) && preg_match('/^\w+$/',$_GET['temp_displayclass'])) {
+	} elseif (isset($_GET['temp_displayclass']) && isset($displayclasses[$_GET['temp_displayclass']])) {
 		$display = $_GET['temp_displayclass'];
 	}
 	if (empty($display))

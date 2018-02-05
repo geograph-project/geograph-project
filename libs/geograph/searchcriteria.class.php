@@ -91,6 +91,71 @@ class SearchCriteria
 			')'));
 	}
 	
+	/**
+	 * `quote` every word in $sql besides words given in $exceptions,
+	 * keep positive integers and convert special characters to spaces.
+	 */
+	// See mail from 30/01/2018 for details.
+	function _quote_columns($sql, $exceptions)
+	{
+		$allowedspecial = ' ,().';
+		$ret = '';
+		$warn = false;
+		$word = null;
+		$prevnum = false;
+		$len = strlen($sql);
+		for ($i = 0; $i < $len; ++$i) {
+			$c = $sql[$i];
+			$isword = false;
+			if (ctype_alpha($c) || $c === '_') {
+				if ($prevnum) {
+					$warn = true;
+				}
+				$isword = true;
+				$prevnum = false;
+			} elseif (ctype_digit($c)) {
+				if (!is_null($word)) {
+					$isword = true;
+				} else {
+					$prevnum = true;
+				}
+			} elseif (strpos($allowedspecial, $c) !== false) {
+				$prevnum = false;
+			} else {
+				$warn = true;
+				$prevnum = false;
+				$c = ' ';
+			}
+			if ($isword) {
+				if (is_null($word)) {
+					$word = $c;
+				} else {
+					$word .= $c;
+				}
+			} else {
+				if (!is_null($word)) {
+					if (!in_array($word, $exceptions, true)) {
+						$word = '`'.$word.'`';
+					}
+					$ret .= $word;
+					$word = null;
+				}
+				$ret .= $c;
+			}
+		}
+		if (!is_null($word)) {
+			if (!in_array($word, $exceptions, true)) {
+				$word = '`'.$word.'`';
+			}
+			$ret .= $word;
+		}
+		#trigger_error("sql column: <$sql> -> <$ret>", E_USER_WARNING); # FIXME remove
+		if ($warn) {
+			trigger_error("invalid sql column: <$sql>", E_USER_WARNING);
+		}
+		return $ret;
+	}
+
 	function getSQLParts() 
 	{
 		global $CONF;
@@ -293,6 +358,8 @@ class SearchCriteria
 						case 'grid_reference':
 						default: 
 							$this->sphinx['impossible']++;
+							/* `quote` every word but desc and crc32 in $sql_order */
+							$sql_order = $this->_quote_columns($sql_order, array('desc', 'crc32'));
 					}
 					if (!$this->sphinx['impossible'] && preg_match('/ desc$/',$this->orderby)) {
 						$this->sphinx['sort'] .= " DESC";
@@ -358,6 +425,8 @@ class SearchCriteria
 			}
 			
 			if ($breakby != $sql_order && !preg_match('/^(\w+)\+$/i',$this->breakby) ) {
+				/* `quote` every word but desc and SUBSTRING in $breakby */
+				$breakby = $this->_quote_columns($breakby, array('desc', 'SUBSTRING'));
 				$sql_order = $breakby.($sql_order?", $sql_order":'');
 				$this->sphinx['sort'] = "$sorder $sorder2".($this->sphinx['sort']?", {$this->sphinx['sort']}":'');
 			}
@@ -800,14 +869,18 @@ class SearchCriteria
 			trigger_error("invalid limit11({$this->id}): '{$this->limit11}'", E_USER_WARNING);
 			return false;
 		}
-		# FIXME some "documentation" about orderby and breakby needed, this is a guess
-		# SELECT id,orderby FROM `queries_archive` WHERE NOT orderby REGEXP "^[...]*$"
-		if (!preg_match('/^[-+A-Za-z0-9()_ ,.]*$/', $this->orderby)) {
+		# FIXME some "documentation" about valid orderby and breakby expressions needed, this is a guess
+		# The following should give an idea of what to expect:
+		# SELECT breakby, COUNT(*) FROM `queries_archive` WHERE `breakby` NOT REGEXP '^[a-zA-Z_][a-zA-Z_0-9]*[+]?$' GROUP BY breakby
+		# SELECT breakby, COUNT(*) FROM `queries` WHERE `breakby` NOT REGEXP '^[a-zA-Z_][a-zA-Z_0-9]*[+]?$' GROUP BY breakby
+		# SELECT orderby, COUNT(*) FROM `queries_archive` WHERE `orderby` NOT REGEXP '^[a-zA-Z_][a-zA-Z_0-9]*( desc)?$' GROUP BY orderby
+		# SELECT orderby, COUNT(*) FROM `queries` WHERE `orderby` NOT REGEXP '^[a-zA-Z_][a-zA-Z_0-9]*( desc)?$' GROUP BY orderby
+		if (!preg_match('/^[A-Za-z0-9()_ ,.]*$/', $this->orderby)) {
 			trigger_error("invalid orderby({$this->id}): '{$this->orderby}'", E_USER_WARNING);
 			return false;
 		}
-		if (!preg_match('/^[-+A-Za-z0-9()_ ,.]*$/', $this->breakby)) {
-			trigger_error("invalid orderby({$this->id}): '{$this->breakby}'", E_USER_WARNING);
+		if (!preg_match('/^[+A-Za-z0-9_ ,.]*$/', $this->breakby)) {
+			trigger_error("invalid breakby({$this->id}): '{$this->breakby}'", E_USER_WARNING);
 			return false;
 		}
 		$this->validated = true;

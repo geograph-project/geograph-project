@@ -725,6 +725,24 @@ END;
 	function setDisplayclass($di) {
 		global $USER;
 		$db=$this->_getDB();
+
+		$displayclasses =  array( // FIXME must be consistent with search.php
+					'full' => 'full listing',
+					'more' => 'full listing + links',
+					'thumbs' => 'thumbnails only',
+					'thumbsmore' => 'thumbnails + links',
+					'gmap' => 'on a map',
+					'slide' => 'slideshow - fullsize',
+					'reveal' => 'slideshow - map imagine',
+					'cooliris' => 'cooliris 3d wall',
+					'mooflow' => 'cover flow',
+					'text' => 'text list only',
+					'spelling' => 'spelling utility'
+				);
+		if (!isset($displayclasses[$di])) {
+			trigger_error("displayclass '{$di}' blocked", E_USER_WARNING);
+			return;
+		}
 		
 		if ($this->query_id) {
 			$db->Execute("update queries set displayclass = ".$db->Quote($di)." where id = {$this->query_id} and user_id = {$USER->user_id}");
