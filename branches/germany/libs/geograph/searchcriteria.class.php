@@ -323,6 +323,7 @@ class SearchCriteria
 				case 'dist_sqd':
 					break;
 				case 'relevance':
+				case 'relevance desc':
 					$sql_order = '';
 					$this->sphinx['sort'] = "@relevance DESC, @id DESC";
 					break;
