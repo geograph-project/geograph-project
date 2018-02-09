@@ -85,7 +85,7 @@ split_timer('gazetteer'); //starts the timer
 					`hcounty` as hist_county,
 					(seq + 1000000) as pid,
 					f_code,
-					( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance
+					( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance
 				from
 					os_gaz
 				where
@@ -100,7 +100,7 @@ split_timer('gazetteer'); //starts the timer
 					loc_placenames.reference_index,
 					loc_adm1.name as adm1_name,
 					loc_placenames.id as pid,
-					power(e-{$e},2)+power(n-{$n},2) as distance
+					pow(e-{$e},2)+pow(n-{$n},2) as distance
 				from 
 					loc_placenames
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
@@ -174,7 +174,7 @@ split_timer('gazetteer'); //starts the timer
 					1 as reference_index,
 					`full_county` as adm1_name,
 					(seq + 2000000) as pid,
-					( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
+					( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
 					'OS250' as gaz
 				from
 					os_gaz_250
@@ -211,16 +211,17 @@ split_timer('gazetteer'); //starts the timer
 						`full_county` as adm1_name,
 						`hcounty` as hist_county,
 						(seq + 1000000) as pid,
-						( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
+						( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
 						f_code,
 						'OS' as gaz
 					from
 						os_gaz
 					where
-						CONTAINS( 	
+						CONTAINS(
 							GeomFromText($rectangle),
 							point_en) AND
 						f_code not in ($codes)
+						AND full_county != 'XXXXXXXX'
 					order by distance asc,f_code+0 asc limit 1");
 				if (count($places2) && sqrt($places2['distance']) < $placeradius) {
 					$places = $places2;
@@ -228,10 +229,10 @@ split_timer('gazetteer'); //starts the timer
 				}
 			}
 		} elseif ($gazetteer == 'OS' && $reference_index == 1) {
-			
+
 			$e = (floor($e/1000) * 1000) + 500;
 			$n = (floor($n/1000) * 1000) + 500;
-		
+
 			$places = array();
 			if (!$f_codes) {
 		//first try looking up a big city/town for 'in'
@@ -250,16 +251,17 @@ split_timer('gazetteer'); //starts the timer
 						`full_county` as adm1_name,
 						`hcounty` as hist_county,
 						(seq + 1000000) as pid,
-						( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
+						( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
 						1 as isin,
 						'OS' as gaz
 					from
 						os_gaz
 					where
-						CONTAINS( 	
+						CONTAINS(
 							GeomFromText($rectangle),
 							point_en) AND
 						f_code in ('C','T')
+						AND full_county != 'XXXXXXXX'
 						order by f_code+0 asc,distance asc limit 1");
 			}
 			if (count($places) == 0) {
@@ -267,9 +269,9 @@ split_timer('gazetteer'); //starts the timer
 				$right=$e+$radius;
 				$top=$n-$radius;
 				$bottom=$n+$radius;
-				
+
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
-				
+
 				if (is_array($f_codes) && count($f_codes)) {
 					$codes = "'".implode("','",$f_codes)."'";
 				} else {
@@ -283,21 +285,22 @@ split_timer('gazetteer'); //starts the timer
 						`full_county` as adm1_name,
 						`hcounty` as hist_county,
 						(seq + 1000000) as pid,
-						( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
+						( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
 						'OS' as gaz
 					from
 						os_gaz
 					where
-						CONTAINS( 	
+						CONTAINS(
 							GeomFromText($rectangle),
 							point_en) AND
 						f_code in ($codes)
+						AND full_county != 'XXXXXXXX'
 					order by distance asc,f_code+0 asc limit 1");
 
 				$placeradius = 4005;
 				if (sqrt($places['distance']) > $placeradius) {
 		//if nothing near try finding a feature
-		
+
 					//can reduce the size of the search
 
 					$left=$e-$placeradius;
@@ -314,16 +317,17 @@ split_timer('gazetteer'); //starts the timer
 							`full_county` as adm1_name,
 							`hcounty` as hist_county,
 							(seq + 1000000) as pid,
-							( (east-{$e})*(east-{$e})+(north-{$n})*(north-{$n}) ) as distance,
+							( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
 							f_code,
 							'OS' as gaz
 						from
 							os_gaz
 						where
-							CONTAINS( 	
+							CONTAINS(
 								GeomFromText($rectangle),
 								point_en) AND
 							f_code not in ($codes)
+							AND full_county != 'XXXXXXXX'
 						order by distance asc,f_code+0 asc limit 1");
 					if (count($places2) && sqrt($places2['distance']) < $placeradius) {
 						$places = $places2;
@@ -331,6 +335,47 @@ split_timer('gazetteer'); //starts the timer
 					}
 				}
 			}
+		} else if ($gazetteer == 'open' && $reference_index == 1) {
+			$sss = array();
+			$cols = "	if(populated_place='',name1,populated_place) AS full_name,
+                                        local_type as dsg,
+                                        1 as reference_index,
+                                        county_unitary as adm1_name,
+                                        '' as hist_county,
+                                        (seq + 40000000) as pid,
+                                        ( (e-{$e})*(e-{$e})+(n-{$n})*(n-{$n}) ) as distance,
+                                        'open' as gaz,
+                                        populated_place,
+					type,
+					postcode_district";
+			$where = "	CONTAINS(
+                                                GeomFromText($rectangle),
+                                                point_en)";
+
+			$places = $db->GetRow($sss[] = "select $cols from os_open_names2 where $where order by distance asc limit 1");
+
+
+			//sometimes its a close road/postcode WITHOUT a populated_place.
+			// (most roads/postcdes HAVE populated_place - so just use it directly!)
+			if (!empty($places) && (empty($places['populated_place']) && $places['type'] != 'populatedPlace') ) {
+				if (empty($places['postcode_district'])) {
+					if (preg_match("/^([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$places['full_name'],$pc)) {
+						$places['postcode_district'] = $pc[1].$pc[2];
+					}
+				}
+
+				//find a settlement in the right postcode area
+				$places = $db->GetRow($sss[] = "select $cols from os_open_names2 where $where
+					and postcode_district = ".$db->Quote($places['postcode_district'])." and type='populatedPlace' order by distance asc limit 1");
+			}
+
+			//if still fail, just find any old settlement.
+			if (empty($places) || (empty($places['populated_place']) && $places['type'] != 'populatedPlace') ) {
+				$places = $db->GetRow($sss[] = "select $cols from os_open_names2 where $where and type='populatedPlace' order by distance asc limit 1");
+			}
+
+			print "<!-- ".implode(";\n",$sss)."; -->";
+
 		} else if ($gazetteer == 'hist' && $reference_index == 1) {
 			$places = $db->GetRow("select
 					full_name,
@@ -339,12 +384,12 @@ split_timer('gazetteer'); //starts the timer
 					`acounty` as adm1_name,
 					`hcounty` as hist_county,
 					(gaz_id + 800000) as pid,
-					( (e-{$e})*(e-{$e})+(n-{$n})*(n-{$n}) ) as distance,
+					( pow(cast(e as signed)-{$e},2)+pow(cast(n as signed)-{$n},2) ) as distance,
 					'hist' as gaz
 				from
 					loc_abgaz
 				where
-					CONTAINS( 	
+					CONTAINS(
 						GeomFromText($rectangle),
 						point_en)
 				order by distance asc limit 1");
@@ -355,7 +400,7 @@ split_timer('gazetteer'); //starts the timer
 					reference_index,
 					'' as adm1_name,
 					(id + 900000) as pid,
-					power(e-{$e},2)+power(n-{$n},2) as distance,
+					( pow(cast(e as signed)-{$e},2)+pow(cast(n as signed)-{$n},2) ) as distance,
 					'towns' as gaz
 				from 
 					loc_towns
@@ -373,8 +418,9 @@ split_timer('gazetteer'); //starts the timer
 					loc_placenames.reference_index,
 					loc_adm1.name as adm1_name,
 					loc_placenames.id as pid,
-					power(e-{$e},2)+power(n-{$n},2) as distance,
-					'geonames' as gaz
+					pow(e-{$e},2)+pow(n-{$n},2) as distance,
+					'geonames' as gaz,
+					coalesce(loc_adm1.country,loc_placenames.country) as country
 				from 
 					loc_placenames
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
@@ -392,8 +438,9 @@ split_timer('gazetteer'); //starts the timer
 				$nearest = $db->GetAll("select
 					distinct full_name,
 					loc_placenames.id as pid,
-					power(e-{$e},2)+power(n-{$n},2) as distance,
-					'geonames' as gaz
+					pow(e-{$e},2)+pow(n-{$n},2) as distance,
+					'geonames' as gaz,
+					coalesce(loc_adm1.country,loc_placenames.country) as country
 				from 
 					loc_placenames
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
@@ -403,7 +450,7 @@ split_timer('gazetteer'); //starts the timer
 						GeomFromText($rectangle),
 						point_en) AND
 					loc_placenames.reference_index = {$reference_index} and
-					power(e-{$e},2)+power(n-{$n},2) < $d
+					pow(e-{$e},2)+pow(n-{$n},2) < $d
 				group by gns_ufi
 				order by distance asc limit 5");
 				$values = array();
@@ -417,6 +464,9 @@ split_timer('gazetteer'); //starts the timer
 		if (isset($places['distance']))
 			$places['distance'] = round(sqrt($places['distance'])/1000)+0.01;
 		$places['reference_name'] = $CONF['references'][$places['reference_index']];
+		if ($places['reference_index'] == 2 && $places['country'] == 'uk') {
+			$places['reference_name'] = "Northern Ireland";
+		}
 
 split_timer('gazetteer','findByNational',$mkey); //logs the wall time
 

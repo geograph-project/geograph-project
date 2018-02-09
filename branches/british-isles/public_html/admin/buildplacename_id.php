@@ -42,13 +42,13 @@ $smarty->display('_std_begin.tpl');
 if (isset($_POST['crit']))
 	$crit = $_POST['crit'];
 else
-	$crit = "placename_id = 0";
+	$crit = "placename_id = 0 AND percent_land != 0";
 
 ?>
 <h2>placename_id Rebuild Tool</h2>
 <form action="buildplacename_id.php" method="post">
-select * from <select name="table"><option>gridimage</option>
-<option<? if ($_POST['table'] == 'gridsquare') echo " selected"; ?>>gridsquare</option></select> where <input type="text" name="crit" size="60" value="<? echo $crit; ?>"/><br/>
+select * from <select name="table"><option>gridsquare</option>
+<option<? if ($_POST['table'] == 'gridimage') echo " selected"; ?>>gridimage</option></select> where <input type="text" name="crit" size="60" value="<? echo $crit; ?>"/><br/>
 (if reference gs will join gridsquare gs)<br/>
 <input type="submit" name="go" value="Start"/>
 <input type="checkbox" name="file"/> Write results to file (otherwise writes to DB)
@@ -127,7 +127,7 @@ if (isset($_POST['go']))
 
 				//to optimise the query, we scan a square centred on the
 				//the required point
-				$radius = 100000;
+				$radius = 100001;
 
 				$places = $square->findNearestPlace($radius,'OS'); //we need explicitly OS gaz, as that what placename_id is based on!
 				$pid = $places['pid'];
@@ -171,14 +171,16 @@ if (isset($_POST['go']))
 			}
 		}
 
-		if (++$count%500==0) {
+		if (++$count%50==0) {
 			printf("done %d at <b>%d</b> seconds<BR>",$count,time()-$tim);
 			flush();
-			sleep(2);
+			ob_flush();
+			sleep(1);
 		}
 
 		$recordSet->MoveNext();
 	}
+	printf("done %d at <b>%d</b> seconds<BR>",$count,time()-$tim);
 	$recordSet->Close();
 	if ($handle)
 		fclose($handle);
