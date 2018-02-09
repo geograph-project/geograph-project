@@ -1,11 +1,19 @@
+{assign var="page_title" value="Interactive Coverage Map"}
 {include file="_std_begin.tpl"}
 
 <div style="width:800px;position:relative;">
 	<div id="mapLink" style="float:right"></div>
-	<h2>Experimental Geograph Coverage Map</h2>
+	<h2><a href="/help/maps">Maps</a> :: Interactive Coverage Map</h2>
 	<p>Click the map to view nearby images (appear below the map). Also open the layer switcher 
-	(via the <img src="{$static_host}/ol/img/layer-switcher-maximize.png" style="opacity:0.5;height:10px;width:10px"> icon) to try other layers.</p>
+	(via the <img src="{$static_host}/ol/img/layer-switcher-maximize.png" style="opacity:0.5;height:10px;width:10px"> icon) to try other layers.
+	<i>or are you looking for <a href="/help/maps">other mapping interfaces</a>?</i>
+	</p>
 </div>
+
+<form name="locForm" onsubmit="return jumpLocation(this)">
+	Jump to location: <input type="text" name="loc" value="" placeholder="(enter coordinate/placename/postcode)" id="loc" size=50>
+	<input type=submit value="Go&gt;"><br><br>
+</form>
 
 	<div id="map_message" style="width:800px; height:10px; position:relative;; left:0; margin-bottom:3px; padding:3px;"></div>
 	<div id="map" style="width:800px; height:600px; position:relative; float:left;"></div>
@@ -16,7 +24,9 @@
         <link rel="stylesheet" href="{$static_host}/ol/theme/default/google.css" type="text/css">
         <link rel="stylesheet" href="{"/ol/style.css"|revision}" type="text/css">        
 
+<link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/themes/ui-lightness/jquery-ui.css" rel="stylesheet"/>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
 
 	<script src="{$static_host}/ol/grid-projections.js"></script>
         <script src="{$static_host}/ol/OpenLayers.js"></script>
@@ -48,13 +58,130 @@ div#thumbs div.thumb {
   margin:2px;
   text-align:center;
 }
-div#thumbs {
-  width:800px;
-}
 </style>
 
 <script type="text/javascript">
 //<![CDATA[
+
+$(function () {
+
+	$( "#loc" ).autocomplete({
+		minLength: 2,
+		source: function( request, response ) {
+
+			var url = "https://www.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&new=1";
+
+			$.ajax({
+				url: url,
+				dataType: 'jsonp',
+				jsonpCallback: 'serveCallback',
+				cache: true,
+				success: function(data) {
+
+					if (!data || !data.items || data.items.length < 1) {
+						$("#message").html("No places found matching '"+request.term+"'");
+						$("#placeMessage").show().html("No places found matching '"+request.term+"'");
+						setTimeout('$("#placeMessage").hide()',3500);
+						return;
+					}
+					var results = [];
+					$.each(data.items, function(i,item){
+						results.push({value:item.gr+' '+item.name,label:item.name,gr:item.gr,title:item.localities});
+					});
+					results.push({value:'',label:'',title:data.query_info});
+					results.push({value:'',label:'',title:data.copyright});
+					response(results);
+				}
+			});
+		},
+		select: function(event,ui) {
+			document.locForm.elements['loc'].value = ui.item.value;
+			jumpLocation(document.locForm);
+			return false;
+		}
+	})
+	.data( "autocomplete" )._renderItem = function( ul, item ) {
+		var re=new RegExp('('+$("#loc").val()+')','gi');
+		if (!item.title) item.title = '';
+		return $( "<li></li>" )
+			.data( "item.autocomplete", item )
+			.append( "<a>" + item.label.replace(re,'<b>$1</b>') + " <small> " + (item.gr||'') + "<br>" + item.title.replace(re,'<b>$1</b>') + "</small></a>" )
+			.appendTo( ul );
+	};
+
+});
+
+function jumpLocation(form) {
+	var value = form.elements['loc'].value;
+	var centre = false;
+
+	if (m = value.match(/^\s*([A-Z]{1,2})\s*(\d+)\s*(\d)*\b/)) {
+
+		var gridref = m[1]+m[2]+(m[3]||'');
+
+		if (m[1].length == 2) {//gb
+			var pos = UkGridProjection.gridRefToEastNorth(gridref);
+			if (pos && pos.east) {
+
+				//check if a Ireland only base map, and if so switch layer!
+				var layers = olmap.map.getLayersByName(/Ireland$/);
+				var vis = 0;
+				for(q=0;q<layers.length;q++) if (layers[q].visibility) vis++;
+				if (vis>0)
+					 olmap.map.setBaseLayer(olmap.layers['nls']); //todo pick a better one?
+
+				//center map
+		                centre = new OpenLayers.LonLat(pos.east, pos.north).transform("EPSG:27700", olmap.map.getProjection());
+
+					//need to find if currently using OS map. might be simpler to use map.getProjection??
+					var layers = olmap.map.getLayersByName('Ordnance Survey GB');
+					var vis = 0;
+					for(q=0;q<layers.length;q++) if (layers[q].visibility) vis++;
+
+		                olmap.map.setCenter(centre, vis?7:14); //OS base layer uses different zooms!
+
+				//switch grids (if Irish grid is ON, turn off, and turn on GB instead!)
+				var vis = 0;
+				var layers = olmap.map.getLayersByName('Irish Grid');
+				for(q=0;q<layers.length;q++) if (layers[q].visibility) {vis++; layers[q].setVisibility(false); }
+				if (vis>0) {
+					var layers = olmap.map.getLayersByName('OSGB Grid');
+					for(q=0;q<layers.length;q++) layers[q].setVisibility(true);
+				}
+			}
+
+		} else if (m[1].length == 1) {//ire
+			var pos = IrishProjection.gridRefToEastNorth(gridref);
+			if (pos && pos.east) {
+
+				//check if a GB only base map, and if so switch layer!
+				var layers = olmap.map.getLayersByName(/^O.*GB$/); //just matches OS baselayers!
+				var vis = 0;
+				for(q=0;q<layers.length;q++) if (layers[q].visibility) vis++;
+				if (vis>0)
+					 olmap.map.setBaseLayer(olmap.layers['osm_phys']); //todo pick a better one?
+
+				//center map!
+		                centre = new OpenLayers.LonLat(pos.east, pos.north).transform("EPSG:29902", olmap.map.getProjection());
+		                olmap.map.setCenter(centre, 14);
+
+				//switch grids (if GB grid is ON, turn off, and turn on Ire instead!)
+				var vis = 0;
+				var layers = olmap.map.getLayersByName('OSGB Grid');
+				for(q=0;q<layers.length;q++) if (layers[q].visibility) {vis++; layers[q].setVisibility(false); }
+				if (vis>0) {
+					var layers = olmap.map.getLayersByName('Irish Grid');
+					for(q=0;q<layers.length;q++) layers[q].setVisibility(true);
+				}
+			}
+		}
+	} else {
+		alert("Unable to Parse Grid Reference from box (if searching by place/postcode make sure select a placename from list)");
+	}
+
+	return false;
+}
+
 
 var labels = [];
 var circles = [];
@@ -121,7 +248,7 @@ function clickEvent(e) {
       a: 1,
       q: getTextQuery()+(myriads.length?' @myriad ('+myriads.join('|')+')':'')+((document.theForm.customised && document.theForm.customised[1].checked)?' @user user'+document.theForm.user_id.value:''),
       limit: 10,
-      select: "title,grid_reference,realname,hash"
+      select: "title,grid_reference,realname,hash,scenti,wgs84_lat,wgs84_long"
     };
     
     data.geo=roundNumber(lonLat.lat,6)+","+roundNumber(lonLat.lon,6)+",0";
@@ -152,8 +279,14 @@ function clickEvent(e) {
           $.each(data.matches,function(index,value) {
             
             value.attrs.thumbnail = getGeographUrl(value.id, value.attrs.hash, 'small');
-            
-    value.html = '<div class="thumb">Dist: '+roundNumber(value.attrs['@geodist']/1000,1)+'km<br><a href="/photo/'+value.id+'" title="'+value.attrs.grid_reference+' : '+value.attrs.title+' by '+value.attrs.realname+'"><img src="'+value.attrs.thumbnail+'"/></a></div>';
+            hover = ''; dist = '';
+            if (value.attrs.wgs84_lat && value.attrs.scenti != 1000000000 && value.attrs.scenti != 2000000000) {
+              hover = ' onmouseover="hoverpin('+value.id+','+rad2deg(value.attrs.wgs84_lat)+','+rad2deg(value.attrs.wgs84_long)+');" onmouseout="hoverout('+value.id+');"';
+	    }
+	    if (value.attrs.scenti != 1000000000 && value.attrs.scenti != 2000000000) {
+              dist = 'Dist: '+roundNumber(value.attrs['@geodist']/1000,1)+'km';
+            }
+            value.html = '<div class="thumb">'+dist+'<br><a href="/photo/'+value.id+'" title="'+value.attrs.grid_reference+' : '+value.attrs.title+' by '+value.attrs.realname+'"'+hover+'><img src="'+value.attrs.thumbnail+'"/></a></div>';
             
             $('#thumbs').append(value.html);            
           });
@@ -173,6 +306,33 @@ function clickEvent(e) {
     );
 }
 
+var hoverpins = {};
+function hoverpin(idx,lat,lng) {
+   if (!olmap.layers['pins']) { //we use our own layer, as markers may be invisible, and coverage is a vector layer
+      olmap.layers['pins'] = new OpenLayers.Layer.Markers('Locations');
+      olmap.map.addLayer(olmap.layers['pins']);
+   }
+   if (!hoverpins[idx])
+      hoverpins[idx] = new OpenLayers.Marker(new OpenLayers.LonLat(lng, lat).transform("EPSG:4326", olmap.map.getProjection()) );
+   olmap.layers['pins'].addMarker(hoverpins[idx]);
+}
+function hoverout(idx) {
+   if (hoverpins[idx])
+	olmap.layers['pins'].removeMarker(hoverpins[idx]);
+}
+
+
+function rad2deg (angle) {
+    // Converts the radian number to the equivalent number in degrees  
+    // 
+    // version: 1109.2015
+    // discuss at: http://phpjs.org/functions/rad2deg
+    // +   original by: Enrique Gonzalez
+    // +      improved by: Brett Zamir (http://brett-zamir.me)
+    // *     example 1: rad2deg(3.141592653589793);
+    // *     returns 1: 180
+    return angle * 57.29577951308232; // angle / Math.PI * 180
+}
 
 function updateCoverage(event) {
 	if (running) {
