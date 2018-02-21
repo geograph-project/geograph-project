@@ -93,14 +93,14 @@ $db = GeographDatabaseConnection(true);
 			
 			$t2 = array();
 			
-			$c = '<b><big>'.htmlentities($name).'</big></b>';
+			$c = '<b><big>'.htmlentities2($name).'</big></b>';
 			$r =  array('title'=>$c,'children'=>array());
 				
 			$results = $db->getAssoc("SELECT article_cat_id,category_name FROM article_cat WHERE parent_id=$parent order by sort_order, article_cat_id"); 
 			if ($results)
 				foreach($results as $id => $name) { 
 
-					$c = '<b><big>'.htmlentities($name).'</big></b>';
+					$c = '<b><big>'.htmlentities2($name).'</big></b>';
 					$r =  array('title'=>$c,'children'=>array());
 
 					$r['children'] = build_article_tree($id,$name); 
@@ -116,7 +116,7 @@ $db = GeographDatabaseConnection(true);
 		if ($results)
 			foreach($results as $id => $name) { 
 				
-				$c = '<b><big>'.htmlentities($name).'</big></b>';
+				$c = '<b><big>'.htmlentities2($name).'</big></b>';
 				$r =  array('title'=>$c,'children'=>array());
 			
 				$r['children'] = build_article_tree($id,$name); 
@@ -158,8 +158,8 @@ $db = GeographDatabaseConnection(true);
 		} 
 		
 		$linker[$row['url']] = $row;
-		$c = '<b><big>'.htmlentities($row['category_name']).'</big></b>';
-		$b = '<small><a href="?user_id='.$row['user_id'].'">by <i>'.htmlentities($row['realname']).'</i></a></small>';
+		$c = '<b><big>'.htmlentities2($row['category_name']).'</big></b>';
+		$b = '<small><a href="?user_id='.$row['user_id'].'">by <i>'.htmlentities2($row['realname']).'</i></a></small>';
 	#	if (empty($link[$c])) {
 	#		$t[$c] = array('title'=>$c,'children'=>array());
 	#		$link[$c] =& $t[$c];
@@ -186,7 +186,7 @@ function dump_list($in) {
 	if (is_array($in) && (!empty($in['children']) || !empty($in['url']))) {
 		print "<li>";
 		if (!empty($in['url'])) {
-			print "<a href=\"".htmlentities($in['url'])."\" title=\"".htmlentities($in['extract']?$in['extract']:$in['title'])." - by - ".htmlentities($in['realname'])."\">".htmlentities($in['title'])."</a>";
+			print "<a href=\"".htmlentities2($in['url'])."\" title=\"".htmlentities2($in['extract']?$in['extract']:$in['title'])." - by - ".htmlentities2($in['realname'])."\">".htmlentities2($in['title'])."</a>";
 		} else {
 			print ($in['title']);
 		}

@@ -58,7 +58,7 @@ if ($data) {
     
     foreach ($data as $idx => $row) {
         
-        print "<li><a href=\"faq-answer.php?id={$idx}\">".htmlentities($row['question'])."</a></li>";
+        print "<li><a href=\"faq-answer.php?id={$idx}\">".htmlentities2($row['question'])."</a></li>";
     }
     print "</ul>";
 } else {

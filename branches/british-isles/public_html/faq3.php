@@ -80,7 +80,7 @@ $extra = '';
 $editable = ($CONF['template'] != 'charcoal');
 
 if (!empty($_GET['q'])) {
-        $smarty->assign('page_title',htmlentities(strip_tags($_GET['q'])).' :: Geograph Knowledgebase');
+        $smarty->assign('page_title',htmlentities2(strip_tags($_GET['q'])).' :: Geograph Knowledgebase');
 } elseif (isset($_GET['l'])) {
         $smarty->assign('page_title','FAQ');
 } else {
@@ -247,7 +247,7 @@ if ($data) {
                 }
                 print "<br/><br/>";
                 foreach ($tags as $tag => $count) {
-                        $u = urlencode($tag);$h=htmlentities($tag);
+                        $u = urlencode($tag);$h=htmlentities2($tag);
                         if (!empty($_GET['q']) && $_GET['q'] == $tag) {
                                 print "&middot; <b>$h</b>";
                         } else {
@@ -313,7 +313,7 @@ if (isset($_GET['l']) && empty($_GET['l'])) {
             }
             $last = $row[$by];
         
-            $title = "CLICK TO SEE FULL ANSWER\n\n".htmlentities(substr($row['content'],0,250)."...");
+            $title = "CLICK TO SEE FULL ANSWER\n\n".htmlentities2(substr($row['content'],0,250)."...");
 
             if (count($data) > 2) {    
                 print "<dt id=\"dt$idx\" title=\"$title\"><a name=\"$idx\"></a>";
@@ -330,7 +330,7 @@ if (isset($_GET['l']) && empty($_GET['l'])) {
         }
 
 
-        $row['content'] = preg_replace('/(?<!["\'\[\]>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>\"\$1\",'nofollow'=>1,'title'=>\"\$1\"))",htmlentities($row['content']));
+        $row['content'] = preg_replace('/(?<!["\'\[\]>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>\"\$1\",'nofollow'=>1,'title'=>\"\$1\"))",htmlentities2($row['content']));
 
         if (preg_match('/(youtube\.com\/watch\?v=|youtu\.be\/)(\w+)/',$row['content'],$m)) {
                 $row['content'] .= "<div style=\"width:490px;margin-left:auto;margin-right:auto;\">".
@@ -345,14 +345,14 @@ if (isset($_GET['l']) && empty($_GET['l'])) {
         if (!empty($row['link'])) {
             $bits = parse_url($row['link']);
             if (!empty($bits['host'])) 
-                print " &middot; <b><a href=\"".htmlentities($row['link'])."\">More information on this topic...</a></b>";
+                print " &middot; <b><a href=\"".htmlentities2($row['link'])."\">More information on this topic...</a></b>";
         }
         
         if (empty($row['anon'])) { 
             if (!empty($row['user_id'])) {
-                print " &middot; contributed by <a href=\"/profile/{$row['user_id']}\">".htmlentities($row['realname'])."</a>"; 
+                print " &middot; contributed by <a href=\"/profile/{$row['user_id']}\">".htmlentities2($row['realname'])."</a>"; 
             } else {
-                print " &middot; by ".htmlentities($row['realname']); 
+                print " &middot; by ".htmlentities2($row['realname']); 
             }
             $date = strtotime($row['created']);
             print ", <span title=\"created:{$row['created']} updated:{$row['updated']}\">".date('M Y',$date)."</span>";
@@ -477,7 +477,7 @@ $smarty->display('_std_end.tpl');
 
 
     function title_escape($in) {
-        $in = htmlentities($in);
+        $in = htmlentities2($in);
         $in = preg_replace('/\[([^\]]+?)\]/','<b>$1</b>',$in);
         return $in;
     }
