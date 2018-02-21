@@ -252,13 +252,13 @@ foreach ($results as $user_id => $collections) {
 				$body .= html_entity_decode("{$image['special_title']}, http://{$param['config']}{$image['special_url']}\n\n");
 				if ($image['when'] != 'posted') {
 					//ugly hack because the forum is already entity encoding
-					$image['special_title'] = htmlentities($image['special_title']);
+					$image['special_title'] = htmlentities2($image['special_title']);
 				}
 				$html .= "<b><a href=\"http://{$param['config']}{$image['special_url']}\">{$image['special_title']}</a></b><br/>\n";
 				$last = $image['special_title'];
 			}
 			$body .= "* {$image['title']}, http://{$param['config']}/photo/{$image['gridimage_id']} {$image['when']} {$image['date']}\n\n";
-			$html .= "&middot; <a href=\"http://{$param['config']}/photo/{$image['gridimage_id']}\">".htmlentities($image['title'])."</a> {$image['when']} {$image['date']}<br/>\n";
+			$html .= "&middot; <a href=\"http://{$param['config']}/photo/{$image['gridimage_id']}\">".htmlentities2($image['title'])."</a> {$image['when']} {$image['date']}<br/>\n";
 		}
 	}
 	if ($param['action'] == 'send') {

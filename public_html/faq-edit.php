@@ -110,8 +110,8 @@ if (!empty($message)) {
 
 <div style="background-color:yellow;padding:10px">
 <b>Question</b>:<br/>
- &nbsp; &nbsp; &nbsp; <big><? print htmlentities($row['question']); ?></big>
- <? if (empty($row['q_anon'])) { print "<br/><i>by ".htmlentities($row['realname'])."</i>"; } ?>
+ &nbsp; &nbsp; &nbsp; <big><? print htmlentities2($row['question']); ?></big>
+ <? if (empty($row['q_anon'])) { print "<br/><i>by ".htmlentities2($row['realname'])."</i>"; } ?>
 </div> <br/><br/>
  
  
@@ -119,7 +119,7 @@ if (!empty($message)) {
 <form action="faq-edit.php?id=<? echo $id; ?>" method="post" style="background-color:lightgrey;padding:10px;border:1px solid gray">
 
 <b>Question Title</b>:<br/>
- &nbsp; &nbsp; &nbsp; <input type="text" name="title" value="<? print htmlentities($row['title']?$row['title']:$row['question']); ?>" maxlength="128" size="80"/> (128 charactors max)<br/>
+ &nbsp; &nbsp; &nbsp; <input type="text" name="title" value="<? print htmlentities2($row['title']?$row['title']:$row['question']); ?>" maxlength="128" size="80"/> (128 charactors max)<br/>
  (optional - rewrite the question as a 'FAQ' style question, ie a simple consise question)<br/><br/>
 
 <b>Answer</b>:<br/>
@@ -134,15 +134,15 @@ if (!empty($message)) {
     <b>Although please do add tags!</b></div>
 <? } ?>
 
- &nbsp; &nbsp; &nbsp; <textarea name="content" rows="12" cols="100"><? print htmlentities($row['content']); ?></textarea><br/>
+ &nbsp; &nbsp; &nbsp; <textarea name="content" rows="12" cols="100"><? print htmlentities2($row['content']); ?></textarea><br/>
 (your actual answer to the question, ideally aim for a few paragraphs at most)<br/><br/>
 
 <b>More information Link</b>:<br/>
- &nbsp; &nbsp; &nbsp; <input type="text" name="link" value="<? print htmlentities($row['link']); ?>" size="80"/><br/>
+ &nbsp; &nbsp; &nbsp; <input type="text" name="link" value="<? print htmlentities2($row['link']); ?>" size="80"/><br/>
  (optional - link to page to read more information)<br/><br/>
 
 <b>Tags</b>:<br/>
- &nbsp; &nbsp; &nbsp; <input type="text" name="tags" value="<? print htmlentities($row['tags']); ?>" size="80"/><br/>
+ &nbsp; &nbsp; &nbsp; <input type="text" name="tags" value="<? print htmlentities2($row['tags']); ?>" size="80"/><br/>
  (optional - seperate tags by commas)<br/><br/>
 
 <? if ($row['level'] > 0 || $row['user_id'] != 2) { ?>

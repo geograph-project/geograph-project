@@ -108,8 +108,8 @@ if (!empty($message)) {
 
 <div style="background-color:yellow;padding:10px">
 <b>Question</b>:<br/>
- &nbsp; &nbsp; &nbsp; <big><? print htmlentities($row['question']); ?></big>
- <? if (empty($row['anon'])) { print "<br/><i>by ".htmlentities($row['realname'])."</i>"; } ?>
+ &nbsp; &nbsp; &nbsp; <big><? print htmlentities2($row['question']); ?></big>
+ <? if (empty($row['anon'])) { print "<br/><i>by ".htmlentities2($row['realname'])."</i>"; } ?>
 </div> <br/><br/>
  
  
@@ -117,7 +117,7 @@ if (!empty($message)) {
 <form action="answer.php?id=<? echo $id; ?>" method="post" style="background-color:lightgrey;padding:10px;border:1px solid gray" name="theForm">
 
 <b>Question Title</b>:<br/>
- &nbsp; &nbsp; &nbsp; <input type="text" name="title" value="<? print htmlentities($row['question']); ?>" maxlength="128" size="80"/> (128 charactors max)<br/>
+ &nbsp; &nbsp; &nbsp; <input type="text" name="title" value="<? print htmlentities2($row['question']); ?>" maxlength="128" size="80"/> (128 charactors max)<br/>
  (optional - rewrite the question as a 'FAQ' style question, ie a simple consise question)<br/><br/>
 
 <b>Reply</b>:<br/>
@@ -258,7 +258,7 @@ if ($data) {
                 ksort($tags);
                 print "<div style=\"\"><b>Current</b>:";
                 foreach ($tags as $tag => $count) {
-                        $h=htmlentities($tag);
+                        $h=htmlentities2($tag);
                         print "<a href=\"#$h\" onclick=\"return useTag('$h')\" style=\"white-space:nowrap\">$h</a> ";
                 }
                 print "</div>";

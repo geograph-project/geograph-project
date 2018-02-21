@@ -48,7 +48,7 @@ if (!empty($_POST) && !empty($_POST['question'])) {
 
     $id = mysql_insert_id();
 
-    $message = "Thank you. Question [<a href=\"faq-answer.php?id=$id\">".htmlentities($updates['question'])."</a>] saved. You may add another below";
+    $message = "Thank you. Question [<a href=\"faq-answer.php?id=$id\">".htmlentities2($updates['question'])."</a>] saved. You may add another below";
 }
 
 
