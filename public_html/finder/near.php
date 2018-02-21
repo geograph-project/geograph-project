@@ -43,7 +43,7 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/near.php') === 0) {
 		$url .= $sep."sort=".urlencode($_GET['sort']); $sep = '&'; }
 
         header("Location: ".$url);
-        print "<a href=\"".htmlentities($url)."\">moved</a>";
+        print "<a href=\"".htmlentities2($url)."\">moved</a>";
 
         exit;
 }
@@ -80,7 +80,7 @@ $qh = $qu = ''; $qfiltbrow = ''; $qfiltmain = '';
 if (!empty($_GET['q'])) {
 	$qu = urlencode(trim($_GET['q']));
 	$qu2 = urlencode2(trim($_GET['q']));
-	$qh = htmlentities(trim($_GET['q']));
+	$qh = htmlentities2(trim($_GET['q']));
 
 	$sphinxq = '';
 
@@ -217,7 +217,7 @@ if (!empty($_GET['q'])) {
 	Images near: <input type=search name=q value="<? echo $qh; ?>" size=40><input type=submit value=go><br/>
 <?
 	if (isset($_GET['filter'])) {
-		print "Matching: <input type=text name=filter value=\"".htmlentities($_GET['filter'])."\">";
+		print "Matching: <input type=text name=filter value=\"".htmlentities2($_GET['filter'])."\">";
 	}
 
 #########################################
@@ -278,11 +278,11 @@ if (!empty($_GET['q'])) {
 			$t = $tag['tag']; //we need to use the actual tag, rather than the query, because it might be a prefixed tag!
                         if (!empty($tag['prefix']))
                                 $t = $tag['prefix'].':'.$t;
-       	                $suggestions[] = '<a href="/of/['.urlencode($t).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities($t).']</a>';
+       	                $suggestions[] = '<a href="/of/['.urlencode($t).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities2($t).']</a>';
 		}
 		$name2= $db->Quote("$plain/{$square->grid_reference}");
 		if ($place = $db->getRow("SELECT * FROM sphinx_placenames WHERE (Place = $name OR Place = $name2) AND images > 0")) {
-			$suggestions[] = '<a href="/place/'.urlencode2($place['Place']).'" rel="nofollow">'.$place['images'].' Images <i>nearest</i> '.htmlentities($place['Place']).', '.htmlentities($place['County']).'</a>';
+			$suggestions[] = '<a href="/place/'.urlencode2($place['Place']).'" rel="nofollow">'.$place['images'].' Images <i>nearest</i> '.htmlentities2($place['Place']).', '.htmlentities2($place['County']).'</a>';
 		}
 
 		if ($grid_ok && !empty($square->nateastings) && $square->natgrlen == 4 && $square->reference_index == 1) {
@@ -436,7 +436,7 @@ if (!empty($_GET['d']) && !empty($final)) {
 ?>
           <div style="float:left;position:relative; width:120px; height:120px;padding:1px;">
           <div align="center">
-          <a title="<? printf("%.1f km, ",$image->distance/1000); echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
+          <a title="<? printf("%.1f km, ",$image->distance/1000); echo $image->grid_reference; ?> : <? echo htmlentities2($image->title) ?> by <? echo htmlentities2($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
           </div>
 <?
 
@@ -493,7 +493,7 @@ if (!empty($final)) {
 	(<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo ($distance == 10000)?3000:$distance; ?>/display=map/pagesize=50/sort=spread">On a map</a>)
 	<br><br>
 
-	Search <i>within</i> these images, keywords: <input type="search" name="q" value="<? echo @htmlentities($_GET['filter']); ?>"><input type=submit value="Browser">
+	Search <i>within</i> these images, keywords: <input type="search" name="q" value="<? echo @htmlentities2($_GET['filter']); ?>"><input type=submit value="Browser">
 	<input type="hidden" name="loc" value="<? echo $gr; ?>"/>
 	<input type="hidden" name="dist" value="<? echo $distance; ?>"/>
 	</div>
@@ -506,7 +506,7 @@ if (!empty($final)) {
 if (!empty($contexts)) {
         print "<p>Geographical Contexts for these images (click to view more images): ";
         foreach ($contexts as $context => $count) {
-                print "&middot; <a href=\"/browser/#!/contexts+%22".urlencode($context)."%22/loc=$gru/dist=1000/\">".htmlentities($context)."</a>[$count] ";
+                print "&middot; <a href=\"/browser/#!/contexts+%22".urlencode($context)."%22/loc=$gru/dist=1000/\">".htmlentities2($context)."</a>[$count] ";
         }
         print "</p>";
 }

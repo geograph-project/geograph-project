@@ -30,7 +30,7 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 	$row =& $db->getRow("select gridimage_id,wgs84_lat,wgs84_long,title,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
 
 	if ($row['wgs84_lat']) {
-		$title = htmlentities($row['title']."::".$row['grid_reference']);
+		$title = htmlentities2($row['title']."::".$row['grid_reference']);
 
 		print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\n";
 		print "<title>$title</title>\n";

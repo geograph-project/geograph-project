@@ -551,7 +551,7 @@ split_timer('gridimage'); //starts the timer
 		$extra_meta[] = "<meta name=\"twitter:site\" content=\"@geograph_bi\">";
 		//$extra_meta[] = "<meta name=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamp.php?id={$this->gridimage_id}\"/>";
 		$extra_meta[] = "<meta name=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamped/".basename($imageurl)."\">";
-		$extra_meta[] = "<meta name=\"og:title\" content=\"".htmlentities($page_title)."\">";
+		$extra_meta[] = "<meta name=\"og:title\" content=\"".htmlentities2($page_title)."\">";
 		//$extra_meta[] = "<meta name=\"twitter:image\" content=\"{$imageurl}\">"; //lets fallback and use non stamped?
 
 
@@ -559,7 +559,7 @@ split_timer('gridimage'); //starts the timer
 			$smarty->assign('meta_description', "{$this->grid_reference} :: {$this->bigtitle}, ".strip_tags(smarty_function_place(array('place'=>$place)))." by ".$this->realname );
 		} else {
 			$smarty->assign('meta_description', $this->comment);
-			$extra_meta[] = "<meta name=\"og:description\" content=\"".htmlentities($this->comment)."\">"; //shame doesnt fall back and actully use metadescruption
+			$extra_meta[] = "<meta name=\"og:description\" content=\"".htmlentities2($this->comment)."\">"; //shame doesnt fall back and actully use metadescruption
 		}
 
 		$smarty->assign('extra_meta', implode("\n",$extra_meta));

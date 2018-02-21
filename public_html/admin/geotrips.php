@@ -70,12 +70,12 @@ if (!empty($_GET['all']))
 $data = $db->getAll("SELECT id,title,start,location,uid,user,FROM_UNIXTIME(updated) as updated FROM geotrips ORDER BY id DESC LIMIT $limit");
 foreach ($data as $row) {
 	print "<tr>";
-	print "<td>#".htmlentities($row['id'])."</td>";
-	print "<td><a href=\"/geotrips/{$row['id']}\">".htmlentities($row['title']?$row['title']:'untitled')."</a><br/><span style=\"font-size:0.7em\">".htmlentities($row['location'])." from ".htmlentities($row['start'])."</td>";
-	print "<td><a href=\"/profile/{$row['uid']}\">".htmlentities($row['user'])."</a></td>";
+	print "<td>#".htmlentities2($row['id'])."</td>";
+	print "<td><a href=\"/geotrips/{$row['id']}\">".htmlentities2($row['title']?$row['title']:'untitled')."</a><br/><span style=\"font-size:0.7em\">".htmlentities2($row['location'])." from ".htmlentities2($row['start'])."</td>";
+	print "<td><a href=\"/profile/{$row['uid']}\">".htmlentities2($row['user'])."</a></td>";
 	print "<td><a href=\"/geotrips/geotrip_edit.php?trip={$row['id']}\">Edit</a> ";
-	print "<form method=post style=\"display:inline\" onclick=\"return confirm('Are you sure you wish to delete #{$row['id']} - ".htmlentities($row['title']?$row['title']:'untitled')." - by ".htmlentities($row['user'])."? THIS CAN NOT BE UNDONE. THERE IS NO BACKUP.')\">";
-	print "<input type=hidden name=delete value=".htmlentities($row['id']).">";
+	print "<form method=post style=\"display:inline\" onclick=\"return confirm('Are you sure you wish to delete #{$row['id']} - ".htmlentities2($row['title']?$row['title']:'untitled')." - by ".htmlentities2($row['user'])."? THIS CAN NOT BE UNDONE. THERE IS NO BACKUP.')\">";
+	print "<input type=hidden name=delete value=".htmlentities2($row['id']).">";
 	print "<input type=submit value=\"Delete\"></form></td>";
 	print "</tr>";
 
