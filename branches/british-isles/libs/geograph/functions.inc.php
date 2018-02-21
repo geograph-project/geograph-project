@@ -708,7 +708,7 @@ function replace_tags($text) {
                 $row['tag'] = urlencode($row['tag']);
                 if (!empty($row['prefix']))
                         $row['tag'] = urlencode($row['prefix']).":".$row['tag'];
-                $row['description'] = htmlentities($row['description']);
+                $row['description'] = htmlentities2($row['description']);
                 $text = "[<a href=\"/tags/?tag={$row['tag']}\" title=\"{$row['description']}\" target=\"_blank\">$text</a>] <i style=\"color:gray\">({$row['images']} images)</i>";
         } else {
                 $text2= urlencode($text);

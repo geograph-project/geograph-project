@@ -42,7 +42,7 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/of.php') === 0) {
 		$url .= "?sort=".urlencode($_GET['sort']);
 
         header("Location: ".$url);
-        print "<a href=\"".htmlentities($url)."\">moved</a>";
+        print "<a href=\"".htmlentities2($url)."\">moved</a>";
 
         exit;
 }
@@ -94,7 +94,7 @@ if (!empty($_GET['q'])) {
 
 	$qu = urlencode(trim($_GET['q']));
 	$qu2 = urlencode2(trim($_GET['q']));
-	$qh = htmlentities(trim($_GET['q']));
+	$qh = htmlentities2(trim($_GET['q']));
 
 	if (preg_match("/^(-?\d+\.\d+)[, ]+(-?\d+\.\d+)$/",$_GET['q'],$ll) && !isset($_GET['redir'])) {
 		header("Location: /near/$qu2");
@@ -186,9 +186,9 @@ if (!empty($_GET['q'])) {
 			if (strpos($object->name,$object->gr) === false)
                                  $object->name .= "/{$object->gr}";
 			if (strpos($object->name,'Grid Reference') === 0)
-				$h = str_replace('/','/ <b>',htmlentities($object->name)).'</b>';
+				$h = str_replace('/','/ <b>',htmlentities2($object->name)).'</b>';
 			else
-				$h = '<b>'.str_replace('/','</b> /',htmlentities($object->name));
+				$h = '<b>'.str_replace('/','</b> /',htmlentities2($object->name));
                         print "Or view images <i>near</i> <a href=\"/near/".urlencode2($object->name)."\">$h</a>";
 
 		} else if ($decode[0]->total_found > 0) {
@@ -230,11 +230,11 @@ if (!empty($_GET['q'])) {
 
 	$bits = explode(' near ',$_GET['q']);
 	if (count($bits) == 2) {
-		print "<div>Looking for keywords '".htmlentities($bits[0])."' <i>near</i> place '".htmlentities($bits[1])."'? If so <a href=\"/search.php?q=$qu\">click here</a>.</div>";
+		print "<div>Looking for keywords '".htmlentities2($bits[0])."' <i>near</i> place '".htmlentities2($bits[1])."'? If so <a href=\"/search.php?q=$qu\">click here</a>.</div>";
 		$sphinx->q = str_replace(' near ',' @(Place,County,Country) ',$sphinx->q);
 
 	} elseif (!empty($prefixMatch) && $prefixMatch > 1 && empty($_GET['place'])) {
-		print "<div style=\"font-size:0.9em;padding:4px;border-bottom:1px solid gray\">There are a <a href=\"/finder/groups.php?q=place:$qu&group=place\">number of places matching '".htmlentities($_GET['q'])."'</a>, below are <b>combined</b> keyword results.";
+		print "<div style=\"font-size:0.9em;padding:4px;border-bottom:1px solid gray\">There are a <a href=\"/finder/groups.php?q=place:$qu&group=place\">number of places matching '".htmlentities2($_GET['q'])."'</a>, below are <b>combined</b> keyword results.";
 		print " To search near specific place, select from the dropdown above. Or <a href=\"/browser/#!/q=$qu/display=group/group=place/n=4/gorder=images%20desc\">View images grouped by nearby Place</a></div>";
 
 	} elseif (!empty($db)) {
@@ -296,7 +296,7 @@ if (!empty($_GET['q'])) {
 
 				print "<div style=\"margin-left:20px;background-color:#DDEA8E;padding:3px\"><p>Potential Collection matches: (<a href=\"/content/?q=$qu&scope=all&in=title\">View all</a>)<ul>";
         	                foreach ($related as $idx => $row) {
-					print "<li><a href=\"{$row['url']}\">".htmlentities($row['title'])."</a> ";
+					print "<li><a href=\"{$row['url']}\">".htmlentities2($row['title'])."</a> ";
 					print $CONF['content_sources'][$row['source']].($row['images']?" with {$row['images']} images":'');
 					if ($idx == 3 && $data2['total_found'] > 3) {
 						print " &nbsp; &nbsp;&nbsp;<i>... plus at least ".($data2['total_found']-3)." <a href=\"/content/?q=$qu&scope=all&in=title\">more results</a></i></li>";
@@ -355,12 +355,12 @@ if (!empty($_GET['q'])) {
 					print "<a href=\"/near/$coord\"><img src=\"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid|$coord&zoom=7&key=AIzaSyDrnpX8oponupk5rMqCg126cuVtiypmIH0&size=250x120&maptype=terrain\"></a></div>";
 
 					print "Looks like you might have been entering an address? If you searching for '";
-					print "<a href=\"/near/$coord\">".htmlentities($r->formatted_address)."</a>";
+					print "<a href=\"/near/$coord\">".htmlentities2($r->formatted_address)."</a>";
 					print "'. Click the map on the right to view images near that location.";
 					print "<hr style=\"clear:both\"/>";
 				}
 
-				print "<i>No results found for '".htmlentities($_GET['q'])."', showing results containing only <b>some of the words</b>...</i><br/>";
+				print "<i>No results found for '".htmlentities2($_GET['q'])."', showing results containing only <b>some of the words</b>...</i><br/>";
 				$words = $_GET['q'];
 	                        $words = str_replace('_SEP_','',$words);
         	                $words = trim(preg_replace('/[^\w]+/',' ',$words));
@@ -460,7 +460,7 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 	$ext = '';
 	if (!empty($data['total_found']) && $data['total_found'] > count($final))
 		$ext = " (of ".number_format($data['total_found'],0)." total)";
-	print "<h2>".count($final)."$ext Photos of ".htmlentities($m[1])."</h2>";
+	print "<h2>".count($final)."$ext Photos of ".htmlentities2($m[1])."</h2>";
 }
 
 
@@ -485,7 +485,7 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 ?>
           <div style="float:left;position:relative; width:<? echo $thumbw;?>px; height:<? echo $thumbw;?>px;padding:1px;">
           <div align="center">
-          <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
+          <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities2($image->title) ?> by <? echo htmlentities2($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
           </div>
 <?
 
@@ -538,7 +538,7 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 				print " Redirecting to a location based search... <script>location.href='/near/".urlencode2($object->name)."';</script>";
                         if (strpos($object->name,$object->gr) === false && $decode[0]->total_found > 1)
                                 $object->name .= "/{$object->gr}";
-			print "Or try a <a href=\"/near/".urlencode2($object->name)."\">search for images <i>near</i> <b>".htmlentities($object->name)."</b></a>.";
+			print "Or try a <a href=\"/near/".urlencode2($object->name)."\">search for images <i>near</i> <b>".htmlentities2($object->name)."</b></a>.";
 		}
 		print "</p>";
 
@@ -549,7 +549,7 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 					$sph->query("SELECT id FROM sample8 WHERE MATCH(".$sph->quote($item).") LIMIT 0");
 					$data = $sph->getAssoc("SHOW META");
 					if (!empty($data['total_found'])) {
-						$h = ($data['total_found'] > 100)?"<b>".htmlentities($item)."</b>":htmlentities($item);
+						$h = ($data['total_found'] > 100)?"<b>".htmlentities2($item)."</b>":htmlentities2($item);
 						$bits[] = "<span class=nowrap><a href=\"/of/".urlencode($item)."\" rel=\"nofollow\">$h</a> (~{$data['total_found']} images)</span>";
 					}
 				}
@@ -577,8 +577,8 @@ if (strlen($_GET['q']) > 10 && preg_match('/\b(19|20|21)(\d{2})\b/',$_GET['q'],$
 	$y = $m[1].$m[2];
 	$qw = trim(str_replace($y,'',$_GET['q']));
 
-	print "<p>Looking for dated images of <b>".htmlentities($qw)."</b>? ";
-	print "If so try a <a href=\"/finder/groups.php?q=".urlencode($qw)."&amp;group=takenyear\">Over Time search for ".htmlentities($qw)."</a>.</p>";
+	print "<p>Looking for dated images of <b>".htmlentities2($qw)."</b>? ";
+	print "If so try a <a href=\"/finder/groups.php?q=".urlencode($qw)."&amp;group=takenyear\">Over Time search for ".htmlentities2($qw)."</a>.</p>";
 }
 
 #########################################
@@ -600,7 +600,7 @@ if (!empty($final) && empty($words) && count($final) != count($rows['google']) &
 	$suggestions = array();
 	if ($data['total_found'] > 60) {
 		if (!empty($tag) && strpos($_GET['q'],'[') !== 0) {
-			$suggestions[] = '<a href="/of/['.urlencode2($tag['tagtext']).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities($tag['tagtext']).']</a>';
+			$suggestions[] = '<a href="/of/['.urlencode2($tag['tagtext']).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities2($tag['tagtext']).']</a>';
 		}
 		if (strpos($_GET['q'],'"') === FALSE && strpos($_GET['q'],' ') > 3)
 			$suggestions[] = "<a href=\"/of/%22$qu2%22\" rel=\"nofollow\">Images with <i>phrase</i> &quot;$qh&quot</a>";
@@ -646,7 +646,7 @@ if (!empty($final) && !empty($remotes[2])) {
 			$sph->query("SELECT id FROM sample8 WHERE MATCH(".$sph->quote($item).") LIMIT 0");
 			$data = $sph->getAssoc("SHOW META");
 			if (!empty($data['total_found']))
-				$bits[] = "<span class=nowrap><a href=\"/of/".urlencode($item)."\" rel=\"nofollow\">".htmlentities($item)."</a> (~{$data['total_found']} images)</span>";
+				$bits[] = "<span class=nowrap><a href=\"/of/".urlencode($item)."\" rel=\"nofollow\">".htmlentities2($item)."</a> (~{$data['total_found']} images)</span>";
 		}
 		if (!empty($bits))
 			print "<p>Alternative Queries: ".implode(" &middot; ",$bits)."</p>";
@@ -754,9 +754,9 @@ function vote_log(action,param,value) {
                         $image = new GridImage();
                         $image->fastInit($row);
 ?>
-                                <div style="float:left;" class="photo33"><div style="height:<? echo $thumbh; ?>px;vertical-align:middle"><a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
-                                <div class="caption"><div class="minheightprop" style="height:2.5em"></div><a href="/gridref/<? echo $image->grid_reference; ?>"><? echo $image->grid_reference; ?></a> : <a title="view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo htmlentities($image->title); ?></a><div class="minheightclear"></div></div>
-                                <div class="statuscaption">by <a href="<? echo $image->profile_link; ?>"><? echo htmlentities($image->realname); ?></a></div>
+                                <div style="float:left;" class="photo33"><div style="height:<? echo $thumbh; ?>px;vertical-align:middle"><a title="<? echo $image->grid_reference; ?> : <? echo htmlentities2($image->title) ?> by <? echo htmlentities2($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
+                                <div class="caption"><div class="minheightprop" style="height:2.5em"></div><a href="/gridref/<? echo $image->grid_reference; ?>"><? echo $image->grid_reference; ?></a> : <a title="view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo htmlentities2($image->title); ?></a><div class="minheightclear"></div></div>
+                                <div class="statuscaption">by <a href="<? echo $image->profile_link; ?>"><? echo htmlentities2($image->realname); ?></a></div>
                                 </div>
 <?
                 }

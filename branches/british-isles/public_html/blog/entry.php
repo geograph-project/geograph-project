@@ -135,7 +135,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['CONTENT_HOST']}/blog/{$page['blog_id']}\" />";
                 $extra_meta[] = "<meta name=\"twitter:card\" content=\"photo\">"; //or summary_large_image
                 $extra_meta[] = "<meta name=\"twitter:site\" content=\"@geograph_bi\">";
-                $extra_meta[] = "<meta name=\"og:title\" content=\"".htmlentities($page['title'])."\">";
+                $extra_meta[] = "<meta name=\"og:title\" content=\"".htmlentities2($page['title'])."\">";
 
 
 		$smarty->assign($page);
@@ -143,7 +143,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$extract = smarty_modifier_truncate($page['content'],140,"...");
 
 			$smarty->assign('meta_description', $extract);
-			$extra_meta[] = "<meta name=\"og:description\" content=\"".htmlentities($extract)."\">"; //shame doesnt fall back and actully use metadescruption
+			$extra_meta[] = "<meta name=\"og:description\" content=\"".htmlentities2($extract)."\">"; //shame doesnt fall back and actully use metadescruption
 		}
 
 		if (!empty($page['gridsquare_id'])) {
