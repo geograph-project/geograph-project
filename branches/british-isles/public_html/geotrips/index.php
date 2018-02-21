@@ -126,8 +126,8 @@ if (!empty($str)) {
       content+='<?php print($thumb);?>\" />';
       content+='</a>';
       content+='</p><p>';
-      content+='<strong><?php print(addslashes(htmlentities($title)));?></strong><br />';
-      content+='<?php print("by <a href=\"/profile/{$track['uid']}\">".addslashes(htmlentities($track['user']))."</a> - $date<br />");?>';
+      content+='<strong><?php print(addslashes(htmlentities2($title)));?></strong><br />';
+      content+='<?php print("by <a href=\"/profile/{$track['uid']}\">".addslashes(htmlentities2($track['user']))."</a> - $date<br />");?>';
       content+='<small>Click image to see details of this trip.</small>';
       content+='</p>';
 //]]>
@@ -230,9 +230,9 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
   if ($_GET['max']) $max=$_GET['max'];
   else $max=3;
   while ($trks[$i]['updated']>date('U')-86400||$i<$max) {  // show all uploaded in last 24 hours, but at least three
-    if ($trks[$i]['title']) $title=htmlentities($trks[$i]['title']);
-    else $title=htmlentities($trks[$i]['location'].' from '.$trks[$i]['start']);
-    $descr=str_replace("\n",'</p><p>',htmlentities($trks[$i]['descr']));
+    if ($trks[$i]['title']) $title=htmlentities2($trks[$i]['title']);
+    else $title=htmlentities2($trks[$i]['location'].' from '.$trks[$i]['start']);
+    $descr=str_replace("\n",'</p><p>',htmlentities2($trks[$i]['descr']));
     if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
     $gr=bbox2gr($trks[$i]['bbox']);
     // fetch Geograph thumbnail
@@ -243,12 +243,12 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
         $thumb='/photos/error120.jpg';
       }
     $mmmyy=explode('-',$trks[$i]['date']);
-    $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities($trks[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
+    $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities2($trks[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
     print('<div class="inner">');
     print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
     print("<b>$title</b><br />");
-    print("<em>".htmlentities($trks[$i]['location'])."</em> -- A ".whichtype($trks[$i]['type'])." from ".htmlentities($trks[$i]['start'])."<br />");
-    print("by <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities($trks[$i]['user'])."</a>");
+    print("<em>".htmlentities2($trks[$i]['location'])."</em> -- A ".whichtype($trks[$i]['type'])." from ".htmlentities2($trks[$i]['start'])."<br />");
+    print("by <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities2($trks[$i]['user'])."</a>");
     print("<div class=\"inner flt_r\">$gr</div>");
     print("<p>$descr&nbsp;[<a href=\"/geotrips/{$trks[$i]['id']}\">more</a>]</p>");
     print('<div class="row"></div>');

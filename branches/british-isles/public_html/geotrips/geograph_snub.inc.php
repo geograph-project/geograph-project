@@ -83,3 +83,8 @@ function GeographDatabaseConnection($allow_readonly = false) {
 	return $class;
 }
 
+function htmlentities2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+{
+    return preg_replace( "/&amp;([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,4};|#x[0-9a-fA-F]{2,4};)/", '&$1' ,htmlentities($myHTML,$quotes,$char_set));
+}
+
