@@ -217,12 +217,12 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 </script>
 
-<h2><a href="./">Geo-Trips</a> :: <? echo htmlentities($hdr2); ?></h2>
+<h2><a href="./">Geo-Trips</a> :: <? echo htmlentities2($hdr2); ?></h2>
 
 <?php
-  print('<h3>'.htmlentities($trk['location']).'</h3>');
+  print('<h3>'.htmlentities2($trk['location']).'</h3>');
   $date=date('D, j M Y',strtotime($trk['date']));
-  print('<h4 style=text-align:left>A '.whichtype($trk['type']).' from '.htmlentities($trk['start']).", $date by <a href=\"/profile/$trk[uid]\">".htmlentities($trk[user])."</a></h4>");
+  print('<h4 style=text-align:left>A '.whichtype($trk['type']).' from '.htmlentities2($trk['start']).", $date by <a href=\"/profile/$trk[uid]\">".htmlentities2($trk[user])."</a></h4>");
 
   $prec=$trk['contfrom'];
   $foll=$foll['id'];
@@ -237,7 +237,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
   }
 ?>
   <p class="mapwidth">
-<?php print(str_replace("\n",'</p><p class="mapwidth">',GeographLinks(htmlentities($trk['descr'])))); ?>
+<?php print(str_replace("\n",'</p><p class="mapwidth">',GeographLinks(htmlentities2($trk['descr'])))); ?>
   </p>
 <? if ($trk['uid'] == $USER->user_id) { ?>
   <div class="mapwidth">
@@ -280,7 +280,7 @@ the direction of view.  There is also a
         $no=$geograph[$i]['natnorthings']+round(100.*cos($geograph[$i]['view_direction']*M_PI/180.));
 		print ",$ea,$no";
       }
-      print("\"><a href=\"/photo/{$geograph[$i]['gridimage_id']}\" title=\"".htmlentities($geograph[$i]['title'])."\" target=\"_blank\">");
+      print("\"><a href=\"/photo/{$geograph[$i]['gridimage_id']}\" title=\"".htmlentities2($geograph[$i]['title'])."\" target=\"_blank\">");
       print($image->getThumbnail(213,160,false,true,$src)."</a><br>");
       print("<strong>".htmlentities2($geograph[$i]['title'])."</strong>");
 	if (!empty($geograph[$i]['comment'])) {
@@ -294,7 +294,7 @@ the direction of view.  There is also a
 </div>
 
   <p class="mapwidth"><small>
-All images &copy; <?php print("<a href=\"/profile/{$trk['uid']}\">".htmlentities($trk['user'])."</a>");?> and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">
+All images &copy; <?php print("<a href=\"/profile/{$trk['uid']}\">".htmlentities2($trk['user'])."</a>");?> and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">
 Creative Commons licence</a> <img alt="external link" title="" src="<?php echo $CONF['STATIC_HOST']; ?>/img/external.png" />. </small>
   </p>
 

@@ -72,12 +72,12 @@ coordinates etc.), those changes will take up to a week before they make it thro
             <hr style="color:#992233">
             <p>
               <b>Location</b> <span class="hlt">(required)</span><br />
-              <input type="text" name="loc" size="72" value="<?php print(htmlentities($trip['location'])); ?>" /><br />
+              <input type="text" name="loc" size="72" value="<?php print(htmlentities2($trip['location'])); ?>" /><br />
             </p>
             <hr style="color:#992233">
             <p>
               <b>Starting point</b> <span class="hlt">(required)</span><br />
-              <input type="text" name="start" size="72" value="<?php print(htmlentities($trip['start'])); ?>" /><br />
+              <input type="text" name="start" size="72" value="<?php print(htmlentities2($trip['start'])); ?>" /><br />
             </p>
             <hr style="color:#992233">
             <p>
@@ -105,7 +105,7 @@ box above.
             <hr style="color:#992233">
             <p>
               <b>Title</b> (optional)<br />
-              <input type="text" name="title" size="72" value="<?php print(htmlentities($trip['title'])); ?>" /><br />
+              <input type="text" name="title" size="72" value="<?php print(htmlentities2($trip['title'])); ?>" /><br />
             </p>
             <hr style="color:#992233">
             <p>
@@ -141,7 +141,7 @@ is still included, or choose a new one.
             <hr style="color:#992233">
             <p>
               <b>Description</b> (optional)<br />
-              <textarea rows="8" cols="80" name="descr"><?php print(htmlentities(str_replace("\r",'',str_replace('</p><p>',"\n",$trip['descr'])))); ?></textarea>
+              <textarea rows="8" cols="80" name="descr"><?php print(htmlentities2(str_replace("\r",'',str_replace('</p><p>',"\n",$trip['descr'])))); ?></textarea>
             </p>
             <hr style="color:#992233">
             <p>
@@ -310,9 +310,9 @@ You can only edit your own trips.  Choose one from the list below:
         </p>
 <?php
         for ($i=0;$i<count($trips);$i++) if ($trips[$i]['uid']==$USER->user_id) { 
-          if ($trips[$i]['title']) $title=htmlentities($trips[$i]['title']);
-          else $title=htmlentities($trips[$i]['location'].' from '.$trips[$i]['start']);
-          $descr=str_replace("\n",'</p><p>',htmlentities($trips[$i]['descr']));
+          if ($trips[$i]['title']) $title=htmlentities2($trips[$i]['title']);
+          else $title=htmlentities2($trips[$i]['location'].' from '.$trips[$i]['start']);
+          $descr=str_replace("\n",'</p><p>',htmlentities2($trips[$i]['descr']));
           if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
           require_once('geograph/gridimage.class.php');
           $image = new GridImage($trips[$i]['img']);
@@ -321,12 +321,12 @@ You can only edit your own trips.  Choose one from the list below:
           } else {
             $thumb='/photos/error120.jpg';
           }
-          $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities($trips[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
+          $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities2($trips[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
           print('<div class="inner">');
           print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
           print("<b>$title</b><br />");
-          print("<em>".htmlentities($trips[$i]['location'])."</em> &ndash; A ".whichtype($trips[$i]['type'], false)." from ".htmlentities($trips[$i]['start'])."<br />");
-          print("by <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities($trips[$i]['user'])."</a>");
+          print("<em>".htmlentities2($trips[$i]['location'])."</em> &ndash; A ".whichtype($trips[$i]['type'], false)." from ".htmlentities2($trips[$i]['start'])."<br />");
+          print("by <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities2($trips[$i]['user'])."</a>");
           print("<p>$descr&nbsp;[<a href=\"geotrip_edit.php?trip={$trips[$i]['id']}\">edit</a>]</p>");
           print('<div class="row"></div>');
           print('</div>');
