@@ -70,6 +70,11 @@ if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
 
 $qh = $qu = '';
 if (!empty($_GET['q'])) {
+
+	if (mb_detect_encoding($_GET['q'], 'UTF-8, ISO-8859-1') == "UTF-8") {
+		$_GET['q'] = utf8_decode($_GET['q']); //even though this page is latin1, browsers can still send us UTF8 queries
+	}
+
 	$_GET['q'] = str_replace(" near (anywhere)",'',$_GET['q']);
 	if (substr_count($_GET['q'], ' ') > 3 && strpos($_GET['q'],'the ') === 0) {
 		$_GET['q'] = str_replace('the ','',$_GET['q']);
@@ -183,6 +188,7 @@ if (!empty($_GET['q'])) {
 	if (!empty($decode[0])) {
 		if ($decode[0]->total_found == 1) {
 			$object = $decode[0]->items[0];
+			$object->name = utf8_decode($object->name);
 			if (strpos($object->name,$object->gr) === false)
                                  $object->name .= "/{$object->gr}";
 			if (strpos($object->name,'Grid Reference') === 0)
@@ -195,6 +201,7 @@ if (!empty($_GET['q'])) {
 			$prefixMatch = 0;
 			print "Or view images <i>near</i> <select onchange=\"location.href = '/near/'+encodeURI(this.value);\"><option value=''>Choose Location...</option>";
 			foreach ($decode[0]->items as $object) {
+				$object->name = utf8_decode($object->name);
 				if (strpos(strtolower($object->name),strtolower($_GET['q'])) === 0)
 					$prefixMatch++;
 				if (strpos($object->name,$object->gr) === false)
@@ -514,6 +521,7 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 
 			print "Can try viewing images <i>near</i>: <ul>";
 			foreach ($decode[0]->items as $object) {
+				$object->name = utf8_decode($object->name);
 				if (strpos($object->name,$object->gr) === false)
                                 	$object->name .= "/{$object->gr}";
                                 printf('<li><a href="/%s/%s">%s</a> %s</li>',
@@ -534,6 +542,7 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 
         	if (!empty($decode[0]) && $decode[0]->total_found > 0) {
                         $object = $decode[0]->items[0];
+			$object->name = utf8_decode($object->name);
 			if ($decode[0]->total_found == 1 && !isset($_GET['redir']))
 				print " Redirecting to a location based search... <script>location.href='/near/".urlencode2($object->name)."';</script>";
                         if (strpos($object->name,$object->gr) === false && $decode[0]->total_found > 1)
