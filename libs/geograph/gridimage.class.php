@@ -498,6 +498,8 @@ split_timer('gridimage'); //starts the timer
 		$this->bigtitle=trim(preg_replace("/^{$this->grid_reference}/", '', $this->title));
 		$this->bigtitle=preg_replace('/(?<!\.[A-Z])(?<!\.)\.$/', '', $this->bigtitle);
 
+                $this->title_utf8 = latin1_to_utf8($this->title);
+
 #if ($this->gridimage_id == 2847145) {
 		$adv = ($this->user_id == 3 || $this->user_id == 1533 || $this->user_id == 2520 || strpos($_SERVER['HTTP_USER_AGENT'], 'Google')!==FALSE || strpos($_SERVER['HTTP_USER_AGENT'], 'bing'));
 
