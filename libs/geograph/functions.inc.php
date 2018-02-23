@@ -366,8 +366,8 @@ if (!function_exists('mb_ucfirst') && function_exists('mb_substr')) {
 }
 
 function recaps($in) {
-	$out = preg_replace('/(^|[ \/-])([^ \/-]{3,})/e','"$1".mb_ucfirst("$2")',mb_strtolower($in));
-	return stripslashes(preg_replace('/(^|\/)([^ \/-])/e','"$1".mb_strtoupper("$2")',$out));
+	$out = preg_replace('/(^|[ \/-])([^ \/-]{3,})/e','"$1".ucfirst("$2")',strtolower($in));
+	return stripslashes(preg_replace('/(^|\/)([^ \/-])/e','"$1".strtoupper("$2")',$out));
 }
 
 function smarty_function_place($params) {
