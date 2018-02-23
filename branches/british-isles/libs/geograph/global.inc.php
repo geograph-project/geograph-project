@@ -116,6 +116,11 @@ function GeographDatabaseConnection($allow_readonly = false) {
 	global $ADODB_FETCH_MODE;
 	static $logged = 1;
 
+	if ($allow_readonly && function_exists('apc_store') && apc_fetch('lag_warning')) {
+		//short cut everything, if lag, then skip slave regardless.
+		$allow_readonly = false;
+	}
+
 	//see if we can use a read only slave connection
 	if ($allow_readonly && !empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
 
@@ -130,20 +135,21 @@ function GeographDatabaseConnection($allow_readonly = false) {
 			        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 				$row = $db->getRow("SHOW SLAVE STATUS");
 				if (!empty($row)) { //its empty if we actully connected to master!
-				    if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 120) && ($row['Seconds_Behind_Master'] < 150) && function_exists('apc_store') && !apc_fetch('lag_warning')) {
+				    if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 120) && function_exists('apc_store') && !apc_fetch('lag_warning')) {
 
-					//email me if we lag, but once gets big no point continuing to notify!
-					ob_start();
-					print "\n\nHost: ".`hostname`."\n\n";
-					print_r($row);
-					$list = $db->getAll("SHOW FULL PROCESSLIST");
-					foreach ($list as $lag)
-						if ($lag['State'] != 'Locked')
-							print_r($lag);
-					debug_print_backtrace();
-					$con = ob_get_clean();
-               				mail('geograph@barryhunter.co.uk','[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
-
+					if ($row['Seconds_Behind_Master'] < 150) {
+						//email me if we lag, but once gets big no point continuing to notify!
+						ob_start();
+						print "\n\nHost: ".`hostname`."\n\n";
+						print_r($row);
+						$list = $db->getAll("SHOW FULL PROCESSLIST");
+						foreach ($list as $lag)
+							if ($lag['State'] != 'Locked')
+								print_r($lag);
+						debug_print_backtrace();
+						$con = ob_get_clean();
+	               				mail('geograph@barryhunter.co.uk','[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
+					}
                				apc_store('lag_warning',1,3600);
 				    }
 				    if (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > $allow_readonly) {
