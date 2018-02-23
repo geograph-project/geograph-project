@@ -197,6 +197,7 @@ if (!empty($_GET['q'])) {
 				foreach ($ids as $c => $id) {
 					$row = $rows[$id];
 					$row['id'] = $id;
+					$row['name'] = utf8_encode($row['name']); //json always want utf8. even sphinx_placnames now contain latin1 data. 
 					$results['items'][] = $row;
 				}
 				$results['total_found'] = $sphinx->resultCount;

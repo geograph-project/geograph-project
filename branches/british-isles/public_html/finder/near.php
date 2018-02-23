@@ -78,6 +78,12 @@ if ($distance > 20000) $distance = 20000;
 
 $qh = $qu = ''; $qfiltbrow = ''; $qfiltmain = '';
 if (!empty($_GET['q'])) {
+
+	if (mb_detect_encoding($_GET['q'], 'UTF-8, ISO-8859-1') == "UTF-8") {
+		$_GET['q'] = utf8_decode($_GET['q']); //even though this page is latin1, browsers can still send us UTF8 queries
+	}
+
+
 	$qu = urlencode(trim($_GET['q']));
 	$qu2 = urlencode2(trim($_GET['q']));
 	$qh = htmlentities2(trim($_GET['q']));
@@ -228,6 +234,7 @@ if (!empty($_GET['q'])) {
 	if (!empty($decode)) {
 		if ($decode->total_found == 1) {
 			$object = $decode->items[0];
+			$object->name = utf8_decode($object->name);
 			if (strpos($object->name,$object->gr) === false)
                                  $object->name .= " / {$object->gr}";
 			print "Matched Location: <b>{$object->name}</b>".($object->localities?", ".$object->localities:'');
@@ -235,6 +242,7 @@ if (!empty($_GET['q'])) {
 		} elseif ($decode->total_found > 0) {
 			print "Possible Locations: <select onchange=\"location.href = '/near/'+encodeURI(this.value);\"><option value=''>Choose Location...</option>";
 			foreach ($decode->items as $object) {
+				$object->name = utf8_decode($object->name);
 				if (strpos($object->name,$object->gr) === false)
                                 	$object->name .= "/{$object->gr}";
                                 printf('<option value="%s"%s>%s</option>', $val = $object->name, ($gr == $object->gr)?' selected':'',
