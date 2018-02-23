@@ -166,11 +166,24 @@ $id = intval($image->gridimage_id);
 $title = "by {$image->realname}";
 
 if (!empty($_GET['title'])) {
-	if (!function_exists('smarty_modifier_truncate')) {
-		require_once("smarty/libs/plugins/modifier.truncate.php");
-	}
 
-	$title = smarty_modifier_truncate($image->title,30,"...")." $title";
+	$image->title_utf = latin1_to_utf8($image->title);
+	//bit of hacky way to detect, but checking, means less scope of for issues if this new code is broken!
+        if ($image->title_utf != $image->title) {
+		$currentLocal = setlocale(LC_CTYPE, 0);
+
+		$title = mb_strimwidth($image->title_utf,0,30,'...')." $title";
+
+		//we need to set the locale, ottherwise IS messed up by escapeshellarg (and potentially other string functions too)
+		setlocale(LC_CTYPE, "en_US.UTF-8");
+
+	} else {
+		if (!function_exists('smarty_modifier_truncate')) {
+			require_once("smarty/libs/plugins/modifier.truncate.php");
+		}
+
+		$title = smarty_modifier_truncate($image->title,30,"...")." $title";
+	}
 }
 if (!(isset($_GET['link']) && empty($_GET['link'])))
 	$title .= " - geograph.".(empty($_GET['ie'])?'org.uk':'ie')."/p/$id";
@@ -221,4 +234,8 @@ if (!empty($_GET['cmd'])) {
 
 header("Content-Type: image/jpeg");
 passthru($command);
+
+
+if (!empty($currentLocal)) //set it back to what it was, because we changed it
+	setlocale(LC_CTYPE, $currentLocal);
 
