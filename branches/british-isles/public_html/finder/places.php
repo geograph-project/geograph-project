@@ -31,6 +31,11 @@ $smarty = new GeographPage;
 $template = 'finder_places.tpl';
 
 if (!empty($_GET['q'])) {
+
+        if (mb_detect_encoding($_GET['q'], 'UTF-8, ISO-8859-1') == "UTF-8") {
+                $_GET['q'] = utf8_decode($_GET['q']); //even though this page is latin1, browsers can still send us UTF8 queries
+        }
+
 	$q=trim($_GET['q']);
 	
 	$fuzzy = !empty($_GET['f']);

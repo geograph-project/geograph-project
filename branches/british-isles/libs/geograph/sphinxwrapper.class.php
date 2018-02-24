@@ -57,7 +57,7 @@ class sphinxwrapper {
 		$q = str_replace(' AND ',' ',$q);
 
 			//http: (urls) bombs out the field: syntax
-		$q = str_replace('http://','http ',$q);
+		$q = preg_replace('/\b(https?):\/\//','$1 ',$q);
 
 			//remove any colons in tags - will mess up field: syntax
 		$q = preg_replace('/\[([^\]]+)[:-]([^\]]+)\]/','[$1~~~$2]',$q);
@@ -71,10 +71,22 @@ class sphinxwrapper {
 		$q = str_replace('&#375;','y',$q);
 
 			//remove unsuitable chars
-		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,\[\]\!-]+/',' ',trim(strtolower($q))));
+		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,\[\]\!\-\xC0-\xD6\xD8-\xF6\xF8-\xFF\xB4\x92\x91\x60]+/',' ',trim(strtolower($q))));
 
+                        //\xC0-\xD6\xD8-\xF6\xF8-\xFF are the 'word' chars from https://en.wikipedia.org/wiki/Windows-1252
+                        // ... that sphinx can deal with via charset_table
+                        // see: https://stackoverflow.com/questions/12265200/preg-replace-and-iso-8859-1-chars-matching
+                        //we ALSO include \xB4\x92\x91\x60 as 'single' smart quotes (plain \x27 is already included as a plain quote)
+                        // as sphinx knows to INGORE them (we could remove them ourselfs here too!)
+                        // see http://www.geograph.org.uk/stuff/unicode-audit.php?done=1&i=1
+
+			//fixup missing trailing " char
 		$q = preg_replace('/^["]([^\(\)\'"]+)$/','"$1"',$q);
+
+			//remove a trailing mismatched operator
 		$q = preg_replace('/^([^\(\)\'"]+)[\(\)\'"]$/','$1',$q);
+
+			//remove a leading mismatched operator
 		$q = preg_replace('/^[\(\)\'"]([^\(\)\'"]+)$/','$1',$q);
 
 			//remove any / not in quorum
@@ -100,7 +112,8 @@ class sphinxwrapper {
 		$q = trim(preg_replace('/[@^=\(~-]+$/','',$q));
 
 			//change back to right case
-		$q = str_replace('near/','NEAR/',$q);
+		$q = preg_replace('/\bnotnear\//','NOTNEAR/',$q);
+		$q = preg_replace('/\bnear\//','NEAR/',$q);
 
 			//change it back to simple: syntax
 		$q2 = preg_replace('/(-?)[@]([a-z_]+) (-?)/','$1$3$2:',$q);
