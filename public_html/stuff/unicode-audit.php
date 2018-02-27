@@ -54,35 +54,52 @@ if (!empty($_GET['done'])) {
 		print "<big>".htmlspecialchars2(urldecode($c))."</big>";
 		print " => ".urlencode($final);
 		print "</div>";
-		if (!preg_match('/^%[\dA-F]{2}$/',$c) || (strlen($final) > 1 && $final != 'SPACE' && $final != 'IGNORE')) {
+
+		if (       (!preg_match('/^%[\dA-F]{2}$/',$c) && empty($_GET['strip'])) //if DONT have strip, then HTML Entities, need diverting to regexp
+			|| (strlen($final) > 1 && $final != 'SPACE' && $final != 'IGNORE')) { //if multi-replace, NEED to use regexp
 			$regexp[$c] = $final;
-		} elseif($final == 'SPACE' || $final == ' ') { //ignore
-		} elseif($final == 'IGNORE') {
+		} elseif ($final == 'SPACE' || $final == ' ') { //dont need anything, sphinx default is a seperator!
+		} elseif ($final == 'IGNORE') {
 			$ignore[$c]=1;
 		} else {
 			$charset[$c] = $final;
 		}
 	}
 	print "<hr>";
-	$charset_type = "sbcs"; 
+	$charset_type = "sbcs";
 	if (!empty($_GET['u']))  $charset_type = "utf-8";
-	print "<h3>Generated sphinx.conf mapping for $charset_type</h3>";
-	print "<pre>";
-	print "charset_type = $charset_type\n";
+	print "<h3>Generated sphinx.conf mapping</h3>";
+	if (!empty($_GET['u']))
+		print "<p>Don't forget may need <tt>sql_query_pre = SET CHARACTER SET 'utf8'</tt> in the SOURCE</p>";
+	print "<pre><b style=background-color:yellow>";
+	if (!empty($_GET['strip']))
+		print "\thtml_strip = 1\n";
+	print "\tcharset_type = $charset_type\n";
+	print "</b>\n";
 	if (!empty($regexp)) {
 		//TODO, collapse multiple into one (eg &#1071; => r and &#1103; => r COULD be &#(1071|1103); => r
 		asort($regexp);
+
+		if (isset($regexp['%26'])) {//NEEDS to be last!
+			$ampvalue = $regexp['%26'];
+			unset($regexp['%26']); //will be added back last!
+		}
+		if (empty($_GET['strip'])) //add a rule to remove all other entities
+			$regexp[urlencode('&#\d+;')] = '.'; //spaces dont work
+		if (!empty($ampvalue))
+			$regexp['%26'] = $ampvalue;
+
 		foreach ($regexp as $c => $final) {
 			if ($final == 'SPACE') $final = '.'; //spaces dont work, in regex syntax, so use some other arbitary seperator
-			if ($final == 'IGNORE') { $final = '\\x80'; $ignore['%80']=1; } //sphinx wont ignore control chars, so choose an aread undefined in latin1
+			if ($final == 'IGNORE') { $final = "'"; $ignore['%27']=1; } //sphinx wont ignore control chars, buy we ignoring single quotes anyway
 
 			if (!empty($_GET['u'])) {
-				if (strlen($c) > 3 || ord(urldecode($c)) < 127 ) { //a html entity OR a ascii char!
+				if ((strlen($c) == 3 || empty($_GET['strip'])) && ord(urldecode($c)) < 127 ) { //a html entity OR a ascii char!
 					$c = str_replace('%','\\x',$c); # \x7F	hex character code (exactly two digits)
 				} else {
 					//oterwise its a non-ascii, but  iso-8859-1, which needs will have been changed in mysql->sphinx to a UTF8
 					$char = latin1_to_utf8(urldecode($c)); //get as a plain char
-					$c = '\\x{'.dechex(uniord($char)).'}'; //encode as re2 expresison \x{10FFFF} 
+					$c = '\\x{'.dechex(uniord($char)).'}'; //encode as re2 expresison \x{10FFFF}
 				}
 			} else {
 				//$c = urldecode($c);
@@ -91,25 +108,27 @@ if (!empty($_GET['done'])) {
 
 			$final = str_replace(' ','.',$final);
 
-			print "regexp_filter = ".htmlentities($c)." => $final\n";   //need htmlentities as we ARE replaceing some actual entities, but simple ones
+			print "\tregexp_filter = ".htmlentities($c)." => $final\n";   //need htmlentities as we ARE replaceing some actual entities, but simple ones
 		}
-		print "\n\n";
+		print "\n";
 	}
 
 	if (!empty($ignore)) {
-		print "ignore_chars = "; $sep = '';
+		print "\tignore_chars = "; $sep = '';
 		foreach ($ignore as $c => $dummy) {
 			print "$sep".simple_urlencode_to_char($c)."";
+			if (!empty($_GET['debug'])) print " ($c) ";
 			$sep = ", ";
 		}
 		print "\n\n";
 	}
 	if (!empty($charset)) {
-		print "charset_table = 0..9, A..Z->a..z, _, a..z \\\n\t\t";
+		print "\tcharset_table = 0..9, A..Z->a..z, _, a..z \\\n\t\t";
 		asort($charset);
 		$i =1;
 		foreach ($charset as $c => $final) {
 			print ", ".simple_urlencode_to_char($c)."->".strtolower($final);
+			if (!empty($_GET['debug'])) print " ($c) ";
 			if (!($i%10))
 				print " \\\n\t\t";
 			$i++;
@@ -186,18 +205,14 @@ function uniord($u) {
     return $k2 * 256 + $k1;
 }
 
-
-	function uniord2($char) {
-		//trick from http://php.net/manual/en/function.ord.php#109724
-		return hexdec(bin2hex($char));
-	}
 	function simple_urlencode_to_char($c) {
 		if (!empty($_GET['u'])) {
-			if (ord(urldecode($c)) < 127) {//plain ascii, so easy
+			if (strlen($c) == 3 && ord(urldecode($c)) < 127) {//plain ascii, so easy
 				return str_replace('%','U+',$c);
 			} else {
 				$char = latin1_to_utf8(urldecode($c));
-				return "U+".strtoupper(dechex(uniord2($char)));
+				//$char = utf8_encode(urldecode($c));
+				return sprintf('U+%04X', uniord($char));
 			}
 		} else {
 			//must by a plain sbcs char
