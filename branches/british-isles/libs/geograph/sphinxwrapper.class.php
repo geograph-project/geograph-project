@@ -70,8 +70,11 @@ class sphinxwrapper {
 		$q = str_replace('&#373;','w',$q);
 		$q = str_replace('&#375;','y',$q);
 
+//add to /w to allow extended chars
+$extended = '\xC0-\xD6\xD8-\xF6\xF8-\xFF\xB4\x92\x91\x60';
+
 			//remove unsuitable chars
-		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,\[\]\!\-\xC0-\xD6\xD8-\xF6\xF8-\xFF\xB4\x92\x91\x60]+/',' ',trim(strtolower($q))));
+		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,\[\]\!\-'.$extended.']+/',' ',trim(strtolower($q))));
 
                         //\xC0-\xD6\xD8-\xF6\xF8-\xFF are the 'word' chars from https://en.wikipedia.org/wiki/Windows-1252
                         // ... that sphinx can deal with via charset_table
@@ -121,12 +124,15 @@ class sphinxwrapper {
 		$q2 = str_replace('~~~',':',$q2);
 		$this->qclean = trim(str_replace('  ',' ',$q2));
 
+if (strpos($_SERVER['PHP_SELF'],'snippet') !== FALSE) { //at the moment dont have a way to filter by index will search!
+	$q = str_replace("'",'',$q); //snippet index has ' as IGNORE, remove them now, so that they dont break hypenated eg, [tre'r-ddol] > [tre'"r ddol" | rddol]
+}
 
 			//make excluded hyphenated words phrases
-		$q = preg_replace('/(?<!"|\w)-(=?\w+)(-[-\w]*\w)/e','"-(\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2").")"',$q);
+		$q = preg_replace('/(?<!"|\w)-(=?[\w'.$extended.']+)(-[-\w'.$extended.']*[\w'.$extended.'])/e','"-(\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2").")"',$q);
 
 			//make hyphenated words phrases
-		$q = preg_replace('/(?<!")(=?\w+)(-[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
+		$q = preg_replace('/(?<!")(=?[\w'.$extended.']+)(-[-\w'.$extended.']*[\w'.$extended.'])/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
 
 			//make excluded aposphies work (as a phrase)
 		$q = preg_replace('/(?<!"|\w)-(=?\w+)(\'\w*[\'\w]*\w)/e','"-(\"".str_replace("\\\'"," ","$1$2")."\" | ".str_replace("\\\'","","$1$2").")"',$q);
@@ -488,7 +494,12 @@ class sphinxwrapper {
 				$cl->SetSortMode ( SPH_SORT_EXTENDED, $this->sort);
 			}
 		}
-		
+
+		//Temporally Hotfix, only the Snippet index is currently UTF-8!
+		if ($index == 'snippet') {
+			$this->q = latin1_to_utf8($this->q);
+		}
+
 		$res = $cl->Query (trim($this->q), $index );
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
 			print "<pre>";
@@ -542,6 +553,12 @@ split_timer('sphinx'); //starts the timer
 		
 		$cl->SetMatchMode ( SPH_MATCH_EXTENDED );
 		$cl->SetLimits(0,1,0);
+
+		//Temporally Hotfix, only the Snippet index is currently UTF-8!
+		if ($index == 'snippet') {
+			$q = latin1_to_utf8($q);
+		}
+
 		$res = $cl->Query ( $q, $index );
 		
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
@@ -769,9 +786,14 @@ split_timer('sphinx'); //starts the timer
 		$q = preg_replace('/@notshared\b/','@!(snippet,snippet_title,snippet_id)',$q);
 		$q = preg_replace('/@shared\b/','@(snippet,snippet_title,snippet_id)',$q);
 		$q = preg_replace('/@not(\w+)\b/','@!($1)',$q);
-		
+
+		//Temporally Hotfix, only the Snippet index is currently UTF-8!
+		if ($index == 'snippet') {
+			$q = latin1_to_utf8($q);
+		}
+
 		$res = $cl->Query (trim($q), $index );
-		
+
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
 			print "<pre>";
 			print_r($cl);	

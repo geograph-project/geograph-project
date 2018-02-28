@@ -2,7 +2,7 @@
 /**
  * $Project: GeoGraph $
  * $Id: searchengine.class.php 2475 2006-09-04 13:23:46Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
  *
@@ -10,12 +10,12 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -35,22 +35,21 @@
 /**
 * Gazetteer
 *
-* 
+*
 * @package Geograph
 */
 class Gazetteer
 {
 	var $db=null;
-	
+
 	function findBySquare($square,$radius = 25000,$f_codes = null,$gazetteer = '') {
 		return $this->findByNational($square->reference_index,$square->nateastings,$square->natnorthings,$radius,$f_codes,$gazetteer);
 	}
-	
 
 	function findListByNational($reference_index,$e,$n,$radius = 1005) {
 		global $CONF,$memcache;
-		
-		$mkey = "$reference_index,$e,$n,$radius,-".'.v3';//need to invalidate the whole cache. 
+
+		$mkey = "$reference_index,$e,$n,$radius,-".'.v3';//need to invalidate the whole cache.
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
@@ -58,12 +57,11 @@ class Gazetteer
 
 split_timer('gazetteer'); //starts the timer
 
-		
 		$db=&$this->_getDB();
-		
+
 		$e = (floor($e/1000) * 1000) + 500;
 		$n = (floor($n/1000) * 1000) + 500;
-		
+
 		//to optimise the query, we scan a square centred on the
 		//the required point
 		$left=$e-$radius;
@@ -75,7 +73,7 @@ split_timer('gazetteer'); //starts the timer
 
 		if (($CONF['use_gazetteer'] == 'OS' || $CONF['use_gazetteer'] == 'OS250') && $reference_index == 1) {
 			//even for 250k gaz, lets use the 50k as we want the detailed list
-			
+
 			$places = $db->GetAll("select
 					`def_nam` as full_name,
 					km_ref as grid_reference,
@@ -89,7 +87,7 @@ split_timer('gazetteer'); //starts the timer
 				from
 					os_gaz
 				where
-					CONTAINS( 	
+					CONTAINS(
 						GeomFromText($rectangle),
 						point_en)
 				order by distance asc,f_code+0,def_nam");
@@ -101,12 +99,12 @@ split_timer('gazetteer'); //starts the timer
 					loc_adm1.name as adm1_name,
 					loc_placenames.id as pid,
 					pow(e-{$e},2)+pow(n-{$n},2) as distance
-				from 
+				from
 					loc_placenames
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 				where
-					dsg LIKE 'PPL%' AND 
-					CONTAINS( 	
+					dsg LIKE 'PPL%' AND
+					CONTAINS(
 						GeomFromText($rectangle),
 						point_en) AND
 					loc_placenames.reference_index = {$reference_index}
@@ -115,26 +113,22 @@ split_timer('gazetteer'); //starts the timer
 
 
 		}
-	        if ($places && count($places))
-			foreach ($places as $i => $place) {
-        		        $places[$i]['full_name'] = _utf8_decode($place['full_name']);
-        		}
 
 split_timer('gazetteer','findListByNational',$mkey); //logs the wall time
 
 		//fails quickly if not using memcached!
 		$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
-		
+
 		return $places;
 	}
-	
+
 	function findByNational($reference_index,$e,$n,$radius = 25005,$f_codes = null,$gazetteer = '') {
 		global $CONF,$memcache;
-		
+
 		if (empty($gazetteer)) {
 			$gazetteer = $CONF['use_gazetteer'];
-		} 
-		
+		}
+
 		$mkey = "$reference_index,$e,$n,$radius,$f_codes,$gazetteer";
 		//fails quickly if not using memcached!
 		$places =& $memcache->name_get('g',$mkey);
@@ -142,9 +136,9 @@ split_timer('gazetteer','findListByNational',$mkey); //logs the wall time
 			return $places;
 
 split_timer('gazetteer'); //starts the timer
-		
+
 		$db=&$this->_getDB();
-		
+
 		//to optimise the query, we scan a square centred on the
 		//the required point
 		$left=$e-$radius;
@@ -538,7 +532,6 @@ split_timer('gazetteer'); //starts the timer
 							if (empty($row['gridref'])) {
 								list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
 							}
-							$places[$id]['full_name'] = _utf8_decode($row['full_name']);
 						}
 					}
 				}
@@ -713,7 +706,6 @@ split_timer('gazetteer'); //starts the timer
 					if (empty($row['gridref'])) {
 						list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
 					}
-			                $places[$id]['full_name'] = _utf8_decode($row['full_name']);
 				}
 				if ($c > 4) {
 					$placename = strtolower($placename);

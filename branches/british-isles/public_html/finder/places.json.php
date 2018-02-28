@@ -144,6 +144,10 @@ if (!empty($_GET['q'])) {
 	if (empty($results)) {
 		$fuzzy = !empty($_GET['f']);
 
+		if (mb_detect_encoding($q, 'UTF-8, ISO-8859-1') == "UTF-8") {
+			$q = utf8_to_latin1($q); //even though we nominially latin1, browsers can still send us UTF8 queries
+		}
+
 		$sphinx = new sphinxwrapper($q);
 
 		$sphinx->pageSize = $pgsize = 15;
