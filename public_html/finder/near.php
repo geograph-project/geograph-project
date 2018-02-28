@@ -80,7 +80,7 @@ $qh = $qu = ''; $qfiltbrow = ''; $qfiltmain = '';
 if (!empty($_GET['q'])) {
 
 	if (mb_detect_encoding($_GET['q'], 'UTF-8, ISO-8859-1') == "UTF-8") {
-		$_GET['q'] = utf8_decode($_GET['q']); //even though this page is latin1, browsers can still send us UTF8 queries
+		$_GET['q'] = utf8_to_latin1($_GET['q']); //even though this page is latin1, browsers can still send us UTF8 queries
 	}
 
 

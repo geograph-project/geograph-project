@@ -381,8 +381,6 @@ function smarty_function_place($params) {
 	elseif (!$place['isin'])
 		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
 
-	$place['full_name'] = _utf8_decode($place['full_name']);
-
 	if (!ctype_lower($place['full_name'])) {
 		$t .= "<b>".recaps($place['full_name'])."</b><small><i>";
 	} else {
@@ -418,25 +416,6 @@ function smarty_function_place($params) {
 	$t = $t2." itemprop=\"contentLocation\">".$t."</$tag>";
 
 	return $t;
-}
-
-function _utf8_decode($string)
-{
-  $tmp = $string;
-  $count = 0;
-  while (mb_detect_encoding($tmp)=="UTF-8")
-  {
-    $tmp = utf8_decode($tmp);
-    $count++;
-  }
-  
-  for ($i = 0; $i < $count-1 ; $i++)
-  {
-    $string = utf8_decode($string);
-    
-  }
-  return $string;
-  
 }
 
 function smarty_function_linktoself($params) {
@@ -1050,9 +1029,19 @@ function latin1_to_utf8($input) {
         //our database has charactors encoded as entities (outside ISO-8859-1) - so need to decode entities.
         //and while we declare ISO-8859-1 as the html charset, we actully using windows-1252, as some browsers are sending us chars not valid in ISO-8859-1.
         //todo detect iconv not installed, and use utf8_encode as a fallback??
+	//we dont utf8_encode if can help it, as it only supports ISO-8859-1, NOT windows-1252
         return html_entity_decode(
                 iconv("windows-1252", "utf-8", $input),
                 ENT_COMPAT, 'UTF-8');
+}
+
+function utf8_to_latin1($input) {
+	//todo, could detct chars OUTSIDE of cp1252 and convert to HTML-Entities, just like browsers do on submitting forms!
+	// http://www.intertwingly.net/blog/2004/04/15/Character-Encoding-and-HTML-Forms
+        // see code at https://stackoverflow.com/questions/3231819/convert-utf8-to-latin1-in-php-all-characters-above-255-convert-to-char-referenc
+        //  $convmap= array(0x0100, 0xFFFF, 0, 0xFFFF);
+        //  $encutf= mb_encode_numericentity($utf, $convmap, 'UTF-8');
+	return iconv("utf-8", "windows-1252", $input);
 }
 
 function urlencode2($input) {

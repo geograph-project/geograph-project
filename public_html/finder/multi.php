@@ -212,18 +212,16 @@ if (!empty($_GET['q'])) {
 				}
 				unset($others['places']);
 			} else {
-				//last ditch attempt incase we have a single match (farms etc not in placename index) 
+				//last ditch attempt incase we have a single match (farms etc not in placename index)
 				$qplacename = $db->Quote($sphinx->qclean);
 				$places = $db->GetAll("
 				(select (seq + 1000000) as id,`def_nam` as full_name,km_ref as gridref,`east` as e,`north` as n,1 as reference_index from os_gaz where def_nam=$qplacename limit 15) 
 				UNION
 				(select id,full_name,'' as gridref,e,n,reference_index from loc_placenames where full_name=$qplacename limit 15)
 				");
-				
+
 				if (count($places) == 1) {
-					$full_name = _utf8_decode($places[0]['full_name']);
-					
-					$inners['places'] = array('title'=>'around '.$full_name,'url'=>"/search.php?placename=".$places[0]['id']."&amp;do=1&displayclass=search");
+					$inners['places'] = array('title'=>'around '.$places[0]['full_name'],'url'=>"/search.php?placename=".$places[0]['id']."&amp;do=1&displayclass=search");
 					unset($others['places']);
 				} elseif (count($places)) {
 					require_once('geograph/conversions.class.php');
@@ -234,10 +232,8 @@ if (!empty($_GET['q'])) {
 							list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
 						}
 						$grs[$places[$id]['gridref']]=1;
-						
-						$full_name = _utf8_decode($places[0]['full_name']);
-						
-						$otherstop['place'.$id] = array('title'=>'Images near '.$full_name.' in '.$places[$id]['gridref'],'url'=>"/search.php?placename=".$places[$id]['id']."&amp;do=1");
+
+						$otherstop['place'.$id] = array('title'=>'Images near '.$places[0]['full_name'].' in '.$places[$id]['gridref'],'url'=>"/search.php?placename=".$places[$id]['id']."&amp;do=1");
 					}
 					//hmm what can we do with THEM...
 					if (count($grs)) {
