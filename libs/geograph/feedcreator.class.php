@@ -1301,7 +1301,6 @@ class RSSCreator20 extends RSSCreator091 {
     function RSSCreator20() {
         parent::_setRSSVersion("2.0");
     }
-    
 }
 
 
@@ -1552,7 +1551,11 @@ class PIECreator01 extends FeedCreator {
 			$itemDate = new FeedDate($this->items[$i]->date);
 			$feed.= "        <created>".htmlspecialchars($itemDate->iso8601())."</created>\n";
 			$feed.= "        <issued>".htmlspecialchars($itemDate->iso8601())."</issued>\n";
-			$feed.= "        <modified>".htmlspecialchars($itemDate->iso8601())."</modified>\n";
+			if (!empty($this->items[$i]->dateUpdated)) {
+				$itemDateUpdated = new FeedDate($this->items[$i]->dateUpdated);
+				$feed.= "        <modified>".htmlspecialchars($itemDateUpdated->rfc3339())."</modified>\n";
+			} else
+				$feed.= "        <modified>".htmlspecialchars($itemDate->iso8601())."</modified>\n";
 			$feed.= "        <id>".htmlspecialchars($this->items[$i]->guid)."</id>\n";
 			if ($this->items[$i]->author!="") {
 				$feed.= "        <author>\n";
@@ -1627,7 +1630,11 @@ class AtomCreator10 extends FeedCreator {
 				$this->items[$i]->date = time();
 			}
 			$itemDate = new FeedDate($this->items[$i]->date);
-			$feed.= "        <updated>".htmlspecialchars($itemDate->rfc3339())."</updated>\n";
+			if (!empty($this->items[$i]->dateUpdated)) {
+				$itemDateUpdated = new FeedDate($this->items[$i]->dateUpdated);
+				$feed.= "        <updated>".htmlspecialchars($itemDateUpdated->rfc3339())."</updated>\n";
+			} else
+				$feed.= "        <updated>".htmlspecialchars($itemDate->rfc3339())."</updated>\n";
 			$feed.= "        <published>".htmlspecialchars($itemDate->rfc3339())."</published>\n";
 			$feed.= "        <id>".htmlspecialchars($this->items[$i]->link)."</id>\n";
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
@@ -1686,7 +1693,7 @@ class AtomCreator03 extends FeedCreator {
 		if ($this->language!="") {
 			$feed.= " xml:lang=\"".$this->language."\"";
 		}
-		$feed.= ">\n"; 
+		$feed.= ">\n";
 		$feed.= "    <title>".htmlspecialchars($this->title)."</title>\n";
 		$feed.= "    <tagline>".htmlspecialchars($this->description)."</tagline>\n";
 		$feed.= "    <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->link)."\"/>\n";
@@ -1713,7 +1720,11 @@ class AtomCreator03 extends FeedCreator {
 			$itemDate = new FeedDate($this->items[$i]->date);
 			$feed.= "        <created>".htmlspecialchars($itemDate->iso8601())."</created>\n";
 			$feed.= "        <issued>".htmlspecialchars($itemDate->iso8601())."</issued>\n";
-			$feed.= "        <modified>".htmlspecialchars($itemDate->iso8601())."</modified>\n";
+			if (!empty($this->items[$i]->dateUpdated)) {
+				$itemDateUpdated = new FeedDate($this->items[$i]->dateUpdated);
+				$feed.= "        <modified>".htmlspecialchars($itemDateUpdated->rfc3339())."</modified>\n";
+			} else
+				$feed.= "        <modified>".htmlspecialchars($itemDate->iso8601())."</modified>\n";
 			$feed.= "        <id>".htmlspecialchars($this->items[$i]->link)."</id>\n";
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
 			if ($this->items[$i]->author!="") {

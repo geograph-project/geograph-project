@@ -35,11 +35,19 @@ if ( $_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || $_GET['q'] == ',') {
 }
 
 require_once('geograph/global.inc.php');
+
+if (empty($_GET['format']) && strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot')!==FALSE) {
+	//lets start moving search engine bots. but Sitemaps use format=ATOM, so exclude them!
+	pageMustBeHTTP();
+}
+
+
+
 require_once('geograph/feedcreator.class.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
-	
+
 
 
 if (!empty($CONF['redis_host']))
@@ -374,12 +382,14 @@ for ($i=0; $i<$cnt; $i++)
 		$item->imageTaken = $images->images[$i]->imagetaken;
 	}
 
+	if (!empty($images->images[$i]->upd_timestamp))
+		$item->dateUpdated = strtotime($images->images[$i]->upd_timestamp);
 	$item->date = strtotime($images->images[$i]->submitted);
 	$item->source = $baselink.preg_replace('/^\//','',$images->images[$i]->profile_link);
 	$item->author = $images->images[$i]->realname;
 	if (!empty($images->images[$i]->tags))
 		$item->tags = $images->images[$i]->tags;
-	
+
 	if ($geoformat) {
 		$item->lat = $images->images[$i]->wgs84_lat;
 		$item->long = $images->images[$i]->wgs84_long;
@@ -426,10 +436,10 @@ for ($i=0; $i<$cnt; $i++)
 }
 
 //these are outputed by the rss class now!
-#customExpiresHeader($rss_timeout,true); //we cache it for a while anyway! 
-#header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
+#customExpiresHeader($rss_timeout,true); //we cache it for a while anyway!
+#header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
-$rss->saveFeed($format, $rssfile); 
+$rss->saveFeed($format, $rssfile);
 
 ########################
 
@@ -444,4 +454,3 @@ function getTextKey() {
 	return md5($t);
 }
 
-?>
