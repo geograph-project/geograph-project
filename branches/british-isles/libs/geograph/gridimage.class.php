@@ -544,24 +544,38 @@ split_timer('gridimage'); //starts the timer
 		}
 
 		$extra_meta = array();
-		if ($this->grid_square->reference_index == 2)
-			$extra_meta[] = "<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/{$this->gridimage_id}\" />";
-		else
-			$extra_meta[] = "<link rel=\"canonical\" href=\"http://www.geograph.org.uk/photo/{$this->gridimage_id}\" />";
+		if ($this->gridimage_id >= 5500000 || ($this->gridimage_id >= 4243769 && $this->gridimage_id <= 4243771)) {
+			if ($this->grid_square->reference_index == 2)
+				$extra_meta[] = "<link rel=\"canonical\" href=\"https://www.geograph.ie/photo/{$this->gridimage_id}\" />";
+			else
+				$extra_meta[] = "<link rel=\"canonical\" href=\"https://www.geograph.org.uk/photo/{$this->gridimage_id}\" />";
+		} else {
+			if ($this->grid_square->reference_index == 2)
+				$extra_meta[] = "<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/{$this->gridimage_id}\" />";
+			else
+				$extra_meta[] = "<link rel=\"canonical\" href=\"http://www.geograph.org.uk/photo/{$this->gridimage_id}\" />";
+		}
 
-		$extra_meta[] = "<meta name=\"twitter:card\" content=\"photo\">"; //or summary_large_image
-		$extra_meta[] = "<meta name=\"twitter:site\" content=\"@geograph_bi\">";
-		//$extra_meta[] = "<meta name=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamp.php?id={$this->gridimage_id}\"/>";
-		$extra_meta[] = "<meta name=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamped/".basename($imageurl)."\">";
-		$extra_meta[] = "<meta name=\"og:title\" content=\"".htmlentities2($page_title)."\">";
-		//$extra_meta[] = "<meta name=\"twitter:image\" content=\"{$imageurl}\">"; //lets fallback and use non stamped?
+		$extra_meta[] = "<meta property=\"twitter:card\" content=\"photo\">"; //or summary_large_image
+		$extra_meta[] = "<meta property=\"twitter:site\" content=\"@geograph_bi\">";
+		//$extra_meta[] = "<meta property=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamp.php?id={$this->gridimage_id}\"/>";
+		$extra_meta[] = "<meta property=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamped/".basename($imageurl)."\">";
+
+                $size = $this->_getFullSize(); //caches, anyway, so not too worried about calling mutlipel times
+		if (!empty($size[0])) {
+			$extra_meta[] = "<meta property=\"og:image:width\" content=\"{$size[0]}\">";
+			$extra_meta[] = "<meta property=\"og:image:height\" content=\"{$size[1]}\">";
+		}
+
+		$extra_meta[] = "<meta property=\"og:title\" content=\"".htmlentities($page_title)."\">";
+		//$extra_meta[] = "<meta property=\"twitter:image\" content=\"{$imageurl}\">"; //lets fallback and use non stamped?
 
 
 		if (empty($this->comment)) {
 			$smarty->assign('meta_description', "{$this->grid_reference} :: {$this->bigtitle}, ".strip_tags(smarty_function_place(array('place'=>$place)))." by ".$this->realname );
 		} else {
 			$smarty->assign('meta_description', $this->comment);
-			$extra_meta[] = "<meta name=\"og:description\" content=\"".htmlentities2($this->comment)."\">"; //shame doesnt fall back and actully use metadescruption
+			$extra_meta[] = "<meta property=\"og:description\" content=\"".htmlentities2($this->comment)."\">"; //shame doesnt fall back and actully use metadescruption
 		}
 
 		$smarty->assign('extra_meta', implode("\n",$extra_meta));
@@ -724,15 +738,15 @@ split_timer('gridimage'); //starts the timer
 				ORDER BY post_id DESC"));
 
 			//todo -experimental - might be removed...
-			if ($this->collections += $db->CacheGetAll(3600*30,"
-				SELECT '' AS url,label AS title,'Automatic Cluster' AS `type`
-				FROM gridimage_group
-				WHERE gridimage_id = {$this->gridimage_id}
-				AND label != 'Other Topics'
+			if ($this->collections += $db->getAll("
+				SELECT '' AS url,CONCAT(label,' [',images,']') AS title,'Automatic Cluster' AS `type`
+				FROM gridimage_group INNER JOIN gridimage_group_stat USING (label)
+				WHERE gridimage_id = {$this->gridimage_id} AND grid_reference = '{$this->grid_reference}'
+				AND label != 'Other Topics' AND images > 1
 				ORDER BY score DESC")) {
 				foreach ($this->collections as $i => $row) {
 					if (empty($row['url']) && !empty($row['title'])) {
-						$this->collections[$i]['url'] = "/search.php?gridref={$this->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode($row['title'])."&amp;do=1";
+						$this->collections[$i]['url'] = "/search.php?gridref={$this->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&amp;do=1";
 					}
 				}
 			}
@@ -877,6 +891,9 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 		if ($returntotalpath)
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
+		if ($this->gridimage_id >= 5500000) //temporally hotwire
+			$fullpath = str_replace('http://','https://',$fullpath);
+
 		return $fullpath;
 	}
 	
@@ -916,7 +933,8 @@ split_timer('gridimage'); //starts the timer
 		if ($CONF['template'] == 'archive' || empty($check_exists)) {
 			if ($returntotalpath)
 				$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
-
+			if ($this->gridimage_id >= 5500000) //temporally hotwire
+				$fullpath = str_replace('http://','https://',$fullpath);
 			return $fullpath;
 		}
 		
@@ -976,7 +994,10 @@ split_timer('gridimage'); //starts the timer
 
 		if ($returntotalpath)
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
-			
+
+		if ($this->gridimage_id >= 5500000) //temporally hotwire
+			$fullpath = str_replace('http://','https://',$fullpath);
+
 split_timer('gridimage','_getFullpath',$this->gridimage_id); //logs the wall time
 
 		return $fullpath;
@@ -1070,6 +1091,8 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 
 		if ($returntotalpath)
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
+		if ($this->gridimage_id >= 5500000) //temporally hotwire
+			$fullpath = str_replace('http://','https://',$fullpath);
 
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 
@@ -1213,6 +1236,9 @@ split_timer('gridimage'); //starts the timer
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
+			if ($this->gridimage_id >= 5500000) //temporally hotwire
+				$thumbpath = str_replace('http://','https://',$thumbpath);
+
 
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
@@ -1333,8 +1359,8 @@ split_timer('gridimage','getSquareThumb-create',$thumbpath); //logs the wall tim
 	* a variety of options. Use this to build specific methods for public
 	* consumption
 	* 
-	* maxw : maximum width of image (default '100')
-	* maxh : maximum height of image (default '100')
+	* maxw : maximum width of image (default '120')
+	* maxh : maximum height of image (default '120')
 	* bestfit : show entire image inside max width/height. If false
 	*           then the image is cropped to match the aspect ratio of
 	*           of the target area first (default 'true')
@@ -1358,8 +1384,8 @@ split_timer('gridimage'); //starts the timer
 			return $result;
 	
 		//unpack known params and set defaults
-		$maxw=isset($params['maxw'])?$params['maxw']:100;
-		$maxh=isset($params['maxh'])?$params['maxh']:100;
+		$maxw=isset($params['maxw'])?$params['maxw']:120;
+		$maxh=isset($params['maxh'])?$params['maxh']:120;
 		$attribname=isset($params['attribname'])?$params['attribname']:'src';
 		$bestfit=isset($params['bestfit'])?$params['bestfit']:true;
 		$bevel=isset($params['bevel'])?$params['bevel']:true;
@@ -1390,6 +1416,9 @@ split_timer('gridimage'); //starts the timer
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
+			if ($this->gridimage_id >= 5500000) //temporally hotwire
+				$return['server'] = str_replace('http://','https://',$return['server']);
+
 			return $return;
 		}
 
@@ -1424,6 +1453,8 @@ split_timer('gridimage'); //starts the timer
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
+			if ($this->gridimage_id >= 5500000) //temporally hotwire
+				$thumbpath = str_replace('http://','https://',$thumbpath);
 
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 
@@ -1609,6 +1640,8 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
+			if ($this->gridimage_id >= 5500000) //temporally hotwire
+				$thumbpath = str_replace('http://','https://',$thumbpath);
 
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 
