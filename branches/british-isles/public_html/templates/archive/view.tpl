@@ -2,7 +2,7 @@
 
 {if $image}
 
-<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="{$sitemap}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
+<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 {if $place.distance}
  {place place=$place h3=true}
 {/if}
@@ -24,10 +24,11 @@
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
 	{if $image->original_width}
 		<div class="caption640" style="text-align:center;"><a href="{$image->_getOriginalpath(false,true)}">view large version ({$image->original_width} x {$image->original_height})</a></div>
+		<noscript><img src="{$image->_getOriginalpath(false,true)}" width=1 height=1></noscript>
 	{/if}
   <div class="img-shadow" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull()|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
 
-  <div class="caption640" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title" itemprop="name">{$image->title|escape:'html'}</div>
+  <div class="caption640"><strong property="dct:title" itemprop="name">{$image->title|escape:'html'}</strong></div>
 
   {if $image->comment}
   <div class="caption640" itemprop="description">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
@@ -61,7 +62,7 @@
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img
 alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL">{$image->realname|escape:'html'}</a> and
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="{$image->_getFullpath(true,true)}" title="Creative Commons Attribution-Share Alike 2.0 Licence">Creative Commons Licence</a>.</div>
+licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="{$imageurl}" title="Creative Commons Attribution-Share Alike 2.0 Licence">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
 <!--
@@ -117,31 +118,6 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator" itemprop="author" rel="author">{$image->realname|escape:'html'}</a></dd>
 {/if}
 
-<dt>Image classification</dt>
-<dd>{if $image->ftf eq 1}
-	Geograph (First for {$image->grid_reference})
-{elseif $image->ftf eq 2}
-	Geograph (Second Visitor for {$image->grid_reference})
-{elseif $image->ftf eq 3}
-	Geograph (Third Visitor for {$image->grid_reference})
-{elseif $image->ftf eq 4}
-	Geograph (Fourth Visitor for {$image->grid_reference})
-{else}
-	{if $image->moderation_status eq "rejected"}
-	Rejected
-	{/if}
-	{if $image->moderation_status eq "pending"}
-	Awaiting moderation
-	{/if}
-	{if $image->moderation_status eq "geograph"}
-	Geograph
-	{/if}
-	{if $image->moderation_status eq "accepted"}
-	Supplemental image
-	{/if}
-{/if}
-{if strpos($image->points,'tpoint') !== false}
-<br/>First in 5 Years (TPoint) <sup><a href="/faq3.php?q=tpoint#61" class="about" style="font-size:0.7em">?</a></sup>{/if}</dd>
 
 
 {if $image_taken}
@@ -163,16 +139,18 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	{/if}
 
 	{foreach from=$image->tag_prefix_stat key=prefix item=count}
-		{if $prefix ne 'top' && $prefix ne '' && $prefix ne 'term' && $prefix ne 'cluster' && $prefix ne 'wiki'}
+		{if $prefix ne 'top' && $prefix ne '' && $prefix ne 'term' && $prefix ne 'cluster' && $prefix ne 'wiki' && $prefix ne 'type'}
 			{if $prefix == 'bucket'}
 				<dt>Image Buckets <sup><a href="/article/Image-Buckets" class="about" style="font-size:0.7em">?</a></sup></dt>
+			{elseif $prefix == 'subject'}
+				<dt>Primary Subject of Photo</dt>
 			{else}
 				<dt>{$prefix|capitalize|escape:'html'} (from Tags)</dt>
 			{/if}
 			<dd style="width:256px;font-size:0.9em" class="tags" itemprop="keywords">
 			{foreach from=$image->tags item=item name=used}{if $item.prefix == $prefix}
 				<span class="tag">
-				<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span>&nbsp;
+				<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span>&nbsp;
 			{/if}{/foreach}</dd>
 		{/if}
 	{/foreach}
@@ -214,18 +192,15 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </div>
 
 {if $overview}
-  <div style="float:left; text-align:center; width:{$overview_width}px; position:relative">
+  <div style="float:left; width:{$overview_width}px; position:relative">
 	{include file="_overview.tpl"}
 	<div style="width:inherit;margin-left:20px;"><br/>
-
-	<a href="{$sitemap}">Text listing of Images in {$image->grid_reference}</a><br/><br/>
-
 
 {if $image->tags && ($image->tag_prefix_stat.$blank || $image->tag_prefix_stat.term || $image->tag_prefix_stat.cluster || $image->tag_prefix_stat.wiki)}
 	<p style="margin-top:0px">
 	<b>Other Tags</b><br/><span class="tags" itemprop="keywords">
 	{foreach from=$image->tags item=item name=used}{if $item.prefix eq '' || $item.prefix eq 'term' || $item.prefix eq 'cluster' || $item.prefix eq 'wiki'}
-		<span class="tag"><a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|lower|escape:'html'}</a></span>&nbsp;
+		<span class="tag"><a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span>&nbsp;
 	{/if}{/foreach}</span>
 	</p>
 {/if}
@@ -238,6 +213,65 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 </div>
 <br style="clear:both"/>
+
+<div style="float:left;font-size: 0.8em;margin-bottom:2px;margin-left:5px">
+
+{if $image->tags && $image->tag_prefix_stat.type}
+	Image Type <a href="/article/Image-Type-Tags-update">(about)</a>:
+
+	{assign var="seperator" value=""}
+
+	{foreach from=$image->tags item=item name=used}{if $item.prefix eq 'type'}
+		<a href="/tagged/type:{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" title="{$item.description|escape:'html'}">{$item.tag|lower|escape:'html'}</a>&nbsp;
+	{assign var="seperator" value=","}{/if}{/foreach}
+
+	{if !$seperator}
+		{if $image->moderation_status ne "accepted"}{$image->moderation_status|ucfirst}{/if}
+	{/if}
+
+	{if $image->ftf eq 1}
+		(First Geograph for {$image->grid_reference})
+	{elseif $image->ftf eq 2}
+		(Second Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 3}
+		(Third Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 4}
+		(Fourth Visitor for {$image->grid_reference})
+	{/if}
+
+{else}
+	Image classification<a href="/faq.php#points">(about)</a>:
+	{if $image->ftf eq 1}
+		Geograph (First for {$image->grid_reference})
+	{elseif $image->ftf eq 2}
+		Geograph (Second Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 3}
+		Geograph (Third Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 4}
+		Geograph (Fourth Visitor for {$image->grid_reference})
+	{else}
+		{if $image->moderation_status eq "rejected"}
+		Rejected
+		{/if}
+		{if $image->moderation_status eq "pending"}
+		Awaiting moderation
+		{/if}
+		{if $image->moderation_status eq "geograph"}
+		Geograph
+		{/if}
+		{if $image->moderation_status eq "accepted"}
+		Supplemental image
+		{/if}
+	{/if}
+{/if}
+
+	{if strpos($image->points,'tpoint') !== false}
+	&middot; First in 5 Years (TPoint) <a href="/faq3.php?q=tpoint#61">(about)</a>{/if}
+
+</div>
+
+
+
 {if $image->hits}
 	<div class="hits">This page has been <a href="/help/hit_counter">viewed</a> about <b>{$image->hits}</b> times.</div>
 	<br/>
