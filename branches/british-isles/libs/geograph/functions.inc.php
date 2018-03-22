@@ -1025,6 +1025,22 @@ function xmlentities($string, $charset = 'UTF-8') {
         return htmlspecialchars($string,ENT_QUOTES,$charset,false);
 }
 
+
+function translit_to_ascii($in, $charset = 'ISO-8859-15') {
+
+        $currentLocal = setlocale(LC_CTYPE, 0);
+        //see comments on http://php.net/manual/en/function.iconv.php  //TRANSLIT may only work if set a UTF8 locale, even though NOT even using unicode (ie not set to charset, always utf8)
+        setlocale(LC_CTYPE, "en_US.UTF-8");
+
+        $new = iconv($charset, 'ASCII//TRANSLIT', $in);
+
+        setlocale(LC_CTYPE, $currentLocal);
+
+        return $new;
+}
+
+
+
 function latin1_to_utf8($input) {
         //our database has charactors encoded as entities (outside ISO-8859-1) - so need to decode entities.
         //and while we declare ISO-8859-1 as the html charset, we actully using windows-1252, as some browsers are sending us chars not valid in ISO-8859-1.
@@ -1036,11 +1052,11 @@ function latin1_to_utf8($input) {
 }
 
 function utf8_to_latin1($input) {
-	//todo, could detct chars OUTSIDE of cp1252 and convert to HTML-Entities, just like browsers do on submitting forms!
+	//dedect chars OUTSIDE of cp1252 and convert to HTML-Entities, just like browsers do on submitting forms!
 	// http://www.intertwingly.net/blog/2004/04/15/Character-Encoding-and-HTML-Forms
         // see code at https://stackoverflow.com/questions/3231819/convert-utf8-to-latin1-in-php-all-characters-above-255-convert-to-char-referenc
-        //  $convmap= array(0x0100, 0xFFFF, 0, 0xFFFF);
-        //  $encutf= mb_encode_numericentity($utf, $convmap, 'UTF-8');
+        $convmap= array(0x0100, 0xFFFF, 0, 0xFFFF);
+        $input= mb_encode_numericentity($input, $convmap, 'UTF-8');
 	return iconv("utf-8", "windows-1252", $input);
 }
 
