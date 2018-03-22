@@ -66,9 +66,15 @@ class sphinxwrapper {
 			//setup field: syntax
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 
-			//see http://milk.geograph.org.uk/wordforms.txt
-		$q = str_replace('&#373;','w',$q);
-		$q = str_replace('&#375;','y',$q);
+			//deal with charactor encodings
+		if (mb_detect_encoding($q, 'UTF-8, ISO-8859-1') == "UTF-8") {
+	                $q = utf8_to_latin1($q); //even though this site is latin1, browsers can still send us UTF8 queries
+
+       		} elseif (strpos($q,'&#') !== FALSE) {
+			//contains utf8 based entities, convert to real utf8, then transliterate
+                        $q = translit_to_ascii(latin1_to_utf8($q), "UTF-8");
+			//in theory could just translit **TO** iso-8859-1, but as will transliterate in sphinx anyway, doesnt matter if tranlit direct to ascii now
+		}
 
 //add to /w to allow extended chars
 $extended = '\xC0-\xD6\xD8-\xF6\xF8-\xFF\xB4\x92\x91\x60';
@@ -124,9 +130,12 @@ $extended = '\xC0-\xD6\xD8-\xF6\xF8-\xFF\xB4\x92\x91\x60';
 		$q2 = str_replace('~~~',':',$q2);
 		$this->qclean = trim(str_replace('  ',' ',$q2));
 
-if (strpos($_SERVER['PHP_SELF'],'snippet') !== FALSE) { //at the moment dont have a way to filter by index will search!
-	$q = str_replace("'",'',$q); //snippet index has ' as IGNORE, remove them now, so that they dont break hypenated eg, [tre'r-ddol] > [tre'"r ddol" | rddol]
-}
+if (!empty($_GET['ddeb']))
+	print __LINE__.' : '.$q."<hr>";
+
+//if (strpos($_SERVER['PHP_SELF'],'snippet') !== FALSE) { //at the moment dont have a way to filter by index will search!
+//	$q = str_replace("'",'',$q); //snippet index has ' as IGNORE, remove them now, so that they dont break hypenated eg, [tre'r-ddol] > [tre'"r ddol" | rddol]
+//}
 
 			//make excluded hyphenated words phrases
 		$q = preg_replace('/(?<!"|\w)-(=?[\w'.$extended.']+)(-[-\w'.$extended.']*[\w'.$extended.'])/e','"-(\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2").")"',$q);
@@ -496,9 +505,9 @@ if (strpos($_SERVER['PHP_SELF'],'snippet') !== FALSE) { //at the moment dont hav
 		}
 
 		//Temporally Hotfix, only the Snippet index is currently UTF-8!
-		if ($index == 'snippet') {
+		//if ($index == 'snippet') {
 			$this->q = latin1_to_utf8($this->q);
-		}
+		//}
 
 		$res = $cl->Query (trim($this->q), $index );
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
@@ -555,9 +564,9 @@ split_timer('sphinx'); //starts the timer
 		$cl->SetLimits(0,1,0);
 
 		//Temporally Hotfix, only the Snippet index is currently UTF-8!
-		if ($index == 'snippet') {
+		//if ($index == 'snippet') {
 			$q = latin1_to_utf8($q);
-		}
+		//}
 
 		$res = $cl->Query ( $q, $index );
 		
@@ -788,9 +797,9 @@ split_timer('sphinx'); //starts the timer
 		$q = preg_replace('/@not(\w+)\b/','@!($1)',$q);
 
 		//Temporally Hotfix, only the Snippet index is currently UTF-8!
-		if ($index == 'snippet') {
+		//if ($index == 'snippet') {
 			$q = latin1_to_utf8($q);
-		}
+		//}
 
 		$res = $cl->Query (trim($q), $index );
 
@@ -900,20 +909,30 @@ split_timer('sphinx'); //starts the timer
 		//todo maybe check users too? ( then skip setByUsername when building search!) 
 		return $arr;
 	}
-	
+
 	function BuildExcerpts($docs, $index, $words, $opts=array() ) {
 		global $CONF;
 		$cl = $this->_getClient();
-		
+
+		//sphinx is now fully utf8!
+		$words = latin1_to_utf8($words);
+		foreach ($docs as $idx => $doc)
+			$docs[$idx] = latin1_to_utf8($doc);
+
+
 	split_timer('sphinx'); //starts the timer
 
 		$res = $cl->BuildExcerpts ( $docs, $CONF['sphinx_prefix'].$index, $words, $opts);
-		
+
 	split_timer('sphinx','BuildExcerpts'.count($docs)); //logs the wall time
-	
+
+		if (!empty($res))
+			foreach ($res as $idx => $doc)
+				$res[$idx] = utf8_to_latin1($doc);
+
 		return $res;
 	}
-	
+
 	function setSort($sort) {
 		$this->sort = $sort;
 	}
