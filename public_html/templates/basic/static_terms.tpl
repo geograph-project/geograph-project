@@ -1,6 +1,14 @@
 {assign var="page_title" value="Terms of Use"}
 {include file="_std_begin.tpl"}
 
+{dynamic}
+	{if $gridimage_id}
+		<div class="interestBox" style="margin:20px">These are our <i>general website terms</i>, if you are looking for information on <b>using/copying image number {$gridimage_id}</b>
+		<span class="nowrap">- please see <a href="/reuse.php?id={$gridimage_id}">our image reuse page</a> - thank you!</span></div>
+	{/if}
+{/dynamic}
+
+
  <h2>Terms of use, the quick version</h2>
 
  <p>Lawyers, eh? Geograph Project's terms of use for the {$http_host} website can
@@ -342,7 +350,7 @@ other types of site submission, you grant Geograph Project Ltd a worldwide, non-
 
 <hr/>
 
-<p><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 26 Cloister Road, Acton, London W3 0DE.</i></small></p>
+<p><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</i></small></p>
 
 {include file="_std_end.tpl"}
 
