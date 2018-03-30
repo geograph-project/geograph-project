@@ -111,9 +111,24 @@ class GeoGridFS(Fuse):
 
 #############################################################################
 
+    def getTargets(self, path): 
+        final = False
+        targets = ''
+        for pattern in config.patterns:
+            if re.search(pattern[1],path):
+                final = pattern
+                break
+        if final:
+            targets = "`class` = '"+final[0]+ "', " + \
+                "`replica_target` = "+str(final[2])+ ", " + \
+                "`backup_target` = "+str(final[3])+ ", "
+	return targets
+
+#############################################################################
+
     def getFirstMount(self, path='/'):
     #todo!
-        return config.mounts['milk']
+        return config.mounts['cream']
 
     def getOrderedMounts(self, path='/'):
 
@@ -330,12 +345,19 @@ class GeoGridFS(Fuse):
                 new_folder_id = self.getFolderId(os.path.dirname(path1))
 
                 #renaming a file is easy!
+
+		#todo - actully not quite that easy, technically a rename can involve a overwrite, there can be an existing file with destination
+		#  ... we should perhaps first check if existing record, and either use it, or delete it, can 'replace' it with the update
+
+		query.Query("DELETE FROM "+config.database['file_table']+" WHERE filename = '"+query.escape_string(path1)+"'"); ##if no existing record, a noop. 
+
+
+		targets = self.getTargets(path1)
+
                 query.Query("UPDATE "+config.database['file_table']+" "+ \
-                        "SET folder_id = "+str(new_folder_id)+", filename = '"+query.escape_string(path1)+"' "+ \
+                        "SET "+targets+" folder_id = "+str(new_folder_id)+", filename = '"+query.escape_string(path1)+"' "+ \
                         "WHERE filename = '"+query.escape_string(path)+"'")
                         
-		#todo - the files class or replicate_target might have changed!
-
                 del self.row_cache[path]
 
         except MySQLdb.Error, e:
@@ -566,16 +588,7 @@ class GeoGridFS(Fuse):
                     if query.rowcount == 0:
                         folder_id = self.server.getFolderId(os.path.dirname(self.path))
 
-                        final = False
-                        targets = ''
-                        for pattern in config.patterns:
-                            if re.search(pattern[1],self.path):
-                                final = pattern
-                                break
-                        if final:
-                            targets = "`class` = '"+final[0]+ "', " + \
-                                "`replica_target` = "+str(final[2])+ ", " + \
-                                "`backup_target` = "+str(final[3])+ ", "
+			targets = self.server.getTargets(self.path)
 
                         query.Query("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
                              "filename = '"+query.escape_string(self.path)+"', " + \
