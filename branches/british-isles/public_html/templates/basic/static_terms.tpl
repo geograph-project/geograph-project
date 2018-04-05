@@ -47,7 +47,7 @@ boilerplate...</p>
  </p>
 
  <h3>2. Privacy Policy</h3>
- <p>Geograph Project Ltd is a data controller within the meaning of the General Data Protection Regulation. Based in the UK, our activities are regulated by the Information Commissioner?s Office. The people within the Geograph Project Ltd responsible for data protection issues are the company Directors / Trustees. The Data Protection Officer is Mark Anderson.</p>
+ <p>Geograph Project Ltd is a data controller within the meaning of the General Data Protection Regulation. Based in the UK, our activities are regulated by the Information Commissioner's Office. The people within the Geograph Project Ltd responsible for data protection issues are the company Directors / Trustees. The Data Protection Officer is Mark Anderson.</p>
  <p>Geograph Project Ltd will use Your personally identifiable information
  collected in connection with this Site, including Your name, e-
  mail address, or other information unique to You (<b>Personally Identifiable
@@ -78,7 +78,7 @@ boilerplate...</p>
  knowingly disclose Personally Identifiable Information to any third party, except:
   (a) in accordance with Your freely given consent; or
   (c) where it is necessary for the Site to provide its services to You; or
-  (d) in pursuance of the Site?s legitimate interests; or
+  (d) in pursuance of the Site's legitimate interests; or
   (e) as required by Court Order, search warrant, or other valid legislative or judicial process; or
   (f) in connection with any merger or development team approved acquisition of Geograph Project Ltd assets, including
   without limitation any restructuring activity with another legal entity.</p>
@@ -315,7 +315,7 @@ other types of site submission, you grant Geograph Project Ltd a worldwide, non-
  agents and volunteer administrator's liability for any claims arising out of or
  relating to this Agreement (including any terms and conditions referenced in this
  Agreement) including for any direct damages arising from your reliance on Site
- Information, will be limited to £10.00 or the amount of direct damages incurred by you
+ Information, will be limited to &pound;10.00 or the amount of direct damages incurred by you
  in reliance on this Site or on Site Information, whichever is less. You agree that
  this is your sole and exclusive remedy and you hereby release Geograph Project Ltd, its officers, employees, agents and volunteer administrators from
  all obligations, liability, claims or demands in excess of the limitation.</p>
