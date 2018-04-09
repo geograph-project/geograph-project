@@ -53,7 +53,7 @@
 				</div>
 
 				{if $recaptcha}
-					<p>Please enter the two words contained in the big white box, alternatively click the speaker icon to listen to a audio version.
+					<p>Please enter solve the following...
 					{$recaptcha}
 				{else}
 					<p>So please take a moment to fill out the below to help prevent spamming of our members.</p>
