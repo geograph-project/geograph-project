@@ -121,7 +121,7 @@ if (isset($_POST['msg']))
 		
 		//user has requested a emailed code
 		if (!empty($_POST['sendcode'])) {
-			$c = uniqid('v');
+			$c = rand(1000,9999);
 			
 			$token=new Token;
 			$token->setValue("v5", md5($c.$CONF['register_confirmation_secret']));
@@ -157,10 +157,10 @@ if (isset($_POST['msg']))
 			}
 		
 		//validate a recapatcha if enabled
-		} elseif (!empty($CONF['recaptcha_publickey']) && !empty($_POST["recaptcha_response_field"])) {
+		} elseif (!empty($CONF['recaptcha_publickey']) && isset($_POST["g-recaptcha-response"])) {
 			require_once('3rdparty/recaptchalib.php');
 			
-			$resp = recaptcha_check_answer($CONF['recaptcha_privatekey'],getRemoteIP(),$_POST["recaptcha_challenge_field"],$_POST["recaptcha_response_field"]);
+			$resp = recaptcha_check_answer($CONF['recaptcha_privatekey'],getRemoteIP(),null,$_POST["g-recaptcha-response"]);
 			
 			if (!$resp->is_valid) {
 				$ok = false;
@@ -303,6 +303,13 @@ elseif (isset($_GET['image']))
 	}
 	$smarty->assign_by_ref('msg', $msg);
 	
+	$images = array(0=>array(
+		'gridimage_id'=>$image->gridimage_id,
+		'title'=>$image->title,
+		'grid_reference'=>$image->grid_reference,
+		'realname'=>$image->realname));
+	$smarty->assign_by_ref('images', $images);
+
 	customExpiresHeader(360,false,true);
 
 } elseif (!empty($_SESSION['photos'])) {
