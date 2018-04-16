@@ -33,11 +33,11 @@ boilerplate...</p>
 
  <h2>Geograph Project Ltd Detailed Terms of Use Agreement and Privacy Policy for the {$http_host} Website</h2>
 
- <p>Last updated: 29 March 2018</p>
+ <p>Last updated: 7 April 2018</p>
 
 <p>This site is run by Geograph Project Ltd, a Company limited by guarantee. The site contains images and information, information on geographing, forums and such other services as may be made available from time to time on {$http_host} (the <b>Site</b>).
 
- These Terms of Use form a legal agreement between the Accountholder and/or Site User(<b>You</b>)
+ These Terms of Use form a legal agreement between the Accountholder and/or Site User (<b>You</b>)
  and Geograph Project Ltd.
  </p>
 
@@ -56,7 +56,7 @@ boilerplate...</p>
 
  <li>(a) Geograph Project Ltd may use
  Personally Identifiable Information to keep You notified of Geograph-related
- developments in Your geographic area; to give You updates on changes to the Site;
+ developments; to give You updates on changes to the Site;
  and to allow You to log Your Geographs and share Your experiences with other users
  of the Site. </li>
 
@@ -77,10 +77,10 @@ boilerplate...</p>
  <p>Geograph Project Ltd will not sell, rent, or otherwise
  knowingly disclose Personally Identifiable Information to any third party, except:
   (a) in accordance with Your freely given consent; or
-  (c) where it is necessary for the Site to provide its services to You; or
-  (d) in pursuance of the Site's legitimate interests; or
-  (e) as required by Court Order, search warrant, or other valid legislative or judicial process; or
-  (f) in connection with any merger or development team approved acquisition of Geograph Project Ltd assets, including
+  (b) where it is necessary for the Site to provide its services to You; or
+  (c) in pursuance of the Site?s legitimate interests; or
+  (d) as required by Court Order, search warrant, or other valid legislative or judicial process; or
+  (e) in connection with any merger or acquisition of Geograph Project Ltd assets approved by the Trustees, including
   without limitation any restructuring activity with another legal entity.</p>
 
  <p>You have the rights to access, rectify or erase your Personally Identifiable Information by using the <a href="/profile.php?edit=1">Edit your profile</a> function of the site. If you have a data protection query or request which cannot be achieved by this method, you can <a href="/contact.php">contact us</a>. If you are unhappy with our response to a Data Protection issue, you can complain to the Information Commissioner.</p>
@@ -103,8 +103,8 @@ boilerplate...</p>
 
 
  <p>The site source code is copyrighted by Geograph Project Ltd and available
- under the terms of the GNU General Public Licence. All photo submissions
- are copyright their respective owners and licensed under a Creative Commons Licence.
+ under the terms of the GNU General Public Licence. All
+ submissions are copyright of their respective owners and licensed under a Creative Commons Licence.
  All rights not expressly granted by these licences and this Agreement are reserved
  by Geograph Project Ltd or by the respective
  owners of the intellectual property rights. Geograph Project Ltd reserves
