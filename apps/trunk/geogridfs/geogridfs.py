@@ -161,10 +161,12 @@ class GeoGridFS(Fuse):
         
         if 'amz' in scores and scores['amz'] > 100:
                 scores['amz'] = 50
-        
+
+        #convert scores to plain list
         mounts = []
         for result in sorted(scores, key=scores.get, reverse=True):
-            mounts.append(config.mounts[result])
+            if result in config.mounts:
+                mounts.append(config.mounts[result])
         
 	#add any missing
         for (key,value) in config.mounts.iteritems():
