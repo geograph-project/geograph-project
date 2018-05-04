@@ -359,14 +359,14 @@ if (!empty($_GET['q'])) {
 			if (empty($rows['score']) && empty($rows['single']) && preg_match('/\s\w+\s+\w/',$_GET['q'])) {
 
 				$idx = count($decode);
-				$body = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$qu&key=AIzaSyCC1etuG6mND1hsTjgIIIsVceKxq8g5d5k&region=uk");
+				$body = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$qu&key={$CONF['google_maps_api3_server']}&region=uk");
 				$decode[$idx] = json_decode($body);
 
 				if ($decode[$idx] && $decode[$idx]->results && $decode[$idx]->status == 'OK') {
 					$r = reset($decode[$idx]->results);
 					$coord = $r->geometry->location->lat.','.$r->geometry->location->lng;
-					print "<div style=\"float:right\"><a href=\"/near/$coord\"><img src=\"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid|$coord&zoom=13&key=AIzaSyDrnpX8oponupk5rMqCg126cuVtiypmIH0&size=250x120&maptype=terrain\"></a> ";
-					print "<a href=\"/near/$coord\"><img src=\"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid|$coord&zoom=7&key=AIzaSyDrnpX8oponupk5rMqCg126cuVtiypmIH0&size=250x120&maptype=terrain\"></a></div>";
+					print "<div style=\"float:right\"><a href=\"/near/$coord\"><img src=\"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid|$coord&zoom=13&key={$CONF['google_maps_api3_key']}&size=250x120&maptype=terrain\"></a> ";
+					print "<a href=\"/near/$coord\"><img src=\"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid|$coord&zoom=7&key={$CONF['google_maps_api3_key']}&size=250x120&maptype=terrain\"></a></div>";
 
 					print "Looks like you might have been entering an address? If you searching for '";
 					print "<a href=\"/near/$coord\">".htmlentities2($r->formatted_address)."</a>";

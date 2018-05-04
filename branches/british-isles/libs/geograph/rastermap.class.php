@@ -518,8 +518,7 @@ class RasterMap
 		global $CONF;
 		//defer the tag to the last minute, to help prevent the page pausing mid load
 		if ((!empty($this->inline) || !empty($this->issubmit)) && $this->service == 'Google') {
-			///key={$CONF['google_maps_api_key']}&amp;
-			return "<script src=\"//maps.googleapis.com/maps/api/js?sensor=false\" type=\"text/javascript\"></script>";
+			return "<script src=\"//maps.googleapis.com/maps/api/js?v=3&key={$CONF['google_maps_api3_key']}\" type=\"text/javascript\"></script>";
 		} elseif ($this->service == 'OSOS') {
 			if (strpos($CONF['raster_service'],'OSOSPro') !== FALSE) {
 				return "<script src=\"{$CONF['PROTOCOL']}osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";

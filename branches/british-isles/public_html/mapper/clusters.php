@@ -24,16 +24,6 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-
-
-
 $smarty = new GeographPage;
+$smarty->display('mapper_clusters.tpl');
 
-$smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
-
-
-$smarty->assign('geocubes_api_key',$CONF['GEOCUBES_API_KEY']);
-
-$smarty->display('mapper_clusters.tpl',$cacheid);
-
-?>

@@ -195,7 +195,9 @@ $CONF['raster_service']='';
 // 'Grid' - display a grid on Google Map 
 // 'Google' - Use Google Mapping (api key required below)
 
-$CONF['google_maps_api_key'] = 'XXXXXXX';
+$CONF['google_maps_api_key'] = 'XXXXXXX'; //old V2 Key, some scrips may use it!
+$CONF['google_maps_api3_key'] = 'XXXXXXX'; //new v3 key - browser based
+$CONF['google_maps_api3_server'] = 'XXXXXXX'; //new v3 key - for API use
 
 $CONF['OS_licence'] = 'XXXXXXXX';
 
@@ -222,10 +224,6 @@ $CONF['enable_newmap'] = 1;
 //use the smaller towns database for the 'near...' lines rather than placenames
 $CONF['use_gazetteer'] = 'towns'; //OS250/OS/hist/towns/default
 //NOTE: for GB, OS, OS250 and hist are (c)'ed datasets and are not available under the GPL licence
-
-//optionally get a key for sending your data to geocubes. 
-$CONF['GEOCUBES_API_KEY'] = "";
-$CONF['GEOCUBES_API_TOKEN'] = "";
 
 ###################################
 # country info
