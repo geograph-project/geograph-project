@@ -74,7 +74,6 @@ if ($isadmin) {
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
 	$datecolumn = 'created';
 	
 	$db=GeographDatabaseConnection(false);

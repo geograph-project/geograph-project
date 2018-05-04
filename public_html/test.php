@@ -442,8 +442,8 @@ if (empty($CONF['token_secret']) || $CONF['token_secret']=='CHANGETHIS') {
 }
 
 
-if (empty($CONF['google_maps_api_key']) || $CONF['google_maps_api_key'] == 'XXXXXXX') {
-	fail('$CONF[\'google_maps_api_key\'] does not appear to have been configured. HIGHLY RECOMMENDED');
+if (empty($CONF['google_maps_api3_key']) || $CONF['google_maps_api3_key'] == 'XXXXXXX') {
+	fail('$CONF[\'google_maps_api3_key\'] does not appear to have been configured. HIGHLY RECOMMENDED');
 }
 
 if (empty($CONF['OS_licence']) || $CONF['OS_licence'] == 'XXXXXXXX') {
@@ -452,12 +452,6 @@ if (empty($CONF['OS_licence']) || $CONF['OS_licence'] == 'XXXXXXXX') {
 
 if (empty($CONF['metacarta_auth']) || $CONF['metacarta_auth'] == '') {
 	warn('$CONF[\'metacarta_auth\'] does not appear to have been configured. OK, experimental anyway');
-}
-
-if (empty($CONF['GEOCUBES_API_KEY'])) {
-	warn('$CONF[\'GEOCUBES_API_KEY\'] does not appear to have been configured.');
-} elseif (empty($CONF['GEOCUBES_API_TOKEN'])) {
-	warn('$CONF[\'GEOCUBES_API_TOKEN\'] does not appear to have been configured. NEEDED IF HAVE GEOCUBES_API_KEY');
 }
 
 if (empty($CONF['flickr_api_key'])) {
@@ -495,7 +489,7 @@ if (strpos($_ENV["OS"],'Windows') === FALSE) {
 
 #todo? Database check...
 
-#todo? API key checks - flickr, GMaps, Geocubes, metacarta etc... 
+#todo? API key checks - flickr, GMaps, metacarta etc...
 
 //////////////////////////////////////////////////////////////////
 // END OF TESTING
@@ -511,4 +505,4 @@ else
 {
 	echo "<li style=\"color:green;font-weight:bold;\">Server is correctly configured to run Geograph!</li>";
 }
-?>
+

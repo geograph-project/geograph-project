@@ -215,7 +215,7 @@ function myPress(that,event) {
 	<small><small>Change view: <a href="javascript:void(resetView());">Whole British Isles</a> &middot; <a href="javascript:void(centerMarker());">Center on Marker</a></small></small>
 </div>
 
-<script src="//maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+<script src="//maps.googleapis.com/maps/api/js?v=3&key={$google_maps_api3_key}" type="text/javascript"></script>
 {if $inner}
 </body>
 </html>

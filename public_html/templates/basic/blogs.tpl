@@ -237,49 +237,5 @@ span.tag, a.tag {
 {/dynamic}
 
 
-{if $geo && $google_maps_api_key}
-	<script src="https://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
-
-	{literal}
-	<script type="text/javascript">
-	//<![CDATA[
-	var map;
-
-	function onLoad() {
-		map = new GMap2(document.getElementById("mapCanvas"));
-		map.addMapType(G_PHYSICAL_MAP);
-		map.addControl(new GSmallMapControl());
-		map.addControl(new GMapTypeControl(true));
-		{/literal}
-
-		var bounds = new GLatLngBounds();
-
-		{foreach from=$list item=item}
-			{if $item.future == 1}
-				bounds.extend(new GLatLng({$item.wgs84_lat}, {$item.wgs84_long}));
-			{/if}
-		{/foreach}
-		{if $future == 1}
-			//bounds doesnt seem to like one point via extends
-			bounds.extend(new GLatLng({$item.wgs84_lat}+1, {$item.wgs84_long}+1));
-			bounds.extend(new GLatLng({$item.wgs84_lat}-1, {$item.wgs84_long}-1));
-		{/if}
-
-		var newZoom = map.getBoundsZoomLevel(bounds);
-		if (newZoom > 10)
-			newZoom = 10;
-		var center = bounds.getCenter();
-		map.setCenter(center, newZoom,G_PHYSICAL_MAP);
-
-		var xml = new GGeoXml("{$self_host}/blog/feed.kml");
-		{literal}
-		map.addOverlay(xml);
-	}
-
-	AttachEvent(window,'load',onLoad,false);
-	//]]>
-	</script>
-{/literal}{/if}
-
 {include file="_std_end.tpl"}
 

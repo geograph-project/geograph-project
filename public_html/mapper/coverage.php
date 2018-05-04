@@ -28,6 +28,7 @@ init_session();
 		pageMustBeHTTP();
 
 $smarty = new GeographPage;
+$smarty->assign('google_maps_api3_key',$CONF['google_maps_api3_key']);
 if (!empty($_GET['mobile'])) {
         $smarty->display('mapper_coverage_mobile.tpl');
 } else {

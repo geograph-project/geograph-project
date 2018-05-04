@@ -48,7 +48,7 @@ div#thumbs .highlighted {
         <script src="{"/ol/nls-api.js"|revision}"></script>
         <script src="{"/ol/geograph-openlayers.js"|revision}"></script>
 
-        <script src="https://maps.google.com/maps/api/js?v=3"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?v=3&key={$google_maps_api3_key}"></script>
 
 {literal}
 <script type="text/javascript">

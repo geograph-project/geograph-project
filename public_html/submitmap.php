@@ -29,7 +29,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
+$smarty->assign('google_maps_api3_key',$CONF['google_maps_api3_key']);
 
 if (isset($_REQUEST['inner'])) {
 	$cacheid = 'iframe';

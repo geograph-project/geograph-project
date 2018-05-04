@@ -38,7 +38,7 @@
         <script src="{"/ol/geograph-openlayers.js"|revision}"></script>
 	<script src="/preview.js.php?d=preview" type="text/javascript"></script>
 	
-        <script src="https://maps.google.com/maps/api/js?v=3"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?v=3&key={$google_maps_api3_key}"></script>
 
 {literal}
 <style>
