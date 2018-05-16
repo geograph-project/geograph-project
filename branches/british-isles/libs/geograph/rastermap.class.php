@@ -83,6 +83,7 @@ class RasterMap
 			'OS50k-small'=>125,
 			'NPE'=>250,
 			'Google'=>250,
+			'Leaflet'=>250,
 			'OSOS'=>350,
 			'OSM-Static-Dev'=>250,
 			'OS250k-m10k'=>250,
@@ -106,7 +107,15 @@ class RasterMap
 	{
 		global $CONF;
 		$this->enabled = false;
+
+		if (!empty($square) && isset($square->grid_square)) {
+			//we CAN be passed an image, which has the square as a member!
+			$image = $square; //still need to save the image for use later!
+			$square = $square->grid_square;
+		}
+
 		if (!empty($square) && isset($square->grid_reference)) {
+			//or we can be passed a square directly!
 			$this->square =& $square;
 
 			$this->exactPosition = $useExact && !empty($square->natspecified);
@@ -140,7 +149,10 @@ class RasterMap
 				$this->service = 'OSM-Static-Dev';
 			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
 				//$this->enabled = true;
-				$this->service = 'Google';
+				if (!$this->issubmit)
+					$this->service = 'Leaflet';
+				else
+					$this->service = 'Google';
 				$this->inline = 1; //no need for none inline anymore...
 			}
 			if (isset($this->tilewidth[$this->service])) {
@@ -149,6 +161,22 @@ class RasterMap
 			if (!empty($epoch) && $epoch != 'latest' && preg_match('/^[\w]+$/',$epoch) ) {
 				$this->epoch = $epoch;
 			}
+		}
+
+		if (!empty($image)) {
+
+                	require_once('geograph/conversions.class.php');
+        	        $conv = new Conversions;
+
+	                list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
+
+	                $this->addLatLong($lat,$long);
+
+	                if (!empty($image->viewpoint_northings)) {
+        	                $this->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
+	                } elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
+        	                $this->addViewDirection($image->view_direction);
+	                }
 		}
 	}
 
@@ -164,7 +192,10 @@ class RasterMap
 		} elseif($this->reference_index == 1 && $service == 'OSOS' && in_array('OSOS',$services)) {
 			$this->service = 'OSOS';
 		} elseif($service == 'Google' && in_array('Google',$services)) {
-			$this->service = 'Google';
+			if (!$this->issubmit)
+				$this->service = 'Leaflet';
+			else
+				$this->service = 'Google';
 			$this->inline = 1; //no need for none inline anymore...
 			if ($this->issubmit) {
 				$this->tilewidth[$this->service] = 350;
@@ -176,7 +207,7 @@ class RasterMap
 	}
 
 	function addLatLong($lat,$long) {
-		if ($this->service == 'Google' || $this->service == 'OSM-Static-Dev') {
+		if ($this->service == 'Google' || $this->service == 'Leaflet' || $this->service == 'OSM-Static-Dev') {
 			$this->enabled = true;
 		}
 		$this->lat = floatval($lat);
@@ -253,7 +284,7 @@ class RasterMap
 			}
 			$s = ($this->exactPosition || !$this->issubmit)?'':"Drag the circles from the green box!<br/>";
 			return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px\"></div>";
-		} elseif ($this->service == 'Google') {
+		} elseif ($this->service == 'Google' || $this->service == 'Leaflet') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
 				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map... (JavaScript required)</div>";
 			} else {
@@ -519,6 +550,9 @@ class RasterMap
 		//defer the tag to the last minute, to help prevent the page pausing mid load
 		if ((!empty($this->inline) || !empty($this->issubmit)) && $this->service == 'Google') {
 			return "<script src=\"//maps.googleapis.com/maps/api/js?v=3&key={$CONF['google_maps_api3_key']}\" type=\"text/javascript\"></script>";
+		} elseif ((!empty($this->inline) || !empty($this->issubmit)) && $this->service == 'Leaflet') {
+			return "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.css\" />".
+				"<script src=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.js\" type=\"text/javascript\"></script>";
 		} elseif ($this->service == 'OSOS') {
 			if (strpos($CONF['raster_service'],'OSOSPro') !== FALSE) {
 				return "<script src=\"{$CONF['PROTOCOL']}osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
@@ -537,8 +571,18 @@ class RasterMap
 	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2,$op=1) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-
-		return "
+		if ($this->service == 'Leaflet')
+			return "
+			var polyline = L.polyline([
+                                [$lat1,$long1],
+                                [$lat2,$long2]
+                        ],{
+                        color: \"#0000FF\",
+                        weight: 1,
+                        opacity: $op
+                        }).addTo(map);\n";
+		else
+			return "
 			var polyline = new google.maps.Polyline({
 			path: [
 				new google.maps.LatLng($lat1,$long1),
@@ -553,7 +597,23 @@ class RasterMap
 	function getPolySquareBlock(&$conv,$e1,$n1,$e2,$n2) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-		return "
+		if ($this->service == 'Leaflet')
+			return "
+			pickupbox = L.polygon([
+				[$lat1,$long1],
+				[$lat1,$long2],
+				[$lat2,$long2],
+				[$lat2,$long1],
+				[$lat1,$long1]
+			],{
+			color: \"#0000FF\",
+			weigth: 1,
+			opacity: 0.7,
+                        fillColor: \"#00FF00\",
+                        fillOpacity: 0.5,
+			}).addTo(map);\n";
+		else
+			return "
 			pickupbox = new google.maps.Polygon({
 			paths: [
 				new google.maps.LatLng($lat1,$long1),
@@ -662,7 +722,130 @@ class RasterMap
 			</script>
 			";
 
+		} elseif ($this->service == 'Leaflet') {  //lfs
+
+			if (empty($this->inline) && empty($this->issubmit)) {
+				//its now handled by the 'childmap'
+				return;
+			}
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+
+			$e = floor($this->nateastings/1000) * 1000;
+			$n = floor($this->natnorthings/1000) * 1000;
+
+			if (strpos($CONF['raster_service'],'Grid') !== FALSE) {
+
+				$block = $this->getPolyLineBlock($conv,$e-1000,$n,$e+2000,$n);
+				$block .= $this->getPolyLineBlock($conv,$e-1000,$n+1000,$e+2000,$n+1000);
+				$block .= $this->getPolyLineBlock($conv,$e,$n-1000,$e,$n+2000);
+				$block .= $this->getPolyLineBlock($conv,$e+1000,$n-1000,$e+1000,$n+2000);
+
+				if (!empty($this->viewpoint_northings)) {
+					$different_square_true = (intval($this->nateastings/1000) != intval($this->viewpoint_eastings/1000)
+						|| intval($this->natnorthings/1000) != intval($this->viewpoint_northings/1000));
+
+					$show_viewpoint = (intval($this->viewpoint_grlen) > 4) || ($different_square_true && ($this->viewpoint_grlen == '4'));
+
+					if ($show_viewpoint) {
+						$ve = $this->viewpoint_eastings;	$vn = $this->viewpoint_northings;
+						if (false) { //this isn't done by gridsquare_to_wgs84 - so doesnt make sence to do it here...
+							if ($this->viewpoint_grlen == '4') {
+								$ve +=500; $vn += 500;
+							}
+							if ($this->viewpoint_grlen == '6') {
+								$ve +=50; $vn += 50;
+							}
+						}
+						list($lat,$long) = $conv->national_to_wgs84($ve,$vn,$this->reference_index);
+						$block .= "
+						var ppoint = [{$lat},{$long}];
+						createPMarker(ppoint);\n";
+					}
+				}
+
+				if (empty($lat) && $this->issubmit) {
+					list($lat,$long) = $conv->national_to_wgs84($e-660,$n-520,$this->reference_index);
+					$block .= "
+						var ppoint = [{$lat},{$long}];
+						createPMarker(ppoint);\n";
+				}
+			} else {
+				$block = '';
+			}
+			if ($this->exactPosition) {
+				$block.= "createMarker(point);";
+			} elseif ($this->issubmit) {
+				list($lat,$long) = $conv->national_to_wgs84($e-380,$n-520,$this->reference_index);
+				$block .= "
+					var point2 = new google.maps.LatLng({$lat},{$long});
+					createMarker(point2);\n";
+			}
+			if ($this->issubmit) {
+				$zoom=13;
+			} else {
+				$zoom=14;
+			}
+			if ($this->issubmit) {
+				$block .= $this->getPolySquareBlock($conv,$e-800,$n-600,$e-200,$n-100);
+
+				for ($i=100; $i<=900; $i+=100) {
+					$block .= $this->getPolyLineBlock($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
+					$block .= $this->getPolyLineBlock($conv,$e+$i,$n,   $e+$i,  $n+1000, 0.25);
+				}
+			}
+			if (empty($this->lat)) {
+				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
+			}
+			$p1 = $p2 = '';
+			if ($this->issubmit) {
+				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
+			}
+			return "
+				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/js/mappingLeaflet.js")."\"></script>
+				$p1
+				<script type=\"text/javascript\">
+				//<![CDATA[
+					var issubmit = {$this->issubmit}+0;
+					var ri = {$this->reference_index};
+					var map = null;
+					var static_host = '{$CONF['STATIC_HOST']}';
+
+					function loadmap() {
+						var point = [{$this->lat},{$this->long}];
+						var newtype = readCookie('GMapType');
+
+						mapTypeId = firstLetterToType(newtype);
+
+						map = L.map('map',{attributionControl:false}).setView(point, 13).addControl(
+							L.control.attribution({ position: 'bottomright', prefix: ''}) );
+
+						setupOSMTiles(map,mapTypeId);
+
+						$block
+
+						map.on('baselayerchange', function (e) {
+							if (e.layer && e.layer.options && e.layer.options.mapLetter) {
+								var t = e.layer.options.mapLetter;
+								createCookie('GMapType',t,10);
+							} else {
+								console.log(e);
+							}
+						});
+
+						if (typeof updateMapMarkers == 'function') {
+							updateMapMarkers();
+						}
+						if (typeof Attribution == 'function') {
+							Attribution(map,mapTypeId);
+						}
+					}
+					AttachEvent(window,'load',loadmap,false);
+				//]]>
+				</script>";
+
 		} elseif ($this->service == 'Google') {
+
 			if (empty($this->inline) && empty($this->issubmit)) {
 				//its now handled by the 'childmap'
 				return;
@@ -767,6 +950,7 @@ class RasterMap
 					var issubmit = {$this->issubmit}+0;
 					var ri = {$this->reference_index};
 					var map = null;
+					var static_host = '{$CONF['STATIC_HOST']}';
 
 					function loadmap() {
 						var point = new google.maps.LatLng({$this->lat},{$this->long});
@@ -806,8 +990,6 @@ class RasterMap
 						}
 					}
 					AttachEvent(window,'load',loadmap,false);
-
-					var static_host = '{$CONF['STATIC_HOST']}';
 				//]]>
 				</script>";
 		} else {
@@ -852,7 +1034,7 @@ class RasterMap
 
 	function getTitle($gridref)
 	{
-		if ($this->service == 'Google' || $this->service == 'OSM-Static-Dev') {
+		if ($this->service == 'Google' || $this->service == 'Leaflet' || $this->service == 'OSM-Static-Dev') {
 			return '';
 		}
 		return "<span id=\"mapTitleOS50k\"".($this->service == 'OS50k'?'':' style="display:none"').">1:50,000 Modern Day Landranger&trade; Map</span>".
@@ -870,7 +1052,7 @@ class RasterMap
 				return '<br/>Centre the blue circle on the subject and mark the camera position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> <a href="javascript:void(enlargeMap());">Enlarge Map</a>';
 			} else
 				return '';
-		} elseif ($this->service == 'Google') {
+		} elseif ($this->service == 'Google' || $this->service == 'Leaflet') {
 			return '';
 		} elseif ($this->issubmit) {
 			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the camera position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> The red arrow will then show view direction.</span>".
