@@ -134,7 +134,7 @@ Zuletzt vervollständigte 10km&thinsp;x&thinsp;10&thinsp;km-Quadrate:
 
 <div style="width:300px;float:left;position:relative">
 
-<p>Die <a title="register now" href="/register.php">Registrierung</a> ist kostenlos, wir freuen uns über jeden Gast und noch mehr über alle, die zum Gelingen des Projekts beitragen wollen! Die wichtigsten Informationen dazu können in der <a title="Fragen und Antworten" href="/faq.php">FAQ</a> gefunden werden.
+<p>Die <a title="register now" href="https://{$http_host}/register.php">Registrierung</a> ist kostenlos, wir freuen uns über jeden Gast und noch mehr über alle, die zum Gelingen des Projekts beitragen wollen! Die wichtigsten Informationen dazu können in der <a title="Fragen und Antworten" href="/faq.php">FAQ</a> gefunden werden.
 </p>
 
 
@@ -162,7 +162,7 @@ zur Verfügung gestellt wird. Mehr Informationen hierzu sind im <a href="/howto/"
 das Projekt noch in einem sehr frühen Stadium befindet, sind allerdings viele Unterseiten noch nicht übersetzt und andere Bereiche noch gar nicht verfügbar.
 </p>
 <p>
-Trotz der noch unvollständigen Umsetzung ist Teilnahme am Projekt sehr erwünscht; Rückmeldung ist über das <a href="/contact.php">Kontaktformular</a>
+Trotz der noch unvollständigen Umsetzung ist Teilnahme am Projekt sehr erwünscht; Rückmeldung ist über das <a href="https://{$http_host}/contact.php">Kontaktformular</a>
 oder per <a href="mailto:geo@hlipp.de">Mail</a> möglich.
 </p>
 </div>

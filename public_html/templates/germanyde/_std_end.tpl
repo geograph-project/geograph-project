@@ -37,7 +37,7 @@
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
      <li><a title="Projektbezogene Informationen" href="/content/?docs&amp;order=title">Dokumente</a></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
-     <li><a accesskey="9" title="Kontaktformular" href="/contact.php">Kontakt</a></li>
+     <li><a accesskey="9" title="Kontaktformular" href="https://{$http_host}/contact.php">Kontakt</a></li>
      <li><a title="Datenschutz" href="/help/privacy">Datenschutz</a></li>
      <li><a title="Impressum" href="/help/legal_notice">Impressum</a></li>
     </ul></li>
@@ -108,7 +108,7 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 	  Nicht angemeldet:
 	  <a title="Schon registriert? Hier einloggen." href="/login.php">Anmelden</a>
 		<span class="sep">|</span>
-	  <a title="Registrieren um Fotos hochzuladen" href="/register.php">Registrieren</a>
+	  <a title="Registrieren um Fotos hochzuladen" href="https://{$http_host}/register.php">Registrieren</a>
   {/if}
   {/dynamic}
 {if $languages}{dynamic}

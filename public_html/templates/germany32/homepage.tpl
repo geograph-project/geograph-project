@@ -125,7 +125,7 @@ Recently completed hectads:
 
 <div style="width:300px;float:left;position:relative">
 
-<p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
+<p><a title="register now" href="https://{$http_host}/register.php">Registration</a> is free so come and join us and see how 
 many grid squares you submit! 
 
 Read the <a title="Frequently Asked Questions" href="/faq.php">FAQ</a>, then get submitting -
@@ -158,7 +158,7 @@ is still at a very early stage, so many pages are not yet translated or even not
 </p>
 <p>
 Although the implementation is still incomplete, your contribution to the project is welcome. Feedback is possible via our
-<a href="/contact.php">contact form</a> or <a href="mailto:geo@hlipp.de">mail</a>.
+<a href="https://{$http_host}/contact.php">contact form</a> or <a href="mailto:geo@hlipp.de">mail</a>.
 </p>
 </div>
 
