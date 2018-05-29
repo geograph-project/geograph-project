@@ -4,7 +4,7 @@
 	 <h3>WGS84 Lat/Long to Grid Reference Conversion</h3> 
 	 
 {if !$e && !$n}
-	<p>This page will convert Latitude and Longitude (assuming WGS84 datum) or Gauß-Krüger coordinates into Rectlinear coordinates as suitable for use on this site.</p> 
+	<p>This page will convert Latitude and Longitude (assuming WGS84 or Potsdam datum) or Gauß-Krüger coordinates into Rectlinear coordinates as suitable for use on this site.</p> 
 {/if}
 
 	<div style="float:left;position:relative;width:200px;height:200px;margin-left:10px;margin-right:10px;text-align:center;background:#dddddd;">
@@ -21,6 +21,7 @@
 		 <td><input type="text" name="long" size="15" value="{$long}"/></td> 
 	  </tr>
 	</table>
+	<p align="center"><label for="potsdam1">Potsdam:</label><input type="checkbox" id="potsdam1" name="potsdam" value="1" {if $potsdam}checked="checked"{/if} /></p>
 	<p align="center"><input type="submit" name="From" value="convert"/></p>
 	</form>
 	</div>
@@ -49,6 +50,7 @@
 				name="longs" value="{$xs}"/> </td> 
 		  </tr> 
 	</table>
+	<p align="center"><label for="potsdam2">Potsdam:</label><input type="checkbox" id="potsdam2" name="potsdam" value="1" {if $potsdam}checked="checked"{/if} /></p>
 	<p align="center"><input type="submit" name="From" value="convert"/></p>
 	</form>
 	</div>
@@ -56,7 +58,8 @@
 	<div style="text-align:center;margin-top:10px;padding-top:0px;padding-bottom:10px;margin-left:10px;margin-right:10px;width:670px;padding-top:10px;background:#dddddd;">
 	<form action="{$script_name}" style="display:inline"> 
 	or paste in a string from somewhere else, e.g. <b>the old style</b> Multimap.com coordinates: <br/>
-		<input type="text" name="multimap" size=40/>
+		<input type="text" name="multimap" size=40/><br/>
+		<label for="potsdam3">Potsdam:</label><input type="checkbox" id="potsdam3" name="potsdam" value="1" {if $potsdam}checked="checked"{/if} /> |
 		<input type="submit" name="From" value="convert"/><br/>
 	<small>eg: "<b>Lat</b>: 54:32:40N (54.5445) <b>Lon</b>: 6:49:22W (-6.8228)"</small>
 	</form></div>
@@ -99,7 +102,7 @@
 </div>
 {/if}
 		<div style="font-family:verdana, arial, sans serif;">
-		<p>[WGS84: {$latdm} {$longdm}]</p>
+		<p>[{if $potsdam}Potsdam{else}WGS84{/if}: {$latdm} {$longdm}{if $potsdam}, WGS84: {$wgslatdm} {$wgslongdm}{/if}]</p>
 		<p><b>Datum</b>: {if $datum == "osgb36"}Ordnance Survey Great Britain 1936{/if}
 			{if $datum == "irish"}Irish Grid OSNI/OSI{/if}
 			{if $datum == "german31"}MGRS (zone 31){/if}
@@ -119,6 +122,7 @@
 		<ul>
 		<li><a href="/gridref/{$gridref4}"><b>Browse</b> Pictures of {$gridref4}</a></li>
 		<li><a href="/search.php?q={$gridref}"><b>Search</b> for Pictures around this location</a></li>
+		<li><a href="/gridref/{$gridref}/links">Show <b>links und map</b> for {$gridref}</a></li>
 		<li>{if $map_token}<a href="/mapbrowse.php?t={$map_token}">Geograph <b>Map</b> around this location</a>{/if}<ul>
 			<li>{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com"}</li>
 		</ul></li>
