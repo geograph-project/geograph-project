@@ -92,6 +92,11 @@
 			Please note that the recipient might <b>not</b> accept your message if you use your <b>Yahoo or AOL</b> address in this form,
 			because Yahoo and AOL use an unfavourable configuration regarding forwarding mails.</div>
 			<br/>
+			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
+			Please note that we generate an email from your input end send it to the specified recipient.
+			Therefore, your email address, your IP address, and your name will be transmitted to the recipient. See also our <a href="/help/privacy">privacy statement</a>.</div>
+			<br/>
 		</div>
 		
 		<div style="float:right; position:relative; vertical-align:top;">
