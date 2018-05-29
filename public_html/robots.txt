@@ -14,6 +14,12 @@ Disallow: /
 User-agent: SemrushBot-SA
 Disallow: /
 
+User-agent: Cliqzbot
+Disallow: /
+
+User-agent: Barkrowler
+Disallow: /
+
 User-Agent: AhrefsBot
 Disallow: /
 #No, it's really too much!
@@ -62,8 +68,9 @@ Disallow: /
 #User-agent: Pixray-Seeker
 #Disallow: /
 
-#User-agent: Yandex
-#Disallow: /
+# Does NOT respect Crawl-delay, although mentioned on their info page
+User-agent: Yandex
+Disallow: /
 
 User-Agent: seoscanners
 Disallow: /
@@ -296,7 +303,6 @@ Disallow: /stuff/kmltest
 Disallow: /files/
 
 User-agent: *
-Crawl-Delay: 50
 Disallow: /profile/*/map
 Disallow: /profile/*/mmap
 Disallow: /photo/*?style=*
@@ -357,5 +363,6 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?
 Disallow: /stuff/kmltest
 Disallow: /files/
+Crawl-Delay: 10
 
 Sitemap: http://geo.hlipp.de/sitemap.xml
