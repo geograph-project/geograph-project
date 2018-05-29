@@ -64,7 +64,7 @@ $step=isset($_POST['step'])?intval($_POST['step']):1;
 
 # Try to guess if upload size > post_max_size or upload_max_filesize
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST) && empty($_FILES) && $_SERVER['CONTENT_LENGTH'] > 0) {
-	$smarty->assign('errormsg', 'You seem to have uploaded a large file. Please note that we have an maximum upload size of 15Mb - please resize the image and try again');
+	$smarty->assign('errormsg', 'You seem to have uploaded a large file. Please note that we have a maximum upload size of 20Mb - please resize the image and try again');
 }
 
 if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_NO_FILE)
@@ -189,7 +189,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 			break;
 		case UPLOAD_ERR_INI_SIZE:
 		case UPLOAD_ERR_FORM_SIZE:
-			$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 15Mb - please resize the image and try again');
+			$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 20Mb - please resize the image and try again');
 			break;
 		case UPLOAD_ERR_PARTIAL:
 			$smarty->assign('error', 'Your file was only partially uploaded - please try again');
@@ -388,7 +388,7 @@ if (isset($_POST['gridsquare']))
 					break;
 				case UPLOAD_ERR_INI_SIZE:
 				case UPLOAD_ERR_FORM_SIZE:
-					$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 15Mb - please resize the image and try again');
+					$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 20Mb - please resize the image and try again');
 					break;
 				case UPLOAD_ERR_PARTIAL:
 					$smarty->assign('error', 'Your file was only partially uploaded - please try again');

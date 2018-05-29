@@ -204,7 +204,7 @@ if (isset($_FILES['jpeg_exif']))
 			break;
 		case UPLOAD_ERR_INI_SIZE:
 		case UPLOAD_ERR_FORM_SIZE:
-			$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
+			$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 20Mb - please resize the image and try again');
 			break;
 		case UPLOAD_ERR_PARTIAL:
 			$smarty->assign('error', 'Your file was only partially uploaded - please try again');
