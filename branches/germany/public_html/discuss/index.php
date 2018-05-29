@@ -44,6 +44,7 @@ $useGoogleApi=!empty($CONF['google_maps_api_key']);
 
 $static_host = $CONF['STATIC_HOST'];
 $static_url = "//{$CONF['STATIC_HOST']}/discuss";
+$http_host = $_SERVER['HTTP_HOST'];
 
 if (count($CONF['languages'])) {
 	$cur_proto = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';

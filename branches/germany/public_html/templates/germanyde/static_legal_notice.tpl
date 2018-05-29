@@ -7,9 +7,9 @@
 
 <p>
 	Wenn Sie ein Anliegen zur Seite haben, können Sie sich über das
-	<a href="/contact.php">Kontaktformular</a> an das Geograph-Team oder
+	<a href="https://{$http_host}/contact.php">Kontaktformular</a> an das Geograph-Team oder
 	per Mail an <a href="mailto:hjlipp@web.de">Hansjörg&nbsp;Lipp&nbsp;&lt;hjlipp@web.de&gt;</a>
-	wenden. Da Mitteilungen über das <a href="/contact.php">Kontaktformular</a> mehrere Leute erreichen,
+	wenden. Da Mitteilungen über das <a href="https://{$http_host}/contact.php">Kontaktformular</a> mehrere Leute erreichen,
 	empfiehlt sich selbiges insbesondere auch für dringende Anliegen!
 </p>
 	

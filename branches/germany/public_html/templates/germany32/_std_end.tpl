@@ -37,7 +37,7 @@
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
      <li><a title="Geograph Information Documents" href="/content/?docs&amp;order=title">Documents</a></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
-     <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
+     <li><a accesskey="9" title="Contact Us" href="https://{$http_host}/contact.php">Contact Us</a></li>
      <li><a title="Privacy" href="/help/privacy">Privacy</a></li>
      <li><a title="Impressum" href="/help/legal_notice">Impressum</a></li>
     </ul></li>
@@ -108,7 +108,7 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 	  You are not logged in
 	  <a title="Already registered? Login in here" href="/login.php">login</a>
 		<span class="sep">|</span>
-	  <a title="Register to upload photos" href="/register.php">register</a>
+	  <a title="Register to upload photos" href="https://{$http_host}/register.php">register</a>
   {/if}
   {/dynamic}
 {if $languages}{dynamic}

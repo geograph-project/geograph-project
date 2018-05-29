@@ -7,9 +7,9 @@
 
 <p>
 	If you have any concerns regarding this web site, please contact
-	the Geograph team via the <a href="/contact.php">contact form</a> or
+	the Geograph team via the <a href="https://{$http_host}/contact.php">contact form</a> or
 	send an email to <a href="mailto:hjlipp@web.de">Hansjörg&nbsp;Lipp&nbsp;&lt;hjlipp@web.de&gt;</a>.
-	Please note that the <a href="/contact.php">contact form</a> is better suited for urgent
+	Please note that the <a href="https://{$http_host}/contact.php">contact form</a> is better suited for urgent
 	concerns because contact messages are sent to several people!
 </p>
 
