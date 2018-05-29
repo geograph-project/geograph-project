@@ -662,7 +662,17 @@ if (isset($_GET['fav']) && $i) {
 	} elseif (isset($_GET['kml'])) {
 		$engine->page = "kml.php";
 	}
- 	$engine->buildSimpleQuery($q,$CONF['default_search_distance'],(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto',(!empty($_GET['user_id']))?intval($_GET['user_id']):0);
+	if (empty($_GET['distance'])) {
+		$distance = $CONF['default_search_distance'];
+	} else {
+		$distance = intval($_GET['distance']);
+		if ($distance < -50) {
+			$distance = -50;
+		} elseif ($distance > 50) {
+			$distance = 50;
+		}
+	}
+ 	$engine->buildSimpleQuery($q,$distance,(isset($_GET['form']) && $_GET['form'] == 'simple')?'simple':'auto',(!empty($_GET['user_id']))?intval($_GET['user_id']):0);
  	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
  		if (empty($_GET['distance']))
  			$_GET['distance'] = $CONF['default_search_distance'];
