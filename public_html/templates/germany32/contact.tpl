@@ -34,6 +34,13 @@
 	<textarea id="msg" name="msg" rows="10" cols="50">{$msg|escape:'html'}</textarea>
     	<br /><span class="formerror">{$msg_error}</span> 
     <br />
+   </p>
+			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
+			Please note that we generate emails to the members of our support team from your input.
+			Therefore, we transmit your email address and, to help them to deal with our user's problems, the
+			reffering geograph page and browser type. See also our <a href="/help/privacy">privacy statement</a>.</div>
+   <p>
         <small>If you are writing in relation to a particular image, don't forget to mention which!</small>
     
     <input type="submit" name="send" value="Send"/></p>
