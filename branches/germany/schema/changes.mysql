@@ -849,3 +849,5 @@ ALTER TABLE `geotrips` ADD  `created` timestamp NOT NULL AFTER `updated`; # <- !
 #INSERT INTO geotrips_bak SELECT * FROM geotrips;
 ###
 ALTER TABLE `geotrips` ADD `userlist` varchar(128) NOT NULL DEFAULT '';
+
+ALTER TABLE  `user` ADD  `use_gravatar` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';
