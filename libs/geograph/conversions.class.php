@@ -346,7 +346,7 @@ function wgs84_to_friendly($lat,$long) {
 	}
 }
 
-function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
+function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty,$prefix='') {
 	global $CONF;
 
 	if ($CONF['lang'] == 'de') {
@@ -375,14 +375,14 @@ function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
 	$ys = str_replace('.', $CONF['decimal_sep'], sprintf("%.5F",$ys));
 	
 	foreach (array('el','nl','along','alat','xd','xm','xs','yd','ym','ys','ymd','xmd') as $name) {
-		$smarty->assign($name, $$name);
+		$smarty->assign($prefix.$name, $$name);
 	}
 	if ($CONF['lang'] == 'de') {
-		$smarty->assign('latdm', "{$yd}°$ymd'$nl");
-		$smarty->assign('longdm', "{$xd}°$xmd'$el");
+		$smarty->assign($prefix.'latdm', "{$yd}°$ymd'$nl");
+		$smarty->assign($prefix.'longdm', "{$xd}°$xmd'$el");
 	} else {
-		$smarty->assign('latdm', "$yd:$ymd$nl");
-		$smarty->assign('longdm', "$xd:$xmd$el");
+		$smarty->assign($prefix.'latdm', "$yd:$ymd$nl");
+		$smarty->assign($prefix.'longdm', "$xd:$xmd$el");
 	}
 }
 
