@@ -155,6 +155,8 @@
 			zoom: zoom,
 			mapTypeId: mapType,
 			streetViewControl: false, //true,
+			fullscreenControl: false,
+			gestureHandling: 'greedy',
 			mapTypeControlOptions: {
 				mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN, "mapniks", "mapnik", "mapnikh", "topo", "cycle"],
 				style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
