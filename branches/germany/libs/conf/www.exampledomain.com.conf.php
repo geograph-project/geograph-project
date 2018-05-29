@@ -234,6 +234,7 @@ $CONF['imagemagick_buggy'] = false;
 $CONF['minibb_admin_user']='admin';
 $CONF['minibb_admin_pwd']='CHANGETHIS';
 $CONF['minibb_admin_email']='root@wherever';
+$CONF['minibb_anonip']=true; // store users' IP addresses?
 
 ###################################
 

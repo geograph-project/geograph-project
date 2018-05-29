@@ -117,6 +117,9 @@ if ($acc=='m') return $forb; else return $acc;
 
 //--------------->
 function getIP(){
+if ($GLOBALS['anonip']) {
+	return "0.0.0.0";
+}
 # FIXME does not work with ipv6
 #$ip1=getenv('REMOTE_ADDR');$ip2=getenv('HTTP_X_FORWARDED_FOR');
 #if ($ip2!='' and ip2long($ip2)!=-1) $finalIP=$ip2; else $finalIP=$ip1;
