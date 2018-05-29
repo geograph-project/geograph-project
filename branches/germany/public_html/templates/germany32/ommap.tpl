@@ -333,7 +333,7 @@ ommap.tpl, rastermap.class.php:
 				}
 			);
 			var mapnik = new OpenLayers.Layer.XYrZ(
-				"Mapnik (Static + OSM)",
+				"Old Mapnik (Static + OSM)",
 				"/tile/osm/${z}/${x}/${y}.png",
 				0, 18, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
 				{
@@ -343,7 +343,7 @@ ommap.tpl, rastermap.class.php:
 				16, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
 			);
 			var mapnik2 = new OpenLayers.Layer.XYrZ(
-				"New Mapnik (Static + OSM)",
+				"Mapnik (Static + OSM)",
 				"/tile/osm2/${z}/${x}/${y}.png",
 				0, 18, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
 				{
@@ -668,12 +668,12 @@ ommap.tpl, rastermap.class.php:
 
 			/* first layer: map type for overview map */
 			map.addLayers([
-				mapnik,
+				mapnik2,
 				osmmapnik, //osmarender,
 				geo,
 				cycle,
 				topobase, //topotrails, topohills,
-				mapnik2,
+				mapnik,
 				hills,
 				geosq, geogr,
 {/literal}

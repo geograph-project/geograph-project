@@ -618,8 +618,8 @@ class GeographMap
 			#FIXME?
 			return '';
 		}
-		#trigger_error("-> $root/tile/osm/{$this->level}/{$this->tile_x}/{$this->tile_y}.png", E_USER_NOTICE);#FIXME
-		return "/tile/osm/{$this->level}/{$this->tile_x}/{$this->tile_y}.png";
+		#trigger_error("-> $root/tile/osm2/{$this->level}/{$this->tile_x}/{$this->tile_y}.png", E_USER_NOTICE);#FIXME
+		return "/tile/osm2/{$this->level}/{$this->tile_x}/{$this->tile_y}.png";
 	}
 
 	/**
