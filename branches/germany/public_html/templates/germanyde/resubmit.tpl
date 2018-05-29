@@ -5,12 +5,12 @@
 
 {if $image}
 	<div style="position:relative; float:right; width:220px; background-color:#eeeeee; padding: 10px; text-align:center">
-		<b>Chosen Image</b>
+		<b>Gewähltes Bild</b>
 		<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a>
 			 <div style="font-size:0.7em">
-				  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
-				  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
-				  for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
+				  <a title="zum Vergrößern anklicken" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
+				  von <a title="Profil" href="{$image->profile_link}">{$image->realname}</a>
+				  für Planquadrat <a title="Seite für {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 			</div>
 		</div>
 	</div>
@@ -20,21 +20,20 @@
 
 
 {if $error}
-<h2><span class="formerror">check and correct errors below...<br/>{$error}</span></h2>
+<h2><span class="formerror">Bitte die unten aufgeführten Fehler korrigeren...<br/>{$error}</span></h2>
 {/if}
 
 {if $step eq -1}
-<h2>Submission Abandoned</h2>
-<p>Your upload has been aborted - if you have any
-concerns or feedback regarding our licence terms, 
-please <a title="contact us" href="/contact.php">contact us</a></p>
+<h2>Upload verworfen</h2>
+<p>Der Vorgang wurde abgebrochen. Für Nachfragen
+sind wir über das <a title="Kontakt" href="/contact.php">Kontaktformular</a> erreichbar.</p>
 
 {elseif $step eq 4}
-	<h3>Thank you</h3>
+	<h3>Danke</h3>
 	
-	<p>Your upload will be verified, and then made available via the 'more sizes' on the photo page soon.</p>
+	<p>Sobald das Bild von den Moderatoren freigeschaltet ist, wird es über "Andere Größen" auf der Fotoseite verfügbar sein.</p>
 	
-	<p>Return to the <a href="/photo/{$image->gridimage_id}">photo page</a></p>
+	<p>Zur <a href="/photo/{$image->gridimage_id}">Fotoseite</a> zurückkehren.</p>
 
 {elseif $step eq 2}
 
@@ -46,7 +45,7 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 
 
 
-<h3>Step 2 : Confirm image size</h3>
+<h3>Schritt 2: Bildgröße einstellen</h3>
 
 		{if $original_width || $altimg}
 			{if !$altimg}{assign var="hide640" value=1}{/if}
@@ -71,40 +70,49 @@ function hideStep3() {
 </script>
 
 <div id="step3">
-<h3>Step 3 : Confirm image rights</h3>
+<h3>Schritt 3: Bildrechte bestätigen</h3>
 
 	<p>
-	Because we are an open project we want to ensure our content is licensed
-	as openly as possible and so we ask that all images are released under a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"}
-	licence, including accompanying metadata.</p>
+	Weil wir ein offenes Projekt sind, wollen wir sicherstellen, dass die Inhalte unter
+	einer möglichst offenen Lizenz stehen. Daher möchten wir, dass alle Bilder unter einer {external title="Mehr über Creative Commons" href="http://creativecommons.org" text="Creative-Commons-Lizenz" target="_blank"}
+	veröffentlicht werden, einschließlich der dazugehörigen Metadaten.</p>
 	
-	<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows 
-	people to copy and distribute the work provided they <b>give credit</b>.</p>
+	<p>Mit einer Creative-Commons-Lizenz behält der Fotograf die Rechte an seinem Werk, erlaubt aber auch,
+	dass die Fotos kopiert, bearbeitet und weiterverbreitet werden, solange der Fotograf genannt und die Lizenz beibehalten wird.</p>
+
+	<p>Desweiteren müssen wir sicherstellen, dass der Einreicher das Bild veröffentlichen darf. Dies betrifft insbesondere
+	Fotos, auf denen Personen abgebildet sind (Persönlichkeitsrecht, Datenschutzrecht, ...), sowie Fotos, die urheberrechtlich geschützte
+	Werke (z.B. Architektur) zeigen und nicht von öffentlich zugänglichen Orten aufgenommen sind.</p>
 	
-	<p>Since we want to ensure we can use your work to allow us to create montages of grid images, we ask that you
-	allow the following</p>
+	<p>Daher bitten wir um Erlaubnis,</p>
 	
 	<ul>
-	<li>The right to use the work commercially</li>
-	<li>The right to modify the work to create derivative works</li>
+	<li>das Werk zu verändern und abgeleitete Werke zu erstellen und</li>
+	<li>das Werk und abgeleitete Werke zu verbreiten.</li>
+	</ul>
+
+	<p>Außerdem bitten wir um Bestätigung, dass &ndash; soweit erforderlich &ndash;</p>
+	<ul>
+	<li>die Einwilligung abgebildeter Personen vorliegt</li>
+	<li>die Erlaubnis zur Veröffentlichung urheberrechtlich geschützter Werke vorliegt</li>
 	</ul>
 	
 	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
 		
-	<p>If you do
-	not agree with these terms, click "I do not agree" and your upload will
-	be abandoned.<br />
+	<p>Sollten diese Bedingungen nicht akzeptabel sein,
+	kann der Upload durch einen Klick auf "ICH BIN NICHT EINVERSTANDEN"
+	rückgängig gemacht werden.<br />
 	<input style="background-color:pink; width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>
 	
-	<p>If you agree with these terms, click "I agree" and the upload will proceed.<br />
+	<p>Sind die Bedingungen dagegen akzeptabel, wird der Upload nach einem Klick auf "ICH BIN EINVERSTANDEN" fortgesetzt.<br />
 	
 	<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);"/> 
 	
 	</p>
 </div>	
 		{else}
-			<h3>Error: file not big enough, please click: 
-			<input style="background-color:pink; width:200px" type="submit" name="abandon" value="Abandon upload"/>
+			<h3>Fehler: Datei nicht groß genug, bitte Anklicken:
+			<input style="background-color:pink; width:200px" type="submit" name="abandon" value="Upload verwerfen"/>
 		{/if}
 
 
@@ -148,7 +156,7 @@ function hideStep3() {
 <br style="clear:both"/>
 <form enctype="multipart/form-data" action="{$script_name}?id={$image->gridimage_id}" method="post" name="theForm" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
-<h3>Schritt 1 : Datei auswählen</h3>
+<h3>Schritt 1: Datei auswählen</h3>
 
 <input type="hidden" name="MAX_FILE_SIZE" value="15728640" />
 <label for="jpeg"><b>JPEG-Datei</b></label>
