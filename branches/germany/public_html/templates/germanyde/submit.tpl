@@ -495,6 +495,10 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	
 	<p>Mit einer Creative-Commons-Lizenz behält der Fotograf die Rechte an seinem Werk, erlaubt aber auch,
 	dass die Fotos kopiert, bearbeitet und weiterverbreitet werden, solange der Fotograf genannt und die Lizenz beibehalten wird.</p>
+
+	<p>Desweiteren müssen wir sicherstellen, dass der Einreicher das Bild veröffentlichen darf. Dies betrifft insbesondere
+	Fotos, auf denen Personen abgebildet sind (Persönlichkeitsrecht, Datenschutzrecht, ...), sowie Fotos, die urheberrechtlich geschützte
+	Werke (z.B. Architektur) zeigen und nicht von öffentlich zugänglichen Orten aufgenommen sind.</p>
 	
 	<p>Daher bitten wir um Erlaubnis,</p>
 	
@@ -502,7 +506,13 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<li>das Werk zu verändern und abgeleitete Werke zu erstellen und</li>
 	<li>das Werk und abgeleitete Werke zu verbreiten.</li>
 	</ul>
-	
+
+	<p>Außerdem bitten wir um Bestätigung, dass &ndash; soweit erforderlich &ndash;</p>
+	<ul>
+	<li>die Einwilligung abgebildeter Personen vorliegt</li>
+	<li>die Erlaubnis zur Veröffentlichung urheberrechtlich geschützter Werke vorliegt</li>
+	</ul>
+
 	<p>{external title="Lizenz ansehen" href="http://creativecommons.org/licenses/by-sa/2.0/deed.de" text="Hier ist die detailliertere Zusammenfassung der Creative-Commons-Lizenzbedingungen" target="_blank"}</p>
 	
 	{assign var="credit" value=$user->credit_realname}
