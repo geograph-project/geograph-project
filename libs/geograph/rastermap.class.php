@@ -850,7 +850,7 @@ function GetTileUrl_GeoH(a, z) {
 }
 
 function GetTileUrl_GeoS(a, z) {
-    return (z < 16 ? "http://geo.hlipp.de/tile/osm/" : "http://tile.openstreetmap.org/") +
+    return (z < 17 ? "http://geo.hlipp.de/tile/osm2/" : "http://tile.openstreetmap.org/") +
                 z + "/" + a.x + "/" + a.y + ".png";
 }
 
@@ -1258,13 +1258,13 @@ EOF;
 			$vector_block
 			var mapnik = new OpenLayers.Layer.XYrZ(
 				\"$name_static\",
-				\"/tile/osm/\${z}/\${x}/\${y}.png\",
+				\"/tile/osm2/\${z}/\${x}/\${y}.png\",
 				0, 18, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
 				{
 					attribution: $attr_static,
 					sphericalMercator : true
 				},
-				16, \"http://tile.openstreetmap.org/\${z}/\${x}/\${y}.png\"
+				17, \"http://tile.openstreetmap.org/\${z}/\${x}/\${y}.png\"
 			);
 			var osmmapnik = new OpenLayers.Layer.OSM();
 

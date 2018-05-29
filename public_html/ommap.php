@@ -41,7 +41,7 @@ if (isset($_REQUEST['inner'])) {
 	$cacheid = '';
 }
 
-$type = 'r';
+$type = 'n';
 if (isset($_REQUEST['picasa'])) {
 	$cacheid .= 'picasa';
 	$smarty->assign('picasa',1);
