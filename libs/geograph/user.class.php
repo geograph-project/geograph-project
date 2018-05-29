@@ -511,6 +511,12 @@ class GeographUser
 			$ok=false;
 			$errors['password2']=$MESSAGES['class_user']['password2'];
 		}
+
+		//check privacy check box
+		if (!isset($form['confirmdata']) || trim($form['confirmdata']) !== '1') {
+			$ok=false;
+			$errors['confirmdata']=$MESSAGES['class_user']['confirmdata'];
+		}
 		
 		//if the params check out, lets ensure they aren't 
 		//already registered...

@@ -70,6 +70,15 @@
 	<label for="password2">Confirm password</label><br/>
 	<input size="12" type="password" id="password2" name="password2" value="{$password2|escape:'html'}"/>
 	<span class="formerror">{$errors.password2}</span>
+	<br/><br/>
+			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
+			Please note that we store the specified data into your user profile. Only the name is publicly visible, the other
+			items are only used internally. Additionally, we will send emails to your address, for example for requests about your contributions.
+			See our <a href="/help/privacy">privacy statement</a> for details.</div>
+			<input type="checkbox" id="confirmdata" name="confirmdata" value="1"{if $confirmdata} checked="checked"{/if} /> <label for="confirmdata">I understand that you are storing and processing my data as described!</label>
+			<br/>
+			<span class="formerror">{$errors.confirmdata}</span>
 	<br/>
 	<span class="formerror">{$errors.general}</span>
 	<br/>

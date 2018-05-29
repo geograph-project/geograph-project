@@ -73,6 +73,15 @@
 	<label for="password2">Passwort wiederholen</label><br/>
 	<input size="12" type="password" id="password2" name="password2" value="{$password2|escape:'html'}"/>
 	<span class="formerror">{$errors.password2}</span>
+	<br/><br/>
+			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
+			Bitte beachten Sie, dass wir die von Ihnen eingegebenen Daten in ihrem Profil speichern. Während der Name nach außen
+			sichtbar ist, werden die anderen Eingaben nur intern verwendet. Zusätzlich werden Ihnen beispielsweise bei Rückfragen zu
+			Ihren Beiträgen E-Mails geschickt werden. Details hierzu finden Sie in der <a href="/help/privacy">Datenschutzerklärung</a>.</div>
+			<input type="checkbox" id="confirmdata" name="confirmdata" value="1"{if $confirmdata} checked="checked"{/if} /> <label for="confirmdata">Ich habe verstanden, dass meine Daten gespeichert und wie beschriebenen verwendet werden!</label>
+			<br/>
+			<span class="formerror">{$errors.confirmdata}</span>
 	<br/>
 	<span class="formerror">{$errors.general}</span>
 	<br/>
