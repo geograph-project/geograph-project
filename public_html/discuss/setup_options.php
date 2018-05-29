@@ -128,6 +128,7 @@ $mail_charset=$CONF['mail_charset'];
 $mail_headerenc=$CONF['mail_transferencoding'];
 $mail_envfrom=is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
 $mail_from=$CONF['mail_from'];
+$anonip=!empty($CONF['minibb_anonip']);
 //$includeHeader='header.php';
 //$includeFooter='footer.php';
 //$emptySubscribe=TRUE;
