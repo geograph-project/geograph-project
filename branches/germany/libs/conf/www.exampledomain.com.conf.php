@@ -194,6 +194,7 @@ $CONF['smarty_caching']=1;
 $CONF['contact_email']='someone@somewhere.invalid,other@elsewhere.invalid';
 $CONF['abuse_email']='abuse@somewhere.invalid';
 $CONF['admin_email']='webmaster@somewhere.invalid';
+$CONF['noreply_email']='noreply@somewhere.invalid';
 
 ###################################
 # folder setup

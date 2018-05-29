@@ -170,7 +170,8 @@ if (isset($_POST['msg']))
 			"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
 			"Content-Disposition: inline\n".
 			"Content-Transfer-Encoding: 8bit";
-		$from = "From: $enc_from_name <$from_email>\n";
+		$from = "From: $enc_from_name <{$CONF['noreply_email']}>\n".
+		        "Reply-To: $enc_from_name <$from_email>\n";
 		$geofrom = "From: Geograph <{$CONF['mail_from']}>\n";
 		$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
 
