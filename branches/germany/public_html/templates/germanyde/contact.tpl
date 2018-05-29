@@ -33,8 +33,14 @@
 	<textarea id="msg" name="msg" rows="10" cols="50">{$msg|escape:'html'}</textarea>
     	<br /><span class="formerror">{$msg_error}</span> 
     <br />
+   </p>
+			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
+			Bitte beachten Sie, dass aus Ihren Angaben E-Mails an die Mitglieder unses Support-Teams generiert werden,
+			wodurch diesen Ihre E-Mail-Adresse sowie zur Erleichterung der Hilfestellung die verweisende Unterseite und der Browsertyp übermittelt wird.
+			Siehe auch die <a href="/help/privacy">Datenschutzerklärung</a>.</div>
+   <p>
         <small>Wenn es um ein Bild geht, bitten wir darum, uns mitzuteilen auf welches Sie sich beziehen!</small>
-    
     <input type="submit" name="send" value="Send"/></p>
     </form>
 {/if} 
