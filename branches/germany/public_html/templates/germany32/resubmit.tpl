@@ -79,16 +79,27 @@ function hideStep3() {
 	licence, including accompanying metadata.</p>
 	
 	<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows 
-	people to copy and distribute the work provided they <b>give credit</b>.</p>
+	people to copy, modify and distribute the work provided they <b>give credit</b>.</p>
 	
-	<p>Since we want to ensure we can use your work to allow us to create montages of grid images, we ask that you
+	<p>We also have to ensure that you are allowed to publish the image. In particular, this affects photos showing
+	persons (privacy law, personal rights, ...) as well as images of copyrighted material (e.g. architecture) taken from a place
+	not open to the public.</p>
+	
+	<p>Therefore, we ask that you
 	allow the following</p>
 	
 	<ul>
-	<li>The right to use the work commercially</li>
 	<li>The right to modify the work to create derivative works</li>
+	<li>The right to distribute the work and derivative works</li>
 	</ul>
-	
+
+	<p>We also ask you to confirm that you</p>
+	<ul>
+	<li>have asked depicted persons for permission if required</li>
+	<li>are sure that you are allowed to have the right to publish images of depicted subjects</li>
+	</ul>
+	</p>
+
 	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
 		
 	<p>If you do
