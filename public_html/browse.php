@@ -111,7 +111,16 @@ elseif (isset($_GET['setpos']))
 	$smarty->assign('gridrefraw', $square->grid_reference);
 	$smarty->assign('gridref2', strlen($square->grid_reference) <= 2 + $CONF['gridpreflen'][$square->reference_index]);
 }
-
+//set by latitude/longitude?
+elseif (isset($_GET['ll']) && preg_match("/^(-?\d+\.\d+),(-?\d+\.\d+) *$/", $_GET['ll'], $ll)) {
+	require_once('geograph/conversions.class.php');
+	$conv = new Conversions;
+	list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
+	$grid_ok = $square->loadFromPosition($x, $y, true);
+	$grid_given=true;
+	$smarty->assign('gridrefraw', $square->grid_reference);
+	$smarty->assign('gridref2', strlen($square->grid_reference) <= 2 + $CONF['gridpreflen'][$square->reference_index]);
+}
 //set by grid ref?
 elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 {
