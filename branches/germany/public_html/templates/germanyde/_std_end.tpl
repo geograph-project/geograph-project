@@ -38,6 +38,7 @@
      <li><a title="Projektbezogene Informationen" href="/content/?docs&amp;order=title">Dokumente</a></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Kontaktformular" href="/contact.php">Kontakt</a></li>
+     <li><a title="Datenschutz" href="/help/privacy">Datenschutz</a></li>
      <li><a title="Impressum" href="/help/legal_notice">Impressum</a></li>
     </ul></li>
   {dynamic}
