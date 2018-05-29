@@ -6,6 +6,7 @@ $MESSAGES['class_user'] = array (
 	'email_invalid'           => 'Bitte gültige E-Mail-Adresse eingeben!',
 	'password1'               => 'Das Passwort ist zu einfach oder zu kurz!',
 	'password2'               => 'Passwörter stimmen nicht überein!',
+	'confirmdata'             => 'Bitte bestätigen Sie, dass Sie die Datenschutzerklärung gelesen haben!',
 	'already_registered'      => 'E-Mail-Adresse schon registriert!',
 	'error_dbupdate'          => 'Datenbank-Update fehlgeschlagen: ',
 	'error_dbinsert'          => 'Datenbank-Insert fehlgeschlagen: ',

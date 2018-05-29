@@ -113,6 +113,7 @@ elseif (isset($_POST['name']))
 		$smarty->assign('email', stripslashes(trim($_POST['email'])));
 		$smarty->assign('password1', stripslashes(trim($_POST['password1'])));
 		$smarty->assign('password2', stripslashes(trim($_POST['password2'])));
+		$smarty->assign('confirmdata', stripslashes(trim($_POST['confirmdata'])));
 		$smarty->assign('errors', $errors);
 	}
 }

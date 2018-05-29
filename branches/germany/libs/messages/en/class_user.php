@@ -6,6 +6,7 @@ $MESSAGES['class_user'] = array (
 	'email_invalid'           => 'Please enter a valid email address',
 	'password1'               => 'You must specify a longer or more complex password',
 	'password2'               => 'Passwords didn\'t match, please try again',
+	'confirmdata'             => 'Please confirm that you have read the privacy statement!',
 	'already_registered'      => 'Email address is already registered',
 	'error_dbupdate'          => 'error updating: ',
 	'error_dbinsert'          => 'error inserting: ',
