@@ -91,6 +91,11 @@
 			Bitte beachten Sie, dass der Empfänger die Nachricht unter Umständen <b>nicht</b> annimmt, falls Sie als Absender eine <b>Yahoo- oder AOL-</b>Adresse angeben,
 			weil Yahoo und AOL eine diesbezüglich ungünstige Mail-Konfiguration einsetzen.</div>
 			<br/>
+			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
+			Bitte beachten Sie, dass aus Ihren Angaben eine Mail an den Empfänger generiert wird und somit an diesen
+			Ihre E-Mail-Adresse, ihre IP-Adresse und Ihr Name übermittelt wird. Siehe auch die <a href="/help/privacy">Datenschutzerklärung</a>.</div>
+			<br/>
 		</div>
 		
 		<div style="float:right; position:relative; vertical-align:top;">
