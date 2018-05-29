@@ -42,9 +42,9 @@
 		{if $error}
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
-		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto 8Mb filesize <sup style="color:red">New!</sup>)<br/>	
+		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto 20Mb filesize <sup style="color:red">New!</sup>)<br/>	
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white"/>
-		<input type="hidden" name="MAX_FILE_SIZE" value="8192000"/></div>
+		<input type="hidden" name="MAX_FILE_SIZE" value="20971520"/></div>
 		<div>
 		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em"/> (while file is sending can continue on the steps below)<br/>
 		</div>
