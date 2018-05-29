@@ -3,34 +3,34 @@
         xmlns="http://a9.com/-/spec/opensearch/1.1/"
         xmlns:moz="http://www.mozilla.org/2006/browser/search/"
         xmlns:opensearchgeo="http://a9.com/-/opensearch/extensions/geo/1.0/" >
-  <ShortName>Geograph</ShortName>
-  <LongName>Geograph British Isles</LongName>
-  <Description>geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland</Description>
-  <Tags>geograph photos images british isles</Tags>
+  <ShortName>Geo DE</ShortName>
+  <LongName>Geograph Germany</LongName>
+  <Description>geographically representative photographs and information for every square kilometre of Germany</Description>
+  <Tags>geograph photos images germany</Tags>
   <SyndicationRight>open</SyndicationRight>
 
   <Developer>Geograph</Developer>
   <Attribution>
     Copyright (c) 2009 Geograph Project Ltd and licensed for reuse under CC-by-sa 2.5
   </Attribution>
-  <Image height="16" width="16" type="image/vnd.microsoft.icon">http://www.geograph.org.uk/favicon.ico</Image>
+  <Image height="16" width="16" type="image/vnd.microsoft.icon">http://geo.hlipp.de/favicon.ico</Image>
 
-  <moz:SearchForm>http://www.geograph.org.uk/search.php</moz:SearchForm>
+  <moz:SearchForm>http://geo.hlipp.de/search.php</moz:SearchForm>
   
   <Url type="application/vnd.google-earth.kml+xml"
-       template="http://www.geograph.org.uk/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}&amp;output=kml">
+       template="http://geo.hlipp.de/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}&amp;output=kml">
   </Url>
   <Url type="application/rss+xml" 
-       template="http://www.geograph.org.uk/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}">
+       template="http://geo.hlipp.de/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}">
   </Url>
   <Url type="text/html" 
-       template="http://www.geograph.org.uk/search.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}">
+       template="http://geo.hlipp.de/search.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}">
   </Url>
-  <Query role="example" searchTerms="Liverpool" />
+  <Query role="example" searchTerms="Faulenbach" />
 
   <AdultContent>false</AdultContent>
 
-  <Language>en-gb</Language>
+  <Language>de-de</Language>
   <OutputEncoding>iso-8859-1</OutputEncoding>
   <InputEncoding>iso-8859-1</InputEncoding>
 </OpenSearchDescription>
