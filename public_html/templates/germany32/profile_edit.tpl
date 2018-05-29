@@ -24,8 +24,10 @@ Your changes could not be processed due to <a href="/help/csrf">security reasons
 	<label for="realname">Real Name:</label>
 	<input type="text" id="realname" name="realname" value="{$profile->realname|escape:'html'}"/>
 	
-	<div class="fieldnotes">Your real name is used to give you attribution
-	whenever your photographs are displayed.</div>
+	<div class="fieldnotes">This name is visible to the public. It is used to give you attribution
+	whenever your photographs are displayed. Is is shown on many pages, most notably the profile page.
+	You may abreviate your name or specify a pseudonym if you don't want to publish and licence
+	your photos under your real name.</div>
 	
 	{if $errors.realname}</div>{/if}
 </div>

@@ -24,8 +24,10 @@ Aus <a href="/help/csrf">Sicherheitsgründen</a> konnten die Änderungen nicht ges
 	<label for="realname">Realname:</label>
 	<input type="text" id="realname" name="realname" value="{$profile->realname|escape:'html'}"/>
 	
-	<div class="fieldnotes">Der Realname wird benötigt, damit wir
-	den Urheber der Bilder angeben können.</div>
+	<div class="fieldnotes">Dieser Name ist öffentlich sichtbar. Er wird benötigt, damit wir
+	den Urheber der Bilder angeben können, und wird auf vielen Seiten angezeigt, wie etwa der Profilseite.
+	Es kann auch ein abgekürzter Name oder ein Pseudonym verwendet werden, wenn die Fotos nicht unter
+	dem wirkleichen Namen veröffentlicht und lizenziert werden sollen.</div>
 	
 	{if $errors.realname}</div>{/if}
 </div>
