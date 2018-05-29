@@ -58,6 +58,10 @@ if (isset($_GET['geo'])) {
 if (isset($_GET['supp'])) {
         $cacheid .= "supp";
 }
+if (isset($_GET['takenorder'])) {
+        $cacheid .= "taken";
+}
+
 
 
 if ($smarty->caching) {
@@ -177,6 +181,21 @@ if (!$smarty->is_cached($template, $cacheid))
 					if (isset($images[$day])) {
 						$images[$day]['gridimage_id'] = $imageid;
 						#trigger_error("{$images[$day]['gridimage_id']} {$imageid} {$day}", E_USER_WARNING);
+					}
+				}
+			}
+			if (!isset($_GET['takenorder'])) { /* use best rated image */
+				foreach ($images as $day=>&$arr) {
+					if ($geosupp) {
+						if ($arr['images'] == $arr['supps']) {
+							$where2 = " AND moderation_status in ('geograph','accepted')";
+						} else {
+							$where2 = " AND moderation_status = 'geograph'";
+						}
+					}
+					$gid = $db->GetOne("SELECT gi.gridimage_id FROM gridimage_search as gi inner join gridimage_rating gr on (gi.gridimage_id=gr.gridimage_id and gr.type='like') WHERE gi.imagetaken='$day' $where1 $where2 ORDER BY gr.rating desc,gi.gridimage_id"); // limit 1 implied
+					if ($gid !== false && !is_null($gid)) {
+						$arr['gridimage_id'] = $gid;
 					}
 				}
 				unset($arr);
