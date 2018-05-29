@@ -107,11 +107,13 @@ Your changes could not be processed due to <a href="/help/csrf">security reasons
 
 <div class="field">
 
-	<label for="gravatar">Gravatar:</label>
-	<img src="{$curproto}www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d={$curproto}www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50" align="left" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>
+	<label for="gravatar">Use Gravatar profile picture:</label>
+	<input type="checkbox" name="use_gravatar" id="use_gravatar" {if $profile->use_gravatar}checked{/if} value="1"/><br/>
+	{if $profile->use_gravatar}<img src="{$curproto}www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d={$curproto}www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50" align="left" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>{/if}
 	
-	<div class="fieldnotes">To setup or change your Avatar image, goto {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address set above.</div>
-	
+	<div class="fieldnotes">To setup or change your Avatar image, goto {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address set above.
+	<b>Please note that when embedding your profile picture, your email address has to be transmitted in an encrypted ("hashed") form to the service gravatar.
+	This is needed by gravatar for finding the profile picture assigned to that email address. The real email address is not transmitted during that process.</b></div>
 </div>
 
 </fieldset>

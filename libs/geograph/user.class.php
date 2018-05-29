@@ -1133,6 +1133,7 @@ class GeographUser
 				message_sig=%s,
 				upload_size=%d,
 				clear_exif=%d,
+				use_gravatar=%d,
 				salt=%s,
 				password=%s
 				where user_id=%d",
@@ -1153,6 +1154,7 @@ class GeographUser
 				$db->Quote(stripslashes($profile['message_sig'])),
 				intval($profile['upload_size']), #FIXME check values!
 				$profile['clear_exif']?1:0,
+				$profile['use_gravatar']?1:0,
 				$db->Quote($salt),
 				$db->Quote($password),
 				$this->user_id
@@ -1196,6 +1198,7 @@ class GeographUser
 				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->upload_size=intval($profile['upload_size']);
 				$this->clear_exif=!empty($profile['clear_exif']);
+				$this->use_gravatar=!empty($profile['use_gravatar']);
 				$this->_forumUpdateProfile();
 				$this->_forumLogin();
 				
