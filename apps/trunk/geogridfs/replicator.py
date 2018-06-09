@@ -157,6 +157,8 @@ def walk_and_notify(folder = '', replica = '', track_progress = True):
             
             if files:
                 for filename in files:
+                    if filename == 'replicator.done':
+			continue;
                     print "sending new file "+ filename
                     path = string.replace(root,mount,'') + "/" + filename
                     
@@ -234,7 +236,7 @@ def replicate_now(path = '',target = ''):
 
     print crit
     
-    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE "+crit+" ORDER BY folder_id DESC LIMIT 400")
+    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" USE INDEX(PRIMARY) WHERE "+crit+" ORDER BY folder_id DESC LIMIT 400")
 
     while True:
         row = c.fetchone()
@@ -298,8 +300,9 @@ def main(argv):
     action = 'unknown'
     replica = ''
     path = ''
+    track = True
     try:
-        opts, args = getopt.getopt(argv,"a:p:r:",["action=","path=","replica="])
+        opts, args = getopt.getopt(argv,"a:p:r:t",["action=","path=","replica=","track"])
     except getopt.GetoptError:
         print 'replicator.py -a (walk|replicate) [-p /geograph_live/rastermaps] [-r milk]'
         sys.exit(2)
@@ -311,6 +314,8 @@ def main(argv):
             replica = arg
         elif opt in ("-p", "--path"):
             path = arg.rstrip("/")
+        elif opt in ("-t", "--track"):
+            track = False
     
     if action == 'unknown':
         print 'replicator.py -a (walk|replicate) [-p /geograph_live/rastermaps] [-r milk]'
@@ -319,9 +324,9 @@ def main(argv):
     elif action == 'walk':
         if replica == 'all':
 		for (key,value) in config.mounts.iteritems():
-		        walk_and_notify(path, key)
+		        walk_and_notify(path, key, track)
 	else:
-		walk_and_notify(path, replica)
+		walk_and_notify(path, replica, track)
     
     elif action == 'replicate':
         replicate_now(path, replica)
