@@ -89,8 +89,10 @@ class GeographUser
 				{
 					if (!is_numeric($name))
 						$this->$name=$value;
-
 				}
+
+				if (empty($this->upload_size))
+					$this->upload_size = 1024;
 
 				// get user homesquare
 				if (isset($this->home_gridsquare)) {
@@ -102,7 +104,7 @@ class GeographUser
 			}
 		}
 	}
-	
+
 	function loadByNickname($nickname=0)
 	{
 		if (!empty($nickname))
@@ -110,12 +112,11 @@ class GeographUser
 			$db = $this->_getDB(true);
 
 			$nickname = $db->Quote($nickname);
-			
+
 			$arr =& $db->GetRow("select * from user where nickname = $nickname limit 1");
-			
-			
+
 			//todo check seperate table
-			
+
 			if (count($arr))
 			{
 				$this->registered=strlen($arr['rights'])>0;
@@ -125,6 +126,8 @@ class GeographUser
 						$this->$name=$value;
 
 				}
+				if (empty($this->upload_size))
+					$this->upload_size = 1024;
 
 				// get user homesquare
 				if (isset($this->home_gridsquare)) {
@@ -135,7 +138,7 @@ class GeographUser
 			}
 		}
 	}
-	
+
 	function randomSalt($len) {
 		$bytes = (int)(($len * 3 + 3) /4);
 		$bin = '';
@@ -520,13 +523,14 @@ class GeographUser
 				$this->user_id=$user_id;
 				$this->registered=true;
 
-				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($user_id).' limit 1');	
+				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($user_id).' limit 1');
 				foreach($arr as $name=>$value)
 				{
 					if (!is_numeric($name))
 						$this->$name=$value;
-
 				}
+				if (empty($this->upload_size))
+					$this->upload_size = 1024;
 
 				//temporary nickname fix for beta accounts
 				if (strlen($this->nickname)==0)
@@ -538,20 +542,19 @@ class GeographUser
 
 				//log into forum too
 				$this->_forumLogin();
-				
+
 				$status="ok";
 			}
-				
 		}
 		else
 		{
 			//hash mismatch or param problem
 			$status="fail";
 		}
-		
+
 		return $status;
 	}
-	
+
 	/**
 	* send password reminder to email address
 	*/
@@ -658,6 +661,8 @@ class GeographUser
 						$this->$name=$value;
 
 				}
+				if (empty($this->upload_size))
+					$this->upload_size = 1024;
 
 				//temporary nickname fix for beta accounts
 				if (strlen($this->nickname)==0)
@@ -731,6 +736,8 @@ class GeographUser
 						$this->$name=$value;
 
 				}
+				if (empty($this->upload_size))
+					$this->upload_size = 1024;
 
 				//temporary nickname fix for beta accounts
 				if (strlen($this->nickname)==0)
@@ -1183,6 +1190,8 @@ class GeographUser
 								if (!is_numeric($name))
 									$this->$name=$value;
 							}
+							if (empty($this->upload_size))
+								$this->upload_size = 1024;
 
 							$this->registered=true;
 							$logged_in=true;
@@ -1276,6 +1285,8 @@ class GeographUser
 									if (!is_numeric($name))
 										$this->$name=$value;
 								}
+								if (empty($this->upload_size))
+									$this->upload_size = 1024;
 
 								//temporary nickname fix for beta accounts
 								if (strlen($this->nickname)==0)
@@ -1334,6 +1345,7 @@ class GeographUser
 			if (!$logged_in)
 			{
 				$smarty = new GeoGraphPage;
+				$this->is_login_form = true; //trap so can detect a login page in pagefooter!
 
 				pageMustBeHTTPS();
 
