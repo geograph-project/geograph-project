@@ -45,7 +45,7 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 			<div style="position:relative;float:right">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]]</div>
 			<b>This article is open for collaborative editing</b>. {$edit_prompt}
 		</div>
-	{elseif $user->user_id == $user_id}
+	{elseif $user->user_id == $user_id || $ismod}
 		<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]] [[<a href="/article/">article listing</a>]]</p>
                 {if $user_warning}
                         <p style="text-align:center;color:red;padding:7px;border:2px solid red" class="no_print">{$user_warning}</p>
