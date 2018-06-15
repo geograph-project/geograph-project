@@ -48,6 +48,8 @@ if ($_GET['url'] == 'Shepherd-Neame2') {
 
 $isadmin=($USER->hasPerm('moderator') || $USER->hasPerm('director'))?1:0;
 
+$smarty->assign('ismod',$USER->hasPerm('moderator'));
+
 $template = 'article_article.tpl';
 
 if ($_GET['url'] == 'preview') {
