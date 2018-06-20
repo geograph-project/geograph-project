@@ -1094,11 +1094,71 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 		if ($this->gridimage_id >= 5500000) //temporally hotwire
 			$fullpath = str_replace('http://','https://',$fullpath);
 
-		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
+	        if (!empty($this->original_width) && $linkoriginal && $this->original_width> 640 && $returntotalpath && !empty($_GET['large'])) {
+	                $maxwidth = min(1024,$this->original_width);
+                	$ratio = $this->original_height/$this->original_width;
+        	        $srcset = array();
 
+	                //add the full anyway for completeness
+        	        $srcset[] = "$fullpath {$size[0]}w";
+
+	                $largest = max($this->original_width,$this->original_height);
+        	        //if 800 works as a midsize, include it.
+	                if ($largest>800) {
+        	                $midurl = $this->getImageFromOriginal(800,800,true);
+	                        if ($this->original_width>$this->original_height)
+        	                        $midwidth = 800;
+	                        else
+                	                $midwidth = round(800*$this->original_width/$this->original_height);
+        	                $srcset[] = "$midurl {$midwidth}w";
+	                }
+
+                	//if 1024 works as a midsize, include it.
+        	        if ($largest>1024) {
+	                        $bigurl = $this->getImageFromOriginal(1024,1024,true);
+        	                if ($this->original_width>$this->original_height)
+	                                $bigwidth = 1024;
+	                        else
+	                                $bigwidth = round(1024*$this->original_width/$this->original_height);
+		                $srcset[] = "$bigurl {$bigwidth}w";
+		        }
+
+	                //the original is small enough to include directly.
+	                if ($largest <= 1024) {
+	                        $original = $this->_getOriginalpath(true,true);
+	                        $srcset[] = "$original {$this->original_width}w";
+	                }
+
+	                $srcset = ' srcset="'.implode(', ',$srcset).'"';
+	        } else {
+	                $maxwidth = min(640,$size[0]);
+	                $ratio = $size[1]/$size[0];
+	                $srcset = '';
+	        }
+
+		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}$srcset/>";
+
+		if (!empty($maxwidth) && !empty($_GET['large'])) {
+			$html="<div class=\"img-responsive\" style=\"max-width:".($maxwidth+10)."px\">$html</div>";
+
+//temp bodge! (this is a dynamic scale, based on ratio, but want to affect ALL the caption640 elements on the page.)
+$html .= <<<EOT
+
+<script>
+var style = document.createElement('style');
+style.type = 'text/css';
+style.innerHTML = '#maincontent div.caption640 { max-width:calc(94vh / $ratio); }';
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+EOT;
+
+		}
+
+		/*
 		if (!empty($this->original_width) && $linkoriginal && $this->user_id == 3) {
 			$html = "<a href=\"{$this->_getOriginalpath(false,true)}\">$html</a>";
-		}
+		}*/
 
 		return $html;
 	}
@@ -1723,9 +1783,9 @@ if (!empty($_GET['ddd'])) {
 
 
 	/**
-	* 
+	*
 	*/
-	function getImageFromOriginal($maxw, $maxh)
+	function getImageFromOriginal($maxw, $maxh, $returntotalpath=false)
 	{
 		$params['maxw']=$maxw;
 		$params['maxh']=$maxh;
@@ -1733,36 +1793,37 @@ if (!empty($_GET['ddd'])) {
 		$params['unsharp']=false;
 		$params['source']='original';
 		$resized=$this->_getResized($params);
-		
+		if ($returntotalpath) {
+			return $resized['server'].$resized['url'];
+		}
 		return $resized['url'];
-	}	
+	}
 
-	
 	/**
 	* Locks this image so its not shown to other moderators
 	*/
 	function lockThisImage($mid)
-	{	
+	{
 		$db=&$this->_getDB();
-		
+
 		$db->Execute("REPLACE INTO gridimage_moderation_lock SET user_id = $mid, gridimage_id = {$this->gridimage_id}");
 	}
-	
+
 	/**
 	* UnLocks this image so its now shown to other moderators
 	*/
 	function unlockThisImage($mid)
-	{	
+	{
 		$db=&$this->_getDB();
-		
+
 		$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = $mid AND gridimage_id = {$this->gridimage_id}");
 	}
-	
+
 	/**
 	* Check if this image is locked by another moderator
 	*/
 	function isImageLocked($mid = 0)
-	{	
+	{
 		$db=&$this->_getDB(10); //dont tollerate a lag
 
 		return $db->getOne("
