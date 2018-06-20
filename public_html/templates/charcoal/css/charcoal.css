@@ -767,7 +767,9 @@ div.caption640
 	font-size:0.8em;
 	margin-left:auto;
 	margin-right:auto;
-	width:640px
+	width:650px;
+	padding-left:5px;
+	padding-right:5px;
 }
 div.snippet640
 {
@@ -906,7 +908,7 @@ div.photolandscape
 	margin:10px;
 }
 
-.img-shadow img {
+div.img-shadow img {
 	/*
 	width:100%;
 	height:100%;
@@ -915,8 +917,22 @@ div.photolandscape
 	*/
   	border: 1px solid #a9a9a9;
   	padding: 4px;
-  }
+}
 
+div.img-responsive {
+        max-width:759px;
+        margin-left:auto;
+        margin-right:auto;
+}
+
+div.img-responsive img {
+        max-width:100%;
+        max-height:95vh;
+        height:auto;
+        width:auto;
+        border-radius:4px;
+        box-sizing:border-box;
+}
 
 /* styling for a 66% resized photo*/
 div.photo66
