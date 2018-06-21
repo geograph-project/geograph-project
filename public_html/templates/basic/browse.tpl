@@ -69,11 +69,14 @@
 </form>
 
 {if $errormsg}
+	<hr/>
+	<br/>
+
 	<p>{$errormsg}</p>
 
 	{if $square->percent_land < 50 && $square->percent_land != -1}
 	<form action="/mapfixer.php" method="get">
-		<p align="right"><input type="submit" name="save" value="Bring this square to the attention of a moderator"/>
+		<p align="right"><input type="submit" name="save" value="Bring {$gridref|escape:'html'} to the attention of a moderator"/>
 		<input type="hidden" name="gridref" value="{$gridref|escape:'html'}"/>
 		</p>
 	</form>
@@ -510,7 +513,6 @@
 
 				<li style="margin-top:10px;">or <b>Clustering Options</b>:<br/>
 				&nbsp; &middot; <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a>,
-				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imageclass%2B&amp;orderby=imageclass&amp;do=1">Category</a>,
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=realname%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Contributor</a>,
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Date Taken</a>{if $imagecount < 500} or
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;breakby=imagetaken_year&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Year Taken</a>{/if}
@@ -631,7 +633,7 @@
 			</noscript>
 			</form> &nbsp;&nbsp; | &nbsp;&nbsp;
 
-			Background Color: [
+			Background Colour: [
 				<a href="{linktoself name="style" value="white"}" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photowhite"} hidelink{/if}{/dynamic}">White</a>
 			/
 				<a href="{linktoself name="style" value="black"}" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photoblack"} hidelink{/if}{/dynamic}">Black</a>

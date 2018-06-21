@@ -1088,20 +1088,22 @@ class SearchCriteria_Postcode extends SearchCriteria
 {
 	function setByPostcode($code) {
 		$db = $this->_getDB(true);
-		
+
 split_timer('search'); //starts the timer
 
 		if (strpos($code,' ') === FALSE) {
 			//yes know avg(reference_index) is always same as reference_index, but get round restriction in mysql
-			$postcode = $db->GetRow('select avg(e) as e,avg(n) as n,avg(reference_index) as reference_index from loc_postcodes where code like'.$db->Quote("$code _").'');			
+			$postcode = $db->GetRow('select avg(e) as e,avg(n) as n,avg(reference_index) as reference_index from loc_postcodes where code like'.$db->Quote("$code _").'');
 		} elseif (preg_match("/([0-9])([A-Z]{2})$/i",strtoupper($code)) ) { //GB can do full postcodes now!
+			//codepoint open encodes it as a 7char string. rather than being always with/without a space.
 			if (strlen($code) == 8) {
-				//codepoint open encodes it as a 7char string. rather than being always with/without a space.
 				$code = str_replace(' ','',$code);
+			} elseif (strlen($code) == 6) {
+				$code = str_replace(' ','  ',$code);
 			}
-			$postcode = $db->GetRow('select e,n,1 as reference_index from postcode_codeopen where code='.$db->Quote($code).' limit 1');	
+			$postcode = $db->GetRow('select e,n,1 as reference_index from postcode_codeopen where code='.$db->Quote($code).' limit 1');
 		} else {
-			$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');	
+			$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');
 		}
 		if ($postcode['reference_index']) {
 			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
@@ -1110,7 +1112,7 @@ split_timer('search'); //starts the timer
 			$this->y = ($postcode['n']/1000) + $origin['origin_y'];
 			$this->reference_index = $postcode['reference_index'];
 		}
-		
+
 split_timer('search','setByPostcode',$code); //logs the wall time
 
 	}

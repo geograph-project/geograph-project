@@ -253,7 +253,7 @@ if (!empty($_GET['q'])) {
 				if (strpos($object->name,$object->gr) === false)
                                 	$object->name .= "/{$object->gr}";
                                 printf('<option value="%s"%s>%s</option>', $val = $object->name, ($gr == $object->gr)?' selected':'',
-                                        str_replace('/',' &nbsp; ',$object->name).($object->localities?", ".$object->localities:''));
+                                        preg_replace('/\/([A-Z]{1,2}\d+)/',' &middot; $1',$object->name).($object->localities?", ".$object->localities:''));
 			}
 
 			print '<optgroup></optgroup>';
