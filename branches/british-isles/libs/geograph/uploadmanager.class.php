@@ -55,11 +55,35 @@ class UploadManager
 	*/
 	function UploadManager()
 	{
-		global $CONF;
+		global $CONF,$USER;
 		$this->db = NewADOConnection($GLOBALS['DSN']);
 		if (!$this->db) die('Database connection failed: '.mysql_error());
 
 		$this->tmppath=isset($CONF['photo_upload_dir'])?$CONF['photo_upload_dir']:'/tmp';
+
+		//todo make this a dedicated config var!
+		$this->use_new_upload = !empty($CONF['filesystem_dsn']);
+
+		if ($this->use_new_upload) {
+
+			$this->use_new_upload = true;
+
+			$a = $USER->user_id%10;
+	                $b = intval($USER->user_id/10)%10;
+
+	                $dir = "{$this->tmppath}/$a/$b/{$USER->user_id}";
+
+			if (!is_dir($dir)) {
+        	                mkdir($dir,0755,true);
+	                }
+
+			//to be removed.
+			$dir = str_replace('upload_tmp_dir','upload_tmp_dir_old',$dir);
+
+                        if (!is_dir($dir)) {
+                                mkdir($dir,0755,true);
+                        }
+		}
 	}
 
 	/**
@@ -76,6 +100,14 @@ class UploadManager
 	function _pendingJPEG($id)
 	{
 		global $USER;
+
+		if ($this->use_new_upload) {
+			$u = $USER->user_id;
+			$a = $USER->user_id%10;
+                        $b = intval($USER->user_id/10)%10;
+			return "{$this->tmppath}/$a/$b/$u/newpic_u{$u}_{$id}.jpeg";
+		}
+
 		return $this->tmppath.'/'.($USER->user_id%10).'/newpic_u'.$USER->user_id.'_'.$id.'.jpeg';
 	}
 
@@ -85,6 +117,12 @@ class UploadManager
 	function _originalJPEG($id)
 	{
 		global $USER;
+		if ($this->use_new_upload) {
+			$u = $USER->user_id;
+			$a = $USER->user_id%10;
+                        $b = intval($USER->user_id/10)%10;
+			return "{$this->tmppath}/$a/$b/$u/newpic_u{$u}_{$id}.original.jpeg";
+		}
 		return $this->tmppath.'/'.($USER->user_id%10).'/newpic_u'.$USER->user_id.'_'.$id.'.original.jpeg';
 	}
 
@@ -94,6 +132,12 @@ class UploadManager
 	function _pendingEXIF($id)
 	{
 		global $USER;
+		if ($this->use_new_upload) {
+			$u = $USER->user_id;
+			$a = $USER->user_id%10;
+                        $b = intval($USER->user_id/10)%10;
+			return "{$this->tmppath}/$a/$b/$u/newpic_u{$u}_{$id}.exif";
+		}
 		return $this->tmppath.'/'.($USER->user_id%10).'/newpic_u'.$USER->user_id.'_'.$id.'.exif';
 	}
 
@@ -755,6 +799,10 @@ class UploadManager
 
 	split_timer('upload','insert',"$gridimage_id"); //logs the wall time
 
+
+		//run this now, before FS operations, so that re record the preview_key, even if ultimately these commands fail!
+		$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method',preview_key='{$this->upload_id}',largestsize = '{$this->largestsize}',hostname = '".trim(`hostname`)."'");
+
 		//copy image to correct area
 		$src=$this->_pendingJPEG($this->upload_id);
 
@@ -765,7 +813,7 @@ class UploadManager
 	split_timer('upload'); //starts the timer
 
 		$storedoriginal = false;
-		if ($ok = $image->storeImage($src)) {
+		if ($ok = $image->storeImage($src,$this->use_new_upload)) {
 
 	split_timer('upload','store',"$gridimage_id"); //logs the wall time
 
@@ -776,7 +824,7 @@ class UploadManager
 
 		split_timer('upload'); //starts the timer
 
-				$storedoriginal =$image->storeOriginal($orginalfile);
+				$storedoriginal =$image->storeOriginal($orginalfile,$this->use_new_upload);
 
 		split_timer('upload','storeOriginal',"$gridimage_id"); //logs the wall time
 
@@ -861,7 +909,7 @@ class UploadManager
 		$src=$this->_pendingJPEG($this->upload_id);
 
 		//store the resized version - just for the moderator to use as a preview
-		if ($ok = $image->storeImage($src,false,'_preview')) {
+		if ($ok = $image->storeImage($src,$this->use_new_upload,'_preview')) {
 
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 
@@ -870,7 +918,7 @@ class UploadManager
 				$this->_downsizeFile($orginalfile,$this->largestsize);
 
 				//store the new original file
-				$ok =$image->storeImage($orginalfile,false,'_pending');
+				$ok =$image->storeImage($orginalfile,$this->use_new_upload,'_pending');
 			}
 		}
 
@@ -901,33 +949,74 @@ class UploadManager
 		@rename($from=$this->_pendingEXIF($this->upload_id), str_replace('upload_tmp_dir','upload_tmp_dir_old',$from));
 		@rename($from=$this->_originalJPEG($this->upload_id), str_replace('upload_tmp_dir','upload_tmp_dir_old',$from));
 
-
-		@unlink($this->_pendingJPEG($this->upload_id));
-		@unlink($this->_pendingEXIF($this->upload_id));
-		@unlink($this->_originalJPEG($this->upload_id));
+		//@unlink($this->_pendingJPEG($this->upload_id));
+		//@unlink($this->_pendingEXIF($this->upload_id));
+		//@unlink($this->_originalJPEG($this->upload_id));
 	}
 
 	function getUploadedFiles()
 	{
 		global $CONF,$USER;
 
-		chdir($CONF['photo_upload_dir'].'/'.($USER->user_id%10));
-
-		if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) {
-			$files = glob("newpic_u{$USER->user_id}_*.exif");
-		} else {
-			//in theory using shell expansion should be faster than glob
-			$files = explode(" ",trim(`echo newpic_u{$USER->user_id}_*.exif`,"\n"));
-		}
 		$data = array();
-
 		$conv = new Conversions;
 
-		foreach ($files as $file) {
-			if (preg_match('/^newpic_u(\d+)_(\w+).exif$/',$file,$m)) {
-				if ($m[1] != $USER->user_id)
-					continue;
-				$row = array('transfer_id'=>$m[2],'uploaded'=>filemtime($file));
+		if ($this->use_new_upload && !empty($CONF['filesystem_dsn'])) { // && strpos($this->tmppath,'/mnt/combined') === 0 ??
+
+		        $db=NewADOConnection($CONF['filesystem_dsn']);
+			$GLOBALS['ADODB_FETCH_MODE'] = ADODB_FETCH_ASSOC;
+
+                        $a = $USER->user_id%10;
+                        $b = intval($USER->user_id/10)%10;
+
+                        $dir = "{$this->tmppath}/$a/$b/{$USER->user_id}";
+
+			$dir = str_replace('/mnt/combined','',$dir);
+
+			$folder_id = $db->getOne("SELECT folder_id FROM folder WHERE folder = ".$db->Quote($dir));
+
+			if (empty($folder_id))
+				return $data; //if there is no folder, there can't be any files!
+
+			$sql = "SELECT filename,UNIX_TIMESTAMP(file_modified) AS uploaded FROM file WHERE folder_id = $folder_id
+				AND filename LIKE '%newpic_u{$USER->user_id}_%.exif' AND replica_count > 0 AND size>0";
+
+			foreach ($db->getAll($sql) as $row) {
+                                if (preg_match('/^newpic_u(\d+)_(\w+).exif$/',basename($row['filename']),$m)) {
+                                        if ($m[1] != $USER->user_id)
+                                                continue;
+                                        $row['transfer_id'] = $m[2];
+
+                                        $data[] = $this->setRowFromEXIF('/mnt/combined'.$row['filename'],$row,$conv);
+                                }
+                        }
+
+		} else {
+
+			chdir($CONF['photo_upload_dir'].'/'.($USER->user_id%10));
+
+			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) {
+				$files = glob("newpic_u{$USER->user_id}_*.exif");
+			} else {
+				//in theory using shell expansion should be faster than glob
+				$files = explode(" ",trim(`echo newpic_u{$USER->user_id}_*.exif`,"\n"));
+			}
+
+			foreach ($files as $file) {
+				if (preg_match('/^newpic_u(\d+)_(\w+).exif$/',$file,$m)) {
+					if ($m[1] != $USER->user_id)
+						continue;
+					$row = array('transfer_id'=>$m[2],'uploaded'=>filemtime($file));
+
+					$data[] = $this->setRowFromEXIF($file,$row,$conv);
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	function setRowFromEXIF($file,$row,$conv) {
 
 				if ($exif = file_get_contents($file)) {
 					$exif=unserialize($exif);
@@ -955,10 +1044,7 @@ class UploadManager
 						 $row['imagetaken'] = implode('-',$dates).(($time)?' '.$time:'');
 					}
 				}
-				$data[] = $row;
-			}
-		}
-		return $data;
+		return $row;
 	}
 
 }
