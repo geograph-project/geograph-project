@@ -837,9 +837,9 @@ class SearchCriteria
 		$this->sphinx['query'] = preg_replace('/\b(not)?(day|month|year):/','\1taken\2:',$this->sphinx['query']);
 		$this->sphinx['query'] = preg_replace('/\b(not)?(monthname):/','\1month:',$this->sphinx['query']);
 		$this->sphinx['query'] = preg_replace('/\b(not)?(gridref):/','\1grid_reference:',$this->sphinx['query']);
-		$this->sphinx['query'] = preg_replace('/\b(not)?(category):/','\1imageclass:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/(?<!\[)\b(not)?(category):/','\1imageclass:',$this->sphinx['query']);
 		$this->sphinx['query'] = preg_replace('/\b(not)?(description):/','\1comment:',$this->sphinx['query']);
-		$this->sphinx['query'] = preg_replace('/\b(not)?(name):/','\1realname:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/(?<!\[)\b(not)?(name):/','\1realname:',$this->sphinx['query']);
 		if (strlen($this->sphinx['query'])) {
 			//really there is little chance its going to be compatible... 
 			$this->sphinx['compatible'] = 0;
@@ -1047,11 +1047,11 @@ class SearchCriteria_Placename extends SearchCriteria
 #split_timer('search'); //starts the timer
 
 		$gaz = new Gazetteer();
-		
+
 		$this->ismore = (strpos($placename,'?') !== FALSE);
-		
+
 		$places = $gaz->findPlacename($placename);
-		
+
 		if (!empty($location) && count($places) > 1) {
 			foreach ($places as $place) {
 				if ($location == $place['gridref']) {
@@ -1060,9 +1060,11 @@ class SearchCriteria_Placename extends SearchCriteria
 					break;
 				}
 			}
-	
-		} 
+		}
+
 		if (count($places) == 1) {
+			$places = array_values($places); //just to reset keys, sometimes its not at idx=0!
+
 			$db = $this->_getDB(true);
 			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." and origin_x > 0 order by origin_x,origin_y limit 1");	
 
@@ -1073,8 +1075,8 @@ class SearchCriteria_Placename extends SearchCriteria
 			$this->full_name = $places[0]['full_name'];
 			$this->reference_index = $places[0]['reference_index'];
 			$this->_matches = $places;
+
 		} elseif (count($places)) {
-			
 			$this->matches = $places;
 			$this->is_multiple = true;
 			$this->searchq = $placename;
