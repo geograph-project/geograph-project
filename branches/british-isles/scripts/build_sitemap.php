@@ -87,7 +87,7 @@ $_SERVER['HTTP_HOST'] = $param['config'];
 
 require_once('geograph/global.inc.php');
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(true);
 
 $urls_per_sitemap=$param['per'];
 
@@ -156,7 +156,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 		if (strcmp($date,$maxdate)>0)
 			$maxdate=$date;
-		if ($last_id >= 5500000) //temporally hotwire
+		if ($last_id >= 5000000) //temporally hotwire
 			$param['protocol'] = 'https';
 
 		if ($param['normal']) {
@@ -183,8 +183,8 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			$recordSet->fields['gridimage_id'],
 			$date,
 			$image->_getFullpath(false,true),
-			utf8_encode(htmlnumericentities($image->title)),
-			utf8_encode(htmlnumericentities($image->realname))
+                        xmlentities(latin1_to_utf8($image->title)),
+                        xmlentities(utf8_encode($image->realname))
 			);
 		}
 

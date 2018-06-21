@@ -122,11 +122,13 @@ if (!empty($_GET['q'])) {
 
 	if ($memcache->valid) {
 		$mkey = md5("#".trim($sphinx->q).$_SERVER['HTTP_HOST']).isset($_GET['redir']).$src;
-		$str =& $memcache->name_get('of',$mkey);
-		if (!empty($str)) {
-			print $str;
-			$smarty->display('_std_end.tpl');
-			exit;
+		if (empty($_GET['refresh'])) {
+			$str =& $memcache->name_get('of',$mkey);
+			if (!empty($str)) {
+				print $str;
+				$smarty->display('_std_end.tpl');
+				exit;
+			}
 		}
 
 		ob_start();
@@ -214,7 +216,7 @@ if (!empty($_GET['q'])) {
 				if (strpos($object->name,$object->gr) === false)
                                 	$object->name .= "/{$object->gr}";
                                 printf('<option value="%s"%s>%s</option>', $val = $object->name, ($gr == $object->gr)?' selected':'',
-                                        str_replace('/',' &nbsp; ',$object->name).($object->localities?", ".$object->localities:''));
+                                        preg_replace('/\/([A-Z]{1,2}\d+)/',' &middot; $1',$object->name).($object->localities?", ".$object->localities:''));
 			}
 
 			print '<optgroup></optgroup>';
@@ -523,12 +525,13 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 #########################################
 # handler for no results
 
-	if (empty($final) && !empty($_GET['place']) && !empty($decode[0]) && $decode[0]->total_found > 0) {
+	if (empty($final) && !empty($_GET['place']) && !empty($decode[0]) && $decode[0]->total_found > 1) {
 		print "<p>No exact place found. ";
 
 			print "Can try viewing images <i>near</i>: <ul>";
 			foreach ($decode[0]->items as $object) {
-				$object->name = utf8_decode($object->name);
+				//the loop above (the dropdown), will have already decoded it!
+				//$object->name = utf8_decode($object->name);
 				if (strpos($object->name,$object->gr) === false)
                                 	$object->name .= "/{$object->gr}";
                                 printf('<li><a href="/%s/%s">%s</a> %s</li>',

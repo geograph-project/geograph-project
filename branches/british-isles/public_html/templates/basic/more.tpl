@@ -137,7 +137,6 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 				
 					<td valign="top"><div class="interestBox">{$preview_width} x {$preview_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}"/></a><br/><br/>
-					<small>as shown on<br/> photo page</small>
 					</td>
 				
 				{if $image->altUrl != "/photos/error.jpg"}

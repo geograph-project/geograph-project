@@ -63,9 +63,9 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/mapmosaic.class.php');
 require_once('geograph/rastermap.class.php');
 
-init_session();
 
 if (isset($_GET['style'])) {
+	init_session();
 	$USER->getStyle();
 	if (isset($_GET['id'])) {
 		$_SESSION['setstyle'] = 1;
@@ -76,7 +76,11 @@ if (isset($_GET['style'])) {
 	}
 	header("Location: /");
 	exit;
+} else {
+	init_session_or_cache(3600, 0); //cache publically, and privately
 }
+
+
 
 customGZipHandlerStart();
 
@@ -123,6 +127,14 @@ if (isset($_GET['id']))
 		$CONF['global_thumb_limit'] = 4;
 	}
 
+	if ($_GET['id'] >= 5500000) {
+		$_GET['large'] = 1; //using _GET so it can be understood inside gridimage class!
+	}
+
+	if (!empty($_GET['large'])) {
+		$cacheid .= "L";
+	}
+
 	//is the image rejected? - only the owner and administrator should see it
 	if ($image->moderation_status=='rejected')
 	{
@@ -132,7 +144,7 @@ if (isset($_GET['id']))
 		}
 		else
 		{
-			$db = GeographDatabaseConnection(true);			
+			$db = GeographDatabaseConnection(true);
 			if ($to = $db->getOne("SELECT destination FROM gridimage_redirect WHERE gridimage_id = ".intval($_GET['id']))) {
 		                header("HTTP/1.0 301 Moved Permanently");
                 		header("Status: 301 Moved Permanently");
