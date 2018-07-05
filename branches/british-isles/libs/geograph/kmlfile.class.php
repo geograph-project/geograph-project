@@ -108,7 +108,7 @@ class kmlPrimative {
 		$this->addChild('TimeStamp','','TimeStamp')->setItem('when',$when);
 		return $this;
 	}
-	
+
 	public function useCredit($author,$link = '') {
 		if (!empty($author)) {
 			$this->addChild('atom:author','','atom:author')->setItem('atom:name',$author);
@@ -175,13 +175,13 @@ class kmlPrimative {
 class kmlFile extends kmlPrimative {
 	var $extension = 'kmz';
 	var $version = '2.0';
-	
+
 	public function __construct($id = '') {
 		$this->contentType = "application/vnd.google-earth.kml+xml";
 		$this->encoding = "utf-8";
 		parent::__construct('kml',$id);
 	}
-	
+
 	public function setHint($target='sky') {
 		if ($mode=='sky') {
 			$this->values['hint'] = "target=sky";
@@ -190,7 +190,7 @@ class kmlFile extends kmlPrimative {
 			unset($this->values['hint']);
 		}
 	}
-	
+
 	public function outputFile($extension='',$sendheaders = true,$diskfile = '') {
 		if (!empty($extension)) {
 			$this->extension = $extension;
@@ -202,13 +202,13 @@ class kmlFile extends kmlPrimative {
 		}
 	}
 
-	
 	public function outputKML($sendheaders = true,$diskfile = '') {
 		if (empty($this->filename)) {
 			$this->filename = uniqid().".kml";
 		}
 		$content =& $this->returnKML();
 		if ($sendheaders && !headers_sent()) {
+			header('Access-Control-Allow-Origin: *');
 			Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($this->filename));
 			Header("Content-Disposition: attachment; filename=".basename($this->filename));
 			header("Content-Length: ".strlen($content));
@@ -227,30 +227,31 @@ class kmlFile extends kmlPrimative {
 		if (empty($this->filename)) {
 			$this->filename = uniqid().".kmz";
 		}
-		
+
 		$content = $this->returnKML(false);
 
 		include("zip.class.php");
-		
-		$zipfile = new zipfile();   
-		
-		// add the binary data stored in the string 'content' 
-		$zipfile -> addFile($content, "doc.kml");   
-		
+
+		$zipfile = new zipfile();
+
+		// add the binary data stored in the string 'content'
+		$zipfile -> addFile($content, "doc.kml");
+
 		$content =& $zipfile->file();
-		
+
 		if ($sendheaders && !headers_sent()) {
+			header('Access-Control-Allow-Origin: *');
 			Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($this->filename));
 			Header("Content-Disposition: attachment; filename=".basename($this->filename));
 			header("Content-Length: ".strlen($content));
 		}
-		
+
 		if (empty($diskfile)) {
 			echo $content;
 		} else {
 			file_put_contents($diskfile,$content);
 		}
-		
+
 		return $this->filename;
 	}
 
@@ -258,12 +259,12 @@ class kmlFile extends kmlPrimative {
 		$s = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 
 		if (!empty($this->atom)) {
-			$this->values['xmlns:atom'] .= "http://www.w3.org/2005/Atom";
+			$this->values['xmlns:atom'] = "http://www.w3.org/2005/Atom";
 			$this->version = 2.2;
 		}
-	
+
 		$this->values['xmlns'] = "http://earth.google.com/kml/".$this->version;
-	
+
 		return $s.parent::toString(0,$prettyprint);
 	}
 
@@ -302,7 +303,7 @@ class kmlDocument extends kmlPrimative {
 		$Style2 = $this->addChild('Style','h'.$id);
 		$IconStyle2 = $Style2->addChild('IconStyle');
 		if ($iconScale != 1 || $hoverScale || $hover) {
-			if ($iconScale != 1 || $hoverScale) 
+			if ($iconScale != 1 || $hoverScale)
 				$IconStyle2->setItem('scale',$hoverScale*$iconScale);
 			if ($hover)
 				$IconStyle2->addChild('Icon')->setItem('href',$iconprefix.$hover);
@@ -381,10 +382,10 @@ class kmlPhotoOverlay extends kmlPlacemark {
 	public function setPhoto($url,$shape = 'rectangle') {
 		$Icon = $this->addChild('Icon');
 		$Icon->setItem('href',$url);
-		
+
 		$this->setItem('shape',$shape);
 	}
-	
+
 	public function setViewVolume1($near=1000,$horzFov = 60,$vertFov = 40) {
 		$ViewVolume = $this->addChild('ViewVolume');
 		$ViewVolume->setItem('near',$near);
@@ -393,9 +394,6 @@ class kmlPhotoOverlay extends kmlPlacemark {
 		$ViewVolume->setItem('bottomFov',-$vertFov);
 		$ViewVolume->setItem('topFov',$vertFov);
 	}
-	
-	
-	
 }
 
 /**************************************************
@@ -526,4 +524,3 @@ class kmlRegion extends kmlPrimative {
 	}
 }
 
-?>

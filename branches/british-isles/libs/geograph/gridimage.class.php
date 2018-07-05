@@ -198,37 +198,37 @@ class GridImage
 	function getPhotographerGridref($spaced = false)
 	{
 		//already calculated?
-		if (strlen($this->photographer_gridref))
+		if (!empty($this->photographer_gridref))
 			return $this->photographer_gridref;
 
 		$this->photographer_gridref='';
-		if ($this->viewpoint_northings) 
+		if ($this->viewpoint_northings)
 		{
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
-			
+
 			list($posgr,$len) = $conv->national_to_gridref(
 				$this->viewpoint_eastings,
 				$this->viewpoint_northings,
 				($this->use6fig && $spaced)?min(6,$this->viewpoint_grlen):max(2,$this->viewpoint_grlen),
 				$this->grid_square->reference_index,$spaced);
-			
+
 			$this->photographer_gridref=$posgr;
 			$this->photographer_gridref_precision=pow(10,6-$len)/10;
-		}	
-		
+		}
+
 		return $this->photographer_gridref;
 	}
-	
+
 	function getSubjectGridref($spaced = false)
 	{
 		//already calculated?
-		if (strlen($this->subject_gridref))	
+		if (!empty($this->subject_gridref))
 			return $this->subject_gridref;
 
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
-	
+
 		if (empty($this->grid_square) && $this->gridsquare_id) {
 			$this->grid_square=new GridSquare;
 			if (is_object($this->db))

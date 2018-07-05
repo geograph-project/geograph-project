@@ -49,26 +49,26 @@ if (isset($_GET['id']))  {
 			exit;
 		}
 		$version42plus = false;
-		if ($_GET['new']) {
+		if (!empty($_GET['new'])) {
 			$version42plus = true;
-		} 
+		}
 		//if (check version) {
 		//	$version42plus = true;
 		//}
-	
+
 		//when this image was modified
 		$mtime = strtotime($image->upd_timestamp);
 
-		customCacheControl($mtime,$image->gridimage_id.'|'.$version42plus);	
-		
+		customCacheControl($mtime,$image->gridimage_id.'|'.$version42plus);
+
 		customExpiresHeader(3600*24*48,true);
-		
+
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
-		
+
 		//because we not loading from the search cache need to recalculate this
 		list($image->wgs84_lat,$image->wgs84_long) = $conv->gridsquare_to_wgs84($image->grid_square);
-		
+
 		$kml = new kmlFile();
 		$kml->atom = true;
 		$stylefile = "{$CONF['KML_HOST']}/kml/style.kmz";
