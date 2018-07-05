@@ -65,62 +65,67 @@ class GeographMapMosaic
 	* db handle
 	*/
 	var $db=null;
-	
+
 	/**
 	* x origin of map in internal coordinates
 	*/
 	var $map_x=0;
-	
+
 	/**
 	* y origin of map in internal coordinates
 	*/
 	var $map_y=0;
-	
+
 	/**
 	* height of map in pixels
 	*/
 	var $image_w=0;
-	
+
 	/**
 	* width of map in pixels
 	*/
 	var $image_h=0;
-	
+
 	/**
 	* scale in pixels per kilometre
 	*/
 	var $pixels_per_km=0;
-	
-	/** 
-	* list of valid scales for this modaic	
+
+	/**
+	* list of valid scales for this modaic
 	*/
 	var $scales;
-	
+
 	/**
 	* width/height of mosaic
 	*/
 	var $mosaic_factor=0;
-	
+
+        /**
+        * map varient
+        */
+	var $type_or_user=0;
+
 	/**
 	* enable caching?
 	*/
 	var $caching=true;
-	
+
 	/**
 	* debug text contains debugging traces suitable for html output
 	*/
 	var $debugtrace="";
-	
+
 	/**
 	* enable debug tracing?
 	*/
 	var $debug=true;
-	
+
 	/**
 	 * palette index, see GeographMap::setPalette for documentation
 	 */
-	var $palette=0; 
-	 
+	var $palette=0;
+
 	/**
 	* Constructor - pass true to get a small overview map, otherwise you get a full map
 	* @access public
