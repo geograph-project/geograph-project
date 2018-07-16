@@ -4,7 +4,8 @@
 <div style="max-width:100ex">
 <h2>Kurzform</h2>
 <p>Diese Datenschutzerklärung klärt Sie über die Art, den Umfang und Zweck der Verarbeitung von personenbezogenen Daten innerhalb unseres Onlineangebotes auf.
-Zur besseren Verständlichkeit stellen wir eine Kurzform voran, <a href="#dsg">die ausführliche, rechtlich bindende Erklärung ist weiter unten zu finden</a>.</p>
+Zur besseren Verständlichkeit stellen wir eine kurze Auflistung der wichtigsten Details zu den von uns verarbeiteten Daten voran, <a href="#dsg">die ausführliche Erklärung,
+die die relevanten rechtlichen Aspekte erörtert, ist weiter unten unter &bdquo;Detaillierte Datenschutzerklärung&ldquo; zu finden, die auch über diesen Link erreichen ist</a>.</p>
 <h3>Unregistrierte Besucher</h3>
 <h4>Cookies</h4>
 <p>Webseiten verwenden zur besseren Bedienbarkeit und aus Sicherheitsgründen sogenannte <a href="https://de.wikipedia.org/wiki/Sitzungsbezeichner">Session-Cookies</a>.
@@ -16,7 +17,7 @@ Momentan erfolgt dies für den Kartentyp der verschiedenen Landkarten.</p>
 <p>Das Anlegen von Cookies kann in den Browsereinstellungen unterbunden werden.
 Bereits angelegte Cookies können manuell in den Browsereinstellungen gelöscht werden.</p>
 <h4>Logging</h4>
-<p>Unser Web-Server loggt täglich Zugriffe (Uhrzeit, Browsertyp, verweisende und besuchte Seite) in eine Log-Datei. Alte Log-Dateien werden automatisch gelöscht. Dies
+<p>Unser Web-Server loggt täglich Zugriffe (Uhrzeit, Browsertyp, verweisende und besuchte Seite) in eine Log-Datei. Alte Log-Dateien werden automatisch nach 15 Tagen gelöscht. Dies
 dient</p>
 <ul>
 <li>
@@ -28,7 +29,8 @@ zur Aufdeckung von missbräuchlichen Zugriffen und</li>
 <p>Leider kommt es immer wieder zur Überlastung des Servers durch schlecht konfigurierte <a href="https://de.wikipedia.org/wiki/Webcrawler">Crawler</a>
 oder (seltener) zu mutwilliger Überlastung durch automatisierte Zugriffe oder zu automatisierten Angriffsversuchen.
 Desweiteren wird immer wieder versucht, automatisiert Fake-Accounts
-zu registrieren, oder SPAM im Forum zu verbreiten, weshalb das vorübergehende Logging unumgänglich ist.</p>
+zu registrieren, oder SPAM im Forum zu verbreiten, weshalb das vorübergehende Logging unumgänglich ist.
+Wir behalten uns beim Auftreten solcher Zugriffe vor, vorübergehend auch die IP-Adressen in dieses Log aufzunehmen.</p>
 <h4>Kontaktformulare</h4>
 <p>Wir bieten zur leichten Erreichbarkeit und zu Supportzwecken ein <a href="https://{$http_host}/contact.php">Kontaktformular</a> an.
 Dieses ist so umgesetzt, dass aus der eingegebenen Nachricht mit Hilfe der eingegebenen E-Mail-Adresse eine E-Mail
@@ -50,8 +52,8 @@ Manche Landkarten sind mit einem Suchfeld für Ortsnamen versehen. Da eine detail
 wird die Suchanfrage an den &bdquo;Google Maps API Geocoder&ldquo; gesendet, damit wir für den Nutzer den passenden Ort auf
 der Karte darstellen können.</p>
 <p>Während wir selbst keine personenbezogenen Daten an dritte weitergeben, haben wir natürlich keinen
-Einfluss auf die von den Drittanbietern selbst erhobenen Daten. Insbesondere ist zu beachten, das der Browser
-des Nutzers die IP-Adresse übermittelt, um eine Kommunikation zu ermöglichen.
+Einfluss auf die von den Drittanbietern selbst erhobenen Daten. Insbesondere ist zu beachten, dass der Browser
+des Nutzers die IP-Adresse übermittelt, um eine Kommunikation zu ermöglichen, und dass diese Dienste Cookies einsetzen können.
 Hier bietet es sich an, die Datenschutzerklärungen der Drittanbieter zu konsultieren.
 </p>
 <h3>Von Nutzern veröffentlichte Inhalte</h3>
@@ -246,19 +248,19 @@ Nach gesetzlichen Vorgaben in Österreich erfolgt die Aufbewahrung insbesondere f
 <p></p>
 <h3 id="dsg-registration">Registrierfunktion</h3>
 <p></p>
-<p><span class="ts-muster-content">Nutzer können ein Nutzerkonto anlegen. Im Rahmen der Registrierung werden die erforderlichen Pflichtangaben den Nutzern mitgeteilt und auf Grundlage des Art. 6 Abs. 1 lit. b DSGVO zu Zwecken der Bereitstellung des Nutzerkontos verarbeitet. Zu den verarbeiteten Daten gehören insbesondere die Login-Informationen (Name, Passwort sowie eine E-Mailadresse). Die im Rahmen der Registrierung eingegebenen Daten werden für die Zwecke der Nutzung des Nutzerkontos und dessen Zwecks verwendet. Die Nutzer erhalten eine Bestätigungsemail, um zu überprüfen, ob sie der Inhaber der eingegebenen Emailadresse sind.
+<p><span class="ts-muster-content">Nutzer können ein Nutzerkonto anlegen. Im Rahmen der Registrierung werden die erforderlichen Pflichtangaben den Nutzern mitgeteilt und auf Grundlage des Art. 6 Abs. 1 lit. f DSGVO zu Zwecken der Bereitstellung des Nutzerkontos verarbeitet. Zu den verarbeiteten Daten gehören insbesondere die Login-Informationen (Name, Passwort sowie eine E-Mailadresse). Die im Rahmen der Registrierung eingegebenen Daten werden für die Zwecke der Nutzung des Nutzerkontos und dessen Zwecks verwendet. Die Nutzer erhalten eine Bestätigungsemail, um zu überprüfen, ob sie der Inhaber der eingegebenen Emailadresse sind.
 	<br />
 	<br />
 	Die Nutzer können über Informationen, die für deren Nutzerkonto relevant sind, wie z.B. technische Änderungen, per E-Mail informiert werden. Wenn Nutzer ihr Nutzerkonto gekündigt haben, werden deren Daten im Hinblick auf das Nutzerkonto, vorbehaltlich einer gesetzlichen Aufbewahrungspflicht, gelöscht. Es obliegt den Nutzern, ihre Daten bei erfolgter Kündigung vor dem Vertragsende zu sichern. Wir sind berechtigt, sämtliche während der Vertragsdauer gespeicherten Daten des Nutzers unwiederbringlich zu löschen.
 	<br />
 	<br />
-	Im Rahmen der Inanspruchnahme unserer Registrierungs- und Anmeldefunktionen sowie der Nutzung des Nutzerkontos, speichern wir die IP-Adresse und den Zeitpunkt der jeweiligen Nutzerhandlung. Die Speicherung erfolgt auf Grundlage unserer berechtigten Interessen, als auch der Nutzer an Schutz vor Missbrauch und sonstiger unbefugter Nutzung. Eine Weitergabe dieser Daten an Dritte erfolgt grundsätzlich nicht, außer sie ist zur Verfolgung unserer Ansprüche erforderlich oder es besteht hierzu besteht eine gesetzliche Verpflichtung gem. Art. 6 Abs. 1 lit. c DSGVO. Die IP-Adressen werden spätestens nach 7 Tagen anonymisiert oder gelöscht.
+	Im Rahmen der Inanspruchnahme unserer Registrierungs- und Anmeldefunktionen sowie der Nutzung des Nutzerkontos, speichern wir die IP-Adresse und den Zeitpunkt der jeweiligen Nutzerhandlung. Die Speicherung erfolgt auf Grundlage unserer berechtigten Interessen, als auch der Nutzer an Schutz vor Missbrauch und sonstiger unbefugter Nutzung. Eine Weitergabe dieser Daten an Dritte erfolgt grundsätzlich nicht, außer sie ist zur Verfolgung unserer Ansprüche erforderlich oder es besteht hierzu besteht eine gesetzliche Verpflichtung gem. Art. 6 Abs. 1 lit. c DSGVO. Die IP-Adressen werden spätestens nach 15 Tagen anonymisiert oder gelöscht.
 	<br />
 </span></p>
 <p></p>
 <h3 id="dsg-comments">Kommentare und Beiträge</h3>
 <p></p>
-<p><span class="ts-muster-content">Wenn Nutzer Kommentare oder sonstige Beiträge hinterlassen, können ihre IP-Adressen auf Grundlage unserer berechtigten Interessen im Sinne des Art. 6 Abs. 1 lit. f. DSGVO für 7 Tage gespeichert werden. Das erfolgt zu unserer Sicherheit, falls jemand in Kommentaren und Beiträgen widerrechtliche Inhalte hinterlässt (Beleidigungen, verbotene politische Propaganda, etc.). In diesem Fall können wir selbst für den Kommentar oder Beitrag belangt werden und sind daher an der Identität des Verfassers interessiert.
+<p><span class="ts-muster-content">Wenn Nutzer Kommentare oder sonstige Beiträge hinterlassen, können ihre IP-Adressen auf Grundlage unserer berechtigten Interessen im Sinne des Art. 6 Abs. 1 lit. f. DSGVO für 15 Tage gespeichert werden. Das erfolgt zu unserer Sicherheit, falls jemand in Kommentaren und Beiträgen widerrechtliche Inhalte hinterlässt (Beleidigungen, verbotene politische Propaganda, etc.). In diesem Fall können wir selbst für den Kommentar oder Beitrag belangt werden und sind daher an der Identität des Verfassers interessiert.
 	<br />
 	<br />
 	Des Weiteren behalten wir uns vor, auf Grundlage unserer berechtigten Interessen gem. Art. 6 Abs. 1 lit. f. DSGVO, die Angaben der Nutzer zwecks Spamerkennung zu verarbeiten.
@@ -293,12 +295,12 @@ Nach gesetzlichen Vorgaben in Österreich erfolgt die Aufbewahrung insbesondere f
 <p></p>
 <h3 id="dsg-contact">Kontaktaufnahme</h3>
 <p></p>
-<p><span class="ts-muster-content">Bei der Kontaktaufnahme mit uns (z.B. per Kontaktformular, E-Mail, Telefon oder via sozialer Medien) werden die Angaben des Nutzers zur Bearbeitung der Kontaktanfrage und deren Abwicklung gem. Art. 6 Abs. 1 lit. b) DSGVO verarbeitet. Die Angaben der Nutzer können in einem Customer-Relationship-Management System ("CRM System") oder vergleichbarer Anfragenorganisation gespeichert werden.
+<p><span class="ts-muster-content">Bei der Kontaktaufnahme mit uns (z.B. per Kontaktformular, E-Mail, Telefon oder via sozialer Medien) werden die Angaben des Nutzers zur Bearbeitung der Kontaktanfrage und deren Abwicklung gem. Art. 6 Abs. 1 lit. f) DSGVO verarbeitet. Die Angaben der Nutzer können in einem Customer-Relationship-Management System ("CRM System") oder vergleichbarer Anfragenorganisation gespeichert werden.
 	<br />
 	<br />
 	Wir löschen die Anfragen, sofern diese nicht mehr erforderlich sind. Wir überprüfen die Erforderlichkeit alle zwei Jahre; Ferner gelten die gesetzlichen Archivierungspflichten.</span></p>
 <p></p>
-<h3 id="dsg-hostingprovider">Hosting und E-Mail-Versand,</h3>
+<h3 id="dsg-hostingprovider">Hosting und E-Mail-Versand</h3>
 <p></p>
 <p><span class="ts-muster-content">Die von uns in Anspruch genommenen Hosting-Leistungen dienen der Zurverfügungstellung der folgenden Leistungen: Infrastruktur- und Plattformdienstleistungen, Rechenkapazität, Speicherplatz und Datenbankdienste, E-Mail-Versand, Sicherheitsleistungen sowie technische Wartungsleistungen, die wir zum Zwecke des Betriebs dieses Onlineangebotes einsetzen. 
 	<br />
@@ -310,7 +312,7 @@ Nach gesetzlichen Vorgaben in Österreich erfolgt die Aufbewahrung insbesondere f
 <p><span class="ts-muster-content">Wir, bzw. unser Hostinganbieter, erhebt auf Grundlage unserer berechtigten Interessen im Sinne des Art. 6 Abs. 1 lit. f. DSGVO Daten über jeden Zugriff auf den Server, auf dem sich dieser Dienst befindet (sogenannte Serverlogfiles). Zu den Zugriffsdaten gehören Name der abgerufenen Webseite, Datei, Datum und Uhrzeit des Abrufs, übertragene Datenmenge, Meldung über erfolgreichen Abruf, Browsertyp nebst Version, das Betriebssystem des Nutzers, Referrer URL (die zuvor besuchte Seite), IP-Adresse und der anfragende Provider.
 	<br />
 	<br />
-	Logfile-Informationen werden aus Sicherheitsgründen (z.B. zur Aufklärung von Missbrauchs- oder Betrugshandlungen) für die Dauer von maximal 7 Tagen gespeichert und danach gelöscht. Daten, deren weitere Aufbewahrung zu Beweiszwecken erforderlich ist, sind bis zur endgültigen Klärung des jeweiligen Vorfalls von der Löschung ausgenommen.</span></p>
+	Logfile-Informationen werden aus Sicherheitsgründen (z.B. zur Aufklärung von Missbrauchs- oder Betrugshandlungen) für die Dauer von maximal 15 Tagen gespeichert und danach gelöscht. Daten, deren weitere Aufbewahrung zu Beweiszwecken erforderlich ist, sind bis zur endgültigen Klärung des jeweiligen Vorfalls von der Löschung ausgenommen.</span></p>
 <p></p>
 <h3 id="dsg-thirdparty-einleitung">Einbindung von Diensten und Inhalten Dritter</h3>
 <p></p>
@@ -321,17 +323,37 @@ Nach gesetzlichen Vorgaben in Österreich erfolgt die Aufbewahrung insbesondere f
 <p></p>
 <h3 id="dsg-thirdparty-googlemaps">Google Maps</h3>
 <p></p>
-<p><span class="ts-muster-content">Wir binden die Landkarten des Dienstes &ldquo;Google Maps&ldquo; des Anbieters Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA, ein. Zu den verarbeiteten Daten können insbesondere IP-Adressen und Standortdaten der Nutzer gehören, die jedoch nicht ohne deren Einwilligung (im Regelfall im Rahmen der Einstellungen ihrer Mobilgeräte vollzogen), erhoben werden. Die Daten können in den USA verarbeitet werden. Datenschutzerklärung: <a target="_blank" href="https://www.google.com/policies/privacy/">https://www.google.com/policies/privacy/</a>, Opt-Out: <a target="_blank" href="https://adssettings.google.com/authenticated">https://adssettings.google.com/authenticated</a>.</span></p>
+<p><span class="ts-muster-content">Wir binden die Landkarten des Dienstes &bdquo;Google Maps&ldquo; des Anbieters Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA, ein. Zu den verarbeiteten Daten können insbesondere IP-Adressen und Standortdaten der Nutzer gehören, die jedoch nicht ohne deren Einwilligung (im Regelfall im Rahmen der Einstellungen ihrer Mobilgeräte vollzogen), erhoben werden. Die Daten können in den USA verarbeitet werden. Datenschutzerklärung: <a target="_blank" href="https://www.google.com/policies/privacy/">https://www.google.com/policies/privacy/</a>, Opt-Out: <a target="_blank" href="https://adssettings.google.com/authenticated">https://adssettings.google.com/authenticated</a>.</span></p>
+<p>Karten dieses Dienstes werden ausschließlich auf Wunsch des Nutzers eingebunden.</p>
+<p>Desweiteren nutzen wir den &bdquo;Google Maps GeoCoder&ldquo;: Unsere Nutzer können hier eine Ortsangabe eingeben, aus der dieser Dienst geographische Koordinaten ermittelt, die wir wiederum auf der Landkarte markieren können. </p>
 <p></p>
 <h3 id="dsg-thirdparty-openstreetmap">OpenStreetMap</h3>
 <p></p>
-<p><span class="ts-muster-content">Wir binden die Landkarten des Dienstes "OpenStreetMap" ein (<a target="_blank" href="https://www.openstreetmap.de">https://www.openstreetmap.de</a>), die auf Grundlage der Open Data Commons Open Database Lizenz (ODbL) durch die OpenStreetMap Foundation (OSMF) angeboten werden. Datenschutzerklärung: <a target="_blank" href="https://wiki.openstreetmap.org/wiki/Privacy_Policy">https://wiki.openstreetmap.org/wiki/Privacy_Policy</a>. 
+<p><span class="ts-muster-content">Wir binden die Landkarten des Dienstes &bdquo;OpenStreetMap&ldquo; ein (<a target="_blank" href="https://www.openstreetmap.de">https://www.openstreetmap.de</a>), die auf Grundlage der Open Data Commons Open Database Lizenz (ODbL) durch die OpenStreetMap Foundation (OSMF) angeboten werden. Datenschutzerklärung: <a target="_blank" href="https://wiki.openstreetmap.org/wiki/Privacy_Policy">https://wiki.openstreetmap.org/wiki/Privacy_Policy</a>. 
 	<br />
 	<br />
 	Nach unserer Kenntnis werden die Daten der Nutzer durch OpenStreetMap ausschließlich zu Zwecken der Darstellung der Kartenfunktionen und Zwischenspeicherung der gewählten Einstellungen verwendet. Zu diesen Daten können insbesondere IP-Adressen und Standortdaten der Nutzer gehören, die jedoch nicht ohne deren Einwilligung (im Regelfall im Rahmen der Einstellungen ihrer Mobilgeräte vollzogen), erhoben werden. 
 	<br />
 	<br />
 	Die Daten können in den USA verarbeitet werden. Weitere Informationen können Sie der Datenschutzerklärung von OpenStreetMap entnehmen: <a target="_blank" href="https://wiki.openstreetmap.org/wiki/Privacy_Policy">https://wiki.openstreetmap.org/wiki/Privacy_Policy</a>.</span></p>
+<h3 id="dsg-thirdparty-nop">Reit- und Wanderkarte</h3>
+<p></p>
+<p><span class="ts-muster-content">Wir binden die Landkarten des Dienstes &bdquo;Reit- und Wanderkarte&ldquo; ein (<a target="_blank" href="https://www.wanderreitkarte.de">https://www.wanderreitkarte.de</a>). Datenschutzerklärung: <a target="_blank" href="https://www.wanderreitkarte.de/privacy_de.php">https://www.wanderreitkarte.de/privacy_de.php</a>. 
+	<br />
+	<br />
+	Nach unserer Kenntnis werden die Daten der Nutzer durch den Dienst ausschließlich zu Zwecken der Darstellung der Kartenfunktionen und Zwischenspeicherung der gewählten Einstellungen verwendet. Zu diesen Daten können insbesondere IP-Adressen und Standortdaten der Nutzer gehören, die jedoch nicht ohne deren Einwilligung (im Regelfall im Rahmen der Einstellungen ihrer Mobilgeräte vollzogen), erhoben werden.
+	<br />
+	Karten dieses Dienstes werden ausschließlich auf Wunsch des Nutzers eingebunden.
+	</span></p>
+<h3 id="dsg-thirdparty-opencyclemap">OpenCycleMap</h3>
+<p></p>
+<p><span class="ts-muster-content">Wir binden die Landkarten des Dienstes &bdquo;OpenCycleMap&ldquo; ein (<a target="_blank" href="http://opencyclemap.org/">http://opencyclemap.org/</a>). Datenschutzerklärung: <a target="_blank" href="http://www.thunderforest.com/privacy/">http://www.thunderforest.com/privacy/</a>. 
+	<br />
+	<br />
+	Nach unserer Kenntnis werden die Daten der Nutzer durch den Dienst ausschließlich zu Zwecken der Darstellung der Kartenfunktionen und Zwischenspeicherung der gewählten Einstellungen verwendet. Zu diesen Daten können insbesondere IP-Adressen und Standortdaten der Nutzer gehören, die jedoch nicht ohne deren Einwilligung (im Regelfall im Rahmen der Einstellungen ihrer Mobilgeräte vollzogen), erhoben werden.
+	<br />
+	Karten dieses Dienstes werden ausschließlich auf Wunsch des Nutzers eingebunden.
+	</span></p>
 <p>
 Vom Websiteinhaber angepasst.
 <a href="https://datenschutz-generator.de" class="dsg1-5" rel="nofollow" target="_blank">Erstellt mit Datenschutz-Generator.de von RA Dr. Thomas Schwenke</a>
