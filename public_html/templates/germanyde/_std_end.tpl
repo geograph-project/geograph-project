@@ -42,7 +42,7 @@
      <li><a title="Impressum" href="/help/legal_notice">Impressum</a></li>
     </ul></li>
   {dynamic}
-  {if $is_mod || $is_admin || $is_tickmod || $is_mapmod}
+  {if $is_mod || $is_admin || $is_tickmod || $is_mapmod || $is_supervisor || $is_modadm}
     <li>Admin<ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      {if $is_mod}

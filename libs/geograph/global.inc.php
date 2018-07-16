@@ -363,6 +363,14 @@ class GeographPage extends Smarty
 			{
 				$this->assign('is_admin', true);
 			}
+			if ($GLOBALS['USER']->hasPerm('useradm'))
+			{
+				$this->assign('is_useradm', true);
+			}
+			if ($GLOBALS['USER']->hasPerm('supervisor'))
+			{
+				$this->assign('is_supervisor', true);
+			}
 			if ($GLOBALS['USER']->hasPerm('moderator'))
 			{
 				$this->assign('is_mod', true);

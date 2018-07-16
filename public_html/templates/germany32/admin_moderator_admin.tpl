@@ -39,6 +39,10 @@
 	<td>Ticket Actions (see below)</td>
 	<td>Map Actions (see below)</td>
 	<td>Forum Actions (see below)</td>
+	<td>Supervisor Actions (see below)</td>
+{if $is_admin}
+	<td>Moderator Administration (see below)</td>
+{/if}
 </tr></thead>
 <tbody>
 
@@ -92,6 +96,22 @@
 			<a href="/admin/moderator_admin.php?grant={$userrow.user_id}&amp;right=forum">Grant</a>
 		{/if}
 	</td>
+	<td>
+		{if strpos($userrow.rights,'supervisor') > 0}
+			<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}&amp;right=supervisor">Revoke</a>
+		{else}
+			<a href="/admin/moderator_admin.php?grant={$userrow.user_id}&amp;right=supervisor">Grant</a>
+		{/if}
+	</td>
+{if $is_admin}
+	<td>
+		{if strpos($userrow.rights,'modadm') > 0}
+			<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}&amp;right=modadm">Revoke</a>
+		{else}
+			<a href="/admin/moderator_admin.php?grant={$userrow.user_id}&amp;right=modadm">Grant</a>
+		{/if}
+	</td>
+{/if}
 </tr>
 {/foreach}
 </tbody>

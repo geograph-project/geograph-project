@@ -100,15 +100,17 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 {/if}
 </ul>
 
-{if $is_admin || $is_mapmod}
+{if $is_admin || $is_mapmod || $is_modadm }
 <br/><br/>
 <h2>Admin Tools - use with care</h2>
 <ul>
 
-{if $is_admin}
+{if $is_admin || $is_modadm}
 <li><a title="Moderators" href="/admin/moderator_admin.php?show_role=-none-">Moderator Admin</a> - 
    grant/revoke moderator rights to users</li>
+{/if}
 
+{if $is_admin}
 <li><a title="API Keys" href="/admin/apikeys.php">API Keys</a> - 
    setup who has access to the API</li>
 
@@ -116,12 +118,15 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
    Organise the user submitted categories</li>
 {/if}
 
+{if $is_admin || $is_mapmod}
 <li><a title="Grid builder" href="/admin/gridbuilder.php">Grid Builder</a> - 
    Import land percentages from grayscale images to the database</li>
 
 <li><a title="Town editor" href="/admin/towns.php">Town editor</a> - 
    Add, edit or remove towns</li>
+{/if}
 </ul>
+{/if}
 {if $is_admin}
 <h3>Statistics</h3>
 <ul>  
@@ -147,6 +152,7 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 
 </ul>
 {/if}
+{if $is_admin || $is_mapmod}
 <h3>Database Update/Repair</h3>
 <ul>
 

@@ -24,18 +24,26 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-$USER->mustHavePerm("admin");
+$USER->hasPerm("admin") || $USER->mustHavePerm("modadm");
 
 $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');  
+if (!$db) die('Database connection failed');
+
+if ($USER->hasPerm("admin")) {
+	$right_list = array(  'basic',   'moderator', /*'admin',*/ 'ticketmod', 'traineemod', /*'suspicious', 'dormant',*/ 'mapmod', 'forum', 'supervisor', 'modadm');
+} else {
+	$right_list = array(/*'basic',*/ 'moderator',              'ticketmod', 'traineemod', /*'suspicious', 'dormant',*/ 'mapmod', 'forum', 'supervisor'          );
+}
 
 if (isset($_GET['revoke'])) {
 	$u = new GeographUser(intval($_GET['revoke']));
 	if ($u->registered) {
 		$right = !empty($_GET['right'])?$_GET['right']:'moderator';
-		if ($db->Execute("UPDATE user SET rights = REPLACE(rights,'$right','') WHERE user_id = {$u->user_id}")) {
+		if (!in_array($right, $right_list, true) || !$USER->hasPerm("admin") && $u->hasPerm("admin")) {
+			trigger_error("invalid revoke request {$USER->user_id} {$u->user_id} {$right}", E_USER_WARNING);
+		} elseif ($db->Execute("UPDATE user SET rights = REPLACE(rights,'$right','') WHERE user_id = {$u->user_id}")) {
 			$smarty->assign('message', "$right rights removed from ".$u->realname);
 			if ($USER->user_id == $u->user_id) 
 				$_SESSION['user'] = new GeographUser($USER->user_id);
@@ -45,7 +53,9 @@ if (isset($_GET['revoke'])) {
 	$u = new GeographUser(intval($_GET['grant']));
 	if ($u->registered) {
 		$right = !empty($_GET['right'])?$_GET['right']:'moderator';
-		if ($db->Execute("UPDATE user SET rights = CONCAT(rights,',$right') WHERE user_id = {$u->user_id}")) {
+		if (!in_array($right, $right_list, true) || !$USER->hasPerm("admin") && $u->hasPerm("admin")) {
+			trigger_error("invalid grant request {$USER->user_id} {$u->user_id} {$right}", E_USER_WARNING);
+		} elseif ($db->Execute("UPDATE user SET rights = CONCAT(rights,',$right') WHERE user_id = {$u->user_id}")) {
 			$smarty->assign('message', "$right rights added for ".$u->realname);
 			if ($USER->user_id == $u->user_id) 
 				$_SESSION['user'] = new GeographUser($USER->user_id);
