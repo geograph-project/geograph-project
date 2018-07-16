@@ -41,7 +41,7 @@
 	</div>
 	<!-- Creative Commons Licence -->
 	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-	alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> und  
+	alt="Creative Commons Licence [Some Rights Reserved]" src="/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> und  
 	lizensiert unter <span class="no_print"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">dieser Creative Commons Licence</a>.</span> 
 	<span class="print_only" style="font-size:0.9em"> <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">dieser Creative Commons Licence: http://creativecommons.org/licenses/by-sa/2.0/</a></span></div>
 	<!-- /Creative Commons Licence -->
