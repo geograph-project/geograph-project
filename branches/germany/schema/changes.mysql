@@ -852,4 +852,5 @@ ALTER TABLE `geotrips` ADD `userlist` varchar(128) NOT NULL DEFAULT '';
 
 ALTER TABLE  `user` ADD  `use_gravatar` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';
 
+ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant', 'mapmod', 'forum', 'supervisor', 'modadm') NULL DEFAULT NULL;
 ALTER TABLE  `user` ADD  `use_gmaps` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';

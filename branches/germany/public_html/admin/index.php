@@ -29,7 +29,7 @@ if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 ) {
 	die("server busy, please try later");
 }
 
-$USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->hasPerm("mapmod") || $USER->mustHavePerm("moderator");
+$USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->hasPerm("mapmod") || $USER->mustHavePerm("moderator") || $USER->mustHavePerm("modadm") || $USER->mustHavePerm("supervisor");
 
 if (isset($_SESSION['editpage_options']))
 	unset($_SESSION['editpage_options']);

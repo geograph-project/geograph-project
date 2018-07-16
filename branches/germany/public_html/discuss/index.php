@@ -38,8 +38,10 @@ $isModerator=$GLOBALS['USER']->hasPerm('moderator');
 $isTicketMod=$GLOBALS['USER']->hasPerm('ticketmod');
 $isMapMod=$GLOBALS['USER']->hasPerm('mapmod');
 $isAdmin=$GLOBALS['USER']->hasPerm('admin');
+$isSupervisor=$GLOBALS['USER']->hasPerm('supervisor');
+$isModAdm=$GLOBALS['USER']->hasPerm('modadm');
 $isTGModAdmin=$isModerator||$isTicketMod||$isAdmin;
-$isModAdmin=$isModerator||$isTicketMod||$isMapMod||$isAdmin;
+$isModAdmin=$isModerator||$isTicketMod||$isMapMod||$isAdmin||$isSupervisor||$isModAdm;
 $useGoogleApi=!empty($CONF['google_maps_api_key']);
 
 $static_host = $CONF['STATIC_HOST'];
