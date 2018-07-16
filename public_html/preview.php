@@ -96,6 +96,7 @@ if (!empty($_POST))
 	
 	$image->fullpath = "/submit.php?preview=".strip_tags(trim(stripslashes($_POST['upload_id'])));
 
+	$image->use_http_host = true;
 
 if (!empty($_POST['spelling'])) { //FIXME smarty
 	
