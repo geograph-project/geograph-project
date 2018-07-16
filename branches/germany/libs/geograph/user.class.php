@@ -929,6 +929,36 @@ class GeographUser
 	}
 	
 	/**
+	 * update profile item in database, input is read from $_POST['item'], $_POST['value'], $_POST['CSRF_token']
+	 */
+	function change_value()
+	{
+		$errors = array();
+		if ($_POST['item'] !== 'use_gmaps' && (!isset($_POST['CSRF_token']) || $_POST['CSRF_token'] !== $_SESSION['CSRF_token'])) {
+			$errors['csrf'] = true;
+		//} elseif (!$this->registered) {
+		} elseif (!$this->hasPerm('basic')) {
+			$errors['registered'] = true;
+		} elseif ($_POST['item'] === 'use_gmaps') {
+			if ($_POST['value'] !== '0' && $_POST['value'] !== '1') {
+				$errors['value'] = true;
+			} else {
+				$_POST['value'] = intval($_POST['value']);
+				$db = $this->_getDB();
+				$sql = sprintf("update user set %s=%d where user_id=%d", $_POST['item'], $_POST['value'], $this->user_id);
+				if ($db->Execute($sql) === false) {
+					$errors['update'] = $db->ErrorMsg();
+				} else {
+					$this->$_POST['item'] = $_POST['value'];
+				}
+			}
+		} else {
+			$errors['item'] = true;
+		}
+		return $errors;
+	}
+
+	/**
 	* update user profile
 	* profile array should contain website, nickname, realname flag. A
 	* public_email entry, if present, will cause the public_email flag
@@ -1139,6 +1169,7 @@ class GeographUser
 				message_sig=%s,
 				upload_size=%d,
 				clear_exif=%d,
+				use_gmaps=%d,
 				use_gravatar=%d,
 				salt=%s,
 				password=%s
@@ -1160,6 +1191,7 @@ class GeographUser
 				$db->Quote(stripslashes($profile['message_sig'])),
 				intval($profile['upload_size']), #FIXME check values!
 				$profile['clear_exif']?1:0,
+				$profile['use_gmaps']?1:0,
 				$profile['use_gravatar']?1:0,
 				$db->Quote($salt),
 				$db->Quote($password),
@@ -1204,9 +1236,11 @@ class GeographUser
 				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->upload_size=intval($profile['upload_size']);
 				$this->clear_exif=!empty($profile['clear_exif']);
+				$this->use_gmaps=!empty($profile['use_gmaps']);
 				$this->use_gravatar=!empty($profile['use_gravatar']);
 				$this->_forumUpdateProfile();
 				$this->_forumLogin();
+				setcookie('use_gmaps', $this->use_gmaps?"1":"0", time()+3600*24*365,'/');
 				
 				if (!empty($profile['ticket_public_change'])) {
 
@@ -1515,6 +1549,8 @@ class GeographUser
 
 									if (isset($_SESSION['maptt'])) 
 										unset($_SESSION['maptt']);								
+
+									setcookie('use_gmaps', $this->use_gmaps?"1":"0", time()+3600*24*365,'/');
 								}
 								else
 								{
@@ -1642,6 +1678,8 @@ class GeographUser
 						$token = md5(uniqid(rand(),1)); 
 						$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
 						setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/');
+
+						setcookie('use_gmaps', $this->use_gmaps?"1":"0", time()+3600*24*365,'/');
 					}
 				}
 			}

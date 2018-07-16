@@ -36,6 +36,10 @@
         .olControlAttribution {
             bottom: 0px;
         }
+        .olControlLayerSwitcher {
+            font-size:x-small;
+            top: 10px;
+        }
     </style>
 {/literal}
 {/if}

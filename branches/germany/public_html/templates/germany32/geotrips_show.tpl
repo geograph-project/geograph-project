@@ -6,7 +6,7 @@
 {assign var="page_title" value="`$triptitle` :: Geo-Trips"}
 {assign var="meta_description" value="A `$trip.nicetype` near `$trip.location`, starting from `$trip.start`, with pictures and plotted on a map."}
 {assign var="extra_css" value="/geotrips/geotrips.css"}
-{assign var="olayersmap" value="1"}
+{dynamic}{assign var="olayersmap" value="1"}{/dynamic}{*cant use the value inside dynamic otherwise...*}
 {include file="_std_begin.tpl"}
 
 {if $google_maps_api_key}
@@ -394,6 +394,7 @@ AttachEvent(window,'load',initmap,false);
 	</small></p></div>
 	<div class="row"></div>
 	<div id="map" class="inner" style="width:798px;height:650px"></div>
+	{dynamic}{if $ask_gmaps}<p style="font-size:small"><a href="#" onclick="set_use_gmaps({$ask_gmaps_newval}, {$ask_gmaps_profile}, 1); return false;">{if $ask_gmaps_newval}With{else}Without{/if} GoogleMaps</a> (<a href="/help/privacy">privacy</a>)</p>{/if}{/dynamic}
 	<p style="font-size:.65em">
 		All images &copy;
 		{foreach key=curuid item=curname from=$uids name=uidlp}

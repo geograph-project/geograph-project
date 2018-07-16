@@ -1,7 +1,7 @@
 {assign var="page_title" value="Übersichtskarte :: Geo-Trips"}
 {assign var="meta_description" value="Eine Zusammenstellung von Touren von Teilnehmern des Geograph-Projekts mit Fotos, Beschreibungen und GPS-Tracks, dargestellt auf einer Landkarte."}
 {assign var="extra_css" value="/geotrips/geotrips.css"}
-{assign var="olayersmap" value="1"}
+{dynamic}{assign var="olayersmap" value="1"}{/dynamic}{*cant use the value inside dynamic otherwise...*}
 {include file="_std_begin.tpl"}
 
   <!--RSS feed via Geograph-->

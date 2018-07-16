@@ -257,6 +257,13 @@ Your changes could not be processed due to <a href="/help/csrf">security reasons
 </div>
 {/if}
 
+<div class="field"> 
+	<label for="use_gmaps" class="nowrap">Use GoogleMaps</label>
+	
+	<input type="checkbox" name="use_gmaps" id="use_gmaps" {if $profile->use_gmaps}checked{/if} value="1"/><!--br/-->
+	 
+	<div class="fieldnotes">Enable the use of the GoogleMaps API and map types.</div>
+</div>
 
 <div class="field"> 
 	<label for="message_sig" class="nowrap">Message Signature</label>

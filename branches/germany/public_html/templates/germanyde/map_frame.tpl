@@ -1,7 +1,7 @@
 {assign var="page_title" value="Geograph Map"}
 
-{include file="_basic_begin.tpl"}
 {dynamic}
+{include file="_basic_begin.tpl"}
 {if $error} 
 	<p>ERROR: {$error}</p>
 {else}

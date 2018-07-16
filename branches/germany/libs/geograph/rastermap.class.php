@@ -1437,8 +1437,32 @@ EOF;
 
 	function getFootNote() 
 	{
+		global $CONF,$USER;
 		if ($this->service == 'Google' || $this->service == 'OLayers') {
-			return '';
+			if ($CONF['ask_gmaps']) {
+				if ($CONF['lang'] == 'de') {
+					$text_with =    'Mit';
+					$text_without = 'Ohne';
+					$text_privacy = 'Datenschutz';
+				} else {
+					$text_with =    'With';
+					$text_without = 'Without';
+					$text_privacy = 'privacy';
+				}
+				$do_reload = $this->issubmit ? 0 : 1;
+				if (empty($CONF['google_maps_api_key'])) {
+					$new_config_val = 1;
+					$msg = $text_with.' GoogleMaps';
+				} else {
+					$new_config_val = 0;
+					$msg = $text_without.' GoogleMaps';
+				}
+				$do_update_profile = $USER->hasPerm("basic") ? 1 : 0;
+				# CSRF protection disabled for better caching; not important for use_gmaps
+				return '<a href="#" onclick="set_use_gmaps('.$new_config_val.', '.$do_update_profile.', '.$do_reload.'); return false;">'.$msg.'</a> (<a href="/help/privacy">'.$text_privacy.'</a>)';
+			} else {
+				return '';
+			}
 		} elseif ($this->service == 'WMS') {
 			if ($this->issubmit) {
 				return '';#FIXME

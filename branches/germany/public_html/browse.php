@@ -159,6 +159,10 @@ $cacheid.=$style;
 $map_suffix = get_map_suffix();
 $cacheid .= $map_suffix;
 
+if (empty($CONF['google_maps_api_key'])) {
+	$cacheid .= '.nogmap';
+}
+
 	#not ready for primetime yet, the user_id SHOULD to be replaced by visitor/has pending-or-rejects/mod switch 
 # when ready to go live, should change the tpl file to remove most of the dynamic tags!
 #$cacheid=($square->gridsquare_id).'.'.md5($_SERVER['QUERY_STRING']).'.'.($USER->user_id);

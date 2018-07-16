@@ -1,4 +1,4 @@
-{assign var="olayersmap" value="1"}
+{dynamic}{assign var="olayersmap" value="1"}{/dynamic}{*cant use the value inside dynamic otherwise...*}
 {if $inner}
 {assign var="page_title" value="Geograph Mercator-Karte"}
 {include file="_basic_begin.tpl"}
@@ -162,7 +162,9 @@ ommap.tpl, rastermap.class.php:
 				var opc = readFloatCookie('OMapOp');
 				if (opc !== false && opc >= 0.0 && opc <= 1.0) {
 					op = opc;
-					document.theForm.opcoverage.value = opc*100;
+					if (document.theForm.opcoverage) {
+						document.theForm.opcoverage.value = opc*100;
+					}
 				}
 			}
 			var opr = 1.0;
@@ -172,7 +174,9 @@ ommap.tpl, rastermap.class.php:
 				var opc = readFloatCookie('OMapOpr');
 				if (opc !== false && opc >= 0.0 && opc <= 1.0) {
 					opr = opc;
-					document.theForm.oprelief.value = opc*100;
+					if (document.theForm.oprelief) {
+						document.theForm.oprelief.value = opc*100;
+					}
 				}
 			}
 			var user = 0;
@@ -182,15 +186,17 @@ ommap.tpl, rastermap.class.php:
 				var userc = readIntCookie('OMapUser');
 				if (userc !== false && userc >= -1) {
 					user = userc;
-					if (userc == -1) {
-						document.theForm.mtradio[1].checked = true;
-					} else if (userc == 0) {
-						document.theForm.mtradio[0].checked = true;
-					} else if (userc == userid) {
-						document.theForm.mtradio[2].checked = true;
-					} else {
-						document.theForm.mtuser.value = userc;
-						document.theForm.mtradio[userid ? 3 : 2].checked = true;
+					if (document.theForm.mtuser) {
+						if (userc == -1) {
+							document.theForm.mtradio[1].checked = true;
+						} else if (userc == 0) {
+							document.theForm.mtradio[0].checked = true;
+						} else if (userc == userid) {
+							document.theForm.mtradio[2].checked = true;
+						} else {
+							document.theForm.mtuser.value = userc;
+							document.theForm.mtradio[userid ? 3 : 2].checked = true;
+						}
 					}
 				}
 			}
@@ -604,6 +610,10 @@ ommap.tpl, rastermap.class.php:
 						type += key;
 				}
 				curtype = type;
+				var curlink = document.getElementById("maplink");
+				if (!curlink) {
+					return;
+				}
 				var url = '?z=' + map.zoom
 					+ '&t=' + type
 					+ '&ll=' + ll.lat + ',' + ll.lon;
@@ -621,7 +631,6 @@ ommap.tpl, rastermap.class.php:
 					ll.transform(map.getProjectionObject(), epsg4326);
 					url += '&mll=' + ll.lat + ',' + ll.lon;
 				}
-				var curlink = document.getElementById("maplink");
 				curlink.setAttribute("href", url);
 				if (window.history.replaceState) {
 					//window.history.replaceState(null, null, url);
@@ -774,10 +783,10 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 </div>
 {/if}
 
-<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen.<br />
+<p style="font-size:small;margin:0px;padding:1px 0px">Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen.<br />
 Anklicken der <img alt="+" src="/ol/img/layer-switcher-maximize.png" />-Symbole zeigt andere Kartentypen und eine Übersichtskarte.</p>
 
-<form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{elseif $ext}action="javascript:void()"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+<form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{elseif $ext}action="javascript:void()"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if} name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 {if !$ext}
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Aktuelle Koordinate</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="16" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
@@ -788,6 +797,7 @@ Anklicken der <img alt="+" src="/ol/img/layer-switcher-maximize.png" />-Symbole 
 {/if}
 
 <div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue"></div><!-- FIXME Karte wird geladen... (JavaScript nötig) -->
+{dynamic}{if $ask_gmaps}<p style="font-size:small;margin:0px;padding:1px 0px"><a href="#" onclick="set_use_gmaps({$ask_gmaps_newval}, {$ask_gmaps_profile}, {$ask_gmaps_reload}); return false;">{if $ask_gmaps_newval}Mit{else}Ohne{/if} GoogleMaps</a> (<a href="/help/privacy">Datenschutz</a>)</p>{/if}{/dynamic}
 
 {if $ext}
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Aktuelle Koordinate</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="16" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />

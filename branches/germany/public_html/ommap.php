@@ -42,6 +42,7 @@ if (isset($_REQUEST['inner'])) {
 }
 
 $type = 'n';
+$issubmit = true;
 if (isset($_REQUEST['picasa'])) {
 	$cacheid .= 'picasa';
 	$smarty->assign('picasa',1);
@@ -53,7 +54,12 @@ if (isset($_REQUEST['picasa'])) {
 	$type = '';
 	$cacheid .= 'ext';
 	$smarty->assign('ext',1);
+	$issubmit = false;
 }
+if (empty($CONF['google_maps_api_key'])) {
+	$cacheid .= '.nogmap';
+}
+
 
 $zoom = -1;
 $op = -1;
@@ -129,6 +135,13 @@ $smarty->assign('latmin', $CONF['gmlatrange'][0][0]);
 $smarty->assign('latmax', $CONF['gmlatrange'][0][1]);
 $smarty->assign('lonmin', $CONF['gmlonrange'][0][0]);
 $smarty->assign('lonmax', $CONF['gmlonrange'][0][1]);
+
+$smarty->assign('ask_gmaps', $CONF['ask_gmaps']);
+if ($CONF['ask_gmaps']) {
+	$smarty->assign('ask_gmaps_newval', empty($CONF['google_maps_api_key']) ? 1 : 0);
+	$smarty->assign('ask_gmaps_profile', $USER->hasPerm("basic") ? 1 : 0);
+	$smarty->assign('ask_gmaps_reload', $issubmit ? 0 : 1);
+}
 
 $smarty->display('ommap.tpl',$cacheid);
 

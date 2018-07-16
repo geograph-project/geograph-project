@@ -919,6 +919,11 @@ if (isset($_GET['fav']) && $i) {
 		$cacheid .= "r".$results_pages;
 	}
 
+	if (empty($CONF['google_maps_api_key'])) {
+		$cacheid .= '.nogmap';
+	}
+
+
 	if (!empty($_GET['t'])) {
 		$token=new Token;
 		if ($token->parse($_GET['t']) && $token->getValue("i") == $i)
@@ -1086,7 +1091,13 @@ if (isset($_GET['fav']) && $i) {
 			$db->query("UPDATE queries_archive SET use_timestamp = null WHERE id = $i");
 		}
 	}
-
+	if ($display == 'gmap') {
+		$smarty->assign('ask_gmaps', $CONF['ask_gmaps']);
+		if ($CONF['ask_gmaps']) {
+			//$smarty->assign('ask_gmaps_newval', empty($CONF['google_maps_api_key']) ? 1 : 0);
+			$smarty->assign('ask_gmaps_profile', $USER->hasPerm("basic") ? 1 : 0);
+		}
+	}
 	$smarty->display($template, $cacheid);
 
 

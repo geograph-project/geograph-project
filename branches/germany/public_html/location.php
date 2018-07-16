@@ -107,7 +107,9 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 
 $cacheid='';
 
-
+if (empty($CONF['google_maps_api_key'])) {
+	$cacheid .= '.nogmap';
+}
 
 //process grid reference
 if ($grid_given)

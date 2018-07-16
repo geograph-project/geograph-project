@@ -42,6 +42,7 @@ $smarty = new GeographPage;
 
 $smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
 
+$issubmit = true;
 if (isset($_REQUEST['inner'])) {
 	$cacheid = 'iframe';
 	$smarty->assign('inner',1);
@@ -55,6 +56,10 @@ if (isset($_REQUEST['picasa'])) {
 } elseif (isset($_REQUEST['submit2'])) {
 	$cacheid .= 'submit2';
 	$smarty->assign('submit2',1);
+}
+
+if (empty($CONF['google_maps_api_key'])) {
+	$cacheid .= '.nogmap';
 }
 
 if (!empty($_REQUEST['grid_reference'])) 
@@ -77,6 +82,13 @@ $smarty->assign('latmin', $CONF['gmlatrange'][0][0]);
 $smarty->assign('latmax', $CONF['gmlatrange'][0][1]);
 $smarty->assign('lonmin', $CONF['gmlonrange'][0][0]);
 $smarty->assign('lonmax', $CONF['gmlonrange'][0][1]);
+
+$smarty->assign('ask_gmaps', $CONF['ask_gmaps']);
+if ($CONF['ask_gmaps']) {
+	$smarty->assign('ask_gmaps_newval', 0);
+	$smarty->assign('ask_gmaps_profile', $USER->hasPerm("basic") ? 1 : 0);
+	$smarty->assign('ask_gmaps_reload', $issubmit ? 0 : 1);
+}
 
 $smarty->display('submitmap.tpl',$cacheid);
 

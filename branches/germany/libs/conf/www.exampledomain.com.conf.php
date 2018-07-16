@@ -260,6 +260,9 @@ $CONF['raster_service']='';
 
 $CONF['google_maps_api_key'] = '';
 
+// ask user whether to use googlemaps
+$CONF['ask_gmaps'] = false;
+
 $CONF['OS_licence'] = 'XXXXXXXX';
 
 //paths to where map data is stored (should be OUTSIDE of the web root)

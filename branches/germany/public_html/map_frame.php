@@ -35,6 +35,10 @@ $smarty = new GeographPage;
 $template='map_frame.tpl';
 $cacheid='';
 
+if (empty($CONF['google_maps_api_key'])) {
+	$cacheid .= '.nogmap';
+}
+
 
 $square=new GridSquare;
 

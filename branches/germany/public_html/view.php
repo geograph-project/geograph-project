@@ -232,6 +232,10 @@ if ($image->isValid())
 	$map_suffix = get_map_suffix();
 	$cacheid .= $map_suffix;
 
+	if (empty($CONF['google_maps_api_key'])) {
+		$cacheid .= '.nogmap';
+	}
+
 	//page is unqiue per user (the profile and links)
 	$hash = $cacheid.'.'.$USER->user_id;
 
