@@ -11,13 +11,13 @@
 	{/if}
 
 	{foreach key=idx item=cursize from=$sizes}
-		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="{$cursize}" {if $user->upload_size == $cursize} checked{/if} id="large{$cursize}" onclick="selectImage(this.id)"/> {$widths.$idx} x {$heights.$idx}</div><br/>
+		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="{$cursize}" {if $user_size == $cursize} checked{/if} id="large{$cursize}" onclick="selectImage(this.id)"/> {$widths.$idx} x {$heights.$idx}</div><br/>
 		<label for="large{$cursize}"><img src="{$preview_url}" width="{$widths.$idx/$ratio}" height="{$heights.$idx/$ratio}" name="large{$cursize}" style="border:2px solid white"/></label>
 		</td>
 	{/foreach}
 
 	{if $showorig}
-		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="65536" {if $user->upload_size > 65530} checked{/if} id="large65536" onclick="selectImage(this.id)"/> {$original_width} x {$original_height}</div><br/>
+		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="65536" {if $user_size > 65530} checked{/if} id="large65536" onclick="selectImage(this.id)"/> {$original_width} x {$original_height}</div><br/>
 		<label for="large65536"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}" name="large65536" style="border:2px solid white"/></label>
 		</td>
 	{/if}
@@ -44,10 +44,10 @@ function selectImage(that) {
 	return true;
 }
 {/literal}
-{if $user->upload_size > $stdsize} 
+{if $user_size > $stdsize} 
 {literal}
  AttachEvent(window,'load',function () {
-		selectImage("large{/literal}{$user->upload_size}{literal}");
+		selectImage("large{/literal}{$user_size}{literal}");
 	},false);
 {/literal}
 {/if}
