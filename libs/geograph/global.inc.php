@@ -290,7 +290,10 @@ class GeographPage extends Smarty
 		//loader which aids template development by loading missing tpl files
 		//from basic
 		// set the default handler
-		if ($CONF['template']!='basic')
+		if (empty($CONF['basic_template'])) {
+			$CONF['basic_template'] = 'basic';
+		}
+		if ($CONF['template'] !== $CONF['basic_template'])
 			$this->default_template_handler_func = array('GeographPage', 'basicTemplateLoader');
 		
 
@@ -468,7 +471,8 @@ class GeographPage extends Smarty
 
 	function templateExists($file)
 	{
-		$basic=$_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$file;
+		global $CONF;
+		$basic=$_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['basic_template'].'/'.$file;
 		return file_exists($this->template_dir.'/'.$file) || file_exists($basic);
 	}
 
@@ -484,9 +488,10 @@ class GeographPage extends Smarty
 	 */
 	static function basicTemplateLoader($resource_type, $resource_name, &$template_source, &$template_timestamp,&$smarty_obj)
 	{
+		global $CONF;
 		if($resource_type == 'file')
 		{
-			$basic=$_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$resource_name;
+			$basic=$_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['basic_template'].'/'.$resource_name;
 			if (is_readable($basic))
 			{
 				 $template_source=file_get_contents($basic);
