@@ -220,7 +220,7 @@ geographing (German)</a> first.</p>
 		{/if}{*FIXME move to FootNote?*}
 		{if count($square->services) > 1}
 		{*<form method="get" action="/gridref/{$gridref}">*}{*FIXME*}
-		<p>Karte:
+		<p>Map:
 		<select name="sid">
 		{html_options options=$square->services selected=$sid}
 		</select>
