@@ -330,8 +330,13 @@ function wgs84_to_friendly($lat,$long) {
 	$ymd = str_replace('.', $CONF['decimal_sep'], sprintf("%.4F",$ym+($ys/60)));
 	$xmd = str_replace('.', $CONF['decimal_sep'], sprintf("%.4F",$xm+($xs/60)));
 
-	$xs = str_replace('.', $CONF['decimal_sep'], sprintf("%.2F",$xs));
-	$ys = str_replace('.', $CONF['decimal_sep'], sprintf("%.2F",$ys));
+	$xs = sprintf("%.2F",$xs);
+	$ys = sprintf("%.2F",$ys);
+	if ($xs === "60.00") { $xs = "59.99"; }
+	if ($ys === "60.00") { $ys = "59.99"; }
+	$xs = str_replace('.', $CONF['decimal_sep'], $xs);
+	$ys = str_replace('.', $CONF['decimal_sep'], $ys);
+
 
 	if ($CONF['lang'] == 'de') {
 		$el = ($long > 0)?'O':'W';
