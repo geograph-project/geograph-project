@@ -524,7 +524,7 @@ class GridImage
 		return substr(md5($this->gridimage_id.$this->user_id.$CONF['photo_hashing_secret']), 0, 8);
 	}
 	
-	function assignToSmarty($smarty, $sid=-1, $map_suffix='') {
+	function assignToSmarty($smarty, $sid=-1, $map_suffix='', $unrestricted=false) {
 		global $CONF;
 
 		$thumb = $this->getMinThumbnail(200,200,2);
@@ -614,7 +614,7 @@ class GridImage
 		$smarty->assign('longdm', $longdm);
 
 		//lets add an rastermap too
-		$rastermap = new RasterMap($this->grid_square,false,true,false,'latest',$sid);
+		$rastermap = new RasterMap($this->grid_square,false,true,false,'latest',$sid,false,$unrestricted);
 		$rastermap->addLatLong($lat,$long);
 		if (!empty($this->viewpoint_northings)) {
 			$rastermap->addViewpoint($this->viewpoint_refindex,$this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_grlen,$this->view_direction);
