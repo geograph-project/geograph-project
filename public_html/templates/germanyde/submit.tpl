@@ -522,7 +522,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<p>Sollten diese Bedingungen nicht akzeptabel sein,
 	kann die Einreichung durch einen Klick auf "ICH BIN NICHT EINVERSTANDEN"
 	rückgängig gemacht werden.<br />
-	<input style="background-color:pink; width:200px" type="submit" name="abandon" value="ICH BIN NICHT EINVERSTANDEN" onclick="return confirm('Sind Sie sicher? Der aktuelle Upload wird verworfen!');"/>
+	<input style="background-color:pink; width:240px" type="submit" name="abandon" value="ICH BIN NICHT EINVERSTANDEN" onclick="return confirm('Sind Sie sicher? Der aktuelle Upload wird verworfen!');"/>
 	
 	</p>
 

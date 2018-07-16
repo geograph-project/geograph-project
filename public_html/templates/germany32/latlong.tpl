@@ -7,7 +7,7 @@
 	<p>This page will convert Latitude and Longitude (assuming WGS84 or Potsdam datum) or Gauß-Krüger coordinates into Rectlinear coordinates as suitable for use on this site.</p> 
 {/if}
 
-	<div style="float:left;position:relative;width:200px;height:200px;margin-left:10px;margin-right:10px;text-align:center;background:#dddddd;">
+	<div style="float:left;position:relative;width:220px;height:250px;margin-left:10px;margin-right:10px;text-align:center;background:#dddddd;">
 	<form action="{$script_name}"> 
 	<h4>Decimal Degrees</h4>
 	<table cellpadding="3" cellspacing="0"> 
@@ -26,7 +26,7 @@
 	</form>
 	</div>
 	
-	<div style="float:left;position:relative;width:450px;height:200px;margin-left:10px;margin-right:10px;text-align:center;background:#dddddd;">
+	<div style="float:left;position:relative;width:500px;height:250px;margin-left:10px;margin-right:10px;text-align:center;background:#dddddd;">
 	<form action="{$script_name}"> 
 
 	<h4>Degrees, Minutes and Seconds</h4>
@@ -50,20 +50,20 @@
 				name="longs" value="{$xs}"/> </td> 
 		  </tr> 
 	</table>
-	<p align="center"><label for="potsdam2">Potsdam:</label><input type="checkbox" id="potsdam2" name="potsdam" value="1" {if $potsdam}checked="checked"{/if} /></p>
-	<p align="center"><input type="submit" name="From" value="convert"/></p>
+	<p align="center"><label for="potsdam2">Potsdam:</label><input type="checkbox" id="potsdam2" name="potsdam" value="1" {if $potsdam}checked="checked"{/if} /> | {*</p>
+	<p align="center">*}<input type="submit" name="From" value="convert"/></p>
 	</form>
 	</div>
 	<br style="clear:both"/>
-	<div style="text-align:center;margin-top:10px;padding-top:0px;padding-bottom:10px;margin-left:10px;margin-right:10px;width:670px;padding-top:10px;background:#dddddd;">
+	<div style="text-align:center;margin-top:10px;padding-top:0px;padding-bottom:10px;margin-left:10px;margin-right:10px;width:740px;padding-top:10px;background:#dddddd;">
 	<form action="{$script_name}" style="display:inline"> 
 	or paste in a string from somewhere else, e.g. <b>the old style</b> Multimap.com coordinates: <br/>
-		<input type="text" name="multimap" size=40/><br/>
+		<input type="text" name="multimap" size="40"/><br/>
 		<label for="potsdam3">Potsdam:</label><input type="checkbox" id="potsdam3" name="potsdam" value="1" {if $potsdam}checked="checked"{/if} /> |
 		<input type="submit" name="From" value="convert"/><br/>
 	<small>eg: "<b>Lat</b>: 54:32:40N (54.5445) <b>Lon</b>: 6:49:22W (-6.8228)"</small>
 	</form></div>
-	<div style="text-align:center;margin-top:10px;padding-top:0px;padding-bottom:10px;margin-left:10px;margin-right:10px;width:670px;padding-top:10px;background:#dddddd;">
+	<div style="text-align:center;margin-top:10px;padding-top:0px;padding-bottom:10px;margin-left:10px;margin-right:10px;width:740px;padding-top:10px;background:#dddddd;">
 	<form action="{$script_name}" style="display:inline"> 
 	<h4>German Grid (Gauß-Krüger)</h4>
 		East: <input type="text" name="gke" size="10" />
