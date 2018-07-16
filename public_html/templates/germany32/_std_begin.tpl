@@ -60,6 +60,8 @@
         }
         .olControlAttribution {
             bottom: 15px;
+            opacity: 0.75;
+            background-color: lightblue;
         }
     </style>
 {/literal}
@@ -71,9 +73,11 @@
         }
         .olControlAttribution {
             bottom: 0px;
+            opacity: 0.75;
+            background-color: lightblue;
         }
         .olControlLayerSwitcher {
-            font-size:small;
+            font-size:x-small;
             top: 10px;
         }
     </style>
