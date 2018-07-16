@@ -18,10 +18,10 @@
 	
 	{if $sent}
 		<p>Thankyou - your message has been sent</p>
-		<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
-		<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
+		{*<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+		<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
 		Please note that the recipient might <b>not</b> accept your message if you use your <b>Yahoo or AOL</b> address in this form,
-		because Yahoo and AOL use an unfavourable configuration regarding forwarding mails.</div>
+		because Yahoo and AOL use an unfavourable configuration regarding forwarding mails.</div>*}
 	{elseif $verification}
 		<form method="post" action="/usermsg.php">
 		
@@ -53,7 +53,7 @@
 	{else}
 		{if $invalid_email} 
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Warning" width="50" height="44" align="left" style="margin-right:10px"/>
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Warning" width="50" height="44" align="left" style="margin-right:10px"/>
 			We don't have valid contact details on record for this user, you can fill out the form below,
 			it will be sent to the Geograph Team, who might or might not be able to help with your query.
 		</div>
@@ -82,18 +82,18 @@
 			<span class="formerror">{$errors.msg}</span>
 
 			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
-			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
 			If you are sending this message in relation to a particular photo or location, please
 			make sure you clearly state which. The contributor may have photographed
 			many locations and may not know immediately to where you are referring.</div>
 			<br/>
-			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
-			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
+			{*<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
 			Please note that the recipient might <b>not</b> accept your message if you use your <b>Yahoo or AOL</b> address in this form,
 			because Yahoo and AOL use an unfavourable configuration regarding forwarding mails.</div>
-			<br/>
+			<br/>*}
 			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
-			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
 			Please note that we generate an email from your input end send it to the specified recipient.
 			Therefore, your email address, your IP address, and your name will be transmitted to the recipient. See also our <a href="/help/privacy">privacy statement</a>.</div>
 			<br/>
