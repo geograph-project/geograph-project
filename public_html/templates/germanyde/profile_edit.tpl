@@ -256,6 +256,13 @@ Aus <a href="/help/csrf">Sicherheitsgründen</a> konnten die Änderungen nicht ges
 </div>
 {/if}
 
+<div class="field"> 
+	<label for="use_gmaps" class="nowrap">GoogleMaps einbinden</label>
+	
+	<input type="checkbox" name="use_gmaps" id="use_gmaps" {if $profile->use_gmaps}checked{/if} value="1"/><!--br/-->
+	 
+	<div class="fieldnotes">Erlaubt das Einbinden der GoogleMaps API mit den entsprechenden Kartentypen.</div>
+</div>
 
 <div class="field"> 
 	<label for="message_sig">Signatur für Mitteilungen:</label>

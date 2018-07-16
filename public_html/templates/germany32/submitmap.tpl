@@ -98,9 +98,9 @@
 	</script>
 {/literal}
 
-<p>Click on the map to create a point, pick it up and drag to move to better location...</p>
+<p style="font-size:small;margin:0px;padding:1px 0px">Click on the map to create a point, pick it up and drag to move to better location...</p>
 
-<form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+<form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if} name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="16" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
@@ -109,6 +109,7 @@
 
 <div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>		
 
+{dynamic}{if $ask_gmaps}<p style="font-size:small;margin:0px;padding:1px 0px"><a href="#" onclick="set_use_gmaps({$ask_gmaps_newval}, {$ask_gmaps_profile}, {$ask_gmaps_reload}); return false;">Without GoogleMaps</a> (<a href="/help/privacy">privacy</a>)</p>{/if}{/dynamic}
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
 

@@ -1,7 +1,7 @@
 {assign var="page_title" value="Overview map :: Geo-Trips"}
 {assign var="meta_description" value="A collection of square-bagging trips by members of the Geograph project, with photographs, descriptions and GPS tracks plotted on a map."}
 {assign var="extra_css" value="/geotrips/geotrips.css"}
-{assign var="olayersmap" value="1"}
+{dynamic}{assign var="olayersmap" value="1"}{/dynamic}{*cant use the value inside dynamic otherwise...*}
 {include file="_std_begin.tpl"}
 
   <!--RSS feed via Geograph-->

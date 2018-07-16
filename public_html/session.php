@@ -88,7 +88,36 @@ if ($_POST['action'] === 'CSRF_token') {
 		print "-2:0:invalid user or unknown error";
 		exit;
 	}
-
+} elseif ($_POST['action'] === 'profile') {
+// status:
+//    -6: invalid csfr token
+//    -5: invalid value
+//    -4: invalid parameter
+//    -3: user not logged in
+//    -2: update failed
+//    -1: invalid request
+//     0: success
+	$errors = $USER->change_value();
+	if (!count($errors)) {
+		print "0:success";
+		exit;
+	}
+	if (isset($errors['csrf'])) {
+		print "-6:0:invalid csfr token, please try again";
+		exit;
+	} elseif (isset($errors['value'])) {
+		print "-5:0:invalid value";
+		exit;
+	} elseif (isset($errors['item'])) {
+		print "-4:0:invalid item";
+		exit;
+	} elseif (isset($errors['registered'])) {
+		print "-3:0:not logged in or unknown error";
+		exit;
+	} else { # elseif (isset($errors['update'])) {
+		print "-2:0:update failed or unknown error";
+		exit;
+	}
 } else {
 	trigger_error("invalid request '{$_POST['action']}'", E_USER_WARNING);
 	print "-1::invalid request";

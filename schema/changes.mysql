@@ -851,3 +851,5 @@ ALTER TABLE `geotrips` ADD  `created` timestamp NOT NULL AFTER `updated`; # <- !
 ALTER TABLE `geotrips` ADD `userlist` varchar(128) NOT NULL DEFAULT '';
 
 ALTER TABLE  `user` ADD  `use_gravatar` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';
+
+ALTER TABLE  `user` ADD  `use_gmaps` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';

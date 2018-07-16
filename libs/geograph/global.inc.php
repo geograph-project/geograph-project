@@ -203,6 +203,7 @@ if (isset($CONF['log_script_timing']))
 //global page initialisation
 function init_session()
 {
+	global $CONF;
 	session_start();
 
 	//do we have a user object?
@@ -233,6 +234,10 @@ function init_session()
 		} else {
 			$_SESSION['CSRF_token'] = hash("sha512", mt_rand());
 		}
+	}
+
+	if ($CONF['ask_gmaps'] && !$GLOBALS['USER']->use_gmaps && empty($_COOKIE['use_gmaps'])) {
+		$CONF['google_maps_api_key'] = '';
 	}
 }
 

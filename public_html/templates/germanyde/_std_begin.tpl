@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"{if $rastermap->service == 'Google'} xmlns:v="urn:schemas-microsoft-com:vml"{/if} xml:lang="de" id="geograph">
+<html xmlns="http://www.w3.org/1999/xhtml"{dynamic}{if $rastermap->service == 'Google'} xmlns:v="urn:schemas-microsoft-com:vml"{/if}{/dynamic} xml:lang="de" id="geograph">
 <head>
 {if $page_title}<title>{$page_title|escape:'html'} :: Geograph Deutschland</title>
 {else}<title>Geograph Deutschland</title>{/if}
@@ -43,7 +43,7 @@
 {if $extra_css}
     <link rel="stylesheet" href="{$extra_css}" type="text/css" />
 {/if}
-{if $olayersmap||$rastermap->service == 'OLayers'}
+{dynamic}{if $olayersmap||$rastermap->service == 'OLayers'}
 <!-- RasterMap.getScriptTag() -->
     <link rel="stylesheet" href="/ol/theme/default/style.css" type="text/css" />
 {if $google_maps_api_key}
@@ -72,6 +72,10 @@
         .olControlAttribution {
             bottom: 0px;
         }
+        .olControlLayerSwitcher {
+            font-size:small;
+            top: 10px;
+        }
     </style>
 {/literal}
 {/if}
@@ -84,6 +88,7 @@ v\:* {
 }
 </style>{/literal}
 {/if}
+{/dynamic}
 {if $canonicalhost}
 <link rel="canonical" href="http://{$canonicalhost}{$canonicalreq|escape:'html'}" />
 {/if}

@@ -1,3 +1,6 @@
+{if !$google_maps_api_key}
+{dynamic}{assign var="olayersmap" value="1"}{/dynamic}{*cant use the value inside dynamic otherwise...*}
+{/if}
 {include file="_search_begin.tpl"}
 
 {if !$engine->resultCount}
@@ -335,7 +338,8 @@
 
 
 	{if $engine->results}
-	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
+	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})</p>
+	{dynamic}{if $ask_gmaps}<p><a href="#" onclick="set_use_gmaps(0, {$ask_gmaps_profile}, 1); return false;">Without GoogleMaps</a> (<a href="/help/privacy">privacy</a>)</p>{/if}{/dynamic}
 	
 	<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;key={$google_maps_api_key}" type="text/javascript"></script>
 	{/if}
@@ -511,8 +515,9 @@
 
 	{if $engine->results}
 	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
+	{dynamic}{if $ask_gmaps}<p><a href="#" onclick="set_use_gmaps(1, {$ask_gmaps_profile}, 1); return false;">With GoogleMaps</a> (<a href="/help/privacy">privacy</a>)</p>{/if}{/dynamic}
 	
-	<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+	{*<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;key={$google_maps_api_key}" type="text/javascript"></script>*}
 	{/if}
 {/if}
 

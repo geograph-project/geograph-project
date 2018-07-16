@@ -113,7 +113,7 @@ beibehalten.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
-		<iframe {if $tab == 4}src="/submitmap.php?inner"{/if} id="innerFrame4" width="613" height="660" frameborder="0"><a href="/submitmap.php">Hier klicken um Google Map zu öffnen</a></iframe>
+		<iframe {if $tab == 4}src="/submitmap.php?inner"{/if} id="innerFrame4" width="613" height="700" frameborder="0"><a href="/submitmap.php">Hier klicken um Google Map zu öffnen</a></iframe>
 	</div>
 	
 </div>

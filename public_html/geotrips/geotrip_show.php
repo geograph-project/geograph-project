@@ -49,6 +49,16 @@ if ($USER->user_id) {
 	}
 }
 
+if (empty($CONF['google_maps_api_key'])) {
+	$cacheid .= '.nogmap';
+}
+
+$smarty->assign('ask_gmaps', $CONF['ask_gmaps']);
+if ($CONF['ask_gmaps']) {
+	$smarty->assign('ask_gmaps_newval', empty($CONF['google_maps_api_key']) ? 1 : 0);
+	$smarty->assign('ask_gmaps_profile', $USER->hasPerm("basic") ? 1 : 0);
+}
+
 if (!$smarty->is_cached($template, $cacheid)) {
 	if (is_null($db)) {
 		$db=NewADOConnection($GLOBALS['DSN']);

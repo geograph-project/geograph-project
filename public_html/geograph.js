@@ -556,7 +556,7 @@ function handleCSRFError(msg)
 	var url="/session.php";
 	var postdata="action=CSRF_token";
 
-	var req=getXMLRequestObject();
+	var req=geoGetXMLRequestObject();
 	var reqTimer = setTimeout(function() {
 	       req.abort();
 	}, 30000);
@@ -602,7 +602,7 @@ function handleAuthError()
 	var url="/session.php";
 	var postdata="action=login&u="+geograph_user_id+"&CSRF_token="+encodeURIComponent(geograph_CSRF_token)+"&password="+encodeURIComponent(pass);
 
-	var req=getXMLRequestObject();
+	var req=geoGetXMLRequestObject();
 	var reqTimer = setTimeout(function() {
 	       req.abort();
 	}, 30000);
@@ -644,6 +644,7 @@ function handleAuthError()
 	req.send(postdata);
 }
 
+
 function timestr(t)
 {
 	var tseconds = t % 60;
@@ -684,6 +685,71 @@ function buttontimer(id, seconds)
 			button.value = buttontext + ' (' + timestr(secondsleft) + ')';
 		}
 	}, 1000);
+}
+
+//	-	-	-	-	-	-	-	-
+
+function set_use_gmaps_finalise(newval, reload) {
+	createCookie('use_gmaps', newval, 365);
+	if (!reload) {
+		alert('Your change will take effect when loading new pages.');
+	} else if (confirm('Reload page?')) {
+		window.location.reload(true);
+	}
+	return;
+}
+
+function set_use_gmaps(newval, updateprofile, reload) {
+	if (!updateprofile) {
+		set_use_gmaps_finalise(newval, reload);
+		return;
+	}
+	if (/*typeof geograph_CSRF_token === 'undefined' ||*/ (newval !== 0 && newval !==1)) {
+		alert('invalid use of set_use_gmap');
+		return;
+	}
+	var url="/session.php";
+	var postdata="action=profile&item=use_gmaps&value="+newval; //+"&CSRF_token="+encodeURIComponent(geograph_CSRF_token);
+
+	var req=geoGetXMLRequestObject();
+	var reqTimer = setTimeout(function() {
+	       req.abort();
+	}, 30000);
+	req.onreadystatechange = function() {
+		if (req.readyState != 4) {
+			return;
+		}
+		clearTimeout(reqTimer);
+		req.onreadystatechange = function() {};
+		if (req.status != 200) {
+			alert("Cannot communicate with server, status " + req.status);
+			return;
+		}
+		var responseText = req.responseText;
+		//alert(responseText);// FIXME remove
+		if (/^-[1-9][0-9]*:[0-9]*:.*$/.test(responseText)) { /* error */
+			var parts = responseText.split(':');
+			var rcode = parseInt(parts[0]);
+			var rinfo = parseInt(parts[1]);
+			if (rcode == -6) {
+				handleCSRFError("Access denied for security reasons, please try again");
+			} else if (rcode == -3) {
+				handleAuthError();
+			} else {
+				alert("Error: Server returned error " + -rcode + " (" + parts[2] + ")");
+			}
+		} else if (/^0:.*$/.test(responseText)) {
+			/* success */
+			set_use_gmaps_finalise(newval, reload);
+		} else {
+			alert("Unexpected response from server");
+		}
+	}
+	req.open("POST", url, true);
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	//req.setRequestHeader("Connection", "close");
+	req.send(postdata);
+	return;
 }
 
 //	-	-	-	-	-	-	-	-
