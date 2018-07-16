@@ -932,7 +932,7 @@ if (!isset($_GET['inner'])) {
 		}
 		$cacheid.=".".$sid;
 		$smarty->assign('sid', $sid);
-		$rastermap = new RasterMap($square,false,$square->natspecified, false, 'latest', $sid);
+		$rastermap = new RasterMap($square,false,$square->natspecified, false, 'latest', $sid, false, true);
 		#if ($square->grid_reference == "UNV1930" || $square->grid_reference == "TNT8481") { //FIXME
 		#	$rastermap = new RasterMap($square,false,$square->natspecified, false, 'latest', 1);
 		#} else {

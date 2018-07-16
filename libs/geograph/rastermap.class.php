@@ -102,7 +102,7 @@ class RasterMap
 	/**
 	* setup the values
 	*/
-	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false,$epoch = 'latest',$serviceid = -1,$iscmap=false)
+	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false,$epoch = 'latest',$serviceid = -1,$iscmap=false,$unrestricted=false)
 	{
 		global $CONF;
 		$this->enabled = false;
@@ -119,6 +119,7 @@ class RasterMap
 			
 			$this->issubmit = $issubmit||$iscmap;
 			$this->iscmap = $iscmap;
+			$this->unrestricted = $unrestricted;
 			$this->serviceid = '';
 			$this->maplink = true;
 			$this->grid = false;
@@ -1173,7 +1174,38 @@ EOF;
 				$google_map_types = '';
 				$google_layers = '';
 				$google_block='';
+				if (empty($this->unrestricted)) {
+					$mapbox_map_types = '';
+					$mapbox_layers = '';
+					$mapbox_block = '';
+				} else {
+					$mapbox_map_types = "'b' : mbhyb80, 's' : mbsat80,";
+					$mapbox_layers = 'mbhyb80, mbsat80,';
+					$mapbox_block = <<<EOF
+			var mbhyb80 = new OpenLayers.Layer.OSM(
+				"Mapbox Sat+Street",
+				"https://api.mapbox.com/v4/mapbox.streets-satellite/\${z}/\${x}/\${y}.jpg80?access_token=pk.eyJ1IjoiaGpsaXBwIiwiYSI6ImNqam9mdzN1NzAwOXcza3AwMmhndDBzbGwifQ.Yib9-LJeVtr8ZEMah7U2xA",
+				{
+					attribution: 'Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>',
+					numZoomLevels: 19
+				}
+			);
+			mbhyb80.hasHills = true;
+			var mbsat80 = new OpenLayers.Layer.OSM(
+				"Mapbox Sat",
+				"https://api.mapbox.com/v4/mapbox.satellite/\${z}/\${x}/\${y}.jpg80?access_token=pk.eyJ1IjoiaGpsaXBwIiwiYSI6ImNqam9mdzN1NzAwOXcza3AwMmhndDBzbGwifQ.Yib9-LJeVtr8ZEMah7U2xA",
+				{
+					attribution: 'Imagery &copy; <a href=\"https://www.mapbox.com/\">Mapbox</a>',
+					numZoomLevels: 19
+				}
+			);
+			mbsat80.hasHills = true;
+EOF;
+				}
 			} else {
+				$mapbox_map_types = '';
+				$mapbox_layers = '';
+				$mapbox_block = '';
 				$google_map_types = "'m' : gmap, 'k' : gsat, 'h' : ghyb, 'p' : gphy,";
 				$google_layers = 'gphy, gmap, gsat, ghyb,';
 				$google_block=<<<EOF
@@ -1348,6 +1380,7 @@ EOF;
 				}
 			);
 			cycle.hasHills = true;
+			$mapbox_block
 
 			map.events.register('changebaselayer', map, function(e) {
 				var redrawlayerswitcher = false;
@@ -1403,6 +1436,7 @@ EOF;
 				//'r' : mapnik,
 				//'n' : mapnik2,
 				'n' : mapnik,
+				$mapbox_map_types
 				'w' : topobase,
 				'c' : cycle
 				//'t' : osmarender
@@ -1436,6 +1470,7 @@ EOF;
 			map.addLayers([
 				mapnik,
 				osmmapnik, //osmarender,
+				$mapbox_layers
 				cycle,
 				topobase, //topotrails, topohills,
 				hills,

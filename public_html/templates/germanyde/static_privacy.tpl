@@ -327,6 +327,11 @@ Nach gesetzlichen Vorgaben in Österreich erfolgt die Aufbewahrung insbesondere f
 <p>Karten dieses Dienstes werden ausschließlich auf Wunsch des Nutzers eingebunden.</p>
 <p>Desweiteren nutzen wir den &bdquo;Google Maps GeoCoder&ldquo;: Unsere Nutzer können hier eine Ortsangabe eingeben, aus der dieser Dienst geographische Koordinaten ermittelt, die wir wiederum auf der Landkarte markieren können. </p>
 <p></p>
+<h3 id="dsg-thirdparty-mapbox">Mapbox</h3>
+<p></p>
+<p><span class="ts-muster-content">Wir binden die Landkarten des Dienstes &bdquo;Mapbox&ldquo; ein. Zu den verarbeiteten Daten können insbesondere IP-Adressen und Standortdaten der Nutzer gehören, die jedoch nicht ohne deren Einwilligung (im Regelfall im Rahmen der Einstellungen ihrer Mobilgeräte vollzogen), erhoben werden. Die Daten können in den USA verarbeitet werden. Datenschutzerklärung: <a target="_blank" href="https://www.mapbox.com/privacy/">https://www.mapbox.com/privacy/</a></span></p>
+<p>Karten dieses Dienstes werden ausschließlich auf Wunsch des Nutzers eingebunden.</p>
+<p></p>
 <h3 id="dsg-thirdparty-openstreetmap">OpenStreetMap</h3>
 <p></p>
 <p><span class="ts-muster-content">Wir binden die Landkarten des Dienstes &bdquo;OpenStreetMap&ldquo; ein (<a target="_blank" href="https://www.openstreetmap.de">https://www.openstreetmap.de</a>), die auf Grundlage der Open Data Commons Open Database Lizenz (ODbL) durch die OpenStreetMap Foundation (OSMF) angeboten werden. Datenschutzerklärung: <a target="_blank" href="https://wiki.openstreetmap.org/wiki/Privacy_Policy">https://wiki.openstreetmap.org/wiki/Privacy_Policy</a>. 

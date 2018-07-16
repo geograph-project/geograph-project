@@ -254,6 +254,13 @@ This is a service provided by Google Inc., 1600 Amphitheatre Parkway, Mountain V
 <p><a href="https://adssettings.google.com/authenticated" target="_blank" rel="noopener">https://adssettings.google.com/authenticated</a></p>
 <p><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">https://policies.google.com/privacy</a></p>
 
+<h5>Mapbox</h5>
+<p>We embed maps provided by the service "Mapbox" (<a target="_blank" href="https://www.mapbox.com/">https://www.mapbox.com/</a>). Privacy policy: <a target="_blank" href="https://www.mapbox.com/privacy/">https://www.mapbox.com/privacy/</a>.</p>
+<p>To our knowledge, the service uses your data only for providing the maps and storing your mapping preferences. This data may include IP addresses and location data, the latter of which is only used with your consent
+(e.g. given in the user preferences of your browser or device).</p>
+<p>Through certification according to the EU-US Privacy Shield Mapbox guarantees that it will follow the EU's data protection regulations when processing data in the United States.</p>
+<p>Maps of this service are only used on your request.</p>
+
 <h5>OpenStreetMap</h5>
 <p>We embed maps provided by the service "OpenStreetMap" (<a target="_blank" href="https://www.openstreetmap.de">https://www.openstreetmap.de</a>), which is operated by the OpenStreetMap Foundation (OSMF) based on the Open Data Commons Open Database Licence (ODbL). Privacy policy: <a target="_blank" href="https://wiki.openstreetmap.org/wiki/Privacy_Policy">https://wiki.openstreetmap.org/wiki/Privacy_Policy</a>.</p>
 <p>To our knowledge, OpenStreetMap uses your data only for providing the maps and storing your mapping preferences. This data may include IP addresses and location data, the latter of which is only used with your consent

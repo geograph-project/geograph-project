@@ -176,10 +176,12 @@ if (isset($_GET['id']))
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$ismoderator=$USER->hasPerm('moderator')?1:0;
 	$isregistered=$USER->registered?1:0;
+	$unrestricted = $image->moderation_status=='rejected' || $image->moderation_status=='pending' ? 0 : 1;
+
 
 	$ab=floor($_GET['id']/10000);
 
-	$cacheid="img$ab|{$_GET['id']}|{$isowner}_{$ismoderator}_{$isregistered}";
+	$cacheid="img$ab|{$_GET['id']}|{$isowner}_{$ismoderator}_{$isregistered}_{$unrestricted}";
 
 	//is the image accepted? - otherwise, only the owner and administrator should see it
 	if (!$isowner&&!$ismoderator) {
@@ -295,7 +297,7 @@ if ($image->isValid())
 		$smarty->assign('std_width', $imagesize[0]);
 		$smarty->assign('std_height', $imagesize[1]);
 
-		$image->assignToSmarty($smarty, $sid, $map_suffix);
+		$image->assignToSmarty($smarty, $sid, $map_suffix, $unrestricted);
 	}
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
