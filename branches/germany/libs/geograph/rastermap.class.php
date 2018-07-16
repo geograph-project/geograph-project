@@ -1170,9 +1170,11 @@ EOF;
 				$ollang = "//OpenLayers.Lang.setCode('$ollang'); /* TODO Needs OpenLayers/Lang/$ollang.js built into OpenLayers.js */";
 			}
 			if (!$CONF['google_maps_api_key']) {
-				$google_block='';
+				$google_map_types = '';
 				$google_layers = '';
+				$google_block='';
 			} else {
+				$google_map_types = "'m' : gmap, 'k' : gsat, 'h' : ghyb, 'p' : gphy,";
 				$google_layers = 'gphy, gmap, gsat, ghyb,';
 				$google_block=<<<EOF
 			var gphy = new OpenLayers.Layer.Google(
@@ -1228,9 +1230,16 @@ EOF;
 					var iscmap = {$this->iscmap}+0;
 					var ri = {$this->reference_index};
 					var map = null;
+					var ovltypes;
+					var maptypes;
 		function loadmapO() {
 			initOL();
 			$ollang
+			var maptype = readCookie('RMapType'); /* is validated later */
+			if (maptype === false) {
+				maptype = '';
+			}
+			var curtype = '';
 			var layerswitcher = new OpenLayers.Control.LayerSwitcher({'ascending':false});
 			map = new OpenLayers.Map({
 				div: \"map\",
@@ -1330,6 +1339,16 @@ EOF;
 			//	if (topohills.getVisibility() != showtopolayers)
 			//		topohills.setVisibility(showtopolayers);
 			//});
+			var cycle = new OpenLayers.Layer.OSM(
+				\"Cycle Map\",
+				\"http://a.tile.opencyclemap.org/cycle/\${z}/\${x}/\${y}.png\",
+				{
+					attribution: '&copy; <a href=\"http://opencyclemap.org/\">OpenCycleMap</a> (<a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)',
+					numZoomLevels: 19
+				}
+			);
+			cycle.hasHills = true;
+
 			map.events.register('changebaselayer', map, function(e) {
 				var redrawlayerswitcher = false;
 				/* Don't show relief if already shown in base layer */
@@ -1360,12 +1379,64 @@ EOF;
 						map.setCenter(map.center, e.layer.minZoomLevel); // FIXME is there really no 'map.setZoom(zoom)'?
 				}
 			});
+			map.events.register('zoomend', map, function(e) {
+				if (map.baseLayer instanceof OpenLayers.Layer.XYrZ) {
+					var z = map.zoom; // FIXME map.getZoom()?
+					if (z > map.baseLayer.maxZoomLevel)
+						map.setCenter(map.center, map.baseLayer.maxZoomLevel); // FIXME is there really no 'map.setZoom(zoom)'?
+					else if (z < map.baseLayer.minZoomLevel)
+						map.setCenter(map.center, map.baseLayer.minZoomLevel); // FIXME is there really no 'map.setZoom(zoom)'?
+				}
+			});
 
 			initMarkersLayer();
 
+			ovltypes = {
+				//'S' : geosq,
+				//'G' : geogr,
+				'H' : hills
+			}
+			maptypes = {
+				$google_map_types
+				//'g' : geo,
+				'o' : osmmapnik,
+				//'r' : mapnik,
+				//'n' : mapnik2,
+				'n' : mapnik,
+				'w' : topobase,
+				'c' : cycle
+				//'t' : osmarender
+			}
+			for (var key in maptypes) {
+				maptypes[key].gurlid = key;
+			}
+			for (var key in ovltypes) {
+				ovltypes[key].savedVisibility = false;
+			}
+
+			function updateLayer() {
+				var mt = map.baseLayer;
+				var mtHasHills = ('hasHills' in mt) && mt.hasHills;
+				var type = mt.gurlid;
+				for (var key in ovltypes) {
+					ot = ovltypes[key];
+					var isvisible;
+					if (ot == hills && !mtHasHills /*|| ot != hills && mt != geo*/)
+						isvisible = ot.getVisibility();
+					else
+						isvisible = ot.savedVisibility;
+					if (isvisible)
+						type += key;
+				}
+				curtype = type;
+				createCookie('RMapType',curtype,365);
+			}
+
+			/* first layer: map type for overview map */
 			map.addLayers([
 				mapnik,
 				osmmapnik, //osmarender,
+				cycle,
 				topobase, //topotrails, topohills,
 				hills,
 				$google_layers
@@ -1376,11 +1447,30 @@ EOF;
 			map.addControl(dragFeature);
 			dragFeature.activate();
 			var point = new OpenLayers.LonLat({$this->long}, {$this->lat});
+			var mt = mapnik;
+			if (maptype !== '') {
+				var mtc = maptype.charAt(0);
+				if (mtc in maptypes) {
+					mt = maptypes[mtc];
+				}
+			}
+			map.setBaseLayer(mt);
 			map.setCenter(point.transform(epsg4326, map.getProjectionObject()), $zoom);
-			var mt = map.baseLayer; // FIXME initial map type
 			var mtHasHills = ('hasHills' in mt) && mt.hasHills;
-			hills.savedVisibility = false;
+			for (var i = 1; i < maptype.length; ++i) {
+				var otc = maptype.charAt(i);
+				if (otc in ovltypes) {
+					var ot = ovltypes[otc];
+					if (ot == hills && !mtHasHills /* || ot != hills && mt != geo */) {
+						ot.setVisibility(true);
+					} else {
+						ot.savedVisibility = true;
+					}
+				}
+			}
 			map.hillBase = mtHasHills;
+			hills.setOpacity(0.5);
+			map.events.on({'changelayer': updateLayer});
 			$block
 		}
 
