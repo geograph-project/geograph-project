@@ -86,7 +86,7 @@ href="http://{$http_host}/"\>
     <TD>&nbsp;</TD>
     <TD vAlign=top align=middle bgColor=#dddddd colSpan=2><A 
       href="http://creativecommons.org/licenses/by-sa/2.0/"><IMG height=31 
-      src="http://creativecommons.org/images/public/somerights20.gif" width=88 align=right 
+      src="http://{$http_host}/img/somerights20.gif" width=88 align=right 
       border=0></A> <FONT face=Georgia>Bild: &copy; Copyright <A title="View profile" 
       href="http://{$http_host}{$image->profile_link}">{$image->realname}</A> und lizenziert unter dieser 
       <A class=nowrap href="http://creativecommons.org/licenses/by-sa/2.0/" 
