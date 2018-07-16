@@ -18,10 +18,10 @@
 	
 	{if $sent}
 		<p>Danke, die Nachricht wurde verschickt.</p>
-		<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
-		<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
+		{*<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+		<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
 		Bitte beachten Sie, dass der Empfänger die Nachricht unter Umständen <b>nicht</b> annimmt, falls Sie als Absender eine <b>Yahoo- oder AOL-</b>Adresse angeben,
-		weil Yahoo und AOL eine diesbezüglich ungünstige Mail-Konfiguration einsetzen.</div>
+		weil Yahoo und AOL eine diesbezüglich ungünstige Mail-Konfiguration einsetzen.</div>*}
 	{elseif $verification}
 		<form method="post" action="/usermsg.php">
 		
@@ -53,7 +53,7 @@
 	{else}
 		{if $invalid_email} 
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Warnung" width="50" height="44" align="left" style="margin-right:10px"/>
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Warnung" width="50" height="44" align="left" style="margin-right:10px"/>
 			Wir haben keine gültigen Kontaktinformationen für diesen Teilnehmer. Die Nachricht wird daher
 			an das Geograph-Deutschland-Team geschickt werden, das vielleicht weiterhelfen kann.
 		</div>
@@ -82,17 +82,17 @@
 			<span class="formerror">{$errors.msg}</span>
 
 			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
-			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
 			Wenn sich die Nachricht auf ein Bild bezieht, bitten wir darum, dieses Bild klar zu benennen:
 			Der Teilnehmer kann an vielen Orten Bilder aufgenommen haben und daher nicht wissen um welches Bild es geht!</div>
 			<br />
-			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
-			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
+			{*<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
 			Bitte beachten Sie, dass der Empfänger die Nachricht unter Umständen <b>nicht</b> annimmt, falls Sie als Absender eine <b>Yahoo- oder AOL-</b>Adresse angeben,
 			weil Yahoo und AOL eine diesbezüglich ungünstige Mail-Konfiguration einsetzen.</div>
-			<br/>
+			<br/>*}
 			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
-			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
+			<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
 			Bitte beachten Sie, dass aus Ihren Angaben eine Mail an den Empfänger generiert wird und somit an diesen
 			Ihre E-Mail-Adresse, ihre IP-Adresse und Ihr Name übermittelt wird. Siehe auch die <a href="/help/privacy">Datenschutzerklärung</a>.</div>
 			<br/>
