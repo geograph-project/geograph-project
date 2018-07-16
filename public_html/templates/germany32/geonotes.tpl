@@ -77,7 +77,7 @@
     <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
   </div></div>
 
-  <div id="imagetexts" style="display:none">
+  <div id="imagetexts" {if !$readonly} style="display:none"{/if}>
   {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
      {if $image->title1 eq ''}
        <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
@@ -199,8 +199,12 @@ function setImgSize(large) {
 {else}
 	var show_hidden = false;
 {/if}
-{literal}
+{if $readonly}
+	var showtexts = true;
+{else}
 	var showtexts = false;
+{/if}
+{literal}
 	function toggleTexts(hidemsg, showmsg)
 	{
 		var button = document.getElementById('toggletexts');
@@ -1035,8 +1039,10 @@ ie7 = true;
 			<option value="original"{if $iniorigsize} selected="selected"{/if}>{$original_width}x{$original_height}</option>
 		</select> |
 {/if}
+{if $readonly}
+		<input id="toggletexts" type="button" value="Hide description" onclick="toggleTexts('Hide description','Show description');" /> |
+{else}
 		<input id="toggletexts" type="button" value="Show description" onclick="toggleTexts('Hide description','Show description');" /> |
-{if !$readonly}
 		{if $ticket}
 		<input id="toggleclassold" type="button" value="Hide old" onclick="toggleBoxes('old', 'Hide old', 'Show old');" /> |
 		<input id="toggleclassnew" type="button" value="Hide new" onclick="toggleBoxes('new', 'Hide new', 'Show new');" /> |
