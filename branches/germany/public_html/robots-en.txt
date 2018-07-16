@@ -133,7 +133,7 @@ Disallow: /explore/calendar.php?*Year*
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
-Disallow: /geonotes.php
+#Disallow: /geonotes.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?*when*
 Disallow: /statistics/moversboard.php?*when*
@@ -171,6 +171,13 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /files/
+Disallow: /help/privacy
+Disallow: /help/privacy_en
+Disallow: /register.php
+Disallow: /login.php
+Disallow: /contact.php
+Disallow: /usermsg.php.php
+Disallow: /help/legal_notice
 
 User-Agent: Slurp
 Crawl-delay: 50
@@ -198,7 +205,7 @@ Disallow: /explore/calendar.php?*Year*
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
-Disallow: /geonotes.php
+#Disallow: /geonotes.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?*when*
 Disallow: /statistics/moversboard.php?*when*
@@ -236,6 +243,13 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /files/
+Disallow: /help/privacy
+Disallow: /help/privacy_en
+Disallow: /register.php
+Disallow: /login.php
+Disallow: /contact.php
+Disallow: /usermsg.php.php
+Disallow: /help/legal_notice
 
 User-Agent: MSNBot
 Crawl-Delay: 25
@@ -263,7 +277,7 @@ Disallow: /explore/calendar.php?*Year*
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
-Disallow: /geonotes.php
+#Disallow: /geonotes.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?*when*
 Disallow: /statistics/moversboard.php?*when*
@@ -301,6 +315,13 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /files/
+Disallow: /help/privacy
+Disallow: /help/privacy_en
+Disallow: /register.php
+Disallow: /login.php
+Disallow: /contact.php
+Disallow: /usermsg.php.php
+Disallow: /help/legal_notice
 
 User-agent: *
 Disallow: /profile/*/map
@@ -327,7 +348,7 @@ Disallow: /explore/calendar.php
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
-Disallow: /geonotes.php
+#Disallow: /geonotes.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?
 Disallow: /statistics/moversboard.php?
@@ -363,6 +384,13 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?
 Disallow: /stuff/kmltest
 Disallow: /files/
+Disallow: /help/privacy
+Disallow: /help/privacy_en
+Disallow: /register.php
+Disallow: /login.php
+Disallow: /contact.php
+Disallow: /usermsg.php.php
+Disallow: /help/legal_notice
 Crawl-Delay: 10
 
 #Sitemap: http://geo-en.hlipp.de/sitemap-en.xml
