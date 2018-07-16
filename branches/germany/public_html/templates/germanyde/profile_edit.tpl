@@ -27,7 +27,7 @@ Aus <a href="/help/csrf">Sicherheitsgründen</a> konnten die Änderungen nicht ges
 	<div class="fieldnotes">Dieser Name ist öffentlich sichtbar. Er wird benötigt, damit wir
 	den Urheber der Bilder angeben können, und wird auf vielen Seiten angezeigt, wie etwa der Profilseite.
 	Es kann auch ein abgekürzter Name oder ein Pseudonym verwendet werden, wenn die Fotos nicht unter
-	dem wirkleichen Namen veröffentlicht und lizenziert werden sollen.</div>
+	dem wirklichen Namen veröffentlicht und lizenziert werden sollen.</div>
 	
 	{if $errors.realname}</div>{/if}
 </div>
