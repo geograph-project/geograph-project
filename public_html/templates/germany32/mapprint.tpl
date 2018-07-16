@@ -120,5 +120,7 @@ licensed for reuse under a <a rel="license" href="http://creativecommons.org/lic
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">http://creativecommons.org/licenses/by-sa/2.5/</a></div> 
 </div>
 
+<p style="font-size:10pt; text-align:center"><a href="http://{$http_host}/help/privacy">privacy</a> <a href="http://{$http_host}/help/legal_notice">impressum / legal notice</a></p>
+
 </body>
 </html>
