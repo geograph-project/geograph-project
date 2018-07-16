@@ -126,6 +126,7 @@ if (isset($_REQUEST['id']))
 				$widths = array();
 				$heights = array();
 				$showorig = false;
+				$user_size = null;
 				if ($uploadmanager->initOriginalUploadSize() && $uploadmanager->hasoriginal) {
 					list($destwidth, $destheight, $maxdim, $changedim) = $uploadmanager->_new_size($uploadmanager->original_width, $uploadmanager->original_height);
 					$smarty->assign('original_width', $uploadmanager->original_width);
@@ -135,17 +136,28 @@ if (isset($_REQUEST['id']))
 						$showorig = $CONF['img_size_unlimited'];
 						foreach ($CONF['img_sizes'] as $cursize) {
 							list($destwidth, $destheight, $destdim, $changedim) = $uploadmanager->_new_size($uploadmanager->original_width, $uploadmanager->original_height, $cursize);
-							if (!$changedim && $showorig)
+							if (!$changedim && $showorig) {
+								if ($USER->upload_size >= $cursize) {
+									$user_size = 65536;
+								}
 								break;
+							}
 							$sizes[] = $cursize;
 							$widths[] = $destwidth;
 							$heights[] = $destheight;
+							if ($USER->upload_size >= $cursize) {
+								$user_size = $cursize;
+							}
 							$maxdim = $destdim;
 							if (!$changedim)
 								break;
 						}
-						if ($showorig)
+						if ($showorig) {
 							$maxdim = max($uploadmanager->original_width, $uploadmanager->original_height);
+							if ($USER->upload_size > 65530) {
+								$user_size = 65536;
+							}
+						}
 					}
 				} else {
 					$maxdim = max($uploadmanager->upload_width, $uploadmanager->upload_height);
