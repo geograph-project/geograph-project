@@ -1052,8 +1052,10 @@ class GridImage
 		
 		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
 			$fullpath = cachize_url("http://".$CONF['STATIC_HOST'].$fullpath);
-		} elseif ($returntotalpath)
-			$fullpath=get_protocol($returntotalpath).$CONF['STATIC_HOST'].$fullpath;
+		} elseif ($returntotalpath) {
+			$host = empty($this->use_http_host) ? $CONF['STATIC_HOST'] : $_SERVER['HTTP_HOST'];
+			$fullpath=get_protocol($returntotalpath).$host.$fullpath;
+		}
 		
 		if ($attrs !== '')
 			$attrs .= ' ';
