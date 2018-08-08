@@ -136,7 +136,7 @@ body {
 
 		<br/>
 		<input type=checkbox onclick="toggle_compact(this)" id="compact"/> <label for="compact">Compact Listing Format</label><br/>
-		<input type=checkbox onclick="toggle_experimental(this)" id="experimental"/> <label for="experimental">Show Experimental Modes</label>
+		<input type=checkbox onclick="toggle_experimental(this)" id="experimental"/> <label for="experimental">Show Expanded Modes</label>
 	</div>
 	<br style="clear:both"/>
 </form>
