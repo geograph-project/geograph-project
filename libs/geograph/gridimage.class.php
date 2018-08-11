@@ -38,6 +38,8 @@
 */
 class GridImage
 {
+	var $enforse_https = 5000000;
+
 	/**
 	* internal db handle
 	*/
@@ -186,11 +188,10 @@ class GridImage
 				$arr[$val]=$val;
 		}
 		natcasesort($arr);
-		
+
 		return $arr;
 	}
-	
-	
+
 	/**
 	* Returns grid reference of photographer if available
 	* Data is additionally stored as member data
@@ -270,7 +271,7 @@ class GridImage
 		$vars=get_object_vars($this);
 		foreach($vars as $name=>$val)
 		{
-			if ($name!="db")
+			if ($name!="db" && $name != "enforce_https")
 				unset($this->$name);
 		}
 	}
@@ -544,7 +545,7 @@ split_timer('gridimage'); //starts the timer
 		}
 
 		$extra_meta = array();
-		if ($this->gridimage_id >= 5500000 || ($this->gridimage_id >= 4243769 && $this->gridimage_id <= 4243771)) {
+		if (($this->gridimage_id >= $this->enforce_https) || ($this->gridimage_id >= 4243769 && $this->gridimage_id <= 4243771)) {
 			if ($this->grid_square->reference_index == 2)
 				$extra_meta[] = "<link rel=\"canonical\" href=\"https://www.geograph.ie/photo/{$this->gridimage_id}\" />";
 			else
@@ -738,17 +739,20 @@ split_timer('gridimage'); //starts the timer
 				ORDER BY post_id DESC"));
 
 			//todo -experimental - might be removed...
-			if ($this->collections += $db->getAll("
+			if ($collections2 = $db->getAll("
 				SELECT '' AS url,CONCAT(label,' [',images,']') AS title,'Automatic Cluster' AS `type`
 				FROM gridimage_group INNER JOIN gridimage_group_stat USING (label)
 				WHERE gridimage_id = {$this->gridimage_id} AND grid_reference = '{$this->grid_reference}'
 				AND label != 'Other Topics' AND images > 1
 				ORDER BY score DESC")) {
-				foreach ($this->collections as $i => $row) {
+
+				foreach ($collections2 as $i => $row) {
 					if (empty($row['url']) && !empty($row['title'])) {
-						$this->collections[$i]['url'] = "/search.php?gridref={$this->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&amp;do=1";
+                                                $collections2[$i]['url'] = "/stuff/list.php?label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&gridref={$this->grid_reference}";
+						//$collections2[$i]['url'] = "/search.php?gridref={$this->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&amp;do=1";
 					}
 				}
+				$this->collections = array_merge($this->collections,$collections2);
 			}
 
 			//TODO - need a 'update' mechanism for this table.
@@ -891,7 +895,7 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 		if ($returntotalpath)
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
-		if ($this->gridimage_id >= 5500000) //temporally hotwire
+		if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
 			$fullpath = str_replace('http://','https://',$fullpath);
 
 		return $fullpath;
@@ -933,7 +937,7 @@ split_timer('gridimage'); //starts the timer
 		if ($CONF['template'] == 'archive' || empty($check_exists)) {
 			if ($returntotalpath)
 				$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
-			if ($this->gridimage_id >= 5500000) //temporally hotwire
+			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
 				$fullpath = str_replace('http://','https://',$fullpath);
 			return $fullpath;
 		}
@@ -995,7 +999,7 @@ split_timer('gridimage'); //starts the timer
 		if ($returntotalpath)
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
-		if ($this->gridimage_id >= 5500000) //temporally hotwire
+		if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
 			$fullpath = str_replace('http://','https://',$fullpath);
 
 split_timer('gridimage','_getFullpath',$this->gridimage_id); //logs the wall time
@@ -1077,6 +1081,21 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 	}
 
 	/**
+	* returns the largest photo visible via photo page - mimics the srcset in getFull()
+	*/
+	function getLargestPhotoPath($returntotalpath = true) {
+		$largest = empty($this->original_width)?0:max($this->original_width,$this->original_height);
+
+		if ($largest > 1024) {
+                        return $this->getImageFromOriginal(1024,1024,$returntotalpath);
+                } elseif (isset($recordSet->fields['original']) && $recordSet->fields['original'] > 640) {
+                        return $this->_getOriginalpath(true,$returntotalpath);
+                } else {
+                        return $this->_getFullpath(false,$returntotalpath);
+                }
+	}
+
+	/**
 	* returns HTML img tag to display this image at full size
 	*/
 	function getFull($returntotalpath = true, $linkoriginal = false)
@@ -1091,7 +1110,7 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 
 		if ($returntotalpath)
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
-		if ($this->gridimage_id >= 5500000) //temporally hotwire
+		if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
 			$fullpath = str_replace('http://','https://',$fullpath);
 
 	        if (!empty($this->original_width) && $linkoriginal && $this->original_width> 640 && $returntotalpath && !empty($_GET['large'])) {
@@ -1139,6 +1158,8 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}$srcset/>";
 
 		if (!empty($maxwidth) && !empty($_GET['large'])) {
+			$html=str_replace('/>',' style="min-width:'.$size[0].'px; min-height:'.$size[1].'px"/>',$html);
+
 			$html="<div class=\"img-responsive\" style=\"max-width:".($maxwidth+10)."px\">$html</div>";
 
 //temp bodge! (this is a dynamic scale, based on ratio, but want to affect ALL the caption640 elements on the page.)
@@ -1296,7 +1317,7 @@ split_timer('gridimage'); //starts the timer
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
-			if ($this->gridimage_id >= 5500000) //temporally hotwire
+			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
 				$thumbpath = str_replace('http://','https://',$thumbpath);
 
 
@@ -1476,7 +1497,7 @@ split_timer('gridimage'); //starts the timer
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
-			if ($this->gridimage_id >= 5500000) //temporally hotwire
+			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
 				$return['server'] = str_replace('http://','https://',$return['server']);
 
 			return $return;
@@ -1513,7 +1534,7 @@ split_timer('gridimage'); //starts the timer
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
-			if ($this->gridimage_id >= 5500000) //temporally hotwire
+			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
 				$thumbpath = str_replace('http://','https://',$thumbpath);
 
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
@@ -1533,93 +1554,86 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 				//get path to fullsize image (will try to fetch it from fetch_on_demand)
 				$fullpath=$this->_getFullpath();
 			}
-			
+
 			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				if (strlen($CONF['imagemagick_path'])) {
-					
+
 					if (($info = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath)) === FALSE) {
 						//couldn't read image!
 						$thumbpath="/photos/error.jpg";
 					} else {
 						list($width, $height, $type, $attr) = $info;
-						
+
 						if (($width>$maxw) || ($height>$maxh)) {
 							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
 						} elseif (!$bestfit) {
 							$operation = 'adaptive-resize';
 						}
-						
+
 						if (isset($operation)) {
 							$unsharpen=$unsharp?"-unsharp 0x1+0.8+0.1":"";
-							
+
 							$raised=$bevel?"-raise 2x2":"";
-							
+
 							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
-							
+
 							if ($bestfit)
 							{
-								$cmd = sprintf ("\"%sconvert\" -$operation %ldx%ld  $unsharpen $raised -quality 87 jpg:%s jpg:%s", 
+								$cmd = sprintf ("\"%sconvert\" -$operation %ldx%ld  $unsharpen $raised -quality 87 jpg:%s jpg:%s",
 								$CONF['imagemagick_path'],
-								$maxw, $maxh, 
+								$maxw, $maxh,
 								$_SERVER['DOCUMENT_ROOT'].$fullpath,
 								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
-								
-								
+
 								passthru ($cmd);
 							}
 							else
 							{
 								$aspect_src=$width/$height;
 								$aspect_dest=$maxw/$maxh;
-								
+
 								if ($aspect_src > $aspect_dest)
 								{
 									//src image is relatively wider - we'll trim the sides
 									$optimum_width=round($height*$aspect_dest);
 									$offset=round(($width-$optimum_width)/2);
-									
+
 									$crop="-crop {$optimum_width}x{$height}+$offset+0";
-									
 								}
 								else
 								{
 									//src image is relatively taller - we'll trim the top/bottom
 									$optimum_height=round($width/$aspect_dest);
 									$offset=round(($height-$optimum_height)/2);
-									
+
 									$crop="-crop {$width}x{$optimum_height}+0+$offset";
-								
 								}
-								
-								$cmd = sprintf ("\"%sconvert\" $crop -quality 87 jpg:%s jpg:%s", 
+
+								$cmd = sprintf ("\"%sconvert\" $crop -quality 87 jpg:%s jpg:%s",
 								$CONF['imagemagick_path'],
 								$_SERVER['DOCUMENT_ROOT'].$fullpath,
 								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
-								
-								
+
 								passthru ($cmd);
-								
+
 								//now resize
-								$cmd = sprintf ("\"%smogrify\" -$operation %ldx%ld $unsharpen $raised -quality 87 jpg:%s", 
+								$cmd = sprintf ("\"%smogrify\" -$operation %ldx%ld $unsharpen $raised -quality 87 jpg:%s",
 								$CONF['imagemagick_path'],
-								$maxw, $maxh, 
+								$maxw, $maxh,
 								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
-								
-								
+
 								passthru ($cmd);
 							}
-							
-							
 
 						} else {
 							//requested thumb is larger than original - stick with original
 							copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
-						}	
+						}
 					}
 				} else {
 					//generate resized image
-					$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath); 
+					$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath);
 					if ($fullimg)
 					{
 						$srcw=imagesx($fullimg);
@@ -1643,9 +1657,9 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 
 
 							$resized = imagecreatetruecolor($destw, $desth);
-							imagecopyresampled($resized, $fullimg, 0, 0, 0, 0, 
+							imagecopyresampled($resized, $fullimg, 0, 0, 0, 0,
 										$destw,$desth, $srcw, $srch);
-	
+
 							if ($unsharp) {
 								require_once('geograph/image.inc.php');
 								UnsharpMask($resized,100,0.5,3);
@@ -1700,7 +1714,7 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
-			if ($this->gridimage_id >= 5500000) //temporally hotwire
+			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
 				$thumbpath = str_replace('http://','https://',$thumbpath);
 
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
@@ -2195,8 +2209,7 @@ split_timer('gridimage','commitChanges',"{$this->gridimage_id}"); //logs the wal
 		//updated cached tables
 		$this->updateCachedTables();
 	}
-	
-	
+
 	/**
 	* Saves update tables based on gridimage
 	*/
@@ -2204,19 +2217,19 @@ split_timer('gridimage','commitChanges',"{$this->gridimage_id}"); //logs the wal
 	{
 		$db=&$this->_getDB();
 		//quick sanity check
-		if (!$this->gridimage_id) 
-			die("no gridimage_id supplied to updateCachedTables");	
+		if (!$this->gridimage_id)
+			die("no gridimage_id supplied to updateCachedTables");
 
 split_timer('gridimage'); //starts the timer
-	
+
 		if ($this->moderation_status == 'rejected' || $this->moderation_status == 'pending') {
 			$sql="DELETE FROM gridimage_search WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);
-			
+
 			$db->Execute("DELETE FROM wordnet1 WHERE gid = {$this->gridimage_id}");
 			$db->Execute("DELETE FROM wordnet2 WHERE gid = {$this->gridimage_id}");
 			$db->Execute("DELETE FROM wordnet3 WHERE gid = {$this->gridimage_id}");
-		
+
 		} elseif ($this->moderation_status) {
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
@@ -2225,35 +2238,39 @@ split_timer('gridimage'); //starts the timer
 			} else {
 				$square = $this->grid_square;
 			}
-			if (!$square) 
+			if (!$square)
 				die("ERROR: no square known in updateCachedTables");
 			if ($square->nateastings) {
 				list($lat,$long) = $conv->national_to_wgs84($square->nateastings,$square->natnorthings,$square->reference_index);
 			} else {
 				list($lat,$long) = $conv->internal_to_wgs84($square->x,$square->y,$square->reference_index);
 			}
-	
+
 			$sql="DELETE FROM gridimage_search WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);
 
-			//todo, note the tags column is populated by sphinx at indexing time. Should really be changed to be updated here. (and when modify tags!)
-
 			$sql="INSERT INTO gridimage_search
-			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)'),'' as tags,licence,points
-			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
-			INNER JOIN user ON(gi.user_id=user.user_id)
-			WHERE gridimage_id = '{$this->gridimage_id}'";
+			SELECT gi.gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,
+				gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,
+				reference_index,comment,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)'),
+				COALESCE(group_concat(distinct if(prefix!='',concat(prefix,':',tag),tag) order by prefix = 'top' desc,tag SEPARATOR '?'),'') as tags,licence,points
+			FROM gridimage AS gi
+				INNER JOIN gridsquare AS gs USING(gridsquare_id)
+				INNER JOIN user ON(gi.user_id=user.user_id)
+				LEFT JOIN gridimage_tag AS gt ON(gt.gridimage_id = gi.gridimage_id AND gt.status = 2)
+				LEFT JOIN tag AS t ON(t.tag_id = gt.tag_id AND t.status = 1)
+			WHERE gi.gridimage_id = {$this->gridimage_id}";
 			$db->Execute($sql);
 		} else {
 			//fall back if we dont know the moduration status then lets load it and start again!
-			$this->loadFromId($this->gridimage_id);	
+			$this->loadFromId($this->gridimage_id);
 			return $this->updateCachedTables();
 		}
-		
+
 split_timer('gridimage','updateCachedTables',"{$this->gridimage_id}"); //logs the wall time
-		
+
 	}
-	
+
 	/**
 	* Saves update tables based on gridimage
 	*/
