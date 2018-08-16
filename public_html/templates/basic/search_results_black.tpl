@@ -1,31 +1,26 @@
-{assign var="maincontentclass" value="content_photoblack"}
 {include file="_search_begin.tpl"}
 
 {if $engine->resultCount}
 
 {literal}
 <style type="text/css">
-#maincontent {
-        background-color:black;
-        color:silver;
-        font-family:verdana;
-}
-#maincontent a {
-        color:white;
-        text-decoration:none;
-}
-#maincontent a:hover {
-        color:cyan;
-}
 #maincontent a img {
-        border:1px solid #666666;
-        border-radius: 7px;
-        padding:8px;
+        --border:1px solid #666666;
+        --border-radius: 7px;
+        --padding:8px;
         margin:22px;
 }
 #maincontent td {
-        background-color:black;
+        font-family:verdana;
 }
+#maincontent td a {
+	color:inherit;
+        text-decoration:none;
+}
+#maincontent td a:hover {
+        text-decoration:underline;
+}
+
 #maincontent td div {
         font-size:0.8em;
         width:250px;
@@ -39,12 +34,6 @@
         padding-top:20px;
 	padding-right:20px;
 	border-radius:2px;
-}
-#geograph body {
-	background-color:black;
-}
-#maincontent_block {
-	border-left:0;
 }
 </style>
 
@@ -74,13 +63,13 @@ jQuery(document).ready( function() {
 <script src="{"/js/lazy.js"|revision}" type="text/javascript"></script>
 <div id="mapdiv"><img src="{$static_host}/img/blank.gif" name="map"/></div>
 
-<table border="0" cellspacing="0" cellpadding="5">
+<table border="0" cellspacing="0" cellpadding="5" class="shadow">
         {foreach from=$engine->results item=image}
         {searchbreak image=$image table=true}
     <tr>
         <td valign="middle" align="center"><a href="/photo/{$image->gridimage_id}" title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string}{if $image->count} - {$image->count|thousends} images in group{/if}" onmouseover="showMap('{$image->wgs84_lat} {$image->wgs84_long}')" onmouseout="hideMap()">{$image->getFull()|replace:'src=':'src="/img/blank.gif" data-src='}</a></td>
         <td valign="middle" align="center">
-            <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if $image->imagetaken > 1 && $image->imagetaken < 2017}<span class="year" title="year taken" style="color:gray;font-size:1.5em">, {$image->imagetaken|truncate:4:''}</span>{/if}<br/>
+            <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if $image->imagetaken > 1 && $image->imagetaken < 2017}<span class="year lighter" title="year taken" style="color:gray;font-size:1.5em"> {$image->imagetaken|truncate:4:''}</span>{/if}<br/>
             {if $image->comment}
                 <br/><small>{$image->comment|escape:'html'|nl2br|geographlinks}</small>
             {/if}
@@ -95,7 +84,7 @@ jQuery(document).ready( function() {
     </tr>
         {foreachelse}
                 {if $engine->resultCount}
-                        <p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}{if $engine->temp_displayclass}&amp;displayclass={$engine->temp_displayclass}{/if}"><b>continue to results</b> &gt; &gt;</a></p>
+                        <div class="interestBox"><a href="/search.php?i={$i}{if $engine->temp_displayclass}&amp;displayclass={$engine->temp_displayclass}{/if}"><b>continue to results</b> &gt; &gt;</a></div>
                 {/if}
         {/foreach}
 </table>

@@ -2,7 +2,7 @@
 
 {if $engine->resultCount}
 
-	<table cellspacing="0" cellpadding="2" border="0">
+	<table cellspacing="0" cellpadding="2" border="0" class=shadow>
 	{foreach from=$engine->results item=image}
 	{searchbreak image=$image table=true}
 		<tr>

@@ -45,7 +45,7 @@
 	</div>
 	</div>
 
-		<div class="img-shadow" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` data-src="}</a></div>
+		<div class="shadow" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` data-src="}</a></div>
 		{if $image->comment}
 		  <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
   		{/if}

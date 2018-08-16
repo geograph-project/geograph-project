@@ -30,7 +30,7 @@
 
   	{foreach from=$recent item=image}
 
-  	  <div style="text-align:center;padding-bottom:1em;">
+  	  <div style="text-align:center;padding-bottom:1em;" class="shadow">
   	  <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 
   	  <div>
@@ -48,8 +48,7 @@
         <hr/>
         <br/>
         &middot; <a href="/finder/recent.php" title="Show the most recent submissions"><b>More recent images</b> &gt;</a><br/>
-        &middot; <a href="/explore/searches.php" title="Featured Selections">Other selections &gt;</a><br/>
-        &middot; <a href="/gallery.php" title="More images of British Isles">Gallery &gt;</a><br/>
+        &middot; <a href="/explore/sample.list.php" title="Selected Images">Selection of Images &gt;</a><br/>
         <br/>
 
   {/if}
