@@ -8,7 +8,14 @@
 {/dynamic}
 
 <div style="float:right;position:relative">To normal <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slide" target="_top">Slide Show</a> mode &nbsp;&nbsp;</div>
-
+<style>
+{literal}
+form.buttons input {
+	margin:8px;
+	font-size:1.3em;
+}
+{/literal}
+</style>
 
 {if $engine->resultCount}
 
@@ -16,7 +23,7 @@
 
 	<script src="{"/slideshow.js"|revision}"></script>
 
-	<form><p align="center"><input type="button" id="prevautobutton" value="&lt; Auto" disabled="disabled" onclick="auto_slide_go(-1)"/><input type="button" id="prevbutton" value="&lt; Prev" disabled="disabled" onclick="slide_go(-1)"/>
+	<form class="buttons"><p align="center"><input type="button" id="prevautobutton" value="&lt; Auto" disabled="disabled" onclick="auto_slide_go(-1)"/><input type="button" id="prevbutton" value="&lt; Prev" disabled="disabled" onclick="slide_go(-1)"/>
 	<input type="button" id="stopbutton" value="stop" onclick="slide_stop()" disabled="disabled"/>
 	<input type="button" id="nextbutton" value="Next &gt;" onclick="slide_go(1)"/><input type="button" id="nextautobutton" value="Auto &gt;" onclick="auto_slide_go(1)"/></p></form>
 
@@ -29,7 +36,7 @@
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		</div>
-		<div class="img-shadow" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` data-src="}</a></div>
+		<div class="shadow" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` data-src="}</a></div>
 		{if $image->comment}
 		  <div class="caption" style="font-size:1.2em">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
   		{/if}

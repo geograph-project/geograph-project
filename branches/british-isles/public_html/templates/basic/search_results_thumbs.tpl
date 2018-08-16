@@ -2,7 +2,7 @@
 
 {if $engine->resultCount}
 
-	<div>
+	<div class="shadow">
 	{foreach from=$engine->results item=image}
 	{searchbreak image=$image}
 	  <div style="float:left;position:relative; width:130px; height:130px">
