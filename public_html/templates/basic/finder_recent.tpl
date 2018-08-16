@@ -23,7 +23,7 @@
 	&middot; <a href="/browser/#!/days=3/display=plus/sort=spread">Browse images more fully</a> &middot;
 </div>
 
-<div style="margin-right:220px;">
+<div class="shadow" style="margin-right:220px;">
 
 {foreach from=$results item=image}
 
