@@ -1529,3 +1529,19 @@ a.about {
 	color:gray;
 	border-bottom:1px solid silver
 }
+
+
+.shadow img, img.shadow {
+	box-shadow: 3px 3px 8px #999;
+	border:0;
+	margin-right: 8px;
+	margin-bottom: 8px;
+}
+
+.content_photoblack .shadow img, .content_photoblack img.shadow {
+	box-shadow: 3px 3px 8px #444;
+}
+
+.content_photogray .shadow img, .content_photogray img.shadow {
+        box-shadow: 3px 3px 8px #333;
+}

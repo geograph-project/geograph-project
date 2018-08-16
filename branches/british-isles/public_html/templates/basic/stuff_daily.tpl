@@ -93,7 +93,7 @@ div.thumbs a:hover {
 </style>
 {/literal}
 
-<div class="thumbs">
+<div class="thumbs shadow">
 
 {foreach from=$results item=image}
 
