@@ -531,7 +531,7 @@
 				<table cellspacing="0" cellpadding="3" border="0" style="margin-left:20px">
 				{foreach from=$images item=image}
 					<tr>
-						<td valign="top" align="center">
+						<td valign="top" align="center" class=shadow>
 							<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
 						</td>
 						<td valign="top" style="border-bottom:1px solid silver">
@@ -546,7 +546,7 @@
 				</table>
 
 			{elseif $displayclass == 'tiles2'}
-				<table cellspacing="0" cellpadding="3" border="0" style="margin-left:20px">
+				<table class=shadow cellspacing="0" cellpadding="3" border="0" style="margin-left:20px">
 				{foreach from=$images2 item=images}
 					<tr>
 					{foreach from=$images item=image name="loop"}
@@ -568,7 +568,7 @@
 				</table>
 
 			{elseif $displayclass == 'thumbs'}
-				<div style="position:relative;margin-left:20px">
+				<div class="shadow" style="position:relative;margin-top:3px; margin-left:20px">
 				{foreach from=$images item=image}
 					<div style="float:left;position:relative; width:{$thumbw+10}px; height:{$thumbh+10}px">
 					<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
