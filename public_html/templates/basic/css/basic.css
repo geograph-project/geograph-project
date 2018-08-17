@@ -1538,7 +1538,7 @@ a.about {
 }
 
 .content_photoblack .shadow img, .content_photoblack img.shadow {
-	box-shadow: 3px 3px 8px #444;
+	box-shadow: inherit; /* undos general version above, so no shadow */
 }
 
 .content_photogray .shadow img, .content_photogray img.shadow {
