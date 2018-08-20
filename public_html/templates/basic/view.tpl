@@ -98,7 +98,7 @@
     {/if}
   {/dynamic}
 
-  <div class="img-shadow" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull(true,true)|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
+  <div class="shadow shadow_large" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull(true,true)|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
 
   <div class="caption640"><strong property="dct:title" itemprop="name">{$image->title|escape:'html'}</strong></div>
 

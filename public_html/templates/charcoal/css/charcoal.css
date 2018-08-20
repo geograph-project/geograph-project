@@ -1519,6 +1519,12 @@ a.about {
 
 .content_photoblack .shadow img, .content_photoblack img.shadow {
         box-shadow: inherit;
+        margin-right: inherit;
+        margin-bottom: inherit;
+}
+.content_photoblack .shadow_large img, .content_photoblack img.shadow_large {
+        border: 1px solid #a9a9a9;
+        padding: 4px;
 }
 
 .content_photogray .shadow img, .content_photogray img.shadow {
