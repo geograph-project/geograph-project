@@ -311,6 +311,10 @@ class GeoGridFS(Fuse):
             if os.path.exists(mount + path):
                 if os.path.isdir(mount + path):
                     folder = True
+
+                if not os.path.exists(os.path.dirname(mount + path1)):
+                    os.makedirs(os.path.dirname(mount + path1)) # use makedirs so will also create parent dirs as required
+
                 os.rename(mount + path, mount + path1)
         
         try:
