@@ -32,6 +32,7 @@ import shutil
 import re
 import subprocess
 import time
+import signal
 
 db=MySQLdb.connect(host=config.database['hostname'], user=config.database['username'], passwd=config.database['password'],db=config.database['database'])
 
@@ -79,6 +80,7 @@ def move_files(folder = '', replica = '', dest = '', classinc =[],classexc=[]):
             
             where = "folder_id = "+folder_id
 	    where = where + " AND FIND_IN_SET('"+replica+"',replicas)"
+	    where = where + " AND NOT FIND_IN_SET('"+dest+"',replicas)"
 	    if classinc:
                 where = where + " AND `class` IN('"+("','".join(classinc))+"')"
 	    if classexc:
@@ -87,6 +89,8 @@ def move_files(folder = '', replica = '', dest = '', classinc =[],classexc=[]):
             c=db.cursor(MySQLdb.cursors.DictCursor)
             cex=db.cursor()
             c.execute("SELECT file_id,filename,replicas,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM "+config.database['file_table']+" WHERE "+where)
+
+            s = signal.signal(signal.SIGINT, signal.SIG_IGN)
             
             while True:
                 row = c.fetchone()
@@ -115,7 +119,7 @@ def move_files(folder = '', replica = '', dest = '', classinc =[],classexc=[]):
                         elif stat.st_size != row['size']:
                             print "BUT size doesnt match"
                         else:
-                            print "OK Move the file... "
+                            #print "OK Move the file... "
 
 		            if not os.path.exists(os.path.dirname(dmount+row['filename'])):
                                 os.makedirs(os.path.dirname(dmount+row['filename'])) ##recursive
@@ -142,7 +146,8 @@ def move_files(folder = '', replica = '', dest = '', classinc =[],classexc=[]):
 				print 'FILE NOT FOUND ON DEST'
                                 sys.exit(2)
 
-            
+            signal.signal(signal.SIGINT, s)
+
             print "-----------"
 
 #############################################################################
