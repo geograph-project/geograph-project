@@ -38,7 +38,7 @@
 */
 class GridImage
 {
-	var $enforse_https = 5000000;
+	var $enforce_https = 3500000;
 
 	/**
 	* internal db handle
@@ -1113,7 +1113,7 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 		if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
 			$fullpath = str_replace('http://','https://',$fullpath);
 
-	        if (!empty($this->original_width) && $linkoriginal && $this->original_width> 640 && $returntotalpath && !empty($_GET['large'])) {
+	        if (!empty($this->original_width) && $linkoriginal && max($this->original_width,$this->original_height) > 640 && $returntotalpath && !empty($_GET['large'])) {
 	                $maxwidth = min(1024,$this->original_width);
                 	$ratio = $this->original_height/$this->original_width;
         	        $srcset = array();
@@ -1158,7 +1158,12 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}$srcset/>";
 
 		if (!empty($maxwidth) && !empty($_GET['large'])) {
-			$html=str_replace('/>',' style="min-width:'.$size[0].'px; min-height:'.$size[1].'px"/>',$html);
+			$mins = array();
+			//if (...) // todo could also prevent this one on really tall thin images.
+				$mins[] = 'min-width:'.$size[0].'px';
+			if (empty($this->original_width) || $this->original_width/$this->original_height < 3) // DONT impose min height on REALLY wide panos.
+				$mins[] = 'min-height:'.$size[1].'px';
+			$html=str_replace('/>',' style="'.implode('; ',$mins).'"/>',$html);
 
 			$html="<div class=\"img-responsive\" style=\"max-width:".($maxwidth+10)."px\">$html</div>";
 
@@ -1610,17 +1615,11 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 									$crop="-crop {$width}x{$optimum_height}+0+$offset";
 								}
 
-								$cmd = sprintf ("\"%sconvert\" $crop -quality 87 jpg:%s jpg:%s",
-								$CONF['imagemagick_path'],
-								$_SERVER['DOCUMENT_ROOT'].$fullpath,
-								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
-
-								passthru ($cmd);
-
-								//now resize
-								$cmd = sprintf ("\"%smogrify\" -$operation %ldx%ld $unsharpen $raised -quality 87 jpg:%s",
+								//crop and resize in one step
+								$cmd = sprintf ("\"%sconvert\" $crop -$operation %ldx%ld $unsharpen $raised -quality 87 jpg:%s jpg:%s",
 								$CONF['imagemagick_path'],
 								$maxw, $maxh,
+								$_SERVER['DOCUMENT_ROOT'].$fullpath,
 								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
 
 								passthru ($cmd);
