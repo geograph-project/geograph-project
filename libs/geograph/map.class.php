@@ -179,13 +179,17 @@ class GeographMap
 	/**
 	* Constructor
 	*/
-	function GeographMap()
+	public function __construct()
 	{
 		$this->setOrigin(0,0);
 		$this->setImageSize(400,400);
 		$this->setScale(0.3);
 		$this->setPalette(0);
 		$this->type_or_user = 0;
+	}
+	function GeographMap()
+	{
+		self::__construct();
 	}
 
 

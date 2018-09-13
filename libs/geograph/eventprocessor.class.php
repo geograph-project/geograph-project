@@ -67,13 +67,17 @@ class EventProcessor
 	* Constructor
 	* @public
 	*/
-	function EventProcessor()
+	public function __construct()
 	{
 		$this->event_handler_dir=realpath($_SERVER["DOCUMENT_ROOT"]."/../libs/event_handlers");
 		
 		$this->db=NewADOConnection($GLOBALS['DSN']);
 		$this->logdb=NewADOConnection($GLOBALS['DSN']);
 	
+	}
+	function EventProcessor()
+	{
+		self::__construct();
 	}
 	
 	/**
@@ -316,7 +320,7 @@ class EventProcessor
 				//no handlers will be successfully processed
 				$success=true; 
 
-				if (is_array($this->handlers[$event_name]))
+				if (isset($this->handlers[$event_name]) && is_array($this->handlers[$event_name]))
 				{
 					foreach($this->handlers[$event_name] as $idx=>$filename)
 					{

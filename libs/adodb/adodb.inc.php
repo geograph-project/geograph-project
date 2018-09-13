@@ -328,9 +328,13 @@
 	/**
 	 * Constructor
 	 */
-	function ADOConnection()			
+	function __construct()
 	{
 		die('Virtual Class -- cannot instantiate');
+	}
+	function ADOConnection()
+	{
+		self::__construct();
 	}
 	
 	function Version()
@@ -2748,9 +2752,13 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 	 * @param queryID  	this is the queryID returned by ADOConnection->_query()
 	 *
 	 */
-	function ADORecordSet($queryID) 
+	function __construct($queryID)
 	{
 		$this->_queryID = $queryID;
+	}
+	function ADORecordSet($queryID)
+	{
+		self::__construct($queryID);
 	}
 	
 	
@@ -3726,7 +3734,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		 * Constructor
 		 *
 		 */
-		function ADORecordSet_array($fakeid=1)
+		function __construct($fakeid=1)
 		{
 		global $ADODB_FETCH_MODE,$ADODB_COMPAT_FETCH;
 		
@@ -3734,6 +3742,10 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			$this->compat = !empty($ADODB_COMPAT_FETCH);
 			$this->ADORecordSet($fakeid); // fake queryID		
 			$this->fetchMode = $ADODB_FETCH_MODE;
+		}
+		function ADORecordSet_array($fakeid=1)
+		{
+			self::__construct($fakeid);
 		}
 		
 		function _transpose($addfieldnames=true)

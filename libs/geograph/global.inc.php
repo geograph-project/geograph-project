@@ -256,7 +256,7 @@ class GeographPage extends Smarty
 	/**
 	* Constructor - sets up smarty appropriately
 	*/
-	function GeographPage()
+	public function __construct()
 	{
 		global $CONF;
 
@@ -400,6 +400,10 @@ class GeographPage extends Smarty
 			$this->assign('canonicalreq', $_SERVER['REQUEST_URI']); # FIXME remove session id? # can be changed in specific scripts, e.g. on the map page
 			$this->assign('language', $CONF['lang']);
 		}
+	}
+	function GeographPage()
+	{
+		self::__construct();
 	}
 
 	function is_cached($template, $cache_id = null, $compile_id = null)

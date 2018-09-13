@@ -129,9 +129,13 @@ class GridSquare
 	/**
 	* Constructor
 	*/
-	function GridSquare()
+	public function __construct()
 	{
 		$this->setServices('');
+	}
+	function GridSquare()
+	{
+		self::__construct();
 	}
 
 	/**
