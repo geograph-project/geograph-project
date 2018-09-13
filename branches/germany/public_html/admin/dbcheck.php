@@ -42,7 +42,6 @@ if (isset($_POST['check']))
 	set_time_limit(3600*24);
 	
 	$db = GeographDatabaseConnection();
-	if (!$db) die('Database connection failed'); 
 	
 	if (isset($_POST['dbtables']))
 	{

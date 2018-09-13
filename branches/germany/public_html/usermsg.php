@@ -42,7 +42,6 @@ $smarty->assign_by_ref('sendcopy', $sendcopy);
 
 
 $db=GeographDatabaseConnection();
-if (empty($db)) die('Database connection failed');
 
 $ip=getRemoteIP();
 

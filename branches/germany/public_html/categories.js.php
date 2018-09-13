@@ -47,7 +47,6 @@ if (isset($_GET['days'])) {
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=GeographDatabaseConnection();
-	if (empty($db)) die('Database connection failed');
 
 	if ($u) {
 		$where = "where submitted > date_sub(now(),interval {$_GET['days']} day) and user_id = $u";

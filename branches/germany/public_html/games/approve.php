@@ -36,7 +36,6 @@ $template='games_approve.tpl';
 
 
 $db=GeographDatabaseConnection();
-if (!$db) die('Database connection failed'); 
 
 if (isset($_POST['submit']) && count($_POST['a'])) {
 	$y = $n = array(); 

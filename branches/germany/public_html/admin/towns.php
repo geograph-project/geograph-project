@@ -29,7 +29,6 @@ $USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->hasPerm("mapmod
 $smarty = new GeographPage;
 
 $db = GeographDatabaseConnection();
-if (!$db) die('Database connection failed');  
 #$db->debug = true;
 	#TODO:
 	#  * recreate affected map?
@@ -309,7 +308,6 @@ if (!$db) die('Database connection failed');
 		#$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'];# allow other user/passwd?
 		$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'].'?new';# allow other user/passwd?
 		$ogdb = GeographDatabaseConnection(false, $ogdbDSN);
-		if (!$ogdb) die('Database connection failed');
 		if (isset($_POST['findlarge'])) {
 			$limit = max(intval($_POST['findlimit']),5000);
 			$sql="

@@ -59,7 +59,6 @@ if (isset($_GET['id']))  {
 			ORDER BY $sql_order";
 
 			$db=GeographDatabaseConnection();
-			if (!$db) die('Database connection failed');  
 
 			$data = $db->getAll($sql);
 
@@ -174,7 +173,6 @@ if (isset($_GET['id']))  {
 				trigger_error(" $sql ", E_USER_WARNING);
 				
 				$db=GeographDatabaseConnection();
-				if (!$db) die('Database connection failed');  
 				
 				$data = $db->getAll($sql);
 

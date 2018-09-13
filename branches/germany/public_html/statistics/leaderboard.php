@@ -183,7 +183,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	$filtered = ($when || $when2 || $ri || $myriad || $has_region);
 	
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');
 	if ($has_region) {
 		$region_name = $db->GetOne("select name from loc_hier where level=$level and community_id=$cid");
 		$sql_table = "gridimage_search i inner join gridsquare_percentage using (gridsquare_id)";

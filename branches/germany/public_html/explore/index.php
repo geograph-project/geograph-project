@@ -34,7 +34,6 @@ if (!$smarty->is_cached('explore.tpl'))
 {
 	if (!isset($db)) {
 		$db=GeographDatabaseConnection();
-		if (!$db) die('Database connection failed');
 	}
 
 	$countylist = array();

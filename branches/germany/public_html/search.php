@@ -84,7 +84,6 @@ if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_le
 if (isset($_GET['fav']) && $i) {
 	if (!$db) {
 		$db=GeographDatabaseConnection();
-		if (!$db) die('Database connection failed');
 	}
 	$fav = ($_GET['fav'])?'Y':'N';
 	$db->query("UPDATE queries SET favorite = '$fav' WHERE id = $i AND user_id = {$USER->user_id}");
@@ -219,7 +218,6 @@ if (isset($_GET['fav']) && $i) {
 	$error = false;
 
 	$db=GeographDatabaseConnection();
-	if (empty($db)) die('Database connection failed');
 
 	if (empty($data['orderby'])) {
 		$data['orderby'] = 'seq_id';
@@ -286,7 +284,6 @@ if (isset($_GET['fav']) && $i) {
 	$error = false;
 
 	$db=GeographDatabaseConnection();
-	if (empty($db)) die('Database connection failed');
 
 	$isadmin=$USER->hasPerm('moderator')?1:0;
 
@@ -726,7 +723,6 @@ if (isset($_GET['fav']) && $i) {
 	// -------------------------------
 
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');
 
 		$smarty->assign('submitted_start', "0-0-0");
 		$smarty->assign('submitted_end', "0-0-0");
@@ -1084,7 +1080,6 @@ if (isset($_GET['fav']) && $i) {
 	if ($engine->criteria->user_id == $USER->user_id) {
 		if (!isset($db)) {
 			$db=GeographDatabaseConnection();
-			if (!$db) die('Database connection failed');
 		}
 		$db->query("UPDATE queries SET use_timestamp = null WHERE id = $i");
 		if (!$db->Affected_Rows()) {
@@ -1129,7 +1124,6 @@ if (isset($_GET['fav']) && $i) {
 	if (!$smarty->is_cached('search.tpl')) {
 		if (!isset($db)) {
 			$db=GeographDatabaseConnection();
-			if (empty($db)) die('Database connection failed');
 		}
 		//list of a few image classes
 		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',c,']') from category_stat
@@ -1146,7 +1140,6 @@ if (isset($_GET['fav']) && $i) {
 	if ($USER->registered) {
 		if (!$db) {
 			$db=GeographDatabaseConnection();
-			if (!$db) die('Database connection failed');
 		}
 		if (isset($_GET['all'])) {
 			$flimit = "";
@@ -1231,7 +1224,6 @@ if (isset($_GET['fav']) && $i) {
 			$smarty->assign('reverse_order_checked', 'checked="checked"');
 		if (empty($db)) {
 			$db=GeographDatabaseConnection();
-			if (empty($db)) die('Database connection failed');
 		}
 		advanced_form($smarty,$db);
 	}

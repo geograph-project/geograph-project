@@ -59,7 +59,6 @@ if ($i) {
 	$template='explore_searches_suggest.tpl';
 	
 	$db=GeographDatabaseConnection();
-		if (!$db) die('Database connection failed');  
 
 	if (isset($_POST['submit'])) {
 		$sql = "INSERT INTO queries_featured SET
@@ -108,7 +107,6 @@ if ($is_mod) {
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 	
 	$where = array();
 	if ($is_mod ) {

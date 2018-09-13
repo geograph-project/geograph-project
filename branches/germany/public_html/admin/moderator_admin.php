@@ -29,7 +29,6 @@ $USER->hasPerm("admin") || $USER->mustHavePerm("modadm");
 $smarty = new GeographPage;
 
 $db = GeographDatabaseConnection();
-if (!$db) die('Database connection failed');
 
 if ($USER->hasPerm("admin")) {
 	$right_list = array(  'basic',   'moderator', /*'admin',*/ 'ticketmod', 'traineemod', /*'suspicious', 'dormant',*/ 'mapmod', 'forum', 'supervisor', 'modadm');

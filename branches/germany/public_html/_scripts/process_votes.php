@@ -40,7 +40,6 @@ else
 }
 
 $db=GeographDatabaseConnection();
-if (!$db) die('Database connection failed');  
 
 $wm = 1; #minimum votes required to be listed (//todo if change need to add a having to clause below!) 
 

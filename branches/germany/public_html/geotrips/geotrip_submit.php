@@ -34,7 +34,6 @@ include('./geotrip_func.php');
 
 
 $db=GeographDatabaseConnection();
-if (!$db) die('Database connection failed');  
 
 
 $smarty->assign('page_title', 'Geo-Trip creation :: Geo-Trips');

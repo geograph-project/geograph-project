@@ -33,7 +33,6 @@ $cacheid='statistics|totals';
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 
 

@@ -56,7 +56,6 @@ class PictureOfTheDay
 	{
 		global $CONF;
 		$db=GeographDatabaseConnection();
-		if (!$db) die('Database connection failed');  
 		$upper=$CONF['potd_daysperimage']-1;
 	
 		#$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where to_days(showday)=to_days(now())");

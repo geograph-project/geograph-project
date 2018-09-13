@@ -129,7 +129,6 @@ GROUP BY user_id,realname
 ORDER BY count DESC,last_date DESC
 ";
 		$db=GeographDatabaseConnection();
-		if (!$db) die('Database connection failed');  
 
 		$users=$db->GetAll($sql);
 		$smarty->assign_by_ref('users', $users);

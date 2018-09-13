@@ -34,7 +34,6 @@ if (!isLocalIPAddress())
 
 $conv = new Conversions;	
 $db=GeographDatabaseConnection();
-if (!$db) die('Database connection failed');  
 			
 $kml = new kmlFile();
 $kml->atom = true;
