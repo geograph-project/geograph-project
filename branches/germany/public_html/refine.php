@@ -87,7 +87,7 @@ $smarty->assign_by_ref('breakdowns', $breakdowns);
 		$dataarray = $_POST;
 		
 		if (empty($db)) {
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection();
 			if (!$db) die('Database connection failed');
 		}
 		

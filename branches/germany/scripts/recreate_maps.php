@@ -147,7 +147,7 @@ require_once('geograph/image.inc.php');
 #trigger_error('recreate_maps max_execution_time: '.ini_get('max_execution_time'), E_USER_WARNING);
 #trigger_error('recreate_maps memory_limit: '.ini_get('memory_limit'), E_USER_WARNING);
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 $start_time = time();
 

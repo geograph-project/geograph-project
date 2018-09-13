@@ -182,7 +182,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$filtered = ($when || $when2 || $ri || $myriad || $has_region);
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');
 	if ($has_region) {
 		$region_name = $db->GetOne("select name from loc_hier where level=$level and community_id=$cid");

@@ -62,7 +62,7 @@ $smarty->register_modifier("colerize", "smarty_modifier_colerize");
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	if ($u) {

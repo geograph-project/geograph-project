@@ -48,7 +48,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 if (!$smarty->is_cached($template, $cacheid)) {
 	dieUnderHighLoad();
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	

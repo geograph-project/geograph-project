@@ -47,7 +47,7 @@ if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 if (!$smarty->is_cached($template, $cacheid))
 {
 
-	$db = NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection();
 	$table = array();
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$images = $db->getAll("

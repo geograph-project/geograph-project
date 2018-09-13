@@ -46,7 +46,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('levellist',array('-1'=>'-all-','1'=>'1','2'=>'2','3'=>'3','4'=>'4','5'=>'5'));
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed'); 
 	
 	/////////////

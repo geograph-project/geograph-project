@@ -82,7 +82,7 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 	$rss->geo = true;
 }
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 	
 
 $sql="select geoevent.*,

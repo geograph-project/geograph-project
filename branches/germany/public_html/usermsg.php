@@ -41,7 +41,7 @@ $smarty->assign_by_ref('from_email', $from_email);
 $smarty->assign_by_ref('sendcopy', $sendcopy);
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 if (empty($db)) die('Database connection failed');
 
 $ip=getRemoteIP();

@@ -75,7 +75,7 @@ if (isset($_GET['expireAll']) && $USER->hasPerm('admin'))
 	exit;
 }
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 
 if (isset($_GET['coast_GB_40'])) {

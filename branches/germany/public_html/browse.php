@@ -292,7 +292,7 @@ if ($grid_given)
 			#$extra .= "&amp;user=".intval($_GET['user']);
 		}
 		if (!empty($_GET['status'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection();
 			$filtered_title .= " moderated as '".htmlentities2($_GET['status'])."'";
 			#$extra .= "&amp;status=".urlencode($_GET['status']);
 			$_GET['status'] = str_replace('supplemental','accepted',$_GET['status']);
@@ -300,14 +300,14 @@ if ($grid_given)
 			$smarty->assign("bby",'status');
 		}
 		if (!empty($_GET['class'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection();
 			$custom_where .= " and imageclass = ".$db->Quote($_GET['class']);
 			$filtered_title .= " categorised as '".htmlentities2($_GET['class'])."'";
 			$smarty->assign("bby",'class');
 			#$extra .= "&amp;class=".urlencode($_GET['class']);
 		}
 		if (!empty($_GET['taken'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection();
 			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['taken']."%");
 			$date = getFormattedDate($_GET['taken']);
 			$filtered_title .= " Taken in $date";
@@ -315,7 +315,7 @@ if ($grid_given)
 			#$extra .= "&amp;taken=".urlencode($_GET['taken']);
 		}
 		if (!empty($_GET['takenyear'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection();
 			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['takenyear']."%");
 			$date = getFormattedDate($_GET['takenyear']);
 			$filtered_title .= " Taken in $date";
@@ -323,7 +323,7 @@ if ($grid_given)
 			#$extra .= "&amp;takenyear=".urlencode($_GET['takenyear']);
 		}
 		if (!empty($_GET['submitted'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection();
 			$custom_where .= " and submitted LIKE ".$db->Quote($_GET['submitted']."%");
 			$date = getFormattedDate($_GET['submitted']);
 			$filtered_title .= " Submitted in $date";
@@ -331,7 +331,7 @@ if ($grid_given)
 			#$extra .= "&amp;submitted=".urlencode($_GET['submitted']);
 		}
 		if (!empty($_GET['submittedyear'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection();
 			$custom_where .= " and submitted LIKE ".$db->Quote($_GET['submittedyear']."%");
 			$date = getFormattedDate($_GET['submittedyear']);
 			$filtered_title .= " Submitted in $date";
@@ -456,7 +456,7 @@ if ($grid_given)
 		if (($square->imagecount > 15 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
 			$square->totalimagecount = $square->imagecount;
 			
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection();
 			
 			$row = $db->cacheGetRow($cacheseconds,"SELECT 
 			count(distinct user_id) as user,
@@ -511,7 +511,7 @@ if ($grid_given)
 		} elseif (!empty($_GET['by'])) {
 			$square->totalimagecount = $square->imagecount;
 			
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection();
 			$breakdown = array();
 			$i = 0;		
 			

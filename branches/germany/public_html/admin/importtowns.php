@@ -28,7 +28,7 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 if (!$db) die('Database connection failed');
 
 $dryrun = !empty($_POST['dryrun']);#true;#FIXME !empty($_POST['dryrun']);
@@ -51,7 +51,7 @@ if (   isset($_POST['submit'])
 
 	#$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'];# allow other user/passwd?
 	$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'].'?new';# allow other user/passwd?
-	$ogdb = NewADOConnection($ogdbDSN);
+	$ogdb = GeographDatabaseConnection(false, $ogdbDSN);
 	if (!$ogdb) die('Database connection failed');
 
 	$duplicaterows = array();

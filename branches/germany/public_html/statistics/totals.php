@@ -32,7 +32,7 @@ $cacheid='statistics|totals';
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 

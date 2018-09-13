@@ -44,7 +44,7 @@ if (isset($_REQUEST['i']) && is_numeric($_REQUEST['i'])) {
 
 
 if ($is_mod && $i && isset($_GET['a'])) {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 
 	$a = intval($_GET['a']);	
 
@@ -58,7 +58,7 @@ if ($is_mod && $i && isset($_GET['a'])) {
 if ($i) {
 	$template='explore_searches_suggest.tpl';
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 		if (!$db) die('Database connection failed');  
 
 	if (isset($_POST['submit'])) {
@@ -107,7 +107,7 @@ if ($is_mod) {
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');  
 	
 	$where = array();

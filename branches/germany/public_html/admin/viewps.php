@@ -28,7 +28,7 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 dump_sql_table('SHOW '.(empty($_GET['full'])?'':'FULL ').'PROCESSLIST','Current mySQL Process List');
 

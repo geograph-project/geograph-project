@@ -142,7 +142,7 @@ require_once('geograph/map.class.php');
 require_once('geograph/image.inc.php');
 require_once('geograph/mapmosaic.class.php');
 	
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 $start_time = time();
 

@@ -53,7 +53,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$upper=$daysperimg-1;
 	$lower=-$daysperimg+1;
 	//lets get some stats
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');  
 	
 	//handle form post

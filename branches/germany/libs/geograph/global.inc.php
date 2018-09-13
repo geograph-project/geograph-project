@@ -148,9 +148,12 @@ if (!empty($CONF['memcache']['sessions'])) {
 		adodb_sess_open(false,false,false);
 }
 
-function GeographDatabaseConnection($allow_readonly = false)
+function GeographDatabaseConnection($allow_readonly = false, $dsn = null)
 {
-	$db = NewADOConnection($GLOBALS['DSN']);
+	if (is_null($dsn)) {
+		$dsn = $GLOBALS['DSN'];
+	}
+	$db = NewADOConnection($dsn);
 	if (!$db) {
 		die('Database connection failed');
 	}

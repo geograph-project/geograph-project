@@ -31,7 +31,7 @@ $smarty = new GeographPage;
 $template='juppy.tpl';
 $cacheid='';
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 	
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))

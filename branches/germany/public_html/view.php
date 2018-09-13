@@ -25,7 +25,7 @@ require_once('geograph/global.inc.php');
 
 if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.org/bot')!==FALSE) ) {
 	//die as quickly as possible with the minimum html (with the approval of geourl owner)
-	$db = NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection();
 
 	$row =& $db->getRow("select gridimage_id,wgs84_lat,wgs84_long,title,title2,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
 

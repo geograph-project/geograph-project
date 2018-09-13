@@ -1242,7 +1242,7 @@ class GeographMap
 		//php file -> set_time_limit(0)
 		global $CONF;
 		$db=&$this->_getDB();
-		$dbsq=NewADOConnection($GLOBALS['DSN']);
+		$dbsq=GeographDatabaseConnection();
 		
 		$db->Execute("DROP TABLE IF EXISTS gridsquare_gmcache_tmp");
 		
@@ -1432,7 +1432,7 @@ class GeographMap
 	{
 		global $CONF;
 		$db=&$this->_getDB();
-		$dbsq=NewADOConnection($GLOBALS['DSN']);
+		$dbsq=GeographDatabaseConnection();
 		require_once('geograph/conversionslatlong.class.php');
 		require_once('geograph/mapmosaic.class.php');
 		$mosaic = new GeographMapMosaic;
@@ -2010,7 +2010,7 @@ class GeographMap
 			$topM=$bottomM+$widthM;
 			$sql="select gridimage_id from gridimage_search inner join gridsquare_gmcache using(gridsquare_id) where user_id = $user_id and gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
 		} else {
-			//$dbImg=NewADOConnection($GLOBALS['DSN']);//FIXME?
+			//$dbImg=GeographDatabaseConnection();//FIXME?
 
 			$left=$this->map_x;
 			$bottom=$this->map_y;
@@ -2158,7 +2158,7 @@ class GeographMap
 
 		$db=&$this->_getDB();
 		if ($this->level >= 12) {
-			$dbImg=NewADOConnection($GLOBALS['DSN']);
+			$dbImg=GeographDatabaseConnection();
 			##imagealphablending($img, true);
 			#$gridcol2=imagecolorallocate ($img, 60,205,252);
 		}
@@ -2610,7 +2610,7 @@ class GeographMap
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
 		
-		$dbImg=NewADOConnection($GLOBALS['DSN']);
+		$dbImg=GeographDatabaseConnection();
 		
 		if (empty($this->force_ri)) {
 			$riwhere = '';
@@ -3189,7 +3189,7 @@ class GeographMap
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
 		
-		$dbImg=NewADOConnection($GLOBALS['DSN']);
+		$dbImg=GeographDatabaseConnection();
 
 		if (empty($this->force_ri)) {
 			$riwhere = '';
@@ -4561,7 +4561,7 @@ END;
 	function &_getDB()
 	{
 		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
+			$this->db=GeographDatabaseConnection();
 		if (!$this->db) die('Database connection failed');  
 		return $this->db;
 	}

@@ -44,7 +44,7 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	dieUnderHighLoad(5);
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed'); 	
 
 	$title = "Geograph Pulse";
