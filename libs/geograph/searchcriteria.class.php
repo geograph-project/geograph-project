@@ -767,7 +767,7 @@ class SearchCriteria
 		if (preg_match("/\b(AND|OR|NOT)\b/",$q) || preg_match('/^\^.*\+$/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
 			$sql_where .= " (";
 			$terms = $prefix = $postfix = '';
-			$tokens = preg_split('/\s+/',trim(preg_replace('/([\(\)])/',' $1 ',preg_replace('/(^|\s+)-([\w^]+)/e','("$1"?"$1AND ":"")."NOT $2"',$q))));
+			$tokens = preg_split('/\s+/',trim(preg_replace('/([\(\)])/',' $1 ',preg_replace_callback('/(^|\s+)-([\w^]+)/', function($m) {return ($m[1]?"{$m[1]}AND ":"")."NOT {$m[2]}";},$q))));
 			$number = count($tokens);
 			$c = 1;
 			$tokens[] = 'END';

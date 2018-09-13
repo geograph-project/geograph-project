@@ -3,6 +3,22 @@
 This file is part of miniBB. miniBB is free discussion forums/message board software, without any warranty. See COPYING file for more details. Copyright (C) 2004 Paul Puzyrev, Sergei Larionov. www.minibb.net
 */
 
+function preg_replace_array($patterns, $replacements, $s)
+{
+	$i = 0;
+	foreach ($patterns as $pattern) {
+		if (!isset($replacements[$i])) {
+			$s = preg_replace($pattern, '', $s);
+		} elseif (is_string($replacements[$i])) {
+			$s = preg_replace($pattern, $replacements[$i], $s);
+		} else {
+			$s = preg_replace_callback($pattern, $replacements[$i], $s);
+		}
+		++$i;
+	}
+	return $s;
+}
+
 function enCodeBB($msg,$admin) {
 
 $pattern=array(); $replacement=array();
@@ -47,15 +63,17 @@ $replacement[]='<u>\\1</u>';
 $pattern[]="/\[big\](.+?)\[\/big\]/is";
 $replacement[]='<big>\\1</big>';
 
-$pattern[]="/\[code\](.+?)\[\/code\]/se";
-$replacement[]='"<pre>".str_replace("<br>","","\\1")."</pre>"'; //any real /n will become <br> later anyway
+$pattern[]="/\[code\](.+?)\[\/code\]/s";
+$replacement[] = function($m) {
+	return "<pre>".str_replace("<br>","",$m[1])."</pre>"; //any real /n will become <br> later anyway
+};
 
 if($admin==1) {
 $pattern[]="/\[font(#[A-F0-9]{6})\](.+?)\[\/font\]/is";
 $replacement[]='<font color="\\1">\\2</font>';
 }
 
-$msg=preg_replace($pattern, $replacement, $msg);
+$msg=preg_replace_array($pattern, $replacement, $msg);
 
 return $msg;
 }

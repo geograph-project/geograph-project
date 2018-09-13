@@ -75,9 +75,13 @@ function add_topic_to_content($topic_id,& $db) {
 		$content = $posts['post_text'];
 		$content = str_replace("\r",'',$content);
 
-		$content = preg_replace('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/e',"add_image_to_list('\$2','\$2')",$content);
+		$content = preg_replace_callback('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/', function($m) {
+			return add_image_to_list($m[2], $m[2]);
+		}, $content);
 
-		$content = preg_replace('/\[image id=(\d+)/e',"add_image_to_list('\$1','\$1')",$content);
+		$content = preg_replace_callback('\[image id=(\d+)/', function($m) {
+                        return add_image_to_list($m[1], $m[1]);
+                }, $content);
 
 		$content = strip_tags($content);
 

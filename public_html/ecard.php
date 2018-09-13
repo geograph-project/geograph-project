@@ -154,7 +154,9 @@ if (!$throttle && isset($_POST['msg']))
 
 			print "<h3 align=center><font face=\"Georgia\">Subject: $subject</font></h3>";
 			$html = preg_replace("/=[\n\r]+/s","\n",$matches[1][0]);
-			$html = preg_replace("/=(\w{2})/e",'chr(hexdec("$1"))',$html);
+			$html = preg_replace_callback("/=(\w{2})/", function($m) {
+				return chr(hexdec($m[1]));
+			},$html);
 			print $html;
 			exit;
 		} else {

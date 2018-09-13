@@ -118,9 +118,14 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 			$content = preg_replace('/<script.*?<\/script>/s','',$content);
 			$content = preg_replace('/<style.*?<\/style>/s','',$content);
 
-			$content = preg_replace('/\{gridimage id="?(\d+)"? text="([^\}]+)"\}/e',"\$this->add_image_to_list('\$1','\$2')",$content);
+			$self = $this;
+			$content = preg_replace_callback('/\{gridimage id="?(\d+)"? text="([^\}]+)"\}/', function($m) use($self) {
+				return $self->add_image_to_list($m[1], $m[2]);
+			}, $content);
 
-			#$content = preg_replace('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/e',"\$this->add_image_to_list('\$2','\$2')",$content);
+			#$content = preg_replace_callback('/\[\[(\[?)(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/', function($m) use($self) {
+			#	return $self->add_image_to_list($m[2], $m[2]);
+			#}, $content);
 
 			$content = strip_tags(preg_replace('/\{(\/?)(\w+)[^}]*\}/s','<{$1}tag>',$content));
 

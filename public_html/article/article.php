@@ -335,18 +335,38 @@ function get_tag($tag,$gr,$images = 4) {
 }
 
 
+function preg_replace_array($patterns, $replacements, $s)
+{
+	$i = 0;
+	foreach ($patterns as $pattern) {
+		if (!isset($replacements[$i])) {
+			$s = preg_replace($pattern, '', $s);
+		} elseif (is_string($replacements[$i])) {
+			$s = preg_replace($pattern, $replacements[$i], $s);
+		} else {
+			$s = preg_replace_callback($pattern, $replacements[$i], $s);
+		}
+		++$i;
+	}
+	return $s;
+}
 
 
 function smarty_function_articletext($input) {
 	global $imageCredits,$smarty,$CONF;
 
-	$output = preg_replace('/(^|\n)(-{7,})\n(.*?)\n(-{7,})/es',"article_make_table('\$3')",str_replace("\r",'',$input));
+	$output = preg_replace_callback('/(^|\n)(-{7,})\n(.*?)\n(-{7,})/s', function($m) {
+		return article_make_table($m[3]);
+	}, str_replace("\r",'',$input));
+
 
 	if ($CONF['CONTENT_HOST'] != $CONF['SELF_HOST']) {
 		$output = str_replace($CONF['CONTENT_HOST'],$CONF['SELF_HOST'],$output);
 	}
 
-	$output = preg_replace('/\!(\[+)/e','str_repeat("¬",strlen("$1"))',$output);
+	$output = preg_replace_callback('/\!(\[+)/', function($m) {
+		return str_repeat("¬",strlen($m[1]));
+	}, $output);
 
 	$output = str_replace(
 		array('[b]','[/b]','[big]','[/big]','[small]','[/small]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]','[tt]','[/tt]','[float]','[/float]','[br/]','[hr/]'),
@@ -449,8 +469,10 @@ function smarty_function_articletext($input) {
 	} else
 		$replacement[]="<a href=\"{$CONF['SELF_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
 
-	$pattern[]='/\[image id=([a-z]*:?\d+) text=([^\]"]+)\]/e';
-	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
+	$pattern[]='/\[image id=([a-z]*:?\d+) text=([^\]]+)\]/';
+	$replacement[] = function($m) {
+		return smarty_function_gridimage(array('id' => $m[1],'extra' => $m[2]));
+	};
 
 	$pattern[]='/\[image id=([a-z]*:?\d+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '{description}'))";
@@ -486,8 +508,10 @@ function smarty_function_articletext($input) {
 	$pattern[]='/\[zoomit=(\w+)\]/';
 	$replacement[]='<script src="http://zoom.it/\1.js?width=auto&height=400px"></script>';
 
-	$pattern[]='/\n\* ?([^\n]+)(\n{2})?/e';
-	$replacement[]="'<ul style=\"margin-bottom:0px;margin-top:0px\"><li>'.stripslashes('\$1').'</li></ul>'.('$2'?'\n':'')";
+	$pattern[]='/\n\* ?([^\n]+)(\n{2})?/';
+	$replacement[] = function($m) {
+		return '<ul style="margin-bottom:0px;margin-top:0px"><li>'.stripslashes($m[1]).'</li></ul>'.($m[2]?"\n":'');
+	};
 	$pattern[]='/<\/ul>\n?<ul style=\"margin-bottom:0px;margin-top:0px\">/';
 	$replacement[]='';
 
@@ -498,19 +522,26 @@ function smarty_function_articletext($input) {
 	$pattern[]='/\n\n\#/';
 	$replacement[]="\n\r\n\$1#";
 
-	$pattern[]='/\n(<\w{1,3}>)?\#([\w]{1,2})? ([^\n]+)(<\/\w{1,3}>)?(\n{2})?/e';
-	$replacement[]="'<ol style=\"margin-bottom:0px;'.('\$1'?'':'margin-top:0px').'\"'.('\$2'?' start=\"\$2\"':'').'><li>\$1\$3\$4</li></ol>'.('\$5'?'\n':'')";
+	$pattern[]='/\n(<\w{1,3}>)?\#([\w]{1,2})? ([^\n]+)(<\/\w{1,3}>)?(\n{2})?/';
+	$replacement[] = function($m) {
+		return '<ol style="margin-bottom:0px;'.($m[1]?'':'margin-top:0px').'"'.($m[2]?' start='.$m[2]:'').'><li>'.$m[1].$m[3].$m[4].'</li></ol>'.($m[5]?"\n":'');
+	};
+
 	$pattern[]='/<\/ol>\n?<ol style=\"margin-bottom:0px;margin-top:0px\">/';
 	$replacement[]='';
 
 	$pattern[]="/\[url[=]?\](.+?)\[\/url\]/i";
 	$replacement[]='\1';
 
-	$pattern[]="/\[url=http:\/\/getamap\.ordnancesurvey\.co\.uk\/getamap\/frames\.htm.*?gazString=(\w+)\](.+?)\[\/url\]/ie";
-	$replacement[]="smarty_function_getamap(array('gridref'=>\"\$1\",'text'=>'\$2'))";
+	$pattern[]="/\[url=http:\/\/getamap\.ordnancesurvey\.co\.uk\/getamap\/frames\.htm.*?gazString=(\w+)\](.+?)\[\/url\]/i";
+	$replacement[] = function($m) {
+		return smarty_function_getamap(array('gridref'=>$m[1],'text'=>$m[2]));
+	};
 
-	$pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n\"]+?)\](.+?)\[\/url\]/ie";
-	$replacement[]="smarty_function_external(array('href'=>\"\$1\",'text'=>'\$3','title'=>\"\$1\"))";
+	$pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n\"]+?)\](.+?)\[\/url\]/i";
+	$replacement[] = function($m) {
+		return smarty_function_external(array('href'=>$m[1],'text'=>$m[3],'title'=>$m[1]));
+	};
 
 	$pattern[]="/\[url=#([\w-]+)\](.+?)\[\/url\]/i";
 	$replacement[]='<a href="#\1">\2</a>';
@@ -519,7 +550,7 @@ function smarty_function_articletext($input) {
 	$pattern[]="/\n/";
 	$replacement[]="<br/>\n";
 
-	$output=preg_replace($pattern, $replacement, $output);
+	$output=preg_replace_array($pattern, $replacement, $output);
 
 	$output = GeographLinks($output,true);
 
