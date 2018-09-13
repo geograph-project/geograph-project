@@ -131,14 +131,22 @@ if (!$smarty->is_cached($template, $cacheid))
 			
 	$smarty->assign("point",$point);
 
-
-	$total['average'] = $total['average_r'] = $point['total'] / ($days/7); 
+	if ($days) {
+		$total['average'] = $total['average_r'] = $point['total'] / ($days/7); 
+	} else {
+		$total['average'] = $total['average_r'] = 0;
+	}
 	$total['next'] = $db->getOne("select count(*) from gridsquare where percent_land > 0 $andri");
 		
 	$total['dif'] = $total['next'] - $point['count'];
-		
-	$total['weeks'] = $total['dif']/$total['average'];
-	$total['weeks_r'] = floor($total['weeks']);
+
+	if ($total['average']) {
+		$total['weeks'] = $total['dif']/$total['average'];
+		$total['weeks_r'] = floor($total['weeks']);
+	} else {
+		$total['weeks'] = 0;
+		$total['weeks_r'] = 0;
+	}
 
 	if ($total['weeks'] < 1040) { //20years
 		$total['endtime'] = strtotime("+{$total['weeks_r']} weeks");
@@ -190,9 +198,14 @@ function calc($sql,$sql2,$mult,$title) {
 		}
 	}
 	$image['total'] = $total;
-	
-	$image['average'] = $total / $days;
-	$image['average_r'] = floor($image['average']);
+
+	if ($days) {
+		$image['average'] = $total / $days;
+		$image['average_r'] = floor($image['average']);
+	} else {
+		$image['average'] = 0;
+		$image['average_r'] = 0;
+	}
 	
 	if ($title) {
 		$table['Average']['Date'] = 'Average';
@@ -204,9 +217,14 @@ function calc($sql,$sql2,$mult,$title) {
 	$image['next'] = ceil($image['count']/$mult) * $mult;
 	
 	$image['dif'] = $image['next'] - $image['count'];
-	
-	$image['days'] = $image['dif']/$image['average'];
-	$image['days_r'] = ceil($image['days']);
+
+	if ($image['average']) {
+		$image['days'] = $image['dif']/$image['average'];
+		$image['days_r'] = ceil($image['days']);
+	} else {
+		$image['days'] = 0;
+		$image['days_r'] = 0;
+	}
 	return $image;
 }
 	
