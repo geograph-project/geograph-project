@@ -64,20 +64,30 @@ function updateWordnet(&$db,$text,$field,$id) {
 	
 	//build a list of two word phrases
 		$text = $alltext;
-	$text = preg_replace('/(\w+) (\w+)/e','addTwoLetterPhrase("$1 $2")',$text);	
+	$text = preg_replace_callback('/(\w+) (\w+)/', function($m) {
+		return addTwoLetterPhrase($m[1]." ".$m[2]);
+	}, $text);
 		$text = $alltext;
 		$text = preg_replace('/(\w+)/','',$text,1);
-	$text = preg_replace('/(\w+) (\w+)/e','addTwoLetterPhrase("$1 $2")',$text);
+	$text = preg_replace_callback('/(\w+) (\w+)/', function($m) {
+		return addTwoLetterPhrase($m[1]." ".$m[2]);
+	}, $text);
 	
 	//build a list of three word phrases
 		$text = $alltext;
-	$text = preg_replace('/(\w+) (\w+) (\w+)/e','addThreeLetterPhrase("$1 $2 $3")',$text);	
+	$text = preg_replace_callback('/(\w+) (\w+) (\w+)/', function($m) {
+		return addThreeLetterPhrase($m[1]." ".$m[2]." ".$m[3]);
+	}, $text);
 		$text = $alltext;
 		$text = preg_replace('/(\w+)/','',$text,1);
-	$text = preg_replace('/(\w+) (\w+) (\w+)/e','addThreeLetterPhrase("$1 $2 $3")',$text);	
+	$text = preg_replace_callback('/(\w+) (\w+) (\w+)/', function($m) {
+		return addThreeLetterPhrase($m[1]." ".$m[2]." ".$m[3]);
+	}, $text);
 		$text = $alltext;
 		$text = preg_replace('/(\w+) (\w+)/','',$text,1);
-	$text = preg_replace('/(\w+) (\w+) (\w+)/e','addThreeLetterPhrase("$1 $2 $3")',$text);
+	$text = preg_replace_callback('/(\w+) (\w+) (\w+)/', function($m) {
+		return addThreeLetterPhrase($m[1]." ".$m[2]." ".$m[3]);
+	}, $text);
 		
 	
 	

@@ -76,9 +76,14 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			$content = $page['content'];
 			$content = str_replace("\r",'',$content);
 			
-			$content = preg_replace('/\{image id=(\d+) text=([^\}]+)\}/e',"\$this->add_image_to_list('\$1','\$2')",$content);
+			$self = $this;
+			$content = preg_replace_callback('/\{image id=(\d+) text=([^\}]+)\}/', function($m) use($self) {
+				return $self->add_image_to_list($m[1], $m[2]);
+			}, $content);
 			
-			$content = preg_replace('/\[\[(\[?)(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/e',"\$this->add_image_to_list('\$2','\$2')",$content);
+			$content = preg_replace_callback('/\[\[(\[?)(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/', function($m) use($self) {
+				return $self->add_image_to_list($m[2], $m[2]);
+			}, $content);
 			
 			$content = strip_tags(preg_replace('/\[(\/?)(\w+)=?(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)?\]/','<{$1}tag>',$content));
 			
