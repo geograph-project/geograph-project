@@ -71,7 +71,9 @@ $words[$i]=preg_replace("/(^|\[)$host\/view\.php\?id=(\d+)/",'\1[[\2]]',$words[$
 $words[$i]=preg_replace("/^$host\/gridref\/([STNH]?[A-Z]{1}\d{2,10}|[A-Z]{3}\d{2,10})(?!\d*\/)/",'[[\1]]',$words[$i]);
 
 
-$words[$i]=preg_replace("/^(\!?)([STNH]?[A-Z]{1}|[A-Z]{3})(\d{2,10})([^\w]?)$/e",'((!"$1"&&strlen("$3")%2==0&&$prefixes["$2"])?"[[$2$3]]":"$2$3")."$4"',$words[$i]);
+$words[$i]=preg_replace_callback("/^(\!?)([STNH]?[A-Z]{1}|[A-Z]{3})(\d{2,10})([^\w]?)$/",  function($m) use (&$prefixes) {
+	return ((!$m[1]&&strlen($m[3])%2==0&&$prefixes[$m[2]])?"[[".$m[2].$m[3]."]]":$m[2].$m[3]).$m[4];
+}, $words[$i]);
 //todo? strip the ! even if wont fire for another reason eg [b]on the !B5467[/b]
 
 
