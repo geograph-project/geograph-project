@@ -41,7 +41,7 @@ if (isset($_POST['check']))
 	flush();
 	set_time_limit(3600*24);
 	
-	$db = NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection();
 	if (!$db) die('Database connection failed'); 
 	
 	if (isset($_POST['dbtables']))

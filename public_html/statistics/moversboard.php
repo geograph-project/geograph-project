@@ -52,7 +52,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/imagelist.class.php');
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed'); 
 
 	$sql_qtable = array (

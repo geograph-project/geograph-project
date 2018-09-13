@@ -34,7 +34,7 @@ $template='hectad.tpl';
 $hectad = (isset($_GET['hectad']) && preg_match('/^\w{1,3}\s*\d{2}$/',$_GET['hectad']))?strtoupper($_GET['hectad']):'';
 
 if (empty($hectad)) {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	
 	$hectad = $db->getOne("select hectad from hectad_stat where landsquares > 0 order by rand()");
 }
@@ -45,7 +45,7 @@ $cacheid = $hectad;
 if (!$smarty->is_cached($template, $cacheid))
 {
 	if (!isset($db)) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 	}
 	
 	$row = $db->getRow("select * from hectad_stat where hectad = ".$db->Quote($hectad));
@@ -81,7 +81,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$row['map_token'] = $mosaic->getToken();
 
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 
 		$db->Execute(sprintf("UPDATE hectad_stat SET
 			map_token = %s

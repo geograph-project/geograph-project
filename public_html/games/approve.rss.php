@@ -35,7 +35,7 @@ $rss->title = 'Game Scoreboard Approvals';
 $rss->link = "http://{$_SERVER['HTTP_HOST']}/games/approve.php";
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 	
 
 $sql="select created,username from game_score where approved = 0 group by username order by created";

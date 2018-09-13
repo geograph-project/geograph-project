@@ -28,7 +28,7 @@ $USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->mustHavePerm("m
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 if (!$db) die('Database connection failed');  
 #$db->debug = true;
 

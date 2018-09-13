@@ -128,7 +128,7 @@ if (   isset($_GET['type'])
 
 $limit = 20;
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 if (!$db) die('Database connection failed');  
 
 $smarty = new GeographPage;

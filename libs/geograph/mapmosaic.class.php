@@ -1827,7 +1827,7 @@ class GeographMapMosaic
 	function &_getDB()
 	{
 		if (!is_object($this->db))
-			$this->db=NewADOConnection($GLOBALS['DSN']);
+			$this->db=GeographDatabaseConnection();
 		if (!$this->db) die('Database connection failed');  
 		return $this->db;
 	}

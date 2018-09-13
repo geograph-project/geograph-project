@@ -30,7 +30,7 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 $amount=isset($_POST['amount'])?$_POST['amount']:100;
 $radius=isset($_POST['radius'])?$_POST['radius']:0.5;

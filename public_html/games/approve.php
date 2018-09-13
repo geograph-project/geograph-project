@@ -35,7 +35,7 @@ $template='games_approve.tpl';
 
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 if (!$db) die('Database connection failed'); 
 
 if (isset($_POST['submit']) && count($_POST['a'])) {

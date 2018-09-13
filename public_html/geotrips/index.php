@@ -83,7 +83,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	require_once('geograph/gridimage.class.php');
 	include('./geotrip_func.php');
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');
 
 	// get trips from database

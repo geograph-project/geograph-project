@@ -43,7 +43,7 @@ if (isset($_GET['gridref']))
 		$isadmin = $USER->hasPerm('moderator')||$USER->hasPerm('mapmod')?1:0;
 		$smarty->assign_by_ref('isadmin', $isadmin);
 	
-		$db = NewADOConnection($GLOBALS['DSN']);
+		$db = GeographDatabaseConnection();
 
 		$smarty->assign('check_count', -2);
 	

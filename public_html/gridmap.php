@@ -129,7 +129,7 @@ if ($grid_given)
 		
 		$blocks = array();
 		
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		if (!$db) die('Database connection failed');  
 		
 		

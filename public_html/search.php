@@ -83,7 +83,7 @@ if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_le
 
 if (isset($_GET['fav']) && $i) {
 	if (!$db) {
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		if (!$db) die('Database connection failed');
 	}
 	$fav = ($_GET['fav'])?'Y':'N';
@@ -218,7 +218,7 @@ if (isset($_GET['fav']) && $i) {
 	$data = $_GET;
 	$error = false;
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (empty($db)) die('Database connection failed');
 
 	if (empty($data['orderby'])) {
@@ -285,7 +285,7 @@ if (isset($_GET['fav']) && $i) {
 	$data = $_GET;
 	$error = false;
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (empty($db)) die('Database connection failed');
 
 	$isadmin=$USER->hasPerm('moderator')?1:0;
@@ -482,7 +482,7 @@ if (isset($_GET['fav']) && $i) {
 	if (!empty($_GET['label'])) {
 		$data['description'] = "labeled [".strip_tags($_GET['label'])."]";
 	
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		$where = "label = ".$db->Quote($_GET['label']);
 	} else {
 		$data['description'] = "in a cluster";
@@ -725,7 +725,7 @@ if (isset($_GET['fav']) && $i) {
 	//  Advanced Form
 	// -------------------------------
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');
 
 		$smarty->assign('submitted_start', "0-0-0");
@@ -1083,7 +1083,7 @@ if (isset($_GET['fav']) && $i) {
 
 	if ($engine->criteria->user_id == $USER->user_id) {
 		if (!isset($db)) {
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection();
 			if (!$db) die('Database connection failed');
 		}
 		$db->query("UPDATE queries SET use_timestamp = null WHERE id = $i");
@@ -1128,7 +1128,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 	if (!$smarty->is_cached('search.tpl')) {
 		if (!isset($db)) {
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection();
 			if (empty($db)) die('Database connection failed');
 		}
 		//list of a few image classes
@@ -1145,7 +1145,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 	if ($USER->registered) {
 		if (!$db) {
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection();
 			if (!$db) die('Database connection failed');
 		}
 		if (isset($_GET['all'])) {
@@ -1230,7 +1230,7 @@ if (isset($_GET['fav']) && $i) {
 		if (!empty($_POST['reverse_order_ind']))
 			$smarty->assign('reverse_order_checked', 'checked="checked"');
 		if (empty($db)) {
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection();
 			if (empty($db)) die('Database connection failed');
 		}
 		advanced_form($smarty,$db);

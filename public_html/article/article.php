@@ -36,7 +36,7 @@ if (empty($_GET['page']) || !preg_match('#^[^\s.?&%/\'"<>]+$#',$_GET['page'])) {
 
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 
 $page = $db->getRow("
 select article.*,realname,gs.grid_reference,category_name

@@ -92,7 +92,7 @@ class GridShader
 			#	$img=false;
 			if ($img)
 			{
-				$this->db = NewADOConnection($GLOBALS['DSN']);
+				$this->db = GeographDatabaseConnection();
 				if (!$this->db) die('Database connection failed');   
 
 				$imgw=imagesx($img);

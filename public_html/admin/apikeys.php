@@ -28,7 +28,7 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 if (!$db) die('Database connection failed');  
 	
 	if ($_POST['submit'] && $_POST['apikey'] && $_POST['id']) {

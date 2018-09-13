@@ -29,7 +29,7 @@ if (!isLocalIPAddress())
         $USER->mustHavePerm("admin");
 }
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 if (!$db) die('Database connection failed');
 
 echo <<<EOF

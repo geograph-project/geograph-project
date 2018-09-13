@@ -32,7 +32,7 @@ header("Content-Length: 0");
 flush();
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection();
 if (!$db) die('Database connection failed');
 
 $ins = "INSERT INTO vote_log SET

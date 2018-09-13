@@ -32,7 +32,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 if (isset($_GET['charge'])) {
 	$USER->mustHavePerm("admin");

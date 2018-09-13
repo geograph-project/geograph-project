@@ -46,7 +46,7 @@ $cacheid='statistics|busyday_users';
 if (!$smarty->is_cached($template, $cacheid))
 {
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	if (!$db) die('Database connection failed');  
 
 	$title = "Busiest Day by User Signups";

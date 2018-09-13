@@ -86,7 +86,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection();
 	
 	if ($CONF['forums']) {
 		//let's find recent posts in the announcements forum made by

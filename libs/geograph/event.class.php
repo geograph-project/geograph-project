@@ -82,7 +82,7 @@ class Event
 	*/
 	static function fire($event_name, $event_param="", $priority=50)
 	{
-		$db=NewADOConnection($GLOBALS['DSN']);
+		$db=GeographDatabaseConnection();
 		if (!$db) die('Database connection failed');  
 		
 		//is a similar event pending? if so, increase its counter

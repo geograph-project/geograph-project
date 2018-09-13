@@ -34,7 +34,7 @@ $_SERVER['DOCUMENT_ROOT'] = "/var/www/geograph_live/";
 require_once('geograph/global.inc.php');
 require_once('geograph/wordnet.inc.php');
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection();
 
 
 	$tim = time();
