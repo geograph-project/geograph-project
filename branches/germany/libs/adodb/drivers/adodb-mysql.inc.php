@@ -36,10 +36,29 @@ class ADODB_mysql extends ADOConnection {
 	var $forceNewConnect = false;
 	var $poorAffectedRows = true;
 	var $clientFlags = 0;
+	var $charSet = '';
 	var $substr = "substring";
 	var $nameQuote = '`';		/// string to use to quote identifiers and names
 	var $compat323 = false; 		// true if compat with mysql 3.23
 	
+	// SetCharSet - switch the client encoding
+	function SetCharSet($charset_name)
+	{
+		if (!function_exists('mysql_set_charset')) {
+			return false;
+		}
+
+		if ($this->charSet !== $charset_name) {
+			$ok = @mysql_set_charset($charset_name,$this->_connectionID);
+			if ($ok) {
+				$this->charSet = $charset_name;
+				return true;
+			}
+			return false;
+		}
+		return true;
+	}
+
 	function ADODB_mysql() 
 	{			
 		if (defined('ADODB_EXTENSION')) $this->rsPrefix .= 'ext_';
@@ -364,7 +383,6 @@ class ADODB_mysql extends ADOConnection {
 	
 		if ($this->_connectionID === false) return false;
 		
-		mysql_query("SET names 'latin1'",$this->_connectionID);#FIXME error handling
 		if ($argDatabasename) return $this->SelectDB($argDatabasename);
 		return true;	
 	}
@@ -379,7 +397,6 @@ class ADODB_mysql extends ADOConnection {
 		else
 			$this->_connectionID = mysql_pconnect($argHostname,$argUsername,$argPassword);
 		if ($this->_connectionID === false) return false;
-		mysql_query("SET names 'latin1'",$this->_connectionID);#FIXME error handling
 		if ($this->autoRollback) $this->RollbackTrans();
 		if ($argDatabasename) return $this->SelectDB($argDatabasename);
 		return true;	
@@ -525,6 +542,8 @@ class ADODB_mysql extends ADOConnection {
 	function _close()
 	{
 		@mysql_close($this->_connectionID);
+
+		$this->charSet = '';
 		$this->_connectionID = false;
 	}
 
