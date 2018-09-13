@@ -46,6 +46,7 @@ $CONF['db_user']='geograph';
 $CONF['db_pwd']='banjo';
 $CONF['db_db']='geograph';
 $CONF['db_persist']=''; #'?persist';
+#$CONF['db_charset']='latin1'; # 'utf8', 'utf8mb4'
 
 $CONF['ogdb_db']=''; # database for OpenGeoDB if available, '' otherwise
 

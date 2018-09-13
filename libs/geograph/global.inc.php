@@ -150,6 +150,7 @@ if (!empty($CONF['memcache']['sessions'])) {
 
 function GeographDatabaseConnection($allow_readonly = false, $dsn = null)
 {
+	global $CONF;
 	if (is_null($dsn)) {
 		$dsn = $GLOBALS['DSN'];
 	}
@@ -158,7 +159,11 @@ function GeographDatabaseConnection($allow_readonly = false, $dsn = null)
 		die('Database connection failed');
 	}
 	$db->readonly = false;
-	# TODO charset etc
+	if (isset($CONF['db_charset']) && !is_null($CONF['db_charset'])) {
+		#$sql = "SET names '".$CONF['db_charset']."'";
+		#$db->Execute($sql);
+		$db->SetCharSet($CONF['db_charset']);
+	}
 	return $db;
 }
 

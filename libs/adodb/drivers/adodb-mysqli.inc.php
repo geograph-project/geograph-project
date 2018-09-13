@@ -108,7 +108,6 @@ class ADODB_mysqli extends ADOConnection {
 					$this->clientFlags);
  	     
 		if ($ok) {
-			mysqli_query($this->_connectionID, "SET names 'latin1'");#FIXME error handling
 	 		if ($argDatabasename)  return $this->SelectDB($argDatabasename);
  			return true;
  	   } else {
