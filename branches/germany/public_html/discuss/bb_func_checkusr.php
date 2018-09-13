@@ -17,10 +17,10 @@ if(strtolower(${$dbUserSheme['username'][1]})==strtolower($dn)) { $correct=1; br
 }
 
 if (!preg_match($userRegExp,${$dbUserSheme['username'][1]})) $correct=1;
-elseif($act=='reg' and !eregi("^[A-Za-z0-9_]{5,32}$", ${$dbUserSheme['user_password'][1]})) $correct=2;
-elseif($act=='upd' and ${$dbUserSheme['user_password'][1]}!='' and !eregi("^[A-Za-z0-9_]{5,32}$", ${$dbUserSheme['user_password'][1]})) $correct=3;
+elseif($act=='reg' and !preg_match("#^[A-Za-z0-9_]{5,32}$#i", ${$dbUserSheme['user_password'][1]})) $correct=2;
+elseif($act=='upd' and ${$dbUserSheme['user_password'][1]}!='' and !preg_match("#^[A-Za-z0-9_]{5,32}$#i", ${$dbUserSheme['user_password'][1]})) $correct=3;
 elseif(${$dbUserSheme['user_password'][1]}!=$passwd2) $correct=3;
-elseif(!eregi("^[0-9a-z]+([._-][0-9a-z]+)*_?@[0-9a-z]+([._-][0-9a-z]+)*[.][0-9a-z]{2}[0-9A-Z]?[0-9A-Z]?$", ${$dbUserSheme['user_email'][1]})) $correct=4;
-elseif(${$dbUserSheme['user_website'][1]}!='' and !eregi("^(f|ht)tp[s]?:\/\/[^<>]+$", ${$dbUserSheme['user_website'][1]})) $correct=6;
+elseif(!preg_match("#^[0-9a-z]+([._-][0-9a-z]+)*_?@[0-9a-z]+([._-][0-9a-z]+)*[.][0-9a-z]{2}[0-9A-Z]?[0-9A-Z]?$#i", ${$dbUserSheme['user_email'][1]})) $correct=4;
+elseif(${$dbUserSheme['user_website'][1]}!='' and !preg_match("#^(f|ht)tp[s]?:\/\/[^<>]+$#i", ${$dbUserSheme['user_website'][1]})) $correct=6;
 
 ?>
