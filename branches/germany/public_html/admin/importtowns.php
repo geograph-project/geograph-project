@@ -96,6 +96,7 @@ if (   isset($_POST['submit'])
 		}
 		$prev = $row;
 	}
+	unset($row);
 	if (!is_null($prev)) {
 		if ($skip) {
 			$duplicaterows[] = $prev;
@@ -131,6 +132,7 @@ if (   isset($_POST['submit'])
 			$invalidrows[] = $row;
 		}
 	}
+	unset($row);
 	$dbarr = $arr;
 	$arr = array();
 	foreach ($dbarr as &$row) {
@@ -145,6 +147,7 @@ if (   isset($_POST['submit'])
 			$oldrows[] = $row;
 		}
 	}
+	unset($row);
 	if ($checkname) {
 		$dbarr = $arr;
 		$arr = array();
@@ -162,6 +165,7 @@ if (   isset($_POST['submit'])
 			}
 		}
 	}
+	unset($row);
 
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;
@@ -228,12 +232,14 @@ if (   isset($_POST['submit'])
 		$sql = 'INSERT INTO loc_towns ('.implode(',',$sqlcolumns).') VALUES ('.implode(',',$sqlvalues).')';
 		$row['sql'] = $sql;
 	}
+	unset($row);
 
 	if (!$dryrun) {
 		foreach ($arr as &$row) {
 			$db->Execute($row['sql']);
 			$mosaic->expirePosition(floor($row['x']/1000),floor($row['y']/1000),0,true);
 		}
+		unset($row);
 	}
 
 	$smarty->assign_by_ref('towns',          $arr);
