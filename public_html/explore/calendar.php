@@ -223,7 +223,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				if ($dayNumber > 0) {
 					$day['number'] = $dayNumber;
 					$day['key'] = sprintf("%04d-%02d-%02d",$year,$month,$dayNumber);
-					if ($images[$day['key']]) {
+					if (!empty($images[$day['key']])) {
 						$day['image']=new GridImage();
 						$day['image']->fastInit($images[$day['key']]);	
 						$day['image']->compact();
