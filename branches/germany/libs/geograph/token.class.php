@@ -129,13 +129,17 @@ class Token
 	/**
 	* Constructor
 	*/
-	function Token()
+	public function __construct()
 	{
 		global $CONF;
 		if (isset($CONF['token_secret']))
 		{
 			$this->magic=$CONF['token_secret'];
 		}
+	}
+	function Token()
+	{
+		self::__construct();
 	}
 	
 	/** 
