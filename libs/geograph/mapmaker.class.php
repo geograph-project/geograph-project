@@ -66,7 +66,6 @@ class MapMaker
 	function build($x1, $y1, $x2, $y2, $showgrid=true,$scale = 1,$force = false,$reference_index = 0,$usr = 0,$bw = false,$limit = 0,$geo = false, $level1 = -2, $level2 = -2, $cid = -1)
 	{
 		$this->db = GeographDatabaseConnection();
-		if (!$this->db) die('Database connection failed');   
 	
 	
 		//ensure coords are in right order

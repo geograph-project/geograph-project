@@ -497,7 +497,6 @@ class sphinxwrapper {
 	{
 		if (!is_object($this->db))
 			$this->db=GeographDatabaseConnection();
-		if (!$this->db) die('Database connection failed'); 
 		return $this->db;
 	}
 	

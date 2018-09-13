@@ -41,7 +41,6 @@ $db = null;
 
 if ($USER->user_id) {
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');
 
 	$uid=$db->getOne("select uid from geotrips where id=$trip_id");
 	if ($uid !== null && $uid !== false || $uid == $USER->user_id) {
@@ -62,7 +61,6 @@ if ($CONF['ask_gmaps']) {
 if (!$smarty->is_cached($template, $cacheid)) {
 	if (is_null($db)) {
 		$db=GeographDatabaseConnection();
-		if (!$db) die('Database connection failed');
 	}
 
 	require_once('geograph/searchcriteria.class.php');

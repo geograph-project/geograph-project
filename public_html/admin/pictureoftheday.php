@@ -54,7 +54,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	$lower=-$daysperimg+1;
 	//lets get some stats
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 	
 	//handle form post
 	if (isset($_POST['addimage']))

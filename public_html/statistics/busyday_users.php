@@ -47,7 +47,6 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 
 	$title = "Busiest Day by User Signups";
 

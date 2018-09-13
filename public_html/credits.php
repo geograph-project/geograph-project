@@ -49,7 +49,6 @@ if (!$smarty->is_cached($template,$cacheid))
 {
 	if (!isset($db)) {
 		$db=GeographDatabaseConnection();
-		if (!$db) die('Database connection failed');
 	}
 	$andwhere = '';
 	

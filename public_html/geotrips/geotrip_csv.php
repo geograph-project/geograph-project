@@ -4,7 +4,6 @@ require_once('geograph/global.inc.php');
 
 include('./geotrip_func.php');
 $db=GeographDatabaseConnection();
-if (!$db) die('Database connection failed');  
 
 
 header("Content-type: application/octet-stream");

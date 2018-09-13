@@ -50,7 +50,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/imagelist.class.php');
 
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 
 	$column = ($date == 'taken')?'imagetaken':'submitted';  
 	$title1 = ($date == 'taken')?'Taken':'Submitted'; 

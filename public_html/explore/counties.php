@@ -38,7 +38,6 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 	#$db->debug = true;
 
 	require_once('geograph/conversions.class.php');

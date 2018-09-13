@@ -33,7 +33,6 @@ init_session();
 
 
 $db = GeographDatabaseConnection();
-if (!$db) die('Database connection failed');   
 
 $smarty = new GeographPage;
 

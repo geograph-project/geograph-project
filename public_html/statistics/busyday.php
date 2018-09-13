@@ -53,7 +53,6 @@ $cacheid='statistics|busyday'.isset($_GET['users']).$date.'.'.$ri.'.'.$u;
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed');  
 
 	$column = ($date == 'submitted')?'substring(submitted, 1, 10 )':'imagetaken';  
 	

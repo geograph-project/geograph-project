@@ -30,7 +30,6 @@ $smarty = new GeographPage;
 $USER->mustHavePerm("admin");
 
 $db=GeographDatabaseConnection();
-	if (!$db) die('Database connection failed'); 
 	
 if (isset($_GET['showlogs']))
 {

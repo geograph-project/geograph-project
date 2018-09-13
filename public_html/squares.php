@@ -105,7 +105,6 @@ if ($grid_ok)
 		LIMIT 250"; ##limt just to make sure
 
 		$db=GeographDatabaseConnection();
-		if (!$db) die('Database connection failed');  
 
 		$data = $db->getAssoc($sql);
 
