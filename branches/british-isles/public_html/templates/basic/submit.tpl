@@ -365,8 +365,8 @@ Below is a full-size preview of the image we will store for grid reference
 
 <img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}" name="mainpreview"/><br>
 Rotate by 90 degrees: 
-	<button value=&#8634; title="Anti-Clockwise 90deg rotation" onclick="rotateImage(270)">&#8634;</button> 
-	<button value=&#8635; title="Clockwise 90deg rotation" onclick="rotateImage(90)">&#8635;</button>
+	<button type=button value=&#8634; title="Anti-Clockwise 90deg rotation" onclick="rotateImage(270)">&#8634;</button> 
+	<button type=button value=&#8635; title="Clockwise 90deg rotation" onclick="rotateImage(90)">&#8635;</button>
 <br/><br/>
 
 {if $max_ftf < 5}
@@ -422,7 +422,7 @@ it was taken or other interesting geographical information. <span id="styleguide
 
 <div>
 	<b>Shared Descriptions/References (Optional){if $snippets} <span style="background-color:yellow" title="{$snippets} Shared Description(s) being used in this square">[{$snippets}]</span>{/if}</b>
-	<span id="hideshare"><input type=button onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" value="Expand"/></span>
+	<span id="hideshare"><input type=button onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id='+document.forms['theForm'].elements['upload_id'].value+'&gr={$grid_reference|escape:'html'}';return false;" value="Expand"/></span>
 
 	<div id="showshare" style="display:none">
 		<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
@@ -465,7 +465,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			{/foreach}
 			<br style="clear:both"/>
 
-		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}&v=3';" id="hidetag"/></p>
+		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?upload_id='+document.forms['theForm'].elements['upload_id'].value+'&gr={$grid_reference|escape:'html'}&v=3';" id="hidetag"/></p>
 
 		<div class="interestBox" id="showtag" style="display:none">
 			<iframe src="about:blank" height="300" width="100%" id="tagframe">
