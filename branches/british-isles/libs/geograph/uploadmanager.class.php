@@ -336,8 +336,23 @@ class UploadManager
 				$ok = $this->_downsizeFile($uploadfile2,$max_dimension,$orginalfile2);
 			}
 
-			//just copy the exif file. later might use rename!
-			copy($exiffile,$exiffile2);
+			//move the EXIF too, and delete the old versions.
+			rename($exiffile,$exiffile2); //may as well just rename thig right now
+			unlink($uploadfile);
+			if (file_exists($orginalfile))
+				unlink($orginalfile);
+
+	                //reassign the snippets and tags
+                		$gid1 = crc32($id)+4294967296;
+		                $gid1 += $USER->user_id * 4294967296;
+                		$gid1 = sprintf('%0.0f',$gid1);
+
+                		$gid2 = crc32($upload_id)+4294967296;
+		                $gid2 += $USER->user_id * 4294967296;
+                		$gid2 = sprintf('%0.0f',$gid2);
+
+			        $this->db->Execute($sql = "UPDATE gridimage_snippet SET gridimage_id = $gid2 WHERE gridimage_id = ".$gid1);
+			        $this->db->Execute($sql = "UPDATE gridimage_tag SET gridimage_id = $gid2 WHERE gridimage_id = ".$gid1);
 
 			$size = getimagesize($uploadfile2);
                         return array('upload_id'=>$upload_id,'width'=>$size[0],'height'=>$size[1],'lossy'=>$lossy);
