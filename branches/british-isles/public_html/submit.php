@@ -244,10 +244,11 @@ if (isset($_POST['gridsquare']))
 		$smarty->assign('eastings', $square->eastings);
 		$smarty->assign('northings', $square->northings);
 		$smarty->assign('gridref', $square->grid_reference);
-	
+
 		//store other useful info about the square
 		$smarty->assign('imagecount', $square->imagecount);
-		
+		$smarty->assign('max_ftf', $square->max_ftf);
+
 		//we're just setting up the position, move to step 2
 		if (isset($_POST['setpos']) || isset($_POST['setpos2']))
 		{
@@ -256,7 +257,7 @@ if (isset($_POST['gridsquare']))
 			if (isset($_POST['jpeg_url'])) {
 				$smarty->assign('jpeg_url', $_POST['jpeg_url']);
 			}
-			
+
 			if (isset($_POST['title'])) {
 				//preserve stuff
 				$smarty->assign('title', stripslashes($_POST['title']));
@@ -272,7 +273,7 @@ if (isset($_POST['gridsquare']))
 		elseif (isset($_POST['goback']))
 		{
 			$step=1;
-		}			
+		}
 		elseif (isset($_POST['transfer_id']))
 		{
 			//preserve the upload id
@@ -290,11 +291,10 @@ if (isset($_POST['gridsquare']))
 				} else {
 					$step=2;
 				}
-			
 			} else {
 				$step=1;
 			}
-		}	
+		}
 		//see if we have an url to process?
 		elseif (isset($_POST['jpeg_url']))
 		{
@@ -320,10 +320,10 @@ if (isset($_POST['gridsquare']))
 			switch($_FILES['jpeg']['error'])
 			{
 				case 0:
-					if (!filesize($_FILES['jpeg']['tmp_name'])) 
+					if (!filesize($_FILES['jpeg']['tmp_name']))
 					{
 						$smarty->assign('error', 'Sorry, no file was received - please try again');
-					} 
+					}
 					elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
 					{
 						$smarty->assign('upload_id', $uploadmanager->upload_id);
@@ -333,7 +333,7 @@ if (isset($_POST['gridsquare']))
 						$smarty->assign('error', $uploadmanager->errormsg);
 						$uploadmanager->errormsg = '';
 					}
-					
+
 					$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg']['name'])));
 
 					break;
