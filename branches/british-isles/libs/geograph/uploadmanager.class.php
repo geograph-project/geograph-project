@@ -66,8 +66,6 @@ class UploadManager
 
 		if ($this->use_new_upload) {
 
-			$this->use_new_upload = true;
-
 			$a = $USER->user_id%10;
 	                $b = intval($USER->user_id/10)%10;
 
@@ -270,6 +268,71 @@ class UploadManager
 	{
 		$this->user_status=$user_status;
 	}
+
+
+	function rotateUpload($id,$degrees,$force=false) {
+		global $CONF;
+
+		if($this->validUploadId($id))
+                {
+                        $uploadfile = $this->_pendingJPEG($id);
+			$orginalfile = $this->_originalJPEG($id);
+			$exiffile = $this->_pendingEXIF($id);
+
+                        //generate a unique "upload id" - we use this to hold the image until
+                        //they've confirmed they want to submit
+                        $upload_id=md5(uniqid('upload'));
+
+                        $uploadfile2 = $this->_pendingJPEG($upload_id);
+			$exiffile2 = $this->_pendingEXIF($upload_id);
+
+			//if have large image, rotate it
+                        if (file_exists($orginalfile)) {
+				//rotate the largest - and recreate the midsize!
+				$orginalfile2 = $this->_originalJPEG($upload_id);
+
+				$from = $orginalfile;
+				$to = $orginalfile2;
+			} else {
+				//otherwise rotate the as provided image
+				$from = $uploadfile;
+				$to = $uploadfile2;
+			}
+
+			$lossy = false;
+			//do the actual rotation, lossless if possible
+			$cmd = "jpegtran -rotate $degrees -perfect -outfile $to $from";
+			passthru($cmd);
+
+			if (!file_exists($to)) {
+				//perfect rotation failed, so do imperfect!
+
+				$lossy = true;
+
+				if (empty($force)) {
+					return array('lossy'=>$lossy);
+				}
+
+				//note, could not set quality, and would try to maintain current or fallback to 92
+				$cmd = sprintf ("\"%sconvert\" jpg:%s -rotate $degrees -quality 87 jpg:%s", $CONF['imagemagick_path'], $from, $to);
+				passthru($cmd);
+			}
+
+			//if have large image, it been rotated, and now need to create new midsize image
+			if (file_exists($orginalfile)) {
+				$max_dimension = 640;
+
+				$ok = $this->_downsizeFile($uploadfile2,$max_dimension,$orginalfile2);
+			}
+
+			//just copy the exif file. later might use rename!
+			copy($exiffile,$exiffile2);
+
+			$size = getimagesize($uploadfile2);
+                        return array('upload_id'=>$upload_id,'width'=>$size[0],'height'=>$size[1],'lossy'=>$lossy);
+		}
+	}
+
 
 	/**
 	* outputs jpeg data for upload id $id and exits
