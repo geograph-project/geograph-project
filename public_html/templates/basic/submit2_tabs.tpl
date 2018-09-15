@@ -144,8 +144,12 @@ function rotateImage(degrees,force) {
 				if (result.width && result.upload_id) {
 					theForm.elements['upload_id['+name+']'].value = result.upload_id;
 
+					//need to set iframe1, even if not visible, as clicker wont reload it!
 					document.getElementById('iframe1').src = '/submit2.php?inner&step=1&transfer_id='+result.upload_id;
-					//todo, maybe make sure step 1 is opened?
+
+					//but do need to reload step 3 as it has the upload_id in url, eg for tags
+					if (document.getElementById('sd3').style.display == 'block')
+						clicker(3,true)
 
 					showPreview("/submit.php?preview="+result.upload_id, result.width, result.height, '');
 				} else if (result.lossy) {

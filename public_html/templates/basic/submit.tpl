@@ -734,6 +734,13 @@ function rotateImage(degrees,force) {
 					}
 
 					showPreview("/submit.php?preview="+result.upload_id, result.width, result.height, '');
+
+					//hide these if showing (as they will be old id, can be reopened if want)
+					if (document.getElementById('hidetag')) {
+						hide_tree('tag');
+						hide_tree('share');
+					}
+
 				} else if (result.lossy) {
 					if (confirm("This image can not be rotated losslessly, there will be some small quality loss if continue")) {
 						 rotateImage(degrees,1);
