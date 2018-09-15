@@ -125,9 +125,47 @@ function doneStep(step,dontclose) {
 		}
 	}
 }
+
+function rotateImage(degrees,force) {
+        //we have to be extra careful checking if a real jquery, as jQl creates a fake jQuery object.
+        if (typeof jQuery === "undefined" || jQuery === null || typeof jQuery.fn === "undefined" || typeof jQuery.fn.load === "undefined") {
+                jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js');
+        }
+
+        $(function() { //will sill execute even after page load!
+		
+	        var theForm = document.forms['theForm'];
+        	var name = document.forms['theForm'].elements['selected'].value;
+		var upload_id = escape(theForm.elements['upload_id['+name+']'].value);
+		if (!force)
+			force=0; //just avoids 'undefined'
+		$.getJSON("/submit.php?rotate="+upload_id+"&degrees="+degrees+"&force="+force,
+                         function (result) {
+				if (result.width && result.upload_id) {
+					theForm.elements['upload_id['+name+']'].value = result.upload_id;
+
+					document.getElementById('iframe1').src = '/submit2.php?inner&step=1&transfer_id='+result.upload_id;
+					//todo, maybe make sure step 1 is opened?
+
+					showPreview("/submit.php?preview="+result.upload_id, result.width, result.height, '');
+				} else if (result.lossy) {
+					if (confirm("This image can not be rotated losslessly, there will be some small quality loss if continue")) {
+						 rotateImage(degrees,1);
+					}
+				} else {
+					alert("Rotation Failed, please try again. Or if persists, let us know!");
+				}
+			}
+		);
+	});
+}
+
 function showPreview(url,width,height,filename) {
 	height2=Math.round((138 * height)/width);
-	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="138" height="'+height2+'" id="imgPreview" onmouseover="var that = this; mytimer=setTimeout(function() {that.height='+height+';that.width='+width+';}, 500);" onmouseout="this.height='+height2+';this.width=138;clearTimeout(mytimer)" /><br/>'+filename;
+	document.getElementById('previewInner').innerHTML = 
+		'<button value=&#8634; title="Anti-Clockwise 90deg rotation" onclick="rotateImage(270)">&#8634;</button> '+
+		'<button value=&#8635; title="Clockwise 90deg rotation" onclick="rotateImage(90)">&#8635;</button> '+
+		'<img src="'+url+'" width="138" height="'+height2+'" id="imgPreview" onmouseover="var that = this; mytimer=setTimeout(function() {that.height='+height+';that.width='+width+';}, 500);" onmouseout="this.height='+height2+';this.width=138;clearTimeout(mytimer)" /><br/>'+filename;
 	document.getElementById('hidePreview').style.display='';
 }
 function scalePreview(scale) {

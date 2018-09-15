@@ -363,9 +363,13 @@ geographing</a> first.</p>
 Below is a full-size preview of the image we will store for grid reference
 {$gridref}.<br/><br/>
 
-<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
+<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}" name="mainpreview"/><br>
+Rotate by 90 degrees: 
+	<button value=&#8634; title="Anti-Clockwise 90deg rotation" onclick="rotateImage(270)">&#8634;</button> 
+	<button value=&#8635; title="Clockwise 90deg rotation" onclick="rotateImage(90)">&#8635;</button>
 <br/><br/>
 
+{if $max_ftf < 5}
 <div style="position:relative; background-color:#dddddd; padding-left:10px;padding-top:1px;padding-bottom:1px;">
 <h3><a name="geograph"></a>Is the image a &quot;geograph&quot;?</h3>
 
@@ -389,10 +393,13 @@ for {$gridref} provided they are accurately located, but may not qualify as geog
 </ul>
 
 </div>
+{/if}
 
+{if $max_ftf < 1}
 <p>If you like, you can provide more images or extra information (which
 can be edited at any time) but to activate a square you need to be first to meet the
 criteria above!</p>
+{/if}
 
 <div class="interestBox" style="width:30em;z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)<br/>
 {newwin href="/gridref/`$gridref`" text="Open `$gridref` Page"}</div>
@@ -690,6 +697,55 @@ have problems
 
 <script type="text/javascript">
 {literal}
+
+function rotateImage(degrees,force) {
+        //we have to be extra careful checking if a real jquery, as jQl creates a fake jQuery object.
+        if (typeof jQuery === "undefined" || jQuery === null || typeof jQuery.fn === "undefined" || typeof jQuery.fn.load === "undefined") {
+                jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js');
+        }
+
+        $(function() { //will sill execute even after page load!
+		
+	        var theForm = document.forms['theForm'];
+		var upload_id;
+		if (theForm.elements['upload_id'])
+			upload_id = escape(theForm.elements['upload_id'].value);
+		if (theForm.elements['transfer_id'])
+			upload_id = escape(theForm.elements['transfer_id'].value);
+		if (!upload_id || upload_id.length<10) {
+			alert("unable to rotate, please let us know");
+			return;
+		}
+			
+		if (!force)
+			force=0; //just avoids 'undefined'
+		$.getJSON("/submit.php?rotate="+upload_id+"&degrees="+degrees+"&force="+force,
+                         function (result) {
+				if (result.width && result.upload_id) {
+					if (theForm.elements['upload_id'])
+						theForm.elements['upload_id'].value = result.upload_id;
+					if (theForm.elements['transfer_id'])
+						theForm.elements['transfer_id'].value = result.transfer_id;
+
+					if (document.images['mainpreview']) {
+						document.images['mainpreview'].src = "/submit.php?preview="+result.upload_id;
+						document.images['mainpreview'].width = result.width;
+						document.images['mainpreview'].height = result.height;
+					}
+
+					showPreview("/submit.php?preview="+result.upload_id, result.width, result.height, '');
+				} else if (result.lossy) {
+					if (confirm("This image can not be rotated losslessly, there will be some small quality loss if continue")) {
+						 rotateImage(degrees,1);
+					}
+				} else {
+					alert("Rotation Failed, please try again. Or if persists, let us know!");
+				}
+			}
+		);
+	});
+}
+
 function showPreview(url,width,height,filename) {
 	height2=Math.round((138 * height)/width);
 	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="138" height="'+height2+'" id="imgPreview" onmouseover="var that = this; mytimer=setTimeout(function() {that.height='+height+';that.width='+width+';}, 500);" onmouseout="this.height='+height2+';this.width=138;clearTimeout(mytimer)" /><br/>'+filename;
