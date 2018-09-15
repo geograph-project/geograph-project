@@ -271,7 +271,7 @@ class UploadManager
 
 
 	function rotateUpload($id,$degrees,$force=false) {
-		global $CONF;
+		global $CONF,$USER;
 
 		if($this->validUploadId($id))
                 {
