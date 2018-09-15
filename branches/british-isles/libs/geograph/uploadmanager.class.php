@@ -299,12 +299,22 @@ class UploadManager
 				$to = $uploadfile2;
 			}
 
+			//NOTE, `exiftran` is NOT used, as it only does lossless rotation, if not right size creates odd edgeing
+			//... so use `jpegtran` instead, which allows exact control, but doesnt reset exif, so have to do that manually with exiftool
+			//`jpegexiforient` sounds perfect, but doesnt seem to work
+			// imagemagick is used to do lossy rotation, and can reset the exif itself.
+
 			$lossy = false;
 			//do the actual rotation, lossless if possible
-			$cmd = "jpegtran -rotate $degrees -perfect -outfile $to $from";
+			$cmd = "jpegtran -rotate $degrees -perfect -copy all -outfile $to $from";
 			passthru($cmd);
 
-			if (!file_exists($to)) {
+			if (file_exists($to)) {
+				//it rotated, but we MAY need to manually reset the rotation flag! (-copy all copied everything including the oreitentation flag!)
+				$orient = `exiftool -Orientation -n $to`;
+				if (strpos($orient,'Orientation') !== FALSE && strpos($orient,'1') === FALSE)
+					`exiftool -Orientation=1 -n -overwrite_original $to`;
+			} else {
 				//perfect rotation failed, so do imperfect!
 
 				$lossy = true;
@@ -314,7 +324,8 @@ class UploadManager
 				}
 
 				//note, could not set quality, and would try to maintain current or fallback to 92
-				$cmd = sprintf ("\"%sconvert\" jpg:%s -rotate $degrees -quality 87 jpg:%s", $CONF['imagemagick_path'], $from, $to);
+				// also -orient only UPDATES the Orientation tag, if none existing, its not added, but thats OK!
+				$cmd = sprintf ("\"%sconvert\" jpg:%s -rotate $degrees -orient TopLeft -quality 87 jpg:%s", $CONF['imagemagick_path'], $from, $to);
 				passthru($cmd);
 			}
 
