@@ -38,6 +38,11 @@ init_session();
 
 $uploadmanager=new UploadManager;
 
+if (isset($_GET['rotate']) && $uploadmanager->validUploadId($_GET['rotate']) && is_numeric($_GET['degrees'])) {
+	$result = $uploadmanager->rotateUpload($_GET['rotate'],intval($_GET['degrees']),@intval($_GET['force']));
+	outputJSON($result);
+	exit;
+}
 //display preview image?
 if (isset($_GET['preview']) && $uploadmanager->validUploadId($_GET['preview']))
 {
@@ -64,9 +69,13 @@ if (isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTTP_X_PSS_LOOP'] == 'pagesp
 }
 
 if (!$USER->hasPerm("basic")) {
+	$smarty->assign("submit",1);
 	$smarty->display('static_submit_intro.tpl');
 	exit;
 }
+
+//temp as page doesnt work on https (mainly maps!)
+pageMustBeHTTP();
 
 if (!empty($_REQUEST['use_autocomplete'])) {
 	$USER->use_autocomplete = 1;
