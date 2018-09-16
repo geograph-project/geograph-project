@@ -120,7 +120,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		        || $image['viewpoint_refindex']  != $image['reference_index'])*/
 		    &&  $image['imagetaken'] === $trk['date']
 		) {
-			$gridimage = new GridImage($image['gridimage_id']); //FIXME fast init?
+			$gridimage = new GridImage();
+			$gridimage->_setDB($db); // we get "mysqli_real_connect(): Too many open links (50)" otherwise
+			$gridimage->loadFromId($image['gridimage_id']); //FIXME fast init?
 			if (!$gridimage->isValid()) {
 				continue;
 				//FIXME?
