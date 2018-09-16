@@ -283,7 +283,7 @@ if ($grid_given)
 	} elseif ($grid_ok) {
 		$db = null;
 		$custom_where = '';
-		#$extra = '';
+		$extra = '';
 		if (!empty($_GET['user'])) {
 			$custom_where .= " and gi.user_id = ".intval($_GET['user']);
 			$profile=new GeographUser($_GET['user']);

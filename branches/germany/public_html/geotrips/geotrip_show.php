@@ -281,7 +281,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		}
 		$group[0] = $geograph[$bestidx]['viewpoint'][0];
 		$group[1] = $geograph[$bestidx]['viewpoint'][1];
-		usort($group[2], viewcmp);
+		usort($group[2], 'viewcmp');
 	}
 	unset($group);
 
