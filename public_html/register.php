@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: register.php 8771 2018-05-29 17:31:53Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)

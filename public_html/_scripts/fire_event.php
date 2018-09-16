@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: fire_event.php 5578 2009-07-08 20:08:42Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)

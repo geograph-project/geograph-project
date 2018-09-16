@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: conversionslatlong.class.php 8619 2017-11-14 01:17:45Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -32,7 +32,7 @@
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision$
+* @version $Revision: 8619 $
 */
 
 

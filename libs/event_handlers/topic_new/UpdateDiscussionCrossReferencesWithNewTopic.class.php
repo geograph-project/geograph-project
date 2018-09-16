@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: UpdateDiscussionCrossReferencesWithNewTopic.class.php 8325 2015-12-28 23:42:44Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -29,7 +29,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision$
+* @version $Revision: 8325 $
 */
 
 require_once("geograph/eventhandler.class.php");

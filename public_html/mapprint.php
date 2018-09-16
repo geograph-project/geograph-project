@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: mapprint.php 5039 2008-11-18 00:20:10Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)

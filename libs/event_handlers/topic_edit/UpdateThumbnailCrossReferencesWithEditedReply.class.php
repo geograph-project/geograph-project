@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: UpdateThumbnailCrossReferencesWithEditedReply.class.php 1647 2005-12-16 04:26:09Z barryhunter $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -29,7 +29,7 @@
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision$
+* @version $Revision: 1647 $
 */
 
 require_once("geograph/eventhandler.class.php");

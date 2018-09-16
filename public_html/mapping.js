@@ -1,6 +1,6 @@
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: mapping.js 8689 2017-12-16 15:39:52Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)

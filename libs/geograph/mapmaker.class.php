@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: mapmaker.class.php 8822 2018-09-13 01:11:40Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision$
+* @version $Revision: 8822 $
 */
 
 

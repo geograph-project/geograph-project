@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # $Project: GeoGraph $
-# $Id$
+# $Id: update_cpu_graph.pl 1434 2005-10-20 08:20:52Z lordelph $
 # 
 # GeoGraph geographic photo archive project
 # This file copyright (C) 2005 Paul Dixon (paul@elphin.com)

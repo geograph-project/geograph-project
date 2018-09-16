@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: latlong.php 8763 2018-05-29 16:22:25Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 BArry Hunter (geo@barryhunter.co.uk)

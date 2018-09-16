@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: gridimage.class.php 8822 2018-09-13 01:11:40Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision$
+* @version $Revision: 8822 $
 */
 
 include_messages('class_gridimage');

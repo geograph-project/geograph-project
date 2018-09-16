@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: searchengine.class.php 8822 2018-09-13 01:11:40Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision$
+* @version $Revision: 8822 $
 */
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # $Project: GeoGraph $
-# $Id$
+# $Id: update_submission_graph.pl 3967 2007-11-27 18:30:38Z geograph $
 # 
 # GeoGraph geographic photo archive project
 # This file copyright (C) 2005 Paul Dixon (paul@elphin.com)

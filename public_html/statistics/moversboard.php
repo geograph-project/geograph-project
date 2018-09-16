@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: moversboard.php 8822 2018-09-13 01:11:40Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 BArry Hunter (geo@barryhunter.co.uk)

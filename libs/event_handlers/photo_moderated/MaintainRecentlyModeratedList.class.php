@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: MaintainRecentlyModeratedList.class.php 5366 2009-03-28 17:46:10Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -29,7 +29,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision$
+* @version $Revision: 5366 $
 */
 
 require_once("geograph/eventhandler.class.php");

@@ -1,5 +1,5 @@
 /**
- * $Id$
+ * $Id: moderation.js 8245 2015-09-12 20:49:44Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)

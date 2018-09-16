@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: InvalidateOldAndNewMaps.class.php 2614 2006-10-10 16:47:25Z barry $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -29,7 +29,7 @@
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision$
+* @version $Revision: 2614 $
 */
 
 require_once("geograph/eventhandler.class.php");

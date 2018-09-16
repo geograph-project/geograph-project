@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: global.inc.php 8836 2018-09-16 02:01:01Z hansjorg $
  *
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision$
+* @version $Revision: 8836 $
 */
 
 $MESSAGES = array();

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: conversion.php 2960 2007-01-15 14:33:27Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 BArry Hunter (geo@barryhunter.co.uk)
