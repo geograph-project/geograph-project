@@ -244,7 +244,7 @@ function init_session()
 		}
 	}
 
-	if ($CONF['ask_gmaps'] && !$GLOBALS['USER']->use_gmaps && empty($_COOKIE['use_gmaps'])) {
+	if ($CONF['ask_gmaps'] && empty($GLOBALS['USER']->use_gmaps) && empty($_COOKIE['use_gmaps'])) {
 		$CONF['google_maps_api_key'] = '';
 	}
 }

@@ -952,7 +952,7 @@ class GridImageTroubleTicket
 	 */
 	function &_getImage()
 	{
-		if (!is_object($this->gridimage))
+		if (!isset($this->gridimage) || !is_object($this->gridimage))
 		{
 			$this->gridimage=new GridImage();
 			$this->gridimage->loadFromId($this->gridimage_id);
