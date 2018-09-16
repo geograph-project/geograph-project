@@ -17,6 +17,11 @@ Disallow: /
 User-agent: Cliqzbot
 Disallow: /
 
+# VelenPublicWebCrawler Does not respect Crawl-delay and crawls way too much
+# VelenPublicWebCrawler does not even read robots.txt...
+User-agent: VelenPublicWebCrawler
+Disallow: /
+
 User-agent: Barkrowler
 Disallow: /
 
@@ -176,7 +181,7 @@ Disallow: /help/privacy_en
 Disallow: /register.php
 Disallow: /login.php
 Disallow: /contact.php
-Disallow: /usermsg.php.php
+Disallow: /usermsg.php
 Disallow: /help/legal_notice
 
 User-Agent: Slurp
@@ -248,7 +253,7 @@ Disallow: /help/privacy_en
 Disallow: /register.php
 Disallow: /login.php
 Disallow: /contact.php
-Disallow: /usermsg.php.php
+Disallow: /usermsg.php
 Disallow: /help/legal_notice
 
 User-Agent: MSNBot
@@ -320,7 +325,7 @@ Disallow: /help/privacy_en
 Disallow: /register.php
 Disallow: /login.php
 Disallow: /contact.php
-Disallow: /usermsg.php.php
+Disallow: /usermsg.php
 Disallow: /help/legal_notice
 
 User-agent: *
@@ -389,7 +394,7 @@ Disallow: /help/privacy_en
 Disallow: /register.php
 Disallow: /login.php
 Disallow: /contact.php
-Disallow: /usermsg.php.php
+Disallow: /usermsg.php
 Disallow: /help/legal_notice
 Crawl-Delay: 10
 
