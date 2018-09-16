@@ -73,7 +73,7 @@ class EventProcessor
 		
 		$this->db=GeographDatabaseConnection();
 		$this->logdb=GeographDatabaseConnection();
-	
+		$this->logdb->Execute('SET @@session.wait_timeout=500');
 	}
 	function EventProcessor()
 	{
