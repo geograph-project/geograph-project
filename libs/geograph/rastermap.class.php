@@ -576,7 +576,7 @@ class RasterMap
 		//defer the tag to the last minute, to help prevent the page pausing mid load
 		if ((!empty($this->inline) || !empty($this->issubmit))) {
 			if ($this->service == 'Google') {
-				return "<script src=\"//maps.googleapis.com/maps/api/js?sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+				return "<script src=\"//maps.googleapis.com/maps/api/js?v=3.33&amp;sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
 			} elseif ($this->service == 'OLayers') {
 				if ($CONF['google_maps_api_key'])
 					$ft = "<script src=\"//maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
