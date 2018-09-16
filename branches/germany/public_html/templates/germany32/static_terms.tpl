@@ -40,6 +40,8 @@ boilerplate...</p>
  </p>
 
  <h3>2. Privacy </h3>
+ <a href="/help/privacy">See privacy page.</a>
+ {*
  <p>Geograph Project will use Your personally identifiable information
  collected in connection with this Site, including without limitation Your name, e-
  mail address, or other information unique to You (<b>Personally Identifiable
@@ -72,7 +74,7 @@ boilerplate...</p>
  without limitation any restructuring activity with another legal entity; or as (b)
  as required by subpoena, search warrant, or other valid legislative or judicial
  process.
- </p>
+ </p>*}
 
  <h3>3. License to Use Site; Restrictions</h3>
  <p>Geograph Project hereby grants You a non-exclusive, non-
