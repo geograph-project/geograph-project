@@ -735,16 +735,16 @@ else
 	}
 	if (!empty($_GET['grid_reference'])) {
 		$ok= $square->setByFullGridRef($_GET['grid_reference']);
-		
+
 		//preserve inputs in smarty
 		$smarty->assign('grid_reference', $_GET['grid_reference']);
-	
+
 		if ($ok) {
 			$smarty->assign('gridsquare', $square->gridsquare);
 			$smarty->assign('eastings', $square->eastings);
 			$smarty->assign('northings', $square->northings);
 			$smarty->assign('gridref', $square->grid_reference);
-			
+
 			if ($square->natgrlen > 4) {
 				$conv = new Conversions('');
 				list($grid_reference,$len) = $conv->national_to_gridref(
@@ -755,7 +755,7 @@ else
 			} else {
 				$grid_reference = $square->grid_reference;
 			}
-			
+
 			$smarty->assign('grid_reference', $grid_reference);
 		}
 	} elseif (!empty($_SESSION['gridsquare'])) {
@@ -764,12 +764,21 @@ else
 		$smarty->assign('eastings', $_SESSION['eastings']);
 		$smarty->assign('northings', $_SESSION['northings']);
 		$smarty->assign('auto',1);
-		$smarty->assign('gridref', $_SESSION['gridsquare'].' '.$_SESSION['eastings'].' '.$_SESSION['northings']);
 		$smarty->assign('grid_reference', $grid_reference = $_SESSION['gridsquare'].' '.$_SESSION['eastings'].' '.$_SESSION['northings']);
+		$smarty->assign('gridref', $grid_reference);
+
+	} elseif ($square->loadMostRecentSubmission($USER->user_id)) {
+		//else just lookup the most recent used square!
+
+		$smarty->assign('gridsquare', $square->gridsquare);
+		$smarty->assign('eastings', $square->eastings);
+		$smarty->assign('northings', $square->northings);
+		$smarty->assign('auto',1);
+		$smarty->assign('grid_reference', $grid_reference = $square->gridsquare.' '.$square->eastings.' '.$square->northings);
+		$smarty->assign('gridref', $grid_reference);
 	}
-	
+
 	if ($step == 1) {
-	
 		if (isset($USER->submission_method) && $USER->submission_method == 'submit2' && !isset($_GET['redir'])) {
 
 			$url = "/submit2.php";

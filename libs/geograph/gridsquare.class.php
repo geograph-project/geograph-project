@@ -450,26 +450,37 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 	*/
 	function loadFromId($gridsquare_id)
 	{
+		global $CONF;
 		$db=&$this->_getDB(true);
-		$square = $db->GetRow('select * from gridsquare where gridsquare_id='.$db->Quote($gridsquare_id).' limit 1');	
+		$square = $db->GetRow('select * from gridsquare where gridsquare_id='.intval($gridsquare_id).' limit 1');
 		if (count($square))
-		{		
+		{
 			//store cols as members
 			foreach($square as $name=>$value)
 			{
 				if (!is_numeric($name))
 					$this->$name=$value;
-								
 			}
-			
+
 			//ensure we get exploded reference members too
 			$this->_storeGridRef($this->grid_reference);
-			
+
 			return true;
 		}
 		return false;
 	}
-	
+
+	function loadMostRecentSubmission($user_id) {
+		$db=&$this->_getDB(true);
+
+		$gridref = $db->getOne($sql = "select grid_reference from gridimage inner join gridsquare using (gridsquare_id) where user_id = {$user_id} order by gridimage_id desc"); //limit 1 added automatically!
+
+		if ($gridref) {
+			 $this->_storeGridRef($gridref);
+		}
+		return $gridref;
+	}
+
 	/**
 	* load square from internal coordinates
 	*/
@@ -733,6 +744,7 @@ split_timer('gridsquare'); //starts the timer
 
 			$sphinx->prepareQuery($this->grid_reference);
 			$sphinx->processQuery(); //if the query starts with a GR it expands it to search nearby squares
+			$sphinx->q = str_replace('@grid_reference ','@(grid_reference,image_square) ',$sphinx->q);
 
 			$ids = $sphinx->returnIds($pg,'snippet');
 
@@ -765,7 +777,14 @@ split_timer('gridsquare'); //starts the timer
 
 		}
 
-		$this->collections_count = count($this->collections);
+		if ($this->collections_count = count($this->collections)) {
+			foreach ( $this->collections as $collection) {
+				if ($collection['title'] == $this->grid_reference) {
+					$this->collection = $collection;
+					break;
+				}
+			}
+		}
 
 split_timer('gridsquare','loadCollections'.$this->collections_count,"{$this->grid_reference}"); //logs the wall time
 
