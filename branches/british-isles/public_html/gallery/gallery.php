@@ -71,15 +71,10 @@ if (count($page)) {
 
 	$page['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$page['topic_title'])))),'_').'_'.$page['topic_id'];
 
-	
-	if (!isset($_GET['dontcount']) && $CONF['template']!='archive' && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE
-                && (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
-                && (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
-                && (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE)
-		) {
+	if (!isset($_GET['dontcount']) && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE && appearsToBePerson()) {
 		$db->Execute("UPDATE LOW_PRIORITY geobb_topics SET topic_views=topic_views+1 WHERE topic_id = $topic_id");
 	}
-	
+
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
@@ -169,11 +164,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	} 
 } else {
 	$smarty->assign('topic_id', $topic_id);
+        $smarty->assign('forum_id', $page['forum_id']);
 }
 
 
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+

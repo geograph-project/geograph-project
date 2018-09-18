@@ -52,6 +52,7 @@ $smarty->assign('maincontentclass', 'content_photo'.$style.'" style="padding:10p
 
 if (!$smarty->is_cached($template, $cacheid)) {
 
+
 	$db = GeographDatabaseConnection(true);
 
 
@@ -70,7 +71,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 			$imagelist->_getImagesBySql($sql);
 			$smarty->assign_by_ref('results', $imagelist->images);
-		} 
+		}
 
 
 		if ($data['nateastings'] && intval($data['natgrlen']) > 4) {
@@ -218,6 +219,13 @@ $client->setFilter('images',array(0),true);
 		} else {
 			$smarty->assign('page_title',$data['title'].$t2);
 		}
+
+		if (empty($data['images']) || empty($imagelist->images) ) {
+			//for bots, send a status to prevent page being indexed.
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
+		}
+
 	} else {
 		header("HTTP/1.0 404 Not Found");
 		header("Status: 404 Not Found");
@@ -225,9 +233,15 @@ $client->setFilter('images',array(0),true);
 		$template = 'static_404.tpl';
 	}
 } else {
+	$db = GeographDatabaseConnection(true);
+	$images = $db->getOne("select images from content where foreign_id = $snippet_id AND source = 'snippet'"); //this table only has a row for snippets WITH images!
+	if (!$images) {
+	        header("HTTP/1.0 404 Not Found");
+                header("Status: 404 Not Found");
+	}
+
 	$smarty->assign('snippet_id',$snippet_id);
 }
- 
 
 
 $smarty->display($template, $cacheid);

@@ -92,14 +92,14 @@ function article_make_table($input) {
 			$output .= "<tbody>";
 		}
 		$output .= "<tr>";
-		
+
 		$row = preg_replace('/^\| | \|$/','',$row);
 		$cells = explode(' | ',$row);
-		
+
 		foreach ($cells as $cell) {
 			$output .= "<td>$cell</td>";
 		}
-		
+
 		$output .= "</tr>";
 		if ($head) {
 			$output .= "</thead>";
@@ -130,26 +130,26 @@ function get_snippet($snippet,$gridimage_id = 0) {
 
 	$snippet = intval($snippet);
 
-	if (empty($db))	
+	if (empty($db))
 		$db = GeographDatabaseConnection(true);
-	
+
 	$row = $db->getRow("SELECT s.*,realname FROM snippet s INNER JOIN user u USING (user_id) WHERE snippet_id = $snippet AND enabled = 1");
-	
+
 	if (empty($row)) {
 		return "ERROR unable to load shared description $snippet";
 	}
-	
+
 	$count = $db->getOne("SELECT count(*) FROM gridimage_snippet WHERE gridimage_id < 4294967296 AND snippet_id = $snippet");
-	
+
 	$html='<div class="photoguide"><small style="background-color:silver;padding:3px"><i>Shared Description</i> used on <a title="view more images" href="/snippet/'.$row['snippet_id'].'">'.($count+0).' images</a></small>';
 
 	$html.='<div style="float:left;width:400px">';
-	
+
 		$html.='<div><b><a title="view more images" href="/snippet/'.$row['snippet_id'].'">';
 		$html.=htmlentities2($row['title']).'</a></b> by <a href="/profile/'.$row['user_id'].'">'.htmlentities2($row['realname']).'</a></div>';
-		
+
 		$html .= GeographLinks(nl2br(htmlentities2($row['comment'])));
-		
+
 	$html.='</div>';
 
 	if (empty($gridimage_id)) {
@@ -163,14 +163,13 @@ function get_snippet($snippet,$gridimage_id = 0) {
 		$image->loadFromId($gridimage_id);
 
 		if (!empty($image->gridimage_id) && $image->moderation_status != 'rejected') {
-		
+
 			if (isset($imageCredits[$image->realname])) {
 				$imageCredits[$image->realname]++;
 			} else {
 				$imageCredits[$image->realname]=1;
 			}
 
-		
 			$html.='<div style="float:left;width:213px"><br/><br/>';
 
 				$title=$image->grid_reference.' : '.htmlentities2($image->title).' by '.htmlentities2($image->realname);
@@ -179,7 +178,7 @@ function get_snippet($snippet,$gridimage_id = 0) {
 				$html.=$image->getThumbnail(120,120);
 				$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
 				$html.=htmlentities2($image->title).'</a> by <a href="'.$image->profile_link.'">'.htmlentities2($image->realname).'</a></div>';
-			
+
 			$html.='</div>';
 
 		} else {
@@ -305,13 +304,13 @@ function get_tag($tag,$gr,$images = 4) {
 				$image->loadFromId($gridimage_id);
 
 				if (!empty($image->gridimage_id) && $image->moderation_status != 'rejected') {
-		
+
 					if (isset($imageCredits[$image->realname])) {
 						$imageCredits[$image->realname]++;
 					} else {
 						$imageCredits[$image->realname]=1;
 					}
-		
+
 					$html.='<div style="float:left;width:130px;height:130px">';
 
 					$title=$image->grid_reference.' : '.htmlentities2($image->title).' by '.htmlentities2($image->realname);
@@ -319,13 +318,12 @@ function get_tag($tag,$gr,$images = 4) {
 					$html.='<a title="'.$title.' - click to view full size image" href="/photo/'.$image->gridimage_id.'">';
 					$html.=$image->getThumbnail(120,120);
 					$html.='</a></div>';
-			
 				}
 			}
 			$html.='<br style="clear:both"/></div>';
 		}
 	}
-		
+
 	return $html;
 }
 
@@ -334,7 +332,7 @@ function get_tag($tag,$gr,$images = 4) {
 
 function smarty_function_articletext($input) {
 	global $imageCredits,$smarty,$CONF;
-	
+
 	$output = preg_replace('/(^|\n)(-{7,})\n(.*?)\n(-{7,})/es',"article_make_table('\$3')",str_replace("\r",'',$input));
 
 	if ($CONF['CONTENT_HOST'] != $CONF['SELF_HOST']) {
@@ -406,7 +404,7 @@ function smarty_function_articletext($input) {
 		}
 		$output = $pages[$offset];
 	}
-	
+
 	if (!empty($_GET['test'])) {
 		print "<pre>";
 		print htmlentities(print_r($pages,1));
@@ -466,15 +464,14 @@ function smarty_function_articletext($input) {
 	//fix a bug where double spacing on a previous match would swallow the newline needed for the next
 	$pattern[]='/\n\n(<\w{1,3}>)\#/';
 	$replacement[]="\n\$1#";
-	
+
 	$pattern[]='/\n\n\#/';
 	$replacement[]="\n\r\n\$1#";
-	
+
 	$pattern[]='/\n(<\w{1,3}>)?\#([\w]{1,2})? ([^\n]+)(<\/\w{1,3}>)?(\n{2})?/e';
 	$replacement[]="'<ol style=\"margin-bottom:0px;'.('\$1'?'':'margin-top:0px').'\"'.('\$2'?' start=\"\$2\"':'').'><li>\$1\$3\$4</li></ol>'.('\$5'?'\n':'')";
 	$pattern[]='/<\/ol>\n?<ol style=\"margin-bottom:0px;margin-top:0px\">/';
 	$replacement[]='';
-
 
 	$pattern[]="/\[url[=]?\](.+?)\[\/url\]/i";
 	$replacement[]='\1';
@@ -493,11 +490,11 @@ function smarty_function_articletext($input) {
 	$replacement[]="<br/>\n";
 
 	$output=preg_replace($pattern, $replacement, $output);
-	
+
 	$output = GeographLinks($output,true);
-	
+
 	$pattern=array(); $replacement=array();
-	
+
 	if (preg_match_all('/\[(small|)map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})( \w+|)\]/',$output,$m)) {
 		foreach ($m[0] as $i => $full) {
 			//lets add an rastermap too
@@ -516,14 +513,13 @@ function smarty_function_articletext($input) {
 					$rastermap->service = 'OS50k-small';
 					$rastermap->width = 125;
 				}
-				
+
 				$pattern[] = "/".preg_quote($full, '/')."/";
 				$replacement[] = $rastermap->getImageTag();
-				
 			}
 		}
 	}
-	
+
 	if (count($imageCredits)) {
 		arsort($imageCredits);
 
@@ -626,11 +622,7 @@ if ($_GET['url'] == 'preview') {
 			$cacheid .= '|'.$USER->user_id;
 		}
 
-		if (!isset($_GET['dontcount']) && $CONF['template']!='archive' && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE
-			&& (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
-			&& (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
-			&& (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE)
-			) {
+		if (!isset($_GET['dontcount']) && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE && appearsToBePerson()) {
 			$db->Execute("UPDATE LOW_PRIORITY article_stat SET views=views+1 WHERE article_id = ".$page['article_id']);
 		}
 
@@ -651,6 +643,8 @@ if ($_GET['url'] == 'preview') {
 
 		if (preg_match('/\bgeograph\b/i',$page['category_name']) || $page['ctype'] == 'document') {
 			$template = 'article_article2.tpl';
+
+			pageMustBeHTTPS();
 		}
 
 		if (strlen($page['content']) < 100) {

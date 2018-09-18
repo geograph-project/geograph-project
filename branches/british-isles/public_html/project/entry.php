@@ -74,8 +74,8 @@ where $sql_where
 limit 1");
 
 if (count($page)) {
-	
-	if ($page['approved'] == -1 && !$USER->hasPerm('moderator')) {
+
+	if ($page['status'] == 'invalid' && !$USER->hasPerm('moderator')) {
 		header("HTTP/1.0 403 Forbidden");
 		header("Status: 403 Forbidden");
 		$template = "static_404.tpl";
@@ -84,21 +84,16 @@ if (count($page)) {
 	if ($page['user_id'] == $USER->user_id) {
 		$cacheid .= '|'.$USER->user_id;
 	}
-	
+
 	//when this page was modified
 	$mtime = strtotime($page['updated']);
-		
+
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
-                if (!isset($_GET['dontcount']) && $CONF['template']!='archive'
-                        && (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
-                        && (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
-                        && (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE)
-                        ) {
+                if (!isset($_GET['dontcount']) && appearsToBePerson()) {
                         $db->Execute("UPDATE LOW_PRIORITY project SET views=views+1,updated=updated WHERE project_id = ".$page['project_id']);
                 }
-
 }
 
 if (!$smarty->is_cached($template, $cacheid))
