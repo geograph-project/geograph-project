@@ -103,11 +103,7 @@ if (count($page)) {
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
-                if (!isset($_GET['dontcount']) && $CONF['template']!='archive'
-                        && (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
-                        && (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
-                        && (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE)
-                        ) {
+                if (!isset($_GET['dontcount']) && appearsToBePerson()) {
                         $db->Execute("UPDATE LOW_PRIORITY blog SET views=views+1,updated=updated WHERE blog_id = ".$page['blog_id']);
                 }
 
@@ -133,9 +129,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
 		$extra_meta = array();
 		$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['CONTENT_HOST']}/blog/{$page['blog_id']}\" />";
-                $extra_meta[] = "<meta name=\"twitter:card\" content=\"photo\">"; //or summary_large_image
-                $extra_meta[] = "<meta name=\"twitter:site\" content=\"@geograph_bi\">";
-                $extra_meta[] = "<meta name=\"og:title\" content=\"".htmlentities2($page['title'])."\">";
+                $extra_meta[] = "<meta property=\"twitter:card\" content=\"photo\">"; //or summary_large_image
+                $extra_meta[] = "<meta property=\"twitter:site\" content=\"@geograph_bi\">";
+                $extra_meta[] = "<meta property=\"og:title\" content=\"".htmlentities2($page['title'])."\">";
 
 
 		$smarty->assign($page);
@@ -143,7 +139,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$extract = smarty_modifier_truncate($page['content'],140,"...");
 
 			$smarty->assign('meta_description', $extract);
-			$extra_meta[] = "<meta name=\"og:description\" content=\"".htmlentities2($extract)."\">"; //shame doesnt fall back and actully use metadescruption
+			$extra_meta[] = "<meta property=\"og:description\" content=\"".htmlentities2($extract)."\">"; //shame doesnt fall back and actully use metadescruption
 		}
 
 		if (!empty($page['gridsquare_id'])) {
@@ -170,7 +166,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				$smarty->assign_by_ref('image', $image);
 				$imageurl = $image->_getFullpath(false,true);
 
-		                $extra_meta[] = "<meta name=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamped/".basename($imageurl)."\">";
+		                $extra_meta[] = "<meta property=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamped/".basename($imageurl)."\">";
 			}
 		}
 		$smarty->assign('extra_meta', implode("\n",$extra_meta));

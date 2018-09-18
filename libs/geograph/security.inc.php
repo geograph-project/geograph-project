@@ -140,10 +140,24 @@ function isLocalIPAddress()
 	elseif (!empty($CONF['server_ip']) && strpos($_SERVER['REMOTE_ADDR'],$CONF['server_ip']) === 0 && strpos(getRemoteIP(),$CONF['server_ip']) === 0) 
 	{
 		//its our server calling direct/our gateway is forwarding for our server
-		//(note as getRemoteIP return the LAST ip from HTTP_X_FORWARDED_FOR its the first one away - ie its the IP our server added- the most trusted. 
 		return true;
 	} 
 	return false;
 }
 
-?>
+function appearsToBePerson() {
+	global $CONF;
+	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
+	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
+	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Preview')===FALSE) &&
+            (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
+            (strpos($_SERVER['HTTP_USER_AGENT'], 'curl')===FALSE) &&
+            (strpos($_SERVER['HTTP_USER_AGENT'], 'The Knowledge AI')===FALSE) &&
+	    empty($_SERVER['HTTP_X_PURPOSE']) && empty($_SERVER['HTTP_PURPOSE']) && empty($_SERVER['HTTP_X_MOZ']) &&  //'prefetch' and 'preview' requests
+	    $CONF['template']!='archive')
+		return true;
+
+	return false;
+}
+
+

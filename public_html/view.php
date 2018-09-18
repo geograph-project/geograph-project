@@ -175,6 +175,10 @@ if ($image->isValid())
 		$smarty->assign("ireland_prompt",1);
 	}
 
+	if ($image->grid_square) {
+		$image->grid_square->rememberInSession();
+	}
+
 	//what style should we use?
 	$style = $USER->getStyle();
 
@@ -204,18 +208,14 @@ if ($image->isValid())
 		$smarty->assign_by_ref('current_search',$s);
 	}
 
-	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
-	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
-	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE) && 
-        (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
-	    empty($_SESSION['photos'][$image->gridimage_id]) &&
-	    $CONF['template']!='archive')
-	{
-		if (empty($db) || $db->readonly) 
-			$db = GeographDatabaseConnection(false);
-		
-		$db->Query("INSERT LOW_PRIORITY INTO gridimage_log VALUES({$image->gridimage_id},1,0,now()) ON duplicate KEY UPDATE hits=hits+1");
-		@$_SESSION['photos'][$image->gridimage_id]++;
+	if (appearsToBePerson()) {
+		if (empty($_SESSION['photos'][$image->gridimage_id])) {
+			if (empty($db) || $db->readonly)
+				$db = GeographDatabaseConnection(false);
+
+			$db->Query("INSERT LOW_PRIORITY INTO gridimage_log VALUES({$image->gridimage_id},1,0,0,now()) ON duplicate KEY UPDATE hits=hits+1");
+			@$_SESSION['photos'][$image->gridimage_id]++;
+		}
 	} else {
 		$smarty->assign('is_bot',true);
 	}
@@ -224,7 +224,7 @@ if ($image->isValid())
 	if (!empty($ref['query'])) {
 		$ref_query = array();
 		parse_str($ref['query'], $ref_query);
-		
+
 		if (strpos($ref['host'],'images.google.') === 0 && !empty($ref_query['prev'])) {
 			$ref = @parse_url('http://'.$ref['host'].urldecode($ref_query['prev']));
 			parse_str($ref['query'], $ref_query);
