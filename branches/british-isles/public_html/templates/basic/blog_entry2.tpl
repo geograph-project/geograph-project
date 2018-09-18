@@ -5,8 +5,10 @@
 .unable,.unable A  {
 	color:gray;
 }
+#maincontent {
+	position:relative;
+}
 </style>{/literal}
-<script src="{"/sorttable.js"|revision}"></script>
 
 
 <div style="float:left; position:relative; padding-right:10px;height:40px"><h3 style="margin-top:0px"><a href="/blog/">Geograph Blog</a> ::</h3></div>
@@ -30,9 +32,9 @@
 <!-- AddThis Button END -->
 {/literal}
 
-{if $gridsquare_id}
+{if $gridsquare_id && $lat}
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
-	<div style="width:300px; height:250px;" id="mapCanvas">Loading map...</div>
+	<div style="width:450px; height:400px;" id="mapCanvas">Loading map...</div>
 	<div style="color:red; background-color:white">Marker only shows grid square</div><br/>
 </div>
 {/if}
@@ -96,29 +98,44 @@
 
 
 
-{if $lat && $google_maps_api_key}
-	<script src="https://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+{if $lat}
+	<link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
+        <script type="text/javascript" src="{"/js/mappingLeaflet.js"|revision}"></script>
 
 	{literal}
 	<script type="text/javascript">
 	//<![CDATA[
-	var map;
+	var map = null ;
+	var issubmit = false;
 
-	function onLoad() {
-		map = new GMap2(document.getElementById("mapCanvas"));
-		map.addMapType(G_PHYSICAL_MAP);
-		map.addControl(new GSmallMapControl());
-		map.addControl(new GMapTypeControl(true));
-		{/literal}
-		var center = new GLatLng({$lat},{$long});
-		{literal}
-		map.setCenter(center, 10,G_PHYSICAL_MAP);
 
-		var themarker = new GMarker(center,{clickable: false});
-		map.addOverlay(themarker);
-	}
+                                        function loadmap() {
+						{/literal}
+                                                var point = [{$lat},{$long}];
+						{literal}
+                                                var newtype = readCookie('GMapType');
 
-	AttachEvent(window,'load',onLoad,false);
+                                                mapTypeId = firstLetterToType(newtype);
+
+                                                map = L.map('mapCanvas',{attributionControl:false}).setView(point, 8).addControl(
+                                                        L.control.attribution({ position: 'bottomright', prefix: ''}) );
+
+                                                setupOSMTiles(map,mapTypeId);
+
+                                                map.on('baselayerchange', function (e) {
+                                                        if (e.layer && e.layer.options && e.layer.options.mapLetter) {
+                                                                var t = e.layer.options.mapLetter;
+                                                                createCookie('GMapType',t,10);
+                                                        } else {
+                                                                console.log(e);
+                                                        }
+                                                });
+
+						 createMarker(point);
+                                        }
+                                        AttachEvent(window,'load',loadmap,false);
+
 	//]]>
 	</script>
 {/literal}{/if}
