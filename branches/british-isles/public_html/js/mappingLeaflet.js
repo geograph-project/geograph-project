@@ -359,13 +359,13 @@ function updateCamIcon() {
 			map.addLayer(baseMaps['OSM']);
 
 		if (L.britishGrid) {
-			overlayMaps['bGrid'] = L.britishGrid({
+			overlayMaps['OSGB Grid'] = L.britishGrid({
 				opacity: 0.6,
 	        		color: '#00f',
 				showSquareLabels: [100000,10000,100]
 			}).addTo(map);
 	
-			overlayMaps['iGrid'] = L.irishGrid({
+			overlayMaps['Irish Grid'] = L.irishGrid({
 				opacity: 0.6,
 				color: '#080',
 				showSquareLabels: [100000,10000,100]
