@@ -314,76 +314,8 @@ function roundNumber(num, dec) {
 	return result;
 }
 
-//stolen from the browser!
 function getTextQuery() {
-    var raw = $('#q').attr('value');
-
-    if (raw.length == 0) {
-       return '';
-    }
-
-    //http: (urls) bombs out the field: syntax
-    //$q = str_replace('http://','http ',$q);
-    var query = raw.replace(/http:\/\//g,'http ');
-
-    query = query.replace(/(-?)\b([a-z_]+):/g,'@$2 $1');
-    query = query.replace(/@(year|month|day) /,'@taken$1 ');
-    query = query.replace(/@gridref /,'@grid_reference ');
-    query = query.replace(/@by /,'@realname ');
-    query = query.replace(/@tag /,'@tags ');
-    query = query.replace(/@placename /,'@place ');
-    query = query.replace(/@category /,'@imageclass ');
-    query = query.replace(/@text /,'@(title,comment,imageclass,tags) ');
-
-    query = query.replace(/\b(\d{3})0s\b/g,'$1tt');
-    query = query.replace(/\bOR\b/g,'|');
-
-    //make excluded hyphenated words phrases
-    query = query.replace(/(^|[^"\w]+)-(=?\w+)(-[-\w]*\w)/g,function(match,pre,p1,p2) {
-        return pre+'-("'+(p1+p2).replace(/-/,' ')+'" | '+(p1+p2).replace(/-/,'')+')';
-    });
-
-    //make hyphenated words phrases
-    query = query.replace(/(^|[^"\w]+)(=?\w+)(-[-\w]*\w)/g,function(match,pre,p1,p2) {
-        return pre+'"'+(p1+p2).replace(/-/,' ')+'" | '+(p1+p2).replace(/-/,'');
-    });
-
-    //make excluded aposphies work (as a phrase)
-    query = query.replace(/(^|[^"\w]+)-(=?\w+)(\'\w*[\'\w]*\w)/g,function(match,pre,p1,p2) {
-        return pre+'-("'+(p1+p2).replace(/\'/,' ')+'" | '+(p1+p2).replace(/\'/,'')+')';
-    });
-
-    //make aposphies work (as a phrase)
-    query = query.replace(/(^|[^"\w]+)(\w+)(\'\w*[\'\w]*\w)/,function(match,pre,p1,p2) {
-        return pre+'"'+(p1+p2).replace(/\'/,' ')+'" | '+(p1+p2).replace(/\'/,'');
-    });
-
-    //change single quotes to double
-    query = query.replace(/(^|\s)\b\'([\w ]+)\'\b(\s|$)/g, '$1"$2"$3');
-
-    //fix placenames with / (the \b stops it replacing in "one two"/3
-    query = query.replace(/\b\/\b/g,' ');
-
-    if (false && query.length > 0 && query.indexOf('@') != 0) {//if first keyword is a field, no point setting ours. 
-        var list = $('#searchin input:checked');
-        var str = new Array();
-        if (list.length > 0 && list.length <= 3) {
-            list.each(function(index) {
-              str.push($(this).val());
-            });
-            query = '@('+str.join(',')+') '+query;
-        } else if (list.length > 3 && list.length < 7) {
-            var list = $('#searchin input');
-            list.each(function(index) {
-              if (!$(this).attr('checked'))
-                 str.push($(this).val());
-            });
-            query = '@!('+str.join(',')+') '+query;
-        }
-
-    }
-
-    return query;
+    return $('#q').attr('value');
 }
 
 
