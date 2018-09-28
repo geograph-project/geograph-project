@@ -310,6 +310,7 @@ function updateCamIcon() {
 }
 
 	var baseMaps = {};
+	var overlayMaps = {};
 
 	function firstLetterToType(newtype) {
 		var mapTypeId = 'OSM';
@@ -357,6 +358,20 @@ function updateCamIcon() {
 		else
 			map.addLayer(baseMaps['OSM']);
 
-		L.control.layers(baseMaps).addTo(map);
+		if (L.britishGrid) {
+			overlayMaps['bGrid'] = L.britishGrid({
+				opacity: 0.6,
+	        		color: '#00f',
+				showSquareLabels: [100000,10000,100]
+			}).addTo(map);
+	
+			overlayMaps['iGrid'] = L.irishGrid({
+				opacity: 0.6,
+				color: '#080',
+				showSquareLabels: [100000,10000,100]
+			}).addTo(map);
+		}
+
+		L.control.layers(baseMaps,overlayMaps).addTo(map);
 	}
 

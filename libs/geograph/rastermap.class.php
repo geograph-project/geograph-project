@@ -552,7 +552,10 @@ class RasterMap
 			return "<script src=\"//maps.googleapis.com/maps/api/js?v=3&key={$CONF['google_maps_api3_key']}\" type=\"text/javascript\"></script>";
 		} elseif ((!empty($this->inline) || !empty($this->issubmit)) && $this->service == 'Leaflet') {
 			return "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.css\" />".
-				"<script src=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.js\" type=\"text/javascript\"></script>";
+				"<script src=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.js\" type=\"text/javascript\"></script>".
+				"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js\"></script>".
+				"<script src=\"".smarty_modifier_revision("/js/Leaflet.MetricGrid.js")."\"></script>";
+
 		} elseif ($this->service == 'OSOS') {
 			if (strpos($CONF['raster_service'],'OSOSPro') !== FALSE) {
 				return "<script src=\"{$CONF['PROTOCOL']}osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
@@ -736,10 +739,14 @@ class RasterMap
 
 			if (strpos($CONF['raster_service'],'Grid') !== FALSE) {
 
-				$block = $this->getPolyLineBlock($conv,$e-1000,$n,$e+2000,$n);
-				$block .= $this->getPolyLineBlock($conv,$e-1000,$n+1000,$e+2000,$n+1000);
-				$block .= $this->getPolyLineBlock($conv,$e,$n-1000,$e,$n+2000);
-				$block .= $this->getPolyLineBlock($conv,$e+1000,$n-1000,$e+1000,$n+2000);
+				if (false) { //use Leaflet.MetricGrid.js to render a grid instead now!
+					$block = $this->getPolyLineBlock($conv,$e-1000,$n,$e+2000,$n);
+					$block .= $this->getPolyLineBlock($conv,$e-1000,$n+1000,$e+2000,$n+1000);
+					$block .= $this->getPolyLineBlock($conv,$e,$n-1000,$e,$n+2000);
+					$block .= $this->getPolyLineBlock($conv,$e+1000,$n-1000,$e+1000,$n+2000);
+				} else {
+					$block = '';
+				}
 
 				if (!empty($this->viewpoint_northings)) {
 					$different_square_true = (intval($this->nateastings/1000) != intval($this->viewpoint_eastings/1000)
