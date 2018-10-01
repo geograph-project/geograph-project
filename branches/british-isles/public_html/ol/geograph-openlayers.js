@@ -63,23 +63,6 @@ function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, t
 	olmap.layers['nls'] = new OpenLayers.Layer.NLS( "OS Historical GB");
     }
     
-    olmap.layers['google_physical'] = new OpenLayers.Layer.Google(
-        "Google Physical",
-        { type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 20 }
-    );
-    olmap.layers['google'] = new OpenLayers.Layer.Google(
-        "Google Streets", // the default
-        { numZoomLevels: 20 }
-    );
-    olmap.layers['google_hybrid'] = new OpenLayers.Layer.Google(
-        "Google Hybrid",
-        { type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20 }
-    );
-    olmap.layers['google_satellite'] = new OpenLayers.Layer.Google(
-        "Google Satellite",
-        { type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22 }
-    );
-
     olmap.layers['osm'] = new OpenLayers.Layer.OSM("OSM (OpenStreetMap)", null, {attribution:'&copy; <a target="_parent" href="http://www.openstreetmap.org">OpenStreetMap</a> and contributors, under an <a target="_parent" href="http://www.openstreetmap.org/copyright">open license</a>'});
 
     olmap.layers['osm_cycle'] = new OpenLayers.Layer.OSM("OSM OpenCycleMap", [
