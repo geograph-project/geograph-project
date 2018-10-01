@@ -2,16 +2,29 @@
 {include file="_std_begin.tpl"}
 
 <div style="width:800px;position:relative;">
-	<div id="mapLink" style="float:right"></div>
-	<h2><a href="/help/maps">Maps</a> :: Interactive Coverage Map</h2>
+
+	<div class="tabHolder">
+		<span class="tabSelected">Interactive Coverage</span>
+		<a href="/mapbrowse.php" class="tab">Original Coverage</a>
+		<a href="/browser/#!/display=map" class="tab">Filterable/Searchable</a>
+		<a href="/mapper/photomap.php" class="tab" onclick="return photomaplink(this)">PhotoMap</a><sup style=color:red>new!</sup>
+		
+		<a href="/help/maps">more maps...</a>
+	</div>
+	<div class="interestBox">	
+		<h2>Interactive Coverage Map</h2>
+	</div>
+
 	<p>Click the map to view nearby images (appear below the map). Also open the layer switcher 
 	(via the <img src="{$static_host}/ol/img/layer-switcher-maximize.png" style="opacity:0.5;height:10px;width:10px"> icon) to try other layers.
-	<i>or are you looking for <a href="/help/maps">other mapping interfaces</a>?</i>
 	</p>
 </div>
 
-<form name="locForm" onsubmit="return jumpLocation(this)">
-	Jump to location: <input type="text" name="loc" value="" placeholder="(enter coordinate/placename/postcode)" id="loc" size=50>
+<form name="locForm" style="width:800px;position:relative;" onsubmit="return jumpLocation(this)">
+
+	<div id="mapLink" style="float:right"></div>
+
+	Jump to location: <input type="search" name="loc" value="" placeholder="(enter coordinate/placename/postcode)" id="loc" size=50>
 	<input type=submit value="Go&gt;"><br><br>
 </form>
 
@@ -21,7 +34,6 @@
 	<br style="clear:both"/>
 
         <link rel="stylesheet" href="{$static_host}/ol/theme/default/style.css" type="text/css">
-        <link rel="stylesheet" href="{$static_host}/ol/theme/default/google.css" type="text/css">
         <link rel="stylesheet" href="{"/ol/style.css"|revision}" type="text/css">        
 
 <link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/themes/ui-lightness/jquery-ui.css" rel="stylesheet"/>
@@ -38,8 +50,6 @@
         <script src="{"/ol/geograph-openlayers.js"|revision}"></script>
 	<script src="/preview.js.php?d=preview" type="text/javascript"></script>
 	
-        <script src="https://maps.googleapis.com/maps/api/js?v=3&key={$google_maps_api3_key}"></script>
-
 {literal}
 <style>
 div.thumbs_under {
@@ -202,8 +212,20 @@ function loadMap() {
 	loadMapInner('map',true); //this does most things, EXCEPT center the map, and doesnt add any interaction. 
 
 	if (!olmap.map.getCenter()) { //it might of been set via a permalink
-		var centre = new OpenLayers.LonLat(436000, 157000).transform("EPSG:27700", olmap.map.getProjection());
-		olmap.map.setCenter(centre, 7);
+		{/literal}
+		{dynamic}
+			var centre = new OpenLayers.LonLat(436000, 157000).transform("EPSG:27700", olmap.map.getProjection());
+			olmap.map.setCenter(centre, 7);
+
+
+			{if $gridref}
+				document.locForm.elements['loc'].value = '{$gridref}';
+                	        jumpLocation(document.locForm); //use this, because it will manipulate base layers!
+			{else}
+
+			{/if}
+		{/dynamic}
+		{literal}
 	}
 
 	olmap.layers['coverage'] = new OpenLayers.Layer.Vector('Coverage');
@@ -607,6 +629,22 @@ function checkboxUpdate() {
 
 	document.getElementById("tpointSpan").style.display = ((!document.theForm.customised || document.theForm.customised[0].checked) && document.theForm.resolution[0].checked)?'':'none';
 	document.getElementById("keywordSpan").style.display = (document.theForm.resolution[1].checked)?'':'none';
+}
+
+
+function photomaplink(that) {
+
+	var lonLat = olmap.map.getCenter();
+	var zoom = olmap.map.getZoom();
+
+	if (olmap.map.getProjection() != "EPSG:4326") {
+	        lonLat.transform(olmap.map.getProjection(), "EPSG:4326");
+		zoom = 21 - zoom;
+	}
+
+	that.href = "/mapper/photomap.php#"+zoom+"/"+roundNumber(lonLat.lat,6)+"/"+roundNumber(lonLat.lon,6);
+
+	return true;
 }
 
 //]]>
