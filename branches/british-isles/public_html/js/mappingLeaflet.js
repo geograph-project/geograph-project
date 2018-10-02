@@ -359,17 +359,14 @@ function updateCamIcon() {
 			map.addLayer(baseMaps['OSM']);
 
 		if (L.britishGrid) {
-			overlayMaps['OSGB Grid'] = L.britishGrid({
-				opacity: 0.6,
-	        		color: '#00f',
-				showSquareLabels: [100000,10000,100]
-			}).addTo(map);
-	
-			overlayMaps['Irish Grid'] = L.irishGrid({
-				opacity: 0.6,
-				color: '#080',
-				showSquareLabels: [100000,10000,100]
-			}).addTo(map);
+			var gridOptions = {
+		                opacity: 0.3,
+		                weight: 0.7,
+		                showSquareLabels: [100000,10000,100]
+		        };
+
+			overlayMaps['OSGB Grid'] = L.britishGrid(gridOptions).addTo(map);
+			overlayMaps['Irish Grid'] = L.irishGrid(gridOptions).addTo(map)
 		}
 
 		L.control.layers(baseMaps,overlayMaps).addTo(map);
