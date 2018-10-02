@@ -18,12 +18,13 @@ L.MetricGrid = L.Layer.extend({
     options: {
 
         proj4ProjDef: "must be provided",                    // must be provided
-        bounds: [[0, 0] , [0, 0]],                           // must be provided. First coord is botton left, second is top right in [x,y] format
+        bounds: [[0, 0] , [0, 0]],                           // must be provided. First coord is bottom left, second is top right in [x,y] format
         clip: null,                                          // optional
-        drawClip: false,                                     // optional, when try, the clip bounds are drawn with the same pen as the grid
+        drawClip: false,                                     // optional, when true, the clip bounds are drawn with the same pen as the grid
         hundredKmSquareFunc: function(e, n) {return "";},    // optional, params are eastings and northings in metres
 
         showAxisLabels: [100, 1000, 10000],                  // show axis for listed grid spacings - omit 100000
+        showAxis100km: false,
         showSquareLabels: [],                                // show square labels for listed grid spacings
         opacity: 0.7,
         weight: 2,                                           // use 2 for best results, else label rub-out is less good (antialiased pixels)
@@ -190,8 +191,11 @@ L.MetricGrid = L.Layer.extend({
             // finish the path and set the clip region
             if (this.options.drawClip) {
                 ctx.stroke();                
-            }
-            ctx.clip();         
+                }
+            ctx.clip();   
+
+
+            
         }
     },
 
@@ -239,6 +243,7 @@ L.MetricGrid = L.Layer.extend({
     _formatEastOrNorth(n, spacing) {
 
         var r;
+        var h = Math.floor(n / 100000);
         n = n % 100000; // metres within 100km square
 
         if (spacing < 1000) {
@@ -252,6 +257,15 @@ L.MetricGrid = L.Layer.extend({
         }
         else {
             r = Math.floor(n / 10000).toString();
+        }
+        
+        // prepend hundreds of km in subscript
+        if (this.options.showAxis100km) {
+            var hs = h.toString();
+            var i;
+            for(i = (hs.length-1); i >= 0; i--) {
+                r = String.fromCharCode(hs.charCodeAt(i) + 8272) + r; 
+            }
         }
 
         return r;
@@ -318,33 +332,6 @@ L.MetricGrid = L.Layer.extend({
         return spacing;
     },
 
-
-    // Cartesian squared distance between two points
-    _squaredDistance: function (x1, y1, x2, y2) {
-            var dx = x2 - x1;
-            var dy = y2 - y1;
-            return dx * dx + dy * dy;
-    },
-
-
-    // Returns square of distance of point x,y from line between x1,y1 and x2,y2
-    _squaredSegmentDistance: function (x, y, x1, y1, x2, y2) {
-      var dx = x2 - x1;
-      var dy = y2 - y1;
-      if (dx !== 0 || dy !== 0) {
-        var t = ((x - x1) * dx + (y - y1) * dy) / (dx * dx + dy * dy);
-        if (t > 1) {
-          x1 = x2;
-          y1 = y2;
-        } else if (t > 0) {
-          x1 += dx * t;
-          y1 += dy * t;
-        }
-      }
-      return this._squaredDistance(x, y, x1, y1);
-    },
-
-
     // Finds the set of screen points corresponding to a grid line.
     // Most metric grid lines are nearly straight on a Web Mercator map, especially when zoomed in.
     // We use the minimum number of line segments that represent the actual grid line,
@@ -360,7 +347,7 @@ L.MetricGrid = L.Layer.extend({
     //
     // This code is adapted from OpenLayers 3
     //
-    _getPoints: function (interpolate, squaredTolerance, map) {
+    _getPoints: function (interpolate, tolerance, map) {
 
         var geoA = interpolate(0);
         var geoB = interpolate(1);
@@ -404,7 +391,7 @@ L.MetricGrid = L.Layer.extend({
             geoM = interpolate(fracM);
             m = map.latLngToContainerPoint(L.latLng(geoM[1], geoM[0]));
 
-            if (this._squaredSegmentDistance(m.x, m.y, a.x, a.y, b.x, b.y) < squaredTolerance) {
+            if (L.LineUtil.pointToSegmentDistance(m, a, b) < tolerance){
               // If the m point is sufficiently close to the straight line, then we
               // discard it.  Just use the b coordinate and move on to the next line
               // segment.
@@ -579,7 +566,7 @@ L.MetricGrid = L.Layer.extend({
             var w = grdEx - grdWx;
             for (y = grdSy; y <= grdNy; y += d) {
 
-                // interpolate northings from right to left
+                // interpolate eastings from right to left
                 function _interpolateX (frac) {
                     return proj4(proj).inverse([grdEx - (frac * w), y]);
                 }
@@ -638,7 +625,7 @@ L.MetricGrid = L.Layer.extend({
                         // check on screen and within grid bounds
                         if ((s.x > 0) && (s.y < hh) && (y < this.options.bounds[1][1])) {
                             var nStr = this._format_northings(y, d);
-                            txtWidth = ctx.measureText(eStr).width;
+                            txtWidth = ctx.measureText(nStr).width;
                             
                             // rub out the bit of the grid line the text will be over
                             ctx.globalCompositeOperation = "destination-out";
@@ -724,13 +711,15 @@ L.britishGrid = function (options) {
     return new L.BritishGrid(options);
 };
 
-/** Definitions for a Irish Grid - EPSG code 29902
+/** Definitions for a Irish Grid 75 - EPSG code 29903 / TM75
 * Clip path avoids overlaying L.BritishGrid
 */
 L.IrishGrid = L.MetricGrid.extend({
 
     options: {
-        proj4ProjDef: "+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +a=6377340.189 +b=6356034.447938534 +units=m +no_defs",
+	//source https://epsg.io/29903
+        proj4ProjDef: "+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +ellps=mod_airy +towgs84=482.5,-130.6,564.6,-1.042,-0.214,-0.631,8.15 +units=m +no_defs",
+
         bounds: [[0, 0] , [500000, 500000]],
         clip: [
             [0, 0],
