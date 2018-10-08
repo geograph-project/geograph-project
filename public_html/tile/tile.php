@@ -1,6 +1,6 @@
 <?
 
-define('SPHINX_INDEX',"sample5n");
+define('SPHINX_INDEX',"sample8");
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
 require_once ('3rdparty/googleMapUtility.php');
@@ -21,6 +21,7 @@ $bounds[] = $b->y+$b->height+$yd;
 
 $_GET['olbounds'] = implode(",",$bounds);
 $_GET['select'] = "wgs84_lat as lat,wgs84_long as lng";
+
 if (empty($_GET['limit']))
 	$_GET['limit'] = 1000;
 if (empty($_GET['order']))
@@ -31,11 +32,22 @@ $_GET['long'] = 1;//long expires header
 if (!empty($_GET['l'])) {
 	$_GET['option'] = "max_matches=50000";
 	$_GET['limit'] = 50000;
+	ini_set('memory_limit', '128M');
 }
 
+if (!empty($_GET['user_id']))
+	@$_GET['match'] .= " @user user".intval($_GET['user_id']);
+
 if (!empty($_GET['6']) && $_GET['z'] > 10) {
-	$_GET['where'] = 'scenti not in(1000000000,2000000000)';
+	$_GET['where'] = 'scenti not in(1000000000,2000000000)'; //exclude 4fig GRs!
+
+} elseif (empty($_GET['match']) && $_GET['z'] < 10) {
+	//todo, later, can redirect this to tile-coverage.php (maybe specifing blue as the colour scheme!)
+
+	$_GET['group'] = "grid_reference"; // one dot per square!
+	$_GET['order'] = "id asc"; //rand doesnt work for group, could use sequence, but may as well just use id.
 }
+
 
 //this is automatically called by "api-facetql.php"
 function call_with_results($data) {
