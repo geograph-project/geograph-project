@@ -341,7 +341,7 @@ split_timer('search'); //starts the timer
 		if (!empty($searchclass) && empty($criteria->is_multiple)) {
 			$db=$this->_GetDB(false);
 
-			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
+			$sql = "INSERT INTO queries SET searchclass = ".$db->Quote($searchclass).",".
 			"searchdesc = ".$db->Quote($searchdesc).",".
 			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($q);
@@ -361,9 +361,9 @@ split_timer('search'); //starts the timer
 			if (!empty($searchx) && !empty($searchy))
 				$sql .= ",x = $searchx,y = $searchy,limit8 = $distance";
 			if ($limit1)
-				$sql .= ",limit1 = $limit1";
+				$sql .= ",limit1 = ".$db->Quote($limit1);
 			if (isset($USER) && $USER->registered) {
-				$sql .= ",user_id = {$USER->user_id}";
+				$sql .= ",user_id = ".intval($USER->user_id);
 				if (!empty($USER->search_results))
 					$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);
 			} elseif (!empty($_GET['perpage'])) {
@@ -631,7 +631,7 @@ split_timer('search'); //starts the timer
 		if (isset($searchclass)) {
 			$db=$this->_GetDB(false);
 
-			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
+			$sql = "INSERT INTO queries SET searchclass = ".$db->Quote($searchclass).",".
 				"searchuse = ".$db->Quote($this->searchuse).",".
 				"searchq = ".$db->Quote($searchq);
 			if (isset($dataarray['searchtext']))
@@ -651,7 +651,7 @@ split_timer('search'); //starts the timer
 			if (isset($searchx) && !empty($searchx) && !empty($searchy))
 				$sql .= ",x = $searchx,y = $searchy";
 			if (isset($USER) && $USER->registered)
-				$sql .= ",user_id = {$USER->user_id}";
+				$sql .= ",user_id = ".intval($USER->user_id);
 
 			if (!empty($dataarray['user_name'])) {
 				$usercriteria = new SearchCriteria_All();
@@ -735,7 +735,7 @@ split_timer('search'); //starts the timer
 					$searchdesc .= ", submitted before ".$dataarray['submitted_endString'];
 				}
 
-				$sql .= ",limit6 = '{$dataarray['submitted_start']}^{$dataarray['submitted_end']}'";
+				$sql .= ",limit6 = ".$db->Quote("{$dataarray['submitted_start']}^{$dataarray['submitted_end']}");
 			}
 
 			$this->builddate($dataarray,"taken_start");
@@ -781,7 +781,7 @@ split_timer('search'); //starts the timer
 					$searchdesc .= ", taken before ".$dataarray['taken_endString'];
 				}
 
-				$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
+				$sql .= ",limit7 = ".$db->Quote("{$dataarray['taken_start']}^{$dataarray['taken_end']}");
 			} else {
 				$this->builddate($dataarray,"taken");
 				if (!empty($dataarray['taken'])) {
@@ -789,7 +789,7 @@ split_timer('search'); //starts the timer
 					$dataarray['taken_end'] = $dataarray['taken'];
 					$searchdesc .= ", taken ".(is_numeric($dataarray['takenString'])?'in ':'').$dataarray['takenString'];
 
-					$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
+					$sql .= ",limit7 = ".$db->Quote("{$dataarray['taken_start']}^{$dataarray['taken_end']}");
 
 					unset($dataarray['taken']);
 				}
@@ -799,17 +799,17 @@ split_timer('search'); //starts the timer
 				$sql .= sprintf(",limit8 = %f",$dataarray['distance']);
 			}
 			if (!empty($dataarray['topic_id'])) {
-				$sql .= ",limit9 = ".$dataarray['topic_id'];
+				$sql .= ",limit9 = ".intval($dataarray['topic_id']);
 				if ($dataarray['topic_id'] > 1) {
-					$topic_name=$db->getOne("SELECT topic_title FROM geobb_topics WHERE topic_id = ".$dataarray['topic_id']);
+					$topic_name=$db->getOne("SELECT topic_title FROM geobb_topics WHERE topic_id = ".intval($dataarray['topic_id']));
 					$searchdesc .= ", in topic ".$topic_name;
 				} else {
 					$searchdesc .= ", in any topic";
 				}
 			}
 			if (!empty($dataarray['route_id'])) {
-				$sql .= ",limit10 = ".$dataarray['route_id'];
-				$topic_name=$db->getOne("SELECT name FROM route WHERE route_id = ".$dataarray['route_id']);
+				$sql .= ",limit10 = ".intval($dataarray['route_id']);
+				$topic_name=$db->getOne("SELECT name FROM route WHERE route_id = ".intval($dataarray['route_id']));
 				$searchdesc .= ", on route ".$topic_name;
 			}
 
