@@ -10,14 +10,14 @@
 
         <link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.Photo/Leaflet.Photo.css" />
 
-	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.css" />
+	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.css?v=2" />
 
 	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.css" />
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.63.0/dist/L.Control.Locate.min.css" />
 
-	<div style="position:relative">
+	<div style="position:relative; width:800px; height:600px">
 		<div id="map" style="width:800px; height:600px"></div>
 		<div id="message" style="z-index:10000;position:absolute;top:0;left:50px;background-color:white;font-size:1em;font-family:sans-serif;opacity:0.8"></div>
 		<div id="gridref" style="z-index:10000;position:absolute;top:0;right:180px;background-color:white;font-size:1em;font-family:sans-serif;opacity:0.8;padding:1px;"></div>
@@ -41,7 +41,7 @@
 
 	<script src="{"/mapper/geotools2.js"|revision}"></script>
 
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.js"></script>
+        <script src="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.js?v=2"></script>
 
         <script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js"></script>
 
@@ -99,7 +99,7 @@
 {/dynamic}
 {literal}
 	
-	L.control.layers(baseMaps, overlayMaps, {collapsed: false}).addTo(map);
+	L.control.layers(baseMaps, overlayMaps).addTo(map).expand();
 
 	map.on('baselayerchange', function(e) {
 		var color = (e.name.indexOf('Imagery') > -1)?"#fff":"#00f";
@@ -123,18 +123,38 @@
 
 <h3>Tips</h3>
 <ul>
+	<li>Use the <b>Search icon</b> (also top left) to search for a place and recenter the map</li>
+	<li>Use the <b>Pin icon</b> (top left) to attempt to center the map on your current location</li>
 
 {dynamic}
 	{if $stats && $stats.images}
-		<li>Enable (Personalize Coverage) in the layer switcher (top right of the map) to just count your images</li>
+		<li>Enable (Personalize Coverage) in the layer switcher (top right of the map) to just count <b>your images</b></li>
         {/if}
 {/dynamic}
 
-	<li>Click the map to view some nearby images, or can enable the 'Photo Thumbnails' layer. (click thumbs to view larger)</li>
-	<li>Try experimenting with the various map layers - there are a wide range of base maps</li>
-	<li>Reduce the number of layers to improve performance</li>
-	<li>Use the Pin icon (top left) to attempt to center the map on your current location</li>
-	<li>Use the Search icon (also top left) to search for a place and recenter the map</li>
+	<li>Try experimenting with the <b>various map layers</b> (top right!) - there are a wide range of base maps, as well as overlay alternatives.<ul>
+		<li>May need to zoom in or out to use some layers, as well as some only working for Great Britain or Ireland </li>
+		<li>Reduce the number of layers to improve performance!</li>
+		</ul></li>
+
+	<li><b>Click the map</b> to view some nearby images, or can enable the 'Photo Thumbnails' layer. (click thumbs to view larger)</li>
+	<li>The <b>Photo Thumbnails</b> layer, automatically clusters images, to reduce overlap. The number show is a hint of the size of the cluster, but there can be significately more photos, which will load automatically when zoom in!
+</ul>
+
+<h3>Coverage Colours</h3>
+<ul>
+	<li><b>Dots</b>: A blue dot presents one or more photo - dot plotted at photo subject possition (only images with 6fig+ grid-reference plotted!) 
+	<li style="padding:3px;"><b>Close</b>: <span style="opacity:0.8">
+		<span style="background-color:#FF0000;padding:3px;">Square with recent images</span> /
+		<span style="background-color:#FF00FF;padding:3px;">No images in last 5 years</span>
+		</span></li>
+	<li style="padding:3px;"><b>Course</b>: <span style="opacity:0.6">
+		<span style="background-color:#FF0000;padding:3px;">Recent photos (last 5 years)</span>
+		<span style="background-color:#ECCE40;padding:3px;">Only older photos</span>
+	 	<span style="background-color:#75FF65;padding:3px;">No photos</span>
+		</span></li>
+	<li><b>Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
+		Experimental coverage layer to see if concept works. Exact specififications of layer subject to change or withdrawl. 
 </ul>
 
 <h3>Todo List</h3>

@@ -20,10 +20,12 @@ baseMaps["OpenStreetMap"] = L.tileLayer(osmUrl, {minZoom: 6, maxZoom: 21, attrib
         var terrainAttrib='Map &copy; ThunderForest, '+osmAttrib;
 baseMaps["OSM Terrain"] = L.tileLayer(terrainUrl, {minZoom: 6, maxZoom: 21, attribution: terrainAttrib});
 
+if (L.tileLayer.bing) {
         var BING_KEY = 'AhwwUjiHWfAqm-dQiAhV1tJO82v-v5mU6osoxU3t1XKx-AlPyKzfBhKpTY81MKtJ';
 	var bingAttribution = 'Image courtesy of Ordnance Survey, via Bing <a style="white-space: nowrap" target="_blank" href="https://www.microsoft.com/maps/product/terms.html">Terms of Use</a>';
 baseMaps["Ordnance Survey GB"] = L.tileLayer.bing({'bingMapsKey':BING_KEY,'minZoom':12,'maxZoom':17,'imagerySet':'OrdnanceSurvey', attribution:bingAttribution, 
 		bounds: [[49.6, -12], [61.7, 3]] });
+}
 
 	var mbToken = 'pk.eyJ1IjoiZ2VvZ3JhcGgiLCJhIjoiY2lteXI3cmlpMDBmenY5bTF5dHFqMnh0NiJ9.sPXF2s1niWNNEfqGjs2HGw';
         var mbAttr = 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, ' +
@@ -53,6 +55,7 @@ baseMaps["ESRI Imagery"] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/r
 //	});
 
 
+if (L.tileLayer.bing)
 baseMaps["Bing Imagry"] = L.tileLayer.bing({'bingMapsKey':BING_KEY,'minZoom':7,'maxZoom':21,'imagerySet':'Aerial'});  //WithLabels
 
 
