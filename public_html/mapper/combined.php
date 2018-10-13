@@ -37,5 +37,8 @@ if (!empty($_SESSION['gridref'])) {
         $smarty->assign('gridref',$_SESSION['gridref']);
 }
 
-$smarty->display('mapper_combined.tpl');
-
+if (!empty($_GET['mobile'])) {
+	$smarty->display('mapper_combined_mobile.tpl');
+} else {
+	$smarty->display('mapper_combined.tpl');
+}
