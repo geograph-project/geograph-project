@@ -20,11 +20,12 @@ if (window.innerWidth < 1100) {
 			#appeal_block div a.btn { padding:20px; font-weight:bold; display:block; width:180px; background-color:purple; color:white; border-radius:10px; text-decoration:none; } \
 		</style>');
 	
-		$('body').prepend('<div id="appeal_block"><a class=closer href="#">Close</a><b>Dear Visitor,</b> \
-			If Geograph is useful to you, please help it to carry on. We&rsquo;re a small charity run entirely by unpaid volunteers.  We have to pay for the servers that bring the website to you. We don&rsquo;t carry advertisements. <br>\
-			If everyone who visits this website today gave &pound;5, we would raise enough funds to keep us going for a year. Please help us.<div class="break"></div>\
-			<div class=float><a href="/help/appeal" class="btn">Donate Now</a></div>\
-			We believe that our growing collection of images is valuable now and will become ever more treasured in the future. We want to keep the website free for everyone to use without restriction.</div>');
+		$('body').prepend('<div id="appeal_block"><a class=closer href="#">Close</a><b>Dear visitor,</b> \
+			It\'s Geoctober! This month only, we invite you to help keep Geograph running. We\'re a small charity run entirely by volunteers, but running costs and updating our hardware and software don't come cheap. We are nearly 100% reliant on donations as we shun commercial advertising.  But only a small portion of our many worldwide visitors donate in return for access to our archive of millions of free images. \
+			If everyone visiting this website today gave &pound;5 - for those of you old enough to remember, that's less than the cost of a roll of film - we would raise enough funds to keep us going for a year, maintain free and unrestricted access to the collection and keep up with developments in digital technology. \
+			If Geograph is useful to you, please take one minute to keep it online and growing. With your help we can remain a valued resource for the future. <br> \
+			Thank you.
+			<div class=float><a href="/help/appeal" class="btn">Donate Now</a></div></div>');
 
 		$('body #appeal_block a.closer').click(function() {
 			$('#appeal_block').hide('fast');
