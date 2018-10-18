@@ -337,7 +337,7 @@ class UploadManager
 			}
 
 			//move the EXIF too, and delete the old versions.
-			rename($exiffile,$exiffile2); //may as well just rename thig right now
+			rename($exiffile,$exiffile2); //may as well just rename this, partly as the multi-submit uses the timestamp of exif to show when uploaded, so dont want copy it
 			unlink($uploadfile);
 			if (file_exists($orginalfile))
 				unlink($orginalfile);

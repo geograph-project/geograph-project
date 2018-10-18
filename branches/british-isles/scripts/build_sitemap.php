@@ -137,9 +137,16 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	if ($last_id)
 		$where[] = "gridimage_id > $last_id"; //still fast, as ordered by id too, it can use it as a index.
 
+	if ($last_id > 5800000) {
+		$extra = ", original_width, original_height";
+		$join = " inner join gridimage_size using (gridimage_id) ";
+	} else {
+		$extra = $join = '';
+	}
+
 	$recordSet = &$db->Execute(
-		"select i.gridimage_id,date(upd_timestamp) as moddate,title,user_id,realname ".
-		"from gridimage_search as i ".
+		"select i.gridimage_id,date(upd_timestamp) as moddate,title,user_id,realname $extra".
+		"from gridimage_search as i $join".
 		"where ".implode(" and ",$where)." ".
 		"order by i.gridimage_id ".
 		"limit $urls_per_sitemap");
@@ -156,7 +163,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 		if (strcmp($date,$maxdate)>0)
 			$maxdate=$date;
-		if ($last_id >= 5000000) //temporally hotwire
+		if ($last_id >= $image->enforce_https) //temporally hotwire
 			$param['protocol'] = 'https';
 
 		if ($param['normal']) {
@@ -169,6 +176,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			);
 		}
 		if ($param['images']) {
+			$image=new GridImage;
 			$image->fastInit($recordSet->fields);
 			fprintf($fh3,"<url>".
 			"<loc>{$param['protocol']}://{$param['config']}/photo/%d</loc>".
@@ -182,7 +190,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			"</url>\n",
 			$recordSet->fields['gridimage_id'],
 			$date,
-			$image->_getFullpath(false,true),
+			$image->getLargestPhotoPath(true),
                         xmlentities(latin1_to_utf8($image->title)),
                         xmlentities(utf8_encode($image->realname))
 			);
