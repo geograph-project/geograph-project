@@ -38,7 +38,7 @@
 */
 class GridImage
 {
-	var $enforce_https = 3500000;
+	var $enforce_https = 2000000;
 
 	/**
 	* internal db handle
@@ -1088,7 +1088,7 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 
 		if ($largest > 1024) {
                         return $this->getImageFromOriginal(1024,1024,$returntotalpath);
-                } elseif (isset($recordSet->fields['original']) && $recordSet->fields['original'] > 640) {
+                } elseif ($largest > 640) {
                         return $this->_getOriginalpath(true,$returntotalpath);
                 } else {
                         return $this->_getFullpath(false,$returntotalpath);
@@ -1321,10 +1321,10 @@ split_timer('gridimage'); //starts the timer
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
-			$thumbpath = $return['server'].$thumbpath;
 			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-				$thumbpath = str_replace('http://','https://',$thumbpath);
+				$return['server'] = str_replace('http://','https://',$return['server']);
 
+			$thumbpath = $return['server'].$thumbpath;
 
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
@@ -1538,9 +1538,10 @@ split_timer('gridimage'); //starts the timer
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
-			$thumbpath = $return['server'].$thumbpath;
 			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-				$thumbpath = str_replace('http://','https://',$thumbpath);
+				$return['server'] = str_replace('http://','https://',$return['server']);
+
+			$thumbpath = $return['server'].$thumbpath;
 
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 
@@ -1712,9 +1713,10 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
-			$thumbpath = $return['server'].$thumbpath;
 			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-				$thumbpath = str_replace('http://','https://',$thumbpath);
+				$return['server'] = str_replace('http://','https://',$return['server']);
+
+			$thumbpath = $return['server'].$thumbpath;
 
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 

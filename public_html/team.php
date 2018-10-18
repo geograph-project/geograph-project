@@ -48,6 +48,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	'complaints' => 'Complaints Resolution',
 	'docs' => 'Documentation Writer',
 	'coordinator' => 'Moderator Coordinator',
+	'alumni' => 'Alumni',
+	'social' => 'Social Representative',
 	'support' => 'Support Representative');
 
 	##'member' => 'Company Member',
@@ -62,12 +64,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	$team = $db->GetAssoc("
-	select 
-		user.user_id,user.realname,user.nickname,user.rights,role,email
+	select
+		user.user_id,user.realname,user.nickname,user.rights,role,email,gravatar
 	from user
 		left join user_moderation using (user_id)
-	where length(rights) > 0 AND (rights != 'basic' OR role != '') AND rights NOT LIKE '%dormant%' AND rights NOT LIKE '%suspicious%' AND rights != 'basic,traineemod'
-		and user.user_id != 23277 $where
+	where (length(replace(replace(replace(replace(rights,'dormant',''),'basic',''),'member',''),'traineemod','')) > 3 OR role != '') AND rights NOT LIKE '%suspicious%'
+		$where
 	group by user.user_id
 	order by rand()");
 
@@ -80,7 +82,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		if (isset($rights['moderator']) && isset($rights['ticketmod'])) {
 			unset($rights['ticketmod']);
+		} elseif (isset($rights['ticketmod'])) {
+			 unset($rights['ticketmod']);
+			$rights['moderator'] = $positions['moderator'];
 		}
+
 		if (empty($rights) && empty($row['role'])) {
 			unset($team[$key]);
 		} else {
@@ -88,7 +94,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			if (!empty($row['role']) && !in_array($row['role'],$rights) && $row['role'] != 'Member')
 				array_unshift($rights,$row['role']);
 
-			$team[$key]['md5_email'] = md5(strtolower($row['email']));
+	                if ($row['gravatar'] && $row['gravatar'] == 'found')
+				$team[$key]['md5_email'] = md5(strtolower($row['email']));
+
 			$team[$key]['rights'] = implode(', ',array_keys($rights));
 		}
 	}
