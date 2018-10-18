@@ -145,8 +145,8 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	}
 
 	$recordSet = &$db->Execute(
-		"select i.gridimage_id,date(upd_timestamp) as moddate,title,user_id,realname $extra".
-		"from gridimage_search as i $join".
+		"select i.gridimage_id,date(upd_timestamp) as moddate,title,user_id,realname $extra ".
+		"from gridimage_search as i $join ".
 		"where ".implode(" and ",$where)." ".
 		"order by i.gridimage_id ".
 		"limit $urls_per_sitemap");
