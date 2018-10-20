@@ -1,12 +1,22 @@
 <?
 
+//if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'],'66.249.76.') !== FALSE) {
+//	header("HTTP/1.1 503 Service Unavailable");
+//	exit;
+//}
+
 $ABORT_GLOBAL_EARLY = true;
 
 require_once('geograph/global.inc.php');
 include('3rdparty/facet-functions.php');
 
 if (!defined('SPHINX_INDEX')) {
-        define('SPHINX_INDEX',empty($_GET['recent'])?"sample8":"sample8E,sample8D");
+	if (!empty($_GET['cc'])) {
+	        define('SPHINX_INDEX',"content_stemmed");
+	} elseif (!empty($_GET['gg'])) {
+	        define('SPHINX_INDEX',"germany");
+	} else
+        	define('SPHINX_INDEX',empty($_GET['recent'])?"sample8":"sample8E,sample8D");
 }
 
 
@@ -73,8 +83,13 @@ Example Queries:
 		$where = array();
 		if (!empty($_GET['match']))
 			$where[] = "MATCH('".mysql_real_escape_string($_GET['match'])."')";
-		if (!empty($_GET['where']))
-			$where[] = $_GET['where'];
+		if (!empty($_GET['where'])) {
+			if (is_array($_GET['where'])) {
+				foreach($_GET['where'] as $key => $value)
+					$where[] = $value;
+			} else
+				$where[] = $_GET['where'];
+		}
 		$group = empty($_GET['group'])?'':$_GET['group'];
 		$n = empty($_GET['n'])?'':intval($_GET['n']);
 		$order = empty($_GET['order'])?'':$_GET['order'];
@@ -307,6 +322,8 @@ function getAll($query) {
                         $row['title'] = utf8_encode($row['title']);
                 if (!empty($row['realname']))
                         $row['realname'] = utf8_encode($row['realname']);
+                if (!empty($row['place']))
+                        $row['place'] = utf8_encode($row['place']);
 		$a[] = $row;
 	}
 	return $a;
