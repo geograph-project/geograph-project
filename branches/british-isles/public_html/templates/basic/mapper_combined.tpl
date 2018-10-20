@@ -7,12 +7,13 @@
         <link rel="stylesheet" href="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.css" />
 
         <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
 
         <link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.Photo/Leaflet.Photo.css" />
 
 	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.css?v=2" />
 
-	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.css" />
+	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.css?v=2" />
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.63.0/dist/L.Control.Locate.min.css" />
@@ -45,7 +46,9 @@
 
         <script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js"></script>
 
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.js"></script>
+	<script src="https://www.geograph.org/leaflet/Leaflet.GeographCollections.js"></script>
+
+        <script src="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.js?v=2"></script>
 
 	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
 
@@ -86,6 +89,8 @@
         map.addLayer(overlayMaps["Coverage - Coarse"]);
 
 	overlayMaps["Photo Thumbnails"] = L.geographPhotos();
+
+	overlayMaps["Collections"] = L.geographCollections();
 
 {/literal}
 {dynamic}

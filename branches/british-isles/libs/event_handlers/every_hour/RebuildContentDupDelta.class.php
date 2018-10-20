@@ -71,7 +71,10 @@ SELECT
 	'blog' AS source, 
 	'info' AS type, 
 	updated, 
-	created 
+	created,
+	0 as wgs84_lat,
+	0 as wgs84_long,
+	null as sequence
 FROM blog
 WHERE approved = 1 AND published < NOW()
 AND updated > DATE_SUB(NOW(),INTERVAL 2 HOUR)
@@ -99,7 +102,10 @@ SELECT
 	'snippet' AS source, 
 	'info' AS type, 
 	MAX(gs.created) AS updated, 
-	s.created 
+	s.created,
+        s.wgs84_lat,
+        s.wgs84_long,
+        null as sequence
 FROM snippet s
 INNER JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)
 LEFT JOIN gridsquare g USING (grid_reference)
@@ -131,7 +137,10 @@ SELECT
         'trip' AS source,
         'info' AS type,
         FROM_UNIXTIME(updated) AS updated,
-        `date` AS created
+        `date` AS created,
+        0 as wgs84_lat,
+        0 as wgs84_long,
+        null as sequence
 FROM geotrips t left join queries_count c on (c.id = t.search)
 WHERE t.updated > UNIX_TIMESTAMP(DATE_SUB(NOW(),INTERVAL 2 HOUR))
                 ");
@@ -139,6 +148,13 @@ WHERE t.updated > UNIX_TIMESTAMP(DATE_SUB(NOW(),INTERVAL 2 HOUR))
 #####################################
 
 #Tidy up....
+
+                $db->Execute("
+UPDATE `content_tmp` ct INNER JOIN `content` c USING (gridsquare_id)
+SET ct.wgs84_lat = c.wgs84_lat, ct.wgs84_long = c.wgs84_long, ct.sequence = c.sequence
+WHERE ct.wgs84_lat = 0 AND ct.gridsquare_id > 0
+		");
+
 
 		$db->Execute("
 INSERT INTO `content`
@@ -155,12 +171,14 @@ ON DUPLICATE KEY UPDATE
 	type = ct.type,
 	views = ct.views,
 	updated = ct.updated,
-	created = ct.created
+	created = ct.created,
+        wgs84_lat = ct.wgs84_lat,
+        wgs84_long = ct.wgs84_long
 		");
 
-		$db->Execute("delete content.* from content left join geobb_topics on (foreign_id = topic_id) where topic_id is null and source in ('themed','gallery')");
+		$db->Execute("delete content.* from content left join geobb_topics on (foreign_id = topic_id) where ( topic_id is null OR forum_id NOT in(6,11) ) and source in ('themed','gallery')");
 
-		$db->Execute("DROP TABLE `content_tmp`");
+//		$db->Execute("DROP TABLE `content_tmp`");
 
 		//return true to signal completed processing
 		//return false to have another attempt later

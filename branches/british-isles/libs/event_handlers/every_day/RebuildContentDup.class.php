@@ -41,19 +41,19 @@ class RebuildContentDup extends EventHandler
 	{
 		global $memcache;
 		//perform actions
-		
+
 		$db=&$this->_getDB();
-		
+
 		$db->Execute("DROP TABLE IF EXISTS `content_tmp`");
 		$db->Execute("CREATE TABLE `content_tmp` LIKE `content`");
-		
+
 		//we dont want the auto_increment, otherwise it will populate on the temp table, and mess up 'ON DUPLICATE KEY'
 		$db->Execute("ALTER TABLE `content_tmp` CHANGE `content_id` `content_id` INT(10) UNSIGNED NULL, DROP PRIMARY KEY");
 
 #######################
 #BLOG
 		$db->Execute("
-		
+
 INSERT INTO `content_tmp`
 SELECT 
 	NULL AS content_id, 
@@ -73,14 +73,17 @@ SELECT
 	'blog' AS source, 
 	'info' AS type, 
 	updated, 
-	created 
+	created,
+        0 as wgs84_lat,
+        0 as wgs84_long,
+	null as sequence
 FROM blog
 WHERE approved = 1 AND published < NOW()
 
 		");
 
 #######################
-#Category		
+#Category
 		$db->Execute("
 
 INSERT INTO `content_tmp`
@@ -102,7 +105,10 @@ SELECT
 	'category' AS source, 
 	'info' AS type, 
 	MAX(submitted) AS updated, 
-	MIN(submitted) AS created 
+	MIN(submitted) AS created,
+        0 as wgs84_lat,
+        0 as wgs84_long,
+        null as sequence
 FROM gridimage_search gi
 LEFT JOIN category_canonical USING (imageclass)  
 GROUP BY gi.imageclass;
@@ -133,13 +139,16 @@ SELECT
 	'context' AS source, 
 	'info' AS type, 
 	MAX(gt.created) AS updated, 
-	t.created AS created 
+	t.created AS created,
+        0 as wgs84_lat,
+        0 as wgs84_long,
+        null as sequence
 FROM gridimage_search gi
 INNER JOIN gridimage_tag gt USING (gridimage_id)
 INNER JOIN tag t USING (tag_id)
 WHERE gt.status = 2 AND t.status = 1 AND prefix = 'top'
 GROUP BY gt.tag_id;
-		
+
 		");
 
 #######################
@@ -165,7 +174,10 @@ SELECT
 	'snippet' AS source, 
 	'info' AS type, 
 	MAX(gs.created) AS updated, 
-	s.created 
+	s.created,
+        s.wgs84_lat,
+        s.wgs84_long,
+        null as sequence
 FROM snippet s
 INNER JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)
 LEFT JOIN gridsquare g USING (grid_reference)
@@ -177,7 +189,7 @@ GROUP BY s.snippet_id;
 #######################
 #USER
 		$db->Execute("
-		
+
 INSERT INTO `content_tmp`
 SELECT 
 	NULL AS content_id, 
@@ -197,7 +209,10 @@ SELECT
 	'user' AS source, 
 	'info' AS type, 
 	submitted AS updated, 
-	DATE(signup_date) AS created 
+	DATE(signup_date) AS created,
+        0 as wgs84_lat,
+        0 as wgs84_long,
+        null as sequence
 FROM user u
 INNER JOIN user_stat USING (user_id)
 INNER JOIN gridimage_search ON (last=gridimage_id);
@@ -210,7 +225,6 @@ INNER JOIN gridimage_search ON (last=gridimage_id);
 # GEO-TRIPS
 
 
-if (true) {
                 $db->Execute("
 
 INSERT INTO `content_tmp`
@@ -232,90 +246,64 @@ SELECT
         'trip' AS source,
         'info' AS type,
         FROM_UNIXTIME(updated) AS updated,
-        `date` AS created
+        `date` AS created,
+        0 as wgs84_lat,
+        0 as wgs84_long,
+        null as sequence
 FROM geotrips t left join queries_count c on (c.id = t.search)
 
                 ");
 
-} elseif ($h = fopen('http://users.aber.ac.uk/ruw/misc/geotrip_csv.php', 'r')) {
-	$c = 0;
-	while (($data = fgetcsv($h, 65536, ',', '"' )) !== FALSE) {
-		if (!$c) {
-			$headings = $data;
-		} else {
-			$row = array_combine($headings,$data);
-/*    [1] => Array
-        (
-            [TripID] => 47
-            [Title] => A walk around the block
-            [SubTitle] => Hardly an epic walk - just experimenting with the new facility. A need to get out and to record how the weather was
-affetcing our local traffic after nearly a week of snow and sub-zero temperatures.
-            [UserID] => 322
-            [GridimageID] => 2187811
-            [GridReference] => SG4729
-            [TripDate] => 2005-08-03
-            [Updated] => 1292095230
-            [Content] => Hardly an epic walk - just experimenting with the new facility. A need to get out and to record how the weather was a
-ffetcing our local traffic after nearly a week of snow and sub-zero temperatures.
-            [SearchID] => 2187811
-        )
-*/
-			$updates = array();
-			$updates['foreign_id'] = $row['TripID'];
-			$updates['title'] = stripslashes($row['Title']);
-			$updates['url'] = "http://users.aber.ac.uk/ruw/misc/geotrip_show.php?osos&trip=".$row['TripID'];
-			$updates['user_id'] = $row['UserID'];
-			$updates['gridimage_id'] = $row['GridimageID'];
-			
-			$gs=new GridSquare();
-			if (!empty($row['GridReference']) && $gs->setByFullGridRef($row['GridReference'])) {
-				$updates['gridsquare_id'] = $gs->gridsquare_id;
-			}
-			
-			$updates['created'] = $row['TripDate'];
-			$updates['updated'] = date('Y-m-d H:i:s',$row['Updated']);
-			
-			if (!empty($row['SubTitle'])) {
-				$lines = explode("\n",wordwrap($row['SubTitle'],250,"\n")); 
+#####################################
+# FAQ Posts
 
-				$updates['extract'] = stripslashes($lines[0]).(count($lines)>1?'...':'');
-			}
-			$updates['words'] = stripslashes($row['Content']);
-			
-			$mkey = $row['SearchID'];
-			$images =& $memcache->name_get('fse',$mkey);
-			if (empty($images)) {
-				$pg = 1;
-				$engine = new SearchEngine($row['SearchID']);
-				if ($engine->criteria) {
-					$engine->criteria->resultsperpage = 1; //override it
-					$engine->Execute($pg);
-					if ($engine->resultCount && $engine->results) {
-						$images = $engine->resultCount;
+                $db->Execute("
 
-						$memcache->name_set('fse',$mkey,$images,$memcache->compress,3600*6*rand(3,10));
-					}
-				}
-			}
-			if (!empty($images)) {
-				$updates['images'] = $images;
-			}
-			$updates['source'] = 'trip';
-			$updates['type'] = 'info';
-			
-			$db->Execute('INSERT INTO content_tmp SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
-		}
-		$c++;
-	}
+INSERT INTO `content_tmp`
+SELECT
+        NULL AS content_id,
+        a.answer_id AS foreign_id,
+        TRIM(q.question) AS title,
+        CONCAT('/faq3.php?a=',a.answer_id,'#',a.answer_id) AS url,
+        a.user_id AS user_id,
+        0 AS gridimage_id,
+        0 AS gridsquare_id,
+        target AS extract,
+        0 AS images,
+        0 AS wordcount,
+        0 AS views,
+        section AS titles,
+        a.tags AS tags,
+        a.content AS words,
+        'faq' AS source,
+        'document' AS type,
+        a.updated AS updated,
+        a.created AS created,
+        0 as wgs84_lat,
+        0 as wgs84_long,
+        null as sequence
+FROM answer_answer a
+	INNER JOIN user USING (user_id)
+	INNER JOIN answer_question q USING (question_id)
+	WHERE a.status = 1 AND q.status = 1
+	GROUP BY level ASC,answer_id ASC
 
-}
+                ");
+
+
 
 #####################################
 
 #Tidy up....
 
+                $db->Execute("
+UPDATE `content_tmp` ct INNER JOIN `content` c USING (gridsquare_id)
+SET ct.wgs84_lat = c.wgs84_lat, ct.wgs84_long = c.wgs84_long, ct.sequence = c.sequence
+WHERE ct.wgs84_lat = 0 AND ct.gridsquare_id > 0
+                ");
+
 		$db->Execute("
-		
+
 INSERT INTO `content`
 SELECT * FROM `content_tmp` ct
 ON DUPLICATE KEY UPDATE
@@ -327,29 +315,32 @@ ON DUPLICATE KEY UPDATE
 	extract = ct.extract,
 	images = IF(ct.images=0,content.images,ct.images),
 	words = ct.words,
+	tags = ct.tags,
 	type = ct.type,
 	views = ct.views,
 	updated = ct.updated,
-	created = ct.created;
-	
+	created = ct.created,
+        wgs84_lat = ct.wgs84_lat,
+        wgs84_long = ct.wgs84_long;
+
 		");
-	
+
 		$db->Execute("
-		
-DELETE `content`.* 
-FROM `content` 
-	LEFT JOIN `content_tmp` USING (`foreign_id`,`source`) 
-WHERE `content`.source IN ('category','context','snippet','user','trip','blog')
+
+DELETE `content`.*
+FROM `content`
+	LEFT JOIN `content_tmp` USING (`foreign_id`,`source`)
+WHERE `content`.source IN ('category','context','snippet','user','trip','blog', 'faq')
 	AND `content_tmp`.`foreign_id` IS NULL;
-	
+
 		");
-		
-		$db->Execute("DROP TABLE `content_tmp`");
-		
-		
+
+//		$db->Execute("DROP TABLE `content_tmp`");
+
 		//return true to signal completed processing
 		//return false to have another attempt later
-		return true;		
+		return true;
 	}
-	
+
 }
+
