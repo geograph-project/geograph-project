@@ -29,13 +29,13 @@ customExpiresHeader(3600);
 $sql = array();
 $sql['wheres'] = array();
 
+$maxspan = empty($_GET['user_id'])?0.35:0.7;
 
 if (!empty($_GET['olbounds'])) {
         $b = explode(',',trim($_GET['olbounds']));
                 #### example: -10.559026590196122,46.59604915850878,7.514135843906623,54.84589681367314
 
         $span = max($b[2] - $b[0],$b[3] - $b[1]);
-	$maxspan = empty($_GET['user_id'])?0.35:0.7;
 
         if ($span > $maxspan) {
                 $error = "Zoom in closer to the British Isles to see coverage details";
@@ -62,7 +62,7 @@ if (!empty($_GET['olbounds'])) {
 	#$ire = ($lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
 	#$uk = ($lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
 
-	if ($span > 0.28) {
+	if ($span > $maxspan) {
 		$error = "Zoom in closer to the British Isles to see coverage details";
 	} else {
 		###                                         left         right                                     bottom     top
@@ -98,11 +98,11 @@ if (empty($error)) {
                 $sql['tables']['gi'] = 'gridimage_search';
                 $sql['group'] = 'grid_reference';
                 $sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
-                $sql['columns'] = "count(*) as c,x,y,grid_reference as gr,SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as r";
+                $sql['columns'] = "count(*) as c,x,y,grid_reference as gr,SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as r,sum(moderation_status='geograph') as g";
 	} else {
 		$sql['tables']['gs'] = 'gridsquare';
 
-		$sql['columns'] = "imagecount as c,x,y,grid_reference as gr,has_recent as r";
+		$sql['columns'] = "imagecount as c,x,y,grid_reference as gr,has_recent as r,has_geographs as g";
 		$sql['wheres'][] = "imagecount > 0";
 	}
 

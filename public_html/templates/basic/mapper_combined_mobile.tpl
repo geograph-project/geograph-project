@@ -104,7 +104,7 @@
 
 	<script src="{"/mapper/geotools2.js"|revision}"></script>
 
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.js?v=3"></script>
+        <script src="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.js?v=4"></script>
 
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js"></script>
 
@@ -175,8 +175,6 @@
         map.addLayer(overlayMaps["Irish Grid"]);
 
         map.addLayer(overlayMaps["Coverage - Close"]);
-
-overlayMaps["Coverage - Dots"].setUrl('https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1');
 
 	if (baseMaps["Geograph PhotoMap"]) delete baseMaps["Geograph PhotoMap"];
 	if (baseMaps["Watercolour"]) delete baseMaps["Watercolour"];
@@ -250,13 +248,14 @@ overlayMaps["Coverage - Dots"].setUrl('https://t0.geograph.org.uk/tile/tile-dens
 <ul>
 	<li><b>Dots</b>: A blue dot presents one or more photo - dot plotted at photo subject possition (only images with 6fig+ grid-reference plotted!) 
 	<li style="padding:3px;"><b>Close</b>: <span style="opacity:0.8">
-		<span style="background-color:#FF0000;padding:3px;">Square with recent images</span> /
-		<span style="background-color:#FF00FF;padding:3px;">No images in last 5 years</span>
+		<span style="background-color:#FF0000;padding:3px;">Square with recent Images</span> /
+		<span style="background-color:#FF00FF;padding:3px;">No Images in last 5 years</span> /
+                <span style="background-color:gray;padding:3px;">No Geograph Images</span>
 		</span></li>
 	<li style="padding:3px;"><b>Course</b>: <span style="opacity:0.6">
-		<span style="background-color:#FF0000;padding:3px;">Recent photos (last 5 years)</span>
-		<span style="background-color:#ECCE40;padding:3px;">Only older photos</span>
-	 	<span style="background-color:#75FF65;padding:3px;">No photos</span>
+		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span>
+		<span style="background-color:#ECCE40;padding:3px;">Only older Geographs</span>
+	 	<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
 		</span></li>
 	<li><b>Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
 		Experimental coverage layer to see if concept works. Exact specififications of layer subject to change or withdrawl. 

@@ -88,7 +88,7 @@ var overlayMaps = {};
 		overlayMaps["Irish Grid"] = L.irishGrid(gridOptions);
 	}
 
-	var layerUrl='https://t0.geograph.org.uk/tile/tile.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
+	var layerUrl='https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
 
 overlayMaps["Coverage - Dots"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 9, maxZoom: 18, attribution: layerAttrib, bounds: bounds});
 
