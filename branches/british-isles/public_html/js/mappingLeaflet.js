@@ -360,7 +360,7 @@ function updateCamIcon() {
 
 
 		// dots layer
-	        var layerUrl='https://t0.geograph.org.uk/tile/tile.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
+	        var layerUrl='https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
 		var layerAttrib='&copy; Geograph Project';
 		var bounds = L.latLngBounds(L.latLng(49.863788, -13.688451), L.latLng(60.860395, 1.795260)); 
         	overlayMaps['All Dots Layer'] = new L.TileLayer(layerUrl, {minZoom: 6, maxZoom: 18, attribution: layerAttrib, bounds: bounds, opacity: 0.8});
