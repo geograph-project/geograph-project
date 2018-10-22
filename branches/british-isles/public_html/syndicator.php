@@ -62,7 +62,7 @@ if (!empty($CONF['redis_host']))
 	$bits[] = getRemoteIP();
 	if (strlen($_SERVER['HTTP_REFERER']) > 2) {
 		$ref = @parse_url($_SERVER['HTTP_REFERER']);
-		$bits[] = $ref['host'];		
+		$bits[] = $ref['host'];
 	} else {
 		$bits[] = '';
 	}
@@ -82,7 +82,6 @@ if (!empty($CONF['redis_host']))
 
 
 
-	
 $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX','TOOLBAR','MEDIA','JSON');
 
 if (isset($_GET['extension']) && !isset($_GET['format']))
@@ -147,32 +146,32 @@ if (isset($_GET['q']) || !empty($_GET['location'])) {
 	//temporally redirect piclens full-text search directly to sphinx
 	if (isset($_GET['source']) && ($_GET['source'] == 'piclens' || $_GET['source'] == 'fist') ) {
 		$sphinx = new sphinxwrapper($q);
-		
-		//gets a cleaned up verion of the query (suitable for filename etc) 
+
+		//gets a cleaned up verion of the query (suitable for filename etc)
 		$cacheid = $sphinx->q;
-		
+
 		$sphinx->pageSize = $pgsize = 15;
-		
+
 		$sphinx->processQuery();
-		
+
 		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
-		
+
 		$ids = $sphinx->returnIds($pg,'_images');
 		unset($q);
 	} else {
 		$cacheid = getTextKey();
 		$pg = 1;
-		
+
 		//$q is used below
 	}
 } elseif (isset($_GET['text'])) {
 	$cacheid = getTextKey();
 	$pg = 1;
-	
+
 	$q = $_GET['text'].' near (anywhere)';
 
-} 
+}
 
 $opt_expand = (!empty($_GET['expand']) && $format != 'KML')?1:0;
 
@@ -196,13 +195,13 @@ if (isset($_GET['callback'])) {
 	$rssfile=preg_replace('/\.(\w+)/',".$callback.\\1",$rssfile);
 }
 
-$rss = new UniversalFeedCreator(); 
+$rss = new UniversalFeedCreator();
 if (empty($_GET['refresh']))
-	$rss->useCached($format,$rssfile,$rss_timeout); 
+	$rss->useCached($format,$rssfile,$rss_timeout);
 if ($CONF['template'] == 'ireland') {
-	$rss->title = 'Geograph Ireland'; 
+	$rss->title = 'Geograph Ireland';
 } else {
-	$rss->title = 'Geograph Britain and Ireland'; 
+	$rss->title = 'Geograph Britain and Ireland';
 }
 if ($CONF['template'] == 'api') {
 	$rss->link = "{$CONF['CONTENT_HOST']}/";
@@ -218,8 +217,8 @@ if (isset($q)) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
-	
-	$engine = new SearchEngineBuilder('#'); 
+
+	$engine = new SearchEngineBuilder('#');
 	$engine->searchuse = "syndicator";
 	$_GET['i'] = $engine->buildSimpleQuery($q,!empty($_GET['distance'])?min(20,floatval($_GET['distance'])):$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
 
@@ -228,7 +227,7 @@ if (isset($q)) {
 		$GLOBALS['memcache']->name_set('rss',
 			$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension",
 			$target,$GLOBALS['memcache']->compress,$rss_timeout);
-		
+
 	} elseif (function_exists('symlink') && isset($cacheid) && !empty($_GET['i'])) {
 		//create a link so cache can be access as original query(cacheid) or directly via its 'i' number later...
 		symlink($_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/$cacheid-{$pg}-{$format}{$opt_expand}.$extension",
@@ -260,7 +259,7 @@ if (isset($sphinx)) {
 			$prev = $pg - 1;
 			$rss->prevURL = $baselink."syndicator.php?q=".urlencode($sphinx->q).(($prev>1)?"&amp;page=$prev":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 		}
-		
+
 		$offset = ($pg -1)* $pgsize;
 		if ($pg < 50 && $offset < 1000 && $sphinx->numberOfPages > $pg) {
 			$next = $pg + 1;
@@ -279,38 +278,38 @@ if (isset($sphinx)) {
 } elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
-		
-		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):1;
-		if (empty($pg) || $pg < 1) {$pg = 1;}
-		
+
+	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):1;
+	if (empty($pg) || $pg < 1) {$pg = 1;}
+
 	$images = new SearchEngine($_GET['i']);
-	
-	$rss->description = "Images".$images->criteria->searchdesc; 
+
+	$rss->description = "Images".$images->criteria->searchdesc;
 	$rss->syndicationURL = $baselink."feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".$format_extension";
-	
+
 	$images->Execute($pg);
 	if ($images->resultCount) {
 		$rss->description .= " ({$images->resultCount} in total)";
 	}
-	
+
 	if (!empty($images->error)) {
-		
-		$item = new FeedItem(); 
+
+		$item = new FeedItem();
 		$item->title = $images->error;
 		$item->description = "Unfortunatly it doesn't appear the search was processed, this is most likly a invalid combination of search terms.";
 		if ($engine->error != "Syntax Error") {
-			$item->description = " But could also be a temporarlly issue so you could try again in a little while."; 
+			$item->description = " But could also be a temporarlly issue so you could try again in a little while.";
 		}
 		$item->date = time();
 		$item->author = $rss->title;
-		
+
 		$rss->addItem($item);
-	
+
 		$rss->saveFeed($format, $rssfile);
 
 		exit;
 	}
-	
+
 	if ($format == 'MEDIA' || $format == 'JSON') {
 		$rss->link =  $baselink."search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
 		if ($pg>1) {
@@ -318,17 +317,17 @@ if (isset($sphinx)) {
 			$rss->prevURL = $baselink."feed/results/".$_GET['i'].(($prev>1)?"/$prev":'').".$format_extension";
 		}
 		$pgsize = $images->criteria->resultsperpage;
-			
+
 		if (!$pgsize) {$pgsize = 15;}
-		
+
 		$offset = ($pg -1)* $pgsize;
 		if ($pg < 10 && $offset < 250 && $images->numberOfPages > $pg) {
 			$next = $pg + 1;
 			$rss->nextURL = $baselink."feed/results/".$_GET['i'].(($next>1)?"/$next":'').".$format_extension";
 		}
 		$rss->icon = "{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
-	} 
-	
+	}
+
 	$images->images = &$images->results;
 
 /**
@@ -336,19 +335,19 @@ if (isset($sphinx)) {
  */
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$profile=new GeographUser($_GET['u']);
-	$rss->description = 'Latest Images by '.$profile->realname; 
+	$rss->description = 'Latest Images by '.$profile->realname;
 	$rss->syndicationURL = $baselink."profile/".intval($_GET['u'])."/feed/recent.$format_extension";
 
 
 	//lets find some recent photos
 	$images=new ImageList();
 	$images->getImagesByUser($_GET['u'],array('accepted', 'geograph'), 'gridimage_id desc', 15, false);
-	
+
 /**
  * general feed of all images
  */
 } else {
-	$rss->description = 'Latest Images'; 
+	$rss->description = 'Latest Images';
 	$rss->syndicationURL = $baselink."feed/recent.$format_extension";
 
 	//lets find some recent photos
@@ -361,22 +360,22 @@ $cnt=count($images->images);
 $geoformat = ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX' || $format == 'MEDIA' || $format == 'JSON');
 $photoformat = ($format == 'KML' || $format == 'GeoPhotoRSS' || $format == 'BASE' || $format == 'MEDIA' || $format == 'JSON');
 
+
 //create some feed items
 for ($i=0; $i<$cnt; $i++)
 {
-	
-	$item = new FeedItem(); 
-	$item->title = $images->images[$i]->grid_reference." : ".$images->images[$i]->title; 
+	$item = new FeedItem();
+	$item->title = $images->images[$i]->grid_reference." : ".$images->images[$i]->title;
 	$item->guid = $item->link = $baselink."photo/{$images->images[$i]->gridimage_id}";
 	if (isset($images->images[$i]->dist_string) || isset($images->images[$i]->imagetakenString)) {
-		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'');
+		@$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'');
 		if ($item->description) {
 			$item->description .= "<br/>";
 		}
-		$item->description .= $images->images[$i]->comment; 
+		$item->description .= $images->images[$i]->comment;
 		$item->descriptionHtmlSyndicated = true;
 	} else {
-		$item->description = $images->images[$i]->comment; 
+		$item->description = $images->images[$i]->comment;
 	}
 	if (!empty($images->images[$i]->imagetaken) && strpos($images->images[$i]->imagetaken,'-00') === FALSE) {
 		$item->imageTaken = $images->images[$i]->imagetaken;
@@ -396,16 +395,16 @@ for ($i=0; $i<$cnt; $i++)
 	}
 	if ($photoformat) {
 		$details = $images->images[$i]->getThumbnail(120,120,2);
-		$item->thumb = $details['server'].$details['url']; 
+		$item->thumb = $details['server'].$details['url'];
 		$item->thumbTag = $details['html'];
 		if (!empty($images->images[$i]->imageclass))
 			$item->category = $images->images[$i]->imageclass;
 		if (!empty($images->images[$i]->tags))
 			$item->tags = $images->images[$i]->tags;
-		
+
 		if ($format == 'MEDIA') {
 			$item->title .= " by ".$images->images[$i]->realname;
-			//$item->content = str_replace('s0.','s0cdn.',$images->images[$i]->_getFullpath(true,true)); 
+			//$item->content = str_replace('s0.','s0cdn.',$images->images[$i]->_getFullpath(true,true));
 			if ($opt_expand) {
 				$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 				$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
@@ -413,7 +412,7 @@ for ($i=0; $i<$cnt; $i++)
 			}
 		}
 	} elseif ($format == 'PHP') {
-		$item->thumb = $images->images[$i]->getThumbnail(120,120,true); 
+		$item->thumb = $images->images[$i]->getThumbnail(120,120,true);
 	} elseif ($format == 'TOOLBAR') {
 		ob_start();
 		imagejpeg($images->images[$i]->getSquareThumb(16));

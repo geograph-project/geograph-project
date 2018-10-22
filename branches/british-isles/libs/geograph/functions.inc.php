@@ -243,8 +243,13 @@ function smarty_function_newwin($params)
 	else
 		$title=strip_tags($text);
 
+	$rel = array();
 	if (isset($params['nofollow']))
-		$title .= "\" rel=\"nofollow";
+		$rel[] = "nofollow";
+	if (!strpos("//{$_SERVER['HTTP_HOST']}/",$href))
+		$rel[] = "noopener";
+	if (!empty($rel))
+		$title .= "\" rel=\"".implode(" ",$rel);
 
 	if (isset($params['onclick']))
 		$title .= "\" onclick=\"".$params['onclick'];
@@ -272,13 +277,21 @@ function smarty_function_external($params)
   	else
   		$text=$href;
 
+	if ($text == 'Link' && preg_match('/\/\/[\w\.]*archive[\w\.]+.*\/\d{14}\/http/',$href))
+		$text='Archive Link';
+
   	if (isset($params['title']))
 		$title=$params['title'];
 	else
-		$title=$text;
-	
+		$title=strip_tags($text);
+
+	$rel = array();
 	if (isset($params['nofollow']))
-		$title .= "\" rel=\"nofollow"; 	
+		$rel[] = "nofollow";
+	if (!strpos("//{$_SERVER['HTTP_HOST']}/",$href))
+		$rel[] = "noopener";
+	if (!empty($rel))
+		$title .= "\" rel=\"".implode(" ",$rel);
 
   	if (isset($params['target']) && $params['target'] == '_blank') {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
@@ -300,11 +313,11 @@ function smarty_function_gridimage($params)
 
 	$image=new GridImage;
 	$image->loadFromId($params['id']);
-	
+
 	if (empty($image->gridimage_id) || $image->moderation_status == 'rejected') {
 		return '';
 	}
-	
+
 	if (isset($imageCredits[$image->realname])) {
 		$imageCredits[$image->realname]++;
 	} else {
@@ -314,9 +327,9 @@ function smarty_function_gridimage($params)
 	$html='<div class="photoguide">';
 
 	$html.='<div style="float:left;width:213px">';
-	
+
 		$title=$image->grid_reference.' : '.htmlentities2($image->title).' by '.htmlentities2($image->realname);
-	
+
 		$html.='<a title="'.$title.' - click to view full size image" href="/photo/'.$image->gridimage_id.'">';
 		$html.=$image->getThumbnail(213,160);
 		$html.='</a><div class="caption"><a href="/gridref/'.$image->grid_reference.'">'.$image->grid_reference.'</a> : <a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
@@ -326,28 +339,28 @@ function smarty_function_gridimage($params)
 	if (isset($params['extra'])) {
 		if ($params['extra'] == '{description}') {
 			if (!empty($image->comment)) {
-				$desc = GeographLinks(preg_replace("/[\n\r]+/",'',nl2br(htmlentities2($image->comment)))).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
-				
+				$desc = GeographLinks(preg_replace("/[\n\r]+/",' ',nl2br(htmlentities2($image->comment)))).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
+
 				$desc = preg_replace('/\b(more sizes)\b/i',"<a href=\"/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
 			} else {
 				$desc = '';
 			}
-			
+
 			$s = $image->loadSnippets();
 			if ($image->snippet_count) {
 				if (!function_exists('smarty_modifier_truncate')) {
 					require_once("smarty/libs/plugins/modifier.truncate.php");
 				}
-			
+
 				$desc .= "<div style=\"text-align:left\"><i>Shared Description".($image->snippet_count>1?'s':'')."</i>".($image->snippets_as_ref?'<ol':'<ul')." style=\"margin:0\">";
 				foreach ($image->snippets as $snippet) {
-					$desc .= "<li><a href=\"/snippet/{$snippet['snippet_id']}\" title=\"".smarty_modifier_truncate($snippet['comment'],90,"... more")."\">". ($snippet['title']?htmlentities2($snippet['title']):'untitled')."</a></li>";
+					$desc .= "<li><a href=\"/snippet/{$snippet['snippet_id']}\" title=\"".htmlentities2(smarty_modifier_truncate($snippet['comment'],90,"... more"))."\">". ($snippet['title']?htmlentities2($snippet['title']):'untitled')."</a></li>";
 				}
 				$desc .= ($image->snippets_as_ref?'</ol>':'</ul>')."</div>";
 			}
 		} else {
 			$desc = htmlentities2($params['extra']);
-		} 
+		}
 		if (!empty($desc)) {
 			$html.='<div style="float:left;padding-left:20px; width:400px;">'.$desc.'</div>';
 		}
@@ -356,7 +369,6 @@ function smarty_function_gridimage($params)
 	$html.='<br style="clear:both"/></div>';
 
 	return $html;
-
 }
 
 if (!function_exists('mb_ucfirst') && function_exists('mb_substr')) {
@@ -376,9 +388,9 @@ function smarty_function_place($params) {
 	$t = '';
 	if (!empty($params['takenago']))
 		$t .= "<span title=\"{$params['taken']}\">taken <b>{$params['takenago']}</b></span>, ";
-	if ($place['distance'] > 3)
+	if (!empty($place['distance']) && $place['distance'] > 3)
 		$t .= ($place['distance']-0.01)." km from ";
-	elseif (!$place['isin'])
+	elseif (empty($place['isin']))
 		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
 
 	if (!ctype_lower($place['full_name'])) {
@@ -387,7 +399,7 @@ function smarty_function_place($params) {
 		$t .= "<b>{$place['full_name']}</b><small><i>";
 	}
 	$t = str_replace(' And ','</b> and <b>',$t);
-	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
+	if (!empty($place['adm1_name']) && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
 		$parts = explode('/',$place['adm1_name']);
 		if (!ctype_lower($parts[0])) {
 			if (isset($parts[1]) && $parts[0] == $parts[1]) {
@@ -397,15 +409,15 @@ function smarty_function_place($params) {
 		} else {
 			$t .= ", {$place['adm1_name']}";
 		}
-	} elseif ($place['hist_county'])
+	} elseif (!empty($place['hist_county']))
 		$t .= ", {$place['hist_county']}";
 	$t .= ", {$place['reference_name']}</i></small>";
-	
+
 	$tag = (isset($params['h3']))?'h3':'span';
 	$t2 = "<$tag";
 	if (!empty($params['h3']) && strlen($params['h3']) > 1)
 		$t2 .= $params['h3'];
-	if ($place['hist_county']) {
+	if (!empty($place['hist_county'])) {
 		$t2 .= " title=\"".substr($place['full_name'],0,12).": Historic County - {$place['hist_county']}";
 		if ($place['hist_county'] == $place['adm1_name'])
 			$t2 .= ", and modern Administrative Area of the same name";
