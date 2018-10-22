@@ -1742,7 +1742,7 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 	*/
 	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false,$attribname = 'src')
 	{
-		if ($this->ext) {
+		if (!empty($this->ext)) {
 			# (120,120,false,true);
 			# $resized['html'];
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.htmlentities2($this->realname);

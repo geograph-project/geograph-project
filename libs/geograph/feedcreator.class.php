@@ -27,6 +27,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Changelog:
 
+v1.7.12(BH)	14-06-18
+	Added Enclosures (Barry Hunter)
+
 v1.7.10(BH)	20-08-11
 	added JSON  (Barry Hunter)
 
@@ -191,7 +194,7 @@ define("TIME_ZONE","");
 /**
  * Version string.
  **/
-define("FEEDCREATOR_VERSION", "FeedCreator 1.7.10(BH)");
+define("FEEDCREATOR_VERSION", "FeedCreator 1.7.12(BH)");
 
 class EmptyClass {} 
 
@@ -1045,9 +1048,9 @@ class RSSCreator10 extends FeedCreator {
 		$feed.= "    xmlns=\"http://purl.org/rss/1.0/\"\n";
 		$feed.= "    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n"; 
 		$feed.= "    xmlns:slash=\"http://purl.org/rss/1.0/modules/slash/\"\n";
-		if ($this->items[0]->thumb!="")
+		if (!empty($this->items[0]->thumb))
 			$feed.= "    xmlns:photo=\"http://www.pheed.com/pheed/\"\n";
-		if ($this->items[0]->lat!="" || $this->geo)
+		if (!empty($this->items[0]->lat) || !empty($this->geo))
 			$feed.= "    xmlns:georss=\"http://www.georss.org/georss\"\n";
 		$feed.= "    xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n";
 		$feed.= "    <channel rdf:about=\"".$this->syndicationURL."\">\n";
@@ -1084,16 +1087,16 @@ class RSSCreator10 extends FeedCreator {
 				$itemDate = new FeedDate($this->items[$i]->date);
 				$feed.= "        <dc:date>".htmlspecialchars($itemDate->iso8601())."</dc:date>\n";
 			}
-			if ($this->items[$i]->source!="") {
+			if (!empty($this->items[$i]->source)) {
 				$feed.= "        <dc:source>".htmlspecialchars($this->items[$i]->source)."</dc:source>\n";
 			}
-			if ($this->items[$i]->author!="") {
+			if (!empty($this->items[$i]->author)) {
 				$feed.= "        <dc:creator>".htmlspecialchars($this->items[$i]->author)."</dc:creator>\n";
 			}
-			if ($this->items[$i]->lat!="") {
+			if (!empty($this->items[$i]->lat)) {
 				$feed.= "        <georss:point>".$this->items[$i]->lat." ".$this->items[$i]->long."</georss:point>\n";
 			}
-			if ($this->items[$i]->thumb!="") {
+			if (!empty($this->items[$i]->thumb)) {
 				$feed.= "        <photo:thumbnail>".htmlspecialchars($this->items[$i]->thumb)."</photo:thumbnail>\n";
 			}
 			$feed.= "        <title>".htmlspecialchars(strip_tags(strtr($this->items[$i]->title,"\n\r","  ")))."</title>\n";
@@ -1149,11 +1152,11 @@ class RSSCreator091 extends FeedCreator {
 		$feed.= "<rss version=\"".$this->RSSVersion."\"";
 		if ($this->format == 'MEDIA') 
 			$feed.= " xmlns:media=\"http://search.yahoo.com/mrss/\"";
-		if ($this->items[0]->licence!="" || $this->creativeCommons)
+		if (!empty($this->items[0]->licence) || !empty($this->creativeCommons))
 			$feed.= " xmlns:creativeCommons=\"http://backend.userland.com/creativeCommonsRssModule\"";
-		if ($this->items[0]->lat!="" || $this->geo)
+		if (!empty($this->items[0]->lat) || !empty($this->geo))
 			$feed.= " xmlns:georss=\"http://www.georss.org/georss\"";
-		if ($this->syndicationURL != '')
+		if (!empty($this->syndicationURL))
 			$feed.= " xmlns:atom=\"http://www.w3.org/2005/Atom\"";
 		$feed.= " xmlns:dc=\"http://purl.org/dc/elements/1.1/\"";
 		$feed.= ">\n";
@@ -1182,54 +1185,54 @@ class RSSCreator091 extends FeedCreator {
 		$feed.= "        <lastBuildDate>".htmlspecialchars($now->rfc822())."</lastBuildDate>\n";
 		$feed.= "        <generator>".FEEDCREATOR_VERSION."</generator>\n";
 
-		if ($this->image!=null) {
+		if (!empty($this->image)) {
 			$feed.= "        <image>\n";
 			$feed.= "            <url>".$this->image->url."</url>\n"; 
 			$feed.= "            <title>".FeedCreator::iTrunc(htmlspecialchars($this->image->title),100)."</title>\n"; 
 			$feed.= "            <link>".$this->image->link."</link>\n";
-			if ($this->image->width!="") {
+			if (!empty($this->image->width)) {
 				$feed.= "            <width>".$this->image->width."</width>\n";
 			}
-			if ($this->image->height!="") {
+			if (!empty($this->image->height)) {
 				$feed.= "            <height>".$this->image->height."</height>\n";
 			}
-			if ($this->image->description!="") {
+			if (!empty($this->image->description)) {
 				$feed.= "            <description>".$this->image->getDescription()."</description>\n";
 			}
 			$feed.= "        </image>\n";
 		}
-		if ($this->language!="") {
+		if (!empty($this->language)) {
 			$feed.= "        <language>".$this->language."</language>\n";
 		}
-		if ($this->copyright!="") {
+		if (!empty($this->copyright)) {
 			$feed.= "        <copyright>".FeedCreator::iTrunc(htmlspecialchars($this->copyright),100)."</copyright>\n";
 		}
-		if ($this->editor!="") {
+		if (!empty($this->editor)) {
 			$feed.= "        <managingEditor>".FeedCreator::iTrunc(htmlspecialchars($this->editor),100)."</managingEditor>\n";
 		}
-		if ($this->webmaster!="") {
+		if (!empty($this->webmaster)) {
 			$feed.= "        <webMaster>".FeedCreator::iTrunc(htmlspecialchars($this->webmaster),100)."</webMaster>\n";
 		}
-		if ($this->pubDate!="") {
+		if (!empty($this->pubDate)) {
 			$pubDate = new FeedDate($this->pubDate);
 			$feed.= "        <pubDate>".htmlspecialchars($pubDate->rfc822())."</pubDate>\n";
 		}
-		if ($this->category!="") {
+		if (!empty($this->category)) {
 			$feed.= "        <category>".htmlspecialchars($this->category)."</category>\n";
 		}
-		if ($this->docs!="") {
+		if (!empty($this->docs)) {
 			$feed.= "        <docs>".FeedCreator::iTrunc(htmlspecialchars($this->docs),500)."</docs>\n";
 		}
-		if ($this->ttl!="") {
+		if (!empty($this->ttl)) {
 			$feed.= "        <ttl>".htmlspecialchars($this->ttl)."</ttl>\n";
 		}
-		if ($this->rating!="") {
+		if (!empty($this->rating)) {
 			$feed.= "        <rating>".FeedCreator::iTrunc(htmlspecialchars($this->rating),500)."</rating>\n";
 		}
-		if ($this->skipHours!="") {
+		if (!empty($this->skipHours)) {
 			$feed.= "        <skipHours>".htmlspecialchars($this->skipHours)."</skipHours>\n";
 		}
-		if ($this->skipDays!="") {
+		if (!empty($this->skipDays)) {
 			$feed.= "        <skipDays>".htmlspecialchars($this->skipDays)."</skipDays>\n";
 		}
 		$feed.= $this->_createAdditionalElements($this->additionalElements, "    ");
@@ -1240,42 +1243,45 @@ class RSSCreator091 extends FeedCreator {
 			$feed.= "            <link>".htmlspecialchars($this->items[$i]->link)."</link>\n";
 			$feed.= "            <description>".$this->items[$i]->getDescription()."</description>\n";
 			
-			if ($this->items[$i]->author!="" && strpos($this->items[$i]->author,'@') === FALSE) {
+			if (!empty($this->items[$i]->author) && strpos($this->items[$i]->author,'@') === FALSE) {
 				$feed.= "            <dc:creator>".htmlspecialchars($this->items[$i]->author)."</dc:creator>\n";
-			} elseif ($this->items[$i]->author!="") {
+			} elseif (!empty($this->items[$i]->author)) {
 				$feed.= "            <author>".htmlspecialchars($this->items[$i]->author)."</author>\n";
 			}
 			/*
 			// on hold
-			if ($this->items[$i]->source!="") {
+			if (!empty($this->items[$i]->source)) {
 					$feed.= "            <source>".htmlspecialchars($this->items[$i]->source)."</source>\n";
 			}
 			*/
-			if ($this->items[$i]->category!="") {
+			if (!empty($this->items[$i]->category)) {
 				$feed.= "            <category>".htmlspecialchars($this->items[$i]->category)."</category>\n";
 			}
-			if ($this->items[$i]->comments!="") {
+			if (!empty($this->items[$i]->comments)) {
 				$feed.= "            <comments>".htmlspecialchars($this->items[$i]->comments)."</comments>\n";
 			}
-			if ($this->items[$i]->date!="") {
+			if (!empty($this->items[$i]->date)) {
 			$itemDate = new FeedDate($this->items[$i]->date);
 				$feed.= "            <pubDate>".htmlspecialchars($itemDate->rfc822())."</pubDate>\n";
 			}
-			if ($this->items[$i]->guid!="") {
+			if (!empty($this->items[$i]->guid)) {
 				$feed.= "            <guid>".htmlspecialchars($this->items[$i]->guid)."</guid>\n";
 			}
-			if ($this->items[$i]->content!="") {
-				if ($this->items[$i]->thumb!="") {
+			if (!empty($this->items[$i]->content)) {
+				if (!empty($this->items[$i]->thumb)) {
 					$feed.= "            <media:thumbnail url=\"".htmlspecialchars($this->items[$i]->thumb)."\"/>\n";
 				}
 				$feed.= "            <media:content url=\"".htmlspecialchars($this->items[$i]->content)."\"/>\n";
-			} elseif ($this->items[$i]->thumb!="") {
+			} elseif (!empty($this->items[$i]->thumb)) {
 				$feed.= "            <g:image_link>".htmlspecialchars($this->items[$i]->thumb)."</g:image_link>\n";
 			}
-			if ($this->items[$i]->lat!="") {
+			if (!empty($this->items[$i]->enclosure)) {
+				 $feed.= "            <enclosure url=\"".htmlspecialchars($this->items[$i]->enclosure)."\" type=\"image/jpeg\"/>\n";
+			}
+			if (!empty($this->items[$i]->lat)) {
 				$feed.= "            <georss:point>".$this->items[$i]->lat." ".$this->items[$i]->long."</georss:point>\n";
 			}
-			if ($this->items[$i]->licence!="") {
+			if (!empty($this->items[$i]->licence)) {
 				$feed.= "            <creativeCommons:license>".htmlspecialchars($this->items[$i]->licence)."</creativeCommons:license>\n";
 			}
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
@@ -1311,33 +1317,39 @@ class RSSCreator20 extends RSSCreator091 {
  * @author Barry Hunter <geo@barryhunter.co.uk>
  */
 class KMLCreator extends FeedCreator {
-	
+
 	function KMLCreator() {
 		$this->contentType = "application/vnd.google-earth.kml+xml";
 		$this->encoding = "utf-8";
 	}
 
-
-	
-			   
 	function createFeed() {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createStylesheetReferences();
-		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; 
+		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n";
 		$feed.= "<Document>\n";
+		$feed.= "<name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>";
 		if ($_GET['LinkControl'])
 			$feed.= "<NetworkLinkControl>\n<minRefreshPeriod>3600</minRefreshPeriod>\n</NetworkLinkControl>\n";
 		if (!empty($_GET['simple']) && count($this->items) > 0) {
+			$normalscale = 1;
+			$highscale = 2.1;
+			if (!empty($_GET['large'])) {
+	                        $normalscale = 2.1;
+	                        $highscale = 3.4;
+			}
 		$feed.= "<Style id=\"defaultIcon\">
 	<LabelStyle>
 		<scale>0</scale>
 	</LabelStyle>
-</Style>
-<Style id=\"hoverIcon\">".
-(($this->items[0]->thumb!="")?"
 	<IconStyle>
-		<scale>2.1</scale>
-	</IconStyle>":'')."
+		<scale>$normalscale</scale>
+	</IconStyle>
+</Style>
+<Style id=\"hoverIcon\">
+	<IconStyle>
+		<scale>$highscale</scale>
+	</IconStyle>
 </Style>
 <StyleMap id=\"defaultStyle\">
 	<Pair>
@@ -1367,19 +1379,19 @@ class KMLCreator extends FeedCreator {
   <visibility>1</visibility>\n";
 		}
 		$this->truncSize = 500;
-		
+
 		for ($i=0;$i<count($this->items);$i++) {
 			$snippet = strip_tags($this->items[$i]->description);
-		
+
 			//added here beucase description gets auto surrounded by cdata
-			if ($this->items[$i]->thumbTag!="") {
+			if (!empty($this->items[$i]->thumbTag)) {
 				$this->items[$i]->description = "<a href=\"".htmlspecialchars($this->items[$i]->link)."\">".$this->items[$i]->thumbTag."</a><br/>".$this->items[$i]->description;
 			}
-			
+
 			$this->items[$i]->description = "<p align=\"center\"><b>".$this->items[$i]->description."</b><br/>
 			".$this->items[$i]->licence."
 				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a></b>";
-			
+
 			if ($this->items[$i]->guid != '') {
 				$feed.= "
 		<Placemark id=\"".htmlspecialchars($this->items[$i]->guid)."\">";
@@ -1396,7 +1408,7 @@ class KMLCreator extends FeedCreator {
 				<extrude>1</extrude><altitudeMode>relativeToGround</altitudeMode>
 				<coordinates>".$this->items[$i]->long.",".$this->items[$i]->lat.",125</coordinates>
 			</Point>";
-			if ($this->items[$i]->thumb) {
+			if (!empty($this->items[$i]->thumb)) {
 				$feed.= "
 			<styleUrl>$style</styleUrl>
 			<Style>
@@ -1407,7 +1419,7 @@ class KMLCreator extends FeedCreator {
 				</IconStyle>
 			</Style>";
 			}
-			if ($this->items[$i]->imageTaken) {
+			if (!empty($this->items[$i]->imageTaken)) {
 				$feed.= "
 			<TimeStamp>
 				<when>".str_replace('-00','',$this->items[$i]->imageTaken)."</when>
@@ -1421,7 +1433,7 @@ class KMLCreator extends FeedCreator {
 		$feed .= "</Document>\n</kml>\n";
 		return $feed;
 	}
-	
+
 	/**
 	 * Generate a filename for the feed cache file. Overridden from FeedCreator to prevent XML data types.
 	 * @return string the feed cache filename
@@ -1441,7 +1453,7 @@ class KMLCreator extends FeedCreator {
  * @author Barry Hunter <geo@barryhunter.co.uk>
  */
 class GPXCreator extends FeedCreator {
-	
+
 	function GPXCreator() {
 		$this->contentType = "text/xml";
 		$this->encoding = "utf-8";
@@ -1452,7 +1464,7 @@ function createFeed() {
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<gpx xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0\"
 creator=\"".FEEDCREATOR_VERSION."\"
-xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\" xmlns=\"http://www.topografix.com/GPX/1/0\">\n"; 
+xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\" xmlns=\"http://www.topografix.com/GPX/1/0\">\n";
 
 		$now = new FeedDate();
 		$feed.= "<desc>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</desc>
@@ -1460,7 +1472,7 @@ xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com
 <url>".htmlspecialchars($this->link)."</url>
 <time>".htmlspecialchars($now->iso8601())."</time>
 \n";
-			
+
 		for ($i=0;$i<count($this->items);$i++) {
 			$title = utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title)));
 			$feed.= "<wpt lat=\"".$this->items[$i]->lat."\" lon=\"".$this->items[$i]->long."\">
@@ -1484,12 +1496,12 @@ xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com
  * @author Barry Hunter <geo@barryhunter.co.uk>
  */
 class PHPCreator extends FeedCreator {
-	
+
 	function PHPCreator() {
 		$this->contentType = "text/plain";
 		$this->encoding = "utf-8";
 	}
-    
+
 	function createFeed() {
 		$feed = "<?php\n";
 		$feed.= "if (!class_exists(\"FeedItem\")) { class FeedItem {} }\n";
@@ -1500,20 +1512,20 @@ class PHPCreator extends FeedCreator {
 		$feed.= "  \$feedItem = array();\n";
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "   \$feedItem[$i] = new FeedItem();\n";
-			if ($this->items[$i]->guid!="") {
+			if (!empty($this->items[$i]->guid)) {
 				$feed.= "    \$feedItem[$i]->id='".htmlspecialchars($this->items[$i]->guid)."';\n";
 			}
 			$feed.= "    \$feedItem[$i]->title='".addslashes(FeedCreator::iTrunc(utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title))),100))."';\n";
 			$feed.= "    \$feedItem[$i]->link='".htmlspecialchars($this->items[$i]->link)."';\n";
 			$feed.= "    \$feedItem[$i]->date=".htmlspecialchars($this->items[$i]->date).";\n";
-			if ($this->items[$i]->author!="") {
+			if (!empty($this->items[$i]->author)) {
 				$feed.= "    \$feedItem[$i]->author='".htmlspecialchars($this->items[$i]->author)."';\n";
-				if ($this->items[$i]->authorEmail!="") {
+				if (!empty($this->items[$i]->authorEmail)) {
 					$feed.= "    \$feedItem[$i]->authorEmail='".$this->items[$i]->authorEmail."';\n";
 				}
 			}
 			$feed.= "    \$feedItem[$i]->description='".addslashes(utf8_encode($this->items[$i]->getDescription()))."';\n";
-			if ($this->items[$i]->thumb!="") {
+			if (!empty($this->items[$i]->thumb)) {
 				$feed.= "    \$feedItem[$i]->thumbURL='".htmlspecialchars($this->items[$i]->thumb)."';\n";
 			}
 		}
@@ -1531,15 +1543,15 @@ class PHPCreator extends FeedCreator {
  * @author Scott Reynen <scott@randomchaos.com> and Kai Blankenhorn <kaib@bitfolge.de>
  */
 class PIECreator01 extends FeedCreator {
-	
+
 	function PIECreator01() {
 		$this->encoding = "utf-8";
 	}
-    
+
 	function createFeed() {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createStylesheetReferences();
-		$feed.= "<feed version=\"0.1\" xmlns=\"http://example.com/newformat#\">\n"; 
+		$feed.= "<feed version=\"0.1\" xmlns=\"http://example.com/newformat#\">\n";
 		$feed.= "    <title>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</title>\n";
 		$this->truncSize = 500;
 		$feed.= "    <subtitle>".$this->getDescription()."</subtitle>\n";
@@ -1557,10 +1569,10 @@ class PIECreator01 extends FeedCreator {
 			} else
 				$feed.= "        <modified>".htmlspecialchars($itemDate->iso8601())."</modified>\n";
 			$feed.= "        <id>".htmlspecialchars($this->items[$i]->guid)."</id>\n";
-			if ($this->items[$i]->author!="") {
+			if (!empty($this->items[$i]->author)) {
 				$feed.= "        <author>\n";
 				$feed.= "            <name>".htmlspecialchars($this->items[$i]->author)."</name>\n";
-				if ($this->items[$i]->authorEmail!="") {
+				if (!empty($this->items[$i]->authorEmail)) {
 					$feed.= "            <email>".$this->items[$i]->authorEmail."</email>\n";
 				}
 				$feed.="        </author>\n";
@@ -1589,7 +1601,7 @@ class AtomCreator10 extends FeedCreator {
 		$this->contentType = "application/atom+xml";
 		$this->encoding = "utf-8";
 	}
-	
+
 	function createFeed() {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createGeneratorComment();
@@ -1598,7 +1610,7 @@ class AtomCreator10 extends FeedCreator {
 		if ($this->format=='TOOLBAR') {
 			$feed.= " xmlns:gtb=\"http://toolbar.google.com/custombuttons/\"";
 		}
-		if ($this->language!="") {
+		if (!empty($this->language)) {
 			$feed.= " xml:lang=\"".$this->language."\"";
 		}
 		$feed.= ">\n"; 
@@ -1608,14 +1620,14 @@ class AtomCreator10 extends FeedCreator {
 		if ($this->syndicationURL != '') {
 			$feed.= "    <link href=\"".$this->syndicationURL."\" rel=\"self\" type=\"".$this->contentType."\"/>\n";
 		}
-		
+
 		$feed.= "    <id>".htmlspecialchars($this->link)."</id>\n";
 		$now = new FeedDate();
 		$feed.= "    <updated>".htmlspecialchars($now->rfc3339())."</updated>\n";
-		if ($this->editor!="") {
+		if (!empty($this->editor)) {
 			$feed.= "    <author>\n";
 			$feed.= "        <name>".$this->editor."</name>\n";
-			if ($this->editorEmail!="") {
+			if (!empty($this->editorEmail)) {
 				$feed.= "        <email>".$this->editorEmail."</email>\n";
 			}
 			$feed.= "    </author>\n";
@@ -1638,15 +1650,15 @@ class AtomCreator10 extends FeedCreator {
 			$feed.= "        <published>".htmlspecialchars($itemDate->rfc3339())."</published>\n";
 			$feed.= "        <id>".htmlspecialchars($this->items[$i]->link)."</id>\n";
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
-			if ($this->items[$i]->author!="") {
+			if (!empty($this->items[$i]->author)) {
 				$feed.= "        <author>\n";
 				$feed.= "            <name>".htmlnumericentities($this->items[$i]->author)."</name>\n";
 				$feed.= "        </author>\n";
 			}
-			if ($this->items[$i]->description!="") {
+			if (!empty($this->items[$i]->description)) {
 				$feed.= "        <summary>".$this->items[$i]->getDescription()."</summary>\n";
 			}
-			if ($this->items[$i]->thumbdata) {
+			if (!empty($this->items[$i]->thumbdata)) {
 				$feed.= "        <gtb:icon mode=\"base64\" type=\"image/jpeg\">\n";
 				$feed.= chunk_split(base64_encode($this->items[$i]->thumbdata))."\n";
 				$feed.= "        </gtb:icon>\n";
@@ -1667,7 +1679,7 @@ class AtomCreator10 extends FeedCreator {
  * for the feed or an author for every single feed item.
  *
  * Some elements have not been implemented yet. These are (incomplete list):
- * author URL, item author's email and URL, item contents, alternate links, 
+ * author URL, item author's email and URL, item contents, alternate links,
  * other link content types than text/html. Some of them may be created with
  * AtomCreator03::additionalElements.
  *
@@ -1681,7 +1693,7 @@ class AtomCreator03 extends FeedCreator {
 		$this->contentType = "application/atom+xml";
 		$this->encoding = "utf-8";
 	}
-	
+
 	function createFeed() {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createGeneratorComment();
@@ -1690,7 +1702,7 @@ class AtomCreator03 extends FeedCreator {
 		if ($this->format=='TOOLBAR') {
 			$feed.= " xmlns:gtb=\"http://toolbar.google.com/custombuttons/\"";
 		}
-		if ($this->language!="") {
+		if (!empty($this->language)) {
 			$feed.= " xml:lang=\"".$this->language."\"";
 		}
 		$feed.= ">\n";
@@ -1700,10 +1712,10 @@ class AtomCreator03 extends FeedCreator {
 		$feed.= "    <id>".htmlspecialchars($this->link)."</id>\n";
 		$now = new FeedDate();
 		$feed.= "    <modified>".htmlspecialchars($now->iso8601())."</modified>\n";
-		if ($this->editor!="") {
+		if (!empty($this->editor)) {
 			$feed.= "    <author>\n";
 			$feed.= "        <name>".$this->editor."</name>\n";
-			if ($this->editorEmail!="") {
+			if (!empty($this->editorEmail)) {
 				$feed.= "        <email>".$this->editorEmail."</email>\n";
 			}
 			$feed.= "    </author>\n";
@@ -1727,15 +1739,15 @@ class AtomCreator03 extends FeedCreator {
 				$feed.= "        <modified>".htmlspecialchars($itemDate->iso8601())."</modified>\n";
 			$feed.= "        <id>".htmlspecialchars($this->items[$i]->link)."</id>\n";
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
-			if ($this->items[$i]->author!="") {
+			if (!empty($this->items[$i]->author)) {
 				$feed.= "        <author>\n";
 				$feed.= "            <name>".htmlnumericentities($this->items[$i]->author)."</name>\n";
 				$feed.= "        </author>\n";
 			}
-			if ($this->items[$i]->description!="") {
+			if (!empty($this->items[$i]->description)) {
 				$feed.= "        <summary>".$this->items[$i]->getDescription()."</summary>\n";
 			}
-			if ($this->items[$i]->thumbdata) {
+			if (!empty($this->items[$i]->thumbdata)) {
 				$feed.= "        <gtb:icon mode=\"base64\" type=\"image/jpeg\">\n";
 				$feed.= chunk_split(base64_encode($this->items[$i]->thumbdata))."\n";
 				$feed.= "        </gtb:icon>\n";
@@ -1761,45 +1773,44 @@ class MBOXCreator extends FeedCreator {
 		$this->contentType = "text/plain";
 		$this->encoding = "ISO-8859-15";
 	}
-    
-	function qp_enc($input = "", $line_max = 76) { 
-		$hex = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'); 
-		$lines = preg_split("/(?:\r\n|\r|\n)/", $input); 
-		$eol = "\r\n"; 
-		$escape = "="; 
-		$output = ""; 
-		while( list(, $line) = each($lines) ) { 
-			//$line = rtrim($line); // remove trailing white space -> no =20\r\n necessary 
-			$linlen = strlen($line); 
-			$newline = ""; 
-			for($i = 0; $i < $linlen; $i++) { 
-				$c = substr($line, $i, 1); 
-				$dec = ord($c); 
-				if ( ($dec == 32) && ($i == ($linlen - 1)) ) { // convert space at eol only 
-					$c = "=20"; 
-				} elseif ( ($dec == 61) || ($dec < 32 ) || ($dec > 126) ) { // always encode "\t", which is *not* required 
-					$h2 = floor($dec/16); $h1 = floor($dec%16); 
-					$c = $escape.$hex["$h2"].$hex["$h1"]; 
-				} 
-				if ( (strlen($newline) + strlen($c)) >= $line_max ) { // CRLF is not counted 
-					$output .= $newline.$escape.$eol; // soft line break; " =\r\n" is okay 
-					$newline = ""; 
-				} 
-				$newline .= $c; 
-			} // end of for 
-			$output .= $newline.$eol; 
-		} 
-		return trim($output); 
+
+	function qp_enc($input = "", $line_max = 76) {
+		$hex = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
+		$lines = preg_split("/(?:\r\n|\r|\n)/", $input);
+		$eol = "\r\n";
+		$escape = "=";
+		$output = "";
+		while( list(, $line) = each($lines) ) {
+			//$line = rtrim($line); // remove trailing white space -> no =20\r\n necessary
+			$linlen = strlen($line);
+			$newline = "";
+			for($i = 0; $i < $linlen; $i++) {
+				$c = substr($line, $i, 1);
+				$dec = ord($c);
+				if ( ($dec == 32) && ($i == ($linlen - 1)) ) { // convert space at eol only
+					$c = "=20";
+				} elseif ( ($dec == 61) || ($dec < 32 ) || ($dec > 126) ) { // always encode "\t", which is *not* required
+					$h2 = floor($dec/16); $h1 = floor($dec%16);
+					$c = $escape.$hex["$h2"].$hex["$h1"];
+				}
+				if ( (strlen($newline) + strlen($c)) >= $line_max ) { // CRLF is not counted
+					$output .= $newline.$escape.$eol; // soft line break; " =\r\n" is okay
+					$newline = "";
+				}
+				$newline .= $c;
+			} // end of for
+			$output .= $newline.$eol;
+		}
+		return trim($output);
 	}
-	
 
 	/**
 	 * Builds the MBOX contents.
-	 * @return    string    the feed's complete text 
+	 * @return    string    the feed's complete text
 	 */
 	function createFeed() {
 		for ($i=0;$i<count($this->items);$i++) {
-			if ($this->items[$i]->author!="") {
+			if (!empty($this->items[$i]->author)) {
 				$from = $this->items[$i]->author;
 			} else {
 				$from = $this->title;
@@ -1821,7 +1832,7 @@ class MBOXCreator extends FeedCreator {
 		}
 		return $feed;
 	}
-	
+
 	/**
 	 * Generate a filename for the feed cache file. Overridden from FeedCreator to prevent XML data types.
 	 * @return string the feed cache filename
@@ -1847,26 +1858,26 @@ class OPMLCreator extends FeedCreator {
 	function OPMLCreator() {
 		$this->encoding = "utf-8";
 	}
-    
-	function createFeed() {     
+
+	function createFeed() {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createGeneratorComment();
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<opml xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
 		$feed.= "    <head>\n";
 		$feed.= "        <title>".htmlspecialchars($this->title)."</title>\n";
-		if ($this->pubDate!="") {
+		if (!empty($this->pubDate)) {
 			$date = new FeedDate($this->pubDate);
 			$feed.= "         <dateCreated>".$date->rfc822()."</dateCreated>\n";
 		}
-		if ($this->lastBuildDate!="") {
+		if (!empty($this->lastBuildDate)) {
 			$date = new FeedDate($this->lastBuildDate);
 			$feed.= "         <dateModified>".$date->rfc822()."</dateModified>\n";
 		}
-		if ($this->editor!="") {
+		if (!empty($this->editor)) {
 			$feed.= "         <ownerName>".$this->editor."</ownerName>\n";
 		}
-		if ($this->editorEmail!="") {
+		if (!empty($this->editorEmail)) {
 			$feed.= "         <ownerEmail>".$this->editorEmail."</ownerEmail>\n";
 		}
 		$feed.= "    </head>\n";
@@ -1889,12 +1900,12 @@ class OPMLCreator extends FeedCreator {
 
 
 /**
- * HTMLCreator is a FeedCreator that writes an HTML feed file to a specific 
+ * HTMLCreator is a FeedCreator that writes an HTML feed file to a specific
  * location, overriding the createFeed method of the parent FeedCreator.
  * The HTML produced can be included over http by scripting languages, or serve
  * as the source for an IFrame.
  * All output by this class is embedded in <div></div> tags to enable formatting
- * using CSS. 
+ * using CSS.
  *
  * @author Pascal Van Hecke
  * @since 1.7
@@ -1902,39 +1913,39 @@ class OPMLCreator extends FeedCreator {
 class HTMLCreator extends FeedCreator {
 
 	var $contentType = "text/html";
-	
+
 	/**
 	 * Contains HTML to be output at the start of the feed's html representation.
 	 */
 	var $header;
-	
+
 	/**
 	 * Contains HTML to be output at the end of the feed's html representation.
 	 */
 	var $footer ;
-	
+
 	/**
-	 * Contains HTML to be output between entries. A separator is only used in 
+	 * Contains HTML to be output between entries. A separator is only used in
 	 * case of multiple entries.
 	 */
 	var $separator;
-	
+
 	/**
-	 * Used to prefix the stylenames to make sure they are unique 
+	 * Used to prefix the stylenames to make sure they are unique
 	 * and do not clash with stylenames on the users' page.
 	 */
 	var $stylePrefix;
-	
+
 	/**
 	 * Determines whether the links open in a new window or not.
 	 */
 	var $openInNewWindow = true;
-	
+
 	var $imageAlign ="right";
-	
+
 	/**
 	 * In case of very simple output you may want to get rid of the style tags,
-	 * hence this variable.  There's no equivalent on item level, but of course you can 
+	 * hence this variable.  There's no equivalent on item level, but of course you can
 	 * add strings to it while iterating over the items ($this->stylelessOutput .= ...)
 	 * and when it is non-empty, ONLY the styleless output is printed, the rest is ignored
 	 * in the function createFeed().
@@ -1943,14 +1954,14 @@ class HTMLCreator extends FeedCreator {
 
 	/**
 	 * Writes the HTML.
-	 * @return    string    the scripts's complete text 
+	 * @return    string    the scripts's complete text
 	 */
 	function createFeed() {
 		// if there is styleless output, use the content of this variable and ignore the rest
-		if ($this->stylelessOutput!="") {
+		if (!empty($this->stylelessOutput)) {
 			return $this->stylelessOutput;
 		}
-		
+
 		//if no stylePrefix is set, generate it yourself depending on the script name
 		if ($this->stylePrefix=="") {
 			$this->stylePrefix = str_replace(".", "_", $this->_generateFilename())."_";
