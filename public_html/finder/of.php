@@ -125,6 +125,10 @@ if (!empty($_GET['q'])) {
 		if (empty($_GET['refresh'])) {
 			$str =& $memcache->name_get('of',$mkey);
 			if (!empty($str)) {
+				if ($CONF['PROTOCOL'] == "https://") {
+					//it may be a http:// page cached!?!
+					$str = str_replace('http://',$CONF['PROTOCOL'],$str);
+				}
 				print $str;
 				$smarty->display('_std_end.tpl');
 				exit;
@@ -492,14 +496,14 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 			$thumbh = 120;
 		}
 
-		print "<div id=thumbs>";
+		print "<div class=shadow id=thumbs>";
                 foreach ($final as $idx => $row) {
 			$row['gridimage_id'] = $row['id'];
                         $image = new GridImage();
                         $image->fastInit($row);
 
 ?>
-          <div style="float:left;position:relative; width:<? echo $thumbw;?>px; height:<? echo $thumbw;?>px;padding:1px;">
+          <div style="float:left;position:relative; width:<? echo $thumbw+5;?>px; height:<? echo $thumbw+5;?>px;padding:1px;">
           <div align="center">
           <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities2($image->title) ?> by <? echo htmlentities2($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
           </div>
@@ -547,7 +551,7 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 			print "</ul> ({$decode[0]->total_found})";
 
 
-	} elseif (empty($final) || count($final) == count($rows['single'])) {
+	} elseif (empty($final) || count($final) == count(@$rows['single'])) {
 		print "<p>No keywords Results found. ";
 
         	if (!empty($decode[0]) && $decode[0]->total_found > 0) {
@@ -603,7 +607,7 @@ if (strlen($_GET['q']) > 10 && preg_match('/\b(19|20|21)(\d{2})\b/',$_GET['q'],$
 #########################################
 # footer links
 
-if (!empty($final) && empty($words) && count($final) != count($rows['google']) && count($final) != count($rows['single'])) {
+if (!empty($final) && empty($words) && count($final) != count(@$rows['google']) && count($final) != count(@$rows['single'])) {
 
 	print "<br><div class=interestBox style=color:white;background-color:gray;font-size:1.05em>";
 	if (!empty($data['total_found']) && $data['total_found'] > 10) {

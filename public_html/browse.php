@@ -950,11 +950,11 @@ if ($grid_given)
 			}
 		} else {
 			$square->loadCollections();
-		
+
 			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
 			$images=$square->getImages($inc_all_user,$custom_where,'order by if(ftf between 1 and 4,ftf,5),gridimage_id limit 100');
 			$square->totalimagecount = count($images);
-		
+
 			//otherwise, lets gether the info we need to display some thumbs
 			if ($square->totalimagecount)
 			{
@@ -964,7 +964,7 @@ if ($grid_given)
 					exit;
 
 				}
-				if ($_GET['displayclass'] == 'tiles2') {
+				if (!empty($_GET['displayclass']) && $_GET['displayclass'] == 'tiles2') {
 					$images2 = array();
 					$images1 = array();
 					foreach ($images as $idx => $image) {
@@ -974,17 +974,16 @@ if ($grid_given)
 							$images1 = array();
 						}
 					}
-					
+
 					$smarty->assign_by_ref('images2', $images2);
 				}
-					
-			
+
 				$smarty->assign_by_ref('images', $images);
 			}
 		}
-		
+
 		$smarty->assign('totalimagecount', $square->totalimagecount);
-		
+
 		if ($square->totalimagecount < 10 || ($USER->registered && !empty($_GET['big']))) {
 			$smarty->assign('thumbw',213);
 			$smarty->assign('thumbh',160);

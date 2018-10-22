@@ -572,13 +572,15 @@ class RestAPI
 					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1,'wgs84_lat'=>1,'wgs84_long'=>1);
 
 					foreach ($images as $i => $image) {
+						$images[$i]->image = $image->_getFullpath(true,true);
+						$images[$i]->thumbnail = $image->getThumbnail(120,120,true);
+
+						//do this last so dont remove anything needed by above functions
 						foreach ($image as $k => $v) {
 							if (empty($v) || empty($whitelist[$k])) {
 								unset($images[$i]->$k);
 							}
 						}
-						$images[$i]->image = $image->_getFullpath(true,true);
-						$images[$i]->thumbnail = $image->getThumbnail(120,120,true);
 					}
 					print json_encode($images);
 				} else {
