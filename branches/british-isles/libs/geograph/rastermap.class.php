@@ -739,7 +739,7 @@ class RasterMap
 
 			if (strpos($CONF['raster_service'],'Grid') !== FALSE) {
 
-				if (false) { //use Leaflet.MetricGrid.js to render a grid instead now!
+				if (false && $this->reference_index == 2) { //use Leaflet.MetricGrid.js to render a grid instead now!
 					$block = $this->getPolyLineBlock($conv,$e-1000,$n,$e+2000,$n);
 					$block .= $this->getPolyLineBlock($conv,$e-1000,$n+1000,$e+2000,$n+1000);
 					$block .= $this->getPolyLineBlock($conv,$e,$n-1000,$e,$n+2000);
@@ -838,7 +838,26 @@ class RasterMap
 							} else {
 								console.log(e);
 							}
+
+		var name = null;
+		for(i in baseMaps) {
+			if (baseMaps[i] == e.layer)
+				name = i;
+		}
+		var color = (name && name.indexOf('Imagery') > -1)?'#fff':'#00f';
+		var opacity = (name && name.indexOf('Imagery') > -1)?0.8:0.3;
+		for(i in overlayMaps) {
+			if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color) {
+				overlayMaps[i].options.color = color;
+				overlayMaps[i].setOpacity(opacity);
+				overlayMaps[i]._reset();
+			}
+		}
+
 						});
+
+		if (mapTypeId && mapTypeId.indexOf('Imagery') > -1 && baseMaps[mapTypeId])
+			map.fire('baselayerchange',{layer: baseMaps[mapTypeId]}); // need this to select the white grid!
 
 						if (typeof updateMapMarkers == 'function') {
 							updateMapMarkers();
@@ -1074,7 +1093,7 @@ class RasterMap
 						$token->setValue($key, $value);
 					}
 				}
-				$token->setValue("service",'Google');
+				$token->setValue("service",'Leaflet');
 				$token = $token->getToken();
 
 				$width = $this->width;
@@ -1460,7 +1479,7 @@ class RasterMap
 		$file = $dir.$e3.'-'.$n3.'.png';
 		$file2 = $dir2.$e3.'-'.$n3.'.png';
 
-if ($_GET['debug'])
+if (!empty($_GET['debug']))
 	print "'$file2'";
 
 		if (!file_exists($file) && file_exists($file2)) {
