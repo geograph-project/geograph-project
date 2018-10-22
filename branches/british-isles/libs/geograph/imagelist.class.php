@@ -48,6 +48,10 @@ class ImageList
 	*/
 	var $images=array();
 
+	/**
+	* standard list of cols, to use with getbySql
+	*/
+	var $cols = "gridimage_id,title,user_id,realname,grid_reference,credit_realname";
 
 	/**
 	* constructor - can be used to build a basic list (See getImages)
@@ -144,7 +148,7 @@ split_timer('imagelist'); //starts the timer
 
 		if ($advanced || preg_match("/(pending|rejected)/",$statuslist)) {
 			$sql="select gi.*,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname, t.topic_id,t.forum_id,t.last_post ";
-			$sql.=" , group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags ";
+			$sql.=" , group_concat(distinct if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags ";
 #			if ($advanced == 2)
 #				$sql.=", (select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status<3) as open_tickets ";
 			$sql.="from gridimage as gi ".
@@ -201,34 +205,35 @@ split_timer('imagelist','getImagesBySphinx',"$q"); //logs the wall time
 			return 0;
 		}
 	}
-	
+
 	/**
 	* get image list for particular list
 	*/
 	function getImagesByIdList($ids,$columnlist = "*") {
-	
+
 split_timer('imagelist'); //starts the timer
 
 		$sql = "SELECT $columnlist FROM gridimage_search WHERE gridimage_id IN(".join(",",$ids).") LIMIT ".count($ids);
-				
+
 		$i=0;
 		if ($sql) {
 			$db=&$this->_getDB(true);
-	
+
+			global $ADODB_FETCH_MODE;
 			$prev_fetch_mode = $ADODB_FETCH_MODE;
-			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$rows = $db->getAssoc($sql);
 			$ADODB_FETCH_MODE = $prev_fetch_mode;
-		
+
 			if (count($rows)) {
-				
+
 				$this->images = array();
 				foreach ($ids as $c => $id) {
 					if (!empty($rows[$id])) {
 						$gridimage = new GridImage;
 						$row = array('gridimage_id'=>$id)+$rows[$id];
 						$gridimage->fastInit($row);
-	
+
 						$this->images[] = $gridimage;
 						$i++;
 					}
@@ -240,6 +245,32 @@ split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
 
 		return $i;
 	}
+
+
+	function getImagesBySphinxQL($sql,$new = true) {
+		$sph = GeographSphinxConnection('sphinxql', $new);
+
+		$this->images=array();
+		$i=0;
+		$recordSet = &$sph->Execute($sql);
+		while (!$recordSet->EOF)
+		{
+			$this->images[$i]=new GridImage;
+			$row = $recordSet->fields;
+			$row['gridimage_id'] = $row['id'];
+			if (!empty($row['takenday'])) //20040629
+				$row['imagetaken'] = preg_replace('/(\d{4})(\d{2})(\d{2})/','$1-$2-$3',$row['takenday']);
+			$this->images[$i]->fastInit($row);
+			if (!empty($this->images[$i]->tags) && is_string($this->images[$i]->tags))
+		                $this->images[$i]->tags = array_filter(array_map(explode("_SEP_",$this->images[$i]->tags),'trim'));
+			$recordSet->MoveNext();
+			$i++;
+		}
+		$recordSet->Close();
+		$this->meta = $sph->getAssoc("SHOW META");
+		return $i;
+	}
+
 
 
 	/**

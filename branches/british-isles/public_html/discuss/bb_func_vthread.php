@@ -269,16 +269,15 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/".str_replace(' ','+',$g_id)."\" target=\"_blank\">$g_id</a>",$posterText);
 			}
 		}
-		
+
 		//fails quickly if not using memcached!
 		$memcache->name_set('fp',$mkey,$posterText,$memcache->compress,$memcache->period_long);
-		
 	}
 }
 
 if (empty($CONF['disable_discuss_thumbs'])) {
-	$posterText = preg_replace('/\[image id=(\d+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '{description}'))",$posterText,5);
-	$posterText = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$posterText,5);
+	$posterText = preg_replace('/\[image id=(\d+)\]/e',"smarty_function_gridimage(array(\'id\' => '\$1',\'extra\' => '{description}'))",$posterText,5);
+	$posterText = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(\'id\' => '\$1',\'extra\' => '\$2'))",$posterText,5);
 }
 
 ##$posterText = preg_replace('/\[([\w :-]+)\]([^>]*)(<(?!\/a>)|$)/e',"replace_tags('$1').'$2$3'",$posterText);

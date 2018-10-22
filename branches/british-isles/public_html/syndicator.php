@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if ( $_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || $_GET['q'] == ',') {
+if ( $_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || @$_GET['q'] == ',') {
 	header('HTTP/1.0 403 Forbidden');
 	header('Cache-Control: max-age=2592000');
 	header("Status: 403 Forbidden");
@@ -58,9 +58,9 @@ if (!empty($CONF['redis_host']))
         $redis_handler->Select($CONF['redis_db']+2);
 
 	$bits = array();
-	$bits[] = $_GET['key'];
+	$bits[] = @$_GET['key'];
 	$bits[] = getRemoteIP();
-	if (strlen($_SERVER['HTTP_REFERER']) > 2) {
+	if (!empty($_SERVER['HTTP_REFERER']) && strlen($_SERVER['HTTP_REFERER']) > 2) {
 		$ref = @parse_url($_SERVER['HTTP_REFERER']);
 		$bits[] = $ref['host'];
 	} else {
