@@ -1,5 +1,12 @@
 <?
 
+
+if ($_GET['z'] < 10 && empty($_GET['gg'])) {
+        require __DIR__."/tile-square.php";
+        exit;
+}
+
+
 if (!empty($_GET['gg'])) {
 	define('SPHINX_INDEX',"germany");
 } else
@@ -52,6 +59,8 @@ if (!empty($_GET['6']) && $_GET['z'] > 10) {
 }
 
 
+if (!function_exists('call_with_results')) { //hack that means this function is only added at RUNTIME, not COMPILE time.
+
 //this is automatically called by "api-facetql.php"
 function call_with_results($data) {
 
@@ -99,7 +108,7 @@ function call_with_results($data) {
 		for($x=$p->x-3; $x<=$p->x+3; $x++) {
 			for($y=$p->y-3; $y<=$p->y+3; $y++) {
 				$d = sqrt(pow($p->y-$y,2) + pow($p->x-$x,2));
-				imageaddalpha($im, $x, $y, -110+(decay*$d));
+				imageaddalpha($im, $x, $y, -110+($decay*$d));
 			}
 		}
 		//draw a tiny dot to present coverage in busy areas
@@ -120,10 +129,19 @@ function call_with_results($data) {
 
 }
 
+}
+
+
 include("../api-facetql.php");
 
 
 function imageaddalpha(&$im, $x, $y, $delta) {
+
+        if ($x<0 || $x > GoogleMapUtility::TILE_SIZE)
+                return;
+        if ($y<0 || $y > GoogleMapUtility::TILE_SIZE)
+                return;
+
 	$rgba = imagecolorat($im, $x, $y);
 
 		$r = ($rgba >> 16) & 0xFF;
