@@ -69,8 +69,8 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:
 }
 
 if (empty($CONF['disable_discuss_thumbs'])) {
-	$postText2 = preg_replace('/\[image id=([a-z]*:\d+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '{description}'))",$postText2,5);
-	$postText2 = preg_replace('/\[image id=([a-z]*:\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$postText2,5);
+	$postText2 = preg_replace('/\[image id=([a-z]*:?\d+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '{description}'))",$postText2,5);
+	$postText2 = preg_replace('/\[image id=([a-z]*:?\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$postText2,5);
 }
 
 ##$postText2 = preg_replace('/\[([\w :-]+)\]([^>]*)(<(?!\/a>)|$)/e',"replace_tags('$1').'$2$3'",$postText2);
