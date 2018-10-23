@@ -440,7 +440,11 @@ class GridImage
 
 			if ($xml !== false && $xml->status['state'] == 'ok') {
 				$this->grid_reference    = (string)$xml->gridref;
-				$this->title             = (string)$xml->title;
+				if (!empty($xml->title2)) { //if there is a dedicated english value, use it - //TODO, make this configurable!
+					$this->title             = (string)$xml->title2;
+				} else {
+					$this->title             = (string)$xml->title;
+				}
 				$this->realname          = (string)$xml->user;
 				$this->ext_img_url       = (string)$xml->img['src'];
 				$this->ext_profile_url   = (string)$xml->user['profile'];
@@ -451,7 +455,11 @@ class GridImage
 				$this->submitted         = (string)$xml->submitted;
 				$this->imagetaken        = (string)$xml->taken;
 				$this->imageclass        = (string)$xml->category;
-				$this->comment           = (string)$xml->comment;
+				if (!empty($xml->comment2)) { //if there is a dedicated english value, use it - //TODO, make this configurable!
+					$this->comment           = (string)$xml->comment2;
+				} else {
+					$this->comment           = (string)$xml->comment;
+				}
 				$this->gridimage_id      = 0;
 				$this->ext_gridimage_id  = $gridimage_id;
 				$this->grid_square       = null;
@@ -537,7 +545,6 @@ split_timer('gridimage'); //starts the timer
 
 		$this->comment = preg_replace('/\s*NOTE.? This image has a detailed.+?To read it click on the image.?/is','',$this->comment);
 
-
 		//find a possible place within 25km
 		$place = $this->grid_square->findNearestPlace(75000);
 		$smarty->assign_by_ref('place', $place);
@@ -591,7 +598,6 @@ split_timer('gridimage'); //starts the timer
 
 		$smarty->assign('extra_meta', implode("\n",$extra_meta));
 
-
 		//count the number of photos in this square
 		$smarty->assign('square_count', $this->grid_square->imagecount);
 
@@ -601,7 +607,6 @@ split_timer('gridimage'); //starts the timer
 		$overview->setCentre($this->grid_square->x,$this->grid_square->y); //does call setAlignedOrigin
 		$overview->assignToSmarty($smarty, 'overview');
 		$smarty->assign('marker', $overview->getSquarePoint($this->grid_square));
-
 
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
@@ -1357,8 +1362,7 @@ split_timer('gridimage'); //starts the timer
 		$abcdef=sprintf("%06d", $this->gridimage_id);
 		$hash=$this->_getAntiLeechHash();
 		$img=null;
-		
-		
+
 		$base=&$_SERVER['DOCUMENT_ROOT'];
 		if ($this->gridimage_id<1000000) {
 			$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
@@ -1370,23 +1374,20 @@ split_timer('gridimage'); //starts the timer
 		{
 			//get path to fullsize image
 			$fullpath=$this->_getFullpath();
-			
+
 			if ($fullpath != '/photos/error.jpg' && file_exists($base.$fullpath))
 			{
-				
-		
 				//generate resized image
-				$fullimg = @imagecreatefromjpeg($base.$fullpath); 
+				$fullimg = @imagecreatefromjpeg($base.$fullpath);
 				if ($fullimg)
 				{
 					$srcw=imagesx($fullimg);
 					$srch=imagesy($fullimg);
-					
+
 					if ($srcw == 0 && $srch == 0)
 					{
 						//couldn't read image!
 						$img=null;
-
 						imagedestroy($fullimg);
 					} else {
 						//crop percentage is how much of the
@@ -1398,8 +1399,6 @@ split_timer('gridimage'); //starts the timer
 						{
 							//landscape
 							$s=$srch*$crop;
-
-
 						}
 						else
 						{
@@ -1413,7 +1412,7 @@ split_timer('gridimage'); //starts the timer
 						$srch=$s;
 
 						$img = imagecreatetruecolor($size, $size);
-						imagecopyresampled($img, $fullimg, 0, 0, $srcx, $srcy, 
+						imagecopyresampled($img, $fullimg, 0, 0, $srcx, $srcy,
 									$size,$size, $srcw, $srch);
 
 						require_once('geograph/image.inc.php');
@@ -1424,7 +1423,6 @@ split_timer('gridimage'); //starts the timer
 						//save the thumbnail
 						imagegd($img, $base.$thumbpath);
 					}
-					
 				}
 				else
 				{
@@ -1436,10 +1434,9 @@ split_timer('gridimage'); //starts the timer
 			{
 				//no original image!
 				$img=null;
-		
 			}
-split_timer('gridimage','getSquareThumb-create',$thumbpath); //logs the wall time
 
+			split_timer('gridimage','getSquareThumb-create',$thumbpath); //logs the wall time
 		}
 		else
 		{
@@ -1758,6 +1755,10 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.htmlentities2($this->realname);
 			#$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			# width="120" height="90"
+
+			if ($maxw != 120 || $maxh != 120)
+				$this->ext_thumb_url = str_replace('120x120',"{$maxw}x{$maxh}",$this->ext_thumb_url);
+
 			$html="<img alt=\"$title\" $attribname=\"{$this->ext_thumb_url}\" />";
 			return $html;
 		}
