@@ -335,8 +335,8 @@ function updateCamIcon() {
 		baseMaps['OSM'] = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 			 {mapLetter: 'o', minZoom: 8, maxZoom: 18, attribution: osmAttrib});		
 
-		baseMaps['OSM Cycle'] = new L.TileLayer('https://tile.thunderforest.com/cycle/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993', 
-			{mapLetter: 'c', maxZoom: 18, attribution: '<a href=https://www.thunderforest.com/>thunderforest.com</a>, '+osmAttrib});
+		//baseMaps['OSM Cycle'] = new L.TileLayer('https://tile.thunderforest.com/cycle/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993', 
+		//	{mapLetter: 'c', maxZoom: 18, attribution: '<a href=https://www.thunderforest.com/>thunderforest.com</a>, '+osmAttrib});
 
 		baseMaps['OSM Terrain'] = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993', 
 			{mapLetter: 't', maxZoom: 18, attribution: '<a href=https://www.thunderforest.com/>thunderforest.com</a>, '+osmAttrib});
@@ -352,6 +352,15 @@ function updateCamIcon() {
 		baseMaps['Historic OS - GB 1920s'] = new L.TileLayer('https://nls-0.tileserver.com/nls/{z}/{x}/{y}.jpg',
 		        {mapLetter: 'n', minZoom: 1, maxZoom:18 , attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
 				bounds: [[49.6, -12], [61.7, 3]] });
+
+
+		if (L.tileLayer.bing) {
+		        var BING_KEY = 'AhwwUjiHWfAqm-dQiAhV1tJO82v-v5mU6osoxU3t1XKx-AlPyKzfBhKpTY81MKtJ';
+		        var bingAttribution = 'Image courtesy of Ordnance Survey, via Bing <a style="white-space: nowrap" target="_blank" href="https://www.microsoft.com/maps/product/terms.html">Terms of Use</a>';
+			baseMaps["Ordnance Survey GB"] = L.tileLayer.bing({mapLetter: 'b', 'bingMapsKey':BING_KEY,'minZoom':12,'maxZoom':17,'imagerySet':'OrdnanceSurvey', attribution:bingAttribution,
+		                bounds: [[49.6, -12], [61.7, 3]] });
+		}
+
 
 		if (mapTypeId && baseMaps[mapTypeId])
 			map.addLayer(baseMaps[mapTypeId])
