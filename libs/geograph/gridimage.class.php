@@ -135,11 +135,12 @@ class GridImage
 	*/
 	function GridImage($id = null,$usesearch = false) //todo - offer to load the snippets, and collection references here (remmeber memcache!)
 	{
-		$this->ext = '';
-		if (!empty($id) && is_numeric($id)) {
-			$this->loadFromId($id,$usesearch);
-		} else {
-			//todo, deal with non-numeric ids! via loadFromServer
+		if (!empty($id)) {
+			if (is_numeric($id)) {
+				$this->loadFromId($id,$usesearch);
+			} elseif (preg_match('/^([a-z]+:)(\d+)$',$id,$m)) {
+				$this->loadFromServer($m[1],$m[2]);
+			}
 		}
 	}
 
