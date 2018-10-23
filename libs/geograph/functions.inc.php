@@ -580,7 +580,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 		$g_image=new GridImage;
 		$ids = array();
 		foreach ($g_matches[3] as $g_i => $g_id) {
-			if (is_numeric($g_id)) {
+			if (empty($g_matches[2][$g_i]) && is_numeric($g_id)) {
 				$ids[] = $g_id;
 			}
 		}
