@@ -313,14 +313,16 @@ function smarty_function_gridimage($params)
 
 	$image=new GridImage($params['id']);
 
-	if (!empty($image->ext_server)) {
-		$host = "http://".$image->ext_server;
-	} else
-		$host = ""; //will remain relative links!
-
 	if (!$image->isValid() || $image->moderation_status == 'rejected') {
 		return '';
 	}
+
+	if (!empty($image->ext_server)) {
+		$host = "http://".$image->ext_server;
+		$image->gridimage_id = $image->ext_gridimage_id; //hack so the links below work. loadfromServer does NOT set this, as might be confusing
+	} else
+		$host = ""; //will remain relative links!
+
 
 	if (isset($imageCredits[$image->realname])) {
 		$imageCredits[$image->realname]++;
@@ -334,9 +336,9 @@ function smarty_function_gridimage($params)
 
 		$title=$image->grid_reference.' : '.htmlentities2($image->title).' by '.htmlentities2($image->realname);
 
-		$html.='<a title="'.$title.' - click to view full size image" href="'.$host.'/photo/'.($image->gridimage_id || $image->ext_gridimage_id).'">';
+		$html.='<a title="'.$title.' - click to view full size image" href="'.$host.'/photo/'.$image->gridimage_id.'">';
 		$html.=$image->getThumbnail(213,160);
-		$html.='</a><div class="caption"><a href="'.$host.'/gridref/'.$image->grid_reference.'">'.$image->grid_reference.'</a> : <a title="view full size image" href="'.$host.'/photo/'.($image->gridimage_id || $image->ext_gridimage_id).'">';
+		$html.='</a><div class="caption"><a href="'.$host.'/gridref/'.$image->grid_reference.'">'.$image->grid_reference.'</a> : <a title="view full size image" href="'.$host.'/photo/'.$image->gridimage_id.'">';
 		$html.=htmlentities2($image->title).'</a> by <a href="'.$image->profile_link.'">'.htmlentities2($image->realname).'</a></div>';
 	$html.='</div>';
 
