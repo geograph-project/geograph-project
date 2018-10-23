@@ -59,7 +59,7 @@ $cacheid = "$topic_id.$pg";
 $db = GeographDatabaseConnection(false);
 
 $page = $db->getRow("
-select t.topic_id,topic_title,topic_poster,topic_poster_name,topic_time,post_time,posts_count
+select t.topic_id,topic_title,topic_poster,topic_poster_name,topic_time,post_time,posts_count,t.forum_id
 	from geobb_topics t
 	inner join geobb_posts on (post_id = topic_last_post_id)
 	where t.topic_id = $topic_id and t.forum_id = 11");
@@ -121,10 +121,10 @@ function smarty_function_gallerytext($input) {
 
 	$pattern=array(); $replacement=array();
 
-	$pattern[]='/\[image id=(\d+)\]/e';
+	$pattern[]='/\[image id=([a-z]*:\d+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '{description}'))";
 
-	$pattern[]='/\[image id=(\d+) text=([^\]]+)\]/e';
+	$pattern[]='/\[image id=([a-z]*:\d+) text=([^\]]+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
 
 	$output=preg_replace($pattern, $replacement, $input, 5);

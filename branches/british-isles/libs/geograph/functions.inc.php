@@ -311,8 +311,7 @@ function smarty_function_gridimage($params)
 {
 	global $imageCredits;
 
-	$image=new GridImage;
-	$image->loadFromId($params['id']);
+	$image=new GridImage($params['id']);
 
 	if (empty($image->gridimage_id) || $image->moderation_status == 'rejected') {
 		return '';
