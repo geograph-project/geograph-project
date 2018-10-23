@@ -16,7 +16,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:
 
 	$ids = array();
 	foreach ($g_matches[3] as $g_i => $g_id) {
-		if (is_numeric($g_id)) {
+		if (empty($g_matches[2][$g_i]) && is_numeric($g_id)) {
 			$ids[] = $g_id;
 		}
 	}
