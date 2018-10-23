@@ -119,12 +119,12 @@ class GridImage
 	* subject grid reference precision (in metres)
 	*/
 	var $subject_gridref_precision;
-	
+
 	/**
 	* external image?
 	*/
 	var $ext = '';
-	private $ext_server;
+	var $ext_server;
 	private $ext_thumb_url;
 	private $ext_img_url;
 	private $ext_profile_url;
@@ -138,7 +138,7 @@ class GridImage
 		if (!empty($id)) {
 			if (is_numeric($id)) {
 				$this->loadFromId($id,$usesearch);
-			} elseif (preg_match('/^([a-z]+:)(\d+)$',$id,$m)) {
+			} elseif (preg_match('/^([a-z]+:)(\d+)$/',$id,$m)) {
 				$this->loadFromServer($m[1],$m[2]);
 			}
 		}
