@@ -123,7 +123,7 @@ class GridImage
 	/**
 	* external image?
 	*/
-	var $ext;
+	var $ext = '';
 	private $ext_server;
 	private $ext_thumb_url;
 	private $ext_img_url;
@@ -133,14 +133,16 @@ class GridImage
 	/**
 	* constructor
 	*/
-	function GridImage($id = null,$usesearch = false) //todo - offer to load the snippets, and collection references here (remmeber memcache!) 
+	function GridImage($id = null,$usesearch = false) //todo - offer to load the snippets, and collection references here (remmeber memcache!)
 	{
-		$this->ext = false;
-		if (!empty($id)) {
+		$this->ext = '';
+		if (!empty($id) && is_numeric($id)) {
 			$this->loadFromId($id,$usesearch);
+		} else {
+			//todo, deal with non-numeric ids! via loadFromServer
 		}
 	}
-	
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
@@ -286,7 +288,7 @@ class GridImage
 			if (!is_numeric($name))
 				$this->$name=$value;
 		}
-		$this->ext = false;
+		$this->ext = '';
 		if (!empty($this->gridsquare_id)) {
 			$this->grid_square=new GridSquare;
 			if (is_object($this->db))
@@ -321,7 +323,7 @@ class GridImage
 	*/
 	function fastInit(&$arr)
 	{
-		$this->ext = false;
+		$this->ext = '';
 		$this->grid_square=null;
 		$this->grid_reference='';
 		foreach($arr as $name=>$value)
@@ -399,16 +401,26 @@ class GridImage
 				}
 			}
 		}
-		//todo memcache (probably make sure dont serialise the dbs!) 
-		
+		//todo memcache (probably make sure dont serialise the dbs!)
+
 		return $this->isValid();
 	}
 
 	/**
 	* assign members from gridimage_id and server (use api)
 	*/
-	function loadFromServer($server, $gridimage_id)
+	function loadFromServer($prefix, $gridimage_id)
 	{
+                if ($prefix == 'bi:') { # TODO make configurable
+                        $server = 'www.geograph.org.uk';
+                } elseif ($prefix == 'de:') {
+                        $server = 'geo.hlipp.de';
+                } elseif ($prefix == 'ci:') {
+                        $server = 'channel-islands.geographs.org';
+                } else {
+			return false;
+		}
+
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_id))
 		{
@@ -416,16 +428,16 @@ class GridImage
 			$mkey = "$server:$gridimage_id";
 			//fails quickly if not using memcached!
 			$string =& $memcache->name_get('e2',$mkey);
-			
+
 			if (empty($string)) {
 				$url = "http://$server/restapi.php/api/Photo/$gridimage_id";
 				$string = file_get_contents($url);
-				
+
 				//fails quickly if not using memcached!
 				$memcache->name_set('e2',$mkey,$string,$memcache->compress,$memcache->period_long);
 			}
 			$xml = simplexml_load_string($string);
-			
+
 			if ($xml !== false && $xml->status['state'] == 'ok') {
 				$this->grid_reference    = (string)$xml->gridref;
 				$this->title             = (string)$xml->title;
@@ -433,7 +445,7 @@ class GridImage
 				$this->ext_img_url       = (string)$xml->img['src'];
 				$this->ext_profile_url   = (string)$xml->user['profile'];
 				$this->ext_thumb_url     = (string)$xml->thumbnail;
-				$this->ext               = true;
+				$this->ext               = $prefix;
 				$this->ext_server        = $server;
 				$this->moderation_status = 'geograph'; //todo
 				$this->submitted         = (string)$xml->submitted;
@@ -443,20 +455,18 @@ class GridImage
 				$this->gridimage_id      = 0;
 				$this->ext_gridimage_id  = $gridimage_id;
 				$this->grid_square       = null;
-		
+
 				$this->profile_link = $this->ext_profile_url;
-				
+
 				if (empty($this->title))
 					$this->title="Untitled photograph for {$this->grid_reference}";
 				return true;
 			}
-
-
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	* calculate a hash to prevent easy downloading of every image in sequence
 	*/

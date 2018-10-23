@@ -198,17 +198,20 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 		if ($topic == 10596) {
 			$CONF['post_thumb_limit'] = 50;
 		}
-		
+
+		require_once('geograph/gridimage.class.php');
+		require_once('geograph/gridsquare.class.php');
 		$g_image=new GridImage;
+
 		$ids = array();
 		foreach ($g_matches[3] as $g_i => $g_id) {
-			if ($g_matches[2][$g_i] != 'de:' && is_numeric($g_id)) {
+			if (is_numeric($g_id)) {
 				$ids[] = $g_id;
 			}
 		}
 		if (count($ids) > 0) {
 			$db = $g_image->_getDB(true);
-			$prev_fetch_mode = $ADODB_FETCH_MODE; 
+			$prev_fetch_mode = $ADODB_FETCH_MODE;
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$data = $db->CacheGetAssoc(3600,"SELECT gridimage_id,moderation_status,title,grid_reference,user_id,realname,credit_realname FROM gridimage_search WHERE gridimage_id IN (".implode(',',$ids).") LIMIT {$CONF['post_thumb_limit']}");
 			$ADODB_FETCH_MODE = $prev_fetch_mode;
@@ -216,28 +219,16 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 
 		foreach ($g_matches[3] as $g_i => $g_id) {
 			$server = $_SERVER['HTTP_HOST'];
-			$ext = false;
-			$prefix = '';
-			if ($g_matches[2][$g_i] == 'de:') {
-				$server = 'geo.hlipp.de';
-				$ext = true;
-				$prefix = 'de:';
-			} elseif ($g_matches[2][$g_i] == 'ci:') {
-				$server = 'channel-islands.geographs.org';
-				$ext = true;
-				$prefix = 'ci:';
-			}
+			$prefix = $g_matches[2][$g_i];
+
 			if (is_numeric($g_id)) {
 				if ($global_thumb_count >= $CONF['global_thumb_limit'] || $thumb_count >= $CONF['post_thumb_limit']) {
 					$posterText = preg_replace("/\[?\[\[$prefix$g_id\]\]\]?/","[[<a href=\"http://{$server}/photo/$g_id\">$prefix$g_id</a>]]",$posterText);
 				} else {
-					if (!isset($g_image)) {
-						require_once('geograph/gridimage.class.php');
-						require_once('geograph/gridsquare.class.php');
-						$g_image=new GridImage;
-					}
-					if ($ext) {
-						$g_ok = $g_image->loadFromServer($server, $g_id);
+					if ($prefix) {
+						$g_ok = $g_image->loadFromServer($prefix, $g_id);
+						if ($g_ok)
+							$server = $g_image->ext_server;
 					} elseif (isset($data[$g_id])) {
 						$data[$g_id]['gridimage_id'] = $g_id;
 						$g_image->fastInit($data[$g_id]);
@@ -276,8 +267,8 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 }
 
 if (empty($CONF['disable_discuss_thumbs'])) {
-	$posterText = preg_replace('/\[image id=(\d+)\]/e',"smarty_function_gridimage(array(\'id\' => '\$1',\'extra\' => '{description}'))",$posterText,5);
-	$posterText = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(\'id\' => '\$1',\'extra\' => '\$2'))",$posterText,5);
+	$posterText = preg_replace('/\[image id=(\d+)\]/e',"smarty_function_gridimage(array('id' => '\$1','extra' => '{description}'))",$posterText,5);
+	$posterText = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array('id' => '\$1','extra' => '\$2'))",$posterText,5);
 }
 
 ##$posterText = preg_replace('/\[([\w :-]+)\]([^>]*)(<(?!\/a>)|$)/e',"replace_tags('$1').'$2$3'",$posterText);
