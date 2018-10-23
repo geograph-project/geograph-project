@@ -313,6 +313,11 @@ function smarty_function_gridimage($params)
 
 	$image=new GridImage($params['id']);
 
+	if (!empty($image->ext_server)) {
+		$host = "http://".$image->ext_server;
+	} else
+		$host = ""; //will remain relative links!
+
 	if (empty($image->gridimage_id) || $image->moderation_status == 'rejected') {
 		return '';
 	}
@@ -329,9 +334,9 @@ function smarty_function_gridimage($params)
 
 		$title=$image->grid_reference.' : '.htmlentities2($image->title).' by '.htmlentities2($image->realname);
 
-		$html.='<a title="'.$title.' - click to view full size image" href="/photo/'.$image->gridimage_id.'">';
+		$html.='<a title="'.$title.' - click to view full size image" href="'.$host.'/photo/'.$image->gridimage_id.'">';
 		$html.=$image->getThumbnail(213,160);
-		$html.='</a><div class="caption"><a href="/gridref/'.$image->grid_reference.'">'.$image->grid_reference.'</a> : <a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
+		$html.='</a><div class="caption"><a href="'.$host.'/gridref/'.$image->grid_reference.'">'.$image->grid_reference.'</a> : <a title="view full size image" href="'.$host.'/photo/'.$image->gridimage_id.'">';
 		$html.=htmlentities2($image->title).'</a> by <a href="'.$image->profile_link.'">'.htmlentities2($image->realname).'</a></div>';
 	$html.='</div>';
 
@@ -340,7 +345,7 @@ function smarty_function_gridimage($params)
 			if (!empty($image->comment)) {
 				$desc = GeographLinks(preg_replace("/[\n\r]+/",' ',nl2br(htmlentities2($image->comment)))).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
 
-				$desc = preg_replace('/\b(more sizes)\b/i',"<a href=\"/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
+				$desc = preg_replace('/\b(more sizes)\b/i',"<a href=\"$host/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
 			} else {
 				$desc = '';
 			}
@@ -353,7 +358,7 @@ function smarty_function_gridimage($params)
 
 				$desc .= "<div style=\"text-align:left\"><i>Shared Description".($image->snippet_count>1?'s':'')."</i>".($image->snippets_as_ref?'<ol':'<ul')." style=\"margin:0\">";
 				foreach ($image->snippets as $snippet) {
-					$desc .= "<li><a href=\"/snippet/{$snippet['snippet_id']}\" title=\"".htmlentities2(smarty_modifier_truncate($snippet['comment'],90,"... more"))."\">". ($snippet['title']?htmlentities2($snippet['title']):'untitled')."</a></li>";
+					$desc .= "<li><a href=\"$host/snippet/{$snippet['snippet_id']}\" title=\"".htmlentities2(smarty_modifier_truncate($snippet['comment'],90,"... more"))."\">". ($snippet['title']?htmlentities2($snippet['title']):'untitled')."</a></li>";
 				}
 				$desc .= ($image->snippets_as_ref?'</ol>':'</ul>')."</div>";
 			}
