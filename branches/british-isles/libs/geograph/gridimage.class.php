@@ -128,7 +128,7 @@ class GridImage
 	private $ext_thumb_url;
 	private $ext_img_url;
 	private $ext_profile_url;
-	private $ext_gridimage_id;
+	var $ext_gridimage_id;
 
 	/**
 	* constructor
@@ -344,7 +344,7 @@ class GridImage
 	*/
 	function isValid()
 	{
-		return isset($this->gridimage_id) && ($this->gridimage_id>0);
+		return (!empty($this->ext) && $this->ext_gridimage_id>0) || (isset($this->gridimage_id) && ($this->gridimage_id>0));
 	}
 	
 	/**
@@ -442,11 +442,11 @@ class GridImage
 			if ($xml !== false && $xml->status['state'] == 'ok') {
 				$this->grid_reference    = (string)$xml->gridref;
 				if (!empty($xml->title2)) { //if there is a dedicated english value, use it - //TODO, make this configurable!
-					$this->title             = (string)$xml->title2;
+					$this->title             = utf8_to_latin1((string)$xml->title2);
 				} else {
-					$this->title             = (string)$xml->title;
+					$this->title             = utf8_to_latin1((string)$xml->title);
 				}
-				$this->realname          = (string)$xml->user;
+				$this->realname          = utf8_to_latin1((string)$xml->user);
 				$this->ext_img_url       = (string)$xml->img['src'];
 				$this->ext_profile_url   = (string)$xml->user['profile'];
 				$this->ext_thumb_url     = (string)$xml->thumbnail;
@@ -455,11 +455,11 @@ class GridImage
 				$this->moderation_status = 'geograph'; //todo
 				$this->submitted         = (string)$xml->submitted;
 				$this->imagetaken        = (string)$xml->taken;
-				$this->imageclass        = (string)$xml->category;
+				$this->imageclass        = utf8_to_latin1((string)$xml->category);
 				if (!empty($xml->comment2)) { //if there is a dedicated english value, use it - //TODO, make this configurable!
-					$this->comment           = (string)$xml->comment2;
+					$this->comment           = utf8_to_latin1((string)$xml->comment2);
 				} else {
-					$this->comment           = (string)$xml->comment;
+					$this->comment           = utf8_to_latin1((string)$xml->comment);
 				}
 				$this->gridimage_id      = 0;
 				$this->ext_gridimage_id  = $gridimage_id;

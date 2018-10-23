@@ -121,10 +121,10 @@ function smarty_function_gallerytext($input) {
 
 	$pattern=array(); $replacement=array();
 
-	$pattern[]='/\[image id=([a-z]*:\d+)\]/e';
+	$pattern[]='/\[image id=([a-z]*:?\d+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '{description}'))";
 
-	$pattern[]='/\[image id=([a-z]*:\d+) text=([^\]]+)\]/e';
+	$pattern[]='/\[image id=([a-z]*:?\d+) text=([^\]]+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
 
 	$output=preg_replace($pattern, $replacement, $input, 5);

@@ -419,10 +419,10 @@ function smarty_function_articletext($input) {
 	$pattern[]='/(?<!["\'\[\/\!\w])([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
 	$replacement[]="<a href=\"{$CONF['SELF_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
 
-	$pattern[]='/\[image id=([a-z]*:\d+) text=([^\]"]+)\]/e';
+	$pattern[]='/\[image id=([a-z]*:?\d+) text=([^\]"]+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
 
-	$pattern[]='/\[image id=([a-z]*:\d+)\]/e';
+	$pattern[]='/\[image id=([a-z]*:?\d+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '{description}'))";
 
 

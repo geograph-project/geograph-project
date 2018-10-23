@@ -267,8 +267,8 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 }
 
 if (empty($CONF['disable_discuss_thumbs'])) {
-	$posterText = preg_replace('/\[image id=([a-z]*:\d+)\]/e',"smarty_function_gridimage(array('id' => '\$1','extra' => '{description}'))",$posterText,5);
-	$posterText = preg_replace('/\[image id=([a-z]*:\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array('id' => '\$1','extra' => '\$2'))",$posterText,5);
+	$posterText = preg_replace('/\[image id=([a-z]*:?\d+)\]/e',"smarty_function_gridimage(array('id' => '\$1','extra' => '{description}'))",$posterText,5);
+	$posterText = preg_replace('/\[image id=([a-z]*:?\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array('id' => '\$1','extra' => '\$2'))",$posterText,5);
 }
 
 ##$posterText = preg_replace('/\[([\w :-]+)\]([^>]*)(<(?!\/a>)|$)/e',"replace_tags('$1').'$2$3'",$posterText);
