@@ -1,6 +1,6 @@
 {include file="_std_begin.tpl"}
 
-<h2>Geograph Coverage Map (v4)</h2>
+<h2>Geograph Coverage Map (v4) {dynamic}{if $realname} for {$realname|escape:'html'}{/if}{/dynamic}</h2>
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" rel="stylesheet" />
 
@@ -63,6 +63,7 @@
                 center: [54.4266, -3.1557], zoom: 13,
                 minZoom: 6, maxZoom: 18
         };
+	var clickOptions = {};
 
 {/literal}
 {dynamic}
@@ -73,8 +74,6 @@
                  if (wgs84)
                           mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
 	{/if}
-{/dynamic}
-{literal}
 
 	var map = L.map('map', mapOptions);
         var hash = new L.Hash(map);
@@ -85,20 +84,27 @@
         map.addLayer(overlayMaps["OSGB Grid"]);
         map.addLayer(overlayMaps["Irish Grid"]);
 
-        map.addLayer(overlayMaps["Coverage - Close"]);
-        map.addLayer(overlayMaps["Coverage - Coarse"]);
+	{if $dots}
+	        map.addLayer(overlayMaps["Coverage - Dots"]);
+	{else}
+	        map.addLayer(overlayMaps["Coverage - Close"]);
+	        map.addLayer(overlayMaps["Coverage - Coarse"]);
+	{/if}
 
-	overlayMaps["Photo Thumbnails"] = L.geographPhotos();
-
-	overlayMaps["Collections"] = L.geographCollections();
-
-{/literal}
-{dynamic}
 	{if $stats && $stats.images}
 		overlayMaps["(Personalize Coverage)"].options.user_id = {$stats.user_id};
                 overlayMaps["(Personalize Coverage)"].options.minZoom = 5;
-                        //todo - optionally could add to map now to personalize the layers!
+		{if !$ownfilter}
+			 //delete overlayMaps["Coverage - Opportunities"]; //deleting this breaks the exclusive events
+		{/if}
+		{if $filter}
+			clickOptions.user_id = {$stats.user_id};
+			overlayMaps["(Personalize Coverage)"].addTo(map);
+			if (map.getZoom() >= 13)
+				setTimeout('overlayMaps["Coverage - Close"].Reset();',100); //TODO some race conditon, means not it doesnt get called automatically :(
+		{/if}
 	{else}
+		 //delete overlayMaps["Coverage - Opportunities"];
 		 delete overlayMaps["(Personalize Coverage)"];
 	{/if}
 {/dynamic}
@@ -120,9 +126,9 @@
 
 	map.addControl(L.geographGeocoder());
 
-	map.addLayer(L.geographClickLayer());
+	map.addLayer(L.geographClickLayer(clickOptions));
 
-{/literal}</script>
+</script>
 
 
 
