@@ -95,7 +95,7 @@
 		overlayMaps["(Personalize Coverage)"].options.user_id = {$stats.user_id};
                 overlayMaps["(Personalize Coverage)"].options.minZoom = 5;
 		{if !$ownfilter}
-			 //delete overlayMaps["Coverage - Opportunities"]; //deleting this breaks the exclusive events
+			delete overlayMaps["Coverage - Opportunities"];
 		{/if}
 		{if $filter}
 			clickOptions.user_id = {$stats.user_id};
@@ -104,7 +104,7 @@
 				setTimeout('overlayMaps["Coverage - Close"].Reset();',100); //TODO some race conditon, means not it doesnt get called automatically :(
 		{/if}
 	{else}
-		 //delete overlayMaps["Coverage - Opportunities"];
+		 delete overlayMaps["Coverage - Opportunities"];
 		 delete overlayMaps["(Personalize Coverage)"];
 	{/if}
 {/dynamic}
@@ -128,7 +128,7 @@
 
 	map.addLayer(L.geographClickLayer(clickOptions));
 
-</script>
+{/literal}</script>
 
 
 
