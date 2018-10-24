@@ -151,6 +151,16 @@ overlayMaps["Coverage - Dots"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom:
 
 	////////////////////////////////////////////////
 
+	if (L.geographPhotos) {
+	        overlayMaps["Photo Thumbnails"] = L.geographPhotos();
+	}
+
+	if (L.geographCollections) {
+	        overlayMaps["Collections"] = L.geographCollections();
+	}
+
+	////////////////////////////////////////////////
+
 	// overlay map
 	var mbToken = 'pk.eyJ1IjoiZ2VvZ3JhcGgiLCJhIjoiY2lteXI3cmlpMDBmenY5bTF5dHFqMnh0NiJ9.sPXF2s1niWNNEfqGjs2HGw';
         var mbAttr = 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, ' +

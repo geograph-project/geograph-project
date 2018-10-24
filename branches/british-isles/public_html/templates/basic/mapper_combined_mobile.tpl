@@ -174,16 +174,17 @@
         map.addLayer(overlayMaps["OSGB Grid"]);
         map.addLayer(overlayMaps["Irish Grid"]);
 
-        map.addLayer(overlayMaps["Coverage - Close"]);
-
 	if (baseMaps["Geograph PhotoMap"]) delete baseMaps["Geograph PhotoMap"];
 	if (baseMaps["Watercolour"]) delete baseMaps["Watercolour"];
 	if (overlayMaps["PhotoMap Overlay"]) delete overlayMaps["PhotoMap Overlay"];
 
-	overlayMaps["Photo Thumbnails"] = L.geographPhotos();
-
 {/literal}
 {dynamic}
+	{if $dots}
+	        map.addLayer(overlayMaps["Coverage - Dots"]);
+	{else}
+	        map.addLayer(overlayMaps["Coverage - Close"]);
+	{/if}
 	{if $stats && $stats.images}
 		overlayMaps["(Personalize Coverage)"].options.user_id = {$stats.user_id};
                 overlayMaps["(Personalize Coverage)"].options.minZoom = 5;

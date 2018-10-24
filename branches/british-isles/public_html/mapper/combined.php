@@ -28,13 +28,37 @@ pageMustBeHTTPS();
 
 $smarty = new GeographPage;
 
-if ($USER->registered) {
+
+if (!empty($_GET['user_id'])) {
+        $profile=new GeographUser(intval($_GET['user_id']));
+
+        if (empty($profile->stats)) {
+                $profile->getStats();
+        }
+
+	if (!empty($profile->stats['images'])) {
+		$smarty->assign('realname',$profile->realname);
+		$smarty->assign('stats',$profile->stats);
+		$smarty->assign('filter',1);
+	}
+
+} elseif ($USER->registered) {
 	$USER->getStats();
 	$smarty->assign('stats',$USER->stats);
+	$smarty->assign('ownfilter',1);
+	if (!empty($_GET['mine'])) {
+		$smarty->assign('filter',1);
+	}
 }
+
 
 if (!empty($_SESSION['gridref'])) {
         $smarty->assign('gridref',$_SESSION['gridref']);
+}
+
+
+if (!empty($_GET['dots'])) {
+        $smarty->assign('dots',1);
 }
 
 if (!empty($_GET['mobile'])) {
