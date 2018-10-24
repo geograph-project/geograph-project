@@ -101,8 +101,8 @@ overlayMaps["Coverage - Dots"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom:
 	        var layerUrl='https://t0.geograph.org.uk/tile/tile-score.php?z={z}&x={x}&y={y}';
 	        overlayMaps["Coverage - Opportunities"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 7, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
 
-		overlayMaps["Coverage - Coarse"].on('add',function() {setTimeout(function () {  map.removeLayer(overlayMaps["Coverage - Opportunities"]); }, 100); } );
-		overlayMaps["Coverage - Opportunities"].on('add',function() { setTimeout(function () { map.removeLayer(overlayMaps["Coverage - Coarse"]); }, 100); } );
+		overlayMaps["Coverage - Coarse"].on('add',       function() { setTimeout(function () { if (overlayMaps["Coverage - Opportunities"])  map.removeLayer(overlayMaps["Coverage - Opportunities"]); }, 100); } );
+		overlayMaps["Coverage - Opportunities"].on('add',function() { setTimeout(function () { if (overlayMaps["Coverage - Coarse"])         map.removeLayer(overlayMaps["Coverage - Coarse"]);        }, 100); } );
 
 	////////////////////////////////////////////////
 
