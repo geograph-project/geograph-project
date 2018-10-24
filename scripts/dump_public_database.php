@@ -1,5 +1,7 @@
 <?php
 
+##################################
+
 chdir(__DIR__."/../");
 
 @include "libs/conf/channel-islands.geographs.org.conf.php";
@@ -8,12 +10,24 @@ chdir("public_html/dumps/");
 
 $database = "-h".escapeshellarg($CONF['db_connect'])." -u".escapeshellarg($CONF['db_user'])." -p".escapeshellarg($CONF['db_pwd'])." ".escapeshellarg($CONF['db_db']);
 
-$execute = !empty($argv[1]);
-
 ##################################
 
-$stat = array();
+//just a check to make sure really do want to run them commands
+$execute = !empty($argv[1]);
 
+$date = time() - (3600*24); //if file is already more recent than this, its skipped
+
+//if run in interactive terminal print some debugging
+if (posix_isatty(STDOUT)) {
+	$STDERR = fopen('php://stderr', 'w+');
+} else {
+	$STDERR = false;
+}
+
+##################################
+# lookup last modeification date of tables (although only works if using MyISAM tables!) 
+
+$stat = array();
 foreach(explode("\n",`echo "select table_name,update_time from information_schema.tables where TABLE_SCHEMA = DATABASE()" | mysql $database`) as $line) {
 	$bits = explode("\t",$line);
 	if (!empty($bits[1]) && $bits[1] != 'NULL')
@@ -21,6 +35,7 @@ foreach(explode("\n",`echo "select table_name,update_time from information_schem
 }
 
 ##################################
+# the dump file definitions
 
 $data = array();
 
@@ -49,7 +64,7 @@ $data[] = array(
 );
 
 $data[] = array(
-        'create' => "CREATE TABLE gridimage_hash (gridimage_id INT UNSIGNED PRIMARY KEY) SELECT gridimage_id,SUBSTRING(MD5(CONCAT(gridimage_id,user_id,'".str_replace('!','\\!',$CONF['photo_hashing_secret'])."')),1,8) AS hash FROM gridimage_search",
+        'create' => "CREATE TABLE gridimage_hash (gridimage_id INT UNSIGNED PRIMARY KEY) SELECT gridimage_id,SUBSTRING(MD5(CONCAT(gridimage_id,user_id,'".$CONF['photo_hashing_secret']."')),1,8) AS hash FROM gridimage_search",
         'file' => '.gridimage_hash.'.md5($CONF['register_confirmation_secret']).'.mysql.gz'
 );
 
@@ -85,14 +100,6 @@ $data[] = array(
 
 ##################################
 
-$date = time() - (3600*24);
-
-if (posix_isatty(STDOUT)) {
-	$STDERR = fopen('php://stderr', 'w+');
-} else {
-	$STDERR = false;
-}
-
 function cmd($cmd) {
 	global $STDERR,$execute;
 	if ($STDERR) fwrite($STDERR, "$cmd\n");
@@ -100,7 +107,11 @@ function cmd($cmd) {
 }
 
 foreach ($data as $row) {
-        ###if ($row['file'] != 'gridimage_tag.mysql.gz') continue;
+
+###########
+# dump virtual tables, that are created via mysql statement
+#  todo, can also be rewritten to use https://github.com/barryhunter/fakedump rather than creating a temporally table.
+
         if (!empty($row['create'])) {
                 if (preg_match('/CREATE TABLE (\w+) /',$row['create'],$m)) {
                         $table = $m[1];
@@ -122,7 +133,7 @@ foreach ($data as $row) {
 			}
 
                         if ($STDERR) fwrite($STDERR, "# running create statement\n");
-                        cmd("echo \"".$row['create']."\" | mysql $database");
+                        cmd("echo \"".str_replace('!','\\!',$row['create'])."\" | mysql $database");
                         cmd("mysqldump $database $table --skip-comments | gzip --rsyncable > $file");
 
 			if (!empty($source) && !empty($stat[$source]))
@@ -142,6 +153,10 @@ foreach ($data as $row) {
                 } else {
                         die("unable to find table {$row['create']}\n\n");
                 }
+
+###########
+# simple dump of complete tables
+
         } elseif (!empty($row['tables'])) {
                 $tables = $row['tables'];
                 $bits = explode(" ",$row['tables']);
@@ -171,6 +186,10 @@ foreach ($data as $row) {
 				cmd("touch $table.tsv.gz -t ".date('YmdHi.s',strtotime($stat[$table])));
                 }
 
+
+#######
+#dump multiple tables into one file (eg if have 'relation' tables, like tags)
+
         } elseif (!empty($row['dump1'])) {
                 if (empty($row['file']))
                         die("no file for {$row['create']}\n\n");
@@ -188,6 +207,8 @@ foreach ($data as $row) {
                 }
                 if ($STDERR) fwrite($STDERR, "# gzipping file\n");
                 cmd("gzip --rsyncable $file -f");
+
+#######
         } else {
                 die("unknown profile\n\n");
         }
