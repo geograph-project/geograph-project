@@ -1,6 +1,18 @@
 <?
 
-define('SPHINX_INDEX',"sample8");
+if ($_GET['z'] < 7 && empty($_GET['gg'])) {
+        require __DIR__."/tile-hectad.php";
+        exit;
+
+}elseif ($_GET['z'] < 10 && empty($_GET['gg'])) {
+	require __DIR__."/tile-square.php";
+	exit;
+}
+
+if (!empty($_GET['gg'])) {
+	define('SPHINX_INDEX',"germany");
+} else
+	define('SPHINX_INDEX',"sample8");
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
 require_once ('3rdparty/googleMapUtility.php');
@@ -48,6 +60,7 @@ if (!empty($_GET['6']) && $_GET['z'] > 10) {
 	$_GET['order'] = "id asc"; //rand doesnt work for group, could use sequence, but may as well just use id.
 }
 
+if (!function_exists('call_with_results')) { //hack that means this function is only added at RUNTIME, not COMPILE time.
 
 //this is automatically called by "api-facetql.php"
 function call_with_results($data) {
@@ -75,6 +88,7 @@ function call_with_results($data) {
 		exit;
 	}
 
+	if (!empty($data['rows']))
 	foreach ($data['rows'] as $row) {
 
 		$lat = rad2deg($row['lat']);
@@ -95,6 +109,8 @@ function call_with_results($data) {
 ########################################################################
 
 	exit;
+
+}
 
 }
 

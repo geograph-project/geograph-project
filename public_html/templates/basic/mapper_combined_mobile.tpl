@@ -108,7 +108,7 @@
 
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js"></script>
 
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.mobile.js?v=2"></script>
+        <script src="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.mobile.js?v=3"></script>
 
 	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
 
