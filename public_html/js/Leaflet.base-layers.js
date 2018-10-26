@@ -10,15 +10,15 @@ var baseMaps = {};
 
 	var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 	var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
-baseMaps["OpenStreetMap"] = L.tileLayer(osmUrl, {minZoom: 6, maxZoom: 21, attribution: osmAttrib});
+baseMaps["OpenStreetMap"] = L.tileLayer(osmUrl, {minZoom: 5, maxZoom: 21, attribution: osmAttrib});
 
         var cycleUrl='https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=42a8aaad46fa4fd784104f2870221993';
         var cycleAttrib='&copy; OpenCycleMap, '+osmAttrib;
-//baseMaps["OpenCycleMap"] = L.tileLayer(cycleUrl, {minZoom: 6, maxZoom: 21, attribution: cycleAttrib});
+//baseMaps["OpenCycleMap"] = L.tileLayer(cycleUrl, {minZoom: 5, maxZoom: 21, attribution: cycleAttrib});
 
         var terrainUrl='https://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=42a8aaad46fa4fd784104f2870221993';
         var terrainAttrib='Map &copy; ThunderForest, '+osmAttrib;
-baseMaps["OSM Terrain"] = L.tileLayer(terrainUrl, {minZoom: 6, maxZoom: 21, attribution: terrainAttrib});
+baseMaps["OSM Terrain"] = L.tileLayer(terrainUrl, {minZoom: 5, maxZoom: 21, attribution: terrainAttrib});
 
 if (L.tileLayer.bing) {
         var BING_KEY = 'AhwwUjiHWfAqm-dQiAhV1tJO82v-v5mU6osoxU3t1XKx-AlPyKzfBhKpTY81MKtJ';
