@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
         <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
 
-        <link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.Photo/Leaflet.Photo.css" />
+        <link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.Photo/Leaflet.Photo.css?v=2" />
 
 	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.css?v=2" />
 
@@ -61,7 +61,7 @@
 
 	var mapOptions =  {
                 center: [54.4266, -3.1557], zoom: 13,
-                minZoom: 6, maxZoom: 18
+                minZoom: 5, maxZoom: 18
         };
 	var clickOptions = {};
 
@@ -98,8 +98,8 @@
 			delete overlayMaps["Coverage - Opportunities"];
 		{/if}
 		{if $filter}
-			clickOptions.user_id = {$stats.user_id};
-			overlayMaps["(Personalize Coverage)"].addTo(map);
+			overlayMaps["(Personalize Coverage)"].addTo(map); //this sets options.user_id on all layers
+			clickOptions.user_id = {$stats.user_id}; //but clicklayer doesnt exist yet, so need to set options from start
 			if (map.getZoom() >= 13)
 				setTimeout('overlayMaps["Coverage - Close"].Reset();',100); //TODO some race conditon, means not it doesnt get called automatically :(
 		{/if}
