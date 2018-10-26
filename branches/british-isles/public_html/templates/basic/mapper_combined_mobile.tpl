@@ -64,6 +64,10 @@
     box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
 
+ul.tips li {
+        margin-bottom: 5px;
+}
+
  </style>{/literal}
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" rel="stylesheet" />
@@ -220,7 +224,7 @@
 <a href="/"><img src="https://s1.geograph.org.uk/templates/basic/img/logo.gif"></a>
 
 <h3>Tips</h3>
-<ul>
+<ul class=tips>
 	<li><b>Tap the map briefly</b> to get the Grid-Reference for that location</li>
 	<li><b>Hold-down</b> to load images near that location<ul>
 		<li>In the popup tap photo briefly to locate the photo on map
@@ -246,8 +250,12 @@
 </ul>
 
 <h3>Coverage Colours</h3>
-<ul>
-	<li><b>Dots</b>: A blue dot presents one or more photo - dot plotted at photo subject possition (only images with 6fig+ grid-reference plotted!) 
+<ul class=tips>
+	<li><b>Dots</b>: A blue dot presents one or more photos - dot plotted at photo subject position (only images with 6fig+ grid-reference plotted!)
+		<ul>
+			<li>Note: when zoom out, this layer will change to show coverage by square, darker = more photos. Zoom out further and it shows by 10km (hectad) squares. 
+			(because becomes too many individual dots to plot, and can't see patterns at these scale anyway)</li>
+		</ul></li>
 	<li style="padding:3px;"><b>Close</b>: <span style="opacity:0.8">
 		<span style="background-color:#FF0000;padding:3px;">Square with recent Images</span> /
 		<span style="background-color:#FF00FF;padding:3px;">No Images in last 5 years</span> /
@@ -260,14 +268,6 @@
 		</span></li>
 	<li><b>Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
 		Experimental coverage layer to see if concept works. Exact specififications of layer subject to change or withdrawl. 
-</ul>
-
-<h3>Todo List</h3>
-<ul>
-	<li>Permalinks, bookmarkable links to load the map for a particular location - ideally with specific layers enabled</li>
-        <li>More Coverage Layer configuration, maybe other that just Firsts/TPoints, eg depth</li>
-	<li>Possibly explicitly request Centisquare Coverage (at the moment the Close coverage automatically changes to centisquare when zoom)</li>
-	<li>Possibly filtering of the coverage and Photo Thumbnails layer (although will only be basic by keyword, filtering by advanced filters will be the purview of the Browser application, which will shortly have a very similar map to above! <a href="/browser/?t=WolhXJvobljhJL5405ouhV444jwVMNNMwVb#!/display=map">Sneak Peak</a> ) 
 </ul>
 
 <h3>Other suggestions/requests?</h3>

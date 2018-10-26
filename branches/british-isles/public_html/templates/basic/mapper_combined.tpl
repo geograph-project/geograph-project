@@ -133,7 +133,7 @@
 
 
 <h3>Tips</h3>
-<ul>
+<ul class=tips>
 	<li>Use the <b>Search icon</b> (also top left) to search for a place and recenter the map</li>
 	<li>Use the <b>Pin icon</b> (top left) to attempt to center the map on your current location</li>
 
@@ -153,8 +153,12 @@
 </ul>
 
 <h3>Coverage Colours</h3>
-<ul>
-	<li><b>Dots</b>: A blue dot presents one or more photo - dot plotted at photo subject possition (only images with 6fig+ grid-reference plotted!) 
+<ul class=tips>
+	<li><b>Dots</b>: A blue dot presents one or more photos - dot plotted at photo subject position (only images with 6fig+ grid-reference plotted!)
+		<ul>
+			<li>Note: when zoom out, this layer will change to show coverage by square, darker = more photos. Zoom out further and it shows by 10km (hectad) squares. 
+			(because becomes too many individual dots to plot, and can't see patterns at these scale anyway)</li>
+		</ul></li>
 	<li style="padding:3px;"><b>Close</b>: <span style="opacity:0.8">
 		<span style="background-color:#FF0000;padding:3px;">Square with recent Images</span> /
 		<span style="background-color:#FF00FF;padding:3px;">No Images in last 5 years</span> /
@@ -169,16 +173,15 @@
 		Experimental coverage layer to see if concept works. Exact specififications of layer subject to change or withdrawl. 
 </ul>
 
-<h3>Todo List</h3>
-<ul>
-	<li>Permalinks, bookmarkable links to load the map for a particular location - ideally with specific layers enabled</li>
-        <li>More Coverage Layer configuration, maybe other that just Firsts/TPoints, eg depth</li>
-	<li>Possibly explicitly request Centisquare Coverage (at the moment the Close coverage automatically changes to centisquare when zoom)</li>
-	<li>Possibly filtering of the coverage and Photo Thumbnails layer (although will only be basic by keyword, filtering by advanced filters will be the purview of the Browser application, which will shortly have a very similar map to above! <a href="/browser/?t=WolhXJvobljhJL5405ouhV444jwVMNNMwVb#!/display=map">Sneak Peak</a> ) 
-</ul>
-
 <h3>Other suggestions/requests?</h3>
 	<p>Let us know!</p>
 
+<style>{literal}
+
+ul.tips li {
+	margin-bottom: 5px;
+}
+
+{/literal}</style>
 
 {include file="_std_end.tpl"}
