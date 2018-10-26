@@ -62,9 +62,11 @@ Example Queries:
 
 <?	exit;
 }
-	customExpiresHeader(empty($_GET['long'])?3600*24:3600*24*30,true);
-
-
+	switch(1) {
+		case !empty($_GET['long']) : customExpiresHeader(3600*24*30); break;
+		case !empty($_GET['mid']) : customExpiresHeader(3600*24*3); break;
+		default : customExpiresHeader(3600*24); break;
+	}
 
 	$res = array();
 

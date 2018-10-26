@@ -7,12 +7,14 @@
 		<span class="tabSelected">Interactive Coverage</span>
 		<a href="/mapbrowse.php" class="tab">Original Coverage</a>
 		<a href="/browser/#!/display=map" class="tab">Filterable/Searchable</a>
-		<a href="/mapper/photomap.php" class="tab" onclick="return photomaplink(this)">PhotoMap</a><sup style=color:red>new!</sup>
+		<a href="/mapper/photomap.php" class="tab" onclick="return photomaplink(this)">PhotoMap</a>
 		
 		<a href="/help/maps">more maps...</a>
 	</div>
 	<div class="interestBox">	
 		<h2>Interactive Coverage Map</h2>
+
+		We are working on a <a href="/mapper/combined.php" onclick="return combinedlink(this)">newer even more refined version of this map</a>, it's not completely finished yet, but may be worth trying. 
 	</div>
 
 	<p>Click the map to view nearby images (appear below the map). Also open the layer switcher 
@@ -632,6 +634,7 @@ function checkboxUpdate() {
 }
 
 
+
 function photomaplink(that) {
 
 	var lonLat = olmap.map.getCenter();
@@ -643,6 +646,21 @@ function photomaplink(that) {
 	}
 
 	that.href = "/mapper/photomap.php#"+zoom+"/"+roundNumber(lonLat.lat,6)+"/"+roundNumber(lonLat.lon,6);
+
+	return true;
+}
+
+function combinedlink(that) {
+
+	var lonLat = olmap.map.getCenter();
+	var zoom = olmap.map.getZoom();
+
+	if (olmap.map.getProjection() != "EPSG:4326") {
+	        lonLat.transform(olmap.map.getProjection(), "EPSG:4326");
+		zoom = 21 - zoom;
+	}
+
+	that.href = "/mapper/combined.php#"+zoom+"/"+roundNumber(lonLat.lat,6)+"/"+roundNumber(lonLat.lon,6);
 
 	return true;
 }

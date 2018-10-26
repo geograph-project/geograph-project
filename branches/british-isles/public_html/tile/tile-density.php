@@ -1,7 +1,11 @@
 <?
 
 
-if ($_GET['z'] < 10 && empty($_GET['gg'])) {
+if ($_GET['z'] < 7 && empty($_GET['gg'])) {
+        require __DIR__."/tile-hectad.php";
+        exit;
+
+} elseif ($_GET['z'] < 10 && empty($_GET['gg'])) {
         require __DIR__."/tile-square.php";
         exit;
 }
@@ -37,7 +41,8 @@ if (empty($_GET['limit']))
 if (empty($_GET['order']))
 	$_GET['order'] = ($_GET['z'] > 8)?"sequence asc":"RAND()";
 
-$_GET['long'] = 1;//long expires header
+//$_GET['long'] = 1;//long expires header
+$_GET['mid'] = 1;//mid expires header
 
 if (!empty($_GET['l'])) {
 	$_GET['option'] = "max_matches=50000";
@@ -96,7 +101,7 @@ function call_with_results($data) {
 
 	$decay = (count($data['rows']) > 1000)?25:15;
 
-
+	if (!empty($data['rows']))
 	foreach ($data['rows'] as $row) {
 
 		$lat = rad2deg($row['lat']);
