@@ -555,7 +555,7 @@ class RasterMap
 				"<script src=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.js\" type=\"text/javascript\"></script>".
 				"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js\"></script>".
 				"<script src=\"".smarty_modifier_revision("/js/Leaflet.MetricGrid.js")."\"></script>".
-				(($this->reference_index==1)?"<script src==\"".smarty_modifier_revision("/js/leaflet-bing-layer.min.js")."\"></script>":"");
+				(($this->reference_index==1)?"<script src=\"".smarty_modifier_revision("/js/leaflet-bing-layer.min.js")."\"></script>":"");
 
 		} elseif ($this->service == 'OSOS') {
 			if (strpos($CONF['raster_service'],'OSOSPro') !== FALSE) {

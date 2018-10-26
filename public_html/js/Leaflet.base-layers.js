@@ -56,7 +56,7 @@ baseMaps["ESRI Imagery"] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/r
 
 
 if (L.tileLayer.bing)
-baseMaps["Bing Imagry"] = L.tileLayer.bing({'bingMapsKey':BING_KEY,'minZoom':7,'maxZoom':21,'imagerySet':'Aerial'});  //WithLabels
+baseMaps["Bing Imagery"] = L.tileLayer.bing({'bingMapsKey':BING_KEY,'minZoom':7,'maxZoom':21,'imagerySet':'Aerial'});  //WithLabels
 
 
         var layerUrl='https://t0.geograph.org.uk/tile/tile-photomap.php?z={z}&x={x}&y={y}&match=&6=1&gbt=6';
@@ -90,7 +90,7 @@ var overlayMaps = {};
 
 	var layerUrl='https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
 
-overlayMaps["Coverage - Dots"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 9, maxZoom: 18, attribution: layerAttrib, bounds: bounds});
+overlayMaps["Coverage - Dots"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 18, attribution: layerAttrib, bounds: bounds});
 
 	if (L.geographCoverage) {
 	        overlayMaps["Coverage - Close"] = L.geographCoverage();
