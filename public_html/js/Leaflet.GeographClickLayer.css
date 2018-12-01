@@ -1,0 +1,35 @@
+
+#clicklayer_lightback {
+	background-color:black; position:fixed; top:0; left:0; bottom:0; right:0; opacity:0.3;  z-index:10000;
+}
+#clicklayer_lightfront {
+	background-color:white; position:fixed; top:50vh; left:0; bottom:0; right:0;  overflow:auto;
+	overflow:auto; border-top:3px solid black; z-index:20000;
+}
+#clicklayer_lightfront #clicklayer_close {
+	float:right;
+	background-color:red;
+}
+#clicklayer_lightfront #clicklayer_close a {
+	color:white;
+	text-decoration:none;
+	padding:3px;
+}
+.clicklayer_thumbs {
+	padding:8px;
+}
+.clicklayer_thumbs .thumbsmall {
+	float:left;
+	width:128px;
+	height:148px;
+}
+.clicklayer_thumbs .thumbmed {
+	float:left;
+	width:223px;
+	height:178px;
+}
+#clicklayer_noresults {
+	background-color:white; position:fixed; top:20vh; left:20vw; right:20vw; overflow:auto; z-index:20000; opacity:0.8;
+	text-align:center; padding:20px;
+}
+
