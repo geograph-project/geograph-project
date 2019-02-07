@@ -1555,8 +1555,9 @@ a.about {
 }
 
 .content_photoblack .shadow_large div.img-responsive img {
-	border: inherit; /* for responsive, need to add it on the container instead */
-	padding: inherit;
+	border: none; /* for responsive, need to add it on the container instead */
+	padding: 0;
+	display: block; /* removes padding due to lineheight ext */
 }
 
 
