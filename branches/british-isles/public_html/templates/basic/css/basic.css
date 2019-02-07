@@ -1552,6 +1552,7 @@ a.about {
 .content_photoblack .shadow_large div.img-responsive {
         border: 1px solid #a9a9a9;
         padding: 4px;
+	display: inline-block;
 }
 
 .content_photoblack .shadow_large div.img-responsive img {
