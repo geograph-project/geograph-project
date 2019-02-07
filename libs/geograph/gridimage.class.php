@@ -38,7 +38,7 @@
 */
 class GridImage
 {
-	var $enforce_https = 2000000;
+	var $enforce_https = 1;
 
 	/**
 	* internal db handle
@@ -1181,7 +1181,7 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 				$mins[] = 'min-height:'.$size[1].'px';
 			$html=str_replace('/>',' style="'.implode('; ',$mins).'"/>',$html);
 
-			$html="<div class=\"img-responsive\" style=\"max-width:".($maxwidth+10)."px\">$html</div>";
+			$html="<div class=\"img-responsive\" style=\"max-width:{$maxwidth}px\">$html</div>"; //maxwidth to prevent upscaling
 
 //temp bodge! (this is a dynamic scale, based on ratio, but want to affect ALL the caption640 elements on the page.)
 $html .= <<<EOT
