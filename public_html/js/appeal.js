@@ -21,10 +21,12 @@ if (window.innerWidth < 1100) {
 		</style>');
 	
 		$('body').prepend('<div id="appeal_block"><a class=closer href="#">Close</a><b>Dear visitor,</b><div class=break></div> \
-			It\'s Geoctober! This month only, we invite you to help Geograph keep running. We\'re a small charity but updating our hardware and software doesn\'t come cheap. We shun advertising so we are reliant on donations. Only a small number of our visitors worldwide donate in return for access to millions of free images. <div class=break></div> \
-			If everyone visiting Geograph today gives &pound;5 we will raise enough to keep going for a year, maintaining unrestricted access to the collection and keeping up with developments in digital technology. <div class=break></div> \
+			This month we ask you to help Geograph.<div class=break></div> \
+			We do not run advertisements. We\'re sustained by donations and only a small portion of our visitors donate. If everyone visiting this website today gave &pound;5, we would raise enough funds to keep us going for a year.<div class=break></div> \
+			If Geograph is useful to you, please take one minute to keep it online and growing. We\'re a small charity run entirely by volunteers but with costs of servers and programs.<div class=break></div> \
 			<div class=float><a href="/help/appeal" class="btn">Donate Now</a></div> \
-			If Geograph is useful to you, please take one minute to keep it online and growing. With your help we can remain a valued resource for today and the future. <div class=break></div> \
+			We believe the information contained in our growing collection of images is valuable now and will become ever more treasured in the future. We wish to keep access to the images free to all without restriction.<div class=break></div> \
+			If you can help us, please do so. Please add a comment telling us what you like about Geograph. <div class=break></div> \
 			<i>Thank you</i>. </div>');
 
 		$('body #appeal_block a.closer').click(function() {
