@@ -185,8 +185,9 @@ def main(argv):
     replica = ''
     path = ''
     order = ''
+    number = 1
     try:
-        opts, args = getopt.getopt(argv,"a:p:r:o:",["action=","path=","replica=","order="])
+        opts, args = getopt.getopt(argv,"a:p:r:o:n:",["action=","path=","replica=","order=","number="])
     except getopt.GetoptError:
         print 'replication.py -a (walk|replicate) [-p /geograph_live/rastermaps]'
         sys.exit(2)
@@ -196,17 +197,21 @@ def main(argv):
             action = arg
         elif opt in ("-r", "--replica"):
             replica = arg
+        elif opt in ("-n", "--number"):
+            number = int(arg)
         elif opt in ("-p", "--path"):
             path = arg.rstrip("/")
         elif opt in ("-o", "--order"):
             order = arg
+
     
     if action == 'unknown':
         print 'replication.py -a (walk|replicate) [-p /geograph_live/rastermaps]'
         sys.exit(2)
     
     elif action == 'drain':
-        drain_now(path, replica, order)
+        for x in xrange(0, number):
+            drain_now(path, replica, order)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
