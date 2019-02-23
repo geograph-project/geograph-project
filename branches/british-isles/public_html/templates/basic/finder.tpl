@@ -139,12 +139,14 @@ h4.title {
 		</form>
 
 		<h4 class="title">Google Images</h4>
-		<form method="get" action="http://images.google.co.uk/images">
+		<form method="get" action="https://www.google.co.uk/search">
 		<div>
 			<label for="gimq">Keywords </label>
 			<input type="text" name="q" value="{$searchq|escape:'html'}" id="gimq"/>
 			<input type="hidden" name="as_q" value="site:geograph.org.uk"/>
-			<input type="submit" name="btnG" value="Search"/></div>
+			<input type="submit" name="btnG" value="Search"/>
+			<input type="hidden" name="tbm" value="isch"/>
+			</div>
 		</form>
 
 		<p>see also <a href="/search.php?form=advanced">Advanced search</a>, and <a href="/search.php">more</a>
@@ -326,7 +328,7 @@ h4.title {
 		</form>
 
 		<h4 class="title">Google</h4>
-		<form method="get" action="http://www.google.co.uk/search">
+		<form method="get" action="https://www.google.co.uk/search">
 		<div>
 			<label for="gcsq">Keywords </label>
 			<input type="text" name="q" value="{$searchq|escape:'html'}" id="gcsq"/>

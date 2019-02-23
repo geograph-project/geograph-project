@@ -72,7 +72,7 @@ if (!empty($_GET['q'])) {
 		}
 
 		$others['google'] = array('title'=>'Google Search','url'=>"https://www.google.co.uk/search?q=$u2&sitesearch=".$_SERVER['HTTP_HOST']);
-		$others['gimages'] = array('title'=>'Google Images','url'=>"http:s//images.google.com/images?q=$u2+site:".$_SERVER['HTTP_HOST']);
+		$others['gimages'] = array('title'=>'Google Images','url'=>"https://www.google.co.uk/search?q=$u2+site:".$_SERVER['HTTP_HOST']."&tbm=isch");
 
 		$try_words = true;
 
