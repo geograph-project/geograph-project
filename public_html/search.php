@@ -733,9 +733,9 @@ if (isset($_GET['fav']) && $i) {
 						case 'full-text.php': header("Location: /full-text.php?q=$q2"); break;
 						case 'bytag.php': header("Location: /finder/bytag.php?q=$q2"); break;
 						case 'sqim.php': header("Location: /finder/sqim.php?q=$q2"); break;
-						case 'images.google.co.uk': header("Location: http://images.google.co.uk/images?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search"); break;
-						case 'www.google.co.uk': header("Location: http://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search"); break;
-						case 'www.google.co.uk/tbs': header("Location: http://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search&tbs=img:1"); break;
+						case 'images.google.co.uk': header("Location: https://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search&tbm=isch"); break;
+						case 'www.google.co.uk': header("Location: https://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search"); break;
+						case 'www.google.co.uk/tbs': header("Location: https://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search&tbs=img:1"); break;
 					}
 					exit;
 				}

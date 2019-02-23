@@ -124,7 +124,7 @@ if (isset($_POST) && isset($_POST['submit'])) {
 			}
 		}
 		if (!empty($_POST['locality'])) {
-			$link = "http://www.google.co.uk/search?q=".urlencode($_POST['title']);
+			$link = "https://www.google.co.uk/search?q=".urlencode($_POST['title']);
 			$name = "Google Web search for ".$_POST['title'];
 			$links[] = "* [url=$link]{$name}[/url]";
 		}	

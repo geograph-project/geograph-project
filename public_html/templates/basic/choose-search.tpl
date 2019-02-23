@@ -190,14 +190,14 @@
 </tr>
 <tr>
 	<td>
-		<img src="http://pagepeeker.com/thumbs.php?size=m&amp;url=http://images.google.co.uk/images?q=bridge%26as_q%3Dsite%3Ageograph.org.uk%26btnG%3DSearch%0A" align="left"/>
+		<img src="http://pagepeeker.com/thumbs.php?size=m&amp;url=https://www.google.co.uk/search?q=bridge%26as_q%3Dsite%3Ageograph.org.uk%26btnG%3DSearch%0A&tbm=isch" align="left"/>
 	</td>
 	<td>
 		<h3>via Google Images</h3>
 
 		Uses Google Images to perform the actual search. Only returns results from <i>geograph.org.uk</i> or <i>geograph.ie</i> sites. Also Google Images has only indexed some (currently about 60% of total)
 
-		<a href="http://images.google.co.uk/images?q=bridge&amp;as_q=site:geograph.org.uk&amp;btnG=Search">View Example page</a><br/><br/>
+		<a href="https://www.google.co.uk/search?q=bridge&amp;as_q=site:geograph.org.uk&amp;btnG=Search&tbm=isch">View Example page</a><br/><br/>
 
 		{dynamic}
 		{if $option == 'images.google.co.uk'}
@@ -210,14 +210,14 @@
 </tr>
 <tr>
 	<td>
-		<img src="http://pagepeeker.com/thumbs.php?size=m&amp;url=http://www.google.co.uk/search?q=bridge%20site%3Ageograph.org.uk%26btnG%3DSearch%0A" align="left"/>
+		<img src="http://pagepeeker.com/thumbs.php?size=m&amp;url=https://www.google.co.uk/search?q=bridge%20site%3Ageograph.org.uk%26btnG%3DSearch%0A" align="left"/>
 	</td>
 	<td>
 		<h3>via Google Web Search</h3>
 
 		Uses Google Web Search, searches all geograph pages - images, article, profiles etc. Only returns results from <i>geograph.org.uk</i> or <i>geograph.ie</i> sites.
 
-		<a href="http://www.google.co.uk/search?q=bridge&amp;as_q=site:geograph.org.uk&amp;btnG=Search">View Example page</a><br/><br/>
+		<a href="https://www.google.co.uk/search?q=bridge&amp;as_q=site:geograph.org.uk&amp;btnG=Search">View Example page</a><br/><br/>
 
 		{dynamic}
 		{if $option == 'www.google.co.uk'}
@@ -230,13 +230,13 @@
 </tr>
 <!--tr>
 	<td>
-		<img src="http://pagepeeker.com/thumbs.php?size=m&amp;url=http://www.google.co.uk/search?q=bridge%20site%3Ageograph.org.uk&amp;btnG%3DSearch&amp;tbs=img:1" align="left"/>
+		<img src="http://pagepeeker.com/thumbs.php?size=m&amp;url=https://www.google.co.uk/search?q=bridge%20site%3Ageograph.org.uk&amp;btnG%3DSearch&amp;tbs=img:1" align="left"/>
 	</td>
 	<td>
 		<h3>via Google Web Thumbnails</h3>
 
 		Runs a web-search - using Googles 'Sites with images' option. Only returns results from <i>geograph.org.uk</i> or <i>geograph.ie</i> sites.
-		<a href="http://www.google.co.uk/search?q=bridge&amp;as_q=site:geograph.org.uk&amp;btnG=Search&amp;tbs=img:1">View Example page</a><br/><br/>
+		<a href="https://www.google.co.uk/search?q=bridge&amp;as_q=site:geograph.org.uk&amp;btnG=Search&amp;tbs=img:1">View Example page</a><br/><br/>
 
 		{dynamic}
 		{if $option == 'www.google.co.uk/tbs'}
