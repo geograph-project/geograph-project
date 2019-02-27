@@ -24,11 +24,10 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-
-
-
 $smarty = new GeographPage;
 $template = 'finder_recent.tpl';
+
+pageMustBeHTTPS();
 
 $cacheid = intval($_GET['page']);
 $extra = array();
@@ -84,8 +83,18 @@ if (true) {
 
 		$db = GeographDatabaseConnection(true);
 
-		$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
-		$client->SetIDRange($max-1000,$max+10);
+		$filter = 124913;
+		if ($filter) {
+			$rr = $db->getRow("SELECT gridimage_id FROM gridimage_search WHERE user_id != $filter ORDER BY gridimage_id DESC LIMIT 1499,1");
+			$min = $rr['gridimage_id']; // GetOne annoyingly blindy adds LIMIT 1 to end, even if already a LIMIT :( - getRow does NOT!
+
+			//$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search WHERE user_id != 124913"); DOESNT USE INDEX!
+			$max = $db->getOne("SELECT gridimage_id FROM gridimage_search WHERE user_id != $filter ORDER BY gridimage_id DESC LIMIT 1");
+		} else {
+			$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+			$min = $max-1500;
+		}
+		$client->SetIDRange($min,$max+10);
 
 			$bits = array();
 			$bits[] = "uniqueserial(atakenyear)";
@@ -99,6 +108,10 @@ if (true) {
 			}
 			$client->setSelect(implode('+',$bits)." as myint");
 			$sphinx->sort = "myint ASC,sequence ASC";
+
+		if ($filter) {
+			$client->SetFilter('auser_id', array($filter), true);
+		}
 
 		$ids = $sphinx->returnIds($pg,'_images');
 
@@ -138,6 +151,7 @@ if (true) {
 
 	$smarty->assign("q",$sphinx->qclean);
 	$smarty->assign("src",$src);
+        $smarty->assign("yesterday",date('Y-m-d',time()-3600*24));
 }
 
 

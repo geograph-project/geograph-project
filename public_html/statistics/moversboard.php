@@ -53,9 +53,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
+	$db = GeographDatabaseConnection(true);
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$db = GeographDatabaseConnection(true); 
-	
+
 	/////////////
 	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....
 	$sql_column = '';
@@ -74,17 +74,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		//squares has to use a count(distinct ...) meaning cant have pending in same query... possibly could do with a funky subquery but probably would lower performance...
 		$sql="select i.user_id,u.realname,
 		count(distinct grid_reference) as geographs
-		from gridimage_search as i 
-		inner join user as u using(user_id)  
+		from gridimage_search as i
+		inner join user as u using(user_id)
 		where i.submitted > date_sub(now(), interval 7 day) $sql_where
-		group by i.user_id 
+		group by i.user_id
 		order by geographs desc";
 		$topusers=$db->GetAssoc($sql);
-	
 
 		//now we want to find all users with pending images and add them to this array
 		$sql="select i.user_id,u.realname,0 as geographs, count(*) as pending from gridimage as i
-		inner join user as u using(user_id)  
+		inner join user as u using(user_id)
 		where i.submitted > date_sub(now(), interval 7 day) and
 		i.moderation_status='pending'
 		group by i.user_id
@@ -214,26 +213,26 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "First Geograph<br/>Points";
 		$desc = "'First Geograph' points awarded";
 		$type = 'first';
-	} 
+	}
 	$smarty->assign('heading', $heading);
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
-	
+
 	if ($sql_column) {
 		$sql_pending = (strpos($sql_table,'_search') === FALSE)?"sum(i.moderation_status='pending')":'0';
-		//we want to find all users with geographs/pending images 
+		//we want to find all users with geographs/pending images
 		$sql="select i.user_id,u.realname,
-		$sql_column as geographs, 
+		$sql_column as geographs,
 		$sql_pending as pending
-		from $sql_table left join user as u using(user_id) 
-		where i.submitted > date_sub(now(), interval 7 day) $sql_where
-		group by i.user_id 
+		from $sql_table left join user as u using(user_id)
+		where i.submitted > date_sub(now(), interval 7 day) $sql_where AND i.user_id != 124913
+		group by i.user_id
 		having (geographs > 0 or pending > 0)
 		order by geographs desc $sql_orderby, pending desc ";
 		if ($_GET['debug'])
 			print $sql;
 		$topusers=$db->GetAssoc($sql);
-	}		
+	}
 	//assign an ordinal
 
 	$i=1;$lastgeographs = '?';
@@ -253,23 +252,21 @@ if (!$smarty->is_cached($template, $cacheid))
 		$pending += $entry['pending'];
 		$points += $entry['points'];
 		if (empty($entry['points'])) $topusers[$user_id]['points'] = '';
-	}	
-	
-	
+	}
+
 	$smarty->assign('geographs', $geographs);
 	$smarty->assign('pending', $pending);
 	$smarty->assign('points', $points);
-	
+
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('cutoff_time', time()-86400*7);
-	
+
 	$smarty->assign('types', array('tpoints','first','second','allpoints','personal','images','depth'));
-	
+
 	//lets find some recent photos
 	new RecentImageList($smarty);
 }
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+
