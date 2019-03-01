@@ -8,7 +8,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	{if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... more"}" />
 	{else}<meta name="description" content="Geograph Britain and Ireland is a web-based project to collect and reference geographically representative images of every square kilometre of the British Isles."/>{/if}
-	{if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}
+	{if $lat && $long}<meta name="ICBM" content="{$lat|escape:'html'}, {$long|escape:'html'}"/>{/if}
 	<meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 	{$extra_meta}
 	<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />

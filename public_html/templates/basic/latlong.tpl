@@ -14,11 +14,11 @@
 
 	  <tr> 
 		 <td align="right">lat</td> 
-		 <td><input type="text" name="lat" size="15" value="{$lat}"/></td> 
+		 <td><input type="text" name="lat" size="15" value="{$lat|escape:'html'}"/></td> 
 	  </tr> 
 	  <tr> 
 		 <td align="right">long</td> 
-		 <td><input type="text" name="long" size="15" value="{$long}"/></td> 
+		 <td><input type="text" name="long" size="15" value="{$long|escape:'html'}"/></td> 
 	  </tr>
 	</table>
 	<p align="center"><input type="submit" name="From" value="convert"/></p>
@@ -35,18 +35,18 @@
 			 <td align="center">
 				<input type="radio" name="ns" value="N"{if $nl == 'N'} checked="checked"{/if}/>N<br/><input
 				type="radio" name="ns" value="S"{if $nl == 'S'} checked="checked"{/if}/>S</td> 
-			 <td>deg<input type="text" size="8" name="lat" value="{$yd}"/>
-				min<input type="text" size="8" name="latm" value="{$ym}"/> sec<input type="text" size="8"
-				name="lats" value="{$ys}"/> </td> 
+			 <td class=nowrap>deg<input type="text" size="6" name="lat" value="{$yd|escape:'html'}"/>
+				min<input type="text" size="6" name="latm" value="{$ym|escape:'html'}"/> sec<input type="text" size="6"
+				name="lats" value="{$ys|escape:'html'}"/> </td> 
 		  </tr> 
 		  <tr> 
 			 <td>long</td> 
 			 <td align="center">
-				<input type="radio" name="ew" value="W"{if $el == 'W'} checked="checked"{/if}/>W&nbsp;<input
-				type="radio" name="ew" value="E"{if $el == 'E'} checked="checked"{/if}/>E</td> 
-			 <td>deg<input type="text" size="8" name="long" value="{$xd}"/>
-				min<input type="text" size="8" name="longm" value="{$xm}"/> sec<input type="text" size="8"
-				name="longs" value="{$xs}"/> </td> 
+				<input type="radio" name="ew" value="W"{if $el == 'W'} checked="checked"{/if}/>W <span class=nowrap><input
+				type="radio" name="ew" value="E"{if $el == 'E'} checked="checked"{/if}/>E</span></td> 
+			 <td class=nowrap>deg<input type="text" size="6" name="long" value="{$xd|escape:'html'}"/>
+				min<input type="text" size="6" name="longm" value="{$xm|escape:'html'}"/> sec<input type="text" size="6"
+				name="longs" value="{$xs|escape:'html'}"/> </td> 
 		  </tr> 
 	</table>
 	<p align="center"><input type="submit" name="From" value="convert"/></p>
@@ -64,7 +64,7 @@
 	{if $errormgs}
 		<hr>
 		<p>{$errormgs}{if $lat || $long}, 
-		however {external href="http://www.nearby.org.uk/coord.cgi?p=`$lat`+`$long`" title="More information about this location" text="nearby.org.uk"} may understand it.
+		however {external href="http://www.nearby.org.uk/coord.cgi?p=`$lat`+`$long`"|escape:html title="More information about this location" text="nearby.org.uk"} may understand it.
 		{else}.{/if}
 		</p>
 	{/if}
@@ -114,7 +114,7 @@
 		<li>{if $map_token}<a href="/mapbrowse.php?t={$map_token}">Geograph <b>Map</b> around this location</a>{/if}<ul>
 		{if $datum == "osgb36"}<li><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}">Open the <b>Draggable Map</b></a></li>{/if}
 			<li>{getamap gridref=$gridref text="Get-a-map&trade;"}</li>
-			<li>{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}</li>
+			<li>{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom"|escape:html text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}</li>
 		</ul></li>
 		<li><a href="/submit.php?gridreference={$gridref}"><b>Submit</b> a picture for {$gridref4} (using {$gridref} as the picture location)</a></li>
 		<li><a href="/gpx.php?gridref={$gridref}">download <b>GPX</b> for this area</a><br/><br/></li>

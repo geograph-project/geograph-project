@@ -116,22 +116,19 @@ if (!empty($_GET['To'])) { //to lat/long
 			$mosaic=new GeographMapMosaic;
 			$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
 		}
-		
+
 		$smarty->assign('gridref', $gridref);
-		
+
 		list ($gridref,$len) = $conv->national_to_gridref($en[0],$en[1],4,$reference_index);
 		$smarty->assign('gridref4', $gridref);
-		
-		
-		
+
 		$smarty->assign('e', $en[0]);
 		$smarty->assign('n', $en[1]);
-		
 	} else {
 		$smarty->assign('errormgs', 'This location does not appear to be in the British Isles');
 	}
-	$smarty->assign('lat', $_GET['lat']);
-	$smarty->assign('long', $_GET['long']);
+	$smarty->assign('lat', floatval($_GET['lat']));
+	$smarty->assign('long', floatval($_GET['long']));
 	$conv->wgs84_to_friendly_smarty_parts($_GET['lat'],$_GET['long'],$smarty);
 }
 $smarty->assign('datum', $_GET['datum']);
@@ -139,5 +136,4 @@ $smarty->assign('usehermert', $_GET['usehermert']);
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+

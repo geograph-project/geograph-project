@@ -108,12 +108,17 @@ if (!empty($_GET['q'])) {
 
 	$smarty->assign("page_title",'Photos near '.$_GET['q']);
 	$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/near/$qu2\"/>");
-	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].$mkey);
+	$smarty->display("_std_begin.tpl",substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 
 	if ($memcache->valid) {
 		$str =& $memcache->name_get('near',$mkey);
 		if (!empty($str)) {
+                        if ($CONF['PROTOCOL'] == "https://") {
+                                //it may be a http:// page cached!?!
+                                $str = str_replace('http://',$CONF['PROTOCOL'],$str);
+                        }
 			print $str;
+
 			$smarty->display('_std_end.tpl');
 			exit;
 		}

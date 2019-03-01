@@ -57,7 +57,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 	dieUnderHighLoad(1);
 	customGZipHandlerStart();
 
-	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF']);
+	$smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
 
 	if (!empty($_GET['id']) && ctype_digit($_GET['id'])) {
 

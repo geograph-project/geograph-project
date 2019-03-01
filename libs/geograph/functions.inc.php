@@ -216,7 +216,7 @@ return "<a href=\"http://www.getamap.ordnancesurveyleisure.co.uk/\" target=\"gam
 	else
 	{
 		//error
-		return $gridref4;
+		return htmlentities($gridref4);
 	}
 }
 
@@ -314,7 +314,7 @@ function smarty_function_gridimage($params)
 	$image=new GridImage($params['id']);
 
 	if (!$image->isValid() || $image->moderation_status == 'rejected') {
-		return '';
+		return '<i style=color:gray>[[unable to display image '.htmlentities($params['id']).']]</i>';
 	}
 
 	if (!empty($image->ext_server)) {
@@ -1073,6 +1073,14 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
 	static $r;
 	if (!empty($r))
 		return($r);
+
+	if (!empty($prefix)) {
+		//this is tricky, callers typically pass PHP_SELF, which needs escaping. But can't call htmlentities on whole prefix, as aldready using &amp; etc in paths
+		$bits = explode('?',$prefix,2);
+		if (count($bits) == 2)
+			$prefix = htmlentities($bits[0])."?".$bits[1];
+	}
+
 	if ($currentPage > 1)
 		$r .= "<a href=\"$prefix".($currentPage-1)."$postfix\"$extrahtml class=\"pageNav\" rel=\"prev\">&lt; &lt; prev</a> ";
 	$start = max(1,$currentPage-5);

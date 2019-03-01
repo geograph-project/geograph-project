@@ -669,22 +669,19 @@ class GeographPage extends Smarty
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
-		
-		
+
 		//assign globallly useful stuff
 		$this->assign_by_ref('user', $GLOBALS['USER']);
 		$this->assign_by_ref('http_host', $_SERVER['HTTP_HOST']);
 		$this->assign_by_ref('self_host', $CONF['SELF_HOST']); //use this in preference to HTTP_HOST as it includes the protocol
 		$this->assign_by_ref('static_host', $CONF['STATIC_HOST']);
-		$this->assign_by_ref('script_name', $_SERVER['PHP_SELF']);
+		$this->assign_by_ref('script_name', htmlentities($_SERVER['PHP_SELF'])); //lots of scripts usse this directly <form action={$script_name}> - THEY should escape it, but do it for them!
 		$this->assign_by_ref('script_uri', $_SERVER['REQUEST_URI']);
 		$this->assign_by_ref('searchq', $_SESSION['searchq']);
 		$this->assign_by_ref('enable_forums', $CONF['forums']);
-		
 
 
 		$this->assign('session_id', session_id());
-
 
 
 		//show more links in template?

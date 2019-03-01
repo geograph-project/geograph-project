@@ -31,13 +31,13 @@ $smarty = new GeographPage;
 $USER->mustHavePerm("basic");
 
 
-$smarty->display('_std_begin.tpl',$_SERVER['PHP_SELF']);
+$smarty->display('_std_begin.tpl',md5($_SERVER['PHP_SELF']));
 
 print "<h2>Bulk Tag/Shared Description editor</h2>";
 
 
 $moderated = !in_array($USER->user_id, array(4264,2520,1469,9181,10354,3,139));
-
+$moderated = false;
 
 
 if (!empty($_POST)) {
