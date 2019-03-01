@@ -40,7 +40,7 @@ customExpiresHeader(3600*23,false,true);
 $smarty->assign("page_title",'Your Photos around the site');
 
 //we dont use smarty caching because the page is so big!
-$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF']);
+$smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
 
 $tabs = array('featured'=>'Featured Images','collection'=>'In Collections','collection2'=>'Collection Image','forum-top'=>'Forum/Galleries Latest','forum'=>'Forum/Galleries All','search'=>'Marked Lists','thumbed'=>'Thumbed',''=>'');
 

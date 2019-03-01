@@ -32,7 +32,7 @@ ini_set("display_errors",1);
 error_reporting(E_ALL ^ E_NOTICE);
 
 $smarty->assign("page_title",'System Status');
-$smarty->display('_std_begin.tpl');
+$smarty->display('_std_begin.tpl',md5($_SERVER['PHP_SELF']));
 ?>
 <style type="text/css">
 	#maincontent h1 {
@@ -69,7 +69,7 @@ print "<hr/>";
 
 if (!empty($DSN_READ) && $DSN_READ != $DSN) {
 	if ($db) {
-	
+
 		?>
 		<div id="hidemaster" style="text-align:center"><a href="javascript:void(show_tree('master'));">Show Master Detail</a></div>
 		<div id="showmaster" class="interestBox" style="display:none"><pre>
@@ -78,18 +78,16 @@ if (!empty($DSN_READ) && $DSN_READ != $DSN) {
 		?></pre>
 		</div>
 		<?
-		
+
 		$master = $row['File'].'|'.$row['Position'];
-		
 	}
 	print "<hr/>";
 
 	print "<h2>Slave Database Status ";
 	print "<tt>{$CONF['db_read_user']}@{$CONF['db_read_connect']}/{$CONF['db_read_db']}</tt></h2>";
 	if ($db = database_status($DSN_READ)) {
-		
+
 		print "<hr/>";
-		
 		?>
 		<div id="hideslave" style="text-align:center"><a href="javascript:void(show_tree('slave'));">Show Slave Detail</a></div>
 		<div id="showslave" class="interestBox" style="display:none"><pre>
@@ -98,13 +96,13 @@ if (!empty($DSN_READ) && $DSN_READ != $DSN) {
 		?></pre>
 		</div>
 		<?
-	
+
 		$slave = $row['Master_Log_File'].'|'.$row['Read_Master_Log_Pos'];
 		if ($slave != $master) {
 			print "<h1>Slave Read Failure?</h1>";
 			print "<pre>Master: $master\nSlave: $slave</pre>";
 		}
-			
+
 		$slave = $row['Master_Log_File'].'|'.$row['Exec_Master_Log_Pos'];
 		if ($slave != $master) {
 			print "<h1>Slave Execute Failure?</h1>";
@@ -127,14 +125,13 @@ if ($DSN2 != $DSN) {
 	print "<h2>Second Database Status ";
 	print "<tt>{$CONF['db_user2']}@{$CONF['db_connect2']}/{$CONF['db_db2']}</tt></h2>";
 	$db = database_status($DSN2);
-		
+
 } else {
 	print "<h4 style='color:gray'>no second database</h4>";
 }
 print "<hr/>";
 
 
-	
 if ($memcache->valid) {
 	print "<h2>Overview Memcache Statistics</h2>";
 	memcache_status();
@@ -148,18 +145,18 @@ print "<hr/>";
 if (!empty($CONF['sphinx_host'])) {
 	print "<h2>Sphinx connection</h2>";
 	$sphinx = new sphinxwrapper('test');
-	
+
 	$ids = $sphinx->returnIds(1,'gaz');
-	
+
 	$cl = $sphinx->_getClient();
-	
+
 	if (!empty($ids) && count($ids)) {
 		print "<p>Ids returned: ".count($ids)."</p>";
 		?>
 		<div id="hidesphinx" style="text-align:center"><a href="javascript:void(show_tree('sphinx'));">Show Sphinx Detail</a></div>
 		<div id="showsphinx" class="interestBox" style="display:none">
-		<?		
-	
+		<?
+
 		print "<table border=1 cellspacing=0>";
 		print "<tr>";
 		print "<th>server</th>";
@@ -173,10 +170,9 @@ if (!empty($CONF['sphinx_host'])) {
 			print "</tr>";
 		}
 		print "</table>";
-		
+
 		print "</div>";
 	} else {
-		
 		print "<h1>".$cl->GetLastError()."</h1>";
 	}
 } else {
@@ -194,29 +190,26 @@ exit;
 function database_status($DSN) {
 	global $CONF;
 	static $counter = 1;
-	
+
 	$db=NewADOConnection($DSN);
-	
+
 	if (!$db) {
 		print "<h1>Unable to connect</h1>";
 		return;
 	}
-	
+
 	$data = $db->getAssoc("SHOW STATUS");
-	
+
 	if ($db->ErrorNo()) {
 		print "<h1>Error</h1>";
 		print "<p>".$db->ErrorMsg()."</p>";
 		return;
 	}
-	
-	
+
 	#print_r($data);
 	print "<p>Uptime: ".$data['Uptime'].", ";
 	print "Threads_connected: ".$data['Threads_connected'].", ";
-	
-	
-	
+
 	if ($db && $CONF['db_tempdb']) {
 		$table = $CONF['db_tempdb'].".mytmp".uniqid();
 		$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP SELECT 1";
@@ -241,7 +234,7 @@ function database_status($DSN) {
 	<div id="hide<? echo $counter; ?>" style="text-align:center"><a href="javascript:void(show_tree('<? echo $counter; ?>'));">Show Database <? echo $counter; ?> Detail</a></div>
 	<div id="show<? echo $counter; ?>" class="interestBox" style="display:none">
 	<?
-	
+
 	print "<table border=1 cellspacing=0>";
 	foreach ($data as $name => $value) {
 		print "<tr>";
@@ -250,7 +243,7 @@ function database_status($DSN) {
 		print "</tr>";
 	}
 	print "</table>";
-		
+
 	print "</div>";
 	$counter++;
 	return $db;
@@ -258,7 +251,7 @@ function database_status($DSN) {
 
 function memcache_status() {
 	global $memcache;
-	
+
 	$a = $memcache->getExtendedStats();
 	$a = array_reverse($a);
 	$keys = array_keys($a);
@@ -292,7 +285,7 @@ function memcache_status() {
 			print "<th>{$name}</th>";
 		}
 		print "</tr>";
-		
+
 		foreach ($keys as $id => $column) {
 			print "<tr>";
 			print "<th>$column</th>";
@@ -302,10 +295,9 @@ function memcache_status() {
 			print "</tr>";
 		}
 	print "</table>";
-	
+
 	print "</div>";
 }
 
 ####################################
 
-?>

@@ -198,7 +198,7 @@ if ($grid_given)
 			$smarty->assign('title',$_GET['title']);
 		}
 		if (!empty($_GET['id'])) {
-			$smarty->assign('id',$_GET['id']);
+			$smarty->assign('id',intval($_GET['id']));
 		}
 	}
 	else

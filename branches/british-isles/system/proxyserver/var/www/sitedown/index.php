@@ -42,7 +42,7 @@ p {font-family:Arial;}
 <p>All our servers are currently working to capacity - please try again in a few minutes,<br><br>
 Thank you for your patience.<br><br>
 </p>
-<p align="right">TIP: You can use <a href="http://images.google.co.uk/images?q=site:geograph.org.uk">Google Image Search</a> to search a small selection of cached Geograph Images. </p>
+<p align="right">TIP: You can use <a href="https://www.google.co.uk/search?q=site:geograph.org.uk&tbm=isch">Google Image Search</a> to search a small selection of cached Geograph Images. </p>
 </div>
 <hr/>
 <p align="center"><small>Backup communications: <a href="http://groups.yahoo.com/group/GeographSidetrack/">GeographSideTrack Email Group</a> 

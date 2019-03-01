@@ -28,10 +28,8 @@
                exit;
        }
 
-
 //TODO, this might be better ONLY allowing certain domains. At the moment, this page is used m.geograph.org.uk etc
 define('ALLOW_FRAMED',1); //HAVE to be CAREFUL to taint all input!
-
 
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
@@ -52,18 +50,62 @@ $square=new GridSquare;
 
 
 $token=new Token;
-if ($token->parse($_GET['t']))
+if (!empty($_GET['t']) && $token->parse($_GET['t']))
 {
 	$s = false;
 	$rastermap = new RasterMap($s);
 	foreach ($token->data as $key => $value) {
 		$rastermap->{$key} = $value;
-	
 	}
 	$rastermap->inline=true;
-	
+
 	$smarty->assign_by_ref('rastermap', $rastermap);
-	
+
+} elseif (!empty($_GET['id']) && !empty($_GET['hash'])) {
+	$image=new GridImage;
+        $image->loadFromId(intval($_GET['id']));
+
+        //is the image rejected? - only the owner and administrator should see it
+        if ($image->moderation_status=='rejected')
+        {
+                //clear the image
+                $image=new GridImage;
+                $cacheid=0;
+                $rejected = true;
+        }
+
+	if ($image->isValid())
+	{
+		if ($_GET['hash'] != $image->_getAntiLeechHash()) {
+			die("invalid");
+		}
+
+        	//when this image was modified
+	        $mtime = strtotime($image->upd_timestamp);
+
+                customCacheControl($mtime,$image->gridimage_id.$mtime);
+
+                require_once('geograph/conversions.class.php');
+                $conv = new Conversions;
+
+                list($lat,$long) = $conv->gridsquare_to_wgs84($image->grid_square);
+
+	        $rastermap = new RasterMap($image->grid_square,false);
+		if (!empty($_GET['i']))
+			$rastermap->service = 'Leaflet';
+        	$rastermap->addLatLong($lat,$long);
+	        if (!empty($image->viewpoint_northings)) {
+        	        $rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
+	        } elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
+        	        $rastermap->addViewDirection($image->view_direction);
+	        }
+
+		$rastermap->inline=true;
+
+		$smarty->assign_by_ref('rastermap', $rastermap);
+	} else {
+		die("invalid");
+	}
 } else {
 	die("invalid");
 }

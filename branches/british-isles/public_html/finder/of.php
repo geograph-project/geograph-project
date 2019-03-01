@@ -118,7 +118,7 @@ if (!empty($_GET['q'])) {
 		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/place/$qu2\"/>");
 	else
 		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/of/$qu2\"/>");
-	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
+	$smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF'].$_GET['q']));
 
 	if ($memcache->valid) {
 		$mkey = md5("#".trim($sphinx->q).$_SERVER['HTTP_HOST']).isset($_GET['redir']).$src;
