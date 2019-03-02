@@ -38,22 +38,21 @@ if (!empty($_GET['id'])) {
 		die("please specify a image");
 	}
 
-	list($desc,$gr) = $db->getRow("select comment,grid_reference from gridimage_search where gridimage_id= $gid");
+	extract($db->getRow("select comment as `desc`,grid_reference as `gr` from gridimage_search where gridimage_id= $gid"),
+		EXTR_PREFIX_INVALID, 'numeric'); //need to cope with row being either Assoc or Both. Can't assume with be Both (wich used to be true!). But can assume not Num only.
 
 	$desc = preg_replace('/(^|[\n\r\s]+)Keywords?[\s:][^\n\r>]+$/i','',$desc);
 	$desc1 = $desc;
-	
+
 	if (empty($desc)) {
 		die("This image does not have a description. (or is not a valid image)");
 	}
 
 	$desc = htmlentities($desc1);
-	
-	$link = "/search.php?gridref=$gr&do=1&orderby=relevance&searchtext=";
-	
-	
-	$desc = preg_replace('/(?<!\.\s)(?<!^)\b([A-Z][a-z]+\b)(\s+[A-Z][a-z]+\b)?(\s+[A-Z][a-z]+\b)?(\s+[A-Z][a-z]+\b)?/e','"<a href=\"'.$link.'".urlencode("$1 $2")."\">".trim("$1 $2 $3 $4")."</a>"',$desc);
 
+	$link = "/search.php?gridref=$gr&do=1&orderby=relevance&searchtext=";
+
+	$desc = preg_replace('/(?<!\.\s)(?<!^)\b([A-Z][a-z]+\b)(\s+[A-Z][a-z]+\b)?(\s+[A-Z][a-z]+\b)?(\s+[A-Z][a-z]+\b)?/e','"<a href=\"'.$link.'".urlencode("$1 $2")."\">".trim("$1 $2 $3 $4")."</a>"',$desc);
 
 ?>
 <style type="text/css">
@@ -72,12 +71,8 @@ New:
 <hr>
 <a href="/photo/<?php echo $gid; ?>">Back to image</a>
 
+<?php
 
-	
-	
-	
-<?php	
-	
 } else {
 	die("nothing to do...");
 }

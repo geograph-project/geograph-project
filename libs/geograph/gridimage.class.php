@@ -1929,25 +1929,26 @@ split_timer('gridimage'); //starts the timer
 		
 		//we want to detect changes in ftf status...a pending image is always ftf 0
 		$original_ftf=$this->ftf;
-		
+
 /*
 		//lock tables
-		$db->Execute("LOCK TABLES 
+		$db->Execute("LOCK TABLES
 		gridsquare WRITE,
 		gridimage WRITE,
 		gridimage_search WRITE");
 */
-		
-		//find out how many users have contributed to the square, and if this is the first from this user, then give it a ftf. 
+
+		//find out how many users have contributed to the square, and if this is the first from this user, then give it a ftf.
 		//NOT ftf used to just mean first overall, now we mark the first from each contributor. (with the sequence in the square)
-		list($contributors,$has_image) = $db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' and gridimage_id<>{$this->gridimage_id}");
+		extract($db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' and gridimage_id<>{$this->gridimage_id}"),
+			EXTR_PREFIX_INVALID, 'numeric'); //need to cope with row being either Assoc or Both. Can't assume with be Both. But can assume not Num only.
 
 		$this->ftf=0;
-		if (($status=='geograph') && ($has_image==0)) 
+		if (($status=='geograph') && ($has_image==0))
 		{
 			$this->ftf=$contributors+1;
 		}
-		
+
 		//update image status and ftf flag
 		$sql="update gridimage set ".
 			"moderation_status='$status',".
@@ -2122,16 +2123,17 @@ split_timer('gridimage'); //starts the timer
 				//does the image get ftf in the target square?
 				if ($this->moderation_status=='geograph')
 				{
-					list($contributors,$has_image) = $db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph' and gridimage_id<>{$this->gridimage_id}");
-					
+					extract($db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph' and gridimage_id<>{$this->gridimage_id}"),
+						EXTR_PREFIX_INVALID, 'numeric'); //need to cope with row being either Assoc or Both. Can't assume with be Both. But can assume not Num only.
+
 					if ($has_image==0)
 						$this->ftf=$contributors+1;
 				}
-				
+
 				$sql_set = "gridsquare_id={$newsq->gridsquare_id},seq_no=$seq_no,ftf=$this->ftf, ";
 			}
 				//if not a new square only update nateastings and natnorthings
-			
+
 			//we DONT use getNatEastings here because only want them if it more than 4 figure
 			$east=$newsq->nateastings+0;
 			$north=$newsq->natnorthings+0;
