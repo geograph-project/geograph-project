@@ -314,11 +314,10 @@ class GeographUser
 	{
 		$db = $this->_getDB(true);
 
-		list($this->tickets,$this->last_ticket_time)=
-
 		$row = $db->GetRow("select count(*) as `tickets`,unix_timestamp(max(suggested)) as last_ticket_time from gridimage inner join gridimage_ticket using (gridimage_id) where gridimage.user_id='{$this->user_id}' and status != 'closed'");
 		$this->tickets = $row['tickets'];
 		$this->last_ticket_time = $row['last_ticket_time'];
+
 		return $this->tickets;
 	}
 
