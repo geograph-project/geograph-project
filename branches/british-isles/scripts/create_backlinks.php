@@ -22,103 +22,38 @@
  */
 
 
-    
-    
 
-//these are the arguments we expect
-$param=array(
-	'dir'=>'/var/www',		//base installation dir
+chdir(__DIR__);
+require "./_scripts.inc.php";
 
-	'config'=>'www.geograph.virtual', //effective config
-	'action'=>'unknown', //which
-
-	'timeout'=>14, //timeout in minutes
-	'sleep'=>10,	//sleep time in seconds
-	'load'=>100,	//maximum load average
-	'help'=>0,		//show script help?
-);
-
-//very simple argument parser
-for($i=1; $i<count($_SERVER['argv']); $i++)
-{
-	$arg=$_SERVER['argv'][$i];
-
-	if (substr($arg,0,2)=='--')
-
-	{
-		$arg=substr($arg,2);
-		$bits=explode('=', $arg,2);
-		if (isset($param[$bits[0]]))
-		{
-			//if we have a value, use it, else just flag as true
-			$param[$bits[0]]=isset($bits[1])?$bits[1]:true;
-		}
-		else die("unknown argument --$arg\nTry --help\n");
-	}
-	else die("unexpected argument $arg - try --help\n");
-	
-}
-
-
-if ($param['help'])
-{
-	echo <<<ENDHELP
----------------------------------------------------------------------
-recreate_maps.php 
----------------------------------------------------------------------
-php recreate_maps.php 
-    --dir=<dir>         : base directory (/home/geograph)
-    --config=<domain>   : effective domain config (www.geograph.org.uk)
-    --timeout=<minutes> : maximum runtime of script (14)
-    --sleep=<seconds>   : seconds to sleep if load average exceeded (10)
-    --load=<loadavg>    : maximum load average (100)
-    --help              : show this message	
----------------------------------------------------------------------
-	
-ENDHELP;
-exit;
-}
-	
-//set up  suitable environment
-ini_set('include_path', $param['dir'].'/libs/');
-$_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/'; 
-$_SERVER['HTTP_HOST'] = $param['config'];
-
-
-//--------------------------------------------
-// nothing below here should need changing
-
-require_once('geograph/global.inc.php');
-
-
+############################################
 
 $db = GeographDatabaseConnection(false);
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
 
 $perpage = 1000;
 
-list($min,$max)=$db->GetRow("select min(gridimage_id),max(gridimage_id) from gridimage_search where gridimage_id > 0");
+extract($db->GetRow("select min(gridimage_id) as `min`,max(gridimage_id) as `max` from gridimage_search where gridimage_id > 0"),
+	EXTR_PREFIX_INVALID, 'numeric'); //need to cope with row being either Assoc or Both. Can't assume with be Both. But can assume not Num only.
+
 $start=floor($min / $perpage) * $perpage;
 if (!$start) $start =1;
 
 print "list($min,$max)=>$start)\n\n";
 
-$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
 for ($from=$start; $start<=$max; $start+=$perpage)
 {
 	$sql = "select gridimage_id,comment from gridimage_search where gridimage_id between $start and ".($start+$perpage-1)." and (comment like '%[[%' or comment like '%/photo/%')";
-	
 
 	$bits = array();
-	
-	
+
 	$recordSet = &$db->Execute($sql);
-		
-	while (!$recordSet->EOF) 
+
+	while (!$recordSet->EOF)
 	{
 		$gridimage_id =  $recordSet->fields['gridimage_id'];
 
-		
 		if (preg_match_all('/\[\[(\d+)\]\]/',$recordSet->fields['comment'],$g_matches)) {
 			foreach ($g_matches[1] as $g_i => $g_id) {
 				$bits[] = "($g_id,$gridimage_id,NOW())";
@@ -129,10 +64,10 @@ for ($from=$start; $start<=$max; $start+=$perpage)
 				$bits[] = "($g_id,$gridimage_id,NOW())";
 			}
 		}
-		
+
 		$recordSet->MoveNext();
 	}
-	
+
 	$recordSet->Close();
 
 	if (count($bits)) {

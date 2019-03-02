@@ -251,17 +251,16 @@ class game {
 		}
 		switch($level) {
 			case 1: $dist = 3;
-			
+
 			case 2: if (!$dist) $dist = 10;
-				
+
 			//case 1,2
 				$square = new GridSquare();
 				if ($square->setByFullGridRef($this->grid_reference)) {
 					$x = $square->x;
 					$y = $square->y;
-					
-				} 
-				
+				}
+
 			case 3: if (empty($x)) {
 					$db = $this->_getDB();
 					$rows = $db->CacheGetAll(3600,"SELECT x,y,COUNT(*) AS c FROM gridimage_search WHERE user_id='{$USER->user_id}' GROUP BY concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ORDER BY COUNT(*) DESC LIMIT 20");
@@ -269,19 +268,20 @@ class game {
 						$rows = array_slice($rows,0,10);
 					}
 					$pos = mt_rand(0,count($rows)-1);
-					list($x,$y) = $rows[$pos];
+					extract($rows[$pos], EXTR_PREFIX_INVALID, 'numeric');
 				}
 
 			case 4: if (empty($x)) {
 					$db = $this->_getDB();
 					$total = $db->CacheGetOne(3600,"select images from user_stat where user_id='{$USER->user_id}'");
 					$pos = mt_rand(0,$total-1);
-					list($x,$y) = $db->getRow("SELECT x,y FROM gridimage_search WHERE user_id='{$USER->user_id}' LIMIT $pos,1");
+					extract($db->getRow("SELECT x,y FROM gridimage_search WHERE user_id='{$USER->user_id}' LIMIT $pos,1"),
+						 EXTR_PREFIX_INVALID, 'numeric');
 				}
-			
+
 			//case 3,4
 				if (!$dist) $dist = 5;
-			
+
 			//case 1,2,3,4
 				$left=$x-$dist;
 				$right=$x+$dist;
@@ -291,23 +291,23 @@ class game {
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
 				$where = "CONTAINS(GeomFromText($rectangle),point_xy)";
-				
+
 				break;
-		
-			case 5: 
+
+			case 5:
 				$db = $this->_getDB();
-				#$where .= sprintf(" and submitted like '____-%02d-%%'",(abs(crc32(session_id()))%12) + 1); 
-				
+				#$where .= sprintf(" and submitted like '____-%02d-%%'",(abs(crc32(session_id()))%12) + 1);
+
 				$maxId = $db->cacheGetOne(3600,"SELECT MAX(gridimage_id) AS max FROM gridimage_search");
-				
+
 				$ids = array();
-				
+
 				$needed = ($game->batchsize*3); //we need to allow for users images, ireland, rejected etc
-				
+
 				if ($maxId < $needed) {
 					die("not enough images submitted");
 				}
-				
+
 				mt_srand(abs(crc32(session_id()))*intval(time()/600));//give the sql a better chance of been cached
 				while (count($ids) < $needed) {
 					$id = mt_rand(1,$maxId);
@@ -315,11 +315,11 @@ class game {
 						$ids[$id]=1;
 					}
 				}
-				
-				$where = "gridimage_id IN (".implode(',',array_keys($ids)).")"; 
+
+				$where = "gridimage_id IN (".implode(',',array_keys($ids)).")";
 				break;
 		}
-		
+
 		if (!empty($reference_index)) {
 			$where .= " and reference_index = $reference_index";
 		}
@@ -333,15 +333,14 @@ class game {
 			from gridimage_search gi
 			where $where
 			order by rand() limit ".($game->batchsize*2);
-		
+
 		$imagelist=new ImageList();
 		$this->numberofimages =$imagelist->_getImagesBySql($sql,3600);
 		$this->images =& $imagelist->images;
-		
+
 		$this->sanitiseImages(false);
 	}
-	
-	
+
 	public function getImagesByRating($rating) {
 		if ($rating > 9) {
 			$where = sprintf("rating BETWEEN %d AND %d",($rating/10)-1,($rating/10)+1);

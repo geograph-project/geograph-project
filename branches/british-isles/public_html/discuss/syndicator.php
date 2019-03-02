@@ -87,20 +87,21 @@ if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 	#$rss->link = "{$CONF['SELF_HOST']}/discuss/topic{$_GET['topic']}";
 	$rss->link = "{$CONF['SELF_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}";
 
-		list($title,$forrom) = $db->GetRow("select topic_title,forum_id from `geobb_topics` where `topic_id` = {$_GET['topic']}");
+	extract($db->GetRow("select topic_title,forum_id from `geobb_topics` where `topic_id` = ".intval($_GET['topic'])),
+		EXTR_PREFIX_INVALID, 'numeric'); //need to cope with row being either Assoc or Both. Can't assume with be Both. But can assume not Num only.
 
-	$rss->title = "Geograph.org.uk Forum :: $title :: Latest Posts";
+	$rss->title = "Geograph.org.uk Forum :: $topic_title :: Latest Posts";
 	$rss->syndicationURL = "{$CONF['SELF_HOST']}/discuss/syndicator.php?format=$format&amp;topic=".$_GET['topic'];
 
-	$posts = $db->getOne("SELECT COUNT(*) FROM `geobb_posts` WHERE `topic_id` = {$_GET['topic']}");
+	$posts = $db->getOne("SELECT COUNT(*) FROM `geobb_posts` WHERE `topic_id` = ".intval($_GET['topic']));
 
-	$perpage = ($forrom == 6 || $forrom == 11)?10:30;
+	$perpage = ($forum_id == 6 || $forum_id == 11)?10:30;
 
 	$hash = $posts % $perpage;
 	$page = floor($posts / $perpage);
-	
+
 	$andwhere = $opt_when?" AND post_time > '$opt_when'":'';
-	
+
 $sql="SELECT *
 FROM `geobb_posts`
 WHERE `topic_id` = {$_GET['topic']} $andwhere
@@ -271,4 +272,3 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 
 $rss->saveFeed($format, $rssfile);
 
-?>

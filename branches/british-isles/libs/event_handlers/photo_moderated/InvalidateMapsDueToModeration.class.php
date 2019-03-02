@@ -40,29 +40,27 @@ class InvalidateMapsDueToModeration extends EventHandler
 	function processEvent(&$event)
 	{
 		$db=&$this->_getDB();
-		
+
 		list($gridimage_id,$updatemaps) = explode(',',$event['event_param']);
-		
+
 		//invalidate any cached maps (on anything except rejecting a pending image)
 		if ($updatemaps) {
 			require_once('geograph/mapmosaic.class.php');
 			$mosaic=new GeographMapMosaic;
 
-			list($x,$y,$user_id) = $db->getRow("select x,y,user_id from gridimage inner join gridsquare using (gridsquare_id) where gridimage_id = $gridimage_id");
-			
+			extract($db->getRow("select x,y,user_id from gridimage inner join gridsquare using (gridsquare_id) where gridimage_id = $gridimage_id"),
+				EXTR_PREFIX_INVALID, 'numeric'); //need to cope with row being either Assoc or Both. Can't assume with be Both. But can assume not Num only.
+
 			$mosaic->expirePosition($x,$y,$user_id);
 		}
-		
+
 		//update placename cached column
 			//we can disable this for now as placename_id is unused
 			//to reable, will need to load up a gridsquare _with_ nateastings (a square created by gridimage)
 		#todo $this->updatePlaceNameId($newsq);
-		
-		
+
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;
 	}
-	
 }
-?>

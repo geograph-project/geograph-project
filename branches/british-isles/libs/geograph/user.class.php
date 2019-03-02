@@ -290,7 +290,7 @@ class GeographUser
 	function getLatestBlogEntry()
 	{
 		$db = $this->_getDB(true);
-		
+
 		$this->blog=$db->GetRow("SELECT blog_id,title,UNIX_TIMESTAMP(created) AS created FROM blog WHERE user_id={$this->user_id} AND approved = 1 AND published < NOW() AND created > DATE_SUB(NOW(),INTERVAL 90 DAY) ORDER BY blog_id DESC");
 
 		if ($this->blog) {
@@ -306,21 +306,24 @@ class GeographUser
 			}
 		}
 	}
-		
-	
+
 	/**
 	* count the number of tickets this user has
 	*/
 	function countTickets()
 	{
 		$db = $this->_getDB(true);
-		
-		list($this->tickets,$this->last_ticket_time)=$db->GetRow("select count(*),unix_timestamp(max(suggested)) from gridimage inner join gridimage_ticket using (gridimage_id) where gridimage.user_id='{$this->user_id}' and status != 'closed'");
+
+		list($this->tickets,$this->last_ticket_time)=
+
+		$row = $db->GetRow("select count(*) as `tickets`,unix_timestamp(max(suggested)) as last_ticket_time from gridimage inner join gridimage_ticket using (gridimage_id) where gridimage.user_id='{$this->user_id}' and status != 'closed'");
+		$this->tickets = $row['tickets'];
+		$this->last_ticket_time = $row['last_ticket_time'];
 		return $this->tickets;
 	}
-	
+
 	/**
-	* register user 
+	* register user
 	* returns true if successful and false if not. Array of
 	* errors returned via $error param
 	*/
