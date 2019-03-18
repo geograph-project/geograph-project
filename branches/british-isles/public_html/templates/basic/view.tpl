@@ -2,6 +2,7 @@
 
 {if $image}
 <div style="float:right; position:relative; width:5em; height:4em;"></div>
+<div style="float:right; position:relative; width:30px; height:33px; margin-right:2px;"></div>
 <div style="float:right; position:relative; width:2.5em; height:1em;"></div>
 <div itemscope itemtype="schema.org/Photograph"><meta itemprop="isFamilyFriendly" content="true"/>
 <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
@@ -55,6 +56,10 @@
 	<div class="interestBox" style="text-align:center; font-size:0.9em">
 		<a href="http://www.geograph.ie/photo/{$image->gridimage_id}" title="View {$image->bigtitle|escape:'html'} on Geograph Ireland">View this photo on Geograph Ireland</a>
 	</div>
+{elseif $prompt}
+	 <div class="interestBox" style="text-align:center; font-size:0.9em">
+		{$prompt}
+	</div>
 {/if}
 
 <div about="{$imageurl}" xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#">
@@ -64,39 +69,6 @@
 	{elseif $user->user_id eq $image->user_id}
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
 	{/if}
-
-  {dynamic}
-    {if $user->registered || !$is_bot}
-
-        <div style="float:left;position:relative;width:30px;height:20px"></div>
-	<div class="interestBox" style="float:right;position:relative;width:20px"><span  id="hideside"></span>
-		<img src="{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side'); if (!loadedBuckets || loadedBuckets.length == 0) jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js', function() {literal}{{/literal} refreshMainList({$image->gridimage_id}); {literal}});{/literal}"/>
-	</div>
-
-	<div style="float:right;position:relative">
-	<div style="position:absolute;left:-210px;top:-20px;width:220px;padding:10px;display:none;text-align:left" id="showside" onmouseout="hide_tree('side')">
-		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
-			<div id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree">I like this image!</a></div>
-			{if $image->comment}
-				<div id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree">I like this description!</a></div>
-			{/if}
-			<br/>
-			<b>Image Buckets</b><br/>
-			{foreach from=$buckets item=item}
-					<label id="{$image->gridimage_id}label{$item|escape:'html'}" for="{$image->gridimage_id}check{$item|escape:'html'}" style="color:gray">
-					<input type=checkbox id="{$image->gridimage_id}check{$item|escape:'html'}" onclick="submitBucket({$image->gridimage_id},'{$item|escape:'html'}',this.checked?1:0,this.value,{if $user->user_id eq $image->user_id}1{else}0{/if});"> {$item|escape:'html'}
-					{if $item == 'CloseCrop'} (was Telephoto){/if}
-					</label><br/>
-
-			{/foreach}<br/>
-			<small>IMPORTANT: Please read the {newwin href="/article/Image-Buckets" title="Article about Buckets" text="Buckets Article"} before picking from this list</small>
-
-		</div>
-	</div>
-	</div>
-
-    {/if}
-  {/dynamic}
 
   <div class="shadow shadow_large" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull(true,true)|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
 
@@ -425,7 +397,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a> &middot;
 
 {if $image_taken}
-	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;taken=%Y-%m-%d"}
+	{assign var="imagetakenurl" value=$image->imagetaken|date_format:"&amp;taken=%Y-%m-%d"}
 {/if}
 
 <span class="nowrap"><img src="{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links?{$imagetakenurl}&amp;title={$image->title|escape:'url'}&amp;id={$image->gridimage_id}"><b>More Links for this image</b></a></span>
@@ -475,6 +447,24 @@ function redrawMainImage() {
 		<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
 		</table>
 	</div>
+
+	<div class="interestBox" style="float:right;position:relative;width:20px;margin-right:2px;"><span  id="hideside"></span>
+		<img src="{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side');"/>
+	</div>
+
+	<div style="float:right;position:relative">
+	<div style="position:absolute;left:-210px;top:-20px;width:220px;padding:10px;display:none;text-align:left" id="showside" onmouseout="hide_tree('side')">
+		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
+			<div id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree">I like this image!</a></div>
+			{if $image->comment}
+				<div id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree">I like this description!</a></div>
+			{/if}
+			<br/>
+			Click link above to signal that you like this image.
+		</div>
+	</div>
+	</div>
+
 	<div style="float:right">
 		[<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}" title="Add this image to your site marked list">Mark</a>]&nbsp;
 	</div>
