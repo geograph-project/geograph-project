@@ -8,7 +8,6 @@
 {assign var="rss_url" value="/content/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 
-<div style="float:right"><a href="./recent.php">Recent</a> <a href="./themes.php?v=1">Common Words</a> <a href="./themes.php?v=2">Clusters</a> <a href="/mapper/collections.php">On a Map</a><sup style=color:red>(new!)</sup> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
 
 
         {if $gridref}
@@ -30,58 +29,33 @@
 {/if}
 {/dynamic}
 
-
-<form action="/content/" method="get" name="theForm">
-
-	<div class="interestBox" style="background-color:#e3e3e3">
-		{if $resultCount}
-			{$shown} of {$resultCount|thousends}
-		{/if}
-		<b>{$title|escape:"html"}</b>
-	</div>
-
-	<div class="interestBox" style="width:200px;font-size:0.8em;float:right;border:1px solid black">
-		Keyword Search:  <input type="submit" value="Find"/> <br/>
-		<input type="text" name="q" id="qs" size="20" {if $q} value="{$q|escape:'html'}"{/if}/><br/>
-		<input type=checkbox name=in value="title" id="in_title" {if $in_title}checked{/if}/><label for="in_title">Search in title only</label>
-
-		<p>Include: <input type=button value="all" onclick="checkall(this.form.elements['scope[]'],true);" style="font-size:0.7em"> <input type=button value="none" onclick="checkall(this.form.elements['scope[]'],false);" style="font-size:0.7em"><br/>
-		<input type=checkbox name=scope[] value="article" onclick="clicked()" {if $scope_article}checked{/if}/><a href="/article/" style="background-color:#{$colours.article}">Articles</a> {if $counts[4]}[{$counts[4]}]{/if}<br/>
-		<input type=checkbox name=scope[] value="gallery" onclick="clicked()" {if $scope_gallery}checked{/if}/><a href="/gallery/" style="background-color:#{$colours.gallery}">Galleries</a> {if $counts.5}[{$counts.5}]{/if}<br/>
-		{if $enable_forums && $user->registered}
-			<input type=checkbox name=scope[] value="themed" onclick="clicked()" {if $scope_themed}checked{/if}/><a href="/discuss/index.php?action=vtopic&amp;forum=6" style="background-color:#{$colours.themed}">Themed Topics</a> {if $counts.5}[{$counts.5}]{/if}<br/>
-		{/if}
-		<input type=checkbox name=scope[] value="blog" onclick="clicked()" {if $scope_blog}checked{/if}/><a href="/blog/" style="background-color:#{$colours.blog}">Blog Entries</a> {if $counts.2}[{$counts.2}]{/if}<br/>
-		<input type=checkbox name=scope[] value="snippet" onclick="clicked()" {if $scope_snippet}checked{/if}/><a href="/snippets.php" style="background-color:#{$colours.snippet}">Shared Descriptions</a> {if $counts.9}[{$counts.9}]{/if}<br/>
-		<input type=checkbox name=scope[] value="trip" onclick="clicked()" {if $scope_trip}checked{/if}/><a href="http://www.geograph.org.uk/geotrips/" title="Trip reports based on Geograph pictures and a GPS track log" style="background-color:#{$colours.trip}">Geo-Trips</a> {if $counts.1}[{$counts.1}]{/if}<br/>
-		<input type=checkbox name=scope[] value="user" onclick="clicked()" {if $scope_user}checked{/if}/><a href="/finder/contributors.php" style="background-color:#{$colours.user}">User Profiles</a> {if $counts.10}[{$counts.10}]{/if}<br/>
-		<input type=checkbox name=scope[] value="category" onclick="clicked()" {if $scope_category}checked{/if}/><a href="/stuff/canonical.php?final=1" style="background-color:#{$colours.category}">Categories</a> {if $counts.11}[{$counts.11}]{/if}<br/>
-		<input type=checkbox name=scope[] value="context" onclick="clicked()" {if $scope_context}checked{/if}/><a href="/tags/primary.php" style="background-color:#{$colours.context}">Geographical Context</a> {if $counts.12}[{$counts.12}]{/if}<br/>
-		<input type=checkbox name=scope[] value="other" onclick="clicked()" {if $scope_other}checked{/if}/><span style="background-color:#{$colours.other}">Other {if $counts.14}[{$counts.14}]{/if}</span>
-		<div style="position:relative;float:right;display:none;top:-20px" id="find_button">
-			<input type="submit" value="Update" style="font-size:0.8em"/>
-		</div>
-
-		<p>Order by:<br/>
-		<select name="order" onchange="this.form.submit()">
-			{foreach from=$orders item=name key=key}
-				<option value="{$key}"{if $order eq $key} selected{/if}>{$name}</option>
-			{/foreach}
-		</select></p>
-
-		<hr/>
-		<p>We also have <a href="/tags/">Tags</a> but they not included on this page.</p>
-
-		<p><small><b>Interested in contributing to Collections?</b> See <a href="/article/Content-on-Geograph">this Article</a> for where to do it</small></p>
-	</div>
-	{foreach from=$extra key=name item=value}
-		<input type="hidden" name="{$name}" value="{$value}"/>
-	{/foreach}
-</form>
-
 <style>{literal}
+
+div.tickerbox {
+	padding-bottom:3px;
+}
+div.tickerbox a {
+	background-color:none !important;
+}
+
+input[type=checkbox]:checked + a {
+	--font-weight:bold;
+}
+
+div.columns {
+	position:relative;
+}
+div.sidebar {
+	background-color:#dddddd;
+	position:absolute;
+	top:0;
+	left:0;
+	width:195px;
+}
 ul.content {
+	margin-left:205px;
 	font-family:"Comic Sans MS", Georgia, Verdana, Arial, serif;
+	min-height:380px;
 }
 ul.content b {
 	font-family:Georgia, Verdana, Arial, serif;
@@ -90,7 +64,68 @@ ul.content b {
 {/literal}</style>
 
 
-<ul class="content" style="border:0">
+<form action="/content/" method="get" name="theForm">
+
+	<div class="tabHolder" style="float:right"><a href="/article/Content-on-Geograph" class="tab"><i>Contribute</b> to Collections</i></a></div>
+	<div class="tabHolder">
+                <a class="tabSelected">General Search</a>
+		<a href="./recent.php" class="tab">Recent</a>
+		<a href="./themes.php?v=1" class="tab">Common Words</a> 
+		<a href="./themes.php?v=2" class="tab">Clusters</a>
+		<a href="/mapper/collections.php" class="tab">On a Map</a>
+		 <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a>
+	</div>
+
+	<div class="interestBox">
+		<div style="float:right">Order by: 
+		<select name="order" onchange="this.form.submit()">
+			{foreach from=$orders item=name key=key}
+				<option value="{$key}"{if $order eq $key} selected{/if}>{$name}</option>
+			{/foreach}
+		</select></div>
+
+		Keywords:  
+		<input type="text" name="q" id="qs" size="40" {if $q} value="{$q|escape:'html'}"{/if} placeholder="enter keywords here"/>
+		<input type="submit" value="Search..."/>
+		<span class="nowrap">(<input type=checkbox name=in value="title" id="in_title" {if $in_title}checked{/if}/><label for="in_title">Search in <b>title only</b></label>)</span>
+
+		{foreach from=$extra key=name item=value}
+			<input type="hidden" name="{$name}" value="{$value}"/>
+		{/foreach}
+
+	</div><div class="columns"><div class="sidebar">
+
+		Include:<br> (<a href="#" onclick="checkall(document.theForm.elements['scope[]'],true);return false;">Tick All</a>
+			 <a href="#" onclick="checkall(document.theForm.elements['scope[]'],false);return false;">Untick All</a>)<br/><br>
+
+		<div class="tickerbox">	<input type=checkbox name=scope[] value="article" onclick="clicked()" {if $scope_article}checked{/if}/><a href="/article/">Articles</a> {if $counts[4]}[<a href="#" onclick="return justcheck('article')">{$counts[4]}</a>]{/if}</div>
+		<div class="tickerbox"> <input type=checkbox name=scope[] value="gallery" onclick="clicked()" {if $scope_gallery}checked{/if}/><a href="/gallery/">Galleries</a> {if $counts[5]}[<a href="#" onclick="return justcheck('gallery')">{$counts[5]}</a>]{/if}</div>
+		{if $enable_forums && $user->registered}
+			<div class="tickerbox"> <input type=checkbox name=scope[] value="themed" onclick="clicked()" {if $scope_themed}checked{/if}/><a href="/discuss/index.php?action=vtopic&amp;forum=6">Themed Topics</a> {if $counts[6]}[<a href="#" onclick="return justcheck('themed')">{$counts[6]}</a>]{/if}</div>
+		{/if}
+		<div class="tickerbox"> <input type=checkbox name=scope[] value="blog" onclick="clicked()" {if $scope_blog}checked{/if}/><a href="/blog/">Blog Entries</a> {if $counts[2]}[<a href="#" onclick="return justcheck('blog')">{$counts[2]}</a>]{/if}</div>
+		<div class="tickerbox"> <input type=checkbox name=scope[] value="snippet" onclick="clicked()" {if $scope_snippet}checked{/if}/><a href="/snippets.php">Shared Descriptions</a> {if $counts[9]}[<a href="#" onclick="return justcheck('snippet')">{$counts[9]}</a>]{/if}</div>
+		<div class="tickerbox"> <input type=checkbox name=scope[] value="trip" onclick="clicked()" {if $scope_trip}checked{/if}/><a href="http://www.geograph.org.uk/geotrips/" title="Trip reports based on Geograph pictures and a GPS track log">Geo-Trips</a> {if $counts[1]}[<a href="#" onclick="return justcheck('trip')">{$counts[1]}</a>]{/if}</div>
+		<div class="tickerbox"> <input type=checkbox name=scope[] value="user" onclick="clicked()" {if $scope_user}checked{/if}/><a href="/finder/contributors.php">User Profiles</a> {if $counts[10]}[<a href="#" onclick="return justcheck('user')">{$counts[10]}</a>]{/if}</div>
+		<div class="tickerbox"> <input type=checkbox name=scope[] value="category" onclick="clicked()" {if $scope_category}checked{/if}/><a href="/stuff/canonical.php?final=1">Categories</a> {if $counts[11]}[<a href="#" onclick="return justcheck('category')">{$counts[11]}</a>]{/if}</div>
+		<div class="tickerbox"> <input type=checkbox name=scope[] value="context" onclick="clicked()" {if $scope_context}checked{/if}/><a href="/tags/primary.php">Geographical Context</a> {if $counts[12]}[<a href="#" onclick="return justcheck('context')">{$counts[12]}</a>]{/if}</div>
+		<div class="tickerbox"> <input type=checkbox name=scope[] value="cluster" onclick="clicked()" {if $scope_cluster}checked{/if}/>Photo Clusters</a> {if $counts[16]}[<a href="#" onclick="return justcheck('cluster')">{$counts[16]}</a>]{/if}</div>
+		<br style=clear:both>
+
+		<p><small><b>Interested in contributing to Collections?</b> See <a href="/article/Content-on-Geograph">this Article</a> for where to do it</small></p>
+
+</div>
+
+
+<ul class="content">
+
+	<p>
+		{if $resultCount}
+			{$shown} of {$resultCount|thousends}
+		{/if}
+		<b>{$title|escape:"html"}</b>
+	</p>
+
 {foreach from=$list item=item}
 
 	<li style="border:0; background-color:{cycle values="#e9e9e9,#f0f0f0"}">
@@ -136,6 +171,10 @@ ul.content b {
 {/foreach}
 
 </ul>
+</div>
+
+</form>
+
 
 <div style="margin-top:0px">
 	{if $pagesString}
@@ -155,10 +194,17 @@ function checkall(ele,result) {
 	for (q=ele.length-1;q>=0;q--) {
 		ele[q].checked = result;
 	}
-	document.getElementById("find_button").style.display='';
+}
+function justcheck(value) {
+	var ele = document.theForm.elements['scope[]'];
+	for (q=ele.length-1;q>=0;q--) {
+                ele[q].checked = (ele[q].value == value);
+        }
+	document.theForm.submit();
+	return false;
 }
 function clicked() {
-	document.getElementById("find_button").style.display='';
+	//document.getElementById("find_button").style.display='';
 }
 {/literal}</script>
 
