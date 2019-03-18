@@ -36,7 +36,7 @@ $(function() {
 					$.each(data.correction, function(key,value) {
 						$('#correction_prompt').append('&middot; Did you mean: <b></b>?').css({'font-style':'italic'});;
 						$('#correction_prompt b').append(
-							$('<a>').attr('href','/finder/of-new.php?q='+urlplus(key)).text(key)
+							$('<a>').attr('href','/of/'+urlplus(key)).text(key)
 						);
 						if (value > 0) {
 							$('#correction_prompt').append(' (about '+parseInt(value,10)+' images)');
@@ -48,7 +48,7 @@ $(function() {
 					$.each(data.suggestions, function(key,value) {
 						$('#alternates').append(
 							$("<span class=nowrap>&middot; </span>").append(
-								$('<a>').attr('href','/finder/of-new.php?q='+urlplus(value['query'])).text(value['query']).attr('rel','nofollow')
+								$('<a>').attr('href','/of/'+urlplus(value['query'])).text(value['query']).attr('rel','nofollow')
 							).append(' (about '+parseInt(value['total_found'],10)+' images)')
 						).append('  ');
 					});
