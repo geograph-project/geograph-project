@@ -8,7 +8,7 @@
 {assign var="rss_url" value="/content/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 
-<div style="float:right"><a href="./recent.php">Recent</a> <a href="./themes.php?v=1">Common Words</a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
+<div style="float:right"><a href="./recent.php">Recent</a> <a href="./themes.php?v=1">Common Words</a> <a href="./themes.php?v=2">Clusters</a> <a href="/mapper/collections.php">On a Map</a><sup style=color:red>(new!)</sup> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
 
 
         {if $gridref}
@@ -46,20 +46,18 @@
 		<input type=checkbox name=in value="title" id="in_title" {if $in_title}checked{/if}/><label for="in_title">Search in title only</label>
 
 		<p>Include: <input type=button value="all" onclick="checkall(this.form.elements['scope[]'],true);" style="font-size:0.7em"> <input type=button value="none" onclick="checkall(this.form.elements['scope[]'],false);" style="font-size:0.7em"><br/>
-		<input type=checkbox name=scope[] value="article" onclick="clicked()" {if $scope_article}checked{/if}/><a href="/article/" style="background-color:#{$colours.article}">Articles</a><br/>
-		<input type=checkbox name=scope[] value="gallery" onclick="clicked()" {if $scope_gallery}checked{/if}/><a href="/gallery/" style="background-color:#{$colours.gallery}">Galleries</a><br/>
+		<input type=checkbox name=scope[] value="article" onclick="clicked()" {if $scope_article}checked{/if}/><a href="/article/" style="background-color:#{$colours.article}">Articles</a> {if $counts[4]}[{$counts[4]}]{/if}<br/>
+		<input type=checkbox name=scope[] value="gallery" onclick="clicked()" {if $scope_gallery}checked{/if}/><a href="/gallery/" style="background-color:#{$colours.gallery}">Galleries</a> {if $counts.5}[{$counts.5}]{/if}<br/>
 		{if $enable_forums && $user->registered}
-			<input type=checkbox name=scope[] value="themed" onclick="clicked()" {if $scope_themed}checked{/if}/><a href="/discuss/index.php?action=vtopic&amp;forum=6" style="background-color:#{$colours.themed}">Themed Topics</a><br/>
+			<input type=checkbox name=scope[] value="themed" onclick="clicked()" {if $scope_themed}checked{/if}/><a href="/discuss/index.php?action=vtopic&amp;forum=6" style="background-color:#{$colours.themed}">Themed Topics</a> {if $counts.5}[{$counts.5}]{/if}<br/>
 		{/if}
-		<input type=checkbox name=scope[] value="blog" onclick="clicked()" {if $scope_blog}checked{/if}/><a href="/blog/" style="background-color:#{$colours.blog}">Blog Entries</a><br/>
-		<input type=checkbox name=scope[] value="help" onclick="clicked()" {if $scope_help}checked{/if}/><a href="/content/documentation.php" style="background-color:#{$colours.help}">Help Documents</a><br/>
-		<input type=checkbox name=scope[] value="snippet" onclick="clicked()" {if $scope_snippet}checked{/if}/><a href="/snippets.php" style="background-color:#{$colours.snippet}">Shared Descriptions</a><br/>
-		<input type=checkbox name=scope[] value="trip" onclick="clicked()" {if $scope_trip}checked{/if}/><a href="http://www.geograph.org.uk/geotrips/" title="Trip reports based on Geograph pictures and a GPS track log" style="background-color:#{$colours.trip}">Geo-Trips</a><br/>
-		<!--input type=checkbox name=scope[] value="portal" onclick="clicked()" {if $scope_portal}checked{/if}/><span style="background-color:#{$colours.portal}">{external href="http://www.geographs.org/portals/" text="Portals"}</span> <small style="color:red">Experimental</small><br/-->
-		<input type=checkbox name=scope[] value="user" onclick="clicked()" {if $scope_user}checked{/if}/><a href="/finder/contributors.php" style="background-color:#{$colours.user}">User Profiles</a><br/>
-		<input type=checkbox name=scope[] value="category" onclick="clicked()" {if $scope_category}checked{/if}/><a href="/stuff/canonical.php?final=1" style="background-color:#{$colours.category}">Categories</a><br/>
-		<input type=checkbox name=scope[] value="context" onclick="clicked()" {if $scope_context}checked{/if}/><a href="/tags/primary.php" style="background-color:#{$colours.context}">Geographical Context</a><br/>
-		<input type=checkbox name=scope[] value="other" onclick="clicked()" {if $scope_other}checked{/if}/><span style="background-color:#{$colours.other}">Other</span>
+		<input type=checkbox name=scope[] value="blog" onclick="clicked()" {if $scope_blog}checked{/if}/><a href="/blog/" style="background-color:#{$colours.blog}">Blog Entries</a> {if $counts.2}[{$counts.2}]{/if}<br/>
+		<input type=checkbox name=scope[] value="snippet" onclick="clicked()" {if $scope_snippet}checked{/if}/><a href="/snippets.php" style="background-color:#{$colours.snippet}">Shared Descriptions</a> {if $counts.9}[{$counts.9}]{/if}<br/>
+		<input type=checkbox name=scope[] value="trip" onclick="clicked()" {if $scope_trip}checked{/if}/><a href="http://www.geograph.org.uk/geotrips/" title="Trip reports based on Geograph pictures and a GPS track log" style="background-color:#{$colours.trip}">Geo-Trips</a> {if $counts.1}[{$counts.1}]{/if}<br/>
+		<input type=checkbox name=scope[] value="user" onclick="clicked()" {if $scope_user}checked{/if}/><a href="/finder/contributors.php" style="background-color:#{$colours.user}">User Profiles</a> {if $counts.10}[{$counts.10}]{/if}<br/>
+		<input type=checkbox name=scope[] value="category" onclick="clicked()" {if $scope_category}checked{/if}/><a href="/stuff/canonical.php?final=1" style="background-color:#{$colours.category}">Categories</a> {if $counts.11}[{$counts.11}]{/if}<br/>
+		<input type=checkbox name=scope[] value="context" onclick="clicked()" {if $scope_context}checked{/if}/><a href="/tags/primary.php" style="background-color:#{$colours.context}">Geographical Context</a> {if $counts.12}[{$counts.12}]{/if}<br/>
+		<input type=checkbox name=scope[] value="other" onclick="clicked()" {if $scope_other}checked{/if}/><span style="background-color:#{$colours.other}">Other {if $counts.14}[{$counts.14}]{/if}</span>
 		<div style="position:relative;float:right;display:none;top:-20px" id="find_button">
 			<input type="submit" value="Update" style="font-size:0.8em"/>
 		</div>
@@ -114,7 +112,9 @@ ul.content b {
 	{assign var="source" value=$item.source}
 	<small><small style="background-color:#{$colours.$source}">{$sources.$source}</small><small style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
 	{if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</small></small>
-	{if $item.extract}
+	{if $item.excerpt}
+		<div style="font-size:0.7em;">{$item.excerpt}</div>
+	{elseif $item.extract}
 		<div title="{$item.extract|escape:'html'}" style="font-size:0.7em;">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
 	{/if}
 	<div style="clear:left"></div>
