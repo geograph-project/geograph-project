@@ -217,6 +217,10 @@ if (!empty($_GET['q'])) {
 }
 
 
+if (!empty($_SERVER['HTTP_ORIGIN'])
+	&& preg_match('/^https?:\/\/(www|schools)\.geograph\.(org\.uk|ie)\.?$/',$_SERVER['HTTP_ORIGIN'])) { //can be spoofed, but SOME protection!
 
+	header('Access-Control-Allow-Origin: *'); //although now this allows everyone to access it!
+}
 
 outputJSON($results);

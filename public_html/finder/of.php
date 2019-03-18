@@ -26,10 +26,19 @@
 
 require_once('geograph/global.inc.php');
 
+#header("HTTP/1.0 503 Unavailable");
+#$smarty = new GeographPage;
+#
+#if (!empty($_GET['q']))
+#	$smarty->assign('q',$_GET['q']);
+#
+#$smarty->display("sample8_unavailable.tpl");
+#exit;
+
 #########################################
 # redirect for non JS clients
 
-if (strpos($_SERVER['REQUEST_URI'],'/finder/of.php') === 0) {
+if (basename($_SERVER['PHP_SELF']) == 'of.php' && strpos($_SERVER['REQUEST_URI'],'/finder/of.php') === 0) {
         header("HTTP/1.0 301 Moved Permanently");
         header("Status: 301 Moved Permanently");
 
@@ -123,13 +132,16 @@ if (!empty($_GET['q'])) {
 	if ($memcache->valid) {
 		$mkey = md5("#".trim($sphinx->q).$_SERVER['HTTP_HOST']).isset($_GET['redir']).$src;
 		if (empty($_GET['refresh'])) {
-			$str =& $memcache->name_get('of',$mkey);
+			$str =& $memcache->name_get('of-new',$mkey);
 			if (!empty($str)) {
 				if ($CONF['PROTOCOL'] == "https://") {
 					//it may be a http:// page cached!?!
 					$str = str_replace('http://',$CONF['PROTOCOL'],$str);
 				}
 				print $str;
+
+				print "<hr><p style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick=\"jQl.loadjQ('/js/search-feedback.js');return false\">Please take this short survey</a>.</p>";
+
 				$smarty->display('_std_end.tpl');
 				exit;
 			}
@@ -143,23 +155,6 @@ if (!empty($_GET['q'])) {
 		$domains .= "+OR+site:geograph.org.uk";
 	else
 		print "<div class=interestBox>This page only shows images from Ireland - Great Britain is automatically excluded.</div>";
-
-	$remotes = parallel_get_contents(array(
-		0=>"http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1",
-		//1=>"http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=$qu+$domains&userip=".getRemoteIP(),
-		2=>"http://suggestqueries.google.com/complete/search?output=toolbar&hl=en&q=$qu"
-	));
-//if many words? "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20contentanalysis.analyze%20where%20text%3D'london+bridge'%3B&diagnostics=true&format=json"
-
-
-
-	foreach ($remotes as $idx => $remote) {
-		if (strlen($remote) > 40 && $idx != 2) { //awkward, but 2 is not json!
-			list($header,$body) = explode("\n\n",str_replace("\r",'',$remote),2);
-        	        $decode[$idx] = json_decode($body);
-			unset($remotes[$idx]);//save some memory, ha!
-	        }
-	}
 
 } else {
 	$smarty->display('_std_begin.tpl');
@@ -190,48 +185,14 @@ if (!empty($_GET['q'])) {
 		<a href="/finder/multi2.php?q=<? echo $qu; ?>">Others</a>
 	</div>
 	<? } ?>
-	Images of: <input type=search name=q value="<? echo $qh; ?>" size=40><input type=submit value=go><br>
+	Images of: <input type=search name=q value="<? echo $qh; ?>" size=40 id="mainquery"><input type=submit value=go><br>
 <?
 
 #########################################
 # display the location results dropdown, for directing to near page.
 
 if (!empty($_GET['q'])) {
-
-	if (!empty($decode[0])) {
-		if ($decode[0]->total_found == 1) {
-			$object = $decode[0]->items[0];
-			$object->name = utf8_decode($object->name);
-			if (strpos($object->name,$object->gr) === false)
-                                 $object->name .= "/{$object->gr}";
-			if (strpos($object->name,'Grid Reference') === 0)
-				$h = str_replace('/','/ <b>',htmlentities2($object->name)).'</b>';
-			else
-				$h = '<b>'.str_replace('/','</b> /',htmlentities2($object->name));
-                        print "Or view images <i>near</i> <a href=\"/near/".urlencode2($object->name)."\">$h</a>";
-
-		} else if ($decode[0]->total_found > 0) {
-			$prefixMatch = 0;
-			print "Or view images <i>near</i> <select onchange=\"location.href = '/near/'+encodeURI(this.value);\"><option value=''>Choose Location...</option>";
-			foreach ($decode[0]->items as $object) {
-				$object->name = utf8_decode($object->name);
-				if (strpos(strtolower($object->name),strtolower($_GET['q'])) === 0)
-					$prefixMatch++;
-				if (strpos($object->name,$object->gr) === false)
-                                	$object->name .= "/{$object->gr}";
-                                printf('<option value="%s"%s>%s</option>', $val = $object->name, ($gr == $object->gr)?' selected':'',
-                                        preg_replace('/\/([A-Z]{1,2}\d+)/',' &middot; $1',$object->name).($object->localities?", ".$object->localities:''));
-			}
-
-			print '<optgroup></optgroup>';
-			if (!empty($decode[0]->query_info))
-				printf('<optgroup label="%s"></optgroup>', $decode[0]->query_info);
-			if (!empty($decode[0]->copyright))
-				printf('<optgroup label="%s"></optgroup>', $decode[0]->copyright);
-			print "</select> ({$decode[0]->total_found})";
-		}
-	}
-
+	print "<div id=\"location_prompt\"></div>";  $need_client = true;
 }
 
 #########################################
@@ -240,6 +201,7 @@ if (!empty($_GET['q'])) {
 
 </div>
 </form>
+<div id="correction_prompt"></div>
 <?
 
 
@@ -336,7 +298,7 @@ if (!empty($_GET['q'])) {
 #########################################
 # special handler to catch entered id numbers
 
-		if (empty($words) && preg_match_all('/\b(\d{2,})\b/',$_GET['q'],$m) && !preg_match("/^\s*([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\s*$/",$_GET['q'])) {
+		if (empty($words) && preg_match_all('/(?<!:)\b(\d{2,})\b/',$_GET['q'],$m) && !preg_match("/^\s*([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\s*$/",$_GET['q'])) {
 			$rows['single'] = $sph->getAll($sql = "
                                 select id,realname,user_id,title,grid_reference
                                 from sample8
@@ -344,69 +306,10 @@ if (!empty($_GET['q'])) {
 
 			if (!empty($_GET['d']))
 				print $sql;
-			print "<p>Includings images with ID(s): ".implode(', ',$m[1]).".</p>";
-		}
-
-#########################################
-# retreive a small number of high scoring images
-
-		if (empty($_GET['sort'])) {
-			$rows['score'] = $sph->getAll($sql = "
-        	                select id,realname,user_id,title,grid_reference
-                	        from sample8
-                        	where $where
-	                        order by score desc
-        	                limit 8
-				option ranker=none, max_query_time=800");
-
-			if (!empty($rows['score']))
-				$data = $sph->getAssoc("SHOW META");
-
-			if (empty($rows['score']) && empty($rows['single']) && preg_match('/\s\w+\s+\w/',$_GET['q'])) {
-
-				$idx = count($decode);
-				$body = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=$qu&key={$CONF['google_maps_api3_server']}&region=uk");
-				$decode[$idx] = json_decode($body);
-
-				if ($decode[$idx] && $decode[$idx]->results && $decode[$idx]->status == 'OK') {
-					$r = reset($decode[$idx]->results);
-					$coord = $r->geometry->location->lat.','.$r->geometry->location->lng;
-					print "<div style=\"float:right\"><a href=\"/near/$coord\"><img src=\"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid|$coord&zoom=13&key={$CONF['google_maps_api3_key']}&size=250x120&maptype=terrain\"></a> ";
-					print "<a href=\"/near/$coord\"><img src=\"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid|$coord&zoom=7&key={$CONF['google_maps_api3_key']}&size=250x120&maptype=terrain\"></a></div>";
-
-					print "Looks like you might have been entering an address? If you searching for '";
-					print "<a href=\"/near/$coord\">".htmlentities2($r->formatted_address)."</a>";
-					print "'. Click the map on the right to view images near that location.";
-					print "<hr style=\"clear:both\"/>";
-				}
-
-				print "<i>No results found for '".htmlentities2($_GET['q'])."', showing results containing only <b>some of the words</b>...</i><br/>";
-				$words = $_GET['q'];
-	                        $words = str_replace('_SEP_','',$words);
-        	                $words = trim(preg_replace('/[^\w]+/',' ',$words));
-                	        $where = "match(".$sph->Quote('"'.$words.'"/0.5').")";
+			if (!empty($rows['single'])) {
+				$s = (count($rows['single'])>1)?'s':'';
+				print "<p><i>Including image$s with ID$s: ".implode(', ',$m[1]).".</i></p>";
 			}
-		}
-
-#########################################
-# get 4 results from Google Images!
-
-		if (!empty($decode[1])) {
-			$ids = array();
-			foreach ($decode[1]->responseData->results as $result) {
-				if (preg_match('/photo\/(\d+)/',$result->originalContextUrl,$m)) {
-					$ids[] = $m[1];
-				} elseif (preg_match('/\/\d{2}\/(\d{6,7})_/',$result->url,$m)) {
-					$ids[] = $m[1];
-                                }
-			}
-			if (!empty($ids))
-				$rows['google'] = $sph->getAll($sql = "
-                        			select id,realname,user_id,title,grid_reference
-		                        	from sample8
-	                		        where id IN(".implode(',',$ids).")
-			                        order by score desc
-                			        limit ".count($ids) );
 		}
 
 #########################################
@@ -430,6 +333,9 @@ if (!empty($_GET['q'])) {
 			$option = ", ranker=expr('sum((word_count+(lcs-1)*max_lcs)*user_weight)')";
 		}
 
+restart:
+
+		$rank = 'floor(ln(weight()*weight()))';
 		$order = "w2ln desc, combined asc";
 		$columns = ", sequence / baysian as combined";
 		if (!empty($_GET['sort']) && $_GET['sort'] == 'recent') {
@@ -442,22 +348,56 @@ if (!empty($_GET['q'])) {
 			$columns = "";
 		}
                 $rows['combined'] = $sph->getAll($sql = "
-                        select id,realname,user_id,title,grid_reference, integer(ln(weight())) as w2ln $columns
+                        select id,realname,user_id,title,grid_reference, $rank as w2ln $columns
                         from sample8
                         where $where
                         order by $order
                         limit {$limit}
 			option field_weights=(place=8,county=6,country=4,title=12,tags=10,imageclass=5)
-			, cutoff=1000000 $ranker ");
+			, cutoff=1000000 $option ");
 
 if (!empty($_GET['d']))
 	print $sql;
 
-#########################################
-# merge all the results into one
-
 		if (empty($data))
 			$data = $sph->getAssoc("SHOW META");
+
+#########################################
+# retreive a small number of high scoring images
+
+		if (empty($_GET['sort'])) {
+			$rows['score'] = $sph->getAll($sql = "
+        	                select id,realname,user_id,title,grid_reference, $rank as w2ln $columns
+                	        from sample8
+                        	where $where
+	                        order by score desc
+        	                limit 8
+				option field_weights=(place=8,county=6,country=4,title=12,tags=10,imageclass=5)
+				, max_query_time=800 $option");
+
+			if (empty($data) && !empty($rows['score']))
+				$data = $sph->getAssoc("SHOW META");
+
+#########################################
+# in case of no matches retry as a quorum search
+
+			if (empty($restarted) && empty($rows['score']) && empty($rows['single']) && preg_match('/\s\w+\s+\w/',$_GET['q'])) {
+
+				print "<div id=\"geocode_results\"></div>";  $need_client = true;
+
+				print "<i>No results found for '".htmlentities($_GET['q'])."', showing results containing only <b>some of the words</b>...</i><br/>";
+				$words = $_GET['q'];
+	                        $words = str_replace('_SEP_','',$words);
+        	                $words = trim(preg_replace('/[^\w]+/',' ',$words));
+                	        $where = "match(".$sph->Quote('"'.$words.'"/0.5').")";
+
+				$restarted = true;
+				goto restart;
+			}
+		}
+
+#########################################
+# merge all the results into one
 
 		$final = array();
 		foreach ($rows as $idx => $arr) {
@@ -469,20 +409,24 @@ if (!empty($_GET['d']))
 		}
 
 #########################################
+# some random testing stuff
 
         print "<br style=clear:both>";
 
-if (!empty($_GET['d'])) {
-	print "<p><a href=\"/search.php?displayclass=map&marked=1&markedImages=".implode(',',array_keys($final))."\">View on Map</a></p>";
-}
+	if (!empty($_GET['d'])) {
+		print "<p><a href=\"/search.php?displayclass=map&marked=1&markedImages=".implode(',',array_keys($final))."\">View on Map</a></p>";
+	}
 
-if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
-	$ext = '';
-	if (!empty($data['total_found']) && $data['total_found'] > count($final))
-		$ext = " (of ".number_format($data['total_found'],0)." total)";
-	print "<h2>".count($final)."$ext Photos of ".htmlentities2($m[1])."</h2>";
-}
+	if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
+		$ext = '';
+		if (!empty($data['total_found']) && $data['total_found'] > count($final))
+			$ext = " (of ".number_format($data['total_found'],0)." total)";
+		print "<h2>".count($final)."$ext Photos of ".htmlentities2($m[1])."</h2>";
+	}
 
+	if (!empty($data['total_found'])) {
+		print "<input id=total_found type=hidden value=".intval($data['total_found']).">";
+	}
 
 #########################################
 # display normal thumbnail results!
@@ -529,57 +473,16 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 #########################################
 # handler for no results
 
-	if (empty($final) && !empty($_GET['place']) && !empty($decode[0]) && $decode[0]->total_found > 1) {
+	if (empty($final) && !empty($_GET['place'])) {
 		print "<p>No exact place found. ";
 
-			print "Can try viewing images <i>near</i>: <ul>";
-			foreach ($decode[0]->items as $object) {
-				//the loop above (the dropdown), will have already decoded it!
-				//$object->name = utf8_decode($object->name);
-				if (strpos($object->name,$object->gr) === false)
-                                	$object->name .= "/{$object->gr}";
-                                printf('<li><a href="/%s/%s">%s</a> %s</li>',
-					(!empty($object->localities) && strpos($object->name,'Postcode') === FALSE && strpos($object->name,'Grid Refe') === FALSE)?'place':'near',
-					urlencode2($object->name),
-                                        str_replace('/',' &middot; ',$object->name),$object->localities);
-			}
-
-			if (!empty($decode[0]->query_info))
-				printf('<li><i>%s</i></li>', $decode[0]->query_info);
-			if (!empty($decode[0]->copyright))
-				printf('<li>%s</li>', $decode[0]->copyright);
-			print "</ul> ({$decode[0]->total_found})";
-
+		print "<div id=\"location_list\"></div>"; $need_client = true;
 
 	} elseif (empty($final) || count($final) == count(@$rows['single'])) {
 		print "<p>No keywords Results found. ";
-
-        	if (!empty($decode[0]) && $decode[0]->total_found > 0) {
-                        $object = $decode[0]->items[0];
-			$object->name = utf8_decode($object->name);
-			if ($decode[0]->total_found == 1 && !isset($_GET['redir']))
-				print " Redirecting to a location based search... <script>location.href='/near/".urlencode2($object->name)."';</script>";
-                        if (strpos($object->name,$object->gr) === false && $decode[0]->total_found > 1)
-                                $object->name .= "/{$object->gr}";
-			print "Or try a <a href=\"/near/".urlencode2($object->name)."\">search for images <i>near</i> <b>".htmlentities2($object->name)."</b></a>.";
-		}
+		print "<span id=\"location_link\"></span>";
 		print "</p>";
-
-		if (!empty($remotes[2])) {
-			if (preg_match_all('/ data="(.+?)"/',$remotes[2],$m)) {
-				$bits = array();
-				foreach ($m[1] as $item) {
-					$sph->query("SELECT id FROM sample8 WHERE MATCH(".$sph->quote($item).") LIMIT 0");
-					$data = $sph->getAssoc("SHOW META");
-					if (!empty($data['total_found'])) {
-						$h = ($data['total_found'] > 100)?"<b>".htmlentities2($item)."</b>":htmlentities2($item);
-						$bits[] = "<span class=nowrap><a href=\"/of/".urlencode($item)."\" rel=\"nofollow\">$h</a> (~{$data['total_found']} images)</span>";
-					}
-				}
-				if (!empty($bits))
-					print "<p>Alternative Queries: ".implode(" &middot; ",$bits)."</p>";
-			}
-		}
+		print "<div id=\"alternates\"></div>";  $need_client = true;
 
 		if (isset($_GET['redir'])) { //ie redir=false
 		        $square=new GridSquare;
@@ -592,7 +495,7 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 				}
 			}
 		}
-}
+	}
 
 #########################################
 
@@ -607,7 +510,7 @@ if (strlen($_GET['q']) > 10 && preg_match('/\b(19|20|21)(\d{2})\b/',$_GET['q'],$
 #########################################
 # footer links
 
-if (!empty($final) && empty($words) && count($final) != count(@$rows['google']) && count($final) != count(@$rows['single'])) {
+if (!empty($final) && empty($words) && count($final) != count(@$rows['single'])) {
 
 	print "<br><div class=interestBox style=color:white;background-color:gray;font-size:1.05em>";
 	if (!empty($data['total_found']) && $data['total_found'] > 10) {
@@ -616,8 +519,21 @@ if (!empty($final) && empty($words) && count($final) != count(@$rows['google']) 
 		print "About <b>".number_format($data['total_found'])."</b> results. ";
 	}
 
-	print 'Explore these images more: <b><a href="/browser/#!/q='.$qu.'" style=color:yellow>in the Browser</a> or ';
-	print '<a href="/search.php?do=1&searchtext='.(empty($words)?'':'~').$qu.'" style=color:yellow>in the standard search</a></b> (may return slightly different results).';
+	$bits = array();
+	if (!empty($_GET['place']))
+		$bits[] = '<a href="/browser/#!/place+%22'.$qu.'%22" style=color:yellow>in the Browser</a>';
+	elseif (!preg_match('/\b(user_id|snippet_id|snippet|snippet_title|month|points|viewsquare|grid):.+/',$_GET['q'])) //gi_stemmed fields!, not in new search
+		$bits[] = '<a href="/browser/#!/q='.$qu.'" style=color:yellow>in the Browser</a>';
+
+	if (!preg_match('/\b(decade|monthname|user|contexts|subjects|types|buckets|groups|terms|snippets|wikis|distance|direction|format|place|county|country|hash|larger|landcover):.+/',$_GET['q'])) //sample8 fields!, not in old search
+		$bits[] = '<a href="/search.php?do=1&searchtext='.(empty($words)?'':'~').$qu.'" style=color:yellow>in the standard search</a>';
+
+	if (!empty($bits)) {
+		print 'Explore these images more: <b>'.implode('</b> or <b>',$bits)."</b>";
+		if (count($bits) > 1) {
+			print " (may return slightly different results).";
+		}
+	}
 	print "</div>";
 
 	$suggestions = array();
@@ -625,24 +541,15 @@ if (!empty($final) && empty($words) && count($final) != count(@$rows['google']) 
 		if (!empty($tag) && strpos($_GET['q'],'[') !== 0) {
 			$suggestions[] = '<a href="/of/['.urlencode2($tag['tagtext']).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities2($tag['tagtext']).']</a>';
 		}
-		if (strpos($_GET['q'],'"') === FALSE && strpos($_GET['q'],' ') > 3)
+		if (strpos($_GET['q'],'"') === FALSE && strpos($_GET['q'],' ') > 3 && strpos($_GET['q'],':') === FALSE)
 			$suggestions[] = "<a href=\"/of/%22$qu2%22\" rel=\"nofollow\">Images with <i>phrase</i> &quot;$qh&quot</a>";
-		if (strpos($_GET['q'],':') === FALSE && !empty($decode[0]) && $decode[0]->total_found > 0)
+		if (strpos($_GET['q'],':') === FALSE) //!empty($decode[0]) && $decode[0]->total_found > 0)  -- THIS means was place match //TODO, hide, this and unhine with ajaz?
 			$suggestions[] = "<a href=\"/of/text:$qu2\" rel=\"nofollow\">Pure Keyword Match for '$qh'</a>";
 	}
 	if (!empty($suggestions)) {
 		print "<div class=interestBox>&middot; Too many imprecise results? Try ".implode(' or ',$suggestions)."</div>";
 	}
 
-} elseif (!empty($final) && count($final) == count($rows['google'])) {
-	print "<br/><div class=interestBox>";
-	print '<a href="https://www.google.co.uk/search?q='.$qu.'+site:geograph.org.uk+OR+site:geograph.ie&amp;tbm=isch" target=_blank><b>Explore these images more</b> via Google Images</a>';
-
-	if ($decode[1]->responseData->cursor && $decode[1]->responseData->cursor->estimatedResultCount) {
-		print " (Estimated <b>".intval($decode[1]->responseData->cursor->estimatedResultCount)."</b> Results)";
-	}
-
-	print "</div>";
 } else {
 	print "<hr/>";
 }
@@ -650,30 +557,20 @@ if (!empty($final) && empty($words) && count($final) != count(@$rows['google']) 
 #########################################
 # powered by footer, required by using images search api
 
-if (!empty($decode[1])) {
-	print "<div style=\"text-align:right\">";
-	if (count($final) != count($rows['google']))
-		print "<i>Results in part</i> ";
-	print "Powered by Google</div>";
-}
+print "<div id=\"footer_message\" style=\"text-align:right\"></div>";
 
 #########################################
 # if we have some suggestions may as well display them...
 
-if (!empty($final) && !empty($remotes[2])) {
-	if (preg_match_all('/ data="(.+?)"/',$remotes[2],$m)) {
-		$bits = array();
-		foreach ($m[1] as $item) {
-			if (preg_match('/^'.preg_quote(strtolower($_GET['q']),'/').'\b/',$item)) //skip prefix expansions
-				continue;
-			$sph->query("SELECT id FROM sample8 WHERE MATCH(".$sph->quote($item).") LIMIT 0");
-			$data = $sph->getAssoc("SHOW META");
-			if (!empty($data['total_found']))
-				$bits[] = "<span class=nowrap><a href=\"/of/".urlencode($item)."\" rel=\"nofollow\">".htmlentities2($item)."</a> (~{$data['total_found']} images)</span>";
-		}
-		if (!empty($bits))
-			print "<p>Alternative Queries: ".implode(" &middot; ",$bits)."</p>";
-	}
+if (!empty($_GET['q'])) {
+	print "<div id=\"alternates\"></div>";  $need_client = true;
+}
+
+#########################################
+
+if (!empty($need_client)) { //TODO, could check $src='data-src'??
+//	print "<script src=\"".smarty_modifier_revision("/js/finder.js")."\"></script>";
+	print "<script src=\"/js/finder.js?t=".time()."\"></script>";
 }
 
 #########################################
@@ -681,7 +578,7 @@ if (!empty($final) && !empty($remotes[2])) {
 if ($memcache->valid && $mkey) {
 	$str = ob_get_flush();
 
-	$memcache->name_set('of',$mkey,$str,$memcache->compress,$memcache->period_long);
+	$memcache->name_set('of-new',$mkey,$str,$memcache->compress,$memcache->period_long);
 }
 
 #########################################
@@ -689,46 +586,11 @@ if ($memcache->valid && $mkey) {
 
 if (!empty($USER->registered)) {
 	print "<hr><p>If you looking for different results page, you can <a href=\"/choose-search.php\">choose which search engine to use</a>.</p>";
-	if (false && $CONF['forums']) {
-		print "<p>Having trouble with this page? <a href=\"/discuss/index.php?&action=vthread&forum=12&topic=26439\">Please let us know on the discussion forum</a>,
-		or fill out <a href='https://docs.google.com/forms/d/1EghtKiKGkLbLUJ1gBAMiENNgMChQotBwI3n7XSyw1z0/viewform' target=_blank>Feedback Form</a>, thank you!</p>";
-	}
-} elseif (false) {
-	print "<hr><p>Have feedback on this search? <a href='https://docs.google.com/forms/d/1EghtKiKGkLbLUJ1gBAMiENNgMChQotBwI3n7XSyw1z0/viewform' target=_blank>please let us know</a>!</p>";
 }
-
 
 #########################################
 
-
-if ($src == 'data-src') { //because we need jQuery!
-
-	print "<p id=votediv>Have these results helped you today? Rate these results: ";
-
-	$id = 1;
-	$qstr = "'".urlencode($_GET['q'])."'";
-	$names = array('','Hmm','Below average','So So','Good','Excellent');
-	foreach (range(1,5) as $i) {
-		print "<a href=\"javascript:void(vote_log('of',$qstr,$i));\" title=\"{$names[$i]}\"><img src=\"{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
-	}
-
-	print " (1 no much, 5 very much, <a href=\"/help/voting\">more</a>)</p>";
-?>
-<script>
-function vote_log(action,param,value) {
-   $.ajax({
-      url: '/stuff/record_usage.php',
-      data: {action: action,param: param,value: value},
-      xhrFields: { withCredentials: true }
-   });
-        document.getElementById("votediv").innerHTML = "Thank you!";
-	setTimeout(function() {
-		document.getElementById("votediv").style.display='none';
-	},3000);
-}
-</script>
-<?
-}
+print "<hr><p style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick=\"jQl.loadjQ('/js/search-feedback.js');return false\">Please take this short survey</a>.</p>";
 
 #########################################
 
@@ -793,92 +655,4 @@ function vote_log(action,param,value) {
 	print '<script src="/preview.js.php" type="text/javascript"></script>';
 
 	$smarty->display('_std_end.tpl');
-	exit;
-
-#########################################
-# functions!
-
-//qudos:  http://wezfurlong.org/blog/2005/may/guru-multiplexing/
-function parallel_get_contents($urls, $timeout = 3) {
-
-  $status = $sockets = $strs = $paths = $hosts = array();
-
-  /* Initiate connections to all the hosts simultaneously */
-  foreach ($urls as $id => $url) {
-    $a = parse_url($url);
-    $s = stream_socket_client($a['host'].":80", $errno, $errstr, $timeout,
-        STREAM_CLIENT_ASYNC_CONNECT|STREAM_CLIENT_CONNECT);
-    if ($s) {
-        $sockets[$id] = $s;
-        $status[$id] = "in progress";
-	$strs[$id] = '';
-	$hosts[$id] = $a['host'];
-	$paths[$id] = $a['path'].'?'.$a['query']; //always assume there is a query!
-    } else {
-        $status[$id] = "failed, $errno $errstr";
-    }
-  }
-
-  /* Now, wait for the results to come back in */
-  while (count($sockets)) {
-    $read = $write = $sockets;
-    /* This is the magic function - explained below */
-    $n = stream_select($read, $write, $e = null, $timeout);
-    if ($n > 0) {
-        /* readable sockets either have data for us, or are failed
-         * connection attempts */
-        foreach ($read as $r) {
-            $id = array_search($r, $sockets);
-            $data = fread($r, 8192);
-            if (strlen($data) == 0) {
-                if ($status[$id] == "in progress") {
-                    $status[$id] = "failed to connect";
-                }
-                fclose($r);
-                unset($sockets[$id]);
-            } else {
-                $strs[$id] .= $data;
-            }
-        }
-        /* writeable sockets can accept an HTTP request */
-        foreach ($write as $w) {
-            $id = array_search($w, $sockets);
-
-	    /* first time round, send request */
-            if ($status[$id] == "in progress") {
-
-		if (!is_resource($w)) {
-                                        ob_start();
-                                        print "\n\nHost: ".`hostname`."\n\n";
-					print "GET {$paths[$id]} HTTP/1.0\r\nHost: {$hosts[$id]}\r\nConnection: close\r\n\r\n";
-
-					print_r($status);
-                                        print_r($sockets);
-                                        print_r($read);
-                                        print_r($write);
-                                        print_r($strs);
-                                        print_r($paths);
-                                        print_r($hosts);
-
-                                        $con = ob_get_clean();
-                                        mail('geograph@barryhunter.co.uk','[Geograph OF] failed '.$hosts[$id],$con);
-		}
-
-            	fwrite($w, "GET {$paths[$id]} HTTP/1.0\r\nHost: {$hosts[$id]}\r\nConnection: close\r\n\r\n");
-                $status[$id] = "waiting for response";
-	    }
-        }
-    } else {
-        /* timed out waiting; assume that all hosts associated
-         * with $sockets are faulty */
-        foreach ($sockets as $id => $s) {
-
-            $status[$id] = "timed out " . $status[$id];
-        }
-        break;
-    }
-  }
-  return $strs;
-}
-
 
