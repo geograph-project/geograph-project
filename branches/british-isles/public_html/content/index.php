@@ -26,6 +26,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+pageMustBeHTTPS();
+
 $cacheid = $USER->registered.'.'.$CONF['forums'];
 
 if (empty($_GET['scope']) && !empty( $_SESSION['content_scope'])) {
@@ -33,9 +35,9 @@ if (empty($_GET['scope']) && !empty( $_SESSION['content_scope'])) {
 } 
 if (empty($_GET['scope'])) {
 #	if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
-		$_GET['scope'] = 'article,gallery,help,blog,trip';
+		$_GET['scope'] = 'article,gallery,help,blog,trip,cluster';
 #	} else {
-#		$_GET['scope'] = 'article,gallery,help,blog,trip,themed';
+#		$_GET['scope'] = 'article,gallery,help,blog,trip,cluster,themed';
 #	}
 }
 
@@ -43,7 +45,7 @@ $GET = $_GET;
 unset($GET['refresh']);
 ksort($GET);
 $cacheid .= md5(serialize($GET));
-	
+
 $template = 'content.tpl';
 
 $db = GeographDatabaseConnection(true);
@@ -52,7 +54,7 @@ $data = $db->getRow("show table status like 'content'");
 
 //when this table was modified
 $mtime = strtotime($data['Update_time']);
-	
+
 //can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 customCacheControl($mtime,$cacheid,!($USER->registered));
 
@@ -102,23 +104,24 @@ if (!empty($_GET['scope']) && $_GET['scope'] == 'all') {
 if (!$smarty->is_cached($template, $cacheid)) {
 
 	$extra = $where = array();
-	
+
 	if ($CONF['template']=='archive') {
 		$pageSize = 1000;
 	} else {
 		$pageSize = 25;
 	}
-	
+
 	$extra['order'] = $order;
-		
+
 	if (!empty($_GET['page'])) {
 		$pg = intval($_GET['page']);
 	} else {
 		$pg = 1;
 	}
-		
+
+	$filters = array();
+
 	if (!empty($_GET['scope'])) {
-		$filters = array();
 		if (is_array($_GET['scope'])) {
 			$s = $_GET['scope'];
 		} else {
@@ -138,6 +141,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				case 'category':
 				case 'context':
 				case 'faq':
+				case 'link':
+				case 'cluster':
 				case 'other':
 					$filters['source'][] = $scope;
 					$smarty->assign("scope_".$scope,1);
@@ -186,9 +191,17 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 	} elseif (!empty($_GET['q'])) {
 
+		$filters['atype'] = array(1); //enum('info','document') so 1=info (ie collections!)
+		if (!empty($_GET['docs']) || (is_array($_GET['scope']) && in_array('link',$_GET['scope']) !== FALSE)) {
+			unset($filters['atype']);
+		}
+
                 $_GET['q'] = preg_replace('/\b(not)?(gridref):/','\1grid_reference:',$_GET['q']);
                 $_GET['q'] = preg_replace('/\b(not)?(description):/','\1words:',$_GET['q']);
                 $_GET['q'] = preg_replace('/\b(not)?(name|by):/','\1realname:',$_GET['q']);
+
+if (!empty($_GET['ddd']))
+	print_r($_GET);
 
 		$sphinx = new sphinxwrapper(trim($_GET['q']));
 		$sphinx->pageSize = $pageSize;
@@ -242,6 +255,10 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 			$title = "Collections used near ".htmlentities($sphinx->qclean);
 			$smarty->assign('gridref',$sphinx->qclean);
+
+			$resultCount = count($ids);
+			$numberOfPages =  floor($resultCount/$sphinx->pageSize);
+
 		} else {
 
 			if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
@@ -250,7 +267,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 			if (!empty($filters)) {
 				foreach ($filters as $key => $value) {
-					if (!empty($filters[$key])) {
+					if (!empty($filters[$key]) && $key != 'atype') {
 						$filters[$key] = "(".implode('|',$filters[$key]).")";
 					}
 				}
@@ -271,9 +288,22 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				$sphinx->sort = $sphinx_sort;
 
 			$ids = $sphinx->returnIds($pg,'content_stemmed');
-		}
 
-		$smarty->assign("query_info",str_replace($sphinx->q,$sphinx->qclean,$sphinx->query_info));
+			$smarty->assign("query_info",str_replace($sphinx->q,$sphinx->qclean,$sphinx->query_info));
+			$resultCount = $sphinx->resultCount;
+			$numberOfPages = $sphinx->numberOfPages;
+
+
+			$sphinx->SetGroupBy('asource',SPH_GROUPBY_ATTR);
+			$res = $sphinx->groupByQuery(1,'content_stemmed');
+			$counts = array();
+			if (!empty($res['matches']))
+				foreach ($res['matches'] as $row)
+					$counts[$row['attrs']['asource']] = $row['attrs']['@count'];
+			$smarty->assign_by_ref('counts',$counts);
+			if (!empty($_GET['dd']))
+				var_dump($counts);
+		}
 
 		if (count($ids)) {
 			$where[] = "content_id IN(".join(",",$ids).")";
@@ -283,8 +313,6 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		} else {
 			$where[] = "0";
 		}
-		$resultCount = $sphinx->resultCount;
-		$numberOfPages = $sphinx->numberOfPages;
 
 		$orders['relevance'] = 'Relevance';
 
@@ -330,6 +358,13 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	}
 
 	$datecolumn = ($order == 'created')?'created':'updated';
+	$colextra = '';
+	$having = "having (posts_with_images >= posts_count/2) OR (content.source = 'gallery' AND posts_with_images>1)";
+
+	if (!empty($sphinx) && !empty($_GET['q']) && !empty($sphinx->q)) {
+		$colextra = ',content.words as raw_words';
+		$having = '';
+	}
 
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -337,24 +372,30 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	select content.content_id,content.user_id,url,title,extract,unix_timestamp(replace(content.$datecolumn,'-00','-01')) as $datecolumn,realname,content.source,content.gridimage_id,
 		(content.views+coalesce(article_stat.views,0)+coalesce(topic_views,0)) as views,
 		(content.images+coalesce(article_stat.images,0)+coalesce(count(gridimage_post.seq_id),0)) as images,
-		article_stat.words,coalesce(posts_count,0) as posts_count,coalesce(count(distinct gridimage_post.post_id),0) as posts_with_images
-	from content 
+		article_stat.words,coalesce(posts_count,0) as posts_count,coalesce(count(distinct gridimage_post.post_id),0) as posts_with_images $colextra
+	from content
 		left join user using (user_id)
 		left join article_stat on (content.source = 'article' and foreign_id = article_id)
-		left join geobb_topics on (content.source IN ('gallery','themed') and foreign_id = topic_id) 
+		left join geobb_topics on (content.source IN ('gallery','themed') and foreign_id = topic_id)
 		left join gridimage_post using (topic_id)
 	where $where
-	group by content_id
-	having (posts_with_images >= posts_count/2) OR (content.source = 'gallery' AND posts_with_images>1)
-	order by content.`type` = 'info' desc, $sql_order 
+	group by content_id $having
+	order by content.`type` = 'info' desc, $sql_order
 	limit $limit");
 
-	if (!empty($_GET['debug'])) {
-		print "<pre>$sql</pre>";
+	if (!empty($sphinx) && !empty($_GET['q']) && !empty($sphinx->q)) {
+		$docs = array();
+		foreach ($list as $i => $row)
+			$docs[$i] = strip_tags(implode(' | ',array($row['raw_words'],$row['extract'],$row['title'])));
+		$reply = $sphinx->BuildExcerpts($docs, 'content_stemmed', $sphinx->q, array('limit' => 300, 'around' => 12, 'query_mode' => 1));
 	}
 
 	foreach ($list as $i => $row) {
-		if ($row['gridimage_id']) {
+		if (!empty($reply) && !empty($reply[$i])) {
+			$list[$i]['excerpt'] = $reply[$i];
+			unset($list[$i]['raw_words']); //just bloat!
+		}
+		if (!empty($row['gridimage_id'])) {
 			$list[$i]['image'] = new GridImage;
 			$g_ok = $list[$i]['image']->loadFromId($row['gridimage_id'],true);
 			if ($g_ok && $list[$i]['image']->moderation_status == 'rejected')
@@ -396,19 +437,20 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$colours[$key] = $colours[$idx];
 	}
 	$smarty->assign_by_ref("colours",$colours);
-	
+
 	//these are handled by the page
 	unset($extra['q']);
 	unset($extra['order']);
 	unset($extra['scope']);
 	unset($extra['in']);
+
 	$smarty->assign_by_ref("extra",$extra);
-} 
+}
 
 if ($USER->registered && empty($_SERVER['QUERY_STRING']) && !empty($db)) {
 	$pending = $db->getAll("
 		select title,url
-		from article 
+		from article
 		where approved = 0 and user_id = {$USER->user_id}
 		order by article_id desc");
 	if (!empty($pending)) {
