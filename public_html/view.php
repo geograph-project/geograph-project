@@ -221,50 +221,51 @@ if ($image->isValid())
 	}
 
 	$ref = @parse_url($_SERVER['HTTP_REFERER']);
+	$ref_query = array();
 	if (!empty($ref['query'])) {
-		$ref_query = array();
 		parse_str($ref['query'], $ref_query);
 
 		if (strpos($ref['host'],'images.google.') === 0 && !empty($ref_query['prev'])) {
 			$ref = @parse_url('http://'.$ref['host'].urldecode($ref_query['prev']));
 			parse_str($ref['query'], $ref_query);
 		}
+	} elseif (!empty($_GET['q'])) {
+		$ref = @parse_url($_SERVER['SCRIPT_URI'].'?'.$_SERVER['QUERY_STRING']);
+		parse_str($ref['query'], $ref_query);
 	}
 
-	if (!empty($CONF['sphinx_host']) 
+	if (!empty($CONF['sphinx_host'])
 		&& count($ref_query) > 0
 		&& ( $intersect = array_intersect(array('q','query','qry','search','su','searchfor','s','qs','p','key','buscar','w'),array_keys($ref_query)) )
 		&& ( $key = @array_shift($intersect) )
 		&& !is_numeric($ref_query[$key])
-		&& ($q = trim(preg_replace('/\b(geograph|photo|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',$ref_query[$key] )) )
+		&& ($q = trim(preg_replace('/\b(geograph|photo|photograph|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',$ref_query[$key] )) )
 		&& strlen($q) > 3 ) {
-		
+
 		if ($m[1] == 'prev' && preg_match('/\b(q|query|qry)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$q,$m)) {
 			$q = trim(urldecode($m[2]));
 		}
-		
+
 		$smarty->assign("search_keywords",$q);
-		
+
 		$mkey = $image->grid_reference.' '.$q;
 		$info =& $memcache->name_get('sn',$mkey);
-		
+
 		if (!empty($info)) {
 			list($count,$when) = $info;
-			
+
 			$smarty->assign("search_count",$count);
 		} else {
 			$sphinx = new sphinxwrapper($mkey);
-			
+
 			$sphinx->processQuery();
 
 			$count = $sphinx->countMatches('_images');
-			
 			$smarty->assign("search_count",$count);
-			
+
 			//fails quickly if not using memcached!
 			$info = array($count,time());
 			$memcache->name_set('sn',$mkey,$info,$memcache->compress,$memcache->period_med);
-			
 		}
 	}
 
@@ -273,44 +274,43 @@ if ($image->isValid())
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{
-		if ($CONF['template']!='archive') {
+		//if ($CONF['template']!='archive') {
 			if (empty($db)) {
 				$db = GeographDatabaseConnection(true);
 			}
 
-			$image->hits = $db->getOne("SELECT hits+hits_archive FROM gridimage_log WHERE gridimage_id = {$image->gridimage_id}");
+			$image->hits = $db->getOne("SELECT hits+hits_archive+hits_gallery FROM gridimage_log WHERE gridimage_id = {$image->gridimage_id}");
+		//}
+
+		if ($CONF['template']!='archive' && empty($q) && !empty($db)) {
+			if ($same = $db->getOne("SELECT images from gridimage_duplicate where grid_reference = '{$image->grid_reference}' and title = ".$db->Quote($image->title))) {
+				$url = "/stuff/list.php?title=".urlencode($image->title)."&amp;gridref={$image->grid_reference}";
+				$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title ".htmlentities($image->title)."</a> in this square");
+			} elseif (preg_match('/[^\w]+(\d{1,3})[^\w]$/', $image->title)) {
+				$title = preg_replace('/[^\w]+(\d{1,3})[^\w]$/', ' #', $image->title);
+				if ($same = $db->getOne("SELECT images from gridimage_duplicate where grid_reference = '{$image->grid_reference}' and title = ".$db->Quote($title))) {
+	                                $url = "/stuff/list.php?title=".urlencode($title)."&amp;gridref={$image->grid_reference}";
+                                	$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title ".htmlentities(preg_replace('/ #$/','',$title))."</a> in this square");
+                        	}
+			}
 		}
 
 		$image->assignToSmarty($smarty);
-		
+
 		$image->loadSnippets();
 		$image->loadCollections();
 	} else {
 		$smarty->assign_by_ref("image",$image); //we dont need the full assignToSmarty
 	}
 
-	$buckets = array('Closeup',
-        'CloseCrop', //was telephoto
-        'Wideangle',
-        'Landscape',
-        'Arty',
-        'Informative',
-        'Aerial',
-        'Indoor',
-        'Subterranean',
-        'Gone',
-        'Temporary',
-        'People',
-        'Life',
-	'Transport');
-	$smarty->assign_by_ref('buckets',$buckets);
-
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
 	header("Status: 410 Gone");
+	$template = "static_404.tpl";
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
+	$template = "static_404.tpl";
 }
 
 $smarty->display($template, $cacheid);
