@@ -1,11 +1,78 @@
 {assign var="page_title" value="Moderation"}
+{assign var="extra_meta" value="<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />"}
 {include file="_std_begin.tpl"}
 <script type="text/javascript" src="{"/admin/moderation.js"|revision}"></script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script src="/js/jquery.storage.js"></script>
-{literal}<script type="text/javascript">
+{literal}
+<style>
+@media only screen and (max-width: 1024px)  {
+	#maincontent_block {
+		margin-left:0;
+	}
+}
+
+#maincontent div.photoguide {
+	min-width: 920px;	
+	font-size:0.85em;text-align:left;width:inherit;
+}
+.photoleft {
+	float:left;text-align:right;
+	max-width:45vw;
+	min-width:45vw;
+	display:table;
+}
+.photoleft img {
+	max-width:50vw;
+	height:inherit;
+}
+.photoright {
+	padding-left:10px;
+	display:table-cell;
+	text-align:left;
+	max-width:45vw;
+}
+.textleft {
+	height:252px;
+	overflow:auto;
+}
+.textleft div {
+	margin-top:9px;
+	font-size:0.9em;
+}
+.mapright {
+	float:right;
+}
+
+@media only screen and (max-width: 1200px)  {
+	.mapright {
+		overflow:hidden;
+	}
+	.mapright iframe {
+		margin:-42px;
+	}
+	.textleft {
+		height:175px;
+	}
+}
+
+.modButtons {
+	line-height:3em;
+}
+.votediv {
+	background-color:#88aa88;
+        padding:3px;
+}
+.votediv a {
+        padding:3px;
+}
+</style>
+
+<script type="text/javascript">
 	setTimeout('window.location.href="/admin/";',1000*60*45);
+
+	var mapOpened = false;
 
 	function moderateWrapper(gridimage_id, status) {
 		//if the cross grid button submit tag (it may of been auto selected) 
@@ -18,32 +85,66 @@
 		//for now always submit this, to make sure the tag is created, or removed if change mind
 		submitModTag(gridimage_id,"type:Geograph",(status == 'geograph')?2:0);
 
+		//submit the status
 		moderateImage(gridimage_id, status, function(statusText) {
-			$('#block'+gridimage_id).next().removeClass('modDisabled');
-		});
-	
-		if ($('#autoScroll').get(0).checked) {
-			var ele = $('#block'+gridimage_id);
-			var nxt = ele.next();
-			if (nxt.length && nxt.hasClass('photoguide')) {
-				//window.scrollBy(0,nxt.height()+22);
-				var diff = nxt.find('.modButtons').offset().top - ele.find('.modButtons').offset().top;
-				$('html, body').animate({
-				    scrollTop: '+='+(diff)
-				}, 500);
+			$('#block'+gridimage_id).next().removeClass('modDisabled').find('iframe').each(function() {
+				var url = $(this).data('src');
+				if (this.src != url) this.src = url;
+			});
+
+			if ($('#autoScroll').get(0).checked) {
+	                	setTimeout(function() {
+					var ele = $('#block'+gridimage_id);
+					var nxt = ele.next();
+					if (nxt.length && nxt.hasClass('photoguide')) {
+						//window.scrollBy(0,nxt.height()+22);
+						var diff = nxt.find('.modButtons').offset().top - ele.find('.modButtons').offset().top;
+						$('html, body').animate({
+						    scrollTop: '+='+(diff)
+						}, 500);
+					}
+                		}, 500);
 			}
+		});
+
+		//reopen the map
+		if (mapOpened) {
+		   $('#block'+gridimage_id).next().find('a.xml-geo').trigger('click');
 		}
 	}
 
 	$(function(){ 
-		if ($.localStorage('admin_autoscroll')) {
-			$('#autoScroll').get(0).checked = true;
+		if ($.localStorage('admin_autoscroll_not')) {
+			$('#autoScroll').get(0).checked = false;
 		}
-		$(".photoguide").first().removeClass('modDisabled');
+		$(".photoguide").first().removeClass('modDisabled').find('iframe').each(function() {
+                        var url = $(this).data('src');
+                        if (this.src != url) this.src = url;
+                });
+
+
+		//setup auto clicking of the moderation button on stars 
+		$('span.votediv a').click(function() {
+			var href = $(this).attr('href');
+			if (m = href.match(/\,(\d+)\,/)) {
+				var gridimage_id = m[1];
+				moderateWrapper(m[1]);
+			}
+		});
+
 	});
 
+	function mapILink(gridimage_id) {
+		$("#block"+gridimage_id+" iframe").each(function() {
+                        var url = $(this).data('src');
+			if (url) this.src = url+'&i=1';
+                });
+		$("#block"+gridimage_id+" .mapright a").remove();
+		return false;
+	}
+
 	function autoScrollUpdate() {
-		$.localStorage('admin_autoscroll', $('#autoScroll').get(0).checked);
+		$.localStorage('admin_autoscroll_not', !$('#autoScroll').get(0).checked);
 	}
 
 </script>
@@ -52,17 +153,12 @@
 
 
 <div style="float:right; width:350px">
-	<input type=checkbox id="autoScroll" onclick="autoScrollUpdate()"> <label for=autoScroll style="font-weight:bold">Auto Scroll</label><sup style=color:red>new!</sup><br>
-	<i>(disable the Greasemonkey<br> version if using this)</i>
+	<input type=checkbox id="autoScroll" checked onclick="autoScrollUpdate()"> <label for=autoScroll style="font-weight:bold">Auto Scroll</label> <sup style=color:red>new!</sup><br>
 </div>
 
 <h2>{if $is_admin || $is_mod}<a title="Admin home page" href="/admin/index.php">Admin</a> : {/if}Moderation</h2>
 
 {dynamic}
-
-<br><br>
-<div class="interestBox">NOTE: This is the experimental new style moderation screen. For more info see the forum, and <a href="/article/Image-Type-Tags">Image Type Tags</a> Article</div>
-	
 
 {$status_message}
 
@@ -74,10 +170,11 @@
 
 {if $unmoderatedcount}
 
+	{if !$second}
 	<ul>
 
 	{if $apply}
-		<li>To get a feel for the moderation process, please make your suggestions for the images below. This is a dummy run, no actual moderations are taking place. Any change requests are created as normal. Make sure you click the 'Finish my application' when finished!</li>
+		<li>To get a feel for the moderation process, please make your suggestions for the images below. This is a dummy run, no actual moderations are taking place. Any change requests are created as normal. {if !$is_mod}Make sure you click the 'Finish my application' when finished!{/if}</li>
 	{elseif $review}
 		<li>The following images have been recently moderated to be different to the status you previously selected, there is no need to change anything.</li>
 	{elseif $moderator}
@@ -87,97 +184,102 @@
 	{else}
 		<li>The following images have been submitted recently.</li>
 	{/if}
+
+	<li>For more on the Image Types, see the forum, and/or <a href="/article/Image-Type-Tags-update">Image Type Tags</a> Article.</li>
  
 	{if !$moderator && !$review}
 		<li>Simply look at each image in turn and click the relevant button(s). The result of the action is displayed just below the buttons.</li>
 	
-		<li><b>Please wait</b> for confirmation after clicking the moderation button, <b>before moving onto the next image</b> (the next image will 'clear' to show this has happened)</li> 
+		<li><b>Please wait</b> for confirmation after clicking the moderation button, <b>before moving onto the next image</b>. (the next image will 'clear' to show this has happened)</li> 
 	
-		{if !$apply}
-			<li>Can now rate images at during moderation. '3' stars is average, and is the same as no vote.</li>
-		{/if}
+	{/if}
+	{if !$apply || $is_mod}
+		<li>Can now rate images at during moderation. '3' stars is average, and is the same as no vote. (<a href="/help/voting">read more</a>)</li>
 	{/if}
 
-	</ul><br/>
-	
+	</ul>
+	{/if}	
+
+
 	{foreach from=$unmoderated item=image}
 
-	  <div class="photoguide modDisabled" id="block{$image->gridimage_id}" style="font-size:0.85em;text-align:left;width:inherit">
+	  <div class="photoguide modDisabled" id="block{$image->gridimage_id}">
 
-	   {if $image->tags}
-             <div style="float:right;font-size:0.7em">
-             {foreach from=$image->tags item=tag}
-		{$tag|escape:'html'}<br>
-             {/foreach}
-             </div>
-           {/if}
-	  
-	  <div style="float:left;width:213px">
-	  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
+	  <div class="photoleft">
+		  <a href="/photo/{$image->gridimage_id}">{$image->getFull()}</a>
 	  </div>
 	  
-	  <div style="margin-left:233px"> 
+	  <div class="photoright"> 
+
+		<div class=mapright>
+			<iframe data-src="/map_frame.php?id={$image->gridimage_id}&amp;hash={$image->_getAntiLeechHash()}" width=252 height=252 frameborder=0 scrolling="no"></iframe>
+			{if $image->grid_square->reference_index == 1}
+				<br><a href=# onclick="return mapILink({$image->gridimage_id})">change to interactive map</a>
+			{/if}
+		</div>
+
+		<div class=textleft>
+			square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images)<br/><br/>
+			by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b> <span{if $image->images<11} style="background-color:yellow"{/if}>({$image->images} images)</span><br/><br/>
+			<b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)
 	  
-	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images)<br/>
-	  by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b> <span{if $image->images<11} style="background-color:yellow"{/if}>({$image->images} images)</span><br/>
-	  title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)<br/>
+			{if $image->comment}
+				<div>
+				{$image->comment|escape:'html'|geographlinks}
+				</div>
+			{/if}
+		</div>
 	  
-	  {if $image->comment}
-	  <span style="font-size:0.9em">{$image->comment|escape:'html'|geographlinks}</span><br/>
-	  {/if}
-	  
-	  <br/>
-		{if $image->reopenmaptoken}
-			<div style="float:left;position:relative"><a href="/submit_popup.php?t={$image->reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;" class="xml-geo">Map</a>&nbsp;</div>
+		<div style="font-family:verdana, arial, sans serif; font-size:0.9em; clear:right" class="interestBox">
+		  <span class=nowrap>{if $image->nateastings}
+		  	subj: <b>{getamap gridref=$image->getSubjectGridref(true) title="(`$image->subject_gridref_precision`m precision)"}</b>
+		  {else}
+		  	map: <b>{getamap gridref=$image->grid_reference title="(1000m precision)"}</b>
+		  {/if}</span>
+		  {if $image->viewpoint_eastings}
+	  		| <span class=nowrap>cam: <b>{getamap gridref=$image->getPhotographerGridref(true) title="(`$image->photographer_gridref_precision`m precision)"}</b>{if $image->different_square_true}(diff){/if}</span>
+		  	| <span class="nowrap{if $image->different_square} interestBox{/if}">dist: <b><a>{$image->distance}</a></b>km</span>
+		  {/if}
+		</div>
+		<br/>
+
+		<div class="modButtons">
+        	  {assign var="button" value="Geograph"}
+		  <input class="toggle{if !$remoderate && in_array('type:Close Look',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Close Look" id="close{$image->gridimage_id}" onclick="toggleButton(this)"/>
+		  <input class="toggle{if !$remoderate && in_array('type:Inside',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Inside" id="inside{$image->gridimage_id}" onclick="toggleButton(this)"/>
+		  <input class="toggle{if !$remoderate && in_array('type:Extra',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Extra" id="extra{$image->gridimage_id}" onclick="toggleButton(this)"/>
+		  <input class="toggle{if !$remoderate && in_array('type:Aerial',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Aerial" id="aerial{$image->gridimage_id}" onclick="toggleButton(this)"/>
+		  <input class="toggle{if $image->different_square_true || (!$remoderate && in_array('type:Cross Grid',$image->tags))} on{assign var="button" value="Accept"}{/if}" type="button" id="cross{$image->gridimage_id}" value="Cross Grid" onclick="return false; toggleButton(this)"/>
+		  <br/>
+
+		  <input class="accept" type="button" id="continue{$image->gridimage_id}" value="{$button}" onclick="moderateWrapper({$image->gridimage_id})" {if $image->user_status == 'rejected'} style="color:gray"{/if}
+			/>{if !$apply || $is_mod}<span class=votediv id="votediv{$image->gridimage_id}">{votestars id=$image->gridimage_id type="mod"}</span>{/if}
+
+		  &nbsp;
+		  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateWrapper({$image->gridimage_id}, 'rejected')" {if $image->user_status == 'rejected'} style="border-bottom:2px solid black"{/if}/>
+		  {if $image->user_status}
+			<span style=background-color:yellow;color:red;padding:5px">(user suggests: {$image->user_status})</span>
+		  {/if}
+        	</div>
+		<br/>
+
+		{if $image->sizestr}
+	  		<div style="background-color:red; color:white; border:1px solid pink; padding:6px;">{$image->sizestr}</div>
 		{/if}
-	  <span style="font-family:verdana, arial, sans serif; font-size:0.9em">
-	  {if $image->nateastings}
-	  	subject: <b>{getamap gridref=$image->getSubjectGridref(true) title="(`$image->subject_gridref_precision`m precision)"}</b>
-	  {else}
-	  	map: <b>{getamap gridref=$image->grid_reference title="(1000m precision)"}</b>
-	  {/if}
-	  {if $image->viewpoint_eastings}
-	  	| camera: <b>{getamap gridref=$image->getPhotographerGridref(true) title="(`$image->photographer_gridref_precision`m precision)"}</b>{if $image->different_square_true}(diff){/if}
-	  	| <span{if $image->different_square} class="interestBox"{/if}>distance: <b><a>{$image->distance}</a></b>km</span>
-	  {/if}
-	  </span>
-	  <br/>
-	  
-	  <br/>
-	  {if $image->sizestr}
-	  	<div style="float:right; background-color:red; color:white; border:1px solid pink; padding:6px;">{$image->sizestr}</div>
-	  {/if}
 
-	<div class="modButtons">
-          {assign var="button" value="Geograph"}
-	  <input class="toggle{if $image->different_square_true || in_array('type:Cross Grid',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" id="cross{$image->gridimage_id}" value="Cross Grid" onclick="return false; toggleButton(this)"/>
-	  <input class="toggle{if in_array('type:Aerial',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Aerial" id="aerial{$image->gridimage_id}" onclick="toggleButton(this)"/>
-	  <input class="toggle{if in_array('type:Inside',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Inside" id="inside{$image->gridimage_id}" onclick="toggleButton(this)"/>
-	  <input class="toggle{if in_array('type:Detail',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Detail" id="detail{$image->gridimage_id}" onclick="toggleButton(this)"/>
-
-	  <input class="accept" type="button" id="continue{$image->gridimage_id}" value="{$button}" onclick="moderateWrapper({$image->gridimage_id})" {if $image->user_status == 'rejected'} style="color:gray"{/if}/>
-	  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateWrapper({$image->gridimage_id}, 'rejected')"/>
-	  {if $image->user_status}
-	  	(user suggests: {$image->user_status})
-	  {/if}
-
-		{if !$apply}
-			<span id="votediv{$image->gridimage_id}"> &nbsp; {votestars id=$image->gridimage_id type="mod"}</span>
+		{if (!$remoderate && $image->user_status && $image->moderation_status != 'pending') || $moderator || $review}
+	  		<br/>Current Classification: {$image->moderation_status} {if $image->mod_realname}, by {$image->mod_realname}{/if}
+		{/if}
+		{if $image->new_status}
+	  		<br/><span{if $image->new_status != $image->moderation_status} style="border:1px solid red; padding:5px; line-height:3em;"{/if}>Suggested Classification: {$image->new_status} {if $image->ml_realname}, by {$image->ml_realname}{/if}, {$image->ml_created}</span>
 		{/if}
 
-        </div>
+		<div id="modinfo{$image->gridimage_id}">&nbsp;</div>
 
-	  {if (!$remoderate && $image->user_status && $image->moderation_status != 'pending') || $moderator || $review}
-	  	<br/>Current Classification: {$image->moderation_status} {if $image->mod_realname}, by {$image->mod_realname}{/if}
-	  {/if}
-	  {if $image->new_status}
-	  	<br/><span{if $image->new_status != $image->moderation_status} style="border:1px solid red; padding:5px; line-height:3em;"{/if}>Suggested Classification: {$image->new_status} {if $image->ml_realname}, by {$image->ml_realname}{/if}</span>
-	  {/if}
-	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
-	  </div>
-	  
 	  </div>
 
+	  <br style=clear:both>	  
+	  </div>
 
 	{/foreach}
 
