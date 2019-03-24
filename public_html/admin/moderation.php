@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id$
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -63,22 +63,20 @@ if (isset($_GET['gridimage_id']))
 	//either way, we want to check for admin status on the session
 	if ($USER->hasPerm('moderator') || isset($_GET['remoderate']))
 	{
-	
 		$gridimage_id=intval($_GET['gridimage_id']);
 		$status=$_GET['status'];
 
 		$image=new GridImage;
 		if ($image->loadFromId($gridimage_id))
 		{
-			if (isset($_GET['remoderate'])) 
+			if (isset($_GET['remoderate']))
 			{
 				if ($USER->hasPerm('basic'))
 				{
 					$status = $db->Quote($status);
 					$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now(),type = 'dummy'");
 					print "classification $status recorded";
-					
-					
+
 					$mkey = $USER->user_id;
 					$memcache->name_delete('udm',$mkey);
 				}
@@ -86,20 +84,20 @@ if (isset($_GET['gridimage_id']))
 				{
 					echo "NOT LOGGED IN";
 				}
-			} 
+			}
 			else
 			{
 				//we really need this not be interupted
 				ignore_user_abort(TRUE);
 				set_time_limit(3600);
-				
+
 				$status2 = $db->Quote($status);
 				$db->Execute("INSERT INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status2, old_status='{$image->moderation_status}',created=now(),type = 'real'");
-				
+
 				$info=$image->setModerationStatus($status, $USER->user_id);
 				echo $info;
 				flush;
-				
+
 				if ($status == 'rejected')
 				{
 					$ticket=new GridImageTroubleTicket();
@@ -121,13 +119,12 @@ if (isset($_GET['gridimage_id']))
 				//clear caches involving the image
 				$ab=floor($gridimage_id/10000);
 				$smarty->clear_cache('', "img$ab|{$gridimage_id}|");
-			
 
 				//clear the users profile cache
 				//todo - maybe we only need to do this if a recent image?
 				$ab=floor($image->user_id/10000);
 				$smarty->clear_cache('', "user$ab|{$image->user_id}|");
-				
+
 				$memcache->name_delete('us',$image->user_id);
 			}
 		}
@@ -135,26 +132,22 @@ if (isset($_GET['gridimage_id']))
 		{
 			echo "FAIL";
 		}
-	
-		
 	}
 	else
 	{
 		echo "NOT LOGGED IN";
 	}
-	
-	
-	
+
 	exit;
 }
 
 if (!empty($_GET['abandon'])) {
 	$USER->hasPerm('moderator') || $USER->mustHavePerm("ticketmod");
-	
+
 	$db->Execute("DELETE FROM gridsquare_moderation_lock WHERE user_id = {$USER->user_id}");
-	
+
 	$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$USER->user_id}");
-	
+
 	header("Location: /admin/");
 	exit;
 }
@@ -170,22 +163,23 @@ if ($limit > 15) {
 
 if (!empty($_GET['relinquish'])) {
 	$USER->mustHavePerm('basic');
-	$db->Execute("UPDATE user SET rights = REPLACE(REPLACE(rights,'traineemod',''),'moderator','') WHERE user_id = {$USER->user_id}");
-	
+	$db->Execute("UPDATE user SET rights = REPLACE(REPLACE(rights,'traineemod',''),'moderator','alumni') WHERE user_id = {$USER->user_id}");
+
 	//reload the user object
 	$_SESSION['user'] =& new GeographUser($USER->user_id);
-	
+
 	header("Location: /profile.php?edit=1");
 	exit;
 
 } elseif (!empty($_GET['apply'])) {
 	$USER->mustHavePerm('basic');
+        $smarty->assign('is_mod',$USER->hasPerm('moderator')); //can still be useful to know!
 
 	if ($_GET['apply'] == 2) {
 
 		$db->Execute("UPDATE user SET rights = CONCAT(rights,',traineemod') WHERE user_id = {$USER->user_id}");
 
-		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0 OR FIND_IN_SET('admin',coordinator)>0");
+		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0 OR FIND_IN_SET('coordinator',rights)>0");
 
 		$url = $CONF['SELF_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
 
@@ -221,7 +215,7 @@ Regards,
 	$smarty->assign('apply', 1);
 
 } elseif (isset($_GET['moderator'])) {
-	($USER->user_id == 10124) || $USER->mustHavePerm('admin');
+	($USER->user_id == 10124) || $USER->hasPerm("director") || $USER->mustHavePerm('admin');
 } else {
 	$USER->mustHavePerm('moderator');
 }
@@ -230,11 +224,10 @@ Regards,
 # check if needs to remoderate
 
 if (!isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remoderate'])) {
-	
-	
+
 	$mkey = $USER->user_id;
 	$count =& $memcache->name_get('udm',$mkey);
-	
+
 	if (empty($count)) {
 		if ($db->readonly) {
 			$db2 =& $db;
@@ -246,7 +239,7 @@ if (!isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remod
 
 		$memcache->name_set('udm',$mkey,$count,$memcache->compress,$memcache->period_med);
 	}
-	
+
 	if ($count['total'] == 0) {
 		$_GET['remoderate'] = 1;
 		$limit = 25;
@@ -254,13 +247,13 @@ if (!isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remod
 		$_GET['remoderate'] = 1;
 		$limit = 10;
 	}
-}	
+}
 
 #############################
 # find the list of squares with self pending images, and exclude them...
 
-$sql = "select distinct gridsquare_id 
-from 
+$sql = "select distinct gridsquare_id
+from
 	gridimage as gi
 where
 	(moderation_status = 2) and
@@ -268,43 +261,44 @@ where
 order by null";
 
 $recordSet = &$db->Execute($sql);
-while (!$recordSet->EOF) 
+while (!$recordSet->EOF)
 {
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$recordSet->fields['gridsquare_id']},lock_type = 'cantmod'");
 
 	$recordSet->MoveNext();
 }
-$recordSet->Close(); 
+$recordSet->Close();
 
 #############################
 # define the images to moderate
 
 $sql_where2 = "
-	and (l.gridsquare_id is null OR 
+	and (l.gridsquare_id is null OR
 			(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
 			(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
 		)";
 $sql_columns = $sql_from = '';
 if (isset($_GET['review'])) {
 	$mid = intval($USER->user_id);
-	
-	$sql_columns = ", new_status,moderation_log.user_id as ml_user_id,v.realname as ml_realname";
+
+	$sql_columns = ", new_status,moderation_log.user_id as ml_user_id,v.realname as ml_realname, DATE(moderation_log.created) as ml_created";
 	$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id AND moderation_log.type='real')
 				inner join user v on(moderation_log.user_id=v.user_id)";
-	
+
 	$sql_where = "(moderation_log.user_id = $mid && gi.moderator_id != $mid)";
-	
+
 	$sql_where = "($sql_where and moderation_status != new_status)";
-			
+
 	$sql_order = "gridimage_id desc";
-	
+
 	$smarty->assign('review', 1);
 	$sql_where2 = '';
+
 } elseif (isset($_GET['moderator'])) {
 	$mid = intval($_GET['moderator']);
-		
+
 	if (isset($_GET['verify'])) {
-		$sql_columns = ", new_status,moderation_log.user_id as ml_user_id,v.realname as ml_realname";
+		$sql_columns = ", new_status,moderation_log.user_id as ml_user_id,v.realname as ml_realname, DATE(moderation_log.created) as ml_created";
 		$sql_from = " inner join moderation_log on(moderation_log.gridimage_id=gi.gridimage_id AND moderation_log.type='dummy')
 					inner join user v on(moderation_log.user_id=v.user_id)";
 		if ($mid == 0) {
@@ -312,7 +306,7 @@ if (isset($_GET['review'])) {
 		} else {
 			$sql_where = "(moderation_log.user_id = $mid or gi.moderator_id = $mid)";
 		}
-		
+
 		if ($_GET['verify'] == 2) {
 			$sql_where = "($sql_where and moderation_status != new_status)";
 		}
@@ -326,18 +320,18 @@ if (isset($_GET['review'])) {
 		$sql_where = "(moderation_status != 2) and moderator_id = $mid";
 		$sql_order = "gridimage_id desc";
 	}
-	
+
 	if (isset($_GET['status']) && ($statuses = $_GET['status']) ) {
 		if (is_array($statuses))
 			$sql_where.=" and moderation_status in ('".implode("','", $statuses)."') ";
 		elseif (strpos($statuses,',') !== FALSE)
 			$sql_where.=" and moderation_status in ('".implode("','", explode(',',$statuses))."') ";
-		elseif (is_int($statuses)) 
+		elseif (is_int($statuses))
 			$sql_where.=" and moderation_status = $statuses ";
 		else
 			$sql_where.=" and moderation_status = '$statuses' ";
 	}
-	
+
 	$smarty->assign('moderator', 1);
 	$sql_where2 = '';
 } elseif (isset($_GET['user_id'])) {
@@ -349,7 +343,7 @@ if (isset($_GET['review'])) {
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } elseif (isset($_GET['remoderate'])) {
-	$sql_where = "moderation_status != 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval 10 day) ";
+	$sql_where = "moderation_status > 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval 10 day) ";
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } else {
@@ -358,11 +352,10 @@ if (isset($_GET['review'])) {
 }
 
 if (isset($_GET['xmas'])) {
-	
+
 	$year = date('Y');
-	
+
 	$db->Execute("insert ignore into gridsquare_moderation_lock select gridsquare_id,{$USER->user_id} as user_id,now() as lock_obtained,'modding' as lock_type from gridimage as gi  left join gridimage_snippet gs using (gridimage_id) left join snippet s using (snippet_id) where (gi.imageclass = 'christmas day $year' OR s.title = 'midday christmas $year') and moderation_status = 'pending' and submitted > date_sub(now(),interval 1 day) group by gridsquare_id");
-	
 
 	$sql_where .= " AND (lock_type = 'modding')";
 }
@@ -370,8 +363,8 @@ if (isset($_GET['xmas'])) {
 #############################
 #lock the table so nothing can happen in between! (leave others as READ so they dont get totally locked)
 
-$db->Execute("LOCK TABLES 
-gridsquare_moderation_lock WRITE, 
+$db->Execute("LOCK TABLES
+gridsquare_moderation_lock WRITE,
 gridsquare_moderation_lock l WRITE,
 moderation_log WRITE,
 gridsquare READ,
@@ -386,7 +379,7 @@ tag_public READ LOCAL");
 
 
 $sql = "select gi.*,group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags,grid_reference,user.realname,imagecount,coalesce(images,0) as images $sql_columns
-from 
+from
 	gridimage as gi
 	inner join gridsquare as gs
 		using(gridsquare_id)
@@ -402,8 +395,7 @@ from
 where
 	$sql_where
 	$sql_where2
-	and user.rights like '%basic%'
-	and submitted < date_sub(now(),interval 30 minute)
+	and submitted < date_sub(now(),interval 1 hour)
 group by gridimage_id
 order by
 	$sql_order
@@ -419,7 +411,7 @@ if (!empty($_GET['debug'])) {
 #############################
 # fetch the list of images...
 
-$images=new ImageList(); 
+$images=new ImageList();
 $images->_setDB($db);
 $c = $images->_getImagesBySql($sql);
 
@@ -439,19 +431,19 @@ foreach ($images->images as $i => $image) {
 		$correction = ($images->images[$i]->viewpoint_grlen > 4)?0:500;
 		$images->images[$i]->distance = sprintf("%0.2f",
 			sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings-$correction,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings-$correction,2))/1000);
-		
+
 		if (intval($images->images[$i]->grid_square->nateastings/1000) != intval($images->images[$i]->viewpoint_eastings/1000)
 			|| intval($images->images[$i]->grid_square->natnorthings/1000) != intval($images->images[$i]->viewpoint_northings/1000))
 			$images->images[$i]->different_square_true = true;
-		
+
 		if ($images->images[$i]->different_square_true && $images->images[$i]->subject_gridref_precision==1000)
 			$images->images[$i]->distance -= 0.5;
-		
+
 		if ($images->images[$i]->different_square_true && $images->images[$i]->distance > 0.1)
 			$images->images[$i]->different_square = true;
-	
+
 		$token->setValue("p", $images->images[$i]->getPhotographerGridref(true));
-	}	
+	}
 	if (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
 		$token->setValue("v", $image->view_direction);
 	}
@@ -461,14 +453,15 @@ foreach ($images->images as $i => $image) {
 		$images->images[$i]->photographer_gridref = '';
 		$images->images[$i]->use6fig = 1;
 	}
-	
+
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
 
 	$fullpath=$images->images[$i]->_getFullpath();
-	list($width, $height, $type, $attr)=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-	if (max($width,$height) < 500)
-		$images->images[$i]->sizestr = $attr;
-
+	if ($fullpath!="/photos/error.jpg") {
+		list($width, $height, $type, $attr)=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+		if ($width > 0 && max($width,$height) < 600)
+			$images->images[$i]->sizestr = $attr;
+	}
 	//if (!empty($image->tags))
 	//	$images->images[$i]->tags = explode("?",$image->tags);
 }
@@ -485,26 +478,26 @@ $images->assignSmarty($smarty, 'unmoderated');
 $style = $USER->getStyle();
 $smarty->assign('maincontentclass', 'content_photo'.$style);
 
-    $smarty->register_function("votestars", "smarty_function_votestars"); 
+    $smarty->register_function("votestars", "smarty_function_votestars");
+
+$smarty->assign('second',!empty($_SESSION['second']));
+$_SESSION['second'] = true;
 
 $smarty->display('admin_moderation.tpl',$style);
 
 
 
 
-function smarty_function_votestars($params) { 
-    global $CONF; 
-    static $last; 
-     
-    $type = $params['type']; 
-    $id = $params['id']; 
-    $names = array('','Hmm','Below average','So So','Good','Excellent'); 
-    foreach (range(1,5) as $i) { 
+function smarty_function_votestars($params) {
+    global $CONF;
+    static $last;
+
+    $type = $params['type'];
+    $id = $params['id'];
+    $names = array('','Hmm','Below average','So So','Good','Excellent');
+    foreach (range(1,5) as $i) {
         print "<a href=\"javascript:void(record_vote('$type',$id,$i));\" title=\"{$names[$i]}\"><img src=\"{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>"; 
-    } 
-    if ($last != $type) { 
-        print " (<a href=\"/help/voting\">about</a>)"; 
-    }  
-    $last = $type; 
-} 
+    }
+    $last = $type;
+}
 
