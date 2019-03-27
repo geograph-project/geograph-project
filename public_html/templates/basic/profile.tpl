@@ -74,10 +74,6 @@
 		{/if}
 	{/if}
 
-        {if $profile->google_profile}
-		<li><b>Google Profile</b>: <a rel="me" href="{$profile->google_profile|escape:'html'}?rel=author">{$profile->google_profile|escape:'html'}</a></li>
-	{/if}
-
  	{if $profile->hasPerm('dormant',true)}
  		<!--<li><i>We do not hold contact details for this user.</i></li>-->
  	{elseif $user->user_id ne $profile->user_id}

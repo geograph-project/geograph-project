@@ -61,8 +61,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
         $db = GeographDatabaseConnection(true);
 
-	$column = ($date == 'taken')?'imagetaken':'submitted';  
-	
+	$column = ($date == 'taken')?'imagetaken':'submitted';
+
 	if (isset($_GET['week'])) {
 		$from_date = "date(min($column))";
 		$group_date = "yearweek($column,1)";
@@ -72,35 +72,33 @@ if (!$smarty->is_cached($template, $cacheid))
 		$from_date = "substring( $column, 1, $length )";
 		$group_date = "substring( $column, 1, $length )";
 	}
-	$title = ($date == 'taken')?'Taken':'Submitted'; 
+	$title = ($date == 'taken')?'Taken':'Submitted';
 	$title = "Breakdown of Images by $title Date";
-	
+
 	$where = array();
-	
+
 	if ($date == 'taken') {
 		$where[] = "$column not like '%-00%'";
 	}
-	
+
 	if ($myriad) {
 		$where[] = "grid_reference like '$myriad%'";
 		$title = "in myriad '$myriad'";
 	}
-	
+
 	if (!empty($ri)) {
 		$where[] = "reference_index=".$ri;
 		$smarty->assign('ri', $ri);
-	
 
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 		$columns_sql .= ", count( DISTINCT SUBSTRING(grid_reference,1,$letterlength)) as `Different Myriads`";
-		
+
 		$columns_sql .= ", count( DISTINCT concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) ) as `Different Hectads`";
-		
+
 	} else {
 		$columns_sql .= ", count( DISTINCT SUBSTRING(grid_reference,1,3 - reference_index)) as `Different Myriads`";
 		$columns_sql .= ", count( DISTINCT concat(substring(grid_reference,1,3 - reference_index),substring(grid_reference,6 - reference_index,1)) ) as `Different Hectads`";
-	}	 
-	
+	}
 
 	if (!empty($u)) {
 		$where[] = "user_id=".$u;
@@ -114,50 +112,47 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	if (count($where))
 		$where_sql = " WHERE ".join(' AND ',$where);
-		
-		
-	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$table=$db->GetAll("SELECT 
-	$from_date AS `Date`, 
-	count( * ) AS `Images`, 
-	sum( moderation_status = 'geograph' ) AS `Geographs`, 
-	sum( ftf =1 ) AS `Points Awarded`, 
-	sum( ftf >0 ) AS `Personal Points`, 
+
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	$table=$db->GetAll("SELECT
+	$from_date AS `Date`,
+	count( * ) AS `Images`,
+	sum( moderation_status = 'geograph' ) AS `Geographs`,
+	sum( ftf =1 ) AS `Points Awarded`,
+	sum( ftf >0 ) AS `Personal Points`,
 	count( * ) / count( DISTINCT grid_reference ) AS `Depth`,
 	count( DISTINCT grid_reference ) AS `Different Gridsquares`
 	$columns_sql
 	, count( DISTINCT imageclass ) AS `Different Categories`
-	
-FROM `gridimage_search` $where_sql
-GROUP BY $group_date" );
+	FROM `gridimage_search` $where_sql
+	GROUP BY $group_date" );
 
-	if (!isset($_GET['output']) || $_GET['output'] != 'csv') 
+	if (!isset($_GET['output']) || $_GET['output'] != 'csv')
 	{
 		foreach($table as $idx=>$entry)
 		{
 			$table[$idx]['Date'] = getFormattedDate($table[$idx]['Date']);
 		}
 	}
-	
+
 	$smarty->assign_by_ref('table', $table);
-	
+
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
-	$smarty->assign_by_ref('references',$CONF['references_all']);	
-	
+	$smarty->assign_by_ref('references',$CONF['references_all']);
+
 	if ($date == 'submitted' && !$u && !$ri && !$myriad) {
-		$smarty->assign("footnote","<p><a href=\"http://www.swivel.com/data_sets/show/1009608\" target=\"_blank\">Graphs compiled from this data</a></p>");
-		$smarty->assign("footnote","<p><a href=\"http://www.google.com/fusiontables/DataSource?dsrcid=487623\" target=\"_blank\">Google Fusion Table for this data</a> - use the Visualise menu, and select Line, Bar or Scatter to plot graphs.</p>");
+		//$smarty->assign("footnote","<p><a href=\"http://www.swivel.com/data_sets/show/1009608\" target=\"_blank\">Graphs compiled from this data</a></p>");
 
 	}
-	
+
 	$extra = array();
 	foreach (array('month','week','date') as $key) {
 		if (isset($_GET[$key])) {
 			$extra[$key] = $_GET[$key];
 		}
 	}
-	$smarty->assign_by_ref('extra',$extra);	
+	$smarty->assign_by_ref('extra',$extra);
 } else {
 	if ($u) {
 		$profile=new GeographUser($u);
@@ -169,5 +164,3 @@ $smarty->assign("filter",2);
 
 $smarty->display($template, $cacheid);
 
-	
-?>
