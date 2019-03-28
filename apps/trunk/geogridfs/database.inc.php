@@ -149,7 +149,7 @@ function print_rp($q) {
 ###################################
 # Create some replicate tasks. Note we dont need to specify a source, as the worker will automatically find source per file.
 
-function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$order = 'NULL',$return_query=false) {
+function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$order = 'shard',$return_query=false) {
 	global $db;
 	if ($avoidover) {
 		$clause .= " AND replica_count < replica_target";
@@ -163,8 +163,9 @@ function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$or
 		$clause .= " AND replicas NOT RLIKE 'h[[:digit:]]'";
 		$targetQ = "CONCAT(IF(RAND()>0.5,'tea','cake'),'h',IF(RAND()>0.5,'1','2'))";
 
-	} elseif ($target == 'hard|empty') {
-		$target = getOne("select mount,(available*1024)-coalesce(sum(bytes),0) as av from mounts left join replica_task on (target=mount and executed < 1) where mount like '%h_' group by mount order by av desc limit 1");
+	} elseif (preg_match('/^(.*)\|empty/',$target,$m)) {
+		$f = ($m[1] == 'hard')?'%h_':$m[1];
+		$target = getOne($sql = "select mount,(available*1024)-coalesce(sum(bytes),0) as av from mounts left join replica_task on (target=mount and executed < 1) where mount like '$f' group by mount order by av desc limit 1");
 
 		$clause .= " AND replicas NOT LIKE ".dbQuote("%".preg_replace('/\d$/','',$target)."%");
 		$targetQ = dbQuote($target);
@@ -209,21 +210,14 @@ function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'N
 		$where = $clause;
 
 	$join = ''; $group = 'shard';
-	if ($target == 'ssd|rand') {
-		die("unimplemtned");
-	} elseif ($target == 'hard|rand') {
-		die("unimplemtned");
-	} elseif ($target == 'hard|empty') {
-		die("unimplemtned");
-
-	} elseif ($target == 'mount' || preg_match('/[%_]/',$target)) {
+	if ($target == 'mount' || preg_match('/[%_]/',$target)) {
 		$join = "INNER JOIN mounts ON (replicas LIKE CONCAT('%',mount,'%'))";
 		//dont need to modify clause, because the join will make filter for target.
 	        if (preg_match('/[%_]/',$target)) {
 	                $where .= ' AND mount LIKE '.dbQuote($target);
         	}
 		$targetQ = 'mount';
-		$group = "mount,shard"; //if the same file is on multiple mounts, will be included in multiple tasks,
+		//$group = "mount,shard"; //if the same file is on multiple mounts, will be included in multiple tasks,
 					// so to be careful, that the file doesnt get drained from each mount (eg replica_count > replica_target in caluse, would help avoid draining to much, first mount to exercute wins!)
 	} else {
 		//$clause .= " AND replicas LIKE ".dbQuote("%$target%"); //DONT need this in the clause, because the worker will do it anyway.
@@ -238,9 +232,9 @@ function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'N
 	}
 
 	$sql = "
-        SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,$clauseQ AS `clause`,$targetQ AS target,NOW() as created,0 AS `executed`
+        SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,$clauseQ AS `clause`,$targetQ AS target,NOW() as created,0 AS `executed`,0 AS defer_until
         FROM file_stat $join
-        WHERE $where AND replica_count > 0
+        WHERE $where AND replica_count > 1
         GROUP BY $group ORDER BY $order";
 
         if ($return_query)
@@ -252,6 +246,43 @@ function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'N
 		print "-------\n$sql;\n----------\n";
 		print "Affected Rows: ".mysql_affected_rows($db)."\n\n";
 	}
+}
+
+###################
+
+function runfixes($where,$where2,$fix, $limit = 10000, $order = 'count DESC', $maxbytes = null) {
+	global $db;
+
+	$rows = getAll($sql = "select shard,sum(count) as count,sum(bytes) as bytes from file_stat where $where GROUP BY shard ORDER BY $order LIMIT $limit");
+
+print "$sql;\n";
+//print_r($rows);
+//return;
+
+	$running = 0;
+	if (count($rows))
+	foreach ($rows as $row) {
+		print "### {$row['shard']} / {$row['count']}\n";
+		$start = $row['shard']*10000;
+		$end = $start+9999;
+
+		$result = queryExecute("UPDATE file SET $fix WHERE $where AND $where2 AND file_id BETWEEN $start AND $end");
+
+			print "$where,$where2,$fix. = ".mysql_affected_rows($db)."\n";
+
+		if (!empty($maxbytes)) {
+			$running += $row['bytes'];
+			if ($running > $maxbytes) {
+				print "Stopped at $running\n";
+				return; //`return` rather than `break`, so dont run the final query
+			}
+		}
+	}
+
+	//last loop to catch files not yet in file_stat
+	$start = getOne("SELECT MAX(file_id) FROM file")-20000;
+
+	$result = queryExecute("UPDATE file SET $fix WHERE $where AND $where2 AND file_id > $start", true);
 }
 
 ############
@@ -273,8 +304,10 @@ function getGeographPath($gridimage_id,$hash,$size ='small') {
                 case 'orig': return "{$fullpath}_original.jpg"; break;
                case 'full': return "$fullpath.jpg"; break;
                case 'med': return "{$fullpath}_213x160.jpg"; break;
+               case '800': return "{$fullpath}_800x800.jpg"; break;
+               case '1024': return "{$fullpath}_1024x1024.jpg"; break;
                case 'small':  return "{$fullpath}_120x120.jpg";
-               default: return "{$fullpath}_{$size}.jpg"; //this is a custom version for geogridfs
+               default: return "{$fullpath}{$size}.jpg"; //this is a custom version for geogridfs
        }
 }
 
@@ -293,6 +326,8 @@ function getGeographUrl($gridimage_id,$hash,$size = 'small') {
       switch($size) {
               case 'full': return "https://s0.geograph.org.uk$fullpath.jpg"; break;
               case 'med': return "$server{$fullpath}_213x160.jpg"; break;
+              case '800': return "$server{$fullpath}_800x800.jpg"; break;
+              case '1024': return "$server{$fullpath}_1024x1024.jpg"; break;
               case 'small':
               default: return "$server{$fullpath}_120x120.jpg";
 

@@ -93,8 +93,8 @@ def drain_now(path = '',target='', order = ''):
     c=db.cursor(MySQLdb.cursors.DictCursor)
     cex=db.cursor()
 
-    print "SELECT * FROM drain_task WHERE target LIKE '"+target+"%' AND `executed` = '0000-00-00 00:00:00' ORDER BY "+order+" LIMIT 1"
-    c.execute("SELECT * FROM drain_task WHERE target LIKE '"+target+"%' AND `executed` = '0000-00-00 00:00:00' ORDER BY "+order+" LIMIT 1")
+    print "SELECT * FROM drain_task WHERE target LIKE '"+target+"%' AND `executed` = '0000-00-00 00:00:00' AND defer_until < NOW() ORDER BY "+order+" LIMIT 1"
+    c.execute("SELECT * FROM drain_task WHERE target LIKE '"+target+"%' AND `executed` = '0000-00-00 00:00:00' AND defer_until < NOW() ORDER BY "+order+" LIMIT 1")
 
     row = c.fetchone()
     if not row:
