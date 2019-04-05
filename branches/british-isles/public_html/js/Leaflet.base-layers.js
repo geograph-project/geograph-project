@@ -14,7 +14,7 @@ baseMaps["OpenStreetMap"] = L.tileLayer(osmUrl, {minZoom: 5, maxZoom: 21, attrib
 
         var cycleUrl='https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=42a8aaad46fa4fd784104f2870221993';
         var cycleAttrib='&copy; OpenCycleMap, '+osmAttrib;
-//baseMaps["OpenCycleMap"] = L.tileLayer(cycleUrl, {minZoom: 5, maxZoom: 21, attribution: cycleAttrib});
+baseMaps["OpenCycleMap"] = L.tileLayer(cycleUrl, {minZoom: 5, maxZoom: 21, attribution: cycleAttrib});
 
         var terrainUrl='https://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=42a8aaad46fa4fd784104f2870221993';
         var terrainAttrib='Map &copy; ThunderForest, '+osmAttrib;
@@ -88,9 +88,23 @@ var overlayMaps = {};
 		overlayMaps["Irish Grid"] = L.irishGrid(gridOptions);
 	}
 
+        var wmsLayer = L.tileLayer.wms('https://map.bgs.ac.uk/arcgis/services/BGS_Detailed_Geology/MapServer/WMSServer?', {
+          layers: 'BGS.50k.Bedrock', transparent: true, format: 'image/png', opacity: 0.6, minZoom: 13, 
+           attribution: "Contains British Geological Survey materials &copy; UKRI 2019",
+	  bounds: bounds
+        });
+
+        var wmsLayer2 = L.tileLayer.wms('http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms?', {
+          layers: 'BGS_EN_Bedrock_and_Superficial_Geology', transparent: true, format: 'image/png', opacity: 0.7, maxZoom: 12, 
+           attribution: "Contains British Geological Survey materials &copy; UKRI 2019",
+	  bounds: bounds
+        });
+	
+overlayMaps["BGS Bedrock Geology"] = L.layerGroup([wmsLayer, wmsLayer2]);
+
 	var layerUrl='https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
 
-overlayMaps["Coverage - Dots"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 18, attribution: layerAttrib, bounds: bounds});
+overlayMaps["Coverage - Dots"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 19, attribution: layerAttrib, bounds: bounds});
 
 	if (L.geographCoverage) {
 	        overlayMaps["Coverage - Close"] = L.geographCoverage();
