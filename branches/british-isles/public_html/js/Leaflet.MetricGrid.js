@@ -30,6 +30,7 @@ L.MetricGrid = L.Layer.extend({
         weight: 2,                                           // use 2 for best results, else label rub-out is less good (antialiased pixels)
         color: "#00f",
         font: "bold 16px Verdana",
+	density: 1,
         minInterval: 100,                // minimum grid interval in metres
         maxInterval: 100000              // maximum grid interval in metres
     },
@@ -321,6 +322,9 @@ L.MetricGrid = L.Layer.extend({
             spacing = 100000;
         }
 
+	if (this.options.density)
+		spacing = spacing / this.options.density;
+
         //limit to min/max interval
         if (spacing < this.options.minInterval) {
             spacing = this.options.minInterval;
@@ -447,6 +451,14 @@ L.MetricGrid = L.Layer.extend({
         var map = this._map;
 
         if (L.Browser.canvas && map) {
+
+	    var zoom = map.getZoom();
+ 	    if (this.options.minZoom && zoom < this.options.minZoom)
+	        return;
+            if (this.options.maxZoom && zoom > this.options.maxZoom)
+		return;
+            if (this.options.skipZoom && this.options.skipZoom.indexOf(zoom) > -1)
+		return;
 
             var spacing = this._calcInterval();
             var proj = this.options.proj4ProjDef
