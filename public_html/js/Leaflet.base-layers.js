@@ -94,7 +94,7 @@ var overlayMaps = {};
 		gridOptions['maxZoom'] = 16; //above this, minInterval means will be 100, same as main grid, so pointless rendering
 		gridOptions['skipZoom'] = [10,13]; //at these two zoom levels the grid is too dense
 
-		overlayMaps["Denser OS Grid"] = L.layerGroup([L.britishGrid(gridOptions), L.irishGrid(gridOptions)]);
+		overlayMaps["Extra Dense Grid"] = L.layerGroup([L.britishGrid(gridOptions), L.irishGrid(gridOptions)]);
 	}
 
         var wmsLayer = L.tileLayer.wms('https://map.bgs.ac.uk/arcgis/services/BGS_Detailed_Geology/MapServer/WMSServer?', {

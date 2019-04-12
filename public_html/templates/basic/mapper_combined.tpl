@@ -52,10 +52,13 @@
 
 	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
 	<script src="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.js"></script>
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographGeocoder.js"></script>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="https://unpkg.com/togeojson@0.16.0/togeojson.js"></script>
+	<script src="https://unpkg.com/leaflet-filelayer@1.2.0/src/leaflet.filelayer.js"></script>
 
 <script>{literal}
 
@@ -78,11 +81,8 @@
 	var map = L.map('map', mapOptions);
         var hash = new L.Hash(map);
 
-	L.control.locate().addTo(map);
-
         map.addLayer(baseMaps["OpenStreetMap"]); //todo, make this configure like in mappingLeaflet.js
-        map.addLayer(overlayMaps["OSGB Grid"]);
-        map.addLayer(overlayMaps["Irish Grid"]);
+        map.addLayer(overlayMaps["OS National Grid"]);
 
 	{if $dots}
 	        map.addLayer(overlayMaps["Coverage - Dots"]);
@@ -110,7 +110,7 @@
 {/dynamic}
 {literal}
 	
-	L.control.layers(baseMaps, overlayMaps).addTo(map).expand();
+	var layerswitcher = L.control.layers(baseMaps, overlayMaps).addTo(map).expand();
 
 	map.on('baselayerchange', function(e) {
 		var color = (e.name.indexOf('Imagery') > -1)?"#fff":"#00f";
@@ -126,8 +126,31 @@
 
 	map.addControl(L.geographGeocoder());
 
+	L.control.locate().addTo(map);
+
+
 	map.addLayer(L.geographClickLayer(clickOptions));
 
+	var filelayer = L.Control.fileLayerLoad().addTo(map);
+
+        filelayer.loader.on('data:loaded', function (event) {
+            // event.layer gives you access to the layers you just uploaded!
+
+            // Add to map layer switcher
+            layerswitcher.addOverlay(event.layer, event.filename);
+        });
+
+	function enlargeMap() {
+		var height = Math.min(1000,$(window).height());
+		$('#map').width(1000).height(height).parent().width(1000).height(height);
+		setTimeout(function(){ map.invalidateSize(); $('#enlargelink').hide(); }, 250);
+		return false;
+	}
+	$(function() {
+		if ($('div#maincontent').width() > 1024) {
+			$('#map').parent().after('<a href=# onclick="return enlargeMap()" id=enlargelink>Enlarge Map</a>');
+		}
+	});
 {/literal}</script>
 
 
