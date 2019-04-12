@@ -84,8 +84,7 @@ var overlayMaps = {};
 	                weight: 0.7,
         	        showSquareLabels: [100000,10000,100]
 	        };
-		overlayMaps["OSGB Grid"] = L.britishGrid(gridOptions);
-		overlayMaps["Irish Grid"] = L.irishGrid(gridOptions);
+		overlayMaps["OS National Grid"] = L.layerGroup([L.britishGrid(gridOptions), L.irishGrid(gridOptions)]);
 
 		gridOptions['weight'] = 0.4;
 		gridOptions['showAxisLabels'] = [];
@@ -95,7 +94,7 @@ var overlayMaps = {};
 		gridOptions['maxZoom'] = 16; //above this, minInterval means will be 100, same as main grid, so pointless rendering
 		gridOptions['skipZoom'] = [10,13]; //at these two zoom levels the grid is too dense
 
-		overlayMaps["Denser Grid"] = L.layerGroup([L.britishGrid(gridOptions), L.irishGrid(gridOptions)]);
+		overlayMaps["Denser OS Grid"] = L.layerGroup([L.britishGrid(gridOptions), L.irishGrid(gridOptions)]);
 	}
 
         var wmsLayer = L.tileLayer.wms('https://map.bgs.ac.uk/arcgis/services/BGS_Detailed_Geology/MapServer/WMSServer?', {
