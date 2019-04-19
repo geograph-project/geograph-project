@@ -209,8 +209,8 @@ function addOurControls(map) {
 	if (L.britishGrid) {
 		//not strictly a control, this is just setting event to mutate the Grid layers depending on baselayer
 		map.on('baselayerchange', function(e) {
-			var color = (e.name.indexOf('Imagery') > -1)?"#fff":"#00f";
-			var opacity = (e.name.indexOf('Imagery') > -1)?0.8:0.3;
+			var color = (e.name.indexOf('Imagery') > -1 || e.name.indexOf('PhotoMap') > -1)?"#fff":"#00f";
+			var opacity = (e.name.indexOf('Imagery') > -1 || e.name.indexOf('PhotoMap') > -1)?0.8:0.3;
 			for(i in overlayMaps) {
 				if (i.indexOf('Grid') > 0) {
 					if (typeof overlayMaps[i].eachLayer == 'function') {

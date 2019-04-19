@@ -116,10 +116,10 @@ ul.tips li {
 
 	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
 	<script src="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.js"></script>
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographGeocoder.js"></script>
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
 </head>
 <body>
@@ -175,8 +175,7 @@ ul.tips li {
         }).addTo( map );
 
         map.addLayer(baseMaps["OpenStreetMap"]); //todo, make this configure like in mappingLeaflet.js
-        map.addLayer(overlayMaps["OSGB Grid"]);
-        map.addLayer(overlayMaps["Irish Grid"]);
+	map.addLayer(overlayMaps["OS National Grid"]);
 
 	if (baseMaps["Geograph PhotoMap"]) delete baseMaps["Geograph PhotoMap"];
 	if (baseMaps["Watercolour"]) delete baseMaps["Watercolour"];
@@ -198,22 +197,9 @@ ul.tips li {
 	{/if}
 {/dynamic}
 {literal}
-	
-	L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-	map.on('baselayerchange', function(e) {
-		var color = (e.name.indexOf('Imagery') > -1)?"#fff":"#00f";
-		var opacity = (e.name.indexOf('Imagery') > -1)?0.8:0.3;
-		for(i in overlayMaps) {
-			if (i.indexOf('Grid') > 0) {
-				overlayMaps[i].options.color = color;
-				overlayMaps[i].setOpacity(opacity);
-				overlayMaps[i]._reset();
-			}
-		}
-	});
-
-	map.addControl(L.geographGeocoder());
+	//needs calling AFTER updating overlayMaps	
+        addOurControls(map);
 
 	map.addLayer(L.geographClickLayer({photos:6}));
 
