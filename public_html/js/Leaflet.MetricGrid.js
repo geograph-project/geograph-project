@@ -232,7 +232,8 @@ L.MetricGrid = L.Layer.extend({
 
     // internal opacity control
     _updateOpacity: function () {
-        L.DomUtil.setOpacity(this._canvas, this.options.opacity);
+        if (this._canvas) //setOpacity may be called before the layer has rendered
+            L.DomUtil.setOpacity(this._canvas, this.options.opacity);
     },
 
 
