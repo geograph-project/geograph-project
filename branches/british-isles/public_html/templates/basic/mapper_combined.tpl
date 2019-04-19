@@ -109,36 +109,15 @@
 	{/if}
 {/dynamic}
 {literal}
-	
+
+	addOurControls(map);
+
+	if (layerswitcher)
+		layerswitcher.expand();	
 	var layerswitcher = L.control.layers(baseMaps, overlayMaps).addTo(map).expand();
-
-	map.on('baselayerchange', function(e) {
-		var color = (e.name.indexOf('Imagery') > -1)?"#fff":"#00f";
-		var opacity = (e.name.indexOf('Imagery') > -1)?0.8:0.3;
-		for(i in overlayMaps) {
-			if (i.indexOf('Grid') > 0) {
-				overlayMaps[i].options.color = color;
-				overlayMaps[i].setOpacity(opacity);
-				overlayMaps[i]._reset();
-			}
-		}
-	});
-
-	map.addControl(L.geographGeocoder());
-
-	L.control.locate().addTo(map);
-
 
 	map.addLayer(L.geographClickLayer(clickOptions));
 
-	var filelayer = L.Control.fileLayerLoad().addTo(map);
-
-        filelayer.loader.on('data:loaded', function (event) {
-            // event.layer gives you access to the layers you just uploaded!
-
-            // Add to map layer switcher
-            layerswitcher.addOverlay(event.layer, event.filename);
-        });
 
 	function enlargeMap() {
 		var height = Math.min(1000,$(window).height());

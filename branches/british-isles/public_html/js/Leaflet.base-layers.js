@@ -195,7 +195,54 @@ overlayMaps["PhotoMap Overlay"] = L.tileLayer(mbUrl, {id: 'geograph/cjju7ep8g3yp
 
 	////////////////////////////////////////////////
 
-
 	//we dont call this ourselves (the parent page should call it, (so it can choose options, as as well add its own overlays etc) 
 	//L.control.layers(baseMaps, overlayMaps, {collapsed: false}).addTo(map);
+
+var layerswitcher;
+var filelayer;
+
+function addOurControls(map) {
 	
+	//the parent map will now have modified the baseMaps/overlayMaps lists!
+	layerswitcher = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+	if (L.britishGrid) {
+		//not strictly a control, this is just setting event to mutate the Grid layers depending on baselayer
+		map.on('baselayerchange', function(e) {
+			var color = (e.name.indexOf('Imagery') > -1)?"#fff":"#00f";
+			var opacity = (e.name.indexOf('Imagery') > -1)?0.8:0.3;
+			for(i in overlayMaps) {
+				if (i.indexOf('Grid') > 0) {
+					if (typeof overlayMaps[i].eachLayer == 'function') {
+						overlayMaps[i].eachLayer(function(layer) { 
+							layer.options.color = color;
+	                                	        layer.setOpacity(opacity);
+		                                        layer._reset();
+						});
+					} else {
+						overlayMaps[i].options.color = color;
+						overlayMaps[i].setOpacity(opacity);
+						overlayMaps[i]._reset();
+					}
+				}
+			}
+		});
+	}
+
+	if (L.geographGeocoder)
+		map.addControl(L.geographGeocoder());
+
+	if (L.control.locate)
+		L.control.locate().addTo(map);
+
+	if (L.Control.fileLayerLoad) {
+		filelayer = L.Control.fileLayerLoad().addTo(map);
+
+	        filelayer.loader.on('data:loaded', function (event) {
+        	    // event.layer gives you access to the layers you just uploaded!
+
+	            // Add to map layer switcher
+        	    layerswitcher.addOverlay(event.layer, event.filename);
+	        });
+	}
+}
