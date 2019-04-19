@@ -203,7 +203,8 @@ L.MetricGrid = L.Layer.extend({
 
     // redraw the overlay after a map pan or zoom etc
     _reset: function () {
-
+        if (!this._canvas) //its possible that _reset is called before grid has ever drawn, due to way events work
+            return; 
         var container = this._container;
         var canvas = this._canvas;
         var size = this._map.getSize();
