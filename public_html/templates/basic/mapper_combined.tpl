@@ -114,7 +114,7 @@
 
 	if (layerswitcher)
 		layerswitcher.expand();	
-	var layerswitcher = L.control.layers(baseMaps, overlayMaps).addTo(map).expand();
+
 
 	map.addLayer(L.geographClickLayer(clickOptions));
 
