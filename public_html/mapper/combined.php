@@ -52,7 +52,17 @@ if (!empty($_GET['user_id'])) {
 }
 
 
-if (!empty($_SESSION['gridref'])) {
+if (isset($_GET['t'])) {
+	$mosaic=new GeographMapMosaic;
+
+        if ($mosaic->setToken($_GET['t'])) {
+		$gridref = $mosaic->getGridRef(-1,-1);
+
+	        $smarty->assign('gridref',$gridref);
+		$smarty->assign('zoom', 12);
+	}
+
+} elseif (!empty($_SESSION['gridref'])) {
         $smarty->assign('gridref',$_SESSION['gridref']);
 }
 

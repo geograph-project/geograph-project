@@ -111,8 +111,7 @@
 		<ul>
 		<li><a href="/gridref/{$gridref4}"><b>Browse</b> Pictures of {$gridref4}</a></li>
 		<li><a href="/search.php?q={$gridref}"><b>Search</b> for pictures around this location</a></li>
-		<li>{if $map_token}<a href="/mapbrowse.php?t={$map_token}">Geograph <b>Map</b> around this location</a>{/if}<ul>
-		{if $datum == "osgb36"}<li><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}">Open the <b>Draggable Map</b></a></li>{/if}
+		<li><a href="/mapper/combined.php#14/{$lat}/{$long}">Open the <b>Draggable Map</b></a></li>
 			<li>{getamap gridref=$gridref text="Get-a-map&trade;"}</li>
 			<li>{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom"|escape:html text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}</li>
 		</ul></li>

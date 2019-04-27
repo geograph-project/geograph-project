@@ -14,7 +14,8 @@
 			<option value="/gridref/$gridref">GridSquare Page</option>
 			<optgroup label="Where possible opens at current location at center of this map"></option>
 			<optgroup label="...still being worked on, not all links work completely!"></option>
-		</select>
+		</select><br>
+		<a href="help/maps">read more...</a>
 	</div>
 </div>
 
@@ -149,6 +150,9 @@
 
                  if (wgs84)
                           mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
+	{/if}
+	{if $zoom}
+		zoom = {$zoom};
 	{/if}
 
 	var map = L.map('map', mapOptions);

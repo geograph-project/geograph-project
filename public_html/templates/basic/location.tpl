@@ -95,14 +95,11 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	<img src="{$static_host}/img/links/20/depth.png" width="20" height="20" alt="depth icon" align="absmiddle"/> <a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}&amp;depth=1"><b>Depth</b></a>, <img src="{$static_host}/img/links/20/maprecent.png" width="20" height="20" alt="recent icon" align="absmiddle"/> <a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}&amp;recent=1"><b>Recent Only</b></a></li>
 	
 	<li style="list-style-type:none">Draggable Maps: 
-		{if $square->reference_index == 1}
-			<img src="{$static_host}/img/links/20/mapper.png" width="20" height="20" alt="draggable icon" align="absmiddle"/> <a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}"><b>Grid Squares</b></a>, <img src="{$static_host}/img/links/20/dragcenti.png" width="20" height="20" alt="dragable centi icon" align="absmiddle"/> <a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1"><b>Centisquares</b></a>
-			<a href="http://m.nearby.org.uk/gmap.php?dots=1#ll={$lat},{$long}&z=14&t=m">Mobile Coverage</a>
-		{/if} 
-		<a href="/mapper/coverage.php#lat={$lat}&amp;lon={$long}&amp;zoom={$intergrated_zoom}&amp;layers={$intergrated_layers}">Experimental <b>Coverage Map</b></a><sup style="color:red">New!</sup>
+		<img src="{$static_host}/img/links/20/mapper.png" width="20" height="20" alt="draggable icon" align="absmiddle"/> 
+		<a href="/mapper/combined.php#13/{$lat}/{$long}"><b>Coverage Map</b></a><sup style="color:red">Updated!</sup>
 	</li>
 	
-	<li style="list-style-type:none">Interactive Map: <img src="{$static_host}/img/links/20/clusters.png" width="20" height="20" alt="clusters icon" align="absmiddle"/> <a href="/browser/#!/grid_reference+%22{$gridref}%22/display=map_dots/pagesize=100"><b>Browser Map</b></a>, <a href="/mapper/quick.php?q={$hectad}">Quick Hectad Map</a><br/><br/></li>
+	<li style="list-style-type:none">Interactive Map: <img src="{$static_host}/img/links/20/clusters.png" width="20" height="20" alt="clusters icon" align="absmiddle"/> <a href="/browser/#!/grid_reference+%22{$gridref}%22/display=map_dots/pagesize=100"><b>Browser Map</b></a><br/><br/></li>
 
 	<li style="list-style-type:none"><a href="/gridref/{$hectad}">Page for <b>Hectad {$hectad}</b></a></li>
 
