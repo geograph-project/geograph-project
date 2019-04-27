@@ -42,6 +42,22 @@ if (isset($_GET['t'])) {
 	$ok = $map->setToken($_GET['t']);
 	if (!$ok)
 		die("Invalid Token");
+
+} elseif (!empty($_GET['lat']) && isset($_GET['lon'])) {
+	$conv = new Conversions;
+        list($x,$y,$reference_index) = $conv->wgs84_to_internal($_GET['lat'],$_GET['lon']);
+
+	if ($_GET['zoom'] < 11) {
+		$map->pixels_per_km = 4;
+		$div = 100;
+	} else {
+		$map->pixels_per_km = 40;
+		$div = 10;
+	}
+
+        $x = ( intval(($x - $CONF['origins'][$reference_index][0])/$div)*$div ) +  $CONF['origins'][$reference_index][0];
+        $y = ( intval(($y - $CONF['origins'][$reference_index][1])/$div)*$div ) +  $CONF['origins'][$reference_index][1];
+	$map->setOrigin($x, $y);
 } else {
 	die("Missing Token");
 }
@@ -74,7 +90,7 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 } elseif (isset($_GET['levels'])) {
 	$old_type_or_user = $map->type_or_user;
 	$map->type_or_user = -13;
-} elseif ( $map->type_or_user == -1 && $map->pixels_per_km = 40) {
+} elseif ( $map->type_or_user == -1 && $map->pixels_per_km == 40) {
 	$map->type_or_user = 0;
 }
 

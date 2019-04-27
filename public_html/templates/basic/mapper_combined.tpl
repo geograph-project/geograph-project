@@ -1,5 +1,23 @@
 {include file="_std_begin.tpl"}
 
+<div style="width:800px">
+	<div style="float:right">
+		<select id="mapLinkSelector" onchange="linkToMap(this)">
+			<option value="">Other Maps....</option>
+			<option value="/browser/#!/loc=$gridref/dist=2000/display=map_dots">Image Browser Map</a>
+			<option value="/mapper/coverage.php#zoom=$zoom&lat=$lat&lon=$long&layers=$layers">Coverage Map V3</option>
+			<option value="/mapper/?zoom=$zoom&lat=$lat&lon=$long">Coverage Map V2 (GB only)</option>
+			<option value="/mapbrowse.php?zoom=$zoom&lat=$lat&lon=$long">Coverage Map V1</option>
+			<option value="/mapsheet.php?zoom=$zoom&lat=$lat&lon=$long">Printable Checksheet</option>
+			<option value="/gridref/$gridref/links">Location Links Page</option>
+			<option value="https://www.nearby.org.uk/coord.cgi?p=$gridref">(nearby.org.uk Links Page)</option>
+			<option value="/gridref/$gridref">GridSquare Page</option>
+			<optgroup label="Where possible opens at current location at center of this map"></option>
+			<optgroup label="...still being worked on, not all links work completely!"></option>
+		</select>
+	</div>
+</div>
+
 <h2>Geograph Coverage Map (v4) {dynamic}{if $realname} for {$realname|escape:'html'}{/if}{/dynamic}</h2>
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" rel="stylesheet" />
@@ -61,6 +79,61 @@
 	<script src="https://unpkg.com/leaflet-filelayer@1.2.0/src/leaflet.filelayer.js"></script>
 
 <script>{literal}
+
+	function linkToMap(that) {
+		var url = that.value;
+
+		var center = map.getCenter();
+		var zoom = map.getZoom();
+
+		if (url.indexOf('$gridref') > -1 || url.indexOf('$layers') > -1) {
+                        //create a wgs84 coordinate
+                        wgs84=new GT_WGS84();
+                        wgs84.setDegrees(center.lat, center.lng);
+			if (wgs84.isIreland2()) {
+				//convert to Irish
+				var grid=wgs84.getIrish(true);
+			} else if (wgs84.isGreatBritain()) {
+				//convert to OSGB
+				var grid=wgs84.getOSGB();
+			}
+			if (zoom > 14) {
+				var gridref = grid.getGridRef(10);
+			} else if (zoom > 9) {
+				var gridref = grid.getGridRef(6);
+			} else {
+				var gridref = grid.getGridRef(4);
+			}
+			url = url.replace(/\$gridref/g,gridref.replace(/ /g,''));
+		}
+		if (url.indexOf('$layers') > -1) {
+			if (wgs84.isGreatBritain()) {
+				zoom = Math.floor(zoom * 0.4); //os maps use a different scale :(
+				var layers = 'FTFB000000000000FT';
+			} else {
+				var layers = 'FFT000000000000BFT';
+			}
+			url = url.replace(/\$layers/g,layers);
+		}
+
+		url = url.replace(/\$lat/g,center.lat);
+		url = url.replace(/\$long/g,center.lng);
+		url = url.replace(/\$zoom/g,zoom);
+
+		if (overlayMaps["(Personalize Coverage)"] && map.hasLayer(overlayMaps["(Personalize Coverage)"])) {
+			if (url.indexOf('?') > -1) {
+				url = url + "&mine=1";
+			} else if (url.indexOf('/browser/') == 0) {
+				var user_id = overlayMaps["(Personalize Coverage)"].options.user_id;
+				url = url + "/user+%22user"+user_id+"%22";
+			}
+		}
+	
+		//if (url.indexOf('/') ==0) 
+		window.open(url,'_blank');
+
+		that.selectedIndex = 0;
+	}
 
 	var mapOptions =  {
                 center: [54.4266, -3.1557], zoom: 13,
