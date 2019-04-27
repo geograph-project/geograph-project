@@ -758,7 +758,7 @@ split_timer('gridimage'); //starts the timer
 			if ($collections2 = $db->getAll("
 				SELECT '' AS url,CONCAT(label,' [',images,']') AS title,'Automatic Cluster' AS `type`
 				FROM gridimage_group INNER JOIN gridimage_group_stat USING (label)
-				WHERE gridimage_id = {$this->gridimage_id} AND grid_reference = '{$this->grid_reference}'
+				WHERE gridimage_group.gridimage_id = {$this->gridimage_id} AND grid_reference = '{$this->grid_reference}'
 				AND label != 'Other Topics' AND images > 1
 				ORDER BY score DESC")) {
 
