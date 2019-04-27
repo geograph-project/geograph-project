@@ -286,12 +286,7 @@ south_F2 = new Image(30,29); south_F2.src = "{$static_host}/templates/basic/mapn
 
 
 
-
-
-
  <br style="clear:both;"/>
-
-
 
 
 {if $token_zoomout || $realname}
@@ -343,19 +338,6 @@ south_F2 = new Image(30,29); south_F2.src = "{$static_host}/templates/basic/mapn
 	{if $coveragelink}
 		 <a class="tab" href="{$coveragelink}">Interactive</a>
 	{/if}
-	{if $mapwidth == 100 || !$token_zoomin}
-		{if $mosaic_ri == 1}
-			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="interactive coverage map overlaid over OS raster maps">Draggable OS</a>
-		{/if}
-		{if $lat && $long}
-                	<a class="tab" href="/mapper/combined.php#9/{$lat}/{$long}">Draggable Map</a>
-		{/if}
-	{elseif $mosaic_ri == 1}
-		<a class="tab" id="tab4">Draggable OS <sup style="font-size:0.7em;color:blue">[Zoom first]</sup></a>
-	{/if}
-	{if !$token_zoomin && $mosaic_ri == 1}
-	<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" href="/mapper/{dynamic}{if $gridref_from}?gridref_from={$gridref_from}{/if}{/dynamic}#13/{$lat}/{$long}" title="shows the coverage at centisquare level - overlaid on OS raster maps">Zoomable Coverage</a>
-	{/if}
 	{if $mapwidth == 10 || $mapwidth == 100}
 		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field">{if $realname}Personalised {elseif $recent}Recent Only {elseif $tab ==3}Depth {elseif $userdepth}User Depth {/if}Check Sheet</a>
 	{/if}
@@ -391,12 +373,12 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 </ul>
 
  <hr/>
-<b>Update 2015:</b><br>
-<div style="margin-left:40px">This map is starting to show its age, it was made over 10 years ago, with what is now old technology; which alas many modern browsers no longer fully support. 
+<b>Update 2019:</b><br>
+<div style="margin-left:40px">This map is starting to show its age, it was made over 15 years ago, with what is now old technology; which alas many modern browsers no longer fully support. 
 In particular the "open in new window"/tab does NOT function propelly, nor normal left-clicking on the map at thumbnail scale for some squares. And using other than 100% page zoom can cause issues.
 For best results use Internet Explorer 10 or below (yes really!), or Firefox still seems functional.</div>
 <br>
-We have started work on a new mapping interface: <a href="/mapper/coverage.php">Experimental Coverage Map</a>, which welcome to try, it still needs some work. 
+<b>We have a new mapping interface: <a href="{$coveragelink}">Coverage Map V4</a>, not finished, but probably recommended over this map.</b>
 
  <hr/>
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project and

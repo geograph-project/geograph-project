@@ -875,6 +875,20 @@ class GeographMapMosaic
 			case 1: $zoom = 7; break;
 			case 4: $zoom = 9; break;
 			case 40:
+			case 80: $zoom = 12;
+		}
+		if ($this->type_or_user && $this->type_or_user == $GLOBALS['USER']->user_id) {
+			return $CONF['SELF_HOST']."/mapper/combined.php?mine=1#$zoom/$lat/$long";
+		} else {
+			return $CONF['SELF_HOST']."/mapper/combined.php#$zoom/$lat/$long";
+		}
+
+		switch ($this->pixels_per_km) {
+			case 0.13:
+			case 0.3: $zoom = 5; break;
+			case 1: $zoom = 7; break;
+			case 4: $zoom = 9; break;
+			case 40:
 			case 80: $zoom = 15;
 		}
 		if ($this->reference_index == 1)

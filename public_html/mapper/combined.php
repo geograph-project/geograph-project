@@ -53,6 +53,7 @@ if (!empty($_GET['user_id'])) {
 
 
 if (isset($_GET['t'])) {
+	require_once('geograph/mapmosaic.class.php');
 	$mosaic=new GeographMapMosaic;
 
         if ($mosaic->setToken($_GET['t'])) {

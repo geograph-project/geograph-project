@@ -4,7 +4,7 @@
 <script type="text/javascript" src="{"/admin/moderation.js"|revision}"></script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script src="/js/jquery.storage.js"></script>
+<script src="{"/js/jquery.storage.js"|revision}"></script>
 {literal}
 <style>
 @media only screen and (max-width: 1024px)  {

@@ -124,7 +124,7 @@
 			<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a>
 			{if $lat}
 				<ul>
-				<li style="margin-top:4px">View on <a href="/mapper/combined.php?16/{$lat}/{$long}"><b>Coverage Map</b></a></li>
+				<li style="margin-top:4px">View on <a href="/mapper/combined.php#16/{$lat}/{$long}"><b>Coverage Map</b></a></li>
 				</ul>
 			{/if}
 			</li>
