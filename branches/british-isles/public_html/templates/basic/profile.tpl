@@ -40,6 +40,10 @@
 {if $overview}
   <div style="float:right; width:{$overview_width+30}px; position:relative">
   {include file="_overview.tpl"}
+
+                {if $user->user_id eq $profile->user_id}
+                        <a href="/mapper/combined.php?mine=1#5/56.317/-2.769">Coverage Map of your Photos</a>
+                {/if}
   </div>
 {/if}
 
@@ -305,7 +309,10 @@
 	{/if}
 	<ul>
 
-		<li><b>Maps</b>: {if $profile->stats.images gt 10}<a href="/profile/{$profile->user_id}/map" rel="nofollow">Personalised Geograph map</a> or {/if} photos on <a href="/mapper/quick.php?q=user{$profile->user_id}">Quick Interactive Map</a></li>
+		{if $user->user_id eq $profile->user_id}
+			<li><b>Maps</b>: <a href="/mapper/combined.php?mine=1#5/56.317/-2.769">Coverage Map of your Photos</a></li>
+		{/if}
+
 		<li><b>Browser</b>: <a href="/browser/#!/q=user{$profile->user_id}/realname+%22{$profile->realname|escape:'url'}%22">View images in the Browser</a></li>
 		<li><b>Recent Images</b>: <a title="View images by {$profile->realname|escape:'html'} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml">as KML</a> or <a title="RSS Feed for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.rss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a></li>
 		{if $profile->stats.images gt 10}

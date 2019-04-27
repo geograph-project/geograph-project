@@ -12,10 +12,11 @@
 			<option value="/gridref/$gridref/links">Location Links Page</option>
 			<option value="https://www.nearby.org.uk/coord.cgi?p=$gridref">(nearby.org.uk Links Page)</option>
 			<option value="/gridref/$gridref">GridSquare Page</option>
+			<option value="http://mapapps.bgs.ac.uk/geologyofbritain/home.html?lat=$lat&long=$long">Geology of Britain Viewer (GB Only)</option>
 			<optgroup label="Where possible opens at current location at center of this map"></option>
 			<optgroup label="...still being worked on, not all links work completely!"></option>
 		</select><br>
-		<a href="help/maps">read more...</a>
+		<a href="/help/maps">read more...</a>
 	</div>
 </div>
 
@@ -72,6 +73,7 @@
 	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="{"/js/jquery.storage.js"|revision}"></script>
 
 	<script src="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.js"></script>
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographGeocoder.js"></script>
@@ -152,13 +154,55 @@
                           mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
 	{/if}
 	{if $zoom}
-		zoom = {$zoom};
+		mapOptions.zoom = {$zoom};
 	{/if}
 
 	var map = L.map('map', mapOptions);
         var hash = new L.Hash(map);
 
-        map.addLayer(baseMaps["OpenStreetMap"]); //todo, make this configure like in mappingLeaflet.js
+{literal}
+	var reinstateOS = false;
+	if (baseMaps["Ordnance Survey GB"]) {
+		//temporally bodge!
+
+		map.on('zoom', function(e) {
+			if (map.hasLayer(baseMaps["Ordnance Survey GB"])) {
+				var zoom = map.getZoom();
+				if (zoom <12 || zoom > 17) {
+					map.addLayer(baseMaps["OpenStreetMap"]);
+					map.removeLayer(baseMaps["Ordnance Survey GB"]);
+					reinstateOS = true;
+				}
+			} else if (reinstateOS && map.hasLayer(baseMaps["OpenStreetMap"])) {
+				var zoom = map.getZoom();
+				if (zoom >= 12 && zoom <= 17) {
+					map.addLayer(baseMaps["Ordnance Survey GB"]);
+					map.removeLayer(baseMaps["OpenStreetMap"]);
+					reinstateOS = false;
+				}
+			}
+		});
+		//need on('baselayerchange' to set  reinstateOS = false;, use the storage one, below rather than two methods!
+	}
+
+	if ($.localStorage && $.localStorage('LeafletBaseMap')) {
+		basemap = $.localStorage('LeafletBaseMap');
+		if (baseMaps[basemap])
+			map.addLayer(baseMaps[basemap]);
+		else
+			map.addLayer(baseMaps["OpenStreetMap"]);
+	} else {
+		map.addLayer(baseMaps["OpenStreetMap"]);
+	}
+	if ($.localStorage) {
+		map.on('baselayerchange', function(e) {
+		  	$.localStorage('LeafletBaseMap', e.name);
+			reinstateOS = false;
+		});
+	}
+{/literal}
+
+	//todo, make this configure like in mappingLeaflet.js
         map.addLayer(overlayMaps["OS National Grid"]);
 
 	{if $dots}
@@ -250,6 +294,8 @@
 		</span></li>
 	<li><b>Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
 		Experimental coverage layer to see if concept works. Exact specififications of layer subject to change or withdrawl. 
+
+	<li>We don't have a key of the BGS layers, but use the link (in [Other Maps...] at top!) to the offical Geology of Britain Viewer, which provides some functions to explain the colouring</li>
 </ul>
 
 <h3>Other suggestions/requests?</h3>
