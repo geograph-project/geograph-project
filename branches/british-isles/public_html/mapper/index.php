@@ -32,47 +32,74 @@ $mosaic->pixels_per_km = 40;
 
 if (isset($_GET['random'])) {
 	$db=GeographDatabaseConnection(false);
-	
+
 	$count = $db->cacheGetOne(86400,"SELECT COUNT(*) FROM gridsquare WHERE reference_index=1 AND percent_land = 100");
-	
+
 	$offset = rand(0,$count);
 
 	$str = $db->getOne("SELECT AsText(point_xy) FROM gridsquare WHERE reference_index=1 AND percent_land = 100 AND gridsquare_id > $offset"); //limit 1 is added automaticallu
 
 	preg_match('/\((\d+) (\d+)\)/',$str,$m);
-;
+
 	if ($str && $m[1]) {
 		$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
 		$mosaic->setOrigin($m[1]-$mapw,$m[2]-$mapw);
 	}
 	$token=$mosaic->getToken();
 	$cacheid='mapper|'.$token;
+
 } elseif (isset($_GET['t'])) {
 	$mosaic->setToken($_GET['t']);
-	
+
 	$token=$mosaic->getToken();
 	$cacheid='mapper|'.$token;
+
 } elseif (isset($_GET['lat'])) {
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions();
 
-	list($x,$y) = $conv->national_to_internal($_GET['lon'],$_GET['lat'],1);	
-	
-	if (isset($_GET['zoom'])) {
-		switch($_GET['zoom']) {
-			case 0: $mosaic->pixels_per_km =  4; break;
-			case 1: $mosaic->pixels_per_km = 40; break;//there isnt a direct equiv
-			case 2: $mosaic->pixels_per_km = 40; break;
-			case 3: $mosaic->pixels_per_km = 80; break;
-			default: die("invalid zoom");
-		} 
+	if ($_GET['lon'] < 10 && $_GET['lat'] < 100) {
+		//new style where real wgs84 lat/long
+		list($x,$y,$reference_index) = $conv->wgs84_to_internal($_GET['lat'],$_GET['lon']);
+		if ($reference_index != 1) {
+			print "list($x,$y,$reference_index)";
+			$smarty = new GeographPage;
+			header("HTTP/1.0 404 Not Found");
+		        $smarty->display('static_404.tpl');
+		        exit;
+			die("this map only works in Great Britain");
+		}
+
+	        if ($_GET['zoom'] >= 12) {
+	                $mosaic->pixels_per_km = 40;
+	        } elseif ($_GET['zoom'] >= 9) {
+	                $mosaic->pixels_per_km = 4;
+	        } else {
+	                $mosaic->pixels_per_km = 1;
+	        }
+	        $mosaic->mosaic_factor = 2;
+
+	        $mosaic->setCentre($x, $y);
+
 	} else {
-		//legacy support for no zoom specified
-	} 
-	
-	$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
-	$mosaic->setOrigin($x-$mapw,$y-$mapw);
-	
+		//old style, where actully eastings/norhgins!
+		list($x,$y) = $conv->national_to_internal($_GET['lon'],$_GET['lat'],1);
+
+		if (isset($_GET['zoom'])) {
+			switch($_GET['zoom']) {
+				case 0: $mosaic->pixels_per_km =  4; break;
+				case 1: $mosaic->pixels_per_km = 40; break;//there isnt a direct equiv
+				case 2: $mosaic->pixels_per_km = 40; break;
+				case 3: $mosaic->pixels_per_km = 80; break;
+				default: die("invalid zoom");
+			}
+		}
+
+		$mapw=($mosaic->image_w/$mosaic->pixels_per_km)/2;
+		$mosaic->setOrigin($x-$mapw,$y-$mapw);
+	}
+
+
 	$token=$mosaic->getToken();
 	$cacheid='mapper|'.$token;
 } else {
@@ -161,5 +188,4 @@ $smarty->assign('tile_host',$CONF['TILE_HOST']);
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+

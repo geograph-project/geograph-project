@@ -138,61 +138,71 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 //are we zooming in on an image map? we'll have a url like this
 //i and j give the index of the mosaic image
 //http://geograph.elphin/mapbrowse.php?t=token&i=0&j=0&zoomin=?275,199
-if (isset($_GET['zoomin']))
-{
+if (isset($_GET['zoomin'])) {
 	dieUnderHighLoad(1.2);
 	//get click coordinate, or use centre point if not supplied
 
 	$x=isset($_GET['x'])?intval($_GET['x']):round(($mosaic->image_w/$mosaic->mosaic_factor)/2);
 	$y=isset($_GET['y'])?intval($_GET['y']):round(($mosaic->image_h/$mosaic->mosaic_factor)/2);
 
-	
 	//get the image index
 	$i=intval($_GET['i']);
 	$j=intval($_GET['j']);
-	
+
 	//handle the zoom
-	$mosaic->zoomIn($i, $j, $x, $y);	
+	$mosaic->zoomIn($i, $j, $x, $y);
 }
 
-if (isset($_GET['center']))
-{
+if (isset($_GET['center'])) {
 	//extract x and y click coordinate from imagemap
 	$x=isset($_GET['x'])?intval($_GET['x']):round(($overview->image_w/$mosaic->mosaic_factor)/2);
 	$y=isset($_GET['y'])?intval($_GET['y']):round(($overview->image_h/$mosaic->mosaic_factor)/2);
-	
+
 
 	//get the image index
 	$i=intval($_GET['i']);
 	$j=intval($_GET['j']);
-	
+
 	//get click coordinate on overview, use it to centre the main map
-	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);	
-	
+	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);
+
 	$zoomindex = array_search($overview->pixels_per_km,$overview->scales);
 	$scale = $overview->scales[$zoomindex+1];
 	$mosaic->setScale($scale);
 	$mosaic->setMosaicFactor(2);
-	$mosaic->setCentre($intx, $inty);	
-	
+	$mosaic->setCentre($intx, $inty);
 }
 
-if (isset($_GET['recenter']))
-{
+if (isset($_GET['recenter'])) {
 	//extract x and y click coordinate from imagemap
 	$x=isset($_GET['x'])?intval($_GET['x']):round(($overview->image_w/$mosaic->mosaic_factor)/2);
 	$y=isset($_GET['y'])?intval($_GET['y']):round(($overview->image_h/$mosaic->mosaic_factor)/2);
-	
-	
+
 	//get the image index
 	$i=intval($_GET['i']);
 	$j=intval($_GET['j']);
-	
+
 	//get click coordinate on overview, use it to centre the main map
-	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);	
-	$mosaic->setCentre($intx, $inty);	
-	
+	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);
+	$mosaic->setCentre($intx, $inty);
 }
+
+if (!empty($_GET['lat']) && isset($_GET['lon'])) {
+	$conv = new Conversions;
+        list($x,$y,$reference_index) = $conv->wgs84_to_internal($_GET['lat'],$_GET['lon']);
+
+	if ($_GET['zoom'] >= 12) {
+		$mosaic->pixels_per_km = 40;
+	} elseif ($_GET['zoom'] >= 9) {
+		$mosaic->pixels_per_km = 4;
+	} else {
+		$mosaic->pixels_per_km = 1;
+	}
+	$mosaic->mosaic_factor = 2;
+
+	$mosaic->setCentre($x, $y);
+}
+
 
 if ($mosaic->pixels_per_km > 40) {
 	$mosaic->pixels_per_km = 40;
@@ -269,14 +279,13 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign_by_ref('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' LIMIT 1"));
 		}
 	}
-	
+
 	//assign main map to smarty
-	
+
 	$mosaic->assignToSmarty($smarty, 'mosaic');
-	
-	
+
 	$smarty->assign('mapwidth', round($mosaic->image_w /$mosaic->pixels_per_km ) );
-	
+
 	$smarty->assign('token_zoomin', $mosaic->getZoomInToken());
 	$smarty->assign('token_zoomout', $mosaic->getZoomOutToken());
 	$smarty->assign('token_north', $mosaic->getPanToken(0, 1));
@@ -297,5 +306,4 @@ if (!$smarty->is_cached($template, $cacheid))
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+

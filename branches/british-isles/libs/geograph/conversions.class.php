@@ -74,17 +74,18 @@ function ExifToNational($exif) {
 * @version $Revision$
 */
 
-	
+
 class Conversions
-{		
+{
 	var $db = null;
-	
+
 //use:	list($x,$y,$reference_index) = wgs84_to_internal($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
 
 function wgs84_to_internal($lat,$long,$asfloat=false) {
 	list($e,$n,$reference_index) = $this->wgs84_to_national($lat,$long);
-	return $this->national_to_internal($e,$n,$reference_index,$asfloat);
+	list($x,$y) = $this->national_to_internal($e,$n,$reference_index,$asfloat);
+	return array($x,$y,$reference_index);
 }
 
 
