@@ -9,7 +9,7 @@
       <li><a title="Advanced image search" href="/search.php?form=text">Advanced</a></li>
       <li><a title="Advanced image search" href="/finder/">More</a></li>
      </ul></li>
-     <li><a title="View map of all submissions" href="/mapper/coverage.php#zoom=7&lat=53.52506&lon=-8.092&layers=FFT000000000000BFT">Maps</a><ul>
+     <li><a title="View map of all submissions" href="/mapper/combined.php#7/53.416/-7.877">Maps</a><ul>
       <li><a title="Depth Map" href="/mapbrowse.php?depth=1">Depth</a></li>
       <li><a title="Other Map" href="/help/maps">...more</a></li>
      </ul></li>

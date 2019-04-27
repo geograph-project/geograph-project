@@ -91,9 +91,7 @@
 
 	<li><a href="/stuff/browse-random.php">Jump to a <b>random</b> grid square</a>.</li>
 
-	<li><a href="/mapbrowse.php">Explore a zoomable <b>map</b></a>.</li>
-
-	<li><a href="/mapper/">View a <b>Draggable map</b> checksheet</a>. (use the grid reference box to jump to your area of interest)</li>
+	<li><a href="/mapper/combined.php">View a <b>Draggable map</b></a> shows coverage and individial photos. (use the search button on the map to jump to your area of interest)</li>
 
 	<li><a href="/hectadmap.php">View a <b>Hectad coverage</b> map</a></li>
 

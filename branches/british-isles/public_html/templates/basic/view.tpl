@@ -392,9 +392,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 {/if}
 
-{if $rastermap->reference_index == 1}<a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a> &middot; {/if}
-
-<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a> &middot;
+<a href="/mapper/combined.php#13/{$lat}/{$long}">Geograph Coverage Map</a> &middot;
 
 {if $image_taken}
 	{assign var="imagetakenurl" value=$image->imagetaken|date_format:"&amp;taken=%Y-%m-%d"}

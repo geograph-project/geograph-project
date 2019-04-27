@@ -12,9 +12,9 @@
 		<a href="/help/maps">more maps...</a>
 	</div>
 	<div class="interestBox">	
-		<h2>Interactive Coverage Map</h2>
+		<h2>Interactive Coverage Map (v3)</h2>
 
-		We are working on a <a href="/mapper/combined.php" onclick="return combinedlink(this)">newer even more refined version of this map</a>, it's not completely finished yet, but may be worth trying. 
+		We now have: <b><a href="/mapper/combined.php" onclick="return combinedlink(this)">Version 4</a></b>, it's not completely finished yet, but may be worth trying. 
 	</div>
 
 	<p>Click the map to view nearby images (appear below the map). Also open the layer switcher 

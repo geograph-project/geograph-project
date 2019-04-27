@@ -146,7 +146,7 @@ AttachEvent(window,'load',loadMap,false);
 </div>
 
 <div class="interestBox" style="padding:0px; margin-top:6px">
-<h3 style="text-align:center;">Draggable Geograph Map of Great Britain <sup>(beta)</sup></h3>
+<h3 style="text-align:center;">Draggable Geograph Map (v2) of Great Britain</h3>
 </div>
 
 <div class="copyright">&middot; Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey.<br/> All Rights Reserved. Educational licence 100045616 &middot;<br/>

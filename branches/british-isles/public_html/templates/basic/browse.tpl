@@ -124,7 +124,7 @@
 			<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a>
 			{if $lat}
 				<ul>
-				<li style="margin-top:4px">View on <a href="/mapper/coverage.php?centi=1#lat={$lat}&amp;lon={$long}&amp;zoom={$intergrated_zoom_centi}&amp;layers={$intergrated_layers}">Experimental <b>Coverage Map</b></a></li>
+				<li style="margin-top:4px">View on <a href="/mapper/combined.php?16/{$lat}/{$long}"><b>Coverage Map</b></a></li>
 				</ul>
 			{/if}
 			</li>
@@ -206,7 +206,7 @@
 	{$rastermap->getImageTag($gridrefraw)}
 	{if $rastermap->getFootNote()}
 	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
-	{if $square->reference_index == 1}<br/><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1">Open <b>Interactive OS Map Overlay</b></a>{/if}
+	<br/><a href="/mapper/combined.php#15/{$lat}/{$long}">Open <b>Interactive Map</b></a>
 
 	{/if}
 	{$rastermap->getScriptTag()}
@@ -361,7 +361,7 @@
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 			{if $lat}
-				<p>View on <a href="/mapper/coverage.php?centi=1#lat={$lat}&amp;lon={$long}&amp;zoom={$intergrated_zoom_centi}&amp;layers={$intergrated_layers}">Experimental <b>Coverage Map</b></a></p>
+				<p>View on <a href="/mapper/combined.php#16/{$lat}/{$long}">Interactive <b>Coverage Map</b></a></p>
 			{/if}
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6 figure grid reference.</small></p>
 

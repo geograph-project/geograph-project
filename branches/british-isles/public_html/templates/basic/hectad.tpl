@@ -81,7 +81,7 @@ Nearby hectads:
 	
 	<li style="list-style-image: url('{$static_host}/img/links/20/map.png');"><a title="View map for {$hectad}" href="/mapbrowse.php?t={$map_token}">View Geograph <b>Coverage Map</b></a> or <img src="{$static_host}/img/links/20/checksheet.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">View a <b>printable check sheet</b></a></li>
 	
-	{if $reference_index == 1}<li style="list-style-image: url('{$static_host}/img/links/20/mapper.png');"><a href="/mapper/?t={$map_token}">Open <b>OS Grid Squares Map</b></a></b> {/if} </li>
+	<li style="list-style-image: url('{$static_host}/img/links/20/mapper.png');"><a href="/mapper/combined.php?t={$map_token}">Open <b>Zoomable Map</b></a></b></li>
 
 	<li style="list-style-image: url('{$static_host}/img/links/20/search.png');"><a title="open geograph browser - search/browse and map in one" href="/browser/#!/hectad+%22{$hectad}%22">Open {$hectad} in <b>Geograph Browser</b></a></li>
 	
