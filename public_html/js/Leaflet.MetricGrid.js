@@ -243,7 +243,7 @@ L.MetricGrid = L.Layer.extend({
     // If grid spacing < 1km, uses 3 digits,
     // else if grid spacing < 10km uses 2 digits,
     // else one digit
-    _formatEastOrNorth(n, spacing) {
+    _formatEastOrNorth: function(n, spacing) {
 
         var r;
         var h = Math.floor(n / 100000);
