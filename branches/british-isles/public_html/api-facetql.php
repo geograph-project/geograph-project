@@ -15,6 +15,8 @@ if (!defined('SPHINX_INDEX')) {
 	        define('SPHINX_INDEX',"content_stemmed");
 	} elseif (!empty($_GET['gg'])) {
 	        define('SPHINX_INDEX',"germany");
+	} elseif (!empty($_GET['vv'])) {
+	        define('SPHINX_INDEX',"viewpoint");
 	} else
         	define('SPHINX_INDEX',empty($_GET['recent'])?"sample8":"sample8E,sample8D");
 }
@@ -70,6 +72,9 @@ Example Queries:
 
 	$res = array();
 
+###########################################
+#initialize query
+
 	$db = mysql_sphinx();
 
 
@@ -103,11 +108,12 @@ Example Queries:
 		if (!empty($_GET['option']))
 			$option[] = $_GET['option'];
 
-$option[] = "max_query_time = 10000";
-
-		#$ = empty($_GET[''])?'':$_GET[''];
+		$option[] = "max_query_time = 10000";
 
 //todo groupByTile
+
+###########################################
+# hack for filters, as need mysql to decode FROM_DAYS
 
 			if (preg_match("/to_days\('?([\d-]+)'?\)/",$select,$m)) {
 				$link = mysql_database();
@@ -120,6 +126,8 @@ $option[] = "max_query_time = 10000";
                                 }
                         }
 
+###########################################
+# extra filters
 
         if (!empty($_GET['filter'])) {
                 foreach ($_GET['filter'] as $key => $value) {
@@ -171,55 +179,92 @@ $option[] = "max_query_time = 10000";
                 }
         }
 
+###################################################
+# geo filter helpers
 
+	$prefix = 'wgs84_';
+	//dont use a 4th param to geo, like in geo2, because needs to apply yo bounds/olbounds too!
+	if (!empty($_GET['geo_prefix']) && preg_match('/^\w+$/',$_GET['geo_prefix']))
+		$prefix = $_GET['geo_prefix'];
+	elseif (SPHINX_INDEX == 'viewpoint')
+		$prefix = 'v'; //set a default
 
         if (!empty($_GET['geo'])) {
                 $bits = explode(',',$_GET['geo']);
-		$select .= ",geodist(wgs84_lat,wgs84_long,".deg2rad($bits[0]).','.deg2rad($bits[1]).') as geodist';
+		$select .= ",geodist({$prefix}lat,{$prefix}long,".deg2rad($bits[0]).','.deg2rad($bits[1]).') as geodist';
+
 		if (!empty($bits[2])) {
 			$where[] = 'geodist < '.floatval($bits[2]);
 
-        	        if ($bits[2] < 75000 && empty($_GET['match']) && strpos(implode('',$where),'MATCH') === FALSE) { //todo, could still run it at other times too
-                	        require_once('geograph/global.inc.php');
+			//make a field filter
+        	        if ($bits[2] < 75000 && $subject && empty($_GET['match']) && strpos(implode('',$where),'MATCH') === FALSE  //todo, could still run it at other times too
+					&& ($prefix == 'wgs84_' || $prefix == 's')) {
                         	require_once('geograph/conversions.class.php');
 	                        $_GET['match'] = geotiles(floatval($bits[0]),floatval($bits[1]),floatval($bits[2]));
 
 		                if (!empty($_GET['match']))
         		                $where[] = "MATCH('".mysql_real_escape_string($_GET['match'])."')";
 	                }
+
+	                //make a BBOX too?
+        	        if (empty($_GET['bounds']) && empty($_GET['olbounds']) && isset($_GET['d'])) {
+                	        //top/right  --- north/east
+                        	list($long1,$lat1) = calcLatLong($bits[1],$bits[0],$bits[2]*2.2,45); //sqrt(2) + some leeway
+	                        //bottom/left -- south/west
+        	                list($long2,$lat2) = calcLatLong($bits[1],$bits[0],$bits[2]*2.2,225);
+
+				$where[] = "{$prefix}lat BETWEEN ".deg2rad($lat2).' AND '.deg2rad($lat1);
+				$where[] = "{$prefix}long BETWEEN ".deg2rad($long1).' AND '.deg2rad($long2);
+        	        }
 		}
-
-                //make a BBOX too?
-                if (empty($_GET['bounds']) && isset($_GET['d'])) {
-                        //top/right  --- north/east
-                        list($long1,$lat1) = calcLatLong($bits[1],$bits[0],$bits[2]*2.2,45); //sqrt(2) + some leeway
-                        //bottom/left -- south/west
-                        list($long2,$lat2) = calcLatLong($bits[1],$bits[0],$bits[2]*2.2,225);
-
-			$where[] = 'wgs84_lat BETWEEN '.deg2rad($lat2).' AND '.deg2rad($lat1);
-			$where[] = 'wgs84_long BETWEEN '.deg2rad($long1).' AND '.deg2rad($long2);
-                }
         }
 
-if (!empty($_GET['bounds'])) {
-        $b = str_replace('Bounds','',$_GET['bounds']);
-        $b = str_replace('(','',$b);
-        $b = str_replace(')','',$b);
+	if (!empty($_GET['bounds'])) {
+	        $b = str_replace('Bounds','',$_GET['bounds']);
+	        $b = str_replace('(','',$b);
+	        $b = str_replace(')','',$b);
 
-        $b = explode(',',$b);
+	        $b = explode(',',$b);
 
-	$where[] = 'wgs84_lat BETWEEN '.deg2rad($b[0]).' AND '.deg2rad($b[2]);
-        $where[] = 'wgs84_long BETWEEN '.deg2rad($b[1]).' AND '.deg2rad($b[3]);
+		$where[] = "{$prefix}lat BETWEEN ".deg2rad($b[0]).' AND '.deg2rad($b[2]);
+	        $where[] = "{$prefix}long BETWEEN ".deg2rad($b[1]).' AND '.deg2rad($b[3]);
 
-} else if (!empty($_GET['olbounds'])) {
-        $b = explode(',',trim($_GET['olbounds']));
-                #### example: -10.559026590196122,46.59604915850878,7.514135843906623,54.84589681367314
+	} else if (!empty($_GET['olbounds'])) {
+	        $b = explode(',',trim($_GET['olbounds']));
+        	        #### example: -10.559026590196122,46.59604915850878,7.514135843906623,54.84589681367314
 
-        $where[] = 'wgs84_lat BETWEEN '.deg2rad($b[1]).' AND '.deg2rad($b[3]);
-        $where[] = 'wgs84_long BETWEEN '.deg2rad($b[0]).' AND '.deg2rad($b[2]);
-}
+	        $where[] = "{$prefix}lat BETWEEN ".deg2rad($b[1]).' AND '.deg2rad($b[3]);
+	        $where[] = "{$prefix}long BETWEEN ".deg2rad($b[0]).' AND '.deg2rad($b[2]);
+	}
 
+        if (!empty($_GET['geo2'])) {
+                $bits = explode(',',$_GET['geo2']);
+		if (preg_match('/^\w+$/',$bits[3]))
+			$prefix = $bits[3];
+		$select .= ",geodist({$prefix}lat,{$prefix}long,".deg2rad($bits[0]).','.deg2rad($bits[1]).') as geo2';
 
+		if (!empty($bits[2])) {
+			if ($bits[2] < 0) {
+				$where[] = 'geo2 > '.abs($bits[2]);
+			} else {
+				$where[] = 'geo2 < '.floatval($bits[2]);
+
+		                //make a BBOX too?
+        		        if (empty($_GET['bounds']) && empty($_GET['olbounds']) && isset($_GET['d'])) {
+                		        //top/right  --- north/east
+                        		list($long1,$lat1) = calcLatLong($bits[1],$bits[0],$bits[2]*2.2,45); //sqrt(2) + some leeway
+		                        //bottom/left -- south/west
+        		                list($long2,$lat2) = calcLatLong($bits[1],$bits[0],$bits[2]*2.2,225);
+
+					$where[] = "{$prefix}lat BETWEEN ".deg2rad($lat2).' AND '.deg2rad($lat1);
+					$where[] = "{$prefix}long BETWEEN ".deg2rad($long1).' AND '.deg2rad($long2);
+	        	        }
+			}
+		}
+	}
+
+###########################################
+# the run the actual query
 
 		$q = array();
 		$q[] = "SELECT $select";
@@ -243,8 +288,8 @@ if ($order == 'RAND()' && empty($_GET['rnd'])) {
 			$q[] = "OPTION ".implode(', ',$option);
 
 
-if (!empty($_GET['debug']))
-        die(implode(' ',$q));
+		if (!empty($_GET['debug']))
+        		die(implode(' ',$q));
 
 
                 $res = array(
@@ -265,6 +310,9 @@ if (!empty($_GET['debug']))
 	}
 
 
+###########################################
+# hack for filters, as need mysql to decode FROM_DAYS
+
 				if (isset($_GET['mnmx']) && !empty($res['rows'])) {
 
                                         $link = mysql_database();
@@ -277,6 +325,8 @@ if (!empty($_GET['debug']))
                                              $res['data'] = mysql_fetch_array($result,MYSQL_ASSOC);
                                         }
                                 }
+
+###########################################
 
 if (function_exists("call_with_results")) {
         call_with_results($res);
@@ -308,6 +358,9 @@ if (empty($res['meta'])) {
 	}
 	if (!empty($callback))
 		print ");";
+
+#end
+###########################################
 
 
 function getAll($query) {
