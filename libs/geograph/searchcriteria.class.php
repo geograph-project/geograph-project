@@ -329,7 +329,7 @@ class SearchCriteria
 							$this->sphinx['sort'] = 'auser_id';
 							break;
 						case 'sequence':
-							$sql_from .= " INNER JOIN gridimage_sequence seq ON(gi.gridimage_id=seq.gridimage_id) ";
+							//$sql_from .= " INNER JOIN gridimage_sequence seq ON(gi.gridimage_id=seq.gridimage_id) "; ... now in gridimage_search directly!
 							$this->sphinx['sort'] = 'sequence';
 							break;
 						case 'realname':

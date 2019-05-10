@@ -1,0 +1,41 @@
+########################################################################
+# create the columns
+ALTER TABLE gridimage_search
+	ADD `vlat` decimal(10,6) NOT NULL DEFAULT '0.000000',
+	ADD `vlong` decimal(10,6) NOT NULL DEFAULT '0.000000',
+	ADD `sequence` int(10) unsigned DEFAULT NULL,
+	ADD `score` int(10) unsigned DEFAULT NULL,
+	ADD `baysian` float DEFAULT NULL;
+
+########################################################################
+# copy the data
+
+UPDATE gridimage_search i INNER JOIN gridimage_viewpoint v USING (gridimage_id)
+	SET i.vlat = v.vlat, i.vlong = v.vlong, upd_timestamp=upd_timestamp; 
+	
+UPDATE gridimage_search i INNER JOIN gridimage_sequence s USING (gridimage_id)
+	SET i.sequence = s.sequence, i.score = s.score, i.baysian = s.baysian, upd_timestamp=upd_timestamp;
+
+########################################################################
+# fill in missing data
+
+UPDATE gridimage_search SET sequence = 3000000+(ABS(CRC32(gridimage_id)) MOD 1000000), upd_timestamp=upd_timestamp WHERE sequence IS NULL;	
+
+#... also run scripts/process_gridimage_viewpoint.php to fill in missing vlat/vlong!
+	
+#update_sequence.php now updates gridimage_search table directly!
+# ... and gridimage.class.php updates it as go along too!
+
+########################################################################
+# these are now in gridimage_search
+ALTER TABLE gridimage_sequence
+	DROP size,
+	DROP score,
+	DROP baysian;
+	
+######################################################################## 
+# drop the temporally table!
+
+DROP TABLE gridimage_viewpoint;
+
+########################################################################
