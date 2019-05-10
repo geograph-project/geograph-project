@@ -116,11 +116,12 @@ if (true) { //actully we can run the code, even in the case of an empty query...
 'subject_ids' => 'Subject',
 'tag_ids' => 'Tags',
 'snippet_ids' => 'Shared Descriptions',
-'bucket_ids' => 'Buckets',
+'type_ids' => 'Types',
 'group_ids' => 'Automatic Clusters',
 'term_ids' => 'Extracted Terms',
 'imageclass' => 'Image Category',
 'wiki_ids' => 'WikiMedia Categories',
+'landcover' => 'Landcover Classification',
 ':2' => '',
 'myriad' => 'Myriad Square',
 'hectad' => 'Hectad Square',
@@ -175,6 +176,10 @@ if (true) { //actully we can run the code, even in the case of an empty query...
                 //convert gi_stemmed -> sample8 format.
                 $where = preg_replace('/@by/','@realname',$where);
                 $where = preg_replace('/__TAG__/i','_SEP_',$where);
+		$where = str_replace('@tags \"_SEP_ subject _SEP_','@subjects \"_SEP_',$where);
+		$where = str_replace('@tags \"_SEP_ type _SEP_','@types \"_SEP_',$where);
+		$where = str_replace('@tags \"_SEP_ top _SEP_','@contexts \"_SEP_',$where);
+		$where = str_replace('@tags \"_SEP_ bucket _SEP_','@buckets \"_SEP_',$where);
 
 		$groupn = 5;
 
@@ -182,6 +187,7 @@ if (true) { //actully we can run the code, even in the case of an empty query...
 			$group = $_GET['group'];
 			$column = ", `$group` as `group`";
 			$order = "images desc,`$group` asc";
+			//todo, set within group order by!!
 			if ($group == 'segment') {
 				$column =', INTERVAL(submitted, NOW()-'.implode(', NOW()-',array_keys($segs)).') AS segment';
 				$names = array_merge(array('Older-Images'),array_values($segs));
@@ -194,7 +200,8 @@ if (true) { //actully we can run the code, even in the case of an empty query...
 				$extractfrom = $m[1];
 				$column = ", {$m[0]}, {$m[1]}s, GROUPBY() as `group`";
 				$groupn = ''; //temp, as group N by not worky with MVA.
-				//todo, set within group order by!!
+
+				$order = str_replace("`$group`","`group`", $order);
 			}
 		} else {
 			$group = "decade";
@@ -250,6 +257,10 @@ if (true) { //actully we can run the code, even in the case of an empty query...
 					$row['group'] = preg_replace('/(?<=\d{3})tt/','0s',$row['group']);
 
 				if (!empty($_GET['filter']) && $_GET['filter'] == 'place' && preg_match('/^\s*(place|countr?y):/i',$row['group']))
+					continue;
+				if (!empty($_GET['filter']) && $_GET['filter'] == 'landmark' && !preg_match('/^Landmark:/',$row['group']))
+					continue;
+				if (!empty($_GET['filter']) && $_GET['filter'] == 'style' && !preg_match('/^style:/',$row['group']))
 					continue;
 
 				$groups[$row['group']]=1;
