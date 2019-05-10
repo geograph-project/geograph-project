@@ -300,7 +300,6 @@ FROM gridimage_search gi
 	INNER JOIN gridimage g2 USING (gridimage_id)
 	INNER JOIN gridimage_size USING (gridimage_id)
 	INNER JOIN gridsquare gs USING (gridsquare_id)
-	LEFT JOIN gridimage_sequence s USING (gridimage_id)
 	LEFT JOIN sphinx_placenames p ON (p.placename_id = gs.placename_id)
 	LEFT JOIN sphinx_tags t ON  (gi.gridimage_id = t.gridimage_id)
 	LEFT JOIN sphinx_terms c ON (gi.gridimage_id = c.gridimage_id)

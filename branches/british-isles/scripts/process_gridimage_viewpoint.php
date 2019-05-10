@@ -1,20 +1,10 @@
 <?
 
 //these are the arguments we expect
-$param=array('limit' => 10000);
+$param=array('limit' => 100000);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
-
-/*
-CREATE TABLE `gridimage_viewpoint` (
-  `gridimage_id` int(10) unsigned NOT NULL,
-  `vlat` decimal(10,6) NOT NULL DEFAULT '0.000000',
-  `vlong` decimal(10,6) NOT NULL DEFAULT '0.000000',
-  `calculated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`gridimage_id`)
-) ENGINE=MyISAM;
-*/
 
 ############################################
 
@@ -47,32 +37,30 @@ $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
-$existing = $db->getOne("SELECT COUNT(*) FROM gridimage_viewpoint");
 $max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 $limit = $param['limit'];
 
-print "max = $max, existing = $existing, limit = $limit\n";
+print "max = $max, limit = $limit\n";
+
+$tim = time();
 
 for($start = 1; $start <= $max; $start += $limit) {
 	$end = $start + $limit -1;
 
 	$where = "gridimage_id BETWEEN $start AND $end";
-	if ($existing)
-		$where .= " AND (gv.gridimage_id IS NULL OR calculated < upd_timestamp)";
 
-	print "$where\n";
+	print "$where; ";
 
-	$tim = time();
 
-	$join = strpos($where,'gv.')?'LEFT JOIN gridimage_viewpoint gv USING (gridimage_id)':'';
         $recordSet = $db->Execute("SELECT gridimage_id,viewpoint_eastings,viewpoint_northings,reference_index
-		 FROM gridimage INNER JOIN gridsquare USING (gridsquare_id) $join
-		 WHERE viewpoint_eastings > 0 AND moderation_status != 'rejected' AND $where");
+		 FROM gridimage gi INNER JOIN gridimage_search gv USING (gridimage_id)
+		 WHERE viewpoint_eastings > 0 AND vlat = 0 AND $where");
 
 	$count = $recordSet->recordCount();
-	printf("got %d rows at %d seconds\n",$count,time()-$tim);
+	printf("got %d rows at %d seconds; ",$count,time()-$tim);
 	if (!$count) {
 		$recordSet->Close();
+		print "\n";
 		continue;
 	}
 
@@ -86,9 +74,9 @@ for($start = 1; $start <= $max; $start += $limit) {
 		$lat = sprintf("%.6f",$lat);//going to be put into decimal anyway, avoids mysql warning
 		$long = sprintf("%.6f",$long);//going to be put into decimal anyway, avoids mysql warning
 
-		$sql = "REPLACE INTO gridimage_viewpoint SET vlat = $lat, vlong = $long, gridimage_id = ".$recordSet->fields['gridimage_id'];
+		$sql = "UPDATE gridimage_search SET vlat = $lat, vlong = $long, upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id'];
 
-		$db->Execute($sql) or die(mysql_error($db->_connection));
+		$db->Execute($sql) or die("$sql;\n".mysql_error()."\n");
 
                 $recordSet->MoveNext();
 		$count++;

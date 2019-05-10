@@ -308,6 +308,12 @@ class SearchEngine
 		}
 		if ($sql_order)
 			$sql_order = "ORDER BY $sql_order";
+
+
+		if (preg_match('/\bsequence\b/',$sql_order))
+			$sql_from .= " INNER JOIN gridimage_sequence seq ON(gi.gridimage_id=seq.gridimage_id) ";
+
+
 	// construct the query sql
 $sql = <<<END
 SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields $extra_fields

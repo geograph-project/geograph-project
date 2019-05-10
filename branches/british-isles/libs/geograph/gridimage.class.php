@@ -2261,6 +2261,12 @@ split_timer('gridimage'); //starts the timer
 				list($lat,$long) = $conv->internal_to_wgs84($square->x,$square->y,$square->reference_index);
 			}
 
+                        if (!empty($this->viewpoint_eastings)) {
+                                list($vlat,$vlong) = $conv->national_to_wgs84($this->viewpoint_eastings,$this->viewpoint_northings,$square->reference_index);
+                        } else {
+                                $vlat = $vlong = 0;
+                        }
+
 			$sql="DELETE FROM gridimage_search WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);
 
@@ -2268,12 +2274,18 @@ split_timer('gridimage'); //starts the timer
 			SELECT gi.gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,
 				gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,
 				reference_index,comment,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)'),
-				COALESCE(group_concat(distinct if(prefix!='',concat(prefix,':',tag),tag) order by prefix = 'top' desc,tag SEPARATOR '?'),'') as tags,licence,points
+				COALESCE(group_concat(distinct if(prefix!='',concat(prefix,':',tag),tag) order by prefix = 'top' desc,tag SEPARATOR '?'),'') as tags,licence,points,
+				$vlat as vlat,$vlong as vlong,
+				coalesce(sequence,3000000+(ABS(CRC32(gi.gridimage_id)) MOD 1000000)) AS sequence,
+				COALESCE(hits+hits_archive,1)*COALESCE(i.baysian,3.2) AS score, i.baysian
 			FROM gridimage AS gi
 				INNER JOIN gridsquare AS gs USING(gridsquare_id)
 				INNER JOIN user ON(gi.user_id=user.user_id)
 				LEFT JOIN gridimage_tag AS gt ON(gt.gridimage_id = gi.gridimage_id AND gt.status = 2)
 				LEFT JOIN tag AS t ON(t.tag_id = gt.tag_id AND t.status = 1)
+				LEFT JOIN gridimage_sequence ss ON(ss.gridimage_id = gi.gridimage_id)
+				left join gridimage_log ll on(ll.gridimage_id = gi.gridimage_id)
+				left join gallery_ids i on(id = gi.gridimage_id)
 			WHERE gi.gridimage_id = {$this->gridimage_id}";
 			$db->Execute($sql);
 		} else {
