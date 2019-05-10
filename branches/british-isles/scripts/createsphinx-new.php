@@ -81,12 +81,10 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 				GROUP_CONCAT(DISTINCT IF(prefix='subject',tag_id,NULL) ORDER BY tag_id SEPARATOR ',') AS subject_ids,
 				GROUP_CONCAT(DISTINCT IF(prefix='type',tag,NULL) ORDER BY tag_id SEPARATOR ';') AS types,
 				GROUP_CONCAT(DISTINCT IF(prefix='type',tag_id,NULL) ORDER BY tag_id SEPARATOR ',') AS type_ids,
-				GROUP_CONCAT(DISTINCT IF(prefix='bucket',tag,NULL) ORDER BY tag_id SEPARATOR ';') AS buckets,
-				GROUP_CONCAT(DISTINCT IF(prefix='bucket',tag_id,NULL) ORDER BY tag_id SEPARATOR ',') AS bucket_ids,
 				GROUP_CONCAT(DISTINCT IF(prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject',NULL,tagtext) ORDER BY final_id SEPARATOR ';') AS tags,
 				GROUP_CONCAT(DISTINCT IF(prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject',NULL,final_id) ORDER BY final_id SEPARATOR ',') AS tag_ids
 			FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) INNER JOIN tag_stat USING (tag_id)
-			WHERE (gt.status = 2 OR prefix='bucket') and t.status = 1 AND __between__
+			WHERE gt.status = 2 and t.status = 1 AND __between__
 			GROUP BY gridimage_id ORDER BY NULL";
 
 	if (!empty($param['daily'])) {
@@ -186,6 +184,7 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_placenames'")) {
 		where
 			loc_placenames.reference_index = 2
 		";
+		//NOTE for loc_placenames, the km_ref is added to Place in query below, because dont have km_ref, yet!
 
 	foreach ($sqls as $sql) {
 		fwrite(STDERR,date('H:i:s ')." $sql\n\n");
@@ -274,7 +273,6 @@ SELECT
 	CONCAT('_SEP_ ',REPLACE(subjects,';',' _SEP_ '),' _SEP_') AS subjects, subject_ids,
 	CONCAT('_SEP_ ',coalesce(REPLACE(types,';',' _SEP_ '), IF(gi.moderation_status='accepted','Supplemental','Geograph') ,' _SEP_') AS types,
 		    coalesce(type_ids, IF(gi.moderation_status='accepted',195749,172412) ) as type_ids,
-	CONCAT('_SEP_ ',REPLACE(buckets, ';',' _SEP_ '),' _SEP_') AS buckets,  bucket_ids,
 	CONCAT('_SEP_ ',REPLACE(t.tags,  ';',' _SEP_ '),' _SEP_') AS tags,     t.tag_ids,
 	CONCAT('_SEP_ ',REPLACE(groups,  ';',' _SEP_ '),' _SEP_') AS groups,   group_ids,
 	CONCAT('_SEP_ ',REPLACE(terms,   ';',' _SEP_ '),' _SEP_') AS terms,    term_ids,
