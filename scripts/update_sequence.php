@@ -69,8 +69,8 @@ if ($db->getOne("SHOW CREATE TABLE gridimage_square2")) {
 //fill in/update the the score and baysian figures.
 
 $build = "update gridimage_search gs inner join gridimage_log using (gridimage_id) left join gallery_ids i on (id = gridimage_id)
-		set s.score = (hits+hits_archive)*COALESCE(i.baysian,3.2),
-			s.baysian = i.baysian, upd_timestamp=upd_timestamp
+		set gs.score = (hits+hits_archive)*COALESCE(i.baysian,3.2),
+			gs.baysian = i.baysian, upd_timestamp=upd_timestamp
 		WHERE \$where";
 
 //$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_sequence"); #cant use this, new rows may be inserted via the first query above!
