@@ -128,7 +128,7 @@ overlayMaps["Coverage - ViewPoints"] = new L.TileLayer(layerUrl, {j:j, user_id: 
 	//this is just being nice, forcing the Viewpoint layer to redraw
 	//... going out of way to make the transition seamless as possible. (so layer doesnt disappear before reappearing)
         function syncViewLine() {
-                if (map.getZoom()>16) && overlayMaps["Coverage - ViewPoints"] && map.hasLayer(overlayMaps["Coverage - ViewPoints"])) {
+                if (map.getZoom()>16 && overlayMaps["Coverage - ViewPoints"] && map.hasLayer(overlayMaps["Coverage - ViewPoints"])) {
                         //we COULD just call redraw(), but that removes all tiles, rather than just updating the url of each tile.
 			if (typeof jQuery === "undefined" || jQuery === null || typeof jQuery.fn === "undefined" || typeof jQuery.fn.load === "undefined" || !$) {
 				overlayMaps["Coverage - ViewPoints"].redraw();
