@@ -62,7 +62,7 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 				'<option value="grid_reference">Same Grid-Square</option>'+
 				'</select></form>');
 			
-			$('#related').append('<div class=thumbs style="padding:5px">Loading...</div>');
+			$('#related').append('<div class="thumbs shadow" style="padding:5px">Loading...</div>');
 
 			$('#related').append('<a href="https://docs.google.com/forms/d/1d_-2JGWxL6E-A51KHEkRZCRuw-PrLDNfAeMfS9yOLJo/viewform" target="_blank">Feedback Form</a>');
 
@@ -83,7 +83,7 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 function renderRelatedImage() {
 	
 	var data = {
-		select: 'myriad,hectad,grid_reference,takenyear,takenmonth,takenday,groups,tags,contexts,snippets,subjects,place,county,country,scenti,user_id,realname,imageclass',
+		select: 'myriad,hectad,grid_reference,takenyear,takenmonth,takenday,groups,tags,types,contexts,snippets,subjects,place,county,country,scenti,user_id,realname,imageclass',
 		where: 'id='+gridimage_id
 	}
 	var params = {
