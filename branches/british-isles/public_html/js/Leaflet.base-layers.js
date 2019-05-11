@@ -118,52 +118,53 @@ overlayMaps["BGS Bedrock Geology"] = L.layerGroup([wmsLayer, wmsLayer2]);
 overlayMaps["Coverage - Dots"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 19, attribution: layerAttrib, bounds: bounds});
 
 
+//... going out of way to make the transition seamless as possible. (so layer doesnt disappear before reappearing)
+L.TileLayer2 = L.TileLayer.extend({
+        _refreshTileUrl: function(tile, url) {
+                //use a image in background, so that only replace the actual tile, once image is loaded in cache!
+                var img = new Image();
+                img.onload = function() {
+                        L.Util.requestAnimFrame(function() {
+                                 tile.el.src = url;
+                        });
+                }
+                img.src = url;
+        },
+        refresh: function() {
+                //prevent _tileOnLoad/_tileReady re-triggering a opacity animation
+                var wasAnimated = this._map._fadeAnimated;
+                this._map._fadeAnimated = false;
+
+                for (var key in this._tiles) {
+                        tile = this._tiles[key];
+                        if (tile.current && tile.active) {
+                                var newsrc = this.getTileUrl(tile.coords);
+                                if (tile.el.src != newsrc) { //just to make sure it really did update!
+                                        this._refreshTileUrl(tile,newsrc);
+                                }
+                        }
+                }
+
+                if (wasAnimated)
+                        setTimeout(function() { map._fadeAnimated = wasAnimated; }, 5000);
+        }
+});
+L.tileLayer2 = function(url, options) {
+    return new L.TileLayer2(url, options);
+}
+
         function j() { //L.template can use callback function. 
                 return (map.getZoom()>16 && overlayMaps["Coverage - Dots"] && map.hasLayer(overlayMaps["Coverage - Dots"]))?1:0;
         }
         var layerUrl='https://t0.geograph.org.uk/tile/tile-viewpoint2.php?z={z}&x={x}&y={y}&match=&l=1&6=1&j={j}';
 
-overlayMaps["Coverage - ViewPoints"] = new L.TileLayer(layerUrl, {j:j, user_id: 0, minZoom: 11, maxZoom: 18, attribution: layerAttrib, bounds: bounds, opacity:0.9});
+overlayMaps["Coverage - ViewPoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZoom: 11, maxZoom: 18, attribution: layerAttrib, bounds: bounds, opacity:0.9});
 
 	//this is just being nice, forcing the Viewpoint layer to redraw
-	//... going out of way to make the transition seamless as possible. (so layer doesnt disappear before reappearing)
+	/// for now using a custom .refresh() method, but hope to have it merged into native leaflet at some point!
         function syncViewLine() {
                 if (map.getZoom()>16 && overlayMaps["Coverage - ViewPoints"] && map.hasLayer(overlayMaps["Coverage - ViewPoints"])) {
-                        //we COULD just call redraw(), but that removes all tiles, rather than just updating the url of each tile.
-			if (typeof jQuery === "undefined" || jQuery === null || typeof jQuery.fn === "undefined" || typeof jQuery.fn.load === "undefined" || !$) {
-				overlayMaps["Coverage - ViewPoints"].redraw();
-				return;
-			}
-
-                        // this is a BODGE, using jquery to do it, as TileLayer has no function. Dont think ther adverse affects by running aournd l$
-                        var hasDots = map.hasLayer(overlayMaps["Coverage - Dots"])?1:0;
-
-                        //another bodge, is to temporally disable animation, as GridLayer, still animates opacity,
-                        // there is an 'onload' event, on the actual <img>
-                        var wasANimated = map._fadeAnimated;
-                        map._fadeAnimated = false;
-
-                        $('div.leaflet-tile-container img').each(function() {
-                                if (this.src.indexOf('/tile/tile-viewpoint') > -1) { //make sure only affecting the right layer!
-                                        var newsrc = this.src.replace(/j=\d/,'j='+hasDots);
-                                        var that = this;
-
-                                        //use a image in background, so that only replace the actual tile, once image is loaded in cache!
-                                        var img = new Image();
-                                        img.onload = function() {
-                                                L.Util.requestAnimFrame(function() {
-                                                        that.src = newsrc;
-                                                });
-                                        }
-                                        img.src = newsrc;
-                                }
-                        });
-
-                        if (wasANimated) {
-                                setTimeout(function() {
-                                        map._fadeAnimated = wasANimated;
-                                }, 5000);
-                        }
+			overlayMaps["Coverage - ViewPoints"].refresh();
                 }
         }
 	overlayMaps["Coverage - Dots"].on('remove',syncViewLine).on('add',syncViewLine);
