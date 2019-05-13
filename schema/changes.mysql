@@ -507,3 +507,10 @@ UPDATE `user` SET salt=SUBSTRING(MD5(signup_date),1,8),password=MD5(CONCAT(SUBST
 #################################################
 
 
+ALTER TABLE gridimage_search
+	ADD `vlat` decimal(10,6) NOT NULL DEFAULT '0.000000',
+	ADD `vlong` decimal(10,6) NOT NULL DEFAULT '0.000000',
+
+
+#################################################
+
