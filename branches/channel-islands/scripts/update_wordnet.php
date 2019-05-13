@@ -22,16 +22,14 @@
  */
 
 
-//needed to allow the config file to load - could be passed in as a argument??
-$_SERVER['HTTP_HOST'] = "www.geograph.org.uk";
+//these are the arguments we expect
+$param=array('limit' => 100);
 
-//not sure how to autodetect this?
-$_SERVER['DOCUMENT_ROOT'] = "/var/www/geograph_live/"; 
+chdir(__DIR__);
+require "./_scripts.inc.php";
 
 //--------------------------------------------
-// nothing below here should need changing
 
-require_once('geograph/global.inc.php');
 require_once('geograph/wordnet.inc.php');
 
 $db = NewADOConnection($GLOBALS['DSN']);
@@ -52,4 +50,3 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	$recordSet->Close(); 
 
 	
-?>
