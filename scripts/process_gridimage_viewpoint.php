@@ -1,7 +1,7 @@
 <?
 
 //these are the arguments we expect
-$param=array('limit' => 100);
+$param=array('limit' => 1000);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
