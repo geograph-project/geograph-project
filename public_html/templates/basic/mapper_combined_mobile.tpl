@@ -184,7 +184,7 @@ ul.tips li {
 {/literal}
 {dynamic}
 	{if $dots}
-	        map.addLayer(overlayMaps["Coverage - Dots"]);
+	        map.addLayer(overlayMaps["Photo Subjects"]);
 	{else}
 	        map.addLayer(overlayMaps["Coverage - Close"]);
 	{/if}
@@ -247,7 +247,7 @@ ul.tips li {
 		<span style="background-color:#FF00FF;padding:3px;">No Images in last 5 years</span> /
                 <span style="background-color:gray;padding:3px;">No Geograph Images</span>
 		</span></li>
-	<li style="padding:3px;"><b>Course</b>: <span style="opacity:0.6">
+	<li style="padding:3px;"><b>Coarse</b>: <span style="opacity:0.6">
 		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span>
 		<span style="background-color:#ECCE40;padding:3px;">Only older Geographs</span>
 	 	<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>

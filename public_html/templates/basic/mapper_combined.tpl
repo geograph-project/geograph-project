@@ -68,7 +68,7 @@
 
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographCollections.js"></script>
 
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.js?v=2"></script>
+        <script src="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.js?v=3"></script>
 
 	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
 
@@ -123,7 +123,7 @@
 		url = url.replace(/\$long/g,center.lng);
 		url = url.replace(/\$zoom/g,zoom);
 
-		if (overlayMaps["(Personalize Coverage)"] && map.hasLayer(overlayMaps["(Personalize Coverage)"])) {
+		if (overlayMaps && overlayMaps["(Personalize Coverage)"] && map.hasLayer(overlayMaps["(Personalize Coverage)"])) {
 			if (url.indexOf('?') > -1) {
 				url = url + "&mine=1";
 			} else if (url.indexOf('/browser/') == 0) {
@@ -133,7 +133,11 @@
 		}
 	
 		//if (url.indexOf('/') ==0) 
-		window.open(url,'_blank');
+		var newWin = window.open(url,'_blank');
+
+		if(!newWin || newWin.closed || typeof newWin.closed=='undefined') { 
+			location.href = url;
+		}
 
 		that.selectedIndex = 0;
 	}
@@ -206,7 +210,7 @@
         map.addLayer(overlayMaps["OS National Grid"]);
 
 	{if $dots}
-	        map.addLayer(overlayMaps["Coverage - Dots"]);
+	        map.addLayer(overlayMaps["Photo Subjects"]);
 	{else}
 	        map.addLayer(overlayMaps["Coverage - Close"]);
 	        map.addLayer(overlayMaps["Coverage - Coarse"]);
@@ -277,17 +281,24 @@
 
 <h3>Coverage Colours</h3>
 <ul class=tips>
-	<li><b>Dots</b>: A blue dot presents one or more photos - dot plotted at photo subject position (only images with 6fig+ grid-reference plotted!)
+	<li><b>Photo Subjects</b>: A blue dot presents one or more photos - dot plotted at photo <b>Subject</b> position (only images with 6fig+ grid-reference plotted!)
 		<ul>
 			<li>Note: when zoom out, this layer will change to show coverage by square, darker = more photos. Zoom out further and it shows by 10km (hectad) squares. 
 			(because becomes too many individual dots to plot, and can't see patterns at these scale anyway)</li>
 		</ul></li>
+
+	<li><b>Photo Viewpoints</b><sup style=color:red>NEW!</sup>: A purple marker - one per photo, showing where the photo was taken <b>from</b>, pointing in the approximate direction of view
+		<ul>
+			<li>If have <b>both</b> Viewpoints and Subjects layers enabled, at close zoom will draw red lines joining each purple to blue dots
+			<li>Disable one or other layer to remove the lines, keeping just one set of dots
+		</ul></li>
+
 	<li style="padding:3px;"><b>Close</b>: <span style="opacity:0.8">
 		<span style="background-color:#FF0000;padding:3px;">Square with recent Images</span> /
 		<span style="background-color:#FF00FF;padding:3px;">No Images in last 5 years</span> /
 		<span style="background-color:gray;padding:3px;">No Geograph Images</span>
 		</span></li>
-	<li style="padding:3px;"><b>Course</b>: <span style="opacity:0.6">
+	<li style="padding:3px;"><b>Coarse</b>: <span style="opacity:0.6">
 		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span>
 		<span style="background-color:#ECCE40;padding:3px;">Only older Geographs</span>
 	 	<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>

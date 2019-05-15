@@ -115,7 +115,7 @@ overlayMaps["BGS Bedrock Geology"] = L.layerGroup([wmsLayer, wmsLayer2]);
 
 	var layerUrl='https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
 
-overlayMaps["Coverage - Dots"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 19, attribution: layerAttrib, bounds: bounds});
+overlayMaps["Photo Subjects"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 19, attribution: layerAttrib, bounds: bounds});
 
 
 //... going out of way to make the transition seamless as possible. (so layer doesnt disappear before reappearing)
@@ -154,20 +154,20 @@ L.tileLayer2 = function(url, options) {
 }
 
         function j() { //L.template can use callback function. 
-                return (map.getZoom()>16 && overlayMaps["Coverage - Dots"] && map.hasLayer(overlayMaps["Coverage - Dots"]))?1:0;
+                return (map.getZoom()>16 && overlayMaps["Photo Subjects"] && map.hasLayer(overlayMaps["Photo Subjects"]))?1:0;
         }
         var layerUrl='https://t0.geograph.org.uk/tile/tile-viewpoint2.php?z={z}&x={x}&y={y}&match=&l=1&6=1&j={j}';
 
-overlayMaps["Coverage - ViewPoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZoom: 11, maxZoom: 18, attribution: layerAttrib, bounds: bounds, opacity:0.9});
+overlayMaps["Photo Viewpoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZoom: 11, maxZoom: 18, attribution: layerAttrib, bounds: bounds, opacity:0.9});
 
 	//this is just being nice, forcing the Viewpoint layer to redraw
 	/// for now using a custom .refresh() method, but hope to have it merged into native leaflet at some point!
         function syncViewLine() {
-                if (map.getZoom()>16 && overlayMaps["Coverage - ViewPoints"] && map.hasLayer(overlayMaps["Coverage - ViewPoints"])) {
-			overlayMaps["Coverage - ViewPoints"].refresh();
+                if (map.getZoom()>16 && overlayMaps["Photo Viewpoints"] && map.hasLayer(overlayMaps["Photo Viewpoints"])) {
+			overlayMaps["Photo Viewpoints"].refresh();
                 }
         }
-	overlayMaps["Coverage - Dots"].on('remove',syncViewLine).on('add',syncViewLine);
+	overlayMaps["Photo Subjects"].on('remove',syncViewLine).on('add',syncViewLine);
 
 
 
