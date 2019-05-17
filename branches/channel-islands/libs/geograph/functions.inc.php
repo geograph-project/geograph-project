@@ -188,7 +188,7 @@ function smarty_function_external($params)
 	global $CONF;
   	//get params and use intelligent defaults...
   	$href=str_replace(' ','+',$params['href']);
-  	if (strpos($href,'http://') !== 0)
+  	if (!preg_match('/^https?:\/\//',$href))
   		$href ="http://$href";
 
   	if (isset($params['text']))
@@ -780,6 +780,12 @@ function htmlnumericentities($myXML){
   return preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars($myXML));
 }
 
+function xmlentities($s) {
+	$trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+	foreach ($trans as $k=>$v) $trans[$k]= "&#".ord($k).";"; // encoding?
+	return strtr($s, $trans);
+}
+
 
 function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtml = '',$showLastPage = false) {
 	static $r;
@@ -845,4 +851,53 @@ function combineTexts($lang1, $lang2)
 		return $lang1 . ' (' . $lang2 . ')';
 }
 
-?>
+
+function sqlBitsToSelect($sql) {
+        $query = "SELECT {$sql['columns']}";
+        if (!empty($sql['tables'])) {
+                $query .= " FROM ".join(' ',$sql['tables']);
+        }
+        if (!empty($sql['wheres'])) {
+                $query .= " WHERE ".join(' AND ',$sql['wheres']);
+        }
+        if (isset($sql['group'])) {
+                $query .= " GROUP BY {$sql['group']}";
+        }
+        if (isset($sql['having'])) {
+                $query .= " HAVING {$sql['having']}";
+        }
+        if (isset($sql['order'])) {
+                $query .= " ORDER BY {$sql['order']}";
+        }
+        if (isset($sql['limit'])) {
+                $query .= " LIMIT {$sql['limit']}";
+        }
+        if (!empty($sql['option'])) {
+                if (is_array($sql['option']))
+                        $sql['option'] = implode(', ',$sql['option']);
+                $query .= " OPTION {$sql['option']}";
+        }
+        return $query;
+}
+
+
+function outputJSON(&$data) {
+        if (!empty($_GET['callback'])) {
+                header("Content-Type:text/javascript");
+                $callback = preg_replace('/[^\w\.\$]+/','',$_GET['callback']);
+                echo "/**/{$callback}(";
+        } else {
+                header("Content-Type:application/json");
+        }
+
+        if (!function_exists('json_encode')) {
+                require_once '3rdparty/JSON.php';
+        }
+
+        print json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR );
+
+        if (!empty($_GET['callback'])) {
+                echo ");";
+        }
+}
+

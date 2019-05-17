@@ -514,3 +514,12 @@ ALTER TABLE gridimage_search
 
 #################################################
 
+
+alter table gridsquare
+	 add `has_recent` tinyint(4) NOT NULL DEFAULT '0',
+	 add `max_ftf` mediumint(8) unsigned NOT NULL DEFAULT '0';
+
+
+#################################################
+
+
