@@ -381,8 +381,8 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 					if (that.options.domain == "https://www.geograph.org.uk")
 						lines.push('<a target=newinw href="'+that.options.domain+'/browser/#!/loc='+gridref+'/dist='+radius+'/sort=spread">Image Browser</a>');
 					if (data.meta && data.meta.total_found && data.rows)
-						lines.push('<a target=newinw href="'+that.options.domain+'/gridref/'+gridref+'?centi=X">More Images in clicked CentiSquare</a>');
-					lines.push('<a target=newinw href="'+that.options.domain+'/gridref/'+gridref+'">Grid Square Page for '+gridref+'</a>');
+						lines.push('<a target=newinw href="'+that.options.domain+'/gridref/'+gridref+'?centi=X">CentiSquare</a>');
+					lines.push('<a target=newinw href="'+that.options.domain+'/gridref/'+gridref+'">Grid Square Page</a>');
 				} else {
 					lines.push('<b><a target=newinw href="'+that.options.domain+'/search.php?go=1&location='+gridref+'">More Images</a></b>');
 				}
