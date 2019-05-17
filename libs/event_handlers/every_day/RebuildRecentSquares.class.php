@@ -41,25 +41,21 @@ class RebuildRecentSquares extends EventHandler
 
 		$db=&$this->_getDB();
 
-		$db->Execute("DROP TABLE IF EXISTS recent_only_tmp");
-
-		$db->Execute("CREATE TABLE recent_only_tmp (
+		$db->Execute("CREATE temporary TABLE recent_only_tmp (
 				  `gridsquare_id` int(11) NOT NULL default '0',
-				  `images` smallint NOT NULL default '0',
 				  PRIMARY KEY  (`gridsquare_id`)
 				)
-				SELECT gridsquare_id,COUNT(*) AS images
+				SELECT gridsquare_id
 				FROM gridimage gi
 				WHERE imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))
 				AND moderation_status = 'geograph'
 				GROUP BY gi.gridsquare_id
 				ORDER BY NULL");
 
-		$db->Execute("DROP TABLE IF EXISTS recent_only");
-		$db->Execute("RENAME TABLE recent_only_tmp TO recent_only");
-
 		$db->Execute("UPDATE gridsquare SET has_recent = 0, max_ftf = 0");
-		$db->Execute("UPDATE gridsquare INNER JOIN recent_only USING (gridsquare_id) SET gridsquare.has_recent = 1");
+
+		$db->Execute("UPDATE gridsquare INNER JOIN recent_only_tmp USING (gridsquare_id) SET gridsquare.has_recent = 1");
+
 
                 $db->Execute("create temporary table gridsquare_updater (gridsquare_id INT UNSIGNED primary key) select gridsquare_id,max(ftf) as max_ftf from gridimage where moderation_status = 'geograph' group by gridsquare_id order by null");
                 $db->Execute("update gridsquare gs inner join gridsquare_updater u using (gridsquare_id) SET gs.max_ftf = u.max_ftf");
@@ -70,3 +66,4 @@ class RebuildRecentSquares extends EventHandler
 	}
 
 }
+
