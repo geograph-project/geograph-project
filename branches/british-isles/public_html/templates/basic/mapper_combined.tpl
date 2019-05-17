@@ -33,7 +33,7 @@
 
 	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.css?v=2" />
 
-	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.css?v=2" />
+	<link rel="stylesheet" href="{"/js/Leaflet.GeographClickLayer.css"|revision}" />
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.63.0/dist/L.Control.Locate.min.css" />
@@ -68,7 +68,7 @@
 
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographCollections.js"></script>
 
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.js?v=3"></script>
+        <script src="{"/js/Leaflet.GeographClickLayer.js"|revision}"></script>
 
 	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
 
@@ -209,7 +209,9 @@
 	//todo, make this configure like in mappingLeaflet.js
         map.addLayer(overlayMaps["OS National Grid"]);
 
-	{if $dots}
+	{if $views}
+	        map.addLayer(overlayMaps["Photo Viewpoints"]);
+	{elseif $dots}
 	        map.addLayer(overlayMaps["Photo Subjects"]);
 	{else}
 	        map.addLayer(overlayMaps["Coverage - Close"]);

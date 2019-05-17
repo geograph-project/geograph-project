@@ -16,6 +16,7 @@
 	padding:3px;
 }
 .clicklayer_thumbs {
+	color:gray;
 	padding:8px;
 }
 .clicklayer_thumbs .thumbsmall {
@@ -33,3 +34,33 @@
 	text-align:center; padding:20px;
 }
 
+#clicklayer_links {
+	float:right;padding:5px;background-color:#eee;width:120px;text-align:center;
+	line-height: 1.5em;
+}
+
+div#map.click_smallmap {
+	max-height:50vh;
+}
+
+.gridded.small {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 130px);
+    grid-gap: 2px;
+}
+.gridded.med {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 223px);
+    grid-gap: 2px;
+}
+
+.gridded div {
+	text-align:center;
+}
+
+.gridded img {
+	box-shadow: 3px 3px 8px #999;
+    border: 0;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
