@@ -71,6 +71,9 @@ if (isset($_GET['t'])) {
 if (!empty($_GET['dots'])) {
         $smarty->assign('dots',1);
 }
+if (!empty($_GET['views'])) {
+        $smarty->assign('views',1);
+}
 
 if (!empty($_GET['mobile'])) {
 	$smarty->display('mapper_combined_mobile.tpl');

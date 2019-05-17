@@ -80,7 +80,7 @@ ul.tips li {
 
 	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.css?v=2" />
 
-	<link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.mobile.css?v=2" />
+	<link rel="stylesheet" href="{"/js/Leaflet.GeographClickLayer.css"|revision}" />
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.63.0/dist/L.Control.Locate.min.css" />
@@ -112,7 +112,7 @@ ul.tips li {
 
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js"></script>
 
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographClickLayer.mobile.js?v=3"></script>
+        <script src="{"/js/Leaflet.GeographClickLayer.js"|revision}"></script>
 
 	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
 
@@ -201,7 +201,7 @@ ul.tips li {
 	//needs calling AFTER updating overlayMaps	
         addOurControls(map);
 
-	map.addLayer(L.geographClickLayer({photos:6}));
+	map.addLayer(L.geographClickLayer({touch:true, domain: "https://m.geograph.org.uk", limit:6}));
 
 {/literal}</script>
 
