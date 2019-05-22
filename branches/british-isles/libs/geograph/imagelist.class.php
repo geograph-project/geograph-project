@@ -483,35 +483,29 @@ class RecentImageList extends ImageList {
 
 split_timer('imagelist'); //starts the timer
 
-		if (false) {
-			$recordSet = &$db->Execute("select * from gridimage_search order by gridimage_id desc limit 5");
-		} elseif ($reference_index == 2) {
-			$recordSet = &$db->Execute("(select * from gridimage_search where reference_index=$reference_index order by gridimage_id desc limit 50) order by rand() limit 5");
+		//carefully construct a query, that 1) uses indexes (ie primary key) and 2) avoids temporaly table, and/or filesort
+		if ($reference_index == 2) {
+			$crit = "- 2500 and reference_index = $reference_index and rand()>0.9";
+		} elseif ($reference_index) {
+			$crit = "- 500 and reference_index = $reference_index and rand()>0.9";
 		} else {
-			$where = ($reference_index)?" and reference_index = $reference_index":'';
-
-			$start = $db->getOne("select recent_id from gridimage_recent where 1 $where");
-
-			$offset=rand(1,200);
-			$ids = range($start+$offset,$start+$offset+50);
-			shuffle($ids);
-
-			$id_string = join(',',array_slice($ids,0,5));
-			$recordSet = &$db->Execute("select * from gridimage_recent where recent_id in ($id_string) $where limit 5");
+			$crit = "- 250 and rand()>0.96";
 		}
 
-		//lets find some recent photos
+		$recordSet = &$db->Execute("select {$this->cols} from gridimage_search
+			where moderation_status = 'geograph' and gridimage_id > (select max(gridimage_id) from gridimage_search) $crit limit 5");
+
 		$this->images=array();
 		$i=0;
-
-		while (!$recordSet->EOF)
-		{
+		while (!$recordSet->EOF) {
 			$this->images[$i]=new GridImage;
 			$this->images[$i]->fastInit($recordSet->fields);
 			$recordSet->MoveNext();
 			$i++;
 		}
 		$recordSet->Close();
+
+		shuffle($this->images);
 
 split_timer('imagelist','RecentImageList',$reference_index); //logs the wall time
 
