@@ -284,6 +284,7 @@ function addOurControls(map) {
 					}
 				}
 			}
+			document.getElementById('map').style.backgroundColor = (e.name.indexOf('Imagery') > -1)?'gray':'white';
 		});
 	}
 
