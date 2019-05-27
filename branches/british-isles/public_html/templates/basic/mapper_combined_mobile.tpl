@@ -110,13 +110,14 @@ ul.tips li {
 
         <script src="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.js?v=4"></script>
 
-	<script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js"></script>
+	<script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js?v=4"></script>
 
         <script src="{"/js/Leaflet.GeographClickLayer.js"|revision}"></script>
 
 	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="{"/js/jquery.storage.js"|revision}"></script>
 
 	<script src="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.js"></script>
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographGeocoder.js"></script>
@@ -137,8 +138,9 @@ ul.tips li {
 
 	var mapOptions =  {
                 center: [54.4266, -3.1557], zoom: 13,
-                minZoom: 6, maxZoom: 18
+                minZoom: 5, maxZoom: 18
         };
+	var clickOptions = {};
 
 {/literal}
 {dynamic}
@@ -149,13 +151,30 @@ ul.tips li {
                  if (wgs84)
                           mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
 	{/if}
+	{if $zoom}
+		mapOptions.zoom = {$zoom};
+	{/if}
 {/dynamic}
 {literal}
 
 	var map = L.map('map', mapOptions);
         var hash = new L.Hash(map);
 
-	L.control.locate().addTo(map);
+
+	if ($.localStorage && $.localStorage('LeafletBaseMap')) {
+		basemap = $.localStorage('LeafletBaseMap');
+		if (baseMaps[basemap])
+			map.addLayer(baseMaps[basemap]);
+		else
+			map.addLayer(baseMaps["OpenStreetMap"]);
+	} else {
+		map.addLayer(baseMaps["OpenStreetMap"]);
+	}
+	if ($.localStorage) {
+		map.on('baselayerchange', function(e) {
+		  	$.localStorage('LeafletBaseMap', e.name);
+		});
+	}
 
 	var sidebar;
 	setTimeout(function() {
@@ -183,7 +202,9 @@ ul.tips li {
 
 {/literal}
 {dynamic}
-	{if $dots}
+	{if $views}
+                map.addLayer(overlayMaps["Photo Viewpoints"]);
+        {elseif $dots}
 	        map.addLayer(overlayMaps["Photo Subjects"]);
 	{else}
 	        map.addLayer(overlayMaps["Coverage - Close"]);
@@ -191,7 +212,43 @@ ul.tips li {
 	{if $stats && $stats.images}
 		overlayMaps["(Personalize Coverage)"].options.user_id = {$stats.user_id};
                 overlayMaps["(Personalize Coverage)"].options.minZoom = 5;
-                        //todo - optionally could add to map now to personalize the layers!
+		{if !$ownfilter}
+			delete overlayMaps["Coverage - Opportunities"];
+		{/if}
+		{if $filter}
+			overlayMaps["(Personalize Coverage)"].addTo(map); //this sets options.user_id on all layers
+			clickOptions.user_id = {$stats.user_id}; //but clicklayer doesnt exist yet, so need to set options from start
+			if (map.getZoom() >= 13)
+				setTimeout('overlayMaps["Coverage - Close"].Reset();',100); //TODO some race conditon, means not it doesnt get called automatically :(
+		{/if}
+
+		{literal}
+		var stateChangingButton = L.easyButton({
+		    states: [{
+		            stateName: 'general',        // name the state
+		            icon:      'fa-user-o',               // and define its properties
+		            title:     'Non Personalized - Click to personalized map',      // like its title
+			    onClick: function(btn, map) {       // and its callback
+				overlayMaps["(Personalize Coverage)"].addTo(map);
+		                btn.state('personal');    // change state on click!
+		            }
+		        }, {
+		            stateName: 'personal',
+		            icon:      'fa-user',
+		            title:     'Personalized (just your images) - click to disable',
+		            onClick: function(btn, map) {
+				overlayMaps["(Personalize Coverage)"].removeFrom(map);
+		                btn.state('general');
+		            }
+		    }]
+		});
+		{/literal}
+		{if $filter}
+			stateChangingButton.state('personal');
+		{/if}
+
+		stateChangingButton.addTo(map);
+
 	{else}
 		 delete overlayMaps["(Personalize Coverage)"];
 	{/if}
@@ -201,7 +258,11 @@ ul.tips li {
 	//needs calling AFTER updating overlayMaps	
         addOurControls(map);
 
-	map.addLayer(L.geographClickLayer({touch:true, domain: "https://m.geograph.org.uk", limit:6}));
+	clickOptions['touch'] = true;
+	clickOptions['domain'] = 'https://m.geograph.org.uk';
+	clickOptions['limit'] = 6;
+	
+	map.addLayer(L.geographClickLayer(clickOptions));
 
 {/literal}</script>
 
@@ -237,11 +298,18 @@ ul.tips li {
 
 <h3>Coverage Colours</h3>
 <ul class=tips>
-	<li><b>Dots</b>: A blue dot presents one or more photos - dot plotted at photo subject position (only images with 6fig+ grid-reference plotted!)
+	<li><b>Photo Subjects</b>: A blue dot presents one or more photos - dot plotted at photo <b>Subject</b> position (only images with 6fig+ grid-reference plotted!)
 		<ul>
 			<li>Note: when zoom out, this layer will change to show coverage by square, darker = more photos. Zoom out further and it shows by 10km (hectad) squares. 
 			(because becomes too many individual dots to plot, and can't see patterns at these scale anyway)</li>
 		</ul></li>
+
+	<li><b>Photo Viewpoints</b><sup style=color:red>NEW!</sup>: A purple marker - one per photo, showing where the photo was taken <b>from</b>, pointing in the approximate direction of view
+		<ul>
+			<li>If have <b>both</b> Viewpoints and Subjects layers enabled, at close zoom will draw red lines joining each purple to blue dots
+			<li>Disable one or other layer to remove the lines, keeping just one set of dots
+		</ul></li>
+
 	<li style="padding:3px;"><b>Close</b>: <span style="opacity:0.8">
 		<span style="background-color:#FF0000;padding:3px;">Square with recent Images</span> /
 		<span style="background-color:#FF00FF;padding:3px;">No Images in last 5 years</span> /
@@ -249,11 +317,13 @@ ul.tips li {
 		</span></li>
 	<li style="padding:3px;"><b>Coarse</b>: <span style="opacity:0.6">
 		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span>
-		<span style="background-color:#ECCE40;padding:3px;">Only older Geographs</span>
+		<span style="background-color:#FF8800;padding:3px;">Only older Geographs</span>
 	 	<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
 		</span></li>
 	<li><b>Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
 		Experimental coverage layer to see if concept works. Exact specififications of layer subject to change or withdrawl. 
+
+	<li>We don't have a key of the BGS layers, but use the link (in [Other Maps...] at top!) to the offical Geology of Britain Viewer, which provides some functions to explain the colouring</li>
 </ul>
 
 <h3>Other suggestions/requests?</h3>

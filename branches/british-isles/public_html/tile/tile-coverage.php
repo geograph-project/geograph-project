@@ -6,6 +6,8 @@ ini_set('memory_limit', '128M');
 
 $maxspan = 10;
 
+customExpiresHeader(empty($_GET['long'])?3600*24:3600*24*6,true);
+customCacheControl(filemtime(__FILE__),$_SERVER['QUERY_STRING']);
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
 require_once ('3rdparty/googleMapUtility.php');
@@ -100,7 +102,7 @@ if (!empty($_GET['dd'])) {
 	$bg = imagecolorallocate($im, 255, 255, 255);
 	imagecolortransparent($im,$bg);
 	$fg = imagecolorallocate($im, 255, 0, 0); //marker/red
-	$supp = imagecolorallocate($im, 236,206,64); //supp/organge
+	$supp = imagecolorallocate($im, 255,136,0); //supp/organge
 	$land = imagecolorallocate($im, 117,255,101); //land/green!
 
 	if (!empty($error)) { //todo!
@@ -125,6 +127,7 @@ if (!empty($_GET['dd'])) {
 		return $cache[$key];
 	}
 
+	if (!empty($rows))
         foreach ($rows as $idx => $row) {
 		$color = $row['r']?$fg:($row['g']?$supp:$land);
 

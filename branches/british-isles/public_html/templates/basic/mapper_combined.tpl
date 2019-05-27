@@ -9,12 +9,22 @@
 			<option value="/mapper/?zoom=$zoom&lat=$lat&lon=$long">Coverage Map V2 (GB only)</option>
 			<option value="/mapbrowse.php?zoom=$zoom&lat=$lat&lon=$long">Coverage Map V1</option>
 			<option value="/mapsheet.php?zoom=$zoom&lat=$lat&lon=$long">Printable Checksheet</option>
+
+{dynamic}
+        {if $stats && $stats.images}
+			<option value="/mapsheet.php?zoom=$zoom&lat=$lat&lon=$long&mine=1">Printable Checksheet (personalized)</option>
+	{/if}
+{/dynamic}
+
 			<option value="/gridref/$gridref/links">Location Links Page</option>
-			<option value="https://www.nearby.org.uk/coord.cgi?p=$gridref">(nearby.org.uk Links Page)</option>
 			<option value="/gridref/$gridref">GridSquare Page</option>
+
+			<option value="https://www.nearby.org.uk/coord.cgi?p=$gridref">nearby.org.uk Links Page</option>
+			<option value="https://www.geograph.org/leaflet/all.php#$zoom/$lat/$long">All Projects Map</option>
 			<option value="http://mapapps.bgs.ac.uk/geologyofbritain/home.html?lat=$lat&long=$long">Geology of Britain Viewer (GB Only)</option>
+
 			<optgroup label="Where possible opens at current location at center of this map"></option>
-			<optgroup label="...still being worked on, not all links work completely!"></option>
+
 		</select><br>
 		<a href="/help/maps">read more...</a>
 	</div>
@@ -38,6 +48,8 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.63.0/dist/L.Control.Locate.min.css" />
 
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+
 	<div style="position:relative; width:800px; height:600px">
 		<div id="map" style="width:800px; height:600px"></div>
 		<div id="message" style="z-index:10000;position:absolute;top:0;left:50px;background-color:white;font-size:1em;font-family:sans-serif;opacity:0.8"></div>
@@ -60,11 +72,13 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.63.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
 
+	<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+
 	<script src="{"/mapper/geotools2.js"|revision}"></script>
 
         <script src="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.js?v=4"></script>
 
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js"></script>
+        <script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js?v=4"></script>
 
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographCollections.js"></script>
 
@@ -142,6 +156,8 @@
 		that.selectedIndex = 0;
 	}
 
+/////////////////////////////////////////////////////
+
 	var mapOptions =  {
                 center: [54.4266, -3.1557], zoom: 13,
                 minZoom: 5, maxZoom: 18
@@ -163,6 +179,8 @@
 
 	var map = L.map('map', mapOptions);
         var hash = new L.Hash(map);
+
+/////////////////////////////////////////////////////
 
 {literal}
 	var reinstateOS = false;
@@ -206,8 +224,9 @@
 	}
 {/literal}
 
-	//todo, make this configure like in mappingLeaflet.js
         map.addLayer(overlayMaps["OS National Grid"]);
+
+/////////////////////////////////////////////////////
 
 	{if $views}
 	        map.addLayer(overlayMaps["Photo Viewpoints"]);
@@ -230,6 +249,34 @@
 			if (map.getZoom() >= 13)
 				setTimeout('overlayMaps["Coverage - Close"].Reset();',100); //TODO some race conditon, means not it doesnt get called automatically :(
 		{/if}
+
+		{literal}
+		var stateChangingButton = L.easyButton({
+		    states: [{
+		            stateName: 'general',        // name the state
+		            icon:      'fa-user-o',               // and define its properties
+		            title:     'Non Personalized - Click to personalized map',      // like its title
+			    onClick: function(btn, map) {       // and its callback
+				overlayMaps["(Personalize Coverage)"].addTo(map);
+		                btn.state('personal');    // change state on click!
+		            }
+		        }, {
+		            stateName: 'personal',
+		            icon:      'fa-user',
+		            title:     'Personalized (just your images) - click to disable',
+		            onClick: function(btn, map) {
+				overlayMaps["(Personalize Coverage)"].removeFrom(map);
+		                btn.state('general');
+		            }
+		    }]
+		});
+		{/literal}
+		{if $filter}
+			stateChangingButton.state('personal');
+		{/if}
+
+		stateChangingButton.addTo(map);
+
 	{else}
 		 delete overlayMaps["Coverage - Opportunities"];
 		 delete overlayMaps["(Personalize Coverage)"];
@@ -237,14 +284,78 @@
 {/dynamic}
 {literal}
 
+/////////////////////////////////////////////////////
+
+	var initialValue = null;
+
+	function setAllOpacity(list, fudge) {
+            if (!initialValue) {
+		initialValue = {}
+		for(i in baseMaps)
+			if (baseMaps[i].options && baseMaps[i].options.opacity)
+				initialValue[i] = baseMaps[i].options.opacity
+		for(i in overlayMaps)
+			if (overlayMaps[i].options && overlayMaps[i].options.opacity)
+				initialValue[i] = overlayMaps[i].options.opacity
+	    }
+
+	    for(i in list) {
+		var defaultValue = initialValue[i] || 1;
+		var value = defaultValue*fudge;
+	        if (value > 1) value=1;
+	        if (value < 0) value=0;
+
+                if (list[i].setOpacity) {
+			list[i].setOpacity(value);
+		} else if (list[i].options && list[i].options.opacity) {
+			list[i].options.opacity = value;
+                }
+            }
+          }
+
+		var opacityButton = L.easyButton({
+		    states: [{
+		            stateName: 'general',
+		            icon:      'fa-adjust', 
+		            title:     'Nominal Display - click to highlight overlays',
+			    onClick: function(btn, map) {
+		                setAllOpacity(baseMaps,0.6);
+		                setAllOpacity(overlayMaps,1.1);
+		                btn.state('over');    // change state on click!
+		            }
+		        }, {
+		            stateName: 'over',
+		            icon:      'fa-adjust',
+		            title:     'Overlay Highlighted - click to highlight base layer',
+		            onClick: function(btn, map) {
+		                setAllOpacity(baseMaps,1.1);
+		                setAllOpacity(overlayMaps,0.6);
+		                btn.state('base');
+		            }
+		        }, {
+		            stateName: 'base',
+		            icon:      'fa-adjust',
+		            title:     'Base layer Highlighted - click to return to nominal',
+		            onClick: function(btn, map) {
+		                setAllOpacity(baseMaps,1);
+		                setAllOpacity(overlayMaps,1);
+		                btn.state('general');
+		            }
+		    }]
+		});
+				
+		opacityButton.addTo(map);
+
+/////////////////////////////////////////////////////
+
 	addOurControls(map);
 
 	if (layerswitcher)
 		layerswitcher.expand();	
 
-
 	map.addLayer(L.geographClickLayer(clickOptions));
 
+/////////////////////////////////////////////////////
 
 	function enlargeMap() {
 		var height = Math.min(1000,$(window).height());
@@ -268,7 +379,7 @@
 
 {dynamic}
 	{if $stats && $stats.images}
-		<li>Enable (Personalize Coverage) in the layer switcher (top right of the map) to just count <b>your images</b></li>
+		<li>Enable <a href="#" onclick="overlayMaps['(Personalize Coverage)'].addTo(map);return false">(Personalize Coverage)</a> in the layer switcher (top right of the map) to just count <b>your images</b></li>
         {/if}
 {/dynamic}
 
@@ -302,7 +413,7 @@
 		</span></li>
 	<li style="padding:3px;"><b>Coarse</b>: <span style="opacity:0.6">
 		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span>
-		<span style="background-color:#ECCE40;padding:3px;">Only older Geographs</span>
+		<span style="background-color:#FF8800;padding:3px;">Only older Geographs</span>
 	 	<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
 		</span></li>
 	<li><b>Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
@@ -318,6 +429,10 @@
 
 ul.tips li {
 	margin-bottom: 5px;
+}
+
+.easy-button-container button span {
+	line-height:30px;
 }
 
 {/literal}</style>
