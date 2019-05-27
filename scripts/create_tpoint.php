@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: recreate_maps.php 2996 2007-01-20 21:39:07Z barry $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Barry Hunter (geo@barryhunter.co.uk)
@@ -21,44 +21,114 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+$param = array(
+	'limit'=>4,
+	'clear'=>0,
+	'verbose'=>0,
+	'source'=>'hectads',
+);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
+#######################################################################
 
 $db_write = GeographDatabaseConnection(false);
-$db_read = GeographDatabaseConnection(true);
+$db_read = GeographDatabaseConnection(2); //to ensure not lagging too much
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+function dbExecute($sql) {
+	global $db_write,$a;
+	if (true) {
+		$db_write->Execute($sql) or die($sql."\n".mysql_error()."\n\n");
+		$a += mysql_affected_rows();
+	} else {
+		print "$sql;\n";
+	}
+}
 
-$a = array();
+#######################################################################
+
+	if ($param['clear'] == 2) {
+		//not recommended to do this! use the nibble version instead!
+		dbExecute("UPDATE gridimage SET points = '',upd_timestamp=upd_timestamp");
+		dbExecute("UPDATE gridimage_search SET points = '',upd_timestamp=upd_timestamp");
+	}
+
+$count = $a = 0;
+
+#######################################################################
 
 
+if ($param['source'] == 'myriads') {
+	//even using gridprefix, results in myriads with 200k photos, so lets use hectads,
+	//  x/y are set with MIN(), so might not be the technical orgin, but is gareneteed to contain the images, just might do some squares multiple times
+	$prefixes = $db_read->GetAll('SELECT hectad AS prefix, x as origin_x, y as origin_y, 10 as width, 10 as height FROM hectad_stat WHERE images>0 LIMIT '.$param['limit']);
+} else {
+	$prefixes = $db_read->GetAll('select * from gridprefix where landcount >0 order by landcount desc limit '.$param['limit']);
+}
+
+$outer_total = count($prefixes);
+$outer_count = 0;
+
+print "$htotal Prefixes...\n";
+foreach ($prefixes as $prefix) {
+
+        $left=$prefix['origin_x'];
+        $right=$prefix['origin_x']+$prefix['width']-1;
+        $top=$prefix['origin_y']+$prefix['height']-1;
+        $bottom=$prefix['origin_y'];
+
+        $rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+        $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
+
+	#######################################################################
 
 	$sql = "SELECT gridimage_id,grid_reference,TO_DAYS(REPLACE(imagetaken,'-00','-01')) AS days
-		FROM gridimage_search WHERE imagetaken NOT LIKE '0000%' AND moderation_status = 'geograph' ORDER BY grid_reference,seq_no";
-	print "$sql\n";
+		FROM gridimage_search
+		WHERE imagetaken NOT LIKE '0000%' AND moderation_status = 'geograph'
+		AND $sql_where
+		ORDER BY grid_reference,seq_no";
+	$recordSet = &$db_read->Execute($sql);
+
+	if ($param['verbose'])
+		print "=> $sql\n";
+
+	$inner_total = $recordSet->RecordCount();
+	$outer_count++;
+	print "{$prefix['prefix']}/$inner_total ($outer_count/$outer_total)\n";
+
+	#######################################################################
 
 	$buckets = array();
-	$count = 0;
 	$last = '';
 
 	$five_years_in_days = 365*5;
-
-	$recordSet = &$db_read->Execute($sql);
+	$break = ($param['verbose'])?10:1000;
 
 	while (!$recordSet->EOF)
 	{
-		$days =  $recordSet->fields['days'];
-		$square =  $recordSet->fields['grid_reference'];
+		$days = $recordSet->fields['days'];
+		$square = $recordSet->fields['grid_reference'];
+
+		#####################
 
 		if ($square != $last) {
+			if ($param['verbose'])
+				print " $square. ";
+			if ($param['clear'] == 1) {
+				$gridsquare_id = $db_read->getOne("SELECT gridsquare_id FROM gridsquare WHERE grid_reference = '$square'");
+				dbExecute("UPDATE gridimage SET points = '',upd_timestamp=upd_timestamp WHERE gridsquare_id = $gridsquare_id AND points = 'tpoint'");
+				dbExecute("UPDATE gridimage_search SET points = '',upd_timestamp=upd_timestamp WHERE grid_reference = '$square' AND points = 'tpoint'");
+			}
+
 			//start fresh for a new square
 			$buckets = array();
-
-			//store it anyway
 			$last = $square;
 		}
+
+		#####################
 
 		$point = 1;
 		if (count($buckets)) {
@@ -74,20 +144,31 @@ $a = array();
 		$buckets[] = $days;
 
 		if ($point) {
-			$db_write->Execute("UPDATE gridimage SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
-			$db_write->Execute("UPDATE gridimage_search SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
-			print ". ";
+			dbExecute("UPDATE gridimage SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
+			dbExecute("UPDATE gridimage_search SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
 			$count++;
+			if (!($count%$break)) {
+				if (!$param['verbose'])
+					print "$square ";
+				print "($count,$a). ";
+			}
 		}
+
+		#####################
 
 		$recordSet->MoveNext();
 	}
 
 	$recordSet->Close();
 
-	$db_write->Execute("alter table user_stat comment='rebuild'"); //mark the table for complete rebuild!
+	print " /($count,$a).\n\n";
+}
 
-	print "done [$count]\n";
-	exit;#!
+
+dbExecute("alter table user_stat comment='rebuild'"); //mark the table for complete rebuild!
+
+print " done [$count]\n";
+
+
 
 
