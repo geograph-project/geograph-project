@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: recreate_maps.php 2996 2007-01-20 21:39:07Z barry $
+ * $Id$
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Barry Hunter (geo@barryhunter.co.uk)
@@ -40,16 +40,16 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $a = array();
 
 
-	$grs = $db_read->getCol("select grid_reference from gridimage_search where submitted >
+	$grs = $db_read->getCol("select grid_reference from gridimage_search where upd_timestamp >
 		date_sub(now(),interval {$param['interval']}) group by grid_reference order by null");
 
-	$sql = "SELECT gridimage_id,grid_reference,TO_DAYS(REPLACE(imagetaken,'-00','-01')) AS days
-			,(submitted > date_sub(now(),interval {$param['interval']}) )  as doit, points
+	$sql = "SELECT gridimage_id,grid_reference,TO_DAYS(REPLACE(imagetaken,'-00','-01')) AS days, points
 		FROM gridimage_search WHERE imagetaken NOT LIKE '0000%'
 			and grid_reference in ('".implode("','",$grs)."')
 			AND moderation_status = 'geograph' ORDER BY grid_reference,seq_no";
 
-	print "$sql\n";
+	if ($param['debug'])
+		print "$sql\n";
 
 	$buckets = array();
 	$count = 0;
@@ -68,6 +68,9 @@ $a = array();
 			//start fresh for a new square
 			$buckets = array();
 
+			//TODO? , the main query can clear any geographs, need to clear non geos.
+			//UPDATE gridimage_search SET points = '' WHERE grid_reference = '$square' and moderation_status !='geograph' AND points = 'tpoint'
+
 			//store it anyway
 			$last = $square;
 		}
@@ -85,14 +88,23 @@ $a = array();
 		}
 		$buckets[] = $days;
 
-		if ($point && $recordSet->fields['doit'] && $recordSet->fields['points'] != 'tpoint') {
+		if ($point && $recordSet->fields['points'] != 'tpoint') {
 			if ($param['debug']) {
                                 print "Setting TPoint on {$recordSet->fields['gridimage_id']}, was '{$recordSet->fields['points']}'\n";
                         } else {
 				$db_write->Execute("UPDATE gridimage SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
 				$db_write->Execute("UPDATE gridimage_search SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
 			}
-			print ". ";
+			//print ". ";
+			$count++;
+		} elseif (!$point && $recordSet->fields['points'] == 'tpoint') {
+			if ($param['debug']) {
+                                print "CLEARING TPoint on {$recordSet->fields['gridimage_id']}, was '{$recordSet->fields['points']}'\n";
+                        } else {
+				$db_write->Execute("UPDATE gridimage SET points = '',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
+				$db_write->Execute("UPDATE gridimage_search SET points = '',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
+			}
+			//print ". ";
 			$count++;
 		}
 
@@ -101,7 +113,10 @@ $a = array();
 
 	$recordSet->Close();
 
-	print "done [$count]\n";
-	exit;#!
+	if ($param['debug'])
+		print "done [$count]\n";
+
+
+
 
 
