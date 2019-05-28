@@ -159,7 +159,11 @@ class RestAPI
                                         $obj->author_url = "http://{$_SERVER['HTTP_HOST']}{$image->profile_link}";
 					$obj->web_page = "http://{$_SERVER['HTTP_HOST']}/photo/$gridimage_id";
 
-                                        $html = $image->getThumbnail(120,120);
+					if (strpos($_GET['url'],'_213x160') !== FALSE) {
+						$html = $image->getThumbnail(213,160);
+					} else {
+	                                        $html = $image->getThumbnail(120,120);
+					}
                                         if (preg_match('/"(http.+?)"\s+width="(\d+)"\s+height="(\d+)"/',$html,$m)) {
 						$obj->thumbnail_url = $m[1];
 						$obj->thumbnail_width = $m[2];
