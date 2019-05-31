@@ -437,8 +437,8 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 					});
 
 					if (ids.length>1) {
-						var url = that.options.domain+'/search.php?markedImages='+ids.join(',')+'&do=1&displayclass=blackvote';
-						$('#clicklayer_thumbs').append('<a href="'+url+'">View these images as GeoRiver</a>');
+						var url = that.options.domain+'/search.php?markedImages='+ids.join(',')+'&do=1&displayclass=black';
+						$('#clicklayer_thumbs').append('<a href="'+url+'" target="_blank" style="margin:40px">View these Images as GeoRiver</a>');
 					}
 
 				} else {
