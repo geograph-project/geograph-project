@@ -405,7 +405,7 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 						//bit wierd, but if they've used a marker before, probably dont need be told again about it!
 						$('#thumbs').html("Tap a thumbnail to see on map above, <nobr>long-press</nobr> to open Geograph Photo Page.<hr>");
 					}
-
+					var ids = [];
 					$.each(data.rows,function(index,value) {
 						value.thumbnail = that.getGeographUrl(value.id, value.hash, size);
 						var dist = '';
@@ -433,8 +433,13 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 								that.hoverOff();
 							});
 						}
+						ids.push(value.id);
 					});
 
+					if (ids.length>1) {
+						var url = that.options.domain+'/search.php?markedImages='+ids.join(',')+'&do=1&displayclass=blackvote';
+						$('#clicklayer_thumbs').append('<a href="'+url+'">View these images as GeoRiver</a>');
+					}
 
 				} else {
 					$('#clicklayer_thumbs').html('No results within '+(radius/1000).toFixed(2)+'km of '+gridref+'.<br>Tip: Try clicking closer to center of a visible thumbnail.');
