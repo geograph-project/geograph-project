@@ -177,7 +177,7 @@ overlayMaps["Photo Viewpoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZo
 	        overlayMaps["Coverage - Close"] = L.geographCoverage();
 
 	        var layerUrl='https://t0.geograph.org.uk/tile/tile-coverage.php?z={z}&x={x}&y={y}';
-	        overlayMaps["Coverage - Coarse"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 7, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
+	        overlayMaps["Coverage - Coarse"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
 
 	        var layerUrl='https://t0.geograph.org.uk/tile/tile-score.php?z={z}&x={x}&y={y}';
 	        overlayMaps["Coverage - Opportunities"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 7, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
