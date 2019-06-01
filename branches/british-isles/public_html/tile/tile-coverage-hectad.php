@@ -1,15 +1,10 @@
 <?
 
-if ($_GET['z'] < 7) {
-         require __DIR__."/tile-coverage-hectad.php";
-         exit;
-}
-
 
 require_once('geograph/global.inc.php');
 ini_set('memory_limit', '128M');
 
-$maxspan = 10;
+$maxspan = 30;
 
 customExpiresHeader(empty($_GET['long'])?3600*24:3600*24*6,true);
 customCacheControl(filemtime(__FILE__),$_SERVER['QUERY_STRING']);
@@ -48,11 +43,25 @@ $sql['wheres'] = array();
         } else {
                 $conv = new Conversions;
 
+if ($bounds[1] < 49)
+	$bounds[1] = 49.0001;
+if ($bounds[2] > 2.3)
+	$bounds[2] = 2.2999;
+if ($bounds[3] > 62)
+	$bounds[3] = 61.9999;
+
                 list($x1,$y1) = $conv->wgs84_to_internal(floatval($bounds[1]),floatval($bounds[0])); //bottom-left
                 list($x2,$y2) = $conv->wgs84_to_internal(floatval($bounds[3]),floatval($bounds[2])); //top-rigth
 
 //BODGE!
-	if ($x2 == 0 && $bounds[2] > 2.3 && $bounds[2] < 4) { //wgs84_to_national as a small boundary for GB!
+	if ($x1 == 0 && $bounds[0] < -9.5 && $bounds[0-9.5] > -15) { //wgs84_to_national as a small boundary for GB!
+		$conv2 =  new ConversionsLatLong;
+
+		list($e,$n) = $conv2->wgs84_to_osgb36(floatval($bounds[1]),floatval($bounds[0]));
+		list($x1,$y1) = $conv2->national_to_internal($e,$n,1);
+	}
+
+	if ($x2 == 0 && $bounds[2] > 2.3 && $bounds[2] < 5.8) { //wgs84_to_national as a small boundary for GB!
 		$conv2 =  new ConversionsLatLong;
 
 		list($e,$n) = $conv2->wgs84_to_osgb36(floatval($bounds[3]),floatval($bounds[2]));
@@ -60,8 +69,12 @@ $sql['wheres'] = array();
 	}
 
 		if ($x1 > -100 && $x1 < 1000) {
-	                $rectangle = "'POLYGON(($x1 $y1,$x2 $y1,$x2 $y2,$x1 $y2,$x1 $y1))'";
-        	        $sql['wheres'][] = "CONTAINS( GeomFromText($rectangle), point_xy)";
+	                //$rectangle = "'POLYGON(($x1 $y1,$x2 $y1,$x2 $y2,$x1 $y2,$x1 $y1))'";
+        	        //$sql['wheres'][] = "CONTAINS( GeomFromText($rectangle), point_xy)";
+
+	                $sql['wheres'][] = "x between $x1 AND $x2";
+	                $sql['wheres'][] = "y between $y1 AND $y2";
+
 		} else {
 			$error = "Zoom in closer to the British Isles to see coverage details";
 		}
@@ -73,16 +86,17 @@ $sql['wheres'] = array();
         $sql['tables'] = array();
 
         if (!empty($_GET['user_id'])) {
+		die("todo");
                 $sql['tables']['gi'] = 'gridimage_search';
                 $sql['group'] = 'grid_reference';
                 $sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
 		$sql['wheres'][] = "moderation_status = 'geograph'";
                 $sql['columns'] = "x,y,reference_index as ri,   count(*) as g,SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as r";
         } else {
-                $sql['tables']['gs'] = 'gridsquare';
+                $sql['tables']['gs'] = 'hectad_stat';
 
-                $sql['columns'] = "x,y,reference_index as ri,   has_geographs as g, has_recent as r";
-                $sql['wheres'][] = "percent_land > 0 ";
+                $sql['columns'] = "x,y,reference_index as ri,   recentsquares/landsquares*100 AS percent";
+                $sql['wheres'][] = "landsquares>0";
         }
 
         $query = sqlBitsToSelect($sql);
@@ -93,6 +107,7 @@ if (!empty($_GET['dd'])) {
 	print_r($bounds);
 	print_r($query);
 	print_r($sql);
+	print_r($error);
 	exit;
 }
 
@@ -107,8 +122,6 @@ if (!empty($_GET['dd'])) {
 	$bg = imagecolorallocate($im, 255, 255, 255);
 	imagecolortransparent($im,$bg);
 	$fg = imagecolorallocate($im, 255, 0, 0); //marker/red
-	$supp = imagecolorallocate($im, 255,136,0); //supp/organge
-	$land = imagecolorallocate($im, 117,255,101); //land/green!
 
 	if (!empty($error)) { //todo!
 
@@ -119,14 +132,41 @@ if (!empty($_GET['dd'])) {
 		exit;
 	}
 
-	if (!empty($rows))
-        foreach ($rows as $idx => $row) {
-		$color = $row['r']?$fg:($row['g']?$supp:$land);
 
-                $p1 = getPixCoord($row['x'],$row['y'],$row['ri']); //getPixCoord gives us location of bottom left corner.
-                $p2 = getPixCoord($row['x']+1,$row['y']+1,$row['ri']);
+
+
+	if (!empty($rows)) {
+		$colors = array();
+		foreach (range(0,100) as $percent) {
+			$cr = 255 - $percent;
+			$cg = 255 - ($percent*$percent); if ($cg<0) $cg=0;
+
+			$colors[$percent] = imagecolorallocate($im, $cr, $cg, 0);
+		}
+
+
+        foreach ($rows as $idx => $row) {
+		$color = $colors[floor($row['percent'])];
+
+                $x = $row['x'];
+                $y = $row['y'];
+		$ri = $row['ri'];
+
+                //remove the internal origin
+                $x -= $CONF['origins'][$ri][0];
+                $y -= $CONF['origins'][$ri][1];
+
+                $x = intval($x/10)*10;
+                $y = intval($y/10)*10;
+
+                $x += $CONF['origins'][$ri][0];
+                $y += $CONF['origins'][$ri][1];
+
+                $p1 = getPixCoord($x,$y,$ri); //getPixCoord gives us location of bottom left corner.
+                $p2 = getPixCoord($x+10,$y+10,$ri);
 
 		imagefilledrectangle($im, $p1->x,$p1->y, $p2->x,$p2->y, $color);
+	}
 	}
 
 	imagesavealpha($im, true);
@@ -135,3 +175,5 @@ if (!empty($_GET['dd'])) {
 
 
 ########################################################################
+
+
