@@ -290,7 +290,6 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 		if (this.options.bi_bounds.contains(ll)) {
 			if (this.options.domain.indexOf('org.uk') == -1)
 				this.options.domain = "https://www.geograph.org.uk";
-			data.vv=1; //use the new viewpoint index!
 			data.select = data.select + ',vgrlen,vlat,vlong';
 			$('#clicklayer_select').prop('disabled',false);
 
@@ -333,7 +332,7 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 		}
 		if (selected.indexOf('Viewpoint') == 0) {
 			data.geo = lat+","+lng+","+radius;
-			//data.geo_prefix="v";
+			data.geo_prefix="v";
 			geo1len = 'vgrlen';
 			if (selected.indexOf('not Subject')>-1)
 				data.geo2 = lat+","+lng+",-"+radius+",wgs84_";
