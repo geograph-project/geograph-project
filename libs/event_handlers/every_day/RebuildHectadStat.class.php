@@ -72,6 +72,7 @@ class RebuildHectadStat extends EventHandler
 					SUM(moderation_status = 'geograph') AS geographs,
 					COUNT(DISTINCT gi.gridsquare_id) AS squares,
 					COUNT(DISTINCT IF(moderation_status='geograph',gi.gridsquare_id,NULL)) AS geosquares,
+					COUNT(DISTINCT IF(has_recent=1,gs.gridsquare_id,NULL)) AS recentsquares,
 					COUNT(DISTINCT user_id) AS users,
 					MIN(IF(ftf=1,submitted,NULL)) AS first_submitted,
 					MAX(IF(ftf=1,submitted,NULL)) AS last_submitted,
@@ -86,7 +87,7 @@ class RebuildHectadStat extends EventHandler
 				//todo when the origin is a multiple of 10 (or =0) then can be optimised away - but mysql might do that anyway
 
 				//give the server a breather...
-				ssleep(500);
+				usleep(500);
 			}
 		}
 

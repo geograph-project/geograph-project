@@ -130,19 +130,7 @@ if (!empty($_GET['dd'])) {
 		exit;
 	}
 
-	//use a cache, because we reusing lots of coords!
-	function getPixCoord($x,$y,$ri) {
-		global $conv, $g;
-
-		static $cache = array();
-		$key = "$x.$y";
-		if (empty($cache[$key])) {
-			list($lat,$lng) = $conv->internal_to_wgs84($x,$y,$ri, 0); //zero fudge to get bottom left!
-			$cache[$key] = $g->getOffsetPixelCoords($lat,$lng,$_GET['z'],$_GET['x'],$_GET['y']);
-		}
-		return $cache[$key];
-	}
-
+	if (!empty($rows))
         foreach ($rows as $idx => $row) {
 		$color = $row['s']?$colours[$row['s']]:$land;
 
