@@ -1,27 +1,30 @@
 <?
 
-
-if ($_GET['z'] < 7 && empty($_GET['gg'])) {
-        require __DIR__."/tile-hectad.php";
-        exit;
-
-} elseif ($_GET['z'] < 10 && empty($_GET['gg'])) {
-        require __DIR__."/tile-square.php";
-        exit;
-}
-
-
 if (!empty($_GET['gg'])) {
 	define('SPHINX_INDEX',"germany");
-} else
+} elseif (!empty($_GET['is'])) {
+	define('SPHINX_INDEX',"islands");
+} else {
+	//these only support Brit+Isle currentyl!
+	if ($_GET['z'] < 7) {
+	        require __DIR__."/tile-hectad.php";
+        	exit;
+
+	} elseif ($_GET['z'] < 10) {
+	        require __DIR__."/tile-square.php";
+	        exit;
+	}
+
+	//not really needed as the default!
 	define('SPHINX_INDEX',"sample8");
+}
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
-require_once ('3rdparty/googleMapUtility.php');
+require_once ('3rdparty/googleMapUtilityClass.php');
 
-$g = new GoogleMapUtility();
+$g = new googleMapUtilityClass($_GET['x'], $_GET['y'], $_GET['z']);
 
-$b = $g->getTileRect($_GET['x'], $_GET['y'], $_GET['z']);
+$b = $g->getTileRect();
 
 ##long,lat,long,lat
 
@@ -76,7 +79,7 @@ function call_with_results($data) {
 ########################################################################
 
 
-	$im =  imagecreatetruecolor(GoogleMapUtility::TILE_SIZE,GoogleMapUtility::TILE_SIZE);
+	$im =  imagecreatetruecolor(googleMapUtilityClass::TILE_SIZE,googleMapUtilityClass::TILE_SIZE);
 
 	if (empty($data) || !empty($data['meta']['error'])) {
 
@@ -95,7 +98,7 @@ function call_with_results($data) {
 	imagealphablending($im, false);
 	//fill with completely trasparent! (so get something with 127 alpha)
 	$fg = imagecolorallocatealpha($im, 0, 0, 255, 127);
-	imagefilledrectangle($im, 0,0, GoogleMapUtility::TILE_SIZE,GoogleMapUtility::TILE_SIZE, $fg);
+	imagefilledrectangle($im, 0,0, googleMapUtilityClass::TILE_SIZE,googleMapUtilityClass::TILE_SIZE, $fg);
 
 	$highlight = imagecolorallocatealpha($im, 255, 255, 255, 20);
 
@@ -107,7 +110,7 @@ function call_with_results($data) {
 		$lat = rad2deg($row['lat']);
 		$lng = rad2deg($row['lng']);
 
-		$p = $g->getOffsetPixelCoords($lat,$lng,$_GET['z'],$_GET['x'],$_GET['y']);
+		$p = $g->getOffsetPixelCoords($lat,$lng);
 
 		//php/gd doesnt doesnt have a 'blend alphas' (eg if 20% alpha in square add 20% to make same colour at 40%, so do it manually!
 		for($x=$p->x-3; $x<=$p->x+3; $x++) {
@@ -142,9 +145,9 @@ include("../api-facetql.php");
 
 function imageaddalpha(&$im, $x, $y, $delta) {
 
-        if ($x<0 || $x > GoogleMapUtility::TILE_SIZE)
+        if ($x<0 || $x > googleMapUtilityClass::TILE_SIZE)
                 return;
-        if ($y<0 || $y > GoogleMapUtility::TILE_SIZE)
+        if ($y<0 || $y > googleMapUtilityClass::TILE_SIZE)
                 return;
 
 	$rgba = imagecolorat($im, $x, $y);

@@ -10,11 +10,11 @@ customExpiresHeader(empty($_GET['long'])?3600*24:3600*24*6,true);
 customCacheControl(filemtime(__FILE__),$_SERVER['QUERY_STRING']);
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
-require_once ('3rdparty/googleMapUtility.php');
+require_once ('3rdparty/googleMapUtilityClass.php');
 
-$g = new GoogleMapUtility();
+$g = new googleMapUtilityClass($_GET['x'], $_GET['y'], $_GET['z']);
 
-$b = $g->getTileRect($_GET['x'], $_GET['y'], $_GET['z']);
+$b = $g->getTileRect();
 
 ##long,lat,long,lat
 
@@ -117,7 +117,7 @@ if (!empty($_GET['dd'])) {
 
 ########################################################################
 
-	$im = imagecreate(GoogleMapUtility::TILE_SIZE,GoogleMapUtility::TILE_SIZE);
+	$im = imagecreate(googleMapUtilityClass::TILE_SIZE,googleMapUtilityClass::TILE_SIZE);
 
 	$bg = imagecolorallocate($im, 255, 255, 255);
 	imagecolortransparent($im,$bg);
