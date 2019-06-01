@@ -14,18 +14,18 @@ if ($_GET['z'] < 10 && empty($_GET['match'])) {
 define('SPHINX_INDEX',"viewpoint");
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
-require_once ('3rdparty/googleMapUtility.php');
+require_once ('3rdparty/googleMapUtilityClass.php');
 
-$g = new GoogleMapUtility();
+$g = new googleMapUtilityClass($_GET['x'], $_GET['y'], $_GET['z']);
 
-$b = $g->getTileRect($_GET['x'], $_GET['y'], $_GET['z']);
+$b = $g->getTileRect();
 
 ##long,lat,long,lat
 
 $xd = $b->width/128;
 $yd = $b->height/128;
 
-if ($_GET['z'] > 16) { //temp bodge, for lines!
+if ((!isset($_GET['j']) || !empty($_GET['j'])) && $_GET['z'] > 16) { //temp bodge, for lines!
 	$xd = $b->width*2; //need extra, to draw lines from 'off tile'
 	$yd = $b->height*2;
 }
@@ -40,8 +40,8 @@ $bounds[] = $b->y+$b->height+$yd;
 $_GET['olbounds'] = implode(",",$bounds);
 $_GET['select'] = "vlat*1000 as lat,vlong*1000 as lng,vgrlen,direction";
 
-if ($_GET['z'] > 16)  //temp bodge, for lines!
-	$_GET['select'] .= ",distance,slat*1000 as slt,slong*1000 as slng";
+if ((!isset($_GET['j']) || !empty($_GET['j'])) && $_GET['z'] > 16) //temp bodge, for lines!
+	$_GET['select'] .= ",distance,wgs84_lat*1000 as slt,wgs84_long*1000 as slng";
 
 if (empty($_GET['limit']))
 	$_GET['limit'] = 1000;
@@ -88,7 +88,7 @@ function call_with_results($data) {
 ########################################################################
 
 
-	$im =  imagecreatetruecolor(GoogleMapUtility::TILE_SIZE,GoogleMapUtility::TILE_SIZE);
+	$im =  imagecreatetruecolor(googleMapUtilityClass::TILE_SIZE,googleMapUtilityClass::TILE_SIZE);
 
 	if (empty($data) || !empty($data['meta']['error'])) {
 
@@ -107,7 +107,7 @@ function call_with_results($data) {
 	imagealphablending($im, false);
 	//fill with completely trasparent! (so get something with 127 alpha)
 	$fg = imagecolorallocatealpha($im, 148, 0, 211, 127);  //purple, https://rubblewebs.co.uk/imagemagick/display_example.php?example=53
-	imagefilledrectangle($im, 0,0, GoogleMapUtility::TILE_SIZE,GoogleMapUtility::TILE_SIZE, $fg);
+	imagefilledrectangle($im, 0,0, googleMapUtilityClass::TILE_SIZE,googleMapUtilityClass::TILE_SIZE, $fg);
 
 	$line = imagecolorallocate($im, 255, 0, 30); //marker/red
 	$arrow = imagecolorallocatealpha($im, 148, 0, 211, 30);
@@ -122,7 +122,7 @@ function call_with_results($data) {
 		$lat = rad2deg($row['lat']/1000);
 		$lng = rad2deg($row['lng']/1000);
 
-		$p = $g->getOffsetPixelCoords($lat,$lng,$_GET['z'],$_GET['x'],$_GET['y']);
+		$p = $g->getOffsetPixelCoords($lat,$lng);
 
 		if ($row['direction'] > -1) {
 			$points = array_merge(
@@ -148,7 +148,7 @@ function call_with_results($data) {
 			$slat = rad2deg($row['slt']/1000);
 	                $slng = rad2deg($row['slng']/1000);
 
-			$p2 = $g->getOffsetPixelCoords($slat,$slng,$_GET['z'],$_GET['x'],$_GET['y']);
+			$p2 = $g->getOffsetPixelCoords($slat,$slng);
 			imageline($im, $p->x, $p->y, $p2->x, $p2->y, $line);
 		}
 		if ($row['vgrlen'] > $nopoint) {
@@ -190,9 +190,9 @@ function projectpoint($x,$y,$d,$a) {//x/y/distance/angle
 
 function imageaddalpha(&$im, $x, $y, $delta) {
 
-        if ($x<0 || $x > GoogleMapUtility::TILE_SIZE)
+        if ($x<0 || $x > googleMapUtilityClass::TILE_SIZE)
                 return;
-        if ($y<0 || $y > GoogleMapUtility::TILE_SIZE)
+        if ($y<0 || $y > googleMapUtilityClass::TILE_SIZE)
                 return;
 
 	$rgba = imagecolorat($im, $x, $y);

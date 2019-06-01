@@ -11,15 +11,17 @@ if ($_GET['z'] < 7 && empty($_GET['gg'])) {
 
 if (!empty($_GET['gg'])) {
 	define('SPHINX_INDEX',"germany");
+} elseif (!empty($_GET['is'])) {
+	define('SPHINX_INDEX',"islands");
 } else
 	define('SPHINX_INDEX',"sample8");
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
-require_once ('3rdparty/googleMapUtility.php');
+require_once ('3rdparty/googleMapUtilityClass.php');
 
-$g = new GoogleMapUtility();
+$g = new googleMapUtilityClass($_GET['x'], $_GET['y'], $_GET['z']);
 
-$b = $g->getTileRect($_GET['x'], $_GET['y'], $_GET['z']);
+$b = $g->getTileRect();
 
 ##long,lat,long,lat
 
@@ -72,7 +74,7 @@ function call_with_results($data) {
 ########################################################################
 
 
-	$im = imagecreate(GoogleMapUtility::TILE_SIZE,GoogleMapUtility::TILE_SIZE);
+	$im = imagecreate(googleMapUtilityClass::TILE_SIZE,googleMapUtilityClass::TILE_SIZE);
 
 	// White background and blue text
 	$bg = imagecolorallocate($im, 255, 255, 255);
@@ -94,7 +96,7 @@ function call_with_results($data) {
 		$lat = rad2deg($row['lat']);
 		$lng = rad2deg($row['lng']);
 
-		$p = $g->getOffsetPixelCoords($lat,$lng,$_GET['z'],$_GET['x'],$_GET['y']);
+		$p = $g->getOffsetPixelCoords($lat,$lng);
 
 		imagefilledrectangle($im, $p->x-1,$p->y-1, $p->x+1,$p->y+1, $fg);
 	}

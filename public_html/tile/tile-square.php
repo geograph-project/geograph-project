@@ -10,11 +10,11 @@ if (!empty($_GET['gg'])) {
 require_once('geograph/global.inc.php');
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
-require_once ('3rdparty/googleMapUtility.php');
+require_once ('3rdparty/googleMapUtilityClass.php');
 
-$g = new GoogleMapUtility();
+$g = new googleMapUtilityClass($_GET['x'], $_GET['y'], $_GET['z']);
 
-$b = $g->getTileRect($_GET['x'], $_GET['y'], $_GET['z']);
+$b = $g->getTileRect();
 
 ##long,lat,long,lat
 
@@ -82,7 +82,7 @@ function call_with_results($data) {
 ########################################################################
 
 
-	$im = imagecreatetruecolor(GoogleMapUtility::TILE_SIZE,GoogleMapUtility::TILE_SIZE);
+	$im = imagecreatetruecolor(googleMapUtilityClass::TILE_SIZE,googleMapUtilityClass::TILE_SIZE);
 
 	if (empty($data) || !empty($data['meta']['error'])) {
 
@@ -101,7 +101,7 @@ function call_with_results($data) {
         imagealphablending($im, false);
         //fill with completely trasparent! (so get something with 127 alpha)
         $fg = imagecolorallocatealpha($im, 0, 0, 255, 127);
-        imagefilledrectangle($im, 0,0, GoogleMapUtility::TILE_SIZE,GoogleMapUtility::TILE_SIZE, $fg);
+        imagefilledrectangle($im, 0,0, googleMapUtilityClass::TILE_SIZE,googleMapUtilityClass::TILE_SIZE, $fg);
 
 
 	if (!empty($data['rows']))
