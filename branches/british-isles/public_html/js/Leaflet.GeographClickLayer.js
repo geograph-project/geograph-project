@@ -188,7 +188,7 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 			this._marker2 = L.circleMarker([lat,lng], {color:'purple'}).addTo(this._map);
 			bounds.extend([lat,lng]);
 		}
-		if (value.wgs84_lat && value.vlat)
+		if (value.wgs84_lat && value.vlat && value.wgs84_lat > 0.6 && value.vlat > 0.6)
 			this._line = L.polyline([this._marker.getLatLng(),this._marker2.getLatLng()], {color: 'red'}).addTo(this._map);
 
 		var testBounds = this._map.getBounds().pad(-0.2);
