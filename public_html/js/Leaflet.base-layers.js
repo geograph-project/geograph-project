@@ -24,7 +24,7 @@ if (L.tileLayer.bing) {
         var BING_KEY = 'AhwwUjiHWfAqm-dQiAhV1tJO82v-v5mU6osoxU3t1XKx-AlPyKzfBhKpTY81MKtJ';
 	var bingAttribution = 'Image courtesy of Ordnance Survey, via Bing <a style="white-space: nowrap" target="_blank" href="https://www.microsoft.com/maps/product/terms.html">Terms of Use</a>';
 baseMaps["Ordnance Survey GB"] = L.tileLayer.bing({'bingMapsKey':BING_KEY,'minZoom':12,'maxZoom':17,'imagerySet':'OrdnanceSurvey', attribution:bingAttribution, 
-		bounds: [[49.6, -12], [61.7, 3]] });
+		bounds: [[49.6, -9], [61.7, 3]] });
 }
 
 	var mbToken = 'pk.eyJ1IjoiZ2VvZ3JhcGgiLCJhIjoiY2lteXI3cmlpMDBmenY5bTF5dHFqMnh0NiJ9.sPXF2s1niWNNEfqGjs2HGw';
@@ -68,7 +68,7 @@ baseMaps["Geograph PhotoMap"] = L.tileLayer(layerUrl, {minZoom: 6, maxZoom: 18, 
 
 baseMaps['Historic OS - GB'] = L.tileLayer('https://nls-0.tileserver.com/nls/{z}/{x}/{y}.jpg',
                         {mapLetter: 'n', minZoom: 1, maxZoom:18 , attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
-                                bounds: [[49.6, -12], [61.7, 3]] });
+                                bounds: [[49.6, -9], [61.7, 3]] });
 
 baseMaps['Historic OS - Ireland'] = L.tileLayer('https://geo.nls.uk/maps/ireland/gsgs4136/{z}/{x}/{y}.png',
                         {mapLetter: 'i', tms: true, minZoom: 5, maxZoom: 15, attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
@@ -180,6 +180,9 @@ overlayMaps["Photo Viewpoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZo
 	        var coverageCoarse = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
 
 		overlayMaps["Coverage - Standard"] = L.layerGroup([coverageClose, coverageCoarse]);
+
+		overlayMaps["Coverage - Large Squares"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 13, maxZoom: 15, attribution: layerAttrib, bounds: bounds, opacity:0.6});
+
 
 	        var layerUrl='https://t0.geograph.org.uk/tile/tile-score.php?z={z}&x={x}&y={y}';
 	        overlayMaps["Coverage - Opportunities"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 7, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});

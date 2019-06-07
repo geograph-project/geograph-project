@@ -210,7 +210,12 @@
 
 	if ($.localStorage && $.localStorage('LeafletBaseMap')) {
 		basemap = $.localStorage('LeafletBaseMap');
-		if (baseMaps[basemap])
+		if (baseMaps[basemap] && (
+				//we can also check, if the baselayer covers the location (not ideal, as it just using bounds, eg much of Ireland are on overlaps bounds of GB.
+				!(baseMaps[basemap].options)
+				 || typeof baseMaps[basemap].bounds == 'undefined'
+				 || L.latLngBounds(baseMaps[basemap].bounds).contains(mapOptions.center)     //(need to construct, as MIGHT be object liternal!
+			))
 			map.addLayer(baseMaps[basemap]);
 		else
 			map.addLayer(baseMaps["OpenStreetMap"]);
