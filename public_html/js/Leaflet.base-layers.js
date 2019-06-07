@@ -174,58 +174,79 @@ overlayMaps["Photo Viewpoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZo
 	////////////////////////////////////////////////
 
 	if (L.geographCoverage) {
-	        overlayMaps["Coverage - Close"] = L.geographCoverage();
+	        var coverageClose = L.geographCoverage();
 
 	        var layerUrl='https://t0.geograph.org.uk/tile/tile-coverage.php?z={z}&x={x}&y={y}';
-	        overlayMaps["Coverage - Coarse"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
+	        var coverageCoarse = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
+
+		overlayMaps["Coverage - Standard"] = L.layerGroup([coverageClose, coverageCoarse]);
 
 	        var layerUrl='https://t0.geograph.org.uk/tile/tile-score.php?z={z}&x={x}&y={y}';
 	        overlayMaps["Coverage - Opportunities"] = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 7, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
 
-		overlayMaps["Coverage - Coarse"].on('add',       function() { setTimeout(function () { if (overlayMaps["Coverage - Opportunities"])  map.removeLayer(overlayMaps["Coverage - Opportunities"]); }, 100); } );
-		overlayMaps["Coverage - Opportunities"].on('add',function() { setTimeout(function () { if (overlayMaps["Coverage - Coarse"])         map.removeLayer(overlayMaps["Coverage - Coarse"]);        }, 100); } );
+		overlayMaps["Coverage - Standard"].on('add',       function() { setTimeout(function () { if (overlayMaps["Coverage - Opportunities"])  map.removeLayer(overlayMaps["Coverage - Opportunities"]); }, 100); } );
+		overlayMaps["Coverage - Opportunities"].on('add',function() { setTimeout(function () { if (overlayMaps["Coverage - Standard"])         map.removeLayer(overlayMaps["Coverage - Standard"]);        }, 100); } );
 
 	////////////////////////////////////////////////
+
+		//this a function, so can be called recurisvely by LayerGroups!
+		function setUserID(user_id,layer) {
+			if (layer && typeof layer.eachLayer == 'function') {
+				layer.eachLayer(function(l) {
+					setUserID(user_id,l);
+				});
+			} else {
+				if (layer && layer.options && typeof layer.options.user_id != "undefined") { // (use typeof becase it can be zero!) 
+					layer.options.user_id = user_id;
+					if (layer._url) {
+						layer.setUrl(layer._url.replace(/(&user_id=\d+|$)/,'&user_id='+user_id));
+					} else if (map.hasLayer(layer) && typeof layer.Reset == 'function') {
+                                                layer.Reset();
+					}
+				}
+			}
+		}
+		function removeUserID(layer) {
+			if (layer && typeof layer.eachLayer == 'function') {
+				layer.eachLayer(function(l) {
+					removeUserID(l);
+				});
+			} else {
+				if (layer && layer.options && typeof layer.options.user_id != "undefined") { // (use typeof becase it can be zero!) 
+					//dont set user_id here, to avoid setting it on ourselves
+                                        if (layer._url && layer._url.match(/user_id=/)) {
+						//doesnt really matter if dont change options.user_id here
+                                                layer.setUrl(layer._url.replace(/(&user_id=\d+)/,''));
+                                        } else if (typeof layer.Reset == 'function') {
+	                                        layer.options.user_id = 0;
+						if (map.hasLayer(layer)) {
+	                                                layer.Reset();
+						}
+                                        }
+                                }
+			}
+		}
 
 		overlayMaps["(Personalize Coverage)"] = L.tileLayer('',{user_id: 0, minZoom:50}) //the container will be responsible for enabling this if needbe!
 		.on('add',function(event) {
 			var user_id = event.target.options.user_id;
 			for(i in overlayMaps) {
-				if (i && overlayMaps[i] && overlayMaps[i].options && typeof overlayMaps[i].options.user_id != "undefined") { // (use typeof becase it can be zero!) 
-					overlayMaps[i].options.user_id = user_id;
-					if (overlayMaps[i]._url) {
-						overlayMaps[i].setUrl(overlayMaps[i]._url.replace(/(&user_id=\d+|$)/,'&user_id='+user_id));
-					} else if (map.hasLayer(overlayMaps[i]) && typeof overlayMaps[i].Reset == 'function') {
-                                                overlayMaps[i].Reset();
-					}
-				}
+				setUserID(user_id,overlayMaps[i]);
 			}
-			//need to catch the clicklayer! (can't JUST use eachLayer as some overlayMaps as may NOT be on the map!)
+			//need to catch the clicklayer! (can't exclusively use eachLayer as some overlayMaps as may NOT be on the map!)
 			if (L.GeographClickLayer)
 			map.eachLayer(function(layer){
 				if (layer instanceof L.GeographClickLayer)
 					layer.options.user_id = user_id;
 			});
 		}).on('remove',function(event) {
-			var user_id = 0;
 			for(i in overlayMaps) {
-                                if (i && overlayMaps[i] && overlayMaps[i].options && typeof overlayMaps[i].options.user_id != "undefined") { // (use typeof becase it can be zero!)
-					//dont set user_id here, to avoid setting it on ourselves
-                                        if (overlayMaps[i]._url && overlayMaps[i]._url.match(/user_id=/)) {
-						//doesnt really matter if dont change options.user_id here
-                                                overlayMaps[i].setUrl(overlayMaps[i]._url.replace(/(&user_id=\d+)/,''));
-                                        } else if (typeof overlayMaps[i].Reset == 'function') {
-	                                        overlayMaps[i].options.user_id = user_id;
-						if (map.hasLayer(overlayMaps[i])) {
-	                                                overlayMaps[i].Reset();
-						}
-                                        }
-                                }
+				removeUserID(overlayMaps[i]);
                         }
 			if (L.GeographClickLayer)
 			map.eachLayer(function(layer){
 				if (layer instanceof L.GeographClickLayer)
-					layer.options.user_id = user_id;
+					layer.options.user_id = 0;
 			});
 		});
 	}
