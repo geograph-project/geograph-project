@@ -191,7 +191,7 @@ overlayMaps["Photo Viewpoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZo
 
 		//this a function, so can be called recurisvely by LayerGroups!
 		function setUserID(user_id,layer) {
-			if (layer && typeof layer.eachLayer == 'function') {
+			if (layer && typeof layer.eachLayer == 'function' && typeof layer.options.user_id == 'undefined') { //the layergroups are also used for actual layers, so exlude one with a user_id option, so can set them DIRECTLY below
 				layer.eachLayer(function(l) {
 					setUserID(user_id,l);
 				});
@@ -207,7 +207,7 @@ overlayMaps["Photo Viewpoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZo
 			}
 		}
 		function removeUserID(layer) {
-			if (layer && typeof layer.eachLayer == 'function') {
+			if (layer && typeof layer.eachLayer == 'function' && typeof layer.options.user_id == 'undefined') {
 				layer.eachLayer(function(l) {
 					removeUserID(l);
 				});
