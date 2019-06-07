@@ -207,7 +207,7 @@ ul.tips li {
         {elseif $dots}
 	        map.addLayer(overlayMaps["Photo Subjects"]);
 	{else}
-	        map.addLayer(overlayMaps["Coverage - Close"]);
+	        map.addLayer(overlayMaps["Coverage - Standard"]);
 	{/if}
 	{if $stats && $stats.images}
 		overlayMaps["(Personalize Coverage)"].options.user_id = {$stats.user_id};
@@ -218,8 +218,8 @@ ul.tips li {
 		{if $filter}
 			overlayMaps["(Personalize Coverage)"].addTo(map); //this sets options.user_id on all layers
 			clickOptions.user_id = {$stats.user_id}; //but clicklayer doesnt exist yet, so need to set options from start
-			if (map.getZoom() >= 13)
-				setTimeout('overlayMaps["Coverage - Close"].Reset();',100); //TODO some race conditon, means not it doesnt get called automatically :(
+			if (map.getZoom() >= 13 && coverageClose && coverageClose.options)
+				setTimeout('coverageClose.Reset();',100); //TODO some race conditon, means not it doesnt get called automatically :(
 		{/if}
 
 		{literal}

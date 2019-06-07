@@ -3,7 +3,7 @@
 <div style="width:800px">
 	<div style="float:right">
 		<select id="mapLinkSelector" onchange="linkToMap(this)">
-			<option value="">Other Maps....</option>
+			<option value="">Location &amp; Map Links...</option>
 			<option value="/browser/#!/loc=$gridref/dist=2000/display=map_dots">Image Browser Map</a>
 			<option value="/mapper/coverage.php#zoom=$zoom&lat=$lat&lon=$long&layers=$layers">Coverage Map V3</option>
 			<option value="/mapper/?zoom=$zoom&lat=$lat&lon=$long">Coverage Map V2 (GB only)</option>
@@ -18,6 +18,7 @@
 
 			<option value="/gridref/$gridref/links">Location Links Page</option>
 			<option value="/gridref/$gridref">GridSquare Page</option>
+			<option value="/submit.php?gridreference=$gridref">Submit a photo in square</option>
 
 			<option value="https://www.nearby.org.uk/coord.cgi?p=$gridref">nearby.org.uk Links Page</option>
 			<option value="https://www.geograph.org/leaflet/all.php#$zoom/$lat/$long">All Projects Map</option>
@@ -26,7 +27,7 @@
 			<optgroup label="Where possible opens at current location at center of this map"></option>
 
 		</select><br>
-		<a href="/help/maps">read more...</a>
+		<a href="/help/maps">Other Maps on Geograph</a>
 	</div>
 </div>
 
@@ -76,7 +77,7 @@
 
 	<script src="{"/mapper/geotools2.js"|revision}"></script>
 
-        <script src="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.js?v=4"></script>
+        <script src="https://www.geograph.org/leaflet/Leaflet.GeographCoverage.js?v=6"></script>
 
         <script src="https://www.geograph.org/leaflet/Leaflet.GeographPhotos.js?v=4"></script>
 
@@ -233,8 +234,7 @@
 	{elseif $dots}
 	        map.addLayer(overlayMaps["Photo Subjects"]);
 	{else}
-	        map.addLayer(overlayMaps["Coverage - Close"]);
-	        map.addLayer(overlayMaps["Coverage - Coarse"]);
+	        map.addLayer(overlayMaps["Coverage - Standard"]);
 	{/if}
 
 	{if $stats && $stats.images}
@@ -246,8 +246,8 @@
 		{if $filter}
 			overlayMaps["(Personalize Coverage)"].addTo(map); //this sets options.user_id on all layers
 			clickOptions.user_id = {$stats.user_id}; //but clicklayer doesnt exist yet, so need to set options from start
-			if (map.getZoom() >= 13)
-				setTimeout('overlayMaps["Coverage - Close"].Reset();',100); //TODO some race conditon, means not it doesnt get called automatically :(
+			if (map.getZoom() >= 13 && coverageClose && coverageClose.options)
+				setTimeout('coverageClose.Reset();',100); //TODO some race conditon, means not it doesnt get called automatically :(
 		{/if}
 
 		{literal}
@@ -325,7 +325,7 @@
 		            }
 		        }, {
 		            stateName: 'over',
-		            icon:      'fa-adjust',
+		            icon:      'fa-adjust fa-rotate-90',
 		            title:     'Overlay Highlighted - click to highlight base layer',
 		            onClick: function(btn, map) {
 		                setAllOpacity(baseMaps,1.1);
@@ -334,7 +334,7 @@
 		            }
 		        }, {
 		            stateName: 'base',
-		            icon:      'fa-adjust',
+		            icon:      'fa-adjust fa-rotate-270',
 		            title:     'Base layer Highlighted - click to return to nominal',
 		            onClick: function(btn, map) {
 		                setAllOpacity(baseMaps,1);
@@ -365,21 +365,25 @@
 	}
 	$(function() {
 		if ($('div#maincontent').width() > 1024) {
-			$('#map').parent().after('<a href=# onclick="return enlargeMap()" id=enlargelink>Enlarge Map</a>');
+			$('#map').parent().after(' &middot; <a href=# onclick="return enlargeMap()" id=enlargelink>Enlarge Map</a> ');
 		}
 	});
+
 {/literal}</script>
 
 
 
-<h3>Tips</h3>
+<h3>Map Functions</h3>
 <ul class=tips>
-	<li>Use the <b>Search icon</b> (also top left) to search for a place and recenter the map</li>
-	<li>Use the <b>Pin icon</b> (top left) to attempt to center the map on your current location</li>
+	<li>Use the <span class="fa fa-search"></span> <b>Search icon</b> to search for a place and recenter the map<br><ul>
+		<li>If looking to search/filter images by 'keywords' etc, use the 'Image Browser Map' function, in the 'Location &amp; Map Links' dropdown. That version allows searching by keywords, as well as location, and other attributes. 
+		</ul></li>
+
+	<li>Use the <span class="fa fa-map-marker"></span> <b>Pin icon</b> (top left) to attempt to center the map on your current location</li>
 
 {dynamic}
 	{if $stats && $stats.images}
-		<li>Enable <a href="#" onclick="overlayMaps['(Personalize Coverage)'].addTo(map);return false">(Personalize Coverage)</a> in the layer switcher (top right of the map) to just count <b>your images</b></li>
+		<li>Use the <span class="fa fa-user-o"></span> <b>Personalize Coverage</b> toggle to just count <b>your images</b></li>
         {/if}
 {/dynamic}
 
@@ -388,38 +392,50 @@
 		<li>Reduce the number of layers to improve performance!</li>
 		</ul></li>
 
-	<li><b>Click the map</b> to view some nearby images, or can enable the 'Photo Thumbnails' layer. (click thumbs to view larger)</li>
-	<li>The <b>Photo Thumbnails</b> layer, automatically clusters images, to reduce overlap. The number show is a hint of the size of the cluster, but there can be significately more photos, which will load automatically when zoom in!
+	<li>Use the <span class="fa fa-adjust"></span> <b>Contrast Adjuster</b> to toggle contrast between overlays, and base map (tri-state toggle</li>
+
+	<li>Use the &#8965; <b>File Upload</b> button to upload a KML, GPX or GeoJSON file to the map. 1Mb filesize limit</li>
+
+	<li><b>Click the map</b> to view some nearby images, or can enable the '<b>Photo Thumbnails</b>' layer. (click thumbs to view larger)</li>
+
+	<li>It's very basic (just a prototype really), but can get a <a href="javascript:void(startTour())">Interactive Tour of the main features</a> of the above map. 
 </ul>
 
-<h3>Coverage Colours</h3>
+<h3>Key to Overlay Layers</h3>
 <ul class=tips>
 	<li><b>Photo Subjects</b>: A blue dot presents one or more photos - dot plotted at photo <b>Subject</b> position (only images with 6fig+ grid-reference plotted!)
 		<ul>
-			<li>Note: when zoom out, this layer will change to show coverage by square, darker = more photos. Zoom out further and it shows by 10km (hectad) squares. 
+			<li>Note: when zoom out, this layer will change to show coverage by 1km square, darker = more photos. Zoom out further and it shows by 10km (hectad) squares. 
 			(because becomes too many individual dots to plot, and can't see patterns at these scale anyway)</li>
 		</ul></li>
 
-	<li><b>Photo Viewpoints</b><sup style=color:red>NEW!</sup>: A purple marker - one per photo, showing where the photo was taken <b>from</b>, pointing in the approximate direction of view
+	<li><b>Photo Viewpoints</b><sup style=color:red>NEW!</sup>: A purple marker - one per photo, showing where the photo was taken <b>from</b>, (optionally) pointing in the approximate direction of view
 		<ul>
 			<li>If have <b>both</b> Viewpoints and Subjects layers enabled, at close zoom will draw red lines joining each purple to blue dots
 			<li>Disable one or other layer to remove the lines, keeping just one set of dots
 		</ul></li>
 
-	<li style="padding:3px;"><b>Close</b>: <span style="opacity:0.8">
-		<span style="background-color:#FF0000;padding:3px;">Square with recent Images</span> /
-		<span style="background-color:#FF00FF;padding:3px;">No Images in last 5 years</span> /
-		<span style="background-color:gray;padding:3px;">No Geograph Images</span>
+	<li style="padding:3px;"><b>Coverage - Close</b>: Shows number of photos in square (either 1km or 100m squares), and coloured by what Geograph image(s) in the square<br>
+		<span style="opacity:0.92; font-family:'Trebuchet MS','Comic Sans MS',Georgia,Verdana,Arial,serif; text-shadow:1px 1px 1px black; font-size:20px;">
+		<span style="color:#FF0000;padding:3px;">Square with recent Images</span> /
+		<span style="color:#FF00FF;padding:3px;">No Images in last 5 years</span> /
+		<span style="color:gray;padding:3px;">No Geograph Images</span>
 		</span></li>
-	<li style="padding:3px;"><b>Coarse</b>: <span style="opacity:0.6">
+
+	<li style="padding:3px;"><b>Coverage - Coarse</b>: Coloured by what Geograph(s) are in the 1km square. <br><span style="opacity:0.6">
 		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span>
 		<span style="background-color:#FF8800;padding:3px;">Only older Geographs</span>
 	 	<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
-		</span></li>
-	<li><b>Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
+		</span> <ul>
+		<li>Note: when zoom out, changes to hectad (10km square) grid resolution, and is coloured yellow->red on the number of squares with recent (last 5 years) Geographs
+		</ul></li>
+
+	<li><b>Coverage - Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
 		Experimental coverage layer to see if concept works. Exact specififications of layer subject to change or withdrawl. 
 
-	<li>We don't have a key of the BGS layers, but use the link (in [Other Maps...] at top!) to the offical Geology of Britain Viewer, which provides some functions to explain the colouring</li>
+	<li>The <b>Photo Thumbnails</b> layer, automatically clusters images, to reduce overlap. The number show is a hint of the size of the cluster, but there can be significately more photos, which will load automatically when zoom in!
+
+	<li>We don't have a key of the <b>BGS Bedrock Geology</b> layers, but use the link (in [Location &amp; Map Links...] at top!) to the offical Geology of Britain Viewer, which provides some functions to explain the colouring</li>
 </ul>
 
 <h3>Other suggestions/requests?</h3>
