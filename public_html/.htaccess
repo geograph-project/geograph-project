@@ -1,0 +1,2 @@
+
+    php_value include_path .:/var/www/geograph_toy/libs/
