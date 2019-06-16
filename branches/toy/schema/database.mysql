@@ -1,0 +1,4 @@
+CREATE TABLE counter (
+	count int unsigned not null default 0,
+	`updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+);
