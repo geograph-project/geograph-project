@@ -36,6 +36,20 @@ if ($filesystem->exists($filename)) {
 ###################################
 # Sphinx/Manticore
 
+print "<h4>Sphinx/Manticore</h4>";
+
+$sph = GeographSphinxConnection();
+
+$result = mysql_query("select * from user where match('bob')") or die(mysql_error());
+$count = mysql_num_rows($result);
+
+if ($count > 10) {
+	print "Run query and got, $count matching rows. Good.";
+} else {
+	print "didnt obtain expected results";
+}
+print "<hr>";
+
 ###################################
 # Redis
 
