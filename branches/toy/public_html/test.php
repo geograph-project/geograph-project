@@ -1,12 +1,5 @@
 <?
 
-//~~~~ TEMP BODGE!
-
-$_SERVER['DOCUMENT_ROOT'] = '/var/www/geograph_toy/public_html';
-ini_set('include_path','.:/var/www/geograph_toy/libs');
-
-//~~~~
-
 require_once('geograph/global.inc.php');
 
 ?>
