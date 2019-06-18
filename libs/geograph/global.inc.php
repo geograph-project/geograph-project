@@ -50,6 +50,10 @@ class FileSystem {
 #####################################################################
 // Sphinx/Manticore configuration
 
+function GeographSphinxConnection($type='sphinxql',$new = false) {
+	global $CONF;
+	return mysql_connect("{$CONF['sphinx_host']}:{$CONF['sphinx_portql']}", '', '', true) or die(mysql_error());
+}
 
 #####################################################################
 // Redis Host
