@@ -316,7 +316,11 @@ function addOurControls(map) {
 		map.addControl(L.geographGeocoder());
 
 	if (L.control.locate)
-		L.control.locate().addTo(map);
+		L.control.locate({
+			locateOptions: {
+				maxZoom: 16,
+	       			enableHighAccuracy: true
+		}}).addTo(map);
 
 	if (L.Control.fileLayerLoad) {
 		filelayer = L.Control.fileLayerLoad().addTo(map);
