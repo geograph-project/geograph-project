@@ -317,7 +317,7 @@ function addOurControls(map) {
 
 	if (L.control.locate)
 		L.control.locate({
-			keepCurrentZoomLevel: [13,17],
+			keepCurrentZoomLevel: [13,18],
 			locateOptions: {
 				maxZoom: 16,
 	       			enableHighAccuracy: true
