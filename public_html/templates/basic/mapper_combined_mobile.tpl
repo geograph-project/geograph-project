@@ -83,7 +83,7 @@ ul.tips li {
 	<link rel="stylesheet" href="{"/js/Leaflet.GeographClickLayer.css"|revision}" />
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.63.0/dist/L.Control.Locate.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css" />
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
 	<link rel="stylesheet" href="https://www.geograph.org/leaflet/leaflet-sidebar-master/src/L.Control.Sidebar.css" />
@@ -101,7 +101,8 @@ ul.tips li {
 
 	<script src="https://www.geograph.org/leaflet/leaflet-hash.js"></script>
 
-	<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.63.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+	<!--script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.63.0/dist/L.Control.Locate.min.js" charset="utf-8"></script-->
+	<script src="https://www.geograph.org/leaflet/L.Control.Locate.js"></script> <!-- fork at https://github.com/barryhunter/leaflet-locatecontrol/blob/gh-pages/ -->
 
         <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
         <script src="https://www.geograph.org/leaflet/leaflet-sidebar-master/src/L.Control.Sidebar.js"></script>
@@ -121,6 +122,9 @@ ul.tips li {
 
 	<script src="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.js"></script>
 	<script src="https://www.geograph.org/leaflet/Leaflet.GeographGeocoder.js"></script>
+
+	<script src="https://unpkg.com/togeojson@0.16.0/togeojson.js"></script>
+	<script src="https://unpkg.com/leaflet-filelayer@1.2.0/src/leaflet.filelayer.js"></script>
 
 </head>
 <body>
