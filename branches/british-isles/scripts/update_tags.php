@@ -23,6 +23,7 @@
 
 $param = array(
 	'days' => 2,
+	'tag_days' => false,
 	'execute' => false,
 );
 
@@ -36,7 +37,12 @@ $s = array();
 
 ######################################################################################################################################################
 
-if (!empty($param['days']))
+if (!empty($param['tag_days']))
+	//special version to note updated tags. Sometimes tags are renamed without updating gridimage_tag :(
+	$s[] = "create temporary table tagids (primary key(gridimage_id))
+		select distinct gridimage_id FROM gridimage_tag INNER JOIN tag USING (tag_id) WHERE tag.updated > DATE_SUB(NOW(),interval {$param['tag_days']} day) and gridimage_id < 4294967296 and gridimage_tag.status = 2 AND tag.updated != tag.created";
+
+elseif (!empty($param['days']))
 	$s[] = "create temporary table tagids (primary key(gridimage_id))
 		select distinct gridimage_id FROM gridimage_tag WHERE updated > DATE_SUB(NOW(),interval {$param['days']} day) and gridimage_id < 4294967296";
 
