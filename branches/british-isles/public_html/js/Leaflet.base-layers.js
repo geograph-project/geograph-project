@@ -281,6 +281,7 @@ overlayMaps["PhotoMap Overlay"] = L.tileLayer(mbUrl, {id: 'geograph/cjju7ep8g3yp
 	//L.control.layers(baseMaps, overlayMaps, {collapsed: false}).addTo(map);
 
 var layerswitcher;
+var geocoder;
 var filelayer;
 
 function addOurControls(map) {
@@ -312,8 +313,8 @@ function addOurControls(map) {
 		});
 	}
 
-	if (L.geographGeocoder)
-		map.addControl(L.geographGeocoder());
+	if (L.geographGeocoder && !geocoder)
+		map.addControl(geocoder = L.geographGeocoder());
 
 	if (L.control.locate)
 		L.control.locate({
