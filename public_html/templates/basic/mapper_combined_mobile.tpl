@@ -142,7 +142,8 @@ ul.tips li {
 
 	var mapOptions =  {
                 center: [54.4266, -3.1557], zoom: 13,
-                minZoom: 5, maxZoom: 18
+                minZoom: 5, maxZoom: 18,
+		zoomControl: false
         };
 	var clickOptions = {};
 
@@ -192,6 +193,14 @@ ul.tips li {
         //setTimeout(function () {
         //    sidebar.show();
         //}, 500);
+
+
+        if (L.geographGeocoder && !geocoder)
+                map.addControl(geocoder = L.geographGeocoder());
+
+        if (mapOptions && typeof mapOptions.zoomControl !== 'undefined' && !mapOptions.zoomControl) //default version turned off, so add it now, AFTER search
+                 map.addControl(L.control.zoom());
+
 
         L.easyButton('fa-info', function(btn, map){
             sidebar.show();
