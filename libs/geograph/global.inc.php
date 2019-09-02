@@ -1,6 +1,6 @@
 <?
 
-require "conf/example.conf";
+require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
 
 #####################################################################
 // smarty configuration
@@ -29,7 +29,6 @@ class GeographPage extends Smarty
                 //setup optimisations
                 $this->compile_check = $CONF['smarty_compile_check'];
                 $this->debugging = $CONF['smarty_debugging'];
-
 	}
 
 }
@@ -38,8 +37,19 @@ class GeographPage extends Smarty
 // folder config
 
 class FileSystem {
+	function publicUrl($path) {
+		global $CONF;
+		//todo, check exists?
+		return $CONF['STATIC_HOST']."/".$path;
+	}
+
+	//this is a toy implemenation, that only works if a local POSIX fileystem.
+	// in reality it may need to implement via S3 API or whatever!
 	function exists($path) {
 		return file_exists($path);
+	}
+	function filesize($path) {
+		return filesize($path);
 	}
 }
 
