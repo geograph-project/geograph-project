@@ -3,6 +3,7 @@
 require_once('geograph/global.inc.php');
 
 ?>
+<title>Geograph Application Test</title>
 
 <h3>Geograph Application Test</h3>
 
@@ -11,22 +12,13 @@ require_once('geograph/global.inc.php');
 <hr>
 
 <style>
-table td {
-	padding:10px;
-}
-table tr.error {
-	background-color:pink;
-}
-table tr.pass {
-	background-color:lightgreen;
-}
-table tr.notice {
-	background-color:cream;
-}
-table td.result {
-	font-size:1.3em;
-	text-align:center;
-}
+table td { padding:10px; }
+table tr.error { background-color:pink; }
+table tr.pass {	background-color:lightgreen; }
+table tr.notice { background-color:cream; }
+table td:nth-child(1) { font-weight:bold; }
+table td:nth-child(2) {	font-size:1.3em; text-align:center; }
+table td:nth-child(3) { font-size:0.8em;  }
 </style>
 
 <table>
