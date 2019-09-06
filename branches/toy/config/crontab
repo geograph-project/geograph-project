@@ -1,3 +1,11 @@
+##############################
+# Manticore 
+
+22 	03 	* * * 	/usr/local/bin/indexer --config=/path/to/sphinx.conf toy --rotate
+
+##############################
+# Basic event implemenation
+
 #fire a regular example event
 1         *       * * *   /usr/bin/php /var/www/geograph_toy/scripts/fire-event.php --event=every_hour --priority=75
 
@@ -6,6 +14,11 @@
 #Note this is done via HTTP (rather than CLI) so that the event is processed via a load balanced webserver.
 
 
+##############################
+# memgator
 
-*/10 * * * * /sbin/start-stop-daemon -SbCv -x /var/memgator/memgator-linux-amd64 -- -a /var/memgator/archives.json -A 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)' server
+# use cron as a cheap way of making sure the memgator deamon is running
 
+*/10 	* 	* * * 	/sbin/start-stop-daemon -SbCv -x /var/memgator/memgator-linux-amd64 -- -a /var/memgator/archives.json -A 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)' server
+
+##############################

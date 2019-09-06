@@ -141,10 +141,10 @@ if (isset($CONF['db_read_driver'])) {
 
 $sph = GeographSphinxConnection();
 
-$result = mysql_query("select * from user where match('bob')") or die(mysql_error());
+$result = mysql_query("select * from toy where match('IOM')") or die(mysql_error());
 $count = mysql_num_rows($result);
 
-if ($count > 10) {
+if ($count > 4) {
 	outputRow('Sphinx/Manticore Daemon','pass',"Run query and got, $count matching rows. Good.");
 } else {
 	outputRow('Sphinx/Manticore Daemon','error',"didnt obtain expected results");
