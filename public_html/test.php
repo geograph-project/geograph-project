@@ -187,9 +187,26 @@ outputRow('TimeGate Proxy','notice','test not yet implemented');
 ###################################
 # Cron
 
-outputRow('Cron Job','notice','test not yet implemented');
+if (!empty($db)) {
+	$sql = "select sum(instances) from event where posted > date_sub(now(),interval 6 hour)";
+	$count = $db->getOne($sql);
+	if ($count > 4 && $count < 8) {
+		outputRow('Cron Job: Firing Events','pass',"$count events fired in last 6 hours, should be 1/hour");
+	} else {
+		outputRow('Cron Job: Firing Events','error',"$count event(s) fired in last 6 hours, note can also show fail if not being processed long term");
+	}
 
-//todo, probably have a periodic cronjob file events (eg into database). And then two tests, 1) testing cron events being fired, and 2) testing events being procesed.
+	$sql = "select count(*) from event where status = 'completed' AND updated > date_sub(now(),interval 6 hour)";
+	$count = $db->getOne($sql);
+	if ($count > 4 && $count < 8) {
+		outputRow('Cron Job: Processing Events','pass',"$count events processed in last 6 hours, should be 1/hour");
+	} else {
+		outputRow('Cron Job: Processing Events','error',"$count event(s) processed in last 6 hours, note can also show fail if not being processed long term");
+	}
+
+} else {
+	outputRow('Cron Jobs','notice','not connected to database unable to test');
+}
 
 ###################################
 #
