@@ -66,7 +66,57 @@ outputRow('File System + Static File',$result, "tests fetching <a href=$url>$url
 ###################################
 # Mysql
 
-outputRow('MySQL Daemon','notice','test not yet implemented');
+
+$db = GeographDatabaseConnection(false); //needs to ba master connection
+
+if (!$db) {
+	outputRow('MySQL/Master','error','not connected to master');
+} elseif ($db->readonly) {
+	outputRow('MySQL/Master','error','got a read-only connection');
+} else {
+	outputRow('MySQL/Master','pass','Connected to master');
+}
+
+###################################
+
+if ($db) {
+	$x = 586; $y = 201; $d=10; $sql_where = '';
+
+					$left=$x-$d;
+                                        $right=$x+$d-1;
+                                        $top=$y+$d-1;
+                                        $bottom=$y-$d;
+
+                                        $rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+                                        $sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
+
+	$sql = "SELECT gridimage_id FROM image_dump WHERE $sql_where";
+
+	$result = $db->getAll($sql) or die(mysql_error());
+	$count = count($result);
+
+	if ($count == 7) {
+		outputRow('MySQL Spatial Query','pass',"Run query and got, $count matching rows. Good.");
+	} else {
+		outputRow('MySQL Spatial Query','error',"didnt obtain 6 rows");
+	}
+}
+
+###################################
+
+if (isset($CONF['db_read_driver'])) {
+	$read = GeographDatabaseConnection(10); //say we allow 10 second of lag!
+	if (!$read) {
+		 outputRow('MySQL/Slave','error','not connected to slave');
+	} elseif(!$read->readonly) {
+		 outputRow('MySQL/Slave','error','re-connected to master - slave not functional');
+	} else {
+		outputRow('MySQL/Slave','pass','Connected to slave. And less than 10 second lag.');
+	}
+} else {
+	outputRow('MySQL/Slave','notice','no slave configured');
+}
 
 ###################################
 # Sphinx/Manticore

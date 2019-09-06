@@ -75,6 +75,80 @@ class FileSystem {
 #####################################################################
 //database configuration
 
+//adodb configuration
+require_once('adodb/adodb.inc.php');
+if ($CONF['adodb_debugging'])
+   require_once('adodb/adodb-errorhandler.inc.php');
+
+$ADODB_CACHE_DIR =& $CONF['adodb_cache_dir'];
+
+
+//build DSN
+$DSN = $CONF['db_driver'].'://'.
+        $CONF['db_user'].':'.$CONF['db_pwd'].
+        '@'.$CONF['db_connect'].
+        '/'.$CONF['db_db'].$CONF['db_persist'];
+
+//optional slave and read only database
+if (isset($CONF['db_read_driver'])) {
+        $DSN_READ = $CONF['db_read_driver'].'://'.
+                $CONF['db_read_user'].':'.$CONF['db_read_pwd'].
+                '@'.$CONF['db_read_connect'].
+                '/'.$CONF['db_read_db'].$CONF['db_read_persist'];
+} else {
+        #$DSN_READ = $DSN;
+}
+
+
+function GeographDatabaseConnection($allow_readonly = false) {
+        global $ADODB_FETCH_MODE;
+        global $CONF;
+
+        //see if we can use a read only slave connection
+        if ($allow_readonly && !empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
+
+		$db=NewADOConnection($GLOBALS['DSN_READ']);
+	        if ($db) {
+			//if the application dictates it needs currency
+			if ($allow_readonly > 1) {
+
+				 $prev_fetch_mode = $ADODB_FETCH_MODE;
+                	         $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        	                 $row = $db->getRow("SHOW SLAVE STATUS");
+				 if (!empty($row)) { //its empty if we actully connected to master!
+
+					 if (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > $allow_readonly) {
+                     	         	        $db2=NewADOConnection($GLOBALS['DSN']);
+	                                        if ($db2) {
+	                                                $db2->readonly = false;
+        	                                        $ADODB_FETCH_MODE = $prev_fetch_mode;
+                	                                return $db2;
+                        	                }
+					}
+                                 }
+				$ADODB_FETCH_MODE = $prev_fetch_mode;
+			}
+			$db->readonly = true;
+                        return $db;
+		} else {
+			//try and fallback and get a master connection
+                        $db=NewADOConnection($GLOBALS['DSN']);
+		}
+
+	} else {
+		//otherwise just get a standard connection
+		$db=NewADOConnection($GLOBALS['DSN'].(empty($CONF['db_persist'])?'?':'&')."new");
+	}
+	if (!$db) {
+		header("HTTP/1.0 503 Service Unavailable");
+		die("Database connection failed");
+	}
+
+        $db->readonly = false;
+        return $db;
+}
+
+
 
 #####################################################################
 // Sphinx/Manticore configuration
