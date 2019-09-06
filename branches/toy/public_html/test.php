@@ -32,8 +32,8 @@ $filesystem = new FileSystem;
 
 $filename = "photos/test-photo.jpg";
 
+$url = $filesystem->publicUrl($filename);
 if ($filesystem->exists($filename)) {
-	$url = $filesystem->publicUrl($filename);
 	$fetched = file_get_contents($url); //this is fetching the file, via the URL, delibeatly to test the file online!
 
 	if (strlen($fetched) == $filesystem->filesize($filename)) {
@@ -43,7 +43,7 @@ if ($filesystem->exists($filename)) {
 		$local = $filesystem->filesize($filename);
 		$remote = strlen($fetched);
 		$result = 'error';
-		$info = "size mismatch (local: $size, remote: $remote)";
+		$info = "size mismatch (local: $local, remote: $remote)";
 	}
 	//print "<p>If see small image here: it works!";
 	//print "<img src=\"$url\" style=max-width:100px><hr>";
@@ -91,6 +91,8 @@ $smarty = new GeographPage;
 
 //for smarty, use a .tpl template, to render the pass!
 $smarty->display('toy.tpl');
+
+//todo detect failures!
 
 ###################################
 #
