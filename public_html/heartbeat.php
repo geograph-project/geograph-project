@@ -47,4 +47,15 @@ if (!file_exists("photos/test-photo.jpg")) {
         die("file system offline\n");
 }
 
+if (!is_writable("photos/")) {
+	header("HTTP/1.0 503 Unavailable");
+        die("file system read-only\n");
+}
+
+if (!is_writable("templates/basic/compiled/")) {
+	header("HTTP/1.0 503 Unavailable");
+        die("smarty compiled not writable\n");
+}
+
+
 ?>.
