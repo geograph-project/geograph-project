@@ -167,4 +167,8 @@ function GeographSphinxConnection($type='sphinxql',$new = false) {
 #####################################################################
 // memcache, may be implemented with redis (to avoid needing BOTH redis and memcache backends!
 
+require_once('geograph/multiservermemcache.class.php');
+
+$memcache = new MultiServerMemcache($CONF['memcache']['app']);
+
 #####################################################################

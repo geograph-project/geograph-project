@@ -70,11 +70,21 @@ $CONF['redis_port'] = 6379;
 $CONF['redis_db'] = 7;
 
 #####################################################################
-// memcache, may be implemented with redis (to avoid needing BOTH redis and memcache backends!
+// memcache Setup
 
 $CONF['memcache'] = array(
         'app' => 'redis' //impleented via Redis above!
 );
+
+/*
+Note, can use memcache if prefer:
+	'app' => array(
+                'host1' => '192.168.1.80', 'port1' => 11211,
+                'host2' => '192.168.1.81', 'port2' => 11211,
+                'p' => 'L'
+                ),
+... although redis is still required, so only use memcache, if want to use it shared on multiple servers (or want a bigger cache than single redis instance!)
+*/
 
 #####################################################################
 
@@ -85,13 +95,8 @@ $CONF['carrot2_dcs_url'] = "http://localhost:8081/dcs/rest";
 $CONF['timetravel_url'] = "http://localhost:1208/api/json/";
 
 #####################################################################
-// example email... (during testing can send an email here!) 
+// example email... (during testing can send an email here!)
 
 $CONF['contact_email']='barry@geograph.org.uk';
-
-
-
-
-
 
 

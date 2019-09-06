@@ -155,16 +155,49 @@ if ($count > 4) {
 # Redis
 #########################################################################################################
 
+if (!empty($CONF['redis_host'])) {
 
-outputRow('Redis Daemon','notice','test not yet implemented');
+	if (empty($redis_handler)) {
+		require("3rdparty/RedisServer.php");
+	        $redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);
+	}
+	$redis_handler->Select($CONF['redis_db']);
 
+	$test_key = "test.php-timestamp";
+	$value = $redis_handler->Get($test_key);
+
+	if ($value && $value > (time()-604800) && $value < time()) {
+		outputRow('Redis Daemon','pass','read a recent timestamp from Redis: '.$value);
+	} else {
+		outputRow('Redis Daemon','error','not read a value from redis');
+	}
+
+	//set for next time!
+	$redis_handler->Set($test_key, time());
+} else
+	outputRow('Redis Daemon','notice','redis not configured');
 
 #########################################################################################################
 # Memcache (possibly Redis anyway!)
 #########################################################################################################
 
 
-outputRow('MemCache Daemon','notice','test not yet implemented');
+if (!empty($CONF['memcache']['app'])) {
+
+	$mkey = "timestamp";
+	$value = $memcache->name_get('test.php',$mkey);
+
+
+	if ($value && $value > (time()-604800) && $value < time()) {
+		outputRow('MemCache Daemon','pass','read a recent timestamp from memcache: '.$value);
+	} else {
+		outputRow('MemCache Daemon','error','not read a value from memcache');
+	}
+
+	//set for next time!
+	$memcache->name_set('test.php',$mkey, time());
+} else
+	outputRow('MemCache Daemon','notice','memcache not configured');
 
 
 #########################################################################################################
