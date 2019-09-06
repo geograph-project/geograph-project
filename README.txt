@@ -21,15 +21,18 @@ B) Requirements
 -----------------------------------------------------------------------
 
 * Apache Webserver
-  * ideally: separate file hosting infrastructure
-* PHP/5.6 (as apache module
-  * PHP Extensions: ereg pcre zlib bz2 iconv mbstring session posix apache2handler gd exif json memcache mysql mysqli mhash apc curl
-* Mysql 5+
-* Manticore, 2.6+
-* Redis
-* Carrot2 DCS
-* TimeGate Proxy
+* PHP/5.6 (tested as Apache module)
+  * PHP Extensions: pcre zlib bz2 iconv mbstring session posix apache2handler gd exif json memcache mysql mysqli mhash apc curl
+* Mysql 5+ Master server (needs intergrated backup)
+* Manticore, 2.6+ (doesn't need to be backed up, data compiled from database server)
+* Redis server (doesn't need to be backed up, transient non-critical data)
 * Ability to run scripts on schedule
+
+Ideally: 
+* Separate file hosting infrastructure  (best if static files, images etc served from second system, optimized for it)
+* MySQL Slave  (so long running queries can run on slave - but can cope with single master)
+* Carrot2 DCS  (doesnt need highly available, its used by overnight cron tasks for example)
+* TimeGate Proxy  (doesnt need highly available, its used by overnight cron tasks for example)
 
 
 C) Directory Structure

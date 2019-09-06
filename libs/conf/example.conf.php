@@ -41,6 +41,20 @@ $CONF['db_pwd']='changethis';
 $CONF['db_db']='geograph_you';
 $CONF['db_persist']=''; //'?persist';
 
+
+//$CONF['db_read_driver']='mysql'; //comment out this line to disable to the slave
+$CONF['db_read_connect']='192.168.1.51';
+$CONF['db_read_user']=$CONF['db_user'];
+$CONF['db_read_pwd']=$CONF['db_pwd'];
+$CONF['db_read_db']=$CONF['db_db'];
+$CONF['db_read_persist']=''; //'?persist';
+
+
+$CONF['db_tempdb']='geograph_tmp';
+//optional second database, that can be excluded from replication
+//replicate-wild-ignore-table=geograph_tmp.%
+
+
 #####################################################################
 // Sphinx/Manticore configuration
 

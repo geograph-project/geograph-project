@@ -1,0 +1,14 @@
+Example commands!
+
+create database geograph_toy;
+
+CREATE USER 'geograph_toy'@'localhost' IDENTIFIED BY '1ah3cs2b43';
+
+GRANT ALL ON `geograph_toy`.* TO 'geograph_toy'@'localhost';
+
+
+if want second temp database.. 
+
+create database geograph_tmp;
+GRANT ALL ON `geograph_tmp`.* TO 'geograph_toy'@'localhost';
+
