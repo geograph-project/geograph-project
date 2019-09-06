@@ -7,18 +7,21 @@ require_once('geograph/global.inc.php');
 
 <h3>Geograph Application Test</h3>
 
-<p>This page runs various tests to ensure the server is online, and fully functiona...
+<p>This page runs various tests to ensure the server is online, and all required services are functional...
 
 <hr>
 
 <style>
-table td { padding:10px; }
+body { font-family:verdana; }
+table td { padding:3px; }
 table tr.error { background-color:pink; }
 table tr.pass {	background-color:lightgreen; }
 table tr.notice { background-color:cream; }
 table td:nth-child(1) { font-weight:bold; }
 table td:nth-child(2) {	font-size:1.3em; text-align:center; }
 table td:nth-child(3) { font-size:0.8em; color:gray; }
+table tr.break { background-color:gray; color:white; font-size:0.8em; }
+table tr.break td { font-weight:normal; }
 </style>
 
 <table>
@@ -34,10 +37,18 @@ register_shutdown_function('shutdown');
 
 
 #########################################################################################################
-# Files!
+outputBreak("Files System Tests");
 #########################################################################################################
 
 $filesystem = new FileSystem;
+
+###################################
+
+outputRow('Photo Dir Writable?', is_writable("photos/")?'pass':'error');
+
+outputRow('Upload Dir Writable?', is_writable($CONF['photo_upload_dir'])?'pass':'error');
+
+###################################
 
 $filename = "photos/test-photo.jpg";
 $result = 'error';
@@ -65,7 +76,7 @@ outputRow('File System + Static File',$result, "tests fetching <a href=$url>$url
 
 
 #########################################################################################################
-# Mysql
+outputBreak("MySQL Server");
 #########################################################################################################
 
 
@@ -76,7 +87,7 @@ if (!$db) {
 } elseif ($db->readonly) {
 	outputRow('MySQL/Master','error','got a read-only connection');
 } else {
-	outputRow('MySQL/Master','pass','Connected to master');
+	outputRow('MySQL/Master','pass','Connected to master. Server: '.mysql_get_server_info());
 }
 
 ###################################
@@ -127,7 +138,7 @@ if (isset($CONF['db_read_driver'])) {
 	} elseif(!$read->readonly) {
 		 outputRow('MySQL/Slave','error','re-connected to master - slave not functional');
 	} else {
-		outputRow('MySQL/Slave','pass','Connected to slave. And less than 10 second lag.');
+		outputRow('MySQL/Slave','pass','Connected to slave. And less than 10 second lag. Server: '.mysql_get_server_info());
 	}
 } else {
 	outputRow('MySQL/Slave','notice','no slave configured');
@@ -135,7 +146,7 @@ if (isset($CONF['db_read_driver'])) {
 
 
 #########################################################################################################
-# Sphinx/Manticore
+outputBreak("Sphinx/Manticore");
 #########################################################################################################
 
 
@@ -145,14 +156,14 @@ $result = mysql_query("select * from toy where match('IOM')") or die(mysql_error
 $count = mysql_num_rows($result);
 
 if ($count > 4) {
-	outputRow('Sphinx/Manticore Daemon','pass',"Run query and got, $count matching rows. Good.");
+	outputRow('Sphinx/Manticore Daemon','pass',"Run query and got, $count matching rows. Good. Server: ".mysql_get_server_info());
 } else {
 	outputRow('Sphinx/Manticore Daemon','error',"didnt obtain expected results");
 }
 
 
 #########################################################################################################
-# Redis
+outputBreak("Redis/Memcache");
 #########################################################################################################
 
 if (!empty($CONF['redis_host'])) {
@@ -177,21 +188,18 @@ if (!empty($CONF['redis_host'])) {
 } else
 	outputRow('Redis Daemon','notice','redis not configured');
 
-#########################################################################################################
-# Memcache (possibly Redis anyway!)
-#########################################################################################################
-
+#############################
 
 if (!empty($CONF['memcache']['app'])) {
+	$title = ($CONF['memcache']['app'] == 'redis')?'Memcache Interface to Redis':'Memcache Daemon(s)';
 
 	$mkey = "timestamp";
 	$value = $memcache->name_get('test.php',$mkey);
 
-
 	if ($value && $value > (time()-604800) && $value < time()) {
-		outputRow('MemCache Daemon','pass','read a recent timestamp from memcache: '.$value);
+		outputRow($title,'pass','read a recent timestamp: '.$value);
 	} else {
-		outputRow('MemCache Daemon','error','not read a value from memcache');
+		outputRow($title,'error','not able to read via memcache');
 	}
 
 	//set for next time!
@@ -201,7 +209,7 @@ if (!empty($CONF['memcache']['app'])) {
 
 
 #########################################################################################################
-# Smarty
+outputBreak("Smarty Templating");
 #########################################################################################################
 
 
@@ -223,7 +231,7 @@ if (preg_match_all('/class=result>pass/',$result) !== 3) //needs to be three pas
 
 
 #########################################################################################################
-# Carrot2 DSC
+outputBreak("Carrot2 DSC");
 #########################################################################################################
 
 
@@ -253,7 +261,7 @@ if (!empty($CONF['carrot2_dcs_url'])) {
 
 
 #########################################################################################################
-# TimeGate Proxy
+outputBreak("TimeGate Proxy");
 #########################################################################################################
 
 
@@ -271,7 +279,7 @@ if (!empty($CONF['timetravel_url'])) {
 
 
 #########################################################################################################
-# Cron
+outputBreak("Cron");
 #########################################################################################################
 
 
@@ -298,6 +306,7 @@ if (!empty($db)) {
 
 
 #########################################################################################################
+outputBreak("Finally");
 
 $shutdown_result = 'pass'; //this is used in shutdown function to render the last row!
 
@@ -309,4 +318,10 @@ function outputRow($message, $class = 'notice', $text = '') {
 	print "<td class=result>$class</td>";
 	print "<td>$text</td>";
 	flush();
+}
+
+function outputBreak($header) {
+	print "<tr class=break>";
+	print "<td colspan=3>$header</td>";
+
 }

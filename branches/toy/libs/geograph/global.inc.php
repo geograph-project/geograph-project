@@ -80,8 +80,6 @@ require_once('adodb/adodb.inc.php');
 if (!empty($CONF['adodb_debugging']))
    require_once('adodb/adodb-errorhandler.inc.php');
 
-$ADODB_CACHE_DIR =& $CONF['adodb_cache_dir'];
-
 
 //build DSN
 $DSN = $CONF['db_driver'].'://'.
