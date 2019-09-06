@@ -6,15 +6,24 @@
 A) Introduction
 -----------------------------------------------------------------------
 
-This is a basic implementation of Geograph Website code. It doesn't contain any real functions, 
-just enough code to test the backend services
+This is a basic implementation of Geograph Website code. 
+It's not a proper user-facing website, just enough code to test the backend services.
+We use this internaly to test our servers are capable of running the real Geograph website.
+
+
+Note: deliberately implemented using PHP5 functions (like mysql_*) and using standaed POSIX filesystem - so it runs on the current servers. 
+
+... later on, will 'upgrade' this to support PHP7, and probably a Amazon S3 implementation (for files hosting). 
+Doing as a standalone step, as will mimick and upgrade will need to do to the real website. 
 
 
 B) Requirements
 -----------------------------------------------------------------------
 
-* Apache with PHP/5.6
+* Apache Webserver
   * ideally: separate file hosting infrastructure
+* PHP/5.6 (as apache module
+  * PHP Extensions: ereg pcre zlib bz2 iconv mbstring session posix apache2handler gd exif json memcache mysql mysqli mhash apc curl
 * Mysql 5+
 * Manticore, 2.6+
 * Redis
