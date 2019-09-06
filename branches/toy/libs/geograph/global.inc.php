@@ -77,7 +77,7 @@ class FileSystem {
 
 //adodb configuration
 require_once('adodb/adodb.inc.php');
-if ($CONF['adodb_debugging'])
+if (!empty($CONF['adodb_debugging']))
    require_once('adodb/adodb-errorhandler.inc.php');
 
 $ADODB_CACHE_DIR =& $CONF['adodb_cache_dir'];
