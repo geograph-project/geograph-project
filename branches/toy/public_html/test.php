@@ -18,7 +18,7 @@ table tr.pass {	background-color:lightgreen; }
 table tr.notice { background-color:cream; }
 table td:nth-child(1) { font-weight:bold; }
 table td:nth-child(2) {	font-size:1.3em; text-align:center; }
-table td:nth-child(3) { font-size:0.8em;  }
+table td:nth-child(3) { font-size:0.8em; color:gray; }
 </style>
 
 <table>
@@ -39,26 +39,26 @@ register_shutdown_function('shutdown');
 $filesystem = new FileSystem;
 
 $filename = "photos/test-photo.jpg";
+$result = 'error';
 
 $url = $filesystem->publicUrl($filename);
 if ($filesystem->exists($filename)) {
-	$fetched = file_get_contents($url); //this is fetching the file, via the URL, delibeatly to test the file online!
+	$local = $filesystem->filesize($filename);
 
-	if (strlen($fetched) == $filesystem->filesize($filename)) {
-		$result = 'pass';
-		$info = "fetched ok!";
+	if ($local < 1024) {
+		$info = "local file too small";
 	} else {
-		$local = $filesystem->filesize($filename);
+		$fetched = file_get_contents($url); //this is fetching the file, via the URL, delibeatly to test the file online!
 		$remote = strlen($fetched);
-		$result = 'error';
-		$info = "size mismatch (local: $local, remote: $remote)";
+
+		if ($remote == $local) { //todo, could also do a content check (eg md5)
+			$result = 'pass';
+			$info = "fetched ok!";
+		} else
+			$info = "size mismatch (local: $local, remote: $remote)";
 	}
-	//print "<p>If see small image here: it works!";
-	//print "<img src=\"$url\" style=max-width:100px><hr>";
-} else {
-	$result = 'error';
-	$info = "file not found";
-}
+} else
+	$info = "local file not found";
 
 outputRow('File System + Static File',$result, "tests fetching <a href=$url>$url</a>, $info");
 
@@ -112,7 +112,21 @@ if (preg_match_all('/class=result>pass/',$result) !== 3) //needs to be three pas
 	outputRow('Smarty Templating', 'error', 'the template didnt appear to render');
 
 ###################################
-#
+# Carrot2 DSC
+
+outputRow('Carrot2 DCS','notice','test not yet implemented');
+
+###################################
+# TimeGate Proxy
+
+outputRow('TimeGate Proxy','notice','test not yet implemented');
+
+###################################
+# Cron
+
+outputRow('Cron Job','notice','test not yet implemented');
+
+//todo, probably have a periodic cronjob file events (eg into database). And then two tests, 1) testing cron events being fired, and 2) testing events being procesed.
 
 ###################################
 #
@@ -123,7 +137,7 @@ $shutdown_result = 'pass'; //this is used in shutdown function to render the las
 
 #########################################################################################################
 
-function outputRow($message, $class = 'notice', $text = null) {
+function outputRow($message, $class = 'notice', $text = '') {
 	print "<tr class=$class>";
 	print "<td>$message</td>";
 	print "<td class=result>$class</td>";
