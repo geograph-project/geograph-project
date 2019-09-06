@@ -29,9 +29,28 @@ class GeographPage extends Smarty
                 //setup optimisations
                 $this->compile_check = $CONF['smarty_compile_check'];
                 $this->debugging = $CONF['smarty_debugging'];
-	}
+		$this->caching = $CONF['smarty_caching'];
 
+                //register our "dynamic" handler for non-cached sections of templates
+                $this->register_block('dynamic', 'smarty_block_dynamic', false,array('cached_user_id'));
+	}
 }
+
+/**
+* Smarty block handler
+* Although it doesn't appear to do much, this is registered as a
+* non-caching block handler - anything between {dynamic}{/dynamic} will
+* not be cached
+*/
+function smarty_block_dynamic($param, $content, &$smarty)
+{
+        if (!empty($param) && !empty($param['cached_user_id'])) {
+                $smarty->assign('cached_user_id',$param['cached_user_id']);
+        }
+    return $content;
+}
+
+
 
 #####################################################################
 // folder config
