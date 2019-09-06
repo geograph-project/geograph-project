@@ -11,9 +11,13 @@ just enough code to test the backend services. We use this internaly to test our
 
 	<li><a href="test.php">Run Live Application Test</a></li>
 
+	<li>There is <a href="heartbeat.php">Automated Test</a> - its output doesn't show much - designed for powering a uptime/proxy check</li>
+
 	<li><a href="source.php">View listing of files</a></li>
 
 	<li><a href="https://svn.geograph.org.uk/viewsvn/?do=browse&project=geograph&path=/branches/toy/">View Code in SVN</a></li>
+
+	<li><a href="https://svn.geograph.org.uk/viewsvn/?do=log&project=geograph&path=/branches/toy/">View SVN Log</a></li>
 
 </ul>
 

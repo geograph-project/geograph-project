@@ -80,7 +80,7 @@ if (!$db) {
 ###################################
 
 if ($db) {
-	$x = 586; $y = 201; $d=10; $sql_where = '';
+	$x = 586; $y = 201; $d=10; $sql_where = ''; $expected = 7; //example query expects 7 rows in test dataset
 
 					$left=$x-$d;
                                         $right=$x+$d-1;
@@ -96,10 +96,23 @@ if ($db) {
 	$result = $db->getAll($sql) or die(mysql_error());
 	$count = count($result);
 
-	if ($count == 7) {
+	if ($count == $expected) {
 		outputRow('MySQL Spatial Query','pass',"Run query and got, $count matching rows. Good.");
 	} else {
-		outputRow('MySQL Spatial Query','error',"didnt obtain 6 rows");
+		outputRow('MySQL Spatial Query','error',"didnt obtain $expected rows");
+	}
+
+	###################################
+
+	if (!empty($CONF['db_tempdb']) && $CONF['db_tempdb']!=$CONF['db_db']) {
+		//test creating someting in the temporaty DB. Its not replicated.
+
+		$sql = "CREATE TEMPORARY TABLE {$CONF['db_tempdb']}.group_test SELECT gridimage_id,COUNT(*),x,y FROM image_dump GROUP BY x DIV 10, y DIV 10";
+
+		$result = $db->Execute($sql) or die(mysql_error());
+
+		$rows = $db->affected_rows();
+		outputRow('MySQL Temporary table creation test', $rows>20?'pass':'error', "created table with $rows rows");
 	}
 }
 
