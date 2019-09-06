@@ -24,6 +24,14 @@ table td:nth-child(3) { font-size:0.8em;  }
 <table>
 <?
 
+$shutdown_result = 'error'; //setup so will only pass if changed at geniune end!
+function shutdown() {
+	outputRow('Test Script Reached End',$GLOBALS['shutdown_result'],'if this fails, means script was prematurely aborted. probably a fatal error');
+
+	print "</table><hr>. Page Generated: ".date('r')." by ".`hostname`;
+}
+register_shutdown_function('shutdown');
+
 
 ###################################
 # Files!
@@ -89,10 +97,19 @@ outputRow('MemCache Daemon','notice','test not yet implemented');
 
 $smarty = new GeographPage;
 
+if (!empty($smarty->compile_dir))
+	outputRow('Smarty Compile Dir Writable?', is_writable($smarty->compile_dir)?'pass':'error');
+
+if (!empty($smarty->cache_dir))
+	outputRow('Smarty Cache Dir Writable?', is_writable($smarty->cache_dir)?'pass':'error');
+
 //for smarty, use a .tpl template, to render the pass!
 $smarty->display('toy.tpl');
 
-//todo detect failures!
+
+$result = $smarty->fetch('toy.tpl');
+if (preg_match_all('/class=result>pass/',$result) !== 3) //needs to be three passes!
+	outputRow('Smarty Templating', 'error', 'the template didnt appear to render');
 
 ###################################
 #
@@ -100,10 +117,7 @@ $smarty->display('toy.tpl');
 ###################################
 #
 
-###################################
-#
-
-print "</table><hr>. Page Generated: ".date('r')." by ".`hostname`;
+$shutdown_result = 'pass'; //this is used in shutdown function to render the last row!
 
 
 
