@@ -201,7 +201,7 @@ if (!empty($db)) {
 	if ($count > 4 && $count < 8) {
 		outputRow('Cron Job: Processing Events','pass',"$count events processed in last 6 hours, should be 1/hour");
 	} else {
-		outputRow('Cron Job: Processing Events','error',"$count event(s) processed in last 6 hours, note can also show fail if not being processed long term");
+		outputRow('Cron Job: Processing Events','error',"$count event(s) processed in last 6 hours, should match now many fired");
 	}
 
 } else {
