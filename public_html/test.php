@@ -33,8 +33,9 @@ function shutdown() {
 register_shutdown_function('shutdown');
 
 
-###################################
+#########################################################################################################
 # Files!
+#########################################################################################################
 
 $filesystem = new FileSystem;
 
@@ -63,8 +64,9 @@ if ($filesystem->exists($filename)) {
 outputRow('File System + Static File',$result, "tests fetching <a href=$url>$url</a>, $info");
 
 
-###################################
+#########################################################################################################
 # Mysql
+#########################################################################################################
 
 
 $db = GeographDatabaseConnection(false); //needs to ba master connection
@@ -131,8 +133,11 @@ if (isset($CONF['db_read_driver'])) {
 	outputRow('MySQL/Slave','notice','no slave configured');
 }
 
-###################################
+
+#########################################################################################################
 # Sphinx/Manticore
+#########################################################################################################
+
 
 $sph = GeographSphinxConnection();
 
@@ -145,18 +150,27 @@ if ($count > 10) {
 	outputRow('Sphinx/Manticore Daemon','error',"didnt obtain expected results");
 }
 
-###################################
+
+#########################################################################################################
 # Redis
+#########################################################################################################
+
 
 outputRow('Redis Daemon','notice','test not yet implemented');
 
-###################################
+
+#########################################################################################################
 # Memcache (possibly Redis anyway!)
+#########################################################################################################
+
 
 outputRow('MemCache Daemon','notice','test not yet implemented');
 
-###################################
+
+#########################################################################################################
 # Smarty
+#########################################################################################################
+
 
 $smarty = new GeographPage;
 
@@ -174,18 +188,59 @@ $result = $smarty->fetch('toy.tpl');
 if (preg_match_all('/class=result>pass/',$result) !== 3) //needs to be three passes!
 	outputRow('Smarty Templating', 'error', 'the template didnt appear to render');
 
-###################################
+
+#########################################################################################################
 # Carrot2 DSC
+#########################################################################################################
 
-outputRow('Carrot2 DCS','notice','test not yet implemented');
 
-###################################
+if (!empty($CONF['carrot2_dcs_url'])) {
+	require_once('3rdparty/Carrot2.class.php');
+
+	$carrot = new Carrot2($CONF['carrot2_dcs_url']);
+
+	$data= $db->getAll("SELECT gridimage_id,title FROM image_dump LIMIT 20");
+        foreach ($data as $row) {
+                $carrot->addDocument(
+                        (string)$row['gridimage_id'],
+                        utf8_encode($row['title']),
+			''
+                );
+        }
+
+        $c = $carrot->clusterQuery();
+
+	if (!empty($c) && count($c) > 5) {
+		outputRow('Carrot2 DCS','pass',"Retreived ".count($c)." Clusters. Good.");
+	} else {
+		outputRow('Carrot2 DCS','notice',"Retreived ".count($c)." Clusters, less than expected. This is not a fail, because DCS not strictly required.");
+	}
+} else
+	outputRow('Carrot2 DCS','notice','not configured');
+
+
+#########################################################################################################
 # TimeGate Proxy
+#########################################################################################################
 
-outputRow('TimeGate Proxy','notice','test not yet implemented');
 
-###################################
+if (!empty($CONF['timetravel_url'])) {
+	// note we deliberately DONT set a query URL, so sending a bad request. we just testing if a memgate, dont want to triger an external https request.
+	$result = file_get_contents($CONF['timetravel_url']);
+	$info = null;
+	foreach ($http_response_header as $line)
+		if (strpos($line,'X-Generator: MemGator') ===0)
+			$info = $line;
+
+	outputRow('TimeGate Proxy Online',$info?'pass':'error',$info);
+} else
+	outputRow('TimeGate Proxy','notice','not configured');
+
+
+#########################################################################################################
 # Cron
+#########################################################################################################
+
 
 if (!empty($db)) {
 	$sql = "select sum(instances) from event where posted > date_sub(now(),interval 6 hour)";
@@ -208,12 +263,10 @@ if (!empty($db)) {
 	outputRow('Cron Jobs','notice','not connected to database unable to test');
 }
 
-###################################
-#
+
+#########################################################################################################
 
 $shutdown_result = 'pass'; //this is used in shutdown function to render the last row!
-
-
 
 #########################################################################################################
 

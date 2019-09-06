@@ -5,7 +5,7 @@
 	<th></th>
 <?
 
-$files = `find /var/www/geograph_toy/ -type f | grep -v /.svn/ |  grep -v /smarty/libs/internals/ | grep -v .back | grep -v _attic`;
+$files = `find /var/www/geograph_toy/ -type f | grep -v /.svn/ |  grep -v /smarty/libs/internals/ | grep -v adodb- | grep -v _attic`;
 
 $svn = 'https://svn.geograph.org.uk/viewsvn/?do=view&project=geograph&path=/branches/toy$dir2/$file2';
 
@@ -35,11 +35,13 @@ foreach (explode("\n",$files) as $file) {
 		print "<td></td>";
 	}
 
-	if ( preg_match('/\.(php|jpg|conf|mysql|txt)$/',$file2)) {
-		print "<td align=right>".filesize($file)." bytes";
-	}
-	if ( preg_match('/\.(php|conf|mysql)$/',$file2)) {
-		print "<td align=right>".intval(`wc -l $file`)." lines";
+	if (strpos($dir2,'libs/') === FALSE || strpos($dir2,'/libs/geograph') === 0) {
+		if ( preg_match('/\.(php|jpg|conf|mysql|txt)$/',$file2)) {
+			print "<td align=right>".filesize($file)." bytes";
+		}
+		if ( preg_match('/\.(php|conf|mysql)$/',$file2)) {
+			print "<td align=right>".intval(`wc -l $file`)." lines";
+		}
 	}
 
 	print "</tr>\n";
@@ -47,6 +49,11 @@ foreach (explode("\n",$files) as $file) {
 	if (strpos($file,'/Smarty.class.php') !== FALSE) {
 		$url = "https://svn.geograph.org.uk/viewsvn/?do=browse&project=geograph&path=/branches/toy/libs/smarty/libs/";
 		print "<tr><td colspan=3>... <i>rest of Smarty internals hidden for brevity, to see rest: <a href=\"$url\">view in SVN</a>";
+	}
+
+	if (strpos($file,'/adodb.inc.php') !== FALSE) {
+		$url = "https://svn.geograph.org.uk/viewsvn/?do=browse&project=geograph&path=/branches/toy/libs/adodb/";
+		print "<tr><td colspan=3>... <i>rest of adodb internals hidden for brevity, to see rest: <a href=\"$url\">view in SVN</a>";
 	}
 
 }

@@ -77,6 +77,14 @@ $CONF['memcache'] = array(
 );
 
 #####################################################################
+
+$CONF['carrot2_dcs_url'] = "http://localhost:8081/dcs/rest";
+
+#####################################################################
+
+$CONF['timetravel_url'] = "http://localhost:1208/api/json/";
+
+#####################################################################
 // example email... (during testing can send an email here!) 
 
 $CONF['contact_email']='barry@geograph.org.uk';
