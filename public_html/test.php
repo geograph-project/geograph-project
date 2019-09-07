@@ -222,10 +222,15 @@ if (!empty($smarty->cache_dir))
 	outputRow('Smarty Cache Dir Writable?', is_writable($smarty->cache_dir)?'pass':'error');
 
 //for smarty, use a .tpl template, to render the pass!
-$smarty->display('toy.tpl');
-
 
 $result = $smarty->fetch('toy.tpl');
+if (strpos($result,'Two times above are same') !== FALSE) { //if the template is first time rendered, wont be cached...
+	sleep(2); // so wait 2 seconds and try again!
+	$result = $smarty->fetch('toy.tpl');
+}
+
+print $result;
+
 if (preg_match_all('/class=result>pass/',$result) !== 3) //needs to be three passes!
 	outputRow('Smarty Templating', 'error', 'the template didnt appear to render');
 
