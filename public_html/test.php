@@ -16,7 +16,7 @@ body { font-family:verdana; }
 table td { padding:3px; }
 table tr.error { background-color:pink; }
 table tr.pass {	background-color:lightgreen; }
-table tr.notice { background-color:cream; }
+table tr.notice { background-color:#ffbf00; }
 table td:nth-child(1) { font-weight:bold; }
 table td:nth-child(2) {	font-size:1.3em; text-align:center; }
 table td:nth-child(3) { font-size:0.8em; color:gray; }
@@ -93,6 +93,10 @@ if (!$db) {
 ###################################
 
 if ($db) {
+	 $db->Execute("UPDATE counter SET count=count+1"); //unused, but keeps a counter going.. May be used for sync testing later.
+
+	###################################
+
 	$x = 586; $y = 201; $d=10; $sql_where = ''; $expected = 7; //example query expects 7 rows in test dataset
 
 					$left=$x-$d;
@@ -113,6 +117,15 @@ if ($db) {
 		outputRow('MySQL Spatial Query','pass',"Run query and got, $count matching rows. Good.");
 	} else {
 		outputRow('MySQL Spatial Query','error',"didnt obtain $expected rows");
+	}
+
+	###################################
+
+	$result = $db->getOne("select PREG_REPLACE('/test/','worked','test')");
+	if ($result == 'worked') {
+		outputRow('MySQL PREG UDF','pass',"PREG_REPLACE() function appears functional");
+	} else {
+		outputRow('MySQL PREG UDF','notice',"PREG_REPLACE() not found, not a fail, as not strictly required");
 	}
 
 	###################################
@@ -152,14 +165,34 @@ outputBreak("Sphinx/Manticore");
 
 $sph = GeographSphinxConnection();
 
+
 $result = mysql_query("select * from toy where match('IOM')") or die(mysql_error());
 $count = mysql_num_rows($result);
 
 if ($count > 4) {
-	outputRow('Sphinx/Manticore Daemon','pass',"Run query and got, $count matching rows. Good. Server: ".mysql_get_server_info());
+	outputRow('Sphinx/Manticore Daemon','pass',"Run query and got $count matching rows. Good. Server: ".mysql_get_server_info());
 } else {
 	outputRow('Sphinx/Manticore Daemon','error',"didnt obtain expected results");
 }
+
+
+$result = mysql_query("select id, user_id, uniqueserial(user_id) as sn from toy order by sn asc");
+$count = mysql_num_rows($result);
+
+if ($count == 20) { //default sphinx LIMIT
+	outputRow('Sphinx/Manticore Daemon UDF/Plugin','pass',"Run query with uniqueserial() and got $count matching rows. Good");
+} else {
+	outputRow('Sphinx/Manticore Daemon UDF/Plugin','error',"uniqueserial() functiona appears non-functional. ".mysql_error());
+}
+
+
+
+//unused, but keeps a counter going.. May be used for sync testing later.
+if ($result = mysql_query("select user_id from toy where id = 55")) {
+	$row = mysql_fetch_array($result);
+	mysql_query("update toy set user_id = ".($row[0]+1)." WHERE id=55");
+}
+
 
 
 #########################################################################################################

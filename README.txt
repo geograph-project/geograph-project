@@ -20,22 +20,27 @@ Doing as a standalone step, as will mimick and upgrade will need to do to the re
 B) Requirements
 -----------------------------------------------------------------------
 
-* Apache Webserver
+* Apache Webserver(s)
+  * If have multiple servers, will need shared file system (NFS/EFS etc)
 * PHP/5.6 (tested as Apache module)
   * PHP Extensions: pcre zlib bz2 iconv mbstring session posix apache2handler gd exif json memcache mysql mysqli mhash apc curl
 * Mysql 5+ Master server (needs intergrated backup)
 * Manticore, 2.6+ (doesn't need to be backed up, data compiled from database server)
+  * Note we do need some custom pluings. Source: http://svn.geograph.org.uk/svn/modules/trunk/sphinx/
 * Redis server (doesn't need to be backed up, transient non-critical data)
 * Ability to run scripts on schedule
 
-Ideally: 
-* Separate file hosting infrastructure  (best if static files, images etc served from second system, optimized for it)
+C) Ideally
+-----------------------------------------------------------------------
+* Separate file hosting+serving infrastructure  (best if static files, images etc served from second system, optimized for it)
+  * Could be something like Amazon S3 (currently would need POSIX compatiblity layer, like s3fs), or just NFS/EFS etc perhaps with Varnish
+* If possible https://github.com/mysqludf/lib_mysqludf_preg insalled on the MySQL servers. 
 * MySQL Slave  (so long running queries can run on slave - but can cope with single master)
-* Carrot2 DCS  (doesnt need highly available, its used by overnight cron tasks for example)
-* TimeGate Proxy  (doesnt need highly available, its used by overnight cron tasks for example)
+* Carrot2 DCS  (doesnt need highly available, it's used by overnight cron tasks for example)
+* TimeGate Proxy  (doesnt need highly available, it's used by overnight cron tasks for example)
 
 
-C) Directory Structure
+D) Directory Structure
 -----------------------------------------------------------------------
 
 libs/conf/
@@ -61,7 +66,7 @@ public_html/templates/basic/compiled/
 public_html/templates/basic/cache/
   shared template folders
   If mulitple instances of apache, all need to use common folder,
-   eg via a Distributed FileSystem
+   eg via a Distributed/Shared FileSystem, NFS etc. 
 
 schema/
   mysql database schema
@@ -70,7 +75,7 @@ scripts/
   code that needs to be run on a schedule (eg once an hour) 
   
   
-D) Installation
+E) Installation
 -----------------------------------------------------------------------
 This software currently requires PHP 5.6 , and was designed to run on
 apache webservers using the apache module.
