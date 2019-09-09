@@ -30,6 +30,7 @@ B) Requirements
   * Note we do need some custom pluings. Source: http://svn.geograph.org.uk/svn/modules/trunk/sphinx/
 * Redis server (doesn't need to be backed up, transient non-critical data)
 * Ability to run scripts on schedule
+* imagemagick, jpegtran, and exiftool command-line tools
 
 C) Ideally
 -----------------------------------------------------------------------
