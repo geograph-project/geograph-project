@@ -35,6 +35,26 @@ function shutdown() {
 }
 register_shutdown_function('shutdown');
 
+#########################################################################################################
+outputBreak("Command Line Tools");
+#########################################################################################################
+
+$list = "mogrify convert exiftool jpegexiforient jpegtran";
+
+$found = 0; $info = array();
+foreach (explode("\n",`whereis $list`) as $line) {
+	if (preg_match('/^(\w+):\s*(\/[\w\/\.]+)?/',$line,$m)) {
+		$short = $m[1];
+		$path = $m[2];
+		if (!empty($path) && is_executable($path))
+			$found++;
+		else
+			$info[] = "$short not found!";
+	}
+}
+if (empty($info)) $info[] = "all of <tt>$list</tt> found";
+
+outputRow('Commands', $found == count(explode(" ",$list))?'pass':'error', implode(', ',$info));
 
 #########################################################################################################
 outputBreak("Files System Tests");
@@ -195,7 +215,7 @@ if (!empty($result) && count($result) == 20) { //default sphinx LIMIT
 //unused, but keeps a counter going.. May be used for sync testing later.
 if ($result = $sph->getOne("select user_id from toy where id = 55")) {
 	$sph->Execute("update toy set user_id = ".($row[0]+1)." WHERE id=55")
-		or outputRow('Sphinx/Manticore Daemon', 'error', 'Update failed: .$sph->ErrorMsg());;
+		or outputRow('Sphinx/Manticore Daemon', 'error', 'Update failed: '.$sph->ErrorMsg());
 }
 
 
