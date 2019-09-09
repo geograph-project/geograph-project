@@ -159,7 +159,15 @@ function GeographDatabaseConnection($allow_readonly = false) {
 
 function GeographSphinxConnection($type='sphinxql',$new = false) {
 	global $CONF;
-	return mysql_connect("{$CONF['sphinx_host']}:{$CONF['sphinx_portql']}", '', '', true) or die(mysql_error());
+
+	if ($type=='sphinxql' || $type=='mysql') {
+
+		$sph = NewADOConnection("{$CONF['db_driver']}://{$CONF['sphinx_host']}:{$CONF['sphinx_portql']}/") or die("unable to connect to sphinx.");
+		if ($type=='mysql') {
+                        return $sph->_connectionID;
+                }
+                return $sph;
+	}
 }
 
 #####################################################################

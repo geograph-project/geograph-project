@@ -42,9 +42,10 @@ if (!empty($_GET['run'])) {
 
 	$sph = GeographSphinxConnection();
 
-	if ($result = mysql_query("select user_id from toy where id=55")) {
-		$row = mysql_fetch_array($result);
-		$d['manticore'] = $row[0];
+	if ($result = $sph->getOne("select user_id from toy where id=55")) {
+		$d['manticore'] = $result;
+	} else {
+		$d['manticore'] = $sph->errorMsg();
 	}
 
 	#########################################################################################################

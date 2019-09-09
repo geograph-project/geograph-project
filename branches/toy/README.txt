@@ -11,10 +11,11 @@ It's not a proper user-facing website, just enough code to test the backend serv
 We use this internaly to test our servers are capable of running the real Geograph website.
 
 
-Note: deliberately implemented using PHP5 functions (like mysql_*) and using standaed POSIX filesystem - so it runs on the current servers. 
+Note: deliberately first implemented using PHP5 functions (like mysql_*) and then upgraded to php7
+		https://svn.geograph.org.uk/viewsvn/?do=diff&project=geograph&path=/branches/toy/&rev=9002&oldrev=9001
 
-... later on, will 'upgrade' this to support PHP7, and probably a Amazon S3 implementation (for files hosting). 
-Doing as a standalone step, as will mimick and upgrade will need to do to the real website. 
+and using standard POSIX filesystem - so it runs on the current servers. 
+... later on, will 'upgrade' this to use a Amazon S3 implementation (for files hosting). 
 
 
 B) Requirements

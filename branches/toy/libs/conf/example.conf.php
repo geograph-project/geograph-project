@@ -34,7 +34,8 @@ $CONF['photo_upload_dir'] = '/mnt/upload/upload_tmp_dir';
 #####################################################################
 //database configuration
 
-$CONF['db_driver']='mysql';
+$CONF['db_driver']='mysqli';
+
 $CONF['db_connect']='192.168.1.50';
 $CONF['db_user']='geograph';
 $CONF['db_pwd']='changethis';
@@ -42,7 +43,7 @@ $CONF['db_db']='geograph_you';
 $CONF['db_persist']=''; //'?persist';
 
 
-//$CONF['db_read_driver']='mysql'; //comment out this line to disable to the slave
+//$CONF['db_read_driver']='mysqli'; //comment out this line to disable to the slave
 $CONF['db_read_connect']='192.168.1.51';
 $CONF['db_read_user']=$CONF['db_user'];
 $CONF['db_read_pwd']=$CONF['db_pwd'];
@@ -61,6 +62,8 @@ $CONF['db_tempdb']='geograph_tmp';
 $CONF['sphinx_host'] = '192.168.1.90';
 $CONF['sphinx_port'] = 3312;
 $CONF['sphinx_portql'] = 9306;
+//Note, SphinxQL connection will reuse $CONF['db_driver'] above!
+
 
 #####################################################################
 // Redis Host

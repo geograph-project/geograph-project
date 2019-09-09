@@ -38,9 +38,9 @@ table td:nth-child(3) { font-size:0.8em; color:gray; }
 	<td>http://toy.geograph.org.uk/test.php</td>
 </tr>
 
-<tr>
+<tr class=done>
 	<td>Upgrade code to support and run on PHP7</td>
-	<td>todo</td>
+	<td>done</td>
 	<td>Currently using many legacy functions, like mysql_*, need tweaking to run on PHP7</td>
 </tr>
 
