@@ -87,7 +87,8 @@ if (!$db) {
 } elseif ($db->readonly) {
 	outputRow('MySQL/Master','error','got a read-only connection');
 } else {
-	outputRow('MySQL/Master','pass','Connected to master. Server: '.mysql_get_server_info());
+	$info = $db->ServerInfo();
+	outputRow('MySQL/Master','pass','Connected to master. Server: '.$info['description']);
 }
 
 ###################################
@@ -110,7 +111,8 @@ if ($db) {
 
 	$sql = "SELECT gridimage_id FROM image_dump WHERE $sql_where";
 
-	$result = $db->getAll($sql) or die(mysql_error());
+	$result = $db->getAll($sql) or outputRow('MySQL Spatial Query','error',"mysql error: ".$db->ErrorMsg());
+
 	$count = count($result);
 
 	if ($count == $expected) {
@@ -121,12 +123,13 @@ if ($db) {
 
 	###################################
 
+	/*
 	$result = $db->getOne("select PREG_REPLACE('/test/','worked','test')");
 	if ($result == 'worked') {
 		outputRow('MySQL PREG UDF','pass',"PREG_REPLACE() function appears functional");
 	} else {
 		outputRow('MySQL PREG UDF','notice',"PREG_REPLACE() not found, not a fail, as not strictly required");
-	}
+	}*/
 
 	###################################
 
@@ -135,7 +138,7 @@ if ($db) {
 
 		$sql = "CREATE TEMPORARY TABLE {$CONF['db_tempdb']}.group_test SELECT gridimage_id,COUNT(*),x,y FROM image_dump GROUP BY x DIV 10, y DIV 10";
 
-		$result = $db->Execute($sql) or die(mysql_error());
+		$result = $db->Execute($sql) or outputRow('MySQL Temporary table creation test','error',"mysql error: ".$db->ErrorMsg());;
 
 		$rows = $db->affected_rows();
 		outputRow('MySQL Temporary table creation test', $rows>20?'pass':'error', "created table with $rows rows");
@@ -151,7 +154,8 @@ if (isset($CONF['db_read_driver'])) {
 	} elseif(!$read->readonly) {
 		 outputRow('MySQL/Slave','error','re-connected to master - slave not functional');
 	} else {
-		outputRow('MySQL/Slave','pass','Connected to slave. And less than 10 second lag. Server: '.mysql_get_server_info());
+		$info = $read->ServerInfo();
+		outputRow('MySQL/Slave','pass','Connected to slave. And less than 10 second lag. Server: '.$info['description']);
 	}
 } else {
 	outputRow('MySQL/Slave','notice','no slave configured');
@@ -166,31 +170,32 @@ outputBreak("Sphinx/Manticore");
 $sph = GeographSphinxConnection();
 
 
-$result = mysql_query("select * from toy where match('IOM')") or die(mysql_error());
-$count = mysql_num_rows($result);
+$result = $sph->getAll("select * from toy where match('IOM')");
 
-if ($count > 4) {
-	outputRow('Sphinx/Manticore Daemon','pass',"Run query and got $count matching rows. Good. Server: ".mysql_get_server_info());
+if (!empty($result) && count($result) > 4) {
+	$info = $sph->ServerInfo();
+	$count = count($result);
+	outputRow('Sphinx/Manticore Daemon','pass',"Run query and got $count matching rows. Good. Server: ".$info['description']);
 } else {
-	outputRow('Sphinx/Manticore Daemon','error',"didnt obtain expected results");
+	outputRow('Sphinx/Manticore Daemon','error',"didnt obtain expected results. ".$sph->ErrorMsg());
 }
 
 
-$result = mysql_query("select id, user_id, uniqueserial(user_id) as sn from toy order by sn asc");
-$count = mysql_num_rows($result);
+$result = $sph->getAll("select id, user_id, uniqueserial(user_id) as sn from toy order by sn asc");
 
-if ($count == 20) { //default sphinx LIMIT
+if (!empty($result) && count($result) == 20) { //default sphinx LIMIT
+	$count = count($result);
 	outputRow('Sphinx/Manticore Daemon UDF/Plugin','pass',"Run query with uniqueserial() and got $count matching rows. Good");
 } else {
-	outputRow('Sphinx/Manticore Daemon UDF/Plugin','error',"uniqueserial() functiona appears non-functional. ".mysql_error());
+	outputRow('Sphinx/Manticore Daemon UDF/Plugin','error',"uniqueserial() functiona appears non-functional. ".$sph->ErrorMsg());
 }
 
 
 
 //unused, but keeps a counter going.. May be used for sync testing later.
-if ($result = mysql_query("select user_id from toy where id = 55")) {
-	$row = mysql_fetch_array($result);
-	mysql_query("update toy set user_id = ".($row[0]+1)." WHERE id=55");
+if ($result = $sph->getOne("select user_id from toy where id = 55")) {
+	$sph->Execute("update toy set user_id = ".($row[0]+1)." WHERE id=55")
+		or outputRow('Sphinx/Manticore Daemon', 'error', 'Update failed: .$sph->ErrorMsg());;
 }
 
 
