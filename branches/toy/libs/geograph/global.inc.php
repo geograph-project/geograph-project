@@ -70,6 +70,9 @@ class FileSystem {
 	function filesize($path) {
 		return filesize($path);
 	}
+	function filemtime($path) {
+		return filemtime($path);
+	}
 }
 
 #####################################################################
