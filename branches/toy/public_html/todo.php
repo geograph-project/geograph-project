@@ -44,9 +44,9 @@ table td:nth-child(3) { font-size:0.8em; color:gray; }
 	<td>Currently using many legacy functions, like mysql_*, need tweaking to run on PHP7</td>
 </tr>
 
-<tr>
+<tr class=done>
 	<td>Implement file storage with Amazon S3 API</td>
-	<td>todo</td>
+	<td>done</td>
 	<td>currently could run with s3fs client, but can be upgrated to bypass that and use Amazon S3 API directly</td>
 </tr>
 

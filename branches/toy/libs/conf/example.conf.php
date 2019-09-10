@@ -30,6 +30,12 @@ $CONF['smarty_caching']=1;
 
 $CONF['photo_upload_dir'] = '/mnt/upload/upload_tmp_dir';
 
+#####################################################################
+// AWS (for s3 access)
+
+//$CONF['awsAccessKey'] = 'xxx'; //comment out to disable!
+$CONF['awsSecretKey'] = 'xxx';
+$CONF['awsS3Bucket'] = 'toy-photos.geograph.org.uk'; //By using a real domain, could enable serving images from the bucket, if the need arrose
 
 #####################################################################
 //database configuration
