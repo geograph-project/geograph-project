@@ -50,16 +50,23 @@ table td:nth-child(3) { font-size:0.8em; color:gray; }
 	<td>currently could run with s3fs client, but can be upgrated to bypass that and use Amazon S3 API directly</td>
 </tr>
 
-<tr>
+<tr class=done>
 	<td>Try building from fresh on new VM</td>
-	<td>todo</td>
-	<td>To check the code in the repository has everything to get going</td>
+	<td>done</td>
+	<td>To check the code in the repository has everything to get going. created VM with php7.2 + mysql5.7 to test<br>
+		<a href="https://docs.google.com/document/d/1-eEPrng5SUHEnmO6pm0x3cU7CxgC0gSfpiwLLqbFBdg/edit">Work Log, as a Google Doc</a></td>
 </tr>
 
 <tr>
 	<td>Try deploying on multiple webservers</td>
 	<td>todo</td>
 	<td>will proabbly need additional checks to make sure distributed filesystem (for smarty) works</td>
+</tr>
+
+<tr class=done>
+	<td>Upgrade Smarty to php7 compatible version</td>
+	<td>done</td>
+	<td>turns out version of smarty we use, not php7 compatible. Needs upgrading. Toy now using 2.6.31 (updated from 2.6.19)</td>
 </tr>
 
 <!--

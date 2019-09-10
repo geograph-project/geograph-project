@@ -214,7 +214,7 @@ if (!empty($result) && count($result) == 20) { //default sphinx LIMIT
 
 //unused, but keeps a counter going.. May be used for sync testing later.
 if ($result = $sph->getOne("select user_id from toy where id = 55")) {
-	$sph->Execute("update toy set user_id = ".($row[0]+1)." WHERE id=55")
+	$sph->Execute("update toy set user_id = ".($result+1)." WHERE id=55")
 		or outputRow('Sphinx/Manticore Daemon', 'error', 'Update failed: '.$sph->ErrorMsg());
 }
 
@@ -272,6 +272,7 @@ outputBreak("Smarty Templating");
 
 
 $smarty = new GeographPage;
+$smarty->assign('smarty_version',$smarty->_version);
 
 if (!empty($smarty->compile_dir))
 	outputRow('Smarty Compile Dir Writable?', is_writable($smarty->compile_dir)?'pass':'error');
