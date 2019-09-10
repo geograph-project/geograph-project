@@ -111,6 +111,7 @@ class Carrot2
 
   private function extractClusters($xml)
   {
+	try{
     if (!($xml instanceof SimpleXMLElement)) {
       $xml = new SimpleXMLElement($xml);
     }
@@ -125,6 +126,9 @@ class Carrot2
       }
       $clusters[] = $cluster;
     }
+	} catch (Exception $e){
+		$clusters = array();
+	}
     return $clusters;
   }
 }
