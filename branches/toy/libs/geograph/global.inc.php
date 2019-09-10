@@ -14,12 +14,12 @@ class GeographPage extends Smarty
         /**
         * Constructor - sets up smarty appropriately
         */
-        function GeographPage()
+        function __construct()
         {
                 global $CONF;
 
                //base constructor
-                $this->Smarty();
+                parent::__construct();
 
                 //set up paths
                 $this->template_dir=$_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'];
