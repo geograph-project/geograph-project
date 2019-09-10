@@ -179,6 +179,21 @@ apache webservers using the apache module.
 
 --------------
 
-12. Once test.php reports success, you're good to go!
+12. If setting up Amazon S3
+	a) Put your AWS creditials in conf file awsAccessKey/awsSecretKey - NOTE: recommended to create a IAM user with S3 read/write access, rather than using root creditials
+	b) Create a bucket, using hostname style. eg "toy-photos.geograph.org.uk";
+		the bucket should not have 'block public access' set.
+	c) setup DNS to point the hostname at S3 (see https://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html ) 
+		toy-photos.geograph.org.uk CNAME toy-photos.geograph.org.uk.s3.amazonaws.com
+	d) use the bucket name in $CONF['awsS3Bucket']
+	e) AND in $CONF['STATIC_HOST'];
+	f) Note: it normal for accessing URLs to redirect to full hostname intially. I think 24 hours or so
+		eg will redirect http://toy-photos.geograph.org.uk.s3-eu-west-1.amazonaws.com/photos/00/000070.jpg
+		until Amazon sets up DNS for your cname to point to the right region
+	g) Tip: can setup a S3 lifecycle to automatically delete test files after say 10 days. 
+
+--------------
+
+13. Once test.php reports success, you're good to go!
 
 

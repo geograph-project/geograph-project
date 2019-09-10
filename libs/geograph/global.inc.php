@@ -56,21 +56,75 @@ function smarty_block_dynamic($param, $content, &$smarty)
 // folder config
 
 class FileSystem {
+
+	function __construct() {
+		global $CONF;
+
+		if (!empty($CONF['awsAccessKey']) && !empty($CONF['awsS3Bucket'])) {
+			require_once("3rdparty/S3.php");
+
+			$this->s3 = new S3($CONF['awsAccessKey'], $CONF['awsSecretKey']);
+		}
+	}
+
+	function put($path, $sourcefile) {
+		if (!empty($this->s3)) {
+                        global $CONF;
+
+			return $this->s3->putObjectFile($_SERVER['DOCUMENT_ROOT'].'/'.$sourcefile, $CONF['awsS3Bucket'], preg_replace("/^\//",'',$path), S3::ACL_PUBLIC_READ);
+		}
+	}
+
 	function publicUrl($path) {
 		global $CONF;
 		//todo, check exists?
 		return $CONF['STATIC_HOST']."/".$path;
 	}
 
-	//this is a toy implemenation, that only works if a local POSIX fileystem.
-	// in reality it may need to implement via S3 API or whatever!
+	//use a static cache, to avoid even memcache calls within same request
+	function metadata($path, $fallbacktolocal = true) {
+		static $cache = array();
+		if (!empty($this->s3)) {
+			global $CONF, $memcache;
+
+			$mkey = md5($path); //todo, add bucket?
+		        $value = $memcache->name_get('s3',$mkey);
+
+			if (!empty($value)) {
+				$cache[$path] = json_decode($value,true);
+			} else {
+				// getObjectInfo($bucket, $uri, $returnInfo = true) {
+
+				$cache[$path] = $this->s3->getObjectInfo($CONF['awsS3Bucket'], $path);
+				if (is_object($cache[$path]))
+					 $cache[$path] = get_object_vars( $cache[$path]);//array is just easier to work with
+
+				$memcache->name_set('s3',$mkey, json_encode($cache[$path]));
+			}
+		} elseif ($fallbacktolocal && empty($cache[$path])) {
+			$cache[$path] =  array('file' => $path,
+					'size' => filesize($path),
+                			'md5sum' => md5_file($path));
+		}
+		return $cache[$path];
+	}
+
 	function exists($path) {
+		if (!empty($this->s3) && ($cache = $this->metadata($path)) ) {
+			return !empty($cache['size']);
+		}
 		return file_exists($path);
 	}
 	function filesize($path) {
+		if (!empty($this->s3) && ($cache = $this->metadata($path)) ) {
+			$cache['size'];
+		}
 		return filesize($path);
 	}
 	function filemtime($path) {
+		if (!empty($this->s3) && ($cache = $this->metadata($path)) ) {
+                        $cache['time'];
+                }
 		return filemtime($path);
 	}
 }

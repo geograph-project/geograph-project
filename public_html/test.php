@@ -64,7 +64,10 @@ $filesystem = new FileSystem;
 
 ###################################
 
-outputRow('Photo Dir Writable?', is_writable("photos/")?'pass':'error');
+if (!empty($filesystem->s3)) {
+	outputRow('Photo Dir Writable?', 'pass', 'setup writing to S3, assume it functional, not tested here');
+} else
+	outputRow('Photo Dir Writable?', is_writable("photos/")?'pass':'error');
 
 outputRow('Upload Dir Writable?', is_writable($CONF['photo_upload_dir'])?'pass':'error');
 
@@ -82,25 +85,67 @@ if ($filesystem->exists($filename)) {
 	} else {
 		$fetched = file_get_contents($url); //this is fetching the file, via the URL, delibeatly to test the file online!
 		$remote = strlen($fetched);
+		$server = 'Server: unknown';
+        	foreach ($http_response_header as $line)
+                	if (strpos($line,'Server:') ===0)
+                        	$server = $line;
 
 		if ($remote == $local) { //todo, could also do a content check (eg md5)
 			$result = 'pass';
-			$info = "fetched ok!";
+			$info = "fetched ok! $server";
 		} else
-			$info = "size mismatch (local: $local, remote: $remote)";
+			$info = "size mismatch (local: $local, remote: $remote) $server";
+
+		//todo, if file not found, and we reading from S3, then maybe file not copied there yet. So copy it?
 	}
 } else
 	$info = "local file not found";
 
-outputRow('File System + Static File',$result, "tests fetching <a href=$url>$url</a>, $info");
+outputRow('File Readable',$result, "tests fetching <a href=$url>$url</a>, $info");
 
+###################################
+//tests writing a file!
+
+if (!empty($filesystem->s3) && strpos($CONF['STATIC_HOST'], $CONF['awsS3Bucket']) !== FALSE) {
+        $local = filesize($filename); //delibairy using FS function as want to read the file, not S3 file!
+
+        $db = GeographDatabaseConnection(false);
+        $db->Execute("UPDATE counter SET count=count+1");
+        $counter = $db->getOne("SELECT count FROM counter");
+
+        $destination = sprintf('photos/%02d/%06d.jpg',$counter/100,$counter);
+
+        $result = $filesystem->put($destination, $filename);
+
+        $url = $filesystem->publicUrl($destination);
+        $fetched = file_get_contents($url); //this is fetching the file, via the URL, delibeatly to test the file online!
+
+        if (empty($fetched)) {
+                sleep(3); //allow for eventual consistency!
+                $fetched = file_get_contents($url);
+        }
+	$remote = strlen($fetched);
+	$server = 'Server: unknown';
+        foreach ($http_response_header as $line)
+                if (strpos($line,'Server:') ===0)
+                        $server = $line;
+
+	if ($local == $remote) {
+		outputRow('File Written to S3', 'pass', "Image copied to <a href=$url>$url</a>. $server");
+	} else {
+		outputRow('File Written to S3', 'error', "Size Mismatch, expected:$local, got:$remote. put said ($result). $server");
+	}
+} else {
+	outputRow('File Written to S3', 'notice', "Amazon S3 not configured. Test Skipped.");
+}
 
 #########################################################################################################
 outputBreak("MySQL Server");
 #########################################################################################################
 
 
-$db = GeographDatabaseConnection(false); //needs to ba master connection
+if (empty($db)) //might already connected!
+	$db = GeographDatabaseConnection(false); //needs to ba master connection
 
 if (!$db) {
 	outputRow('MySQL/Master','error','not connected to master');
@@ -114,10 +159,6 @@ if (!$db) {
 ###################################
 
 if ($db) {
-	 $db->Execute("UPDATE counter SET count=count+1"); //unused, but keeps a counter going.. May be used for sync testing later.
-
-	###################################
-
 	$x = 586; $y = 201; $d=10; $sql_where = ''; $expected = 7; //example query expects 7 rows in test dataset
 
 					$left=$x-$d;
