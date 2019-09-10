@@ -1,7 +1,8 @@
 CREATE TABLE counter (
-	count int unsigned not null default 0,
+	`count` int unsigned not null default 0,
 	`updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
 );
+INSERT `counter` SET `count` = 0;
 
 
 CREATE TABLE `event` (
