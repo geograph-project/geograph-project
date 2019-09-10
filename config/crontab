@@ -1,7 +1,7 @@
 ##############################
 # Manticore 
 
-22 	03 	* * * 	/usr/local/bin/indexer --config=/path/to/sphinx.conf toy --rotate
+22 	03 	* * * 	/usr/local/bin/indexer --config /path/to/sphinx.conf toy --rotate
 
 ##############################
 # Basic event implemenation

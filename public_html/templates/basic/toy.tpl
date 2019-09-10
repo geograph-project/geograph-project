@@ -1,7 +1,7 @@
 <tr class=pass>
        <td>Smarty Templating</td>
        <td class=result>pass</td>
-       <td>Cached Time: {$smarty.now} (when this template was cached)</td>
+       <td>Cached Time: {$smarty.now} (when this template was cached) Version: {$smarty_version}</td>
 </tr>
 
 {assign var="cached_now" value=$smarty.now}
