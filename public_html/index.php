@@ -15,6 +15,8 @@ just enough code to test the backend services. We use this internaly to test our
 
 	</ul></li>
 
+	<li><a href="capabilities.txt">capabilities.txt</a></li>
+
 	<li><a href="source.php">View listing of files</a></li>
 
 	<li>Subversion Repository: <a href="https://svn.geograph.org.uk/svn/branches/toy/">https://svn.geograph.org.uk/svn/branches/toy/</a><ul>

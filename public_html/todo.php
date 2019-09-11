@@ -81,6 +81,11 @@ table td:nth-child(3) { font-size:0.8em; color:gray; }
 	<td>Testing reading latin1 and converting to UTF8 in PHP</td>
 </tr>
 
+<tr class=done>
+	<td>Test converting tables to InnoDB</td>
+	<td>done</td>
+	<td>The tables in sample database converted to InnoDB, test.php still runs. (eg InnoDB spatial indexing, seems to be working?)</td>
+</tr>
 
 
 <!--
