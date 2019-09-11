@@ -1,0 +1,19 @@
+This application should
+
+* Be capable of running on multiple web-servers (ie multiple instances of Apache+PHP7)
+    * Testing Smarty templating using a shared EFS filesystem  
+* Reading+Writing files to/from S3 (via API) - with HTTP access optionally via CloudFront
+* Connecting to RDS "mysql" instance 5.6/5.7, including with a Read-Replica
+    * includes a sample dataset to import - using MyISAM
+* Connecting to a Manticore 2.6/3 query endpoint (in practical terms a running instance of `searchd` somewhere) 
+    * includes config to build an index with `indexer`
+* Verifying that required command line commands are present
+* Connecting to a Redis Instance
+* Connecting to optional memcached instances (or can use redis instead) 
+* Connecting to a Carrot2-DCS Instance
+* Connecting to a TimeGate Instance (includes config to set one up!) 
+* Running some basic scheduled tasks (called on CLI) inside the webserver instances
+
+
+
+Additionally, should cope if the mysql tables are converted to InnoDB.
