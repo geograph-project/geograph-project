@@ -25,13 +25,14 @@ B) Requirements
   * If have multiple servers, will need shared file system (NFS/EFS etc)
 * PHP/5.6 (tested as Apache module)
   * PHP Extensions: pcre zlib bz2 iconv mbstring session posix apache2handler gd exif json memcache mysql mysqli mhash apc curl
-* Mysql 5+ Master server (needs intergrated backup)
+* Mysql 5.6/5.7 Master server (needs intergrated backup)
   * Note: ONLY_FULL_GROUP_BY must NOT be in sql_mode for now. 
-* Manticore, 2.6+ (doesn't need to be backed up, data compiled from database server)
+* Manticore, 2.6+/3 (doesn't need to be backed up, data compiled from database server)
   * Note we do need some custom pluings. Source: http://svn.geograph.org.uk/svn/modules/trunk/sphinx/
-* Redis server (doesn't need to be backed up, transient non-critical data)
+* Redis server (doesn't need to be backed up, transient non-critical data. But does eed to be highly available)
 * Ability to run scripts on schedule
 * imagemagick, jpegtran, and exiftool command-line tools
+* ability for the webserver to send emails, notably via the php mail() function
 
 C) Ideally
 -----------------------------------------------------------------------
