@@ -78,12 +78,14 @@ scripts/
   
 E) Installation
 -----------------------------------------------------------------------
-This software currently requires PHP 5.6 , and was designed to run on
+This software tested with PHP 5.6 and PHP 7.2, and was designed to run on
 apache webservers using the apache module.
 
 --------------
 
-1. Unpack the files into <basedir>
+1. Download the files from repository, if have subversion installed, easiest with a simple checkout command. 
+
+svn checkout https://svn.geograph.org.uk/svn/branches/toy/ geograph_toy/
 
 --------------
 
@@ -110,20 +112,27 @@ apache webservers using the apache module.
 
       if have a master+slave setup (recommeded!) then suggested to create a second database, that is configured to be excluded from replication. (but optional) 
 
-      see schema/create.txt for example commands to run on command line. 
+      see schema/create.txt for example commands to run on command line.
+
+	NOTE: if needbe, Remove ONLY_FULL_GROUP_BY from sql_mode
+
+	SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+ 
 
 --------------
 
 4. Initialise the database using schema/database.mysql into the master. (e.g. mysql geograph < database.mysql)
 
-    Also import schema/image_dump.mysql - which is sameple dataset to test more advanced queries
+	Also import schema/image_dump.mysql - which is sample dataset to test more advanced queries
+
+	and schema/gridimage_funny.mysql - which is sample dataset of titles with extended non-ascii charactors, to test charset conversions
 
 --------------
 
 5. Setup Manticore (based on Sphinx)  Currently use, Server version: 2.6.2 later versions MAY work
 
 	use config/sphinx.conf as a start. 
-	... will need the mysql database creditials. 
+	... will need the mysql database credentials. Ideally connect to slave/read-replica
 
 	Note: we use some custom Sphinx Plugins, which will need compiling. 
 	Source: http://svn.geograph.org.uk/viewsvn/?do=browse&project=geograph&path=/modules/trunk/sphinx/
@@ -143,7 +152,7 @@ apache webservers using the apache module.
 
 --------------
 
-6. Setup Redis Daemon. No special setup is required, just need its ip/port for the config, and need two DBs to use for the test. 
+6. Setup Redis Daemon. No special setup is required, just need its ip/port for the config, and need one unique DB to use for the test. 
 
 --------------
 
@@ -172,12 +181,12 @@ apache webservers using the apache module.
 --------------
 
 11. Restart apache and attempt to access http://<**yourdomain**>/test.php - 
-   this will test your installation and report back on anything that must 
-   be fixed
+	this will test your installation and report back on anything that must be fixed
 
 --------------
 
 12. If setting up Amazon S3
+
 	a) Put your AWS creditials in conf file awsAccessKey/awsSecretKey - NOTE: recommended to create a IAM user with S3 read/write access, rather than using root creditials
 	b) Create a bucket, using hostname style. eg "toy-photos.geograph.org.uk";
 		the bucket should not have 'block public access' set.
