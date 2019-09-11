@@ -36,6 +36,24 @@ function shutdown() {
 register_shutdown_function('shutdown');
 
 #########################################################################################################
+outputBreak("Webserver Tests");
+#########################################################################################################
+
+$result = file_get_contents("{$CONF['CONTENT_HOST']}/help/static");
+
+outputRow('RewriteRule Test',strpos($result,"Page: <b>static</b>")===FALSE?'error':'pass',"Tests that /help/static internal rewrite rule is working (the URL should be directed to staticfile.php if functional");
+
+$content='';
+foreach ($http_response_header as $line)
+       	if (strpos($line,'Content-Type:') ===0)
+               	$content = $line;
+
+outputRow('Content-Type Test',strpos($content,"charset=ISO-8859-1")===FALSE?'error':'pass',"The above URL, served by PHP should have ISO-8859-1 as declared charset");
+
+
+//todo, test https?
+
+#########################################################################################################
 outputBreak("Command Line Tools");
 #########################################################################################################
 
