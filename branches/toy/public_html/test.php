@@ -329,8 +329,21 @@ outputBreak("Smarty Templating");
 $smarty = new GeographPage;
 $smarty->assign('smarty_version',$smarty->_version);
 
-if (!empty($smarty->compile_dir))
+if (!empty($smarty->compile_dir)) {
 	outputRow('Smarty Compile Dir Writable?', is_writable($smarty->compile_dir)?'pass':'error');
+
+	//todo, this is very fagile, only checking if the compiled is a symlink to a folder that appears mounted on EFS!
+	if (is_link($smarty->compile_dir)) {
+		$dest = readlink($smarty->compile_dir);
+		$result = `df $dest`;
+		if (strpos($result,'.efs.') !== FALSE) {
+			$files = trim(`find $dest -type f | wc -l`);
+			outputRow('Compile Dir symlink to Amazon-EFS',$files>1?'pass':'error',"linked to $dest, appear to be mounted EFS share. Not a thorough test");
+		} else {
+			outputRow('Compile Dir symlink','notice',"linked to $dest, which doesnt appear to be EFS");
+		}
+	}
+}
 
 if (!empty($smarty->cache_dir))
 	outputRow('Smarty Cache Dir Writable?', is_writable($smarty->cache_dir)?'pass':'error');
