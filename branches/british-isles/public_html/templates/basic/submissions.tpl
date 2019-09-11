@@ -1,14 +1,13 @@
-{assign var="page_title" value="My Submissions"}
+{assign var="page_title" value="Recent Uploads"}
 {assign var="meta_description" value="Lists your most recent submissions for easy editing and review"}
 {include file="_std_begin.tpl"}
 
-<h2>My Submissions{if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
+<h2>Recent Uploads{if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
 
 	<br/>
 
 	{foreach from=$images item=image}
-	 <div style="border-top: 2px solid lightgrey; padding-top:3px;">
-	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="display:inline">
+	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style"background-color:#{cycle values="eaeaea,f8f8f8"};padding:8px 0;">
 	  <div class="shadow" style="float:left; position:relative; width:133px; text-align:center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a><br/>
 		<div class="caption">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
@@ -53,8 +52,8 @@
 			</iframe>
 		</div>
 
-	  </form><br/>
-	 </div>
+	  </form>
+
 	{foreachelse}
 	 	nothing to see here
 	{/foreach}
