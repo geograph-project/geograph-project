@@ -204,6 +204,20 @@ if ($db) {
 		$rows = $db->affected_rows();
 		outputRow('MySQL Temporary table creation test', $rows>20?'pass':'error', "created table with $rows rows");
 	}
+
+	###################################
+	//test charset!
+
+	//an example image from gridimage_funny, that makes a nice test of both ISO-8859-1 and UTF8 conversions!
+	$id = 1785100;
+	$latin1 = "Frampton%3A+Keeper%92s+Cottage+and+postbox+%26%238470%3B+DT2+48";
+	$urf8 = "Frampton%3A+Keeper%26rsquo%3Bs+Cottage+and+postbox+%E2%84%96+DT2+48";
+
+	$value = $db->getOne("SELECT title FROM gridimage_funny WHERE gridimage_id = $id");
+
+	outputRow('latin1 data to ISO-8859-1 HTML', (urlencode(htmlentities2($value)) == $latin1)?'pass':'error', 'tests both fetchinf from database, and converting to HTML');
+
+	outputRow('latin1 data to UTF-8 HTML', (urlencode(htmlentities(latin1_to_utf8($value), ENT_COMPAT, 'UTF-8')) == $urf8)?'pass':'error');
 }
 
 ###################################
