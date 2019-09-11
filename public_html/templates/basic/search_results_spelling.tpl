@@ -4,8 +4,7 @@
 
 	{foreach from=$engine->results item=image}
 	{searchbreak image=$image}
-	 <div style="border-top: 2px solid lightgrey; padding-top:3px;">
-	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="display:inline">
+	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="background-color:#{cycle values="eaeaea,f8f8f8"};padding:8px 0;">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 		<br/><div style="font-size:0.7em;">[[[{$image->gridimage_id}]]]
@@ -45,9 +44,8 @@
 				<div><a href="#" onclick="hide_tree('tag{$image->gridimage_id}');return false">- Close <i>Tagging</I> box</a> ({newwin href="/article/Tags" text="Article about Tags"})</div>
 		  </div>
 
+	  </form>
 
-	  </form><br/>
-	 </div>
 	{foreachelse}
 	 	{if $engine->resultCount}
 	 		<p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}{if $engine->temp_displayclass}&amp;displayclass={$engine->temp_displayclass}{/if}"><b>continue to results</b> &gt; &gt;</a></p>
