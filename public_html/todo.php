@@ -57,6 +57,12 @@ table td:nth-child(3) { font-size:0.8em; color:gray; }
 		<a href="https://docs.google.com/document/d/1-eEPrng5SUHEnmO6pm0x3cU7CxgC0gSfpiwLLqbFBdg/edit">Work Log, as a Google Doc</a></td>
 </tr>
 
+<tr class=done>
+	<td>Connect smarty compiled folder to EFS</td>
+	<td>done</td>
+	<td>Tested smarty can run with compiled/cached folders mounted to Amazon-EFS share</td>
+</tr>
+
 <tr>
 	<td>Try deploying on multiple webservers</td>
 	<td>todo</td>
@@ -68,6 +74,14 @@ table td:nth-child(3) { font-size:0.8em; color:gray; }
 	<td>done</td>
 	<td>turns out version of smarty we use, not php7 compatible. Needs upgrading. Toy now using 2.6.31 (updated from 2.6.19)</td>
 </tr>
+
+<tr class=done>
+	<td>Added basic Charset test</td>
+	<td>done</td>
+	<td>Testing reading latin1 and converting to UTF8 in PHP</td>
+</tr>
+
+
 
 <!--
 <tr class=done>
