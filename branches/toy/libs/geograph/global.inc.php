@@ -235,3 +235,21 @@ require_once('geograph/multiservermemcache.class.php');
 $memcache = new MultiServerMemcache($CONF['memcache']['app']);
 
 #####################################################################
+
+//functions developed on geograph.org.uk
+
+function htmlentities2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+{
+    return preg_replace( "/&amp;([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,4};|#x[0-9a-fA-F]{2,4};)/", '&$1' ,htmlentities($myHTML,$quotes,$char_set));
+}
+
+function latin1_to_utf8($input) {
+        //our database has charactors encoded as entities (outside ISO-8859-1) - so need to decode entities.
+        //and while we declare ISO-8859-1 as the html charset, we actully using windows-1252, as some browsers are sending us chars not valid in ISO-8859-1.
+        //todo detect iconv not installed, and use utf8_encode as a fallback??
+        //we dont utf8_encode if can help it, as it only supports ISO-8859-1, NOT windows-1252
+        return html_entity_decode(
+                iconv("windows-1252", "utf-8", $input),
+                ENT_COMPAT, 'UTF-8');
+}
+
