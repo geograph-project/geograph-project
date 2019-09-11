@@ -60,16 +60,13 @@ public_html/photos/
   hosted locally. eg via separate hostname https://toy-cdn.geograph.org.uk/photos/
   
 public_html/templates/basic/
-  basic smarty template and supporting files - as other
-  site templates are developed, they would go into similar
-  directories at this level. All template-specific graphics
-  and CSS files are stored here also.
+  basic smarty template and supporting files
 
 public_html/templates/basic/compiled/
 public_html/templates/basic/cache/
   shared template folders
   If mulitple instances of apache, all need to use common folder,
-   eg via a Distributed/Shared FileSystem, NFS etc. 
+   eg via a Distributed/Shared FileSystem, NFS, EFS etc. 
 
 schema/
   mysql database schema
@@ -194,6 +191,23 @@ apache webservers using the apache module.
 
 --------------
 
-13. Once test.php reports success, you're good to go!
+13. If have multiple webserver instances, Smarty requires a 'common' folder to store complied and cached templates file. 
+
+	So need to use a distributed filesystem. Works over NFS on current servers. EFS has been lightly tested. 
+
+	a) Create the EFS filesystem in AWS control panel
+	b) mount it in the local filesystem somewhere convenient
+	c) create folders for complied and cached folders, and create symlinks to them, for example
+
+		mkdir /mnt/efs/toy-compiled/
+		chmod a+w /mnt/efs/toy-compiled/
+		rm -Rf public_html/templates/basic/compiled/
+		ln -s /mnt/efs/toy-compiled/ public_html/templates/basic/compiled
+
+	d) repeat for cache
+
+--------------
+
+14. Once test.php reports success, you're good to go!
 
 
