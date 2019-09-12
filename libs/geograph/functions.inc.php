@@ -263,10 +263,10 @@ function smarty_function_external($params)
 	$icon = "/img/external.png";
 	if (isset($params['target']) && $params['target'] == '_blank') {
 		$title .= "\" target=\"_blank";
-		$prompt = "External link - shift click to open in new window";
+		$prompt = "External link - opens in a new window";
 		$icon = "/img/newwin.png";
 
-	} elseif (preg_match("/^https?\/\/{$_SERVER['HTTP_HOST']}\//",$href)) {
+	} elseif (preg_match("/^https?:\/\/{$_SERVER['HTTP_HOST']}\//",$href)) {
 		//for 'internal' links, can skip rest, dont need to show 'external' icon, nor should be adding the nofollow!
 		return "<a title=\"$title\" href=\"$href\">$text</a>";
 	}
