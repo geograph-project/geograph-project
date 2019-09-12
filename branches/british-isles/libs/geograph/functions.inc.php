@@ -223,44 +223,15 @@ return "<a href=\"http://www.getamap.ordnancesurveyleisure.co.uk/\" target=\"gam
 
 /**
 * Smarty new window linker
-*
-* Provides centralised formatting of external links
-* href, title and text are the params here...
 */
 function smarty_function_newwin($params)
 {
-	global $CONF;
-  	//get params and use intelligent defaults...
-  	$href=str_replace(' ','+',trim($params['href']));
-  	
-  	if (isset($params['text']))
-  		$text=$params['text'];
-  	else
-  		$text=$href;
-
-  	if (isset($params['title']))
-		$title=$params['title'];
-	else
-		$title=strip_tags($text);
-
-	$rel = array();
-	if (isset($params['nofollow']))
-		$rel[] = "nofollow";
-	if (!strpos("//{$_SERVER['HTTP_HOST']}/",$href))
-		$rel[] = "noopener";
-	if (!empty($rel))
-		$title .= "\" rel=\"".implode(" ",$rel);
-
-	if (isset($params['onclick']))
-		$title .= "\" onclick=\"".$params['onclick'];
-
-	return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>"; 
+	//external finction now supports new window via a paramater
+	$params['target'] = '_blank';
+	return smarty_function_external($params);
 }
 
 /**
-* Smarty new window linker
-*
 * Provides centralised formatting of external links
 * href, title and text are the params here...
 */
@@ -285,21 +256,31 @@ function smarty_function_external($params)
 	else
 		$title=strip_tags($text);
 
+	if (isset($params['onclick']))
+		$title .= "\" onclick=\"".$params['onclick'];
+
+	$prompt = "External link - shift click to open in new window";
+	$icon = "/img/external.png";
+	if (isset($params['target']) && $params['target'] == '_blank') {
+		$title .= "\" target=\"_blank";
+		$prompt = "External link - shift click to open in new window";
+		$icon = "/img/newwin.png";
+
+	} elseif (preg_match("/^https?\/\/{$_SERVER['HTTP_HOST']}\//",$href)) {
+		//for 'internal' links, can skip rest, dont need to show 'external' icon, nor should be adding the nofollow!
+		return "<a title=\"$title\" href=\"$href\">$text</a>";
+	}
+
 	$rel = array();
 	if (isset($params['nofollow']))
-		$rel[] = "nofollow";
+		$rel[] = "nofollow ugc";
 	if (!strpos("//{$_SERVER['HTTP_HOST']}/",$href))
 		$rel[] = "noopener";
 	if (!empty($rel))
 		$title .= "\" rel=\"".implode(" ",$rel);
 
-  	if (isset($params['target']) && $params['target'] == '_blank') {
-  		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>";
-  	} else {
-  		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
-  	}
+	return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\">$text</a>".
+		"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"$prompt\" src=\"{$CONF['STATIC_HOST']}$icon\" width=\"10\" height=\"10\"/></span>";
 }
 
 /**
@@ -670,6 +651,13 @@ function GeographLinks(&$posterText,$thumbs = false) {
 	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
 
 	$posterText = preg_replace('/(?<![>\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'http://\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
+
+	//temp bodge, both CONTENT_HOST and SELF_HOST use $CONF['PROTOCOL'], so current protocol, doesnt actully fix https links!
+	//we now WE can support https:// and consider it canonical, even if http:// urls still work!
+	$posterText = str_replace("http://".$_SERVER['HTTP_HOST'],"https://".$_SERVER['HTTP_HOST'],$posterText);
+
+	//... although geotrip urls are still http:// canoncial! ?!
+	$posterText = str_replace("https://".$_SERVER['HTTP_HOST']."/geotrip","http://".$_SERVER['HTTP_HOST']."/geotrip",$posterText);
 
 	return $posterText;
 }
