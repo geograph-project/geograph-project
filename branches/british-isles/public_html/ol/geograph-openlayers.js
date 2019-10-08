@@ -43,11 +43,13 @@ function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, t
         tabletOrPhone = true;
     }
 
+/*
     olmap.layers['os'] = new OpenLayers.Layer.OsOpenSpaceLayer({
         OSAPIKey: "A493C3EB96133019E0405F0ACA6056E3", // Geograph's key key
         OSKeysUrl: 'http://'+window.location.host+'/', // Geograph's URL (escaped) registered against the key
         layerName: "Ordnance Survey GB"
     });
+*/
 
     if (tileserver_default) { // this is set by nls-api.js
 	// Define the XYZ-based layer for NLS Map

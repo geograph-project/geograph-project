@@ -145,10 +145,12 @@ function jumpLocation(form) {
 				//center map
 		                centre = new OpenLayers.LonLat(pos.east, pos.north).transform("EPSG:27700", olmap.map.getProjection());
 
+				var vis = 0;
+				
 					//need to find if currently using OS map. might be simpler to use map.getProjection??
-					var layers = olmap.map.getLayersByName('Ordnance Survey GB');
-					var vis = 0;
+				if (var layers = olmap.map.getLayersByName('Ordnance Survey GB')) {
 					for(q=0;q<layers.length;q++) if (layers[q].visibility) vis++;
+				}
 
 		                olmap.map.setCenter(centre, vis?7:14); //OS base layer uses different zooms!
 
