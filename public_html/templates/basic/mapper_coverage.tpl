@@ -148,7 +148,7 @@ function jumpLocation(form) {
 				var vis = 0;
 				
 					//need to find if currently using OS map. might be simpler to use map.getProjection??
-				if (var layers = olmap.map.getLayersByName('Ordnance Survey GB')) {
+				if (layers = olmap.map.getLayersByName('Ordnance Survey GB')) {
 					for(q=0;q<layers.length;q++) if (layers[q].visibility) vis++;
 				}
 
