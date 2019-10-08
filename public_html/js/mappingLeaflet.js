@@ -335,11 +335,13 @@ function updateCamIcon() {
 		baseMaps['OSM'] = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 			 {mapLetter: 'o', minZoom: 8, maxZoom: 18, attribution: osmAttrib});		
 
+/*
 		//baseMaps['OSM Cycle'] = new L.TileLayer('https://tile.thunderforest.com/cycle/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993', 
 		//	{mapLetter: 'c', maxZoom: 18, attribution: '<a href=https://www.thunderforest.com/>thunderforest.com</a>, '+osmAttrib});
 
 		baseMaps['OSM Terrain'] = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993', 
 			{mapLetter: 't', maxZoom: 18, attribution: '<a href=https://www.thunderforest.com/>thunderforest.com</a>, '+osmAttrib});
+*/
 
 		baseMaps['Aerial Imagery'] = new L.TileLayer('https://api.mapbox.com/styles/v1/geograph/cjh8zse9f2lq32spb7s5vmvbk/tiles/256/{z}/{x}/{y}?access_token={accessToken}', 
 			{mapLetter: 'h', maxZoom: 18, attribution: 'Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>',

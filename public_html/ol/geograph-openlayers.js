@@ -65,6 +65,7 @@ function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, t
     
     olmap.layers['osm'] = new OpenLayers.Layer.OSM("OSM (OpenStreetMap)", null, {attribution:'&copy; <a target="_parent" href="http://www.openstreetmap.org">OpenStreetMap</a> and contributors, under an <a target="_parent" href="http://www.openstreetmap.org/copyright">open license</a>'});
 
+/*
     olmap.layers['osm_cycle'] = new OpenLayers.Layer.OSM("OSM OpenCycleMap", [
 						      'https://a.tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993',
                                                       'https://b.tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993',
@@ -82,6 +83,7 @@ function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, t
                                                       'https://b.tile.thunderforest.com/landscape/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993',
                                                       'https://c.tile.thunderforest.com/landscape/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993'],
                                                          {attribution:'Tiles &copy; Gravitystorm, Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'});
+*/
 
     olmap.layers['bing'] = new OpenLayers.Layer.Bing({
         name: "Bing Road",
