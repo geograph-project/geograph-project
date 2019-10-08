@@ -350,7 +350,7 @@ map.mapTypes.set("osm", new google.maps.ImageMapType({
 	alt: "OpenStreetMap",
         maxZoom: 18
 }));
-
+/*
 //Define CM map type pointing at the OpenCycleMap tile server
 map.mapTypes.set("cm", new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
@@ -376,7 +376,7 @@ map.mapTypes.set("phy", new google.maps.ImageMapType({
 	alt: "Terrain from Open Cycle Map",
         maxZoom: 18
 }));
-
+*/
 	}
 
 function Attribution(map,mapTypeId) {
