@@ -52,6 +52,7 @@ function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, t
     olmap.layers['os'].resolutions = [1000, 500, 200, 100, 50, 25, 10, 5]; // metres per pixel
     olmap.layers['os'].products = ["OV1", "OV2", "MSR", "MS", "250KR", "250K", "50KR", "50K"]; //product names
     olmap.layers['os'].minResolution = 5;
+    olmap.layers['os'].numZoomLevels = 8;
 
 
     if (tileserver_default) { // this is set by nls-api.js
