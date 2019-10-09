@@ -48,6 +48,10 @@ function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, t
         OSAPIKey: "A493C3EB96133019E0405F0ACA6056E3", // Geograph's key key
         OSKeysUrl: 'http://'+window.location.host+'/', // Geograph's URL (escaped) registered against the key
         layerName: "Ordnance Survey GB",
+	resolutions: [1000, 500, 200, 100, 50, 25, 10, 5], // metres per pixel
+	products: ["OV1", "OV2", "MSR", "MS", "250KR", "250K", "50KR", "50K"], //product names
+	minResolution: 5,
+	numZoomLevels: 8
     });
     olmap.layers['os'].resolutions = [1000, 500, 200, 100, 50, 25, 10, 5]; // metres per pixel
     olmap.layers['os'].products = ["OV1", "OV2", "MSR", "MS", "250KR", "250K", "50KR", "50K"]; //product names
