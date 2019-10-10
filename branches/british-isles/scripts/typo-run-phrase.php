@@ -74,7 +74,7 @@ if (!empty($rows)) {
 	foreach ($rows as $row) {
 		$id = $row['gridimage_id'];
 		$word = $db->Quote($row['include']);
-		$sql = "INSERT INTO gridimage_typo SET gridimage_id = $id,created=NOW(),`word` = $word ON DUPLICATE KEY UPDATE updated = NOW(),`word` = $word";
+		$sql = "INSERT INTO gridimage_typo SET gridimage_id = $id,created=NOW(),`word` = $word,type='typo' ON DUPLICATE KEY UPDATE updated = NOW(),`word` = $word";
 		$db->Execute($sql);
 
 		$typos[$row['typo_id']]++;

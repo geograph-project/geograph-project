@@ -21,54 +21,52 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-require_once('geograph/global.inc.php');
+        $param = array('type'=>'typo');
 
-if (!isLocalIPAddress())
-{
-	init_session();
-        $USER->mustHavePerm("admin");
-}
-
-$db=NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');  
-
-set_time_limit(3600*24);
-
+        chdir(__DIR__);
+        require "./_scripts.inc.php";
 
 #####################
 
+set_time_limit(3600*24);
+
+$db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
+if ($param['type'] == 'typo') {
+	$type= 'typo';
 
-$words = $db->getAssoc("SELECT include,profile FROM typo WHERE include!='' AND exclude='' AND enabled = 1 AND profile in ('keywords','either')");
-$list = array();
+	$words = $db->getAssoc("SELECT include,profile FROM typo WHERE include!='' AND exclude='' AND enabled = 1 AND profile in ('keywords','either')");
+	$list = array();
 
-foreach ($words as $word => $profile) {
-	if (preg_match('/^[\w \']+$/',$word)) {
-		$quotes = 0;
-		$spaces = (strpos($word,' ') !== FALSE);
-		$word = str_replace("'",' ',$word,$quotes);
-		
-		if ($spaces) {
-			if ($profile == 'keywords') {
-				if ($quotes) {
-					$list[] = '"'.$word.'"';
+	foreach ($words as $word => $profile) {
+		if (preg_match('/^[\w \']+$/',$word)) {
+			$quotes = 0;
+			$spaces = (strpos($word,' ') !== FALSE);
+			$word = str_replace("'",' ',$word,$quotes);
+
+			if ($spaces) {
+				if ($profile == 'keywords') {
+					if ($quotes) {
+						$list[] = '"'.$word.'"';
+					} else {
+						$list[] = '('.$word.')';
+					}
 				} else {
-					$list[] = '('.$word.')';
+					$list[] = '"'.preg_replace('/\b(\w)/','=$1',$word).'"';
 				}
+			} elseif ($quotes) {
+				$list[] = '(='.str_replace(" ",'',$word).') | ('.$word.')';
 			} else {
-				$list[] = '"'.preg_replace('/\b(\w)/','=$1',$word).'"';
+				$list[] = $word;
 			}
-		} elseif ($quotes) {
-			$list[] = '(='.str_replace(" ",'',$word).') | ('.$word.')';
-		} else {
-			$list[] = $word;
 		}
 	}
-}
 
-if (file_exists('../../profanity-list.txt')) {
+} elseif (file_exists('../../profanity-list.txt')) {
+
+	$type = 'profanity';
 	$words = explode(',',file_get_contents('../../profanity-list.txt'));
 
 	foreach ($words as $word) {
@@ -82,6 +80,9 @@ if (file_exists('../../profanity-list.txt')) {
 		}
 	}
 }
+
+if (empty($list))
+	die("no words!\n");
 
 $q = strtolower(implode(' | ',$list));
 
@@ -138,11 +139,10 @@ if ($q) {
 					$docs[$idx] = ($imgs[$id]['title']).' '.strip_tags($imgs[$id]['comment']).' '.($imgs[$id]['imageclass']);
 				}
 				$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $q2, array('around'=>0,'limit'=>10,'before_match'=>'','after_match'=>''));
-				
-				
+
 				foreach ($ids as $idx => $id) {
 					$word = $db->Quote($reply[$idx]);
-					$sql = "INSERT INTO gridimage_typo SET gridimage_id = $id,created=NOW(),`word` = $word ON DUPLICATE KEY UPDATE updated = NOW(),`word` = $word";
+					$sql = "INSERT INTO gridimage_typo SET gridimage_id = $id,created=NOW(),`word` = $word,type='$type' ON DUPLICATE KEY UPDATE updated = NOW(),`word` = $word";
 					$db->Execute($sql);
 				}
 
