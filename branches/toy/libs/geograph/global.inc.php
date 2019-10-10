@@ -82,13 +82,14 @@ class FileSystem {
 	}
 
 	//use a static cache, to avoid even memcache calls within same request
-	function metadata($path, $fallbacktolocal = true) {
+	function metadata($path, $fallbacktolocal = true, $usememcache = true) {
 		static $cache = array();
-		if (!empty($this->s3)) {
+		if (!empty($this->s3) && empty($cache[$path])) {
 			global $CONF, $memcache;
 
 			$mkey = md5($path); //todo, add bucket?
-		        $value = $memcache->name_get('s3',$mkey);
+			if ($usememcache)
+			        $value = $memcache->name_get('s3',$mkey);
 
 			if (!empty($value)) {
 				$cache[$path] = json_decode($value,true);
@@ -99,7 +100,7 @@ class FileSystem {
 				if (is_object($cache[$path]))
 					 $cache[$path] = get_object_vars( $cache[$path]);//array is just easier to work with
 
-				$memcache->name_set('s3',$mkey, json_encode($cache[$path]));
+				$memcache->name_set('s3',$mkey, json_encode($cache[$path]), false, 86400*10);
 			}
 		} elseif ($fallbacktolocal && empty($cache[$path])) {
 			$cache[$path] =  array('file' => $path,

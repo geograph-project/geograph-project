@@ -22,6 +22,9 @@ foreach ($tables as $row) {
 }
 print "</table>";
 
+print "If dont have the `tag` and `gridimage_tag` tables, download copy from http://data.geograph.org.uk/dumps/gridimage_tag.mysql.gz (currently about 130Mb compressed)
+	and import into your database";
+
 ########################################################################
 ########################################################################
 
@@ -44,6 +47,8 @@ $select = "SELECT tag_id,
 
 ########################################################################
 ########################################################################
+
+$total = $live = 0;
 
 $rows = run_sql_time($range, true);
 $min = $rows[0]['min']; $max = $rows[0]['max'];
@@ -68,19 +73,25 @@ foreach (range($min,$max,$step) as $start) {
 ########################################################################
 ########################################################################
 
+printf('Total Time: <b>%.3f</b> seconds;<br>', $total);
+
+if ($live < 3) {
+	print "<hr>Showing Cached results. Click to run the queries live: <form method=post><input type=submit name=submit value='Run Live'></form>";
+}
+
 
 
 function run_sql_time($sql,$getdata = false) {
-	global $db;
+	global $db, $total, $live;
 
 	print "<pre style=font-size:0.8em>$sql;</pre>";
 
 
 	$query_hash = md5($sql);
 
-	$cache = $db->getRow("SELECT * FROM timing_info WHERE query_hash = '$query_hash'");
+	$cache = $db->getRow("SELECT * FROM timing_info WHERE query_hash = '$query_hash' ORDER BY created DESC LIMIT 1");
 
-	if (empty($cache) || $getdata) { //if returning, cant use cache
+	if (empty($cache) || $getdata || !empty($_POST)) { //if returning, cant use cache
 		if (!$db->getOne("SHOW TABLES LIKE 'timing_info'")) {
 			$db->Execute("CREATE TABLE `timing_info` (
 			  `query_hash` varchar(32) NOT NULL,
@@ -90,7 +101,7 @@ function run_sql_time($sql,$getdata = false) {
 			  `affected` int(10) unsigned NOT NULL,
 			  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			  `query` text NOT NULL,
-			  PRIMARY KEY (`query_hash`)
+			  PRIMARY KEY (`query_hash`,`created`)
 			)");
 		};
 
@@ -118,12 +129,15 @@ function run_sql_time($sql,$getdata = false) {
 		$db->Execute('INSERT INTO timing_info SET `'.implode('` = ?,`',array_keys($cache)).'` = ?',array_values($cache));
 
 		$cache['created'] = "now"; //just used for display below!
+		$live++;
 	}
 
 	printf('Time: <b>%.3f</b> seconds; Affected Rows: %s     (when query run: %s)<br>', $cache['after'] - $cache['before'], $cache['affected'], $cache['created']);
 
 	print "<hr>";
 	flush(); ob_flush();
+
+	$total += $cache['taken'];
 
 	if ($getdata)
 		return $data;
