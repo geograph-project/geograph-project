@@ -5,7 +5,7 @@
 	<th></th>
 <?
 
-$files = `find /var/www/geograph_toy/ -type f | grep -v /.svn/ |  grep -v /smarty/libs/internals/ | grep -v adodb- | grep -v _attic`;
+$files = `find /var/www/geograph_toy/ -type f | grep -v /.svn/ |  grep -v /smarty/libs/internals/ | grep -v adodb- | grep -v _attic | grep -v %%`;
 
 $svn = 'https://svn.geograph.org.uk/viewsvn/?do=view&project=geograph&path=/branches/toy$dir2/$file2';
 
@@ -28,7 +28,7 @@ foreach (explode("\n",$files) as $file) {
 		print "<b><a href=\"$url\">$file2</a></b></td>";
 	}
 
-	if (strpos($dir2,'/public_html') === 0 && preg_match('/\.(php|jpg|txt)$/',$file2) && strpos($dir2,'/compiled') === FALSE) {
+	if (strpos($dir2,'/public_html') === 0 && preg_match('/\.(php|jpg|txt|png)$/',$file2) && strpos($dir2,'/compiled') === FALSE) {
 		$url = str_replace('/var/www/geograph_toy/public_html/','https://toy.geograph.org.uk/',$file);
 		print "<td><a href=\"$url\">view</a></td>";
 	} else {
