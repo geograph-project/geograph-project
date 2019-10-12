@@ -19,7 +19,7 @@
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 	  </div>
 	  <div style="float:left; position:relative; width:80%">
-		<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>
+		<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title_html}</b></a>
 		by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
 		[<a title="view edit page" href="/editimage.php?id={$image->gridimage_id}">Edit</a>]
 		[<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]<br/>
@@ -29,7 +29,7 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
 		{if $image->comment}
-		<div class="caption" style="font-size:0.7em;padding-bottom:7px">{$image->comment|escape:'html'|geographlinks}</div>
+		<div class="caption" style="font-size:0.7em;padding-bottom:7px">{$image->comment_html}</div>
 		{/if}
 
 	  </div><br style="clear:both;"/>

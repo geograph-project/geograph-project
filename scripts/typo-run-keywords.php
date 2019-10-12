@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-        $param = array('type'=>'typo');
+        $param = array('type'=>'typo', 'size'=>0, 'debug'=>false, 'index'=>'gi_stemmed_delta', 'execute'=>true);
 
         chdir(__DIR__);
         require "./_scripts.inc.php";
@@ -30,18 +30,18 @@
 
 set_time_limit(3600*24);
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
 if ($param['type'] == 'typo') {
 	$type= 'typo';
 
-	$words = $db->getAssoc("SELECT include,profile FROM typo WHERE include!='' AND exclude='' AND enabled = 1 AND profile in ('keywords','either')");
+	$words = $db->getAssoc("SELECT include,profile FROM typo WHERE include!='' AND exclude='' AND enabled = 1 AND profile in ('keywords','either') AND updated < date_sub(now(),interval 3 hour)");
 	$list = array();
 
 	foreach ($words as $word => $profile) {
-		if (preg_match('/^[\w \']+$/',$word)) {
+		if (preg_match('/^[\w \'"=]+$/',$word)) {
 			$quotes = 0;
 			$spaces = (strpos($word,' ') !== FALSE);
 			$word = str_replace("'",' ',$word,$quotes);
@@ -57,7 +57,7 @@ if ($param['type'] == 'typo') {
 					$list[] = '"'.preg_replace('/\b(\w)/','=$1',$word).'"';
 				}
 			} elseif ($quotes) {
-				$list[] = '(='.str_replace(" ",'',$word).') | ('.$word.')';
+				$list[] = '(='.str_replace(" ",'',$word).') | "'.$word.'"';
 			} else {
 				$list[] = $word;
 			}
@@ -86,16 +86,25 @@ if (empty($list))
 
 $q = strtolower(implode(' | ',$list));
 
-print $q;
+if ($param['debug'])
+	print "\n\n$q\n\n";
+
 $limit = 100000;
 
 if ($q) {
-	$q2 = preg_replace('/\b(the|and)\b/','',$q); //a more basic one for snippets
+	//$q2 = preg_replace('/\b(the|and)\b/','',$q); //a more basic one for snippets
+	$q2 = $q; //now using query_mode!
 
 	//use cursors to loop, rather than traditional paging. Using SetIDRange so need to order by doc_id
 	$more = true;
-	$min_id = 1;
 	$counter =0;
+
+	if ($param['size']) {
+		$last_id = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+		$min_id = max(1,$last_id-$param['size']);
+	} else {
+		$min_id = 1;
+	}
 
 	while ($more && $counter < 10) {
 		$more = false; //so we have to explicitly enable it if want to go again...
@@ -122,15 +131,18 @@ if ($q) {
 
 			$sphinx->sort = "@id ASC";
 
-			$ids = $sphinx->returnIds($pg,'_images');
-			if (isset($_GET['d'])) {
+			$ids = $sphinx->returnIds($pg,$param['index']);
+			if ($param['debug'] == 2) {
+				print "Cnt: ".count($ids)."   {$sphinx->query_info}\n";
 				print_r($q);
 				print_r($cl);
+				exit;
 			}
 
-			if (!empty($ids) && count($ids)) {
-				print "<p>{$sphinx->query_info}</p>";
+			if ($param['debug'])
+				print "$min_id: {$sphinx->query_info}\n";
 
+			if (!empty($ids) && count($ids)) {
 
 				$imgs = $db->getAssoc("SELECT gridimage_id,title,comment,imageclass FROM gridimage_search WHERE gridimage_id IN (".implode(',',$ids).")");
 
@@ -138,15 +150,18 @@ if ($q) {
 				foreach ($ids as $idx => $id) {
 					$docs[$idx] = ($imgs[$id]['title']).' '.strip_tags($imgs[$id]['comment']).' '.($imgs[$id]['imageclass']);
 				}
-				$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $q2, array('around'=>0,'limit'=>10,'before_match'=>'','after_match'=>''));
+				$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $q2, array('query_mode'=>1,'around'=>0,'limit'=>10,'before_match'=>'','after_match'=>'','allow_empty'=>1));
 
 				foreach ($ids as $idx => $id) {
 					$word = $db->Quote($reply[$idx]);
-					$sql = "INSERT INTO gridimage_typo SET gridimage_id = $id,created=NOW(),`word` = $word,type='$type' ON DUPLICATE KEY UPDATE updated = NOW(),`word` = $word";
-					$db->Execute($sql);
-				}
 
-				$delta += count($ids);
+					if ($param['execute']) {
+						$sql = "INSERT INTO gridimage_typo SET gridimage_id = $id,created=NOW(),`word` = $word,type='$type' ON DUPLICATE KEY UPDATE updated = NOW(),`word` = $word";
+						$db->Execute($sql) or die("$sql;\n".mysql_error()."\n\n");
+					} else {
+						print "$id: $word\n";
+					}
+				}
 
 				if ($limit > 1000 && count($ids) == 1000) { //we want, and there could be more
 					$more = true;
@@ -154,15 +169,13 @@ if ($q) {
 				}
 			}
 
-		} else {
-			$delta = -1;
-			print "<p>All Done</p>";
+		} elseif ($param['debug']) {
+			print "All Done\n";
 		}
 		$counter++;
 	}
 }
 
 
-
-
-print "<hr>";
+if ($param['debug'])
+	print "fin.\n";
