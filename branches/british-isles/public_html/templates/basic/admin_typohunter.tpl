@@ -1,22 +1,39 @@
 {assign var="page_title" value="Typo Hunter"}
 {include file="_std_begin.tpl"}
+{dynamic}
+<h2><a href="/admin/typolist.php">Typos</a> :: Typo Hunter v0.9 {if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
 
-<h2><a href="/admin/typolist.php">Typos</a> :: Typo Hunter v0.8 {if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
-
-<div class="interestBox">
-	<form action="{$script_name}" method="get">
-		<label for="include"><b>Include</b>:</label> <input type="text" size="40" name="include" value="{$include|escape:'html'}" id="include" /> |
-		<label for="exclude">Exclude (optional):</label> <input type="text" size="40" name="exclude" value="{$exclude|escape:'html'}" id="exclude" />
-		<input type="submit" value="Find" /><br/>
-		<select name="profile">
+<form action="{$script_name}" method="get">
+	<div class="interestBox">
+		<label for="include"><b>Include</b>:</label> <input type="text" size="40" name="include" value="{$include|escape:'html'}" id="include" onchange="document.getElementById('subbutton').style.display='none';"/> |
+		<label for="exclude">Exclude (optional):</label> <input type="text" size="40" name="exclude" value="{$exclude|escape:'html'}" id="exclude"  onchange="document.getElementById('subbutton').style.display='none';"/>
+		<input type="submit" value="Find" style="font-size:1.1em"/><br/>
+		<select name="profile" onchange="document.getElementById('subbutton').style.display='none'; document.getElementById('moreopt').style.display=(this.selectedIndex==1)?'none':''">
 			<option value="phrase">phrase - legacy style 'substring' matching</option>
 			<option value="keywords"{if $profile=='keywords'} selected{/if}>keywords - new style whole word keyword</option>
 		</select> |
+		<span id="moreopt" {if $profile=='keywords'} style="display:none"{/if}>
 		<label for="size">Number of images to search:</label> <select name="size" id="size">{html_options options=$sizes selected=$size}</select> |
-		<input type="checkbox" name="title" {if $title} checked="checked"{/if} id="title" /> <label for="title">Search <b>title</b> as well as description</label>
-
-	</form>
-</div>
+		<input type="checkbox" name="title" {if $title} checked="checked"{/if} id="title"  onchange="document.getElementById('subbutton').style.display='none';"/> <label for="title">Search <b>title</b> as well as description</label>
+		</span>
+	</div>
+	{if $include}
+	<div style="text-align:right;max-width:900px">
+		{if $typo_id}
+			(already on list)
+		{else}
+			<input type="submit" name="save" value="Save to List {if $old_id}(as new){/if}" id="subbutton">
+			{if $old_id}
+				<br>or 
+				<input type="submit" name="over" value="Overwrite [ {$old_title|escape:'html'} ]">
+			{/if}
+		{/if}
+	</div>
+	{/if}
+	{if $old_id}
+		<input type="hidden" name="old_id" value="{$old_id}">
+	{/if}
+</form>
 
 
 	<br/>
@@ -30,7 +47,7 @@
 		[[<a href="/photo/{$image->gridimage_id}">{$image->gridimage_id}</a>]] for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $image->realname} by <a title="view user profile" href="/profile/{$image->user_id}">{$image->realname}</a>{/if}<br/>
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
-		<div>{if $image->comment}<textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="continue &gt;"/>
+		<div>{if $image->comment}<textarea name="comment" style="font-size:0.9em;" rows="6" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="continue &gt;"/>
 		</div>
 	  </div><br style="clear:both;"/>
 	  </form><br/>
@@ -42,17 +59,25 @@
 		<ul>
 			<li>For <b>'phrase'</b> searches:<br/><br/>
 				<ul>
-					<li>Only searches the <b>most recent and moderated</b> images (number configurable above)<br/><br/></li>
-					<li>Include/Exclude boxes accept a <b>single exact search string</b>, including special charactors; matches part words (but not case sensitive)<br/><br/></li>
+					<li>Only searches the <b>most recent and moderated</b> images (number configurable above)<br>
+						(but note, if 'Saved' to list, the watchlist function will <i>eventually</i> run it against entire archive!)<br/><br/></li>
+					<li>Both Include and Exclude boxes accept a <b>single exact string</b>, including special charactors; matches part words (but not case sensitive). There is NO special syntax (including <tt>OR</tt> etc)<br/><br/></li>
 					<li>By default looks in the description <b>only</b>, as that is the most useful for typo hunting. Can also search the title, but please only do that when needed<br/><br/></li>
 				</ul></li>
 			<li>For <b>'keyword'</b> searches:<br/><br/>
 				<ul>
 					<li>Searches ALL moderated images<br/><br/></li>
-					<li>Include/Exclude boxes accept a <b>word search</b>, a list of keywords. Can use <b>=</b> to disable stemming, but other features not recommended<br/><br/></li>
+					<li>Include/Exclude boxes accept a <b>word search</b>, a list of keywords. Can use "phrase" and/or <b>=</b> to disable stemming, but other features not recommended.<ul>
+						<li><tt>"the the"</tt> - searches for the two words immirately following each other - as a phrase</li>
+						<li><tt>ont he</tt> - requires both words, in any order (don't have to be adjacent) - still subject to stemming</li>
+						<li><tt>=maintainance</tt> - exact word, not subject to stemming. but still case insensitive.</li>
+						<li><tt>"=trough =the"</tt> - the = must go on each individual keyword, if used and multiword</li>
+					</ul>
+					<br></li>
+					
 					<li>looks in the title, description and category <b>only</b><br/><br/></li>
 				</ul></li>
-			<li>Searches are automatically recorded so can be re-run easily. <a href="/admin/typolist.php">View results here</a><br/><br/></li>
+			<li>Searches are can be saved so can be re-run easily (and powers automatic watchlist). <a href="/admin/typolist.php">View results here</a><br/><br/></li>
 		</ul>
 	{/foreach}
 
@@ -70,8 +95,8 @@
 </div>
 {/if}
 
-<p><small>Note: Only searches the last {$size} images and only includes moderated images.<br/>
+<p><small>Note: {if $profile=='phrase'}Only searches the last {$size} images and{/if} only includes moderated images.<br/>
 Page generated at 1 hour intervals, please don't refresh more often than that.</small></p>
 
-
+{/dynamic}
 {include file="_std_end.tpl"}

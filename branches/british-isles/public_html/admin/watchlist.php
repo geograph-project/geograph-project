@@ -30,17 +30,17 @@ if (!empty($_GET['id']) && $USER->user_id) {
 	header("Status: 204 No Content");
 	header("Content-Length: 0");
 	flush();
-	
+
 	$db = GeographDatabaseConnection(false);
-	
+
 	$sql = "UPDATE gridimage_typo SET
 		muted = NOW(),
 		moderator = ".intval($USER->user_id)."
 		WHERE gridimage_id = ".intval($_GET['id']);
-	
+
 	$db->Execute($sql);
 	exit;
-} 
+}
 
 $smarty = new GeographPage;
 
@@ -48,32 +48,72 @@ $smarty = new GeographPage;
 
 customGZipHandlerStart();
 
-$template='admin_watchlist.tpl';	
+$template='admin_watchlist.tpl';
 $cacheid="";
 
 //what style should we use?
 $style = $USER->getStyle();
 
 $smarty->assign('maincontentclass', 'content_photo'.$style);
-				
+
 	$imagelist=new ImageList;
-	
-	$sql="	select gridimage_id,title,realname,user_id,comment,imageclass,moderation_status,grid_reference,submitted,upd_timestamp,word
-		from gridimage_typo inner join gridimage_search using (gridimage_id)
-		where muted < upd_timestamp
+	$db = $imagelist->_getDB();
+
+	$where = array();
+	$join = '';
+	if (!empty($_GET['type']))
+		$where[] = "type = ".$db->Quote($_GET['type']);
+
+	if (!empty($_GET['u']))
+		$where[] = "gi.user_id = ".$db->Quote($_GET['u']);
+
+	if (!empty($_GET['current'])) {
+		$last = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage");
+		$join = " INNER JOIN user_stat USING (user_id)";
+		$where[] = "last > ".($last-14000);
+	}
+	$where[] = "muted < upd_timestamp"; //only images updated since been muted!
+
+	$where[] = "updated > date_sub(now(),interval 48 hour)"; //only show images found matching recently, so images no longer match the trigger, 'fall' away!
+
+	$where = implode(' AND ',$where);
+
+	$sql="	select gridimage_id,title,realname,user_id,comment,imageclass,moderation_status,grid_reference,submitted,upd_timestamp,word,updated
+		from gridimage_typo inner join gridimage_search gi using (gridimage_id) $join
+		where $where
 		order by updated desc
 		limit 50";
-	
+
 	$imagelist->_getImagesBySql($sql);
-	
+
 	if (count($imagelist->images)) {
 		foreach ($imagelist->images as $i => $image) {
 			$imagelist->images[$i]->imagetakenString = getFormattedDate($image->imagetaken);
-			if (preg_match('/^\w/',$image->word)) {
-				$image->word = ''; //snippet builder just uses the start of the title if 
+			//if (preg_match('/^\w/',$image->word)) {
+			//	$image->word = ''; //snippet builder just uses the start of the title if
+			//}
+
+
+
+			if (!empty($image->comment)) {
+				//we do here, so can do some highliting!
+				$imagelist->images[$i]->comment_html = GeographLinks(nl2br(htmlspecialchars2($image->comment)));
+				if (!empty($image->word)) {
+					$imagelist->images[$i]->comment_html = preg_replace(
+						'/('.preg_replace('/\s*\\\.\\\.\\\.\s*/','',preg_quote($image->word,'/')).')/i',
+						'<b style=background-color:yellow;>$1</b>',
+						$imagelist->images[$i]->comment_html);
+				}
+			}
+			$imagelist->images[$i]->title_html = htmlspecialchars2($image->title);
+			if (!empty($image->word)) {
+				$imagelist->images[$i]->title_html = preg_replace(
+					'/('.preg_replace('/\s*\\\.\\\.\\\.\s*/','',preg_quote($image->word,'/')).')/i',
+					'<b style=background-color:yellow;>$1</b>',
+					$imagelist->images[$i]->title_html);
 			}
 		}
-	
+
 		$smarty->assign_by_ref('images', $imagelist->images);
 	}
 
