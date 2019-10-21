@@ -27,6 +27,16 @@ services:
       MYSQL_PASSWORD: dEBpm12FXOLhHYTk
       MYSQL_DATABASE: geograph_toy
 
+  redis:
+    image: redis:5.0-alpine
+    restart: always
+
+  carrot2-dcs:
+    build:
+      context: .
+      dockerfile: Dockerfile.carrot2-dcs
+    restart: always
+
 volumes:
   mysql_data: {}
 
