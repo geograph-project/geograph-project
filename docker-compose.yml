@@ -37,6 +37,19 @@ services:
       dockerfile: Dockerfile.carrot2-dcs
     restart: always
 
+  memgator:
+    build:
+      context: .
+      dockerfile: Dockerfile.memgator
+    volumes:
+      - ./config/archives.json:/run/config/archives.json:ro
+    restart: always
+    command: [
+      "memgator",
+      "-a", "/run/config/archives.json",
+      "-A", "Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)",
+      "server"]
+
 volumes:
   mysql_data: {}
 

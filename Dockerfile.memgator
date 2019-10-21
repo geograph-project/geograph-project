@@ -1,0 +1,31 @@
+FROM alpine:3.10
+
+ARG BUILD_DATE=1970-01-01T00:00:00Z
+ARG VCS_REF=HEAD
+
+RUN set -eux; \
+  apk add --no-cache --update \
+    curl \
+  ; \
+  addgroup -g 1001 memgator; \
+  adduser -h /var/lib/memgator -g MemGator -G memgator -DH -u 1001 memgator; \
+  rm -rf /var/cache/apk/*
+
+# Install ODU WS-DL MemGator
+RUN set -eux; \
+  curl -sLo /usr/local/bin/memgator \
+  "https://github.com/oduwsdl/MemGator/releases/download/1.0-rc7/memgator-linux-amd64"; \
+  chmod +x /usr/local/bin/memgator
+
+USER memgator
+CMD ["memgator", "server"]
+
+# https://github.com/opencontainers/image-spec/blob/master/annotations.md
+LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.authors="Tiger Computing Ltd" \
+      org.opencontainers.image.url="https://gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy" \
+      org.opencontainers.image.source="https://gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.title="ODU WS-DL MemGator for Geograph"
+
+# vim: ts=2 sw=2 et sts=2 ft=dockerfile
