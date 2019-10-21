@@ -1,0 +1,33 @@
+---
+version: '3.3'
+
+services:
+  mysql:
+    image: mariadb:10.3
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./schema:/docker-entrypoint-initdb.d
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 5seEwwLrcMWkqEDk
+      MYSQL_DATABASE: geograph_toy
+      MYSQL_USER: geograph
+      MYSQL_PASSWORD: dEBpm12FXOLhHYTk
+
+  manticore:
+    depends_on:
+      - mysql
+    build:
+      context: .
+      dockerfile: Dockerfile.manticore
+    restart: always
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: geograph
+      MYSQL_PASSWORD: dEBpm12FXOLhHYTk
+      MYSQL_DATABASE: geograph_toy
+
+volumes:
+  mysql_data: {}
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml
