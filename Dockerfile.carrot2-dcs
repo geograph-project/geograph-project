@@ -1,0 +1,37 @@
+FROM openjdk:8-jre-slim
+
+ARG BUILD_DATE=1970-01-01T00:00:00Z
+ARG VCS_REF=HEAD
+
+RUN set -eux; \
+  export DEBIAN_FRONTEND=noninteractive; \
+  apt-get update; \
+  apt-get install -y --no-install-recommends \
+    ca-certificates \
+    unzip \
+    wget \
+  ; \
+  addgroup --gid 999 dcs; \
+  adduser --home /var/lib/dcs --no-create-home --uid 999 \
+    --gecos 'Carrot2 DCS' --ingroup dcs --disabled-password --disabled-login \
+    dcs; \
+  wget https://github.com/carrot2/carrot2/releases/download/release%2F3.14.0/carrot2-dcs-3.14.0.zip; \
+  unzip carrot2-dcs-3.14.0.zip; \
+  rm carrot2-dcs-3.14.0.zip; \
+  mv carrot2-dcs-3.14.0 /opt/carrot2-dcs; \
+  chown -R dcs: /opt/carrot2-dcs; \
+  find /var/lib/apt/lists -mindepth 1 -delete
+
+WORKDIR /opt/carrot2-dcs
+USER dcs
+CMD ["./dcs.sh"]
+
+# https://github.com/opencontainers/image-spec/blob/master/annotations.md
+LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.authors="Tiger Computing Ltd" \
+      org.opencontainers.image.url="https://gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy" \
+      org.opencontainers.image.source="https://gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.title="Carrot2 DCS for Geograph"
+
+# vim: ts=2 sw=2 et sts=2 ft=dockerfile
