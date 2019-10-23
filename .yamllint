@@ -1,0 +1,13 @@
+---
+extends: default
+
+rules:
+  # Permit either style of sequence indentation, because YAML is commonly
+  # generated without the extra indent, let's just make sure it's consistent.
+  indentation:
+    indent-sequences: consistent
+
+  # Permit really long lines because breaking some strings is impractical.
+  line-length: disable
+
+# vim: ai ts=2 sw=2 et sts=2 ft=yaml

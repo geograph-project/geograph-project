@@ -1,6 +1,14 @@
 ---
 stages:
+  - lint
   - build
+
+yamllint:
+  stage: lint
+  image: pipelinecomponents/yamllint:latest
+  script:
+    - yamllint --version
+    - yamllint --strict .
 
 .build_container:
   stage: build
