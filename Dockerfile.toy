@@ -1,0 +1,33 @@
+# https://hub.docker.com/r/tigercomputing/debian-php-fpm
+FROM tigercomputing/debian-php-fpm:buster
+
+ARG BUILD_DATE=1970-01-01T00:00:00Z
+ARG VCS_REF=HEAD
+
+RUN set -eux; \
+  export DEBIAN_FRONTEND=noninteractive; \
+  apt-get update; \
+  apt-get install -y --no-install-recommends \
+    nginx \
+    procps \
+  ; \
+  find /var/lib/apt/lists -mindepth 1 -delete
+
+RUN set -eux; \
+  rm -f /etc/nginx/sites-enabled/default; \
+  :
+
+COPY config/nginx/ /etc/nginx/
+COPY config/php-fpm/ /etc/php/conf.d/
+COPY libs/ /var/www/geograph_toy/libs/
+COPY public_html/ /var/www/geograph_toy/public_html/
+
+# https://github.com/opencontainers/image-spec/blob/master/annotations.md
+LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.authors="Tiger Computing Ltd" \
+      org.opencontainers.image.url="https://gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy" \
+      org.opencontainers.image.source="https://gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.title="Geograph's Toy application"
+
+# vim: ts=2 sw=2 et sts=2 ft=dockerfile

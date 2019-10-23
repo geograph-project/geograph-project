@@ -50,6 +50,22 @@ services:
       "-A", "Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)",
       "server"]
 
+  toy:
+    build:
+      context: .
+      dockerfile: Dockerfile.toy
+    restart: always
+    network_mode: service:nginx
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.toy
+    restart: always
+    command: ["nginx", "-g", "daemon off;"]
+    ports:
+      - 8080:80
+
 volumes:
   mysql_data: {}
 

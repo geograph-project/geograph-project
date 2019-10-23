@@ -1,0 +1,16 @@
+server {
+  listen 10080 default_server;
+  server_name _;
+
+  location / {
+    return 403;
+  }
+
+  # Simple health check
+  location /healthz {
+    access_log off;
+    return 200;
+  }
+}
+
+# vim: ai ts=2 sw=2 et sts=2 ft=conf

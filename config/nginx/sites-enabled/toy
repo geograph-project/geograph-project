@@ -1,0 +1,42 @@
+error_log stderr notice;
+access_log /dev/stdout;
+
+map $http_x_forwarded_proto $forwarded_proto {
+  "http" "http";
+  "https" "https";
+  default "http";
+}
+
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server;
+
+  root /var/www/geograph_toy/public_html;
+  index index.php;
+
+  server_name _;
+
+  location / {
+    try_files $uri $uri/ /index.php?$args;
+  }
+
+  # Equivalent to the RewriteRule
+  location /help/ {
+    rewrite ^/help/([^/]*)$ /staticpage.php?page=$1 last;
+    return 403;  # for things that don't get rewritten
+  }
+
+  location ~ [^/]\.php(/|$) {
+    include snippets/fastcgi-php.conf;
+
+    fastcgi_param SCRIPT_FILENAME $request_filename;
+    fastcgi_pass 127.0.0.1:9000;
+  }
+
+  # Deny access to dotfiles
+  location ~ /\. {
+    deny all;
+  }
+}
+
+# vim: ts=2 sw=2 et sts=2 ft=conf

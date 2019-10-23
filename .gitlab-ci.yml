@@ -56,4 +56,7 @@ manticore:
 memgator:
   extends: .build_container
 
+toy:
+  extends: .build_container
+
 # vim: ai ts=2 sw=2 et sts=2 ft=yaml
