@@ -1,0 +1,138 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memgator
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: memgator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: toy
+      app.kubernetes.io/instance: develop
+      app.kubernetes.io/component: memgator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: toy
+        app.kubernetes.io/instance: develop
+        app.kubernetes.io/component: memgator
+    spec:
+      imagePullSecrets:
+      - name: gitlab-registry
+      containers:
+      - name: memgator
+        image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/memgator:develop
+        imagePullPolicy: Always
+        command: [
+          "memgator",
+          "-a", "/run/config/archives.json",
+          "-A", "Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)",
+          "server"
+        ]
+        ports:
+        - containerPort: 1208
+          name: http
+        volumeMounts:
+        - mountPath: /run/config
+          name: config
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          name: memgator
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: memgator
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: memgator
+data:
+  archives.json: |
+    [
+      {
+        "id": "ia",
+        "name": "Internet Archive",
+        "timemap": "http://web.archive.org/web/timemap/json/",
+        "timegate": "http://web.archive.org/web/",
+        "probability": 0.5
+      },
+      {
+        "id": "proni",
+        "name": "PRONI Web Archive",
+        "timemap": "http://webarchive.proni.gov.uk/timemap/",
+        "timegate": "http://webarchive.proni.gov.uk/timegate/",
+        "probability": 0.001
+      },
+      {
+        "id": "blarchive",
+        "name": "UK Web Archive",
+        "timemap": "http://www.webarchive.org.uk/wayback/archive/timemap/link/",
+        "timegate": "http://www.webarchive.org.uk/wayback/archive/",
+        "probability": 0.1
+      },
+      {
+        "id": "archiveit",
+        "name": "Archive-It",
+        "timemap": "http://wayback.archive-it.org/all/timemap/link/",
+        "timegate": "http://wayback.archive-it.org/all/",
+        "probability": 0.1
+      },
+      {
+        "id": "ukparliament",
+        "name": "UK Parliament Web Archive",
+        "timemap": "http://webarchive.parliament.uk/timemap/",
+        "timegate": "http://webarchive.parliament.uk/timegate/"
+      },
+      {
+        "id": "uknationalarchives",
+        "name": "UK National Archives Web Archive",
+        "timemap": "http://webarchive.nationalarchives.gov.uk/timemap/",
+        "timegate": "http://webarchive.nationalarchives.gov.uk/timegate/",
+        "probability": 0.04
+      },
+      {
+        "id": "bibalex",
+        "name": "Bibliotheca Alexandrina Web Archive",
+        "timemap": "http://web.archive.bibalex.org/web/timemap/link/",
+        "timegate": "http://web.archive.bibalex.org/web/",
+        "probability": 0.01
+      },
+      {
+        "id": "archive.is",
+        "name": "archive.today",
+        "timemap": "http://archive.today/timemap/",
+        "timegate": "http://archive.today/timegate/",
+        "probability": 0.07
+      }
+    ]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: memgator
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: memgator
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: memgator
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml

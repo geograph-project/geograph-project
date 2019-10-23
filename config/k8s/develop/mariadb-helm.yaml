@@ -1,0 +1,29 @@
+---
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: mariadb
+  namespace: toy-develop
+spec:
+  releaseName: toy-develop-mariadb
+  chart:
+    # https://github.com/helm/charts/tree/master/stable/mariadb
+    repository: https://kubernetes-charts.storage.googleapis.com
+    name: mariadb
+    version: 6.12.0  # MariaDB 10.3.18
+  resetValues: true
+  values:
+    fullnameOverride: mariadb
+
+    rootUser:
+      password: changeit  # for development only
+
+    db:
+      user: geograph
+      password: changeit  # for development only
+      name: geograph_toy
+
+    replication:
+      enabled: false
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml
