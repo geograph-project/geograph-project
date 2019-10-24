@@ -16,14 +16,10 @@ server {
 
   server_name _;
 
-  location / {
-    try_files $uri $uri/ /index.php?$args;
-  }
-
   # Equivalent to the RewriteRule
   location /help/ {
     rewrite ^/help/([^/]*)$ /staticpage.php?page=$1 last;
-    return 403;  # for things that don't get rewritten
+    return 404;  # for things that don't get rewritten
   }
 
   location ~ [^/]\.php(/|$) {
