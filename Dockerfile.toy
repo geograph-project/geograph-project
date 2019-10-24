@@ -9,6 +9,8 @@ RUN set -eux; \
   apt-get update; \
   apt-get install -y --no-install-recommends \
     nginx \
+    php-bz2 \
+    php-memcache \
     procps \
   ; \
   find /var/lib/apt/lists -mindepth 1 -delete
