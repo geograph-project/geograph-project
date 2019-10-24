@@ -1,0 +1,88 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toy
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: toy
+      app.kubernetes.io/instance: develop
+      app.kubernetes.io/component: toy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: toy
+        app.kubernetes.io/instance: develop
+        app.kubernetes.io/component: toy
+    spec:
+      imagePullSecrets:
+      - name: gitlab-registry
+      containers:
+      - name: php-fpm
+        image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/toy:develop
+        imagePullPolicy: Always
+      - name: nginx
+        image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/toy:develop
+        imagePullPolicy: Always
+        command: ["nginx", "-g", "daemon off;"]
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 10080
+        ports:
+        - containerPort: 80
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: toy
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: toy
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: toy-dev.cloud.geograph.org.uk
+    http:
+      paths:
+      - backend:
+          serviceName: toy
+          servicePort: http
+  tls:
+  - hosts:
+    - toy-dev.cloud.geograph.org.uk
+    secretName: toy-tls
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml
