@@ -5,10 +5,10 @@ $CONF = array();
 #####################################################################
 
 //URL served by Apache
-$CONF['CONTENT_HOST'] = "https://toy.geograph.org.uk";
+$CONF['CONTENT_HOST'] = $_SERVER['CONTENT_HOST'];
 
 //FILE servering host
-$CONF['STATIC_HOST'] = "https://toy-static.geograph.org.uk"; //eg might be a external CDN
+$CONF['STATIC_HOST'] = $_SERVER['STATIC_HOST']; //eg might be a external CDN
 
 #####################################################################
 // smarty configuration
@@ -17,7 +17,7 @@ $CONF['STATIC_HOST'] = "https://toy-static.geograph.org.uk"; //eg might be a ext
 $CONF['template']='basic';
 
 //turn compile check off on stable site for a small boost
-$CONF['smarty_compile_check']=1;
+$CONF['smarty_compile_check']=0;
 
 //only enable debugging on development domains
 $CONF['smarty_debugging']=0;
@@ -28,36 +28,38 @@ $CONF['smarty_caching']=1;
 #####################################################################
 // folder config
 
-$CONF['photo_upload_dir'] = '/mnt/upload/upload_tmp_dir';
+$CONF['photo_upload_dir'] = '/mnt/upload';
 
 #####################################################################
 // AWS (for s3 access)
 
-//$CONF['awsAccessKey'] = 'xxx'; //comment out to disable!
-$CONF['awsSecretKey'] = 'xxx';
-$CONF['awsS3Bucket'] = 'toy-photos.geograph.org.uk'; //By using a real domain, could enable serving images from the bucket, if the need arrose
+if (isset($_SERVER['AWS_ACCESS_KEY_ID'])) {
+	$CONF['awsAccessKey'] = $_SERVER['AWS_ACCESS_KEY_ID'];
+	$CONF['awsSecretKey'] = $_SERVER['AWS_SECRET_ACCESS_KEY'];
+	$CONF['awsS3Bucket'] = $_SERVER['S3_BUCKET_NAME'];
+}
 
 #####################################################################
 //database configuration
 
 $CONF['db_driver']='mysqli';
 
-$CONF['db_connect']='192.168.1.50';
-$CONF['db_user']='geograph';
-$CONF['db_pwd']='changethis';
-$CONF['db_db']='geograph_you';
+$CONF['db_connect']=$_SERVER['MYSQL_HOST'];
+$CONF['db_user']=$_SERVER['MYSQL_USER'];
+$CONF['db_pwd']=$_SERVER['MYSQL_PASSWORD'];
+$CONF['db_db']=$_SERVER['MYSQL_DATABASE'];
 $CONF['db_persist']=''; //'?persist';
 
+if (isset($_SERVER['MYSQL_READ_HOST'])) {
+	$CONF['db_read_driver']='mysqli';
+	$CONF['db_read_connect']=$_SERVER['MYSQL_READ_HOST'];
+	$CONF['db_read_user']=$_SERVER['MYSQL_READ_USER'] ?? $CONF['db_user'];
+	$CONF['db_read_pwd']=$_SERVER['MYSQL_READ_PASSWORD'] ?? $CONF['db_pwd'];
+	$CONF['db_read_db']=$_SERVER['MYSQL_READ_DATABASE'] ?? $CONF['db_db'];
+	$CONF['db_read_persist']=''; //'?persist';
+}
 
-//$CONF['db_read_driver']='mysqli'; //comment out this line to disable to the slave
-$CONF['db_read_connect']='192.168.1.51';
-$CONF['db_read_user']=$CONF['db_user'];
-$CONF['db_read_pwd']=$CONF['db_pwd'];
-$CONF['db_read_db']=$CONF['db_db'];
-$CONF['db_read_persist']=''; //'?persist';
-
-
-$CONF['db_tempdb']='geograph_tmp';
+$CONF['db_tempdb']=$_SERVER['MYSQL_TEMP_DATABASE'] ?? $CONF['db_db'];
 //optional second database, that can be excluded from replication
 //replicate-wild-ignore-table=geograph_tmp.%
 
@@ -65,18 +67,18 @@ $CONF['db_tempdb']='geograph_tmp';
 #####################################################################
 // Sphinx/Manticore configuration
 
-$CONF['sphinx_host'] = '192.168.1.90';
-$CONF['sphinx_port'] = 3312;
-$CONF['sphinx_portql'] = 9306;
+$CONF['sphinx_host'] = $_SERVER['SPHINX_HOST'];
+$CONF['sphinx_port'] = (int)($_SERVER['SPHINX_API_PORT'] ?? 9312);
+$CONF['sphinx_portql'] = (int)($_SERVER['SPHINX_QL_PORT'] ?? 9306);
 //Note, SphinxQL connection will reuse $CONF['db_driver'] above!
 
 
 #####################################################################
 // Redis Host
 
-$CONF['redis_host'] = '192.168.1.48';
-$CONF['redis_port'] = 6379;
-$CONF['redis_db'] = 7;
+$CONF['redis_host'] = $_SERVER['REDIS_HOST'];
+$CONF['redis_port'] = (int)($_SERVER['REDIS_PORT'] ?? 6379);
+$CONF['redis_db'] = (int)($_SERVER['REDIS_DATABASE'] ?? 0);
 
 #####################################################################
 // memcache Setup
@@ -97,11 +99,11 @@ Note, can use memcache if prefer:
 
 #####################################################################
 
-$CONF['carrot2_dcs_url'] = "http://localhost:8081/dcs/rest";
+$CONF['carrot2_dcs_url'] = $_SERVER['CARROT2_DCS_URL'];
 
 #####################################################################
 
-$CONF['timetravel_url'] = "http://localhost:1208/api/json/";
+$CONF['timetravel_url'] = $_SERVER['TIMETRAVEL_URL'];
 
 #####################################################################
 // example email... (during testing can send an email here!)

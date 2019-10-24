@@ -56,6 +56,17 @@ services:
       dockerfile: Dockerfile.toy
     restart: always
     network_mode: service:nginx
+    environment:
+      CONTENT_HOST: http://localhost
+      STATIC_HOST: http://localhost
+      MYSQL_HOST: mysql
+      MYSQL_USER: geograph
+      MYSQL_PASSWORD: dEBpm12FXOLhHYTk
+      MYSQL_DATABASE: geograph_toy
+      SPHINX_HOST: manticore
+      REDIS_HOST: redis
+      CARROT2_DCS_URL: http://carrot2-dcs:8080/dcs/rest
+      TIMETRAVEL_URL: http://memgator:1208/api/json/
 
   nginx:
     build:
