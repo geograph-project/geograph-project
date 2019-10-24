@@ -18,7 +18,7 @@ spec:
     cluster:
       enabled: false
 
-    password: changeit  # for development only
+    usePassword: false
 
     master:
       persistence:
