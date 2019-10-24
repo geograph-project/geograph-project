@@ -28,6 +28,37 @@ spec:
       - name: php-fpm
         image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/toy:develop
         imagePullPolicy: Always
+        env:
+        - name: CONTENT_HOST
+          value: https://toy-dev.cloud.geograph.org.uk
+        - name: STATIC_HOST
+          value: https://toy-dev.cloud.geograph.org.uk
+        - name: MYSQL_HOST
+          value: mariadb
+        - name: MYSQL_USER
+          value: geograph
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb
+              key: mariadb-password
+        - name: MYSQL_DATABASE
+          value: geograph_toy
+        - name: SPHINX_HOST
+          value: manticore
+        - name: REDIS_HOST
+          value: redis-master
+        - name: CARROT2_DCS_URL
+          value: http://carrot2-dcs/dcs/rest
+        - name: TIMETRAVEL_URL
+          value: http://memgator/api/json/
+        volumeMounts:
+        - mountPath: /mnt/photos
+          name: photos-tmp
+        - mountPath: /var/www/geograph_toy/public_html/templates/basic/cache
+          name: smarty-cache
+        - mountPath: /var/www/geograph_toy/public_html/templates/basic/compiled
+          name: smarty-compiled
       - name: nginx
         image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/toy:develop
         imagePullPolicy: Always
@@ -39,6 +70,15 @@ spec:
         ports:
         - containerPort: 80
           name: http
+      securityContext:
+        fsGroup: 33  # www-data inside the containers
+      volumes:
+      - name: photos-tmp
+        emptyDir: {}
+      - name: smarty-cache
+        emptyDir: {}
+      - name: smarty-compiled
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
