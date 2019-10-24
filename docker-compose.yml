@@ -67,6 +67,13 @@ services:
       REDIS_HOST: redis
       CARROT2_DCS_URL: http://carrot2-dcs:8080/dcs/rest
       TIMETRAVEL_URL: http://memgator:1208/api/json/
+    volumes:
+      - type: tmpfs
+        target: /var/www/geograph_toy/public_html/templates/basic/cache
+      - type: tmpfs
+        target: /var/www/geograph_toy/public_html/templates/basic/compiled
+      - type: tmpfs
+        target: /mnt/upload
 
   nginx:
     build:
