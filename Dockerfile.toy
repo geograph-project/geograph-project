@@ -22,6 +22,8 @@ COPY config/php-fpm/ /etc/php/conf.d/
 COPY libs/ /var/www/geograph_toy/libs/
 COPY public_html/ /var/www/geograph_toy/public_html/
 
+ENV CONF_PROFILE=docker
+
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.authors="Tiger Computing Ltd" \

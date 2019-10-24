@@ -1,6 +1,7 @@
 <?
 
-require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
+$CONF_PROFILE = $_SERVER['CONF_PROFILE'] ?? $_SERVER['HTTP_HOST'];
+require('conf/'.$CONF_PROFILE.'.conf.php');
 
 #####################################################################
 // smarty configuration
