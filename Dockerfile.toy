@@ -34,10 +34,14 @@ RUN set -eux; \
   rm -f /etc/nginx/sites-enabled/default; \
   :
 
+COPY config/crontab /etc/
 COPY config/nginx/ /etc/nginx/
 COPY config/php-fpm/ /etc/php/conf.d/
 COPY libs/ /var/www/geograph_toy/libs/
 COPY public_html/ /var/www/geograph_toy/public_html/
+COPY scripts/_scripts.inc.php  /var/www/geograph_toy/scripts/
+COPY scripts/fire-event.php  /var/www/geograph_toy/scripts/
+COPY scripts/toy-jobs.sh /jobs.sh
 
 ENV CONF_PROFILE=docker
 
