@@ -32,7 +32,24 @@ if ($short_open_tag!='on' && $short_open_tag!='1') {
 }
 
 $list = get_loaded_extensions();
-foreach (explode(" ","pcre zlib bz2 iconv mbstring session posix apache2handler gd exif json memcache mysqli mhash apc curl") as $wanted) {
+$wanted_list = [
+        "apc",
+        "bz2",
+        "curl",
+        "exif",
+        "gd",
+        "hash",
+        "iconv",
+        "json",
+        "mbstring",
+        "memcache",
+        "mysqli",
+        "pcre",
+        "posix",
+        "session",
+        "zlib",
+];
+foreach ($wanted_list as $wanted) {
         if (!in_array($wanted,$list)) {
                 header("HTTP/1.0 503 Unavailable");
                 die("php-module:$wanted\n");
