@@ -28,30 +28,15 @@ spec:
       - name: php-fpm
         image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/toy:develop
         imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: toy
         env:
-        - name: CONTENT_HOST
-          value: https://toy-dev.cloud.geograph.org.uk
-        - name: STATIC_HOST
-          value: https://toy-dev.cloud.geograph.org.uk
-        - name: MYSQL_HOST
-          value: mariadb
-        - name: MYSQL_USER
-          value: geograph
         - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mariadb
               key: mariadb-password
-        - name: MYSQL_DATABASE
-          value: geograph_toy
-        - name: SPHINX_HOST
-          value: manticore
-        - name: REDIS_HOST
-          value: redis-master
-        - name: CARROT2_DCS_URL
-          value: http://carrot2-dcs/dcs/rest
-        - name: TIMETRAVEL_URL
-          value: http://memgator/api/json/
         volumeMounts:
         - mountPath: /mnt/photos
           name: photos-tmp
@@ -79,6 +64,66 @@ spec:
         emptyDir: {}
       - name: smarty-compiled
         emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toy-jobs
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy-jobs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: toy
+      app.kubernetes.io/instance: develop
+      app.kubernetes.io/component: toy-jobs
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: toy
+        app.kubernetes.io/instance: develop
+        app.kubernetes.io/component: toy-jobs
+    spec:
+      imagePullSecrets:
+      - name: gitlab-registry
+      containers:
+      - name: cron
+        image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/toy:develop
+        imagePullPolicy: Always
+        command: [/jobs.sh]
+        envFrom:
+          - configMapRef:
+              name: toy
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb
+              key: mariadb-password
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: toy
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy
+data:
+  CONTENT_HOST: https://toy-dev.cloud.geograph.org.uk
+  STATIC_HOST: https://toy-dev.cloud.geograph.org.uk
+  MYSQL_HOST: mariadb
+  MYSQL_USER: geograph
+  MYSQL_DATABASE: geograph_toy
+  SPHINX_HOST: manticore
+  REDIS_HOST: redis-master
+  CARROT2_DCS_URL: http://carrot2-dcs/dcs/rest
+  TIMETRAVEL_URL: http://memgator/api/json/
 ---
 apiVersion: v1
 kind: Service
