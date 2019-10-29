@@ -1,6 +1,6 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: manticore
   namespace: toy-develop
@@ -15,8 +15,7 @@ spec:
       app.kubernetes.io/name: toy
       app.kubernetes.io/instance: develop
       app.kubernetes.io/component: manticore
-  strategy:
-    type: Recreate
+  serviceName: manticore
   template:
     metadata:
       labels:
@@ -67,27 +66,22 @@ spec:
       securityContext:
         fsGroup: 999  # manticore inside the container
       volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: manticore-data
       - name: run
         emptyDir: {}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: manticore-data
-  namespace: toy-develop
-  labels:
-    app.kubernetes.io/name: toy
-    app.kubernetes.io/instance: develop
-    app.kubernetes.io/component: manticore
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
+  volumeClaimTemplates:
+  - metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: toy
+        app.kubernetes.io/instance: develop
+        app.kubernetes.io/component: manticore
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
