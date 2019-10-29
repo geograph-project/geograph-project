@@ -31,6 +31,8 @@ spec:
         envFrom:
           - configMapRef:
               name: toy
+          - secretRef:
+              name: toy-iam
         env:
         - name: MYSQL_PASSWORD
           valueFrom:
@@ -38,7 +40,7 @@ spec:
               name: mariadb
               key: mariadb-password
         volumeMounts:
-        - mountPath: /mnt/photos
+        - mountPath: /mnt/upload
           name: photos-tmp
         - mountPath: /var/www/geograph_toy/public_html/templates/basic/cache
           name: smarty-cache
@@ -98,6 +100,8 @@ spec:
         envFrom:
           - configMapRef:
               name: toy
+          - secretRef:
+              name: toy-iam
         env:
         - name: MYSQL_PASSWORD
           valueFrom:
@@ -116,7 +120,8 @@ metadata:
     app.kubernetes.io/component: toy
 data:
   CONTENT_HOST: https://toy-dev.cloud.geograph.org.uk
-  STATIC_HOST: https://toy-dev.cloud.geograph.org.uk
+  STATIC_HOST: https://toy-photos.cloud.geograph.org.uk
+  S3_BUCKET_NAME: toy-photos.cloud.geograph.org.uk
   MYSQL_HOST: mariadb
   MYSQL_USER: geograph
   MYSQL_DATABASE: geograph_toy
