@@ -63,8 +63,35 @@ spec:
           name: sphinxql
         - containerPort: 9312
           name: sphinxapi
+      - name: cron
+        image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/manticore:develop
+        imagePullPolicy: Always
+        command: [supercronic, /etc/crontab]
+        env:
+        - name: MYSQL_HOST
+          value: mariadb
+        - name: MYSQL_USER
+          value: geograph
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb
+              key: mariadb-password
+        - name: MYSQL_DATABASE
+          value: geograph_toy
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 999  # manticore
+        volumeMounts:
+        - mountPath: /var/lib/manticore
+          name: data
+        - mountPath: /var/run/manticore
+          name: run
       securityContext:
         fsGroup: 999  # manticore inside the container
+      # For cron to send signals to manticore
+      shareProcessNamespace: true
       volumes:
       - name: run
         emptyDir: {}
