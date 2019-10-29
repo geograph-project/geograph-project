@@ -1,0 +1,6 @@
+##############################
+# Manticore
+
+@daily indexer --config /etc/sphinxsearch/sphinx.conf --all --rotate
+
+##############################

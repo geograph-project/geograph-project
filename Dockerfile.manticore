@@ -8,6 +8,7 @@ RUN set -eux; \
   apt-get update; \
   apt-get install -y --no-install-recommends \
     ca-certificates \
+    curl \
     libcrypto++6 \
     libexpat1 \
     libmariadbclient-dev-compat \
@@ -15,17 +16,31 @@ RUN set -eux; \
     libpq5 \
     mysql-client \
     openssl \
-    wget \
+    procps \
   ; \
-  addgroup --gid 999 manticore; \
-  adduser --home /var/lib/manticore --no-create-home --uid 999 \
-    --gecos 'Manticore Search' --ingroup manticore --disabled-password \
-    --disabled-login manticore; \
-  wget https://github.com/manticoresoftware/manticoresearch/releases/download/2.6.2/manticore_2.6.2-180223-0bbd194-release-stemmer.stretch_amd64-bin.deb; \
-  dpkg -i manticore_2.6.2-180223-0bbd194-release-stemmer.stretch_amd64-bin.deb; \
-  rm manticore_2.6.2-180223-0bbd194-release-stemmer.stretch_amd64-bin.deb; \
   find /var/lib/apt/lists -mindepth 1 -delete
 
+RUN set -eux; \
+  addgroup --gid 999 manticore; \
+  adduser --home /var/lib/manticore --uid 999 \
+    --gecos 'Manticore Search' --ingroup manticore --disabled-password \
+    --disabled-login manticore; \
+  curl -fsSLO https://github.com/manticoresoftware/manticoresearch/releases/download/2.6.2/manticore_2.6.2-180223-0bbd194-release-stemmer.stretch_amd64-bin.deb; \
+  dpkg -i manticore_2.6.2-180223-0bbd194-release-stemmer.stretch_amd64-bin.deb; \
+  rm manticore_2.6.2-180223-0bbd194-release-stemmer.stretch_amd64-bin.deb
+
+ARG SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.9/supercronic-linux-amd64
+ARG SUPERCRONIC=supercronic-linux-amd64
+ARG SUPERCRONIC_SHA1SUM=5ddf8ea26b56d4a7ff6faecdd8966610d5cb9d85
+
+RUN set -eux; \
+  curl -fsSLO "$SUPERCRONIC_URL"; \
+  echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c -; \
+  chmod +x "$SUPERCRONIC"; \
+  mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}"; \
+  ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+
+COPY config/crontab.manticore /etc/crontab
 COPY config/sphinx.conf /etc/sphinxsearch/
 COPY config/sphinxql_state.sql /etc/sphinxsearch/
 COPY plugins/*.so /usr/lib/manticore/plugins/
