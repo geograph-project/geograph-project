@@ -29,10 +29,10 @@ spec:
         image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/toy:develop
         imagePullPolicy: Always
         envFrom:
-          - configMapRef:
-              name: toy
-          - secretRef:
-              name: toy-iam
+        - configMapRef:
+            name: toy
+        - secretRef:
+            name: toy-iam
         env:
         - name: MYSQL_PASSWORD
           valueFrom:
@@ -98,10 +98,10 @@ spec:
         imagePullPolicy: Always
         command: [/jobs.sh]
         envFrom:
-          - configMapRef:
-              name: toy
-          - secretRef:
-              name: toy-iam
+        - configMapRef:
+            name: toy
+        - secretRef:
+            name: toy-iam
         env:
         - name: MYSQL_PASSWORD
           valueFrom:
