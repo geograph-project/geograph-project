@@ -87,6 +87,12 @@ table td:nth-child(3) { font-size:0.8em; color:gray; }
 	<td>The tables in sample database converted to InnoDB, test.php still runs. (eg InnoDB spatial indexing, seems to be working?)</td>
 </tr>
 
+<tr class=done>
+	<td>Test bringing it all up in Kubernetes on AWS</td>
+	<td>done</td>
+	<td>https://gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy</td>
+</tr>
+
 
 <!--
 <tr class=done>
