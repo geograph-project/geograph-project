@@ -93,6 +93,13 @@ table td:nth-child(3) { font-size:0.8em; color:gray; }
 	<td>https://gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy</td>
 </tr>
 
+<tr class=done>
+	<td>Test Modifying a file, see if deplyed automaticly</td>
+	<td>done</td>
+	<td>https://toy.cloud.geograph.org.uk/todo.php</td>
+</tr>
+
+
 
 <!--
 <tr class=done>
