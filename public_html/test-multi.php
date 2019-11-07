@@ -184,9 +184,10 @@ if (!empty($CONF['carrot2_dcs_url'])) {
 	$d['hostname'] = trim(`hostname`);
 	$d['time'] = time();
 
-	if (!empty($_GET['times']))
+	if (!empty($_GET['times'])) {
+		$times['total'] = array_sum($times);
 		$d['times'] = $times;
-
+	}
 	#########################################################################################################
 
 	header("Content-Type:application/json");
