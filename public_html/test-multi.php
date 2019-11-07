@@ -155,7 +155,7 @@ if (!empty($CONF['carrot2_dcs_url'])) {
 Makes a request every 2 seconds. If the checksum changes, hints at an issue.</p>
 
 Ongoing log:<br>
-<textarea id="output" rows=40 cols=100></textarea><br>
+<textarea id="output" rows=40 cols=100 style="white-space:pre"></textarea><br>
 
 Last Result:<br>
 <textarea id="last" rows=6 cols=100></textarea><br>
@@ -163,11 +163,34 @@ Last Result:<br>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
 <script>
+	var startTime = Date.now();
 
 	setInterval(function() {
 		$.getJSON( "test-multi.php?run=1", function( data ) {
-			document.getElementById('output').value += data['time'] + ': '+ data['hostname'] + ' : ' + data['checksum'] + "\n";
-			 document.getElementById('last').value = JSON.stringify(data);
+			var endTime = Date.now();
+			var diff = (endTime-startTime);
+			diff = diff.toString().padStart(4,' ');
+
+			document.getElementById('output').value += data['time'] + ', '+diff+'ms: '+ data['hostname'] + ' : ' + data['checksum'] + " :: "+ JSON.stringify(data) +"\n";
+			document.getElementById('last').value = JSON.stringify(data);
 		});
 	}, 2000);
+
+
+if (!String.prototype.padStart) {
+    String.prototype.padStart = function padStart(targetLength, padString) {
+        targetLength = targetLength >> 0; //truncate if number, or convert non-number to 0;
+        padString = String(typeof padString !== 'undefined' ? padString : ' ');
+        if (this.length >= targetLength) {
+            return String(this);
+        } else {
+            targetLength = targetLength - this.length;
+            if (targetLength > padString.length) {
+                padString += padString.repeat(targetLength / padString.length); //append to original to ensure we are longer than needed
+            }
+            return padString.slice(0, targetLength) + String(this);
+        }
+    };
+}
+
 </script>
