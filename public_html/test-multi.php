@@ -210,9 +210,9 @@ Last Result:<br>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
 <script>
-	var startTime = Date.now();
 
 	setInterval(function() {
+		var startTime = Date.now();
 		$.getJSON( "test-multi.php?run=1<?php if (!empty($_GET['times'])) { echo "&times=1"; } ?>", function( data ) {
 			var endTime = Date.now();
 			var diff = (endTime-startTime);
