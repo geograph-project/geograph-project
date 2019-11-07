@@ -86,6 +86,11 @@ def move_files(folder = '', replica = '', dest = '', classinc =[],classexc=[]):
 	    if classexc:
                 where = where + " AND `class` NOT IN('"+("','".join(classexc))+"')"
 
+            if '1024' in classinc:
+	            where = where + " AND filename LIKE '%1024x1024.jpg'"
+            if '800' in classinc:
+	            where = where + " AND filename LIKE '%800x800.jpg'"
+
             c=db.cursor(MySQLdb.cursors.DictCursor)
             cex=db.cursor()
             c.execute("SELECT file_id,filename,replicas,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM "+config.database['file_table']+" WHERE "+where)
@@ -150,6 +155,53 @@ def move_files(folder = '', replica = '', dest = '', classinc =[],classexc=[]):
 
             print "-----------"
 
+def get_auto_settings(replica,path,classinc=[]):
+
+    if replica == '':
+        replica = config.server['self']
+
+    mount = config.mounts[replica]
+
+    where = "FIND_IN_SET('"+replica+"',replicas)"
+    where = where + " AND example LIKE '"+path+"%'"
+
+    if classinc:
+        where = where + " AND `class` IN('"+("','".join(classinc))+"')"
+
+    c=db.cursor(MySQLdb.cursors.DictCursor)
+    cex=db.cursor()
+    c.execute("SELECT example,replicas FROM file_stat WHERE "+where+" ORDER BY bytes DESC LIMIT 1")
+
+    while True:
+        row = c.fetchone()
+        if not row: break
+
+        print row
+
+        filename = row['example']
+
+        scores = config.getRawScores(filename)
+
+        max = 99
+
+	for (key,value) in scores.iteritems():
+	    if key == replica:
+		max = value
+
+        best = False
+        score = 0
+
+        for (key,value) in scores.iteritems():
+            if value < max and value > score:
+		best = key
+		score = value
+
+        print scores
+
+	print "best = "+str(best)+" score = "+str(score)
+
+        return best
+
 #############################################################################
 
 def main(argv):
@@ -160,13 +212,15 @@ def main(argv):
     classinc = []
     classexc = []
     try:
-        opts, args = getopt.getopt(argv,"p:r:d:i:e:",["path=","replica=","dest=","include=","exclude="])
+        opts, args = getopt.getopt(argv,"ap:r:d:i:e:",["auto","path=","replica=","dest=","include=","exclude="])
     except getopt.GetoptError:
         print 'mover.py -p /geograph_live/geograph_live/public_html/geophotos/03/38/39 -r teas1 -d teas2'
         sys.exit(2)
     
     for opt, arg in opts:
-        if opt in ("-d", "--dest"):
+        if opt in ("-a", "--auto"):
+	    dest = get_auto_settings(replica,path,classinc)
+        elif opt in ("-d", "--dest"):
             dest = arg
         elif opt in ("-p", "--path"):
             path = arg.rstrip("/")
