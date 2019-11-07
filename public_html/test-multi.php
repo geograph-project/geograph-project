@@ -213,7 +213,7 @@ Last Result:<br>
 	var startTime = Date.now();
 
 	setInterval(function() {
-		$.getJSON( "test-multi.php?run=1", function( data ) {
+		$.getJSON( "test-multi.php?run=1<?php if (!empty($_GET['times'])) { echo "&times=1"; } ?>", function( data ) {
 			var endTime = Date.now();
 			var diff = (endTime-startTime);
 			diff = diff.toString().padStart(4,' ');
