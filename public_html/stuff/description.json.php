@@ -37,7 +37,7 @@ if (empty($_GET['id'])) {
 $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-$row = $db->getRow("SELECT gridimage_id,comment FROM gridimage_search WHERE gridimage_id = ".intval($_GET['id']));
+$row = $db->getRow("SELECT gridimage_id,comment,title FROM gridimage_search WHERE gridimage_id = ".intval($_GET['id']));
 
 if (!empty($row)) {
 	$image = new Gridimage();
@@ -67,6 +67,9 @@ if (!empty($row)) {
 	}
 	if (!empty($image->snippets_as_ref)) {
 		 $data['snippets_as_ref'] = $image->snippets_as_ref;
+	}
+	if (!empty($image->title)) {
+		 $data['title'] = latin1_to_utf8($image->title); //include this too, just ebcause we can, it should be small, and we might encode it better, than if got from sphinx for example
 	}
 } else {
 	class EmptyClass {}

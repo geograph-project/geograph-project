@@ -22,8 +22,8 @@ if (window.innerWidth < 1100) {
 	
 		$('body').prepend('<div id="appeal_block"><a class=closer href="#">Close</a> \
 			Help Geograph move to the cloud!<div class=break></div>\
-			To make the website more resilient and reduce our reliance on elderly servers \
-			we are going to move to the cloud. The cost will be some &pound;7,500 - please help by donating today.<div class=break></div> \
+			Our target of &pound;7,500 has been reached.  Thank you to everyone who donated - a great effort.  We still need money for our running costs so please continue to donate.\
+			<div class=break></div> \
 			<div class=float><a href="/help/appeal" class="btn">Donate Now</a></div> \
 			<i>Thank you</i>. </div>');
 

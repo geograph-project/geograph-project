@@ -6,7 +6,6 @@
                 <span class="tabSelected">Geographical Context</span>
 		<a href="/tags/prefix.php?prefix=subject" class="tab">Subjects</a>
 		<a href="/tags/prefix.php?prefix=type" class="tab">Types</a>
-                <a href="/tags/prefix.php?prefix=bucket" class="tab">Image Buckets</a>
 		<a href="/tags/prefix.php" class="tab">Other Prefixes</a>
         </div>
         <div style="position:relative;margin-bottom:10px" class="interestBox">

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: eventprocessor.class.php 8672 2017-12-10 14:28:42Z barry $
+ * $Id: eventprocessor.class.php 9039 2019-11-18 13:49:27Z barry $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 8672 $
+* @version $Revision: 9039 $
 */
 
 require_once("geograph/eventhandler.class.php");
@@ -312,7 +312,8 @@ class EventProcessor
 				$event_id=$event['event_id'];
 				
 				//lets mark the event as in progress
-				$this->db->Execute("update event set status='in_progress' where event_id=$event_id");
+				// ... need to set updated explicitly, because if even is already in progress, the updated column wont be changed.
+				$this->db->Execute("update event set status='in_progress',updated=NOW() where event_id=$event_id");
 				
 				$this->db->Execute("UNLOCK TABLES");
 				

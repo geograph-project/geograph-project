@@ -138,9 +138,16 @@ if (!empty($_GET['q'])) {
 					//it may be a http:// page cached!?!
 					$str = str_replace('http://',$CONF['PROTOCOL'],$str);
 				}
+
+				if (strpos($str,"No keywords Results found.") !== FALSE) {
+			                //might be too late, but might as well try!
+			                header("HTTP/1.0 404 Not Found");
+                			header("Status: 404 Not Found");
+				}
+
 				print $str;
 
-				print "<hr><p style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick=\"jQl.loadjQ('/js/search-feedback.js');return false\">Please take this short survey</a>.</p>";
+				//print "<hr><p style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick=\"jQl.loadjQ('/js/search-feedback.js');return false\">Please take this short survey</a>.</p>";
 
 				$smarty->display('_std_end.tpl');
 				exit;
@@ -212,7 +219,7 @@ if (!empty($_GET['q'])) {
 
 	$bits = explode(' near ',$_GET['q']);
 	if (count($bits) == 2) {
-		print "<div>Looking for keywords '".htmlentities2($bits[0])."' <i>near</i> place '".htmlentities2($bits[1])."'? If so <a href=\"/search.php?q=$qu\">click here</a>.</div>";
+		print "<div>Looking for keywords '<b>".htmlentities2($bits[0])."</b>' <i>near</i> place '<b>".htmlentities2($bits[1])."</b>'? If so <a href=\"/search.php?q=$qu\">click here</a>.</div><br><br>";
 		$sphinx->q = str_replace(' near ',' @(Place,County,Country) ',$sphinx->q);
 
 	} elseif (!empty($prefixMatch) && $prefixMatch > 1 && empty($_GET['place'])) {
@@ -479,6 +486,11 @@ if (!empty($_GET['d']))
 		print "<div id=\"location_list\"></div>"; $need_client = true;
 
 	} elseif (empty($final) || count($final) == count(@$rows['single'])) {
+
+		//might be too late, but might as well try!
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+
 		print "<p>No keywords Results found. ";
 		print "<span id=\"location_link\"></span>";
 		print "</p>";
@@ -569,8 +581,7 @@ if (!empty($_GET['q'])) {
 #########################################
 
 if (!empty($need_client)) { //TODO, could check $src='data-src'??
-//	print "<script src=\"".smarty_modifier_revision("/js/finder.js")."\"></script>";
-	print "<script src=\"/js/finder.js?t=".time()."\"></script>";
+	print "<script src=\"".smarty_modifier_revision("/js/finder.js")."\"></script>";
 }
 
 #########################################
@@ -590,7 +601,7 @@ if (!empty($USER->registered)) {
 
 #########################################
 
-print "<hr><p style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick=\"jQl.loadjQ('/js/search-feedback.js');return false\">Please take this short survey</a>.</p>";
+//print "<hr><p style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick=\"jQl.loadjQ('/js/search-feedback.js');return false\">Please take this short survey</a>.</p>";
 
 #########################################
 
