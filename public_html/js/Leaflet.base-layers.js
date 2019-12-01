@@ -23,7 +23,7 @@ baseMaps["OSM Terrain"] = L.tileLayer(terrainUrl, {minZoom: 5, maxZoom: 21, attr
 */
 
 	var topoUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
-	var topoAttribution = 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)';
+	var topoAttribution = 'Data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]';
 baseMaps["OpenTopoMap"] = L.tileLayer(topoUrl, {minZoom: 1, maxZoom: 17, detectRetina: false, attribution: topoAttribution});
 
 if (L.tileLayer.bing) {
