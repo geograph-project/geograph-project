@@ -407,8 +407,8 @@ function Attribution(map,mapTypeId) {
   style.fontFamily = 'sans-serif';
   style.fontSize = '11px';
 
-  el.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'.
-	(mapTypeId == 'otm'?' | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]':'');
+  el.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'+
+	((mapTypeId == 'otm')?' | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]':'');
 
   map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(el);
 
@@ -416,8 +416,8 @@ function Attribution(map,mapTypeId) {
     var type = map.getMapTypeId();
     style.display = (type == 'osm' || type == 'otm' || type == 'cm' || type == 'phy') ? '' : 'none';
 
-  el.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'.
-	(type == 'otm'?' | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]':'');
+  el.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'+
+	((type == 'otm')?' | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]':'');
 
   });
 };
