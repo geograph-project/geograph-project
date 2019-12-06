@@ -410,7 +410,7 @@ function Attribution(map,mapTypeId) {
   el.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'+
 	((mapTypeId == 'otm')?' | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]':'');
 
-  map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(el);
+  map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(el);
 
   google.maps.event.addListener(map, 'maptypeid_changed', function() {
     var type = map.getMapTypeId();
