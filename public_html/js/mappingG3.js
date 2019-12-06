@@ -320,6 +320,7 @@ var mapTypeIds;
 	                mapTypeIds.push("nls");
                 }
                 mapTypeIds.push("osm");
+                mapTypeIds.push("otm");
                 mapTypeIds.push("cm");
                 mapTypeIds.push("phy");
 
@@ -332,6 +333,7 @@ var mapTypeIds;
                 if (newtype == 't') {mapTypeId = google.maps.MapTypeId.TERRAIN;}
                 if (newtype == 'n' && mapTypeIds.indexOf('nls') > -1) {mapTypeId = 'nls';}
                 if (newtype == 'o') {mapTypeId = 'osm';}
+                if (newtype == 'l') {mapTypeId = 'otm';}
                 if (newtype == 'c') {mapTypeId = 'cm';}
                 if (newtype == 'p') {mapTypeId = 'phy';}
 
@@ -345,10 +347,26 @@ map.mapTypes.set("osm", new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
                 return "https://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
         },
+	
         tileSize: new google.maps.Size(256, 256),
+	mapLetter: 'o',
         name: "OSM",
 	alt: "OpenStreetMap",
         maxZoom: 18
+}));
+
+//Define OTM map type pointing at the OpenTopoMap tile server
+map.mapTypes.set("otm", new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+                var subdomains = ['a','b','c'];
+                var index = Math.abs(coord.x + coord.x) % subdomains.length;
+                return "https://"+subdomains[index]+".tile.opentopomap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+        },
+        tileSize: new google.maps.Size(256, 256),
+	mapLetter: 'l',
+        name: "OTM",
+	alt: "OpenTopoMap",
+        maxZoom: 17
 }));
 /*
 //Define CM map type pointing at the OpenCycleMap tile server
@@ -359,6 +377,7 @@ map.mapTypes.set("cm", new google.maps.ImageMapType({
                 return "https://"+subdomains[index]+".tile.thunderforest.com/cycle/" + zoom + "/" + coord.x + "/" + coord.y + ".png?apikey=42a8aaad46fa4fd784104f2870221993";
         },
         tileSize: new google.maps.Size(256, 256),
+	mapLetter: 'c',
         name: "Cycle Map",
 	alt: "Open Cycle Map",
         maxZoom: 18
@@ -372,6 +391,7 @@ map.mapTypes.set("phy", new google.maps.ImageMapType({
                 return "https://"+subdomains[index]+".tile.thunderforest.com/landscape/" + zoom + "/" + coord.x + "/" + coord.y + ".png?apikey=42a8aaad46fa4fd784104f2870221993";
         },
         tileSize: new google.maps.Size(256, 256),
+	mapLetter: 'p',
         name: "Physical",
 	alt: "Terrain from Open Cycle Map",
         maxZoom: 18
@@ -382,18 +402,23 @@ map.mapTypes.set("phy", new google.maps.ImageMapType({
 function Attribution(map,mapTypeId) {
   var el = document.createElement('div');
   var style = el.style;
-  if (mapTypeId != 'osm' && mapTypeId != 'cm' && mapTypeId != 'phy')
+  if (mapTypeId != 'osm' && mapTypeId != 'otm' && mapTypeId != 'cm' && mapTypeId != 'phy')
     style.display = 'none';
   style.fontFamily = 'sans-serif';
   style.fontSize = '11px';
 
-  el.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors';
+  el.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'.
+	(mapTypeId == 'otm'?' | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]':'');
 
   map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(el);
 
   google.maps.event.addListener(map, 'maptypeid_changed', function() {
     var type = map.getMapTypeId();
-    style.display = (type == 'osm' || type == 'cm' || type == 'phy') ? '' : 'none';
+    style.display = (type == 'osm' || type == 'otm' || type == 'cm' || type == 'phy') ? '' : 'none';
+
+  el.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'.
+	(type == 'otm'?' | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]':'');
+
   });
 };
 
