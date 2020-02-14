@@ -65,7 +65,8 @@ $(function() {
                         cache: true,
                         data: {
                                 q: query,
-                                new: 1
+                                new: 1,
+				more: (location.search && location.search.indexOf('more'))?1:0
                         },
                         success: function(data) {
 
