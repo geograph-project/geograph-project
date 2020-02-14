@@ -66,7 +66,7 @@ $(function() {
                         data: {
                                 q: query,
                                 new: 1,
-				more: (location.search && location.search.indexOf('more'))?1:0
+				more: (location.search && location.search.indexOf('more')>-1)?1:0
                         },
                         success: function(data) {
 
@@ -101,13 +101,19 @@ $(function() {
 					});
 					$('#location_prompt').append("("+data.total_found+")");
 
+					if (data.total_found && data.total_found > data.items.length)
+						$('#location_prompt select').append($('<option/>').attr('value','...more').text('... View more place matches'));
+
 					if (data.query_info)
 		                                $('#location_prompt select').append($('<optgroup/>').attr('label',data.query_info));
 					if (data.copyright)
 		                                $('#location_prompt select').append($('<optgroup/>').attr('label',data.copyright));
 
 					$('select#near').change(function() {
-						location.href = '/near/'+urlplus(this.value);
+						if (this.value == '...more')
+							location.href = '/place/'+urlplus(query)+'?more=1';
+						else
+							location.href = '/near/'+urlplus(this.value);
 					});
 
 					if (prefixMatch > 1) {
