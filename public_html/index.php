@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: index.php 9053 2020-02-27 20:38:32Z barry $
+ * $Id: index.php 9054 2020-02-27 21:02:22Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -53,7 +53,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/map.class.php');
 	require_once('geograph/mapmosaic.class.php');
 
-	if ($CONF['template'] == 'ireland' && !isset($_GET['preview'])) {
+	if ($CONF['template'] == 'ireland' && !isset($_GET['preview']))
 		$preset = 'overview_ireland';
 	else
 		$preset = 'overview_charcoal';

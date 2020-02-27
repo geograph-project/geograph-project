@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: global.inc.php 8909 2019-03-01 15:19:34Z barry $
+ * $Id: global.inc.php 9054 2020-02-27 21:02:22Z barry $
  *
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 8909 $
+* @version $Revision: 9054 $
 */
 
 if (isset($_SERVER['HTTP_USER_AGENT'])) {
@@ -360,6 +360,13 @@ if (false && function_exists('apc_store') && !preg_match('/(iPad|iPhone|Chrome|M
                                         $con = ob_get_clean();
                                         mail('geograph@barryhunter.co.uk','[Geograph USERAGENT] '.$_SERVER['HTTP_USER_AGENT'],$con);
 	}
+}
+
+#################################################
+
+//todo, maybe switch on session var too?
+if (!empty($_GET['lang']) && $_GET['lang'] == 'cy' && ($CONF['template'] == 'basic' || $CONF['template'] == 'archive')) {
+	$CONF['template'] = 'cy';
 }
 
 #################################################
