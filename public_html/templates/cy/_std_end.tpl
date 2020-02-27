@@ -3,39 +3,39 @@
 <div id="nav_block" class="no_print">
  <div class="nav">
   <ul>
-    <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/">Home</a></li>
-    <li>View<ul>
-     <li><a title="Find and locate images" href="/search.php">Search</a></li>
+    <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/?lang=cy">Hafan</a></li>
+    <li>Gweld<ul>
+     <li><a title="Find and locate images" href="/search.php">Chwilio</a></li>
      <li id="markedLink" style="display:none"><a title="View your current Marked Images" href="/finder/marked.php">Marked Images</a></li>
-     <li><a title="View map of all submissions" href="/mapper/combined.php">Maps</a></li>
-     <li><a title="Interactive browser, search and map in one" href="/browser/#!start">Browser</a></li>
-     <li><a title="Explore images by theme" href="/explore/">Explore</a></li>
-     <li><a title="Curated selection of images" href="/gallery.php">Showcase</a></li>
+     <li><a title="View map of all submissions" href="/mapper/combined.php">Mapiau</a></li>
+     <li><a title="Interactive browser, search and map in one" href="/browser/#!start">Porwr</a></li>
+     <li><a title="Explore images by theme" href="/explore/">Archwilio</a></li>
+     <li><a title="Curated selection of images" href="/gallery.php">Arddangos</a></li>
     </ul></li>
     <li><ul>
-     <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Collections</a></li>
+     <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Casgliadau</a></li>
     </ul></li>
-    <li>Interact<ul>
-     <li><a title="Geographical games to play" href="/games/">Games</a></li>
-     <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
+    <li>Rhyngweithio<ul>
+     <li><a title="Geographical games to play" href="/games/">Gemau</a></li>
+     <li><a title="Discussion Forum" href="/discuss/">Trafodaethau</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
      {/if}{/dynamic}
     </ul></li>
-    <li>Contributors<ul>
-     <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
+    <li>Cyfranwyr<ul>
+     <li><a title="Submit your photos" href="/submit.php">Cyflwyno</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Your most recent submissions" href="/submissions.php">Recent Uploads</a></li>
      {/if}{/dynamic}
-     <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li>
-     <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>
+     <li><a title="Interesting facts and figures" href="/numbers.php">Ystadegau</a></li>
+     <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Tabl Arweinwyr</a></li>
     </ul></li>
-    <li>General<ul>
-     <li><a title="Frequently Asked Questions" href="/faq3.php?l=0">FAQ</a></li>
-     <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Project Info</a></li>
-     <li><a title="View a list of all pages" href="/help/sitemap">Sitemap</a></li>
-     <li><a title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
-     <li><a title="Donate to Geograph Project" href="/help/donate">Support</a></li>
+    <li>Cyffredinol<ul>
+     <li><a title="Frequently Asked Questions" href="/faq3.php?l=0">Cwestiynau Cyffredin</a></li>
+     <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Tudalennau Cymorth</a></li>
+     <li><a title="View a list of all pages" href="/help/sitemap">Map o'r Safle</a></li>
+     <li><a title="Contact the Geograph Team" href="/contact.php">Cysylltu &acirc; Ni</a></li>
+     <li><a title="Donate to Geograph Project" href="/help/donate">Cefnogwch Ni</a></li>
     </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
@@ -52,7 +52,7 @@
   {/if}
   {/dynamic}
   </ul>
-<div class="sponsor">sponsored by <br/> <br/>
+<div class="sponsor">noddir gan <br/> <br/>
 <a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="{$static_host}/img/os-logo-p64.png" width="64" height="50" alt="Ordnance Survey"/></a></div>
 {if $image && $image->collections}
 	<h3 class="newstitle">This photo is linked from:</h3>
@@ -118,10 +118,10 @@
   	  <span class="sep">|</span></span>
   	  <a title="Log out" href="/logout.php">logout</a>
   {else}
-	  You are not logged in
-	  <a title="Already registered? Login in here" href="/login.php">login</a>
+	  heb fewngofnodi
+	  <a title="Already registered? Login in here" href="/login.php">mewngofnodi</a>
 		<span class="sep">|</span></span>
-	  <a title="Register to upload photos" href="/register.php">register</a>
+	  <a title="Register to upload photos" href="/register.php">cofrestru</a>
   {/if}
   {/dynamic}
   </div>
@@ -133,22 +133,23 @@
 	<div class="content2" id="footer_block">
 {/if}
   <div id="footer" class="no_print">
-     <p style="color:#AAAABB;float:left">Page updated at {$smarty.now|date_format:"%H:%M"}</p>
-   <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>
+     <p style="color:#AAAABB;float:left">Diweddarwyd y dudalen am {$smarty.now|date_format:"%H:%M"}</p>
+   <p><a href="/help/sitemap" title="Listing of site pages">Map o'r safle</a>
        <span class="sep">|</span>
-       <a href="/article/Use-of-Cookies-on-Geograph-Website" title="How this site uses cookies">Cookies</a>
+       <a href="/article/Use-of-Cookies-on-Geograph-Website" title="How this site uses cookies">Cwcis</a>
        <span class="sep">|</span>
-       <a href="/help/credits" title="Who built this and how?">Credits</a>
+       <a href="/help/credits" title="Who built this and how?">Cydnabyddiaeth</a>
        <span class="sep">|</span>
-       <a href="/help/terms" title="Terms and Conditions">Terms of use</a>
+       <a href="/help/terms">Telerau defnyddio</a>
        <span class="sep">|</span>
-       <a href="/article/Get-Involved" title="contribute to geograph">Get Involved</a>
+       <a href="/article/Get-Involved" title="contribute to geograph">Cymryd Rhan</a>
     </p>
-    <p style="color:#777788;">Website supported by
-    {external title="click to visit the livetodot website" href="http://www.livetodot.com/hosting/" text="Hosting from Livetodot" nofollow="true"}
+    <p style="color:#777788;">Gweithredir y wefan gan
+    {external title="click to visit the livetodot website" href="http://www.livetodot.com/hosting/" text="wasanaeth Lletya Livetodot" nofollow="true"}
     </p>
   </div>
 </div>
 {dynamic}{pagefooter}{/dynamic}
 </body>
 </html>
+

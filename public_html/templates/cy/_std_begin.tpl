@@ -6,8 +6,8 @@
 	{if $page_title}<title>{$page_title|escape:'html'} :: Geograph Prydain ac Iwerddon</title>
 	{else}<title>Geograph Prydain ac Iwerddon - llun o bob sgw&acirc;ar y grid!</title>{/if}
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-	{if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... more"}" />
-	{else}<meta name="description" content="Nod prosiect Geograph Prydain ac Iwerddon yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgwâr ym Mhrydain Fawr ac Iwerddon, a gallwch chi fod yn rhan o hynny."/>{/if}
+	{if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... mwy"}" />
+	{else}<meta name="description" content="Nod prosiect Geograph Prydain ac Iwerddon yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym Mhrydain Fawr ac Iwerddon, a gallwch chi fod yn rhan o hynny."/>{/if}
 	{if $lat && $long}<meta name="ICBM" content="{$lat|escape:'html'}, {$long|escape:'html'}"/>{/if}
 	<meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 	{$extra_meta}
@@ -31,13 +31,13 @@
 	{else}
 		<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
 	{/if}
-	<link rel="search" type="application/opensearchdescription+xml" title="Geograph Britain and Ireland search" href="/stuff/osd.xml" />
+	<link rel="search" type="application/opensearchdescription+xml" title="Chwilio Geograph Prydain ac Iwerddon" href="/stuff/osd.xml" />
 	<script type="text/javascript" src="{"/js/geograph.js"|revision}"></script>
 </head>
 <body>
 <div id="header_block">
   <div id="header">
-    <h1 onclick="document.location='/';"><a title="Geograph home page" href="/">Geograph - photograph every grid square</a></h1>
+    <h1 onclick="document.location='/?lang=cy';"><a title="Hafan Geograph" href="/">Geograph - llun o bob sgw&acirc;r ar y grid</a></h1>
   </div>
 </div>
 {if $right_block}
@@ -46,3 +46,4 @@
 {dynamic}<div {if $maincontentclass}class="{$maincontentclass}"{else}class="content2"{/if} id="maincontent_block">{/dynamic}
 {/if}
 <div id="maincontent">
+

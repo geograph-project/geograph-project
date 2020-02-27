@@ -8,23 +8,23 @@
 <div style="position:relative;margin-left:auto;margin-right:auto;width:750px">
 
 <div class="interestBox" style="padding:2px;text-align:center;border-radius:6px;">
-The <b>Geograph<sup style="font-size:0.4em">&reg;</sup> Britain and Ireland</b> project aims to collect geographically
-representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and
-<a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
+Nod prosiect <b>Geograph<sup style="font-size:0.4em">&reg;</sup> Prydain ac Iwerddon</b> 
+yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym 
+<a href="/explore/places/1/">Mhrydain Fawr</a> ac <a href="/explore/places/2/">Iwerddon</a>, a gallwch chi fod yn rhan o hynny.</div>
 
-<div style="text-align:center; padding:10px">Since 2005, <b class="nowrap">{$stats.users|thousends} contributors</b> have submitted <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
+<div style="text-align:center; padding:10px">Ers 2005, mae <b class="nowrap">{$stats.users|thousends} o gyfranwyr</b> wedi cyflwyno <b class="nowrap">{$stats.images|thousends} o luniau</b> <span  class="nowrap">ar gyfer <b class="nowrap">{$stats.squares|thousends} o sgwariau.r grid</b>, sy.n <b class="nowrap">{$stats.percentage}%</b> o gyfanswm y sgwariau</span></div>
 
 	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<div style="position:relative;float:right;margin-right:10px">
-				<a href="/stuff/daily.php" style="color:white;font-size:0.9em;text-decoration:underline gray" title="Previous Photos of the Day">view previous &gt;</a>
+				<a href="/stuff/daily.php" style="color:white;font-size:0.9em;text-decoration:underline gray" title="Previous Photos of the Day">gweld y llun blaenorol &gt;</a>
 			</div>
-			<h3 style="margin-top:0;margin-bottom:8px">{$ptitles.$ptitle}</h3>
+			<h3 style="margin-top:0;margin-bottom:8px">Llun dan sylw</h3>
 
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
 		<div style="position:relative;float:left; width:150px">
-			<p style="margin-top:30px;text-align:center">Click the map to start browsing photos</p>
+			<p style="margin-top:30px;text-align:center">Cliciwch ar y map i bori drwy.r lluniau</p>
 
 			<div class="map" style="height:{$overview2_height}px;width:{$overview2_width}px">
 				<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
@@ -58,44 +58,33 @@ representative photographs and information for every square kilometre of <a href
 	</div>
 
 	<div class="interestBox" style="height:370px;width:150px; float:left; font-size:0.8em;margin-left:10px;padding:10px; overflow:auto;border-radius: 10px;">
-		<h3 style="margin-top:0;">What is Geographing?</h3>
+		<h3 style="margin-top:0;">Beth yw Graffio Daearyddol?</h3>
 
 		<ul style="margin-top:2px;margin-bottom:0;padding:0 0 0 1em;">
-			<li style="padding-bottom:4px">It's a game - how many grid squares will you contribute?</li>
-			<li style="padding-bottom:4px">It's a geography project for the people</li>
-			<li style="padding-bottom:4px">It's a national photography project</li>
-			<li style="padding-bottom:4px">It's a good excuse to get out more!</li>
-			<li style="padding-bottom:4px">It's a free and <a href="/faq.php#opensource">open online community</a> project for all</li>
+			<li style="padding-bottom:4px">Gêm . faint o sgwariau wnewch chi eu cyfrannu?</li>
+			<li style="padding-bottom:4px">Prosiect daearyddiaeth i.r bobl</li>
+			<li style="padding-bottom:4px">Prosiect ffotograffiaeth cenedlaethol</li>
+			<li style="padding-bottom:4px">Esgus da i fynd i grwydro mwy!</li>
+			<li style="padding-bottom:4px">Prosiect <a href="/faq.php#opensource">cymunedol ar-lein</a> sy.n rhad ac am ddim ac yn agored i bawb</li>
 		</ul>
 
-		<p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how
-		many grid squares you submit!</p>
+		<p>Gallwch <a title="register now" href="/register.php">gofrestru</a> am ddim felly ymunwch &acirc; ni i 
+		weld sawl sgw&acirc;r o.r grid gallwch chi eu cyflwyno!
+</p>
 	</div>
 
 </div>
 
 <br style="clear:both"/>
 
-<div class="interestBox" style="margin-left:auto;margin-right:auto;width:750px; padding:2px;text-align:center;border-radius:6px;margin-top:10px;margin-bottom:6px;">
-	Good News!
-	{external href="http://www.mikeparker.org.uk/" text="Mike Parker"}, the author of Map Addict, On Red Hill and Mapping the Roads, has agreed to become the first ever Patron of the Geograph project.
-	Mike thinks Geograph &quot;is exactly what the internet was invented for.&quot; 
-	He uses Geograph for book research and for leisure and is fascinated by maps and the land that they show. He hopes to &quot;help Geograph develop further in finding new generations of explorers, photographers, writers and map addicts.&quot;
-	Mike lives in Wales and will be at our <a href="/events/event.php?id=65">2020 AGM in Llandudno</a>. 
-	Christine Johnstone, Chair
-</div>
-
-
-
-
 {if $recentcount}
 	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px" id="photo_block">
 		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px">
 			<div style="position:relative;float:right">
 				<a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
-				<a href="/finder/recent.php" title="Show the most recent submissions"><b>see more</b> &gt;</a>
+				<a href="/finder/recent.php" title="Show the most recent submissions"><b>mwy...</b> &gt;</a>
 			</div>
-			<h3 style="margin:0">Recent Photos</h3>
+			<h3 style="margin:0">Lluniau diweddar</h3>
 		</div>
 
 		{foreach from=$recent item=image}
@@ -106,8 +95,8 @@ representative photographs and information for every square kilometre of <a href
 			</div>
 
 			<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
-			<span class="nowrap">by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></span>
-			<span class="nowrap">for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
+			<span class="nowrap">gan <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></span>
+			<span class="nowrap">am sgw&acirc;r <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
 
 		</div>
 
@@ -116,9 +105,8 @@ representative photographs and information for every square kilometre of <a href
 	</div>
 {/if}
 
-
 <div style="text-align:center;clear:both;padding:10px;">
-	<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, <a href="/submit.php">add yours now</a>!
+	Mae <b class="nowrap">llai na 4 llun</b> ar gyfer <b class="nowrap">{$stats.fewphotos|thousends} o.r sgwariau</b>, <a href="/submit.php">felly ewch ati i ychwanegu.ch lluniau chi</a>!
 </div>
 
 
@@ -128,8 +116,8 @@ representative photographs and information for every square kilometre of <a href
 	<div class="interestBox" style="text-align:left; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px; border:2px solid #{$colours.$source}; background-color:white; padding:0;">
 
 		<div style="background-color: #{$colours.$source}; padding:2px;">
-			<div style="float:right"> <a href="/content/featured.php">view previous &gt;</a> &nbsp; <a href="/content/">all collections &gt;</a></div>
-			<b>Featured Collection</b></div>
+			<div style="float:right"> <a href="/content/featured.php">gweld y casgliad blaenorol &gt;</a> &nbsp; <a href="/content/">gweld pob casgliad &gt;</a></div>
+			<b>Casgliad Dan Sylw</b></div>
 
 		<div style="padding:7px">
 			<div class="shadow" style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
@@ -159,9 +147,9 @@ representative photographs and information for every square kilometre of <a href
 {/foreach}
 
 <div style="text-align:center;clear:both;padding:10px;">
-	&middot; Geograph on <b>{external href="https://twitter.com/geograph_bi" text="Twitter"},
+	&middot; Geograph ar <b>{external href="https://twitter.com/geograph_bi" text="Twitter"},
 	{external href="https://www.facebook.com/geograph.org.uk" text="Facebook"}</b> 
-	&middot; <b><a href="/news.php">Project News</a></b><br/>
+	&middot; <b><a href="/news.php">Newyddion y Prosiect</a></b><br/>
 </div>
 {if $job}
 <div class="interestBox" style="padding:3px;text-align:center;border-radius:6px;background-color:#FCDB8D;margin-bottom:5px">
@@ -171,20 +159,20 @@ representative photographs and information for every square kilometre of <a href
 
 <div style="position:relative; text-align:left; margin-left:auto;margin-right:auto;width:750px;">
 	<div style="position:relative;float:left;width:200px;text-align:center">
-		<p><a href="/help/donate"><img src="{$static_host}/img/donate-now-button.gif" style="vertical-align: middle;" width="190" height="48" alt="donate now" style="border-radius:14px"/></a>
-		Please <a href="/help/donate">support</a><br/> the project</p>
+		<p><big><a href="/help/donate">Cyfrannu nawr</a></b>, 
+		<a href="/help/donate">cefnogwch</a> y prosiect os gwelwch yn dda</p>
 	</div>
 	<div style="position:relative;float:left;width:550px;text-align:center">
-		<p>This site is archived for preservation by the <a href="/help/webarchive">UK Web Archive</a> project.</p>
+		<p>Caiff y wefan hon ei harchifo a.i chadw gan brosiect <a href="/help/webarchive">Archif Gwe.r DU</a>.</p>
 
-		<p style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg;</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. <br> The registered office is Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
+		<p style="font-size:0.9em;"><span class="nowrap">Prosiect gan <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">Elusen Gofrestredig yng Nghymru a Lloegr, rhif 114562</span>, yw Geograph&reg; Britain and Ireland. <span class="nowrap">Rhif y cwmni: 7473967</span>. <br> Y swyddfa gofrestredig yw: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
 	</div>
 	<br style="clear:both"/>
 </div>
 
 <div style="text-align:center;clear:both;padding:10px;">
-        &middot; Geograph <a href="https://schools.geograph.org.uk/">For Schools</a> 
-	&middot; {external href="https://geo-en.hlipp.de/" text="Geograph Germany"}
+        &middot; Geograph <a href="https://schools.geograph.org.uk/">Geograph i Ysgolion</a> 
+	&middot; {external href="https://geo-en.hlipp.de/" text="Geograph yr Almaen"}
         &middot;
 </div>
 
@@ -283,12 +271,12 @@ AttachEvent(window,'resize',thiswindowresize,false);
 {
    "@context": "http://schema.org",
    "@type": "WebSite",
-   "url": "http://www.geograph.org.uk/",
+   "url": "http://www.geograph.org.uk/?lang=cy",
    "name": "Geograph",
-   "alternateName": "Geograph Britain and Ireland",
+   "alternateName": "Geograph Prydain ac Iwerddon",
    "potentialAction": {
      "@type": "SearchAction",
-     "target": "http://www.geograph.org.uk/of/{search_term}",
+     "target": "http://www.geograph.org.uk/of/{search_term}?lang=cy",
      "query-input": "required name=search_term"
    }
 }
@@ -298,3 +286,4 @@ AttachEvent(window,'resize',thiswindowresize,false);
 
 
 {include file="_std_end.tpl"}
+
