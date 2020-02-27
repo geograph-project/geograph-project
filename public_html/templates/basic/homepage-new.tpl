@@ -1,5 +1,5 @@
 {assign var="imageurl" value=$pictureoftheday.image->_getFullpath(false,true)}
-{assign var="extra_meta" value="<link href=\"https://plus.google.com/b/104248293367205883120/\" rel=\"publisher\"/><meta property=\"og:image\" content=\"`$imageurl`\"/>`$extra_meta`"}
+{assign var="extra_meta" value="<meta property=\"og:image\" content=\"`$imageurl`\"/>`$extra_meta`"}
 {assign var="maincontentclass" value="content2"}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
