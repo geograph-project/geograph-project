@@ -1,5 +1,5 @@
 {assign var="imageurl" value=$pictureoftheday.image->_getFullpath(false,true)}
-{assign var="extra_meta" value="<link href=\"https://plus.google.com/b/104248293367205883120/\" rel=\"publisher\"/><meta property=\"og:image\" content=\"`$imageurl`\"/>"}
+{assign var="extra_meta" value="<link href=\"https://plus.google.com/b/104248293367205883120/\" rel=\"publisher\"/><meta property=\"og:image\" content=\"`$imageurl`\"/>`$extra_meta`"}
 {assign var="maincontentclass" value="content2"}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
@@ -15,11 +15,10 @@ representative photographs and information for every square kilometre of <a href
 
 <div style="text-align:center; padding:10px">Since 2005, <b class="nowrap">{$stats.users|thousends} contributors</b> have submitted <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
 
-
 	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<div style="position:relative;float:right;margin-right:10px">
-				<a href="/stuff/daily.php" style="color:white;font-size:0.9em;text-decoration:none;border-bottom:1px solid gray" title="Previous Photos of the Day">view previous &gt;</a>
+				<a href="/stuff/daily.php" style="color:white;font-size:0.9em;text-decoration:underline gray" title="Previous Photos of the Day">view previous &gt;</a>
 			</div>
 			<h3 style="margin-top:0;margin-bottom:8px">{$ptitles.$ptitle}</h3>
 
@@ -28,13 +27,13 @@ representative photographs and information for every square kilometre of <a href
 		<div style="position:relative;float:left; width:150px">
 			<p style="margin-top:30px;text-align:center">Click the map to start browsing photos</p>
 
-			<div class="map" style="height:{$overview_height}px;width:{$overview_width}px">
-				<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
+			<div class="map" style="height:{$overview2_height}px;width:{$overview2_width}px">
+				<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
 
 					{foreach from=$overview2 key=y item=maprow}
 						<div>
 						{foreach from=$maprow key=x item=mapcell}
-						<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
+						<a href="/mapbrowse.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
 						alt="Clickable map" ismap="ismap" title="{$messages.$m}" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 						{/foreach}
 
@@ -52,10 +51,10 @@ representative photographs and information for every square kilometre of <a href
 			<a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
 		</div>
 		<div style="font-size:0.9em;margin-top:8px">
-			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->title}</a> 
-			<span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->realname}</a></span> 
-			<span class="nowrap">for square <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->grid_reference}</a></span>, 
-			<span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
+			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->title}</a> 
+			<span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->realname}</a></span> 
+			<span class="nowrap">for square <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->grid_reference}</a></span>, 
+			<span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
 		</div>
 	</div>
 
@@ -77,6 +76,19 @@ representative photographs and information for every square kilometre of <a href
 </div>
 
 <br style="clear:both"/>
+
+<div class="interestBox" style="margin-left:auto;margin-right:auto;width:750px; padding:2px;text-align:center;border-radius:6px;margin-top:10px;margin-bottom:6px;">
+	Good News!
+	{external href="http://www.mikeparker.org.uk/" text="Mike Parker"}, the author of Map Addict, On Red Hill and Mapping the Roads, has agreed to become the first ever Patron of the Geograph project.
+	Mike thinks Geograph &quot;is exactly what the internet was invented for.&quot; 
+	He uses Geograph for book research and for leisure and is fascinated by maps and the land that they show. He hopes to &quot;help Geograph develop further in finding new generations of explorers, photographers, writers and map addicts.&quot;
+	Mike lives in Wales and will be at our <a href="/events/event.php?id=65">2020 AGM in Llandudno</a>. 
+	Christine Johnstone, Chair
+</div>
+
+
+
+
 {if $recentcount}
 	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px" id="photo_block">
 		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px">
@@ -89,7 +101,7 @@ representative photographs and information for every square kilometre of <a href
 
 		{foreach from=$recent item=image}
 
-		<div style="text-align:center;padding-bottom:1em;width:150px;float:left;font-size:0.8em;">
+		<div class="shadow" style="text-align:center;padding-bottom:1em;width:150px;float:left;font-size:0.8em;">
 			<div style="height:126px">
 				<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 			</div>
@@ -121,7 +133,7 @@ representative photographs and information for every square kilometre of <a href
 			<b>Featured Collection</b></div>
 
 		<div style="padding:7px">
-			<div style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
+			<div class="shadow" style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
 				{if $item.image}
 				<a title="{$item.image->title|escape:'html'} by {$item.image->realname|escape:'html'} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
 				{/if}
@@ -164,12 +176,19 @@ representative photographs and information for every square kilometre of <a href
 		Please <a href="/help/donate">support</a><br/> the project</p>
 	</div>
 	<div style="position:relative;float:left;width:550px;text-align:center">
-		<p>This site is archived for preservation by the <a href="https://www.webarchive.org.uk/ukwa/target/31653948">UK Web Archive</a> project.</p>
+		<p>This site is archived for preservation by the <a href="/help/webarchive">UK Web Archive</a> project.</p>
 
 		<p style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg;</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. <br> The registered office is Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
 	</div>
 	<br style="clear:both"/>
 </div>
+
+<div style="text-align:center;clear:both;padding:10px;">
+        &middot; Geograph <a href="https://schools.geograph.org.uk/">For Schools</a> 
+	&middot; {external href="https://geo-en.hlipp.de/" text="Geograph Germany"}
+        &middot;
+</div>
+
 
 </div>
 
