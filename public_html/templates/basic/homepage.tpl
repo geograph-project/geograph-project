@@ -1,8 +1,7 @@
 {assign var="imageurl" value=$pictureoftheday.image->_getFullpath(false,true)}
 {assign var="extra_meta" value="<meta property=\"og:image\" content=\"`$imageurl`\"/>`$extra_meta`"}
-{assign var="maincontentclass" value="content2"}
-{assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
+{assign var="right_block" value="_block_recent.tpl"}
 
 <div style="position:relative;background-color:white;">
 

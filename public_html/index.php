@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: index.php 7147 2011-03-10 14:18:54Z geograph $
+ * $Id: index.php 9053 2020-02-27 20:38:32Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -39,14 +39,8 @@ if (isset($_GET['potd'])) {
 	$smarty->caching = 0;
 }
 
-#if (empty($_SERVER['HTTP_REFERER']) && $USER->registered && $CONF['template']=='basic') {
-if ($CONF['template'] == 'basic' || $CONF['template'] == 'archive') {
-	$_GET['preview'] = 1;
-}
-
 if (isset($_GET['preview'])) {
 	$template='homepage-new.tpl';
-	$smarty->assign('maincontentclass', 'content2'); //we need this because it in a dynamic block in _std_begin
 }
 
 //regenerate?
@@ -59,23 +53,19 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/map.class.php');
 	require_once('geograph/mapmosaic.class.php');
 
-	switch($CONF['template']) {
-		case 'charcoal': $preset = 'overview_charcoal'; break;
-		case 'ireland': $preset = 'overview_ireland'; break;
-		default: $preset = 'overview_large'; break;
-	}
-	if (isset($_GET['preview'])) {
-		 $preset = 'overview_charcoal';
-	}
+	if ($CONF['template'] == 'ireland' && !isset($_GET['preview'])) {
+		$preset = 'overview_ireland';
+	else
+		$preset = 'overview_charcoal';
+
 	$overview=new GeographMapMosaic($preset);
 	$overview->type_or_user = -1;
-	if ($preset == 'overview_large' || isset($_GET['preview'])) {
+	if ($preset != 'overview_ireland') {
 		$overview->assignToSmarty($smarty, 'overview2');
 	} else {
 		$overview->assignToSmarty($smarty, 'overview');
 	}
-	
-	
+
 	require_once('geograph/pictureoftheday.class.php');
 	$potd=new PictureOfTheDay;
 	if (isset($_GET['potd'])) {
