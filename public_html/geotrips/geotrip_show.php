@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: geotrip_show.php 8715 2018-02-21 18:56:08Z barry $
+ * $Id: geotrip_show.php 9056 2020-03-06 14:50:21Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Rudi Winter (http://www.geograph.org.uk/profile/2520)
@@ -222,11 +222,11 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 <?php
   print('<h3>'.htmlentities2($trk['location']).'</h3>');
   $date=date('D, j M Y',strtotime($trk['date']));
-  print('<h4 style=text-align:left>A '.whichtype($trk['type']).' from '.htmlentities2($trk['start']).", $date by <a href=\"/profile/$trk[uid]\">".htmlentities2($trk[user])."</a></h4>");
+  print('<h4 style=text-align:left>A '.whichtype($trk['type']).' from '.htmlentities2($trk['start']).", $date by <a href=\"/profile/$trk[uid]\">".htmlentities2($trk['user'])."</a></h4>");
 
-  $prec=$trk['contfrom'];
-  $foll=$foll['id'];
-  if ($prec||$foll) {
+  if (!empty($trk['contfrom'])||!empty($foll['id'])) {
+    $prec=$trk['contfrom'];
+    $foll=$foll['id'];
     print('<table class="ruled mapwidth"></tr>');
     if ($prec) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"/geotrips/$prec\">preceding leg</a></td>");
     else print('<td></td>');
