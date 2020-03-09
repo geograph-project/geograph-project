@@ -12,7 +12,7 @@ Nod prosiect <b>Geograph<sup style="font-size:0.4em">&reg;</sup> Prydain ac Iwer
 yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym 
 <a href="/explore/places/1/">Mhrydain Fawr</a> ac <a href="/explore/places/2/">Iwerddon</a>, a gallwch chi fod yn rhan o hynny.</div>
 
-<div style="text-align:center; padding:10px">Ers 2005, mae <b class="nowrap">{$stats.users|thousends} o gyfranwyr</b> wedi cyflwyno <b class="nowrap">{$stats.images|thousends} o luniau</b> <span  class="nowrap">ar gyfer <b class="nowrap">{$stats.squares|thousends} o sgwariau.r grid</b>, sy.n <b class="nowrap">{$stats.percentage}%</b> o gyfanswm y sgwariau</span></div>
+<div style="text-align:center; padding:10px">Ers 2005, mae <b class="nowrap">{$stats.users|thousends} o gyfranwyr</b> wedi cyflwyno <b class="nowrap">{$stats.images|thousends} o luniau</b> <span  class="nowrap">ar gyfer <b class="nowrap">{$stats.squares|thousends} o sgwariau'r grid</b>, sy'n <b class="nowrap">{$stats.percentage}%</b> o gyfanswm y sgwariau</span></div>
 
 	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
@@ -24,7 +24,7 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
 		<div style="position:relative;float:left; width:150px">
-			<p style="margin-top:30px;text-align:center">Cliciwch ar y map i bori drwy.r lluniau</p>
+			<p style="margin-top:30px;text-align:center">Cliciwch ar y map i bori drwy'r lluniau</p>
 
 			<div class="map" style="height:{$overview2_height}px;width:{$overview2_width}px">
 				<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
@@ -51,9 +51,9 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 		</div>
 		<div style="font-size:0.9em;margin-top:8px">
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->title}</a> 
-			<span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->realname}</a></span> 
-			<span class="nowrap">for square <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->grid_reference}</a></span>, 
-			<span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
+			<span class="nowrap">gan <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->realname}</a></span> 
+			<span class="nowrap">am sgw&acirc;r <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->grid_reference}</a></span>, 
+			<span class="nowrap">wedi'i dynnu <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
 		</div>
 	</div>
 
@@ -61,15 +61,15 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 		<h3 style="margin-top:0;">Beth yw Graffio Daearyddol?</h3>
 
 		<ul style="margin-top:2px;margin-bottom:0;padding:0 0 0 1em;">
-			<li style="padding-bottom:4px">Gêm . faint o sgwariau wnewch chi eu cyfrannu?</li>
-			<li style="padding-bottom:4px">Prosiect daearyddiaeth i.r bobl</li>
+			<li style="padding-bottom:4px">G&ecirc;m - faint o sgwariau wnewch chi eu cyfrannu?</li>
+			<li style="padding-bottom:4px">Prosiect daearyddiaeth i'r bobl</li>
 			<li style="padding-bottom:4px">Prosiect ffotograffiaeth cenedlaethol</li>
 			<li style="padding-bottom:4px">Esgus da i fynd i grwydro mwy!</li>
-			<li style="padding-bottom:4px">Prosiect <a href="/faq.php#opensource">cymunedol ar-lein</a> sy.n rhad ac am ddim ac yn agored i bawb</li>
+			<li style="padding-bottom:4px">Prosiect <a href="/faq.php#opensource">cymunedol ar-lein</a> sy'n rhad ac am ddim ac yn agored i bawb</li>
 		</ul>
 
 		<p>Gallwch <a title="register now" href="/register.php">gofrestru</a> am ddim felly ymunwch &acirc; ni i 
-		weld sawl sgw&acirc;r o.r grid gallwch chi eu cyflwyno!
+		weld sawl sgw&acirc;r o'r grid gallwch chi eu cyflwyno!
 </p>
 	</div>
 
@@ -106,7 +106,7 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 {/if}
 
 <div style="text-align:center;clear:both;padding:10px;">
-	Mae <b class="nowrap">llai na 4 llun</b> ar gyfer <b class="nowrap">{$stats.fewphotos|thousends} o.r sgwariau</b>, <a href="/submit.php">felly ewch ati i ychwanegu.ch lluniau chi</a>!
+	Mae <b class="nowrap">llai na 4 llun</b> ar gyfer <b class="nowrap">{$stats.fewphotos|thousends} o'r sgwariau</b>, <a href="/submit.php">felly ewch ati i ychwanegu'ch lluniau chi</a>!
 </div>
 
 
@@ -159,13 +159,13 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 
 <div style="position:relative; text-align:left; margin-left:auto;margin-right:auto;width:750px;">
 	<div style="position:relative;float:left;width:200px;text-align:center">
-		<p><big><a href="/help/donate">Cyfrannu nawr</a></b>, 
-		<a href="/help/donate">cefnogwch</a> y prosiect os gwelwch yn dda</p>
+		<p><a href="/help/donate" style="background-color:purple;color:white;text-decoration:none;font-size:1.4em;padding:4px;margin:5px;border-radius:4px">Cyfrannu nawr</a> 
+		cefnogwch y prosiect os gwelwch yn dda</p>
 	</div>
 	<div style="position:relative;float:left;width:550px;text-align:center">
-		<p>Caiff y wefan hon ei harchifo a.i chadw gan brosiect <a href="/help/webarchive">Archif Gwe.r DU</a>.</p>
+		<p>Caiff y wefan hon ei harchifo a'i chadw gan brosiect <a href="/help/webarchive">Archif Gwe'r DU</a>.</p>
 
-		<p style="font-size:0.9em;"><span class="nowrap">Prosiect gan <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">Elusen Gofrestredig yng Nghymru a Lloegr, rhif 114562</span>, yw Geograph&reg; Britain and Ireland. <span class="nowrap">Rhif y cwmni: 7473967</span>. <br> Y swyddfa gofrestredig yw: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
+		<p style="font-size:0.9em;"><span class="nowrap">Prosiect gan <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">Elusen Gofrestredig yng Nghymru a Lloegr, rhif 114562</span>, yw Geograph&reg; Prydain ac Iwerddon. <span class="nowrap">Rhif y cwmni: 7473967</span>. <br> Y swyddfa gofrestredig yw: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
 	</div>
 	<br style="clear:both"/>
 </div>

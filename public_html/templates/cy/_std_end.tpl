@@ -104,7 +104,7 @@
     <form method="get" action="/search.php">
     <div id="searchfield">
     <input type="hidden" name="form" value="simple"/>
-    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search" onfocus="search_focus(this)" onblur="search_blur(this)"/>{/dynamic}
+    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search" placeholder="chwilio am luniau..." style="background:white"/>{/dynamic}
     <input id="searchbutton" type="submit" name="go" value="Find"/></div>
     </form>
     </div>
