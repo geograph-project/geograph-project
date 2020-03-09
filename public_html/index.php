@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: index.php 9054 2020-02-27 21:02:22Z barry $
+ * $Id: index.php 9059 2020-03-09 16:35:11Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -30,7 +30,7 @@ $smarty = new GeographPage;
 customGZipHandlerStart();
 
 $template='homepage.tpl';
-if ($CONF['template']!='charcoal') {
+if ($CONF['template']!='charcoal' && $CONF['template']!='charcoal_cy') {
 	$cacheid=rand(1,5); //so we get a selection of homepages
 }
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: global.inc.php 9054 2020-02-27 21:02:22Z barry $
+ * $Id: global.inc.php 9059 2020-03-09 16:35:11Z barry $
  *
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 9054 $
+* @version $Revision: 9059 $
 */
 
 if (isset($_SERVER['HTTP_USER_AGENT'])) {
@@ -364,13 +364,6 @@ if (false && function_exists('apc_store') && !preg_match('/(iPad|iPhone|Chrome|M
 
 #################################################
 
-//todo, maybe switch on session var too?
-if (!empty($_GET['lang']) && $_GET['lang'] == 'cy' && ($CONF['template'] == 'basic' || $CONF['template'] == 'archive')) {
-	$CONF['template'] = 'cy';
-}
-
-#################################################
-
 if (!empty($CONF['memcache']['adodb'])) {
 	if ($CONF['memcache']['adodb'] != $CONF['memcache']['app']) {
 		$ADODB_MEMCACHE_OBJECT = new MultiServerMemcache($CONF['memcache']['adodb']);
@@ -479,6 +472,16 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 		$GLOBALS['USER'] =& new GeographUser;
                 @apache_note('user_id', 0);
 
+
+		global $CONF;
+		//note at this point, wouldn't have a session var!
+		if (!empty($_GET['lang']) && $_GET['lang'] == 'cy') {
+			if ($CONF['template'] == 'basic' || $CONF['template'] == 'archive')
+				$CONF['template'] = 'cy';
+			elseif ($CONF['template'] == 'charcoal')
+				$CONF['template'] = 'charcoal_cy';
+		}
+
 	} else {
         	init_session();
 
@@ -523,6 +526,16 @@ function init_session()
 
 	//tell apache our ID, handy for logs
 	@apache_note('user_id', $GLOBALS['USER']->user_id);
+
+	global $CONF;
+	//todo, maybe switch on session var too?
+	if (!empty($_GET['lang']) && $_GET['lang'] == 'cy') {
+		if ($CONF['template'] == 'basic' || $CONF['template'] == 'archive')
+			$CONF['template'] = 'cy';
+		elseif ($CONF['template'] == 'charcoal')
+			$CONF['template'] = 'charcoal_cy';
+	}
+
 
 	//HACK for CDN - under heavy traffic this could be uncommented (or enabled via curtail_level) to shift of non logged in traffic to cdn.
 	// could for example only enable for a % of traffic, or based on IP etc etc
