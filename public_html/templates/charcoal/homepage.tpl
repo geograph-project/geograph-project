@@ -6,13 +6,13 @@
 <h1>Photo Map</h1>
 <p>Click the map to start browsing photos of the British Isles</p>
 
-<div class="map" style="height:{$overview_height}px;width:{$overview_width}px">
-<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
+<div class="map" style="height:{$overview2_height}px;width:{$overview2_width}px">
+<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
 
-{foreach from=$overview key=y item=maprow}
+{foreach from=$overview2 key=y item=maprow}
 	<div>
 	{foreach from=$maprow key=x item=mapcell}
-	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
+	<a href="/mapbrowse.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
 	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 	{/foreach}
 
