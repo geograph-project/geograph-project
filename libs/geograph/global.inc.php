@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: global.inc.php 9059 2020-03-09 16:35:11Z barry $
+ * $Id: global.inc.php 9061 2020-03-09 16:40:14Z barry $
  *
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 9059 $
+* @version $Revision: 9061 $
 */
 
 if (isset($_SERVER['HTTP_USER_AGENT'])) {
@@ -52,9 +52,6 @@ header("X-Content-Type-Options: nosniff");
 //global routines
 require_once('geograph/functions.inc.php');
 
-//if ('217.45.188.209' == $_SERVER['HTTP_X_FORWARDED_FOR']) {
-//#	$_GET['php_profile'] = 1;
-//}
 
 
 if (isset($_GET['php_profile']) && !class_exists('Profiler',false)) {
@@ -65,7 +62,7 @@ if (isset($_GET['php_profile']) && !class_exists('Profiler',false)) {
 	ProfilerRenderer::setJqueryLocation('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
 
 	ProfilerRenderer::setPrettifyLocation("/js/code-prettify");
-	
+
 	$p = Profiler::start("Global");
 }
 
