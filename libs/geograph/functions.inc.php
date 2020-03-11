@@ -240,7 +240,7 @@ function smarty_function_external($params)
 	global $CONF;
   	//get params and use intelligent defaults...
   	$href=str_replace(' ','+',$params['href']);
-  	if (!preg_match('/^https?:\/\//',$href))
+  	if (!preg_match('/^https?:\/\//',$href) && strpos($href,'/') !== 0)
   		$href ="http://$href";
 
   	if (isset($params['text']))
@@ -380,6 +380,7 @@ function smarty_function_place($params) {
 	elseif (empty($place['isin']))
 		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
 
+	$t .= "<span itemprop=\"contentLocation\" itemscope itemtype=\"http://schema.org/Place\"><span itemprop=\"name\">";
 	if (!ctype_lower($place['full_name'])) {
 		$t .= "<b>".recaps($place['full_name'])."</b><small><i>";
 	} else {
@@ -398,7 +399,16 @@ function smarty_function_place($params) {
 		}
 	} elseif (!empty($place['hist_county']))
 		$t .= ", {$place['hist_county']}";
-	$t .= ", {$place['reference_name']}</i></small>";
+	$t .= ", {$place['reference_name']}</i></small></span>";
+
+	if (!empty($params['lat'])) { //we only check latitude, as technically longitude can be exactly 0 in GB!
+	  $t .= sprintf('<span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+	    <meta itemprop="latitude" content="%.5f" />
+	    <meta itemprop="longitude" content="%.5f" />
+	  </span>',$params['lat'],$params['long']);
+	}
+
+	$t .= "</span>";
 
 	$tag = (isset($params['h3']))?'h3':'span';
 	$t2 = "<$tag";
@@ -412,7 +422,7 @@ function smarty_function_place($params) {
 			$t2 .= ", modern Administrative Area - {$place['adm1_name']}";
 		$t2 .= "\"";
 	}
-	$t = $t2." itemprop=\"contentLocation\">".$t."</$tag>";
+	$t = $t2.">".$t."</$tag>";
 
 	return $t;
 }

@@ -4,10 +4,10 @@
 <div style="float:right; position:relative; width:5em; height:4em;"></div>
 <div style="float:right; position:relative; width:30px; height:33px; margin-right:2px;"></div>
 <div style="float:right; position:relative; width:2.5em; height:1em;"></div>
-<div itemscope itemtype="schema.org/Photograph"><meta itemprop="isFamilyFriendly" content="true"/>
+<div itemscope itemtype="http://schema.org/ImageObject"><meta itemprop="isFamilyFriendly" content="true"/>
 <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 {if $place.distance}
- {place place=$place h3=true takenago=$takenago}
+ {place place=$place h3=true takenago=$takenago lat=$lat long=$long}
 {/if}
 
 {if $image->moderation_status eq 'rejected'}
@@ -70,7 +70,7 @@
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
 	{/if}
 
-  <div class="shadow shadow_large" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull(true,true)|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
+  <div class="shadow shadow_large" id="mainphoto">{$image->getFull(true,true)|replace:'/>':' itemprop="contentURL url"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
 
   <div class="caption640"><strong property="dct:title" itemprop="name">{$image->title|escape:'html'}</strong></div>
 
@@ -106,7 +106,7 @@
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img
 alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and
-licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="{$imageurl}" title="Creative Commons Attribution-Share Alike 2.0 Licence">Creative Commons Licence</a>.</div>
+licensed for <a href="/reuse.php?id={$image->gridimage_id}" itemprop="acquireLicensePage">reuse</a> under this <a rel="license" itemprop="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="{$imageurl}" title="Creative Commons Attribution-Share Alike 2.0 Licence">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
 <!--
@@ -266,12 +266,6 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 {if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a> [{$image->subject_gridref_precision}m precision]<br/>
 WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude"
 title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
-  <div itemprop="contentLocation">
-  <div itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-    <meta itemprop="latitude" content="{$lat|string_format:"%.5f"}" />
-    <meta itemprop="latitude" content="{$long|string_format:"%.5f"}" />
-  </div>
-  </div>
 </dd>
 
 {if $image->photographer_gridref}
