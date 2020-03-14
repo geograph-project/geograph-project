@@ -1,10 +1,10 @@
-{assign var="page_title" value="Geograph for Schools"}
+{assign var="page_title" value="Geograph i Ysgolion"}
 {include file="_std_begin.tpl"}
 
 {box colour="333" style="width:160px;float:left;margin-right:15px;"}
 <div class="infobox" style="height:389px">
 <h1>Map o'r lluniau</h1>
-<p>Cliciwch ar y map i bori drwy.r lluniau o Ynysoedd Prydain</p>
+<p>Cliciwch ar y map i bori drwy'r lluniau o Ynysoedd Prydain</p>
 
 <div class="map" style="height:{$overview2_height}px;width:{$overview2_width}px">
 <div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
@@ -13,11 +13,11 @@
 	<div>
 	{foreach from=$maprow key=x item=mapcell}
 	<a href="/mapbrowse.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
-	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+	alt="Map mae modd ei glicio" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 	{/foreach}
 
 	{if $marker}
-	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Llun y diwrnod"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
+	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Lleoliad Llun y Diwrnod"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
 	{/if}
 
 	</div>
@@ -33,14 +33,16 @@
 <div class="infobox" style="height:389px"> 
 <h1>Llun y diwrnod</h1>
 
-<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
+<a href="/photo/{$pictureoftheday.gridimage_id}" title="Cliciwch i weld delwedd maint llawn">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 
 <div style="float:left">
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
+<a rel="license" title="Trwydded Creative Commons" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
 </div>
-<div class="potdtitle"><a href="/photo/{$pictureoftheday.gridimage_id}"
-title="Click to see full size photo"
->{$pictureoftheday.image->title}</a> gan <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname}</a></div>
+<div class="potdtitle"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Cliciwch i weld delwedd maint llawn">{$pictureoftheday.image->title}</a>
+<span class="nowrap">gan <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname}</a></span>
+<span class="nowrap">yn sgw&acirc;r <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->grid_reference}</a></span>,
+<span class="nowrap">wedi'i dynnu ar <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
+</div>
 </div>
 {/box}
 
@@ -109,7 +111,7 @@ title="Click to see full size photo"
 	<li><a href="/activities/" title="Activites">Gweld delweddau yn ein hadran <b>Weithgareddau</b></a></li>
 	<li><a href="/teachers/" title="Education Area">Geograph ar gyfer <b>athrawon</b></a><br/><br/></li>
 	
-	<li>Mae ein lluniau ar gael i.w hail-ddefnyddio o dan <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Drwydded Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Rhagor o wybodaeth</a></li>
+	<li>Mae ein lluniau ar gael i.w hail-ddefnyddio o dan <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Drwydded Creative Commons"}</b>. <a href="/help/freedom" title="">Rhagor o wybodaeth</a></li>
 </ul>
 
 
@@ -120,7 +122,7 @@ title="Click to see full size photo"
 	<li><a href="/submit.php" title="">Ychwanegwch <b>eich lluniau eich hun</b></a></li>
 	<li><a href="/article/edit.php" title="">Ysgrifennwch <b>erthygl</b></a></li>
 	{if $enable_forums}
-	<li><a href="/discuss/" title=""><b>Discuss</b> the project on our forums</a></li>
+	<li><a href="/discuss/" title="">Trafodaethau</a></li>
 	{/if}
 	<li><a href="/help/guide" title="">Gweld ein <b>meini prawf cyflwyno</b></a></li>
 

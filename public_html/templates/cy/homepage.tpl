@@ -21,7 +21,7 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 			</div>
 			<h3 style="margin-top:0;margin-bottom:8px">Llun dan sylw</h3>
 
-			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
+			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Cliciwch i weld delwedd maint llawn">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
 		<div style="position:relative;float:left; width:150px">
 			<p style="margin-top:30px;text-align:center">Cliciwch ar y map i bori drwy'r lluniau</p>
@@ -37,7 +37,7 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 						{/foreach}
 
 						{if $marker}
-						<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
+						<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Lleoliad Llun y Diwrnod"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
 						{/if}
 
 						</div>
@@ -47,13 +47,13 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 		</div>
 		<br style="clear:both"/>
 		<div style="float:right">
-			<a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
+			<a rel="license" title="Trwydded Creative Commons" href="https://creativecommons.org/licenses/by-sa/2.0/"><img alt="Trwydded Creative Commons" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
 		</div>
 		<div style="font-size:0.9em;margin-top:8px">
-			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->title}</a> 
+			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Cliciwch i weld delwedd maint llawn" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->title}</a> 
 			<span class="nowrap">gan <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->realname}</a></span> 
-			<span class="nowrap">am sgw&acirc;r <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->grid_reference}</a></span>, 
-			<span class="nowrap">wedi'i dynnu <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
+			<span class="nowrap">yn sgw&acirc;r <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->grid_reference}</a></span>, 
+			<span class="nowrap">wedi'i dynnu ar <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
 		</div>
 	</div>
 
@@ -81,7 +81,7 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px" id="photo_block">
 		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px">
 			<div style="position:relative;float:right">
-				<a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
+				<a href="/explore/searches.php" title="Featured Selections">Dewisiadau Eraill &gt;</a>&nbsp;&nbsp;
 				<a href="/finder/recent.php" title="Show the most recent submissions"><b>mwy...</b> &gt;</a>
 			</div>
 			<h3 style="margin:0">Lluniau diweddar</h3>
@@ -91,12 +91,12 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 
 		<div class="shadow" style="text-align:center;padding-bottom:1em;width:150px;float:left;font-size:0.8em;">
 			<div style="height:126px">
-				<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+				<a title="{$image->title|escape:'html'} - Cliciwch i weld delwedd maint llawn" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 			</div>
 
-			<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
+			<a title="Cliciwch i weld delwedd maint llawn" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
 			<span class="nowrap">gan <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></span>
-			<span class="nowrap">am sgw&acirc;r <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
+			<span class="nowrap">yn sgw&acirc;r <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
 
 		</div>
 
@@ -122,7 +122,7 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 		<div style="padding:7px">
 			<div class="shadow" style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
 				{if $item.image}
-				<a title="{$item.image->title|escape:'html'} by {$item.image->realname|escape:'html'} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
+				<a title="{$item.image->title|escape:'html'} by {$item.image->realname|escape:'html'} - Cliciwch i weld delwedd maint llawn" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
 				{/if}
 			</div>
 			{if $item.images > 2 && ($item.source == 'themed' || $item.source == 'gallery' || $item.source == 'snippet' || $item.source == 'article')}
@@ -171,7 +171,7 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 </div>
 
 <div style="text-align:center;clear:both;padding:10px;">
-        &middot; Geograph <a href="https://schools.geograph.org.uk/">Geograph i Ysgolion</a> 
+        &middot; Geograph <a href="https://schools.geograph.org.uk/?lang=cy">Geograph i Ysgolion</a> 
 	&middot; {external href="https://geo-en.hlipp.de/" text="Geograph yr Almaen"}
         &middot;
 </div>
@@ -271,12 +271,12 @@ AttachEvent(window,'resize',thiswindowresize,false);
 {
    "@context": "http://schema.org",
    "@type": "WebSite",
-   "url": "http://www.geograph.org.uk/?lang=cy",
+   "url": "https://www.geograph.org.uk/?lang=cy",
    "name": "Geograph",
    "alternateName": "Geograph Prydain ac Iwerddon",
    "potentialAction": {
      "@type": "SearchAction",
-     "target": "http://www.geograph.org.uk/of/{search_term}?lang=cy",
+     "target": "https://www.geograph.org.uk/of/{search_term}?lang=cy",
      "query-input": "required name=search_term"
    }
 }

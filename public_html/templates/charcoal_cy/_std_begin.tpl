@@ -26,6 +26,40 @@
 <link rel="search" type="application/opensearchdescription+xml" 
 title="Chwilio Geograph Prydain ac Iwerddon" href="/stuff/osd.xml" />
 <script type="text/javascript" src="{"/js/geograph.js"|revision}"></script>
+<style type="text/css">{literal}
+#tabs #nav2 {
+    height: 29px;
+    list-style: none;
+    display: inline;	
+}
+#tabs #nav2 li {
+	display:inline-block;
+	background-color:#999;
+	width:80px;
+	height:22px;
+	padding-top:7px;
+	border-top-left-radius:10px;
+	border-top-right-radius:10px;
+	text-align:center;
+}
+#tabs #nav2 li:hover {
+	background-color:#ccc;
+}
+#tabs #nav2 li.selected {
+	background-color:white;
+}
+
+#tabs #nav2 li a {
+	color:white;
+	text-decoration:none;
+}
+#tabs #nav2 li:hover a {
+	color:black;
+}
+#tabs #nav2 li a.selected {
+	color:black;
+}
+{/literal}</style>
 </head>
 
 <body>
@@ -36,11 +70,11 @@ title="Chwilio Geograph Prydain ac Iwerddon" href="/stuff/osd.xml" />
 		<div id="profilebar">
 		{dynamic}
 		  {if $user->registered}
-		  	  Logged in as {$user->realname|escape:'html'}
+		  	  Wedi mewngofnodi fel {$user->realname|escape:'html'}
 		  	  <span class="sep">|</span>
-		  	  <a title="Profile" href="/profile.php">profile</a>
+		  	  <a title="Profile" href="/profile.php">proffil</a>
 		  	  <span class="sep">|</span>
-		  	  <a title="Log out" href="/logout.php">logout</a>
+		  	  <a title="Log out" href="/logout.php">allgofnodi</a>
 		  {else}
 			  heb fewngofnodi
 			  <a title="Already registered? Login in here" href="/login.php">mewngofnodi</a>
@@ -54,21 +88,22 @@ title="Chwilio Geograph Prydain ac Iwerddon" href="/stuff/osd.xml" />
 	<div id="search">
 		<div id="searchbar">
 			<form method="get" action="/finder/welsh.php">
-			<input id="q" type="text" name="q" value="{$searchq|escape:'html'}"/>
-			<input id="b_sea" type="submit" value=""/>
+			<input type="hidden" name="lang" value="cy"/>
+			<input type="text" name="q" value="{$searchq|escape:'html'}" placeholder="(geiriau allweddol yma)"/>
+			<input type="submit" value="Chwilio..."/>
 			</form>
 		</div>
 	</div>
 
 
 	<div id="tabs">
-		<ul id="nav">
-		<li id="t_hom"><a href="/" class="selected">Hafan</a></li>
-		<li id="t_map"><a href="/mapbrowse.php">Mapiau</a></li>
-		<li id="t_sub"><a href="/submit.php">Cyflwyno</a></li>
-		{if $enable_forums}<li id="t_dis"><a href="/discuss/">Discuss</a></li>{/if}
-		<li id="t_sta"><a href="/numbers.php">Ystadegau</a></li>
-		<li id="t_hel"><a href="/faq3.php?l=0">Cymorth</a></li>
+		<ul id="nav2">
+		<li class=selected><a href="/" class="selected">Hafan</a></li>
+		<li><a href="/mapbrowse.php">Mapiau</a></li>
+		<li><a href="/submit.php">Cyflwyno</a></li>
+		{if $enable_forums}<li><a href="/discuss/">Discuss</a></li>{/if}
+		<li><a href="/numbers.php">Ystadegau</a></li>
+		<li><a href="/faq3.php?l=0">Cymorth</a></li>
 		</ul>
 	</div>
 

@@ -6,7 +6,7 @@
     <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/?lang=cy">Hafan</a></li>
     <li>Gweld<ul>
      <li><a title="Find and locate images" href="/search.php">Chwilio</a></li>
-     <li id="markedLink" style="display:none"><a title="View your current Marked Images" href="/finder/marked.php">Marked Images</a></li>
+     <li id="markedLink" style="display:none"><a title="View your current Marked Images" href="/finder/marked.php">Delweddau wedi'u marcio</a></li>
      <li><a title="View map of all submissions" href="/mapper/combined.php">Mapiau</a></li>
      <li><a title="Interactive browser, search and map in one" href="/browser/#!start">Porwr</a></li>
      <li><a title="Explore images by theme" href="/explore/">Archwilio</a></li>
@@ -19,13 +19,13 @@
      <li><a title="Geographical games to play" href="/games/">Gemau</a></li>
      <li><a title="Discussion Forum" href="/discuss/">Trafodaethau</a></li>
      {dynamic}{if $user->registered}
-     <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
+     <li><a title="Geograph Blog" href="/blog/">Blogiau Aelodau</a></li>
      {/if}{/dynamic}
     </ul></li>
     <li>Cyfranwyr<ul>
      <li><a title="Submit your photos" href="/submit.php">Cyflwyno</a></li>
      {dynamic}{if $user->registered}
-     <li><a title="Your most recent submissions" href="/submissions.php">Recent Uploads</a></li>
+     <li><a title="Your most recent submissions" href="/submissions.php">Wedi llwytho i fyny yn ddiweddar</a></li>
      {/if}{/dynamic}
      <li><a title="Interesting facts and figures" href="/numbers.php">Ystadegau</a></li>
      <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Tabl Arweinwyr</a></li>
@@ -39,15 +39,15 @@
     </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
-    <li>Admin<ul>
-     <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
+    <li>Gweinyddol<ul>
+     <li><a title="Admin Tools" href="/admin/">Mynegai Gweinyddol</a></li>
      {if $is_mod}
-     	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
+     	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Safoni </a></li>
      {/if}
      {if $is_tickmod}
-     	<li><a title="Trouble Tickets" href="/admin/suggestions.php">Suggestions</a></li>
+     	<li><a title="Trouble Tickets" href="/admin/suggestions.php">Awgrymiadau</a></li>
      {/if}
-     <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
+     <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Gorffen</a></li>
     </ul></li>
   {/if}
   {/dynamic}
@@ -101,22 +101,22 @@
 <div id="search_block" class="no_print">
   <div id="search">
     <div id="searchform">
-    <form method="get" action="/search.php">
+    <form method="get" action="/finder/welsh.php">
     <div id="searchfield">
-    <input type="hidden" name="form" value="simple"/>
-    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search" placeholder="chwilio am luniau..." style="background:white"/>{/dynamic}
-    <input id="searchbutton" type="submit" name="go" value="Find"/></div>
+    <input type="hidden" name="lang" value="cy"/>
+    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="geiriau allweddol, neu rhowch enw lle, cod post, neu gyfeirnod grid yma" placeholder="chwilio am luniau..." style="background:white"/>{/dynamic}
+    <input id="searchbutton" type="submit" name="go" value="Chwilio"/></div>
     </form>
     </div>
   </div>
   <div id="login"><span class="nowrap">
   {dynamic}
   {if $user->registered}
-  	  Logged in as {$user->realname|escape:'html'}
+  	  Wedi mewngofnodi fel {$user->realname|escape:'html'}
   	  <span class="sep">|</span>
-  	  <a title="Profile" href="/profile.php">profile</a>
+  	  <a title="Profile" href="/profile.php">proffil</a>
   	  <span class="sep">|</span></span>
-  	  <a title="Log out" href="/logout.php">logout</a>
+  	  <a title="Log out" href="/logout.php">allgofnodi</a>
   {else}
 	  heb fewngofnodi
 	  <a title="Already registered? Login in here" href="/login.php">mewngofnodi</a>
