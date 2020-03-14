@@ -3,8 +3,8 @@
 
 {box colour="333" style="width:160px;float:left;margin-right:15px;"}
 <div class="infobox" style="height:389px">
-<h1>Photo Map</h1>
-<p>Click the map to start browsing photos of the British Isles</p>
+<h1>Map o'r lluniau</h1>
+<p>Cliciwch ar y map i bori drwy.r lluniau o Ynysoedd Prydain</p>
 
 <div class="map" style="height:{$overview2_height}px;width:{$overview2_width}px">
 <div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
@@ -17,7 +17,7 @@
 	{/foreach}
 
 	{if $marker}
-	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
+	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Llun y diwrnod"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
 	{/if}
 
 	</div>
@@ -31,7 +31,7 @@
 
 {box colour="000" style="width:409px;float:left;margin-right:12px;"}
 <div class="infobox" style="height:389px"> 
-<h1>Photograph of the day</h1>
+<h1>Llun y diwrnod</h1>
 
 <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 
@@ -40,26 +40,26 @@
 </div>
 <div class="potdtitle"><a href="/photo/{$pictureoftheday.gridimage_id}"
 title="Click to see full size photo"
->{$pictureoftheday.image->title}</a> by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname}</a></div>
+>{$pictureoftheday.image->title}</a> gan <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname}</a></div>
 </div>
 {/box}
 
 {box colour="333" style="width:160px;float:left;"}
 
 <div class="infobox" style="height:389px">
-<h1>Welcome</h1>
-<p>The Geograph Britain and Ireland project aims to collect a 
-geographically representative photograph for every square 
-kilometre of the British Isles and you can be part of it.</p>
+<h1>Croeso</h1>
+<p>Nod prosiect Geograph Prydain ac Iwerddon yw casglu llun o bob cilometr sgwâr o Ynysoedd Prydain, a gallwch chi fod yn rhan o hynny.</p>
 
-<p><a href="/help/more_pages"><img src="{$static_host}/templates/charcoal/css/find_out_more.gif"/></a></p>
+<p><a href="/help/more_pages" style="width:144px;height:63px;background-image: url({$static_host}/templates/charcoal_cy/img/find_out_more.png);
+    display:inline-block; padding-top:24px; box-sizing:border-box; color:white; text-decoration:none; padding-left:5px;"
+>Rhagor o wybodaeth...</a></p>
 
 <div id="photocount">{$stats.images|thousends}</div>
-<div id="photocount_title">photographs</div>
+<div id="photocount_title">llun</div>
 
 <div id="call_to_action">
-...but there are {$stats.fewphotos|thousends} photographed squares</b> with 
-fewer than 4 photos, <a href="/submit.php">add yours now!</a>
+
+...ond mae llai na 4 llun ar gyfer {$stats.fewphotos|thousends} o'r sgwariau, <a href="/submit.php">felly ewch ati i ychwanegu'ch lluniau chi!</a>
 </div>
 
 </div>
@@ -71,10 +71,10 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 {box colour="333" style="margin-bottom:12px;font-size:1.3em;text-align:center"}
 <div class="titlebox">&middot;
-	<a href="/games/" style="color:white">Games &amp; Activities</a> &middot;
-	<a href="/content/?&order=views" style="color:white">Collections</a> &middot;
-	<a href="/browser/" style="color:white">Image Browser</a> &middot;
-	<a href="/tags/" style="color:white">Images by Tags</a> &middot;
+	<a href="/games/" style="color:white">Gemau a Gweithgareddau</a> &middot;
+	<a href="/content/?&order=views" style="color:white">Casgliadau</a> &middot;
+	<a href="/browser/" style="color:white">Porwr Delweddau</a> &middot;
+	<a href="/tags/" style="color:white">Tagiau</a> &middot;
 </div>
 {/box}
 
@@ -83,7 +83,7 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 {box colour="333" style="margin-bottom:12px;"}
 <div class="titlebox">
-<b>Are you a teacher/student?</b> <small><a href="/help/education_feedback" style="color:white">We value your opinion</a></small>.
+<b>Ydych chi'n Athro/Myfyriwr?</b> <small><a href="/help/education_feedback" style="color:white">Rydyn ni'n gwerthfawrogi eich barn</a></small>.
 </div>
 {/box}
 
@@ -91,38 +91,38 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 {box colour="f4f4f4"}
 <div class="infobox_alt">
-<h2>Explore...</h2>
+<h2>Archwilio...</h2>
 <ul>
 
-	<li><a href="/mapbrowse.php" title="View the coverage Map">Explore these isles with our <b>map</b></a></li>
-	<li><a href="/search.php" title="Image Search"><b>Search</b> for places or features</a></li>
-	<li><a href="/explore/" title="Themed Exploring">Try browsing by <b>theme</b></a></li>
-	<li><a href="/content/" title="Submitted Content">Read <b>content</b> submitted by members</b></a></li>
-	<li><a href="/help/sitemap">View a complete site map</a></li>
+	<li><a href="/mapbrowse.php" title="View the coverage Map">Archwiliwch yr ynysoedd hyn gyda'n <b>map</b></a></li>
+	<li><a href="/search.php" title="Image Search"><b>Chwiliwch</b> am leoedd neu nodweddion</a></li>
+	<li><a href="/explore/" title="Themed Exploring">Chwiliwch yn &ocirc;l <b>thema</b></a></li>
+	<li><a href="/content/" title="Submitted Content">Darllenwch <b>gynnwys</b> sydd wedi cael ei gyflwyno gan aelodau</b></a></li>
+	<li><a href="/help/sitemap">Gweld map cyfan o.r safle</a></li>
 </ul>
 
 
-<h2>Use and re-use our images!</h2>
+<h2>Defnyddiwch ac ail-ddefnyddiwch ein delweddau!</h2>
 <ul>
-	<li><a href="/kml.php" title="KML Exports">Geograph with <b>Google Earth</b> and <b>Google Maps</b></a></li>
-	<li><a href="/help/sitemap#software" title="Geograph Page List"><b>Other ways</b> to use this faboulous resource</a></li>
-	<li><a href="/activities/" title="Activites">View images in our <b>Activities section</b></a></li>
-	<li><a href="/teachers/" title="Education Area">Geograph for <b>teachers</b></a><br/><br/></li>
+	<li><a href="/kml.php" title="KML Exports">Geograph gyda <b>Google Earth</b></a></li>
+	<li><a href="/help/sitemap#software" title="Geograph Page List"><b>Ffyrdd eraill</b> o ddefnyddio'r adnodd arbennig hwn</a></li>
+	<li><a href="/activities/" title="Activites">Gweld delweddau yn ein hadran <b>Weithgareddau</b></a></li>
+	<li><a href="/teachers/" title="Education Area">Geograph ar gyfer <b>athrawon</b></a><br/><br/></li>
 	
-	<li>All our photos are licensed for reuse under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a></li>
+	<li>Mae ein lluniau ar gael i.w hail-ddefnyddio o dan <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Drwydded Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Rhagor o wybodaeth</a></li>
 </ul>
 
 
-<h2>Join In...</h2>
+<h2>Cymerwch ran...</h2>
 <ul>
 
-	<li><a href="/games/" title="educational games">try out some <b>games</b> using our images and maps</a></li>
-	<li><a href="/submit.php" title="">Add <b>your own pictures</b></a></li>
-	<li><a href="/article/edit.php" title="">Write an <b>article</b></a></li>
+	<li><a href="/games/" title="educational games">Rhowch gynnig ar <b>gemau</b> yn defnyddio ein lluniau a.n mapiau</a></li>
+	<li><a href="/submit.php" title="">Ychwanegwch <b>eich lluniau eich hun</b></a></li>
+	<li><a href="/article/edit.php" title="">Ysgrifennwch <b>erthygl</b></a></li>
 	{if $enable_forums}
 	<li><a href="/discuss/" title=""><b>Discuss</b> the project on our forums</a></li>
 	{/if}
-	<li><a href="/help/guide" title="">view our <b>submission criteria</b></a></li>
+	<li><a href="/help/guide" title="">Gweld ein <b>meini prawf cyflwyno</b></a></li>
 
 </ul>
 
@@ -135,7 +135,7 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 {box colour="333" style="margin-bottom:12px;"}
 <div class="titlebox">
-<h1>Site Guide</h1>
+<h1>Canllaw i'r Safle</h1>
 </div>
 {/box}
 
@@ -144,22 +144,22 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 
 
-	<h2>Statistics Junkie?</h2>
+	<h2>Ydych chi'n hoffi ystadegau?</h2>
 	<ul>
 
-		<li><a href="/numbers.php" title="">View a <b>summary</b></a></li>
-		<li><a href="/statistics.php" title="">More <b>in-depth Statistics</b></a></li>
-		<li><a href="/help/sitemap#stats" title="">Further Statistics</a></li>
-		<li><a href="/statistics/moversboard.php" title="">View the current <b>leaderboard</b></a></li>
+		<li><a href="/numbers.php" title="">Gweld <b>crynodeb</b></a></li>
+		<li><a href="/statistics.php" title=""><b>Ystadegau</b> mwy manwl</a></li>
+		<li><a href="/help/sitemap#stats" title="">Rhagor o Ystadegau</a></li>
+		<li><a href="/statistics/moversboard.php" title="">Gweld rhestr o <b>bwy sydd ar y blaen</b></a></li>
 	</ul>
 
 
-	<h2>Need Help?</h2>
+	<h2>Angen Help?</h2>
 	<ul>
 
-		<li><a href="/faq3.php?l=0" title="">View our Frequently Asked Questions</a></li>
-		<li><a href="/help/credits" title="">Who runs the site</a></li>
-		<li><a href="/contact.php" title="">Contact Us</a></li>
+		<li><a href="/faq3.php?l=0" title="">Gweld ein Cwestiynau Cyffredin</a></li>
+		<li><a href="/help/credits" title="">Pwy sy'n rhedeg y safle</a></li>
+		<li><a href="/contact.php" title="">Cysylltu &acirc; ni</a></li>
 
 	</ul>
 	</div>
@@ -169,15 +169,18 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 	<br/><br/><br/>
 	{box colour="f4f4f4"}
 	<div class="infobox_alt" style="font-size:0.7em; text-align:center;">
-	<b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span>.<br/>
-	
-	Recently completed hectads: 
+	<b class="nowrap">Mae {$stats.users|thousends} o ddefnyddwyr</b> wedi cyfrannu 
+	<span class="nowrap"><b>{$stats.images|thousends}</b> o luniau</span>
+	ar gyfer <span  class="nowrap"><b>{$stats.squares|thousends}</b> o sgwariau'r grid</span>,
+	sy'n <b class="nowrap">{$stats.percentage}%</b> o gyfanswm y sgwariau.<br/>
+
+	Hectadau a gafodd eu cwblhau.n ddiweddar:
 	{foreach from=$hectads key=id item=obj}
 	<a title="View Mosaic for {$obj.hectad}, completed {$obj.last_submitted}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad}</a>,
 	{/foreach}
-	<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
-	
-	<span class="nowrap"><b>{$stats.fewphotos|thousends} photographed squares</b> with <b>fewer than 4 photos</b></span>, <a href="/submit.php">add yours now</a>!
+	<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">mwy...</a><br/>
+
+	Mae llai na 4 llun ar gyfer <b>{$stats.fewphotos|thousends} o'r sgwariau</b>, <a href="/submit.php">felly ewch ati i ychwanegu'ch lluniau chi</a>!
 	
 	</div>
 	{/box}
