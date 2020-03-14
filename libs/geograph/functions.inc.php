@@ -825,6 +825,17 @@ function getFormattedDate($input) {
 	} elseif ($y>0) {
 		$date=$y;
 	}
+
+	//ugly, but out server doesnt have a welsh locale installed.
+        if (strlen($date)>4 && !empty($_GET['lang']) && $_GET['lang'] == 'cy') {
+                $translate = array("January"=>"Ionawr","July"=>"Gorffennaf","February"=>"Chwefror","August"=>"Awst","March"=>"Mawrth","September"=>"Medi",
+                "April"=>"Ebrill","October"=>"Hydref","May"=>"Mai","November"=>"Tachwedd","June"=>"Mehefin","December"=>"Rhagfyr",
+                "Monday"=>"Dydd Llun","Friday"=>"Dydd Gwener","Tuesday"=>"Dydd Mawrth","Saturday"=>"Dydd Sadwrn",
+                "Wednesday"=>"Dydd Mercher","Sunday"=>"Dydd Sul","Thursday"=>"Dydd Iau");
+                $date = str_replace(array_keys($translate),array_values($translate),$date);
+        }
+
+
 	return $date;
 }
 
