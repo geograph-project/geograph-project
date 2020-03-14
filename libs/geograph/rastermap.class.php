@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: rastermap.class.php 8892 2018-10-26 13:26:16Z barry $
+ * $Id: rastermap.class.php 9069 2020-03-14 21:50:52Z barry $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision: 8892 $
+* @version $Revision: 9069 $
 */
 
 
@@ -554,8 +554,7 @@ class RasterMap
 			return "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.css\" />".
 				"<script src=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.js\" type=\"text/javascript\"></script>".
 				"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js\"></script>".
-				"<script src=\"".smarty_modifier_revision("/js/Leaflet.MetricGrid.js")."\"></script>".
-				(($this->reference_index==1)?"<script src=\"".smarty_modifier_revision("/js/leaflet-bing-layer.min.js")."\"></script>":"");
+				"<script src=\"".smarty_modifier_revision("/js/Leaflet.MetricGrid.js")."\"></script>";
 
 		} elseif ($this->service == 'OSOS') {
 			if (strpos($CONF['raster_service'],'OSOSPro') !== FALSE) {
@@ -1100,7 +1099,7 @@ class RasterMap
 				$width = $this->width;
 				$iframe = rawurlencode("<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map...</iframe>");
 
-				$str = "<br><a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); if (document.getElementById('mapFootNoteOS50k')) { document.getElementById('mapFootNoteOS50k').style.display = 'none';} return false;\">Change to interactive Map &gt;</a>";
+				$str = "<br/><a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); if (document.getElementById('mapFootNoteOS50k')) { document.getElementById('mapFootNoteOS50k').style.display = 'none';} return false;\">Change to interactive Map &gt;</a>";
 			}
 
 			if (!empty($this->clickable)) {
