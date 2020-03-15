@@ -33,6 +33,17 @@
 	{/if}
 	<link rel="search" type="application/opensearchdescription+xml" title="Chwilio Geograph Prydain ac Iwerddon" href="/stuff/osd.xml" />
 	<script type="text/javascript" src="{"/js/geograph.js"|revision}"></script>
+	<style>{literal}
+		#header h1 {
+			background-image: url({/literal}{$static_host}{literal}/templates/basic/img/geograph-logo-welsh-small.png);
+		}
+		#search_block {
+		    width: 430px;
+		}
+		.nav ul li ul li {
+			border-top: 1px solid lightgrey;
+		}
+	{/literal}</style>
 </head>
 <body>
 <div id="header_block">

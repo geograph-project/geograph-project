@@ -31,5 +31,17 @@ $smarty = new GeographPage;
 $template = 'finder_welsh.tpl';
 $cacheid = '';
 
+
+        if (!$smarty->is_cached($template, $cacheid)) {
+
+                $db = GeographDatabaseConnection(true);
+                        $prev_fetch_mode = $ADODB_FETCH_MODE;
+                        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+                $list = $db->getAll("SELECT grouping_cy,top,top_cy,description_cy from category_primary order by grouping desc,top_cy");
+                $smarty->assign_by_ref('context',$list);
+        }
+
+
 $smarty->display($template,$cacheid);
 

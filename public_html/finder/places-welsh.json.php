@@ -95,7 +95,7 @@ if (!empty($_GET['q'])) {
 				}
 				list($gr,$len) = $conv->national_to_gridref($row['e'],$row['n'],8,$row['reference_index']);
 				$output = array(
-					'name' => "God post ".$row['code'],
+					'name' => "Cod post ".$row['code'],
 					'gr' => $gr,
 					'localities'=>''
 				);

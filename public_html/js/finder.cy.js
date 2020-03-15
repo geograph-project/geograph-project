@@ -47,20 +47,6 @@ $(function () {
 	
 	$( "#loc" ).autocomplete({
 		minLength: 1,
-		search: function(event, ui) {
-			if (false && this.value.search(/^\s*\w{1,2}\d{2,10}\s*$/) > -1) {
-				ok = getWgs84FromGrid(this.value);
-				if (ok) {
-					setLocationBox(this.value,ok);
-				} else {
-					$("#message").html("Does not appear to be a valid grid-reference '"+this.value+"'");
-					$("#placeMessage").show().html("Does not appear to be a valid grid-reference '"+this.value+"'");
-					setTimeout('$("#placeMessage").hide()',3500);
-				}
-				$( "#location" ).autocomplete( "close" );
-				return false;
-			}
-		},
 		source: function( request, response ) {
 
 			if ($( "input#wales:checked" ).length) {
@@ -77,7 +63,7 @@ $(function () {
 				success: function(data) {
 
 					if (!data || !data.items || data.items.length < 1) {
-						$("#message").html("No places found matching '"+request.term+"'");
+						$("#message").html("Does dim lleoedd yn cyfateb am '"+request.term+"'. Awgrym:  Rhowch gynnig ar sillafiad gwahanol, neu God post neu Gyfeirnod Grid OS");
 						return;
 					}
 					var results = [];
@@ -93,11 +79,6 @@ $(function () {
 					response(results);
 				}
 			});
-
-		},
-		select: function(event,ui) {
-			//setLocationBox(ui.item.value,false,false);
-			//return false;
 		}
 	})
 	.data( "autocomplete" )._renderItem = function( ul, item ) {
@@ -118,15 +99,24 @@ $(function () {
 		}
 		return $( "<li></li>" )
 			.data( "item.autocomplete", item )
-			.append( "<a>" + label + " <small> " + (item.gridref||item.gr||'') + "<br>" + item.title.replace(re,'<b>$1</b>') + "</small></a>" )
+			.append( "<a>" + label + " <small> " + (item.gridref||item.gr||'') + "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + item.title.replace(re,'<b>$1</b>') + "</small></a>" )
 			.appendTo( ul );
 	};
 
-	if (q = getUrlParameter('q'))
+
+/////////////////////////////////////////////////////////
+
+	if (q = getUrlParameter('q')) {
 		$("#qqq").val(q);
+		if (!getUrlParameter('loc'))
+			setupLocationPrompt(q);
+	}
 
 	if (loc = getUrlParameter('loc'))
 		$("#loc").val(loc);
+
+        if (context = getUrlParameter('context'))
+                $("#context").val(context);
 
 	if (q || loc)
 		submitSearch($("#loc").get(0).form);
@@ -134,8 +124,6 @@ $(function () {
 	if ($("#qqq").val().length > 2) {
 		// $("#qqq").autocomplete( "search", $("#qqq").val() );
 	}
-
-
 });
 
 function getUrlParameter(name) {
@@ -144,6 +132,137 @@ function getUrlParameter(name) {
     var results = regex.exec(location.search);
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 };
+
+window.onpopstate = function(event) {
+	if (q = getUrlParameter('q'))
+                $("#qqq").val(q);
+
+        if (loc = getUrlParameter('loc'))
+                $("#loc").val(loc);
+
+	$("#wales").prop('checked',!!getUrlParameter('wales')); //always set this so can untick it!
+
+        if (context = getUrlParameter('context'))
+                $("#context").val(context);
+
+        if (q || loc)
+                submitSearch($("#loc").get(0).form, true);
+};
+
+/////////////////////////////////////////////////////////
+
+function setupLocationPrompt(query) {
+	if ($('#location_prompt').length > 0) {
+
+                $.ajax({
+                        url: 'https://api.geograph.org.uk/finder/places.json.php', //use the national, not just wales, may not be searching in wales!
+                        dataType: 'json',
+                        cache: true,
+                        data: {
+                                q: query,
+                                new: 1,
+                        },
+                        success: function(data) {
+
+				//if only one result, display as quick clickable link!
+				if (data && data.total_found == 1) {
+					var value = data.items[0];
+					if (value['name'].indexOf(value['gr']) == -1)
+						value['name'] = value['name'] + "/" + value['gr'];
+					var name = value['name'];
+					if (name.indexOf('Grid Reference') == 0)
+						name = htmlentities(name).replace(/\//,'/ <b>')+'</b>';
+					else
+						name = '<b>'+htmlentities(name).replace(/\//,'</b> /');
+					$('#location_prompt').html('Neu lluniau wedi\'i dynnu ger <a>'+name+'</a>');
+					$('#location_prompt a').click(function() {
+						$('#qqq').val('');
+						$('#loc').val(value['gr'] + ' ' + value['name']);
+						if (value['localities'] && value['localities'].indexOf('Wales') == -1)
+							$('#wales').prop('checked',false);
+						submitSearch($("#loc").get(0).form);
+					});
+
+				//display a dropdown of places
+				} else if (data && data.total_found > 1) {
+					var prefixMatch = 0;
+					$('#location_prompt').html('...Neu lluniau wedi\'i dynnu ger <select id=near><option value="">Dewis lleoedd</select>');
+					$.each(data.items, function(key,value) {
+						if (value['name'].toLowerCase().indexOf(query.toLowerCase()) == 0)
+							prefixMatch++;
+						if (value['name'].indexOf(value['gr']) == -1)
+	                                                value['name'] = value['name'] + "/" + value['gr']; 
+						$('#location_prompt select').append(
+							$('<option/>').attr('value',value['name'])
+								.text(value['name'].replace(/\/([A-Z]{1,2}\d+)/,' - $1') + 
+									(value['localities']?", "+value['localities']:'')
+								)
+						);
+					});
+					$('#location_prompt').append("("+data.total_found+")");
+
+					//if (data.total_found && data.total_found > data.items.length)
+					//	$('#location_prompt select').append($('<option/>').attr('value','...more').text('... View more place matches'));
+
+					if (data.query_info) {
+                                                if (m = data.query_info.match(/(\d+) matches.* ([\d\.]+) sec/))
+							data.query_info = "Wedi canfod "+m[1]+" canlyniad mewn "+m[2]+" eiliad";
+                                                $('#location_prompt select').append($('<optgroup/>').attr('label',data.query_info));
+					}
+					if (data.copyright)
+		                                $('#location_prompt select').append($('<optgroup/>').attr('label',"Yn cynnwys data'r OS (c) Hawlfraint y Goron [a hawl cronfa ddata] 2018"));
+
+					$('select#near').change(function() {
+						if (this.value == '...more')
+							location.href = '/place/'+urlplus(query)+'?more=1';
+						else {
+							//location.href = '/near/'+urlplus(this.value);
+				                        $('#qqq').val('');
+		                                        $('#loc').val(this.value);
+							var opttext = this.options[this.selectedIndex].text;
+							if (opttext && opttext.indexOf('Wales') == -1)
+								$('#wales').prop('checked',false);
+                	                                submitSearch($("#loc").get(0).form);
+						}
+					});
+
+				}
+
+				if (data && data.total_found > 0) {				
+					//display a basic link, only used if there ar NO keyword results :)
+					//duplicates the first location from dropdown
+					if ($('#location_link').length) {
+	                                        var value = data.items[0];
+        	                                if (value['name'].indexOf(value['gr']) == -1)
+                	                                value['name'] = value['name'] + "/" + value['gr'];
+						if (data.total_found == 1)
+							location.replace('/near/'+urlplus(value['name']));
+                        	                var name = value['name'];
+                                	        if (name.indexOf('Grid Reference') == 0)
+                                        	        name = htmlentities(name).replace(/\//,'/ <b>')+'</b>';
+	                                        else
+        	                                        name = '<b>'+htmlentities(name).replace(/\//,'</b> /');
+                	                        $('#location_link').html('Neu lluniau wedi\'i dynnu ger <a>'+name+'</a>');
+						$('#location_link a').click(function() {
+							$('#qqq').val('');
+							$('#loc').val(value['gr'] + ' ' + value['name']);
+							if (value['localities'] && value['localities'].indexOf('Wales') == -1)
+								$('#wales').prop('checked',false);
+							submitSearch($("#loc").get(0).form);
+						});
+					}
+				}
+
+
+				$('form.finder input[type=submit]').click(function() {
+					$('#location_prompt').empty();
+				});
+
+			}
+		});
+	}
+
+}
 
 /////////////////////////////////////////////////////////
 
@@ -156,7 +275,11 @@ var distance = 2000;
 
 /////////////////////////////////////////////////////////
 
-function submitSearch(form) {
+function submitSearch(form, skip_pop) {
+	if (history.pushState && !skip_pop) {
+		var data = $(form).serialize();
+                history.pushState({data:data}, '', "?"+data);
+        }
 
   var query = form.elements['q'].value;
   var location = form.elements['loc'].value;
@@ -166,24 +289,24 @@ function submitSearch(form) {
  /////////////
 
   if (location && location.length > 5) {
-     if (gridref = location.toUpperCase().match(/^\s*(\w{1,2}\d{2,10})/)) {
+     if (gridref = location.toUpperCase().match(/(^|\/)\s*(\w{1,2}\d{2,10})/)) {
   
         //todo, get more detailed location from easting/norhting, returned from gazetter, maybe check right square??
 
 	var grid=new GT_OSGB();
 	var ok = false;
-	if (grid.parseGridRef(gridref[1])) {
+	if (grid.parseGridRef(gridref[2])) {
 		ok = true;
 	} else {
 		grid=new GT_Irish();
-		ok = grid.parseGridRef(gridref[1])
+		ok = grid.parseGridRef(gridref[2])
 	}
         if (ok) {
 		//convert to a wgs84 coordinate
 		wgs84 = grid.getWGS84(true);
 
             geo=parseFloat(wgs84.latitude).toFixed(6)+","+parseFloat(wgs84.longitude).toFixed(6)+","+distance;
-            loctext = " wedi'i dynnu ger "+gridref[1];
+            loctext = " wedi'i dynnu ger "+gridref[2];
         }
      }
   }
@@ -350,10 +473,19 @@ function fetchCuratedImages(label,geo,$output,title) {
   var data = {
      label: label,
   };
-  if (document.getElementById('wales').checked)
+  var url = '/curated/sample.php?label='+encodeURIComponent(label);
+  if (document.getElementById('wales').checked) {
      data.region = "Wales";
-//  if (geo)   //todo, not functional!
-//     data.geo = geo;
+     url = url + '&amp;region=Wales';
+  }
+  if (selected = document.getElementById('context').value) {
+     data.context = selected;
+     url = url + '&amp;context='+encodeURIComponent(selected);//dont think this used, but may as well send it!
+  }
+  if (geo) {
+     data.geo = geo;
+     url = url + '&amp;geo='+encodeURIComponent(geo);//dont think this used, but may as well send it!
+  }
 
   $("#message").text('Arhoswch os gwelwch yn dda ['+label+']...');
 
@@ -378,9 +510,6 @@ function fetchCuratedImages(label,geo,$output,title) {
         });
 
         if (data.label && data.label[label] && data.label[label] >=20) {
-           var url = '/curated/sample.php?label='+encodeURIComponent(label)
-           if (document.getElementById('wales').checked)
-              url = url + '&amp;region=Wales'
            $output.append("<p>"+data.label[label]+' lluniau rydyn ni wedi.u dewis. <a href="'+url+'">Gweld Nesaf</a></p>');
 
            $output.append("<p>Dydyn ni ond wedi casglu nifer fechan o ddelweddau hyd yma, mae chwiliad allweddair yn gallu cael canlyniadau gwell</p>");
@@ -388,8 +517,9 @@ function fetchCuratedImages(label,geo,$output,title) {
            $output.find('h3').append(' (20 lluniau gyntaf)');
         }
         setupLoadImage($output);
+      } else {
+        $output.empty();
       }
-
     });
 }
 
@@ -402,11 +532,20 @@ function fetchImages(query,geo,$output,title) {
      match: query,
      limit: perpage,
   };
-  if (document.getElementById('wales').checked)
-     data.match = query + " @country Wales";
+  var url = "/browser/#!/q="+encodeURIComponent(query).replace(/%20/g,'+');
 
-  if (geo)
+  if (document.getElementById('wales').checked) {
+     data.match = query + " @country Wales";
+     url = url + '/country+%22Wales%22'
+  }
+  if (selected = document.getElementById('context').value) {
+     data.match = query + ' @contexts "'+selected+'"';
+     url = url + '/contexts+'+encodeURIComponent('"'+selected+'"');
+  }
+  if (geo) {
      data.geo = geo;
+     url = url + '/loc='+encodeURIComponent(document.getElementById('loc').value)+'/dist=2000';
+  }
 
     if (page && page > 1) {
       data.offset=((page-1)*data.limit);
@@ -422,11 +561,6 @@ function fetchImages(query,geo,$output,title) {
     'serveCallback',
     function(data) {
      if (data && data.rows) {
-        var url = "/browser/#!/q="+encodeURIComponent(query).replace(/%20/g,'+');
-        if (document.getElementById('wales').checked)
-            url = url + '/country+%22Wales%22'
-        if (geo && document.getElementById('loc').value != '')
-            url = url + '/loc='+encodeURIComponent(document.getElementById('loc').value)+'/dist=2000';
 
         $("#message").empty();
 
@@ -457,8 +591,8 @@ function fetchImages(query,geo,$output,title) {
         }
 
     } else {
-        $("#message").html("Does dim Delweddau'n cyfateb. Gwiriwch y sillafu a rhoi cynnig arall arni");
-        $output.empty();
+        $("#message").html("Does dim Delweddau'n cyfateb. Gwiriwch y sillafu a rhoi cynnig arall arni.");
+        $output.empty().html("<p>Does dim Delweddau'n cyfateb. Gwiriwch y sillafu a rhoi cynnig arall arni.</p><span id=\"location_link\"></span>");
     }
   });
 }

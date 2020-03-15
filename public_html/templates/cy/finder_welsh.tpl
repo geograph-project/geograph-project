@@ -3,6 +3,11 @@
 {include file="_std_begin.tpl"}
 
 <style>{literal}
+form.finder {
+	background-color:silver;
+	padding:5px;
+	margin-bottom:15px;
+}
 #results div.thumbs {
   margin-left:10px
 }
@@ -12,9 +17,6 @@
   height:160px;
   margin:2px;
   text-align:center;
-}
-#results div.thumb img {
-  border-radius:10px;
 }
 #results p, #output div.clear {
   clear:both;
@@ -123,21 +125,41 @@
 
 {/literal}</style>
 
+<div id="message" style="float:right"></div>
+
 <h2>Chwilio lluniau ar Geograph</h2>
-<form method="get" onsubmit="return submitSearch(this)">
+<form method="get" onsubmit="return submitSearch(this)" class="finder">
 	<input type="search" name="q" id="qqq" value="" size="40" placeholder="(rhowch y geiriau allweddol yma)">
 	<input type="search" name="loc" id="loc" size="40" placeholder="(rhowch enw lle, cod post, neu gyfeirnod grid yma)">
 	<input type="submit" value="Rhedeg Chwiliad"><br>
-	<label for="wales">Chwilio am luniau yng Nghymru yn unig? <input type="checkbox" name="wales" id="wales" checked="">(ticiwch)</label><br><br>
+	<div id="location_prompt"></div>
+	<label for="wales">Chwilio am luniau yng Nghymru yn unig? <input type="checkbox" name="wales" id="wales" checked="">(ticiwch)</label><br>
+
+	<label for="context">Cynnwys Daearyddol</label>: <select name="context" id="context">
+		<option value="">(dewisol)</option>
+		{assign var="last" value=""}
+		{foreach from=$context item=row}
+			{if $last != $row.grouping_cy}
+				{if $last}
+					</optgroup>
+				{/if}
+				<optgroup label="{$row.grouping_cy|escape:html}">
+				{assign var="last" value=$row.grouping_cy}
+			{/if}
+			<option value="{$row.top|escape:html}">{$row.top_cy|escape:html}</option>
+		{/foreach}
+		{if $last}
+			</optgroup>
+		{/if}
+	</select>
 </form>
 
-<div id="message">
-<p>Defnyddiwch y dudalen hon i chwilio am ddelweddau Geograph, testun Saesneg sydd gan y rhan fwyaf o'n delweddau, felly ceir y canlyniadau gorau drwy roi geiriau allweddol Saesneg. Mae rhai testunau wedi cael eu cyfieithu felly mae modd rhoi cynnig ar eiriau Cymraeg.</p>
-<p>A/ neu gallwch chi chwilio am luniau sydd wedi cael eu tynnu ger lleoliad penodol.</p>
-</div>
 <div id="results">
    <div id="curatedResults"></div>
-   <div id="plainResults"></div>
+   <div id="plainResults">
+	<p>Defnyddiwch y dudalen hon i chwilio am ddelweddau Geograph, testun Saesneg sydd gan y rhan fwyaf o'n delweddau, felly ceir y canlyniadau gorau drwy roi geiriau allweddol Saesneg. Mae rhai testunau wedi cael eu cyfieithu felly mae modd rhoi cynnig ar eiriau Cymraeg.</p>
+	<p>A/ neu gallwch chi chwilio am luniau sydd wedi cael eu tynnu ger lleoliad penodol.</p>
+   </div>
    <div id="translatedResults"></div>
 </div>
 
