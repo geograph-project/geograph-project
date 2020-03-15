@@ -1,7 +1,3 @@
-$.ajaxSetup({
-  cache: false
-});
-
 var eastings = northings = null;
 
 $(function () {
@@ -35,7 +31,6 @@ $(function () {
 					response(results);
 				}
 			});
-
 		}
 	})
 	.data( "autocomplete" )._renderItem = function( ul, item ) {
@@ -122,7 +117,7 @@ $(function () {
 	}
 
 	if (loc = getUrlParameter('loc'))
-		$("#loc").val(loc);
+		$("#loc").val(loc); //todo, run query via API to get the exact location of the place
 
         if (context = getUrlParameter('context'))
                 $("#context").val(context);
@@ -266,15 +261,12 @@ function setupLocationPrompt(query) {
 					}
 				}
 
-
 				$('form.finder input[type=submit]').click(function() {
 					$('#location_prompt').empty();
 				});
-
 			}
 		});
 	}
-
 }
 
 /////////////////////////////////////////////////////////
@@ -538,9 +530,7 @@ function fetchContent(query,$output,title) {
         $('select#content_id').change(function() {
                 location.href = this.value;
         });
-
     }
-
   });
 }
 
@@ -603,7 +593,7 @@ function fetchCuratedImages(label,geo,$output,title) {
 
 /////////////////////////////////////////////////////////
 
-function fetchImages(query,geo,$output,title) {
+function fetchImages(query,geo,$output,title,order) {
 
   var data = {
      select: "id,title,grid_reference,realname,hash,user_id,takenday,wgs84_lat,wgs84_long,original",
@@ -631,6 +621,25 @@ function fetchImages(query,geo,$output,title) {
       var page = 1;
     }
 
+  if (!query && geo && typeof order === 'undefined')
+     order = 'distance';
+
+  if (order) {
+    switch(order) {//defaults to relevence!
+      case 'taken_down':  data.order="takendays DESC"; data.option='ranker=none';  break;
+      case 'taken_up':  data.order="takendays ASC"; data.option='ranker=none';  break;
+      case 'submitted_down':  data.order="id DESC"; data.option='ranker=none';  break;
+      case 'submitted_up':  data.order="id ASC"; data.option='ranker=none';  break;
+      case 'spread':  data.order="sequence ASC"; data.option='ranker=none';  break;
+      case 'hash':  data.order="hash ASC"; data.option='ranker=none';  break;
+      case 'score':  data.order="score DESC"; data.option='ranker=none';  break;
+      case 'distance':  data.order="geodist ASC"; data.option='ranker=none';  break;
+      case 'random':  data.order="RAND()";  break;
+    }
+    if (data.order) //just checks it set something really!
+        url = url + '/sort='+encodeURIComponent(order);
+  }
+
   $("#message").text('Arhoswch os gwelwch yn dda ['+query+']...');
 
   _call_cors_api(
@@ -645,7 +654,24 @@ function fetchImages(query,geo,$output,title) {
         $output.empty().html('<div class="thumbs shadow"></div>');
         if (title) {
            $output.prepend('<h3></h3>');
-           $output.find('h3').text(title);
+           $output.find('h3').text(title)
+	           .prepend('<div style=float:right><select title="Trefnu yn &ocirc;l"/></div>');
+	   var $ele = $output.find('select');
+           $ele.append( $('<option/>').attr('value','').text('Mywaf perthnasol'));
+           if (geo)
+               $ele.append( $('<option/>').attr('value','distance').text('Pellter'));
+	   $ele.append( $('<option/>').attr('value','taken_down').text('Dynnu - Diweddaraf i\'r henaf'));
+	   $ele.append( $('<option/>').attr('value','taken_up').text('Dynnu - Henaf i\'r diweddaraf'));
+	   $ele.append( $('<option/>').attr('value','submitted_down').text('Cyflwynwyd - Diweddaraf i\'r henaf'));
+	   $ele.append( $('<option/>').attr('value','submitted_up').text('Cyflwynwyd - Henaf i\'r diweddaraf'));
+	   $ele.append( $('<option/>').attr('value','hash').text('Mewn unrhyw drefn'));
+           $ele.append( $('<option/>').attr('value','spread').text('Daearyddol'));
+           $ele.append( $('<option/>').attr('value','score').html('Sg&ocirc;r'));
+           if (order)
+	      $ele.val(order);
+           $ele.change(function() {
+  		fetchImages(query,geo,$output,title,this.value);
+	   });
         }
         var last = '';
         var $thumbs = $output.find(".thumbs");
