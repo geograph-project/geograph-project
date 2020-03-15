@@ -17,7 +17,7 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<div style="position:relative;float:right;margin-right:10px">
-				<a href="/stuff/daily.php" style="color:white;font-size:0.9em;text-decoration:underline gray" title="Previous Photos of the Day">gweld y llun blaenorol &gt;</a>
+				<a href="/stuff/daily.php" style="color:white;font-size:0.9em;text-decoration:underline gray" title="Previous Photos of the Day">Gweld y llun blaenorol &gt;</a>
 			</div>
 			<h3 style="margin-top:0;margin-bottom:8px">Llun dan sylw</h3>
 
@@ -116,30 +116,30 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 	<div class="interestBox" style="text-align:left; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px; border:2px solid #{$colours.$source}; background-color:white; padding:0;">
 
 		<div style="background-color: #{$colours.$source}; padding:2px;">
-			<div style="float:right"> <a href="/content/featured.php">gweld y casgliad blaenorol &gt;</a> &nbsp; <a href="/content/">gweld pob casgliad &gt;</a></div>
-			<b>Casgliad Dan Sylw</b></div>
+			<div style="float:right"> <a href="/content/featured.php">Gweld y casgliad blaenorol &gt;</a> &nbsp; <a href="/content/">Gweld pob casgliad &gt;</a></div>
+			<b>Casgliad dan sylw</b></div>
 
 		<div style="padding:7px">
 			<div class="shadow" style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
 				{if $item.image}
-				<a title="{$item.image->title|escape:'html'} by {$item.image->realname|escape:'html'} - Cliciwch i weld delwedd maint llawn" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
+				<a title="{$item.image->title|escape:'html'} gan {$item.image->realname|escape:'html'} - Cliciwch i weld delwedd maint llawn" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
 				{/if}
 			</div>
 			{if $item.images > 2 && ($item.source == 'themed' || $item.source == 'gallery' || $item.source == 'snippet' || $item.source == 'article')}
 				<div style="position:relative;float:right;margin-right:10px">
-					<a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="View Images"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0" alt="view images in this collection"/></a>
+					<a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="Lluniau un yr Casgliad"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0" alt="view images in this collection"/></a>
 				</div>
 			{elseif $item.source == 'user' && $item.images > 2}
 				<div style="position:relative;float:right;margin-right:10px">
-					<a href="/browser/#/realname+%22{$item.title|escape:'url'}%22" title="View Images"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0"/></a>
+					<a href="/browser/#/realname+%22{$item.title|escape:'url'}%22" title="Lluniau gan {$item.title|escape:'html'}"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0"/></a>
 				</div>
 			{/if}
 
 			<b><a href="{$item.url}">{$item.title|escape:'html'}</a></b><br/>
-			<small><small style="background-color:#{$colours.$source}">{$sources.$source}</small><small style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
-			{if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</small></small>
+			<small><small style="background-color:#{$colours.$source}">{$sources.$source}</small><small style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} cychwyn{/if} gan <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, gyda {$item.words} gair{/if}{if $item.images}, {$item.images|thousends} lluniau{/if}{if $item.views} a gweld {$item.views|thousends} or weithiau{/if}.
+			{if $item.updated}Diweddarwyd {$item.updated}.{/if}{if $item.created}Wedi'i greu {$item.created}.{/if}</small></small>
 			{if $item.extract}
-				<div title="{$item.extract|escape:'html'}" style="font-size:0.7em;">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
+				<div title="{$item.extract|escape:'html'}" style="font-size:0.7em;">{$item.extract|escape:'html'|truncate:90:"... (<u>mwy</u>)"}</div>
 			{/if}
 			<div style="clear:left"></div>
 		</div>
@@ -163,7 +163,7 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 		cefnogwch y prosiect os gwelwch yn dda</p>
 	</div>
 	<div style="position:relative;float:left;width:550px;text-align:center">
-		<p>Caiff y wefan hon ei harchifo a'i chadw gan brosiect <a href="/help/webarchive">Archif Gwe'r DU</a>.</p>
+		<p>Caiff y wefan hon ei harchifo a'i chadw gan brosiect <a href="/help/webarchive">Archif We y DG</a>.</p>
 
 		<p style="font-size:0.9em;"><span class="nowrap">Prosiect gan <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">Elusen Gofrestredig yng Nghymru a Lloegr, rhif 114562</span>, yw Geograph&reg; Prydain ac Iwerddon. <span class="nowrap">Rhif y cwmni: 7473967</span>. <br> Y swyddfa gofrestredig yw: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
 	</div>

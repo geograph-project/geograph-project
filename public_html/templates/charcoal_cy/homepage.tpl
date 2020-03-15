@@ -97,10 +97,10 @@
 <ul>
 
 	<li><a href="/mapbrowse.php" title="View the coverage Map">Archwiliwch yr ynysoedd hyn gyda'n <b>map</b></a></li>
-	<li><a href="/search.php" title="Image Search"><b>Chwiliwch</b> am leoedd neu nodweddion</a></li>
+	<li><a href="/finder/welsh.php" title="Image Search"><b>Chwiliwch</b> am leoedd neu nodweddion</a></li>
 	<li><a href="/explore/" title="Themed Exploring">Chwiliwch yn &ocirc;l <b>thema</b></a></li>
 	<li><a href="/content/" title="Submitted Content">Darllenwch <b>gynnwys</b> sydd wedi cael ei gyflwyno gan aelodau</b></a></li>
-	<li><a href="/help/sitemap">Gweld map cyfan o.r safle</a></li>
+	<li><a href="/help/sitemap">Gweld map cyfan o'r safle</a></li>
 </ul>
 
 

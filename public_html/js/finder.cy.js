@@ -2,6 +2,8 @@ $.ajaxSetup({
   cache: false
 });
 
+var eastings = northings = null;
+
 $(function () {
 
 	$( "#qqq" ).autocomplete({
@@ -79,7 +81,14 @@ $(function () {
 					response(results);
 				}
 			});
-		}
+		},
+                select: function(event,ui) {
+			if (ui.item && ui.item.e && ui.item.n) {
+				eastings = ui.item.e;
+				northings = ui.item.n;
+			}				
+                }
+
 	})
 	.data( "autocomplete" )._renderItem = function( ul, item ) {
 		var re=new RegExp('('+$("#loc").val()+')','gi');
@@ -297,6 +306,13 @@ function submitSearch(form, skip_pop) {
 	var ok = false;
 	if (grid.parseGridRef(gridref[2])) {
 		ok = true;
+		if (eastings && northings &&  //saved from the gazetter autocomplete!
+				grid.eastings%1000 == 0 && grid.northings%1000 == 0 && // and that its a four figure!
+				Math.floor(eastings/1000) == Math.floor(grid.eastings/1000) && // as a quick sanity check, check right square!
+				Math.floor(northings/1000) == Math.floor(grid.northings/1000)) {
+			grid.eastings = eastings;
+			grid.northings = northings;
+		}
 	} else {
 		grid=new GT_Irish();
 		ok = grid.parseGridRef(gridref[2])
