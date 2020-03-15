@@ -1,4 +1,3 @@
-
 {assign var="page_title" value="Chwilio lluniau"}
 {include file="_std_begin.tpl"}
 
@@ -129,14 +128,25 @@ form.finder {
 
 <h2>Chwilio lluniau ar Geograph</h2>
 <form method="get" onsubmit="return submitSearch(this)" class="finder">
-	<input type="search" name="q" id="qqq" value="" size="40" placeholder="(rhowch y geiriau allweddol yma)">
-	<input type="search" name="loc" id="loc" size="40" placeholder="(rhowch enw lle, cod post, neu gyfeirnod grid yma)">
-	<input type="submit" value="Rhedeg Chwiliad"><br>
-	<div id="location_prompt"></div>
+	<div style="float:left;width:310px;height:44px">
+		<label for="qqq">Chwilio am Eiriau allweddol:<br/></label>
+		<input type="search" name="q" id="qqq" value="" size="38" placeholder="(rhowch y geiriau allweddol yma)">
+	</div>
+	<div style="float:left;width:310px;height:44px">
+		<label for="loc">Chwilio gerllaw:<br/></label>
+		<input type="search" name="loc" id="loc" size="38" placeholder="(enw lle, cod post, neu gyfeirnod grid yma)">
+	</div>
+	<div style="float:left;width:110px;height:44px">
+		&nbsp;<br/>
+		<input type="submit" value="Rhedeg Chwiliad">
+	</div>
+
+	<div id="location_prompt" style="clear:both"></div>
+
 	<label for="wales">Chwilio am luniau yng Nghymru yn unig? <input type="checkbox" name="wales" id="wales" checked="">(ticiwch)</label><br>
 
 	<label for="context">Cynnwys Daearyddol</label>: <select name="context" id="context">
-		<option value="">(dewisol)</option>
+		<option value="">Dewis term...</option>
 		{assign var="last" value=""}
 		{foreach from=$context item=row}
 			{if $last != $row.grouping_cy}
@@ -151,10 +161,11 @@ form.finder {
 		{if $last}
 			</optgroup>
 		{/if}
-	</select>
+	</select>(dewisol)
 </form>
 
 <div id="results">
+   <div id="contentResults"></div>
    <div id="curatedResults"></div>
    <div id="plainResults">
 	<p>Defnyddiwch y dudalen hon i chwilio am ddelweddau Geograph, testun Saesneg sydd gan y rhan fwyaf o'n delweddau, felly ceir y canlyniadau gorau drwy roi geiriau allweddol Saesneg. Mae rhai testunau wedi cael eu cyfieithu felly mae modd rhoi cynnig ar eiriau Cymraeg.</p>

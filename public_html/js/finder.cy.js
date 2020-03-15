@@ -183,19 +183,21 @@ function setupLocationPrompt(query) {
 						name = htmlentities(name).replace(/\//,'/ <b>')+'</b>';
 					else
 						name = '<b>'+htmlentities(name).replace(/\//,'</b> /');
-					$('#location_prompt').html('Neu lluniau wedi\'i dynnu ger <a>'+name+'</a>');
-					$('#location_prompt a').click(function() {
+					$('#location_prompt').html('Chwilio am lluniau wedi\'i dynnu ger <a>'+name+'</a>? (Cliciwch)');
+					$('#location_prompt a').click(function(event) {
 						$('#qqq').val('');
-						$('#loc').val(value['gr'] + ' ' + value['name']);
+						$('#loc').val(value['name']);
 						if (value['localities'] && value['localities'].indexOf('Wales') == -1)
 							$('#wales').prop('checked',false);
 						submitSearch($("#loc").get(0).form);
-					});
+						event.preventDefault();
+						$('#location_prompt').empty();
+					}).attr('href','/near/'+urlplus(value['name'])); //still needed to make it look like a link!
 
 				//display a dropdown of places
 				} else if (data && data.total_found > 1) {
 					var prefixMatch = 0;
-					$('#location_prompt').html('...Neu lluniau wedi\'i dynnu ger <select id=near><option value="">Dewis lleoedd</select>');
+					$('#location_prompt').html('...Neu lluniau wedi\'i dynnu ger <select id=near><option value="">Dewis lleoedd...</select>');
 					$.each(data.items, function(key,value) {
 						if (value['name'].toLowerCase().indexOf(query.toLowerCase()) == 0)
 							prefixMatch++;
@@ -244,21 +246,23 @@ function setupLocationPrompt(query) {
 	                                        var value = data.items[0];
         	                                if (value['name'].indexOf(value['gr']) == -1)
                 	                                value['name'] = value['name'] + "/" + value['gr'];
-						if (data.total_found == 1)
-							location.replace('/near/'+urlplus(value['name']));
+						//if (data.total_found == 1)
+						//	location.replace('/near/'+urlplus(value['name']));
                         	                var name = value['name'];
                                 	        if (name.indexOf('Grid Reference') == 0)
                                         	        name = htmlentities(name).replace(/\//,'/ <b>')+'</b>';
 	                                        else
         	                                        name = '<b>'+htmlentities(name).replace(/\//,'</b> /');
-                	                        $('#location_link').html('Neu lluniau wedi\'i dynnu ger <a>'+name+'</a>');
-						$('#location_link a').click(function() {
+                	                        $('#location_link').html('&middot; lluniau wedi\'i dynnu ger <a>'+name+'</a>? (Cliciwch i weld)');
+						$('#location_link a').click(function(event) {
 							$('#qqq').val('');
-							$('#loc').val(value['gr'] + ' ' + value['name']);
+							$('#loc').val(value['name']);
 							if (value['localities'] && value['localities'].indexOf('Wales') == -1)
 								$('#wales').prop('checked',false);
 							submitSearch($("#loc").get(0).form);
-						});
+							event.preventDefault();
+							$('#location_prompt').empty();
+						}).attr('href','/near/'+urlplus(value['name']));
 					}
 				}
 
@@ -397,6 +401,15 @@ function submitSearch(form, skip_pop) {
 
   /////////////
 
+  var $div4 = $('#results #contentResults');
+  if (!location) {
+	  fetchContent(query,$div4,"Cyfatebiadau Casgliad Posibl");
+  } else {
+	$div4.empty();
+  }
+
+  /////////////
+
   //so the form doesnt actully submit
   return false;
 }
@@ -485,6 +498,55 @@ $(function() {
 
 /////////////////////////////////////////////////////////
 
+function fetchContent(query,$output,title) {
+  var data = {
+     match: "@title "+query+" @source -themed"+(location.host.indexOf('schools')>-1?' -blogs':''),
+     cc: 1,
+     select: "id,title,url,asource,aimages"
+  };
+  _call_cors_api(
+    endpoint,
+    data,
+    'contentCallback',
+    function(data) {
+     $output.empty();
+     if (data && data.rows) {
+
+        if (title) {
+           $output.text(title);
+        }
+
+	$output.append('<select id=content_id><option value="">Dewis...</select>');
+	$.each(data.rows, function(key,value) {
+		//todo, do somthing with asource?
+		$output.find('select').append(
+			$('<option/>').attr('value',value['url'])
+				.text(value['title']+' (gyda '+value['aimages']+' lluniau)')
+		);
+	});
+
+	if (data.meta.total_found) {
+		if (data.meta.total_found > data.rows.length) {
+			$output.find('select').append(
+				$('<option/>').attr('value','/content/?q='+encodeURIComponent(query)+'&scope=all&in=title')
+					.text(data.meta.total_found+' canlyniad (gweld pob un...)')
+			);
+		}
+		$output.append(' ('+data.meta.total_found+' canlyniad)');
+	}
+
+        $('select#content_id').change(function() {
+                location.href = this.value;
+        });
+
+    }
+
+  });
+}
+
+
+/////////////////////////////////////////////////////////
+
 function fetchCuratedImages(label,geo,$output,title) {
   var data = {
      label: label,
@@ -526,7 +588,7 @@ function fetchCuratedImages(label,geo,$output,title) {
         });
 
         if (data.label && data.label[label] && data.label[label] >=20) {
-           $output.append("<p>"+data.label[label]+' lluniau rydyn ni wedi.u dewis. <a href="'+url+'">Gweld Nesaf</a></p>');
+           $output.append("<p>"+data.label[label]+' lluniau rydyn ni wedi\'u dewis. <a href="'+url+'">Gweld Nesaf</a></p>');
 
            $output.append("<p>Dydyn ni ond wedi casglu nifer fechan o ddelweddau hyd yma, mae chwiliad allweddair yn gallu cael canlyniadau gwell</p>");
 
@@ -752,4 +814,11 @@ function _call_cors_api(endpoint,data,uniquename,success,error) {
 		return thumbnail.replace(/_\d+x\d+\.jpg$/,'.jpg').replace(/s[1-9]\.geograph/,'s0.geograph');
 	}
 
+
+        function urlplus(input) {
+                return encodeURIComponent(input).replace(/%20/g,'+').replace(/%2F/g,'/');
+        }
+        function htmlentities(input) {
+                return $('<div />').text(input).html()
+        }
 
