@@ -5,9 +5,9 @@
   <ul>
     <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/?lang=cy">Hafan</a></li>
     <li>Gweld<ul>
-     <li><a title="Find and locate images" href="/finder/welsh.php">Chwilio</a></li>
+     <li><a title="Find and locate images" href="/finder/welsh.php?lang=cy">Chwilio</a></li>
      <li id="markedLink" style="display:none"><a title="View your current Marked Images" href="/finder/marked.php">Delweddau wedi'u marcio</a></li>
-     <li><a title="View map of all submissions" href="/mapper/combined.php">Mapiau</a></li>
+     <li><a title="View map of all submissions" href="/mapper/combined.php?lang=cy">Mapiau</a></li>
      <li><a title="Interactive browser, search and map in one" href="/browser/#!start">Porwr</a></li>
      <li><a title="Explore images by theme" href="/explore/">Archwilio</a></li>
      <li><a title="Curated selection of images" href="/gallery.php">Arddangos</a></li>

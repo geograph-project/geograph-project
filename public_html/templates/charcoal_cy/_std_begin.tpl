@@ -98,8 +98,8 @@ title="Chwilio Geograph Prydain ac Iwerddon" href="/stuff/osd.xml" />
 
 	<div id="tabs">
 		<ul id="nav2">
-		<li class=selected><a href="/" class="selected">Hafan</a></li>
-		<li><a href="/mapbrowse.php">Mapiau</a></li>
+		<li class=selected><a href="/?lang=cy" class="selected">Hafan</a></li>
+		<li><a href="/mapper/combined.php?lang=cy">Mapiau</a></li>
 		<li><a href="/submit.php">Cyflwyno</a></li>
 		{if $enable_forums}<li><a href="/discuss/">Discuss</a></li>{/if}
 		<li><a href="/numbers.php">Ystadegau</a></li>

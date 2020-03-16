@@ -431,28 +431,50 @@ function loadImage() {
         value.hash = m[1];
     value.full = getGeographUrl(value.id, value.hash, 'full');
 
+
+    $result.append('<div class="part1"></div>');
+    $result.append('<div class="part2"></div>');
+    var $part1 = $result.find('.part1');
+    var $part2 = $result.find('.part2');
+
     //TITLE BAR
-    $result.append('<div class="title"><a href="/photo/'+value.id+'" target="_blank"><b>'+value.title+'</b></a> gan <a href="/profile/'+value.user_id+'">'+value.realname+'</a><br/>'+
+    $part1.append('<div class="title"><a href="/photo/'+value.id+'" target="_blank"><b>'+value.title+'</b></a> gan <a href="/profile/'+value.user_id+'">'+value.realname+'</a><br/>'+
             'Yn sgw&acirc;r <a href="/gridref/'+value.grid_reference+'" target="_blank" id="gridref">'+value.grid_reference+"</a>, wedi'i dynnu ar <b>"+space_date(value.takenday || value.imagetaken)+'</b></span></div>')
 
     //IMAGE
-    $result.append('<div style="min-height:300px"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' gan '+value.realname+'"><img src="'+value.full+'" id="full"/></a></div>')
+    $part1.append('<div style="min-height:300px"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' gan '+value.realname+'"><img src="'+value.full+'" id="full"/></a></div>')
 
     //CC MESSAGE
-    $result.append('<div class="ccmessage"><a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons Licence [Some Rights Reserved]" src="https://creativecommons.org/images/public/somerights20.gif"></a> &copy; Copyright <a title="View profile" href="/profile/'+value.user_id+'" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL dct:creator">'+value.realname+'</a>  ac wedi.i drwyddedu ar gyfer cael ei <a href="/reuse.php?id='+value.gridimage_id+'">ail-ddefnyddio</a> o dan <a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/" about="'+value.full+'" title="Creative Commons Attribution-Share Alike 2.0 Licence">Drwydded Creative Commons</a>.</div>')
+    $part1.append('<div class="ccmessage"><a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons Licence [Some Rights Reserved]" src="https://creativecommons.org/images/public/somerights20.gif"></a> &copy; Copyright <a title="View profile" href="/profile/'+value.user_id+'" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL dct:creator">'+value.realname+'</a>  ac wedi.i drwyddedu ar gyfer cael ei <a href="/reuse.php?id='+value.gridimage_id+'">ail-ddefnyddio</a> o dan <a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/" about="'+value.full+'" title="Creative Commons Attribution-Share Alike 2.0 Licence">Drwydded Creative Commons</a>.</div>')
 
     //BUTTONS
-    $result.append('<div class=buttons>'+
+    $part1.append('<div class=buttons>'+
        '&middot; <a href="/photo/'+value.id+'">Cliciwch i weld delwedd maint llawn</a> '+
        '&middot; <a href="/reuse.php?id='+value.id+'">Defnyddio</a> '+
        '&middot; <a href="/more.php?id='+value.id+'" id="larger" style="display:none;font-weight:bold">Meintiau mwy ar gael</a> '+
        '&middot; <a href="/stamp.php?id='+value.id+'">Llwytho\'r ddelwedd &acirc; dyfrnodau arni i lawr</a> '+
-       '&middot; <a href="/reuse.php?id='+value.id+'&download='+value.hash+'" id="download">Llwytho.r ddelwedd i lawr</a>.</div>');
+       '&middot; <a href="/reuse.php?id='+value.id+'&download='+value.hash+'" id="download">Llwytho\'r ddelwedd i lawr</a>.</div>');
 
     //DESCRIPTION
-    $result.append('<div id="maindesc"></div>');
+    $part2.append('<div id="maindesc"></div>');
 
-    $result.append("<br><br><div><i>Mae'r cyfrannwr yn caniatáu i chi ail-ddefnyddio'r llun ar gyfer unrhyw bwrpas, ar yr amod eich yn cydnabod hynny. Darllenwch y manylion llawn ar <a href='https://creativecommons.org/licenses/by-sa/2.0/'>Weithred Trwydded CC</a></i></div>");
+    //MAP
+	//https://t0.geograph.org.uk/tile-static.php?source=OSM-cymru&z=13&w=640&h=350&mlat=53.204592&mlon=-4.16174
+        //https://openstreetmap.cymru?h=52.95404183016033&ll=-3.9584255218505864&ch=14
+    if (value.wgs84_lat && value.wgs84_long) {
+	var lat = (value.wgs84_lat<40)?rad2deg(value.wgs84_lat):parseFloat(value.wgs84_lat);
+	var lng = (value.wgs84_lat<40)?rad2deg(value.wgs84_long):parseFloat(value.wgs84_long);
+	var source = (document.getElementById('wales').checked)?"OSM-cymru":"OSM";
+        $part2.append('<a href="https://openstreetmap.cymru/?h='+lat+'&ll='+lng+'&ch=13&p=1" class=osm><img src="https://t0.geograph.org.uk/tile-static.php?source='+source+'&z=13&w=640&h=350&mlat='+lat+'&mlon='+lng+'"/></a>');
+        $part2.find("a.osm img").hover(function() {
+		this.src = this.src.replace(/z=\d+/,'z=6');
+        },function() {
+		this.src = this.src.replace(/z=\d+/,'z=13');
+	});
+    }
+
+    //FOOTER
+    $part2.append("<br><br><div><i>Mae'r cyfrannwr yn caniat&aacute;u i chi ail-ddefnyddio'r llun ar gyfer unrhyw bwrpas, ar yr amod eich yn cydnabod hynny. Darllenwch y manylion llawn ar <a href='https://creativecommons.org/licenses/by-sa/2.0/'>Weithred Trwydded CC</a></i></div>");
 
 
     loadDescription(value.id);
@@ -603,11 +625,11 @@ function fetchImages(query,geo,$output,title,order) {
   var url = "/browser/#!/q="+encodeURIComponent(query).replace(/%20/g,'+');
 
   if (document.getElementById('wales').checked) {
-     data.match = query + " @country Wales";
+     data.match = data.match + " @country Wales";
      url = url + '/country+%22Wales%22'
   }
   if (selected = document.getElementById('context').value) {
-     data.match = query + ' @contexts "'+selected+'"';
+     data.match = data.match + ' @contexts "'+selected+'"';
      url = url + '/contexts+'+encodeURIComponent('"'+selected+'"');
   }
   if (geo) {

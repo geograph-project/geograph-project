@@ -48,7 +48,7 @@
 <body>
 <div id="header_block">
   <div id="header">
-    <h1 onclick="document.location='/?lang=cy';"><a title="Hafan Geograph" href="/">Geograph - llun o bob sgw&acirc;r ar y grid</a></h1>
+    <h1 onclick="document.location='/?lang=cy';"><a title="Hafan Geograph" href="/?lang=cy">Geograph - llun o bob sgw&acirc;r ar y grid</a></h1>
   </div>
 </div>
 {if $right_block}

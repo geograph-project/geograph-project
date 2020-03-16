@@ -105,6 +105,19 @@ form.finder {
   z-index:100;
   box-shadow:         0px 0px 4px 4px gray;
 }
+
+@media only screen and (min-width: 1400px) {
+   .lightbox {
+      width:1360px;
+      left:calc( 50vw - 660px );
+   }
+
+   .lightbox .part1, .lightbox .part2 {
+      float:left;
+      width:660px;
+   }
+}
+
 .close_button {
   float:right;
   padding-left:20px;
