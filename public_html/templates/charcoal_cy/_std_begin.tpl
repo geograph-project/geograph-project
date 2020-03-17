@@ -68,6 +68,11 @@ title="Chwilio Geograph Prydain ac Iwerddon" href="/stuff/osd.xml" />
 	<h1>Geograph - llun o bob sgw&acirc;r ar y grid</h1>
 	<div id="profile">
 		<div id="profilebar">
+		{if $english_url}
+		<span id="language_block">
+		        [Cymraeg/<a href="{$english_url}">English</a>] &nbsp;
+		</span>
+		{/if}
 		{dynamic}
 		  {if $user->registered}
 		  	  Wedi mewngofnodi fel {$user->realname|escape:'html'}
