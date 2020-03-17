@@ -167,7 +167,7 @@
 /////////////////////////////////////////////////////
 
 	var mapOptions =  {
-                center: [52.399/-3.593], zoom: 8,
+                center: [52.399,-3.593], zoom: 8,
                 minZoom: 5, maxZoom: 18
         };
 	var clickOptions = {};
