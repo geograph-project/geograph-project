@@ -132,7 +132,7 @@ if (!empty($_GET['q'])) {
 
 			print $str;
 
-			$smarty->display('_std_end.tpl');
+			$smarty->display('_std_end.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 			exit;
 		}
 
@@ -221,7 +221,7 @@ if (!empty($_GET['q'])) {
 	}
 
 } else {
-	$smarty->display('_std_begin.tpl');
+	$smarty->display('_std_begin.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 }
 
 #########################################
@@ -618,5 +618,5 @@ function vote_log(action,param,value) {
 
 #########################################
 
-	$smarty->display('_std_end.tpl');
+	$smarty->display('_std_end.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 

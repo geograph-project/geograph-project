@@ -155,7 +155,7 @@ if (!empty($_GET['q'])) {
 
 				//print "<hr><p style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick=\"jQl.loadjQ('/js/search-feedback.js');return false\">Please take this short survey</a>.</p>";
 
-				$smarty->display('_std_end.tpl');
+				$smarty->display('_std_end.tpl',md5($_SERVER['PHP_SELF'].$_GET['q']));
 				exit;
 			}
 		}
@@ -170,7 +170,7 @@ if (!empty($_GET['q'])) {
 		print "<div class=interestBox>This page only shows images from Ireland - Great Britain is automatically excluded.</div>";
 
 } else {
-	$smarty->display('_std_begin.tpl');
+	$smarty->display('_std_begin.tpl',md5($_SERVER['PHP_SELF'].$_GET['q']));
 }
 
 #########################################
@@ -611,7 +611,7 @@ if (!empty($USER->registered)) {
 
 #########################################
 
-        $smarty->display('_std_end.tpl');
+        $smarty->display('_std_end.tpl',md5($_SERVER['PHP_SELF'].$_GET['q']));
         exit;
 
 #########################################
@@ -619,7 +619,7 @@ if (!empty($USER->registered)) {
 
 } elseif (!empty($_GET['q'])) {
 	print '<iframe src="/finder/search-service.php?q='.$qu.'" width="700" height="700" name="searchwindow" style="width:100%"></iframe>';
-        $smarty->display('_std_end.tpl');
+        $smarty->display('_std_end.tpl',md5($_SERVER['PHP_SELF'].$_GET['q']));
         exit;
 }
 
@@ -671,5 +671,5 @@ if (!empty($USER->registered)) {
 		print "<script src=\"".smarty_modifier_revision("/js/lazy.js")."\"></script>";
 	print '<script src="/preview.js.php" type="text/javascript"></script>';
 
-	$smarty->display('_std_end.tpl');
+	$smarty->display('_std_end.tpl',md5($_SERVER['PHP_SELF'].$_GET['q']));
 

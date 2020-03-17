@@ -32,10 +32,10 @@ $template = 'finder_welsh.tpl';
 $cacheid = '';
 
 if ($CONF['template']!='ireland') {
-	if (!empty($_GET['q']))
-	        $smarty->assign('english_url',"/of/".urlencode2($_GET['q'])); //needed by the welsh template!
-	else
-		$smarty->assign('english_url',"/search.php");
+	//NOTE, we CAN'T supply a unique URL, as the query does not form part of cacheid!
+	//if (!empty($_GET['q']))
+	//        $smarty->assign('english_url',"/of/".urlencode2($_GET['q'])); //needed by the welsh template!
+	$smarty->assign('english_url',"/of/"); //linkt to the simple search, as the most similar to this!
 }
 
         if (!$smarty->is_cached($template, $cacheid)) {
