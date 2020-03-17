@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: search.php 8907 2019-02-23 11:04:52Z barry $
+ * $Id: search.php 9079 2020-03-17 18:19:44Z barry $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -55,6 +55,12 @@ if (!empty($_GET['style'])) {
 
 
 $smarty = new GeographPage;
+
+if ($CONF['template']!='ireland') {
+        $smarty->assign('welsh_url',"/finder/welsh.php?lang=cy"); //todo, try to forward the query somehow?
+        //$smarty->assign('english_url',"/"); //needed by the welsh template!
+}
+
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
@@ -995,7 +1001,11 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		dieUnderHighLoad(0,'search_unavailable.tpl');
 		die("Invalid Search Parameter");
 	}
-	
+
+	if (!empty($engine->criteria) && !empty($engine->criteria->searchtext)) {
+		$smarty->assign('welsh_url',"/finder/welsh.php?q=".urlencode($engine->criteria->searchtext));
+	}
+
 	if (isset($_GET['legacy']) 
 		&& (!empty($engine->criteria->searchq) || !empty($engine->criteria->searchtext) || !empty($engine->criteria->x) )
 		&& empty($engine->criteria->limit6) && empty($engine->criteria->limit1) ) {

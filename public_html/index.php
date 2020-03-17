@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: index.php 9075 2020-03-15 18:31:06Z barry $
+ * $Id: index.php 9079 2020-03-17 18:19:44Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -34,7 +34,10 @@ init_session();
 $smarty = new GeographPage;
 }
 
-header("X-Template: {$CONF['template']}");
+if ($CONF['template']!='ireland') {
+	$smarty->assign('welsh_url',"/?lang=cy"); //needed by the english template!
+	$smarty->assign('english_url',"/"); //needed by the welsh template!
+}
 
 
 customGZipHandlerStart();

@@ -65,6 +65,12 @@ init_session();
 
 $smarty = new GeographPage;
 
+if ($CONF['template']!='ireland') {
+        $smarty->assign('welsh_url',"/finder/welsh.php?loc=".urlencode($_GET['q']));
+        //$smarty->assign('english_url',"/"); //needed by the welsh template!
+}
+
+
 customExpiresHeader(3600,false,true);
 
 $src = 'data-src';
@@ -117,6 +123,13 @@ if (!empty($_GET['q'])) {
                                 //it may be a http:// page cached!?!
                                 $str = str_replace('http://',$CONF['PROTOCOL'],$str);
                         }
+
+			if (strpos($str,"No Results found.") !== FALSE) {
+		                //might be too late, but might as well try!
+		                header("HTTP/1.0 404 Not Found");
+               			header("Status: 404 Not Found");
+			}
+
 			print $str;
 
 			$smarty->display('_std_end.tpl');
@@ -480,6 +493,10 @@ if (!empty($_GET['d']) && !empty($final)) {
 # handler for no results
 
 	} else {
+		//might be too late, but might as well try!
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+
 		if (empty($sph)) {
 			$sph = GeographSphinxConnection('sphinxql',true);
 		}

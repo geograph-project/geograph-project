@@ -31,6 +31,12 @@ $smarty = new GeographPage;
 $template = 'finder_welsh.tpl';
 $cacheid = '';
 
+if ($CONF['template']!='ireland') {
+	if (!empty($_GET['q']))
+	        $smarty->assign('english_url',"/of/".urlencode2($_GET['q'])); //needed by the welsh template!
+	else
+		$smarty->assign('english_url',"/search.php");
+}
 
         if (!$smarty->is_cached($template, $cacheid)) {
 

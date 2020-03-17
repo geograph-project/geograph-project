@@ -98,6 +98,11 @@
 {/if}
   </div>
 </div>
+{if $english_url}
+<div id="language_block">
+	[Cymraeg/<a href="{$english_url}">English</a>]
+</div>
+{/if}
 <div id="search_block" class="no_print">
   <div id="search">
     <div id="searchform">
