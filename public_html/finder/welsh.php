@@ -29,7 +29,12 @@ init_session();
 
 $smarty = new GeographPage;
 $template = 'finder_welsh.tpl';
-$cacheid = '';
+$cacheid = 'live';
+
+if (!empty($_GET['dev'])) {
+	$cacheid = 'dev';
+	$smarty->assign('dev',filemtime("../js/finder_dev.cy.js"));
+}
 
 if ($CONF['template']!='ireland') {
 	//NOTE, we CAN'T supply a unique URL, as the query does not form part of cacheid!

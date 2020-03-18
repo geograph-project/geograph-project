@@ -122,8 +122,10 @@ $(function () {
         if (context = getUrlParameter('context'))
                 $("#context").val(context);
 
-	if (q || loc)
+	if (q || loc) {
+		$('#plainResults').html('<h3>llwytho, arhoswch...</h3>');
 		submitSearch($("#loc").get(0).form);
+	}
 
 	if ($("#qqq").val().length > 2) {
 		// $("#qqq").autocomplete( "search", $("#qqq").val() );
@@ -286,22 +288,23 @@ function submitSearch(form, skip_pop) {
                 history.pushState({data:data}, '', "?"+data);
         }
 
-  var query = form.elements['q'].value;
+  var query = getTextQuery(); //form.elements['q'].value;
   var location = form.elements['loc'].value;
-  var geo = null; //todo, from gazetter!
+  var geo = null; 
   var loctext = '';
 
  /////////////
+ // is a location centered search
 
   if (location && location.length > 5) {
      if (gridref = location.toUpperCase().match(/(^|\/)\s*(\w{1,2}\d{2,10})/)) {
   
-        //todo, get more detailed location from easting/norhting, returned from gazetter, maybe check right square??
-
 	var grid=new GT_OSGB();
 	var ok = false;
 	if (grid.parseGridRef(gridref[2])) {
 		ok = true;
+
+	        //get more detailed location from easting/norhting, returned from gazetter, and check right square.
 		if (eastings && northings &&  //saved from the gazetter autocomplete!
 				grid.eastings%1000 == 0 && grid.northings%1000 == 0 && // and that its a four figure!
 				Math.floor(eastings/1000) == Math.floor(grid.eastings/1000) && // as a quick sanity check, check right square!
@@ -327,14 +330,23 @@ function submitSearch(form, skip_pop) {
   // try a translated word 
 
   if (query.length > 2) {
-     var label = query.toLowerCase();
-     //todo, this JUST looks for a single exact match at the moment! (although can be multiword). 
-     _call_cors_api('https://www.geograph.org.uk/finder/words-welsh.json.php',{q:label},'WordLookup', function(data) {
+     var searchquery = query.toLowerCase(); //the raw query entered by user, used to check the translated word is actully contained in query
+     var sphinxquery = searchquery;  //the sphinx query sent to server, might be slighly differnt
+
+     if (searchquery.match(/^\w+(\s+\w+)+$/)) { // is a multi-word query, but not using any special syntax
+        //turn into a OR or quorum search. (ie could do "..."/1 instead)
+	sphinxquery = searchquery.replace(/\s+/g,'|');
+	//todo, perhapsa should ask sphinx to sort by shortest words?
+     } //else - todo, we might still be able to do something with syntax queries, eg ignoring field syntax
+
+     _call_cors_api('https://www.geograph.org.uk/finder/words-welsh.json.php',{q:sphinxquery},'WordLookup', function(data) {
         var foundWelsh = foundEnglish = foundCurated = false;
         if (data && data.items) {
            $.each(data.items,function(index,value) {
 
-              if (value && value['welsh'] && value['welsh'].toLowerCase() == label) {
+	      //Does the Query contain a known WELSH word??
+		//check the return is wholely contained, eg query might be 'afon' but get back 'afon afrwydd' which we DONT want!
+              if (value && value['welsh'] && searchquery.match(regexp = new RegExp('\\b('+value['welsh'].toLowerCase()+')\\b')) ) {
                  foundWelsh=true;
             
                  // curated Results
@@ -347,28 +359,34 @@ function submitSearch(form, skip_pop) {
                  // plainResults now contains the WELSH results
 
                  // translatedResults to contain ENGLISH results
-                 var query2 = value.english;
+                 var query2 = searchquery.replace(regexp, value.english); //replace the welsh word/term with the english
 
                  var $div2 = $('#results #translatedResults');
-                 fetchImages(query2,geo,$div2,"Delweddau sy'n cyfateb i dermau chwilio ["+query2+']'+loctext);
+                 if (query2 != searchquery) //quick sanity check!
+                   fetchImages(query2,geo,$div2,"Delweddau sy'n cyfateb i dermau chwilio ["+query2+']'+loctext, null, searchquery);
 
-              } else if (value && value['welsh'] && !foundWelsh && value['english'] == label) {
+	      //Does the Query contain a known English word??
+              } else if (value && value['english'] && !foundWelsh && searchquery.match(regexp = new RegExp('\\b('+value['english'].toLowerCase()+')\\b')) ) {
                  foundEnglish=true;
             
                  // curated Results
                  if (value['images'] && value['images'] > 2) {
                      var $div1 = $('#results #curatedResults');
-                     fetchCuratedImages(value['english'],geo,$div1,"Delweddau rydyn ni wedi'u dewis ar gyfer ["+value['welsh']+'] (o: '+value['english']+')');
+                     var source = value['welsh']?("["+value['welsh']+"] (ddefnyddio dermau ["+value['english']+"])"):("["+value['english']+"]");
+                     fetchCuratedImages(value['english'],geo,$div1,"Delweddau rydyn ni wedi'u dewis ar gyfer "+source);
                      foundCurated = true;
                  }
 
                  // plainResults now contains the ENGLISH results
 
-                 // translatedResults to contain WELSH results
-                 var query2 = value.welsh;
+                 if (value['welsh']) {
+                   // translatedResults to contain WELSH results
+                   var query2 = searchquery.replace(regexp, value.welsh);
 
-                 var $div2 = $('#results #translatedResults');
-                 fetchImages(query2,geo,$div2,"Delweddau sy'n cyfateb i dermau chwilio ["+query2+']'+loctext);
+                   var $div2 = $('#results #translatedResults');
+                   if (query2 != searchquery) //quick sanity check!
+                     fetchImages(query2,geo,$div2,"Delweddau sy'n cyfateb i dermau chwilio ["+query2+']'+loctext, null, searchquery);
+                 }
               }
            });
         }
@@ -395,9 +413,9 @@ function submitSearch(form, skip_pop) {
 
   var $div4 = $('#results #contentResults');
   if (!location) {
-	  fetchContent(query,$div4,"Cyfatebiadau Casgliad Posibl");
+	  fetchContent(query,$div4,"Cyfatebiadau Casgliad Posibl: ");
   } else {
-	$div4.empty();
+	$div4.empty().hide();
   }
 
   /////////////
@@ -445,7 +463,7 @@ function loadImage() {
     $part1.append('<div style="min-height:300px"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' gan '+value.realname+'"><img src="'+value.full+'" id="full"/></a></div>')
 
     //CC MESSAGE
-    $part1.append('<div class="ccmessage"><a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons Licence [Some Rights Reserved]" src="https://creativecommons.org/images/public/somerights20.gif"></a> &copy; Copyright <a title="View profile" href="/profile/'+value.user_id+'" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL dct:creator">'+value.realname+'</a>  ac wedi.i drwyddedu ar gyfer cael ei <a href="/reuse.php?id='+value.gridimage_id+'">ail-ddefnyddio</a> o dan <a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/" about="'+value.full+'" title="Creative Commons Attribution-Share Alike 2.0 Licence">Drwydded Creative Commons</a>.</div>')
+    $part1.append('<div class="ccmessage"><a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons Licence [Some Rights Reserved]" src="https://creativecommons.org/images/public/somerights20.gif"></a> &copy; Copyright <a title="View profile" href="/profile/'+value.user_id+'" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL dct:creator">'+value.realname+'</a>  ac wedi\'i drwyddedu ar gyfer cael ei <a href="/reuse.php?id='+value.gridimage_id+'">ail-ddefnyddio</a> o dan <a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/" about="'+value.full+'" title="Creative Commons Attribution-Share Alike 2.0 Licence">Drwydded Creative Commons</a>.</div>')
 
     //BUTTONS
     $part1.append('<div class=buttons>'+
@@ -527,21 +545,23 @@ function fetchContent(query,$output,title) {
      if (data && data.rows) {
 
         if (title) {
-           $output.text(title);
+           $output.text(title).show();
         }
 
 	$output.append('<select id=content_id><option value="">Dewis...</select>');
+	var $element = $output.find('select');
 	$.each(data.rows, function(key,value) {
 		//todo, do somthing with asource?
-		$output.find('select').append(
+		$element.append(
 			$('<option/>').attr('value',value['url'])
-				.text(value['title']+' (gyda '+value['aimages']+' lluniau)')
+				.text(value['title']+' (gyda '+value['aimages']+' lluniau) :: '+value['url'])
 		);
 	});
 
 	if (data.meta.total_found) {
 		if (data.meta.total_found > data.rows.length) {
-			$output.find('select').append(
+			$element.append($('<option/>'));
+			$element.append(
 				$('<option/>').attr('value','/content/?q='+encodeURIComponent(query)+'&scope=all&in=title')
 					.text(data.meta.total_found+' canlyniad (gweld pob un...)')
 			);
@@ -615,7 +635,7 @@ function fetchCuratedImages(label,geo,$output,title) {
 
 /////////////////////////////////////////////////////////
 
-function fetchImages(query,geo,$output,title,order) {
+function fetchImages(query,geo,$output,title,order,excludequery) {
 
   var data = {
      select: "id,title,grid_reference,realname,hash,user_id,takenday,wgs84_lat,wgs84_long,original",
@@ -692,8 +712,16 @@ function fetchImages(query,geo,$output,title,order) {
            if (order)
 	      $ele.val(order);
            $ele.change(function() {
-  		fetchImages(query,geo,$output,title,this.value);
+  		fetchImages(query,geo,$output,title,this.value,excludequery);
 	   });
+           if ( excludequery ) {
+		$output.find('h3').append('<small><br/>&nbsp; &gt; <i><a href=#>eithrio lluniau</a> sy\'n cyfateb i ['+excludequery+'] </i></small>');
+                $output.find('h3 a').click(function(event) {
+			var newquery = query + ' -('+ excludequery + ')';
+			event.preventDefault();
+			fetchImages(newquery,geo,$output,title+' ac eithrio ['+ excludequery + ']',order);
+		});
+	   }
         }
         var last = '';
         var $thumbs = $output.find(".thumbs");
@@ -870,3 +898,105 @@ function _call_cors_api(endpoint,data,uniquename,success,error) {
                 return $('<div />').text(input).html()
         }
 
+function getTextQuery() {
+    var raw = $('#qqq').attr('value');
+
+    if (raw.length == 0) {
+       return '';
+    }
+
+    //http: (urls) bombs out the field: syntax
+    //$q = str_replace('http://','http ',$q);
+    var query = raw.replace(/(https?):\/\//g,'$1 ');
+
+    //remove any colons in tags - will mess up field: syntax
+    query  =  query.replace(/\[([^\]]+)[:]([^\]]+)\]/g,'[$1~~~$2]');
+
+    query = query.replace(/(-?)\b([a-z_]+):/g,'@$2 $1');
+    query = query.replace(/@(year|month|day) /,'@taken$1 ');
+    query = query.replace(/@gridref /,'@grid_reference ');
+    query = query.replace(/@by /,'@realname ');
+    query = query.replace(/@name /,'@realname ');
+    query = query.replace(/@tag /,'@tags ');
+    query = query.replace(/@subject /,'@subjects ');
+    query = query.replace(/@type /,'@types ');
+    query = query.replace(/@context /,'@contexts ');
+    query = query.replace(/@placename /,'@place ');
+    query = query.replace(/@category /,'@imageclass ');
+    query = query.replace(/@text /,'@(title,comment,imageclass,tags,subjects) ');
+    query = query.replace(/@user /,'@user user');
+    
+    query = query.replace(/\b(\d{3})0s\b/g,'$1tt');
+    query = query.replace(/\bOR\b/g,'|');
+
+    //make excluded hyphenated words phrases
+    query = query.replace(/(^|[^"\w]+)-(=?\w+)(-[-\w]*\w)/g,function(match,pre,p1,p2) {
+        return pre+'-("'+(p1+p2).replace(/-/,' ')+'" | '+(p1+p2).replace(/-/,'')+')';
+    });
+
+    //make hyphenated words phrases
+    query = query.replace(/(^|[^"\w]+)(=?\w+)(-[-\w]*\w)/g,function(match,pre,p1,p2) {
+        return pre+'"'+(p1+p2).replace(/-/,' ')+'" | '+(p1+p2).replace(/-/,'');
+    });
+
+    //make excluded aposphies work (as a phrase)
+    query = query.replace(/(^|[^"\w]+)-(=?\w+)(\'\w*[\'\w]*\w)/g,function(match,pre,p1,p2) {
+        return pre+'-("'+(p1+p2).replace(/\'/,' ')+'" | '+(p1+p2).replace(/\'/,'')+')';
+    });
+
+    //make aposphies work (as a phrase)
+    query = query.replace(/(^|[^"\w]+)(\w+)(\'\w*[\'\w]*\w)/,function(match,pre,p1,p2) {
+        return pre+'"'+(p1+p2).replace(/\'/,' ')+'" | '+(p1+p2).replace(/\'/,'');
+    });
+
+    //change single quotes to double
+    query = query.replace(/(^|\s)\b\'([\w ]+)\'\b(\s|$)/g, '$1"$2"$3');
+
+    //fix placenames with / (the \b stops it replacing in "one two"/3
+    query = query.replace(/\b\/\b/g,' ');
+
+    //seperate out tags!
+    if (m = query.match(/(-?)\[([^\]]+)\]/g)) {
+       for(i=0;i<m.length;i++) {
+          var value = m[i];
+          query = query.replace(value,'');
+          var bits = value.replace(/[\[\]-]+/g,'').split('~~~');
+          var prefix = '*';
+          if (bits.length > 1) {
+             if (bits[0] == 'subject' || bits[0] == 'type' || bits[0] == 'context' || bits[0] == 'bucket') {
+                 prefix = bits[0]+'s';
+                 value = bits[1];
+             } else if (bits[0] == 'top') {
+                 prefix = 'contexts';
+                 value = bits[1];
+             } else {
+                 prefix = 'tags';
+                 value = bits[0]+' '+bits[1];
+             }
+          } 
+          query = query +' @'+prefix+' '+((value.indexOf('-')==0)?'-':'') + '"_SEP_ '+value.replace(/[\[\]-]+/g,'') + ' _SEP_"';
+       }
+    }
+
+    if ($('#searchin').length && query.length > 0 && query.indexOf('@') != 0) {//if first keyword is a field, no point setting ours. 
+        var list = $('#searchin input:checked');
+        var searchintotal = $('#searchin input').length;
+        var str = new Array();
+        if (list.length > 0 && list.length <= 3) {
+            list.each(function(index) {
+              str.push($(this).val());
+            });
+            query = '@('+str.join(',')+') '+query;
+        } else if (list.length > 3 && list.length < searchintotal) {
+            var list = $('#searchin input');
+            list.each(function(index) {
+              if (!$(this).attr('checked'))
+                 str.push($(this).val());
+            });
+            query = '@!('+str.join(',')+') '+query;
+        }
+
+    }
+
+    return query;
+}

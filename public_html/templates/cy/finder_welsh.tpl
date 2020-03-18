@@ -27,6 +27,21 @@ form.finder {
   padding:10px;
 }
 
+#results h3 small {
+	color:gray;
+}
+#results h3 small a {
+	color:#2b99bd;
+}
+
+#contentResults {
+    background-color: #DDEA8E;
+    padding:10px;
+}
+#contentResults select {
+	max-width:70vw;
+}
+
 .shadow div.thumb {
     padding-right: 8px;
     padding-bottom: 8px;
@@ -178,7 +193,7 @@ form.finder {
 </form>
 
 <div id="results">
-   <div id="contentResults"></div>
+   <div id="contentResults" style="display:none"></div>
    <div id="curatedResults"></div>
    <div id="plainResults">
 	<p>Defnyddiwch y dudalen hon i chwilio am ddelweddau Geograph, testun Saesneg sydd gan y rhan fwyaf o'n delweddau, felly ceir y canlyniadau gorau drwy roi geiriau allweddol Saesneg. Mae rhai testunau wedi cael eu cyfieithu felly mae modd rhoi cynnig ar eiriau Cymraeg.</p>
@@ -205,7 +220,11 @@ form.finder {
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
 
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
-<script src="/js/finder.cy.js?{$smarty.now}"></script>
+{if $dev}
+	{dynamic}<script src="/js/finder_dev.cy.js?{$dev}"></script>{/dynamic}
+{else}
+	<script src="{"/js/finder.cy.js"|revision}"  ></script>
+{/if}
 
 
 
