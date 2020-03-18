@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: index.php 9079 2020-03-17 18:19:44Z barry $
+ * $Id: index.php 9086 2020-03-18 14:49:09Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -21,8 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' && empty($_GET['lang'])) {
-	$mobile_url = "https://m.geograph.org.uk/";
+if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
+	if (!empty($_GET['lang']))
+		$mobile_url = "https://m.geograph.org.uk/?lang=cy";
+	else
+		$mobile_url = "https://m.geograph.org.uk/";
 }
 
 if (empty($smarty)) {
@@ -283,7 +286,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	//$job = $db->getRow("select blog_id,title from blog where tags like 'job posting' and approved = 1 order by rand() limit 1");
 	//$smarty->assign_by_ref("job",$job);
 
-	$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/\"/>");
+	if (!empty($_GET['lang']))
+		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/?lang=cy\"/>");
+	else
+		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/\"/>");
 }
 
 
