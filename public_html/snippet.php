@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: snippet.php 8848 2018-09-18 17:13:40Z barry $
+ * $Id: snippet.php 9084 2020-03-18 13:43:04Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2009 Barry Hunter (geo@barryhunter.co.uk)
@@ -71,6 +71,14 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 			$imagelist->_getImagesBySql($sql);
 			$smarty->assign_by_ref('results', $imagelist->images);
+
+			if ($data['images'] <= 10) {
+				$smarty->assign('thumbw',213);
+				$smarty->assign('thumbh',160);
+			} else {
+				$smarty->assign('thumbw',120);
+				$smarty->assign('thumbh',120);
+			}
 		}
 
 
