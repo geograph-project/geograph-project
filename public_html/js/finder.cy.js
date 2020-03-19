@@ -774,7 +774,7 @@ function fetchImages(query,geo,$output,title,order,excludequery) {
 		url = "/of/"+urlplus(rawquery);
 	else 
 		url = '/search.php';
-  	$('#location_block a').attr('href', url);
+  	$('#language_block a').attr('href', url);
 
     } else {
         $("#message").html("Does dim Delweddau'n cyfateb.");
