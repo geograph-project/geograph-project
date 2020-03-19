@@ -2,6 +2,15 @@ var eastings = northings = null;
 
 $(function () {
 
+	$("select#context").change(function() {
+		if ( $('#qqq').val() || $('#qqq').val() || $("input#wales:checked").length )
+			submitSearch($("#loc").get(0).form);
+	});
+	$("input#wales:checked").click(function() {
+		if ( $('#qqq').val() || $('#qqq').val() || $("select#context").val() )
+			submitSearch($("#loc").get(0).form);
+	});
+
 	$( "#qqq" ).autocomplete({
 		minLength: 2,
 		source: function( request, response ) {
@@ -119,10 +128,13 @@ $(function () {
 	if (loc = getUrlParameter('loc'))
 		$("#loc").val(loc); //todo, run query via API to get the exact location of the place
 
+	if ((wales = getUrlParameter('wales')) && wales === "0")
+		$("#wales").prop('checked',false);
+
         if (context = getUrlParameter('context'))
                 $("#context").val(context);
 
-	if (q || loc) {
+	if (q || loc || context) {
 		$('#plainResults').html('<h3>llwytho, arhoswch...</h3>');
 		submitSearch($("#loc").get(0).form);
 	}
@@ -403,7 +415,7 @@ function submitSearch(form, skip_pop) {
   // finally general search results 
 
   if (query.length < 1 && !form.elements['wales'].checked && !geo) {
-     $("#message").html('Rhowch ymholiad');
+     $("#message").html('<p class=error>Rhowch ymholiad</p>');
      return false;
   }
   var $div3 = $('#results #plainResults');
@@ -412,11 +424,8 @@ function submitSearch(form, skip_pop) {
   /////////////
 
   var $div4 = $('#results #contentResults');
-  if (!location) {
+  if (!location) // not currently filterable!
 	  fetchContent(query,$div4,"Cyfatebiadau Casgliad Posibl: ");
-  } else {
-	$div4.empty().hide();
-  }
 
   /////////////
 
@@ -541,14 +550,13 @@ function fetchContent(query,$output,title) {
     data,
     'contentCallback',
     function(data) {
-     $output.empty();
      if (data && data.rows) {
-
+	$output.html('<p></p>');
         if (title) {
-           $output.text(title).show();
+           $output.find('p').text(title);
         }
 
-	$output.append('<select id=content_id><option value="">Dewis...</select>');
+	$output.find('p').append('<select id=content_id><option value="">Dewis...</select>');
 	var $element = $output.find('select');
 	$.each(data.rows, function(key,value) {
 		//todo, do somthing with asource?
@@ -566,12 +574,14 @@ function fetchContent(query,$output,title) {
 					.text(data.meta.total_found+' canlyniad (gweld pob un...)')
 			);
 		}
-		$output.append(' ('+data.meta.total_found+' canlyniad)');
+		$output.find('p').append(' ('+data.meta.total_found+' canlyniad)');
 	}
 
         $('select#content_id').change(function() {
                 location.href = this.value;
         });
+    } else {
+      $output.empty();
     }
   });
 }
@@ -676,6 +686,8 @@ function fetchImages(query,geo,$output,title,order,excludequery) {
       case 'hash':  data.order="hash ASC"; data.option='ranker=none';  break;
       case 'score':  data.order="score DESC"; data.option='ranker=none';  break;
       case 'distance':  data.order="geodist ASC"; data.option='ranker=none';  break;
+      case 'larger':  if (!data.match || data.match.length < 2) data.match = '@status Geograph'; //cheeky, but need something!
+		data.match = data.match + ' MAYBE @larger 1024';  break; //as long as left on relvence sorting this should work!
       case 'random':  data.order="RAND()";  break;
     }
     if (data.order) //just checks it set something really!
@@ -694,6 +706,8 @@ function fetchImages(query,geo,$output,title,order,excludequery) {
         $("#message").empty();
 
         $output.empty().html('<div class="thumbs shadow"></div>');
+
+	//title bar (nearly always present)
         if (title) {
            $output.prepend('<h3></h3>');
            $output.find('h3').text(title)
@@ -708,7 +722,8 @@ function fetchImages(query,geo,$output,title,order,excludequery) {
 	   $ele.append( $('<option/>').attr('value','submitted_up').text('Cyflwynwyd - Henaf i\'r diweddaraf'));
 	   $ele.append( $('<option/>').attr('value','hash').text('Mewn unrhyw drefn'));
            $ele.append( $('<option/>').attr('value','spread').text('Daearyddol'));
-           $ele.append( $('<option/>').attr('value','score').html('Sg&ocirc;r'));
+           $ele.append( $('<option/>').attr('value','score').html('Sg&ocirc;r (Ansawdd)'));
+           $ele.append( $('<option/>').attr('value','larger').html('Cydraniad Uchel'));
            if (order)
 	      $ele.val(order);
            $ele.change(function() {
@@ -723,7 +738,8 @@ function fetchImages(query,geo,$output,title,order,excludequery) {
 		});
 	   }
         }
-        var last = '';
+
+	//actual thumbnails
         var $thumbs = $output.find(".thumbs");
         $.each(data.rows,function(index,value) {
           value.gridimage_id = value.id;
@@ -733,20 +749,40 @@ function fetchImages(query,geo,$output,title,order,excludequery) {
           images[value.id] = value;
         });
 
+	//footer message
         $output.append("<p><i>wedi canfod "+data.rows.length+" o "+data.meta.total_found+" canlyniad mewn "+data.meta.time+" eiliad</i></p>");
- 
         if (data.meta.total_found > data.rows.length) {
-             $output.append('<div><a href="'+url+'">Mwy llyniau &gt;&gt;&gt;</a> (<a href="'+url+'/display=map/pagesize=40">ar fap</a>)</div>');
+		//note use of .total, vs .total_found is deliberate
+	     $output.append("<div>Tudalen 1 o'r "+Math.floor(data.meta.total/perpage)+'. <b><a href="'+url+'/display=plus/pagesize='+perpage+'/page=2">Tudalen 2 &gt;</a></b> '
+		+'  &nbsp; neu <a href="'+url+'">Archwilio llyniau &gt;&gt;&gt;</a> (<a href="'+url+'/display=map/pagesize=40">ar fap</a>)</div>');
         }
+
+	//adds lightbox links
         setupLoadImage($output);
 
+	//open the the image, if exactly one result
         if (data.rows.length == 1 && $('.thumbs a').length == 1) { //check also that only one thumbnail being displayed overall
             $output.find('.thumbs a').click();
         }
 
+	//Update the the 'English' link in the header
+	if (geo && rawquery)
+		url = "/near/"+urlplus($('#loc').val())+"?filter="+encodeURIComponent(rawquery);
+	else if (geo)
+		url = "/near/"+urlplus($('#loc').val());
+	else if (rawquery)
+		url = "/of/"+urlplus(rawquery);
+	else 
+		url = '/search.php';
+  	$('#location_block a').attr('href', url);
+
     } else {
-        $("#message").html("Does dim Delweddau'n cyfateb. Gwiriwch y sillafu a rhoi cynnig arall arni.");
-        $output.empty().html("<p>Does dim Delweddau'n cyfateb. Gwiriwch y sillafu a rhoi cynnig arall arni.</p><span id=\"location_link\"></span>");
+        $("#message").html("Does dim Delweddau'n cyfateb.");
+        $output.empty().html("<p>Does dim Delweddau'n cyfateb am [<tt></tt>]. Gwiriwch y sillafu a rhoi cynnig arall arni.</p><span id=\"location_link\"></span>");
+	$output.find('tt').text(query);
+
+	//TODO, find if there are other blocks using this query as a potential exclude filter, and remove the link in that case
+	// alas async nature of multiple quries make this hard
     }
   });
 }

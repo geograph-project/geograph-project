@@ -36,6 +36,8 @@ form.finder {
 
 #contentResults {
     background-color: #DDEA8E;
+}
+#contentResults p {
     padding:10px;
 }
 #contentResults select {
@@ -129,6 +131,7 @@ form.finder {
 
    .lightbox .part1, .lightbox .part2 {
       float:left;
+      margin-left:10px;
       width:660px;
    }
 }
@@ -150,9 +153,23 @@ form.finder {
   cursor:pointer;
 }
 
+.lightbox .part2 img {
+	margin-top: 20px;
+	border-radius: 5px;
+   	box-shadow: 3px 3px 8px #808080;
+}
+
+#message {
+	float:right
+}
+#message p.error
+	padding:10px;
+	background-color:pink;
+}
+
 {/literal}</style>
 
-<div id="message" style="float:right"></div>
+<div id="message"></div>
 
 <h2>Chwilio lluniau ar Geograph</h2>
 <form method="get" onsubmit="return submitSearch(this)" class="finder">
@@ -171,7 +188,7 @@ form.finder {
 
 	<div id="location_prompt" style="clear:both"></div>
 
-	<label for="wales">Chwilio am luniau yng Nghymru yn unig? <input type="checkbox" name="wales" id="wales" checked="">(ticiwch)</label><br>
+	<label for="wales">Chwilio am luniau yng Nghymru yn unig? <input type="checkbox" name="wales" id="wales" value="1" checked="">(ticiwch)</label><br>
 
 	<label for="context">Cynnwys Daearyddol</label>: <select name="context" id="context">
 		<option value="">Dewis term...</option>
@@ -193,7 +210,7 @@ form.finder {
 </form>
 
 <div id="results">
-   <div id="contentResults" style="display:none"></div>
+   <div id="contentResults"></div>
    <div id="curatedResults"></div>
    <div id="plainResults">
 	<p>Defnyddiwch y dudalen hon i chwilio am ddelweddau Geograph, testun Saesneg sydd gan y rhan fwyaf o'n delweddau, felly ceir y canlyniadau gorau drwy roi geiriau allweddol Saesneg. Mae rhai testunau wedi cael eu cyfieithu felly mae modd rhoi cynnig ar eiriau Cymraeg.</p>
