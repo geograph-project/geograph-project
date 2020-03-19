@@ -766,6 +766,7 @@ function fetchImages(query,geo,$output,title,order,excludequery) {
         }
 
 	//Update the the 'English' link in the header
+	var rawquery = $('#qqq').val();
 	if (geo && rawquery)
 		url = "/near/"+urlplus($('#loc').val())+"?filter="+encodeURIComponent(rawquery);
 	else if (geo)
