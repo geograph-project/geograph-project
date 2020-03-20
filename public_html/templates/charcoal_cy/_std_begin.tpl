@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"{if $rastermap->service == 'Google'} xmlns:v="urn:schemas-microsoft-com:vml"{/if} xml:lang="en" id="geograph">
 <head>
 {if $page_title}<title>{$page_title|escape:'html'} :: Geograph Prydain ac Iwerddon</title>
-{else}<title>Geograph Prydain ac Iwerddon - llun o bob sgw&acirc;ar y grid!</title>{/if}
+{else}<title>Geograph Prydain ac Iwerddon - llun o bob sgw&acirc;r y grid!</title>{/if}
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... more"}" />
 {else}<meta name="description" content="Nod prosiect Geograph Prydain ac Iwerddon yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym Mhrydain Fawr ac Iwerddon, a gallwch chi fod yn rhan o hynny."/>{/if}
