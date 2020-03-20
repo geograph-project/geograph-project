@@ -494,7 +494,7 @@ function loadImage() {
 	var source = (document.getElementById('wales').checked)?"OSM-cymru":"OSM";
         $part2.append('<a href="https://openstreetmap.cymru/?h='+lat+'&ll='+lng+'&ch=13&p=1" class=osm><img src="https://t0.geograph.org.uk/tile-static.php?source='+source+'&z=13&w=640&h=350&mlat='+lat+'&mlon='+lng+'"/></a>');
         $part2.find("a.osm img").hover(function() {
-		this.src = this.src.replace(/z=\d+/,'z=6');
+		this.src = this.src.replace(/z=\d+/,'z=7');
         },function() {
 		this.src = this.src.replace(/z=\d+/,'z=13');
 	});
@@ -510,6 +510,8 @@ function loadImage() {
         $('#larger').show('slow');
     if (value.largest && value.largest > 640)
         $('#larger').show('slow');
+
+	usage_log('show','photo',value.id);
 }
 
 function setupLoadImage($element) {
@@ -893,6 +895,15 @@ function space_date(datestr) {
     return datestr;
 }
 
+
+function usage_log(action,param,value) {
+	//todo, use BeaconAPI ?
+   $.ajax({
+      url: '/stuff/record_usage.php',
+      data: {action:action, param:param, value:value},
+      xhrFields: { withCredentials: true }
+   });
+}
 
 // function to allow using cors if possible
 function _call_cors_api(endpoint,data,uniquename,success,error) {
