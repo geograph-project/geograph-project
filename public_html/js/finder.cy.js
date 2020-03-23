@@ -407,7 +407,7 @@ function submitSearch(form, skip_pop) {
         if (!foundWelsh && !foundEnglish) {
             $('#results #translatedResults').empty();
 
-	    if (searchquery.match(/^\w+(,?\s+\w+)*\.?*\s*$/)) {
+	    if (searchquery.match(/^\w+(,?\s+\w+)*\.?\s*$/)) {
 
 	      _call_cors_api('https://api.geograph.org.uk/api-translate.json.php',{input:searchquery,from:'cy',to:'en'},'TranslateLookup', function(data) {
 	        if (data && data.result) {
