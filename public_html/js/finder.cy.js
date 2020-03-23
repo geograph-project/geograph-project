@@ -404,8 +404,20 @@ function submitSearch(form, skip_pop) {
         }
         if (!foundCurated)
             $('#results #curatedResults').empty();
-        if (!foundWelsh && !foundEnglish)
+        if (!foundWelsh && !foundEnglish) {
             $('#results #translatedResults').empty();
+
+	    if (searchquery.match(/^\w+(,?\s+\w+)*\.?*\s*$/)) {
+
+	      _call_cors_api('https://api.geograph.org.uk/api-translate.json.php',{input:searchquery,from:'cy',to:'en'},'TranslateLookup', function(data) {
+	        if (data && data.result) {
+			var query2 = data.result;
+			 var $div2 = $('#results #translatedResults');
+			fetchImages(query2,geo,$div2,"Delweddau sy'n cyfateb i dermau chwilio ["+query2+']'+loctext, null, searchquery);
+		}    
+	      });
+            }
+	}
      });
   } else {
      $('#results #curatedResults, #results #translatedResults').empty();
