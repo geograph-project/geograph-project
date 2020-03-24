@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: geotrip_show.php 9056 2020-03-06 14:50:21Z barry $
+ * $Id: geotrip_show.php 9094 2020-03-24 10:31:56Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Rudi Winter (http://www.geograph.org.uk/profile/2520)
@@ -435,4 +435,15 @@ function scrollIntoView(gridimage_id) {
 
 
 $smarty->display('_std_end.tpl');
+
+
+if (!isset($_GET['dontcount']) && appearsToBePerson()) {
+
+	if (empty($db) || $db->readonly)
+		$db = GeographDatabaseConnection(false);
+
+	//yes, updated is currently a integer column (and so not 'on update set current_timestamp') - but set it just in case it gets changed. Noop currently.
+	$db->Execute("UPDATE LOW_PRIORITY geotrips SET views=views+1, last_view=NOW(), updated=updated WHERE id = ".$_GET['trip']);
+}
+
 

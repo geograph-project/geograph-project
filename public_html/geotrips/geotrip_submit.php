@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: geotrip_submit.php 8715 2018-02-21 18:56:08Z barry $
+ * $Id: geotrip_submit.php 9094 2020-03-24 10:31:56Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Rudi Winter (http://www.geograph.org.uk/profile/2520)
@@ -347,7 +347,7 @@ and there need to be at least three images matching these criteria in your searc
         $query=$query.$img.",";
         $query=$query."'".mysql_real_escape_string($_POST['descr'])."',";
         $query=$query."UNIX_TIMESTAMP(NOW()),";
-        $query=$query.$contfrom.',null)';
+        $query=$query.$contfrom.',null,0,now(),0)';
         
         $db->Execute($query);
         $newid=$db->Insert_ID();
