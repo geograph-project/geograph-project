@@ -56,9 +56,9 @@ $(function () {
 		source: function( request, response ) {
 
 			if ($( "input#wales:checked" ).length) {
-				var url = "https://www.geograph.org.uk/finder/places-welsh.json.php?q="+encodeURIComponent(request.term);
+				var url = "/finder/places-welsh.json.php?q="+encodeURIComponent(request.term);
 			} else {
-				var url = "https://www.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term);
+				var url = "/finder/places.json.php?q="+encodeURIComponent(request.term);
 			}
 
 			$.ajax({
@@ -351,7 +351,7 @@ function submitSearch(form, skip_pop) {
 	//todo, perhapsa should ask sphinx to sort by shortest words?
      } //else - todo, we might still be able to do something with syntax queries, eg ignoring field syntax
 
-     _call_cors_api('https://www.geograph.org.uk/finder/words-welsh.json.php',{q:sphinxquery},'WordLookup', function(data) {
+     _call_cors_api('/finder/words-welsh.json.php',{q:sphinxquery},'WordLookup', function(data) {
         var foundWelsh = foundEnglish = foundCurated = false;
         if (data && data.items) {
            $.each(data.items,function(index,value) {
@@ -624,7 +624,7 @@ function fetchCuratedImages(label,geo,$output,title) {
   $("#message").text('Arhoswch os gwelwch yn dda ['+label+']...');
 
   _call_cors_api(
-    'https://www.geograph.org.uk/curated/sample.json.php',
+    '/curated/sample.json.php',
     data,
     'curatedCallback',
     function(data) {
@@ -807,7 +807,7 @@ function fetchImages(query,geo,$output,title,order,excludequery) {
 function loadDescription(id) {
 
   _call_cors_api(
-    'https://www.geograph.org.uk/stuff/description.json.php',
+    '/stuff/description.json.php',
     {id: id},
     'loaddesc',
     function(data) {
