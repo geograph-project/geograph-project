@@ -92,10 +92,10 @@ title="Chwilio Geograph Prydain ac Iwerddon" href="/stuff/osd.xml" />
 
 	<div id="search">
 		<div id="searchbar">
-			<form method="get" action="/finder/welsh.php">
-			<input type="hidden" name="lang" value="cy"/>
+			<form method="get" action="/chwilio/">
 			<input type="text" name="q" value="{$searchq|escape:'html'}" placeholder="(geiriau allweddol yma)"/>
 			<input type="submit" value="Chwilio..."/>
+			<input type="hidden" name="lang" value="cy"/>
 			</form>
 		</div>
 	</div>

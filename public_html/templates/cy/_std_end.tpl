@@ -5,12 +5,12 @@
   <ul>
     <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/?lang=cy">Hafan</a></li>
     <li>Gweld<ul>
-     <li><a title="Find and locate images" href="/finder/welsh.php?lang=cy">Chwilio</a></li>
+     <li><a title="Find and locate images" href="/chwilio/?lang=cy">Chwilio</a></li>
      <li id="markedLink" style="display:none"><a title="View your current Marked Images" href="/finder/marked.php">Delweddau wedi'u marcio</a></li>
      <li><a title="View map of all submissions" href="/mapper/combined.php?lang=cy">Mapiau</a></li>
-     <li><a title="Interactive browser, search and map in one" href="/browser/#!start">Porwr</a></li>
+     <li><a title="Interactive browser, search and map in one" href="/browser/#!/country+%22Wales%22">Porwr</a></li>
      <li><a title="Explore images by theme" href="/explore/">Archwilio</a></li>
-     <li><a title="Curated selection of images" href="/gallery.php">Arddangos</a></li>
+     <li><a title="Curated selection of images" href="/gallery.php?crit=Country%3AWales">Arddangos</a></li>
     </ul></li>
     <li><ul>
      <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Casgliadau</a></li>
@@ -106,11 +106,11 @@
 <div id="search_block" class="no_print">
   <div id="search">
     <div id="searchform">
-    <form method="get" action="/finder/welsh.php">
+    <form method="get" action="/chwilio/">
     <div id="searchfield">
-    <input type="hidden" name="lang" value="cy"/>
     {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="geiriau allweddol, neu rhowch enw lle, cod post, neu gyfeirnod grid yma" placeholder="chwilio am luniau..." style="background:white"/>{/dynamic}
     <input id="searchbutton" type="submit" name="go" value="Chwilio"/></div>
+    <input type="hidden" name="lang" value="cy"/>
     </form>
     </div>
   </div>

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: search.php 9079 2020-03-17 18:19:44Z barry $
+ * $Id: search.php 9096 2020-03-30 14:07:29Z barry $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -57,7 +57,7 @@ if (!empty($_GET['style'])) {
 $smarty = new GeographPage;
 
 if ($CONF['template']!='ireland') {
-        $smarty->assign('welsh_url',"/finder/welsh.php?lang=cy"); //todo, try to forward the query somehow?
+        $smarty->assign('welsh_url',"/chwilio/?lang=cy"); //todo, try to forward the query somehow?
         //$smarty->assign('english_url',"/"); //needed by the welsh template!
 }
 
@@ -1003,7 +1003,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	}
 
 	if (!empty($engine->criteria) && !empty($engine->criteria->searchtext)) {
-		$smarty->assign('welsh_url',"/finder/welsh.php?q=".urlencode($engine->criteria->searchtext));
+		$smarty->assign('welsh_url',"/chwilio/?q=".urlencode($engine->criteria->searchtext)."&lang=cy");
 	}
 
 	if (isset($_GET['legacy']) 

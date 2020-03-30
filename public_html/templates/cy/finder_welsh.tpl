@@ -207,6 +207,7 @@ form.finder {
 			</optgroup>
 		{/if}
 	</select>(dewisol)
+	<input type=hidden name=lang value="cy">
 </form>
 
 <div id="results">

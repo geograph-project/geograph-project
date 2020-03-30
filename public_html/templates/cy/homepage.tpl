@@ -58,7 +58,7 @@ yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym
 	</div>
 
 	<div class="interestBox" style="height:370px;width:150px; float:left; font-size:0.8em;margin-left:10px;padding:10px; overflow:auto;border-radius: 10px;">
-		<h3 style="margin-top:0;">Beth yw Graffio Daearyddol?</h3>
+		<h3 style="margin-top:0;">Beth yw Geographio?</h3>
 
 		<ul style="margin-top:2px;margin-bottom:0;padding:0 0 0 1em;">
 			<li style="padding-bottom:4px">G&ecirc;m - faint o sgwariau wnewch chi eu cyfrannu?</li>
@@ -276,7 +276,7 @@ AttachEvent(window,'resize',thiswindowresize,false);
    "alternateName": "Geograph Prydain ac Iwerddon",
    "potentialAction": {
      "@type": "SearchAction",
-     "target": "https://www.geograph.org.uk/of/{search_term}?lang=cy",
+     "target": "https://www.geograph.org.uk/chwilio/?q={search_term}&lang=cy",
      "query-input": "required name=search_term"
    }
 }
