@@ -90,6 +90,26 @@
 </tr>
 <tr>
 	<td>
+		<img src="http://pagepeeker.com/thumbs.php?size=m&amp;url=http://www.geograph.org.uk/chwilio/?q=traeth" align="left"/>
+	</td>
+	<td>
+		<h3>Welsh Language Search</h3>
+
+		Specialised search engine that copes better with Welsh Language queries, but works for English too!
+		
+		<a href="http://www.geograph.org.uk/chwilio/?q=traeth&lang=cy">View Example page</a><br/><br/>
+
+		{dynamic}
+		{if $option == 'welsh.php'}
+			<b><i>This is your current selection</i></b>
+		{else}
+        	        <input type="submit" name="submit[welsh.php]" value="Use this as my default"/>
+		{/if}
+		{/dynamic}
+	</td>
+</tr>
+<tr>
+	<td>
 		<img src="http://pagepeeker.com/thumbs.php?size=m&amp;url=http://www.geograph.org.uk/finder/multi2.php?q=bridge" align="left"/>
 	</td>
 	<td>
