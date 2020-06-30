@@ -160,31 +160,33 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	}
 
 	$updates = array();
-	
+
 	if ($page['approved'] == 2 && $USER->user_id != $page['user_id']) {
 		$keys = array('content','complete');
 	} else {
-		$keys = array('url','title','licence','content','publish_date','article_cat_id','gridsquare_id','parent_url','extract','complete');
+		$keys = array('url','title','licence','content','publish_date','article_cat_id','gridsquare_id','parent_url','extract','complete','browser_url');
 	}
-	
+	$optional = array('gridsquare_id','parent_url','complete','browser_url');
+
 	foreach ($keys as $key) {
 		if ($page[$key] != $_POST[$key]) {
-			$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
+			$updates[] = "`$key` = ".$db->Quote($_POST[$key]);
 			$smarty->assign($key, $_POST[$key]);
-			if ($key == 'url' || $key = 'title') {
+			if ($key == 'url' || $key == 'title') {
 				$sql = "select count(*) from article where `$key` = ".$db->Quote($_POST[$key]);
 				if (!empty($_REQUEST['article_id'])) {
 					$sql .=  " and article_id != ".$db->Quote($_REQUEST['article_id']);
 				}
-				if ($db->getOne($sql)) 
-					$errors[$key] = "(".$db->Quote($_POST[$key]).') is already in use';				
+				if ($db->getOne($sql))
+					$errors[$key] = "(".$db->Quote($_POST[$key]).') is already in use';
 			}
-		} elseif (empty($_POST[$key]) && $key != 'gridsquare_id' && $key != 'parent_url' && $key != 'complete') 
-			$errors[$key] = "missing required info";		
+		} elseif (empty($_POST[$key]) && !in_array($key,$optional))
+			$errors[$key] = "missing required info";
 	}
+
 	if (isset($_POST['edit_prompt'])) {
 		$key = 'edit_prompt';
-		$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
+		$updates[] = "`$key` = ".$db->Quote($_POST[$key]);
 		$smarty->assign($key, $_POST[$key]);
 	}
 	if (!count($updates)) {
