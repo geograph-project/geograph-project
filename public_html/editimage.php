@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: editimage.php 8707 2018-02-03 18:59:39Z barry $
+ * $Id: editimage.php 9100 2020-07-03 14:18:54Z barry $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -334,7 +334,6 @@ if (isset($_REQUEST['id']))
 			}
 
 			$comment=trim(stripslashes($_POST['comment']));
-			$comment=strip_tags($comment);
 
 			/////////////////////////////////////////////////////////////
 			// STEP 2 - change control
@@ -416,7 +415,6 @@ if (isset($_REQUEST['id']))
 			}
 
 			$comment=trim(stripslashes($_POST['comment']));
-			$comment=strip_tags($comment);
 
 			$imageclass=trim(stripslashes($_POST['imageclass']));
 			$imageclass=strip_tags($imageclass);
@@ -733,7 +731,6 @@ if (isset($_REQUEST['id']))
 			$title=strip_tags($title);
 
 			$comment=trim(stripslashes($_POST['comment']));
-			$comment=strip_tags($comment);
 
 			$image->title=$title;
 			$image->comment=$comment;
