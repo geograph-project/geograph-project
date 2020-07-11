@@ -187,11 +187,11 @@ $db = GeographDatabaseConnection();
 				$sqlcolumns[]  = "cx";
 				$sqlvalues[]   = $db->Quote($cy);
 				$sqlcolumns[]  = "cy";
-				$sqlvalues[]   = "GeomFromText('POINT({$newe} {$newn})')";
+				$sqlvalues[]   = "ST_GeomFromText('POINT({$newe} {$newn})')";
 				$sqlcolumns[]  = "point_en";
-				$sqlvalues[]   = "GeomFromText('POINT({$x} {$y})')";
+				$sqlvalues[]   = "ST_GeomFromText('POINT({$x} {$y})')";
 				$sqlcolumns[]  = "point_xy";
-				$sqlvalues[]   = "GeomFromText('POINT({$cx} {$cy})')";
+				$sqlvalues[]   = "ST_GeomFromText('POINT({$cx} {$cy})')";
 				$sqlcolumns[]  = "point_cxy";
 			}
 			if ($_POST['oldi'.$c] !== '') {

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: imagelist.class.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: imagelist.class.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 8822 $
+* @version $Revision: 9102 $
 */
 
 /**
@@ -305,8 +305,8 @@ class ImageList
 		$sql="select $cols 
 			from gridimage_search 
 			where 
-			CONTAINS( 	
-				GeomFromText($rectangle),
+			MBRIntersects( 	
+				ST_GeomFromText($rectangle),
 				point_xy)
 			$rfilter $limit";
 		
@@ -354,8 +354,8 @@ class ImageList
 		$sql="select $cols 
 			from gridimage_search 
 			where moderation_status = 'geograph' and ftf = 1 $rfilter and 
-			CONTAINS( 	
-				GeomFromText($rectangle),
+			MBRIntersects( 	
+				ST_GeomFromText($rectangle),
 				point_xy)
 			$orderby $limit";
 

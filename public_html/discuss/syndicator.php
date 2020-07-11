@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: syndicator.php 8821 2018-09-13 01:10:07Z hansjorg $
+ * $Id: syndicator.php 9102 2020-07-11 01:41:38Z hansjorg $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -216,7 +216,7 @@ if (!$opt_noLimit) {
 
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-		$sql_where .= " AND CONTAINS(GeomFromText($rectangle),point_xy)";
+		$sql_where .= " AND MBRIntersects(ST_GeomFromText($rectangle),point_xy)";
 		if ($d < 50) {
 			//shame cant use dist_sqd in the next line!
 			$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);

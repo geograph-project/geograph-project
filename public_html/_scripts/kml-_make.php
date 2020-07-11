@@ -33,25 +33,15 @@ $db=GeographDatabaseConnection();
 
 set_time_limit(3600*24);
 
-
 #####################
 
-
-print "Drop<br>";flush();
-
-$db->Execute("drop table if exists gridimage_kml");
-
-
-#####################
-
-
-print "Create<br>";flush();
+print "Create/Temp<br>";flush();
 
 #need to join gi and g2 as each contains columns not in the other. 
 
+#create TEMPORARY table gridimage_kml0 ENGINE=HEAP
 $db->Execute("
-create table gridimage_kml
-ENGINE = MYISAM
+create TEMPORARY table gridimage_kml0 ENGINE=MYISAM
 select 
 	gi.gridimage_id,
 	gi.x,
@@ -86,13 +76,23 @@ order by
 #  higher percision first (so the 'first' image is less likly to be grid based.) 
 #  geograph first (so will show geograph first) 
 #  then random so all images should get a a lookin
+#####################
+
+
+print "Drop<br>";flush();
+
+$db->Execute("drop table if exists gridimage_kml");
+
 
 #####################
 
 
-print "Index<br>";flush();
+print "Index/Insert<br>";flush();
 
-$db->Execute("ALTER IGNORE TABLE `gridimage_kml` ADD UNIQUE (`x` ,`y`) ");
+
+$db->Execute("create table gridimage_kml like gridimage_kml0");
+$db->Execute("ALTER TABLE `gridimage_kml` ADD UNIQUE (`x` ,`y`) "); # IGNORE removed in 5.7
+$db->Execute("INSERT IGNORE INTO gridimage_kml SELECT * FROM gridimage_kml0");
 
 /* done by the unique index above! 
 print "Select<br>";flush();
@@ -101,7 +101,6 @@ delete from gridimage_kml
 where gridimage_id <> ANY 
 	(select gridimage_id from gridimage_kml group by x,y)");
 */
-
 
 #####################
 
@@ -113,7 +112,8 @@ $db->Execute("
 create TEMPORARY table gridimage_kml2 ENGINE=HEAP
 select gridimage_id from gridimage_kml group by x div 3,y div 3
 ");
-$db->Execute("ALTER IGNORE TABLE `gridimage_kml2` ADD UNIQUE (gridimage_id) ");
+#$db->Execute("ALTER IGNORE TABLE `gridimage_kml2` ADD UNIQUE (gridimage_id) "); # IGNORE removed in 5.7
+$db->Execute("ALTER TABLE `gridimage_kml2` ADD UNIQUE (gridimage_id) ");
 
 
 #####################

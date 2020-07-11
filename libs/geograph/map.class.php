@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: map.class.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: map.class.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 8822 $
+* @version $Revision: 9102 $
 */
 
 /**
@@ -467,7 +467,7 @@ class GeographMap
 		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
 		$y_km=$this->map_y + floor($y/$this->pixels_per_km);
 		
-		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where CONTAINS( GeomFromText('POINT($x_km $y_km)'),point_xy )");
+		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where MBRIntersects( ST_GeomFromText('POINT($x_km $y_km)'),point_xy )");
 			
 		if (!empty($row['reference_index'])) {
 			$this->gridref = $row['grid_reference'];
@@ -488,7 +488,7 @@ class GeographMap
 			$x_lim=$x_km-100;
 			$y_lim=$y_km-100;
 			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
-				where CONTAINS( geometry_boundary,	GeomFromText('POINT($x_km $y_km)'))
+				where MBRIntersects( geometry_boundary,	ST_GeomFromText('POINT($x_km $y_km)'))
 				and (origin_x > $x_lim) and (origin_y > $y_lim)
 				order by $order_by limit 1";
 
@@ -1902,7 +1902,7 @@ class GeographMap
 		
 		//now plot all squares in the desired area
 		$sql="select x,y,percent_land,reference_index from gridsquare where $riwhere
-			CONTAINS( GeomFromText($rectangle),	point_xy)";
+			MBRIntersects( ST_GeomFromText($rectangle),	point_xy)";
 
 		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
@@ -2036,7 +2036,7 @@ class GeographMap
 
 			//because we are only interested if any photos on tile, use limit 1 (added by getOne) rather than a count(*)
 			$sql="select gridimage_id from gridimage_search where 
-					CONTAINS( GeomFromText($rectangle),	point_xy) and
+					MBRIntersects( ST_GeomFromText($rectangle),	point_xy) and
 					user_id = $user_id";
 		}
 		$id = $db->getOne($sql);
@@ -2167,7 +2167,7 @@ class GeographMap
 			# coverage map
 			$number = !empty($this->minimum)?intval($this->minimum):0;
 			#$sql="select x,y,gridsquare_id,has_geographs from gridsquare where $riwhere
-			#	CONTAINS( GeomFromText($rectangle),	point_xy)
+			#	MBRIntersects( ST_GeomFromText($rectangle),	point_xy)
 			#	and imagecount>$number";
 			#FIXME remove reference_index,x,y
 			$whereuser = '';
@@ -2180,7 +2180,7 @@ class GeographMap
 		} else if ($this->type_or_user > 0) {
 			# personal map
 			#$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where $riwhere
-			#	CONTAINS( GeomFromText($rectangle),	point_xy) and
+			#	MBRIntersects( ST_GeomFromText($rectangle),	point_xy) and
 			#	user_id = {$this->type_or_user} group by grid_reference";
 			$whereuser = "and user_id = {$this->type_or_user}";
 			$sql="select gridsquare_id,sum(moderation_status = 'geograph') as has_geographs,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridimage_search using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM $whereuser group by gridsquare_id";
@@ -2188,7 +2188,7 @@ class GeographMap
 			# depth map
 			$number = !empty($this->minimum)?intval($this->minimum):0;
 			#$sql="select x,y,gridsquare_id,imagecount from gridsquare where $riwhere
-			#	CONTAINS( GeomFromText($rectangle),	point_xy)
+			#	MBRIntersects( ST_GeomFromText($rectangle),	point_xy)
 			#	and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
 			$whereuser = '';
 			if (!empty($this->mapDateCrit)) {
@@ -2656,13 +2656,13 @@ class GeographMap
 					group by gridsquare_id";
 			} else {
 				$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where $riwhere
-					CONTAINS( GeomFromText($rectangle),	point_xy) and
+					MBRIntersects( ST_GeomFromText($rectangle),	point_xy) and
 					user_id = {$this->type_or_user} group by grid_reference";
 			}
 		} else {
 			$number = !empty($this->minimum)?intval($this->minimum):0;
 			$sql="select x,y,gridsquare_id,has_geographs from gridsquare where $riwhere
-				CONTAINS( GeomFromText($rectangle),	point_xy)
+				MBRIntersects( ST_GeomFromText($rectangle),	point_xy)
 				and imagecount>$number";
 		}
 
@@ -2939,7 +2939,7 @@ class GeographMap
 				inner join gridimage2 gi using(gridsquare_id)
 				inner join gridimage_group gg using(gridimage_id)
 				
-			group by gi.gridsquare_id "; #where CONTAINS( GeomFromText($rectangle),	point_xy) 
+			group by gi.gridsquare_id "; #where MBRIntersects( ST_GeomFromText($rectangle),	point_xy) 
 			
 			$sql="select * from gridsquare_group_count";
 			
@@ -2948,12 +2948,12 @@ class GeographMap
 			from 
 			gridsquare gs 
 			inner join gridimage gi using(gridsquare_id)
-			where $riwhere CONTAINS( GeomFromText($rectangle),	point_xy) and
+			where $riwhere MBRIntersects( ST_GeomFromText($rectangle),	point_xy) and
 			submitted < '{$this->mapDateStart}'
 			group by gi.gridsquare_id ";
 		} else {
 		$sql="select x,y,gridsquare_id,imagecount from gridsquare where $riwhere
-			CONTAINS( GeomFromText($rectangle),	point_xy)
+			MBRIntersects( ST_GeomFromText($rectangle),	point_xy)
 			and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
 		}
 
@@ -3098,7 +3098,7 @@ class GeographMap
 				from 
 				gridsquare gs 
 				inner join gridimage gi using(gridsquare_id)
-				where $riwhere CONTAINS( GeomFromText($rectangle),	point_xy) and
+				where $riwhere MBRIntersects( ST_GeomFromText($rectangle),	point_xy) and
 				imagetaken LIKE '{$this->displayYear}%'
 				group by gi.gridsquare_id ";
 		
@@ -3107,7 +3107,7 @@ class GeographMap
 				from 
 				gridsquare gs 
 				inner join gridimage gi using(gridsquare_id)
-				where $riwhere CONTAINS( GeomFromText($rectangle),	point_xy) and
+				where $riwhere MBRIntersects( ST_GeomFromText($rectangle),	point_xy) and
 				submitted < '{$this->mapDateStart}'
 				group by gi.gridsquare_id ";
 		}
@@ -3233,19 +3233,19 @@ class GeographMap
 			if ($this->type_or_user < -2007) {
 			$sql="select x,y,gi.gridimage_id from gridimage_search gi
 			where 
-			CONTAINS( GeomFromText($rectangle),	point_xy) and imagetaken = '".($this->type_or_user * -1)."-12-25'
+			MBRIntersects( ST_GeomFromText($rectangle),	point_xy) and imagetaken = '".($this->type_or_user * -1)."-12-25'
 			and( gi.imageclass LIKE '%christmas%') 
 			order by rand()";
 			} else {
 			$sql="select x,y,gi.gridimage_id from gridimage_search gi
 			where 
-			CONTAINS( GeomFromText($rectangle),	point_xy) and imagetaken = '".($this->type_or_user * -1)."-12-25'
+			MBRIntersects( ST_GeomFromText($rectangle),	point_xy) and imagetaken = '".($this->type_or_user * -1)."-12-25'
 			 order by ( (gi.title LIKE '%xmas%' OR gi.comment LIKE '%xmas%' OR gi.imageclass LIKE '%xmas%') OR (gi.title LIKE '%christmas%' OR gi.comment LIKE '%christmas%' OR gi.imageclass LIKE '%christmas%') ), rand()";
 			} 
 		} elseif (1) {
 			$sql="select x,y,gi.gridimage_id from gridimage_search gi
 			where 
-			CONTAINS( GeomFromText($rectangle),	point_xy)
+			MBRIntersects( ST_GeomFromText($rectangle),	point_xy)
 			and seq_no = 1 group by FLOOR(x/10),FLOOR(y/10) order by rand() limit 600";
 			#inner join gridimage_post gp on (gi.gridimage_id = gp.gridimage_id and gp.topic_id = 1006)
 			
@@ -3257,7 +3257,7 @@ class GeographMap
 		} else {
 		
 		$sql="select x,y,grid_reference from gridsquare where 
-			CONTAINS( GeomFromText($rectangle),	point_xy)
+			MBRIntersects( ST_GeomFromText($rectangle),	point_xy)
 			and imagecount>0 group by FLOOR(x/30),FLOOR(y/30) order by rand() limit 500";
 		}
 		
@@ -3399,18 +3399,18 @@ class GeographMap
 if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1 ) || $reference_index >= 3) {
 	//$countries = "'EN','WA','SC'";
 	//FIXME either use 
-        //   CONTAINS( GeomFromText($rectangle),	point_en) 
+        //   MBRIntersects( ST_GeomFromText($rectangle),	point_en) 
         //   AND reference_index = $reference_index
 	//(some towns are missing, then) or
-        //   CONTAINS( GeomFromText($rectanglexy),	point_xy) 
-#CONTAINS( GeomFromText($rectangle),	point_en) 
+        //   MBRIntersects( ST_GeomFromText($rectanglexy),	point_xy) 
+#MBRIntersects( ST_GeomFromText($rectangle),	point_en) 
 #AND reference_index = $reference_index
 $sql = <<<END
 SELECT short_name as name,e,n,s,quad,reference_index
 FROM loc_towns
 WHERE 
  $crit
-CONTAINS( GeomFromText($rectanglexy),	point_xy) 
+MBRIntersects( ST_GeomFromText($rectanglexy),	point_xy) 
 ORDER BY s
 END;
 #GROUP BY FLOOR(e/$div),FLOOR(n/$div)
@@ -3424,7 +3424,7 @@ FROM loc_placenames
 INNER JOIN `loc_wikipedia` ON ( full_name = text ) 
 WHERE dsg = 'PPL' AND
 loc_wikipedia.country IN ($countries) AND 
-CONTAINS( GeomFromText($rectangle),	point_en) 
+MBRIntersects( ST_GeomFromText($rectangle),	point_en) 
 GROUP BY gns_ufi
 ORDER BY RAND()
 END;
@@ -3627,18 +3627,18 @@ END;
 if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1 ) || $reference_index >= 3) {
 	//$countries = "'EN','WA','SC'";
 	//FIXME either use 
-	//   CONTAINS( GeomFromText($rectangle),	point_en) 
+	//   MBRIntersects( ST_GeomFromText($rectangle),	point_en) 
 	//   AND reference_index = $reference_index
 	//(some towns are missing, then) or
-	//   CONTAINS( GeomFromText($rectanglexy),	point_xy) 
-#CONTAINS( GeomFromText($rectangle),	point_en) 
+	//   MBRIntersects( ST_GeomFromText($rectanglexy),	point_xy) 
+#MBRIntersects( ST_GeomFromText($rectangle),	point_en) 
 #AND reference_index = $reference_index
 $sql = <<<END
 SELECT short_name as name,e,n,s,quad
 FROM loc_towns
 WHERE 
  $crit
-CONTAINS( GeomFromText($rectanglexy),	point_xy) 
+MBRIntersects( ST_GeomFromText($rectanglexy),	point_xy) 
 ORDER BY s
 END;
 #GROUP BY FLOOR(e/$div),FLOOR(n/$div)
@@ -3652,7 +3652,7 @@ FROM loc_placenames
 INNER JOIN `loc_wikipedia` ON ( full_name = text ) 
 WHERE dsg = 'PPL' AND
 loc_wikipedia.country IN ($countries) AND 
-CONTAINS( GeomFromText($rectangle),	point_en) 
+MBRIntersects( ST_GeomFromText($rectangle),	point_en) 
 GROUP BY gns_ufi
 ORDER BY RAND()
 END;
@@ -3765,7 +3765,7 @@ END;
 				$ymin -= 100;
 				$rectangle = "'POLYGON(($xmin $ymin,$xmax $ymin,$xmax $ymax,$xmin $ymax,$xmin $ymin))'";#FIXME
 				$sql="select * from gridprefix where ".
-					"$riwhere and CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
+					"$riwhere and MBRIntersects( ST_GeomFromText($rectangle),	point_origin_xy) ".
 					"and landcount>0";
 
 				$recordSet = $db->Execute($sql);
@@ -3867,7 +3867,7 @@ END;
 			$ymin -= 100;
 			$rectangle = "'POLYGON(($xmin $ymin,$xmax $ymin,$xmax $ymax,$xmin $ymax,$xmin $ymin))'";#FIXME
 			$sql="select * from gridprefix where ".
-				"$riwhere and CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
+				"$riwhere and MBRIntersects( ST_GeomFromText($rectangle),	point_origin_xy) ".
 				"and landcount>0";
 
 			$recordSet = $db->Execute($sql);
@@ -4126,7 +4126,7 @@ END;
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		
 		$sql="select * from gridprefix where ".
-			"$riwhere CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
+			"$riwhere MBRIntersects( ST_GeomFromText($rectangle),	point_origin_xy) ".
 			"and landcount>0";
 
 		$recordSet = $db->Execute($sql);
@@ -4386,7 +4386,7 @@ END;
 				) 
 				left join user using(user_id)
 				where 
-				CONTAINS( GeomFromText($rectangle),	point_xy)
+				MBRIntersects( ST_GeomFromText($rectangle),	point_xy)
 				and percent_land<>0 
 				group by gs.grid_reference order by y,x";
 		}
@@ -4514,7 +4514,7 @@ END;
 				) 
 				left join user using(user_id)
 				where 
-				CONTAINS( GeomFromText($rectangle),	point_xy)
+				MBRIntersects( ST_GeomFromText($rectangle),	point_xy)
 				and percent_land<>0 
 				group by gs.grid_reference order by y,x";
 		} else {
@@ -4524,7 +4524,7 @@ END;
 				from gridsquare gs
 				left join gridimage gi on(gi.gridsquare_id = gs.gridsquare_id $where_crit2 )
 				where 
-				CONTAINS( GeomFromText($rectangle),	point_xy)
+				MBRIntersects( ST_GeomFromText($rectangle),	point_xy)
 				and percent_land<>0 
 				group by gs.gridsquare_id order by y,x";
 		}

@@ -383,12 +383,12 @@ if (isset($_GET['map']))
 					(natnorthings DIV 100 * 100) AS natnorthings,
 					count(*) as imagecount 
 					from gridimage inner join gridsquare using (gridsquare_id) where 
-					CONTAINS( GeomFromText($rectangle),	point_xy)
+					MBRIntersects( ST_GeomFromText($rectangle),	point_xy)
 					and moderation_status = 'geograph' and natgrlen <= 3
 					group by nateastings DIV 100, natnorthings DIV 100";
 			} else {
 				$sql="select x,y,imagecount,percent_land,has_geographs from gridsquare where 
-					CONTAINS( GeomFromText($rectangle),	point_xy)";
+					MBRIntersects( ST_GeomFromText($rectangle),	point_xy)";
 			}
 			
 			/////////////////////////

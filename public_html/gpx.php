@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: gpx.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: gpx.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -156,7 +156,7 @@ if (isset($_GET['id']))  {
 
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-				$sql_where .= "CONTAINS(GeomFromText($rectangle),gs.point_xy)";
+				$sql_where .= "MBRIntersects(ST_GeomFromText($rectangle),gs.point_xy)";
 				
 				//shame cant use dist_sqd in the next line!
 				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d); // HAVING?

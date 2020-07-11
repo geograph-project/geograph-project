@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: buildgridimage_search.php 8821 2018-09-13 01:10:07Z hansjorg $
+ * $Id: buildgridimage_search.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -117,7 +117,7 @@ if (isset($_POST['recreate']))
 
 		echo "<p>Rebuilding gridimage_search...</p>";flush();
 		$db->Execute("INSERT INTO gridimage_search
-			SELECT gridimage_id, gi.user_id, moderation_status, title, title2, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,comment2,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)')
+			SELECT gridimage_id, gi.user_id, moderation_status, title, title2, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,comment2,0,0,ftf,seq_no,point_xy,ST_GeomFromText('POINT(0 0)')
 			FROM tmpimg AS gi
 			INNER JOIN tmpsq AS gs
 			USING ( gridsquare_id )
@@ -139,7 +139,7 @@ if (isset($_POST['recreate']))
 
 
 		$db->Execute("INSERT INTO gridimage_search
-			SELECT gridimage_id, gi.user_id, moderation_status, title, title2, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,comment2,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)')
+			SELECT gridimage_id, gi.user_id, moderation_status, title, title2, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,comment2,0,0,ftf,seq_no,point_xy,ST_GeomFromText('POINT(0 0)')
 			FROM gridimage AS gi
 			INNER JOIN gridsquare AS gs
 			USING ( gridsquare_id )
@@ -175,7 +175,7 @@ if (!empty($_POST['update']))
 			list($lat,$long) = $conv->internal_to_wgs84($image['x'],$image['y'],$image['reference_index']);
 		}
 	
-		$db2->Execute("UPDATE LOW_PRIORITY gridimage_search SET wgs84_lat = $lat, wgs84_long = $long,point_ll = GeomFromText('POINT($long $lat)') WHERE gridimage_id = ".$image['gridimage_id']);
+		$db2->Execute("UPDATE LOW_PRIORITY gridimage_search SET wgs84_lat = $lat, wgs84_long = $long,point_ll = ST_GeomFromText('POINT($long $lat)') WHERE gridimage_id = ".$image['gridimage_id']);
 		
 		if (++$count%500==0) {
 				printf("done %d at <b>%d</b> seconds<br/>",$count,time()-$start);

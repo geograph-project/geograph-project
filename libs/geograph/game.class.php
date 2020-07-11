@@ -299,7 +299,7 @@ class game {
 
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-				$where = "CONTAINS(GeomFromText($rectangle),point_xy)";
+				$where = "MBRIntersects(ST_GeomFromText($rectangle),point_xy)";
 				
 				break;
 		

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: conversions.class.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: conversions.class.php 9102 2020-07-11 01:41:38Z hansjorg $
  *
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -54,7 +54,7 @@ function ExifConvertDegMinSecToDD($deg, $min, $sec) {
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision: 8822 $
+* @version $Revision: 9102 $
 */
 
 	
@@ -203,7 +203,9 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 	$x_lim=$x-100;
 	$y_lim=$y-100;
 	$sql="select prefix from gridprefix ".
-		"where CONTAINS(geometry_boundary, GeomFromText('POINT($x $y)')) ".
+		"where MBRIntersects(geometry_boundary, ST_GeomFromText('POINT($x $y)')) ".
+		#"where GeoContains(geometry_boundary, ST_GeomFromText('POINT($x $y)')) ".
+		#"where CONTAINS(geometry_boundary, GeomFromText('POINT($x $y)')) ".
 		"and (origin_x > $x_lim) and (origin_y > $y_lim) ".
 		"and reference_index=$reference_index";
 	$prefix=$db->GetOne($sql);
@@ -265,7 +267,10 @@ function internal_to_national($x,$y,$reference_index = 0,$doshift = true) {
 	if (!$reference_index) {
 		$db = $this->_getDB();
 		
-		$reference_index=$db->GetOne("select reference_index from gridsquare where CONTAINS( GeomFromText('POINT($x $y)'),point_xy )");
+		#$reference_index=$db->GetOne("select reference_index from gridsquare where GeoContains( ST_GeomFromText('POINT($x $y)'),point_xy )"); # This is very slow!
+		#$reference_index=$db->GetOne("select reference_index from gridsquare where CONTAINS( GeomFromText('POINT($x $y)'),point_xy )");
+		#$reference_index=$db->GetOne("select reference_index from gridsquare where Equals( ST_GeomFromText('POINT($x $y)'),point_xy )"); # deprecated
+		$reference_index=$db->GetOne("select reference_index from gridsquare where MBRIntersects( ST_GeomFromText('POINT($x $y)'),point_xy )");
 		
 		//But what to do when the square is not on land??
 		
@@ -280,7 +285,9 @@ function internal_to_national($x,$y,$reference_index = 0,$doshift = true) {
 			#	"where $x between origin_x and (origin_x+width-1) and ".
 			#	"$y between origin_y and (origin_y+height-1) $where_crit";
 			$sql="select reference_index from gridprefix ".
-				"where CONTAINS(geometry_boundary, GeomFromText('POINT($x $y)')) and (origin_x > $x_lim) and (origin_y > $y_lim) ".
+				"where MBRIntersects(geometry_boundary, ST_GeomFromText('POINT($x $y)')) and (origin_x > $x_lim) and (origin_y > $y_lim) ".
+				#"where GeoContains(geometry_boundary, ST_GeomFromText('POINT($x $y)')) and (origin_x > $x_lim) and (origin_y > $y_lim) ".
+				#"where CONTAINS(geometry_boundary, GeomFromText('POINT($x $y)')) and (origin_x > $x_lim) and (origin_y > $y_lim) ".
 				$where_crit;
 			$reference_index=$db->GetOne($sql);
 		}

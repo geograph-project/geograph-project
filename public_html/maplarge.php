@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: maplarge.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: maplarge.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -122,7 +122,7 @@ count(distinct imageclass) as categories
 FROM 
 	gridimage_search
 WHERE 
-	CONTAINS(GeomFromText($rectangle),point_xy) AND
+	MBRIntersects(ST_GeomFromText($rectangle),point_xy) AND
 	moderation_status = 'geograph' AND
 	ftf = 1
 GROUP BY user_id,realname

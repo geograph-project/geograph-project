@@ -62,7 +62,7 @@ $bottom=$prefix['origin_y'];
 
 $rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-$sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
+$sql_where = "MBRIntersects(ST_GeomFromText($rectangle),point_xy)";
 
 $sql_where .= ' and reference_index = '.$prefix['reference_index'].' ';
 

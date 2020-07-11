@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: mapfixer.php 8821 2018-09-13 01:10:07Z hansjorg $
+ * $Id: mapfixer.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -143,7 +143,7 @@ if (isset($_GET['gridref']))
 					$y=$prefix['origin_y'] + $northings;
 
 					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy) ".
-						"values($x,$y,$percent,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)') )";
+						"values($x,$y,$percent,'$gridref',{$prefix['reference_index']},ST_GeomFromText('POINT($x $y)') )";
 					$db->Execute($sql);
 					$gridsquare_id=$db->Insert_ID();
 				} else {

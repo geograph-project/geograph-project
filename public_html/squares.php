@@ -87,7 +87,7 @@ if ($grid_ok)
 
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-		$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
+		$sql_where .= "MBRIntersects(ST_GeomFromText($rectangle),point_xy)";
 		
 		if (empty($_GET['s'])) {
 			//shame cant use dist_sqd in the next line!

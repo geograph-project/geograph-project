@@ -221,11 +221,11 @@ if (   isset($_POST['submit'])
 		$sqlcolumns[]  = "cx";
 		$sqlvalues[]   = $db->Quote($cy);
 		$sqlcolumns[]  = "cy";
-		$sqlvalues[]   = "GeomFromText('POINT({$e} {$n})')";
+		$sqlvalues[]   = "ST_GeomFromText('POINT({$e} {$n})')";
 		$sqlcolumns[]  = "point_en";
-		$sqlvalues[]   = "GeomFromText('POINT({$x} {$y})')";
+		$sqlvalues[]   = "ST_GeomFromText('POINT({$x} {$y})')";
 		$sqlcolumns[]  = "point_xy";
-		$sqlvalues[]   = "GeomFromText('POINT({$cx} {$cy})')";
+		$sqlvalues[]   = "ST_GeomFromText('POINT({$cx} {$cy})')";
 		$sqlcolumns[]  = "point_cxy";
 		$sql = 'INSERT INTO loc_towns ('.implode(',',$sqlcolumns).') VALUES ('.implode(',',$sqlvalues).')';
 		$row['sql'] = $sql;

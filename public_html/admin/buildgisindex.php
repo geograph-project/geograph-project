@@ -89,7 +89,7 @@ if (isset($_POST['go']))
 
 			$boundary = "'POLYGON((".implode(',',$poly)."))'";
 
-			$db->Execute("UPDATE gridprefix SET geometry_boundary = GeomFromText($boundary) WHERE prefix = '".$recordSet->fields['prefix']."'");
+			$db->Execute("UPDATE gridprefix SET geometry_boundary = ST_GeomFromText($boundary) WHERE prefix = '".$recordSet->fields['prefix']."'");
 
 			printf("done %s at <b>%d</b> seconds $boundary<BR>",$recordSet->fields['prefix'],time()-$tim);
 			flush();

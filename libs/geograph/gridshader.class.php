@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: gridshader.class.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: gridshader.class.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 8822 $
+* @version $Revision: 9102 $
 */
 
 
@@ -166,7 +166,7 @@ class GridShader
 							if (!$ok && $createsquares && $percent_land != 0) {
 								if (!$dryrun) {
 									$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land,point_xy) ".
-										"values('{$gridref}','{$reference_index}',$gridx,$gridy,0,GeomFromText('POINT($gridx $gridy)'))";
+										"values('{$gridref}','{$reference_index}',$gridx,$gridy,0,ST_GeomFromText('POINT($gridx $gridy)'))";
 									$this->db->Execute($sql);
 									$gsquare = $this->db->GetRow("select gridsquare_id,percent_land from gridsquare where x='$gridx' and y='$gridy'");
 								} else {
@@ -253,7 +253,7 @@ class GridShader
 								{
 									if ($setpercland)
 										$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land,point_xy) ".
-											"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land,GeomFromText('POINT($gridx $gridy)'))";
+											"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land,ST_GeomFromText('POINT($gridx $gridy)'))";
 									else
 										$sql="insert into gridsquare_percentage (gridsquare_id,level,community_id,percent) ".
 											"values('{$gsquare['gridsquare_id']}','$level','$cid','$percent_land')";

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: mapmosaic.class.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: mapmosaic.class.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 8822 $
+* @version $Revision: 9102 $
 */
 
 
@@ -878,7 +878,7 @@ class GeographMapMosaic
 			$y_km=$map_y + round($y/$this->pixels_per_unit);
 		}
 		
-		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where CONTAINS( GeomFromText('POINT($x_km $y_km)'),point_xy )");
+		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where MBRIntersects( ST_GeomFromText('POINT($x_km $y_km)'),point_xy )");
 			
 		if (!empty($row['reference_index'])) {
 			$this->gridref = $row['grid_reference'];
@@ -901,7 +901,7 @@ class GeographMapMosaic
 			$y_lim=$y_point-100;
 			$point = "'POINT($x_point $y_point)'";
 			$sql="select prefix,origin_x,origin_y,reference_index from gridprefix 
-				where CONTAINS(geometry_boundary, GeomFromText($point)) and (origin_x > $x_lim) and (origin_y > $y_lim)
+				where MBRIntersects(geometry_boundary, ST_GeomFromText($point)) and (origin_x > $x_lim) and (origin_y > $y_lim)
 				order by landcount desc, reference_index desc limit 1";
 			$prefix=$db->GetRow($sql);
 			

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: gridsquare.class.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: gridsquare.class.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 8822 $
+* @version $Revision: 9102 $
 */
 
 include_messages('class_gridsquare');
@@ -793,7 +793,7 @@ class GridSquare
 		$internalx += $dx;
 		$internaly += $dy;
 		#trigger_error("  ->$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
-		$square = $db->GetRow("select * from gridsquare where CONTAINS( GeomFromText('POINT($internalx $internaly)'),point_xy ) order by percent_land desc limit 1");
+		$square = $db->GetRow("select * from gridsquare where MBRIntersects( ST_GeomFromText('POINT($internalx $internaly)'),point_xy ) order by percent_land desc limit 1");
 		if (count($square))
 		{		
 			$ok=true;
@@ -929,7 +929,7 @@ class GridSquare
 					//to indicate it needs review, and also to prevent it being
 					//used in further findNearby calls
 					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy,permit_photographs,permit_geographs) 
-						values($x,$y,-1,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)'),0,0)";
+						values($x,$y,-1,'$gridref',{$prefix['reference_index']},ST_GeomFromText('POINT($x $y)'),0,0)";
 					$db->Execute($sql);
 					$gridimage_id=$db->Insert_ID();
 					$this->setServices('');
@@ -993,8 +993,8 @@ class GridSquare
 		$sql="select *,
 			power(x-$x,2)+power(y-$y,2) as distance
 			from gridsquare where
-			CONTAINS( 	
-				GeomFromText($rectangle),
+			MBRIntersects( 	
+				ST_GeomFromText($rectangle),
 				point_xy)
 			$ofilter
 			order by distance asc limit 1";

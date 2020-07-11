@@ -86,8 +86,8 @@ class Gazetteer
 				from
 					os_gaz
 				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
+					MBRIntersects( 	
+						ST_GeomFromText($rectangle),
 						point_en)
 				order by distance asc,f_code+0,def_nam");
 		} else if ($CONF['use_gazetteer'] == 'towns') {
@@ -104,8 +104,8 @@ class Gazetteer
 				from 
 					loc_towns
 				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
+					MBRIntersects( 	
+						ST_GeomFromText($rectangle),
 						point_en) AND
 					reference_index = {$reference_index}
 				order by distance asc";
@@ -134,8 +134,8 @@ class Gazetteer
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 				where
 					dsg LIKE 'PPL%' AND 
-					CONTAINS( 	
-						GeomFromText($rectangle),
+					MBRIntersects( 	
+						ST_GeomFromText($rectangle),
 						point_en) AND
 					loc_placenames.reference_index = {$reference_index}
 				group by gns_ufi
@@ -179,7 +179,7 @@ class Gazetteer
 			//this is actully slower: 0.029 vs 0.025 (how to do it without a Distance() function)
 			//$point = "'POINT({$e} {$n})'";
 			//$sql = 	ROUND(GLength(LineStringFromWKB(LineString(AsBinary(point_en),
-			//				AsBinary(GeomFromText($point))  )))) as distance
+			//				AsBinary(ST_GeomFromText($point))  )))) as distance
 
 		if ($gazetteer == 'OS250' && $reference_index == 1) {
 			$places = array();
@@ -201,8 +201,8 @@ class Gazetteer
 				from
 					os_gaz_250
 				where
-					CONTAINS(
-						GeomFromText($rectangle),
+					MBRIntersects(
+						ST_GeomFromText($rectangle),
 						point_en)
 				order by distance asc limit 1");
 
@@ -239,8 +239,8 @@ class Gazetteer
 					from
 						os_gaz
 					where
-						CONTAINS( 	
-							GeomFromText($rectangle),
+						MBRIntersects( 	
+							ST_GeomFromText($rectangle),
 							point_en) AND
 						f_code not in ($codes)
 					order by distance asc,f_code+0 asc limit 1");
@@ -278,8 +278,8 @@ class Gazetteer
 					from
 						os_gaz
 					where
-						CONTAINS( 	
-							GeomFromText($rectangle),
+						MBRIntersects( 	
+							ST_GeomFromText($rectangle),
 							point_en) AND
 						f_code in ('C','T')
 						order by f_code+0 asc,distance asc limit 1");
@@ -310,8 +310,8 @@ class Gazetteer
 					from
 						os_gaz
 					where
-						CONTAINS( 	
-							GeomFromText($rectangle),
+						MBRIntersects( 	
+							ST_GeomFromText($rectangle),
 							point_en) AND
 						f_code in ($codes)
 					order by distance asc,f_code+0 asc limit 1");
@@ -342,8 +342,8 @@ class Gazetteer
 						from
 							os_gaz
 						where
-							CONTAINS( 	
-								GeomFromText($rectangle),
+							MBRIntersects( 	
+								ST_GeomFromText($rectangle),
 								point_en) AND
 							f_code not in ($codes)
 						order by distance asc,f_code+0 asc limit 1");
@@ -366,8 +366,8 @@ class Gazetteer
 				from
 					loc_abgaz
 				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
+					MBRIntersects( 	
+						ST_GeomFromText($rectangle),
 						point_en)
 				order by distance asc limit 1");
 		} else if ($gazetteer == 'towns' /*&& $reference_index == 1*/) {
@@ -390,8 +390,8 @@ class Gazetteer
 				from 
 					loc_towns
 				where
-					CONTAINS( 	
-						GeomFromText($rectangle),
+					MBRIntersects( 	
+						ST_GeomFromText($rectangle),
 						point_en) AND
 					reference_index = {$reference_index}
 				order by odistance asc limit 1");
@@ -415,8 +415,8 @@ class Gazetteer
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 				where
 					dsg LIKE 'PPL%' AND 
-					CONTAINS( 	
-						GeomFromText($rectangle),
+					MBRIntersects( 	
+						ST_GeomFromText($rectangle),
 						point_en) AND
 					loc_placenames.reference_index = {$reference_index}
 				order by distance asc limit 1");
@@ -437,8 +437,8 @@ class Gazetteer
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 				where
 					dsg LIKE 'PPL%' AND 
-					CONTAINS( 	
-						GeomFromText($rectangle),
+					MBRIntersects( 	
+						ST_GeomFromText($rectangle),
 						point_en) AND
 					loc_placenames.reference_index = {$reference_index} and
 					power(e-{$e},2)+power(n-{$n},2) < $d

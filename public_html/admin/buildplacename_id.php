@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: buildplacename_id.php 8821 2018-09-13 01:10:07Z hansjorg $
+ * $Id: buildplacename_id.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -147,8 +147,8 @@ if (isset($_POST['go']))
 				$sql="select placename_id,
 					power(x-{$recordSet->fields['x']},2)+power(y-{$recordSet->fields['y']},2) as distance
 					from gridsquare where
-					CONTAINS( 	
-						GeomFromText($rectangle),
+					MBRIntersects( 	
+						ST_GeomFromText($rectangle),
 						point_xy)
 					$ofilter
 					order by distance asc limit 1";

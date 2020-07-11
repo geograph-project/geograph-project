@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: searchcriteria.class.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: searchcriteria.class.php 9102 2020-07-11 01:41:38Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision: 8822 $
+* @version $Revision: 9102 $
 */
 
 
@@ -237,7 +237,7 @@ class SearchCriteria
 			
 			$rectangle = "'POLYGON(($west $south,$east $south,$east $north,$west $north,$west $south))'";
 			
-			$sql_where = "CONTAINS(GeomFromText($rectangle),point_ll)";
+			$sql_where = "MBRIntersects(ST_GeomFromText($rectangle),point_ll)";
 			
 			$this->sphinx['impossible']++; //todo we might be able to transform it to a set of GR's?
 		} else {
@@ -254,7 +254,7 @@ class SearchCriteria
 				}
 
 				if ($this->limit8 == 1) {
-					$sql_where .= "CONTAINS( GeomFromText('POINT($x $y)'),point_xy )";
+					$sql_where .= "MBRIntersects( ST_GeomFromText('POINT($x $y)'),point_xy )";
 				} else {
 					$left=$x-$d;
 					$right=$x+$d-1;
@@ -263,7 +263,7 @@ class SearchCriteria
 
 					$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-					$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
+					$sql_where .= "MBRIntersects(ST_GeomFromText($rectangle),point_xy)";
 					if ($this->limit8 > 0) {
 						//shame cant use dist_sqd in the next line!
 						$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
@@ -507,7 +507,7 @@ class SearchCriteria
 			
 			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-			$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
+			$sql_where .= "MBRIntersects(ST_GeomFromText($rectangle),point_xy)";
 			
 			if (empty($this->limit4))
 				$sql_where .= ' and gs.reference_index = '.$prefix['reference_index'].' ';
@@ -803,8 +803,8 @@ class SearchCriteria
 
 		$sql="select count(*) 
 			from gridsquare where
-			CONTAINS( 	
-				GeomFromText($rectangle),
+			MBRIntersects( 	
+				ST_GeomFromText($rectangle),
 				point_xy)
 			AND imagecount<2
 			AND power(x-$x,2)+power(y-$y,2) <= ($radius*$radius)
