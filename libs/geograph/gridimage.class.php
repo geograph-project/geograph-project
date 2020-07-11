@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: gridimage.class.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: gridimage.class.php 9103 2020-07-11 02:04:23Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 8822 $
+* @version $Revision: 9103 $
 */
 
 include_messages('class_gridimage');
@@ -2258,7 +2258,7 @@ class GridImage
 			$notes = $db->Quote($notes);
 
 			$sql="REPLACE INTO gridimage_search
-			SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,$notes,point_xy,GeomFromText('POINT($long $lat)')
+			SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,$notes,point_xy,ST_GeomFromText('POINT($long $lat)')
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";
@@ -2268,7 +2268,7 @@ class GridImage
 			if ($row !== false && count($row)) {
 				$recent_id=$row['recent_id'];
 				$sql="REPLACE INTO gridimage_recent
-				SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,$notes,point_xy,GeomFromText('POINT($long $lat)'),$recent_id
+				SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,$notes,point_xy,ST_GeomFromText('POINT($long $lat)'),$recent_id
 				FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 				INNER JOIN user ON(gi.user_id=user.user_id)
 				WHERE gridimage_id = '{$this->gridimage_id}'";
