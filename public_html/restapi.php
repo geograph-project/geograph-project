@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: restapi.php 8300 2015-12-27 01:36:11Z hansjorg $
+ * $Id: restapi.php 9110 2020-07-13 01:15:40Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2006 Paul Dixon (lordelph@gmail.com)
@@ -157,7 +157,11 @@ class RestAPI
                                         $obj->author_url = "http://{$_SERVER['HTTP_HOST']}{$image->profile_link}";
 					$obj->web_page = "http://{$_SERVER['HTTP_HOST']}/photo/$gridimage_id";
 
-                                        $html = $image->getThumbnail(120,120);
+					if (strpos($_GET['url'],'_213x160') !== FALSE) {
+						$html = $image->getThumbnail(213,160);
+					} else {
+						$html = $image->getThumbnail(120,120);
+					}
                                         if (preg_match('/"(http.+?)"\s+width="(\d+)"\s+height="(\d+)"/',$html,$m)) {
 						$obj->thumbnail_url = $m[1];
 						$obj->thumbnail_width = $m[2];
@@ -224,6 +228,8 @@ class RestAPI
 					$obj = new EmptyClass;
 					
 					$obj->title = $image->title;
+					$obj->title1 = $image->title1;
+					$obj->title2 = $image->title2;
 					$obj->grid_reference = $image->grid_reference;
 					$obj->profile_link = $image->profile_link;
 					$obj->realname = $image->realname;
@@ -238,6 +244,8 @@ class RestAPI
 					$obj->submitted = strtotime($image->submitted);
 					$obj->category = $image->category;
 					$obj->comment = $image->comment;
+					$obj->comment1 = $image->comment1;
+					$obj->comment2 = $image->comment2;
 					$obj->wgs84_lat = $image->wgs84_lat;
 					$obj->wgs84_long = $image->wgs84_long;
 					
@@ -245,9 +253,11 @@ class RestAPI
 				} else {
 					echo '<status state="ok"/>';
 
-					echo '<title>'.xmlentities($image->title).'</title>';
+					echo '<title>'.xmlentities_utf8($image->title).'</title>';
+					echo '<title1>'.xmlentities_utf8($image->title1).'</title1>';
+					echo '<title2>'.xmlentities_utf8($image->title2).'</title2>';
 					echo '<gridref>'.htmlentities_latin($image->grid_reference).'</gridref>';
-					echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".xmlentities($image->realname).'</user>';
+					echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".xmlentities_utf8($image->realname).'</user>';
 
 					echo preg_replace('/alt=".*?" /','',$image->getFull());
 
@@ -255,8 +265,11 @@ class RestAPI
 					echo '<thumbnail>'.$details['server'].$details['url'].'</thumbnail>';
 					echo '<taken>'.htmlentities_latin($image->imagetaken).'</taken>';
 					echo '<submitted>'.htmlentities_latin($image->submitted).'</submitted>';
-					echo '<category>'.xmlentities($image->imageclass).'</category>';
-					echo '<comment><![CDATA['.xmlentities($image->comment).']]></comment>';
+					echo '<category>'.xmlentities_utf8($image->imageclass).'</category>';
+					echo '<comment><![CDATA['.xmlentities_utf8($image->comment).']]></comment>';
+					echo '<comment1><![CDATA['.xmlentities_utf8($image->comment1).']]></comment1>';
+					echo '<comment2><![CDATA['.xmlentities_utf8($image->comment2).']]></comment2>';
+					#echo '<comment>'.xmlentities($image->comment).'</comment>';
 					
 					$size = $image->_getFullSize(); //uses cached_size
 					if (!empty($size[4])) {
@@ -682,7 +695,7 @@ ini_set('memory_limit', '64M');
 		$profile=new GeographUser($uid);
 		if ($profile->realname)
 		{
-			header("Content-Type:text/xml");
+			header("Content-Type:text/xml;charset=UTF-8");
 					
 			echo "<data>\n";
 			$images=new ImageList;
@@ -724,7 +737,7 @@ ini_set('memory_limit', '64M');
 			}
 		} else {
 			customExpiresHeader(360,true,true);
-			header("Content-Type:text/xml");
+			header("Content-Type:text/xml;charset=UTF-8");
 			echo '<?xml version="1.0" encoding="UTF-8"?>';
 			if (empty($skip))
 				echo '<geograph>';

@@ -939,6 +939,12 @@ function xmlentities($s) {
 	return strtr($s, $trans);
 }
 
+function xmlentities_utf8($s) {
+	$trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES, 'ISO-8859-1');#FIXME use charset only for php versions 5.4.0+
+	foreach ($trans as $k=>$v) $trans[$k]= "&#".ord($k).";"; // encoding?
+	return mb_convert_encoding(strtr($s, $trans), "UTF-8", "Windows-1252");
+}
+
 
 function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtml = '',$showLastPage = false) {
 	static $r;
