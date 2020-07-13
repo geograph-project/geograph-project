@@ -106,7 +106,7 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
   	  <a title="Log out" href="/logout.php">logout</a>
   {else}
 	  You are not logged in
-	  <a title="Already registered? Login in here" href="/login.php">login</a>
+	  <a title="Already registered? Login in here" href="https://{$http_host}/login.php">login</a>
 		<span class="sep">|</span>
 	  <a title="Register to upload photos" href="https://{$http_host}/register.php">register</a>
   {/if}

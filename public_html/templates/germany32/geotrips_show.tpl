@@ -10,7 +10,7 @@
 {include file="_std_begin.tpl"}
 
 {if $google_maps_api_key}
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
+<script type="text/javascript" src="//maps.google.com/maps/api/js?v=3.6&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
 {/if}
 <script type="text/javascript" src="/ol/OpenLayers.js"></script>
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
@@ -133,7 +133,7 @@
 				attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 				sphericalMercator : true
 			},
-			16, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
+			16, "//tile.openstreetmap.org/${z}/${x}/${y}.png"
 		);
 		var osmmapnik = new OpenLayers.Layer.OSM(
 			null,
@@ -155,7 +155,7 @@
 		var topobase = new OpenLayers.Layer.XYrZ(
 			"Nop's Wanderreitkarte",
 			//[ "http://base.wanderreitkarte.de/base/${z}/${x}/${y}.png", "http://base2.wanderreitkarte.de/base/${z}/${x}/${y}.png"],
-			[ "http://topo.wanderreitkarte.de/topo/${z}/${x}/${y}.png", "http://topo2.wanderreitkarte.de/topo/${z}/${x}/${y}.png"], // topo3, topo4
+			[ "//topo.wanderreitkarte.de/topo/${z}/${x}/${y}.png", "//topo2.wanderreitkarte.de/topo/${z}/${x}/${y}.png"], // topo3, topo4
 			4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 			{
 				attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC, CIAT</a>)',
@@ -273,7 +273,7 @@
 		{if $image.group < 0}
 			// Define camera marker
 			pos=new OpenLayers.LonLat({$image.viewpoint.1},{$image.viewpoint.0});
-			thumburl = '{$image.gridimage->getThumbnail(213,160,3)|escape:"javascript"}';
+			thumburl = '{$image.gridimage->getThumbnail(213,160,3,false,'src',3)|escape:"javascript"}';
 			thumbwidth = {$image.gridimage->last_width};
 			thumbheight = {$image.gridimage->last_height};
 			content = makeHtml(
@@ -309,7 +309,7 @@
 		{if !$smarty.foreach.grouploop.first}
 			content += '<hr />';
 		{/if}
-			thumburl = '{$image.gridimage->getThumbnail(213,160,3)|escape:"javascript"}';
+			thumburl = '{$image.gridimage->getThumbnail(213,160,3,false,'src',3)|escape:"javascript"}';
 			thumbwidth = {$image.gridimage->last_width};
 			thumbheight = {$image.gridimage->last_height};
 			content += makeHtml(
@@ -365,7 +365,7 @@ AttachEvent(window,'load',initmap,false);
 	<h4>by <a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}</a></h4>{*FIXME H4?*}
 	<p style="text-align:center">{*FIXME title2*}
 	{foreach item=idx from=$selectedimages}<a href="/photo/{$images.$idx.gridimage_id}" title="{$images.$idx.title|escape:"html"}"
-	><img alt="{$images.$idx.title|escape:"html"}" class="inner" src="{$images.$idx.gridimage->getThumbnail(213,160,true)}" /></a>&nbsp;{/foreach}
+	><img alt="{$images.$idx.title|escape:"html"}" class="inner" src="{$images.$idx.gridimage->getThumbnail(213,160,true,false,'src',3)}" /></a>&nbsp;{/foreach}
 	</p>
 
 {if $trip.contfrom || $trip.nextpart}
@@ -402,7 +402,7 @@ AttachEvent(window,'load',initmap,false);
 		{foreach item=realname from=$realnames.$curuid name=rnloop}
 		<a href="/profile/{$trip.uid}?a={$realname|escape:"url"}">{$realname|escape:"html"}</a>{if !$smarty.foreach.rnloop.last}, {/if}{/foreach}{/if}{if !$smarty.foreach.uidlp.last}; {/if}{/foreach}
 		and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a>
-		<img alt="external link" title="" src="http://geo.hlipp.de/img/external.png" />.
+		<img alt="external link" title="" src="//geo.hlipp.de/img/external.png" />.
 	</p>
 </div>
 

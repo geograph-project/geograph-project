@@ -165,9 +165,9 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	{/if}
 </td>
 {if $user->user_id ne $image->user_id}
-<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="//{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="https://{$http_host}/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="//{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
-	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the contributor</a>
+	<a href="https://{$http_host}/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the contributor</a>
 </td>
 {/if}
 </tr>

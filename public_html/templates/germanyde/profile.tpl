@@ -83,7 +83,7 @@
 		{if $profile->public_email eq 1 && $profile->stats.images gt 0}
 			<li><b>E-Mail</b>: {mailto address=$profile->email encode="javascript"}</li>
 		{/if}
-		<li><a title="{$profile->realname|escape:'html'} kontaktieren" href="/usermsg.php?to={$profile->user_id}">Mitteilung an {$profile->realname|escape:'html'} senden</a></li>
+		<li><a title="{$profile->realname|escape:'html'} kontaktieren" href="https://{$http_host}/usermsg.php?to={$profile->user_id}">Mitteilung an {$profile->realname|escape:'html'} senden</a></li>
 	{else}
 		<li><b>E-Mail</b>: {mailto address=$profile->email encode="javascript"}
 		{if $profile->public_email ne 1} <em>(für andere nicht sichtbar)</em>{/if}
@@ -114,7 +114,7 @@
 {/if}
 
 {if $user->user_id eq $profile->user_id}
-	<p><a href="/profile.php?edit=1">Profil ändern</a>, falls gewünscht.</p> 	
+	<p><a href="https://{$http_host}/profile.php?edit=1">Profil ändern</a>, falls gewünscht.</p> 	
 {else}
 	<br/><br/>
 {/if}

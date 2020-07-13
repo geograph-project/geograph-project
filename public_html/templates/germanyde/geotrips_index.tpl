@@ -8,7 +8,7 @@
   <!--link rel="alternate" type="application/rss+xml" title="Geo-Trips RSS" href="/content/syndicator.php?scope[]=trip" /-->{* FIXME *}
 
 {*if $google_maps_api_key}
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
+<script type="text/javascript" src="//maps.google.com/maps/api/js?v=3.6&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
 {/if*}
 <script type="text/javascript" src="/ol/OpenLayers.js"></script>
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
@@ -75,7 +75,7 @@
 				attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a>-User (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 				sphericalMercator : true
 			},
-			16, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
+			16, "//tile.openstreetmap.org/${z}/${x}/${y}.png"
 		);
 		var osmmapnik = new OpenLayers.Layer.OSM(
 			null,
@@ -231,7 +231,7 @@ AttachEvent(window,'load',initmap,false);
 	{/if}
 	<div class="inner">
 		<div class="inner flt_r" style="max-width:213px">
-			<a href="geotrip_show.php?trip={$trip.id}"><img src="{$trip.gridimage->getThumbnail(213,160,true)}" alt="" title="{$triptitle|escape:"html"}" style="display: block;margin-left: auto;margin-right: auto;" /></a>
+			<a href="geotrip_show.php?trip={$trip.id}"><img src="{$trip.gridimage->getThumbnail(213,160,true,false,'src',3)}" alt="" title="{$triptitle|escape:"html"}" style="display: block;margin-left: auto;margin-right: auto;" /></a>
 			<!--br /-->
 			<span style="font-size:0.6em">Bild &copy;
 				<a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}{*FIXME realname*}</a>

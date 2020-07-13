@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: global.inc.php 8836 2018-09-16 02:01:01Z hansjorg $
+ * $Id: global.inc.php 9121 2020-07-13 01:37:28Z hansjorg $
  *
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 8836 $
+* @version $Revision: 9121 $
 */
 
 $MESSAGES = array();
@@ -400,10 +400,10 @@ class GeographPage extends Smarty
 			}
 		}
 
+		$cur_proto = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
+		$this->assign('curproto', $cur_proto);
 		if (count($CONF['languages'])) {
-			$cur_proto = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
 			$this->assign('languages', $CONF['languages']);
-			$this->assign('curproto', $cur_proto);
 			$this->assign('canonicalhost', reset($CONF['languages']));
 			$this->assign('canonicalreq', $_SERVER['REQUEST_URI']); # FIXME remove session id? # can be changed in specific scripts, e.g. on the map page
 			$this->assign('language', $CONF['lang']);

@@ -106,7 +106,7 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
   	  <a title="Ausloggen" href="/logout.php">Abmelden</a>
   {else}
 	  Nicht angemeldet:
-	  <a title="Schon registriert? Hier einloggen." href="/login.php">Anmelden</a>
+	  <a title="Schon registriert? Hier einloggen." href="https://{$http_host}/login.php">Anmelden</a>
 		<span class="sep">|</span>
 	  <a title="Registrieren um Fotos hochzuladen" href="https://{$http_host}/register.php">Registrieren</a>
   {/if}
