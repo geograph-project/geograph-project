@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: gridimage.class.php 9103 2020-07-11 02:04:23Z hansjorg $
+ * $Id: gridimage.class.php 9105 2020-07-13 00:57:46Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 9103 $
+* @version $Revision: 9105 $
 */
 
 include_messages('class_gridimage');
@@ -696,6 +696,7 @@ class GridImage
 			( $orderdesc ? "desc" : "asc"));
 		while (!$recordSet->EOF) {
 			$n=new GridImageNote;
+			$n->_setDB($db); // FIXME we get "mysqli_real_connect(): Too many open links (50)" otherwise
 			$n->loadFromRecordset($recordSet);
 			$notes[]=$n;
 			$recordSet->MoveNext();
