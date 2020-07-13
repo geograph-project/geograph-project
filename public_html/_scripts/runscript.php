@@ -25,6 +25,11 @@ $scripts=array(
 	'maps'=> "{$phpbin} {$phpopt} {$memopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/recreate_maps.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
 	'kml' => "{$phpbin} {$phpopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/recreate_kml.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
 	'tmp' => "{$phpbin} {$phpopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/cleanup_tmp.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
+	'dumpimg'=> "{$phpbin} {$phpopt} {$memopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/dump_tables.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']} --item='@images'",
+	'dumpp1'=> "{$phpbin} {$phpopt} {$memopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/dump_tables.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']} --item='@priority1'",
+	'dumpp2'=> "{$phpbin} {$phpopt} {$memopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/dump_tables.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']} --item='@priority2'",
+	'dumpp3'=> "{$phpbin} {$phpopt} {$memopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/dump_tables.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']} --item='@priority3'",
+	'dumpp4'=> "{$phpbin} {$phpopt} {$memopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/dump_tables.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']} --item='@priority4'",
 );
 
 $logfile=$_SERVER['DOCUMENT_ROOT']."/../log/runscript.log";

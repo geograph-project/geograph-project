@@ -180,6 +180,7 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /files/
+Disallow: /dumps/
 Disallow: /help/privacy
 Disallow: /help/privacy_en
 Disallow: /register.php
@@ -252,6 +253,7 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /files/
+Disallow: /dumps/
 Disallow: /help/privacy
 Disallow: /help/privacy_en
 Disallow: /register.php
@@ -324,6 +326,7 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /files/
+Disallow: /dumps/
 Disallow: /help/privacy
 Disallow: /help/privacy_en
 Disallow: /register.php
@@ -393,6 +396,7 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?
 Disallow: /stuff/kmltest
 Disallow: /files/
+Disallow: /dumps/
 Disallow: /help/privacy
 Disallow: /help/privacy_en
 Disallow: /register.php
