@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: gridimage.class.php 9105 2020-07-13 00:57:46Z hansjorg $
+ * $Id: gridimage.class.php 9111 2020-07-13 01:17:00Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 9105 $
+* @version $Revision: 9111 $
 */
 
 include_messages('class_gridimage');
@@ -2248,6 +2248,12 @@ class GridImage
 				list($lat,$long) = $conv->internal_to_wgs84($square->x,$square->y,$square->reference_index);
 			}
 
+			if (!empty($this->viewpoint_eastings)) {
+				list($vlat,$vlong) = $conv->national_to_wgs84($this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_refindex);
+			} else {
+				$vlat = $vlong = 0;
+			}
+
 			/* GROUP_CONCAT limits the resulting length, so using php... */
 			$notes = $db->GetCol("SELECT comment FROM gridimage_notes WHERE gridimage_id='{$this->gridimage_id}' and status='visible'");
 			if ($notes === false) {
@@ -2259,7 +2265,7 @@ class GridImage
 			$notes = $db->Quote($notes);
 
 			$sql="REPLACE INTO gridimage_search
-			SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,$notes,point_xy,ST_GeomFromText('POINT($long $lat)')
+			SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,$notes,point_xy,ST_GeomFromText('POINT($long $lat)'),$vlat as vlat,$vlong as vlong
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";
@@ -2269,7 +2275,7 @@ class GridImage
 			if ($row !== false && count($row)) {
 				$recent_id=$row['recent_id'];
 				$sql="REPLACE INTO gridimage_recent
-				SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,$notes,point_xy,ST_GeomFromText('POINT($long $lat)'),$recent_id
+				SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,$notes,point_xy,ST_GeomFromText('POINT($long $lat)'),$vlat as vlat,$vlong as vlong,$recent_id
 				FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 				INNER JOIN user ON(gi.user_id=user.user_id)
 				WHERE gridimage_id = '{$this->gridimage_id}'";

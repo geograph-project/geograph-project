@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: restapi.php 9110 2020-07-13 01:15:40Z hansjorg $
+ * $Id: restapi.php 9111 2020-07-13 01:17:00Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2006 Paul Dixon (lordelph@gmail.com)
@@ -248,6 +248,8 @@ class RestAPI
 					$obj->comment2 = $image->comment2;
 					$obj->wgs84_lat = $image->wgs84_lat;
 					$obj->wgs84_long = $image->wgs84_long;
+					$obj->vlat = $image->vlat;
+					$obj->vlong = $image->vlong;
 					
 					print $json->encode($obj);
 				} else {
@@ -270,6 +272,12 @@ class RestAPI
 					echo '<comment1><![CDATA['.xmlentities_utf8($image->comment1).']]></comment1>';
 					echo '<comment2><![CDATA['.xmlentities_utf8($image->comment2).']]></comment2>';
 					#echo '<comment>'.xmlentities($image->comment).'</comment>';
+					if (!empty($image->wgs84_lat)) {
+						echo '<location grid="'.($image->reference_index).'" lat="'.($image->wgs84_lat).'" long="'.($image->wgs84_long).'"/>';
+					}
+					if (!empty($image->vlat)) {
+						echo '<viewpoint lat="'.($image->vlat).'" long="'.($image->vlong).'"/>';
+					}
 					
 					$size = $image->_getFullSize(); //uses cached_size
 					if (!empty($size[4])) {
@@ -459,7 +467,7 @@ class RestAPI
 				if ($this->output=='json') {
 					require_once '3rdparty/JSON.php';
 					$json = new Services_JSON();
-					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1,'wgs84_lat'=>1,'wgs84_long'=>1);
+					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1,'wgs84_lat'=>1,'wgs84_long'=>1, 'vlat'=>1, 'vlong'=>1);
 					
 					foreach ($images as $i => $image) {
 						foreach ($image as $k => $v) {
