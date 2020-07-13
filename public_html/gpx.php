@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: gpx.php 9102 2020-07-11 01:41:38Z hansjorg $
+ * $Id: gpx.php 9113 2020-07-13 01:19:39Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -88,12 +88,22 @@ if (isset($_GET['id']))  {
 }		
 
 
-	
+	$db=GeographDatabaseConnection();
+
+	$rlevel=-2;
+	$rcid=-1;
+	$has_region = false;
 	if (isset($_REQUEST['submit'])) {
 		$d=(!empty($_REQUEST['distance']))?min(100,intval(stripslashes($_REQUEST['distance']))):5;
 				
 		$type=(isset($_REQUEST['type']))?stripslashes($_REQUEST['type']):'few';
 		$uid = isset($_REQUEST['user']) ? intval($_REQUEST['user']) : 0;
+		if (isset($_REQUEST['region']) &&  preg_match('/^\d+_\d+$/',$_REQUEST['region'])) {
+			list($rlevel,$rcid) = explode('_',$_REQUEST['region']);
+			$rlevel = intval($rlevel);
+			$rcid = intval($rcid);
+			$has_region = in_array($rlevel, $CONF['hier_statlevels']);
+		}
 		if ($uid) {
 			switch($type) {
 				case 'with': $typename = 'with'; $having = 'imgcount>0'; $crit = '1'; break;
@@ -116,53 +126,68 @@ if (isset($_GET['id']))  {
 			$having = "";
 			#$uidwhere = "";
 		}
-	
+		if ($has_region) {
+			$join = "inner join gridsquare_percentage gpr on (gs.gridsquare_id=gpr.gridsquare_id and gpr.percent > 0 and gpr.level=$rlevel and gpr.community_id=$rcid) ".$join;
+		}
+
+		$no_grid=false;
+		$grid_ok=false;
 		$square=new GridSquare;
 		if (!empty($_REQUEST['ll']) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$_REQUEST['ll'],$ll)) {
 			$conv = new Conversions;
 			list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
 			$grid_ok=$square->loadFromPosition($x, $y, true);
+		} elseif ($has_region && empty($_REQUEST['gridref'])) {
+			$no_grid=true;
 		} else {
 			$grid_ok=$square->setByFullGridRef($_REQUEST['gridref']);
 		}
 		
-		if ($grid_ok)
+		if ($grid_ok||$no_grid)
 		{
 			$smarty = new GeographPage;
 				
 			$template='gpx_download_gpx.tpl';
-			$cacheid = $square->grid_reference.'-'.($type).'-'.($d).'-'.($uid);
+			$cacheid = ($no_grid?'_':$square->grid_reference).'-'.($type).'-'.($no_grid?'_':$d).'-'.($uid).'-'.($rlevel).'_'.($rcid);
 		
 			//regenerate?
 			if (/*true ||*/ !$smarty->is_cached($template, $cacheid))
 			{
-				$searchdesc = "squares within {$d}km of {$square->grid_reference} $typename photographs";
+				$searchdesc = "squares".($no_grid?'':" within {$d}km of {$square->grid_reference}")." $typename photographs";
 				if ($uid) {
 					$profile = new GeographUser($uid);
 					$searchdesc .= " by user {$profile->realname} [#$uid]";
 				}
+				if ($has_region) {
+					$rname = $db->GetOne("select name from loc_hier where level=$rlevel and community_id=$rcid");
+					$searchdesc .= " in region {$rname} [$rlevel/$rcid]";
+				}
 				/*$smarty->caching = 0;*/
 				trigger_error(" $cacheid $searchdesc ", E_USER_WARNING);
-				
-				$x = $square->x;
-				$y = $square->y;
-				
-				$sql_where = $crit.' and ';
+				if ($no_grid) {
+					$sql_where = $crit;
+					$sql_order = ' gs.x,gs.y ';
+				} else {
+					$x = $square->x;
+					$y = $square->y;
+					
+					$sql_where = $crit.' and ';
 
-				$left=$x-$d;
-				$right=$x+$d;
-				$top=$y+$d;
-				$bottom=$y-$d;
+					$left=$x-$d;
+					$right=$x+$d;
+					$top=$y+$d;
+					$bottom=$y-$d;
 
-				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+					$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-				$sql_where .= "MBRIntersects(ST_GeomFromText($rectangle),gs.point_xy)";
-				
-				//shame cant use dist_sqd in the next line!
-				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d); // HAVING?
+					$sql_where .= "MBRIntersects(ST_GeomFromText($rectangle),gs.point_xy)";
+					
+					//shame cant use dist_sqd in the next line!
+					$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d); // HAVING?
 
-				$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
-				$sql_order = ' dist_sqd ';
+					$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
+					$sql_order = ' dist_sqd ';
+				}
 
 				
 				$sql = "SELECT gs.grid_reference,gs.x,gs.y,$imgcount $sql_fields
@@ -171,8 +196,6 @@ if (isset($_GET['id']))  {
 				$group $having
 				ORDER BY $sql_order";
 				trigger_error(" $sql ", E_USER_WARNING);
-				
-				$db=GeographDatabaseConnection();
 				
 				$data = $db->getAll($sql);
 
@@ -222,6 +245,18 @@ if (isset($_GET['id']))  {
 		}
 	}
 	$smarty->assign('distances', array(1,3,5,10,15,20,30,50,75,100));
+	if (count($CONF['hier_statlevels'])) {
+		$sql = "select name,level,community_id from loc_hier where level in (".implode(",",$CONF['hier_statlevels']).") order by level,name";
+		$regions = $db->GetAll($sql);
+		if ($regions === false)
+			$regions = array();
+	} else {
+		$regions = array();
+	}
+	$smarty->assign("regions", $regions);
+	$smarty->assign("rlevel", $has_region?$rlevel:-2);
+	$smarty->assign("rcid",   $has_region?$rcid:-1);
+	#$smarty->assign("curregion", $has_region?$rlevel.'_'.$rcid:'');
 		
 //lets find some recent photos
 new RecentImageList($smarty);

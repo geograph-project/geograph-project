@@ -25,6 +25,14 @@
 		</select></p>
 		
 		<p>Download Squares 
+    {if $regions}
+        <select name="region">
+            <option value=""></option>
+            {foreach from=$regions item=region}
+                <option value="{$region.level}_{$region.community_id}"{if $rlevel==$region.level && $rcid==$region.community_id} selected="selected"{/if}>in {$region.name|escape:'html'}</option>
+            {/foreach}
+        </select>
+    {/if}
 			<input id="type_with" type="radio" name="type" value="with"{if $type == 'with'} checked="checked"{/if}/><label for="type_with">with</label> 
 			/<input id="type_without" type="radio" name="type" value="without" size="8"{if $type == 'without'} checked="checked"{/if}/><label for="type_without">without</label>
 			/<input id="type_few" type="radio" name="type" value="few"{if $type == 'few'} checked="checked"{/if}/><label for="type_few">with few</label> 
