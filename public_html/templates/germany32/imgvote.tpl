@@ -29,11 +29,11 @@
 	<td style="text-align:right;background-color:#ddd"><a href="imgvote.php?vote=5&amp;type={$curtype}{if $userimg}&amp;user={$userimg}{/if}{if $uservote != $user->user_id}&amp;u={$uservote}{/if}">{$votestat.$curtype.5}</a></td>
 	<td style="text-align:right;background-color:#ddd"><a href="imgvote.php?type={$curtype}{if $userimg}&amp;user={$userimg}{/if}{if $uservote != $user->user_id}&amp;u={$uservote}{/if}">{$votestat.$curtype.0}</a></td>
 	{else}
-	<td style="text-align:center;background-color:#ddd"" colspan="6">0</td>
+	<td style="text-align:center;background-color:#ddd" colspan="6">0</td>
 	{/if}
 	</tr>
 	{/foreach}
-	<tbody>
+	</tbody>
 	</table>
 <h3>Images</h3>
 

@@ -127,7 +127,7 @@ while (!$recordSet->EOF)
 			where article_id = {$recordSet->fields['article_id']} and update_time = '{$recordSet->fields['update_time']}'");
 	
 		$item->title .= " [rev #$version by $realname]";
-		$recordSet->fields['url'] = "history.php?page=".rawurlencode($recordSet->fields['url'])".&v=$version";
+		$recordSet->fields['url'] = "history.php?page=".rawurlencode($recordSet->fields['url'])."&amp;v=$version";
 		
 		$item->author = $realname;
 		$item->date = strtotime($recordSet->fields['update_time']);
