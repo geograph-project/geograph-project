@@ -863,5 +863,9 @@ ALTER TABLE gridimage_search
 ALTER TABLE gridimage_recent ADD `vlat` decimal(10,6) NOT NULL DEFAULT '0.000000' AFTER `point_ll`;
 ALTER TABLE gridimage_recent ADD `vlong` decimal(10,6) NOT NULL DEFAULT '0.000000' AFTER `vlat`;
 
+alter table gridsquare
+   add `has_recent` tinyint(4) NOT NULL DEFAULT '0',
+   add `max_ftf` mediumint(8) unsigned NOT NULL DEFAULT '0';
+
 #CREATE FUNCTION GeoContains(g1 geometry, g2 geometry) RETURNS int DETERMINISTIC RETURN MBRContains(g1,g2)||MBRTouches(g1,g2);
 #DROP FUNCTION GeoContains;

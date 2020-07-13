@@ -1038,4 +1038,50 @@ function include_messages($id)
 	if (!isset($MESSAGES[$id])) require_once('messages/en/'.$id.'.php');
 }
 
-?>
+function sqlBitsToSelect($sql) {
+        $query = "SELECT {$sql['columns']}";
+        if (!empty($sql['tables'])) {
+                $query .= " FROM ".join(' ',$sql['tables']);
+        }
+        if (!empty($sql['wheres'])) {
+                $query .= " WHERE ".join(' AND ',$sql['wheres']);
+        }
+        if (isset($sql['group'])) {
+                $query .= " GROUP BY {$sql['group']}";
+        }
+        if (isset($sql['having'])) {
+                $query .= " HAVING {$sql['having']}";
+        }
+        if (isset($sql['order'])) {
+                $query .= " ORDER BY {$sql['order']}";
+        }
+        if (isset($sql['limit'])) {
+                $query .= " LIMIT {$sql['limit']}";
+        }
+        if (!empty($sql['option'])) {
+                if (is_array($sql['option']))
+                        $sql['option'] = implode(', ',$sql['option']);
+                $query .= " OPTION {$sql['option']}";
+        }
+        return $query;
+}
+
+function outputJSON(&$data) {
+        if (!empty($_GET['callback'])) {
+                header("Content-Type:text/javascript");
+                $callback = preg_replace('/[^\w\.\$]+/','',$_GET['callback']);
+                echo "/**/{$callback}(";
+        } else {
+                header("Content-Type:application/json");
+        }
+
+        if (!function_exists('json_encode')) {
+                require_once '3rdparty/JSON.php';
+        }
+
+        print json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR );
+
+        if (!empty($_GET['callback'])) {
+                echo ");";
+        }
+}
