@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # $Project: GeoGraph $
-# $Id: update_submission_graph.pl 3967 2007-11-27 18:30:38Z geograph $
+# $Id: update_submission_graph.pl 9115 2020-07-13 01:26:20Z hansjorg $
 # 
 # GeoGraph geographic photo archive project
 # This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -38,7 +38,8 @@ use Getopt::Long;
 #-------------------------------------------------
 
 #where is rrdtool?
-my $rrdtool='/usr/bin/rrdtool';
+#my $rrdtool='/usr/bin/rrdtool';
+my $rrdtool='LD_LIBRARY_PATH=/is/htdocs/wp1036181_DDJ1DZ0I8N/lib /is/htdocs/wp1036181_DDJ1DZ0I8N/bin/rrdtool';
 
 #db credentials
 my $db="geograph";     #database name
