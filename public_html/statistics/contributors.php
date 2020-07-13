@@ -51,7 +51,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$title .= " in ".$CONF['references_all'][$ri];
 	} 
 
-	if (count($where))
+	if (isset($where) && count($where))
 		$where_sql = " WHERE ".join(' AND ',$where);
 
 	

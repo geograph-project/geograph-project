@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: article.php 8821 2018-09-13 01:10:07Z hansjorg $
+ * $Id: article.php 9127 2020-07-13 01:42:59Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2006 Barry Hunter (geo@barryhunter.co.uk)
@@ -265,7 +265,7 @@ function smarty_function_articletext($input) {
 		}
 	}
 	
-	if (count($imageCredits)) {
+	if (isset($imageCredits) && count($imageCredits)) {
 		arsort($imageCredits);
 
 		$imageCreditsStr = implode(', ',array_keys($imageCredits));

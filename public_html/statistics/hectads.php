@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: hectads.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: hectads.php 9127 2020-07-13 01:42:59Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -50,7 +50,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$title .= " in ".$CONF['references_all'][$ri];
 	} 
 
-	if (count($where))
+	if (isset($where) && count($where))
 		$where_sql = " WHERE ".join(' AND ',$where);
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;

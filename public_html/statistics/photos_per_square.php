@@ -48,7 +48,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$title .= " in ".$CONF['references_all'][$ri];
 	} 
 
-	if (count($where))
+	if (isset($where) && count($where))
 		$where_sql = " AND ".join(' AND ',$where);
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;

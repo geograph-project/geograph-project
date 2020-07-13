@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: search.php 8825 2018-09-13 01:18:10Z hansjorg $
+ * $Id: search.php 9127 2020-07-13 01:42:59Z hansjorg $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -943,7 +943,7 @@ if (isset($_GET['fav']) && $i) {
 
 		$smarty->assign('querytime', $engine->Execute($pg));
 
-		if ($display == 'full' && count($engine->results)) {
+		if ($display == 'full' && isset($engine->results) && count($engine->results)) {
 			$pgsize = $engine->criteria->resultsperpage;
 			if (!$pgsize) {
 				$pgsize = 15;

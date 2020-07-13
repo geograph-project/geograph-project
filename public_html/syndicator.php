@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: syndicator.php 8332 2015-12-30 01:18:47Z hansjorg $
+ * $Id: syndicator.php 9127 2020-07-13 01:42:59Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -274,7 +274,7 @@ if (isset($sphinx)) {
 }
 
 
-$cnt=count($images->images);
+$cnt = isset($images->images) ? count($images->images) : 0;
 
 $geoformat = ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX' || $format == 'MEDIA');
 $photoformat = ($format == 'KML' || $format == 'GeoPhotoRSS' || $format == 'BASE' || $format == 'MEDIA');

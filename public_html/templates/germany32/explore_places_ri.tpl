@@ -8,11 +8,11 @@
 
 {if $ri == 1}<h4>Local Authorities of {$references.$ri} in alphabetical order:</h4>{/if}
 
-<div style="position:relative; float:right" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+{if $image}<div style="position:relative; float:right" class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   Example photo in <b>{$image->county}</b>: 
   <div class="img-shadow"><a href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a></div>
   <div class="caption"><b>{$image->title|escape:'html'}</b><br/> by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></div>
-</div>
+</div>{/if}
 
 <ul>
 {foreach from=$counts key=adm1 item=line}
