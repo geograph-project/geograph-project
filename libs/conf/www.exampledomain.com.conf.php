@@ -199,6 +199,12 @@ $CONF['admin_email']='webmaster@somewhere.invalid';
 $CONF['noreply_email']='noreply@somewhere.invalid';
 
 ###################################
+# contact form
+
+// spam regex
+#$CONF['contact_block_regex']= array('/backlink/i','/marketing/i');
+
+###################################
 # folder setup
 
 //path to temp folder for photo uploads - on cluster setups should be a shared folder.

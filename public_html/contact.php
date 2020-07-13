@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: contact.php 7885 2013-04-15 23:29:44Z hansjorg $
+ * $Id: contact.php 9114 2020-07-13 01:24:48Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -50,11 +50,24 @@ if (isset($_POST['msg']))
 			if (strlen($subject)==0)
 				$subject='Re: '.$_SERVER['HTTP_HOST'];
 			
+			$possible_spam = false;
+			if (isset($CONF['contact_block_regex'])) {
+				foreach($CONF['contact_block_regex'] as $re) {
+					if (preg_match($re, $msg)) {
+						$possible_spam = true;
+						break;
+					}
+				}
+			}
 			$msg.="\n\n-------------------------------\n";
 			$msg.="Referring page: ".$_POST['referring_page']."\n";
 			if ($_SESSION['user']->user_id)
 				$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
 			$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
+			if ($possible_spam) {
+				$msg .= 'IP: '.getRemoteIP()."\n";
+				$subject = '[SPAM] '.$subject;
+			}
 
 			$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
 			$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
@@ -63,7 +76,8 @@ if (isset($_POST['msg']))
 				"Content-Disposition: inline\n".
 				"Content-Transfer-Encoding: 8bit";
 
-			mail($CONF['contact_email'],
+			#mail($CONF['abuse_email'],
+			mail($possible_spam ? $CONF['abuse_email'] : $CONF['contact_email'],
 				$encsubject,
 				$msg,
 				'From: '.$from."\n".$mime, $envfrom);
