@@ -440,7 +440,8 @@ class ADODB_Session {
 	/*!
 	*/
 	static function _init() {
-		session_module_name('user');
+		# probably use this: if (version_compare(PHP_VERSION, '7.2', '<')) {
+		# session_module_name('user'); //not allowed from php 7.2
 		session_set_save_handler(
 			array('ADODB_Session', 'open'),
 			array('ADODB_Session', 'close'),
