@@ -2,16 +2,17 @@
 
 require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
 
-#$phpdir="/usr/bin"; # FIXME $CONF
-if (empty($CONF['phpdir'])) {
+if (empty($CONF['phpbin'])) {
 	header("HTTP/1.0 404 Not Found"); //FIXME
 	exit(1);
-}
-$phpdir=$CONF['phpdir'];
-if (empty($CONF['phpbin'])) {
-	$phpbin='php';
 } else {
 	$phpbin=$CONF['phpbin'];
+}
+
+if (empty($CONF['phpscriptopt'])) {
+	$phpopt='';
+} else {
+	$phpopt=$CONF['phpscriptopt'];
 }
 
 if (!empty($CONF['mem_maptiles'])) {
@@ -21,9 +22,9 @@ if (!empty($CONF['mem_maptiles'])) {
 }
 
 $scripts=array(
-	'maps'=> "{$phpdir}/{$phpbin} {$memopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/recreate_maps.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
-	'kml' => "{$phpdir}/{$phpbin} {$_SERVER['DOCUMENT_ROOT']}/../scripts/recreate_kml.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
-	'tmp' => "{$phpdir}/{$phpbin} {$_SERVER['DOCUMENT_ROOT']}/../scripts/cleanup_tmp.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}"
+	'maps'=> "{$phpbin} {$phpopt} {$memopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/recreate_maps.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
+	'kml' => "{$phpbin} {$phpopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/recreate_kml.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
+	'tmp' => "{$phpbin} {$phpopt} {$_SERVER['DOCUMENT_ROOT']}/../scripts/cleanup_tmp.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
 );
 
 $logfile=$_SERVER['DOCUMENT_ROOT']."/../log/runscript.log";
