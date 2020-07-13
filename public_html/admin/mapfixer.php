@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: mapfixer.php 9102 2020-07-11 01:41:38Z hansjorg $
+ * $Id: mapfixer.php 9106 2020-07-13 00:58:40Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -311,6 +311,7 @@ if (isset($_GET['save']) && $_GET['save'] === 'quick')
 else
 {
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	$db->execute('SET SQL_BIG_SELECTS=1'); # FIXME?
 	$unknowns=$db->GetAll("select gridsquare_id,grid_reference,imagecount,
 		group_concat(comment order by mapfix_log_id SEPARATOR ' | ') as comments,
 		group_concat(concat(old_percent_land,'>',new_percent_land) order by mapfix_log_id SEPARATOR ', ') as percents		
