@@ -97,7 +97,7 @@ $USER->mustHavePerm("basic");
 
 /* let admin have a look at another user's stats */
 if (   isset($_GET['u'])
-    && preg_match('/^\s*[1-9][0-9]*\s*$/', $_GET['u'])
+    && preg_match('/^\s*[0-9]+\s*$/', $_GET['u'])
     && $USER->hasPerm("admin")) {
 	$uid = intval($_GET['u']);
 } else {
@@ -142,38 +142,78 @@ if ($userimg) {
 	$smarty->assign('realname', $profile->realname);
 }
 $smarty->assign('uservote', $uid);
+if ($uid != $USER->user_id) {
+	$smarty->assign('haveuid', 1);
+	if ($uid) {
+		$profile = new GeographUser($uid);
+		$smarty->assign('voterealname', $profile->realname);
+	}
+}
 $smarty->assign_by_ref('types', $types);
 $smarty->assign_by_ref('typenames', $typenames);
+
+if ($userimg && $userimg==$uid) {
+	$uidwhere = "gi.user_id = gv.user_id AND gv.user_id=$uid";
+} else {
+	$uidwhere = 'gi.user_id != gv.user_id';
+	if ($uid) {
+		$uidwhere .= " AND gv.user_id=$uid";
+	}
+	if ($userimg) {
+		$uidwhere .= " AND gi.user_id=$userimg";
+	}
+}
 
 // use user_vote_stat?
 $sql = "SELECT gv.type, COUNT(*), SUM(gv.vote=1), SUM(gv.vote=2), SUM(gv.vote=3), SUM(gv.vote=4), SUM(gv.vote=5)".
 	"FROM gridimage gi INNER JOIN gridimage_vote gv ON (gi.gridimage_id=gv.gridimage_id)".
-	"WHERE gv.user_id=$uid AND gi.user_id != gv.user_id GROUP BY gv.type;";
+	"WHERE $uidwhere GROUP BY gv.type;";
 
 $votestat = $db->GetAssoc($sql);
 $smarty->assign_by_ref('votestat', $votestat);
 
-$where = "gv.user_id=$uid ";
-if ($userimg) {
-	$where .= "and gi.user_id=$userimg ";
+if ($userimg && $userimg==$uid) {
+	$where = "gi.user_id = gv.user_id AND gv.user_id=$uid ";
+	$cols = "";
+	$joins = "";
+} else {
+	$where = "gi.user_id != gv.user_id ";
+	if ($uid) {
+		$where .= "and gv.user_id=$uid ";
+		$cols = "";
+		$joins = "";
+	} else {
+		$cols = ",gv.user_id as uidvote, uv.realname as uservote";
+		$joins = "inner join user as uv on (gv.user_id=uv.user_id) ";
+	}
+	if ($userimg) {
+		$where .= "and gi.user_id=$userimg ";
+	}
 }
 if ($vote) {
 	$where .= "and gv.vote=$vote ";
 }
 if ($type === '') {
 	$group = "group by gv.gridimage_id ";
+	if (!$uid) {
+		$group .= ",gv.user_id ";
+	}
 	$time = "MAX(gv.created)";
 } else {
 	$group = "";
+	if (!$uid) {
+		$group = "group by gv.user_id ";
+	}
 	$time = "gv.created";
 	$where .= "and gv.type='$type' ";
 }
 
-$sql = "select gi.*,grid_reference,$time as vtime,u.realname as contributorname ".
+$sql = "select gi.*,grid_reference,$time as vtime,u.realname as contributorname $cols ".
 	"from gridimage as gi ".
 	"inner join gridsquare as gs using(gridsquare_id) ".
 	"inner join gridimage_vote as gv using(gridimage_id) ".
 	"inner join user as u on (gi.user_id=u.user_id) ".
+	$joins.
 	"where moderation_status in ('geograph','accepted') and ".
 	$where.$group.
 	"order by vtime desc limit $limit;";
@@ -184,7 +224,11 @@ $imagelist->_getImagesBySql($sql);
 if (count($imagelist->images)) {
 	foreach ($imagelist->images as &$image) {
 		$image->imagetakenString = getFormattedDate($image->imagetaken);
-		$image->votes =& $image->getVotes($uid);
+		if ($uid) {
+			$image->votes =& $image->getVotes($uid);
+		} else {
+			$image->votes =& $image->getVotes($image->uidvote);
+		}
 	}
 	unset($image);
 	$smarty->assign_by_ref('images', $imagelist->images);
