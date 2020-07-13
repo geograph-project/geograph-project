@@ -36,7 +36,7 @@
 <h3>{$item.category_name}</h3>
 <ul class="content">
 {/if}
-	<li><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'|escape:'html'}" href="/article/{$item.url|escape:'url'}">{$item.title|escape:'html'}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}
+	<li><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'|escape:'html'}" href="/article/{$item.url|escape:'url'}">{$item.title}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}
 	<small>by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}">{$item.realname|escape:'html'}</a></small>
 		{if $isadmin || $item.user_id == $user->user_id}
 			<small><small><br/>&nbsp;&nbsp;&nbsp;&nbsp; 
