@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: view.php 8821 2018-09-13 01:10:07Z hansjorg $
+ * $Id: view.php 9130 2020-07-13 01:45:11Z hansjorg $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -31,7 +31,7 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 
 	if ($row['wgs84_lat']) {
 		$title = combineTexts($row['title'], $row['title2']);
-		$title = htmlentities_latin($title."::".$row['grid_reference']);
+		$title = htmlentities2($title."::".$row['grid_reference']);
 
 		print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\n";
 		print "<title>$title</title>\n";

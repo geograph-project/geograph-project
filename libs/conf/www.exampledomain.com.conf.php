@@ -1,6 +1,7 @@
 <?php
 
 setlocale(LC_ALL,'C'); //to match online servers...
+mb_internal_encoding("iso-8859-1");
 
 //domain specific configuration file
 $CONF=array();
