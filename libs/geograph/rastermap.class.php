@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: rastermap.class.php 8837 2018-09-16 02:05:34Z hansjorg $
+ * $Id: rastermap.class.php 9118 2020-07-13 01:34:29Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision: 8837 $
+* @version $Revision: 9118 $
 */
 
 
@@ -209,17 +209,23 @@ class RasterMap
 		$this->view_direction = $view_direction;
 	}
 	
-	function getImageTag($gridref = '') 
+	function getImageTag($gridref = '', $divwidth='', $divheight = '')
 	{
 		global $CONF;
 		$east = floor($this->nateastings/1000) * 1000;
 		$nort = floor($this->natnorthings/1000) * 1000;
 
 		$width = $this->width;
+		if ($divwidth === '') {
+			$divwidth = "{$width}px";
+		}
+		if ($divheight === '') {
+			$divheight = "{$width}px";
+		}
 
 		if ($this->service == 'Google') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
-				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map... (JavaScript required)</div>";
+				return "<div id=\"map\" style=\"width:{$divwidth}; height:{$divheight}\">Loading map... (JavaScript required)</div>";
 			} else {
 				$token=new Token;
 				
@@ -234,7 +240,7 @@ class RasterMap
 			}
 		} elseif ($this->service == 'OLayers') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
-				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\"></div>";// FIXME Loading map... (JavaScript required)
+				return "<div id=\"map\" style=\"width:{$divwidth}; height:{$divheight}\"></div>";// FIXME Loading map... (JavaScript required)
 			} else {
 				$token=new Token;
 				

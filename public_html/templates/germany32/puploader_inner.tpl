@@ -69,15 +69,19 @@
 
 	{if $rastermap->enabled}
 		<div class="rastermap" style="width:45%;position:relative">
+		{if $rastermap->service == 'OLayers' || $rastermap->service == 'Google'}
+		{$rastermap->getImageTag('', '100%', '400px')}<br/>
+		{else}
 		{$rastermap->getImageTag()}<br/>
+		{/if}
 		<b>{$rastermap->getTitle($gridref)}</b><br/>
 		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
-		{if $rastermap->service == 'OLayers'}
+		{*if $rastermap->service == 'OLayers'}
 			<a href="#" onclick="this.style.display='none';document.getElementById('map').style.width = '100%';document.getElementById('map').style.height = '400px';map.updateSize();return false">Enlarge Map</a>
-		{/if}{*FIXME move to FootNote?*}
-		{if $rastermap->service == 'Google'}
+		{/if*}{*FIXME move to FootNote?*}
+		{*if $rastermap->service == 'Google'}
 			<a href="#" onclick="this.style.display='none';document.getElementById('map').style.width = '100%';document.getElementById('map').style.height = '400px';google.maps.event.trigger(map, 'resize');return false">Enlarge Map</a>
-		{/if}{*FIXME move to FootNote?*}
+		{/if*}{*FIXME move to FootNote?*}
 		
 		</div>
 
