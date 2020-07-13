@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: rastermap.class.php 9118 2020-07-13 01:34:29Z hansjorg $
+ * $Id: rastermap.class.php 9119 2020-07-13 01:35:10Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision: 9118 $
+* @version $Revision: 9119 $
 */
 
 
@@ -582,12 +582,13 @@ class RasterMap
 		//defer the tag to the last minute, to help prevent the page pausing mid load
 		if ((!empty($this->inline) || !empty($this->issubmit))) {
 			if ($this->service == 'Google') {
-				return "<script src=\"//maps.googleapis.com/maps/api/js?v=3.33&amp;sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+				return "<script src=\"//maps.googleapis.com/maps/api/js?sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
 			} elseif ($this->service == 'OLayers') {
-				if ($CONF['google_maps_api_key'])
-					$ft = "<script src=\"//maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
-				else
+				if ($CONF['google_maps_api_key']) {
+					$ft = "<script src=\"//maps.google.com/maps/api/js?sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+				} else {
 					$ft = '';
+				}
 #				$ft .= <<<EOF
 #<script type="text/javascript" src="/ol/OpenLayers.js"></script>
 #<script type="text/javascript" src="/mapper/geotools2.js"></script>
@@ -999,6 +1000,7 @@ EOF;
 						map = new google.maps.Map(
 							document.getElementById('map'), {
 							center: point,
+							controlSize: 24,
 							zoom: $zoom,
 							mapTypeId: mt,
 							//streetViewControl: issubmit?true:false
