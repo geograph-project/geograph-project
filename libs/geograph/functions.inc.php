@@ -600,7 +600,10 @@ function GeographLinks($posterText, $thumbs = false, $short = false, $newwindow 
 						$ok = $g_image->loadFromId($g_id);
 					}
 					if ($g_image->moderation_status == 'rejected') {
-						$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+						if ($thumbs) {
+							$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+						}
+						$posterText = preg_replace("/\[{2,3}$prefix$g_id\]{2,3}/",'[image no longer available]',$posterText);
 					} elseif ($ok) {
 						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
 						if ($g_matches[1][$i]) {
@@ -627,7 +630,7 @@ function GeographLinks($posterText, $thumbs = false, $short = false, $newwindow 
 				$thumb_count++;
 			} else {
 				//link to grid ref
-				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);
+				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/".str_replace(' ','+',$g_id)."\">$g_id</a>",$posterText);
 			}
 		}
 	}
