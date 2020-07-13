@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: index.php 8822 2018-09-13 01:11:40Z hansjorg $
+ * $Id: index.php 9125 2020-07-13 01:41:48Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -29,7 +29,7 @@ if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 ) {
 	die("server busy, please try later");
 }
 
-$USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->hasPerm("mapmod") || $USER->mustHavePerm("moderator") || $USER->mustHavePerm("modadm") || $USER->mustHavePerm("supervisor");
+$USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->hasPerm("mapmod") || $USER->hasPerm("moderator") || $USER->hasPerm("modadm") || $USER->mustHavePerm("supervisor");
 
 if (isset($_SESSION['editpage_options']))
 	unset($_SESSION['editpage_options']);
