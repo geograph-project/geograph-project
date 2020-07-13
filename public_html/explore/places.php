@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: places.php 8821 2018-09-13 01:10:07Z hansjorg $
+ * $Id: places.php 9128 2020-07-13 01:43:47Z hansjorg $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -31,6 +31,7 @@ $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (!empty($_GET['ri'])) {
+	$_GET['ri'] = intval($_GET['ri']);
 	if (!empty($_GET['adm1'])) {
 		if (!empty($_GET['pid'])) {
 			$url = "/search.php?placename=".intval($_GET['pid'])."&do=1";
@@ -39,6 +40,7 @@ if (!empty($_GET['ri'])) {
 			exit;
 			//should never return!
 		}
+		$_GET['adm1'] = preg_replace('/[^-A-Za-z,0-9_ ]/','_', $_GET['adm1']);
 		$template='explore_places_adm1.tpl';
 		$cacheid='places|'.$_GET['ri'].'.'.$_GET['adm1'];
 	} else {
