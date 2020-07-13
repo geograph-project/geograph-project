@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... more"}" />
 {else}<meta name="description" content="Das Geograph-Projekt hat das Ziel, geographisch repräsentative Photos für jeden Quadratkilometer der Region zu sammeln."/>{/if}
-{if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}
+{dynamic}{if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}{/dynamic}
 <meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 {if $ogimage}<meta property="og:image" content="{$ogimage|escape:'html'}"/>{/if}
 {if $ogimage}<meta property="og:image:width" content="{$ogimagewidth|escape:'html'}"/>{/if}

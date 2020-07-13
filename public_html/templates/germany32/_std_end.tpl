@@ -97,7 +97,7 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
     </div>
   </div>
   <div id="login">
-  {dynamic}
+{dynamic}
   {if $user->registered}
   	  Logged in as {$user->realname|escape:'html'}
   	  <span class="sep">|</span>
@@ -110,13 +110,13 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 		<span class="sep">|</span>
 	  <a title="Register to upload photos" href="https://{$http_host}/register.php">register</a>
   {/if}
-  {/dynamic}
-{if $languages}{dynamic}
+{if $languages}
 &emsp;[{foreach from=$languages key=lang item=langhost name=langloop}
 {if ! $smarty.foreach.langloop.first}|{/if}
 {if $lang == $language}{$lang}{else}<a href="{$curproto}{$langhost}{$canonicalreq|escape:'html'}">{$lang}</a>{/if}
 {/foreach}]
-{/dynamic}{/if}
+{/if}
+{/dynamic}
   </div>
 </div>
 {if $right_block}

@@ -1,4 +1,4 @@
-{assign var="olayersmap" value="1"}
+{dynamic}{assign var="olayersmap" value="1"}{/dynamic}{*cant use the value inside dynamic otherwise...*}
 {if $inner}
 {assign var="page_title" value="Geograph-Karte"}
 {include file="_basic_begin.tpl"}
