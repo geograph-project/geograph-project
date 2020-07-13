@@ -27,7 +27,6 @@ init_session();
 
 $smarty = new GeographPage;
 
-
 $level = -1;
 $cid = -1;
 
@@ -55,8 +54,16 @@ if (count($CONF['hier_statlevels'])) {
 	}
 }
 
+$full = ($level < 0 || empty($_GET['full'])) ? 0 : 1;
+
+if ($full) {
+	$limit = '';
+} else {
+	$limit = 'limit 50';
+}
+
 $template='statistics_region_squares.tpl';
-$cacheid='statistics|region_squares.'.$type.'.'.$level.'.'.$cid;
+$cacheid='statistics|region_squares.'.$type.'.'.$level.'.'.$cid.'.'.$full;
 
 if ($smarty->caching) {
 	$smarty->caching = 2; // lifetime is per cache
@@ -110,12 +117,15 @@ if (!$smarty->is_cached($template, $cacheid))
 				from gridsquare_percentage gp inner join gridsquare gs on (gp.gridsquare_id = gs.gridsquare_id)
 				where gp.level=$level and gp.community_id=$cid and gp.percent>0 and $where
 				order by gs.grid_reference
-				limit 50";
+				$limit";
 			$squares = $db->GetAll($sql);
 			$hiername = $db->GetOne("select name from loc_hier where level=$level and community_id=$cid");
 			$smarty->assign('squares',$squares);
 			$smarty->assign('squaretitle',$title);
 			$smarty->assign('regionname',$hiername);
+			$smarty->assign('region',$level.'_'.$cid);
+			$smarty->assign('type',$type);
+			$smarty->assign('full',$full);
 		}
 	} else {
 		$listlevel = -1;

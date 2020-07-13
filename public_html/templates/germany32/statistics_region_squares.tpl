@@ -39,6 +39,10 @@
 </tbody>
 </table>
 
+{if !$full && count($squares) == 50}
+<p>This list is limited to 50 entries. <a href="/statistics/region_squares.php?region={$region}&amp;type={$type}&amp;full=1">Show complete list.</a></p>
+{/if}
+
 {/if}
 
 
