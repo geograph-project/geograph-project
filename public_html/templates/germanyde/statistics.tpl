@@ -123,7 +123,8 @@ In {$ref} <a href="/gridref/{$centergr[$ri]}" title="Planquadrat {$centergr[$ri]
    Ohne Bilder: <a href="/statistics/not_geographed.php">Hectads</a> (10km&times;10km-Quadrate)<br/><br/>
    Mit Bildern: <a href="/statistics/most_geographed.php">Planquadrate und Hectads</a> sowie <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100km&times;100km-Quadrate)</small>.<br/><br/>
    <b>Alle Planquadrate: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10km&times;10km-Quadrate)</small> &ndash; mit großem Mosaik!</b><br/><br/>
-   Diagramm: Abeckung der <a href="/statistics/photos_per_square.php">Planquadrate</a> und <a href="/statistics/hectads.php">Hectads</a></p>
+   Diagramm: Abeckung der <a href="/statistics/photos_per_square.php">Planquadrate</a> und <a href="/statistics/hectads.php">Hectads</a><br/><br/>
+   <a href="/statistics/centi.php">100m·100m-Quadrat-Abdeckung</a></p>
 
    <p><b>Aktivität</b><br/><br/>
    Diagramme: <a href="/statistics/moversboard.php#rate_graph">Wöchentliche Einreichungen</a>, <a href="/statistics/contributors.php">Teilnehmer</a>.<br/><br/>

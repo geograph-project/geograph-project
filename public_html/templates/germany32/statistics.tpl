@@ -123,7 +123,8 @@ In {$ref} <a href="/gridref/{$centergr[$ri]}" title="view square {$centergr[$ri]
    None: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - shrinking all the time!<br/><br/>
    Mostly: <a href="/statistics/most_geographed.php">Grid Squares &amp; Hectads</a> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.<br/><br/>
    <b>Fully: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b><br/><br/>
-   Graph: <a href="/statistics/photos_per_square.php">Gridsquares</a> and <a href="/statistics/hectads.php">Hectad</a> Coverage</p>
+   Graph: <a href="/statistics/photos_per_square.php">Gridsquares</a> and <a href="/statistics/hectads.php">Hectad</a> Coverage<br/><br/>
+   <a href="/statistics/centi.php">Centisquare coverage</a></p>
 
    <p><b>Past Activity:</b><br/><br/>
    Graphs: <a href="/statistics/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/statistics/contributors.php">Contributor Graphs</a>.<br/><br/>
