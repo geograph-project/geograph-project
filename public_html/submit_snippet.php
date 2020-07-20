@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: submit_snippet.php 8699 2018-01-05 16:35:08Z barry $
+ * $Id: submit_snippet.php 9132 2020-07-20 11:47:44Z barry $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2009 Barry Hunter (geo@barryhunter.co.uk)
@@ -430,9 +430,13 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 
 				$ids = $sphinx->returnIds($pg,'snippet');
 
-				$where[] = "reference_index = {$square->reference_index} AND CONTAINS(
+				$ors = array();
+				$ors[] = "(reference_index = {$square->reference_index} AND CONTAINS(
 						GeomFromText($rectangle),
-						point_en)".(empty($ids)?'':(' OR s.snippet_id IN ('.implode(',',$ids).')'));
+						point_en))";
+				if (!empty($ids))
+					$ors[] = 's.snippet_id IN ('.implode(',',$ids).')';
+				$where[] = "(".implode(' OR ',$ors).")";
 			}
 
 			if (!empty($_REQUEST['onlymine'])) {
