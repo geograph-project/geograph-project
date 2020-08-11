@@ -16,8 +16,13 @@ RUN set -eux; \
   "https://github.com/oduwsdl/MemGator/releases/download/${MEMGATOR_VER}/memgator-linux-amd64"; \
   chmod +x /usr/local/bin/memgator
 
+COPY system/docker/memgator/archives.json /usr/share/memgator/
+
 USER memgator
-CMD ["memgator", "server"]
+CMD ["memgator", \
+  "--agent", "Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)", \
+  "--arcs", "/usr/share/memgator/archives.json", \
+  "server"]
 
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="Tiger Computing Ltd" \
