@@ -87,7 +87,7 @@ INSERT INTO `content_tmp`
 SELECT 
 	NULL AS content_id, 
 	s.snippet_id AS foreign_id, 
-	TRIM(title) AS title, 
+	TRIM(s.title) AS title, 
 	CONCAT('/snippet/',s.snippet_id) AS url, 
 	s.user_id, 
 	gridimage_id, 
@@ -98,7 +98,7 @@ SELECT
 	0 AS views, 
 	0 AS titles, 
 	0 AS tags, 
-	comment AS words, 
+	s.comment AS words, 
 	'snippet' AS source, 
 	'info' AS type, 
 	MAX(gs.created) AS updated, 
@@ -107,8 +107,9 @@ SELECT
         s.wgs84_long,
         null as sequence
 FROM snippet s
-INNER JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)
-LEFT JOIN gridsquare g USING (grid_reference)
+INNER JOIN gridimage_snippet gs USING (snippet_id)
+INNER JOIN gridimage_search gi USING (gridimage_id)
+LEFT JOIN gridsquare g ON (g.grid_reference = s.grid_reference)
 WHERE s.updated > DATE_SUB(NOW(),INTERVAL 2 HOUR) AND s.enabled = 1
 GROUP BY s.snippet_id
 ORDER BY NULL
@@ -178,7 +179,7 @@ ON DUPLICATE KEY UPDATE
 
 		$db->Execute("delete content.* from content left join geobb_topics on (foreign_id = topic_id) where ( topic_id is null OR forum_id NOT in(6,11) ) and source in ('themed','gallery')");
 
-//		$db->Execute("DROP TABLE `content_tmp`");
+		$db->Execute("DROP TABLE `content_tmp`");
 
 		//return true to signal completed processing
 		//return false to have another attempt later

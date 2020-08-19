@@ -44,6 +44,15 @@ class RebuildContentDup extends EventHandler
 
 		$db=&$this->_getDB();
 
+
+                $data = $db->getRow("SHOW TABLE STATUS LIKE 'content_tmp'");
+
+                if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*60*3)) {
+                        //if a recent table give up this time. It might still be running.
+                        return false;
+                }
+
+
 		$db->Execute("DROP TABLE IF EXISTS `content_tmp`");
 		$db->Execute("CREATE TABLE `content_tmp` LIKE `content`");
 
@@ -159,7 +168,7 @@ INSERT INTO `content_tmp`
 SELECT 
 	NULL AS content_id, 
 	s.snippet_id AS foreign_id, 
-	TRIM(title) AS title, 
+	TRIM(s.title) AS title, 
 	CONCAT('/snippet/',s.snippet_id) AS url, 
 	s.user_id, 
 	gridimage_id, 
@@ -170,7 +179,7 @@ SELECT
 	0 AS views, 
 	0 AS titles, 
 	0 AS tags, 
-	comment AS words, 
+	s.comment AS words, 
 	'snippet' AS source, 
 	'info' AS type, 
 	MAX(gs.created) AS updated, 
@@ -179,8 +188,9 @@ SELECT
         s.wgs84_long,
         null as sequence
 FROM snippet s
-INNER JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)
-LEFT JOIN gridsquare g USING (grid_reference)
+INNER JOIN gridimage_snippet gs USING (snippet_id)
+INNER JOIN gridimage_search gi USING (gridimage_id)
+LEFT JOIN gridsquare g ON (g.grid_reference = s.grid_reference)
 WHERE s.enabled = 1
 GROUP BY s.snippet_id;
 
@@ -290,20 +300,52 @@ FROM answer_answer a
 
                 ");
 
+#####################################
+# Link entries.
 
+$h = fopen("https://www.geograph.org/links/download_tsv.php",'r');
+while ($h && !feof($h)) {
+	$bits = explode("\t",trim(fgets($h)));
+	##0link_id  1sites  2url  3title  4excerpt  5description  6introduced  7experimental  8category  9developer  10tags  11created  12updated
+
+	$count=0;
+	$updates = array();
+	$updates['url'] = preg_replace('/^https?:\/\/www\.geograph\.org\.uk/','',$bits[2],-1,$count);
+	if ($count != 1)
+		continue;
+
+	$updates['foreign_id'] = $bits[0];
+	$updates['title'] = $bits[3];
+	if (!empty($bits[4])) {
+		$updates['extract'] = $bits[4];
+		$updates['words'] = $bits[5];
+	} else
+		$updates['extract'] = $bits[5];
+	$updates['tags'] = $bits[8];
+		if (!empty($bits[10])) $updates['tags'] .= ', '.$bits[10];
+	$updates['source'] = 'link';
+	$updates['type'] = 'document';
+	$updates['created'] = (!empty($bits[6]) && $bits[6] > '2')?$bits[6]:$bits[11];
+	$updates['updated'] = $bits[12];
+
+	$db->Execute('INSERT INTO content_tmp SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+}
 
 #####################################
+# keep any lat/long coordinates we happen to have.
 
-#Tidy up....
-
-                $db->Execute("
+$db->Execute("
 UPDATE `content_tmp` ct INNER JOIN `content` c USING (gridsquare_id)
 SET ct.wgs84_lat = c.wgs84_lat, ct.wgs84_long = c.wgs84_long, ct.sequence = c.sequence
 WHERE ct.wgs84_lat = 0 AND ct.gridsquare_id > 0
-                ");
+");
 
-		$db->Execute("
+#####################################
+# copy over the updates
 
+//... works because have UNIQUE KEY(`foreign_id`,`source`),
+
+$db->Execute("
 INSERT INTO `content`
 SELECT * FROM `content_tmp` ct
 ON DUPLICATE KEY UPDATE
@@ -322,20 +364,25 @@ ON DUPLICATE KEY UPDATE
 	created = ct.created,
         wgs84_lat = ct.wgs84_lat,
         wgs84_long = ct.wgs84_long;
+");
 
-		");
+#####################################
+# finally delete any gone
+# ... use a dynamic list, so will only delete ones we actully update!
 
-		$db->Execute("
+$list = $db->getCol("SELECT DISTINCT source FROM `content_tmp`");
 
+$db->Execute("
 DELETE `content`.*
 FROM `content`
 	LEFT JOIN `content_tmp` USING (`foreign_id`,`source`)
-WHERE `content`.source IN ('category','context','snippet','user','trip','blog', 'faq')
+WHERE `content`.source IN ('".implode("','",$list)."')
 	AND `content_tmp`.`foreign_id` IS NULL;
+");
 
-		");
+#####################################
 
-//		$db->Execute("DROP TABLE `content_tmp`");
+		$db->Execute("DROP TABLE `content_tmp`");
 
 		//return true to signal completed processing
 		//return false to have another attempt later
