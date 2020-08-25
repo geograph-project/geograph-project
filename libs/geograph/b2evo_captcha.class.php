@@ -614,6 +614,10 @@ class b2evo_captcha
 				   {
 					   $gd_version_number = $matches[1];
 				   }
+				   elseif(preg_match("/\bgd\s+library\s+version\b[^\d\n\r]+?([\d\.]+)/i", $module_info, $matches))
+				   {
+					   $gd_version_number = $matches[1];
+				   }
 				   else
 				   {
 					   $gd_version_number = 0;
