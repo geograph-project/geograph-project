@@ -1,0 +1,178 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toy
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: toy
+      app.kubernetes.io/instance: develop
+      app.kubernetes.io/component: toy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: toy
+        app.kubernetes.io/instance: develop
+        app.kubernetes.io/component: toy
+    spec:
+      imagePullSecrets:
+      - name: gitlab-registry
+      containers:
+      - name: php-fpm
+        image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/toy:develop
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: toy
+        - secretRef:
+            name: toy-iam
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb
+              key: mariadb-password
+        volumeMounts:
+        - mountPath: /mnt/upload
+          name: photos-tmp
+        - mountPath: /var/www/geograph_toy/public_html/templates/basic/cache
+          name: smarty-cache
+        - mountPath: /var/www/geograph_toy/public_html/templates/basic/compiled
+          name: smarty-compiled
+      - name: nginx
+        image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/toy:develop
+        imagePullPolicy: Always
+        command: ["nginx", "-g", "daemon off;"]
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 10080
+        ports:
+        - containerPort: 80
+          name: http
+      securityContext:
+        fsGroup: 33  # www-data inside the containers
+      volumes:
+      - name: photos-tmp
+        emptyDir: {}
+      - name: smarty-cache
+        emptyDir: {}
+      - name: smarty-compiled
+        emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toy-jobs
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy-jobs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: toy
+      app.kubernetes.io/instance: develop
+      app.kubernetes.io/component: toy-jobs
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: toy
+        app.kubernetes.io/instance: develop
+        app.kubernetes.io/component: toy-jobs
+    spec:
+      imagePullSecrets:
+      - name: gitlab-registry
+      containers:
+      - name: cron
+        image: registry.gitlab.tiger-computing.co.uk/clients/geograph/geograph_toy/toy:develop
+        imagePullPolicy: Always
+        command: [/jobs.sh]
+        envFrom:
+        - configMapRef:
+            name: toy
+        - secretRef:
+            name: toy-iam
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb
+              key: mariadb-password
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: toy
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy
+data:
+  CONTENT_HOST: https://toy-dev.cloud.geograph.org.uk
+  STATIC_HOST: https://toy-photos.cloud.geograph.org.uk
+  S3_BUCKET_NAME: toy-photos.cloud.geograph.org.uk
+  MYSQL_HOST: mariadb
+  MYSQL_USER: geograph
+  MYSQL_DATABASE: geograph_toy
+  SPHINX_HOST: manticore
+  REDIS_HOST: redis-master
+  CARROT2_DCS_URL: http://carrot2-dcs/dcs/rest
+  TIMETRAVEL_URL: http://memgator/api/json/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: toy
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: toy
+  namespace: toy-develop
+  labels:
+    app.kubernetes.io/name: toy
+    app.kubernetes.io/instance: develop
+    app.kubernetes.io/component: toy
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: toy-dev.cloud.geograph.org.uk
+    http:
+      paths:
+      - backend:
+          serviceName: toy
+          servicePort: http
+  tls:
+  - hosts:
+    - toy-dev.cloud.geograph.org.uk
+    secretName: toy-tls
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml

@@ -1,0 +1,27 @@
+---
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: redis
+  namespace: toy-develop
+spec:
+  releaseName: toy-develop-redis
+  chart:
+    # https://github.com/helm/charts/tree/master/stable/redis
+    repository: https://kubernetes-charts.storage.googleapis.com
+    name: redis
+    version: 9.4.1  # Redis 5.0.5
+  resetValues: true
+  values:
+    fullnameOverride: redis
+
+    cluster:
+      enabled: false
+
+    usePassword: false
+
+    master:
+      persistence:
+        enabled: false
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml

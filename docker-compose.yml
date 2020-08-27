@@ -1,0 +1,90 @@
+---
+version: '3.3'
+
+services:
+  mysql:
+    image: mariadb:10.3
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./schema:/docker-entrypoint-initdb.d
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 5seEwwLrcMWkqEDk
+      MYSQL_DATABASE: geograph_toy
+      MYSQL_USER: geograph
+      MYSQL_PASSWORD: dEBpm12FXOLhHYTk
+
+  manticore:
+    depends_on:
+      - mysql
+    build:
+      context: .
+      dockerfile: Dockerfile.manticore
+    restart: always
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: geograph
+      MYSQL_PASSWORD: dEBpm12FXOLhHYTk
+      MYSQL_DATABASE: geograph_toy
+
+  redis:
+    image: redis:5.0-alpine
+    restart: always
+
+  carrot2-dcs:
+    build:
+      context: .
+      dockerfile: Dockerfile.carrot2-dcs
+    restart: always
+
+  memgator:
+    build:
+      context: .
+      dockerfile: Dockerfile.memgator
+    volumes:
+      - ./config/archives.json:/run/config/archives.json:ro
+    restart: always
+    command: [
+      "memgator",
+      "-a", "/run/config/archives.json",
+      "-A", "Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)",
+      "server"]
+
+  toy:
+    build:
+      context: .
+      dockerfile: Dockerfile.toy
+    restart: always
+    network_mode: service:nginx
+    environment:
+      CONTENT_HOST: http://localhost
+      STATIC_HOST: http://localhost
+      MYSQL_HOST: mysql
+      MYSQL_USER: geograph
+      MYSQL_PASSWORD: dEBpm12FXOLhHYTk
+      MYSQL_DATABASE: geograph_toy
+      SPHINX_HOST: manticore
+      REDIS_HOST: redis
+      CARROT2_DCS_URL: http://carrot2-dcs:8080/dcs/rest
+      TIMETRAVEL_URL: http://memgator:1208/api/json/
+    volumes:
+      - type: tmpfs
+        target: /var/www/geograph_toy/public_html/templates/basic/cache
+      - type: tmpfs
+        target: /var/www/geograph_toy/public_html/templates/basic/compiled
+      - type: tmpfs
+        target: /mnt/upload
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.toy
+    restart: always
+    command: ["nginx", "-g", "daemon off;"]
+    ports:
+      - 8080:80
+
+volumes:
+  mysql_data: {}
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml

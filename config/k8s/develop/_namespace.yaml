@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: toy-develop
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml

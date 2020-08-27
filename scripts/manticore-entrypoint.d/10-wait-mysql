@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eux
+
+for try in $(seq 1 30); do
+  if mysqladmin status \
+    --host="${MYSQL_HOST}" \
+    --user="${MYSQL_USER}" \
+    --password="${MYSQL_PASSWORD}"
+  then
+    exit 0
+  fi
+
+  sleep 5
+done
+
+exit 1
+
+# vim: ai ts=2 sw=2 et sts=2 ft=sh

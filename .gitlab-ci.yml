@@ -1,0 +1,62 @@
+---
+stages:
+  - lint
+  - build
+
+yamllint:
+  stage: lint
+  image: pipelinecomponents/yamllint:latest
+  script:
+    - yamllint --version
+    - yamllint --strict .
+
+.build_container:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  before_script:
+    - \[ -z "$DOCKER_CONFIG" ] && export DOCKER_CONFIG=/kaniko/.docker
+    - |
+      cat > "${DOCKER_CONFIG}/config.json" <<EOF
+      {
+        "auths": {
+          "${CI_REGISTRY}": {
+            "username": "${CI_REGISTRY_USER}",
+            "password": "${CI_REGISTRY_PASSWORD}"
+          }
+        }
+      }
+      EOF
+    - |
+      if [ "$CI_COMMIT_REF_NAME" = "master" ]; then
+        TAGS="${CI_COMMIT_SHORT_SHA} latest"
+      else
+        TAGS="${CI_COMMIT_REF_SLUG}"
+      fi
+    - |
+      KANIKO_DESTS="$(for TAG in $TAGS; do
+          echo "--destination ${CI_REGISTRY_IMAGE}/${CI_JOB_NAME}:${TAG}";
+        done)"
+  script:
+    - >-
+      /kaniko/executor
+      --context $CI_PROJECT_DIR
+      --dockerfile $CI_PROJECT_DIR/Dockerfile.${CI_JOB_NAME}
+      --build-arg=BUILD_DATE="$(date --utc +%Y-%m-%dT%H:%M:%SZ)"
+      --build-arg=VCS_REF=${CI_COMMIT_SHA}
+      $KANIKO_DESTS
+
+carrot2-dcs:
+  extends: .build_container
+
+manticore:
+  extends: .build_container
+
+memgator:
+  extends: .build_container
+
+toy:
+  extends: .build_container
+
+# vim: ai ts=2 sw=2 et sts=2 ft=yaml
