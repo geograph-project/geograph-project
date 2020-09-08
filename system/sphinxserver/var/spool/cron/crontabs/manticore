@@ -13,8 +13,7 @@
 ########################
 # Sample8 - the NEW image index
 
-#now we rebuild daily (note, sample8E, creates its own temp table, doesnt need to use createsphinx-new.php)
-35 5 * * *     /usr/bin/php /var/www/geograph_live/scripts/createsphinx-new.php --rebuild=1 ; /usr/bin/indexer --config /etc/sphinxsearch/sphinx.conf sample8A sample8B sample8C sample8D sample8E --rotate --sighup-each
+35 5 * * *          /usr/bin/indexer --config /etc/sphinxsearch/sphinx.conf sample8A sample8B sample8C sample8D sample8E --rotate --sighup-each
 
 ########################
 # Update The 'delta' indexes
