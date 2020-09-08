@@ -1,0 +1,18 @@
+#!/bin/bash
+set -eu -o pipefail
+
+# Enable command tracing if desired
+[ -n "${ENTRYPOINT_TRACE:-}" ] && set -x
+
+# Create the data directories in case an empty volume is mounted
+mkdir -p /var/lib/manticore/{binlog,data}
+
+# Copy the seed data (wordlists etc...) into the data volume if it's missing
+cp --archive --update --verbose /usr/share/manticore/data /var/lib/manticore/
+
+# Fix permissions if we're running as root
+if [ "$(id -un)" = "root" ]; then
+  chown -R manticore: /var/lib/manticore/{binlog,data}
+fi
+
+# vim: ai ts=2 sw=2 et sts=2 ft=sh

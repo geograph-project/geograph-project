@@ -85,6 +85,8 @@ RUN set -eux; \
 
 COPY --from=builder /root/*.so /usr/lib/manticore/plugins/
 
+COPY system/sphinxserver/var/lib/manticore/data/ /usr/share/manticore/data/
+
 COPY system/docker/manticore/entrypoint /
 COPY system/docker/manticore/entrypoint.d/ /entrypoint.d/
 COPY system/docker/manticore/etc/ /etc/
