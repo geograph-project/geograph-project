@@ -107,6 +107,7 @@ RUN set -eux; \
   ; \
   :
 
+WORKDIR /var/lib/manticore
 USER manticore
 ENTRYPOINT ["/entrypoint"]
 CMD ["searchd", "--nodetach"]
