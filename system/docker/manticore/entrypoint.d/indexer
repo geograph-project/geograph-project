@@ -17,8 +17,9 @@ IFS=$'\n' read -d '' -r -a MISSING_INDEXES < <(
 
 if [ ${#MISSING_INDEXES[@]} -ne 0 ]; then
   echo "Building missing indexes" >&2
-  set -x
-  exec indexer --config /etc/sphinxsearch/sphinx.conf "${MISSING_INDEXES[@]}"
+  printf '%s\0' "${MISSING_INDEXES[@]}" | \
+    xargs --null --max-args=1 --max-procs=2 --verbose -- \
+    indexer --config /etc/sphinxsearch/sphinx.conf
 fi
 
 # vim: ai ts=2 sw=2 et sts=2 ft=sh
