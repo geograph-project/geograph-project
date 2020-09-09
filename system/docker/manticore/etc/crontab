@@ -1,6 +1,50 @@
+# m h  dom mon dow   command
+
 ##############################
 # Manticore
 
-@daily indexer --config /etc/sphinxsearch/sphinx.conf --all --rotate
+#@daily indexer --config /etc/sphinxsearch/sphinx.conf --all --rotate
+## Disable this one for now. Use the more targetted refresh cycle as below.
 
 ##############################
+
+
+########################
+# Forum Posts
+
+1 5 * * *           indexer --config /etc/sphinxsearch/sphinx.conf post_stemmed post_stemmed_delta --rotate
+
+########################
+# Gridimage - the original main image index
+
+23 5 * * *          indexer --config /etc/sphinxsearch/sphinx.conf gi_stemmed gi_stemmed_delta --rotate
+
+########################
+# Sample8 - the NEW image index
+
+35 5 * * *          indexer --config /etc/sphinxsearch/sphinx.conf sample8A sample8B sample8C sample8D sample8E --rotate --sighup-each
+
+########################
+# Update The 'delta' indexes
+
+05,20,35,50 * * * * indexer --config /etc/sphinxsearch/sphinx.conf gi_stemmed_delta post_stemmed_delta --rotate
+
+30 0-1,7-23 * * *   indexer --config /etc/sphinxsearch/sphinx.conf sample8E --rotate
+
+########################
+# Other Misc Indexes
+
+15,45 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf content_stemmed user snippet --rotate
+
+57 */2 * * *        indexer --config /etc/sphinxsearch/sphinx.conf tags tagsstemmed tickets --rotate
+
+50 7 * * *          indexer --config /etc/sphinxsearch/sphinx.conf category tagsoup content1 document_stemmed document_words --rotate
+
+47 */6 * * *        indexer --config /etc/sphinxsearch/sphinx.conf tickets_closed --rotate
+
+########################
+# ViewPoint Index
+
+12 8 * * 2          indexer --config /etc/sphinxsearch/sphinx.conf viewpoint --rotate
+
+########################
