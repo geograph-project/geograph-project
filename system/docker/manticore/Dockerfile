@@ -1,8 +1,8 @@
 ARG DEBIAN_RELEASE=stretch
 
-ARG MANTICORE_VERSION=2.6.2
+ARG MANTICORE_VERSION=2.8.2
 ARG MANTICORE_PROJECT=manticoresoftware/manticoresearch
-ARG MANTICORE_SHA256SUM=af14d1b371557e567bcf9b33a248778e50b9188572729356b4f946dabef9d992
+ARG MANTICORE_SHA256SUM=1e4f34eb7dfd444c02e653b14bb0d71ac17b9e1ee019d4be6b90f752d4e87826
 
 FROM debian:${DEBIAN_RELEASE}-slim AS base
 
@@ -99,7 +99,10 @@ RUN set -eux; \
   :
 
 RUN set -eux; \
-  mkdir /var/lib/manticore/binlog; \
+  mkdir -p \
+    /var/lib/manticore/binlog \
+    /var/run/manticore \
+  ; \
   chown -R manticore: \
     /var/lib/manticore \
     /var/log/manticore \
