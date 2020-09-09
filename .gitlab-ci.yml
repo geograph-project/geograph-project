@@ -57,6 +57,7 @@ build/memgator:
       when: never
     - when: manual
 
+# Deployments to staging environment
 .k8s_deploy_staging:
   extends: .k8s_deploy
   stage: staging
@@ -67,16 +68,55 @@ build/memgator:
 
 staging/carrot2-dcs:
   extends: .k8s_deploy_staging
+  needs:
+    - build/carrot2-dcs
 
 staging/geograph:
   extends: .k8s_deploy_staging
+  needs:
+    - build/geograph
 
 staging/manticore:
   extends: .k8s_deploy_staging
   variables:
     FLUX_KIND: statefulset
+  needs:
+    - build/manticore
 
 staging/memgator:
   extends: .k8s_deploy_staging
+  needs:
+    - build/memgator
+
+# Deployments to production environment
+.k8s_deploy_production:
+  extends: .k8s_deploy
+  stage: production
+  environment:
+    url: https://www.geograph.org.uk/
+    kubernetes:
+      namespace: production
+
+production/carrot2-dcs:
+  extends: .k8s_deploy_production
+  needs:
+    - staging/carrot2-dcs
+
+production/geograph:
+  extends: .k8s_deploy_production
+  needs:
+    - staging/geograph
+
+production/manticore:
+  extends: .k8s_deploy_production
+  variables:
+    FLUX_KIND: statefulset
+  needs:
+    - staging/manticore
+
+production/memgator:
+  extends: .k8s_deploy_production
+  needs:
+    - staging/memgator
 
 # vim: ts=2 sw=2 et sts=2 ft=yaml
