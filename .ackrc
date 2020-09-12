@@ -1,0 +1,11 @@
+--php 
+--html 
+--js 
+--perl 
+--css
+--type-add=tpl:ext:tpl
+--tpl
+--ignore-dir=.svn
+--ignore-dir=_attic
+--ignore-dir=system
+--ignore-dir=code-prettify
