@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: process_votes.php 5307 2009-03-28 10:51:56Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2008 Barry Hunter (geo@barryhunter.co.uk)

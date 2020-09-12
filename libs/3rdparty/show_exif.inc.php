@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: show_exif.inc.php 6041 2009-11-08 22:41:50Z barry $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -27,7 +27,7 @@
 *
 * @package Geograph
 * @author Rudi Winter <http://www.geograph.org.uk/profile/2520>
-* @version $Revision$
+* @version $Revision: 6041 $
 */
 
 /*

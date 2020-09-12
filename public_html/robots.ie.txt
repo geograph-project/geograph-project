@@ -1,5 +1,5 @@
 # www.geograph.ie robot exclusion file
-# * $Id$
+# * $Id: robots.ie.txt 8849 2018-09-26 18:14:34Z barry $
 
 User-agent: *
 Disallow: /stuff/canonical.php

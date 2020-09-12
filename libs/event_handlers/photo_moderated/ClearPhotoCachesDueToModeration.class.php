@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: ClearPhotoCachesDueToModeration.class.php 4203 2008-03-04 20:02:44Z barry $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/

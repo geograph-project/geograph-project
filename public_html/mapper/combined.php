@@ -28,6 +28,14 @@ pageMustBeHTTPS();
 
 $smarty = new GeographPage;
 
+if ($CONF['template']!='ireland' && empty($_GET['mobile'])) {
+	$G = $_GET;
+	$G['lang'] = 'cy';
+        $smarty->assign('welsh_url',"/mapper/combined.php?".http_build_query($G)); //needed by the english template!
+	unset($G['lang']);
+        $smarty->assign('english_url',"/mapper/combined.php?".http_build_query($G)); //needed by the welsh template!
+}
+
 
 if (!empty($_GET['user_id'])) {
         $profile=new GeographUser(intval($_GET['user_id']));

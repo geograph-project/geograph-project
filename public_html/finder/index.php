@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: index.php 9096 2020-03-30 14:07:29Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2008 Barry Hunter (geo@barryhunter.co.uk)
@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (!empty($_GET['lang']) && $_GET['lang'] == 'cy') {
+        include "welsh.php";
+        exit;
+}
+
 require_once('geograph/global.inc.php');
 init_session();
 
@@ -33,5 +38,3 @@ $smarty->assign('tab',1);
 
 $smarty->display('finder.tpl');
 
-	
-?>

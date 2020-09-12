@@ -65,6 +65,12 @@ init_session();
 
 $smarty = new GeographPage;
 
+if ($CONF['template']!='ireland') {
+        $smarty->assign('welsh_url',"/chwilio/?loc=".urlencode($_GET['q'])."&lang=cy");
+        //$smarty->assign('english_url',"/"); //needed by the welsh template!
+}
+
+
 customExpiresHeader(3600,false,true);
 
 $src = 'data-src';
@@ -117,9 +123,16 @@ if (!empty($_GET['q'])) {
                                 //it may be a http:// page cached!?!
                                 $str = str_replace('http://',$CONF['PROTOCOL'],$str);
                         }
+
+			if (strpos($str,"No Results found.") !== FALSE) {
+		                //might be too late, but might as well try!
+		                header("HTTP/1.0 404 Not Found");
+               			header("Status: 404 Not Found");
+			}
+
 			print $str;
 
-			$smarty->display('_std_end.tpl');
+			$smarty->display('_std_end.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 			exit;
 		}
 
@@ -208,7 +221,7 @@ if (!empty($_GET['q'])) {
 	}
 
 } else {
-	$smarty->display('_std_begin.tpl');
+	$smarty->display('_std_begin.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 }
 
 #########################################
@@ -480,6 +493,10 @@ if (!empty($_GET['d']) && !empty($final)) {
 # handler for no results
 
 	} else {
+		//might be too late, but might as well try!
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+
 		if (empty($sph)) {
 			$sph = GeographSphinxConnection('sphinxql',true);
 		}
@@ -601,5 +618,5 @@ function vote_log(action,param,value) {
 
 #########################################
 
-	$smarty->display('_std_end.tpl');
+	$smarty->display('_std_end.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 

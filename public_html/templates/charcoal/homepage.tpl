@@ -1,3 +1,4 @@
+{assign var="page_title" value="Geograph for Schools"}
 {include file="_std_begin.tpl"}
 
 {box colour="333" style="width:160px;float:left;margin-right:15px;"}
@@ -5,13 +6,13 @@
 <h1>Photo Map</h1>
 <p>Click the map to start browsing photos of the British Isles</p>
 
-<div class="map" style=height:{$overview_height}px;width:{$overview_width}px">
-<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
+<div class="map" style="height:{$overview2_height}px;width:{$overview2_width}px">
+<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
 
-{foreach from=$overview key=y item=maprow}
+{foreach from=$overview2 key=y item=maprow}
 	<div>
 	{foreach from=$maprow key=x item=mapcell}
-	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
+	<a href="/mapbrowse.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
 	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 	{/foreach}
 
@@ -25,8 +26,6 @@
 </div>
 
 
-<div id="sponsor">sponsored by</div>
-<span id="sponsorlink"><a href="http://www.ordnancesurvey.co.uk/education-research/" title="Geograph British Isles sponsored by Ordnance Survey"><img src="{$static_host}/templates/charcoal/css/oslogo.gif" width="127" height="35" alt="Ordnance Survey Logo"/></a></span>
 </div>
 {/box}
 
@@ -34,9 +33,7 @@
 <div class="infobox" style="height:389px"> 
 <h1>Photograph of the day</h1>
 
-<a href="/photo/{$pictureoftheday.gridimage_id}"
-title="Click to see full size photo"
->{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
+<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 
 <div style="float:left">
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
@@ -51,7 +48,7 @@ title="Click to see full size photo"
 
 <div class="infobox" style="height:389px">
 <h1>Welcome</h1>
-<p>The Geograph British Isles project aims to collect a 
+<p>The Geograph Britain and Ireland project aims to collect a 
 geographically representative photograph for every square 
 kilometre of the British Isles and you can be part of it.</p>
 
@@ -71,6 +68,16 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 <br style="clear:both"/>
 <br style="clear:both"/>
+
+{box colour="333" style="margin-bottom:12px;font-size:1.3em;text-align:center"}
+<div class="titlebox">&middot;
+	<a href="/games/" style="color:white">Games &amp; Activities</a> &middot;
+	<a href="/content/?&order=views" style="color:white">Collections</a> &middot;
+	<a href="/browser/" style="color:white">Image Browser</a> &middot;
+	<a href="/tags/" style="color:white">Images by Tags</a> &middot;
+</div>
+{/box}
+
 
 <div style="width:370px;float:left;margin-right:14px;">
 
@@ -166,7 +173,7 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 	
 	Recently completed hectads: 
 	{foreach from=$hectads key=id item=obj}
-	<a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a>,
+	<a title="View Mosaic for {$obj.hectad}, completed {$obj.last_submitted}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad}</a>,
 	{/foreach}
 	<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
 	

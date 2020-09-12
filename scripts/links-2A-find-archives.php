@@ -48,7 +48,7 @@ ini_set('user_agent',$ua);
 if (!empty($param['mode']) && $param['mode'] == 'retry') {
 
 	$sql = "SELECT gridimage_link_id,url,first_used FROM gridimage_link
-        WHERE archive_url = '' AND archive_requested NOT LIKE '0000%' AND next_check < '2022'
+        WHERE archive_url = '' AND archive_requested NOT LIKE '0000%' AND next_check < '9999'
 		AND updated < DATE_SUB(NOW(),interval 2 hour)
 		AND archive_checked < DATE_SUB(NOW(),interval 7 day)
         GROUP BY url ORDER BY updated LIMIT {$param['number']}";
@@ -56,7 +56,7 @@ if (!empty($param['mode']) && $param['mode'] == 'retry') {
 } else {
 
 	$sql = "SELECT gridimage_link_id,url,first_used FROM gridimage_link
-	WHERE archive_checked LIKE '0000%' AND next_check < '2022'
+	WHERE archive_checked LIKE '0000%' AND next_check < '9999'
 	AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%' AND parent_link_id = 0
 	GROUP BY url ORDER BY first_used LIMIT {$param['number']}";
 }

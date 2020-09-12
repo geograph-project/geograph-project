@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: ClearOutCacheOfRecentSearchCounts.class.php 8029 2014-04-05 18:03:46Z barry $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -27,7 +27,7 @@
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision$
+* @version $Revision: 8029 $
 */
 
 require_once("geograph/eventhandler.class.php");

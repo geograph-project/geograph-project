@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # $Project: GeoGraph $
-# $Id$
+# $Id: update_rate_graph.pl 5048 2008-11-21 20:18:48Z geograph $
 # 
 # GeoGraph geographic photo archive project
 # This file copyright (C) 2005 Paul Dixon (paul@elphin.com)

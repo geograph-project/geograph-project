@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: typohunter.php 9036 2019-10-12 16:36:56Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2007 Barry Hunter (geo@barryhunter.co.uk)

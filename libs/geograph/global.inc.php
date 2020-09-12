@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: global.inc.php 9061 2020-03-09 16:40:14Z barry $
  *
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision$
+* @version $Revision: 9061 $
 */
 
 if (isset($_SERVER['HTTP_USER_AGENT'])) {
@@ -52,9 +52,6 @@ header("X-Content-Type-Options: nosniff");
 //global routines
 require_once('geograph/functions.inc.php');
 
-//if ('217.45.188.209' == $_SERVER['HTTP_X_FORWARDED_FOR']) {
-//#	$_GET['php_profile'] = 1;
-//}
 
 
 if (isset($_GET['php_profile']) && !class_exists('Profiler',false)) {
@@ -65,7 +62,7 @@ if (isset($_GET['php_profile']) && !class_exists('Profiler',false)) {
 	ProfilerRenderer::setJqueryLocation('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
 
 	ProfilerRenderer::setPrettifyLocation("/js/code-prettify");
-	
+
 	$p = Profiler::start("Global");
 }
 
@@ -472,6 +469,16 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 		$GLOBALS['USER'] =& new GeographUser;
                 @apache_note('user_id', 0);
 
+
+		global $CONF;
+		//note at this point, wouldn't have a session var!
+		if (!empty($_GET['lang']) && $_GET['lang'] == 'cy') {
+			if ($CONF['template'] == 'basic' || $CONF['template'] == 'archive')
+				$CONF['template'] = 'cy';
+			elseif ($CONF['template'] == 'charcoal')
+				$CONF['template'] = 'charcoal_cy';
+		}
+
 	} else {
         	init_session();
 
@@ -516,6 +523,16 @@ function init_session()
 
 	//tell apache our ID, handy for logs
 	@apache_note('user_id', $GLOBALS['USER']->user_id);
+
+	global $CONF;
+	//todo, maybe switch on session var too?
+	if (!empty($_GET['lang']) && $_GET['lang'] == 'cy') {
+		if ($CONF['template'] == 'basic' || $CONF['template'] == 'archive')
+			$CONF['template'] = 'cy';
+		elseif ($CONF['template'] == 'charcoal')
+			$CONF['template'] = 'charcoal_cy';
+	}
+
 
 	//HACK for CDN - under heavy traffic this could be uncommented (or enabled via curtail_level) to shift of non logged in traffic to cdn.
 	// could for example only enable for a % of traffic, or based on IP etc etc

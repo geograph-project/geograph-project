@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: snippets.php 8197 2014-11-29 19:28:54Z geograph $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2009 Barry Hunter (geo@barryhunter.co.uk)

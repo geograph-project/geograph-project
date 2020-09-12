@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: memorymap.php 8519 2017-08-13 18:59:40Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Ian Rutson (ian@rutson.com)

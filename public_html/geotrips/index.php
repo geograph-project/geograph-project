@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: index.php 9056 2020-03-06 14:50:21Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Rudi Winter (http://www.geograph.org.uk/profile/2520)
@@ -227,7 +227,7 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
   </p>
 <?php
   $i=0;
-  if ($_GET['max']) $max=$_GET['max'];
+  if (!empty($_GET['max'])) $max=$_GET['max'];
   else $max=3;
   while ($trks[$i]['updated']>date('U')-86400||$i<$max) {  // show all uploaded in last 24 hours, but at least three
     if ($trks[$i]['title']) $title=htmlentities2($trks[$i]['title']);

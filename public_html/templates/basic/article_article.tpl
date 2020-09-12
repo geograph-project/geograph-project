@@ -65,15 +65,15 @@ div.breadcrumb a {
 	{/if}
 {/dynamic}
 {if $parent_url && $parent_title}
-<div class="breadcrumb">
-<div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-  <a href="/article/" itemprop="url"><span itemprop="title">Articles</span></a> &gt;
+<div class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+<div itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><meta itemprop="position" content="1" />
+  <a href="/article/" itemprop="item"><span itemprop="name">Articles</span></a> &gt;
 </div>
-<div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-  <a href="/article/{$parent_url}" itemprop="url"><span itemprop="title">{$parent_title|escape:'html'}</span></a> &gt;
+<div itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><meta itemprop="position" content="2" />
+  <a href="/article/{$parent_url|escape:'url'}" itemprop="item"><span itemprop="name">{$parent_title|escape:'html'}</span></a> &gt;
 </div>
-<div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-  <span itemprop="title"><b>{$title|escape:'html'}</b></span>
+<div itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><meta itemprop="position" content="3" />
+  <span itemprop="name"><b>{$title|escape:'html'}</b></span>
 </div>
 </div>
 {/if}

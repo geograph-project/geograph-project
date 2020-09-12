@@ -81,6 +81,16 @@ a.hidelink {
  * search block (incorporates login/register links)
  *---------------------------------------------------------------*/
 
+#language_block {
+	position: absolute;
+   	top: 4px;
+	right: 30em;
+   	width: 10em;
+	text-align: left;
+	background:#000066;
+   	color: white;
+}
+
 #search_block {
 	position:absolute;
 	top:4px;
@@ -108,12 +118,12 @@ a.hidelink {
 	font-weight:bold;
 }
 
-#login a
+#login a, #language_block a
 {
 	color: #aaaaaa;
 }
 
-#login a:hover
+#login a:hover, #language_block a:hover
 {
 	color: #eeeeee;
 }

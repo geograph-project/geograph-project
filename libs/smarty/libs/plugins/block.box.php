@@ -41,7 +41,8 @@ function smarty_block_box($params, $content, &$smarty, &$repeat)
    
    			global $CONF;
    			$imgdir="{$CONF['STATIC_HOST']}/templates/{$CONF['template']}/css/";
-          
+                        $imgdir=str_replace('charcoal_cy','charcoal',$imgdir);
+
             $out="<div class=\"round{$colour}\"{$style}>";
             $out.='<div class="roundtop">';
             $out.="<img src=\"{$imgdir}b{$colour}_tl.gif\" width=\"12\" height=\"12\" class=\"corner\" style=\"display:none\">";
@@ -57,4 +58,5 @@ function smarty_block_box($params, $content, &$smarty, &$repeat)
         }
     }
 }
-?>
+
+

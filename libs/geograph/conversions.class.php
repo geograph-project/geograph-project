@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: conversions.class.php 8928 2019-04-27 14:59:42Z barry $
  *
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -71,7 +71,7 @@ function ExifToNational($exif) {
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision$
+* @version $Revision: 8928 $
 */
 
 

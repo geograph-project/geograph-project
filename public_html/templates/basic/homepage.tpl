@@ -1,151 +1,300 @@
-{assign var="right_block" value="_block_recent.tpl"}
+{assign var="imageurl" value=$pictureoftheday.image->_getFullpath(false,true)}
+{assign var="extra_meta" value="<meta property=\"og:image\" content=\"`$imageurl`\"/>`$extra_meta`"}
 {include file="_std_begin.tpl"}
-
-<div style="text-align:center;font-size:0.9em;padding-bottom:3px;border-bottom:1px solid silver;margin-bottom:8px"><a href="?preview=1">Preview our new Homepage layout</a>!</div>
-
-<h2>Welcome to Geograph Britain and Ireland</h2>
+{assign var="right_block" value="_block_recent.tpl"}
 
 <div style="position:relative;background-color:white;">
 
-<div style="background-color:#eeeeee;padding:2px; text-align:center">
-The Geograph Britain and Ireland project aims to collect geographically
-representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
+<div style="position:relative;margin-left:auto;margin-right:auto;width:750px">
+
+<div class="interestBox" style="padding:2px;text-align:center;border-radius:6px;">
+The <b>Geograph<sup style="font-size:0.4em">&reg;</sup> Britain and Ireland</b> project aims to collect geographically
+representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
-<div style="text-align:right;font-size:0.7em">Looking for <a href="/help/geograph_british_isles">Geograph British Isles</a>?</div>
 
-<div style="width:35%;float:left;position:relative;margin-right:10px">
+<div style="text-align:center; padding:10px">Since 2005, <b class="nowrap">{$stats.users|thousends} contributors</b> have submitted <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
 
-{if $overview2}
+	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
+		<div style="position:relative;float:left; width:400px">
+			<div style="position:relative;float:right;margin-right:10px">
+				<a href="/stuff/daily.php" style="color:white;font-size:0.9em;text-decoration:underline gray" title="Previous Photos of the Day">view previous &gt;</a>
+			</div>
+			<h3 style="margin-top:0;margin-bottom:8px">{$ptitles.$ptitle}</h3>
 
-	<h3 style="margin-bottom:4px;margin-top:12px;text-align:center">Coverage Map</h3>
-	
-	<div class="map" style="margin-left:auto;margin-right:auto; height:{$overview2_height}px;width:{$overview2_width}px">
-
-	<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
-
-	{foreach from=$overview2 key=y item=maprow}
-		<div>
-		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1&amp;m={$m}"><img 
-		alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
-		{/foreach}
+			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
-	{/foreach}
+		<div style="position:relative;float:left; width:150px">
+			<p style="margin-top:30px;text-align:center">Click the map to start browsing photos</p>
 
-	{if $marker}
-	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
-	{/if}
+			<div class="map" style="height:{$overview2_height}px;width:{$overview2_width}px">
+				<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
 
+					{foreach from=$overview2 key=y item=maprow}
+						<div>
+						{foreach from=$maprow key=x item=mapcell}
+						<a href="/mapbrowse.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
+						alt="Clickable map" ismap="ismap" title="{$messages.$m}" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+						{/foreach}
+
+						{if $marker}
+						<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
+						{/if}
+
+						</div>
+					{/foreach}
+				</div>
+			</div>
+		</div>
+		<br style="clear:both"/>
+		<div style="float:right">
+			<a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
+		</div>
+		<div style="font-size:0.9em;margin-top:8px">
+			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->title}</a> 
+			<span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->realname}</a></span> 
+			<span class="nowrap">for square <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->grid_reference}</a></span>, 
+			<span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:underline gray">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
+		</div>
 	</div>
-	</div>
-	<div style="font-size:0.9em;text-align:center;position:relative">{$messages.$m}</div>
 
+	<div class="interestBox" style="height:370px;width:150px; float:left; font-size:0.8em;margin-left:10px;padding:10px; overflow:auto;border-radius: 10px;">
+		<h3 style="margin-top:0;">What is Geographing?</h3>
+
+		<ul style="margin-top:2px;margin-bottom:0;padding:0 0 0 1em;">
+			<li style="padding-bottom:4px">It's a game - how many grid squares will you contribute?</li>
+			<li style="padding-bottom:4px">It's a geography project for the people</li>
+			<li style="padding-bottom:4px">It's a national photography project</li>
+			<li style="padding-bottom:4px">It's a good excuse to get out more!</li>
+			<li style="padding-bottom:4px">It's a free and <a href="/faq.php#opensource">open online community</a> project for all</li>
+		</ul>
+
+		<p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how
+		many grid squares you submit!</p>
+	</div>
+
+</div>
+
+<br style="clear:both"/>
+
+<div class="interestBox" style="margin-left:auto;margin-right:auto;width:750px; padding:2px;text-align:center;border-radius:6px;margin-top:10px;margin-bottom:6px;">
+	Good News!
+	{external href="http://www.mikeparker.org.uk/" text="Mike Parker"}, the author of Map Addict, On Red Hill and Mapping the Roads, has agreed to become the first ever Patron of the Geograph project.
+	Mike thinks Geograph &quot;is exactly what the internet was invented for.&quot; 
+	He uses Geograph for book research and for leisure and is fascinated by maps and the land that they show. He hopes to &quot;help Geograph develop further in finding new generations of explorers, photographers, writers and map addicts.&quot;
+	Mike lives in Wales and will be at our <a href="/events/event.php?id=65">2020 AGM in Llandudno</a>. 
+	Christine Johnstone, Chair
+</div>
+
+
+
+
+{if $recentcount}
+	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px" id="photo_block">
+		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px">
+			<div style="position:relative;float:right">
+				<a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
+				<a href="/finder/recent.php" title="Show the most recent submissions"><b>see more</b> &gt;</a>
+			</div>
+			<h3 style="margin:0">Recent Photos</h3>
+		</div>
+
+		{foreach from=$recent item=image}
+
+		<div class="shadow" style="text-align:center;padding-bottom:1em;width:150px;float:left;font-size:0.8em;">
+			<div style="height:126px">
+				<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+			</div>
+
+			<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
+			<span class="nowrap">by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></span>
+			<span class="nowrap">for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
+
+		</div>
+
+		{/foreach}
+		<br style="clear:both"/>
+	</div>
 {/if}
 
 
+<div style="text-align:center;clear:both;padding:10px;">
+	<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, <a href="/submit.php">add yours now</a>!
 </div>
 
-<div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;">
 
-	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
+{foreach from=$collections item=item}
+	{assign var="source" value=$item.source}
 
-	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day <small>[<a href="/results/2087426" title="View the Picture of the Day Archive">more...</a>]</small></h3>
-	<a href="/photo/{$pictureoftheday.gridimage_id}" 
-	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
+	<div class="interestBox" style="text-align:left; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px; border:2px solid #{$colours.$source}; background-color:white; padding:0;">
 
-	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
+		<div style="background-color: #{$colours.$source}; padding:2px;">
+			<div style="float:right"> <a href="/content/featured.php">view previous &gt;</a> &nbsp; <a href="/content/">all collections &gt;</a></div>
+			<b>Featured Collection</b></div>
 
-	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
-	&nbsp;&nbsp;
-	<span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></span>
-	<span class="nowrap">Taken {$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</span>
+		<div style="padding:7px">
+			<div class="shadow" style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
+				{if $item.image}
+				<a title="{$item.image->title|escape:'html'} by {$item.image->realname|escape:'html'} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
+				{/if}
+			</div>
+			{if $item.images > 2 && ($item.source == 'themed' || $item.source == 'gallery' || $item.source == 'snippet' || $item.source == 'article')}
+				<div style="position:relative;float:right;margin-right:10px">
+					<a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="View Images"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0" alt="view images in this collection"/></a>
+				</div>
+			{elseif $item.source == 'user' && $item.images > 2}
+				<div style="position:relative;float:right;margin-right:10px">
+					<a href="/browser/#/realname+%22{$item.title|escape:'url'}%22" title="View Images"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0"/></a>
+				</div>
+			{/if}
+
+			<b><a href="{$item.url}">{$item.title|escape:'html'}</a></b><br/>
+			<small><small style="background-color:#{$colours.$source}">{$sources.$source}</small><small style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
+			{if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</small></small>
+			{if $item.extract}
+				<div title="{$item.extract|escape:'html'}" style="font-size:0.7em;">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
+			{/if}
+			<div style="clear:left"></div>
+		</div>
 	</div>
-
-	</div>
-
-</div>
-
-
-
-<br style="clear:both"/>
-
-<div style="margin-top:10px;padding:5px;position:relative;text-align:center">
-	<h3 style="margin-top:0;margin-bottom:4px;text-align:center">What is Geographing?</h3>
-	
-	&middot; It's a game - how many grid squares will you contribute? &middot;<br/>
-	&middot; It's a geography project for the people &middot;<br/>
-	&middot; It's a national photography project &middot;<br/>
-	&middot; It's a good excuse to get out more! &middot;<br/>
-	&middot; It's a free and <a href="/faq.php#opensource">open online community</a> project for all &middot;<br/>
-	
-</div>
-<br style="clear:both"/>
-<div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span>.<br/>
-
-Recently completed hectads: 
-{foreach from=$hectads key=id item=obj}
-<a title="View Photo Mosaic for {$obj.hectad}, completed {$obj.last_submitted}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad}</a>,
 {/foreach}
-<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
 
-<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, add yours now!
+<div style="text-align:center;clear:both;padding:10px;">
+	&middot; Geograph on <b>{external href="https://twitter.com/geograph_bi" text="Twitter"},
+	{external href="https://www.facebook.com/geograph.org.uk" text="Facebook"}</b> 
+	&middot; <b><a href="/news.php">Project News</a></b><br/>
+</div>
+{if $job}
+<div class="interestBox" style="padding:3px;text-align:center;border-radius:6px;background-color:#FCDB8D;margin-bottom:5px">
+	&middot; <a href="/blog/{$job.blog_id}">{$job.title|escape:'html'}</a> &middot; (<a href="/blog/?tag=job%20posting">more...</a>) &middot;
+</div>
+{/if}
 
-</div><br style="clear:both"/>
+<div style="position:relative; text-align:left; margin-left:auto;margin-right:auto;width:750px;">
+	<div style="position:relative;float:left;width:200px;text-align:center">
+		<p><a href="/help/donate"><img src="{$static_host}/img/donate-now-button.gif" style="vertical-align: middle;" width="190" height="48" alt="donate now" style="border-radius:14px"/></a>
+		Please <a href="/help/donate">support</a><br/> the project</p>
+	</div>
+	<div style="position:relative;float:left;width:550px;text-align:center">
+		<p>This site is archived for preservation by the <a href="/help/webarchive">UK Web Archive</a> project.</p>
 
-
-<div style="width:350px;float:left;position:relative">
-
-<h3>Quick links...</h3>
-<ul>
-	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
-	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
-	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
-	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
-</ul>
-
-<h3>Exploring in more depth...</h3>
-<ul>
-	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
-	<li><a title="Explore Images" href="/explore/"><b>explore</b> Geograph images</a></li>
-	<li><a title="Submitted Content" href="/content/">view <b>content and articles</b></a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></li>
-	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
-	<li><a title="Features Searches" href="/explore/searches.php">browse <b>featured collections</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
-</ul>
-
+		<p style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg;</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. <br> The registered office is Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
+	</div>
+	<br style="clear:both"/>
 </div>
 
-<div style="width:300px;float:left;position:relative">
-
-<p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
-many grid squares you submit! 
-
-Read the <a title="Frequently Asked Questions" href="/faq.php">FAQ</a>, then get submitting -
-we hope you'll enjoy being a part of this great project
-</p>
+<div style="text-align:center;clear:both;padding:10px;">
+        &middot; Geograph <a href="https://schools.geograph.org.uk/">For Schools</a> 
+	&middot; {external href="https://geo-en.hlipp.de/" text="Geograph Germany"}
+        &middot;
+</div>
 
 
-<h3>View images elsewhere...</h3>
-
-<a title="Recent Images in Google Earth" href="/feed/recent.kml" class="xml-kml">KML</a> (for <a title="Google Earth Export" href="/kml.php"><b>Google Earth</b> and <b>Maps</b></a>)<br/>
-
-<a title="RSS Feed of Recent Images" href="/feed/recent.rss" rel="RSS" class="xml-rss">RSS</a> (<a title="RSS Feeds" href="/faq.php#rss">more <b>RSS feeds</b> of images</a>)<br/>
-
-<a title="GPX File of Recent Images" href="/feed/recent.gpx" rel="RSS" class="xml-gpx">GPX</a> (<a title="GPX File Export" href="/gpx.php">more GPX options</a>)<br/>
-
-or <a title="Memory Map Export" href="/memorymap.php">in <b>Memory Map</b></a><br/><br/>
-
-and <a href="/article/Ways-to-view-Geograph-Images">even more ways to view images</a>
 </div>
 
 <br style="clear:both"/>
 
-<p align="center">
-	This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948">UK Web Archive</a> project.
-</div>
 
-<p align="center"><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</i></small></p>
 
-&nbsp;
 
-</div>
+{literal}
+<script type="text/javascript">
+//<![CDATA[
+
+//sillyness for IE6!
+var locked = false;
+
+function thiswindowresize() {
+	if (locked || !document.getElementById("right_block")) {
+		return;
+	}
+  var main=document.getElementById("maincontent_block");
+  var width = (main.className=="content3")?782:970;
+
+  if (main.offsetWidth >width) {
+  	document.getElementById("right_block").style.display = '';
+  	document.getElementById("photo_block").style.display = 'none';
+  	main.className="content3";
+  } else {
+   	document.getElementById("right_block").style.display = 'none';
+  	document.getElementById("photo_block").style.display = '';
+  	main.className="content2";
+  }
+
+	locked = true;
+	setTimeout(function() { locked = false; }, 150);
+}
+
+//Stolen from JQuery!
+var readyBound;
+var isReady = false;
+function bindReady(the_function){
+    if ( readyBound ) return;
+    readyBound = true;
+
+    // Mozilla, Opera and webkit nightlies currently support this event
+    if ( document.addEventListener ) {
+        // Use the handy event callback
+        document.addEventListener( "DOMContentLoaded", function(){
+                document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
+                the_function();
+        }, false );
+
+    // If IE event model is used
+    } else if ( document.attachEvent ) {
+        // ensure firing before onload,
+        // maybe late but safe also for iframes
+        document.attachEvent("onreadystatechange", function(){
+                if ( document.readyState === "complete" ) {
+                        document.detachEvent( "onreadystatechange", arguments.callee );
+                        the_function();
+                }
+        });
+
+        // If IE and not an iframe
+        // continually check to see if the document is ready
+        if ( document.documentElement.doScroll && window == window.top ) (function(){
+                if ( isReady ) return;
+
+                try {
+                        // If IE is used, use the trick by Diego Perini
+                        // http://javascript.nwbox.com/IEContentLoaded/
+                        document.documentElement.doScroll("left");
+                } catch( error ) {
+                        AttachEvent(window,'load',the_function,false);
+                        return;
+                }
+				isReady = true;
+                // and execute any waiting functions
+                the_function();
+        })();
+    }
+
+    // A fallback to window.onload, that will always work
+    AttachEvent(window,'load',the_function,false);
+}
+bindReady(thiswindowresize);
+
+AttachEvent(window,'resize',thiswindowresize,false);
+
+//]]>
+</script>
+
+<script type="application/ld+json">
+{
+   "@context": "http://schema.org",
+   "@type": "WebSite",
+   "url": "http://www.geograph.org.uk/",
+   "name": "Geograph",
+   "alternateName": "Geograph Britain and Ireland",
+   "potentialAction": {
+     "@type": "SearchAction",
+     "target": "http://www.geograph.org.uk/of/{search_term}",
+     "query-input": "required name=search_term"
+   }
+}
+</script>
+
+{/literal}
+
+
 {include file="_std_end.tpl"}

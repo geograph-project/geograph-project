@@ -2,7 +2,7 @@
 
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: syndicator.php 8878 2018-10-22 17:18:22Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: gridimage.class.php 9069 2020-03-14 21:50:52Z barry $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision$
+* @version $Revision: 9069 $
 */
 
 /**
@@ -435,7 +435,8 @@ class GridImage
 				$string = file_get_contents($url);
 
 				//fails quickly if not using memcached!
-				$memcache->name_set('e2',$mkey,$string,$memcache->compress,$memcache->period_long);
+				if (strlen($string)>2)
+					$memcache->name_set('e2',$mkey,$string,$memcache->compress,$memcache->period_long);
 			}
 			$xml = simplexml_load_string($string);
 
@@ -575,26 +576,28 @@ split_timer('gridimage'); //starts the timer
 				$extra_meta[] = "<link rel=\"canonical\" href=\"http://www.geograph.org.uk/photo/{$this->gridimage_id}\" />";
 		}
 
-		$extra_meta[] = "<meta property=\"twitter:card\" content=\"photo\">"; //or summary_large_image
-		$extra_meta[] = "<meta property=\"twitter:site\" content=\"@geograph_bi\">";
-		//$extra_meta[] = "<meta property=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamp.php?id={$this->gridimage_id}\"/>";
-		$extra_meta[] = "<meta property=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamped/".basename($imageurl)."\">";
+		if ($CONF['template']!='archive') {
 
-                $size = $this->_getFullSize(); //caches, anyway, so not too worried about calling mutlipel times
-		if (!empty($size[0])) {
-			$extra_meta[] = "<meta property=\"og:image:width\" content=\"{$size[0]}\">";
-			$extra_meta[] = "<meta property=\"og:image:height\" content=\"{$size[1]}\">";
+			$extra_meta[] = "<meta property=\"twitter:card\" content=\"photo\" />"; //or summary_large_image
+			$extra_meta[] = "<meta property=\"twitter:site\" content=\"@geograph_bi\" />";
+			//$extra_meta[] = "<meta property=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamp.php?id={$this->gridimage_id}\" />";
+			$extra_meta[] = "<meta property=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamped/".basename($imageurl)."\" />";
+
+        	        $size = $this->_getFullSize(); //caches, anyway, so not too worried about calling mutlipel times
+			if (!empty($size[0])) {
+				$extra_meta[] = "<meta property=\"og:image:width\" content=\"{$size[0]}\" />";
+				$extra_meta[] = "<meta property=\"og:image:height\" content=\"{$size[1]}\" />";
+			}
+
+			$extra_meta[] = "<meta property=\"og:title\" content=\"".htmlentities($page_title)."\" />";
+			//$extra_meta[] = "<meta property=\"twitter:image\" content=\"{$imageurl}\" />"; //lets fallback and use non stamped?
 		}
-
-		$extra_meta[] = "<meta property=\"og:title\" content=\"".htmlentities($page_title)."\">";
-		//$extra_meta[] = "<meta property=\"twitter:image\" content=\"{$imageurl}\">"; //lets fallback and use non stamped?
-
 
 		if (empty($this->comment)) {
 			$smarty->assign('meta_description', "{$this->grid_reference} :: {$this->bigtitle}, ".strip_tags(smarty_function_place(array('place'=>$place)))." by ".$this->realname );
 		} else {
 			$smarty->assign('meta_description', $this->comment);
-			$extra_meta[] = "<meta property=\"og:description\" content=\"".htmlentities2($this->comment)."\">"; //shame doesnt fall back and actully use metadescruption
+			$extra_meta[] = "<meta property=\"og:description\" content=\"".htmlentities2($this->comment)."\" />"; //shame doesnt fall back and actully use metadescruption
 		}
 
 		$smarty->assign('extra_meta', implode("\n",$extra_meta));
@@ -764,7 +767,7 @@ split_timer('gridimage'); //starts the timer
 
 				foreach ($collections2 as $i => $row) {
 					if (empty($row['url']) && !empty($row['title'])) {
-                                                $collections2[$i]['url'] = "/stuff/list.php?label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&gridref={$this->grid_reference}";
+                                                $collections2[$i]['url'] = "/stuff/list.php?label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&amp;gridref={$this->grid_reference}";
 						//$collections2[$i]['url'] = "/search.php?gridref={$this->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&amp;do=1";
 					}
 				}
@@ -1145,7 +1148,8 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
         	                        $midwidth = 800;
 	                        else
                 	                $midwidth = round(800*$this->original_width/$this->original_height);
-        	                $srcset[] = "$midurl {$midwidth}w";
+        			if (basename($minurl) != 'error.jpg')
+			                $srcset[] = "$midurl {$midwidth}w";
 	                }
 
                 	//if 1024 works as a midsize, include it.
@@ -1155,13 +1159,15 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 	                                $bigwidth = 1024;
 	                        else
 	                                $bigwidth = round(1024*$this->original_width/$this->original_height);
-		                $srcset[] = "$bigurl {$bigwidth}w";
+				if (basename($bigurl) != 'error.jpg')
+			                $srcset[] = "$bigurl {$bigwidth}w";
 		        }
 
 	                //the original is small enough to include directly.
 	                if ($largest <= 1024) {
 	                        $original = $this->_getOriginalpath(true,true);
-	                        $srcset[] = "$original {$this->original_width}w";
+				if (basename($original) != 'error.jpg')
+		                        $srcset[] = "$original {$this->original_width}w";
 	                }
 
 	                $srcset = ' srcset="'.implode(', ',$srcset).'"';
@@ -1790,7 +1796,7 @@ if (!empty($_GET['ddd'])) {
 	* 
 	* Compare with getThumbnail, which is for getting a "best fit"
 	*/
-	function getFixedThumbnail($maxw, $maxh)
+	function getFixedThumbnail($maxw, $maxh, $urlonly = false)
 	{
 		$params['maxw']=$maxw;
 		$params['maxh']=$maxh;

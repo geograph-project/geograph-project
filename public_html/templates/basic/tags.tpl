@@ -15,15 +15,15 @@
 {/if}
 
 {if $thetag && $gridref}
-<div class="breadcrumb" style="margin-bottom:20px">
-<span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-  <a href="/tags/" itemprop="url"><span itemprop="title">Tagged Images</span></a> &gt;
+<div class="breadcrumb" style="margin-bottom:20px" itemscope itemtype="https://schema.org/BreadcrumbList">
+<span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><meta itemprop="position" content="1" />
+  <a href="/tags/" itemprop="item"><span itemprop="name">Tagged Images</span></a> &gt;
 </span>
-<span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-  <a href="/tagged/{if isset($theprefix)}{$theprefix|escape:'urlplus'}:{/if}{$thetag|escape:'urlplus'}" itemprop="url"><span itemprop="title">Tagged with <b>{$thetag|capitalizetag|escape:'html'}</b></span></a> &gt;
+<span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><meta itemprop="position" content="2" />
+  <a href="/tagged/{if isset($theprefix)}{$theprefix|escape:'urlplus'}:{/if}{$thetag|escape:'urlplus'}" itemprop="item"><span itemprop="name">Tagged with <b>{$thetag|capitalizetag|escape:'html'}</b></span></a> &gt;
 </span>
-<span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-  <span itemprop="title"><b>Near {$gridref|escape:'html'}</b></span>
+<span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><meta itemprop="position" content="3" />
+  <span itemprop="name"><b>Near {$gridref|escape:'html'}</b></span>
 </span>
 </div>
 {/if}

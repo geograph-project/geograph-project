@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: search.php 9097 2020-03-30 14:12:45Z barry $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -55,6 +55,12 @@ if (!empty($_GET['style'])) {
 
 
 $smarty = new GeographPage;
+
+if ($CONF['template']!='ireland') {
+        $smarty->assign('welsh_url',"/chwilio/?lang=cy"); //todo, try to forward the query somehow?
+        //$smarty->assign('english_url',"/"); //needed by the welsh template!
+}
+
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
@@ -728,6 +734,7 @@ if (isset($_GET['fav']) && $i) {
 								header("Location: /browser/#!/q=$q2");
 							} break;
 						case 'of.php': header("Location: /of/".str_replace('%2F','/',str_replace('%3A',':',urlencode($q)))); break;
+						case 'welsh.php': header("Location: /chwilio/?q=$q2&lang=cy"); break;
 						case 'multi2.php': header("Location: /finder/multi2.php?q=$q2"); break;
 						case 'multi.php': header("Location: /finder/multi.php?q=$q2"); break;
 						case 'full-text.php': header("Location: /full-text.php?q=$q2"); break;
@@ -995,7 +1002,11 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		dieUnderHighLoad(0,'search_unavailable.tpl');
 		die("Invalid Search Parameter");
 	}
-	
+
+	if (!empty($engine->criteria) && !empty($engine->criteria->searchtext)) {
+		$smarty->assign('welsh_url',"/chwilio/?q=".urlencode($engine->criteria->searchtext)."&lang=cy");
+	}
+
 	if (isset($_GET['legacy']) 
 		&& (!empty($engine->criteria->searchq) || !empty($engine->criteria->searchtext) || !empty($engine->criteria->x) )
 		&& empty($engine->criteria->limit6) && empty($engine->criteria->limit1) ) {

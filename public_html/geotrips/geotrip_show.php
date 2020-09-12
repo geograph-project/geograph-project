@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: geotrip_show.php 9094 2020-03-24 10:31:56Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Rudi Winter (http://www.geograph.org.uk/profile/2520)
@@ -222,11 +222,11 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 <?php
   print('<h3>'.htmlentities2($trk['location']).'</h3>');
   $date=date('D, j M Y',strtotime($trk['date']));
-  print('<h4 style=text-align:left>A '.whichtype($trk['type']).' from '.htmlentities2($trk['start']).", $date by <a href=\"/profile/$trk[uid]\">".htmlentities2($trk[user])."</a></h4>");
+  print('<h4 style=text-align:left>A '.whichtype($trk['type']).' from '.htmlentities2($trk['start']).", $date by <a href=\"/profile/$trk[uid]\">".htmlentities2($trk['user'])."</a></h4>");
 
-  $prec=$trk['contfrom'];
-  $foll=$foll['id'];
-  if ($prec||$foll) {
+  if (!empty($trk['contfrom'])||!empty($foll['id'])) {
+    $prec=$trk['contfrom'];
+    $foll=$foll['id'];
     print('<table class="ruled mapwidth"></tr>');
     if ($prec) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"/geotrips/$prec\">preceding leg</a></td>");
     else print('<td></td>');
@@ -435,4 +435,15 @@ function scrollIntoView(gridimage_id) {
 
 
 $smarty->display('_std_end.tpl');
+
+
+if (!isset($_GET['dontcount']) && appearsToBePerson()) {
+
+	if (empty($db) || $db->readonly)
+		$db = GeographDatabaseConnection(false);
+
+	//yes, updated is currently a integer column (and so not 'on update set current_timestamp') - but set it just in case it gets changed. Noop currently.
+	$db->Execute("UPDATE LOW_PRIORITY geotrips SET views=views+1, last_view=NOW(), updated=updated WHERE id = ".$_GET['trip']);
+}
+
 

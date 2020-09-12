@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: restapi.php 8877 2018-10-22 16:48:25Z barry $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2006 Paul Dixon (lordelph@gmail.com)

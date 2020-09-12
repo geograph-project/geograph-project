@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: geograph-at-home-client-yahoo_terms.php 5684 2009-08-21 17:48:55Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2009 Barry Hunter (geo@barryhunter.co.uk)

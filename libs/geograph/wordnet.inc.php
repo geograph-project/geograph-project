@@ -1,7 +1,7 @@
 <?
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: wordnet.inc.php 2442 2006-08-28 22:09:06Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision$
+* @version $Revision: 2442 $
 */
 
 function addTwoLetterPhrase($phrase) {

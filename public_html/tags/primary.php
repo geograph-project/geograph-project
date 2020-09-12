@@ -32,11 +32,24 @@ $smarty = new GeographPage;
 
 $template = 'tags_primary.tpl';
 $cacheid = "";
+	if (!empty($_GET['lang']) && $_GET['lang'] == 'cy')
+		$cacheid = "cy";
 
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db = GeographDatabaseConnection(true);
 
+	if (!empty($_GET['lang']) && $_GET['lang'] == 'cy') {
+	$tags = $db->getAssoc("
+		SELECT top_cy as top,ids,`count` AS images,category_primary.description_cy as description,grouping_cy as grouping
+		FROM category_primary
+		LEFT JOIN tag t ON (top = tag AND prefix = 'top')
+		LEFT JOIN tag_stat USING (tag_id)
+		GROUP BY top
+		ORDER BY sort_order
+		LIMIT 75");
+
+	} else {
 	$tags = $db->getAssoc("
 		SELECT top,ids,`count` AS images,category_primary.description,grouping
 		FROM category_primary
@@ -45,6 +58,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		GROUP BY top
 		ORDER BY sort_order
 		LIMIT 75");
+	}
 
 	$ids = array();
 	foreach ($tags as $tag => $row) {
@@ -84,6 +98,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 
 	$smarty->assign_by_ref('results', $results);
+        $smarty->assign('thumbw',120);
+        $smarty->assign('thumbh',120);
 
 	$smarty->assign('example',1);
 }

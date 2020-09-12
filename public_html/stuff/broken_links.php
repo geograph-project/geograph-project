@@ -131,7 +131,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "SELECT
 	l.*
 	FROM gridimage_link l $tables
-	WHERE HTTP_Status != 0 AND next_check > NOW() AND next_check < '2022' AND parent_link_id = 0 $andwhere
+	WHERE HTTP_Status != 0 AND next_check > NOW() AND next_check < '9999' AND parent_link_id = 0 $andwhere
 	ORDER BY last_checked desc,HTTP_Location
 	LIMIT 100";
 

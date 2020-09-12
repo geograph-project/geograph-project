@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: snippet.php 9134 2020-08-19 15:34:50Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2009 Barry Hunter (geo@barryhunter.co.uk)
@@ -62,7 +62,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/snippet/{$data['snippet_id']}\"/>");
 
-		$data['images'] = $db->getOne("SELECT COUNT(*) FROM gridimage_snippet gs WHERE snippet_id = $snippet_id AND gridimage_id < 4294967296");
+		$data['images'] = $db->getOne("SELECT COUNT(*) FROM gridimage_snippet gs INNER JOIN gridimage_search USING (gridimage_id) WHERE snippet_id = $snippet_id");
 
 		if ($data['images']) {
 			$imagelist = new ImageList();
@@ -71,6 +71,14 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 			$imagelist->_getImagesBySql($sql);
 			$smarty->assign_by_ref('results', $imagelist->images);
+
+			if ($data['images'] <= 10) {
+				$smarty->assign('thumbw',213);
+				$smarty->assign('thumbh',160);
+			} else {
+				$smarty->assign('thumbw',120);
+				$smarty->assign('thumbh',120);
+			}
 		}
 
 

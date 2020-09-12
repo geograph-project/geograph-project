@@ -2465,4 +2465,9 @@ alter table user modify `ticket_option` enum('all','major','digest','none','off'
 #################################################
 
 
+UPDATE gridimage_link SET next_check = '9999-01-01 00:00:00',updated=updated WHERE next_check > '2022';
+
+
+#################################################
+
 

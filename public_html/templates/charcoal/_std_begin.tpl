@@ -34,6 +34,11 @@ title="Geograph Britain and Ireland search" href="/stuff/osd.xml" />
 	<h1>Geograph - photograph every grid square</h1>
 	<div id="profile">
 		<div id="profilebar">
+		{if $welsh_url}
+		<span id="language_block">
+		        [<a href="{$welsh_url}">Cymraeg</a>/English] &nbsp;
+		</span>
+		{/if}
 		{dynamic}
 		  {if $user->registered}
 		  	  Logged in as {$user->realname|escape:'html'}

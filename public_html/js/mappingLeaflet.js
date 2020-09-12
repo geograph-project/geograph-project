@@ -333,7 +333,12 @@ function updateCamIcon() {
 		var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
 
 		baseMaps['OSM'] = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-			 {mapLetter: 'o', minZoom: 8, maxZoom: 18, attribution: osmAttrib});		
+			 {mapLetter: 'o', minZoom: 3, maxZoom: 18, attribution: osmAttrib});		
+
+		        var topoUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+		        var topoAttribution = 'Data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]';
+		baseMaps["OpenTopoMap"] = L.tileLayer(topoUrl, {mapLetter: 'l', minZoom: 1, maxZoom: 17, detectRetina: false, attribution: topoAttribution});
+
 
 /*
 		//baseMaps['OSM Cycle'] = new L.TileLayer('https://tile.thunderforest.com/cycle/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993', 

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: create_tpoint.php 8956 2019-05-27 09:58:47Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Barry Hunter (geo@barryhunter.co.uk)
