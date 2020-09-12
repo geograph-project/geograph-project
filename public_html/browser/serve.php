@@ -21,24 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if (false) {
-	header("HTTP/1.0 503 Unavailable");
-	print "<h3>Sorry. The browser is currently offline due to server issues.</h3>";
-	print "<p>We hope to restore service within 24 hours";
-	print "<p>return to <a href=/>Geograph Homepage</a>";
-	exit;
-}
-
 require_once('geograph/global.inc.php');
-
-if (empty($CONF['browser_url'])) {
-	header("HTTP/1.0 503 Unavailable");
-	$smarty = new GeographPage;
-
-	$smarty->display("sample8_unavailable.tpl");
-	exit;
-}
-
 
 $seconds = 3600;
 
@@ -49,24 +32,24 @@ customGZipHandlerStart();
 
 ############
 
-if (!empty($_GET['_escaped_fragment_'])) {
-	include __DIR__."/_fake-browser.php";
-	exit;
-}
-
-############
-
 	$ctx = stream_context_create(array(
 	    'http' => array(
 	        'timeout' => 1
 	        )
 	    )
 	);
-        $mkey = $_SERVER['HTTP_HOST'];
-	$url = $CONF['browser_url'];
-	if (!empty($_GET['t'])) {
-		$url .= "&".$_GET['t'];
+        $mkey = $_SERVER['HTTP_HOST'].$_GET['output'];
+
+	if (empty($_GET['output'])) {
+                header("Content-Type: text/javascript");
+		$url = "http://ww2.scenic-tours.co.uk/serve.js";
+		$mkey .= ".js";
+	} elseif (!empty($_GET['t'])) {
+		$url = "http://ww2.scenic-tours.co.uk/serve.php?t=".$_GET['t']."&output=".$_GET['output'];
 		$mkey .= $url;
+	} else {
+		$url = "http://ww4.scenic-tours.co.uk/serve.php?t=WolhXJL5405oNulVhXhhbluwN44X&output=".$_GET['output'];
+		 //ww4 runs around edgecast! we use memcache anyway, so dont need the caching
 	}
         if (rand(1,10) > 5 && $memcache->valid) {
                 $remote =& $memcache->name_get('browser',$mkey);
@@ -87,41 +70,13 @@ if (!empty($_GET['_escaped_fragment_'])) {
 		$memcache->name_set('browser',$mkey,$remote,$memcache->compress,$memcache->period_long*2);
 	}
 
-	//these are now local
-	//$remote = str_replace('<head>','<head><base href="http://ww2.scenic-tours.co.uk/"/>',$remote);
-	$remote = preg_replace('/"serve\.v(\d+)\.js"/','"serve.php?v=$1"',$remote);
 
-if (isset($_GET['inner'])) {
-	$str = "<script>
-	function resizeContainer() {
-		var FramePageHeight =  document.body.offsetHeight + 10;
-		window.parent.document.getElementById('iframe').style.height=FramePageHeight+'px';
+        if ($_GET['output'] == 'js' || $_GET['output'] == 'js2') {
+                header("Content-Type: text/javascript");
+        }
+        if ($_GET['output'] == 'css') {
+                header("Content-Type: text/css");
 	}
-	setInterval(resizeContainer,1000);
-	</script>";
-	##$remote = str_replace('</body>',$str.'</body>',$remote);
-	$remote = str_replace('Back to Geograph','',$remote);
-} else {
-	$remote = str_replace('Back to Geograph','Geograph Homepage',$remote);
-}
-
-
-$remote = str_replace('>var user_id = 3;<','>var user_id = '.$USER->user_id.';<',$remote);
-$remote = str_replace('<body>','<body class="theme_'.$USER->getStyle().'">',$remote);
-
-if (strpos($_SERVER['HTTP_USER_AGENT'],'MSIE ') !== FALSE) {
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<?
-}
 
 print $remote;
-
-
-
-
-//browser, is one of the few 'pages' that doesnt use smarty to render template
-if (function_exists('recordVisitor'))
-	recordVisitor();
-
 
