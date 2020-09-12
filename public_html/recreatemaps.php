@@ -31,7 +31,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(false);
 
 if (isset($_POST['inv']))
 {

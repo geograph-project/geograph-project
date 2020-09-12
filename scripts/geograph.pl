@@ -3,7 +3,7 @@ use strict;
 use Getopt::Long;
 
 #servers to sync with
-my @servers=('toast', 'crumpet','scone');
+my @servers=('cake', 'cream');
 
 #options
 my $show_help=0;
@@ -16,7 +16,6 @@ my $apache=0;
 my $mysql=0;
 my $fast=0;
 my $revision='';
-my $tracker=0;
 my $today=0;
 my $filesonly=0;
 
@@ -27,7 +26,6 @@ GetOptions
     'svnupdate!', \$cvsupdate,
     'makelive!', \$makelive,  
     'apache!', \$apache,
-    'tracker!', \$tracker,
     'today!', \$today,
     'filesonly!',\$filesonly,
     'mysql!', \$mysql,
@@ -43,7 +41,7 @@ GetOptions
 @exfilelist = split(/,/,join(',',@exfilelist));
 
 #any command specified?
-if (!$mysql && !$apache && !$today && !$tracker && !$cvsupdate && !$makelive && !$show_help)
+if (!$mysql && !$apache && !$today && !$cvsupdate && !$makelive && !$show_help)
 {
    print "No action specified, try geograph --help\n\n";
    exit;
@@ -87,9 +85,6 @@ geograph --makelive [options]
                           below a base directory called foo 
   --include "/foo/**/bar" would include any file called bar two or more 
                           levels below a base directory called foo 
-
-geograph --tracker
-  Updates torrents.geograph.org.uk with latest code from SVN 
 
 geograph --apache syntax|start|stop|restart|reload|force-reload [--fast]
   Starts, stops or restarts the geograph apache server
@@ -175,7 +170,7 @@ if ($cvsupdate)
 {
    print "Updating staging area...\n";
    my $rev = ($revision)?" -r $revision":'';
-   my $update_out = `cd /var/www/geograph_svn && sudo -u geograph svn update --ignore-externals $rev`;
+   my $update_out = `cd /var/www/geograph_svn && sudo -u geograph -H svn update --ignore-externals $rev`;
    print "$update_out\n\n";
 
    if ($update_out =~ /^C/m) 
@@ -202,7 +197,7 @@ if ($cvsupdate)
        `sudo -u geograph $cmd`;
    }
 
-   if (my @files = ($update_out =~ /([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
+   if (my @files = ($update_out =~ /([^ ']+\.js|[^ ']+?\.css)'?$/mg)) {
      &update_revision_file('/var/www/geograph_svn',@files);
      foreach my $server (@servers)
        {
@@ -219,31 +214,6 @@ if ($cvsupdate)
    #if (my @files = ($all =~ /\/var\/www\/geograph_svn\/([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
    #  &update_revision_file('/var/www/geograph_svn',@files);
    #}
-
-   print "\nDone.\n\n";
-}
-
-############################################################################
-
-if ($tracker) {
-   print "Updating tracker staging area...\n";
-   my $rev = ($revision)?" -r $revision":'';
-   my $update_out = `cd /var/www/geograph_svn/apps/tracker/ && sudo -u geograph svn update $rev`;
-   print "$update_out\n\n";
-
-   #sync tracker site
-   my $cmd="rsync ".
-        "--verbose ".
-        "--archive ".
-        "--links ".
-        "--cvs-exclude ".
-        "--exclude-from=/var/www/geograph_svn/scripts/makelive-exclusion ".
-        "--exclude=torrents ".
-        "/var/www/geograph_svn/apps/tracker/ ".
-        "/var/www/rivettracker/";
-
-   print "Copying torrent tracker updates\n";
-   `sudo -u geograph $cmd`;
 
    print "\nDone.\n\n";
 }
@@ -320,10 +290,11 @@ if ($makelive)
               "$server-pvt:/var/www/geograph_live/";
 
           print "Copying to $server...\n";
+#print "Executing:\n$cmd\n\n";
           `sudo -u geograph $cmd`;
       }
 
-      if (my @files = ($rsync_out =~ /([^\n\r ]+\.js|[^\n\r ]+?\.css)'?$/msg)) {
+      if (my @files = ($rsync_out =~ /([^\n\r ']+\.js|[^\n\r ']+?\.css)'?$/msg)) {
          &update_revision_file('/var/www/geograph_live',@files);
          foreach my $server (@servers)
          {

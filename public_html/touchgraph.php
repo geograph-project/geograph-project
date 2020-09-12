@@ -71,7 +71,7 @@ if ($grid_ok)
 	WHERE $sql_where
 	LIMIT 25"; ##limt just to make sure
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection(false);
 	if (!$db) die('Database connection failed');  
 
 	$photos = $db->getAssoc($sql);

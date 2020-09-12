@@ -115,7 +115,7 @@
 	{if $grid_reference}
 		<li class="interestBox">This description is located in {$grid_reference}, <a href="/gridref/{$grid_reference}/links"><img src="{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | <a href="/gridref/{$grid_reference}"><b>Photos</b> for {$grid_reference}</a></li>
 	{/if}
-	{if $title}<li class="interestBox"><a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find {if $grid_reference}nearby{/if} images <b>mentioning the words [ {$title|escape:'html'} ]</b></a> | (<a href="/browser/#!/q={$title|escape:'url'}/">in ther Browser</a>)</li>{/if}
+	{if $title}<li class="interestBox"><a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find {if $grid_reference}nearby{/if} images <b>mentioning the words [ {$title|escape:'html'} ]</b></a> | (<a href="/browser/#!/q={$title|escape:'url'}/">in the Browser</a>) </li>{/if}
 </ul>
 
 <br/>

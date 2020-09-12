@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: eventprocessor.class.php 9039 2019-11-18 13:49:27Z barry $
+ * $Id: eventprocessor.class.php 8672 2017-12-10 14:28:42Z barry $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -28,7 +28,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision: 9039 $
+* @version $Revision: 8672 $
 */
 
 require_once("geograph/eventhandler.class.php");
@@ -303,7 +303,7 @@ class EventProcessor
 			$event=$this->db->GetRow("select * from event 
 				where (
 						status = 'pending'
-						or (status = 'in_progress' and updated < date_sub(now(),interval 1 hour))
+						or (status = 'in_progress' and updated < date_sub(now(),interval 6 hour))
 				      ) $attemptfilter 
 				order by priority, posted limit 1");
 			

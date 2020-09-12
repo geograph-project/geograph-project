@@ -64,7 +64,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach ($images as $i => $row) {
 		if ($row['imagecount'] == 0) {
 			$count[0]+=$row['count'];
-		} elseif ($row['imagecount'] <= 10) {
+		} elseif ($row['imagecount'] <= 20) {
 			$count[$row['imagecount']]+=$row['count'];
 		} elseif ($row['imagecount'] < 100) {
 			$count[intval($row['imagecount']/10)*10+10]+=$row['count'];
@@ -80,7 +80,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$max = 0;
 	foreach ($percents as $p) {
 		$line = array();
-		$line['title'] = ($p > 10?"&lt; ":'').$p;
+		$line['title'] = ($p > 20?"&lt; ":'').$p;
 		$line['value'] = $count[$p];
 		$table[] = $line;
 		$max = max($max,$count[$p]);
