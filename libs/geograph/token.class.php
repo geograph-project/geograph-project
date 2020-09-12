@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: token.class.php 3996 2007-12-30 19:02:04Z barry $
  * 
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
@@ -32,7 +32,7 @@
 *
 * @package Geograph
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision$
+* @version $Revision: 3996 $
 */
 
 
@@ -83,7 +83,7 @@
 *
 * @package System
 * @author Paul Dixon <paul@elphin.com>
-* @version $Revision$
+* @version $Revision: 3996 $
 */
 class Token
 {

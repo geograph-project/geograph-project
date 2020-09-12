@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: tagger.php 8584 2017-08-25 20:48:58Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Barry Hunter (geo@barryhunter.co.uk)

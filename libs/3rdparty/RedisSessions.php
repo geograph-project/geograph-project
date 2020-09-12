@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: RedisSessions.php 8023 2014-04-05 17:52:08Z barry $
  *
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: notification-mailer.php 8717 2018-02-21 19:13:16Z barry $
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2013 Barry Hunter (geo@barryhunter.co.uk)

@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: juploader.php 8210 2014-11-29 21:52:36Z geograph $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2008 David Morris 
