@@ -103,12 +103,11 @@ $CONF['adodb_cache_dir']=$_SERVER['DOCUMENT_ROOT'].'/../adodbcache/';
 
 //sphinx is not required but highly recommended
 #$CONF['sphinx_host'] = "localhost";
-#$CONF['sphinx_hostnew'] = "localhost"; //server that provides sample8 index
 #$CONF['sphinx_port'] = 3312;
 #$CONF['sphinx_portql'] = 9306;
 #$CONF['sphinx_prefix'] = ""; //prefix for index names, if only one instance of geograph probably leave blank (will need to add to indexes in sphinx.conf manually)
 
-# can also provide $CONF['sphinxql_dsn'] directly, but not recommended. (will be built from sphinx_hostnew and sphinx_portql)
+# can also provide $CONF['sphinxql_dsn'] directly, but not recommended. (will be built from sphinx_host and sphinx_portql)
 
 ###################################
 # Site setup

@@ -50,6 +50,145 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			header("HTTP/1.0 410 Gone");
 			header("Status: 410 Gone");
 			$template = "static_404.tpl";
+
+		} elseif ($_GET['method'] == 'sample' || $_GET['method'] == 'quick') {
+			$results = array();
+
+			require_once ( "3rdparty/sphinxapi.php" );
+
+			$cl = new SphinxClient ();
+			$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
+
+			$cl->SetIDRange($image->gridimage_id,$image->gridimage_id);
+			$cl->SetLimits(0,1);
+			$res = $cl->Query('','sample8');
+
+		if (!empty($_GET['debug'])) {
+			print_r($res);
+			print_r($cl);
+			print "\n\n<hr>\n\n";
+		}
+
+			$data = array();
+			$data[''] = array(); //just to forse it to be first
+
+			if (empty($res) || empty($res['matches'])) {
+
+				$data[''][] = $image->title;
+				$data[''][] = $image->realname;
+				$data[''][] = str_replace('-','',$image->imagetaken);
+				$data[''][] = str_replace('-','',substr($image->imagetaken,0,7));
+				$data[''][] = substr($image->imagetaken,0,4);
+				$data[''][] = $image->grid_reference;
+				if (preg_match('/([A-Z]+)(\d)\d(\d)\d/',$image->grid_reference,$m)) {
+					$data[''][] = $m[1].$m[2].$m[3];
+					$data[''][] = $m[1];
+				}
+
+			} else {
+				$columns = array();
+				foreach ($res['fields'] as $idx => $attr) {
+					if ($res['attrs'][$attr] == 7 && $attr != 'hash' && $attr != 'status' && $attr != 'takenyear') {
+						$columns[] = $attr;
+					}
+				}
+
+				foreach ($res['matches'] as $idx => $row) {
+					foreach ($columns as $column) {
+						if (!empty($row['attrs'][$column])) {
+							if (is_numeric($row['attrs'][$column])) {
+								if ($row['attrs'][$column] > 1000)
+									$data[$column] = array($row['attrs'][$column]);
+							} else {
+								$data[''][] = $row['attrs'][$column];
+							}
+						}
+					}
+				}
+			}
+
+			$q = array();
+			foreach ($data as $column => $row) {
+				$words = explode(' ',trim(strtolower(preg_replace('/[^\w]+/',' ',str_replace('_SEP_',' ',implode(' ',$row))))));
+				$words = array_unique($words);
+
+				if (empty($_GET['all'])) {
+					$keywords = $cl->BuildKeywords(implode(' ',$words),'sample8C', true);
+					$inverted = array_flip($words); // hay look, really nice quick lookup table, to delete by value.
+					foreach ($keywords as $idx => $keyword) {
+						if ($keyword['docs'] > 100000) {
+							unset($words[$inverted[$keyword['tokenized']]]);
+						}
+					}
+				}
+				if (empty($words))
+					continue;
+
+				if ($column) {
+					if (count($words) > 1 && count($words) < 32) {
+						$q[] = '| (@'.$column.' "'.implode(' ',$words).'"/1 )';
+					} else {
+                                                $q[] = '| (@'.$column.' '.implode(' | ',$words).' )';
+                                        }
+				} else {
+					if (count($words) < 32) { //quorym can only cope with 32 words!
+						$q[] = '"'.implode(' ',$words).'"/'.max(4,intval(count($words)/10));
+					} else {
+						$q[] = '( '.implode(' | ',$words).' )';
+					}
+				}
+			}
+			$q = implode(' ',$q);
+
+			if ($_GET['method'] == 'quick') {
+				$cl->setLimits(0,25,500,30000);
+				$cl->setMaxQueryTime(150);
+			} elseif (empty($_GET['exact'])) {
+				$cl->setLimits(0,25,1000,300000);
+				$cl->setMaxQueryTime(600); //setting this gives more approximate, but quicker results. Without this can easily take 20seconds+ !!?
+			} else {
+				$cl->setLimits(0,25);
+			}
+
+			$cl->_min_id = 0; $cl->_max_id = 0; //there is no ResetIDRange
+			$cl->setMatchMode(SPH_MATCH_EXTENDED);
+///			$cl->setRankingMode(SPH_RANK_WORDCOUNT);
+			$cl->setSelect("user_id,realname,title,grid_reference");
+			$cl->setFieldWeights(array('title'=>5,'myriad'=>4,'hectad'=>3,'grid_reference'=>2,'takenday'=>2));
+
+			$res = $cl->Query($q, 'sample8');
+
+		if (!empty($_GET['debug'])) {
+			print_r($q);
+			print_r($res);
+			print_r($cl);
+			exit;
+		}
+
+			if ($res && !empty($res['matches'])) {
+				$images = array();
+				foreach ($res['matches'] as $idx=>$row) {
+					if ($idx == $_REQUEST['id'])
+						continue;
+					 $gridimage = new GridImage;
+                                         $row['attrs']['gridimage_id'] = $idx;
+                                         $gridimage->fastInit($row['attrs']);
+
+                                         $images[] = $gridimage;
+				}
+
+                                $row = array();
+                                $row['title'] = "Images similar/related to this image";
+                                $row['images'] = $images;
+                                $row['resultCount'] = $res['total']; //using this rather than total_found, because there can be many thousends of results.
+                                $row['query'] = $q;
+
+				$results[] = $row;
+			}
+
+                        $smarty->assign_by_ref('results', $results);
+                        $smarty->assign('method',$_GET['method']);
+
 		} elseif (!empty($_GET['method']) && $_GET['method'] == 'combined') {
 			$results = array();
 

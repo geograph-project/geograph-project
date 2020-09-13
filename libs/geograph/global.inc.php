@@ -238,13 +238,11 @@ function GeographDatabaseConnection($allow_readonly = false) {
 #################################################
 
 //this is legacy. Some scripts still use this! (should use GeographSphinxConnection instead!)
-if (empty($CONF['sphinxql_dsn']) && !empty($CONF['sphinx_hostnew']))
-	$CONF['sphinxql_dsn'] = "{$CONF['db_driver']}://{$CONF['sphinx_hostnew']}:{$CONF['sphinx_portql']}/";
+if (empty($CONF['sphinxql_dsn']) && !empty($CONF['sphinx_host']))
+	$CONF['sphinxql_dsn'] = "{$CONF['db_driver']}://{$CONF['sphinx_host']}:{$CONF['sphinx_portql']}/";
 
-function GeographSphinxConnection($type='sphinxql',$new = false) {
+function GeographSphinxConnection($type='sphinxql',$new = false) { //the new param is legacy and now ignored. all indexes are on the same host!
 	global $CONF;
-	$host = ($new && !empty($CONF['sphinx_hostnew']))?$CONF['sphinx_hostnew']:$CONF['sphinx_host'];
-	//todo, this could be inteligent, and if sphinx_host unavailable, switch to new host transparently
 
 	if ($type=='sphinxql' || $type=='mysql') {
 
@@ -259,7 +257,7 @@ function GeographSphinxConnection($type='sphinxql',$new = false) {
                 require_once ( "3rdparty/sphinxapi.php" );
 
                 $client = new SphinxClient ();
-                $client->SetServer ( $host, $CONF['sphinx_port'] );
+                $client->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
 
 		return $client;
         }
