@@ -63,8 +63,12 @@ if (!empty($param['mode']) && $param['mode'] == 'retry') {
 
 $timetravelurl = "http://timetravel.mementoweb.org/api/json/";
 
+if (!empty($CONF['timetravel_url'])) {
+	$timetravelurl = $CONF['timetravel_url']."/api/json/"; //in this script we only use the json API, so add the prefix. BUt config file allows for other API use
+} // else {
+	//die("Local timetravel/memgate not installed, can get away without and use the public one above, but better to use local
+//}
 
-$timetravelurl = "http://tea-pvt:1208/api/json/";
 //we now have a local installation of https://github.com/oduwsdl/memgator
 //test with: GET http://tea-pvt:1208/api/json/20160801/http://www.devizesheritage.org.uk/railway_devizes.html
 
