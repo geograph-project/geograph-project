@@ -1,5 +1,7 @@
 <?php
 
+die("this site is only a demo test site");
+
 setlocale(LC_ALL,'C'); //to match online servers...
 
 //domain specific configuration file
@@ -303,3 +305,4 @@ $CONF['carrot2_dcs_url'] = "http://localhost:8081/dcs/rest"; //the specific rest
 
 $CONF['timetravel_url'] = "http://localhost:1208"; //just the hostname (and optional port) without trailing slash. We add the full API path
 
+$CONF['carrot2_dcs_url'] = "http://localhost:8081/dcs/rest";

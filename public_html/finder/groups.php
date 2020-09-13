@@ -347,3 +347,75 @@ if (true) { //actully we can run the code, even in the case of an empty query...
 
 $smarty->display($template,$cacheid);
 
+
+function fakeSample8Clustered($sph,$where,$groupn,$limit) {
+
+        require '3rdparty/Carrot2.class.php';
+        $carrot = Carrot2::createDefault();
+
+
+	$cols = 'tags';
+	$cols = 'county,decade,format,hectad,imageclass,imageclass,myriad,place,snippets,subjects,tags,takenday,takenmonth,takenyear,terms,types,scenti';
+	#contexts,country
+	$recordSet = $sph->Execute("
+                        select id,realname,user_id,title,grid_reference,weight() as w, $cols
+                        from sample8
+                        where $where
+                        order by score desc, w desc
+                        limit 1000") or die (mysql_error());
+
+	$lookup = array();
+	$reverse = array();
+	while (!$recordSet->EOF) {
+		$row =& $recordSet->fields;
+		$lookup[] = $row;
+		$tags = array();
+		foreach($row as $key => $value) {
+			if ($key == 'id' || $key == 'user_id' || $key == 'title' || $key == 'realname') {
+				continue;
+			} elseif (strpos($value,'_SEP_') !== FALSE) {
+				foreach (explode('_SEP_',$value) as $word) {
+					$tags[trim($word)]=1;
+				}
+			} elseif (!empty($value) && is_numeric($value)) {
+				$hash = hash($algo,$value);
+				$reverse[$hash] = $value;
+				$tags[$hash]=1;
+			} else {
+				$tags[trim($value)]=1;
+			}
+		}
+
+		$carrot->addDocument(
+			(string)$row['id'],
+			(string)utf8_encode(htmlentities($row['title'])),
+			(string)utf8_encode(htmlentities(implode('. ',array_keys($tags))))
+		);
+
+		$recordSet->MoveNext();
+	}
+	$recordSet->Close();
+
+        $c = $carrot->clusterQuery();
+
+	$rows = array();
+	foreach ($c as $cluster) {
+		$count = count($cluster->document_ids);
+
+			if (isset($reverse[strtolower($cluster->label)]))
+				$cluster->label = $reverse[strtolower($cluster->label)];
+
+		$d = 0;
+		foreach ($cluster->document_ids as $sort_order => $document_id) {
+			$row = $lookup[$document_id];
+			$row['images'] = $count;
+			$row['group'] = $cluster->label;
+			$rows[] = $row;
+			$d++;
+			if ($d == $groupn)
+				break;
+		}
+	}
+
+	return $rows;
+}

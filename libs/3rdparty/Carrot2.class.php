@@ -45,7 +45,12 @@ class Carrot2
 
   public static function createDefault()
   {
-    $carrot = new self('http://localhost:8080/dcs/rest');
+	global $CONF;
+	if (!empty($CONF['carrot2_dcs_url'])) {
+	    $carrot = new self($CONF['carrot2_dcs_url']);
+	} else {
+	    $carrot = new self('http://localhost:8080/dcs/rest');
+	}
     return $carrot;
   }
 
@@ -54,13 +59,19 @@ class Carrot2
     $this->documents[] = array($url, $title, $snippet);
   }
 
-  public function clusterQuery($query_hint='')
+  public function clearDocuments()
+  {
+    $this->documents = array();
+  }
+
+  public function clusterQuery($query_hint='',$debug = false, $algorithm = 'lingo')
   {
     $curl   = curl_init($this->baseurl);
     $fields = array(
       'dcs.output.format' => 'XML',
       'dcs.clusters.only'  => 'true',
-      'dcs.c2stream'           => $this->generateXml($query_hint)
+      'dcs.algorithm'	 => $algorithm,
+      'dcs.c2stream'           => $this->generateXml($query_hint),
     );
     curl_setopt_array($curl,
       array(
@@ -70,7 +81,8 @@ class Carrot2
         CURLOPT_POSTFIELDS     => $fields
       )
     );
-    curl_setopt($curl, CURLOPT_VERBOSE, 1);
+    if ($debug)
+        curl_setopt($curl, CURLOPT_VERBOSE, 1);
     $response = curl_exec($curl);
 
     return $this->extractClusters($response);
@@ -104,7 +116,6 @@ class Carrot2
 
   private function extractClusters($xml)
   {
-  
     if (!($xml instanceof SimpleXMLElement)) {
       $xml = new SimpleXMLElement($xml);
     }
@@ -121,4 +132,5 @@ class Carrot2
     }
     return $clusters;
   }
-} ?>
+}
+
