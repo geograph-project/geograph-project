@@ -22,8 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
-require dirname(__FILE__)."/RedisServer.php";
+
+require_once("3rdparty/RedisServer.php");
 
 $redis_handler = NULL;
 $session_stat = array();
@@ -31,7 +31,7 @@ $session_stat = array();
 function redis_session_open($save_path, $session_name)
 {
 	global $redis_handler,$CONF;
-	
+
 	if ($redis_handler === NULL)
 	{
 		$redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);

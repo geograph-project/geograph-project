@@ -326,7 +326,7 @@ outputBreak("Redis/Memcache");
 if (!empty($CONF['redis_host'])) {
 
 	if (empty($redis_handler)) {
-	//	require("3rdparty/RedisServer.php");
+		require_once("3rdparty/RedisServer.php");
 	        $redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);
 	}
 	$redis_handler->Select($CONF['redis_db']);

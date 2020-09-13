@@ -21,10 +21,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
+
 /**
  * Extends Memcache to :
  - configure from a config array
+ - work with redis!
  - automatically connect to multiple servers
  - allow multiple client clusters to use the same server
  - simplistic support for namespaces
@@ -43,49 +44,48 @@ class MultiServerMemcache extends Memcache {
 	var $valid = false;
 	
 	var $db=null;
-	
+	var $redis=null;
+
 	function MultiServerMemcache(&$conf,$debug = false) {
-		//parent::__construct();
+
+		if ($conf == 'redis') {
+			//kind of a hack, but functional enough.
+			global $CONF;
+			global $redis_handler;
+			if (empty($redis_handler)) {
+				require_once("3rdparty/RedisServer.php");
+				$redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);
+			}
+			$this->redis = $redis_handler;
+			$this->prefix = $CONF['redis_db'].'~'; //not sure if want this, but its an attempt to avoid conflicting keys as not acully setting a db!
+			//if ($redis_handler->connection)
+				$this->valid = true;
+			return;
+		}
+
 		if (empty($conf['host']) && empty($conf['host1']))
 			return;
-			
-		split_timer('memcache'); //starts the timer	
-			
+
+		parent::__construct();
+
+		split_timer('memcache'); //starts the timer
+
 		$valid = false;
 		if (!empty($conf['host'])) {
 			if (@$this->connect($conf['host'], $conf['port']))
 				$valid = true;
 			elseif ($debug) 
 				die(" Can't connect to memcache server on: {$conf['host']}, {$conf['port']}<br>\n");
-		}	
-		if (!empty($conf['host1'])) {
-			if (@$this->addServer($conf['host1'], $conf['port1']))
-				$valid = true;
-			elseif ($debug) 
-				die(" Can't connect to memcache server on: {$conf['host1']}, {$conf['port1']}<br>\n");
 		}
-		
-		if (!empty($conf['host2'])) {
-			if (@$this->addServer($conf['host2'], $conf['port2']))
-				$valid = true;
-			elseif ($debug) 
-				die(" Can't connect to memcache server on: {$conf['host2']}, {$conf['port2']}<br>\n");
-		}
-		
-		if (!empty($conf['host3'])) {
-			if (@$this->addServer($conf['host3'], $conf['port3']))
-				$valid = true;
-			elseif ($debug) 
-				die(" Can't connect to memcache server on: {$conf['host3']}, {$conf['port3']}<br>\n");
-		}
-		
-		if (!empty($conf['host4'])) {
-			if (@$this->addServer($conf['host4'], $conf['port4']))
-				$valid = true;
-			elseif ($debug) 
-				die(" Can't connect to memcache server on: {$conf['host4']}, {$conf['port4']}<br>\n");
-		}
-		
+
+		foreach (array('1','2','3','4') as $b)
+			if (!empty($conf['host'.$b])) {
+				if (@$this->addServer($conf['host'.$b], $conf['port'.$b]))
+					$valid = true;
+				elseif ($debug)
+					die(" Can't connect to memcache server on: ".$conf['host'.$b].", ".$conf['port'.$b]."<br>\n");
+			}
+
 		if ($this->valid = $valid) {
 			$this->prefix = isset($conf['p'])?($conf['p'].'~'):'';
 		}
@@ -97,22 +97,38 @@ class MultiServerMemcache extends Memcache {
 	// and to have a global simple namespace;
 	function set($key, &$val, $flag = false, $expire = 0) {
 		if (!$this->valid) return false;
+		if ($this->redis) {
+			if ($expire)
+				return $this->redis->SetEx($this->prefix.$key, $expire, $val);
+			else
+				return $this->redis->Set($this->prefix.$key, $val);
+		}
 		return parent::set($this->prefix.$key, $val, $flag, $expire);
 	}
 
 	function get($key,&$param1=null,&$param2=null) {
 		if (!$this->valid) return false;
-		$tmp =& parent::get($this->prefix.$key);
+		if ($this->redis)
+			return $this->redis->Get($this->prefix.$key);
+		return parent::get($this->prefix.$key);
+	}
+
+	function parent_get($key) {
+		$tmp =& parent::get($key);
 		return $tmp;
 	}
 
 	function delete($key, $timeout = 0) {
 		if (!$this->valid) return false;
+		if ($this->redis)
+			return $this->redis->Del($this->prefix.$key);
 		return parent::delete($this->prefix.$key, $timeout);
 	}
 
 	function increment($key, $value = 1,$create = false) {
 		if (!$this->valid) return false;
+		if ($this->redis)
+			return $this->redis->IncrBy($this->prefix.$key, $value);
 		$v = parent::increment($this->prefix.$key, $value);
 		if ($v === false && $create) {
 			$this->set($key,$value);
@@ -122,6 +138,8 @@ class MultiServerMemcache extends Memcache {
 
 	function decrement($key, $value = 1,$create = false) {
 		if (!$this->valid) return false;
+		if ($this->redis)
+			return $this->redis->DecrBy($this->prefix.$key, $value);
 		$v = parent::decrement($this->prefix.$key, $value);
 		if ($v === false && $create) {
 			$v2 = $value*-1;
@@ -134,6 +152,18 @@ class MultiServerMemcache extends Memcache {
 	//http://lists.danga.com/pipermail/memcached/2006-July/002545.html
 	function name_set($namespace, $key, &$val, $flag = false, $expire = 0) {
 		if (!$this->valid) return false;
+		if ($this->redis) {
+			if ($expire)
+				return $this->redis->SetEx($this->prefix.$namespace.':'.$key, $expire, $val);
+			else
+				return $this->redis->Set($this->prefix.$namespace.':'.$key, $val);
+		}
+
+		if (isset($_GET['remote_profile'])) {
+			$start = microtime(true);
+			print "$start  :: name_Set($namespace, $key, ".@strlen($val).")<br>";
+		}
+
 		split_timer('memcache'); //starts the timer
 		$tmp =& parent::set($this->prefix.$namespace.':'.$key, $val, $flag, $expire);
 		split_timer('memcache','set',$namespace.':'.$key); //logs the wall time	
@@ -142,6 +172,12 @@ class MultiServerMemcache extends Memcache {
 
 	function name_get($namespace, $key) {
 		if (!$this->valid) return false;
+		if ($this->redis)
+			return $this->redis->Get($this->prefix.$namespace.':'.$key);
+
+		if (isset($_GET['remote_profile'])) {
+			$start = microtime(true);
+		}
 		split_timer('memcache'); //starts the timer
 		$tmp =& parent::get($this->prefix.$namespace.':'.$key);
 		split_timer('memcache','get',$namespace.':'.$key); //logs the wall time	
@@ -150,6 +186,9 @@ class MultiServerMemcache extends Memcache {
 
 	function name_delete($namespace, $key, $timeout = 0) {
 		if (!$this->valid) return false;
+		if ($this->redis)
+			return $this->redis->Del($this->prefix.$namespace.':'.$key);
+
 		split_timer('memcache'); //starts the timer
 		$tmp = parent::delete($this->prefix.$namespace.':'.$key, $timeout);
 		split_timer('memcache','delete',$namespace.':'.$key); //logs the wall time	
@@ -165,4 +204,5 @@ class MultiServerMemcache extends Memcache {
 	}
 
 }
+
 
