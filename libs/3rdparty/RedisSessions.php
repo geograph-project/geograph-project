@@ -25,14 +25,13 @@
 
 require_once("3rdparty/RedisServer.php");
 
-$redis_handler = NULL;
 $session_stat = array();
 
 function redis_session_open($save_path, $session_name)
 {
 	global $redis_handler,$CONF;
 
-	if ($redis_handler === NULL)
+	if (empty($redis_handler))
 	{
 		$redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);
 		if (!empty($CONF['redis_db']))

@@ -90,6 +90,7 @@ $CONF['adodb_cache_dir']=$_SERVER['DOCUMENT_ROOT'].'/../adodbcache/';
 #		'p' => 'l' ##if running multiple sites with one memcache instance, this should be different for each
 #		),
 #	);
+# can also set 'app'=>'redis' to use Redis instead!
 
 //uncomment to enable adodb caching (adodb_cache_dir is ignored) 
 #$CONF['memcache']['adodb'] =& $CONF['memcache']['app'];

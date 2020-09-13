@@ -98,6 +98,16 @@ class MultiServerMemcache extends Memcache {
 	function set($key, &$val, $flag = false, $expire = 0) {
 		if (!$this->valid) return false;
 		if ($this->redis) {
+
+if (!is_string($val) && !is_int($val)) {
+	//memcache can deal with serializing complex varibles itself. Redis cant. it expects a string!
+
+	//we have to use a second variable as the original is passed by reference which dont want to change.
+	$val2 = "SERIALIZED:".serialize($val); //use a special prefix, so we can detect in get!
+
+	$val = $val2; //rebind it without affecting original!
+}
+
 			if ($expire)
 				return $this->redis->SetEx($this->prefix.$key, $expire, $val);
 			else
@@ -108,8 +118,12 @@ class MultiServerMemcache extends Memcache {
 
 	function get($key,&$param1=null,&$param2=null) {
 		if (!$this->valid) return false;
-		if ($this->redis)
-			return $this->redis->Get($this->prefix.$key);
+		if ($this->redis) {
+			$r = $this->redis->Get($this->prefix.$key);
+			if (strlen($r) > 11 && substr($r,0,11) == "SERIALIZED:")
+				$r = unserialize(substr($r,11));
+			return $r;
+		}
 		return parent::get($this->prefix.$key);
 	}
 
@@ -153,6 +167,17 @@ class MultiServerMemcache extends Memcache {
 	function name_set($namespace, $key, &$val, $flag = false, $expire = 0) {
 		if (!$this->valid) return false;
 		if ($this->redis) {
+
+if (!is_string($val) && !is_int($val)) {
+	//memcache can deal with serializing complex varibles itself. Redis cant. it expects a string!
+
+	//we have to use a second variable as the original is passed by reference which dont want to change.
+	$val2 = "SERIALIZED:".serialize($val); //use a special prefix, so we can detect in get!
+
+	$val = $val2; //rebind it without affecting original!
+}
+
+
 			if ($expire)
 				return $this->redis->SetEx($this->prefix.$namespace.':'.$key, $expire, $val);
 			else
@@ -172,8 +197,14 @@ class MultiServerMemcache extends Memcache {
 
 	function name_get($namespace, $key) {
 		if (!$this->valid) return false;
-		if ($this->redis)
-			return $this->redis->Get($this->prefix.$namespace.':'.$key);
+		if ($this->redis) {
+			$tmp = $this->redis->Get($this->prefix.$namespace.':'.$key);
+			if (strlen($tmp) > 11 && substr($tmp,0,11) == "SERIALIZED:") {
+				$r = unserialize(substr($tmp,11));
+				$tmp =& $r;
+			}
+			return $tmp;
+		}
 
 		if (isset($_GET['remote_profile'])) {
 			$start = microtime(true);
@@ -202,6 +233,19 @@ class MultiServerMemcache extends Memcache {
 	function name_decrement($namespace, $key, $value = 1,$create = false) {
 		return $this->decrement($namespace.':'.$key, $value, $create);
 	}
+
+        /**
+         * get stored db object, creating if necessary
+	 * Note, this looks odd on this object, but memcache_cache_handler.inc.php uses a Db as a companion!
+         * @access private
+         */
+        function &_getDB()
+        {
+                if (!is_object($this->db))
+                        $this->db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
+                if (!$this->db) die('Database connection failed');
+                return $this->db;
+        }
 
 }
 
