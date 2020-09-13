@@ -461,10 +461,6 @@ if (empty($CONF['os_licence']) || $CONF['os_licence'] == 'XXXXXXXX') {
 	warn('$CONF[\'os_licence\'] does not appear to have been configured. Only a problem if Geograph British Isles/Britain and Ireland');
 }
 
-if (empty($CONF['metacarta_auth']) || $CONF['metacarta_auth'] == '') {
-	warn('$CONF[\'metacarta_auth\'] does not appear to have been configured. OK, experimental anyway');
-}
-
 if (empty($CONF['flickr_api_key'])) {
 	warn('$CONF[\'flickr_api_key\'] does not appear to have been configured. OK, not really used anyway');
 }

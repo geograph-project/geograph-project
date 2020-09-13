@@ -20,9 +20,14 @@ public_html/sitemap
 public_html/combined
 logs/
 adodbcache/
+upload_tmp_dir/
 schema/
 .cvsignore
 .svn/
+.gitignore
+.git/
+.svn2git.meta
+thisis.*
 system/
 rastermaps/
 rastermaps
@@ -30,7 +35,6 @@ libs/conf/revisions.conf.php
 scripts/geograph.pl
 scripts/makelive-exclusion
 _attic/
-
 sync-to-git.php
 find-excluded.php
 experiments/

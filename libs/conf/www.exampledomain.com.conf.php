@@ -213,11 +213,6 @@ $CONF['rastermap'] = array(
 			)	
 );
 
-//Username/Passowrd for the metacarta webservices api
-//http://developers.metacarta.com/register/
-#$CONF['metacarta_auth'] = 'user@domain.com:password';
-$CONF['metacarta_auth'] = '';
-
 //does the map draw the more demanding placenames
 $CONF['enable_newmap'] = 1;
 
