@@ -105,7 +105,7 @@ if (!is_string($val) && !is_int($val)) {
 	//we have to use a second variable as the original is passed by reference which dont want to change.
 	$val2 = "SERIALIZED:".serialize($val); //use a special prefix, so we can detect in get!
 
-	$val = $val2; //rebind it without affecting original!
+	$val =& $val2; //rebind it without affecting original!
 }
 
 			if ($expire)
@@ -174,7 +174,7 @@ if (!is_string($val) && !is_int($val)) {
 	//we have to use a second variable as the original is passed by reference which dont want to change.
 	$val2 = "SERIALIZED:".serialize($val); //use a special prefix, so we can detect in get!
 
-	$val = $val2; //rebind it without affecting original!
+	$val =& $val2; //rebind it without affecting original!
 }
 
 
