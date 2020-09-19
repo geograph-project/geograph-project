@@ -138,7 +138,7 @@ split_timer('search'); //starts the timer
 
 			$hectad = strtoupper($gr[1].$gr[2]);
 
-			if ($db->getOne("SELECT hectad FROM hectat_stat WHERE hectad = '$hectad'")) {
+			if ($db->getOne("SELECT hectad FROM hectad_stat WHERE hectad = '$hectad'")) {
 				if ( $autoredirect == 'simple') {
 					header("Location: /gridref/$hectad");
 					print "<a href='/gridref/$hectad'>Go here</a>";
