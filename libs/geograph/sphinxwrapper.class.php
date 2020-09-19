@@ -567,6 +567,11 @@ split_timer('sphinx'); //starts the timer
 			$q = latin1_to_utf8($q);
 		//}
 
+                if (!empty($this->upper_limit)) {
+                        //todo a bodge to run on dev/staging
+                        $cl->SetIDRange ( 1, $this->upper_limit+0);
+                }
+
 		$res = $cl->Query ( $q, $index );
 
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {

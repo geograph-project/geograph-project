@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOST'],'t0.') === 0)
+if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOST'],'t0.') !== FALSE)
 	define('ALLOW_FRAMED',1); //HAVE to be CAREFUL to taint all input!
 
 require_once('geograph/global.inc.php');
@@ -31,7 +31,7 @@ if (empty($_GET['gravity']))
 	$_GET['gravity'] = 'South';
 
 
-if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOST'],'t0.') === 0) {
+if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOST'],'t0.') !== FALSE) {
 	customExpiresHeader(3600*24*180,true,true);
 
 		$image=new GridImage();

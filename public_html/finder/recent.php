@@ -115,7 +115,7 @@ if (true) {
 
 		$ids = $sphinx->returnIds($pg,'_images');
 
-		if (count($ids)) {
+		if (!empty($ids)) {
 			$where = "gridimage_id IN(".join(",",$ids).")";
 
 

@@ -9,3 +9,7 @@
 --ignore-dir=_attic
 --ignore-dir=system
 --ignore-dir=code-prettify
+--ignore-dir=cache
+--ignore-dir=compiled
+--ignore-dir=compiled-mnt
+

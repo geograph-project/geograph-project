@@ -360,6 +360,10 @@ restart:
 			$order = "w2ln desc, sequence asc";
 			$columns = "";
 		}
+
+
+	if ($_SERVER['HTTP_HOST'] == 'staging.geograph.org.uk')	$where .= " and id < 197482";
+
                 $rows['combined'] = $sph->getAll($sql = "
                         select id,realname,user_id,title,grid_reference, $rank as w2ln $columns
                         from sample8
