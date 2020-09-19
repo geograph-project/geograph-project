@@ -204,19 +204,18 @@ if (isset($_POST['msg']))
 	//still ok?
 	if ($ok)
 	{
+		####################################################################
 		//build message and send it...
-		
+
 		if (!empty($_POST['mention'])) {
 			$ids = implode(',',$_POST['mention']);
-			
-			$db = GeographDatabaseConnection(true);
-			
+			$ids = array_map('intval',$ids);
+
 			$images = $db->getAll("SELECT gridimage_id,title,grid_reference,realname FROM gridimage_search WHERE gridimage_id IN ($ids) AND user_id = {$recipient->user_id} ORDER BY FIELD(gridimage_id,$ids) DESC LIMIT 4");
 			
 			if (!empty($images)) {
 				$smarty->assign_by_ref('images', $images);
 			}
-			
 		}
 		
 		$body=$smarty->fetch('email_usermsg.tpl');
@@ -228,7 +227,11 @@ if (isset($_POST['msg']))
 			"with HTTP;".
 			strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
 
-		if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) {
+		//we create a 'fake' email address for From, so that email clients dont just set merge all emails to one contact!
+		$crc = sprintf("%u", crc32($from_email));
+		$fromheader = "From: $from_name via Geograph <noreply+$crc@geograph.org.uk>\nSender: noreply@geograph.org.uk\nReply-To: $from_name <$from_email>";
+
+		if ($recipient->email == '' || strpos($recipient->rights,'dormant') !== FALSE) {
 			$smarty->assign('invalid_email', 1);
 			
 			$email = $CONF['contact_email'];
@@ -241,11 +244,13 @@ if (isset($_POST['msg']))
 		if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
 		{
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
-		
-		
+
 			$smarty->assign('sent', 1);
 		}
-		else 
+
+		####################################################################
+
+		else
 		{
 			@mail($CONF['contact_email'], 
 				'Mail Error Report from '.$_SERVER['HTTP_HOST'],
@@ -332,5 +337,3 @@ if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$
 
 $smarty->display($template);
 
-	
-?>
