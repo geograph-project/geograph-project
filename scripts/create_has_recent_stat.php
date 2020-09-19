@@ -4,7 +4,7 @@
  * $Id: recreate_maps.php 2996 2007-01-20 21:39:07Z barry $
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
+ * This file copyright (C) 2011 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,54 +32,32 @@ require "./_scripts.inc.php";
 
 ############################################
 
-$db = GeographDatabaseConnection(false);
+$db_write = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
 
 $a = array();
 
 
 
-$sql = "
-SELECT user_id,`gridsquare_id`,MIN(seq_no) AS min_seq_no
-FROM gridimage
-WHERE moderation_status='geograph'
-GROUP BY user_id,`gridsquare_id`
-ORDER BY gridsquare_id,min_seq_no
-";
+foreach (range(2005,date('Y')) as $year) {
+	foreach (range(1,12) as $month) {
+		$day = sprintf("%04d-%02d-%02d",$year,$month,1);
+		print "$day";	
 
+		$sql = "replace into has_recent_stat select '$day',count(distinct grid_reference),0 from gridimage_search where imagetaken > date_sub('$day',interval 5 year) and submitted < '$day' and moderation_status = 'geograph'";
+		$db_write->Execute($sql);
+		print ".";
 
+		$sql = "replace into has_recent_stat select '$day',count(distinct grid_reference),1 from gridimage_search where imagetaken > date_sub('$day',interval 5 year) and submitted < '$day' and moderation_status = 'geograph' and reference_index = 1";
+		$db_write->Execute($sql);
+		print ".";
 
-$last = -1;
-$recordSet = $db->Execute($sql);
-
-while (!$recordSet->EOF) 
-{
-	$row = $recordSet->fields;
-	
-	if ($last != $row['gridsquare_id']) {
-		$rank = 1;
-		$last = $row['gridsquare_id'];
-	} else {
-		$rank++;
+		$sql = "replace into has_recent_stat select '$day',count(distinct grid_reference),2 from gridimage_search where imagetaken > date_sub('$day',interval 5 year) and submitted < '$day' and moderation_status = 'geograph' and reference_index = 2";
+		$db_write->Execute($sql);
+		print ". ";	
 	}
-	if ($rank > 1) { //ftf=1 should already be set!
-		$sql = "
-		UPDATE gridimage 
-		SET upd_timestamp = upd_timestamp, ftf = $rank
-		WHERE gridsquare_id = {$row['gridsquare_id']}
-		AND seq_no = {$row['min_seq_no']}
-		AND moderation_status='geograph' 
-		";
-		$db->Execute($sql);
-	
-		print "."; 
-	}
-	
-	$recordSet->MoveNext();
 }
 
-$recordSet->Close();
-print "l\n";
 
-
-
+print "DONE\n";

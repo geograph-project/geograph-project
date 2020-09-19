@@ -21,123 +21,42 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-/**
-* get 1 minute load average
-*/
-function get_loadavg() 
-{
-	$uname = posix_uname();
-	switch ($uname['sysname']) {
-		case 'Linux':
-			return linux_loadavg();
-			break;
-		case 'FreeBSD':
-			return freebsd_loadavg();
-			break;
-		default:
-			return -1;
-	}
-}
-
-/*
- * linux_loadavg() - Gets the 1 min load average from /proc/loadavg
- */
-function linux_loadavg() {
-	$buffer = "0 0 0";
-	$f = fopen("/proc/loadavg","r");
-	if (!feof($f)) {
-		$buffer = fgets($f, 1024);
-	}
-	fclose($f);
-	$load = explode(" ",$buffer);
-	return (float)$load[0];
-}
-
-/*
- * freebsd_loadavg() - Gets the 1 min  load average from uptime
- */
-function freebsd_loadavg() {
-	$buffer= `uptime`;
-	ereg("averag(es|e): ([0-9][.][0-9][0-9]), ([0-9][.][0-9][0-9]), ([0-9][.][0-9][0-9]*)", $buffer, $load);
-	return (float)$load[2];
-}
-    
-    
+############################################
 
 //these are the arguments we expect
 $param=array(
-	'dir'=>'/home/geograph',		//base installation dir
-
-	'config'=>'www.geograph.org.uk', //effective config
-
 	'timeout'=>14, //timeout in minutes
 	'sleep'=>10,	//sleep time in seconds
 	'load'=>100,	//maximum load average
 	'base'=>0,	//delete the basemaps?
 	'dryrun'=>0,	//test only?
-	'help'=>0,		//show script help?
 );
 
-//very simple argument parser
-for($i=1; $i<count($_SERVER['argv']); $i++)
-{
-	$arg=$_SERVER['argv'][$i];
-
-	if (substr($arg,0,2)=='--')
-
-	{
-		$arg=substr($arg,2);
-		$bits=explode('=', $arg,2);
-		if (isset($param[$bits[0]]))
-		{
-			//if we have a value, use it, else just flag as true
-			$param[$bits[0]]=isset($bits[1])?$bits[1]:true;
-		}
-		else die("unknown argument --$arg\nTry --help\n");
-	}
-	else die("unexpected argument $arg - try --help\n");
-	
-}
-
-
-if ($param['help'])
-{
-	echo <<<ENDHELP
----------------------------------------------------------------------
-recreate_maps.php 
----------------------------------------------------------------------
-php recreate_maps.php 
-    --dir=<dir>         : base directory (/home/geograph)
-    --config=<domain>   : effective domain config (www.geograph.org.uk)
+$HELP = <<<ENDHELP
     --timeout=<minutes> : maximum runtime of script (14)
     --sleep=<seconds>   : seconds to sleep if load average exceeded (10)
     --load=<loadavg>    : maximum load average (100)
     --base=1/0          : delete the basemap (0)
     --dryrun=1/0        : dont actully delete (0)
-    --help              : show this message	
----------------------------------------------------------------------
-	
 ENDHELP;
-exit;
-}
-	
-//set up  suitable environment
-ini_set('include_path', $param['dir'].'/libs/');
-$_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/'; 
-$_SERVER['HTTP_HOST'] = $param['config'];
+
+chdir(__DIR__);
+require "./_scripts.inc.php";
+
+############################################
+
+$db = GeographDatabaseConnection(false);
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
-//--------------------------------------------
-// nothing below here should need changing
 
-require_once('geograph/global.inc.php');
+
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/map.class.php');
 require_once('geograph/image.inc.php');
 require_once('geograph/mapmosaic.class.php');
 
-$db = NewADOConnection($GLOBALS['DSN']);
 
 $start_time = time();
 
@@ -207,4 +126,3 @@ while (1) {
 }
 
 
-?>

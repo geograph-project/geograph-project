@@ -21,62 +21,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-    
-    
+############################################
 
 //these are the arguments we expect
 $param=array(
-	'dir'=>'/home/geograph',		//base installation dir
-
-	'config'=>'www.geograph.org.uk', //effective config
-
-	'cols'=>'', 
-	'help'=>0,		//show script help?
+	'cols'=>'',
 );
 
-//very simple argument parser
-for($i=1; $i<count($_SERVER['argv']); $i++)
-{
-	$arg=$_SERVER['argv'][$i];
-
-	if (substr($arg,0,2)=='--')
-
-	{
-		$arg=substr($arg,2);
-		$bits=explode('=', $arg,2);
-		if (isset($param[$bits[0]]))
-		{
-			//if we have a value, use it, else just flag as true
-			$param[$bits[0]]=isset($bits[1])?$bits[1]:true;
-		}
-		else die("unknown argument --$arg\nTry --help\n");
-	}
-	else die("unexpected argument $arg - try --help\n");
-	
-}
-
-
-if ($param['help'])
-{
-	echo <<<ENDHELP
----------------------------------------------------------------------
-recreate_maps.php 
----------------------------------------------------------------------
-php recreate_maps.php 
-    --dir=<dir>         : base directory (/home/geograph)
-    --config=<domain>   : effective domain config (www.geograph.org.uk)
+$HELP = <<<ENDHELP
     --cols=<params>     : comma seperated list of column definitions
-    --help              : show this message	
----------------------------------------------------------------------
-	
 ENDHELP;
-exit;
-}
-	
-//set up  suitable environment
-ini_set('include_path', $param['dir'].'/libs/');
-$_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/'; 
-$_SERVER['HTTP_HOST'] = $param['config'];
+
+chdir(__DIR__);
+require "./_scripts.inc.php";
+
+############################################
+
+
+
 
 $_GET = array();
 $cols = explode(',',$param['cols']);
@@ -87,12 +49,6 @@ foreach ($cols as $col) {
 
 $h = fopen("/tmp/output.csv",'w');
 
-
-
-
-require_once('geograph/global.inc.php');
-
-#	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
 include('geograph/export.inc.php');
 
@@ -177,4 +133,3 @@ fclose($h);
 
 print "outputed $counter records\n";
 
-?>

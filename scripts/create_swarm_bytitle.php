@@ -22,84 +22,20 @@
  */
 
 
-    
-    
+############################################
 
 //these are the arguments we expect
-$param=array(
-	'dir'=>'/var/www',		//base installation dir
+$param=array();
 
-	'config'=>'www.geograph.virtual', //effective config
+chdir(__DIR__);
+require "./_scripts.inc.php";
 
-	'timeout'=>14, //timeout in minutes
-	'sleep'=>10,	//sleep time in seconds
-	'load'=>100,	//maximum load average
-	'help'=>0,		//show script help?
-);
+############################################
 
-//very simple argument parser
-for($i=1; $i<count($_SERVER['argv']); $i++)
-{
-	$arg=$_SERVER['argv'][$i];
-
-	if (substr($arg,0,2)=='--')
-
-	{
-		$arg=substr($arg,2);
-		$bits=explode('=', $arg,2);
-		if (isset($param[$bits[0]]))
-		{
-			//if we have a value, use it, else just flag as true
-			$param[$bits[0]]=isset($bits[1])?$bits[1]:true;
-		}
-		else die("unknown argument --$arg\nTry --help\n");
-	}
-	else die("unexpected argument $arg - try --help\n");
-	
-}
-
-
-if ($param['help'])
-{
-	echo <<<ENDHELP
----------------------------------------------------------------------
-recreate_maps.php 
----------------------------------------------------------------------
-php recreate_maps.php 
-    --dir=<dir>         : base directory (/home/geograph)
-    --config=<domain>   : effective domain config (www.geograph.org.uk)
-    --timeout=<minutes> : maximum runtime of script (14)
-    --sleep=<seconds>   : seconds to sleep if load average exceeded (10)
-    --load=<loadavg>    : maximum load average (100)
-    --help              : show this message	
----------------------------------------------------------------------
-	
-ENDHELP;
-exit;
-}
-	
-//set up  suitable environment
-ini_set('include_path', $param['dir'].'/libs/');
-$_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/'; 
-$_SERVER['HTTP_HOST'] = $param['config'];
-
-
-//--------------------------------------------
-// nothing below here should need changing
-
-require_once('geograph/global.inc.php');
-
-
-$db = NewADOConnection($GLOBALS['DSN']);
-
-
-$a = array();
-
-
-
-
+$db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+$a = array();
 
 	$sql = "select user_id,grid_reference,title,count(*) as images,group_concat(gridimage_id) as ids from gridimage_search where  title != '' group by user_id,grid_reference,title having images > 1 order by null";
 	print "$sql\n";
@@ -133,9 +69,5 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 				
 	$recordSet->Close();
 	print "l\n";
-	exit;#!
 
 
-
-
-?>

@@ -21,65 +21,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
-    
+############################################
 
 //these are the arguments we expect
-$param=array(
-	'dir'=>'/var/www/geograph_live/',		//base installation dir
-	'config'=>'www.geograph.org.uk', //effective config
-	'help'=>0,		//show script help?
-);
+$param=array();
 
-//very simple argument parser
-for($i=1; $i<count($_SERVER['argv']); $i++)
-{
-	$arg=$_SERVER['argv'][$i];
+chdir(__DIR__);
+require "./_scripts.inc.php";
 
-	if (substr($arg,0,2)=='--')
+############################################
 
-	{
-		$arg=substr($arg,2);
-		$bits=explode('=', $arg,2);
-		if (isset($param[$bits[0]]))
-		{
-			//if we have a value, use it, else just flag as true
-			$param[$bits[0]]=isset($bits[1])?$bits[1]:true;
-		}
-		else die("unknown argument --$arg\nTry --help\n");
-	}
-	else die("unexpected argument $arg - try --help\n");
-	
-}
+$db = GeographDatabaseConnection(true);
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
-if ($param['help'])
-{
-	echo <<<ENDHELP
----------------------------------------------------------------------
-build_sitemap.php 
----------------------------------------------------------------------
-    --dir=<dir>         : base directory (/var/www/geograph_live/)
-    --config=<domain>   : effective domain config (www.geograph.org.uk)
-    --help              : show this message	
----------------------------------------------------------------------
-	
-ENDHELP;
-exit;
-}
-	
-//set up  suitable environment
-ini_set('include_path', $param['dir'].'/libs/');
-$_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/'; 
-$_SERVER['HTTP_HOST'] = $param['config'];
-
-
-//--------------------------------------------
-// nothing below here should need changing
-
-require_once('geograph/global.inc.php');
-
-$db = NewADOConnection($GLOBALS['DSN']);
 
 //set this low - to try it out...
 $urls_per_sitemap=1000;
@@ -91,6 +46,7 @@ $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
 $last_percent=0;
+$percent=0;
 $count=0;
 for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 {
@@ -182,4 +138,3 @@ for ($s=1; $s<=$sitemaps; $s++)
 fprintf($fh, '</sitemapindex>');
 fclose($fh);
 
-?>

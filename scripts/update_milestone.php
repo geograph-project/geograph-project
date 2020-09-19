@@ -22,70 +22,21 @@
  */
 
 
-    
+
+############################################
 
 //these are the arguments we expect
-$param=array(
-	'dir'=>'/home/geograph',		//base installation dir
+$param=array();
 
-	'config'=>'www.geograph.org.uk', //effective config
+chdir(__DIR__);
+require "./_scripts.inc.php";
 
-	'help'=>0,		//show script help?
-);
+############################################
 
-//very simple argument parser
-for($i=1; $i<count($_SERVER['argv']); $i++)
-{
-	$arg=$_SERVER['argv'][$i];
-
-	if (substr($arg,0,2)=='--')
-
-	{
-		$arg=substr($arg,2);
-		$bits=explode('=', $arg,2);
-		if (isset($param[$bits[0]]))
-		{
-			//if we have a value, use it, else just flag as true
-			$param[$bits[0]]=isset($bits[1])?$bits[1]:true;
-		}
-		else die("unknown argument --$arg\nTry --help\n");
-	}
-	else die("unexpected argument $arg - try --help\n");
-	
-}
+$db = GeographDatabaseConnection(false);
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
-if ($param['help'])
-{
-	echo <<<ENDHELP
----------------------------------------------------------------------
-recreate_maps.php 
----------------------------------------------------------------------
-php recreate_maps.php 
-    --dir=<dir>         : base directory (/home/geograph)
-    --config=<domain>   : effective domain config (www.geograph.org.uk)
-    --help              : show this message	
----------------------------------------------------------------------
-	
-ENDHELP;
-exit;
-}
-	
-//set up  suitable environment
-ini_set('include_path', $param['dir'].'/libs/');
-$_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/'; 
-$_SERVER['HTTP_HOST'] = $param['config'];
-
-
-//--------------------------------------------
-// nothing below here should need changing
-
-require_once('geograph/global.inc.php');
-
-
-$db=NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');  
-#$db->debug = true;
 
 $rows = $db->getAll("
 SELECT images div images_d * images_d as calc,user_id,max(milestone) as milestone,images,images_d
@@ -120,5 +71,3 @@ foreach ($rows as $a => $row) {
 
 }
 
-	
-?>

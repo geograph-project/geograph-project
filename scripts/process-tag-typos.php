@@ -23,71 +23,27 @@
 
 error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
 
+############################################
 
 //these are the arguments we expect
 $param=array(
-	'dir'=>'/var/www/geograph_live',		//base installation dir
-
-	'config'=>'www.geograph.org.uk', //effective config
-
         'action'=>'dummy',
-
-	'help'=>0,		//show script help?
 );
 
-//very simple argument parser
-for($i=1; $i<count($_SERVER['argv']); $i++)
-{
-	$arg=$_SERVER['argv'][$i];
-
-	if (substr($arg,0,2)=='--')
-
-	{
-		$arg=substr($arg,2);
-		$bits=explode('=', $arg,2);
-		if (isset($param[$bits[0]]))
-		{
-			//if we have a value, use it, else just flag as true
-			$param[$bits[0]]=isset($bits[1])?$bits[1]:true;
-		}
-		else die("unknown argument --$arg\nTry --help\n");
-	}
-	else die("unexpected argument $arg - try --help\n");
-
-}
-
-
-if ($param['help'])
-{
-	echo <<<ENDHELP
----------------------------------------------------------------------
-process-tag-typos.php
----------------------------------------------------------------------
-php process-tag-typos.php
-    --dir=<dir>         : base directory (/home/geograph)
-    --config=<domain>   : effective domain config (www.geograph.org.uk)
-    --action=<event>    : use action=execute to run for real
-    --help              : show this message
----------------------------------------------------------------------
-
+$HELP = <<<ENDHELP
+    --action=dummy|execute : set to execute to run for real
 ENDHELP;
-exit;
-}
 
-//set up  suitable environment
-ini_set('include_path', $param['dir'].'/libs/');
-$_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/';
-$_SERVER['HTTP_HOST'] = $param['config'];
+chdir(__DIR__);
+require "./_scripts.inc.php";
 
-//--------------------------------------------
-
-require_once('geograph/global.inc.php');
+############################################
 
 require_once('adodb/adodb-errorhandler.inc.php');
 
 $db = GeographDatabaseConnection(false);
-
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
 
 $check = $db->getAll("select tag_id,tag,group_concat(tag2),group_concat(status),count(distinct tag2) as dist from
  tag_report where status != 'rejected' and type != 'split' and type != 'canonical' group by tag having dist > 1");
