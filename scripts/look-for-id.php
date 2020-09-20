@@ -26,6 +26,7 @@
 //these are the arguments we expect
 $param=array(
         'id'=>2405926,
+	'column'=>'gridimage_id',
 );
 
 chdir(__DIR__);
@@ -38,16 +39,25 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
 
-$tables = $db->getCol("SELECT TABLE_NAME FROM information_schema.columns where table_schema = DATABASE() AND column_name = 'gridimage_id' and COLUMN_KEY != ''");
+$tables = $db->getCol("SELECT TABLE_NAME FROM information_schema.columns where table_schema = DATABASE() AND column_name = '{$param['column']}' and COLUMN_KEY != ''");
+
+if ($param['column'] == 'gridimage_id')
+	$tables[] = 'tag_public'; //its actully a view!
 
 foreach ($tables as $table) {
-	$rows = $db->getAll("SELECT * FROM {$table} WHERE gridimage_id = {$param['id']} LIMIT 10");
+	$rows = $db->getAll("SELECT * FROM {$table} WHERE {$param['column']} = {$param['id']} LIMIT 10");
 	if (!empty($rows)) {
 		print str_repeat('-',80)."\n";
 		print "TABLE = $table\n";
-		print implode("\t",array_keys($rows[0]))."\n";
-		foreach ($rows as $row) {
-			print implode("\t",$row)."\n";
+		if (count($rows) == 1) {
+			foreach ($rows[0] as $key => $value) {
+				printf("%40s : %s\n", $key, $value);
+			}
+		} else {
+			print implode("\t",array_keys($rows[0]))."\n";
+			foreach ($rows as $row) {
+				print implode("\t",$row)."\n";
+			}
 		}
 		print "\n";
 	}
