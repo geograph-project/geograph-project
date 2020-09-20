@@ -343,7 +343,9 @@ if (isset($_GET['review'])) {
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } elseif (isset($_GET['remoderate'])) {
-	$sql_where = "moderation_status > 2 and moderator_id != {$USER->user_id} and submitted > date_sub(now(),interval 10 day) ";
+	$sql_where = "moderation_status > 2 and moderator_id != {$USER->user_id}";
+	if ($_SERVER['HTTP_HOST'] != 'staging.geograph.org.uk')
+		$sql_where .= " and submitted > date_sub(now(),interval 10 day) ";
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } else {
@@ -469,6 +471,25 @@ foreach ($images->images as $i => $image) {
 #############################
 
 $db->Execute("UNLOCK TABLES");
+
+#############################
+
+//might as well do this after unlock
+if (!empty($image_ids)) {
+
+	$tagdata = $db->getAll("SELECT gridimage_id, group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags
+	        FROM tag_public
+		WHERE gridimage_id IN (".implode(',',array_keys($image_ids)).")
+		AND prefix = 'type'
+		GROUP BY gridimage_id ORDER BY NULL"); // we only NEED the type tags!
+
+	if (!empty($tagdata)) // can be empty!
+	foreach ($tagdata as $row) {
+		$i = $image_ids[$row['gridimage_id']];
+		if (!empty($images->images[$i]))
+			$images->images[$i]->tags = explode("?",$row['tags']);
+	}
+}
 
 #############################
 
