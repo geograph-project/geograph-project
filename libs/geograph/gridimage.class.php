@@ -1198,8 +1198,12 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 
 		$title=htmlentities2($this->title);
 
-		if ($returntotalpath)
-			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
+		if ($returntotalpath) {
+			if (strpos($fullpath,'submit.php') !== FALSE)
+				$fullpath=$CONF['CONTENT_HOST'].$fullpath;
+			else
+				$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
+		}
 		$fullpath = str_replace('http://','https://',$fullpath);
 
 	        if (!empty($this->original_width) && $linkoriginal && max($this->original_width,$this->original_height) > 640 && $returntotalpath && !empty($_GET['large'])) {
