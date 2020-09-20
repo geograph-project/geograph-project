@@ -180,6 +180,23 @@ if ($cvsupdate)
 
    #now we need to rsync that to the webserver staging areas
 
+       my $cmd="rsync ".
+        "--verbose ".
+        "--archive ".
+        "--links ".
+        "--cvs-exclude ".
+        "--exclude-from=/mnt/big/geograph_svn/scripts/makelive-exclusion ".
+        "/mnt/big/geograph_svn/ ".
+        "/var/www/geograph_svn/";
+
+       print "Copying updates to localhost...\n";
+
+print "Executing:\n$cmd\n\n";
+
+$update_out = `sudo -u geograph $cmd`;
+print "$update_out\n";
+
+   ############################
    
    my $server;
    foreach $server (@servers)
@@ -197,17 +214,10 @@ if ($cvsupdate)
        `sudo -u geograph $cmd`;
    }
 
-   if (my @files = ($update_out =~ /([^ ']+\.js|[^ ']+?\.css)'?$/mg)) {
-     &update_revision_file('/var/www/geograph_svn',@files);
-     foreach my $server (@servers)
-       {
-          my $cmd="rsync ".
-           "/var/www/geograph_svn/libs/conf/revisions.conf.php ".
-           "$server-pvt:/var/www/geograph_svn/libs/conf/";
+   ############################
 
-          print "Copying Revision File to $server...\n";
-          `sudo -u geograph $cmd`;
-       }
+   if (my @files = ($update_out =~ /([^\n\r ']+\.js|[^\n\r ']+?\.css)'?$/mg)) {
+     &update_revision_file('/mnt/big/geograph_svn','/var/www/geograph_svn', '/mnt/s3-photos-staging', @files);
    }
 
    #my $all = `svn status /var/www/geograph_svn/public_html -v`;
@@ -294,17 +304,10 @@ if ($makelive)
           `sudo -u geograph $cmd`;
       }
 
-      if (my @files = ($rsync_out =~ /([^\n\r ']+\.js|[^\n\r ']+?\.css)'?$/msg)) {
-         &update_revision_file('/var/www/geograph_live',@files);
-         foreach my $server (@servers)
-         {
-            my $cmd="rsync ".
-            "/var/www/geograph_live/libs/conf/revisions.conf.php ".
-            "$server-pvt:/var/www/geograph_live/libs/conf/";
+   ############################
 
-            print "Copying Revision File to $server...\n";
-            `sudo -u geograph $cmd`;
-         }
+      if (my @files = ($rsync_out =~ /([^\n\r ']+\.js|[^\n\r ']+?\.css)'?$/mg)) {
+         &update_revision_file('/mnt/big/geograph_svn','/var/www/geograph_live', '/mnt/s3-photos-production', @files);
       }
 
       print "Files are now live at http://www.geograph.org.uk\n\n";
@@ -315,12 +318,26 @@ if ($makelive)
 ############################################################################
 
 sub update_revision_file {
-	my $folder = shift;
+	my $source = shift;
+	my $destination = shift;
+	my $static = shift;
 	my @files = @_;
 	my $data;
 	my %revs;
+
+##... also it needs to 'build' and copy the file to3 ?!!??!
+
+##... this works, but its should intergrate the minification that the statis server did
+## plus this is only for staging, prodiction s3 is similar tho
+##sudo -u www-data mkdir -p /mnt/s3-photos-staging/templates/basic/css/
+##sudo -u www-data cp public_html/templates/basic/css/basic.css /mnt/s3-photos-staging/templates/basic/css/basic.v9080.css
+##sudo -u www-data mkdir -p /mnt/s3-photos-staging/js/
+##sudo -u www-data cp public_html/js/geograph.js /mnt/s3-photos-staging/js/geograph.v8582.js
+
+	#####################################
+	# read current file
 	
-	if (open (CODE,"$folder/libs/conf/revisions.conf.php")) {
+	if (open (CODE,"$source/libs/conf/revisions.conf.php")) {
 		foreach (<CODE>) {
 			if (/REVISIONS\['(.*?)'\]=(\d+)/) {
 				$revs{$1} = $2;
@@ -329,13 +346,35 @@ sub update_revision_file {
 		close (CODE);
 	}
 	
+	#####################################
+	# update revision(s)
+
 	foreach (@files) {
 		(my $url = $_) =~ s/public_html//;
 		print "checking revision for: $url";
-		$data = `svn info /var/www/geograph_svn/$_ | grep "Last Changed Rev"`;
-		if ($data =~ /: (\d+)/) {
+		$data = `git info $source/$_ | grep "Commit ID"`;
+		if ($data =~ /: (\w+)/) {
 			$revs{$url} = $1;
-			print " :: $1\n";
+			$revs{$url} =~ s/[a-f]+//g;
+			$revs{$url} = substr($revs{$url}, 0, 8);
+
+			if ('' eq $revs{$url}) { ##unlikely to have nothing, but just in case!
+				$revs{$url} = 111;
+			}
+			
+			print " :: $revs{$url} \n";
+
+			my $url2 = $url;
+			$url2 =~ s/\.(\w+)$/\.v$revs{$url}.$1/;		
+
+		        my $cmd="rsync --inplace ".
+                	        "$source/public_html"."$url ".
+		                              $static.$url2;
+
+		        print "Copying $url to $static...\n";
+			print "$cmd\n";
+		        `sudo -u www-data $cmd`;
+
 		} else {
 			$revs{$url} = 1;
 			print " :: unknown\n";
@@ -343,7 +382,10 @@ sub update_revision_file {
 	}
 	print "\n";
 	
-	open (OUT, ">$folder/libs/conf/revisions.conf.php");
+	#####################################
+	# write the file
+	
+	open (OUT, ">$source/libs/conf/revisions.conf.php");
 	print OUT "<?php\n";
 	print OUT "\$REVISIONS = array();\n";
 	foreach (sort keys %revs) {
@@ -351,7 +393,31 @@ sub update_revision_file {
 	}
 	print OUT "?>";
 	close (OUT);
-	
+
+        #####################################
+	#sync the file locally 
+
+        my $cmd="rsync ".
+                "$source/libs/conf/revisions.conf.php ".
+           "$destination/libs/conf/";
+
+        print "Copying Revision File locally...\n";
+        `sudo -u geograph $cmd`;
+
+	#####################################
+	# sync the file remotely 
+
+        foreach my $server (@servers)
+        {
+          my $cmd="rsync ".
+                        "$source/libs/conf/revisions.conf.php ".
+           "$server:$destination/libs/conf/";
+
+          print "Copying Revision File to $server...\n";
+          `sudo -u geograph $cmd`;
+        }
+
+	#####################################	
 }
 
 ############################################################################
