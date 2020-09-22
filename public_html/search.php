@@ -24,9 +24,6 @@
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 
-if ($_SERVER['HTTP_HOST'] == 'staging.geograph.org.uk')
-	$_GET['safe'] = true; //todo, move this to config file!
-
 if (!empty($_GET['debug'])) {
 	ini_set("display_errors",true);
 }

@@ -95,19 +95,24 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 
 
-	$sql = "select user_id,realname,nickname from user where user_id in (".implode(',',$users).")";
-	$user_rows = $db->getAll($sql);
-	$bits = array();
-	foreach ($user_rows as $row) {
-		$bits[] = "<a href=\"/profile/{$row['user_id']}\">".htmlentities($row['realname'])."</a>";
+	if (!empty($users)) {
+		$sql = "select user_id,realname,nickname from user where user_id in (".implode(',',$users).")";
+		$user_rows = $db->getAll($sql);
+		$bits = array();
+		foreach ($user_rows as $row) {
+			$bits[] = "<a href=\"/profile/{$row['user_id']}\">".htmlentities($row['realname'])."</a>";
+		}
+		$extra_info = "Compiled by ".implode(', ',array_slice($bits,0,count($bits)-1))." and ".array_pop($bits);
+		$smarty->assign_by_ref("extra_info", $extra_info);
 	}
-	$extra_info = "Compiled by ".implode(', ',array_slice($bits,0,count($bits)-1))." and ".array_pop($bits);
 
 	$smarty->assign_by_ref("results", $results);
 	ksort($stats);
 	$smarty->assign_by_ref("stats", $stats);
 	$smarty->assign_by_ref("alpha", $alpha);
 	$smarty->assign_by_ref("extra_info", $extra_info);
+
+	$smarty->assign('keyword', 'Rivers');
 }
 
 

@@ -88,6 +88,11 @@ if ($template == 'static_sitemap.tpl' && !$smarty->is_cached($template)) {
 
 	$remote = str_replace('"?ajax=&amp;','"http://www.geographs.org/links/sitemap.php?',$remote);
 
+	if ($_SERVER['HTTP_HOST'] == 'staging.geograph.org.uk') {
+		$remote = str_replace("www.geograph.org.uk",'staging.geograph.org.uk',$remote);
+	}
+
+
 	$smarty->assign('content',$remote);
 }
 

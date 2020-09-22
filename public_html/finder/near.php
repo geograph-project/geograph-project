@@ -359,11 +359,7 @@ print "<!-- ($lat,$lng) -->";
 		$where[] = "distance < $distance";
 
 
-
 		$where = implode(' and ',$where);
-
-        if ($_SERVER['HTTP_HOST'] == 'staging.geograph.org.uk') $where .= " and id < 197482";
-
 
 		$rows = array();
 
