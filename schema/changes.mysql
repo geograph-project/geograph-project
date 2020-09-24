@@ -2471,6 +2471,12 @@ UPDATE gridimage_link SET next_check = '9999-01-01 00:00:00',updated=updated WHE
 #################################################
 
 
+## now using INET6_ATON instead of INET_ATON
+alter table visitor_log modify `ipaddr` VARBINARY(16)  NOT NULL;
+
+
+#################################################
+
 CREATE TABLE `register_spam` (
   `blocked` tinyint unsigned default null,
   `username` varchar(128) not null,
@@ -2484,3 +2490,6 @@ CREATE TABLE `register_spam` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
 );
+
+#################################################
+

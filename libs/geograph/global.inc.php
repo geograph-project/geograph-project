@@ -722,7 +722,7 @@ function recordVisitor() {
         `pages` = 1,
         `request_time` = ".intval($_SERVER['REQUEST_TIME']).",
         `user_id` = ".@intval($USER->user_id).",
-        `ipaddr` = INET_ATON(".$mydb->Quote($ip)."),
+        `ipaddr` = INET6_ATON(".$mydb->Quote($ip)."),
         `hostname` = ".$mydb->Quote($_SERVER['HTTP_HOST']).",
         `landing` = ".$mydb->Quote($_SERVER['REQUEST_URI']).",
         `useragent` = ".$mydb->Quote($_SERVER['HTTP_USER_AGENT']).",
