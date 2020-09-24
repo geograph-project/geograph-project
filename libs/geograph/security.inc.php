@@ -118,7 +118,10 @@ function getRemoteIP()
 	{
 		$ip=$_SERVER['REMOTE_ADDR'];
 	}
-	if (!preg_match('/^\d+(\.\d+)+$/',$ip)) //we often use getRemoteIP to insert directly into database. because from HTTP_X_FORWARDED_FOR there is a chance is spoofed, and vulnerable to SQL injection (although should be ok if REALLY behind cache, as OUR proxy will set it safely.
+//    [HTTP_X_FORWARDED_FOR] => 2a05:d018:fcc:be01:35e0:4306:928a:97ca
+
+	if (!preg_match('/^[a-f\d]+([\.:][a-f\d]*)+$/i',$ip))
+	 //we often use getRemoteIP to insert directly into database. because from HTTP_X_FORWARDED_FOR there is a chance is spoofed, and vulnerable to SQL injection (although should be ok if REALLY behind cache, as OUR proxy will set it safely.
 		return 0;
 	return $ip;
 }
