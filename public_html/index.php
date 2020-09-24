@@ -277,8 +277,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$colours = array('E1BBDA','DDEA8E','83E7E1','D5CEA9','E6B875','A7CEE5','E9B1A5','A6E09A','7DE0B8','CED4CF','B2DAAD','C5C474','A0DACA');
 
 	$keys = array_keys($sources);
+	$cnt = count($colours);
 	foreach ($keys as $idx => $key) {
-		$colours[$key] = $colours[$idx];
+		$colours[$key] = $colours[$idx%$cnt];
 	}
 	$smarty->assign_by_ref("colours",$colours);
 

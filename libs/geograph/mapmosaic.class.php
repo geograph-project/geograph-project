@@ -209,7 +209,7 @@ class GeographMapMosaic
 			$this->debugtrace.="<li>$msg</li>";
 		}
 	}
-	
+
 	function _err($msg)
 	{
 		if ($this->debug)
@@ -217,12 +217,12 @@ class GeographMapMosaic
 			$this->debugtrace.="<li style=\"color:#880000;\">$msg</li>";
 		}
 	}
-	
+
 	function enableCaching($enable)
 	{
 		$this->caching=$enable;
 	}
-	
+
 	/**
 	* Assigns useful stuff to the given smarty object
 	* basename = 2d array of image tiles (see getImageArray)
@@ -237,14 +237,11 @@ class GeographMapMosaic
 		$smarty->assign_by_ref($basename, $overviewimages);
 		$smarty->assign($basename.'_width', $this->image_w);
 		$smarty->assign($basename.'_height', $this->image_h);
-		$smarty->assign($basename.'_ri', $this->reference_index);
+		if (!empty($this->reference_index))
+			$smarty->assign($basename.'_ri', $this->reference_index);
 		$smarty->assign($basename.'_token', $this->getToken());
 		$smarty->assign($basename.'_updated', $this->getUpdateDateString());
-	
 	}
-
-
-
 
 	/**
 	* Set origin of map in internal coordinates, returns true if valid
@@ -256,7 +253,7 @@ class GeographMapMosaic
 		$this->map_y=intval($y);
 		return true;
 	}
-	
+
 	/**
 	* Set size of mosaic image
 	* @access public
