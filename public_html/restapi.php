@@ -949,10 +949,12 @@ $api->dispatch();
 
 if (!empty($CONF['redis_host']))
 {
-        if (empty($redis_handler)) {
-                $redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);
+        if (empty($redis)) {
+		$redis = new Redis();
+                $redis->connect($CONF['redis_host'], $CONF['redis_port']);
         }
-        $redis_handler->Select($CONF['redis_db']+2);
+        if (!empty($CONF['redis_api_db']))
+                $redis->select($CONF['redis_api_db']);
 
         $bits = array();
         $bits[] = $_GET['key'];
@@ -970,10 +972,7 @@ if (!empty($CONF['redis_host']))
         $identy = implode('|',$bits);
 
         #hIncrBy($key, $field, $increment)
-        $redis_handler->hIncrBy('restapi',$identy,1);
-        $redis_handler->hIncrBy('r|'.$identy,date("Y-m-d H"),1);
-
-        //set back
-        $redis_handler->Select($CONF['redis_db']);
+        $redis->hIncrBy('restapi',$identy,1);
+        $redis->hIncrBy('r|'.$identy,date("Y-m-d H"),1);
 }
 

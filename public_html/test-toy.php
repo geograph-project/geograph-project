@@ -325,21 +325,23 @@ outputBreak("Redis/Memcache");
 
 if (!empty($CONF['redis_host'])) {
 
-	if (empty($redis_handler)) {
-		require_once("3rdparty/RedisServer.php");
-	        $redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);
-	}
-	$redis_handler->Select($CONF['redis_db']);
+        if (empty($redis)) {
+                $redis = new Redis();
+                $redis->connect($CONF['redis_host'], $CONF['redis_port']);
+        }
+        if (!empty($CONF['redis_api_db']))
+                $redis->select($CONF['redis_api_db']);
+
 
 	$test_key = "test.php-timestamp";
-	$value = $redis_handler->Get($test_key);
+	$value = $redis->get($test_key);
 
 	if ($value && $value > (time()-604800) && $value < time()) {
 		outputRow('Redis Daemon','pass','read a recent timestamp from Redis: '.$value);
 	} else {
-		$redis_handler->Set($test_key, time());
+		$redis->set($test_key, time());
 		sleep(1);
-		$value = $redis_handler->Get($test_key);
+		$value = $redis->get($test_key);
 		if ($value && $value > (time()-3) && $value < time()) {
                 	outputRow('Redis Daemon','pass','tested writing and reading: '.$value);
 	        } else {
@@ -348,14 +350,14 @@ if (!empty($CONF['redis_host'])) {
 	}
 
 	//set for next time!
-	$redis_handler->Set($test_key, time());
+	$redis->set($test_key, time());
 } else
 	outputRow('Redis Daemon','notice','redis not configured');
 
 #############################
 
 if (!empty($CONF['memcache']['app'])) {
-	$title = ($CONF['memcache']['app'] == 'redis')?'Memcache Interface to Redis':'Memcache Daemon(s)';
+	$title = isset($CONF['memcache']['app']['redis'])?'Memcache Interface to Redis':'Memcache Daemon(s)';
 
 	$mkey = "timestamp";
 	$value = $memcache->name_get('test.php',$mkey);

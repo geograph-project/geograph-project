@@ -23,8 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-require_once("3rdparty/RedisServer.php");
-
+$redis_handler = NULL;
 $session_stat = array();
 
 function redis_session_open($save_path, $session_name)
@@ -33,10 +32,11 @@ function redis_session_open($save_path, $session_name)
 
 	if (empty($redis_handler))
 	{
-		$redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);
-		if (!empty($CONF['redis_db']))
+		$redis_handler = new Redis();
+		$redis_handler->connect($CONF['redis_host'], $CONF['redis_port']);
+		if (!empty($CONF['redis_session_db']))
 		{
-			$redis_handler->Select($CONF['redis_db']);
+			$redis_handler->Select($CONF['redis_session_db']);
 		}
 	}
 }
@@ -52,13 +52,12 @@ function redis_session_read($id)
 	global $redis_handler,$session_stat;
 	$key = session_name().":".$id;
 
-	$sess_data = $redis_handler->Get($key);
+	$sess_data = $redis_handler->get($key);
 	if ($sess_data === NULL)
 	{
 		return "";
 	}
 	$session_stat[$key] = md5($sess_data);
-	
 	return $sess_data;
 }
 
@@ -74,13 +73,13 @@ function redis_session_write($id, $sess_data)
 
 	$key = session_name().":".$id;
 	$lifetime = ini_get("session.gc_maxlifetime");
-	
+
 	//check if anything changed in the session, only send if has changed
 	if (!empty($session_stat[$key]) && $session_stat[$key] == md5($sess_data)) {
 		//just sending EXPIRE should save a lot of bandwidth!
-		$redis_handler->Expire($key, $lifetime);
+		$redis_handler->expire($key, $lifetime);
 	} else {
-		$redis_handler->SetEx($key, $lifetime, $sess_data);
+		$redis_handler->setEx($key, $lifetime, $sess_data);
 	}
 }
 
@@ -89,7 +88,7 @@ function redis_session_destroy($id)
 	global $redis_handler;
 	$key = session_name().":".$id;
 
-	$redis_handler->Del($key);
+	$redis_handler->del($key);
 }
 
 function redis_session_gc($maxlifetime)

@@ -90,7 +90,7 @@ $CONF['adodb_cache_dir']=$_SERVER['DOCUMENT_ROOT'].'/../adodbcache/';
 #		'p' => 'l' ##if running multiple sites with one memcache instance, this should be different for each
 #		),
 #	);
-# can also set 'app'=>'redis' to use Redis instead!
+# can also set 'app'=>array('redis'=>1) to use Redis instead! were the value a redis db index
 
 //uncomment to enable adodb caching (adodb_cache_dir is ignored) 
 #$CONF['memcache']['adodb'] =& $CONF['memcache']['app'];
@@ -98,8 +98,20 @@ $CONF['adodb_cache_dir']=$_SERVER['DOCUMENT_ROOT'].'/../adodbcache/';
 //uncomment to enable putting smarty templates in memcache (NOTE: on a shared cluster the compiled/ directorys need to be shared between all) 
 #$CONF['memcache']['smarty'] =& $CONF['memcache']['app'];
 
+
 //not yet functional/fully tested
 #$CONF['memcache']['sessions'] =& $CONF['memcache']['app'];
+
+
+###################################
+
+//NOTE, if $CONF['redis_host'] is defined, it WILL be used for sessions, and $CONF['memcache']['sessions'] is ignored!
+
+$CONF['redis_host'] = 'localhost';
+$CONF['redis_port'] = 6379;
+$CONF['redis_session_db'] = 2;
+$CONF['redis_api_db'] = 4;
+
 
 ###################################
 # optional sphinx setup

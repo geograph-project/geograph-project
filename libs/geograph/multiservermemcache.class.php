@@ -48,17 +48,15 @@ class MultiServerMemcache extends Memcache {
 
 	function MultiServerMemcache(&$conf,$debug = false) {
 
-		if ($conf == 'redis') {
+		if (isset($conf['redis'])) {
 			//kind of a hack, but functional enough.
 			global $CONF;
-			global $redis_handler;
-			if (empty($redis_handler)) {
-				require_once("3rdparty/RedisServer.php");
-				$redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);
-			}
-			$this->redis = $redis_handler;
-			$this->prefix = $CONF['redis_db'].'~'; //not sure if want this, but its an attempt to avoid conflicting keys as not acully setting a db!
-			//if ($redis_handler->connection)
+			$this->redis = new Redis();
+			$this->redis->connect($CONF['redis_host'], $CONF['redis_port']);
+			if (is_numeric($conf['redis']))
+				$this->redis->select($conf['redis']);
+			$this->prefix = isset($conf['p'])?($conf['p'].'~'):'';
+			//if ($this->redis->ping())
 				$this->valid = true;
 			return;
 		}
@@ -109,9 +107,9 @@ if (!is_string($val) && !is_int($val)) {
 }
 
 			if ($expire)
-				return $this->redis->SetEx($this->prefix.$key, $expire, $val);
+				return $this->redis->setEx($this->prefix.$key, $expire, $val);
 			else
-				return $this->redis->Set($this->prefix.$key, $val);
+				return $this->redis->set($this->prefix.$key, $val);
 		}
 		return parent::set($this->prefix.$key, $val, $flag, $expire);
 	}
@@ -119,7 +117,7 @@ if (!is_string($val) && !is_int($val)) {
 	function get($key,&$param1=null,&$param2=null) {
 		if (!$this->valid) return false;
 		if ($this->redis) {
-			$r = $this->redis->Get($this->prefix.$key);
+			$r = $this->redis->get($this->prefix.$key);
 			if (strlen($r) > 11 && substr($r,0,11) == "SERIALIZED:")
 				$r = unserialize(substr($r,11));
 			return $r;
@@ -135,14 +133,14 @@ if (!is_string($val) && !is_int($val)) {
 	function delete($key, $timeout = 0) {
 		if (!$this->valid) return false;
 		if ($this->redis)
-			return $this->redis->Del($this->prefix.$key);
+			return $this->redis->del($this->prefix.$key);
 		return parent::delete($this->prefix.$key, $timeout);
 	}
 
 	function increment($key, $value = 1,$create = false) {
 		if (!$this->valid) return false;
 		if ($this->redis)
-			return $this->redis->IncrBy($this->prefix.$key, $value);
+			return $this->redis->incrBy($this->prefix.$key, $value);
 		$v = parent::increment($this->prefix.$key, $value);
 		if ($v === false && $create) {
 			$this->set($key,$value);
@@ -153,7 +151,7 @@ if (!is_string($val) && !is_int($val)) {
 	function decrement($key, $value = 1,$create = false) {
 		if (!$this->valid) return false;
 		if ($this->redis)
-			return $this->redis->DecrBy($this->prefix.$key, $value);
+			return $this->redis->decrBy($this->prefix.$key, $value);
 		$v = parent::decrement($this->prefix.$key, $value);
 		if ($v === false && $create) {
 			$v2 = $value*-1;
@@ -179,9 +177,9 @@ if (!is_string($val) && !is_int($val)) {
 
 
 			if ($expire)
-				return $this->redis->SetEx($this->prefix.$namespace.':'.$key, $expire, $val);
+				return $this->redis->setEx($this->prefix.$namespace.':'.$key, $expire, $val);
 			else
-				return $this->redis->Set($this->prefix.$namespace.':'.$key, $val);
+				return $this->redis->set($this->prefix.$namespace.':'.$key, $val);
 		}
 
 		if (isset($_GET['remote_profile'])) {
@@ -198,7 +196,7 @@ if (!is_string($val) && !is_int($val)) {
 	function name_get($namespace, $key) {
 		if (!$this->valid) return false;
 		if ($this->redis) {
-			$tmp = $this->redis->Get($this->prefix.$namespace.':'.$key);
+			$tmp = $this->redis->get($this->prefix.$namespace.':'.$key);
 			if (strlen($tmp) > 11 && substr($tmp,0,11) == "SERIALIZED:") {
 				$r = unserialize(substr($tmp,11));
 				$tmp =& $r;
@@ -218,7 +216,7 @@ if (!is_string($val) && !is_int($val)) {
 	function name_delete($namespace, $key, $timeout = 0) {
 		if (!$this->valid) return false;
 		if ($this->redis)
-			return $this->redis->Del($this->prefix.$namespace.':'.$key);
+			return $this->redis->del($this->prefix.$namespace.':'.$key);
 
 		split_timer('memcache'); //starts the timer
 		$tmp = parent::delete($this->prefix.$namespace.':'.$key, $timeout);

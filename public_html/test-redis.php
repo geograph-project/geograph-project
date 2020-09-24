@@ -10,17 +10,14 @@ if (empty($CONF['redis_host']))
 	die("redis_host not configired");
 
 
-var_dump($redis_handler);
 
-if (empty($redis_handler)) { //one MIGHT of been started iether by RedisSessions.php OR by multiservermemcache.class.php
-	require_once("3rdparty/RedisServer.php");
-	print "Note, creating \$redis_handler myself!<br>";
-        $redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);
-        if (!empty($CONF['redis_db']))
-        {
-                $redis_handler->Select($CONF['redis_db']);
+        if (empty($redis)) {
+                $redis = new Redis();
+                $redis->connect($CONF['redis_host'], $CONF['redis_port']);
         }
-}
+        if (!empty($CONF['redis_api_db']))
+                $redis->select($CONF['redis_api_db']);
+
 
 ##################################################
 // stolen from test.php for now!
@@ -30,14 +27,14 @@ if (empty($redis_handler)) { //one MIGHT of been started iether by RedisSessions
 
 
         $test_key = "test.php-timestamp";
-        $value = $redis_handler->Get($test_key);
+        $value = $redis->get($test_key);
 
         if ($value && $value > (time()-604800) && $value < time()) {
                 outputRow('Redis Daemon','pass','read a recent timestamp from Redis: '.$value);
         } else {
-                $redis_handler->Set($test_key, time());
+                $redis->set($test_key, time());
                 sleep(1);
-                $value = $redis_handler->Get($test_key);
+                $value = $redis->get($test_key);
                 if ($value && $value > (time()-3) && $value < time()) {
                         outputRow('Redis Daemon','pass','tested writing and reading: '.$value);
                 } else {
@@ -46,7 +43,7 @@ if (empty($redis_handler)) { //one MIGHT of been started iether by RedisSessions
         }
 
 	//set for next time!
-        $redis_handler->Set($test_key, time());
+        $redis->set($test_key, time());
 
 		print "<br>";
 
@@ -58,8 +55,8 @@ if (empty($CONF['memcache']))
 $mkey = "test.php"; //use the same key, using the namespace to avoid collisions!
 
 foreach ($CONF['memcache'] as $key => $value) {
-	if ($value == 'redis') {
-		print "memcache\[$key\] is using redis<br>";
+	if (isset($value['redis'])) {
+		print "<hr><b>memcache\[$key\] is using redis</b><br>";
 		if ($key == 'app') {
 
 			//print "memcache->redis = {$memcache->redis}<br>";
