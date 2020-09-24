@@ -1839,11 +1839,14 @@ split_timer('gridimage','after-unlock',$thumbpath); //logs the wall time
 
 			split_timer('gridimage','_getResized'.(isset($srcw)?'-create':''),$thumbpath); //logs the wall time
 
-			//fails quickly if not using memcached!
-			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long*4);
+			if (!empty($size[0])) {
+				//fails quickly if not using memcached!
+				$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long*4);
 
-			$db=&$this->_getDB(false);
-                        $db->Execute("replace into gridimage_thumbsize set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]},maxw=$maxw,maxh=$maxh");
+				$db=&$this->_getDB(false);
+				if (empty($db->readonly)) //not used yet, but ultimately we may get to stage that running on a readonly slave.
+	                        	$db->Execute("replace into gridimage_thumbsize set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]},maxw=$maxw,maxh=$maxh");
+			}
 		}
 
 		$return['html']=$html;

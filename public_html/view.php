@@ -257,7 +257,9 @@ if ($image->isValid())
 			if (empty($db) || $db->readonly)
 				$db = GeographDatabaseConnection(false);
 
-			$db->Query("INSERT LOW_PRIORITY INTO gridimage_log VALUES({$image->gridimage_id},1,0,0,now()) ON duplicate KEY UPDATE hits=hits+1");
+			if (empty($db->readonly)) //not used yet, but ultimately we may get to stage that running on a readonly slave.
+				$db->Query("INSERT LOW_PRIORITY INTO gridimage_log VALUES({$image->gridimage_id},1,0,0,now()) ON duplicate KEY UPDATE hits=hits+1");
+
 			@$_SESSION['photos'][$image->gridimage_id]++;
 		}
 	} else {
