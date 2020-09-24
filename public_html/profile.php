@@ -254,7 +254,7 @@ if ($template=='profile.tpl')
 		 $_GET['expand'] = true;
 	}
 	
-	if (!empty($_GET['expand']) || $USER->expand_about == 1) {
+	if (!empty($_GET['expand']) || !empty($USER->expand_about)) {
 		$cacheid .= "E";
 	}
 	if (isset($_GET['reject']) && empty($_GET['reject'])) {
