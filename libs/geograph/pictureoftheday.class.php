@@ -35,6 +35,7 @@ require_once("geograph/gridimage.class.php");
 */
 class PictureOfTheDay
 {
+	var $db=null;
 	/**
 	 * today's image, as selected by initToday
 	 */
