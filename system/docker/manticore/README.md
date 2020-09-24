@@ -64,8 +64,4 @@ agnostic to the executable bit; our script uses the executable bit exclusively.
 
 The container-specific configuration is held in
 [`system/docker/manticore/etc/sphinxsearch/sphinx.conf.d/`](etc/sphinxsearch/sphinx.conf.d/);
-this is overlaid with the indices from
-[`system/sphinxserver/etc/sphinxsearch/sphinx.d/`](../../sphinxserver/etc/sphinxsearch/sphinx.d/).
-Certain files from the latter directory are removed as they are superseded by
-files in the former directory: `0database.conf`, `common.conf`, `indexer.conf`,
-`searchd.conf`.
+
