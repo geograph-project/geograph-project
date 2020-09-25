@@ -44,6 +44,7 @@ $smarty->display('_std_begin.tpl');
 <?
 }
 
+if (!empty($CONF['filesystem_dsn'])) {
 	$db2=NewADOConnection($CONF['filesystem_dsn']);
 
 	$db=GeographDatabaseConnection(false);
@@ -79,6 +80,7 @@ if (!empty($_GET['update'])) {
 	}
 }
 
+}
 
 
 	$where = '';
