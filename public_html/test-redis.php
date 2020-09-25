@@ -1,8 +1,10 @@
 <?php
 
+ini_set('display_errors',1);
+//print "."; flush(); //so that can see the eror produced by session class!
+
 require_once('geograph/global.inc.php');
 
-ini_set('display_errors',1);
 
 
 
@@ -18,6 +20,15 @@ if (empty($CONF['redis_host']))
         if (!empty($CONF['redis_api_db']))
                 $redis->select($CONF['redis_api_db']);
 
+
+
+##################################################
+
+if (!empty($_GET['info'])) {
+	print "<pre>";
+	print_r($redis->info());
+	exit;
+}
 
 ##################################################
 // stolen from test.php for now!

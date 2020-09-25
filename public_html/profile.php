@@ -34,7 +34,8 @@ if (empty($_POST) && empty($_GET['style']) && empty($_REQUEST['edit'])) {
 $smarty = new GeographPage;
 
 //must be https if possible
-pageMustBeHTTPS();
+if (empty($_GET['php_profile']))
+	pageMustBeHTTPS();
 
 
 $template='profile.tpl';
