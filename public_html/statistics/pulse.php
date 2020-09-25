@@ -134,14 +134,16 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	$sql = "SELECT COUNT(DISTINCT user_id) FROM geobb_lastviewed WHERE ts > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
 	calc("Forum Viewers in last 24 hours",$sql,3600);
 
-$table[] = array("Parameter"=>'',"Value"=>'');
+	if (!empty($_GET['advanced']) && !empty($CONF['filesystem_dsn'])) {
+		$table[] = array("Parameter"=>'',"Value"=>'');
 
-	$filedb=NewADOConnection($CONF['filesystem_dsn']);
+		$filedb=NewADOConnection($CONF['filesystem_dsn']);
 
-	$files = $filedb->getOne("select max(file_id) from file"); //yes its not quite the same as COUNT(*) but its an innodb table, so count(*) is not optimized!
-	$recent = $filedb->getOne("select count(*) from file where file_id > $files-1000 and file_created > date_sub(now(),interval 1 hour)");
-	$table[] = array("Parameter"=>"Total FileSystem Objects","Value"=>$files);
-	$table[] = array("Parameter"=>"Created in last Hour","Value"=>$recent);
+		$files = $filedb->getOne("select max(file_id) from file"); //yes its not quite the same as COUNT(*) but its an innodb table, so count(*) is not optimized!
+		$recent = $filedb->getOne("select count(*) from file where file_id > $files-1000 and file_created > date_sub(now(),interval 1 hour)");
+		$table[] = array("Parameter"=>"Total FileSystem Objects","Value"=>$files);
+		$table[] = array("Parameter"=>"Created in last Hour","Value"=>$recent);
+	}
 
 $table[] = array("Parameter"=>'',"Value"=>'');
 
