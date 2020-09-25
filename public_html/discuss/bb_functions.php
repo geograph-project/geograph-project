@@ -89,7 +89,7 @@ if ($acc=='m') return $forb; else return $acc;
 function getIP(){
 $ip1=getenv('REMOTE_ADDR');$ip2=getenv('HTTP_X_FORWARDED_FOR');
 if ($ip2!='' and ip2long($ip2)!=-1) $finalIP=$ip2; else $finalIP=$ip1;
-$finalIP=substr($finalIP,0,15);
+$finalIP=substr($finalIP,0,45);
 return $finalIP;
 }
 
@@ -209,4 +209,3 @@ $out.="<option {$sel} value=\"$key\">$val</option>\n";
 return "<select name=$selectName class=textForm>$out</select>";
 }
 
-?>

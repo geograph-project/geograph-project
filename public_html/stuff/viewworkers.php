@@ -129,12 +129,21 @@ if (isset($_GET['tab']) && $_GET['tab'] == 'coverage') {
 
 } elseif (isset($_GET['tab']) && $_GET['tab'] == '24') {
 
-dump_sql_table("select * from (
-select at_home_worker_id as worker,team,max(last_contact) as last_contact,count(*) as jobs,sum(terms) as terms,sum(images) as images
-from at_home_job inner join at_home_worker using(at_home_worker_id)
-where last_contact > date_sub(now(),interval 24 hour) and task = '$task'
-group by at_home_worker_id) as i
-order by last_contact desc,worker",'Last 24 Hours');
+	dump_sql_table("select * from (
+		select at_home_worker_id as worker,team,max(last_contact) as last_contact,count(*) as jobs,sum(terms) as terms,sum(images) as images
+		from at_home_job inner join at_home_worker using(at_home_worker_id)
+		where last_contact > date_sub(now(),interval 24 hour) and task = '$task'
+		group by at_home_worker_id) as i
+		order by last_contact desc,worker",'Last 24 Hours');
+
+} elseif (isset($_GET['tab']) && $_GET['tab'] == 'alive2') {
+	$USER->mustHavePerm("admin");
+
+	dump_sql_table("select at_home_worker_id as worker,team,max(last_contact) as last_contact, count(*) as jobs,sum(terms) as terms,sum(images) as images,
+		if(user_agent like 'Geograph-At-Home%','Standalone Client','Browser Client') as Client,inet6_ntoa(ip) as ip
+                from at_home_job inner join at_home_worker using(at_home_worker_id)
+                where at_home_job.sent > date_sub(now(),interval 2 day) and task = '$task'
+                group by at_home_worker_id order by last_contact desc,worker",'Last Contact');
 
 } elseif (isset($_GET['tab']) && $_GET['tab'] == 'alive') {
 

@@ -31,7 +31,7 @@ $db=GeographDatabaseConnection(false);
 if (empty($_REQUEST['key']) || preg_match("/[^\w\.]/",$_REQUEST['key']) )
 	die("ERROR: no api key");
 	
-$sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_REQUEST['key'])." AND (`ip` = INET_ATON('{$_SERVER['REMOTE_ADDR']}') OR `ip` = 0) AND `enabled` = 'Y'";
+$sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_REQUEST['key'])." AND (`ip` = INET6_ATON('".getRemoteIP()."') OR `ip` = 0) AND `enabled` = 'Y'";
 
 $profile = $db->GetRow($sql);
 

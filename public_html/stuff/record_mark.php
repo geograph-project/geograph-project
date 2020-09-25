@@ -40,27 +40,15 @@ flush();
 $db=NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');
 
-if (!is_numeric($_GET['id'])) {
-	$id = $db->getOne("SELECT id FROM vote_string WHERE value = ".$db->Quote(@$_GET['id']));
-	if (empty($id)) {
-		$ins = "INSERT INTO vote_string SET value = ".$db->Quote(@$_GET['id']).", user_id = ".intval($USER->user_id);
-		$db->Execute($ins);
-		$_GET['id'] = mysql_insert_id();
-	} else {
-		$_GET['id'] = intval($id);
-	}
-}
 
-
-$ins = "INSERT INTO vote_log SET
-	type = ".$db->Quote(@$_GET['t']).",
-	id = ".intval(@$_GET['id']).",
-	vote = ".intval(@$_GET['v']).",
+$ins = "INSERT INTO usage_mark SET
+	url = ".$db->Quote(@$_SERVER['HTTP_REFERER']).",
+	`id` = ".$db->Quote(@$_GET['id']).",
 	ipaddr = INET6_ATON('".getRemoteIP()."'),
 	user_id = ".intval($USER->user_id).",
 	useragent = ".$db->Quote($_SERVER['HTTP_USER_AGENT']).",
 	session = ".$db->Quote(session_id());
-	
+
 $db->Execute($ins);
 
 

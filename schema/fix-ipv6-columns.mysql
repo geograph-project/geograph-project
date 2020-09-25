@@ -1,0 +1,83 @@
+
+ALTER TABLE `geograph_staging`.`sessions` MODIFY `ipaddr` varchar(45) NOT NULL DEFAULT '';
+ALTER TABLE `geograph_staging`.`tmppost` MODIFY `poster_ip` varchar(45) NOT NULL DEFAULT '';
+
+ALTER TABLE `geograph_staging`.`geobb_posts` MODIFY `poster_ip` varchar(45) NOT NULL DEFAULT '';
+ALTER TABLE `geograph_staging`.`geobb_posts_quar` MODIFY `poster_ip` varchar(45) NOT NULL DEFAULT '';
+ALTER TABLE `geograph_staging`.`geobb_banned` MODIFY `banip` varchar(45) NOT NULL DEFAULT '';
+
+
+ALTER TABLE `geograph_live`.`geobb_posts` MODIFY `poster_ip` varchar(45) NOT NULL DEFAULT '';
+ALTER TABLE `geograph_live`.`geobb_posts_quar` MODIFY `poster_ip` varchar(45) NOT NULL DEFAULT '';
+ALTER TABLE `geograph_live`.`geobb_banned` MODIFY `banip` varchar(45) NOT NULL DEFAULT '';
+
+
+
+ALTER TABLE `geograph_staging`.`at_home_worker` MODIFY `ip` varbinary(16) NOT NULL;
+UPDATE `geograph_staging`.`at_home_worker` SET `ip` = inet6_aton(inet_ntoa(`ip`)) WHERE `ip` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_staging`.`vote_log` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_staging`.`vote_log` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)) WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_staging`.`game_score` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_staging`.`game_score` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)), `created` = `created` WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_staging`.`visitor_log` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_staging`.`visitor_log` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)), `updated` = `updated` WHERE `ipaddr` regexp binary '^[[:digit:]]+$'; #modifies 6432 rows
+
+ALTER TABLE `geograph_staging`.`compare_done` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_staging`.`compare_done` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)), `when` = `when` WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_staging`.`usage_log` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_staging`.`usage_log` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)) WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_staging`.`apikeys` MODIFY `ip` varbinary(16) NOT NULL DEFAULT 0;
+UPDATE `geograph_staging`.`apikeys` SET `ip` = inet6_aton(inet_ntoa(`ip`)), `last_use` = `last_use` WHERE `ip` regexp binary '^[[:digit:]]+$';
+
+
+ALTER TABLE `geograph_live`.`search_ranking_log` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`search_ranking_log` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)) WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`error_log` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`error_log` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)) WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`speed_log` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`speed_log` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)) WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`humansearch` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`humansearch` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)), `updated` = `updated` WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`downsize_test` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`downsize_test` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)) WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`vote_selection` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`vote_selection` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)) WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`humansearch_result` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`humansearch_result` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)) WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`vote_log` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`vote_log` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)) WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`game_score` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`game_score` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)), `created` = `created` WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`visitor_log` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`visitor_log` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)), `updated` = `updated` WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`survey_ip` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`survey_ip` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)), `upd_timestamp` = `upd_timestamp` WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`compare_done` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`compare_done` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)), `when` = `when` WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`usage_log` MODIFY `ipaddr` varbinary(16) NOT NULL;
+UPDATE `geograph_live`.`usage_log` SET `ipaddr` = inet6_aton(inet_ntoa(`ipaddr`)) WHERE `ipaddr` regexp binary '^[[:digit:]]+$';
+
+ALTER TABLE `geograph_live`.`apikeys` MODIFY `ip` varbinary(16) NOT NULL DEFAULT 0;
+UPDATE `geograph_live`.`apikeys` SET `ip` = inet6_aton(inet_ntoa(`ip`)), `last_use` = `last_use` WHERE `ip` regexp binary '^[[:digit:]]+$';
+
+
+##yes the throttle table uses user_id column to store an ipaddress!
+alter table `throttle` modify user_id varbinary(16) not null;
+UPDATE `throttle` SET `user_id` = inet6_aton(inet_ntoa(`user_id`)), `used` = `used` WHERE `user_id` regexp binary '^[[:digit:]]+$';

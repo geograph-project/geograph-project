@@ -112,7 +112,7 @@ class game {
 		$updates['ua'] = $_SERVER['HTTP_USER_AGENT'];
 		$updates['session'] = session_id();
 		
-		$db->Execute('INSERT INTO game_score SET `ipaddr` = INET_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		$db->Execute('INSERT INTO game_score SET `ipaddr` = INET6_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 		
 		return $app;
 	}

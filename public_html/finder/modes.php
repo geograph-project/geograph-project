@@ -34,7 +34,7 @@ if (!empty($_GET['rating'])) {
 		q = ".$db->Quote(@$_GET['q']).",
 		comment = ".$db->Quote(@$_GET['comment']).",
 		rating = ".intval(@$_GET['rating']).",
-		ipaddr = INET_ATON('".getRemoteIP()."'),
+		ipaddr = INET6_ATON('".getRemoteIP()."'),
 		user_id = ".intval($USER->user_id);
 
 	$db->Execute($ins);
@@ -51,7 +51,7 @@ if (!empty($_GET['modes'])) {
 		mode = ".intval(@$_GET['mode']).",
 		modes = ".$db->Quote(@$_GET['modes']).",
 		q = ".$db->Quote(@$_GET['q']).",
-		ipaddr = INET_ATON('".getRemoteIP()."'),
+		ipaddr = INET6_ATON('".getRemoteIP()."'),
 		user_id = ".intval($USER->user_id);
 
 	$db->Execute($ins);

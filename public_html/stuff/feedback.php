@@ -44,7 +44,7 @@ if (!empty($_POST['submit'])) {
 			type = 'f',
 			id = $id,
 			vote = ".intval($value).",
-			ipaddr = INET_ATON('".getRemoteIP()."'),
+			ipaddr = INET6_ATON('".getRemoteIP()."'),
 			user_id = ".intval($USER->user_id);
 			$db->Execute($ins);
 		}

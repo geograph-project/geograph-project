@@ -65,7 +65,7 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 			$updates['ua'] = $_SERVER['HTTP_USER_AGENT'];
 			$updates['session'] = session_id();
 
-			$db->Execute('INSERT INTO game_score SET created=NOW(),`ipaddr` = INET_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates)) or die(mysql_error());
+			$db->Execute('INSERT INTO game_score SET created=NOW(),`ipaddr` = INET6_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates)) or die(mysql_error());
 		}
 
 		header("Location: ?");//todo, if public results, redirect there!

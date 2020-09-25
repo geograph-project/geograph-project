@@ -86,7 +86,7 @@ if (!empty($_POST['create'])) {
 			comment = ".$db->Quote(@$_POST['comment']).",
 			grid_reference = ".$db->Quote(@$_POST['grid_reference']).",
 			notify = ".intval(@$_POST['notify']).",
-			ipaddr = INET_ATON('".getRemoteIP()."'),
+			ipaddr = INET6_ATON('".getRemoteIP()."'),
 			user_id = ".intval($USER->user_id).",
 			type = '".(isset($_GET['geo'])?'geo':'standard')."',
 			created = NOW(),
@@ -158,7 +158,7 @@ if (!empty($_POST['create'])) {
 		query_id = $query_id,
 		page = ".intval(@$_GET['page']).",
 		gridimage_id = $gridimage_id,
-		ipaddr = INET_ATON('".getRemoteIP()."'),
+		ipaddr = INET6_ATON('".getRemoteIP()."'),
 		user_id = ".intval($USER->user_id).",
 		created = NOW()";
 

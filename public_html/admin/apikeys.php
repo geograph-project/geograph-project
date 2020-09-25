@@ -50,7 +50,7 @@ if (!$db) die('Database connection failed');
 				$updates[] = "`crt_timestamp` = NOW()";
 			} else {
 				//otherwise we need an update
-				$arr = $db->GetRow("select *,INET_NTOA(ip) as `ip_text` from `apikeys` where `id` = {$_POST['id']}");
+				$arr = $db->GetRow("select *,INET6_NTOA(ip) as `ip_text` from `apikeys` where `id` = {$_POST['id']}");
 				$sql = "UPDATE";
 				$sql_where = " WHERE id = {$_POST['id']}";
 				$message .= "<p>The following info has been updated:</p><ul>";
@@ -62,7 +62,7 @@ if (!$db) die('Database connection failed');
 
 			//ip address requires a special handler
 			if ($_POST['ip_text'] != $arr['ip_text']) {
-				$updates[] = "`ip` = INET_ATON('{$_POST['ip_text']}')";
+				$updates[] = "`ip` = INET6_ATON('{$_POST['ip_text']}')";
 				$message .="<li>IP</li>";
 			}
 			unset($_POST['ip_text']);
@@ -91,7 +91,7 @@ if (!$db) die('Database connection failed');
 	} elseif ($_GET['id']) {
 		//load the info for editing the record
 		if ($_GET['id'] != '-new-') {
-			$arr = $db->GetRow("select *,INET_NTOA(ip) as ip_text from apikeys where id = {$_GET['id']}");
+			$arr = $db->GetRow("select *,INET6_NTOA(ip) as ip_text from apikeys where id = {$_GET['id']}");
 		}
 		$smarty->assign('id', $_GET['id']);
 	} else {	
@@ -105,5 +105,3 @@ if (!$db) die('Database connection failed');
 $smarty->display('admin_apikeys.tpl');
 
 
-	
-?>

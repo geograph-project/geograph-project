@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: apikeys.php 939 2005-06-29 22:22:57Z barryhunter $
+ * $Id: record_vote.php 6944 2010-12-03 21:44:38Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2008 Barry Hunter (geo@barryhunter.co.uk)
@@ -21,45 +21,38 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
 require_once('geograph/global.inc.php');
+
 init_session();
 
-$smarty = new GeographPage;
-$USER->mustHavePerm("basic");
+if (isset($_GET['html'])) {
+        print "thanks - you may close this window";
+} else {
+	header("HTTP/1.0 204 No Content");
+	header("Status: 204 No Content");
+	header("Content-Length: 0");
+}
 
-$template = 'admin_mykey.tpl';
-$cacheid = '';
-
-
-function smarty_block_highlight($params, $content, &$smarty, &$repeat) 
-{ 
-  return highlight_string(str_replace("\r",'',$content),true);
-} 
+flush();
 
 
-$smarty->register_block('highlight', 'smarty_block_highlight');
+$db=NewADOConnection($GLOBALS['DSN']);
+if (!$db) die('Database connection failed');
 
 
-	$db = GeographDatabaseConnection(true);
+$decode = json_decode(file_get_contents("php://input"),true);
 
-	if (!empty($_GET['apikey'])) {
-		//load the info for editing the record
-		if ($_GET['apikey'] != '-new-') {
-			$arr = $db->GetRow("select *,INET6_NTOA(ip) as ip_text from apikeys where enabled = 1 and apikey = ".$db->Quote($_GET['apikey']));
-			$smarty->assign($arr);
-			
-			
-			$token=new Token;
-			$token->setValue("i", $arr['id']);
-			$smarty->assign('access',$token->getToken());
-			
-			$smarty->assign('shared',md5($CONF['token_secret'].$arr['apikey']));
-			
-		}
-	} 
+
+$ins = "INSERT INTO external_link SET
+	href = ".$db->Quote(@$decode['href']).",
+	source = ".$db->Quote(@$decode['source']).",
+	ipaddr = INET6_ATON('".getRemoteIP()."'),
+	user_id = ".intval($USER->user_id).",
+	useragent = ".$db->Quote($_SERVER['HTTP_USER_AGENT']).",
+	session = ".$db->Quote(session_id());
+
+$db->Execute($ins);
 
 
 
-$smarty->display($template, $cacheid);
-	
-?>

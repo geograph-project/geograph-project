@@ -83,7 +83,7 @@ if (isset($_GET['t'])) {
 		$where = "user_id = ?";
 		$a = array($USER->user_id);
 	} else {
-		$where = "user_id = 0 and `ipaddr` = INET_ATON(?) AND `ua` = ?";
+		$where = "user_id = 0 and `ipaddr` = INET6_ATON(?) AND `ua` = ?";
 		$a = array(getRemoteIP(),$_SERVER['HTTP_USER_AGENT']);
 	}	
 
@@ -148,7 +148,7 @@ if (!empty($pair['compare_pair_id'])) {
 	$updates['compare_pair_id'] = $pair['compare_pair_id'];
 	$updates['ua'] = $_SERVER['HTTP_USER_AGENT'];
 	
-	$db->Execute('REPLACE INTO compare_done SET `ipaddr` = INET_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	$db->Execute('REPLACE INTO compare_done SET `ipaddr` = INET6_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 
 } elseif (isset($_GET['again']) && !isset($_GET['t'])) {
 	$pair = $db->getRow("

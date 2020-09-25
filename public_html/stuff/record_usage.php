@@ -40,28 +40,27 @@ flush();
 $db=NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');
 
-if (!is_numeric($_GET['id'])) {
-	$id = $db->getOne("SELECT id FROM vote_string WHERE value = ".$db->Quote(@$_GET['id']));
-	if (empty($id)) {
-		$ins = "INSERT INTO vote_string SET value = ".$db->Quote(@$_GET['id']).", user_id = ".intval($USER->user_id);
-		$db->Execute($ins);
-		$_GET['id'] = mysql_insert_id();
-	} else {
-		$_GET['id'] = intval($id);
-	}
-}
 
-
-$ins = "INSERT INTO vote_log SET
-	type = ".$db->Quote(@$_GET['t']).",
-	id = ".intval(@$_GET['id']).",
-	vote = ".intval(@$_GET['v']).",
+$ins = "INSERT INTO usage_log SET
+	action = ".$db->Quote(@$_GET['action']).",
+	param = ".$db->Quote(@$_GET['param']).",
+	value = ".$db->Quote(@$_GET['value']).",
 	ipaddr = INET6_ATON('".getRemoteIP()."'),
 	user_id = ".intval($USER->user_id).",
 	useragent = ".$db->Quote($_SERVER['HTTP_USER_AGENT']).",
 	session = ".$db->Quote(session_id());
-	
+
 $db->Execute($ins);
 
 
+//not perfect, but lets count viewing a page of thumbs or the large image as a 'pageview'.
+if (($_GET['action'] == 'view' && $_GET['param'] == 'page')
+   ||($_GET['action'] == 'set' && $_GET['param'] == 'display' && in_array($_GET['value'], array('date_slider','grouped','map','map_dots')) )
+   ||($_GET['action'] == 'show' && $_GET['param'] == 'main')) {
+   // we only bother with update, as it should NEVER be the 'first' view.
+   //$upd = "UPDATE visitor_log SET pages=pages+1 WHERE `session` = ".$db->Quote(session_id());
+   //$db->query($upd);
 
+	//actully lets just use the full function. we may need to update session1 anyway. (turns out can be first view, if session expired as was auto-renewed with remember_me!)
+	recordVisitor();
+}
