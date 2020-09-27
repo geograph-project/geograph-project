@@ -12,12 +12,12 @@
 ########################
 # Forum Posts
 
-1 5 * * *           indexer --config /etc/sphinxsearch/sphinx.conf post_stemmed post_stemmed_delta --rotate
+1 5 * * *           indexer --config /etc/sphinxsearch/sphinx.conf post_master post_stemmed post_stemmed_delta --rotate
 
 ########################
 # Gridimage - the original main image index
 
-23 5 * * *          indexer --config /etc/sphinxsearch/sphinx.conf gi_stemmed gi_stemmed_delta --rotate
+23 5 * * *          indexer --config /etc/sphinxsearch/sphinx.conf gridimage_master gi_stemmed gi_stemmed_delta --rotate
 
 ########################
 # Sample8 - the NEW image index
