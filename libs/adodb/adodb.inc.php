@@ -1749,7 +1749,7 @@
 
 			if ($rs && $this->memCache) {
 				$rs = $this->_rs2rs($rs); // read entire recordset into memory immediately
-				if(!putmemCache($md5file, $rs, $this->memCacheHost, $this->memCachePort, $this->memCacheCompress, $this->debug)) {
+				if(!putmemCache($md5file, $rs, $this->memCacheHost, $this->memCachePort, $this->memCacheCompress, $this->debug, $secs2cache)) {
 					if ($fn = $this->raiseErrorFn && strlen(serialize($rs)) < 1048576)
 						$fn($this->databaseType,'CacheExecute',-32000,"Cache write error",$md5file,$sql,$this);
 					if ($this->debug) ADOConnection::outp( " Cache write error");

@@ -62,7 +62,7 @@ $ADODB_INCLUDED_MEMCACHE = 1;
 		return $rs;
 	}
 
-	function putmemcache($key, $rs, &$host, $port, $compress, $debug=false)
+	function putmemcache($key, $rs, &$host, $port, $compress, $debug=false, $timeout = 3600)
 	{
 		$false = false;
 		$true = true;
@@ -78,7 +78,7 @@ $ADODB_INCLUDED_MEMCACHE = 1;
 		}
 
 		$rs->timeCreated = time();
-		if (!$memcache->set($key, $rs, $compress, 3600)) {
+		if (!$memcache->set($key, $rs, $compress, $timeout+3)) { //we add a few extra seconds, as the get function allows a few second leaway too!
 			if ($debug) ADOConnection::outp(" Failed to save data at the memcached server!<br>\n");
 			return $false;
 		}
