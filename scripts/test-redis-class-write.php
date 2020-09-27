@@ -32,6 +32,8 @@ $param=array(
 	'sleep'=>0,
 
     'host'=>false,
+    'flush'=>false,
+    'force'=>false,
 );
 
 $ABORT_GLOBAL_EARLY=1; //avoids global.inc.php auto connecteding to redis to with "$memcache" variable
@@ -59,6 +61,21 @@ print("Using server: $CONF[redis_host]\n");
 $redis = new Redis();
 $redis->connect($CONF['redis_host'], $CONF['redis_port']);
 
+############################################
+
+if (isset($param['flush']) && is_numeric($param['flush'])) {
+	if ($param['flush'] == 2 && empty($param['force'])) //session
+		die("refusing to flush, use --force=1\n");
+
+	$redis->select($param['flush']);
+
+	$redis->flushDb();
+	print "Flushed {$param['flush']}\n";
+	exit;
+}
+
+
+############################################
 
 $redis->select(13); //use a db not use for anything else
 

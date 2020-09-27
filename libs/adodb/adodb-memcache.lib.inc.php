@@ -78,7 +78,7 @@ $ADODB_INCLUDED_MEMCACHE = 1;
 		}
 
 		$rs->timeCreated = time();
-		if (!$memcache->set($key, $rs, $compress, 0)) {
+		if (!$memcache->set($key, $rs, $compress, 3600)) {
 			if ($debug) ADOConnection::outp(" Failed to save data at the memcached server!<br>\n");
 			return $false;
 		}
@@ -112,4 +112,4 @@ $ADODB_INCLUDED_MEMCACHE = 1;
 		}
 		return;
 	}
-?>
+
