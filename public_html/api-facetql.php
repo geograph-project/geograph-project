@@ -68,9 +68,9 @@ Example Queries:
 <?	exit;
 }
 	switch(1) {
-		case !empty($_GET['long']) : customExpiresHeader(3600*24*30); break;
-		case !empty($_GET['mid']) : customExpiresHeader(3600*24*3); break;
-		default : customExpiresHeader(3600*24); break;
+		case !empty($_GET['long']) : customExpiresHeader(3600*24*30,true); break;
+		case !empty($_GET['mid']) : customExpiresHeader(3600*24*3,true); break;
+		default : customExpiresHeader(3600*24,true); break;
 	}
 
 	$res = array();
