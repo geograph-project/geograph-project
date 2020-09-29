@@ -36,7 +36,7 @@ function redis_session_open($save_path, $session_name)
 		$redis_handler->connect($CONF['redis_host'], $CONF['redis_port']);
 		if (!empty($CONF['redis_session_db']))
 		{
-			$redis_handler->Select($CONF['redis_session_db']);
+			$redis_handler->select($CONF['redis_session_db']);
 		}
 	}
 }

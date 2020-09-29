@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /**
  * $Project: GeoGraph $
@@ -27,6 +28,7 @@
 $param=array(
 	//source = gridimage_queue
 	//dest = gridimage
+	'execute'=>true,
 );
 
 chdir(__DIR__);
@@ -58,6 +60,9 @@ while (1) {
 				 #last option is safe on myisam table (which tracks the auto-incr value directly), not innodb
 
 	print "$cmd\n";
+	if (!$param['execute'])
+		exit;
+
 	exec($cmd,$output);
 
         $str = implode("\n",$output);
