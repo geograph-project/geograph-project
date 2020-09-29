@@ -402,8 +402,8 @@ END;
 		}
 
 	//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
-		if (isset($GLOBALS['smarty']) && !preg_match('/@viewsquare/',$sphinx->q) && strpos($_SERVER['HTTP_REFERER'],'?i='.$this->criteria->id) === FALSE) {
-		
+		if (isset($GLOBALS['smarty']) && !preg_match('/@viewsquare/',$sphinx->q) && strpos(@$_SERVER['HTTP_REFERER'],'?i='.$this->criteria->id) === FALSE) {
+
 			$suggestions = array();
 			if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && empty($this->criteria->sphinx['x']) ) {
 				$suggestions = $sphinx->didYouMean($sphinx->q);

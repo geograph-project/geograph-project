@@ -919,7 +919,7 @@ class RestAPI
 			}
 		}
 
-		if ($_SERVER["PATH_INFO"]) {
+		if (!empty($_SERVER["PATH_INFO"])) {
 			$this->params=explode('/', $_SERVER["PATH_INFO"]);
 		} else {
 			$this->params=explode('/', $_SERVER["SCRIPT_NAME"]);
@@ -962,7 +962,7 @@ if (!empty($CONF['redis_host']))
         $bits = array();
         $bits[] = $_GET['key'];
         $bits[] = getRemoteIP();
-        if (strlen($_SERVER['HTTP_REFERER']) > 2) {
+        if (!empty($_SERVER['HTTP_REFERER'])) {
                 $ref = @parse_url($_SERVER['HTTP_REFERER']);
                 $bits[] = $ref['host'];
         } else {
