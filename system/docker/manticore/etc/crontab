@@ -17,7 +17,7 @@
 ########################
 # Gridimage - the original main image index
 
-23 5 * * *          indexer --config /etc/sphinxsearch/sphinx.conf gridimage_master gi_stemmed gi_stemmed_delta --rotate
+23 2 * * *          indexer --config /etc/sphinxsearch/sphinx.conf gridimage_master gi_stemmed gi_stemmed_delta --rotate
 
 ########################
 # Sample8 - the NEW image index
