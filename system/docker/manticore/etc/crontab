@@ -7,7 +7,9 @@
 ## Disable this one for now. Use the more targetted refresh cycle as below.
 
 ##############################
+# Clear up Cruft (previous failed index attempts etc) 
 
+30 1 * * *          find /var/lib/manticore/data/ -name '*.tmp*' -type f -mtime +1 -delete
 
 ########################
 # Forum Posts
