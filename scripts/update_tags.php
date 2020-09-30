@@ -62,7 +62,7 @@ if (!empty($s))
 	$from = "from tagids inner join gridimage_tag gt using (gridimage_id) inner join tag t using (tag_id)";
 else
 	$from = "from gridimage_tag gt inner join tag t using (tag_id)";
-$where = "where gt.status = 2 and t.status = 1";
+$where = "where gt.status = 2 and t.status = 1 and gridimage_id < 4294967296";
 $group = "group by gridimage_id order by null";
 
 if (empty($param['days']) || $param['days']>10) {
