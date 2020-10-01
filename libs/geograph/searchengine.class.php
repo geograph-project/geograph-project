@@ -309,6 +309,11 @@ class SearchEngine
 			$sql_order = "ORDER BY $sql_order";
 
 
+
+if (preg_match('/crc32/',$sql_order))
+	dieUnderHighLoad(0,'search_unavailable.tpl');
+
+
 		if (preg_match('/\bsequence\b/',$sql_order))
 			$sql_from .= " INNER JOIN gridimage_sequence seq ON(gi.gridimage_id=seq.gridimage_id) ";
 
@@ -724,7 +729,7 @@ END;
 		if (!empty($sql_where)) {
 			$sql_where = "WHERE $sql_where";
 			$this->islimited = true;
-		} elseif (preg_match('/rand\(/',$sql_order)) {
+		} elseif (preg_match('/(rand|crc32)\(/',$sql_order)) {
 			//homefully temporally
 			dieUnderHighLoad(0,'search_unavailable.tpl');
 		}
@@ -786,6 +791,11 @@ END;
 
 			return 0;
 		}
+
+
+if (preg_match('/crc32/',$sql_order))
+        dieUnderHighLoad(0,'search_unavailable.tpl');
+
 		if ($sql_order)
 			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql

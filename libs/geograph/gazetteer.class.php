@@ -179,7 +179,7 @@ split_timer('gazetteer'); //starts the timer
 				order by distance asc limit 1");
 
 			$placeradius = 5005;
-			if (sqrt($places['distance']) > $placeradius) {
+			if (!empty($places) && sqrt($places['distance']) > $placeradius) {
 				//if nothing near try finding a feature
 				
 				$e = (floor($e/1000) * 1000) + 500;
@@ -292,7 +292,7 @@ split_timer('gazetteer'); //starts the timer
 					order by distance asc,f_code+0 asc limit 1");
 
 				$placeradius = 4005;
-				if (sqrt($places['distance']) > $placeradius) {
+				if (!empty($places) && sqrt($places['distance']) > $placeradius) {
 		//if nothing near try finding a feature
 
 					//can reduce the size of the search
@@ -457,9 +457,11 @@ split_timer('gazetteer'); //starts the timer
 		}
 		if (isset($places['distance']))
 			$places['distance'] = round(sqrt($places['distance'])/1000)+0.01;
-		$places['reference_name'] = $CONF['references'][$places['reference_index']];
-		if ($places['reference_index'] == 2 && $places['country'] == 'uk') {
-			$places['reference_name'] = "Northern Ireland";
+		if (!empty($places['reference_index'])) {
+			$places['reference_name'] = $CONF['references'][$places['reference_index']];
+			if ($places['reference_index'] == 2 && $places['country'] == 'uk') {
+				$places['reference_name'] = "Northern Ireland";
+			}
 		}
 
 split_timer('gazetteer','findByNational',$mkey); //logs the wall time
