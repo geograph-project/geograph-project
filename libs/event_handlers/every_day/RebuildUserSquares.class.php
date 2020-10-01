@@ -38,26 +38,63 @@ class RebuildUserSquares extends EventHandler
 	function processEvent(&$event)
 	{
 		//perform actions
-		
+
 		$db=&$this->_getDB();
-		
+
 		$db->Execute("DROP TABLE IF EXISTS user_gridsquare_tmp");
-		
-		
-		$db->Execute("CREATE TABLE user_gridsquare_tmp
-				(INDEX (user_id,`grid_reference`),INDEX(`grid_reference`))
-				ENGINE=MyISAM
-				SELECT user_id,`grid_reference`,
-				sum(moderation_status='geograph') as has_geographs,count(*) as imagecount
-				FROM gridimage_search
-				GROUP BY user_id,`grid_reference` ORDER BY NULL");
-		
+
+		$create = "CREATE TABLE user_gridsquare_tmp
+                                (UNIQUE INDEX (user_id,`grid_reference`),INDEX(`grid_reference`))
+                                ENGINE=MyISAM";
+		$insert = "INSERT INTO user_gridsquare_tmp";
+		$select = " SELECT user_id,`grid_reference`,
+                                sum(moderation_status='geograph') as has_geographs,count(*) as imagecount,
+                                max(ftf) as max_ftf, sum(points = 'tpoint') as tpoints, min(gridimage_id) as `first`, max(gridimage_id) as `last`
+                                FROM gridimage_search
+				WHERE \$where
+                                GROUP BY user_id,`grid_reference` ORDER BY NULL";
+
+		//FULL
+		if (false) {
+			$where = 1;
+			$sql = $create.$select;
+			$db->Execute(str_replace('$where',$where,$sql));
+
+		//INCREMENTAL
+		} elseif (false) {
+		        $grs = $db_read->getCol("select grid_reference from gridimage_search where upd_timestamp >
+	                date_sub(now(),interval {$param['interval']}) group by grid_reference order by null");
+
+			$where = "grid_reference in ('".implode("','",$grs)."')";
+
+			$db->Execute("CREATE TABLE user_gridsquare_tmp LIKE user_gridsquare");
+			$db->Execute("INSERT INTO user_gridsquare_tmp SELECT * FROM user_gridsquare WHERE NOT ($where)");
+
+			$sql = $insert.$select;
+			$db->Execute(str_replace('$where',$where,$sql));
+
+		//PIECEMEAL
+		} else {
+			$size = 1000;
+                        $users = $db->getOne("SELECT MAX(user_id) FROM gridimage_search");
+
+                        $end = ceil($users/$size)*$size;
+			for($q=0;$q<$end;$q+=$size) {
+                                $where = sprintf("user_id BETWEEN %d AND %d",$q,$q+$size-1);
+
+				$sql = ($q?$insert:$create).$select;
+
+				$db->Execute(str_replace('$where',$where,$sql));
+
+				$size += 1000; //as go, thogh in general newer contributors submit less, and there are less of them in each range.
+			}
+		}
+
 		$db->Execute("DROP TABLE IF EXISTS user_gridsquare");
 		$db->Execute("RENAME TABLE user_gridsquare_tmp TO user_gridsquare");
-		
+
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;
 	}
-	
 }
