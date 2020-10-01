@@ -24,7 +24,6 @@
 
 //these are the arguments we expect
 $param=array(
-        'daily'=>false, //build daily delta tables - overrides rebuild
         'rebuild'=>false, //force rebuild tags/terms - false only creates if not exist
         'schema'=>false, //show the schema used to create a new sphinx index. 
 );
@@ -38,7 +37,7 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-if (!empty($param['daily']) || !empty($param['rebuild'])) {
+if (!empty($param['rebuild'])) {
         $sqls = array();
 
         fwrite(STDERR,date('H:i:s ')."Dropping tables\n");
@@ -50,20 +49,6 @@ if (!empty($param['daily']) || !empty($param['rebuild'])) {
                 $db->Execute($sql);
         }
 }
-
-if (!empty($param['daily'])) {
-
-	//from jam
-       // sql_query_range         = SELECT FLOOR(max_doc_id*0.9)+1,(SELECT MAX(gridimage_id) FROM gridimage_search) FROM sph_counter WHERE counter_id='sample8' and server_id=4;
-
-	//note, this is deliberately using the slave! As sphinx connects to slave, the sph_counter table is only updated on SLAVE (and if updated on master, slave would uptodate too!)
-	$db2 = GeographDatabaseConnection(true);
-	$row = $db2->getRow("SELECT FLOOR(max_doc_id*0.9)+1 AS `start`,(SELECT MAX(gridimage_id) FROM gridimage_search) as `end` FROM sph_counter WHERE counter_id='sample8' and server_id=4");
-	$between = "gridimage_id BETWEEN {$row['start']} AND {$row['end']}";
-
-}
-
-
 
 #####################################################
 
@@ -87,18 +72,15 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 			WHERE gt.status = 2 and t.status = 1 AND __between__
 			GROUP BY gridimage_id ORDER BY NULL";
 
-	if (!empty($param['daily'])) {
-		$sqls[] = "CREATE TABLE sphinx_tags (gridimage_id INT UNSIGNED PRIMARY KEY) ".
-			str_replace('__between__',$between, $sql);
-	} else {
-		$count = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+	$count = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
-		for($q=0;$q<$count;$q+=100000) {
-			$between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+100000);
-			$sqls[] = ($q?"INSERT INTO sphinx_tags ":"CREATE TABLE sphinx_tags (gridimage_id INT UNSIGNED PRIMARY KEY) ").
-				str_replace('__between__',$between, $sql);
-		}
+	for($q=0;$q<$count;$q+=100000) {
+		$between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+100000);
+		$sqls[] = ($q?"INSERT INTO sphinx_tags ":"CREATE TABLE sphinx_tags (gridimage_id INT UNSIGNED) ENGINE=MyISAM").
+			str_replace('__between__',$between, $sql);
 	}
+
+	$sqls[] = "ALTER TABLE sphinx_tags ADD PRIMARY KEY(gridimage_id)";
 
 	foreach ($sqls as $sql) {
 		fwrite(STDERR,date('H:i:s ')." $sql\n\n");
@@ -139,16 +121,12 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 		AND __between__
 		GROUP BY gridimage_id ORDER BY NULL";
 
-	if (!empty($param['daily'])) {
-		$sqls[] = str_replace('__between__',$between, $sql);
-	} else {
 	        $count = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search where imageclass != '' and tags = ''");  //in theory long term will be few without so can exclude them
 
-                for($q=0;$q<$count;$q+=100000) {
-                        $between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+100000);
-                        $sqls[] = str_replace('__between__',$between, $sql);
-                }
-	}
+        for($q=0;$q<$count;$q+=100000) {
+                $between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+100000);
+                $sqls[] = str_replace('__between__',$between, $sql);
+        }
 
 	foreach ($sqls as $sql) {
 		fwrite(STDERR,date('H:i:s ')." $sql\n\n");
@@ -182,18 +160,15 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_terms'")) {
 			WHERE m.__between__
 			GROUP BY gridimage_id ORDER BY NULL";
 
-        if (!empty($param['daily'])) {
-                $sqls[] = "CREATE TABLE sphinx_terms (gridimage_id INT UNSIGNED PRIMARY KEY) ".
-                        str_replace('__between__',$between, $sql);
-        } else {
-                $count = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+        $count = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
-                for($q=0;$q<$count;$q+=100000) {
-                        $between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+100000);
-                        $sqls[] = ($q?"INSERT INTO sphinx_terms ":"CREATE TABLE sphinx_terms (gridimage_id INT UNSIGNED PRIMARY KEY) ").
-                                str_replace('__between__',$between, $sql);
-                }
+        for($q=0;$q<$count;$q+=100000) {
+                $between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+100000);
+                $sqls[] = ($q?"INSERT INTO sphinx_terms ":"CREATE TABLE sphinx_terms (gridimage_id INT UNSIGNED) ENGINE=MyISAM").
+                         str_replace('__between__',$between, $sql);
         }
+
+	$sqls[] = "ALTER TABLE sphinx_terms ADD PRIMARY KEY(gridimage_id)";
 
 	$sqls[] = "DELETE FROM sphinx_terms WHERE groups IS NULL AND terms IS NULL AND snippets IS NULL AND wikis IS NULL";
 

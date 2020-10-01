@@ -44,7 +44,7 @@ $sqls = array();
 ##################################################
 //copy in new computed values (if available!)
 
-if ($db->getOne("SHOW CREATE TABLE gridimage_square2")) {
+if ($db->getOne("SHOW TABLES LIKE 'gridimage_square2'")) {
 
 	//create a copy table, (so replace into works in gridimage.class
 	$build = "REPLACE INTO gridimage_sequence

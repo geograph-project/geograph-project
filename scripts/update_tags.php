@@ -22,9 +22,10 @@
  */
 
 $param = array(
-	'days' => 2,
+	'interval' => "2 day",
 	'tag_days' => false,
 	'execute' => false,
+	'debug' => false,
 );
 
 chdir(__DIR__);
@@ -42,9 +43,9 @@ if (!empty($param['tag_days']))
 	$s[] = "create temporary table tagids (primary key(gridimage_id))
 		select distinct gridimage_id FROM gridimage_tag INNER JOIN tag USING (tag_id) WHERE tag.updated > DATE_SUB(NOW(),interval {$param['tag_days']} day) and gridimage_id < 4294967296 and gridimage_tag.status = 2 AND tag.updated != tag.created";
 
-elseif (!empty($param['days']))
+elseif (!empty($param['interval']))
 	$s[] = "create temporary table tagids (primary key(gridimage_id))
-		select distinct gridimage_id FROM gridimage_tag WHERE updated > DATE_SUB(NOW(),interval {$param['days']} day) and gridimage_id < 4294967296";
+		select distinct gridimage_id FROM gridimage_tag WHERE updated > DATE_SUB(NOW(),interval {$param['interval']}) and gridimage_id < 4294967296";
 
 ######################################################################################################################################################
 
@@ -65,7 +66,7 @@ else
 $where = "where gt.status = 2 and t.status = 1 and gridimage_id < 4294967296";
 $group = "group by gridimage_id order by null";
 
-if (empty($param['days']) || $param['days']>10) {
+if (preg_match('/(\d+) day/',$param['interval'],$m) && $m[1]>10) {
 	$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
 	for($start = 1;$start<$max;$start+=100000) {
@@ -85,15 +86,20 @@ $s[] = $copy;
 ######################################################################################################################################################
 
 foreach ($s as $sql) {
-	print "---\n$sql;\n---\n";
+	if (!empty($param['debug']))
+		print "---\n$sql;\n---\n";
 	if (!empty($param['execute'])) {
-		print date('r')." (started)\n";
+		if (!empty($param['debug']))
+			print date('r')." (started)\n";
 		$db->Execute($sql);
-		print date('r')." (done)\n";
-		print "Rows Affected: ".$db->Affected_Rows()."\n";
+		if (!empty($param['debug'])) {
+			print date('r')." (done)\n";
+			print "Rows Affected: ".mysql_affected_rows()."\n";
+		}
 	}
 }
-print ".\n";
+if (!empty($param['debug']))
+	print ".\n";
 
 
 
