@@ -35,13 +35,25 @@ require_once("geograph/eventhandler.class.php");
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
 class RebuildUserSquares extends EventHandler
 {
+	function Execute($sql) {
+		$db=&$this->_getDB();
+
+		//$db->Execute($sql); return;
+
+		print "$sql; ";
+		$start = microtime(true);
+		$db->Execute($sql);
+		$end = microtime(true);
+		printf(" #... took %.3f seconds, %d affected rows\n\n", $end-$start, $db->Affected_Rows());
+	}
+
 	function processEvent(&$event)
 	{
 		//perform actions
 
 		$db=&$this->_getDB();
 
-		$db->Execute("DROP TABLE IF EXISTS user_gridsquare_tmp");
+		$this->Execute("DROP TABLE IF EXISTS user_gridsquare_tmp");
 
 		$create = "CREATE TABLE user_gridsquare_tmp
                                 (UNIQUE INDEX (user_id,`grid_reference`),INDEX(`grid_reference`))
@@ -54,44 +66,48 @@ class RebuildUserSquares extends EventHandler
 				WHERE \$where
                                 GROUP BY user_id,`grid_reference` ORDER BY NULL";
 
+		if (empty($event['event_param'])) //easy way of forcing a full build.
+			$user_gridsquare = $db->getRow("SHOW TABLE STATUS LIKE 'user_gridsquare'");
+
 		//FULL
 		if (false) {
 			$where = 1;
 			$sql = $create.$select;
-			$db->Execute(str_replace('$where',$where,$sql));
+			$this->Execute(str_replace('$where',$where,$sql));
 
 		//INCREMENTAL
-		} elseif (false) {
-		        $grs = $db_read->getCol("select grid_reference from gridimage_search where upd_timestamp >
-	                date_sub(now(),interval {$param['interval']}) group by grid_reference order by null");
+		} elseif ( !empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*6) ) {
+
+		        $grs = $db->getCol("select grid_reference from gridimage_search where upd_timestamp >
+	                date_sub(now(),interval 10 hour) group by grid_reference order by null");
 
 			$where = "grid_reference in ('".implode("','",$grs)."')";
 
-			$db->Execute("CREATE TABLE user_gridsquare_tmp LIKE user_gridsquare");
-			$db->Execute("INSERT INTO user_gridsquare_tmp SELECT * FROM user_gridsquare WHERE NOT ($where)");
+			$this->Execute("CREATE TABLE user_gridsquare_tmp LIKE user_gridsquare");
+			$this->Execute("INSERT INTO user_gridsquare_tmp SELECT * FROM user_gridsquare WHERE NOT ($where)");
 
 			$sql = $insert.$select;
-			$db->Execute(str_replace('$where',$where,$sql));
+			$this->Execute(str_replace('$where',$where,$sql));
 
 		//PIECEMEAL
 		} else {
-			$size = 1000;
+			$size = 100;
                         $users = $db->getOne("SELECT MAX(user_id) FROM gridimage_search");
 
                         $end = ceil($users/$size)*$size;
 			for($q=0;$q<$end;$q+=$size) {
+				$size += 1000; //as go, thogh in general newer contributors submit less, and there are less of them in each range.
+
                                 $where = sprintf("user_id BETWEEN %d AND %d",$q,$q+$size-1);
 
 				$sql = ($q?$insert:$create).$select;
 
-				$db->Execute(str_replace('$where',$where,$sql));
-
-				$size += 1000; //as go, thogh in general newer contributors submit less, and there are less of them in each range.
+				$this->Execute(str_replace('$where',$where,$sql));
 			}
 		}
 
-		$db->Execute("DROP TABLE IF EXISTS user_gridsquare");
-		$db->Execute("RENAME TABLE user_gridsquare_tmp TO user_gridsquare");
+		$this->Execute("DROP TABLE IF EXISTS user_gridsquare");
+		$this->Execute("RENAME TABLE user_gridsquare_tmp TO user_gridsquare");
 
 		//return true to signal completed processing
 		//return false to have another attempt later

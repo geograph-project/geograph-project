@@ -35,6 +35,18 @@ require_once("geograph/eventhandler.class.php");
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
 class RebuildUserStats extends EventHandler
 {
+	function Execute($sql) {
+		$db=&$this->_getDB();
+
+		//$db->Execute($sql); return;
+
+		print "$sql; ";
+		$start = microtime(true);
+		$db->Execute($sql);
+		$end = microtime(true);
+		printf(" #... took %.3f seconds, %d affected rows\n", $end-$start, $db->Affected_Rows());
+	}
+
 	function processEvent(&$event)
 	{
 		//perform actions
@@ -43,7 +55,7 @@ class RebuildUserStats extends EventHandler
 
 		$db->getOne("SELECT GET_LOCK('user_stat',3600)");
 
-		$db->Execute("DROP TABLE IF EXISTS user_stat_tmp");
+		$this->Execute("DROP TABLE IF EXISTS user_stat_tmp");
 
 		$user_gridsquare = $db->getRow("SHOW TABLE STATUS LIKE 'user_gridsquare'");
 
@@ -73,12 +85,12 @@ class RebuildUserStats extends EventHandler
 			$id_list = implode(',',$users);
 
 			//copy over unchanged data (ranks will be recalculated anyway!)
-			$db->Execute("INSERT INTO user_stat_tmp SELECT * FROM user_stat WHERE user_id NOT IN ($id_list,0)");
+			$this->Execute("INSERT INTO user_stat_tmp SELECT * FROM user_stat WHERE user_id NOT IN ($id_list,0)");
 
 			$crit = "user_id IN ($id_list)";
 
 			//add the changed users data
-			if (!empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*0.2) ) {
+			if (!empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*1.2) ) {
 				$this->insertFromUserGridsquare($crit);
 			} else {
 				$this->insertFromGridimageSearch($crit);
@@ -89,7 +101,7 @@ class RebuildUserStats extends EventHandler
 
 		} elseif (!empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*6) ) {
 
-                        $size = 1000;
+                        $size = 100;
                         $users = $db->getOne("SELECT MAX(user_id) FROM gridimage_search");
 
                         $end = ceil($users/$size)*$size;
@@ -97,20 +109,20 @@ class RebuildUserStats extends EventHandler
                         $db->Execute("ALTER TABLE user_stat_tmp DISABLE KEYS");
 
                         for($q=0;$q<$end;$q+=$size) {
+                                $size += 1000;
+
                                 $crit = sprintf("user_id BETWEEN %d AND %d",$q,$q+$size-1);
 
 				$this->insertFromUserGridsquare($crit);
-
-                                $size += 1000;
                         }
 
-                        $db->Execute("ALTER TABLE user_stat_tmp ENABLE KEYS");
+                        $this->Execute("ALTER TABLE user_stat_tmp ENABLE KEYS");
 
 		##############################################
 		// Or just create from scratch
 
 		} else {
-			$size = 1000;
+			$size = 100;
 			$users = $db->getOne("SELECT MAX(user_id) FROM gridimage_search");
 
 			$end = ceil($users/$size)*$size;
@@ -118,16 +130,16 @@ class RebuildUserStats extends EventHandler
 			$db->Execute("ALTER TABLE user_stat_tmp DISABLE KEYS");
 
 			for($q=0;$q<$end;$q+=$size) {
+				$size += 1000;
+
 				$crit = sprintf("user_id BETWEEN %d AND %d",$q,$q+$size-1);
 
 				$this->insertFromGridimageSearch($crit);
 
 				sleep(2);//allow held up threads a chance to run
-
-				$size += 1000;
 			}
 
-			$db->Execute("ALTER TABLE user_stat_tmp ENABLE KEYS");
+			$this->Execute("ALTER TABLE user_stat_tmp ENABLE KEYS");
 		}
 
 		##############################################
@@ -225,9 +237,7 @@ class RebuildUserStats extends EventHandler
 	}
 
 	function createTable() {
-		$db=&$this->_getDB();
-
-		$db->Execute("CREATE TABLE user_stat (
+		$this->Execute("CREATE TABLE user_stat (
 						`user_id` int(11) unsigned NOT NULL default '0',
 						`images` mediumint(5) unsigned NOT NULL default '0',
 						`squares` mediumint(5) unsigned NOT NULL default '0',
@@ -256,9 +266,7 @@ class RebuildUserStats extends EventHandler
 	}
 
 	function insertFromGridimageSearch($crit) {
-		$db=&$this->_getDB();
-
-		$db->Execute("INSERT INTO user_stat_tmp
+		$this->Execute("INSERT INTO user_stat_tmp
 				SELECT user_id,
 					count(*) as images,
 					count(distinct grid_reference) as squares,
@@ -288,9 +296,7 @@ class RebuildUserStats extends EventHandler
 	}
 
 	function insertFromUserGridsquare($crit) {
-		$db=&$this->_getDB();
-
-                $db->Execute("INSERT INTO user_stat_tmp
+                $this->Execute("INSERT INTO user_stat_tmp
 				SELECT user_id,
 					sum(imagecount) as images,
 					count(*) as squares,

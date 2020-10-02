@@ -35,6 +35,18 @@ require_once("geograph/eventhandler.class.php");
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
 class RebuildTagStat extends EventHandler
 {
+        function Execute($sql) {
+                $db=&$this->_getDB();
+
+                //$db->Execute($sql); return;
+
+                print "$sql; ";
+                $start = microtime(true);
+                $db->Execute($sql);
+                $end = microtime(true);
+                printf(" #... took %.3f seconds, %d affected rows\n\n", $end-$start, $db->Affected_Rows());
+        }
+
 	function processEvent(&$event)
 	{
 		//perform actions
@@ -60,17 +72,17 @@ WHERE \$where GROUP BY t1.tag_id ORDER BY NULL";
 			$max = $db->getOne("SELECT MAX(tag_id) FROM tag");
 			for($start=1;$start<$max;$start+=1000) {
 				$where = "t1.tag_id BETWEEN $start AND ".($start+999)." AND gridimage_id < 4294967296";
-				$db->Execute("REPLACE INTO tag_stat ".str_replace('$where',$where,$sql));
+				$this->Execute("REPLACE INTO tag_stat ".str_replace('$where',$where,$sql));
 			}
 
 			//delete any not updated! (must be from wholely deleted tags!)
-			$db->Execute("DELETE FROM tag_stat WHERE stat_updated < DATE_SUB(NOW(),INTERVAL 2 HOUR)");
+			$this->Execute("DELETE FROM tag_stat WHERE stat_updated < DATE_SUB(NOW(),INTERVAL 2 HOUR)");
 
 		} else {
 			$where = 'gridimage_id < 4294967296';
 
 			$db->Execute("DROP TABLE IF EXISTS tag_stat_tmp");
-			$db->Execute("CREATE TABLE tag_stat_tmp (primary key (`tag_id`),index (`rnd`)) ".str_replace('$where',$where,$sql));
+			$this->Execute("CREATE TABLE tag_stat_tmp (primary key (`tag_id`),index (`rnd`)) ".str_replace('$where',$where,$sql));
 			$db->Execute("DROP TABLE IF EXISTS tag_stat");
 			$db->Execute("RENAME TABLE tag_stat_tmp TO tag_stat");
 		}
