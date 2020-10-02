@@ -253,8 +253,8 @@ if ($template=='profile.tpl')
 	if ($CONF['template']=='archive') {
 		 $_GET['expand'] = true;
 	}
-	
-	if (!empty($_GET['expand']) || !empty($USER->expand_about)) {
+
+	if (!empty($_GET['expand']) || (!empty($USER->expand_about) && $USER->expand_about==="1") ) {
 		$cacheid .= "E";
 	}
 	if (isset($_GET['reject']) && empty($_GET['reject'])) {
