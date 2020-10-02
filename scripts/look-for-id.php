@@ -29,6 +29,11 @@ $param=array(
 	'column'=>'gridimage_id',
 );
 
+if (!empty($_SERVER['argv'][1]) && is_numeric($_SERVER['argv'][1])) {
+	$param['id'] = $_SERVER['argv'][1];
+	unset($_SERVER['argv'][1]); //avoid confusing hte normal parser!
+}
+
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
