@@ -1,3 +1,6 @@
 [submodule "src/sphinx-plugins"]
 	path = src/sphinx-plugins
 	url = https://github.com/geograph-project/sphinx-plugins.git
+[submodule "showcase"]
+	path = showcase
+	url = https://github.com/geograph-project/showcase-gallery
