@@ -47,7 +47,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/map.class.php');
 	require_once('geograph/mapmosaic.class.php');
 
-	if (!$db) {
+	if (empty($db)) {
 		$db = GeographDatabaseConnection(true);
 	}
 

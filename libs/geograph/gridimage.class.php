@@ -1092,7 +1092,7 @@ split_timer('gridimage'); //starts the timer
 						$this->original_height = $size[5] = $osize[1];
 
 						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]},original_width={$osize[0]}, original_height={$osize[1]}");
-					} else {
+					} elseif (!empty($size[0])) {
 						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
 					}
 					$src = 'file';

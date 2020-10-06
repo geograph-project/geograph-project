@@ -44,7 +44,7 @@ $cacheid = $hectad;
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
-	if (!$db) {
+	if (empty($db)) {
 		$db = GeographDatabaseConnection(true);
 	}
 

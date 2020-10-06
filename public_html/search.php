@@ -1301,12 +1301,14 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	}
 
 	if ($engine->criteria->user_id == $USER->user_id) {
-		if (!$db || $db->readonly) {
+		if (empty($db) || $db->readonly) {
 			$db=GeographDatabaseConnection(false);
 		}
-		$db->query("UPDATE queries SET use_timestamp = null WHERE id = $i");
-		if (!$db->Affected_Rows()) {
-			$db->query("UPDATE queries_archive SET use_timestamp = null WHERE id = $i");
+		if (empty($db->readonly)) { //not used yet, but ultimately we may get to stage that running on a readonly slave.
+			$db->query("UPDATE queries SET use_timestamp = null WHERE id = $i");
+			if (!$db->Affected_Rows()) {
+				$db->query("UPDATE queries_archive SET use_timestamp = null WHERE id = $i");
+			}
 		}
 	}
 
@@ -1364,7 +1366,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		$smarty->assign('searchtext', $q);
 	}
 	if (!$smarty->is_cached($template)) {
-		if (!isset($db)) {
+		if (empty($db)) {
 			$db = GeographDatabaseConnection(true);
 		}
 		//list of a few tags
@@ -1380,7 +1382,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		$smarty->assign_by_ref('featured',$arr2);
 	}
 	if ($USER->registered) {
-		if (!$db) {
+		if (empty($db)) {
 			$db = GeographDatabaseConnection(true);
 		}
 		if (isset($_GET['all'])) {
