@@ -69,6 +69,7 @@ class RebuildUserStats extends EventHandler
 
 		//create table
 		$db->Execute("CREATE TABLE user_stat_tmp LIKE user_stat");
+		$db->Execute("ALTER TABLE user_stat_tmp COMMENT=''");
 
 		##############################################
 		// Incremental Update on Recent Table
