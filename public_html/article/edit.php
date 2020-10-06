@@ -68,7 +68,7 @@ $cacheid = '';
 
 		if (count($page) && (
 				$page['user_id'] == $USER->user_id ||
-				$USER->hasPerm('moderator') ||
+				$isadmin ||
 				$page['approved'] == 2
 			) ) {
 

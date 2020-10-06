@@ -4,3 +4,4 @@
 [submodule "showcase"]
 	path = public_html/showcase
 	url = https://github.com/geograph-project/showcase-gallery
+	ignore = dirty
