@@ -11,6 +11,8 @@ if (empty($CONF['gallery_url'])) {
 	exit;
 }
 
+if ($CONF['template'] == 'ireland' && empty($_GET['crit']))
+	$_GET['crit'] = "Country:Republic of Ireland";
 
 customGZipHandlerStart();
 
@@ -132,17 +134,4 @@ function hideMenu() {
 
 </body>
 </html>
-
-
-<?
-
-exit;
-
-header("Status: 301 Moved Permanently");
-$link = "/";
-$link .= basename($_SERVER['SCRIPT_URL']);
-if ($_SERVER['QUERY_STRING'])
-	$link .= "?".$_SERVER['QUERY_STRING'];
-
-header("Location: https://www.geograph.org$link");
 
