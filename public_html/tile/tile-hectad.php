@@ -101,6 +101,8 @@ function call_with_results($data) {
 		$x = $row['x'];
 		$y = $row['y'];
 
+		if ($x == 4294967205) $x = -91; //manticore stores x,y in uint column, which overflows. only used for Rockall
+
                 //remove the internal origin
                 $x -= $CONF['origins'][$reference_index][0];
                 $y -= $CONF['origins'][$reference_index][1];

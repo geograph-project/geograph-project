@@ -117,6 +117,8 @@ function call_with_results($data) {
 		} else {
 			$x = $row['x'];
 			$y = $row['y'];
+
+	                if ($x == 4294967205) $x = -91; //manticore stores x,y in uint column, which overflows. only used for Rockall
 		}
 
                 $p1 = getPixCoord($x,$y,$ri); //getPixCoord gives us location of bottom left corner.
