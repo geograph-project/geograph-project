@@ -53,7 +53,7 @@ build/memgator:
       --message "Deployed by CI pipeline ${CI_PIPELINE_URL}"
       --watch
   rules:
-    - if: '$CI_COMMIT_BRANCH != $GEO_REGION && $CI_COMMIT_BRANCH != "british-isles-k8s"'
+    - if: '$CI_COMMIT_BRANCH != $GEO_REGION'
       when: never
     - when: manual
 
