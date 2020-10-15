@@ -1,18 +1,39 @@
 <?php
 
+//we expect $param already setup, but set some defaults, so doesn't need to be provided
+// we can't use the config files here, as this is LOADING the config! we could in theory read DocumentRoot/ServerName from /etc/apache2/sites-enabled/{*}.conf ??
+
 if (!isset($param))
 	$param = array();
 
-//we expect $param already setup, but set some defaults
-if (empty($param['dir']))
-        $param['dir'] ='/var/www/geograph_live'; //base installation dir
+//running inside a container
+if (!empty($_SERVER['CONFIG_FILE'])) {
+	$param['config']= $_SERVER['CONFIG_FILE'];
+	$param['dir'] = $_SERVER['BASE_DIR'];
+} else {
+	//base installation dir
+	if (empty($param['dir'])) {
+		if (strpos(__DIR__,'geograph_live'))
+		        $param['dir'] ='/var/www/geograph_live';
+		else
+			$param['dir'] ='/var/www/geograph_svn';
+	}
 
-if (empty($param['config']))
-        $param['config']='www.geograph.org.uk'; //effective config
+	//effective config
+	if (empty($param['config'])) {
+		if (strpos(__DIR__,'geograph_live'))
+	        	$param['config']='www.geograph.org.uk';
+		else
+			$param['config']='staging.geograph.org.uk';
+	}
+}
 
+
+//show script help?
 if (empty($param['help']))
-        $param['help']=0;              //show script help?
+        $param['help']=0;
 
+##########################################################
 
 //very simple argument parser
 for($i=1; $i<count($_SERVER['argv']); $i++)
