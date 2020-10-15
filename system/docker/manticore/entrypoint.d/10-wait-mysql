@@ -1,0 +1,25 @@
+#!/bin/sh
+set -eu
+
+tries=30
+
+for try in $(seq 1 $tries); do
+  if mysqladmin status \
+    --host="${MYSQL_HOST}" \
+    --user="${MYSQL_USER}" \
+    --password="${MYSQL_PASSWORD}" \
+    >/dev/null 2>&1
+  then
+    exit 0
+  fi
+
+  if [ $try -lt $tries ]; then
+    echo "Could not connect to MySQL; trying again in 5s... (${try}/${tries})" >&2
+    sleep 5
+  fi
+done
+
+echo "Could not connect to MySQL after ${tries} attempts. Giving up." >&2
+exit 1
+
+# vim: ai ts=2 sw=2 et sts=2 ft=sh

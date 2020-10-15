@@ -1,0 +1,5 @@
+---
+variables:
+  GEO_REGION: british-isles
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml

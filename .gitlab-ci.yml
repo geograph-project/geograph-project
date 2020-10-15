@@ -1,0 +1,125 @@
+---
+include:
+  - template: Workflows/Branch-Pipelines.gitlab-ci.yml
+  - local: /ci-build/variables.yaml
+
+variables:
+  FLUXCTL_IMAGE: fluxcd/fluxctl:1.20.2
+  FLUX_FORWARD_NAMESPACE: tcl-system
+
+stages:
+  - build
+  - staging
+  - production
+
+# Template for container builds
+.container_build:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - ash ci-build/kaniko.sh
+
+# Container build jobs
+build/carrot2-dcs:
+  extends: .container_build
+
+build/geograph:
+  extends: .container_build
+
+build/manticore:
+  extends: .container_build
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+
+build/memgator:
+  extends: .container_build
+
+# Template for deployments
+.k8s_deploy:
+  image: $FLUXCTL_IMAGE
+  environment:
+    name: $CI_JOB_NAME
+  variables:
+    FLUX_KIND: deployment
+  script:
+    - 'export COMPONENT="${CI_JOB_NAME#${CI_JOB_STAGE}/*}"'
+    - 'export IMAGE_NAME="${CI_REGISTRY_IMAGE}/${GEO_REGION}/${COMPONENT}"'
+    - fluxctl list-workloads -n ${KUBE_NAMESPACE}
+    - fluxctl list-images --workload ${KUBE_NAMESPACE}:${FLUX_KIND}/${COMPONENT}
+    - fluxctl release
+      --workload ${KUBE_NAMESPACE}:${FLUX_KIND}/${COMPONENT}
+      --update-image ${IMAGE_NAME}:$CI_COMMIT_SHORT_SHA
+      --user "${GITLAB_USER_NAME} <${GITLAB_USER_EMAIL}>"
+      --message "Deployed by CI pipeline ${CI_PIPELINE_URL}"
+      --watch
+
+# Deployments to staging environment
+.k8s_deploy_staging:
+  extends: .k8s_deploy
+  stage: staging
+  environment:
+    url: https://cloud.geograph.org.uk
+    kubernetes:
+      namespace: staging
+  when: manual
+
+staging/carrot2-dcs:
+  extends: .k8s_deploy_staging
+  needs:
+    - build/carrot2-dcs
+
+staging/geograph:
+  extends: .k8s_deploy_staging
+  needs:
+    - build/geograph
+
+staging/manticore:
+  extends: .k8s_deploy_staging
+  variables:
+    FLUX_KIND: statefulset
+  needs:
+    - build/manticore
+
+staging/memgator:
+  extends: .k8s_deploy_staging
+  needs:
+    - build/memgator
+
+# Deployments to production environment
+.k8s_deploy_production:
+  extends: .k8s_deploy
+  stage: production
+  environment:
+    url: https://www.geograph.org.uk/
+    kubernetes:
+      namespace: production
+  rules:
+    - if: '$CI_COMMIT_BRANCH != $GEO_REGION'
+      when: never
+    - when: manual
+
+production/carrot2-dcs:
+  extends: .k8s_deploy_production
+  needs:
+    - staging/carrot2-dcs
+
+production/geograph:
+  extends: .k8s_deploy_production
+  needs:
+    - staging/geograph
+
+production/manticore:
+  extends: .k8s_deploy_production
+  variables:
+    FLUX_KIND: statefulset
+  needs:
+    - staging/manticore
+
+production/memgator:
+  extends: .k8s_deploy_production
+  needs:
+    - staging/memgator
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml

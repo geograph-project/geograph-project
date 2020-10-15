@@ -1,0 +1,25 @@
+#!/bin/bash
+set -eu -o pipefail
+
+### Get a list of all the indexes missing on disk
+# This reads the indexes into a bash array. indextool prints the list as a
+# comma-separated string of quoted index names, so we have to strip the prefix,
+# split by ', ' (into lines), remove the surrounding quotes, then finally read
+# the lines into the array. The || true is needed because read returns 1 due to
+# reaching EOF.
+IFS=$'\n' read -d '' -r -a MISSING_INDEXES < <(
+  indextool --quiet --checkconfig \
+    --config /etc/sphinxsearch/sphinx.conf | \
+  awk -F ': ' '/missed index/ { print $2 }' | \
+  sed -e 's/, /\n/g' | \
+  sed -e "s/^'//g" -e "s/'$//g"
+) || true
+
+if [ ${#MISSING_INDEXES[@]} -ne 0 ]; then
+  echo "Building missing indexes:" "${MISSING_INDEXES[@]}" >&2
+  printf '%s\0' "${MISSING_INDEXES[@]}" | \
+    xargs --null --max-args=1 --max-procs=2 --verbose -- \
+    indexer --config /etc/sphinxsearch/sphinx.conf
+fi
+
+# vim: ai ts=2 sw=2 et sts=2 ft=sh
