@@ -321,7 +321,10 @@ if ($image->isValid())
 	if (!$smarty->is_cached($template, $cacheid))
 	{
 		//if ($CONF['template']!='archive') {
-			if (empty($db)) {
+			if (!empty($image->db) && !empty($image->db->realonly) && (empty($db) || empty($db->realonly))) {
+				//if the image has a readonly connection, we can use, lets do it!
+				$db = $image->db;
+			} elseif (empty($db)) {
 				$db = GeographDatabaseConnection(true);
 			}
 
