@@ -21,6 +21,8 @@ build:geograph:
 
 build:manticore:
   extends: .container_build
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
 
 build:memgator:
   extends: .container_build
