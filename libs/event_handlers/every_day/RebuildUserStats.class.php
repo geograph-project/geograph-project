@@ -207,16 +207,16 @@ class RebuildUserStats extends EventHandler
 		$db->Execute('INSERT INTO user_stat_tmp SET `'.implode('` = ?,`',array_keys($overall)).'` = ?',array_values($overall));
 
 	//add content data
-		$topusers=$db->GetAssoc("SELECT user_id,count(distinct if(source in ('blog','trip'),title,content_id)) as content
+		$this->Execute("create temporary table user_content_stat (primary key(user_id))
+			SELECT user_id,count(distinct if(source in ('blog','trip'),title,content_id)) as content
 			FROM content
 			WHERE source IN('article','gallery','help','blog','trip')
 			GROUP BY user_id
 			ORDER BY NULL");
-		foreach ($topusers as $user_id => $count) {
-			$db->query("UPDATE user_stat_tmp
-			SET content = $count
-			WHERE user_id = $user_id");
-		}
+
+		$this->Execute("update user_stat_tmp inner join user_content_stat using (user_id)
+			 set user_stat_tmp.content = user_content_stat.content");
+
 
 		$db->Execute("DROP TABLE IF EXISTS user_stat_old");
 
@@ -323,6 +323,17 @@ class RebuildUserStats extends EventHandler
                                 WHERE $crit
                                 GROUP BY user_id
                                 ORDER BY NULL");
+
+
+		$this->Execute("
+			create temporary table user_day_stat (primary key(user_id))
+			select user_id,count(distinct imagetaken) as days from gridimage_search
+			WHERE $crit group by user_id");
+
+		$this->Execute("update user_stat_tmp inner join user_day_stat using (user_id)
+			set user_stat_tmp.days = user_day_stat.days");
+
+		$this->Execute("drop temporary table user_day_stat");
 	}
 }
 
