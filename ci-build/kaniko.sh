@@ -6,7 +6,8 @@
 
 set -eu
 
-IMAGE_NAME="${CI_REGISTRY_IMAGE}/${GEO_REGION}/${CI_JOB_NAME#build:*}"
+COMPONENT="${CI_JOB_NAME#build/*}"
+IMAGE_NAME="${CI_REGISTRY_IMAGE}/${GEO_REGION}/${COMPONENT}"
 TAGS="$CI_COMMIT_SHORT_SHA $CI_COMMIT_REF_SLUG"
 
 CREATED_DATE="$(date --utc +%Y-%m-%dT%H:%M:%SZ)"
@@ -37,7 +38,7 @@ set -x
 # shellcheck disable=SC2046
 /kaniko/executor \
   --context . \
-  --dockerfile "system/docker/${CI_JOB_NAME#build:*}/Dockerfile" \
+  --dockerfile "system/docker/${COMPONENT}/Dockerfile" \
   --label org.opencontainers.image.created="$CREATED_DATE" \
   --label org.opencontainers.image.revision="$CI_COMMIT_SHA" \
   "$@" \

@@ -1,8 +1,14 @@
 ---
 include: ci-build/variables.yaml
 
+variables:
+  FLUXCTL_IMAGE: fluxcd/fluxctl:1.20.2
+  FLUX_FORWARD_NAMESPACE: tcl-system
+
 stages:
   - build
+  - staging
+  - production
 
 # Template for container builds
 .container_build:
@@ -13,18 +19,64 @@ stages:
   script:
     - ash ci-build/kaniko.sh
 
-build:carrot2-dcs:
+# Container build jobs
+build/carrot2-dcs:
   extends: .container_build
 
-build:geograph:
+build/geograph:
   extends: .container_build
 
-build:manticore:
+build/manticore:
   extends: .container_build
   variables:
     GIT_SUBMODULE_STRATEGY: normal
 
-build:memgator:
+build/memgator:
   extends: .container_build
+
+# Template for deployments
+.k8s_deploy:
+  image: $FLUXCTL_IMAGE
+  environment:
+    name: $CI_JOB_NAME
+  variables:
+    FLUX_KIND: deployment
+  script:
+    - 'export COMPONENT="${CI_JOB_NAME#${CI_JOB_STAGE}/*}"'
+    - 'export IMAGE_NAME="${CI_REGISTRY_IMAGE}/${GEO_REGION}/${COMPONENT}"'
+    - fluxctl list-workloads -n ${KUBE_NAMESPACE}
+    - fluxctl list-images --workload ${KUBE_NAMESPACE}:${FLUX_KIND}/${COMPONENT}
+    - fluxctl release
+      --workload ${KUBE_NAMESPACE}:${FLUX_KIND}/${COMPONENT}
+      --update-image ${IMAGE_NAME}:$CI_COMMIT_SHORT_SHA
+      --user "${GITLAB_USER_NAME} <${GITLAB_USER_EMAIL}>"
+      --message "Deployed by CI pipeline ${CI_PIPELINE_URL}"
+      --watch
+  rules:
+    - if: '$CI_COMMIT_BRANCH != $GEO_REGION && $CI_COMMIT_BRANCH != "british-isles-k8s"'
+      when: never
+    - when: manual
+
+.k8s_deploy_staging:
+  extends: .k8s_deploy
+  stage: staging
+  environment:
+    url: https://cloud.geograph.org.uk
+    kubernetes:
+      namespace: staging
+
+staging/carrot2-dcs:
+  extends: .k8s_deploy_staging
+
+staging/geograph:
+  extends: .k8s_deploy_staging
+
+staging/manticore:
+  extends: .k8s_deploy_staging
+  variables:
+    FLUX_KIND: statefulset
+
+staging/memgator:
+  extends: .k8s_deploy_staging
 
 # vim: ts=2 sw=2 et sts=2 ft=yaml
