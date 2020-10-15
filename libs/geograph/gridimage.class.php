@@ -1067,8 +1067,8 @@ split_timer('gridimage'); //starts the timer
 				$db->SetFetchMode($prev_fetch_mode);
 				if ($size) {
 					$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
-					$this->original_width = $size[4];
-					$this->original_height = $size[5];
+					$this->original_width = @$size[4];
+					$this->original_height = @$size[5];
 					$src = 'db';
 				} else {
 					$fullpath = $this->_getFullpath(2); //will fetch the file if needbe
@@ -1101,8 +1101,8 @@ split_timer('gridimage'); //starts the timer
 				$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
 			}
 			$this->cached_size = $size;
-			$this->original_width = $size[4];
-			$this->original_height = $size[5];
+			$this->original_width = @$size[4];
+			$this->original_height = @$size[5];
 		} else {
 			$size = array();
 			$size[3] = '';
