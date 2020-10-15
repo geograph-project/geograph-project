@@ -256,9 +256,9 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 			this._circle.removeFrom(this._map);
 		this._circle = L.circle([lat, lng], {radius: radius,opacity:0.2}).addTo(this._map);
 
-		var offset = $('#map').offset();
+		var offset = $(this._map._container).offset();
 		$('html, body').scrollTop(offset.top);
-		$('#map').addClass('click_smallmap');	//todo, shouldnt be hardcoded as #map!
+		$(this._map._container).addClass('click_smallmap');
 		this._map.invalidateSize();
 
 		this._mapBounds = this._map.getBounds();
@@ -512,7 +512,7 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 			this._circle.removeFrom(this._map);
 			this._circle = null;
 		}
-		$('#map').removeClass('click_smallmap');
+		$(this._map._container).removeClass('click_smallmap');
 		this._map.invalidateSize();
 
 		$('.leaflet-control-container .leaflet-top').show(); //hides top controls, but not attribution!
