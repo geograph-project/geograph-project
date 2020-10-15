@@ -1,0 +1,28 @@
+---
+include: ci-build/variables.yaml
+
+stages:
+  - build
+
+# Template for container builds
+.container_build:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - ash ci-build/kaniko.sh
+
+build:carrot2-dcs:
+  extends: .container_build
+
+build:geograph:
+  extends: .container_build
+
+build:manticore:
+  extends: .container_build
+
+build:memgator:
+  extends: .container_build
+
+# vim: ts=2 sw=2 et sts=2 ft=yaml
