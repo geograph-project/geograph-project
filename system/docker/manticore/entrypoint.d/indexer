@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eux
+
+# Checks that all indexes defined in the configuration are built
+MISSING_INDEXES=$(indextool --quiet --checkconfig \
+  --config /etc/sphinxsearch/sphinx.conf | \
+  awk -F"'" '/missed index/ {print $2}')
+
+if [ -n "$MISSING_INDEXES" ]; then
+  indexer --config /etc/sphinxsearch/sphinx.conf $MISSING_INDEXES
+fi
+
+# vim: ai ts=2 sw=2 et sts=2 ft=sh

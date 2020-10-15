@@ -1,0 +1,6 @@
+**/.*.swp
+**/.dockerignore
+**/.gitignore
+**/Dockerfile
+
+.git/
