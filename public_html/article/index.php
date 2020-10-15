@@ -46,27 +46,29 @@ if (isset($_GET['table'])) {
 if ($isadmin) {
 	if (!empty($_GET['page']) && preg_match('/^[\w-]+$/',$_GET['page'])) {
 		$db = GeographDatabaseConnection(false);
-		
-		$a = intval($_GET['approve']);	
-		
-		$sql = "UPDATE article SET approved = $a WHERE url = ".$db->Quote($_GET['page']);
+
+		$a = intval($_GET['approve']);
+
+		$sql = "UPDATE article SET approved = $a WHERE url = ".$db->Quote($_GET['page'])." AND user_id != ".intval($USER->user_id);
 		$db->Execute($sql);
 
-		//and back it up
-		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE url = ".$db->Quote($_GET['page']);
-		$db->Execute($sql);
-		
-		$article_id = $db->getOne("SELECT article_id FROM article WHERE url = ".$db->Quote($_GET['page']));
-		if ($a > 0) {
-			require_once('geograph/event.class.php');
-			new Event("article_updated", $article_id);
-		
-		} else {
-			$db->Execute("delete from content where foreign_id = $article_id and type = 'article'");
-			//todo maybe make it an event?
+		if ($db->Affected_Rows()) {
+			//and back it up
+			$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE url = ".$db->Quote($_GET['page']);
+			$db->Execute($sql);
+
+			$article_id = $db->getOne("SELECT article_id FROM article WHERE url = ".$db->Quote($_GET['page']));
+			if ($a > 0) {
+				require_once('geograph/event.class.php');
+				new Event("article_updated", $article_id);
+
+			} else {
+				$db->Execute("delete from content where foreign_id = $article_id and type = 'article'");
+				//todo maybe make it an event?
+			}
+
+			$smarty->clear_cache($template, $cacheid);
 		}
-		
-		$smarty->clear_cache($template, $cacheid);
 	}
 }
 
@@ -76,43 +78,42 @@ $data = $db->getRow("show table status like 'article'");
 
 //when this table was modified
 $mtime = strtotime($data['Update_time']);
-	
+
 //can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	
 	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
 		$where = "AND article.user_id = {$_GET['user_id']}";
 		$smarty->assign('extra', "&amp;user_id={$_GET['user_id']}");
 		$smarty->assign('desc', ", by specific user");
-	
+
 	} elseif (!empty($_GET['q']) && preg_match('/^[\w ]+$/',$_GET['q'])) {
 		$where = "AND title LIKE '%{$_GET['q']}%'";
 		$smarty->assign('extra', "&amp;q={$_GET['q']}");
 		$smarty->assign('desc', ", matching [ {$_GET['q']} ]");
-	
+
 	} elseif (!empty($_GET['cat_q']) && preg_match('/^\![\w ]+$/',$_GET['cat_q'])) {
 		$where = "AND category_name NOT LIKE '%".str_replace('!','',$_GET['cat_q'])."%'";
 		$smarty->assign('extra', "&amp;cat_q={$_GET['cat_q']}");
 		$smarty->assign('desc', ", not matching [ {$_GET['cat_q']} ]");
-	
+
 	} elseif (!empty($_GET['type']) && preg_match('/^\w+$/',$_GET['type'])) {
 		$where = "AND type = '{$_GET['type']}'";
 		$smarty->assign('extra', "&amp;type={$_GET['type']}");
 		$smarty->assign('desc', ", of type {$_GET['type']}");
-	
+
 	} elseif (!empty($_GET['cat_word']) && preg_match('/^\![\w ]+$/',$_GET['cat_word'])) {
 		$where = 'AND category_name NOT REGEXP '.$db->Quote('[[:<:]]'.str_replace('!','',$_GET['cat_word']).'[[:>:]]');
 		$smarty->assign('extra', "&amp;cat_word={$_GET['cat_word']}");
 		$smarty->assign('desc', ", category not matching word [ {$_GET['cat_word']} ]");
-	
+
 	} elseif (!empty($_GET['cat_q']) && preg_match('/^[\w ]+$/',$_GET['cat_q'])) {
 		$where = "AND category_name LIKE '%{$_GET['cat_q']}%'";
 		$smarty->assign('extra', "&amp;cat_q={$_GET['cat_q']}");
 		$smarty->assign('desc', ", category matching [ {$_GET['cat_q']} ]");
-	
+
 	} elseif (!empty($_GET['cat_word']) && preg_match('/^[\w -]+$/',$_GET['cat_word'])) {
 		$where = 'AND category_name REGEXP '.$db->Quote('[[:<:]]'.$_GET['cat_word'].'[[:>:]]');
 		$smarty->assign('extra', "&amp;cat_word={$_GET['cat_word']}");

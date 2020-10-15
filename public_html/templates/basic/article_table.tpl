@@ -98,17 +98,19 @@ Scope: <select name="scope" style="width:80px">
 		{/if}
 		[<a title="Edit History for {$item.title}" href="/article/history.php?page={$item.url}">History</a>]
 		{if $isadmin}
-			{if $item.approved > 0}
-				[<a href="/article/?page={$item.url}&amp;approve=0">Disapprove</a>]
-                                {if $item.approved != 2 && $item.edit_prompt}
+			{if $item.user_id != $user->user_id}
+				{if $item.approved > 0}
+					[<a href="/article/?page={$item.url}&amp;approve=0">Disapprove</a>]
+	                                {if $item.approved != 2 && $item.edit_prompt}
                                         [<a href="/article/?page={$item.url}&amp;approve=2">Enable Collaborative Editing</a>]
-                                {/if}
-			{else}
-				[<a href="/article/?page={$item.url}&amp;approve=1">Approve</a>{if $item.approved == 0 and $item.licence != 'none'}
-                                {if $item.approved != 2 && $item.edit_prompt}
-                                        [<a href="/article/?page={$item.url}&amp;approve=2">Approve + Enable Collaborative Editing</a>]
-                                {/if}
-				 <b>Ready to be Approved</b>{/if}]
+	                                {/if}
+				{else}
+					[<a href="/article/?page={$item.url}&amp;approve=1">Approve</a>{if $item.approved == 0 and $item.licence != 'none'}
+		                        {if $item.approved != 2 && $item.edit_prompt}
+	                                        [<a href="/article/?page={$item.url}&amp;approve=2">Approve + Enable Collaborative Editing</a>]
+		                        {/if}
+					 <b>Ready to be Approved</b>{/if}]
+				{/if}
 			{/if}
 			<br/>-- Version {$item.version}{if $item.modifier_id != $item.user_id} by <a href="/profile/{$item.modifier_id}" title="View Geograph Profile for {$item.modifier_realname}">{$item.modifier_realname}</a>{/if}
 		{/if}
