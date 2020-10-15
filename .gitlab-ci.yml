@@ -1,5 +1,7 @@
 ---
-include: ci-build/variables.yaml
+include:
+  - template: Workflows/Branch-Pipelines.gitlab-ci.yml
+  - local: /ci-build/variables.yaml
 
 variables:
   FLUXCTL_IMAGE: fluxcd/fluxctl:1.20.2
@@ -52,10 +54,6 @@ build/memgator:
       --user "${GITLAB_USER_NAME} <${GITLAB_USER_EMAIL}>"
       --message "Deployed by CI pipeline ${CI_PIPELINE_URL}"
       --watch
-  rules:
-    - if: '$CI_COMMIT_BRANCH != $GEO_REGION'
-      when: never
-    - when: manual
 
 # Deployments to staging environment
 .k8s_deploy_staging:
@@ -65,6 +63,7 @@ build/memgator:
     url: https://cloud.geograph.org.uk
     kubernetes:
       namespace: staging
+  when: manual
 
 staging/carrot2-dcs:
   extends: .k8s_deploy_staging
@@ -96,6 +95,10 @@ staging/memgator:
     url: https://www.geograph.org.uk/
     kubernetes:
       namespace: production
+  rules:
+    - if: '$CI_COMMIT_BRANCH != $GEO_REGION'
+      when: never
+    - when: manual
 
 production/carrot2-dcs:
   extends: .k8s_deploy_production
