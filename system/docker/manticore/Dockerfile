@@ -89,6 +89,13 @@ COPY system/docker/manticore/entrypoint /
 COPY system/docker/manticore/entrypoint.d/ /entrypoint.d/
 COPY system/docker/manticore/etc/ /etc/
 
+# Copy in the Manticore index configs and remove the ones we handle separately
+COPY system/sphinxserver/etc/sphinxsearch/sphinx.d/ /etc/sphinxsearch/sphinx.conf.d/
+RUN set -eux; \
+  cd /etc/sphinxsearch/sphinx.conf.d/; \
+  rm 0database.conf common.conf indexer.conf searchd.conf; \
+  :
+
 RUN set -eux; \
   mkdir /var/lib/manticore/binlog; \
   chown -R manticore: \
