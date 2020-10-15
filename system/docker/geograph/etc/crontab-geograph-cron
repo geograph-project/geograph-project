@@ -2,10 +2,10 @@
 # Basic event implemenation
 
 #fire a regular example event
-1         *       * * *   /usr/bin/php /var/www/geograph/scripts/fire-event.php --event=every_hour --priority=75
+#1         *       * * *   /usr/bin/php /var/www/geograph/scripts/fire-event.php --event=every_hour --priority=75
 
 #and process events when available
-*/5       *       * * *   curl -sSL -A "geograph-cron" "${CONTENT_HOST}/_scripts/process_events.php?start=1&max_execution=290&max_load=1.2"
+#*/5       *       * * *   curl -sSL -A "geograph-cron" "${CONTENT_HOST}/_scripts/process_events.php?start=1&max_execution=290&max_load=1.2"
 #Note this is done via HTTP (rather than CLI) so that the event is processed via a load balanced webserver.
 
 

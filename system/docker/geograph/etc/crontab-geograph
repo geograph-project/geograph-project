@@ -1,0 +1,3 @@
+##############################
+# Could place for example script to cleanup temporally files specifically in this container
+# Application level Cron scripts are managed in a seperate container
