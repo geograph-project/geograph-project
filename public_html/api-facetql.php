@@ -96,6 +96,7 @@ Example Queries:
 		        customExpiresHeader(60,true,true);
 			header("HTTP/1.1 503 Service Unavailable");
 			header('Content-type: application/json');
+			header('Access-Control-Allow-Origin: *');
 			die("{'error': 'Service Unavailable'}");
 		}
 
