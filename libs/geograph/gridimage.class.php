@@ -1595,15 +1595,18 @@ split_timer('gridimage'); //starts the timer
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 		}
 
-		if ($CONF['template']=='archive' || ((!empty($params['urlonly']) && $params['urlonly'] !== 2) && ($filesystem = GeographFileSystem()) && $filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))) {
-			$return=array();
-			$return['url']=$thumbpath;
-			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
-			} else {
-				$return['server']= $CONF['CONTENT_HOST'];
-			}
+		$return=array();
+		$return['url']=$thumbpath;
+		if (!empty($CONF['enable_cluster'])) {
+			$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
+		} else {
+			$return['server']= $CONF['CONTENT_HOST'];
+		}
+		if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
 			$return['server'] = str_replace('http://','https://',$return['server']);
+
+
+		if ($CONF['template']=='archive' || ((!empty($params['urlonly']) && $params['urlonly'] !== 2) && ($filesystem = GeographFileSystem()) && $filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))) {
 			return $return;
 		}
 
@@ -1627,17 +1630,10 @@ split_timer('gridimage'); //starts the timer
 		}
 
 		if ($size) {
-			$return=array();
-			$return['url']=$thumbpath;
+			if (empty($this->title) && empty($this->realname)) //if we dont have these, we not creating proper html anyway
+				return $return;
 
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.htmlentities2($this->realname);
-
-			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
-			} else {
-				$return['server']= $CONF['CONTENT_HOST'];
-			}
-			$return['server'] = str_replace('http://','https://',$return['server']);
 
 			$thumbpath = $return['server'].$thumbpath;
 
@@ -1822,8 +1818,8 @@ split_timer('gridimage','after-unlock',$thumbpath); //logs the wall time
 			break; //using while for a lock/retry loop, but dont actully want to loop normally
 		}
 
-		$return=array();
-		$return['url']=$thumbpath;
+		if (empty($this->title) && empty($this->realname)) //if we dont have these, we not creating proper html anyway
+			return $return;
 
 		if ($thumbpath=='/photos/error.jpg')
 		{
@@ -1832,13 +1828,8 @@ split_timer('gridimage','after-unlock',$thumbpath); //logs the wall time
 		else
 		{
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+
 			$size=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath,2);
-			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
-			} else {
-				$return['server']= $CONF['CONTENT_HOST'];
-			}
-			$return['server'] = str_replace('http://','https://',$return['server']);
 
 			$thumbpath = $return['server'].$thumbpath;
 
