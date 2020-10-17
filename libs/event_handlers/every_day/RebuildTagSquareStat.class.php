@@ -41,6 +41,14 @@ class RebuildTagSquareStat extends EventHandler
 
 		$db=&$this->_getDB();
 
+                if (!$db->getOne("SELECT GET_LOCK('RebuildTagSquareStat',10)")) {
+                        //only execute if can get a lock
+                        $this->_output(2, "Failed to get Lock");
+                         return false;
+                }
+
+		##################################################
+		# define the creation query
 
 		$sql = "SELECT tag_id, gi.user_id, grid_reference, COUNT(*) AS images
 			FROM gridimage_tag
@@ -49,32 +57,45 @@ class RebuildTagSquareStat extends EventHandler
 			GROUP BY tag_id, gi.user_id, grid_reference
 			ORDER BY NULL";
 
+		##################################################
+		# create the table if doesnt exist
 
 		if (!$db->getOne("show tables like 'tag_square_stat'")) {
 			$prefix = $db->GetOne("select prefix from gridprefix where landcount > 0 order by landcount");
                         $where = "grid_reference LIKE ".$db->Quote("{$prefix}____");
 
-//print "000$prefix ";
-
-			$db->Execute("CREATE TABLE tag_square_stat (index (`tag_id`)) ".str_replace('$where',$where,$sql)) or die(mysql_error());
+			//for now use MyISAM, as it was optimized that way, and uses disable/enable keys.
+			// there is no primary key!
+			$this->Execute("CREATE TABLE tag_square_stat (index (`tag_id`)) ENGINE=myisam ".str_replace('$where',$where,$sql)) or die(mysql_error());
 		}
 
+		##################################################
+		# create the temporaly table
 
 		$db->Execute("DROP TABLE IF EXISTS tag_square_stat_tmp");
 
 		$db->Execute("CREATE TABLE tag_square_stat_tmp LIKE tag_square_stat");
 		$db->Execute("ALTER TABLE tag_square_stat_tmp DISABLE KEYS");
 
+		##################################################
+		# fill the tempory table
+
                	$prefixes = $db->GetCol("select prefix from gridprefix where landcount > 0");
        	        foreach ($prefixes as $prefix) {
-//print "$prefix ";
                         $where = "grid_reference LIKE ".$db->Quote("{$prefix}____");
-			$db->Execute("INSERT INTO tag_square_stat_tmp ".str_replace('$where',$where,$sql)) or die(mysql_error());
+			$this->Execute("INSERT INTO tag_square_stat_tmp ".str_replace('$where',$where,$sql)) or die(mysql_error());
 		}
-//print "done\n";
+
+		##################################################
+		# swap the tables into place
+
 		$db->Execute("ALTER TABLE tag_square_stat_tmp ENABLE KEYS");
 		$db->Execute("DROP TABLE IF EXISTS tag_square_stat");
 		$db->Execute("RENAME TABLE tag_square_stat_tmp TO tag_square_stat");
+
+		##################################################
+
+		$db->Execute("DO RELEASE_LOCK('RebuildTagSquareStat')");
 
 		//return true to signal completed processing
 		//return false to have another attempt later

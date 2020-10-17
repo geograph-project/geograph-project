@@ -43,6 +43,12 @@ class RebuildContentDupDelta extends EventHandler
 
 		$db=&$this->_getDB();
 
+                if (!$db->getOne("SELECT GET_LOCK('RebuildContentDup',10)")) {
+                        //only execute if can get a lock
+                        $this->_output(2, "Failed to get Lock");
+                         return false;
+                }
+
 		$db->Execute("DROP TABLE IF EXISTS `content_tmp`");
 		$db->Execute("CREATE TABLE `content_tmp` LIKE `content`");
 
@@ -180,6 +186,8 @@ ON DUPLICATE KEY UPDATE
 		$db->Execute("delete content.* from content left join geobb_topics on (foreign_id = topic_id) where ( topic_id is null OR forum_id NOT in(6,11) ) and source in ('themed','gallery')");
 
 		$db->Execute("DROP TABLE `content_tmp`");
+
+		$db->Execute("DO RELEASE_LOCK('RebuildContentDup')");
 
 		//return true to signal completed processing
 		//return false to have another attempt later

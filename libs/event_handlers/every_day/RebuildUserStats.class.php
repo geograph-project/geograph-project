@@ -35,18 +35,6 @@ require_once("geograph/eventhandler.class.php");
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
 class RebuildUserStats extends EventHandler
 {
-	function Execute($sql) {
-		$db=&$this->_getDB();
-
-		//$db->Execute($sql); return;
-
-		print "$sql; ";
-		$start = microtime(true);
-		$db->Execute($sql);
-		$end = microtime(true);
-		printf(" #... took %.3f seconds, %d affected rows\n", $end-$start, $db->Affected_Rows());
-	}
-
 	function processEvent(&$event)
 	{
 		//perform actions
