@@ -101,18 +101,72 @@ print "</pre>";
 		$str = preg_replace('/[\w:\/\.]*\/(\d{6,7})_\w{8}(_\w+)?\.jpg/','$1',$_POST['image_url']); //replace any thumbnail urls with just the id.
         	$updates["gridimage_id"] = trim(preg_replace('/[^\d]+/',' ',$str));
 
-		$updates["affected"] = implode(', ',$_POST['affected']);
-		$updates["page_url"] = $_POST['page_url'];
+		if (!empty($_POST['affected']))
+			$updates["affected"] = implode(', ',$_POST['affected']);
+
+		if (!empty($_POST['page_url']))
+			$updates["page_url"] = $_POST['page_url'];
                 $updates["user_id"] = intval($USER->user_id);
 
 		$db->Execute('INSERT INTO image_report_form SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
-		print "Thank you, report recorded for {$updates["gridimage_id"]}";
+		print "<p>Thank you, report recorded for {$updates["gridimage_id"]}</p>";
+
+		////////////////////////////////////////////////////////
+
+		ob_start();
+                debug_print_backtrace();
+                print "\n\nHost: ".`hostname`."\n\n";
+
+                print_r($updates);
+
+		if (!empty($updates["gridimage_id"])) {
+			$image = new Gridimage($updates['gridimage_id']);
+			$path = $image->_getFullpath(true);
+		        print "$path\n";
+			check_path($CONF['STATIC_HOST'],$path,$updates);
+
+		        $image->_getFullSize(); //just sets orginal_width
+
+			if ($image->original_width) {
+	                        $path = $image->getLargestPhotoPath(false); //true, gets the URL
+			        print "$path\n";
+				check_path($CONF['STATIC_HOST'],$path,$updates);
+			}
+
+		        if (strpos($updates['affected'],'120px')!== FALSE) {
+		                $thumbw=120; $thumbh=120;
+
+		                $resized = $image->getThumbnail($thumbw,$thumbh, 2);
+		                print_r($resized);
+				check_path($resized['server'],$resized['url'],$updates);
+		        }
+		        if (strpos($updates['affected'],'213px')!== FALSE) {
+		                $thumbw=213; $thumbh=160;
+
+		                $resized = $image->getThumbnail($thumbw,$thumbh, 2);
+		                print_r($resized);
+				check_path($resized['server'],$resized['url'],$updates);
+		        }
+
+		}
+		$con = ob_get_clean();
+
+                mail('geograph@barryhunter.co.uk','[Geograph] Failed Image Report '.date('r'),$con);
+
+		////////////////////////////////////////////////////////
+
 	}
 
 }
 
+function check_path($server,$path, $row) {
+        $cmd = "ls -l {$_SERVER['DOCUMENT_ROOT']}$path";
+        print "$cmd\n";
+        passthru($cmd);
 
-
+	$url = $server.$path;
+        print "$url\n";
+}
 
 ?>
 <form method=post>
