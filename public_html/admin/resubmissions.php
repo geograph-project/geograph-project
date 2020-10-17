@@ -127,17 +127,6 @@ if (isset($_POST['gridimage_id']))
 				//save the pending as original
 				$image->storeOriginal($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl);
 
-				//send a copy to Amazon (only used if GeoGridFS not used)
-				if (!empty($CONF['awsAccessKey'])) {
-
-					$image->originalUrl = 	$image->_getOriginalpath(true,false,'_original');
-
-					require_once("3rdparty/S3.php");
-
-					$s3 = new S3($CONF['awsAccessKey'], $CONF['awsSecretKey'], false);
-					$ok = $s3->putObjectFile($_SERVER['DOCUMENT_ROOT'].$image->originalUrl, $CONF['awsS3Bucket'], preg_replace("/^\//",'',$image->originalUrl), S3::ACL_PRIVATE);
-				}
-
 				//refresh the preview image
 				if ($image->previewUrl != "/photos/error.jpg") {
 					if (!empty($_POST['confirm'])) {
