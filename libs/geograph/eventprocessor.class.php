@@ -304,7 +304,7 @@ class EventProcessor
 				where (
 						status = 'pending'
 						or (status = 'in_progress' and updated < date_sub(now(),interval 6 hour))
-				      ) $attemptfilter
+				      ) $where
 				order by priority, posted limit 1");
 
 			if ($event)

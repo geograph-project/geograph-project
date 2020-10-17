@@ -92,7 +92,7 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 			if (preg_match('/<div style="text-align:right"><a href="\/profile\/(\d+)">[\w ]+<\/a>/',$content,$matches)) {
 				$updates[] = "`user_id` = {$matches[1]}";
 			} elseif ($username) {
-				$user_id = $db->getOne("select user_id from user where rights like '%admin%' and (realname like '%$username%' OR nickname like '%$username%')");
+				$user_id = $db->getOne("select user_id from user where (realname = '$username' OR nickname = '$username')");
 				$updates[] = "`user_id` = {$user_id}";
 			}
 
