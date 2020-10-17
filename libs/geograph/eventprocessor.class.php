@@ -139,8 +139,8 @@ class EventProcessor
 
 		if (!empty($this->current_event_id))
 		{
-			$this->logdb->Execute("insert into event_log(event_id, logtime,verbosity, log) values ".
-			"({$this->current_event_id}, now(), $level, ".$this->logdb->Quote($text).")");
+			$this->logdb->Execute("insert into event_log(event_id, logtime, verbosity, log, pid) values ".
+			"({$this->current_event_id}, now(), $level, ".$this->logdb->Quote($text).", ".getmypid().")");
 		}
 	}
 

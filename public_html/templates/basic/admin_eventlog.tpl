@@ -51,13 +51,14 @@ td.verbose
 
 <table class="report" style="font-size:0.7em">
 <thead>
-<tr><td>Time</td><td>Verbosity</td><td >Entry</td></tr>
+<tr><td>Time</td><td>PID</td><td>Verbosity</td><td >Entry</td></tr>
 </thead>
 <tbody>
 {if $logs}
 	{foreach from=$logs item=log}
 	<tr>
-	<td>{$log.logtime}</td>
+	<td style="white-space:nowrap">{$log.logtime}</td>
+	<td>{$log.pid}</td>
 	<td>{$log.verbosity}</td>
 	<td class="{$log.verbosity}">{$log.log}</td>
 	</tr>
