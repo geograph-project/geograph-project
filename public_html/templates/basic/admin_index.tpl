@@ -25,8 +25,7 @@
 	<li><a href="/admin/moderation.php">Moderate</a> new photo submissions (<span><a href="/admin/moderation.php?review=1" style="color:gray">Review</a>)</span><br/>
 	<b>[{$images_pending.count} pending, {$images_pending_available} available to moderate, oldest is {$images_pending.age/3600|thousends} hours]</b></li>
 
-<li style=color:red>Note: If find a broken or missing image, please in the first instance report it via {external href="https://docs.google.com/forms/d/e/1FAIpQLScjqdBFwQrC_zOtrD3S0JYYUJqMa_OS9a-M8Dj6jIykKvaujA/viewform" text="this report form"}. (this form can be posted publically for anyone to use, not just for moderators)</li>
-
+<li style=color:red>Note: If find a broken or missing image, please in the first instance report it via <a href="/stuff/image_report_form.php">Image Report Form</a>. (this form can be posted publically for anyone to use, not just for moderators)</li>
 
 
 	{if $ci_pending}
