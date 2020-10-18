@@ -51,17 +51,20 @@ td.verbose
 
 <table class="report" style="font-size:0.7em">
 <thead>
-<tr><td>Time</td><td>PID</td><td>Verbosity</td><td >Entry</td></tr>
+<tr><td>Time</td><td>Delta</td><td>Verbosity</td><td>PID</td><td >Entry</td></tr>
 </thead>
 <tbody>
 {if $logs}
+	{assign var="last" value=$logs.0.logtime|date_format:'%s'}
 	{foreach from=$logs item=log}
-	<tr>
-	<td style="white-space:nowrap">{$log.logtime}</td>
-	<td>{$log.pid}</td>
-	<td>{$log.verbosity}</td>
-	<td class="{$log.verbosity}">{$log.log}</td>
-	</tr>
+		<tr>
+			<td style="white-space:nowrap">{$log.logtime}</td>
+			<td align=right>+{math equation="t-l" t=$log.logtime|date_format:'%s' l=$last}</td>
+			<td>{$log.verbosity}</td>
+			<td>{$log.pid}</td>
+			<td class="{$log.verbosity}">{$log.log}</td>
+		</tr>
+		 {assign var="last" value=$log.logtime|date_format:'%s'}
 	{/foreach}
 
 {else}
