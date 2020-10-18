@@ -38,7 +38,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
 
-$filename=sprintf('%s/public_html/sitemap/credits.html', $param['dir']); 
+$filename=sprintf('%s/public_html/sitemap/credits.html', $param['dir']);
 $fh=fopen($filename, "w");
 
 fprintf($fh, "<html><head><title>Contributor List for Geograph Britain and Ireland</title>\n".
@@ -49,15 +49,14 @@ fprintf($fh, "<html><head><title>Contributor List for Geograph Britain and Irela
 		"<p>As at ".date('r')." <small>(page updated once a day)</small></p>".
 		"<p><a href=\"/\">back to Homepage</a> | <a href=\"/credits/\">back to Credits page</a></p><hr/>".
 		"<p align=\"center\">");
-		
 
 $recordSet = $db->Execute("SELECT user_id,realname,nickname,images FROM user INNER JOIN user_stat USING (user_id) ORDER BY realname");
-while (!$recordSet->EOF) 
+while (!$recordSet->EOF)
 {
 	$r = $recordSet->fields;
-	
+
 	$r['realname'] = preg_replace('/ +/','&middot;',trim($r['realname']));
-	
+
 	fprintf($fh,'&nbsp;<a href="/profile/%s" title="%s, %s images">%s</a><small>&nbsp;[%s]</small> &nbsp;',
 		$r['user_id'],
 		htmlentities2($r['nickname']),
@@ -75,4 +74,4 @@ fprintf($fh, "</p>\n<hr/><p><a href=\"/\">back to Homepage</a> | <a href=\"/cred
 
 //finalise file
 fprintf($fh, '</body></html>');
-fclose($fh); 
+fclose($fh);

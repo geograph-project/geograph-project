@@ -41,12 +41,11 @@ $urls_per_sitemap=1000;
 
 //how many sitemap files must we write?
 printf("Counting users...\r");
-$images=$db->GetOne("select count(*) from user_stat");
+$images=$db->GetOne("select count(*) from user_stat u inner join gridimage_search gi on(u.last = gridimage_id) where u.user_id NOT IN (0,1695) and gi.reference_index = 1");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
-$last_percent=0;
-$percent=0;
+$percent=$last_percent=0;
 $count=0;
 for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 {

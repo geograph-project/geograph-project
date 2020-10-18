@@ -90,7 +90,7 @@ $images=$db->GetOne("select count(*) from content where source IN('article','gal
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
-$last_percent=0;
+$percent=$last_percent=0;
 $count=0;
 for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 {

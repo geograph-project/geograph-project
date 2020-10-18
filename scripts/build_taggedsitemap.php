@@ -37,7 +37,7 @@ printf("Counting tags...\r");
 $images=$db->GetOne("select count(*) from tag_stat where `count` >= 3 AND users>1");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
-$last_percent=0;
+$percent=$last_percent=0;
 $count=0;
 for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++) {
 

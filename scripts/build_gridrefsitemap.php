@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: build_htmlsitemap.php 6622 2010-04-10 13:35:13Z barry $
+ * $Id: build_gridsitemap.php 6622 2010-04-10 13:35:13Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -21,27 +21,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
-############################################
-
-//these are the arguments we expect
-$param=array();
-
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-############################################
+//--------------------------------------------
+// nothing below here should need changing
 
 $db = GeographDatabaseConnection(true);
-$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-
-//this upper limit is set by google
+//set this low - to try it out...
 $urls_per_sitemap=50000;
 
 //how many sitemap files must we write?
-printf("Counting images...\r");
-$images=$db->GetOne("select count(*) from kmlcache where rendered = 1 and filename like '/kml/__/%'");
+printf("Counting square...\r");
+$images=$db->GetOne(" select count(*) from gridsquare where reference_index = 1 and imagecount > 0");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
@@ -50,9 +43,9 @@ $count=0;
 for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 {
 	//prepare output file and query
-	printf("Preparing sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
+	printf("Preparing grid sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
 
-	$filename=sprintf('%s/public_html/sitemap/sitemap%04d.xml', $param['dir'], $sitemap);
+	$filename=sprintf('%s/public_html/sitemap/root/sitemap-grid%04d.xml', $param['dir'], $sitemap);
 	$fh=fopen($filename, "w");
 
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -61,31 +54,28 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$maxdate="";
 
 	$offset=($sitemap-1)*$urls_per_sitemap;
-	$recordSet = $db->Execute(
-		"select filename,date(ts) as ts_date ".
-		"from kmlcache ".
-		"where rendered = 1 and filename like '/kml/__/%' ".
-		"order by level ".
+	$recordSet = &$db->Execute(
+		"select grid_reference,date(max(upd_timestamp)) as moddate ".
+		"from gridimage_search gi ".
+		"where reference_index = 1 ".
+		"group by grid_reference ".
 		"limit $offset,$urls_per_sitemap");
 
 	//write one <url> line per result...
 	while (!$recordSet->EOF)
 	{
 		//figure out most recent update
-		$date=$recordSet->fields['ts_date'];
+		$date=$recordSet->fields['moddate'];
 
 		if (strcmp($date,$maxdate)>0)
 			$maxdate=$date;
 
-		$file = str_replace("kml",'sitemap',$recordSet->fields['filename']);
-		$file = str_replace("kmz",'html',$file);
-
 		fprintf($fh,"<url>".
-			"<loc>%s</loc>".
+			"<loc>https://{$param['config']}/gridref/%s</loc>".
 			"<lastmod>%s</lastmod>".
 			"<changefreq>monthly</changefreq>".
 			"</url>\n",
-			"http://".$_SERVER['HTTP_HOST'].$file,
+			$recordSet->fields['grid_reference'],
 			$date
 			);
 
@@ -94,7 +84,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 		if ($percent!=$last_percent)
 		{
 			$last_percent=$percent;
-			printf("Writing sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
+			printf("Writing grid sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
 		}
 
 		$recordSet->MoveNext();
@@ -112,10 +102,11 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 	//gzip it
 	`gzip $filename -f`;
+	touch("$filename.gz",$unixtime); //weird (bug? possibl in GeogridFS!), if gzip is overwriting a file, it doesn't perserve the timestamp!
 }
 
 //now we write an index file pointing to our generated ones above
-$filename=sprintf('%s/public_html/sitemap/sitemap.xml', $param['dir']);
+$filename=sprintf('%s/public_html/sitemap/root/sitemap-grid.xml', $param['dir']);
 $fh=fopen($filename, "w");
 
 fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -125,15 +116,16 @@ for ($s=1; $s<=$sitemaps; $s++)
 {
 	fprintf($fh, "<sitemap>");
 
-	$fname=sprintf("sitemap%04d.xml.gz", $s);
+	$fname=sprintf("sitemap-grid%04d.xml.gz", $s);
 
-	$mtime=filemtime($param['dir']."/public_html/sitemap/".$fname);
+	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
 
-	fprintf($fh, "<loc>http://{$_SERVER['HTTP_HOST']}/sitemap/%s</loc>", $fname);
+	fprintf($fh, "<loc>https://{$param['config']}/%s</loc>", $fname);
 	fprintf($fh, "<lastmod>$mtimestr</lastmod>", $fname);
 	fprintf($fh, "</sitemap>\n");
 }
 
 fprintf($fh, '</sitemapindex>');
+fclose($fh);
 

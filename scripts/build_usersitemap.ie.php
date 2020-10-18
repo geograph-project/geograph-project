@@ -46,8 +46,7 @@ $images=$db->GetOne(" select count(distinct user_id) from gridimage_search where
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
-$last_percent=0;
-$percent=0;
+$percent=$last_percent=0;
 $count=0;
 for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 {
