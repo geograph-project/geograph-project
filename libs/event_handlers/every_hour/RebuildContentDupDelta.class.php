@@ -57,7 +57,7 @@ class RebuildContentDupDelta extends EventHandler
 
 #######################
 #BLOG
-		$db->Execute("
+		$this->Execute("
 INSERT INTO `content_tmp`
 SELECT 
 	NULL AS content_id, 
@@ -88,7 +88,7 @@ AND updated > DATE_SUB(NOW(),INTERVAL 2 HOUR)
 
 #######################
 #SNIPPET
-		$db->Execute("
+		$this->Execute("
 INSERT INTO `content_tmp`
 SELECT 
 	NULL AS content_id, 
@@ -124,7 +124,7 @@ ORDER BY NULL
 #####################################
 # GEO-TRIPS
 
-                $db->Execute("
+                $this->Execute("
 INSERT INTO `content_tmp`
 SELECT
         NULL AS content_id,
@@ -156,14 +156,14 @@ WHERE t.updated > UNIX_TIMESTAMP(DATE_SUB(NOW(),INTERVAL 2 HOUR))
 
 #Tidy up....
 
-                $db->Execute("
+                $this->Execute("
 UPDATE `content_tmp` ct INNER JOIN `content` c USING (gridsquare_id)
 SET ct.wgs84_lat = c.wgs84_lat, ct.wgs84_long = c.wgs84_long, ct.sequence = c.sequence
 WHERE ct.wgs84_lat = 0 AND ct.gridsquare_id > 0
 		");
 
 
-		$db->Execute("
+		$this->Execute("
 INSERT INTO `content`
 SELECT * FROM `content_tmp` ct
 ON DUPLICATE KEY UPDATE
@@ -183,7 +183,7 @@ ON DUPLICATE KEY UPDATE
         wgs84_long = ct.wgs84_long
 		");
 
-		$db->Execute("delete content.* from content left join geobb_topics on (foreign_id = topic_id) where ( topic_id is null OR forum_id NOT in(6,11) ) and source in ('themed','gallery')");
+		$this->Execute("delete content.* from content left join geobb_topics on (foreign_id = topic_id) where ( topic_id is null OR forum_id NOT in(6,11) ) and source in ('themed','gallery')");
 
 		$db->Execute("DROP TABLE `content_tmp`");
 
