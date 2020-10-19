@@ -217,7 +217,7 @@ while (!$recordSet->EOF)
 						}
 						print "CREATED<pre>".print_r($row,1)."</pre>";
 						$db->Execute('INSERT INTO gridimage_link SET `'.implode('` = ?,`',array_keys($row)).'` = ? ON DUPLICATE KEY UPDATE gridimage_link_id = LAST_INSERT_ID(gridimage_link_id), last_checked = ? ',array_merge(array_values($row),array($row['last_checked'])) );
-						$parent_link_id = mysql_insert_id();
+						$parent_link_id = $db->Insert_ID();
 						$done_urls[$url2] = 1;
 					}
 				}
