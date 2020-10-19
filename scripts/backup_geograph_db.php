@@ -111,31 +111,46 @@ $status = getAssoc("SHOW TABLE STATUS");
 
 $tables = getAssoc("SELECT * FROM _tables ORDER BY table_name"); //useful trick to put _tables at the end :)
 
-foreach ($tables as $table => $data) {
-	$s = $status[$table];
+foreach ($status as $table => $s) {
+        $data = isset($tables[$table])?$tables[$table]:array('backedup' => 0, 'type'=>'unknown', 'backup'=>'?');
 
 	$backup = false;
+	if ($data['backup'] == 'N') {
+		//actully we will backup these sometimes! But note we dont save history!
+		if (rand(1,3) == 3) {
+			if ($s['Update_time'] > $data['backedup']) { $backup = true; }
+		}
+	} else {
+		switch($data['type']) {
+			//backp these always!
+			case 'primary_archive': //TODO, check a primary key and include a WHERE key > x onto the dump?
+			case 'primary':	if ($s['Update_time'] > $data['backedup']) { $backup = true; } break;
 
-	switch($data['type']) {
+			//only back these up once a week
+			case 'secondary': if (date('N') == 7 && $s['Update_time'] > $data['backedup']) { $backup = true; } break;
 
-		case 'primary_archive': //TODO, check a primary key and include a WHERE key > x onto the dump?
+			//only backup these once
+			case 'derivied':
+			case 'old':
+			case 'temp': if (empty($data['backedup']) || $data['backedup'] < '1000-00-00') {	$backup = true; } break;
 
-		case 'primary':	if ($s['Update_time'] > $data['backedup'] && $data['backup'] != 'N') { $backup = true; } break;
-
-		//only back these up once a week
-		case 'secondary': if (date('N') == 7 && $s['Update_time'] > $data['backedup']) { $backup = true; } break;
-
+			//backup everything else as needed. (static rarely change anyway, and best to backup unknown in case)
+			case 'static':
+			case 'unknown':
+			default: if ($s['Update_time'] > $data['backedup']) { $backup = true; } break;
+		}
 	}
 
 	if ($backup) {
 		//create the SQL before dumping the table, so updates happen after are caught in next backip
 		$sql = "UPDATE `_tables` SET `backedup` = '".date('Y-m-d H-i-s')."' WHERE `table_name` = '".mysql_real_escape_string($table)."'";
 
-		if (!is_dir($folder.$table.'/')) {
+		if (!is_dir($folder.$table.'/'))
 			mkdir($folder.$table.'/');
-		}
 
-		if ($data['shard']) {
+		if (false && $data['shard']) {
+			//shard feature - this was only beta quality and not used any more!
+
 			$desc = getAssoc("DESCRIBE $table");
 			foreach ($desc as $column => $info) {
 				if ($info['Key'] == 'PRI') {
@@ -146,10 +161,12 @@ foreach ($tables as $table => $data) {
 			$mm = getAssoc("SELECT 1 as d,MIN($key) AS `min`,MAX($key) AS `max` FROM $table");
 			$mm = array_pop($mm);
 
-
 			for($q = floor($mm['min']/$data['shard'])*$data['shard'];$q < $mm['max'];$q+=$data['shard']) {
-				$shard = sprintf('_%03d',$q/$data['shard']);
-
+				if ($data['shard'] <= 10000) {
+					$shard = sprintf('_%04d',$q/$data['shard']);
+				} else {
+					$shard = sprintf('_%03d',$q/$data['shard']);
+				}
 				$file = $folder.$table.'/'.$date."_$table$shard.sql.gz";
 
 				$where = "$key BETWEEN $q AND ".($q+$data['shard']-1);
@@ -163,7 +180,6 @@ foreach ($tables as $table => $data) {
 					$cmd .= " | gzip --no-name --rsyncable > $file";
 				}
 				print "$cmd\n";
-
 				print `$cmd`;
 
 				### ls -1t /var/www/backups/by-table/gridimage_exif/*_002* | head -n2 | xargs md5sum | cut -d' ' -f1 | uniq -c | cut -d' ' -f7
@@ -176,18 +192,44 @@ foreach ($tables as $table => $data) {
 						print "delete $file\n";
 						unlink($file);
 					}
-
 				}
-
 			}
-
 			//TODO - run hardlink & delete!
 
 		} else {
-			$file = $folder.$table.'/'.$date."_$table.sql.gz";
+			$desc = getAssoc("DESCRIBE $table");
+			$primary_key = '';
+			foreach($desc as $_column => $_row) {
+				if ($_row['Key'] == 'PRI' && ($_row['Extra'] == 'auto_increment' || $_column == 'gridimage_id'))
+					$primary_key = $_column;
+			}
+			if (isset($desc['upd_timestamp']) && rand(1,40)>2 && $data['backedup'] > 0) {
+				$file = $folder.$table.'/'.$date."_$table.append.sql.gz";
 
-			$cmd = "mysqldump --opt --skip-comments $cred ".escapeshellarg($table);
+				$where = "upd_timestamp >= \"{$data['backedup']}\"";
 
+				$cmd = "mysqldump --opt --skip-comments $cred ".escapeshellarg($table)." --where '$where' --no-create-info";
+
+			} elseif (!empty($primary_key) && !empty($data['backedup_key']) && rand(1,40)>2) {
+				$file = $folder.$table.'/'.$date."_$table.append.sql.gz";
+
+                                $where = "$primary_key > \"{$data['backedup_key']}\"";
+
+                                $cmd = "mysqldump --opt --skip-comments $cred ".escapeshellarg($table)." --where '$where' --no-create-info";
+
+				$bid = getOne("SELECT MAX($primary_key) FROM `$table`");
+				$sql = str_replace(' SET '," SET backedup_key = $bid, ",$sql);
+
+			} else {
+				$file = $folder.$table.'/'.$date."_$table.sql.gz";
+
+				$cmd = "mysqldump --opt --skip-comments $cred ".escapeshellarg($table);
+			}
+			if ($data['backup'] == 'N') {
+				//backup=N just means dont store history, overwrite the latest copy (so remove date from the filename).
+
+				$file = str_replace($date."_",'',$file);
+			}
 			if ($data['sensitive'] == 'Y') {
 				$file .= '.gpg';
 				$cmd .= " | gzip | gpg --encrypt --recipient 'Geograph' > $file";
@@ -200,9 +242,11 @@ foreach ($tables as $table => $data) {
 		}
 
 		if (file_exists($file) && filesize($file) > 10) {
-			//we reconnect, as the connection possibly died
-			$db = mysql_connect($CONF['db_connect'], $CONF['db_user'], $CONF['db_pwd'], true);
-			mysql_select_db($CONF['db_db'], $db);
+			if (!mysql_ping($db)) {
+				//we reconnect, as the connection possibly died
+				$db = mysql_connect($CONF['db_connect'], $CONF['db_user'], $CONF['db_pwd'], true);
+				mysql_select_db($CONF['db_db'], $db);
+			}
 			mysql_query($sql, $db) or print('<br>Error save: '.mysql_error());
 			print "\n\n";
 		} else {
@@ -243,3 +287,12 @@ function getAssoc($query) {
         return $a;
 }
 
+function getOne($query) {
+	global $db;
+	$result = mysql_query($query, $db) or print("<br>Error getOne [[ $query ]] : ".mysql_error());
+	if (mysql_num_rows($result)) {
+		return mysql_result($result,0,0);
+	} else {
+		return FALSE;
+	}
+}

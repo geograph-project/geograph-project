@@ -325,7 +325,7 @@ while ($h && !feof($h)) {
 		if (!empty($bits[10])) $updates['tags'] .= ', '.$bits[10];
 	$updates['source'] = 'link';
 	$updates['type'] = 'document';
-	$updates['created'] = (!empty($bits[6]) && $bits[6] > '2')?$bits[6]:$bits[11];
+	$updates['created'] = (!empty($bits[6]) && $bits[6] > '2000-00-00')?$bits[6]:$bits[11];
 	$updates['updated'] = $bits[12];
 
 	$db->Execute('INSERT INTO content_tmp SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));

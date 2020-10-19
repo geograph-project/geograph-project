@@ -51,7 +51,7 @@ if ($param['mode'] == 'archive') {
 $sql = "SELECT gridimage_link_id,gridimage_id,url,first_used,archive_url,soft_ratio FROM gridimage_link
 	WHERE archive_url != '' AND HTTP_Status > 200 AND url not rlike '[[:alpha:][:digit:]/&#]$'
 	AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%' AND parent_link_id = 0
-	AND next_check < '9999' AND fix_attempted LIKE '0000%'
+	AND next_check < '9999-00-00' AND fix_attempted LIKE '0000%'
 	GROUP BY url ORDER BY HTTP_Status DESC,updated ASC LIMIT {$param['number']}";
 
 } elseif ($param['mode'] == 'geograph') {
@@ -59,7 +59,7 @@ $sql = "SELECT gridimage_link_id,gridimage_id,url,first_used,archive_url,soft_ra
 	WHERE url not rlike '[[:alpha:][:digit:]/&#]$'
 	AND url NOT like '%/of/%' AND url NOT like '%/tagged/%'
 	AND (url like 'http://www.geograph.org.uk/%' OR url like 'http://www.geograph.ie/%') AND parent_link_id = 0
-	AND next_check < '9999' AND fix_attempted LIKE '0000%'
+	AND next_check < '9999-00-00' AND fix_attempted LIKE '0000%'
 	GROUP BY url ORDER BY HTTP_Status DESC,updated ASC LIMIT {$param['number']}";
 }
 

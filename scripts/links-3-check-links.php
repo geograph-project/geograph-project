@@ -25,13 +25,19 @@
 $param=array(
 	'mode'=>'external',
         'number'=>10,   //number to do each time
+        'offset'=>0,   //offset - useful for many workers
         'sleep'=>0,    //sleep time in seconds
+	'id' => 0,
+	'force' => 0,
+	'dedup'=>1,
+	'prefix'=>'',
 );
 
 $HELP = <<<ENDHELP
     --mode=exteral|geograph
     --sleep=<seconds>   : seconds to sleep between calls (0)
     --number=<number>   : number of items to process in each batch (10)
+    --offset=<number>   : useful for many workers
 ENDHELP;
 
 
@@ -48,55 +54,107 @@ set_time_limit(3600*24);
 
 /* we can run this, as we KNOW nither Google Maps nor Bing support KML URLs any more!
 update gridimage_link SET HTTP_Status_final = 404,HTTP_Status=IF(HTTP_Status>0,HTTP_Status,404),last_checked=NOW(),next_check = '2018-01-01'
-where parent_link_id = 0   AND  url like '%maps%.kml%' AND next_check < '9999';
+where parent_link_id = 0   AND  url like '%maps%.kml%' AND next_check < '9999-00-00';
 */
 
-$offset = isset($param['offset'])?intval($param['offset']).",":'';
+$offset = (!empty($param['offset']))?intval($param['offset']).",":'';
 
-$where = "AND url NOT like 'http://www.geograph.org.uk/%' AND url NOT like 'http://www.geograph.ie/%'";
+$domains = array("http://www.geograph.org.uk/","https://www.geograph.org.uk/","http://www.geograph.ie/","https://www.geograph.ie/");
+
+$where = array();
+$where[] = 'parent_link_id = 0';
+if (!empty($param['force']))
+	$where[] = "next_check < '9999-00-00'";
+else
+	$where[] = "next_check < now()";
+
 
 if ($param['mode'] == 'geograph') {
 	//we dont normally do geograph links,as links-3B-check-geograph.php is more efficient, but we CAN do them to catch stragglers
-	$where = "AND (url like 'http://www.geograph.org.uk/%' OR url like 'http://www.geograph.ie/%')";
+	$where[] = "(url like '".implode("%' OR url like '",$domains)."%')";
+} else {
+	//temporally bodge, to not bother checking these, they DONT work!
+	$domains[] = "http://list.english-heritage.org.uk";
+
+	$where[] = "url NOT like '".implode("%' AND url NOT like '",$domains)."%'";
 }
 
+if (!empty($param['id']))
+	$where[] = "gridimage_id = ".intval($param['id']);
+
+if (!empty($param['prefix']))
+	$where[] = "url LIKE ".$db->Quote($param['prefix']."%")." ORDER BY last_checked";
+
+#####################
+
+$where= implode(' AND ',$where);
 $sql = "
 SELECT
-        gridimage_link_id,gridimage_id,url,HTTP_Last_Modified
+        gridimage_link_id,gridimage_id,content_id,url,HTTP_Last_Modified,failure_count
 FROM
         gridimage_link l
 WHERE
-        next_check < now() AND parent_link_id = 0
         $where
-ORDER BY RAND()
 LIMIT {$offset}{$param['number']}";
 
 $done = 0;
 $recordSet = &$db->Execute("$sql");
 
+#####################
+
 $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)';
 ini_set('user_agent',$ua);
 $done_urls = array();
+$last = null;
 while (!$recordSet->EOF)
 {
-	$bindts = $db->BindTimeStamp(time());
-	$bindts10 = $db->BindTimeStamp(time()+3600*24*10);
-	$bindts90 = $db->BindTimeStamp(time()+3600*24*90);
-
 	$rs = $recordSet->fields;
 	$url = $rs['url'];
+
+	$bits = explode("/",$url);
+
+	//skip the HTTPS redirect!
+	if (preg_match('/\b(wikipedia\.org|wikimedia\.org|bench-marks\.org\.uk)$/', $bits[2])) {
+		//wikimedia does: 	Strict-Transport-Security: max-age=106384710; includeSubDomains; preload
+		// todo, extend to other domains!
+		$url = preg_replace('/^http:/','https:',$url);
+	}
+
 	if (isset($done_urls[$url])) {
 		$recordSet->MoveNext();
 		continue;
+	}
+	if ($param['dedup']) {
+		if (!empty($hosts[$bits[2]])) {
+			print "SKIP: $url   [/{$hosts[$bits[2]]}]\n";
+			$hosts[$bits[2]]--;
+			if ($hosts[$bits[2]] < 1)
+				unset($hosts[$bits[2]]);
+
+	                $recordSet->MoveNext();
+	                continue;
+		}
+		if ($last == $bits[2] && $param['sleep'])
+			sleep($param['sleep']);
+		$last = $bits[2];
 	}
 
 	print str_repeat('#',80)."\n";
 	print "URL: $url\n";
 
-	$user_agent = "$ua\r\nReferer: http://{$_SERVER['HTTP_HOST']}/photo/{$rs['gridimage_id']}";
+	$bindts = $db->BindTimeStamp(time());
+	$bindts10 = $db->BindTimeStamp(time()+3600*24*10);
+	$bindts90 = $db->BindTimeStamp(time()+3600*24*90);
+
+	if ($rs['gridimage_id']) {
+		$user_agent = "$ua\r\nReferer: http://{$_SERVER['HTTP_HOST']}/photo/{$rs['gridimage_id']}";
+	} elseif ($rs['content_id']) {
+		$user_agent = "$ua\r\nReferer: http://{$_SERVER['HTTP_HOST']}".$db->getOne("SELECT url FROM content WHERE content_id = {$rs['content_id']}");
+	}
 	if ($rs['HTTP_Last_Modified']) {
 		$user_agent .= "\r\nIf-Modified-Since: ".$rs['HTTP_Last_Modified'];
 	}
+//print "UA:$user_agent\n";
 	ini_set('user_agent',$user_agent);
 
 	$content = '';
@@ -111,7 +169,7 @@ while (!$recordSet->EOF)
 
 	print "LEN: ".strlen($content)."\n";
 	print "\n";
-	print_r($http_response_header);
+//	print_r($http_response_header);
 
 	if ($http_response_header) {
 		$updates['HTTP_Status'] = $updates['HTTP_Status_final'] = 601;
@@ -121,6 +179,7 @@ while (!$recordSet->EOF)
 				$i++;
 				$heads[$i] = array();
 				$heads[$i]['HTTP_Status'] = $m[1];
+				$heads[$i]['HTTP_HSTS'] = 0; //set to no, will be changed later (used to make sure overwrite -1)
 				$updates['HTTP_Status_final'] = $m[1]; //also save the last one in the 'chain'
 			} elseif(preg_match('/^Location:(.*)/i',$header,$m)) {
 				if (strpos(trim($m[1]),'http') ===0) {
@@ -130,6 +189,9 @@ while (!$recordSet->EOF)
 				}
 			} elseif(preg_match('/^Last-Modified:(.*)/i',$header,$m)) {
 				$heads[$i]['HTTP_Last_Modified'] = trim($m[1]);
+			} elseif(preg_match('/^Strict-Transport-Security:(.*)/i',$header,$m)) {
+				//  Strict-Transport-Security: max-age=106384710; includeSubDomains; preload
+				$heads[$i]['HTTP_HSTS'] = (strpos($header,'includeSubDomains')!==FALSE)?2:1;
 			}
 		}
 
@@ -155,7 +217,7 @@ while (!$recordSet->EOF)
 						}
 						print "CREATED<pre>".print_r($row,1)."</pre>";
 						$db->Execute('INSERT INTO gridimage_link SET `'.implode('` = ?,`',array_keys($row)).'` = ? ON DUPLICATE KEY UPDATE gridimage_link_id = LAST_INSERT_ID(gridimage_link_id), last_checked = ? ',array_merge(array_values($row),array($row['last_checked'])) );
-						$parent_link_id = $db->Insert_ID();
+						$parent_link_id = mysql_insert_id();
 						$done_urls[$url2] = 1;
 					}
 				}
@@ -171,24 +233,32 @@ while (!$recordSet->EOF)
 		$updates['HTTP_Status'] = $updates['HTTP_Status_final'] = 600;
 	}
 
-	$where = "url = ?";
-	$where_value = $url;
-
-	if ($rs['HTTP_Last_Modified'] && $updates['HTTP_Status'] == 304) {
-		$db->Execute($sql = "UPDATE gridimage_link SET last_checked = NOW(),next_check=date_add(NOW(),interval 90 day) WHERE $where",array($where_value));
+	if ($updates['HTTP_Status'] == 304) {
+		//$where = "gridimage_link_id = ?";
+                //$where_value = array($rs['gridimage_link_id']);
+		$where = "url = ? AND HTTP_Last_Modified = ?";
+		$where_value = array($rs['url'],$rs['HTTP_Last_Modified']);
 	} else {
+		$where = "url = ?";
+		$where_value = array($rs['url']);
+	}
+
+	if (!empty($updates)) {
 		$updates['last_checked'] = $bindts;
-		if ($updates['HTTP_Status'] == 200 || $updates['HTTP_Status'] == 301 || $updates['HTTP_Status'] == 302) {
+		if ($updates['HTTP_Status'] == 200 || $updates['HTTP_Status'] == 301 || $updates['HTTP_Status'] == 302 || $updates['HTTP_Status'] == 304) {
 			$updates['next_check'] = $bindts90;
 			$extra = ",failure_count = 0";
 		} else {
 			//todo, if(failure_count > 2) next=90 maybe?
-			$updates['next_check'] = $bindts10;
+			if ($rs['failure_count'] > 2)
+				$updates['next_check'] = $bindts90;
+			else
+				$updates['next_check'] = $bindts10;
 			$extra = ",failure_count = failure_count + 1";
 		}
 
 		$db->Execute($sql = 'UPDATE gridimage_link SET `'.implode('` = ?,`',array_keys($updates))."` = ? $extra WHERE $where",
-		array_merge(array_values($updates),array($where_value)));
+		array_merge(array_values($updates),$where_value));
 	}
 
 	//print "".$sql."\n\n";
@@ -197,6 +267,18 @@ while (!$recordSet->EOF)
 	$done++;
 	$done_urls[$url]=1;
 
+	if ($param['dedup']) {
+		if (!empty($hosts)) {
+			foreach ($hosts as $host => $count) {
+				$hosts[$host]--;
+				if (empty($hosts[$host]))
+					unset($hosts[$host]);
+			}
+		}
+		$bits = explode("/",$url);
+		@$hosts[$bits[2]]+=10;
+	}
+
 	$recordSet->MoveNext();
 
         if ($param['sleep'])
@@ -204,7 +286,7 @@ while (!$recordSet->EOF)
 }
 $recordSet->Close();
 
-print "#DONE\n\n";
+print "#DONE $done\n\n";
 
 
 

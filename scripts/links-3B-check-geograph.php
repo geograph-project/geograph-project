@@ -46,7 +46,7 @@ set_time_limit(3600*24);
 
 /* we can run this, as we KNOW nither Google Maps nor Bing support KML URLs any more! (although should check first that they ARE all gmaps or bing links!
 update gridimage_link SET HTTP_Status_final = 404,HTTP_Status=IF(HTTP_Status>0,HTTP_Status,404),last_checked=NOW(),next_check = '2018-01-01'
-where parent_link_id = 0   AND  url like '%maps%.kml%' AND next_check < '9999';
+where parent_link_id = 0   AND  url like '%maps%.kml%' AND next_check < '9999-00-00';
 */
 
 $offset = isset($param['offset'])?intval($param['offset']).",":'';

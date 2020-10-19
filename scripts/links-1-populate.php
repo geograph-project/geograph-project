@@ -78,7 +78,7 @@ INNER JOIN
 	gridimage_link l ON (gi.gridimage_id = l.gridimage_id)
 WHERE
 	(comment LIKE '%http%' OR comment LIKE '%www.%')
-	AND next_check < '9999' AND parent_link_id = 0
+	AND next_check < '9999-00-00' AND parent_link_id = 0
 GROUP BY
 	gi.gridimage_id
 HAVING
@@ -93,8 +93,8 @@ LIMIT {$param['number']}";
 // careful does NOT filter by last_found, to so may process a LOT of images
 // this example is looking for images with extracted links, but may be partical.
 // May also want to run this query, as last_found wont be set correctly on the incorrectly extracted links!
-// update gridimage_link one inner join gridimage_link two using (gridimage_id) set one.first_used = two.first_used where two.url = substring_index( one.url,'@',1) and two.next_check > '9999' and one.next_check < '9999'
-// update gridimage_link one inner join gridimage_link two using (gridimage_id) set one.first_used = two.first_used where two.url = substring_index( one.url,'!',1) and two.next_check > '9999' and one.next_check < '9999'
+// update gridimage_link one inner join gridimage_link two using (gridimage_id) set one.first_used = two.first_used where two.url = substring_index( one.url,'@',1) and two.next_check > '9999-00-00' and one.next_check < '9999-00-00'
+// update gridimage_link one inner join gridimage_link two using (gridimage_id) set one.first_used = two.first_used where two.url = substring_index( one.url,'!',1) and two.next_check > '9999-00-00' and one.next_check < '9999-00-00'
 
 $sql = "
 SELECT
@@ -106,7 +106,7 @@ INNER JOIN
 WHERE
 	(comment LIKE '%http%' OR comment LIKE '%www.%')
 	AND (comment LIKE '%@%' OR comment LIKE '%!%')
-	AND next_check < '9999' AND parent_link_id = 0
+	AND next_check < '9999-00-00' AND parent_link_id = 0
 GROUP BY
 	gi.gridimage_id
 ORDER BY
@@ -127,7 +127,7 @@ INNER JOIN
 	gridimage_link l ON (gi.gridimage_id = l.gridimage_id)
 WHERE
 	NOT(comment LIKE '%http%' OR comment LIKE '%www.%')
-	AND next_check < '9999' AND parent_link_id = 0
+	AND next_check < '9999-00-00' AND parent_link_id = 0
 GROUP BY
 	gi.gridimage_id
 ORDER BY
@@ -188,7 +188,7 @@ while (!$recordSet->EOF)
 			}
 			if (!empty($found_on_image)) {
 				//existing row on this image, needs updating
-				if ($found_on_image['next_check'] > '9999') //the link was previouslly removed
+				if ($found_on_image['next_check'] > '9999-00-00') //the link was previouslly removed
 					$db->Execute("UPDATE gridimage_link SET next_check = NOW(),last_found=NOW() WHERE url = $qurl AND gridimage_id = {$recordSet->fields['gridimage_id']}");
 				else
 					$db->Execute("UPDATE gridimage_link SET last_found=NOW() WHERE url = $qurl AND gridimage_id = {$recordSet->fields['gridimage_id']}");

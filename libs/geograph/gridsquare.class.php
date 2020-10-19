@@ -821,6 +821,9 @@ split_timer('gridsquare'); //starts the timer
 		{
 			$images[$i]=new GridImage;
 			$images[$i]->fastInit($recordSet->fields);
+			if (!empty($images[$i]->imagetaken) && $images[$i]->imagetaken > '1000-00-00') {
+				$images[$i]->year = substr($images[$i]->imagetaken,0,4);
+			}
 			$recordSet->MoveNext();
 			$i++;
 		}
