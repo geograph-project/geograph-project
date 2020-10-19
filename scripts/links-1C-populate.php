@@ -97,7 +97,7 @@ if ($param['mode'] == 'new') {
 
 	$sql = str_replace('select ',"select max(last_found) as last_link,group_concat(url separator ' ') as urls, ", $sql);
 	$sql = str_replace('where ','inner join gridimage_link l using(content_id) where ', $sql);
-	$sql = str_replace('where ',"where next_check < '9999' AND parent_link_id = 0 AND ", $sql);
+	$sql = str_replace('where ',"where next_check < '9999-00-00' AND parent_link_id = 0 AND ", $sql);
 	$sql = str_replace('order ','HAVING updated > last_link order', $sql);
 
 #####################################################
@@ -106,7 +106,7 @@ if ($param['mode'] == 'new') {
 	//todo, if using the material view, this will need updating (ie links left join tmp where tmp is null and l.content > 0 )
 	$sql = str_replace('select ',"select group_concat(url separator ' ') as urls,", $sql);
 	$sql = str_replace('where ','inner join gridimage_link l using(content_id) where ', $sql);
-	$sql = str_replace('where ',"where next_check < '9999' AND parent_link_id = 0 AND ", $sql);
+	$sql = str_replace('where ',"where next_check < '9999-00-00' AND parent_link_id = 0 AND ", $sql);
 	$sql = preg_replace('/AND \((\w+\.\w+) LIKE /',' AND NOT(\1 LIKE ', $sql);
 
 #####################################################
@@ -202,7 +202,7 @@ print_r($all);
 			}
 			if (!empty($found_on_image)) {
 				//existing row on this image, needs updating
-				if ($found_on_image['next_check'] > '9999') //the link was previouslly removed
+				if ($found_on_image['next_check'] > '9999-00-00') //the link was previouslly removed
 					$db->Execute("UPDATE gridimage_link SET next_check = NOW(),last_found=NOW() WHERE url = $qurl AND content_id = {$recordSet->fields['content_id']}");
 				else
 					$db->Execute("UPDATE gridimage_link SET last_found=NOW() WHERE url = $qurl AND content_id = {$recordSet->fields['content_id']}");
