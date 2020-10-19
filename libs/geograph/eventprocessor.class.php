@@ -312,7 +312,7 @@ class EventProcessor
 				$event_id=$event['event_id'];
 
 				//lets mark the event as in progress
-				// ... need to set updated explicitly, because if even is already in progress, the updated column wont be changed.
+				// ... need to set updated explicitly, because if already in progress, the updated column wont be changed
 				$this->db->Execute("update event set status='in_progress',updated=NOW() where event_id=$event_id");
 
 				$this->db->Execute("UNLOCK TABLES");
@@ -420,7 +420,7 @@ class EventProcessor
 		}
 
 		//ok, we're going to quit, but lets post some useful diagnostics
-		$count=$this->db->GetOne("select count(*) as cnt from event where status>=0");
+		$count=$this->db->GetOne("select count(*) as cnt from event where status<3");
 		$this->trace("Processing complete - $count events remaining in queue");
 	}
 }
