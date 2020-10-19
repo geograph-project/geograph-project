@@ -89,7 +89,7 @@ while (!$recordSet->EOF) {
 			//print_r($decode);
 			print_r($updates);
 			print "$sql\n";
-			print "Rows = ".mysql_affected_rows()."\n";
+			print "Rows = ".$db->Affected_Rows()."\n";
 //			print_r($db->getAll("SHOW WARNINGS()"));
 		}
 	}

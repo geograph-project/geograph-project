@@ -162,10 +162,10 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			if ($comment != $row['comment']) {
 				
 				$db_write->Execute($sql = "UPDATE gridimage SET comment = ".$db_write->Quote($comment)." WHERE gridimage_id = ".$row['gridimage_id']);
-				if (mysql_affected_rows() != 1) die("SQL FAIL\n $sql\n\n");
+				if ($db->Affected_Rows() != 1) die("SQL FAIL\n $sql\n\n");
 
 				$db_write->Execute("UPDATE gridimage_search SET comment = ".$db_write->Quote($comment)." WHERE gridimage_id = ".$row['gridimage_id']);
-				if (mysql_affected_rows() != 1) die("SQL FAIL\n $sql\n\n");
+				if ($db->Affected_Rows() != 1) die("SQL FAIL\n $sql\n\n");
 
 				$db_write->Execute("INSERT INTO gridimage_ticket SET 
 					gridimage_id={$row['gridimage_id']},
@@ -177,7 +177,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 					type='minor',
 					notify='',
 					public='everyone'");
-				if (mysql_affected_rows() != 1) die("SQL FAIL\n $sql\n\n");
+				if ($db->Affected_Rows() != 1) die("SQL FAIL\n $sql\n\n");
 
 				$db_write->Execute("INSERT INTO gridimage_ticket_item SET
 					gridimage_ticket_id = LAST_INSERT_ID(),
@@ -186,7 +186,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 					oldvalue = ".$db_write->Quote($row['comment']).",
 					newvalue = ".$db_write->Quote($comment).",
 					status = 'immediate'");
-				if (mysql_affected_rows() != 1) die("SQL FAIL\n $sql\n\n");
+				if ($db->Affected_Rows() != 1) die("SQL FAIL\n $sql\n\n");
 
 				
 				print "{$row['gridimage_id']}. ";
@@ -234,9 +234,9 @@ function add_public_tag($db,$gridimage_id,$user_id,$tag) {
 		$u['user_id'] = $user_id;
 
 		$db->Execute($sql = 'INSERT INTO tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
-		if (mysql_affected_rows() != 1) print_r($u).die("SQL FAIL\n $sql\n\n");
+		if ($db->Affected_Rows() != 1) print_r($u).die("SQL FAIL\n $sql\n\n");
 
-		$tag_id = mysql_insert_id();
+		$tag_id = $db->Insert_ID();
 	}
 
 if (empty($tag_id)) {
@@ -251,6 +251,6 @@ if (empty($tag_id)) {
 	$u['status'] = 2;
 
 	$db->Execute($sql = 'INSERT INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ? ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
-	if (mysql_affected_rows() != 1 && mysql_affected_rows() != 2) print_r($u).die("SQL FAIL\n $sql\n\n");
+	if ($db->Affected_Rows() != 1 && $db->Affected_Rows() != 2) print_r($u).die("SQL FAIL\n $sql\n\n");
 }
 

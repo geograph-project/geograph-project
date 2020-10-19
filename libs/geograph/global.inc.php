@@ -198,24 +198,15 @@ function GeographDatabaseConnection($allow_readonly = false) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 #		split_timer('db','connect','master'); //logs the wall time
 	}
+	/* TOFIX, now using mysqli, which doesnt have an easy way of getting last error
 	if (!$db && mysql_error() == 'MySQL server has gone away') {
 		//one last try! forcing a new connection via nconnect. 
 		$db=NewADOConnection($GLOBALS['DSN'].(empty($CONF['db_persist'])?'?':'&')."new");
-	}
+	}*/
 	if (!$db) {
 		split_timer('db','connect','failed'); //just to log the failure!
-		//todo - show a 'smart' smarty error here... (probably check for existance of a global $smarty var) 
+		//todo - show a 'smart' smarty error here... (probably check for existance of a global $smarty var)
 		header("HTTP/1.0 503 Service Unavailable");
-
-					//email me if we lag, but once gets big no point continuing to notify!
-					ob_start();
-					print "\n\nHost: ".`hostname`."\n";
-					print "Time: ".time()." (".(time()-$_SERVER['REQUEST_TIME'])." seconds)\n\n";
-					print_r($_SERVER);
-					debug_print_backtrace();
-					$con = ob_get_clean();
-               		///		mail('geograph@barryhunter.co.uk','[Geograph Database] Connection failed: '.mysql_error(),$con);
-
 		die("Database connection failed");
 	}
 
@@ -240,7 +231,7 @@ function GeographDatabaseConnection($allow_readonly = false) {
 
 //this is legacy. Some scripts still use this! (should use GeographSphinxConnection instead!)
 if (empty($CONF['sphinxql_dsn']) && !empty($CONF['sphinx_hostnew']))
-	$CONF['sphinxql_dsn'] = "mysql://{$CONF['sphinx_hostnew']}:{$CONF['sphinx_portql']}/";
+	$CONF['sphinxql_dsn'] = "{$CONF['db_driver']}://{$CONF['sphinx_hostnew']}:{$CONF['sphinx_portql']}/";
 
 function GeographSphinxConnection($type='sphinxql',$new = false) {
 	global $CONF;
@@ -249,7 +240,7 @@ function GeographSphinxConnection($type='sphinxql',$new = false) {
 
 	if ($type=='sphinxql' || $type=='mysql') {
 
-		$sph = NewADOConnection("mysql://{$host}:{$CONF['sphinx_portql']}/") or die("unable to connect to sphinx. ".mysql_error());
+		$sph = NewADOConnection("{$CONF['db_driver']}://{$host}:{$CONF['sphinx_portql']}/") or die("unable to connect to search engine");
 		if ($type=='mysql') {
 			return $sph->_connectionID;
 		}
@@ -466,7 +457,7 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 	                define('VARY_COOKIE',1); //so that gzip handler knows to include cookie in the header
 	        }
 
-		$GLOBALS['USER'] =& new GeographUser;
+		$GLOBALS['USER'] = new GeographUser;
                 @apache_note('user_id', 0);
 
 
@@ -510,7 +501,7 @@ function init_session()
 			session_regenerate_id();
 
 		//create new user object - initially anonymous
-		$_SESSION['user'] =& new GeographUser;
+		$_SESSION['user'] = new GeographUser;
 
 		//give object a chance to auto-login via cookie
 		$_SESSION['user']->autoLogin();

@@ -51,7 +51,7 @@ function UnsharpMask($img, $amount, $radius, $threshold)	{
 	
 	$radius = abs(round($radius)); 	// Only integers make sense.
 	if ($radius == 0) {
-		return $img; imagedestroy($img); break;		}
+		return $img; imagedestroy($img); }
 	$w = imagesx($img); $h = imagesy($img);
 	$imgCanvas = imagecreatetruecolor($w, $h);
 	$imgCanvas2 = imagecreatetruecolor($w, $h);
@@ -201,4 +201,3 @@ function imageCopyResampleBicubic($dst_img, $src_img, $dst_x, $dst_y, $src_x, $s
   }
 }
 
-?>

@@ -57,7 +57,7 @@ function init_session() {
 	{
 		session_regenerate_id();
 
-		$_SESSION['user'] =& new GeographUser;
+		$_SESSION['user'] = new GeographUser;
 
 	}
 

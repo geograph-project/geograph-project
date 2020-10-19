@@ -451,11 +451,11 @@ class GridImageTroubleTicket
 				else
 				{
 					$sql=sprintf("insert into gridimage_ticket_item(gridimage_ticket_id, field, oldvalue, newvalue, status, approver_id) ".
-						"values(%d, '%s', '%s', '%s', '%s', '%d')",
+						"values(%d, '%s', %s, %s, '%s', '%d')",
 						$this->gridimage_ticket_id,
 						$change["field"],
-						mysql_escape_string($change["oldvalue"]),
-						mysql_escape_string($change["newvalue"]),
+						$db->Quote($change["oldvalue"]),
+						$db->Quote($change["newvalue"]),
 						$change["status"],
 						$change["approver_id"]);
 				}

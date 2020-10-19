@@ -74,6 +74,6 @@ foreach ($sqls as $sql) {
 	print "---\n$sql\n---\n".date('r')." (started)\n";
 	$db->Execute($sql);
 	print date('r')." (done)\n";
-	print "Rows Affected: ".mysql_affected_rows()."\n";
+	print "Rows Affected: ".$db->Affected_Rows()."\n";
 }
 print ".\n";

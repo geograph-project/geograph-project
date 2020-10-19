@@ -152,7 +152,7 @@ while (!$recordSet->EOF)
 			if ($param['action'] == 'execute') {
 				//we actully need to run it now, so all actions can use the newly created tag. (cos we build all the sqls first)
 				$db->Execute("INSERT INTO tag SET created=NOW(),".implode(', ',$values).",user_id={$r['user_id']}");
-				$r['tag2_id'] = mysql_insert_id();
+				$r['tag2_id'] = $db->Insert_ID();
 			}
 		}
 

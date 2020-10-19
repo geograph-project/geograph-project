@@ -1,23 +1,28 @@
 <?
 
-$db = mysql_connect('cream','geograph','m4pp3r') or die("unable to connect ".mysql_error());
-mysql_select_db("geograph_live",$db)  or die("unable to use ".mysql_error());;
+chdir(__DIR__);
+require "./_scripts.inc.php";
+
+############################################
+
+$db = GeographDatabaseConnection(false);
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
-$result = mysql_query("SELECT * FROM document_words WHERE stemcrc = 0 LIMIT 1000")  or die("unable to select ".mysql_error());
+$rows = $db->getAll("SELECT * FROM document_words WHERE stemcrc = 0 LIMIT 1000")  or die("unable to select ".$db->ErrorMsg());
 
 
 require "libs/3rdparty/PorterStemmer.class.php";
 
-while($row = mysql_fetch_assoc($result)) {
+foreach($rows as $row) {
 
 	$stem = PorterStemmer::Stem($row['word']);
 
-	$stem = mysql_real_escape_string($stem);
+	$stem = $db->Quote($stem);
 
-	$sql = "UPDATE document_words SET stem = '$stem',stemcrc=CRC32('$stem') WHERE id = {$row['id']}";
+	$sql = "UPDATE document_words SET stem = $stem,stemcrc=CRC32($stem) WHERE id = {$row['id']}";
 
-	mysql_query($sql);
+	$db->Execute($sql);
 	$count++;
 }
 

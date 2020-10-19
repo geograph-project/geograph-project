@@ -67,7 +67,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		100
 	");
 	foreach ($images as $i => $row) {
-		$image=& new GridImage();
+		$image= new GridImage();
 		$image->LoadFromId($row['gridimage_id']);	
 		$image->compact();
 		

@@ -40,8 +40,8 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 function dbExecute($sql) {
 	global $db_write,$a;
 	if (true) {
-		$db_write->Execute($sql) or die($sql."\n".mysql_error()."\n\n");
-		$a += mysql_affected_rows();
+		$db_write->Execute($sql) or die($sql."\n".$db->ErrorMsg()."\n\n");
+		$a += $db->Affected_Rows();
 	} else {
 		print "$sql;\n";
 	}

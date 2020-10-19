@@ -100,7 +100,7 @@ class MultiServerMemcache extends Memcache {
 		return parent::set($this->prefix.$key, $val, $flag, $expire);
 	}
 
-	function get($key) {
+	function get($key,&$param1=null,&$param2=null) {
 		if (!$this->valid) return false;
 		$tmp =& parent::get($this->prefix.$key);
 		return $tmp;

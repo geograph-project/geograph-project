@@ -141,7 +141,7 @@ while (!$recordSet->EOF) {
 		foreach ($sqls as $sql) {
 			//print preg_replace("/\s+/",' ',$sql).";\n";
 			$db->Execute($sql);
-			print "Rows = ".mysql_affected_rows().", ";
+			print "Rows = ".$db->Affected_Rows().", ";
 		}
 		print "\n";
 		$updates['next_check'] = '9999-01-01'; //mark the link as deleted!
@@ -169,7 +169,7 @@ while (!$recordSet->EOF) {
 			//print_r($decode);
 			print_r($updates);
 			print "$sql\n";
-			print "Rows = ".mysql_affected_rows()."\n";
+			print "Rows = ".$db->Affected_Rows()."\n";
 //			print_r($db->getAll("SHOW WARNINGS()"));
 		}
 	}

@@ -161,7 +161,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					$day['number'] = $dayNumber;
 					$day['key'] = sprintf("%04d-%02d-%02d",$year,$month,$dayNumber);
 					if ($images[$day['key']]) {
-						$day['image']=& new GridImage();
+						$day['image']= new GridImage();
 						$day['image']->fastInit($images[$day['key']]);	
 						$day['image']->compact();
 					}
@@ -234,7 +234,7 @@ if (!$smarty->is_cached($template, $cacheid))
 						$day['number'] = $dayNumber;
 						$day['key'] = sprintf("%04d-%02d-%02d",$year,$month,$dayNumber);
 						if ($images[$day['key']]) {
-							$day['image']=& new GridImage();
+							$day['image']= new GridImage();
 							$day['image']->fastInit($images[$day['key']]);	
 							$day['image']->compact();
 						}

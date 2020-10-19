@@ -157,7 +157,7 @@ if ($q) {
 
 					if ($param['execute']) {
 						$sql = "INSERT INTO gridimage_typo SET gridimage_id = $id,created=NOW(),`word` = $word,type='$type' ON DUPLICATE KEY UPDATE updated = NOW(),`word` = $word";
-						$db->Execute($sql) or die("$sql;\n".mysql_error()."\n\n");
+						$db->Execute($sql) or die("$sql;\n".$db->ErrorMsg()."\n\n");
 					} else {
 						print "$id: $word\n";
 					}

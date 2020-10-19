@@ -120,7 +120,7 @@ function runit($table,$column,$primary) {
 //continue;
 
 		$db->Execute($sql);
-		$m += mysql_affected_rows();
+		$m += $db->Affected_Rows();
 		$c++;
 
 		if (!($c%10))

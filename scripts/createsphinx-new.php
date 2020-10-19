@@ -307,7 +307,7 @@ FROM gridimage_search gi
 fwrite(STDERR,date('H:i:s ')."Getting Schema...\n");
 
 
-$result = mysql_query("$sql LIMIT 1") or die(mysql_error());
+$result = $db->Execute("$sql LIMIT 1") or die($db->ErrorMsg());
 
 print "######################################\n";
 
@@ -316,13 +316,14 @@ print "sql_query = ".str_replace("\n","\\\n",trim(str_replace("\r",'',$sql)))."\
 print "######################################\n";
 print "# Attributes...\n\n";
 
-$fields = mysql_num_fields($result);
+$fields = $result->fieldCount();
 for ($i=1; $i < $fields; $i++) {
-	$name  = mysql_field_name($result, $i);
-	$type  = mysql_field_type($result, $i);
-	switch ($type) {
-		case 'string':
-		case 'blob':
+	$r = $result->FetchField($i);
+	$name  = $r->name;
+		//the numberic is mysqli - todo, maybe swithc to MetaType?
+	switch ($r->type) {
+		case 'string': case 253:
+		case 'blob':   case 252:
 			if ($name == 'comment') {
 				//leave a simple field
 			} elseif (preg_match('/_ids$/',$name)) {
@@ -331,15 +332,15 @@ for ($i=1; $i < $fields; $i++) {
 				print "sql_field_string	= $name\n";
 			}
 			break;
-		case 'int':
+		case 'int':   case 3:
 			if ($name == 'submitted') {
 				print "sql_field_timestamp	= $name\n";
 			} else {
-				//todo - set bits based on $len = mysql_field_len($result, $i);
+				//todo - set bits based on $len
 				print "sql_attr_uint		= $name\n";
 			}
 			break;
-		case 'real':
+		case 'real':  case 246:
 			print "sql_attr_float		= $name\n";
 			break;
 	}
@@ -366,13 +367,14 @@ $sql = "SELECT gridimage_id,tags,groups,terms,snippets,wikis FROM sphinx_view";
 
 fwrite(STDERR,date('H:i:s ')."Running main query...\n");
 
-$result = mysql_query($sql) or die(mysql_error());
+$recordSet = Execute($sql) or die($db->ErrorMsg());
 
 fwrite(STDERR,date('H:i:s ')."Starting building values...\n");
 
 $crcs = array();
 
-while ($result && ($row = mysql_fetch_assoc($result)) ) {
+while (!$recordSet->EOF) {
+	$row =& $recordSet->fields;
 
 	$values = array();
 	$value_ids = array();
@@ -393,7 +395,7 @@ while ($result && ($row = mysql_fetch_assoc($result)) ) {
 		uksort($values,'sort_by_ids');
 		asort($value_ids); //dont need to sort $value_ids becauase sphinx will do it anyway.
 
-		$sql = "UPDATE ... SET value_ids = '".implode(',',$value_ids)."',values = '".mysql_real_escape_string(implode(';',$values))."' WHERE gridimage_id = {$row['gridimage_id']}";
+		$sql = "UPDATE ... SET value_ids = '".implode(',',$value_ids)."',values = ".$db->Quote(implode(';',$values))." WHERE gridimage_id = {$row['gridimage_id']}";
 		$db->Execute($sql);
 	}
 
@@ -402,7 +404,9 @@ while ($result && ($row = mysql_fetch_assoc($result)) ) {
 	//	usleep(500);
 	}
 	$c++;
+	$recordSet->MoveNext();
 }
+$recordSet->Close();
 
 $sql = "SELECT * FROM sphinx_view";
 

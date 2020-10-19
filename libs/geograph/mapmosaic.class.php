@@ -1082,7 +1082,7 @@ split_timer('map','expirePosition',"($x,$y,$user_id,$expire_basemaps)=$deleted")
 			$db=&$this->_getDB(false);
 			
 			$db->Execute("delete from mapcache where $crit");
-                        $GLOBALS['deleted_records'] = mysql_affected_rows();
+                        $GLOBALS['deleted_records'] = $db->Affected_Rows();
 		}
 		return $deleted;
 	}
