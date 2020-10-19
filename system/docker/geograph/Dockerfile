@@ -39,6 +39,9 @@ RUN ln -s /var/www/geograph/scripts /scripts
 WORKDIR /var/www/geograph
 ENV CONF_PROFILE=docker
 
+# Used by scripts to setup enviroment. CONFIG_FILE will need to be set in flux
+ENV BASE_DIR=/var/www/geograph
+
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="Tiger Computing Ltd" \
       org.opencontainers.image.url="https://github.com/geograph-project/geograph-project" \
