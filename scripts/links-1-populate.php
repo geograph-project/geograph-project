@@ -141,7 +141,7 @@ if (empty($sql))
 	die("unknown mode\n");
 
 $done = 0;
-$recordSet = &$db->Execute("$sql");
+$recordSet = $db->Execute("$sql");
 
 $bindts = $db->BindTimeStamp(time());
 

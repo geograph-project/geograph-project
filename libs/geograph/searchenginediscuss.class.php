@@ -99,7 +99,7 @@ if (!empty($_GET['debug']))
 		//lets find some photos
 		$this->results=array();
 		$i=0;
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$this->results[$i] = $recordSet->fields;

@@ -58,7 +58,7 @@ if (isset($_POST['go']))
 		flush();
 		
 
-		$recordSet = &$db->Execute("select * from gridprefix");
+		$recordSet = $db->Execute("select * from gridprefix");
 
 		while (!$recordSet->EOF) 
 		{

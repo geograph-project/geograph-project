@@ -57,7 +57,7 @@ $sql = "SELECT gridimage_link_id,url,first_used,archive_url FROM gridimage_link
 
 
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF) {
 	$bindts = $db->BindTimeStamp(time());
 	$row = $recordSet->fields;

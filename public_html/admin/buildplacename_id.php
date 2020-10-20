@@ -82,7 +82,7 @@ if (isset($_POST['go']))
 		$join .= " inner join user u using (user_id)";
 
 
-	$recordSet = &$db->Execute("select * from $table $join where {$_POST['crit']} $limit");
+	$recordSet = $db->Execute("select * from $table $join where {$_POST['crit']} $limit");
 	if (!empty($_POST['file'])) {
 		$handle = fopen($_SERVER['DOCUMENT_ROOT']."/rss/placename_updates.sql",'a') or die("unable to open file");
 	}

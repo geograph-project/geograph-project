@@ -93,7 +93,7 @@ where enabled = 1 $crit
 order by snippet_id desc
 limit 96";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();

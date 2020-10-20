@@ -109,7 +109,7 @@ ORDER BY `post_time` DESC";
 if (!$opt_noLimit) {
 	$sql .= " LIMIT 15";
 }
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 	while (!$recordSet->EOF)
 	{
 		$item = new FeedItem();
@@ -234,7 +234,7 @@ $sql_where
 ORDER BY $sql_order
 LIMIT 30";
 
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 	while (!$recordSet->EOF)
 	{
 		$item = new FeedItem();

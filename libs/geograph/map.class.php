@@ -695,7 +695,7 @@ split_timer('map'); //starts the timer
 		$sql="select x,y,percent_land,reference_index from gridsquare where 
 			CONTAINS( GeomFromText($rectangle),	point_xy)";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields[0];
@@ -1098,7 +1098,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 			}
 		}
 		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_ASSOC);
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		$db->SetFetchMode($prev_fetch_mode);
 		while (!$recordSet->EOF) 
 		{
@@ -1442,7 +1442,7 @@ split_timer('map'); //starts the timer
 
 
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields[0];
@@ -1601,7 +1601,7 @@ split_timer('map'); //starts the timer
 		}
 
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields[0];
@@ -1752,7 +1752,7 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 		}
 		
 		$usercount=array();
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		$lines = array();
 		while (!$recordSet->EOF) 
 		{
@@ -1891,7 +1891,7 @@ ORDER BY RAND()
 END;
 }
 		$squares=array();
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$e=$recordSet->fields['e'];
@@ -2060,7 +2060,7 @@ split_timer('map','_plotPlacenames'); //logs the wall time
 			"CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
 			"and landcount>0";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$origin_x=$recordSet->fields['origin_x'];
@@ -2372,7 +2372,7 @@ split_timer('map'); //starts the timer
 		}
 		
 		
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields['x'];

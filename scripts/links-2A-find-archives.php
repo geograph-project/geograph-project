@@ -77,7 +77,7 @@ if (!empty($CONF['timetravel_url'])) {
 
 
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF) {
 	$bindts = $db->BindTimeStamp(time());
 	$row = $recordSet->fields;

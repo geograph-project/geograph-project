@@ -60,7 +60,7 @@ if (isset($_POST['go']))
 print "<PRE>"; print_r($_POST); print "</PRE>";		
 		print "$datefrom - $dateto<BR>";
 	
-	$recordSet = &$db->Execute("select * from gridimage");
+	$recordSet = $db->Execute("select * from gridimage");
 	while (!$recordSet->EOF) 
 	{
 		

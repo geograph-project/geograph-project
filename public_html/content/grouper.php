@@ -62,7 +62,7 @@ if (isset($_POST['save']) || isset($_GET['start'])) {
 	
 	
 	$groups = array();
-	$recordSet = &$db->Execute("SELECT label FROM content_group WHERE source like 'user%' GROUP BY label");
+	$recordSet = $db->Execute("SELECT label FROM content_group WHERE source like 'user%' GROUP BY label");
 	while (!$recordSet->EOF)
 	{
 		$groups[$recordSet->fields[0]] = $recordSet->fields[0];

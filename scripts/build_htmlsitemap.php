@@ -107,7 +107,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$maxdate="";
 	
 	$offset=($sitemap-1)*$urls_per_sitemap;
-	$recordSet = &$db->Execute(
+	$recordSet = $db->Execute(
 		"select filename,date(ts) as ts_date ".
 		"from kmlcache ".
 		"where rendered = 1 and filename like '/kml/__/%' ".

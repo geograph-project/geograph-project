@@ -75,7 +75,7 @@ if (isset($_POST['check']))
 	
 	
 		$count=0;
-		$recordSet = &$db->Execute("SELECT gridimage.gridsquare_id, grid_reference, 
+		$recordSet = $db->Execute("SELECT gridimage.gridsquare_id, grid_reference, 
 		imagecount as gridsquare_imagecount, count( * ) AS gridsimage_imagecount,
 		has_geographs as gridsquare_has_geographs, sum(moderation_status='geograph') AS gridsimage_geographcount
 		FROM gridimage

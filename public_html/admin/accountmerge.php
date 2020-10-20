@@ -50,9 +50,9 @@ if (isset($_POST['go']))
 	
 	
 	if (!empty($_POST['ids'])) {		
-		$recordSet = &$db->Execute("select * from gridimage where user_id='$from' and gridimage_id IN ({$_POST['ids']})");
+		$recordSet = $db->Execute("select * from gridimage where user_id='$from' and gridimage_id IN ({$_POST['ids']})");
 	} else {
-		$recordSet = &$db->Execute("select * from gridimage where user_id='$from'");
+		$recordSet = $db->Execute("select * from gridimage where user_id='$from'");
 	}
 	while (!$recordSet->EOF) 
 	{

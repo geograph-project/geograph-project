@@ -252,7 +252,7 @@ split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
 
 		$this->images=array();
 		$i=0;
-		$recordSet = &$sph->Execute($sql);
+		$recordSet = $sph->Execute($sql);
 		while (!$recordSet->EOF)
 		{
 			$this->images[$i]=new GridImage;
@@ -282,9 +282,9 @@ split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
 		$this->images=array();
 		$i=0;
 		if ($cache > 0) {
-			$recordSet = &$db->CacheExecute($cache,$sql);
+			$recordSet = $db->CacheExecute($cache,$sql);
 		} else {
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 		}
 		while (!$recordSet->EOF)
 		{
@@ -386,7 +386,7 @@ split_timer('imagelist'); //starts the timer
 				point_xy)
 			$orderby $limit";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 
 split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$reference_index"); //logs the wall time
 
@@ -492,7 +492,7 @@ split_timer('imagelist'); //starts the timer
 			$crit = "- 250 and rand()>0.96";
 		}
 
-		$recordSet = &$db->Execute("select {$this->cols} from gridimage_search
+		$recordSet = $db->Execute("select {$this->cols} from gridimage_search
 			where moderation_status = 'geograph' and gridimage_id > (select max(gridimage_id) from gridimage_search) $crit limit 5");
 
 		$this->images=array();

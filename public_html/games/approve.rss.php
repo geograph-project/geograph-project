@@ -40,7 +40,7 @@ $db=NewADOConnection($GLOBALS['DSN']);
 
 $sql="select created,username from game_score where approved = 0 group by username order by created";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();

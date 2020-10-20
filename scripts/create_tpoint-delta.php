@@ -57,7 +57,7 @@ $a = array();
 
 	$five_years_in_days = 365*5;
 
-	$recordSet = &$db_read->Execute($sql);
+	$recordSet = $db_read->Execute($sql);
 
 	while (!$recordSet->EOF)
 	{

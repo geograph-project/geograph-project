@@ -45,7 +45,7 @@ if (isset($_POST['go']))
 	flush();
 	set_time_limit(3600*24);
 	
-	$recordSet = &$db->Execute("select * from gridimage");
+	$recordSet = $db->Execute("select * from gridimage");
 	while (!$recordSet->EOF) 
 	{
 		

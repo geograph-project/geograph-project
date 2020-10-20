@@ -52,7 +52,7 @@ if (isset($_GET['check2']))
 	
 	$sql="select gridsquare_id,grid_reference from gridsquare where imagecount>0";
 	
-	$recordSet = &$db->Execute($sql);	
+	$recordSet = $db->Execute($sql);	
 	while (!$recordSet->EOF) 
 	{
 		$sql2="select * from gridimage where gridsquare_id={$recordSet->fields['gridsquare_id']} ".
@@ -136,7 +136,7 @@ function recurse_maps($folder) {
 	
 
 	$sql = "SELECT mapcache2.* FROM mapcache2 LEFT JOIN mapcache  USING (map_x,map_y,image_w,image_h,pixels_per_km,type_or_user,palette) WHERE mapcache.map_x IS NULL";
-	$recordSet = &$db->Execute("$sql");
+	$recordSet = $db->Execute("$sql");
 	while (!$recordSet->EOF) 
 	{
 		$values = array();

@@ -101,7 +101,7 @@ $sql="select blog_id,blog.user_id,title,content,blog.updated,blog.created,realna
 	order by updated desc
 	limit $limit";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();

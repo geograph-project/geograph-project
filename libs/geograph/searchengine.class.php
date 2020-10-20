@@ -336,7 +336,7 @@ END;
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
 				
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
@@ -590,7 +590,7 @@ END;
 			list($usec, $sec) = explode(' ',microtime());
 			$querytime_before = ((float)$usec + (float)$sec);
 
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 
 			list($usec, $sec) = explode(' ',microtime());
 			$querytime_after = ((float)$usec + (float)$sec);
@@ -806,7 +806,7 @@ END;
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
 				
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 				
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
@@ -850,9 +850,9 @@ END;
 	function ReturnRecordset($pg,$nocache = false) {
 		if ($nocache || $this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\.(grid_reference|)/',$this->criteria->searchq,$m)) && !$m[2]) {
 			//a Special Search needs full access to GridImage/GridSquare/User
-			$recordSet =& $this->ExecuteReturnRecordset($pg);
+			$recordSet = $this->ExecuteReturnRecordset($pg);
 		} else {
-			$recordSet =& $this->ExecuteCachedReturnRecordset($pg); 
+			$recordSet = $this->ExecuteCachedReturnRecordset($pg); 
 		}
 		return $recordSet;
 	}
@@ -889,9 +889,9 @@ END;
 	{
 		if ($this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\.(grid_reference|)/',$this->criteria->searchq,$m)) && !$m[2]) {
 			//a Special Search needs full access to GridImage/GridSquare/User
-			$recordSet =& $this->ExecuteReturnRecordset($pg);
+			$recordSet = $this->ExecuteReturnRecordset($pg);
 		} else {
-			$recordSet =& $this->ExecuteCachedReturnRecordset($pg); 
+			$recordSet = $this->ExecuteCachedReturnRecordset($pg); 
 		}
 		
 		if (!empty($this->error)) {

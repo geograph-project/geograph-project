@@ -112,7 +112,7 @@ ORDER BY gridsquare_id,min_seq_no
 
 
 $last = -1;
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 
 while (!$recordSet->EOF) 
 {

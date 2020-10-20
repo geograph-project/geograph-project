@@ -96,7 +96,7 @@ function runit($table,$column,$primary) {
 	print "$sql\n";
 
 	$c=0;$m=0;
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 	while (!$recordSet->EOF) {
         	//$recordSet->fields['comment']
 		$row = $recordSet->fields;

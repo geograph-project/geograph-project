@@ -78,10 +78,10 @@ fwrite ($rdf,
 
 $db=NewADOConnection($GLOBALS['DSN']);
 if (!empty($_GET['rejected'])) {
-$recordSet = &$db->Execute(sprintf("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where moderation_status = 'rejected'",$s,$s+10000));
+$recordSet = $db->Execute(sprintf("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where moderation_status = 'rejected'",$s,$s+10000));
 
 } else {
-$recordSet = &$db->Execute(sprintf("select gi.*,user.realname as user_realname from gridimage_search gi inner join user using (user_id) where gridimage_id between %d and %d",$s,$s+10000));
+$recordSet = $db->Execute(sprintf("select gi.*,user.realname as user_realname from gridimage_search gi inner join user using (user_id) where gridimage_id between %d and %d",$s,$s+10000));
 }
 
 $files = array("rdf/$filename.rdf");

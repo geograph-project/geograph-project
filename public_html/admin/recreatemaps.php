@@ -220,7 +220,7 @@ if (isset($_GET['coast_GB_40'])) {
 					where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
 					$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
 			
-			$recordSet = &$db->Execute("$sql");
+			$recordSet = $db->Execute("$sql");
 			while (!$recordSet->EOF) 
 			{
 				print implode(', ',array_values($recordSet->fields))."<br/>";
@@ -250,7 +250,7 @@ if (isset($_GET['coast_GB_40'])) {
 	
 	$map=new GeographMap;
 	
-	$recordSet = &$db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit $limit");
+	$recordSet = $db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit $limit");
 	while (!$recordSet->EOF) 
 	{
 		foreach($recordSet->fields as $name=>$value)

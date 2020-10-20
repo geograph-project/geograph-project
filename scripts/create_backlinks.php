@@ -53,7 +53,7 @@ for ($from=$start; $start<=$max; $start+=$perpage) {
 
 	$bits = array();
 
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 
 	while (!$recordSet->EOF) {
 		$gridimage_id =  $recordSet->fields['gridimage_id'];

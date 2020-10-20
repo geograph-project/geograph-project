@@ -65,7 +65,7 @@ LIMIT {$offset}{$param['number']}";
 
 
 $done = 0;
-$recordSet = &$db->Execute("$sql");
+$recordSet = $db->Execute("$sql");
 
 print "c = ".$recordSet->RecordCount()."\n";
 

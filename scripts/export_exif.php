@@ -133,7 +133,7 @@ function dump_file($start,$end,$table) {
         $h = fopen($out_file, "a");
 
 	$c=0;
-        $recordSet = &$db->Execute($sql);
+        $recordSet = $db->Execute($sql);
         while (!$recordSet->EOF) {
 		fwrite($h, $recordSet->fields['gridimage_id']."\t". base64_encode($recordSet->fields['exif'])."\n") ;
                 $recordSet->MoveNext();

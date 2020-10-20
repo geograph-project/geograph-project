@@ -222,7 +222,7 @@ if (isset($_GET['downloadJobData'])) {
 				//yahoo api via jsonp will not manage long descriptions - will do them as a seperate job
 
 				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-				$recordSet = &$db->Execute($sql);
+				$recordSet = $db->Execute($sql);
 
 				$a = array();
 				while (!$recordSet->EOF) 
@@ -238,7 +238,7 @@ if (isset($_GET['downloadJobData'])) {
 				//title is not actully needed - but php clients expect the column. 
 
 				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-				$recordSet = &$db->Execute($sql);
+				$recordSet = $db->Execute($sql);
 
 				$f = fopen("php://output", "w");
 				if (!$f) {
@@ -264,7 +264,7 @@ if (isset($_GET['downloadJobData'])) {
 				$sql = "SELECT gridimage_id,title,comment FROM gridimage_search WHERE grid_reference = '$gr' ORDER BY seq_no";
 		
 				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-				$recordSet = &$db->Execute($sql);
+				$recordSet = $db->Execute($sql);
 
 				$f = fopen("php://output", "w");
 				if (!$f) {
@@ -426,7 +426,7 @@ if (isset($_GET['downloadJobData'])) {
 		$sql = "SELECT gridsquare_id FROM gridsquare WHERE imagecount > 2";
 					
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 
 		while (!$recordSet->EOF) {
 		

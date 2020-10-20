@@ -78,7 +78,7 @@ if (isset($_GET['tags'])) {
 
 	$wordcount = array();
 
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 	while (!$recordSet->EOF) {
 		$words = preg_split('/[^a-zA-Z0-9]+/',trim(str_replace("'",'',$recordSet->fields['title'])));
 

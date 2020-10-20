@@ -78,7 +78,7 @@ if (empty($_GET['tab'])) {
 		$t = 0;
 		$sql = "SELECT gridimage_id gid,title t,showday s FROM gridimage_search INNER JOIN gridimage_daily USING (gridimage_id) WHERE showday IS NOT NULL AND showday < NOW() AND user_id = $u ORDER BY showday";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			$r = $recordSet->fields;
 			if (!$t) {
@@ -99,7 +99,7 @@ if (empty($_GET['tab'])) {
 		$t = $l = '';
 		$sql = "SELECT gi.gridimage_id gid,gi.title t,url,c.title ct FROM gridimage_search gi INNER JOIN gridimage_content USING (gridimage_id) INNER JOIN content c USING (content_id) WHERE gi.user_id = $u ORDER BY content_id";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			$r = $recordSet->fields;
 			if (!$t) {
@@ -125,7 +125,7 @@ if (empty($_GET['tab'])) {
 		$t = $l = '';
 		$sql = "SELECT gi.gridimage_id gid,gi.title t,url,c.title ct FROM gridimage_search gi INNER JOIN content c USING (gridimage_id) WHERE gi.user_id = $u AND source != 'snippet' ORDER BY content_id";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			$r = $recordSet->fields;
 			if (!$t) {
@@ -156,7 +156,7 @@ if (empty($_GET['tab'])) {
 			$sql = "SELECT gridimage_id gid,title t,topic_id tid,topic_title as tt,post_id p ,forum_id f FROM gridimage_search INNER JOIN gridimage_post USING (gridimage_id) INNER JOIN geobb_topics USING (topic_id) WHERE user_id = $u ORDER BY topic_id,post_id";
 		}
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			$r = $recordSet->fields;
 			if (!$t) {
@@ -182,7 +182,7 @@ if (empty($_GET['tab'])) {
 		$t = '';
 		$sql = "SELECT gridimage_id gid,title t,count(*) c FROM gridimage_search INNER JOIN gridimage_query USING (gridimage_id) WHERE user_id = $u GROUP BY gridimage_id HAVING c > 1 ORDER BY c DESC";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			$r = $recordSet->fields;
 			if (!$t) {
@@ -203,7 +203,7 @@ if (empty($_GET['tab'])) {
 		$t = '';
 		$sql = "SELECT gridimage_id gid,title t,type s FROM gridimage_search INNER JOIN vote_stat ON (gridimage_id=id) WHERE user_id = $u AND type in ('img','desc') ORDER BY last_vote DESC";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			$r = $recordSet->fields;
 			if (!$t) {

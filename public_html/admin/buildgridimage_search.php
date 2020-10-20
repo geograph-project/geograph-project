@@ -169,7 +169,7 @@ if (!empty($_POST['update']))
 		$andwhere = " AND gridimage_id IN ($ids) ";
 	}
 
-	$recordSet = &$db->Execute("select gridimage_id,x,y,reference_index,nateastings,natnorthings
+	$recordSet = $db->Execute("select gridimage_id,x,y,reference_index,nateastings,natnorthings
 		from gridimage
 		INNER JOIN gridsquare AS gs USING ( gridsquare_id )
 		where moderation_status in ('accepted','geograph')
@@ -211,7 +211,7 @@ if (!empty($_POST['fix']))
 		$andwhere = " AND gi.gridimage_id IN ($ids) ";
 	}
 
-	$recordSet = &$db->Execute("SELECT gi.gridimage_id,x,y,reference_index,nateastings,natnorthings,wgs84_lat,wgs84_long
+	$recordSet = $db->Execute("SELECT gi.gridimage_id,x,y,reference_index,nateastings,natnorthings,wgs84_lat,wgs84_long
 		FROM gridimage gi
 		INNER JOIN gridimage_search AS gs USING ( gridimage_id )
 		INNER JOIN gridimage_ticket_archive AS gt USING ( gridimage_id )

@@ -197,7 +197,7 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_placenames'")) {
 
 	$sql = "SELECT placename_id,has_dup,km_ref,reference_index FROM sphinx_placenames WHERE km_ref LIKE ',%'";
 
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;

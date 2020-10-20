@@ -48,7 +48,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 	$tim = time();
 	
-	$recordSet = &$db->Execute("select gridimage_id,title from gridimage where moderation_status != 'rejected'");
+	$recordSet = $db->Execute("select gridimage_id,title from gridimage where moderation_status != 'rejected'");
 	
 	$db->Execute("truncate wordnet1");
 	$db->Execute("truncate wordnet2");

@@ -107,7 +107,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$maxdate="";
 	
 	$offset=($sitemap-1)*$urls_per_sitemap;
-	$recordSet = &$db->Execute(
+	$recordSet = $db->Execute(
 		"select u.user_id,date(upd_timestamp) as moddate ".
 		"from user_stat u ".
 		"inner join gridimage_search gi on(u.last = gridimage_id) ".

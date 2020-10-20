@@ -94,7 +94,7 @@ fprintf($fh, "<html><head><title>Contributor List for Geograph Britain and Irela
 		"<p align=\"center\">");
 		
 
-$recordSet = &$db->Execute("SELECT user_id,realname,nickname,images FROM user INNER JOIN user_stat USING (user_id) ORDER BY realname");
+$recordSet = $db->Execute("SELECT user_id,realname,nickname,images FROM user INNER JOIN user_stat USING (user_id) ORDER BY realname");
 while (!$recordSet->EOF) 
 {
 	$r = $recordSet->fields;

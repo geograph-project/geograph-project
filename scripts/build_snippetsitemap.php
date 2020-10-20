@@ -107,7 +107,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$maxdate="";
 	
 	$offset=($sitemap-1)*$urls_per_sitemap;
-	$recordSet = &$db->Execute(
+	$recordSet = $db->Execute(
 		"select snippet_id,date(updated) as updated ".
 		"from snippet where enabled = 1 ".
 		"limit $offset,$urls_per_sitemap");

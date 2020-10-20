@@ -810,7 +810,7 @@ split_timer('gridsquare'); //starts the timer
 			$inc_all_user = "=$inc_all_user";
 		}
 		$i=0;
-		$recordSet = &$db->Execute("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname ".
+		$recordSet = $db->Execute("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname ".
 			"from gridimage gi ".
 			"inner join user using(user_id) ".
 			"where gridsquare_id={$this->gridsquare_id} $custom_where_sql ".

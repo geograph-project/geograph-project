@@ -90,7 +90,7 @@ foreach ($prefixes as $prefix) {
 		WHERE imagetaken NOT LIKE '0000%' AND moderation_status = 'geograph'
 		AND $sql_where
 		ORDER BY grid_reference,seq_no";
-	$recordSet = &$db_read->Execute($sql);
+	$recordSet = $db_read->Execute($sql);
 
 	if ($param['verbose'])
 		print "=> $sql\n";

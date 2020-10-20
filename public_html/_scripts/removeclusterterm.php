@@ -33,7 +33,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 
 print "<pre>";
 
-$recordSet = &$db->Execute("SELECT tag_id,tag,prefix FROM tag WHERE prefix IN ('cluster','term') and tag = 'bridge' AND status = 1 LIMIT 10");
+$recordSet = $db->Execute("SELECT tag_id,tag,prefix FROM tag WHERE prefix IN ('cluster','term') and tag = 'bridge' AND status = 1 LIMIT 10");
 $count=0;
 while (!$recordSet->EOF) 
 {

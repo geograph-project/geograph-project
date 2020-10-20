@@ -136,7 +136,7 @@ FROM tmpflam INNER JOIN gridimage g USING (gridimage_id) INNER JOIN gridsquare g
 
 print "$sql\n";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 
 while (!$recordSet->EOF) 
 {
@@ -155,7 +155,7 @@ $sql = "SELECT GROUP_CONCAT(user_id) as user_id, realname,count(*) as c FROM use
 
 print "$sql\n";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 
 while (!$recordSet->EOF) 
 {
@@ -204,7 +204,7 @@ foreach (range(1,12) as $month) {
 	$months[$month] = date("M",strtotime("2005-$month-04"));
 }
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 $t = 1; $c = 1; $p = 1;
 $imagetaken_map = $imageclass_map = array();
 while (!$recordSet->EOF) 
@@ -279,7 +279,7 @@ $sql = "SELECT gridimage_id,label FROM gridimage_group INNER JOIN tmpflam USING 
 
 print "$sql\n";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 
 $cluster_map = array();
 $c = 1;
@@ -331,7 +331,7 @@ foreach ($sqls as $sql) {
 
 	print "$sql\n";
 
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 
 	while (!$recordSet->EOF) 
 	{
@@ -369,7 +369,7 @@ foreach ($sqls as $sql) {
 	
 	print "$sql\n";
 
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;

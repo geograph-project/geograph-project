@@ -104,7 +104,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$sql = "select user_id,grid_reference,title,count(*) as images,group_concat(gridimage_id) as ids from gridimage_search where  title != '' group by user_id,grid_reference,title having images > 1 order by null";
 	print "$sql\n";
 	
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 		
 	while (!$recordSet->EOF) 
 	{

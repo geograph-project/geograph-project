@@ -82,7 +82,7 @@ function processGroup($label,$table,$column = '1',$where = '1',$gi_column = 'gri
 	$biggest = 0;
 	$l = $db->Quote($label);
 	
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 	if ($recordSet->_numOfRows> 1) {
 	
 		while (!$recordSet->EOF) {

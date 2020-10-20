@@ -992,7 +992,7 @@ split_timer('map'); //starts the timer
 				where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
 				$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
 			
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 			while (!$recordSet->EOF) 
 			{
 				$mkey = $this->getImageFilename($recordSet->fields);
@@ -1022,7 +1022,7 @@ split_timer('map'); //starts the timer
 			$sql="select * from mapcache 
 			where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
 			$y between map_y and (map_y+image_h/pixels_per_km-1)";
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 			while (!$recordSet->EOF) 
 			{
 				$file = $this->getBaseMapFilename($recordSet->fields);
@@ -1055,7 +1055,7 @@ split_timer('map','expirePosition',"($x,$y,$user_id,$expire_basemaps)=$deleted")
 
 		$sql="select * from mapcache where $crit";
 		$deleted = 0;
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$file = $this->getImageFilename($recordSet->fields);

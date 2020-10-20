@@ -1604,7 +1604,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$smarty->assign_by_ref('distances',$d);
 
 			$countylist = array();
-			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
+			$recordSet = $db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
 			while (!$recordSet->EOF)
 			{
 				$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];

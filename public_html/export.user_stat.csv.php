@@ -67,7 +67,7 @@ foreach ($db->getRow("SELECT * FROM user_stat WHERE user_id = 0") as $name => $v
 }
 $columns = implode(',',$columns);
 
-$recordSet = &$db->Execute("SELECT $columns FROM user_stat $where");
+$recordSet = $db->Execute("SELECT $columns FROM user_stat $where");
 
 $counter = -1;
 while (!$recordSet->EOF) 

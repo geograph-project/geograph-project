@@ -31,7 +31,7 @@ $db = GeographDatabaseConnection(false);
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-$recordSet = &$db->Execute("SELECT user_id,MD5(LOWER(email)) m5d FROM user INNER JOIN user_stat USING (user_id) WHERE gravatar = 'unknown' LIMIT 1000");
+$recordSet = $db->Execute("SELECT user_id,MD5(LOWER(email)) m5d FROM user INNER JOIN user_stat USING (user_id) WHERE gravatar = 'unknown' LIMIT 1000");
 while (!$recordSet->EOF) {
 
 	#"http://www.gravatar.com/avatar/53640618dabda27e268972addfe9bb83?d=404"

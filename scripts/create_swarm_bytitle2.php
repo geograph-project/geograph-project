@@ -104,7 +104,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$sql = "select user_id,grid_reference, concat(substring_index(title,':',1),': ...') as title,count(*) as images,group_concat(gridimage_id) as ids from gridimage_search where title like '_____%:%' group by user_id,grid_reference, substring_index(title,':',1) having images > 1 order by null";
 	print "$sql\n";
 	
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 		
 	while (!$recordSet->EOF) 
 	{

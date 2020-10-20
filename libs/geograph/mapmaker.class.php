@@ -98,7 +98,7 @@ class MapMaker
 			"(x between $left and $right) and ".
 			"(y between $bottom and $top) order by imagecount";
 			
-		$recordSet = &$this->db->Execute($sql);
+		$recordSet = $this->db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields[0];
@@ -133,7 +133,7 @@ class MapMaker
 				//"and reference_index=1 and landcount>0";
 
 
-			$recordSet = &$this->db->Execute($sql);
+			$recordSet = $this->db->Execute($sql);
 			while (!$recordSet->EOF) 
 			{
 				$origin_x=$recordSet->fields['origin_x'];

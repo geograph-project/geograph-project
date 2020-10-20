@@ -86,7 +86,7 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 			}
 		} 
 		$r = 1;
-		$recordSet = &$db->Execute("SELECT Folder,CacheID FROM smarty_cache_page WHERE $where");
+		$recordSet = $db->Execute("SELECT Folder,CacheID FROM smarty_cache_page WHERE $where");
 		while (!$recordSet->EOF) {
 			$r += $m->delete($recordSet->fields['Folder'].$recordSet->fields['CacheID']);
 			$recordSet->MoveNext();
