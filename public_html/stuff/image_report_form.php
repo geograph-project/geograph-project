@@ -37,10 +37,6 @@ $smarty->display("_std_begin.tpl");
 
 print "<h2>Geograph Image Issue Report Form</h2>";
 
-print "<p>Please let us know here if unable to view an image on geograph. This includes if having issues with fresh submissions.  </p>";
-
-print "<p>If have multiple images to report, will have to submit multiple times";
-
 if (!empty($_POST)) {
 
 /*
@@ -63,6 +59,16 @@ if (!empty($_POST)) {
 	$db = GeographDatabaseConnection(false);
 
 	$updates = array();
+
+function check_path($server,$path, $row) {
+        $cmd = "ls -l {$_SERVER['DOCUMENT_ROOT']}$path";
+        print "$cmd\n";
+        passthru($cmd);
+
+	$url = $server.$path;
+        print "$url\n";
+}
+
 
 	if (!empty($_POST['bulk'])) {
 		$lines = explode("\n",str_replace("\r",'',$_POST['bulk']));
@@ -157,18 +163,54 @@ print "</pre>";
 
 	}
 
-}
+} elseif (!empty($_GET['results'])) {
+	$db = GeographDatabaseConnection(true);
+	print "<p>Recently fixed images:<br>";
 
-function check_path($server,$path, $row) {
-        $cmd = "ls -l {$_SERVER['DOCUMENT_ROOT']}$path";
-        print "$cmd\n";
-        passthru($cmd);
 
-	$url = $server.$path;
-        print "$url\n";
+	function outputthumbs($rows,$thumbw,$thumbh) {
+		foreach ($rows as $id => $row) {
+			$image = new Gridimage($id);
+			$title = htmlentities2("{$image->title} by {$image->realname}");
+
+			print "<div style=\"float:left;width:".($thumbw+10)."px;height:".($thumbh+30)."px;border:1px solid gray; margin:2px;\">";
+			print "<a href=\"/photo/$id\" title=\"$title\">";
+			if ($thumbw != 200) {
+				print $image->getThumbnail($thumbw,$thumbh);
+			} else {
+				$image->_getFullSize(); //just sets orginal_width
+                                $url = $image->getLargestPhotoPath(true); //true, gets the URL
+				print "<img src=\"$url\" style=\"max-width:200px;max-height:200px\">";
+			}
+			print "</a><br>";
+			print "Reported: {$row['created']}";
+			print "</div>";
+		}
+		print "<br style=clear:both>";
+	}
+
+	$rows = $db->getAssoc("select gridimage_id,created,status from image_report_form where affected like '%120px%' and status like '%_120x120.jpg:okurl%' order by report_id desc limit 10");
+	 $thumbw=120; $thumbh=120;
+	outputthumbs($rows,$thumbw,$thumbh);
+
+	$rows = $db->getAssoc("select gridimage_id,created,status from image_report_form where affected like '%213px%' and status like '%_213x160.jpg:okurl%' order by report_id desc limit 10");
+	 $thumbw=213; $thumbh=160;
+	outputthumbs($rows,$thumbw,$thumbh);
+
+	$rows = $db->getAssoc("select gridimage_id,created,status from image_report_form where affected like '%Photo Page%' and status like '%.jpg:okurl%' order by report_id desc limit 10");
+	 $thumbw=200; $thumbh=200;
+	outputthumbs($rows,$thumbw,$thumbh);
+
+
+	print "If dont see all thumbnails above, press F5 to try reloading<hr>";
 }
 
 ?>
+
+<p>Please let us know here if unable to view an image on geograph. This includes if having issues with fresh submissions.  </p>
+
+<p>If have multiple images to report, will have to submit multiple times</p>
+
 <form method=post>
 <table border=0 cellspacing=0 cellpadding=5>
 <?
