@@ -63,8 +63,11 @@ WHERE
 GROUP BY url
 LIMIT {$offset}{$param['number']}";
 
+
 $done = 0;
 $recordSet = &$db->Execute("$sql");
+
+print "c = ".$recordSet->RecordCount()."\n";
 
 $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)';
 ini_set('user_agent',$ua);
@@ -114,8 +117,23 @@ while (!$recordSet->EOF)
 		|| preg_match('/\.(uk|ie)\/gallery\/[\w-]+?_(\d+)\b/',$url,$m) //we do gallery directly because the nameslug is UNimportant and could change
 		) {
 		 $lookup = intval($m[2]);
-                if ($db->getOne("SELECT topic_id FROM geobb_topics WHERE topic_id = $lookup AND forum_id=11")) { //need to SPECIFICALLY check for galleries!
+		$forum_id = $db->getOne("SELECT forum_id FROM geobb_topics WHERE topic_id = $lookup");
+                if ($forum_id==11) { //need to SPECIFICALLY check for galleries!
                         $updates['HTTP_Status'] =  $updates['HTTP_Status_final'] = 200;
+                } elseif ($forum_id) {
+                        $updates['HTTP_Status'] =  $updates['HTTP_Status_final'] = 403;
+                } else {
+                        //unknown!
+                        $updates['HTTP_Status'] =  $updates['HTTP_Status_final'] = 404;
+                }
+
+	} elseif(preg_match('/\.(uk|ie)\/discuss\/.*gridref=(\w{1,2}\d+)/',$url,$m)) {
+		 $lookup = $db->Quote($m[2]);
+		$forum_id = $db->getOne("SELECT forum_id FROM geobb_topics WHERE topic_title = $lookup");
+                if ($forum_id==11) { //need to SPECIFICALLY check for galleries!
+                        $updates['HTTP_Status'] =  $updates['HTTP_Status_final'] = 200;
+                } elseif ($forum_id) {
+                        $updates['HTTP_Status'] =  $updates['HTTP_Status_final'] = 403;
                 } else {
                         //unknown!
                         $updates['HTTP_Status'] =  $updates['HTTP_Status_final'] = 404;

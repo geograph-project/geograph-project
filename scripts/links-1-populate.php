@@ -196,6 +196,7 @@ while (!$recordSet->EOF)
 				//existing row on other image, needs duplicating!
 				$row = $rows[0];
 				unset($row['gridimage_link_id']);
+				unset($row['content_id']);
 				$row['gridimage_id'] = $recordSet->fields['gridimage_id'];
 				$row['created'] = $bindts;
 				$row['first_used'] = $bindts; //todo, this should only be set if running this script regulally, if not should be blank so fix-first can pupulate it

@@ -58,8 +58,11 @@ if (!empty($param['mode']) && $param['mode'] == 'retry') {
 	$sql = "SELECT gridimage_link_id,url,first_used FROM gridimage_link
 	WHERE archive_checked LIKE '0000%' AND next_check < '9999-00-00'
 	AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%' AND parent_link_id = 0
+        AND url NOT LIKE 'http://web.archive.org/web/%'
+        AND url NOT LIKE 'https://web.archive.org/web/%'
 	GROUP BY url ORDER BY first_used LIMIT {$param['number']}";
 }
+
 
 $timetravelurl = "http://timetravel.mementoweb.org/api/json/";
 
