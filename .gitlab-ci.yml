@@ -66,6 +66,20 @@ staging/geograph:
   needs:
     - build/geograph
 
+staging/geograph-cron:
+  extends: .k8s_deploy_staging
+  variables:
+    FLUX_IMAGE: geograph
+  needs:
+    - build/geograph
+
+staging/geograph-bot:
+  extends: .k8s_deploy_staging
+  variables:
+    FLUX_IMAGE: geograph
+  needs:
+    - build/geograph
+
 staging/manticore:
   extends: .k8s_deploy_staging
   variables:
@@ -98,6 +112,20 @@ production/carrot2-dcs:
 
 production/geograph:
   extends: .k8s_deploy_production
+  needs:
+    - staging/geograph
+
+production/geograph-cron:
+  extends: .k8s_deploy_production
+  variables:
+    FLUX_IMAGE: geograph
+  needs:
+    - staging/geograph
+
+production/geograph-bot:
+  extends: .k8s_deploy_production
+  variables:
+    FLUX_IMAGE: geograph
   needs:
     - staging/geograph
 
