@@ -60,6 +60,8 @@ if (!empty($param['mode']) && $param['mode'] == 'retry') {
 	AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%' AND parent_link_id = 0
         AND url NOT LIKE 'http://web.archive.org/web/%'
         AND url NOT LIKE 'https://web.archive.org/web/%'
+	AND url NOT LIKE 'http://webarchive.nationalarchives.gov.uk%'
+	AND url NOT LIKE 'https://www.webarchive.org.uk/wayback%'
 	GROUP BY url ORDER BY first_used LIMIT {$param['number']}";
 }
 
