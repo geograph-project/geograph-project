@@ -4,7 +4,7 @@ include:
   - local: /ci-build/variables.yaml
 
 variables:
-  FLUXCTL_IMAGE: fluxcd/fluxctl:1.20.2
+  FLUXCTL_IMAGE: fluxcd/fluxctl:1.21.0
   FLUX_FORWARD_NAMESPACE: tcl-system
 
 stages:
