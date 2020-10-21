@@ -4,7 +4,7 @@ include:
   - local: /ci-build/variables.yaml
 
 variables:
-  FLUXCTL_IMAGE: fluxcd/fluxctl:1.20.2
+  FLUXCTL_IMAGE: fluxcd/fluxctl:1.21.0
   FLUX_FORWARD_NAMESPACE: tcl-system
 
 stages:
@@ -44,16 +44,7 @@ build/memgator:
   variables:
     FLUX_KIND: deployment
   script:
-    - 'export COMPONENT="${CI_JOB_NAME#${CI_JOB_STAGE}/*}"'
-    - 'export IMAGE_NAME="${CI_REGISTRY_IMAGE}/${GEO_REGION}/${COMPONENT}"'
-    - fluxctl list-workloads -n ${KUBE_NAMESPACE}
-    - fluxctl list-images --workload ${KUBE_NAMESPACE}:${FLUX_KIND}/${COMPONENT}
-    - fluxctl release
-      --workload ${KUBE_NAMESPACE}:${FLUX_KIND}/${COMPONENT}
-      --update-image ${IMAGE_NAME}:$CI_COMMIT_SHORT_SHA
-      --user "${GITLAB_USER_NAME} <${GITLAB_USER_EMAIL}>"
-      --message "Deployed by CI pipeline ${CI_PIPELINE_URL}"
-      --watch
+    - ash ci-build/flux-deploy.sh
 
 # Deployments to staging environment
 .k8s_deploy_staging:
@@ -72,6 +63,20 @@ staging/carrot2-dcs:
 
 staging/geograph:
   extends: .k8s_deploy_staging
+  needs:
+    - build/geograph
+
+staging/geograph-cron:
+  extends: .k8s_deploy_staging
+  variables:
+    FLUX_IMAGE: geograph
+  needs:
+    - build/geograph
+
+staging/geograph-bot:
+  extends: .k8s_deploy_staging
+  variables:
+    FLUX_IMAGE: geograph
   needs:
     - build/geograph
 
@@ -107,6 +112,20 @@ production/carrot2-dcs:
 
 production/geograph:
   extends: .k8s_deploy_production
+  needs:
+    - staging/geograph
+
+production/geograph-cron:
+  extends: .k8s_deploy_production
+  variables:
+    FLUX_IMAGE: geograph
+  needs:
+    - staging/geograph
+
+production/geograph-bot:
+  extends: .k8s_deploy_production
+  variables:
+    FLUX_IMAGE: geograph
   needs:
     - staging/geograph
 
