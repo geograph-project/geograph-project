@@ -31,7 +31,7 @@ $param=array(
 );
 
 $HELP = <<<ENDHELP
-    --action=dummy|execute : set to execute to run for real
+    --action=dummy|execute|verbose : set to execute to run for real, verbose to get extra detail
 ENDHELP;
 
 chdir(__DIR__);
@@ -105,7 +105,7 @@ while (!$recordSet->EOF)
 		if (empty($r['tag2_id'])) {
 			//create tag!
 			$sqls[] = "#INSERT INTO tag SET created=NOW(),".implode(', ',$values).",user_id={$r['user_id']}";
-			if ($param['action'] == 'execute') {
+			if ($param['action'] != 'dummy') {
 				//we actully need to run it now, so all actions can use the newly created tag. (cos we build all the sqls first)
 				$db->Execute("INSERT INTO tag SET created=NOW(),".implode(', ',$values).",user_id={$r['user_id']}");
 				$r['tag2_id'] = $db->Insert_ID();
@@ -116,7 +116,7 @@ while (!$recordSet->EOF)
 			$sqls[] = "#Applying {$r['tag']} > {$r['tag2']} AGAIN";
 		}
 
-		if ($param['action'] == 'execute' && (empty($r['tag_id']) || empty($r['tag2_id'])) ) {
+		if ($param['action'] != 'dummy' && (empty($r['tag_id']) || empty($r['tag2_id'])) ) {
 			print_r($r);
 			$con = print_r($r,TRUE);
 			mail('geograph@barryhunter.co.uk','[Geograph] MISSING TAG IDS',$con);
@@ -165,7 +165,9 @@ while (!$recordSet->EOF)
 $recordSet->Close();
 
 if (empty($tickets) && empty($final)) {
-	die("no queries\n");
+	if ($param['action'] != 'execute')
+		print "no queries\n";
+	exit;
 }
 
 foreach ($tickets as $gridimage_id => $sql) {
@@ -178,15 +180,18 @@ foreach ($final as $idx => $sql) {
 	$sqls[] = $sql;
 }
 
-if ($param['action'] == 'execute') {
+if ($param['action'] != 'dummy') {
 	foreach ($sqls as $sql) {
 		if (strpos($sql,'#') !== 0) {
 			$db->Execute($sql);
-			$rows = $db->Affected_Rows();
-			print "[$rows] ";
+			if ($param['action'] = 'verbose') {
+				$rows = $db->Affected_Rows();
+				print "[$rows] ";
+			}
 		}
 
-		print preg_replace('/\s+/s',' ',$sql)."\n";
+		if ($param['action'] = 'verbose')
+			print preg_replace('/\s+/s',' ',$sql)."\n";
 	}
 } else {
 	foreach ($sqls as $sql) {
@@ -194,4 +199,6 @@ if ($param['action'] == 'execute') {
 	}
 }
 
-print "/END\n\n";
+if ($param['action'] != 'execute')
+	print "/END\n\n";
+
