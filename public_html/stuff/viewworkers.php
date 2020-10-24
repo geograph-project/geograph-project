@@ -57,13 +57,74 @@ foreach ($tabs as $key => $value) {
 }
 print "</p>";
 
-if (isset($_GET['tab']) && $_GET['tab'] == 'all') {
+$merge = $db->getOne("SHOW TABLES LIKE 'at_home_job_merge'")?'_merge':'';
 
-dump_sql_table("
-select team,sum(terms) as terms,sum(images) as images,count(*) as jobs
-from at_home_job inner join at_home_worker using(at_home_worker_id)
-where task = '$task'
-group by team with rollup",'All Time');
+if (isset($_GET['tab']) && $_GET['tab'] == 'coverage') {
+	$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+	$data = $db->getAssoc("SELECT CONCAT(start_gridimage_id,'-',IF(repeat_of>0,1,0)) as k,end_gridimage_id,count(*) as jobs,sum(images) as images,sum(terms) as terms,at_home_job_id
+		from at_home_job$merge
+		where task = '$task'
+		group by k,end_gridimage_id
+		order by null");
+
+	$c = array(0,0,0);
+	print "<table cellspacing=0 border=1 cellpadding=3>";
+	foreach (range(1,$max,5000) as $s) {
+		$c[2]++;
+		print "<tr><th align=right>$s</th>";
+		$im = 0;
+		$end = 0;
+		foreach (range(0,1) as $t) {
+			$k = "$s-$t";
+			if (isset($data[$k])) {
+				$c[$t]++;
+				$end = max($end,$data[$k]['end_gridimage_id']);
+				if ($data[$k]['end_gridimage_id'] == $s+4999)
+					$data[$k]['end_gridimage_id'] = '';
+				else
+					$last = $data[$k];
+
+				print "<td align=right>{$data[$k]['end_gridimage_id']}</td>";
+				print "<td align=right style=color:gray>{$data[$k]['jobs']}</td>";
+				print "<td ".($data[$k]['images']<($t?100:2000)?' style="background-color:pink"':'')." align=right>{$data[$k]['images']}</td>";
+				print "<td align=right style=color:silver>{$data[$k]['terms']}</td>";
+				$im += $data[$k]['images'];
+			} else {
+				print "<td></td><td></td><td></td><td></td>";
+				if ($t == 1 && !empty($_GET['sql'])) {
+					if ($s < $last['end_gridimage_id']) {
+						$sql = "INSERT INTO at_home_job SET created=NOW(),start_gridimage_id=$s,end_gridimage_id=$s+4999,repeat_of={$last['at_home_job_id']},task = '$task'";
+						print "$sql;<br>";
+					}
+				}
+			}
+		}
+		print "<td align=right>$im</td>";
+		$p = sprintf('%0.1f',($im/($end-$s+1))*100);
+		print "<td ".($p<50?' style="background-color:pink"':'')." align=right>$p%</td>";
+	}
+	print "<tr><td>{$c[2]}</td><td></td><td>{$c[0]}</td><td></td><td></td><td></td><td>{$c[1]}</td><td></td><td></td><td></td><td></td>";
+	print "</table>";
+	print "$max (latest gridimage_id)";
+
+} elseif (isset($_GET['tab']) && $_GET['tab'] == 'all') {
+
+	dump_sql_table("
+		select team,sum(terms) as terms,sum(images) as images,count(*) as jobs
+		from at_home_job$merge inner join at_home_worker using(at_home_worker_id)
+		where task = '$task'
+		group by team with rollup",'All Time');
+
+} elseif (isset($_GET['tab']) && $_GET['tab'] == 'recent') {
+
+	dump_sql_table("
+		select team,sum(terms) as terms,sum(images) as images,count(*) as jobs
+		from at_home_job inner join at_home_worker using(at_home_worker_id)
+		where last_contact > date_sub(now(),interval 7 day) and task = '$task'
+		group by team with rollup",'Last 7 Days');
+
+} elseif (isset($_GET['tab']) && $_GET['tab'] == 'created') {
+        dump_sql_table("select substring(created,1,13),count(*),sum(completed = 0) from at_home_job where task = '$task' group by substring(created,1,13) desc limit 40", "jobs created");
 
 } elseif (isset($_GET['tab']) && $_GET['tab'] == '24') {
 

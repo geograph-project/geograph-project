@@ -89,7 +89,7 @@ class SearchEngine
 			$sleep = 500000;
 			while (empty($query) && $tries < 10) {
 				$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries WHERE id = $query_id LIMIT 1");
-				if (empty($query)) {
+				if (empty($query) && $db->getOne("SHOW TABLES LIKE 'queries_archive'")) {
 					$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries_archive WHERE id = $query_id LIMIT 1");
 				}
 				if (empty($query)) {

@@ -49,7 +49,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('ri',$ri);
 	} else {
 		$whereri = "";
-		$andri = ""; 
+		$andri = "";
 	}
 
 	$table = array();
@@ -66,33 +66,36 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$sql = "select substring(submitted,1,10) as d ,count(*) as c from gridimage_search where moderation_status = 'geograph' and submitted > '$beginday' AND submitted < '$today' $andri group by substring(submitted,1,10)";
 	$sql2 = "select count(*) from gridimage_search where moderation_status = 'geograph' $andri";
-		
+	
 	$geograph = calc($sql,$sql2,10000,'Geographs');
-		
+	
 	$smarty->assign("geograph",$geograph);
 	
 	
 	$sql = "select substring(suggested,1,10) as d ,count(*) as c from gridimage_ticket where suggested > '$beginday' AND suggested < '$today' group by substring(suggested,1,10)";
 	$sql2 = "select count(*) from gridimage_ticket";
-		
+	
 	$ticket = calc($sql,$sql2,10000,'Suggestions');
-		
+	
 	$smarty->assign("ticket",$ticket);
 	
 	
 	$sql = "select date(last_submitted) as d ,count(*) as c from hectad_stat where last_submitted > '$beginday' AND last_submitted < '$today' $andri group by date(last_submitted)";
 	$sql2 = "select count(*) from hectad_complete $whereri";
-		
+	
 	$hectad = calc($sql,$sql2,100,'Hectads');
-		
+	
 	$smarty->assign("hectad",$hectad);
 	
 	
 	$sql = "select substring(crt_timestamp,1,10) as d ,count(*) as c from queries where crt_timestamp > '$beginday' AND crt_timestamp < '$today' group by substring(crt_timestamp,1,10)";
-	$sql2 = "SELECT (select count(*) from queries)+(select count(*) from queries_archive)";
+	if ($db->getOne("SHOW TABLES LIKE 'queries_archive'"))
+		$sql2 = "SELECT (select count(*) from queries)+(select count(*) from queries_archive)";
+	else
+		$sql2 = "select count(*) from queries";
 
 	$searches = calc($sql,$sql2,10000,'Searches');
-				
+	
 	$smarty->assign("searches",$searches);
 	
 	
@@ -100,7 +103,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql2 = "select count(*) from geobb_posts";
 
 	$post = calc($sql,$sql2,1000,'Posts');
-			
+	
 	$smarty->assign("post",$post);
 
 
@@ -108,7 +111,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql2 = "select count(*) from user where rights <> ''";
 
 	$users = calc($sql,$sql2,500,'Users');
-			
+	
 	$smarty->assign("users",$users);
 	
 	
@@ -117,7 +120,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql2 = "select count(distinct user_id) from gridimage_search $whereri";
 
 	$cusers = calc($sql,$sql2,100,'Contributing Users');
-				
+	
 	$smarty->assign("cusers",$cusers);
 	
 
@@ -125,15 +128,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql2 = "select count(*) from gridimage_search where ftf = 1 $andri";
 
 	$point = calc($sql,$sql2,10000,'Points');
-			
+	
 	$smarty->assign("point",$point);
 
 
 	$total['average'] = $total['average_r'] = $point['total'] / ($days/7); 
 	$total['next'] = $db->getOne("select count(*) from gridsquare where percent_land > 0 $andri");
-		
+	
 	$total['dif'] = $total['next'] - $point['count'];
-		
+	
 	$total['weeks'] = $total['dif']/$total['average'];
 	$total['weeks_r'] = floor($total['weeks']);
 
@@ -156,7 +159,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	array_unshift($table,$first);
 
 	$smarty->assign_by_ref('table', $table);
-		
+	
 	$smarty->assign("total",count($table));
 }
 
@@ -206,5 +209,4 @@ function calc($sql,$sql2,$mult,$title) {
 	$image['days_r'] = ceil($image['days']);
 	return $image;
 }
-	
-?>
+

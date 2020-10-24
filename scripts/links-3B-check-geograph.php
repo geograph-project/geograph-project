@@ -76,6 +76,8 @@ $recordSet = $db->Execute("$sql");
 
 print "c = ".$recordSet->RecordCount()."\n";
 
+$has_query_archive = $db->getOne("SHOW TABLES LIKE 'queries_archive'")?1:0;
+
 $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)';
 ini_set('user_agent',$ua);
 while (!$recordSet->EOF)
@@ -151,7 +153,7 @@ while (!$recordSet->EOF)
 		 $lookup = intval($m[2]);
                 if ($db->getOne("SELECT id FROM queries WHERE id = $lookup")) {
                         $updates['HTTP_Status'] =  $updates['HTTP_Status_final'] = 200;
-                } elseif ($db->getOne("SELECT id FROM queries_archive WHERE id = $lookup")) {
+                } elseif ($has_query_archive && $db->getOne("SELECT id FROM queries_archive WHERE id = $lookup")) {
                         $updates['HTTP_Status'] =  $updates['HTTP_Status_final'] = 200;
                 } else {
                         //unknown!

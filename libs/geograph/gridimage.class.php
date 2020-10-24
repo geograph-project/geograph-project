@@ -808,8 +808,10 @@ split_timer('gridimage'); //starts the timer
 	
 
 		$tickets=array();
-		
-		$recordSet = $db->Execute("select t.*,u.realname as suggester_name,DATEDIFF(NOW(),t.updated) as days from gridimage_ticket_merge as t ".
+
+		$merge = $db->getOne("SHOW TABLES LIKE 'gridimage_ticket_merge'")?'_merge':'';
+
+		$recordSet = $db->Execute("select t.*,u.realname as suggester_name,DATEDIFF(NOW(),t.updated) as days from gridimage_ticket$merge as t ".
 			"inner join user as u using(user_id) ".
 			"where t.gridimage_id={$this->gridimage_id} and t.status in ($statuses) order by t.updated desc");
 		while (!$recordSet->EOF) 

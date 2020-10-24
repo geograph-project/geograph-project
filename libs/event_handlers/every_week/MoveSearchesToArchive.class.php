@@ -37,23 +37,27 @@ class MoveSearchesToArchive extends EventHandler
 {
 	function processEvent(&$event)
 	{
-		//perform actions
-		
-		$db=&$this->_getDB();
-		
-		$db->Execute("lock table queries write, queries_archive write");
-		
-		
-		$db->Execute("INSERT INTO queries_archive SELECT * FROM queries WHERE user_id = 0 and use_timestamp < date_sub(now(),interval 1 month)");
-		
-		$db->Execute("DELETE FROM queries WHERE user_id = 0 and use_timestamp < date_sub(now(),interval 1 month)");
-		
-		
-		$db->Execute("unlock tables;");
-		
+		$db = $this->_getDB();
+
+		//we should abort early, if the table doesn't exist. Soon might be migrating to partitioned table instead of using _archive tables
+		if (!$db->getOne("SHOW TABLES LIKE 'queries_archive'"))
+			return true;
+
+		if (!empty($this->processor) && !empty($this->processor->current_event_id)) {
+			$this->Execute("lock table queries write, queries_archive write, event_log write"); //this->Execute logs results in event_log!
+		} else {
+			$this->Execute("lock table queries write, queries_archive write");
+		}
+
+		$this->Execute("INSERT INTO queries_archive SELECT * FROM queries WHERE user_id = 0 and use_timestamp < date_sub(now(),interval 1 month)");
+
+		if ($db->Affected_Rows() > 0)
+			$this->Execute("DELETE FROM queries WHERE user_id = 0 and use_timestamp < date_sub(now(),interval 1 month)");
+
+		$this->Execute("unlock tables");
+
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;
 	}
-	
 }

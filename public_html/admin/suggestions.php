@@ -110,17 +110,19 @@ $locked = (isset($_GET['locked']))?1:0;
 #############################
 # defaults
 
+$table = ($_GET['type'] == 'closed' && !empty($_GET['q']) && $db->getOne("SHOW TABLES LIKE 'gridimage_ticket_merge'"))?"gridimage_ticket_merge":"gridimage_ticket";
+
 $locks = array();
 $locks[] = "gridimage_moderation_lock WRITE";
 $locks[] = "gridimage_moderation_lock l WRITE";
 $locks[] = "gridimage_ticket_comment as c WRITE";
-$locks[] = "gridimage_ticket t READ"; 
+$locks[] = "$table t READ";
 $locks[] = "user suggester READ";
 $locks[] = "gridimage i READ";
 $locks[] = "user as submitter READ";
 
 
-$columns = ''; 
+$columns = '';
 $tables = '';
 $sql_where = '';
 
@@ -333,7 +335,7 @@ $newtickets=$db->GetAll($sql =
 		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment,
 		group_concat(if(c.user_id=t.user_id,c.comment,null)) as suggester_comment
 		$columns
-	from gridimage_ticket as t
+	from $table as t
 	inner join user as suggester on (suggester.user_id=t.user_id)
 	inner join gridimage as i on (t.gridimage_id=i.gridimage_id)
 	inner join user as submitter on (submitter.user_id=i.user_id)
