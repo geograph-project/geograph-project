@@ -66,6 +66,8 @@ $percent=$last_percent=0;
 $count=0;
 $last_id=0;
 $stat=array();
+$datecrit = date('Y-m-d', time()-86400*3);
+
 for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 {
 	//prepare output file and query
@@ -102,19 +104,45 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	if ($last_id)
 		$where[] = "gridimage_id > $last_id"; //still fast, as ordered by id too, it can use it as a index.
 
-	if ($last_id > 5800000) {
-		$extra = ", original_width, original_height";
-		$join = " inner join gridimage_size using (gridimage_id) ";
-	} else {
-		$extra = $join = '';
-	}
-
-	$recordSet = $db->Execute(
-		"select i.gridimage_id,date(upd_timestamp) as moddate,title,user_id,realname $extra ".
-		"from gridimage_search as i $join ".
+	$recordSet = &$db->Execute($sql = 
+		"select i.gridimage_id,date(upd_timestamp) as moddate,title,user_id,realname ".
+		"from gridimage_search as i ".
 		"where ".implode(" and ",$where)." ".
 		"order by i.gridimage_id ".
 		"limit $urls_per_sitemap");
+
+print "$sitemap :: $maxdate < $datecrit\n$sql\n\n\n";
+
+	while (!$recordSet->EOF) {
+		$date=$recordSet->fields['moddate'];
+
+		//store the id from the LAST row (need to do this now, because may abort running the full build)
+		$last_id = $recordSet->fields['gridimage_id'];
+
+                if (strcmp($date,$maxdate)>0)
+                        $maxdate=$date;
+
+                $recordSet->MoveNext();
+        }
+
+        $recordSet->moveFirst();
+
+	if ($maxdate < $datecrit) {
+		//abort early
+		printf("Aborting sitemap %d of %d - %s < %s\n", $sitemap, $sitemaps, $maxdate, $datecrit);
+
+                if ($last_id >= $image->enforce_https) //temporally hotwire
+                        $param['protocol'] = 'https';
+		@$stat[$sitemap][$param['protocol']]++;
+
+		if ($param['normal'])
+			unlink($filename); //we only deleting the uncompressed file, any existing .gz file untouched!
+		if ($param['images'])
+			unlink($filename3);
+
+                $recordSet->Close();
+                continue;
+	}
 
 	$image=new GridImage;
 
@@ -153,7 +181,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			"</url>\n",
 			$recordSet->fields['gridimage_id'],
 			$date,
-			$image->getLargestPhotoPath(true),
+			$image->_getFullpath(false,true),
                         xmlentities(latin1_to_utf8($image->title)),
                         xmlentities(utf8_encode($image->realname))
 			);
