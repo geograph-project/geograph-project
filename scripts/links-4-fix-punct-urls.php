@@ -40,8 +40,17 @@ ini_set("default_socket_timeout",15);
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
+#####################################################
+
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+if (!$db->getOne("SELECT GET_LOCK('".basename($argv[0])."',3600)")) {
+        die("unable to get a lock;\n");
+}
+
+#####################################################
+
 
 //this is not actully the link check bot, but gives something so can contact us!
 $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)';

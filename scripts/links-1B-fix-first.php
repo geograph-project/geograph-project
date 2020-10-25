@@ -24,9 +24,16 @@
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
+################################################
+
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+if (!$db->getOne("SELECT GET_LOCK('".basename($argv[0])."',3600)")) {
+        die("unable to get a lock;\n");
+}
+
+################################################
 
 $sqls = array();
 $sqls[] = "DROP TABLE gridimage_link_first";
