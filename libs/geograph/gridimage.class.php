@@ -896,20 +896,32 @@ split_timer('gridimage'); //starts the timer
 		$abcdef=sprintf("%06d", $this->gridimage_id);
 		$hash=$this->_getAntiLeechHash();
 
-		$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
-		if (!is_dir("$base/$yz"))
-			mkdir("$base/$yz");
-		if (!is_dir("$base/$yz/$ab"))
-			mkdir("$base/$yz/$ab");
-		if (!is_dir("$base/$yz/$ab/$cd"))
-			mkdir("$base/$yz/$ab/$cd");
+		if ($this->gridimage_id<1000000) {
+			$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
+			if (!is_dir("$base/$ab"))
+				mkdir("$base/$ab");
+			if (!is_dir("$base/$ab/$cd"))
+				mkdir("$base/$ab/$cd");
 
-		$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
+			$dest="$base/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
+		} else {
+
+			$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
+			if (!is_dir("$base/$yz"))
+				mkdir("$base/$yz");
+			if (!is_dir("$base/$yz/$ab"))
+				mkdir("$base/$yz/$ab");
+			if (!is_dir("$base/$yz/$ab/$cd"))
+				mkdir("$base/$yz/$ab/$cd");
+
+			$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
+		}
+
 		if ($movefile)
-			$ret = @rename($srcfile, $dest);
+			$ret = rename($srcfile, $dest);
 		else
-			$ret = @copy($srcfile, $dest);
-			
+			$ret = copy($srcfile, $dest);
+
 split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wall time
 
 		return $ret;
