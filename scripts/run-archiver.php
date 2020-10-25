@@ -37,7 +37,7 @@ require "./_scripts.inc.php";
 ############################################
 
 if (empty($CONF['use_insertionqueue']))
-	print "WARNING: doesnt appear to be using use_insertionqueue\n"; //todo make this FATAL
+	die("Error: doesnt appear to be using use_insertionqueue\n";
 
 //--source h=db-master-pvt,u=geograph,p=m4pp3r,D=geograph_live,t=gridimage_queue
 $source = "--source h={$CONF['db_connect']},u={$CONF['db_user']},p={$CONF['db_pwd']},D={$CONF['db_db']},t=gridimage_queue";
