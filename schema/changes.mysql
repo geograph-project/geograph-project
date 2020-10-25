@@ -2471,3 +2471,16 @@ UPDATE gridimage_link SET next_check = '9999-01-01 00:00:00',updated=updated WHE
 #################################################
 
 
+CREATE TABLE `register_spam` (
+  `blocked` tinyint unsigned default null,
+  `username` varchar(128) not null,
+  `email` varchar(128) not null,
+  `post_data` varchar(1024) not null,
+  `ts` timestamp NOT NULL DEFAULT current_timestamp(),
+  `reported` datetime default null,
+  `ipaddr` varbinary(16) NOT NULL,
+  `useragent` varchar(128) NOT NULL,
+  `session` varchar(32) NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+);
