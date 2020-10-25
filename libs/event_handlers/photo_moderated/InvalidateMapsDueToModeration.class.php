@@ -23,15 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-/**
-* handles the photo_moderated event and maintains a list of
-* recently moderated pictures for use in aiding display of recent pictures
-*
-* @package Geograph
-* @author Barry Hunter <geo@barryhunter.co.uk>
-* @version $Revision: 8910 $
-*/
-
 require_once("geograph/eventhandler.class.php");
 
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
