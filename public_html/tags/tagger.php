@@ -336,10 +336,17 @@ if ($gid) {
 
 	if ($gid < 4294967296 && $template=='tags_tagger.tpl') {
 		$db2 = GeographDatabaseConnection(true);
-		$suggestions = $db2->getAll("(SELECT label AS tag,'' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid AND label NOT IN ('Other Topics','(Other)') ORDER BY score DESC,sort_order) 
-		UNION (SELECT result AS tag,'' AS `prefix` FROM at_home_result WHERE gridimage_id = $gid ORDER BY at_home_result_id)
-		UNION (SELECT result AS tag,'' AS `prefix` FROM at_home_result_archive WHERE gridimage_id = $gid ORDER BY at_home_result_id)
-		UNION (SELECT tag,'wiki' AS `prefix` FROM gridimage_wiki WHERE gridimage_id = $gid ORDER BY seq)");
+
+		$tables = array();
+
+		$tables[] = "SELECT label AS tag,'' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid AND label NOT IN ('Other Topics','(Other)') ORDER BY score DESC,sort_order";
+		$tables[] = "SELECT result AS tag,'' AS `prefix` FROM at_home_result WHERE gridimage_id = $gid ORDER BY at_home_result_id";
+		if ($db2->getOne("SHOW TABLES LIKE 'at_home_result_archive'"))
+			$tables[] = "SELECT result AS tag,'' AS `prefix` FROM at_home_result_archive WHERE gridimage_id = $gid ORDER BY at_home_result_id";
+		$tables[] = "SELECT tag,'wiki' AS `prefix` FROM gridimage_wiki WHERE gridimage_id = $gid ORDER BY seq";
+
+		$suggestions = $db2->getAll("(".implode(') UNION (',$tables).")");
+
 		if (count($used) && count($suggestions)) {
 			$list = array();
 			foreach ($used as $row) $list[$row['tag']]=1;

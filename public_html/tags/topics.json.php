@@ -30,18 +30,22 @@ if (!empty($_GET['gridimage_id'])) {
 	customExpiresHeader(3600);
 
 	$gid = intval($_GET['gridimage_id']);
-	
+
 	$db = GeographDatabaseConnection(true);
-	
+
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-	$topics = $db->getAll("(SELECT label AS tag,'cluster' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid ORDER BY score DESC,sort_order) 
-		UNION (SELECT result AS tag,'term' AS `prefix` FROM at_home_result WHERE gridimage_id = $gid ORDER BY at_home_result_id)
-		UNION (SELECT result AS tag,'term' AS `prefix` FROM at_home_result_archive WHERE gridimage_id = $gid ORDER BY at_home_result_id)
-		UNION (SELECT tag,'wiki' AS `prefix` FROM gridimage_wiki WHERE gridimage_id = $gid ORDER BY seq)");
-	
+	$tables = array();
+	$tables[] = "SELECT label AS tag,'cluster' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid ORDER BY score DESC,sort_order";
+	$tables[] = "SELECT result AS tag,'term' AS `prefix` FROM at_home_result WHERE gridimage_id = $gid ORDER BY at_home_result_id";
+	if ($db->getOne("SHOW TABLES LIKE 'at_home_result_archive'"))
+		$tables[] = "SELECT result AS tag,'term' AS `prefix` FROM at_home_result_archive WHERE gridimage_id = $gid ORDER BY at_home_result_id";
+	$tables[] = "SELECT tag,'wiki' AS `prefix` FROM gridimage_wiki WHERE gridimage_id = $gid ORDER BY seq";
+
+	$topics = $db->getAll("(".implode(') UNION (',$tables).")");
+
 	//todo - if none found, perhaps load a string, and do it on the fly?
-} 
+}
 
 if (false) {
 	$topics[] = array('tag'=>"testing",'prefix'=>'');
