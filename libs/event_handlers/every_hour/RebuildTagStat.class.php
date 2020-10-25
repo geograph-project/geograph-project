@@ -70,7 +70,7 @@ WHERE \$where GROUP BY t1.tag_id ORDER BY NULL";
 			$where = 'gridimage_id < 4294967296';
 
 			$db->Execute("DROP TABLE IF EXISTS tag_stat_tmp");
-			$db->Execute("CREATE TABLE tag_stat_tmp (unique (`tag_id`),index (`rnd`)) ".str_replace('$where',$where,$sql));
+			$db->Execute("CREATE TABLE tag_stat_tmp (primary key (`tag_id`),index (`rnd`)) ".str_replace('$where',$where,$sql));
 			$db->Execute("DROP TABLE IF EXISTS tag_stat");
 			$db->Execute("RENAME TABLE tag_stat_tmp TO tag_stat");
 		}
