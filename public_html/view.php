@@ -360,12 +360,21 @@ if ($image->isValid())
 				$words = explode(' ',trim($image->title));
 				array_pop($words);
 				$title = preg_replace('/[^\w]+$/','',implode(' ',$words))."%";  //the replace removes commas etc from end of words (so 'The Black Horse, Nuthurst', necomes 'The Black Horse')
-				if (($same = $db->getOne("SELECT COUNT(*) AS images FROM gridimage_search where grid_reference = '{$image->grid_reference}' and title LIKE ".$db->Quote($title))) && $same > 1) {
+				//if (($same = $db->getOne("SELECT COUNT(*) AS images FROM gridimage_search where grid_reference = '{$image->grid_reference}' and title LIKE ".$db->Quote($title))) && $same > 1) {
+
+				//should be more effient to do this in manticore/sphinx
+				$sph = GeographSphinxConnection('sphinxql',true);
+				require_once ( "3rdparty/sphinxapi.php" );
+				$query = "@grid_reference {$image->grid_reference} @title \"^".SphinxClient::EscapeString(trim($title,'%')).'"';
+				//NOTE: the spaces before SELECT are delibeate, as adodb automatically adds LIMIT 1, which conflicts with sphinxQL OPTION
+				if (($same = $sph->getOne("  SELECT COUNT(*) FROM gi_stemmed WHERE MATCH(".$sph->Quote($query).") OPTION ranker=none")) && $same > 1) {
+
+					//the space on the end of the URL param is deliberate!
 	                                $url = "/stuff/list.php?title=".urlencode(preg_replace('/%$/',' ',$title))."&amp;gridref={$image->grid_reference}";
-                                	$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title starting with ".htmlentities(preg_replace('/%$/','',$title))."</a> in this square");
+					$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title starting with ".htmlentities(trim($title,'%'))."</a> in this square");
 
 					if (!empty($image->collections))
-						$image->collections[] = array('url'=>$url,'title'=>preg_replace('/%$/','',$title)." ... [$same]",'type'=>'Title Cluster');
+						$image->collections[] = array('url'=>$url,'title'=>trim($title,'%')." ... [$same]",'type'=>'Title Cluster');
 
                         	}
 			}
@@ -388,8 +397,8 @@ if ($image->isValid())
 $smarty->display($template, $cacheid);
 
 
-if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
+//if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 //         Profiler::render();
-}
+//}
 
 
