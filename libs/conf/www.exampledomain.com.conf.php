@@ -199,7 +199,7 @@ $CONF['google_maps_api_key'] = 'XXXXXXX'; //old V2 Key, some scrips may use it!
 $CONF['google_maps_api3_key'] = 'XXXXXXX'; //new v3 key - browser based
 $CONF['google_maps_api3_server'] = 'XXXXXXX'; //new v3 key - for API use
 
-$CONF['OS_licence'] = 'XXXXXXXX';
+$CONF['os_licence'] = 'XXXXXXXX';
 
 //paths to where map data is stored (should be OUTSIDE of the web root)
 $CONF['rastermap'] = array(

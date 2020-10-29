@@ -258,7 +258,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 				$this->width/2, $this->width/2,
 				$this->width, $this->width, 
 				$CONF['imagemagick_font'],
-				$CONF['OS_licence'],
+				$CONF['os_licence'],
 				$path    );
 				
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
@@ -405,7 +405,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 				$this->TIFF_PX_PER_KM*2, $this->TIFF_PX_PER_KM*2, 
 				$this->width, $this->width, 
 				$CONF['imagemagick_font'],
-				$CONF['OS_licence'],
+				$CONF['os_licence'],
 				$path    );
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
 				$cmd = str_replace('/','\\',$cmd);

@@ -7,7 +7,7 @@ for try in $(seq 1 $tries); do
   if mysqladmin status \
     --host="${MYSQL_HOST}" \
     --user="${MYSQL_USER}" \
-    --password="${MYSQL_PASSWORD}" \
+    --password="${CONF_DB_PWD}" \
     >/dev/null 2>&1
   then
     exit 0

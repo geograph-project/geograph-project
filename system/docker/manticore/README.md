@@ -30,7 +30,7 @@ server.
 
 The user to connect to the database with. Default: `geograph`.
 
-### `MYSQL_PASSWORD`
+### `CONF_DB_PWD`
 
 The password for the above user. Default: `password`.
 
