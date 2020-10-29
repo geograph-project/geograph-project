@@ -80,8 +80,8 @@ $sql['wheres'] = array();
                 $sql['tables']['gi'] = 'gridimage_search';
                 $sql['group'] = 'grid_reference';
                 $sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
-		$sql['wheres'][] = "moderation_status = 'geograph'";
-                $sql['columns'] = "x,y,reference_index as ri,   count(*) as g,SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as r";
+		//$sql['wheres'][] = "moderation_status = 'geograph'";
+                $sql['columns'] = "x,y,reference_index as ri,   sum(moderation_status = 'geograph') as g,SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as r";
         } else {
                 $sql['tables']['gs'] = 'gridsquare';
 
