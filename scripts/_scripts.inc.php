@@ -8,9 +8,9 @@ if (!isset($param))
 
 //base installation dir
 if (empty($param['dir'])) {
-	if (!empty($_SERVER['BASE_DIR'])) { //running inside a container
+	if (!empty($_SERVER['BASE_DIR'])) //running inside a container
 		$param['dir'] =$_SERVER['BASE_DIR'];
-	} elseif (strpos(__DIR__,'geograph_live'))
+	elseif (strpos(__DIR__,'geograph_live'))
 	        $param['dir'] ='/var/www/geograph_live';
 	else
 		$param['dir'] ='/var/www/geograph_svn';
@@ -18,7 +18,7 @@ if (empty($param['dir'])) {
 
 //effective config
 if (empty($param['config'])) {
-	if (!empty($_SERVER['CLI_HTTP_HOST'])) { //running inside a container
+	if (!empty($_SERVER['CLI_HTTP_HOST'])) //running inside a container
 		//Note, the ENV[CONF_PROFILE] will override the config file used.
 		$param['config']=$_SERVER['CLI_HTTP_HOST'];
 	elseif (strpos(__DIR__,'geograph_live'))
