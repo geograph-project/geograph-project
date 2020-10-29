@@ -211,8 +211,9 @@ $inc=realpath($_SERVER['DOCUMENT_ROOT'].'/../libs');
 if (check_include('geograph/global.inc.php'))
 {
 	//include path is ok - let see if it contains the other stuff we need
-	if (!check_include('conf/'.$_SERVER['HTTP_HOST'].'.conf.php'))
-		fail('conf/'.$_SERVER['HTTP_HOST'].'.conf.php not found - copy and adapt the www.example.com.conf.php file');
+	$CONF_PROFILE = $_SERVER['CONF_PROFILE'] ?? $_SERVER['HTTP_HOST'];
+	if (!check_include('conf/'.$CONF_PROFILE.'.conf.php'))
+		fail('conf/'.$_SERVER['CONF_PROFILE'].'.conf.php not found - copy and adapt the www.example.com.conf.php file');
 	if (!check_include('adodb/adodb.inc.php'))
 		fail("ADOdb not found in $inc/adodb - download and install it there");
 	if (!check_include('smarty/libs/Smarty.class.php'))
@@ -446,8 +447,8 @@ if (empty($CONF['google_maps_api3_key']) || $CONF['google_maps_api3_key'] == 'XX
 	fail('$CONF[\'google_maps_api3_key\'] does not appear to have been configured. HIGHLY RECOMMENDED');
 }
 
-if (empty($CONF['OS_licence']) || $CONF['OS_licence'] == 'XXXXXXXX') {
-	warn('$CONF[\'OS_licence\'] does not appear to have been configured. Only a problem if Geograph British Isles/Britain and Ireland');
+if (empty($CONF['os_licence']) || $CONF['os_licence'] == 'XXXXXXXX') {
+	warn('$CONF[\'os_licence\'] does not appear to have been configured. Only a problem if Geograph British Isles/Britain and Ireland');
 }
 
 if (empty($CONF['metacarta_auth']) || $CONF['metacarta_auth'] == '') {

@@ -558,9 +558,9 @@ class RasterMap
 
 		} elseif ($this->service == 'OSOS') {
 			if (strpos($CONF['raster_service'],'OSOSPro') !== FALSE) {
-				return "<script src=\"{$CONF['PROTOCOL']}osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
+				return "<script src=\"{$CONF['PROTOCOL']}osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['os_openspace_licence']}\" type=\"text/javascript\"></script>";
 			} else {
-				return "<script src=\"http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
+				return "<script src=\"http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['os_openspace_licence']}\" type=\"text/javascript\"></script>";
 			}
 		}
 	}
@@ -1307,7 +1307,7 @@ class RasterMap
 				$tilewidth/2, $tilewidth/2,
 				$outputwidth, $outputwidth,
 				$CONF['imagemagick_font'],
-				$CONF['OS_licence'],
+				$CONF['os_licence'],
 				$path);
 
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE)
@@ -1345,7 +1345,7 @@ class RasterMap
 			$this->width, $this->width,
 			$this->width, $this->width,
 			$CONF['imagemagick_font'],
-			$CONF['OS_licence'],
+			$CONF['os_licence'],
 			$output);
 
 		if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE)

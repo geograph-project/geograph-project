@@ -71,8 +71,8 @@ if (isset($_GET['php_profile']) && !class_exists('Profiler',false)) {
 //include domain specific configuration - if your install fails on
 //this line, copy and adapt one of the existing configuration
 //files in /libs/conf
-require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
-
+$CONF_PROFILE = $_SERVER['CONF_PROFILE'] ?? $_SERVER['HTTP_HOST'];
+require('conf/'.$CONF_PROFILE.'.conf.php');
 @include('conf/revisions.conf.php');
 
 #################################################
@@ -82,7 +82,8 @@ require_once('adodb/adodb.inc.php');
 if ($CONF['adodb_debugging'])
    require_once('adodb/adodb-errorhandler.inc.php');
 
-$ADODB_CACHE_DIR =& $CONF['adodb_cache_dir'];
+if (!empty($CONF['adodb_cache_dir']))
+	$ADODB_CACHE_DIR =& $CONF['adodb_cache_dir'];
 
 
 //build DSN

@@ -6,28 +6,26 @@
 if (!isset($param))
 	$param = array();
 
-//running inside a container
-if (!empty($_SERVER['CONFIG_FILE'])) {
-	$param['config']= $_SERVER['CONFIG_FILE'];
-	$param['dir'] = $_SERVER['BASE_DIR'];
-} else {
-	//base installation dir
-	if (empty($param['dir'])) {
-		if (strpos(__DIR__,'geograph_live'))
-		        $param['dir'] ='/var/www/geograph_live';
-		else
-			$param['dir'] ='/var/www/geograph_svn';
-	}
-
-	//effective config
-	if (empty($param['config'])) {
-		if (strpos(__DIR__,'geograph_live'))
-	        	$param['config']='www.geograph.org.uk';
-		else
-			$param['config']='staging.geograph.org.uk';
-	}
+//base installation dir
+if (empty($param['dir'])) {
+	if (!empty($_SERVER['BASE_DIR'])) { //running inside a container
+		$param['dir'] =$_SERVER['BASE_DIR'];
+	} elseif (strpos(__DIR__,'geograph_live'))
+	        $param['dir'] ='/var/www/geograph_live';
+	else
+		$param['dir'] ='/var/www/geograph_svn';
 }
 
+//effective config
+if (empty($param['config'])) {
+	if (!empty($_SERVER['CLI_HTTP_HOST'])) { //running inside a container
+		//Note, the ENV[CONF_PROFILE] will override the config file used.
+		$param['config']=$_SERVER['CLI_HTTP_HOST'];
+	elseif (strpos(__DIR__,'geograph_live'))
+        	$param['config']='www.geograph.org.uk';
+	else
+		$param['config']='staging.geograph.org.uk';
+}
 
 //show script help?
 if (empty($param['help']))
