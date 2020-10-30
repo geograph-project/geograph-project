@@ -308,7 +308,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 	
 		if (strlen($CONF['imagemagick_path'])) {
 		
-#/usr/bin/convert tiff:/var/www/geograph_live/rastermaps/OS-50k/tiffs/SH/SH64.TIF -gravity SouthWest -crop 3600x3600+100+100 +repage -crop 400x400 +repage -thumbnail 250x250 -colors 128 -font /usr/share/fonts/truetype/freefont/FreeSans.ttf -fill "#eeeeff" -draw "roundRectangle 8,230 153,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 '© Crown Copyright 100045616'" png:/var/www/geograph_live/rastermaps/OS-50k/pngs-2k-250/27/34/SH64.png
+#/usr/bin/convert tiff:rastermaps/OS-50k/tiffs/SH/SH64.TIF -gravity SouthWest -crop 3600x3600+100+100 +repage -crop 400x400 +repage -thumbnail 250x250 -colors 128 -font /usr/share/fonts/truetype/freefont/FreeSans.ttf -fill "#eeeeff" -draw "roundRectangle 8,230 153,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 '© Crown Copyright 100045616'" png:rastermaps/OS-50k/pngs-2k-250/27/34/SH64.png
 
 			$cmd = sprintf ('%s"%sconvert" tiff:%s -gravity SouthWest +repage -crop %ldx%ld +repage -thumbnail %ldx%ld -colors 128 png:%s', 
 				isset($_GET['nice'])?'nice ':'',
@@ -395,7 +395,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 	
 		if (strlen($CONF['imagemagick_path'])) {
 		
-#/usr/bin/convert tiff:/var/www/geograph_live/rastermaps/OS-50k/tiffs/SH/SH64.TIF -gravity SouthWest -crop 3600x3600+100+100 +repage -crop 400x400 +repage -thumbnail 250x250 -colors 128 -font /usr/share/fonts/truetype/freefont/FreeSans.ttf -fill "#eeeeff" -draw "roundRectangle 8,230 153,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 '© Crown Copyright 100045616'" png:/var/www/geograph_live/rastermaps/OS-50k/pngs-2k-250/27/34/SH64.png
+#/usr/bin/convert tiff:rastermaps/OS-50k/tiffs/SH/SH64.TIF -gravity SouthWest -crop 3600x3600+100+100 +repage -crop 400x400 +repage -thumbnail 250x250 -colors 128 -font /usr/share/fonts/truetype/freefont/FreeSans.ttf -fill "#eeeeff" -draw "roundRectangle 8,230 153,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 '© Crown Copyright 100045616'" png:rastermaps/OS-50k/pngs-2k-250/27/34/SH64.png
 
 			$cmd = sprintf ('"%sconvert" tiff:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,230 155,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 \'© Crown Copyright %s\'" png:%s', 
 				$CONF['imagemagick_path'],
@@ -490,7 +490,7 @@ $square->reference_index = 1; #if that x5x5 square is at sea then our detection 
 
 		if (strlen($CONF['imagemagick_path'])) {
 		
-#/usr/bin/convert tiff:/var/www/geograph_live/rastermaps/OS-50k/tiffs/SH/SH64.TIF -gravity SouthWest -crop 3600x3600+100+100 +repage -crop 400x400 +repage -thumbnail 250x250 -colors 128 -font /usr/share/fonts/truetype/freefont/FreeSans.ttf -fill "#eeeeff" -draw "roundRectangle 8,230 153,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 '© Crown Copyright 100045616'" png:/var/www/geograph_live/rastermaps/OS-50k/pngs-2k-350/27/34/SH64.png
+#/usr/bin/convert tiff:rastermaps/OS-50k/tiffs/SH/SH64.TIF -gravity SouthWest -crop 3600x3600+100+100 +repage -crop 400x400 +repage -thumbnail 250x250 -colors 128 -font /usr/share/fonts/truetype/freefont/FreeSans.ttf -fill "#eeeeff" -draw "roundRectangle 8,230 153,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 '© Crown Copyright 100045616'" png:rastermaps/OS-50k/pngs-2k-350/27/34/SH64.png
 
 			$cmd = sprintf ("\"%sconvert\" -gravity SouthWest -crop %ldx%ld+%ld+%ld -resize %ldx%ld tiff:%s png:%s", 
 				str_replace('"','',$CONF['imagemagick_path']),

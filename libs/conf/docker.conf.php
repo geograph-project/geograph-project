@@ -43,20 +43,20 @@ if (!empty($CONF['db_read_connect'])) {
 
 $CONF['rastermap'] = array(
 	'OS50k' => array(
-			'path'=>'/var/www/geograph/rastermaps/OS-50k/',
+			'path'=>$_SERVER['BASE_DIR'].'/rastermaps/OS-50k/',
 			'epoch'=>'latest/'
 			),
 	'OS250k' => array(
-			'path'=>'/var/www/geograph/rastermaps/OS-250k/',
+			'path'=>$_SERVER['BASE_DIR'].'/rastermaps/OS-250k/',
 			'epoch'=>'latest/'
 			)
 );
 
-$CONF['os50ktilepath']='/var/www/geograph/rastermaps/OS-50k/latest/tiffs/';
-$CONF['os50kimgpath']='/var/www/geograph/rastermaps/OS-50k/';
+$CONF['os50ktilepath']=$_SERVER['BASE_DIR'].'/rastermaps/OS-50k/latest/tiffs/';
+$CONF['os50kimgpath']=$_SERVER['BASE_DIR'].'/rastermaps/OS-50k/';
 $CONF['os50kepoch']='latest/';
 
-$CONF['imagemagick_font'] = '/var/www/geograph/libs/3rdparty/FreeSans.ttf';
+$CONF['imagemagick_font'] = $_SERVER['BASE_DIR'].'/libs/fonts/FreeSans.ttf';
 
 ########################################################################
 //these are not really config as such, the config file is jsut a good place to put constants. You can't really change these
