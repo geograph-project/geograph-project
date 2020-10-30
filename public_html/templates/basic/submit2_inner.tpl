@@ -15,6 +15,19 @@
 	<div class="interestBox" style="float:right;width:160px;">&middot; <a href="/submit-multi.php" target="_top">Upload a batch of images</a><br/>
 			&middot; <a href="/submit2.php?inner&amp;step=1&amp;container={$container|escape:'html'}" targer="_self">Upload a single image</a></div>
 
+	{if $one && $item}
+			
+
+				<a href="{$script_name}?inner&amp;step=0&amp;one=1&amp;delete={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193" onclick="return confirm('Are you sure?');" style="color:red" targer="_self">Delete this image</a>
+				<a href="{$script_name}?inner&amp;step=1&amp;transfer_id={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}">Submit this image &gt;</a>
+				<br>
+				Uploaded: {$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"} 
+				{if $item.imagetaken}&nbsp; Taken: {$item.imagetaken|date_format:"%a, %e %b %Y at %H:%M"}{/if}<br>
+		
+				<a href="/submit.php?preview={$item.transfer_id}" target="_blank"><img src="/submit.php?preview={$item.transfer_id}"/></a>
+			
+
+	{else}
 		<table id="upload" class="report sortable">
 			<thead>
 			<tr>
@@ -22,6 +35,7 @@
 				<td>Continue</td>
 				<td>Uploaded</td>
 				<td>Taken</td>
+				<td>Delete?</td>
 			</tr>
 			</thead>
 			<tbody>
@@ -29,9 +43,10 @@
 			{foreach from=$data item=item}
 				<tr>
 					<td><a href="/submit.php?preview={$item.transfer_id}" target="_blank"><img src="/submit.php?preview={$item.transfer_id}" width="160"/></a></td>
-					<td><a href="/submit2.php?inner&amp;step=1&amp;transfer_id={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}">continue &gt;</a></td>
+					<td><a href="{$script_name}?inner&amp;step=1&amp;transfer_id={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}">continue &gt;</a></td>
 					<td sortvalue="{$item.uploaded}">{$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"}</td>
 					<td sortvalue="{$item.imagetaken}">{if $item.imagetaken}{$item.imagetaken|date_format:"%a, %e %b %Y at %H:%M"}{/if}</td>
+					<td><a href="{$script_name}?inner&amp;step=0&amp;delete={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193" onclick="return confirm('Are you sure?');" style="color:red" targer="_self">Delete</a></td>
 				</tr>
 			{foreachelse}
 				<tr><td colspan="4">No images yet. <a href="/submit-multi.php" target="_top">Upload some now!</a></td></tr>
@@ -40,6 +55,7 @@
 		</table>
 
 		<script src="{"/sorttable.js"|revision}"></script>
+	{/if}
 
 {elseif $step eq 1}
 
@@ -66,18 +82,33 @@
 			<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
 		{/if}
 
-		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1{if $container}&amp;container={$container|escape:'url'}{/if}">Upload a new image</a> or <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193">Select an different uploaded image</a></p>
+		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1{if $container}&amp;container={$container|escape:'url'}{/if}">Upload a new image</a> 
+		or <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193">Select an different uploaded image</a>
+		(<a href="/submit2.php?inner&amp;step=0&amp;one=1{if $container}&amp;container={$container|escape:'url'}{/if}">Submit one uploaded image</a>)
+		</p>
 	{else}
-		<div class="interestBox" style="float:right;width:200px;">&middot; <a href="/submit-multi.php" target="_top">Upload multiple images</a><br/>&middot;  <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193">Select an uploaded image</a></div>
+		<div class="interestBox" style="float:right;width:200px;">&middot; <a href="/submit-multi.php" target="_top">Upload multiple images</a><br/>
+		&middot; <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193">Select an uploaded image</a><br> 
+		&middot; <a href="/submit2.php?inner&amp;step=0&amp;one=1{if $container}&amp;container={$container|escape:'url'}{/if}">Submit an uploaded image</a> </div>
 		{if $error}
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
+
+	{if $filepicker}
+
+		<input type="filepicker-dragdrop" id="jpeg_url" name="jpeg_url" data-fp-apikey="AWbx7KpSUTJ-4fLh3i4TEz" data-fp-option-container="modal" data-fp-option-maxsize="8000000" data-fp-option-services="BOX,COMPUTER,DROPBOX,FACEBOOK,GITHUB,GOOGLE_DRIVE,FLICKR,GMAIL,INSTAGRAM" onchange="this.value = event.files[0].url;">
+		<div>
+		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em" /> (while file is sending can continue on the steps below)<br/>
+		</div>
+
+	{else}
 		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto {if $small_upload}<b>5Mb</b>{else}8Mb{/if} filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/>
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white" accept="image/jpeg"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000"/></div>
 		<div>
 		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em" onclick="return check_jpeg(this.form.jpeg_exif)"/> (while file is sending can continue on the steps below)<br/>
 		</div>
+	{/if}
 
 		<br/>
 		<div><i>Optionally</i> upload an image with Locational information attached <a href="/article/Uploading-Tagged-Images" class="about" target="_blank">About</a><br/>
@@ -148,10 +179,23 @@ function check_jpeg(ele) {
 	{/literal}
 {/if}
 
-{/dynamic}
 </script>
-
-
 </form>
+
+
+        {if $filepicker}
+                <script type="text/javascript" src="//api.filepicker.io/v0/filepicker.js"></script>
+		<script type="text/javascript">
+	        {literal}
+		function setupFilePicker() {
+			filepicker.constructWidget(document.getElementById('jpeg_url'));
+		}
+		AttachEvent(window,'load',setupFilePicker,false);
+	        {/literal}
+		</script>
+	{/if}
+
+{/dynamic}
+
 </body>
 </html>

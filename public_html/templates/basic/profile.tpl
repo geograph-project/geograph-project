@@ -59,7 +59,11 @@
 	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Moderator</div>
 {/if}
 {if strpos($profile->rights,'member') > 0}
-        <div style="margin-top:-1px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 3px; font-size:0.9em">Geograph Project Limited Company Member</div>
+        <div style="margin-top:-1px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 3px; font-size:0.9em">Geograph Project Limited Company Member
+		{if $company_link}<br>
+			<a href="{$company_link|escape:'html'}" target="_blank">Follow this link to be taken to the company mini-site</a>
+		{/if}
+	</div>
 {/if}
 
 
@@ -205,7 +209,7 @@
 				{/if}
 			</li>
 			{if $profile->stats.content}
-				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}" title="view content submitted by {$profile->realname|escape:'html'}">Collections submitted</a>
+				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}&amp;scope=article,gallery,blog,trip" title="view content submitted by {$profile->realname|escape:'html'}">Collections submitted</a>
 					{if $user->user_id eq $profile->user_id}
 						[<a href="/article/?user_id={$profile->user_id}">Article list</a>]
 					{/if}

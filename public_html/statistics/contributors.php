@@ -37,13 +37,11 @@ $smarty->cache_lifetime = 3600*24; //24hour cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db = GeographDatabaseConnection(true); 
-	
+	$db = GeographDatabaseConnection(true);
+
 	$title = "User Submissions";
-	
 	$column = "count(*)";
 
-	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	if ($ri) {
@@ -55,9 +53,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (count($where))
 			$where_sql = " WHERE ".join(' AND ',$where);
 
-		$users = $db->CacheGetAll(3600,"select 
+		$users = $db->CacheGetAll(3600,"select
 		$column as count
-		from gridimage_search 
+		from gridimage_search
 		$where_sql
 		group by user_id
 		order by null");
@@ -65,30 +63,23 @@ if (!$smarty->is_cached($template, $cacheid))
 		$users = $db->GetAll("select
         	images as count
 	        from user_stat
+		where user_id > 0
         	order by null");
 	}
 
-
-	
-	
 	$count = array();
 	foreach ($users as $i => $row) {
 		if ($row['count'] == 0) {
 			$count[0]++;
-		} elseif ($row['count'] < 50) {
-			$count[intval($row['count']/5)*5+5]++;
-		} elseif ($row['count'] < 200) {
-			$count[intval($row['count']/10)*10+10]++;
-		} elseif ($row['count'] < 1000) {
-			$count[intval($row['count']/50)*50+50]++;
 		} else {
-			$count[intval($row['count']/500)*500+500]++;
+			$exp = ceil(log($row['count'])*5);
+			$count[floor(exp($exp/5))]++;
 		}
 	}
-	
+
 	$percents = array_keys($count);
 	natsort($percents);
-	
+
 	$table = array();
 	$max = 0;
 	foreach ($percents as $p) {
@@ -101,26 +92,23 @@ if (!$smarty->is_cached($template, $cacheid))
 		$table[] = $line;
 		$max = max($max,$count[$p]);
 	}
-	
+
 	$graphs = array();
 	$graph = array();
-	
+
 	$graph['table'] = &$table;
 	$graph['title'] = 'Images Submitted by Number of Contributors';
 	$graph['max'] = $max;
-	
+
 	$graphs[] = &$graph;
-	
+
 	$smarty->assign_by_ref('graphs',$graphs);
-	
+
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
 	$smarty->assign_by_ref('references',$CONF['references_all']);
-
-} 
+}
 
 $smarty->assign("filter",1);
 $smarty->display($template, $cacheid);
 
-	
-?>

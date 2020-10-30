@@ -124,5 +124,8 @@
 		<p>See also {external href="http://www.nearby.org.uk/coord-entry.html" text="nearby.org.uk"} which offers a similar converter.</p>
 	{/if}
 
+
+<P>Note: The individual deg/min/sec boxes all take decimal values too. So a value like '56:34.2345' (degrees with decimal minutes), can enter '34.2345' in the min box.
+
 {/dynamic}    
 {include file="_std_end.tpl"}

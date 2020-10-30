@@ -38,30 +38,39 @@ class RebuildCategoryStats extends EventHandler
 	function processEvent(&$event)
 	{
 		//perform actions
-		
+
 		$db=&$this->_getDB();
-		
+
+                if (!$db->getOne("SELECT GET_LOCK('".get_class($this)."',10)")) {
+                        //only execute if can get a lock
+                        $this->_output(2, "Failed to get Lock");
+                         return false;
+                }
+
 		$db->Execute("DROP TABLE IF EXISTS category_stat_tmp");
-		
-		
+
 		$db->Execute("CREATE TABLE category_stat_tmp (
 					`category_id` int(11) UNSIGNED NOT NULL,
 					`imageclass` varchar(32) NOT NULL DEFAULT '',
 					`c` int(11) NOT NULL DEFAULT '0',
 					`gridimage_id` int(11) NOT NULL ,
+					`first` datetime NOT NULL,
+					`last` datetime NOT NULL,
 					PRIMARY KEY (`category_id`),
 					INDEX (c))
 				ENGINE=MyISAM
-				SELECT CRC32(LOWER(imageclass)) AS category_id,imageclass,count(*) AS c,gridimage_id
+				SELECT CRC32(LOWER(imageclass)) AS category_id,imageclass,count(*) AS c,gridimage_id, MIN(submitted) AS first, MAX(submitted) AS last
 				FROM gridimage_search
+				WHERE imageclass != ''
 				GROUP BY imageclass"); //the autoincrement column doesnt need 'null' for some reason. 
-		
+
 		$db->Execute("DROP TABLE IF EXISTS category_stat");
 		$db->Execute("RENAME TABLE category_stat_tmp TO category_stat");
-		
+
+                $db->Execute("DO RELEASE_LOCK('".get_class($this)."')");
+
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;
 	}
-	
 }

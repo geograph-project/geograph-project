@@ -28,6 +28,13 @@ $USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->mustHavePerm("m
 
 $smarty = new GeographPage;
 
+       //lets hobble this!
+        header("HTTP/1.1 503 Service Unavailable");
+        $smarty->assign('searchq',stripslashes($_GET['q']));
+        $smarty->display('function_disabled.tpl');
+        exit;
+
+
 $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');  
 #$db->debug = true;

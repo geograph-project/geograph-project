@@ -20,7 +20,7 @@ $bounds[] = $b->x+$b->width+$xd;
 $bounds[] = $b->y+$b->height+$yd;
 
 $_GET['olbounds'] = implode(",",$bounds);
-$_GET['select'] = "wgs84_lat as lat,wgs84_long as lng,scenic as s";
+$_GET['select'] = "wgs84_lat*1000 as lat,wgs84_long*1000 as lng,scenic as s";
 if (empty($_GET['limit']))
 	$_GET['limit'] = 1000;
 if (empty($_GET['order']))
@@ -47,7 +47,7 @@ if (isset($_GET['group'])) {
         if (!empty($_GET['column']) && in_array($_GET['column'],$columns))
                 $func = $_GET['column'];
 
-	$_GET['select'] = "wgs84_lat as lat,wgs84_long as lng,$func(scenic) as s,CEIL(wgs84_lat*$sizee) as l1,CEIL(wgs84_long*$sizee) as l2";
+	$_GET['select'] = "wgs84_lat*1000 as lat,wgs84_long*1000 as lng,$func(scenic) as s,CEIL(wgs84_lat*$sizee) as l1,CEIL(wgs84_long*$sizee) as l2";
 	$_GET['group'] = "l1,l2";
 }
 
@@ -105,8 +105,8 @@ customExpiresHeader(30,true);
 		if (!empty($_GET['uniq']) && $avg == ceil($row['s']) ) {
 			continue;
 		}
-		$lat = rad2deg($row['lat']);
-		$lng = rad2deg($row['lng']);
+		$lat = rad2deg($row['lat']/1000);
+		$lng = rad2deg($row['lng']/1000);
 
 		$p = $g->getOffsetPixelCoords($lat,$lng,$_GET['z'],$_GET['x'],$_GET['y']);
 

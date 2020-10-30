@@ -30,6 +30,19 @@ $smarty = new GeographPage;
 $USER->mustHavePerm("basic");
 
 
+if (empty($_GET) && empty($_POST)) {
+?>
+<title>content grouper</title>
+<frameset cols="250,*">
+<frame src="/content/grouper.php?sidebar=1">
+<frame src="about:blank" name="mainframe">
+</frameset>
+<?
+exit;
+}
+
+
+
 $template = 'content_grouper.tpl';
 
 $db = GeographDatabaseConnection(false);
@@ -40,10 +53,10 @@ if (isset($_POST['save'])) {
 	$updates['source'] = "user{$USER->user_id}";
 	$updates['score'] = 1;
 	$updates['sort_order'] = 0;
-	
+
 	foreach (explode("\n",$_POST['groups']) as $line) {
 		$updates['label'] = preg_replace('/[^\w -]+/','',$line);
-		
+
 		if (!empty($updates['label'])) {
 			$db->Execute('INSERT INTO content_group SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 		}
@@ -55,12 +68,11 @@ if (isset($_POST['save']) || isset($_GET['start'])) {
 	select c.*
 	from content c
 		left join content_group cg on (c.content_id=cg.content_id and cg.source = 'user{$USER->user_id}')
-	where cg.content_id IS NULL
+	where cg.content_id IS NULL and type='info'
 	limit 1");
 
 	$smarty->assign($page);
-	
-	
+
 	$groups = array();
 	$recordSet = $db->Execute("SELECT label FROM content_group WHERE source like 'user%' GROUP BY label");
 	while (!$recordSet->EOF)
@@ -70,9 +82,7 @@ if (isset($_POST['save']) || isset($_GET['start'])) {
 	}
 	$recordSet->Close();
 	$smarty->assign_by_ref('groups', $groups);
-	
 }
 
 $smarty->display($template, $cacheid);
 
-?>

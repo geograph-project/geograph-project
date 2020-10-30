@@ -1,5 +1,4 @@
-{assign var="page_title" value=$topic_title}
-{assign var="rss_url" value="/discuss/syndicator.php?forum=11&amp;topic=`$topic_id`"}
+{assign var="rss_url" value="/discuss/syndicator.php?forum=`$forum_id`&amp;topic=`$topic_id`"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 #maincontent h1 { padding: 5px; margin-top:0px; background-color: black; color:white}
@@ -32,7 +31,7 @@
 }
 </style>{/literal}
 
-<div style="float:right"><a title="RSS Feed for {$topic_title}" href="/discuss/syndicator.php?forum=11&amp;topic={$topic_id}" class="xml-rss">RSS</a></div>
+<div style="float:right"><a title="RSS Feed for {$topic_title}" href="/discuss/syndicator.php?forum={$forum_id}&amp;topic={$topic_id}" class="xml-rss">RSS</a></div>
 
 <h1 style="margin-bottom:0px;">{$topic_title}</h1>
 <div style="margin-top:0px">
@@ -60,12 +59,18 @@
 
 <br style="clear:both"/>
 
-<div style="text-align:right"><a title="RSS Feed for {$topic_title}" href="/discuss/syndicator.php?forum=11&amp;topic={$topic_id}" class="xml-rss">RSS</a></div>
+
+<p align=right><a href="/search.php?do=1&amp;orderby=post_id,seq_id&amp;topic_id={$topic_id}">View Image Detail</a>
+- <a href="/browser/content-redirect.php?id={$topic_id}&amp;source={if $forum_id == '11'}gallery{else}themed{/if}">View in Browser</a>
+- <a href="/search.php?do=1&amp;topic_id={$topic_id}&amp;orderby=post_id,seq_id&amp;displayclass=slide">View as Slide Show</a>
+- <a title="View these images in Google Earth" href="/search.php?do=1&amp;orderby=post_id,seq_id&amp;topic_id={$topic_id}&amp;kml" class="xml-kml">KML</a>
+- <a title="RSS Feed for images" href="/search.php?do=1&amp;topic_id={$topic_id}&amp;orderby=post_id,seq_id&amp;reverse_order_ind=1&amp;rss" class="xml-rss">photo RSS</a>
+- <a title="RSS Feed for this Topic" href="/discuss/syndicator.php?forum={$forum_id}&amp;topic={$topic_id}" class="xml-rss">topic RSS</a></p>
 
 {dynamic}
 {if $user->registered && $enable_forums}
 	<div class="interestBox">
-		<a href="/discuss/?action=vthread&amp;forum=11&amp;topic={$topic_id}">Switch to edit mode</a> (registered users only)
+		<a href="/discuss/?action=vthread&amp;forum={$forum_id}&amp;topic={$topic_id}">Switch to edit mode</a> (registered users only)
 	</div>
 {/if}
 {/dynamic}

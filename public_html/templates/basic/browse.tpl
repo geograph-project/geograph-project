@@ -105,7 +105,7 @@
 		{/if}
 
 		<li><big>We have
-			{if $imagecount eq 1}just one image{else}{$imagecount|thousends} images{/if}
+			{if $imagecount eq 1}just one image{else}<b>{$imagecount|thousends}</b> images{/if}
 			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
 			{if $mode eq 'takenfrom'} of other squares,
 				taken from <b>{$gridref}</b>
@@ -120,11 +120,21 @@
 			{/if}
 		</li>
 
+		{if $square->premill} 
+			<li style="margin-top:4px">
+			{if $square->premill > 100} 
+				<a href="/browser/#!/taken=,1999-12-31/grid_reference+%22{$gridref}%22">
+			{else}
+				<a href="/stuff/list.php?gridref={$gridref}&amp;premill=1">
+			{/if}
+			<b>{$square->premill}</b> images <b>taken pre 2000</b></a></li>
+		{/if}
+
 		{if $by ne 'centi' && $by ne 'viewcenti' && $mode eq 'normal'}
 			<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a>
 			{if $lat}
 				<ul>
-				<li style="margin-top:4px">View on <a href="/mapper/combined.php#16/{$lat}/{$long}"><b>Coverage Map</b></a></li>
+				<li style="margin-top:4px">View on <a href="/mapper/combined.php#15/{$lat}/{$long}"><b>Coverage Map</b></a></li>
 				</ul>
 			{/if}
 			</li>
@@ -359,9 +369,9 @@
 		<blockquote>
 		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>{if $filtered_title}{$filtered_title},{/if} by {$breakdown_title}</b>:</p>
 
-		{if $by eq 'centi' || $by eq 'viewcenti' }
+		{if $by eq 'centi' || $by eq 'viewcenti'}
 			{if $lat}
-				<p>View on <a href="/mapper/combined.php#16/{$lat}/{$long}">Interactive <b>Coverage Map</b></a></p>
+				<p>View on <a href="/mapper/combined.php{if $by eq 'viewcenti'}?views=1{/if}#15/{$lat}/{$long}">Interactive <b>Coverage Map</b></a></p>
 			{/if}
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6 figure grid reference.</small></p>
 
@@ -583,7 +593,7 @@
 				{foreach from=$images item=image}
 					<div class="photo33 shadow" style="border:0;float:left; {if $sample && $displayclass != 'tilesbig'}width:180px{/if}"><div style="height:{$thumbh+8}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
 					<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
-					<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+					<div class="statuscaption">{if $image->year && $image->year > '1'}{$image->year} {/if}by <a href="{$image->profile_link}">{$image->realname}</a></div>
 					</div>
 				{/foreach}
 			{/if}

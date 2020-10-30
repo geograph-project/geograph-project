@@ -337,6 +337,8 @@ class Token
 		$validation.=$this->magic;
 
 		//check hash is correct
+		//TODO: this should be using hmac, to avoid Length extension Attack
+		//http://en.wikipedia.org/wiki/Length_extension_attack
 		$ok= substr(md5($validation),0,$this->hashlength)==$this->data['thash'];
 		if (!$ok)
 		{

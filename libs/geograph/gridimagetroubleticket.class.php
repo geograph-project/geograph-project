@@ -531,7 +531,7 @@ class GridImageTroubleTicket
 					}
 
 					$owner=new GeographUser($img->user_id);
-					$msg =& $this->_buildEmail($comment,$owner->realname);
+					$msg =& $this->_buildEmail($comment, $owner->realname, true);
 					if ( ($owner->ticket_option == 'all') ||
 							( ($this->type=='normal') && $owner->ticket_option == 'major')
 						)
@@ -563,7 +563,7 @@ class GridImageTroubleTicket
 					if ( ($owner->ticket_option == 'all') ||
 							( ($this->type=='normal') && $owner->ticket_option == 'major')
 						) {
-						$msg =& $this->_buildEmail($comment,$owner->realname);
+						$msg =& $this->_buildEmail($comment, $owner->realname, true);
 						$this->_sendMail($owner->email, $msg); //notifying contributor of automatically applied change
 					}
 				}
@@ -611,7 +611,7 @@ class GridImageTroubleTicket
 	* returns an array containing email body and subject
 	* @access private
 	*/
-	function & _buildEmail($comment,$realname = '')
+	function & _buildEmail($comment, $realname = '', $for_owner = false)
 	{
 		$msg=array();
 		global $CONF;
@@ -641,6 +641,11 @@ class GridImageTroubleTicket
 		$msg['body'].="To respond to this message, please visit\n";
 		$msg['body'].="{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}\n";
 		$msg['body'].="Please, do NOT reply by email";
+
+		if ($for_owner) {
+			$msg['body'].="\n\nNote, can change preferences for notification emails, see option on profile:\n";
+			$msg['body'].="{$CONF['SELF_HOST']}/profile.php?edit=1#prefs";
+		}
 
 		return $msg;
 	}
@@ -725,7 +730,7 @@ class GridImageTroubleTicket
 		$owner=new GeographUser($image->user_id);
 
 		if ($owner->ticket_option != 'off') { // the message IS send in case of 'none'!
-			$msg =& $this->_buildEmail($comment,$owner->realname);
+			$msg =& $this->_buildEmail($comment, $owner->realname, true);
 			$this->_sendMail($owner->email, $msg); //sending contributor notification of moderator comment
 		}
 
@@ -764,7 +769,7 @@ class GridImageTroubleTicket
 
 		$db->Execute("update gridimage_ticket set notify = '{$this->notify}' where gridimage_ticket_id={$this->gridimage_ticket_id}");
 
-		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
+		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id && $this->user_id != $this->moderator_id) {
 			//email comment to suggestor
 			$suggestor=new GeographUser($this->user_id);
 
@@ -805,7 +810,7 @@ class GridImageTroubleTicket
 		if ( ($owner->ticket_option == 'all') ||
 			( ($this->type=='normal') && $owner->ticket_option == 'major')
 			) {
-			$msg =& $this->_buildEmail($comment,$owner->realname);
+			$msg =& $this->_buildEmail($comment, $owner->realname, true);
 			$this->_sendMail($owner->email, $msg); //sending contributor comment from suggestor
 		}
 	}
@@ -899,7 +904,7 @@ class GridImageTroubleTicket
 		}
 		$owner=new GeographUser($image->user_id);
 		if ($owner->ticket_option != 'off') { // the message IS send in case of 'none'!
-			$msg =& $this->_buildEmail($owner_msg,$owner->realname);
+			$msg =& $this->_buildEmail($owner_msg, $owner->realname, true);
 			$this->_sendMail($owner->email, $msg);  //notifying contributor that ticket closed
 		}
 

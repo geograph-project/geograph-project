@@ -46,7 +46,7 @@
 
 	<li><a href="/explore/searches.php"><b>Featured searches</b></a> - hand-picked example searches</li>
 
-	<!--li>{external href="http://ww2.scenic-tours.co.uk/serve.php?t=WolNuJvoMhXMJL5405olNblMbhZjaMtNXNh#station=achnasheen%3ANH1658" text="Geograph Stations Viewer"}<sup style="color:red">new!</sup> - experimental interative station viewer</li-->
+	<!--li>{external href="http://ww2.scenic-tours.co.uk/serve.php?t=WolNuJvoMhXMJL5405olNblMbhZjaMtNXNh#station=achnasheen%3ANH1658" text="Geograph Stations Viewer"} - experimental interative station viewer</li-->
 
 	<li><a href="/explore/rivers.php">Prime <b>Rivers</b> of Great Britain</a> - sample of images for all major rivers</li>
 
@@ -73,13 +73,13 @@
 
 	<li><a href="/statistics/breakdown.php?by=class">Breakdown by <b>Category</b></a>, (soon to be replaced by tags).</li>
 
-	<li><a href="/help/sitemap#users">Explore by <b>contributor</b></a>.</li>
+	<li><a href="/credits/">Explore by <b>contributor</b></a>.</li>
 
 </ul>
 <h3>Go anywhere...</h3>
 <ul class="explore">
 
-	<li><a href="/browser/#!start">Geograph Browser</a><sup style="color:red">NEW!</sup> - Interactive browser to quickly search and browse images</li>
+	<li><a href="/browser/#!start">Geograph Browser</a> - Interactive browser to quickly search and browse images</li>
 
 	<li>SuperLayer: for <a href="/kml.php">Google Earth</a> - dragable/zoomable interactive maps - shows all images</li>
 
@@ -89,7 +89,7 @@
 	<input id="searchgo" type="submit" value="Go"/>
 	</form></li>
 
-	<li><a href="/stuff/browse-random.php">Jump to a <b>random</b> grid square</a>.</li>
+	<li><b><a href="/explore/random.php">Image Randomizer</a></b><sup style="color:red">new!</sup> or <a href="/stuff/browse-random.php">Jump to a <b>random</b> grid square</a>.</li>
 
 	<li><a href="/mapper/combined.php">View a <b>Draggable map</b></a> shows coverage and individial photos. (use the search button on the map to jump to your area of interest)</li>
 
@@ -169,9 +169,5 @@ $(function() {
         }
 
 {/literal}</script>
-
-
-
-<p style="background-color:#cccccc;padding:10px;">Explore using <a href="/help/sitemap#software">external <b>software</b></a>.</p>
 
 {include file="_std_end.tpl"}

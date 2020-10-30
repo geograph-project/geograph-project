@@ -27,8 +27,8 @@ require_once('geograph/global.inc.php');
 if (!empty($_GET['callback'])) {
 	header('Content-type: text/javascript');
 
-        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
-        echo "{$callback}(";
+        $callback = preg_replace('/[^\w\.$]+/','',$_GET['callback']);
+        echo "/**/{$callback}(";
 } else {
 	header('Content-type: application/json');
 }

@@ -29,7 +29,7 @@
 ******/
 
 $gridimage_ids = array();
-	
+
 function add_image_to_list($id,$text ='') {
 	global $gridimage_ids;
 	if (is_numeric($id)) {
@@ -38,14 +38,13 @@ function add_image_to_list($id,$text ='') {
 	return " $text ";
 }
 
-	
 function add_topic_to_content($topic_id,& $db) {
 	global $gridimage_ids;
-	
+
 	$topic=$db->GetRow("select topic_title,forum_id,topic_time,topic_poster from geobb_topics where topic_id='$topic_id'");
-	
+
 	$gridimage_ids = array();
-	
+
 	if ($topic['forum_id'] == 6 || $topic['forum_id'] == 11) {//todo gsd
 		$updates = array();
 		$updates[] = "`foreign_id` = {$topic_id}";
@@ -53,10 +52,10 @@ function add_topic_to_content($topic_id,& $db) {
 			case 5: $updates[] = "`source` = 'gsd'"; break;
 			case 6: $updates[] = "`source` = 'themed'"; break;
 			case 11: $updates[] = "`source` = 'gallery'"; break;
-		} 
-		
+		}
+
 		$content_id = $db->getOne("SELECT content_id FROM content WHERE ".implode(' AND ',$updates));
-		
+
 		$updates[] = "`title` = ".$db->Quote(trim($topic['topic_title']));
 
 		$url = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$topic['topic_title'])))),'_').'_'.$topic_id;
@@ -67,11 +66,11 @@ function add_topic_to_content($topic_id,& $db) {
 		}
 		$updates[] = "`user_id` = {$topic['topic_poster']}";
 
-		$db->query("SET SESSION group_concat_max_len = 32768");
+		$db->query("SET SESSION group_concat_max_len = 100000");
 
 		$posts=$db->GetRow("select max(post_time) as post_time,group_concat(post_text ORDER BY post_id SEPARATOR ' ') as post_text from geobb_posts where topic_id='$topic_id'");
 
-		#$updates[] = "`extract` = ".$db->Quote($page['extract']);			
+		#$updates[] = "`extract` = ".$db->Quote($page['extract']);
 
 		$content = $posts['post_text'];
 		$content = str_replace("\r",'',$content);
@@ -92,6 +91,7 @@ function add_topic_to_content($topic_id,& $db) {
 		#todo tags.
 
 		if (count($gridimage_ids)) {
+			$updates[] = "`images` = ".count($gridimage_ids);
 			$updates[] = "`gridimage_id` = {$gridimage_ids[0]}";
 		}
 		$updates[] = "`type` = 'info'";
@@ -106,7 +106,7 @@ function add_topic_to_content($topic_id,& $db) {
 			//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,type)
 			$sql = "INSERT INTO `content` SET ".implode(',',$updates);
 		}
-		
+
 		$db->Execute($sql);
-	} 
+	}
 }

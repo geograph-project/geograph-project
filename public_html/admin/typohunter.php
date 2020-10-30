@@ -25,11 +25,22 @@ require_once('geograph/global.inc.php');
 require_once('geograph/imagelist.class.php');
 init_session();
 
+if (!empty($CONF['db_read_connect2'])) {
+        //concoct a special writable connection to SECOND slave!
+        $DSN_READ = $CONF['db_read_driver'].'://'.
+                $CONF['db_user'].':'.$CONF['db_pwd'].
+                '@'.$CONF['db_read_connect2'].
+                '/'.$CONF['db_db'].$CONF['db_read_persist'];
+
+	dieUnderHighLoad(2.2);
+} else {
+	dieUnderHighLoad(0.8);
+}
+
 $smarty = new GeographPage;
 
 customGZipHandlerStart();
 
-dieUnderHighLoad(0.8);
 
 $USER->mustHavePerm("basic");
 
@@ -48,15 +59,12 @@ if (!empty($_GET['next'])) {
 		die("invalid token");
 	}
 }
-$include = $exclude = $title = $profile = '';
+$include = $exclude = $profile = '';
 if (!empty($_GET['include'])) {
 	$include= $_GET['include'];
 }
 if (!empty($_GET['exclude'])) {
 	$exclude= $_GET['exclude'];
-}
-if (!empty($_GET['title'])) {
-	$title= $_GET['title'];
 }
 
 if (!empty($_GET['profile'])) {
@@ -67,7 +75,7 @@ $size = (!empty($_GET['size']))?intval($_GET['size']):10000;
 $size = max(100,min(50000,$size));
 
 /*
-$cacheid = md5("$include|$exclude|$title|$profile|$size");
+$cacheid = md5("$include|$exclude|$profile|$size");
 if (!empty($_GET['save']))
 	$cacheid .= ".save";
 
@@ -84,6 +92,26 @@ $cacheid = 'dynamic';
 $smarty->assign('sizes',array(1000=>1000,3000=>3000,5000=>5000,10000=>10000,50000=>50000));
 $smarty->assign('size',$size);
 
+if (!empty($_GET['deep'])) {
+	$template = "admin_typohunter_deep.tpl";
+
+	$smarty->assign('include',$_GET['include']);
+	$smarty->assign('exclude',$_GET['exclude']);
+	$smarty->assign('profile',$_GET['profile']);
+
+        $imagelist=new ImageList;
+        $db = $imagelist->_getDB(true);
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+	$lastid = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+	$smarty->assign('shards', intval($lastid/50000));
+
+	$smarty->display($template, $cacheid);
+	exit;
+}
+
+
+
 //regenerate?
 if (//!$smarty->is_cached($template, $cacheid) && -- we now use 'dynamic'
 	strlen($include)) {
@@ -92,14 +120,15 @@ if (//!$smarty->is_cached($template, $cacheid) && -- we now use 'dynamic'
 
 	$imagelist=new ImageList;
 
-	$db = $imagelist->_getDB();
+	$db = $imagelist->_getDB(true);
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	$last_id = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
 	######################################################
 	//keywords profile
 
-	if (!empty($_GET['profile']) && $_GET['profile'] == 'keywords') {
+	if ($profile == 'keywords') {
 
 		$pgsize = 50;
 
@@ -126,34 +155,50 @@ if (//!$smarty->is_cached($template, $cacheid) && -- we now use 'dynamic'
 	} else {
 		$where = array();
 
-		if (!empty($_GET['title'])) {
+		if ($profile == 'expression') {
 			if (!empty($_GET['include'])) {
-				$where[] = '(title LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['include']).'%').
-					' OR comment LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['include']).'%').')';
+				$where[] = '(title REGEXP BINARY '.$db->Quote($_GET['include']).
+					' OR comment REGEXP BINARY '.$db->Quote($_GET['include']).')';
 				$smarty->assign('include',$_GET['include']);
 			}
 			if (!empty($_GET['exclude'])) {
-				$where[] = 'title NOT LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
-				$where[] = 'comment NOT LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
+				$where[] = 'title NOT REGEXP BINARY '.$db->Quote($_GET['exclude']);
+				$where[] = 'comment NOT REGEXP BINARY '.$db->Quote($_GET['exclude']);
 				$smarty->assign('exclude',$_GET['exclude']);
 			}
-			$smarty->assign('title',1);
 		} else {
 			if (!empty($_GET['include'])) {
-				$where[] = 'comment LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['include']).'%');
+				$where[] = '(title LIKE '.$db->Quote('%'.$_GET['include'].'%').
+					' OR comment LIKE '.$db->Quote('%'.$_GET['include'].'%').')';
 				$smarty->assign('include',$_GET['include']);
 			}
 			if (!empty($_GET['exclude'])) {
-				$where[] = 'comment NOT LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
+				$where[] = 'title NOT LIKE '.$db->Quote('%'.$_GET['exclude'].'%');
+				$where[] = 'comment NOT LIKE '.$db->Quote('%'.$_GET['exclude'].'%');
 				$smarty->assign('exclude',$_GET['exclude']);
 			}
 		}
-		if (count($where)) {
+
+		if (isset($_GET['shard'])) {
+		        $start = $_GET['shard']*50000;
+		        $end = $start+49999;
+			$where[] = "gridimage_id BETWEEN $start AND $end";
+
+		} elseif (count($where)) {
 			$where[] = 'gridimage_id > '.($last_id-$size);
 
-			$where= implode(' AND ',$where);
 		} else {
 			die("umm?");
+		}
+
+		$where= implode(' AND ',$where);
+
+		if (!empty($_GET['count'])) {
+			customExpiresHeader(3600,false,true);
+
+			$data = $db->getRow("SELECT gridimage_id, COUNT(*) AS matches FROM gridimage_search WHERE $where");
+			outputJSON($data);
+			exit;
 		}
 
 		$sql="select gridimage_id,user_id,realname,title,comment,grid_reference ".
@@ -161,6 +206,9 @@ if (//!$smarty->is_cached($template, $cacheid) && -- we now use 'dynamic'
 			"where $where ".
 			($max_gridimage_id?" and gridimage_id < $max_gridimage_id ":'').
 			"order by gridimage_id desc limit 50";
+
+if ($USER->user_id == 3)
+	print "<hr>$sql<hr>";
 
 		$imagelist->_getImagesBySql($sql);
 
@@ -173,6 +221,26 @@ if (//!$smarty->is_cached($template, $cacheid) && -- we now use 'dynamic'
 	//display results
 
 	if (count($imagelist->images)) {
+
+		if ($profile == 'expression') {
+			$regex = '/^.*?(.{0,20})('.str_replace('/','\\/',$_GET['include']).')(.{0,20}).*?$/s';
+		} elseif ($profile == 'keywords') {
+			//remove =exact and "phrase char" - very basic, but proabbly deals with most (excepting stemming!)
+			//todo, maybe use BuildExcerpts like Watchlist does!
+			$regex = '/^.*?(.{0,20})('.preg_quote(preg_replace('/[="]/','',$_GET['include']),'/').')(.{0,20}).*?$/si';
+		} else {
+			$regex = '/^.*?(.{0,20})('.preg_quote($_GET['include'],'/').')(.{0,20}).*?$/si';
+		}
+		$replace = '... $1<b style=background-color:yellow;>$2</b>$3 ...';
+
+		foreach ($imagelist->images as $i => $image) {
+			if (preg_match($regex, $image->title))
+				$imagelist->images[$i]->title_html = preg_replace($regex,$replace, $image->title);
+
+			if (!empty($image->comment) && preg_match($regex, $image->comment))
+				$imagelist->images[$i]->comment_html = preg_replace($regex,$replace, $image->comment);
+		}
+
 
 		$smarty->assign_by_ref('images', $imagelist->images);
 		$smarty->assign_by_ref('image_count', $total_results);
@@ -204,13 +272,13 @@ if (//!$smarty->is_cached($template, $cacheid) && -- we now use 'dynamic'
 		$where[] = "include = ".$db->Quote($_GET['include']);
 		$where[] = "exclude = ".$db->Quote($_GET['exclude']);
 		$where[] = "profile = ".$db->Quote($_GET['profile']);
-		$where[] = "title = ".intval($_GET['title']);
 
 	//lookup see if already a saved typo (to prevent trying to save again!
 	if ($typo_id = $db->getOne($sql = "SELECT typo_id FROM typo WHERE ".implode(' AND ',$where)." AND enabled=1")) {
 		$smarty->assign('typo_id', $typo_id);
 	}
 
+		@$total_results+=0; //make sure a number
 		$updates = array();
 		$updates[] = "last_results = ".$total_results;
 		$updates[] = "last_time=NOW()";
@@ -228,6 +296,9 @@ if (//!$smarty->is_cached($template, $cacheid) && -- we now use 'dynamic'
 		$updates[] = 'enabled=1'; //so will renable, if previousll deleted!
 
                 $db->Execute('UPDATE typo SET '.implode(',',$updates).' WHERE typo_id = '.$db->Quote($_GET['old_id']));
+
+		$typo_id = intval($_GET['old_id']); //to make sure it shows as saved.
+		$smarty->assign('typo_id', $typo_id);
 
 	//save as a new item. (but will do update if duplicate!)
 	} elseif (!empty($_GET['save'])) {

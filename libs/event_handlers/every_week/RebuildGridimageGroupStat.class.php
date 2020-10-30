@@ -39,33 +39,43 @@ class RebuildGridimageGroupStat extends EventHandler
 	{
 		$db=&$this->_getDB();
 
+		if (!$db->getOne("SELECT GET_LOCK('RebuildGridimageGroupStat',10)")) {
+			//only execute if can get a lock
+			$this->_output(2, "Failed to get Lock");
+			 return false;
+		}
+
 		$sql = '
 		select null as gridimage_group_stat_id, grid_reference, label
 			, count(*) as images, count(distinct user_id) as users
 			, count(distinct imagetaken) as days, count(distinct year(imagetaken)) as years, count(distinct substring(imagetaken,1,3)) as decades
 			, min(submitted) as created, max(submitted) as updated, gridimage_id
+			, SUBSTRING_INDEX(SUBSTRING_INDEX(GROUP_CONCAT(submitted ORDER BY submitted),\',\',2),\',\',-1) AS `second`
 			, avg(wgs84_lat) as wgs84_lat, avg(wgs84_long) as wgs84_long
 		from gridimage_group inner join gridimage_search using (gridimage_id)
 		where label not in (\'(other)\',\'Other Topics\') and grid_reference like \'{$prefix}%\' and reference_index = {$reference_index}
 		group by grid_reference, label having images > 1 order by null';
 
-		if ($db->getCol("SHOW TABLES LIKE 'gridimage_group_stat'")) {
-			$db->Execute("CREATE TABLE IF NOT EXISTS gridimage_group_stat_tmp LIKE gridimage_group_stat");
-			$db->Execute("TRUNCATE TABLE gridimage_group_stat_tmp");
+		//may as well just create the table fresh - incase schema changed!
+		if (false && $db->getCol("SHOW TABLES LIKE 'gridimage_group_stat'")) {
+			$this->Execute("CREATE TABLE IF NOT EXISTS gridimage_group_stat_tmp LIKE gridimage_group_stat");
+			$this->Execute("TRUNCATE TABLE gridimage_group_stat_tmp");
 		} else {
-			$db->Execute("DROP TABLE IF EXISTS `gridimage_group_stat_tmp`");
+			$this->Execute("DROP TABLE IF EXISTS `gridimage_group_stat_tmp`");
 			$prefix = array('prefix'=>'XX','reference_index'=>999); //will never match anything!
-			$db->Execute('create table gridimage_group_stat_tmp ( gridimage_group_stat_id int unsigned auto_increment primary key, index(grid_reference) ) '.
+			$this->Execute('create table gridimage_group_stat_tmp ( gridimage_group_stat_id int unsigned auto_increment primary key, index(grid_reference) ) '.
 				preg_replace('/\{\$(\w+)\}/e','$prefix["\1"]',$sql)) or die(mysql_error());
 		}
 
 		$prefixes = $db->GetAll("select prefix,reference_index from gridprefix where landcount > 0 ");
 		foreach ($prefixes as $prefix) {
-			$db->Execute('insert into gridimage_group_stat_tmp '.preg_replace('/\{\$(\w+)\}/e','$prefix["\1"]',$sql));
+			$this->Execute('insert into gridimage_group_stat_tmp '.preg_replace('/\{\$(\w+)\}/e','$prefix["\1"]',$sql));
 		}
 
-		$db->Execute("DROP TABLE IF EXISTS gridimage_group_stat");
-		$db->Execute("RENAME TABLE gridimage_group_stat_tmp TO gridimage_group_stat");
+		$this->Execute("DROP TABLE IF EXISTS gridimage_group_stat");
+		$this->Execute("RENAME TABLE gridimage_group_stat_tmp TO gridimage_group_stat");
+
+		$db->Execute("DO RELEASE_LOCK('RebuildGridimageGroupStat')");
 
 		//return true to signal completed processing
 		//return false to have another attempt later

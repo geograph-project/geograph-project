@@ -11,7 +11,7 @@
 {/if}
 
 
-<form action="/support/open.php" method="POST" enctype="multipart/form-data">
+<form action="https://company.geograph.org.uk/support/open.php" method="POST" enctype="multipart/form-data">
  <input type=hidden name="topicId" value="13">
 <table align="left" cellpadding=2 cellspacing=1 width="90%">
 {dynamic}
@@ -59,5 +59,8 @@
 </table>
 </form>
      <div style="text-align:right"><a id="powered_by" target="_blank" href="http://osticket.com"><img src="https://company.geograph.org.uk/support/assets/default/images/poweredby.png" width="126" height="23" alt="Powered by osTicket"></a></div>
+
+
+<br style="clear:both"/>
 
 {include file="_std_end.tpl"}

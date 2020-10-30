@@ -177,27 +177,48 @@ geographing</a> first.</p>
 
 
 	<br/><br/><br/>
-	<p>If you are unsure of the photo location there are a number of online
-		sources available to help:</p>
 
+	<b>Tips for locationing photos:</b>
 	<ul>
-		<li><b>{external href="http://www.getamap.ordnancesurveyleisure.co.uk/" text="OS getamap"} provides a search by
-		Placename or Postcode.</b><br/> Once you have centred the map on the picture location,
-		return here and enter the <i>Grid reference at centre</i> value shown into the box
-		above.<br/><br/></li>
-		<li>{external href="http://www.multimap.com/map/browse.cgi?lat=54.5445&lon=-6.8228&scale=1000000" text="multimap.com"} now displays 1:50,000 <b>Mapping for Northern Ireland</b>. Use our handy <a href="/latlong.php">Lat/Long Convertor</a> to get the correct Grid Square for a picture.<br/><br/>
+		<li>If the image already has location attached (in EXIF), eg taken from a smartphone, GPS-Enabled camera, or geolocated via {external href="https://piclocata.inchworks.com/" text="PicLocata"} 
+		and similar GPS-Log correlation software - then use the 'GeoTagged Image' option. 
+		(you upload the image first, and the location data is extracted) <br/><br/></li>
 
-		Furthermore {external href="http://www.osni.gov.uk/mapstore" text="OSNI"} and {external href="http://www.osi.ie/" text="OSI"} now offer online mapping from their own websites. Coordinate conversion may not be easy - its probably best to rely on visual estimation using the national grid projected on the map.
-		<br/><br/></li>
+		<li>Can locate the approximate location using the 'Locate on Map' function, an interactive zoomable map to zoom to the right area 
+		(includes a placename/postcode search). Once located, can refine the locations on a detailed map. <br/><br/></li>
 
-		<li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
-		(e.g. from a GPS receiver, or from multimap site), then see our
-		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li>
-		<li><b>For information on {external href="http://en.wikipedia.org/wiki/Grid_reference" text="Grid References"}</b> <br/>see
-		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/resources/maps-and-geographic-resources/the-national-grid.html"}.
-		The {external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish National Grid"} is very similar, but using a single letter prefix,
-		see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.
-		</li>
+		<li>If you have a WGS84 latitude & longitude coordinate (e.g. from a GPS receiver, or from multimap site), then see our 
+		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a>.<br/><br/></li>
+
+		<li>See our <a href="/map/">Overview Map</a> for the layout of the Myriad Prefix letters.<br/><br/></li> 
+
+		<li>Can while out and about use a modern SmartPhone as a GPS, and get GRs, 
+		eg using our own 'Radar' Applicaton (open <tt>m.geograph.org.uk</tt> on device), 
+		or {external href="https://play.google.com/store/apps/details?id=uk.co.ordnancesurvey.oslocate.android" text="OS Locate"}
+		or similar. Can also get the device to actively record a data track, with 
+		{external href="https://play.google.com/store/search?q=GPS%20Log%20gpx&c=apps" text="variety of apps"}<br/><br/></li>
+	</ul>
+
+	<b>Resources for Great Britain:</b>
+	<ul>
+		<li>{external href="https://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid" text="OSGB"} 
+		({external href="http://www.ordnancesurvey.co.uk/resources/maps-and-geographic-resources/the-national-grid.html" text="Interactive Guide"}) 
+		covers Great Britain, and Isle of Man and uses two letter 'Myriad' prefix letters. <br/><br/></li>
+
+		<li>{external href="https://osmaps.ordnancesurvey.co.uk/" text="OS Maps Online"} - provide interactive zoomable maps,
+		 and provides a Grid-References. <br/><br/></li>
+
+		<li>{external href="http://magic.gov.uk/MagicMap.aspx" text="Magic Map"}
+		has a nice range of mapping and aerial imagery, for Great Britian. Can get a 'Grid Ref' to paste into the above form via the 'Where am I' tool.<br/><br/></li>
+	</ul>
+
+        <b>Resources for Ireland:</b>
+        <ul>
+		<li>{external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish Grid"}
+		 ({external href="https://www.osi.ie/wp-content/uploads/2015/04/The-Irish-Grid-A-Description-of-the-Coordinate-Reference-System-Used-in-Ireland.pdf" text="Fuller Description"})
+		 uses single letter 'Myriad' prefix.<br/><br/></li>
+
+		<li>We have a useful article: <a href="/article/Locating-photos---Republic-of-Ireland">Locating photos - Ireland</a> with some further tips (covers Northern and Republic of Ireland.<br/><br/></li>
 	</ul>
 
 	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
@@ -287,8 +308,8 @@ geographing</a> first.</p>
 	</div>
 
 	{if $rastermap->enabled}
-		<div class="rastermap" style="width:45%;position:relative">
-		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
+		<div class="rastermap" style="width:48%;position:relative;border:0;padding:0;padding-left:10px;">
+		<b>{$rastermap->getTitle($gridref)}</b><br/>
 		{$rastermap->getImageTag()}<br/>
 		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
 
@@ -312,9 +333,9 @@ geographing</a> first.</p>
 		<script type="text/javascript" src="{"/mapping.js"|revision}"></script>
 	{/if}
 
-	<br/>
-	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) {return autoDisable(this);} else {return false}{/literal}"/>
 	<br style="clear:both"/>
+	<input type="submit" name="goback" value="&lt; Back"/> <input type="submit" name="upload" value="Next &gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) {return autoDisable(this);} else {return false}{/literal}"/>
+	<br/>
 
 	{if $totalimagecount gt 0}
 	<br/>
@@ -449,7 +470,11 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 
 
-		<p><label for="top"><b>Geographical Context</b></label> <small style="font-size:0.7em">(tick as many as required, hover over name for a description, <a href="/tags/primary.php" text="More examples" class="about" target="_blank" style="font-size:0.85em">more</a>)</small><br />
+		<p><label for="top"><b>Geographical Context</b></label> <small style="font-size:0.7em">(tick as many as required, hover over name for a description, <a href="/tags/primary.php" text="More examples" class="about" target="_blank" style="font-size:0.85em">more</a>)</small><br/>
+
+			{if $error.tags}
+			        <span class="formerror">{$error.tags}</span><br>
+		        {/if}
 
 			{foreach from=$tops key=key item=item}
 				<div class="plist">

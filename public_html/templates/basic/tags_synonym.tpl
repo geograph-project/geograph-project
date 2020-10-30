@@ -26,7 +26,7 @@
 
 	<label for="tag">Primary Tag:</label>
 	{if $canonical}
-		<b><a href="/tags/?tag={if $canonical.prefix}{$canonical.prefix|escape:'url'}:{/if}{$canonical.tag|escape:'url'}&amp;exact=1">{if $canonical.prefix}{$canonical.prefix|escape:'html'}:{/if}{$canonical.tag|escape:'html'}</a></b>
+		<b><a href="/tagged/{if $canonical.prefix}{$canonical.prefix|escape:'urlplus'}:{/if}{$canonical.tag|escape:'urlplus'}?exact=1">{if $canonical.prefix}{$canonical.prefix|escape:'html'}:{/if}{$canonical.tag|escape:'html'}</a></b>
 		<input type="hidden" name="tag" value="{if $canonical.prefix}{$canonical.prefix|escape:'html'}:{/if}{$canonical.tag|escape:'html'}" size="20" readonly="readonly" style="border:0;font-size:1.2em"/>
 		<input type="hidden" name="tag_id" value="{$canonical.tag_id}"/>
 
@@ -50,7 +50,7 @@
 		<ul style="margin-left:90px">
 		{foreach from=$synonyms item=row}
 			{if $tag && $row.tag == $tag && $row.prefix == $theprefix}{assign var="found" value="true"}{/if}
-			<li><a href="/tags/?tag={if $row.prefix}{$row.prefix|escape:'url'}:{/if}{$row.tag|escape:'url'}&amp;exact=1">{if $row.prefix}{$row.prefix|escape:'html'}:{/if}{$row.tag|escape:'html'}</a></li>
+			<li><a href="/tagged/{if $row.prefix}{$row.prefix|escape:'urlplus'}:{/if}{$row.tag|escape:'urlplus'}?exact=1">{if $row.prefix}{$row.prefix|escape:'html'}:{/if}{$row.tag|escape:'html'}</a></li>
 		{/foreach}
 		</ul>
 

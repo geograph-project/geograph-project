@@ -52,29 +52,48 @@ $map->setPalette(3);
 $map->type_or_user = -12;
 
 
+$target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
 
-if (!empty($_GET['refresh']) && $USER->hasPerm("admin")) {
-	$target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
+if (!file_exists($target) || filemtime($target) < (time()-3600*6) || (!empty($_GET['refresh']) && $USER->hasPerm("admin")) ) {
 	unlink($target);
 	$map->_renderMap();
 }
 
 
-$overlayurl=$map->getImageUrl();
+$overlayurl=$map->getImageUrl()."&amp;dummy=".filemtime($target);
 
 
 $smarty->display('_std_begin.tpl');
 
 print "<h2>Route map for Thread #$route</h2>";
 
+print "<p>Map rendered: ".date('M, jS \a\t H:m',filemtime($target))."</p>";
+
+print "<p>Grid-Squares with photo(s) posted in the thread, are shown in red. This includes images from the whole thread, no paging.</p>";
+
 ?>
 <div style="position:relative; height:1300px;width:900px">
-	<div style="position:absolute;top:0;left:0"> 
-		<img src="<? echo $blankurl; ?>"/>
+	<div style="position:absolute;top:0;left:0">
+		<img src="<? echo $blankurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
 	</div>
-	<div style="position:absolute;top:0;left:0"> 
-		<img src="<? echo $overlayurl; ?>"/>
+	<div style="position:absolute;top:0;left:0">
+		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
 	</div>
+	<? if ($route == 27300) { ?>
+	<div style="position:absolute;top:1px;left:0">
+		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
+	</div>
+	<div style="position:absolute;top:0;left:1px">
+		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
+	</div>
+	<div style="position:absolute;top:0;left:-1px">
+		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
+	</div>
+	<div style="position:absolute;top:-1px;left:0">
+		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
+	</div>
+
+	<? } ?>
 </div>
 
 <?

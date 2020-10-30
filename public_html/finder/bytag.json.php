@@ -37,7 +37,7 @@ $sql['columns'] = "tag_id,tag.tag,if (tag.prefix='term' or tag.prefix='cluster' 
 
 $sql['wheres'] = array();
 
-if (!empty($_GET['q']) || !empty($_GET['recent'])) {
+if (!empty($_GET['q'])  || !empty($_GET['tag_id']) || !empty($_GET['recent'])) {
 	$q=trim($_GET['q']);
 
 	$sphinx = new sphinxwrapper($q);
@@ -53,6 +53,14 @@ if (!empty($_GET['q']) || !empty($_GET['recent'])) {
 
 	$client = $sphinx->_getClient();
 	$client->SetArrayResult(true);
+
+	if (!empty($_GET['tag_id'])) {
+		if (!is_array($_GET['tag_id']))
+			$_GET['tag_id'] = array($_GET['tag_id']);
+		foreach ($_GET['tag_id'] as $tag_id)
+			if (is_numeric($tag_id))
+				$client->SetFilter('all_tag_id', array(intval($tag_id)));
+	}
 
         if (!empty($_GET['recent'])) {
                 $max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
@@ -96,7 +104,8 @@ if (!empty($_GET['term'])) {
 
 	foreach ($data as $idx => $row) {
 		$data[$idx]['count'] = $count[$row['tag_id']];
-		unset($data[$idx]['tag_id']);
+		if (empty($_GET['ids']))
+			unset($data[$idx]['tag_id']);
 	}
 }
 

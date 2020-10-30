@@ -4,6 +4,8 @@
 User-agent: *
 Disallow: /stuff/canonical.php
 Disallow: /browser/
+Disallow: /photo/*?style
+Disallow: /photo/*.kml
 Disallow: /mapbrowse.php
 Disallow: /map/
 Disallow: /mapper/
@@ -14,6 +16,7 @@ Disallow: /admin/
 Disallow: /search.php
 Disallow: /full-text.php
 Disallow: /finder/
+Disallow: /chwilio/?q=
 Disallow: /explore/wordnet.php
 Disallow: /explore/calendar.php
 Disallow: /showmap.php
@@ -86,6 +89,7 @@ Disallow: /admin/
 Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/
+Disallow: /chwilio/?q=
 Disallow: /explore/wordnet.php
 Disallow: /explore/calendar.php?*Year
 Disallow: /showmap.php
@@ -184,4 +188,8 @@ Disallow: /
 
 User-agent: dotbot
 Disallow: /
+
+User-agent: Screaming Frog SEO Spider
+Disallow: /
+
 

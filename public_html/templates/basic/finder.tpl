@@ -27,7 +27,7 @@ h4.title {
 }
 
 	#taglist li {
-		padding:2px
+		padding:2px;
 		z-index:1000px;
 	}
 	#taglist li a {
@@ -50,7 +50,7 @@ h4.title {
 		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,10)">Images by Square</a>
 		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab9" onclick="tabClick('tab','div',9,10)">Tags</a>
 		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,10)">Combined</a>
-		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,10)">Content</a>
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,10)">Collections</a>
 		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,10)">Contributors</a>
 		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" onclick="tabClick('tab','div',6,10)">Locations</a>
 		<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" onclick="tabClick('tab','div',7,10)">Shared Descriptions</a>
@@ -100,14 +100,11 @@ h4.title {
 			<label for="fq">Keywords </label> <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<label for="fgroup">Group By <select name="group" id="fgroup">
 	        <option label="" value=":1"></option>
-<option label="Top Level Contexts" value="context_ids">Top Level Contexts</option>
+<option label="Geographical Contexts" value="context_ids">Geographical Contexts</option>
 <option label="Tags" value="tag_ids">Tags</option>
 <option label="Shared Descriptions" value="snippet_ids">Shared Descriptions</option>
-<option label="Buckets" value="bucket_ids">Buckets</option>
 <option label="Automatic Clusters" value="group_ids">Automatic Clusters</option>
-<option label="Extracted Terms" value="term_ids">Extracted Terms</option>
-<option label="Image Category" value="imageclass">Image Category</option>
-<option label="WikiMedia Categories" value="wiki_ids">WikiMedia Categories</option>
+<option label="Subjects" value="subject_ids">Subjects</option>
 <option label="" value=":2"></option>
 <option label="Myriad Square" value="myriad">Myriad Square</option>
 <option label="Hectad Square" value="hectad">Hectad Square</option>
@@ -175,7 +172,7 @@ h4.title {
 		<input type="submit" value="View"/><br/>
 
 		<div style="position:relative;">
-			<div style="position:absolute;top:0px;left:0px;background-color:lightgrey;margin-left:86px;padding-right:20px;display:none;z-index:10000" id="tagParent">
+			<div style="position:absolute;top:0px;left:0px;background-color:lightgrey;margin-left:86px;padding-left:30px;padding-right:20px;display:none;z-index:10000" id="tagParent">
 				<ol id="taglist">
 				</ol>
 			</div>
@@ -285,7 +282,7 @@ h4.title {
 	</div>
 
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
-		<h3 class="title">Content search</h3>
+		<h3 class="title">Collections search</h3>
 		<br/>
 		<form method="get" action="/content/">
 			<label for="fq">Keywords</label> <input type="text" name="q" id="cfq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/> <input type="submit" value="Search"/> <br/>
@@ -299,6 +296,11 @@ h4.title {
 					  <option value="themed" {if $scope == 'themed'} selected{/if}>Themed Topics</option>
 				  {/if}
 				{/dynamic}
+				<option value="blog" {if $scope == 'blog'} selected{/if}>Blog Entries</option>
+				<option value="snippet" {if $scope == 'snippet'} selected{/if}>Shared Descriptions</option>
+				<option value="user" {if $scope == 'user'} selected{/if}>Contributors</option>
+				<option value="trip" {if $scope == 'trip'} selected{/if}>GeoTrips</option>
+				<option value="context" {if $scope == 'context'} selected{/if}>Geographical Conext</option>
 				<option value="help" {if $scope == 'help'} selected{/if}>Help Pages</option>
 				<option value="document" {if $scope == 'document'} selected{/if}>Information Pages</option>
 			</select>

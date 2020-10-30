@@ -11,7 +11,7 @@
 		<li><b>Geograph Britain and Ireland</b><br/><br/></li>
 		<li><b>Geograph Ireland</b><br/><br/></li>
 	</ul>
-	... share the same user/registration database.<br/><br/> You can use either login here.
+	... share the same database.<br/><br/> You can use either login here.
 </div>
 
 {if $inline}

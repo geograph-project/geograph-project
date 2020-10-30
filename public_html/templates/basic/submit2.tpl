@@ -278,8 +278,9 @@ function clearSubmission() {
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php?redir=false">Submission Process</a> should be functional without it.</div>
 	</noscript>
 
-
-	<p>New! If you want, can <a href="?picnik=1">submit image via PicMonkey</a>. PicMonkey allows you to perform basic image manipulation and tweaking of the image prior to automatically transferring it to Geograph. (when done tweaking clicke the 'Save' button top left)</p>
+	{if !$transfer_id}
+		<p>New! If you want, can <a href="?picnik=1">submit image via PicMonkey</a>. PicMonkey allows you to perform basic image manipulation and tweaking of the image prior to automatically transferring it to Geograph. (when done tweaking clicke the 'Save' button top left)</p>
+	{/if}
 
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).
 	 A overview map is provided to help locate a square, but is optional. You can directly enter a grid reference in step 2 if you wish.

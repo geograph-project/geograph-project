@@ -29,7 +29,6 @@
 		<a href="/tags/prefix.php?prefix=top" class="tab">Geographical Context</a>
 		<a href="/tags/prefix.php?prefix=subject" class="tab">Subjects</a>
                 <a href="/tags/prefix.php?prefix=type" class="tab">Types</a>
-                <a href="/tags/prefix.php?prefix=bucket" class="tab">Image Buckets</a>
 		<a href="/tags/prefix.php" class="tab">Other Prefixes</a>
 </div>
 <div style="position:relative;" class="interestBox">

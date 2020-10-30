@@ -32,17 +32,17 @@
  */
 
 class MultiServerMemcache extends Memcache {
-	
+
 	//contstants
 	var $period_temp = 60;
 	var $period_short = 3600; //hour
 	var $period_med = 86400; //24h;
 	var $period_long = 604800; //7day
-	
+
 	//extra variables
 	var $compress = false; //|| MEMCACHE_COMPRESSED
 	var $valid = false;
-	
+
 	var $db=null;
 	var $redis=null;
 
@@ -72,7 +72,7 @@ class MultiServerMemcache extends Memcache {
 		if (!empty($conf['host'])) {
 			if (@$this->connect($conf['host'], $conf['port']))
 				$valid = true;
-			elseif ($debug) 
+			elseif ($debug)
 				die(" Can't connect to memcache server on: {$conf['host']}, {$conf['port']}<br>\n");
 		}
 
@@ -87,8 +87,8 @@ class MultiServerMemcache extends Memcache {
 		if ($this->valid = $valid) {
 			$this->prefix = isset($conf['p'])?($conf['p'].'~'):'';
 		}
-		
-		split_timer('memcache','connect'); //logs the wall time	
+
+		split_timer('memcache','connect'); //logs the wall time
 	}
 
 	//extended to allow quick exit if memcache not in use
@@ -96,6 +96,7 @@ class MultiServerMemcache extends Memcache {
 	function set($key, &$val, $flag = false, $expire = 0) {
 		if (!$this->valid) return false;
 		if ($this->redis) {
+			//note, redis ignores the 'compress' flag! Unused atm.
 
 if (!is_string($val) && !is_int($val)) {
 	//memcache can deal with serializing complex varibles itself. Redis cant. it expects a string!
@@ -114,7 +115,7 @@ if (!is_string($val) && !is_int($val)) {
 		return parent::set($this->prefix.$key, $val, $flag, $expire);
 	}
 
-	function get($key,&$param1=null,&$param2=null) {
+	function get($key) {
 		if (!$this->valid) return false;
 		if ($this->redis) {
 			$r = $this->redis->get($this->prefix.$key);
@@ -189,7 +190,7 @@ if (!is_string($val) && !is_int($val)) {
 
 		split_timer('memcache'); //starts the timer
 		$tmp =& parent::set($this->prefix.$namespace.':'.$key, $val, $flag, $expire);
-		split_timer('memcache','set',$namespace.':'.$key); //logs the wall time	
+		split_timer('memcache','set',$namespace.':'.$key); //logs the wall time
 		return $tmp;
 	}
 
@@ -209,7 +210,12 @@ if (!is_string($val) && !is_int($val)) {
 		}
 		split_timer('memcache'); //starts the timer
 		$tmp =& parent::get($this->prefix.$namespace.':'.$key);
-		split_timer('memcache','get',$namespace.':'.$key); //logs the wall time	
+
+		if (isset($_GET['remote_profile'])) {
+			print "$start  :: name_Get($namespace, $key, ".@strlen($tmp).")<br>";
+		}
+
+		split_timer('memcache','get',$namespace.':'.$key); //logs the wall time
 		return $tmp;
 	}
 
@@ -220,7 +226,7 @@ if (!is_string($val) && !is_int($val)) {
 
 		split_timer('memcache'); //starts the timer
 		$tmp = parent::delete($this->prefix.$namespace.':'.$key, $timeout);
-		split_timer('memcache','delete',$namespace.':'.$key); //logs the wall time	
+		split_timer('memcache','delete',$namespace.':'.$key); //logs the wall time
 		return $tmp;
 	}
 

@@ -67,16 +67,16 @@
 	<table cellspacing="0" cellpadding="2" border="0">
 	{foreach from=$results item=image}
 		<tr>
+			<td valign="top">
+				<div class="interestBox" style="font-weight:bold;color:white;background-color:black">
+					<div style="float:right;color:yellow"><small>x</small><b>{$image->count}</b></div>
+				{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}:{/if}<a{if $image->count > 1} href="/search.php?searchtext={$q|escape:'url'}+tags:%22{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}+{/if}{$image->tag.tag|escape:'html'}%22{if $user_id}&amp;user_id={$user_id}{/if}&amp;do=1"{/if} style="color:cyan">{$image->tag.tag|escape:'html'}</a></div>
+
+				<div class="caption" style="margin-top:10px;">Example Image: {if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+				<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+			</td>
 			<td valign="top" align="center">
 				<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
-			</td>
-			<td valign="top">
-				<div class="interestBox" style="font-weight:bold">
-					<div style="float:right"><small>x</small><b>{$image->count}</b></div>
-				<span class="tag">{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}:{/if}<a{if $image->count > 1} href="/search.php?searchtext={$q|escape:'url'}+tags:%22{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}+{/if}{$image->tag.tag|escape:'html'}%22{if $user_id}&amp;user_id={$user_id}{/if}&amp;do=1"{/if} class="taglink">{$image->tag.tag|escape:'html'}</a></span></div>
-
-				<div class="caption" style="margin-top:10px;">{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
-				<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
 			</td>
 		</tr>
 	{foreachelse}

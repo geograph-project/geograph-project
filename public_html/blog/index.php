@@ -62,6 +62,9 @@ if ($isadmin) {
 		$sql = "UPDATE blog SET approved = $a WHERE blog_id = ".$db->Quote($_GET['id']);
 		$db->Execute($sql);
 
+		if ($a < 1)
+		 	$db->Execute("DELETE FROM content WHERE source = 'blog' AND foreign_id = ".intval($_POST['id']));
+
 		$smarty->clear_cache('blogs.tpl');
 		$smarty->clear_cache('blogs.tpl',$cacheid);
 		$smarty->clear_cache('blog_entry.tpl',$_REQUEST['id']);
@@ -113,7 +116,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		or blog.user_id = {$USER->user_id}
 		or ($isadmin and approved != -1)
 		) $where
-	order by blog_id desc limit 25");
+	order by published desc limit 25");
 
 	$conv = new Conversions;
 	foreach ($list as $i => $row) {

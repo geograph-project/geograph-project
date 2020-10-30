@@ -31,11 +31,14 @@ init_session_or_cache(3600*3, 900); //cache publically, and privately
 
 $smarty = new GeographPage;
 
-customGZipHandlerStart();
+pageMustBeHTTPS();
+
+if (empty($_GET['ddddd']))
+	customGZipHandlerStart();
+
 ##customExpiresHeader(600,false,true);
 
 
-        
 $db = GeographDatabaseConnection(true);
 
 
@@ -66,10 +69,17 @@ if ($by == 'level') {
     $by = "level asc,answer_id asc";
 }
 
-$data = $db->getAssoc("SELECT a.*,realname,question 
-FROM answer_answer a INNER JOIN user USING (user_id) INNER JOIN answer_question q USING (question_id) 
+$data = $db->getAssoc("SELECT a.*,realname,question
+FROM answer_answer a INNER JOIN user USING (user_id) INNER JOIN answer_question q USING (question_id)
 WHERE a.status = 1 AND q.status = 1 $where
 GROUP BY $by,level ASC,answer_id ASC LIMIT 5000");
+
+if (!empty($where)) {
+	$tagdata = $db->getAll("SELECT tags FROM  answer_answer a INNER JOIN answer_question q USING (question_id) WHERE a.status = 1 AND q.status = 1");
+} else {
+	$tagdata = $data;
+}
+
 
 $by = preg_replace('/[ \+].*/','',$by);
 
@@ -80,12 +90,16 @@ $extra = '';
 $editable = ($CONF['template'] != 'charcoal');
 
 if (!empty($_GET['q'])) {
-        $smarty->assign('page_title',htmlentities2(strip_tags($_GET['q'])).' :: Geograph Knowledgebase');
+        $smarty->assign('page_title','Geograph Knowledgebase, tagged ['.htmlentities2(strip_tags($_GET['q'])).']');
 } elseif (isset($_GET['l'])) {
         $smarty->assign('page_title','FAQ');
 } else {
         $smarty->assign('page_title','Knowledgebase');
 }
+
+if (count($data) < 3)
+	header("X-Robots-Tag: noindex");
+
 
 $smarty->display('_std_begin.tpl',$mkey);
 
@@ -134,7 +148,7 @@ dl {
 dt {
     margin-top:8px;
     background-color:#f9f9f9;
-    font-weight:bold;
+    --font-weight:bold;
     color:#333333;
 }
 dt b {
@@ -155,21 +169,21 @@ dd {
     margin-bottom:20px;
     margin-left:20px;
 }
-dd div {
+dd div.linkbar {
     margin-top:20px;
     border-top:1px solid silver;
-    color:#cccccc;    
+    color:#cccccc;
     font-size:0.8em;
 }
-dd div a {
+dd div.linkbar a {
     text-decoration:none;
     color:silver;
     white-space:nowrap;
 }
-dd div.selected {
+dd div.linkbar:hover {
     color:gray;
 }
-dd div.selected a {
+dd div.linkbar:hover a {
     color:blue;
 }
 
@@ -178,7 +192,7 @@ dd div.selected a {
     width:180px;
     top:-50px;
     position:relative;
-    height:<? print (count($data)>10)?1200:400; ?>px;
+    min-height:<? print (count($data)>10)?1200:400; ?>px;
     border-left:1px solid gray;
     font-size:0.8em;
     margin-left:4px;
@@ -203,7 +217,6 @@ dd div.selected a {
         <a href="/team.php" class="tab">The Geograph Team</a>
         <a href="/credits/" class="tab">Contributors</a>
         <a href="/help/credits" class="tab">Credits</a>
-        <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
         <a href="/contact.php" class="tab">Contact Us</a>
         <a href="/article/Get-Involved">Get Involved...</a>
 </div>
@@ -220,16 +233,15 @@ dd div.selected a {
 $smarty->display('_doc_search.tpl');
 
 ?>
-
 <div class=sidebar>
-
         <a href="/content/documentation.php">More Help Pages</a><br/><br/>
-    
-<? 
+<?
 
-if ($data) {
+################################################
+
+if (!empty($tagdata)) {
         $tags = array();
-        foreach ($data as $idx => $row) {
+        foreach ($tagdata as $idx => $row) {
                 if (!empty($row['tags'])) {
                         $bits = preg_split('/\s*,\s*/',strtolower(trim($row['tags'])));
                         foreach ($bits as $bit) {
@@ -240,14 +252,21 @@ if ($data) {
                 }
         }
         if (!empty($tags)) {
+		if (isset($tags[''])) unset($tags['']);
                 ksort($tags);
                 print "<div><b>Topics</b>:";
                 if (!empty($_GET['q'])) {
                         print " (<a href=\"faq3.php".($extra?"?$extra":'')."\">show all</a>)";
                 }
                 print "<br/><br/>";
+		$last = 'a'; //just to avoid one at the start.
                 foreach ($tags as $tag => $count) {
+			if ($last != $tag[0]) {
+	                        print "<br/><br>";
+				$last = $tag[0];
+			}
                         $u = urlencode($tag);$h=htmlentities2($tag);
+			print "<nobr>";
                         if (!empty($_GET['q']) && $_GET['q'] == $tag) {
                                 print "&middot; <b>$h</b>";
                         } else {
@@ -255,7 +274,7 @@ if ($data) {
                         }
                         if ($count > 1)
                                 print " <small>x $count</small>";
-                        print "<br/>";
+			print "&nbsp; </nobr> ";
                 }
                 if (!empty($_GET['q'])) {
                         print "<br> (<a href=\"faq3.php".($extra?"?$extra":'')."\">show all questions</a>)";
@@ -264,14 +283,18 @@ if ($data) {
         }
 }
 
+################################################
+
 ?>
-
-
 </div>
+
+
 <? if (count($data) > 2) { ?>
         <input type=button value="Expand All" onclick="showAll()"/>
         <input type=button value="Collapse All" onclick="hideAll()"/>
 <? }
+
+#############################################################################################
 
 $bys = array('target'=>'Subject','level'=>'Level');
 
@@ -293,15 +316,17 @@ if (isset($_GET['l']) && empty($_GET['l'])) {
     print "[<a href=\"faq3.php".($extra?"?$extra":'')."\">View <b>even more</b> questions!</a>]";
 }
 
-    print "<dl>";
+#############################################################################################
+
+    print '<dl itemscope itemtype="https://schema.org/FAQPage">';
     $last = '';
     $question = 0;
     foreach ($data as $idx => $row) {
+
         if ($row['question_id'] != $question) {
-            
             if ($question)
-                print "</dd>";
-            
+                print "</dd></section>";
+
             $question = $row['question_id'];
 
             if ($last != $row[$by]) {
@@ -312,58 +337,64 @@ if (isset($_GET['l']) && empty($_GET['l'])) {
                 print "</h4>";
             }
             $last = $row[$by];
-        
+
             $title = "CLICK TO SEE FULL ANSWER\n\n".htmlentities2(substr($row['content'],0,250)."...");
 
-            if (count($data) > 2) {    
+	    print '<section itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">';
+
+            if (count($data) > 2) {
                 print "<dt id=\"dt$idx\" title=\"$title\"><a name=\"$idx\"></a>";
-                print "<a href=\"/faq3.php#$idx\" onclick=\"showIt($idx);return false\" onmouseover=\"hoverIt($idx)\" onmouseout=\"exitIt($idx)\" id=\"a$idx\">".title_escape($row['title']?$row['title']:$row['question'])."</a> ";
+		//need a span, can't put itemprop on <a> directly as will use href, not 'innerText'
+                print "<a href=\"/faq3.php#$idx\" onclick=\"showIt($idx);return false\" onmouseover=\"hoverIt($idx)\" onmouseout=\"exitIt($idx)\" id=\"a$idx\"><span itemprop=\"name\">".title_escape($row['title']?$row['title']:$row['question'])."</span></a> ";
                 print " <a href=\"javascript:void(hideIt($idx));\" class=\"close\" id=\"cl$idx\" style=\"display:none\">Close</a></dt>";
-                print "<dd id=\"dd$idx\" style=\"display:none\">";
+                print "<dd id=\"dd$idx\" style=\"display:none\"";
             } else {
-                print "<dt id=\"dt$idx\">".title_escape($row['title']?$row['title']:$row['question'])."</dt>";
-                print "<dd id=\"dd$idx\">";
-            }    
+                print "<dt id=\"dt$idx\" itemprop=\"name\">".title_escape($row['title']?$row['title']:$row['question'])."</dt>";
+                print "<dd id=\"dd$idx\"";
+            }
+		print ' itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"';
+	    print ">"; //close <dd>
 
         } else {
             print "<br/><br/>";
         }
 
-
-        $row['content'] = preg_replace('/(?<!["\'\[\]>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>\"\$1\",'nofollow'=>1,'title'=>\"\$1\"))",htmlentities2($row['content']));
+        $row['content'] = preg_replace('/(?<!["\'\[\]>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:!]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>\"\$1\",'nofollow'=>1,'title'=>\"\$1\"))",htmlentities2($row['content']));
 
         if (preg_match('/(youtube\.com\/watch\?v=|youtu\.be\/)(\w+)/',$row['content'],$m)) {
                 $row['content'] .= "<div style=\"width:490px;margin-left:auto;margin-right:auto;\">".
                 '<object width="480" height="385"><param name="movie" value="http://www.youtube-nocookie.com/v/'.$m[2].'&hl=en_US&fs=1&rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="https://www.youtube-nocookie.com/v/'.$m[2].'&hl=en_US&fs=1&rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object>'.
                 "</div>";
         }
-
+	print '<div itemprop="text">';
         print nl2br($row['content']);
+	print '</div>';
 
-        print "<div onmouseover=\"this.className='selected'\" onmouseout=\"this.className=''\">";
+	####################
+
+        print "<div class=\"linkbar\">";
 
         if (!empty($row['link'])) {
             $bits = parse_url($row['link']);
-            if (!empty($bits['host'])) 
+            if (!empty($bits['host']))
                 print " &middot; <b><a href=\"".htmlentities2($row['link'])."\">More information on this topic...</a></b>";
         }
-        
-        if (empty($row['anon'])) { 
+
+        if (empty($row['anon'])) {
             if (!empty($row['user_id'])) {
-                print " &middot; contributed by <a href=\"/profile/{$row['user_id']}\">".htmlentities2($row['realname'])."</a>"; 
+                print " &middot; contributed by <a href=\"/profile/{$row['user_id']}\">".htmlentities2($row['realname'])."</a>";
             } else {
-                print " &middot; by ".htmlentities2($row['realname']); 
+                print " &middot; by ".htmlentities2($row['realname']);
             }
             $date = strtotime($row['created']);
             print ", <span title=\"created:{$row['created']} updated:{$row['updated']}\">".date('M Y',$date)."</span>";
-        } else if ($USER->user_id == $row['user_id']) { 
-            print " &middot; anonymous by YOU"; 
+        } else if ($USER->user_id == $row['user_id']) {
+            print " &middot; anonymous by YOU";
         }
 
         if ($editable) {
-
-                if (!empty($row['wiki']) || $USER->user_id == $row['user_id']) { 
-                    print " &middot; <a href=\"faq-edit.php?id=$idx\">Edit this answer</a>";  
+                if (!empty($row['wiki']) || $USER->user_id == $row['user_id']) {
+                    print " &middot; <a href=\"faq-edit.php?id=$idx\">Edit this answer</a>";
                     if (!empty($row['wiki'])) {
                         print " (Open for editing by anyone)";
                     }
@@ -373,14 +404,22 @@ if (isset($_GET['l']) && empty($_GET['l'])) {
         }
 
         print "</div>";
-        
+
+	####################
     }
     if ($question)
-        print "</dd>";
+        print "</dd></section>";
     print "</dl>";
 
-?>
+#############################################################################################
 
+	$count = $db->getOne("SELECT COUNT(*) FROM answer_answer a INNER JOIN answer_question q USING (question_id) WHERE a.status = 1 AND q.status = 1");
+
+	if (count($data) < $count) {
+
+	    print "<hr>&middot; ".count($data)." of $count questions shown. <a href=\"faq3.php".($extra?"?$extra":'')."\"><b>View All</b></a>";
+	}
+?>
 
 <br style="clear:both"/>
 
@@ -398,8 +437,8 @@ if (isset($_GET['l']) && empty($_GET['l'])) {
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons Licence [Some Rights Reserved]" src="https://creativecommons.org/images/public/somerights20.gif" border="0" style="vertical-align: middle"></a>
 the content of this page is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 
-<br/><br/>
- 
+<br style="clear:both"/><br/>
+
 <script>
 
 function showAll() {
@@ -467,9 +506,6 @@ AttachEvent(window,'load',function () {
 </script>
 
 <?
-
-        print "&middot; <a href=\"faq.php#top\">Old FAQ page</a> in case you still looking for it. But please let us know why so we can update this one!";
-
 
 $smarty->display('_std_end.tpl');
 

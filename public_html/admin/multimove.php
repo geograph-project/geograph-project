@@ -24,7 +24,7 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-$USER->mustHavePerm("admin");
+$USER->mustHavePerm("forum");
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
@@ -32,7 +32,8 @@ $db = NewADOConnection($GLOBALS['DSN']);
 if (empty($_GET['topic_id'])) {
 	?>
 	<form>
-		<input name="topic_id"><input type=submit>
+		Enter tthe topic-ID of the thread to move posts FROM:
+		<input name="topic_id"><input type=submit> (will choose the specicifc posts in next page)
 	</form>
 	<?
 	exit;
@@ -46,30 +47,33 @@ if (!empty($_POST['new_id'])) {
 	$sql = "UPDATE geobb_posts SET topic_id = ".intval($_POST['new_id'])." WHERE topic_id = ".intval($_GET['topic_id'])." AND post_id IN ($ids)";
 
 	print $sql;
-	$db->Execute($sql);	
+	$db->Execute($sql);
 }
 
 
 ?>
 <form action="?topic_id=<? echo intval($_GET['topic_id']); ?>" method="post">
 
+Tick any posts to move to new thread:
 <table>
 
 <?
 
-$data = $db->getAll("SELECT post_id,poster_name,post_time FROM geobb_posts WHERE topic_id = ".intval($_GET['topic_id'])." ORDER BY post_id");
+$data = $db->getAll("SELECT post_id,poster_name,post_time,substring(post_text,1,50) as post_text FROM geobb_posts WHERE topic_id = ".intval($_GET['topic_id'])." ORDER BY post_id");
 
 foreach ($data as $row) {
 	print "<tr>";
 	print "<td><input type=checkbox name=\"tick[{$row['post_id']}]\"></td>";
 	print "<td>{$row['poster_name']}</td>";
 	print "<td>{$row['post_time']}</td>";
+	print "<td>".htmlentities($row['post_text'])."...</td>";
 	print "</tr>";
 }
 
 ?>
 </table>
-<input name="new_id">
+Enter the topic-ID of the NEW thread to move TO:
+<input name="new_id"> (needs to be created first!)<br>
 <input type=submit>
 </form>
-	
+

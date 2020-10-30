@@ -113,6 +113,10 @@ if (!empty($_GET['q'])) {
 					$smarty->assign("offset",$offset);
 				}
 				$ADODB_FETCH_MODE = $prev_fetch_mode;
+
+                                $smarty->assign('thumbw',120);
+                                $smarty->assign('thumbh',120);
+
 			}
 		} else {
 			$smarty->assign("query_info","Search will only return 1000 results - please refine your search");

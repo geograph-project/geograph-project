@@ -39,7 +39,7 @@ class SendtoAmazonS3 extends EventHandler
 		if (!empty($CONF['awsAccessKey'])) {
 			require_once("3rdparty/S3.php");
 			
-			$s3 = new S3($CONF['awsAccessKey'], $CONF['awsSecretKey']);
+			$s3 = new S3($CONF['awsAccessKey'], $CONF['awsSecretKey'], false);
 
 			
 			list($gridimage_id,$user_id,$storedoriginal) = explode(',',$event['event_param']);

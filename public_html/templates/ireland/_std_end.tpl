@@ -63,7 +63,7 @@
     <li>Further Info<ul rel="open">
      <li><a title="Recent Geograph Announcements" href="/news.php">Latest News</a></li>
      <li><a title="FAQ" href="/faq3.php?l=0">FAQ</a><ul>
-      <li><a title="Geograph Documents" href="/content/documentation.php">Project Info</a></li>
+      <li><a title="Geograph Documents" href="/content/documentation.php">Help Pages</a></li>
      </ul></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a><ul>
       <li><a title="View More Pages" href="/help/more_pages">More Pages</a><ul>

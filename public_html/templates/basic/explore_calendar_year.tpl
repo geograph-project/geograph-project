@@ -59,7 +59,29 @@
 <h2>Geograph Calendar :: {$year}</h2>
 
 <form action="{$script_name}" class="no_print">
-<p>Date: {html_select_date display_days=false prefix="" time=`$date` start_year="-100" reverse_years=true  month_empty="-whole year-" all_extra="onchange='this.form.submit()'"}<noscript><input type="submit" value="Update"/></noscript></p> 
+<p>Date: {html_select_date display_days=false prefix="" time=`$date` start_year="-100" reverse_years=true  month_empty="-whole year-" all_extra="onchange='this.form.submit()'"}
+
+    {dynamic}
+    {if $user->registered}
+        <select name="u" onchange='this.form.submit()'>
+                {if $u && $u != $user->user_id}
+                        <option value="{$u}">Just for {$profile->realname}</option>
+                {/if}
+                <option value="{$user->user_id}">Just for {$user->realname}</option>
+                <option value="" {if !$u} selected{/if}>For Everyone</option>
+        </select>
+    {else}
+        {if $u}
+        <select name="u" onchange='this.form.submit()'>
+                <option value="{$u}" selected>Just for {$profile->realname}</option>
+                <option value="">For Everyone</option>
+        </select>
+        {/if}
+    {/if}
+    {/dynamic}
+
+<noscript><input type="submit" value="Update"/></noscript></p> 
+
 {if $image}
 <input type="hidden" name="image" value="{$image->gridimage_id}"/>
 {/if}

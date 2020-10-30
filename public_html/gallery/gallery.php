@@ -63,9 +63,9 @@ select t.topic_id,topic_title,topic_poster,topic_poster_name,topic_time,post_tim
 	from geobb_topics t
 	inner join geobb_posts on (post_id = topic_last_post_id)
 	where t.topic_id = $topic_id and t.forum_id = 11");
-	
+
 if (count($page)) {
-	
+
 	//when this page was modified
 	$mtime = strtotime($page['post_time']);
 
@@ -82,10 +82,10 @@ if (count($page)) {
 	if (empty($pgsize)) {$pgsize = 10;}
 	if (!$pg or $pg < 1) {$pg = 1;}
 
-	$pagelimit = ($pg -1)* $pgsize;	
+	$pagelimit = ($pg -1)* $pgsize;
 
 	if ($USER->user_id && count($page)) {
-		
+
 		$prev_fetch_mode = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$list = $db->getAll("
@@ -94,10 +94,10 @@ if (count($page)) {
 		where topic_id = $topic_id
 		order by post_id
 		limit $pagelimit,$pgsize");
-	
+
 		$last = count($list)-1;
 		$postID = $list[$last]['post_id'];
-		
+
 		$db->Execute($sql = "insert into geobb_lastviewed set topic_id=$topic_id,user_id={$USER->user_id},last_post_id = $postID on duplicate key update last_post_id = if(last_post_id < $postID,$postID,last_post_id)");
 	}
 } else {
@@ -130,7 +130,7 @@ function smarty_function_gallerytext($input) {
 	$output=preg_replace($pattern, $replacement, $input, 5);
 
 	return $output;
-} 
+}
 
 $smarty->register_modifier("gallerytext", "smarty_function_gallerytext");
 
@@ -141,6 +141,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$CONF['post_thumb_limit'] *= 2;
 
 		$smarty->assign($page);
+		$smarty->assign('page_title', $page['topic_title']);
 
 		if (empty($list)) {
 			$prev_fetch_mode = $ADODB_FETCH_MODE;
@@ -154,15 +155,19 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 
 		$smarty->assign_by_ref('list', $list);
-		
+
 		if ($page['posts_count'] > $pgsize) {
 			$numberOfPages = ceil($page['posts_count']/$pgsize);
-			
+
 			$smarty->assign('pagesString', pagesString($pg,$numberOfPages,"/gallery/{$page['url']}/"));
+
+			if ($pg > 1)
+				$smarty->assign('page_title', $page['topic_title']." :: Page $pg");
 		}
-		
-	} 
+	}
+
 } else {
+	//needed by the dynamic block
 	$smarty->assign('topic_id', $topic_id);
         $smarty->assign('forum_id', $page['forum_id']);
 }

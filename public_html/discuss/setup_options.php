@@ -46,7 +46,7 @@ $viewmaxtopic=30;
 $viewlastdiscussions=30;
 $viewmaxreplys=30;
 $viewmaxsearch=30;
-$viewpagelim=500;
+$viewpagelim=5000;
 $viewTopicsIfOnlyOneForum=0;
 
 $protectWholeForum=0;

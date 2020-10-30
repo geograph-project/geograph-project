@@ -76,17 +76,6 @@ representative photographs and information for every square kilometre of <a href
 
 <br style="clear:both"/>
 
-<div class="interestBox" style="margin-left:auto;margin-right:auto;width:750px; padding:2px;text-align:center;border-radius:6px;margin-top:10px;margin-bottom:6px;">
-	Good News!
-	{external href="http://www.mikeparker.org.uk/" text="Mike Parker"}, the author of Map Addict, On Red Hill and Mapping the Roads, has agreed to become the first ever Patron of the Geograph project.
-	Mike thinks Geograph &quot;is exactly what the internet was invented for.&quot; 
-	He uses Geograph for book research and for leisure and is fascinated by maps and the land that they show. He hopes to &quot;help Geograph develop further in finding new generations of explorers, photographers, writers and map addicts.&quot;
-	Mike lives in Wales and will be at our <a href="/events/event.php?id=65">2020 AGM in Llandudno</a>. 
-	Christine Johnstone, Chair
-</div>
-
-
-
 
 {if $recentcount}
 	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px" id="photo_block">

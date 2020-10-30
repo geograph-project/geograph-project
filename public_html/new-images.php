@@ -22,6 +22,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+$_SERVER['HTTPS'] = 'on'; //cheeky, but forces generation of https:// urls :)
+
 require_once('geograph/global.inc.php');
 require_once('geograph/feedcreator.class.php');
 require_once('geograph/gridimage.class.php');
@@ -43,7 +45,7 @@ if ($CONF['template'] == 'ireland') {
 	$ri = 2;
 } else {
 	$rss->title = 'Geograph Britain and Ireland';
-	$ri = 1;
+	$ri = 1; //this is delibeate, sarch engines etc, index only GB images on .org.uk, uses .ie for all ireland photos. (.org.uk will redirect!)
 }
 if ($CONF['template'] == 'api') {
         $rss->link = "{$CONF['CONTENT_HOST']}/";
@@ -54,6 +56,7 @@ $baselink = $rss->link;
 
 	//lets find some photos
 	$images=new ImageList();
+	$cols = "gi.gridimage_id,title,comment,gi.grid_reference,imagetaken,submitted,upd_timestamp,gi.user_id,credit_realname,tags,gi.wgs84_lat,gi.wgs84_long";
 
 	$db = $images->_getDB(true);
 
@@ -73,37 +76,52 @@ $baselink = $rss->link;
         if (!empty($_GET['v'])) {
                 if ($_GET['v'] == 1) {
                         //most recent sent!
-                        $sql = "SELECT gi.* FROM gridimage_search gi
+                        $sql = "SELECT $cols FROM gridimage_search gi
                                 INNER JOIN geograph_tmp.newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
                         WHERE reference_index = $ri $filter
                         ORDER BY gi.gridimage_id DESC LIMIT 100";
                 } elseif ($_GET['v'] == 4) {
                         //mid level sent!
-                        $sql = "SELECT gi.* FROM gridimage_search gi
+                        $sql = "SELECT $cols FROM gridimage_search gi
                                 INNER JOIN geograph_tmp.newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
                         WHERE reference_index = $ri $filter
                         ORDER BY gi.gridimage_id DESC LIMIT 500,100";
                 } elseif ($_GET['v'] == 2) {
                         //oldest sent!
-                        $sql = "SELECT gi.* FROM gridimage_search gi
+                        $sql = "SELECT $cols FROM gridimage_search gi
                                 INNER JOIN geograph_tmp.newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
                         WHERE reference_index = $ri $filter
                         ORDER BY gi.gridimage_id ASC LIMIT 100";
                 } elseif ($_GET['v'] == 3) {
                         //newest before setup!
                         $id = $db->getOne("SELECT MIN(gridimage_id) FROM geograph_tmp.newimages");
-                        $sql = "SELECT gi.* FROM gridimage_search gi
+                        $sql = "SELECT $cols FROM gridimage_search gi
                         WHERE reference_index = $ri $filter AND gi.gridimage_id < $id
                         ORDER BY gi.gridimage_id DESC LIMIT 100";
-                }
+                } elseif ($_GET['v'] == 5) {
+                        //just list updated (but excluding recent submissions)
+                        $sql = "SELECT $cols FROM gridimage_search gi
+                        WHERE reference_index = $ri $filter and submitted < date_sub(now(),interval 2 day)
+                        ORDER BY upd_timestamp DESC LIMIT 100";
+		}
+        } elseif ($_GET['g'] == 1) {
+		//show images from newly created clusters (in theory more unique images!)
+		$sql = "SELECT $cols FROM gridimage_search gi
+			INNER JOIN gridimage_group_stat gs ON (gi.gridimage_id = gs.gridimage_id)
+			LEFT JOIN geograph_tmp.newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
+		WHERE reference_index = $ri $filter AND ni.gridimage_id IS NULL
+		ORDER BY gs.created DESC LIMIT 100";
         } else {
                 //constantly refreshing list!
-                $sql = "SELECT gi.* FROM gridimage_search gi
+                $sql = "SELECT $cols FROM gridimage_search gi
                         LEFT JOIN geograph_tmp.newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
 			LEFT JOIN vote_log ON (id = gi.gridimage_id and vote < 3)
                 WHERE reference_index = $ri $filter AND ni.gridimage_id IS NULL AND vote is NULL
                 ORDER BY gi.gridimage_id DESC LIMIT 100";
         }
+
+if (!empty($_GET['dd']))
+	die($sql);
 
 
 	$images->_getImagesBySql($sql);

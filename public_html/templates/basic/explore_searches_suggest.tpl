@@ -35,10 +35,10 @@
 <div class="field">
 	{if $errors.comment}<div class="formerror"><p class="error">{$errors.comment}</p>{/if}
 	 
-	<label for="url">Comment:</label>
-	<input type="text" name="comment" value="{$query.comment|escape:"html"}" maxlength="100" size="40"/></span>
+	<label for="url">Reason:</label>
+	<input type="text" name="comment" value="{$query.comment|escape:"html"}" maxlength="100" size="60"/></span>
 
-	<div class="fieldnotes">Optional, up to 100 chars describing why this search should be featured</div>
+	<div class="fieldnotes">Please explain why you think this search is worthy of being featured, in under 100 charactors.</div>
 	
 	{if $errors.comment}</div>{/if}
 </div>
@@ -48,7 +48,9 @@
 <input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');"/>
 <input type="submit" name="submit" value="Submit" style="font-size:1.1em"/>
 </form>
-<br/><br/>(Searches will only show on the site once they have been approved by a site moderator)</p>
+{if !$is_mod}
+	<br/><br/>(Searches will only show on the site once they have been approved by a site moderator)</p>
+{/if}
 
 {/if}
 

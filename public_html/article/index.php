@@ -35,7 +35,7 @@ if (!empty($_GET)) {
 	$cacheid .= ".".md5(serialize($_GET));
 }
 
-$isadmin=$USER->hasPerm('moderator')?1:0;
+$isadmin=($USER->hasPerm('moderator') || $USER->hasPerm('director'))?1:0;
 $smarty->assign_by_ref('isadmin', $isadmin);
 
 $template = ($isadmin)?'article_admin.tpl':'article.tpl';
@@ -98,6 +98,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('extra', "&amp;cat_q={$_GET['cat_q']}");
 		$smarty->assign('desc', ", not matching [ {$_GET['cat_q']} ]");
 	
+	} elseif (!empty($_GET['type']) && preg_match('/^\w+$/',$_GET['type'])) {
+		$where = "AND type = '{$_GET['type']}'";
+		$smarty->assign('extra', "&amp;type={$_GET['type']}");
+		$smarty->assign('desc', ", of type {$_GET['type']}");
+	
 	} elseif (!empty($_GET['cat_word']) && preg_match('/^\![\w ]+$/',$_GET['cat_word'])) {
 		$where = 'AND category_name NOT REGEXP '.$db->Quote('[[:<:]]'.str_replace('!','',$_GET['cat_word']).'[[:>:]]');
 		$smarty->assign('extra', "&amp;cat_word={$_GET['cat_word']}");
@@ -108,11 +113,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('extra', "&amp;cat_q={$_GET['cat_q']}");
 		$smarty->assign('desc', ", category matching [ {$_GET['cat_q']} ]");
 	
-	} elseif (!empty($_GET['cat_word']) && preg_match('/^[\w ]+$/',$_GET['cat_word'])) {
+	} elseif (!empty($_GET['cat_word']) && preg_match('/^[\w -]+$/',$_GET['cat_word'])) {
 		$where = 'AND category_name REGEXP '.$db->Quote('[[:<:]]'.$_GET['cat_word'].'[[:>:]]');
 		$smarty->assign('extra', "&amp;cat_word={$_GET['cat_word']}");
-		$smarty->assign('desc', ", matching word [ {$_GET['cat_word']} ]");
-	
+		$smarty->assign('desc', ", category matching [ {$_GET['cat_word']} ]");
+		$smarty->assign('cat_word', $_GET['cat_word']);
 	} else {
 		$where = '';
 	}
@@ -178,6 +183,37 @@ if (!$smarty->is_cached($template, $cacheid))
 	$_SESSION['article_urls'] = $urls;
 	
 	$smarty->assign_by_ref('list', $list);
+
+
+
+$cats = array(0=>'');
+
+
+// now, retrieve all descendants of the $root node
+$results = $db->getAssoc('SELECT category_name, category_name, rgt FROM article_cat ORDER BY lft ASC');
+
+// start with an empty $right stack
+$right = array();
+
+// display each row
+foreach ($results as $id => $row) {
+        // only check stack if there is one
+        if (count($right)>0) {
+                // check if we should remove a node from the stack
+                while ($right[count($right)-1]<$row['rgt'] && count($right)) {
+                        array_pop($right);
+                }
+        }
+
+        // display indented node title
+        $cats[$id] = str_repeat('&middot;&nbsp;&nbsp;',count($right)).$row['category_name'];
+
+        // add this node to the stack
+        $right[] = $row['rgt'];
+}
+
+        $smarty->assign('article_cat', $cats);
+
 
 }
 

@@ -249,6 +249,7 @@ if (!empty($_GET['ddeb']))
 
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
+			if (!empty($this->db)) $conv->_setDB($this->db);
 
 			$e = floor($e/1000);
 			$n = floor($n/1000);
@@ -278,6 +279,8 @@ if (!empty($_GET['ddeb']))
 	public function setSpatial($data) {
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
+		if (!empty($this->db)) $conv->_setDB($this->db);
+
 
 		$grs = array();
 
@@ -531,7 +534,7 @@ if (!empty($_GET['ddeb']))
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-			$this->query_info = "Query '{$q}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$this->query_info = "Query '{$q}' retrieved ".count(@$res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 			$this->resultCount = $res['total_found'];
 			if (!empty($this->pageSize))
 				$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
@@ -596,7 +599,7 @@ split_timer('sphinx'); //starts the timer
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-			$this->query_info = "Query '{$q}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$this->query_info = "Query '{$q}' retrieved ".count(@$res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 			$this->resultCount = $res['total_found'];
 			if (!empty($this->pageSize))
 				$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
@@ -804,6 +807,11 @@ split_timer('sphinx'); //starts the timer
 			$q = latin1_to_utf8($q);
 		//}
 
+		if (isset($_GET['remote_profile'])) {
+			$start = microtime(true);
+		}
+
+
 		$res = $cl->Query (trim($q), $index );
 
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
@@ -834,14 +842,22 @@ split_timer('sphinx'); //starts the timer
 			#if ( $cl->GetLastWarning() )
 			#	print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-			$this->query_info = "Query '{$this->qoutput}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$this->query_info = "Query '{$this->qoutput}' retrieved ".count(@$res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+
+
+			if (isset($_GET['remote_profile'])) {
+			        $end = microtime(true);
+	                        print "$start (".($end-$start)." seconds) {$this->query_info}<br>";
+                	}
+
+
 			$this->query_time = $res['time'];
 			$this->resultCount = $res['total_found'];
 			$this->maxResults = $res['total'];
 			$this->numberOfPages = ceil(min($this->resultCount,$res['total'])/$this->pageSize);
 			$this->res = $res;
 
-			if (is_array($res["matches"]) ) {
+			if (!empty($res["matches"]) && is_array($res["matches"]) ) {
 				$this->ids = array_keys($res["matches"]);
 
 				split_timer('sphinx','returnIds',$this->query_info); //logs the wall time
@@ -965,6 +981,11 @@ split_timer('sphinx'); //starts the timer
 		}
 		return $this->db;
 	}
+        function _setDB(&$db)
+        {
+                $this->db=$db;
+        }
+
 
 	function &_getClient($new=false)
 	{

@@ -7,7 +7,6 @@ define ('INCLUDED776',1);
 //use our own authentication first...
 require_once('geograph/global.inc.php');
 init_session();
-$USER->mustHavePerm("admin");
 
 $static_host = $CONF['STATIC_HOST'];
 $self_host = $CONF['SELF_HOST'];
@@ -68,7 +67,7 @@ if($handle=@opendir($GLOBALS['pathToFiles'].'img/forum_icons')) {
 $ss=0;
 while (($file=readdir($handle))!==false) {
 if ($file != '.' && $file != '..' and (substr(strtolower($file),-3)=='gif' OR substr(strtolower($file),-3)=='jpg' OR substr(strtolower($file),-4)=='jpeg')) {
-$iconList.="<a href=\"#\" onclick=\"return paste_strinL('{$file}')\" onMouseOver=\"window.status='{$GLOBALS['l_forumIcon']}: {$file}'; return true\"><img src=\"{$GLOBALS['static_url']}/img/forum_icons/{$file}\" border=0 alt=\"{$file}\"></a>&nbsp;&nbsp;";
+$iconList.="<a href=\"#\" onclick=\"return paste_strinL('{$file}')\" onMouseOver=\"window.status='{$GLOBALS['l_forumIcon']}: {$file}'; return true\"><img src=\"{$GLOBALS['main_url']}/img/forum_icons/{$file}\" border=0 alt=\"{$file}\"></a>&nbsp;&nbsp;";
 $ss++;
 if ($ss==5) {
 $ss=0;
@@ -678,8 +677,11 @@ $text2=ParseTpl(makeUp('admin_panel'));
 } // end of switch
 }
 else {
-if (!$warning) $warning=$l_enter_admin_login;
-$text2=ParseTpl(makeUp('admin_login'));
+
+$USER->mustHavePerm("admin");
+
+//if (!$warning) $warning=$l_enter_admin_login;
+//$text2=ParseTpl(makeUp('admin_login'));
 }
 
 } // end of switch

@@ -32,15 +32,17 @@ if (empty($_POST) && empty($_GET['style']) && empty($_REQUEST['edit'])) {
 }
 
 $smarty = new GeographPage;
+
+//must be https if possible
+pageMustBeHTTPS();
+
+
 $template='profile.tpl';
 $cacheid='';
 $profile = array();
 
 if (isset($_REQUEST['edit']))
 {
-	//must be https if possible
-	pageMustBeHTTPS();
-
 	//must be logged in to proceed with an edit
 	$USER->login();
 
@@ -51,23 +53,23 @@ if (isset($_REQUEST['edit']))
 	{
 		$errors=array();
 		$ok=$USER->updateProfile($_POST, $errors);
-		
+
 		if ($ok)
 		{
 			//show the user their new profile
-			$template='profile.tpl';	
-			
+			$template='profile.tpl';
+
 			$ab=floor($USER->user_id/10000);
-			
+
 			//clear anything with a cache id userxyz|
 			$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
-			
+
 			$profile =& $USER;
 		}
 		else
 		{
 			$profile=new GeographUser($USER->user_id);
-			
+
 			$smarty->assign('errors', $errors);
 			//ensure we keep submission intact
 			foreach($_POST as $name=>$value)
@@ -87,9 +89,21 @@ if (isset($_REQUEST['edit']))
 	'major' => 'Only Major suggestions',
 	//'digest' => 'Receive Digest emails Once per Day',
 	'none' => 'No Initial Notifications',
-	'off' => 'No emails at all, even when closed'));
+	'off' => 'No emails at all, even final notifications'));
 
 	$profile->getStats();
+
+	if ($profile->hasPerm('basic') && !$profile->hasPerm('suspicious') && $profile->stats && $profile->stats['images'] > 100 || $profile->hasPerm('member')) {
+		$token=new Token;
+		$token->magic = $CONF['company_magic'];
+	        $token->setValue("v", $CONF['company_name']);
+
+		$token->setValue("id", intval($USER->user_id));
+		$token->setValue("expire", time()+21600);
+
+		$smarty->assign('company_link', $CONF['company_link'].'?t='.$token->getToken());
+                $smarty->assign('company_member', $profile->hasPerm('member'));
+	}
 
 	if ($profile->gravatar && $profile->gravatar == 'found')
 		$profile->md5_email = md5(strtolower($profile->email));
@@ -118,12 +132,13 @@ elseif (isset($_REQUEST['notifications']))
 		$freqs = array('disabled','daily','weekly','monthly');
 
 		$items = array(
-		'featured'=>array('title'=>'Featured Images'),
-		'collection'=>array('title'=>'In Collections'),
-		'forum'=>array('title'=>'Forum/Galleries'),
-		'thumbed'=>array('title'=>'Thumbed'),
-		'gallery'=>array('title'=>'Showcase Gallery'),
+		'featured'=>array('title'=>'Featured Images (your images featured on the homepage)'),
+		'collection'=>array('title'=>'In Collections (your images used in articles etc)'),
+		'forum'=>array('title'=>'Forum/Galleries (your images used in discussion forum posts)'),
+		'thumbed'=>array('title'=>'Thumbed (your images recently recieving thumbs-up)'),
+		'gallery'=>array('title'=>'Showcase Gallery (images well in the gallery)'),
 		'squares'=>array('title'=>'My Squares (images submitted to squares you\'ve submitted images to)'),
+		'snippets'=>array('title'=>'Shared Descriptions (images using shared descriptions you\'ve created)'),
 		'photos'=>array('title'=>'Photo Descriptions (Other photos that link directly to yours)'),
 		);
 
@@ -286,6 +301,20 @@ if ($template=='profile.tpl')
 			if (!empty($_SESSION['last_ticket_time']) && $profile->last_ticket_time <= $_SESSION['last_ticket_time']) {
 				$profile->tickets = 0;
 			}
+
+	if ($profile->hasPerm('basic') && $profile->hasPerm('member')) {
+		$token=new Token;
+		$token->magic = $CONF['company_magic'];
+	        $token->setValue("v", $CONF['company_name']);
+
+		$token->setValue("id", intval($USER->user_id));
+		$token->setValue("expire", time()+21600);
+
+		$smarty->assign('company_link', $CONF['company_link'].'?t='.$token->getToken());
+                $smarty->assign('company_member', $profile->hasPerm('member'));
+	}
+
+
 		}
 		
 		if (empty($_GET['id'])) {
@@ -327,8 +356,9 @@ if ($template=='profile.tpl')
 			$overview->type_or_user = $uid;
 			$overview->assignToSmarty($smarty, 'overview');
 		}
-		
-		$profile->md5_email = md5(strtolower($profile->email));
+
+		if ($profile->gravatar && $profile->gravatar == 'found')
+			$profile->md5_email = md5(strtolower($profile->email));
 	} else {
 		$profile=new GeographUser();
 		$profile->user_id = $uid;

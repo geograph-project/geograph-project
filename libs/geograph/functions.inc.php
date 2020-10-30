@@ -742,6 +742,17 @@ function pageMustBeHTTP($status = 302) {
 }
 
 
+function dieIfReadOnly($template = 'function_readonly.tpl') {
+	global $smarty,$CONF;
+
+	if (!empty($CONF['readonly'])) {
+		if (empty($smarty))
+			$smarty = new GeographPage;
+
+		dieUnderHighLoad(0,$template);
+	}
+}
+
 //available as a function, as doesn't come into effect if just re-using a smarty cache
 function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl') {
 	global $smarty,$USER,$CONF;
@@ -1202,3 +1213,46 @@ function outputJSON(&$data) {
                 echo ");";
         }
 }
+
+
+
+//if update this function, remember there is a javascript version too!
+function cleanTag($text, $fix_apos = true) {
+        //basic HTML injection protection
+	$text = preg_replace('/[<>]+/',' ',preg_replace('/<[^>]*>/','',preg_replace('/\\\\/','',$text)));
+
+	$prefix = null;
+	if (strpos($text,':') !== FALSE) {
+                list($prefix,$text) = explode(':',$text,2);
+		//prefixes have particully restricted charactor set.
+		$prefix = trim(preg_replace('/[ _]+/',' ',preg_replace('/[^\w]+/',' ',strtolower($prefix))));
+	}
+
+	if ($prefix != 'top') {
+	        //this is just a short list of charactors we KNOW not support, plenty more.
+	        //Todo.. change to whitelist, rather than blacklist.
+	        $text = preg_replace('/[?|;,]+/',' ',$text);
+	        // in general the whitelist is [A-Za-z0-9/\.& ()\*!-]
+	        //NOTE: do still have legacy with '?' and ',' can be allowed in top: tags only!
+	}
+
+	//quotes not supported, clean whitespace.
+	$text = trim(preg_replace('/[ _\t\n\r]+/',' ',preg_replace('/[\'"]+/','',$text)));
+
+	//this is a well known and common issue to fix, our house style doesnt have dot after st.
+	$text = preg_replace('/\b(st)\.+\s*/i','$1 ',$text);
+
+	//just to catch odd cases were tag ends up actully blank!
+	$text = preg_replace('/^\s*$/','blank',$text);
+
+	//old tags might still have a space before s, in partiucular where apostrophy was replaced by space.
+	if ($fix_apos)
+		$text = preg_replace('/ s\b/','s',$text);
+
+	if ($prefix)
+                $text = $prefix.':'.$text;
+
+	return $text;
+}
+
+

@@ -40,21 +40,28 @@ if (isset($_GET['prefixes']) && count($_GET) == 1) {
 	$url = "/tags/prefix.php";
 }
 if (isset($_GET['prefix']) && count($_GET) == 1) {
-	 $url = "/tags/prefix.php?prefix=".urlencode($_GET['prefix']);
+	$url = "/tags/prefix.php?prefix=".urlencode($_GET['prefix']);
+}
+
+//fix up the tag a bit. do early so it applies to canonical etc too!
+if (!empty($_GET['tag']) && preg_match('/_/',$_GET['tag'])) { //todo, could also fix other non-allowed chars?
+	//also could fix the prefix? botin in _GET[prefix] and if part of _GET[tag]
+        $_GET['tag'] = str_replace('\\','',$_GET['tag']);
+        $_GET['tag'] = trim(preg_replace('/[ _]+/',' ',$_GET['tag']));
 }
 
 if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie' &&
                ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
                (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) ) {
 	if (!empty($_GET['tag']) && count($_GET) == 1) {
-		$url = "http://www.geograph.org.uk/tagged/".urlencode2($_GET['tag']);
+		$url = "https://www.geograph.org.uk/tagged/".urlencode2($_GET['tag']);
 	} else {
-		$url = "http://www.geograph.org.uk/tags/?".$_SERVER['QUERY_STRING'];
+		$url = "https://www.geograph.org.uk/tags/?".$_SERVER['QUERY_STRING'];
 	}
 }
 
 if ((!empty($_GET['photo']) || !empty($_GET['exclude'])) && stripos($_SERVER['HTTP_USER_AGENT'], 'CCBot') === 0) {
-	$url = "http://www.geograph.org.uk/tagged/".urlencode2($_GET['tag']);
+	$url = "https://www.geograph.org.uk/tagged/".urlencode2($_GET['tag']);
 }
 
 if (strpos($_SERVER['REQUEST_URI'],'/tags/index.php') === 0
@@ -85,12 +92,17 @@ if (!empty($url)) {
 if (!empty($_GET['tag']) && preg_match('/^\/tagged\/([^\?]+)/',$_SERVER['REQUEST_URI'],$m) && $_GET['tag'] != $m[1]) {
 	//fix for /at:Saxmundham+Sports+%26+Recreation+Ground    (the & is has already been urldcoded in QUERY_STRING)
 	$_GET['tag'] = urldecode($m[1]);
+
+        $_GET['tag'] = str_replace('\\','',$_GET['tag']);
+        $_GET['tag'] = trim(preg_replace('/[ _]+/',' ',$_GET['tag']));
 }
 
 
 init_session();
 
 $smarty = new GeographPage;
+
+pageMustBeHTTPS();
 
 if (isset($_GET['tag']) && empty($_GET['tag'])) {
 	unset($_GET['tag']);
@@ -150,7 +162,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		);
 		$taglist[] = array(
 			'title' => 'Popular Tags',
-			'tags' => $db->CacheGetAll(3600*rand(10,30),"SELECT prefix,tag,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix != 'top' AND prefix != 'type' ORDER BY count DESC LIMIT 50")
+			'tags' => $db->CacheGetAll(3600*rand(10,30),"SELECT prefix,tag,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix != 'top' AND prefix != 'type' AND prefix != 'milestoneid' ORDER BY count DESC LIMIT 50")
 		);
 		if (rand(1,10)>5) {
 		$taglist[] = array(
@@ -160,7 +172,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		} else {
 		$taglist[] = array(
 			'title' => 'Recent Tags',
-			'tags' => $db->CacheGetAll(3600*rand(1,5),"SELECT prefix,tag,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix != 'top' AND prefix != 'type' ORDER BY last_used DESC LIMIT 50")
+			'tags' => $db->CacheGetAll(3600*rand(1,5),"SELECT prefix,tag,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix != 'top' AND prefix != 'type' AND prefix != 'milestoneid' ORDER BY last_used DESC LIMIT 50")
 		);
 		}
 		$taglist[] = array(
@@ -332,23 +344,32 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 				}
 
 			} else {
+				$row = null;
 				if ($canon= $db->getOne("SELECT canonical FROM tag WHERE status = 0 AND (canonical is not null and canonical != 0 and canonical != tag_id) AND tag=".$db->Quote($_GET['tag']).$andwhere)) {
-					if ($row = $db->getRow("SELECT prefix,tag FROM tag WHERE tag_id = $canon")) {
-						$tag = $row['tag'];
-						if (!empty($row['prefix']))
-							$tag = "{$row['prefix']}:$tag";
-						header("HTTP/1.0 301 Moved Permanently");
-					        header("Status: 301 Moved Permanently");
-				                $url = "http://www.geograph.org.uk/tagged/".urlencode2($tag);
-					        header("Location: ".$url);
-					        print "<a href=\"".htmlentities($url)."\">moved</a>";
-					        exit;
-					}
+					$row = $db->getRow("SELECT prefix,tag FROM tag WHERE tag_id = $canon");
+				} elseif (($newtag = cleanTag($_GET['tag'])) != $_GET['tag']) {
+					//only redirect if actully exists, avoid a redirect TO a 404 page!
+					$row = $db->getRow("SELECT prefix,tag FROM tag INNER JOIN tag_stat USING (tag_id) WHERE `count`>0 AND tag=".$db->Quote($newtag).$andwhere);
 				}
 
-				header("HTTP/1.0 404 Not Found");
+				if (!empty($row)) {
+					$tag = $row['tag'];
+					if (!empty($row['prefix']))
+						$tag = "{$row['prefix']}:$tag";
+					header("HTTP/1.0 301 Moved Permanently");
+				        header("Status: 301 Moved Permanently");
+			                $url = "https://www.geograph.org.uk/tagged/".urlencode2($tag);
+				        header("Location: ".$url);
+				        print "<a href=\"".htmlentities($url)."\">moved</a>";
+				        exit;
+				}
+
 				$smarty->assign('q', $_GET['tag']);
 				$smarty->assign('thetag', '');
+			}
+
+			if (empty($imagelist->images)) {
+				header("HTTP/1.0 404 Not Found");
 			}
 		}
 
@@ -366,7 +387,7 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 		}
 	}
 } elseif (!empty($_GET['tag'])) {
-	$tags= $db->getAssoc("SELECT tag_id,prefix,tag,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
+	$tags= $db->getAssoc($sql = "SELECT tag_id,prefix,tag,canonical,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id)	WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
 
 	if (!isset($_GET['exact'])) {
 		$bits = array();
@@ -388,8 +409,14 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 		}
 	}
 
-	if (count($tags) == 1) {
+	if (empty($tags)) {
+		header("HTTP/1.0 404 Not Found");
+
+	} elseif (count($tags) == 1) {
 		reset($tags);
+                if (empty($tags[key($tags)]['count'])) {
+                        header("HTTP/1.0 404 Not Found");
+                }
 		$smarty->assign('onetag',1);
 		$smarty->assign('description',$tags[key($tags)]['description']);
 	} elseif (empty($prefix)) {

@@ -104,7 +104,59 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 		fwrite(STDERR,date('H:i:s ')." $sql\n\n");
 		$db->Execute($sql);
 	}
+
+	#####################################################
+
+	$sqls = array();
+
+        fwrite(STDERR,date('H:i:s ')."Building Fake Subject Tags...\n");
+
+	//look up columns in table dynamiclly, although we know the list from the above query
+	$columns = $db->getAssoc("DESCRIBE sphinx_tags");
+
+	$cols = array();
+	foreach ($columns as $column => $data) {
+		if ($column == 'gridimage_id') {
+			$cols[] = 'gridimage_id';
+		} elseif ($column == 'subjects') {
+			$cols[] = "GROUP_CONCAT(DISTINCT IF(prefix='subject',tag,NULL) ORDER BY tag_id SEPARATOR ';') AS subjects";
+		} elseif ($column == 'subject_ids') {
+			$cols[] = "GROUP_CONCAT(DISTINCT IF(prefix='subject',tag_id,NULL) ORDER BY tag_id SEPARATOR ',') AS subject_ids";
+		} elseif (is_null($data['Default'])) {
+			$cols[] = "NULL as $column";
+		} else {
+			$cols[] = $db->Quote($data['Default'])." as $column";
+		}
+	}
+
+	//ignore, so just add to images without tags. or maybe could add ON DUPLICATE UPDATE subjects = ...
+	$sql = "INSERT IGNORE INTO sphinx_tags
+		SELECT ".implode(", ",$cols)."
+		FROM gridimage_search gi
+		 INNER join category_mapping c USING (imageclass)
+		 INNER join tag on (prefix='subject' AND tag = subject)
+		WHERE gi.tags = '' AND gi.imageclass!=''
+		AND __between__
+		GROUP BY gridimage_id ORDER BY NULL";
+
+	if (!empty($param['daily'])) {
+		$sqls[] = str_replace('__between__',$between, $sql);
+	} else {
+	        $count = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search where imageclass != '' and tags = ''");  //in theory long term will be few without so can exclude them
+
+                for($q=0;$q<$count;$q+=100000) {
+                        $between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+100000);
+                        $sqls[] = str_replace('__between__',$between, $sql);
+                }
+	}
+
+	foreach ($sqls as $sql) {
+		fwrite(STDERR,date('H:i:s ')." $sql\n\n");
+		$db->Execute($sql);
+	}
 }
+
+#####################################################
 
 if (!$db->getOne("SHOW TABLES LIKE 'sphinx_terms'")) {
 	$sqls = array();

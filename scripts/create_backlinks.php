@@ -63,7 +63,7 @@ for ($from=$start; $start<=$max; $start+=$perpage) {
 				$bits[] = "($g_id,$gridimage_id,NOW(),NOW())";
 			}
 		}
-		if (preg_match_all('/geograph\.(org\.uk|ie)\/(p|photo)\/(\d+)\b/',$recordSet->fields['comment'],$g_matches)) {
+		if (preg_match_all('/geograph\.(org\.uk|ie)\/(p|photo)\/(\d+)\b(?!\.kml)/',$recordSet->fields['comment'],$g_matches)) {
 			foreach ($g_matches[3] as $g_i => $g_id) {
 				$bits[] = "($g_id,$gridimage_id,NOW(),NOW())";
 			}

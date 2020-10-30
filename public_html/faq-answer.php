@@ -35,7 +35,7 @@ $db = GeographDatabaseConnection(false);
 
 if (!empty($_GET['id'])) {
     $id = intval($_GET['id']);
-    
+
     if (!($row = $db->getRow("SELECT q.*,realname FROM answer_question q INNER JOIN user USING (user_id) WHERE q.status=1 AND question_id = $id"))) {
         die("invalid question");
     }
@@ -44,14 +44,12 @@ if (!empty($_GET['id'])) {
 }
 
 if (!empty($_POST) && !empty($_POST['content'])) {
-    
-    
+
     $updates = $_POST;
-        
+
     $updates['user_id'] = $USER->user_id;
-    
     $updates['question_id'] = $id;
-    
+
     if (!empty($_POST['anon'])) {
         $updates['anon'] = 1;
     }
@@ -62,7 +60,7 @@ if (!empty($_POST) && !empty($_POST['content'])) {
 
     if ($updates['title'] == $row['question']) {
         unset($updates['title']);
-    }    
+    }
 
     $db->Execute('INSERT INTO answer_answer SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
     $id = mysql_insert_id();
@@ -75,14 +73,13 @@ if (!empty($_POST) && !empty($_POST['content'])) {
                                 $u['name'] = $key;
                                 $u['value'] = $value;
                                 $u['user_id'] = $USER->user_id;
-                                $db->Execute('INSERT INTO answer_log SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+                                $db->Execute('INSERT INTO answer_log SET `'.implode('` = ?,`',array_keys($u)).'` = ?',array_values($u));
 
                         }
                 }
 
-    
     $message = "Thank you! Reply saved. ";
-    
+
     print "$message<br><br><a href='./faq3.php'>Continue</a>";
     exit;
 }
@@ -94,6 +91,19 @@ $smarty->display('_std_begin.tpl',$mkey);
 ?>
 <h2>Geograph Knowledgebase / FAQ </h2>
 
+<style type="text/css">
+.taglist {
+	color:gray;
+	font-size:0.9em;
+}
+.taglist a {
+	white-space:nowrap;
+	text-decoration: none;
+}
+.taglist a:hover {
+	text-decoration: underline;
+}
+</style>
 
 <p><a href="faq3.php">View Answers</a> | <a href="faq-ask.php">Ask a question</a> | <a href="faq-unanswered.php">Answer a question</a></p>
 
@@ -114,7 +124,7 @@ if (!empty($message)) {
  
  
 <h2>Your reply</h2>
-<form action="answer.php?id=<? echo $id; ?>" method="post" style="background-color:lightgrey;padding:10px;border:1px solid gray" name="theForm">
+<form action="faq-answer.php?id=<? echo $id; ?>" method="post" style="background-color:lightgrey;padding:10px;border:1px solid gray" name="theForm">
 
 <b>Question Title</b>:<br/>
  &nbsp; &nbsp; &nbsp; <input type="text" name="title" value="<? print htmlentities2($row['question']); ?>" maxlength="128" size="80"/> (128 charactors max)<br/>
@@ -256,10 +266,10 @@ if ($data) {
         }
         if (!empty($tags)) {
                 ksort($tags);
-                print "<div style=\"\"><b>Current</b>:";
+                print "<div class=\"taglist\"><b>Current</b>:";
                 foreach ($tags as $tag => $count) {
                         $h=htmlentities2($tag);
-                        print "<a href=\"#$h\" onclick=\"return useTag('$h')\" style=\"white-space:nowrap\">$h</a> ";
+                        print "<a href=\"#$h\" onclick=\"return useTag('$h')\">$h</a> &middot; ";
                 }
                 print "</div>";
         }
@@ -280,11 +290,11 @@ function useTag(tag) {
 </script>
 
 
-<br/> 
-<b>Wiki Style Answer</b>? <input type="checkbox" name="wiki" checked/><br/>
+<br/>
+<b>Wiki Style Answer</b>? <input type="checkbox" name="wiki" value="1" checked/><br/>
  &nbsp; &nbsp; &nbsp;  (optional - tick to allow others to refine your answer)<br/>
 
-<br/> 
+<br/>
 <b>Anonymous</b>? <input type="checkbox" name="anon"/><br/>
  &nbsp; &nbsp; &nbsp;  (optional - tick to submit this reply anonymously? - not recommended)<br/><br/>
 
@@ -292,11 +302,10 @@ function useTag(tag) {
 By clicking the button below, you agree to release your contribution under the <b class="nowrap">Creative Commons Attribution-Share Alike 3.0</b> Licence.<br/> <a title="View licence" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank" class="nowrap">Here is the Commons Deed outlining the licence terms</a>
 <br/> <br/>
  <input type="submit" value="Submit Reply"/>
- 
+
 </form>
-    
 
 
-<? 
+<?
 
 $smarty->display('_std_end.tpl',$mkey);

@@ -83,7 +83,12 @@ if (!empty($_GET['views'])) {
         $smarty->assign('views',1);
 }
 
-if (!empty($_GET['mobile'])) {
+$smarty->assign('g_time',filemtime("../guider/mapper_guider.js"));
+
+if (!empty($_GET['dev'])) {
+	$smarty->display('mapper_combined_dev.tpl');
+
+} elseif (!empty($_GET['mobile'])) {
 	$smarty->display('mapper_combined_mobile.tpl');
 } else {
 	$smarty->display('mapper_combined.tpl');

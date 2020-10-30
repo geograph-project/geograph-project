@@ -33,7 +33,7 @@ boilerplate...</p>
 
  <h2>Geograph Project Ltd Detailed Terms of Use Agreement and Privacy Policy for the {$http_host} Website</h2>
 
- <p>Last updated: 7 April 2018</p>
+ <p>Last updated: 14th July 2020</p>
 
 <p>This site is run by Geograph Project Ltd, a Company limited by guarantee. The site contains images and information, information on geographing, forums and such other services as may be made available from time to time on {$http_host} (the <b>Site</b>).
 
@@ -122,6 +122,12 @@ boilerplate...</p>
  well as through other links) are governed by this Agreement and are also subject to
  such additional terms and conditions as Geograph Project Ltd may, from time
  to time, post in the Geograph Project Ltd Forums area.</p>
+
+ <p>Material on Geograph must be relevant and appropriate to Geograph's aims as set out on the 
+  <a href="https://www.geograph.org.uk/article/About-Geograph-page">'About Geograph' page</a>
+  and in the Geograph Project Ltd, 
+  <a href="https://media.geograph.org.uk/files/c74d97b01eae257e44aa9d5bade97baf/Articles_Oct11.pdf">Articles of Association</a>.</p>
+
 
  <p>You and not Geograph Project Ltd, are entirely responsible for all content
  that you upload, post or otherwise transmit via the Site. You agree not to:</p>

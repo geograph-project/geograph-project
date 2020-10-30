@@ -45,7 +45,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$sql = "select id,full_name,e,n from loc_placenames where country = 'uk' and reference_index = 2 and dsg like 'PPL%'";
 	$localities = $db->Quote("Northern Ireland, uk");
 
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;

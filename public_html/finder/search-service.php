@@ -38,6 +38,10 @@ $q = isset($_GET['q'])?$_GET['q']:'';
 
 $q = preg_replace('/ OR /',' | ',$q);
 
+                        //remove any colons in tags - will mess up field: syntax
+                $q = preg_replace('/\[([^\]]+)[:]([^\]]+)\]/','[$1~~~$2]',$q);
+
+
 $q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 
                         //seperate out tags!
@@ -45,7 +49,12 @@ $q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
                         $q2 = '';
                         foreach ($m[2] as $idx => $value) {
                                 $q = str_replace($m[0][$idx],'',$q);
-                                $q2 .= " ".$m[1][$idx].'"__TAG__ '.strtr($value,':-','  ').' __TAG__"';
+                                 $value = strtr($value,':-','  ');
+                                 if (strpos($value,'~~~') > 0) {
+                                         $bits = explode('~~~',$value,2);
+                                         $q2 .= " ".$m[1][$idx].'"__TAG__ '.implode(' __PRE__ ',$bits).' __TAG__"';
+                                 } else
+                                         $q2 .= " ".$m[1][$idx].'"__TAG__ '.$value.' __TAG__"';
                         }
                         if (!empty($q2)) {
                                 $q .= " @tags".$q2;

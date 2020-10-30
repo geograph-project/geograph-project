@@ -20,7 +20,7 @@
         li.smart_autocomplete_highlight {background-color: #C1CE84;}
 
         #searchresults a { font-weight:bold; }
-        #searchresults div.text { font-size:0.8em; margin-left:20px; border-left:1px solid silver; padding-left:2px; margin-bottom:4px; }
+        #searchresults div.text { font-size:0.8em; margin-left:20px; border-left:1px solid silver; padding-left:2px; margin-top:2px; margin-bottom:8px; }
         #searchresults a.clear { color:red; display:block; background-color:#eeeeee;padding:5px;margin:20px; }
 
         .results_preview { margin-left:240px; margin-top:-35px; }
@@ -63,7 +63,10 @@
                                 if (argname == 'q') {
                                         var value = decodeURIComponent(pairs[i].substring(pos+1)).replace(/\+/g,' ');
 					$("#type_ahead_autocomplete_field").val(value);
-					loadSearchResults(value,true);
+
+					if (location.href.indexOf('faq3.php') == -1) {
+						loadSearchResults(value,true);
+					}
                                 }
                         }
                 }
@@ -91,7 +94,7 @@
                                 loadedquery = param;
 
                                 $('#searchresults').attr('class',highlight?'results_full':'results_preview');
-                                $('#searchresults').html('Results for <b></b>.<br/>').find('b').text(value);
+                                $('#searchresults').html((data.length>1?(data.length-1):data.length)+' Results for <b></b>.<br/>').find('b').text(value);
 
                                 str = '';
                                 for(var idx in data) {
@@ -111,9 +114,12 @@
                                 }
                                 $('#searchresults').append(str);
 
-                                if (highlight) {
-                                        $('#searchresults').append('<a href="javascript:void($(\'#searchresults\').empty())" class="clear">Hide results</a>');
-                                }
+                                if (highlight && data.length > 1) {
+                                        $('#searchresults').append('<a href="javascript:void($(\'#searchresults\').empty())" class="clear">Clear results</a>');
+                                } else {
+					$('#searchresults .clear').remove();
+				}
+				$('#searchresults').append('<br><br><br><br>');
                         }
                 });
         }

@@ -87,12 +87,6 @@ span.tag, a.tag {
 }
 
 {/literal}</style>
-{if $geo}
-<div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
-	<small style="color:red">Marker only shows grid square, see description for exact location<small><br/><br/></small></small>
-	<div style="width:400px; height:320px;" id="mapCanvas"></div>
-</div>
-{/if}
 
 <div style="float:right; padding-right:30px;"><a title="geoRSS Feed for Geograph Blog Entries" href="{$rss_url}" class="xml-rss">RSS</a> {if $geo}<a title="KML Feed for Geograph Blog Entries" href="/blog/kml-nl.php" class="xml-kml">KML</a>{/if}</div>
 

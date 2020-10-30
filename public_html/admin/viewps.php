@@ -30,7 +30,14 @@ $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
-dump_sql_table('SHOW '.(empty($_GET['full'])?'':'FULL ').'PROCESSLIST','Current mySQL Process List');
+dump_sql_table('SHOW '.(empty($_GET['full'])?'':'FULL ').'PROCESSLIST','Current mySQL Process List - Master');
+
+if (!empty($GLOBALS['DSN_READ'])) {
+	$db = NewADOConnection($GLOBALS['DSN_READ']);
+
+	dump_sql_table('SHOW '.(empty($_GET['full'])?'':'FULL ').'PROCESSLIST','Current mySQL Process List - Slave');
+}
+
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");

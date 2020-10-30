@@ -31,10 +31,13 @@ $smarty = new GeographPage;
 
 $month=(!empty($_GET['Month']))?intval($_GET['Month']):'';
 $year=(!empty($_GET['Year']))?intval($_GET['Year']):date('Y');
-
+$u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
 $template=($month)?'explore_calendar_month.tpl':'explore_calendar_year.tpl';
 $cacheid="$year-$month";
+if ($u) {
+        $cacheid .= ".u$u";
+}
 if (isset($_REQUEST['image'])) {
 	$cacheid .= ".".intval($_REQUEST['image']);
 }
@@ -59,21 +62,13 @@ if ($month == date('n') && $year == date('Y')) {
 	$smarty->cache_lifetime = 3600*24*7; //7day cache
 }
 
-function print_rp(&$in,$exit = false) {
-	print "<pre>";
-	print_r($in);
-	print "</pre>";
-	if ($exit)
-		exit;
-}
-
 function smarty_modifier_colerize($input) {
 	global $maximages;
 	if ($input) {
 
-		$hex = str_pad(dechex(255 - $input/$maximages*255), 2, '0', STR_PAD_LEFT); 
+		$hex = str_pad(dechex(255 - $input/$maximages*255), 2, '0', STR_PAD_LEFT);
 		return "ffff$hex";
-	} 
+	}
 	return 'ffffff';
 }
 
@@ -126,9 +121,11 @@ if (!$smarty->is_cached($template, $cacheid))
 			} elseif (isset($_GET['supp'])) {
                                 $where .= " AND moderation_status = 'accept'";
                         }
+			if ($u)
+				$where .= " AND user_id = $u";
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-			$images=&$db->GetAssoc($sql= "SELECT 
-			imagetaken, 
+			$images=$db->GetAssoc($sql= "SELECT
+			imagetaken,
 			gridimage_id, title, user_id, realname, grid_reference,
 			COUNT(*) AS images,
 			SUM(moderation_status = 'accepted') AS `supps`
@@ -201,6 +198,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			} elseif (isset($_GET['supp'])) {
                                 $where .= " AND moderation_status = 'accept'";
                         }
+			if ($u)
+				$where .= " AND user_id = $u";
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$images=&$db->GetAssoc("SELECT 
 			imagetaken, 
@@ -245,23 +244,23 @@ if (!$smarty->is_cached($template, $cacheid))
 					$dayNumber++;
 					if ($dayNumber > $daysInMonth)
 						$dayNumber = -20; //just big so that we get the full row of blank squares
-				}			
-				
+				}
+
 				$weeks[] = $week;
-				$w++;		
+				$w++;
 			}
-			$name = date('F',mktime(0,0,0,$month,1,2005)); 
-			$months[$name] = $weeks;			
+			$name = date('F',mktime(0,0,0,$month,1,2005));
+			$months[$name] = $weeks;
 		}
 		$month = 0;
 		$smarty->assign_by_ref("months",$months);
 
 	}
-	
+
 	//array of day names to use
 	$days = array();
 	for($i=1; $i<=7; $i++)
-		$days[] = date('D',mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday 
+		$days[] = date('D',mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday
 	$smarty->assign_by_ref("days",$days);
 	$month = sprintf("%02d",$month);
 	$smarty->assign("month",$month);
@@ -269,7 +268,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("date","$year-$month-00");
 }
 
+$smarty->assign('u', $u);
+if ($u) {
+        $profile=new GeographUser($u);
+        $smarty->assign_by_ref('profile', $profile);
+	$smarty->assign('title'," for ".$profile->realname);
+}
+
 $smarty->display($template, $cacheid);
 
-	
-?>

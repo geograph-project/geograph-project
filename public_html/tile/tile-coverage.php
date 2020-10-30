@@ -5,14 +5,18 @@ if ($_GET['z'] < 7) {
          exit;
 }
 
+if ($_GET['z'] > 11) {
+         require __DIR__."/tile-coverage-large.php";
+         exit;
+}
+
 
 require_once('geograph/global.inc.php');
 ini_set('memory_limit', '128M');
 
 $maxspan = 10;
 
-customExpiresHeader(empty($_GET['long'])?3600*24:3600*24*6,true);
-customCacheControl(filemtime(__FILE__),$_SERVER['QUERY_STRING']);
+customExpiresHeader(empty($_GET['user_id'])?3600*24*3:3600*6,true);
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
 require_once ('3rdparty/googleMapUtilityClass.php');
@@ -107,7 +111,17 @@ if (!empty($_GET['dd'])) {
 	$bg = imagecolorallocate($im, 255, 255, 255);
 	imagecolortransparent($im,$bg);
 	$fg = imagecolorallocate($im, 255, 0, 0); //marker/red
+
+if (!empty($_GET['test'])) {
+//#FF00FF
+	//$supp = imagecolorallocate($im, 255,0,255); //tpoint/purple (no longer used for non-geo squares!)
+	//$supp = imagecolorallocate($im, 255,204,255); //tpoint/pink (no longer used for non-geo squares!)
+        $supp = imagecolorallocate($im, 1,50,32);
+
+} else {
 	$supp = imagecolorallocate($im, 255,136,0); //supp/organge
+}
+
 	$land = imagecolorallocate($im, 117,255,101); //land/green!
 
 	if (!empty($error)) { //todo!

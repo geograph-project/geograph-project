@@ -2,7 +2,36 @@
 {include file="_std_begin.tpl"}
 {assign var="gridimage_id" value=$image->gridimage_id}
 
+{literal}<style>
+
+#sideimage {
+	display:none;
+	float:right;
+	position:relative;
+	width:220px;
+	height:100%;
+	min-height:800px;
+	margin-left:20px;
+	border-left:1px solid gray;
+	padding:10px;
+	z-index:1000;
+}
+
+ @media screen and (min-width: 1100px) {
+	#sideimage {
+		display:block;
+	}
+	#topimage {
+		 display:none;
+	}
+	#thumbresults {
+		margin-right:230px;
+	}
+ }
+</style>{/literal}
+
 <a name="top"></a>
+
 
 <div style="float:left; position:relative; padding-right:10px;"><h2><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img
 alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" align="top" /></a> <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : </h2></div>
@@ -12,7 +41,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/so
 
 <br style="clear:both;"/>
 
-<div class="photoguide" style="margin-left:auto;margin-right:auto; ">
+<div id="topimage" class="photoguide" style="margin-left:auto;margin-right:auto; ">
 	<div style="float:left;width:213px">
 		<a title="view full size image" href="/photo/{$image->gridimage_id}">
 		{$image->getThumbnail(213,160)}
@@ -30,6 +59,21 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/so
 	<br style="clear:both"/>
 </div>
 
+<div id="sideimage">
+	<a title="view full size image" href="/photo/{$image->gridimage_id}">
+	{$image->getThumbnail(213,160)}
+	</a><div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
+
+	<span style="font-size:0.7em">{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}</span><br/>
+	<br/>
+	<small><b>&nbsp; &copy; Copyright <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and
+	licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a></b></small>
+
+	{if $image_taken && $image->imagetaken > 1}
+		<div class="keywords yeardisplay" title="year photo was taken">year taken <div class="year">{$image->imagetaken|truncate:4:''}</div></div>
+	{/if}
+	
+</div>
 
 <div class="tabHolder" style="margin-top:3px">
 	{foreach from=$methods key=i item=m}
@@ -47,7 +91,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/so
 <br/>
 {/if}
 
-<ol start="{$offset}">
+<ol id="thumbresults" start="{$offset}">
 {foreach from=$results item=item}
 {if count($results) > 1}
 	<li>

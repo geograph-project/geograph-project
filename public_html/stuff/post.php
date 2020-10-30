@@ -39,7 +39,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 	if ($post_id) {
 		$db = GeographDatabaseConnection(true);
-		
+
 		$row = $db->getRow("
 			select topic_title
 			from geobb_topics
@@ -49,8 +49,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			");
 
 		$smarty->assign($row);
-		
+
 		if (!empty($row)) {
+
 			$sql = "select gi.*
 				from gridimage_post
 					inner join gridimage_search gi using(gridimage_id)
@@ -60,13 +61,35 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$imagelist = new ImageList();
 
 			$imagelist->_getImagesBySql($sql);
-			
+
+			$squares = array();
 			foreach ($imagelist->images as $idx => $image) {
 				$imagelist->images[$idx]->imagetakenString = getFormattedDate($image->imagetaken);
+				@$squares[$image->grid_reference]++;
 			}
-			
-			$smarty->assign_by_ref('results', $imagelist->images);
+			if (count($squares) == 1) {
+				reset($squares);
+				$gr = key($squares);
+				$smarty->assign('page_title', "$gr :: {$row['topic_title']} :: Group of images");
+				$smarty->assign('gridref', $gr);
 
+		                $square=new GridSquare;
+				if ( $square->setByFullGridRef($gr,true) ) {
+        	        		if ($square->percent_land > 0) {
+		                	        //find a possible place within 25km
+	        		                $smarty->assign('place', $place = $square->findNearestPlace(75000));
+
+		                	        $place_name = strip_tags(smarty_function_place(array('place'=>$place)));
+
+		        	                $smarty->assign('meta_description', count($imagelist->images)." photos in {$square->grid_reference}, $place_name");
+	        		        }
+				}
+
+			} else {
+				$smarty->assign('page_title', "{$row['topic_title']} :: Group of images");
+			}
+
+			$smarty->assign_by_ref('results', $imagelist->images);
 		}
 	}
 }

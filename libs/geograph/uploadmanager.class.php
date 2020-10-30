@@ -47,6 +47,7 @@ class UploadManager
 
 	var $imageclass=''; //we specifically initialize these, as they are rarely set on new uploads any more.
 	var $user_status='';
+	var $realname=''; //credit not needed, but can be provided
 
 	var $tmppath="";
 
@@ -79,6 +80,12 @@ class UploadManager
 			$dir = str_replace('upload_tmp_dir','upload_tmp_dir_old',$dir);
 
                         if (!is_dir($dir)) {
+                                mkdir($dir,0755,true);
+                        }
+		} else {
+			$a = $USER->user_id%10;
+			$dir = "{$this->tmppath}/$a";
+			if (!is_dir($dir)) {
                                 mkdir($dir,0755,true);
                         }
 		}
@@ -450,7 +457,6 @@ class UploadManager
                                         print_r(mime_content_type($file));print "\n";
 					print_r($_FILES);
 					print_r($_POST);
-                                        print_r($_SERVER);
                                         debug_print_backtrace();
                                         $con = ob_get_clean();
                                         mail('geograph@barryhunter.co.uk','[Geograph] JPEG Detection Failed',$con);
@@ -477,9 +483,9 @@ class UploadManager
 	function trySetDateFromExif($exif)
 	{
 		//dont know yet which of these is best but they all seem to be the same on my test images
-		if (($date = $exif['EXIF']['DateTimeOriginal']) ||
-		    ($date = $exif['EXIF']['DateTimeDigitized']) ||
-		    ($date = $exif['IFD0']['DateTime']) )
+		if (($date = @$exif['EXIF']['DateTimeOriginal']) ||
+		    ($date = @$exif['EXIF']['DateTimeDigitized']) ||
+		    ($date = @$exif['IFD0']['DateTime']) )
 		{
 			//Example: ["DateTimeOriginal"]=> string(19) "2004:07:09 14:05:19"
 			 list($date,$time) = explode(' ',$date);
@@ -517,6 +523,7 @@ class UploadManager
 		 || preg_match('/^https?:\/\/www\.picnik\.com\/file\/\d+$/',$url)
 		 || preg_match('/^https?:\/\/cdn\.filestackcontent\.com\/\w+$/',$url)
 		 || preg_match('/^https?:\/\/ucarecdn.com\/\w[\w-]+\//',$url)
+                 || preg_match('/^https:\/\/lh3.googleusercontent.com\//',$url)
 		 || preg_match('/^https?:\/\/www\.filepicker\.io\//',$url))
 		{
 			if ($this->fetch_remote_file($url, $temp_file))
@@ -592,6 +599,35 @@ class UploadManager
 
 		if ($exif!==false)
 		{
+			//some cameras produce a MakerNote, that only PARTLY read. The original issue (below) had empty makernotes
+			// see https://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=4&topic=29948 for this new variation
+                        if (preg_match('/MAKERNOTE$/', $exif['FILE']['SectionsFound']) && !empty($exif['MAKERNOTE']) ) {
+                                foreach ($exif['MAKERNOTE'] as $key => $value) {
+                                        if (strpos($key,'UndefinedTag:') === 0) {
+                                                //has broken values, possibly curruptd!
+                                                unset($exif['EXIF']['MakerNote']); // so remove it the next if statement will strip fully
+                                                break;
+                                        }
+                                }
+                        }
+
+			//create a new exif file without Makernote, if it caused PHP to fail to read EXIF completely
+			if (preg_match('/MAKERNOTE$/', $exif['FILE']['SectionsFound']) && !isset($exif['EXIF']['MakerNote']) ) {
+				//if MAKERNOTE is listed as a section, but its not present, then probably exif_read_data failed due to PHP bug
+				// https://bugs.php.net/bug.php?id=72682
+				// http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=4&topic=29257
+				// http://cake.geograph.org.uk/exif/_exif_test-andrew.php
+				// [Tiger Computing Ltd #19872] PHP bug introduced, possible to fix?
+
+				$filename = tempnam("/tmp",'exif');
+				@unlink($filename); //exif wont overwrite the file
+				`exiftool -o $filename -m -makernotes= $upload_file`;
+				$exif2 = @exif_read_data($filename,0,true);
+				if ($exif2!==false)
+					$exif = $exif2;
+				@unlink($filename);
+			}
+
 			$this->trySetDateFromExif($exif);
 			$this->rawExifData = $exif;
 			$strExif=serialize($exif);
@@ -815,6 +851,27 @@ class UploadManager
 			return("Must assign square");
 		}
 
+		if (!empty($CONF['use_insertionqueue'])) {
+			$existing = $this->db->getOne("select gridimage_id from gridimage_queue g inner join submission_method m using (gridimage_id) where submitted > date_sub(now(), interval 1 hour) and preview_key = '{$this->upload_id}'");
+		}
+
+		if (empty($existing)) {
+			$existing = $this->db->getOne("select gridimage_id from gridimage g inner join submission_method m using (gridimage_id) where submitted > date_sub(now(), interval 1 hour) and preview_key = '{$this->upload_id}'");
+		}
+
+		if (!empty($existing)) {
+					ob_start();
+                                        print "\n\nHost: ".`hostname`."\n\n";
+                                        print "\nOriginal: $existing\n";
+                                        print_r($_FILES);
+                                        print_r($_POST);
+                                        debug_print_backtrace();
+                                        $con = ob_get_clean();
+                                        mail('geograph@barryhunter.co.uk','[Geograph] Duplicate Submission',$con);
+
+			return("Duplicate Submission detected. This image appears to have already been submitted. If you think this is an error, please press F5 key in about 5 minutes time to try again.");
+		}
+
 		$viewpoint = new GridSquare;
 		if ($this->viewpoint_gridreference) {
 			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference,true,true);
@@ -935,6 +992,9 @@ class UploadManager
 		$gid = sprintf('%0.0f',$gid);
 
 		$this->db->Execute($sql = "UPDATE gridimage_snippet SET gridimage_id = $gridimage_id WHERE gridimage_id = ".$gid);
+
+		//assign the vision descriptions now we know the real id.
+		$this->db->Execute($sql = "UPDATE vision_results SET id = $gridimage_id WHERE id = ".$gid);
 
 		//assign the tags now we know the real id.
 		require_once('geograph/tags.class.php');

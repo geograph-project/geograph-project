@@ -34,7 +34,7 @@ $bounds[] = $b->x+$b->width+$xd;
 $bounds[] = $b->y+$b->height+$yd;
 
 $_GET['olbounds'] = implode(",",$bounds);
-$_GET['select'] = "wgs84_lat as lat,wgs84_long as lng";
+$_GET['select'] = "wgs84_lat*1000 as lat,wgs84_long*1000 as lng";
 
 if (empty($_GET['limit']))
 	$_GET['limit'] = 1000;
@@ -93,8 +93,8 @@ function call_with_results($data) {
 	if (!empty($data['rows']))
 	foreach ($data['rows'] as $row) {
 
-		$lat = rad2deg($row['lat']);
-		$lng = rad2deg($row['lng']);
+		$lat = rad2deg($row['lat']/1000);
+		$lng = rad2deg($row['lng']/1000);
 
 		$p = $g->getOffsetPixelCoords($lat,$lng);
 

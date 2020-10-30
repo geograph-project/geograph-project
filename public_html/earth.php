@@ -23,7 +23,7 @@
 
 require_once('geograph/global.inc.php');
 	
-if (!isset($_GET['BBOX'])) {
+if (!isset($_GET['BBOX']) && !isset($_GET['big'])) {
 	die("This page provides a feed for Google Earth"); 
 }
 if (empty($_GET['i']) || !intval($_GET['i'])) {
@@ -32,6 +32,8 @@ if (empty($_GET['i']) || !intval($_GET['i'])) {
 
 dieUnderHighLoad(2,'earth_unavailable.tpl');
 
+
+if (isset($_GET['BBOX'])) {
 	list($west,$south,$east,$north) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
 	
 	$span = min($north - $south,$east - $west);
@@ -55,6 +57,7 @@ dieUnderHighLoad(2,'earth_unavailable.tpl');
 		$smarty->display("earth_outsidearea.tpl");
 		exit;
 	}
+}
 		
 require_once('geograph/feedcreator.class.php');
 require_once('geograph/gridimage.class.php');
@@ -62,6 +65,9 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 
 $format = 'KML';
+if (!empty($_GET['format']) && $_GET['format'] == 'JSON') {
+	$format = 'JSON';
+}
 
 $rss = new UniversalFeedCreator(); 
 $rss->title = 'Geograph British Isles'; 

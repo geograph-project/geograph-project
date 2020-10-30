@@ -9,7 +9,17 @@
 	<a href="/results/1522">View as search result</a>
 </div>
 
-<h2>Recently Submitted Images</h2>
+<div class="tabHolder">
+	Recent: <a class="tabSelected">All Submitted Images</a>
+	<a href="/browser/#!/taken=,1999-12-31/display=group/group=decade/n=4/gorder=last%20desc/sort=submitted_down" class="tab">Historic Images</a>
+	<a href="/browser/#!/display=group/group=user_id/n=4/gorder=user_id%20desc" class="tab">Contributors</a>
+	<a href="/content/?order=created" class="tab">Collections</a>
+	<a href="/browser/#!/taken={$yesterday},{$yesterday}/display=group/group=county/n=4/gorder=alpha%20asc" class="tab">Taken Yesterday</a>
+</div>
+<div class="interestBox">
+	<h2>Recently Submitted Images</h2>
+</div>
+
 
 <div style="width:200px;float:right;position:relative">
 	<div class="interestBox">
@@ -23,7 +33,9 @@
 	&middot; <a href="/browser/#!/days=3/display=plus/sort=spread">Browse images more fully</a> &middot;
 </div>
 
-<div class="shadow" style="margin-right:220px;">
+<br>
+
+<div class="thumbs shadow" style="margin-right:220px;">
 
 {foreach from=$results item=image}
 

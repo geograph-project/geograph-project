@@ -202,12 +202,14 @@ function useIt(text,which) {
 
 var replies = 0;
 function checkMultiTags(that,event) {
+	var original = that.form.elements['tag'].value;
+	
 	var text = that.value.replace(/\r/g,'');
 	tags = text.split(/\s*\n\s*/);
 	
 	var div = $('#tags-message').empty();
 
-	$('#result').html('The ['+text+'] will be removed from <b>'+that.form.elements['tag_images'].value+'</b> images, and the <span id=tagsStr></span> tags will be added instead. Afterwards the ['+text+'] will be deleted.');
+	$('#result').html('The ['+original+'] will be removed from <b>'+that.form.elements['tag_images'].value+'</b> images, and the <span id=tagsStr></span> tags will be added instead. Afterwards the ['+original+'] will be deleted.');
 
 	replies = 0;
 	for(q=0;q<tags.length;q++) {

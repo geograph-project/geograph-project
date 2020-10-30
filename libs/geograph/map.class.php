@@ -411,7 +411,7 @@ split_timer('map'); //starts the timer
 			$palette .= "_i{$this->searchId}";
 		}
 		
-		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < -20)?'jpg':'png';
+		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < -200)?'jpg':'png';
 		
 		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}{$palette}.$extension";
 		
@@ -486,7 +486,7 @@ split_timer('map','getBaseMapFilename',"$file"); //logs the wall time
 
 		return $file;
 	}
-	
+
 	/**
 	* returns an image with appropriate headers
 	* @access public
@@ -501,54 +501,52 @@ split_timer('map','getBaseMapFilename',"$file"); //logs the wall time
 		}
 		$file=$this->getImageFilename();
 
+if (!empty($_GET['debug'])) {
+	die($file);
+}
+
 split_timer('map'); //starts the timer
-		
+
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
-		if (!$this->caching || !@file_exists($full))
+		if (!$this->caching || !@file_exists($full) || (filemtime($full) < time()-604800) )
 		{
 			$this->_renderMap();
 		}
-		
+
 		if (!@file_exists($full))
 			$full=$_SERVER['DOCUMENT_ROOT']."/maps/errortile.png";
-			
+
 		$type="image/png";
 		if (strpos($full, ".jpg")>0)
 			$type="image/jpeg";
-			
+
 		//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
 		$t=filemtime($full);
-		
+
 		//use the filename as a hash
 		//can use if-last-mod as file is not unique per user
-		customCacheControl($t,$full,true);	
+		customCacheControl($t,$full,true);
 		customExpiresHeader(3600*6,true);
-		
-		
-		
+
 		$size=filesize($full);
 		header("Content-Type: $type");
 		header("Content-Length: $size");
-		
-		
-		//header("Cache-Control: no-store, no-cache, must-revalidate");  // HTTP/1.1 
-		//header("Cache-Control: post-check=0, pre-check=0", false); 
-		//header("Pragma: no-cache");         
+
+		//header("Cache-Control: no-store, no-cache, must-revalidate");  // HTTP/1.1
+		//header("Cache-Control: post-check=0, pre-check=0", false);
+		//header("Pragma: no-cache");
 
 split_timer('map','returnImage',$file); //logs the wall time
-		
+
 		readfile($full);
-		
-		
 	}
-	
+
 	/**
 	* render the map to a file
 	* @access private
 	*/
 	function& _renderMap() {
 
-	
 	#STANDARD MAP
 		if ($this->type_or_user == 0) {
 			$ok = $this->_renderImage();
@@ -560,14 +558,18 @@ split_timer('map','returnImage',$file); //logs the wall time
 				|| $this->type_or_user == -20
 	#ROUTE MAP
 				|| $this->type_or_user == -12
+	#landcover
+				|| $this->type_or_user == -16
+	#postcode
+				|| $this->type_or_user == -22
 	#RECENT ONLY MAP
 				|| $this->type_or_user == -6) {
 
 				$ok = $this->_renderImage();
 
-	#GROUP DEPTH - (via gridimage_group/gridsquare_group_count) 
+	#GROUP DEPTH - (via gridimage_group/gridsquare_group_count)
 			} elseif ($this->type_or_user == -3
-	#PHOTO VIEWING  (via gridimage_log) 
+	#PHOTO VIEWING  (via gridimage_log)
 				|| $this->type_or_user == -5
 	#CENTISQUARE DEPTH MAP
 				|| $this->type_or_user == -8
@@ -577,24 +579,28 @@ split_timer('map','returnImage',$file); //logs the wall time
 				|| $this->type_or_user == -13
 	#YEAR DEPTH MAP
 				|| $this->type_or_user == -14
+	#SCENIC MAP
+				|| $this->type_or_user == -17
+	#SHOWCASE MAP
+				|| $this->type_or_user == -18
 	#QUADS DEPTH MAP
 				|| $this->type_or_user == -9) {
-				
+
 				$ok = $this->_renderDepthImage();
 
 	#DEPTH MAP (_renderDepthImage also understands date maps)
 			} elseif ($this->type_or_user == -1) {
-				//if thumbs level can just use normal render. 
+				//if thumbs level can just use normal render.
 				if ($this->pixels_per_km<=4) {
 					$ok = $this->_renderDepthImage();
 				} else {
 					$ok = $this->_renderImage();
 				}
-	
+
 	#ONLY INCLUDE PHOTOS UPTO CERTAIN DATE
 			} elseif ($this->type_or_user == -2) {
 				$ok = $this->_renderDateImage();
-	
+
 	#BLANK (base) MAP
 			} elseif ($this->type_or_user == -10) {
 				//normal render image, understands type_or_user = -10 and just draws empty tile
@@ -989,9 +995,9 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 							if (strpos($sql_from,'gs') !== FALSE) {
 								$sql_from = str_replace('gs.','gi.',$sql_from);
 							}
-		
+
 							$sql = "select x,y,1 as has_geographs from gridimage_search as gi $sql_from where 1 $sql_where group by x,y order by null";
-							
+
 						} elseif (!empty($this->tagId)) {
 							$sql="select x,y,1 as has_geographs from gridimage_tag inner join gridimage_search using (gridimage_id) where status = 2 and tag_id = {$this->tagId} group by x,y order by null";
 						} elseif ($this->topicId == -1) {
@@ -999,44 +1005,55 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 						} else {
 							$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) where topic_id = {$this->topicId} group by x,y order by null";
 						}
+					} elseif ($this->type_or_user == -16) {
+						$id = intval($_GET['landcover']);
+						$sql="select x,y,gridsquare_id,1 as has_geographs from gridsquare_test
+							where
+							landcover_id = $id
+							";
+
+					} elseif ($this->type_or_user == -22) {
+				//create table postcode_codeopen_square select code,(e div 1000)+206 as x, (n div 1000) as y,count(*) as codes from postcode_codeopen group by e div 1000,n div 1000 order by null;
+
+						$sql="select x,y,1 as has_geographs from postcode_codeopen_square";
+
 					} elseif ($this->type_or_user == -6) {
-						$sql="select x,y,gridsquare_id,has_recent as has_geographs from gridsquare where 
+						$sql="select x,y,gridsquare_id,has_recent as has_geographs from gridsquare where
 							CONTAINS( GeomFromText($rectangle),	point_xy)
-							and imagecount>0";					
+							and imagecount>0";
 					} else {//type_or_user > 0
-						$sql="select x,y,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where 
+						$sql="select x,y,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where
 							CONTAINS( GeomFromText($rectangle),	point_xy) and
 							user_id = {$this->type_or_user} group by x,y";
 					}
 				} elseif ($this->type_or_user == -20) {
-				
+
 					#$hectad_assignment_id = $db->getOne("SELECT * FROM hectad_assignment WHERE status = 'accepted' AND hectad = '$hectad'");
-				
+
 					$table = $CONF['db_tempdb'].".gi_render$counter"; $counter++;
-					
+
 					//TODO - doesnt cope with multiple assignments for a given hectad!
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-						SELECT gi.gridimage_id,x,y,user_id,1 AS has_geographs 
+						SELECT gi.gridimage_id,x,y,user_id,1 AS has_geographs
 						FROM gridimage_search gi
 						INNER JOIN gridsquare_assignment ga ON (gi.gridimage_id = ga.gridimage_id)
 						WHERE CONTAINS( GeomFromText($rectangle),	point_xy)";
 					$db->Execute($sql);
 
-					$sql="INSERT INTO $table 
+					$sql="INSERT INTO $table
 						SELECT gridimage_id,x,y,user_id,(moderation_status = 'geograph') AS has_geographs
-						FROM gridimage_search WHERE 
+						FROM gridimage_search WHERE
 						CONTAINS( GeomFromText($rectangle),	point_xy)
 						AND ftf <= 1
 						ORDER BY moderation_status+0 DESC,seq_no";
 					$db->Execute($sql);
-				
-				
+
 					$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y)";
 					$db->Execute($sql);
-					
+
 					$sql="SELECT x,y,has_geographs,user_id,gridimage_id
 						FROM $table";
-				
+
 				} else {
 					if ($this->type_or_user == -6) {
 						$crit = "imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))";
@@ -1045,14 +1062,14 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					}
 					$table = $CONF['db_tempdb'].".gi_render$counter"; $counter++;
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-						SELECT gridimage_id,x,y,user_id,moderation_status FROM gridimage_search WHERE 
+						SELECT gridimage_id,x,y,user_id,moderation_status FROM gridimage_search WHERE
 						CONTAINS( GeomFromText($rectangle),	point_xy) AND $crit
 						ORDER BY moderation_status+0 DESC,seq_no";
 					$db->Execute($sql);
 
 					$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y)";
 					$db->Execute($sql);
-					
+
 					//if the image is a sup then there cant be any geos, due to sort order!
 					$sql="SELECT x,y,(moderation_status = 'geograph') as has_geographs,user_id,gridimage_id
 						FROM $table";
@@ -1061,20 +1078,20 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 		} else {
 			$number = !empty($this->minimum)?intval($this->minimum):0;
 			if ($this->pixels_per_km<40) {
-				$sql="select x,y,gridsquare_id,has_geographs from gridsquare where 
+				$sql="select x,y,gridsquare_id,has_geographs from gridsquare where
 					CONTAINS( GeomFromText($rectangle),	point_xy)
 					and imagecount>$number";
 			} else {
 				$table = $CONF['db_tempdb'].".gi_render$counter"; $counter++;
-				
+
 				if (true) {
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-						SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_persquare WHERE 
+						SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_persquare WHERE
 						CONTAINS( GeomFromText($rectangle),	point_xy)";
 					$db->Execute($sql);
 				} else {
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-						SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_search WHERE 
+						SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_search WHERE
 						CONTAINS( GeomFromText($rectangle),	point_xy)
 						AND ftf <= 1
 						ORDER BY moderation_status+0 DESC,seq_no";
@@ -1083,12 +1100,12 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y)";
 					$db->Execute($sql);
 				}
-				
+
 				if ($number) {
 					$sql="SELECT gridsquare.x,gridsquare.y,has_geographs,user_id,gridimage_id
-					FROM gridsquare 
+					FROM gridsquare
 					INNER JOIN $table USING (grid_reference)
-					WHERE 
+					WHERE
 						CONTAINS( GeomFromText($rectangle),	point_xy)
 						AND imagecount>$number";
 				} else {
@@ -1100,7 +1117,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_ASSOC);
 		$recordSet = $db->Execute($sql);
 		$db->SetFetchMode($prev_fetch_mode);
-		while (!$recordSet->EOF) 
+		while (!$recordSet->EOF)
 		{
 			$gridx=$recordSet->fields['x'];
 			$gridy=$recordSet->fields['y'];
@@ -1113,10 +1130,10 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 
 			$imgx2=$imgx1 + $this->pixels_per_km;
 			$imgy2=$imgy1 + $this->pixels_per_km;
-				
+
 			$color = ($recordSet->fields['has_geographs'])?$colMarker:$colSuppMarker;
-				
-			//if less than 1 pixel per km, use our aliasing scheme	
+
+			//if less than 1 pixel per km, use our aliasing scheme
 			if ($this->pixels_per_km<1)
 			{
 				$rgb = imagecolorat($img, $imgx1, $imgy1);
@@ -1128,7 +1145,6 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 				{
 					imagesetpixel($img,$imgx1, $imgy1,$colAliasedMarker[0]);
 				}
-				
 			}
 			elseif ($this->pixels_per_km==1)
 			{
@@ -1140,7 +1156,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 				//nice large marker
 				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
 			}
-			elseif ($recordSet->fields['gridimage_id']) 
+			elseif ($recordSet->fields['gridimage_id'])
 			{
 				//thumbnail
 
@@ -1156,12 +1172,15 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 				//	imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
 				//	imagerectangle ($img, $imgx1+1, $imgy1+1, $imgx2-1, $imgy2-1, $colBorder);
 
-					if (!$recordSet->fields['has_geographs']) {
-                                               imagefilledrectangle ($img, $imgx1+2, $imgy1+3, $imgx1+6, $imgy1+5, $colSuppMarker);
-                                               imagefilledrectangle ($img, $imgx1+3, $imgy1+2, $imgx1+5, $imgy1+6, $colSuppMarker);
-					}
 				} else {
+					//at least colour it right
+					imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
 					$ok = false;
+				}
+
+				if (!$recordSet->fields['has_geographs']) {
+                                        imagefilledrectangle ($img, $imgx1+2, $imgy1+3, $imgx1+6, $imgy1+5, $colSuppMarker);
+                                        imagefilledrectangle ($img, $imgx1+3, $imgy1+2, $imgx1+5, $imgy1+6, $colSuppMarker);
 				}
 
 			}
@@ -1211,16 +1230,47 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 			}
 
 			imagedestroy($img);
-			
+
 			split_timer('map','_renderImage',$target); //logs the wall time
 
-			
 			return $ok;
 		} else {
 			return false;
 		}
-	}	
+	}
 
+	function _outputStaticKey()
+	{
+		$imgkey=imagecreatetruecolor(400,20);
+
+		$green=imagecolorallocate ($imgkey, $this->colour['land'][0],$this->colour['land'][1],$this->colour['land'][2]);
+		imagefill($imgkey,0,0,$green);
+
+		foreach (range(0,10) as $idx => $o) {
+			switch (true) {
+				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break;
+
+	                        case $o ==10: $r=255; $g=255; $b=0; break;
+        	                case $o == 9: $r=255; $g=196; $b=0; break;
+                	        case $o == 8: $r=255; $g=132; $b=0; break;
+                        	case $o == 7: $r=255; $g=64; $b=0; break;
+	                        case $o == 6: $r=225; $g=0; $b=0; break;
+        	                case $o == 5: $r=200; $g=0; $b=0; break;
+                	        case $o == 4: $r=168; $g=0; $b=0; break;
+                        	case $o == 3: $r=136; $g=0; $b=0; break;
+	                        case $o == 2: $r=112; $g=0; $b=0; break;
+        	                default: $r=80; $g=0; $b=0; break;
+			}
+			$back=imagecolorallocate($imgkey, $r,$g,$b);
+			$text=imagecolorallocate($imgkey, 255-$r,255-$g,255-$b);
+
+			imagefilledrectangle($imgkey, ($idx*40), 0, ($idx*40)+40, 20, $back);
+			imagestring($imgkey, 5, ($idx*40)+9, 3, $o<10?" $o":$o, $text);
+		}
+		header("Content-Type: image/png");
+		imagepng($imgkey);
+		exit;
+	}
 
 	function _outputDepthKey()
 	{
@@ -1231,16 +1281,16 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 
 		foreach (array(0,1,2,3,4,5,7,10,20,40) as $idx => $o) {
 			switch (true) {
-				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
-				case $o == 1: $r=255; $g=255; $b=0; break; 
-				case $o == 2: $r=255; $g=196; $b=0; break; 
-				case $o == 3: $r=255; $g=132; $b=0; break; 
-				case $o == 4: $r=255; $g=64; $b=0; break; 
-				case $o <  7: $r=225; $g=0; $b=0; break; 
-				case $o < 10: $r=200; $g=0; $b=0; break; 
-				case $o < 20: $r=168; $g=0; $b=0; break; 
-				case $o < 40: $r=136; $g=0; $b=0; break; 
-				case $o < 80: $r=112; $g=0; $b=0; break; 
+				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break;
+				case $o == 1: $r=255; $g=255; $b=0; break;
+				case $o == 2: $r=255; $g=196; $b=0; break;
+				case $o == 3: $r=255; $g=132; $b=0; break;
+				case $o == 4: $r=255; $g=64; $b=0; break;
+				case $o <  7: $r=225; $g=0; $b=0; break;
+				case $o < 10: $r=200; $g=0; $b=0; break;
+				case $o < 20: $r=168; $g=0; $b=0; break;
+				case $o < 40: $r=136; $g=0; $b=0; break;
+				case $o < 80: $r=112; $g=0; $b=0; break;
 			}
 			$back=imagecolorallocate($imgkey, $r,$g,$b);
 			$text=imagecolorallocate($imgkey, 255-$r,255-$g,255-$b);
@@ -1262,40 +1312,40 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 		global $CONF;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		$ok = true;
-		
+
 		if ($this->pixels_per_km < 1) {
 			//render at 1px/km and scale...
 			$this->real_pixels_per_km = $this->pixels_per_km;
 			$this->real_image_w = $this->image_w;
 			$this->real_image_h = $this->image_h;
-			
+
 			//need to change the actual values as need to fool other functions too
 			$this->image_w = floor($this->image_w/$this->pixels_per_km);
 			$this->image_h = floor($this->image_h/$this->pixels_per_km);
 			$this->pixels_per_km = 1;
 		}
-		
+
 		$basemap=$this->getBaseMapFilename();
 		if ($this->caching && @file_exists($root.$basemap)) {
-			
+
 			split_timer('map'); //starts the timer
-			
+
 			$img=imagecreatefromgd($root.$basemap);
-			
+
 			split_timer('map','loadbasemap',$basemap); //logs the wall time
 		} else {
 			$img=&$this->_createBasemap($root.$basemap);
 		}
-		
+
 		if (!$img) {
 			return false;
 		}
-		
+
 		$db=&$this->_getDB(true);
 
 split_timer('map'); //starts the timer
 
-		if ($this->type_or_user == -7 || $this->type_or_user == -8 || $this->type_or_user == -13 || $this->type_or_user == -14) {
+		if ($this->type_or_user == -7 || $this->type_or_user == -8 || $this->type_or_user == -13 || $this->type_or_user == -14 || $this->type_or_user == -17 || $this->type_or_user == -18) {
 
 			set_time_limit(600);
 
@@ -1317,11 +1367,11 @@ split_timer('map'); //starts the timer
 			$o = $counts[$p];
 			//standard green, yellow => red
 			switch (true) {
-				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
-				case $o == 1: $r=255; $g=255; $b=0; break; 
-				case $o == 2: $r=255; $g=196; $b=0; break; 
-				case $o == 3: $r=255; $g=132; $b=0; break; 
-				case $o == 4: $r=255; $g=64; $b=0; break; 
+				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break;
+				case $o == 1: $r=255; $g=255; $b=0; break;
+				case $o == 2: $r=255; $g=196; $b=0; break;
+				case $o == 3: $r=255; $g=132; $b=0; break;
+				case $o == 4: $r=255; $g=64; $b=0; break;
 				case $o <  7: $r=225; $g=0; $b=0; break; #5-6
 				case $o < 10: $r=200; $g=0; $b=0; break; #7-9
 				case $o < 20: $r=168; $g=0; $b=0; break; #10-19
@@ -1381,10 +1431,25 @@ split_timer('map'); //starts the timer
 				group by x,y
 				 order by null";
 
+		} elseif ($this->type_or_user == -17) {
+			$sql="select x,y,0 as `d`,round(pow(average,1.97)) as imagecount
+				from gridimage_search
+					inner join scenic_votes using (gridimage_id)
+				group by x,y
+				 order by null";
+
+		} elseif ($this->type_or_user == -18) {
+			$sql="select x,y,0 as `d`,round(pow(baysian*2,1.97)) as imagecount
+				from gridimage_search
+					inner join gallery_ids on(gridimage_id=id)
+				where baysian is not null
+				group by x,y
+				 order by null";
+
 		} elseif ($this->type_or_user == -9) {
 			$sql="select x,y,gs.gridsquare_id,(count(distinct nateastings DIV 500, natnorthings DIV 500) - (sum(nateastings = 0) > 0) )  as imagecount
-				from 
-				gridsquare gs 
+				from
+				gridsquare gs
 				inner join gridimage gi using(gridsquare_id)
 				where CONTAINS( GeomFromText($rectangle),	point_xy)
 				and moderation_status in ('accepted','geograph')
@@ -1392,8 +1457,8 @@ split_timer('map'); //starts the timer
 
 		} elseif ($this->type_or_user == -8) {
 			$sql="select x,y,gs.gridsquare_id,(count(distinct nateastings DIV 100, natnorthings DIV 100) - (sum(nateastings = 0) > 0) )  as imagecount
-				from 
-				gridsquare gs 
+				from
+				gridsquare gs
 				inner join gridimage gi using(gridsquare_id)
 				where CONTAINS( GeomFromText($rectangle),	point_xy)
 				and moderation_status in ('accepted','geograph')
@@ -1401,8 +1466,8 @@ split_timer('map'); //starts the timer
 
 		} elseif ($this->type_or_user == -7) {
 			$sql="select x,y,gs.gridsquare_id,ceil(datediff(now(),max(imagetaken)) / 356) as imagecount
-				from 
-				gridsquare gs 
+				from
+				gridsquare gs
 				inner join gridimage gi using(gridsquare_id)
 				where CONTAINS( GeomFromText($rectangle),	point_xy)
 				and moderation_status in ('accepted','geograph')
@@ -1410,12 +1475,12 @@ split_timer('map'); //starts the timer
 
 		} elseif ($this->type_or_user == -3) {
 			$sql="select x,y,gs.gridsquare_id,count(distinct label) as imagecount
-				from 
-				gridsquare gs 
+				from
+				gridsquare gs
 				inner join gridimage2 gi using(gridsquare_id)
 				inner join gridimage_group gg using(gridimage_id)
-			group by gi.gridsquare_id "; #where CONTAINS( GeomFromText($rectangle),	point_xy) 
-			
+			group by gi.gridsquare_id "; #where CONTAINS( GeomFromText($rectangle),	point_xy)
+
 			$sql="select * from gridsquare_group_count";
 
 		} elseif ($this->type_or_user == -5) {

@@ -87,7 +87,16 @@
 	  keep you notified about any changes requested or made to your
 	  submissions. It also allows anyone who is interested in your photos
 	  to contact you, but you can control whether you make your address
-	  public or not.</div>
+	  public or not.
+
+		{if $company_member}
+			<br><br><b>Note: If you change your email, may want to also update in the Company Membership database.</b>
+			<a href="{$company_link|escape:'html'}" target="_blank">Follow this link to be taken to the company mini-site</a>
+			(opens in a new window)
+		{/if}
+
+
+	  </div>
 	
 	{if $errors.email}</div>{/if}
 	
@@ -266,8 +275,8 @@
 
 <div class="field"> 
 	<label for="submission_new" class="nowrap">Submission Style (only applies to v1)</label>
-	
-	<select name="submission_new" id="submission_new"> 
+	<br/>
+	<select name="submission_new" id="submission_new" style="margin-left:10em;"> 
 		<option value="{if $profile->submission_new ==2}2{else}1{/if}">Geographical Context (Recommended)</option>
 		<option value="0"{if $profile->submission_new ==0} selected="selected"{/if}>Category (Soon to be removed)</option>
 	</select>
@@ -305,8 +314,8 @@
 {if $profile->ticket_public ne 'everyone' && $profile->ticket_public ne ''}
 <div class="field"> 
 	<label for="ticket_public" class="nowrap">Change Suggestion Anonymity</label>
-	
-	<select name="ticket_public" id="ticket_public">
+	<br/>
+	<select name="ticket_public" id="ticket_public" style="margin-left:10em;">
 		{if $profile->ticket_public eq 'no'}<option value="no">Do not disclose my name</option>{/if}
 		{if $profile->ticket_public eq 'owner'}<option value="owner" selected>Show my name to the photo owner</option>{/if}
 		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Show my name against the suggestion</option>
@@ -334,8 +343,8 @@
 
 <div class="field"> 
 	<label for="ticket_option" class="nowrap">Change Suggestion Emails</label>
-	
-	<select name="ticket_option" id="ticket_option" size="1"> 
+	<br/>	
+	<select name="ticket_option" id="ticket_option" size="1" style="margin-left:10em;"> 
 		{html_options options=$ticket_options selected=$profile->ticket_option}
 	</select>
 	 

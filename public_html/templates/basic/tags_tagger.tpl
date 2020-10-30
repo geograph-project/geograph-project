@@ -57,7 +57,7 @@
 
 	<div style="float:left;width:59%;font-size:0.9em">
 		{assign var="tab" value="1"}
-		{if $topics && !$suggestions}
+		{if !$suggestions}
 			{assign var="tab" value="2"}
 		{/if}
 		{assign var="ctab" value="1"}
@@ -188,6 +188,7 @@
 <div style="font-size:0.8em;padding-right:20px;padding-top:20px">
 
 	&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/>
+	&middot; Tags should ONLY contain letters, numbers, spaces, and/or hyphens.<br/><br/>
 	&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/>
 	&middot; Tags should be singular, ie an image of a church should have the tag "church", not "churches"<br/> <small>&nbsp;&nbsp;(however if a photo is of multiple say fence posts, then the tag "fence post<b>s</b>" should be used).</small><br/>
 	&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".
@@ -200,7 +201,11 @@
 }
 </style><script type="text/javascript">
 
+var failedTags = new Array();
+
 function useTags(ele) {
+
+	failedTags = new Array();
 
 	if (ele.value.indexOf(';') > -1 || ele.value.indexOf(',') > -1) {
 		var arr = ele.value.split(/\s*[,;]+\s*/);
@@ -211,12 +216,49 @@ function useTags(ele) {
 		addTag(ele.value.replace(/^\s*(top|bucket):/i,''));
 	}
 
-	ele.value='';
+	if (failedTags.length)
+		ele.value = failedTags.join('; ');
+	else
+		ele.value='';
 	ele.focus();
 }
 
 var recordNext = '';
 
+function cleanTag(text) {
+	//basic HTML injection protection
+	text = text.replace(/\\/g, "").replace(/<[^>]*>/g, "").replace(/[<>]+/ig, " ");
+
+	var prefix = null;
+	if (text.indexOf(':') > -1) {
+		var bits = text.split(/\s*:+\s*/,2);
+		text = bits[1];
+
+		//prefixes have particully restricted charactor set.
+		prefix = bits[0].toLowerCase().replace(/[^\w]+/," ").replace(/[ _]+/g, " ").replace(/(^\s+|\s+$)/g, "");
+	}
+
+	if (prefix != 'top') {
+		//this is just a short list of charactors we KNOW not support, plenty more.
+		//Todo.. change to whitelist, rather than blacklist. 
+		text = text.replace(/[?|;,]+/g, " "); 
+		// in general the whitelist is [A-Za-z0-9/\.& ()\*!-]
+		//NOTE: do still have legacy with '?' and ',' can be allowed in top: tags only!
+	}
+
+	//quotes not supported, clean whitespace.
+	text = text.replace(/['"]+/g, "").replace(/[ _\t\n\r]+/g, " ").replace(/(^\s+|\s+$)/g, "");
+
+	//this is a well known and common issue to fix, our house style doesnt have dot after st. 
+	text = text.replace(/\b(st)\.+\s*/i, '$1 ');
+
+	//just to catch odd cases were tag ends up actully blank!
+	text = text.replace(/^\s*$/,'blank');
+
+	if (prefix)
+		text = prefix+':'+text;
+	return text;
+}
 
 function addTag(text,suggestion,clearText) {
 
@@ -248,9 +290,16 @@ function addTag(text,suggestion,clearText) {
 		$('#tags i').remove();
 	}
 
-	text = text.replace(/<[^>]*>/ig, "");
-	text = text.replace(/['"]+/ig, " ");
-	//todo - split on comma so can enter multiple tags at once.
+
+	newtext = cleanTag(text);
+	if (newtext != text) {
+		if (!confirm("The tag has been changed to ["+newtext+"], due to unsupported charactors. Press OK to continue with changed tag, or Cancel to change the tag yourself, will need to press the Add button again")) {
+			failedTags.push(newtext);
+			return;
+		}
+		text = newtext;
+	}
+
 
 {/literal}{dynamic}{if $is_owner}
 	str = "<span class=\"tag tagPublic\" id=\"tag"+text+"\" onclick=\"toggleTag('"+text+"');\" ondblclick=\"editTag('"+text+"');\">";
@@ -271,6 +320,7 @@ function addTag(text,suggestion,clearText) {
 	submitTag(text,{/literal}{dynamic}{if $is_owner}2{else}1{/if}{/dynamic}{literal});
 	return void('');
 }
+
 function removeTag(text) {
 	if (document.getElementById("tag"+text)) {
 		document.getElementById("tag"+text).style.textDecoration = "line-through";

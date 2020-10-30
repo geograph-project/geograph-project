@@ -8,13 +8,15 @@
 $ABORT_GLOBAL_EARLY = true;
 
 require_once('geograph/global.inc.php');
-include('3rdparty/facet-functions.php');
+require_once('3rdparty/facet-functions.php');
 
 if (!defined('SPHINX_INDEX')) {
 	if (!empty($_GET['cc'])) {
 	        define('SPHINX_INDEX',"content_stemmed");
 	} elseif (!empty($_GET['gg'])) {
 	        define('SPHINX_INDEX',"germany");
+	} elseif (!empty($_GET['is'])) {
+        	define('SPHINX_INDEX',"islands");
 	} elseif (!empty($_GET['vv'])) {
 	        define('SPHINX_INDEX',"viewpoint");
 	} else
@@ -22,6 +24,7 @@ if (!defined('SPHINX_INDEX')) {
 }
 
 
+if (!headers_sent())
 	customGZipHandlerStart();
 
 
@@ -86,6 +89,17 @@ Example Queries:
 			$res['rows'] = getAll("DESCRIBE ".$res['rows'][0]['Agent']);
 		}
 	} elseif (!empty($_GET['select'])) {
+
+		$threads = getAssoc("SHOW THREADS"); //alas no quick way to just get count.
+		//todo, maybe put this in apc cache??
+		if (count($threads) > 30) {
+		        customExpiresHeader(60,true,true);
+			header("HTTP/1.1 503 Service Unavailable");
+			header('Content-type: application/json');
+			die("{'error': 'Service Unavailable'}");
+		}
+
+
 		$select = empty($_GET['select'])?'id':$_GET['select'];
 		$where = array();
 		if (!empty($_GET['match']))
@@ -197,7 +211,7 @@ Example Queries:
 			$where[] = 'geodist < '.floatval($bits[2]);
 
 			//make a field filter
-        	        if ($bits[2] < 75000 && $subject && empty($_GET['match']) && strpos(implode('',$where),'MATCH') === FALSE  //todo, could still run it at other times too
+        	        if ($bits[2] < 75000 && empty($_GET['match']) && strpos(implode('',$where),'MATCH') === FALSE  //todo, could still run it at other times too
 					&& ($prefix == 'wgs84_' || $prefix == 's')) {
                         	require_once('geograph/conversions.class.php');
 	                        $_GET['match'] = geotiles(floatval($bits[0]),floatval($bits[1]),floatval($bits[2]));
@@ -238,6 +252,14 @@ Example Queries:
 	}
 
         if (!empty($_GET['geo2'])) {
+		if (!empty($_GET['geo'])) {
+			//awkward workaround, manticore doesn like using two geodist() functions when alias is called geodist
+			//  https://github.com/manticoresoftware/manticoresearch/issues/192
+			$select = str_replace(' as geodist',' as geo1',$select);
+			foreach ($where as $key => $value)
+				$where[$key] = str_replace('geodist ','geo1 ',$value);
+		}
+
                 $bits = explode(',',$_GET['geo2']);
 		if (preg_match('/^\w+$/',$bits[3]))
 			$prefix = $bits[3];

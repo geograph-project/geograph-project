@@ -27,6 +27,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+pageMustBeHTTPS();
+
 $myriad = (isset($_GET['myriad']) && preg_match('/^[\w]{1,3}$/' , $_GET['myriad']))?$_GET['myriad']:'';
 
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;

@@ -109,7 +109,7 @@ function read_exif($id) {
         $dir2 = sprintf("%02d", floor($start/10000)%100);
         $filename = "$folder/$dir1/$dir2/$start.exif";
 
-print "<!-- $filename -->";
+//print "<!-- $filename -->";
 
         if (file_exists("$filename.gz"))
                 $h = gzopen($opened = "$filename.gz",'rb');
@@ -118,7 +118,7 @@ print "<!-- $filename -->";
         else
                 return false;
 
-print "<!-- $filename  --  $h -- $opened -->";
+//print "<!-- $filename  --  $h -- $opened -->";
 
 
         $prefix = "$id\t";

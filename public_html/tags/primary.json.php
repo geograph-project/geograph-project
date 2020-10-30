@@ -28,13 +28,14 @@ customExpiresHeader(3600*24);
 
 $db = GeographDatabaseConnection(true);
 
-$query = "SELECT 'top' as `prefix`, top AS tag
+$query = "SELECT 'top' as `prefix`, top AS tag, grouping
 		FROM category_primary
 		ORDER BY sort_order";
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $data = $db->getAll($query);
 
+header("Access-Control-Allow-Origin: *");
 outputJSON($data);
 
 

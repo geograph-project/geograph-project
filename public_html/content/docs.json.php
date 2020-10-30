@@ -36,31 +36,31 @@ if (!empty($_GET['h'])) {
 	$sql['columns'] .= ",words";
 }
 
-if (!empty($_GET['q'])) {
+if (isset($_GET['q'])) {
 
 	customExpiresHeader(3600);
 
 	if (!empty($CONF['sphinx_host'])) {
-				
+
                 $q = trim(preg_replace('/[^\w]+/',' ',str_replace("'",'',$_REQUEST['q'])));
-		
+
 		$sphinx = new sphinxwrapper($q);
-		
-		$sphinx->pageSize = $pgsize = 25; 
-		
+
+		$sphinx->pageSize = $pgsize = 25;
+
 		$pg = (!empty($_REQUEST['page']))?intval(str_replace('/','',$_REQUEST['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
-		
+
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
-	
-		if ($offset < (1000-$pgsize) ) { 
-			
+
+		if ($offset < (1000-$pgsize) ) {
+
 			$ids = $sphinx->returnIds($pg,'document_stemmed');
-			
+
 			if (!empty($ids) && count($ids)) {
 				$idstr = join(",",$ids);
 				$where = "content_id IN(".join(",",$ids).")";
-	
+
 				$sql['wheres'] = array("`content_id` IN ($idstr)");
 				$sql['order'] = "FIELD(`content_id`,$idstr)";
 
@@ -90,7 +90,7 @@ $data = $db->getAll($query);
 if (!empty($_GET['h']) && !empty($data) && !empty($sphinx)) {
 	$docs = array();
         foreach ($data as $c => $row) {
-                $docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['words']));
+                $docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['words']?$row['words']:$row['extract']));
         }
 
         $reply = $sphinx->BuildExcerpts($docs, 'document_stemmed', $sphinx->q);

@@ -12,6 +12,7 @@ Re: image for {$image.grid_reference} ({$image.title})
 {/if}
 
 ------------------------------------------------------------
+Message sent on behalf of: {$from_email}
 Forward abuse complaints to: support@geograph.org.uk
 {/dynamic}
  	

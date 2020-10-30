@@ -43,10 +43,9 @@ $types = array(
 	'without'=>'with no'
 );
 
-	
 	if (isset($_REQUEST['submit'])) {
 		$d=(!empty($_REQUEST['distance']))?min(100,intval(stripslashes($_REQUEST['distance']))):5;
-				
+
 		$type=(isset($_REQUEST['type']))?stripslashes($_REQUEST['type']):'few';
 		switch($type) {
 			case 'all': $crit = 'percent_land>0'; $d = min($d,10); break;
@@ -54,12 +53,12 @@ $types = array(
 			case 'with': $crit = 'imagecount>0'; break;
 			case 'few': $crit = 'imagecount<2 and (percent_land > 0 || imagecount>1)'; break;
 			case 'nogeos': $crit = 'has_geographs=0 and percent_land > 0'; break;
-			case 'recent': $crit = 'recent_only.gridsquare_id IS NOT NULL'; break;
-			case 'norecent': $crit = 'recent_only.gridsquare_id IS NULL'; break;
+			case 'recent': $crit = 'percent_land > 0 and has_recent=1'; break;
+			case 'norecent': $crit = 'percent_land > 0 and has_recent=0'; break;
 			default: $type = 'without'; $crit = 'imagecount=0 and percent_land > 0'; break;
 		}
 		$typename = $types[$type];
-	
+
 		$square=new GridSquare;
 		if (!empty($_REQUEST['ll']) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$_REQUEST['ll'],$ll)) {
 			$conv = new Conversions;
@@ -68,21 +67,20 @@ $types = array(
 		} else {
 			$grid_ok=$square->setByFullGridRef($_REQUEST['gridref']);
 		}
-		
+
 		if ($grid_ok)
 		{
-				
 			$template='gpx_download_gpx.tpl';
 			$cacheid = $square->grid_reference.'-'.($type).'-'.($d);
-		
+
 			//regenerate?
 			if (!$smarty->is_cached($template, $cacheid))
 			{
 				$searchdesc = "squares within {$d}km of {$square->grid_reference} $typename photographs";
-				
+
 				$x = $square->x;
 				$y = $square->y;
-				
+
 				$sql_where = $crit.' and ';
 
 				$left=$x-$d;
@@ -93,49 +91,37 @@ $types = array(
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
 				$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
-				
+
 				//shame cant use dist_sqd in the next line!
 				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
 
 				$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 				$sql_order = ' dist_sqd ';
 
-				
-				if ($type=='norecent' || $type=='recent') {
-	
-					$sql = "SELECT grid_reference,x,y,coalesce(images,0) as imagecount $sql_fields
-					FROM gridsquare gs
-					LEFT JOIN recent_only USING (gridsquare_id)
-					WHERE $sql_where
-					GROUP BY gridsquare_id
-					ORDER BY $sql_order"; 
-				} else {
-					$sql = "SELECT grid_reference,x,y,imagecount $sql_fields
+				$sql = "SELECT grid_reference,x,y,imagecount $sql_fields
 					FROM gridsquare gs
 					WHERE $sql_where
 					ORDER BY $sql_order";
-				}
-				
-				$db=NewADOConnection($GLOBALS['DSN']);
-				if (!$db) die('Database connection failed');  
-				
+
+				$db=GeographDatabaseConnection(false);
+				if (!$db) die('Database connection failed');
+
 				$data = $db->getAll($sql);
 
 				require_once('geograph/conversions.class.php');
-				$conv = new Conversions;				
+				$conv = new Conversions;
 				foreach ($data as $q => $row) {
 					list($data[$q]['lat'],$data[$q]['long']) = $conv->internal_to_wgs84($row['x'],$row['y']);
 				}
-				
+
 				$smarty->assign_by_ref('data', $data);
 				$smarty->assign_by_ref('searchdesc', $searchdesc);
-				
 			}
-			
+
 			header("Content-type: application/octet-stream");
 			header("Content-Disposition: attachment; filename=\"Geograph-$cacheid.gpx\"");
 			customExpiresHeader(3600*24*14,true);
-			
+
 			$smarty->display($template, $cacheid);
 			exit;
 		}
@@ -147,13 +133,10 @@ $types = array(
 			$smarty->assign('gridref', stripslashes($_REQUEST['gridref']));
 			$smarty->assign('distance', $d);
 			$smarty->assign('type', $type);
-		
-			$smarty->assign('errormsg', $square->errormsg);	
+
+			$smarty->assign('errormsg', $square->errormsg);
 		}
-		
-				
-	
-		
+
 	} else {
 		init_session();
 
@@ -165,7 +148,7 @@ $types = array(
 	}
 	$smarty->assign('distances', array(1,3,5,10,15,20,30,50,75,100));
 	$smarty->assign_by_ref('types', $types);
-		
+
 
 
 $smarty->display($template, $cacheid);

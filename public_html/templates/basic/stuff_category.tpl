@@ -3,6 +3,7 @@
 
 <h2>Category Selection Tester</h2>
 
+{if $v != 3}
 
  <div class="interestBox" style="margin:10px">
    <form method="get" action="{$script_name}" style="display:inline">
@@ -12,6 +13,7 @@
   <noscript>
     <input type="submit" value="Update"/></noscript></form></div>
 
+{/if}
 
 
     <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" {if $step ne 1}style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;"{/if}>
@@ -20,7 +22,8 @@
 
 {if $type eq 'top'}
 
-{assign var="tab" value=$v+1}
+{if $v != 3}
+	{assign var="tab" value=$v+1}
 	<div class="tabHolder" style="margin-left:10px">
 		<a class="tab{if $tab == 1}Selected{/if} nowrap" href="?type=top&amp;v=0">Variation A</a>
 		<a class="tab{if $tab == 2}Selected{/if} nowrap" href="?type=top&amp;v=1">Variation B</a>
@@ -32,15 +35,13 @@
 	<div class="interestBox">
 		<h3>Dummy submission</h3>
 	</div>
+{else}
+	Note: This is only a part of the submission process - just to show how now select the Context.
+	<hr/>
+{/if}
 
 
-
-
-
-
-
-....
-
+<a name="dummy"></a>
 <p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 

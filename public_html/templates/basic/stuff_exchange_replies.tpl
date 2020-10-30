@@ -50,7 +50,7 @@
 	{/foreach}
 	<br style="clear:both"/>
 {else}
-	<p>Nothing to show</p>
+	<p>Nothing to show! <a href="{$script_name}">participate in an exchange</a> to see pairs here</p>
 {/if}
 
 {/dynamic}

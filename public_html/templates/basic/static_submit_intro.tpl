@@ -15,9 +15,11 @@
 </style>
 {/literal}
 
+<h2>Geograph Image Submission</h2>
+
 {dynamic}
-{if !$user->registered}
-   <h2>Login Required</h2>
+{if !$user->registered && $submit}
+   <h3>Login Required</h3>
    <div class="interestBox">You must <a href="/login.php">login</a> to access this page. If you haven't
 registered yet, <a title="register now" href="/register.php">go and register</a>, it's quick and free!</div>
 {/if}
@@ -57,9 +59,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 	<li>Pre-process the image with <b>{external href="http://www.picmonkey.com/" text="PicMonkey"} online image manipulation</b> service, transferring the image automatically to continue the above process.</li>
 	
  	<li>Bulk upload photos using an on <b>offline Java application</b>, locate and describe your images offline, and then upload when ready to connect to the internet (this does not include the draggable icons on map).</li>
- 	
- 	<li>Upload <b>multiple</b> photos via <b>{external href="http://picasa.google.com/" text="Picasa"} image management</b> program, fully integrates the submission process into Picasa, <b>optimized for multiple images at once</b>.</li>
-</ul>	
+ </ul>	
  {dynamic}
 {if $user->registered}
  <p>Continue to the <a href="/submit.php">submit process</a> to access the above options</p>

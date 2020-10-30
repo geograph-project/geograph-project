@@ -34,7 +34,6 @@ div#thumbs .highlighted {
 	<div id="map" style="width:800px; height:600px; position:relative;"></div>
 	{if $engine->results}
         <link rel="stylesheet" href="{$static_host}/ol/theme/default/style.css" type="text/css">
-        <link rel="stylesheet" href="{$static_host}/ol/theme/default/google.css" type="text/css">
         <link rel="stylesheet" href="{"/ol/style.css"|revision}" type="text/css">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -47,8 +46,6 @@ div#thumbs .highlighted {
         <script src="{"/ol/osgb-layer.js"|revision}"></script>
         <script src="{"/ol/nls-api.js"|revision}"></script>
         <script src="{"/ol/geograph-openlayers.js"|revision}"></script>
-
-        <script src="https://maps.googleapis.com/maps/api/js?v=3&key={$google_maps_api3_key}"></script>
 
 {literal}
 <script type="text/javascript">
@@ -77,7 +74,7 @@ function loadMap() {
 
     var lonLat = olmap.bounds.getCenterLonLat();
     if (OpenLayers.Projection.Irish.isValidLonLat(lonLat.lon, lonLat.lat)) {
-        olmap.map.setBaseLayer(olmap.layers['google_physical']);
+        olmap.map.setBaseLayer(olmap.layers['osm_phys']);
 
 	//we repeat this, because ireland might be out of GB grid extents.
         olmap.map.zoomToExtent(olmap.bounds.clone().transform(new OpenLayers.Projection("EPSG:4326"),olmap.map.getProjection()));

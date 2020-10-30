@@ -59,13 +59,25 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 	$imagelist=new ImageList;
 	$db = $imagelist->_getDB();
 
+
+	$values = $db->getCol("SELECT distinct type FROM gridimage_typo");
+	array_unshift($values,'');
+	$smarty->assign('types', array_combine($values,$values));
+	$smarty->assign_by_ref('get', $_GET);
+
 	$where = array();
 	$join = '';
 	if (!empty($_GET['type']))
 		$where[] = "type = ".$db->Quote($_GET['type']);
 
-	if (!empty($_GET['u']))
-		$where[] = "gi.user_id = ".$db->Quote($_GET['u']);
+	if (!empty($_GET['u']) && preg_match('/^\d+(\,\d+)*$/',$_GET['u']))
+		$where[] = "gi.user_id IN ({$_GET['u']})"; //preg above avoids sql injecion
+
+	if (!empty($_GET['e']) && preg_match('/^\d+(\,\d+)*$/',$_GET['e']))
+		$where[] = "gi.user_id NOT IN ({$_GET['e']})"; //preg above avoids sql injecion
+
+	if (!empty($_GET['i']))
+		$where[] = "word NOT LIKE ".$db->Quote('%'.$_GET['i'].'%');
 
 	if (!empty($_GET['current'])) {
 		$last = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage");
@@ -94,23 +106,21 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 			//}
 
 
+			$imagelist->images[$i]->title_html = htmlspecialchars2($image->title);
+			if (!empty($image->word)) {
+				//$search = '/('.preg_replace('/\s*\\\.\\\.\\\.\s*/','',preg_quote($image->word,'/')).')/i';
+				$search = '/('.preg_quote(preg_replace('/\s*\.\.\.\s*/','',$image->word),'/').')/i';
+				//todo if word is itself a regex could just run it, but it is mysql format regex, not preg, so slightly different
+				$replace = '<b style=background-color:yellow;>$1</b>';
+				$imagelist->images[$i]->title_html = preg_replace($search, $replace, $imagelist->images[$i]->title_html);
+			}
 
 			if (!empty($image->comment)) {
 				//we do here, so can do some highliting!
 				$imagelist->images[$i]->comment_html = GeographLinks(nl2br(htmlspecialchars2($image->comment)));
 				if (!empty($image->word)) {
-					$imagelist->images[$i]->comment_html = preg_replace(
-						'/('.preg_replace('/\s*\\\.\\\.\\\.\s*/','',preg_quote($image->word,'/')).')/i',
-						'<b style=background-color:yellow;>$1</b>',
-						$imagelist->images[$i]->comment_html);
+					$imagelist->images[$i]->comment_html = preg_replace($search, $replace, $imagelist->images[$i]->comment_html);
 				}
-			}
-			$imagelist->images[$i]->title_html = htmlspecialchars2($image->title);
-			if (!empty($image->word)) {
-				$imagelist->images[$i]->title_html = preg_replace(
-					'/('.preg_replace('/\s*\\\.\\\.\\\.\s*/','',preg_quote($image->word,'/')).')/i',
-					'<b style=background-color:yellow;>$1</b>',
-					$imagelist->images[$i]->title_html);
 			}
 		}
 

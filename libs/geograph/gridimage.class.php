@@ -38,8 +38,6 @@
 */
 class GridImage
 {
-	var $enforce_https = 1;
-
 	/**
 	* internal db handle
 	*/
@@ -274,7 +272,7 @@ class GridImage
 		$vars=get_object_vars($this);
 		foreach($vars as $name=>$val)
 		{
-			if ($name!="db" && $name != "enforce_https")
+			if ($name!="db")
 				unset($this->$name);
 		}
 	}
@@ -522,7 +520,9 @@ split_timer('gridimage'); //starts the timer
                 $this->title_utf8 = latin1_to_utf8($this->title);
 
 #if ($this->gridimage_id == 2847145) {
-		$adv = ($this->user_id == 3 || $this->user_id == 1533 || $this->user_id == 2520 || strpos($_SERVER['HTTP_USER_AGENT'], 'Google')!==FALSE || strpos($_SERVER['HTTP_USER_AGENT'], 'bing'));
+		//$adv = ($this->user_id == 3 || $this->user_id == 1533 || $this->user_id == 2520 || strpos($_SERVER['HTTP_USER_AGENT'], 'Google')!==FALSE || strpos($_SERVER['HTTP_USER_AGENT'], 'bing'));
+  	        $adv = 1; //now!
+
 
 		$lines = explode("\n",wordwrap($this->bigtitle,40,"\n"));
 		$bits = array();
@@ -564,17 +564,10 @@ split_timer('gridimage'); //starts the timer
 		}
 
 		$extra_meta = array();
-		if (($this->gridimage_id >= $this->enforce_https) || ($this->gridimage_id >= 4243769 && $this->gridimage_id <= 4243771)) {
-			if ($this->grid_square->reference_index == 2)
-				$extra_meta[] = "<link rel=\"canonical\" href=\"https://www.geograph.ie/photo/{$this->gridimage_id}\" />";
-			else
-				$extra_meta[] = "<link rel=\"canonical\" href=\"https://www.geograph.org.uk/photo/{$this->gridimage_id}\" />";
-		} else {
-			if ($this->grid_square->reference_index == 2)
-				$extra_meta[] = "<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/{$this->gridimage_id}\" />";
-			else
-				$extra_meta[] = "<link rel=\"canonical\" href=\"http://www.geograph.org.uk/photo/{$this->gridimage_id}\" />";
-		}
+		if ($this->grid_square->reference_index == 2)
+			$extra_meta[] = "<link rel=\"canonical\" href=\"https://www.geograph.ie/photo/{$this->gridimage_id}\" />";
+		else
+			$extra_meta[] = "<link rel=\"canonical\" href=\"https://www.geograph.org.uk/photo/{$this->gridimage_id}\" />";
 
 		if ($CONF['template']!='archive') {
 
@@ -656,8 +649,24 @@ split_timer('gridimage'); //starts the timer
 split_timer('gridimage','assignToSmarty',$this->gridimage_id); //logs the wall time
 
 		if ($this->user_id == 1695) {
-			$smarty->assign('extra_meta','<meta name="robots" content="noindex">');
+			$smarty->assign('extra_meta','<meta name="robots" content="noindex" />');
 			header("X-Robots-Tag: noindex");
+		}
+
+		if (!empty($this->comment) && (strpos($this->comment,'http') !== FALSE || strpos($this->comment,'www.') !== FALSE) ) {
+			$db=&$this->_getDB(true);
+			$aa = $db->getAll($sql = "select url,archive_url from gridimage_link where gridimage_id = ".intval($this->gridimage_id)."
+				AND (HTTP_Status >= 400 || HTTP_Status_final >= 400 || soft_ratio > 0.8) AND archive_url != '' AND next_check < '9999'");
+			if (!empty($aa)) {
+				foreach ($aa as $row) {
+					$row['url'] = preg_replace('/^http:\/\//','',$row['url']); //strip the prefix, because it MIGHT be a www. link without http:// at start
+					if (preg_match('/#.+$/',$row['url'],$m) && strpos($row['archive_url'],'#') === FALSE) {
+						$row['archive_url'] .= $m[0];
+					}
+					$this->comment = str_replace($row['url'],"{$row['url']} ({$row['archive_url']} ) ",$this->comment);
+				}
+				//$this->comment .= "\n----\nNote: One or more links in this description no longer seem to be active.\nArchived version of pages may be available: ".implode("  ",$aa);
+			}
 		}
 	}
 
@@ -665,81 +674,105 @@ split_timer('gridimage','assignToSmarty',$this->gridimage_id); //logs the wall t
 		global $memcache;
 
 split_timer('gridimage'); //starts the timer
-		
+
 		if (empty($gid)) {
+			if (!empty($this->ext))
+				return;
 			$gid = $this->gridimage_id;
 			$cachetime = 3600;
 		} else {
 			$cachetime = 0;
 		}
-		
+
 		if ($cachetime && $memcache->valid) {
 			$mkey = $this->gridimage_id;
-			
+
 			$this->snippets =& $memcache->name_get('sd',$mkey);
-			
+
 			if ($this->snippets === FALSE) {
-				$db=&$this->_getDB(true); 
-				
-				$this->snippets = $db->getAll("SELECT snippet.*,u.realname FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) INNER JOIN user u ON (snippet.user_id = u.user_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
+				$db=&$this->_getDB(true);
+
+				$this->snippets = $db->getAll("SELECT snippet.*,u.realname FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) LEFT JOIN user u ON (snippet.user_id = u.user_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
 				$memcache->name_set('sd',$mkey,$this->snippets,$memcache->compress,$memcache->period_med);
 			}
 		} else {
 			//even without memcache we can use adodb caching - but then dont get invalidation
-			
+
 			$db=&$this->_getDB(30); //need currency
-		
+
 			$this->snippets = $db->CacheGetAll($cachetime,"SELECT snippet.*,u.realname FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) INNER JOIN user u ON (snippet.user_id = u.user_id)  WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
 		}
-		
+
 		if (!empty($this->snippets)) {
 			$this->snippet_count = count($this->snippets);
-		
+
 			if (preg_match('/[^\[]\[\d+\]/',$this->comment))
 				$this->snippets_as_ref =1;
 		}
-		
+
 		//find tags
-		if (empty($db)) $db=&$this->_getDB(true); 
-		$this->tags = $db->getAll("SELECT prefix,tag,description FROM tag_public WHERE gridimage_id = {$this->gridimage_id} ORDER BY created");
+		if (empty($db)) $db=&$this->_getDB(true);
+		$this->tags = $db->getAll("SELECT prefix,tag,description FROM tag_public WHERE gridimage_id = {$this->gridimage_id} GROUP BY tag_id ORDER BY created");
 		if (!empty($this->tags)) {
 			$this->tag_prefix_stat = array();
 			foreach ($this->tags as $row)
 				@$this->tag_prefix_stat[$row['prefix']]++;
 		}
-	
+
 split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall time
 
 	}
-	
-	
-	function loadCollections() {
-	
 
-		//only show on active images (non active images wont be in those tables anyway) 
-		if ($this->moderation_status != 'rejected' && $this->moderation_status != 'pending') { 
-		
-			$db=&$this->_getDB(30); 
+
+	function loadCollections() {
+
+		global $CONF;
+
+		if (!empty($this->ext))
+			return;
+
+		//only show on active images (non active images wont be in those tables anyway)
+		if ($this->moderation_status == 'rejected' || $this->moderation_status == 'pending') {
+			return;
+		}
+
+		$db=&$this->_getDB(30);
 
 split_timer('gridimage'); //starts the timer
+
+		if ($CONF['template'] == 'archive') {
+			//use a mataerialzed view. and dont bother caching (not used much)
+			$this->collections = $db->getAll("
+                                SELECT url,title,`type`
+                                FROM gridimage_collection_copy
+                                WHERE gridimage_id = {$this->gridimage_id}");
+
+			if (!empty($this->collections))
+                                foreach ($this->collections as $i => $row) {
+                                        if ($row['type'] == 'Automatic Cluster' && empty($row['url']) && !empty($row['title'])) {
+						$this->collections[$i]['url'] = "/search.php?gridref={$this->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&amp;do=1";
+                                        }
+                                }
+
+		} else {
 
 			//find articles
 			$this->collections = $db->CacheGetAll(3600*3,"
 				SELECT c.url,c.title,'Article' AS `type`
 				FROM gridimage_content gc
-					INNER JOIN content c USING (content_id) 
-				WHERE gc.gridimage_id = {$this->gridimage_id} 
+					INNER JOIN content c USING (content_id)
+				WHERE gc.gridimage_id = {$this->gridimage_id}
 				ORDER BY content_id DESC");
 
 			//find galleries (not net harmogized into gridimage_content)
 			$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,"
-				SELECT c.url,c.title,'Gallery' AS `type` 
+				SELECT c.url,c.title,'Gallery' AS `type`
 				FROM gridimage_post gp
-					INNER JOIN content c ON (c.foreign_id = topic_id AND c.source = 'gallery') 
-				WHERE gp.gridimage_id = {$this->gridimage_id} 
+					INNER JOIN content c ON (c.foreign_id = topic_id AND c.source = 'gallery')
+				WHERE gp.gridimage_id = {$this->gridimage_id}
 				ORDER BY content_id DESC"));
 			//todo - could add themed topics (if a registered user) and gsds (if they become part of content)
-						
+
 			//todo -experimental and duplicate anyway!
 			if (!empty($this->snippet_count)) {
 				foreach ($this->snippets as $i => $row) {
@@ -916,8 +949,7 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 		if ($returntotalpath)
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
-		if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-			$fullpath = str_replace('http://','https://',$fullpath);
+		$fullpath = str_replace('http://','https://',$fullpath);
 
 		return $fullpath;
 	}
@@ -958,8 +990,7 @@ split_timer('gridimage'); //starts the timer
 		if ($CONF['template'] == 'archive' || empty($check_exists)) {
 			if ($returntotalpath)
 				$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
-			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-				$fullpath = str_replace('http://','https://',$fullpath);
+			$fullpath = str_replace('http://','https://',$fullpath);
 			return $fullpath;
 		}
 		
@@ -1020,8 +1051,7 @@ split_timer('gridimage'); //starts the timer
 		if ($returntotalpath)
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
-		if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-			$fullpath = str_replace('http://','https://',$fullpath);
+		$fullpath = str_replace('http://','https://',$fullpath);
 
 split_timer('gridimage','_getFullpath',$this->gridimage_id); //logs the wall time
 
@@ -1101,10 +1131,63 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 		return $size;
 	}
 
+
+        function getResponsiveImgTag($min = 120, $max = 640, $lazy = false) {
+		global $CONF;
+
+                $db=&$this->_getDB(true);
+
+                $srcset = array();
+		$minwidth = $min;
+		$maxwidth = $min;
+
+                $fullpath = $this->_getFullpath(false,false);
+
+                if (!empty($CONF['enable_cluster'])) {
+                        $thumbserver = str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
+                } else {
+                        $thumbserver = $CONF['CONTENT_HOST'];
+                }
+
+		//this is a cheat, just look for what thumbnails have created before!
+                foreach ($db->getAll("select maxw,maxh,width from gridimage_thumbsize where gridimage_id = {$this->gridimage_id} AND maxw BETWEEN $min AND $max") as $row) {
+                        $thumbpath= $thumbserver . str_replace('.jpg',"_{$row['maxw']}x{$row['maxh']}.jpg",$fullpath);
+                        $srcset[] = "$thumbpath {$row['width']}w";
+			if ($row['width'] > $maxwidth) $maxwidth = $row['width'];
+			if ($row['width'] < $minwidth) $minwidth = $row['width'];
+                }
+
+                if (($min <= 640 && $max >= 640) || empty($srcset)) {
+                        $thumbpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
+                        $this->_getFullSize();
+                        $srcset[] = "$thumbpath {$this->cached_size[0]}w";
+			if ($this->cached_size[0] > $maxwidth) $maxwidth = $this->cached_size[0];
+			if ($this->cached_size[0] < $minwidth) $minwidth = $this->cached_size[0];
+                }
+
+                if (empty($srcset))
+                        return ''; //todo, error image instread?
+
+		if ($lazy) {
+			//https://github.com/aFarkas/lazysizes is already loaded!
+	                $srcset = ' data-srcset="'.implode(', ',$srcset).'"';
+        	        return "<img class=\"lazyload\" data-src=\"$thumbpath\" $srcset data-sizes=\"auto\" id=\"img{$this->gridimage_id}\" style=\"max-width:{$maxwidth}px;min-width:{$minwidth}px\"/>";
+		}
+
+                $srcset = ' srcset="'.implode(', ',$srcset).'"';
+                return "<img src=\"$thumbpath\" $srcset id=\"img{$this->gridimage_id}\"/>";
+        }
+
+
 	/**
 	* returns the largest photo visible via photo page - mimics the srcset in getFull()
 	*/
 	function getLargestPhotoPath($returntotalpath = true) {
+
+		//TODO - this would need testing!
+		//if (!isset($this->original_width)) //if not set then try to load, so container doesnt have to do it. But use isset, rather than empty as it might be set, but 0
+		//   $this->_getFullSize();
+
 		$largest = empty($this->original_width)?0:max($this->original_width,$this->original_height);
 
 		if ($largest > 1024) {
@@ -1131,8 +1214,7 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 
 		if ($returntotalpath)
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
-		if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-			$fullpath = str_replace('http://','https://',$fullpath);
+		$fullpath = str_replace('http://','https://',$fullpath);
 
 	        if (!empty($this->original_width) && $linkoriginal && max($this->original_width,$this->original_height) > 640 && $returntotalpath && !empty($_GET['large'])) {
 	                $maxwidth = min(1024,$this->original_width);
@@ -1141,6 +1223,7 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 
 	                //add the full anyway for completeness
         	        $srcset[] = "$fullpath {$size[0]}w";
+			$largestwidth = $size[0];
 
 	                $largest = max($this->original_width,$this->original_height);
         	        //if 800 works as a midsize, include it.
@@ -1150,8 +1233,10 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
         	                        $midwidth = 800;
 	                        else
                 	                $midwidth = round(800*$this->original_width/$this->original_height);
-        			if (basename($minurl) != 'error.jpg')
+        			if (basename($minurl) != 'error.jpg') {
 			                $srcset[] = "$midurl {$midwidth}w";
+					$largestwidth = $midwidth;
+				}
 	                }
 
                 	//if 1024 works as a midsize, include it.
@@ -1161,15 +1246,19 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 	                                $bigwidth = 1024;
 	                        else
 	                                $bigwidth = round(1024*$this->original_width/$this->original_height);
-				if (basename($bigurl) != 'error.jpg')
+				if (basename($bigurl) != 'error.jpg') {
 			                $srcset[] = "$bigurl {$bigwidth}w";
+					$largestwidth = $bigwidth;
+				}
 		        }
 
 	                //the original is small enough to include directly.
 	                if ($largest <= 1024) {
 	                        $original = $this->_getOriginalpath(true,true);
-				if (basename($original) != 'error.jpg')
+				if (basename($original) != 'error.jpg') {
 		                        $srcset[] = "$original {$this->original_width}w";
+					$largestwidth = $this->original_width;
+				}
 	                }
 
 	                $srcset = ' srcset="'.implode(', ',$srcset).'"';
@@ -1187,9 +1276,15 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 				$mins[] = 'min-width:'.$size[0].'px';
 			if (empty($this->original_width) || $this->original_width/$this->original_height < 3) // DONT impose min height on REALLY wide panos.
 				$mins[] = 'min-height:'.$size[1].'px';
-			$html=str_replace('/>',' style="'.implode('; ',$mins).'"/>',$html);
+			$html=str_replace('/>',' style="'.implode('; ',$mins).';image-orientation: none"/>',$html);
 
-			$html="<div class=\"img-responsive\" style=\"max-width:{$maxwidth}px\">$html</div>"; //maxwidth to prevent upscaling
+
+//image-orientation: none is there in particualar for Chrome 81+, as it now sets [image-orientation: from-image] as default!
+//we may set this more directly somewhere else, but for the moment, this is the most likely place to see it - on larger uploads
+// even the 640 is probably ok, so wouldnt be spotted at moderation time. Only larger upload affected
+
+
+			$html="<div class=\"img-responsive\" style=\"max-width:{$largestwidth}px\">$html</div>"; //maxwidth to prevent upscaling
 
 //temp bodge! (this is a dynamic scale, based on ratio, but want to affect ALL the caption640 elements on the page.)
 $html .= <<<EOT
@@ -1345,8 +1440,7 @@ split_timer('gridimage'); //starts the timer
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
-			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-				$return['server'] = str_replace('http://','https://',$return['server']);
+			$return['server'] = str_replace('http://','https://',$return['server']);
 
 			$thumbpath = $return['server'].$thumbpath;
 
@@ -1518,8 +1612,7 @@ split_timer('gridimage'); //starts the timer
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
-			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-				$return['server'] = str_replace('http://','https://',$return['server']);
+			$return['server'] = str_replace('http://','https://',$return['server']);
 
 			return $return;
 		}
@@ -1554,8 +1647,7 @@ split_timer('gridimage'); //starts the timer
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
-			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-				$return['server'] = str_replace('http://','https://',$return['server']);
+			$return['server'] = str_replace('http://','https://',$return['server']);
 
 			$thumbpath = $return['server'].$thumbpath;
 
@@ -1563,13 +1655,28 @@ split_timer('gridimage'); //starts the timer
 
 			$return['html']=$html;
 
-split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
+split_timer('gridimage','_getResized-cache'.$maxw,$thumbpath); //logs the wall time
 
 			return $return;
 		}
 
-		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
+		$loop = 0;
+		while (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) // a loop, as we can retry if locked, but when lock available, again the file may now exist!
 		{
+			$db=&$this->_getDB(false);
+			$lockkey = basename($thumbpath);
+
+
+split_timer('gridimage','before-lock'.$maxw,$thumbpath); //logs the wall time
+
+			if ($loop < 5 && !$db->getOne("SELECT GET_LOCK('$lockkey',1)")) { // if someone else has a lock long term, possibly failed, and doesnt REALLY matter if we try writing the file anyway, the random looping means out of sync anyway
+				usleep(rand(500000,1500000)); //use random to help avoid self-sync between parallel requests
+				$loop++;
+				continue; //goes back to file-exists test, which may terminate the loop!
+			}
+
+split_timer('gridimage','after-lock',$thumbpath); //logs the wall time
+
 			if ($source == 'original') {
 				$fullpath=$this->_getOriginalpath();
 			} else {
@@ -1711,6 +1818,14 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 				//no original image! - return link to error image
 				$thumbpath="/photos/error.jpg";
 			}
+
+split_timer('gridimage','before-unlock',$thumbpath); //logs the wall time
+
+			$db->getOne("SELECT RELEASE_LOCK('$lockkey')");
+
+split_timer('gridimage','after-unlock',$thumbpath); //logs the wall time
+
+			break; //using while for a lock/retry loop, but dont actully want to loop normally
 		}
 
 		$return=array();
@@ -1729,8 +1844,7 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
-			if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-				$return['server'] = str_replace('http://','https://',$return['server']);
+			$return['server'] = str_replace('http://','https://',$return['server']);
 
 			$thumbpath = $return['server'].$thumbpath;
 

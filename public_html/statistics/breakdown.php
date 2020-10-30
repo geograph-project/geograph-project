@@ -113,6 +113,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		} else {
 			$sql_group = $sql_fieldname = "concat(substring(gi.grid_reference,1,length(gi.grid_reference)-3),substring(gi.grid_reference,length(gi.grid_reference)-1,1))";
 		}
+
 	} else if ($by == 'taken') {
 		$smarty->assign('linkpro', 1);
 		$sql_group = $sql_fieldname = "SUBSTRING(imagetaken,1,7)";
@@ -122,6 +123,17 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else if ($by == 'takenday') {
 		$smarty->assign('linkpro', 1);
 		$sql_group = $sql_fieldname = "imagetaken";
+
+	} else if ($by == 'submitted') {
+		$smarty->assign('linkpro', 1);
+		$sql_group = $sql_fieldname = "SUBSTRING(submitted,1,7)";
+	} else if ($by == 'submittedyear') {
+		$smarty->assign('linkpro', 1);
+		$sql_group = $sql_fieldname = "SUBSTRING(submitted,1,4)";
+	} else if ($by == 'submittedday') {
+		$smarty->assign('linkpro', 1);
+		$sql_group = $sql_fieldname = "SUBSTRING(submitted,1,10)";
+
 	} else if ($by == 'user') {
 		$smarty->assign('linkpro', 1);
 		$sql_group = "user_id";
@@ -267,21 +279,25 @@ limit 5000";
 
 				$breakdown[$idx]['link'] = "/profile/".$entry['user_id'];
 			}
-		} elseif ($by == 'takenyear') {
+		} elseif ($by == 'takenyear' || $by == 'submittedyear') {
+			$kk = preg_replace('/(year|day)/','',$by);
+
 			foreach($breakdown as $idx=>$entry) {
 				$y = $entry['field'];
 
-				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;taken_endYear=$y&amp;taken_startYear=$y&amp;orderby=imagetaken&amp;do=1";
+				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;{$kk}_endYear=$y&amp;{$kk}_startYear=$y&amp;orderby=imagetaken&amp;do=1";
 				if ($y < 100) {
 					$breakdown[$idx]['field'] = ''; //ie unspecified!
 				}
 			}
-		} elseif ($by == 'taken') {
+		} elseif ($by == 'taken' || $by == 'submitted') {
+			$kk = preg_replace('/(year|day)/','',$by);
+
 			foreach($breakdown as $idx=>$entry) {
 				list($y,$m)=explode('-', $entry['field']);
-				
-				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;taken_endMonth=$m&amp;taken_endYear=$y&amp;taken_startMonth=$m&amp;taken_startYear=$y&amp;orderby=imagetaken&amp;do=1";
-			
+
+				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;{$kk}_endMonth=$m&amp;{$kk}_endYear=$y&amp;{$kk}_startMonth=$m&amp;{$kk}_startYear=$y&amp;orderby=imagetaken&amp;do=1";
+
 				if ($m>0) {
 					//well, it saves having an array of months...
 					$t=strtotime("2000-$m-01");
@@ -295,7 +311,12 @@ limit 5000";
 				} else {
 					$breakdown[$idx]['field'] = ''; //ie unspecified!
 				}
-				
+			}
+		} elseif ($by == 'takenday' || $by == 'submittedday') {
+			$kk = preg_replace('/(year|day)/','',$by);
+
+			foreach($breakdown as $idx=>$entry) {
+				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;{$kk}_start={$entry['field']}&amp;{$kk}_end={$entry['field']}&amp;orderby=$kk&amp;do=1";
 			}
 		}
 	}

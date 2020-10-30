@@ -3,7 +3,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <link href="{"/js/select2-3.3.2/select2.css"|revision}" rel="stylesheet"/>
 <script src="{"/js/select2-3.3.2/select2.js"|revision}"></script>
-<script src="{"/js/to-title-case.js"|revision}"></script>
+{dynamic}
+{if $old}
+	<script src="http://s0.geograph.org.uk/js/to-title-case.v8159.js"></script>
+{else}
+	<script src="{"/js/to-title-case.js"|revision}"></script>
+{/if}{/dynamic}
 <script src="/js/jquery.storage.js"></script>
 <div style="position:fixed;top:200px;left:10px;border:1px solid red"></div>
 <div style="padding:6px">
@@ -55,22 +60,21 @@ body {
 }
 
 .column1 {
-	float:left;
-	position:relative;
-	width:610px;
 	height:240px;
+	padding-right:260px;
 }
 .column2 {
-	float:left;
+	float:right;
+	width:220px;
 	margin-left:10px;
 	position:relative;
 	font-size:0.9em;
 	z-index:10000;
 }
-
-@media all and (max-width: 800px) {
-	.column1 { width:410px; }
+@media all and (max-width: 510px) {
+       .column1 { width:400px; }
 }
+
 .experimental {
 	display:none;
 }
@@ -84,30 +88,15 @@ body {
 		<div id="autoSave" style="font-size:0.7em"></div>
 	</div>
 
+	{if $upload_id}<input type="hidden" name="upload_id" value="{$upload_id}" />{/if}
 	{if $gridimage_id}<input type="hidden" name="gridimage_id" value="{$gridimage_id}" />{/if}
 	{if $ids}<input type="hidden" name="ids" value="{$ids|escape:'html'}" />{/if}
 	{if $gr}<input type="hidden" name="gr" value="{$gr|escape:'html'}" />{/if}
 
-	<div style="float:right;"><a href="/article/Tags" title="Article about Tags" class="about" target="_blank">More about Tags</a></div>
-
-	<div class="column1">
-		{if $topicstring}<input type="hidden" name="topicstring" value="{$topicstring|escape:'html'}" />{/if}
-		<input type=hidden name="__newtag" id="__newtag" value="{$usedtext|escape:html}" size="50" style="width:100%"/>
-{/dynamic}
-
-		<div style="font-size:0.8em;padding-right:20px;padding-top:20px">
-
-			&middot; Having typed a tag, to start another, just type a comma or semicolon.<br/><br/>
-			&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/><br/>
-			&middot; Tags should ONLY contain letters, numbers, spaces, and/or hyphens.<br/><br/>
-			&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/><br/>
-			&middot; Tags should be singular, ie an image of a church should have the tag "church", not "churches"<br/> <small>&nbsp;&nbsp;(however if a photo is of multiple say fence posts, then the tag "fence post<b>s</b>" should be used).</small><br/><br/>
-			&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".
-		</div>
-
-	</div>
 
 	<div class="column2">
+		<div style="text-align:right;margin-bottom:6px;"><a href="/article/Tags" title="Article about Tags" class="about" target="_blank">More about Tags</a></div>
+
 		<span class="experimental">
 		<input type="radio" name="selector" accesskey="1" value="alpha" id="sel_alpha"/> <label for="sel_alpha">All Tags - Alphabetical</label><br/></span>
 		<input type="radio" name="selector" accesskey="2" value="ranked" id="sel_ranked" checked/> <label for="sel_ranked">All Tags<span class="experimental"> - Ranked</span></label><br/>
@@ -115,17 +104,18 @@ body {
 		<span class="experimental">
 		<input type="radio" name="selector" accesskey="e" value="selfimages" id="sel_selfimages"/> <label for="sel_selfimages">Your Tags - Most Used</label><br/>
 		<input type="radio" name="selector" accesskey="4" value="selfalpha" id="sel_selfalpha"/> <label for="sel_selfalpha">Your Tags - Alphabetical</label><br/></span>
-		{dynamic}
 		{if $gr}
 			<input type="radio" name="selector" accesskey="5" value="nearby" id="sel_nearby"/> <label for="sel_nearby">Nearby Tags</label><br/>
 		{/if}
 		{if $topicstring}
 			<input type="radio" name="selector" accesskey="7" value="automatic" id="sel_automatic" checked/> <label for="sel_automatic">Tags derived from description</label><br/>
 		{/if}
+		{if $vision}
+			<input type="radio" name="selector" value="vision" id="sel_vision"/> <label for="sel_vision">Computer Generated</label><br/>
+		{/if}
 		{if $hide_context}<span class="experimental">{/if}
 		<input type="radio" name="selector" accesskey="8" value="top" id="sel_top"/> <label for="sel_top">Context List</label><br/>
 		{if $hide_context}</span>{/if}
-		{/dynamic}
 		<input type="radio" name="selector" accesskey="s" value="subject" id="sel_subject"/> <label for="sel_subject">Subject List</label><br/>
 		<span class="experimental">
 		<input type="radio" name="selector" accesskey="9" value="bucket" id="sel_bucket"/> <label for="sel_bucket">Bucket List</label><br/>
@@ -136,8 +126,28 @@ body {
 
 		<br/>
 		<input type=checkbox onclick="toggle_compact(this)" id="compact"/> <label for="compact">Compact Listing Format</label><br/>
-		<input type=checkbox onclick="toggle_experimental(this)" id="experimental"/> <label for="experimental">Show Expanded Modes</label>
+		<input type=checkbox onclick="toggle_experimental(this)" id="experimental"/> <label for="experimental">Show Extended Modes</label>
 	</div>
+
+	<div class="column1">
+		{if $topicstring}<input type="hidden" name="topicstring" value="{$topicstring|escape:'html'}" />{/if}
+		<input type=hidden name="__newtag" id="__newtag" value="{$usedtext|escape:html}" size="50" style="width:100%"/>
+
+		<div style="font-size:0.8em;padding-right:20px;padding-top:10px">
+
+			&middot; Having typed a tag, to start another, just type a comma or semicolon.<br/><br/>
+			&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/><br/>
+			&middot; Tags should ONLY contain letters, numbers, spaces, and/or hyphens.<br/><br/>
+			&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/><br/>
+			&middot; Tags should be singular, ie an image of a church should have the tag "church", not "churches"<br/> <small>&nbsp;&nbsp;(however if a photo is of multiple say fence posts, then the tag "fence post<b>s</b>" should be used).</small><br/><br/>
+			&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".<br><br>
+			<b>&middot; Before using the 'Computer Generated' tags, please <a href="/discuss/index.php?&action=vthread&forum=12&topic=28614" target=_blank>read this thread</a></b>
+		</div>
+
+	</div>
+
+{/dynamic}
+
 	<br style="clear:both"/>
 </form>
 
@@ -154,6 +164,41 @@ String.prototype.capitalizeTag = function () {
 		return this.toTitleCase();
 	}
 }
+
+
+function cleanTag(text) {
+        //basic HTML injection protection
+        text = text.replace(/\\/g, "").replace(/<[^>]*>/g, "").replace(/[<>]+/ig, " ");
+
+        var prefix = null;
+        if (text.indexOf(':') > -1) {
+                var bits = text.split(/\s*:+\s*/,2);
+                text = bits[1];
+
+                //prefixes have particully restricted charactor set.
+                prefix = bits[0].toLowerCase().replace(/[^\w]+/," ").replace(/[ _]+/g, " ").replace(/(^\s+|\s+$)/g, "");
+        }
+
+        //this is just a short list of charactors we KNOW not support, plenty more.
+        //Todo.. change to whitelist, rather than blacklist.
+        text = text.replace(/[?|;,]+/g, " ");
+        // in general the whitelist is [A-Za-z0-9/\.& ()\*!-]
+        //NOTE: do still have legacy with '?' and ',' can be allowed in top: tags only!
+
+        //quotes not supported, clean whitespace.
+        text = text.replace(/['"]+/g, "").replace(/[ _\t\n\r]+/g, " ").replace(/(^\s+|\s+$)/g, "");
+
+        //this is a well known and common issue to fix, our house style doesnt have dot after st.
+        text = text.replace(/\b(st)\.+\s*/i, '$1 ');
+
+        //just to catch odd cases were tag ends up actully blank!
+        text = text.replace(/^\s*$/,'blank');
+
+        if (prefix)
+                text = prefix+':'+text;
+        return text;
+}
+
 
 function export_tags() {
 	var list = $('#__newtag').select2('val');
@@ -204,9 +249,15 @@ $(function() {
 				if ((mode == 'suggestions' || mode == 'prospective' || mode == 'automatic') && $("input[name=topicstring]").length > 0) {
 					data.term = ''; //send a empty string to help with caching
 					data.string = $("input[name=topicstring]").val();
+				} else if (mode == 'vision') {
+					data.term = ''; //send a empty string to help with caching
+					if ($("input[name=upload_id]").length)
+						data.upload_id = $("input[name=upload_id]").val();
+					if ($("input[name=gridimage_id]").length)
+						data.gridimage_id = $("input[name=gridimage_id]").val();
 				} else if (mode == 'nearby' && $("input[name=gr]").length > 0) {
 					data.gr = $("input[name=gr]").val();
-				} else if (mode == 'selfrecent') { 
+				} else if (mode == 'selfrecent') {
 					if (term.length > 0 && !$('.experimental').prop('checked')) {
 						//if entered a term, fall back to 'Your Tags - Ranked'
 						data.mode = 'ranked';
@@ -233,6 +284,7 @@ $(function() {
 			var mode =$("input[name=selector]:checked").val()
 			if (mode == 'subject' || mode == 'top' || mode == 'bucket' || mode == 'categories')
 				return false;
+			term = cleanTag(term);
 			return {id: term, text: term};
 		},
 		//formatCreateNew: function (term) { return "\"" + term + "\" (create as new tag)"; },
@@ -290,23 +342,23 @@ $(function() {
 		$('.select2-input').prop('disabled',(mode == 'suggestions' || mode == 'prospective' || mode == 'automatic'));
 	});
 
-	//fix for firefox to allow the search box to be clicked to focus (works with just the z-index bodge on other browsers) 
+	//fix for firefox to allow the search box to be clicked to focus (works with just the z-index bodge on other browsers)
 	$(".select2-search-field input").bind('click',function(e) {
 		$(this).focus();
 	});
 
 	if ($.localStorage('tagger_compact')) {
 		$('#compact').prop('checked',true);
-		$(".select2-drop").addClass("select2-compact");		
+		$(".select2-drop").addClass("select2-compact");
 	}
 	if ($.localStorage('tagger_experimental')) {
 		$('#experimental').prop('checked',true);
-		$(".experimental").show();		
+		$(".experimental").show();
 	}
 
 	var mode = null;
 	var num = 0;
-	$("input[name=selector]").each(function(index){ 
+	$("input[name=selector]").each(function(index){
 		current = $.localStorage('tagger_mode_'+$(this).val());
 		if (current && current > num) {
 			mode = $(this).val();

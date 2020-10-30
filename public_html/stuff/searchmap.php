@@ -78,11 +78,13 @@ $map->setPalette(3);
 $map->type_or_user = -12;
 
 
+$target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
 
 if (!empty($_GET['refresh']) && $USER->hasPerm("admin")) {
-	$target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
 	unlink($target);
 	$map->_renderMap();
+} elseif (!file_exists($target)) {
+        $map->_renderMap();
 }
 
 
@@ -91,17 +93,42 @@ $overlayurl=$map->getImageUrl();
 
 $smarty->display('_std_begin.tpl');
 
-print "<h2>Coverage map for Search";
+print "<h2>Coverage map for Images";
 if (!empty($title))
 	print "<small><a href=\"/search.php?i=$i\">$title</a></small>";
 print "</h2>";
 
+print "<p>Map rendered: ".date('M, jS \a\t H:m',filemtime($target))." - <a href=\"/search.php?i=$i&temp_displayclass=map\">see also zoomable interactive map</a></p>";
+
+print "<p>Grid-Squares with photo(s) matching the search are shown in red. This includes images from the whole resultset, no paging.</p>";
+
 ?>
-<div style="position:relative; height:1300px;width:900px">
-	<div style="position:absolute;top:0;left:0"> 
+
+<style>
+	div.mapholder {
+		position:relative; height:1300px;width:900px;
+		max-width:100vw;max-height:100vh;
+	}
+	div.mapholder div {
+		position:absolute;top:0;left:0;
+	}
+	div.mapholder img {
+		max-width:100vw;max-height:100vh;
+	}
+
+	@media screen and (max-width: 920px) {
+		div.mapholder {
+			margin-left:-20px;
+		}
+	}
+</style>
+
+
+<div class=mapholder>
+	<div>
 		<img src="<? echo $blankurl; ?>"/>
 	</div>
-	<div style="position:absolute;top:0;left:0"> 
+	<div>
 		<img src="<? echo $overlayurl; ?>"/>
 	</div>
 </div>

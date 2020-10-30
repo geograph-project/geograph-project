@@ -360,7 +360,6 @@ and there need to be at least three images matching these criteria in your searc
 					print "Message: ".$db->ErrorMsg()."\n\n";
 					print "Query: $query\n\n";
                                         print_r($_POST);
-                                        print_r($_SERVER);
                                         $con = ob_get_clean();
                                         mail('geograph@barryhunter.co.uk','[Geograph Geotrip] Creation Error',$con);
 

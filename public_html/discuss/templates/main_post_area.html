@@ -5,7 +5,7 @@
 {$mainPostForm}
 
 <tr>
-<td class=caption5><INPUT TYPE=SUBMIT VALUE="{$l_sub_post_msg}" class=inputButton tabindex=5>
+<td class=caption5><INPUT TYPE=SUBMIT VALUE="{$l_sub_post_msg}" class=inputButton tabindex=55 ONCLICK="return checkHotlink(this.form)">
 <input type=button value="Preview" class=inputButton onClick="prevThis();">
 </td>
 </tr>
@@ -16,3 +16,25 @@
 <INPUT TYPE=HIDDEN NAME=anchor VALUE="{$anchor}">
 </form>
 </div>
+
+<script language="JavaScript">
+
+function checkHotlink(form) {
+        var text = form.elements['postText'].value;
+        var ok = true;
+        if (arr = text.match(/\[img\]http:\/\/[\w\.-]+/g)) {
+            for(q=0;q<arr.length;q++) {
+                 if (one = arr[q].match(/\[img\]http:\/\/([\w\.-]+)/)) {
+                     domain = one[1];
+                     if (domain.indexOf('.geograph.org.uk') ==-1) {
+                         ok = confirm("You appear to be hotlinking an image from '"+domain+"'. Do you have permission to do so? Using images direct from other websites without permission is rude. Ideally you should also include a credit.");
+                     } else if (domain.indexOf('s0.geograph.org.uk') == 0) {
+                         ok = confirm("You appear to be using a Geograph image directly. Have you included a credit to the Contributor? (as required by the Creative Commons Licence)");
+                     }
+                 }
+            }
+        }
+        return ok;
+}
+
+</script>

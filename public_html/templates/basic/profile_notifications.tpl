@@ -8,7 +8,6 @@
         <a href="/choose-search.php" class="tab">Site Search Engine</a>
         <a href="/choose-preview.php" class="tab">Preview Method</a>
         <a href="/switch_tagger.php" class="tab">Tagging Box</a>
-        <a href="/switch.php" class="tab">Submission Method</a>
 </div>
 <div style="position:relative;" class="interestBox">
 	<h2>Notification Preferences - Experimental</h2>

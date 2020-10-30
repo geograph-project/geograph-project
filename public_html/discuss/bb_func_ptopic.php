@@ -19,6 +19,11 @@ echo load_header(); echo ParseTpl(makeUp('main_warning')); return;
 
 if (!$user_usr) $user_usr=$l_anonymous;
 
+if (strlen($_POST['topicTitle']) == 5 && !preg_match('/^\w\d{4}$/',$_POST['topicTitle'])) {
+	header("HTTP/1.1 500 Service Unavailable");
+        die("Please use a more descriptive title");
+}
+
 if (trim($_POST['topicTitle'])=='' and trim($_POST['postText'])=='') {
 $action='vtopic'; return;
 }

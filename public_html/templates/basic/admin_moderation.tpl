@@ -26,6 +26,7 @@
 .photoleft img {
 	max-width:50vw;
 	height:inherit;
+	image-orientation: none; /* to match old default, browsers (like Chrome 81+) have started changing the default */
 }
 .photoright {
 	padding-left:10px;
@@ -67,6 +68,16 @@
 .votediv a {
         padding:3px;
 }
+
+#popupMsg {
+	position: fixed; top: 20vh; bottom: 20vh; left: 20vw; right: 20vw; 
+	z-index: 10000;
+	background-color: white; padding: 20px; border: 3px solid red;
+	display: none;
+}
+#popupMsg li {
+	padding-bottom:10px;
+}	
 </style>
 
 <script type="text/javascript">
@@ -74,7 +85,35 @@
 
 	var mapOpened = false;
 
+	var blockList = {};
+	
+	function unloadMess() {
+		var blocked = false;
+		for (var key in blockList) {
+ 			if (blockList.hasOwnProperty(key))
+				if (blockList[key] > 0)
+					blocked = true;
+		}
+		if (blocked) {
+		        return "Please wait until replies.\n\n**************************\n";
+		}
+                return;
+	}	
+	//this is unreliable with AttachEvent
+	window.onbeforeunload=unloadMess;
+
 	function moderateWrapper(gridimage_id, status) {
+		var gridref = $('#block'+gridimage_id).find('.gridref').text();
+
+		var blocked = false;
+		if (typeof blockList[gridref] !== 'undefined') {
+			if (blockList[gridref] > 0)
+				blocked = true;
+			blockList[gridref]++;
+		} else {
+			blockList[gridref] = 1;
+		}
+		
 		//if the cross grid button submit tag (it may of been auto selected) 
 		if (document.getElementById('cross'+gridimage_id).className.indexOf('on') > -1)
 			submitModTag(gridimage_id,"type:Cross Grid",2);
@@ -82,34 +121,55 @@
 		if (!status)
 			status = getStatus(gridimage_id);
 
+		if (status != 'geograph')
+			blocked = false;
+
 		//for now always submit this, to make sure the tag is created, or removed if change mind
 		submitModTag(gridimage_id,"type:Geograph",(status == 'geograph')?2:0);
 
 		//submit the status
 		moderateImage(gridimage_id, status, function(statusText) {
-			$('#block'+gridimage_id).next().removeClass('modDisabled').find('iframe').each(function() {
-				var url = $(this).data('src');
-				if (this.src != url) this.src = url;
-			});
-
-			if ($('#autoScroll').get(0).checked) {
-	                	setTimeout(function() {
-					var ele = $('#block'+gridimage_id);
-					var nxt = ele.next();
-					if (nxt.length && nxt.hasClass('photoguide')) {
-						//window.scrollBy(0,nxt.height()+22);
-						var diff = nxt.find('.modButtons').offset().top - ele.find('.modButtons').offset().top;
-						$('html, body').animate({
-						    scrollTop: '+='+(diff)
-						}, 500);
-					}
-                		}, 500);
+			if (blocked) {//if blocked, need wait until reply before moving on!
+				highlightNext(gridimage_id);
 			}
+			blockList[gridref]--;
 		});
+
+		if (!blocked) {//if not blocked, then can move on right away!
+			highlightNext(gridimage_id);
+		}
 
 		//reopen the map
 		if (mapOpened) {
 		   $('#block'+gridimage_id).next().find('a.xml-geo').trigger('click');
+		}
+
+		//and start the one after loading too!
+		$('#block'+gridimage_id).next().next().find('iframe').each(function() {
+                        var url = $(this).data('src');
+                        if (!this.src || this.src.indexOf(url) == -1) this.src = url;
+                });
+	}
+
+
+	function highlightNext(gridimage_id) {
+		$('#block'+gridimage_id).next().removeClass('modDisabled').find('iframe').each(function() {
+			var url = $(this).data('src');
+			if (!this.src || this.src.indexOf(url) == -1) this.src = url;
+		});
+
+		if ($('#autoScroll').get(0).checked) {
+                	setTimeout(function() {
+				var ele = $('#block'+gridimage_id);
+				var nxt = ele.next();
+				if (nxt.length && nxt.hasClass('photoguide')) {
+					//window.scrollBy(0,nxt.height()+22);
+					var diff = nxt.find('.modButtons').offset().top - ele.find('.modButtons').offset().top;
+					$('html, body').animate({
+					    scrollTop: '+='+(diff)
+					}, 300);
+				}
+               		}, 120);
 		}
 	}
 
@@ -121,7 +181,9 @@
                         var url = $(this).data('src');
                         if (this.src != url) this.src = url;
                 });
-
+		if (!$.localStorage('admin_mod_message')) {
+			$('#popupMsg').show('fast');
+		}
 
 		//setup auto clicking of the moderation button on stars 
 		$('span.votediv a').click(function() {
@@ -145,6 +207,12 @@
 
 	function autoScrollUpdate() {
 		$.localStorage('admin_autoscroll_not', !$('#autoScroll').get(0).checked);
+	}
+
+	function hideMsg() {
+		$('#popupMsg').hide('fast');
+		$.localStorage('admin_mod_message',1);
+		return false;
 	}
 
 </script>
@@ -171,6 +239,27 @@
 {if $unmoderatedcount}
 
 	{if !$second}
+
+	<div id="popupMsg">
+		<h2>Important Message</h2>
+		<p>The way this page works has changed!</p>
+		<ul>
+			<li>No longer need to wait for the 'reply' to the previous moderation before moving on to next. 
+			<b>Can move (use auto-scroll to do it automatically!) on as soon as the next image 'ungrays'.</b> Moving on is only 'paused' for the reply if a point is at stake. 
+
+			<li>Still should progress down the page in order, don't skip, or do them out of sequence. 
+
+			<li>However, <b>still need to wait for all the replies to come back before moving to another page</b>, including using 'Continue'. 
+			Use the counter at the bottom to confirm, the continue button also only appears once all replies received. 
+
+			<li>If a update is still 'in progress' when try to navigate away, will get a warning message. Please cancel to let the request process, dont 'Leave' anyway. 
+
+			<li>Can still 'Finish' early, again make sure any inflight requests are done before doing so. 
+		</ul>
+		<a href=# onclick="return hideMsg();">Dismiss</a>
+	</div>
+
+
 	<ul>
 
 	{if $apply}
@@ -219,7 +308,7 @@
 		</div>
 
 		<div class=textleft>
-			square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images)<br/><br/>
+			square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}" class="gridref">{$image->grid_reference}</a></b> ({$image->imagecount} images)<br/><br/>
 			by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b> <span{if $image->images<11} style="background-color:yellow"{/if}>({$image->images} images)</span><br/><br/>
 			<b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)
 	  
@@ -296,8 +385,9 @@
 		
 		</div>
 	{elseif !$moderator && !$remoderate}
-		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a>
-		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
+		<div class="interestBox" style="padding-left:100px">
+			<a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session early. 
+			(Continue button will appear once all replies come back!)</div>
 	{elseif $remoderate}
 		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a></div>
 	{/if}
@@ -308,6 +398,10 @@
 		</span>
 		<input id="continueButton" style="display:none" type=button value="Continue &gt;" onclick="window.location.href='/admin/moderation.php'">
 	</form>
+	<div id="skipDiv">
+		<input type=button value="Skip Rest &gt;" onclick="window.location.href='/admin/moderation.php?skip=1'">
+		(Use to goto next page, without moderating all above images. The unmoderated images will be shown to another modeator, and you can continue moderating more images)
+	</div>
 {else}
 
 	<p>There are no images available to moderate at this time!</p>

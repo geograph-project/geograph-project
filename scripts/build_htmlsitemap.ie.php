@@ -111,6 +111,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 	//gzip it
 	`gzip $filename -f`;
+	touch("$filename.gz",$unixtime); //weird (bug? possibl in GeogridFS!), if gzip is overwriting a file, it doesn't perserve the timestamp!
 }
 
 //now we write an index file pointing to our generated ones above

@@ -133,4 +133,3 @@ class Carrot2
     return $clusters;
   }
 }
-

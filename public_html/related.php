@@ -27,20 +27,26 @@ session_cache_limiter('none');
 init_session();
 
 $smarty = new GeographPage;
-$template='related.tpl';	
+
+#$smarty->display("sample8_unavailable.tpl");
+#exit;
+
+$template='related.tpl';
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $cacheid = empty($_GET['id'])?0:intval($_GET['id']);
-if (!empty($_GET['method']) && preg_match('/^\w+$/',$_GET['method']) && $_GET['method'] == 'combined') {
+if (!empty($_GET['method']) && preg_match('/^\w+$/',$_GET['method'])) {
 	$cacheid .= ".".$_GET['method'];
+} else {
+	$_GET['method'] = '';//cheap hack so can do comparisions below without undefined warnigns
 }
 
 if (!$smarty->is_cached($template, $cacheid)) {
 
 	if (!empty($_GET['id'])) {
-	
+
 		$image=new GridImage();
 		$ok = $image->loadFromId($_REQUEST['id']);
 
@@ -50,7 +56,6 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			header("HTTP/1.0 410 Gone");
 			header("Status: 410 Gone");
 			$template = "static_404.tpl";
-
 		} elseif ($_GET['method'] == 'sample' || $_GET['method'] == 'quick') {
 			$results = array();
 
@@ -227,7 +232,10 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				}
 			}
 
-			$bits[] = "( imageclass:{$image->imageclass} )";
+			if (!empty($image->imageclass))
+				$bits[] = "( imageclass:{$image->imageclass} )";
+
+	//TODO - tags/context etc?
 
 			$bits[] = "( comment:{$image->gridimage_id} )";
 
@@ -238,7 +246,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				}
 			}
 
-			$bits[] = "( title:$t2 )";
+			if (!empty($t2))
+				$bits[] = "( title:$t2 )";
 
 			if (!preg_match('/(0000|-00)/',$image->imagetaken)) {
 				$bits[] = "( takenday:".str_replace('-','',$image->imagetaken)." )";
@@ -267,7 +276,10 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 			###########################
 
-			$t2 = preg_replace('/\b\d+\b/',' ',$image->title);
+			$t2 = preg_replace('/\b(\d+|\w{1,2})\b/',' ',$image->title);
+			$t2 = str_replace("'",'',$t2);
+			$t2 = trim(preg_replace('/\s+/',' ',$t2));
+
 			$res = check_images(
 				"Similar Title near {$image->grid_reference}",
 				$image->grid_reference,
@@ -399,8 +411,12 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$image->image_taken=$image->getFormattedTakenDate();
 		$smarty->assign_by_ref('image', $image);
 
-		$methods = array('split'=>'Breakdown','combined'=>'Combined Results');
+		$methods = array('split'=>'Breakdown','combined'=>'Combined Results','quick'=>'Quick Results');
 		$smarty->assign_by_ref('methods', $methods);
+
+		                       $smarty->assign('thumbw',120);
+                                        $smarty->assign('thumbh',120);
+
 	} else {
 		header("HTTP/1.0 404 Not Found");
 		header("Status: 404 Not Found");

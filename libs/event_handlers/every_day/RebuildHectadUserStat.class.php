@@ -76,7 +76,7 @@ class RebuildHectadUserStat extends EventHandler
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 			
 			//give the server a breather...
-			sleep(10);
+			//sleep(10);
 		
 			$db->Execute("INSERT INTO hectad_user_stat_tmp
 			SELECT 

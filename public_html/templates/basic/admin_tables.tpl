@@ -11,7 +11,6 @@
     
 
 {if $table}
-   	
 	<form action="{$script_name}" method="post">
 	<input type="hidden" name="next" value="{$next}">
 	<input type="hidden" name="table" value="{$table}">
@@ -33,8 +32,18 @@
 			     </select></td>
 		  </tr>
 		  <tr>
+			 <td><b>Sensitive</b></td>
+			 <td><select name="sensitive" id="type" size="1"> 
+				{html_options options=$sensitives selected=$arr.sensitive}
+			     </select></td>
+		  </tr>
+		  <tr>
 			 <td><b>description</b></td>
 			 <td><textarea name="description" rows="4" cols="50">{$arr.description}</textarea></td>
+		  </tr>
+		  <tr>
+			 <td><b>public title</b></td>
+			 <td><input name="title" size="50" value="{$arr.title}"/></td>
 		  </tr>
 		  <tr>
 			 <td>&nbsp;</td>
@@ -47,20 +56,21 @@
    	
 	<table cellpadding="4" cellspacing="0" border="1" class="report sortable" id="reportlist"> 
 	<thead>
-	<tr><th>Table</th><th>Type</th><th>Rows</th><th>Data Length</th><th>Created</th><th>Updated</th><th>Checked</th><th>Edit</th><th>Skipped</th></tr>
+	<tr><th>Table</th><th>Type</th><th>Backup</th><th>Sensitive</th><th>Rows</th><th>Data Length</th><th>Created</th><th>Updated</th><th>Checked</th><th>Edit</th></tr>
 	</thead>
 	<tbody>
 	{foreach key=table item=row from=$arr name=loop}
 		<tr{if $row.skipped} style="color:gray;text-decoration:line-through"{/if}>
 		<td><tt>{$table}</td>
 		<td><tt>{$row.type}</td>
+		<td><tt>{$row.backup|default:'Y'}</td>
+		<td><tt>{$row.sensitive|default:'N'}</td>
 		<td align=right>{$row.Rows}</td>
 		<td align=right>{$row.Data_length}</td>
 		<td align=right>{$row.Create_time}</td>
 		<td align=right>{$row.Update_time}</td>
 		<td align=right>{$row.Check_time}</td>
 		<td align=right><a href="{$script_name}?table={$table}">Edit...</a></td>
-		<td align=right>{$row.skipped}</td>
 		</tr>
 	{/foreach}
 	</tbody>

@@ -23,6 +23,7 @@ span.tag, a.tag {
 	line-height:1.4em;
 	width:200px;
 	float:right;
+	height:56em;
 	background-color:#eee;
 }
 .listing-sidebar table {
@@ -34,7 +35,9 @@ span.tag, a.tag {
 .listing-sidebar .cell a {
 	text-decoration:none;
 }
-
+.entry_container {
+	margin-right:220px;
+}
 .entry {
 	position:relative;
 	width:233px;
@@ -80,6 +83,11 @@ span.tag, a.tag {
 }
 
 {/literal}</style>
+
+<div style="position:relative;float:right">
+	For more developer orientated projects, see also <a href="/article/Get-Involved">Get Involved</a>
+</div>
+
 
 <h2>Geograph Projects
 
@@ -153,6 +161,7 @@ span.tag, a.tag {
 
 {if $list}
 
+<div class="entry_container">
 
 {foreach from=$list item=item}
 
@@ -165,11 +174,15 @@ span.tag, a.tag {
 			<span class="tag">{$item.tags|escape:'html'|lower|replace:',':'</span> <span class="tag">'}</span>
 			</div>
 		{/if}
-		{if $item.reason && $item.purpose}
-			<b>Purpose/Goal</b>
-			<div class="textual" style="padding-left:3px;">{$item.purpose|truncate:255|escape:'html'}</div>
-			<b>Why do this project?</b>
-			<div class="textual" style="padding-left:3px;">{$item.reason|truncate:255|escape:'html'}</div>
+		{if $item.reason || $item.purpose}
+			{if $item.purpose}
+				<b>Purpose/Goal</b>
+				<div class="textual" style="padding-left:3px;">{$item.purpose|truncate:255|escape:'html'}</div>
+			{/if}
+			{if $item.reason}
+				<b>Why do this project?</b>
+				<div class="textual" style="padding-left:3px;">{$item.reason|truncate:255|escape:'html'}</div>
+			{/if}
 		{else}
 
 			<div class="textual">{$item.content|truncate:500|escape:'html'|replace:'/':'/<wbr/>'|regex_replace:'/\[\[\[(\d+)\]\]\]/':'<a href="/photo/\1">Photo</a>'}</div>
@@ -198,6 +211,9 @@ span.tag, a.tag {
 
 {/foreach}
 <br style="clear:both"/>
+
+</div>
+
 
 {else}
   <p>There are no listed entries.</p>

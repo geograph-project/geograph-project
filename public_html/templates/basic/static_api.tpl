@@ -79,7 +79,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 	 <p>This API accesses the Images database, allowing a wide variety of output formats, and filtering options. 
 		Include RSS style outputs (can be used directly as a RSS feed), but also supports various XML, KML, JSON and HTML outputs. The feed lives at<br/><br/>
 	 <a title="Geograph RSS feed"
-		href="http://{$api_host}/syndicator.php?key=[apikey]" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]</a><br/><br/>
+		href="{$api_host}/syndicator.php?key=[apikey]" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]</a><br/><br/>
 	 and by default returns obtains an up-to-date listing of the 15 latest
 		Geograph submissions, you can however return different results as below</p> 
 
@@ -98,7 +98,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		</tr> 
 		<tr> 
 		  <td>
-			 <a href="http://{$api_host}/syndicator.php?key=[apikey]" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]</a></td>
+			 <a href="{$api_host}/syndicator.php?key=[apikey]" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">i=[searchid]</th> 
@@ -114,7 +114,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		</tr> 
 		<tr> 
 		  <td>
-			 <a href="http://{$api_host}/syndicator.php?key=[apikey]&amp;i=12345" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;i=12345</a></td>
+			 <a href="{$api_host}/syndicator.php?key=[apikey]&amp;i=12345" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">u=[user_id]</th> 
@@ -122,7 +122,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		</tr> 
 		<tr> 
 		  <td>
-			 <a href="http://{$api_host}/syndicator.php?key=[apikey]&amp;u=3" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;u=3</a></td>
+			 <a href="{$api_host}/syndicator.php?key=[apikey]&amp;u=3" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;u=3</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">q=[query]</th> 
@@ -144,7 +144,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		</tr> 
 		<tr> 
 		  <td>
-			 <a href="http://{$api_host}/syndicator.php?key=[apikey]&amp;q=bridge+near+TQ7054" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;q=bridge+near+TQ7054</a></td>
+			 <a href="{$api_host}/syndicator.php?key=[apikey]&amp;q=bridge+near+TQ7054" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;q=bridge+near+TQ7054</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">location=[location]</th> 
@@ -170,7 +170,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		</tr> 
 		<tr> 
 		  <td>
-			 <a href="http://{$api_host}/syndicator.php?key=[apikey]&amp;location=TQ7054" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;location=TQ7054</a></td>
+			 <a href="{$api_host}/syndicator.php?key=[apikey]&amp;location=TQ7054" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;location=TQ7054</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">text=[text string]</th> 
@@ -188,7 +188,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		</tr> 
 		<tr> 
 		  <td>
-			 <a href="http://{$api_host}/syndicator.php?key=[apikey]&amp;text=bridge" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;text=bridge</a></td>
+			 <a href="{$api_host}/syndicator.php?key=[apikey]&amp;text=bridge" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;text=bridge</a></td>
 		</tr> 
 	 </table> 
 	 
@@ -201,7 +201,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		</tr> 
 		<tr> 
 		  <td>
-			 <a href="http://{$api_host}/syndicator.php?key=[apikey]&amp;format=JSON&amp;callback=function" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;format=JSON&amp;callback=function</a></td>
+			 <a href="{$api_host}/syndicator.php?key=[apikey]&amp;format=JSON&amp;callback=function" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;format=JSON&amp;callback=function</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">expand=1</th> 
@@ -210,7 +210,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		<tr> 
 		  <td>
 			 <a title="Geograph RSS feed"
-			  href="http://{$api_host}/syndicator.php?key=[apikey]&amp;expand=1" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;expand=1</a></td>
+			  href="{$api_host}/syndicator.php?key=[apikey]&amp;expand=1" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;expand=1</a></td>
 		</tr> 
 	 </table>  
 	 <h4><a name="rss_format"></a>Formats</h4> 
@@ -219,68 +219,68 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		<tr> 
 		  <td>format=<b>RSS0.91</b></td> 
 		  <td><a title="Geograph RSS 0.91 feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=RSS0.91" rel="nofollow">RSS 0.91</a> </td> 
+			 href="{$api_host}/syndicator.php?key=[apikey]&format=RSS0.91" rel="nofollow">RSS 0.91</a> </td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>RSS1.0</b></td> 
 		  <td><a title="Geograph RSS 0.91 feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&i=12345&format=RSS1.0" rel="nofollow">RSS 1.0</a></td> 
+			 href="{$api_host}/syndicator.php?key=[apikey]&i=12345&format=RSS1.0" rel="nofollow">RSS 1.0</a></td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>RSS2.0</b></td> 
 		  <td><a title="Geograph RSS 2.0 feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=RSS2.0" rel="nofollow">RSS 2.0</a></td> 
+			 href="{$api_host}/syndicator.php?key=[apikey]&format=RSS2.0" rel="nofollow">RSS 2.0</a></td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>GeoRSS</b></td> 
 		  <td><a title="Geograph GeoRSS feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&i=12345&format=GeoRSS" rel="nofollow">GeoRSS</a> -<b><i>
+			 href="{$api_host}/syndicator.php?key=[apikey]&i=12345&format=GeoRSS" rel="nofollow">GeoRSS</a> -<b><i>
 			 Default</i></b> - 
 			 Extension of RSS 1.0 to include the lat/long, see {external href="http://www.georss.org/" text="georss.org"}</td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>GeoPhotoRSS</b></td> 
 		  <td><a title="Geograph GeoPhotoRSS feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&i=12345&format=GeoPhotoRSS" rel="nofollow">GeoPhotoRSS</a> - 
+			 href="{$api_host}/syndicator.php?key=[apikey]&i=12345&format=GeoPhotoRSS" rel="nofollow">GeoPhotoRSS</a> - 
 			 Further custom extension of GeoRSS to also include the thumbnail url, see {external href="http://www.pheed.com/pheed/rss_anatomy.html" text="pheed.com"}</td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>GPX</b></td> 
 		  <td><a title="Geograph GPX feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&i=12345&format=GPX" rel="nofollow">GPX 1.0</a> - 
+			 href="{$api_host}/syndicator.php?key=[apikey]&i=12345&format=GPX" rel="nofollow">GPX 1.0</a> - 
 			 the GPS Exchange Format, see {external href="http://www.topografix.com/gpx.asp" text="topografix.com"}</td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>OPML</b></td> 
 		  <td><a title="Geograph OPML feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&i=12345&format=OPML" rel="nofollow">OPML</a></td> 
+			 href="{$api_host}/syndicator.php?key=[apikey]&i=12345&format=OPML" rel="nofollow">OPML</a></td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>HTML</b></td> 
 		  <td><a title="Geograph HTML feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=HTML" rel="nofollow">HTML</a> - ideal to be
+			 href="{$api_host}/syndicator.php?key=[apikey]&format=HTML" rel="nofollow">HTML</a> - ideal to be
 			 output by a server side script or to be included in an IFRAME</td> 
 		</tr> 
 		<tr> 
 		  <td rowspan="2">format=<b>JS</b></td> 
 		  <td><a title="Geograph JavaScript feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=JS" rel="nofollow">JavaScript</a> - ideal to
+			 href="{$api_host}/syndicator.php?key=[apikey]&format=JS" rel="nofollow">JavaScript</a> - ideal to
 			 output a simple table with a single &lt;SCRIPT&gt; tag</td> 
 		</tr> 
 		<tr> 
 		  <td>&lt;script
-			 src="http://{$api_host}/syndicator.php?key=[apikey]&amp;format=JS"
+			 src="{$api_host}/syndicator.php?key=[apikey]&amp;format=JS"
 			 type="text/javascript"&gt;&lt;/script&gt;</td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>PHP</b></td> 
 		  <td><a title="Geograph PHP feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=PHP" rel="nofollow">PHP</a> - returns a valid php page, that builds a data-structure for use via include (includes the thumbnail url).</td> 
+			 href="{$api_host}/syndicator.php?key=[apikey]&format=PHP" rel="nofollow">PHP</a> - returns a valid php page, that builds a data-structure for use via include (includes the thumbnail url).</td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>KML</b></td> 
 		  <td><a title="Geograph Google Earth feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=KML" rel="nofollow">KML</a> - suitable for use directly in Google Earth (XML based - includes the thumb url and lat/long!)<br/>accepts additional parameters:</span>
+			 href="{$api_host}/syndicator.php?key=[apikey]&format=KML" rel="nofollow">KML</a> - suitable for use directly in Google Earth (XML based - includes the thumb url and lat/long!)<br/>accepts additional parameters:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>simple=1</th> 
@@ -291,7 +291,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		<tr> 
 		  <td>format=<b>JSON</b> <sup style="color:red">NEW!</sup></td> 
 		  <td><a title="Geograph JSON feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=JSON" rel="nofollow">JSON</a> encoded output - particully suitable for integration into Javascript apps, but many other languages have json decoders. Also supports JSONP with <b>&callback=functionname</b> so can use in a webapp - JQuery etc make this easy!</td> 
+			 href="{$api_host}/syndicator.php?key=[apikey]&format=JSON" rel="nofollow">JSON</a> encoded output - particully suitable for integration into Javascript apps, but many other languages have json decoders. Also supports JSONP with <b>&callback=functionname</b> so can use in a webapp - JQuery etc make this easy!</td> 
 		</tr> 
 	 </table> 
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rest"></a>Details API</h3>
@@ -301,7 +301,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
 		  <th colspan="2"><a title="Example REST Request"
-			 href="http://{$api_host}/api/photo/1234/[apikey]" rel="nofollow">http://{$api_host}/api/photo/[photo-id]/[apikey]</a></th> 
+			 href="{$api_host}/api/photo/1234/[apikey]" rel="nofollow">{$api_host}/api/photo/[photo-id]/[apikey]</a></th> 
 		</tr> 
 		<tr> 
 		  <th>Photo Details</th> 
@@ -320,7 +320,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		</tr> 
 		<tr> 
 		  <th colspan="2"><a title="Example REST Request"
-			 href="http://{$api_host}/api/Gridref/SD1234/[apikey]" rel="nofollow">http://{$api_host}/api/<b>G</b>ridref/[4fig gridref]/[apikey]</a></th> 
+			 href="{$api_host}/api/Gridref/SD1234/[apikey]" rel="nofollow">{$api_host}/api/<b>G</b>ridref/[4fig gridref]/[apikey]</a></th> 
 		</tr> 
 		<tr> 
 		  <th>Grid Square Details</th> 
@@ -340,7 +340,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 		</tr> 
 		<tr> 
 		  <th colspan="2"><a title="Example REST Request"
-			 href="http://{$api_host}/api/latlong/2km/50.64163,-1.94978/[apikey]" rel="nofollow">http://{$api_host}/api/latlong/[distance]km/[lat],[long]/[apikey]</a></th> 
+			 href="{$api_host}/api/latlong/2km/50.64163,-1.94978/[apikey]" rel="nofollow">{$api_host}/api/latlong/[distance]km/[lat],[long]/[apikey]</a></th> 
 		</tr> 
 		<tr> 
 		  <th>Search Nearby <b style="color:red">[DEPRECATED]</b></th> 
@@ -348,7 +348,7 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	In general, using the syndicator.php API is recommended instead of this option. It offers the same functionality, with a lot more options (eg specifying a sort order, filtering by keywords) <br><br>
 
-	Example: <a href="http://{$api_host}/syndicator.php?format=JSON&q=50.64163,-1.94978&distance=2&key=[apikey]" rel="nofollow">http://{$api_host}/syndicator.php?format=JSON&q=[lat],[long]&distance=[distance]&key=[apikey]</a>
+	Example: <a href="{$api_host}/syndicator.php?format=JSON&q=50.64163,-1.94978&distance=2&key=[apikey]" rel="nofollow">{$api_host}/syndicator.php?format=JSON&q=[lat],[long]&distance=[distance]&key=[apikey]</a>
 </div>
 
 
@@ -383,17 +383,17 @@ Note:the distance should be 10km or below.
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
 		  <td>output=<b>xml</b></td> 
-		  <td><a href="http://{$api_host}/api/photo/1234/[apikey]?output=xml" rel="nofollow">XML</a> -<i>Default</i> as above</td> 
+		  <td><a href="{$api_host}/api/photo/1234/[apikey]?output=xml" rel="nofollow">XML</a> -<i>Default</i> as above</td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>json</b></td> 
-		  <td><a href="http://{$api_host}/api/photo/1234/[apikey]?output=json" rel="nofollow">JSON</a> alternative cross-platform format<br/><br/>
+		  <td><a href="{$api_host}/api/photo/1234/[apikey]?output=json" rel="nofollow">JSON</a> alternative cross-platform format<br/><br/>
 		  <table border="1" cellpadding="3" cellspacing="0"> 
 			<tr> 
 			  <th>callback=myFunc</th> 
 			  <td>wraps the data in a function call - JSONP - useful for cross-domain javascript calls<br/>
 			    <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-			  	NOTE: When using in a public web-based project don't use your API key in requests, just use a <a href="http://{$api_host}/api/photo/1234/{$http_host}?output=json" title="example!" rel="nofollow">your domain name</a> as the api key. 
+			  	NOTE: When using in a public web-based project don't use your API key in requests, just use a <a href="{$api_host}/api/photo/1234/{$http_host}?output=json" title="example!" rel="nofollow">your domain name</a> as the api key. 
 			    </div>
 			  </td> 
 			</tr> 
@@ -415,7 +415,7 @@ Note:the distance should be 10km or below.
 	 <p>More suited for bulk downloads, or for keeping an offsite cache
 		up-to-date, it lives at:<br/><br/>
 	 <a title="Geograph RSS feed"
-		href="http://{$api_host}/export.csv.php?key=[apikey]" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]</a><br/><br/>
+		href="{$api_host}/export.csv.php?key=[apikey]" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]</a><br/><br/>
 	 but works best in combination with the parameters below.</p>
 	 <h4><a name="csv_param"></a>Parameters</h4> 
 	 <table cellpadding="3" cellspacing="0" border="1"> 
@@ -428,7 +428,7 @@ Note:the distance should be 10km or below.
 		<tr> 
 		  <td>
 			 <a title="Geograph RSS feed"
-			  href="http://{$api_host}/export.csv.php?key=[apikey]" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]</a></td>
+			  href="{$api_host}/export.csv.php?key=[apikey]" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">since=[date] </th> 
@@ -439,7 +439,7 @@ Note:the distance should be 10km or below.
 		<tr> 
 		  <td>
 			 <a 
-			  href="http://{$api_host}/export.csv.php?key=[apikey]&since=2005-07-01" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;since=2005-07-01</a></td>
+			  href="{$api_host}/export.csv.php?key=[apikey]&since=2005-07-01" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;since=2005-07-01</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">last=[number]+[interval]</th> 
@@ -464,9 +464,9 @@ Note:the distance should be 10km or below.
 		<tr> 
 		  <td>
 			 <a 
-			  href="http://{$api_host}/export.csv.php?key=[apikey]&last=7+day" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;last=7+DAY</a><br/><a
+			  href="{$api_host}/export.csv.php?key=[apikey]&last=7+day" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;last=7+DAY</a><br/><a
 			 
-			 href="http://{$api_host}/export.csv.php?key=[apikey]&last=6+hour" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;last=6+HOUR</a></td>
+			 href="{$api_host}/export.csv.php?key=[apikey]&last=6+hour" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;last=6+HOUR</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">limit=[number] </th> 
@@ -476,7 +476,7 @@ Note:the distance should be 10km or below.
 		<tr> 
 		  <td>
 			 <a 
-			  href="http://{$api_host}/export.csv.php?key=[apikey]&limit=30" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;limit=30</a></td>
+			  href="{$api_host}/export.csv.php?key=[apikey]&limit=30" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;limit=30</a></td>
 		</tr> 
 		<tr> 
 		  <th rowspan="2">ri=[1|2]</th> 
@@ -487,9 +487,9 @@ Note:the distance should be 10km or below.
 		<tr> 
 		  <td>
 			 <a 
-			  href="http://{$api_host}/export.csv.php?key=[apikey]&ri=1" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;ri=<b>1</b></a>
+			  href="{$api_host}/export.csv.php?key=[apikey]&ri=1" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;ri=<b>1</b></a>
 			 - <b>Great Britain</b><br/><a 
-			 href="http://{$api_host}/export.csv.php?key=[apikey]&ri=2" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;ri=<b>2</b></a>
+			 href="{$api_host}/export.csv.php?key=[apikey]&ri=2" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;ri=<b>2</b></a>
 			 - <b>Ireland</b></td> 
 		</tr> 
 		<tr> 
@@ -512,7 +512,7 @@ Note:the distance should be 10km or below.
 		<tr> 
 		  <td>
 			 <a 
-			  href="http://{$api_host}/export.csv.php?key=[apikey]&i=12345" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;i=12345</a></td>
+			  href="{$api_host}/export.csv.php?key=[apikey]&i=12345" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 	 </table> 
 	 <p>* because these results also return images modified within the period
@@ -567,7 +567,7 @@ Note:the distance should be 10km or below.
 		</tr> 
 		<tr> 
 		  <td colspan="2"><a 
-			 href="http://{$api_host}/export.csv.php?key=[apikey]&en=1" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;en=1</a></td>
+			 href="{$api_host}/export.csv.php?key=[apikey]&en=1" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;en=1</a></td>
 		</tr> 
 		<tr style="font-size:0.8em"> 
 		  <th rowspan="3">&nbsp;</th> 
@@ -635,7 +635,7 @@ Note:the distance should be 10km or below.
 		</tr> 
 		<tr> 
 		  <td colspan="2"><a 
-			 href="http://{$api_host}/export.csv.php?key=[apikey]&en=1" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;ppos=1</a></td>
+			 href="{$api_host}/export.csv.php?key=[apikey]&en=1" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;ppos=1</a></td>
 		</tr> 
 		<tr style="font-size:0.8em"> 
 		  <th rowspan="3">&nbsp;</th> 
@@ -686,7 +686,7 @@ Note:the distance should be 10km or below.
 	 <p>TIP: where ever you pass a i parameter you can also pass a <i>page</i>
 		parameter to return another page of results. eg
 		<a 
-		href="http://{$api_host}/syndicator.php?key=[apikey]&i=12345&page=2" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;i=12345&amp;page=2</a></p>
+		href="{$api_host}/syndicator.php?key=[apikey]&i=12345&page=2" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;i=12345&amp;page=2</a></p>
 	 <table border="1" cellpadding="3" cellspacing="0"> 
 		<tr> 
 		  <td>Predefined Searches</td> 
@@ -777,17 +777,17 @@ Note:the distance should be 10km or below.
 		<tr> 
 		  <td>XML/HTML etc feed</td> 
 		  <td><a title="Geograph RSS feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&i=12345" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;i=12345</a></td>
+			 href="{$api_host}/syndicator.php?key=[apikey]&i=12345" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 		<tr> 
 		  <td>CSV feed</td> 
 		  <td><a 
-			 href="http://{$api_host}/export.csv.php?key=[apikey]&i=12345" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;i=12345</a></td>
+			 href="{$api_host}/export.csv.php?key=[apikey]&i=12345" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 		<tr> 
 		  <td>GPX Export</td> 
 		  <td><a title="Geograph GPX Downloads"
-		  	href="http://{$api_host}/syndicator.php?key=[apikey]&amp;format=GPX&amp;i=12345" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;format=GPX&amp;i=12345</a></td>
+		  	href="{$api_host}/syndicator.php?key=[apikey]&amp;format=GPX&amp;i=12345" rel="nofollow">{$api_host}/syndicator.php?key=[apikey]&amp;format=GPX&amp;i=12345</a></td>
 		</tr> 
 	 </table> 
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="others"></a>Other Ways to download information</h3> 

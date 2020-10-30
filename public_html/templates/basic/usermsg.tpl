@@ -9,7 +9,18 @@
 {else}
 
 {if $recipient->registered}
-	<h2>Send message to {$recipient->realname|escape:'html'}</h2>
+	<h2>Send message to <span style="background-color:yellow">{if $invalid_email} Geograph Support{else}{$recipient->realname|escape:'html'}{/if}</span></h2>
+
+	{if $dev}
+		<div class="interestBox" style="background-color:orange;margin:80px;padding:10px">
+			<big>Only use this form to contact <b>{$recipient->realname|escape:'html'}</b> - a developer for the Geograph Project.</big> <br/><br/>
+
+			TIP: Take a moment to make sure you understand what the Geograph Project actully is. An alarming number of people contact us thinking we are the businesses/locations shown in the photos contributed by site members.<br/><br/>
+
+			In most cases contacting the Team via the <a href="/contact.php">Contact form</a> is better, as it will be routed to the right person. Only use this page if the nature of the query means you want to be clear who will read your message. 
+		</div>
+	{/if}
+
 
 	{if $error}
 		<h2>Sorry</h2>
@@ -81,10 +92,10 @@
 		</form>
 	{else}
 		{if $invalid_email}
-		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px; font-size:1.2em;">
 			<img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Warning" width="50" height="44" align="left" style="margin-right:10px"/>
-			We don't have valid contact details on record for this user, you can fill out the form below,
-			it will be sent to the Geograph team, who might or might not be able to help with your query.
+			We <b>do not</b> have valid contact details on record for this user. <br><br>
+			You can fill out the form below, it will be sent <b>to the Geograph Support team</b> <i>instead</i>, who might or might not be able to help with your query.
 		</div>
 		<br/><br/><br/>
 		{/if}
@@ -113,8 +124,8 @@
 			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
 			<img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
 			If you are sending this message in relation to a particular photo or location, please
-			make sure you clearly state which one. The contributor may have photographed
-			many locations and may not know immediately to what you are referring.</div>
+			make sure you clearly state which one. {if !$invalid_email}The contributor may have photographed
+			many locations and may not know immediately to what you are referring.{/if}</div>
 			<br/>
 
 			{if $mention}
@@ -138,8 +149,8 @@
 		<div style="float:right; position:relative; vertical-align:top;">
 			- <b>{external href="http://recaptcha.net/" text="Protected by reCAPTCHA"}</b></span> -
 		</div>
-
-		<input type="submit" name="send" value="Send message to {$recipient->realname|escape:'html'}">
+		<br>
+		<input type="submit" name="send" value="Send message to {if $invalid_email}Geograph Support Team{else}{$recipient->realname|escape:'html'}{/if}">
 		</form>
 	{/if}
 {else}

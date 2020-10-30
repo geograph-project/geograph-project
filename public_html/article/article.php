@@ -46,7 +46,14 @@ if ($_GET['url'] == 'Shepherd-Neame2') {
 	exit;
 }
 
-$isadmin=($USER->hasPerm('moderator') || $USER->hasPerm('director'))?1:0;
+if ($_GET['url'] == 'Top-Level-Categories') {
+	header("HTTP/1.0 301 Moved Permanently");
+	header("Status: 301 Moved Permanently");
+	header("Location: /tags/prefix.php?prefix=top");
+        exit;
+}
+
+$isadmin=($USER->hasPerm('moderator') || $USER->hasPerm('director') || $USER->hasPerm('ticketmod') )?1:0;
 
 $smarty->assign('ismod',$USER->hasPerm('moderator'));
 
@@ -213,13 +220,13 @@ function get_tag($tag,$gr,$images = 4) {
 		$where = array();
                 $where['prefix'] = "prefix = ''";
 
-		$tag2 = preg_replace('/[^\w:]+/',' ',$tag);		
+		$tag2 = preg_replace('/[^\w:]+/',' ',$tag);
 
                 if (strpos($tag,':') !== FALSE) {
                         list($prefix,$tag) = explode(':',$tag,2);
 
                         $where['prefix'] = "prefix = ".$db->Quote($prefix);
-			$sphinxq = "tags:\"__TAG__ $prefix ".preg_replace('/[^\w]+/',' ',$tag)." __TAG__\"";
+			$sphinxq = "tags:\"__TAG__ $prefix __TAG__ ".preg_replace('/[^\w]+/',' ',$tag)." __TAG__\"";
                 } else {
 			$sphinxq = "tags:\"__TAG__ ".preg_replace('/[^\w]+/',' ',$tag)." __TAG__\"";
 		}
@@ -231,7 +238,7 @@ function get_tag($tag,$gr,$images = 4) {
 	if (empty($row)) {
 		return "ERROR unable to load tag [".htmlentities($tag)."]";
 	}
-	$tag_ids = array($row['tag_id']);	
+	$tag_ids = array($row['tag_id']);
 
 	if (!empty($row['canonical'])) {
 		if ($row2 = $db->getRow("SELECT prefix,tag FROM tag WHERE status = 1 AND tag_id = ".intval($row['canonical']))) {
@@ -270,8 +277,8 @@ function get_tag($tag,$gr,$images = 4) {
 		$pg = 1;
                 $client = $sphinx->_getClient();
 
-		$number = intval($pgsize/3); if ($number < 2) $number = 2; if ($number > 5) $number = 5; 
-		
+		$number = intval($pgsize/3); if ($number < 2) $number = 2; if ($number > 5) $number = 5;
+
                         $bits = array();
                         $bits[] = "withinfirstx(atakenyear,$number)";
                         $bits[] = "withinfirstx(takendays,$number)";
@@ -342,9 +349,21 @@ function smarty_function_articletext($input) {
 	$output = preg_replace('/\!(\[+)/e','str_repeat("¬",strlen("$1"))',$output);
 
 	$output = str_replace(
-		array('[b]','[/b]','[big]','[/big]','[small]','[/small]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]','[tt]','[/tt]','[float]','[/float]','[br/]','[hr/]','[reveal]','[/reveal]'),
-		array('<b>','</b>','<big>','</big>','<small>','</small>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>','<tt>','</tt>','<div style="float:left;padding-right:10px;padding-bottom:10px;position:relative">','</div>','<br style="clear:both"/>','<hr align="center" width="75%"/>','<span style="color:white">','</span>'),
+		array('[b]','[/b]','[big]','[/big]','[small]','[/small]','[i]','[/i]','[h2]','[/h2]','[h3]','[/h3]','[h4]','[/h4]','[tt]','[/tt]','[float]','[/float]','[br/]','[hr/]'),
+		array('<b>','</b>','<big>','</big>','<small>','</small>','<i>','</i>','<h2>','</h2>','<h3>','</h3>','<h4>','</h4>','<tt>','</tt>','<div style="float:left;padding-right:10px;padding-bottom:10px;position:relative">','</div>','<br style="clear:both"/>','<hr align="center" width="75%"/>'),
 		$output);
+
+	$output = preg_replace_callback(
+        	'/\[reveal\](.+?)\[\/reveal\]/s',
+	        function ($m) {
+			static $i = 0;
+			$i++;
+			$id = "rev$i";
+	        	return "<span id=hide$id><button onclick=\"show_tree('$id')\">Reveal</button></span>".
+				"<span id=show$id style=display:none><button onclick=\"hide_tree('$id')\">Hide</button> {$m[1]}</span>";
+	        },
+	        $output
+    	);
 
 	$pattern=array(); $replacement=array();
 
@@ -412,12 +431,23 @@ function smarty_function_articletext($input) {
 	}
 
 
+	if (!empty($pattern)) {
+		//do this now, because the title replacements NEED the limit=1 for for if multiple identical titles. the later replacement, cant use a limit.
+        	$output=preg_replace($pattern, $replacement, $output, 1);
+
+		$pattern=array(); $replacement=array();
+	}
+
 	$pattern[]='/<\/h(\d)>\n(?!\*)/';
 	$replacement[]='</h$1>';
 
-
 	$pattern[]='/(?<!["\'\[\/\!\w])([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
-	$replacement[]="<a href=\"{$CONF['SELF_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
+
+	if (preg_match('/Castle/',$GLOBALS['page']['url'])) {
+		$keyword="Castle";
+		$replacement[]="<a href=\"{$CONF['SELF_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a> (<a href=\"/browser/#!/q=$keyword/loc=\\1/dist=2000\" target=\"_blank\">Images</a>) ";
+	} else
+		$replacement[]="<a href=\"{$CONF['SELF_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
 
 	$pattern[]='/\[image id=([a-z]*:?\d+) text=([^\]"]+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
@@ -578,39 +608,39 @@ if ($_GET['url'] == 'preview') {
 	}
 	$_POST['url'] = preg_replace('/ /','-',trim($_POST['url']));
 	$_POST['url'] = preg_replace('/[^\w-]+/','',$_POST['url']);
-	
+
 	$gs=new GridSquare();
 	if (!empty($_POST['grid_reference'])) {
 		if ($gs->setByFullGridRef($_POST['grid_reference'])) {
 			$_POST['gridsquare_id'] = $gs->gridsquare_id;
-		} else 
+		} else
 			$errors['grid_reference'] = $gs->errormsg;
 	}
-	
+
 	$_POST['content'] = strip_tags($_POST['content']);
 	$_POST['content'] = preg_replace('/[“”]/','',$_POST['content']);
 
 	$_POST['extract'] = strip_tags($_POST['extract']);
 	$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
-	
+
 	if (!empty($_POST['page'])) {
 		$_GET['page'] = intval($_POST['page']);
 	}
-	
+
 	$_POST['title'] = "Preview of: {$_POST['title']} -- NOT SAVED";
-	
+
 	$page = $_POST;
-	
+
 } else {
 	$db = GeographDatabaseConnection(false);
 
 	$page = $db->getRow("
 	select article.*,realname,gs.grid_reference,category_name,c.type as ctype
-	from article 
+	from article
 		left join user using (user_id)
 		left join article_cat c on (article.article_cat_id = c.article_cat_id)
 		left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
-	where ( (licence != 'none' and approved > 0) 
+	where ( (licence != 'none' and approved > 0)
 		or user.user_id = {$USER->user_id}
 		or $isadmin )
 		and url = ".$db->Quote($_GET['url']).'

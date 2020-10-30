@@ -27,6 +27,8 @@ require_once("3rdparty/xmlHandler.class.php");
 
 $smarty = new GeographPage;
 
+dieIfReadOnly();
+
 if (!empty($CONF['submission_message'])) {
 	$smarty->assign("status_message",$CONF['submission_message']);
 }

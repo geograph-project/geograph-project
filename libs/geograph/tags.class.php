@@ -207,7 +207,6 @@ class Tags
                         debug_print_backtrace();
                         print "\n\nHost: ".`hostname`."\n\n";
                         print_r($_POST);
-                        print_r($_SERVER);
 			print_r($USER->user_id);
                         $con = ob_get_clean();
                         mail('geograph@barryhunter.co.uk','[Geograph] TAG FAILED '.date('r'),$con);

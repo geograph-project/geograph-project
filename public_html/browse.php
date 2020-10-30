@@ -469,7 +469,7 @@ if ($grid_given)
 				if (empty($imagelist->images)) {
 					$imagelist->_setDB($db);
 
-					$columns = "gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference,comment";
+					$columns = "gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference,comment,substring(imagetaken,1,4) as year";
 					$gis_where = "grid_reference = '{$square->grid_reference}'";
 					$limit = 12;
 
@@ -713,7 +713,7 @@ if ($grid_given)
 					}
 					if ($row[1] > 20) {
 						if ($row[0] == 'pending' || $row[0] == 'rejected') {
-							$breakdown[$i]['link']="/profile/{$USER->user_id}";
+							$breakdown[$i]['link']="/gridref/{$square->grid_reference}?status=".urlencode($rowname).$extra;
 						} else {
 							$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;moderation_status=".urlencode($row[0])."&amp;do=1";
 							$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;status=".urlencode($rowname).$extra;

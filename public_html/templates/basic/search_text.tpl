@@ -9,6 +9,9 @@ tt {
 	border:1px solid gray;
 	padding:2px;
 }
+.selectedHighlight {
+	background-color:yellow;
+}
 {/literal}
 </style>
 
@@ -117,7 +120,7 @@ tt {
 					<div style="position:absolute;line-height:1.1em;top:0px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
 						<ul>
 							<li style="padding-bottom:5px">Separate multiple keywords with spaces, all keywords are required (ie AND)</li>
-							<li style="padding-bottom:5px">Enter <b>tags</b>, in [...], for example: <tt>[footpath]</tt></li>
+							<li style="padding-bottom:5px">Enter a <b>tag</b>, in [...], for example: <tt>[footpath]</tt></li>
 							<li style="padding-bottom:5px">Only matches whole words, punctuation is not searchable</li>
 							<li style="padding-bottom:5px">Not case sensitive</li>
 							<li style="padding-bottom:5px"><b>Looking for exact match?</b> <tt>=bridge</tt><br/>&nbsp; Prefix a keyword with <tt>=</tt> (<tt>bridge</tt> matches bridges, bridging etc too)</small></li>
@@ -126,7 +129,7 @@ tt {
 								<li>image taken date ( <tt>20071103</tt>, <tt>200711</tt>, <tt>2007</tt> or even <tt>April</tt>)</li>
 								<li>subject grid-reference <span class="nowrap">( <tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt> )</span></li>
 							</ul><i style="font-size:0.8em">(can optionally limit matches to a particular field, see 'About' above)</i></li>
-							<li style="padding-bottom:5px">Can match phrases <tt>"road bridge"</tt></li>
+							<li style="padding-bottom:5px">Can match phrases <tt>"road bridge" (requires words be adjacent)</tt></li>
 							<li style="padding-bottom:5px">Can use OR between keywords <span class="nowrap"><tt>bridge OR bont OR pont</tt></span></li>
 							<li style="padding-bottom:5px">Can exclude words/terms <tt>canal -river</tt> or <tt>river -"road bridge"</tt></li>
 							<li style="padding-bottom:5px">Instead run an ANY search <tt>~bridge road river</tt></li>
@@ -212,9 +215,9 @@ tt {
 		  <tr onmouseover="this.style.background='#efefef';showMyHelpDiv('date',true);" onmouseout="this.style.background='#f9f9f9';showMyHelpDiv('date',false);">
 			 <td><label for="submitted_startDay">Date submitted</label></td>
 			 <td colspan="2">
-				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}
-				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}
-				</td>
+				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type=text style="width:17px" name="__submitted_start" value="{$submitted_start|replace:'0-0-0':''}" id="submitted_start"/>
+				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type=text style="width:17px" name="__submitted_end" value="{$submitted_end|replace:'0-0-0':''}" id="submitted_end"/>
+			 </td>
 		  </tr>
 		  <tr onmouseover="this.style.background='#efefef';showMyHelpDiv('date',true);" onmouseout="this.style.background='#f9f9f9';showMyHelpDiv('date',false);">
 			 <td><label for="taken_startDay">Date taken</label>
@@ -229,9 +232,9 @@ tt {
 				</div>
 			 </td>
 			 <td>
-				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}
-				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}
-				</td>
+				between {html_select_date prefix="taken_start" time=$taken_start start_year="1880" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type=text style="width:17px" name="__taken_start" value="{$taken_start|replace:'0-0-0':''}" id="taken_start"/>
+				and {html_select_date prefix="taken_end" time=$taken_end start_year="1880" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type=text style="width:17px" name="__taken_end" value="{$taken_end|replace:'0-0-0':''}" id="taken_end"/>
+			 </td>
 			 <td>&nbsp;<input type="submit" value="Find"/></td>
 		  </tr>
 		  <tr>
@@ -264,9 +267,15 @@ tt {
 		  </tr>
 		</table></form>
 
-{literal}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/js/datepicker/javascript/zebra_datepicker.js"></script>
+<link rel="stylesheet" href="/js/datepicker/css/default.css" type="text/css">
+
 <script type="text/javascript"><!--
+
+var today = '{$smarty.now|date_format:"%Y-%m-%d"}';
+
+{literal}
 
 	$(function() {
 		$('#tagParent').hide();
@@ -332,6 +341,7 @@ function showLocationBox() {
 
 	for(q=0;q<ele.options.length;q++) {
 		document.getElementById('tr_'+ele.options[q].value).style.display = ele.options[q].selected?'':'none';
+		document.getElementById(ele.options[q].value).disabled = !ele.options[q].selected;
 	}
 }
 
@@ -349,6 +359,103 @@ function showMyHelpDiv(which,show) {
 			timers[which] = null;
 		},400);
 }
+
+////////////////////////
+
+function clearDate(element) {
+        updateDateDropdown('','--',null,element?element:this);
+}
+function updateDateDropdown(date_formatted,date_raw,date_object,element) {
+        var name = element.prop('id');
+        var form = element.get(0).form;
+        var bits = date_raw.split(/-/);
+        setByValue(form.elements[name+'Year'],bits[0]); //value and text are the same :)
+        setByValue(form.elements[name+'Month'],bits[1]); //month has zero padded value
+        setByText(form.elements[name+'Day'],bits[2]); //day has zero padded text, but not value
+}
+function setByValue(ele,value) {
+        for(q=0;q<ele.options.length;q++)
+                if (ele[q].value == value)
+                        ele.selectedIndex = q;
+}
+function setByText(ele,value) {
+        for(q=0;q<ele.options.length;q++)
+                if (ele[q].text == value)
+                        ele.selectedIndex = q;
+}
+
+function updateHiddenDate(that) {
+        var name = that.name.replace(/(Year|Month|Day)$/,'');
+	if (that.form.elements[name+'Year'].selectedIndex == 0 && that.form.elements[name+'Month'].selectedIndex  == 0 && that.form.elements[name+'Month'].selectedIndex == 0) {
+		//leave 'no date' blank, as that is handled better (via start_date) than defaults on getSelText, which ends up being 1st Jan
+		that.form.elements['__'+name].value = '';
+	} else {
+	        that.form.elements['__'+name].value = getSelText(that.form.elements[name+'Year'],today.substring(0,4))+'-'+getSelValue(that.form.elements[name+'Month'],'01')+'-'+getSelText(that.form.elements[name+'Day'],'01');
+	}
+}
+function getSelValue(ele,defa) {
+        return ele.options[ele.selectedIndex].value || defa;
+}
+function getSelText(ele,defa) {
+        return ele.options[ele.selectedIndex].text || defa;
+}
+
+$(document).ready(function() {
+
+    $('#submitted_start').Zebra_DatePicker({
+        direction: [false, '2005-02-08'],
+	start_date: today,
+        //pair: $('#submitted_end'),
+        zero_pad: true,
+        onClear: clearDate,
+        onSelect: updateDateDropdown
+    });
+    $('#submitted_end').Zebra_DatePicker({
+        direction: [false, '2005-02-08'],
+	start_date: today,
+        //pair: $('#submitted_start'),
+        zero_pad: true,
+        onClear: clearDate,
+        onSelect: updateDateDropdown
+    });
+
+    $('#taken_start').Zebra_DatePicker({
+        direction: [false, '1880-01-01'],
+	start_date: today,
+        //pair: $('#taken_end'),
+        zero_pad: true,
+        onClear: clearDate,
+        onSelect: updateDateDropdown
+    });
+    $('#taken_end').Zebra_DatePicker({
+        direction: [false, '1880-01-01'],
+	start_date: today,
+        //pair: $('#taken_start'),
+        zero_pad: true,
+        onClear: clearDate,
+        onSelect: updateDateDropdown
+    });
+
+
+	$('input, textarea, select').change(function() {
+		var $this = $(this);
+		if ($this.is(':checkbox') || $this.is(':radio')) {
+			if ($this.prop("checked"))
+				$this.addClass('selectedHighlight');
+			else
+				$this.removeClass('selectedHighlight');
+
+		} else if (!$this.is(':button') && !$this.is(':submit')) {
+			if ($this.val() && $this.val().length > 0)
+				$this.addClass('selectedHighlight');
+			else
+				$this.removeClass('selectedHighlight');
+		}
+	})
+	$('input, textarea, select').trigger('change');
+});
+
+
 
 {/literal}
 //--></script>

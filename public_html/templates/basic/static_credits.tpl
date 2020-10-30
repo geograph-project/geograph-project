@@ -8,7 +8,6 @@
         <a href="/team.php" class="tab">The Geograph Team</a>
         <a href="/credits/" class="tab">Contributors</a>
         <span class="tabSelected">Credits</span>
-        <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
         <a href="/contact.php" class="tab">Contact Us</a>
         <a href="/article/Get-Involved">Get Involved...</a>
 </div>
@@ -103,6 +102,8 @@
      <li>{external title="Visit Fubra website" href="http://www.fubra.com/" text="Fubra"}/{external title="Visit Livetodot website" href="http://www.livetodot.com/hosting/" text="Livetodot"} provide superb co-location hosting and support, giving a home to {external href="http://blog.dixo.net/2006/07/28/geograph-servers-coming-to-life/" text="our collection of servers"}.</li> 
 
      <li>{external title="Visit World of Computers website" href="http://www.woc.co.uk/" text="World of Computers"} build all our servers. Reliable machines coupled with great technical support.</li>
+
+     <li>{external title="Visit Tiger Computing website" href="https://www.tiger-computing.co.uk/" text="Tiger Computing"} keep our servers running, performing the routine maintainance, and incident support.</li>
 
      <li><small>During the early days of the project, we relied on a dedicated server generously donated by {external title="Visit Positive Internet website" href="http://www.positive-internet.com/" text="Positive Internet"}.</small></li> 
 

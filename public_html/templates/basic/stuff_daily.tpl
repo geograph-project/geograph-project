@@ -56,14 +56,13 @@ div.thumbs a.text {
 div.thumbs a.credit {
         position:absolute;
         top:280px;left:0;
-        width:393px;
+        width:389px;
         display:block;
 	text-shadow: 0px 0px 13px rgba(0, 0, 0, 1);
 	color:white;
         font-weight:bold;
         text-decoration:none;
 	text-align:right;
-	padding-right:5px;
         opacity:0.7;
 }
 
@@ -80,7 +79,6 @@ div.thumbs a.date {
         color:white;
         text-decoration:none;
         text-align:left;
-	text-size:0.8em;
 	padding-left:5px;
         opacity:0.9;
 }

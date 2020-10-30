@@ -72,7 +72,7 @@ $cacheid='maplarge|'.$token;
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
-	dieUnderHighLoad();
+	dieUnderHighLoad(0.5);
 
 	//assign overview to smarty
 	if ($mosaic->type_or_user > 0) {

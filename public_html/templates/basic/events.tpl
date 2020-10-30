@@ -115,8 +115,8 @@
 		{/foreach}
 		{if $future == 1}
 			//bounds doesnt seem to like one point via extends
-			bounds.extend(new GLatLng({$item.wgs84_lat}+1, {$item.wgs84_long}+1));
-			bounds.extend(new GLatLng({$item.wgs84_lat}-1, {$item.wgs84_long}-1));
+			bounds.extend(new GLatLng({$fitem.wgs84_lat}+1, {$fitem.wgs84_long}+1));
+			bounds.extend(new GLatLng({$fitem.wgs84_lat}-1, {$fitem.wgs84_long}-1));
 		{/if}
 
 		var newZoom = map.getBoundsZoomLevel(bounds);
@@ -128,6 +128,12 @@
 		var xml = new GGeoXml("{$self_host}/events/feed.kml");
 		{literal}
 		map.addOverlay(xml);
+
+
+		setTimeout(function() {
+			map.setCenter(center, newZoom,G_PHYSICAL_MAP);
+		}, 1000);
+
 	}
 
 	AttachEvent(window,'load',onLoad,false);

@@ -124,7 +124,7 @@ if ($grid_ok)
 
 		$data = $db->getAssoc($sql);
 
-		if ($type != 'all' && ($CONF['use_gazetteer'] == 'OS' || $CONF['use_gazetteer'] == 'OS250') && $square->reference_index == 1) {
+		if ($type != 'all1' && ($CONF['use_gazetteer'] == 'OS' || $CONF['use_gazetteer'] == 'OS250') && $square->reference_index == 1) {
 			$square->getNatEastings();
 			$gaz = new Gazetteer();
 			$places = $gaz->findListByNational($square->reference_index,$square->nateastings,$square->natnorthings,$d*1000);	

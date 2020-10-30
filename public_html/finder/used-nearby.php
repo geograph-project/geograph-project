@@ -226,7 +226,12 @@ function useIt(that,attribute,id,label) {
 		var checked = false;
 	} else {
 		if (attribute=='subject') {
-			$("ul.subject a.used").removeClass('used');
+			if (window.parent && window.parent.document.forms && window.parent.document.forms['theForm'] && window.parent.document.forms['theForm'].elements['subject']) {
+				//the parent form is a dropdown, so enforcing selecting one!
+				$("ul.subject a.used").removeClass('used');
+			} else {
+				$("ul.subject a").css('text-decoration','none'); //discorage selecting any more
+			}
 		}
 		$that.addClass('used');
 		var status = 2;//public if possible!

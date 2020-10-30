@@ -21,12 +21,13 @@
 				New Image (640px preview)
 			</th>
 			<th>
-				Current Image
+				Current Image <br>
+				Moderation Status: {$image->moderation_status}
 			</th>
 		</tr>
 		<tr>
 			<td>
-				<div class="img-shadow" id="mainphoto"><img src="{$image->previewUrl}" name="new"></div>
+				<div class="img-shadow" id="mainphoto"><img src="{$image->previewUrl}?{$smarty.now}" name="new"></div>
 
 			</td>
 			<td>
@@ -44,7 +45,11 @@
 		</tr>
 	</table>
 
-	{if $image->previewUrl == "/photos/error.jpg"}
+	{if $image->status == 'accepted' || $image->status == 'confirmed'}
+	<ul>
+		<li>Existing Status: {$image->status}</li>
+	</ul>
+	{elseif $image->previewUrl == "/photos/error.jpg"}
 	<ul>
 		<li>Unable to load preview. Click the button to notify a developer: <input style="background-color:pink; width:200px" type="submit" name="broken" value="This is broken."/></li>
 	</ul>
@@ -63,13 +68,15 @@
 	<li>Major tweaking is permissible (such as removing border, overlaid text etc) - but should be marked "Close enough"</li>
 	<li>Minor cropping changes is permissible, but must be marked "Close enough"</li>
 	<li>Major cropping changes, provided the 'subject focal area' is unchanged, should also be marked "Close Enough"<ul>
-		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of the larger panorama - still marked "Close enough")</li>
+		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of - or a frame from - the larger panorama - still marked "Close enough")</li>
 		</ul></li>
 	<li>Anything else, or when they are not the same image shouldn't be allowed</li>
 	</ul>
 	{/if}
 
-	In a nutshell, if the two images above are the same size and look exactly the same, then choose "Identical", otherwise if still confident represent the same image then "Close Enough".
+	<p>Note, for panoramas, we are now encouraging 360 degree photospheres, so these are expressly allowed as the 'Large Upload' on an image, even if the main image is not a panorama. <a href="/discuss/?&action=vthread&topic=31573" target=_blank>see this thread</a>) 
+
+	In a nutshell, if the two preview images above are the <b>same size</b> exactly and <b>look</b> exactly the same, then choose "Identical", otherwise if still confident represent the same image then "Close Enough".
 </form>
 
 <script type="text/javascript">

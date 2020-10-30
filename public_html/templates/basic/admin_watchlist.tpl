@@ -9,6 +9,38 @@
 
 {dynamic}
 
+<div class="interestBox">
+<form method=get>
+	<div style="float:left;padding-left:10px">
+		<label for="type">Type</label><br>
+		<select name="type" id="type" size="1">
+		   {html_options options=$types selected=$get.type}
+                </select>		
+	</div>
+	<div style="float:left;padding-left:10px">
+		<label for="u">Only User ID(s)</label><br>
+		<input type=search name=u id=u value="{$get.u|escape:'html'}" size=10>
+	</div>
+	<div style="float:left;padding-left:10px">
+		<label for="e">Exclude User ID(s)</label><br>
+		<input type=search name=e id=e value="{$get.e|escape:'html'}" size=10>
+	</div>
+	<div style="float:left;padding-left:10px">
+		<label for="current">Current Users</label><br>
+		Only <input type=checkbox name=current {if $get.current} checked{/if}>?
+	</div>
+	<div style="float:left;padding-left:10px">
+		<label for="i">Exclude Words</label><br>
+		<input type=search name=i id=i value="{$get.i|escape:'html'}" size=10>
+	</div>
+	<div style="float:left;padding-left:10px">
+		<input type=submit value="go">
+	</div>
+	<br style=clear:both>
+</form>
+</div>
+
+
 	{foreach from=$images item=image}
 	 <div style="border-top: 1px solid lightgrey; padding-top:1px;" id="div{$image->gridimage_id}">
 	 	<div style="float:right">

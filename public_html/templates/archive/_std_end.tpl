@@ -22,7 +22,7 @@
     </ul></li>
     <li>General<ul>
      <li><a title="Frequently Asked Questions" href="/faq3.php?l=0">FAQ</a></li>
-     <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Project Info</a></li>
+     <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Help Pages</a></li>
      <li><a title="View a list of all pages" href="/help/sitemap">Sitemap</a></li>
      <li><a title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
      <li><a title="Donate to Geograph Project" href="/help/donate">Support</a></li>

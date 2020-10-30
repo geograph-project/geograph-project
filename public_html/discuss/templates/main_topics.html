@@ -17,7 +17,7 @@ return false;
 <td align=right valign=top width="40%" class=caption3><span class=txtSm>{$l_sortedBy}&nbsp;{$sortedByT}.&nbsp;<a title="Change sort order" href="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}&amp;sortBy={$sortByNew}">{$l_sortBy}&nbsp;{$sortByT}</a></span></td>
 </tr>
 </table>
-
+{$forumDesc}
 <table class=tbTransparent>
 <tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
 </table>
@@ -58,7 +58,7 @@ return false;
 
 <tr>
 <td class=caption5>
-<INPUT TYPE=SUBMIT VALUE="{$l_sub_post_tpc}" class=inputButton tabindex=5>
+<INPUT TYPE=SUBMIT VALUE="{$l_sub_post_tpc}" class=inputButton tabindex=5 ONCLICK="return checkHotlink(this.form)">
 <input type=button value="Preview" class=inputButton onClick="prevThis();">
 </td>
 </tr>
@@ -82,6 +82,25 @@ return false;
 <p align=right><a title="RSS Feed for this Forum" href="/discuss/syndicator.php?forum={$forum}" class="xml-rss">RSS</a></p>
 
 <script language="JavaScript">
+
+function checkHotlink(form) {
+        var text = form.elements['postText'].value;
+        var ok = true;
+        if (arr = text.match(/\[img\]http:\/\/[\w\.-]+/g)) {
+            for(q=0;q<arr.length;q++) {
+                 if (one = arr[q].match(/\[img\]http:\/\/([\w\.-]+)/)) {
+                     domain = one[1];
+                     if (domain.indexOf('.geograph.org.uk') ==-1) {
+                         ok = confirm("You appear to be hotlinking an image from '"+domain+"'. Do you have permission to do so? Using images direct from other websites without permission is rude. Ideally you should also include a credit.");
+                     } else if (domain.indexOf('s0.geograph.org.uk') == 0) {
+                         ok = confirm("You appear to be using a Geograph image directly. Have you included a credit to the Contributor? (as required by the Creative Commons Licence)");
+                     }
+                 }
+            }
+        }
+        return ok;
+}
+
 function prevThis(){
 var pT,tT,cT;
 pT=document.forms['postMsg'].elements['postText'].value;

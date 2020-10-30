@@ -24,10 +24,9 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-
-
-
 $smarty = new GeographPage;
+
+dieIfReadOnly();
 
 $smarty->assign('google_maps_api3_key',$CONF['google_maps_api3_key']);
 
@@ -48,6 +47,9 @@ if (isset($_REQUEST['picasa'])) {
 
 if (!empty($_REQUEST['container'])) {
 	$smarty->assign('container', $_REQUEST['container']);
+}
+if (!empty($_REQUEST['new'])) {
+	$smarty->assign('new', 1);
 }
 
 if (!empty($_REQUEST['grid_reference'])) 

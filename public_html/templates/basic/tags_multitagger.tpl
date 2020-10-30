@@ -74,7 +74,7 @@
 		<ul>
 			{foreach from=$used item=item}
 				<li><span class="tag">
-						<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
+						<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}?photo={$image->gridimage_id}" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
 				</span> used on <b>{$item.images} images</b>. <small><a href="" onclick="alert('todo - not functional yet'); return false;">Delete from all</a> | <a href="" onclick="alert('todo - not functional yet'); return false;">Add as Public tag to all</a> | <a href="" onclick="alert('todo - not functional yet'); return false;">Add as Private tag to all</a></small></li>
 			{/foreach}
 		</ul>

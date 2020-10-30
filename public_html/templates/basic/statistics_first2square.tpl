@@ -5,6 +5,7 @@
 
 <p>Listed below are the contributors being the first to claim a numberical square.</p>
 
+<p><i><small>Numberical is defined as a grid reference without the letters, so to claim the numberical square 1234 you need to have been the first to geograph that grid reference in any myriad.</small></i></p>
 
 
 <table class="report">

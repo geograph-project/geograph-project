@@ -1,6 +1,10 @@
 {assign var="page_title" value="Special Search"}
 {include file="_std_begin.tpl"}
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/js/datepicker/javascript/zebra_datepicker.js"></script>
+<link rel="stylesheet" href="/js/datepicker/css/default.css" type="text/css">
+
 <h2>Advanced Search Builder</h2>
 
 {if $errormsg}
@@ -122,15 +126,15 @@
 		  <tr> 
 			 <td><label for="submitted_startDay">Date submitted</label></td> 
 			 <td colspan="2"> 
-				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
-				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
-				</td> 
+                                between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\""}<input type=text style="width:17px" name="__submitted_start" value="{$submitted_start}" id="submitted_start"/>
+                                and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\""}<input type=text style="width:17px" name="__submitted_end" value="{$submitted_end}" id="submitted_end"/>
+			 </td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="taken_startDay">Date taken</label></td> 
 			 <td colspan="2"> 
-				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
-				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+				between {html_select_date prefix="taken_start" time=$taken_start start_year="1880" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\""}<input type=text style="width:17px" name="__taken_start" value="{$taken_start}" id="taken_start"/>
+                                and {html_select_date prefix="taken_end" time=$taken_end start_year="1880" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\""}<input type=text style="width:17px" name="__taken_end" value="{$taken_end}" id="taken_end"/>
 				</td> 
 		  </tr> 
 		  <tr> 
@@ -194,6 +198,73 @@ function updateBreakBy(that) {
 }
 
 updateBreakBy(document.theForm.orderby);
+
+function clearDate(element) {
+	updateDateDropdown('','--',null,element?element:this);
+}
+function updateDateDropdown(date_formatted,date_raw,date_object,element) {
+	var name = element.prop('id');
+	var form = element.get(0).form;
+	var bits = date_raw.split(/-/);
+	setByValue(form.elements[name+'Year'],bits[0]); //value and text are the same :)
+	setByValue(form.elements[name+'Month'],bits[1]); //month has zero padded value
+	setByText(form.elements[name+'Day'],bits[2]); //day has zero padded text, but not value
+}
+function setByValue(ele,value) {
+	for(q=0;q<ele.options.length;q++)
+		if (ele[q].value == value)
+			ele.selectedIndex = q;
+}
+function setByText(ele,value) {
+	for(q=0;q<ele.options.length;q++)
+		if (ele[q].text == value)
+			ele.selectedIndex = q;
+}
+
+function updateHiddenDate(that) {
+	var name = that.name.replace(/(Year|Month|Day)$/,'');
+	that.form.elements['__'+name].value = getSelText(that.form.elements[name+'Year'],2014)+'-'+getSelValue(that.form.elements[name+'Month'],'01')+'-'+getSelText(that.form.elements[name+'Day'],'01');
+}
+function getSelValue(ele,defa) {
+	return ele.options[ele.selectedIndex].value || defa;
+}
+function getSelText(ele,defa) {
+	return ele.options[ele.selectedIndex].text || defa;
+}
+
+$(document).ready(function() {
+
+    $('#submitted_start').Zebra_DatePicker({
+	direction: [false, '2005-02-08'],
+	pair: $('#submitted_end'),
+	zero_pad: true,
+	onClear: clearDate,
+	onSelect: updateDateDropdown
+    });
+    $('#submitted_end').Zebra_DatePicker({
+        direction: [false, '2005-02-08'],
+	//pair: $('#submitted_start'),
+	zero_pad: true,
+	onClear: clearDate,
+	onSelect: updateDateDropdown
+    });
+
+    $('#taken_start').Zebra_DatePicker({
+	direction: [false, '1880-01-01'],
+	pair: $('#taken_end'),
+	zero_pad: true,
+	onClear: clearDate,
+	onSelect: updateDateDropdown
+    });
+    $('#taken_end').Zebra_DatePicker({
+	direction: [false, '1880-01-01'],
+	//pair: $('#taken_start'),
+	zero_pad: true,
+	onClear: clearDate,
+	onSelect: updateDateDropdown
+    });
+
+});
 
 {/literal}
 //--></script>

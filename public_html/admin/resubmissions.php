@@ -84,7 +84,6 @@ if (isset($_POST['gridimage_id']))
 			print "\n\nHost: ".`hostname`."\n\n";
 			print "\n\nView: {$CONF['SELF_HOST']}/admin/resubmissions.php?review=$gridimage_id\n\n";
 			print_r($row);
-			print_r($_SERVER);
 			$con = ob_get_clean();
 			mail('geograph@barryhunter.co.uk','[Geograph] Resubmission failure!',$con);
 
@@ -97,25 +96,53 @@ if (isset($_POST['gridimage_id']))
 			$image->previewUrl = 	$image->_getOriginalpath(true,false,'_preview');
 			$image->pendingUrl = 	$image->_getOriginalpath(true,false,'_pending');
 
-			//we actually hav a file to move!
+			//we actually have a file to move!
 			if ($image->pendingUrl != "/photos/error.jpg") {
 
 				//delete the current original file if any
 				if ($image->originalUrl != "/photos/error.jpg") {
 					unlink($_SERVER['DOCUMENT_ROOT'].$image->originalUrl);
+
+					//todo - bam the varnish copy?
+					// if (greatest(withd,height) <= 1024) {// the original would only be cached in varnish if was used on the photo page!
+					//by making a http request to...
+					//	https://data.geograph.org.uk/sizes.php?id=6028299&ban=/geophotos/06/02/82/6028299_b2e0be97_original.jpg
+
+					//for the moment, call always, not a issue if ban a non-cached file!
+					request_no_wait("http://data.geograph.org.uk/sizes.php",
+						array('id'=>$gridimage_id, 'ban'=>$image->originalUrl),
+						'GET', 0.5);
 				}
 
 				//delete the _640x640 too! (incase its no longer relevent) - if needbe, will be recrated from previewUrl below
 				foreach (array(640,800,1024,1600) as $size) {
 					$thumbnail = $image->_getOriginalpath(true,false,"_{$size}x{$size}");
 					if (basename($thumbnail) != "error.jpg") {
+						//delete teh actual file
 						unlink($_SERVER['DOCUMENT_ROOT'].$thumbnail);
+
+						//delete the memcache copy
+						$mkey = "{$gridimage_id}:{$size}x{$size}";
+						$memcache->name_delete('is',$mkey);
+
+						//delete the database copy
+						$db->Execute("DELETE FROM gridimage_thumbsize WHERE gridimage_id = $gridimage_id AND maxw = $size");
+
+						//todo - ban the varnish copy?
+						//by making a http request to...
+						//	https://data.geograph.org.uk/sizes.php?id=6028299&ban=/geophotos/06/02/82/6028299_b2e0be97_800x800.jpg
+						//can't run it 'internally' easily as varnish is on tea.
+
+						request_no_wait("http://data.geograph.org.uk/sizes.php",
+							array('id'=>$gridimage_id, 'ban'=>$thumbnail),
+							'GET', 0.5);
 					}
 				}
 
 				//save the pending as original
 				$image->storeOriginal($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl);
 
+				//send a copy to Amazon (only used if GeoGridFS not used)
 				if (!empty($CONF['awsAccessKey'])) {
 
 					$image->originalUrl = 	$image->_getOriginalpath(true,false,'_original');
@@ -126,6 +153,7 @@ if (isset($_POST['gridimage_id']))
 					$ok = $s3->putObjectFile($_SERVER['DOCUMENT_ROOT'].$image->originalUrl, $CONF['awsS3Bucket'], preg_replace("/^\//",'',$image->originalUrl), S3::ACL_PRIVATE);
 				}
 
+				//refresh the preview image
 				if ($image->previewUrl != "/photos/error.jpg") {
 					if (!empty($_POST['confirm'])) {
 						//delete the preview - we dont need it
@@ -140,10 +168,13 @@ if (isset($_POST['gridimage_id']))
 				$ab=floor($gridimage_id/10000);
 				$smarty->clear_cache('', "img$ab|{$gridimage_id}|");
 
+				//clear memcache
 				$mkey = "{$gridimage_id}:F";
 				$memcache->name_delete('is',$mkey);
 
+				//delete the cache
 				$db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = $gridimage_id"); // could populate this now, but easier to delete, and let it autorecreate
+
 
 				$status = empty($_POST['confirm'])?'accepted':'confirmed';
 
@@ -187,7 +218,7 @@ if (empty($_GET['review'])) {
 		LIMIT 1";
 } else {
 	$id = intval($_GET['review']);
-	$sql = "SELECT gi.*, pending_id
+	$sql = "SELECT gi.*, pending_id, status
 		FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
 		WHERE gridimage_id = $id
 		LIMIT 1";
@@ -200,6 +231,7 @@ if (empty($_GET['review'])) {
 $data = $db->getRow($sql);
 
 if ($data && empty($_GET['review'])) {
+	$db->Execute("UPDATE gridimage_pending gp SET updated = NOW() WHERE gridimage_id = {$data['gridimage_id']} AND status = 'open'"); //if already open 'lock' it again.
 	$db->Execute("UPDATE gridimage_pending gp SET status = 'open' WHERE gridimage_id = {$data['gridimage_id']} AND status = 'new'"); //dont affect historic reports!
 }
 
@@ -216,6 +248,18 @@ if ($data) {
 	$image->pendingUrl = $image->_getOriginalpath(true,false,'_pending');
 	$image->previewUrl = $image->_getOriginalpath(true,false,'_preview');
 
+
+	if ($image->previewUrl == "/photos/error.jpg" && !empty($_GET['review'])) {
+		//deal when its already approved!
+		// ... although in this case, ther MAY not be a '640px' thumb, in which case, it SHOULD be idential!
+
+		$image->pendingUrl = $image->_getOriginalpath(true,false,'_original');
+
+		$size = 640;
+		$thumbnail = $image->_getOriginalpath(true,false,"_{$size}x{$size}");
+		$image->previewUrl = $thumbnail;
+	}
+
 	$image->pendingSize = filesize($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl);
 
 	$smarty->assign_by_ref('image', $image);
@@ -228,3 +272,45 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 
 $smarty->display('admin_resubmissions.tpl',$style);
 
+
+
+
+//inspired by https://stackoverflow.com/questions/962915/how-do-i-make-an-asynchronous-get-request-in-php
+
+  function request_no_wait($url, $params = NULL, $type='GET', $timeout = 1)
+  {
+      $post_string = '';
+      if (!empty($params)) {
+        //todo, use http_build_query ?
+        $post_params = array();
+        foreach ($params as $key => &$val) {
+          if (is_array($val)) $val = implode(',', $val);
+          $post_params[] = $key.'='.urlencode($val);
+        }
+        $post_string = implode('&', $post_params);
+      }
+
+      $parts=parse_url($url);
+
+      $errno = $errstr = null;
+      $fp = fsockopen($parts['host'],
+          isset($parts['port'])?$parts['port']:80,
+          $errno, $errstr, $timeout);
+
+      // Data goes in the path for a GET request
+      if('GET' == $type && !empty($post_string)) $parts['path'] .= '?'.$post_string;
+
+      $out = "$type ".$parts['path']." HTTP/1.1\r\n";
+      $out.= "Host: ".$parts['host']."\r\n";
+      if ('POST' == $type) {
+        $out.= "Content-Type: application/x-www-form-urlencoded\r\n";
+        $out.= "Content-Length: ".strlen($post_string)."\r\n";
+      }
+      $out.= "Connection: Close\r\n\r\n";
+
+      // Data goes in the request body for a POST request
+      if ('POST' == $type && !empty($post_string)) $out.= $post_string;
+
+      fwrite($fp, $out);
+      fclose($fp);
+  }

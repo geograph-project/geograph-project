@@ -21,6 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+$param = array('limit' => 100000);
+
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
@@ -56,8 +58,8 @@ if ($db->getOne("SHOW CREATE TABLE gridimage_square2")) {
 
 	$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_square2");
 
-	for($start = 1;$start<$max;$start+=100000) {
-	        $end = $start+99999;
+	for($start = 1;$start<$max;$start+=$param['limit']) {
+	        $end = $start+$param['limit']-1;
         	$sqls[] = str_replace("\$where","gridimage_id BETWEEN $start AND $end",$build);
         	$sqls[] = str_replace("\$where","gridimage_id BETWEEN $start AND $end",$build2);
 	}
@@ -76,8 +78,8 @@ $build = "update gridimage_search gs inner join gridimage_log using (gridimage_i
 //$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_sequence"); #cant use this, new rows may be inserted via the first query above!
 $max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
-for($start = 1;$start<$max;$start+=100000) {
-        $end = $start+99999;
+for($start = 1;$start<$max;$start+=$param['limit']) {
+        $end = $start+$param['limit']-1;
         $sqls[] = str_replace("\$where","gridimage_id BETWEEN $start AND $end",$build);
 }
 

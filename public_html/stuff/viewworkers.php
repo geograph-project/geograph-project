@@ -31,9 +31,9 @@ $USER->mustHavePerm("basic");
 
 $smarty->display('_std_begin.tpl');
 
-print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
+$db = GeographDatabaseConnection(false); //the job creation/update statements are not replication safe, so need to use master
 
-$db = GeographDatabaseConnection(true);
+print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
 
 $task = isset($_GET['task'])?$_GET['task']:'yahoo_terms';
 if (!in_array($task,array('yahoo_terms','carrot2'))) {
@@ -41,7 +41,8 @@ if (!in_array($task,array('yahoo_terms','carrot2'))) {
 }
 
 $tabs = array(
-'all'=>'All Time',
+'all'=>'All Time Teams',
+'recent'=>'Recent Teams',
 '24'=>'Last 24 Hours',
 'alive'=>'Last Contact',
 'jobs'=>'Job Breakdown'
@@ -188,6 +189,11 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 
 	print "<H3>$title</H3>";
 
+if (mysql_num_rows($result) ==0) {
+	print "0 rows";
+	return;
+}
+
 	print "<TABLE border='1' cellspacing='0' cellpadding='2' class=\"report sortable\" id=\"photolist\"><THEAD><TR>";
 	foreach ($row as $key => $value) {
 		print "<TH>$key</TH>";
@@ -202,8 +208,15 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
                         $row['team'] = '-EVERYONE-';
 		}
  		foreach ($row as $key => $value) {
-			print "<TD ALIGN=$align>".htmlentities($value)."</TD>";
+			if ($key == 'grid_reference') {
+				print "<TD ALIGN=$align><a href=\"/gridref/$value?by=cluster\">".htmlentities($value)."</a></TD>";
+			} else {
+				print "<TD ALIGN=$align>".htmlentities($value)."</TD>";
+			}
 			$align = "right";
+		}
+		if (!empty($row['ip'])) {
+			print "<td>".gethostbyaddr($row['ip'])."</TD>";
 		}
 		print "</TR>";
 	} while ($row = mysql_fetch_array($result,MYSQL_ASSOC));

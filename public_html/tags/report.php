@@ -108,16 +108,25 @@ if (!empty($_GET['finder'])) {
 
         $db = GeographDatabaseConnection(false);
 
+	if (!empty($_GET['stop'])) {
+		$USER->mustHavePerm("tagsmod");
+
+		$db->Execute("UPDATE tag_report SET status = 'new' WHERE report_id = ".intval($_GET['stop']));
+	}
+
 	if ($_GET['report'] == 'mine') {
 		$USER->mustHavePerm("basic");
 
 	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-        	$reports = $db->getAll("select gridimage_id,title,r.tag as old,tag2 as new from tag_report r inner join gridimage_tag gt using (tag_id) inner join gridimage_search gi using (gridimage_id) where r.status in ('approved','moved') and type != 'canonical' and gi.user_id = {$USER->user_id}");
+        	$reports = $db->getAll("select gridimage_id,title,r.tag as old,tag2 as new
+		from tag_report r inner join gridimage_tag gt using (tag_id) inner join gridimage_search gi using (gridimage_id)
+		where r.status in ('approved','moved') and type != 'canonical' and gi.user_id = {$USER->user_id}");
+
 
 	} elseif ($_GET['report'] == 'subjects') {
 
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-                $reports = $db->getAll(" select tag,tag2,type,user_id,created,updated,status,approver_id from tag_report where tag like 'subject:%' order by tag,status+0 desc");
+                $reports = $db->getAll(" select report_id,tag,tag2,type,user_id,created,updated,status,approver_id from tag_report where tag like 'subject:%' order by tag,status+0 desc");
 
 		print "<b>new</b> - suggestion made but not approved yet<br>";
 		print "<b>approved</b> - suggestion approved but not yet actioned<br>";
@@ -126,34 +135,84 @@ if (!empty($_GET['finder'])) {
 		print "<b>rejected</b> - the suggestion has been actively rejected and will have no effect<br>";
 
 
+	} elseif ($_GET['report'] == 'duplicates') {
+		$USER->mustHavePerm("basic");
+
+		print "<h3>These are duplicates. Can't be processed until duplicates removed</h3>";
+
+		$ids = $db->getCol("select tag_id,count(distinct tag2) as dist from
+			 tag_report where status in ('approved','moved') and type != 'split' and type != 'canonical' group by tag having dist > 1");
+		if (empty($ids))
+			die("none! Good.\n");
+
+		$ids = implode(",",$ids);
+
+	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        	$reports = $db->getAll("select report_id,r.updated,r.tag as old,tag2 as new,count(*) as images,r.status
+		from tag_report r inner join gridimage_tag gt using (tag_id) inner join gridimage_search gi using (gridimage_id)
+		where r.status in ('approved','moved') and type != 'canonical' and tag_id in ($ids)
+		group by tag_id,tag2");
+
+
 	} elseif ($_GET['report'] == 'outstanding') {
 		$USER->mustHavePerm("basic");
 
 		print "<h3>The following changes will soon be made automatically. You do not need to make any changes yourself (it's best that you dont)</h3>";
 
+	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        	$reports = $db->getAll("select report_id,r.updated,r.tag as old,tag2 as new,count(*) as images,r.status
+		from tag_report r inner join gridimage_tag gt using (tag_id) inner join gridimage_search gi using (gridimage_id)
+		where r.status in ('approved','moved') and type != 'canonical' and tag_id > 0 and gt.status > 0
+		group by tag_id,tag2");
+
+
+        } elseif ($_GET['report'] == 'new') {
+                $USER->mustHavePerm("tagsmod");
 
 	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-        	$reports = $db->getAll("select r.updated,r.tag as old,tag2 as new,count(*) as images from tag_report r inner join gridimage_tag gt using (tag_id) inner join gridimage_search gi using (gridimage_id) where r.status in ('approved','moved') and type != 'canonical' group by tag_id,tag2");
+		$reports = $db->getAll("select r.created,r.tag,tag2,type,r.user_id,count as images
+		from tag_report r inner join tag t using (tag_id) left join tag_stat s using (tag_id)
+		where r.status='new' AND t.status = 1 AND type != 'canonical'");
+
+
+	} else if ($_GET['report'] == 'split') {
+		$USER->mustHavePerm("basic");
+
+	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		$reports = $db->getAll("SELECT COUNT(DISTINCT report_id) as reports,tag,GROUP_CONCAT(tag2 SEPARATOR ', ') AS tag2s,r.status,r.user_id,approver_id,
+			COUNT(DISTINCT gi.gridimage_id) as images,count(distinct gt.user_id) as users
+		FROM tag_report r LEFT JOIN gridimage_tag gt USING (tag_id) LEFT JOIN gridimage_search gi USING (gridimage_id)
+		WHERE r.status IN ('approved','moved') AND type = 'split'
+		group by tag_id ORDER BY tag_id");
+
 
 	} else if ($_GET['report'] == 'review') {
 		$USER->mustHavePerm("tagsmod");
 
 	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-		$reports = $db->getAll("SELECT report_id,tag_id,tag2_id,tag,tag2,r.type,r.status,r.user_id,approver_id,COUNT(gi.gridimage_id) as images,count(distinct gt.user_id) as users FROM tag_report r LEFT JOIN gridimage_tag gt USING (tag_id) LEFT JOIN gridimage_search gi USING (gridimage_id) WHERE r.status IN ('approved','moved') AND type != 'split' AND type != 'canonical' group by tag_id ORDER BY tag_id");
+		$reports = $db->getAll("SELECT report_id,tag_id,tag2_id,tag,tag2,r.type,r.status,r.user_id,approver_id,COUNT(gi.gridimage_id) as images,count(distinct gt.user_id) as users
+		FROM tag_report r LEFT JOIN gridimage_tag gt USING (tag_id) LEFT JOIN gridimage_search gi USING (gridimage_id)
+		WHERE r.status IN ('approved','moved') AND type != 'split' AND type != 'canonical'
+		group by tag_id,tag2 ORDER BY tag_id");
 
 		foreach ($reports as $idx => $report) {
 			$reports[$idx]['levenshtein'] = levenshtein($report['tag'],$report['tag2']);
 		}
+
 
 	} else if ($_GET['report'] == 'reject') {
 		$USER->mustHavePerm("tagsmod");
 
 	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-		$reports = $db->getAll("SELECT report_id,tag_id,tag2_id,tag,tag2,r.type,r.user_id,approver_id,COUNT(gridimage_id) as images,count(distinct gt.user_id) as users FROM tag_report r LEFT JOIN gridimage_tag gt USING (tag_id) WHERE r.status IN ('rejected') AND type != 'canonical' group by tag_id ORDER BY tag_id");
+		$reports = $db->getAll("SELECT report_id,tag_id,tag2_id,tag,tag2,r.type,r.user_id,approver_id,COUNT(gridimage_id) as images,count(distinct gt.user_id) as users
+		FROM tag_report r LEFT JOIN gridimage_tag gt USING (tag_id)
+		WHERE r.status IN ('rejected') AND type != 'canonical'
+		group by tag_id ORDER BY tag_id");
 
 		foreach ($reports as $idx => $report) {
 			$reports[$idx]['levenshtein'] = levenshtein($report['tag'],$report['tag2']);
 		}
+
 
 	} elseif ($_GET['report'] == 'list') {
 		$USER->mustHavePerm("tagsmod");
@@ -162,7 +221,10 @@ if (!empty($_GET['finder'])) {
 		$status = (empty($_GET['status']) || !ctype_alpha($_GET['status'])?'rejected':$_GET['status']);
 
 		$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
-		$reports = $db->getAll($sql = "select r.*,t.* from tag_report r left join tag_report t on (t.tag_id = r.tag_id and t.report_id != r.report_id) where r.status = '$status' order by r.report_id desc limit $limit");
+		$reports = $db->getAll($sql = "select r.*,t.*
+		from tag_report r left join tag_report t on (t.tag_id = r.tag_id and t.report_id != r.report_id)
+		where r.status = '$status' order by r.report_id desc limit $limit");
+
 
         } elseif ($_GET['report'] == 'potential2') {
 
@@ -284,11 +346,19 @@ update tag_suggest set score=score+1 where tag != '';
 <TABLE class="report sortable" id="photolist" cellspacing=0 cellpadding=3 border=1>
 <?
 
-        print "<thead><tr><th>".implode('</th><th>',array_keys($reports[0])).'</th></tr></htead>';
+        print "<thead><tr><th>".implode('</th><th>',array_keys($reports[0])).'</th>';
+        if (!empty($reports[0]['report_id'])) {
+                print '<th>Stop</td>';
+        }
+        print '</tr></htead>';
 
         print "<tbody>";
         foreach ($reports as $report) {
-                print "<tr><td>".implode('</td><td>',$report).'</td></tr>';
+                print "<tr><td>".implode('</td><td>',$report).'</td>';
+		if (!empty($report['report_id']) && ($report['status'] == 'approved' || $report['status'] == 'moved')) {
+			print "<td><a href=\"?report={$_GET['report']}&stop={$report['report_id']}\">Stop</a></td>";
+		}
+		print '</tr>';
         }
         print "</tbody></table>";
 

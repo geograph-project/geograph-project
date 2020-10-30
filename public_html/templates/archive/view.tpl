@@ -24,7 +24,7 @@
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
 	{if $image->original_width}
 		<div class="caption640" style="text-align:center;"><a href="{$image->_getOriginalpath(false,true)}">view large version ({$image->original_width} x {$image->original_height})</a></div>
-		<noscript><img src="{$image->_getOriginalpath(false,true)}" width=1 height=1></noscript>
+		<img src="{$image->_getOriginalpath(false,true)}" width="{$image->original_width}" height="{$image->original_height}" style="display:none">
 	{/if}
   <div class="img-shadow" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull()|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
 
@@ -275,6 +275,8 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 {if $image->hits}
 	<div class="hits">This page has been <a href="/help/hit_counter">viewed</a> about <b>{$image->hits}</b> times.</div>
 	<br/>
+{else}
+	<br style="clear:both">
 {/if}
 
 

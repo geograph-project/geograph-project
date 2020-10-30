@@ -7,7 +7,9 @@ $db = GeographDatabaseConnection(false);
 
 
 if (!empty($_GET['q'])) {
-	if (strlen($_GET['q']) > 1) {
+	if ($_GET['q'] == '&') { //needs special handling, as can be part of a entity!
+		$like = "REGEXP '&[^#]'"; //wouldnt find ones at tend, but they shoud be rare!
+	} elseif (strlen($_GET['q']) > 1) {
 		$like = "LIKE ".$db->Quote('%'.$_GET['q'].'%'); //its a html entity!
 	} else {
 		$like = "LIKE BINARY CONCAT('%',CHAR(".ord($_GET['q'])."),'%')";
@@ -53,6 +55,24 @@ if (!empty($_GET['done'])) {
 		print "<div title=\"$c\">";
 		print "<big>".htmlspecialchars2(urldecode($c))."</big>";
 		print " => ".urlencode($final);
+
+		if (!empty($_GET['t'])) {
+		        //SPHIXNwrapper:        $q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,\[\]\!-]+/',' ',trim(strtolower($q))));
+			$raw = urldecode($c);
+			$tran = iconv('ISO-8859-15','ASCII//TRANSLIT', $raw);
+			print " => T[$tran]";
+			print " => w[".preg_match('/\w/',$raw)."]";
+
+			//\xC0-\xD6\xD8-\xF6\xF8-\xFF are the 'word' chars from https://en.wikipedia.org/wiki/Windows-1252
+			// see: https://stackoverflow.com/questions/12265200/preg-replace-and-iso-8859-1-chars-matching
+			//we ALSO include \xB4\x92\x91\x60 as 'single' smart quotes (plain \x27 is already included as a plain quote)
+			// as sphinx knows to INGORE them (we could remove them ourselfs here too!)
+			// see http://www.geograph.org.uk/stuff/unicode-audit.php?done=1&i=1
+                        print " => e[".preg_match('/^[\w\xC0-\xD6\xD8-\xF6\xF8-\xFF\xB4\x92\x91\x60]+$/',$raw)."]";
+
+
+		}
+
 		print "</div>";
 
 		if (       (!preg_match('/^%[\dA-F]{2}$/',$c) && empty($_GET['strip'])) //if DONT have strip, then HTML Entities, need diverting to regexp
@@ -141,7 +161,17 @@ if (!empty($_GET['done'])) {
 }
 
 
-if (!empty($_GET['descriptions'])) {
+if (!empty($_GET['col']) && $USER->hasPerm("admin") && preg_match('/^(\w+)\.(\w+)$/',$_GET['col'],$m)) {
+	$table = $m[1]; $column = $m[2];
+	$result = mysql_query("select `$column` from `$table` where `$column` not rlike binary '^[ -~\\n\\r]*$' OR `$column` LIKE '%&#%;%'");
+
+} elseif (!empty($_GET['tags'])) {
+	$result = mysql_query("select tag from tag where tag not rlike binary '^[ -~\\n\\r]*$'");
+
+} elseif (!empty($_GET['snippets'])) {
+	$result = mysql_query("select DISTINCT title from snippet inner join gridimage_snippet using (snippet_id) where title not rlike binary '^[ -~\\n\\r]*$' and enabled=1");
+
+} elseif (!empty($_GET['descriptions'])) {
 	$result = mysql_query("select comment from gridimage_funny WHERE comment IS NOT NULL");
 
 } else {
@@ -183,6 +213,8 @@ foreach ($a as $c => $title) {
 		continue;
 	if (!empty($_GET['i']) && strlen($c) > 3)
 		continue;
+	if ($c == '%26' || $c == '%23' || $c == '%3B') //ascii chars used in HTML-Entities, including them here, just confuses
+		continue;
 
 	print "<big>".htmlspecialchars2(urldecode($c))."</big>";
 	print " <input type=text name=\"o[$c]\" value=\"\" size=2 title=\"$c\">";
@@ -212,6 +244,8 @@ function uniord($u) {
 			} else {
 				$char = latin1_to_utf8(urldecode($c));
 				//$char = utf8_encode(urldecode($c));
+//print "<br>$c => ".urlencode($char)." => ".uniord($char)." => ".sprintf('U+%04X', uniord($char))."<hr>";
+
 				return sprintf('U+%04X', uniord($char));
 			}
 		} else {

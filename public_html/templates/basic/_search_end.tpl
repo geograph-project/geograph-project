@@ -17,18 +17,11 @@
 	{/if}
 
 
-{if strpos($engine->criteria->searchdesc,'with incomplete data') === FALSE}
-	{assign var="sidebarclass" value="search"}
-{else}
-	{assign var="sidebarclass" value="searchtext"}
-{/if}
+	View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteria->sphinx.compatible)}<a href="/stuff/searchmap.php?i={$i}">Coverage Map</a> <a title="Breakdown for images{$engine->criteria->searchdesc|escape:"html"}" href="/statistics/breakdown.php?i={$i}">Statistics</a> {/if}<a title="Google Earth Or Google Maps Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/kml.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}">as KML</a> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a> <a title="GPX file for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.gpx" class="xml-gpx">GPX</a>
+
+	<a href="/browser/search-redirect.php?i={$i}"><i>Try</i> opening in Browser function</a><small> (Experimental, may not work!)</small>
 
 
-<div align="right" style="clear:both">Sidebar for:
-<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass={$sidebarclass}" target="_search" rel="nofollow">IE &amp; Firefox</a>, <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass={$sidebarclass}" rel="sidebar" rel="nofollow" title="Results">Opera</a>.
-
-
-View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteria->sphinx.compatible)}<a title="Breakdown for images{$engine->criteria->searchdesc|escape:"html"}" href="/statistics/breakdown.php?i={$i}">Statistics</a> {/if}<a title="Google Earth Or Google Maps Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/kml.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}">as KML</a> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a> <a title="GPX file for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.gpx" class="xml-gpx">GPX</a></div>
 {elseif !$engine->error}
 <p align="right" style="clear:both"><small>Subscribe to find images submitted in future:</small> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a></p>
 {/if}
@@ -68,7 +61,10 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 
 {/if}
 
-<p align="center"><a href="/article/The-Search-Results-page" class="about">More information about this Search Results page</a></p>
+<hr>
+<!--p align="center" style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick="jQl.loadjQ('/js/search-feedback.js');return false">Please take this short survey</a>.</p-->
+
+<p align="center">Found these results useful? <a href="/help/donate">Please Donate</a></p>
 
 
 {if $engine->resultCount}
@@ -86,7 +82,7 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 </noscript>
 </form> &nbsp;&nbsp; | &nbsp;&nbsp;
 
-Background Color: [
+Background Colour: [
 	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=white" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photowhite"} hidelink{/if}{/dynamic}">White</a>
 /
 	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=black" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photoblack"} hidelink{/if}{/dynamic}">Black</a>

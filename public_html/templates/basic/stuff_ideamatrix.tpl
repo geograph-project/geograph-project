@@ -4,7 +4,7 @@
 {literal}<style type="text/css">
         .black_overlay{
             display: none;
-            position: absolute;
+            position: fixed;
             top: 0%;
             left: 0%;
             width: 100%;
@@ -17,7 +17,7 @@
         }
         .white_content {
             display: none;
-            position: absolute;
+            position: fixed;
             top: 20%;
             left: 20%;
             width: 60%;
@@ -48,6 +48,7 @@
 .ideamatrix th.titlebar h3 {
 	margin-top:0;	
 	border-bottom:1px solid gray;
+	color:yellow;
 }
 .ideamatrix th a {
 	color:cyan;
@@ -87,6 +88,10 @@ function showbox(formm,idea_id,idea,tone) {
 	}
 	return false;
 }
+function countWords(that) {
+	var words = that.value.replace(/^\s+|\s+$/,'').split(/\s+/);
+	that.form.elements['words'].value = words.length;
+}
 </script>
 {/literal}
 
@@ -101,7 +106,7 @@ function showbox(formm,idea_id,idea,tone) {
 	{foreach from=$ideas item=idea key=idea_id}
 		<tr>
 			<th colspan=7 class="titlebar">
-				{if !$idea.ownvote && $idea.user_id != $user->user_id}
+				{if !$idea.ownvote}
 					<form method="post" action="{$script_name}?voteIdea">
 						<input type=hidden name="idea_id" value="{$idea_id}">
 						<input type=submit value="I support this">
@@ -124,10 +129,10 @@ function showbox(formm,idea_id,idea,tone) {
 							</form>
 						{/if}
 						{$comment.comment|escape:'html'}<br/>
-						<span>by <a href="/profile{$comment.user_id}">{$comment.realname|escape:'html'}</a>, {$comment.day|escape:'html'}{if $comment.votes}, <b>{$comment.votes}</b> votes{/if}</span>
+						<span>by <a href="/profile/{$comment.user_id}">{$comment.realname|escape:'html'}</a>, {$comment.day|escape:'html'}{if $comment.votes}, <b>{$comment.votes}</b> votes{/if}</span>
 						<hr/>	
 					{/foreach}
-					<a href="javascript:void(showbox(2,{$idea_id},'{$idea.title|escape:'javascript'}','{$tone}'))">Add a <b>{$tone}</b> comment</a>
+					<a href="javascript:void(showbox(2,{$idea_id},'{$idea.title|escape:'javascript'|escape:'html'}','{$tone}'))">Add a <b>{$tone}</b> comment</a>
 				</td>
 			{/foreach}
 		</tr>
@@ -158,10 +163,12 @@ function showbox(formm,idea_id,idea,tone) {
 		<h3>Add new Comment to a Idea/Proposal</h3>
 		<input type=hidden name=idea_id value="">
 		<input type=text name=idea value="" size="64" readonly=readonly><br/>
-		Tone:<input type=text name=tone value="" size="40" readonly=readonly><br/>
-		<textarea name="comment" rows="15" cols="60" placeholder="Enter your comment here"></textarea><br/>
+		Tone:<input type=text name=tone value="" size="10" readonly=readonly><br/>
+		<textarea name="comment" rows="15" cols="60" placeholder="Enter your comment here" onkeyup="countWords(this)"></textarea><br/>
 		If you have multiple points please submit as SEPERATE comments, rather than bundle all together. A comment should be short, easily digestable, and self-contained. <br/>
-		<input type="submit" value="submit">
+		<input type="submit" value="submit"><br/><br/>
+
+		Words: <input type=text size=5 name=words readonly=readonly> - the shorter the better. Please don't pad or add emotional reinforcements.
 	</form>
 </div>
 <div id="fade" class="black_overlay"></div>

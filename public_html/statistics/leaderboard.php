@@ -25,6 +25,7 @@ require_once('geograph/global.inc.php');
 
 init_session_or_cache(3600, 360); //cache publically, and privately
 
+pageMustBeHTTPS();
 
 if (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type'])) {
         $type = $USER->setPreference('statistics.leaderboard.type',$_GET['type'],true);

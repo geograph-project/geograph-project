@@ -4,7 +4,7 @@
 
 	{foreach from=$engine->results item=image}
 	{searchbreak image=$image}
-	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="background-color:#{cycle values="eaeaea,f8f8f8"};padding:8px 0;">
+	  <form action="http://{$http_host}/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="border-top:1px solid silver; padding:8px 0;">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 		<br/><div style="font-size:0.7em;">[[[{$image->gridimage_id}]]]
@@ -23,11 +23,22 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
 
-		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="continue &gt;" onclick="mark_color(this.form,'yellow')"/>{if $is_mod || $user->user_id == $image->user_id}
-		<br/><span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a> [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]</span>
+		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="continue &gt;" onclick="mark_color(this.form,'yellow')"/>
+		<br/>
+
+		<span id="hidetag{$image->gridimage_id}" style="font-size:0.8em">Tags: <span id="tags{$image->gridimage_id}"></span> &middot; <a href="#" onclick="return open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Tagging</b> Box</a></span>
+
+                {if $image->grid_reference}
+                        <span id="hidenear{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_nearby({$image->gridimage_id},'{$image->grid_reference}','');">Used Nearby</a>&nbsp;</span>
+                {/if}
+
+		{if $is_mod || $user->user_id == $image->user_id}
+		<span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a> [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]</span>
 		{/if}
+
 		</div>
 	  </div><br style="clear:both;"/>
+
 		{if $is_mod || $user->user_id == $image->user_id}
 		  <div class="interestBox" id="showshare{$image->gridimage_id}" style="display:none">
 			<iframe src="about:blank" height="400" width="100%" id="shareframe{$image->gridimage_id}">
@@ -35,8 +46,6 @@
 			<div><a href="#" onclick="hide_tree('share{$image->gridimage_id}');return false">- Close <i>Shared Descriptions</I> box</a> ({newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"})</div>
 		  </div>
 		{/if}
-
-		<span id="hidetag{$image->gridimage_id}" style="font-size:0.8em">Tags: <span id="tags{$image->gridimage_id}"></span> &middot; <a href="#" onclick="return open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Tagging</b> Box</a></span>
 
 		  <div class="interestBox" id="showtag{$image->gridimage_id}" style="display:none">
 				<iframe src="about:blank" height="300" width="100%" id="tagframe{$image->gridimage_id}">
@@ -104,6 +113,13 @@ function open_tagging(gid,gr,extra) {
 	document.getElementById('tagframe'+gid).src='/tags/tagger.php?gridimage_id='+gid+'&gr='+gr+extra;
 	return false;
 }
+function open_nearby(gid,gr,extra) {
+	//show_tree('near'+gid); 
+	document.getElementById('showtag'+gid).style.display='';
+		document.getElementById('tagframe'+gid).src='/finder/used-nearby.php?gridimage_id='+gid+'&gr='+gr+extra;
+	return false;
+}
+
 function loadSnippetCount(random) {
         var ids = new Array();
         {/literal}

@@ -68,25 +68,24 @@ if (!$smarty->is_cached($template, $cacheid))
 	where ((approved = 1) 
 		or user.user_id = {$USER->user_id}
 		or ($isadmin and approved != -1)
-		) and (event_time > date_sub(now(),interval 1 month) )
+		) and (event_time > date_sub(now(),interval 1 week) )
 	group by geoevent_id
 	order by future desc,event_time");
-	
-	
+
 	$conv = new Conversions;
 	$f = 0;
 	foreach ($list as $i => $row) {
+		list($list[$i]['wgs84_lat'],$list[$i]['wgs84_long']) = $conv->internal_to_wgs84($row['x'],$row['y']);
 		if ($row['future']) {
 			$f++;
+			$fitem = $list[$i];
 		}
-		list($list[$i]['wgs84_lat'],$list[$i]['wgs84_long']) = $conv->internal_to_wgs84($row['x'],$row['y']);
 	}
 	$smarty->assign('future', $f);
+	$smarty->assign('fitem', $fitem);
 	$smarty->assign_by_ref('list', $list);
 
 }
 
 $smarty->display($template, $cacheid);
 
-	
-?>

@@ -286,10 +286,27 @@ if (!$smarty->is_cached($template, $cacheid))
 	//$job = $db->getRow("select blog_id,title from blog where tags like 'job posting' and approved = 1 order by rand() limit 1");
 	//$smarty->assign_by_ref("job",$job);
 
+	$extra_meta = array();
+
 	if (!empty($_GET['lang']))
-		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/?lang=cy\"/>");
+		$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/?lang=cy\"/>";
 	else
-		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/\"/>");
+		$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/\"/>";
+
+	//hard to do this dynamically
+	if ($CONF['template']=='charcoal' ||  $CONF['template']=='charcoal_cy') {
+		$extra_meta[] = "<link rel=\"alternate\" hreflang=\"en\" href=\"https://schools.geograph.org.uk/\"/>";
+		$extra_meta[] = "<link rel=\"alternate\" hreflang=\"cy\" href=\"https://schools.geograph.org.uk/?lang=cy\"/>";
+	} else {
+		$extra_meta[] = "<link rel=\"alternate\" hreflang=\"en\" href=\"https://www.geograph.org.uk/\"/>";
+		$extra_meta[] = "<link rel=\"alternate\" hreflang=\"cy\" href=\"https://www.geograph.org.uk/?lang=cy\"/>";
+		$extra_meta[] = "<link rel=\"alternate\" hreflang=\"en-ie\" href=\"https://www.geograph.ie/\"/>";
+	}
+
+	if (!empty($mobile_url))
+		$extra_meta[] = "<link rel=\"alternate\" media=\"only screen and (max-width: 640px)\" href=\"$mobile_url\"/>";
+
+	$smarty->assign('extra_meta',implode('',$extra_meta));
 }
 
 

@@ -20,7 +20,7 @@
 
 		<b><a href="/swarm.php?id={$item.swarm_id}" class="text">{$item.title|escape:'html'|default:'Untitled'}</a></b> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
 		<div style="font-size:0.7em;color:gray;margin-left:10px;">		
-		Found {$item.images|thousends} images, <a href="/search.php?{if $item.query_id}i={$item.query_id}&amp;temp_displayclass{else}marked=1&markedImages={$item.ids}&amp;displayclass{/if}=spelling">Display in Spelling Utility</a></div>
+		Found {$item.images|thousends} images, <a href="/search.php?{if $item.query_id && $item.type != 'S'}i={$item.query_id}&amp;temp_displayclass{else}marked=1&markedImages={$item.ids}&amp;displayclass{/if}=spelling">Display in Spelling Utility</a></div>
 		
 		<br style="clear:both"/>
 	</div>

@@ -56,12 +56,18 @@ if (!empty($_GET['q']) && !empty($_GET['tag'])) {
 
 	if (!empty($row)) {
 		
-		print "<h3>Starting</h3>";
+		print "<h3>#Starting</h3>";
+
+		$sql = "INSERT INTO tagornot_seed SET query = ".$db->Quote($_REQUEST['q']).", user_id = {$USER->user_id},tag_id = {$row['tag_id']}";
+
+		print "<p>$sql;</p>";
+		if (isset($_GET['run']))
+			$db->Execute($sql);
 				
 		if (!empty($CONF['sphinx_host'])) {
 		
 
-			$q = trim(preg_replace('/[^\w]+/',' ',str_replace("'",'',$_REQUEST['q'])));
+			$q = trim($_REQUEST['q']);
 			
 			$pg = (!empty($_REQUEST['page']))?intval(str_replace('/','',$_REQUEST['page'])):0;
 			if (empty($pg) || $pg < 1) {$pg = 1;}
@@ -70,6 +76,7 @@ if (!empty($_GET['q']) && !empty($_GET['tag'])) {
 			$startid = 0;
 							
 			while ($more) {
+				$more = false;
 
 				$sphinx = new sphinxwrapper($q);
 
@@ -86,7 +93,7 @@ if (!empty($_GET['q']) && !empty($_GET['tag'])) {
 					$sphinx->sort = "@id ASC"; //within group order
 				
 					if ($startid > 0) {
-						 $cl->SetIDRange($startid+1,999999999);
+						 $client->SetIDRange($startid+1,999999999);
 					}
 					
 					$ids = $sphinx->returnIds($pg,'_images');
@@ -100,6 +107,8 @@ if (!empty($_GET['q']) && !empty($_GET['tag'])) {
 						SELECT NULL, {$row['tag_id']} AS tag_id, gridimage_id, '' AS user_ids, 0 AS done, NOW() AS created, 0 AS updated FROM gridimage_search WHERE $where";
 						
 						print "<p>$sql;</p>";
+						if (isset($_GET['run']))
+							$db->Execute($sql);
 
 												
 					} else {
@@ -111,13 +120,11 @@ if (!empty($_GET['q']) && !empty($_GET['tag'])) {
 						
 						$startid = array_pop($ids);
 						
-					} else {
-						$more = false;
 					}
 					
 				}
 			} 
-		
+			print "<hr/>#All done";		
 		} else {
 			die("no sphinx");
 		}

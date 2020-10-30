@@ -11,9 +11,9 @@
 	<h2>Content: {$source}</h2>
 	
 	<script type="text/javascript">
-		window.open("{$url|escape:'html'}",'_main');
+		window.open("{$url|escape:'html'}",'mainframe');
 	</script>
-	<p><a href="{$url|escape:'html'}" target="_main">{$title|escape:'html'}</a></p>
+	<p><a href="{$url|escape:'html'}" target="mainframe">{$title|escape:'html'}</a></p>
 	
 	<form action="{$script_name}" target="_self" method="post">
 	<input type="hidden" name="content_id" value="{$content_id}"/>
@@ -32,7 +32,7 @@
 	
 	
 {else}
-	<a href="/content/grouper.php?start" target="_search" rel="nofollow">Click to start</a>
+	<a href="/content/grouper.php?start" rel="nofollow">Click to start</a>
 {/if}
 
 {/dynamic}

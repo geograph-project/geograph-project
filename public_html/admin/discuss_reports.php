@@ -61,31 +61,39 @@ if (!empty($_POST) && !empty($_POST['action'])) {
 
 			$update_topic = 0;
 
+			require_once('geograph/event.class.php');
+
 			switch ($action) {
 				case 'delete_thread':
+					new Event(EVENT_DELTOPIC, $report['topic_id']);
 					$sqls[] = "REPLACE INTO geobb_topics_quar SELECT $tcols,$i FROM geobb_topics WHERE $t";
 					$sqls[] = "DELETE FROM geobb_topics WHERE $t";
 					$sqls[] = "REPLACE INTO geobb_posts_quar SELECT $pcols,$i FROM geobb_posts WHERE $t";
 					$sqls[] = "DELETE FROM geobb_posts WHERE $t";
 					$open[$r] = 1; break;
 				case 'delete_post':
+					new Event('topic_edit', $report['topic_id']);
 					$sqls[] = "REPLACE INTO geobb_posts_quar SELECT $pcols,$i FROM geobb_posts WHERE $t AND post_id = {$report['post_id']}";
 					$sqls[] = "DELETE FROM geobb_posts WHERE $t AND post_id = {$report['post_id']}";
 
 					$open[$r] = 1; $update_topic = 1; break;
 				case 'delete_onwards':
+					new Event('topic_edit', $report['topic_id']);
 					$sqls[] = "REPLACE INTO geobb_posts_quar SELECT $pcols,$i FROM geobb_posts WHERE $t AND post_id => {$report['post_id']}";
 					$sqls[] = "DELETE FROM geobb_posts WHERE $t AND post_id => {$report['post_id']}";
 					$open[$r] = 1; $update_topic = 1; break;
 
 				case 'restore_thread':
+					new Event(EVENT_NEWTOPIC, $report['topic_id']);
 					$sqls[] = "INSERT IGNORE INTO geobb_topics SELECT $tcols FROM geobb_topics_quar WHERE $t AND $w";
 					$sqls[] = "INSERT IGNORE INTO geobb_posts SELECT $pcols FROM geobb_posts_quar WHERE $t AND $w";
 					break;
 				case 'restore_post':
+					new Event(EVENT_NEWREPLY, $report['post_id']);
 					$sqls[] = "INSERT IGNORE INTO geobb_posts SELECT $pcols FROM geobb_posts_quar WHERE $t AND post_id = {$report['post_id']} AND $w";
 					$update_topic = 1; break;
 				case 'restore_onwards':
+					new Event('topic_edit', $report['topic_id']);
 					$sqls[] = "INSERT IGNORE INTO geobb_posts SELECT $pcols FROM geobb_posts_quar WHERE $t AND post_id => {$report['post_id']} AND $w";
 					$update_topic = 1; break;
 

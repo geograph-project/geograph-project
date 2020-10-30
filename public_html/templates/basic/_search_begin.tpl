@@ -1,6 +1,6 @@
 {include file="_std_begin.tpl"}
 
-<div style="padding:10px;" class="searchresults">
+<div style="padding:10px;max-height:1000000px;" class="searchresults">
 
 {if $suggestions}
 	<div><b>Alternative suggestions:</b>
@@ -27,6 +27,7 @@
 			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=thumbs" class="tab{if $engine->display == 'thumbs'}Selected{assign var="disfound" value="1"}{/if}">Thumbnails</a>
 			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=map" class="tab{if $engine->display == 'map'}Selected{assign var="disfound" value="1"}{/if}">Map</a>
 			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=slide" class="tab{if $engine->display == 'slide'}Selected{assign var="disfound" value="1"}{/if}">Slideshow</a>
+			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=black" class="tab{if $engine->display == 'black'}Selected{assign var="disfound" value="1"}{/if}">GeoRiver</a>
 			<span class="tab">
 				<select name="displayclass" size="1" onchange="this.form.submit()" style="margin:0">
 					{if $disfound}
@@ -84,6 +85,11 @@
 		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However, your search seems to be compatible with the legacy engine. You can <a href="/search.php?i={$i}&amp;legacy=true&amp;page={$engine->currentPage+1}">view the next page in Legacy Mode</a> to continue. <b>Note, searches will be slower.</b>
 	</div>
 
+{elseif $engine->fullText && $engine->numberOfPages eq $engine->currentPage && $engine->resultCount > $engine->maxResults}
+	<div class="interestBox" style="border:1px solid pink;">
+		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. You may be able to access more results by getting results in submitted order.
+	</div>
+
 {elseif $engine->fullText && (!$engine->criteria->sphinx.compatible || $engine->criteria->sphinx.no_legacy)}
 
 
@@ -122,6 +128,8 @@
 				| <a href="javascript:void(hide_tree(101));">close</a></div>
 			</form>
 		</div>
+	{elseif $engine->criteria->markedlist}
+		[<a href="/refine.php?i={$i}">Refine Search</a>]
 	{else}
 	</p>
 	{/if}
@@ -129,5 +137,5 @@
 	<p style="font-size:0.8em">[We have no images for <a href="/gridref/{$engine->criteria->searchq|escape:"html"}">{$engine->criteria->searchq|escape:"html"}</a>, <a href="/submit.php?gridreference={$engine->criteria->searchq|escape:"url"}">Submit Yours Now</a>!]</p>
 	{/if}
 	{if $singlesquares}
-	<p style="font-size:0.8em">[<a href="/squares.php?p={math equation="900*y+900-x" x=$engine->criteria->x y=$engine->criteria->y}&amp;distance={$singlesquare_radius}">{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo</a> - can you <a href="/submit.php">add more</a>?]</p>
+	<p style="font-size:0.8em">[<a href="/squares.php?p={math equation="900*floor(y)+900-floor(x)" x=$engine->criteria->x y=$engine->criteria->y}&amp;distance={$singlesquare_radius}">{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo</a> - can you <a href="/submit.php">add more</a>?]</p>
 	{/if}

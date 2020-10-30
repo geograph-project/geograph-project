@@ -115,9 +115,9 @@ if (!empty($str)) {
 ?>
       // Define marker
       pos=new OpenSpace.MapPoint(<?php print("$cen[0],$cen[1]");?>);
-      size=new OpenLayers.Size(15,15);
-      offset=new OpenLayers.Pixel(-7,-7);
-      infoWindowAnchor=new OpenLayers.Pixel(7,7);
+      size=new OpenLayers.Size(9,9);
+      offset=new OpenLayers.Pixel(-5,-5);
+      infoWindowAnchor=new OpenLayers.Pixel(5,5);
       icon=new OpenSpace.Icon('<?php print("{$track['type']}.png");?>',size,offset,null,infoWindowAnchor);
 //<![CDATA[
       content='<p>';

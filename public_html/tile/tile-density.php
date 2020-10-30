@@ -37,7 +37,7 @@ $bounds[] = $b->x+$b->width+$xd;
 $bounds[] = $b->y+$b->height+$yd;
 
 $_GET['olbounds'] = implode(",",$bounds);
-$_GET['select'] = "wgs84_lat as lat,wgs84_long as lng";
+$_GET['select'] = "wgs84_lat*1000 as lat,wgs84_long*1000 as lng,natgrlen";
 
 if (empty($_GET['limit']))
 	$_GET['limit'] = 1000;
@@ -58,6 +58,7 @@ if (!empty($_GET['user_id']))
 
 if (!empty($_GET['6']) && $_GET['z'] > 10) {
 	$_GET['where'] = 'scenti not in(1000000000,2000000000)'; //exclude 4fig GRs!
+	//todo, this could use natgrlen attribute instead now!
 
 } elseif (empty($_GET['match']) && $_GET['z'] < 10) {
 	//todo, later, can redirect this to tile-coverage.php (maybe specifing blue as the colour scheme!)
@@ -66,13 +67,21 @@ if (!empty($_GET['6']) && $_GET['z'] > 10) {
 	$_GET['order'] = "id asc"; //rand doesnt work for group, could use sequence, but may as well just use id.
 }
 
+$nopoint = 2;
+if ($_GET['z'] > 16) {
+	$nopoint = 8;
+} elseif ($_GET['z'] > 13) {
+	$nopoint = 6;
+} elseif ($_GET['z'] > 10) {
+	$nopoint = 4;
+}
 
 if (!function_exists('call_with_results')) { //hack that means this function is only added at RUNTIME, not COMPILE time.
 
 //this is automatically called by "api-facetql.php"
 function call_with_results($data) {
 
-	global $g,$b;
+	global $g,$b,$nopoint;
 
 ########################################################################
 ########################################################################
@@ -107,8 +116,8 @@ function call_with_results($data) {
 	if (!empty($data['rows']))
 	foreach ($data['rows'] as $row) {
 
-		$lat = rad2deg($row['lat']);
-		$lng = rad2deg($row['lng']);
+		$lat = rad2deg($row['lat']/1000);
+		$lng = rad2deg($row['lng']/1000);
 
 		$p = $g->getOffsetPixelCoords($lat,$lng);
 
@@ -119,8 +128,10 @@ function call_with_results($data) {
 				imageaddalpha($im, $x, $y, -110+($decay*$d));
 			}
 		}
-		//draw a tiny dot to present coverage in busy areas
-		imagesetpixel($im, $p->x, $p->y, $highlight);
+		if ($row['natgrlen'] > $nopoint) {
+			//draw a tiny dot to present coverage in busy areas
+			imagesetpixel($im, $p->x, $p->y, $highlight);
+		}
 	}
 
 

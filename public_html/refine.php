@@ -115,7 +115,7 @@ $smarty->assign_by_ref('breakdowns', $breakdowns);
 		}
 		$sql .= ",orderby = ".$db->Quote($orderby);
 		
-		if (!empty($dataarray['breakby'])) {
+		if (isset($dataarray['breakby'])) {
 			$sql .= ",breakby = ".$db->Quote($dataarray['breakby']);
 		}
 		

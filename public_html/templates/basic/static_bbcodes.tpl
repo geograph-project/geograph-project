@@ -5,9 +5,8 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 .bbcode {border: 1px solid gray}
 .preview { padding:3px; background-color:white}
 .example {background-color:#eeeeee; padding:10px;}
-.tip {font-size:0.8em; border: 1px solid red; padding:3px}
+.tip {font-size:0.8em; padding:3px}
 .explain {color: brown; font-size:0.8em; font-style:italic;}
-.title { font-size:0.7em }
 </style>{/literal}
 
 <h2>Formatting and Links for use in Discussion Posts</h2>
@@ -35,19 +34,29 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 <div class="example"><tt class="bbcode">[[5463]]</tt> shows as <span class="preview">{literal}{<a href="/photo/5463" title="Geograph Image by Ben Gamble">TQ3328 : Ardingly Reservoir</a>}{/literal}</span></div><br/></li>
 
 <li><b class="title">Include an image thumbnail by ID</b><br/>
-<div class="example"><tt class="bbcode">[[[5463]]]</tt> shows as <span class="preview"><a href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir" src="/photos/00/54/005463_ea60a493_120x120.jpg" width="120" height="90"/></a></span></div><br/></li>
+<div class="example"><tt class="bbcode">[[[5463]]]</tt> shows as <span class="preview"><a href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir" src="/photos/00/54/005463_ea60a493_120x120.jpg" width="120" height="90"/></a></span></div>
+</ul>
 
+<blockquote class="tip">Other Geograph projects images can be used, for example <tt class="bbcode">[[[ci:1]]]</tt> or <tt class="bbcode">[[[de:1]]]</tt>, 
+which includes image #1 from the Channel Islands or Germany project respectively.<br><br></blockquote>
+
+<ul>
 <li><b class="title">Include a large thumbnail by ID</b><br/>
-<div class="example"><tt class="bbcode">[image id=5463]</tt> shows as <div class="photoguide"><div style="float:left;width:213px"><a title="TQ3328 : Ardingly Reservoir by Ben Gamble - click to view full size image" href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir by Ben Gamble" src="//s3.geograph.org.uk/photos/00/54/005463_ea60a493_213x160.jpg" width="213" height="160" /></a><div class="caption"><a title="view full size image" href="/photo/5463">Ardingly Reservoir</a> by <a href="/profile/113">Ben Gamble</a></div></div><div style="float:left;padding-left:20px; width:400px;">Sailing club at the southern end of the reservoir<div style="text-align:right;font-size:0.8em">by Ben Gamble</a></div></div><br style="clear:both"/></div></div><br/>
-<div class="example">Can also use a custom description/comment: <tt class="bbcode">[image id=5463 text=This is an example of a custom description.]</tt></div><br/></li>
+<div class="example"><tt class="bbcode">[image id=5463]</tt> shows as <div class="photoguide"><div style="float:left;width:213px"><a title="TQ3328 : Ardingly Reservoir by Ben Gamble - click to view full size image" href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir by Ben Gamble" src="//s3.geograph.org.uk/photos/00/54/005463_ea60a493_213x160.jpg" width="213" height="160" /></a><div class="caption"><a title="view full size image" href="/photo/5463">Ardingly Reservoir</a> by <a href="/profile/113">Ben Gamble</a></div></div><div style="float:left;padding-left:20px; width:400px;">Sailing club at the southern end of the reservoir<div style="text-align:right;font-size:0.8em">by Ben Gamble</a></div></div><br style="clear:both"/></div></div></li>
+</ul>
 
+<blockquote class="tip">Can also use a custom description/comment: <tt class="bbcode">[image id=5463 text=This is an example of a custom description.]</tt></blockquote>
+
+<blockquote class="tip">Other Geograph projects images can be used, for example <tt class="bbcode">[image id=ci:1]</tt> or <tt class="bbcode">[image id=de:1]</tt></blockquote>
+
+<ul>
 <li><b class="title">Webpage/URL</b><br/>
 <div class="example"><tt class="bbcode">[url=http://www.example.com]Some text[/url]</tt> shows as <span class="preview"><a href="http://www.example.com">Some text</a></span></div><br/></li>
 <div class="example"><tt class="bbcode">http://www.example.com</tt> shows as a clickable link, <span class="preview"><a href="http://www.example.com">http://www.example.com</a></span></div><br/></li>
 </ul>
 
 <blockquote class="tip"><b>Linking to a specific discussion post</b><br/>
-You can get the link for a specifc post, by right clicking the # character at the beginning of a post, and selecting 'Copy Link Location' or similar. You can then use this in [url=...]thread[/url] tags.</blockquote>
+You can get the link for a specific post, by right clicking the # character at the beginning of a post, and selecting 'Copy Link Location' or similar. You can then use this in [url=...]thread[/url] tags.</blockquote>
 
 <ul>
 <li><b class="title">Link to Browse page for a Square</b><br/>
@@ -74,6 +83,8 @@ To stop <i>text looking like a grid reference</i> being converted, either use lo
 
 <li><tt class="bbcode">[imgright]http://www.domain.com/image.gif[/img]</tt> will right align the image in the flow of text.</li>
 </ul>
+
+(Note: images over 640px <i>wide</i> will be reduced in size for display purposes) 
 
 
 

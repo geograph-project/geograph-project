@@ -44,6 +44,14 @@ $square=new GridSquare;
 
 
 $template='location.tpl';
+if (!empty($_GET['test'])) {
+        if ($USER->registered) {
+                if (empty($USER->stats))
+                        $USER->getStats();
+                $smarty->assign('stats',$USER->stats);
+        }
+	$template='location_test.tpl';
+}
 
 if (isset($_GET['getamap'])) {
 	$smarty->assign('getamap', 1);
@@ -109,6 +117,8 @@ if ($grid_given)
 	//now we see if the grid reference is actually available...
 	if ($grid_ok)
 	{
+		pageMustBeHTTPS();
+
 		$smarty->assign_by_ref('square', $square);
 		$smarty->assign('gridref', $square->grid_reference);
 		$smarty->assign('gridsquare', $square->gridsquare);

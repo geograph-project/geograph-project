@@ -26,6 +26,8 @@ init_session();
 
 ###############################################
 
+$_GET['preview'] = 1;
+
 //grid specified
 if (!empty($_GET['ri'])) {
 	//county specified
@@ -53,8 +55,11 @@ if (!empty($_GET['ri'])) {
 			header("Location: /explore/places/{$ri}/{$adm1}/");
 			exit;
 		}
-
-		$template='explore_places_adm1.tpl';
+		if (!empty($_GET['preview'])) {
+			$template='explore_places_adm1_preview.tpl';
+		} else {
+			$template='explore_places_adm1.tpl';
+		}
 		$cacheid='places|'.$_GET['ri'].'.'.$_GET['adm1'];
 	//county selector
 	} else {
@@ -94,13 +99,46 @@ if (!$smarty->is_cached($template, $cacheid))
 		###############################################
 		//county selected
 
-		if (!empty($_GET['adm1'])) {
+		if (!empty($_GET['adm1']) && preg_match('/^[\w \&,-]+$/',$_GET['adm1'])) {
 			$smarty->assign('adm1', $_GET['adm1']);
+
+
+			###############################################
+			// list places - works for BOTH grids!
+
+			if (!empty($_GET['preview'])) {
+				$ri = intval($_GET['ri']);
+
+				//although needs some magic to lookup the county name!
+				if ($_GET['ri'] == 2) {
+					list($country,$adm1) = explode('-',$_GET['adm1']);
+					if ($adm1) {
+						$county = $db->GetOne("SELECT name FROM loc_adm1 WHERE country = ".$db->Quote($country)." AND adm1 = ".$db->Quote($adm1));
+						$smarty->assign_by_ref('adm1_name', $county);
+						$smarty->assign('parttitle', "in County");
+						$filter = "county LIKE ".$db->Quote($county);
+					} else {
+						$smarty->assign('adm1_name', "Northern Ireland");
+						$filter = "country = 'Northern Ireland'";
+					}
+				} else {
+					$sql = "SELECT co_code,name as adm1_name FROM os_gaz_county WHERE name LIKE ".$db->Quote($_GET['adm1'])." LIMIT 1";
+					$placename = $db->GetRow($sql);
+
+					$smarty->assign_by_ref('adm1_name', $placename['adm1_name']);
+					if ($placename['adm1_name'] != "Isle of Man")
+						$smarty->assign('parttitle', "in County");
+
+					$filter = "county LIKE ".$db->Quote($_GET['adm1']); //underscores already work as wildcards
+				}
+
+				$sql = "SELECT placename_id,Place as full_name,images as c
+				FROM sphinx_placenames where reference_index = $ri AND images > 0 AND $filter ORDER BY Place";
 
 			###############################################
 			// list places in Ireland
 
-			if ($_GET['ri'] == 2) {
+			} elseif ($_GET['ri'] == 2) {
 				list($country,$adm1) = explode('-',$_GET['adm1']);
 				if ($adm1) {
 					$sql = "SELECT name FROM loc_adm1 WHERE country = ".$db->Quote($country)." AND adm1 = ".$db->Quote($adm1);
@@ -135,19 +173,32 @@ if (!$smarty->is_cached($template, $cacheid))
 
 			$counts = $db->GetAssoc($sql);
 			$smarty->assign_by_ref('counts', $counts);
+			$total = 0;
+			if (!empty($counts)) foreach ($counts as $row) $total += $row['c'];
+			$smarty->assign('total', number_format($total,0));
 
 		###############################################
 		// list counties in Great Britain
 
 		} elseif ($_GET['ri'] == 1) {
 			$sql = "SELECT REPLACE(REPLACE(REPLACE(REPLACE(os_gaz_county.name,'&','_'),',','_'),'-','_'),' ','_') as adm1,
-			os_gaz_county.name as name,placename_id,full_name,
+			os_gaz_county.name as name,placename_id,full_name,country,
 			sum(gridimage_os_gaz.c) as images,count(distinct (placename_id)) as places,gridimage_id
 			FROM gridimage_os_gaz INNER JOIN os_gaz_county USING (co_code)
 			GROUP BY co_code
-			ORDER BY name";
+			ORDER BY country,name";
 			$counts = $db->GetAssoc($sql);
 			unset($counts['XXXXXXXX']); //not a real county
+
+			foreach ($counts as $idx => $row) {
+				switch($row['country']) {
+					case 'E': $counts[$idx]['country'] = 'England'; break;
+					case 'M': $counts[$idx]['country'] = 'Isle of Man'; break;
+					case 'S': $counts[$idx]['country'] = 'Scotland'; break;
+					case 'W': $counts[$idx]['country'] = 'Wales'; break;
+				}
+			}
+
 			$smarty->assign_by_ref('counts', $counts);
 
 		###############################################
@@ -169,11 +220,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (count($counts)) {
 			$key = array_rand($counts,1);
 			$val = $counts[$key];
-			$image=new GridImage();
-			if ($image->loadFromId($val['gridimage_id'],true)) {
-				$image->county = $val['name'];
-				$image->placename = $val['full_name'];
-				$smarty->assign_by_ref('image', $image);
+			if (!empty($val['gridimage_id'])) {
+				$image=new GridImage();
+				if ($image->loadFromId($val['gridimage_id'],true)) {
+					$image->county = $val['name'];
+					$image->placename = $val['full_name'];
+					$smarty->assign_by_ref('image', $image);
+				}
 			}
 		}
 
@@ -181,8 +234,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	// just select the grid
 
 	} else {
-		$sql = "SELECT reference_index,count(*) as c
-		FROM gridimage_search
+		$sql = "SELECT reference_index,sum(imagecount) as c
+		FROM gridsquare
 		GROUP BY reference_index";
 		$counts = $db->GetAssoc($sql);
 		$smarty->assign_by_ref('counts', $counts);

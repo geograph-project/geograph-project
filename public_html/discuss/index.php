@@ -585,6 +585,13 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 
 if(isset($includeFooter)) include($includeFooter); else echo ParseTpl(makeUp('main_footer'));
 
+
+//the forum doesnt use smarty to render template, so need to call this directly.
+recordVisitor();
+
+
+
+
 if (!empty($auto_logoff)) {
 	//log them off to slow them down.
 	$USER->logout();

@@ -54,16 +54,59 @@ if (!empty($_GET['token'])) {
 		$template = "static_404.tpl";
 		exit;
 	}
-
-			if ($token->hasValue("small")) {
-				$details = $image->getThumbnail(120,120,2);
-			} else {
-				$details = $image->getThumbnail(213,160,2);
+			if (!empty($_GET['html'])) {
+				$full = "http://t0.geograph.org.uk/stuff/captcha.php?token=".htmlentities($_GET['token'])."&amp;/full.jpg";
+				print "<img src=\"$full\"/><br/>";
+				print "&copy; Copyright ".htmlentities($image->realname)." and licensed for reuse under this <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>.";
+				exit;
 			}
-			$url = $details['url'];
-			
+
+			if ($token->hasValue("large")) {
+				$url = $image->_getFullpath();
+			} else {
+				if ($token->hasValue("small")) {
+					$details = $image->getThumbnail(120,120,2);
+				} else {
+					$details = $image->getThumbnail(213,160,2);
+				}
+				$url = $details['url'];
+			}
+
 			header("Content-Type: image/jpeg");
-			@readfile('..'.$url);
+
+			if ($token->hasValue("o") || !empty($_GET['o'])) {
+			        $fullimg = imagecreatefromjpeg('..'.$url);
+			        $fullw=imagesx($fullimg);
+			        $fullh=imagesy($fullimg);
+
+				$col = imagecolorallocate($fullimg,0,210,0);
+				#imageline($fullimg,0,0,$fullw,$fullh,$col);
+				#imageline($fullimg,$fullw,0,0,$fullh,$col);
+
+				$values = array(
+					0,0,
+					20,0,
+					$fullw,$fullh,
+					$fullw-20,$fullh,
+					0,0);
+				//imagefilledpolygon($fullimg, $values, 5, $col);
+
+				foreach (range(-150,$fullw,150) as $i) {
+					$diff = 160+rand(-40,40);
+					$values = array(
+						$i,$fullh,
+						$i+15,$fullh,
+						$i+$diff,0,
+						$i+$diff-15,0,
+						$i,$fullh);
+	                                imagefilledpolygon($fullimg, $values, 5, $col);
+				}
+
+			        imagejpeg($fullimg,null,75);
+
+			} else {
+				@readfile('..'.$url);
+			}
 			exit;
 		}
 	}
@@ -74,8 +117,14 @@ if (!empty($_GET['token'])) {
 
 #	print "TOKEN: <TT>".$token->getToken()."</TT>";
 
+	if (isset($_GET['small']))
+		$token->setValue("small",1);
+	if (isset($_GET['large']))
+		$token->setValue("large",1);
+
+
 	print "<p>Copy/Paste all this into a forum thread..</p>";
-	print "<p><input size=110 value=\"[img]http://www.geograph.org.uk/stuff/captcha.php?token=".$token->getToken()."&amp;/med.jpg[/img]\"></p>";
+	print "<p><input size=110 value=\"[img]http://t0.geograph.org.uk/stuff/captcha.php?token=".$token->getToken()."&amp;/med.jpg[/img]\"></p>";
 
 	exit;
 }

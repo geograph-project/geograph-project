@@ -28,7 +28,7 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 
 dump_sql_table('select rendered,level,url,filename,count(*),min(ts),max(ts) from kmlcache group by  rendered,level order by level,rendered','KML - Superlayer Rendering Progress');
 
@@ -39,11 +39,11 @@ dump_sql_table("select substring(ts,1,10),count(*),count(distinct level),sum(ren
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
-	
+
 	$row = mysql_fetch_array($result,MYSQL_ASSOC);
 
 	print "<H3>$title</H3>";
-	
+
 	print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
 	foreach ($row as $key => $value) {
 		print "<TH>$key</TH>";
@@ -61,5 +61,4 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	print "</TR></TABLE>";
 }
 
-	
-?>
+

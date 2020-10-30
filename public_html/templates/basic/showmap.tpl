@@ -68,6 +68,10 @@
 							curgr = gro.getGridRef(digits);
 
 							document.getElementById('coordoutput').innerHTML = curgr+" <small>E: "+gro.eastings+" N: "+gro.northings+"</small>";
+
+							document.getElementById('iomlink').style.display = 
+								(gro.eastings > 214900 && gro.eastings < 249900
+								&& gro.northings > 464530 && gro.northings < 505100)?'':'none';
 						}
 					});
 					map.events.register("click", map, function(e) {
@@ -114,6 +118,11 @@
         {/if}
 
 {/dynamic}
+
+	<div id="iomlink" style="display:none">
+		Not all scales of maps work in Isle of Man due to no longer been mapped by Ordnance Survey Great Britain; if don't see map above, try zooming out.
+		 You can find high resolution mapping for Isle of Man on the <a href="https://www.gov.im/maps/" target="_blank">Manngis website</a>
+	</div>
 </body>
 </html>
 

@@ -27,7 +27,7 @@ $bounds[] = $b->x+$b->width+$xd;
 $bounds[] = $b->y+$b->height+$yd;
 
 $_GET['olbounds'] = implode(",",$bounds);
-$_GET['select'] = "wgs84_lat as lat,wgs84_long as lng";
+$_GET['select'] = "wgs84_lat*1000 as lat,wgs84_long*1000 as lng";
 
 if (empty($_GET['limit']))
 	$_GET['limit'] = 1000;
@@ -55,7 +55,7 @@ if (!empty($_GET['6']) && $_GET['z'] > 10)
 	$_GET['where'] = 'scenti not in(1000000000,2000000000)'; //exclude 4fig GRs!
 
 
-$_GET['select'] = "avg(wgs84_lat) as lat,avg(wgs84_long) as lng,count(*) as images";
+$_GET['select'] = "avg(wgs84_lat*1000) as lat,avg(wgs84_long*1000) as lng,count(*) as images";
 $_GET['group'] = "grid_reference"; // one dot per square!
 $_GET['order'] = "id asc"; //rand doesnt work for group, could use sequence, but may as well just use id.
 
@@ -108,8 +108,8 @@ function call_with_results($data) {
 	foreach ($data['rows'] as $row) {
 
 		if (!empty($row['lat'])) {
-			$lat = rad2deg($row['lat']);
-			$lng = rad2deg($row['lng']);
+			$lat = rad2deg($row['lat']/1000);
+			$lng = rad2deg($row['lng']/1000);
 
 			//alas using wgs84_to_internal, doesnt give refernce_index
 			list($e,$n,$ri) = $conv->wgs84_to_national($lat,$lng);

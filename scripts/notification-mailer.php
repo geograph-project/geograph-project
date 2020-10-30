@@ -95,7 +95,7 @@ if (!empty($map['gallery'])) {
                 'title' => 'Showcase Gallery',
 		'when' => 'added',
                 'sql' => "SELECT $columns,fetched AS date FROM gridimage_search gi INNER JOIN gallery_ids ON (id = gridimage_id)
-				WHERE baysian > 3.5 AND user_id IN ($ids) AND fetched > $crit AND showday IS NULL ORDER BY fetched DESC"
+				WHERE gallery_ids.baysian > 3.5 AND user_id IN ($ids) AND fetched > $crit AND showday IS NULL ORDER BY fetched DESC"
         );
 }
 
@@ -138,7 +138,7 @@ if (!empty($map['squares'])) {
                 'when' => 'submitted',
                 'sql' => "SELECT $columns,gi.submitted AS date,CONCAT(gi.title,' by ',gi.realname) AS title,CONCAT(gi.grid_reference,IF(name is not null,concat(' near ',name,', ',localities),'')) AS special_title, CONCAT('/gridref/',gi.grid_reference) AS special_url, ug.user_id as user_id
                         FROM user_gridsquare ug INNER JOIN gridimage_search gi USING (grid_reference) INNER JOIN gridimage g2 USING (gridimage_id) LEFT JOIN placename_index ON (gr=grid_reference)
-                        WHERE gi.submitted > DATE_SUB($crit, INTERVAL 3 DAY) AND g2.moderated > $crit AND ug.user_id IN ($ids) AND gi.user_id != ug.user_id GROUP BY gridimage_id ORDER BY gi.grid_reference,gridimage_id"
+                        WHERE gi.submitted > DATE_SUB($crit, INTERVAL 3 DAY) AND g2.moderated > $crit AND ug.user_id IN ($ids) AND gi.user_id != ug.user_id GROUP BY ug.user_id,gridimage_id ORDER BY gi.grid_reference,gridimage_id"
 			//used moderated as the filter, but include submitted in there too, as it has an index. (because when a mod backlog, images would be missed on daily schedule)
         );
 }
@@ -150,7 +150,7 @@ if (!empty($map['snippets'])) {
                 'when' => 'added',
                 'sql' => "SELECT $columns,gs.created AS date,CONCAT(gi.title,' by ',gi.realname) AS title,s.title AS special_title, CONCAT('/snippet/',snippet_id) AS special_url, s.user_id as user_id
                         FROM snippet s INNER JOIN gridimage_snippet gs USING (snippet_id) INNER JOIN gridimage_search gi USING (gridimage_id)
-                        WHERE gs.created > $crit AND s.user_id IN ($ids) AND gi.user_id != s.user_id GROUP BY gridimage_id ORDER BY snippet_id,gridimage_id"
+                        WHERE gs.created > $crit AND s.user_id IN ($ids) AND gi.user_id != s.user_id GROUP BY snippet_id,gridimage_id"
         );
 }
 

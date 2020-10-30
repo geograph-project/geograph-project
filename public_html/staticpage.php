@@ -50,9 +50,14 @@ $template='static_'.$page.'.tpl';
 
 //lets be sure it exists...
 $smarty = new GeographPage;
-if (!$smarty->templateExists($template))
-{
+
+
+
+
+if (!$smarty->templateExists($template) || $page=='404') {
 	$template='static_404.tpl';
+} else {
+	pageMustBeHTTPS();
 }
 
 customGZipHandlerStart();
@@ -68,11 +73,17 @@ if ($mtime) {
 }
 
 
-$smarty->assign("api_host",preg_replace("/^(https?:\/\/|)\w+/",'api',$CONF['CONTENT_HOST']));
+$smarty->assign("api_host",$CONF['API_HOST']);
+$smarty->assign('google_maps_api3_key',$CONF['google_maps_api3_key']);
 
-if ($template == 'static_sitemap.tpl' && !$smarty->is_cached($template)) {
 
-	$remote = file_get_contents("http://nearby.geographs.org/links/sitemap2.php?ajax&experimental=N&internal=Y&depreciated=N&site=www.geograph.org.uk");
+if ($template == 'static_terms.tpl' && preg_match('/\/photo\/(\d+)/',$_SERVER['HTTP_REFERER'],$m)) {
+
+	 $smarty->assign('gridimage_id',intval($m[1]));
+
+} elseif ($template == 'static_sitemap.tpl' && !$smarty->is_cached($template)) {
+
+	$remote = file_get_contents("http://www.geograph.org/links/sitemap2.php?ajax&experimental=N&internal=Y&depreciated=N&site=www.geograph.org.uk");
 
 	if (empty($remote) || strlen($remote) < 512) {
 		if ($memcache->valid) {
@@ -86,7 +97,13 @@ if ($template == 'static_sitemap.tpl' && !$smarty->is_cached($template)) {
 		$memcache->name_set('links',$mkey,$remote,$memcache->compress,$memcache->period_long*2);
 	}
 
-	$remote = str_replace('"?ajax=&amp;','"http://www.geographs.org/links/sitemap.php?',$remote);
+        $remote = str_replace('"?ajax=&amp;','"http://www.geograph.org/links/sitemap.php?',$remote);
+        $remote = str_replace('"/links/sitemap2.php','"http://www.geograph.org/links/sitemap.php',$remote);
+
+        if (preg_match('/(<h4 class="title">5 Newest Links<\/h4>.*?)<h4 class="title">List of all links by Category<\/h4>/s',$remote,$m)) {
+                $smarty->assign('newlinks',str_replace('</a>','</a><br>',$m[1]));
+                $remote = str_replace($m[0],'',$remote);
+        }
 
 	if ($_SERVER['HTTP_HOST'] == 'staging.geograph.org.uk') {
 		$remote = str_replace("www.geograph.org.uk",'staging.geograph.org.uk',$remote);
@@ -95,6 +112,8 @@ if ($template == 'static_sitemap.tpl' && !$smarty->is_cached($template)) {
 
 	$smarty->assign('content',$remote);
 }
+
+$smarty->assign('hid', dechex($_SERVER['REQUEST_TIME']));
 
 $smarty->display($template);
 

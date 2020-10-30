@@ -21,6 +21,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+//these are the arguments we expect
+$param=array(
+        'action'=>'test',
+);
+
+$HELP = <<<ENDHELP
+    --action=<action>    : test, or execute to run for real
+ENDHELP;
+
 
 chdir(__DIR__);
 require "./_scripts.inc.php";

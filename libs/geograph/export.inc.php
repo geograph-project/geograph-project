@@ -20,15 +20,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
- 
+
+if (!empty($CONF['db_read_connect2'])) {
+        if (!empty($DSN_READ))
+                $DSN_READ = str_replace($CONF['db_read_connect'],$CONF['db_read_connect2'],$DSN_READ);
+        if (!empty($CONF['db_read_connect']))
+                $CONF['db_read_connect'] = $CONF['db_read_connect2'];
+}
+
 $db = GeographDatabaseConnection(true);
+
+if (!empty($db->readonly)) {
+        set_time_limit(6*90);
+	ini_set('memory_limit', '128M');
+}
+
 
 if (isset($_SERVER['REMOTE_ADDR'])) {
 	if ((empty($_GET['key']) || preg_match("/[^\w\.@]/",$_GET['key'])) && empty($_GET['u']))
 		die("ERROR: no api key or email address");
 
-	$sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_GET['key'])." AND (`ip` = INET_ATON('{$_SERVER['REMOTE_ADDR']}') OR `ip` = 0) AND `enabled` = 'Y'";
+	$sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_GET['key'])." AND (`ip` = INET6_ATON('".getRemoteIP()."') OR `ip` = 0) AND `enabled` = 'Y'";
 
 	$profile = $db->GetRow($sql);
 
@@ -63,7 +75,7 @@ if (!empty($_GET['desc'])) {
 	$csvhead .= ",Description";
 	$sql_from .= ',comment';
 }
-if (!empty($_GET['thumb'])) {
+if (!empty($_GET['thumb']) || !empty($_GET['gr'])) {
 	require_once('geograph/gridimage.class.php');
 	$gridimage = new GridImage;
 	$csvhead .= ",Thumb URL";
@@ -129,7 +141,7 @@ if (!empty($_GET['level'])) {
 
 if (!empty($_GET['points'])) {
 	$csvhead .= ",Points";
-	$sql_from .= ",CONCAT_WS(' ', IF(ftf BETWEEN 1 and 4,ftf,NULL), IF(ftf>0,'personal',NULL), points) as points";
+	$sql_from .= ",CONCAT_WS(' ', IF(ftf>0,'personal',NULL), IF(ftf BETWEEN 1 and 4,ftf,NULL), points) as points";
 }
 
 
@@ -144,7 +156,9 @@ if (!empty($_GET['u']) && preg_match("/^\d+$/",$_GET['u'])) {
 	$user_crit = 1;
 }
 
-if (!empty($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
+if (!empty($_GET['ids']) && preg_match("/^\d+(\,\d+)*$/",$_GET['ids']) ) {
+	$sql_crit .= " AND gi.gridimage_id IN ({$_GET['ids']})";
+} elseif (!empty($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}' $sql_hardlimit";
 } elseif (!empty($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 	$_GET['last'] = preg_replace("/s$/",'',$_GET['last']);
@@ -202,7 +216,11 @@ if ($i && !$user_crit ) {
 	if (!empty($_GET['ftf'])) {
 		$mod_sql .= " and ftf = 1"; 
 	}
-	$recordSet = $db->Execute("select gi.gridimage_id,title,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imageclass,nateastings,natnorthings,if(use6fig=1,6,natgrlen) as natgrlen,gi.user_id $sql_from 
+
+	if (!empty($_GET['sql']))
+		$sql_crit = preg_replace('/( LIMIT \d+\s*|$)/',' LIMIT 1',$sql_crit);
+
+	$recordSet = &$db->Execute($sql = "select gi.gridimage_id,title,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imageclass,nateastings,natnorthings,if(use6fig=1,6,natgrlen) as natgrlen,gi.user_id $sql_from 
 	from user 
 	inner join gridimage gi using(user_id) 
 	inner join gridsquare using(gridsquare_id) 
@@ -215,10 +233,16 @@ if ($i && !$user_crit ) {
 	if (!empty($_GET['ftf'])) {
 		$mod_sql .= " and ftf = 1"; 
 	}
-	$recordSet = $db->Execute("select gi.gridimage_id,title,grid_reference,credit_realname,realname,imageclass,user_id $sql_from 
+
+	if (!empty($_GET['sql']))
+		$sql_crit = preg_replace('/( LIMIT \d+\s*|$)/',' LIMIT 1',$sql_crit);
+
+	$recordSet = &$db->Execute($sql = "select gi.gridimage_id,title,grid_reference,credit_realname,realname,imageclass,user_id $sql_from 
 	from gridimage_search gi 
 	$sql_tables
 	where $mod_sql $sql_crit");
 }
 
-?>
+if (!empty($_GET['sql']))
+	die($sql);
+

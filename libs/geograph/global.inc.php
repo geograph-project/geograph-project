@@ -54,7 +54,21 @@ require_once('geograph/functions.inc.php');
 
 
 
+if (!empty($_COOKIE['php_profile']) && !isset($_GET['php_profile'])) {
+	$_GET['php_profile'] = 1;
+	if (!empty($_GET['dde'])) {
+		error_reporting(-1);
+		ini_set("display_errors",1);
+	}
+}
+
 if (isset($_GET['php_profile']) && !class_exists('Profiler',false)) {
+	if ($_GET['php_profile'] == 2)
+		setcookie('php_profile','1',time()+3600);
+
+	if (empty($_GET['php_profile']))
+		setcookie('php_profile','',time()-3600);
+
 	require "3rdparty/profiler.php";
 	Profiler::enable();
 
@@ -127,6 +141,12 @@ function GeographDatabaseConnection($allow_readonly = false) {
 	global $ADODB_FETCH_MODE;
 	static $logged = 1;
 
+                if (isset($_GET['remote_profile'])) {
+                        $start = microtime(true);
+                        print "$start  :: GeographDatabaseConnection($allow_readonly)<br>";
+                }
+
+
 	if ($allow_readonly && function_exists('apc_store') && apc_fetch('lag_warning')) {
 		//short cut everything, if lag, then skip slave regardless.
 		$allow_readonly = false;
@@ -161,7 +181,8 @@ function GeographDatabaseConnection($allow_readonly = false) {
 						$con = ob_get_clean();
 	               				mail('geograph@barryhunter.co.uk','[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
 					}
-               				apc_store('lag_warning',1,3600);
+					if (function_exists('apc_store'))
+	               				apc_store('lag_warning',1,3600);
 				    }
 				    if (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > $allow_readonly) {
 					split_timer('db'); //starts the timer
@@ -197,6 +218,10 @@ function GeographDatabaseConnection($allow_readonly = false) {
 			split_timer('db'); //starts the timer
 			$db=NewADOConnection($GLOBALS['DSN']);
 			split_timer('db','connect','master-fallback'); //logs the wall time
+
+                	//setting this, prevents future connections trying to to connect to slave.
+        	        if (function_exists('apc_store'))
+				apc_store('lag_warning',1,1810);
 		}
 	} else {
 		//otherwise just get a standard connection
@@ -316,7 +341,7 @@ require_once('geograph/security.inc.php');
 
 $ip = getRemoteIP();
 if ($ip == '128.86.236.164' || $ip == '194.66.232.85' || (isset($_SERVER['HTTP_USER_AGENT']) &&
-	(strpos($_SERVER['HTTP_USER_AGENT'], 'bl.uk_lddc_bot')!==FALSE) ||
+	(strpos($_SERVER['HTTP_USER_AGENT'], 'bl.uk_')!==FALSE) ||
 	(strpos($_SERVER['HTTP_USER_AGENT'], 'ia_archiver')!==FALSE) ||
 	(strpos($_SERVER['HTTP_USER_AGENT'], 'heritrix')!==FALSE) ) ) {
 
@@ -328,6 +353,11 @@ if ($ip == '128.86.236.164' || $ip == '194.66.232.85' || (isset($_SERVER['HTTP_U
 	}
 	$CONF['template']='archive';
 	$CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
+	$CONF['forums'] = false;
+} elseif (!empty($_GET['arc'])) {
+	$CONF['template']='archive';
+	$CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
+	$CONF['forums'] = false;
 }
 
 if (false && function_exists('apc_store') && !preg_match('/(iPad|iPhone|Chrome|MSIE|Firefox|Safari|Opera|PLAYSTATION)/',$_SERVER['HTTP_USER_AGENT'])
@@ -344,13 +374,11 @@ if (false && function_exists('apc_store') && !preg_match('/(iPad|iPhone|Chrome|M
 	if ($count == 50) {
                                         ob_start();
                                         print "Host: ".`hostname`."\n\n";
-                                        print_r($_SERVER);
                                         $con = ob_get_clean();
                                         mail('geograph@barryhunter.co.uk','[Geograph Useragent] '.$_SERVER['HTTP_USER_AGENT'],$con);
 	} elseif ($count == 100) {
                                         ob_start();
                                         print "Host: ".`hostname`."\n\n";
-                                        print_r($_SERVER);
                                         $con = ob_get_clean();
                                         mail('geograph@barryhunter.co.uk','[Geograph USERAGENT] '.$_SERVER['HTTP_USER_AGENT'],$con);
 	}
@@ -450,6 +478,10 @@ if (isset($CONF['log_script_timing']))
 
 #################################################
 
+//for some pages, we can skip createing the session on first view (eg a bot!)
+// ... real users will have a cookie (either session cookie, or remember_me) so they CAN login,
+// session is never started, so can't use this version on pages that process 'login' form requests. (or NEED to save session state!)
+
 
 function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 
@@ -467,6 +499,9 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
                 @apache_note('user_id', 0);
 
 
+		if (isset($_GET['responsive'])) //want even if =0 URL!
+			header("X-Robots-Tag: noindex");
+
 		global $CONF;
 		//note at this point, wouldn't have a session var!
 		if (!empty($_GET['lang']) && $_GET['lang'] == 'cy') {
@@ -474,6 +509,16 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 				$CONF['template'] = 'cy';
 			elseif ($CONF['template'] == 'charcoal')
 				$CONF['template'] = 'charcoal_cy';
+
+		//for now ignore this on welsh pages!
+		} elseif (!empty($_GET['responsive'])) {
+		        $_GET['mobile'] = 0; //just prevents homepage redirecting!
+		       	if ($_GET['responsive'] == 1)
+		                $CONF['template'] = 'new';
+	        	if ($_GET['responsive'] == 2)
+               			$CONF['template'] = 'new2';
+		        if ($_GET['responsive'] == 3)
+                		$CONF['template'] = 'r';
 		}
 
 	} else {
@@ -503,8 +548,12 @@ function init_session()
 
 		//this is a new session - as a safeguard against session
 		//fixation, we regenerate the session id
-		if (!empty($_REQUEST['PHPSESSID']))
+		if (!empty($_REQUEST['PHPSESSID'])) {
+			if (isset($_SESSION) && empty($_SESSION['session1']))
+				$_SESSION['session1'] = session_id(); //store the previous id for log purposes
+
 			session_regenerate_id();
+		}
 
 		//create new user object - initially anonymous
 		$_SESSION['user'] = new GeographUser;
@@ -528,6 +577,77 @@ function init_session()
 			$CONF['template'] = 'cy';
 		elseif ($CONF['template'] == 'charcoal')
 			$CONF['template'] = 'charcoal_cy';
+	} else {
+		//for now ignore this on welsh pages!
+
+		if (isset($_GET['responsive'])) {
+   			$_SESSION['responsive'] = intval($_GET['responsive']);
+			$_GET['mobile'] = 0; //just prevents homepage redirecting!
+
+			header("X-Robots-Tag: noindex"); //dont want these accidently indexed!
+ 		}
+
+		//for logged in users, set from session which may of been updated above!
+		if (!empty($_SESSION['responsive'])) {
+			if ($_SESSION['responsive'] == 1)
+				$CONF['template'] = 'new';
+			if ($_SESSION['responsive'] == 2)
+				$CONF['template'] = 'new2';
+			if ($_SESSION['responsive'] == 3)
+				$CONF['template'] = 'r';
+		}
+	}
+
+	global $mobile_browser,$mobile_url;
+
+	if (isset($_GET['mobile'])) {
+   		$_SESSION['mobile'] = intval($_GET['mobile']);
+ 	}
+
+	if (isset($_SERVER['HTTP_USER_AGENT'])) {
+
+			$mobile_browser = '0';
+
+			if(preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|ipad|android)/i', strtolower($_SERVER['HTTP_USER_AGENT']))) {
+					$mobile_browser++;
+			}
+
+			if((strpos(strtolower(@$_SERVER['HTTP_ACCEPT']),'application/vnd.wap.xhtml+xml')>0) or ((isset($_SERVER['HTTP_X_WAP_PROFILE']) or isset($_SERVER['HTTP_PROFILE'])))) {
+					$mobile_browser++;
+			}
+
+			$mobile_ua = strtolower(substr($_SERVER['HTTP_USER_AGENT'],0,4));
+			$mobile_agents = array(
+					'w3c ','acs-','alav','alca','amoi','audi','avan','benq','bird','blac',
+					'blaz','brew','cell','cldc','cmd-','dang','doco','eric','hipt','inno',
+					'ipaq','java','jigs','kddi','keji','leno','lg-c','lg-d','lg-g','lge-',
+					'maui','maxo','midp','mits','mmef','mobi','mot-','moto','mwbp','nec-',
+					'newt','noki','oper','palm','pana','pant','phil','play','port','prox',
+					'qwap','sage','sams','sany','sch-','sec-','send','seri','sgh-','shar',
+					'sie-','siem','smal','smar','sony','sph-','symb','t-mo','teli','tim-',
+					'tosh','tsm-','upg1','upsi','vk-v','voda','wap-','wapa','wapi','wapp',
+					'wapr','webc','winw','winw','xda','xda-');
+
+			if(in_array($mobile_ua,$mobile_agents)) {
+					$mobile_browser++;
+			}
+
+			if (strpos(strtolower(@$_SERVER['ALL_HTTP']),'OperaMini')>0) {
+					$mobile_browser++;
+			}
+
+			if (strpos(strtolower($_SERVER['HTTP_USER_AGENT']),'windows')>0) {
+					$mobile_browser=0;
+			}
+
+		if (!empty($mobile_url) && !isset($_SESSION['mobile'])) {
+			if($mobile_browser>0) {
+				header("Location: $mobile_url", 302);
+				header("Vary: User-Agent");
+				print "<a href=\"$mobile_url\">Click here to continue</a>";
+				exit;
+			}
+		}
 	}
 
 
@@ -553,6 +673,62 @@ function init_session()
 }
 
 #################################################
+
+function recordVisitor() {
+	global $db, $memcache, $USER;
+
+	//sometimes might be able to reuse a global one!
+	if (empty($db) || !is_object($db) || $db->readonly )
+	 	$mydb = GeographDatabaseConnection(false);
+	else
+		$mydb =& $db;
+
+	$sess_id = session_id();
+	$ip = getRemoteIP();
+
+	if (empty($sess_id)) { //because of init_session_or_cache, some visitors dont start a session
+		$sess_id = $ip; //.. so use their IP address!?! (and maybe hash the user-agent?? - to have some support for uliple users via one IP!)
+		if ($memcache->valid) $memcache->name_set('sess1',$ip,$ip,false,$memcache->period_short); //remember that we HAVE used this IP as a session-ident
+
+		//... in this case session1 will set correctly as will just duplicate sess_id (can't have a session1! already)
+
+	} elseif (empty($_SESSION['session1']) && $memcache->valid) {
+		//we DO now have a real session,
+		//but may have possibly used this IP address as an ident already?
+		//... but only need to check memcache, if not set session1 already (which is stateful)
+		if ($memcache->name_get('sess1',$ip))
+			$_SESSION['session1'] = $ip; //because started using IP as their ident, we need to continue that concept!
+	}
+
+
+	$ins = "INSERT INTO visitor_log SET
+	`session` = ".$mydb->Quote($sess_id).",
+        `session1` = ".$mydb->Quote(empty($_SESSION['session1'])?$sess_id:$_SESSION['session1']).",
+        `pages` = 1,
+        `request_time` = ".intval($_SERVER['REQUEST_TIME']).",
+        `user_id` = ".@intval($USER->user_id).",
+        `ipaddr` = INET_ATON(".$mydb->Quote($ip)."),
+        `hostname` = ".$mydb->Quote($_SERVER['HTTP_HOST']).",
+        `landing` = ".$mydb->Quote($_SERVER['REQUEST_URI']).",
+        `useragent` = ".$mydb->Quote($_SERVER['HTTP_USER_AGENT']).",
+        `referer` = ".@$mydb->Quote($_SERVER['HTTP_REFERER']).",
+        `person` = ".(appearsToBePerson()?1:0)."
+        ON DUPLICATE KEY UPDATE
+        `pages` = `pages` + 1";
+
+	if (!empty($USER->user_id))
+		$ins  .= ", `user_id` = ".intval($USER->user_id); //update this, as the first visit may not of been logged in, only logged in later!
+
+	$mydb->Execute($ins);
+
+
+if (!empty($_GET['ddddd']))
+        die("X-SQL-debug: ".preg_replace("/\s+/",' ',$ins));
+
+}
+
+#################################################
+
 
 function smarty_function_pageheader() {
 	//if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {

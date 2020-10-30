@@ -18,9 +18,9 @@ var iii = {$i};
 
 function redo(fragment) {
 	if (fragment.indexOf('-') == 0) {
-		fragment = fragment.replace(/^\-/,'-"').replace(/:/g,' ')+'"';
+		fragment = fragment.replace(/^\-/,'-"')+'"';
 	} if (fragment.indexOf(':') > 0) {
-		fragment = 'tags:"'+fragment.replace(/:/g,' ')+'"';
+		fragment = '['+fragment+']';
 	}
 
 	var url = "/search.php?text="+encodeURIComponent(query+" "+fragment)+"&i="+iii+"&redo=1&displayclass=bytag";

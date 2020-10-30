@@ -688,7 +688,7 @@ class FeedCreator extends HtmlDescribable {
 					$timeout = $GLOBALS['rss_timeout'];
 				customExpiresHeader($timeout-(time()-$mtime),true);
 
-				if ($encoding = getEncoding()) {
+				if (empty($_GET['remote_profile']) && $encoding = getEncoding()) {
 					$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
 					header ('Content-Encoding: '.$encoding);
 			                if (defined('VARY_COOKIE')) {
@@ -751,7 +751,7 @@ class FeedCreator extends HtmlDescribable {
 				customCacheControl($mtime,$mtime);
 				customExpiresHeader($timeout-(time()-$mtime),true);
 
-				if ($encoding = getEncoding()) {
+				if (empty($_GET['remote_profile']) && $encoding = getEncoding()) {
 					$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
 					header ('Content-Encoding: '.$encoding);
 			                if (defined('VARY_COOKIE')) {

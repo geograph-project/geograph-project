@@ -26,7 +26,7 @@ require_once('geograph/global.inc.php');
 
 init_session();
 
-$USER->mustHavePerm("basic");
+//$USER->mustHavePerm("basic");
 
 $db = GeographDatabaseConnection(true);
 
@@ -79,7 +79,14 @@ li div {
 <h2>Geograph Categories as at <? echo ($date = date('Y-m-d')); ?></h2><p>Click a term to run a search directly on Geograph, press 'alt' and <i>letter</i> at any time to jump</p><p>Jump: | 
 <?
 
-if (!empty($_GET['tags'])) {
+if (!empty($_GET['snippets']) && $_GET['snippets'] == 2) {
+	$data = $db->getAssoc("SELECT TRIM(title) AS title,COUNT(*) AS c FROM snippet INNER JOIN gridimage_snippet USING (snippet_id) WHERE grid_reference = '' GROUP BY snippet_id ORDER BY TRIM(REPLACE(title,'The ',''))");
+	$urlprefix = "http://www.geograph.org.uk/snippets.php?q=";
+} elseif (!empty($_GET['snippets'])) {
+	$data = $db->getAssoc("SELECT TRIM(title) AS title,COUNT(*) AS c FROM snippet INNER JOIN gridimage_snippet USING (snippet_id) GROUP BY snippet_id ORDER BY TRIM(title)");
+	$urlprefix = "http://www.geograph.org.uk/snippets.php?q=";
+} elseif (!empty($_GET['tags'])) {
+//	die();
 	$data = $db->getAssoc("SELECT IF(prefix='',tag,CONCAT(prefix,':',tag)) AS tag,COUNT(*) AS c FROM tag_public GROUP BY tag_id ORDER BY tag,prefix");
 	$urlprefix = "http://www.geograph.org.uk/search.php?tag=";
 } else {
@@ -90,7 +97,7 @@ if (!empty($_GET['tags'])) {
 
 $alphas = array();
 foreach ($data as $category => $count) {
-	@$alphas[strtoupper(substr(trim($category),0,1))]++;
+	@$alphas[strtoupper(substr(trim(str_replace('The ','',$category)),0,1))]++;
 }
 unset($alphas['']);
 foreach ($alphas as $key => $value) {
@@ -111,7 +118,7 @@ foreach ($data as $category => $count) {
 		$url = "-";
 		$html = "<i>unclassified</i>";
 	} else {
-		$alpha = strtoupper(substr($category,0,1));
+		$alpha = strtoupper(substr(trim(str_replace('The ','',$category)),0,1));
 		$url = urlencode($category);
 		$html = htmlentities($category);
 	}
@@ -125,7 +132,8 @@ foreach ($data as $category => $count) {
 	}
 	$common = substr($category,0,$p);
 	$html = preg_replace("/^".preg_quote($common,'/')."/","$common<b>",$html)."</b>";
-	
+	$html = preg_replace("/(\d+)<b>(\d+)/","<b>$1$2",$html); //never split numbers
+
 	print "<li value=\"$count\"";
 	if ($alpha != $lastalpha) {
 		print " class=\"break\">";

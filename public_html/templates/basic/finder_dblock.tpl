@@ -51,7 +51,7 @@
 
 {if $dblock}
 	<ul>
-		<li>{external href="http://www.bbc.co.uk/history/domesday/dblock/`$dblock`" text="View D-Block <b>`$dblock`</b> on Domesday Reloaded" title="view on Domesday Reloaded provided by BBC History"} (Photos in 1986 and 2011)
+		<li>{external href="http://webarchive.nationalarchives.gov.uk/20120320232950/http://www.bbc.co.uk/history/domesday/dblock/`$dblock`" text="View D-Block <b>`$dblock`</b> on Domesday Reloaded" title="view on Domesday Reloaded provided by BBC History"} (Photos in 1986 and 2011)
 		<li>Go: <a href="{$script_name}?p={math equation="900*(y+3)+900-(x)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">North</a> | <a href="{$script_name}?p={math equation="900*(y)+900-(x-4)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">West</a> | <a href="{$script_name}?p={math equation="900*(y-3)+900-(x)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">South</a> | <a href="{$script_name}?p={math equation="900*(y)+900-(x+4)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">East</a></li>
 	</ul>
 {/if}
@@ -77,7 +77,7 @@
 							{assign var="image" value=$results.$x.$y}
 							<td align="center" width="25%">
 
-								<div class="interestBox" style="margin-bottom:4px"><a href="/search.php?searchtext={$q|escape:'url'}+gridref:{$image->grid_reference}{if $year}+takenyear:{$year}{/if}&amp;do=1">{$image->grid_reference}</a> <b>{$image->count}</b><small> images</small></div>
+								<div class="interestBox" style="margin-bottom:4px"><a href="{if $q || $year}/search.php?searchtext={$q|escape:'url'}+gridref:{$image->grid_reference}{if $year}+takenyear:{$year}{/if}&amp;do=1{else}/gridref/{$image->grid_reference}{/if}">{$image->grid_reference}</a> <b>{$image->count}</b><small> images</small></div>
 								<div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
 								<div class="caption"><div class="minheightprop" style="height:2.5em"></div><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
 								<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>

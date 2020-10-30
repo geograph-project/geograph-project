@@ -9,7 +9,6 @@
         <a href="/choose-search.php" class="tab">Site Search Engine</a>
         <span class="tabSelected">Preview Method</span>
         <a href="/switch_tagger.php" class="tab">Tagging Box</a>
-        <a href="/switch.php" class="tab">Submission Method</a>
 </div>
 <div style="position:relative;" class="interestBox">
 	<h2>Preview Method - HIGHLY EXPERIMENTAL</h2>

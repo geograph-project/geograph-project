@@ -70,18 +70,18 @@ class GeographUser
 	var $stats=array();
 
 	var $use_autocomplete=false;
-	
+
 	/**
 	* Constructor doesn't normally do anything, but if supplied with a user id
-	* can be used to create an instance for a particular user. 
+	* can be used to create an instance for a particular user.
 	*/
 	function GeographUser($uid=0)
 	{
 		if (($uid>0) && preg_match('/^[0-9]+$/' , $uid))
 		{
 			$db = $this->_getDB(true);
-						
-			$arr =& $db->GetRow("select * from user where user_id=$uid limit 1");	
+
+			$arr =& $db->GetRow("select * from user where user_id=$uid limit 1");
 			if (count($arr))
 			{
 				$this->registered=strlen($arr['rights'])>0;
@@ -149,14 +149,14 @@ class GeographUser
 	}
 
 	function getPreference($key,$default = null,$session = false) {
-		if ($session && isset($_SESSION[$key])) 
+		if ($session && isset($_SESSION[$key]))
 			return $_SESSION[$key];
-			
-		if (!$this->registered) 
+
+		if (!$this->registered)
 			return $default;
-			
+
 		$db = $this->_getDB(true);
-		
+
 		If (($value =$db->getOne("SELECT value FROM user_preference WHERE user_id={$this->user_id} AND pkey = ".$db->Quote($key))) !== FALSE) {
 			if ($session)
 				$_SESSION[$key] = $value;
@@ -164,7 +164,7 @@ class GeographUser
 		}
 		return $default;
 	}
-	
+
 	function setPreference($key,$value,$session = false) {
 		if ($session)
 			$_SESSION[$key] = $value;
@@ -362,7 +362,11 @@ class GeographUser
 			$ok=false;
 			$errors['email']='Please enter a valid email address';
 		}
-		
+		if (preg_match('/@(www\.|)geograph\.org\.uk$/',$email)) {
+//			header("HTTP/1.0 410 Gone");
+//			die('segmentation fault');
+		}
+
 		//check password
 		if (strlen($password1)==0)
 		{
@@ -497,27 +501,24 @@ class GeographUser
 		global $CONF;
 		$ok=true;
 		$status="ok";
-		
+
 		//validate inputs, they came from outside
 		$ok=$ok && preg_match('/\d+/', $user_id);
 		$ok=$ok && preg_match('/[0-9a-f]+/', $hash);
-		
+
 		//validate hash
 		$ok=$ok && ($hash==substr(md5($user_id.$CONF['register_confirmation_secret']),0,16));
 		if ($ok)
 		{
 			$db = $this->_getDB();
-			
-			
-			$arr = $db->GetRow('select rights from user where user_id='.$db->Quote($user_id).' limit 1');	
+
+			$arr = $db->GetRow('select rights from user where user_id='.$db->Quote($user_id).' limit 1');
 			if (strlen($arr['rights']))
 			{
 				$status="alreadycomplete";
-			
 			}
 			else
 			{
-			
 				//assign some basic rights to the user
 				$sql="update user set rights='basic',confirmed=NOW() where user_id=".$db->Quote($user_id);
 				$db->Execute($sql);
@@ -1091,11 +1092,14 @@ class GeographUser
 		$this->registered=false;
 		$this->user_id=0;
 		$this->realname="";
-		
+
+                if (isset($_SESSION) && empty($_SESSION['session1']))
+                        $_SESSION['session1'] = session_id(); //store the previous id for log purposes
+
 		//we've changed state, won't hurt to use a new
 		//session id...
-		session_regenerate_id(); 
-		
+		session_regenerate_id();
+
 		//delete the autologin token - needed to prevent someone contining to use a highjacked cookie
 		if(isset($_COOKIE['autologin']))
 		{
@@ -1301,9 +1305,18 @@ class GeographUser
 									$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
 									//bool setcookie ( $name, $value = "", $expire = 0, $path = "" , $domain = "", bool $secure = false , bool $httponly = false );
 
+						if (false && empty($_COOKIE['securetest']) && (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 ==2) ) {
+							//lets begin auto-opting people in!
+							setcookie('securetest', '1', time()+3600*24*14,'/');  //we DONT set secure on this cookie, as need it for http->https redirect
+							$_COOKIE['securetest'] = 1;
+						}
+
 									setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/',
 										"", !empty($_COOKIE['securetest']) && ($CONF['PROTOCOL'] == 'https://'), true); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
 								}
+
+					                        if (isset($_SESSION) && empty($_SESSION['session1']))
+					                                $_SESSION['session1'] = session_id(); //store the previous id for log purposes
 
 								//we're changing privilege state, so we should
 								//generate a new session id to avoid fixation attacks
@@ -1401,7 +1414,13 @@ class GeographUser
 				
 				//log the errornumber (we use in case the db lookup failed)
 				$errorNumber = $db->ErrorNo();
-					
+				
+				if (empty($row)) {
+					$row = $db->GetRow("select * from autologin_archive where $clause and created > DATE_SUB(NOW(),interval 30 second) 
+							and forwarded_for = ".$db->Quote($_SERVER['HTTP_X_FORWARDED_FOR'])." limit 1");
+					$from_archive = 1;
+				}
+	
 				if (count($row))
 				{
 					//log the user in
@@ -1420,31 +1439,53 @@ class GeographUser
 							if (!is_numeric($name))
 								$this->$name=$value;
 						}
+						if (empty($this->upload_size))
+							$this->upload_size = 1024;
 
 						//temporary nickname fix for beta accounts
 						if (strlen($this->nickname)==0)
 							$this->nickname=str_replace(" ", "", $this->realname);
-
-						//we're changing privilege state, so we should
-						//generate a new session id to avoid fixation attacks
-						session_regenerate_id(); 
 
 						$this->registered=true;
 						$this->autologin=true;
 
 						//log into forum
 						$this->_forumLogin();
+	
+						if (empty($from_archive)) {
+							//we're changing privilege state, so we should
+							//generate a new session id to avoid fixation attacks
 
-						//delete the autologin, we've used it
-						$db->query("delete from autologin where $clause");
+				                        if (isset($_SESSION) && empty($_SESSION['session1']))
+				                                $_SESSION['session1'] = session_id(); //store the previous id for log purposes
 
-						//given the user a new one
-						$token = md5(uniqid(rand(),1)); 
-						$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
-						setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/',
-							"", !empty($_COOKIE['securetest']) && ($CONF['PROTOCOL'] == 'https://'), true); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
+							session_regenerate_id();
 
+							//delete the autologin, we've used it
+							$db->query("delete from autologin where $clause");
+
+	        $db->query("insert autologin_archive set user_id='{$bits[0]}', token='{$bits[1]}', request_time = {$_SERVER['REQUEST_TIME']},
+				 remote_port = {$_SERVER['REMOTE_PORT']}, forwarded_for = ".$db->Quote($_SERVER['HTTP_X_FORWARDED_FOR']));
+	
+							//given the user a new one
+							$token = md5(uniqid(rand(),1)); 
+							$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
+							setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/',
+								"", !empty($_COOKIE['securetest']) && ($CONF['PROTOCOL'] == 'https://'), true ); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
+						}
 					}
+				} else {
+/*
+        ob_start();
+        print "\n\nHost: ".`hostname`."\n\n";
+	print_r($_COOKIE);
+	print_r($db->GetRow("select * from autologin_archive where $clause"));
+	print_r($db->GetRow("select now()"));
+        print_r($_POST);
+        debug_print_backtrace();
+        $con = ob_get_clean();
+        mail('geograph@barryhunter.co.uk','[Geograph] AutoLogin Failed',$message."\n\n".$con);
+*/
 				}
 			}
 			if ($errorNumber != 0) {

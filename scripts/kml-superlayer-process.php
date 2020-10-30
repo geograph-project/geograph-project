@@ -22,6 +22,8 @@
  */
 
 
+exit; //TEMPORALLY disabled!
+
 //these are the arguments we expect
 $param=array(
 	'timeout'=>14, //timeout in minutes
@@ -64,7 +66,7 @@ while (1) {
 
 	if ($invalid_maps) {
 		//done as many small select statements to allow new maps to be processed
-		$recordSet = &$db->Execute("select url,filename,rendered from kmlcache where rendered != 1 order by level limit {$param['offset']},{$param['number']}");
+		$recordSet = $db->Execute("select url,filename,rendered from kmlcache where rendered != 1 order by level limit {$param['offset']},{$param['number']}");
 		while (!$recordSet->EOF) 
 		{
 			//sleep until calm if we've specified a load average

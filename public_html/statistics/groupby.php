@@ -98,7 +98,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		if ($ri) {
 			$smarty->assign('ri',$ri);
-			$filters['scenti'] = array($ri * 10000000,(($ri+1) * 10000000)-1); //scenti is a shortcut to avoid indexing ri on its own. 
+			$filters['scenti'] = array($ri * 1000000000,(($ri+1) * 1000000000)-1); //scenti is a shortcut to avoid indexing ri on its own. 
 		}
 	}
 	
@@ -247,7 +247,7 @@ function encode_option($option,$value) {
 			$value = $db->getOne("select crc32(lower('$value'))"); break;
 		case 'scenti':
 			//todo - get eastings/northings out of GR then use
-			# (gi.reference_index * 10000000 + IF(natgrlen+0 <= 3,(nateastings DIV 100) * 100 + natnorthings DIV 100),0) AS scenti, \
+			# (gi.reference_index * 1000000000 + IF(natgrlen+0 <= 3,(nateastings DIV 100) * 100000 + natnorthings DIV 100),0) AS scenti, \
 			break;
 	}
 	return array(($value)+0);

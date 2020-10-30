@@ -4,9 +4,6 @@
 
 <h2>Picture of the day</h2>
 
-<div class="interestBox" style="text-align:center">
-	Please do not disclose the details of this page - including the searches that show image details</div>
-
 <h3>Nominate New Image</h3>
 
 <div class="interestBox" style="width:230px;float:right">
@@ -55,12 +52,15 @@
 
 <h3>Upcoming Pool</h3>
 
-<p>You can <a href="/search.php?i=2136521">Preview</a>(don't disclose this url) the images currently in the emergency kitty. You can also <a href="/search.php?i=5761957&amp;temp_displayclass=vote">review the newly-added images</a> (again don't disclose this url), please visit this page regularly and rate images. The highest rated photos will be added to the allocation list below. </p>
+<p>You can <a href="/search.php?i=2136521">Preview</a>(don't disclose this url) the images currently in the kitty. 
+You can also <a href="/search.php?i=5761957&amp;temp_displayclass=vote">review the newly-added images</a> 
+	<b>or <a href="/search.php?i=5761957&amp;temp_displayclass=blackvote">as GeoRiver</a></b> (again don't disclose this), please visit this page regularly and rate images. 
+The highest rated photos will be added to the allocation list below. </p>
 
 
-<h3>Preliminary Allocations</h3>
+<h3>Upcoming Allocations</h3>
 
-<p>Photos only show on this list once they have been rated, so please check the preview link above and rate some images!</p>
+<p>Note, the pool images are randomly being shuffled, the list below really just shows that there are pool images to show, not the exact allocation of day. (on that day the pool will shuffle differenly!) 
 
 <table class="report">
 {foreach from=$coming_up key=date item=info}
@@ -70,7 +70,7 @@
 {if $info.gridimage_id}
 	<td><a href="/photo/{$info.gridimage_id}" class="imagepopup">photo {$info.gridimage_id}</a> 
 		{if $info.pool}
-		 (from pool)
+		 (random from pool)
 		{/if}
 	</td>
 {else}

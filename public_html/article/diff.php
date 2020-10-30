@@ -43,9 +43,9 @@ $db = GeographDatabaseConnection(true);
 
 $page = $db->getRow("
 select article.article_id,title,url,article.user_id,extract,licence,approved,realname
-from article 
+from article
 	left join user using (user_id)
-where ( (licence != 'none' and approved >0) 
+where ( (licence != 'none' and approved >0)
 	or user.user_id = {$USER->user_id}
 	or $isadmin )
 	and url = ".$db->Quote($_GET['page']).'
@@ -58,9 +58,15 @@ if (count($page)) {
 
 	$r1 = (!empty($_GET['1']))?intval($_GET['1']):0;
 	$r2 = (!empty($_GET['2']))?intval($_GET['2']):0;
-	
+
+	if ($r2 && $r1 == -1) {
+		$r1 = $db->getOne("SELECT article_revision_id FROM article_revisions WHERE article_id = {$page['article_id']} AND article_revision_id < $r2 ORDER BY article_revision_id DESC");
+	}
+
 	if ($r1 && $r2 && $r1 != $r2) {
 		$cacheid .= "|$r1.$r2";
+		if (!empty($_GET['c']))
+			$cacheid .= "++";
 	} else {
 		$cacheid = '';
 	}
@@ -69,7 +75,7 @@ if (count($page)) {
 if (!$smarty->is_cached($template, $cacheid))
 {
 	include("3rdparty/simplediff.inc.php");
-	
+
 	if (count($page)) {
 		$smarty->assign($page);
 		if ($r1 && $r2 && $r1 != $r2) {
@@ -80,7 +86,23 @@ if (!$smarty->is_cached($template, $cacheid))
 				$a1 = getRevisionArray($page['article_id'],intval($r1));
 				$a2 = getRevisionArray($page['article_id'],intval($r2),true);
 			}
-			$smarty->assign_by_ref('output', diff2table($a1,$a2));
+			if (count($a1) > 1300 || count($a2) > 1300 || !empty($_GET['c'])) {
+				$l1 = array_shift($a1);
+				$l2 = array_shift($a2);
+				$t1 = tempnam("/tmp", "diff");
+				$t2 = tempnam("/tmp", "diff");
+				$h1 = fopen($t1,'w'); foreach($a1 as $line) { fwrite($h1,$line."\n"); } fclose($h1);
+				$h2 = fopen($t2,'w'); foreach($a2 as $line) { fwrite($h2,$line."\n"); } fclose($h2);
+				$raw = `diff --unified $t1 $t2 --label "{$l1}" --label "{$l2}"`;
+				$html = "<pre class=code>\n".htmlentities($raw)."</pre>";
+				$html = preg_replace('/^(\+.*?)$/m','<span class=new>$1</span>',$html);
+				$html = preg_replace('/^(-.*?)$/m','<span class=old>$1</span>',$html);
+				$html = preg_replace('/^(@.*?)$/m','<span class=blank>$1</span>',$html);
+				$smarty->assign('output', $html);
+				unlink($t1);
+				unlink($t2);
+			} else
+				$smarty->assign_by_ref('output', diff2table($a1,$a2));
 		}
 	} else {
 		header("HTTP/1.0 404 Not Found");
@@ -104,17 +126,17 @@ function getRevisionArray($aid,$revid,$showwho = false) {
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$page = $db->getRow("
-	select category_name,url,title,extract,licence,approved,user.realname as modifier_realname,content,update_time
-	from article_revisions 
+	select category_name,url,title,extract,licence,approved,user.realname as modifier_realname,content,update_time,edit_prompt
+	from article_revisions
 		inner join user on (modifier = user.user_id)
 		left join article_cat on (article_revisions.article_cat_id = article_cat.article_cat_id)
-	where ( (licence != 'none' and approved > 0) 
+	where ( (licence != 'none' and approved > 0)
 		or user.user_id = {$USER->user_id}
 		or $isadmin )
 		and article_id = {$aid}
 		and article_revision_id = {$revid}");
 	$ADODB_FETCH_MODE = $prev_fetch_mode;
-	
+
 	$a = array();
 	$a[] = "Revision: {$page['update_time']}";
 	$a[] = "Title: {$page['title']}";
@@ -122,12 +144,13 @@ function getRevisionArray($aid,$revid,$showwho = false) {
 	$a[] = "Category: {$page['category_name']}";
 	$a[] = "Extract: {$page['extract']}";
 	$a[] = "Licence: {$page['licence']}";
+	if (!empty($page['edit_prompt']))
+		$a[] = "Prompt: {$page['edit_prompt']}";
 	$a[] = "Approved: {$page['approved']}";
 	if ($showwho)
 		$a[] = "Modifier: {$page['modifier_realname']}";
 	$a[] = "---------------------------------";
 	$a[] = "";
-	
 
         $f = array();
         $f[] = '';
@@ -135,7 +158,6 @@ function getRevisionArray($aid,$revid,$showwho = false) {
         $f[] = "Revision: {$page['update_time']}";
 
         return array_merge($a,explode("\n",str_replace("\r",'',$page['content'])),$f);
-
 }
 
 function diff2table($old, $new){

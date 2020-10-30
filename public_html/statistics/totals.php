@@ -34,15 +34,28 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	$db = GeographDatabaseConnection(true);
 
-
-	$tables=$db->MetaTables();
-	foreach ($tables as $table)
-	{
-		$count[$table]=$db->GetOne("select count(*) from $table");
+	if (false) {
+		//this WAS ok when all tables myisam, as its optimized away. But now we have some views, merge, and even innodn tables.
+		$tables=$db->MetaTables();
+		foreach ($tables as $table)
+		{
+			$count[$table]=$db->GetOne("select count(*) from $table");
+		}
+	} else {
+		//not all tables will have count, but should be good enough!
+		$tables = $db->getAssoc("SHOW TABLE STATUS");
+		foreach ($tables as $table => $row) {
+			if (!empty($row['Rows']))
+				$count[$table]=$row['Rows'];
+		}
 	}
-	
+
+	if (empty( $ADODB_SESSION_DRIVER) || $ADODB_SESSION_DRIVER != $CONF['db_driver']) {
+		//only keep this if sessions are really stored in database!
+		unset($count['sessions']);
+	}
+
 	$count['loc_placenames__ppl']=$db->CacheGetOne(14*24*3600,"select count(*) from loc_placenames where dsg = 'PPL'");
-	
 
 	$count['gridsquare__land']=$db->CacheGetOne(14*24*3600,"select count(*) from gridsquare where percent_land > 0");
 	$count['gridprefix__land']=$db->CacheGetOne(14*24*3600,"select count(*) from gridprefix where landcount > 0");
@@ -56,34 +69,32 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!empty($count['queries_archive']))
 		$count['queries'] +=$count['queries_archive'];
 	$count['apikeys']=$db->GetOne("select count(*) from apikeys where enabled = 'Y'");
-	
+
 	$count['autologin__30dayusers']=$db->GetOne("select count(distinct user_id)-1 from autologin where created > date_sub(now(), interval 30 day)");
-	
+
 	$smarty->assign_by_ref("count", $count);
-	
-	
-function count_files($dir,$ext) {
-	$c = 0;
-	$dir = "../".$dir;
-	if (is_dir($dir) && $dh = opendir($dir)) {
-		while (($file = readdir($dh)) !== false) 
-			if (preg_match('/\.'.$ext.'$/',$file) )
-				$c++;
-		closedir($dh);
+
+	if (false) {
+		//these can be slow, lets not bother
+		function count_files($dir,$ext) {
+			$c = 0;
+			$dir = "../".$dir;
+			if (is_dir($dir) && $dh = opendir($dir)) {
+				while (($file = readdir($dh)) !== false)
+					if (preg_match('/\.'.$ext.'$/',$file) )
+						$c++;
+				closedir($dh);
+			}
+			return $c;
+		}
+		$files['rss'] = count_files("rss/","...");
+		$files['tpraw'] = count_files("templates/basic/","tpl");
+		$files['tpcompiled'] = count_files("templates/basic/compiled/","php");
 	}
-	return $c;
-}
-	
-	$files['rss'] = count_files("rss/","...");
-	$files['memorymap'] = count_files("memorymap/","csv");
-	$files['tpraw'] = count_files("templates/basic/","tpl");
-	$files['tpcompiled'] = count_files("templates/basic/compiled/","php");
-	
+
 	$smarty->assign_by_ref("files", $files);
 }
 
 
 $smarty->display($template, $cacheid);
 
-	
-?>

@@ -57,6 +57,7 @@ if ($param['mode'] == 'history') {
 			}
 		}
 	}
+
 } elseif ($param['mode'] == 'diff') {
 	$table = 'gridimage_exif';
 
@@ -72,12 +73,13 @@ if ($param['mode'] == 'history') {
 		die("only {$row['count']} rows exist\n");
 
 	$from = intval($row['min']/1000)*1000;
-	$stop = intval(($row['max'] - 10000)/1000)*1000;
+	$stop = intval(($row['max'] - 10000)/1000)*1000; //stops a bit early, and rounds DOWN to nearest 1000, in general avoid writing partial files!!
 
 	for($start = $from; $start < $stop; $start+=1000) {
 		$end = $start+999;
 		print "#($start,$end,$table)\n";
 		dump_file($start,$end,$table);
+		sleep(1);
 	}
 
 	$cmds = array();
@@ -144,9 +146,8 @@ function dump_file($start,$end,$table) {
 
 	$h = fopen($logfile, "a");
 	fputcsv($h,array(date('r'),$out_file,$start,$end,$table,$c));
-	sleep(1);
 
-	/* todo, could run
+	/* todo, could run - instead do it a seperate step delete_exif.php - which run at same time manually as making sure the tmp file is safely stored!
         $sql = "DELETE FROM $table WHERE gridimage_id BETWEEN $start AND $end";
 
                 $line = `wc -l $filename`;

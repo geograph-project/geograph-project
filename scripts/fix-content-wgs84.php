@@ -35,7 +35,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
                         $conv = new Conversions;
 
 
-$recordSet = &$db->Execute("SELECT content_id,source, foreign_id, gridsquare_id FROM content WHERE wgs84_lat = 0 AND (gridsquare_id > 0 OR source = 'trip')");
+$recordSet = $db->Execute("SELECT content_id,source, foreign_id, gridsquare_id FROM content WHERE wgs84_lat = 0 AND (gridsquare_id > 0 OR source = 'trip')");
 while (!$recordSet->EOF) {
 	$row = $recordSet->fields;
 

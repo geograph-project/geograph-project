@@ -34,12 +34,15 @@ if ( $_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || @$_GET['q'] == ',') {
         exit;
 }
 
+if (empty($_GET['key']))
+	$_SERVER['HTTPS'] = 'on'; //cheeky, but forces generation of https:// urls :)
+
 require_once('geograph/global.inc.php');
 
-if (empty($_GET['format']) && strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot')!==FALSE) {
-	//lets start moving search engine bots. but Sitemaps use format=ATOM, so exclude them!
-	pageMustBeHTTP();
-}
+//if (empty($_GET['format']) && strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot')!==FALSE) {
+//	//lets start moving search engine bots. but Sitemaps use format=ATOM, so exclude them!
+//	pageMustBeHTTP();
+//}
 
 
 
@@ -170,6 +173,8 @@ if (isset($_GET['q']) || !empty($_GET['location'])) {
 
 	$q = $_GET['text'].' near (anywhere)';
 
+} elseif (!empty($_GET['orderby']) && $_GET['orderby'] == 'sequence') {
+	$_GET['i'] = 56711675;
 }
 
 $opt_expand = (!empty($_GET['expand']) && $format != 'KML')?1:0;
@@ -393,6 +398,8 @@ for ($i=0; $i<$cnt; $i++)
 		$item->long = $images->images[$i]->wgs84_long;
 	}
 	if ($photoformat) {
+		//todo, this should be internal to imagelist!
+		if (!empty($images->db)) $images->images[$i]->db =&$images->db;
 		$details = $images->images[$i]->getThumbnail(120,120,2);
 		$item->thumb = $details['server'].$details['url'];
 		$item->thumbTag = $details['html'];

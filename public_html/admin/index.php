@@ -37,6 +37,10 @@ $_SESSION['thumb'] = true;
 
 $smarty = new GeographPage;
 
+if (!empty($CONF['moderation_message'])) {
+        $smarty->assign("status_message",$CONF['moderation_message']);
+}
+
 $template='admin_index.tpl';
 $cacheid=$USER->user_id;
 $smarty->caching=0;
@@ -46,18 +50,26 @@ customExpiresHeader(300,false,true);
 	$db = GeographDatabaseConnection(true);
 
 if ($USER->hasPerm("ticketmod")) {
-		
+
 	$smarty->assign('tickets_new', $db->GetOne("select count(*) from gridimage_ticket where moderator_id=0 and status<>'closed' and deferred < date_sub(NOW(),INTERVAL 24 HOUR)"));
 	$smarty->assign('tickets_yours', $db->GetOne("select count(*) from gridimage_ticket where moderator_id={$USER->user_id} and status<>'closed'"));
-	
-	$smarty->assign('contacts_open', $db->GetOne("select count(*) from contactform where status = 'open' and moderator_id in (0,{$USER->user_id})"));
 }
 
 if ($USER->hasPerm("moderator")) {
-	$smarty->assign('support_open', $db->GetOne("select count(*) from support.ost_ticket where status = 'open' and isanswered=0 and dept_id != 3"));
+
+	$count = $memcache->name_get('ci',$mkey = 'pending');
+	if (empty($count) || isset($_GET['refresh'])) {
+	        $ctx = stream_context_create(array('http' => array('timeout' => 2 )));
+                $remote = file_get_contents("http://www.geograph.org.gg/stuff/pending.json.php",0,$ctx);
+		$count = json_decode($remote,true);
+		$memcache->name_set('ci',$mkey,$count,$memcache->compress,$memcache->period_short);
+	}
+	$smarty->assign('ci_pending', $count['images']);
+
+	//$smarty->assign('support_open', $db->GetOne("select count(*) from support.ost_ticket where status = 'open' and isanswered=0 and dept_id != 3 and (updated > date_sub(now(),interval 7 day) or created > date_sub(now(),interval 7 day))"));
 
 	$smarty->assign('images_pending', $db->GetRow("select count(*) as `count`,(unix_timestamp(now()) - unix_timestamp(min(submitted))) as age from gridimage where moderation_status='pending'"));
-	
+
 	$smarty->assign('gridsquares_sea', $db->GetAssoc("select reference_index,count(*) from gridsquare where percent_land=-1 group by reference_index"));
 
 
@@ -68,13 +80,15 @@ if ($USER->hasPerm("moderator")) {
 
 	$smarty->assign('articles_ready', $db->getOne("select count(*) from article where licence != 'none' and approved = 0"));
 
-	$smarty->assign('originals_new', $db->getOne("select count(*) from gridimage_pending where status = 'new' and type = 'original'"));
+	$smarty->assign('originals_new', $db->getOne("select count(*) from gridimage_pending where (status = 'new' OR (status = 'open' AND updated < DATE_SUB(NOW(),INTERVAL 1 HOUR) ) ) and type = 'original'"));
 }
 
 $smarty->assign('names_pending', $db->GetOne("select count(*) from game_score where approved=0"));
 
 $smarty->assign('pics_pending', $db->GetOne("select count(*) from gridimage_daily where showday is null and (vote_baysian > 3.5)"));
 $smarty->assign('pics_no_vote', $db->GetOne("select count(*) from gridimage_daily where showday is null and (vote_baysian = 0)"));
+
+$smarty->assign('unanswered_faq', $db->GetOne("select COUNT(*) FROM answer_question q    WHERE q.status = 1 AND question_id NOT IN (SELECT question_id FROM answer_answer WHERE status=1) AND created > date_sub(now(),interval 14 day)"));
 
 $smarty->display($template,$cacheid);
 

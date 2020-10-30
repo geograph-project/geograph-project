@@ -23,7 +23,25 @@
 
 require_once('geograph/global.inc.php');
 
-if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.org/bot')!==FALSE) ) {
+if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'BingPreview/1.0b')!==FALSE) ) {
+
+	$db = GeographDatabaseConnection(true);
+
+        $row =& $db->getRow("select gridimage_id,realname,title,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
+
+	print "<html><head><title>".htmlentities($row['title'])." by ".htmlentities($row['realname'])."</title>";
+	print "</head><body style=\"font-family:georgia;color:white;background-color:#000066\">";
+
+	print "<p><a href=\"http://creativecommons.org/licenses/by-sa/2.0/\" rel=\"licence\">";
+	print "<img src=\"http://creativecommons.org/images/public/somerights20.gif\" width=\"200\" height=\"70\" alt=\"cc-by-sa/2.0\" border=\"0\"></a></p>";
+
+	print "<p><big style=\"font-size:4.3em\">Image <b> &copy; ".htmlentities($row['realname'])."</b> and licensed for reuse as per <span style=\"white-space:nowrap;\">cc-by-sa/2.0</span></big></p>";
+
+	print "<a href=\"http://geograph.org.uk/p/{$row['gridimage_id']}\" style=\"color:yellow;font-size:3em\">http://geograph.org.uk/p/{$row['gridimage_id']}</a>";
+	print "</body></html>";
+	exit;
+
+} elseif (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.org/bot')!==FALSE) ) {
 	//die as quickly as possible with the minimum html (with the approval of geourl owner)
 	$db = GeographDatabaseConnection(true);
 
@@ -84,13 +102,27 @@ if (isset($_GET['style'])) {
 
 customGZipHandlerStart();
 
+if ($_SERVER['HTTP_USER_AGENT'] == "curl/7.55.1") {
+	$CONF['template']='archive';
+}
+
 $smarty = new GeographPage;
 
 if ($CONF['template']=='archive') {
-	dieUnderHighLoad(1.5);
+	dieUnderHighLoad(2.5);
 }
 
 $template='view.tpl';
+
+if (!empty($_GET['preview'])) {
+	        require_once('geograph/imagelist.class.php');
+
+	$smarty->assign('right_block','_block_recent.tpl');
+
+        //lets find some recent photos
+        new RecentImageList($smarty);
+}
+
 
 $cacheid=0;
 
@@ -112,10 +144,13 @@ if (isset($_GET['id']))
 	
 		exit;
 	}
-	
-	
+
+        if ($image->isValid() && $image->moderation_status!='rejected')
+		pageMustBeHTTPS();
+
+
 	$isowner=($image->user_id==$USER->user_id)?1:0;
-	$ismoderator=$USER->hasPerm('moderator')?1:0;
+	$ismoderator=($USER->hasPerm('moderator')||$USER->hasPerm('director'))?1:0;
 
 	$ab=floor($_GET['id']/10000);
 
@@ -127,12 +162,16 @@ if (isset($_GET['id']))
 		$CONF['global_thumb_limit'] = 4;
 	}
 
-	if ($_GET['id'] >= 5500000) {
+	if ($_GET['id'] <= 1600000 || $_GET['id'] >= 2800000 || !empty($_SESSION['large'])) {
 		$_GET['large'] = 1; //using _GET so it can be understood inside gridimage class!
+	} elseif ($_SERVER['HTTP_REFERER'] == 'http://www.geograph.org.uk/' || $_SERVER['HTTP_REFERER'] == 'https://www.geograph.org.uk/') {
+		$_GET['large'] = 1;
 	}
 
 	if (!empty($_GET['large'])) {
-		$cacheid .= "L";
+		if (!isset($_SESSION['large']))
+			$_SESSION['large'] = 1;
+		$cacheid .= "LL";
 	}
 
 	//is the image rejected? - only the owner and administrator should see it
@@ -195,6 +234,11 @@ if ($image->isValid())
 		//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 		customCacheControl($mtime,$hash,($USER->user_id == 0));
 	}
+
+	if ($image->title == 'The War Memorial at Winchcombe') {
+		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"http://{$_SERVER['HTTP_HOST']}/of/title:".urlencode($image->title)."\"/>");
+	}
+
 
 	if (!empty($_SESSION['currentSearch']) && ($idx = array_search($image->gridimage_id,$_SESSION['currentSearch']['r'])) !== FALSE) {
 		$s = $_SESSION['currentSearch']; //keep a copy to avoid adding next/prev to the session value
@@ -282,23 +326,46 @@ if ($image->isValid())
 			$image->hits = $db->getOne("SELECT hits+hits_archive+hits_gallery FROM gridimage_log WHERE gridimage_id = {$image->gridimage_id}");
 		//}
 
+		$image->assignToSmarty($smarty);
+
+		$image->loadSnippets();
+		$image->loadCollections();
+
+		//disable large image for [panorama: ] tagged images, needs to be done here, AFTER loadSnippets()!
+		if (!empty($image->tag_prefix_stat['panorama']) && !empty($_GET['large']) && strpos($_SERVER['QUERY_STRING'],'large')===false) //ensure user didnt specifically ask in URL!
+			$_GET['large']=0;
+
 		if ($CONF['template']!='archive' && empty($q) && !empty($db)) {
 			if ($same = $db->getOne("SELECT images from gridimage_duplicate where grid_reference = '{$image->grid_reference}' and title = ".$db->Quote($image->title))) {
 				$url = "/stuff/list.php?title=".urlencode($image->title)."&amp;gridref={$image->grid_reference}";
 				$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title ".htmlentities($image->title)."</a> in this square");
+
+				if (!empty($image->collections))
+					$image->collections[] = array('url'=>$url,'title'=>$image->title." [$same]",'type'=>'Title Cluster');
+
+/*
 			} elseif (preg_match('/[^\w]+(\d{1,3})[^\w]$/', $image->title)) {
 				$title = preg_replace('/[^\w]+(\d{1,3})[^\w]$/', ' #', $image->title);
 				if ($same = $db->getOne("SELECT images from gridimage_duplicate where grid_reference = '{$image->grid_reference}' and title = ".$db->Quote($title))) {
 	                                $url = "/stuff/list.php?title=".urlencode($title)."&amp;gridref={$image->grid_reference}";
                                 	$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title ".htmlentities(preg_replace('/ #$/','',$title))."</a> in this square");
                         	}
+*/
+			} elseif (substr_count($image->title,' ') > 1) {
+				$words = explode(' ',trim($image->title));
+				array_pop($words);
+				$title = preg_replace('/[^\w]+$/','',implode(' ',$words))."%";  //the replace removes commas etc from end of words (so 'The Black Horse, Nuthurst', necomes 'The Black Horse')
+				if (($same = $db->getOne("SELECT COUNT(*) AS images FROM gridimage_search where grid_reference = '{$image->grid_reference}' and title LIKE ".$db->Quote($title))) && $same > 1) {
+	                                $url = "/stuff/list.php?title=".urlencode(preg_replace('/%$/',' ',$title))."&amp;gridref={$image->grid_reference}";
+                                	$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title starting with ".htmlentities(preg_replace('/%$/','',$title))."</a> in this square");
+
+					if (!empty($image->collections))
+						$image->collections[] = array('url'=>$url,'title'=>preg_replace('/%$/','',$title)." ... [$same]",'type'=>'Title Cluster');
+
+                        	}
 			}
 		}
 
-		$image->assignToSmarty($smarty);
-
-		$image->loadSnippets();
-		$image->loadCollections();
 	} else {
 		$smarty->assign_by_ref("image",$image); //we dont need the full assignToSmarty
 	}
@@ -314,5 +381,10 @@ if ($image->isValid())
 }
 
 $smarty->display($template, $cacheid);
+
+
+if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
+//         Profiler::render();
+}
 
 

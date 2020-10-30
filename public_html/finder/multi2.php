@@ -67,12 +67,14 @@ if (!empty($_GET['q'])) {
 
 		$others['search'] = array('title'=>'Full Image Search','url'=>"/search.php?q=$u2");
 		$others['tags'] = array('title'=>'Image Tags','url'=>"/finder/bytag.php?q=$u2");
+		$others['groups'] = array('title'=>'Automatic Clusters','url'=>"/finder/groups.php?q=$u2&group=group_ids");
 		$others['content'] = array('title'=>'Collections','url'=>"/content/?q=$u2");
 		$others['places'] = array('title'=>'Placenames','url'=>"/finder/places.php?q=$u2");
 		$others['users'] = array('title'=>'Contributors','url'=>"/finder/contributors.php?q=$u2");
 		$others['sqim'] = array('title'=>'Images by Square','url'=>"/finder/sqim.php?q=$u2");
 		$others['text'] = array('title'=>'Simple Text Search','url'=>"/full-text.php?q=$u2");
 		$others['snippet'] = array('title'=>'Shared Descriptions','url'=>"/snippets.php?q=$u2");
+		$others['links'] = array('title'=>'Links Directory','url'=>"http://www.geograph.org/links/search.php?q=$u2");
 
 		if ($CONF['forums']) {
 			$others['discuss'] = array('title'=>'Discussions','url'=>"/finder/discussions.php?q=$u2");
@@ -81,20 +83,20 @@ if (!empty($_GET['q'])) {
 		$others['google'] = array('title'=>'Google Search','url'=>"https://www.google.co.uk/search?q=$u2&sitesearch=".$_SERVER['HTTP_HOST']);
 		$others['gimages'] = array('title'=>'Google Images','url'=>"https://www.google.co.uk/search?q=$u2+site:".$_SERVER['HTTP_HOST']."&tbm=isch");
 
-		$others['browser'] = array('title'=>'Geograph Browser','url'=>"https://www.geograph.org.uk/browser/#!/q=$u2");
+		$others['browser'] = array('title'=>'Geograph Browser','url'=>"/browser/#!/q=$u2");
 
 		$old = $sphinx->q;
 		$try_words = true;
 
 		if (is_numeric($q)) {
-				
+
 			$where = "gridimage_id = $q";
 
 			$sql = "SELECT gridimage_id,grid_reference,title,realname,user_id
 			FROM gridimage_search
 			WHERE $where
-			LIMIT 60";
-			
+			LIMIT {$sphinx->pageSize}";
+
 			$list = $db->getAll($sql);
 			if ($list) {
 				$result = array();
@@ -116,14 +118,14 @@ if (!empty($_GET['q'])) {
 
 			if ($grid_ok) {
 				$gr = $square->grid_reference;
-				
+
 				if ($square->imagecount) {
 					$where = "grid_reference = '{$gr}'";
-											
+
 					$sql = "SELECT gridimage_id,title,realname,user_id
 					FROM gridimage_search
 					WHERE $where
-					LIMIT 5";
+					LIMIT {$sphinx->pageSize}";
 
 					$result = array();
 					$result['title'] = "Images in {$gr}";
@@ -137,9 +139,9 @@ if (!empty($_GET['q'])) {
 					$result['count'] = $square->imagecount." images";
 					$result['link'] = "/gridref/".urlencode($sphinx->qclean);
 					$results[] = $result;
-					
+
 					$others['search2'] = array('title'=>'Images Near '.$gr,'url'=>"/search.php?gridref=$u2&do=1");
-		
+
 				} else {
 					$sphinx->processQuery();
 					$ids = $sphinx->returnIds($pg,'_images');
@@ -150,7 +152,7 @@ if (!empty($_GET['q'])) {
 						$sql = "SELECT gridimage_id,grid_reference,title,realname,user_id
 						FROM gridimage_search
 						WHERE $where
-						LIMIT 60";
+						LIMIT {$sphinx->pageSize}";
 
 						$result = array();
 						$result['title'] = "Images near {$gr}";
@@ -167,14 +169,14 @@ if (!empty($_GET['q'])) {
 
 						unset($others['search']);
 					}
-					
+
 					$sphinx->q = $old;
 				}
-				
+
 				if ($square->natgrlen == 6) { //centisquare
-									
+
 					//todo - sphinx can do this...
-					
+
 					require_once('geograph/conversions.class.php');
 					$conv = new Conversions;
 					list($centi,$len) = $conv->national_to_gridref(
@@ -182,7 +184,7 @@ if (!empty($_GET['q'])) {
 					$square->getNatNorthings()-$correction,
 					6,
 					$square->reference_index,false);
-					
+
 					$others['search3'] = array('title'=>'Images in centisquare '.$sphinx->qclean,'url'=>"/gridref/$gr?centi=$centi");
 				}
 			}
@@ -192,7 +194,7 @@ if (!empty($_GET['q'])) {
 			##########################################################
 
 			//specifically exclude contributor column!
-			
+
 			if (!preg_match('/@\w+/',$old)) {
 				//todo, maybe extend this to myriad etc?
 				$sphinx->q = "@(title,comment,imageclass,snippet,snippet_title) ".$sphinx->q;
@@ -200,21 +202,21 @@ if (!empty($_GET['q'])) {
 
 			$ids = $sphinx->returnIds($pg,'_images');
 			if (!empty($ids) && count($ids)) {
-				
+
 				$where = "gridimage_id IN(".join(",",$ids).")";
-						
+
 				$sql = "SELECT gridimage_id,grid_reference,title,realname,user_id
 				FROM gridimage_search
 				WHERE $where
-				LIMIT 60";
-				
+				LIMIT {$sphinx->pageSize}";
+
 				$result = array();
 				$result['title'] = "Image keyword matches";
 				if ($q != trim($_GET['q'])) {
 					$result['title'] .= " for [ $q ]";
 				}
 				$result['results'] = array();
-				
+
 				$list = $db->getAll($sql);
 				foreach ($list as $row) {
 					$row['link'] = '/photo/'.$row['gridimage_id'];
@@ -223,24 +225,82 @@ if (!empty($_GET['q'])) {
 				$result['count'] = $sphinx->resultCount." images";
 				$result['link'] = "/search.php?searchtext=$u2&do=1";
 				$results[] = $result;
-				
+
 				unset($others['search']);
 			}
 
 			$sphinx->q = $old;
 
 			##########################################################
+
+			if (!empty($CONF['sphinxql_dsn']) && !preg_match('/[@:]/',$sphinx->q)) {
+
+		                $prev_fetch_mode = $ADODB_FETCH_MODE;
+		                $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+		                $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
+
+				$attribute = "group";
+		                $where = "match(".$sph->Quote("@groups ".$sphinx->q).")";
+
+
+	                        $rows = $sph->getAll($sql = "
+	                        select id,{$attribute}s,{$attribute}_ids,COUNT(*) as images,GROUPBY() as group,grid_reference
+	                        from sample8
+	                        where $where
+	                        group by {$attribute}_ids
+	                        order by images desc
+	                        limit 50"); //we deliberately overfetch, because some may be filtered!
+
+				if (!empty($rows)) {
+	                                $result = array();
+                                	$result['title'] = "Automatic Clusters";
+                        	        if ($q != trim($_GET['q'])) {
+                	                        $result['title'] .= " for [ $q ]";
+        	                        }
+	                                $result['results'] = array();
+
+					$words = explode(' ',trim(preg_replace('/[^\w]+/',' ',$sphinx->q)));
+					$crit = "/(".implode('|',$words).")/i";
+		                        foreach ($rows as $idx => $row) {
+		                                $ids = explode(',',$row[$attribute.'_ids']);
+	        	                        $names = explode('_SEP_',$row[$attribute.'s']);array_shift($names); //the first is always blank!
+                        	       		$row['title'] = trim($names[array_search($row['group'],$ids)]);
+
+						if (!empty($words) && !preg_match($crit,$row['title']))
+							continue;
+
+	                                        $row['link'] = "/browser/#!/q=$u2+groups%3A".urlencode($row['title']);
+        	                                $result['results'][] = $row;
+
+						if (count($result['results']) == $sphinx->pageSize)
+							break;
+               			        }
+					if (!empty($result['results'])) {
+						$data = $sph->getAssoc("SHOW META");
+
+        	        	                $result['count'] = $data['total_found']." clusters";
+        		                        $result['link'] = "/finder/groups.php?q=$u2&group=group_ids";
+	                	                $results[] = $result;
+					}
+                                }
+
+				unset($others['groups']);
+			}
+
+
+			##########################################################
 			//alternate: $places = $gaz->findPlacename($placename);
 			$ids = $sphinx->returnIds($pg,'gaz');
 			unset($others['places']); //now we checked this no point showing it! (we know it wont work!)
 			if (!empty($ids) && count($ids)) {
-			
+
 				$where = "id IN(".join(",",$ids).")";
-										
+
 				$sql = "SELECT name as title,gr as grid_reference,id,localities as type
 				FROM placename_index
 				WHERE $where
-				LIMIT 60";
+				LIMIT {$sphinx->pageSize}";
 
 				$result = array();
 				$result['title'] = "Placename matches";
@@ -265,13 +325,13 @@ if (!empty($_GET['q'])) {
 				$ids = $sphinx->returnIds($pg,'gaz_stemmed'); //used stemmed because it has enable_star
 				$sphinx->pageSize /= 3;
 				if (!empty($ids) && count($ids)) {
-				
+
 					$where = "id IN(".join(",",$ids).")";
-														
+
 					$sql = "SELECT name,gr as grid_reference,id,localities as type
 					FROM placename_index
 					WHERE $where
-					LIMIT 60";
+					LIMIT {$sphinx->pageSize}";
 
 					$result = array();
 					$result['title'] = "Placename partial matches";
@@ -280,10 +340,10 @@ if (!empty($_GET['q'])) {
 					$list = $db->getAll($sql);
 					foreach ($list as $row) {
 						$left = trim(preg_replace('/ +/',' ',str_ireplace($row['name'],'',$old)));
-						
+
 						$row['link'] = '/search.php?searchtext='.urlencode($left).'&placename='.$row['id']."&do=1";
 						$row['title'] = "Search for '$left' near ".$row['name'];
-						
+
 						$bits = explode(', ',$row['type']);
 						if (count($bits) > 2) {
 							$row['type'] = ", ".implode(", ",array_slice($bits,0,2));
@@ -293,31 +353,30 @@ if (!empty($_GET['q'])) {
 					$result['count'] = $sphinx->resultCount." places";
 					$result['link'] = "/finder/places.php?q=".urlencode($sphinx->q);
 					$results[] = $result;
-				
 				}
-				
+
 				$sphinx->q = $old;
-				
+
 			} else {
-				//last ditch attempt incase we have a single match (farms etc not in placename index) 
+				//last ditch attempt incase we have a single match (farms etc not in placename index)
 
 				//todo - see multi.php
 			}
-			
+
 			##########################################################
 
 			//todo - change the query to promote short matches (eg | "^bridge$") - field end doesnt work right now :(
 
 			$ids = $sphinx->returnIds($pg,'tags');
 			if (!empty($ids) && count($ids)) {
-			
+
 				$where = "tag_id IN(".join(",",$ids).")";
-																		
+
 				$sql = "SELECT if (tag.prefix != '' and not (tag.prefix='term' or tag.prefix='category' or tag.prefix='cluster' or tag.prefix='wiki'),concat(tag.prefix,':',tag.tag),tag.tag) as title, count(*) as images
 				FROM tag_public tag
 				WHERE $where
 				GROUP BY tag_id
-				LIMIT 60";
+				LIMIT {$sphinx->pageSize}";
 
 				$result = array();
 				$result['title'] = "Tag matches";
@@ -325,7 +384,7 @@ if (!empty($_GET['q'])) {
 
 				$list = $db->getAll($sql);
 				foreach ($list as $row) {
-					$row['link'] = '/tags/?tag='.urlencode($row['title']);
+					$row['link'] = '/tagged/'.urlencode2($row['title']);
 					$result['results'][] = $row;
 				}
 				$result['count'] = $sphinx->resultCount." tags";
@@ -337,14 +396,14 @@ if (!empty($_GET['q'])) {
 
 			$ids = $sphinx->returnIds($pg,'user');
 			if (!empty($ids) && count($ids)) {
-				
+
 				$where = "user_id IN(".join(",",$ids).")";
-														
+
 				$sql = "SELECT realname as title,nickname as type,user.user_id,images
 				FROM user
 				INNER JOIN user_stat USING (user_id)
 				WHERE $where
-				LIMIT 60";
+				LIMIT {$sphinx->pageSize}";
 
 				$result = array();
 				$result['title'] = "Contributor Name matches";
@@ -358,29 +417,52 @@ if (!empty($_GET['q'])) {
 				$result['count'] = $sphinx->resultCount." contributors";
 				$result['link'] = "/finder/contributors.php?q=$u2";
 				$results[] = $result;
-				
+
 				unset($others['users']);
 			}
 
 			##########################################################
 
-//todo - worth striping out any of the other collections to dedicated searchs (or maybe if collections count is over 20 say?) 
+			$data = file_get_contents("http://www.geograph.org/links/search.json.php?q=".urlencode($old));
+			$decode = json_decode($data,true);
+			if (!empty($decode['rows'])) {
+
+				$result = array();
+				$result['title'] = "Links Directory matches";
+				$result['results'] = array();
+
+				$list = $db->getAll($sql);
+				foreach ($decode['rows'] as $row1) {
+					$row = array();
+					$row['title'] = $row1['title'];
+					$row['link'] = $row1['url'];
+					$row['type'] = 'link';
+					$result['results'][] = $row;
+				}
+				if (preg_match('/of (\d+)/',$decode['info'],$m))
+					$result['count'] = $m[1]." links";
+				$result['link'] = "http://www.geograph.org/links/search.php?q=$u2";
+				$results[] = $result;
+
+				unset($others['links']);
+			}
+
+			##########################################################
+
+//todo - worth striping out any of the other collections to dedicated searchs (or maybe if collections count is over 20 say?)
 
 			$sphinx->q = "@title ".$sphinx->q." @source -themed -user -category -portal"; //we look at user above, and category below
 
 			$ids = $sphinx->returnIds($pg,'content_stemmed');
 			if (!empty($ids) && count($ids)) {
-				
-				$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'context'=>'Geographical Context', 'other'=>'Other');
 
-				
 				$where = "content_id IN(".join(",",$ids).")";
-														
+
 				$sql = "SELECT title,url,images,source,content.user_id,realname
 				FROM content
 				LEFT JOIN user USING (user_id)
 				WHERE $where
-				LIMIT 60";
+				LIMIT {$sphinx->pageSize}";
 
 				$result = array();
 				$result['title'] = "Collection title matches";
@@ -389,7 +471,7 @@ if (!empty($_GET['q'])) {
 				$list = $db->getAll($sql);
 				foreach ($list as $row) {
 					$row['link'] = $row['url'];
-					$row['type'] = $sources[$row['source']];
+					$row['type'] = $CONF['content_sources'][$row['source']];
 					$result['results'][] = $row;
 				}
 				$result['count'] = $sphinx->resultCount." collections";
@@ -401,12 +483,9 @@ if (!empty($_GET['q'])) {
 
 			} else {
 				$sphinx->q = $old." @source -themed -user -category";
-				
+
 				$ids = $sphinx->returnIds($pg,'content_stemmed');
 				if (!empty($ids) && count($ids)) {
-
-					$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'other'=>'Other');
-
 
 					$where = "content_id IN(".join(",",$ids).")";
 
@@ -414,7 +493,7 @@ if (!empty($_GET['q'])) {
 					FROM content
 					LEFT JOIN user USING (user_id)
 					WHERE $where
-					LIMIT 60";
+					LIMIT {$sphinx->pageSize}";
 
 					$result = array();
 					$result['title'] = "Collection keyword matches";
@@ -423,7 +502,7 @@ if (!empty($_GET['q'])) {
 					$list = $db->getAll($sql);
 					foreach ($list as $row) {
 						$row['link'] = $row['url'];
-						$row['type'] = $sources[$row['source']];
+						$row['type'] = $CONF['content_sources'][$row['source']];
 						$result['results'][] = $row;
 					}
 					$result['count'] = $sphinx->resultCount." collections";
@@ -435,18 +514,49 @@ if (!empty($_GET['q'])) {
 			}
 
 			$sphinx->q = $old;
-			
+
 			##########################################################
+
+			$sphinx->q = $old;
+
+			$ids = $sphinx->returnIds($pg,'document_stemmed');
+			if (!empty($ids) && count($ids)) {
+
+				$where = "content_id IN(".join(",",$ids).")";
+
+				$sql = "SELECT title,url,images,source,content.user_id,realname
+				FROM content
+				LEFT JOIN user USING (user_id)
+				WHERE $where
+				LIMIT {$sphinx->pageSize}";
+
+				$result = array();
+				$result['title'] = "Project Info Page matches";
+				$result['results'] = array();
+
+				$list = $db->getAll($sql);
+				foreach ($list as $row) {
+					$row['link'] = $row['url'];
+					$row['type'] = $CONF['content_sources'][$row['source']];
+					$result['results'][] = $row;
+				}
+				$result['count'] = $sphinx->resultCount." pages";
+				$result['link'] = "/content/documentation.php?q=$u2";
+				$results[] = $result;
+			}
+
+			##########################################
+
 
 			$ids = $sphinx->returnIds($pg,'category');
 			if (!empty($ids) && count($ids)) {
-			
+
 				$where = "category_id IN(".join(",",$ids).")";
-																		
+
 				$sql = "SELECT imageclass as title,c as images
 				FROM category_stat
 				WHERE $where
-				LIMIT 60";
+				LIMIT {$sphinx->pageSize}";
 
 				$result = array();
 				$result['title'] = "Category matches";
@@ -460,22 +570,21 @@ if (!empty($_GET['q'])) {
 				$result['count'] = $sphinx->resultCount." categories";
 				$result['link'] = "/content/?q=$u2&scope=category";
 				$results[] = $result;
-			
 			}
 
 			##########################################################
 		}
-		
+
 /*
 todo...?
 
-if (count($results) == 1 && strpos($results[0]['link'],'/search.php') === 0) 
+if (count($results) == 1 && strpos($results[0]['link'],'/search.php') === 0)
 	header("Location: {$results[0]['link']}");
 	exit;
 }
 
 */
-		
+
 		$smarty->assign_by_ref("results",$results);
 		$smarty->assign_by_ref("others",$others);
 	}
@@ -485,3 +594,4 @@ if (count($results) == 1 && strpos($results[0]['link'],'/search.php') === 0)
 }
 
 $smarty->display($template,$cacheid);
+

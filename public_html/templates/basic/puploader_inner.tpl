@@ -96,12 +96,12 @@
 						if (eastings2 < 10) 
 							return;
 						currentelement = marker2;
-						var point = new OpenSpace.MapPoint(eastings2, northings2-3);
+						var point = new OpenSpace.MapPoint(eastings2, northings2);
 					} else {
 						if (eastings1 < 10) 
 							return;
 						currentelement = marker1;
-						var point = new OpenSpace.MapPoint(eastings1, northings1-3);
+						var point = new OpenSpace.MapPoint(eastings1, northings1);
 					}
 
 					if ((currentelement == null) && map) {

@@ -30,11 +30,41 @@ init_session();
 $smarty = new GeographPage;
 
 $USER->mustHavePerm("basic");
+$isadmin=$USER->hasPerm('moderator')?1:0;
 
-$db = GeographDatabaseConnection(true);
+
+$db = GeographDatabaseConnection(false);
 
 
 $smarty->display('_std_begin.tpl',$mkey);
+
+if (!empty($_GET['delete']) && $isadmin) {
+	$idx = intval($_GET['delete']);
+	if (!empty($_POST['confirm'])) {
+		$sql = "UPDATE answer_question SET status = 0 WHERE question_id = $idx";
+		$db->Execute($sql);
+
+		if (mysql_affected_rows())
+			print "<p>Deleted</p>";
+
+		print " <a href=?>Back</a>";
+
+	} else {
+		$row = $db->getRow("SELECT * FROM answer_question q WHERE question_id = $idx");
+
+	        print "<ul><li><a href=\"faq-answer.php?id={$idx}\">".htmlentities($row['question'])."</a></li></ul>";
+
+		print "<form method=post action=?delete=$idx>";
+		print "<input type=submit name=confirm value=\"Confirm Delete Question\">";
+
+		print " <a href=?>Back</a>";
+		print "</form>";
+	}
+	$smarty->display('_std_end.tpl',$mkey);
+
+	exit;
+}
+
 
 
 ?>
@@ -50,15 +80,22 @@ $data = $db->getAssoc("SELECT * FROM answer_question q
 
 
 if ($data) {
-    
     print "<h3>Latest unanswered questions....</h3>";
-    
+
+	if ($isadmin)
+		print "<p>Questions that are irrelivent, or already answered can be deleted.</p>";
 
     print "<ul>";
-    
+
     foreach ($data as $idx => $row) {
-        
-        print "<li><a href=\"faq-answer.php?id={$idx}\">".htmlentities2($row['question'])."</a></li>";
+
+        print "<li><a href=\"faq-answer.php?id={$idx}\">".htmlentities2($row['question'])."</a>";
+
+	if ($isadmin) {
+		print " <a href=\"?delete=$idx\" style=color:red>delete</a>";
+	}
+
+	print "</li>";
     }
     print "</ul>";
 } else {

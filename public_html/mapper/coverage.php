@@ -29,6 +29,19 @@ init_session();
 
 $smarty = new GeographPage;
 $smarty->assign('google_maps_api3_key',$CONF['google_maps_api3_key']);
+
+if (!empty($_SESSION['gridref'])) {
+	$smarty->assign('gridref',$_SESSION['gridref']);
+	/*
+	$square=new GridSquare;
+	if ($square->setByFullGridRef($_SESSION['gridref'],true,true)) {
+		$square->getNatEastings();
+		$smarty->assign('reference_index',$square->reference_index);
+		$smarty->assign('nateastings',$square->nateastings);
+		$smarty->assign('natnorthings',$square->natnorthings);
+	}*/
+}
+
 if (!empty($_GET['mobile'])) {
         $smarty->display('mapper_coverage_mobile.tpl');
 } else {

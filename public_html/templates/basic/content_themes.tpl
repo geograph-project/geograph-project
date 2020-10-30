@@ -8,27 +8,42 @@
 	<a {if !$v}class="tabSelected"{else}href="?" class="tab"{/if}>Short Clusters</a>
 	<a {if $v eq 2}class="tabSelected"{else}href="?v=2" class="tab"{/if}>Long Clusters</a>
 	<a {if $v eq 3}class="tabSelected"{else}href="?v=3" class="tab"{/if}>Collaborative</a>
+	<a {if $v eq 4}class="tabSelected"{else}href="?v=4" class="tab"{/if}>Original</a>
 </div>
 <div class="interestBox">
 	<h2 style="margin-bottom:0">User Contributed Content</h2>
-	Documents are assigned automatically to groups, this is still experimental! 
+	{if $v eq 3 || $v eq 4}
+		Documents have been manually assigned to broad categories. Note this list is not actively maintained, so only some collections have been classified.
+	{else}
+		Documents are assigned automatically to groups, this is still experimental! 
+	{/if}
 </div>
+
+{if $stat}
+	Index: &middot;
+	{foreach from=$stat key=item item=count}
+		<span class=nowrap><a href="#{$item|escape:'url'|escape:'url'}">{$item|escape:'html'}</a>{if $count > 1}<span style=color:gray>({$count})</span>{/if}</span> &middot;
+	{/foreach}
+	<hr/>
+{/if}
+
 
 
 
 {assign var="lastid" value="0"}
 {foreach from=$list item=item}
-{if $lastcat != $item.label}
-{if $lastcat}
-</ul>
-</div>
-{cycle values=",<br style='clear:both'/>"}
-{/if}
-<div style="float:left;width:46%;position:relative; padding:5px;">
-<h3>{$item.label}</h3>
-<ul class="content">
-{assign var="lastname" value=""}
-{/if}
+	{if $lastcat != $item.label}
+		{if $lastcat}
+			</ul>
+			</div>
+			{cycle values=",<br style='clear:both'/>"}
+		{/if}
+		<div style="float:left;width:46%;position:relative; padding:5px;">
+		<a name="{$item.label|escape:'url'}"></a><h3>{$item.label} <small><a href="/content/?q={$item.label|escape:'url'}">more...</a></small></h3>
+		<ul class="content">
+		{assign var="lastname" value=""}
+	{/if}
+
 	<li><b><a title="{$item.extract|default:'View Content'}" href="{$item.url}">{$item.title}</a></b><br/>
 	<small id="att{$lastid+1}"><small style="color:lightgrey">by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a></small></small>
 

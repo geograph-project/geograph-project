@@ -53,7 +53,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++) {
 	$maxdate="";
 
 	$offset=($sitemap-1)*$urls_per_sitemap;
-	$recordSet = &$db->Execute("select tagtext,date(last_used) as last_used from tag_stat where `count` >= 3 AND users>1 limit $offset,$urls_per_sitemap") or die(mysql_error());
+	$recordSet = $db->Execute("select tagtext,date(last_used) as last_used from tag_stat where `count` >= 3 AND users>1 limit $offset,$urls_per_sitemap") or die(mysql_error());
 
 	//write one <url> line per result...
 	while (!$recordSet->EOF) {

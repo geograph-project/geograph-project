@@ -1,4 +1,4 @@
-{assign var="page_title" value="Places :: Geograph Gazetteer"}
+{assign var="page_title" value="Photos of Britain and Ireland"}
 {assign var="meta_description" value="Geograph has many photos and images of the British Isles, find them here."}
 {include file="_std_begin.tpl"}
  

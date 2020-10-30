@@ -47,7 +47,6 @@ if (isset($_GET['preview']) && $uploadmanager->validUploadId($_GET['preview']))
 
 $smarty = new GeographPage;
 
-
 //you must be logged in to request changes
 $USER->mustHavePerm("basic");
 
@@ -87,10 +86,14 @@ if (isset($_REQUEST['id']))
 			{
 				$uploadmanager->setLargestSize($_POST['largestsize']);
 
-				$uploadmanager->addOriginal($image);
+				$result = $uploadmanager->addOriginal($image);
 
-				$smarty->assign('step',4);
-
+				if (!empty($result)) {
+					$smarty->assign('error',$result);
+					$smarty->assign('step',-1);
+				} else {
+					$smarty->assign('step',4);
+				}
 			} else {
 				$smarty->assign('step',-1);
 			}

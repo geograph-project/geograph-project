@@ -441,7 +441,7 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 					}
 
 				} else {
-					$('#clicklayer_thumbs').html('No results within '+(radius/1000).toFixed(2)+'km of '+gridref+'.<br>Tip: Try clicking closer to center of a visible thumbnail.');
+					$('#clicklayer_thumbs').html('No results within '+(radius/1000).toFixed(2)+'km of '+gridref+' (the area of the blue circle on the map). Zoom out for a circle covering a bigger area. <br>'Tip: can try turning on the [Photo Subjects] and/or [Photo Viewpoints] layer to see the positions of photos, alternatively the [Photo Thumbnails] plots many thumbnails direct on the map (the Photo Subjects layer works well together with Photo Thumbnails layer)');
 				}
 			}
 		);

@@ -63,6 +63,11 @@ $smarty->display('_std_begin.tpl',$mkey);
 
 <h3>Ask a question...</h3>
 
+<div class="interestBox" style="background-color:pink">
+	<b>Note</b>: This form is for prompting for a answer to be added to the <a href="/faq3.php?l=0">FAQ page</a>, your request should be generic and relevent to a large number of users.
+	If you have a specific question you are seeking help with, can get an individual response by <a href="/ask.php">Asking a Support Representative</a>.
+</div>
+
 <p><b>Confused about something on Geograph? Don't know what something means? Want to find out more about something?</b> ... seek answers here!</p>
 
 <?
@@ -74,6 +79,8 @@ if (!empty($message)) {
 
 
 <form action="faq-ask.php" method="post" style="background-color:lightgrey;padding:10px;border:1px solid gray">
+
+
 
 <b>Question</b>:<br/>
  &nbsp; &nbsp; &nbsp; <input type="text" name="question" value="" maxlength="128" size="80"/> (128 charactors max)<br/>
@@ -88,7 +95,7 @@ if (!empty($message)) {
  (the more detailed the better, but try to keep it consise. This will make it easier to answer!)<br/>
  
 <br/> 
-<b>Anonymous</b>? <input type="checkbox" name="anon"/><br/>
+<b>Anonymous</b>? <input type="checkbox" name="anon" value="1"/><br/>
  &nbsp; &nbsp; &nbsp;  (tick to submit this question anonymously?)<br/>
 <br/> 
  <input type="submit" value="Submit Question"/>

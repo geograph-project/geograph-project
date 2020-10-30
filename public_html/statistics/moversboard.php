@@ -25,21 +25,13 @@ require_once('geograph/global.inc.php');
 
 init_session_or_cache(3600, 360); //cache publically, and privately
 
-if (isset($_GET['debug'])) {
-	print_r($USER);
-	print_r($_SESSION);
-}
 
+pageMustBeHTTPS();
 
 if (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type'])) {
         $type = $USER->setPreference('statistics.moversboard.type',$_GET['type'],true);
 } else {
         $type = $USER->getPreference('statistics.moversboard.type','tpoints',true);
-}
-if (isset($_GET['debug'])) {
-	print "TYPE=$type\n";
-	print date('r');
-	exit;
 }
 
 $smarty = new GeographPage;
@@ -128,6 +120,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_table = " gridimage_search i ";
 		$heading = "G-Points";
 		$desc = "test points";
+	} elseif ($type == 'multi') {
+		$sql_column = "sum((i.points='tpoint') + (i.moderation_status = 'geograph') + (ftf>0) + (ftf>0 && ftf<5) + 1)";
+		$sql_table = " gridimage_search i ";
+		$heading = "MultiPoints";
+		$desc = "multiple points";
 	} elseif ($type == 'depth') {
 		$sql_column = "count(*)/count(distinct grid_reference)";
 		$sql_table = " gridimage_search i ";
@@ -229,8 +226,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		group by i.user_id
 		having (geographs > 0 or pending > 0)
 		order by geographs desc $sql_orderby, pending desc ";
-		if ($_GET['debug'])
-			print $sql;
 		$topusers=$db->GetAssoc($sql);
 	}
 	//assign an ordinal

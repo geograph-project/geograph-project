@@ -67,8 +67,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	select
 		user.user_id,user.realname,user.nickname,user.rights,role,email,gravatar
 	from user
-		left join user_moderation using (user_id)
-	where (length(replace(replace(replace(replace(rights,'dormant',''),'basic',''),'member',''),'traineemod','')) > 3 OR role != '') AND rights NOT LIKE '%suspicious%'
+	where length(rights)>5 AND (length(replace(replace(replace(replace(rights,'dormant',''),'basic',''),'member',''),'traineemod','')) > 3 OR role != '') AND rights NOT LIKE '%suspicious%'
 		$where
 	group by user.user_id
 	order by rand()");
@@ -97,8 +96,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	                if ($row['gravatar'] && $row['gravatar'] == 'found')
 				$team[$key]['md5_email'] = md5(strtolower($row['email']));
 
+			unset($team[$key]['email']);
 			$team[$key]['rights'] = implode(', ',array_keys($rights));
 		}
+
 	}
 
         $smarty->assign_by_ref('positions', $positions);

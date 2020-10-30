@@ -303,7 +303,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 
 			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-			$fields = ",if(natnorthings > 0,(nateastings-{$square->nateastings})*(nateastings-{$square->nateastings})+(natnorthings-{$square->natnorthings})*(natnorthings-{$square->natnorthings}),0) as distance";
+			$fields = ",if(natnorthings > 0,pow(cast(nateastings as signed)-{$square->nateastings},2)+pow(cast(natnorthings as signed)-{$square->natnorthings},2),0) as distance";
 
 			$where[] = "CONTAINS(
 					GeomFromText($rectangle),

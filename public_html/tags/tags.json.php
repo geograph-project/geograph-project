@@ -24,6 +24,9 @@
 if (!empty($_GET['mode']) && $_GET['mode'] == 'suggestions' && !empty($_GET['string'])) {
 	require("./topics.json.php");
 	exit;
+} elseif (!empty($_GET['mode']) && $_GET['mode'] == 'vision') {
+	require("./vision.json.php");
+	exit;
 } elseif (!empty($_GET['mode']) && $_GET['mode'] == 'prospective' && !empty($_GET['string'])) {
 	require("./prospective.json.php");
 	exit;
@@ -44,12 +47,6 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'suggestions' && !empty($_GET['str
 require_once('geograph/global.inc.php');
 
 
-if (!empty($_GET['callback'])) {
-	header('Content-type: text/javascript');
-} else {
-	header('Content-type: application/json');
-}
-
 $db = GeographDatabaseConnection(true);
 
 $sql = array();
@@ -64,27 +61,49 @@ if (isset($_GET['term'])) {
 	if (empty($_GET['term']) && !empty($CONF['sphinx_host'])) {
 		$_REQUEST['q'] = $_GET['q'] = '..'; //falls though as an empty to query, which sphinx now orders by images desc - so gives most popular tags!
 	}
+} elseif (!empty($_GET['synonums'])) {
+	$sql['columns'] .= "tag.tag,tag.prefix,canonical,tag_id,`count` as images";
+        $sql['tables']['stat'] = 'LEFT JOIN tag_stat ts USING (tag_id)';
+
 } else {
 	$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='category' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
 }
 
 if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
 	init_session();
-	customExpiresHeader(90,false,true);
+	customExpiresHeader(30,false,true);
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	if ($USER->registered) {
-
-		$sql['columns'] .= ",MAX(gt.created) AS last_used";
 
 		$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
 
 		$sql['wheres'][] = "gt.user_id = {$USER->user_id}";
 		$sql['wheres'][] = "prefix != 'top'";
+		$sql['wheres'][] = "prefix != 'type'";
+		$sql['wheres'][] = "prefix != 'milestoneid'";
 		$sql['wheres'][] = "gridimage_id < 4294967296";
 
-		$sql['group'] = 'tag.tag_id';
-		$sql['order'] = 'last_used DESC';
+		if ($USER->user_id == 2639) {
+
+			//this user deletes a lot of tags
+			$sql['wheres'][] = "gt.status = 2";
+			$sql['order'] = 'gt.updated DESC';
+			$sql['limit'] = 500;
+
+			//if there are lots of tags, this turns out most effient way to 'group' it. A real group, groups all rows, order then limits.
+			$sql = array(
+				'columns' => 'DISTINCT *',
+				'tables' => array("(".sqlBitsToSelect($sql).") AS t2"),
+			);
+
+		} else {
+			$sql['columns'] .= ",MAX(gt.created) AS last_used";
+
+			$sql['group'] = 'tag.tag_id';
+			$sql['order'] = 'last_used DESC';
+		}
+
 		$sql['limit'] = 59;
 	}
 
@@ -134,44 +153,58 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 			list($prefix,$_REQUEST['q']) = explode(':',$_REQUEST['q'],2);
 		}
 
-                $q = trim(preg_replace('/[^\w@!]+/',' ',str_replace("'",'',$_REQUEST['q'])));
+                $q = trim(preg_replace('/[^\w@!|-]+/',' ',str_replace("'",'',$_REQUEST['q'])));
 
+		$pgsize = 60;
+		if (!empty($_GET['limit']) && $_GET['limit']<=1000)
+			$pgsize = intval($_GET['limit']);
 		$sphinx = new sphinxwrapper($q);
-		$sphinx->pageSize = $pgsize = 60;
+		$sphinx->pageSize = $pgsize;
 
 		$pg = (!empty($_REQUEST['page']))?intval(str_replace('/','',$_REQUEST['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
 
-		$offset = (($pg -1)* $sphinx->pageSize)+1;
+		$offset = (($pg -1)* $sphinx->pageSize);
 
-		if ($offset < (1000-$pgsize) ) {
+		if ($offset <= (1000-$pgsize) ) {
 			$client = $sphinx->_getClient();
 			if (!empty($_GET['counts'])) {
-				$client->SetSelect('images');
+				$client->SetSelect('images /* OPTION expand_keywords=1 */');
 				$sql['columns'] .= ",tag_id";
 			} else {
-	                        $client->SetSelect('id'); //we dont need any, but sphinx wants somethingt
+	                        $client->SetSelect('id /* OPTION expand_keywords=1 */');
 			}
 
-			if ($sphinx->q && strpos($sphinx->q,'@') === false && !preg_match('/(images|alpha)$/',$_GET['mode'])) {
-				$sphinx->q = "\"^{$sphinx->q}$ \" | \"^={$sphinx->q}$ \" | \"^{$sphinx->q}\" | \"{$sphinx->q}$ \" | (^$sphinx->q) | (=$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$ \"";
+			if (!empty($sphinx->q)) {
+				$before = $sphinx->q;
+
+				if (!preg_match('/[@"|-]/',$sphinx->q) && //this doesnt work, if already operatores in the search
+						!preg_match('/(images|alpha)$/',$_GET['mode'])) { //no point doing all this, ebcause going to ignore WEIGHT()
+
+					$sphinx->q = "\"^{$sphinx->q}$ \" | \"^={$sphinx->q}$ \" | \"^{$sphinx->q}\" | \"{$sphinx->q}$ \" | (^$sphinx->q) | (=$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$ \"";
+				}
+
+				if (preg_match('/ /',$before))
+					$sphinx->q .= " | ".str_replace(' ','',$before);
+
 				if (!empty($prefix)) {
 					$sphinx->q = "({$sphinx->q}) @prefix $prefix";
 				}
 			} elseif (!empty($prefix)) {
 				$sphinx->q = "\"^{$prefix}$\" | (^$prefix) | ($prefix) | @tag (^$prefix) | @tag \"^{$prefix}$\" | @prefix \"^{$prefix}\" | @prefix \"^{$prefix}\" | @prefix \"^{$prefix}\"";
 			}
+
 			if (!empty($_GET['mode'])) {
 				switch($_GET['mode']) {
-					case 'alpha': 
+					case 'alpha':
 						$sphinx->sort = "tag ASC";
 						//... falls though to use exclusion for top
 					case 'ranked': //the default anyway!
 						if (empty($prefix)) {
 							if (empty($sphinx->q)) {
-								$sphinx->q = "_ALL_ @prefix -top";
+								$sphinx->q = "_ALL_ @prefix -top -subject -bucket";
 							} else {
-								$sphinx->q = "({$sphinx->q}) @prefix -top";
+								$sphinx->q = "({$sphinx->q}) @prefix -top -subject -bucket";
 							}
 						}
 						break;
@@ -198,7 +231,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 								$sphinx->q = "{$_GET['gr']} ({$sphinx->q})";
 							}
 							$sphinx->processQuery();
-							$sphinx->q = str_replace('@grid_reference (',"@image_square ({$_GET['gr']} | ",$sphinx->q)." @prefix -top";
+							$sphinx->q = str_replace('@grid_reference (',"@image_square ({$_GET['gr']} | ",$sphinx->q)." @prefix -top -subject";
 						}
 						break;
 					case 'subject':
@@ -239,6 +272,8 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 			                die("{error: 'not logged in'}");
 			        }
 				$sphinx->addFilters(array('user_id'=>array($USER->user_id)));
+			} elseif (isset($_GET['user_id'])) {
+				$sphinx->addFilters(array('user_id'=>array(intval($_GET['user_id']))));
 			}
 
 			$ids = $sphinx->returnIds($pg,'tags');
@@ -294,20 +329,25 @@ if (isset($_GET['term'])) {
 			$data[$idx]['images'] = $sphinx->res['matches'][$row['tag_id']]['attrs']['images'];
 		}
 	}
+
+        if (!empty($_GET['synonums'])) {
+		$have = array();
+		$need = array();
+		foreach ($data as $idx => $row) {
+			$have[$row['tag_id']] = $row['tag_id'];
+			$need[$row['tag_id']] = $row['tag_id']; //find any tags using this tag as its canonical
+			if ($row['canonical'])
+				$need[$row['canonical']] = $row['canonical']; //find any tags with the same canonical, AND the tag itself
+		}
+		if ($more = $db->getAll($sql = "SELECT {$sql['columns']},1 AS added,`count` AS images FROM tag LEFT JOIN tag_stat USING (tag_id)
+				WHERE (tag_id IN (".implode(',',$need).") OR canonical IN (".implode(',',$need).")) AND tag_id NOT IN (".implode(',',$have).")"))
+			$data = array_merge($data,$more);
+
+if (!empty($_GET['dd']))
+	print $sql;
+
+	}
 }
 
-if (!empty($_GET['callback'])) {
-        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
-        echo "{$callback}(";
-}
-
-require_once '3rdparty/JSON.php';
-$json = new Services_JSON();
-print $json->encode($data);
-
-if (!empty($_GET['callback'])) {
-        echo ");";
-}
-
-
+outputJSON($data);
 

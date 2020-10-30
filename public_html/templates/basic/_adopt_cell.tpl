@@ -5,6 +5,6 @@
 </div>
 {if $image->imagecount > 1}
 	<div>
-	&nbsp;<b>{$image->imagecount}</b> <a href="#" onclick="return showbox({$image->gridsquare_id},{$x},{$y})">images</a>
+	&nbsp;<b>{$image->imagecount}</b> <a href="#" onclick="return showbox({$image->gridsquare_id},{$x},{$y})">images</a> {if !$image->auto}[done]{/if}
 	</div>
 {/if}	  

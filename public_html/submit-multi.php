@@ -27,8 +27,84 @@ init_session();
 //you must be logged in to submit images
 $USER->mustHavePerm("basic");
 
+dieIfReadOnly();
 
-if (!empty($_POST) && !empty($_POST['name'])) {
+if ($_GET['tab'] != 'cloud')
+//temp as page doesnt work on https (mainly maps!)
+pageMustBeHTTP();
+
+if (!empty($_POST) && !empty($_POST['urls'])) {
+	print ' <meta name="viewport" content="width=device-width, initial-scale=1"> ';
+
+	if (!empty($_POST['debug'])) {
+		print "<pre>";
+		print_r($_POST);
+		print "</pre>";
+	}
+	$ids = array();
+	if (preg_match_all('/https\:\/\/ucarecdn.com\/(\w[\w-]+)~(\d+)/',$_POST['urls'],$m)) {
+		foreach ($m[1] as $idx => $uuid) {
+			$num = $m[2][$idx];
+			foreach (range(0,$num-1) as $i) {
+				$url = "https://ucarecdn.com/{$uuid}~{$num}/nth/{$i}/.jpg"; //fake extension just to allow it via processURL
+
+				if (!empty($_POST['debug']))
+					print "<pre>$url</pre>";
+
+		                print "<h3>".htmlentities("$uuid ".($i+1)."/$num")."</h3>";
+		                $uploadmanager=new UploadManager;
+
+		                if ($uploadmanager->processURL($url)) {
+                		        print "<p>Copied successfully</p>";
+					$ids[] = $uploadmanager->upload_id;
+		                } else {
+                		        print "<p>Error: {$uploadmanager->errormsg}</p>";
+		                }
+			}
+		}
+
+	} else foreach (explode("\n",str_replace("\r","",$_POST['urls'])) as $line) {
+		list($filename,$url,$handle) = explode('|',$line);
+		if (empty($url))
+			continue;
+
+		print "<h3>".htmlentities($filename)."</h3>";
+	        $uploadmanager=new UploadManager;
+
+	        if ($uploadmanager->processURL($url)) {
+        	        print "<p>Copied successfully</p>";
+			$ids[] = $uploadmanager->upload_id;
+		} else {
+        	        print "<p>Error: {$uploadmanager->errormsg}</p>";
+        	}
+
+		//todo, use $handle to REMOVE the fiule from storage!
+	}
+
+	$id = array_shift($ids);
+	$url = "/submit2.php?transfer_id={$id}";
+
+	if (!empty($_REQUEST['auto'])) {
+		header("Location: $url");
+		print "<script>window.location.href='$url';</script>";
+		//use a script tag, because header might not work!
+	}
+
+	print " <a href=\"/submit-multi.php?tab=submit\">Continue with v1</a> ";
+	print " <a href=\"/submit2.php?multi=true\">Continue with v2</a> (<a href=$url>Direct with FIRST image)</a>";
+
+	if (!empty($_GET['mobile'])) {
+		print "<p>Tip: Can also open these URLs on desktop browser, and continue the submission there.</p>";
+		$url = "http://{$_SERVER['HTTP_HOST']}/submit-multi.php?tab=submit";
+		print "<p>v1: <a href=$url>$url</a></p>";
+		$url = "http://{$_SERVER['HTTP_HOST']}/submit2.php?multi=true";
+		print "<p>v2: <a href=$url>$url</a></p>";
+		print "or just goto the 'multi' submission method, the files are uploaded to general upload area";
+	}
+
+	exit;
+
+} elseif (!empty($_POST) && !empty($_POST['name'])) {
 	// HTTP headers for no cache etc
 	header('Content-type: text/plain; charset=UTF-8');
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
@@ -105,6 +181,7 @@ if (!empty($_POST) && !empty($_POST['name'])) {
 
 
 $smarty = new GeographPage;
+$cacheid = 'normal';
 
 if (!empty($CONF['submission_message'])) {
         $smarty->assign("status_message",$CONF['submission_message']);
@@ -115,18 +192,30 @@ if (isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTTP_X_PSS_LOOP'] == 'pagesp
 	$smarty->assign("small_upload",1);
 }
 
+if (!empty($_GET['mobile'])) {
+	$smarty->assign("mobile",1);
+	$smarty->assign("canonical",$CONF['SELF_HOST']."/".basename($_SERVER['PHP_SELF']));
+	$cacheid = 'mobile';
+}
+
 if (empty($_GET['tab'])) {
-	
+
 	$template = "submit_multi_upload.tpl";
-	
+	$smarty->assign("page_title","Multi-Upload");
+
 } elseif ($_GET['tab'] == "upload") {
-	
+
 	$template = "submit_multi_upload.tpl";
-	
+	$smarty->assign("page_title","Multi-Upload");
+
+} elseif ($_GET['tab'] == "cloud") {
+
+	$template = "submit_multi_cloud.tpl";
+
 } elseif ($_GET['tab'] == "nofrills") {
-	
+
 	$template = "submit_multi_nofrills.tpl";
-	
+
 	$dirs = array (-1 => '');
 	$jump = 360/16; $jump2 = 360/32;
 	for($q = 0; $q< 360; $q+=$jump) {
@@ -139,13 +228,13 @@ if (empty($_GET['tab'])) {
 	}
 	$dirs['00'] = $dirs[0];
 	$smarty->assign_by_ref('dirs', $dirs);
-	
+
 } else {
 	$template = "submit_multi_submit.tpl";
 	$uploadmanager=new UploadManager;
 
 	if (!empty($_GET['delete']) && $uploadmanager->validUploadId($_GET['delete']) ) {
-		
+
 		$uploadmanager->setUploadId($_GET['delete'],false);
 
 		$uploadmanager->cleanUp();
@@ -153,17 +242,17 @@ if (empty($_GET['tab'])) {
 }
 
 if ($template == "submit_multi_submit.tpl" || $template == "submit_multi_nofrills.tpl") {
-	
+
 	$uploadmanager=new UploadManager;
 
 	$data = $uploadmanager->getUploadedFiles();
-	
+
 	$smarty->assign_by_ref('data',$data);
 } elseif (empty($CONF['submission_message'])) {
 	customExpiresHeader(3600,false,true);
 }
 
 
-$smarty->display($template);
+$smarty->display($template,$cacheid);
 
 

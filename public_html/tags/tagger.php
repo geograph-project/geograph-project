@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: tagger.php 8584 2017-08-25 20:48:58Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -36,8 +36,14 @@ if ($usenew) {
 	$template='tags_tagger.tpl';
 }
 
+if (!empty($_GET['old']))
+	$smarty->assign('old',1);
+
 //if ($USER->user_id == 3)
 	$smarty->assign('vision',1);
+
+################################################################
+# Read Params
 
 $gid = 0;
 
@@ -49,27 +55,27 @@ if (!empty($_GET['upload_id'])) {
 
 	$smarty->assign('upload_id',$_GET['upload_id']);
 	$smarty->assign('gridimage_id',$gid);
-	
+
 	$smarty->assign('is_owner',$is_owner = 1);
-	
+
 	$linktable = "gridimage_tag"; //this will be needed for multiple types
 	$linkid = "gridimage_id"; //this will be needed for multiple types
-	
+
 } elseif (!empty($_REQUEST['gridimage_id'])) {
 
 	$gid = intval($_REQUEST['gridimage_id']);
-	
+
 	$image=new GridImage();
 	$ok = $image->loadFromId($gid);
-		
+
 	if (!$ok) {
 		die("invalid image");
 	}
-	
+
 	if ($image->user_id == $USER->user_id) {
 		$smarty->assign('is_owner',$is_owner = 1);
 	}
-	
+
 	$smarty->assign('gridimage_id',$gid);
 
 	$linktable = "gridimage_tag"; //this will be needed for multiple types
@@ -78,14 +84,17 @@ if (!empty($_GET['upload_id'])) {
 } elseif (!empty($_REQUEST['ids']) && preg_match('/^\d+(,\d+)+$/',$_REQUEST['ids'])) {
 	$ids = $_REQUEST['ids'];
 	$smarty->assign('ids',$ids);
-	
+
 	$ids = explode(',',$ids);
-	
+
 	$smarty->assign('is_owner',$is_owner = 1); //we allow them to set public tags just that we verify it at write time!
-	
+
 	$linktable = "gridimage_tag"; //this will be needed for multiple types
 	$linkid = "gridimage_id"; //this will be needed for multiple types
 }
+
+################################################################
+# Apply any POSTed updates
 
 $db = GeographDatabaseConnection(false);
 
@@ -165,18 +174,18 @@ if (!empty($_POST['save']) && !empty($ids)) {
 				foreach ($tags as $tid => $row2) {
 					if (in_array("id:$tid",$_POST['tag_id'])) {
 						$found++;
-						
+
 						$idx = array_search("id:$tid",$_POST['tag_id']);
-						
+
 						$status = 1;
 						if ($_POST['mode'][$idx] == 'Public' || $_POST['mode'][$idx] == 2) { //TODO check allowed to make public!
 							$status = 2;
 						}
-						
+
 						if ($row['status'] != $status) {
 							$sql = "UPDATE gridimage_tag SET status = $status WHERE gridimage_id = $gid AND tag_id = $tid AND user_id = {$USER->user_id}";
 							$db->Execute($sql);
-							
+
 							if ($gid < 4294967296 && empty($cleared)) {
 								//clear any caches involving this photo
 								$ab=floor($gid/10000);
@@ -195,7 +204,6 @@ if (!empty($_POST['save']) && !empty($ids)) {
 	}
 
 	if (!empty($tagsDontMatch)) {
-		
 		//$tags array set by the precheck :)
 
 		if (!empty($tags)) {//see if any need deleting
@@ -221,13 +229,13 @@ if (!empty($_POST['save']) && !empty($ids)) {
 		foreach ($_POST['tag_id'] as $idx => $text) {
 			if ($text == '-deleted-') {
 				//its either a tag created and deleted (so we can ignore) or its been deleted above!
-				
+
 			} elseif (preg_match('/^id:(\d+)$/',$text,$m) && isset($tags[$m[1]])) {
 				//its matches - nothing to do
-				
+
 			} else {
 				//its a new tag for this link!
-				
+
 				$u = array();
 				$u['tag'] = $text;
 				$bits = explode(':',$u['tag'],2);
@@ -236,7 +244,7 @@ if (!empty($_POST['save']) && !empty($ids)) {
 					$u['tag'] = $bits[1];
 				}
 				$u['tag'] = trim(preg_replace('/[ _]+/',' ',$u['tag']));
-				
+
 				if (preg_match('/^id:(\d+)$/',$text,$m)) {
 					$tag_id = $m[1];
 				} else {
@@ -249,7 +257,6 @@ if (!empty($_POST['save']) && !empty($ids)) {
 					$u['user_id'] = $USER->user_id;
 
 					$db->Execute('INSERT INTO tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
-					
 					$tag_id = mysql_insert_id();
 				}
 
@@ -258,27 +265,25 @@ if (!empty($_POST['save']) && !empty($ids)) {
 				$u['gridimage_id'] = $gid;
 				$u['tag_id'] = $tag_id;
 				$u['user_id'] = $USER->user_id;
-				
+
 				if ($_POST['mode'][$idx] == 'Public' || $_POST['mode'][$idx] == 2) { //TODO check allowed to make public!
 					$u['status'] = 2;
 				}
-				
+
 				$db->Execute('INSERT INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ? ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
-				
+
 				if ($u['status'] == 2 && $gid < 4294967296 && empty($cleared)) {
 					//clear any caches involving this photo
 					$ab=floor($gid/10000);
 					$smarty->clear_cache(null, "img$ab|{$gid}");
 					$cleared = true;
 				}
-				
 			}
 		}
-	
 	}
 
 } elseif ($gid && !empty($_POST['remove'])) {
-	
+
 	$criteria = array();
 	$criteria['gridimage_id'] = $gid;
 	//todo add user_id filter!?
@@ -316,10 +321,10 @@ if (!empty($_POST['save']) && !empty($ids)) {
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
 	}
-
 }
 
-
+################################################################
+# lookup data for displaying box
 
 if ($gid) {
 
@@ -362,23 +367,26 @@ if ($gid) {
 } elseif ($ids) {
 	//TODO -- look though the images, and compile popular terns/clusters...
 }
-	if (!empty($_GET['v']))
-		$smarty->assign('hide_context',1);
 
-	if (!empty($is_owner) && empty($_GET['v'])) {
+################################################################
+# setup some variable
 
-		if (empty($db2))
-			$db2 = GeographDatabaseConnection(true);
-		
-		$list = $db2->getAssoc("SELECT `top`,`grouping` FROM category_primary ORDER BY `sort_order`");
-		foreach ($list as $top => $grouping) {
+if (!empty($_GET['v']))
+	$smarty->assign('hide_context',1);
 
-			$tree[$grouping][] = $top;
-		}
-		$smarty->assign_by_ref('tree',$tree);
+if (!empty($is_owner) && empty($_GET['v'])) {
+
+	if (empty($db2))
+		$db2 = GeographDatabaseConnection(true);
+
+	$list = $db2->getAssoc("SELECT `top`,`grouping` FROM category_primary ORDER BY `sort_order`");
+	foreach ($list as $top => $grouping) {
+		$tree[$grouping][] = $top;
 	}
-	
-	 $buckets = array('Closeup',
+	$smarty->assign_by_ref('tree',$tree);
+}
+
+$buckets = array('Closeup',
         'CloseCrop', //was telephoto
         'Wideangle',
         'Landscape',
@@ -392,7 +400,8 @@ if ($gid) {
         'People',
         'Life',
         'Transport');
-	$smarty->assign_by_ref('buckets',$buckets);
+$smarty->assign_by_ref('buckets',$buckets);
+
 
 if ($template=='tags_tagger.tpl' && isset($_GET['form']) && $_GET['form'] == 'submissions') {
 	//stop this working on the old form! BEcause it runs the extraction, even if dont ever visit the tab.
@@ -401,14 +410,20 @@ if ($template=='tags_tagger.tpl' && isset($_GET['form']) && $_GET['form'] == 'su
         $string = $_GET['title'].' '.$_GET['comment'];
 
         $smarty->assign('topicstring',$string);
-
 }
+
+################################################################
+# some template specific lookups
 
 if ($template=='tags_tagger.tpl' && $USER->registered) {
 	if (empty($db2))
                 $db2 = GeographDatabaseConnection(true);
 
-	$recent = $db2->getAll("SELECT tag,prefix,MAX(gt.created) AS last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' AND prefix != 'type' GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 20");
+	if ($USER->user_id == 2639) {
+		$recent = $db2->getAll("SELECT DISTINCT * FROM (SELECT tag,prefix FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' AND prefix != 'type' AND prefix != 'milestoneid' ORDER BY gt.updated DESC LIMIT 500) t2 LIMIT 30");
+	} else {
+		$recent = $db2->getAll("SELECT tag,prefix,MAX(gt.created) AS last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' AND prefix != 'type' AND prefix != 'milestoneid' GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 20");
+	}
 	if (count($used) && count($recent)) {
 		$list = array();
 		foreach ($used as $row) $list[$row['tag']]=1;
@@ -435,8 +450,8 @@ if ($template=='tags_tagger.tpl' && $USER->registered) {
 	}
 }
 
-
-
+################################################################
+# final display
 
 if (!empty($CONF['sphinx_host'])) {
 	$smarty->assign('sphinx',1);
@@ -444,9 +459,6 @@ if (!empty($CONF['sphinx_host'])) {
 if (!empty($_GET['create'])) {
 	$smarty->assign('create',1);
 }
-
-
-
 
 $smarty->display($template,$template);
 

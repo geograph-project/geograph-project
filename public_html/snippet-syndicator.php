@@ -46,10 +46,10 @@ if ($format == 'KML') {
 	if (!isset($_GET['simple']))
 		$_GET['simple'] = 1; //default to on
 	$extension = (empty($_GET['simple']))?'kml':'simple.kml';
-	$crit = "and wgs84_lat != 0 and grid_reference != ''";
+	$crit = "and s.wgs84_lat != 0 and s.grid_reference != ''";
 } elseif ($format == 'GPX') {
 	$extension = 'gpx';
-	$crit = "and wgs84_lat != 0 and grid_reference != ''";
+	$crit = "and s.wgs84_lat != 0 and s.grid_reference != ''";
 } else {
 	$extension = 'xml';
 	$crit = '';
@@ -62,14 +62,13 @@ $rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/snippet-{$format}.$
 
 
 $rss = new UniversalFeedCreator();
-if (empty($_GET['refresh'])) 
+if (empty($_GET['refresh']))
 	$rss->useCached($format,$rssfile);
 
-$rss->title = 'Shared Descriptions'; 
+$rss->title = 'Shared Descriptions';
 $rss->link = "{$CONF['SELF_HOST']}/snippets.php";
- 
-	
-$rss->description = "Recent Shared descriptions"; 
+
+$rss->description = "Recent Shared descriptions";
 
 	$rss->syndicationURL = "{$CONF['SELF_HOST']}/snippet-syndicator.php?format=$format";
 
@@ -80,17 +79,19 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 	require_once('geograph/gridsquare.class.php');
 	$conv = new Conversions;
 
-	$rss->geo = true;	
-} 
+	$rss->geo = true;
+}
 
 $db=GeographDatabaseConnection(true);
 
 
-$sql="select snippet_id,title,comment,created,wgs84_lat,wgs84_long,realname
-from snippet
-	left join user using (user_id)
-where enabled = 1 $crit
-order by snippet_id desc
+$sql="select snippet_id,s.title,s.comment,s.created,s.wgs84_lat,s.wgs84_long,u.realname
+from snippet s
+	inner join gridimage_snippet using (snippet_id)
+	inner join gridimage_search using (gridimage_id)
+	left join user u on (u.user_id = s.user_id)
+where s.enabled = 1 $crit
+group by snippet_id desc
 limit 96";
 
 $recordSet = $db->Execute($sql);

@@ -7,16 +7,14 @@
 
 	<div id="map_message" style="width:800px; height:10px; position:relative;; left:0; margin-bottom:3px; padding:3px;"></div>
 	<div id="map" style="width:800px; height:600px; position:relative;"></div>
-	<div id="thumbs"></div>
+
 	<br style="clear:both"/>
 
         <link rel="stylesheet" href="{$static_host}/ol/theme/default/style.css" type="text/css">
         <link rel="stylesheet" href="{$static_host}/ol/theme/default/google.css" type="text/css">
         <link rel="stylesheet" href="{"/ol/style.css"|revision}" type="text/css">        
 
-<link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/themes/ui-darkness/jquery-ui.css" rel="stylesheet"/>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
 
 	<script src="{$static_host}/ol/grid-projections.js"></script>
         <script src="{$static_host}/ol/OpenLayers.js"></script>
@@ -30,18 +28,6 @@
         <script src="https://maps.google.com/maps/api/js?v=3"></script>
 
 {literal}
-<style>
-div#thumbs div.thumb {
-  float:left;
-  width:120px;
-  height:130px;
-  margin:2px;
-  text-align:center;
-}
-div#thumbs {
-  width:800px;
-}
-</style>
 
 <script type="text/javascript">
 //<![CDATA[
@@ -56,7 +42,6 @@ var running = false;
 var prevZoom = -1;
 var shownall = false;
 var sentBounds = '';
-var myriads = new Array();
 var m;
 
 var endpoint = "https://api.geograph.org.uk/api-facet.php";
@@ -78,59 +63,7 @@ function loadMap() {
 	olmap.layers['coverage'].events.register('visibilitychanged', olmap.layers['coverage'], updateCoverage); //pvf
 
 	updateCoverage();
-
-	olmap.map.events.register('click', olmap.map, clickEvent);
-
 }
-
-
-function clickEvent(e) {
-
-    var lonLat = olmap.map.getLonLatFromPixel(e.xy);
-
-    if (olmap.map.getProjection() != "EPSG:4326") {
-        lonLat.transform(olmap.map.getProjection(), "EPSG:4326");
-    }
-
-    var data = {
-      a: 1,
-      q: getTextQuery()+(myriads.length?' @myriad ('+myriads.join('|')+')':'')+(document.theForm.customised[1].checked?' @user user'+document.theForm.user_id.value:''),
-      limit: 10,
-      select: "title,grid_reference,realname,hash,wgs84_lat,wgs84_long" //user_id,takenday
-    };
-    
-    data.geo=roundNumber(lonLat.lat,6)+","+roundNumber(lonLat.lon,6)+",0";
-    data.olbounds=sentBounds;
-    data.sort="@geodist ASC"; data.rank=2; 
-
-
-    $('#thumbs').html('<div style="height:260px">Loading thumbnails.... please wait.</div>');
-    
-    _call_cors_api(
-      endpoint,
-      data,
-      'serveCallback',
-      function(data) {
-        if (data && data.matches) {
-          $('#thumbs').empty();
-
-          $.each(data.matches,function(index,value) {
-            
-            value.attrs.thumbnail = getGeographUrl(value.id, value.attrs.hash, 'small');
-            
-    value.html = '<div class="thumb">Dist: '+roundNumber(value.attrs['@geodist']/1000,1)+'km<br><a href="http://www.geograph.org.uk/photo/'+value.gridimage_id+'" title="'+value.attrs.grid_reference+' : '+value.attrs.title+' by '+value.attrs.realname+'"><img src="'+value.attrs.thumbnail+'"/></a></div>';
-            
-            $('#thumbs').append(value.html);            
-          });
-
-	  if (data.total_found && data.total_found > 10) {
-            $('#thumbs').append('<div class="thumb">10 of '+data.total_found+' images within map view.</div>');
-          }
-        }
-      }
-    );
-}
-
 
 function updateCoverage(event) {
 	if (running) {
@@ -159,7 +92,7 @@ function updateCoverage(event) {
 	}
 
 	if (shownall == false || olmap.map.getZoom() <= prevZoom) {
-		var bounds = olmap.map.getExtent().transform(olmap.map.getProjection(),"EPSG:4326"); //getMyriadLetter expects wgs84
+		var bounds = olmap.map.getExtent().transform(olmap.map.getProjection(),"EPSG:4326");
 
 		sentBounds = bounds.toString();
 		if (document.theForm.resolution[1].checked) {
@@ -174,19 +107,6 @@ function updateCoverage(event) {
 			var labelSize = 12;
 		}
 
-		if (true) {
-			myriads = new Array();
-			vgr = getMyriadLetter( new OpenLayers.LonLat(bounds.left,bounds.top) );
-			if (vgr && vgr.length >0) myriads.push(vgr);
-			vgr = getMyriadLetter( new OpenLayers.LonLat(bounds.left,bounds.bottom) );
-			if (vgr && vgr.length >0) myriads.push(vgr);
-			vgr = getMyriadLetter( new OpenLayers.LonLat(bounds.right,bounds.top) );
-			if (vgr && vgr.length >0) myriads.push(vgr);
-			vgr = getMyriadLetter( new OpenLayers.LonLat(bounds.right,bounds.bottom) );
-			if (vgr && vgr.length >0) myriads.push(vgr);
-			url = url + '&myriads='+myriads.join(',');
-		}
-		
 		if (document.theForm.customised[1].checked)
 			url = url + '&user_id='+document.theForm.user_id.value;
 
@@ -290,23 +210,6 @@ function updateCoverage(event) {
 
 	}
 	prevZoom = olmap.map.getZoom();
-}
-
-function getMyriadLetter(lonLat) {
-    var gridref = null;
-    if (OpenLayers.Projection.Irish.isValidLonLat(lonLat.lon, lonLat.lat)) {
-        //Irish area, preceed lat,lon with Irish Grid Ref
-        gridref = OpenLayers.Projection.Irish.lonLatToString(lonLat.transform("EPSG:4326", "EPSG:29902"), 0);
-    }
-    else if (OpenLayers.Projection.OS.isValidLonLat(lonLat.lon, lonLat.lat)) {
-        //UK area, preceed lat,lon with UK Grid Ref
-        gridref = OpenLayers.Projection.OS.lonLatToString(lonLat.transform("EPSG:4326", "EPSG:27700"), 0);
-    }
-    if (gridref) {
-        var bits = gridref.split(/ /);
-        return bits[0];
-    } else 
-        return '';
 }
 
 function roundNumber(num, dec) {

@@ -30,6 +30,7 @@ $smarty = new GeographPage;
 $template='admin_server.tpl';
 $cacheid='';
 
+die("disabled - to many files to run du now!");
 
 if (!$smarty->is_cached($template, $cacheid))
 {

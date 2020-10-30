@@ -10,7 +10,11 @@
 
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/mappingG3.js"|revision}"></script>
+{dynamic}{if $new}
+<script type="text/javascript" src="/js/nls.tileserver.com-api2.js"></script>
+{else}
 <script type="text/javascript" src="{"/js/nls.tileserver.com-api.js"|revision}"></script>
+{/if}{/dynamic}
 {literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -215,7 +219,8 @@ function myPress(that,event) {
 	<small><small>Change view: <a href="javascript:void(resetView());">Whole British Isles</a> &middot; <a href="javascript:void(centerMarker());">Center on Marker</a></small></small>
 </div>
 
-<script src="//maps.googleapis.com/maps/api/js?v=3&key={$google_maps_api3_key}" type="text/javascript"></script>
+<script src="//maps.googleapis.com/maps/api/js?v=3&key={$google_maps_api3_key}&libraries=geometry" type="text/javascript"></script>
+
 {if $inner}
 </body>
 </html>

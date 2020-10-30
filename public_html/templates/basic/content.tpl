@@ -71,7 +71,7 @@ ul.content b {
                 <a class="tabSelected">General Search</a>
 		<a href="./recent.php" class="tab">Recent</a>
 		<a href="./themes.php?v=1" class="tab">Common Words</a> 
-		<a href="./themes.php?v=2" class="tab">Clusters</a>
+		<a href="./themes.php?v=2" class="tab">Subject Index</a>
 		<a href="/mapper/collections.php" class="tab">On a Map</a>
 		 <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a>
 	</div>

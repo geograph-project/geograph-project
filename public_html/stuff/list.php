@@ -46,16 +46,102 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	$imagelist->cols .= ",imagetaken";
 
+if (!empty($_GET['cluster'])) {
 
+	//no JOIN or subqueries, in sphinx :( - and location index doesnt have all the attributes!)
+
+	$sph = GeographSphinxConnection('sphinxql', true);
+
+	if (!empty($_GET['d'])) {
+		//emulate what scripts/cluster_location.php does
+
+		$param=array('geo1'=>200, 'geo2'=>200, 'diff'=>22);
+
+		$param['diff'] = intval($_GET['d']);
+
+
+		//NOTE `viewpoint` index is used, as it has distance/direction as numberic attributes!
+		//could also use `location`, but that is already filtered, and less updated!
+
+		$row = $sph->getRow("select id,wgs84_lat,wgs84_long,vlat,vlong,direction FROM viewpoint WHERE id = ".intval($_GET['cluster']));
+		if (empty($row))
+			die ("unable to load image");
+
+		$rads=deg2rad(0.01); //need rads, 0.01degree shoud be bigger than 200m!
+
+        	$row['lat1'] = $row['wgs84_lat']-$rads;
+        	$row['lat2'] = $row['wgs84_lat']+$rads;
+
+		$find = 'select id,geodist($wgs84_lat,$wgs84_long,wgs84_lat,wgs84_long) as geo1,
+		        geodist($vlat,$vlong,vlat,vlong) as geo2,
+		        180 - abs(abs($direction-direction) - 180) as diff
+		        from viewpoint
+			 where geo1 <= '.$param['geo1'].' and geo2 < '.$param['geo2'].' and diff <= '.$param['diff'].'
+		         and wgs84_lat>$lat1 and wgs84_lat<$lat2
+			 and natgrlen>=6 and vgrlen>=6 and distance>8 and direction != -1
+		        limit 1000';
+
+	        $sql = preg_replace_callback('/\$(\w+)/', function ($m) { return $GLOBALS['row'][$m[1]]; }, $find );
+
+if (!empty($_GET['debug']))
+	print "<!-- $sql -->";
+
+	        $ids = $sph->getCol($sql);
+
+	} else {
+		$ids = $sph->getCol("SELECT id FROM location WHERE cluster_id = ".intval($_GET['cluster']));
+		if (empty($ids) || count($ids) <2) {
+			//second attempt, just in case the image is part of another cluster!
+			$_GET['cluster'] = $sph->getOne("select cluster_id from location where id = ".intval($_GET['cluster']));
+
+			if (empty($_GET['cluster']) || $_GET['cluster'] == 9999999)
+				die("this image is not part of any cluster");
+
+			$ids = $sph->getCol("SELECT id FROM location WHERE cluster_id = ".intval($_GET['cluster']));
+			if (empty($ids))
+				die ("unable to load images");
+		}
+	}
+
+	if (!empty($ids)) {
+		$ids = implode(',',$ids);
+
+		$row = $db->getRow("SELECT avg(view_direction) as d, avg(viewpoint_eastings) as e, avg(viewpoint_northings) as n FROM gridimage WHERE gridimage_id IN ($ids)");
+		$ri = $db->getOne("SELECT reference_index FROM gridimage_search WHERE gridimage_id = ".intval($_GET['cluster']));
+
+		$conv = new Conversions;
+		list ($grid_reference,$len) = $conv->national_to_gridref(intval($row['e']),intval($row['n']),6,$ri);
+
+		$direction = heading_string($row['d']);
+
+		$title = "Looking roughly $direction from $grid_reference";
+	} else {
+		$ids = '0';
+		$title = "Unknown Cluster";
+	}
+
+
+	$sql = "SELECT id,title,realname,user_id,grid_reference,takenday,place,county,country FROM sample8
+		WHERE id IN ($ids) ORDER BY takenday DESC, realname ASC, id DESC LIMIT 100";
+
+} else {
 	if (!empty($_GET['title'])) {
 		if (substr($_GET['title'],-2) == ' #') {
 			$prefix = preg_replace('/ #$/','',$_GET['title']);
 			$title = "Images titled: ".$prefix;
 			$q = '@title "^'.$prefix.'"';
+		} elseif (substr($_GET['title'],-1) == ' ') { //the space would already invalidate the field end modifier, but can give it a nice page title!
+			$title = "Image titles starting with: ".$_GET['title'];
+			$q = '@title "^'.$_GET['title'].'"';
 		} else {
 			$title = "Images titled: ".$_GET['title'];
 			$q = '@title "^'.$_GET['title'].'$"';
 		}
+
+		if (!empty($_GET['q'])) {
+			$q = $_GET['q'].' '.$q; //put at start so it before the @title!
+		}
+
 	} elseif (!empty($_GET['label'])) {
 		$title = "images in cluster ".$_GET['label'];
 		$q = '@groups "_SEP_ '.$_GET['label'].' _SEP_"';
@@ -64,15 +150,27 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$title = "Images matching: ".$_GET['q'];
 		$q = $_GET['q']; //todo, run this via sphinxClient?
 
+	} elseif (!empty($_GET['premill'])) {
+		$title = "Images Taken Pre 2000";
+		$q = "@takenyear 19*|18*"; //decade isnt a prefix_field, and min_prefix_len =2;
+
 	} else {
 		die("unknown query");
 	}
 
-	if (!empty($_GET['gridref']))
+	if (!empty($_GET['gridref'])) {
 		$q .= " @grid_reference {$_GET['gridref']}";
+		$title .= " in {$_GET['gridref']}";
+	}
 
 	$sql = "SELECT id,title,realname,user_id,grid_reference,takenday,place,county,country FROM sample8
-		WHERE MATCH(".$db->Quote($q).") ORDER BY grid_reference ASC, takenday DESC, realname ASC, id DESC LIMIT 100";
+		WHERE MATCH(".$db->Quote($q).") ORDER BY takenday DESC, realname ASC, id DESC LIMIT 100";
+}
+
+if (!empty($_GET['debug']))
+	print "<!-- $sql -->";
+
+
        	$imagelist->getImagesBySphinxQL($sql);
 
 	if (!empty($imagelist->meta) && !empty($imagelist->meta['total_found']) && $imagelist->meta['total_found'] > 1 && preg_match('/^image/i',$title)) {
@@ -82,10 +180,12 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	$smarty->assign('page_title', $title); //is automatically escaped
 	$smarty->display('_std_begin.tpl',md5($title));
-	print "<div style=float:right;color:gray>Showing most recent first, in descending order</div>";
+
+	if (!empty($_GET['gridref']))
+		print "<div style=float:right;color:gray>Showing most recent first, in descending order</div>";
 	print "<h2>".htmlentities2($title)."</h2>";
 	if (!empty($_GET['label'])) {
-		print "<p>Image clustering - assigning images labels - is an automated process, based on the image title/description. It's not totally accurate, and can sometimes assign images to odd clusters</p>";
+		print "<p style=color:gray><i>Image clustering - assigning images labels - is an automated process, based on the image title/description. It's not totally accurate, and can sometimes assign images to odd clusters</i></p>";
 	}
 
 	if (count($imagelist->images)) {
@@ -121,14 +221,35 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$thumbh = 160;
         	$thumbw = 213;
 
+?><style>
+.gridded.med {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, <? echo ($thumbw+10); ?>px);
+    grid-gap: 18px;
+    grid-row-gap: 20px;
+}
+.gridded > div {
+        text-align:left;
+
+ /* ignored in grid, but to support older browsers! */
+        float:left;
+        width: <? echo ($thumbw+10); ?>px;
+}
+.gridded .shadow {
+	text-align:center;
+	height: <? echo ($thumbh+8); ?>px;
+}
+</style><?
+
+		print "<div class=\"gridded med\">";
 		foreach ($imagelist->images as $image) {
 		?>
-        	  <div style="float:left;position:relative; width:<? echo ($thumbw+10); ?>px; height:<? echo ($thumbh+120); ?>px">
-	          <div align="center" class="shadow">
+        	  <div id="img<? echo $image->gridimage_id; ?>">
+	            <div class="shadow">
         	    <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities2($image->title) ?> by <? echo htmlentities2($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true); ?></a></div>
 		    <?
 			if (count($s['title']) > 1)
-				print htmlentities2($image->title).'<br>';
+				print highlight_changes(htmlentities2($image->title))."<br>";
 			if (count($s['grid_reference']) > 1)
 				print '<span style="color:gray">In:</span> '.ooo($image,'grid_reference',"<a href=\"/gridref/{$image->grid_reference}\">{$image->grid_reference}</a>").'<br>';
 			if (count($s['place']) > 1)
@@ -143,15 +264,27 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	          </div>
 		<?
 		}
-		print "<br style=clear:both>";
+		print "<br style=clear:both></div>";
 
-		$q = str_replace("'"," ",$q); //tofix, single quotes are special syntax in browser, and doesnt work in quoted strings, currently. Awkward!
+		if (!empty($q)) {
+			$q = str_replace("'"," ",$q); //tofix, single quotes are special syntax in browser, and doesnt work in quoted strings, currently. Awkward!
 
-		if (!empty($imagelist->meta) && !empty($imagelist->meta['total_found']) && $imagelist->meta['total_found'] > 100) {
-			print "<p>Showing sample of 100 of roughly {$imagelist->meta['total_found']} matching images, <a href=\"/browser/#!/q=".urlencode($q)."/display=plus\">explore them more in the Browser</a></p>";
-		} else {
-			print "<p><a href=\"/browser/#!/q=".urlencode($q)."/display=plus\">Explore these images in the Browser</a></p>";
+			if (!empty($imagelist->meta) && !empty($imagelist->meta['total_found']) && $imagelist->meta['total_found'] > 100) {
+				print "<p>Showing sample of 100 of roughly {$imagelist->meta['total_found']} matching images, <a href=\"/browser/#!/q=".urlencode($q)."/display=plus\">explore them more in the Browser</a>";
+			} else {
+				print "<p><a href=\"/browser/#!/q=".urlencode($q)."/display=plus\">Explore these images in the Browser</a>";
+			}
+
+			if (!empty($_GET['gridref'])) {
+		                $q2 = trim(str_replace(" @grid_reference {$_GET['gridref']}",'',$q));
+				print " or <a href=\"/browser/#!/q=".urlencode($q2)."/loc=".urlencode($_GET['gridref'])."/dist=2000/display=plus\">Explore matching images including in surrounding squares</a> (if any!)";
+			}
+
 		}
+
+		if (count($s['realname']) == 1 && reset($s['realname']) && ($value = key($s['realname'])) )
+			print "<hr><p>All images <img src=\"{$CONF['STATIC_HOST']}/img/80x15.png\"> <b>&copy; ".htmlentities2($value)."</b> and licensed for reuse under this <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\" target=\"_blank\">Creative Commons Licence</a></p>";
+
 
 	} else {
 		print "nothing to display at this time.";
@@ -169,15 +302,149 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		}
 	}
 
-	if (!empty($_GET['title']) && !empty($_GET['gridref'])) {
+	if (!empty($_GET['label']) && !empty($_GET['gridref'])) {
+		$label = $db->Quote($_GET['label']);
+		$gr = $db->Quote($_GET['gridref']);
+
+		//could just use gridimage_group_stat, but doing a full join like this can get number of 'overlapping' images. 
+		$others = $db->getAll("select g.label,count(g.gridimage_id) count,count(s.gridimage_id) as matched
+					from gridimage_group g inner join gridimage_search i using (gridimage_id)
+					 left join (select gridimage_id from gridimage_group inner join gridimage_search using (gridimage_id)
+					 		where grid_reference = $gr and label = $label) s using (gridimage_id)
+					where grid_reference = $gr
+					group by g.label order by matched desc, count desc");
+		if (!empty($others)) {
+			print "<hr>";
+			print "<p>Other Automatic clusters in ".htmlentities($_GET['gridref'])."</p>";
+			print "<ol>";
+			$gr = urlencode($_GET['gridref']);
+			foreach ($others as $row) {
+				if ($row['label'] == 'Other Topics')
+					continue;
+				print "<li value={$row['count']}>";
+				if ($row['label'] == $_GET['label']) {
+					print "<b>".htmlentities2($row['label'])."</b>";
+				} else {
+					$url = "/stuff/list.php?label=".urlencode($row['label'])."&gridref=$gr";
+					print "<a href=\"".htmlentities($url)."\">".htmlentities2($row['label'])."</a>";
+					if ($row['matched']) {
+						print " <small>(of which {$row['matched']} shown above)</small>";
+					}
+				}
+				print "</li>";
+			}
+			print "</ol>";
+
+			if (!empty($USER->user_id)) {
+				print "<hr>&middot; There is also an alternate view: <a href=\"/finder/groups.php?q=%5E$gr&group=group_ids\">View images Grouped by Automatic Cluster</a>";
+			}
+		}
+
+	} elseif (!empty($_GET['title']) && !empty($_GET['gridref'])) {
 		$labeled = $db->getOne("select count(*) from gridimage_group inner join gridimage_search using (gridimage_id)
 				where grid_reference = ".$db->Quote($_GET['gridref'])." and label = ".$db->Quote($_GET['title']));
 		if ($labeled) {
 			$url = "/stuff/list.php?label=".urlencode($_GET['title'])."&gridref=".urlencode($_GET['gridref']);
 			print "<p>Can also view <a href=\"".htmlentities2($url)."\"><b>$labeled</b> images with the cluster ".htmlentities2($_GET['title'])." in this square</a></p>";
 		}
+
+
+		if (!empty($_GET['descriptions']) && count($imagelist->images)) {
+			print '<div class="interestBox">';
+			print "<h3>Combined descriptions from these images</h2>";
+			print "<p>Click a paragraph to view one of the images with that paragraph</p>";
+			print "</div>";
+
+			//this is annoying, sphinx doesnt have descriptiosn so look them up again!
+			$comments = $db->getAll($sql = "select gridimage_id,comment,realname from gridimage_search
+                                where comment != '' AND grid_reference = ".$db->Quote($_GET['gridref'])." and title = ".$db->Quote($_GET['title']));
+
+			$d = array();
+			$r = array();
+			foreach ($comments as $row) {
+				$bits = preg_split('/\n\n/',str_replace("\r",'',$row['comment']));
+				foreach ($bits as $idx=>$bit) {
+					$md = md5($bit);
+					if (isset($d[$md])) {
+						$d[$md]['ids'][] = $row['gridimage_id'];
+						$d[$md]['pos'][] = $idx+1;
+					} else {
+						$d[$md] = array(
+							'text' => $bit,
+							'ids' => array($row['gridimage_id']),
+							'pos' => array($idx+1),
+						);
+					}
+				}
+				@$r[$row['realname']]++;
+			}
+
+			foreach ($d as $md => $row) {
+				$d[$md]['avg'] = array_sum($row['pos'])/count($row['pos']);
+			}
+
+function cmp($a, $b) {
+    if ($a['avg'] == $b['avg']) {
+        return 0;
+    }
+    return ($a['avg'] < $b['avg']) ? -1 : 1;
+}
+
+			uasort($d, 'cmp');
+
+			foreach ($d as $row) {
+				$style = array('text-decoration:none');
+				$style[] = "font-size: ".(1.2*log(1+sqrt(count($row['ids']))))."em";
+				if (count($row['ids']) == 1)
+					$style[] = "color:#222";
+				else
+					$style[] = "color:black";
+				$id = array_pop($row['ids']);
+				print "<p><a href=\"/photo/$id\" style=\"".implode(';',$style)."\">".GeographLinks(htmlentities2($row['text']))."</a></p>\n";
+			}
+
+			print "<hr>";
+			print "<p>Text above produced by combining descriptions from images provided by ".implode(', ',array_keys($r))."</p>";
+		}
+
 	}
+
+?>
+<script>
+function highlightImage() {
+	if (document.referrer && (m=document.referrer.match(/photo\/(\d+)\b/))) {
+		var id = "img"+m[1];
+		if (document.getElementById && document.getElementById(id)) {
+			var ele = document.getElementById(id);
+			ele.style.backgroundColor = '#eee';
+			ele.style.border = '2px solid silver';
+		}
+	}
+}
+AttachEvent(window,'load',highlightImage,false);
+</script>
+<?
+
 
 	$smarty->display('_std_end.tpl');
 	exit;
+
+
+function highlight_changes($str) {
+	static $prev = '';
+        $c = common_prefix($str,$prev);
+	$prev = $str;
+        if ($c > 0)
+                return substr($str,0,$c)."<b>".substr($str,$c)."</b>";
+        else
+                return "<b>$str</b>";
+}
+
+function common_prefix($one,$two) {
+        $limit = min(strlen($one),strlen($two));
+        $i=1;
+        while(substr($one,0,$i)==substr($two,0,$i) && $i <= $limit) //case sensitive!
+                $i++;
+        return $i-1;
+}
 

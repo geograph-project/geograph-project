@@ -6,7 +6,6 @@
         <a href="/team.php" class="tab">The Geograph Team</a>
         <a href="/credits/" class="tab">Contributors</a>
         <a href="/help/credits" class="tab">Credits</a>
-        <a href="http://www.geograph.org/downloads.html" class="tab">Downloads</a>
         <span class="tabSelected">Contact Us</span>
         <a href="/article/Get-Involved">Get Involved...</a>
 </div>
@@ -44,5 +43,9 @@
 {/dynamic} 
 
 <p>Your message will become a ticket in our system, and will be answered by one of the <a href="/team.php">team</a>. If you have a personal issue, you can <a href="/usermsg.php?to=3&amp;dev=1">contact a developer directly</a>.</p>
+
+<hr>
+
+<p align="center" style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. The registered office is <span class="nowrap">Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</span> </p>
 
 {include file="_std_end.tpl"}

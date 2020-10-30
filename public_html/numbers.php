@@ -22,20 +22,26 @@
  */
 
 require_once('geograph/global.inc.php');
-init_session();
+
+#if (isset($_GET['save'])) {
+        init_session();
+#} else {
+#	init_session_or_cache(3600, 360); //cache publically, and privately
+#}
 
 $smarty = new GeographPage;
 
 if (isset($_GET['save'])) {
         $USER->setPreference('statistics.advanced',0,true);
-} elseif ($USER->getPreference('statistics.advanced',0,true)) {
-	include("./statistics.php");
+} elseif (!empty($_SERVER['HTTP_COOKIE']) && $USER->getPreference('statistics.advanced',0,true)) {
+##	include("./statistics.php");
+	header("Location: /statistics.php");
 	exit;
 }
 
 
 $template='numbers.tpl';
-$cacheid='';
+$cacheid=intval($USER->user_id);
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))

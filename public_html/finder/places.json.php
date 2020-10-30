@@ -151,6 +151,8 @@ if (!empty($_GET['q'])) {
 		$sphinx = new sphinxwrapper($q);
 
 		$sphinx->pageSize = $pgsize = 15;
+                if (!empty($_GET['more']))
+                        $sphinx->pageSize = $pgsize = 150;
 
 
 		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
@@ -187,21 +189,19 @@ if (!empty($_GET['q'])) {
 				if (empty($db))
 					$db = GeographDatabaseConnection(true);
 
-				$limit = 25;
-
 				$prev_fetch_mode = $ADODB_FETCH_MODE;
 				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 				if (!empty($_GET['new'])) {
-					$rows = $db->getAssoc("select placename_id,Place as name,km_ref as gr,concat(County,', ',Country) as localities from sphinx_placenames where placename_$where limit $limit");
+					$rows = $db->getAssoc("select placename_id,Place as name,km_ref as gr,concat(County,', ',Country) as localities from sphinx_placenames where placename_$where limit $pgsize");
 				} else {
-					$rows = $db->getAssoc("select id,name,gr,localities,score from placename_index where $where limit $limit");
+					$rows = $db->getAssoc("select id,name,gr,localities,score from placename_index where $where limit $pgsize");
 				}
 
 				$results['items'] = array();
 				foreach ($ids as $c => $id) {
 					$row = $rows[$id];
 					$row['id'] = $id;
-					$row['name'] = utf8_encode($row['name']); //json always want utf8. even sphinx_placnames now contain latin1 data. 
+					$row['name'] = utf8_encode($row['name']); //json always want utf8. even sphinx_placnames now contain latin1 data.
 					$results['items'][] = $row;
 				}
 				$results['total_found'] = $sphinx->resultCount;
@@ -218,7 +218,7 @@ if (!empty($_GET['q'])) {
 
 
 if (!empty($_SERVER['HTTP_ORIGIN'])
-	&& preg_match('/^https?:\/\/(www|schools)\.geograph\.(org\.uk|ie)\.?$/',$_SERVER['HTTP_ORIGIN'])) { //can be spoofed, but SOME protection!
+	&& preg_match('/^https?:\/\/(m|www|schools)\.geograph\.(org\.uk|ie)\.?$/',$_SERVER['HTTP_ORIGIN'])) { //can be spoofed, but SOME protection!
 
 	header('Access-Control-Allow-Origin: *'); //although now this allows everyone to access it!
 }

@@ -35,6 +35,11 @@ init_session();
 $smarty = new GeographPage;
 $template='reuse.tpl';
 
+if (!empty($_GET['wikitext'])) {
+	$template = 'reuse-wikimedia.tpl';
+	header("Content-Type: text/plain");
+}
+
 if (isset($_REQUEST['id']))
 {
 	//initialise message

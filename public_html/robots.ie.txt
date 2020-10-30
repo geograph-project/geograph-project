@@ -4,6 +4,8 @@
 User-agent: *
 Disallow: /stuff/canonical.php
 Disallow: /browser/
+Disallow: /photo/*?style
+Disallow: /photo/*.kml
 Disallow: /mapbrowse.php
 Disallow: /map/
 Disallow: /mapper/
@@ -181,4 +183,9 @@ Disallow: /
 
 User-agent: SemrushBot
 Disallow: /
+
+User-agent: Screaming Frog SEO Spider
+Disallow: /
+
+
 

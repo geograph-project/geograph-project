@@ -26,7 +26,7 @@
 //these are the arguments we expect
 $param=array(
 	'secret'=>'imagesitemap',		//secret - change this
-	'protocol'=>'http',
+	'protocol'=>'https',
 	'per'=>50000, //number of lines per sitemap
 	'normal'=>'1', //which sitemaps to produce
 	'images'=>'0', //which sitemaps to produce
@@ -44,6 +44,13 @@ chdir(__DIR__);
 require "./_scripts.inc.php";
 
 ############################################
+
+if (!empty($CONF['db_read_connect2'])) {
+        if (!empty($DSN_READ))
+                $DSN_READ = str_replace($CONF['db_read_connect'],$CONF['db_read_connect2'],$DSN_READ);
+        if (!empty($CONF['db_read_connect']))
+                $CONF['db_read_connect'] = $CONF['db_read_connect2'];
+}
 
 $db = GeographDatabaseConnection(true);
 
@@ -121,8 +128,6 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 		if (strcmp($date,$maxdate)>0)
 			$maxdate=$date;
-		if ($last_id >= $image->enforce_https) //temporally hotwire
-			$param['protocol'] = 'https';
 
 		if ($param['normal']) {
 			fprintf($fh,"<url>".
@@ -222,9 +227,6 @@ function indexFooter($fh) {
         fclose($fh);
 }
 
-
-print_r($stat);
-
 #################################################################################################
 $fh = array();
 
@@ -242,10 +244,6 @@ if ($param['images']) {
 	$fh['images-http']=indexHeader($filename);
 	$filename=sprintf('%s/public_html/sitemap/root/sitemap-%s%s-https.xml', $param['dir'], $param['secret'], $param['suffix']);
 	$fh['images-https']=indexHeader($filename);
-	if ($sitemaps>400) {
-		$filename=sprintf('%s/public_html/sitemap/root/sitemap-%s%s-part2.xml', $param['dir'], $param['secret'], $param['suffix']);
-		$fh['images2-http']=indexHeader($filename);
-	}
 }
 
 #################################
@@ -276,9 +274,6 @@ for ($s=1; $s<=$sitemaps; $s++)
 			indexEntry($fh['images-http'], $fname);
 		if (isset($stat[$s]['https']))
 			indexEntry($fh['images-https'], $fname, 'https');
-
-		if ($s > 400 && isset($stat[$s]['http']))
-			indexEntry($fh['images2-http'], $fname);
 	}
 }
 

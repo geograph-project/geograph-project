@@ -76,7 +76,7 @@ class PictureOfTheDay
 			$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where showday=date(now())");
 			if (empty($gridimage_id))
 			{
-				$ids = $db->getCol("select distinct user_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday > date_sub(now(),interval 30 day)");
+				$ids = $db->getCol("select distinct user_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday > date_sub(now(),interval 120 day)");
 				if (empty($ids)) {
 					$ids = 0;
 				} else {

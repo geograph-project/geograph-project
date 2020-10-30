@@ -400,9 +400,9 @@ if (isset($_POST['gridsquare']))
 					}
 					$smarty->assign_by_ref('tags', $tags);
 				}
-				
+
 				$smarty->assign('subject', trim(stripslashes($_POST['subject'])));
-				
+
 				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
 					$imageclass = stripslashes($_POST['imageclassother']);
 				} else if ($_POST['imageclass'] != 'Other') {
@@ -410,13 +410,15 @@ if (isset($_POST['gridsquare']))
 				}
 				if (strlen($imageclass)==0) {
 					if (empty($_POST['tags'])) {
+						//only show an error, is BOTH empty, but need to report it on both, (if new submit, dont even see imageclass errors!)
 						$ok=false;
-						$error['imageclass']="Please choose a geographical feature";	
+						$error['tags']="Please choose at least one geographical context type";
+						$error['imageclass']="Please choose a geographical feature";
 					}
 				} else {
 					$smarty->assign_by_ref('imageclass', $imageclass);
 				}
-				
+
 				$title=trim(stripslashes($_POST['title']));
 				$title=strip_tags($title);
 				if (strlen($title)==0)

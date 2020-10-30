@@ -1,4 +1,8 @@
-{include file="_std_begin.tpl"}
+{if $mobile}
+	{include file="_mobile_begin.tpl"}
+{else}
+	{include file="_std_begin.tpl"}
+{/if}
 
 <div style="float:right;position:relative"><a href="/submit.php?redir=false">v1</a> / <a href="/submit2.php">v2</a> / <b>multi</b> / <a href="/help/submit">more...</a></div>
 
@@ -48,7 +52,7 @@ $(function() {
 		sortable: true,
 
 		// draging
-		dragdrop: true,
+		dragdrop: {/literal}{if $mobile}false{else}true{/if}{literal},
 
 		// Specify what files to browse for
 		filters : [
@@ -106,11 +110,13 @@ function setResize(that) {
 			<fieldset>
 				<legend>Upload Dimensions</legend>
 				<input type="radio" name="size" value="65536" checked onclick="setResize(this)"/> No Resize |
+				<input type="radio" name="size" value="3840" onclick="setResize(this)"/> 3840 pixels |
+				<input type="radio" name="size" value="3200" onclick="setResize(this)"/> 3200 pixels |
 				<input type="radio" name="size" value="1600" onclick="setResize(this)"/> 1600 pixels |
 				<input type="radio" name="size" value="1024" onclick="setResize(this)"/> 1024 pixels |
 				<input type="radio" name="size" value="800" onclick="setResize(this)"/> 800 pixels |
 				<input type="radio" name="size" value="640" onclick="setResize(this)"/> 640 pixels<br/>
-				(images are resized in your browser before being sent to Geograph - EXIF data may be stripped)
+				(images are resized in your browser before being sent to Geograph - EXIF data <i>may</i> be stripped)
 			</fieldset>
 
 			<div id="uploader">
@@ -130,4 +136,8 @@ function setResize(that) {
 </div>
 
 
-{include file="_std_end.tpl"}
+{if $mobile}
+	{include file="_mobile_end.tpl"}
+{else}
+	{include file="_std_end.tpl"}
+{/if}

@@ -14,7 +14,8 @@
 	<a href="/statistics.php#more">more...</a> &nbsp;
 	
 	<a class="tab" href="/statistics/leaderboard.php?type={$type}">all time</a> 
-        <a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear=2014">2014</a>
+        <a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear=2019">2019</a>
+        <a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear=2018">2018</a>
 	<span class="tabSelected">weekly</span>
 	
 </div>

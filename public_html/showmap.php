@@ -27,7 +27,30 @@ if (strpos($_SERVER['HTTP_USER_AGENT'],'http:') > -1) {
 	exit;
 }
 
+if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
+	header("HTTP/1.0 401 Forbidden");
+	if (!empty($_SERVER['HTTP_REFERER'])) {
+		$url = htmlentities(str_replace('www.geograph.ie','www.geograph.org.uk',$_SERVER['HTTP_REFERER']));
+	} else {
+		$url = "http://www.geograph.org.uk/";
+	}
+	print "These maps do not function on <b>geograph.ie</b> site. Please use <a href=\"$url\" onclick=\"window.opener.location.href = this.href;window.close()\">www.geograph.org.uk</a> website.";
+	exit;
+}
 
+if (!empty($_SERVER['HTTP_REFERER']) && !preg_match('/^https?:\/\/(www|m|schools)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER'])	) {
+
+	header("HTTP/1.0 401 Forbidden");
+        print "<h3>Access Denied</h3>" ;
+
+	print "<p><b>This popup is for internal use of Geograph Project websites</b>. <br><br>Make your own with the <a href=\"http://www.ordnancesurvey.co.uk/oswebsite/web-services/os-openspace/index.html\">OS OpenSpace API</a>.</p>";
+
+        if (!empty($_GET['gridref']) && preg_match('/^\w{2}\s?\d+\s?\d*$/',$_GET['gridref'])) {
+                print "<p>However you may still be able to view <a href=\"/gridref/".urlencode($_GET['gridref'])."\">our Gridsquare Browse page</a>.</p>";
+        }
+
+        exit;
+}
 
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
@@ -35,14 +58,32 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/token.class.php');
 require_once('geograph/gazetteer.class.php');
 
-init_session();
+init_session_or_cache(3600*3, 900); //cache publically, and privately
+
+if (0 && !isset($_SESSION['user'])) {
+	header("HTTP/1.0 403 Forbidden");
+        print "<h3>Access Denied</h3>" ;
+
+	print "<p>This popup is for internal use of Geograph Project websites. Make your own with the <a href=\"http://www.ordnancesurvey.co.uk/oswebsite/web-services/os-openspace/index.html\">OS OpenSpace API</a>.</p>";
+
+        if (!empty($_GET['gridref']) && preg_match('/^\w{2}\s?\d+\s?\d*$/',$_GET['gridref'])) {
+                print "<p>However you may still be able to view <a href=\"/gridref/".urlencode($_GET['gridref'])."\">our Gridsquare Browse page</a>.</p>";
+        }
+
+        exit;
+}
 
 
 $smarty = new GeographPage;
 
+//temp as page doesnt work on https (mainly maps!)
+pageMustBeHTTP();
+
+
 $template='showmap.tpl';
 $cacheid='2232';
 
+$smarty->assign('extra_meta','<link rel="dns-prefetch" href="//osopenspacepro.ordnancesurvey.co.uk"> <meta name="viewport" content="width=device-width, initial-scale=1">');
 
 $square=new GridSquare;
 
@@ -118,7 +159,7 @@ if ($grid_ok) {
 	
 	$rastermap->addLatLong($lat,$long);
 	
-	$smarty->assign_by_ref('gridref', $gridref);
+	$smarty->assign_by_ref('gridref', strtoupper($gridref));
 	
 	if (!empty($photographer_gridref))
 	{

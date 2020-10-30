@@ -36,14 +36,25 @@
 	</div>
 {/if}
 
-<form action="{$script_name}" method="get" onsubmit="focusBox()">
+<form action="{$script_name}" method="get" onsubmit="focusBox()" name=theForm>
 	<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{if $q} value="{$q|escape:'html'}"{/if}/>
 	<input type="submit" value="Search"/><br/>
 	{if $groupings}
-	     <label for="fgroup">Group By: <select name="group" id="fgroup">
-	        {html_options options=$groupings selected=$group}
-	     </select>
-		{literal}<div style="float:right"><input type=button value="shuffle" onclick="with (this.form.elements['group']) { selectedIndex = (selectedIndex==options.length-1)?0:selectedIndex+1; if (options[selectedIndex].text=='') {selectedIndex=selectedIndex+1} this.form.submit()}"></div>{/literal}
+
+		<div class="tabHolder">
+			Group By: 
+			<a class="tab{if $group == 'context_ids'}Selected{/if} nowrap" href="?q={$q|escape:'url'}&amp;group=context_ids">Context</a>
+			<a class="tab{if $group == 'subject_ids'}Selected{/if} nowrap" href="?q={$q|escape:'url'}&amp;group=subject_ids">Subject</a>
+			<a class="tab{if $group == 'hectad'}Selected{/if} nowrap" href="?q={$q|escape:'url'}&amp;group=hectad">Hectad</a>
+			<a class="tab{if $group == 'decade'}Selected{/if} nowrap" href="?q={$q|escape:'url'}&amp;group=decade">Decade Taken</a>
+			<a class="tab{if $group == 'type_ids'}Selected{/if} nowrap" href="?q={$q|escape:'url'}&amp;group=type_ids">Types</a>
+			<span class="tab">
+			     <label for="fgroup">Others:<select name="group" id="fgroup" onchange="this.form.submit()">
+			        {html_options options=$groupings selected=$group}
+			     </select>
+			     {literal}<small><a href=# onclick="with (document.forms['theForm'].elements['group']) { selectedIndex = (selectedIndex==options.length-1)?0:selectedIndex+1; if (options[selectedIndex].text=='') {selectedIndex=selectedIndex+1} form.submit()}">next</a></small>{/literal}
+			</span>
+		</div>
 	{/if}
 </form>
 {/if}
@@ -74,7 +85,7 @@
 	{assign var="last" value=$image->group}
 
 	
-		<div style="float:left;width:160px" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true,'data-src')}</a></div>
+		<div style="float:left;width:160px;border:0" class="photo33 shadow"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true,'data-src')}</a></div>
 		<div class="caption"><div class="minheightprop" style="height:2.5em"></div><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
 		<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
 		</div>

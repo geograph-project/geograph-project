@@ -452,7 +452,12 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 	{
 		global $CONF;
 		$db=&$this->_getDB(true);
-		$square = $db->GetRow('select * from gridsquare where gridsquare_id='.intval($gridsquare_id).' limit 1');
+		if ($CONF['template']=='archive') {
+			//todo, if this works, could update this daily?
+			$square = $db->GetRow('select * from gridsquare_copy where gridsquare_id='.intval($gridsquare_id).' limit 1');
+		} else {
+			$square = $db->GetRow('select * from gridsquare where gridsquare_id='.intval($gridsquare_id).' limit 1');
+		}
 		if (count($square))
 		{
 			//store cols as members

@@ -185,7 +185,7 @@ if (isset($_POST['check']))
 		having firsts != 1");
 		foreach ($squares as $id => $square)
 		{
-			echo "<tr><td><a href=\"/gridref/{$square['grid_reference']}\">{$square['grid_reference']}</a></td><td>{$square['geographs']}</td><td>{$square['firsts']}</td></tr>\n";
+			echo "<tr><td><a href=\"square.php?gr={$square['grid_reference']}\">{$square['grid_reference']}</a></td><td>{$square['geographs']}</td><td>{$square['firsts']}</td></tr>\n";
 		}
 		echo "</tbody></table>\n";
 		flush();

@@ -226,7 +226,6 @@ class SearchEngine
 			}
 			unset($this->criteria->db);
 			print_r($this->criteria);
-			print_r($_SERVER);
 			$con = ob_get_clean();
 			mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->criteria->searchdesc,$con);
 			
@@ -350,7 +349,11 @@ END;
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
 			} elseif (!empty($recordSet)) {
 				$this->resultCount = $recordSet->RecordCount();
-				if ($this->resultCount == $pgsize) {
+
+				if ($this->resultCount == $pgsize && preg_match('/^topic_id = (\d+)\s*$/',$sql_where,$m)) {
+					$this->resultCount = $db->getOne("SELECT COUNT(*) FROM gridimage_post WHERE topic_id = {$m[1]}");
+					$this->numberOfPages = ceil($this->resultCount/$pgsize);
+				} elseif ($this->resultCount == $pgsize) {
 					$this->numberOfPages = 2;
 					$this->pageOneOnly = 1;
 				} else {
@@ -385,6 +388,7 @@ END;
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 
 		$sphinx = new sphinxwrapper($this->criteria->sphinx['query']);
+		if (!empty($this->db)) $sphinx->_setDB($this->db);
 
 		$this->fullText = 1;
 
@@ -454,7 +458,7 @@ END;
 					$sphinx2 = new sphinxwrapper();
 					$sphinx2->pageSize = $pgsize = 3;
 					
-					$sphinx2->prepareQuery("@title ".$this->criteria->searchtext." @source -themed -portal");
+					$sphinx2->prepareQuery("@title ".$this->criteria->searchtext." @source -themed");
 
 					$ids = $sphinx2->returnIds(1,'content_stemmed');
 
@@ -470,18 +474,16 @@ END;
 							FROM content c
 							LEFT JOIN user u USING (user_id)
 							WHERE c.content_id IN($id_list)
-						ORDER BY FIELD(c.content_id,$id_list)"); 
-						
-						$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'context'=>'Geographical Context', 'other'=>'Other');
+						ORDER BY FIELD(c.content_id,$id_list)");
 
 						foreach ($related as $row) {
 							$suggestions[] = array(
 								'link'=>$row['url'],
 								'query'=>$row['title'],
-								'localities'=>$sources[$row['source']].($row['images']?" with {$row['images']} images":'')
+								'localities'=>$CONF['content_sources'][$row['source']].($row['images']?" with {$row['images']} images":'')
 							);
 						}
-						
+
 						if ($sphinx2->resultCount > 3) {
 							$suggestions[] = array(
 								'link'=>"/content/?q=".urlencode($this->criteria->searchtext)."&amp;in=title&amp;scope=all",
@@ -682,7 +684,6 @@ END;
                         }
                         unset($this->criteria->db);
                         print_r($this->criteria);
-                        print_r($_SERVER);
                         $con = ob_get_clean();
                         mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->criteria->searchdesc,$con);
 
@@ -727,13 +728,15 @@ END;
 			//homefully temporally
 			dieUnderHighLoad(0,'search_unavailable.tpl');
 		}
-		
+
 		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
 			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
 		}
-		
-		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
+
+		$sql_from = str_replace('gridimage_query using (gridimage_id)','gridimage_query on (gi.gridimage_id = gridimage_query.gridimage_id)',$sql_from);
+
+		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly || preg_match('/^WHERE topic_id = (\d+)\s*$/',$sql_where,$m)) {
 			$resultCount = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
 			if ($resultCount) {
 				$this->resultCount = $resultCount;
@@ -909,7 +912,6 @@ END;
 			}
 			unset($this->criteria->db);
 			print_r($this->criteria);
-			print_r($_SERVER);
 			$con = ob_get_clean();
 			#mail('geograph@barryhunter.co.uk','[Geograph '.$this->error.'] '.$this->criteria->searchdesc,$con);
 		}
@@ -924,7 +926,7 @@ END;
 			$this->results=array();
 			$i=0;
 
-			$showtaken = ($this->criteria->limit7 || preg_match('/^imagetaken/',$this->criteria->orderby));
+			$showtaken = ($this->criteria->limit7 || preg_match('/^imagetaken/',$this->criteria->orderby) || preg_match('/black|grid2/',$this->getDisplayclass()));
 
 			while (!$recordSet->EOF)
 			{
@@ -1057,7 +1059,7 @@ END;
 		if (!empty($r))
 			return($r);
 		if (isset($this->temp_displayclass)) {
-			$postfix .= "&amp;displayclass=".$this->temp_displayclass;
+			$postfix .= "&amp;temp_displayclass=".$this->temp_displayclass;
 		}
 		if (!empty($_GET['legacy'])) { //todo - technically a bodge!
 			$postfix .= "&amp;legacy=true";
@@ -1162,14 +1164,13 @@ END;
 	{
 		echo "$msg<br/>";
 		flush();
-	}	
+	}
 	function _err($msg)
 	{
 		echo "<p><b>Error:</b> $msg</p>";
 		flush();
 	}
-	
-	
+
 	/**
 	* store error message
 	*/
@@ -1177,9 +1178,7 @@ END;
 	{
 		$this->errormsg=$msg;
 	}
-	
+
 }
 
 
-
-?>

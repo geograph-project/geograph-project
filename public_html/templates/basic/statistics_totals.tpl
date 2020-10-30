@@ -27,17 +27,28 @@
 <li><b>{$count.gridimage_ticket|thousends}</b> change requests (<b>{$count.gridimage_ticket_item|thousends}</b> individual changes)<ul>
 	<li>by <b>{$count.gridimage_ticket__users|thousends}</b> different users (<b>{$count.gridimage_ticket__users_others|thousends}</b> excluding suggestions on own images)</li>
 </ul></li>
+<li><b>{$count.content|thousends}</b> collections</li>
 <li><b>{$count.article|thousends}</b> articles</li>
+<li><b>{$count.blog|thousends}</b> blog entries</li>
+<li><b>{$count.geotrips|thousends}</b> Geo Trips</li>
+<li><b>{$count.tag_stat|thousends}</b> tags</li>
+<li><b>{$count.category_stat|thousends}</b> categories</li>
+<li><b>{$count.subject|thousends}</b> subjects</li>
+<li><b>{$count.project_idea|thousends}</b> ideas</li>
+<li><b>{$count.geoevent|thousends}</b> events</li>
 </ul>
 
 <p>Additionally the site knows about:</p>
 
 <ul>
-<li><b>{$count.gridprefix}</b> known 100x100km grid squares (<b>{$count.gridprefix__land}</b> on land)</li>
+<li><b>{$count.gridprefix}</b> known 100x100km grid squares - myriads (<b>{$count.gridprefix__land}</b> on land)</li>
+<li><b>{$count.hectad_stat}</b> known 10x10km grid squares with photos - hectads</li>
 <li><b>{$count.queries|thousends}</b> searches preformed<ul>
 	<li>by <b>{$count.queries__users|thousends}</b> different users</li>
 </ul></li>
-<li><b>{$count.sessions|thousends}</b> visitors in the last 24 minutes</li>
+{if $count.sessions}
+<li><b>{$count.sessions|thousends}</b> visitors in the last 24 <u>minutes</u></li>
+{/if}
 <li><b>{$count.apikeys}</b> sites using the Geograph API</li>
 <li><b>{$count.loc_counties_pre74}</b> historic counties</li>
 <li><b>{$count.loc_counties}</b> ceremonial counties</li>
@@ -57,9 +68,8 @@
 <ul>
 <li><b>{$count.mapcache|thousends}</b> rendered map tiles</li>
 <li><b>{$count.kmlcache|thousends}</b> rendered superlayer tiles</li>
-<li><b>{$files.rss|thousends}</b> different syndicated feeds</li>
-<li><b>{$files.memorymap|thousends}</b> different Memory-Map feeds</li>
-<li><b>{$files.tpcompiled|thousends}</b> page templates (made of <b>{$files.tpraw}</b> components)</li>
+<!--li><b>{$files.rss|thousends}</b> different syndicated feeds</li>
+<li><b>{$files.tpcompiled|thousends}</b> page templates (made of <b>{$files.tpraw}</b> components)</li-->
 <li><b>{$count.kmlcache|thousends}</b> static sitemap files</li>
 </ul>
 

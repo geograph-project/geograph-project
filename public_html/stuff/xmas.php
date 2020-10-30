@@ -43,6 +43,8 @@ if ($year >= 2004 && $year <= date('Y')) {
 } 
 $target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
 
+ini_set('memory_limit', '128M');
+
 
 $template='stuff_xmas.tpl';
 $cacheid=$map->type_or_user * -1;
@@ -50,8 +52,7 @@ $cacheid=$map->type_or_user * -1;
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*7*24; //7 day cache (as search can be cached - and we manually refreshed anyway
 
-
-if (!empty($_GET['refresh']) && $USER->hasPerm("admin")) {
+if (!file_exists($target) || filemtime($target) < (time()-3600*12) || (!empty($_GET['refresh']) && $USER->hasPerm("admin")) ) {
 	unlink($target);
 	$map->_renderMap();
 	$smarty->clear_cache($template, $cacheid);

@@ -26,6 +26,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 require_once('geograph/global.inc.php');
 
 $attribs = array('font','style','weight','gravity','pointsize');
+$attribs = array('font','gravity','pointsize');
 #'stretch' - doenst seem to work on scone/toast
 if (empty($_GET['gravity']))
 	$_GET['gravity'] = 'South';
@@ -99,8 +100,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 			Options:
 			<input type=checkbox name=title id=title/><label for=title>Include image title</label>,
 			<input type=checkbox name=link id=link value=0 /><label for=link>Hide geograph link</label>,
-			<input type=checkbox name=ie id=ie value=1 <? if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') { ?> checked<? } ?>/><label for=ie>.ie link</label>,
-			<input type=checkbox name=invert id=invert value=1 /><label for=invert>invert text color</label><br/>
+			<input type=checkbox name=ie id=ie value=1 <? if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') { ?> checked<? } ?>/><label for=ie>.ie link</label>
 			<hr/>
 	<?
 		foreach ($attribs as $list) {
@@ -122,7 +122,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 			print "<option></option>";
 			foreach ($lines as $line) {
 				if ($list == 'font') {
-					if (!preg_match('/Font: ([\w-]+)/',$line,$m) || preg_match('/(Bold|Italic|Oblique)+$/',$m[1])) {
+					if (!preg_match('/Font: ([\w-]+)/',$line,$m) || preg_match('/(Bold|Italic|Oblique|Symbol|Dingbat|Nimbus|Liberation|DejaVu-Serif|Palatino|NewCenturySchlbk|AvantGarde)/',$m[1])) {
 						continue;
 					}
 					$line = $m[1];
@@ -133,6 +133,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 			print "</select> &nbsp; ";
 		}
 	?>
+		<input type=checkbox name=invert id=invert value=1 /><label for=invert>invert text color</label>
 		<hr/>
 		<input type="submit" value="Get Stamped Image &gt;&gt;"/>
 		</form>
@@ -149,16 +150,28 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 
 if (!empty($_GET['large'])) {
 	switch($_GET['large']) {
+		case 213: $thumb = $image->getThumbnail(213,160,2);
+			$file = ".".$thumb['url']; break; //we dont want the http hostname
+
+		case 393: $thumb = $image->getFixedThumbnail(393,300,2);
+			$file = ".".$thumb['url']; break; //we dont want the http hostname
+
                 case 640:
                 case 800:
                 case 1024:
                 case 1600:
                         $file = ".".$image->getImageFromOriginal(intval($_GET['large']),intval($_GET['large']));
+			if (strlen($file) < 20 || basename($file)=="error.jpg") {
+				$file = ".".$image->_getOriginalpath();
+			}
                         break;
 		default:
 			$file = ".".$image->_getOriginalpath();
 			break;
 	}
+        if (strlen($file) < 20 || basename($file)=="error.jpg") {
+                $file = ".".$image->_getFullpath();
+        }
 } else {
 	$file = ".".$image->_getFullpath();
 }

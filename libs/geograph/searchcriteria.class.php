@@ -239,7 +239,6 @@ class SearchCriteria
 				}
 				unset($this->db);
 				print_r($this);
-				print_r($_SERVER);
 				$con = ob_get_clean();
 				mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->searchdesc,$con);
 						
@@ -327,6 +326,11 @@ class SearchCriteria
 							break;
 						case 'user_id':
 							$this->sphinx['sort'] = 'auser_id';
+							break;
+						case 'potd':
+							$sql_order = "(vote_baysian >= 3.2) desc,crc32(concat(gi.gridimage_id,yearweek(now()))) desc";
+							$this->sphinx['sort'] = 'rand()';
+							$this->sphinx['compatible_order'] = 0;
 							break;
 						case 'sequence':
 							//$sql_from .= " INNER JOIN gridimage_sequence seq ON(gi.gridimage_id=seq.gridimage_id) "; ... now in gridimage_search directly!

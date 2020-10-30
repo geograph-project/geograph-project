@@ -97,12 +97,6 @@
 	<script src="https://unpkg.com/togeojson@0.16.0/togeojson.js"></script>
 	<script src="https://unpkg.com/leaflet-filelayer@1.2.0/src/leaflet.filelayer.js"></script>
 
-{dynamic}
-	{if $printable}
-		<script src="https://cdn.jsdelivr.net/npm/leaflet.browser.print@0.8.3/dist/leaflet.browser.print.min.js" integrity="sha256-mmSPao6D4tXRdPzxAx/bo+miWx5aNk5kdCga/xuHXCI=" crossorigin="anonymous"></script>
-	{/if}
-{/dynamic}
-
 <script>{literal}
 
 	function linkToMap(that) {
@@ -428,38 +422,6 @@ function startTour() {
 
 /////////////////////////////////////////////////////
 {/literal}
-{dynamic}
-	{if $printable}{literal}
-		L.control.browserPrint({printModes:["Portrait", "Landscape"]}).addTo(map)
-
-L.Control.BrowserPrint.Utils.registerLayer(
-	L.BritishGrid,
-	"L.BritishGrid",
-	function(layer, utils) {
-		return L.britishGrid(layer.options);
-	}
-);
-
-L.Control.BrowserPrint.Utils.registerLayer(
-	L.IrishGrid,
-	"L.IrishGrid",
-	function(layer, utils) {
-		return L.irishGrid(layer.options);
-	}
-);
-
-L.Control.BrowserPrint.Utils.registerLayer(
-	L.TileLayer.Bing,
-	"L.TileLayer.Bing",
-	function(layer, utils) {
-		return L.tileLayer(osmUrl, {minZoom: 5, maxZoom: 21, attribution: osmAttrib});
-	}
-);
-
-	{/literal}{/if}
-{/dynamic}
-
-/////////////////////////////////////////////////////
 </script>
 
 

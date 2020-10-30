@@ -22,7 +22,7 @@
  */
 
 
-        $param = array('type'=>'typo','size'=>10000,'print'=>0);
+        $param = array('type'=>'typo','size'=>0,'debug'=>false,'period'=>4);
 
         chdir(__DIR__);
         require "./_scripts.inc.php";
@@ -38,14 +38,19 @@ $type = $param['type'];
 
 $where = array();
 
-$last_id = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+if ($param['size']) {
+        $last_id = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
-$where[] = 'gridimage_id > '.($last_id-$param['size']);
+        $where[] = 'gridimage_id > '.($last_id-$param['size']);
+} else {
+        $where[] = 'upd_timestamp > date_sub(now(),interval '.intval($param['period']).' day)';
+        $param['size'] = $db->getOne("SELECT COUNT(*) FROM gridimage_search WHERE ".implode(' AND ',$where));
+}
 
 $where[] = "include!=''";
 $where[] = "exclude=''";
 $where[] = "enabled = 1";
-$where[] = "profile in ('phrase','either')";
+$where[] = "profile = 'phrase'";
 $where[] = "t.updated < DATE_SUB(NOW(),INTERVAL 3 HOUR)";
 
 $where= implode(' AND ',$where);
@@ -53,11 +58,13 @@ $where= implode(' AND ',$where);
 $sql = "
 SELECT typo_id,include,gridimage_id
 FROM `typo` t
-INNER JOIN `gridimage_search` gi ON ( `comment` LIKE CONCAT('%',include,'%') OR IF(t.title=1,gi.title LIKE CONCAT('%',include,'%'),0) )
+INNER JOIN `gridimage_search` gi ON ( `comment` LIKE CONCAT('%',include,'%') OR gi.title LIKE CONCAT('%',include,'%') )
 WHERE $where";
-print "$sql;\n";
 
-if ($param['print'])
+if ($param['debug'])
+	print "$sql;\n";
+
+if ($param['debug'] ==2)
 	exit;
 
 $rows = $db->getAll($sql);
@@ -82,15 +89,15 @@ if (!empty($rows)) {
 			last_results = $count,
 			last_time=NOW(),
 			last_size={$param['size']},
-			last_gridimage_id=$last_id,
 			last_user_id=0,
 			total_results=total_results+$count,
 			total_runs = total_runs + 1
 			WHERE typo_id = $typo_id";
 		$db->Execute($sql);
-		print "$sql;\n";
+		if ($param['debug'])
+			print "$sql;\n";
 	}
-
 }
 
-print "done\n";
+if ($param['debug'])
+	print "done\n";

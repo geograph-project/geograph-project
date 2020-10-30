@@ -3,4 +3,6 @@
 User-agent: *
 Disallow: /
 Allow: /$
+Allow: /?lang=cy$
+Allow: /api-facetql.php
 

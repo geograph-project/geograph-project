@@ -6,7 +6,7 @@
 	{foreach from=$engine->results item=image}
 	{searchbreak image=$image table=true}
   <tr>
-      <td align="center" valign="top">
+      <td align="center" valign="top" class="shadow">
         <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
       </td>
       <td valign="top">

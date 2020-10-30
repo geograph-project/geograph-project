@@ -3,6 +3,8 @@
 
 {dynamic}
 
+{$status_message}
+
 {if $image}
 	<div style="position:relative; float:right; width:220px; background-color:#eeeeee; padding: 10px; text-align:center">
 		<b>Chosen Image</b>
@@ -33,6 +35,8 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 	<h3>Thank you</h3>
 	
 	<p>Your upload will be verified, and then made available via the 'more sizes' on the photo page soon.</p>
+
+	<p>NOTE: Please check your larger size upload after 24 hours - if it has not appeared, <a href="/discuss/index.php?&action=vthread&forum=4&topic=28153">please report it</a></p>
 	
 	<p>Return to the <a href="/photo/{$image->gridimage_id}">photo page</a></p>
 
@@ -48,9 +52,11 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 
 <h3>Step 2 : Confirm image size</h3>
 
-		{if $original_width}
+		{if $original_width || $allow_same}
 			
-			{assign var="hide640" value=1}
+			{if !$allow_same}
+				{assign var="hide640" value=1}
+			{/if}
 			{include file="_submit_sizes.tpl"}
 
 <script type="text/javascript">{literal}
@@ -59,7 +65,7 @@ function hideStep3() {
 	document.getElementById("step3").style.display = 'none';
 }
 {/literal}
-{if !$user->upload_size || $user->upload_size == 640}
+{if (!$user->upload_size || $user->upload_size == 640) && !$allow_same}
  AttachEvent(window,'load',hideStep3,false);
 {/if}
 </script>
@@ -108,12 +114,18 @@ function hideStep3() {
 
 {else if $step eq 1}
 
-
-<ul>
-	<li>Use this form to add a higher resolution image to the above submission</li>
-	<li>This should only be used to add the same exact image - although for example better tweaking of contrast and brightness is fine</li>
-	<li>NOTE: This only adds a higher resolution version - it does NOT affect the photo shown on <a href="/photo/{$image->gridimage_id}">the photo page</a>
-</ul>
+{if $repair}
+	<ul>
+		<li>Use this form to repair (and optionally add a higher resolution image to) the above submission</li>
+		<li>You can just upload a 640px version, or as large as required. On the next screen will decide the actual resolution to release</li>
+	</ul>
+{else}
+	<ul>
+		<li>Use this form to add a higher resolution image to the above submission</li>
+		<li>This should only be used to add the same exact image - although for example better tweaking of contrast and brightness is fine</li>
+		<li>NOTE: This only adds a higher resolution version - it does NOT affect the photo shown on <a href="/photo/{$image->gridimage_id}">the photo page</a>
+	</ul>
+{/if}
 
 {if $exif}
 	<p>Data from EXIF that might help locate the original:</p>

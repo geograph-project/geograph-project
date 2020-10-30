@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors",1);
+
 /**
  * $Project: GeoGraph $
  * $Id: cities.php 5785 2009-09-12 10:06:29Z barry $
@@ -32,7 +32,7 @@ $smarty = new GeographPage;
 $alpha = (!empty($_GET['alpha']) && ctype_upper($_GET['alpha']) )?$_GET['alpha']:'G';
 
 $template='explore_rivers.tpl';
-$cacheid=$alpha;
+$cacheid=$alpha.$alpha.$alpha;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -53,29 +53,29 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		if (preg_match_all('/\[\[\[(\d+)\]\]\]/',$row['post_text'],$g_matches)) {
 
-			preg_match('/<b>([\w ,-]+)<\/b>/',$row['post_text'],$name) ;
+			preg_match('/<b>([\w ,\(\)-]+)<\/b>/',$row['post_text'],$name) ;
 
 			if (empty($name)) {
-				preg_match('/^(River [\w ,-]+)<br/',$row['post_text'],$name) ;
+				preg_match('/^(River [\w ,\(\)-]+)<br/',$row['post_text'],$name) ;
 			}
 
 			if (!empty($name)) {
-				preg_match('/^(River |)(\w.*)/',$name[1],$m);
+				preg_match('/^(River |Afon |Abhainn |Allt |Water of |Burn of |The |)(\w.*)/',$name[1],$m);
 				if ($slug = strtoupper($m[2]))
-					$stats[substr($slug,0,1)]++;
+					@$stats[substr($slug,0,1)]++;
 			}
 
 			if (($ids = $g_matches[1]) && !empty($name) && strpos($slug,$alpha) === 0) {
 
 				$result = array();
 
-				list($result['name'],$result['county']) = explode(', ',$name[1],2);
+				@list($result['name'],$result['county']) = explode(', ',$name[1],2);
 				$result['hash'] = str_replace(' ','-',trim(preg_replace('/[^\w \-]+/','',strtolower($result['name']))));
 
 				if (!empty($result['county'])) {
-					$result['q'] = "({$result['name']}) | ({$result['county']} {$result['name']})";
+					$result['q'] = "\"{$result['name']}\" | ({$result['county']} {$result['name']})";
 				} else {
-					$result['q'] = $result['name'];
+					$result['q'] = '"'.$result['name'].'"';
 				}
 
 				$sql = "select gridimage_id,user_id,realname,title,grid_reference from gridimage_search where gridimage_id in (".implode(',',$ids).")";
@@ -88,12 +88,14 @@ if (!$smarty->is_cached($template, $cacheid))
 
 					$result['images'][] = $gridimage;
 				}
-				$results[] = $result;
+
+				$results[$slug] = $result;
 				$users[] = $row['poster_id'];
 			}
 		}
 	}
 
+	ksort($results);
 
 	if (!empty($users)) {
 		$sql = "select user_id,realname,nickname from user where user_id in (".implode(',',$users).")";
@@ -110,7 +112,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	ksort($stats);
 	$smarty->assign_by_ref("stats", $stats);
 	$smarty->assign_by_ref("alpha", $alpha);
-	$smarty->assign_by_ref("extra_info", $extra_info);
 
 	$smarty->assign('keyword', 'Rivers');
 }

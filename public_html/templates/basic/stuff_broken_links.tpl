@@ -64,7 +64,7 @@
 		<td sortvalue="{$item.url|escape:'html'}">{external href=$item.url text=$item.url|replace:"http://":""|truncate:90|escape:html|regex_replace:'/^([\w\.-]+)/':'<b>$1</b><small>'}<br/>
 		<b>{$item.HTTP_Status}</b> {$codes.$HTTP_Status}</small>
 		{if $item.HTTP_Location}
-			<small>... Server reports {external href=$item.HTTP_Location text="new location"}
+			<small>... has {if $item.HTTP_Status >=400} previouslly{/if} reported a {external href=$item.HTTP_Location text="new location"}
 			{if strpos($item.HTTP_Location,'404')}
 				[<b>Which <i>appears</i> to be an Error Page</b>]
 			{/if}

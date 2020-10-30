@@ -2,34 +2,65 @@
 {assign var="meta_description" value="Lists your most recent submissions for easy editing and review"}
 {include file="_std_begin.tpl"}
 
+
+<form method=get action="/search.php" style="float:right;padding:2px;background-color:silver;color:black;width:320px">
+	Search your moderated images:
+	<input type=search name="searchtext" value="" size=30 placeholder="{literal}{enter keywords - optional}{/literal}">
+
+	<input type=hidden name="form" value="recent">
+	<input type=hidden name="user_id" value="{$user->user_id}">
+	<input type=hidden name="orderby" value="gridimage_id">
+	<input type=hidden name="reverse_order_ind" value="on">
+	<input type=hidden name="displayclass" value="spelling">
+
+	<input type=hidden name="do" value="1">
+	<input type=submit value="Search">
+	<small><br>Tip: Can just press Search without entering keywords to see all your moderated images</small>
+</form>
+
 <h2>Recent Uploads{if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
 
 	<br/>
 
+{if $prev || $next}
+	<div class="interestBox" style=max-width:600px>Navigation: <b>|
+	{if $prev == 1}
+		<a href="{$script_name}">Previous</a> |
+	{elseif $prev}
+		<a href="{$script_name}?next={$prev|escape:'url'}">Previous</a> |
+	{/if}
+	{if $next}
+		<a href="{$script_name}?next={$next|escape:'url'}">Next</a> |
+	{/if}</b>
+
+	<a href="/stuff/submissions-map.php">On Map</a>
+	</div>
+{/if}
+
 	{foreach from=$images item=image}
-	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style"background-color:#{cycle values="eaeaea,f8f8f8"};padding:8px 0;">
-	  <div class="shadow" style="float:left; position:relative; width:133px; text-align:center">
-		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a><br/>
-		<div class="caption">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
-		<br/><div style="font-size:0.6em;">[[[{$image->gridimage_id}]]]</div>
+	  <form action="http://{$http_host}/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="clear:both;border-top:1px solid silver; padding:8px 0;">
+	  <div class="shadow" style="float:left; position:relative; width:226px; text-align:center">
+		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true,$src)}</a><br/>
+		<div class="caption">{if $image->moderation_status eq "pending"}{$image->moderation_status}{/if}</div>
 	  </div>
 	  <div style="float:left; position:relative">
 		<a name="{$image->gridimage_id}"><input type="text" name="title" size="80" value="{$image->title|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/></a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]
 		<br/>
-		for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $image->realname} by <a title="view user profile" href="/profile/{$user->user_id}?a={$image->realname|escape:'url'}">{$image->realname}</a>{/if}<br/>
+		for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $image->realname} by <a title="view user profile" href="/profile/{$user->user_id}?a={$image->realname|escape:'url'}">{$image->realname}</a>{/if}
+		(<a href="/browser/#!/loc={$image->grid_reference}/dist=20000/days=365/display=group/group=user_id/n=4/gorder=images%20desc">local leaderboard</a>)<br/>
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
 		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;" onclick="mark_color(this.form,'yellow')"/>{if $image->moderation_status == 'pending' || $user->stats.images > 100}<input type="submit" name="apply" value="Apply changes" onclick="mark_color(this.form,'lightgreen')"/>{/if}
-		<br/>
+		<div style="font-size:0.7em;padding-top:7px">[[[{$image->gridimage_id}]]]</div>
 
-		<div class="tabHolder" style="font-size:1em">		
+		<div class="tabHolder" style="font-size:1em;padding-top:10px">		
 			<a class="tab nowrap" id="tab{$image->gridimage_id}1" onclick="if(tabClick2('tab{$image->gridimage_id}','div{$image->gridimage_id}',1,3)) open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Tags</a>&nbsp;
                         <a class="tab nowrap" id="tab{$image->gridimage_id}2" onclick="if(tabClick2('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3)) open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Shared Descriptions<span id="c{$image->gridimage_id}"></span></a>
 			<span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">
-				[ <a onclick="tabClick('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3); open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a>
-				 | <a onclick="tabClick('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3); open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a>
-				 | <a onclick="tabClick('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3); open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">New</a> ]</span>
+				[ <a onclick="tabClick('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3); open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');" style="cursor:pointer;">Recent</a>
+				 | <a onclick="tabClick('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3); open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');" style="cursor:pointer;">Suggestions</a>
+				 | <a onclick="tabClick('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3); open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');" style="cursor:pointer;">New</a> ]</span>
                         {if $image->grid_reference}
                                 <a class="tab nowrap" id="tab{$image->gridimage_id}3" onclick="if (tabClick2('tab{$image->gridimage_id}','div{$image->gridimage_id}',3,3)) open_nearby({$image->gridimage_id},'{$image->grid_reference}','');">Used Nearby</a>&nbsp;
                         {/if}
@@ -179,5 +210,9 @@ function showSnippetCount(data) {
  AttachEvent(window,'load',loadSnippetCount,false);
 {/literal}
 </script>
+
+{if $src == 'data-src'}
+	 <script src="{"/js/lazy.js"|revision}" type="text/javascript"></script>
+{/if}
 
 {include file="_std_end.tpl"}

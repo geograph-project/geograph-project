@@ -146,7 +146,7 @@ if(($ii==0 and $page==0 and $topicDesc==0) or ($topicDesc==1 and $numRows==$view
 else $deleteM=<<<out
 <a href="JavaScript:confirmDelete({$cols[6]},0)" onMouseOver="window.status='{$l_deletePost}'; return true;" onMouseOut="window.status=''; return true;">$l_deletePost</a>
 out;
-$allowed=$allowedEdit." ".$deleteM;
+$allowed=$allowedEdit;//." ".$deleteM;
 } 
 else {
 $cols[4]='';
@@ -356,7 +356,7 @@ if (mysql_num_rows($result)) {
 
 if ($logged_admin==1 or $isMod==1) {
 
-$deleteTopic="$l_sepr <a href=\"JavaScript:confirmDelete({$topic},1)\" onMouseOver=\"window.status='{$l_deleteTopic}'; return true;\" onMouseOut=\"window.status=''; return true;\">$l_deleteTopic</a>";
+//$deleteTopic="$l_sepr <a href=\"JavaScript:confirmDelete({$topic},1)\" onMouseOver=\"window.status='{$l_deleteTopic}'; return true;\" onMouseOut=\"window.status=''; return true;\">$l_deleteTopic</a>";
 
 $moveTopic="$l_sepr <a href=\"{$main_url}/{$indexphp}action=movetopic&amp;forum=$forum&amp;topic=$topic&amp;page=$page\">$l_moveTopic</a>";
 

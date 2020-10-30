@@ -59,9 +59,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 
 $sql = " (
-	select subject,t.tag,count(gridimage_id) images from subjects s left join tag t on (t.tag = s.subject and t.prefix = 'subject') left join gridimage_tag gt on (t.tag_id = gt.tag_id and gt.status = 2) group by subject order by null
+	select lower(subject) as subject,lower(t.tag) as tag,count(gridimage_id) images from subjects s left join tag t on (t.tag = s.subject and t.prefix = 'subject') left join gridimage_tag gt on (t.tag_id = gt.tag_id and gt.status = 2) group by subject order by null
 ) union (
-	select subject,t.tag,count(gridimage_id) images from tag t inner join gridimage_tag gt using (tag_id) left join subjects s on (t.tag = s.subject) where t.prefix = 'subject' and gt.status = 2 and s.subject is null group by tag_id order by null
+	select lower(subject) as subject,lower(t.tag) as tag,count(gridimage_id) images from tag t inner join gridimage_tag gt using (tag_id) left join subjects s on (t.tag = s.subject) where t.prefix = 'subject' and t.status = 1 and gt.status = 2 and s.subject is null group by tag_id order by null
 ) order by coalesce(subject,tag)";
 
 //union (
@@ -70,12 +70,14 @@ $sql = " (
 	$list = $db->getAll($sql);
 
 
-	$historic = $db->getAssoc("select subject,count(*) images,count(distinct imageclass) as cats from gridimage_search inner join category_mapping using (imageclass) group by subject order by null");
+//	$historic = $db->getAssoc("select lower(subject) as subject,count(*) images,count(distinct imageclass) as cats from gridimage_search inner join category_mapping using (imageclass) group by subject order by null");
+	$historic = $db->getAssoc("select lower(subject) as subject,sum(c) as images,count(distinct imageclass) as cats from category_stat inner join category_mapping using (imageclass) group by subject order by null");
 	foreach ($list as $idx => $row) {
-		if (!empty($historic[$row['subject']])) {
-			$list[$idx]['historic'] = $historic[$row['subject']]['images'];
-			$list[$idx]['cats'] = $historic[$row['subject']]['cats'];
-			unset($historic[$row['subject']]);
+		$tag = $row['subject']?$row['subject']:$row['tag'];
+		if (!empty($historic[$tag])) {
+			$list[$idx]['historic'] = $historic[$tag]['images'];
+			$list[$idx]['cats'] = $historic[$tag]['cats'];
+			unset($historic[$tag]);
 		}
 	}
 	if (!empty($historic)) {

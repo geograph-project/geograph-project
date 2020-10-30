@@ -36,20 +36,18 @@ ENDHELP;
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-set_time_limit(3600*24);
-
-###############################################
-
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
 
 if (!$db->getOne("SELECT GET_LOCK('".basename($argv[0])."',3600)")) {
         die("unable to get a lock;\n");
 }
 
-###############################################
+set_time_limit(3600*24);
 
 
+#####################
 
 /* we can run this, as we KNOW nither Google Maps nor Bing support KML URLs any more! (although should check first that they ARE all gmaps or bing links!
 update gridimage_link SET HTTP_Status_final = 404,HTTP_Status=IF(HTTP_Status>0,HTTP_Status,404),last_checked=NOW(),next_check = '2018-01-01'

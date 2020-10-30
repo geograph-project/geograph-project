@@ -206,10 +206,13 @@ if (!empty($_GET['ddd']))
 		$sphinx = new sphinxwrapper(trim($_GET['q']));
 		$sphinx->pageSize = $pageSize;
 
-		if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
+		if (preg_match('/\bp(age|)(\d+)\s*$/',$_GET['q'],$m)) {
 			$pg = intval($m[2]);
 			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
 		}
+
+		if ($sphinx->q == 'coronavirus')
+			$sphinx->q = 'coronavirus | "Covid 19" | Covid19';
 
 		if (!empty($_GET['in']) && $_GET['in'] == 'title') {
 			$extra['in'] = $_GET['in'];
@@ -236,6 +239,8 @@ if (!empty($_GET['ddd']))
 		$sphinx->processQuery();
 		$sphinx->qoutput = $sphinx->q;
 
+                $sphinxq = $sphinx->q; //store the original for the Excepts, as we may modify it below!
+                // ... in particular dont want 'themed' highlighted in snippet
 
 		if (preg_match('/@grid_reference \(/',$sphinx->q) && preg_match('/^\w{1,2}\d{4}$/',$sphinx->qclean)) {
 
@@ -383,11 +388,11 @@ if (!empty($_GET['ddd']))
 	order by content.`type` = 'info' desc, $sql_order
 	limit $limit");
 
-	if (!empty($sphinx) && !empty($_GET['q']) && !empty($sphinx->q)) {
+	if (!empty($sphinx) && !empty($_GET['q']) && !empty($sphinxq)) {
 		$docs = array();
 		foreach ($list as $i => $row)
 			$docs[$i] = strip_tags(implode(' | ',array($row['raw_words'],$row['extract'],$row['title'])));
-		$reply = $sphinx->BuildExcerpts($docs, 'content_stemmed', $sphinx->q, array('limit' => 300, 'around' => 12, 'query_mode' => 1));
+		$reply = $sphinx->BuildExcerpts($docs, 'content_stemmed', $sphinxq, array('limit' => 300, 'around' => 12, 'query_mode' => 1));
 	}
 
 	foreach ($list as $i => $row) {

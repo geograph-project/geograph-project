@@ -343,7 +343,7 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 			GROUP BY q.quiz_id");
 	$smarty->assign_by_ref('quizs',$quizs);
 
-	if ($USER->registered) {
+	if ($USER->registered && empty($_GET['play'])) {
 
 		$tags = $db->getAll("SELECT qt.*,COUNT(DISTINCT qq.question_id) AS count,COUNT(DISTINCT qqq.question_id) AS count_user, u.realname
 			FROM quiz_tag qt

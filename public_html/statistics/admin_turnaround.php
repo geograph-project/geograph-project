@@ -29,7 +29,13 @@ init_session();
 
 $smarty = new GeographPage;
 
+$USER->mustHavePerm("moderator");
+
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
+
+if ($u && !$USER->hasPerm("director"))
+        $u = $USER->user_id;
+
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache

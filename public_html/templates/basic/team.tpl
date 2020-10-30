@@ -42,7 +42,6 @@
         <span class="tabSelected">The Geograph Team</span>
         <a href="/credits/" class="tab">Contributors</a>
         <a href="/help/credits" class="tab">Credits</a>
-        <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
         <a href="/contact.php" class="tab">Contact Us</a>
 	<a href="/article/Get-Involved">Get Involved...</a>
 </div>
@@ -56,12 +55,11 @@
 
 	<div class="names">
 
-	{foreach from=$team item=userrow}
-		{if $userrow.role ne 'Member' || $userrow.rights ne ''}
-			<a href="/profile/{$userrow.user_id}" class="name" title="Nickname: {$userrow.nickname|escape:'html'|default:'none'}, Role(s): {$userrow.rights}"><img src="https://www.gravatar.com/avatar/{$userrow.md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=25&amp;s=25" align="absmiddle" alt="{$userrow.realname|escape:'html'}'s Gravatar"/> {$userrow.realname|escape:'html'}</a>
-		{/if}
-		{if $userrow.role eq 'Member'}
+	{foreach from=$team key=user_id item=userrow}
+		{if $userrow.rights == 'alumni'}
 			{assign var="hist" value="1"}
+		{else}
+			<a href="/profile/{$user_id}" class="name" title="Nickname: {$userrow.nickname|escape:'html'|default:'none'}, Role(s): {$userrow.rights}"><img src="{if $userrow.md5_email}https://www.gravatar.com/avatar/{$userrow.md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=25&amp;s=25{else}https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25{/if}" align="absmiddle" alt="{$userrow.realname|escape:'html'}'s Gravatar"/> {$userrow.realname|escape:'html'}</a>
 		{/if}
 	{/foreach}
 
@@ -75,9 +73,9 @@
 
 
 	<div class="names" style="font-size:0.9em">
-	{foreach from=$team item=userrow}
-		{if $userrow.role eq 'Member'}
-			<a href="/profile/{$userrow.user_id}" class="name"{if $userrow.rights} title="Current Role(s): {$userrow.rights}"{/if}><img src="https://www.gravatar.com/avatar/{$userrow.md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=25&amp;s=25" align="absmiddle" alt="{$userrow.realname|escape:'html'}'s Gravatar"/> {$userrow.realname|escape:'html'}</a>
+	{foreach from=$team key=user_id item=userrow}
+		{if strpos($userrow.rights,'alumni') !== false}
+			<a href="/profile/{$user_id}" class="name"{if $userrow.rights && $userrow.rights != 'alumni'} title="Current Role(s): {$userrow.rights}"{/if}><img src="{if $userrow.md5_email}https://www.gravatar.com/avatar/{$userrow.md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=25&amp;s=25{else}https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25{/if}" align="absmiddle" alt="{$userrow.realname|escape:'html'}'s Gravatar"/> {$userrow.realname|escape:'html'}</a>
 		{/if}
 	{/foreach}
 	</div>
@@ -99,6 +97,8 @@
 	<span class="nowrap"><b>Moderator Coordinator</b> : Central point of contact for communication between moderators</span> -
         <span class="nowrap"><b>Support Representative</b> : Answers questions submitted via <a href="/contact.php">Contact Us</a></span> -
 </div>
+
+<p align="center">Company directors, and their specializations (if any) are listed on the <a href="/article/About-Geograph-page">About Geograph</a> page. </p>
 
 {dynamic}
 {if $user->registered && ($user->stats.squares gt 20)}

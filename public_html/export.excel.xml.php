@@ -36,7 +36,10 @@ include('geograph/export.inc.php');
 header("Content-type: application/vnd.ms-excel");
 header("Content-Disposition: attachment; filename=\"geograph.xml\"");
 
-print "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
+$charset = "ISO-8859-1";
+//NOTE, if want to change this, eg to UTF8, geograph database still in latin1/ISO-8859-1, so will need to convert, eg xmlentities(latin1_to_utf8($image->title))
+
+print "<?xml version=\"1.0\" encoding=\"$charset\"?>\n";
 print "<?mso-application progid=\"Excel.Sheet\"?>\n";
 ?>
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
@@ -69,12 +72,12 @@ while (!$recordSet->EOF)
 	$image = $recordSet->fields;
 
 	print "<Cell ss:StyleID=\"sHy\" ss:HRef=\"{$CONF['SELF_HOST']}/photo/{$image['gridimage_id']}\"><Data ss:Type=\"Number\">{$image['gridimage_id']}</Data></Cell>\n";
-	print "<Cell><Data ss:Type=\"String\">{$image['title']}</Data></Cell>";
+	print "<Cell><Data ss:Type=\"String\">".xmlentities($image['title'],$charset)."</Data></Cell>";
 	print "<Cell><Data ss:Type=\"String\">{$image['grid_reference']}</Data></Cell>";
-	print "<Cell><Data ss:Type=\"String\">{$image['realname']}</Data></Cell>";
-	print "<Cell><Data ss:Type=\"String\">{$image['imageclass']}</Data></Cell>";
+	print "<Cell><Data ss:Type=\"String\">".xmlentities($image['realname'],$charset)."</Data></Cell>";
+	print "<Cell><Data ss:Type=\"String\">".xmlentities($image['imageclass'],$charset)."</Data></Cell>";
 	if (!empty($_GET['desc']))
-		print "<Cell><Data ss:Type=\"String\">{$image['comment']}</Data></Cell>";
+		print "<Cell><Data ss:Type=\"String\">".xmlentities($image['comment'],$charset)."</Data></Cell>";
 	if (!empty($_GET['thumb'])) {
 		$gridimage->fastInit($image);
 		print "<Cell><Data ss:Type=\"String\">".$gridimage->getThumbnail(120,120,true)."</Data></Cell>";
@@ -111,7 +114,7 @@ while (!$recordSet->EOF)
 			print "<Cell><Data ss:Type=\"Number\">{$image['wgs84_long']}</Data></Cell>\n";
 		}
 		if (!empty($_GET['tags']))
-			print "<Cell><Data ss:Type=\"String\">{$image['tags']}</Data></Cell>";
+			print "<Cell><Data ss:Type=\"String\">".xmlentities($image['tags'],$charset)."</Data></Cell>";
 	}
 	if (!empty($_GET['taken'])) {
 		if (strpos($image['imagetaken'],'-00') === FALSE)
@@ -134,6 +137,10 @@ while (!$recordSet->EOF)
 
 	echo "</Row>\n";
 	$recordSet->MoveNext();
+	if (!($counter%1000)) {
+		flush();
+		ob_flush();
+	}
 	$counter++;
 }
 $recordSet->Close();

@@ -144,7 +144,7 @@ if (true) { //actully we can run the code, even in the case of an empty query...
 'distance' => 'Subject Distance',
 ':7' => '',
 'format' => 'Image Format',
-'status' => 'Moderation Status',
+'auto' => 'Dynamic Clustering',
 		);
 
 				$segs = array(
@@ -211,14 +211,17 @@ if (true) { //actully we can run the code, even in the case of an empty query...
 		if (!empty($_GET['sort']) && preg_match('/^\w+$/',$_GET['sort'])) {
 			$order = "`{$_GET['sort']}` desc";
 		}
-
-		$rows = $sph->getAll($sql = "
+		if ($group == 'auto') {
+			$rows = fakeSample8Clustered($sph,$where,$groupn,$sphinx->pageSize);
+		} else {
+			$rows = $sph->getAll($sql = "
 			select id,realname,user_id,title,grid_reference, count(*) as images, weight() as w $column
 			from sample8
 			where $where
 			group $groupn by `$group`
 			order by $order, score desc, w desc
 			limit {$sphinx->pageSize}");
+		}
 
 		if (!empty($_GET['p']))
 			print "$sql;";

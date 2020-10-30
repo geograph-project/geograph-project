@@ -1,6 +1,9 @@
 {assign var="page_title" value="Blog :: $title"}
 {assign var="rss_url" value="/blog/feed.rss"}
 {include file="_std_begin.tpl"}
+{if $blog_id == 272}
+	<div style="position:absolute; top:0; left:0; width:100%; height:100%;	background-image:url('https://pbs.twimg.com/media/DHNj1dcXoAAtkiX.jpg'); background-size:cover; opacity:0.1; z-index:-1000"></div>
+{/if}
 {literal}<style type="text/css">
 .unable,.unable A  {
 	color:gray;

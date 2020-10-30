@@ -45,33 +45,14 @@ $q1 = $m[1];
 
 $q2 = str_replace('~','_',$q);
 $q2 = str_replace('|','.',$q2);
-$cachepath = $CONF['sphinx_cache']."place/$q1/$q2.txt";
 
 $encoding = getEncoding();
 if ($encoding) {
-	$cachepath .= ".$encoding";
 	header ('Content-Encoding: '.$encoding);
 }
 header ('Vary: Accept-Encoding');
 
 
-if (file_exists($cachepath) && empty($_GET['refresh'])) {
-	$mtime = @filemtime($cachepath);
-
-	customExpiresHeader(3600*24*24,true);
-	customCacheControl($mtime,$cachepath);
-
-
-	header('Content-length: '.filesize($cachepath));
-
-	readfile($cachepath);
-	exit;
-}
-
-
-if (!@is_dir($CONF['sphinx_cache']."place/$q1")) {
-	mkdir($CONF['sphinx_cache']."place/$q1");
-}
 
 	$nocache = $r = '';
 
@@ -95,7 +76,7 @@ if (!@is_dir($CONF['sphinx_cache']."place/$q1")) {
 			$mode = SPH_MATCH_EXTENDED;
 		}
 		$index = "gaz";
-		$cl->SetWeights ( array ( 100, 1 ) );
+		//$cl->SetWeights ( array ( 100, 1 ) );
 		$cl->SetMatchMode ( $mode );
 		$cl->SetSortMode ( SPH_SORT_EXTENDED, "score ASC, @relevance DESC" );
 		$cl->SetLimits(0,20);
@@ -165,13 +146,6 @@ if (!@is_dir($CONF['sphinx_cache']."place/$q1")) {
 
 		customExpiresHeader(3600*24*24,true);
 
-		if (empty($nocache)) {
-			file_put_contents($cachepath,$r);
-
-			$mtime = @filemtime($cachepath);
-
-			customCacheControl($mtime,$cachepath);
-		}
 		header('Content-length: '.strlen($r));
 
 		print $r;

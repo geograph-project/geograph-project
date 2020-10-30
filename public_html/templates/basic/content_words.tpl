@@ -14,7 +14,7 @@
 </div>
 
 {foreach from=$words key=word item=count}
-	<span class="nowrap">&middot; <a href="/content/?q=title:{$word}" style="font-size:{math equation="log(c)" c=$count}em">{$word}</a></span>
+	<span class="nowrap">&middot; <a href="/content/?q=title:{$word}" style="font-size:{math equation="log(c)/2" c=$count}em">{$word}</a></span>
 {/foreach}
 
 <br style="clear:both"/>

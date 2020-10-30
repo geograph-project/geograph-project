@@ -48,7 +48,7 @@ for ($from=$start; $start<=$max; $start+=$perpage)
 {
 	$sql = "select post_id,topic_id,post_text from geobb_posts where topic_id between $start and ".($start+$perpage-1)." and (post_text like '%action=vthread%')";
 
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 
 	$bits = array();
 	while (!$recordSet->EOF)

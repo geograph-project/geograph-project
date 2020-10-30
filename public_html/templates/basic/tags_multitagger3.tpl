@@ -161,7 +161,11 @@
 		if (document.getElementById("onlynull").checked) {
 			query = query + " tags:^null";
 		}
-		url = "/syndicator.php?format=JSON&text="+encodeURIComponent(query);
+		if (matches = query.match(/i=(\d+)/)) {
+			url = "/syndicator.php?format=JSON&i="+encodeURIComponent(matches[1]);
+		} else {
+			url = "/syndicator.php?format=JSON&text="+encodeURIComponent(query);
+		}
 		//if (page > 1) {
 		//	url = url + "&page=".parseInt(page,10);
 		//}
@@ -308,7 +312,7 @@
 
 						for(var tag_id in data) {
 							var text = data[tag_id].tag;
-							if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
+							if (data[tag_id].prefix && data[tag_id].prefix!='category' && data[tag_id].prefix!='term' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
 								text = data[tag_id].prefix+':'+text;
 							}
 							text = text.replace(/<[^>]*>/ig, "");
@@ -345,7 +349,7 @@
 					for(var tag_id in data) {
 
 						var text = data[tag_id].tag;
-						if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
+						if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='category' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
 							text = data[tag_id].prefix+':'+text;
 						}
 						text = text.replace(/<[^>]*>/ig, "");

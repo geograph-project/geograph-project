@@ -26,6 +26,12 @@
 
 require_once('geograph/global.inc.php');
 
+#header("HTTP/1.0 503 Unavailable");
+#$smarty = new GeographPage;
+#
+#$smarty->display("sample8_unavailable.tpl");
+#exit;
+
 #########################################
 # redirect for non JS clients
 
@@ -131,6 +137,8 @@ if (!empty($_GET['q'])) {
 			}
 
 			print $str;
+
+			//print "<hr><p style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick=\"jQl.loadjQ('/js/search-feedback.js');return false\">Please take this short survey</a>.</p>";
 
 			$smarty->display('_std_end.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 			exit;
@@ -585,8 +593,9 @@ if (!empty($USER->registered)) {
 
 #########################################
 
+//print "<hr><p style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick=\"jQl.loadjQ('/js/search-feedback.js');return false\">Please take this short survey</a>.</p>";
 
-if ($src == 'data-src') { //because we need jQuery!
+if (false && $src == 'data-src') { //because we need jQuery!
 
 	print "<p id=votediv>Have these results helped you today? Rate these results: ";
 

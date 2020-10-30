@@ -38,19 +38,16 @@ ENDHELP;
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-#####################################################
-
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $db->Execute("SET SESSION group_concat_max_len = 1000000");
 
 if (!$db->getOne("SELECT GET_LOCK('".basename($argv[0])."',3600)")) {
-	die("unable to get a lock;\n");
+       die("unable to get a lock;\n");
 }
 
 #####################################################
-
 if ($param['mode'] == 'new') {
 //all images that appear to have a link in comment, but no entry in gridimage_link
 // ... ie links added to imaegs that never had links (including new submissions!)
@@ -148,7 +145,7 @@ if (empty($sql))
 	die("unknown mode\n");
 
 $done = 0;
-$recordSet = $db->Execute("$sql");
+$recordSet = $db->Execute($sql);
 
 $bindts = $db->BindTimeStamp(time());
 

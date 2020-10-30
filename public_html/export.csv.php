@@ -64,7 +64,7 @@ while (!$recordSet->EOF)
 			echo ',"'.str_replace('"', '""', $image['comment']).'"';
 		}
 	}
-	if (!empty($_GET['thumb'])) {
+	if (!empty($_GET['thumb']) || !empty($_GET['gr'])) {
 		$gridimage->fastInit($image);
 		echo ','.$gridimage->getThumbnail(120,120,true);
 
@@ -127,6 +127,8 @@ while (!$recordSet->EOF)
 
 	echo "\n";
 	$recordSet->MoveNext();
+        if (!($counter%1000))
+                flush();
 	$counter++;
 }
 $recordSet->Close();

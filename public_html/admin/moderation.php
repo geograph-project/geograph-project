@@ -152,6 +152,9 @@ if (!empty($_GET['abandon'])) {
 	exit;
 }
 
+if (!empty($_GET['skip'])) {
+	$db->Execute("UPDATE gridsquare_moderation_lock SET lock_type='cantmod' WHERE user_id = {$USER->user_id} AND lock_type='modding'");
+}
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):15;
 if ($limit > 15) {
@@ -198,7 +201,7 @@ $url
 Regards,
 
 {$USER->realname}".($USER->nickname?" (aka {$USER->nickname})":''),
-				"From: {$USER->realname} <{$USER->email}>");
+				"From: {$USER->realname} <{$USER->email}>\nCC: geo@brisk.org.uk");
 
 		header("Location: /profile.php");
 		exit;
@@ -380,7 +383,7 @@ user_stat us READ LOCAL,
 tag_public READ LOCAL");
 
 
-$sql = "select gi.*,group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags,grid_reference,user.realname,imagecount,coalesce(images,0) as images $sql_columns
+$sql = "select gi.*,grid_reference,user.realname,imagecount,coalesce(images,0) as images $sql_columns
 from
 	gridimage as gi
 	inner join gridsquare as gs
@@ -392,8 +395,6 @@ from
 		on(gi.user_id=user.user_id)
 	left join user_stat us
 		on(gi.user_id=us.user_id)
-	left join tag_public t
-		on(t.gridimage_id = gi.gridimage_id)
 where
 	$sql_where
 	$sql_where2
@@ -404,6 +405,16 @@ order by
 limit $limit";
 //implied: and user_id != {$USER->user_id}
 // -> because squares with users images are locked
+
+/* .. removed fro mthe above query, and done seperately for NOW, as for some reason the query with tags is getting slow
+group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags,
+
+	left join tag_public t
+		on(t.gridimage_id = gi.gridimage_id)
+
+*/
+$image_ids = array();
+
 
 if (!empty($_GET['debug'])) {
 	print $sql;
@@ -464,8 +475,10 @@ foreach ($images->images as $i => $image) {
 		if ($width > 0 && max($width,$height) < 600)
 			$images->images[$i]->sizestr = $attr;
 	}
-	//if (!empty($image->tags))
+	//if (!empty($image->tags)) - now done automatically by imagelist class!
 	//	$images->images[$i]->tags = explode("?",$image->tags);
+	if (!isset($image->tags))
+		$image_ids[$image->gridimage_id] = $i;
 }
 
 #############################
@@ -493,6 +506,23 @@ if (!empty($image_ids)) {
 
 #############################
 
+//might as well do this after unlock
+
+$tagdata = $db->getAll("SELECT gridimage_id, group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags
+        FROM tag_public
+	WHERE gridimage_id IN (".implode(',',array_keys($image_ids)).")
+	AND prefix = 'type'
+	GROUP BY gridimage_id ORDER BY NULL"); // we only NEED the type tags!
+
+if (!empty($tagdata)) // can be empty!
+foreach ($tagdata as $row) {
+	$i = $image_ids[$row['gridimage_id']];
+	if (!empty($images->images[$i]))
+		$images->images[$i]->tags = explode("?",$row['tags']);
+}
+
+#############################
+
 $images->assignSmarty($smarty, 'unmoderated');
 
 //what style should we use?
@@ -501,10 +531,16 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 
     $smarty->register_function("votestars", "smarty_function_votestars");
 
+if (!empty($_GET['full']))
+	$smarty->assign('full',1);
+
 $smarty->assign('second',!empty($_SESSION['second']));
 $_SESSION['second'] = true;
 
-$smarty->display('admin_moderation.tpl',$style);
+if (!empty($_GET['old']))
+	$smarty->display('admin_moderation_old.tpl',$style);
+else
+	$smarty->display('admin_moderation.tpl',$style);
 
 
 

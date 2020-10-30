@@ -181,15 +181,26 @@ split_timer('imagelist','getImagesByUser',"$user_id,$statuses,$sort,$count,$adva
 	/**
 	* get image list for particular query
 	*/
-	function getImagesBySphinx($q,$pgsize=15,$pg = 1) {
+	function getImagesBySphinx($q,$pgsize=15,$pg = 1, $new = false) {
 
 split_timer('imagelist'); //starts the timer
 
-		$sphinx = new sphinxwrapper($q);
+		$sphinx = new sphinxwrapper($q, $new);
 
 		$sphinx->pageSize = $pgsize;
 
 		$sphinx->processQuery();
+
+		if ($new) {
+			//TODO, use $this->colsQL or something?, so can add more columns like place,county etc
+			$sql = "SELECT id,title,realname,user_id,takendays,tags,grid_reference,hash FROM sample8 WHERE MATCH(?)";
+			if ($pg > 1)
+				$sql .= sprintf(" LIMIT %d,%d", ($pg -1)*$pgsize, $pgsize);
+			else
+				$sql .= " LIMIT $pgsize";
+
+			return $this->getImagesBySphinxQL($sql, $new, $sphinx->q); // getImagesBySphinxQL has a basic implementation of prepared query!
+		}
 
 		$ids = $sphinx->returnIds($pg,'_images');
 		
@@ -209,15 +220,33 @@ split_timer('imagelist','getImagesBySphinx',"$q"); //logs the wall time
 	/**
 	* get image list for particular list
 	*/
-	function getImagesByIdList($ids,$columnlist = "*") {
+	function getImagesByIdList($ids,$columnlist = "*",$advanced=false) {
 
 split_timer('imagelist'); //starts the timer
 
-		$sql = "SELECT $columnlist FROM gridimage_search WHERE gridimage_id IN(".join(",",$ids).") LIMIT ".count($ids);
+
+                if ($advanced) {
+			if (empty($columnlist) || $columnlist == '*')
+				$columnlist = "gi.*";
+			$where = array();
+			$where[] = "gridimage_id IN(".join(",",$ids).")";
+			$where[] = "moderation_status> 2";
+			$where = implode(' AND ',$where);
+                        $sql = "select $columnlist,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imagecount ".
+                                "from gridimage as gi ".
+                                "inner join gridsquare as gs using(gridsquare_id) ".
+                                "inner join user on(gi.user_id=user.user_id) ".
+                                "where $where ".
+                                "LIMIT ".count($ids);
+			//no order needed, as reorder below!
+
+		} else {
+			$sql = "SELECT $columnlist FROM gridimage_search WHERE gridimage_id IN(".join(",",$ids).") LIMIT ".count($ids);
+		}
 
 		$i=0;
 		if ($sql) {
-			$db=&$this->_getDB(true);
+			$db=$this->_getDB(true);
 
 			global $ADODB_FETCH_MODE;
 			$prev_fetch_mode = $ADODB_FETCH_MODE;
@@ -247,12 +276,16 @@ split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
 	}
 
 
-	function getImagesBySphinxQL($sql,$new = true) {
+	function getImagesBySphinxQL($sql,$new = true, $query = null) {
 		$sph = GeographSphinxConnection('sphinxql', $new);
+
+		if (!is_null($query) && stripos($sql,'MATCH(?)') !== FALSE) // we offer to do the quoting, as we have the sphinxQL connection!
+			$sql = str_ireplace('MATCH(?)', 'MATCH('.$sph->Quote($query).')', $sql);
 
 		$this->images=array();
 		$i=0;
 		$recordSet = $sph->Execute($sql);
+		if ($recordSet && $recordSet->numRows()) {
 		while (!$recordSet->EOF)
 		{
 			$this->images[$i]=new GridImage;
@@ -267,6 +300,7 @@ split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
 			$i++;
 		}
 		$recordSet->Close();
+		}
 		$this->meta = $sph->getAssoc("SHOW META");
 		return $i;
 	}
@@ -278,7 +312,7 @@ split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
 	* @access private
 	*/
 	function _getImagesBySql($sql,$cache = 0) {
-		$db=&$this->_getDB(true);
+		$db=$this->_getDB(true);
 		$this->images=array();
 		$i=0;
 		if ($cache > 0) {
@@ -286,6 +320,7 @@ split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
 		} else {
 			$recordSet = $db->Execute($sql);
 		}
+		if ($recordSet && $recordSet->numRows()) {
 		while (!$recordSet->EOF)
 		{
 			$this->images[$i]=new GridImage;
@@ -297,6 +332,7 @@ split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
 			$i++;
 		}
 		$recordSet->Close();
+		}
 		return $i;
 	}
 
@@ -336,7 +372,7 @@ split_timer('imagelist'); //starts the timer
 		$this->images=array();
 		if ($count_only)
 		{
-			$db=&$this->_getDB(true);
+			$db=$this->_getDB(true);
 			
 			$count=$db->GetOne($sql);
 		}
@@ -356,7 +392,7 @@ split_timer('imagelist','_getImagesByArea',"$left,$right,$top,$bottom,$reference
 	*/
 	function getRecordSetByArea($left,$right,$top,$bottom,$reference_index=null, $count_only=true)
 	{
-		$db=&$this->_getDB(true);
+		$db=$this->_getDB(true);
 
 split_timer('imagelist'); //starts the timer
 
@@ -414,7 +450,7 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 
 	function getRecordSetByPrefix($prefix) {
 
-		$db=&$this->_getDB(true);
+		$db=$this->_getDB(true);
 
 		$data=$db->GetRow("select * from gridprefix where prefix='".$prefix."' limit 1");
 
@@ -433,12 +469,44 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 		$smarty->assign($basename.'count', count($this->images));
 	}
 
+
+	/**
+	 * output images as thumbs (intended as a basic testing function, for quick prototypes, rather than full feature)
+	 */
+	function outputThumbs($thumbw = 120,$thumbh = 120, $clear = true)
+	{
+       		if (count($this->images)) {
+	                foreach ($this->images as $idx => $row) {
+
+				if (is_array($row)) {
+	                	        $image = new GridImage();
+        	                	$image->fastInit($row);
+				} else {
+					$image = $row;
+				}
+
+				print '<div style="float:left;position:relative; width:'.($thumbw+10).'px; height:'.($thumbh+10).'px">';
+				print '<div align="center">';
+				print '<a title="'.$image->grid_reference.' : '.htmlentities($image->title).' by '.htmlentities($image->realname).' - click to view full size image"';
+				print ' href="/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true).'</a>';
+				print '</div></div>';
+        	        }
+			if ($clear)
+		                print "<br style=\"clear:both\"/>";
+       		}
+	}
+
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
 	function &_getDB($allow_readonly = false)
 	{
+
+///$allow_readonly = false; //todo, temp overright as slave non-functional.
+
+
 		//check we have a db object or if we need to 'upgrade' it
 		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
 			$this->db=GeographDatabaseConnection($allow_readonly);
@@ -473,13 +541,13 @@ class RecentImageList extends ImageList {
 
 		$mkey = rand(1,10).'.'.$reference_index;
 		//fails quickly if not using memcached!
-		$this->images =& $memcache->name_get('ril',$mkey);
+		$this->images = $memcache->name_get('ril',$mkey);
 		if ($this->images) {
 			$this->assignSmarty($smarty, 'recent');
 			return;
 		}
 
-		$db=&$this->_getDB(true);
+		$db=$this->_getDB(true);
 
 split_timer('imagelist'); //starts the timer
 
@@ -497,6 +565,7 @@ split_timer('imagelist'); //starts the timer
 
 		$this->images=array();
 		$i=0;
+		if ($recordSet && $recordSet->numRows()) {
 		while (!$recordSet->EOF) {
 			$this->images[$i]=new GridImage;
 			$this->images[$i]->fastInit($recordSet->fields);
@@ -504,6 +573,7 @@ split_timer('imagelist'); //starts the timer
 			$i++;
 		}
 		$recordSet->Close();
+		}
 
 		shuffle($this->images);
 

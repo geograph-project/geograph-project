@@ -1,9 +1,10 @@
-# www.geograph.org.uk robot exclusion file
+# www.geograph.org.uk (archive) robot exclusion file
 # * $Id: robots-archive.txt 7471 2011-11-08 22:06:46Z barry $
 
 User-agent: *
 Crawl-Delay: 7
 Disallow: /stuff/canonical.php
+Disallow: /browser/
 Disallow: /mapbrowse.php
 Disallow: /map/t
 Disallow: /mapper/
@@ -21,6 +22,7 @@ Disallow: /showmap.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
+Disallow: /statistics/groupby.php
 Disallow: /submit.php
 Disallow: /submit2.php
 Disallow: /submit_popup.php
@@ -30,6 +32,7 @@ Disallow: /mapsheet.php
 Disallow: /kml.php
 Disallow: /gpx.php
 Disallow: /reuse.php
+Disallow: /stamp.php
 Disallow: /more.php
 Disallow: /editimage.php
 Disallow: /browse.php
@@ -37,6 +40,7 @@ Disallow: /hectad.php
 Disallow: /location.php
 Disallow: /gridref/
 Disallow: /ecard.php
+Disallow: /related.php
 Disallow: /show_exif.php
 Disallow: /export.
 Disallow: /auth.php
@@ -48,11 +52,12 @@ Disallow: /_scripts/
 Disallow: /stuff/conversion.php
 Disallow: /article/edit.php
 Disallow: /article/history.php
+Disallow: /article/source.php
+Disallow: /article/diff.php
 Disallow: /content/syndicator.php
 Disallow: /content/feed
 Disallow: /article/feed
 Disallow: /squares.php
-Disallow: /tags/description.php
 Disallow: /explore/places/1/
 Disallow: /explore/places/2/
 Disallow: /sitemap/terms/
@@ -61,6 +66,11 @@ Disallow: /sitemap/categories/
 Disallow: /sitemap/termlist/
 Disallow: /kml/
 Disallow: /stuff/
+Disallow: /tags/
+Disallow: /tagged/*exclude=
+Disallow: /tagged/*photo=
+Disallow: /faq-
+
 
 #stuff not needed in a minimal export
 Disallow: /gridref/
@@ -69,9 +79,9 @@ Disallow: /statistics/
 Disallow: /stuff/
 
 #Not available by crawling
-Disallow: /photo/
 Disallow: /sitemap/
-Disallow: /tags/
+Disallow: /tagged/
+Disallow: /snippet/
 
 
 #The following are wildcard excludes which most crawlers don't understand
@@ -81,12 +91,19 @@ Disallow: /photo/*?style=*
 Disallow: /photo/*.kml
 Disallow: /explore/calendar.php?*Year*
 Disallow: /statistics/leaderboard.php?*when*
+Disallow: /statistics/leaderboard.php?*myriad*
 Disallow: /statistics/moversboard.php?*when*
 Disallow: /statistics/*?*csv
 Disallow: /syndicator.php?key=
 Disallow: /map/t*
 Disallow: /sitemap*xml*
 Disallow: /content/*?*order=*
+
+
+
+User-agent: Googlebot-Image
+Disallow: /*_120x120.jpg$
+Disallow: /*_213x160.jpg$
 
 
 Sitemap: http://www.geograph.org.uk/sitemap.xml

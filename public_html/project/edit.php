@@ -89,10 +89,10 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$updates = array();
 	foreach (array('title','content','initiator','purpose','reason','tags','published') as $key) {
 		if ($page[$key] != $_POST[$key]) {
-			$updates[] = "`$key` = ".$db->Quote(trim(strip_tags($_POST[$key]))); 
+			$updates[] = "`$key` = ".$db->Quote(trim(strip_tags($_POST[$key])));
 			$smarty->assign($key, $_POST[$key]);
 		} elseif (empty($_POST[$key]) && in_array($key,array('title','content')))
-			$errors[$key] = "missing required info";		
+			$errors[$key] = "missing required info";
 	}
 
 	if (isset($_POST['initial'])) {

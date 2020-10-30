@@ -58,7 +58,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 	$maxdate="";
 	$offset=($sitemap-1)*$urls_per_sitemap;
-	$recordSet = &$db->Execute(
+	$recordSet = $db->Execute(
 		"select gridimage_id,date(upd_timestamp) as updated ".
 		"from gridimage_search INNER JOIN sample_selection USING (gridimage_id) WHERE context IS NOT NULL AND context != '' AND reference_index = $ri ".
 		"limit $offset,$urls_per_sitemap");

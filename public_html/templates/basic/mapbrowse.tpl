@@ -298,15 +298,6 @@ south_F2 = new Image(30,29); south_F2.src = "{$static_host}/templates/basic/mapn
 {/if}
 <br style="clear:both;"/><br/>
 
-{if !$token_zoomout}
-<small>TIP: The new Geograph Browser application, includes a <a href="/browser/#!{if $realname}/realname+%22{$realname|escape:'url'}%22{/if}/display=map">Interactive Map feature</a> - allows easy filtering of results shown<br/><br/></small>
-{/if}
-
-{if $coveragelink && !$realname}
-	<p><span style=color:red>New!</span> Open this area in new <a href="{$coveragelink}">Interactive Coverage Map</a></p> 
-{/if}
-
-
 {if $realname}
 	{assign var="tab" value="2"}
 {elseif $depth && $token_zoomin}
@@ -320,7 +311,6 @@ south_F2 = new Image(30,29); south_F2.src = "{$static_host}/templates/basic/mapn
 {/if}
 
 <div class="tabHolder" style="margin-top:3px">
-	Style:
 	<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/map/{$mosaic_token}?depth=0" title="Map showing squares with/without photos so far">Coverage</a>
 	{if $hectad && $hectad_row}
 		<a class="tab nowrap" title="View Large Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}" style="background-color:yellow">Photo Mosaic</a>
@@ -335,17 +325,27 @@ south_F2 = new Image(30,29); south_F2.src = "{$static_host}/templates/basic/mapn
 	<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="/map/{$mosaic_token}?depth=1" title="visualizes how many photos we have in each square">Depth</a>
 	<a class="tab{if $tab == 13}Selected{/if} nowrap" id="tab13" href="/map/{$mosaic_token}?userdepth=1" title="visualizes how many contributors we have in each square">User Depth</a>
 	{/if}
-	{if $coveragelink}
-		 <a class="tab" href="{$coveragelink}">Interactive</a>
-	{/if}
 	{if $mapwidth == 10 || $mapwidth == 100}
 		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field">{if $realname}Personalised {elseif $recent}Recent Only {elseif $tab ==3}Depth {elseif $userdepth}User Depth {/if}Check Sheet</a>
 	{/if}
-	<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" href="/mapprint.php?t={$mosaic_token}" title="A version of this map optimized for printing">Printable</a>
 	<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/map/{$mosaic_token}?recent=1" title="shows squares with recent squares - so can find squares without recent photos">Recent Only</a>
+
+	<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" href="/mapprint.php?t={$mosaic_token}" title="A version of this map optimized for printing">Printable</a>
 
 	<a href="/article/Mapping-on-Geograph" title="More information about the various map types" class="about">About</a>
 
+	&nbsp;
+	(Others:
+	{if $coveragelink}
+		 <a class="tab" href="{$coveragelink}">Interactive</a>
+	{/if}
+
+        {if !$token_zoomin && $mosaic_ri == 1}
+                <a class="tab nowrap" id="tab5" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}&amp;centi=1" title="shows the coverage at centisquare level - overlaid on OS raster maps">v2</a>
+        {/if}
+
+	<a class="tab" href="/help/maps">More...</a>
+	)
 </div>
 <div class="interestBox">
 
@@ -357,7 +357,26 @@ south_F2 = new Image(30,29); south_F2.src = "{$static_host}/templates/basic/mapn
 	<p style="text-align:right; font-size:0.8em; margin-top:0">{$mosaic_updated}</p>
 {/if}
 
-<p>Here are a few tips for using our map:</p>
+
+<div style="padding:10px;border:1px solid cyan;" id="explain">
+
+	This map is starting to show its age, it was made over 12 years ago, with what is now old technology; which alas many modern browsers no longer fully support. 
+	In particular the "open in new window"/tab does NOT function propelly, nor normal left-clicking on the map at thumbnail scale for some squares. And using other than 100% page zoom can cause issues.
+	For best results use Internet Explorer 10 or below (yes really!), or Firefox still seems functional.
+
+	{if $coveragelink}
+		<br><br>
+		We have a new mapping interface: <a href="{$coveragelink}">Coverage Map V4</a>, not finished, but probably recommended over this map.
+	{/if}
+	{if !$token_zoomout}
+		<br><br>
+		There is also a  <a href="/browser/#!{if $realname}/realname+%22{$realname|escape:'url'}%22{/if}/display=map">Interactive Mapping function</a> in the Geograph Photo Browser.
+	{/if}
+	<br><br>
+	<a href="/help/maps">View other mapping available</a>
+</div>
+
+<p>Here are a few tips for using this map:</p>
 
 <ul>
 {if !$token_zoomin}
@@ -373,6 +392,7 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 </ul>
 
  <hr/>
+
 <b>Update 2019:</b><br>
 <div style="margin-left:40px">This map is starting to show its age, it was made over 15 years ago, with what is now old technology; which alas many modern browsers no longer fully support. 
 In particular the "open in new window"/tab does NOT function propelly, nor normal left-clicking on the map at thumbnail scale for some squares. And using other than 100% page zoom can cause issues.
@@ -381,8 +401,24 @@ For best results use Internet Explorer 10 or below (yes really!), or Firefox sti
 <b>We have a new mapping interface: <a href="{$coveragelink}">Coverage Map V4</a>, not finished, but probably recommended over this map.</b>
 
  <hr/>
+
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project and
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div>
 
+
+{literal} 
+<script>
+if (window.innerWidth >= 1024) {
+	//we have to be extra careful checking if a real jquery, as jQl creates a fake jQuery object. 
+	if (typeof jQuery === "undefined" || jQuery === null || typeof jQuery.fn === "undefined" || typeof jQuery.fn.load === "undefined") {
+		jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js');
+	}
+
+	$(function() {
+		$('#explain').detach().prependTo('#maincontent').css({float:'right',width:'280px',marginRight:'20px'});
+	});
+}
+</script>
+{/literal}
 
 {include file="_std_end.tpl"}

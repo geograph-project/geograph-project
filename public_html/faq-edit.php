@@ -31,61 +31,72 @@ $smarty = new GeographPage;
 
 $USER->mustHavePerm("basic");
 
+
 $db = GeographDatabaseConnection(false);
+$isadmin=$USER->hasPerm('moderator')?1:0;
 
 if (!empty($_GET['id'])) {
     $id = intval($_GET['id']);
-    
-    if (!($row = $db->getRow("SELECT a.*,q.question,q.anon AS q_anon,realname 
-            FROM answer_question q INNER JOIN answer_answer a USING (question_id) 
-            INNER JOIN user s ON (q.user_id = s.user_id) 
-            WHERE q.status=1 AND a.status=1 AND answer_id = $id AND (wiki=1 OR q.user_id = {$USER->user_id})"))) {
+
+    if (!($row = $db->getRow("SELECT a.*,ua.realname as a_realname,
+		q.question,q.anon as q_anon,uq.realname as q_realname
+		FROM answer_answer a INNER JOIN user ua ON (ua.user_id = a.user_id)
+			INNER JOIN answer_question q USING (question_id) INNER JOIN user uq ON (uq.user_id = q.user_id)
+		WHERE q.status=1 AND a.status = 1 AND answer_id = $id"))) {
         die("invalid question");
     }
+
+    if (empty($row['wiki']) && $row['user_id'] != $USER->user_id && !$isadmin) {
+        die("access denied");
+    }
+
 } else {
     die("no question");
 }
 
 if (!empty($_POST) && !empty($_POST['content'])) {
-    $updates = array();
 
-    $updates['title'] = trim($_POST['title']);
-    $updates['content'] = trim($_POST['content']);
-    $updates['link'] = trim($_POST['link']);
-    $updates['tags'] = trim($_POST['tags']);
-    $updates['target'] = trim($_POST['target']);
-    $updates['level'] = intval(trim($_POST['level']));
+    $updates = $_POST;
 
-    if ($USER->user_id == $row['user_id']) {
-        $updates['anon'] = empty($_POST['anon'])?0:1;
-
-        $updates['wiki'] = empty($_POST['wiki'])?0:1;
+    if (isset($_POST['anon'])) {
+        $updates['anon'] = intval($_POST['anon']);
     }
-
+    if (isset($_POST['wiki'])) {
+        $updates['wiki'] =  intval($_POST['wiki']);
+    }
     if ($updates['title'] == $row['question']) {
         unset($updates['title']);
     }
-    
-    $db->Execute("UPDATE answer_answer SET `".implode('` = ?,`',array_keys($updates)).'` = ? WHERE answer_id = '.$id,array_values($updates));
+
+    $db->Execute($sql = 'UPDATE answer_answer SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE answer_id = '.intval($id),array_values($updates));
+
+	if ($USER->user_id == 3) {
+		print "$sql\n".$db->ErrorMsg()."\n\n";
+print_r($_POST);
+		print_r($updates);
+		exit;
+        }
 
                 foreach ($updates as $key => $value) {
-                        if (!is_null($value) && $value != $row[$key]) {
+                        if (!is_null($value)) {
                                 $u = array();
                                 $u['table'] = 'answer_answer';
                                 $u['table_id'] = $id;
                                 $u['name'] = $key;
                                 $u['value'] = $value;
                                 $u['user_id'] = $USER->user_id;
-                                $db->Execute('INSERT INTO answer_log SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+                                $db->Execute('INSERT INTO answer_log SET `'.implode('` = ?,`',array_keys($u)).'` = ?',array_values($u));
+
                         }
                 }
 
+    $message = "Thank you! Reply saved. ";
 
-    
-    $message = "Thank you! Edit(s) saved. ";
-    
-    print "$message<br><br><a href=\"faq3.php#{$row['answer_id']}\">Continue</a>";
-    print "<meta http-equiv=\"refresh\" content=\"2;url=faq3.php#{$row['answer_id']}\">";
+	$url = "./faq3.php";
+	if (!empty($_GET['feedback']) || strpos($_SERVER['HTTP_REFERER'],'feedback'))
+		$url = "./faq-rated.php";
+
+    print "$message<br><br><a href='$url'>Continue</a>";
     exit;
 }
 
@@ -96,56 +107,91 @@ $smarty->display('_std_begin.tpl',$mkey);
 ?>
 <h2>Geograph Knowledgebase / FAQ </h2>
 
+<style type="text/css">
+.taglist {
+	color:gray;
+	font-size:0.9em;
+}
+.taglist a {
+	white-space:nowrap;
+	text-decoration: none;
+}
+.taglist a:hover {
+	text-decoration: underline;
+}
+</style>
 
 <p><a href="faq3.php">View Answers</a> | <a href="faq-ask.php">Ask a question</a> | <a href="faq-unanswered.php">Answer a question</a></p>
-
-<h3>Reply to a question...</h3>
 
 <?
 
 if (!empty($message)) {
     print "<p>$message</p>";
 }
-?>
 
+
+if (!empty($row['answer_id']) && !empty($_GET['feedback'])) {
+	$data = $db->getAll("SELECT rate,missing,comment FROM answer_rate r WHERE answer_id = {$row['answer_id']}");
+
+	$matrix = $more = array();
+	foreach ($data as $rr) {
+        	foreach (explode("; ",$rr['rate']) as $feedback) {
+			if (empty($_GET['all']) && preg_match('/^(Of inter|None|Minor|I did not)/',$feedback))
+				continue;
+                	@$matrix[$feedback]++;
+		}
+		if (!empty($rr['missing']))
+			$more[] = "<b>missing tags</b><br>".htmlentities($rr['missing']);
+		if (!empty($rr['comment']))
+			$more[] = "<b>comment</b><br>".htmlentities($rr['comment']);
+	}
+
+	print '<div style="float:right; width:280px; background-color:pink; padding:10px;min-height:300px">';
+	print "<h4>Feedback</h4>";
+	print "<ul>";
+	foreach ($matrix as $feedback => $count) {
+		print "<li>".htmlentities($feedback);
+	}
+	print "</ul><hr>";
+	if (!empty($more))
+		print implode("<hr>",$more);
+
+	if ($isadmin) {
+		print "<hr>";
+		print "<a href=\"/faq-answered.php?delete={$row['question_id']}\">Delete Question</a> ";
+		print "<a href=\"/faq-answered.php?delete={$row['answer_id']}&a=1\">Delete This Answer</a> ";
+	}
+
+	print '</div>';
+	print '<div style="margin-right:300px;">';
+}
+?>
 <div style="background-color:yellow;padding:10px">
+
 <b>Question</b>:<br/>
  &nbsp; &nbsp; &nbsp; <big><? print htmlentities2($row['question']); ?></big>
- <? if (empty($row['q_anon'])) { print "<br/><i>by ".htmlentities2($row['realname'])."</i>"; } ?>
+ <? if (empty($row['q_anon'])) { print "<br/><i>by ".htmlentities2($row['q_realname'])."</i>"; } ?>
 </div> <br/><br/>
- 
- 
-<h2>Edit Reply</h2>
-<form action="faq-edit.php?id=<? echo $id; ?>" method="post" style="background-color:lightgrey;padding:10px;border:1px solid gray">
+
+<h2>Edit Question Reply</h2>
+
+ <? if (empty($row['anon'])) { print "Editing reply <i>by ".htmlentities2($row['a_realname'])."</i>"; } ?>
+
+
+<form action="faq-edit.php?id=<? echo $id; ?>" method="post" style="background-color:lightgrey;padding:10px;border:1px solid gray; min-height:900px" name="theForm">
 
 <b>Question Title</b>:<br/>
- &nbsp; &nbsp; &nbsp; <input type="text" name="title" value="<? print htmlentities2($row['title']?$row['title']:$row['question']); ?>" maxlength="128" size="80"/> (128 charactors max)<br/>
+ &nbsp; &nbsp; &nbsp; <input type="text" name="title" value="<? print htmlentities2($row['title']); ?>" maxlength="128" size="80"/> (128 charactors max)<br/>
  (optional - rewrite the question as a 'FAQ' style question, ie a simple consise question)<br/><br/>
 
-<b>Answer</b>:<br/>
-
-<? if ($row['level'] == 0) { ?>
-    <div style="background-color:pink; padding:30px;border:3px solid orange">
-    <big>NOTE</big>: 
-    This is copy of a question from the original FAQ. While you can edit the answer below, <b>please only use it to make small changes</b> (typos, or clarification of the wording).<br/><br/>
-
-    If you have substational information to add, or a total rewrite, please use the <a href="answer.php?id=<? echo $row['question_id']; ?>">Provide an alternative answer</a>. THANK YOU!<br/><br/>
-
-    <b>Although please do add tags!</b></div>
-<? } ?>
-
+<b>Reply</b>:<br/>
  &nbsp; &nbsp; &nbsp; <textarea name="content" rows="12" cols="100"><? print htmlentities2($row['content']); ?></textarea><br/>
-(your actual answer to the question, ideally aim for a few paragraphs at most)<br/><br/>
+(your actual answer to the questionn, ideally aim for a few paragraphs at most)<br/><br/>
 
 <b>More information Link</b>:<br/>
  &nbsp; &nbsp; &nbsp; <input type="text" name="link" value="<? print htmlentities2($row['link']); ?>" size="80"/><br/>
  (optional - link to page to read more information)<br/><br/>
 
-<b>Tags</b>:<br/>
- &nbsp; &nbsp; &nbsp; <input type="text" name="tags" value="<? print htmlentities2($row['tags']); ?>" size="80"/><br/>
- (optional - seperate tags by commas)<br/><br/>
-
-<? if ($row['level'] > 0 || $row['user_id'] != 2) { ?>
 <b>Level</b>:<br/>
  &nbsp; &nbsp; &nbsp; <select name="level">
 <option></option>
@@ -155,45 +201,202 @@ if (!empty($message)) {
 <option value="4"<? if ($row['level'] == '4') { echo " selected"; }?>>4</option>
 <option value="5"<? if ($row['level'] == '5') { echo " selected"; }?>>5 - Advanced</option>
 </select><br/>
- (marks the approximate target audience for this answer)<br/><br/>
-<? } ?>
+ (marks the approximate target audience for this answer - based on their experience level on the website)<br/><br/>
+
 
 <b>Subject/Target</b>:<br/>
  &nbsp; &nbsp; &nbsp; <select name="target">
 <option></option>
-<option<? if ($row['target'] == 'General') { echo " selected"; }?>>General</option>
-<option<? if ($row['target'] == 'Viewing Images') { echo " selected"; }?>>Viewing Images</option>
-<option<? if ($row['target'] == 'Reusing Geograph Content') { echo " selected"; }?>>Reusing Geograph Content</option>
-<option<? if ($row['target'] == 'Points and Moderation') { echo " selected"; }?>>Points and Moderation</option>
-<option<? if ($row['target'] == 'Photo Contributors') { echo " selected"; }?>>Photo Contributors</option>
-<option<? if ($row['target'] == 'Photo Contributors :: Contributing') { echo " selected"; }?>>Photo Contributors :: Contributing</option>
-<option<? if ($row['target'] == 'Other Contributors') { echo " selected"; }?>>Other Contributors</option>
-<option<? if ($row['target'] == 'Finding way in the forum') { echo " selected"; }?>>Finding way in the forum</option>
-<option<? if ($row['target'] == 'Moderators') { echo " selected"; }?>>Moderators</option>
-<option<? if ($row['target'] == 'External Developers') { echo " selected"; }?>>External Developers</option>
-<option<? if ($row['target'] == 'Other') { echo " selected"; }?>>Other</option>
+<option>General</option>
+<option>Viewing Images</option>
+<option>Reusing Geograph Content</option>
+<option>Points and Moderation</option>
+<option>Photo Contributors</option>
+<option>Photo Contributors :: Contributing</option>
+<option>Other Contributors</option>
+<option>Finding way in the forum</option>
+<option>Moderators</option>
+<option>External Developers</option>
+<option>Other</option>
 </select><br/><br/>
+<script>
+var ele = document.forms['theForm'].elements['target'];
+for(var i=0;i<ele.options.length;i++)
+	if (ele.options[i].value == '<? print htmlentities2($row['target']); ?>')
+		ele.selectedIndex = i;
+</script>
 
 
-<? if ($USER->user_id == $row['user_id']) { ?>
-<br/> 
-<b>Wiki Style Answer</b>? <input type="checkbox" name="wiki" <? if (!empty($row['wiki'])) { print "checked"; } ?>/><br/>
+<b>Site Section</b>:<br/>
+ &nbsp; &nbsp; &nbsp; <select name="section">
+<option></option>
+<option>Home</option>
+<option>Image Search</option>
+<option>.. Advanced</option>
+<option>.. By Square</option>
+<option>.. Place</option>
+<option>.. Multi</option>
+<option>Map</option>
+<option>.. Depth</option>
+<option>.. Recent</option>
+<option>.. Draggable</option>
+<option>.. .. Centisquare</option>
+<option>.. Clusters</option>
+<option>.. Hectad Coverage</option>
+<option>Browse</option>
+<option>Explore</option>
+<option>.. Featured Stuff</option>
+<option>.. Mosaics</option>
+<option>.. Popular Images</option>
+<option>.. Routes</option>
+<option>.. Places</option>
+<option>.. Calendar</option>
+<option>.. Featured Searches</option>
+<option>Collections</option>
+<option>.. Articles</option>
+<option>.. Galleries</option>
+<option>.. Themed Topics</option>
+<option>.. Shared Descriptions</option>
+<option>.. User Profiles</option>
+<option>.. Categories</option>
+<option>Contribute</option>
+<option>.. Submit Photos</option>
+<option>.. .. Submit v2</option>
+<option>.. .. Others</option>
+<option>.. Collections</option>
+<option>My Photos</option>
+<option>.. My Profile</option>
+<option>.. My Submissions</option>
+<option>.. My Thumbed Images</option>
+<option>.. Personal Map</option>
+<option>.. Check Submissions</option>
+<option>.. CSV Export</option>
+<option>Activities</option>
+<option>.. Games</option>
+<option>.. Imagine</option>
+<option>Interact</option>
+<option>.. Discussions</option>
+<option>.. .. Search</option>
+<option>.. Blog</option>
+<option>.. Chat</option>
+<option>.. Events</option>
+<option>Statistics</option>
+<option>.. More Stats</option>
+<option>.. Contributors</option>
+<option>.. Current Stats</option>
+<option>.. Leaderboard</option>
+<option>Export</option>
+<option>.. Google Earth/Maps</option>
+<option>.. Memory Map</option>
+<option>.. GPX</option>
+<option>.. API</option>
+<option>Further Info</option>
+<option>.. FAQ</option>
+<option>.. Information</option>
+<option>.. More Pages</option>
+<option>.. Sitemap</option>
+<option>.. Experimental Features</option>
+<option>.. Contact Us</option>
+<option>.. The Team</option>
+<option>.. Credits</option>
+<option value="OTHER">OTHER <- Select this if not covered above</option>
+</select><br/><br/>
+<script>
+var ele = document.forms['theForm'].elements['section'];
+for(var i=0;i<ele.options.length;i++)
+	if (ele.options[i].value == '<? print htmlentities2($row['section']); ?>')
+		ele.selectedIndex = i;
+</script>
+
+<b>Tags</b>:<br/>
+ &nbsp; &nbsp; &nbsp; <input type="text" name="tags" value="<? print htmlentities2($row['tags']); ?>" size="80" onfocus="showtags(true)" onblur="showtags(false)"/><br/>
+ (optional - seperate tags by commas - helps makes answers categorizable and keyword searchable)<br/>
+
+<?
+
+
+$data = $db->getAll("SELECT tags
+FROM answer_answer a INNER JOIN answer_question q USING (question_id)
+WHERE a.status = 1 AND q.status = 1");
+
+
+if ($data) {
+        $tags = array();
+        foreach ($data as $r) {
+                if (!empty($r['tags'])) {
+                        $bits = preg_split('/\s*,\s*/',strtolower(trim($r['tags'])));
+                        foreach ($bits as $bit) {
+                                $tags[$bit]++;
+                        }
+                }
+        }
+        if (!empty($tags)) {
+                ksort($tags);
+                print "<div class=\"taglist\" id=taglist1 style=display:none><b>Current</b>:";
+                foreach ($tags as $tag => $count) {
+                        $h=htmlentities2($tag);
+                        print "<a href=\"#$h\" onclick=\"return useTag('$h')\">$h</a> &middot; ";
+                }
+                print "</div>";
+        }
+}
+
+
+?><br/>
+<script>
+var distimer = null
+function showtags(disp) {
+	if (document.getElementById('taglist1')) {
+		if (disp) {
+			document.getElementById('taglist1').style.display = disp?'':'none';
+		} else {
+			//need this, so that div doesnt disappear right away, breaking the click!
+			distimer = setTimeout(function() {
+				document.getElementById('taglist1').style.display = disp?'':'none';
+				distimer = null;
+			},100);
+		}
+	}
+}
+function useTag(tag) {
+    var ele = document.forms['theForm'].elements['tags'];
+    if (ele.value.length == 0) {
+        ele.value = tag;
+    } else {
+        ele.value = ele.value + ', '+tag;
+    }
+	ele.focus();
+	if (distimer)
+		clearTimeout(distimer);
+	distimer = null;
+    return false;
+}
+</script>
+
+
+<br/>
+<input type=hidden name=wiki value=0>
+<b>Wiki Style Answer</b>? <input type="checkbox" name="wiki" value="1" <? if (!empty($row['wiki'])) {echo ' checked'; } ?>/><br/>
  &nbsp; &nbsp; &nbsp;  (optional - tick to allow others to refine your answer)<br/>
 
-<br/> 
-<b>Anonymous</b>? <input type="checkbox" name="anon" <? if (!empty($row['anon'])) { print "checked"; } ?>/><br/>
+<? if ($row['user_id'] == $USER->user_id) { ?>
+<br/>
+<input type=hidden name=anon value=0>
+<b>Anonymous</b>? <input type="checkbox" name="anon" value="1" <? if (!empty($row['anon'])) {echo ' checked'; } ?>/><br/>
  &nbsp; &nbsp; &nbsp;  (optional - tick to submit this reply anonymously? - not recommended)<br/><br/>
 <? } ?>
 
 <hr/>
 By clicking the button below, you agree to release your contribution under the <b class="nowrap">Creative Commons Attribution-Share Alike 3.0</b> Licence.<br/> <a title="View licence" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank" class="nowrap">Here is the Commons Deed outlining the licence terms</a>
 <br/> <br/>
- <input type="submit" value="Submit Reply"/>
- 
+ <input type="submit" value="Update Reply"/>
+
 </form>
 
-
-
 <?
+
+if (!empty($row['answer_id']) && !empty($_GET['feedback'])) {
+	print "</div>";
+}
 
 $smarty->display('_std_end.tpl',$mkey);

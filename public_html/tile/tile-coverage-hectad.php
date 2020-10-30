@@ -7,7 +7,6 @@ ini_set('memory_limit', '128M');
 $maxspan = 30;
 
 customExpiresHeader(empty($_GET['long'])?3600*24:3600*24*6,true);
-customCacheControl(filemtime(__FILE__),$_SERVER['QUERY_STRING']);
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
 require_once ('3rdparty/googleMapUtilityClass.php');
@@ -86,14 +85,15 @@ if ($bounds[3] > 62)
         $sql['tables'] = array();
 
         if (!empty($_GET['user_id'])) {
-		die("todo");
-                $sql['tables']['gi'] = 'gridimage_search';
-                $sql['group'] = 'grid_reference';
+                $sql['tables']['gi'] = 'gridimage_search gi';
+                $sql['group'] = 'hectad';
                 $sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
 		$sql['wheres'][] = "moderation_status = 'geograph'";
-                $sql['columns'] = "x,y,reference_index as ri,   count(*) as g,SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as r";
+
+                $sql['columns'] = "CONCAT(SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-3),SUBSTRING(gi.grid_reference,LENGTH(gi.grid_reference)-1,1)) AS hectad,"
+			."x,y,reference_index as ri, COUNT(DISTINCT IF(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR)),grid_reference,null)) AS percent"; //technically its just number in hectad, not a percent!
         } else {
-                $sql['tables']['gs'] = 'hectad_stat';
+                $sql['tables']['hs'] = 'hectad_stat';
 
                 $sql['columns'] = "x,y,reference_index as ri,   recentsquares/landsquares*100 AS percent";
                 $sql['wheres'][] = "landsquares>0";

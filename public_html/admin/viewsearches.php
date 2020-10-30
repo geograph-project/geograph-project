@@ -46,6 +46,8 @@ $db = GeographDatabaseConnection(true);
 	print "<HR/><H2>Search Stats for the past 7 Days</H2>";
 	
 	$datecrit = "crt_timestamp > date_sub(now(), interval 7 day)";
+
+	 $datecrit .= " AND searchuse = 'search'";
 	
 	$sql = "select searchclass,count(distinct user_id) as users,count(*) as count from queries where $datecrit group by searchclass";	
 	dump_sql_table($sql,'Most Used Search Class');
@@ -79,10 +81,10 @@ $db = GeographDatabaseConnection(true);
 	
 	print "<HR/><H2>Search Stats for whole time</H2>";
 		
-	$sql = "select searchclass,count(distinct user_id) as users,count(*) as count from queries group by searchclass";	
+	$sql = "select searchclass,count(distinct user_id) as users,count(*) as count from queries where searchuse = 'search' group by searchclass";	
 	dump_sql_table($sql,'Most Used Search Class');
 
-	$sql = "select searchq,count(distinct user_id) as users,count(*) as count from queries group by searchq";	
+	$sql = "select searchq,count(distinct user_id) as users,count(*) as count from queries where searchuse = 'search' group by searchq";	
 	dump_sql_table($sql,'Most Used Query Strings');
 	}
 	

@@ -31,7 +31,7 @@ init_session();
 
 
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(false);
 if (!$db) die('Database connection failed');   
 
 $smarty = new GeographPage;
@@ -58,10 +58,12 @@ if (isset($_POST['gridimage_id']))
 					
 				switch ($status) {
 					case 'Geograph':
+					case 'Cancel Rejection request':
 						$user_status = ''; break;
 					case 'Supplemental':
 						$user_status = 'accepted'; break;
 					case 'Reject':
+					case 'Request Rejection of this image':
 						$user_status = 'rejected'; break;
 					default:
 						echo "UNKNOWN STATUS";

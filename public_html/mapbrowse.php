@@ -223,54 +223,56 @@ if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,2}\d{4}$/',$_GET['g
 	$smarty->assign('gridref_from', $_GET['gridref_from']);
 }
 
+if (!empty($_GET['ds'])) {
+	print_r($mosaic);
+	exit;
+}
+
+
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
 	dieUnderHighLoad(1.2);
 
 	$overview->setPreset('overview');
-	
+
 	//assign overview to smarty
 	if ($mosaic->type_or_user > 0) {
 		$profile=new GeographUser($mosaic->type_or_user);
-		
+
 		if (count($profile->stats) == 0) {
 			$profile->getStats();
 		}
-		
+
 		//the map is only useful for people with images!
 		if ( !empty($profile->stats['images']) ) {
 			$smarty->assign('realname', $profile->realname);
 			$smarty->assign('nickname', $profile->nickname);
 			$smarty->assign('user_id', $mosaic->type_or_user);
-		
+
 			$overview->type_or_user = $mosaic->type_or_user;
 		} else {
 			$mosaic->type_or_user = 0;
 		}
 	}
-	
-	if ($mosaic->pixels_per_km == 40) { 
+
+	if ($mosaic->pixels_per_km == 40) {
 		//largeoverview
 		$overview->setScale(1);
 		list ($x,$y) = $mosaic->getCentre();
 		$overview->setCentre($x,$y); //does call setAlignedOrigin
-		
+
 		#$mosaic->fillGridMap(true); //true = for imagemap
-		
 	} else {
 		//set it back incase we come from a largeoverview
 		$overview->setScale(0.13);
-		$overview->setOrigin(0,-10);		
+		$overview->setOrigin(0,-10);
 	}
-	
-	
+
 	$overview->assignToSmarty($smarty, 'overview');
 	$smarty->assign('marker', $overview->getBoundingBox($mosaic));
-	
-	
+
 	//assign all the other useful stuff
-		
 	if ($gridref = $mosaic->getGridRef(-1,-1)) {
 		$smarty->assign('gridref', $gridref);
 		if ($mosaic->pixels_per_km == 40 && preg_match('/([A-Z]+\d)5(\d)5$/',$gridref,$m)) {

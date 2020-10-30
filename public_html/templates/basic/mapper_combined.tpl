@@ -1,3 +1,4 @@
+{assign var="page_title" value="Coverage Map (v4)"}
 {include file="_std_begin.tpl"}
 
 <div style="width:800px">
@@ -66,8 +67,6 @@
 
         <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
         <script src="https://www.geograph.org/leaflet/Leaflet.Photo/Leaflet.Photo.js"></script>
-
-	<script src="{"/js/leaflet-bing-layer.min.js"|revision}"></script>
 
 	<script src="https://www.geograph.org/leaflet/leaflet-hash.js"></script>
 
@@ -212,7 +211,7 @@
 
 	if ($.localStorage && $.localStorage('LeafletBaseMap')) {
 		basemap = $.localStorage('LeafletBaseMap');
-		if (baseMaps[basemap] && (
+		if (baseMaps[basemap] && basemap != "Ordnance Survey GB" && (
 				//we can also check, if the baselayer covers the location (not ideal, as it just using bounds, eg much of Ireland are on overlaps bounds of GB.
 				!(baseMaps[basemap].options)
 				 || typeof baseMaps[basemap].bounds == 'undefined'
@@ -361,6 +360,43 @@
 		layerswitcher.expand();	
 
 	map.addLayer(L.geographClickLayer(clickOptions));
+
+/////////////////////////////////////////////////////
+
+var guiders = null;
+
+$(function() {
+jQuery.cachedScript = function(url, success) {
+
+  return jQuery.ajax({
+    dataType: "script",
+    cache: true,
+    url: url, 
+    success: success
+  });
+};
+if (window.location.hash && window.location.hash.length > 1 && window.location.hash.indexOf('tour') > -1) 
+	startTour();
+});
+
+function startTour() {
+    if (!guiders) {
+        guiders = 'started'; //just to prevent repeats while still loading... 
+        
+        $('head').append('<link rel="stylesheet" href="//s1.geograph.org.uk/guider/guiders-1.2.8.css" type="text/css" />');
+
+        $.cachedScript('//s1.geograph.org.uk/guider/guiders-1.2.8.js', function() {
+            $.cachedScript('/guider/mapper_guider.js?t={/literal}{dynamic}{$g_time}{/dynamic}{literal}', function() {
+                setTimeout('startTour()',100);
+            });
+        });
+        return false;
+    }
+    $(function() {
+        guiders.show('g_welcome');
+    });
+    return false;
+}
 
 /////////////////////////////////////////////////////
 

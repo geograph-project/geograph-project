@@ -28,6 +28,10 @@ $smarty = new GeographPage;
 
 $template = 'tags_synonym.tpl';
 
+if (!empty($_GET['new'])) {
+	$template = 'tags_synonym_new.tpl';
+}
+
 $USER->mustHavePerm("basic");
 
 
@@ -36,7 +40,59 @@ $USER->mustHavePerm("basic");
 if (!empty($_GET['deal'])) {
 	$USER->mustHavePerm("admin");
 
-	
+} elseif (!empty($_GET['review'])) {
+
+        $db = GeographDatabaseConnection(false);
+
+	$data = $db->getAll("select o.tag_id,o.prefix,o.tag,o.canonical,
+t.tag_id as tag_id2,t.prefix as prefix2,t.tag as tag2
+from tag o inner join tag t on (o.canonical = t.tag_id)
+inner join gridimage_tag go on (go.tag_id = o.tag_id)
+inner join gridimage_tag gt on (gt.tag_id = t.tag_id)
+where o.canonical != 0 and o.canonical != o.tag_id
+group by t.tag_id
+order by t.tag_id");
+
+	$list = array();
+	foreach ($data as $idx => $row) {
+		$list[$row['canonical']][] = $row['tag_id'];
+		$lookup[$row['canonical']] = empty($row['prefix2'])?$row['tag2']:"{$row['prefix2']}:{$row['tag2']}";
+		$lookup[$row['tag_id']] = empty($row['prefix'])?$row['tag']:"{$row['prefix']}:{$row['tag']}";
+	}
+	if (empty($_GET['group'])) {
+		foreach ($list as $canonical => $row) {
+			print "<b>".htmlentities($lookup[$canonical])."</b>; ";
+			foreach ($row as $tag_id) {
+				print "<a>".htmlentities($lookup[$tag_id])."</a>; ";
+			}
+			print "<hr/>";
+		}
+	} else {
+		$prefixes = array();
+		foreach ($list as $canonical => $row) {
+			$str = $lookup[$canonical];
+                        foreach ($row as $tag_id) {
+				$str .= "; ".$lookup[$tag_id];
+                        }
+			$prefix = '';
+			if (preg_match('/([\w ]+):/',$str,$m)) {
+				$prefix = trim(strtolower($m[1]));
+			}
+			$prefixes[$prefix][] = $canonical;
+                }
+		ksort($prefixes);
+		foreach ($prefixes as $prefix => $rows) {
+			if (empty($prefix) || $prefix == 'category' || $prefix == 'term')
+				continue;
+			print "<h3>$prefix</h3>";
+			foreach ($rows as $canonical) {
+				print "".htmlentities($lookup[$canonical])."<br/> ";
+			}
+		}
+	}
+
+	exit;
+
 } else {
 	if (!empty($_POST)) {
 

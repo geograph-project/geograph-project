@@ -28,7 +28,13 @@ require_once('geograph/global.inc.php');
 $smarty = new GeographPage;
 $template='frame.tpl';
 
-customExpiresHeader(3600*6,true,true);
+if (!empty($_REQUEST['random']) && empty($_REQUEST['date'])) {
+	$tomo = strtotime("tomorrow");
+	$diff = $tomo - time();
+	customExpiresHeader($diff+90,true,true);
+} else {
+	customExpiresHeader(3600*12,true,true);
+}
 
 if (!empty($_REQUEST['q'])) {
 	$q=trim($_REQUEST['q']);
@@ -71,7 +77,7 @@ if (!empty($_REQUEST['q'])) {
 
 				$int = hexdec(substr($md,2,2).substr($md,12,2).substr($md,22,2));
 
-				$pg = $int % $images;
+				$pg = ($int % $images)+1;
 			}
 		}
 

@@ -31,6 +31,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/mapmosaic.class.php');
 require_once('geograph/rastermap.class.php');
 
+header("X-Robots-Tag: noindex, follow");
 
 customGZipHandlerStart();
 

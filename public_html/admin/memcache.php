@@ -139,31 +139,88 @@ if (isset($_GET['getExtendedStats'])) {
 		$v = $memcache->get($_GET['key']);
 		print "return value:";
 		print "<pre>";
-		print htmlentities(print_r($v,true));
+		if (empty($v))
+			var_dump($v);//display the EXACT type of empty :) - null, zero, empty string etc
+		else
+			print htmlentities(print_r($v,true));
 		print "</pre>";
 	} elseif ($_GET['action'] == 'delete') {
 		$ok = $memcache->delete($_GET['key'])?1:0;
 		print "<p>Delete return value: $ok</p>";
 	}
 
+} elseif (!empty($_GET['auto_delete'])) {
+
+	$namespace = 'is';
+        $size = "F";if (!empty($_GET['size'])) $size = $_GET['size'];
+
+	$rows = $db->getCol("SELECT gridimage_id FROM gridimage_size where width=320 and height=240 and gridimage_id > 4000000");
+
+	if (!empty($rows))
+	foreach ($rows as $gridimage_id) {
+		print "<h3>$gridimage_id</h3>";
+
+		$ok = $memcache->name_delete($namespace,intval($gridimage_id).':'.$size);
+                print "<p>Memcache Delete return value: $ok</p>";
+
+                        if ($size == 'F') {
+                                $db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = ".intval($gridimage_id));
+                                print "<p>gridimage_size Affected Rows: ".$db->Affected_Rows()."</p>";
+                        } else {
+                                $db->Execute("DELETE FROM gridimage_thumbsize WHERE gridimage_id = ".intval($gridimage_id));
+                                print "<p>gridimage_thumbsize Affected Rows: ".$db->Affected_Rows()."</p>";
+                        }
+	}
+
+} elseif (!empty($_GET['ids'])) {
+
+	$namespace = 'is';
+        $size = "F";if (!empty($_GET['size'])) $size = $_GET['size'];
+
+
+	foreach (explode(' ',trim(preg_replace('/[^\d]+/',' ',$_GET['ids']))) as $gridimage_id) {
+		print "<h3>$gridimage_id</h3>";
+
+		$ok = $memcache->name_delete($namespace,intval($gridimage_id).':'.$size);
+                print "<p>Memcache Delete return value: $ok</p>";
+
+		if (!empty($_GET['cleardb'])) {
+                        if ($size == 'F') {
+                                $db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = ".intval($gridimage_id));
+                                print "<p>gridimage_size Affected Rows: ".$db->Affected_Rows()."</p>";
+                        } else {
+                                $db->Execute("DELETE FROM gridimage_thumbsize WHERE gridimage_id = ".intval($gridimage_id));
+                                print "<p>gridimage_thumbsize Affected Rows: ".$db->Affected_Rows()."</p>";
+                        }
+		}
+	}
+
+
 } elseif (!empty($_GET['image_id'])) {
+	$id = intval($_GET['image_id']);
 	$namespace = 'is';
 	$size = "120x120";if (!empty($_GET['size'])) $size = $_GET['size'];
-	$key = $memcache->prefix.$namespace.':'.intval($_GET['image_id']).':'.$size;
+	$key = $memcache->prefix.$namespace.':'.$id.':'.$size;
 	print "<h2>Thumbnail Stat Cache</h2>";
 	print "<h3>Memcache key: <tt>$key</tt></h3>";
 	if ($_GET['action'] == 'view') {
-		$v = $memcache->name_get($namespace,intval($_GET['image_id']).':'.$size);
+		$v = $memcache->name_get($namespace,$id.':'.$size);
 		print "<pre>";
 		print htmlentities(print_r($v,true));
 		print "</pre>";
+
 	} elseif ($_GET['action'] == 'delete') {
-		$ok = $memcache->name_delete($namespace,intval($_GET['image_id']).':'.$size);
-		print "<p>Delete return value: $ok</p>";
+		$ok = $memcache->name_delete($namespace,$id.':'.$size);
+		print "<p>Memcache Delete return value: $ok</p>";
 
 		if (!empty($_GET['cleardb'])) {
-			$db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = ".intval($_GET['image_id']));
-			print "Affected Rows: ".$db->Affected_Rows();
+			if ($size == 'F') {
+				$db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = $id");
+				print "<p>gridimage_size Affected Rows: ".$db->Affected_Rows()."</p>";
+			} elseif (preg_match('/(\d+)x(\d+)/',$size,$m)) {
+				$db->Execute("DELETE FROM gridimage_thumbsize WHERE gridimage_id = $id AND maxw = {$m[1]} AND maxh = {$m[2]}");
+				print "<p>gridimage_thumbsize Affected Rows: ".$db->Affected_Rows()."</p>";
+			}
 		}
 	}
 
@@ -213,6 +270,7 @@ key <input type="text" name="key" value="" size="7"/> <input type="submit" value
 <form method="get">
 <h3>Image Stat Cache</h3>
 gridimage_id: <input type="text" name="image_id" value="" size="7"/> <input type="submit" value="Go"><br/>
+or ids: <textarea name=ids rows=3 cols=50></textarea><br/><br>
 
 <input type="radio" name="size" value="120x120" checked> 120x120 <br/>
 <input type="radio" name="size" value="213x160"> 213x160 <br/>

@@ -23,13 +23,31 @@
 require_once('geograph/global.inc.php');
 
 if (isset($_POST['finalise'])) {
-	//so the back button works. 	
+	//so the back button works.
 	 session_cache_limiter('none');
 }
 
 init_session();
 
 $smarty = new GeographPage;
+
+dieIfReadOnly();
+
+               if (isset($_GET['picnik'])) {
+                        $q = array();
+                        $q['_apikey'] = $CONF['picnik_api_key'];
+                        $q['_page'] = '/in/upload';
+                        $q['_export'] = "http://{$_SERVER['HTTP_HOST']}/submit2.php";
+                        $q['_export_field'] = 'jpeg_url';
+                        $q['_export_agent'] = 'browser';
+                        $q['_export_method'] = 'POST';
+                        $q['_userid'] = md5($USER->user_id.$CONF['register_confirmation_secret']);
+                        $q['_export_title'] = 'Send to Geograph';
+                        $q['_host_name'] = 'Geograph';
+                        header('Location: http://www.picmonkey.com/service?'.http_build_query($q));
+                        exit;
+                }
+
 
 if (!empty($CONF['submission_message'])) {
         $smarty->assign("status_message",$CONF['submission_message']);
@@ -44,12 +62,20 @@ if (empty($_GET['multi']) && isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTT
 //you must be logged in to submit images
 $USER->mustHavePerm("basic");
 
+//temp as page doesnt work on https (mainly maps!)
+pageMustBeHTTP();
+
+
+
 $smarty->assign('extra_meta','<link rel="dns-prefetch" href="https://osopenspacepro.ordnancesurvey.co.uk/">');
 
 $template = 'submit2.tpl';
 
 if (!empty($_GET['display']) && $_GET['display'] == 'tabs') {
 	$template = 'submit2_tabs.tpl';
+}
+if (!empty($_GET['display']) && $_GET['display'] == 'mobile') {
+	$template = 'submit2_mobile.tpl';
 }
 
 $cacheid='';
@@ -217,6 +243,8 @@ if (isset($_FILES['jpeg_exif']))
 		$smarty->assign('nofrills', 1);
 	if (isset($_REQUEST['display']) && $_REQUEST['display'] == 'tabs')
 		$smarty->assign('display', 'tabs');
+	if (isset($_REQUEST['display']) && $_REQUEST['display'] == 'mobile')
+		$smarty->assign('display', 'mobile');
 	$smarty->assign('submit2', 1);
 	$smarty->assign('status', $status);
 	$smarty->assign('filenames', $filenames);
@@ -316,8 +344,12 @@ if (isset($_REQUEST['inner'])) {
                 	$uploadmanager->setUploadId($_GET['delete'],false);
         	        $uploadmanager->cleanUp();
 	        }
-
 		$data = $uploadmanager->getUploadedFiles();
+
+		if (!empty($_GET['one'])) {
+			$smarty->assign('one', 1);
+			 $smarty->assign('item',array_shift($data));
+		}
 
 		$smarty->assign_by_ref('data',$data);
 	} else {

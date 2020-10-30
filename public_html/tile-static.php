@@ -38,8 +38,13 @@ $mapurl = "http://old-dev.openstreetmap.org/~ojw/StaticMap/?mode=Export&show=1&l
 //actully we can host 'our' own version that uses thiner lines and smaller icons
 //see http://svn.openstreetmap.org/sites/other/StaticMap/
 
-$mapurl = "http://www.nearby.org.uk/StaticMap/?mode=Export&show=1&layer=cycle&";
-
+if ($_GET['source'] == 'OSM-cymru') {
+	$mapurl = $_SERVER['CONF_STATIC_MAP_SERVER']."&layer=cymru&";
+} elseif ($_GET['source'] == 'blank') {
+	$mapurl = $_SERVER['CONF_STATIC_MAP_SERVER']."&layer=blank&";
+} else {
+	$mapurl = $_SERVER['CONF_STATIC_MAP_SERVER']."&layer=mapnik&";
+}
 
 if (preg_match('/^[\w&=\.-]+$/',$_SERVER['QUERY_STRING'])) {
 	$mapurl .= $_SERVER['QUERY_STRING'];
@@ -51,7 +56,7 @@ if (preg_match('/^[\w&=\.-]+$/',$_SERVER['QUERY_STRING'])) {
 $opts = array(
   'http'=>array(
     'user_agent'=>$_SERVER['HTTP_USER_AGENT'],
-    'header'=>"Referer: {$_SERVER['HTTP_REFERER']}\r\n" 
+    'header'=>"Referer: {$_SERVER['HTTP_REFERER']}\r\n"
   )
 );
 

@@ -28,10 +28,16 @@ init_session();
 
 $smarty = new GeographPage;
 
+dieIfReadOnly();
+
 customGZipHandlerStart();
 
-
 $USER->mustHavePerm("basic");
+
+
+//temp as edit page doesnt work on https (mainly maps!)
+pageMustBeHTTP();
+
 
 
 $template='submissions.tpl';
@@ -40,7 +46,7 @@ $max_gridimage_id = 0;
 $count = 0;
 if (!empty($_GET['next'])) {
 	$token=new Token;
-	
+
 	if ($token->parse($_GET['next']) && $token->hasValue("id")) {
 		$max_gridimage_id = intval($token->getValue("id"));
 		$count = intval($token->getValue("c"));
@@ -49,10 +55,17 @@ if (!empty($_GET['next'])) {
 	}
 }
 
-
 $ab=floor($USER->user_id/10000);
-	
+
 $cacheid="user$ab|{$USER->user_id}|{$max_gridimage_id}";
+
+$src = 'data-src';
+if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
+        (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
+  $src = 'src';//revert back to standard non lazy loading
+}
+$cacheid .=".$src";
+
 
 //what style should we use?
 $style = $USER->getStyle();
@@ -64,14 +77,12 @@ if ($smarty->caching) {
 }
 
 $smarty->assign('maincontentclass', 'content_photo'.$style);
-	
+
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
-
 	$imagelist=new ImageList;
 
-	
 	$sql="select gi.*,grid_reference ".
 		"from gridimage as gi ".
 		"inner join gridsquare as gs using(gridsquare_id) ".
@@ -79,17 +90,17 @@ if (!$smarty->is_cached($template, $cacheid))
 		"and gi.user_id={$USER->user_id} ".
 		($max_gridimage_id?" and gridimage_id < $max_gridimage_id ":'').
 		"order by gridimage_id desc limit 20";
-			
+
 	$imagelist->_getImagesBySql($sql);
-	
+
 	if (count($imagelist->images)) {
-		foreach ($imagelist->images as $i => $image) 
+		foreach ($imagelist->images as $i => $image)
 			$imagelist->images[$i]->imagetakenString = getFormattedDate($image->imagetaken);
-	
+
 		$smarty->assign_by_ref('images', $imagelist->images);
 
 		$first = $imagelist->images[0];
-		
+
 		$smarty->assign('criteria', $first->submitted);
 
 		$last = $imagelist->images[count($imagelist->images)-1];
@@ -105,7 +116,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('next', $token->getToken());
 		}
 	}
-	
+
 	if ($max_gridimage_id && isset($_SERVER['HTTP_REFERER'])) {
 		$ref = @parse_url($_SERVER['HTTP_REFERER']);
 		if (!empty($ref['query'])) {
@@ -123,10 +134,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$USER->db = $imagelist->db;
 	}
 	$USER->getStats();
-
 }
 
-
+$smarty->assign("src",$src);
 $smarty->display($template, $cacheid);
 
 

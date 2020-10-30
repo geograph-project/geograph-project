@@ -32,9 +32,8 @@
 	primary key(gridimage_id),
 	index(showday)
 	);
-  
  */
-	 
+
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 init_session();
@@ -51,21 +50,22 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	//lets get some stats
 	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
-	
+	if (!$db) die('Database connection failed');
+
 	//handle form post
 	if (isset($_POST['addimage']))
 	{
+		$_POST['addimage'] = preg_replace('/[^\d]+/',' ',$_POST['addimage']);
 		$smarty->assign("addimage",$_POST['addimage']);
 		$smarty->assign("when",$_POST['when']);
-		
+
 		$gridimage_id=intval($_POST['addimage']);
 		if ($gridimage_id)
 		{
 			$error="";
-			
+
 			$image=new GridImage($gridimage_id);
-			if ($image->moderation_status=="geograph" || 
+			if ($image->moderation_status=="geograph" ||
 				$image->moderation_status=="accepted")
 			{
 				$when=trim($_POST['when']);
@@ -73,9 +73,9 @@ if (!$smarty->is_cached($template, $cacheid))
 				{
 					$t=strtotime($when);
 					$today=strtotime("today");
-					
+
 					$d=strftime("%a, %d-%b-%Y %H:%M", $t);
-					
+
 					if ($t<$today)
 					{
 						$error="$when evaluated as a past day ($d)";
@@ -83,19 +83,17 @@ if (!$smarty->is_cached($template, $cacheid))
 					else
 					{
 						$showday=strftime("'%Y-%m-%d'", $t);
-					
+
 						$assigned_id=$db->GetOne("select gridimage_id from gridimage_daily where showday=$showday");
 						if ($assigned_id)
-							$error="There is already an image $assigned_id assigned for $d";	
-				
+							$error="There is already an image $assigned_id assigned for $d";
 					}
-					
 				}
 				else
 				{
 					$showday="NULL";
 				}
-				
+
 				//have we used this image already?
 				if(strlen($error)==0)
 				{
@@ -105,8 +103,7 @@ if (empty($assigned)) {
 	 $assigned=$db->GetRow("select showday from gridimage_daily_archive where gridimage_id=$gridimage_id");
 
 }
-					
-					
+
 					if (is_array($assigned) && count($assigned))
 					{
 						if (is_null($assigned['showday']))
@@ -118,10 +115,8 @@ if (empty($assigned)) {
 						{
 							$assigned_t=strtotime($assigned['showday']);
 							$assigned_when=$assigned['showday'];
-							
-							
 						}
-						
+
 						$today=strtotime("today");
 						if ($assigned_t<$today)
 						{
@@ -130,11 +125,10 @@ if (empty($assigned)) {
 						else
 						{
 							$error="Image $assigned_id has already been assigned to $assigned_when";
-						}	
+						}
 					}
-					
 				}
-				
+
 				if(strlen($error)==0)
 				{
 					//woo yay - go for it
@@ -151,36 +145,33 @@ if (empty($assigned)) {
 					$error="Image $gridimage_id is {$image->moderation_status} so can't be used!'";
 				else
 					$error="Invalid image id";
-					
 			}
-			
+
 			if (strlen($error))
 				$smarty->assign("error",$error);
 		}
-		
-		
-		
 	}
-	
-	
+
 	//count how many are in the kitty
 	$pending=$db->GetCol("select gridimage_id from gridimage_daily where showday is null and (vote_baysian > 3)");
-	
+
 	//get the next 4 weeks of assignments
 	$days=28;
 	$coming_up=$db->GetAssoc("select showday,gridimage_id,1 as assigned from gridimage_daily where showday > date(now()) and showday < date(date_add(now(),interval $days day))");
-	
+
 	$ids = $db->getCol("select distinct user_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday > date_sub(now(),interval 30 day)");
 	if (empty($ids)) {
 		$ids = 0;
 	} else {
 		$ids = implode(',',$ids);
 	}
-	
+
 	//get ordered list of pool images
-	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null and (vote_baysian > 3.1) and (user_id not in ($ids)) order by  moderation_status+0 desc,(abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()>0.7,7,0) asc,crc32(concat(gridimage_id,yearweek(now()))) desc limit $days");
-	
-	
+	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id)
+		where showday is null and (vote_baysian > 3.1) and (user_id not in ($ids))
+		order by moderation_status+0 desc, coalesce((abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()>0.7,7,0),floor(rand()*20)) asc, crc32(concat(gridimage_id,yearweek(now()))) desc
+		limit $days");
+
 	//fill in blanks
 	for ($d=1; $d<$days; $d++)
 	{
@@ -211,5 +202,3 @@ if (empty($assigned)) {
 
 $smarty->display($template,$cacheid);
 
-	
-?>

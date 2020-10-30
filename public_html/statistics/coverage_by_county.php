@@ -69,7 +69,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				format(sum(has_geographs)/count(*)*100,2) as Percentage,
 				format(sum(imagecount),0) as 'Total Photos'
 			from gridsquare gs
-				inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
+				inner join os_gaz on (cast(placename_id as signed)-1000000 = os_gaz.seq)
 			where gs.reference_index = 1 and percent_land > 0
 			group by hcounty
 			" );
@@ -86,7 +86,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				format(sum(has_geographs)/count(*)*100,2) as Percentage,
 				format(sum(imagecount),0) as 'Total Photos'
 			from gridsquare gs
-				inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
+				inner join os_gaz on (cast(placename_id as signed)-1000000 = os_gaz.seq)
 				inner join os_gaz_county on (os_gaz.co_code = os_gaz_county.co_code)
 				inner join loc_country on (country = loc_country.code)
 			where gs.reference_index = 1 and percent_land > 0
@@ -117,7 +117,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			sum(has_geographs)/count(*)*100 as Percentage
 		from gridsquare gs
 			inner join loc_placenames on (placename_id = id)
-			inner join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_adm1.country = loc_placenames.country)
+			left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_adm1.country = loc_placenames.country)
 			inner join loc_country on (loc_placenames.country = loc_country.code)
 		where gs.reference_index = 2 and percent_land > 0
 		group by loc_placenames.country,loc_adm1.adm1
@@ -131,7 +131,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	
 	$smarty->assign_by_ref('tables', $tables);
 	
-	$smarty->assign("headnote","See also <a href=\"/statistics/coverage_by_country.php\">Coverage by Country</a>.");
+	$smarty->assign("headnote","See also <a href=\"/statistics/coverage_by_country.php\">Coverage by Country</a>. NOTE: The statistics on this page are very approxiamte. Geograph does not have proper county border data, it guestimates a likely county for a square, by looking at nearby placenames.");
 			
 	$smarty->assign("h2title",'Coverage by County');
 } 

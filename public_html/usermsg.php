@@ -40,12 +40,12 @@ $smarty->assign_by_ref('from_email', $from_email);
 $smarty->assign_by_ref('sendcopy', $sendcopy);
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection(false);
 if (empty($db)) die('Database connection failed');
 
 $ip=getRemoteIP();
 
-$user_id = "inet_aton('{$ip}')";
+$user_id = "inet6_aton('{$ip}')";
 
 $throttlenumber = 5;
 if ($USER->hasPerm("ticketmod") || $USER->hasPerm("moderator")) {
@@ -71,7 +71,7 @@ if (empty($CONF['usermsg_spam_trap'])) {
 if (rand(1,10) > 5) {
 	$db->query("delete from throttle where used < date_sub(now(), interval 48 hour)");
 }
-	
+
 //try and send?
 if (isset($_POST['msg']))
 {
@@ -97,7 +97,7 @@ if (isset($_POST['msg']))
 	$smarty->assign_by_ref('errors', $errors);
 
 	$smarty->assign_by_ref('msg', $msg);
-	
+
 	if (!empty($_POST['mention']))
 		$smarty->assign_by_ref('mention', $_POST['mention']);
 
@@ -106,48 +106,47 @@ if (isset($_POST['msg']))
 		$ok=false;
 		$errors['msg']="Sorry, this looks like spam";
 	}
-	
+
 	//if not logged in or they been busy - lets ask them if a person! (plus jump though a few hoops to make it harder to program a bot)
-	if ($ok && ($USER->user_id == 0 || $throttle )) {
-	
+	if ($ok && ($USER->user_id == 0 || $throttle || empty($_SERVER['HTTP_REFERER']) )) {
+
 		$verification = md5($CONF['register_confirmation_secret'].$msg.$from_email.$from_name);
-		
+
 		//check the verification code
 		if (empty($_POST['verification']) || $_POST['verification'] != $verification || empty($_SESSION['verification']) || $_SESSION['verification'] != $verification) {
 			$ok = false;
 			$smarty->assign('verification', $verification);
 		}
 		$_SESSION['verification'] = $verification;
-		
+
 		//user has requested a emailed code
 		if (!empty($_POST['sendcode'])) {
 			$c = rand(1000,9999);
-			
+
 			$token=new Token;
 			$token->setValue("v5", md5($c.$CONF['register_confirmation_secret']));
-			
+
 			$smarty->assign('encoded', $token->getToken());
-			
+
 			$message="This message is to confirm your email address, for spam prevention purposes.\n\n";
 			$message.="Please enter the following code:\n\n";
 			$message.="$c\n\n";
 			$message.="into the the webpage where you clicked 'Request confirmation code by email'\n\n";
 			$message.="Thank you,\n\n";
 			$message.="The Geograph.org.uk Team\n\n";
-			
+
 			$message.="P.S. Please note that while your email address is sent to the contributor so they can reply, Geograph do not store it at all, and certainly won't use it for spam!";
-			
+
 			@mail($from_email, '[geograph] Confirm email address', $message,
-			"From: Geograph Website <noreply@geograph.org.uk>");
-			
+			"From: Geograph Website <noreply@geograph.org.uk>", '-fnoreply@geograph.org.uk');
+
 			$ok = false;
-			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 			$smarty->assign('verification', $verification);
-		
+
 		//need to verify the entered confirm code
 		} elseif (isset($_POST['confirmcode'])) {
 			$token=new Token;
-			
+
 			if ($token->parse($_POST['encoded']) && $token->hasValue("v5") && md5(trim($_POST['confirmcode']).$CONF['register_confirmation_secret']) == $token->getValue("v5")) {
 				//who-ooo!
 			} else {
@@ -155,21 +154,21 @@ if (isset($_POST['msg']))
 				$smarty->assign('verification', $verification);
 				$smarty->assign('error', "Confirmation code doesn't match");
 			}
-		
+
 		//validate a recapatcha if enabled
 		} elseif (!empty($CONF['recaptcha_publickey']) && isset($_POST["g-recaptcha-response"])) {
 			require_once('3rdparty/recaptchalib.php');
-			
+
 			$resp = recaptcha_check_answer($CONF['recaptcha_privatekey'],getRemoteIP(),null,$_POST["g-recaptcha-response"]);
-			
+
 			if (!$resp->is_valid) {
 				$ok = false;
 				$smarty->assign('verification', $verification);
-				
+
 				$smarty->assign('recaptcha', recaptcha_get_html($CONF['recaptcha_publickey'], $resp->error));
 				$smarty->assign('error', "Captcha Failed - see below");
 			}
-		
+
 		//otherwise validate our own capatcha
 		} elseif (!empty($_POST['verify'])) {
 			define('CHECK_CAPTCHA',true);
@@ -177,7 +176,7 @@ if (isset($_POST['msg']))
 			require("stuff/captcha.jpg.php");
 
 			$ok = $ok && CAPTCHA_RESULT;
-			
+
 			if ($ok) {
 				$_SESSION['verCount'] = (isset($_SESSION['verCount']))?$_SESSION['verCount']-2:-2;
 
@@ -190,17 +189,17 @@ if (isset($_POST['msg']))
 				}
 				$ok = false;
 				$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
-				
+
 				$_SESSION['verCount'] = (isset($_SESSION['verCount']))?$_SESSION['verCount'] +1:1;
-			} 
+			}
 		}
-		
+
 		if (!$ok && !empty($CONF['recaptcha_publickey']) && empty($resp)) {
 			require_once('3rdparty/recaptchalib.php');
 			$smarty->assign('recaptcha', recaptcha_get_html($CONF['recaptcha_publickey']));
 		}
 	}
-	
+
 	//still ok?
 	if ($ok)
 	{
@@ -208,19 +207,19 @@ if (isset($_POST['msg']))
 		//build message and send it...
 
 		if (!empty($_POST['mention'])) {
-			$ids = implode(',',$_POST['mention']);
-			$ids = array_map('intval',$ids);
+			$ids = array_map('intval',$_POST['mention']);
+			$ids = implode(',',$ids);
 
 			$images = $db->getAll("SELECT gridimage_id,title,grid_reference,realname FROM gridimage_search WHERE gridimage_id IN ($ids) AND user_id = {$recipient->user_id} ORDER BY FIELD(gridimage_id,$ids) DESC LIMIT 4");
-			
+
 			if (!empty($images)) {
 				$smarty->assign_by_ref('images', $images);
 			}
 		}
-		
+
 		$body=$smarty->fetch('email_usermsg.tpl');
 		$subject="[Geograph] $from_name contacting you via {$_SERVER['HTTP_HOST']}";
-		
+
 		$hostname=trim(`hostname`);
 		$received="Received: from [{$ip}]".
 			" by {$hostname}.geograph.org.uk ".
@@ -233,18 +232,19 @@ if (isset($_POST['msg']))
 
 		if ($recipient->email == '' || strpos($recipient->rights,'dormant') !== FALSE) {
 			$smarty->assign('invalid_email', 1);
-			
 			$email = $CONF['contact_email'];
-			
 			$body = "Sent as Geograph doesn't hold email address for this user [id {$recipient->user_id}]\n\n--\n\n".$body;
 		} else {
 			$email = $recipient->email;
 		}
-
-		if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
+		if (trim(strtolower($from_email)) == "vincentronald2016@gmail.com")
+		{
+			//silently do nothing. Dont send the email. Can still send the 'copy'!
+			$smarty->assign('sent', 1);
+		}
+		elseif (@mail($email, $subject, $body, $received.$fromheader, '-fnoreply@geograph.org.uk'))
 		{
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
-
 			$smarty->assign('sent', 1);
 		}
 
@@ -252,31 +252,30 @@ if (isset($_POST['msg']))
 
 		else
 		{
-			@mail($CONF['contact_email'], 
+			@mail($CONF['contact_email'],
 				'Mail Error Report from '.$_SERVER['HTTP_HOST'],
 				"Original Subject: $subject\n".
 				"Original To: {$recipient->email}\n".
 				"Original From: $from_name <$from_email>\n".
 				"Original Subject:\n\n$body",
-				'From:webserver@'.$_SERVER['HTTP_HOST']);	
+				'From:webserver@'.$_SERVER['HTTP_HOST']);
 
 
 			$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
 		}
-		
+
 		if ($sendcopy) {
 			$subject="[Geograph] Copy of message sent to {$recipient->realname}";
-		
-			if (!@mail($from_email, $subject, $body, "From: $from_name <$from_email>")) {
-				@mail($CONF['contact_email'], 
+
+			if (!@mail($from_email, $subject, $body, $fromheader, '-fnoreply@geograph.org.uk')) {
+				@mail($CONF['contact_email'],
 					'Mail Error Report from '.$_SERVER['HTTP_HOST'],
 					"Original Subject: $subject\n".
 					"Original To: {$from_email}\n".
 					"Original From: $from_name <$from_email>\n".
 					"Copy of message sent to {$recipient->realname}\n".
 					"Original Subject:\n\n$body",
-					'From:webserver@'.$_SERVER['HTTP_HOST']);	
-
+					'From:webserver@'.$_SERVER['HTTP_HOST']);
 
 				$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
 			}
@@ -327,13 +326,16 @@ elseif (isset($_GET['image']))
 	$smarty->assign_by_ref('images', $images);
 }
 
-if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) {
+if ($recipient->email == '' || strpos($recipient->rights,'dormant') !== FALSE) {
 	$smarty->assign('invalid_email', 1);
 	if ($recipient->public_email) {
 		$smarty->assign_by_ref('public_email', $recipient->public_email);
 	}
 }
 
+if (!empty($_GET['dev'])) {
+	$smarty->assign("dev",1);
+}
 
 $smarty->display($template);
 

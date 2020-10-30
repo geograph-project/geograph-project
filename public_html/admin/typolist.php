@@ -30,7 +30,8 @@ $smarty = new GeographPage;
 
 customGZipHandlerStart();
 
-dieUnderHighLoad(0.8);
+dieUnderHighLoad(2.2);
+customNoCacheHeader();
 
 $USER->mustHavePerm("basic");
 
@@ -83,7 +84,7 @@ if (!empty($_GET['hide'])) {
 				switch ($token) {
 					case 'END': $token = '';
 					case 'AND':
-					case 'OR': 
+					case 'OR':
 						if ($c != 1 && $c != $number) {
 							if (strpos($terms,'^') === 0) {
 								$results[] = str_replace('^','',preg_replace('/\+$/','',$terms));
@@ -93,10 +94,10 @@ if (!empty($_GET['hide'])) {
 							$terms = '';
 						}
 						break;
-					case '(': 
-					case ')': 
+					case '(':
+					case ')':
 					case 'NOT': break;
-					default: 
+					default:
 						if ($terms)	$terms .= " ";
 						$terms .= $token;
 				}
@@ -106,9 +107,9 @@ if (!empty($_GET['hide'])) {
 			$results[] = preg_replace('/[\+~]$/','',str_replace('^','',$q));
 		} elseif (strpos($q,'~') === 0) {
 			$q = preg_replace('/^\~/','',$q);
-			
+
 			$sphinx = new sphinxwrapper($q);
-			
+
 			foreach ($sphinx->explodeWithQuotes(" ",$q) as $token) {
 				$results[] = str_replace('"','',$token);
 			}
@@ -116,18 +117,17 @@ if (!empty($_GET['hide'])) {
 			$results[] = $q;
 		}
 	}
-	
+
 	$db = GeographDatabaseConnection(false);
 	foreach ($results as $result) {
 		if (strlen($result) > 1) {
 			$inserts = array();
 			$inserts[] = "created=NOW()";
 			$inserts[] = "include = ".$db->Quote(preg_replace('/^=/','',$result));
-			$inserts[] = "title = ".intval($_GET['title']);
-			$inserts[] = "profile = ".$db->Quote($_GET['profile']);
+			$inserts[] = "profile = ".$db->Quote($_POST['profile']);
 
 			$inserts[] = "user_id = ".$USER->user_id;
-			
+
 			$db->Execute('INSERT IGNORE INTO typo SET '.implode(',',$inserts));
 		}
 	}
@@ -155,6 +155,9 @@ if (!$smarty->is_cached($template, $cacheid) )
 	$sql="select * from typo where enabled = 1 order by updated desc limit 1000";
 
 	$data = $db->getAll($sql);
+
+	foreach ($data as $idx=>$row)
+		$data[$idx]['s'] = strtolower(preg_replace("/[^\w]+/",'',$row['include']));
 
 	$smarty->assign_by_ref('data',$data);
 }

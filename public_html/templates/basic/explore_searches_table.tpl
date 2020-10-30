@@ -29,7 +29,12 @@
 	{if $is_mod}
 	<td style="font-size:0.6em;">
 		{if $row.approved}
-			<a href="{$script_name}?i={$row.id}&amp;a=0">Unapprove</a>
+			<a href="{$script_name}?i={$row.id}&amp;a=0">Unapprove</a> | 
+			{if $row.stickied}
+				<a href="{$script_name}?i={$row.id}&amp;s=0">Unsticky</a>
+			{else}
+				<a href="{$script_name}?i={$row.id}&amp;s=1">Sticky</a>
+			{/if}
 		{else}
 			<a href="{$script_name}?i={$row.id}&amp;a=1">Approve</a> | <a href="{$script_name}?i={$row.id}&amp;a=-1">Dismiss</a>
 		{/if}
@@ -47,7 +52,7 @@
 </table>
 
 	
-<p>Suggest a new search for this page using the link on the search results page.</p>
+<p>If there is a search you think should be shown here, <a href="/contact.php">Contact us</a>.</p>
 
 <p>Note: searches without a link in the RSS column are not sorted in descending order, which is required for RSS feeds to work well.</p>
 

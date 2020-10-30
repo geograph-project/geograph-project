@@ -35,7 +35,7 @@ $myriad = (isset($_GET['myriad']) && ctype_upper($_GET['myriad']))?$_GET['myriad
 
 if (empty($myriad)) {
 	$db = GeographDatabaseConnection(true);
-	
+
 	$myriad = $db->getOne("select prefix from gridprefix where landcount > 0 order by rand()");
 }
 
@@ -50,23 +50,29 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (!$db) {
 		$db = GeographDatabaseConnection(true);
 	}
-	
+
 	$prefix = $db->getRow("select * from gridprefix where prefix= '$myriad'");
 
-	$mosaic=new GeographMapMosaic;	
+        if (empty($prefix)) {
+                header("HTTP/1.0 404 Not Found");
+                $smarty->display("static_404.tpl");
+                exit;
+        }
+
+	pageMustBeHTTPS();
+
+
+	$mosaic=new GeographMapMosaic;
 	//start with same params
 	$mosaic->setScale(4);
 	$mosaic->setMosaicFactor(2);
-	$mosaic->setOrigin($prefix['origin_x'],$prefix['origin_y']); 
+	$mosaic->setOrigin($prefix['origin_x'],$prefix['origin_y']);
 	$mosaic->type_or_user = -1;
 	$smarty->assign('token',$mosaic->getToken());
-	
-	
+
 	$smarty->assign('myriad',$myriad);
 }
 
 
 $smarty->display($template, $cacheid);
 
-	
-?>

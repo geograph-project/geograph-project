@@ -92,7 +92,7 @@ if ($db->getOne("SHOW TABLES LIKE ".$db->Quote($param['table']))) {
 	if (empty($param['execute']))
 		die("add --execute=true to run for real\n");
 
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;

@@ -24,12 +24,17 @@ ul.methods li div {
 }
 {/literal}</style>
 <ul class="methods">
-	<li><b>{external href="https://mydonate.bt.com/charities/geograph" text="BT MyDonate"}</b></b>: - <small>Preferred</small> <br><br>
 
-		<a href="https://mydonate.bt.com/donation/v4/chooseAmount.html?charity=61687&sourcePage=charityPage"><img src="https://mydonate.bt.com/images/Donate-Now-button.gif" height=48 align></a> 
+	<li>
+		<a href="https://uk.virginmoneygiving.com/donation-web/charity?charityId=1017685&utm_source=extbtn&utm_campaign=donatebtn" target="_blank" title="Donate to us (Link opens in a new window)"><img src="http://uk.virginmoneygiving.com/giving/assets/buttons/DONATE_RED_BUTTON@1x.png" border="0" alt="Make a donation using Virgin Money Giving"></a>
 
-		Via BT MyDonate, we are charged <b>no fees</b> (unlike PayPal) for receiving donations. You can also apply Gift Aid to increase the value of your donation.
+
+		via <b>{external href="https://uk.virginmoneygiving.com/charity-web/charity/finalCharityHomepage.action?charityId=1017685" text="Virgin Money Giving"}</b> <br><br>
+
+		Click the button to make a donation with Virgin Money Giving, can choose a one off, or a monthly donation. You can also apply Gift Aid to increase the value of your donation.
+		<br/><br style="clear:both"/>
 	</li>
+
 </ul>
 
 or

@@ -40,7 +40,7 @@ $max_vote_id = 0;
 $count = 0;
 if (!empty($_GET['next'])) {
 	$token=new Token;
-	
+
 	if ($token->parse($_GET['next']) && $token->hasValue("id")) {
 		$max_vote_id = intval($token->getValue("id"));
 		$count = intval($token->getValue("c"));
@@ -51,10 +51,11 @@ if (!empty($_GET['next'])) {
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'';
 $who = (isset($_GET['who']) && preg_match('/^\w+$/' , $_GET['who']))?$_GET['who']:'mine';
+$iwho = (isset($_GET['iwho']) && preg_match('/^\w+$/' , $_GET['iwho']))?$_GET['iwho']:'mine';
 
 $ab=floor($USER->user_id/10000);
-	
-$cacheid="user$ab|{$USER->user_id}|{$max_vote_id}|$type|$who";
+
+$cacheid="user$ab|{$USER->user_id}|{$max_vote_id}|$type|$who|$iwho";
 
 //what style should we use?
 $style = $USER->getStyle();
@@ -66,18 +67,22 @@ if ($smarty->caching) {
 }
 
 $smarty->assign('maincontentclass', 'content_photo'.$style);
-	
+
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$types = array(''=>'images or descriptions','img'=>'images','desc'=>'descriptions');
 	$smarty->assign_by_ref('types', $types);
 	$smarty->assign_by_ref('type', $type);
-	
+
 	$whos = array('mine'=>"I've",'others'=>'others have');
 	$smarty->assign_by_ref('whos', $whos);
 	$smarty->assign_by_ref('who', $who);
-	
+
+	$iwhos = array('mine'=>"My own",'others'=>'Other peoples');
+	$smarty->assign_by_ref('iwhos', $iwhos);
+	$smarty->assign_by_ref('iwho', $iwho);
+
 	$imagelist=new ImageList;
 
 	$extra = '';
@@ -87,33 +92,45 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else {
 		$where = "type in ('img','desc')";
 	}
-	
+
+	if ($iwho == 'others') {
+		$crit2 = "!=";
+		$extra .= "&iwho=others";
+	} else {
+		$crit2 = "=";
+	}
+
 	if ($who == 'others') {
 		$crit = "!=";
 		$extra .= "&who=others";
+
+		$crit2 = "=";
+		$smarty->assign('iwho', 'mine');
+		$extra = str_replace("&iwho=others",'',$extra);
 	} else {
 		$crit = "=";
 	}
-	
+
+
 	$sql="select gi.*,type,vote_id,ts ".
 		"from vote_log as vl ".
-		"inner join gridimage_search as gi on (vl.id = gi.gridimage_id and vl.user_id $crit gi.user_id) ".
+		"inner join gridimage_search as gi on (vl.id = gi.gridimage_id) ".
 		"where $where ".
-		"and vl.user_id $crit {$USER->user_id} and gi.user_id={$USER->user_id} ".
+		"and vl.user_id $crit {$USER->user_id} and gi.user_id $crit2 {$USER->user_id} ".
 		($max_vote_id?" and vote_id < $max_vote_id ":'').
 		"group by gridimage_id ".
 		"order by vote_id desc limit 20";
-			
+
 	$imagelist->_getImagesBySql($sql);
-	
+
 	if (count($imagelist->images)) {
-		foreach ($imagelist->images as $i => $image) 
+		foreach ($imagelist->images as $i => $image)
 			$imagelist->images[$i]->imagetakenString = getFormattedDate($image->imagetaken);
-	
+
 		$smarty->assign_by_ref('images', $imagelist->images);
 
 		$first = $imagelist->images[0];
-		
+
 		#$smarty->assign('criteria', $first->ts);
 
 		$last = $imagelist->images[count($imagelist->images)-1];
@@ -129,7 +146,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('next', $token->getToken());
 		}
 	}
-	
+
 	if ($max_vote_id && isset($_SERVER['HTTP_REFERER'])) {
 		$ref = @parse_url($_SERVER['HTTP_REFERER']);
 		if (!empty($ref['query'])) {

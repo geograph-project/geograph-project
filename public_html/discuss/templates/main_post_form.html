@@ -20,10 +20,21 @@
 <input type="checkbox" name="disbbcode" id="disbbcode" value="on"><label for="disbbcode">{$l_disableBbCode}</label>
 
 <script type="text/javascript">
-current = readCookie('markedImages')
+var current = readCookie('markedImages')
 if (current && current != '') {
-splited = current.commatrim().split(',');
-document.write('<div style="border: 1px solid lightgrey;">Marked Images['+(splited.length+0)+']: <a title="Insert marked image list" href="#" onclick="return paste_strinL(returnMarkedImages(),0)" onMouseOver="window.status=\'Insert marked image list\'; return true" onMouseOut="window.status=\'\'; return true"><b>Insert into Post</b></a> (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear</a>)</div>');
+	var splited = current.commatrim().split(',');
+	var html_links = '<div style="border: 1px solid lightgrey;">Marked Images['+(splited.length+0)+']: ';
+	html_links = html_links + '<a title="Insert marked image list" href="#" onclick="return paste_strinL(returnMarkedImages(),0)"><b>Insert into Post</b></a>';
+	if (splited.length<=5)
+		html_links = html_links + ' (<a title="Insert as large thumbnail(s)" href="#" onclick="return pasteBigImages()" onMouseOver="window.status=\'Insert marked image list\'; return true" onMouseOut="window.status=\'\'; return true">As Large Images</a>)';
+	html_links = html_links + ' ... <a href="javascript:void(clearMarkedImages())" style="color:red">Clear list</a> once used</div>';
+	document.write(html_links);
+}
+function pasteBigImages() {
+	var newstr = returnMarkedImages();
+	newstr = newstr.replace(/ /g,"\n").replace(/\[\[\[/g,'[image id=').replace(/\]\]\]/g,']');
+	paste_strinL(newstr,0);
+	return false;
 }
 
 function unloadMess() {

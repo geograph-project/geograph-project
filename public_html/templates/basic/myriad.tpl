@@ -4,18 +4,21 @@
 
 <div style="width:40%; float:right; position:relative">
 	<form method="get" action="/search.php" target="results">
+		<input type="hidden" name="form" value="myriad"/>
 		<label for="fq">Keywords</label>: <input type="text" name="searchtext" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 		<input type="submit" value="Search"/><br/>
 		<input type="hidden" name="gridsquare" value="{$myriad}"/>
 		<input type="hidden" name="displayclass" value="search"/>
 		<input type="hidden" name="do" value="1"/>
 	</form>
-	<iframe src="/finder/search-service.php?q={$myriad}" height="900" width="100%" name="results">
+	<iframe src="/finder/search-service.php?q=myriad:{$myriad}" height="900" width="100%" name="results">
 	
 	</iframe>
 </div>
 
 <h2>Myriad :: {$myriad}</h2>
+
+&middot;<a href="/browser/#!/myriad+%22{$myriad}%22">Open {$myriad} in Geograph Browser</a><br/><br/>
 
 <div style="width:420px; float:left; position:relative">
 	<iframe src="/mapprint.php?t={$token}&amp;inner" height="485" width="430">

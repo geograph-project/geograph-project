@@ -157,7 +157,8 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{if $square->reference_index eq 1}
 		<li>{getamap gridref=$gridrefraw text="Geograph Map Popup"}</li>
 		<li>{external href="http://www.old-maps.co.uk/maps.html?txtXCoord=`$square->nateastings`&amp;txtYCoord=`$square->natnorthings`" text="old-maps.co.uk"}</li>
-		<li>{external href="http://maps.nls.uk/geo/find/#zoom=13&lat=$lat&lon=$long&layers=102" text="maps.nls.uk"}</li>
+		<li>{external href="http://maps.nls.uk/geo/find/#zoom=13&lat=$lat&lon=$long&layers=102" text="maps.nls.uk"}
+			({external href="https://maps.nls.uk/geo/explore/side-by-side/#zoom=16&lat=$lat&lon=$long" text="side by side viewer"})	</li>
 		<li>{external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&amp;xygridref=`$square->nateastings`,`$square->natnorthings`&amp;startscale=10000" text="magic.defra.gov.uk"}{if $gridref6} ({external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&xygridref=`$square->nateastings`,`$square->natnorthings`&startscale=5000" text="closer"}){/if}</li> 
 		<li>{external href="http://www.streetmap.co.uk/newmap.srf?x=`$square->nateastings`&amp;y=`$square->natnorthings`&amp;z=3&amp;sv=`$square->nateastings`,`$square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$urltitle]+from+geograph.org.uk&amp;ar=y&amp;bi=background=$self_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}</li> 
 		
@@ -166,18 +167,18 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{/if}
 	<li>{external href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14" text="OpenStreetMap.org"} ({external href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14&amp;layers=C" text="Cycling"})</li>
 
-
-	<li>{external title="Open in Google Maps" href="http://www.google.co.uk/maps/place/`$lat`,`$long`/`$lat`,`$long`,11z/" text="Google Maps"}</li>
+	<li>{external title="Open in Google Maps" href="https://www.google.co.uk/maps/search/`$lat`,`$long`/" text="Google Maps"}</li>
+	<li>{external title="Open in Google Earth" href="https://earth.google.com/web/search/`$lat`,`$long`/" text="Google Earth for Web"}</li>
 	{if $id}
-		<li><a title="Open in Google Earth" href="{$self_host}/photo/{$id|escape:'url'}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</li>
+		<li><a title="Open in Google Earth" href="{$self_host}/photo/{$id|escape:'url'}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (eg for Google Earth Pro)</li>
 		<li>{external href="https://www.bing.com/maps?v=2&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1&amp;mapurl=`$self_host`/photo/`$id`.kml" text="Bing Maps" title="detailed aerial photography from bing.com"}</li>
 		<li>{external href="http://gokml.net/maps?q=`$self_host`/photo/`$id`.kml" text="ClassyGMaps" title="Google Maps view via ClassyGMaps"}</li>
 	{else}
-		<li><a title="Open in Google Earth" href="http://www.nearby.org.uk/googleEarth.kml.php?lat={$lat}&amp;long={$long}&amp;p={$gridrefraw}" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</li>
+		<li><a title="Open in Google Earth" href="http://www.nearby.org.uk/googleEarth.kml.php?lat={$lat}&amp;long={$long}&amp;p={$gridrefraw}" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (eg for Google Earth Pro)</li>
 		<li>{external href="https://www.bing.com/maps?v=2&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1" text="Bing Maps" title="detailed aerial photography from bing.com"}</li>
 		<li>{external href="http://gokml.net/maps?q=`$lat`,`$long`&amp;ll=`$lat`,`$long`&amp;z=11" text="ClassyGMaps" title="Google Maps view via ClassyGMaps"}</li>
 	{/if}
-
+	
 </ul>
 </div>
 <div style="position:relative; float:left; width:40%;">
@@ -217,10 +218,10 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <hr/>
 <b>Even more links</b>: &nbsp;
 	{if $square->reference_index eq 1}
-		via {external title="find local features and maps with wikimedia" href="http://tools.wmflabs.org/os/coor_g/?params=`$gridrefraw`_region%3AGB_scale%3A25000" text="wikimedia geohack"} &nbsp; &middot; &nbsp;
+		via {external title="find local features and maps with wikimedia" href="https://tools.wmflabs.org/geohack/en/`$lat`;`$long`_region:GB_scale:25000?pagename=Geograph" text="wikimedia geohack"} &nbsp; &middot; &nbsp;
 		via {external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`" text="nearby.org.uk"} 
 	{else}
-		via {external title="find local features and maps with wikimedia" href="http://tools.wmflabs.org/os/coor_g/?params=`$lat_abs`_`$nl`_`$long_abs`_`$el`_type:city_region:IE" text="wikimedia geohack"} &nbsp; &middot; &nbsp;
+		via {external title="find local features and maps with wikimedia" href="https://tools.wmflabs.org/geohack/en/`$lat`;`$long`_region:IE-D?pagename=Geograph" text="wikimedia geohack"} &nbsp; &middot; &nbsp;
 		via {external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`+OSI" text="nearby.org.uk"}
 	{/if}
 

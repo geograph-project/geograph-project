@@ -11,6 +11,11 @@
 
 <h2><a href="/finder/">Finder</a> :: Image Clusters</h2>
 
+<div class="interestBox">
+<p>Image clustering - assigning images labels - is an automated process, based on the image title/description. It's not totally accurate, and can sometimes assign images to odd clusters</p>
+<p>Note: you are searching the words in the cluster label itself. Can also enter a 4figure grid-ref (like TF4878) as first word to get 'nearby' results. To get just clusters in that square prefix with ^ (like ^TF7052)
+</div>
+
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
 		<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
@@ -30,7 +35,7 @@
 <ol start="{$offset}">
 {foreach from=$results item=item}
 	<li>
-	<b><a href="/search.php?cluster2=1&amp;label={$item.label|escape:'url'}&amp;displayclass=full" target="_top">{$item.label|escape:'html'|default:'unknown'}</a></b>
+	<b><a href="/stuff/list.php?label={$item.label|escape:'url'}&amp;gridref={$item.grid_reference|escape:'url'}" target="_top">{$item.label|escape:'html'|default:'unknown'}</a></b> {$item.grid_reference}
 	
 	{if $item.images}
 	<small><small style="color:gray">{$item.images} images</small></small>{/if}
@@ -43,6 +48,7 @@
 
 </ol>
 
+
 <div style="margin-top:0px"> 
 {if $pagesString}
 	( Page {$pagesString})
@@ -53,6 +59,9 @@
 	<p>{$query_info}</p>
 {/if}
 
+{if $q} 
+<p>&middot; can get similar results from <a href="/finder/groups.php?q=groups%3A{$q|escape:'url'}&amp;group=group_ids">Group By Search</a> filtered to only show results from the cluster labels</p>
+{/if}
 
 <div class="interestBox" style="margin-top:60px;">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:

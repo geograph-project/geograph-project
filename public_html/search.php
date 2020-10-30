@@ -21,6 +21,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (!empty($_GET['do']) && !empty($_GET['page']) && $_GET['page'] > 20) {
+	header('HTTP/1.0 403 Forbidden');
+	exit;
+} elseif (!empty($_GET['do']) && preg_match('/page=\d+&page=\d+/',$_SERVER['QUERY_STRING'])) {
+	header('HTTP/1.0 403 Forbidden');
+	exit;
+}
+
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 
@@ -78,14 +86,15 @@ $displayclasses =  array(
 			'thumbs' => 'thumbnails only',
 			'thumbsmore' => 'thumbnails + links',
 			'bigger' => 'thumbnails - bigger',
+			'grid' => 'thumbnail grid',
 			'excerpt' => 'highlighted keywords',
 			'map' => 'on a map',
 			'slide' => 'slideshow',
 			'slidebig' => 'slideshow - full page',
 			'reveal' => 'slideshow - map imagine',
 			'black' => 'georiver - full images + detail',
-			'cooliris' => 'cooliris 3d wall',
-			'mooflow' => 'cover flow',
+			//'cooliris' => 'cooliris 3d wall',
+			//'mooflow' => 'cover flow',
 			'text' => 'text list only',
 			'spelling' => 'multi editor'
 			);
@@ -999,6 +1008,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	}
 
 	$display = $engine->getDisplayclass();
+
 	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass'])) {
 		$display = $_GET['displayclass'];
 		if ($USER->registered && $USER->user_id == $engine->criteria->user_id && $_GET['displayclass'] != 'search' && $_GET['displayclass'] != 'searchtext') {
@@ -1009,12 +1019,18 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		}
 	} elseif (isset($_GET['temp_displayclass']) && preg_match('/^\w+$/',$_GET['temp_displayclass'])) {
 		$display = $_GET['temp_displayclass'];
+		$engine->temp_displayclass = $display;
 	}
 	if (empty($display))
 		$display = 'full';
 	$engine->display = $display;
 	$template = 'search_results_'.$display.'.tpl';
-	
+
+	if ($display == 'map') {
+		//temp as page doesnt work on https (mainly maps!)
+		pageMustBeHTTP();
+	}
+
 	$ab=floor($i%10000);
 	$cacheid="search|$ab|$i.$pg";
 	if (!empty($_GET['count'])) {
@@ -1029,6 +1045,10 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	if (!empty($_GET['legacy'])) {
 		$cacheid.="X";
 		$smarty->assign('legacy', 1);
+	}
+
+	if (!empty($_GET['resort'])) {
+		$cacheid.="SORTED";
 	}
 
 	if (!empty($_GET['t'])) {
@@ -1106,14 +1126,14 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			} else {
 				$name .= "_start";
 			}
-			
+
 			$engine->nextLink = "/search.php?i=$i&redo=1&$name=$value";
 		}
-		
+
 		if ($engine->resultCount) {
+
 		if ($display == 'reveal') {
 			foreach ($engine->results as $idx => $image) {
-			
 				if ($engine->results[$idx]->gridsquare_id) {
 					$engine->results[$idx]->grid_square=new GridSquare;
 					$engine->results[$idx]->grid_square->loadFromId($engine->results[$idx]->gridsquare_id);

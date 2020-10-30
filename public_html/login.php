@@ -46,7 +46,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
                         from geobb_topics as t
                         inner join geobb_posts as p on(t.topic_id=p.topic_id)
                         inner join user as u on (p.poster_id=u.user_id)
-                        where find_in_set('admin',u.rights)>0 and
+                        where (find_in_set('director',u.rights)>0) and
+			topic_time > DATE_SUB(NOW(),INTERVAL 1 MONTH) and
                         abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
                         t.forum_id=1
                         group by t.topic_id

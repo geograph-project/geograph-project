@@ -41,13 +41,20 @@ $db->Execute("drop table if exists gridimage_kml");
 #####################
 
 
-print "Create\n";
+print "Create (lots of small queries, to avoid lock on main tables)\n";
 
-#need to join gi and g2 as each contains columns not in the other.
+//first time, create the table
+$prefix = "create table gridimage_kml ENGINE = MYISAM";
 
-$db->Execute("
-create table gridimage_kml
-ENGINE = MYISAM
+$last = $db->getOne("SELECT max(gridimage_id) FROM gridimage_search");
+for($q=1;$q<=$last;$q+=100000) {
+	$start = $q;
+	$end = $q+99999;
+	print "$start..$end\n";
+
+	#need to join gi and g2 as each contains columns not in the other.
+	$db->Execute("
+$prefix
 select
 	gi.gridimage_id,
 	gi.x,
@@ -70,11 +77,16 @@ from
 		using (grid_reference)
 	inner join gridimage g2
 		on (gi.gridimage_id = g2.gridimage_id)
+where gi.gridimage_id BETWEEN $start and $end
 order by
 	imagecount desc,
 	(natgrlen != '4') desc,
 	(gi.moderation_status = 'geograph') desc,
 	rand(date(now()))");
+
+	//now insert into existing table
+	$prefix = "INSERT INTO gridimage_kml";
+}
 
 # order preference:
 #  dense squares first (so they shown in the tile selection)

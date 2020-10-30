@@ -21,7 +21,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-        $param = array('type'=>'typo', 'size'=>0, 'debug'=>false, 'index'=>'gi_stemmed_delta', 'execute'=>true);
+        $param = array('type'=>'typo',
+		'debug'=>false,
+		'execute'=>true,
+		'size'=>0, //specify how many images to process. leave zero to process all images in specififed index!
+		'index'=>'gi_stemmed_delta', //the delta index is new and updated documents, emulates period=4 on other scripts
+		'limit'=>100000, //specifies a hard limit on images processed, just in case
+		'klim'=>'auto', //how many keywords to search. Use 1000,1000 to do the second page -- or 'auto' to do all!!
+	);
 
         chdir(__DIR__);
         require "./_scripts.inc.php";
@@ -33,11 +40,21 @@ set_time_limit(3600*24);
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+$klims = array();
+if ($param['klim'] == 'auto') {
+	$max = $db->getOne("SELECT COUNT(*) FROM typo WHERE include!='' AND exclude='' AND enabled = 1 AND profile in ('keywords','either') AND updated < date_sub(now(),interval 3 hour)");
+	foreach(range(0,$max,1000) as $i)
+		$klims[] = "$i,1000";
+} else {
+	$klims[] = $param['klim'];
+}
+
+foreach ($klims as $klim) {
 
 if ($param['type'] == 'typo') {
 	$type= 'typo';
 
-	$words = $db->getAssoc("SELECT include,profile FROM typo WHERE include!='' AND exclude='' AND enabled = 1 AND profile in ('keywords','either') AND updated < date_sub(now(),interval 3 hour)");
+	$words = $db->getAssoc("SELECT include,profile FROM typo WHERE include!='' AND exclude='' AND enabled = 1 AND profile in ('keywords','either') AND updated < date_sub(now(),interval 3 hour) LIMIT $klim");
 	$list = array();
 
 	foreach ($words as $word => $profile) {
@@ -89,7 +106,7 @@ $q = strtolower(implode(' | ',$list));
 if ($param['debug'])
 	print "\n\n$q\n\n";
 
-$limit = 100000;
+$limit = $param['limit'];
 
 if ($q) {
 	//$q2 = preg_replace('/\b(the|and)\b/','',$q); //a more basic one for snippets
@@ -176,6 +193,8 @@ if ($q) {
 	}
 }
 
+
+} //klim loop
 
 if ($param['debug'])
 	print "fin.\n";

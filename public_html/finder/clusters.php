@@ -62,8 +62,8 @@ if (!empty($_GET['q'])) {
 			$prev_fetch_mode = $ADODB_FETCH_MODE;
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$rows = $db->getAssoc("
-			select gridimage_group_stat_id,label,images
-			from gridimage_group_stat 
+			select gridimage_group_stat_id,label,images,grid_reference
+			from gridimage_group_stat
 			where $where
 			limit $limit");
 
@@ -93,4 +93,3 @@ if (isset($_GET['popup'])) {
 
 $smarty->display($template,$cacheid);
 
-?>

@@ -4,7 +4,9 @@ This file is part of miniBB. miniBB is free discussion forums/message board soft
 */
 if (!defined('INCLUDED776')) die ('Fatal error.');
 
-//can edit articles in forum 6&11 for 5 years 
+$useredit=86400*7;
+
+//can edit articles in forum 6&11 for 5 years
 //nice hack huh? :(
 if ($_REQUEST['forum']==6 || $_REQUEST['forum']==11)
 	$useredit=86400*365*5;

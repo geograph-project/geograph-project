@@ -25,10 +25,22 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-
-
 $smarty = new GeographPage;
-$smarty->display('teachers.tpl');
+$template = 'teachers.tpl';
+$cacheid = null;
 
-	
-?>
+//regenerate?
+if (!$smarty->is_cached($template, $cacheid))
+{
+	$imagelist=new ImageList;
+	$sql = "SELECT {$imagelist->cols} FROM gridimage_search WHERE gridimage_id IN (334016,3263388,1359367,227437,5669859,4588191) ORDER BY RAND()";
+
+        $imagelist->_getImagesBySql($sql);
+
+        if (count($imagelist->images)) {
+		$smarty->assign_by_ref('images', $imagelist->images);
+	}
+}
+
+$smarty->display($template, $cacheid);
+

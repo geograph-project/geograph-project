@@ -26,6 +26,9 @@ init_session();
 
 $smarty = new GeographPage;
 
+$template = "news.tpl";
+$cacheid = "main";
+
 if (!$smarty->is_cached($template, $cacheid)) {
 
         if ($CONF['forums']) {
@@ -58,6 +61,6 @@ if (!$smarty->is_cached($template, $cacheid)) {
         }
 }
 
-$smarty->display('news.tpl');
+$smarty->display($template, $cacheid);
 
 

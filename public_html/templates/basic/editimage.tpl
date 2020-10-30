@@ -46,12 +46,12 @@
   	{if $isadmin}
   		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=0" style="font-size:0.6em">Switch to full image</a>
   	{/if}
-  	<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a></div>
+  	<div class="shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a></div>
   {else}
   	{if $isadmin}
   		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" style="font-size:0.6em">Switch to thumbnail image</a>
   	{/if}
-  	<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getFull()}</a></div>
+  	<div class="shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getFull()}</a></div>
   {/if}
   <div class="caption"><b>{$image->current_title|escape:'html'}</b> by <a href="{$image->profile_link}">{$image->realname}</a>{if $isowner} (<a href="/licence.php?id={$image->gridimage_id}">change credit</a>){/if}</div>
 
@@ -134,7 +134,7 @@
 	  		<small>(pending images should generally be moderated in sequence via the moderation page)</small>
 	  	</p>
 	  {else}
-	  	<p>NOTE: This is the experimental new style moderation buttons. For more info see the forum, and <a href="/article/Image-Type-Tags">Image Type Tags</a> Article</p>
+	  	<p>NOTE: This is the experimental new style moderation buttons. For more info see the forum, and <a href="/article/Image-Type-Tags-update">Image Type Tags</a> Article</p>
 	  
 	  	{literal}<script type="text/javascript">
 	  	
@@ -158,7 +158,8 @@
 	  	  <input class="toggle{if in_array('type:Cross Grid',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" id="cross{$image->gridimage_id}" value="Cross Grid" onclick="toggleButton(this)"/>
 	  	  <input class="toggle{if in_array('type:Aerial',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Aerial" id="aerial{$image->gridimage_id}" onclick="toggleButton(this)"/>
 	  	  <input class="toggle{if in_array('type:Inside',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Inside" id="inside{$image->gridimage_id}" onclick="toggleButton(this)"/>
-	  	  <input class="toggle{if in_array('type:Detail',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Detail" id="detail{$image->gridimage_id}" onclick="toggleButton(this)"/>
+                  <input class="toggle{if in_array('type:Close Look',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Close Look" id="close{$image->gridimage_id}" onclick="toggleButton(this)"/>
+                  <input class="toggle{if in_array('type:Extra',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Extra" id="extra{$image->gridimage_id}" onclick="toggleButton(this)"/>
 	  
 	  	  <input class="accept" type="button" id="continue{$image->gridimage_id}" value="{$button}" onclick="moderateWrapper({$image->gridimage_id})"/>
 	  	  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateWrapper({$image->gridimage_id}, 'rejected')"/>
@@ -167,7 +168,7 @@
         	</div>
 	  {/if}
 	  
-	  <span class="caption" id="modinfo{$image->gridimage_id}">Current Classification: {$image->moderation_status}{if $image->mod_realname}<abbr title="Approximate date of last moderation: {$image->moderated|date_format:"%a, %e %b %Y"}"><small><small>, by <a href="/usermsg.php?to={$image->moderator_id}&amp;image={$image->gridimage_id}">{$image->mod_realname}</a></small></small></abbr>{/if}</span></p>
+	  <span class="caption" id="modinfo{$image->gridimage_id}">Current Classification: {$image->moderation_status}{if $image->mod_realname}<abbr title="Approximate date of last moderation: {$image->moderated|date_format:"%a, %e %b %Y"}"><small><small>, by <a href="/usermsg.php?to={$image->moderator_id}&amp;image={$image->gridimage_id}">{$image->mod_realname}</a></small></small></abbr>{/if}</span>
 	  </form>
   {/if}
 
@@ -426,10 +427,12 @@
 	 		<input class="accept" type="button" id="defer" value="Defer 7 days" onclick="deferTicket({$ticket->gridimage_ticket_id},168)"/>
 	 		<span class="caption" id="modinfo{$ticket->gridimage_ticket_id}"></span>
 
-			{if $owner_ticket_option == 'off' && $ticket->user_id ne $user->user_id}
-				<br>The image contributor does not receive notifications for this suggestion
-			{elseif $owner_ticket_option == 'major' && $ticket->type == 'minor'}
-				<br>The image contributor did not receive an initial notification, but will receive follow up replies. 
+			{if $ticket->user_id ne $user->user_id}
+				{if $owner_ticket_option == 'off'}
+					<br>The image contributor does not receive notifications for this suggestion
+				{elseif $owner_ticket_option == 'none' || ($owner_ticket_option == 'major' && $ticket->type == 'minor')}
+					<br>The image contributor did not receive an initial notification, but will receive follow up replies. 
+				{/if}
 			{/if}
 			
 		{/if}
@@ -703,6 +706,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 <br style="clear:both"/>
 
 {if $isadmin}
+
 	<div>
 	<input type="radio" name="mod" value="" id="mod_blank" checked="checked"/> <label for="mod_blank">Create a new suggestion to be moderated by someone else.</label><br/>
 	<input type="radio" name="mod" value="assign" id="mod_assign"/> <label for="mod_assign">Create an open suggestion and assign to myself. (Give the contributor a chance to respond.)</label><br/>

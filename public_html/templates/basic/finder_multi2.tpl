@@ -26,7 +26,26 @@
 {if $results}
 
 	{foreach from=$results item=result}
-		<h3>{$result.title|escape:'html'}</h3>
+		<div class="interestBox">
+			<div style="position:relative;float:left;width:400px">
+				<h3 style="margin:0">{$result.title|escape:'html'}</h3>
+			</div>
+			<div style="position:relative;float:left">
+			{if $result.count}
+				{if $result.count > 5}
+					<b>{$result.count}</b> in total.
+					{if $result.link}
+						<a href="{$result.link|escape:'html'}">View all results &gt;&gt;&gt;</a>
+					{/if}
+				{elseif $result.link}
+					<a href="{$result.link|escape:'html'}">View in dedicated search &gt;&gt;&gt;</a>
+				{/if}
+			{elseif $result.link}
+				<a href="{$result.link|escape:'html'}">View all results &gt;&gt;&gt;</a>
+			{/if}
+			</div>
+			<br style="clear:both"/>
+		</div>
 		<ul>
 			{foreach from=$result.results item=row}
 				<li><b><a href="{$row.link|escape:'html'}">{$row.title|escape:'html'}</a></b><small>
@@ -45,25 +64,10 @@
 				</li>
 			{/foreach}
 		</ul>
-		{if $result.count}
-			{if $result.count > 5}
-				<b>{$result.count}</b> in total.
-				{if $result.link}
-						<a href="{$result.link|escape:'html'}">View all results &gt;&gt;&gt;</a>
-				{/if}
-			{elseif $result.link}
-				<a href="{$result.link|escape:'html'}">View in dedicated search &gt;&gt;&gt;</a>
-			{/if}
-		{elseif $result.link}
-			<a href="{$result.link|escape:'html'}">View all results &gt;&gt;&gt;</a>
-		{/if}
-		<hr/>
 	{/foreach}
 	<br style="clear:both"/>
 {else}
 	<p>NOTE: Only enter one type of term, eg just a Grid Reference, or just a placename. In the future we plan to support multiple types of terms in one query. </p>
-
-
 
 	{if $q}
 		<p><i>No Results</i></p>
@@ -72,7 +76,9 @@
 
 
 {if $others}
-	<h3>More possible searches for [ {$q|escape:'html'} ]</h3>
+	<div class="interestBox">
+		<h3 style="margin:0">More possible searches for [ {$q|escape:'html'} ]</h3>
+	</div>
 	<ul>
 	{foreach from=$others item=item}
 		<li>

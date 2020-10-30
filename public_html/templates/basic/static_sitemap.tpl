@@ -34,7 +34,6 @@
         <a href="/team.php" class="tab">The Geograph Team</a>
         <a href="/credits/" class="tab">Contributors</a>
         <a href="/help/credits" class="tab">Credits</a>
-        <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
         <a href="/contact.php" class="tab">Contact Us</a>
         <a href="/article/Get-Involved">Get Involved...</a>
 </div>

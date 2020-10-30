@@ -126,7 +126,7 @@ print "$sql;\n\n";
 //	exit; //currentyl doest have the content_id column!
 
 $done = 0;
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 
 print "Rows = ".$recordSet->RecordCount()."\n";
 

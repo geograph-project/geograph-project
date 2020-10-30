@@ -30,6 +30,9 @@
 
 <br style="clear:both"/>
 
+<p>&middot; <a href="/content/sitemap/">Content Sitemap</a> &middot; <a href="/article/tree.php">Article Tree</a> &middot;</p>
+
+
 <br/><br/>
 
 

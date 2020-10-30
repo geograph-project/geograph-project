@@ -41,7 +41,7 @@
 	function setuptreemenu() {
 		ddtreemenu.createTree("treemenu1", true, 5);
 	}
-	AttachEvent(window,'load',setuptreemenu,false);
+	AttachEvent(window,window.addEventListener?'DOMContentLoaded':'load',setuptreemenu,false);
 	{/literal}</script>
 	<script type="text/javascript" src="{"/js/simpletreemenu.js"|revision}"></script>
 	<link rel="stylesheet" type="text/css" title="Monitor" href="{"/js/simpletree.css"|revision}" media="screen" />

@@ -4,7 +4,7 @@
 
 	{foreach from=$engine->results item=image}
 	{searchbreak image=$image}
-	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
+	 <div style="border-top: 1px solid lightgrey; padding-top:1px;max-width:940px">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 	  </div>

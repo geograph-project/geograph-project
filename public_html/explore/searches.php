@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-ini_set("display_errors",true);
+//ini_set("display_errors",true);
 
 require_once('geograph/global.inc.php');
 init_session();
@@ -42,15 +42,26 @@ $cacheid = $is_mod=($USER->hasPerm('admin') && !isset($_GET['admin']))?1:0;
 $i = 0;
 if (isset($_REQUEST['i']) && is_numeric($_REQUEST['i'])) {
 	$i = intval($_REQUEST['i']);
-} 
+}
 
 
 if ($is_mod && $i && isset($_GET['a'])) {
 	$db = GeographDatabaseConnection(false);
 
-	$a = intval($_GET['a']);	
+	$a = intval($_GET['a']);
 
 	$sql = "UPDATE queries_featured SET approved = $a WHERE id = ".$db->Quote($i);
+	$db->Execute($sql);
+
+	$smarty->clear_cache($template, $cacheid);
+	$i = 0;
+
+} elseif ($is_mod && $i && isset($_GET['s'])) {
+	$db = GeographDatabaseConnection(false);
+
+	$s = intval($_GET['s']);
+
+	$sql = "UPDATE queries_featured SET stickied = $s WHERE id = ".$db->Quote($i);
 	$db->Execute($sql);
 
 	$smarty->clear_cache($template, $cacheid);
@@ -59,7 +70,7 @@ if ($is_mod && $i && isset($_GET['a'])) {
 
 if ($i) {
 	$template='explore_searches_suggest.tpl';
-	
+
 	$db = GeographDatabaseConnection(false);
 
 	if (isset($_POST['submit'])) {
@@ -67,13 +78,13 @@ if ($i) {
 				id = $i,
 				user_id = {$USER->user_id},
 				comment = ".$db->Quote($_POST['comment']).",
+				approved = ".intval($is_mod).",
 				created = NOW()";
 		$ok = @$db->Execute($sql)?1:0;
 		$smarty->assign('ok',$ok);
 		$smarty->assign('saved',1);
 	} else {
-	
-	
+
 		$where = array();
 		$where[] = 'id = '.$i;
 
@@ -92,9 +103,10 @@ if ($i) {
 
 		$smarty->assign_by_ref('query',$query);
 	}
-	
+
 	$smarty->assign_by_ref('i',$i);
-	
+	$smarty->assign('is_mod',$is_mod);
+
 	$smarty->display($template, $cacheid);
 	exit;
 }
@@ -109,14 +121,14 @@ if ($is_mod) {
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db = GeographDatabaseConnection(true);
-	
+
 	$where = array();
 	if ($is_mod ) {
 		$where[] = 'approved > -1';
 	} else {
 		$where[] = 'approved = 1';
 	}
-	
+
 	if (count($where))
 		$where_sql = " where ".join(' AND ',$where);
 
@@ -130,41 +142,38 @@ if (!$smarty->is_cached($template, $cacheid))
 		inner join queries using (id)
 		left join queries_count using (id)
 	$where_sql
-	order by 
+	order by
 		stickied desc, updated desc");
 	$ADODB_FETCH_MODE = $dol;
-	
+
 	if (!empty($CONF['memcache']['app'])) { //without memcache this would suck
 		require_once('geograph/searchcriteria.class.php');
 		require_once('geograph/searchengine.class.php');
-		
+
 		$checked = 0 ;
 
 		foreach ($queries as $idx => $row) {
-		
+
 			$mkey = $row['id'];
 			$queries[$idx]['image'] =& $memcache->name_get('fse',$mkey);
 			if (empty($queries[$idx]['image']) && $checked < 10) {
-			
+
 				$engine = new SearchEngine($row['id']);
 				$engine->criteria->resultsperpage = 1; //override it
-				$engine->Execute($pg);
+				$engine->Execute(1);
 				if ($engine->resultCount && $engine->results) {
 					$queries[$idx]['image'] = $engine->results[0];
-					
+
 					$memcache->name_set('fse',$mkey,$queries[$idx]['image'],$memcache->compress,3600*6*rand(3,10));
 				}
 				$checked++;
 			}
-			
 		}
 	}
-	
-	
+
 	$smarty->assign_by_ref('queries',$queries);
-} 
+}
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+

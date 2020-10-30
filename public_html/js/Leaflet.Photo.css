@@ -26,6 +26,15 @@
 	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
 }
 
+
+.leaflet-marker-photo:hover {
+        margin-top:-40px !important;
+        margin-left:-40px !important;
+        width:80px !important;
+        height:80px !important;
+}
+
+
 /* photo/video popup */
 .leaflet-popup-photo a.leaflet-popup-close-button {
 	top: -13px;
@@ -60,3 +69,4 @@
 .leaflet-popup-photo p {
 	margin: 5px 0 0 0;
 }
+

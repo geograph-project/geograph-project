@@ -9,15 +9,15 @@
     <b>Beginning with</b>: 
     {foreach from=$stats key=alp item=count}
 		{if $alp === $alpha}
-			<b title="{$count} rivers">{$alp|escape:'html'}</b>
+			<b title="{$count} {$keyword}">{$alp|escape:'html'}</b>
 		{else}
-			<a href="?alpha={$alp|escape:'url'}" title="{$count} rivers">{$alp|escape:'html'}</a> 
+			<a href="?alpha={$alp|escape:'url'}" title="{$count} {$keyword}">{$alp|escape:'html'}</a> 
 		{/if}
     {/foreach}
     
     <hr/>
     
-    <b>Rivers on this page</b>:
+    <b>{$keyword} on this page</b>:
     {foreach from=$results item=row}
 		<a href="#{$row.hash}">{$row.name|escape:'html'}</a> |
     {/foreach}
@@ -29,10 +29,10 @@
 		<div style="padding:20px">
 			<div class="interestBox" style="margin-bottom:5px">
 				<div style="position:relative;float:right">
-					<a href="/search.php?q={$row.q|escape:'url'}">More images of <b>{$row.name|escape:'html'}</b></a>
+					<a href="/of/{$row.q|escape:'url'}">More images of <b>{$row.name|escape:'html'}</b></a>
 				</div>
 				<a name="{$row.hash}"></a>
-				<big>{$row.name|escape:'html'}</big>{if $row.county}, {$row.county|escape:'html'}{/if}
+				<big>{$row.name|escape:'html'}</big>{if $row.county}, {$row.county|escape:'html'}{/if} {if $row.count}[~{$row.count} images]{/if}
 			</div>	
 			{foreach from=$row.images item=image}
 			  <div style="float:left;position:relative; width:130px; height:130px">
@@ -48,6 +48,17 @@
 	
 	
 <br style="clear:both;"/>
+
+	<hr>
+
+    <b>Beginning with</b>: 
+    {foreach from=$stats key=alp item=count}
+		{if $alp === $alpha}
+			<b title="{$count} {$keyword}">{$alp|escape:'html'}</b>
+		{else}
+			<a href="?alpha={$alp|escape:'url'}" title="{$count} {$keyword}">{$alp|escape:'html'}</a> 
+		{/if}
+    {/foreach}
 
 
 {if $extra_info}

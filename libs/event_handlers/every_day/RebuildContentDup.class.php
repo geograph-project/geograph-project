@@ -44,14 +44,11 @@ class RebuildContentDup extends EventHandler
 
 		$db=&$this->_getDB();
 
-
-                $data = $db->getRow("SHOW TABLE STATUS LIKE 'content_tmp'");
-
-                if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*60*3)) {
-                        //if a recent table give up this time. It might still be running.
-                        return false;
+                if (!$db->getOne("SELECT GET_LOCK('RebuildContentDup',10)")) {
+                        //only execute if can get a lock
+                        $this->_output(2, "Failed to get Lock");
+                         return false;
                 }
-
 
 		$db->Execute("DROP TABLE IF EXISTS `content_tmp`");
 		$db->Execute("CREATE TABLE `content_tmp` LIKE `content`");
@@ -96,31 +93,31 @@ WHERE approved = 1 AND published < NOW()
 		$db->Execute("
 
 INSERT INTO `content_tmp`
-SELECT 
-	NULL AS content_id, 
-	CRC32(LOWER(gi.imageclass)) AS foreign_id, 
-	TRIM(gi.imageclass) AS title, 
-	CONCAT('/search.php?imageclass=',REPLACE(gi.imageclass,' ','+')) AS url, 
-	0 AS user_id, 
-	gridimage_id, 
-	0 AS gridsquare_id, 
-	IF(canonical IS NULL,'',CONCAT('Parent: ',canonical)) AS extract, 
-	COUNT(*) AS images, 
-	0 AS wordcount, 
-	0 AS views, 
-	0 AS titles, 
-	0 AS tags, 
-	0 AS words, 
-	'category' AS source, 
-	'info' AS type, 
-	MAX(submitted) AS updated, 
-	MIN(submitted) AS created,
+SELECT
+        NULL AS content_id,
+        category_id AS foreign_id,
+        TRIM(imageclass) AS title,
+        CONCAT('/search.php?imageclass=',REPLACE(TRIM(imageclass),' ','+')) AS url,
+        0 AS user_id,
+        gridimage_id,
+        0 AS gridsquare_id,
+        IF(canonical IS NULL,'',CONCAT('Parent: ',canonical)) AS extract,
+        `c` AS images,
+        0 AS wordcount,
+        0 AS views,
+        0 AS titles,
+        0 AS tags,
+        0 AS words,
+        'category' AS source,
+        'info' AS type,
+        `last` AS updated,
+        `first` AS created,
         0 as wgs84_lat,
         0 as wgs84_long,
         null as sequence
-FROM gridimage_search gi
-LEFT JOIN category_canonical USING (imageclass)  
-GROUP BY gi.imageclass;
+FROM category_stat gi
+LEFT JOIN category_canonical USING (imageclass)
+WHERE imageclass != ''
 
 		");
 
@@ -130,33 +127,30 @@ GROUP BY gi.imageclass;
 		$db->Execute("
 
 INSERT INTO `content_tmp`
-SELECT 
-	NULL AS content_id, 
-	gt.tag_id AS foreign_id, 
-	TRIM(tag) AS title, 
-	CONCAT('/search.php?tag=',REPLACE(IF(prefix!='',CONCAT(prefix,':',tag),tag),' ','+')) AS url, 
-	0 AS user_id, 
-	gi.gridimage_id, 
-	0 AS gridsquare_id, 
-	'' AS extract, 
-	COUNT(*) AS images, 
-	0 AS wordcount, 
-	0 AS views, 
-	0 AS titles, 
-	0 AS tags, 
-	0 AS words, 
-	'context' AS source, 
-	'info' AS type, 
-	MAX(gt.created) AS updated, 
-	t.created AS created,
+SELECT
+        NULL AS content_id,
+        tag_id AS foreign_id,
+        TRIM(tag) AS title,
+        CONCAT('/search.php?tag=',REPLACE(tagtext,' ','+')) AS url,
+        0 AS user_id,
+        (SELECT gridimage_id FROM gridimage_tag gt WHERE gt.tag_id = ts.tag_id AND status = 2 AND gridimage_id < 4294967296 LIMIT 1) as gridimage_id,
+        0 AS gridsquare_id,
+        '' AS extract,
+        `count` AS images,
+        0 AS wordcount,
+        0 AS views,
+        0 AS titles,
+        0 AS tags,
+        0 AS words,
+        'context' AS source,
+        'info' AS type,
+        `last_used` AS updated,
+        tag.created AS created,
         0 as wgs84_lat,
         0 as wgs84_long,
         null as sequence
-FROM gridimage_search gi
-INNER JOIN gridimage_tag gt USING (gridimage_id)
-INNER JOIN tag t USING (tag_id)
-WHERE gt.status = 2 AND t.status = 1 AND prefix = 'top'
-GROUP BY gt.tag_id;
+FROM tag_stat ts INNER JOIN tag USING (tag_id)
+WHERE tag.prefix = 'top' AND canonical = 0
 
 		");
 
@@ -383,6 +377,8 @@ WHERE `content`.source IN ('".implode("','",$list)."')
 #####################################
 
 		$db->Execute("DROP TABLE `content_tmp`");
+
+		$db->Execute("DO RELEASE_LOCK('RebuildContentDup')");
 
 		//return true to signal completed processing
 		//return false to have another attempt later

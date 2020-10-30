@@ -104,7 +104,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			
 			$updates[] = "`updated` = '{$page['update_time']}'";
 			$updates[] = "`created` = '{$page['create_time']}'";
-			
+
 			//we can come here via update too, so replace works, as we have a UNIQUE(foreign_id,source)
 			if ($content_id) {
 				$sql = "UPDATE `content` SET ".implode(',',$updates)." WHERE content_id = $content_id";

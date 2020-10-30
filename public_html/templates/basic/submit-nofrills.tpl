@@ -27,8 +27,9 @@
 	<h3>Step 2 - Enter Details</h3>
 	
 	<div style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
-	
+{dynamic}	
 		{assign var="key" value="0"}
+{/dynamic}
 		<input type="hidden" name="upload_id[{$key}]" value="" size="60"/> 
 		
 		<div><span style="width:120px;display:block;float:left"><b>Subject</b>:</span><input type="text" name="grid_reference[{$key}]" value="" size="12" maxlength="12" onblur="checkGridref(this)"/><span style="color:red" id="msg-grid_reference[{$key}]"></span> (at least 4 figures required)</div>
@@ -63,7 +64,16 @@
 				<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I> box</a> ({newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"})</div>
 			</div></p>
 			
-		<div><span style="width:120px;display:block;float:left">Largest Size:</span><input type="text" name="largestsize[{$key}]" value="" size="4"/> pixels (default 640px)</div>
+{dynamic}
+		<div><span style="width:120px;display:block;float:left">Largest Size:</span>
+        <select name="largestsize[{$key}]" id="upload_size">
+                <option value="640" {if $user->upload_size == 640} selected="selected"{/if}>640 x 640 (image will have no 'more sizes' link)</option>
+                <option value="800" {if $user->upload_size == 800} selected="selected"{/if}>800 x 800</option>
+                <option value="1024" {if $user->upload_size == 1024} selected="selected"{/if}>1024 x 1024</option>
+                <option value="1600" {if $user->upload_size == 1600} selected="selected"{/if}>1600 x 1600</aoption>
+                <option value="65536" {if $user->upload_size > 65530} selected="selected"{/if}>As uploaded</option>
+        </select></div>
+{/dynamic}
 		
 
 	</div>	

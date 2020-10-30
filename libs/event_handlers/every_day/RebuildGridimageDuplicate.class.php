@@ -41,13 +41,17 @@ class RebuildGridimageDuplicate extends EventHandler
 
 		$db=&$this->_getDB();
 
+
+//Note this script, fines 'exact' duplicates using mysql GROUP BY, there is a seperate `scripts/duplicate_titles.php` that finds sequences
+//... that script creates the titles with # at end, so this script doesn't delete them!
+
 		$prefixes = $db->GetCol("select prefix from gridprefix where landcount > 0");
 
 		foreach ($prefixes as $prefix) {
 			$crit = $db->Quote("{$prefix}____");
 
 //print "$crit ... ";
-			$db->Execute("DELETE FROM gridimage_duplicate WHERE grid_reference LIKE $crit");
+			$db->Execute("DELETE FROM gridimage_duplicate WHERE grid_reference LIKE $crit AND title NOT like '% #'");
 //print " deleted ...";
 			$db->Execute("INSERT INTO gridimage_duplicate
 				SELECT grid_reference,title,COUNT(*) AS images,COUNT(DISTINCT user_id) AS users FROM gridimage_search

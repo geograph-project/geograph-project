@@ -1,17 +1,13 @@
-{assign var="page_title" value="Grouping "}
 {include file="_std_begin.tpl"}
-
-
 
 	<h2>{$topic_title|escape:'html'}</h2>
 
-
 {if $topic_title}
-	
+        {if $place}
+                <div style="border-bottom:1px solid silver;margin-bottom:22px">in <a href="/gridref/{$gridref}">{$gridref}</a>, {place place=$place}</div>
+        {/if}
 
 	{if $results}
-		
-		
 		{foreach from=$results item=image}
 			 <div style="border-top: 1px solid lightgrey; padding-top:1px;" id="result{$image->gridimage_id}">
 			  <div style="float:left; position:relative; width:130px; text-align:center">
@@ -32,10 +28,7 @@
 			  </div><br style="clear:both;"/>
 			 </div>
 		{/foreach}
-
 	{/if}
-	
-	
 
 	{if count($results) eq 2} 
 		<br/><br/>
@@ -49,11 +42,8 @@
 			</iframe>
 		</div>
 	{/if}
-	
-
 {else}
 	<p>Unable to load this search.</p>
 {/if}
-
 
 {include file="_std_end.tpl"}

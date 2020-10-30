@@ -53,7 +53,7 @@
 	<li>
 	{if $item.top}
 		<div style="float:right;width:220px;font-size:0.8em">
-			<a href="/tags/?tag=top:{$item.top|escape:'url'}">{$item.top|escape:'html'}</a>
+			<a href="/tagged/top:{$item.top|escape:'urlplus'}">{$item.top|escape:'html'}</a>
 		</div>
 	{/if}
 

@@ -1,11 +1,13 @@
 {assign var="page_title" value="My Thumbed Images"}
 {include file="_std_begin.tpl"}
 
-<h2>My own {$types.$type} {$whos.$who} liked{if $criteria}<small style="font-weight:normal">, from: {$criteria|escape:'html'}</small>{/if}</h2>
+<h2>{$iwhos.$iwho} {$types.$type} {$whos.$who} liked{if $criteria}<small style="font-weight:normal">, from: {$criteria|escape:'html'}</small>{/if}</h2>
 
  <div class="interestBox" style="margin:10px">
    <form method="get" action="{$script_name}" style="display:inline">
-    My own  <select name="type" onchange="this.form.submit()">
+    <select name="iwho" onchange="this.form.submit()">
+        {html_options options=$iwhos selected=$iwho}
+    </select>  <select name="type" onchange="this.form.submit()">
     	{html_options options=$types selected=$type}
     </select>  <select name="who" onchange="this.form.submit()">
     	{html_options options=$whos selected=$who}

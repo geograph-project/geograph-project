@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: suggestions.php 8065 2014-04-09 19:31:54Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -37,14 +37,14 @@ if (!empty($CONF['moderation_message'])) {
 $db = GeographDatabaseConnection(false);
 
 if (!empty($_GET['relinqush'])) {
-	$db->Execute("UPDATE user SET rights = REPLACE(rights,'ticketmod','') WHERE user_id = {$USER->user_id}");
-	
+	$db->Execute("UPDATE user SET rights = REPLACE(rights,'ticketmod','alumni') WHERE user_id = {$USER->user_id}");
+
 	//reload the user object
 	$_SESSION['user'] = new GeographUser($USER->user_id);
-	
-	header("Location: /profile.php?edit=1");
 
-} 
+	header("Location: /profile.php?edit=1");
+	exit;
+}
 
 if (isset($_GET['gridimage_ticket_id']))
 {
@@ -62,21 +62,21 @@ if (isset($_GET['gridimage_ticket_id']))
 	if ($ticket->isValid())
 	{
 		$ticket->setDefer("DATE_ADD(NOW(), INTERVAL $hours HOUR)");
-		echo "Suggestions Deferred for $hours hours";		
+		echo "Suggestions Deferred for $hours hours";
 	}
 	else
 	{
 		echo "FAIL";
 	}
-	
+
 	exit;
 }
 
 if (!empty($_GET['Submit'])) {
 	//if changing state, release locks
-	
+
 	$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$USER->user_id}");
-	
+
 	header("Location: /admin/suggestions.php?".str_replace('Submit='.$_GET['Submit'],'',$_SERVER['QUERY_STRING']));
 	exit;
 }
@@ -88,7 +88,7 @@ if (!empty($_GET['Submit'])) {
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):50;
 $page = (isset($_GET['page']) && is_numeric($_GET['page']))?min(100,intval($_GET['page'])):0;
 if ($page) {
-	$limit = sprintf("%d,%d",($page -1)* $limit,$limit);	
+	$limit = sprintf("%d,%d",($page -1)* $limit,$limit);
 }
 
 $rev = (isset($_GET['rev']))?'desc':'';
@@ -158,26 +158,31 @@ if (!empty($_GET['q'])) {
 	} else {
 		$sphinx = new sphinxwrapper($_GET['q']);
 
-		$sphinx->pageSize = $pgsize = 100;
+		$sphinx->pageSize = $pgsize = 500;
 
-		$ids = $sphinx->returnIds(1,'tickets');	
-				
+		//deal with single NOT being incomputable.
+		if (strpos($sphinx->q,'-') !== FALSE) {
+			$sphinx->q .= " @status ".(($_GET['type']=='closed')?'closed':'(pending|open)');
+		}
+
+		$sphinx->sort = "suggested DESC";
+		$ids = $sphinx->returnIds(1,($_GET['type']=='closed')?'tickets_closed':'tickets');
+
 		if (!empty($ids) && count($ids)) {
 			$sql_where .= " and t.gridimage_ticket_id IN(".join(",",$ids).")";
 		} else {
 			$sql_where .= " and 0";
 		}
 		$smarty->assign('q', $sphinx->qclean);
-
 	}
 }
 
 #################
 # available values
 
-$types = array('pending'=>'New Tickets','open'=>"Open Suggestions",'closed'=>"Closed Suggestions",'ongoing'=>'New or Open');
+$types = array('pending'=>'New Suggestions','open'=>"Open Suggestions",'closed'=>"Closed Suggestions",'ongoing'=>'New or Open');
 $modifers = array('recent'=>'All','24'=>"over 24 hours old",'7'=>"over 7 days old");
-$themes = array('any'=>'Any','tmod'=>"on ticket I moderating/ed",'mod'=>"on images I moderated",'comment'=>"suggestions I have commented on",'suggest'=>"suggestions I suggested",'all'=>'any involvement');
+$themes = array('any'=>'Any','owned'=>"Exclude owned by others",'tmod'=>"on suggestions owned by me",'mod'=>"on images I moderated",'comment'=>"suggestions I have commented on",'suggest'=>"suggestions I suggested",'all'=>'any involvement');
 $variations = array('any'=>'Any','own'=>"suggested on own images",'comment'=>"has left comment");
 
 #################
@@ -190,24 +195,33 @@ if ($type != 'pending') {
 
 	$smarty->assign('col_moderator', 1);
 
-	if ($type == 'open') { 
+	if ($type == 'open') {
 		$where_crit = "t.moderator_id>0 and t.status in ('pending','open')";
 	} elseif ($type == 'closed') {
 		$where_crit = "t.status='closed'";
+
+		if (empty($_GET['q'])) {
+			$where_crit .= " AND t.gridimage_ticket_id > (SELECT MAX(gridimage_ticket_id) FROM gridimage_ticket t2) - 100000";
+				$locks[] = "gridimage_ticket t2 READ";
+		}
+
 	} elseif ($type == 'all') {
 		$where_crit = "1";
+
+		$where_crit = "t.gridimage_ticket_id > (SELECT MAX(gridimage_ticket_id) FROM gridimage_ticket t2) - 100000";
+			$locks[] = "gridimage_ticket t2 READ";
+
 	} else {//ongoing
 		$where_crit = "t.status in ('pending','open')";
 	}
-	
+
 	$rev = ($rev)?'':'desc';
-	
+
 } else {
 	$type = 'pending';
-	
+
 	$where_crit = " t.moderator_id=0 and t.status in ('pending','open')";
 
-	
 	$sql_where .= " and i.user_id != {$USER->user_id}";
 }
 
@@ -237,6 +251,9 @@ if ($theme == 'all') {
 
 } elseif ($theme == 'mod') {
 	$sql_where .= " and i.moderator_id = {$USER->user_id}";
+
+} elseif ($theme == 'owned') {
+	$sql_where .= " and t.moderator_id IN (0,{$USER->user_id})";
 
 } elseif ($theme == 'tmod') {
 	$sql_where .= " and t.moderator_id = {$USER->user_id}";
@@ -272,10 +289,10 @@ if (empty($major)) {
 #################
 
 $title = "Showing: ".$modifers[$modifer].", ".$types[$type];
-if ($defer) {		
+if ($defer) {
 	$title .= ", including Deferred";
 }
-if ($locked) {		
+if ($locked) {
 	$title = "<span style='color:red'>$title, including Locked</span>";
 }
 
@@ -312,25 +329,28 @@ $smarty->assign('query_string', $_SERVER['QUERY_STRING']);
 #################
 # put it all together...
 
-$available = "(l.gridimage_id is null OR 
+$available = "(l.gridimage_id is null OR
 				(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
 				(l.user_id != {$USER->user_id} AND lock_type = 'cantmod')
 		)";
 
 if (empty($_GET['locked'])) {
 
-	$db->Execute("LOCK TABLES ".implode(',',$locks));
-	
+	$db->Execute($sql = "LOCK TABLES ".implode(',',$locks));
+
+	if (!empty($_GET['debug']))
+		print "$sql;<BR>";
+
 	$sql_where .= " and $available";
-	
+
 	$columns .= ", 1 as available";
 } else {
 	$columns .= ", $available as available";
 }
 
-$newtickets=$db->GetAll($sql = 
+$newtickets=$db->GetAll($sql =
 	"select t.*,suggester.realname as suggester, (i.user_id = t.user_id) as ownimage,
-		submitter.realname as submitter, submitter.ticket_option as submitter_ticket_option, (submitter.rights LIKE '%dormant%') as submitter_dormant,
+		submitter.realname as submitter, submitter.ticket_option as submitter_ticket_option, (submitter.email = '' OR submitter.rights LIKE '%dormant%') as submitter_dormant,
 		i.title, DATEDIFF(NOW(),t.updated) as days,
 		group_concat(if(c.user_id=i.user_id,c.comment,null)) as submitter_comment,
 		group_concat(if(c.user_id=t.user_id,c.comment,null)) as suggester_comment
@@ -345,10 +365,10 @@ $newtickets=$db->GetAll($sql =
 	left join gridimage_ticket_comment as c
 		on(c.gridimage_ticket_id=t.gridimage_ticket_id)
 	where $where_crit $sql_where
-		
 	group by t.gridimage_ticket_id
 	order by t.suggested $rev
 	limit $limit");
+
 if (!empty($_GET['debug']))
 	print $sql;
 

@@ -1,4 +1,4 @@
-{assign var="page_title" value="$adm1_name :: `$references.$ri` :: Geograph Gazetteer"}
+{assign var="page_title" value="$adm1_name :: `$references.$ri` :: Geograph Photos"}
 {assign var="meta_description" value="Creative Commons licensed photos of $adm1_name, `$references.$ri`, we have many!"}
 {include file="_std_begin.tpl"}
  

@@ -23,8 +23,18 @@
 
 require_once('geograph/global.inc.php');
 
+if (empty($_GET['user_id'])) {
+	if (date('G') < 6) //early in morning, keep until 6am, when new version should be available
+		$target = strtotime(date('Y-m-d').' 06:05 '.date('O'));
+	else //otherwise keep until tomorrow morning!
+		$target = strtotime(date('Y-m-d',time()+3600*24).' 06:05 '.date('O'));
+	$seconds = $target-time();
+}
+if (empty($seconds) || $seconds < 60)
+	$seconds = 3600*6;
+
 customGZipHandlerStart();
-customExpiresHeader(3600*6,true);
+customExpiresHeader($seconds,true);
 header('Access-Control-Allow-Origin: *');
 
 $sql = array();
@@ -33,9 +43,9 @@ $sql['wheres'] = array();
 if (!empty($_GET['hectad'])) {
 	$db = GeographDatabaseConnection(true);
 
-        $row = $db->getRow("select reference_index,x,y from hectad_stat where hectad = ".$db->Quote($_GET['hectad']));
+        $row = $db->getRow("select * from hectad_stat where hectad = ".$db->Quote($_GET['hectad']));
 
-        if (!empty($row['reference_index'])) {
+        if (!empty($row['map_token'])) {
 
                 $ri = $row['reference_index'];
                 $x = ( intval(($row['x'] - $CONF['origins'][$ri][0])/10)*10 ) +  $CONF['origins'][$ri][0];
@@ -43,6 +53,7 @@ if (!empty($_GET['hectad'])) {
 
 		$sql['wheres'][] = "x between $x AND $x+9";
 		$sql['wheres'][] = "y between $y AND $y+9";
+		$sql['wheres'][] = "reference_index = {$row['reference_index']}"; //just to exclude small number of cross-grids
 
 	} else {
 		$error = "unknown hectad";
@@ -61,6 +72,12 @@ if (empty($error)) {
 	if (empty($_GET['user_id'])) {
 		$sql['tables']['gs'] = 'gridsquare gs';
 		$sql['columns'] = "grid_reference as gr,x,y,imagecount as c,has_recent as r,percent_land as l,max_ftf as g";
+	} elseif (empty($_GET['user_id'])) {
+		$sql['tables']['gs'] = 'gridsquare gs';
+		$sql['tables']['gi'] = 'LEFT JOIN gridimage gi USING (gridsquare_id)';
+		$sql['group'] = 'gridsquare_id';
+		$sql['wheres'][] = "moderation_status IN ('geograph','accepted')";
+		$sql['columns'] = "grid_reference as gr,x,y,imagecount as c,has_recent as r,percent_land as l,max(ftf) as g";
 	} else {
 		$sql['tables']['gi'] = 'gridimage_search';
 		$sql['group'] = 'grid_reference';

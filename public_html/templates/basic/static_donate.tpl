@@ -21,37 +21,34 @@ ul.methods li {
 ul.methods li img {
 	vertical-align:middle;
 }
-ul.methods li div {
-	position:relative;width:120px;float:left;
+ul.methods li div div {
+	position:relative;width:170px;float:left;
 	padding:10px;
 }
 {/literal}</style>
 <ul class="methods">
 	<li>
-		<a href="https://mydonate.bt.com/donation/donate.html?charity=geograph"><img src="https://mydonate.bt.com/images/Donate-Now-button.gif" height=24></a> 
-		via <b>{external href="https://mydonate.bt.com/charities/geograph" text="BT MyDonate"}</b> - <small>Preferred</small> <br><br>
+		<a href="https://uk.virginmoneygiving.com/donation-web/charity?charityId=1017685&utm_source=extbtn&utm_campaign=donatebtn" target="_blank" title="Donate to us (Link opens in a new window)"><img src="https://uk.virginmoneygiving.com/giving/assets/buttons/DONATE_RED_BUTTON@1x.png" border="0" alt="Make a donation using Virgin Money Giving"></a>
 
-		<div>
-			<a href="https://mydonate.bt.com/charities/geograph"><img src="https://mydonate.bt.com/images/creditcards.gif" width=110></a>
-		</div>		
 
-		Click the link above to go to the Geograph page on MyDonate, and make a donation from there. Via BT, we are charged <b>no fees</b> (unlike Paypal) for receiving donations. You can also apply Gift Aid to increase the value of your donation.
-		<br/><br/>
+		via <b>{external href="https://uk.virginmoneygiving.com/charity-web/charity/finalCharityHomepage.action?charityId=1017685" text="Virgin Money Giving"}</b> <br><br>
 
-		<small>Note: If you first {external href="https://mydonate.bt.com/login.html?j_action=registration" text="create an account"}, can make a regular monthly donation. Use the dropdown on "Step 1" of the donation process to select 'regular', read more in the {external href="http://www.btplc.com/mydonate/Help/Helpguides/Fordonors/Donor.aspx" text="help"} (click the 'Donations' section). <br/>
-		(You can make a one-off donation by credit/debit card without having to register, if you like)</small>
-		<br/><br/>
+		Click the button to make a donation with Virgin Money Giving, can choose a one off, or a monthly donation. You can also apply Gift Aid to increase the value of your donation.
+		<br/><br style="clear:both"/>
 	</li>
 
 	<li>
-		via <b>PayPal</b><br>
+		alternatively can accept direct donations via <b>PayPal</b>, <a href="javascript:void(show_tree('ppay'));" id="hideppay">Read More...</a>
+
+		<div id="showppay" style="display:none">
+
 		<div style="width:250px">
 			Single Donation
 			<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 				<input type="hidden" name="cmd" value="_donations">
 				<input type="hidden" name="business" value="paypal@geograph.org.uk">
 				<input type="hidden" name="lc" value="US">
-				<input type="hidden" name="item_name" value="Geograph Project">
+				{dynamic}<input type="hidden" name="item_name" value="Donation via {$self_host} id:{$hid}">{/dynamic}
 				<input type="hidden" name="no_note" value="0">
 				<input type="hidden" name="currency_code" value="GBP">
 				<input type="hidden" name="bn" value="PP-DonationsBF:btn_donateCC_LG.gif:NonHostedGuest">
@@ -107,15 +104,51 @@ ul.methods li div {
 			<small>Click Donate to make a regular recurring donation. You can cancel at any time via the Paypal website. PayPal account required.</small>
 		</div>
 		<br style="clear:both"/>
+		</div>
 	</li>
 
 	<li>
 		See {external text="our page on <b>Give as you Live</b>" href="https://www.giveasyoulive.com/join/geograph-project-limited"}, for how can raise free donations simply by shopping online.
 	</li>
 
-	<li>Can also donate via {external href="https://www.cafonline.org/" text="Charities Aid Foundation (CAF)"}</li>
+	<li>
+		Or can setup <b>{external href="https://smile.amazon.co.uk/gp/chpf/about/ref=smi_se_rspo_laas_aas" text="Amazon Smile"}</b> and Amazon will donate to a charity of your choice for every purchase you make. 
+			{external href="https://smile.amazon.co.uk/gp/chpf/homepage?q=Geograph&orig=%2F&ie=UTF-8" text="Geograph"} is registered there. 
+	</li>
 
-	<li>{mailto address="treasurer@geograph.org.uk" text="Contact the Treasurer" encode="javascript"} if you wish to set up a standing order.</li>
+	<li>Otherwise can donate via {external href="https://www.cafonline.org/" text="<b>Charities Aid Foundation</b> (CAF)"}</li>
+
+	<li>{mailto address="treasurer@geograph.org.uk" text="Contact the Treasurer" encode="javascript"} if you wish to set up a <b>standing order</b>.</li>
+
+	<li>Also can a leave a <b>gift in your will</b>. <a href="javascript:void(show_tree('gift'));" id="hidegift">Read More...</a>
+
+                <div id="showgift" style="display:none;padding-left:20px"><br><br>
+			After taking care of your family and friends, please consider leaving a gift to the
+			Geograph Project in your will. The Geograph Project receives no public funding. We
+			are completely reliant on the generosity of people like you to enable us to carry on
+			doing what we're really proud of doing: helping people explore the geography and
+			history of Britain and Ireland. You don't have to be wealthy to leave a gift in your will.
+			Whatever the amount, big or small, we're extremely grateful for any gift left to the
+			Geograph Project.<br>
+			<br>
+			Leaving a gift in your will is simple and easy to do<br>
+			<br>
+			If you are considering writing or updating your will, it is best to use a qualified
+			solicitor or will writer. To leave a gift to the Geograph Project, you just need to give
+			your professional adviser our charity name, postal address and registered charity
+			number along with the amount, or percentage of your estate, that you would like to
+			give us. Our details are:<br>
+			<br>
+			Geograph Project Ltd<br>
+			Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire, DN6 8DA.<br>
+			<br>
+			Registered charity in England and Wales (1145621)<br>
+			<br>
+			If you do include the Geograph Project in your will you don't have to tell us and you
+			can always change your mind later. But we'd be delighted to {mailto address="treasurer@geograph.org.uk" text="hear from you" encode="javascript"} and we
+			will treat any information you share with us in strictest confidence.
+		</div>
+
 </ul>
 
 <p>Thank you!</p>
@@ -133,7 +166,7 @@ ul.methods li div {
 			{external href="https://www.ordnancesurvey.co.uk/education/" text="Ordnance Survey"}<br/><br/>
 			- National Mapping Agency of Great Britain. OS Sponsor Geograph.
 		</td>
-	</td>
+	</tr>
         <tr>
                 <td align="center">
 			<a href="http://www.livetodot.com/hosting/" rel="nofollow"><img src="{$static_host}/img/livetodot-logo.png" style="padding:10px;" alt="Livetodot Logo"/></a>
@@ -142,7 +175,16 @@ ul.methods li div {
 			{external href="http://www.livetodot.com/hosting/" text="Livetodot Hosting"}<br/><br/>
 			- Server Co-location services. Home of the Geograph servers.
                 </td>
-        </td>
+        </tr>
+        <tr>
+                <td align="center">
+			<a href="https://www.tiger-computing.co.uk/" rel="nofollow"><img src="{$static_host}/img/tiger-logo-tl.png" width="200"/></a>
+                </td>
+                <td>
+ 			{external href="https://www.tiger-computing.co.uk/" text="Tiger Computing"}<br/><br/>
+			- Linux Support Services. Tiger keep our servers running in tip-top condition. 
+	        </td>
+        </tr>
         <tr>
                 <td align="center">
 			<a href="http://www.woc.co.uk/" rel="nofollow"><img src="{$static_host}/img/woc.jpg"/></a>
@@ -150,7 +192,8 @@ ul.methods li div {
                 <td>
  			{external href="http://www.woc.co.uk/" text="World of Computers"}<br/><br/>
 			- high quality custom built servers. This site is powered by servers built by WOC. 
-        </td>
+	        </td>
+        </tr>
 </table>
 
 <p><small>Want your name here? Get in <a href="/contact.php">Contact</a>!</small></p>

@@ -29,7 +29,6 @@ AttachEvent(window,'load',setupSubmitForm,false);
                 <a href="/tags/prefix.php?prefix=top" class="tab">Geographical Context</a>
 		<a href="/tags/prefix.php?prefix=subject" class="tab">Subjects</a>
                 <a href="/tags/prefix.php?prefix=type" class="tab">Types</a>
-                <a href="/tags/prefix.php?prefix=bucket" class="tab">Image Buckets</a>
         </div>
         <div style="position:relative;padding-bottom:3px" class="interestBox">
 		<h2 style="margin:0">Public Tags <sup><a href="/article/Tags" class="about" style="font-size:0.7em">About tags on Geograph</a></sup></h2>

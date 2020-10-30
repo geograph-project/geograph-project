@@ -47,15 +47,15 @@ if (isset($_REQUEST['t'])) {
 			$_GET['page'] = $token->getValue("p");
 		}
 	}
-} 
+}
 if (isset($_REQUEST['debug']) && $USER->hasPerm("admin")) {
 	$token=new Token;
 
 	$token->setValue("i", $i);
-	if (!empty($_GET['page'])){ 
+	if (!empty($_GET['page'])){
 		$token->setValue("p", $_GET['page']);
 	}
-	print $token->getToken(); 
+	print $token->getToken();
 }
 if (isset($_GET['l']) && isset($_SESSION['gameToken'])) {
 	unset($_SESSION['gameToken']);
@@ -67,7 +67,7 @@ if (isset($_REQUEST['token'])) {
 	$game->setToken($_REQUEST['token']);
 } elseif (isset($_SESSION['gameToken'])) {
 	$game->setToken($_SESSION['gameToken']);
-} 
+}
 
 if (isset($_REQUEST['debug']) && $USER->hasPerm("admin") && $game->i) {
 	print "<br>{$game->i}";
@@ -133,16 +133,16 @@ if (isset($_GET['check'])) {
 				case '3' : echo $prefix."Couldn't do better than 500m, huh?... $postfix"; break;
 			}
 			exit;
-		}		
+		}
 
 		echo $distance;
 		exit;
 	}
-	
+
 	die('unknown error');
 
 } elseif (isset($_REQUEST['next']) || isset($_REQUEST['save'])) {
-	
+
 	if (empty($_REQUEST['grid_reference'])) {
 
 	} else {
@@ -174,7 +174,10 @@ if (isset($_GET['check'])) {
 	}
 	#$params[] = "token=".$game->getToken();
 	$_SESSION['gameToken'] = $game->getToken();
-	
+	if (isset($_REQUEST['inner'])) {
+		$params[] = "inner=1";
+	}
+
 	if (isset($_REQUEST['next'])) {
 		header("Location: /games/markit.php?".implode('&',$params));
 	} else {
@@ -191,12 +194,12 @@ if ($i) {
 
 	$game->getImagesBySearch($i);
 	$game->i = $i;
-	
+
 	if ($game->numberofimages > 0) {
 		$game->setSearchPage($i,'x');
 		$game->getImagesBySearch($i);
 	}
-	
+
 } elseif (!empty($game->i)) {
 	$game->getImagesBySearch($game->i);
 } elseif ($l) {
@@ -211,6 +214,10 @@ if ($i) {
 
 
 $smarty = new GeographPage;
+$template = 'games_markit.tpl';
+
+if (isset($_REQUEST['inner']))
+	$template = 'games_markit_inner.tpl';
 
 
 if ($game->numberofimages > 0) {
@@ -231,9 +238,9 @@ if ($game->numberofimages > 0) {
 		}
 		$keys = array_keys($game->images);
 	}
-	
+
 	$game->points = 5;
-	
+
 	if ( $USER->hasPerm("basic") && isset($_REQUEST['rater'])) {
 		$smarty->assign('rater',1);
 	}
@@ -250,6 +257,5 @@ if ($game->numberofimages > 0) {
 
 $smarty->assign_by_ref('game',$game);
 
-$smarty->display('games_markit.tpl');
+$smarty->display($template);
 
-?>

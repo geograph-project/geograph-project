@@ -118,12 +118,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	$from_date AS `Date`,
 	count( * ) AS `Images`,
 	sum( moderation_status = 'geograph' ) AS `Geographs`,
-	sum( ftf =1 ) AS `Points Awarded`,
+	sum( points = 'tpoint' ) AS `TPoints`,
+	sum( ftf =1 ) AS `First Points`,
+	sum( ftf between 1 and 4 ) AS `AllPoints`,
 	sum( ftf >0 ) AS `Personal Points`,
 	count( * ) / count( DISTINCT grid_reference ) AS `Depth`,
 	count( DISTINCT grid_reference ) AS `Different Gridsquares`
 	$columns_sql
-	, count( DISTINCT imageclass ) AS `Different Categories`
 	FROM `gridimage_search` $where_sql
 	GROUP BY $group_date" );
 
@@ -143,7 +144,6 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	if ($date == 'submitted' && !$u && !$ri && !$myriad) {
 		//$smarty->assign("footnote","<p><a href=\"http://www.swivel.com/data_sets/show/1009608\" target=\"_blank\">Graphs compiled from this data</a></p>");
-
 	}
 
 	$extra = array();

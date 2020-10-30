@@ -97,6 +97,13 @@ function makeUneditable() {
 {/literal}</script>
 {if $error}
 	<div><span class="formerror">{$error}</span></div>
+	{if $approved == 2 && $user_id != $user->user_id}
+		<ul>
+		{foreach from=$errors key=key item=value}
+			<li title="{$key}">{$value}</li>	
+		{/foreach}
+		</ul>
+	{/if}
 {/if}
 
 <form class="simpleform" action="/article/edit.php" method="post" name="theForm">
@@ -204,9 +211,20 @@ function makeUneditable() {
 	{if $errors.parent_url}<div class="formerror"><p class="error">{$errors.parent_url}</p>{/if}
 
 	<label for="parent_url">Parent Article:</label>
-	<input type="text" name="parent_url" value="{$parent_url|escape:"html"}" maxlength="128" size="60"/>
+	<input type="text" name="parent_url" value="{$parent_url|escape:"html"}" maxlength="128" size="80"/>
 
-	<div class="fieldnotes">Optional, full url to parent article if there is one. To be used by Articles that are in a group.</div>
+	<div class="fieldnotes">Optional, full URL to parent article if there is one. To be used by Articles that are in a group.</div>
+
+	{if $errors.parent_url}</div>{/if}
+</div>
+
+<div class="field">
+	{if $errors.browser_url}<div class="formerror"><p class="error">{$errors.browser_url}</p>{/if}
+
+	<label for="parent_url">Image Browser URL:</label>
+	<input type="text" name="browser_url" value="{$browser_url|escape:"html"}" maxlength="1024" size="80"/>
+
+	<div class="fieldnotes">Optional, URL to a 'Browser' search for images roughly matching what this Article is about. E.g. for an article "Castles in England", would use <tt><a href="/browser/#!/q=text:Castle/country+%22England%22" target="_blank">/browser/#!/q=text:Castle/country+%22England%22</a></tt> (use the full URL, not a tiny/short version).</div>
 
 	{if $errors.parent_url}</div>{/if}
 </div>
@@ -241,6 +259,9 @@ function makeUneditable() {
 
 	<label for="content">Content:</label> (see markup reference at bottom of page)
 	<textarea rows="40" cols="80" name="content" style="width:58em">{$content|escape:"html"}</textarea></p>
+
+		<div class="fieldnotes">Note: If use a external image [img=http://othersite.com...] the URL will be automatically replaced with a copy hosted on https://media.geograph.org.uk/ - see <a href="/discuss/?action=vthread&topic=29847">this thread</a> for more info.</div>
+
 
 	{if $errors.content}</div>{/if}
 </div>
@@ -327,11 +348,14 @@ Or <a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close edit
 
 <p><tt>[[[123434]]]</tt> <small>&middot; inserts the thumbnail of a geograph image - get the id number from the image url</small></p>
 
-
-
 <p>Link: <tt>[url=http://www.example.com]Goto this site[/url]</tt></p>
+
+<p>Note: Can use ! before any [ to nuturalize the tag, so it displays directly on page, rather than treated as special syntax. 
+Mention it here, because generally want to avoid accidently prefixing a tag with !. Can typically just add an extra space, 
+eg <tt>[b]Wow! [/b]</tt>, rather than <tt>[b]Wow![/b]</tt> to avoid this. </p>
+
 <hr/>
-<small>&middot; See the full reference for including tables, map extracts, external images and other features.</small>
+<small>&middot; See the {newwin href="/article/Help_on_formatting_of_articles" text="Full Reference"} for including tables, map extracts, external images and other features.</small>
 </div>
 
 {include file="_std_end.tpl"}

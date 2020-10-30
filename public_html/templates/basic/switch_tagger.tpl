@@ -8,7 +8,6 @@
         <a href="/choose-search.php" class="tab">Site Search Engine</a>
         <a href="/choose-preview.php" class="tab">Preview Method</a>
         <span class="tabSelected">Tagging Box</span>
-        <a href="/switch.php" class="tab">Submission Method</a>
 </div>
 <div style="position:relative;" class="interestBox">
 	<h2>Tag Box Update</h2>

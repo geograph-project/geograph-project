@@ -165,22 +165,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign('token',$token);
 }
-if (isset($_SESSION['maptt']) || isset($_REQUEST['inner'])) {
-	
-} else {
-	// as we doing in session no need to save.
-	$tt = new ThrottleToken('',false);
-
-	if ($USER->hasPerm('admin') || $USER->hasPerm('moderator')) {
-		$tt->uses = 800;
-	} elseif ($USER->hasPerm('basic')) {
-		$tt->uses = 400;
-	} else {
-		$tt->uses = 50;
-	}
-
-	$_SESSION['maptt'] = $tt;
-}
 
 $smarty->assign('content_host',$CONF['CONTENT_HOST']);
 $smarty->assign('tile_host',$CONF['TILE_HOST']);

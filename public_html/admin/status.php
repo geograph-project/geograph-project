@@ -24,12 +24,17 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-$USER->mustHavePerm("admin");
+$USER->hasPerm("moderator") || $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-ini_set("display_errors",1);
-error_reporting(E_ALL ^ E_NOTICE);
+//ini_set("display_errors",1);
+//error_reporting(E_ALL ^ E_NOTICE);
+
+if (function_exists('apc_store') && !empty($_GET['clear'])) {
+	apc_delete('lag_warning');
+}
+
 
 $smarty->assign("page_title",'System Status');
 $smarty->display('_std_begin.tpl',md5($_SERVER['PHP_SELF']));
@@ -56,9 +61,27 @@ flush();
 
 $hostname=trim(`hostname`);
 print "Host = $hostname";
-	
+
 print "<hr/>";
-	
+
+print "<h2>Folders</h2>";
+
+$folders = array();
+$folders[] = $_SERVER['DOCUMENT_ROOT']."/geophotos/";
+$folders[] = $_SERVER['DOCUMENT_ROOT']."/photos/";
+$folders[] = $_SERVER['DOCUMENT_ROOT']."/maps/";
+$folders[] = $_SERVER['DOCUMENT_ROOT']."/../rastermaps/";
+
+foreach ($folders as $folder) {
+	print "<b>$folder</b>: <tt>";
+	print `ls -l $folder | head -1`;
+	print "</tt><br/>";
+}
+
+print "<hr/>";
+
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
 
 print "<h2>Main Database Status ";
 print "<tt>{$CONF['db_user']}@{$CONF['db_connect']}/{$CONF['db_db']}</tt></h2>";
@@ -85,6 +108,10 @@ if (!empty($DSN_READ) && $DSN_READ != $DSN) {
 
 	print "<h2>Slave Database Status ";
 	print "<tt>{$CONF['db_read_user']}@{$CONF['db_read_connect']}/{$CONF['db_read_db']}</tt></h2>";
+
+if (function_exists('apc_store')) {
+	print "lag_warning:".apc_fetch('lag_warning')."<br>";
+}
 	if ($db = database_status($DSN_READ)) {
 
 		print "<hr/>";

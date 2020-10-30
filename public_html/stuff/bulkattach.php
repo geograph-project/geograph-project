@@ -145,8 +145,7 @@ if (!empty($_POST)) {
 
 		print "<h4>Tracking Reference: $unique</h4>";
 
-		$str = print_r($_SERVER,1)."\n";
-		$str .= print_r($_POST,1)."\n";
+		$str = print_r($_POST,1)."\n";
 		$str .= print_r($USER->realname,1)."\n";
 		$str .= print_r($USER->user_id,1)."\n";
 		$str .= print_r($USER->email,1)."\n\n\n";

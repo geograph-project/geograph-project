@@ -26,6 +26,8 @@ require_once('geograph/eventprocessor.class.php');
 
 set_time_limit(5000); 
 
+if(extension_loaded('newrelic'))
+        newrelic_background_job(true);
 
 //need perms if not requested locally
 if (isLocalIPAddress())

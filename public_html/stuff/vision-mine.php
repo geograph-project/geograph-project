@@ -52,19 +52,35 @@ $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
-$andwhere = $extra = '';
+$andwhere = $leftjoin = $extra = '';
 if (isset($_GET['v'])) {
 	$andwhere = " AND validated = ".intval($_GET['v']);
 	$extra = '&v='.intval($_GET['v']);
 }
 
+if (!empty($_GET['filter'])) {
+	if ($_GET['filter'] == 'tags') {
+		$leftjoin .= " LEFT JOIN gridimage_tag USING (gridimage_id)";
+		$andwhere .= " AND tag_id IS NULL";
+		$extra .= '&filter='.$_GET['filter'];
+
+	} elseif ($_GET['filter'] == 'plaintags') {
+		$leftjoin .= " LEFT JOIN tag_public t ON (gi.gridimage_id = t.gridimage_id AND prefix != 'top' AND prefix != 'bucket' AND prefix != 'type')";
+		$andwhere .= " AND tag_id IS NULL";
+		$extra .= '&filter='.$_GET['filter'];
+
+	}
+}
+
+
 
 if (!empty($_GET['tab'])) {
 
-	$list = $db->getAll("SELECT gridimage_id,user_id,title,realname,grid_reference,
+	$list = $db->getAll("SELECT gi.gridimage_id,gi.user_id,title,realname,grid_reference,
 			description
                         FROM gridimage_search gi
                         INNER JOIN vision_results ON (id=gridimage_id)
+			$leftjoin
                         WHERE gi.user_id = $u AND description != '' $andwhere
                         ORDER BY PASSWORD(description) DESC
                         LIMIT 400");
@@ -112,14 +128,18 @@ if (!empty($_GET['tab'])) {
 
 } else {
 
-	$list = $db->getAll("SELECT gridimage_id,user_id,title,realname,grid_reference,
-			GROUP_CONCAT(description ORDER BY score DESC) as descriptions
+	$list = $db->getAll($sql = "SELECT gi.gridimage_id,gi.user_id,title,realname,grid_reference,
+			GROUP_CONCAT(v.description ORDER BY score DESC) as descriptions
                         FROM gridimage_search gi
-                        INNER JOIN vision_results ON (id=gridimage_id)
-                        WHERE gi.user_id = $u AND description != '' $andwhere
-                        GROUP BY gridimage_id
-                        ORDER BY gridimage_id DESC
+                        INNER JOIN vision_results v ON (v.id=gi.gridimage_id)
+			$leftjoin
+                        WHERE gi.user_id = $u AND v.description != '' $andwhere
+                        GROUP BY gi.gridimage_id
+                        ORDER BY gi.gridimage_id DESC
                         LIMIT 100");
+
+if (!empty($_GET['d']))
+	print_r($sql);
 
 
 	if (count($list)) {

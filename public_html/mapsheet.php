@@ -35,6 +35,8 @@ $smarty = new GeographPage;
 customGZipHandlerStart();
 customExpiresHeader(360,false,true);
 
+ini_set('memory_limit', '64M');
+
 //initialise map
 $map=new GeographMap;
 
@@ -122,9 +124,10 @@ if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,2}\d{4}$/',$_GET['g
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
-	dieUnderHighLoad();
 	
 	if ($map->type_or_user > 0) {
+		dieUnderHighLoad(1.2);
+	
 		$profile=new GeographUser($map->type_or_user);
 		$smarty->assign('realname', $profile->realname);
 		$smarty->assign('user_id', $map->type_or_user);
@@ -135,10 +138,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('generated',$data['Update_time']);
 		
 	} elseif ($map->type_or_user == -6) {
+		dieUnderHighLoad(0.7);
+
 		$db = GeographDatabaseConnection(true);
 
 		//this copes with leap years etc
 		$smarty->assign('recent', $db->getOne("SELECT DATE_SUB(NOW(),INTERVAL 5 YEAR)"));
+	} else {
+		dieUnderHighLoad(0.6);
 	}
 	
 	//assign main map to smarty

@@ -79,7 +79,14 @@ Nearby hectads:
 	<li style="list-style-image: url('{$static_host}/img/links/20/mosaic.png');"><a title="View Mosaic for {$hectad}" href="/maplarge.php?t={$largemap_token}">Have a look at a <b>Large Photo Mosaic</b>/map</a> (includes First Geograph statistics)</li>
 	{/if}
 	
-	<li style="list-style-image: url('{$static_host}/img/links/20/map.png');"><a title="View map for {$hectad}" href="/mapbrowse.php?t={$map_token}">View Geograph <b>Coverage Map</b></a> or <img src="{$static_host}/img/links/20/checksheet.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">View a <b>printable check sheet</b></a></li>
+	<li style="list-style-image: url('{$static_host}/img/links/20/map.png');"><a title="View map for {$hectad}" href="/mapbrowse.php?t={$map_token}">View Geograph <b>Coverage Map</b></a> 
+		or <img src="{$static_host}/img/links/20/checksheet.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">View a <b>printable check sheet</b></a>
+		{dynamic}
+		{if $stats && ($stats.squares gt 1)}
+			(<a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&mine=1">Personalized to You</b></a>)
+		{/if}
+		{/dynamic}
+	</li>
 	
 	<li style="list-style-image: url('{$static_host}/img/links/20/mapper.png');"><a href="/mapper/combined.php?t={$map_token}">Open <b>Zoomable Map</b></a></b></li>
 

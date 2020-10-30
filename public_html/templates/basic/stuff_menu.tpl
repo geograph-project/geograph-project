@@ -95,7 +95,7 @@
 			<li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Information</a></li>
 			<li><a title="View More Pages" href="/help/more_pages">More Pages</a><ul>
 				<li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
-				<li><a title="View All Pages" href="http://www.geographs.org/links/sitemap.php?experimental=Y&amp;internal=Y&amp;site=www.geograph.org.uk">Experimental Featured</a></li>
+				<li><a title="View All Pages" href="http://www.geograph.org/links/sitemap.php?experimental=Y&amp;internal=Y&amp;site=www.geograph.org.uk">Experimental Featured</a></li>
 			</ul></li>
 
 			<li><a title="Contact Us" href="/contact.php">Contact Us</a><ul>

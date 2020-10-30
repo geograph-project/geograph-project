@@ -34,32 +34,36 @@ $smarty = new GeographPage;
  customExpiresHeader(300,false,true);
 
 	$smarty->display('_std_begin.tpl');
-	
+
 	$db = GeographDatabaseConnection(true);
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
-		SELECT imagetaken,count(*) AS images, title, grid_reference, COUNT(DISTINCT grid_reference) AS squares
-		FROM gridimage_search
+		SELECT imagetaken,count(*) AS images, gi.title, grid_reference, COUNT(DISTINCT grid_reference) AS squares, id
+		FROM gridimage_search gi
+			 LEFT JOIN geotrips t ON (t.uid = user_id AND t.date = imagetaken)
 		WHERE user_id = {$USER->user_id}
-		AND gridimage_id > 1750000
 		GROUP BY imagetaken DESC
+		LIMIT 150
 		");
 
 	print "<h2>Recent Trips</h2>";
 
 	if (count($list)) {
-		print "<p>Click the date, to run a search for all your images that day</p>";
+		print "<p>Click the date, to run a search for all your images that day. Showing most recent 150 days. (Note: the linked geotrip (if any), is just a trip you have on that day - ie only date is used to match)</p>";
 		print "<ul>";
 		foreach ($list as $idx => $row) {
 			$link = htmlentities2("/search.php?user_id={$USER->user_id}&orderby=submitted&taken_start={$row['imagetaken']}&taken_end={$row['imagetaken']}&do=1");
-			print "<li><a href=\"$link\">{$row['imagetaken']}</a> ({$row['images']} images, {$row['squares']} squares) - example: {$row['grid_reference']} ".htmlentities2($row['title'])."</li>";
+			print "<li><a href=\"$link\">{$row['imagetaken']}</a> ({$row['images']} images, {$row['squares']} squares) - ";
+			if (!empty($row['id']))
+				print "<a href=\"/geotrips/{$row['id']}\">Geo-Trip</a> - ";
+			print " example: {$row['grid_reference']} ".htmlentities2($row['title'])."</li>";
 		}
 		print "</ul>";
 	} else {
 		print "nothing to display";
 	}
-	
+
 	$smarty->display('_std_end.tpl');
 	exit;
 

@@ -24,7 +24,7 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-$USER->mustHavePerm("admin");
+($USER->user_id == 93) || ($USER->user_id == 20032) || $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
@@ -36,11 +36,15 @@ $db=GeographDatabaseConnection(false);
 
 
 if (isset($_POST['submit'])) {
+	$desc = $db->getAssoc("DESCRIBE user");
 
 	$updates= $_POST;
 	unset($updates['submit']);
 	foreach ($updates as $key => $value) {
-		if (is_array($value)) {
+		if (!isset($desc[$key])) {
+                        unset($updates[$key]);
+
+                } elseif (is_array($value)) {
 			$updates[$key] = implode(',',$value);
 		}
 	}
@@ -74,12 +78,14 @@ if (isset($_POST['submit'])) {
 		$i = intval($updates['user_id']);
 		unset($updates['user_id']);
 
+		if ($updates['deceased_date'] == '0000-00-00' || empty($updates['deceased_date']))
+			$updates['deceased_date'] = null;
+
 		$old = $db->getRow("SELECT user_id,realname,nickname,email FROM user WHERE user_id = $i");
 
 		$db->Execute('UPDATE user SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE user_id='.$i,array_values($updates));
 
 		if ($old['email'] != $updates['email']) {
-
 			$db->Execute("insert into user_emailchange ".
 				"(user_id, oldemail,newemail,requested,status,completed)".
 				"values(?,?,?,now(),'completed',now())",
@@ -116,20 +122,39 @@ if (isset($_POST['submit'])) {
 	$profile=new GeographUser($i);
 	$profile->_forumUpdateProfile();
 
-	//todo, expire smarty caches...
+        $ab=floor($profile->user_id/10000);
+
+        //clear anything with a cache id userxyz|
+        $smarty->clear_cache(null, "user$ab|{$profile->user_id}");
 
 	$smarty->assign_by_ref("i",$i);
 } else {
 
-	$i = intval($_GET['id']);
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$row = $db->getRow("SELECT * FROM user WHERE user_id = $i");
+
+	if (!empty($_GET['adv'])) {
+		$cols = "*";
+	} elseif ($USER->user_id == 20032) {
+		$cols = "user_id,realname,credit_realname,nickname,email,public_email,website,home_gridsquare,about_yourself,signup_date,confirmed,deceased_date,rights,role,ticket_option";
+	} else {
+		$cols = "user_id,realname,nickname,email,public_email,website,ticket_option";
+	}
+
+	if (!empty($_GET['email'])) {
+		$row = $db->getRow("SELECT $cols FROM user WHERE email = ".$db->quote($_GET['email']));
+		$i = $row['user_id'];
+	} else {
+		$i = intval($_GET['id']);
+		$row = $db->getRow("SELECT $cols FROM user WHERE user_id = $i");
+	}
 	$smarty->assign_by_ref("row",$row);
 	$smarty->assign_by_ref("id",$i);
 
 	$desc = $db->getAssoc("DESCRIBE user");
 
 	foreach ($desc as $col => $data) {
+		if (!isset($row[$col]))
+			continue;
 		if (preg_match('/(set|enum)\(\'(.*)\'\)/',$data['Type'],$m)) {
 			$desc[$col]['values'] = array_combine(explode("','",$m[2]),explode("','",$m[2]));
 			$desc[$col]['multiple'] = ($m[1] == 'set')?' multiple':'';

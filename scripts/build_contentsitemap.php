@@ -21,20 +21,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-############################################
-
-//these are the arguments we expect
-$param=array();
-
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-############################################
+//--------------------------------------------
+// nothing below here should need changing
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
-
 
 //set this low - to try it out...
 $urls_per_sitemap=1000;
@@ -44,6 +38,8 @@ printf("Counting users...\r");
 $images=$db->GetOne("select count(*) from content where source IN('article','gallery','help','blog')");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
+$filter = date('Y-m-d',time()-(3600*24*180));
+
 //go through each sitemap file...
 $percent=$last_percent=0;
 $count=0;
@@ -51,68 +47,67 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 {
 	//prepare output file and query
 	printf("Preparing user sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
-		
-	$filename=sprintf('%s/public_html/sitemap/root/sitemap-content%04d.xml', $param['dir'], $sitemap); 
+
+	$filename=sprintf('%s/public_html/sitemap/root/sitemap-content%04d.xml', $param['dir'], $sitemap);
 	$fh=fopen($filename, "w");
-	
+
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
 	fprintf($fh, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
-	
-	
+
 	$maxdate="";
-	
+
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = $db->Execute(
 		"select url,date(updated) as updated ".
 		"from content where source IN('article','gallery','help','blog') ".
 		"limit $offset,$urls_per_sitemap");
-	
+
 	//write one <url> line per result...
-	while (!$recordSet->EOF) 
+	while (!$recordSet->EOF)
 	{
 		//figure out most recent update
 		$date=$recordSet->fields['updated'];
-		
+
 		if (strcmp($date,$maxdate)>0)
 			$maxdate=$date;
-		
+
 		fprintf($fh,"<url>".
 			"<loc>http://{$param['config']}%s</loc>".
 			"<lastmod>%s</lastmod>".
-			"<changefreq>monthly</changefreq>".
+			($date>$filter?"<changefreq>monthly</changefreq>":'').
 			"</url>\n",
 			$recordSet->fields['url'],
 			$date
 			);
-			
-		$count++;	
+
+		$count++;
 		$percent=round(($count*100)/$images);
 		if ($percent!=$last_percent)
 		{
 			$last_percent=$percent;
 			printf("Writing content sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
-		}	
-	
-		
+		}
+
 		$recordSet->MoveNext();
 	}
-			
+
 	$recordSet->Close();
-	
+
 	//finalise file
 	fprintf($fh, '</urlset>');
-	fclose($fh); 
-	
+	fclose($fh);
+
 	//set datestamp on file
 	$unixtime=strtotime($maxdate);
 	touch($filename,$unixtime);
-	
+
 	//gzip it
 	`gzip $filename -f`;
+	touch("$filename.gz",$unixtime); //weird (bug? possibl in GeogridFS!), if gzip is overwriting a file, it doesn't perserve the timestamp!
 }
 
 //now we write an index file pointing to our generated ones above
-$filename=sprintf('%s/public_html/sitemap/root/sitemap-content.xml', $param['dir']); 
+$filename=sprintf('%s/public_html/sitemap/root/sitemap-content.xml', $param['dir']);
 $fh=fopen($filename, "w");
 
 fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -121,12 +116,12 @@ fprintf($fh, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 for ($s=1; $s<=$sitemaps; $s++)
 {
 	fprintf($fh, "<sitemap>");
-	
+
 	$fname=sprintf("sitemap-content%04d.xml.gz", $s);
-	
+
 	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
-	
+
 	fprintf($fh, "<loc>http://{$param['config']}/%s</loc>", $fname);
 	fprintf($fh, "<lastmod>$mtimestr</lastmod>", $fname);
 	fprintf($fh, "</sitemap>\n");

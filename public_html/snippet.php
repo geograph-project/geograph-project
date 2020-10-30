@@ -94,25 +94,53 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 			$data['grid_reference'] = $gr;
 		}
-		
+
+                if (empty($CONF['forums']) && !empty($data['comment']) && preg_match('/geograph\.(org\.uk|uk|ie)\/discuss\//',$data['comment'])) {
+                        //todo, heavy handled, but editing the description could be tricky!
+                        $data['comment'] = '';
+                }
+
 		if (!empty($data['comment'])) {
 			require_once("smarty/libs/plugins/modifier.truncate.php");
 			$smarty->assign('meta_description', smarty_modifier_truncate(preg_replace('/[\s\n]+/',' ',$data['comment']), 255) );
 
-			//we do this here first, rather than in smarty - so we can attach html. 
+			$rawlen = strlen($data['comment']);
+
+			//we do this here first, rather than in smarty - so we can attach html.
 			$data['comment'] = htmlentities2($data['comment']);
-			$data['comment'] = GeographLinks(nl2br($data['comment']));
+			$data['comment'] = GeographLinks($data['comment']);
 			$data['comment'] = preg_replace('/(^|[\n\r\s]+)(Keywords?[\s:][^\n\r>]+)$/i','<span class="keywords">$2</span>',$data['comment']);
+
+			// http://en.wikipedia.org/wiki/T.J._Maxx
+			if ($rawlen <= 150 && preg_match('/\/(\w+).wikipedia.org\/wiki\/([\w\.,:\(\)-]+)/',$data['comment'],$m)) {
+
+				//https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=T.J._Maxx
+
+				ini_set('user_agent', 'Geograph Britain and Ireland - http://www.geograph.org.uk/snippet/'.$data['snippet_id']);
+
+				$rawtext = file_get_contents("https://{$m[1]}.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&redirects=1&titles=".urlencode($m[2]));
+
+				if ($extract = json_decode($rawtext,true)) {
+					if (count($extract['query']['pages']) == 1) {
+						foreach ($extract['query']['pages'] as $key => $value) {
+							if (!empty($value['extract'])) {
+								$data['comment'] .= "<blockquote><i>".nl2br($value['extract'])."</i><br><small>This extract uses material from the Wikipedia article <a href=\"http://{$m[1]}.wikipedia.org/wiki/{$m[2]}\">\"{$m[2]}\"</a>, which is released under the <a href=\"http://creativecommons.org/licenses/by-sa/3.0/\">Creative Commons Attribution-Share-Alike License 3.0</a>.</small></blockquote>";
+							}
+						}
+					}
+				}
+			}
+
 		} else {
 			$smarty->assign('meta_description', "Shared description for ".$data['title'].', featuring '.$data['images'].' images');
 		}
-		
+
 		if ($CONF['sphinx_host'] && $data['grid_reference']) {
 
 			$sphinx = new sphinxwrapper();
 			$sphinx->pageSize = $pgsize = 25;
 			$pg = 1;
-			
+
 			if ($data['nateastings']) {
 				require_once('geograph/conversions.class.php');
 				$conv = new Conversions;
@@ -134,8 +162,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 $client = $sphinx->_getClient();
 $client->setFilter('images',array(0),true);
-			
-			$ids = $sphinx->returnIds($pg,'snippet');
+
+			if (empty($_GET['skipp']))
+				$ids = $sphinx->returnIds($pg,'snippet');
 
 			if (!empty($ids) && count($ids) > 0) {
 				$where = array();
@@ -144,51 +173,61 @@ $client->setFilter('images',array(0),true);
 				$where[] = "s.snippet_id IN($id_list)";
 				$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
 
-				$where[] = "enabled = 1"; 
+				$where[] = "enabled = 1";
 				$where[] = "s.snippet_id != {$data['snippet_id']}";
 
 				$where= implode(' AND ',$where);
 
-				$others = $db->getAll($sql="SELECT snippet_id,title,comment FROM snippet s WHERE $where $orderby"); 
+				$others = $db->getAll($sql="SELECT snippet_id,title,comment FROM snippet s WHERE $where $orderby");
 
 				$smarty->assign_by_ref('others',$others);
-				
-				
-				//we only replace links, if they appears to be in bits not affected by markup 
+
+				//we only replace links, if they appears to be in bits not affected by markup
 				foreach ($others as $id => $row) {
 					if (strlen($row['title']) > 3 && stripos($data['comment'],$row['title']) !== FALSE)
 						$data['comment'] = preg_replace("/\b(".preg_quote($row['title'],'/').")\b(?![^<]*>)/i",'<a href="/snippet/'.$row['snippet_id'].'">$1</a>',$data['comment']);
 				}
-			} 
-		} 
+
+			}
+		}
 		if (!empty($data['comment']) && $CONF['sphinx_host']) {
 			$sphinx = new sphinxwrapper();
 			$sphinx->pageSize = $pgsize = 8;
 			$pg = 1;
-			
+
 			$crit = '';
 			if (strlen($data['comment']) > 100) {
-			
+
 				preg_match_all('/\b([A-Z]\w{3,})\b/',str_replace('Link','',$data['comment']),$m);
-				
+
 				if (count($m[1]) > 3) {
 					$words = array_unique($m[1]);
-					
+
 					$quorum = min(2,count($words) -2);
-					
+
 					$crit = ' | (@(title,comment) "'.implode(' ',$words).'"/'.$quorum.')';
-					
 				}
 			}
-			
+
+			if (!empty($geodata)) {
+				$sphinx->setSpatial($geodata); //does not set sort order in itseel
+				$sphinx->setSelect("*,if(@geodist < 20000 OR @geodist > 150000,1,0) as f"); //nearby, or non-located
+				$sphinx->addFilters(array('f'=>array(1)));
+				$cl = $sphinx->_getClient();
+				foreach ($cl->_filters as $key => $value) {
+					if ($value['attr'] == '@geodist' && $key == 0)
+						array_shift($cl->_filters); //use shift, so that it reindexes the keys.
+				}
+			}
+
 			$sphinx->prepareQuery("(@title {$data['title']}) | (@comment \"{$data['title']}\") ".$crit);
 ##			$sphinx->setGroupBy('titlecrc',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC");
 
 $client = $sphinx->_getClient();
 $client->setFilter('images',array(0),true);
-			
+
 			$ids = $sphinx->returnIds($pg,'snippet');
-			
+
 			if (!empty($ids) && count($ids) > 0) {
 				$where = array();
 
@@ -196,29 +235,37 @@ $client->setFilter('images',array(0),true);
 				$where[] = "s.snippet_id IN($id_list)";
 				$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
 
-				$where[] = "enabled = 1"; 
+				$where[] = "enabled = 1";
 				$where[] = "s.snippet_id != {$data['snippet_id']}";
 
 				$where= implode(' AND ',$where);
 
 				$related = $db->getAll($sql="SELECT s.snippet_id,title,comment,realname,s.user_id,COUNT(gs.snippet_id) AS images FROM snippet s LEFT JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)  WHERE $where  GROUP BY s.snippet_id $orderby"); 
-	
+
 				$smarty->assign_by_ref('related',$related);
-				
+
 				//we only replace links, if they appears to be in bits not affected by markup - should help prevent replaces in what is already links, or titles of images etc
 				$nohtml = strip_tags(preg_replace('/<a\s.+?>.*?<\/a>/','', $data['comment']));
 				$hassame = 0;
 				foreach ($related as $id => $row) {
-					if (strlen($row['title']) > 3 && stripos($nohtml,$row['title']) !== FALSE)
-						$data['comment'] = preg_replace("/\b(".preg_quote($row['title'],'/').")\b/i",'<a href="/snippet/'.$row['snippet_id'].'">$1</a>',$data['comment']);
+                                        if (strlen($row['title']) > 3 && stripos($nohtml,$row['title']) !== FALSE)
+                                               $data['comment'] = preg_replace("/(?<!!)\b(".preg_quote($row['title'],'/').")\b/",'<a href="/snippet/'.$row['snippet_id'].'">$1</a>',$data['comment']);
+
+					//if (strlen($row['title']) > 3)
+					//	//only replace text NOT already inside <a> tag, image thumbs etc, will always be in a <a>
+                                        //        $data['comment'] = preg_replace("/(^|\/a>)([^!<\"]*)\b(".preg_quote($row['title'],'/').")\b/m",'$1$2<a href="/snippet/'.$row['snippet_id'].'">$3</a>',$data['comment']);
 					if ($row['title'] == $data['title']) {
 						$hassame++;
 					}
 				}
+				$data['comment'] = preg_replace("/(^|\s)!([A-Z]\w+)/",'$1$2',$data['comment']);
+
 				$smarty->assign('hassame',$hassame);
-			} 
-			
+			}
 		}
+
+		if (!empty($data['comment']))
+			$data['comment'] = nl2br($data['comment']);
 
 		$smarty->assign($data);
 		$t2 = ($data['grid_reference'])?" in {$data['grid_reference']}":'';

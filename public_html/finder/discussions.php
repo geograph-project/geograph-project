@@ -77,11 +77,13 @@ $orders = array(
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
 		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$sphinx->q,$m)) {
 			$smarty->assign('gridref',$m[1].$m[2].$m[3]);
-			$sphinx->q = " ".$sphinx->q;
+			$sphinx->q = " ".$sphinx->q; //this STOPS the magic in processQuery that makes the query behave like a 'nearby' query
 		}
 
 		if ($offset < (1000-$pgsize) ) {
 			$sphinx->processQuery();
+
+			$sphinxq = $sphinx->q; //store the original for the Excepts, as we may modify it below!
 
 			if ($titleonly && strpos($sphinx->q,'@') !== 0) {
 				$sphinx->q = "@title ".$sphinx->q;
@@ -151,9 +153,9 @@ $orders = array(
 					$docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['post_text']));
 				}
 				if ($expand) {
-					$reply = $sphinx->BuildExcerpts($docs, 'post_stemmed', $sphinx->q,array('limit' => 512,'around' => 12, 'query_mode' => 1));
+					$reply = $sphinx->BuildExcerpts($docs, 'post_stemmed', $sphinxq, array('limit' => 512,'around' => 12, 'query_mode' => 1));
 				} else {
-					$reply = $sphinx->BuildExcerpts($docs, 'post_stemmed', $sphinx->q);
+					$reply = $sphinx->BuildExcerpts($docs, 'post_stemmed', $sphinxq, array('query_mode' => 1));
 				}
 
 				$times = array(

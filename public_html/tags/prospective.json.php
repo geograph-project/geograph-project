@@ -40,6 +40,9 @@ if (isset($_GET['term'])) {
 	}
 } else {
 	$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='category' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
+        if (!empty($_GET['counts'])) {//todo - doesnt work to show count, but ads the id for now
+                 $sql['columns'] = "tag_id,{$sql['columns']}";
+        }
 }
 
 if (!empty($_GET['string'])) {

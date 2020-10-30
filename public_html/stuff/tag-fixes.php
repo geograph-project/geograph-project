@@ -84,6 +84,21 @@ if ($_GET['fix'] == 2) {
 
 #######################################
 
+if ($_GET['fix'] == 202) {
+
+        print "<h3>Proposed fix #202. Remove dot(s) after Rd, Ave, Dr, Tce/Terr words.</h3>";
+
+        $where = "tag like '%.%' and tag rlike '[[:<:]](rd|ave|dr|tce|terr)\\\\.'";
+
+        $dedup = "/\b(?:rd|ave|dr|tce|terr)\.+( *\w+)/i";
+}
+
+        $patterns[] = "/\b(rd|ave|dr|tce|terr)\.+ */i";
+        $replacements[] = "$1 ";
+
+
+#######################################
+
 if ($_GET['fix'] == 3) {
 
         print "<h3>Proposed fix #3. Remove dot at end of tag</h3>";
@@ -143,6 +158,36 @@ if ($_GET['fix'] == 7) {
         $replacements[] = '${1}blank';
 
 #######################################
+
+if ($_GET['fix'] == 8) {
+
+	print "<h3>Proposed fix #4. change nr. to a prefix</h3>";
+
+	$where = "tag like 'nr. %'";
+}
+
+	$patterns[] = "/^nr. /";
+	$replacements[] = "near:";
+
+#######################################
+
+if ($_GET['fix'] == 9) {
+
+	print "<h3>Fix Milestone ID Prefix</h3>";
+
+	$where = "tag rlike binary '^[[:upper:]]{2,4}[ .-][[:alpha:]][[:alpha:][:digit:]]+\.?$'";
+	$where .= " AND prefix IN ('','milestone society national id')";
+	$where .= " AND gt.user_id = 124913";
+
+	$patterns[] = "/^([\w ]+:)?(.*)$/";
+	$replacements[] = "milestoneid:$2";
+
+	$patterns[] = "/\.+$/";
+	$replacements[] = "";
+}
+
+#######################################
+	// just to tidy up any fixes.
 
         $patterns[] = "/[ _]+/";
         $replacements[] = " ";
@@ -220,11 +265,12 @@ if (!empty($where)) {
 				$sqls[] = "UPDATE tag SET status = 0 WHERE tag_id = $tag_id1";
 			} else {
 				$values = tagToSQL($new);
-				$tag_id2 = $db->getOne($sql = "SELECT tag_id FROM tag WHERE ".implode(' AND ',$values));
+				$row2 = $db->getRow("SELECT tag_id,status FROM tag WHERE ".implode(' AND ',$values));
 
-				if ($tag_id2) {
+				if (!empty($row2) && ($tag_id2 = $row2['tag_id'])) {
 					$sqls[] = "UPDATE tag SET status = 0, canonical=$tag_id2 WHERE tag_id = $tag_id1";
-					$sqls[] = "UPDATE tag SET status = 1 WHERE tag_id = $tag_id2"; //could check if this needed, but quick noop if already=1
+					if (!$row2['status'])
+						$sqls[] = "UPDATE tag SET status = 1 WHERE tag_id = $tag_id2";
 
 					$sqls[] = "UPDATE IGNORE gridimage_tag SET tag_id = $tag_id2 WHERE tag_id = $tag_id1";
 					$sqls[] = "UPDATE gridimage_tag SET status=0 WHERE tag_id = $tag_id1"; //any left after first update, failed due to duplicate key issues. Can now delete the duplicate

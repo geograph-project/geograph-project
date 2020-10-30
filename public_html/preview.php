@@ -38,7 +38,7 @@ $smarty = new GeographPage;
 $template='view.tpl';
 $cacheid=0;
 
-$smarty->caching = 0; 
+$smarty->caching = 0;
 
 
 
@@ -46,7 +46,7 @@ $smarty->caching = 0;
 if (!empty($_POST))
 {
 	$image=new GridImage;
-	
+
 	if (!empty($_POST['id'])) {
 		$image->loadFromId(intval($_POST['id']));
 	} else {
@@ -56,142 +56,53 @@ if (!empty($_POST))
 		$image->user_id = $USER->user_id;
 		$image->realname = $USER->realname;
 		$image->profile_link = "/profile/{$image->user_id}";
-		
+
 		if (!empty($_POST['pattrib']) && $_POST['pattrib'] == 'other') {
 			$image->realname = strip_tags(trim(stripslashes($_POST['pattrib_name'])));
 			$image->profile_link .= "?a=".urlencode($_POST['pattrib_name']);
 		}
-		
 	}
-	
+
 	$image->title = strip_tags(trim(stripslashes($_POST['title'])));
 	$image->comment = strip_tags(trim(stripslashes($_POST['comment'])));
-	
+
 	$image->imageclass=strip_tags(trim(stripslashes($_POST['imageclass'])));
-	
+
 	if ($image->imageclass=="Other") {
 		$image->imageclass = strip_tags(trim(stripslashes($_POST['imageclassother'])));
 	}
-	
+
 	if (isset($_POST['imagetakenYear'])) {
 		$image->imagetaken=sprintf("%04d-%02d-%02d",$_POST['imagetakenYear'],$_POST['imagetakenMonth'],$_POST['imagetakenDay']);
-	}	
+	}
 	$image->use6fig = !empty($_POST['use6fig']);
-	
+
 	if (!empty($_POST['grid_reference'])) {
 		$image->grid_square = new GridSquare();
 		$image->grid_square->setByFullGridRef($_POST['grid_reference']);
-		
+
 		$image->grid_reference=$image->grid_square->grid_reference;
 		$image->natgrlen=$image->grid_square->natgrlen;
 		$image->nateastings=$image->grid_square->nateastings;
 		$image->natnorthings=$image->grid_square->natnorthings;
 	}
-	
+
 	if (!empty($_POST['photographer_gridref'])) {
 		$viewpoint = new GridSquare;
 		$ok= $viewpoint->setByFullGridRef($_POST['photographer_gridref'],true);
-		
+
 		$image->viewpoint_eastings = $viewpoint->nateastings;
 		$image->viewpoint_northings = $viewpoint->natnorthings;
 		$image->viewpoint_grlen = $viewpoint->natgrlen;
 	}
-	
-	$image->view_direction = intval(strip_tags(trim(stripslashes($_POST['view_direction']))));
-	
+
+	if (isset($_POST['view_direction']))
+		$image->view_direction = intval(strip_tags(trim(stripslashes($_POST['view_direction']))));
+
 	if (!empty($_POST['upload_id']))
 		$image->fullpath = "/submit.php?preview=".strip_tags(trim(stripslashes($_POST['upload_id'])));
 
 
-if (!empty($_POST['spelling'])) {
-	
-	require_once("3rdparty/spellchecker.class.php");
-	?>
-	<style type="text/css">
-		body { font-family:Georgia, Verdana, Arial, serif; }
-		u { color:red }
-		u span { color:black } 
-		p { background-color:#eeeeee; border:1px solid gray; padding:10px }
-	</style>
-	<script type="text/javascript">
-		function doupdate(that) {
-			var ele = that.form.elements[that.name];
-			var str = '';
-			for(q=0;q<ele.length;q++) {
-				if (ele[q].type.toLowerCase() == 'select-one' 
-						&& ele[q] == that
-						&& ele[q].selectedIndex == ele[q].options.length-1
-						) {
-					ele[q].options[ele[q].selectedIndex].value = prompt("Enter the correct spelling of "+ele[q].value,ele[q].value);
-				} 
-				str = str + ele[q].value;
-			}
-			name = that.name.replace(/_/,'');
-			that.form.elements[name].value = str;
-		}
-	</script>
-	<?
-	$query = "{$image->title} {$image->comment} {$image->imageclass}"; 
-
-	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query )); 
-	if (!$xml) {
-		die("unable to contact spelling service");
-	}
-	$replacements = array(); 
-	foreach($xml->c as $correction) { 
-		$suggestions = explode("\t", (string)$correction); 
-		$offset = intval($correction['o']); 
-		$length = intval($correction['l']); 
-
-		$replacements[mb_substr($query, $offset, $length)] = $suggestions; 
-	} 
-
-	print "<form>";
-	foreach (array('title'=>'Title','comment'=>'Description/Comment','imageclass'=>'Category') as $key => $name) {
-		print "<h3>$name</h3><blockquote>";
-		$result = $select = $original = htmlentities2($image->$key);
-		if (!empty($original)) {
-			foreach($replacements as $old => $new) { 
-				$old2 = preg_quote($old); 
-				if (count($new)) {
-					$original = preg_replace("/$old2/is", "<u title=\"".implode("\n",$new)."\"><span>$old</span></u>", $original, 1); 
-					$select = preg_replace("/$old2/is", "<select name=\"_$key\" onchange=\"doupdate(this)\"><optgroup label=\"Suggestions\"><option>".implode("</option><option>",$new)."</option></optgroup><optgroup label=\"Original\"><option value=\"$old\">$old</option></optgroup><option value=\"$old\">EDIT...</option></select>", $select, 1); 
-					$result = preg_replace("/$old2/is", $new[0], $result, 1); 
-				} else {
-					$original = preg_replace("/$old2/is", "<u title=\"-no suggestions-\"><span>$old</span></u>", $original, 1); 
-				}
-			}
-			if (htmlentities2($image->$key) != $result) {
-				print "<h4>Original</h4>";
-				print "<p>$original</p>";
-				print "<h4>Suggestion</h4>";
-				$bits = preg_split('/<select.*?select>/',$select);
-				foreach ($bits as $bit) {
-					$select = preg_replace('/(?<!>)(<select|$)/',"<input type=\"hidden\" name=\"_$key\" value=\"$bit\">\$1",$select,1);
-				}
-			
-				print "<p>$select</p>";
-				if ($key == 'comment') {
-					print "<p><textarea name=\"$key\" rows=\"3\" cols=\"80\" spellcheck=\"true\">$result</textarea>";
-				} else {
-					print "<p><input name=\"$key\" spellcheck=\"true\" value=\"$result\" size=60 readonly/>";
-				}
-				if ($key != 'imageclass') {
-					print "<input type=button value=\"copy to submission\" onclick=\"window.opener.document.forms.theForm.$key.value= this.form.$key.value\" />";
-				}
-				print "</p>";
-			} else {
-				print "<p>$original</p>";
-			}
-		} else {
-			print "<i>empty</i>";
-		}
-		print "</blockquote><hr/>";
-	}
-	print "</form>";
-	print "<i>Powered by the <b>Google Toolbar</b> spell checker - language is set to English</i>";
-	exit;
-}
 
 
 	//what style should we use?
@@ -209,7 +120,7 @@ if (!empty($_POST['spelling'])) {
 			$gid = sprintf('%0.0f',$gid);
 
 			$image->loadSnippets($gid);
-		} else {
+		} elseif (!empty($_POST['id'])) {
 			$image->loadSnippets();
 		}
 	#}

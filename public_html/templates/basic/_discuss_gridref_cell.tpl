@@ -1,8 +1,8 @@
 
 {dynamic}
-	<h3 style="float:left; margin-top:0; padding-left:10px; font-weight:normal;"><a href="/gridref/{$gridref}" style="color:silver;">{$gridref}</a> :: &nbsp;</h3>
+	<h3 style="float:left; margin-top:0; padding-left:10px; font-weight:normal;"><a href="/gridref/{$gridref}">{$gridref}</a> :: &nbsp;</h3>
 	{if $place.distance}
-		 {place place=$place h3=' style="text-align:left; margin-top:0; padding-left:10px; font-weight:normal; color:silver;"'}
+		 {place place=$place h3=' style="text-align:left; margin-top:0; padding-left:10px; font-weight:normal;"'}
 	{/if}
 
 	{if count($images) > 0}

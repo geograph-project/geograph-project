@@ -68,10 +68,108 @@ if(updateArray(array('topic_last_post_id'),$Tt,'topic_id',$topic)>0){
 db_forumReplies($forum,$Tp,$Tf);
 db_topicPosts($topic,$Tt,$Tp);
 
+$result=mysql_query("select COUNT(poster_id) from geobb_posts WHERE poster_id = {$USER->user_id}");
+$postcount = mysql_result($result,0);
+if (!$result || $postcount === '1' || empty($postcount)) {
+
+unset($USER->db);
+ob_start();
+print "View: http://www.geograph.org.uk/discuss/index.php?&action=vthread&topic=$topic\n";
+print "Reports: http://{$_SERVER['HTTP_HOST']}/admin/discuss_reports.php?topic_id=$topic\n\n";
+var_dump(mysql_result($result,0));
+print_r($_POST);
+print_r($USER);
+$con = ob_get_clean();
+
+        $check = file_get_contents($CONF['spam_url']."&ip=".getRemoteIP());
+
+	if (empty($check))
+		$check = "[error] ".$http_response_header;
+
+	$con = "CHECK: $check\n\n $con";
+
+	if (strpos($check,'<appears>yes</appears>') !== FALSE) {
+
+		$db = GeographDatabaseConnection(false);
+
+	        $tcols = '`'.implode('`,`',$db->getCol("DESCRIBE geobb_topics")).'`';
+	        $pcols = '`'.implode('`,`',$db->getCol("DESCRIBE geobb_posts")).'`';
+
+		$u = array();
+		$u['post_id'] = $topic_last_post_id;
+		$u['topic_id'] = $topic;
+		$u['type'] = 'spam';
+		$u['comment'] = $check;
+                $u['user_id'] = $USER->user_id;
+
+                $db->Execute('INSERT INTO discuss_report SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+		$report_id = mysql_insert_id();
+
+                $r = intval($report_id);
+		$w = "report_id = $r";
+                $i = "$r AS report_id";
+
+                $t = "topic_id = $topic";
+
+		$sqls = array();
+
+		if (empty($_POST['topicTitle'])) {
+			$p = "post_id = $topic_last_post_id";
+
+                        $sqls[] = "REPLACE INTO geobb_posts_quar SELECT $pcols,$i FROM geobb_posts WHERE $t AND $p";
+                        $sqls[] = "DELETE FROM geobb_posts WHERE $t AND $p";
+
+			$sqls[] = "INSERT INTO discuss_report_log SET $w, user_id = {$USER->user_id}, action = 'delete_post'";
+
+			$sqls[] = "UPDATE geobb_topics SET topic_last_post_id = (SELECT MAX(post_id) FROM geobb_posts AS t1 WHERE $t),posts_count=(SELECT COUNT(*) FROM geobb_posts AS t2 WHERE $t) WHERE $t";
+
+		} else {
+	                $sqls[] = "REPLACE INTO geobb_topics_quar SELECT $tcols,$i FROM geobb_topics WHERE $t";
+	                $sqls[] = "DELETE FROM geobb_topics WHERE $t";
+	                $sqls[] = "REPLACE INTO geobb_posts_quar SELECT $pcols,$i FROM geobb_posts WHERE $t";
+        	        $sqls[] = "DELETE FROM geobb_posts WHERE $t";
+
+			$sqls[] = "INSERT INTO discuss_report_log SET $w, user_id = {$USER->user_id}, action = 'delete_thread'";
+ 		}
+                $db->Execute("LOCK TABLES geobb_topics WRITE, geobb_posts WRITE, discuss_report WRITE, geobb_posts AS t1 WRITE, geobb_posts AS t2 WRITE,
+                                        geobb_topics_quar WRITE, geobb_posts_quar WRITE, discuss_report_log WRITE");
+                foreach ($sqls as $sql) {
+                        #print "<pre>$sql</pre>";
+                        $db->Execute($sql);
+                        #print "Affected: ".$db->Affected_Rows();
+                }
+                $db->Execute("UNLOCK TABLES");
+
+		$data = "Suspected Spam (Please review the message below, and if it is NOT spam, then use the link above to reinstate the thread. The message has already been deleted by the system):\n\n".print_r($_POST,1);
+
+                $mods=$db->GetCol("select email from user where FIND_IN_SET('forum',rights)>0 AND user_id != 3");
+
+                $subject = "[Geograph Forum Report] for thread #$topic [Automated Report]";
+                $body = "http://{$_SERVER['HTTP_HOST']}/admin/discuss_reports.php?topic_id=$topic\n\n";
+                $body .= "Time: ".date('r')."\n\n";
+                $body .= $data;
+
+                foreach ($mods as $email)
+                        mail($email,$subject,$body);
+
+		if(preg_match('/^\w{6} <a href=/',$_POST['postText'])) {
+			$db->Execute("UPDATE user SET rights = 'dormant,suspicious' WHERE user_id = {$USER->user_id}");
+		}
+
+		$auto_logoff = true;
+	} else {
+	        mail('geograph@barryhunter.co.uk','[Geograph] FIRST POST!',$con);
+	}
+
+}
+
 //fire an event
 	require_once('geograph/event.class.php');
-	new Event(EVENT_NEWREPLY, $topic_last_post_id);
+	if (empty($auto_logoff))
+		new Event(EVENT_NEWREPLY, $topic_last_post_id);
 }
+
+if (empty($auto_logoff)) {
 
 if ($emailusers==1 or (isset($emailadmposts) and $emailadmposts==1)) {
 $topicTitle=db_simpleSelect(0,$Tt,'topic_title','topic_id','=',$topic);
@@ -99,6 +197,8 @@ if (isset($_POST['CheckSendMail']) and emailCheckBox()!='' and substr(emailCheck
 $ae=db_simpleSelect(0,$Ts,'count(*)','user_id','=',$user_id,'','','topic_id','=',$topic); $ae=$ae[0];
 if($ae==0) { $topic_id=$topic; insertArray(array('user_id','topic_id'),$Ts); }
 }
+
+}//if (empty($auto_logoff))
 
 }//inserted post successfully
 

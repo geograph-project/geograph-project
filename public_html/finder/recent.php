@@ -85,14 +85,14 @@ if (true) {
 
 		$filter = 124913;
 		if ($filter) {
-			$rr = $db->getRow("SELECT gridimage_id FROM gridimage_search WHERE user_id != $filter ORDER BY gridimage_id DESC LIMIT 1499,1");
+			$rr = $db->getRow("SELECT gridimage_id FROM gridimage_search WHERE user_id != $filter ORDER BY gridimage_id DESC LIMIT 1099,1");
 			$min = $rr['gridimage_id']; // GetOne annoyingly blindy adds LIMIT 1 to end, even if already a LIMIT :( - getRow does NOT!
 
 			//$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search WHERE user_id != 124913"); DOESNT USE INDEX!
-			$max = $db->getOne("SELECT gridimage_id FROM gridimage_search WHERE user_id != $filter ORDER BY gridimage_id DESC LIMIT 1");
+			$max = $db->getOne("SELECT gridimage_id FROM gridimage_search WHERE user_id != $filter ORDER BY gridimage_id DESC"); //LIMIT 1
 		} else {
 			$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
-			$min = $max-1500;
+			$min = $max-1100;
 		}
 		$client->SetIDRange($min,$max+10);
 

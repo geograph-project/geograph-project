@@ -70,39 +70,37 @@ function isValidURL($url)
 
 /**
  * Heuristic spam check intended for email message checking
- * 
+ *
  */
 function isSpam($msg)
 {
 	//some spam features url and entity encoding to hide
 	//the real content from filters. Bugger off!
-	$msg=html_entity_decode(urldecode($msg)); 
+	$msg=html_entity_decode(urldecode($msg));
 	$msg=strtolower($msg);
-	
+
 	//no legitimate use for html or bbedit tags
 	if (strstr($msg, '[url')!==false)
 		return true;
 	if (strstr($msg, 'href=')!==false)
 		return true;
-		
+
 	//how many times does http appear?
 	$matches=array();
 	preg_match_all("{http}", $msg, $matches);
 	$count=count($matches[0]);
 
-	preg_match_all("{http://www.geograph.org.uk}", $msg, $matches);
+	preg_match_all("{https?://www.geograph.org.uk}", $msg, $matches);
 	$legit=count($matches[0]);
-	
+
 	//we'll let you off for using geograph links...
 	$count-=$legit;
 
 	if ($count>3)
 		return true;
 
-	
-	
 	return false;
-}	
+}
 
 /**
  * Return IP address of user
@@ -120,6 +118,8 @@ function getRemoteIP()
 	{
 		$ip=$_SERVER['REMOTE_ADDR'];
 	}
+	if (!preg_match('/^\d+(\.\d+)+$/',$ip)) //we often use getRemoteIP to insert directly into database. because from HTTP_X_FORWARDED_FOR there is a chance is spoofed, and vulnerable to SQL injection (although should be ok if REALLY behind cache, as OUR proxy will set it safely.
+		return 0;
 	return $ip;
 }
 

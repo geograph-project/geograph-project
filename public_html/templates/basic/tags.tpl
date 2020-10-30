@@ -53,8 +53,6 @@
 		<h2>Image Buckets</h2>
         </div>
 
-	<p>This is only a prototype, to get the ball rolling; more features will be added soon. <a href="/article/Image-Buckets">Read more about buckets here</a></p>
-
 {else}
 	<div style="float:right">
 		<a href="/article/Tags" class="about" style="font-size:0.7em">About tags on Geograph</a>
@@ -64,7 +62,6 @@
                 <a href="/tags/prefix.php?prefix=top" class="tab">Geographical Context</a>
 		<a href="/tags/prefix.php?prefix=subject" class="tab">Subjects</a>
                 <a href="/tags/prefix.php?prefix=type" class="tab">Types</a>
-                <a href="/tags/prefix.php?prefix=bucket" class="tab">Image Buckets</a>
                 <a href="/tags/prefix.php" class="tab">Other Prefixes</a>
         </div>
         <div style="position:relative;padding-bottom:3px" class="interestBox">
@@ -225,6 +222,7 @@
 	&middot; Search for <a href="/search.php?text={$q|escape:'url'}">images matching '{$q|capitalizetag|escape:'html'}'</a> instead
 {/if}
 
+<div style="display:none" data-nosnippet>Don't click these: <a href="/potmel.php">PotMel 1</a> <a href="/export.potmel.php">PotMel 2</a></div>
 
 {include file="_std_end.tpl"}
 

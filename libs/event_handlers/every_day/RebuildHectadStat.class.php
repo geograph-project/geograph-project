@@ -43,18 +43,59 @@ class RebuildHectadStat extends EventHandler
 
 		$db=&$this->_getDB();
 
-		$data = $db->getRow("SHOW TABLE STATUS LIKE 'hectad_stat_tmp'");
+                if (!$db->getOne("SELECT GET_LOCK('".get_class($this)."',10)")) {
+                        //only execute if can get a lock
+                        $this->_output(2, "Failed to get Lock");
+                         return false;
+                }
 
-		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*60*3)) {
-			//if a recent table give up this time. It might still be running.
-			return false;
+
+##################################
+//check another process
+
+                $tables = $db->getAssoc("SHOW TABLE STATUS LIKE 'hectad_stat%'");
+
+##################################
+//may need to create the original table
+
+                if (empty($tables['hectad_stat'])) {
+                        $db->Execute("
+CREATE TABLE `hectad_stat` (
+  `reference_index` tinyint(4) DEFAULT '1',
+  `x` int(11) NOT NULL DEFAULT '0',
+  `y` int(11) NOT NULL DEFAULT '0',
+  `hectad` varchar(7) NOT NULL DEFAULT '',
+  `landsquares` smallint(5) unsigned DEFAULT '0',
+  `images` int(11) unsigned NOT NULL DEFAULT '0',
+  `geographs` mediumint(8) unsigned DEFAULT '0',
+  `squares` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `geosquares` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `recentsquares` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `users` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `first_submitted` datetime DEFAULT NULL,
+  `last_submitted` datetime DEFAULT NULL,
+  `map_token` varchar(128) DEFAULT NULL,
+  `largemap_token` varchar(128) DEFAULT NULL,
+  `ftfusers` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`hectad`),
+  KEY `reference_index` (`reference_index`),
+  KEY `geosquares` (`geosquares`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1
+			");
 		}
 
-		$db->Execute("CREATE TABLE IF NOT EXISTS hectad_stat_tmp LIKE hectad_stat");
+##################################
+// create the TEMP table
 
-		$db->Execute("TRUNCATE hectad_stat_tmp"); //just incase we inheritied a old table.
+		if (empty($tables['hectad_stat_tmp'])) {
+			$db->Execute("CREATE TABLE hectad_stat_tmp LIKE hectad_stat");
+		} else {
+			$db->Execute("TRUNCATE hectad_stat_tmp");
+		}
 
 		$db->Execute("ALTER TABLE hectad_stat_tmp DISABLE KEYS");
+
+##################################
 
 		foreach (array(1,2) as $ri) {
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
@@ -63,7 +104,7 @@ class RebuildHectadStat extends EventHandler
 
 			foreach ($prefixes as $prefix) {
 
-				$db->Execute("INSERT INTO hectad_stat_tmp
+				$this->Execute("INSERT INTO hectad_stat_tmp
 				SELECT
 					reference_index,min(x) as x,min(y) as y,
 					CONCAT(SUBSTRING(grid_reference,1,".($letterlength+1)."),SUBSTRING(grid_reference,".($letterlength+3).",1)) AS hectad,
@@ -90,29 +131,36 @@ class RebuildHectadStat extends EventHandler
 				usleep(500);
 			}
 		}
+##################################
 
 		$db->Execute("UPDATE hectad_stat_tmp INNER JOIN hectad_stat USING (hectad)
 			SET hectad_stat_tmp.map_token = hectad_stat.map_token,
 			hectad_stat_tmp.largemap_token = hectad_stat.largemap_token
 			WHERE hectad_stat.map_token != '' OR hectad_stat.largemap_token != ''");
 
+##################################
+
 		$db->Execute("ALTER TABLE hectad_stat_tmp ENABLE KEYS");
 
-		$data = $db->getRow("SHOW TABLE STATUS LIKE 'hectad_stat_tmp'");
+##################################
 
-		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*30)) {
-			//make sure we have a recent table
+		$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
 
-			$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+		if ($db->getOne("SELECT GET_LOCK('hectad_stat',10)")) {
+			//check the table STILL exists, there is small chance another thread beat us to it, and renamed the tables!
+			$table = $db->getAll("SHOW TABLES LIKE 'hectad_stat_tmp'");
+			if (!empty($table)) {
 
-			//done in one operation so there is always a hectad_stat table, even if the tmp fails
-			//... well we did until it stopped working... http://bugs.mysql.com/bug.php?id=31786
-			//$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old, hectad_stat_tmp TO hectad_stat");
+				//done in one operation so there is always a hectad_stat table, even if the tmp fails
+				//... well we did until it stopped working... http://bugs.mysql.com/bug.php?id=31786
+				//$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old, hectad_stat_tmp TO hectad_stat");
 
-			$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old");
-			$db->Execute("RENAME TABLE hectad_stat_tmp TO hectad_stat");
+				$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old");
+				$db->Execute("RENAME TABLE hectad_stat_tmp TO hectad_stat");
 
-			$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+				$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+			}
+			$db->getOne("SELECT RELEASE_LOCK('hectad_stat')");
 
 			//return true to signal completed processing
 			//return false to have another attempt later
@@ -120,6 +168,9 @@ class RebuildHectadStat extends EventHandler
 		} else {
 			return false;
 		}
+
+##################################
+
 	}
 }
 

@@ -57,6 +57,10 @@ if (!empty($_POST['idea_id'])) {
 	$updates['description'] = $_POST['description'];
 	$db->Execute('INSERT INTO idea SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 }
+if (!empty($_POST)) {
+	header("Location: /stuff/ideamatrix.php");
+	exit;
+}
 
 $ideas = $db->getAssoc("SELECT i.*, COUNT(vote_id) AS votes, SUM(v.user_id = {$USER->user_id}) AS ownvote
 	FROM idea i LEFT JOIN idea_vote v ON (v.idea_id = i.idea_id AND v.comment_id = 0)

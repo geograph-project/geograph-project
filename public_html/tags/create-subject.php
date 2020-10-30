@@ -38,13 +38,19 @@ $db = GeographDatabaseConnection(false);
 	if (!empty($_POST)) {
 
 		$updates = $_POST;
+		$updates['subject'] = strtolower($updates['subject']);
 
 		$db->Execute('INSERT INTO subjects SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 
 	}
 	print "<p>Scroll to bottom for action form</p>";
 
-	dump_sql_table("select t.*,count(gridimage_id) from tag t left join subjects s on (t.tag = s.subject) left join tag_report using (tag_id) left join gridimage_tag using (tag_id) where t.prefix = 'subject' and t.status = 1 and s.subject is NULL and report_id IS NULL GROUP BY tag_id",'Unoffical Subject');
+	dump_sql_table("select tag_id,t.tag,t.user_id,t.created,t.updated,canonical,count(gridimage_id) from tag t left join subjects s on (t.tag = s.subject) left join tag_report using (tag_id) left join gridimage_tag using (tag_id) where t.prefix = 'subject' and t.status = 1 and s.subject is NULL and report_id IS NULL GROUP BY tag_id",
+		'Unoffical Subjects (been created as a subject:prefix tag, but not in the offical tag list)');
+
+	dump_sql_table("select tag_id,tag.user_id,tag_report.tag,tag2,tag_report.status,approver_id from tag inner join tag_report using (tag_id) where prefix = 'subject' and tag.status = 0 order by tag_id",
+		'Previouslly created subject tags, that have already been redirected');
+	print "Any time one of these tags is added to an image, the tag will automatically be converted to the second form";
 
 	?>
 	<br><br>
@@ -53,7 +59,7 @@ $db = GeographDatabaseConnection(false);
 	<form method=post>
 		Choose subject to edit: <select name="subject" required><option></option>
 			<?
-			foreach ($db->getCol("SELECT t.tag FROM tag t left join subjects s on (t.tag = s.subject) where prefix = 'subject' and subject is null and t.status = 1 ORDER BY t.tag") as $value) {
+			foreach ($db->getCol("SELECT t.tag FROM tag t left join subjects s on (t.tag = s.subject) left join tag_report r using (tag_id) where prefix = 'subject' and subject is null and t.status = 1  AND r.report_id IS NULL ORDER BY t.tag") as $value) {
 				print "<option>$value</option>";
 			} ?>
 		</select><br><br>
@@ -101,6 +107,8 @@ $db = GeographDatabaseConnection(false);
 $smarty->display('_std_end.tpl');
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
+	static $idx = 1;
+
         $result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
 
         $row = mysql_fetch_array($result,MYSQL_ASSOC);
@@ -112,7 +120,10 @@ if (mysql_num_rows($result) ==0) {
         return;
 }
 
-        print "<TABLE border='1' cellspacing='0' cellpadding='2'><THEAD><TR>";
+	if ($idx ==1)
+		print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
+
+        print "<TABLE border='1' cellspacing='0' cellpadding='2' class=\"report sortable\" id=\"list$idx\"><THEAD><TR>";
         foreach ($row as $key => $value) {
                 print "<TH>$key</TH>";
         }
@@ -135,6 +146,8 @@ if (mysql_num_rows($result) ==0) {
                 print "</TR>";
         } while ($row = mysql_fetch_array($result,MYSQL_ASSOC));
         print "</TR></TBODY></TABLE>";
+
+	$idx++;
 }
 
 

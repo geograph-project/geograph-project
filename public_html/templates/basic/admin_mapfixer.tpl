@@ -28,8 +28,10 @@ Land percent for <span id="voteref" style="font-weight:bold"></span>&nbsp; is
 
 <div style="margin-top:10px" id="voteinfo"></div>
 
+<iframe src="about:blank" id="mapframe" width=400 height=450 style=display:none></iframe>
+
 </div>
-<div style="font-size:0.7em">Great Britain open in Get-a-Map, Ireland opens our 'Location' page which displays Google Maps.</div>
+<div style="font-size:0.7em">Great Britain our own OpenSpace Map, Ireland opens our 'Location' page which displays Google Maps.</div>
 
 <script language="javascript">
 
@@ -90,7 +92,10 @@ function shownext()
 		document.getElementById('voteref').innerHTML=gr4;
 		currentgr = gr4;
 
-		if (gr4.length != 6) {
+		if (true) {
+			document.getElementById("mapframe").style.display='';
+			document.getElementById("mapframe").src = "/showmap.php?gridref="+gr4;
+		} else if (gr4.length != 6) {
 			var wWidth = 740;
 			var wHeight = 520;
 			var wLeft = Math.round(0.5 * (screen.availWidth - wWidth));

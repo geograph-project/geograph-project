@@ -88,7 +88,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$q = $db->Quote($_GET['prefix']);
 		$title = "[".htmlentities($_GET['prefix'])."] Prefixed Tags";
 
-		$limit = 1500;
+		if ($template=='tags_prefix.tpl') {
+			$limit = 12000;
+		} else {
+			$limit = 1500;
+		}
 		if ($template=='tags_prefix_subject.tpl') {
 			$sql = "SELECT tag,count as images,grouping,maincontext
 			FROM tag_stat INNER JOIN tag USING (tag_id) INNER JOIN subjects ON (subject=tag) left join category_primary on (top = maincontext)

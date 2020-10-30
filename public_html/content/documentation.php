@@ -28,7 +28,7 @@ init_session_or_cache(3600*3, 900); //cache publically, and privately
 
 $smarty = new GeographPage;
 
-
+pageMustBeHTTPS();
 
 if (isset($_GET['1'])) {
 	$template = 'content_docs_tiles.tpl';

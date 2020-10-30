@@ -19,17 +19,17 @@
 	
 	{literal}
 		<script type="text/javascript">
-			function $(id) {
+			function byID(id) {
 				return document.getElementById(id);
 			}
 		
 			function updateAttribDivs() {
 				isself = document.theForm.pattrib[0].checked;
 				
-				$('dt_self').style.fontWeight = isself?'bold':'';
-				$('dd_self').style.display = isself?'':'none';
-				$('dt_other').style.fontWeight = isself?'':'bold';
-				$('dd_other').style.display = isself?'none':'';
+				byID('dt_self').style.fontWeight = isself?'bold':'';
+				byID('dd_self').style.display = isself?'':'none';
+				byID('dt_other').style.fontWeight = isself?'':'bold';
+				byID('dd_other').style.display = isself?'none':'';
 			}
 			AttachEvent(window,'load',updateAttribDivs,false);
 		</script>
