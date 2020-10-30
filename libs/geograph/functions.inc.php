@@ -126,7 +126,7 @@ function split_timer($profile,$key='',$id='') {
 		$unique = uniqid();
 	}
 
-
+	if ($filehandle)
 	fputcsv($filehandle,array(
 		$_SERVER['REQUEST_TIME'], //timestamp of request start
 		$unique, //helps idenity unique reqests

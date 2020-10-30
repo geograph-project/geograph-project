@@ -16,7 +16,7 @@ require "./_scripts.inc.php";
 
 
 
-$files = "{$param['dir'}/public_html/sitemap/root/*.xml";
+$files = "{$param['dir']}/public_html/sitemap/root/*.xml";
 
 $h = popen("find $files -mtime -1 -type f",'r');
 while ($h && !feof($h)) {

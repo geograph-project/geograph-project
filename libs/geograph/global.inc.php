@@ -71,8 +71,15 @@ if (isset($_GET['php_profile']) && !class_exists('Profiler',false)) {
 //include domain specific configuration - if your install fails on
 //this line, copy and adapt one of the existing configuration
 //files in /libs/conf
-$CONF_PROFILE = $_SERVER['CONF_PROFILE'] ?? $_SERVER['HTTP_HOST'];
-require('conf/'.$CONF_PROFILE.'.conf.php');
+
+if (stream_resolve_include_path('conf/'.$_SERVER['HTTP_HOST'].'.conf.php')) {
+	//even if using CONF_PROFILE, there MAY be a specific config file to use
+	require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php'); //this file will STILL need to use CONF_PROFILE
+
+} elseif (!empty($_SERVER['CONF_PROFILE'])) {
+	require('conf/'.$_SERVER['CONF_PROFILE'].'.conf.php');
+}
+
 @include('conf/revisions.conf.php');
 
 #################################################

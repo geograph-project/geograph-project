@@ -81,6 +81,7 @@ $_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html';
 $_SERVER['HTTP_HOST'] = $param['config'];
 $_SERVER['REMOTE_ADDR'] = null;
 $_SERVER['HTTP_USER_AGENT'] = 'Geograph Script';
+$_SERVER['REQUEST_URI'] = $argv[0];
 
 //main include
 require_once('geograph/global.inc.php');

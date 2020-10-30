@@ -54,7 +54,8 @@ function status($msg)
 function check_include($file)
 {
 	$ok=false;
-	$f=@fopen ($file, 'r', true);	
+	//fopen used deliberately, so it checks include_path
+	$f=@fopen ($file, 'r', true);
 	if ($f)
 	{
 		fclose($f);
@@ -211,9 +212,11 @@ $inc=realpath($_SERVER['DOCUMENT_ROOT'].'/../libs');
 if (check_include('geograph/global.inc.php'))
 {
 	//include path is ok - let see if it contains the other stuff we need
-	$CONF_PROFILE = $_SERVER['CONF_PROFILE'] ?? $_SERVER['HTTP_HOST'];
-	if (!check_include('conf/'.$CONF_PROFILE.'.conf.php'))
+	if (stream_resolve_include_path('conf/'.$_SERVER['HTTP_HOST'].'.conf.php')) {
+		//we knwo the file eixsts!
+	} elseif (!empty($_SERVER['CONF_PROFILE']) && !check_include('conf/'.$_SERVER['CONF_PROFILE'].'.conf.php'))
 		fail('conf/'.$_SERVER['CONF_PROFILE'].'.conf.php not found - copy and adapt the www.example.com.conf.php file');
+
 	if (!check_include('adodb/adodb.inc.php'))
 		fail("ADOdb not found in $inc/adodb - download and install it there");
 	if (!check_include('smarty/libs/Smarty.class.php'))
@@ -230,7 +233,14 @@ $example=$CONF;
 unset($CONF);
 
 //try and include the real configuration
-include('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
+
+if (stream_resolve_include_path('conf/'.$_SERVER['HTTP_HOST'].'.conf.php')) {
+	//even if using CONF_PROFILE, there MAY be a specific config file to use
+	require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php'); //this file will STILL need to use CONF_PROFILE
+
+} elseif (!empty($_SERVER['CONF_PROFILE'])) {
+	require('conf/'.$_SERVER['CONF_PROFILE'].'.conf.php');
+}
 
 //check everything is set
 foreach($example as $name=>$value)
