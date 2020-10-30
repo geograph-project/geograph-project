@@ -1496,60 +1496,6 @@ CREATE TABLE `user_stat` (
   KEY `points` (`points`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
---
--- Table structure for table `wordnet`
---
-
-DROP TABLE IF EXISTS `wordnet`;
-CREATE TABLE `wordnet` (
-  `gid` int(11) NOT NULL DEFAULT '0',
-  `len` char(1) NOT NULL DEFAULT '',
-  `words` varchar(64) NOT NULL DEFAULT '',
-  `title` smallint(6) NOT NULL DEFAULT '0',
-  `comment` smallint(6) NOT NULL DEFAULT '0',
-  `total` smallint(6) NOT NULL DEFAULT '0',
-  KEY `len` (`len`,`words`),
-  KEY `gid` (`gid`),
-  KEY `gid_2` (`gid`,`words`),
-  KEY `gid_3` (`gid`,`title`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `wordnet1`
---
-
-DROP TABLE IF EXISTS `wordnet1`;
-CREATE TABLE `wordnet1` (
-  `gid` int(11) NOT NULL DEFAULT '0',
-  `words` varchar(64) NOT NULL DEFAULT '',
-  `title` smallint(6) NOT NULL DEFAULT '0',
-  KEY `gid_2` (`gid`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `wordnet2`
---
-
-DROP TABLE IF EXISTS `wordnet2`;
-CREATE TABLE `wordnet2` (
-  `gid` int(11) NOT NULL DEFAULT '0',
-  `words` varchar(64) NOT NULL DEFAULT '',
-  `title` smallint(6) NOT NULL DEFAULT '0',
-  KEY `gid_2` (`gid`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `wordnet3`
---
-
-DROP TABLE IF EXISTS `wordnet3`;
-CREATE TABLE `wordnet3` (
-  `gid` int(11) NOT NULL DEFAULT '0',
-  `words` varchar(64) NOT NULL DEFAULT '',
-  `title` smallint(6) NOT NULL DEFAULT '0',
-  KEY `gid_2` (`gid`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

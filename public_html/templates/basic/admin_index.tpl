@@ -164,10 +164,6 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <li><a title="DB Check" href="/admin/dbcheck.php">Database Check</a> analyse database for
 database or application problems</li>
 
-<li>Rebuild <a title="Rebuild wordnet" href="/admin/buildwordnet.php">WordNet</a>/<a 
-title="Rebuild gridimage_search" href="/admin/buildgridimage_search.php">Search Cache</a> - use if
-tables become corrupted</li>
-
 </ul>
 <h3>Developer Tools</h3>
 <ul>
