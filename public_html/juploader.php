@@ -138,7 +138,16 @@ function UploadPicture() {
 		$um->setSubject($m[1]);
 	} else
 		$um->setClass($_POST['feature']);
+	
 	$um->setUserStatus($_POST['supplemental']);
+	
+	if (!empty($_POST['largestsize'])) { //juppy doesnt send this, but allow for the possiblity.
+		$um->setLargestSize(intval($_POST['largestsize']));
+	} elseif (!empty($USER->upload_size)) {
+		$um->setLargestSize($USER->upload_size);
+	} else {
+		$um->setLargestSize(1024); //other submissions methods implement a default of 1024 now. 
+	}
 
 	$um->processUpload($_FILES['uploadfile']['tmp_name']);
 
