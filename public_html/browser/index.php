@@ -65,7 +65,7 @@ if (!empty($_GET['_escaped_fragment_'])) {
         $mkey = $_SERVER['HTTP_HOST'];
 	$url = $CONF['browser_url'];
 	if (!empty($_GET['t'])) {
-		$url .= "&".$_GET['t'];
+		$url .= "&t=".$_GET['t'];
 		$mkey .= $url;
 	}
         if (rand(1,10) > 5 && $memcache->valid) {
