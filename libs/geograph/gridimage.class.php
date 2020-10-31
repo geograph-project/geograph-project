@@ -564,10 +564,7 @@ split_timer('gridimage'); //starts the timer
 		}
 
 		$extra_meta = array();
-		if ($this->grid_square->reference_index == 2)
-			$extra_meta[] = "<link rel=\"canonical\" href=\"https://www.geograph.ie/photo/{$this->gridimage_id}\" />";
-		else
-			$extra_meta[] = "<link rel=\"canonical\" href=\"https://www.geograph.org.uk/photo/{$this->gridimage_id}\" />";
+		$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$this->grid_square->reference_index]}/photo/{$this->gridimage_id}\" />";
 
 		if ($CONF['template']!='archive') {
 

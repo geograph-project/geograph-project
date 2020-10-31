@@ -62,11 +62,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$data = $db->GetRow("SHOW TABLE STATUS LIKE 'hectad_stat'");
 	$smarty->assign('updated',$data['Update_time']);
 
-        if ($row['reference_index'] == 2) {
-                $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"https://www.geograph.ie/gridref/{$row['hectad']}\"/>");
-        } else {
-                $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"https://www.geograph.org.uk/gridref/{$row['hectad']}\"/>");
-        }
+        $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$row['reference_index']]}/gridref/{$row['hectad']}\"/>");
 
 	require_once('geograph/mapmosaic.class.php');
 	$mosaic=new GeographMapMosaic;
