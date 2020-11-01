@@ -195,6 +195,7 @@ if (empty($_GET['review'])) {
 	$sql = "SELECT gi.*, pending_id, status
 		FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
 		WHERE gridimage_id = $id
+		ORDER BY pending_id DESC
 		LIMIT 1";
 }
 
@@ -228,6 +229,7 @@ if ($data) {
 		// ... although in this case, ther MAY not be a '640px' thumb, in which case, it SHOULD be idential!
 
 		$image->pendingUrl = $image->_getOriginalpath(true,false,'_original');
+		$image->showingcurrent = true;
 
 		$size = 640;
 		$thumbnail = $image->_getOriginalpath(true,false,"_{$size}x{$size}");

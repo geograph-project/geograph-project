@@ -15,32 +15,40 @@
 	<input type="hidden" name="pending_id" value="{$image->pending_id}"/>
 	<br/>
 
-	<table border="1" cellpadding="4" cellspacing="0">
+	<table cellpadding="10" cellspacing="0" style="background-color:white">
 		<tr>
 			<th>
-				New Image (640px preview)
+				{if $image->showingcurrent}
+					Current Larger Image
+				{else}
+					New Larger Image - Pending Approval
+				{/if} (640px preview)
 			</th>
 			<th>
-				Current Image <br>
+				Original 640px Image <br>
 				Moderation Status: {$image->moderation_status}
 			</th>
 		</tr>
 		<tr>
 			<td>
-				<div class="img-shadow" id="mainphoto"><img src="{$image->previewUrl}?{$smarty.now}" name="new"></div>
+				<div class="img-shadow" id="mainphoto"><img src="{$image->previewUrl}?{$smarty.now}" name="new" style="border:none"></div>
 
 			</td>
 			<td>
-				<div class="img-shadow" id="mainphoto"><a href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'alt=':'name="old" alt='}</a></div>
+				<div class="img-shadow" id="mainphoto"><a href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'alt=':'name="old" style="border:none" alt='}</a></div>
 			</td>
 		</tr>
 		<tr>
 			<th>
-				New Image (<a href="{$image->pendingUrl}" target="_preview">View full size</a> - {$image->pendingSize|thousends} bytes!)
+				{if $image->showingcurrent}
+                                        Current Larger Image
+                                {else}
+                                        New Larger Image (Pending Approval)
+                                {/if} (<a href="{$image->pendingUrl}" target="_preview">View full size</a> - {$image->pendingSize|thousends} bytes!)
 			</th>
 			<th>
-				Current Image
-<small>If the image fails to load, try <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'_213x160.jpg'))">213 x 160</a>, or <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'_120x120.jpg'))">120 x 120</a>       thumbnail,<br/> or back to <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'.jpg'))">original</a>.</small>
+				Original 640px Image<br>
+<small>If the image fails to load, try <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'_213x160.jpg'))">213 x 160</a>, or <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'_120x120.jpg'))">120 x 120</a>       thumbnail,<br/> or back to <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'.jpg'))">640px</a>.</small>
 			</th>
 		</tr>
 	</table>
