@@ -104,6 +104,8 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 	//set datestamp on file
 	$unixtime=strtotime($maxdate." 23:59:59");
+	if ($unixtime>time()) //it could be updated TODAY, claiming end of day is wrong!
+		$unixtime=time();
 	touch($filename,$unixtime);
 
 	//gzip it

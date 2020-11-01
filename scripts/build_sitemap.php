@@ -104,20 +104,18 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	if ($last_id)
 		$where[] = "gridimage_id > $last_id"; //still fast, as ordered by id too, it can use it as a index.
 
-	$recordSet = &$db->Execute($sql = 
+	$recordSet = &$db->Execute(
 		"select i.gridimage_id,date(upd_timestamp) as moddate,title,user_id,realname ".
 		"from gridimage_search as i ".
 		"where ".implode(" and ",$where)." ".
 		"order by i.gridimage_id ".
 		"limit $urls_per_sitemap");
 
-print "$sitemap :: $maxdate < $datecrit\n$sql\n\n\n";
-
 	while (!$recordSet->EOF) {
-		$date=$recordSet->fields['moddate'];
-
 		//store the id from the LAST row (need to do this now, because may abort running the full build)
 		$last_id = $recordSet->fields['gridimage_id'];
+
+		$date=$recordSet->fields['moddate'];
 
                 if (strcmp($date,$maxdate)>0)
                         $maxdate=$date;
@@ -125,7 +123,7 @@ print "$sitemap :: $maxdate < $datecrit\n$sql\n\n\n";
                 $recordSet->MoveNext();
         }
 
-        $recordSet->moveFirst();
+	$image=new GridImage;
 
 	if ($maxdate < $datecrit) {
 		//abort early
@@ -144,7 +142,7 @@ print "$sitemap :: $maxdate < $datecrit\n$sql\n\n\n";
                 continue;
 	}
 
-	$image=new GridImage;
+        $recordSet->moveFirst();
 
 	//write one <url> line per result...
 	while (!$recordSet->EOF)
@@ -206,6 +204,8 @@ print "$sitemap :: $maxdate < $datecrit\n$sql\n\n\n";
 	//gzip it
 
 	$unixtime=strtotime("$maxdate 23:59:59");
+	if ($unixtime>time()) //it could be updated TODAY, claiming end of day is wrong!
+		$unixtime=time();
 
 	if ($param['normal']) {
 		fprintf($fh, '</urlset>');
