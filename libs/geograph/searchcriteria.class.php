@@ -328,7 +328,7 @@ class SearchCriteria
 							$this->sphinx['sort'] = 'auser_id';
 							break;
 						case 'potd':
-							$sql_order = "(vote_baysian >= 3.2) desc,crc32(concat(gi.gridimage_id,yearweek(now()))) desc";
+							$sql_order = "(vote_baysian >= 3.2) desc,CRC32(concat(gi.gridimage_id,yearweek(now()))) desc";
 							$this->sphinx['sort'] = 'rand()';
 							$this->sphinx['compatible_order'] = 0;
 							break;
