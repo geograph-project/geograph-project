@@ -49,22 +49,29 @@ class FileSystem extends S3 {
 	function __construct() {
 		global $CONF;
 
-		if (empty($CONF['aws_role']))
+		//fetch folder first to find the only creds available?
+		$iamrole = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/");
+
+		if (empty($iamrole))
 			return; //no more construction needed, the class can run without S3.
 
-		//todo, maybe fetch folder first to find the only creds available?
-			//$iam-role = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/");
-		$json = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/".$CONF['aws_role']);
+		$json = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/$iamrole");
 
 		// assume it never fails for now! tofix (use memcache/apc??)
 		$decode = json_decode($json,true);
 
 //todo, get buckets from $CONF ?
+if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
+	$this->buckets = array(
+                "{$_SERVER['BASE_DIR']}/public_html/" => "{$CONF['s3_bucket_name']}/",
+		"{$_SERVER['BASE_DIR']}/rastermaps/" => 'attic.geograph.org.uk/rastermaps/',
+	);
+}
 
 		parent::__construct($decode['AccessKeyId'], $decode['SecretAccessKey'], false);
 
 			//curl http://169.254.169.254/latest/meta-data/placement/region --although we want the region of the bucket(s), not the current instance!
-		$this->setRegion('eu-west-1'); //can also pass this in construct, todo, shouoldnt be harcdoed. 
+		$this->setRegion('eu-west-1'); //can also pass this in construct, todo, shouoldnt be harcdoed.
 
 		if (!empty($decode["Token"])) {
 			$this->setSignatureVersion('v4');

@@ -23,26 +23,29 @@
 
 ############################################
 
-$param = array('execute'=>0);
+$param = array(
+	'execute'=>0,
+	'verbose'=>0,
+	'src' => "/tmp/197537_f6908b09_213x160.jpg",
+	'dst' => "photos/19/75/197537_f6908b09_213x160.jpg.test.jpg", //a path 'relative' to document-root!
+);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
 ############################################
 
-$local = "/tmp/197537_f6908b09_213x160.jpg";
-$destination = "photos/19/75/197537_f6908b09_213x160.jpg"; //no slash at start!
-
-$destination .= ".test.jpg";
-
-############################################
-
 if (empty($filesystem)) //eventually gloabl will do this!
 	$filesystem = new FileSystem(); //sets up configuation automagically
 
+if (!empty($param['verbose'])) {
+	$GLOBALS['curl_verbose'] = $param['verbose'];
+	print_r($filesystem);
+}
+
 ############################################
 
-$destination = $_SERVER['DOCUMENT_ROOT']."/".$destination;
+$destination = $_SERVER['DOCUMENT_ROOT']."/".$param['dst']);
 
 $r = $filesystem->getBucketPath($destination);
 
@@ -53,7 +56,7 @@ if (empty($param['execute']))
 
 ############################################
 
-$r = $filesystem->copy($local,$destination);
+$r = $filesystem->copy($param['src'], $destination);
 
 print_r($r);
 
