@@ -12,6 +12,7 @@ RUN set -eux; \
     nginx \
     php-bz2 \
     php-memcache \
+    php-redis \
     procps \
   ; \
   rm -f /etc/nginx/sites-enabled/default; \
