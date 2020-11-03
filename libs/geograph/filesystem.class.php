@@ -39,12 +39,7 @@ class FileSystem extends S3 {
 	var $SecurityToken = ''; //comes from meta-data
 	var $defaultStorage = self::STORAGE_CLASS_IT;
 
-	var $buckets = array( //no slash at start! at start of bucket paths. so put slash on folder to match
-		"/var/www/geograph_svn/public_html/" => 'uk-org-geograph-staging-photos/',
-		"/var/www/geograph_live/public_html/" => 'photos.geograph.org.uk/',
-		"/var/www/geograph_svn/rastermaps/" => 'attic.geograph.org.uk/rastermaps/',
-		"/var/www/geograph_live/rastermaps/" => 'attic.geograph.org.uk/rastermaps/',
-	);
+	var $buckets = array();
 
 	function __construct() {
 		global $CONF;
@@ -63,8 +58,8 @@ class FileSystem extends S3 {
 //todo, get buckets from $CONF ?
 if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 	$this->buckets = array(
-                "{$_SERVER['BASE_DIR']}/public_html/" => "{$CONF['s3_bucket_name']}/",
-		"{$_SERVER['BASE_DIR']}/rastermaps/" => 'attic.geograph.org.uk/rastermaps/',
+                "{$_SERVER['BASE_DIR']}/public_html/" => $CONF['s3_photos_bucket_path'],
+		"{$_SERVER['BASE_DIR']}/rastermaps/" => $CONF['s3_rastermaps_bucket_path'],
 	);
 }
 
