@@ -30,6 +30,8 @@ $param=array(
     'info'=>false,
 );
 
+$ABORT_GLOBAL_EARLY=1; //avoids global.inc.php auto connecteding to redis to with "$memcache" variable
+
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
