@@ -45,7 +45,7 @@ if (!empty($param['verbose'])) {
 
 ############################################
 
-$destination = $_SERVER['DOCUMENT_ROOT']."/".$param['dst']);
+$destination = $_SERVER['DOCUMENT_ROOT']."/".$param['dst'];
 
 $r = $filesystem->getBucketPath($destination);
 
