@@ -28,6 +28,8 @@ $param=array(
         'loop'=>1,
     'host'=>false,
     'info'=>false,
+    'reconnect'=>false,
+    'sleep'=>false,
 );
 
 $ABORT_GLOBAL_EARLY=1; //avoids global.inc.php auto connecteding to redis to with "$memcache" variable
@@ -40,7 +42,7 @@ require "./_scripts.inc.php";
 if ($param['host']) {
     $CONF['redis_host'] = $param['host'];
 }
-print("Using server: $CONF[redis_host]\n");
+print(date('H:i:s')."\tUsing server: $CONF[redis_host]\n");
 
 ############################################
 
@@ -80,7 +82,13 @@ print "key = $rediskey   (db: {$CONF['memcache']['smarty']['redis']})\n";
 
 
 foreach (range(1,$param['loop']) as $r) {
-
+	if (!empty($param['reconnect'])) {
+		print(date('H:i:s')."\t$r. Using server: $CONF[redis_host]\n");
+		$redis = new Redis();
+		$redis->connect($CONF['redis_host'], $CONF['redis_port']);
+		if (!empty($CONF['memcache']['smarty']['redis']))
+			$redis->select($CONF['memcache']['smarty']['redis']);
+	}
 
 		$before = microtime(true);
 		// $str = $redis_handler->Get($rediskey);
@@ -90,8 +98,11 @@ foreach (range(1,$param['loop']) as $r) {
 		$after = microtime(true);
 
 
-		printf("\t %.3f seconds, %d bytes\n", $after-$before, strlen($str));
+		printf("%s\t %.3f seconds, %d bytes\n", date('H:i:s'), $after-$before, strlen($str));
 
+	if (!empty($param['sleep'])) {
+		sleep($param['sleep']);
+	}
 }
 
 ############################################
