@@ -1922,7 +1922,7 @@ class S3
 	* @param string &$file File path
 	* @return string
 	*/
-	private static function __getMIMEType(&$file)
+	public static function __getMIMEType(&$file)
 	{
 		static $exts = array(
 			'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'gif' => 'image/gif',

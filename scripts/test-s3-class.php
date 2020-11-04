@@ -26,6 +26,7 @@
 $param = array(
 	'execute'=>0,
 	'verbose'=>0,
+	'read'=>0,
 	'src' => "/tmp/197537_f6908b09_213x160.jpg",
 	'dst' => "photos/19/75/197537_f6908b09_213x160.jpg.test.jpg", //a path 'relative' to document-root!
 );
@@ -45,18 +46,46 @@ if (!empty($param['verbose'])) {
 
 ############################################
 
+$local = $param['src'];
 $destination = $_SERVER['DOCUMENT_ROOT']."/".$param['dst'];
 
 $r = $filesystem->getBucketPath($destination);
 
 print_r($r);
 
+############################################
+
+if (!empty($param['read'])) {
+	list($bucket, $uri) = $filesystem->getBucketPath($destination);
+	$r = $filesystem->getObject($bucket, $uri);
+	if (!empty($r) && !empty($r->body))
+		$r->body = "string(".strlen($r->body)." bytes)";
+	print_r($r);
+	exit;
+}
+
+
+############################################
+
 if (empty($param['execute']))
 	exit;
 
 ############################################
 
-$r = $filesystem->copy($param['src'], $destination);
+$r = $filesystem->copy($local, $destination);
 
+print "COPY: $local -> $destination :";
 print_r($r);
+print "\n";
 
+############################################
+
+$destination = str_replace('213x160',"120x120",$destination);
+
+$r = $filesystem->execute($cmd = "convert %s -resize 120x120 jpg:%d",$local,$destination);
+
+print "$cmd: $local -> $destination :";
+print_r($r);
+print "\n";
+
+############################################

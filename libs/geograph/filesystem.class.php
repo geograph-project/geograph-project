@@ -84,6 +84,10 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 		return array(null, $filename);
 	}
 
+#########################################################
+// the main workhorse for uploading a file!
+
+	//copy a local file to remote. Can copy local->local, but cant copy from remote.
 	function copy($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
 
 		//normal filesystems will do this, but we need to do it. In case of S3, the dir wont exist, so can't actully use is_dir($dest) type logic!
@@ -105,8 +109,10 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 			//set the mtime, for compatiblity with s3fs etc
 			$headers['x-amz-meta-mtime'] = filemtime($local);
 
-			/* we cant use putObjectFile as it doesnt have storage class param!*/
+			//we do this ourselfs, as S3 class built in detection works on source file, not destination! We tend to have files using known extensions anyway, so works (because cant use fileinfo)
+			$headers['Content-Type'] = parent::__getMIMEType($destination);
 
+			/* we cant use putObjectFile as it doesnt have storage class param!*/
 			//  putObject($input, $bucket, $uri, $acl = self::ACL_PRIVATE, $metaHeaders = array(), $requestHeaders = arr
 			return parent::putObject(self::inputFile($local), $bucket, $destination, $acl, array(), $headers, $storageClass);
 		} else {
@@ -116,12 +122,15 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 		}
 	}
 
-	//executes command, appending the temporally fielname to the end. Its assumes the comand will write to the file, which is then copied/uploaded
+#########################################################
+
+	//executes command, assumes that the command is WRITING a file to fileystem
+	//appending the temporally fielname to the end. Its assumes the comand will write to the file, which is then copied/uploaded
 	function execute($cmd, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
 		$tmpfname = tempnam("/tmp", "FOO");
 		passthru($cmd.$tmpfname); //todo, maybe passthur not right version
-		if (filesize($tmpfname)) //dont bother copying empyu files - probably a command failure 
-			copy($tmpfname, $destination);
+		if (filesize($tmpfname)) //dont bother copying empyu files - probably a command failure
+			$this->copy($tmpfname, $destination, $acl, $storage);
 
 		//always, delete, even if failed
 		unlink($tmpfname);
