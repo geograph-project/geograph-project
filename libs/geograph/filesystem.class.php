@@ -122,11 +122,63 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 		}
 	}
 
+	//so can write without a temporally file
+        function file_put_contents($destination, &$data) {
+                list($bucket, $destination) = $this->getBucketPath($destination);
+                if ($bucket) {
+			$headers = array();
+
+                        $storageClass = empty($storage)?$this->defaultStorage:$storage;
+                        //small files, store as STANDARD rather than STANDARD_IA, as there is a minumum of 120kb. 50k is used, because IA is still 40% cost of STD
+                        if ($storageClass == 'STANDARD_IA' && strlen($data) < 50000)
+                                $storageClass = 'STANDARD';
+
+			$headers['x-amz-meta-mtime'] = time();
+
+                        //we do this ourselfs, as S3 class built in detection works on source file, not destination! We tend to have files using known extensions anyway, so works (because cant use fileinfo)
+                        $headers['Content-Type'] = parent::__getMIMEType($destination);
+
+			return parent::putObject($data, $bucket, $destination, $acl, array(), $headers, $storageClass);
+                } else {
+                        return file_put_contents($destination, $data);
+                }
+        }
+
+#########################################################
+
+	//really a copy+delete
+	function rename($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+
+		//normal filesystems will do this, but we need to do it. In case of S3, the dir wont exist, so can't actully use is_dir($dest) type logic!
+		if (substr($destination,-1) == '/')
+			$destination .= basename($local);
+
+		list($bucket, $destination2) = $this->getBucketPath($destination);
+
+		if ($bucket) {
+			//may as well use logic already in copy.
+			$r = $this->copy($local, $destination, $acl, $storage);
+
+			if ($r) //todo, not sure how robust this is!
+				unlink($local);
+		} else {
+			rename($local, $destination);
+		}
+	}
+
+	function move_uploaded_file($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+		if (!is_uploaded_file($local)) {
+			return FALSE;
+		}
+		$this->copy($local, $destination, $acl, $storage);
+	}
+
 #########################################################
 
 	//executes command, assumes that the command is WRITING a file to fileystem
 	//appending the temporally fielname to the end. Its assumes the comand will write to the file, which is then copied/uploaded
-	function execute($cmd, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+	//this was the original version, but only dealt with using a local file for 'source'
+	function execute2($cmd, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
 		$tmpfname = tempnam("/tmp", "FOO");
 		passthru($cmd.$tmpfname); //todo, maybe passthur not right version
 		if (filesize($tmpfname)) //dont bother copying empyu files - probably a command failure
@@ -136,6 +188,184 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 		unlink($tmpfname);
 	}
 
+#########################################################
+// special execute wrapper
+
+	//execute, command,  assumes that the command is WRITING a file to fileystem
+	function execute($cmd, $local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+		if (!empty($local)) {
+			list($sbucket, $sfilename) = $this->getBucketPath($local);
+			if ($sbucket) {
+				//download!
+				$tmp_src = $this->_get_remote_as_tempfile($sbucket, $sfilename);
+				$cmd = str_replace('%s',$tmp_src, $cmd);
+			} else {
+				$cmd = str_replace('%s',$local, $cmd);
+			}
+		}
+
+		if (!empty($destination)) {
+			if (strpos($cmd,'%d')===FALSE)
+				$cmd.="%d"; //add to end!
+			list($dbucket, $dfilename) = $this->getBucketPath($destination);
+			if ($dbucket) {
+				//upload
+				$tmp_dst = tempnam("/tmp", "l".getmypid());
+				$cmd = str_replace('%d',$tmp_dst, $cmd);
+			} else {
+				$cmd = str_replace('%d',$destination, $cmd);
+			}
+		}
+
+print "$cmd\n";
+
+                passthru($cmd); //todo, maybe passthur not right version
+
+		if (!empty($tmp_dst)) {
+	                if (filesize($tmp_dst)) //dont bother copying empyu files - probably a command failure
+				$this->copy($tmp_dst, $destination, $acl, $storage);
+
+			//always, delete, even if failed
+	                unlink($tmp_dst);
+		} else {
+			//if writing to local file, nothing more todo?
+		}
+	}
+
+	//
+	function _get_remote_as_tempfile($bucket, $filename) {
+		//todo add caching
+		$tmpfname = tempnam("/tmp", "r".getmypid());
+
+		$this->getObject($bucket, $filename, $tmpfname);
+
+		//todo, register shutdown function to unlink it!
+		return $tempfname;
+	}
+
+#########################################################
+// functions to work on files
+
+	function is_dir($filename) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			return true; //fake, most likely use for is_dir, is to check if need to mkdir, which dont with S3!
+		} else {
+			return is_dir($filename);
+		}
+	}
+
+	function mkdir($filename, $mode = 0777, $recursive = FALSE) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			return true; //fake, S3 doesnt have real directions, can write any key
+		} else {
+			return mkdir($filename, $mode, $recursive);
+		}
+	}
+
+#########################################################
+// function to READ files from remote.
+
+	function file_exists($filename) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			//for photos, use our getimagesize, which is optmized to use memcache etc to avoid FS calls where possible.
+			if (strpos($bucket,'photos') !== FALSE && strpos($filename,'.jpg')) {
+				return $this->getimagesize($filename)?1:0;
+			}
+			//getObjectInfo
+		} else {
+			return file_exists($filename);
+		}
+	}
+
+	function getimagesize($filename) {
+		return true; //todo!
+	}
+
+
+	//dont support additional params for now
+	function file_get_contents($filename) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			//use temp file for now. maybe could use getObject directly, to avoid wrtiing to a temp file?
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			return file_get_contents($tmpfname);
+		} else {
+			return file_get_contents($filename);
+		}
+	}
+	function file($filename) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			return file($tmpfname);
+		} else {
+			return file($filename);
+		}
+	}
+	function readfile($filename) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			return readfile($tmpfname);
+		} else {
+			return readfile($filename);
+		}
+	}
+
+	function imagecreatefromjpeg($filename) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			return imagecreatefromjpeg($tmpfname);
+		} else {
+			return imagecreatefromjpeg($filename);
+		}
+	}
+
+	function imagecreatefromgd($filename) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			return imagecreatefromgd($tmpfname);
+		} else {
+			return imagecreatefromgd($filename);
+		}
+	}
+
+#########################################################
+
+
+#########################################################
+
+/*
+	function ($filename) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			return ($tmpfname);
+		} else {
+			return ($filename);
+		}
+	}
+
+	//just a tempalte function showing how to work with a single filename
+	function template($filename) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			//do magic
+		} else {
+			//call normal filesystem version
+			return template($filename);
+		}
+	}
+
+
+*/
+
+#########################################################
 }
 
 
