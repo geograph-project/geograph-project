@@ -79,6 +79,15 @@ class S3
 	private static $__sslKey = null;
 
 	/**
+	 * Short term Security, used with STS
+	 *
+	 * @var string
+	 * @access public
+	 * @static
+	 */
+	public static $securityToken = null;
+
+	/**
 	 * Default delimiter to be used, for example while getBucket().
 	 * @var string
 	 * @access public
@@ -2361,6 +2370,11 @@ final class S3Request
 			if (isset(S3::$proxy['user'], S3::$proxy['pass']) && S3::$proxy['user'] != null && S3::$proxy['pass'] != null)
 				curl_setopt($curl, CURLOPT_PROXYUSERPWD, sprintf('%s:%s', S3::$proxy['user'], S3::$proxy['pass']));
 		}
+
+		if (!empty(S3::$securityToken)) {
+		       $this->amzHeaders['X-Amz-Security-Token'] = S3::$securityToken;
+		}
+
 
 		// Headers
 		$headers = array(); $amz = array();

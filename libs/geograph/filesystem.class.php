@@ -36,7 +36,6 @@ require_once "3rdparty/S3.php";
 
 class FileSystem extends S3 {
 
-	var $SecurityToken = ''; //comes from meta-data
 	var $defaultStorage = self::STORAGE_CLASS_IT;
 
 	var $buckets = array();
@@ -70,7 +69,7 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 
 		if (!empty($decode["Token"])) {
 			$this->setSignatureVersion('v4');
-			$this->SecurityToken = $decode["Token"];
+			self::$securityToken = $decode["Token"];
 		}
 	}
 
@@ -95,10 +94,6 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 
 		if ($bucket) {
 			$headers = array();
-			if (!empty($this->SecurityToken)) {
-				//todo, maybe can put setting X-Amz-Security-Token on EVERY request in the parent class.
-				$headers['X-Amz-Security-Token'] = $this->SecurityToken;
-			}
 
 			//set the storage class
 			$storageClass = empty($storage)?$this->defaultStorage:$storage;
