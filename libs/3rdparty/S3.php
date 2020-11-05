@@ -852,7 +852,7 @@ class S3
 	* @param mixed $saveTo Filename or resource to write to
 	* @return mixed
 	*/
-	public static function getObject($bucket, $uri, $saveTo = false)
+	public static function getObject($bucket, $uri, $saveTo = false, $range = null)
 	{
 		$rest = new S3Request('GET', $bucket, $uri, self::$endpoint);
 		if ($saveTo !== false)
@@ -865,9 +865,12 @@ class S3
 				else
 					$rest->response->error = array('code' => 0, 'message' => 'Unable to open save file for writing: '.$saveTo);
 		}
+		if (!empty($range)) {
+			$rest->setHeader('Range', $range);
+		}
 		if ($rest->response->error === false) $rest->getResponse();
 
-		if ($rest->response->error === false && $rest->response->code !== 200)
+		if ($rest->response->error === false && $rest->response->code !== 200 && $rest->response->code !== 206)
 			$rest->response->error = array('code' => $rest->response->code, 'message' => 'Unexpected HTTP status');
 		if ($rest->response->error !== false)
 		{
