@@ -77,6 +77,16 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 		}
 	}
 
+	var $log = false;
+	function _log($method,$function,$r) {
+		if (empty($this->log)) return;
+	        if (!empty($r) && is_object($r) && !empty($r->body))
+	                $r->body = "string(".strlen($r->body)." bytes)";
+		$r = preg_replace('/\s+/',' ',print_r($r,true));
+
+		print date('H:i:s ')."$method, $function, $r\n";
+	}
+
 	function getBucketPath($filename) {
 		foreach ($this->buckets as $prefix => $bucket) {
 			if (strpos($filename,$prefix) === 0) {
@@ -116,9 +126,12 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 
 			/* we cant use putObjectFile as it doesnt have storage class param!*/
 			//  putObject($input, $bucket, $uri, $acl = self::ACL_PRIVATE, $metaHeaders = array(), $requestHeaders = arr
-			return parent::putObject(self::inputFile($local), $bucket, $destination, $acl, array(), $headers, $storageClass);
+			$r = parent::putObject(self::inputFile($local), $bucket, $destination, $acl, array(), $headers, $storageClass);
 
-			//todo, clearstatcache
+			$this->_log('putObject','copy',$r);
+			$this->_clearcache($destination);
+
+			return $r;
 		} else {
 			//fall back basic filesystem operation
 			return copy($local, $destination);
@@ -129,7 +142,7 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 #########################################################
 //Cut down version, so can write without a temporally file
 
-        function file_put_contents($destination, &$data) {
+        function file_put_contents($destination, &$data, $acl = self::ACL_FULL_CONTROL, $storage = null) {
                 list($bucket, $destination) = $this->getBucketPath($destination);
                 if ($bucket) {
 			$headers = array();
@@ -144,9 +157,12 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
                         //we do this ourselfs, as S3 class built in detection works on source file, not destination! We tend to have files using known extensions anyway, so works (because cant use fileinfo)
                         $headers['Content-Type'] = parent::__getMIMEType($destination);
 
-			return parent::putObject($data, $bucket, $destination, $acl, array(), $headers, $storageClass);
+			$r = parent::putObject($data, $bucket, $destination, $acl, array(), $headers, $storageClass);
 
-			//todo, clearstatcache
+			$this->_log('putObject','file_put_contents',$r);
+			$this->_clearcache($destination);
+
+			return $r;
                 } else {
                         return file_put_contents($destination, $data);
                 }
@@ -170,8 +186,9 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 			if ($r) //todo, not sure how robust this is!
 				unlink($local);
 		} else {
-			rename($local, $destination);
+			$r = rename($local, $destination);
 		}
+		return $r;
 	}
 
 	function move_uploaded_file($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
@@ -225,8 +242,6 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 			}
 		}
 
-print "$cmd\n";
-
                 passthru($cmd); //todo, maybe passthur not right version
 
 		if (!empty($tmp_dst)) {
@@ -249,12 +264,14 @@ print "$cmd\n";
 
 		$r = $this->getObject($bucket, $filename, $tmpfname);
 
+		$this->_log('getObject','_get_remote_as_tempfile',$r);
+
 		if (!empty($r->headers)) {
 			$headers = $r->headers;
                         $this->statcache[$filename] = array(
                                 7 => $headers['size'],
                                 8 => $headers['date'], //the date of request! is the HTTP 'Date' Header
-                                9 => $headers['x-amz-meta-mtime']?$headers['x-amz-meta-mtime']:$headers['time'], //if have a custom header use that in preference
+                                9 => isset($headers['x-amz-meta-mtime'])?$headers['x-amz-meta-mtime']:$headers['time'], //if have a custom header use that in preference
                                 10 => $headers['time'], //time is the 'date-modifed' stored on amazon
                                 20 => $headers['hash'],
                                 30 => $headers['type'],
@@ -264,7 +281,15 @@ print "$cmd\n";
 		$this->filecache[$filename] = $tmpfname;
 
 		$this->register_shutdown_function();
-		return $tempfname;
+		return $tmpfname;
+	}
+
+	function _clearcache($filename) {
+		$this->statcache[$filename] = null;
+		if (!empty($this->filecache[$filename])) {
+			unlink($this->filecache[$filename]);
+			unset($this->filecache[$filename]);
+		}
 	}
 
 	function shutdown_function() {
@@ -286,7 +311,7 @@ print "$cmd\n";
 		list($bucket) = $this->getBucketPath($filename);
 		if ($bucket) {
 			//for photos, use our getimagesize, which is optmized to use memcache etc to avoid FS calls where possible.
-			if (strpos($bucket,'photos') !== FALSE && strpos($filename,'.jpg') && $this->getimagesize($filename)) {
+			if (strpos($bucket,'photos') !== FALSE && strpos($filename,'.jpg') && $this->getimagesize($filename,true)) {
 				return true;
 			} //... still want to fallback, the file can exist even if not in memcache
 			$stat = $this->stat($filename, $use_get);
@@ -304,7 +329,10 @@ print "$cmd\n";
 					$this->_get_remote_as_tempfile($bucket, $filename);
 					//get_remote will itself set statcache! Its doing a GET, so will get headers anyway!
 				} else {
-		                	$headers = $filesystem->getObjectInfo($bucket, $uri);
+					$headers = $this->getObjectInfo($bucket, $filename);
+
+					$this->_log('getObjectInfo','stat',$headers);
+
 					$this->statcache[$filename] = array(
 						7 => $headers['size'],
 						8 => $headers['date'], //the date of request! is the HTTP 'Date' Header
@@ -326,65 +354,40 @@ print "$cmd\n";
 		if (empty($filename)) {
 			$this->statcache = array();
 			clearstatcache($clear_realpath_cache);
-			return;
 		} else {
 			list($bucket, $filename) = $this->getBucketPath($filename);
 			if ($bucket) {
 				$this->statcache[$filename] = null;
 			} else {
-				return clearstatcache($clear_realpath_cache,$filename);
+				clearstatcache($clear_realpath_cache,$filename);
 			}
 		}
 	}
 
-	function filemtime($filename, $use_get = false) {
+	function filemtime($filename, $use_get = false, $function = 'filemtime', $member = 9) {
 		list($bucket) = $this->getBucketPath($filename);
 		if ($bucket) {
 			$stat = $this->stat($filename, $use_get);
-			return @$stat[9];
+			return @$stat[$member];
 		} else {
-			return filemtime($filename);
+			return $function($filename);
 		}
 	}
 
 	function fileatime($filename, $use_get = false) {
-		list($bucket) = $this->getBucketPath($filename);
-		if ($bucket) {
-			$stat = $this->stat($filename, $use_get);
-			return @$stat[8];
-		} else {
-			return fileatime($filename);
-		}
+		return $this->filemtime($filename, $use_get, 'fileatime', 8);
 	}
 
 	function filectime($filename, $use_get = false) {
-		list($bucket) = $this->getBucketPath($filename);
-		if ($bucket) {
-			$stat = $this->stat($filename, $use_get);
-			return @$stat[10];
-		} else {
-			return filectime($filename);
-		}
+		return $this->filemtime($filename, $use_get, 'filectime', 10);
 	}
 
         function filesize($filename, $use_get = false) {
-                list($bucket) = $this->getBucketPath($filename);
-                if ($bucket) {
-                        $stat = $this->stat($filename, $use_get);
-                        return @$stat[7];
-                } else {
-                        return filesize($filename);
-                }
+		return $this->filemtime($filename, $use_get, 'filesize', 7);
         }
 
         function md5_file($filename, $use_get = false) {
-                list($bucket) = $this->getBucketPath($filename);
-                if ($bucket) {
-                        $stat = $this->stat($filename, $use_get);
-                        return @$stat[20];
-                } else {
-                        return md5_file($filename);
-                }
+		return $this->filemtime($filename, $use_get, 'md5_file', 20);
         }
 
 //todo, touch
@@ -423,8 +426,50 @@ print "$cmd\n";
 #########################################################
 // function to READ files from remote.
 
-	function getimagesize($filename) {
-		return true; //todo!
+	function getimagesize($filename, $quick_only = false) {
+		global $memcache;
+		if (strpos($filename,'photos/') !== FALSE && !empty($memcache) && preg_match('/(\d+)_(\w{8})(_\w+|)\.jpg$/',$filename,$m)) {
+			$gridimage_id = intval($m[1]);
+			if (empty($m[3])) {//fullsize!
+				$mkey = "$gridimage_id:F";
+				$sql = "SELECT width,height FROM gridimage_size WHERE gridimage_id = $gridimage_id";
+			} elseif ($m[3] == '_original') {
+				$mkey = "$gridimage_id:F";
+				$sql = "SELECT original_width AS width,original_height AS height FROM gridimage_size WHERE gridimage_id = $gridimage_id";
+			} elseif (preg_match('/(\d+)x(\d+)/',$m[3],$m)) {
+				$mkey = "{$gridimage_id}:{$m[0]}";
+				$sql = "select width,height from gridimage_thumbsize where gridimage_id = {$gridimage_id} and maxw = {$m[1]} and maxh = {$m[2]}";
+			}
+
+			if (!empty($mkey)) {
+	                        $size =& $memcache->name_get('is',$mkey);
+		                $src = 'memcache';
+				if (!$size && !empty($sql)) {
+					$db=&$this->_getDB(true);
+
+					$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
+					$size = $db->getRow($sql);
+					$db->SetFetchMode($prev_fetch_mode);
+					if ($size) {
+	                                        $size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+						$src = 'db';
+					}
+				}
+				if (!empty($size)) {
+					if (!empty($this->statcache[$filename][30])) //on the offchance we have this, return it!
+						$size['mime'] = $this->statcache[$filename][30];
+					$size['src'] = $src;
+					return $size;
+				}
+			}
+
+			//Note, we DONT write memcache/db, even if could, leave that to gridimage.class
+		}
+
+		if ($quick_only)
+			return false;
+
+		return $this->file($filename,'getimagesize');
 	}
 
 
@@ -439,53 +484,37 @@ print "$cmd\n";
 			return file_get_contents($filename);
 		}
 	}
-	function file($filename) {
+
+	//a special function that can acully call different fucntions on the returned file!
+	function file($filename,$function = 'file') {
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
+			//use temp file for now. maybe could use getObject directly, to avoid wrtiing to a temp file?
 			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
-			return file($tmpfname);
+			return $function($tmpfname);
 		} else {
-			return file($filename);
+			return $function($filename);
 		}
 	}
+
 	function readfile($filename) {
-		list($bucket, $filename) = $this->getBucketPath($filename);
-		if ($bucket) {
-			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
-			return readfile($tmpfname);
-		} else {
-			return readfile($filename);
-		}
+		return $this->file($filename,'readfile');
 	}
 
 	function imagecreatefromjpeg($filename) {
-		list($bucket, $filename) = $this->getBucketPath($filename);
-		if ($bucket) {
-			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
-			return imagecreatefromjpeg($tmpfname);
-		} else {
-			return imagecreatefromjpeg($filename);
-		}
+		return $this->file($filename,'imagecreatefromjpeg');
+	}
+
+	function imagecreatefrompng($filename) {
+		return $this->file($filename,'imagecreatefrompng');
 	}
 
 	function imagecreatefromgd($filename) {
-		list($bucket, $filename) = $this->getBucketPath($filename);
-		if ($bucket) {
-			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
-			return imagecreatefromgd($tmpfname);
-		} else {
-			return imagecreatefromgd($filename);
-		}
+		return $this->file($filename,'imagecreatefromgd');
 	}
 
 	function imagecreatefromgif($filename) {
-		list($bucket, $filename) = $this->getBucketPath($filename);
-		if ($bucket) {
-			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
-			return imagecreatefromgif($tmpfname);
-		} else {
-			return imagecreatefromgif($filename);
-		}
+		return $this->file($filename,'imagecreatefromgif');
 	}
 
 //exif_read_data
@@ -511,14 +540,14 @@ print "$cmd\n";
 		if (empty($filename)) {
 			return $function($img, $filename, $quality, $filter);
 		}
-                list($bucket, $filename) = $this->getBucketPath($filename);
+                list($bucket, $filename) = $this->getBucketPath($original = $filename);
                 if ($bucket) {
 			//write to a temp file, otherwise would have to mess around with output buffering
         	        $tmpfname = tempnam("/tmp", $function);
 			$r = $function($img, $tmpfname, $quality, $filter);
 
 	                if (filesize($tmpfname)) //dont bother copying empty files - probably a command failure
-                	        $this->copy($tmpfname, $destination, $acl, $storage);
+				$this->copy($tmpfname, $original);
 
 				//todo, maybe could cach it?
 				// $this->filecache[$filename] = $tmpfname;
@@ -541,6 +570,20 @@ print "$cmd\n";
 	}
 
 #########################################################
+
+        /**
+         * get stored db object, creating if necessary
+         * @access private
+         */
+        function &_getDB($allow_readonly = false)
+        {
+                //check we have a db object or if we need to 'upgrade' it
+                if (empty($this->db) || !is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+                        $this->db=GeographDatabaseConnection($allow_readonly);
+                }
+                return $this->db;
+        }
+
 }
 
 
