@@ -41,6 +41,9 @@ class FileSystem extends S3 {
 
 	var $buckets = array();
 
+	var $statcache = array();
+	var $filecache = array();
+
 	function __construct() {
 		global $CONF;
 
@@ -94,7 +97,6 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 		if (substr($destination,-1) == '/')
 			$destination .= basename($local);
 
-
 		list($bucket, $destination) = $this->getBucketPath($destination);
 
 		if ($bucket) {
@@ -115,14 +117,18 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 			/* we cant use putObjectFile as it doesnt have storage class param!*/
 			//  putObject($input, $bucket, $uri, $acl = self::ACL_PRIVATE, $metaHeaders = array(), $requestHeaders = arr
 			return parent::putObject(self::inputFile($local), $bucket, $destination, $acl, array(), $headers, $storageClass);
+
+			//todo, clearstatcache
 		} else {
 			//fall back basic filesystem operation
 			return copy($local, $destination);
-			//todo, do touch?
+			//todo, do touch? Our S3 copy preserves the original time!
 		}
 	}
 
-	//so can write without a temporally file
+#########################################################
+//Cut down version, so can write without a temporally file
+
         function file_put_contents($destination, &$data) {
                 list($bucket, $destination) = $this->getBucketPath($destination);
                 if ($bucket) {
@@ -139,6 +145,8 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
                         $headers['Content-Type'] = parent::__getMIMEType($destination);
 
 			return parent::putObject($data, $bucket, $destination, $acl, array(), $headers, $storageClass);
+
+			//todo, clearstatcache
                 } else {
                         return file_put_contents($destination, $data);
                 }
@@ -232,19 +240,158 @@ print "$cmd\n";
 		}
 	}
 
-	//
+#########################################################
+// internal function to fetch + cache a remote file!
+
 	function _get_remote_as_tempfile($bucket, $filename) {
 		//todo add caching
 		$tmpfname = tempnam("/tmp", "r".getmypid());
 
-		$this->getObject($bucket, $filename, $tmpfname);
+		$r = $this->getObject($bucket, $filename, $tmpfname);
 
-		//todo, register shutdown function to unlink it!
+		if (!empty($r->headers)) {
+			$headers = $r->headers;
+                        $this->statcache[$filename] = array(
+                                7 => $headers['size'],
+                                8 => $headers['date'], //the date of request! is the HTTP 'Date' Header
+                                9 => $headers['x-amz-meta-mtime']?$headers['x-amz-meta-mtime']:$headers['time'], //if have a custom header use that in preference
+                                10 => $headers['time'], //time is the 'date-modifed' stored on amazon
+                                20 => $headers['hash'],
+                                30 => $headers['type'],
+                        );
+		}
+
+		$this->filecache[$filename] = $tmpfname;
+
+		$this->register_shutdown_function();
 		return $tempfname;
 	}
 
+	function shutdown_function() {
+		if (!empty($this->filecache))
+			foreach ($this->filecache as $filename => $tmpfname)
+				unlink($tmpfname);
+	}
+	function register_shutdown_function() {
+		static $done = 0;
+		if ($done) return;
+		register_shutdown_function(array($this, 'shutdown_function'));
+		$done = 1;
+	}
+
 #########################################################
-// functions to work on files
+//functions that read meta data about files
+
+	function file_exists($filename, $use_get = false) {
+		list($bucket) = $this->getBucketPath($filename);
+		if ($bucket) {
+			//for photos, use our getimagesize, which is optmized to use memcache etc to avoid FS calls where possible.
+			if (strpos($bucket,'photos') !== FALSE && strpos($filename,'.jpg') && $this->getimagesize($filename)) {
+				return true;
+			} //... still want to fallback, the file can exist even if not in memcache
+			$stat = $this->stat($filename, $use_get);
+			return !empty($stat[9]);
+		} else {
+			return file_exists($filename);
+		}
+	}
+
+	function stat($filename, $use_get = false) {
+                list($bucket, $filename) = $this->getBucketPath($filename);
+                if ($bucket) {
+			if (empty($this->statcache[$filename])) {
+			        if ($use_get) { //use a GET to store the body in cache. Can use this trick to avoid, doing a HEAD+GET for the same file. (eg if(file_exists..) {file(...)} sort of thing)
+					$this->_get_remote_as_tempfile($bucket, $filename);
+					//get_remote will itself set statcache! Its doing a GET, so will get headers anyway!
+				} else {
+		                	$headers = $filesystem->getObjectInfo($bucket, $uri);
+					$this->statcache[$filename] = array(
+						7 => $headers['size'],
+						8 => $headers['date'], //the date of request! is the HTTP 'Date' Header
+						9 => $headers['x-amz-meta-mtime']?$headers['x-amz-meta-mtime']:$headers['time'], //if have a custom header use that in preference
+						10 => $headers['time'], //time is the 'date-modifed' stored on amazon
+						20 => $headers['hash'],
+						30 => $headers['type'],
+					);
+				}
+			}
+			return $this->statcache[$filename];
+                } else {
+                        //call normal filesystem version
+                        return stat($filename);
+                }
+	}
+
+	function clearstatcache($clear_realpath_cache = FALSE, $filename = FALSE) {
+		if (empty($filename)) {
+			$this->statcache = array();
+			clearstatcache($clear_realpath_cache);
+			return;
+		} else {
+			list($bucket, $filename) = $this->getBucketPath($filename);
+			if ($bucket) {
+				$this->statcache[$filename] = null;
+			} else {
+				return clearstatcache($clear_realpath_cache,$filename);
+			}
+		}
+	}
+
+	function filemtime($filename, $use_get = false) {
+		list($bucket) = $this->getBucketPath($filename);
+		if ($bucket) {
+			$stat = $this->stat($filename, $use_get);
+			return @$stat[9];
+		} else {
+			return filemtime($filename);
+		}
+	}
+
+	function fileatime($filename, $use_get = false) {
+		list($bucket) = $this->getBucketPath($filename);
+		if ($bucket) {
+			$stat = $this->stat($filename, $use_get);
+			return @$stat[8];
+		} else {
+			return fileatime($filename);
+		}
+	}
+
+	function filectime($filename, $use_get = false) {
+		list($bucket) = $this->getBucketPath($filename);
+		if ($bucket) {
+			$stat = $this->stat($filename, $use_get);
+			return @$stat[10];
+		} else {
+			return filectime($filename);
+		}
+	}
+
+        function filesize($filename, $use_get = false) {
+                list($bucket) = $this->getBucketPath($filename);
+                if ($bucket) {
+                        $stat = $this->stat($filename, $use_get);
+                        return @$stat[7];
+                } else {
+                        return filesize($filename);
+                }
+        }
+
+        function md5_file($filename, $use_get = false) {
+                list($bucket) = $this->getBucketPath($filename);
+                if ($bucket) {
+                        $stat = $this->stat($filename, $use_get);
+                        return @$stat[20];
+                } else {
+                        return md5_file($filename);
+                }
+        }
+
+//todo, touch
+//todo, unlink
+
+#########################################################
+// functions to work on directories
 
 	function is_dir($filename) {
 		list($bucket, $filename) = $this->getBucketPath($filename);
@@ -258,27 +405,23 @@ print "$cmd\n";
 	function mkdir($filename, $mode = 0777, $recursive = FALSE) {
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
-			return true; //fake, S3 doesnt have real directions, can write any key
+			return true; //fake, S3 doesnt have real directories, can write any key
 		} else {
 			return mkdir($filename, $mode, $recursive);
 		}
 	}
 
-#########################################################
-// function to READ files from remote.
-
-	function file_exists($filename) {
+	function rmdir($filename) {
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
-			//for photos, use our getimagesize, which is optmized to use memcache etc to avoid FS calls where possible.
-			if (strpos($bucket,'photos') !== FALSE && strpos($filename,'.jpg')) {
-				return $this->getimagesize($filename)?1:0;
-			}
-			//getObjectInfo
+			return true; //fake, S3 doesnt have real directories!
 		} else {
-			return file_exists($filename);
+			return rmdir($filename);
 		}
 	}
+
+#########################################################
+// function to READ files from remote.
 
 	function getimagesize($filename) {
 		return true; //todo!
@@ -290,7 +433,7 @@ print "$cmd\n";
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
 			//use temp file for now. maybe could use getObject directly, to avoid wrtiing to a temp file?
-			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
 			return file_get_contents($tmpfname);
 		} else {
 			return file_get_contents($filename);
@@ -299,7 +442,7 @@ print "$cmd\n";
 	function file($filename) {
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
-			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
 			return file($tmpfname);
 		} else {
 			return file($filename);
@@ -308,7 +451,7 @@ print "$cmd\n";
 	function readfile($filename) {
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
-			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
 			return readfile($tmpfname);
 		} else {
 			return readfile($filename);
@@ -318,7 +461,7 @@ print "$cmd\n";
 	function imagecreatefromjpeg($filename) {
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
-			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
 			return imagecreatefromjpeg($tmpfname);
 		} else {
 			return imagecreatefromjpeg($filename);
@@ -328,42 +471,74 @@ print "$cmd\n";
 	function imagecreatefromgd($filename) {
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
-			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
 			return imagecreatefromgd($tmpfname);
 		} else {
 			return imagecreatefromgd($filename);
 		}
 	}
 
-#########################################################
-
-
-#########################################################
-
-/*
-	function ($filename) {
+	function imagecreatefromgif($filename) {
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
-			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename)
-			return ($tmpfname);
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
+			return imagecreatefromgif($tmpfname);
 		} else {
-			return ($filename);
+			return imagecreatefromgif($filename);
 		}
 	}
 
-	//just a tempalte function showing how to work with a single filename
-	function template($filename) {
-		list($bucket, $filename) = $this->getBucketPath($filename);
-		if ($bucket) {
-			//do magic
-		} else {
-			//call normal filesystem version
-			return template($filename);
-		}
+//exif_read_data
+        function exif_read_data($filename, $sections = NULL, $arrays = FALSE, $thumbnail = FALSE ) {
+                list($bucket, $filename) = $this->getBucketPath($filename);
+                if ($bucket) {
+                        $tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
+                        return exif_read_data($tmpfname, $sections, $arrays, $thumbnail);
+                } else {
+                        return exif_read_data($filename, $sections, $arrays, $thumbnail);
+                }
+        }
+
+	function read_exif_data($filename, $sections = NULL, $arrays = FALSE, $thumbnail = FALSE ) {
+		$this->exif_read_data($filename, $sections, $arrays, $thumbnail);
 	}
 
+#########################################################
+// functions that write files
+	// there is also the copy/file_put_contents that exist, near the top of class, seperated, as all the functions that do real3 contact near start of file
 
-*/
+        function imagepng(&$img, $filename = null, $quality = -1, $filter = -1, $function = 'imagepng') {
+		if (empty($filename)) {
+			return $function($img, $filename, $quality, $filter);
+		}
+                list($bucket, $filename) = $this->getBucketPath($filename);
+                if ($bucket) {
+			//write to a temp file, otherwise would have to mess around with output buffering
+        	        $tmpfname = tempnam("/tmp", $function);
+			$r = $function($img, $tmpfname, $quality, $filter);
+
+	                if (filesize($tmpfname)) //dont bother copying empty files - probably a command failure
+                	        $this->copy($tmpfname, $destination, $acl, $storage);
+
+				//todo, maybe could cach it?
+				// $this->filecache[$filename] = $tmpfname;
+				// $this->register_shutdown_function();
+
+        	        //always, delete, even if failed
+	                unlink($tmpfname);
+			return $r;
+                } else {
+                        return $function($img, $filename, $quality, $filter);
+                }
+        }
+
+	function imagejpeg(&$img, $filename = null, $quality = 87) {
+		return $this->imagepng($img, $filename, $quality, null, 'imagejpeg');
+	}
+
+	function imagegd(&$img, $filename = null) {
+		return $this->imagepng($img, $filename, null, null, 'imagegd');
+	}
 
 #########################################################
 }

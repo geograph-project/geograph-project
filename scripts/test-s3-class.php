@@ -57,7 +57,11 @@ print_r($r);
 
 if (!empty($param['read'])) {
 	list($bucket, $uri) = $filesystem->getBucketPath($destination);
-	$r = $filesystem->getObject($bucket, $uri);
+
+	if ($param['read'] == 2)
+		$r = $filesystem->getObjectInfo($bucket, $uri);
+	else
+		$r = $filesystem->getObject($bucket, $uri);
 	if (!empty($r) && !empty($r->body))
 		$r->body = "string(".strlen($r->body)." bytes)";
 	print_r($r);
