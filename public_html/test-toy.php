@@ -81,14 +81,12 @@ outputRow('Commands', $found == count(explode(" ",$list))?'pass':'error', implod
 outputBreak("Files System Tests");
 #########################################################################################################
 
-if (class_exists('FileSystem', false)) { //dont call autoload!
-
-$filesystem = new FileSystem;
+$filesystem = GeographFileSystem();
 
 ###################################
 
-if (!empty($filesystem->s3)) {
-	outputRow('Photo Dir Writable?', 'pass', 'setup writing to S3, assume it functional, not tested here');
+if ($filesystem->hasAuth()) {
+	outputRow('Photo Dir Writable?', 'pass', 'Seems setup for writing to S3, assume it functional, not tested here');
 } else
 	outputRow('Photo Dir Writable?', is_writable("photos/")?'pass':'error');
 
@@ -99,19 +97,19 @@ outputRow('Upload Dir Writable?', is_writable($CONF['photo_upload_dir'])?'pass':
 $filename = "photos/test-photo.jpg";
 $result = 'error';
 
-$url = $filesystem->publicUrl($filename);
-if ($filesystem->exists($filename)) {
-	$local = $filesystem->filesize($filename);
+$url = $CONF['STATIC_HOST'].'/'.$filename;
+if ($filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$filename)) {
+	$local = $filesystem->filesize($_SERVER['DOCUMENT_ROOT'].'/'.$filename);
 
 	if ($local < 1024) {
 		$info = "local file too small";
 	} else {
 		$fetched = file_get_contents($url); //this is fetching the file, via the URL, delibeatly to test the file online!
 		$remote = strlen($fetched);
-		$server = 'Server: unknown';
+		$server = '';
         	foreach ($http_response_header as $line)
-                	if (strpos($line,'Server:') ===0)
-                        	$server = $line;
+	                if (strpos($line,'Server:') ===0 || strpos($line,'X-Amz-Cf-Pop:') ===0 || strpos($line,'X-Cache:') ===0)
+				$server .= ", $line";
 
 		if ($remote == $local) { //todo, could also do a content check (eg md5)
 			$result = 'pass';
@@ -129,8 +127,8 @@ outputRow('File Readable',$result, "tests fetching <a href=$url>$url</a>, $info"
 ###################################
 //tests writing a file!
 
-if (!empty($filesystem->s3) && strpos($CONF['STATIC_HOST'], $CONF['awsS3Bucket']) !== FALSE) {
-        $local = filesize($filename); //delibairy using FS function as want to read the file, not S3 file!
+if (!empty($filesystem)) {
+        $local = $filesystem->filesize($filename);
 
         $db = GeographDatabaseConnection(false);
         $db->Execute("UPDATE counter SET count=count+1");
@@ -138,9 +136,13 @@ if (!empty($filesystem->s3) && strpos($CONF['STATIC_HOST'], $CONF['awsS3Bucket']
 
         $destination = sprintf('photos/%02d/%06d.jpg',$counter/100,$counter);
 
-        $result = $filesystem->put($destination, $filename);
+	list($bucket, $uri) = $filesystem->getBucketPath($_SERVER['DOCUMENT_ROOT'].'/'.$filename);
+	$tempfile = $filesystem->_get_remote_as_tempfile($bucket, $uri);
 
-        $url = $filesystem->publicUrl($destination);
+        $result = $filesystem->copy($tempfile, $_SERVER['DOCUMENT_ROOT'].'/'.$destination);
+
+        //$url = $filesystem->publicUrl($destination);
+	$url = $CONF['STATIC_HOST'].'/'.$destination;
         $fetched = file_get_contents($url); //this is fetching the file, via the URL, delibeatly to test the file online!
 
         if (empty($fetched)) {
@@ -148,23 +150,19 @@ if (!empty($filesystem->s3) && strpos($CONF['STATIC_HOST'], $CONF['awsS3Bucket']
                 $fetched = file_get_contents($url);
         }
 	$remote = strlen($fetched);
-	$server = 'Server: unknown';
+	$server = '';
         foreach ($http_response_header as $line)
-                if (strpos($line,'Server:') ===0)
-                        $server = $line;
+                if (strpos($line,'Server:') ===0 || strpos($line,'X-Amz-Cf-Pop:') ===0 || strpos($line,'X-Cache:') ===0)
+                        $server = ", $line";
 
 	if ($local == $remote) {
-		outputRow('File Written to S3', 'pass', "Image copied to <a href=$url>$url</a>. $server");
+		outputRow('File Written to S3', 'pass', "Image copied to <a href=$url>$url</a> $server");
 	} else {
-		outputRow('File Written to S3', 'error', "Size Mismatch, expected:$local, got:$remote. put said ($result). $server");
+		outputRow('File Written to S3', 'error', "Size Mismatch, expected:$local, got:$remote. put said ($result) $server");
 	}
 } else {
 	outputRow('File Written to S3', 'notice', "Amazon S3 not configured. Test Skipped.");
 }
-
-} else
-	outputRow('FileSystem','notice','FileSystem Class not installed. This test only works with that class, not normal Fileystem');
-
 
 #########################################################################################################
 outputBreak("MySQL Server");

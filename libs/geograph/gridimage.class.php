@@ -163,7 +163,7 @@ class GridImage
 	{
 		$this->db=$db;
 	}
-	
+
 	/**
 	* Get an array of current image classes
 	*/
@@ -887,7 +887,8 @@ split_timer('gridimage','getTroubleTickets',$statuses); //logs the wall time
 	*/
 	function storeImage($srcfile, $movefile=false, $suffix = '')
 	{
-	
+		$filesystem = GeographFileSystem();
+
 split_timer('gridimage'); //starts the timer
 
 		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
@@ -898,45 +899,51 @@ split_timer('gridimage'); //starts the timer
 
 		if ($this->gridimage_id<1000000) {
 			$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
-			if (!is_dir("$base/$ab"))
-				mkdir("$base/$ab");
-			if (!is_dir("$base/$ab/$cd"))
-				mkdir("$base/$ab/$cd");
+
+			list($bucket, $uri) = $filesystem->getBucketPath("$base/");
+			if (!empty($bucket)) { //filesystem does have is_dir etc, but they dont work on buckets anyway.
+				if (!is_dir("$base/$ab"))
+					mkdir("$base/$ab");
+				if (!is_dir("$base/$ab/$cd"))
+					mkdir("$base/$ab/$cd");
+			}
 
 			$dest="$base/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		} else {
-
 			$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
-			if (!is_dir("$base/$yz"))
-				mkdir("$base/$yz");
-			if (!is_dir("$base/$yz/$ab"))
-				mkdir("$base/$yz/$ab");
-			if (!is_dir("$base/$yz/$ab/$cd"))
-				mkdir("$base/$yz/$ab/$cd");
+
+			list($bucket, $uri) = $filesystem->getBucketPath("$base/");
+			if (!empty($bucket)) { //filesystem does have is_dir etc, but they dont work on buckets anyway.
+				if (!is_dir("$base/$yz"))
+					mkdir("$base/$yz");
+				if (!is_dir("$base/$yz/$ab"))
+					mkdir("$base/$yz/$ab");
+				if (!is_dir("$base/$yz/$ab/$cd"))
+					mkdir("$base/$yz/$ab/$cd");
+			}
 
 			$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		}
 
 		if ($movefile)
-			$ret = rename($srcfile, $dest);
+			$ret = $filesystem->rename($srcfile, $dest);
 		else
-			$ret = copy($srcfile, $dest);
+			$ret = $filesystem->copy($srcfile, $dest);
 
 split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wall time
 
 		return $ret;
 	}
-	
+
 	/**
 	* Store a file as the original
 	* (note: we set movefile=true, because we might further move the original file - see warning on manpage for "rsync --remove-source-files")
-	
 	*/
 	function storeOriginal($srcfile, $movefile=true)
 	{
 		return $this->storeImage($srcfile,$movefile,'_original');
 	}
-	
+
 	function _getOriginalpath($check_exists=true, $returntotalpath=false, $suffix='_original')
 	{
 		global $CONF;
@@ -952,7 +959,7 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		}
 
-		if ($check_exists && !file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
+		if ($check_exists && ($filesystem = GeographFileSystem()) && !$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath, $check_exists == 2))
 			$fullpath="/photos/error.jpg";
 
 		if ($returntotalpath)
@@ -962,8 +969,7 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 
 		return $fullpath;
 	}
-	
-	
+
 	/**
 	* calculate the path to the full size photo image
 	* if you specify true for check_exists parameter (the default), the
@@ -1002,54 +1008,21 @@ split_timer('gridimage'); //starts the timer
 			$fullpath = str_replace('http://','https://',$fullpath);
 			return $fullpath;
 		}
-		
-		$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
-		
+
+		$filesystem = GeographFileSystem();
+
+		$ok=$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath, $check_exists==2);
+
 		if (!$ok)
 		{
-			
 			//can we fetch it from elsewhere?
 			if (isset($CONF['fetch_on_demand']) && ($_SERVER['HTTP_HOST']!=$CONF['fetch_on_demand']))
 			{
 				$url='http://'.$CONF['fetch_on_demand'].$fullpath;
-				$fin=fopen($url, 'rb');
-				
-				if ($fin)
-				{
-					$target=$_SERVER['DOCUMENT_ROOT'].$fullpath;
-					
-					//create target dir
-					if ($this->gridimage_id<1000000) {
-						$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
-						if (!is_dir("$base/$ab"))
-							mkdir("$base/$ab");
-						if (!is_dir("$base/$ab/$cd"))
-							mkdir("$base/$ab/$cd");
-					} else {
-						$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
-						if (!is_dir("$base/$yz"))
-							mkdir("$base/$yz");
-						if (!is_dir("$base/$yz/$ab"))
-							mkdir("$base/$yz/$ab");
-						if (!is_dir("$base/$yz/$ab/$cd"))
-							mkdir("$base/$yz/$ab/$cd");
-					}
-					$fout=fopen($target, 'wb');
-					if ($fout)
-					{
-						while (!feof($fin))
-						{
-							 $chunk = fread($fin, 8192);
-							 fwrite($fout,$chunk);
-	
-						}	
-						fclose($fout);
-					}
-						
-					fclose($fin);
-					
-					$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
-		
+				$contents = @file_get_contents($url); //surpress 404 warning
+				if (strlen($contents)>100) {
+					$tmpfname = tempnam("/tmp", "demand".getmypid());
+					$ok = $this->storeImage($tmpfname,true); //move it, so dont need to delete ourselfs
 				}
 			}
 		}
@@ -1096,21 +1069,23 @@ split_timer('gridimage'); //starts the timer
 					$this->original_height = $size[5];
 					$src = 'db';
 				} else {
-					$fullpath = $this->_getFullpath(true); //will fetch the file if needbe
+					$fullpath = $this->_getFullpath(2); //will fetch the file if needbe
 
 					if ($fullpath=="/photos/error.jpg") {
 						//break early, to avoid caching the broken dimensions.
 						return array(640,640,null,'');
 					}
 
-					$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+					$filesystem = GeographFileSystem();
 
-					$origpath = $this->_getOriginalpath(true);
+					$size=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath,2); //we tell it NOT to use memcache, as we already done that.
+
+					$origpath = $this->_getOriginalpath(2);
 
 					$db=&$this->_getDB(false);
 
 					if ($origpath!="/photos/error.jpg") {
-						$osize=getimagesize($_SERVER['DOCUMENT_ROOT'].$origpath);
+						$osize=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$origpath, 2);
 						$this->original_width = $size[4] = $osize[0];
 						$this->original_height = $size[5] = $osize[1];
 
@@ -1358,14 +1333,17 @@ split_timer('gridimage'); //starts the timer
 			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}XX{$maxh}.jpg"; ##two XX's as windows isnt case sensitive!
 		}
-		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
+
+		$filesystem = GeographFileSystem();
+
+		if (!$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath, true)) //use_get because we about to read it anyway (for size)
 		{
-			//get path to fullsize image, 
+			//get path to fullsize image,
 			$fullpath=$this->_getFullpath();
-			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
+			if ($fullpath != '/photos/error.jpg')
 			{
 				//generate resized image
-				$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath); 
+				$fullimg = $filesystem->imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath);
 				if ($fullimg)
 				{
 					$srcw=imagesx($fullimg);
@@ -1377,36 +1355,33 @@ split_timer('gridimage'); //starts the timer
 						if ($srcw>$srch)
 						{
 							//landscape
-							
+
 							$srcx = round(($srcw - $srch)/2);
 							$srcy = 0;
-							
+
 							$srcw = $srch;
 						}
 						else
 						{
 							//portrait
-							
+
 							$srcx = 0;
 							$srcy = round(($srch - $srcw)/2);
-							
+
 							$srch = $srcw;
 						}
 
-
 						$resized = imagecreatetruecolor($maxw, $maxh);
-						imagecopyresampled($resized, $fullimg, 0, 0, $srcx, $srcy, 
+						imagecopyresampled($resized, $fullimg, 0, 0, $srcx, $srcy,
 									$maxw,$maxh, $srcw, $srch);
 
-						
 						require_once('geograph/image.inc.php');
 						UnsharpMask($resized,100,0.5,3);
-						
-							
+
 						imagedestroy($fullimg);
 
 						//save the thumbnail
-						imagejpeg ($resized, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+						$filesystem->imagejpeg($resized, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
 						imagedestroy($resized);
 					}
 					elseif ($srcw == 0 && $srch == 0)
@@ -1415,11 +1390,16 @@ split_timer('gridimage'); //starts the timer
 						$thumbpath="/photos/error.jpg";
 
 						imagedestroy($fullimg);
-					} 
+					}
 					else
 					{
 						//requested thumb is larger than original - stick with original
-						copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+						//copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+						//$filesystem->copy can't YET copy between remotes
+
+						//so for now, just save as is!
+						$filesystem->imagejpeg($fullimg, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+						imagedestroy($fullimg);
 					}
 				}
 				else
@@ -1443,7 +1423,7 @@ split_timer('gridimage'); //starts the timer
 		{
 			$title=htmlentities2($this->title);
 
-			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
+			$size=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 			} else {
@@ -1482,15 +1462,18 @@ split_timer('gridimage'); //starts the timer
 			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
 		}
-		if (!file_exists($base.$thumbpath))
+
+		$filesystem = GeographFileSystem();
+
+		if (!$filesystem->file_exists($base.$thumbpath))
 		{
 			//get path to fullsize image
 			$fullpath=$this->_getFullpath();
 
-			if ($fullpath != '/photos/error.jpg' && file_exists($base.$fullpath))
+			if ($fullpath != '/photos/error.jpg' && $filesystem->file_exists($base.$fullpath, true)) //use_get, because we about to load it anyway
 			{
 				//generate resized image
-				$fullimg = @imagecreatefromjpeg($base.$fullpath);
+				$fullimg = $filesystem->imagecreatefromjpeg($base.$fullpath);
 				if ($fullimg)
 				{
 					$srcw=imagesx($fullimg);
@@ -1533,7 +1516,7 @@ split_timer('gridimage'); //starts the timer
 						imagedestroy($fullimg);
 
 						//save the thumbnail
-						imagegd($img, $base.$thumbpath);
+						$filesystem->imagegd($img, $base.$thumbpath);
 					}
 				}
 				else
@@ -1552,7 +1535,7 @@ split_timer('gridimage'); //starts the timer
 		}
 		else
 		{
-			$img=imagecreatefromgd($base.$thumbpath);
+			$img=$filesystem->imagecreatefromgd($base.$thumbpath);
 
 			split_timer('gridimage','getSquareThumb-load',$thumbpath); //logs the wall time
 		}
@@ -1587,7 +1570,7 @@ split_timer('gridimage'); //starts the timer
 		$result =& $memcache->name_get('ir',$mkey);
 		if ($result && $result['url'] !='/photos/error.jpg')
 			return $result;
-	
+
 		//unpack known params and set defaults
 		$maxw=isset($params['maxw'])?$params['maxw']:120;
 		$maxh=isset($params['maxh'])?$params['maxh']:120;
@@ -1596,8 +1579,7 @@ split_timer('gridimage'); //starts the timer
 		$bevel=isset($params['bevel'])?$params['bevel']:true;
 		$unsharp=isset($params['unsharp'])?$params['unsharp']:true;
 		$source=isset($params['source'])?$params['source']:'';
-		
-		
+
 		//establish whether we have a cached thumbnail
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
@@ -1613,7 +1595,7 @@ split_timer('gridimage'); //starts the timer
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 		}
 
-		if ($CONF['template']=='archive' || ((!empty($params['urlonly']) && $params['urlonly'] !== 2) && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))) {
+		if ($CONF['template']=='archive' || ((!empty($params['urlonly']) && $params['urlonly'] !== 2) && ($filesystem = GeographFileSystem()) && $filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))) {
 			$return=array();
 			$return['url']=$thumbpath;
 			if (!empty($CONF['enable_cluster'])) {
@@ -1622,7 +1604,6 @@ split_timer('gridimage'); //starts the timer
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$return['server'] = str_replace('http://','https://',$return['server']);
-
 			return $return;
 		}
 
@@ -1669,8 +1650,10 @@ split_timer('gridimage','_getResized-cache'.$maxw,$thumbpath); //logs the wall t
 			return $return;
 		}
 
+		$filesystem = GeographFileSystem();
+
 		$loop = 0;
-		while (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) // a loop, as we can retry if locked, but when lock available, again the file may now exist!
+		while (!$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath, true)) // a loop, as we can retry if locked, but when lock available, again the file may now exist!
 		{
 			$db=&$this->_getDB(false);
 			$lockkey = basename($thumbpath);
@@ -1687,17 +1670,17 @@ split_timer('gridimage','before-lock'.$maxw,$thumbpath); //logs the wall time
 split_timer('gridimage','after-lock',$thumbpath); //logs the wall time
 
 			if ($source == 'original') {
-				$fullpath=$this->_getOriginalpath();
+				$fullpath=$this->_getOriginalpath(2); //2 is special value, to specify filesystems $use_get function
 			} else {
 				//get path to fullsize image (will try to fetch it from fetch_on_demand)
-				$fullpath=$this->_getFullpath();
+				$fullpath=$this->_getFullpath(2);
 			}
 
-			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
+			if ($fullpath != '/photos/error.jpg')
 			{
 				if (strlen($CONF['imagemagick_path'])) {
 
-					if (($info = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath)) === FALSE) {
+					if (($info = $filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath)) === FALSE) {
 						//couldn't read image!
 						$thumbpath="/photos/error.jpg";
 					} else {
@@ -1749,23 +1732,24 @@ split_timer('gridimage','after-lock',$thumbpath); //logs the wall time
 								}
 
 								//crop and resize in one step
-								$cmd = sprintf ("\"%sconvert\" $crop -$operation %ldx%ld $unsharpen $raised -quality 87 jpg:%s jpg:%s",
+								$cmd = sprintf("\"%sconvert\" $crop -$operation %ldx%ld $unsharpen $raised -quality 87 jpg:%s jpg:%s",
 								$CONF['imagemagick_path'],
 								$maxw, $maxh,
-								$_SERVER['DOCUMENT_ROOT'].$fullpath,
-								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
+								'%s', '%d');
 
-								passthru ($cmd);
+								$filesystem->execute($cmd, $_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
 							}
 
 						} else {
 							//requested thumb is larger than original - stick with original
-							copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+							//copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+							//$filesystem->copy can't YET copy between remotes
+							$filesystem->execute("convert %s -strip %d", $_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
 						}
 					}
 				} else {
 					//generate resized image
-					$fullimg = @imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath);
+					$fullimg = $filesystem->imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath);
 					if ($fullimg)
 					{
 						$srcw=imagesx($fullimg);
@@ -1799,20 +1783,21 @@ split_timer('gridimage','after-lock',$thumbpath); //logs the wall time
 							imagedestroy($fullimg);
 
 							//save the thumbnail
-							imagejpeg ($resized, $_SERVER['DOCUMENT_ROOT'].$thumbpath,85);
+							$filesystem->imagejpeg($resized, $_SERVER['DOCUMENT_ROOT'].$thumbpath,85);
 							imagedestroy($resized);
 						}
 						elseif ($srcw == 0 && $srch == 0)
 						{
 							//couldn't read image!
 							$thumbpath="/photos/error.jpg";
-							
 							imagedestroy($fullimg);
-						} 
+						}
 						else
 						{
 							//requested thumb is larger than original - stick with original
-							copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+							//copy($_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+							//$filesystem->copy can't YET copy between remotes
+							$filesystem->imagejpeg($fullimg, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
 						}
 					}
 					else
@@ -1847,7 +1832,7 @@ split_timer('gridimage','after-unlock',$thumbpath); //logs the wall time
 		else
 		{
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
-			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
+			$size=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath,2);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 			} else {

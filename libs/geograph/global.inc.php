@@ -262,6 +262,21 @@ function GeographDatabaseConnection($allow_readonly = false) {
 
 #################################################
 
+/**
+  * get filesystem, creating if necessary
+  */
+function GeographFileSystem() {
+        global $filesystem;
+        if (empty($filesystem)) {
+		require_once("geograph/filesystem.class.php");
+                $filesystem = new FileSystem();
+	}
+        return $filesystem;
+}
+
+
+#################################################
+
 //this is legacy. Some scripts still use this! (should use GeographSphinxConnection instead!)
 if (empty($CONF['sphinxql_dsn']) && !empty($CONF['sphinx_host']))
 	$CONF['sphinxql_dsn'] = "{$CONF['db_driver']}://{$CONF['sphinx_host']}:{$CONF['sphinx_portql']}/";
