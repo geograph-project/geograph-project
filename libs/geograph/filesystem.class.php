@@ -1,4 +1,3 @@
-
 <?php
 
 /**
@@ -264,7 +263,7 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 
 		$r = $this->getObject($bucket, $filename, $tmpfname);
 
-		$this->_log('getObject','_get_remote_as_tempfile',$r);
+		$this->_log('getObject','_get_remote_as_tempfile('.basename($filename).')',$r);
 
 		if (!empty($r->headers)) {
 			$headers = $r->headers;
@@ -440,7 +439,7 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 
 	function getimagesize($filename, $quick_only = false) {
 		global $memcache;
-		if (strpos($filename,'photos/') !== FALSE && !empty($memcache) && preg_match('/(\d+)_(\w{8})(_\w+|)\.jpg$/',$filename,$m)) {
+		if ($quick_only != 2 && strpos($filename,'photos/') !== FALSE && !empty($memcache) && preg_match('/(\d+)_(\w{8})(_\w+|)\.jpg$/',$filename,$m)) {
 			$gridimage_id = intval($m[1]);
 			if (empty($m[3])) {//fullsize!
 				$mkey = "$gridimage_id:F";
@@ -478,7 +477,7 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 			//Note, we DONT write memcache/db, even if could, leave that to gridimage.class
 		}
 
-		if ($quick_only)
+		if ($quick_only === true)
 			return false;
 
 		return $this->file($filename,'getimagesize');
