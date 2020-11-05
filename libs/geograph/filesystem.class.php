@@ -333,6 +333,9 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 
 					$this->_log('getObjectInfo','stat',$headers);
 
+					if (empty($headers)) //make sure dont cache 404s
+						return array();
+
 					$this->statcache[$filename] = array(
 						7 => $headers['size'],
 						8 => $headers['date'], //the date of request! is the HTTP 'Date' Header
@@ -420,6 +423,15 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 			return true; //fake, S3 doesnt have real directories!
 		} else {
 			return rmdir($filename);
+		}
+	}
+
+	function is_writable($filename) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			return true; //fake, S3 can pretty much write anywhere
+		} else {
+			return is_writable($filename);
 		}
 	}
 

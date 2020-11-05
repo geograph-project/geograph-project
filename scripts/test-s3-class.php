@@ -57,6 +57,9 @@ print_r($r);
 ############################################
 
 if (!empty($param['read'])) {
+
+$destination .="404";
+
 	list($bucket, $uri) = $filesystem->getBucketPath($destination);
 
 	if ($param['read'] == 2)
@@ -69,7 +72,7 @@ if (!empty($param['read'])) {
 		foreach ($r as $key=>$value)
 			if (preg_match('/(date|time)$/',$key))
 				$r[$key] = $value." - ".date('r',$value);
-	print_r($r);
+	var_dump($r);
 	exit;
 }
 
@@ -167,7 +170,6 @@ $copied = $local.".copy.jpg"; copy($local,$copied);
 
 $dir = dirname($destination);
 
-if (false) {
 //	function __construct() {
 //	function getBucketPath($filename) {
 //	function copy($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
@@ -185,7 +187,6 @@ print "rename: ";
 $r = $filesystem->rename($copied, $destination);
 print_r($r);
 print "\n";  test_file($destination);
-}
 
 //	function move_uploaded_file($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
 //	function execute2($cmd, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
