@@ -1700,10 +1700,10 @@ split_timer('gridimage','after-lock',$thumbpath); //logs the wall time
 								$cmd = sprintf ("\"%sconvert\" -$operation %ldx%ld  $unsharpen $raised -quality 87 jpg:%s jpg:%s",
 								$CONF['imagemagick_path'],
 								$maxw, $maxh,
-								$_SERVER['DOCUMENT_ROOT'].$fullpath,
-								$_SERVER['DOCUMENT_ROOT'].$thumbpath);
+								'%s', '%d'); //use placeholders with execute
 
-								passthru ($cmd);
+								$filesystem->execute($cmd, $_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+
 							}
 							else
 							{
