@@ -469,6 +469,11 @@ if (!empty($_GET['debug']))
 			if (!empty($mkey)) {
 	                        $size =& $memcache->name_get('is',$mkey);
 		                $src = 'memcache';
+				if ($size && $m[3] == '_original') {
+					$size[0] = $size[4]; //we getting the 'original' size, which is attached to 'F'
+					$size[1] = $size[5];
+                                        $size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+				}
 				if (!$size && !empty($sql)) {
 					$db=&$this->_getDB(true);
 
