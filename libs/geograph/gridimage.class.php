@@ -1019,9 +1019,11 @@ split_timer('gridimage'); //starts the timer
 			if (isset($CONF['fetch_on_demand']) && ($_SERVER['HTTP_HOST']!=$CONF['fetch_on_demand']))
 			{
 				$url='http://'.$CONF['fetch_on_demand'].$fullpath;
+				//storeImage wraps S3 class, and so only deals with real local files, not via URL wrapper.
 				$contents = @file_get_contents($url); //surpress 404 warning
 				if (strlen($contents)>100) {
 					$tmpfname = tempnam("/tmp", "demand".getmypid());
+					file_put_contents($tmpfname, $contents);
 					$ok = $this->storeImage($tmpfname,true); //move it, so dont need to delete ourselfs
 				}
 			}

@@ -58,14 +58,21 @@ print_r($r);
 
 if (!empty($param['read'])) {
 
-$destination .="404";
+	if ($param['read'] == -1)
+		$destination .="404";
+	elseif (strlen($param['read']) > 10)
+		$destination=$_SERVER['DOCUMENT_ROOT']."/".$param['read'];
 
 	list($bucket, $uri) = $filesystem->getBucketPath($destination);
+
+	if (empty($bucket))
+		die("unknown bucket for $destination\n");
 
 	if ($param['read'] == 2)
 		$r = $filesystem->getObjectInfo($bucket, $uri);
 	else
 		$r = $filesystem->getObject($bucket, $uri);
+
 	if (!empty($r) && !empty($r->body))
 		$r->body = "string(".strlen($r->body)." bytes)";
 	if (is_array($r))

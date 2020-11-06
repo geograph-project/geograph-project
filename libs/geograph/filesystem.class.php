@@ -222,6 +222,10 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 			if ($sbucket) {
 				//download!
 				$tmp_src = $this->_get_remote_as_tempfile($sbucket, $sfilename);
+
+				if (empty($tmp_src))
+					return "error: unable to read file\n";
+
 				$cmd = str_replace('%s',$tmp_src, $cmd);
 			} else {
 				$cmd = str_replace('%s',$local, $cmd);
@@ -258,10 +262,10 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 // internal function to fetch + cache a remote file!
 
 	function _get_remote_as_tempfile($bucket, $filename) {
-		//todo add caching
+
 		$tmpfname = tempnam("/tmp", "r".getmypid());
 
-		$r = $this->getObject($bucket, $filename, $tmpfname);
+		$r = @$this->getObject($bucket, $filename, $tmpfname);
 
 		$this->_log('getObject','_get_remote_as_tempfile('.basename($filename).')',$r);
 
@@ -275,12 +279,14 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
                                 20 => $headers['hash'],
                                 30 => $headers['type'],
                         );
+			$this->filecache[$filename] = $tmpfname;
+			$this->register_shutdown_function();
+			return $tmpfname;
+		} else {
+			//no point saving empty cache file
+			unlink($tmpfname);
+			return FALSE;
 		}
-
-		$this->filecache[$filename] = $tmpfname;
-
-		$this->register_shutdown_function();
-		return $tmpfname;
 	}
 
 	function _clearcache($filename) {
@@ -328,7 +334,7 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 					$this->_get_remote_as_tempfile($bucket, $filename);
 					//get_remote will itself set statcache! Its doing a GET, so will get headers anyway!
 				} else {
-					$headers = $this->getObjectInfo($bucket, $filename);
+					$headers = @$this->getObjectInfo($bucket, $filename);
 
 					$this->_log('getObjectInfo','stat',$headers);
 
@@ -345,7 +351,7 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 					);
 				}
 			}
-			return $this->statcache[$filename];
+			return @$this->statcache[$filename]; //@ because it still might not exist, if file not exist on S3!
                 } else {
                         //call normal filesystem version
                         return stat($filename);
