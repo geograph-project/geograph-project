@@ -16,8 +16,10 @@
 <dl style="float:right; margin:0px; position:relative">
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
 {if $square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$gridrefraw text=$gridrefraw} [{$square->precision}m precision]<br/>
-WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude" 
-title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
+<span style="font-family:monospace;font-size:1.25em">&nbsp;&nbsp;&nbsp;&nbsp; {$square->nateastings},{$square->natnorthings} {if $square->reference_index eq 2}OSI{/if} [meters]</span></br>
+WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.6f"}">{$latdm}</abbr> <abbr class="longitude" 
+title="{$long|string_format:"%.6f"}">{$longdm}</abbr></span><br>
+<span style="font-family:monospace;font-size:1.25em">&nbsp;&nbsp;&nbsp;&nbsp; {$lat|string_format:"%.6f"},{$long|string_format:"%.6f"}</span>
 </dd>
 </dl>
 
