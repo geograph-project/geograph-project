@@ -901,7 +901,7 @@ split_timer('gridimage'); //starts the timer
 			$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
 
 			list($bucket, $uri) = $filesystem->getBucketPath("$base/");
-			if (!empty($bucket)) { //filesystem does have is_dir etc, but they dont work on buckets anyway.
+			if (empty($bucket)) { //filesystem does have is_dir etc, but a noop on buckets anyway
 				if (!is_dir("$base/$ab"))
 					mkdir("$base/$ab");
 				if (!is_dir("$base/$ab/$cd"))
@@ -913,7 +913,7 @@ split_timer('gridimage'); //starts the timer
 			$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
 
 			list($bucket, $uri) = $filesystem->getBucketPath("$base/");
-			if (!empty($bucket)) { //filesystem does have is_dir etc, but they dont work on buckets anyway.
+			if (empty($bucket)) { //filesystem does have is_dir etc, but a noop on buckets anyway
 				if (!is_dir("$base/$yz"))
 					mkdir("$base/$yz");
 				if (!is_dir("$base/$yz/$ab"))
