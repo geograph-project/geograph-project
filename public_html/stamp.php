@@ -252,7 +252,7 @@ if (!empty($_GET['cmd'])) {
 		}
 
 header("Content-Type: image/jpeg");
-$filesystem->passthru($command,$file);
+$filesystem->execute($command,$file);
 
 
 if (!empty($currentLocal)) //set it back to what it was, because we changed it

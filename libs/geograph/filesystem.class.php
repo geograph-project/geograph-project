@@ -221,7 +221,7 @@ if (!empty($_GET['debug']))
 // special execute wrapper
 
 	//execute, command,  assumes that the command is WRITING a file to fileystem
-	function execute($cmd, $local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+	function execute($cmd, $local, $destination = null, $acl = self::ACL_FULL_CONTROL, $storage = null) {
 		if (!empty($local)) {
 			list($sbucket, $sfilename) = $this->getBucketPath($local);
 			if ($sbucket) {
