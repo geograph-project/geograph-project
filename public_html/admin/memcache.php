@@ -166,8 +166,8 @@ if (isset($_GET['getExtendedStats'])) {
                         if ($size == 'F') {
                                 $db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = ".intval($gridimage_id));
                                 print "<p>gridimage_size Affected Rows: ".$db->Affected_Rows()."</p>";
-                        } else {
-                                $db->Execute("DELETE FROM gridimage_thumbsize WHERE gridimage_id = ".intval($gridimage_id));
+                        } elseif (preg_match('/(\d+)x(\d+)/',$size,$m)) {
+				$db->Execute("DELETE FROM gridimage_thumbsize WHERE gridimage_id = $gridimage_id AND maxw = {$m[1]} AND maxh = {$m[2]}");
                                 print "<p>gridimage_thumbsize Affected Rows: ".$db->Affected_Rows()."</p>";
                         }
 	}
@@ -188,8 +188,8 @@ if (isset($_GET['getExtendedStats'])) {
                         if ($size == 'F') {
                                 $db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = ".intval($gridimage_id));
                                 print "<p>gridimage_size Affected Rows: ".$db->Affected_Rows()."</p>";
-                        } else {
-                                $db->Execute("DELETE FROM gridimage_thumbsize WHERE gridimage_id = ".intval($gridimage_id));
+                        } elseif (preg_match('/(\d+)x(\d+)/',$size,$m)) {
+				$db->Execute("DELETE FROM gridimage_thumbsize WHERE gridimage_id = $gridimage_id AND maxw = {$m[1]} AND maxh = {$m[2]}");
                                 print "<p>gridimage_thumbsize Affected Rows: ".$db->Affected_Rows()."</p>";
                         }
 		}
@@ -276,6 +276,10 @@ or ids: <textarea name=ids rows=3 cols=50></textarea><br/><br>
 <input type="radio" name="size" value="213x160"> 213x160 <br/>
 <input type="radio" name="size" value="393x300"> 393x300 <br/>
 <input type="radio" name="size" value="F"> Full <br/>
+<input type="radio" name="size" value="640x640"> 640x640 <br/>
+<input type="radio" name="size" value="800x800"> 800x800 <br/>
+<input type="radio" name="size" value="1024x1024"> 1024x1024 <br/>
+<input type="radio" name="size" value="1600x1600"> 1600x1600 <br/>
 <br/>
 
 <input type="radio" name="action" value="view" checked> View Contents<br/>
