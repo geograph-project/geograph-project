@@ -84,6 +84,11 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 		$r = preg_replace('/\s+/',' ',print_r($r,true));
 
 		print date('H:i:s ')."$method, $function, $r\n";
+
+if (!empty($_GET['debug']))
+	debug_print_backtrace();
+
+
 	}
 
 	function getBucketPath($filename) {
@@ -262,6 +267,9 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 // internal function to fetch + cache a remote file!
 
 	function _get_remote_as_tempfile($bucket, $filename) {
+
+		if (!empty($this->filecache[$filename]))
+			return $this->filecache[$filename];
 
 		$tmpfname = tempnam("/tmp", "r".getmypid());
 
@@ -445,7 +453,7 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 
 	function getimagesize($filename, $quick_only = false) {
 		global $memcache;
-		if ($quick_only != 2 && strpos($filename,'photos/') !== FALSE && !empty($memcache) && preg_match('/(\d+)_(\w{8})(_\w+|)\.jpg$/',$filename,$m)) {
+		if ($quick_only !== 2 && strpos($filename,'photos/') !== FALSE && !empty($memcache) && preg_match('/(\d+)_(\w{8})(_\w+|)\.jpg$/',$filename,$m)) {
 			$gridimage_id = intval($m[1]);
 			if (empty($m[3])) {//fullsize!
 				$mkey = "$gridimage_id:F";
@@ -476,6 +484,7 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 					if (!empty($this->statcache[$filename][30])) //on the offchance we have this, return it!
 						$size['mime'] = $this->statcache[$filename][30];
 					$size['src'] = $src;
+					$this->_log('mecache','getimagesize',$src);
 					return $size;
 				}
 			}
@@ -506,7 +515,6 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 	function file($filename,$function = 'file') {
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
-			//use temp file for now. maybe could use getObject directly, to avoid wrtiing to a temp file?
 			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
 			return $function($tmpfname);
 		} else {
@@ -514,8 +522,34 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 		}
 	}
 
-	function readfile($filename) {
-		return $this->file($filename,'readfile');
+	function readfile($filename, $avoid_temp = false) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			if ($avoid_temp && empty($this->filecache[$filename])) { //if we already have a cache, use it!
+				header('X-Debug: readfile-STDOUT');
+
+				$stdout = fopen('php://output', 'w'); //stdout is actully command line, web requests have dedicated output buffer
+				$r = @$this->getObject($bucket, $filename, $stdout);
+
+				if (!empty($r->headers) && !headers_sent()) {
+		                        $headers = $r->headers;
+					header("Content-Length: {$headers['size']}");
+					$mtime = isset($headers['x-amz-meta-mtime'])?$headers['x-amz-meta-mtime']:$headers['time'];
+					$gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
+					header("Last-Modified: $gmdate_mod");
+				}
+
+		                $this->_log('getObject','readfile('.basename($filename).')',$r);
+				return;
+			}
+
+			header('X-Debug: readfile-tempfile');
+			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
+			return readfile($tmpfname);
+		} else {
+			header('X-Debug: readfile-filesystem');
+			return readfile($filename);
+		}
 	}
 
 	function imagecreatefromjpeg($filename) {
