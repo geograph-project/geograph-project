@@ -102,7 +102,14 @@ if (isset($_REQUEST['id']))
 			header("Content-Type: image/jpeg");
 			header("Content-Disposition: attachment; filename=\"$filename\"");
 
-			if (function_exists('apache_get_modules') && ($m = apache_get_modules()) && in_array('mod_xsendfile',$m)) {
+			if (!empty($filesystem)) {
+				customExpiresHeader(86400*180,true);
+
+				//writes direct to STDOUT. But can't output Last-Modified/Content-Length
+
+				$filesystem->readfile($_SERVER['DOCUMENT_ROOT'].$filepath, true);
+
+			} elseif (function_exists('apache_get_modules') && ($m = apache_get_modules()) && in_array('mod_xsendfile',$m)) {
 				$filepath = preg_replace('/^\//','',$filepath);
 				header("X-Sendfile: $filepath");
 			} elseif (1) {

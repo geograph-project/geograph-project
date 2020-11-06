@@ -224,11 +224,17 @@ if (strpos($options,'-gravity left') !== FALSE) {
 	$options = " -rotate 90 ".str_replace('-gravity right','-gravity south',$options)." -rotate -90";
 }
 
-if (($ar = getimagesize($file)) !== FALSE && isset($ar['channels']) && $ar['channels'] == 1) {
+##########################################
+
+$filesystem = new FileSystem();
+
+/* disabled, as we now on ImageMagick  6.9.10-23 which hopefully not affected - needs testing!
+if (($ar = $filesystem->getimagesize($file,2)) !== FALSE && isset($ar['channels']) && $ar['channels'] == 1) {
      $options .= ' -colorspace Gray'; // hack avoids problem in ImageMagick 6.7.7 with grayscale
 }
+*/
 
-$command = "convert $file $options jpg:-";
+$command = "convert $s $options jpg:-";
 
 if (!empty($_GET['cmd'])) {
 	print $command;
@@ -246,7 +252,7 @@ if (!empty($_GET['cmd'])) {
 		}
 
 header("Content-Type: image/jpeg");
-passthru($command);
+$filesystem->passthru($command,$file);
 
 
 if (!empty($currentLocal)) //set it back to what it was, because we changed it
