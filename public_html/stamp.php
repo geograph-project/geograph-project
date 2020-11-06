@@ -234,7 +234,7 @@ if (($ar = $filesystem->getimagesize($file,2)) !== FALSE && isset($ar['channels'
 }
 */
 
-$command = "convert $s $options jpg:-";
+$command = "convert %s $options jpg:-";
 
 if (!empty($_GET['cmd'])) {
 	print $command;
