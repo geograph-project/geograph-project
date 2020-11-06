@@ -959,7 +959,7 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		}
 
-		if ($check_exists && ($filesystem = GeographFileSystem()) && !$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath, $check_exists == 2))
+		if ($check_exists && ($filesystem = GeographFileSystem()) && !$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath, $check_exists === 2))
 			$fullpath="/photos/error.jpg";
 
 		if ($returntotalpath)
@@ -1011,7 +1011,7 @@ split_timer('gridimage'); //starts the timer
 
 		$filesystem = GeographFileSystem();
 
-		$ok=$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath, $check_exists==2);
+		$ok=$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath, $check_exists===2);
 
 		if (!$ok)
 		{
