@@ -202,6 +202,28 @@ if (!empty($_GET['debug']))
 		$this->copy($local, $destination, $acl, $storage);
 	}
 
+	function unlink($filename, $invalidate = false) {
+		list($bucket, $filename) = $this->getBucketPath($filename);
+		if ($bucket) {
+			$r = parent::deleteObject($bucket, $filename);
+
+			$this->_log('deleteObject','unlink('.basename($filename).')',$r);
+
+			/* TODO - we dont have a way to get the distributionId yet!
+			if ($r && $invalidate) {
+				parent::invalidateDistribution($distributionId, array($$filename));
+			} */
+			return $r;
+		} else {
+			return unlink($filename);
+		}
+	}
+
+
+//todo, touch
+
+
+
 #########################################################
 
 	//executes command, assumes that the command is WRITING a file to fileystem
@@ -261,6 +283,20 @@ if (!empty($_GET['debug']))
 		} else {
 			//if writing to local file, nothing more todo?
 		}
+	}
+
+#########################################################
+
+	//really just a convenient wrapper around _get_remote_as_tempfile
+	function get_local_file($filename) {
+		 list($bucket, $filename) = $this->getBucketPath($filename);
+                 if ($bucket) {
+                        //download!
+                        return $this->_get_remote_as_tempfile($bucket, $filename);
+                 } else {
+			//just return the original path!
+			return $filename;
+                 }
 	}
 
 #########################################################
@@ -405,9 +441,6 @@ if (!empty($_GET['debug']))
         function md5_file($filename, $use_get = false) {
 		return $this->filemtime($filename, $use_get, 'md5_file', 20);
         }
-
-//todo, touch
-//todo, unlink
 
 #########################################################
 // functions to work on directories

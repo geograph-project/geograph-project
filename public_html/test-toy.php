@@ -136,8 +136,8 @@ if (!empty($filesystem)) {
 
         $destination = sprintf('photos/%02d/%06d.jpg',$counter/100,$counter);
 
-	list($bucket, $uri) = $filesystem->getBucketPath($_SERVER['DOCUMENT_ROOT'].'/'.$filename);
-	$tempfile = $filesystem->_get_remote_as_tempfile($bucket, $uri);
+	//copy can't copy remote files directly, so we still have to get a local file manually
+	$tempfile = $filesystem->get_local_file($_SERVER['DOCUMENT_ROOT'].'/'.$filename);
 
         $result = $filesystem->copy($tempfile, $_SERVER['DOCUMENT_ROOT'].'/'.$destination);
 
