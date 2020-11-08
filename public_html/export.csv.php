@@ -56,6 +56,8 @@ while (!$recordSet->EOF)
 		$image['title'] = '"'.str_replace('"', '""', $image['title']).'"';
 	if (strpos($image['imageclass'],',') !== FALSE || strpos($image['imageclass'],'"') !== FALSE)
 		$image['imageclass'] = '"'.str_replace('"', '""', $image['imageclass']).'"';
+	if (strpos($image['realname'],',') !== FALSE || strpos($image['realname'],'"') !== FALSE)
+		$image['realname'] = '"'.str_replace('"', '""', $image['realname']).'"';
 	echo "{$image['gridimage_id']},{$image['title']},{$image['grid_reference']},{$image['realname']},{$image['imageclass']}";
 	if (!empty($_GET['desc'])) {
 		if (empty($image['comment'])) {
@@ -105,8 +107,10 @@ while (!$recordSet->EOF)
 		if (!empty($_GET['tags'])) {
 			if (empty($image['tags'])) {
 				echo ',';
-			} else {
+			} elseif (strpos($image['tags'],',') !== FALSE || strpos($image['tags'],'"') !== FALSE)
 				echo ',"'.str_replace('"', '""', $image['tags']).'"';
+			} else {
+				echo ",{$image['tags']}";
 			}
 		}
 	}
