@@ -45,14 +45,14 @@ if (isset($_REQUEST['id']))
 		header("Status: 410 Gone");
 		$template = "static_404.tpl";
 	} else {
-		$image->altUrl = $image->_getOriginalpath(true,false,'_640x640');
+		$image->altUrl = $image->_getOriginalpath(true,true,'_640x640');
 
-		$image->originalUrl = $image->_getOriginalpath(true,false);
+		$image->originalPath = $image->_getOriginalpath(true,false);
 
 		if (empty($filesystem))
 			$filesystem = new FileSystem();
 
-		$image->originalSize = $filesystem->filesize($_SERVER['DOCUMENT_ROOT'].$image->originalUrl);
+		$image->originalSize = $filesystem->filesize($_SERVER['DOCUMENT_ROOT'].$image->originalPath);
 
 		$style = $USER->getStyle();
 		$smarty->assign('maincontentclass', 'content_photo'.$style);

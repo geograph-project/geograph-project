@@ -102,7 +102,9 @@ if (isset($_REQUEST['id']))
 			header("Content-Type: image/jpeg");
 			header("Content-Disposition: attachment; filename=\"$filename\"");
 
-			if (!empty($filesystem)) {
+			$filesystem = GeographFileSystem();
+
+			if ($filesystem->hasAuth()) {
 				customExpiresHeader(86400*180,true);
 
 				//writes direct to STDOUT. But can't output Last-Modified/Content-Length

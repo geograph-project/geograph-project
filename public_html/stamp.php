@@ -151,29 +151,29 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 if (!empty($_GET['large'])) {
 	switch($_GET['large']) {
 		case 213: $thumb = $image->getThumbnail(213,160,2);
-			$file = ".".$thumb['url']; break; //we dont want the http hostname
+			$file = $_SERVER['DOCUMENT_ROOT'].$thumb['url']; break; //url, is actulyl just the path, without server
 
 		case 393: $thumb = $image->getFixedThumbnail(393,300,2);
-			$file = ".".$thumb['url']; break; //we dont want the http hostname
+			$file = $_SERVER['DOCUMENT_ROOT'].$thumb['url']; break;
 
                 case 640:
                 case 800:
                 case 1024:
                 case 1600:
-                        $file = ".".$image->getImageFromOriginal(intval($_GET['large']),intval($_GET['large']));
+                        $file = $_SERVER['DOCUMENT_ROOT'].$image->getImageFromOriginal(intval($_GET['large']),intval($_GET['large']));
 			if (strlen($file) < 20 || basename($file)=="error.jpg") {
-				$file = ".".$image->_getOriginalpath();
+				$file = $_SERVER['DOCUMENT_ROOT'].$image->_getOriginalpath();
 			}
                         break;
 		default:
-			$file = ".".$image->_getOriginalpath();
+			$file = $_SERVER['DOCUMENT_ROOT'].$image->_getOriginalpath();
 			break;
 	}
         if (strlen($file) < 20 || basename($file)=="error.jpg") {
-                $file = ".".$image->_getFullpath();
+                $file = $_SERVER['DOCUMENT_ROOT'].$image->_getFullpath();
         }
 } else {
-	$file = ".".$image->_getFullpath();
+	$file = $_SERVER['DOCUMENT_ROOT'].$image->_getFullpath();
 }
 $id = intval($image->gridimage_id);
 $title = "by {$image->realname}";
@@ -237,7 +237,9 @@ if (($ar = $filesystem->getimagesize($file,2)) !== FALSE && isset($ar['channels'
 $command = "convert %s $options jpg:-";
 
 if (!empty($_GET['cmd'])) {
-	print $command;
+	header("Content-Type: text/plain");
+	print "$command\n";
+	print "$file\n";
 	exit;
 }
 
