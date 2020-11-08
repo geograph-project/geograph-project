@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: imagemap.php 1690 2005-12-22 15:05:42Z barryhunter $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -51,19 +51,19 @@ $black=imagecolorallocate($img, 255,255,255);
 
 
 if ($id) {
-	//die as quickly as possible with the minimum 
+	//die as quickly as possible with the minimum
 	$db = GeographDatabaseConnection(true);
 
 	$realname =& $db->getOne($sql = "select realname from gridimage_search where gridimage_id=".intval($id) );
 }
-	
+
 if (!empty($realname)) {
-	imagestring($img, 2, 8, 5, "c Copyright", $black);	
-	imageellipse($img, 10, 12, 12, 12, $black);	
+	imagestring($img, 2, 8, 5, "c Copyright", $black);
+	imageellipse($img, 10, 12, 12, 12, $black);
 
 	imagestring($img, 3, 78, 5, $realname, $black);
 } else {
-	imagestring($img, 2, 5, 5, "Image from", $black);	
+	imagestring($img, 2, 5, 5, "Image from", $black);
 
 	imagestring($img, 3, 72, 5, "{$_SERVER['HTTP_HOST']}", $black);
 }
@@ -84,10 +84,13 @@ if (empty($_SERVER["PATH_INFO"])) {
 	header("Status: 403 Forbidden");
 }
 
+$filesystem = new FileSystem();
+
 if ( (preg_match('/thread|topic|forum|28dayslater|secretscotland|geograph\.org\.uk|hbwalkersaction/',$_SERVER['HTTP_REFERER']) || !empty($_SERVER["PATH_INFO"]))
-	&& preg_match('/^\/(geo|)photos\/(\d+\/|)\d+\/\d+\/\d{6,}_(\w+)\.jpg$/',$filename,$m) 
-	&& strpos($m[3],'_') === FALSE && file_exists($_SERVER['DOCUMENT_ROOT'].$filename)) {
-	$fullimg = imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$filename); 
+	&& preg_match('/^\/(geo|)photos\/(\d+\/|)\d+\/\d+\/\d{6,}_(\w+)\.jpg$/',$filename,$m)
+	&& strpos($m[3],'_') === FALSE && $filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$filename, true)) {
+
+	$fullimg = $filesystem->imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$filename);
 	$fullw=imagesx($fullimg);
 	$fullh=imagesy($fullimg);
 
@@ -102,4 +105,4 @@ if ( (preg_match('/thread|topic|forum|28dayslater|secretscotland|geograph\.org\.
 	header("Content-Type: image/png");
 	imagepng($img);
 }
-?>
+

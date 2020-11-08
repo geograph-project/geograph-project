@@ -30,6 +30,9 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
+die("This function is offline, will need converting to work with Amazon S3");
+
+
 $db = NewADOConnection($GLOBALS['DSN']);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 

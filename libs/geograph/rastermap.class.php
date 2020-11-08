@@ -1139,7 +1139,9 @@ class RasterMap
 
 		split_timer('rastermap','foundpath',$path); //logs the wall time
 
-		if (($this->caching && file_exists($path)) || ($create && $this->createTile($service,$path)) ) {
+		$filesystem = GeographFileSystem();
+
+		if (($this->caching && $filesystem->file_exists($path)) || ($create && $this->createTile($service,$path)) ) {
 			return $path;
 		} else {
 			return false;
@@ -1179,6 +1181,8 @@ class RasterMap
 		$numtiles = $m[1];
 		$stepdist = ($m[1]-1)*$div;
 
+		$filesystem = GeographFileSystem();
+
 		if (strlen($CONF['imagemagick_path'])) {
 			$tilelist = array();
 			$c = 0;
@@ -1191,7 +1195,7 @@ class RasterMap
 								$div ) as $e) {
 					$newpath = $this->getOSGBStorePath($service,$e,$n);
 
-					if (file_exists($newpath)) {
+					if ($filesystem->file_exists($newpath)) {
 						$tilelist[] = $newpath;
 						$found = 1;
 					} else {
@@ -1212,24 +1216,29 @@ class RasterMap
 			if (!$path)
 				$path = $this->getOSGBStorePath($service,$east,$nort,true);
 
+
+			$tmpfiles = array();
+			foreach ($tilelist as $newpath)
+				$tmpfiles[] = $filesystem->get_local_file($newpath);
+
 			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile %dx%d png:- | "%sconvert" - -thumbnail %ldx%ld -colors 128 -depth 8 -type Palette png:%s &1>1 &2>1', 
 				isset($_GET['nice'])?'nice ':'',
 				$CONF['imagemagick_path'],
-				implode(' ',$tilelist),
+				implode(' ',$tmpfiles),
 				$numtiles,$numtiles,
 				$CONF['imagemagick_path'],
 				$this->width, $this->width,
-				$path);
+				'%d');
 
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE)
 				$cmd = str_replace('/','\\',$cmd);
 
-			print exec ($cmd);
+			$filesystem->execute($cmd, $path);
 
 			if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
-				print "<pre>$cmd</pre>";
+				print "<pre>$cmd >>> $path</pre>";
 
-			if (file_exists($path)) {
+			if ($filesystem->file_exists($path)) {
 				return true;
 			} else {
 				return false;
@@ -1265,6 +1274,8 @@ class RasterMap
 		$east = floor($this->nateastings/1000) * 1000;
 		$nort = floor($this->natnorthings/1000) * 1000;
 
+		$filesystem = GeographFileSystem();
+
 		if (strlen($CONF['imagemagick_path'])) {
 			$tilelist = array();
 			$c = 0;
@@ -1277,7 +1288,7 @@ class RasterMap
 								1000 ) as $e) {
 					$newpath = $this->getOSGBStorePath($service,$e,$n);
 
-					if (file_exists($newpath)) {
+					if ($filesystem->file_exists($newpath, true)) {
 						$tilelist[] = $newpath;
 						$found = 1;
 					} else {
@@ -1298,26 +1309,31 @@ class RasterMap
 			if (!$path)
 				$path = $this->getOSGBStorePath('OS50k',$east,$nort,true);
 
+                        $tmpfiles = array();
+                        foreach ($tilelist as $newpath)
+                                $tmpfiles[] = $filesystem->get_local_file($newpath);
+
 			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile 3x3 png:- | "%sconvert" - -crop %ldx%ld+%ld+%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,230 160,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 \'(c) Crown Copyright %s\'" -colors 128 -depth 8 -type Palette png:%s', 
 				isset($_GET['nice'])?'nice ':'',
 				$CONF['imagemagick_path'],
-				implode(' ',$tilelist),
+				implode(' ',$tmpfiles),
 				$CONF['imagemagick_path'],
 				$tilewidth*2, $tilewidth*2,
 				$tilewidth/2, $tilewidth/2,
 				$outputwidth, $outputwidth,
 				$CONF['imagemagick_font'],
 				$CONF['os_licence'],
-				$path);
+				'%d');
 
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE)
 				$cmd = str_replace('/','\\',$cmd);
 
-			exec ($cmd);
-			if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
-				print "<pre>$cmd</pre>";
+			$filesystem->execute($cmd, $path);
 
-			if (file_exists($path)) {
+			if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
+				print "<pre>$cmd >>> $path</pre>";
+
+			if ($filesystem->file_exists($path)) {
 				return true;
 			} else {
 				return false;
@@ -1336,26 +1352,29 @@ class RasterMap
 
 		$by20 = $this->width/20; //to center on the centisquare
 
+		$filesystem = GeographFileSystem();
+
 		$cmd = sprintf('%s"%sconvert" png:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld +repage -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 13,114 118,130 3,3" -fill "#000066" -pointsize 10 -draw "text 14,123 \'(c) OSGB %s\'" -colors 128 -depth 8 -type Palette png:%s', 
 			isset($_GET['nice'])?'nice ':'',
 			$CONF['imagemagick_path'],
-			$input,
+			'%s',
 			$this->width, $this->width,
 			($this->width*$east)+$by20, ($this->width*$nort)+$by20,
 			$this->width, $this->width,
 			$this->width, $this->width,
 			$CONF['imagemagick_font'],
 			$CONF['os_licence'],
-			$output);
+			'%d');
 
 		if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE)
 			$cmd = str_replace('/','\\',$cmd);
 
-		exec ($cmd);
+		$filesystem->execute($cmd, $input, $output);
+
 		if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 			die("<pre>$cmd</pre>");
 
-		if (file_exists($path)) {
+		if ($filesystem->file_exists($path)) {
 			return true;
 		} else {
 			return false;
@@ -1372,7 +1391,9 @@ class RasterMap
 
 		$mappath = $this->getMapPath($this->service);
 
-		if (!$mappath || !file_exists($mappath)) {
+		$filesystem = GeographFileSystem();
+
+		if (!$mappath || !$filesystem->file_exists($mappath,true)) {
 			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+3600*6);
 			header("Expires: $expires");
 
@@ -1382,7 +1403,7 @@ class RasterMap
 
 		#there is a suggestion that as we setting an expires, we can do without mod checks (by not sending etag/lastmod), and avoid needless 304's 
 		#//Last-Modified: Sun, 20 Mar 2005 18:19:58 GMT
-		#$t=filemtime($mappath);
+		#$t=$filesystem->filemtime($mappath);
 
 		#//use the filename as a hash (md5'ed)
 		#//can use if-last-mod as file is not unique per user
@@ -1392,12 +1413,12 @@ class RasterMap
 
 		header("Content-Type: image/png");
 
-		$size=filesize($mappath);
+		$size=$filesystem->filesize($mappath);
 		header("Content-Length: $size");
 
 		split_timer('rastermap','sending',$mappath); //logs the wall time
 
-		readfile($mappath);
+		$filesystem->readfile($mappath, true);
 	}
 
 	/**
@@ -1464,30 +1485,21 @@ class RasterMap
 
 		list($source,$dummy) = explode('-',$service);
 
+		$filesystem = GeographFileSystem();
+
 		$dir=$CONF['rastermap'][$source]['path'].$this->epoch.'/'.$folder;
-		$dir2='/mnt/secondry/rastermaps-OS-50k-'.$this->epoch.'-'.str_replace('/','-',$folder);
 		$dir.=$e2.'/';
-		$dir2.=$e2.'-';
-		if ($create && !is_dir($dir))
-			mkdir($dir);
+		if ($create && !$filesystem->is_dir($dir))
+			$filesystem->mkdir($dir);
 
 		$dir.=$n2.'/';
-		$dir2.=$n2.'-';
-		if ($create && !is_dir($dir))
-			mkdir($dir);
+		if ($create && !$filesystem->is_dir($dir))
+			$filesystem->mkdir($dir);
 
 		$file = $dir.$e3.'-'.$n3.'.png';
-		$file2 = $dir2.$e3.'-'.$n3.'.png';
 
-if (!empty($_GET['debug']))
-	print "'$file2'";
-
-		if (!file_exists($file) && file_exists($file2)) {
-			return $file2;
-		} else {
-			return $file;
-		}
-
+		//we DONT check it exists, the parent will take care of that. This function might be called to get the path to CREATE the file.
+		return $file;
 	}
 
 	function _trace($msg)

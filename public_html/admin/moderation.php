@@ -471,9 +471,9 @@ foreach ($images->images as $i => $image) {
 
 	$fullpath=$images->images[$i]->_getFullpath();
 	if ($fullpath!="/photos/error.jpg") {
-		list($width, $height, $type, $attr)=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-		if ($width > 0 && max($width,$height) < 600)
-			$images->images[$i]->sizestr = $attr;
+		$size = $images->images[$i]->_getFullSize();
+		if ($size[0] > 0 && max($size[0],$size[1]) < 600)
+			$images->images[$i]->sizestr = $size[3];
 	}
 	//if (!empty($image->tags)) - now done automatically by imagelist class!
 	//	$images->images[$i]->tags = explode("?",$image->tags);

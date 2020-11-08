@@ -123,7 +123,7 @@ if (isset($_REQUEST['id']))
 				}
 
 				$fullpath=$image->_getFullpath();
-	                        if ($fullpath == '/photos/error.jpg' || !file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath)) {
+	                        if ($fullpath == '/photos/error.jpg') {
 					 $smarty->assign('allow_same', 1);
 				}
 
@@ -207,6 +207,9 @@ $smarty->display($template, $cacheid);
 //this function should be in a central lib - maybe even gridimage.class.php - but for now this is the only page that uses it!
 function read_exif($id) {
         $folder = "/mnt/combined/geograph_live/exif";
+
+//todo, this still needs converting to use S3/$filesystem
+
 
         $start = intval($id/1000)*1000;
         $dir1 = sprintf("%02d", floor($start/1000000)%100);

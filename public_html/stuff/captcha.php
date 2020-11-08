@@ -38,14 +38,14 @@ if (!empty($_GET['token'])) {
 	{
 		if ($token->hasValue("id")) {
 			$id = $token->getValue("id");
-	
+
 			//iamges should be immutable! So we have permentent urls
-			customCacheControl(getlastmod(),$id);	
+			customCacheControl(getlastmod(),$id);
 			customExpiresHeader(3600*24*48,true);
-			
+
 			$image = new GridImage;
 			$ok = $image->loadFromId($id);
-			
+
 	if (!$ok || $image->moderation_status=='rejected') {
 		//clear the image
 		$image=new GridImage;
@@ -74,8 +74,10 @@ if (!empty($_GET['token'])) {
 
 			header("Content-Type: image/jpeg");
 
+			$filesystem = new FileSystem();
+
 			if ($token->hasValue("o") || !empty($_GET['o'])) {
-			        $fullimg = imagecreatefromjpeg('..'.$url);
+			        $fullimg = $filesystem->imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$url);
 			        $fullw=imagesx($fullimg);
 			        $fullh=imagesy($fullimg);
 
@@ -105,7 +107,7 @@ if (!empty($_GET['token'])) {
 			        imagejpeg($fullimg,null,75);
 
 			} else {
-				@readfile('..'.$url);
+				$filesystem->readfile($_SERVER['DOCUMENT_ROOT'].$url, true);
 			}
 			exit;
 		}
@@ -124,7 +126,7 @@ if (!empty($_GET['token'])) {
 
 
 	print "<p>Copy/Paste all this into a forum thread..</p>";
-	print "<p><input size=110 value=\"[img]http://t0.geograph.org.uk/stuff/captcha.php?token=".$token->getToken()."&amp;/med.jpg[/img]\"></p>";
+	print "<p><input size=110 value=\"[img]{$CONF['TILE_HOST']}/stuff/captcha.php?token=".$token->getToken()."&amp;/med.jpg[/img]\"></p>";
 
 	exit;
 }
@@ -137,7 +139,7 @@ if (!empty($_GET['image'])) {
 	$details = $image->getThumbnail(213,160,2);
 	$url = $details['url'];
 	header("Content-Type: image/jpeg");
-	@readfile('..'.$url);
+	$filesystem->readfile($_SERVER['DOCUMENT_ROOT'].$url, true);
 	exit;
 } 
 

@@ -48,7 +48,11 @@ if (isset($_REQUEST['id']))
 		$image->altUrl = $image->_getOriginalpath(true,false,'_640x640');
 
 		$image->originalUrl = $image->_getOriginalpath(true,false);
-		$image->originalSize = filesize($_SERVER['DOCUMENT_ROOT'].$image->originalUrl);
+
+		if (empty($filesystem))
+			$filesystem = new FileSystem();
+
+		$image->originalSize = $filesystem->filesize($_SERVER['DOCUMENT_ROOT'].$image->originalUrl);
 
 		$style = $USER->getStyle();
 		$smarty->assign('maincontentclass', 'content_photo'.$style);

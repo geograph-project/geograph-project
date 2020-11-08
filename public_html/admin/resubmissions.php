@@ -99,19 +99,13 @@ if (isset($_POST['gridimage_id']))
 			//we actually have a file to move!
 			if ($image->pendingUrl != "/photos/error.jpg") {
 
+				$filesystem = new FileSystem();
+
 				//delete the current original file if any
 				if ($image->originalUrl != "/photos/error.jpg") {
-					unlink($_SERVER['DOCUMENT_ROOT'].$image->originalUrl);
+					$filesystem->unlink($_SERVER['DOCUMENT_ROOT'].$image->originalUrl, true); //setting invalidate=true, as will invalidate in CloudFront
 
-					//todo - bam the varnish copy?
-					// if (greatest(withd,height) <= 1024) {// the original would only be cached in varnish if was used on the photo page!
-					//by making a http request to...
-					//	https://data.geograph.org.uk/sizes.php?id=6028299&ban=/geophotos/06/02/82/6028299_b2e0be97_original.jpg
-
-					//for the moment, call always, not a issue if ban a non-cached file!
-					request_no_wait("http://data.geograph.org.uk/sizes.php",
-						array('id'=>$gridimage_id, 'ban'=>$image->originalUrl),
-						'GET', 0.5);
+					//todo  (greatest(withd,height) <= 1024) - the original would only be cached in varnish if was used on the photo page!
 				}
 
 				//delete the _640x640 too! (incase its no longer relevent) - if needbe, will be recrated from previewUrl below
@@ -119,7 +113,7 @@ if (isset($_POST['gridimage_id']))
 					$thumbnail = $image->_getOriginalpath(true,false,"_{$size}x{$size}");
 					if (basename($thumbnail) != "error.jpg") {
 						//delete teh actual file
-						unlink($_SERVER['DOCUMENT_ROOT'].$thumbnail);
+						$filesystem->unlink($_SERVER['DOCUMENT_ROOT'].$thumbnail, true);
 
 						//delete the memcache copy
 						$mkey = "{$gridimage_id}:{$size}x{$size}";
@@ -127,15 +121,6 @@ if (isset($_POST['gridimage_id']))
 
 						//delete the database copy
 						$db->Execute("DELETE FROM gridimage_thumbsize WHERE gridimage_id = $gridimage_id AND maxw = $size");
-
-						//todo - ban the varnish copy?
-						//by making a http request to...
-						//	https://data.geograph.org.uk/sizes.php?id=6028299&ban=/geophotos/06/02/82/6028299_b2e0be97_800x800.jpg
-						//can't run it 'internally' easily as varnish is on tea.
-
-						request_no_wait("http://data.geograph.org.uk/sizes.php",
-							array('id'=>$gridimage_id, 'ban'=>$thumbnail),
-							'GET', 0.5);
 					}
 				}
 
@@ -157,7 +142,7 @@ if (isset($_POST['gridimage_id']))
 				if ($image->previewUrl != "/photos/error.jpg") {
 					if (!empty($_POST['confirm'])) {
 						//delete the preview - we dont need it
-						unlink($_SERVER['DOCUMENT_ROOT'].$image->previewUrl);
+						$filesystem->unlink($_SERVER['DOCUMENT_ROOT'].$image->previewUrl);
 					} else {
 						//store the preview as an alterantive fullsize
 						$image->storeImage($_SERVER['DOCUMENT_ROOT'].$image->previewUrl,true,'_640x640');
@@ -260,7 +245,9 @@ if ($data) {
 		$image->previewUrl = $thumbnail;
 	}
 
-	$image->pendingSize = filesize($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl);
+	$filesystem = new FileSystem();
+
+	$image->pendingSize = $filesystem->filesize($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl);
 
 	$smarty->assign_by_ref('image', $image);
 }
@@ -272,45 +259,3 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 
 $smarty->display('admin_resubmissions.tpl',$style);
 
-
-
-
-//inspired by https://stackoverflow.com/questions/962915/how-do-i-make-an-asynchronous-get-request-in-php
-
-  function request_no_wait($url, $params = NULL, $type='GET', $timeout = 1)
-  {
-      $post_string = '';
-      if (!empty($params)) {
-        //todo, use http_build_query ?
-        $post_params = array();
-        foreach ($params as $key => &$val) {
-          if (is_array($val)) $val = implode(',', $val);
-          $post_params[] = $key.'='.urlencode($val);
-        }
-        $post_string = implode('&', $post_params);
-      }
-
-      $parts=parse_url($url);
-
-      $errno = $errstr = null;
-      $fp = fsockopen($parts['host'],
-          isset($parts['port'])?$parts['port']:80,
-          $errno, $errstr, $timeout);
-
-      // Data goes in the path for a GET request
-      if('GET' == $type && !empty($post_string)) $parts['path'] .= '?'.$post_string;
-
-      $out = "$type ".$parts['path']." HTTP/1.1\r\n";
-      $out.= "Host: ".$parts['host']."\r\n";
-      if ('POST' == $type) {
-        $out.= "Content-Type: application/x-www-form-urlencoded\r\n";
-        $out.= "Content-Length: ".strlen($post_string)."\r\n";
-      }
-      $out.= "Connection: Close\r\n\r\n";
-
-      // Data goes in the request body for a POST request
-      if ('POST' == $type && !empty($post_string)) $out.= $post_string;
-
-      fwrite($fp, $out);
-      fclose($fp);
-  }
