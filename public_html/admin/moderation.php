@@ -370,17 +370,14 @@ if (isset($_GET['xmas'])) {
 
 $db->Execute("LOCK TABLES
 gridsquare_moderation_lock WRITE,
-gridsquare_moderation_lock l WRITE,
-moderation_log WRITE,
-gridsquare READ,
+gridsquare_moderation_lock l READ,
+moderation_log READ,
 gridsquare gs READ,
 gridimage gi READ LOCAL,
 user READ LOCAL,
-gridprefix READ,
 user v READ LOCAL,
 user m READ LOCAL,
-user_stat us READ LOCAL,
-tag_public READ LOCAL");
+user_stat us READ LOCAL");
 
 
 $sql = "select gi.*,grid_reference,user.realname,imagecount,coalesce(images,0) as images $sql_columns
@@ -406,20 +403,9 @@ limit $limit";
 //implied: and user_id != {$USER->user_id}
 // -> because squares with users images are locked
 
-/* .. removed fro mthe above query, and done seperately for NOW, as for some reason the query with tags is getting slow
-group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags,
-
-	left join tag_public t
-		on(t.gridimage_id = gi.gridimage_id)
-
-*/
-$image_ids = array();
-
-
 if (!empty($_GET['debug'])) {
 	print $sql;
 }
-
 
 #############################
 # fetch the list of images...
@@ -428,8 +414,25 @@ $images=new ImageList();
 $images->_setDB($db);
 $c = $images->_getImagesBySql($sql);
 
+//do this first, inside the LOCK
+$donesquare = array();
+foreach ($images->images as $i => $image) {
+	if (!empty($donesquare[$image->gridsquare_id]))
+		continue;
+
+	$db->Execute("REPLACE INTO gridsquare_moderation_lock  SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
+	$donesquare[$image->gridsquare_id]=1;
+}
+
+#############################
+
+$db->Execute("UNLOCK TABLES");
+
+#############################
+// _getFullSize etc, might want to write, so do that outside the LOCK.
 
 $realname = array();
+$image_ids = array();
 foreach ($images->images as $i => $image) {
 	$token=new Token;
 	$fix6fig = 0;
@@ -467,8 +470,6 @@ foreach ($images->images as $i => $image) {
 		$images->images[$i]->use6fig = 1;
 	}
 
-	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
-
 	$fullpath=$images->images[$i]->_getFullpath();
 	if ($fullpath!="/photos/error.jpg") {
 		$size = $images->images[$i]->_getFullSize();
@@ -483,11 +484,6 @@ foreach ($images->images as $i => $image) {
 
 #############################
 
-$db->Execute("UNLOCK TABLES");
-
-#############################
-
-//might as well do this after unlock
 if (!empty($image_ids)) {
 
 	$tagdata = $db->getAll("SELECT gridimage_id, group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags
