@@ -52,34 +52,13 @@ $nufolder = $folder->addChild('Folder');
 $nufolder->setItem('name','None');
 $nufolder->setItem('open',1);
 $nufolder->setItem('visibility',1);
-	
-	
-	
-
-$networklink = new kmlNetworkLink(null,'Geograph SuperLayer');
-$networklink->setItemCDATA('description',<<<END_HTML
-<p>This SuperLayer allows full access to the thousends of images contributed to Geograph since March 2005, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible.</p>
-
-<p>Click on the Camera Icon or Thumbnails to view a bigger image, and follow the link to view the full resolution image on the geograph website.</p>
-
-<p>This SuperLayer will automatically update, but by design is not realtime, so can take a number of weeks for new pictures to become available in the SuperLayer.</p>
-END_HTML
-);
-$networklink->setItem('Snippet','move...scroll...rotate...tilt, to view the Geograph Archive...');
-$UrlTag = $networklink->useUrl("http://www.geograph.org.uk/kml-superlayer.php?download");
-$UrlTag->setItem('refreshMode','onInterval');
-$UrlTag->setItem('refreshInterval',60*60*24);
-$networklink->setItem('visibility',0);
-$networklink->setItem('open',0);
-$folder->addChild($networklink);
-
 
 
 
 
 $NetworkLink = $folder->addChild('NetworkLink');
 $NetworkLink->setItem('name','Geograph NetworkLink');
-$NetworkLink->setItemCDATA('description',"View-Based NetworkLink to view many images - always show recent images, for Google Earth Version 4+ the SuperLayer recommended instead");
+$NetworkLink->setItemCDATA('description',"View-Based NetworkLink to view many images - always show recent images");
 $NetworkLink->setItem('open',0);
 $NetworkLink->setItem('visibility',0);
 $UrlTag = $NetworkLink->useUrl("http://www.geograph.org.uk/earth.php?simple=1");
@@ -152,11 +131,8 @@ if (isset($_GET['debug'])) {
 	print $kml->returnKML(empty($_GET['simple']));
 	print "</textarea>";
 	exit;
-} 
+}
 
 
 $kml->outputKML(empty($_GET['simple']));
-exit;
 
-
-?>

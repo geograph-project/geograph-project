@@ -4,9 +4,6 @@
 	<div style="padding:5px;background:#dddddd;position:relative; float:right; font-size:0.8em; z-index:100; border:1px solid blue">
 	Quick links: <a href="javascript:void(show_tree(1));" id="hide1">Expand...</a>
 	<span style="display:none" id="show1"><a href="javascript:void(hide_tree(1));">Hide</a><br/><br/>
-	<b>All Geograph Images</b>: <br/>
-	&nbsp;&nbsp;&nbsp;<a href="/kml-superlayer.php" title="Geograph Superlayer" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (<b>GE Version 4+</b>)<br/>
-	<br/>
 	<b>Recent Images</b>: <br/>
 	&nbsp;&nbsp;&nbsp;<a href="/feed/recent.kml" title="recent Geograph Submissions" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a>
 	&nbsp;&nbsp;&nbsp;{external href="http://www.bing.com/maps/default.aspx?v=2&mapurl=http://$http_host/feed/recent.kml" text="Bing Maps"}<br/>
@@ -39,14 +36,6 @@
 	 </p>
 
 	{if !$i}
-	 <div class="interestBox" style="width:550px;background-color:yellow;padding:10px;margin-left: 15px; border:1px solid orange">
-	 <img src="/kml/images/cam1-small.gif" width="24" height="24" style="vertical-align: middle"/> <a href="/superlayer.kml"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
-	{if $i}<br/><i><b>- displays all images - not the selection as per requested search</b></i>{/if}
-	<br/>
-	<small><br/><br/>This SuperLayer allows full access to the thousands of images contributed to Geograph, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible (broadband recommended).
-	 <br/><small><i>Last updated: {$superlayer_updated}</i></small>
-	 <a href="/help/superlayer">View Icon Key</a></small>
-	 </div>
 
 	 <p style="margin-left: 15px"><small>Anywhere you see a <a title="Google Earth Feed" href="/kml.php" class="xml-kml">KML</a>
 		 icon on the Geograph website, (for example on a photo page) click to download into Google Earth.</small></p>
@@ -142,8 +131,6 @@
 			 <td colspan="2"><b><label for="type_mapsview"><big><acronym title="View-Based Refresh Network Link on Maps">Wide area Maps</acronym></big></label></b><br/>Browse these results on <b>Google Maps</b></b>
 		  </tr>
 		</table>
-
-		<ul><li> (if you have GE4+ it is recommended to use the <a href="/kml.php">superlayer</a>, however you will not get the filtering of the results, and will see all images)</li></ul>
 
 		<input type="hidden" name="simple" value="1"/>
 
