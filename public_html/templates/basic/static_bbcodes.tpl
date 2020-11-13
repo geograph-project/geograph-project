@@ -1,4 +1,4 @@
-{assign var="page_title" value="Formatting Help"}
+{assign var="page_title" value="Discussion Post Formatting Summary"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:white}
@@ -12,6 +12,9 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 <h2>Formatting and Links for use in Discussion Posts</h2>
 
 <p>By using the code below in your post, you can help to make your post more concise. Just use the simple codes as detailed below. You can also use the buttons on the page to insert blank codes at the end of your message, ready for you to add in your own text.</p>
+
+<p><i>These formatting are only for use in Discussion Posts, they do not work in other places, like image descriptions etc. Similarly Articles and blog posts, have their own similar, but not identical, formatting syntax, refer to their own reference for more information.</i></p>
+
 
 <h4>Formatting </h4>
 
@@ -63,7 +66,7 @@ You can get the link for a specific post, by right clicking the # character at t
 <div class="example"><tt class="bbcode">[[TQ7506]]</tt> shows as <span class="preview"><a href="/gridref/TQ7506">TQ7506</a></span></div><br/></li>
 </ul>
 
-<blockquote class="tip">Grid references in the text are identified and linked to the browse page.<br/>
+<blockquote class="tip">Text that looks like a Grid Reference in Discussion Post are identified and auto-linked to the browse page.<br/>
 To stop <i>text looking like a grid reference</i> being converted, either use lowercase or prefix with a !. For example <span class="nowrap">!B4567</a> won't be linked but <a href="/gridref/B4567">B4567</a> would, the ! mark is not shown on the final page.
 <div class="example"><tt class="bbcode">Drive along the !B4567 road.</tt> shows as <span class="preview">Drive along the B4567 road.</span></div></blockquote>
 
