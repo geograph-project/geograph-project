@@ -280,6 +280,17 @@
 		{if $mention_count || $mode eq 'mentioning'}
 			<a class="tab{if $tab == 9}Selected{/if} nowrap" id="tab9" href="/gridref/{$gridref}?mentioning"><i>mentioning</i> {$gridref}{if $mention_count} [{$mention_count}]{/if}</a>
 		{/if}
+
+		{if $square->premill}
+			<a class="tab{if $tab == 10}Selected{/if} nowrap" id="tab10" 
+			{if $square->premill > 100} 
+				href="/browser/#!/taken=,1999-12-31/grid_reference+%22{$gridref}%22">
+			{else}
+				href="/stuff/list.php?gridref={$gridref}&amp;premill=1">
+			{/if}
+			taken <i>pre 2000</i> [{$square->premill}]</a></li>
+		{/if}
+
 	</div>
 
 	<div class="interestBox" style="position:relative; margin-left:10px">
