@@ -49,7 +49,7 @@ if ( isset($_GET['coords'])) {
 	$conv = new ConversionsLatLong;
 }
 $counter = -1;
-while (!$recordSet->EOF) 
+while (!$recordSet->EOF)
 {
 	$image = $recordSet->fields;
 	if (strpos($image['title'],',') !== FALSE || strpos($image['title'],'"') !== FALSE)
@@ -94,7 +94,7 @@ while (!$recordSet->EOF)
 	} elseif (!empty($_GET['en'])) {
 		if (empty($image['nateastings']) && isset($_GET['coords'])) {
 			list($e,$n) = $conv->internal_to_national($image['x'],$image['y'],$image['reference_index']);
-			
+
 			echo ",$e,$n,{$image['natgrlen']}";
 		} else {
 			echo ",{$image['nateastings']},{$image['natnorthings']},{$image['natgrlen']}";
@@ -107,7 +107,7 @@ while (!$recordSet->EOF)
 		if (!empty($_GET['tags'])) {
 			if (empty($image['tags'])) {
 				echo ',';
-			} elseif (strpos($image['tags'],',') !== FALSE || strpos($image['tags'],'"') !== FALSE)
+			} elseif (strpos($image['tags'],',') !== FALSE || strpos($image['tags'],'"') !== FALSE) {
 				echo ',"'.str_replace('"', '""', $image['tags']).'"';
 			} else {
 				echo ",{$image['tags']}";
