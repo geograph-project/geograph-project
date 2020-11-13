@@ -107,6 +107,8 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 
 			if (preg_match('/<(p)[^>]*>([^{]+?)<\/(p)>/s',$content,$matches)) {
 				$updates[] = "`extract` = ".$db->Quote(trim(preg_replace("/[\s\n]+/"," ",strip_tags($matches[2]))));
+			} else {
+				$updates[] = "`extract` = ''";
 			}
 
 			$updates[] = "`title` = ".$db->Quote(trim($title));
