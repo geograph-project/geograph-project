@@ -36,7 +36,8 @@ require_once "3rdparty/S3.php";
 
 class FileSystem extends S3 {
 
-	var $defaultStorage = self::STORAGE_CLASS_IT;
+	var $defaultStorage = self::STORAGE_CLASS_STANDARD_IA;
+	var $defaultACL = self::ACL_PRIVATE;
 
 	var $buckets = array();
 
@@ -67,8 +68,15 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 
 		parent::__construct($decode['AccessKeyId'], $decode['SecretAccessKey'], false);
 
+		if (!empty($CONF['s3_storage']))
+			$this->defaultStorage = $CONF['s3_storage'];
+
+		if (!empty($CONF['s3_acl']))
+			$this->defaultACL = $CONF['s3_acl'];
+
 			//curl http://169.254.169.254/latest/meta-data/placement/region --although we want the region of the bucket(s), not the current instance!
-		$this->setRegion('eu-west-1'); //can also pass this in construct, todo, shouoldnt be harcdoed.
+		if (!empty($CONF['s3_region']))
+			$this->setRegion($CONF['s3_region']);
 
 		if (!empty($decode["Token"])) {
 			$this->setSignatureVersion('v4');
@@ -105,7 +113,7 @@ if (!empty($_GET['debug']))
 // the main workhorse for uploading a file!
 
 	//copy a local file to remote. Can copy local->local, but cant copy from remote.
-	function copy($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+	function copy($local, $destination, $acl = null, $storage = null) {
 
 		//normal filesystems will do this, but we need to do it. In case of S3, the dir wont exist, so can't actully use is_dir($dest) type logic!
 		if (substr($destination,-1) == '/')
@@ -115,6 +123,8 @@ if (!empty($_GET['debug']))
 
 		if ($bucket) {
 			$headers = array();
+
+			$acl = empty($acl)?$this->defaultACL:$acl;
 
 			//set the storage class
 			$storageClass = empty($storage)?$this->defaultStorage:$storage;
@@ -146,10 +156,12 @@ if (!empty($_GET['debug']))
 #########################################################
 //Cut down version, so can write without a temporally file
 
-        function file_put_contents($destination, &$data, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+        function file_put_contents($destination, &$data, $acl = null, $storage = null) {
                 list($bucket, $destination) = $this->getBucketPath($destination);
                 if ($bucket) {
 			$headers = array();
+
+			$acl = empty($acl)?$this->defaultACL:$acl;
 
                         $storageClass = empty($storage)?$this->defaultStorage:$storage;
                         //small files, store as STANDARD rather than STANDARD_IA, as there is a minumum of 120kb. 50k is used, because IA is still 40% cost of STD
@@ -175,7 +187,7 @@ if (!empty($_GET['debug']))
 #########################################################
 
 	//really a copy+delete
-	function rename($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+	function rename($local, $destination, $acl = null, $storage = null) {
 
 		//normal filesystems will do this, but we need to do it. In case of S3, the dir wont exist, so can't actully use is_dir($dest) type logic!
 		if (substr($destination,-1) == '/')
@@ -195,7 +207,7 @@ if (!empty($_GET['debug']))
 		return $r;
 	}
 
-	function move_uploaded_file($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+	function move_uploaded_file($local, $destination, $acl = null, $storage = null) {
 		if (!is_uploaded_file($local)) {
 			return FALSE;
 		}
@@ -231,7 +243,7 @@ if (!empty($_GET['debug']))
 	//executes command, assumes that the command is WRITING a file to fileystem
 	//appending the temporally fielname to the end. Its assumes the comand will write to the file, which is then copied/uploaded
 	//this was the original version, but only dealt with using a local file for 'source'
-	function execute2($cmd, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+	function execute2($cmd, $destination, $acl = null, $storage = null) {
 		$tmpfname = tempnam("/tmp", "FOO");
 		passthru($cmd.$tmpfname); //todo, maybe passthur not right version
 		if (filesize($tmpfname)) //dont bother copying empyu files - probably a command failure
@@ -245,7 +257,7 @@ if (!empty($_GET['debug']))
 // special execute wrapper
 
 	//execute, command,  assumes that the command is WRITING a file to fileystem
-	function execute($cmd, $local, $destination = null, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+	function execute($cmd, $local, $destination = null, $acl = null, $storage = null) {
 		if (!empty($local)) {
 			list($sbucket, $sfilename) = $this->getBucketPath($local);
 			if ($sbucket) {
