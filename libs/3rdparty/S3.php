@@ -550,7 +550,8 @@ class S3
 				'name' => (string)$c->Key,
 				'time' => strtotime((string)$c->LastModified),
 				'size' => (int)$c->Size,
-				'hash' => substr((string)$c->ETag, 1, -1)
+				'hash' => substr((string)$c->ETag, 1, -1),
+				'class' => (string)$c->StorageClass
 			);
 			$nextMarker = (string)$c->Key;
 		}
@@ -583,7 +584,8 @@ class S3
 					'name' => (string)$c->Key,
 					'time' => strtotime((string)$c->LastModified),
 					'size' => (int)$c->Size,
-					'hash' => substr((string)$c->ETag, 1, -1)
+					'hash' => substr((string)$c->ETag, 1, -1),
+					'class' => (string)$c->StorageClass
 				);
 				$nextMarker = (string)$c->Key;
 			}
