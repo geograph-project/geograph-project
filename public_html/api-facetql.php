@@ -92,7 +92,7 @@ Example Queries:
 
 		$threads = getAssoc("SHOW THREADS"); //alas no quick way to just get count.
 		//todo, maybe put this in apc cache??
-		if (count($threads) > 30) {
+		if (count($threads) > 90) {
 		        customExpiresHeader(60,true,true);
 			header("HTTP/1.1 503 Service Unavailable");
 			header('Content-type: application/json');
