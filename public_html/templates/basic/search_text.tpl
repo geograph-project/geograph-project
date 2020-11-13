@@ -251,7 +251,7 @@ tt {
 					{html_options options=$displayclasses selected=$displayclass}
 				</select> of <select name="resultsperpage" id="resultsperpage" style="text-align:right" size="1">
 					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
-				</select> images per page,<br/> at most {newwin href="/help/one_result_per_group" title="Read more" text="one"} image from each <select name="groupby" id="groupby" size="1">
+				</select> images per page,<br/> at most {newwin href="/faq3.php?q=search#172" title="Read more" text="one"} image from each <select name="groupby" id="groupby" size="1">
 					{html_options options=$groupbys selected=$groupby}
 				</select>,<br/> would like a heading separating images by <select name="breakby" id="breakby" size="1">
 					{html_options options=$breakdowns selected=$breakby}
