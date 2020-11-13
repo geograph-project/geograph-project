@@ -65,6 +65,8 @@ if (!empty($param['read'])) {
 
 	list($bucket, $uri) = $filesystem->getBucketPath($destination);
 
+	print "($bucket, $uri)\n";
+
 	if (empty($bucket))
 		die("unknown bucket for $destination\n");
 
