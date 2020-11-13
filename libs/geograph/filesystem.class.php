@@ -209,9 +209,11 @@ if (!empty($_GET['debug']))
 
 			$this->_log('deleteObject','unlink('.basename($filename).')',$r);
 
+			$this->_clearcache($filename);
+
 			/* TODO - we dont have a way to get the distributionId yet!
 			if ($r && $invalidate) {
-				parent::invalidateDistribution($distributionId, array($$filename));
+				parent::invalidateDistribution($distributionId, array($filename));
 			} */
 			return $r;
 		} else {
@@ -488,13 +490,14 @@ if (!empty($_GET['debug']))
 		global $memcache;
 		if ($quick_only !== 2 && strpos($filename,'photos/') !== FALSE && !empty($memcache) && preg_match('/(\d+)_(\w{8})(_\w+|)\.jpg$/',$filename,$m)) {
 			$gridimage_id = intval($m[1]);
-			if (empty($m[3])) {//fullsize!
+			$slug = $m[3];
+			if (empty($slug)) {//fullsize!
 				$mkey = "$gridimage_id:F";
 				$sql = "SELECT width,height FROM gridimage_size WHERE gridimage_id = $gridimage_id";
-			} elseif ($m[3] == '_original') {
+			} elseif ($slug == '_original') {
 				$mkey = "$gridimage_id:F";
 				$sql = "SELECT original_width AS width,original_height AS height FROM gridimage_size WHERE gridimage_id = $gridimage_id";
-			} elseif (preg_match('/(\d+)x(\d+)/',$m[3],$m)) {
+			} elseif (preg_match('/(\d+)x(\d+)/',$slug,$m)) {
 				$mkey = "{$gridimage_id}:{$m[0]}";
 				$sql = "select width,height from gridimage_thumbsize where gridimage_id = {$gridimage_id} and maxw = {$m[1]} and maxh = {$m[2]}";
 			}
@@ -502,7 +505,7 @@ if (!empty($_GET['debug']))
 			if (!empty($mkey)) {
 	                        $size =& $memcache->name_get('is',$mkey);
 		                $src = 'memcache';
-				if ($size && $m[3] == '_original') {
+				if ($size && $slug == '_original') {
 					$size[0] = $size[4]; //we getting the 'original' size, which is attached to 'F'
 					$size[1] = $size[5];
                                         $size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";

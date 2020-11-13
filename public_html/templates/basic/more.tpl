@@ -80,7 +80,7 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					<a href="{$tile_host}/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&download=1">Stamped</a>
 					</td>
 				
-				{if $image->altUrl != "/photos/error.jpg"}
+				{if basename($image->altUrl) != "error.jpg"}
 					{if $original_width>$original_height}
 						{assign var="resized_width" value=640}
 						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
@@ -139,7 +139,7 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}"/></a><br/><br/>
 					</td>
 				
-				{if $image->altUrl != "/photos/error.jpg"}
+				{if basename($image->altUrl) != "error.jpg"}
 					{assign var="preview_url" value=$image->altUrl}
 					
 					{if $original_width>$original_height}
