@@ -186,6 +186,7 @@ if (!empty($_GET['ddeb']))
         	        //convert gi_stemmed -> sample8 format.
                 	$q = str_replace('@by','@realname',$q);
                         $q = preg_replace('/@text\b/','@(title,comment,imageclass,tags)',$q);
+                        $q = preg_replace('/@(year|month|day)\b/','@taken$1',$q);
 
 	                $q = str_ireplace('__TAG__','_SEP_',$q);
         	        $q = str_replace('@tags "_SEP_ top _SEP_ ','@contexts "_SEP_ ',$q);
@@ -199,6 +200,8 @@ if (!empty($_GET['ddeb']))
 					$q = str_replace(' near ',' @(Place,County,Country) ',$q);
 				}
 			}
+
+			$q = preg_replace('/(?<!=)\b(\d{3})0s\b/','$1tt',$q);
 		}
 
 		$this->q = $q;

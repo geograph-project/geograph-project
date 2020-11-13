@@ -334,16 +334,16 @@ if (!empty($_GET['q'])) {
 		//$option = ", ranker=expr('sum(lcs*lccs*user_weight)*1000+bm25')";
 		$option = "";
 
-		if (empty($_GET['place']) && (preg_match('/^\w+\s+\w+[\w\s]*$/',$_GET['q']) || $_SERVER['HTTP_HOST'] == 'www.geograph.ie')) {
+		if (empty($_GET['place']) && (preg_match('/^\w+\s+\w+[\w\s]*$/',$sphinx->q) || $_SERVER['HTTP_HOST'] == 'www.geograph.ie')) {
 			//todo - restructure this to use MAYBE!
 			$bits = array();
 			//todo, if a great many (over 30?) then switch to high quorum?
-			$bits[] = '('.$_GET['q'].')';
+			$bits[] = '('.$sphinx->q.')';
 			if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
-		                $bits[] = '('.$_GET['q'].' @country Ireland )';
+		                $bits[] = '('.$sphinx->q.' @country Ireland )';
 			}
-			if (preg_match('/^\w+\s+\w+[\w\s]*$/',$_GET['q'])) {
-		                $bits[] = '"'.$_GET['q'].'"';
+			if (preg_match('/^\w+\s+\w+[\w\s]*$/',$sphinx->q)) {
+		                $bits[] = '"'.$sphinx->q.'"';
 			}
 		        $where = "match(".$sph->Quote(implode(' | ',$bits)).")";
 			$option = ", ranker=expr('sum((word_count+(lcs-1)*max_lcs)*user_weight)')";
