@@ -13,7 +13,9 @@ require "./_scripts.inc.php";
 
 ############################################
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/geophotos/')) {
+$filesystem = new FileSystem();
+
+if (!$filesystem->hasAuth() && !is_writable($_SERVER['DOCUMENT_ROOT'].'/geophotos/')) {
 	die("Unable to write to geophotos/ mount may be non-functional (and/or may need to run as www-data)\n");
 }
 

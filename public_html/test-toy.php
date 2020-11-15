@@ -403,7 +403,7 @@ if (!empty($smarty->compile_dir)) {
 	}
 }
 
-if (!empty($smarty->cache_dir))
+if (empty($CONF['memcache']['smarty']) && !empty($smarty->cache_dir)) // only use if NOT using memcache, but cache_dir is still set!
 	outputRow('Smarty Cache Dir Writable?', is_writable($smarty->cache_dir)?'pass':'error');
 
 //for smarty, use a .tpl template, to render the pass!
