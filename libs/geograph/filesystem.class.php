@@ -582,15 +582,8 @@ if (!empty($_GET['debug']))
 				header('X-Debug: readfile-STDOUT');
 
 				$stdout = fopen('php://output', 'w'); //stdout is actully command line, web requests have dedicated output buffer
+				$GLOBALS['proxy_headers'] = true; //tell S3 class to output the Content-Length etc headers.
 				$r = @$this->getObject($bucket, $filename, $stdout);
-
-				if (!empty($r->headers) && !headers_sent()) {
-		                        $headers = $r->headers;
-					header("Content-Length: {$headers['size']}");
-					$mtime = isset($headers['x-amz-meta-mtime'])?$headers['x-amz-meta-mtime']:$headers['time'];
-					$gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
-					header("Last-Modified: $gmdate_mod");
-				}
 
 		                $this->_log('getObject','readfile('.basename($filename).')',$r);
 				return;

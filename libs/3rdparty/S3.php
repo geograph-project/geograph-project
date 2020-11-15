@@ -2600,6 +2600,44 @@ if (!empty($GLOBALS['curl_verbose']))
 			elseif (preg_match('/^x-amz-meta-.*$/', $header))
 				$this->response->headers[$header] = $value;
 		}
+
+		//this needs to be done here, because the user can pipe the fetched file, direct to php://output, in which case we need to send the headers BEFORE
+		if (!empty($GLOBALS['proxy_headers']) && !headers_sent()) {
+			$headers = $this->response->headers;
+
+			if ($this->response->code != 200) {
+				//also need to proxy 404. But may was well proxy, any like 500/403 etc.
+				http_response_code($this->response->code);
+			}
+
+                        //use Content-MD5 to set ETag
+                        if (!empty($headers['hash'])) {
+                                $hash = "\"{$headers['hash']}\"";
+                                header("Etag: $hash");
+                                if(isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH'] == $hash) {
+                                        header("HTTP/1.0 304 Not Modified");
+                                        header('Content-Length: 0');
+                                        exit;
+                                }
+                        }
+
+                        $mtime = isset($headers['x-amz-meta-mtime'])?$headers['x-amz-meta-mtime']:$headers['time'];
+                        $gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
+                        header("Last-Modified: $gmdate_mod");
+
+			if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+		                $if_modified_since = preg_replace('/;.*$/', '', $_SERVER['HTTP_IF_MODIFIED_SINCE']);
+
+		                if ($if_modified_since == $gmdate_mod) {
+		                        header("HTTP/1.0 304 Not Modified");
+		                        header('Content-Length: 0');
+		                        exit;
+		                }
+			}
+
+                        header("Content-Length: {$headers['size']}");
+		}
+
 		return $strlen;
 	}
 
