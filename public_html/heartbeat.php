@@ -33,6 +33,7 @@ foreach (explode(" ","redis ereg pcre zlib bz2 iconv mbstring session posix apac
 	}
 }
 
+/* s3fs is no longer mounted
 if (!is_dir("photos/02/")) {
 	header("HTTP/1.0 503 Unavailable");
 	die("nofs-photos\n");
@@ -46,6 +47,7 @@ if (!is_dir("../rastermaps/OS-250k/")) {
 	header("HTTP/1.0 503 Unavailable");
 	die("nofs-raster\n");
 }
+*/
 
 if (!is_dir("../upload_tmp_dir/2")) {
         header("HTTP/1.0 503 Unavailable");
