@@ -28,6 +28,8 @@ init_session();
 
 $USER->mustHavePerm("admin");
 
+die("This function is offline, will need converting to work with Amazon S3"); //althoug may never do this now. If did, would with a non-web script
+
 $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
