@@ -115,6 +115,20 @@ if (!empty($_GET['debug']))
 	//copy a local file to remote. Can copy local->local, but cant copy from remote.
 	function copy($local, $destination, $acl = null, $storage = null) {
 
+		########
+		// first check if '$local' is actully a remote bucket path! (to copy remote->remote, or even copy remote->local!)
+		list($localbucket, $localpath) = $this->getBucketPath($local);
+		if ($localbucket) {
+			$local = $this->_get_remote_as_tempfile($localbucket, $localpath);
+		}
+
+		if (!filesize($local)) { //$local is explicitly a local file, either native, or a temporally created temp file!
+			//can't copy file not existant
+			return false;
+		}
+
+		########
+
 		//normal filesystems will do this, but we need to do it. In case of S3, the dir wont exist, so can't actully use is_dir($dest) type logic!
 		if (substr($destination,-1) == '/')
 			$destination .= basename($local);
@@ -199,10 +213,21 @@ if (!empty($_GET['debug']))
 			//may as well use logic already in copy.
 			$r = $this->copy($local, $destination, $acl, $storage);
 
+			//then delete the file
 			if ($r) //todo, not sure how robust this is!
-				unlink($local);
+				$this->unlink($local);
 		} else {
+			//only need to check if local is remote, if not suing this->copy. which does this check itself
+			list($localbucket, $localpath) = $this->getBucketPath($local);
+			if ($localbucket) {
+				$local = $this->_get_remote_as_tempfile($localbucket, $localpath);
+			}
+
 			$r = rename($local, $destination);
+
+			//the above rename, only renamed the temporally file! need to still delete the remote file
+			if ($r && $localbucket) {
+				$this->unlink($local);
 		}
 		return $r;
 	}
