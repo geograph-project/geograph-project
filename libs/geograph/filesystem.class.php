@@ -115,10 +115,42 @@ if (!empty($_GET['debug']))
 	//copy a local file to remote. Can copy local->local, but cant copy from remote.
 	function copy($local, $destination, $acl = null, $storage = null) {
 
+		//normal filesystems will do this, but we need to do it. In case of S3, the dir wont exist, so can't actully use is_dir($dest) type logic!
+		if (substr($destination,-1) == '/')
+			$destination .= basename($local);
+
+		list($bucket, $destination) = $this->getBucketPath($destination);
+
+		//prelimineray setup
+		if ($bucket) {
+			$acl = empty($acl)?$this->defaultACL:$acl;
+
+			//set the storage class
+			$storageClass = empty($storage)?$this->defaultStorage:$storage;
+			//small files, store as STANDARD rather than STANDARD_IA, as there is a minumum of 120kb. 50k is used, because IA is still 40% cost of STD
+			if ($storageClass == 'STANDARD_IA' && filesize($local) < 50000)
+				$storageClass = 'STANDARD';
+
+		}
+
 		########
 		// first check if '$local' is actully a remote bucket path! (to copy remote->remote, or even copy remote->local!)
+
 		list($localbucket, $localpath) = $this->getBucketPath($local);
 		if ($localbucket) {
+			//if BOTH, are remote, then should do a remote copy!
+			if ($bucket) {
+				//copyObject($srcBucket, $srcUri, $bucket, $uri, $acl = self::ACL_PRIVATE, $metaHeaders = array(), $requestHeaders = array(), $storageClass = self::STORAGE_CLASS_STANDARD);
+
+				//by NOT setting any headers, S3 class, will not set x-amz-metadata-directive, so metadata (including Content-Type!) will be preserved in the copy!
+				$r = parent::copyObject($localbucket,$localpath, $bucket,$destination, $acl, array(), array(), $storageClass);
+
+				$this->_log('copyObject','copy',$r);
+				$this->_clearcache($destination);
+
+				return $r;
+			}
+
 			$local = $this->_get_remote_as_tempfile($localbucket, $localpath);
 		}
 
@@ -129,22 +161,8 @@ if (!empty($_GET['debug']))
 
 		########
 
-		//normal filesystems will do this, but we need to do it. In case of S3, the dir wont exist, so can't actully use is_dir($dest) type logic!
-		if (substr($destination,-1) == '/')
-			$destination .= basename($local);
-
-		list($bucket, $destination) = $this->getBucketPath($destination);
-
 		if ($bucket) {
 			$headers = array();
-
-			$acl = empty($acl)?$this->defaultACL:$acl;
-
-			//set the storage class
-			$storageClass = empty($storage)?$this->defaultStorage:$storage;
-			//small files, store as STANDARD rather than STANDARD_IA, as there is a minumum of 120kb. 50k is used, because IA is still 40% cost of STD
-			if ($storageClass == 'STANDARD_IA' && filesize($local) < 50000)
-				$storageClass = 'STANDARD';
 
 			//set the mtime, for compatiblity with s3fs etc
 			$headers['x-amz-meta-mtime'] = filemtime($local);
@@ -226,7 +244,7 @@ if (!empty($_GET['debug']))
 			$r = rename($local, $destination);
 
 			//the above rename, only renamed the temporally file! need to still delete the remote file
-			if ($r && $localbucket) {
+			if ($r && $localbucket)
 				$this->unlink($local);
 		}
 		return $r;

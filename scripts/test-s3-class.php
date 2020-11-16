@@ -34,6 +34,13 @@ require "./_scripts.inc.php";
 
 ############################################
 
+$local = "/tmp/197537_f6908b09_213x160.jpg";
+$destination = "photos/19/75/197537_f6908b09_213x160.jpg"; //no slash at start!
+
+$destination .= ".test.jpg";
+
+############################################
+
 if (empty($filesystem)) //eventually gloabl will do this!
 	$filesystem = new FileSystem(); //sets up configuation automagically
 
@@ -60,7 +67,7 @@ if (!empty($param['read'])) {
 
 	if ($param['read'] == -1)
 		$destination .="404";
-	elseif (strlen($param['read']) > 10)
+	elseif (strlen($param['read']) > 4)
 		$destination=$_SERVER['DOCUMENT_ROOT']."/".$param['read'];
 
 	list($bucket, $uri) = $filesystem->getBucketPath($destination);
@@ -175,27 +182,51 @@ sleep(2);
 
 $data = file_get_contents($local);
 $img = imagecreatefromjpeg($local);
-$copied = $local.".copy.jpg"; copy($local,$copied);
+$copied = $local.".copy.jpg"; copy($local,$copied); //createing a copy of local file, to be used with rename()
 
 $dir = dirname($destination);
 
 //	function __construct() {
 //	function getBucketPath($filename) {
 //	function copy($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
+#first copy local->remote
+print "copy(local->remote): ";
+$r = $filesystem->copy($local, $destination);
+print_r($r);
+print "\n"; test_file($destination);
+
+sleep(2);
+
+#... then copy new remote to second remote!
+print "copy(remote->remote): ";
+$r = $filesystem->copy($destination, $destination.".copy.jpg");
+print_r($r);
+print "\n"; test_file($destination.".copy.jpg");
+
+exit;
+sleep(2);
 
 //	function file_put_contents($destination, &$data) {
 print "file_put_contents: ";
-##$r = $filesystem->file_put_contents($destination, $data);
+$r = $filesystem->file_put_contents($destination, $data);
 print_r($r);
 print "\n"; test_file($destination);
 
 sleep(2);
 
 //	function rename($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
-print "rename: ";
+print "rename(local->remote): ";
 $r = $filesystem->rename($copied, $destination);
 print_r($r);
 print "\n";  test_file($destination);
+
+
+print "rename(remote->remote): ";
+$r = $filesystem->rename($copied.".copy.jpg", $destination.".copy2.jpg");
+print_r($r);
+print "\n";  test_file($destination.".copy2.jpg");
+
+
 
 //	function move_uploaded_file($local, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
 //	function execute2($cmd, $destination, $acl = self::ACL_FULL_CONTROL, $storage = null) {
