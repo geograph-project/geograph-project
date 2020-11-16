@@ -128,7 +128,7 @@ outputRow('File Readable',$result, "tests fetching <a href=$url>$url</a>, $info"
 //tests writing a file!
 
 if (!empty($filesystem)) {
-        $local = $filesystem->filesize($filename);
+        $local = $filesystem->filesize($_SERVER['DOCUMENT_ROOT'].'/'.$filename);
 
         $db = GeographDatabaseConnection(false);
         $db->Execute("UPDATE counter SET count=count+1");
@@ -185,18 +185,24 @@ if (!$db) {
 if ($db) {
 	$x = 586; $y = 201; $d=10; $sql_where = '';
 
+	//this is the table in 'toy'
 	$table = "image_dump";
 	 $expected = 7; //example query expects 7 rows in test dataset
-
-	if ($db->getOne("SHOW TABLES LIKE 'gridimage_search'")) {
-		$table = "gridimage_search";
-		$expected = 381; // on the initial staging dataset anyway!
-	}
 
 					$left=$x-$d;
                                         $right=$x+$d-1;
                                         $top=$y+$d-1;
                                         $bottom=$y-$d;
+
+
+	//cehck the actual tables
+	if ($db->getOne("SHOW TABLES LIKE 'gridimage_search'")) {
+		$table = "gridimage_search";
+		$expected = 381; // on the initial staging dataset anyway!
+
+		//lookup expected number without using spatial query!
+		$expected = $db->getOne($sql = "SELECT SUM(imagecount) FROM gridsquare WHERE x BETWEEN $left AND $right AND y BETWEEN $bottom AND $top");
+	}
 
                                         $rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
@@ -259,7 +265,7 @@ if (isset($CONF['db_read_driver'])) {
 	if (!$read) {
 		 outputRow('MySQL/Slave','error','not connected to slave');
 	} elseif(!$read->readonly) {
-		 outputRow('MySQL/Slave','error','re-connected to master - slave not functional');
+		 outputRow('MySQL/Slave','error','re-connected to master - slave not functional. '.$read->failover_reason);
 	} else {
 		$info = $read->ServerInfo();
 		outputRow('MySQL/Slave','pass','Connected to slave. And less than 10 second lag. Server: '.$info['description']);
@@ -497,7 +503,7 @@ outputBreak("Cron");
 
 
 if (!empty($db)) {
-	$sql = "select sum(instances) from event where posted > date_sub(now(),interval 6 hour)";
+	$sql = "select sum(instances) from event where posted > date_sub(now(),interval 6 hour) and event_name = 'every_hour'";
 	$count = $db->getOne($sql);
 	if ($count > 4 && $count < 8) {
 		outputRow('Cron Job: Firing Events','pass',"$count events fired in last 6 hours, should be 1/hour");
@@ -505,7 +511,7 @@ if (!empty($db)) {
 		outputRow('Cron Job: Firing Events','error',"$count event(s) fired in last 6 hours, note can also show fail if not being processed long term");
 	}
 
-	$sql = "select count(*) from event where status = 'completed' AND `processed` > date_sub(now(),interval 6 hour)";
+	$sql = "select count(*) from event where status = 'completed' AND `processed` > date_sub(now(),interval 6 hour) and event_name = 'every_hour'";
 	$count = $db->getOne($sql);
 	if ($count > 4 && $count < 8) {
 		outputRow('Cron Job: Processing Events','pass',"$count events processed in last 6 hours, should be 1/hour");
