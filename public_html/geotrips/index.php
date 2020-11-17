@@ -107,7 +107,7 @@ if (!empty($str)) {
       if ($image->isValid() && $image->moderation_status!='rejected') {
         $thumb=$image->getThumbnail(213,160,true);
       } else {
-        $thumb='/photos/error120.jpg';
+        $thumb=$CONF['STATIC_HOST'].'/photos/error120.jpg';
       }
       if ($track['title']) $title=$track['title'];
       else $title=$track['location'].' from '.$track['start'];
@@ -240,7 +240,7 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
       if ($image->isValid() && $image->moderation_status!='rejected') {
         $thumb=$image->getThumbnail(213,160,true);
       } else {
-        $thumb='/photos/error120.jpg';
+        $thumb=$CONF['STATIC_HOST'].'/photos/error120.jpg';
       }
     $mmmyy=explode('-',$trks[$i]['date']);
     $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities2($trks[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" /></span>";

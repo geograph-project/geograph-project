@@ -238,7 +238,7 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 					}
 					if ($g_ok && $g_image->moderation_status == 'rejected' && (!isset($userRanks[$cc]) || $userRanks[$cc] == 'Member')) {
 						if ($g_matches[1][$g_i]) {
-							$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available ['.$g_id.']" />',$posterText);
+							$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="'.$CONF['STATIC_HOST'].'/photos/error120.jpg" width="120" height="90" alt="image no longer available ['.$g_id.']" />',$posterText);
 						} else {
 							$posterText = preg_replace("/(?<!\[)\[\[$prefix$g_id\]\]/","{<span title=\"[$g_id]\">image no longer available</span>}",$posterText);
 						}

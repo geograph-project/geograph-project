@@ -619,7 +619,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 
 					if ($g_image->moderation_status == 'rejected') {
 						if ($thumbs) {
-							$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+							$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="'.$CONF['STATIC_HOST'].'/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
 						}
 						$posterText = preg_replace("/\[{2,3}$prefix$g_id\]{2,3}/",'[image no longer available]',$posterText);
 					} elseif ($ok) {

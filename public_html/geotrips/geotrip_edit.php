@@ -119,7 +119,7 @@ box above.
       if ($image->isValid() && $image->moderation_status!='rejected') {
         $thumb=$image->getThumbnail(213,160,true);
       } else {
-        $thumb='/photos/error120.jpg';
+        $thumb=$CONF['STATIC_HOST'].'/photos/error120.jpg';
       }
 
 ?>
@@ -319,7 +319,7 @@ You can only edit your own trips.  Choose one from the list below:
           if ($image->isValid() && $image->moderation_status!='rejected') {
             $thumb=$image->getThumbnail(213,160,true);
           } else {
-            $thumb='/photos/error120.jpg';
+            $thumb=$CONF['STATIC_HOST'].'/photos/error120.jpg';
           }
           $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities2($trips[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
           print('<div class="inner">');
