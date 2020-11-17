@@ -270,13 +270,15 @@ if ($CONF['adodb_debugging'] || $CONF['smarty_debugging'] || !$CONF['smarty_cach
 // directory permissions
 status("checking file permissions...");
 
+$filesystem = GeographFileSystem();
+
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/maps'))
 	fail('public_html/maps not writable - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/photos'))
+if (!$filesystem->is_writable($_SERVER['DOCUMENT_ROOT'].'/photos'))
 	fail('public_html/photos not writable - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/geophotos'))
+if (!$filesystem->is_writable($_SERVER['DOCUMENT_ROOT'].'/geophotos'))
 	fail('public_html/geophotos not writable - REQUIRED');
 
 if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/rss'))
