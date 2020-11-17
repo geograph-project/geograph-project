@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: ecard.php 3886 2007-11-02 20:14:19Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -26,12 +26,12 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$template='ecard.tpl';	
+$template='ecard.tpl';
 
 //you must be logged in to send e-cards
 $USER->mustHavePerm("basic");
 
-//gather what we need	
+//gather what we need
 $from_name=isset($_POST['from_name'])?stripslashes($_POST['from_name']):$USER->realname;
 $from_email=isset($_POST['from_email'])?stripslashes($_POST['from_email']):$USER->email;
 
@@ -66,11 +66,11 @@ if (isset($_REQUEST['image']))
 {
 	//initialise message
 	require_once('geograph/gridsquare.class.php');
-    require_once('geograph/gridimage.class.php');
+	require_once('geograph/gridimage.class.php');
 
 	$image=new GridImage();
 	$image->loadFromId($_REQUEST['image']);
-	
+
 	if ($image->moderation_status=='rejected' || $image->moderation_status=='pending') {
 		//clear the image
 		$image=new GridImage;
@@ -81,13 +81,13 @@ if (isset($_REQUEST['image']))
 	}
 	$smarty->assign_by_ref('image', $image);
 }
-	
+
 //try and send?
 if (!$throttle && isset($_POST['msg']))
 {
 	$ok=true;
 	$msg=htmlentities(trim(stripslashes($_POST['msg'])));
-	
+
 	$errors=array();
 	if (!isValidEmailAddress($from_email))
 	{
@@ -118,21 +118,19 @@ if (!$throttle && isset($_POST['msg']))
 
 	$smarty->assign_by_ref('msg', html_entity_decode($msg)); //will be re-htmlentities'ed when output
 
-	
 	//still ok?
-	if ($ok && !isset($_POST['edit']))  
+	if ($ok && !isset($_POST['edit']))
 	{
 		//build message and send it...
-		
-		
+
 		$smarty->assign_by_ref('htmlmsg', nl2br($msg));
-		
+
 		$body=$smarty->fetch('email_ecard.tpl');
 		$subject="[{$_SERVER['HTTP_HOST']}] $from_name is sending you an e-Card";
-		
+
 		if (isset($_POST['preview'])) {
 			preg_match_all('/(<!DOCTYPE.*<\/HTML>)/s',$body,$matches);
-	
+
 			print "<title>eCard Preview</title>";
 			print "<form method=\"post\">";
 			foreach ($_POST as $name => $value) {
@@ -144,7 +142,7 @@ if (!$throttle && isset($_POST['msg']))
 			print "<input type=\"submit\" name=\"edit\" value=\"Edit\">";
 			print "<input type=\"submit\" name=\"send\" value=\"Send\"></p>";
 			print "</FORM>";
-			
+
 			print "<h3 align=center><font face=\"Georgia\">Subject: $subject</font></h3>";
 			$html = preg_replace("/=[\n\r]+/s","\n",$matches[1][0]);
 			$html = preg_replace("/=(\w{2})/e",'chr(hexdec("$1"))',$html);
@@ -152,24 +150,27 @@ if (!$throttle && isset($_POST['msg']))
 			exit;
 		} else {
 			$db->query("insert into throttle set user_id={$USER->user_id},feature = 'ecard'");
-			
+
 			$ip=getRemoteIP();
-			
+
 			$headers = array();
-			$headers[] = "From: $from_name <{$USER->email}>";
-			if ($from_email != $USER->email) 
-				$headers[] = "Reply-To: $from_name <$from_email>";
+
+			$crc = sprintf("%u", crc32($from_email));
+	                $headers[] = "From: $from_name via Geograph <noreply+$crc@geograph.org.uk>"; //use a 'unique' email address, so receivers dont lump all geograph emails into one 'contact'
+			$headers[] = "Sender: noreply@geograph.org.uk";
+			$headers[] = "Reply-To: $from_name <$from_email>";
+
 			$headers[] = "X-GeographUserId:{$USER->user_id}";
 			$headers[] = "X-IP:$ip";
 
 			$headers[] = "Content-Type: multipart/alternative;\n	boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"";
-			
+
 			$hostname=trim(`hostname`);
 			$received="Received: from [{$ip}]".
 				" by {$hostname}.geograph.org.uk ".
 				"with HTTP;".
 				strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
-			
+
 			@mail("$to_name <$to_email>", $subject, $body, $received.implode("\n",$headers));
 
 			$smarty->assign('sent', 1);
@@ -180,5 +181,3 @@ if (!$throttle && isset($_POST['msg']))
 
 $smarty->display($template);
 
-	
-?>
