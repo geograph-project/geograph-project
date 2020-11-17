@@ -73,7 +73,7 @@ solid"=20
     <TD style=3D"BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px =
 solid"=20
     align=3Dmiddle bgColor=3D#ffffff><BR><A=20
-      href=3D"{$self_host}/photo/{$image->gridimage_id}">{$image->getFull(true)|replace:'=':'=3D'|replace:'alt=':'border=3D0 alt='}</A></TD>
+      href=3D"{$self_host}/photo/{$image->gridimage_id}">{$image->getFull(true)|quotedprintable}</A></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
@@ -81,8 +81,8 @@ solid"=20
     bgColor=3D#ffffff>&nbsp;</TD>
     <TD style=3D"BORDER-RIGHT: black 1px solid" align=3Dmiddle =
 bgColor=3D#ffffff>
-      <DIV class=3Dcaption><FONT face=3DGeorgia size=3D-1><B>{$image->title|escape:'html'}</B></FONT></DIV>
-      <DIV class=3Dcaption><FONT face=3DGeorgia size=3D-1>{$image->comment|escape:'html'|geographlinks|replace:'=':'=3D'}</FONT>=
+      <DIV class=3Dcaption><FONT face=3DGeorgia size=3D-1><B>{$image->title|escape:'html'|quotedprintable}</B></FONT></DIV>
+      <DIV class=3Dcaption><FONT face=3DGeorgia size=3D-1>{$image->comment|escape:'html'|geographlinks|quotedprintable}</FONT>=
 </DIV></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
@@ -105,7 +105,7 @@ height=3D31=20
 align=3Dright=20
       border=3D0></A> <FONT face=3DGeorgia>Image =A9 Copyright <A =
 title=3D"View profile"=20
-      href=3D"{$self_host}{$image->profile_link|replace:'=':'=3D'}">{$image->realname}</A> and licensed for =
+      href=3D"{$self_host}{$image->profile_link|quotedprintable}">{$image->realname}</A> and licensed for =
 reuse under this=20
       <A class=3Dnowrap =
 href=3D"http://creativecommons.org/licenses/by-sa/2.0/"=20

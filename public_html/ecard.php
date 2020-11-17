@@ -125,6 +125,15 @@ if (!$throttle && isset($_POST['msg']))
 
 		$smarty->assign_by_ref('htmlmsg', nl2br($msg));
 
+
+		include "3rdparty/mimePart.inc.php";
+		function smarty_modifier_quotedprintable($input) {
+			$encoder = new Mail_mimePart();
+			return $encoder->_quotedPrintableEncode($input);
+		}
+		$smarty->register_modifier("quotedprintable", "smarty_modifier_quotedprintable");
+
+
 		$body=$smarty->fetch('email_ecard.tpl');
 		$subject="[{$_SERVER['HTTP_HOST']}] $from_name is sending you an e-Card";
 
