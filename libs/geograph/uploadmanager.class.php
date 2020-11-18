@@ -1057,6 +1057,27 @@ class UploadManager
 
 		$src=$this->_pendingJPEG($this->upload_id);
 
+			##################
+			// we do this outselves (rather than inside $filesystem->copy(), used by StoreImage)
+			// ... because we warn to invalidate multiple paths, and ONLY if they exist. Invalidation is expensive, so only do if needed
+			if (!empty($CONF['s3_photos_bucket_path'])) {
+				$image->previewUrl =    $image->_getOriginalpath(true,false,'_preview');
+				$image->pendingUrl =    $image->_getOriginalpath(true,false,'_pending');
+
+				$paths = array();
+				if (basename($image->previewUrl) != "error.jpg")
+					 $paths[]= $image->previewUrl;
+				if (basename($image->pendingUrl) != "error.jpg")
+					 $paths[]= $image->pendingUrl;
+
+				if (!empty($paths)) {
+					$filesystem = GeographFileSystem();
+					$filesystem->_invalidate(trim($CONF['s3_photos_bucket_path'],'/'), $paths);
+				}
+			}
+
+			##################
+
 		//store the resized version - just for the moderator to use as a preview
 		if ($ok = $image->storeImage($src,$this->use_new_upload,'_preview')) {
 

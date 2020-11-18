@@ -41,6 +41,16 @@ class FileSystem extends S3 {
 
 	var $buckets = array();
 
+	//todo, we dont have a way to get the distributionId dynamiically yet
+	var $clondfront_distributions = array(
+		'E22ER0JS3DLXPR' => 'www.cloud.geograph.org.uk',
+		'E2AW6TWVBHC3FR' => 'uk-org-geograph-staging-photos.s3.eu-west-1.amazonaws.com',
+		'E2QZT58R5WVO8J' => 'toy-photos.cloud.geograph.org.uk.s3.eu-west-1.amazonaws.com',
+		'E3CH889HENL09U' => 'photos.geograph.org.uk.s3.eu-west-1.amazonaws.com',
+		'E3D7ZOGGGHV796' => 'staging.geograph.org.uk'
+	);
+
+
 	var $statcache = array();
 	var $filecache = array();
 
@@ -266,16 +276,25 @@ if (!empty($_GET['debug']))
 
 			$this->_clearcache($filename);
 
-			/* TODO - we dont have a way to get the distributionId yet!
 			if ($r && $invalidate) {
-				parent::invalidateDistribution($distributionId, array($filename));
-			} */
+				$this->_invalidate($bucket, $filename);
+			}
 			return $r;
 		} else {
 			return unlink($filename);
 		}
 	}
 
+	function _invalidate($bucket, $filenames) {
+		foreach ($clondfront_distributions as $id => $domain) {
+		        if (strpos($domain,"$bucket.") ===0) {
+				if (is_string($filenames))
+			                $filenames = array($filenames);
+	        	        $this->invalidateDistribution($id, $filenames);
+				break;
+		        }
+		}
+	}
 
 //todo, touch
 

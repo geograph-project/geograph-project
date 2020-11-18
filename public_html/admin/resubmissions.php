@@ -99,7 +99,7 @@ if (isset($_POST['gridimage_id']))
 			//we actually have a file to move!
 			if ($image->pendingUrl != "/photos/error.jpg") {
 
-				$filesystem = new FileSystem();
+				$filesystem = GeographFileSystem();
 
 				//delete the current original file if any
 				if ($image->originalUrl != "/photos/error.jpg") {
@@ -125,13 +125,13 @@ if (isset($_POST['gridimage_id']))
 				}
 
 				//save the pending as original
-				$image->storeOriginal($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl);
+				$image->storeOriginal($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl); //note, does not invalidate the file in cloudfront!
 
 				//refresh the preview image
 				if ($image->previewUrl != "/photos/error.jpg") {
 					if (!empty($_POST['confirm'])) {
 						//delete the preview - we dont need it
-						$filesystem->unlink($_SERVER['DOCUMENT_ROOT'].$image->previewUrl);
+						$filesystem->unlink($_SERVER['DOCUMENT_ROOT'].$image->previewUrl); //note we dont bother invalidating.
 					} else {
 						//store the preview as an alterantive fullsize
 						$image->storeImage($_SERVER['DOCUMENT_ROOT'].$image->previewUrl,true,'_640x640');
@@ -236,7 +236,7 @@ if ($data) {
 		$image->previewUrl = $thumbnail;
 	}
 
-	$filesystem = new FileSystem();
+	$filesystem = GeographFileSystem();
 
 	$image->pendingSize = $filesystem->filesize($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl);
 
