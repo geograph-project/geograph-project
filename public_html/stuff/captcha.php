@@ -74,7 +74,7 @@ if (!empty($_GET['token'])) {
 
 			header("Content-Type: image/jpeg");
 
-			$filesystem = new FileSystem();
+			$filesystem = GeographFileSystem();
 
 			if ($token->hasValue("o") || !empty($_GET['o'])) {
 			        $fullimg = $filesystem->imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$url);

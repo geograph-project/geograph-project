@@ -745,7 +745,7 @@ function pageMustBeHTTP($status = 302) {
 function dieIfReadOnly($template = 'function_readonly.tpl') {
 	global $smarty,$CONF;
 
-	$filesystem = new FileSystem();
+	$filesystem = GeographFileSystem();
 
 	if (!$filesystem->hasAuth() && !is_writable($_SERVER['DOCUMENT_ROOT'].'/geophotos/'))
 		$CONF['readonly'] = true; //TODO - hopefully temporally function, but if ELB thinks ALL targets are down, it continues to send traffic. So need to disable writing (as s3fs may be offline)

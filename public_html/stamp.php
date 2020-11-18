@@ -226,7 +226,7 @@ if (strpos($options,'-gravity left') !== FALSE) {
 
 ##########################################
 
-$filesystem = new FileSystem();
+$filesystem = GeographFileSystem();
 
 /* disabled, as we now on ImageMagick  6.9.10-23 which hopefully not affected - needs testing!
 if (($ar = $filesystem->getimagesize($file,2)) !== FALSE && isset($ar['channels']) && $ar['channels'] == 1) {

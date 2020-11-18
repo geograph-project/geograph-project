@@ -84,7 +84,7 @@ if (empty($_SERVER["PATH_INFO"])) {
 	header("Status: 403 Forbidden");
 }
 
-$filesystem = new FileSystem();
+$filesystem = GeographFileSystem();
 
 if ( (preg_match('/thread|topic|forum|28dayslater|secretscotland|geograph\.org\.uk|hbwalkersaction/',$_SERVER['HTTP_REFERER']) || !empty($_SERVER["PATH_INFO"]))
 	&& preg_match('/^\/(geo|)photos\/(\d+\/|)\d+\/\d+\/\d{6,}_(\w+)\.jpg$/',$filename,$m)

@@ -49,8 +49,7 @@ if (isset($_REQUEST['id']))
 
 		$image->originalPath = $image->_getOriginalpath(true,false);
 
-		if (empty($filesystem))
-			$filesystem = new FileSystem();
+		$filesystem = GeographFileSystem();
 
 		$image->originalSize = $filesystem->filesize($_SERVER['DOCUMENT_ROOT'].$image->originalPath);
 
