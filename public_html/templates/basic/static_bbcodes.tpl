@@ -37,7 +37,7 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 <div class="example"><tt class="bbcode">[[5463]]</tt> shows as <span class="preview">{literal}{<a href="/photo/5463" title="Geograph Image by Ben Gamble">TQ3328 : Ardingly Reservoir</a>}{/literal}</span></div><br/></li>
 
 <li><b class="title">Include an image thumbnail by ID</b><br/>
-<div class="example"><tt class="bbcode">[[[5463]]]</tt> shows as <span class="preview"><a href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir" src="/photos/00/54/005463_ea60a493_120x120.jpg" width="120" height="90"/></a></span></div>
+<div class="example"><tt class="bbcode">[[[5463]]]</tt> shows as <span class="preview"><a href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir" src="https://s3.geograph.org.uk/photos/00/54/005463_ea60a493_120x120.jpg" width="120" height="90"/></a></span></div>
 </ul>
 
 <blockquote class="tip">Other Geograph projects images can be used, for example <tt class="bbcode">[[[ci:1]]]</tt> or <tt class="bbcode">[[[de:1]]]</tt>, 
@@ -45,7 +45,7 @@ which includes image #1 from the Channel Islands or Germany project respectively
 
 <ul>
 <li><b class="title">Include a large thumbnail by ID</b><br/>
-<div class="example"><tt class="bbcode">[image id=5463]</tt> shows as <div class="photoguide"><div style="float:left;width:213px"><a title="TQ3328 : Ardingly Reservoir by Ben Gamble - click to view full size image" href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir by Ben Gamble" src="//s3.geograph.org.uk/photos/00/54/005463_ea60a493_213x160.jpg" width="213" height="160" /></a><div class="caption"><a title="view full size image" href="/photo/5463">Ardingly Reservoir</a> by <a href="/profile/113">Ben Gamble</a></div></div><div style="float:left;padding-left:20px; width:400px;">Sailing club at the southern end of the reservoir<div style="text-align:right;font-size:0.8em">by Ben Gamble</a></div></div><br style="clear:both"/></div></div></li>
+<div class="example"><tt class="bbcode">[image id=5463]</tt> shows as <div class="photoguide"><div style="float:left;width:213px"><a title="TQ3328 : Ardingly Reservoir by Ben Gamble - click to view full size image" href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir by Ben Gamble" src="https://s3.geograph.org.uk/photos/00/54/005463_ea60a493_213x160.jpg" width="213" height="160" /></a><div class="caption"><a title="view full size image" href="/photo/5463">Ardingly Reservoir</a> by <a href="/profile/113">Ben Gamble</a></div></div><div style="float:left;padding-left:20px; width:400px;">Sailing club at the southern end of the reservoir<div style="text-align:right;font-size:0.8em">by Ben Gamble</a></div></div><br style="clear:both"/></div></div></li>
 </ul>
 
 <blockquote class="tip">Can also use a custom description/comment: <tt class="bbcode">[image id=5463 text=This is an example of a custom description.]</tt></blockquote>
