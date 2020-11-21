@@ -1,0 +1,80 @@
+#!/usr/bin/php
+<?php 
+
+$folder = '';
+if (!empty($argv[1]))
+        $folder= $argv[1];
+
+//passthru('find -name "*.php" -mtime -1 | xargs -I{} php -l {}');
+
+//PHP Parse error:  syntax error, unexpected ';' in ./public_html/curated/geography-images.php on line 37
+
+
+$h = popen('find '.$folder.' -name "*.php" -mtime -1 2>/dev/null | xargs -I{} php -l {} 2>&1','r');
+$return_var = 0;
+
+while($h && !feof($h)) {
+        $line = fgets($h);
+        print $line;
+        if (preg_match('/ in (\.[\w\/\.-]+) on line (\d+)/',$line,$m)) {
+		print "\n";
+                passthru("cat -n {$m[1]} | grep -P '^\s*{$m[2]}\s' -C5 --color", $return_var);
+                print "\n";
+        }
+}
+
+###############################################
+
+if (!empty($return_var) || !empty($argv[1]) || !is_dir('public_html/templates/') || !is_file('libs/smarty/libs/Smarty.class.php'))
+        exit;
+
+
+$h = popen('find public_html/templates/ -name "*.tpl" -mtime -1 2>/dev/null','r');
+
+while($h && !feof($h)) {
+	$line = fgets($h);
+	if (strlen($line) < 3) continue;
+	if (empty($smarty)) {
+		include "libs/smarty/libs/Smarty.class.php";
+		$smarty = new Smarty;
+		$smarty->cache_dir = "/tmp/smarty";
+		$smarty->compile_dir = "/tmp/smarty";
+		if (!is_dir("/tmp/smarty"))
+			mkdir("/tmp/smarty");
+
+		//just enough to allow compliation!
+	        $smarty->register_block('dynamic', 'smarty_block_fake', false);
+	        $smarty->register_function('newwin', 'smarty_block_fake');
+	        $smarty->register_function('external', 'smarty_block_fake');
+                $smarty->register_function('getamap', 'smarty_block_fake');
+                $smarty->register_function('votestars', 'smarty_block_fake');
+                $smarty->register_function('searchbreak', 'smarty_block_fake');
+                $smarty->register_function('place', 'smarty_block_fake');
+                $smarty->register_function('linktoself', 'smarty_block_fake');
+                $smarty->register_function('pageheader', 'smarty_block_fake');
+                $smarty->register_function('pagefooter', 'smarty_block_fake');
+	}
+	$filename = trim($line);
+
+	$smarty->template_dir = dirname($filename);
+
+	ini_set('display_errors',1);
+
+
+	print "$filename: ";
+
+		//$text = $smarty->fetch(basename($filename));
+
+		$_smarty_compile_path = $smarty->_get_compile_path(basename($filename));
+		$smarty->_compile_resource(basename($filename), $_smarty_compile_path);
+
+	print "done\n";
+}
+
+
+
+function smarty_block_fake($param, $content, &$smarty)
+{
+    return $content;
+}
+
