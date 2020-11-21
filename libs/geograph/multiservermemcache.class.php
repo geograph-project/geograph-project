@@ -115,7 +115,7 @@ if (!is_string($val) && !is_int($val)) {
 		return parent::set($this->prefix.$key, $val, $flag, $expire);
 	}
 
-	function get($key) {
+	function get($key, &$p1=null, &$p2=null) {
 		if (!$this->valid) return false;
 		if ($this->redis) {
 			$r = $this->redis->get($this->prefix.$key);
@@ -123,11 +123,11 @@ if (!is_string($val) && !is_int($val)) {
 				$r = unserialize(substr($r,11));
 			return $r;
 		}
-		return parent::get($this->prefix.$key);
+		return parent::get($this->prefix.$key, $p1, $p2);
 	}
 
-	function parent_get($key) {
-		$tmp =& parent::get($key);
+	function parent_get($key, &$p1=null, &$p2=null) {
+		$tmp =& parent::get($key, $p1, $p2);
 		return $tmp;
 	}
 
