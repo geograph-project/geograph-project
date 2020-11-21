@@ -286,7 +286,7 @@ function GeographSphinxConnection($type='sphinxql',$new = false) { //the new par
 
 	if ($type=='sphinxql' || $type=='mysql') {
 
-		$sph = NewADOConnection("{$CONF['db_driver']}://{$host}:{$CONF['sphinx_portql']}/") or die("unable to connect to search engine");
+		$sph = NewADOConnection("{$CONF['db_driver']}://{$CONF['sphinx_host']}:{$CONF['sphinx_portql']}/") or die("unable to connect to search engine");
 		if ($type=='mysql') {
 			return $sph->_connectionID;
 		}
