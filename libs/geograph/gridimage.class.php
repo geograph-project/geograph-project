@@ -1686,7 +1686,7 @@ split_timer('gridimage','after-lock',$thumbpath); //logs the wall time
 						//couldn't read image!
 						$thumbpath="/photos/error.jpg";
 					} else {
-						list($width, $height, $type, $attr) = $info;
+						list($width, $height) = $info;
 
 						if (($width>$maxw) || ($height>$maxh)) {
 							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
