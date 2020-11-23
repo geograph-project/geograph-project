@@ -293,8 +293,14 @@ if (!empty($CONF['sphinx_host'])) {
 	$result = $sph->getAll("select * from $index where match('IOM')");
 
 	if (!empty($result) && count($result) > 4) {
-		//$info = $sph->ServerInfo(); //doesnt work on Sphinx! 
-		$info['description'] =  mysql_get_server_info();
+		//$info = $sph->ServerInfo(); //doesnt work on Sphinx! adodb doesnt have wrapper for mysqli_get_server_info
+		if ($CONF['db_read_driver'] == 'mysql') {
+			$info['description'] =  mysql_get_server_info();
+		} elseif ($CONF['db_read_driver'] == 'mysqli') {
+			$info['description'] =  mysqli_get_server_info($sph->_connectionID);
+		} else {
+			$info['description'] =  "unknown db driver";
+		}
 		$count = count($result);
 		outputRow('Sphinx/Manticore Daemon','pass',"Run query and got $count matching rows. Good. Server: ".$info['description']);
 	} else {
