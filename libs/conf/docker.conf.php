@@ -11,14 +11,16 @@ if (!empty($_SERVER['HTTPS']) || ( !empty($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
 
 foreach ($_SERVER as $key => $value) {
 	if (preg_match('/^CONF_(\w+)/',$key,$m)) {
-		if (preg_match('/^[\[\{].*[\}\]]$/',$value))
-			$value = json_decode($value,true);
 		if (preg_match('/env\.([A-Z]\w+)/',$value,$m2))
 			$CONF[strtolower($m[1])] = $_SERVER[$m2[1]];
 		elseif (preg_match('/_HOST$/',$key) && strpos($value,'http')===0) //these have special handling, and are explicitly upper case
 			$CONF[$m[1]] = preg_replace('/^https?:\/\//',$CONF['PROTOCOL'],$value);
-		else
+		else {
+			if (preg_match('/^[\[\{].*[\}\]]$/',$value))
+				$value = json_decode($value,true);
+
 			$CONF[strtolower($m[1])] = $value;
+		}
 	}
 }
 
