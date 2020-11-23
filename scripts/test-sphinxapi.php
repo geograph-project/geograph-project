@@ -1,10 +1,14 @@
 <?
 
-require_once ( "libs/3rdparty/sphinxapi.php" );
+############################################
 
-$CONF['sphinx_host'] = "staging.geograph.internal";
-$CONF['sphinx_port'] = 9312;
-$CONF['sphinx_prefix'] = '';
+chdir(__DIR__);
+require "./_scripts.inc.php";
+
+############################################
+
+require_once ( "3rdparty/sphinxapi.php" );
+
 
 $offset = 0;
 $q = "bridge";
@@ -32,5 +36,10 @@ $index = 'gi_stemmed';
                 }
 
 		print $query_info;
-		print_r($res);
+		if (!empty($res['matches'])) {
+			foreach ($res['matches'] as $id => $row) {
+				print "{$id} [{$row['weight']}] => ".implode(',',$row['attrs'])."\n";
+			}
+		}
+		//print_r($res);
 		print "\n\n";
