@@ -46,7 +46,11 @@ class Carrot2
   public static function createDefault()
   {
 	global $CONF;
-	if (!empty($CONF['carrot2_dcs_url'])) {
+	if (!empty($CONF['carrot2_dcs_host'])) {
+		if (!empty($CONF['carrot2_dcs_port']) && $CONF['carrot2_dcs_port']!=80)
+			$CONF['carrot2_dcs_host'] .= ":".$CONF['carrot2_dcs_port']; //just so injected in url correctly
+		$carrot = new self("http://{$CONF['carrot2_dcs_host']}/dcs/rest");
+	} elseif (!empty($CONF['carrot2_dcs_url'])) {
 	    $carrot = new self($CONF['carrot2_dcs_url']);
 	} else {
 	    $carrot = new self('http://localhost:8080/dcs/rest');

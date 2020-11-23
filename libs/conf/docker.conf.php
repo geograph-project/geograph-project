@@ -13,7 +13,9 @@ foreach ($_SERVER as $key => $value) {
 	if (preg_match('/^CONF_(\w+)/',$key,$m)) {
 		if (preg_match('/^[\[\{].*[\}\]]$/',$value))
 			$value = json_decode($value,true);
-		if (preg_match('/_HOST$/',$key) && strpos($value,'http')===0) //these have special handling, and are explicitly upper case
+		if (preg_match('/env\.([A-Z]\w+)/',$value,$m2))
+			$CONF[strtolower($m[1])] = $_SERVER[$m2[1]];
+		elseif (preg_match('/_HOST$/',$key) && strpos($value,'http')===0) //these have special handling, and are explicitly upper case
 			$CONF[$m[1]] = preg_replace('/^https?:\/\//',$CONF['PROTOCOL'],$value);
 		else
 			$CONF[strtolower($m[1])] = $value;
@@ -23,13 +25,13 @@ foreach ($_SERVER as $key => $value) {
 $CONF['SELF_HOST'] = $CONF['PROTOCOL'].$_SERVER['HTTP_HOST'];
 
 ########################################################################
-// configure the optional slave, do this, so dont need to duplicate everything in config. 
+// configure the optional slave, do this, so dont need to duplicate everything in config
 
 if (!empty($CONF['db_read_connect'])) {
 	if (empty($CONF['db_read_driver']))
 		$CONF['db_read_driver'] = $CONF['db_driver'];
 	if (empty($CONF['db_read_user']))
-		$CONF['db_read_user']=$CONF['db_user']; //the replica has --read-only, so wont be able to write anyway.
+		$CONF['db_read_user']=$CONF['db_user']; //the replica has --read-only, so wont be able to write anyway
 	if (empty($CONF['db_read_pwd']))
 		$CONF['db_read_pwd']=$CONF['db_pwd'];
 	if (empty($CONF['db_read_db']))
@@ -39,7 +41,7 @@ if (!empty($CONF['db_read_connect'])) {
 }
 
 ########################################################################
-// todo this really should be reworked to be tidier.
+// todo this really should be reworked to be tidier
 
 $CONF['rastermap'] = array(
 	'OS50k' => array(

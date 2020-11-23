@@ -74,13 +74,17 @@ if (!empty($param['mode']) && $param['mode'] == 'retry') {
 }
 
 
-$timetravelurl = "http://timetravel.mementoweb.org/api/json/";
 
-if (!empty($CONF['timetravel_url'])) {
+if (!empty($CONF['timetravel_host'])) { //the container may supply it as seperate host/port values
+	if (!empty($CONF['timetravel_port']) && $CONF['timetravel_port']!=80)
+		$CONF['timetravel_host'] .= ":".$CONF['timetravel_port']; //just so injected in url correctly
+	$timetravelurl = "http://{$CONF['timetravel_host']}/api/json/";
+} elseif (!empty($CONF['timetravel_url'])) {
 	$timetravelurl = $CONF['timetravel_url']."/api/json/"; //in this script we only use the json API, so add the prefix. BUt config file allows for other API use
-} // else {
+} else {
+	$timetravelurl = "http://timetravel.mementoweb.org/api/json/";
 	//die("Local timetravel/memgate not installed, can get away without and use the public one above, but better to use local
-//}
+}
 
 //we now have a local installation of https://github.com/oduwsdl/memgator
 //test with: GET http://tea-pvt:1208/api/json/20160801/http://www.devizesheritage.org.uk/railway_devizes.html

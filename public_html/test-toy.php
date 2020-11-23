@@ -431,10 +431,10 @@ outputBreak("Carrot2 DSC");
 #########################################################################################################
 
 
-if (!empty($CONF['carrot2_dcs_url'])) {
+if (!empty($CONF['carrot2_dcs_url']) || !empty($CONF['carrot2_dcs_host'])) {
 	require_once('3rdparty/Carrot2.class.php');
 
-	$carrot = new Carrot2($CONF['carrot2_dcs_url']);
+	$carrot = Carrot2::createDefault(); //this automatially uses config variables
 
 	$data= $db->getAll("SELECT gridimage_id,title FROM $table LIMIT 20");
         foreach ($data as $row) {
@@ -460,13 +460,21 @@ if (!empty($CONF['carrot2_dcs_url'])) {
 outputBreak("TimeGate Proxy");
 #########################################################################################################
 
+if (!empty($CONF['timetravel_host'])) { //the container may supply it as seperate host/port values
+        if (!empty($CONF['timetravel_port']) && $CONF['timetravel_port']!=80)
+                $CONF['timetravel_host'] .= ":".$CONF['timetravel_port']; //just so injected in url correctly
+        $timetravelurl = "http://{$CONF['timetravel_host']}/api/json/";
+} elseif (!empty($CONF['timetravel_url'])) {
+        $timetravelurl = $CONF['timetravel_url']."/api/json/"; //in this script we only use the json API, so add the prefix. BUt config file allows for other API use
+}
 
-if (!empty($CONF['timetravel_url'])) {
+
+if (!empty($timetravelurl)) {
 	if (!empty($_GET['full'])) {//make it a param, as the API makes real external APIs
-		$result = file_get_contents($CONF['timetravel_url']."/api/json/20160801/http://www.devizesheritage.org.uk/railway_devizes.html");
+		$result = file_get_contents($timetravelurl."/api/json/20160801/http://www.devizesheritage.org.uk/railway_devizes.html");
 	} else {
-		// note we deliberately DONT set a query URL, so sending a bad request. we just testing if a memgate, dont want to triger an external https request.
-		$result = file_get_contents($CONF['timetravel_url']);
+		// note we deliberately DONT set a query URL, so sending a bad request. we just testing if a memgate, dont want to triger an external http request
+		$result = file_get_contents($timetravelurl);
 	}
 	$info = null;
 	foreach ($http_response_header as $line)
