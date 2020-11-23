@@ -31,7 +31,7 @@
 		</tr>
 		<tr>
 			<td>
-				<div class="img-shadow" id="mainphoto"><img src="{$image->previewUrl}?{$smarty.now}" name="new" style="border:none"></div>
+				<div class="img-shadow" id="mainphoto"><img src="{$static_host}{$image->previewUrl}?{$smarty.now}" name="new" style="border:none"></div>
 
 			</td>
 			<td>
@@ -44,7 +44,7 @@
                                         Current Larger Image
                                 {else}
                                         New Larger Image (Pending Approval)
-                                {/if} (<a href="{$image->pendingUrl}" target="_preview">View full size</a> - {$image->pendingSize|thousends} bytes!)
+                                {/if} (<a href="{$static_host}{$image->pendingUrl}" target="_preview">View full size</a> - {$image->pendingSize|thousends} bytes!)
 			</th>
 			<th>
 				Original 640px Image<br>
