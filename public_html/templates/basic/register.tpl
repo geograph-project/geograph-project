@@ -65,6 +65,8 @@ function hide_message() {
 	<p>You must register before you can upload photos, but it's quick
 	and painless and free. </p>
 
+	<p>We will send you a one-off email, to confirm your registration.</p>
+
 	<label for="name">Your name</label><br/>
 	<input id="name" name="name" value="{$name|escape:'html'}"/>
 	<span class="formerror">{$errors.name}</span>
@@ -88,6 +90,14 @@ function hide_message() {
 	<br/>
 	<span class="formerror">{$errors.general}</span>
 	<br/>
+
+	{if $recaptcha}
+		<p>Please enter/solve the following...
+		 {$recaptcha}
+		<br>
+		<span class="formerror">{$errors.captcha}</span>
+		<br>
+	{/if}
 
 	<input type="submit" name="register" value="Register"/>
 </div>

@@ -72,7 +72,26 @@ if (isset($_GET['confirm']))
 elseif (isset($_POST['name']))
 {
 	$errors=array();
-	$ok=$USER->register($_POST, $errors);
+
+	$ok = true;
+	if (!empty($CONF['recaptcha_publickey'])) {
+		if (!empty($_POST["g-recaptcha-response"])) {
+	        	require_once('3rdparty/recaptchalib.php');
+
+		        $resp = recaptcha_check_answer($CONF['recaptcha_privatekey'],getRemoteIP(),null,$_POST["g-recaptcha-response"]);
+
+        		if (!$resp->is_valid) {
+                		$ok = false;
+		                $errors['captcha'] = "Captcha Failed";
+	        	}
+		} else {
+                	$ok = false;
+	                $errors['captcha'] = "Captcha Responce Missing";
+		}
+        }
+
+	if ($ok)
+		$ok=$USER->register($_POST, $errors);
 
 	//store registration errors and error errors
 	$smarty->assign('registration_ok', $ok);
@@ -90,6 +109,10 @@ if (empty($_SERVER['HTTP_REFERER'])) {
 	$smarty->assign('empty_referer',1);
 }
 
+if (!empty($CONF['recaptcha_publickey'])) {
+        require_once('3rdparty/recaptchalib.php');
+        $smarty->assign('recaptcha', recaptcha_get_html($CONF['recaptcha_publickey']));
+}
 
 $smarty->display($template);
 
