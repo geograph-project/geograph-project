@@ -37,6 +37,21 @@ COPY scripts/     /var/www/geograph/scripts/
 
 RUN ln -s /var/www/geograph/scripts /scripts
 
+RUN ln -s /mnt/efs/upload_tmp_dir /var/www/geograph/upload_tmp_dir
+RUN ln -s /mnt/efs/upload_tmp_dir_old /var/www/geograph/upload_tmp_dir_old
+
+#git repo contains 'default' files for the shared folders, but actully needs to be linked to EFS for use
+RUN mv /var/www/geograph/public_html/maps /var/www/geograph/public_html/maps.orig
+RUN mv /var/www/geograph/public_html/kml /var/www/geograph/public_html/kml.orig
+RUN mv /var/www/geograph/public_html/rss /var/www/geograph/public_html/rss.orig
+RUN mv /var/www/geograph/public_html/sitemap /var/www/geograph/public_html/sitemap.orig
+
+RUN ln -s /mnt/efs-staging/maps /var/www/geograph/public_html/maps
+RUN ln -s /mnt/efs-staging/kml /var/www/geograph/public_html/kml
+RUN ln -s /mnt/efs-staging/rss /var/www/geograph/public_html/rss
+RUN ln -s /mnt/efs-staging/sitemap /var/www/geograph/public_html/sitemap
+
+
 WORKDIR /var/www/geograph
 ENV CONF_PROFILE=docker
 
