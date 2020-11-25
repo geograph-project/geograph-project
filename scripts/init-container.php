@@ -44,3 +44,37 @@ This script WILL...
 4. Create needed folders in EFS
 
 */
+
+
+##########################################################
+
+//symlink  /var/www/geograph_svn/public_html/templates/*/compiled-mnt -> /mnt/efs-staging/smarty-$1
+
+$mountpoint = $_SERVER['BASE_DIR']."/public_html/templates/*/compiled-mnt";
+$destination = '/mnt/efs/smarty-$1';
+
+####################
+
+	if (strpos($mountpoint,'*')) {
+
+		$re =  '/'.str_replace('\\*','(.+)',preg_quote($mountpoint,'/')).'/';
+		$dest = $destination;
+
+//just test removing this, so finds ALL folders. rather than just the ones that exist!
+$mountpoint = str_replace('compiled-mnt','',$mountpoint);
+
+                foreach (glob($mountpoint) as $mountpoint) {
+
+//at the moment, wilcard only used for compiled-mnt, but if not, would have to only conditionally add it back!
+$mountpoint .= 'compiled-mnt';
+
+                        if (preg_match($re,$mountpoint,$m)) {
+                                $destination = str_replace('$1',$m[1],$dest);
+                        }
+			if (!is_dir($destination))
+				mkdir($destination);
+			//$cmd = "ln -s $destination $mountpoint";
+			symlink($destination, $mountpoint);
+                }
+	}
+
