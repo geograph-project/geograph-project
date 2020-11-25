@@ -272,54 +272,64 @@ status("checking file permissions...");
 
 $filesystem = GeographFileSystem();
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/maps'))
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/maps/'))
 	fail('public_html/maps not writable - REQUIRED');
 
-if (!$filesystem->is_writable($_SERVER['DOCUMENT_ROOT'].'/photos'))
+if (!$filesystem->is_writable($_SERVER['DOCUMENT_ROOT'].'/photos/'))
 	fail('public_html/photos not writable - REQUIRED');
 
-if (!$filesystem->is_writable($_SERVER['DOCUMENT_ROOT'].'/geophotos'))
+if (!$filesystem->is_writable($_SERVER['DOCUMENT_ROOT'].'/geophotos/'))
 	fail('public_html/geophotos not writable - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/rss'))
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/rss/'))
 	fail('public_html/rss not writable - REQUIRED');
 
-if (!is_dir($_SERVER['DOCUMENT_ROOT'].'/rss/'.$CONF['template']))
+if (!is_dir($_SERVER['DOCUMENT_ROOT'].'/rss/'.$CONF['template'].'/'))
 	fail('public_html/rss/'.$CONF['template'].' doesn\'t exist - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/rss/'.$CONF['template']))
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/rss/'.$CONF['template'].'/'))
 	fail('public_html/rss/'.$CONF['template'].' not writable - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/sitemap'))
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/sitemap/'))
 	fail('public_html/sitemap not writable - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/sitemap/root'))
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/sitemap/root/'))
 	fail('public_html/sitemap/root not writable - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/kml'))
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/kml/'))
 	fail('public_html/sitemap/kml not writable - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/memorymap'))
+if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/memorymap/'))
 	fail('public_html/memorymap not writable - REQUIRED');
 
 if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/memorymap/geograph.bmp'))
 	fail('public_html/memorymap/geograph.bmp missing - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/compiled'))
-	fail('public_html/templates/basic/compiled not writable - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/cache'))
-	fail('public_html/templates/basic/cache not writable - REQUIRED');
+if (!empty($CONF['memcache']['smarty'])) {
+	if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/compiled-mnt'))
+                fail('public_html/templates/basic/compiled-mnt not writable - REQUIRED');
 
+	if ($CONF['template'] != 'basic' && !is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'].'/compiled-mnt'))
+		fail('public_html/templates/'.$CONF['template'].'/compiled-mnt not writable - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'].'/compiled'))
-	fail('public_html/templates/'.$CONF['template'].'/compiled not writable - REQUIRED');
+} else {
+	if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/compiled'))
+		fail('public_html/templates/basic/compiled not writable - REQUIRED');
 
-if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'].'/cache'))
-	fail('public_html/templates/'.$CONF['template'].'/cache not writable - REQUIRED');
+	if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/basic/cache'))
+		fail('public_html/templates/basic/cache not writable - REQUIRED');
 
+	if ($CONF['template'] != 'basic') {
+		if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'].'/compiled'))
+			fail('public_html/templates/'.$CONF['template'].'/compiled not writable - REQUIRED');
 
-if (!is_writable($CONF['adodb_cache_dir']))
+		if (!is_writable($_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'].'/cache'))
+			fail('public_html/templates/'.$CONF['template'].'/cache not writable - REQUIRED');
+	}
+}
+
+if (!empty($CONF['adodb_cache_dir']) && !is_writable($CONF['adodb_cache_dir']))
 	fail('$CONF[\'adodb_cache_dir\'] ('.$CONF['adodb_cache_dir'].') not writable - REQUIRED');
 
 if (!is_writable($CONF['photo_upload_dir']))
