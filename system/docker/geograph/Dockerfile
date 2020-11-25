@@ -46,16 +46,17 @@ RUN mv /var/www/geograph/public_html/kml /var/www/geograph/public_html/kml.orig
 RUN mv /var/www/geograph/public_html/rss /var/www/geograph/public_html/rss.orig
 RUN mv /var/www/geograph/public_html/sitemap /var/www/geograph/public_html/sitemap.orig
 
-RUN ln -s /mnt/efs-staging/maps /var/www/geograph/public_html/maps
-RUN ln -s /mnt/efs-staging/kml /var/www/geograph/public_html/kml
-RUN ln -s /mnt/efs-staging/rss /var/www/geograph/public_html/rss
-RUN ln -s /mnt/efs-staging/sitemap /var/www/geograph/public_html/sitemap
+RUN ln -s /mnt/efs/maps /var/www/geograph/public_html/maps
+RUN ln -s /mnt/efs/kml /var/www/geograph/public_html/kml
+RUN ln -s /mnt/efs/rss /var/www/geograph/public_html/rss
+RUN ln -s /mnt/efs/sitemap /var/www/geograph/public_html/sitemap
 
+# Note, the smarty symlinks, are set in 'init-container.php' as they have more logic
 
 WORKDIR /var/www/geograph
 ENV CONF_PROFILE=docker
 
-# Used by scripts to setup enviroment. CONFIG_FILE will need to be set in flux
+# Used by scripts to setup enviroment
 ENV BASE_DIR=/var/www/geograph
 
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
