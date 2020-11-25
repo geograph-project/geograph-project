@@ -164,6 +164,27 @@ if (!empty($filesystem)) {
 	outputRow('File Written to S3', 'notice', "Amazon S3 not configured. Test Skipped.");
 }
 
+if (is_link($CONF['photo_upload_dir'])) {
+	$dest = readlink($CONF['photo_upload_dir']);
+	$result = `df $dest`;
+        $type = (strpos($result,'.efs.') !== FALSE)?'EFS':'unknown';
+
+	if (is_writable($CONF['photo_upload_dir']."/")) { //testing destination of link!
+		$tmpname = $CONF['photo_upload_dir']."/".md5(uniqid());
+		file_put_contents($tmpname,'test');
+		$ls = trim(`ls $tmpname -l`);
+		if (file_exists($tmpname) && filesize($tmpname) == 4) {
+			outputRow($type.' Mount', 'pass', "TMP File successfully written to efs. $ls");
+		} else {
+			outputRow($type.' Mount', 'error', "TMP File not written. Listing: $ls");
+		}
+		unlink($tmpname);
+	} else {
+		outputRow($type.' Mount', 'error', "Does not appear writable");
+	}
+}
+
+
 #########################################################################################################
 outputBreak("MySQL Server");
 #########################################################################################################
