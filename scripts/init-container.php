@@ -33,15 +33,11 @@ require "./_scripts.inc.php";
 /*
 This script WILL...
 
-1. Scan 'resources' (CSS/JS etc)    $exts = 'js,css,png,jpg,gif,ico,txt,xml,html,htm,htc,json'
+Scan 'resources' (CSS/JS etc)    $exts = 'js,css,png,jpg,gif,ico,txt,xml,html,htm,htc,json'
      find /var/www/geograph/public_html/ -xdev -name "*.js" -or -name "*.css" -or ....
     ... update revisions.conf.php
     ... deploy the latest version to S3
 	(remembering special case of deploying robots-archive.txt to S3 as robots.txt!)
-
-3. Make sure there are symlinks to the EFS mount as needed
-
-4. Create needed folders in EFS
 
 */
 
@@ -50,31 +46,20 @@ This script WILL...
 
 //symlink  /var/www/geograph_svn/public_html/templates/*/compiled-mnt -> /mnt/efs-staging/smarty-$1
 
-$mountpoint = $_SERVER['BASE_DIR']."/public_html/templates/*/compiled-mnt";
-$destination = '/mnt/efs/smarty-$1';
+$folders = $_SERVER['BASE_DIR']."/public_html/templates/*";
+$pattern = '/mnt/efs/smarty-{NAME}';
 
-####################
+foreach (glob($folders) as $folder) {
 
-	if (strpos($mountpoint,'*')) {
+	$mountpoint = $folder.'/compiled-mnt';
+	$destination = str_replace('{NAME}',basename($folder),$pattern);
 
-		$re =  '/'.str_replace('\\*','(.+)',preg_quote($mountpoint,'/')).'/';
-		$dest = $destination;
+	//optionally create the folder in EFS
+	if (!is_dir($destination))
+		mkdir($destination);
 
-//just test removing this, so finds ALL folders. rather than just the ones that exist!
-$mountpoint = str_replace('compiled-mnt','',$mountpoint);
+	//then create the symlink
+	symlink($destination, $mountpoint);
+}
 
-                foreach (glob($mountpoint) as $mountpoint) {
-
-//at the moment, wilcard only used for compiled-mnt, but if not, would have to only conditionally add it back!
-$mountpoint .= 'compiled-mnt';
-
-                        if (preg_match($re,$mountpoint,$m)) {
-                                $destination = str_replace('$1',$m[1],$dest);
-                        }
-			if (!is_dir($destination))
-				mkdir($destination);
-			//$cmd = "ln -s $destination $mountpoint";
-			symlink($destination, $mountpoint);
-                }
-	}
-
+##########################################################
