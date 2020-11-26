@@ -383,9 +383,9 @@ class GridImage
 		{
 			
 			if ($usesearch) {
-				$row = &$db->GetRow("select * from gridimage_search where gridimage_id={$gridimage_id} limit 1");
+				$row = $db->GetRow("select * from gridimage_search where gridimage_id={$gridimage_id} limit 1");
 			} else {
-				$row = &$db->GetRow("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
+				$row = $db->GetRow("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
 			}
 			if (is_array($row))
 			{
@@ -426,7 +426,7 @@ class GridImage
 			global $memcache;
 			$mkey = "$server:$gridimage_id";
 			//fails quickly if not using memcached!
-			$string =& $memcache->name_get('e2',$mkey);
+			$string = $memcache->name_get('e2',$mkey);
 
 			if (empty($string)) {
 				$url = "http://$server/restapi.php/api/Photo/$gridimage_id";
@@ -684,7 +684,7 @@ split_timer('gridimage'); //starts the timer
 		if ($cachetime && $memcache->valid) {
 			$mkey = $this->gridimage_id;
 
-			$this->snippets =& $memcache->name_get('sd',$mkey);
+			$this->snippets = $memcache->name_get('sd',$mkey);
 
 			if ($this->snippets === FALSE) {
 				$db=&$this->_getDB(true);
@@ -1057,7 +1057,7 @@ split_timer('gridimage'); //starts the timer
 			global $memcache;
 			$mkey = "{$this->gridimage_id}:F";
 			//fails quickly if not using memcached!
-			$size =& $memcache->name_get('is',$mkey);
+			$size = $memcache->name_get('is',$mkey);
 			$src = 'memcache';
 			if (!$size) {
 				$db=&$this->_getDB(true);
@@ -1573,7 +1573,7 @@ split_timer('gridimage'); //starts the timer
 
 		$mkey = "{$this->gridimage_id}:".md5(serialize($params));
 		//fails quickly if not using memcached!
-		$result =& $memcache->name_get('ir',$mkey);
+		$result = $memcache->name_get('ir',$mkey);
 		if ($result && $result['url'] !='/photos/error.jpg')
 			return $result;
 
@@ -1608,8 +1608,7 @@ split_timer('gridimage'); //starts the timer
 		} else {
 			$return['server']= $CONF['CONTENT_HOST'];
 		}
-		if ($this->gridimage_id >= $this->enforce_https) //temporally hotwire
-			$return['server'] = str_replace('http://','https://',$return['server']);
+		$return['server'] = str_replace('http://','https://',$return['server']);
 
 
 		if ($CONF['template']=='archive' || ((!empty($params['urlonly']) && $params['urlonly'] !== 2) && ($filesystem = GeographFileSystem()) && $filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))) {
@@ -1618,7 +1617,7 @@ split_timer('gridimage'); //starts the timer
 
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!
-		$size =& $memcache->name_get('is',$mkey);
+		$size = $memcache->name_get('is',$mkey);
 
 		if (empty($size)) {
 			$db=&$this->_getDB(true);

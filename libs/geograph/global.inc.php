@@ -511,7 +511,8 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 	        }
 
 		$GLOBALS['USER'] = new GeographUser;
-                @apache_note('user_id', 0);
+		if (function_exists('apache_note'))
+	                apache_note('user_id', 0);
 
 
 		if (isset($_GET['responsive'])) //want even if =0 URL!
@@ -583,7 +584,8 @@ function init_session()
 	$GLOBALS['USER'] =& $_SESSION['user'];
 
 	//tell apache our ID, handy for logs
-	@apache_note('user_id', $GLOBALS['USER']->user_id);
+	if (function_exists('apache_note'))
+		apache_note('user_id', $GLOBALS['USER']->user_id);
 
 	global $CONF;
 	//todo, maybe switch on session var too?
@@ -880,7 +882,7 @@ class GeographPage extends Smarty
 		$this->assign_by_ref('http_host', $_SERVER['HTTP_HOST']);
 		$this->assign_by_ref('self_host', $CONF['SELF_HOST']); //use this in preference to HTTP_HOST as it includes the protocol
 		$this->assign_by_ref('static_host', $CONF['STATIC_HOST']);
-		$this->assign_by_ref('script_name', htmlentities($_SERVER['PHP_SELF'])); //lots of scripts usse this directly <form action={$script_name}> - THEY should escape it, but do it for them!
+		$this->assign('script_name', htmlentities($_SERVER['PHP_SELF'])); //lots of scripts usse this directly <form action={$script_name}> - THEY should escape it, but do it for them!
 		$this->assign_by_ref('script_uri', $_SERVER['REQUEST_URI']);
 		$this->assign_by_ref('searchq', $_SESSION['searchq']);
 		$this->assign_by_ref('enable_forums', $CONF['forums']);

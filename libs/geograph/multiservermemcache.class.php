@@ -189,7 +189,7 @@ if (!is_string($val) && !is_int($val)) {
 		}
 
 		split_timer('memcache'); //starts the timer
-		$tmp =& parent::set($this->prefix.$namespace.':'.$key, $val, $flag, $expire);
+		$tmp = parent::set($this->prefix.$namespace.':'.$key, $val, $flag, $expire);
 		split_timer('memcache','set',$namespace.':'.$key); //logs the wall time
 		return $tmp;
 	}
@@ -209,7 +209,7 @@ if (!is_string($val) && !is_int($val)) {
 			$start = microtime(true);
 		}
 		split_timer('memcache'); //starts the timer
-		$tmp =& parent::get($this->prefix.$namespace.':'.$key);
+		$tmp = parent::get($this->prefix.$namespace.':'.$key);
 
 		if (isset($_GET['remote_profile'])) {
 			print "$start  :: name_Get($namespace, $key, ".@strlen($tmp).")<br>";
