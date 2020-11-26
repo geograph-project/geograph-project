@@ -35,23 +35,27 @@ $USER->mustHavePerm("basic");
 dieUnderHighLoad(2);
 
 customGZipHandlerStart();
-customExpiresHeader(3600*23,false,true);
+
+if (!empty($_GET['tab'])) {
+	//need to connect before outputing HTML , as may need to add a HTTP headers
+
+	if (!empty($CONF['db_read_connect2'])) {
+	        if (!empty($DSN_READ))
+	                $DSN_READ = str_replace($CONF['db_read_connect'],$CONF['db_read_connect2'],$DSN_READ);
+	        if (!empty($CONF['db_read_connect']))
+	                $CONF['db_read_connect'] = $CONF['db_read_connect2'];
+	}
+
+	$db = GeographDatabaseConnection(true);
+	if ($db && $db->readonly) {//if Not readonly, then its just an error message
+		customExpiresHeader(3600*23,false,true);
+	}
+}
 
 $smarty->assign("page_title",'Your Photos around the site');
 
 //we dont use smarty caching because the page is so big!
 $smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
-
-
-if (!empty($CONF['db_read_connect2'])) {
-        if (!empty($DSN_READ))
-                $DSN_READ = str_replace($CONF['db_read_connect'],$CONF['db_read_connect2'],$DSN_READ);
-        if (!empty($CONF['db_read_connect']))
-                $CONF['db_read_connect'] = $CONF['db_read_connect2'];
-}
-
-if (!empty($_GET['tab']))
-	$db = GeographDatabaseConnection(true);
 
 
 $tabs = array('featured'=>'Featured Images','collection'=>'In Collections','collection2'=>'Collection Image','forum-top'=>'Forum/Galleries Latest','forum'=>'Forum/Galleries All','search'=>'Marked Lists','thumbed'=>'Thumbed','gallery'=>'Showcase Gallery','photos'=>'Other Photos','viewed'=>'Most Viewed');
