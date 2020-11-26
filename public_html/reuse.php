@@ -104,14 +104,14 @@ if (isset($_REQUEST['id']))
 
 			$filesystem = GeographFileSystem();
 
-			if ($filesystem->hasAuth()) {
+			if ($filesystem->hasAuth() && empty($_GET['method'])) {
 				customExpiresHeader(86400*180,true);
 
 				//writes direct to STDOUT. But can't output Last-Modified/Content-Length
 
 				$filesystem->readfile($_SERVER['DOCUMENT_ROOT'].$filepath, true);
 
-			} elseif (function_exists('apache_get_modules') && ($m = apache_get_modules()) && in_array('mod_xsendfile',$m)) {
+			} elseif (@$_GET['method'] != 'read' && function_exists('apache_get_modules') && ($m = apache_get_modules()) && in_array('mod_xsendfile',$m)) {
 				$filepath = preg_replace('/^\//','',$filepath);
 				header("X-Sendfile: $filepath");
 			} elseif (1) {
@@ -120,7 +120,10 @@ if (isset($_REQUEST['id']))
 				customExpiresHeader(86400*180,true);
 				customCacheControl($lastmod,$image->gridimage_id);
 
-				header("Content-Length: ".filesize($_SERVER['DOCUMENT_ROOT'].$filepath));
+				$size = filesize($_SERVER['DOCUMENT_ROOT'].$filepath);
+				header("Content-Length: ".$size);
+				if (empty($size))
+					header("HTTP/1.0 404 Not Found");
 
 				readfile($_SERVER['DOCUMENT_ROOT'].$filepath);
 			} else {
