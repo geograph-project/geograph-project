@@ -42,8 +42,8 @@
 		<h4>Ideas you like the most</h4>
 		<ul class="connectedSortable">
 		{foreach from=$ideas item=idea}
-			{if $idea.mine}
-			 	<li class="ui-state-default" data-id="{$idea.project_idea_id}" title="{$idea.content|escape:'html'|truncate:250}">{$idea.title|escape:'html'}</li>
+			{if $idea.mine > 0}
+				<li class="ui-state-default" data-id="{$idea.project_idea_id}" title="{$idea.content|escape:'html'|truncate:250}">{$idea.title|escape:'html'}</li>
 			{/if}
                 {/foreach}
 		</ul>
@@ -52,8 +52,8 @@
 		<h4>All other ideas</h4>
 		<ul class="connectedSortable">
 		{foreach from=$ideas item=idea}
-			{if !$idea.mine}
-			 	<li class="ui-state-default" data-id="{$idea.project_idea_id}" title="{$idea.content|escape:'html'|truncate:250}">{$idea.title|escape:'html'}</li>
+			{if $idea.mine eq 0}
+				<li class="ui-state-default" data-id="{$idea.project_idea_id}" title="{$idea.content|escape:'html'|truncate:250}">{$idea.title|escape:'html'}</li>
 			{/if}
                 {/foreach}
 		</ul>
