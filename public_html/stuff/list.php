@@ -158,7 +158,7 @@ if (!empty($_GET['debug']))
 		die("unknown query");
 	}
 
-	if (!empty($_GET['gridref'])) {
+	if (!empty($_GET['gridref']) && preg_match('/^\w{1,3}\d{4,10}/',$_GET['gridref'])) {
 		$q .= " @grid_reference {$_GET['gridref']}";
 		$title .= " in {$_GET['gridref']}";
 	}
