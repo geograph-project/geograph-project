@@ -146,8 +146,7 @@ function GeographDatabaseConnection($allow_readonly = false) {
                         print "$start  :: GeographDatabaseConnection($allow_readonly)<br>";
                 }
 
-
-	if ($allow_readonly && function_exists('apc_store') && apc_fetch('lag_warning')) {
+	if ($allow_readonly && function_exists('apc_store') && apc_fetch('lag_cooloff')) {
 		//short cut everything, if lag, then skip slave regardless.
 		$allow_readonly = false;
 	}
@@ -181,8 +180,10 @@ function GeographDatabaseConnection($allow_readonly = false) {
 						$con = ob_get_clean();
 	               				mail('geograph@barryhunter.co.uk','[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
 					}
-					if (function_exists('apc_store'))
+					if (function_exists('apc_store')) {
 	               				apc_store('lag_warning',1,3600);
+	               				apc_store('lag_cooloff',1,75);
+					}
 				    }
 				    if (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > $allow_readonly) {
 					split_timer('db'); //starts the timer
