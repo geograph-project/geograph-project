@@ -208,7 +208,7 @@ if (//!$smarty->is_cached($template, $cacheid) && -- we now use 'dynamic'
 			"order by gridimage_id desc limit 50";
 
 if ($USER->user_id == 3)
-	print "<hr>$sql<hr>";
+	print "<hr>".htmlentities($sql)."<hr>";
 
 		$imagelist->_getImagesBySql($sql);
 

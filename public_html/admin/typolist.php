@@ -35,6 +35,30 @@ customNoCacheHeader();
 
 $USER->mustHavePerm("basic");
 
+if (!empty($_GET['list'])) {
+	$db = GeographDatabaseConnection(true);
+
+	$data = $db->getAll("select substring(regexp_replace(include,'[^\\\\w]',''),1,1) as first,count(*),include,sum(profile='keywords'),sum(profile='phrase'),sum(profile='expression') from typo where enabled = 1 and profile != 'disabled' group by substring(regexp_replace(include,'[^\\\\w]',''),1,1)");
+
+	print "<table>";
+	print "<tr><th>First</th><th>All<th>keywords<th>phrase<th>expression<th>example";
+	foreach ($data as $row) {
+		print "<tr><th>".htmlentities($row['first']);
+		$url = "?all=1&filter=".urlencode($row['first']);
+		print "<td align=right><a href=$url>{$row['count(*)']}</td>";
+		foreach (array('keywords','phrase','expression') as $k) {
+			if ($count = $row["sum(profile='$k')"]) {
+				print "<td align=right><a href=$url&amp;profile=$k>{$count}</td>";
+			} else {
+				print "<td>";
+			}
+		}
+		print "<td>".htmlentities($row['include']);
+	}
+
+	exit;
+}
+
 if (!empty($_GET['hide'])) {
 	$db = GeographDatabaseConnection(false);
 	$db->Execute("UPDATE typo SET quieted = NOW() WHERE typo_id = ".intval($_GET['hide']));
@@ -152,7 +176,19 @@ if (!$smarty->is_cached($template, $cacheid) )
 
 	//$sql="select * from typo where enabled = 1 and quieted < date_sub(now(), interval 48 hour) order by updated desc limit 400";
 
-	$sql="select * from typo where enabled = 1 order by updated desc limit 1000";
+	$limit = 1000;
+	if (!empty($_GET['all']))
+		$limit = 20000;
+
+	$where = array();
+	$where[] = "enabled = 1";
+	if (!empty($_GET['profile']))
+		 $where[] = "profile = ".$db->Quote($_GET['profile']);
+
+	if (isset($_GET['filter']))
+		$where[] = "substring(regexp_replace(include,".$db->Quote('[^\\w]').",''),1,1) = ".$db->Quote($_GET['filter']);
+
+	$sql="select * from typo where ".implode(' AND ',$where)." order by updated desc limit $limit";
 
 	$data = $db->getAll($sql);
 
