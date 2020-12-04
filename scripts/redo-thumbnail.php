@@ -6,9 +6,6 @@ chdir(__DIR__);
 require "./_scripts.inc.php";
 
 chdir($_SERVER['DOCUMENT_ROOT']); //even as a script this is updated!
-if (!file_exists("photos/error.jpg")) {
-	die("ERROR: {$_SERVER['DOCUMENT_ROOT']} does not appear to be connected to GeoGridFS\n");
-}
 
 if ($param['execute'] && trim(`whoami`) != 'www-data') {
 	die("ERROR: Needs to be run as www-data!\n");
@@ -23,6 +20,12 @@ $row = array('gridimage_id'=>$param['id']);
 
 $filesystem = new FileSystem();
 $filesystem->log=1;
+
+if (!$filesystem->file_exists($_SERVER['DOCUMENT_ROOT']."/photos/error.jpg")) {
+	die("ERROR: {$_SERVER['DOCUMENT_ROOT']} does not appear to be connected to FileSystem\n");
+}
+
+
 
 	$image = new GridImage($param['id']);
 
@@ -50,7 +53,7 @@ $filesystem->log=1;
 
 
 	// then only look at cases where the file exists (got this far becasue it NOT in gridimage_thumbsize, which probably means its currutped!)
-	if (file_exists(".".$path)) {
+	if ($filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$path)) {
 
 		// Task 1 - Delete the file
 		$cmd = "unlink .$path";
