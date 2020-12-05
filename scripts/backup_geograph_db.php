@@ -21,56 +21,34 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
-
-
-
 //these are the arguments we expect
 $param=array(
-	'dir'=>'/var/www',		//base installation dir
-
-	'config'=>'www.geograph.virtual', //effective config
-
-	'timeout'=>14, //timeout in minutes
-	'sleep'=>10,	//sleep time in seconds
-	'load'=>100,	//maximum load average
+	'dir'=>'/var/www/geograph_svn',		//base installation dir
+	'config'=>'staging.geograph.org.uk', //effective config
 	'help'=>0,		//show script help?
 );
 
 //very simple argument parser
-for($i=1; $i<count($_SERVER['argv']); $i++)
-{
+for($i=1; $i<count($_SERVER['argv']); $i++) {
 	$arg=$_SERVER['argv'][$i];
-
-	if (substr($arg,0,2)=='--')
-
-	{
+	if (substr($arg,0,2)=='--') {
 		$arg=substr($arg,2);
 		$bits=explode('=', $arg,2);
-		if (isset($param[$bits[0]]))
-		{
+		if (isset($param[$bits[0]])) {
 			//if we have a value, use it, else just flag as true
 			$param[$bits[0]]=isset($bits[1])?$bits[1]:true;
 		}
 		else die("unknown argument --$arg\nTry --help\n");
 	}
 	else die("unexpected argument $arg - try --help\n");
-
 }
 
-
-if ($param['help'])
-{
+if ($param['help']) {
 	echo <<<ENDHELP
 ---------------------------------------------------------------------
-recreate_maps.php
----------------------------------------------------------------------
-php recreate_maps.php
+php backup_geograph_db.php
     --dir=<dir>         : base directory (/home/geograph)
     --config=<domain>   : effective domain config (www.geograph.org.uk)
-    --timeout=<minutes> : maximum runtime of script (14)
-    --sleep=<seconds>   : seconds to sleep if load average exceeded (10)
-    --load=<loadavg>    : maximum load average (100)
     --help              : show this message
 ---------------------------------------------------------------------
 
@@ -83,14 +61,13 @@ ini_set('include_path', $param['dir'].'/libs/');
 $_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/';
 $_SERVER['HTTP_HOST'] = $param['config'];
 
-
 //--------------------------------------------
 # here we connect manually, to avoid having to load adodb and global (to make this script as portable as possible!)
 
+//todo, use docker config
 require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
 
-$db = mysql_connect($CONF['db_connect'], $CONF['db_user'], $CONF['db_pwd']);
-mysql_select_db($CONF['db_db'], $db);
+$db = mysqli_connect($CONF['db_connect'], $CONF['db_user'], $CONF['db_pwd'], $CONF['db_db']);
 
 
 
@@ -143,7 +120,7 @@ foreach ($status as $table => $s) {
 
 	if ($backup) {
 		//create the SQL before dumping the table, so updates happen after are caught in next backip
-		$sql = "UPDATE `_tables` SET `backedup` = '".date('Y-m-d H-i-s')."' WHERE `table_name` = '".mysql_real_escape_string($table)."'";
+		$sql = "UPDATE `_tables` SET `backedup` = '".date('Y-m-d H-i-s')."' WHERE `table_name` = '".mysqli_real_escape_string($table)."'";
 
 		if (!is_dir($folder.$table.'/'))
 			mkdir($folder.$table.'/');
@@ -242,12 +219,11 @@ foreach ($status as $table => $s) {
 		}
 
 		if (file_exists($file) && filesize($file) > 10) {
-			if (!mysql_ping($db)) {
+			if (!mysqli_ping($db) && !ini_get('mysqli.reconnect')) {
 				//we reconnect, as the connection possibly died
-				$db = mysql_connect($CONF['db_connect'], $CONF['db_user'], $CONF['db_pwd'], true);
-				mysql_select_db($CONF['db_db'], $db);
+				$db = mysqli_connect($CONF['db_connect'], $CONF['db_user'], $CONF['db_pwd'], $CONF['db_db']);
 			}
-			mysql_query($sql, $db) or print('<br>Error save: '.mysql_error());
+			mysqli_query($db, $sql) or print('<br>Error save: '.mysqli_error($db));
 			print "\n\n";
 		} else {
 			print "++++++++++ Error: FILE $file NOT FOUND +++++++++++++\n\n";
@@ -266,32 +242,32 @@ foreach ($status as $table => $s) {
 
 function getAssoc($query) {
         global $db;
-        $result = mysql_query($query, $db) or print('<br>Error getAssoc: '.mysql_error());
-        if (!mysql_num_rows($result)) {
+        $result = mysqli_query($db, $query) or print('<br>Error getAssoc: '.mysqli_error($db));
+        if (!mysqli_num_rows($result)) {
                 return FALSE;
         }
         $a = array();
-        $row = mysql_fetch_assoc($result);
+        $row = mysqli_fetch_assoc($result);
 
         if (count($row) > 2) {
                 do {
                         $i = array_shift($row);
                         $a[$i] = $row;
-                } while($row = mysql_fetch_assoc($result));
+                } while($row = mysqli_fetch_assoc($result));
         } else {
                 $row = array_values($row);
                 do {
                         $a[$row[0]] = $row[1];
-                } while($row = mysql_fetch_row($result));
+                } while($row = mysqli_fetch_row($result));
         }
         return $a;
 }
 
 function getOne($query) {
 	global $db;
-	$result = mysql_query($query, $db) or print("<br>Error getOne [[ $query ]] : ".mysql_error());
-	if (mysql_num_rows($result)) {
-		return mysql_result($result,0,0);
+	$result = mysqli_query($db, $query) or print("<br>Error getOne [[ $query ]] : ".mysqli_error($db));
+	if (mysqli_num_rows($result)) {
+		return mysqli_result($result,0,0);
 	} else {
 		return FALSE;
 	}
