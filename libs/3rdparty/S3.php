@@ -519,14 +519,16 @@ class S3
 	* @param string $maxKeys Max keys (maximum number of keys to return)
 	* @param string $delimiter Delimiter
 	* @param boolean $returnCommonPrefixes Set to true to return CommonPrefixes
+	* @param boolean $v2 use V2 API (which is quicker!), default true! Should be little reason to use v1
 	* @return array | false
 	*/
-	public static function getBucket($bucket, $prefix = null, $marker = null, $maxKeys = null, $delimiter = null, $returnCommonPrefixes = false)
+	public static function getBucket($bucket, $prefix = null, $marker = null, $maxKeys = null, $delimiter = null, $returnCommonPrefixes = false, $v2 = true)
 	{
 		$rest = new S3Request('GET', $bucket, '', self::$endpoint);
 		if ($maxKeys == 0) $maxKeys = null;
+		if ($v2) $rest->setParameter('list-type', 2);
 		if ($prefix !== null && $prefix !== '') $rest->setParameter('prefix', $prefix);
-		if ($marker !== null && $marker !== '') $rest->setParameter('marker', $marker);
+		if ($marker !== null && $marker !== '') $rest->setParameter($v2?'start-after':'marker', $marker); //v2 doesnt use marker, but can has a start-after which works similally
 		if ($maxKeys !== null && $maxKeys !== '') $rest->setParameter('max-keys', $maxKeys);
 		if ($delimiter !== null && $delimiter !== '') $rest->setParameter('delimiter', $delimiter);
 		else if (!empty(self::$defDelimiter)) $rest->setParameter('delimiter', self::$defDelimiter);
@@ -543,6 +545,7 @@ class S3
 		$results = array();
 
 		$nextMarker = null;
+		$nextContinuationToken = null;
 		if (isset($response->body, $response->body->Contents))
 		foreach ($response->body->Contents as $c)
 		{
@@ -565,14 +568,18 @@ class S3
 
 		if (isset($response->body, $response->body->NextMarker))
 			$nextMarker = (string)$response->body->NextMarker;
+		if (isset($response->body, $response->body->NextContinuationToken))
+			$nextContinuationToken = (string)$response->body->NextContinuationToken;
 
 		// Loop through truncated results if maxKeys isn't specified
-		if ($maxKeys == null && $nextMarker !== null && (string)$response->body->IsTruncated == 'true')
+		if ($maxKeys == null && ($nextMarker !== null || $nextContinuationToken !== null) && (string)$response->body->IsTruncated == 'true')
 		do
 		{
 			$rest = new S3Request('GET', $bucket, '', self::$endpoint);
+			if ($v2) $rest->setParameter('list-type', 2);
 			if ($prefix !== null && $prefix !== '') $rest->setParameter('prefix', $prefix);
-			$rest->setParameter('marker', $nextMarker);
+			if ($nextContinuationToken !== null) $rest->setParameter('continuation-token', $nextContinuationToken);
+			else $rest->setParameter('marker', $nextMarker);
 			if ($delimiter !== null && $delimiter !== '') $rest->setParameter('delimiter', $delimiter);
 
 			if (($response = $rest->getResponse()) == false || $response->code !== 200) break;
@@ -596,6 +603,9 @@ class S3
 
 			if (isset($response->body, $response->body->NextMarker))
 				$nextMarker = (string)$response->body->NextMarker;
+
+			if (isset($response->body, $response->body->NextContinuationToken))
+				$nextContinuationToken = (string)$response->body->NextContinuationToken;
 
 		} while ($response !== false && (string)$response->body->IsTruncated == 'true');
 
