@@ -25,6 +25,7 @@
 $param=array(
 	'dir'=>'/var/www/geograph_svn',		//base installation dir
 	'config'=>'staging.geograph.org.uk', //effective config
+	'dry'=>true,
 	'help'=>0,		//show script help?
 );
 
@@ -88,6 +89,7 @@ $status = getAssoc("SHOW TABLE STATUS");
 
 $tables = getAssoc("SELECT * FROM _tables ORDER BY table_name"); //useful trick to put _tables at the end :)
 
+$done =0;
 foreach ($status as $table => $s) {
         $data = isset($tables[$table])?$tables[$table]:array('backedup' => 0, 'type'=>'unknown', 'backup'=>'?');
 
@@ -120,7 +122,7 @@ foreach ($status as $table => $s) {
 
 	if ($backup) {
 		//create the SQL before dumping the table, so updates happen after are caught in next backip
-		$sql = "UPDATE `_tables` SET `backedup` = '".date('Y-m-d H-i-s')."' WHERE `table_name` = '".mysqli_real_escape_string($table)."'";
+		$sql = "UPDATE `_tables` SET `backedup` = '".date('Y-m-d H-i-s')."' WHERE `table_name` = '".mysqli_real_escape_string($db,$table)."'";
 
 		if (!is_dir($folder.$table.'/'))
 			mkdir($folder.$table.'/');
@@ -150,14 +152,15 @@ foreach ($status as $table => $s) {
 
 				$cmd = "mysqldump --opt --skip-comments --no-create-info $cred ".escapeshellarg($table)." --where '$where'";
 
-				if ($data['sensitive'] == 'Y') {
+				if (false && $data['sensitive'] == 'Y') { //this server doesnt have encyptiuon setup
 					$file .= '.gpg';
 					$cmd .= " | gzip | gpg --encrypt --recipient 'Geograph' > $file";
 				} else {
 					$cmd .= " | gzip --no-name --rsyncable > $file";
 				}
 				print "$cmd\n";
-				print `$cmd`;
+				if (empty($param['dry']))
+					print `$cmd`;
 
 				### ls -1t /var/www/backups/by-table/gridimage_exif/*_002* | head -n2 | xargs md5sum | cut -d' ' -f1 | uniq -c | cut -d' ' -f7
 
@@ -167,7 +170,8 @@ foreach ($status as $table => $s) {
 
 					if (trim(`$cmd`) == 2) {
 						print "delete $file\n";
-						unlink($file);
+						if (empty($param['dry']))
+							unlink($file);
 					}
 				}
 			}
@@ -207,15 +211,15 @@ foreach ($status as $table => $s) {
 
 				$file = str_replace($date."_",'',$file);
 			}
-			if ($data['sensitive'] == 'Y') {
+			if (false && $data['sensitive'] == 'Y') {
 				$file .= '.gpg';
 				$cmd .= " | gzip | gpg --encrypt --recipient 'Geograph' > $file";
 			} else {
 				$cmd .= " | gzip --rsyncable > $file";
 			}
 			print "$cmd\n";
-
-			print `$cmd`;
+			if (empty($param['dry']))
+				print `$cmd`;
 		}
 
 		if (file_exists($file) && filesize($file) > 10) {
@@ -223,8 +227,11 @@ foreach ($status as $table => $s) {
 				//we reconnect, as the connection possibly died
 				$db = mysqli_connect($CONF['db_connect'], $CONF['db_user'], $CONF['db_pwd'], $CONF['db_db']);
 			}
-			mysqli_query($db, $sql) or print('<br>Error save: '.mysqli_error($db));
+print "$sql;";
+			if (empty($param['dry']))
+				mysqli_query($db, $sql) or print('<br>Error save: '.mysqli_error($db));
 			print "\n\n";
+			$done++;
 		} else {
 			print "++++++++++ Error: FILE $file NOT FOUND +++++++++++++\n\n";
 		}
@@ -236,7 +243,7 @@ foreach ($status as $table => $s) {
 }
 
 
-
+print "done=$done\n";
 ###
 
 
