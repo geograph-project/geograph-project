@@ -217,7 +217,7 @@ print "$update_out\n";
    ############################
 
    if (my @files = ($update_out =~ /([^\n\r ']+\.js|[^\n\r ']+?\.css)'?$/mg)) {
-     &update_revision_file('/mnt/big/geograph_svn','/var/www/geograph_svn', '/mnt/s3-photos-staging', @files);
+     &update_revision_file('/mnt/big/geograph_svn','/var/www/geograph_svn', @files);
    }
 
    #my $all = `svn status /var/www/geograph_svn/public_html -v`;
@@ -307,7 +307,7 @@ if ($makelive)
    ############################
 
       if (my @files = ($rsync_out =~ /([^\n\r ']+\.js|[^\n\r ']+?\.css)'?$/mg)) {
-         &update_revision_file('/mnt/big/geograph_svn','/var/www/geograph_live', '/mnt/s3-photos-production', @files);
+         &update_revision_file('/mnt/big/geograph_svn','/var/www/geograph_live', @files);
       }
 
       print "Files are now live at http://www.geograph.org.uk\n\n";
@@ -320,7 +320,6 @@ if ($makelive)
 sub update_revision_file {
 	my $source = shift;
 	my $destination = shift;
-	my $static = shift;
 	my @files = @_;
 	my $data;
 	my %revs;
@@ -363,18 +362,6 @@ sub update_revision_file {
 			}
 			
 			print " :: $revs{$url} \n";
-
-			my $url2 = $url;
-			$url2 =~ s/\.(\w+)$/\.v$revs{$url}.$1/;		
-
-		        my $cmd="rsync --inplace ".
-                	        "$source/public_html"."$url ".
-		                              $static.$url2;
-
-		        print "Copying $url to $static...\n";
-			print "$cmd\n";
-		        `sudo -u www-data $cmd`;
-
 		} else {
 			$revs{$url} = 1;
 			print " :: unknown\n";
@@ -395,7 +382,7 @@ sub update_revision_file {
 	close (OUT);
 
         #####################################
-	#sync the file locally 
+	# sync the file locally
 
         my $cmd="rsync ".
                 "$source/libs/conf/revisions.conf.php ".
@@ -403,6 +390,11 @@ sub update_revision_file {
 
         print "Copying Revision File locally...\n";
         `sudo -u geograph $cmd`;
+
+        #####################################
+	# call the PHP script that copies the file to S3
+
+	print `php $destination/scripts/publish-to-s3.php`;
 
 	#####################################
 	# sync the file remotely 
