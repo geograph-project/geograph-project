@@ -23,7 +23,7 @@
 
 ############################################
 
-$param = array();
+$param = array('mtime'=>1);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -33,7 +33,7 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 
 
-$h = popen($cmd = 'find '.$CONF['photo_upload_dir'].'/ -type f -not -name "*.exif" -not -name "*.original.jpeg" -printf "%p %T@\n"', 'r');
+$h = popen($cmd = 'find '.$CONF['photo_upload_dir'].'/ -type f -mtime -'.$param['mtime'].' -not -name "*.exif" -not -name "*.original.jpeg" -printf "%p %T@\n"', 'r');
 
 print "$cmd\n";
 
@@ -43,19 +43,24 @@ while ($h && !feof($h)) {
 		continue;
 	list($filename, $time) = explode(' ',$line);
 
+			$start = microtime(true);
+
 print "$line\n";
 			$updates= array();
 			$updates['basename'] = basename($filename);
 			$updates['class'] = 'upload';
 			$updates['file_created'] = date('Y-m-d H:i:s', intval($time));
-			$updates['hash'] = md5_file($filename);
+			$updates['md5sum'] = md5_file($filename);
 
 
  		       $db->Execute($sql = 'INSERT INTO full_md5 SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
 		 	        	   ' ON DUPLICATE KEY UPDATE `'.implode('` = ?,`',array_keys($updates)).'` = ?',
         	              		  array_merge(array_values($updates),array_values($updates))) or die("$sql\n\n".mysql_error()."\n");
 
+			$end = microtime(true);
+
 			print ".";
+			usleep(($end-$start)*1000); ///make the delay dynamic.
 }
 print "\n";
 

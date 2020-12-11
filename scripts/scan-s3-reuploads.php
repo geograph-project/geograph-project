@@ -23,7 +23,7 @@
 
 ############################################
 
-$param = array('start'=>'auto', 'end'=>'auto', 'verbose'=>0, 'log'=>0);
+$param = array('limit'=>'1', 'interval'=>'10 day', 'verbose'=>0, 'log'=>0);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -44,26 +44,17 @@ if (!empty($param['verbose'])) {
 
 $db = GeographDatabaseConnection(false);
 
-if ( $param['start'] == 'auto') {
-	$basename = $db->getOne("  select basename from full_md5 where class='full.jpg' order by auto_id desc limit 1");
-	if (preg_match('/^(\d{6,7})_/',$basename,$m)) {
-		$start = intval($m[1]); //we could round down to nearest 100, but not really needed
-		$start -= 200; //just to have a little leeway
-	} else {
-		die("unable to find start image");
-	}
-} else {
-	$start = $param['start'];
-}
+//todo, add since filter?
+$where = "type='original' and status = 'accepted'";
+if (!empty($param['interval']))
+	$where .= " AND suggested > date_sub(now(),interval {$param['interval']})";
 
-if ( $param['end'] == 'auto') {
-	$end = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
-} else {
-	$end = $param['end'];
-}
-$step = 100; //images per final folder!
 
-foreach (range($start,$end,$step) as $id) {
+$ids = $db->getCol("select gridimage_id from gridimage_pending where $where group by gridimage_id div 100 limit {$param['limit']}");
+
+
+foreach ($ids as $id) {
+
 	$image = new GridImage();
 	$image->gridimage_id = $id;
 	$image->user_id = 0;  //fake, all we want is right folder set in path
@@ -126,5 +117,4 @@ foreach (range($start,$end,$step) as $id) {
         	}
 		print "\n";
 	}
-
 }

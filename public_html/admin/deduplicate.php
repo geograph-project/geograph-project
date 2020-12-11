@@ -69,7 +69,7 @@ if (!empty($_GET['list'])) {
 	print "</ol>";
 
 
-	$rows = $db->getAll($sql = "select full_md5.hash,filename from full_md5 inner join full_dup on (full_md5.hash = full_dup.md5sum)
+	$rows = $db->getAll($sql = "select full_md5.md5sum,filename from full_md5 inner join full_dup using (md5sum)
 		where status = ".$db->Quote($status)." and user_id > 0 limit 100"); //user_id>0 is just to exclude automatic invalid items.
 	print "<table>";
 	$last = 0;
@@ -92,15 +92,19 @@ if (!empty($_GET['list'])) {
 
 ##############################################
 
+//todo, could convert to a single query
+//select file_id,class,basename,gridimage_id,submitted,moderation_status from full_md5 left join gridimage on (gridimage_id = basename) where md5sum='e228077c601f546aac047769b5f1b893';
+//basename on conversion in int on the join, will match.
+
 if (!empty($_GET['md5sum'])) {
-	$rows = $db->getAll($sql = "select full_md5.hash as md5sum,basename from full_md5
-		where full_md5.hash = ".$db->Quote($_GET['md5sum']));
+	$rows = $db->getAll($sql = "select full_md5.md5sum,basename from full_md5
+		where full_md5.md5sum = ".$db->Quote($_GET['md5sum']));
 
 ##############################################
 
 } else {
-	$rows = $db->getAll($sql = "select full_md5.hash as md5sum,basename from full_md5
-		where full_md5.hash = (select md5sum from full_dup where status = ".$db->Quote($status)." limit $offset,1)");
+	$rows = $db->getAll($sql = "select full_md5.md5sum,basename from full_md5
+		where full_md5.md5sum = (select md5sum from full_dup where status = ".$db->Quote($status)." limit $offset,1)");
 }
 
 ##############################################
@@ -168,7 +172,7 @@ if (count($ids) > 1) {
 						$larger = true;
 					}
 
-        	                        print "<td><a href=\"$link\"><img src=$url /></a></td>";
+        	                        print "<td><a href=\"$link\"><img src=$url /></a><br>$name</td>";
 	                        }
 				print "</tr>";
 			}

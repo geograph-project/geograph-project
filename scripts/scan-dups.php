@@ -32,7 +32,7 @@ require "./_scripts.inc.php";
 
 $db = GeographDatabaseConnection(false);
 
-$key = 'hash'; //md5sum
+$key = 'md5sum';
 
 //quick safely check that that the hash is indexed! The query will be horendus without the key!
 $keys = $db->getAll("show keys from full_md5");
