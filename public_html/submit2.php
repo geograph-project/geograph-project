@@ -282,7 +282,7 @@ if ($upload_to_process && !empty($uploadmanager) && $uploadmanager->upload_id) {
 
 	$exif = $uploadmanager->rawExifData;
 
-	if (!empty($exif['GPS'])) {
+	if (!empty($exif['GPS']) && !empty($exif['GPS']['GPSLatitude']) && !empty($exif['GPS']['GPSLongitude'])) {
 		$conv = new Conversions;
 
 		list($e,$n,$reference_index) = ExifToNational($exif);
