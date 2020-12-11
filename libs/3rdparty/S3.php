@@ -2607,6 +2607,10 @@ if (!empty($GLOBALS['curl_verbose']))
 				$this->response->headers['type'] = $value;
 			elseif ($header == 'ETag')
 				$this->response->headers['hash'] = $value{0} == '"' ? substr($value, 1, -1) : $value;
+			elseif ($header == 'Cache-Control')
+				$this->response->headers['cache'] = $value;
+			elseif ($header == 'x-amz-storage-class')
+				$this->response->headers['class'] = $value;
 			elseif (preg_match('/^x-amz-meta-.*$/', $header))
 				$this->response->headers[$header] = $value;
 		}
