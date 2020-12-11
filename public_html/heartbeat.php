@@ -66,7 +66,7 @@ if (!is_dir("templates/basic/compiled-mnt/") || !is_writable("templates/basic/co
 if (isset($diequick))
 	exit;
 
-$_SERVER['HTTP_HOST'] = 'staging.geograph.org.uk';
+//$_SERVER['HTTP_HOST'] = 'staging.geograph.org.uk';
 
 //just so we do something...
 require_once('geograph/global.inc.php');
