@@ -14,6 +14,13 @@ $offset = 0;
 $q = "bridge";
 $index = 'gi_stemmed';
 
+
+if (!empty($argv[1])) {
+    $CONF['sphinx_host'] = $argv[1];
+}
+print("Using server: $CONF[sphinx_host]\n");
+
+
                 $cl = new SphinxClient ();
                 $cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
                 $cl->SetLimits($offset,25);
