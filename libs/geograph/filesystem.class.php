@@ -38,6 +38,7 @@ class FileSystem extends S3 {
 
 	var $defaultStorage = self::STORAGE_CLASS_STANDARD_IA;
 	var $defaultACL = self::ACL_PRIVATE;
+	var $defaultCacheControl = null;
 
 	var $buckets = array();
 
@@ -83,6 +84,9 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 
 		if (!empty($CONF['s3_acl']))
 			$this->defaultACL = $CONF['s3_acl'];
+
+		if (!empty($CONF['s3_cachecontrol']))
+			$this->defaultCacheControl = $CONF['s3_cachecontrol'];
 
 			//curl http://169.254.169.254/latest/meta-data/placement/region --although we want the region of the bucket(s), not the current instance!
 		if (!empty($CONF['s3_region']))
@@ -179,6 +183,9 @@ if (!empty($_GET['debug']))
 
 			//we do this ourselfs, as S3 class built in detection works on source file, not destination! We tend to have files using known extensions anyway, so works (because cant use fileinfo)
 			$headers['Content-Type'] = parent::__getMIMEType($destination);
+
+			if (!empty($this->defaultCacheControl))
+				$headers['Cache-Control'] = $this->defaultCacheControl;
 
 			/* we cant use putObjectFile as it doesnt have storage class param!*/
 			//  putObject($input, $bucket, $uri, $acl = self::ACL_PRIVATE, $metaHeaders = array(), $requestHeaders = arr
