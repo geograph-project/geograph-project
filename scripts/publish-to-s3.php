@@ -30,21 +30,10 @@ require "./_scripts.inc.php";
 
 ############################################
 
-$CONF['s3_cachecontrol'] = 'max-age='.(3600*24*180);
-
 if (empty($filesystem)) //eventually gloabl will do this!
 	$filesystem = new FileSystem(); //sets up configuation automagically
 
-//ultimately should be dynamic, but the main class doesnt do this yet
-$filesystem->buckets["/var/www/geograph_svn/public_html/"] = 'uk-org-geograph-staging-photos/';
-$filesystem->buckets["/var/www/geograph_live/public_html/"] = 'photos.geograph.org.uk/';
-
 if (!empty($param['log'])) $filesystem->log = true;
-
-//if (!empty($param['verbose'])) {
-//	$GLOBALS['curl_verbose'] = $param['verbose'];
-//	print_r($filesystem);
-//}
 
 ############################################
 
@@ -54,7 +43,6 @@ foreach ($REVISIONS as $filename => $vid) {
 	if (file_exists(".".$filename)) { //specifically checking there is a local file!
 
 		$destination = preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
-
 
 		######################
 		//special indepth test, checking all the headers are correct (not just that exists!)
