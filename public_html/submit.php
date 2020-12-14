@@ -111,7 +111,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 
 				$exif = $uploadmanager->rawExifData;
 
-				if (!empty($exif['GPS'])) {
+				if (!empty($exif['GPS']) && !empty($exif['GPS']['GPSLatitude']) && !empty($exif['GPS']['GPSLongitude'])) {
 					$conv = new Conversions;
 
 					list($e,$n,$reference_index) = ExifToNational($exif);
@@ -662,7 +662,7 @@ if (isset($_POST['gridsquare']))
 			for($q = 0; $q< 360; $q+=$jump) {
 				$s = ($q%90==0)?strtoupper(heading_string($q)):ucwords(heading_string($q));
 				$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
-					str_pad($s,16,' '),
+					str_pad($s,16,'Â '),
 					$q,
 					($q == 0?$q+360-$jump2:$q-$jump2),
 					$q+$jump2);
