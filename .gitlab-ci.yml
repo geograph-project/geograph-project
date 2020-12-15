@@ -120,14 +120,14 @@ production/geograph-cron:
   variables:
     FLUX_IMAGE: geograph
   needs:
-    - staging/geograph
+    - staging/geograph-cron
 
 production/geograph-bot:
   extends: .k8s_deploy_production
   variables:
     FLUX_IMAGE: geograph
   needs:
-    - staging/geograph
+    - staging/geograph-bot
 
 production/manticore:
   extends: .k8s_deploy_production
