@@ -8,8 +8,17 @@
 #*/5       *       * * *   curl -sSL -A "geograph-cron" "${CONTENT_HOST}/_scripts/process_events.php?start=1&max_execution=290&max_load=1.2"
 #Note this is done via HTTP (rather than CLI) so that the event is processed via a load balanced webserver.
 
-
 ##############################
+# Misc scripts
 
-55	7-22	* * *   /usr/bin/php /var/www/geograph/scripts/scan-s3-hashes.php
+
+55	7-22	* * *	/usr/bin/php /var/www/geograph/scripts/scan-s3-hashes.php
+
+35	1       * * *	/usr/bin/php /var/www/geograph/scripts/createsphinx-new.php --rebuild=1
+
+21      */3     * * *	/usr/bin/php /var/www/geograph/scripts/typo-run-phrase.php --debug
+25      */6     * * *	/usr/bin/php /var/www/geograph/scripts/typo-run-expression.php --debug
+33	*/12	* * *	/usr/bin/php /var/www/geograph/scripts/typo-run-keywords.php --debug
+
+45      16      * * *	/usr/bin/php /var/www/geograph/scripts/process-tag-typos.php --action=execute
 
