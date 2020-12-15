@@ -23,7 +23,7 @@
 
 ############################################
 
-$param = array('start'=>'auto', 'end'=>'auto', 'verbose'=>0, 'log'=>0);
+$param = array('start'=>'auto', 'end'=>'auto', 'verbose'=>0, 'log'=>0, 'progress'=>posix_isatty(STDOUT));
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -117,14 +117,42 @@ foreach (range($start,$end,$step) as $id) {
 			$updates['s3_size'] = $row['size'];
 			$updates['s3_class'] = preg_replace('/([A-Z])[A-Z]+/','$1',$row['class']);
 
-
- 		       $db->Execute($sql = 'INSERT INTO full_md5 SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
+			$db->Execute($sql = 'INSERT INTO full_md5 SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
 		 	        	   ' ON DUPLICATE KEY UPDATE `'.implode('` = ?,`',array_keys($updates)).'` = ?',
         	              		  array_merge(array_values($updates),array_values($updates))) or die("$sql\n\n".mysql_error()."\n");
 
-			print ".";
+			if ($param['progress'])
+				print ".";
         	}
-		print "\n";
+		if ($param['progress'])
+			print "\n";
 	}
 
 }
+
+
+if ($param['start'] == 'auto' && $param['end'] == 'auto') {
+
+	$key = 'md5sum';
+
+	//quick safely check that that the hash is indexed! The query will be horendus without the key!
+	$keys = $db->getAll("show keys from full_md5");
+	$found = false;
+	foreach ($keys as $row)
+		if ($row['Column_name'] == $key && $row['Seq_in_index'] == 1)
+			$found = true;
+
+	if (empty($found))
+		die("No key found for $key - refusing to run!\n ALTER TABLE full_md5 ADD key($key)\n");
+
+	//the table has a unique key on 'md5sum', so reinsertions of hte same dup should be silently ignored.
+	/// ... but does mean will miss adding a new image to a previousp duplication!
+	$sql = "INSERT IGNORE INTO full_dup SELECT $key as md5sum,COUNT(*) cnt,'new',0,NOW(),NOW() FROM full_md5 WHERE $key != '' AND class != 'upload' GROUP BY $key HAVING cnt > 1 ORDER BY NULL";
+
+	print "$sql;\n";
+
+	$db->Execute($sql);
+
+	print "Affected Rows: ".$db->Affected_Rows()."\n";
+}
+
