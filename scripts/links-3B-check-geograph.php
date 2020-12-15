@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: conversion.php 2960 2007-01-15 14:33:27Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2008 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -64,7 +64,8 @@ FROM
         gridimage_link l
 WHERE
         next_check < now() AND parent_link_id = 0
-        AND (url like 'http://www.geograph.org.uk/%' OR url like 'http://www.geograph.ie/%')
+        AND (url like 'http://www.geograph.org.uk/%' OR url like 'http://www.geograph.ie/%' OR
+	     url like 'https://www.geograph.org.uk/%' OR url like 'https://www.geograph.ie/%')
 GROUP BY url
 LIMIT {$offset}{$param['number']}";
 
@@ -109,7 +110,7 @@ while (!$recordSet->EOF)
 		|| preg_match('/\.(uk|ie)(\/snippet\/\d+)/',$url,$m)
 		|| preg_match('/\.(uk|ie)(\/profile\/\d+)/',$url,$m)
 		|| preg_match('/\.(uk|ie)(\/article\/[\w-]+)/',$url,$m) //todo we COULD check the fragment /article/A-History-of-Port-Glasgow#gourock-ropeworks TOO!
-		//|| preg_match('/\.(uk|ie)(\/gallery\/[\w-]+)/',$url,$m) //do this with ID directly below instead... 
+		//|| preg_match('/\.(uk|ie)(\/gallery\/[\w-]+)/',$url,$m) //do this with ID directly below instead...
 		) {
 		$lookup = $db->quote($m[2]);
 		if ($db->getOne("SELECT content_id FROM content WHERE url = $lookup")) {
@@ -173,7 +174,7 @@ http://www.geograph.org.uk/search.php?i=10090652
 http://www.geograph.org.uk/stuff/fade.php?1=153188&2=4883206#0
 http://www.geograph.org.uk/tagged/Arches+at+Bowling#photo=4143159
 
-The idea of this file is to do the bulk of links effientiylu (particully the image and collection links!) 
+The idea of this file is to do the bulk of links effientiylu (particully the image and collection links!)
 */
 	        $recordSet->MoveNext();
 		continue; //skip for now! could be checked with standard HTTP based check...

@@ -2,17 +2,17 @@
 
 ##############################
 
-#11     7       * * *   /usr/bin/php /var/www/geograph/scripts/links-1-populate.php --mode=new 
-#11     8       * * *   /usr/bin/php /var/www/geograph/scripts/links-1-populate.php --mode=update
-#11     9       * * *   /usr/bin/php /var/www/geograph/scripts/links-1-populate.php --mode=gone 
+11     7       * * *   /usr/bin/php /var/www/geograph/scripts/links-1-populate.php --mode=new 
+ 7     8       * * *   /usr/bin/php /var/www/geograph/scripts/links-1-populate.php --mode=update
+11     9       * * *   /usr/bin/php /var/www/geograph/scripts/links-1-populate.php --mode=gone 
 
-#22     */3     * * *   /usr/bin/php /var/www/geograph/scripts/links-3-check-links.php --number=5000 --sleep=1 
-#11     1       * * *   /usr/bin/php /var/www/geograph/scripts/links-3B-check-geograph.php  --number=10000 --sleep=0 
-#33     1       * * *   /usr/bin/php /var/www/geograph/scripts/links-3-check-links.php --number=1000 --sleep=1 --mode=geograph
+22     */3     * * *   /usr/bin/php /var/www/geograph/scripts/links-3-check-links.php --number=5000 --sleep=1 
+11     1       * * *   /usr/bin/php /var/www/geograph/scripts/links-3B-check-geograph.php  --number=10000 --sleep=0 
+33     1       * * *   /usr/bin/php /var/www/geograph/scripts/links-3-check-links.php --number=1000 --sleep=1 --mode=geograph
 
-#44     *       * * *   /usr/bin/php /var/www/geograph/scripts/links-2A-find-archives.php --number=1000 --sleep=3 
-#55     */3     * * *   /usr/bin/php /var/www/geograph/scripts/links-2B-request-archives.php --number=1000 --sleep=20
-#34     *       * * *   /usr/bin/php /var/www/geograph/scripts/links-2A-find-archives.php --number=1000 --sleep=5 --mode=retry
+44     *       * * *   /usr/bin/php /var/www/geograph/scripts/links-2A-find-archives.php --number=1000 --sleep=3 
+55     */3     * * *   /usr/bin/php /var/www/geograph/scripts/links-2B-request-archives.php --number=1000 --sleep=20
+34     *       * * *   /usr/bin/php /var/www/geograph/scripts/links-2A-find-archives.php --number=1000 --sleep=5 --mode=retry
 
 ##############################
 

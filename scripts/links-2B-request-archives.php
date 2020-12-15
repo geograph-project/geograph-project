@@ -75,9 +75,10 @@ while (!$recordSet->EOF) {
 
 		$url = 'http://web.archive.org/save/'.($row['url']);
 
+        print "URL: ".$url."\n";
+
                 $content = file_get_contents($url);
 
-        print "URL: ".$url."\n";
         print "LEN: ".strlen($content)."\n";
         print "\n";
         print_r($http_response_header);
