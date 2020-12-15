@@ -10,3 +10,6 @@
 
 
 ##############################
+
+55	7-22	* * *   /usr/bin/php /var/www/geograph/scripts/scan-s3-hashes.php
+
