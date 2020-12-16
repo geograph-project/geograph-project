@@ -38,7 +38,7 @@ fluxctl release \
       --workload "${WORKLOAD}" \
       --update-image "${IMAGE_NAME}:${IMAGE_TAG}" \
       --user "${GITLAB_USER_NAME} <${GITLAB_USER_EMAIL}>" \
-      --message "Deployed ${KUBE_NAMESPACE}/${COMPONENT}\n\n by CI pipeline ${CI_PIPELINE_URL}" \
+      --message "Deployed ${KUBE_NAMESPACE}/${COMPONENT} by CI pipeline ${CI_PIPELINE_URL}" \
       --watch
 
 # vim: ai ts=2 sw=2 et sts=2 ft=sh
