@@ -9,13 +9,14 @@ require "./_scripts.inc.php";
 
 ################################################################################
 
-if (file_exists("/go/data/showcase/gallery.export.php") || file_exists("../public_html/showcase/gallery.export.php")) {
+$db = GeographDatabaseConnection(false);
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+if ($db->getOne(" show tables from showcase like 'gallery_image'")) {
         //the database is now local!
 
 	if ($param['debug']) print "Fetching Locally\n";
 
-	$db = GeographDatabaseConnection(false);
-	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	if ($db->getOne("SELECT 1 FROM showcase.gallery_image")) {//limit 1 is implicit! ... checking can connect to the database!
 		if ($param['debug']) print "dropping...\n";
