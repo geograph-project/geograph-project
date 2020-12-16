@@ -16,11 +16,34 @@ server {
 
   server_name _;
 
-  # Equivalent to the RewriteRule
+  ###################################
+  # special setup for staging (dont use a seperate 'server' block as most of the rules below are common to all hosts) 
+
+  if ($http_host ~ staging) {
+    rewrite ^/robots.txt /robots-none.txt last;
+  }
+
+  ###################################
+  # Rules to setup Pretty URLs
+
+  rewrite ^/photo/([0-9]+)\.xml /api/photo/$1;
+  rewrite /api/.* /restapi.php last;
+
+  rewrite ^/photo/([0-9]+)\.rdf /rdfapi.php?id=$1 last;
+  rewrite ^/photo/([0-9]+)\.kml /kml.php?id=$1 last;
+  rewrite ^/photo/([0-9]+) /view.php?id=$1 last;
+
   location /help/ {
     rewrite ^/help/([^/]*)$ /staticpage.php?page=$1 last;
     return 404;  # for things that don't get rewritten
   }
+
+  ###################################
+
+  error_page 404 /staticpage.php?page=404;
+
+  ###################################
+  # direct php to php-fpm
 
   location ~ [^/]\.php(/|$) {
     include snippets/fastcgi-php.conf;
@@ -29,10 +52,13 @@ server {
     fastcgi_pass 127.0.0.1:9000;
   }
 
+  ###################################
   # Deny access to dotfiles
+
   location ~ /\. {
     deny all;
   }
+
 }
 
 # vim: ts=2 sw=2 et sts=2 ft=conf
