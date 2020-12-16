@@ -922,7 +922,7 @@ class RestAPI
 		if (!empty($_SERVER["PATH_INFO"])) {
 			$this->params=explode('/', $_SERVER["PATH_INFO"]);
 		} else {
-			$this->params=explode('/', $_SERVER["SCRIPT_NAME"]);
+			$this->params=explode('/', $_SERVER["REQUEST_URI"]);
 		}
 		//eat params we don't need - empty initial param and 'api'
 		if (strlen($this->params[0])==0)
