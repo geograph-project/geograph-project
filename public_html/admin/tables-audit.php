@@ -234,6 +234,7 @@ function dump_table($rows) {
 
 
 function updates_to_a(&$updates) {
+	global $db;
         $a = array();
         foreach ($updates as $key => $value) {
                 //NULL
@@ -248,7 +249,7 @@ function updates_to_a(&$updates) {
                         if (is_numeric($value) || preg_match('/^\w+\(\)$/',$value)) {
                                 $a[] = "`$key`=$value";
                         } else {
-                                $a[] = "`$key`='".mysql_real_escape_string($value)."'";
+                                $a[] = "`$key`=".$db->Quote($value);
                         }
                 }
         }
@@ -266,9 +267,10 @@ function updates_to_replace($table,$updates) {
 }
 
 function updates_to_update($table,$updates,$primarykey,$primaryvalue) {
+	global $db;
         $a = updates_to_a($updates);
         if (!is_numeric($primaryvalue)) {
-                $primaryvalue = "'".mysql_real_escape_string($primaryvalue)."'";
+                $primaryvalue = $db->Quote($primaryvalue);
         }
         return "UPDATE $table SET ".join(',',$a)." WHERE `$primarykey` = $primaryvalue";
 }

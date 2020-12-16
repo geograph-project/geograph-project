@@ -215,10 +215,14 @@ dump_sql_table($sql,$title);
 }
 
 
-function dump_sql_table($sql,$title,$autoorderlimit = false) {
-	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
+function dump_sql_table($sql,$title) {
+	global $db;
+	$recordSet = $db->Execute($sql) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
-	$row = mysql_fetch_array($result,MYSQL_ASSOC);
+	if (!$recordSet->RecordCount())
+		return;
+
+	$row = $recordSet->fields;
 
 	print "<H3>$title</H3>";
 
@@ -239,7 +243,8 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 			$align = "left";
 		}
 		print "</TR>";
-	} while ($row = mysql_fetch_array($result,MYSQL_ASSOC));
+		$recordSet->MoveNext();
+	} while ($recordSet && !$recordSet->EOF);
 	print "</TR></TABLE>";
 }
 

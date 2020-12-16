@@ -94,7 +94,7 @@ foreach ($s as $sql) {
 		$db->Execute($sql);
 		if (!empty($param['debug'])) {
 			print date('r')." (done)\n";
-			print "Rows Affected: ".mysql_affected_rows()."\n";
+			print "Rows Affected: ".$db->Affected_Rows()."\n";
 		}
 	}
 }

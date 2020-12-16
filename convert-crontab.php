@@ -26,13 +26,22 @@ while ($h && !feof($h)) {
 
 	$new = str_replace('/var/www/geograph/','',$php);
 
-	if (!file_exists($new)) {
+	if (file_exists($new)) {
+		print "$new exists\n";
+
+	        $command = "ack mysql_ $new";
+	        if (strlen(`$command`) > 2) {
+	                print "$command\n";
+	                passthru($command);
+	        }
+
+	} else {
 		print "ERROR: $new MISSING\n";
 	}
 }
 fclose($h);
 
-print_r($done);
+//print_r($done);
 
 #########################################################
 

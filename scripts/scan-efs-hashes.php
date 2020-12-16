@@ -55,7 +55,7 @@ print "$line\n";
 
  		       $db->Execute($sql = 'INSERT INTO full_md5 SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
 		 	        	   ' ON DUPLICATE KEY UPDATE `'.implode('` = ?,`',array_keys($updates)).'` = ?',
-        	              		  array_merge(array_values($updates),array_values($updates))) or die("$sql\n\n".mysql_error()."\n");
+        	              		  array_merge(array_values($updates),array_values($updates))) or die("$sql\n\n".$db->ErrorMsg()."\n");
 
 			$end = microtime(true);
 
