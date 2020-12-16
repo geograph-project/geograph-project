@@ -65,6 +65,8 @@ staging/carrot2-dcs:
 
 staging/development:
   extends: .k8s_deploy_staging
+  variables:
+    FLUX_IMAGE: geograph
   needs:
     - build/geograph
 
