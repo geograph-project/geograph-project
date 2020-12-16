@@ -653,7 +653,7 @@ split_timer('gridimage','assignToSmarty',$this->gridimage_id); //logs the wall t
 		if (!empty($this->comment) && (strpos($this->comment,'http') !== FALSE || strpos($this->comment,'www.') !== FALSE) ) {
 			$db=&$this->_getDB(true);
 			$aa = $db->getAll($sql = "select url,archive_url from gridimage_link where gridimage_id = ".intval($this->gridimage_id)."
-				AND (HTTP_Status >= 400 || HTTP_Status_final >= 400 || soft_ratio > 0.8) AND archive_url != '' AND next_check < '9999'");
+				AND (HTTP_Status >= 400 || HTTP_Status_final >= 400 || soft_ratio > 0.8) AND archive_url != '' AND next_check < '9999-00-00'");
 			if (!empty($aa)) {
 				foreach ($aa as $row) {
 					$row['url'] = preg_replace('/^http:\/\//','',$row['url']); //strip the prefix, because it MIGHT be a www. link without http:// at start
