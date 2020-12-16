@@ -27,6 +27,7 @@ build/carrot2-dcs:
 
 build/geograph:
   extends: .container_build
+  variables:
     GIT_SUBMODULE_STRATEGY: normal
 
 build/manticore:
