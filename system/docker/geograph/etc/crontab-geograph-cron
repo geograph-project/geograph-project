@@ -28,3 +28,10 @@
 17	*	* * *	/usr/bin/php /var/www/geograph/scripts/gravatar-update.php --action=execute
 
 
+13	2	* * * /usr/bin/php /var/www/geograph/scripts/update_sequence.php
+5	3	* * * /usr/bin/php /var/www/geograph/scripts/buildplacename_id.php
+30      3       * * * /usr/bin/php /var/www/geograph/scripts/create_backlinks.php
+*/15	7-23	* * * /usr/bin/php /var/www/geograph/scripts/process_regions.php --table=curated1
+*/10	7-23	* * * /usr/bin/php /var/www/geograph/scripts/announce-curated.php --execute=1
+33	1	* * * /usr/bin/php /var/www/geograph/scripts/gallery.downsync.php
+*/5     *       * * * /usr/bin/php /var/www/geograph/scripts/announce-where.php
