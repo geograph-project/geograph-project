@@ -95,7 +95,7 @@ if (!empty($rows)) {
 			WHERE typo_id = $typo_id";
 		$db->Execute($sql);
 		if ($param['debug'])
-			print "$sql;\n";
+			print preg_replace('/\s+/',' ',$sql).";\n";
 	}
 }
 
