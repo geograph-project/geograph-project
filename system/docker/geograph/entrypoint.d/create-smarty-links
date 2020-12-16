@@ -1,0 +1,47 @@
+#!/usr/bin/php
+<?php
+/**
+ * $Project: GeoGraph $
+ *
+ * GeoGraph geographic photo archive project
+ * This file copyright (C) 2020 Barry Hunter (geo@barryhunter.co.uk)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+##########################################################
+
+//symlink  /var/www/geograph_svn/public_html/templates/*/compiled-mnt -> /mnt/efs-staging/smarty-$1
+
+$folders = $_SERVER['BASE_DIR']."/public_html/templates/*";
+$pattern = '/mnt/efs/smarty-{NAME}';
+
+foreach (glob($folders) as $folder) {
+
+	$mountpoint = $folder.'/compiled-mnt';
+	$destination = str_replace('{NAME}',basename($folder),$pattern);
+
+	//optionally create the folder in EFS
+	if (!is_dir($destination)) {
+		mkdir($destination);
+		if (trim(`whoami`) == 'root')
+			`chown www-data:www-data $destination`;
+	}
+
+	//then create the symlink
+	symlink($destination, $mountpoint);
+}
+
+##########################################################

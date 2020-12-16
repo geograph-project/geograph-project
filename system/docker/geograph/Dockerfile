@@ -31,6 +31,8 @@ RUN set -eux; \
 
 COPY system/docker/geograph/etc/ /etc/
 
+COPY system/docker/geograph/entrypoint.d/ /entrypoint.d/
+
 COPY libs/        /var/www/geograph/libs/
 COPY public_html/ /var/www/geograph/public_html/
 COPY scripts/     /var/www/geograph/scripts/
