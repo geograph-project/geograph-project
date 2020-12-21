@@ -927,7 +927,8 @@ class RestAPI
 		//eat params we don't need - empty initial param and 'api'
 		if (strlen($this->params[0])==0)
 			array_shift($this->params);
-		array_shift($this->params);
+		if ($this->params[0] == 'api')
+			array_shift($this->params);
 
 		$method=array_shift($this->params);
 		$method=preg_replace('/[^a-z_]/i', '', $method);
