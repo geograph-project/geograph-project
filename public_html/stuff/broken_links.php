@@ -128,12 +128,30 @@ if (!$smarty->is_cached($template, $cacheid))
                 $smarty->assign('hide_checked', ' checked');
         }
 
+	if (!empty($_GET['group'])) {
+		if ($_GET['group'] == 2) {
+			$group = "substring_index(url,'/',3),HTTP_Status_final";
+		} else {
+			$group = "url,HTTP_Status_final";
+		}
+
+	$sql = "SELECT
+	l.*, count(*) as count
+	FROM gridimage_link l $tables
+	WHERE HTTP_Status != 0 AND next_check > NOW() AND next_check < '9999-00-00' AND parent_link_id = 0 $andwhere
+	GROUP BY $group
+	ORDER BY last_checked desc,HTTP_Location
+	LIMIT 100";
+
+		$smarty->assign('grouped', intval($_GET['group']));
+	} else {
 	$sql = "SELECT
 	l.*
 	FROM gridimage_link l $tables
 	WHERE HTTP_Status != 0 AND next_check > NOW() AND next_check < '9999-00-00' AND parent_link_id = 0 $andwhere
 	ORDER BY last_checked desc,HTTP_Location
 	LIMIT 100";
+	}
 
 	$table = $db->getAll($sql);
 
