@@ -67,6 +67,7 @@ staging/development:
   extends: .k8s_deploy_staging
   variables:
     FLUX_IMAGE: geograph
+    FLUX_KIND: statefulset
   needs:
     - build/geograph
 
