@@ -18,7 +18,6 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
 		<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;"> 
 		  <li><a href="#dumps">Database Dumps</a></li> 
-		  <li><a href="#torrents">Image bittorrent downloads</a></li> 
 		  <li><a href="#rss">Images API</a> 
 			 <ul> 
 				<li><a href="#rss_param">Types</a>, <a href="#rss_options">Options</a>, <a href="#rss_format">Formats</a></li> 
@@ -63,10 +62,6 @@ We would much perfer to work with you to find a suitable API, than forcing you t
 	 <p>We have created a mysqldump snapshot of the database and made it available for download, see 
 		{external title="Geograph Archive Database Dump" href="http://data.geograph.org.uk/dumps/" text="data.geograph.org.uk/dumps"} for details.</p>
 	
-	 <h3 style="border:1px solid #cccccc;background-color:lightgreen; padding:10px; clear:both;margin-top:30px;"><a name="torrents"></a>Torrents - Bulk Image download</h3> 
-	 <p>The entire (or at least it will be) archive is available for download via bittorrent, see 
-		{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk/" text="torrents.geograph.org.uk"} for details.</p>
-
 	 <h3 style="border:1px solid #cccccc;background-color:pink; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 
 	 <p>If you haven't got one you will need to obtain a unique API-key, which
 		gives you access to the feeds below, simply <a href="/admin/apikey.php">request a key</a>,
@@ -797,7 +792,7 @@ Note:the distance should be 10km or below.
 		<li>sitemap.xml - see {external href="http://www.sitemaps.org"}</li>
 		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>
 		<li>We can also create coverage CSVs on demand, (listing squares currently with images)</li>
-		<li>{external title="Geograph Archive Database Dump" href="http://data.geograph.org.uk/dumps/" text="data.geograph.org.uk/dumps"} &amp; {external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk/" text="torrents.geograph.org.uk"}<br/><br/></li>
+		<li>{external title="Geograph Archive Database Dump" href="http://data.geograph.org.uk/dumps/" text="data.geograph.org.uk/dumps"}<br/><br/></li>
 		<li>Please DON'T use the <tt>/list/</tt> and/or <tt>/sitemap/</tt> namespace as they are to help Search Engines crawlers.</li>
 	 </ul>
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="finally"></a>Finally</h3> 
