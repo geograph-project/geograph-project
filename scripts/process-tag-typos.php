@@ -57,7 +57,7 @@ if (!empty($check)) {
 
 $sql = "select report_id,r.status,r.type,r.tag_id,r.tag,tag2,tag2_id,r.user_id,r.approver_id,gridimage_id
 from tag_report r inner join gridimage_tag gt using (tag_id) inner join gridimage_search using (gridimage_id)
-where r.status in ('approved','moved') and type != 'canonical' and gt.status > 0 and r.updated < date_sub(now(),interval 4 day) order by gridimage_id,tag_id";
+where r.status in ('approved','moved') and type != 'canonical' and gt.status > 0 and r.updated < date_sub(now(),interval 2 day) order by gridimage_id,tag_id";
 
 $recordSet = $db->Execute($sql);
 
