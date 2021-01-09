@@ -53,7 +53,6 @@
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a> (<a href="#stats">more below</a>)</li>
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
 	<li><a title="Photo Gallery" href="/gallery/">view some <b>themed galleries</b></a></li>
-	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
 	<li><a title="Games" href="/games/"><b>play</b> with geograph images</a></li>
 	<li><a title="Draggable Map" href="/mapper/">interactive <b>draggable map</b></a></li>
 	<li><a href="/hectadmap.php">Hectad coverage map</a></li>
