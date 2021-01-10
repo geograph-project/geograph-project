@@ -30,14 +30,17 @@ function redis_session_open($save_path, $session_name)
 {
 	global $redis_handler,$CONF;
 
-	if (empty($redis_handler))
-	{
+	if (empty($redis_handler)) {
 		$redis_handler = new Redis();
-		$redis_handler->connect($CONF['redis_host'], $CONF['redis_port']);
-		if (!empty($CONF['redis_session_db']))
+		$success = $redis_handler->connect($CONF['redis_host'], $CONF['redis_port']);
+
+		if ($success && !empty($CONF['redis_session_db']))
 		{
 			$redis_handler->select($CONF['redis_session_db']);
 		}
+		return $success;
+	} else {
+		return $redis_handler->ping()?true:false;
 	}
 }
 
@@ -45,6 +48,7 @@ function redis_session_close()
 {
 	global $redis_handler;
 	$redis_handler = NULL;
+	return true;
 }
 
 function redis_session_read($id)
@@ -81,6 +85,7 @@ function redis_session_write($id, $sess_data)
 	} else {
 		$redis_handler->setEx($key, $lifetime, $sess_data);
 	}
+	return true;
 }
 
 function redis_session_destroy($id)
@@ -89,11 +94,13 @@ function redis_session_destroy($id)
 	$key = session_name().":".$id;
 
 	$redis_handler->del($key);
+	return true;
 }
 
 function redis_session_gc($maxlifetime)
 {
 	//redis expires keys automatically (using SetEx)
+	return true;
 }
 
 function redis_session_install()

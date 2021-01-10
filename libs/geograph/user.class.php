@@ -1374,8 +1374,10 @@ class GeographUser
 
 				$smarty->assign('remember_me', isset($_COOKIE['autologin'])?1:0);
 				$smarty->assign('inline', $inline);
-				$smarty->assign('email', $email);
-				$smarty->assign('password', $password);
+				if (!empty($email))
+					$smarty->assign('email', $email);
+				if (!empty($password))
+					$smarty->assign('password', $password);
 				$smarty->assign('errors', $errors);
 				$smarty->assign_by_ref('_post', $_POST);
 				$smarty->display('login.tpl');

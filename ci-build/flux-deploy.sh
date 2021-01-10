@@ -28,6 +28,10 @@ for i in $(seq 30 -1 1); do
     sleep 10
   else
     echo "The image hasn't appeared, giving up."
+    echo "Output of 'fluxctl list-images' for debug purposes..."
+
+    fluxctl list-images --workload "${WORKLOAD}"
+
     exit 1
   fi
 done

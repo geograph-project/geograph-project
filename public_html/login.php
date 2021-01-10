@@ -34,6 +34,7 @@ init_session();
 $USER->login(false);
 
 $smarty = new GeographPage;
+$template = 'login_success.tpl'; $cacheid = '';
 
 if (!$smarty->is_cached($template, $cacheid)) {
 
@@ -67,6 +68,6 @@ if (!$smarty->is_cached($template, $cacheid)) {
         }
 }
 
-$smarty->display('login_success.tpl');
+$smarty->display($template, $cacheid);
 
 
