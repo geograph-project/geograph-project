@@ -119,6 +119,9 @@
     RewriteCond %{HTTP_HOST}   ^www\.geograph\.ie [NC]
     RewriteRule ^/sitemap/(geograph.html|index.html|)$   http://www.geograph.ie/sitemap/ireland.html [L,R=permanent]
 
+
+#GENERAL RULES
+
 	#canonical for feeds (georss is now the default for .rss)
     RewriteRule ^/(feed|profile)/(.*)\.georss$   /$1/$2.rss [L,R=permanent]
 
@@ -218,6 +221,9 @@
     RewriteRule ^/(\d+)$ http://%{HTTP_HOST}/photo/$1 [qsa,L,R=permanent]
     RewriteRule ^/m/photo/(\d+)$ https://m.geograph.org.uk/photo/$1 [qsa,L,R=permanent]
     RewriteRule ^/mobile/photo/(\d+)$ https://m.geograph.org.uk/photo/$1 [qsa,L,R=permanent]
+
+
+#End General
 
     ErrorDocument 404 /staticpage.php?page=404
 
