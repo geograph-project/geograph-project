@@ -57,7 +57,7 @@ function redis_session_read($id)
 	$key = session_name().":".$id;
 
 	$sess_data = $redis_handler->get($key);
-	if ($sess_data === NULL)
+	if (empty($sess_data))
 	{
 		return "";
 	}
@@ -72,7 +72,7 @@ function redis_session_write($id, $sess_data)
 	$default = "user|O:12:\"GeographUser\":5:{s:7:\"user_id\";i:0;s:10:\"registered\";b:0;s:9:\"autologin\";b:0;s:5:\"stats\";a:0:{}s:16:\"use_autocomplete\";b:0;}searchq|N;";
 	if ($sess_data == $default) {
 		//bit of a bodge, but dont bother saving the 'uncustomised' session!
-		return;
+		return true;
 	}
 
 	$key = session_name().":".$id;
