@@ -72,7 +72,7 @@ $(document).keyup(function(e) {
 
 	Click to start: <input type=button onclick=showSaver2() value="Show Slideshow" style="padding:30px;font-size:2em;background-color:lightgreen"> (press Escape to exit)
 
-	<br>Tip: Use left/right cursor keys to move backwards/forwards
+	<br>Tip: Use left/right cursor keys to move backwards/forwards. Can press F11 to open full-screen.
 {/literal}
 
 

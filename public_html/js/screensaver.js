@@ -13,12 +13,6 @@ var SY = 0;
 
 $(function() {
 	var disableMouseMove = false;
-	$(document).keyup(function(e) {
-	        if (e.key === "F11") {
-        	        disableMouseMove = true; //The movemouse event will fire (becuse cursor possition changes relative to document!)
-			setTimeout("disableMouseMove = false;",500);
-        	}
-	});
 
 	$('body').mousemove(function(event) {
 		if (disableMouseMove)
@@ -36,7 +30,12 @@ $(function() {
 	}).scroll(function(event) {
 		if (STimer) clearTimeout(STimer); STimer = null;
 	}).keyup(function(event) {
-                if (STimer) clearTimeout(STimer); STimer = null;
+	        if (e.key === "F11") {
+        	        disableMouseMove = true; //The movemouse event will fire (becuse cursor possition changes relative to document!)
+			setTimeout("disableMouseMove = false;",500);
+        	} else {
+	                if (STimer) clearTimeout(STimer); STimer = null;
+		}
         });;
 
 	$('body').append('<div id=SSaver></div>');
