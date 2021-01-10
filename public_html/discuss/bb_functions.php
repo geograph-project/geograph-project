@@ -168,7 +168,7 @@ if (!isset($GLOBALS['genEmailDisable']) or $GLOBALS['genEmailDisable']!=1){
 $msg=str_replace("\r\n", "\n", $msg);
 $php_version=phpversion();
 $from_email="From: $from_email\nReply-To: $errors_email\nErrors-To: $errors_email\nX-Mailer: PHP ver. $php_version";
-mail($email, $subject, $msg, $from_email);
+mail_wrapper($email, $subject, $msg, $from_email);
 }
 }
 

@@ -22,7 +22,7 @@ if (!empty($_POST['email'])) {
 
 		$msg .= "---------------\nForward abuse reports to support@geograph.org.uk\n";
 
-		@mail($_POST['email'], '[Geograph] Link to feedback form', $msg,
+		mail_wrapper($_POST['email'], '[Geograph] Link to feedback form', $msg,
 						"From: Geograph Website <noreply@geograph.org.uk>");
 	} else {
 		die("Does not appear to be a valid email address - press back, and try again");

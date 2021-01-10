@@ -483,7 +483,7 @@ class GeographUser
 					$msg.="{$CONF['SELF_HOST']}/ask.php\n";
 					
 					
-					@mail($email, '[geograph] Confirm registration', $msg,
+					mail_wrapper($email, '[geograph] Confirm registration', $msg,
 						"From: Geograph Website <noreply@geograph.org.uk>");
 				}
 			}
@@ -600,7 +600,7 @@ class GeographUser
 
 				"If you do not wish to change your password, simply disregard this message";
 
-				@mail($email, 'Password Change Confirmation for '.$_SERVER['HTTP_HOST'], $msg,
+				mail_wrapper($email, 'Password Change Confirmation for '.$_SERVER['HTTP_HOST'], $msg,
 				"From: Geograph Website <noreply@geograph.org.uk>");
 
 				$ok=true;
@@ -909,7 +909,7 @@ class GeographUser
 				
 				"If you do not wish to change your address, simply disregard this message";
 				
-				@mail($profile['email'], 'Please confirm your email address change', $msg,
+				mail_wrapper($profile['email'], 'Please confirm your email address change', $msg,
 				"From: Geograph Website <noreply@geograph.org.uk>");
 				
 				
@@ -1479,14 +1479,12 @@ class GeographUser
 				} else {
 /*
         ob_start();
-        print "\n\nHost: ".`hostname`."\n\n";
 	print_r($_COOKIE);
 	print_r($db->GetRow("select * from autologin_archive where $clause"));
 	print_r($db->GetRow("select now()"));
         print_r($_POST);
-        debug_print_backtrace();
         $con = ob_get_clean();
-        mail('geograph@barryhunter.co.uk','[Geograph] AutoLogin Failed',$message."\n\n".$con);
+        debug_message('[Geograph] AutoLogin Failed',$message."\n\n".$con);
 */
 				}
 			}

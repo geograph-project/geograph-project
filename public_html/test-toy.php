@@ -501,7 +501,7 @@ if (!empty($timetravelurl)) {
 		$result = file_get_contents($timetravelurl."/api/json/20160801/http://www.devizesheritage.org.uk/railway_devizes.html");
 	} else {
 		// note we deliberately DONT set a query URL, so sending a bad request. we just testing if a memgate, dont want to triger an external http request
-		$result = file_get_contents($timetravelurl);
+		$result = @file_get_contents($timetravelurl);
 	}
 	$info = null;
 	foreach ($http_response_header as $line)

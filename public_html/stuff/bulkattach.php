@@ -151,7 +151,7 @@ if (!empty($_POST)) {
 		$str .= print_r($USER->email,1)."\n\n\n";
 		$str .= implode(";\n\n",array_map('htmlentities',$sqls))."\n\n#\n";
 
-		mail("barry@barryhunter.co.uk","bulk attach :: $unique",$str);
+		mail_wrapper("barry@barryhunter.co.uk","bulk attach :: $unique",$str);
 
 		print "<h2>Saved</h2>";
 	} else {

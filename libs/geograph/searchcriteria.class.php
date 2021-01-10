@@ -240,8 +240,7 @@ class SearchCriteria
 				unset($this->db);
 				print_r($this);
 				$con = ob_get_clean();
-				mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->searchdesc,$con);
-						
+				debug_message('[Geograph Disabled] '.$this->searchdesc,$con);
 				exit;
 			}
 

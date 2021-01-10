@@ -659,7 +659,7 @@ class GridImageTroubleTicket
 		if (empty($to)) {
 			return;
 		}
-		mail($to, $msg['subject'], $msg['body'],
+		mail_wrapper($to, $msg['subject'], $msg['body'],
 				"From: Geograph - Reply Using Link <noreply@geograph.org.uk>");
 	}
 

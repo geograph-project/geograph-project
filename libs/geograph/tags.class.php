@@ -205,11 +205,10 @@ class Tags
 		if (empty($tag_id)) {
 			ob_start();
                         debug_print_backtrace();
-                        print "\n\nHost: ".`hostname`."\n\n";
                         print_r($_POST);
 			print_r($USER->user_id);
                         $con = ob_get_clean();
-                        mail('geograph@barryhunter.co.uk','[Geograph] TAG FAILED '.date('r'),$con);
+                        debug_message('[Geograph] TAG FAILED '.date('r'),$con);
 		}
 
 

@@ -38,17 +38,13 @@ function smarty_core_process_compiled_include($params, &$smarty)
     $_return = preg_replace('!(\{nocache\:(\w+)#(\d+)\})!sU','',$_return,-1,$count);
 
     if ($count > 0 && function_exists('apc_store') && !apc_fetch('nocache_warning'.$_include_file_path)) {
-    
+
 	ob_start();
-	debug_print_backtrace();
-	print "\n\nHost: ".`hostname`."\n\n";
 	print_r($GLOBALS);
 	print_r(get_included_files());
 	$con = ob_get_clean();
-	mail('geograph@barryhunter.co.uk','[Geograph Error] nocache: '.$_SERVER['SCRIPT_NAME'],$con);
-	
-    
-    
+	debug_message('[Geograph Error] nocache: '.$_SERVER['SCRIPT_NAME'],$con);
+
     	apc_store('nocache_warning'.$_include_file_path,1,500);
     }
     ###############

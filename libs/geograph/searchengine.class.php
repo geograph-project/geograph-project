@@ -161,13 +161,11 @@ class SearchEngine
 		if ($bad) {
 			unset($this->criteria->db);
                 	ob_start();
-        	        debug_print_backtrace();
-			print "\n\nHost: ".`hostname`."\n\n";
 			print_r($this->criteria);
 	                print_r($explain);
         	        $con = ob_get_clean();
-        	        mail('geograph@barryhunter.co.uk','[Geograph Search Quota] '.date('r'),$con);
-		
+			debug_message('[Geograph Search Quota] '.date('r'),$con);
+
 			global $smarty,$USER;
 			header("HTTP/1.1 503 Service Unavailable");
 			$smarty->assign('searchq',stripslashes($_GET['q']));
@@ -211,28 +209,27 @@ class SearchEngine
 			$this->error = "Impossible Search";
 			return 0; 
 		}
-	
-		if (!empty($this->criteria->searchtext) && !empty($GLOBALS['smarty']) && !empty($CONF['sphinx_host'])) { 
+
+		if (!empty($this->criteria->searchtext) && !empty($GLOBALS['smarty']) && !empty($CONF['sphinx_host'])) {
 			//this really should have been turned over to sphinx
 			header("HTTP/1.1 503 Service Unavailable");
 			$GLOBALS['smarty']->assign('searchq',stripslashes($_GET['q']));
 			$GLOBALS['smarty']->assign('temp',1);
 			$GLOBALS['smarty']->display('function_disabled.tpl');
-			
+
 			ob_start();
-			print "\n\nHost: ".`hostname`."\n\n";
 			if (!empty($GLOBALS['USER']->registered)) {
 				print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
 			}
 			unset($this->criteria->db);
 			print_r($this->criteria);
 			$con = ob_get_clean();
-			mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->criteria->searchdesc,$con);
-			
+
+			debug_message('[Geograph Disabled] '.$this->criteria->searchdesc,$con);
+
 			exit;
 		}
-		
-	
+
 		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
 			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
 			$sql_from .= " {$matches[1]} join {$matches[2]}";
@@ -683,14 +680,13 @@ END;
                         $GLOBALS['smarty']->display('function_disabled.tpl');
 
                         ob_start();
-                        print "\n\nHost: ".`hostname`."\n\n";
                         if (!empty($GLOBALS['USER']->user_id)) {
                                 print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
                         }
                         unset($this->criteria->db);
                         print_r($this->criteria);
                         $con = ob_get_clean();
-                        mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->criteria->searchdesc,$con);
+			debug_message('[Geograph Disabled] '.$this->criteria->searchdesc,$con);
 
                         exit;
                 }
@@ -898,19 +894,17 @@ END;
 	 * run a standard search and populate $this->results with GridImages
 	 * @access public
 	 */
-	function Execute($pg) 
+	function Execute($pg)
 	{
 		if ($this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\.(grid_reference|)/',$this->criteria->searchq,$m)) && !$m[2]) {
 			//a Special Search needs full access to GridImage/GridSquare/User
 			$recordSet = $this->ExecuteReturnRecordset($pg);
 		} else {
-			$recordSet = $this->ExecuteCachedReturnRecordset($pg); 
+			$recordSet = $this->ExecuteCachedReturnRecordset($pg);
 		}
-		
+
 		if (!empty($this->error)) {
 			ob_start();
-			print "\n\nHost: ".`hostname`."\n\n";
-			print "Link: http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}\n\n";
 			if (!empty($this->info)) {
 				print "Info: {$this->info}\n";
 			}
@@ -923,7 +917,7 @@ END;
 			unset($this->criteria->db);
 			print_r($this->criteria);
 			$con = ob_get_clean();
-			#mail('geograph@barryhunter.co.uk','[Geograph '.$this->error.'] '.$this->criteria->searchdesc,$con);
+			debug_message('[Geograph '.$this->error.'] '.$this->criteria->searchdesc,$con);
 		}
 
 		//we dont actully want to process anything

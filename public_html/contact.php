@@ -79,10 +79,13 @@ if (isset($_POST['msg']))
 			$token->setValue("id", intval($db->Insert_ID()));
 			$msg.="Admin: {$CONF['SELF_HOST']}/admin/contact.php?t=".$token->getToken()."\n";
 
-			mail($CONF['contact_email'],
+			$crc = sprintf("%u", crc32($from));
+	                $fromheader = "From: $from via Geograph <noreply+$crc@geograph.org.uk>\nSender: noreply@geograph.org.uk\nReply-To: $from_name <$from_email>";
+
+			mail_wrapper($CONF['contact_email'],
 				'[Geograph] '.$subject,
 				$msg,
-				'From:'.$from);
+				$fromheader);
 
 			$smarty->assign('message_sent', true);
 		}

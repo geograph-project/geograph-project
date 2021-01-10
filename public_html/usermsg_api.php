@@ -118,9 +118,12 @@ if (!empty($_REQUEST['client_ip']) && preg_match("/^[\w\.]+$/",$_REQUEST['client
 	" by [{$id}] ".
 	"with HTTP;".
 	strftime("%d %b %Y %H:%M:%S -0000", empty($_REQUEST['timestamp'])?time():intval($_REQUEST['timestamp']))."\n";
-
-
 }
+
+//we create a 'fake' email address for From, so that email clients dont just set merge all emails to one contact!
+$crc = sprintf("%u", crc32($from_email));
+$fromheader = "From: $from_name via Geograph <noreply+$crc@geograph.org.uk>\nSender: noreply@geograph.org.uk\nReply-To: $from_name <$from_email>";
+
 
 
 if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|localhost|127\.0\.0\.1)/',$recipient->email)) {
@@ -131,24 +134,20 @@ if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|l
 } else {
 	$email = $recipient->email;
 }
-if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
+
+if (mail_wrapper($email, $subject, $body, $received.$fromheader))
 {
-
-
 	print "Success";
 	exit;
 }
-else 
+else
 {
-	@mail($CONF['contact_email'], 
-		'Mail Error Report from '.$_SERVER['HTTP_HOST'],
+	debug_message('Mail Error Report from '.$_SERVER['HTTP_HOST'],
 		"Original Subject: $subject\n".
 		"Original To: {$recipient->email}\n".
 		"Original From: $from_name <$from_email>\n".
-		"Original Subject:\n\n$body",
-		'From:webserver@'.$_SERVER['HTTP_HOST']);	
+		"Original Subject:\n\n$body");
 
 	die("ERROR: fatal error, Please let us know");
 }
 
-?>
