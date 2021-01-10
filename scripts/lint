@@ -5,12 +5,17 @@ $folder = '';
 if (!empty($argv[1]))
         $folder= $argv[1];
 
+$days = 1;
+if (!empty($argv[2]))
+	$days = intval($argv[2]);
+
+
 //passthru('find -name "*.php" -mtime -1 | xargs -I{} php -l {}');
 
 //PHP Parse error:  syntax error, unexpected ';' in ./public_html/curated/geography-images.php on line 37
 
 
-$h = popen('find '.$folder.' -name "*.php" -mtime -1 2>/dev/null | xargs -I{} php -l {} 2>&1','r');
+$h = popen('find '.$folder.' -name "*.php" -mtime -'.$days.' 2>/dev/null | xargs -I{} php -l {} 2>&1','r');
 $return_var = 0;
 
 while($h && !feof($h)) {
