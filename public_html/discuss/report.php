@@ -62,7 +62,7 @@ if (!empty($_POST)) {
 		$body .= $data;
 
 		foreach ($mods as $email)
-			mail($email,$subject,$body);
+			mail_wrapper($email,$subject,$body);
 	}
 }
 

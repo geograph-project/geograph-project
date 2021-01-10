@@ -137,7 +137,7 @@ if (isset($_POST['msg']))
 
 			$message.="P.S. Please note that while your email address is sent to the contributor so they can reply, Geograph do not store it at all, and certainly won't use it for spam!";
 
-			@mail($from_email, '[geograph] Confirm email address', $message,
+			mail_wrapper($from_email, '[geograph] Confirm email address', $message,
 			"From: Geograph Website <noreply@geograph.org.uk>", '-fnoreply@geograph.org.uk');
 
 			$ok = false;
@@ -242,7 +242,7 @@ if (isset($_POST['msg']))
 			//silently do nothing. Dont send the email. Can still send the 'copy'!
 			$smarty->assign('sent', 1);
 		}
-		elseif (@mail($email, $subject, $body, $received.$fromheader, '-fnoreply@geograph.org.uk'))
+		elseif (mail_wrapper($email, $subject, $body, $received.$fromheader, '-fnoreply@geograph.org.uk'))
 		{
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 			$smarty->assign('sent', 1);
@@ -252,13 +252,12 @@ if (isset($_POST['msg']))
 
 		else
 		{
-			@mail($CONF['contact_email'],
+			debug_message('Mail Error Report from '.$_SERVER['HTTP_HOST'],
 				'Mail Error Report from '.$_SERVER['HTTP_HOST'],
 				"Original Subject: $subject\n".
 				"Original To: {$recipient->email}\n".
 				"Original From: $from_name <$from_email>\n".
-				"Original Subject:\n\n$body",
-				'From:webserver@'.$_SERVER['HTTP_HOST']);
+				"Original Subject:\n\n$body");
 
 
 			$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
@@ -267,9 +266,9 @@ if (isset($_POST['msg']))
 		if ($sendcopy) {
 			$subject="[Geograph] Copy of message sent to {$recipient->realname}";
 
-			if (!@mail($from_email, $subject, $body, $fromheader, '-fnoreply@geograph.org.uk')) {
-				@mail($CONF['contact_email'],
-					'Mail Error Report from '.$_SERVER['HTTP_HOST'],
+			if (!mail_wrapper($from_email, $subject, $body, $fromheader, '-fnoreply@geograph.org.uk')) {
+
+				debug_message('Mail Error Report from '.$_SERVER['HTTP_HOST'],
 					"Original Subject: $subject\n".
 					"Original To: {$from_email}\n".
 					"Original From: $from_name <$from_email>\n".

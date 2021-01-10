@@ -81,11 +81,10 @@ if (isset($_POST['gridimage_id']))
 
 			//email me if we lag, but once gets big no point continuing to notify!
 			ob_start();
-			print "\n\nHost: ".`hostname`."\n\n";
 			print "\n\nView: {$CONF['SELF_HOST']}/admin/resubmissions.php?review=$gridimage_id\n\n";
 			print_r($row);
 			$con = ob_get_clean();
-			mail('geograph@barryhunter.co.uk','[Geograph] Resubmission failure!',$con);
+			debug_message('[Geograph] Resubmission failure!',$con);
 
 			//unclog the queue!
 			$status = 'rejected';

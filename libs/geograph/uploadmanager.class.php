@@ -453,13 +453,11 @@ class UploadManager
 
 			if (!$is_jpeg) {
                                         ob_start();
-                                        print "\n\nHost: ".`hostname`."\n\n";
                                         print_r(mime_content_type($file));print "\n";
 					print_r($_FILES);
 					print_r($_POST);
-                                        debug_print_backtrace();
                                         $con = ob_get_clean();
-                                        mail('geograph@barryhunter.co.uk','[Geograph] JPEG Detection Failed',$con);
+                                        debug_message('[Geograph] JPEG Detection Failed',$con);
 			}
 
 		}
@@ -861,13 +859,11 @@ class UploadManager
 
 		if (!empty($existing)) {
 					ob_start();
-                                        print "\n\nHost: ".`hostname`."\n\n";
                                         print "\nOriginal: $existing\n";
                                         print_r($_FILES);
                                         print_r($_POST);
-                                        debug_print_backtrace();
                                         $con = ob_get_clean();
-                                        mail('geograph@barryhunter.co.uk','[Geograph] Duplicate Submission',$con);
+                                        debug_message('[Geograph] Duplicate Submission',$con);
 
 			return("Duplicate Submission detected. This image appears to have already been submitted. If you think this is an error, please press F5 key in about 5 minutes time to try again.");
 		}

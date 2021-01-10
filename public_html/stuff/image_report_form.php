@@ -120,9 +120,6 @@ print "</pre>";
 		////////////////////////////////////////////////////////
 
 		ob_start();
-                debug_print_backtrace();
-                print "\n\nHost: ".`hostname`."\n\n";
-
                 print_r($updates);
 
 		if (!empty($updates["gridimage_id"])) {
@@ -157,7 +154,7 @@ print "</pre>";
 		}
 		$con = ob_get_clean();
 
-                mail('geograph@barryhunter.co.uk','[Geograph] Failed Image Report '.date('r'),$con);
+                debug_message('[Geograph] Failed Image Report '.date('r'),$con);
 
 		////////////////////////////////////////////////////////
 

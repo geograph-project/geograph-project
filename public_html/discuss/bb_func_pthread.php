@@ -150,7 +150,7 @@ $con = ob_get_clean();
                 $body .= $data;
 
                 foreach ($mods as $email)
-                        mail($email,$subject,$body);
+                        mail_wrapper($email,$subject,$body);
 
 		if(preg_match('/^\w{6} <a href=/',$_POST['postText'])) {
 			$db->Execute("UPDATE user SET rights = 'dormant,suspicious' WHERE user_id = {$USER->user_id}");
@@ -158,7 +158,7 @@ $con = ob_get_clean();
 
 		$auto_logoff = true;
 	} else {
-	        mail('geograph@barryhunter.co.uk','[Geograph] FIRST POST!',$con);
+	        debug_message('[Geograph] FIRST POST!',$con);
 	}
 
 }

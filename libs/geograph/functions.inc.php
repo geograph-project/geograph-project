@@ -1271,7 +1271,7 @@ function cleanTag($text, $fix_apos = true) {
 }
 
 
-function mail_wrapper($email, $subject, $body, $headers = '', $param = '') {
+function mail_wrapper($email, $subject, $body, $headers = '', $param = '', $debug = false) {
 	global $CONF;
 
 	if (!empty($CONF['smtp_host'])) {
@@ -1281,7 +1281,8 @@ function mail_wrapper($email, $subject, $body, $headers = '', $param = '') {
 		$mail = new PHPMailer;
 
 		#########################
-		//$mail->SMTPDebug = 3;                               // Enable verbose debug output
+		if ($debug)
+			$mail->SMTPDebug = 3;                               // Enable verbose debug output
 
 		$mail->XMailer = 'x'; //used to SKIP the header
 
@@ -1297,6 +1298,11 @@ function mail_wrapper($email, $subject, $body, $headers = '', $param = '') {
 		$mail->Port = $CONF['smtp_port'];                     // TCP port to connect to
 
 		#########################
+
+		$mail->setFrom($CONF['smtp_from'],'',true);//set sender too
+
+		#########################
+		// parse the general headers from request
 
 		if ($headers) {
 			if (is_array($headers))
@@ -1339,3 +1345,23 @@ function mail_wrapper($email, $subject, $body, $headers = '', $param = '') {
 		return mail($email, $subject, $body, $headers, $param);
 	}
 }
+
+function debug_message($subject,$body) {
+	global $CONF;
+
+	$body = "Host: ".`hostname`."\n".
+		" [REQUEST_URI] => ".$_SERVER['REQUEST_URI']."\n".
+		" [QUERY_STRING] => ".$_SERVER['QUERY_STRING']."\n".
+		" [HTTP_USER_AGENT] => ".$_SERVER['HTTP_USER_AGENT']."\n".
+		" [HTTP_X_FORWARDED_FOR] => ".$_SERVER['HTTP_X_FORWARDED_FOR']."\n".
+		" [REQUEST_TIME] => ".$_SERVER['REQUEST_TIME']."\n".
+		" [HTTP_X_AMZN_TRACE_ID] => ".$_SERVER['HTTP_X_AMZN_TRACE_ID']."\n\n".
+		$body;
+
+	ob_start();
+	debug_print_backtrace();
+        $con = ob_get_clean();
+
+	mail_wrapper($CONF['contact_email'],$subject,$body."\n\n".$con);
+}
+

@@ -82,7 +82,7 @@ if (!empty($_POST['submit'])) {
 		}
 		$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
 
-		mail($CONF['contact_email'], 
+		mail_wrapper($CONF['contact_email'], 
 			'[Geograph] '.$subject,
 			$msg,
 			'From:'.$from);	

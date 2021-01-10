@@ -137,7 +137,7 @@ if (!empty($_POST)) {
 						$body .= "-------------------------------\n";
 						$body .= " Forward abuse complaints to: support@geograph.org.uk\n\n";
 						
-						if (@mail($email, $subject, $body, "From: Do NOT reply <noreply@geograph.org.uk>")) 
+						if (mail_wrapper($email, $subject, $body, "From: Do NOT reply <noreply@geograph.org.uk>")) 
 						{
 							$smarty->assign('sent', 1);
 						}

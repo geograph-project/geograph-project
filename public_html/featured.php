@@ -215,11 +215,7 @@ $smarty->display($template, $cacheid);
 
 
 function sendNotification($message,$subject = 'Message') {
-	ob_start();
-	print "\n\nHost: ".`hostname`."\n\n";
-	debug_print_backtrace();
-	$con = ob_get_clean();
-	mail('geograph@barryhunter.co.uk','[Geograph] Featured - '.$subject,$message."\n\n".$con);
+	debug_message('[Geograph] Featured - '.$subject,$message);
 }
 
 function getLinks($extra,$direct=true) {

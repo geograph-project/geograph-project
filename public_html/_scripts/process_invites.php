@@ -69,7 +69,7 @@ foreach ($all as $id => $row) {
 
 				print " +email sent";
 
-				@mail("{$row['realname']} <{$row['email']}>", $subject, str_replace("\r",'',$body), implode("\n",$headers));
+				mail_wrapper("{$row['realname']} <{$row['email']}>", $subject, str_replace("\r",'',$body), implode("\n",$headers));
 			} else {
 				print " (no email)";
 			}

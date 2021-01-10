@@ -170,15 +170,13 @@ function GeographDatabaseConnection($allow_readonly = false) {
 					if ($row['Seconds_Behind_Master'] < 150) {
 						//email me if we lag, but once gets big no point continuing to notify!
 						ob_start();
-						print "\n\nHost: ".`hostname`."\n\n";
 						print_r($row);
 						$list = $db->getAll("SHOW FULL PROCESSLIST");
 						foreach ($list as $lag)
 							if ($lag['State'] != 'Locked')
 								print_r($lag);
-						debug_print_backtrace();
 						$con = ob_get_clean();
-	               				mail('geograph@barryhunter.co.uk','[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
+	               				debug_message('[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
 					}
 					if (function_exists('apc_store')) {
 	               				apc_store('lag_warning',1,3600);
@@ -388,15 +386,9 @@ if (false && function_exists('apc_store') && !preg_match('/(iPad|iPhone|Chrome|M
 		apc_store($_SERVER['HTTP_USER_AGENT'],$count+1,600);
 	}
 	if ($count == 50) {
-                                        ob_start();
-                                        print "Host: ".`hostname`."\n\n";
-                                        $con = ob_get_clean();
-                                        mail('geograph@barryhunter.co.uk','[Geograph Useragent] '.$_SERVER['HTTP_USER_AGENT'],$con);
+                debug_message('[Geograph Useragent] '.$_SERVER['HTTP_USER_AGENT'],'');
 	} elseif ($count == 100) {
-                                        ob_start();
-                                        print "Host: ".`hostname`."\n\n";
-                                        $con = ob_get_clean();
-                                        mail('geograph@barryhunter.co.uk','[Geograph USERAGENT] '.$_SERVER['HTTP_USER_AGENT'],$con);
+                debug_message('[Geograph USERAGENT] '.$_SERVER['HTTP_USER_AGENT'],'');
 	}
 }
 
@@ -465,15 +457,14 @@ function __autoload($class_name) {
 split_timer('autoload'); //starts the timer
 
         if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/../libs/geograph/'.strtolower($class_name).'.class.php')) {
+		global $CONF;
                 ob_start();
-                debug_print_backtrace();
-		print "\n\nHost: ".`hostname`."\n\n";
                 print_r($GLOBALS);
 		print_r(get_included_files());
                 $con = ob_get_clean();
-                mail('geograph@barryhunter.co.uk','[Geograph Error] '.date('r'),$con);
+                debug_message('[Geograph Error] '.date('r'),$con);
 		header("HTTP/1.1 505 Server Error");
-                die("Fatal Internal Error, the developers have been notified, if possible please <a href='mailto:geograph@barryhunter.co.uk?subject=$class_name'>let us know</a> what you where doing that lead up to this error");
+                die("Fatal Internal Error, the developers have been notified, if possible please <a href='mailto:{$CONF['contact_email']}?subject=$class_name'>let us know</a> what you where doing that lead up to this error");
         }
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');

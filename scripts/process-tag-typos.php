@@ -50,7 +50,7 @@ $check = $db->getAll("select tag_id,tag,group_concat(tag2),group_concat(status),
 
 if (!empty($check)) {
  $con = print_r($check,TRUE);
- mail('geograph@barryhunter.co.uk','[Geograph] MULTIPLE TAGS',$con);
+ debug_message('[Geograph] MULTIPLE TAGS',$con);
  print "\n\nFAILED MULTI CHECK\n\n";
  exit;
 }
@@ -119,7 +119,7 @@ while (!$recordSet->EOF)
 		if ($param['action'] != 'dummy' && (empty($r['tag_id']) || empty($r['tag2_id'])) ) {
 			print_r($r);
 			$con = print_r($r,TRUE);
-			mail('geograph@barryhunter.co.uk','[Geograph] MISSING TAG IDS',$con);
+			debug_message('[Geograph] MISSING TAG IDS',$con);
 
 			die("MISSING TAG IDS!\n");
 		}

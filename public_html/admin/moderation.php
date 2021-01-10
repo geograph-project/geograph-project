@@ -186,7 +186,7 @@ if (!empty($_GET['relinquish'])) {
 
 		$url = $CONF['SELF_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
 
-		mail(implode(',',$mods), "[Geograph] Moderator Application ({$USER->user_id})",
+		mail_wrapper(implode(',',$mods), "[Geograph] Moderator Application ({$USER->user_id})",
 "Dear Admin,
 
 I have just completed verification.
@@ -201,7 +201,7 @@ $url
 Regards,
 
 {$USER->realname}".($USER->nickname?" (aka {$USER->nickname})":''),
-				"From: {$USER->realname} <{$USER->email}>\nCC: geo@brisk.org.uk");
+				"Reply-To: {$USER->realname} <{$USER->email}>");
 
 		header("Location: /profile.php");
 		exit;
