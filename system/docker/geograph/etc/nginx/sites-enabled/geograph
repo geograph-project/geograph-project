@@ -41,6 +41,8 @@ server {
     return 404;  # for things that don't get rewritten
   }
 
+  rewrite ^/reg/([^/]+)/(.*) /register.php?u=$1&confirm=$2 last;
+
   ###################################
 
   error_page 404 /staticpage.php?page=404;
