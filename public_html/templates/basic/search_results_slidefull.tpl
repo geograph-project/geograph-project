@@ -52,10 +52,7 @@ function hideSaver() {
 		clearTimeout(STimer);
 }
 $(document).keyup(function(e) {
-	if (e.key === "F11") {
-		disableMouseMove = true; //The movemouse event will fire (becuse cursor possition changes relative to document!)
-
-	} else if (e.key === "Escape") { // escape key maps to keycode `27`
+	if (e.key === "Escape") { // escape key maps to keycode `27`
 		hideSaver();
 	} else if (e.keyCode == 37) { //left arrow
 		autoAdvance = 10000;

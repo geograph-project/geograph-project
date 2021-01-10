@@ -30,7 +30,7 @@ $(function() {
 	}).scroll(function(event) {
 		if (STimer) clearTimeout(STimer); STimer = null;
 	}).keyup(function(event) {
-	        if (e.key === "F11") {
+	        if (event.key === "F11") {
         	        disableMouseMove = true; //The movemouse event will fire (becuse cursor possition changes relative to document!)
 			setTimeout("disableMouseMove = false;",500);
         	} else {
