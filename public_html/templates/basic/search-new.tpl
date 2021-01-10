@@ -134,8 +134,6 @@
 		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li>
 
 
-<li>A <a title="Photograph Listing" href="/sitemap/geograph.html">complete listing of all photographs</a> is available.<br/><br/></li>
-
 <li>You may prefer to browse images on a <a title="Geograph Map Browser" href="/mapbrowse.php">map of the British Isles</a>.<br/><br/></li>
 
 

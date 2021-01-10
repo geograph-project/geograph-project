@@ -372,10 +372,6 @@ The <b>Geograph website</b>:
 		<p>Please get in <a title="Contact Us" href="/contact.php">contact</a> if you have an idea for re-using images,
 		beyond what's available via the RSS feeds above. In all likelihood we can provide a <a href="/help/api">feed</a>
 		to suit your requirements.</p>
-
-		<p>The entire archive will be available for download via bittorrent - see
-		{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"}
-		for details.</p>
 	</blockquote>
 
 	<p>We also have a Google Gadget: * {external href="http://www.google.com/ig/add?moduleurl=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" target="_blank" text="Add to my iGoogle page"} * {external href="http://www.google.com/ig/creator?url=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" text="Add to any webpage"} *</p>

@@ -24,7 +24,7 @@
 <h3>Selections...</h3>
 <ul class="explore">
 
-	<li><b><a href="/gallery.php">Showcase Gallery"</a></b> - Hand selected selection of Geograph Images</li>
+	<li><b><a href="/gallery.php">Showcase Gallery</a></b> - Hand selected selection of Geograph Images</li>
 
 	<li><form action="/tags/" method="get" style="display:inline"> <a href="/tags/"><b>Tagged Images</b></a> 
                 <input type="text" name="tag" size="30" maxlength="60" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}" autocomplete="off"/ placeholder="Tag Search">

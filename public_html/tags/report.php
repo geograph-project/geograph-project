@@ -98,8 +98,20 @@ if (!empty($_GET['finder'])) {
 
 	$report['levenshtein'] = levenshtein($report['tag'],$report['tag2']);
 
-	$smarty->assign_by_ref('report',$report);
+	$tops = $db->getCol("SELECT top FROM category_primary");
+	$best = 99; $top = null; $none = preg_replace('/^\w+:\s*/','',$report['tag']);
+	foreach ($tops as $test) {
+		$guess = levenshtein($none,$test);
+		if ($guess < $best) {
+			$best = $guess;
+			$top = $test;
+		}
+	}
+	if ($best < strlen($none)) {
+		$smarty->assign('top',$top);
+	}
 
+	$smarty->assign_by_ref('report',$report);
 
 
 } elseif (!empty($_GET['report'])) {
@@ -156,10 +168,20 @@ if (!empty($_GET['finder'])) {
 
 	} elseif ($_GET['report'] == 'outstanding') {
 		$USER->mustHavePerm("basic");
+	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+$check = $db->getAll("select tag_id,tag,group_concat(tag2),group_concat(status),count(distinct tag2) as dist from
+ tag_report where status != 'rejected' and type != 'split' and type != 'canonical' group by tag having dist > 1");
+
+if (!empty($check)) {
+ $con = print_r($check,TRUE);
+ print "<h3>FAILED MULTI CHECK</h3>";
+ print "<p>The following tags have multiple suggestions, processing is halted until resolved</p>";
+ print "<pre>$con</pre>";
+}
 
 		print "<h3>The following changes will soon be made automatically. You do not need to make any changes yourself (it's best that you dont)</h3>";
 
-	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
         	$reports = $db->getAll("select report_id,r.updated,r.tag as old,tag2 as new,count(*) as images,r.status
 		from tag_report r inner join gridimage_tag gt using (tag_id) inner join gridimage_search gi using (gridimage_id)
 		where r.status in ('approved','moved') and type != 'canonical' and tag_id > 0 and gt.status > 0

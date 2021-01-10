@@ -49,7 +49,11 @@
 		<b>{$report.levenshtein}</b> (number of letters changed between the two versions)
 		<hr/>
 	{/if}
-
+	{if $top}
+		<div style="float:left;width:100px">Offical:</div>
+		<b>{$top}</b> (closest offical top level tag)
+		<hr/>
+	{/if}
 
 	<p>
 		{if $report.tag2}
