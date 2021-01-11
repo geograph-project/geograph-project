@@ -19,7 +19,9 @@ image_exists() {
 echo "Deploying image ${IMAGE_NAME}:${IMAGE_TAG} ..."
 echo "  ... to ${WORKLOAD}."
 
-for i in $(seq 30 -1 1); do
+# Check for the image every ten seconds, sixty times, to total a ten-minute
+# window.
+for i in $(seq 60 -1 1); do
   # If the image exists, fall out of the loop
   image_exists && break
 
