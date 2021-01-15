@@ -184,7 +184,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 					$sphinx->q = "\"^{$sphinx->q}$ \" | \"^={$sphinx->q}$ \" | \"^{$sphinx->q}\" | \"{$sphinx->q}$ \" | (^$sphinx->q) | (=$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$ \"";
 				}
 
-				if (preg_match('/ /',$before))
+				if (preg_match('/ /',$before) && strpos($before,'@') !== 0)
 					$sphinx->q .= " | ".str_replace(' ','',$before);
 
 				if (!empty($prefix)) {
