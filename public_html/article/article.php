@@ -407,6 +407,7 @@ function smarty_function_articletext($input) {
 
 	if (preg_match_all('/<h(\d)>([^\n]+?)<\/h(\d)>/',$output,$matches)) {
 		$list = array();
+		$lengths = array();
 		if (count($pages) > 1) {
 			foreach ($pages as $idx => $onepage) {
 				if (preg_match_all('/<h(\d)>([^\n]+?)<\/h(\d)>/',$onepage,$matches)) {
@@ -415,8 +416,10 @@ function smarty_function_articletext($input) {
 					$url = ($offset==$thispage)?'':"/article/{$GLOBALS['page']['url']}/$offset";
 					foreach ($matches[1] as $i => $level) {
 						$hash = getUniqueHash($matches[2][$i]);
-						if (empty($singlePageContents) || $singlePageContents == $offset)
+						if (empty($singlePageContents) || $singlePageContents == $offset) {
 							$list[] = "<li class=\"h$level\"$style><a href=\"$url#$hash\">{$matches[2][$i]}</a></li>";
+							$lengths[] = strlen($matches[2][$i]);
+						}
 						$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
 						$replacement[]='<h$1><a name="'.$hash.'"></a><a name="p'.$i.'"></a>$2</h$3>';
 						$style = '';
@@ -427,12 +430,14 @@ function smarty_function_articletext($input) {
 			foreach ($matches[1] as $i => $level) {
 				$hash = getUniqueHash($matches[2][$i]);
 				$list[] = "<li class=\"h$level\"><a href=\"#$hash\">{$matches[2][$i]}</a></li>";
+				$lengths[] = strlen($matches[2][$i]);
 				$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
 				$replacement[]='<h$1><a name="'.$hash.'"></a><a name="p'.$i.'"></a>$2</h$3>';
 			}
 		}
 		$list = implode("\n",$list);
 		$smarty->assign("tableContents", $list);
+		$smarty->assign("avgTitleLength", array_sum($lengths)/count($lengths));
 	}
 
 	if (count($pages) > 1) {

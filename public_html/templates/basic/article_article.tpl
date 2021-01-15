@@ -173,7 +173,7 @@ div.breadcrumb a {
 
 <hr/><br/>
 {if $tableContents}
-	<div style="float:right; width:250px; position:relative;" id="contents_table">
+	<div style="float:right; max-width:{if $avgTitleLength < 8}100px{else}250px{/if}; position:relative;" id="contents_table">
 	<div class="title">Contents</div>
 	<ul>
 		{$tableContents}
