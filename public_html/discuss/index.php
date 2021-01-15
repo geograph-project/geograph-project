@@ -468,7 +468,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		print "<div class=interestBox style=\"padding:2px;margin-top:4px;vertical-align:middle;font-size:0.8em;background-color:#f9f9f9;width:100%\">";
 		print "<div style=\"float:right;display:none\" id=\"updatebutton\"><input type=submit value=Update /></div> Show:";
 		
-		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id',' NOT IN ','(11,7)','forum_order')){
+		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id',' NOT IN ','(11,7,20)','forum_order')){
 			do {
 				$forum=$cols[0];
 
