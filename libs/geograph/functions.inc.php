@@ -334,7 +334,7 @@ function smarty_function_gridimage($params)
 			}
 
 			$s = $image->loadSnippets();
-			if ($image->snippet_count) {
+			if (!empty($image->snippet_count)) {
 				if (!function_exists('smarty_modifier_truncate')) {
 					require_once("smarty/libs/plugins/modifier.truncate.php");
 				}
