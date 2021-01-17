@@ -20,8 +20,12 @@ foreach (file($input) as $line) {
 			if (preg_match('/^\s*RewriteRule ([^ ]+)\s+([^ ]+)\s*(\[[\w,]+\])?/',$line,$m)) {
 				@list(,$rule,$replace,$flags) = $m;
 
+				if (strpos($rule,'}') || strpos($rule,';')) //If a regular expression includes the .}. or .;. characters, the whole expressions should be enclosed in single or double quotes.
+					$rule = '"'.$rule.'"';
+
 				if (isset($done[$rule]))
 					continue;
+
 				/*
 				RewriteRule ^/photo/([0-9]+)\.xml /api/photo/$1 [qsa]
 				 rewrite ^/photo/([0-9]+)\.xml /api/photo/$1;
