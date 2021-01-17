@@ -154,7 +154,7 @@ class GridSquare
 		
 		$mkey = $this->gridsquare_id;
 		//fails quickly if not using memcached!
-		$result =& $memcache->name_get('gsd',$mkey);
+		$result = $memcache->name_get('gsd',$mkey);
 		if ($result) {
 			$smarty->assign_by_ref('discuss', $result['topics']);
 			$smarty->assign('totalcomments', $result['totalcomments']);
@@ -220,7 +220,7 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 		if (!isset($this->nateastings)) {
 			//fails quickly if not using memcached!
 			$mkey = $this->gridsquare;
-			$square =& $memcache->name_get('pr',$mkey);
+			$square = $memcache->name_get('pr',$mkey);
 			if (!$square) {
 				$db=&$this->_getDB(true);
 
@@ -635,7 +635,7 @@ split_timer('gridsquare','_setGridRef'.(isset($gridsquare_id)?'-create':''),$gri
 		
 		//fails quickly if not using memcached!
 		$mkey = "$x,$y,$radius,$occupied";
-		$nearest =& $memcache->name_get('gn',$mkey);
+		$nearest = $memcache->name_get('gn',$mkey);
 		if ($nearest) {
 			$this->nearest = $nearest;
 			return true;
@@ -802,7 +802,7 @@ split_timer('gridsquare','loadCollections'.$this->collections_count,"{$this->gri
 		
 		//fails quickly if not using memcached!
 		$mkey = md5("{$this->gridsquare_id}:$inc_all_user,$custom_where_sql,$order_and_limit");
-		$images =& $memcache->name_get('gi',$mkey);
+		$images = $memcache->name_get('gi',$mkey);
 		if ($images) {
 			return $images;
 		}

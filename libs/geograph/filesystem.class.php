@@ -584,7 +584,7 @@ if (!empty($_GET['debug']))
 			}
 
 			if (!empty($mkey)) {
-	                        $size =& $memcache->name_get('is',$mkey);
+	                        $size = $memcache->name_get('is',$mkey);
 		                $src = 'memcache';
 				if ($size && $slug == '_original') {
 					$size[0] = $size[4]; //we getting the 'original' size, which is attached to 'F'

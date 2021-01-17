@@ -2263,7 +2263,7 @@ split_timer('map','_plotPlacenames'); //logs the wall time
 
 			$mkey = $this->getImageFilename();
 			$mnamespace = $isimgmap?'mi':'ms';
-			$grid =& $memcache->name_get($mnamespace,$mkey);
+			$grid = $memcache->name_get($mnamespace,$mkey);
 			if ($grid) {
 				return $grid;
 			}

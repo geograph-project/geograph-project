@@ -877,7 +877,7 @@ class UploadManager
 	split_timer('upload'); //starts the timer
 
 		$mkey = $this->square->gridsquare_id;
-		$seq_no =& $memcache->name_get('sid2',$mkey);
+		$seq_no = $memcache->name_get('sid2',$mkey);
 
 		if (empty($seq_no) && !empty($CONF['use_insertionqueue'])) {
 			$seq_no = $this->db->GetOne("select max(seq_no) from gridimage_queue where gridsquare_id={$this->square->gridsquare_id}");

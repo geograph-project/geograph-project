@@ -674,9 +674,9 @@ class FeedCreator extends HtmlDescribable {
 		}
 		//uses Geograph specific functions, get them seperatly or just comment out.
 		if (!empty($GLOBALS['memcache']) && $GLOBALS['memcache']->valid) {
-			$contents =& $GLOBALS['memcache']->name_get('rss',$filename);
+			$contents = $GLOBALS['memcache']->name_get('rss',$filename);
 			if (!empty($contents) && preg_match('/^symlink:(.*)/',$contents,$m)) {
-				$contents =& $GLOBALS['memcache']->name_get('rss',$m[1]);
+				$contents = $GLOBALS['memcache']->name_get('rss',$m[1]);
 			}
 			if (!empty($contents)) {
 				$mtime = $GLOBALS['memcache']->name_get('rsst',empty($m[1])?$filename:$m[1]);

@@ -34,7 +34,7 @@ function mcsclose()
 function mcsread($id)
 {
 	global $memcachesession;
-	$tmp=& $memcachesession->name_get('s',$id);
+	$tmp= $memcachesession->name_get('s',$id);
 	return $tmp;
 }
 
