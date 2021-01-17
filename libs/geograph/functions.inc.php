@@ -664,12 +664,12 @@ function GeographLinks(&$posterText,$thumbs = false) {
 
 	# TODO we probably should introduce something like [[:url:href|text]] and [[:url:href]] which would become <a href="href">text</a> or <a href="href">Link</a>
 	#      would make parsing easier, no assumptions about probable urls needed... could easily introduce [[:whatever:...]] using the same code...
-	$posterText = preg_replace_callback('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/', function($m) use ($targetstr) {
-		return smarty_function_external(array('href'=>$m[1],'text'=>'Link','nofollow'=>1,'title'=>$m[1].$targetstr));
+	$posterText = preg_replace_callback('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/', function($m) {
+		return smarty_function_external(array('href'=>$m[1],'text'=>'Link','nofollow'=>1,'title'=>$m[1]));
 	}, $posterText);
 
-	$posterText = preg_replace_callback('/(?<![>\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/', function($m) use ($targetstr) {
-		return smarty_function_external(array('href'=>"http://".$m[1],'text'=>'Link','nofollow'=>1,'title'=>$m[1].$targetstr));
+	$posterText = preg_replace_callback('/(?<![>\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/', function($m) {
+		return smarty_function_external(array('href'=>"http://".$m[1],'text'=>'Link','nofollow'=>1,'title'=>$m[1]));
 	}, $posterText);
 
 	//temp bodge, both CONTENT_HOST and SELF_HOST use $CONF['PROTOCOL'], so current protocol, doesnt actully fix https links!
