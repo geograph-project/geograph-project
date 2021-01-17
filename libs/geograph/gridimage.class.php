@@ -415,7 +415,7 @@ class GridImage
                 } elseif ($prefix == 'de:') {
                         $server = 'geo.hlipp.de';
                 } elseif ($prefix == 'ci:') {
-                        $server = 'channel-islands.geographs.org';
+                        $server = 'www.geograph.org.gg';
                 } else {
 			return false;
 		}
