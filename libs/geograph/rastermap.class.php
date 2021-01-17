@@ -158,7 +158,7 @@ class RasterMap
 			if (isset($this->tilewidth[$this->service])) {
 				$this->width = $this->tilewidth[$this->service];
 			}
-			if (!empty($epoch) && $epoch != 'latest' && preg_match('/^[\w]+$/',$epoch) ) {
+			if (!empty($epoch) && $epoch != 'revB' && preg_match('/^[\w]+$/',$epoch) ) { //revB IS latest, so can ignore it!
 				$this->epoch = $epoch;
 			}
 		}
@@ -1457,7 +1457,7 @@ class RasterMap
 				$this->natnorthings = $token->getValue("n") * $this->divisor[$this->service];
 				$this->width = $this->tilewidth[$this->service];
 
-				if ($token->hasValue("r")) {
+				if ($token->hasValue("r") && $token->getValue("r") != 'revB') { //revB IS latest, so can ignore it!
 					$this->epoch = $token->getValue("r");
 				}
 			}
