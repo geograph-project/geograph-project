@@ -72,5 +72,4 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	} while (!$result->EOF);
 	print "</TR></TABLE>";
 }
-	
-?>
+
