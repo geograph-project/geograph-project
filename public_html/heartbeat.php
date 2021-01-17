@@ -26,7 +26,7 @@ if ($short_open_tag!='on' && $short_open_tag!='1') {
 }
 
 $list = get_loaded_extensions();
-foreach (explode(" ","redis ereg pcre zlib bz2 iconv mbstring session posix apache2handler gd exif json memcache mysql mysqli mhash apc curl") as $wanted) {
+foreach (explode(" ","redis pcre zlib bz2 iconv mbstring session posix apache2handler gd exif json memcache mysql mysqli mhash apc curl") as $wanted) {
         if (!in_array($wanted,$list)) {
 	        header("HTTP/1.0 503 Unavailable");
 	        die("php-module:$wanted\n");

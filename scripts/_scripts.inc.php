@@ -128,7 +128,7 @@ function linux_loadavg() {
  */
 function freebsd_loadavg() {
         $buffer= `uptime`;
-        ereg("averag(es|e): ([0-9][.][0-9][0-9]), ([0-9][.][0-9][0-9]), ([0-9][.][0-9][0-9]*)", $buffer, $load);
+        preg_match("#averag(es|e): ([0-9][.][0-9][0-9]), ([0-9][.][0-9][0-9]), ([0-9][.][0-9][0-9]*)#", $buffer, $load);
         return (float)$load[2];
 }
 
