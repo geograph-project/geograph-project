@@ -68,15 +68,13 @@ if(updateArray(array('topic_last_post_id'),$Tt,'topic_id',$topic)>0){
 db_forumReplies($forum,$Tp,$Tf);
 db_topicPosts($topic,$Tt,$Tp);
 
-$result=mysql_query("select COUNT(poster_id) from geobb_posts WHERE poster_id = {$USER->user_id}");
-$postcount = mysql_result($result,0);
+$postcount = db_simpleSelect(2,'geobb_posts','count(*)','poster_id','=',$USER->user_id);
 if (!$result || $postcount === '1' || empty($postcount)) {
 
 unset($USER->db);
 ob_start();
 print "View: http://www.geograph.org.uk/discuss/index.php?&action=vthread&topic=$topic\n";
 print "Reports: http://{$_SERVER['HTTP_HOST']}/admin/discuss_reports.php?topic_id=$topic\n\n";
-var_dump(mysql_result($result,0));
 print_r($_POST);
 print_r($USER);
 $con = ob_get_clean();
@@ -103,7 +101,7 @@ $con = ob_get_clean();
                 $u['user_id'] = $USER->user_id;
 
                 $db->Execute('INSERT INTO discuss_report SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
-		$report_id = mysql_insert_id();
+		$report_id = $db->Insert_ID();
 
                 $r = intval($report_id);
 		$w = "report_id = $r";

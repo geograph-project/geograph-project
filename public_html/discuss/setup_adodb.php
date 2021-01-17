@@ -326,4 +326,13 @@ function db_gridreftopics($Tt, $forum, $gridref)
 	return array($currentgridreftopics, $action, $topic);
 }
 
-?>
+function db_set_mute($mute, $user_id, $topic) {
+	global $bbdb;
+	$bbdb->Execute("UPDATE geobb_lastviewed SET muted = ".intval($mute).",ts=ts WHERE user_id = ".intval($user_id)." AND topic_id = ".intval($topic));
+}
+
+function db_is_muted($user_id, $topic) {
+	global $bbdb;
+	return $bbdb->getOne("SELECT muted FROM geobb_lastviewed WHERE user_id=".intval($user_id)." AND topic_id = ".intval($topic));
+}
+

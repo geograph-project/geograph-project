@@ -347,16 +347,13 @@ $mainPostArea=ParseTpl($mainPostArea);
 
 #############
 
-$result = mysql_query("SELECT muted FROM geobb_lastviewed WHERE user_id=$user_id AND topic_id = $topic") or print("<br>Error getOne [[ $query ]] : ".mysql_error());
-if (mysql_num_rows($result)) {
-	if (mysql_result($result,0,0)) {
+	if (db_is_muted($user_id, $topic)) {
 		//muted, so need to be able to unmute!
 		$muteTopic = "$l_sepr <a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=0\">Unmute Topic</a>";
 	} else {
 		//link to mute the thread;
 		$muteTopic = "$l_sepr <a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=1\">Mute Topic</a> (Muted topics show a Gray rather than Red dot when updated)";
 	}
-}
 
 #############
 

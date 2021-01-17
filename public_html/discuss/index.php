@@ -311,8 +311,7 @@ elseif($action=='vpost') { $pageAnchor=db_searchDeSlice(false,intval($_GET['post
 elseif($action=='search') {if($reqTxt!=1)require($pathToFiles.'bb_func_txt.php');require($pathToFiles.'bb_func_search.php');}
 
 elseif($action=='mute') {
-	$mute = intval($_GET['mute']);
-	mysql_query("UPDATE geobb_lastviewed SET muted = $mute,ts=ts WHERE user_id = $user_id AND topic_id = $topic");
+	db_set_mute($_GET['mute'], $user_id, $topic);
 
 	header("Location: {$main_url}/");
 	exit;
@@ -490,14 +489,13 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 	}
 
 	if ($USER->user_id == 3 || $USER->user_id==93) { // && $GLOBALS['memcache']->valid) {
-		$result=mysql_query("select max(poster_id) from geobb_posts");
-		$poster_id = mysql_result($result,0);
+		$poster_id = $bbdb->getOne("select max(poster_id) from geobb_posts");;
 		$mkey = "forum_first_post:".$USER->user_id;
 		$last_id = $GLOBALS['memcache']->get($mkey);
 		if ($last_id != $poster_id) {
-			$result = mysql_query("SELECT * FROM geobb_posts WHERE poster_id = $poster_id");
+			$rows = $bbdb->getAll("SELECT * FROM geobb_posts WHERE poster_id = $poster_id");
 			print "<h4>New Poster!</h4><ul>";
-			while($row = mysql_fetch_assoc($result)) {
+			foreach ($rows as $row) {
 				print "<li><a href=\"?action=vpost&topic={$row['topic_id']}&forum={$row['forum_id']}&post={$row['post_id']}\">".htmlentities($row['poster_name'])."</a> : ".htmlentities($row['post_text'])."</li>";
 			}
 			print "</ul><p><a href=\"/admin/latestposts.php\">All Latest Users</a></p>";
@@ -506,8 +504,8 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 
 	}
 	$critwhere = (empty($showIds))?'':(" AND t.forum_id IN (".implode(',',$showIds).")");
-	$result=mysql_query("SELECT COUNT(*) cnt FROM geobb_promoted a INNER JOIN geobb_posts p USING (post_id) INNER JOIN geobb_topics t USING (topic_id) LEFT JOIN geobb_lastviewed l ON (l.user_id = {$USER->user_id} AND l.topic_id = t.topic_id) WHERE (l.last_post_id < p.post_id OR l.topic_id IS NULL) AND votes > 1 AND muted != 1 $critwhere");
-	if ($count = mysql_result($result,0)) {
+	$count = $bbdb->getOne("SELECT COUNT(*) cnt FROM geobb_promoted a INNER JOIN geobb_posts p USING (post_id) INNER JOIN geobb_topics t USING (topic_id) LEFT JOIN geobb_lastviewed l ON (l.user_id = {$USER->user_id} AND l.topic_id = t.topic_id) WHERE (l.last_post_id < p.post_id OR l.topic_id IS NULL) AND votes > 1 AND muted != 1 $critwhere");
+	if ($count) {
 		print "<div style=text-align:center><a href=\"/discuss/promoted.php\">View $count new posts you might like</a></div>";
 	}
 
