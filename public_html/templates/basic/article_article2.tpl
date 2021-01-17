@@ -72,7 +72,7 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 {/if}
 
 {if $tableContents}
-	<div style="float:right; width:250px; position:relative;" id="contents_table">
+	<div style="float:right; max-width:250px; position:relative;" id="contents_table">
 	<div class="title">Contents</div>
 	<ul>
 		{$tableContents}

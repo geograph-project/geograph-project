@@ -93,12 +93,19 @@ LIMIT {$param['number']}";
 
 #####################################################
 } elseif ($param['mode'] == 'special') {
-//special mode to recheck images that match certain conditions.
+//special mode to recheck images that match certain (hardcoded) conditions.
 // careful does NOT filter by last_found, to so may process a LOT of images
 // this example is looking for images with extracted links, but may be partical.
 // May also want to run this query, as last_found wont be set correctly on the incorrectly extracted links!
 // update gridimage_link one inner join gridimage_link two using (gridimage_id) set one.first_used = two.first_used where two.url = substring_index( one.url,'@',1) and two.next_check > '9999-00-00' and one.next_check < '9999-00-00'
 // update gridimage_link one inner join gridimage_link two using (gridimage_id) set one.first_used = two.first_used where two.url = substring_index( one.url,'!',1) and two.next_check > '9999-00-00' and one.next_check < '9999-00-00'
+
+
+$crit = "AND (comment LIKE '%@%' OR comment LIKE '%!%')";
+
+//and this one looks for possibly truncated links (the field used to be a varchar(255), was increased to 512, but even that not enough now 990)
+$crit = "AND LENGTH(url) IN (255,512)";
+
 
 $sql = "
 SELECT
@@ -109,8 +116,8 @@ INNER JOIN
 	gridimage_link l ON (gi.gridimage_id = l.gridimage_id)
 WHERE
 	(comment LIKE '%http%' OR comment LIKE '%www.%')
-	AND (comment LIKE '%@%' OR comment LIKE '%!%')
 	AND next_check < '9999-00-00' AND parent_link_id = 0
+	$crit
 GROUP BY
 	gi.gridimage_id
 ORDER BY

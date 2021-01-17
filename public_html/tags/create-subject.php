@@ -45,7 +45,7 @@ $db = GeographDatabaseConnection(false);
 	}
 	print "<p>Scroll to bottom for action form</p>";
 
-	dump_sql_table("select tag_id,t.tag,t.user_id,t.created,t.updated,canonical,count(gridimage_id) from tag t left join subjects s on (t.tag = s.subject) left join tag_report using (tag_id) left join gridimage_tag using (tag_id) where t.prefix = 'subject' and t.status = 1 and s.subject is NULL and report_id IS NULL GROUP BY tag_id",
+	dump_sql_table("select tag_id,t.tag,t.user_id,t.created,t.updated,canonical,sum(gt.status = 2) as images from tag t left join subjects s on (t.tag = s.subject) left join tag_report using (tag_id) left join gridimage_tag gt using (tag_id) where t.prefix = 'subject' and t.status = 1 and s.subject is NULL and report_id IS NULL GROUP BY tag_id",
 		'Unoffical Subjects (been created as a subject:prefix tag, but not in the offical tag list)');
 
 	dump_sql_table("select tag_id,tag.user_id,tag_report.tag,tag2,tag_report.status,approver_id from tag inner join tag_report using (tag_id) where prefix = 'subject' and tag.status = 0 order by tag_id",

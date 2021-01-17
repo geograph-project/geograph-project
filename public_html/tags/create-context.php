@@ -51,7 +51,7 @@ $db = GeographDatabaseConnection(false);
 
 		//	$db->Execute("INSERT INTO tag_report_skip SET report_id = $report_id, user_id = {$USER->user_id}, created = NOW()");
 
-	dump_sql_table("select tag_id,t.tag,t.user_id,t.created,t.updated,canonical,count(gridimage_id) as images from tag t left join category_primary on (t.tag = top) left join gridimage_tag using (tag_id) where prefix = 'top' and grouping is null and t.status = 1 group by tag_id",
+	dump_sql_table("select tag_id,t.tag,t.user_id,t.created,t.updated,canonical,sum(gt.status = 2) as images from tag t left join category_primary on (t.tag = top) left join gridimage_tag gt using (tag_id) where prefix = 'top' and grouping is null and t.status = 1 group by tag_id",
 		'Unoffical Content (been created as a top:prefix tag, but not in the offical tag list)');
 
 	dump_sql_table("select tag_id,tag.user_id,tag_report.tag,tag2,tag_report.status,approver_id from tag inner join tag_report using (tag_id) where prefix = 'top' and tag.status = 0 order by tag_id",

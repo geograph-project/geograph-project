@@ -128,6 +128,7 @@ while (!$recordSet->EOF)
 		$sqls['r:'.$r['report_id']] = "UPDATE tag_report SET status = 'moved',tag2_id = {$r['tag2_id']} WHERE report_id = {$r['report_id']} # {$r['tag']} > {$r['tag2']}";
 
 		if ($r['type']=='split') {
+			//for a split, we duplicate the tag, we cant 'change' the existing tag, as need the original for the other splits
 			$sqls[] = "INSERT IGNORE INTO gridimage_tag SELECT gridimage_id,{$r['tag2_id']} as tag_id,user_id,created,status,NOW() as updated FROM gridimage_tag WHERE tag_id = {$r['tag_id']} AND gridimage_id = {$r['gridimage_id']} # {$r['tag']} > {$r['tag2']}";
 		} else {
 			$sqls[] = "UPDATE IGNORE gridimage_tag SET tag_id = {$r['tag2_id']} WHERE tag_id = {$r['tag_id']} AND gridimage_id = {$r['gridimage_id']} # {$r['tag']} > {$r['tag2']}";

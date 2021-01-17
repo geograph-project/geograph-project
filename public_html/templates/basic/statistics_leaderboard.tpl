@@ -18,8 +18,8 @@
 		<span class="tabSelected">limited</span>
 	{else}	
 		<span class="tabSelected">all time</span>
+		<a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear=2021">2021</a>
 		<a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear=2020">2020</a>
-		<a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear=2019">2019</a>
 	{/if}
 	<a class="tab" href="/statistics/moversboard.php?type={$type}">weekly</a>
 </div>
