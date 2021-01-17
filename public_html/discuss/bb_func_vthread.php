@@ -190,7 +190,7 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 	global $memcache;
 	$mkey = $cols[6].$_SERVER['HTTP_HOST'].((!empty($_GET['l']))?'y':'');
 	//fails quickly if not using memcached!
-	if (empty($_GET['refresh']) && $memtext =& $memcache->name_get('fp',$mkey)) {
+	if (empty($_GET['refresh']) && $memtext = $memcache->name_get('fp',$mkey)) {
 		$posterText = $memtext;
 	} elseif (empty($CONF['disable_discuss_thumbs'])) {
 		$thumb_count = 0;
