@@ -12,11 +12,11 @@ $regUsrForums=array();
 
 
 $mkey = "userRanks2";
-$userRanks =& $memcache->get($mkey);
+$userRanks = $memcache->get($mkey);
 
 if(empty($userRanks) && $cols=db_simpleSelect(0,'user','user_id,rights,role','role != \'\' OR rights LIKE \'%admin%\' OR rights',' LIKE ','%moderator%')) {
 	$userRanks=array();
-	
+
 	do {
 		if ($cols[2])
 			$userRanks[$cols[0]]=$cols[2];
@@ -34,4 +34,4 @@ $mods=array();
 
 $themeDesc = array(3798);
 
-?>
+
