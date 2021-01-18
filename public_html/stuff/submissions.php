@@ -38,6 +38,7 @@ $db->Execute("SET SESSION max_statement_time = 3");
 
 print "<h2>Your Recent Submissions - live/no caching <sub><a href=?>refresh</a></sub></h2>";
 
+
 print "<table cellspacing=0 border=1 cellpadding=3>";
 
 if (!empty($CONF['use_insertionqueue']))
@@ -80,5 +81,29 @@ function dump_rows($sql, $full = false) {
 
 }
 
+
+if (!empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
+
+        $db=NewADOConnection($GLOBALS['DSN_READ']);
+
+	if (!empty($db)) {
+                $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+                $row = $db->getRow("SHOW SLAVE STATUS");
+                if (!empty($row)) { //its empty if we actully connected to master!
+			if (is_null($row['Seconds_Behind_Master'])) {
+				print "<h3>Replication Status: Offline.</h3>";
+				print "<p>Because replication is offline, some parts of the the site may not be showing recent updates.</p>";
+
+			} else {
+				print "<h3>Current Replication Lag: {$row['Seconds_Behind_Master']} Seconds. </h3>";
+				if ($row['Seconds_Behind_Master']>1)
+					print "<p>This is roughly long a delay being a change been made in the primary database, and the data replicated and displayed around the site.";
+			}
+		}
+	}
+}
+
+
 $smarty->display('_std_end.tpl');
+
 
