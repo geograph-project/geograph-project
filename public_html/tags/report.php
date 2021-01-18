@@ -147,6 +147,24 @@ if (!empty($_GET['finder'])) {
 		print "<b>rejected</b> - the suggestion has been actively rejected and will have no effect<br>";
 
 
+	} elseif ($_GET['report'] == 'loops') {
+
+		$reports=$db->getAll("select one.tag_id,one.canonical,one.prefix,one.tag,one.status, two.tag_id,two.canonical,two.prefix,two.tag,two.status
+		 from tag one inner join tag two on (two.tag_id = one.canonical and one.tag_id != one.canonical) where two.canonical = one.tag_id");
+
+
+		/*
+		select one.tag_id,one.tag,one.status, two.tag_id,two.tag,two.status
+		 from tag_report one inner join tag_report two on (two.tag_id = one.tag2_id and one.tag_id != one.tag2_id)
+		 where two.tag2_id = one.tag_id and one.status in ('approved','moved','renamed') and two.status in ('approved','moved','renamed')
+		*/
+
+	} elseif ($_GET['report'] == 'disabled') {
+
+                $reports=$db->getAll("select one.tag_id,one.canonical,one.prefix,one.tag,one.status, two.tag_id,two.canonical,two.prefix,two.tag,two.status
+                 from tag one inner join tag two on (two.tag_id = one.canonical and one.tag_id != one.canonical) where one.status = 1 and two.status = 0");
+
+
 	} elseif ($_GET['report'] == 'duplicates') {
 		$USER->mustHavePerm("basic");
 
@@ -177,6 +195,17 @@ if (!empty($check)) {
  $con = print_r($check,TRUE);
  print "<h3>FAILED MULTI CHECK</h3>";
  print "<p>The following tags have multiple suggestions, processing is halted until resolved</p>";
+ print "<pre>$con</pre>";
+}
+
+
+$check = $db->getAll("select report_id,tag_id,tag,tag2_id,tag2 from
+ tag_report where status in ('approved','moved') and (tag_id = 0)"); //we dont check tag2 here, as that might be zero as the new tag is to be craeted!
+
+if (!empty($check)) {
+ $con = print_r($check,TRUE);
+ print "<h3>FAILED ID CHECK</h3>";
+ print "<p>The following reports where not linked to tags, processing is halted until resolved</p>";
  print "<pre>$con</pre>";
 }
 
