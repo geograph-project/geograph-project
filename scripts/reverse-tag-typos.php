@@ -52,7 +52,7 @@ if (empty($param['id']))
 if (empty($param['ids']))
 	die("specify ids\n");
 
-$sql = "select report_id,gridimage_id,
+$sql = "select report_id,gridimage_id,r.status
 tag2_id as tag_id, tag2 as tag,
 r.tag_id as tag2_id, tag as tag2
 from tag_report r inner join gridimage_tag gt on (gt.tag_id = r.tag2_id)
@@ -75,6 +75,9 @@ $tickets = $items = $sqls = array();
 while (!$recordSet->EOF)
 {
         $r = $recordSet->fields;
+
+	if ($r['status'] == 'moved' || $r['status'] == 'approved')
+		die("report is still active, and so any change would immidately be reverted\n");
 
 
 		$user_id = $param['user'];
