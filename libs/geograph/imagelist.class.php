@@ -147,15 +147,13 @@ split_timer('imagelist'); //starts the timer
 			$limit="limit $count";
 
 		if ($advanced || preg_match("/(pending|rejected)/",$statuslist)) {
-			$sql="select gi.*,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname, t.topic_id,t.forum_id,t.last_post ";
+			$sql="select gi.*,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname ";
 			$sql.=" , group_concat(distinct if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags ";
 #			if ($advanced == 2)
 #				$sql.=", (select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status<3) as open_tickets ";
 			$sql.="from gridimage as gi ".
 				"inner join gridsquare as gs using(gridsquare_id) ".
 				"inner join user on(gi.user_id=user.user_id) ".
-				"left join gridsquare_topic as t on(gi.gridsquare_id=t.gridsquare_id and ".
-				"t.last_post=(select max(last_post) from gridsquare_topic where gridsquare_id=gi.gridsquare_id)) ".
 				"left join tag_public tp on(tp.gridimage_id = gi.gridimage_id) ".
 				"where $statuslist ".
 				"gi.user_id='$user_id' ".
@@ -170,7 +168,11 @@ split_timer('imagelist'); //starts the timer
 				"gi.user_id='$user_id' ".
 				"$orderby $limit";
 		}
-		
+
+	if (!empty($_GET['sql'])) {
+		header('X-SQL: '.preg_replace('/\s+/',' ',$sql));
+	}
+
 		$c = $this->_getImagesBySql($sql);
 
 split_timer('imagelist','getImagesByUser',"$user_id,$statuses,$sort,$count,$advanced"); //logs the wall time
