@@ -21,6 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+$param = array(
+	'execute' => false,
+	'simple' => true,
+);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -32,9 +36,23 @@ $rows = $db->getAll("select table_name,type,backup,TABLE_ROWS,DATA_LENGTH from _
 
 $list = array();
 foreach ($rows as $row) {
-	$key = array($row['type'],($row['backup']=='N')?'skipped':'backup');
+	if (empty($row['type']))
+		$row['type'] = 'unknown';
+
+	if ($param['simple']) {
+		print "{$row['table_name']},{$row['type']}: ";
+		$keys = $db->getAssoc("DESCRIBE {$row['table_name']}");
+		print implode(',',array_keys($keys))."\n";
+		continue;
+	}
+
+	$key = array($CONF['db_db'],$row['type'],($row['backup']=='N')?'skipped':'backup');
 	@$list[implode('.',$key)][] = $row['table_name'];
 }
+
+if ($param['simple'])
+	exit;
+
 
 $crit = "-h{$CONF['db_connect']} -u{$CONF['db_user']} -p{$CONF['db_pwd']} {$CONF['db_db']}";
 
