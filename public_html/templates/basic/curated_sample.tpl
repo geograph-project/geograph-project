@@ -292,7 +292,10 @@ function renderImages(data) {
 	}
 	var div = $('#thumbnails').empty();
 	if (data.images) {
+		var count = 0;
 		$.each(data.images,function(index,image) {
+			if (count == 100)
+				return;
 			var hash = image.thumbnail.match(/\/(\d+)_(\w{8})_/);
 			var download = "https://t0.geograph.org.uk/stamp.php?id="+hash[1]+"&title=on&gravity=SouthEast&hash="+hash[2]+"&download=1";
 			if (image.largest && image.largest > 800) {
@@ -319,7 +322,10 @@ function renderImages(data) {
 				);
 			}
 			$div.appendTo(div);
+			count++;
 		});
+		if (count == 100)
+			div.append('This prototype can only view 100 images, there may be more matching. They are not currently accessible');
 	}
 }
 {/literal}
