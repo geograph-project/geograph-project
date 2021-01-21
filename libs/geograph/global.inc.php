@@ -220,7 +220,7 @@ function GeographDatabaseConnection($allow_readonly = false) {
 
                 	//setting this, prevents future connections trying to to connect to slave.
         	        if (function_exists('apc_store'))
-				apc_store('lag_warning',1,1810);
+				apc_store('lag_cooloff',1,1810);
 		}
 	} else {
 		//otherwise just get a standard connection

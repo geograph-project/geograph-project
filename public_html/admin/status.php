@@ -32,7 +32,15 @@ $smarty = new GeographPage;
 //error_reporting(E_ALL ^ E_NOTICE);
 
 if (function_exists('apc_store') && !empty($_GET['clear'])) {
-	apc_delete('lag_warning');
+	print apc_delete('lag_warning');
+}
+
+if (function_exists('apc_store') && isset($_GET['cool'])) {
+	if (empty($_GET['cool'])) {
+		print apc_delete('lag_cooloff');
+	} else {
+		print apc_store('lag_cooloff',1,intval($_GET['cool']));
+	}
 }
 
 
@@ -111,6 +119,7 @@ if (!empty($DSN_READ) && $DSN_READ != $DSN) {
 
 if (function_exists('apc_store')) {
 	print "lag_warning:".apc_fetch('lag_warning')."<br>";
+	print "lag_cooloff:".apc_fetch('lag_cooloff')."<br>";
 }
 	if ($db = database_status($DSN_READ)) {
 
