@@ -44,8 +44,12 @@ $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ############################################
+$s3fs = false;
 
-if (!is_dir("{$_SERVER['DOCUMENT_ROOT']}/photos/01/"))
+if (file_exists("/mnt/s3-photos-production-testing/robots.txt")) {
+	print "Using /mnt/s3-photos-production-testing/\n";
+	$s3fs = true;
+} elseif (!is_dir("{$_SERVER['DOCUMENT_ROOT']}/photos/01/"))
 	die("photos folder not mounted?\n");
 
 if (trim(`whoami`) != 'www-data')
@@ -84,6 +88,7 @@ foreach ($rows as $row) {
 	}
 
 	print_r($row);
+	print "https://www.geograph.org.uk/stuff/image-file-viewer.php?id={$row['gridimage_id']}\n";
 
 	$image = new Gridimage($row['gridimage_id']);
 		        if (!empty($CONF['enable_cluster'])) {
@@ -93,6 +98,9 @@ foreach ($rows as $row) {
                         }
 	$path = $image->_getFullpath(true);
 	print "$path\n";
+		if (basename($path) == 'error.jpg') {
+			print "Image not found? expected path=".$image->_getFullpath(false)."\n";
+		}
 
 	if (strpos($row['affected'],'Image Shown on Photo Page') !== FALSE) {
 		check_path($CONF['STATIC_HOST'],$path, $row);
@@ -129,7 +137,7 @@ foreach ($rows as $row) {
 		check_path($server,$path, $row);
 	}
 
-	$r = readline("Reply?");
+	$r = readline("Reply? (enter text to add to log table)");
 	if (strlen(trim($r)))
 		 update_status($row['gridimage_id'], $r);
 
@@ -141,13 +149,28 @@ foreach ($rows as $row) {
 ########################################
 
 function check_path($server,$path, $row) {
-	global $param;
+	global $param,$s3fs;
+	if (basename($path) == 'error.jpg')
+		die("unable to process error.jpg\n");
 
-	$cmd = "ls -l {$_SERVER['DOCUMENT_ROOT']}$path";
+	if ($s3fs) {
+		$fullpath = "/mnt/s3-photos-production-testing$path";
+	} else {
+		$fullpath = "{$_SERVER['DOCUMENT_ROOT']}$path";
+	}
+	$id = intval(basename($path));
+	$size = "F";
+	if (preg_match('/(\d+x\d+)/',$path,$m))
+		$size = $m[1];
+	else
+		print "WARNING does NOT appear to be a thumbnail!\n";
+
+	print "\n";
+	$cmd = "ls -l $fullpath";
         print "$cmd\n";
 	passthru($cmd);
 
-	$size = filesize($_SERVER['DOCUMENT_ROOT'].$path);
+	$size = filesize($fullpath);
 	if ($size) {
 		$url = $server.$path;
 		print "$url\n";
@@ -155,13 +178,14 @@ function check_path($server,$path, $row) {
 		$str= file_get_contents($url);
 		if (strlen($str) == $size) {
 
-			print `identify {$_SERVER['DOCUMENT_ROOT']}$path`;
-			$r = readline("Does that look valid?");
+			print `identify $fullpath`;
+			$r = readline("Does that look valid? (if not 'y' will delete the file)");
 			if ($r != 'y') {
-				$id = intval(basename($path));
-				print "sudo -u www-data rm {$_SERVER['DOCUMENT_ROOT']}$path\n";
-				print "https://{$_SERVER['HTTP_HOST']}/admin/memcache.php?image_id=$id&size=120x120&action=delete&cleardb=on\n";
+				print "\n";
+				print "sudo -u www-data rm $fullpath\n";
+				print "https://{$_SERVER['HTTP_HOST']}/admin/memcache.php?image_id=$id&size=$size&action=delete&cleardb=on\n";
 				print "php scripts/test-s3-invalidation.php --path=$path --dir={$param['dir']}\n";
+				print "https://api.geograph.org.uk/api/oembed?url=$url\n";
 				exit;
 			}
 
@@ -171,6 +195,7 @@ function check_path($server,$path, $row) {
 		}
 	} else {
 		update_status($row['gridimage_id'], "failed", false);
+		print "https://{$_SERVER['HTTP_HOST']}/admin/memcache.php?image_id=$id&size=$size&action=delete&cleardb=on\n";
 	}
 }
 
