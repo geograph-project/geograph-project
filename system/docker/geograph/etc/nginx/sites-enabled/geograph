@@ -53,10 +53,7 @@ server {
   rewrite ^/blog/([0-9]+) /blog/entry.php?id=$1 last;
   rewrite ^/gloc/([0-9-]+) /stuff/geolocate.php?date=$1 last;
 
-  location /help/ {
-    rewrite ^/help/([^/]*)$ /staticpage.php?page=$1 last;
-    return 404;  # for things that don't get rewritten
-  }
+  rewrite ^/help/([^/]*)$ /staticpage.php?page=$1 last;
 
   rewrite ^/profile/([0-9]+)/feed(|/[0-9]+)/recent\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 last;
   rewrite ^/feed/userid/([0-9]+)(|/[0-9]+)\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 last;
@@ -117,11 +114,16 @@ server {
   # RewriteRule ^/mapbrowse.php /mapbrowse.php?x=%2&y=%3&%1
 
   location ~ /mapbrowse.php {
+    # https://serverfault.com/questions/488444/nginx-rewrite-convert-querystring-to-path
     if ($args ~* "(.+)\?([0-9]+),([0-9]+)$") {
         set $args "x=$2&y=$3&$1";
     }
+
+    # doesnt automatically just to PHP handler, so duplicate it
+    include snippets/fastcgi-php.conf;
+    fastcgi_param SCRIPT_FILENAME $request_filename;
+    fastcgi_pass 127.0.0.1:9000;
   }
-  # https://serverfault.com/questions/488444/nginx-rewrite-convert-querystring-to-path
 
   rewrite ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 last;
 
