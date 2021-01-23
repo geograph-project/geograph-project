@@ -64,7 +64,7 @@ function add_image_to_list($id,$thumb ='') {
 function showmessage($count,$points,$soft,$hard) {
 	global $total;
 	$total += ($count*$points);
-	
+
 	if ($count > $hard) {
 		return " <span class=hard>WARNING: This number is too high - you NEED to split this this section into multiple pages</span>";
 	} elseif ($count > $soft) {
@@ -77,20 +77,20 @@ function count_section($output) {
 	$total = 0;
 
 	print "<div>Characters: ".strlen($output)."</div>";
-	print "<div>Lines: ".count(explode("\n",$output))."</div>"; 
+	print "<div>Lines: ".count(explode("\n",$output))."</div>";
 	print "<div>Approx word count: ".str_word_count($output)."</div>";
 
 	$big = 0;
-	if (preg_match_all('/\[image id=(\d+) text=([^\]]+)\]/',$output,$matches)) 
+	if (preg_match_all('/\[image id=(\d+) text=([^\]]+)\]/',$output,$matches))
 		$big += count($matches[1]);
-	if (preg_match_all('/\[image id=(\d+)\]/',$output,$matches)) 
+	if (preg_match_all('/\[image id=(\d+)\]/',$output,$matches))
 		$big += count($matches[1]);
-	if ($big) 
+	if ($big)
 		print "<div>Big Images: ".$big.showmessage($big,3,50,75)."</div>";
 
 	$thumbs = $links = array();
 
-	if (preg_replace('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/e',"add_image_to_list('\$2','\$1')",$output)) { 
+	if (preg_replace_callback('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/', function($m) { return add_image_to_list($m[2],$m[1]); }, $output)) {
 		if (!empty($thumbs))
 			print "<div>Thumbnails: ".count($thumbs).showmessage(count($thumbs),1,100,200)."</div>";
 		if (!empty($links))
@@ -147,18 +147,16 @@ if (count($page)) {
 	$output = $page['content'];
 
 	//break counting of demos
-	$output = preg_replace('/\!(\[+)/e','str_repeat("¬",strlen("$1"))',$output);
+	$output = preg_replace_callback('/\!(\[+)/',function($m) { return str_repeat("¬",strlen($m[1])); }, $output);
 
-	
 	$pages = preg_split("/\n+\s*~{7,}\s*[\w\s\{\}\+:-]*\n+/",$output);
-if ($_GET['ddd'])
-print_r($pages);	
+
 	print "<div>Pages: ".count($pages)."</div>";
 	if (count($pages) > 1) {
-		print "<div>Characters: ".strlen($output)."</div>"; 
-		print "<div>Lines: ".count(explode("\n",$output))."</div>"; 
+		print "<div>Characters: ".strlen($output)."</div>";
+		print "<div>Lines: ".count(explode("\n",$output))."</div>";
 		print "<div>Approx word count: ".str_word_count($output)."</div>";
-		
+
 		foreach ($pages as $idx => $onepage) {
 
 			print "<h3>Page ".($idx+1)."</h3>";
@@ -166,7 +164,7 @@ print_r($pages);
 			count_section($onepage);
 			print "</blockquote>";
 		}
-		
+
 	} else {
 		count_section($output);
 	}

@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: faq.php 15 2005-02-16 12:23:35Z lordelph $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2006 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -29,52 +29,48 @@ $smarty = new GeographPage;
 $USER->mustHavePerm('basic');
 
 
-
 $template = 'article_builder_place.tpl';
 $cacheid = '';
 
-	
-
 if (isset($_POST) && isset($_POST['submit'])) {
 	$errors = array();
-	
-	
+
 	$_POST['title'] = preg_replace('/[^\w\-\.,:;\' ]+/','',trim($_POST['title']));
-	
+
 	$_POST['locality'] = preg_replace('/[^\w\-\.,:;\' ]+/','',trim($_POST['locality']));
-	
+
 	$_POST['extract'] = "Short article about {$_POST['title']} in {$_POST['locality']}";
-	
+
 	if (!empty($_POST['locality'])) {
 		$_POST['title'] .= ", ".$_POST['locality'];
-	}	
-	
+	}
+
 	if (empty($_POST['url']) && !empty($_POST['title'])) {
 		$_POST['url'] = $_POST['title'];
 	}
 	$_POST['url'] = preg_replace('/ /','-',trim($_POST['url']));
 	$_POST['url'] = preg_replace('/[^\w-]+/','',$_POST['url']);
-	
+
 	if ($_POST['title'] == "New Article")
 		$errors['title'] = "Please give a meaningful title";
-	
+
 	$gs=new GridSquare();
 	if (!empty($_POST['grid_reference'])) {
 		if ($gs->setByFullGridRef($_POST['grid_reference'])) {
 			$_POST['gridsquare_id'] = $gs->gridsquare_id;
-		} else 
+		} else
 			$errors['grid_reference'] = $gs->errormsg;
 	}
-	
+
 	//the most basic protection
 	$_POST['content'] = strip_tags($_POST['content']);
 	$c = preg_replace('/[“”]/','',$_POST['content']);
 
 	################################
 	# the 'magic'
-	
+
 	if ($_POST['title']) {
-	
+
 		if ($_POST['gridsquare_id']) {
 
 			$c .= "\n\n[h2]Location Map[/h2]\n\n";
@@ -127,9 +123,9 @@ if (isset($_POST) && isset($_POST['submit'])) {
 			$link = "https://www.google.co.uk/search?q=".urlencode($_POST['title']);
 			$name = "Google Web search for ".$_POST['title'];
 			$links[] = "* [url=$link]{$name}[/url]";
-		}	
+		}
 		if (!empty($_POST['q'])) {
-			$gr2 = preg_replace('/([A-Z])/e', '"%".bin2hex(\'\\1\')', $gs->grid_reference);
+			$gr2 = preg_replace_callback('/([A-Z])/', function($m) { return "%".bin2hex($m[1]); }, $gs->grid_reference);
 
 			$link = "{$CONF['SELF_HOST']}/search.php?gridref={$gr2}&searchtext=".urlencode($_POST['q'])."&distance=2&do=1";
 			$name = "Auto-updating Search for related images";
@@ -138,58 +134,56 @@ if (isset($_POST) && isset($_POST['submit'])) {
 		if (!empty($links)) {
 			$c .= "\n\n[h2]Further Reading[/h2]\n";
 			$c .= implode("\n",$links);
-		}	
+		}
 
 		$_POST['content'] = strip_tags($c);
 	}
 
 	################################
-	
+
 	$db = GeographDatabaseConnection(false);
-	
+
 	$updates = array();
-	
+
 	$keys = array('url','title','content','extract','gridsquare_id');
-	
-	
+
 	foreach ($keys as $key) {
 		if ($page[$key] != $_POST[$key]) {
-			$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
+			$updates[] = "`$key` = ".$db->Quote($_POST[$key]);
 			$smarty->assign($key, $_POST[$key]);
 			if ($key == 'url' || $key = 'title') {
 				$sql = "select count(*) from article where `$key` = ".$db->Quote($_POST[$key]);
 
-				if ($db->getOne($sql)) 
-					$errors[$key] = "(".$db->Quote($_POST[$key]).') is already in use';				
+				if ($db->getOne($sql))
+					$errors[$key] = "(".$db->Quote($_POST[$key]).') is already in use';
 			}
-		} elseif (empty($_POST[$key]) && $key == 'title') 
-			$errors[$key] = "missing required info";		
+		} elseif (empty($_POST[$key]) && $key == 'title')
+			$errors[$key] = "missing required info";
 	}
 	if (isset($_POST['edit_prompt'])) {
 		$key = 'edit_prompt';
-		$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
+		$updates[] = "`$key` = ".$db->Quote($_POST[$key]);
 		$smarty->assign($key, $_POST[$key]);
 	}
-	
+
 	if (!count($updates)) {
 		$smarty->assign('error', "No Changes to Save");
 		$errors[1] =1;
 	}
-	
+
 		$updates[] = "`article_cat_id` = 2";
 		$updates[] = "publish_date = NOW()";
 
 		$updates[] = "`user_id` = {$USER->user_id}";
 		$updates[] = "`create_time` = NOW()";
 		$sql = "INSERT INTO article SET ".implode(',',$updates);
-	
-	
+
 	if (!count($errors) && count($updates)) {
-		
+
 		$db->Execute($sql);
-		
+
 		$_REQUEST['article_id'] = $db->Insert_ID();
-				
+
 		//require_once('geograph/event.class.php');
 		//new Event("article_updated", $_REQUEST['article_id']);
 
@@ -198,21 +192,20 @@ if (isset($_POST) && isset($_POST['submit'])) {
 		$db->Execute($sql);
 
 		print "<h3>Your article has been created</h3>";
-		
+
 		print "<p>Title: ".$_POST['title']."</p>";
-		
+
 		$url = "{$CONF['SELF_HOST']}/article/{$_POST['url']}";
-		
+
 		print "<p>Link: <a href=\"$url\">$url</a></p>";
-		
+
 		print "<p>Note: <b>The article is not yet published.</b> To publish the article you need to edit it and assign a licence to the work - you should at the same time check the article is to your satifaction.</p>";
 		print "<p>Once a licence has set, the article will be reviewed by site moderators and then made public</p>";
-		
+
 		print "<p><a href=\"edit.php?page={$_POST['url']}\">Edit the Article now</a></p>";
-		
+
 		print "<p><a href=\"./\">Return to Homepage</a></p>";
-		
-		
+
 		flush();
 
 		exit;
@@ -221,8 +214,7 @@ if (isset($_POST) && isset($_POST['submit'])) {
 			$smarty->assign('error', "Please see messages below...");
 		$smarty->assign_by_ref('errors',$errors);
 	}
-} 
-
+}
 
 
 $smarty->display($template, $cacheid);

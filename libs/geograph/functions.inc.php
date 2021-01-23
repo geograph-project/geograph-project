@@ -523,32 +523,29 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 			$numbers = $m[2];
 			$numlen = strlen($m[2]);
 			$c = $numlen/2;
-			
+
 			$n = sprintf("%d%d",intval($numbers{0}/2)*2,intval($numbers{$c}/2)*2);
 		}
 	}
-	
+
 	if ($level == 5) {
-		//if level 5 quantize to subhectad/mosaic (and define gr to be in SH43NW format) 
-		
-		//SH4(0)35  -> SH435(W) 
-		$gr = preg_replace('/^(.+)[5-9](\d)(\d)$/','$1$2$3E',$gr);
-		$gr = preg_replace('/^(.+)[0-4](\d)(\d)$/','$1$2$3W',$gr);
-		//SH43(5)E  -> SH43(N)E 
-		$gr = preg_replace('/^(.+)[5-9]([EW])$/e','$1."N".$2',$gr);
-		$gr = preg_replace('/^(.+)[0-4]([EW])$/e','$1."S".$2',$gr);
+		//if level 5 quantize to subhectad/mosaic (and define gr to be in SH43NW format)
+
+		//SH4(0)35  -> SH435(W)
+		$gr = preg_replace('/^(.+)[5-9](\d)(\d)$/','$1$2${3}E',$gr);
+		$gr = preg_replace('/^(.+)[0-4](\d)(\d)$/','$1$2${3}W',$gr);
+		//SH43(5)E  -> SH43(N)E
+		$gr = preg_replace('/^(.+)[5-9]([EW])$/','${1}N$2',$gr);
+		$gr = preg_replace('/^(.+)[0-4]([EW])$/','${1}S$2',$gr);
 	}
-		
-	
-	
+
 	$extension = 'html';
 	$prefix = "/sitemap";
-	
+
 	if ($i) {
 		$prefix .= "/$i";
-	} 
+	}
 
-	
 	if ($level == 3) {
 		return "$prefix/$s/$n.$extension";
 	} elseif ($level == 2) {
@@ -558,7 +555,6 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 	} else {
 		return "$prefix/$s/$n/$level/$gr.$extension";
 	}
-
 }
 
 /**
@@ -1059,7 +1055,9 @@ function htmlentities2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
 }
 
 function htmlnumericentities($myXML){
-  return str_replace('&#38;amp;','&#38;',preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars($myXML)));
+	return str_replace('&#38;amp;','&#38;', preg_replace_callback('/[^!-%\x27-;=?-~ ]/',
+	       function($m) { return '&#'.ord($m[0]).';'; },
+	       htmlspecialchars($myXML)));
 }
 
 function xmlentities($string, $charset = 'UTF-8') {

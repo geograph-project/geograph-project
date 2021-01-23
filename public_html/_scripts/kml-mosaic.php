@@ -45,15 +45,15 @@ if (!preg_match('/^([A-Z]{1,3})([\d_]*)([NS]*)([EW]*)$/',strtoupper($gr))) {
 	die("invalid gr");
 }
 
-//convert subhectad/mosaic references to normal, eg SH43NW -> SH4035 
+//convert subhectad/mosaic references to normal, eg SH43NW -> SH4035
 
-//SH43(N)E -> SH43(5)E 
-$gr2 = preg_replace('/^(.+)N([EW])$/e','$1."5".$2',$gr);
-$gr2 = preg_replace('/^(.+)S([EW])$/e','$1."0".$2',$gr2);
+//SH43(N)E -> SH43(5)E
+$gr2 = preg_replace('/^(.+)N([EW])$/','${1}5$2',$gr);
+$gr2 = preg_replace('/^(.+)S([EW])$/','${1}0$2',$gr2);
 
-//SH435(W) -> SH4(0)35 
-$gr2 = preg_replace('/^(.+)(\d{2})E$/e','"$1"."5"."$2"',$gr2);
-$gr2 = preg_replace('/^(.+)(\d{2})W$/e','"$1"."0"."$2"',$gr2);
+//SH435(W) -> SH4(0)35
+$gr2 = preg_replace('/^(.+)(\d{2})E$/','${1}5$2',$gr2);
+$gr2 = preg_replace('/^(.+)(\d{2})W$/','${1}0$2',$gr2);
 
 
 $square=new GridSquare;
@@ -71,10 +71,8 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 
 $links = new kmlPrimative('Folder');
 $links->setItem('name','Next Level...');
-	
 
-	
-$prefix = $db->GetRow('select * from gridprefix where prefix='.$db->Quote($square->gridsquare).' limit 1');	
+$prefix = $db->GetRow('select * from gridprefix where prefix='.$db->Quote($square->gridsquare).' limit 1');
 
 $left=$prefix['origin_x']+intval($square->eastings/5)*5;
 $right=$left+5-1;
@@ -86,34 +84,34 @@ $rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$lef
 $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 
-$photos = $db->GetAll("select 
+$photos = $db->GetAll("select
 gridimage_id,grid_reference,title,imagecount,user_id,realname,x,y,view_direction,credit_realname,realname,
 wgs84_lat,wgs84_long
-from gridimage_kml 
+from gridimage_kml
 where $sql_where
 order by null");
 
 
-foreach($photos as $id=>$entry) 
+foreach($photos as $id=>$entry)
 {
 	if ($entry['imagecount'] == 1) {
-		$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);			
+		$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);
 
 		$placemark = new kmlPlacemark_Photo($entry['gridimage_id'],$entry['grid_reference'].' :: '.$entry['title'],$point);
-		
+
 		$placemark->useHoverStyle();
 
 		$image=new GridImage;
 		$image->fastInit($entry);
-		
+
 			$placemark->useCredit($image->realname,"{$CONF['SELF_HOST']}/photo/".$image->gridimage_id);
 			$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$entry['title'].' by '.$image->realname);
 			$linkTag = "<a href=\"".$placemark->link."\">";
 
 			$details = $image->getThumbnail(120,120,2);
-			$thumb = $details['server'].$details['url']; 
+			$thumb = $details['server'].$details['url'];
 			$thumbTag = $details['html'];
-			
+
 			$description = $linkTag.$thumbTag."</a><br/>".GeographLinks($image->comment)." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"".$CONF['SELF_HOST'].$image->profile_link."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
 
 			$placemark->setItemCDATA('description',$description);
@@ -122,14 +120,11 @@ foreach($photos as $id=>$entry)
 			$placemark->setItemCDATA('Snippet',strip_tags($description));
 
 			$placemark->useImageAsIcon($thumb);
-			
-			
+
 		if (strlen($entry['view_direction']) && $entry['view_direction'] != -1) {
 			$placemark->addViewDirection($entry['view_direction']);
-		} 
-		
-			
-		
+		}
+
 		$Region = $placemark->addChild('Region');
 		$Region->setPoint($point,0.01);
 
@@ -162,12 +157,9 @@ foreach($photos as $id=>$entry)
 		$Region2 = $networklink->addChild('Region');
 		$Region2->setBoundary($north,$south,$east,$west);
 		$Region2->setLod(450,-1);
-		$Region2->setFadeExtent(100,0);	
+		$Region2->setFadeExtent(100,0);
 	}
 }
-
-
-
 
 
 
@@ -176,6 +168,3 @@ $folder->addChild($links);
 
 kmlPageFooter($kml,$square,$gr,'mosaic.php',5,$html);
 
-
-
-?>

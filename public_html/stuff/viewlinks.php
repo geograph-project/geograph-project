@@ -52,7 +52,10 @@ if (!empty($_GET['id'])) {
 
 	$link = "/search.php?gridref=$gr&do=1&orderby=relevance&searchtext=";
 
-	$desc = preg_replace('/(?<!\.\s)(?<!^)\b([A-Z][a-z]+\b)(\s+[A-Z][a-z]+\b)?(\s+[A-Z][a-z]+\b)?(\s+[A-Z][a-z]+\b)?/e','"<a href=\"'.$link.'".urlencode("$1 $2")."\">".trim("$1 $2 $3 $4")."</a>"',$desc);
+	$desc = preg_replace_callback('/(?<!\.\s)(?<!^)\b([A-Z][a-z]+\b)(\s+[A-Z][a-z]+\b)?(\s+[A-Z][a-z]+\b)?(\s+[A-Z][a-z]+\b)?/',
+		function($m) use ($link) {
+			return '<a href="'.$link.urlencode("{$m[1]} {$m[2]}").'">'.trim("{$m[1]} {$m[2]} {$m[3]} {$m[4]}").'</a>';
+		},$desc);
 
 ?>
 <style type="text/css">

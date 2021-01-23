@@ -359,7 +359,9 @@ if (isset($_GET['l']) && empty($_GET['l'])) {
             print "<br/><br/>";
         }
 
-        $row['content'] = preg_replace('/(?<!["\'\[\]>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:!]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>\"\$1\",'nofollow'=>1,'title'=>\"\$1\"))",htmlentities2($row['content']));
+        $row['content'] = preg_replace_callback('/(?<!["\'\[\]>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:!]*)(?<!\.)(?!["\'])/',function($m) {
+			return smarty_function_external(array('href'=>$m[1],'text'=>$m[1],'nofollow'=>1,'title'=>$m[1]));
+		},htmlentities2($row['content']));
 
         if (preg_match('/(youtube\.com\/watch\?v=|youtu\.be\/)(\w+)/',$row['content'],$m)) {
                 $row['content'] .= "<div style=\"width:490px;margin-left:auto;margin-right:auto;\">".

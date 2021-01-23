@@ -30,18 +30,16 @@
 
 class kmlPlacemark_Photo extends kmlPlacemark {
 
-
-
 	public function addPhotographerPoint($kmlPoint,$view_direction=-1,$photographer = '') {
-		
+
 		//take a copy of the placemark
 		$subjectPlacemark = clone $this;
-		
+
 		//make ourself a folder, and clear any options
 		$this->tag = 'Folder';
 		$this->items = array();
 		$this->children = array();
-		
+
 		//set the minimum back
 		$this->setItem('name',$subjectPlacemark->getItem('name'),true);
 		if ($timestamp = $subjectPlacemark->getChild('TimeStamp')) {
@@ -50,18 +48,18 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 		if ($subjectPlacemark->issetItem('visibility')) {
 			$this->setItem('visibility',$subjectPlacemark->getItem('visibility'));
 		}
-		
+
 		//add the subject placemark
 		$this->addChild($subjectPlacemark);
-	
+
 		//add the photographer placemark
 		$photographerPlacemark = $this->addChild(new kmlPlacemark(null,'Photographer'));
 		if (!empty($photographer)) {
 			$photographerPlacemark->setItemCDATA('description',"($photographer)");
 		}
-		
+
 		$sbjPoint = $subjectPlacemark->getChild('Point');
-		
+
 		//setup the sightline
 		$MultiGeometry = $photographerPlacemark->addChild('MultiGeometry');
 		$MultiGeometry->addChild($kmlPoint);
@@ -69,7 +67,7 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 		$LineString->setItem('tessellate',1);
  		$LineString->setItem('altitudeMode','clampToGround');
  		$LineString->setItem('coordinates',$sbjPoint->getItem('coordinates')." ".$kmlPoint->getItem('coordinates'));
- 		
+
  		//seems a LookAt is required (but is nice to set the heading anyway!)
  		$LookAt = $photographerPlacemark->addChild('LookAt');
  		$this->addChild($LookAt);
@@ -82,8 +80,7 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 		} else {
 			$LookAt->setItem('heading',$kmlPoint->calcHeadingToPoint($sbjPoint));
 		}
-		
-		
+
 		$Style = $photographerPlacemark->addChild('Style');
 		$IconStyle = $Style->addChild('IconStyle');
 		$IconStyle->setItem('scale',0.7);
@@ -94,12 +91,12 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 
 		return $this;
 	}
-	
+
 	public function addViewDirection($view_direction) {
 		$LookAt = $this->addChild('LookAt');
-		
+
 		$sbjPoint = $this->getChild('Point');
-		
+
 		$LookAt->setItem('longitude',$sbjPoint->lon);
 		$LookAt->setItem('latitude',$sbjPoint->lat);
 		$LookAt->setItem('tilt',70);
@@ -115,7 +112,7 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 class kmlPlacemark_Circle extends kmlPlacemark {
 	public function __construct($id,$itemname = '',$kmlPoint = null,$d = 10000) {
 		parent::__construct($id,$itemname,$kmlPoint);
-		
+
 		if (is_object($kmlPoint)) {
 			$this->addCircle($kmlPoint,$d);
 		}
@@ -130,14 +127,14 @@ class kmlPlacemark_Circle extends kmlPlacemark {
 			$LineString = $this->addChild('LineString');
 		}
 		$coordinates = array();
-		
+
 		// convert coordinates to radians
 		$lat1 = deg2rad($kmlPoint->lat);
 		$long1 = deg2rad($kmlPoint->lon);
-		
+
 		//d in meters;
 		$d_rad = $d/6378137;
-		
+
 		// loop through the array and write path linestrings
 		for($i=0; $i<360; $i+=12) {
 			$radial = deg2rad($i);
@@ -150,7 +147,6 @@ class kmlPlacemark_Circle extends kmlPlacemark {
 
 		$LineString->setItem('coordinates',join(' ',$coordinates));
 	}
-	
 }
 
 
@@ -177,21 +173,19 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 			$n = sprintf("%d%d",intval($numbers{0}/2)*2,intval($numbers{$c}/2)*2);
 		}
 	}
-	
+
 	if ($level == 5) {
-		//if level 5 quantize to subhectad/mosaic (and define gr to be in SH43NW format) 
+		//if level 5 quantize to subhectad/mosaic (and define gr to be in SH43NW format)
 		//importantly doesnt affect a gr already in this format.
-		
-		//SH4(0)35  -> SH435(W) 
+
+		//SH4(0)35  -> SH435(W)
 		$gr = preg_replace('/^(.+)[5-9](\d)(\d)$/','$1$2$3E',$gr);
 		$gr = preg_replace('/^(.+)[0-4](\d)(\d)$/','$1$2$3W',$gr);
-		//SH43(5)E  -> SH43(N)E 
-		$gr = preg_replace('/^(.+)[5-9]([EW])$/e','$1."N".$2',$gr);
-		$gr = preg_replace('/^(.+)[0-4]([EW])$/e','$1."S".$2',$gr);
+		//SH43(5)E  -> SH43(N)E
+		$gr = preg_replace('/^(.+)[5-9]([EW])$/','${1}N$2',$gr);
+		$gr = preg_replace('/^(.+)[0-4]([EW])$/','${1}S$2',$gr);
 	}
-			
-	
-	
+
 	$base=$_SERVER['DOCUMENT_ROOT'].'/kml';
 	$prefix = "/kml";
 	$base2=$_SERVER['DOCUMENT_ROOT'].'/sitemap';
@@ -199,7 +193,7 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 		$base .= "/$i";
 		$prefix .= "/$i";
 		$base2 .= "/$i";
-	} 
+	}
 	if (!is_dir("$base/$s"))
 		mkdir("$base/$s");
 	if (!is_dir("$base2/$s"))
@@ -208,7 +202,7 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 		mkdir("$base/$s/$n");
 	if ($n && !is_dir("$base2/$s/$n"))
 		mkdir("$base2/$s/$n");
-	
+
 	if ($level == 3) {
 		return "$prefix/$s/$n.$extension";
 	} elseif ($level == 2) {
@@ -227,7 +221,7 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 
 function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 	global $db,$CONF;
-	
+
 	if (isset($_GET['debug'])) {
 		print "<a href=?download>Open in Google Earth</a><br/>";
 		print "<textarea rows=35 style=width:100%>";
@@ -238,7 +232,6 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 		exit;
 	} else {
 		$file = getKmlFilepath($kml->extension,$level,$square,$gr);
-		
 
 		$base=$_SERVER['DOCUMENT_ROOT'];
 		$kml->outputFile('kmz',false,$base.$file);
@@ -247,11 +240,10 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 
 		$db->Execute("replace into kmlcache set `url` = '$self?gr=$gr',filename='$file',`level` = $level,`rendered` = 1,filesize = $size");
 
-		
 		if ($html) {
 			$file = str_replace("kml",'sitemap',$file);
 			$file = str_replace("kmz",'html',$file);
-			
+
 			if (!empty($list)) {
 				$s = "Photos in ".$list." :: Geograph British Isles";
 			} elseif (!empty($gr) && $level == 5) {
@@ -263,20 +255,20 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 			} else {
 				$s = "Photos in ".$CONF['references_all'][0];
 			}
-			
+
 			$file1 = getKmlFilepath($kml->extension,$level-1,$square,$gr);
 			$file1 = str_replace("kml",'sitemap',$file1);
 			$file1 = str_replace("kmz",'html',$file1);
-			
+
 			$html = str_replace("http://{$_SERVER['HTTP_HOST']}/",'/',$html);
-			
+
 			$html = "<html><head><title>{$s}</title></head>\n".
 			"<body>".
 			"<h3>Geograph British Isles</h3>".
 			"<p><a href=\"/\">Homepage</a> | <a href=\"/sitemap/\">Sitemap</a> | <a href=\"$file1\">Up one level</a> | $s</p>".
 			"<ul>\n$html</ul>".
 			"</body></html>";
-			
+
 			file_put_contents($base.$file,$html);
 		}
 	}
@@ -291,4 +283,3 @@ function getHtmlLink($url,$text,$prefix = 'in',$postfix='') {
 	return "<li><a title=\"List photographs $prefix $text\" href=\"$url\">View Photographs <b>$prefix $text</b>$postfix</a></li>\n";
 }
 
-?>

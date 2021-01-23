@@ -64,12 +64,12 @@ class RebuildGridimageGroupStat extends EventHandler
 			$this->Execute("DROP TABLE IF EXISTS `gridimage_group_stat_tmp`");
 			$prefix = array('prefix'=>'XX','reference_index'=>999); //will never match anything!
 			$this->Execute('create table gridimage_group_stat_tmp ( gridimage_group_stat_id int unsigned auto_increment primary key, index(grid_reference) ) '.
-				preg_replace('/\{\$(\w+)\}/e','$prefix["\1"]',$sql)) or die(mysql_error());
+				preg_replace_callback('/\{\$(\w+)\}/', function($m) use ($prefix) { return $prefix[$m[1]]; }, $sql)) or die(mysql_error());
 		}
 
 		$prefixes = $db->GetAll("select prefix,reference_index from gridprefix where landcount > 0 ");
 		foreach ($prefixes as $prefix) {
-			$this->Execute('insert into gridimage_group_stat_tmp '.preg_replace('/\{\$(\w+)\}/e','$prefix["\1"]',$sql));
+			$this->Execute('insert into gridimage_group_stat_tmp '.preg_replace_callback('/\{\$(\w+)\}/', function($m) use ($prefix) { return $prefix[$m[1]]; }, $sql));
 		}
 
 		$this->Execute("DROP TABLE IF EXISTS gridimage_group_stat");

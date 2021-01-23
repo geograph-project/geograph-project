@@ -63,7 +63,9 @@ $q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 
 $q = trim(preg_replace('/[^\w~\|\(\)@"\/\*=<^$,-]+/',' ',trim(strtolower($q))));
 
-$q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\""',$q);
+$q = preg_replace_callback('/(\w+)(-\w+[-\w]*\w)/',function($m) {
+	return '"'.str_replace("-"," ",$m[1].$m[2]).'"';
+	},$q);
 
 $q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 //todo - handle full placenames with near, by looking up in gaz :)

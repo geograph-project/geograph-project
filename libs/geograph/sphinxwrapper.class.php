@@ -106,7 +106,7 @@ $extended = '\xC0-\xD6\xD8-\xF6\xF8-\xFF\xB4\x92\x91\x60';
 		$q = preg_replace('/(?<!"|near)\//',' ',$q);
 
 			//convert ="phrase" to = on all words
-		$q = preg_replace('/="(\^)?(\w[\w ]+)(\$?)"/e','"\\"$1".preg_replace("/\b(\w+)/","=\\$1","$2")."$3\\""',$q);
+		$q = preg_replace_callback('/="(\^)?(\w[\w ]+)(\$?)"/', function($m) { return '"'.$m[1].preg_replace('/\b(\w+)/','=$1',$m[2]).$m[3].'"'; }, $q);
 
 			//remove any = not at word start
 		$q = preg_replace('/(^|[\s\(\[~"^-]+)=/','$1%',$q);
@@ -142,7 +142,9 @@ if (!empty($_GET['ddeb']))
 //}
 
 			//make excluded hyphenated words phrases
-		$q = preg_replace('/(?<!"|\w)-(=?[\w'.$extended.']+)(-[-\w'.$extended.']*[\w'.$extended.'])/e','"-(\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2").")"',$q);
+		$q = preg_replace_callback('/(?<!"|\w)-(=?[\w'.$extended.']+)(-[-\w'.$extended.']*[\w'.$extended.'])/', function($m) {
+			return '-("'.str_replace("-"," ",$m[1].$m[2]).'" | '.str_replace("-","",$m[1].$m[2]).')';
+		},$q);
 
 			//make hyphenated words phrases
 		$q = preg_replace_callback('/(?<!")(=?[\w'.$extended.']+)(-[-\w'.$extended.']*[\w'.$extended.'])/', function($m) {
