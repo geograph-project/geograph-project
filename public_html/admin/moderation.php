@@ -487,6 +487,7 @@ foreach ($images->images as $i => $image) {
 
 #############################
 
+//might as well do this after unlock
 if (!empty($image_ids)) {
 
 	$tagdata = $db->getAll("SELECT gridimage_id, group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags
@@ -501,23 +502,6 @@ if (!empty($image_ids)) {
 		if (!empty($images->images[$i]))
 			$images->images[$i]->tags = explode("?",$row['tags']);
 	}
-}
-
-#############################
-
-//might as well do this after unlock
-
-$tagdata = $db->getAll("SELECT gridimage_id, group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags
-        FROM tag_public
-	WHERE gridimage_id IN (".implode(',',array_keys($image_ids)).")
-	AND prefix = 'type'
-	GROUP BY gridimage_id ORDER BY NULL"); // we only NEED the type tags!
-
-if (!empty($tagdata)) // can be empty!
-foreach ($tagdata as $row) {
-	$i = $image_ids[$row['gridimage_id']];
-	if (!empty($images->images[$i]))
-		$images->images[$i]->tags = explode("?",$row['tags']);
 }
 
 #############################
