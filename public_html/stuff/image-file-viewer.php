@@ -28,6 +28,9 @@ $res = array();
 
 if ($image->original_width>10) {
 	$greatest = max($image->original_width,$image->original_height);
+
+	print "This image is listed as having a greatest dimension of $greatest\n";
+
 	if ($image->original_width > 640) {
 		$size = 640;
                 $thumbnail = $image->_getOriginalpath(true,true,"_{$size}x{$size}");
@@ -102,6 +105,10 @@ foreach ($sizes as $size) {
 
 		//stamp
 		$url = "{$CONF['TILE_HOST']}/stamp.php?id={$image->gridimage_id}&gravity=SouthEast&hash=".$image->_getAntiLeechHash();
+
+//jsut so can see the text in the tiny thumbnail!
+$url .="&pointsize=45";
+
 		print "<td><img src=$url $style>$stylefix</td>";
 
 		//download
@@ -120,6 +127,10 @@ foreach ($sizes as $size) {
 		if ($size != 640) {
 			//stamp
 			$url = "{$CONF['TILE_HOST']}/stamp.php?id={$image->gridimage_id}&gravity=SouthEast&hash=".$image->_getAntiLeechHash()."&large=$size";
+
+//jsut so can see the text in the tiny thumbnail!
+$url .="&pointsize=45";
+
 			print "<td><img src=$url $style>$stylefix</td>";
 
 			//download
@@ -141,6 +152,10 @@ foreach ($sizes as $size) {
 
 		//stamp
 		$url = "{$CONF['TILE_HOST']}/stamp.php?id={$image->gridimage_id}&gravity=SouthEast&hash=".$image->_getAntiLeechHash()."&large=1";
+
+//jsut so can see the text in the tiny thumbnail!
+$url .="&pointsize=45";
+
 		print "<td><img src=$url $style>$stylefix</td>";
 
 		//download
