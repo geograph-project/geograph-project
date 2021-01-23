@@ -335,10 +335,8 @@ function get_tag($tag,$gr,$images = 4) {
 }
 
 
-function preg_replace_array($patterns, $replacements, $s)
-{
-	$i = 0;
-	foreach ($patterns as $pattern) {
+function preg_replace_array($patterns, $replacements, $s) {
+	foreach ($patterns as $i => $pattern) {
 		if (!isset($replacements[$i])) {
 			$s = preg_replace($pattern, '', $s);
 		} elseif (is_string($replacements[$i])) {
@@ -346,7 +344,6 @@ function preg_replace_array($patterns, $replacements, $s)
 		} else {
 			$s = preg_replace_callback($pattern, $replacements[$i], $s);
 		}
-		++$i;
 	}
 	return $s;
 }
@@ -449,13 +446,6 @@ function smarty_function_articletext($input) {
 		$output = $pages[$offset];
 	}
 
-	if (!empty($_GET['test'])) {
-		print "<pre>";
-		print htmlentities(print_r($pages,1));
-		exit;
-	}
-
-
 	if (!empty($pattern)) {
 		//do this now, because the title replacements NEED the limit=1 for for if multiple identical titles. the later replacement, cant use a limit.
         	$output=preg_replace($pattern, $replacement, $output, 1);
@@ -479,15 +469,20 @@ function smarty_function_articletext($input) {
 		return smarty_function_gridimage(array('id' => $m[1],'extra' => $m[2]));
 	};
 
-	$pattern[]='/\[image id=([a-z]*:?\d+)\]/e';
-	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '{description}'))";
+	$pattern[]='/\[image id=([a-z]*:?\d+)\]/';
+	$replacement[] = function($m) {
+		return smarty_function_gridimage(array('id' => $m[1],'extra' => '{description}'));
+	};
 
+	$pattern[]='/\[snippet id=(\d+)(?: image=(\d+))?\]/';
+	$replacement[] = function($m) {
+		return get_snippet($m[1],$m[2]);
+	};
 
-	$pattern[]='/\[snippet id=(\d+)(?: image=(\d+))?\]/e';
-	$replacement[]="get_snippet('\$1','\$2')";
-
-	$pattern[]='/\[tag=([^=\]"]+?)(?: gr=(\w{1,2}\d{0,4}))?(?: images=(\d+))?\]/e';
-	$replacement[]="get_tag('\$1','\$2','\$3')";
+	$pattern[]='/\[tag=([^=\]"]+?)(?: gr=(\w{1,2}\d{0,4}))?(?: images=(\d+))?\]/';
+	$replacement[] = function($m) {
+		return get_tag($m[1],$m[2],$m[3]);
+	};
 
 	$pattern[]='/(\!)([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
 	$replacement[]="\\2";
@@ -551,7 +546,6 @@ function smarty_function_articletext($input) {
 	$pattern[]="/\[url=#([\w-]+)\](.+?)\[\/url\]/i";
 	$replacement[]='<a href="#\1">\2</a>';
 
-
 	$pattern[]="/\n/";
 	$replacement[]="<br/>\n";
 
@@ -586,7 +580,7 @@ function smarty_function_articletext($input) {
 		}
 	}
 
-	if (count($imageCredits)) {
+	if (!empty($imageCredits)) {
 		arsort($imageCredits);
 
 		$imageCreditsStr = implode(', ',array_keys($imageCredits));
