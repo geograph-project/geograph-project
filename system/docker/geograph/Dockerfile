@@ -7,6 +7,7 @@ RUN set -eux; \
   apt-get install -y --no-install-recommends \
     curl \
     imagemagick \
+    gsfonts \
     libimage-exiftool-perl \
     libjpeg-turbo-progs \
     nginx \
