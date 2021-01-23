@@ -56,6 +56,7 @@ if (!$smarty->is_cached('explore.tpl'))
 	$topics=array("1"=>"Any Topic"); 
 	
 	$options = array();
+	$last = false;
 	foreach ($topicsraw as $topic_id => $row) {
 		if ($last != $row['forum_name'] && $last) {
 			$topics[$last] = $options;

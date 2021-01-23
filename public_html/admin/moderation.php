@@ -96,7 +96,7 @@ if (isset($_GET['gridimage_id']))
 
 				$info=$image->setModerationStatus($status, $USER->user_id);
 				echo $info;
-				flush;
+				flush();
 
 				if ($status == 'rejected')
 				{
@@ -229,7 +229,7 @@ Regards,
 if (!isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remoderate'])) {
 
 	$mkey = $USER->user_id;
-	$count =& $memcache->name_get('udm',$mkey);
+	$count = $memcache->name_get('udm',$mkey);
 
 	if (empty($count)) {
 		if ($db->readonly) {
@@ -449,14 +449,15 @@ foreach ($images->images as $i => $image) {
 			sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings-$correction,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings-$correction,2))/1000);
 
 		if (intval($images->images[$i]->grid_square->nateastings/1000) != intval($images->images[$i]->viewpoint_eastings/1000)
-			|| intval($images->images[$i]->grid_square->natnorthings/1000) != intval($images->images[$i]->viewpoint_northings/1000))
+			|| intval($images->images[$i]->grid_square->natnorthings/1000) != intval($images->images[$i]->viewpoint_northings/1000)) {
 			$images->images[$i]->different_square_true = true;
 
-		if ($images->images[$i]->different_square_true && $images->images[$i]->subject_gridref_precision==1000)
-			$images->images[$i]->distance -= 0.5;
+			if ($images->images[$i]->subject_gridref_precision==1000)
+				$images->images[$i]->distance -= 0.5;
 
-		if ($images->images[$i]->different_square_true && $images->images[$i]->distance > 0.1)
-			$images->images[$i]->different_square = true;
+			if ($images->images[$i]->distance > 0.1)
+				$images->images[$i]->different_square = true;
+		}
 
 		$token->setValue("p", $images->images[$i]->getPhotographerGridref(true));
 	}
@@ -478,8 +479,10 @@ foreach ($images->images as $i => $image) {
 	}
 	//if (!empty($image->tags)) - now done automatically by imagelist class!
 	//	$images->images[$i]->tags = explode("?",$image->tags);
-	if (!isset($image->tags))
+	if (!isset($image->tags)) {
+		$images->images[$i]->tags = array(); //initialize as empty so the array is always set, even if not tags
 		$image_ids[$image->gridimage_id] = $i;
+	}
 }
 
 #############################

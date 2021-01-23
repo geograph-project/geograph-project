@@ -35,7 +35,7 @@ if (isset($_GET['1'])) {
 } else {
 	$template = 'content_docs.tpl';
 }
-
+$cacheid = '';
 
 ##$data = $db->getRow("show table status like 'article'");
 
@@ -67,9 +67,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$ADODB_FETCH_MODE = $prev_fetch_mode;
 
-	$halve = ceil(count($list)/2);
-	$smarty->assign('splitcat', $list[$halve]['category_name']);
-
+	if (!empty($list)) {
+		$halve = ceil(count($list)/2);
+		$smarty->assign('splitcat', $list[$halve]['category_name']);
+	}
 	$smarty->assign_by_ref('list', $list);
 }
 
