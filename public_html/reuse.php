@@ -97,7 +97,7 @@ if (isset($_REQUEST['id']))
 			$filename = basename($filepath);
 			$filename = "geograph-".preg_replace('/_\w+(\.jpg)/'," by {$image->realname}\$1",$filename);
 			$filename = preg_replace('/ /','-',trim($filename));
-			$filename = preg_replace('/[^\w-\.,]+/','',$filename);
+			$filename = preg_replace('/[^\w\-\.,]+/','',$filename);
 
 			header("Content-Type: image/jpeg");
 			header("Content-Disposition: attachment; filename=\"$filename\"");
