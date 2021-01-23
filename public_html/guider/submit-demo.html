@@ -1,0 +1,699 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" id="geograph"> 
+<head> 
+<title>Submit :: Geograph Britain and Ireland - photograph every grid square!</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /> 
+<meta name="description" content="Geograph Britain and Ireland is a web based project to collect and reference geographically representative images of every square kilometre of the British 
+Isles."/><meta name="DC.title" content="Geograph:: Submit"/> 
+ 
+<link rel="stylesheet" type="text/css" title="Monitor" href="http://s0.geograph.org.uk/templates/basic/css/basic.v7290.css" media="screen" /> 
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/> 
+<link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/> 
+<link rel="search" type="application/opensearchdescription+xml" 
+title="Geograph Britain and Ireland search" href="/stuff/osd.xml" /> 
+<script type="text/javascript" src="http://s0.geograph.org.uk/js/geograph.v7331.js"></script> 
+</head> 
+<body> 
+<div id="header_block"> 
+  <div id="header"> 
+    <h1 onclick="document.location='/';"><a title="Geograph home page" href="/">GeoGraph - photograph every grid square</a></h1> 
+  </div> 
+</div> 
+<div class="content2" id="maincontent_block"><div id="maincontent"><style type="text/css"> 
+.tab {
+	cursor:pointer;
+	cursor:hand;
+}
+ 
+.navButtons A {
+	border: 1px solid lightgrey;
+	padding: 2px;
+}
+ 
+</style> 
+ 
+    <form enctype="multipart/form-data" action="/submit.php" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" > 
+ 
+ 
+  
+	<h2>Submit Step 1 of 4 : Choose grid square</h2> 
+ 
+ 
+ 
+<ul> 
+	<li>You are using the new Tagging based submission process, thank you. <small><a href="/switch.php">change</a>.</small></li> 
+</ul> 
+ 
+	
+<div style="position:relative;"> 
+	<div class="tabHolder"> 
+		<a class="tabSelected nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>&nbsp;
+		<a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,4)">Choose Square</a>&nbsp;
+		<a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Geotagged Image</a>&nbsp;
+		<a class="tab nowrap" id="tab4" onclick="tabClick('tab','div',4,4); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = 
+'/submitmap.php?inner'"><b>Locate on Map</b>/by Placename</a> 
+	</div> 
+ 
+	<div style="position:relative;" class="interestBox" id="div1"> 
+		<p>Begin by choosing the grid square for which you wish to submit.</p> 
+ 
+		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; specify the photographer location in the next step.</p> 
+ 
+		<p><label for="grid_reference">Enter the grid reference
+		(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
+		<u title="e.g. TQ435646 or TQ 435 646">6</u>,
+		<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or
+		<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the subject grid square</label><br /><br /> 
+		<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">clear</a>)<br/></small></small>		<input id="grid_reference" type="text" 
+name="grid_reference" value="" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a 
+href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a 
+href="javascript:doMove('grid_reference',1,0);">E</a></small></small> 
+		&nbsp;&nbsp;&nbsp;
+		<input type="submit" name="setpos" id="setpos" value="Next &gt;"/> <hr/><br/>or enter location above and <input type="submit" name="picnik" id="picnik" value="Upload via Picnik &gt;"/> 
+		</p> 
+ 
+		<p><small>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically 
+transferring it to Geograph.</small> 
+		</p> 
+	</div> 
+ 
+	<div style="position:relative;display:none" class="interestBox" id="div2"> 
+		<p>Begin by choosing the grid square for which you wish to submit.</p> 
+ 
+		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; if you wish you can specify a photographer location in the next step.</p> 
+ 
+		<p><label for="gridsquare">Select the 1km grid square below...</label><br/><br/> 
+		<select id="gridsquare" name="gridsquare"> 
+			<option label="HP" value="HP">HP</option> 
+<option label="HT" value="HT">HT</option> 
+<option label="HU" value="HU">HU</option> 
+<option label="HW" value="HW">HW</option> 
+<option label="HX" value="HX">HX</option> 
+<option label="HY" value="HY">HY</option> 
+<option label="HZ" value="HZ">HZ</option> 
+<option label="MC" value="MC">MC</option> 
+<option label="NA" value="NA">NA</option> 
+<option label="NB" value="NB" selected="selected">NB</option> 
+<option label="NC" value="NC">NC</option> 
+<option label="ND" value="ND">ND</option> 
+<option label="NF" value="NF">NF</option> 
+<option label="NG" value="NG">NG</option> 
+<option label="NH" value="NH">NH</option> 
+<option label="NJ" value="NJ">NJ</option> 
+<option label="NK" value="NK">NK</option> 
+<option label="NL" value="NL">NL</option> 
+<option label="NM" value="NM">NM</option> 
+<option label="NN" value="NN">NN</option> 
+<option label="NO" value="NO">NO</option> 
+<option label="NR" value="NR">NR</option> 
+<option label="NS" value="NS">NS</option> 
+<option label="NT" value="NT">NT</option> 
+<option label="NU" value="NU">NU</option> 
+<option label="NW" value="NW">NW</option> 
+<option label="NX" value="NX">NX</option> 
+<option label="NY" value="NY">NY</option> 
+<option label="NZ" value="NZ">NZ</option> 
+<option label="OV" value="OV">OV</option> 
+<option label="SC" value="SC">SC</option> 
+<option label="SD" value="SD">SD</option> 
+<option label="SE" value="SE">SE</option> 
+<option label="SH" value="SH">SH</option> 
+<option label="SJ" value="SJ">SJ</option> 
+<option label="SK" value="SK">SK</option> 
+<option label="SM" value="SM">SM</option> 
+<option label="SN" value="SN">SN</option> 
+<option label="SO" value="SO">SO</option> 
+<option label="SP" value="SP">SP</option> 
+<option label="SR" value="SR">SR</option> 
+<option label="SS" value="SS">SS</option> 
+<option label="ST" value="ST">ST</option> 
+<option label="SU" value="SU">SU</option> 
+<option label="SV" value="SV">SV</option> 
+<option label="SW" value="SW">SW</option> 
+<option label="SX" value="SX">SX</option> 
+<option label="SY" value="SY">SY</option> 
+<option label="SZ" value="SZ">SZ</option> 
+<option label="TA" value="TA">TA</option> 
+<option label="TF" value="TF">TF</option> 
+<option label="TG" value="TG">TG</option> 
+<option label="TL" value="TL">TL</option> 
+<option label="TM" value="TM">TM</option> 
+<option label="TQ" value="TQ">TQ</option> 
+<option label="TR" value="TR">TR</option> 
+<option label="TV" value="TV">TV</option> 
+<option label="B" value="B">B</option> 
+<option label="C" value="C">C</option> 
+<option label="D" value="D">D</option> 
+<option label="F" value="F">F</option> 
+<option label="G" value="G">G</option> 
+<option label="H" value="H">H</option> 
+<option label="J" value="J">J</option> 
+<option label="L" value="L">L</option> 
+<option label="M" value="M">M</option> 
+<option label="N" value="N">N</option> 
+<option label="O" value="O">O</option> 
+<option label="Q" value="Q">Q</option> 
+<option label="R" value="R">R</option> 
+<option label="S" value="S">S</option> 
+<option label="T" value="T">T</option> 
+<option label="V" value="V">V</option> 
+<option label="W" value="W">W</option> 
+<option label="X" value="X">X</option> 
+ 
+		</select>&nbsp;&nbsp;
+		<label for="eastings">E</label> 
+		<select id="eastings" name="eastings"> 
+			<option label="00" value="0">00</option> 
+<option label="01" value="1">01</option> 
+<option label="02" value="2">02</option> 
+<option label="03" value="3">03</option> 
+<option label="04" value="4">04</option> 
+<option label="05" value="5">05</option> 
+<option label="06" value="6">06</option> 
+<option label="07" value="7">07</option> 
+<option label="08" value="8">08</option> 
+<option label="09" value="9">09</option> 
+<option label="10" value="10">10</option> 
+<option label="11" value="11">11</option> 
+<option label="12" value="12">12</option> 
+<option label="13" value="13">13</option> 
+<option label="14" value="14">14</option> 
+<option label="15" value="15">15</option> 
+<option label="16" value="16">16</option> 
+<option label="17" value="17">17</option> 
+<option label="18" value="18">18</option> 
+<option label="19" value="19">19</option> 
+<option label="20" value="20">20</option> 
+<option label="21" value="21">21</option> 
+<option label="22" value="22">22</option> 
+<option label="23" value="23">23</option> 
+<option label="24" value="24">24</option> 
+<option label="25" value="25">25</option> 
+<option label="26" value="26">26</option> 
+<option label="27" value="27">27</option> 
+<option label="28" value="28">28</option> 
+<option label="29" value="29">29</option> 
+<option label="30" value="30">30</option> 
+<option label="31" value="31">31</option> 
+<option label="32" value="32" selected="selected">32</option> 
+<option label="33" value="33">33</option> 
+<option label="34" value="34">34</option> 
+<option label="35" value="35">35</option> 
+<option label="36" value="36">36</option> 
+<option label="37" value="37">37</option> 
+<option label="38" value="38">38</option> 
+<option label="39" value="39">39</option> 
+<option label="40" value="40">40</option> 
+<option label="41" value="41">41</option> 
+<option label="42" value="42">42</option> 
+<option label="43" value="43">43</option> 
+<option label="44" value="44">44</option> 
+<option label="45" value="45">45</option> 
+<option label="46" value="46">46</option> 
+<option label="47" value="47">47</option> 
+<option label="48" value="48">48</option> 
+<option label="49" value="49">49</option> 
+<option label="50" value="50">50</option> 
+<option label="51" value="51">51</option> 
+<option label="52" value="52">52</option> 
+<option label="53" value="53">53</option> 
+<option label="54" value="54">54</option> 
+<option label="55" value="55">55</option> 
+<option label="56" value="56">56</option> 
+<option label="57" value="57">57</option> 
+<option label="58" value="58">58</option> 
+<option label="59" value="59">59</option> 
+<option label="60" value="60">60</option> 
+<option label="61" value="61">61</option> 
+<option label="62" value="62">62</option> 
+<option label="63" value="63">63</option> 
+<option label="64" value="64">64</option> 
+<option label="65" value="65">65</option> 
+<option label="66" value="66">66</option> 
+<option label="67" value="67">67</option> 
+<option label="68" value="68">68</option> 
+<option label="69" value="69">69</option> 
+<option label="70" value="70">70</option> 
+<option label="71" value="71">71</option> 
+<option label="72" value="72">72</option> 
+<option label="73" value="73">73</option> 
+<option label="74" value="74">74</option> 
+<option label="75" value="75">75</option> 
+<option label="76" value="76">76</option> 
+<option label="77" value="77">77</option> 
+<option label="78" value="78">78</option> 
+<option label="79" value="79">79</option> 
+<option label="80" value="80">80</option> 
+<option label="81" value="81">81</option> 
+<option label="82" value="82">82</option> 
+<option label="83" value="83">83</option> 
+<option label="84" value="84">84</option> 
+<option label="85" value="85">85</option> 
+<option label="86" value="86">86</option> 
+<option label="87" value="87">87</option> 
+<option label="88" value="88">88</option> 
+<option label="89" value="89">89</option> 
+<option label="90" value="90">90</option> 
+<option label="91" value="91">91</option> 
+<option label="92" value="92">92</option> 
+<option label="93" value="93">93</option> 
+<option label="94" value="94">94</option> 
+<option label="95" value="95">95</option> 
+<option label="96" value="96">96</option> 
+<option label="97" value="97">97</option> 
+<option label="98" value="98">98</option> 
+<option label="99" value="99">99</option> 
+ 
+		</select> 
+		<small><small><a href="javascript:doMove2(-1,0);">W</a></small><small><a href="javascript:doMove2(1,0);">E</a></small></small>&nbsp;&nbsp;
+		<label for="northings">N</label> 
+		<select id="northings" name="northings"> 
+			<option label="00" value="0">00</option> 
+<option label="01" value="1">01</option> 
+<option label="02" value="2">02</option> 
+<option label="03" value="3">03</option> 
+<option label="04" value="4">04</option> 
+<option label="05" value="5">05</option> 
+<option label="06" value="6">06</option> 
+<option label="07" value="7">07</option> 
+<option label="08" value="8">08</option> 
+<option label="09" value="9">09</option> 
+<option label="10" value="10">10</option> 
+<option label="11" value="11">11</option> 
+<option label="12" value="12">12</option> 
+<option label="13" value="13">13</option> 
+<option label="14" value="14">14</option> 
+<option label="15" value="15">15</option> 
+<option label="16" value="16">16</option> 
+<option label="17" value="17">17</option> 
+<option label="18" value="18">18</option> 
+<option label="19" value="19">19</option> 
+<option label="20" value="20">20</option> 
+<option label="21" value="21" selected="selected">21</option> 
+<option label="22" value="22">22</option> 
+<option label="23" value="23">23</option> 
+<option label="24" value="24">24</option> 
+<option label="25" value="25">25</option> 
+<option label="26" value="26">26</option> 
+<option label="27" value="27">27</option> 
+<option label="28" value="28">28</option> 
+<option label="29" value="29">29</option> 
+<option label="30" value="30">30</option> 
+<option label="31" value="31">31</option> 
+<option label="32" value="32">32</option> 
+<option label="33" value="33">33</option> 
+<option label="34" value="34">34</option> 
+<option label="35" value="35">35</option> 
+<option label="36" value="36">36</option> 
+<option label="37" value="37">37</option> 
+<option label="38" value="38">38</option> 
+<option label="39" value="39">39</option> 
+<option label="40" value="40">40</option> 
+<option label="41" value="41">41</option> 
+<option label="42" value="42">42</option> 
+<option label="43" value="43">43</option> 
+<option label="44" value="44">44</option> 
+<option label="45" value="45">45</option> 
+<option label="46" value="46">46</option> 
+<option label="47" value="47">47</option> 
+<option label="48" value="48">48</option> 
+<option label="49" value="49">49</option> 
+<option label="50" value="50">50</option> 
+<option label="51" value="51">51</option> 
+<option label="52" value="52">52</option> 
+<option label="53" value="53">53</option> 
+<option label="54" value="54">54</option> 
+<option label="55" value="55">55</option> 
+<option label="56" value="56">56</option> 
+<option label="57" value="57">57</option> 
+<option label="58" value="58">58</option> 
+<option label="59" value="59">59</option> 
+<option label="60" value="60">60</option> 
+<option label="61" value="61">61</option> 
+<option label="62" value="62">62</option> 
+<option label="63" value="63">63</option> 
+<option label="64" value="64">64</option> 
+<option label="65" value="65">65</option> 
+<option label="66" value="66">66</option> 
+<option label="67" value="67">67</option> 
+<option label="68" value="68">68</option> 
+<option label="69" value="69">69</option> 
+<option label="70" value="70">70</option> 
+<option label="71" value="71">71</option> 
+<option label="72" value="72">72</option> 
+<option label="73" value="73">73</option> 
+<option label="74" value="74">74</option> 
+<option label="75" value="75">75</option> 
+<option label="76" value="76">76</option> 
+<option label="77" value="77">77</option> 
+<option label="78" value="78">78</option> 
+<option label="79" value="79">79</option> 
+<option label="80" value="80">80</option> 
+<option label="81" value="81">81</option> 
+<option label="82" value="82">82</option> 
+<option label="83" value="83">83</option> 
+<option label="84" value="84">84</option> 
+<option label="85" value="85">85</option> 
+<option label="86" value="86">86</option> 
+<option label="87" value="87">87</option> 
+<option label="88" value="88">88</option> 
+<option label="89" value="89">89</option> 
+<option label="90" value="90">90</option> 
+<option label="91" value="91">91</option> 
+<option label="92" value="92">92</option> 
+<option label="93" value="93">93</option> 
+<option label="94" value="94">94</option> 
+<option label="95" value="95">95</option> 
+<option label="96" value="96">96</option> 
+<option label="97" value="97">97</option> 
+<option label="98" value="98">98</option> 
+<option label="99" value="99">99</option> 
+ 
+		</select> 
+		<small><sup><a href="javascript:doMove2(0,1);">N</a></sup><sub><a href="javascript:doMove2(0,-1);">S</a></sub></small> 
+		&nbsp;&nbsp;&nbsp;
+		<input type="submit" name="setpos2" value="Next &gt;"/> <hr/><br/>or select location above and <input type="submit" name="picnik" value="Upload via Picnik &gt;"/> 
+		</p> 
+ 
+		<p><small>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically 
+transferring it to Geograph.</small>		</p> 
+	</div> 
+ 
+	<div style="position:relative;display:none" class="interestBox" id="div3"> 
+		<p><label for="jpeg_exif"><b>Upload an image with locational information attached</b></label> <br/> 
+ 
+		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" accept="image/jpeg"/> 
+		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" /> 
+ 
+		<input type="submit" name="setpos" value="Next &gt;"/> <br/> 
+ 
+		 - (upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/> 
+ 
+		<div>Currently understands: <a href="/article/Uploading-Tagged-Images" class="about">About</a><ul> 
+		<li>GPS-EXIF tags based on WGS84 Lat/Long</li> 
+		<li>Subject grid-reference from the name of the file (eg "<tt>photo-<b style="padding:1px">TQ435646</b>A.jpg</tt>")</li> 
+		<li>Subject grid-reference in EXIF Comment tag</li> 
+		</ul></div> 
+ 
+		<p><sup style=color:red>New!</sup> the <a href="/submit-multi.php">Multi-Submit</a>, now understands tagged images like this upload box does.</p> 
+	</div> 
+ 
+	<div style="position:relative;display:none" class="interestBox" id="div4"> 
+		<iframe  id="innerFrame4" width="613" height="660" frameborder="0"><a href="/submitmap.php">Click here to open a Draggable Interactive Google Map</a></iframe> 
+	</div> 
+ 
+</div> 
+		<p>&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);"> 
+			<option value="OSOS">Zoomable Modern OS Mapping</option> 
+			<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option> 
+			<option value="Google">Zoomable Google Mapping + 1920s to 1940s OS</option> 
+		</select> <small>(OS Maps not available for Ireland)</small></p> 
+ 
+		<script> 
+		function saveService(that) {
+			createCookie("MapSrv",that.options[that.selectedIndex].value,10);
+		}
+ 
+		function restoreService() {
+			var newservice = readCookie('MapSrv');
+			if (newservice) {
+				var ele = document.getElementById('service');
+				for(var q=0;ele.options.length;q++)
+					if (ele.options[q].value == newservice)
+						ele.options[q].selected = true;
+			}
+		}
+		AttachEvent(window,'load',restoreService,false);
+		</script> 
+ 
+ 
+	<br/><br/><br/> 
+	<p>If you are unsure of the photo location there are a number of online
+		sources available to help:</p> 
+ 
+	<ul> 
+		<li><b><span class="nowrap"><a title="OS getamap" href="http://www.getamap.ordnancesurveyleisure.co.uk/">OS getamap</a><img style="padding-left:2px;" alt="External link" 
+title="External link - shift click to open in new window" src="http://s0.geograph.org.uk/img/external.png" width="10" height="10"/></span> provides a search by
+		Placename or Postcode.</b><br/> Once you have centred the map on the picture location,
+		return here and enter the <i>Grid reference at centre</i> value shown into the box
+		above.<br/><br/></li> 
+		<li><span class="nowrap"><a title="multimap.com" href="http://www.multimap.com/map/browse.cgi?lat=54.5445&lon=-6.8228&scale=1000000">multimap.com</a><img style="padding-left:2px;" 
+alt="External link" title="External link - shift click to open in new window" src="http://s0.geograph.org.uk/img/external.png" width="10" height="10"/></span> now displays 1:50,000 <b>Mapping for 
+Northern Ireland</b>. Use our handy <a href="/latlong.php">Lat/Long Convertor</a> to get the correct Grid Square for a picture.<br/><br/> 
+ 
+		Furthermore <span class="nowrap"><a title="OSNI" href="http://www.osni.gov.uk/mapstore">OSNI</a><img style="padding-left:2px;" alt="External link" title="External link - shift click 
+to open in new window" src="http://s0.geograph.org.uk/img/external.png" width="10" height="10"/></span> and <span class="nowrap"><a title="OSI" href="http://www.osi.ie/">OSI</a><img 
+style="padding-left:2px;" alt="External link" title="External link - shift click to open in new window" src="http://s0.geograph.org.uk/img/external.png" width="10" height="10"/></span> now offer 
+online mapping from their own websites. Coordinate conversion may not be easy - its probably best to rely on visual estimation using the national grid projected on the map.
+		<br/><br/></li> 
+ 
+		<li><b>If you have a WGS84 latitude &amp; longitude coordinate</b> 
+		(e.g. from a GPS receiver, or from multimap site), then see our
+		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li> 
+		<li><b>For information on <span class="nowrap"><a title="Grid References" href="http://en.wikipedia.org/wiki/Grid_reference">Grid References</a><img style="padding-left:2px;" 
+alt="External link" title="External link - shift click to open in new window" src="http://s0.geograph.org.uk/img/external.png" width="10" height="10"/></span></b> <br/>see
+		<span class="nowrap"><a title="Guide to the National Grid" href="http://www.ordnancesurvey.co.uk/oswebsite/gi/nationalgrid/nghelp1.html">Interactive Guide to the National Grid in 
+Great Britain</a><img style="padding-left:2px;" alt="External link" title="External link - shift click to open in new window" src="http://s0.geograph.org.uk/img/external.png" width="10" 
+height="10"/></span>.
+		The <span class="nowrap"><a title="Irish National Grid" href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system">Irish National Grid</a><img style="padding-left:2px;" 
+alt="External link" title="External link - shift click to open in new window" src="http://s0.geograph.org.uk/img/external.png" width="10" height="10"/></span> is very similar, but using a single 
+letter prefix,
+		see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.
+		</li> 
+	</ul> 
+ 
+	<script type="text/javascript" src="http://s0.geograph.org.uk/mapping1.v3790.js"></script> 
+	<script type="text/javascript" src="http://s0.geograph.org.uk/mapper/geotools2.v7300.js"></script> 
+ 
+	<input type="hidden" name="photographer_gridref" value=""> 
+	<input type="hidden" name="view_direction" value=""> 
+	<input type="hidden" name="use6fig" value=""> 
+ 
+ 
+	<input type="hidden" name="title" value=""/> 
+	<input type="hidden" name="comment" value=""/> 
+	<input type="hidden" name="tags" value=""/> 
+	<input type="hidden" name="imageclass" value=""/> 
+	<input type="hidden" name="imagetaken" value=""/> 
+	<input type="hidden" name="user_status" value=""/> 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+	</form> 
+ 
+ 
+ 
+ 
+</div> 
+</div> 
+<div id="nav_block" class="no_print"> 
+ <div class="nav"> 
+  <ul> 
+    <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/">Home</a></li> 
+    <li>View<ul> 
+     <li><a title="Find and locate images" href="/search.php">Search</a></li> 
+     <li><a title="View map of all submissions" href="/mapbrowse.php">Maps</a></li> 
+     <li><a title="Explore images by theme" href="/explore/">Explore</a></li> 
+     <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Collections</a></li> 
+    </ul></li> 
+    <li>Interact<ul> 
+     <li><a title="Geographical games to play" href="/games/">Games</a></li> 
+     <li><a title="Activities on the site" href="/activities/">Activities</a> </li> 
+     <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li> 
+          <li><a title="Geograph Blog" href="/blog/">Blog</a></li> 
+     <li><a title="Local Events and Meetups" href="/events/">Events</a></li> 
+         </ul></li> 
+    <li>Contributors<ul> 
+     <li><a title="Submit your photos" href="/submit.php">Submit</a></li> 
+          <li><a title="Your most recent submissions" href="/submissions.php">Submissions</a></li> 
+          <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li> 
+     <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li> 
+    </ul></li> 
+    <li>General<ul> 
+     <li><a title="Frequently Asked Questions" href="/faq.php">FAQ</a></li> 
+     <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Help Pages</a></li> 
+     <li><a title="View a list of all pages" href="/help/sitemap">Sitemap</a></li> 
+     <li><a accesskey="9" title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li> 
+    </ul></li> 
+      </ul> 
+<div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/> 
+<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="http://s0.geograph.org.uk/templates/basic/img/sponsor_small.gif" width="125" 
+height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div> 
+  </div> 
+</div> 
+<div id="search_block" class="no_print"> 
+  <div id="search"> 
+    <div id="searchform"> 
+    <form method="get" action="/search.php"> 
+    <div id="searchfield"> 
+    <input type="hidden" name="form" value="simple"/> 
+    <input id="searchterm" type="text" name="q" value="" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search" onfocus="search_focus(this)" onblur="search_blur(this)"/>    
+<input id="searchbutton" type="submit" name="go" value="Find"/></div> 
+    </form> 
+    </div> 
+  </div> 
+  <div id="login"><span class="nowrap"> 
+      	  Logged in as UNKNOWN
+  	  <span class="sep">|</span> 
+  	  <a title="Profile" href="/profile.php">profile</a> 
+  	  <span class="sep">|</span></span> 
+  	  <a title="Log out" href="/logout.php">logout</a> 
+      </div> 
+</div> 
+	<div class="content2" id="footer_block"> 
+  <div id="footer" class="no_print"> 
+     <p style="color:#AAAABB;float:left">Page updated at 20:22</p> 
+   <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a> 
+       <span class="sep">|</span> 
+       <a href="/help/credits" title="Who built this and how?">Credits</a> 
+       <span class="sep">|</span> 
+       <a href="/help/terms" title="Terms and Conditions">Terms of use</a> 
+       <span class="sep">|</span> 
+       <a href="http://hub.geograph.org.uk/downloads.html" title="check our available downloads">Downloads</a> 
+    </p> 
+    <p style="color:#777788;">Hosting supported by
+    <span class="nowrap"><a title="click to visit the CatN website - home of vCluster hosting" href="http://catn.com/">CatN</a><img style="padding-left:2px;" alt="External link" title="External link 
+- shift click to open in new window" src="http://s0.geograph.org.uk/img/external.png" width="10" height="10"/></span> 
+    </p> 
+  </div> 
+</div> 
+
+
+    <!-- guider.js requires jQuery as a prerequisite. Be sure to load guider.js AFTER jQuery. --> 
+    <script type="text/javascript" src="jquery-1.5.1.min.js"></script> 
+    <script type="text/javascript" src="guiders-1.1.0.js"></script> 
+    <link rel="stylesheet" href="guiders-1.1.0.css" type="text/css" /> 
+
+ 
+    <script type="text/javascript"> 
+    /**
+     * Guiders are created with guider.createGuider({settings}).
+     *
+     * You can show a guider with the .show() method immediately
+     * after creating it, or with guider.show(id) and the guider's id.
+     *
+     * guider.next() will advance to the next guider, and
+     * guider.hideAll() will hide all guiders.
+     *
+     * By default, a button named "Next" will have guider.next as
+     * its onclick handler.  A button named "Close" will have
+     * its onclick handler set to guider.hideAll.  onclick handlers
+     * can be customized too.
+     */
+
+
+     
+    guiders.createGuider({
+      buttons: [{name: "Next"}],
+      description: "This demo will guide you though making a submission. <br/><br/><small>(if this was a real guide it would actully guide you though the process of submitting a REAL image! - or could be two versions, one just showing you what to do, and another actully going though a real submission)</small>",
+      id: "first",
+      next: "second",
+      overlay: true,
+      title: "Welcome to our Submission Guide!"
+    }).show();
+    
+    guiders.createGuider({
+      attachTo: "#tab3",
+      buttons: [{name: "Continue", onclick: guiders.next}],
+      description: "If you have a image that already contains the coordinates (either in EXIF Geo-tags, or in the filename), select the Geotagged Image tab.<br><br>If your file doesnt contain coordinates, or unsure, just click 'Continue'.",
+      id: "second",
+      next: "third",
+      position: 6,
+      overlay: true,
+      title: "Geotagged Image?"
+    });
+
+
+    guiders.createGuider({
+      attachTo: "#grid_reference",
+      buttons: [{name: "Continue", onclick: guiders.next},{name: "I dont know the grid-reference",onclick: locateOnMap}],
+      description: "Enter the grid-reference of the square you wish to submit an image for in this box, eg TQ7064. Once you have done so, click the 'Continue' button",
+      id: "third",
+      next: "fourth",
+      position: 3,
+      title: "Enter the Grid Reference of the square"
+    });
+
+document.getElementById('grid_reference').onkeyup = autoNextStep;
+
+function autoNextStep() {
+	var that = document.getElementById('grid_reference');
+	GridRef = /\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
+	ok = true;
+	if (that.value.length > 0) {
+		myArray = GridRef.exec(that.value); 
+		if (myArray && myArray.length > 0) {
+			numbers = myArray[2]+myArray[3];
+			if (numbers.length == 0 || numbers.length % 2 != 0) {
+				ok = false;
+			}
+		} else {
+			ok = false;
+		}
+	} else {
+		ok = false;
+	}
+	if (ok) {
+	        guiders.hideAll();
+        	guiders.show('fourth');
+	}
+}
+
+    guiders.createGuider({
+      attachTo: "#picnik",
+      buttons: [{name: "Continue", onclick: guiders.next}],
+      description: "If you need to tweak the image, such as changing contrast, sharpening, or streightening the horizon you can use Picnik. <br/><br/> Otherwise if your image is suitable for use directly, click the 'Continue' button",
+      id: "fourth",
+      next: "fifth",
+      position: 3,
+      title: "Need to tweak the image?"
+    });
+
+
+    guiders.createGuider({
+      attachTo: "#setpos",
+      buttons: [],
+      description: "Click the Next button to goto the next step",
+      id: "fifth",
+      position: 12,
+      title: "Continue to Step 2"
+    });
+
+
+function locateOnMap() {
+	tabClick('tab','div',4,4);
+	if (!document.getElementById('innerFrame4').src) 
+		document.getElementById('innerFrame4').src = '/submitmap.php?inner';
+	guiders.hideAll();
+	guiders.show('onMap');
+}
+document.getElementById('tab4').onclick = locateOnMap;
+
+    guiders.createGuider({
+      attachTo: "#innerFrame4",
+      buttons: [],
+      description: "Use the map to add a pin in approximately the right location. Dont worry about being exact, will specifiy the exact location in the next step. When done, click 'Next Step' button",
+      id: "onMap",
+      position: 12,
+      title: "Locate on map"
+    });
+
+function backToTab1() {
+        tabClick('tab','div',1,4);
+        guiders.hideAll();
+        guiders.show('third');
+}
+document.getElementById('tab1').onclick = backToTab1;
+
+
+
+	</script>
+
+</body> 
+</html>
