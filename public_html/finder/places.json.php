@@ -106,6 +106,26 @@ if (!empty($_GET['q'])) {
 			$results['query_info'] = '';
 			$results['copyright'] = "Contains Ordnance Survey data (c) Crown copyright and database right 2012";
 		}
+	} elseif (preg_match("/^(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)$/",$q,$ll)) {
+                require_once('geograph/conversions.class.php');
+                $conv = new Conversions;
+
+                list($e,$n,$reference_index) = $conv->wgs84_to_national($ll[1],$ll[2],true);
+                list($gr,$len) = $conv->national_to_gridref($e,$n,10,$reference_index,false);
+
+		if (strlen($gr) > 4 && $reference_index) {
+			$results['items'] = array();
+			$output = array(
+                                'name' => "WGS84 Latitude/Longitude",
+                                'gr' => $gr,
+                                'localities'=>preg_replace('/[^A-Z]+/','',$gr)
+                        );
+			$results['items'][] = $output;
+			$results['total_found'] = count($results['items']);
+        	        $results['query_info'] = '';
+			$results['copyright'] = '';
+		}
+
 	} elseif (preg_match("/^\s*([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\s*$/",$q,$gr)) {
                 require_once('geograph/gridsquare.class.php');
                 $square=new GridSquare;
@@ -120,6 +140,7 @@ if (!empty($_GET['q'])) {
 			$results['items'][] = $output;
 			$results['total_found'] = count($results['items']);
         	        $results['query_info'] = '';
+			$results['copyright'] = '';
 		}
 	} elseif (!empty($_GET['legacy'])) {
 		 $gaz = new Gazetteer();
