@@ -196,6 +196,7 @@ function check_path($server,$path, $row) {
 	} else {
 		update_status($row['gridimage_id'], "failed", false);
 		print "https://{$_SERVER['HTTP_HOST']}/admin/memcache.php?image_id=$id&size=$size&action=delete&cleardb=on\n";
+		print "https://api.geograph.org.uk/api/oembed?url=$url\n";
 	}
 }
 
