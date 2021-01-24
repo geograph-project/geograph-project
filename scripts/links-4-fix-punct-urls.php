@@ -57,8 +57,8 @@ $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)
 ini_set('user_agent',$ua);
 
 if ($param['mode'] == 'archive') {
-$sql = "SELECT gridimage_link_id,gridimage_id,url,first_used,archive_url,soft_ratio FROM gridimage_link
-	WHERE archive_url != '' AND HTTP_Status > 200 AND url not rlike '[[:alpha:][:digit:]/&#]$'
+$sql = "SELECT gridimage_link_id,gridimage_id,url,first_used,archive_url,soft_ratio,HTTP_Status,HTTP_Status_Final FROM gridimage_link
+	WHERE archive_url != '' AND HTTP_Status_Final BETWEEN 201 AND 599 AND url not rlike '[[:alpha:][:digit:]/&#]$'
 	AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%' AND parent_link_id = 0
 	AND next_check < '9999-00-00' AND fix_attempted LIKE '0000%' and gridimage_id>0
 	GROUP BY url ORDER BY HTTP_Status DESC,updated ASC LIMIT {$param['number']}";
@@ -72,7 +72,7 @@ $sql = "SELECT gridimage_link_id,gridimage_id,url,first_used,archive_url,soft_ra
 	GROUP BY url ORDER BY HTTP_Status DESC,updated ASC LIMIT {$param['number']}";
 }
 
-$user_id = 3;
+$user_id = 23277;
 
 $recordSet = $db->Execute($sql);
 while (!$recordSet->EOF) {
@@ -89,6 +89,7 @@ while (!$recordSet->EOF) {
 	$content = '';
 
 	$url=$row['url'];
+	ini_set('user_agent',"$ua\r\nReferer: https://{$_SERVER['HTTP_HOST']}/photo/{$row['gridimage_id']}");
 
 	print str_repeat("#",80)."\n";
 	print_r($row);
@@ -99,7 +100,7 @@ while (!$recordSet->EOF) {
 	} else {
 		$hostname = parse_url($url,PHP_URL_HOST);
 		$hostname = preg_replace('/[^\w]$/', '', $hostname); //parse_url doesnt strip from urls like http://www.communic8.com, !
-		print "H:$hostname;\n";
+		print "H:$hostname; ";
 		$ip = gethostbyname($hostname);
 		print "I:$ip;\n";
 		if (empty($ip) || $hostname == $ip) {
@@ -111,8 +112,14 @@ while (!$recordSet->EOF) {
 				$url = preg_replace('/[^\w]$/', '', $url);
 			} */
 			do {
-			  	print "$url\n";
-				$content = file_get_contents($url);
+			  	print "$url :: ";
+				$content = @file_get_contents($url);
+				print strlen($content)." bytes ";
+				foreach ($http_response_header as $c => $header)
+		                        if (preg_match('/^HTTP\/\d+.\d+ +(\d+)/i',$header,$m))
+						print ", {$m[1]}";
+
+				print "\n";
 
 		        } while(preg_match('/[^\w]$/', $url) && empty($content) && ($url = preg_replace('/[^\w]$/', '', $url)) && (sleep(2) == 0) );
 		}
@@ -127,13 +134,16 @@ while (!$recordSet->EOF) {
 		$replace = "REPLACE(comment,".$db->Quote(preg_replace('/^http:\/\//','',$row['url'])).",".
 					      $db->Quote(preg_replace('/^http:\/\//','',"$url $after")).")";
 
+		//remove the www prefix, to prevent the link in the notes autolinking!
+		$hostname = preg_replace('/^w{3}\./','',$hostname);
+
                 $sqls[] = "INSERT INTO gridimage_ticket SET
                                                                 gridimage_id={$row['gridimage_id']},
                                                                 suggested=NOW(),
                                                                 user_id=$user_id,
                                                                 updated=NOW(),
                                                                 status='closed',
-                                                                notes='Fixing the link. Works without the punctation as part of link.',
+                                                                notes='Fixing the $hostname link. Adding a space after link, so the punctation isn\\'t taken as part of link. (this is a bot edit)',
                                                                 type='minor',
                                                                 notify='',
                                                                 public='everyone'";
@@ -183,9 +193,9 @@ while (!$recordSet->EOF) {
 
 		if (true) {
 			//print_r($decode);
-			print_r($updates);
-			print "$sql\n";
-			print "Rows = ".$db->Affected_Rows()."\n";
+			//print_r($updates);
+			print "$sql; :: ";
+			print $db->Affected_Rows()." Rows updated\n";
 //			print_r($db->getAll("SHOW WARNINGS()"));
 		}
 	}
