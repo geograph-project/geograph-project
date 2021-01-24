@@ -82,6 +82,10 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$imagelist=new ImageList;
+	if (!empty($_SESSION['last_grid_reference'])) { //appears have been uploading recently!
+		$db = $imagelist->_getDB(60); // we 'initialize' the contained db, as one that allows only some lag.
+		header('X-Reason: '.@$db->failover_reason); //just for interest output this!
+	}
 
 	$sql="select gi.*,grid_reference ".
 		"from gridimage as gi ".

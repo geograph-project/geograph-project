@@ -312,7 +312,7 @@ class RebuildUserStats extends EventHandler
                                 GROUP BY user_id
                                 ORDER BY NULL");
 
-
+/*
 		$this->Execute("
 			create temporary table user_day_stat (primary key(user_id))
 			select user_id,count(distinct imagetaken) as days from gridimage_search
@@ -322,6 +322,7 @@ class RebuildUserStats extends EventHandler
 			set user_stat_tmp.days = user_day_stat.days");
 
 		$this->Execute("drop temporary table user_day_stat");
+*/
 	}
 }
 

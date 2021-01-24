@@ -46,8 +46,13 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'suggestions' && !empty($_GET['str
 
 require_once('geograph/global.inc.php');
 
-
-$db = GeographDatabaseConnection(true);
+if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && !empty($_SESSION['last_grid_reference'])) { //appears have been uploading recently!
+	$db = GeographDatabaseConnection(60); //very little lag
+} elseif (!empty($_GET['gridimage_id'])) {
+	$db = GeographDatabaseConnection(false); //no lag!
+} else {
+	$db = GeographDatabaseConnection(true); //allows even large lag!
+}
 
 $sql = array();
 
