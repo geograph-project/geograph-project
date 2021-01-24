@@ -15,14 +15,14 @@ if (!empty($_GET['audit'])) {
 		WHERE gridimage_link_id = ".intval($_POST['gridimage_link_id']));
 	}
 
-	$row = $db->getRow("SELECT gridimage_link_id,gridimage_id,url,comment
+	$row = $db->getRow("SELECT gridimage_link_id,gridimage_id,t.url,comment
 		FROM gridimage_search inner join tmp_link_examples t using (gridimage_id)
 		inner join gridimage_link using (gridimage_link_id,gridimage_id)
 		where last_found > upd_timestamp
 		and next_check < '9999-00-00'
 		AND result = ''
 		GROUP BY gridimage_id
-		ORDER BY crc32(url) LIMIT 1");
+		ORDER BY crc32(t.url) LIMIT 1");
 
 if (empty($row))
 	die("no more to check!\n");
