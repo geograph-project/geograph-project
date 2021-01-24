@@ -32,7 +32,7 @@ $smarty = new GeographPage;
  customExpiresHeader(3600,false,true);
 
 	$smarty->display('_std_begin.tpl');
-	
+
 	$db = GeographDatabaseConnection(true);
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -80,10 +80,10 @@ Optionally give preference to images in <input type="text" name="gr" value="<? e
                         $thumbh = 120;
                         $thumbw = 120;
 
-$years = $db->getAll("select count(*) c,gridimage_id,imagetaken from gridimage_search where imagetaken like '$date' group by substring(imagetaken,1,4) desc");
+$years = $db->CacheGetAll(3600*24,"select count(*) c,gridimage_id,imagetaken from gridimage_search where imagetaken like '$date' group by substring(imagetaken,1,4) desc");
 
 	if (count($years)) {
-		
+
 		if (!empty($_GET['gr'])) {
 			if (preg_match('/([A-Za-z]{1,2})(\d*)(\d*)(\d*)(\d*)/',$_GET['gr'],$m)) {
 				$gr = array();
@@ -141,9 +141,8 @@ $years = $db->getAll("select count(*) c,gridimage_id,imagetaken from gridimage_s
 	$str = ob_get_flush();
 
 	$memcache->name_set('thisday',$mkey,$str,$memcache->compress,$memcache->period_long);
-} 
+}
 
-	
+
 	$smarty->display('_std_end.tpl');
-	exit;
 
