@@ -40,13 +40,24 @@ if (empty($_GET['topic_id'])) {
 }
 
 if (!empty($_POST['new_id'])) {
+	if ($_POST['new_id'] == $_GET['topic_id'])
+		die("huh");
 	$ids = implode(',',array_keys($_POST['tick']));
 	if (preg_match('/[^\d,]/',$ids))
 		die("oops");
 
 	$sql = "UPDATE geobb_posts SET topic_id = ".intval($_POST['new_id'])." WHERE topic_id = ".intval($_GET['topic_id'])." AND post_id IN ($ids)";
+	print "$sql;<hr>";
+	$db->Execute($sql);
 
-	print $sql;
+	$t = "topic_id = ".intval($_POST['new_id']);
+	$sql = "UPDATE geobb_topics SET topic_last_post_id = (SELECT MAX(post_id) FROM geobb_posts AS t1 WHERE $t),posts_count=(SELECT COUNT(*) FROM geobb_posts AS t2 WHERE $t) WHERE $t";
+	print "$sql;<hr>";
+	$db->Execute($sql);
+
+	$t = "topic_id = ".intval($_GET['topic_id']);
+	$sql = "UPDATE geobb_topics SET topic_last_post_id = (SELECT MAX(post_id) FROM geobb_posts AS t1 WHERE $t),posts_count=(SELECT COUNT(*) FROM geobb_posts AS t2 WHERE $t) WHERE $t";
+	print "$sql;<hr>";
 	$db->Execute($sql);
 }
 
