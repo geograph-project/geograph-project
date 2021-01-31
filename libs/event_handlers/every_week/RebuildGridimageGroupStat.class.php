@@ -42,8 +42,24 @@ class RebuildGridimageGroupStat extends EventHandler
 		if (!$db->getOne("SELECT GET_LOCK('RebuildGridimageGroupStat',10)")) {
 			//only execute if can get a lock
 			$this->_output(2, "Failed to get Lock");
-			 return false;
+			return false;
 		}
+
+
+                $status = $db->getRow("SHOW TABLE STATUS LIKE 'gridimage_group'");
+
+                if (!empty($status['Update_time']) && strtotime($status['Update_time']) < time()-3600*24*8) {
+                        $this->_output(2, "No updates to process");
+                        return true;
+		}
+
+                $status = $db->getRow("SHOW TABLE STATUS LIKE 'gridimage_group_stat'");
+
+                if (!empty($status['Update_time']) && strtotime($status['Update_time']) > time()-3600*24*5) {
+                        $this->_output(2, "Assume that table is being incrementally updated");  //this script runs weekly, so if recent updates something else must be doing it!
+                        return true;
+		}
+
 
 		$sql = '
 		select null as gridimage_group_stat_id, grid_reference, label

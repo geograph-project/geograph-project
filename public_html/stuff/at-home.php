@@ -418,7 +418,7 @@ if (isset($_GET['downloadJobData'])) {
 					$ids[$gridimage_id]=1;
 				}
 			}
-			
+			//todo - should also compute stats and insert direct into gridimage_group_stat (as we only updating one square anyway)
 		
 			//finalise in one request!
 			if (isset($_GET['finalizeJob'])) {
