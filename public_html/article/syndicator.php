@@ -101,7 +101,7 @@ $db = GeographDatabaseConnection(true);
 
 $sql="select article_id, article.article_cat_id, category_name, article.user_id, url, title, extract, licence, publish_date, approved, update_time, create_time, realname, article.gridsquare_id
 	from article 
-		inner join user using (user_id)
+		left join user using (user_id)
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 	where $sql_where
 	order by update_time desc
@@ -134,7 +134,8 @@ while (!$recordSet->EOF)
 		$item->author = $realname;
 		$item->date = strtotime($recordSet->fields['update_time']);
 	} else {
-		$item->author = $recordSet->fields['realname'];
+		if (!empty($recordSet->fields['realname']))
+			$item->author = $recordSet->fields['realname'];
 		$item->date = strtotime($recordSet->fields['publish_date']);
 	}
 

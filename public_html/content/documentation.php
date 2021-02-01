@@ -57,7 +57,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$list = $db->getAll("
 	select content.url,content.title,content.user_id,coalesce(category_name,'Help Document') as category_name,realname,words,created,content.extract
 	from content 
-		inner join user using (user_id)
+		left join user using (user_id)
 		left join article on (foreign_id = article_id and source = 'article')
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 

@@ -140,7 +140,7 @@ function get_snippet($snippet,$gridimage_id = 0) {
 	if (empty($db))
 		$db = GeographDatabaseConnection(true);
 
-	$row = $db->getRow("SELECT s.*,realname FROM snippet s INNER JOIN user u USING (user_id) WHERE snippet_id = $snippet AND enabled = 1");
+	$row = $db->getRow("SELECT s.*,realname FROM snippet s LEFT JOIN user u USING (user_id) WHERE snippet_id = $snippet AND enabled = 1");
 
 	if (empty($row)) {
 		return "ERROR unable to load shared description $snippet";
