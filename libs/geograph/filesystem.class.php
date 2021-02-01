@@ -577,7 +577,7 @@ if (!empty($_GET['debug']))
 				$sql = "SELECT width,height FROM gridimage_size WHERE gridimage_id = $gridimage_id";
 			} elseif ($slug == '_original') {
 				$mkey = "$gridimage_id:F";
-				$sql = "SELECT original_width AS width,original_height AS height FROM gridimage_size WHERE gridimage_id = $gridimage_id";
+				$sql = "SELECT original_width AS width,original_height AS height FROM gridimage_size WHERE gridimage_id = $gridimage_id AND original_width > 0"; //only want to return a row, IF there is a larger image
 			} elseif (preg_match('/(\d+)x(\d+)/',$slug,$m)) {
 				$mkey = "{$gridimage_id}:{$m[0]}";
 				$sql = "select width,height from gridimage_thumbsize where gridimage_id = {$gridimage_id} and maxw = {$m[1]} and maxh = {$m[2]}";
@@ -587,6 +587,8 @@ if (!empty($_GET['debug']))
 	                        $size = $memcache->name_get('is',$mkey);
 		                $src = 'memcache';
 				if ($size && $slug == '_original') {
+					if (empty($size[4]) && empty($size[5]) && $quick_only === true)
+						return false;
 					$size[0] = $size[4]; //we getting the 'original' size, which is attached to 'F'
 					$size[1] = $size[5];
                                         $size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";

@@ -1829,6 +1829,7 @@ split_timer('gridimage','after-unlock',$thumbpath); //logs the wall time
 		if ($thumbpath=='/photos/error.jpg')
 		{
 			$html="<img $attribname=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" />";
+			$return['url']=$thumbpath;
 		}
 		else
 		{
