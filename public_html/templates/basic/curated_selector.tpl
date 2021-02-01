@@ -31,7 +31,7 @@ Here are some images we have pre-selected, to be high quality and clearly show t
 
 	<div>
 	        <a class=thumb href="/photo/{$image->gridimage_id}" title="{$image->title|escape:'html'} by {$image->realname|escape:'html'}">
-        	        {$image->getThumbnail(213,160)}
+		        {$image->getThumbnail(213,160)}
 	        </a>
 		{if $image->download}
 			<a class=download href="{$image->download|escape:'html'}" data-filename="geograph-{$image->gridimage_id}.jpg">download example image</a>
