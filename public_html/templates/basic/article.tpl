@@ -98,7 +98,7 @@ Scope: <select name="scope" style="width:80px">
 {assign var="lastname" value=""}
 {/if}
 	<li><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}<br/>
-	<small id="att{$lastid+1}"><small style="color:lightgrey">by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a>
+	<small id="att{$lastid+1}"><small style="color:lightgrey">{if $item.user_id} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a>{/if}
 		{if (($item.user_id == $user->user_id) || $item.approved == 2) && !$item.locked_user}
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>] [<a title="Edit History for {$item.title}" href="/article/history.php?page={$item.url}">History</a>]

@@ -126,7 +126,7 @@ ul.infos li:hover>small {
 		{assign var="lastname" value=""}
 	{/if}
 	<li><a title="{$item.extract|default:'View Article'}" href="{$item.url}">{$item.title}</a>
-		<small id="att{$lastid+1}"><small style="color:lightgrey">by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a>
+		<small id="att{$lastid+1}"><small style="color:lightgrey">{if $item.user_id}by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a>{/if}
 		</small></small>
 	</li>
 	{assign var="lastname" value=$item.realname}
