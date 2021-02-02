@@ -44,6 +44,8 @@
 
 47 */6 * * *        indexer --config /etc/sphinxsearch/sphinx.conf tickets_closed --rotate
 
+47 1 * * *          indexer --config /etc/sphinxsearch/sphinx.conf curated1 --rotate
+
 ########################
 # ViewPoint Index
 
