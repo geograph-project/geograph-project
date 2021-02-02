@@ -25,20 +25,17 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$USER->mustHavePerm("basic");
+
 
 $smarty->display('_std_begin.tpl');
 
 ?>
-<h2>Curated Images - Education Topic List</h2>
+<h2>Curated Images - current Topic List</h2>
 
 <p>This is the current topic list. It's still in development, and needs fleshing out. Contact us, if would like to help curate the list of topics themselves.
-
-<p>We have already been collecting images, using a <a href="all-topics.php">long list of educational themed words from a dictionary</a>.
-We've tried to cross reference this short list of topics, with that long list, the 'label' column shows the suggested label from the long list. 
-If there is no link or description visible, means the word is not actully in the 
-
-<p><i>If we have already begun collecting images for the label, use one of the 'curation interface' links to help with the curation process</i>.</p>
+<? if ($USER->registered) { ?>
+<p><i>Some topics we have begun already collecting imags, use one of the 'curation interface' links to help with the curation process</i>.</p>
+<? } ?></p>
 
 
 <hr>
@@ -50,10 +47,10 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 /*
 $data = $db->getAll("
-select stack,name,label,l.description,count(gridimage_id) as images,h.description as h_description,h.label_id
-from curated_label l
- left join curated1 c1 using (label)
- left join curated_headword h using (label)
+select stack,name,label,count(gridimage_id) as images,length(curated_headword.description) hw
+from curated_label
+ left join curated1 using (label)
+ left join curated_headword using (label)
 where label is not null and stack != ''
 group by name
 order by stack,name
@@ -61,10 +58,10 @@ order by stack,name
 */
 
 $data = $db->getAll("
-select stack,name,label,l.description,images,h.description as h_description,h.label_id
-from curated_label l
+select stack,name,label,images,length(curated_headword.description) hw
+from curated_label
  left join curated1_stat using (label)
- left join curated_headword h using (label)
+ left join curated_headword using (label)
 where label is not null and stack != ''
 group by name
 order by stack,name
@@ -73,45 +70,16 @@ order by stack,name
 
 $last = array();
 
-
-print "<table cellspacing=0 cellpadding=4 border=1>";
-print "<tr>";
-	print "<td>Name";
-//	print "<td>Description";
-	print "<td>Suggested Label";
-	print "<td>Label Decription";
-	print "<td>Images for Label";
-	print "<td>Curation";
-
 foreach ($data as $row) {
 	$bits = explode(' > ',$row['stack']);
 	foreach($bits as $idx => $bit) {
 		if ($bit != @$last[$idx])
-			print "<tr style=background-color:#eee><td colspan=6>".str_repeat('&nbsp;&nbsp;&nbsp;',$idx)."<b>".htmlentities($bit)."</b>";
+			print str_repeat('&nbsp;&nbsp;&nbsp;',$idx)."<b>".htmlentities($bit)."</b><br>";
 	}
 	$last = $bits;
 
-	print "<tr><td>";
 	print str_repeat('&nbsp;&nbsp;&nbsp;',count($bits)+1);
 	print "<big>".htmlentities($row['name'])."</big>";
-
-//	print "<td style=font-size:0.7em>".htmlentities($row['description']);
-
-	print "<td>".htmlentities($row['label']);
-
-	if (empty($row['label_id'])) {
-		if (!empty($row['label'])) {
-			$link1 = "create-topic.php?label=".urlencode($row['label'])."&name=".urlencode($row['name']);
-			print "<td colspan=3 style=background-color:#eee><a href=\"$link1\">define label...</a>";
-		} else
-			print "<td colspan=3 style=background-color:#eee>&nbsp;";
-		continue;
-	}
-
-	$row['h_description'] = smarty_modifier_truncate($row['h_description'],140,"...");
-	print "<td style=font-size:0.7em>".htmlentities($row['h_description']);
-	if (!empty($row['label_id']))
-		print " <a href=\"headwords.php?id={$row['label_id']}\">edit</a>";
 
 	$row['group'] = 'Geography and Geology';
 	$row['group'] = $row['stack'];
@@ -122,18 +90,16 @@ foreach ($data as $row) {
 	$link1 = "/photoset/view.php?label=".urlencode($row['label']);
 	$link2 = "collecter.php?group=".urlencode($row['group'])."&amp;label=".urlencode($row['label']);
 
-	print "<td>";
 	if (!empty($row['images'])) {
-		print "<a href=\"$link1\">{$row['images']} Images</a>";
+		print " <a href=\"$link1\">{$row['images']} Images so far</a>";
 	}
 
-	print "<td>";
-	if ($row['h_description']) {
-		print "<i><a href=\"$link2\">Curation</a></i>";
+	if ($USER->registered && $row['hw']) {
+		print " <i><a href=\"$link2\">Curation Interface</a></i>";
 	}
-	print "</tr>";
+	print "<br>";
 }
-print "</table>";
+
 
 
 $smarty->display('_std_end.tpl');

@@ -86,13 +86,24 @@ if (!empty($_GET['loc'])) {
 if (!$smarty->is_cached($template, $cacheid)) {
 
 	if (empty($data)) {
-
+/*
 		$data = $db->getAll("
 		select stack,name,label,count(gridimage_id) as images, gridimage_id
 		from curated_label l
 		 inner join curated1 c using (label)
 		 inner join curated_headword h using (label)
 		where label is not null and stack != '' and gridimage_id > 0 and c.active=1 and c.score >= 10
+		group by name
+		order by stack,name
+		");
+*/
+
+		$data = $db->getAll("
+		select stack,name,label, images, gridimage_id
+		from curated_label l
+		 inner join curated1_stat using (label)
+		 inner join curated_headword h using (label)
+		where label is not null and stack != ''
 		group by name
 		order by stack,name
 		");
