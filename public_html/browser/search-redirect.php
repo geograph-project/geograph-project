@@ -315,6 +315,10 @@ if (!empty($warning) || !empty($_GET['debug'])) {
 
 	if (!empty($offer_import)) {
 		print "<p>However, can <a href=\"?i={$engine->query_id}&import=true\">Import all images from this saved search into your Current Marked list</a> (adding to any images already marked)<br>... your marked list will then be accessible in the browser</p>";
+
+		if (!empty($_COOKIE['markedImages']) && $engine->criteria->user_id == $USER->user_id) {
+			print "<p>Or can simply view you <a href=\"/browser/#!/marked=1\">current marked list in the Browser</a> (which ignores the images from this search!)</p>";
+		}
 	}
 
 
