@@ -104,7 +104,7 @@ if (!empty($_GET['region']) && $_GET['region'] == 'Group By') {
 } elseif (!$filtered) { //no dimension filters!
 	$sql2 = "GROUP BY `group` ORDER BY `group` ASC"; //nolimit! (under 20 rows!)
 	$data['sectioner'] = 'group';
-} elseif ($filtered == 2 && !empty($_GET['group'])) {
+} elseif ($filtered === 1 && !empty($_GET['group'])) { //only filtered by group!
 	$sql2 = "GROUP BY `label` ORDER BY `label` ASC LIMIT 1000";
 	$data['sectioner'] = 'label';
 } else {
@@ -136,7 +136,7 @@ if (!empty($data['images'])) {
 
 ########################################################################
 
-$data['sqls'] = $sqls;
+//$data['sqls'] = $sqls;
 header('Access-Control-Allow-Origin: *');
 customExpiresHeader(3600*24,true);
 outputJSON($data);
