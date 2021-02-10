@@ -33,7 +33,7 @@
 require_once("geograph/eventhandler.class.php");
 
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
-class Curated1Stat extends EventHandler
+class RebuildCurated1Stat extends EventHandler
 {
 	function processEvent(&$event)
 	{
@@ -41,8 +41,12 @@ class Curated1Stat extends EventHandler
 
 		$db->Execute("DROP TABLE IF EXISTS curated1_stat_tmp");
 
-		$db->Execute("
-create table curated1_stat_tmp
+
+		$create = "create table curated1_stat_tmp ";
+		$insert = "insert into curated1_stat_tmp ";
+
+		foreach (range('a','z') as $idx => $letter) {
+			$this->Execute(($idx?$insert:$create)."
 select `group`,
 `label`,
 count(*) as images,
@@ -59,12 +63,13 @@ gi.gridimage_id
 from curated1 c
 inner join gridimage_search gi using (gridimage_id)
 inner join gridimage_size using (gridimage_id)
-where active>0
+where active>0 and c.label like '$letter%'
 group by `group`, `label`
 order by null
 ");
+		}
 
-		$db->Execute("alter table curated1_stat_tmp add index(`group`), add unique(label,`group`), add index(`last`)");
+		$this->Execute("alter table curated1_stat_tmp add index(`group`), add unique(label,`group`), add index(`last`)");
 
 		$db->Execute("DROP TABLE IF EXISTS curated1_stat");
 		$db->Execute("RENAME TABLE curated1_stat_tmp TO curated1_stat");
