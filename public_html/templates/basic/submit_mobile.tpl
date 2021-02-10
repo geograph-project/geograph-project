@@ -37,6 +37,9 @@ html {
 *, *:before, *:after {
   box-sizing: inherit;
 }
+img {
+	image-orientation: none;
+}
 
 .tabs {
 	white-space:nowrap;
@@ -653,17 +656,23 @@ $(function() {
 		    var reader = new FileReader();
 
 	            reader.onload = function (e) {
-		        $('#previewImage').css({maxWidth:'100%',maxHeight:'80vh'})
-	                    .attr('src', e.target.result);
-
 			$('#preview').show();
 			setupMess();
 
-			//need to know if landscape or portrait, if portrait size by height. 
-			var size = ($('#previewImage').height() > $('#previewImage').width()) ? 'auto 640px' : '640px auto';
+			$('#previewImage').on('load',function() {
+				//need to do this 'async' to get the actual size
+				var size = $('#previewImage').prop('naturalWidth')+"px "+$('#previewImage').prop('naturalHeight')+"px";
+				$('#previewImage2').css({backgroundSize:size});			
+			});
+
+		        $('#previewImage').css({maxWidth:'100%',maxHeight:'60vh'})
+	                    .attr('src', e.target.result);
+
+			//want the background to be the natural size, not resized
+			var size = $('#previewImage').prop('naturalWidth')+"px "+$('#previewImage').prop('naturalHeight')+"px";
 
 			// https://stackoverflow.com/questions/17090571/is-there-a-way-to-set-background-image-as-a-base64-encoded-image
-			$('#previewImage2').css({width:'100%', height:'300px', boxShadow:'0 0 8px 8px #eee inset', borderRadius:'10px',
+			$('#previewImage2').css({width:'100%', height:'400px', boxShadow:'0 0 8px 8px silver inset', borderRadius:'20px',
 				backgroundImage:"url('"+e.target.result.replace(/[\r\n]/g, "")+"')",
 				backgroundSize:size, backgroundRepeat:'no-repeat', backgroundPosition:'center'});
 		    };
