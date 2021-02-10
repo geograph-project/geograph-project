@@ -323,6 +323,29 @@ class RebuildUserStats extends EventHandler
 
 		$this->Execute("drop temporary table user_day_stat");
 */
+
+		$sph = GeographSphinxConnection();
+		$db = $this->_getDB();
+
+		//rather than using $crit, whic may be MORE than 1000 rows, lets do it piecemeal
+
+		$ids = $db->getCol("SELECT user_id FROM user_stat_tmp WHERE days = 0 and user_id > 0 limit 1000");
+
+		$loop = 0;
+		while (!empty($ids)) {
+			$data = $sph->getAll("SELECT auser_id,count(distinct takendays) as days FROM gi_stemmed
+				WHERE user_id IN (".implode(',',$ids).") GROUP BY auser_id LIMIT 1000");
+
+$this->processor->trace("Found ".count($data)." Rows from manticore");
+
+			foreach ($data as $row)
+				$this->Execute("UPDATE user_stat_tmp SET days = {$row['days']} WHERE user_id = {$row['auser_id']}");
+
+			$ids = $db->getCol("SELECT user_id FROM user_stat_tmp WHERE days = 0 and user_id > 0 limit 1000");
+			$loop++;
+			if ($loop > 10)
+				return;
+		}
 	}
 }
 
