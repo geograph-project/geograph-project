@@ -108,16 +108,23 @@ foreach (range($start,$end,$step) as $id) {
 			$updates= array();
 			$updates['basename'] = basename($filename);
 
-			if (!preg_match("/^\d+_\w{8}(_640x640|)\.jpg$/",$updates['basename'],$m)) //only interested in 640px which includes 'full' image!)
+			if (!preg_match("/^\d+_\w{8}(_640x640|_original|)\.jpg$/",$updates['basename'],$m)) //only interested in 640px which includes 'full' image!)
 				continue;
-			$updates['class'] = $m[1]?'thumb.jpg':'full.jpg';
+
+			if ($m[1] == '_original') {
+				$updates['class'] = 'original.jpg';
+				$table = "original_md5"; //we also keep a record of larger upload, for backup purposes
+			} else {
+				$updates['class'] = $m[1]?'thumb.jpg':'full.jpg';
+				$table = "full_md5"; //this table we only want the 640s used for deduplication
+			}
 
 			$updates['s3_date'] = date('Y-m-d H:i:s',$row['time']);
 			$updates['md5sum'] = $row['hash'];
 			$updates['s3_size'] = $row['size'];
 			$updates['s3_class'] = preg_replace('/([A-Z])[A-Z]+/','$1',$row['class']);
 
-			$db->Execute($sql = 'INSERT INTO full_md5 SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
+			$db->Execute($sql = 'INSERT INTO '.$table.' SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
 		 	        	   ' ON DUPLICATE KEY UPDATE `'.implode('` = ?,`',array_keys($updates)).'` = ?',
         	              		  array_merge(array_values($updates),array_values($updates))) or die("$sql\n\n".$db->ErrorMsg()."\n");
 
