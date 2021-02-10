@@ -92,6 +92,17 @@
 	   {else}
 		(<b><a href="/search.php?i=5761957&amp;temp_displayclass=vote">Vote now!</a></b> - don't disclose this url)
 	   {/if}</li>
+
+	   <li>
+		<form method="post" action="pictureoftheday.php">
+			Quick Add: 
+			<label for="addimage">Image number</label>
+			<input type="text" name="addimage" size="8" id="addimage" value="" title="enter the id, or even just the photo page URL"/>
+			<input type="button" value="Preview" onclick="window.open('/?potd='+this.form.addimage.value);">
+			<input type="submit" name="add" value="Add"/>
+		</form>
+	   </li>
+
 {else}
 </ul>
 <h3>Tools</h3>
