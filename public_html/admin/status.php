@@ -41,6 +41,11 @@ if (function_exists('apc_store') && isset($_GET['cool'])) {
 	} else {
 		print apc_store('lag_cooloff',1,intval($_GET['cool']));
 	}
+	if (!empty($_GET['q'])) {
+		$hostname=trim(`hostname`);
+		print ". Host = $hostname";
+		exit;
+	}
 }
 
 
