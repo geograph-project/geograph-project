@@ -160,6 +160,9 @@ p.alert-danger {
 		<input type=button value="Open Map Viewer for these images" onclick="showMap()">
 		{if $label && $imagecount > 50}
 			<input type=button value="View all {$imagecount} Curated Images" onclick="location.href='/curated/sample.php?label={$label|escape:'url'}'">
+			{if !$place}
+				<input type=button value="View images by Region" onclick="location.href='/curated/sample.php?label={$label|escape:'url'}&amp;region=Group+By'">
+			{/if}
 		{/if}
 		<input type=button value="View {$keywordcount} Keyword Matches" onclick="location.href='/browser/#!/q={$label|escape:'url'}'">
 		{if $label}
