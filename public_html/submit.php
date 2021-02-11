@@ -25,6 +25,11 @@ require_once('geograph/global.inc.php');
 
 dieIfReadOnly();
 
+if (empty($_POST) && empty($_GET)) { //specifially want to avoid ?redir=false, but actully GET used for other things, so avoid ALL
+	//init_session will automatically redirect!
+	$mobile_url = "https://{$_SERVER['HTTP_HOST']}/submit-mobile.php"; //speciically https, as we may be http
+}
+
 if (isset($_GET['preview'])) {
 	session_cache_limiter('none');
 } else {
@@ -781,40 +786,35 @@ else
 	}
 
 	if ($step == 1) {
-		if (isset($USER->submission_method) && $USER->submission_method == 'submit2' && !isset($_GET['redir'])) {
-
-			$url = "/submit2.php";
-			if (!empty($grid_reference)) {
-				$url .= "#gridref=$grid_reference";
+		if (isset($USER->submission_method) && !isset($_GET['redir'])) {
+			if ($USER->submission_method == 'submit2') {
+				$url = "/submit2.php";
+				if (!empty($grid_reference))
+					$url .= "#gridref=$grid_reference";
+			} elseif ($USER->submission_method == 'submit2tabs') {
+				$url = "/submit2.php?display=tabs";
+				if (!empty($grid_reference))
+					$url .= "#gridref=$grid_reference";
+			} elseif ($USER->submission_method == 'multi') {
+				$url = "/submit-multi.php";
+				if (!empty($grid_reference))
+					$url .= "#gridref=$grid_reference";
+			} elseif ($USER->submission_method == 'mobile') {
+				$url = "/submit-mobile.php?redir=false";
+				if (!empty($grid_reference))
+					$url .= "&gridref=$grid_reference";
 			}
-			header("Location: $url");
-			print "<a href=\"$url\">Continue</a>";
-			exit;
-
-		} elseif (isset($USER->submission_method) && $USER->submission_method == 'submit2tabs' && !isset($_GET['redir'])) {
-
-			$url = "/submit2.php?display=tabs";
-			if (!empty($grid_reference)) {
-				$url .= "#gridref=$grid_reference";
+			if (!empty($url)) {
+				header("Location: $url");
+				print "<a href=\"$url\">Continue</a>";
+				exit;
 			}
-			header("Location: $url");
-			print "<a href=\"$url\">Continue</a>";
-			exit;
-
-		} elseif (isset($USER->submission_method) && $USER->submission_method == 'multi' && !isset($_GET['redir'])) {
-			$url = "/submit-multi.php";
-			if (!empty($grid_reference)) {
-				$url .= "#gridref=$grid_reference";
-			}
-			header("Location: $url");
-			print "<a href=\"$url\">Continue</a>";
-			exit;
 		}
-		
+
 		//init smarty
 		$smarty->assign('prefixes', $square->getGridPrefixes());
 		$smarty->assign('kmlist', $square->getKMList());
-	
+
 		$USER->getStats();
 	}
 }

@@ -2493,3 +2493,6 @@ CREATE TABLE `register_spam` (
 
 #################################################
 
+alter table `user` modify `submission_method` enum('submit','submit2','multi','submit2tabs','mobile') DEFAULT 'submit';
+
+#################################################

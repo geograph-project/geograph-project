@@ -21,6 +21,10 @@
 		<b style="font-size:1.2em"><a href="/submit-multi.php">Multi Submission</a></b><br/><br/>
 		Upload multiple files to server in one go. Then continue via v1 or v2 to actually submit the photos.<br/><br/>
         </li>
+	<li>
+		<b style="font-size:1.2em"><a href="/submit-mobile.php">Mobile/Tablet Optimized</a></b><br/><br/>
+		New method specifically designed for small screens, and/or using 'touch' style interaction<br/><br/>
+        </li>
         <li>
 		<span style="font-size:1.2em">{external href="http://media.geograph.org.uk/speculative/" text="Speculative Upload"}</span><br/><br/>
 		Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.<br/><br/>

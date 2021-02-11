@@ -21,7 +21,7 @@
 	}
 {/literal}</style>
 </head>
-<body style="background-color:white">
+<body style="background-color:#e4e4fc">
 
 <div style="background-color:#000066">
 <a target="_top" href="https://m.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
@@ -60,7 +60,8 @@ You can also still use the original desktop processes, but they dont work very w
 
 <hr>
 - <a href="https://m.geograph.org.uk/">Homepage</a>
-- <a href="http://www.geograph.org.uk/submit2.php">View Desktop Page</a>
+- <a href="https://www.geograph.org.uk/help/submit">View Desktop Page</a>
+- <a href="https://www.geograph.org.uk/help/submit" style=white-space:nowrap>read more about above methods</a>
 
 </body>
 </html>

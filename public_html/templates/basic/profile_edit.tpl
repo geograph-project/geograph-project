@@ -267,6 +267,7 @@
 		<option value="submit2" {if $profile->submission_method =='submit2'} selected="selected"{/if}>Submit Version 2</option>
 		<option value="submit2tabs" {if $profile->submission_method =='submit2tabs'} selected="selected"{/if}>Submit Version 2 Tabs</option>
 		<option value="multi" {if $profile->submission_method =='multi'} selected="selected"{/if}>Multi Submit</option>
+		<option value="mobile" {if $profile->submission_method =='mobile'} selected="selected"{/if}>Mobile/Tablet Version</option>
 	</select>
 
 	 

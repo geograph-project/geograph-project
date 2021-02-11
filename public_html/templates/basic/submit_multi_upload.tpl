@@ -4,7 +4,7 @@
 	{include file="_std_begin.tpl"}
 {/if}
 
-<div style="float:right;position:relative"><a href="/submit.php?redir=false">v1</a> / <a href="/submit2.php">v2</a> / <b>multi</b> / <a href="/help/submit">more...</a></div>
+<div style="float:right;position:relative"><a href="/submit.php?redir=false">v1</a> / <a href="/submit2.php">v2</a> /{if $mobile} <a href="/submit-mobile.php">single</a> / {/if}<b>multi</b> / <a href="/help/submit">more...</a></div>
 
 	<h2>Multiple Image Submission</h2>
 

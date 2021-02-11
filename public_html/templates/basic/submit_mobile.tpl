@@ -56,7 +56,7 @@ img {
 	color:white;
 }
 .tabs a.selected {
-	background-color:silver;
+	background-color:#e4e4fc;
 	color:black;
 }
 .tabs a span {
@@ -69,7 +69,7 @@ img {
 }
 
 form { 
-	background-color:silver;
+	background-color:#e4e4fc;
 	min-height:calc( 100vh - 89px );
 }
 
@@ -732,6 +732,9 @@ var static_host = '{$static_host}';
 
 		<p id="note">NOTE: Currently the image is uploaded at FULL resolution, and later downsized (not resized on device first!) - so beware of data charges!</p>
 
+
+		<hr>
+		<a href="?redir=false">Choose different Submission Process</a>
 </div>
 
 <div class="tab2">

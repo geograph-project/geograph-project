@@ -27,6 +27,12 @@ if (isset($_POST['finalise'])) {
 	 session_cache_limiter('none');
 }
 
+if (empty($_POST) && empty($_GET)) {
+	$_GET['mobile'] = 0; //otherwise init_session will automatically redirect!
+        $mobile_url = "https://{$_SERVER['HTTP_HOST']}/submit-mobile.php"; //speciically https, as we may be http
+}
+
+
 init_session();
 
 $smarty = new GeographPage;

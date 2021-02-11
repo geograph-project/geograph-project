@@ -22,6 +22,12 @@
  */
 
 require_once('geograph/global.inc.php');
+
+if (empty($_POST) && empty($_GET)) { //specifially want to avoid ?redir=false, but actully GET used for other things, so avoid ALL
+        $_GET['mobile'] = 0; //otherwise init_session will automatically redirect!
+        $mobile_url = "https://{$_SERVER['HTTP_HOST']}/submit-multi.php?mobile=1"; //speciically https, as we may be http
+}
+
 init_session();
 
 //you must be logged in to submit images
