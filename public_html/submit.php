@@ -800,9 +800,9 @@ else
 				if (!empty($grid_reference))
 					$url .= "#gridref=$grid_reference";
 			} elseif ($USER->submission_method == 'mobile') {
-				$url = "/submit-mobile.php?redir=false";
+				$url = "/submit-mobile.php";
 				if (!empty($grid_reference))
-					$url .= "&gridref=$grid_reference";
+					$url .= "?gridref=$grid_reference";
 			}
 			if (!empty($url)) {
 				header("Location: $url");

@@ -30,10 +30,6 @@
 		Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.<br/><br/>
         </li>
         <li>
-                <a href="/submit-iphone.php">iPhone/iPad submission method</a><br/><br/>
-		Experimental interface for uploading images from an iPhone/iPad device, using a third party application to get around the lack of native file upload capablitity. <br/><br/>
-	</li>
-        <li>
 		{external href="http://media.geograph.org.uk/" text="Media Upload"}<br/><br/>
 		Dedicated hosting for drawings, files, and other media used to accompany Geograph submissions (eg drawings for incorporation into articles).<br/><br/>
         </li>
@@ -65,7 +61,7 @@ function restoreService() {
 	var newservice = readCookie('MapSrv');
 	if (newservice) {
 		var ele = document.getElementById('service');
-		for(var q=0;ele.options.length;q++)
+		for(var q=0;q<ele.options.length;q++)
 			if (ele.options[q].value == newservice)
 				ele.options[q].selected = true;
 	}
