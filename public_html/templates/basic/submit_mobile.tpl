@@ -489,7 +489,7 @@ function checkOnline() {
 	}
 
 	$.ajax({
-		url: "https://www.geograph.org.uk/stuff/online.json.php",
+		url: "/stuff/online.json.php",
 		dataType: 'json',
 		xhrFields: { withCredentials: true },
 		cache: false,
@@ -497,7 +497,7 @@ function checkOnline() {
 			if (data === "ok") {
 				successCallback();
 			} else if (data === "no") {
-				failedCallback('Need to <a href="https://www.geograph.org.uk/login.php" target="_blank">login to geograph.org.uk</a>');
+				failedCallback('Need to <a href="/login.php" target="_blank">login</a>. Once logged in, return here, and try again.');
 			}
 				},
 				error: function() {
