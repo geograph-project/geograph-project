@@ -228,7 +228,7 @@ function checkMultiFormSubmission() {
 
                                                 mapTypeId = firstLetterToType(newtype);
 
-                                                map = L.map('map',{attributionControl:false}).addControl(
+                                                map = L.map('map',{attributionControl:false,doubleClickZoom:false}).addControl(
                                                         L.control.attribution({ position: 'bottomright', prefix: ''}) );
 
                                                 setupOSMTiles(map,mapTypeId);
@@ -241,7 +241,12 @@ function checkMultiFormSubmission() {
                                                                 console.log(e);
                                                         }
 						});
-
+						if (location.search.length>2 && location.search.indexOf('gridref=')) {
+							if (match = location.search.match(/gridref=([A-Z]{1,2} ?\d{2,5} ?\d{2,5})/)) {
+								disableAutoUpdate = true; //we just centering the map, not setting an exact location!
+								centerMap(match[1]);
+							}
+						}
 
         if (L.geographGeocoder && !geocoder)
                 map.addControl(geocoder = L.geographGeocoder());
@@ -269,6 +274,19 @@ function checkMultiFormSubmission() {
 	L.DomEvent.on(map._container, 'touchstart', function() {
                 disableAutoUpdate = false;
         });
+
+
+	map.on('dblclick',function(event) {
+		console.log(event,event.latlng);
+
+		//first SWAP the active.
+		disableAutoUpdate = true;
+		$('.tab2 input[type=text]').toggleClass('active');
+		
+		//then recenter the map (which feeds back to the new location box!) 
+		disableAutoUpdate = false;
+		map.panTo(event.latlng);
+	});
 
 
 
@@ -318,8 +336,11 @@ function centerMap(gridref) {
 	        ok = grid.parseGridRef(gridref)
 	}
 
-        if (ok && gridref.length > 6) {
-	        if (gridref.length <= 8 && grid.eastings%100 == 0 && grid.northings%100 == 0) {
+        if (ok && gridref.length > 4) {
+	        if (gridref.length <= 6 && grid.eastings%1000 == 0 && grid.northings%1000 == 0) {
+		        grid.eastings = grid.eastings + 500;
+		        grid.northings = grid.northings + 500;
+	        } else if (gridref.length <= 8 && grid.eastings%100 == 0 && grid.northings%100 == 0) {
 		        grid.eastings = grid.eastings + 50;
 		        grid.northings = grid.northings + 50;
 	        } else if (gridref.length <= 10 && grid.eastings%10 == 0 && grid.northings%10 == 0) {
