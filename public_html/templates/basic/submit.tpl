@@ -147,6 +147,20 @@ geographing</a> first.</p>
 	    if (ele && ele.value && ele.value.length > 0 && !ele.value.match(/.jpe?g$/i)) {
 	    	return confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel");
 	    }
+
+	    if (ele && ele.files) {
+            var file = ele.files[0];
+            if (file && file.size && file.size > 8192000) {
+                alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
+		return false;
+            } else if (file && file.type && file.type != "image/jpeg") {
+                alert('File appears to not be a JPEG image. We only accept .jpg files');
+		return false;
+            } else if (file && file.size && file.size < 10000) {
+                return confirm('File appears to be '+file.size+' bytes, which is rather small. Please check selected right image.');
+            }
+	    }
+
 	}
 	{/literal}
 	</script>
@@ -167,7 +181,7 @@ geographing</a> first.</p>
 			var newservice = readCookie('MapSrv');
 			if (newservice) {
 				var ele = document.getElementById('service');
-				for(var q=0;ele.options.length;q++)
+				for(var q=0;q<ele.options.length;q++)
 					if (ele.options[q].value == newservice)
 						ele.options[q].selected = true;
 			}
@@ -264,6 +278,20 @@ geographing</a> first.</p>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 		<label for="jpeg"><b>JPEG Image File</b></label>
 		<input id="jpeg" name="jpeg" type="file" accept="image/jpeg"/>
+
+        {literal}<script>
+        document.getElementById("jpeg").onchange = function(e) {
+            var file = e.target.files[0];
+            if (file && file.size && file.size > 8192000) {
+                alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
+            } else if (file && file.type && file.type != "image/jpeg") {
+                alert('File appears to not be a JPEG image. We only accept .jpg files');
+            } else if (file && file.size && file.size < 10000) {
+                alert('File appears to be '+file.size+' bytes, which is rather small. Please check selected right image.');
+            }
+        }
+        </script>{/literal}
+
 
 		<div>(upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)</div>
 		{/if}

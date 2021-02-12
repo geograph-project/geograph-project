@@ -163,6 +163,18 @@ function hideStep3() {
 
 <p>(There is no resolution limit, but the file must be under 8 megabytes)</p>
 
+        {literal}<script>
+        document.getElementById("jpeg").onchange = function(e) {
+            var file = e.target.files[0];
+            if (file && file.size && file.size > 8192000) {
+                alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
+            } else if (file && file.type && file.type != "image/jpeg") {
+                alert('File appears to not be a JPEG image. We only accept .jpg files');
+            } else if (file && file.size && file.size < 10000) {
+                alert('File appears to be '+file.size+' bytes, which is rather small. Please check selected right image.');
+            }
+        }
+        </script>{/literal}
 
 <input type="submit" name="next" value="Next &gt;" onclick="autoDisable(this);"/>
 

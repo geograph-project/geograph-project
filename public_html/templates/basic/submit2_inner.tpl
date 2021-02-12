@@ -96,7 +96,7 @@
 
 	{if $filepicker}
 
-		<input type="filepicker-dragdrop" id="jpeg_url" name="jpeg_url" data-fp-apikey="AWbx7KpSUTJ-4fLh3i4TEz" data-fp-option-container="modal" data-fp-option-maxsize="8000000" data-fp-option-services="BOX,COMPUTER,DROPBOX,FACEBOOK,GITHUB,GOOGLE_DRIVE,FLICKR,GMAIL,INSTAGRAM" onchange="this.value = event.files[0].url;">
+		<input type="filepicker-dragdrop" id="jpeg_url" name="jpeg_url" data-fp-apikey="AWbx7KpSUTJ-4fLh3i4TEz" data-fp-option-container="modal" data-fp-option-maxsize="8192000" data-fp-option-services="BOX,COMPUTER,DROPBOX,FACEBOOK,GITHUB,GOOGLE_DRIVE,FLICKR,GMAIL,INSTAGRAM" onchange="this.value = event.files[0].url;">
 		<div>
 		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em" /> (while file is sending can continue on the steps below)<br/>
 		</div>
@@ -108,6 +108,21 @@
 		<div>
 		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em" onclick="return check_jpeg(this.form.jpeg_exif)"/> (while file is sending can continue on the steps below)<br/>
 		</div>
+
+	{literal}<script>
+        document.getElementById("jpeg_exif").onchange = function(e) {
+            var file = e.target.files[0];
+            if (file && file.size && file.size > 8192000) {
+                alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
+	    } else if (file && file.type && file.type != "image/jpeg") {
+                alert('File appears to not be a JPEG image. We only accept .jpg files');
+            } else if (file && file.size && file.size < 10000) {
+		alert('File appears to be '+file.size+' bytes, which is rather small. Please check selected right image.');
+            }
+        }
+	</script>{/literal}
+
+
 	{/if}
 
 		<br/>

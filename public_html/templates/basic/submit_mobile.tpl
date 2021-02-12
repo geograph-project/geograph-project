@@ -174,6 +174,18 @@ function checkMultiFormSubmission() {
 		alert("Please select an image to submit");
 		return false;
 	}
+        if (form.elements['jpeg_exif'].files && form.elements['jpeg_exif'].files[0]) {
+            var file = form.elements['jpeg_exif'].files[0];
+            if (file && file.size && file.size > 8192000) {
+                alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize image to be under 8 Megabytes');
+		return false;
+            }
+            if (file && file.type && file.type != "image/jpeg") {
+                alert('File appears to not be a JPEG image. We only accept .jpg files');
+		return false;
+            }
+        }
+
 
 	if (form.elements['grid_reference'].value.length < 2) {
 		selectTab(3);		
@@ -621,7 +633,18 @@ function toDecimal(number) {
 $(function() {
 	document.getElementById("jpeg_exif").onchange = function(e) {
             var file = e.target.files[0];
-            if (file && file.name) {
+	    if (file && file.size && file.size > 8192000) {
+		$('#jpeg_exif').after('<div class=toobig><b>File appears to be '+file.size+' bytes, which is too big for final submission</b>. Please downsize the image to be under 8 Megabytes</div>');
+	    } else {
+		$('.toobig').remove();
+	    }
+	    if (file && file.type && file.type != "image/jpeg") {
+		$('#jpeg_exif').after('<div class=nonjpeg>File appears to not be a JPEG image. We only accept .jpg files</div>');
+            } else if (file && file.name) {
+                if (file && file.size && file.size < 10000) {
+			$('#jpeg_exif').after('<div class=toobig>File appears to be '+file.size+' bytes, which is rather small. Please check selected right image.</div>');
+		}
+		$('.nonjpeg').remove();
                 EXIF.getData(file, function() {
 		////////////////////////			
 
