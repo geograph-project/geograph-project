@@ -10,6 +10,7 @@
 <link href="{"/js/select2-3.3.2/select2.css"|revision}" rel="stylesheet"/>
 <script src="{"/js/select2-3.3.2/select2.js"|revision}"></script>
 <script type="text/javascript" src="https://s1.geograph.org.uk/mapper/geotools2.v7300.js"></script>
+<script src="{"/js/jquery.storage.js"|revision}"></script>
 
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
@@ -37,10 +38,12 @@ html {
 *, *:before, *:after {
   box-sizing: inherit;
 }
-img {
+img, #previewImage2 {
 	image-orientation: none;
 }
-
+#preview {
+	text-align:center;
+}
 .tabs {
 	white-space:nowrap;
 	overflow:hidden;
@@ -119,7 +122,20 @@ form {
 	text-align:center;
 	padding:2px;
 }
-
+a.done {
+	color:lightgreen;
+}
+#recentTags {
+	line-height:3em;
+}
+#recentTags a {
+	padding:5px;
+	border-radius:3px;
+	background-color:silver;
+	text-decoration:none;
+	margin-right:10px;
+	white-space:nowrap;
+}
 </style>
 
 <script>
@@ -138,6 +154,22 @@ $.ajaxSetup({
 			else
 				loadmap();
 		}
+
+		$('div.tabs a').removeClass('done');
+		var form = document.forms['theForm'];
+		if (form.elements['jpeg_exif'].value.length > 2) {
+			if (form.elements['jpeg_exif'].files && form.elements['jpeg_exif'].files[0]) {
+				var file = form.elements['jpeg_exif'].files[0];
+				if (file.size > 10000 && file.size <= 8192000 && file.type && file.type == "image/jpeg")
+					$('div.tabs a').eq(0).addClass('done');
+			} else {
+				$('div.tabs a').eq(0).addClass('done');
+			}
+		}
+		if (form.elements['grid_reference'].value.length > 4) $('div.tabs a').eq(1).addClass('done');
+		if (form.elements['title'].value.length > 1) $('div.tabs a').eq(2).addClass('done');
+		if (form.elements['contexts[]'].value) $('div.tabs a').eq(3).addClass('done');
+
 		return false;
 	}
 
@@ -187,9 +219,9 @@ function checkMultiFormSubmission() {
         }
 
 
-	if (form.elements['grid_reference'].value.length < 2) {
-		selectTab(3);		
-		alert("Please enter a subject location");
+	if (form.elements['grid_reference'].value.length < 5) {
+		selectTab(2);
+		alert("Please enter a Subject Location. (subject is required, camera location is optional)");
 		return false;
 	}
 
@@ -199,16 +231,58 @@ function checkMultiFormSubmission() {
 		return false;
 	}
 
+	////////////////////////
+
 	var options = form.elements['contexts[]'].options;
 	var count = 0;
+	var rawText = $.localStorage('submit.contexts');
+	var existing = {};
+	if (rawText && rawText.length > 3) {
+		$.each(rawText.split(/\n/), function(index,value) {
+			var bits = value.split('|');
+			existing[bits[1]] = bits[0];
+		});
+	}
 	for(q = 0;q<options.length;q++)
-		if (options.selected)
+		if (options[q].selected) {
+			existing[options[q].value] = Date.now();
 			count++;
-	if (options < 1) {
+		}
+	if (count > 0) {
+		var lines = [];
+		$.each(existing,function(key,value) {
+			lines.push(value+'|'+key);
+		});
+		$.localStorage('submit.contexts',lines.join('\n'));
+	} else {
 		selectTab(4);		
 		alert("Please select at least one Geograpical Context");
 		return false;
 	}
+
+	/////////////////////////
+
+	var rawText = $.localStorage('submit.tags');
+	var existing = {};
+	if (rawText && rawText.length > 3) {
+		$.each(rawText.split(/\n/), function(index,value) {
+			var bits = value.split('|');
+			existing[bits[1]] = bits[0];
+		});
+	}
+	var tags = $('#tags').val();
+	if (tags && tags.length > 1) {
+		$.each(tags.toLowerCase().split(/;/), function(index,value) {
+			existing[value] = Date.now();
+		});
+		var lines = [];
+		$.each(existing,function(key,value) {
+			lines.push(value+'|'+key);
+		});
+		$.localStorage('submit.tags',lines.join('\n'));
+	}
+
+	/////////////////////////
 
 	cancelMess();
 	return true;
@@ -516,8 +590,31 @@ function checkOnline() {
 
 $(function() {
 	var $ele = $('select#contexts');
-        var url = "https://www.geograph.org.uk/tags/primary.json.php";
 
+	var rawText = $.localStorage('submit.contexts');
+	if (rawText && rawText.length > 3) {
+	        var existing = {};
+		var $optgroup = $('<optgroup/>').attr('label', 'Recently Used').appendTo($ele);
+		$.each(rawText.split(/\n/), function(index,value) {
+			var bits = value.split('|');
+			existing[bits[1]] = parseInt(bits[0],10);
+		});
+		var keys = Object.keys(existing); //list of contexts
+		keys.sort(function(a, b) {
+		    a = existing[a];
+		    b = existing[b];
+		    return a < b ? 1 : (a > b ? -1 : 0); //descending sort
+		});
+		var count=0;
+		$.each(keys,function(index,value) {
+			if(count < 6) {
+				$('<option/>').attr('value', value).text(value).appendTo($optgroup);
+				count++;
+			}
+		});
+	}
+
+        var url = "https://www.geograph.org.uk/tags/primary.json.php";
         $.ajax({
                 url: url,
                 dataType: 'json',
@@ -536,7 +633,43 @@ $(function() {
 		}
 
 	});
+
+	var rawText = $.localStorage('submit.tags');
+	if (rawText && rawText.length > 3) {
+		var existing = {};
+		var $tags = $('#recentTags').append('Recent (click to use): ');
+		$.each(rawText.split(/\n/), function(index,value) {
+			var bits = value.split('|');
+			existing[bits[1]] = bits[0];
+		});
+		var keys = Object.keys(existing); //list of tags
+		keys.sort(function(a, b) {
+		    a = existing[a];
+		    b = existing[b];
+		    return a < b ? 1 : (a > b ? -1 : 0); //descending sort
+		});
+		var count=0;
+		$.each(keys,function(index,value) {
+			if(count < 16) {
+				$('<a/>').attr('href','#').text(value.capitalizeTag()).click(useTag).appendTo($tags);
+				count++;
+			}
+		});
+	}
 });
+
+function useTag() {
+	var $ele = $('#tags');
+	if ($ele.val().length>1) {
+		$ele.val($ele.val()+';'+$(this).text()).trigger('change');
+	} else {
+		$ele.val($(this).text()).trigger('change');
+	}
+	var $parent = $(this).parent();
+	$(this).remove();
+	if ($parent.find('a').length==0)
+		$parent.empty();
+}
 
 /******************************************************************************
  TAGS */
@@ -736,7 +869,7 @@ var static_host = '{$static_host}';
 <body style="background-color:white">
 
 <div style="background-color:#000066">
-<a target="_top" href="https://m.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
+	<a target="_top" href="/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
 </div>
 
 <div class=tabs>
@@ -759,7 +892,7 @@ var static_host = '{$static_host}';
 
 		<div id="preview" style="display:none">
 			Full image preview:<br>
-			<img src="" id="previewImage"/>
+			<img src="" id="previewImage"/><br>
 			Actual size preview:<br>
 			<div id="previewImage2"/></div>
 			(may only display a part of image, so can check image is in focus etc)
@@ -839,7 +972,6 @@ var static_host = '{$static_host}';
 			<input type="date" name="imagetaken" id="imagetaken" value="" size="10" maxlength="10" min="1700-01-01" max="{$smarty.now|date_format:'%Y-%m-%d'}"/>
 			<input type=button value=today onclick="this.form.elements['imagetaken'].value = '{$smarty.now|date_format:'%Y-%m-%d'}'"> 
 		</div>  
-
 		<hr>
 
 		<div><label for=contexts>Geographical Contexts: (Select Multiple)</label>
@@ -847,9 +979,9 @@ var static_host = '{$static_host}';
 		<br>
 		<hr>
 
-
 		<div><label for=tags>Tags (and/or Subject):</label>
 		<input type="text" name="tags" id="tags" value="" size="60" placeholder="tags (optional)" style="width:100%"></div>
+		<div id="recentTags"></div>
 		<blockquote>
 			<span class="experimental">
 			<input type="radio" name="selector" accesskey="1" value="alpha" id="sel_alpha"/> <label for="sel_alpha">All Tags - Alphabetical</label><br/></span>
@@ -860,8 +992,7 @@ var static_host = '{$static_host}';
 			<input type="radio" name="selector" accesskey="4" value="selfalpha" id="sel_selfalpha"/> <label for="sel_selfalpha">Your Tags - Alphabetical</label><br/></span>
 			<input type="radio" name="selector" accesskey="s" value="subject" id="sel_subject"/> <label for="sel_subject">Subject List</label><br/>
 		</blockquote>
-
-
+		<br><br>
 </div>
 
 
@@ -902,7 +1033,7 @@ var static_host = '{$static_host}';
 
 		<p><span><a title="View licence" href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Here is the Commons Deed outlining the licence terms</a><img style="padding-left:2px;" alt="External link" title="External link - opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span></p>
 	
-		<div id="submissionAvailable" style="display:none">
+		<div id="submissionAvailable" style="display:none;padding:10px;">
 			<p>If you agree with these terms, click "I agree" and your image will be stored in the grid square.<br/><br/>
 			<input style="background-color:pink; width:120px" type="button" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/> 
 			&nbsp;&middot;&nbsp;
@@ -911,7 +1042,7 @@ var static_host = '{$static_host}';
 			(You appear to be online (and logged into geograph.org.uk), so use the Agree button above to submit image)
 		</p>
 		</div>
-		<div id="submissionUnavailable"> 
+		<div id="submissionUnavailable" onmouseover="checkOnline(this)"> 
 			<div id="submissionMessage">Dont know if can contact server yet. Click the button to see if have a functional connection...</div>
 			<input type="button" value="Check Online" onclick="checkOnline(this)">
 		</div>
