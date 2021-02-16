@@ -1417,37 +1417,45 @@ split_timer('map'); //starts the timer
 		$number = !empty($this->minimum)?intval($this->minimum):0;
 
 		if ($this->type_or_user == -13) {
-			$sql="select x,y,0 as `d`,max(ftf) as imagecount
+			$sql="select x,y,max(ftf) as imagecount
 				from gridimage_search
 				where CONTAINS( GeomFromText($rectangle),       point_xy)
 				group by x,y
 				 having imagecount>0
 				 order by null";
+			//now have the max_ftf column to use...
+			$sql="select x,y,max_ftf AS imagecount
+				from gridsquare
+				where CONTAINS( GeomFromText($rectangle),       point_xy)
+				AND max_ftf > 0";
 
 		} elseif ($this->type_or_user == -14) {
-			$sql="select x,y,0 as `d`,count(distinct year(imagetaken)) as imagecount
+			$sql="select x,y,count(distinct year(imagetaken)) as imagecount
 				from gridimage_search
 				where imagetaken NOT LIKE '0000-%'
+				WHERE CONTAINS( GeomFromText($rectangle),       point_xy)
 				group by x,y
 				 order by null";
 
 		} elseif ($this->type_or_user == -17) {
-			$sql="select x,y,0 as `d`,round(pow(average,1.97)) as imagecount
+			$sql="select x,y,round(pow(average,1.97)) as imagecount
 				from gridimage_search
 					inner join scenic_votes using (gridimage_id)
+				WHERE CONTAINS( GeomFromText($rectangle),       point_xy)
 				group by x,y
 				 order by null";
 
 		} elseif ($this->type_or_user == -18) {
-			$sql="select x,y,0 as `d`,round(pow(baysian*2,1.97)) as imagecount
+			$sql="select x,y,round(pow(baysian*2,1.97)) as imagecount
 				from gridimage_search
 					inner join gallery_ids on(gridimage_id=id)
 				where baysian is not null
+				AND CONTAINS( GeomFromText($rectangle),       point_xy)
 				group by x,y
 				 order by null";
 
 		} elseif ($this->type_or_user == -9) {
-			$sql="select x,y,gs.gridsquare_id,(count(distinct nateastings DIV 500, natnorthings DIV 500) - (sum(nateastings = 0) > 0) )  as imagecount
+			$sql="select x,y,(count(distinct nateastings DIV 500, natnorthings DIV 500) - (sum(nateastings = 0) > 0) )  as imagecount
 				from
 				gridsquare gs
 				inner join gridimage gi using(gridsquare_id)
@@ -1456,7 +1464,7 @@ split_timer('map'); //starts the timer
 				group by gi.gridsquare_id ";
 
 		} elseif ($this->type_or_user == -8) {
-			$sql="select x,y,gs.gridsquare_id,(count(distinct nateastings DIV 100, natnorthings DIV 100) - (sum(nateastings = 0) > 0) )  as imagecount
+			$sql="select x,y,(count(distinct nateastings DIV 100, natnorthings DIV 100) - (sum(nateastings = 0) > 0) )  as imagecount
 				from
 				gridsquare gs
 				inner join gridimage gi using(gridsquare_id)
@@ -1465,7 +1473,7 @@ split_timer('map'); //starts the timer
 				group by gi.gridsquare_id ";
 
 		} elseif ($this->type_or_user == -7) {
-			$sql="select x,y,gs.gridsquare_id,ceil(datediff(now(),max(imagetaken)) / 356) as imagecount
+			$sql="select x,y,ceil(datediff(now(),max(imagetaken)) / 356) as imagecount
 				from
 				gridsquare gs
 				inner join gridimage gi using(gridsquare_id)
@@ -1474,7 +1482,7 @@ split_timer('map'); //starts the timer
 				group by gi.gridsquare_id ";
 
 		} elseif ($this->type_or_user == -3) {
-			$sql="select x,y,gs.gridsquare_id,count(distinct label) as imagecount
+			$sql="select x,y,count(distinct label) as imagecount
 				from
 				gridsquare gs
 				inner join gridimage2 gi using(gridsquare_id)
@@ -1484,15 +1492,16 @@ split_timer('map'); //starts the timer
 			$sql="select * from gridsquare_group_count";
 
 		} elseif ($this->type_or_user == -5) {
-			$sql="select x,y,gs.gridsquare_id,round(log10(hits)*2) as imagecount
+			$sql="select x,y,round(log10(hits)*2) as imagecount
 				from
 				gridsquare gs
-				inner join gridsquare_log using (gridsquare_id)"; 
+				inner join gridsquare_log using (gridsquare_id)
+				where CONTAINS( GeomFromText($rectangle),       point_xy)";
 
 		} elseif (!empty($this->mapDateCrit)) {
-			$sql="select x,y,gs.gridsquare_id,count(*) as imagecount
-				from 
-				gridsquare gs 
+			$sql="select x,y,count(*) as imagecount
+				from
+				gridsquare gs
 				inner join gridimage gi using(gridsquare_id)
 				where CONTAINS( GeomFromText($rectangle),	point_xy)
 				and submitted < '{$this->mapDateStart}'
@@ -1500,23 +1509,23 @@ split_timer('map'); //starts the timer
 				group by gi.gridsquare_id ";
 
 		} else {
-			$sql="select x,y,gridsquare_id,imagecount from gridsquare where 
+			$sql="select x,y,imagecount from gridsquare where
 				CONTAINS( GeomFromText($rectangle),	point_xy)
 				and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
 		}
 
 
-
+		//todo, one of those rare cases, where we explicitly use NUM, if change the default will need $ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 		$recordSet = $db->Execute($sql);
-		while (!$recordSet->EOF) 
+		while (!$recordSet->EOF)
 		{
 			$gridx=$recordSet->fields[0];
 			$gridy=$recordSet->fields[1];
 
 			$imgx1=round(($gridx-$left) * $this->pixels_per_km);
 			$imgy1=round(($this->image_h-($gridy-$bottom+1)* $this->pixels_per_km));
-	
-			$color = $colour[$recordSet->fields[3]];
+
+			$color = $colour[$recordSet->fields[2]];
 
 			if ($this->pixels_per_km==1) {
 				imagesetpixel($img,$imgx1, $imgy1,$color);
@@ -1525,11 +1534,11 @@ split_timer('map'); //starts the timer
 				$imgy2=$imgy1 + $this->pixels_per_km;
 				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
 			}
-	
+
 			$recordSet->MoveNext();
 		}
 		if (!empty($recordSet))
-			$recordSet->Close(); 
+			$recordSet->Close();
 
 		if (isset($this->real_pixels_per_km) && $this->real_pixels_per_km < 1) {
 			//render at 1px/km and scale...
