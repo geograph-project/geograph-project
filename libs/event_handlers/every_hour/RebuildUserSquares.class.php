@@ -67,7 +67,7 @@ class RebuildUserSquares extends EventHandler
 		} elseif ( !empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*6) ) {
 
 		        $grs = $db->getCol("select grid_reference from gridimage_search where upd_timestamp >
-	                date_sub(now(),interval 10 hour) group by grid_reference order by null");
+	                date_sub(now(),interval 6 hour) group by grid_reference order by null");
 
 			$where = "grid_reference in ('".implode("','",$grs)."')";
 

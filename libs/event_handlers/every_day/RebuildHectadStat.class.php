@@ -79,7 +79,8 @@ CREATE TABLE `hectad_stat` (
   `ftfusers` mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`hectad`),
   KEY `reference_index` (`reference_index`),
-  KEY `geosquares` (`geosquares`)
+  KEY `geosquares` (`geosquares`),
+  KEY `y` (`y`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1
 			");
 		}

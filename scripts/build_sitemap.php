@@ -58,7 +58,8 @@ $urls_per_sitemap=$param['per'];
 
 //how many sitemap files must we write?
 printf("Counting images...\r");
-$images=$db->GetOne("select count(*) from gridimage_search where user_id != 1695 ".($param['ri']?" and reference_index = {$param['ri']}":''));
+//$images=$db->GetOne("select count(*) from gridimage_search where user_id != 1695 ".($param['ri']?" and reference_index = {$param['ri']}":''));
+$images=$db->GetOne("select sum(images) from hectad_user_stat where user_id != 1695 ".($param['ri']?" and reference_index = {$param['ri']}":''));
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...

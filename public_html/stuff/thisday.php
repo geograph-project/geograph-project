@@ -80,7 +80,8 @@ Optionally give preference to images in <input type="text" name="gr" value="<? e
                         $thumbh = 120;
                         $thumbw = 120;
 
-$years = $db->CacheGetAll(3600*24,"select count(*) c,gridimage_id,imagetaken from gridimage_search where imagetaken like '$date' group by substring(imagetaken,1,4) desc");
+//$years = $db->CacheGetAll(3600*24,"select count(*) c,gridimage_id,imagetaken from gridimage_search where imagetaken like '$date' group by substring(imagetaken,1,4) desc");
+	$years = $db->getAll("select images as c,gridimage_id,imagetaken from imagetaken_stat where imagetaken like '$date' order by imagetaken desc");
 
 	if (count($years)) {
 
@@ -113,7 +114,7 @@ $years = $db->CacheGetAll(3600*24,"select count(*) c,gridimage_id,imagetaken fro
 			}
 
 			if ($year['c'] > 5) {
-				print " <small>[{$year['c']} <a href=\"/search.php?searchtext=".urlencode($q)."&amp;do=1\">images</a>]</small>";				
+				print " <small>[{$year['c']} <a href=\"/search.php?searchtext=".urlencode($q)."&amp;do=1\">images</a>]</small>";
 			}
 			print "</h3></div>";
 

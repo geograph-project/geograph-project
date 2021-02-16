@@ -64,7 +64,7 @@ class RebuildUserStats extends EventHandler
 
 		if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*6) && $status['Comment'] != 'rebuild') {
 
-			$users = $db->getCol("select distinct user_id from gridimage_search where upd_timestamp > date_sub(now(),interval 3 hour)"); //use 3 hour just to be safe!
+			$users = $db->getCol("select distinct user_id from gridimage_search where upd_timestamp > date_sub(now(),interval 2 hour)"); //use 2 hour just to be safe!
 
 			if (empty($users)) {
 				//nothing to do then!
@@ -79,7 +79,7 @@ class RebuildUserStats extends EventHandler
 			$crit = "user_id IN ($id_list)";
 
 			//add the changed users data
-			if (!empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*1.2) ) {
+			if (!empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*2) ) {
 				$this->insertFromUserGridsquare($crit);
 			} else {
 				$this->insertFromGridimageSearch($crit);

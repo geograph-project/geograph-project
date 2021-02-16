@@ -27,6 +27,11 @@ init_session();
 
 $smarty = new GeographPage;
 
+        header("HTTP/1.1 503 Service Unavailable");
+        $smarty->display('function_disabled.tpl');
+exit;
+
+
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $days = (isset($_GET['days']) && is_numeric($_GET['days']))?intval($_GET['days']):7;
