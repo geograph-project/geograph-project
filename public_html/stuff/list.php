@@ -306,13 +306,16 @@ if (!empty($_GET['debug']))
 		$label = $db->Quote($_GET['label']);
 		$gr = $db->Quote($_GET['gridref']);
 
-		//could just use gridimage_group_stat, but doing a full join like this can get number of 'overlapping' images. 
-		$others = $db->getAll("select g.label,count(g.gridimage_id) count,count(s.gridimage_id) as matched
+		//could just use gridimage_group_stat, but doing a full join like this can get number of 'overlapping' images.
+		/*$others = $db->getAll("select g.label,count(g.gridimage_id) count,count(s.gridimage_id) as matched
 					from gridimage_group g inner join gridimage_search i using (gridimage_id)
 					 left join (select gridimage_id from gridimage_group inner join gridimage_search using (gridimage_id)
 					 		where grid_reference = $gr and label = $label) s using (gridimage_id)
 					where grid_reference = $gr
-					group by g.label order by matched desc, count desc");
+					group by g.label order by matched desc, count desc"); */
+
+		//... actully for now, lets do the simpler query, as the above query is using lots of IO
+		$others = $db->getAll("SELECT label,images AS count FROM gridimage_group_stat WHERE grid_reference = $gr ORDER BY images DESC LIMIT 100");
 		if (!empty($others)) {
 			print "<hr>";
 			print "<p>Other Automatic clusters in ".htmlentities($_GET['gridref'])."</p>";
@@ -327,7 +330,7 @@ if (!empty($_GET['debug']))
 				} else {
 					$url = "/stuff/list.php?label=".urlencode($row['label'])."&gridref=$gr";
 					print "<a href=\"".htmlentities($url)."\">".htmlentities2($row['label'])."</a>";
-					if ($row['matched']) {
+					if (!empty($row['matched'])) {
 						print " <small>(of which {$row['matched']} shown above)</small>";
 					}
 				}
@@ -341,7 +344,8 @@ if (!empty($_GET['debug']))
 		}
 
 	} elseif (!empty($_GET['title']) && !empty($_GET['gridref'])) {
-		$labeled = $db->getOne("select count(*) from gridimage_group inner join gridimage_search using (gridimage_id)
+		//$labeled = $db->getOne("select count(*) from gridimage_group inner join gridimage_search using (gridimage_id)
+		$labeled = $db->getOne("select images from gridimage_group_stat
 				where grid_reference = ".$db->Quote($_GET['gridref'])." and label = ".$db->Quote($_GET['title']));
 		if ($labeled) {
 			$url = "/stuff/list.php?label=".urlencode($_GET['title'])."&gridref=".urlencode($_GET['gridref']);
