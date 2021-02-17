@@ -17,6 +17,7 @@
 	&nbsp;&nbsp;&nbsp;{external href="http://www.bing.com/maps/default.aspx?v=2&mapurl=http://$http_host/discuss/feed/forum5.kml" text="Bing Maps"}<br/>
 	{/if}
 	<br/>
+	{if $coverage_updated}
 	<b>Hectad<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup> 3D Coverage Graph</b>:<br/>
 	&nbsp;&nbsp;&nbsp;<a href="/kml/hectads-points.kmz" title="Geograph 3D Coverage Graph" class="xml-kml" type="application/vnd.google-earth.kmz+xml">KMZ</a> (about 200 kilobytes)<br/>
 	{if $user->registered}
@@ -24,6 +25,7 @@
 	{/if}
 	<small><small><i>Last updated: {$coverage_updated}</i></small></small><br/>
 	<br/>
+	{/if}
 	<b>Geograph Layer Collection</b>:<br/>
 	&nbsp;&nbsp;&nbsp;<a href="/kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> <small><small>- includes access to<br/> nearly all the features on this page and more!</small></small></span>
 	</div>

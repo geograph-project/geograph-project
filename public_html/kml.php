@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: kml.php 8784 2018-07-05 10:25:16Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -33,7 +33,7 @@ if (isset($_GET['id']))  {
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	$image=new GridImage;
-	
+
 	$ok = $image->loadFromId($_GET['id']);
 
 	if ($ok && $image->moderation_status=='rejected') {
@@ -84,7 +84,7 @@ if (isset($_GET['id']))  {
 		$linkTag = "<a href=\"{$CONF['SELF_HOST']}/photo/".$image->gridimage_id."\">";
 		$details = $image->getThumbnail(120,120,2);
 
-		$thumb = $details['server'].$details['url']; 
+		$thumb = $details['server'].$details['url'];
 		$thumbTag = $details['html'];
 
 		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks(htmlnumericentities($image->comment))." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"".$CONF['SELF_HOST'].$image->profile_link."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
@@ -143,22 +143,22 @@ $cacheid = '';
 		if ($i < 1) {
 			if ($USER->registered) {
 				$data = array();
-				$data['user_id'] = $USER->user_id; 
-				$data['orderby'] = 'gridimage_id'; 
-				$data['reverse_order_ind'] = 1; 
+				$data['user_id'] = $USER->user_id;
+				$data['orderby'] = 'gridimage_id';
+				$data['reverse_order_ind'] = 1;
 				$sortorders = array('gridimage_id'=>'Date Submitted');
 
 				$data['adminoverride'] = 0; //prevent overriding it
-				
-				$engine = new SearchEngineBuilder('#'); 
+
+				$engine = new SearchEngineBuilder('#');
 				$i = $engine->buildAdvancedQuery($data,false);
 			} else {
 				$i = 1522;
 			}
 		}
-		
+
 		$engine = new SearchEngine($i);
-		
+
 		if (isset($_REQUEST['submit'])) {
 			$simple = $_REQUEST['simple'];
 			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'view') {
@@ -189,7 +189,7 @@ $cacheid = '';
 				exit;
 			} else {
 				customExpiresHeader(3600*24*14,true);
-				
+
 				$kml = new kmlFile();
 				$kml->filename = "Geograph.kml";
 
@@ -215,13 +215,12 @@ $cacheid = '';
 		} else {
 			$engine->countOnly = true;
 			$smarty->assign('querytime', $engine->Execute($pg)); 
-			
+
 			$smarty->assign('i', $i);
 			$smarty->assign('currentPage', $pg);
 			$smarty->assign_by_ref('engine', $engine);
-		
 		}
-		
+
 	} else {
 		$is = array(1522=>'Recent Submissions',
 			46131 => 'Selection of Photos across the British Isles',
@@ -235,15 +234,10 @@ $cacheid = '';
 		);
 		$smarty->assign_by_ref('is', $is);
 		$smarty->assign('currentPage', 1);
-		
-		$db = GeographDatabaseConnection(true);
-		$updatetime = $db->CacheGetOne(86400,"select avg(unix_timestamp(ts))-stddev(unix_timestamp(ts)) from kmlcache where rendered = 1");
-		
-		$smarty->assign('superlayer_updated', strftime("%A, %d %b at %H:%M",intval($updatetime)));
-		$smarty->assign('coverage_updated', strftime("%A, %d %b at %H:%M",@filemtime("kml/hectads-points.kmz")));
-		
+
+		if ($time = @filemtime("kml/hectads-points.kmz"))
+			$smarty->assign('coverage_updated', strftime("%A, %d %b at %H:%M",$time));
 	}
-		
 
 $smarty->assign('adv', $_GET['adv']);
 
