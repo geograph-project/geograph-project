@@ -862,28 +862,37 @@ split_timer('gridsquare','getImages'.$i,"$inc_all_user,$custom_where_sql"); //lo
 	*/
 	function updateCounts()
 	{
+		global $ADODB_FETCH_MODE;
 		$db=&$this->_getDB();
-		
+
+		$prev_fetch_mode = $ADODB_FETCH_MODE;
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
 split_timer('gridsquare'); //starts the timer
-		
-		//see if we have any geographs
-			//we can use a limit, implied by GetOne (rather than count) beucase we only interested if *any* not now many, 'limit 1' will stop searching once found 1
-		$geographs= $db->GetOne("select gridsquare_id from gridimage ".
-					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph'");
 
-		$has_geographs=$geographs?1:0;
+		$updates = $db->getRow("
+			SELECT
+			  COUNT(*) AS `imagecount`,
+			  IF(SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR)) AND moderation_status='geograph')>0,1,0) AS has_recent,
+			  COALESCE(MAX(ftf),0) AS max_ftf,
+			  COALESCE(SUM(moderation_status = 'geograph' and imagetaken LIKE '1%'),0) AS premill
+			FROM gridimage
+			WHERE gridsquare_id={$this->gridsquare_id}");
+		//  IF(SUM(moderation_status='geograph')>0,1,0) AS has_geographs,
 
-		//count how many images in the square
-		$imagecount= $db->GetOne("select count(*) from gridimage ".
-			"where gridsquare_id={$this->gridsquare_id} and moderation_status in ('accepted','geograph')");
+		//see if we have any geographs (we had the has_geograph column first, added max_ftf for more detail later,
+			//but didnt want to change definition later, and any use of has_geographs, could use max_ftf,
+			//eg currenty have "sum(has_geographs) as geographs", but could convert to "sum(max_ftf>0) as geographs"
+		$updates['has_geographs']=$updates['max_ftf']?1:0;
 
-		//update the has_geographs flag
-		$db->Query("update gridsquare set has_geographs=$has_geographs,imagecount=$imagecount ".
-			"where gridsquare_id={$this->gridsquare_id}");
-	
+		$db->Execute('INSERT INTO gridimage_group SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+
+		$db->Execute('UPDATE gridsquare SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE gridsquare_id={$this->gridsquare_id}",
+			array_values($updates));
+
+		$ADODB_FETCH_MODE = $prev_fetch_mode;
+
 split_timer('gridsquare','updateCounts',"{$this->grid_reference},$imagecount"); //logs the wall time
-
-		//todo - update the has_recent flag. 
 	}
 }
 

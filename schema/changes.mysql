@@ -2496,3 +2496,9 @@ CREATE TABLE `register_spam` (
 alter table `user` modify `submission_method` enum('submit','submit2','multi','submit2tabs','mobile') DEFAULT 'submit';
 
 #################################################
+
+alter table gridsquare add last_timestamp timestamp not null on update current_timestamp();
+
+#################################################
+
+
