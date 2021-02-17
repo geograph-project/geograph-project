@@ -42,7 +42,8 @@ $urls_per_sitemap=1000;
 
 //how many sitemap files must we write?
 printf("Counting users...\r");
-$images=$db->GetOne(" select count(distinct user_id) from gridimage_search where reference_index = 2");
+//$images=$db->GetOne(" select count(distinct user_id) from gridimage_search where reference_index = 2");
+$images=$db->GetOne(" select count(distinct user_id) from hectad_user_stat where length(hectad) = 3");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
