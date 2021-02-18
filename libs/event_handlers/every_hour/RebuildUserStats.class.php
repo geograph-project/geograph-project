@@ -334,7 +334,7 @@ class RebuildUserStats extends EventHandler
 		$loop = 0;
 		while (!empty($ids)) {
 			$data = $sph->getAll("SELECT auser_id,count(distinct takendays) as days FROM gi_stemmed
-				WHERE user_id IN (".implode(',',$ids).") GROUP BY auser_id LIMIT 1000");
+				WHERE auser_id IN (".implode(',',$ids).") GROUP BY auser_id LIMIT 1000");
 
 $this->processor->trace("Found ".count($data)." Rows from manticore");
 
