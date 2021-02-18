@@ -30,7 +30,7 @@ if (!empty($param['tables'])) {
 
 foreach ($tables as $row) {
 	//recreate from parsed
-	$columns = $db->getAll("SELECT * FROM material_view_column WHERE table_name = '{$row['table_name']}' ORDER BY sort_order");
+	$columns = $db->getAll("SELECT * FROM material_view_column WHERE table_name = '{$row['table_name']}' ORDER BY sort_order,column_id");
 	$bits = array();
 	foreach ($columns as $col) {
 		if ($col['definition'] != $col['column_name'])

@@ -131,7 +131,7 @@ $group = $updates['sql_group'];
 
 ############################################
 
-foreach ($bits as $bit) {
+foreach ($bits as $idx => $bit) {
 	$updates = array();
 
 	if (preg_match('/(.*) as `?(\w+)`?\s*$/i',$bit,$m)) {
@@ -144,9 +144,12 @@ foreach ($bits as $bit) {
 	if (strpos($group,$updates['definition']) !== FALSE)
 		$updates['grouped'] = 1; //basic version for now!
 
+	//todo $updates['indexed'] =
+
 	print_r($updates);
 
 	$updates['table_name'] = $table;
+	$updates['sort_order'] = $idx;
 	if ($param['execute'])
 		$db->Execute('INSERT INTO material_view_column SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 }
