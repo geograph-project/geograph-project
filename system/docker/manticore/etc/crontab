@@ -21,6 +21,8 @@
 
 # disabled to see effect on database load overnight. the delta can just grow
 ####23 2 * * *          indexer --config /etc/sphinxsearch/sphinx.conf gridimage_master gi_stemmed gi_stemmed_delta --rotate
+23 2 * * 6	    indexer --config /etc/sphinxsearch/sphinx.conf gridimage_master gi_stemmed gi_stemmed_delta --rotate
+
 
 ########################
 # Sample8 - the NEW image index
@@ -38,7 +40,12 @@
 ########################
 # Other Misc Indexes
 
-15,45 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf content_stemmed user snippet --rotate
+##15,45 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf content_stemmed user snippet --rotate
+
+##split to so can see the effect on each on the database. 
+15 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf content_stemmed  --rotate
+45 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf snippet --rotate
+12 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf user --rotate
 
 57 */2 * * *        indexer --config /etc/sphinxsearch/sphinx.conf tags tagsstemmed tickets --rotate
 
