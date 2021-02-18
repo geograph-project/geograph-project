@@ -101,9 +101,20 @@ CREATE TABLE `hectad_stat` (
 		foreach (array(1,2) as $ri) {
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
-			$prefixes = $db->GetCol("select prefix from gridprefix where reference_index = $ri and landcount > 0 ");
+			$prefixes = $db->getAssoc("select prefix,origin_x,origin_y from gridprefix where reference_index = $ri and landcount > 0 ");
 
-			foreach ($prefixes as $prefix) {
+			foreach ($prefixes as $prefix => $data) {
+				//used to use "grid_reference LIKE '$prefix%'" but wasnt using index on gr, was using the reference_index index anyway
+				// see scripts/try-hectad-index.php
+				// so could add "FORCE INDEX(grid_reference)" which helps a bit, but can do EVEN better using spatial index...
+				$indexes = "FORCE INDEX(point_xy)"; //shouldnt be needed as will pick it anyway, but query is quicker with it (saves a bit of calulations to choose index??!)
+				$left=$data['origin_x'];
+				$right=$data['origin_x']+99; //we could use width, but lets just grab whole square, we ARE filtering by reference_index anyway.
+				$top=$data['origin_y']+99;
+				$bottom=$data['origin_y'];
+
+				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+				$where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 				$this->Execute("INSERT INTO hectad_stat_tmp
 				SELECT
@@ -121,17 +132,19 @@ CREATE TABLE `hectad_stat` (
 					'' AS map_token,
 					'' AS largemap_token,
 					COUNT(DISTINCT IF(ftf=1,user_id,NULL)) AS ftfusers
-					FROM gridsquare gs
+					FROM gridsquare gs $indexes
 					LEFT JOIN gridimage gi ON (gs.gridsquare_id=gi.gridsquare_id AND moderation_status IN ('geograph','accepted'))
-					WHERE reference_index = $ri AND grid_reference LIKE '$prefix%' AND percent_land >0
+					WHERE reference_index = $ri AND $where AND percent_land >0
 					GROUP BY (x-{$CONF['origins'][$ri][0]}) div 10,(y-{$CONF['origins'][$ri][1]}) div 10
 					ORDER BY NULL");
+				//we group using CONF['origins'] rather than gridprefix.origin_x because while gridprefix should contain whole square, it not nesseraily aligned to hectad boundaries!
 				//todo when the origin is a multiple of 10 (or =0) then can be optimised away - but mysql might do that anyway
 
 				//give the server a breather...
 				usleep(500);
 			}
 		}
+
 ##################################
 
 		$db->Execute("UPDATE hectad_stat_tmp INNER JOIN hectad_stat USING (hectad)

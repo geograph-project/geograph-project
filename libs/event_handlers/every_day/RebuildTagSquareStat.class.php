@@ -80,9 +80,24 @@ class RebuildTagSquareStat extends EventHandler
 		##################################################
 		# fill the tempory table
 
-               	$prefixes = $db->GetCol("select prefix from gridprefix where landcount > 0");
-       	        foreach ($prefixes as $prefix) {
-                        $where = "grid_reference LIKE ".$db->Quote("{$prefix}____");
+               	$prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0");
+       	        foreach ($prefixes as $prefix => $data) {
+                        //$where = "grid_reference LIKE ".$db->Quote("{$prefix}____");
+                        //... wasnt using index on gr, was not using ANY index!
+                        // see scripts/try-hectad-index2.php
+                        // so could add "FORCE INDEX(grid_reference)" which helps a bit, but can do EVEN better using spatial index...
+                        $indexes = "FORCE INDEX(point_xy)"; //shouldnt be needed as will pick it anyway, but query is quicker with it (saves a bit of calulations to choose index??!)
+                        $left=$data['origin_x'];
+                        $right=$data['origin_x']+99; //we could use width, but lets just grab whole square, we ARE filtering by reference_index anyway.
+                        $top=$data['origin_y']+99;
+                        $bottom=$data['origin_y'];
+
+                        $rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+                        $where = "CONTAINS(GeomFromText($rectangle),point_xy)";
+			$where.= " AND reference_index = ".$data['reference_index'];
+
+			$sql = str_replace('gi USING',"gi $indexes USING",$sql); //hardcoded, as an index on gi
+
 			$this->Execute("INSERT INTO tag_square_stat_tmp ".str_replace('$where',$where,$sql)) or die(mysql_error());
 		}
 
