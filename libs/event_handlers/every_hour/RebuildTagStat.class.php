@@ -54,8 +54,30 @@ coalesce(t2.tag_id,t1.tag_id) as final_id, now() as stat_updated
 FROM tag_public t1 left join tag t2 on (t2.tag_id = t1.canonical and t2.status =1)
 WHERE \$where GROUP BY t1.tag_id ORDER BY NULL";
 
+                $status = $db->getRow("SHOW TABLE STATUS LIKE 'tag_stat'");
 
-		if ($db->getOne("show tables like 'tag_stat'")) {
+		//incremental
+		if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*6)) {
+			if (false) {
+				//this works, but can still block for like 40 seconds
+				$this->Execute("CREATE TEMPORARY TABLE tag_updated (PRIMARY KEY(tag_id))
+					SELECT DISTINCT tag_id FROM gridimage_tag WHERE updated > date_sub(now(),interval 6 hour)");
+
+				$sql = str_replace('tag_public t1','tag_public t1 inner join tag_updated using (tag_id)', $sql);
+				$where = '1';
+
+				$this->Execute("REPLACE INTO tag_stat ".str_replace('$where',$where,$sql));
+			} else {
+				//doing one, by one, is inefficent, but runs better as lots of small queries
+				$ids = $db->getCol("SELECT DISTINCT tag_id FROM gridimage_tag WHERE updated > date_sub(now(),interval 3 hour)");
+				foreach ($ids as $id) {
+					$where = "t1.tag_id = $id";
+					$this->Execute("REPLACE INTO tag_stat ".str_replace('$where',$where,$sql));
+				}
+			}
+
+		//do a (full) inplace update
+		} elseif (!empty($status)) {
 
 			$max = $db->getOne("SELECT MAX(tag_id) FROM tag");
 			for($start=1;$start<$max;$start+=1000) {
@@ -66,6 +88,7 @@ WHERE \$where GROUP BY t1.tag_id ORDER BY NULL";
 			//delete any not updated! (must be from wholely deleted tags!)
 			$this->Execute("DELETE FROM tag_stat WHERE stat_updated < DATE_SUB(NOW(),INTERVAL 2 HOUR)");
 
+		//create again from scratch
 		} else {
 			$where = 'gridimage_id < 4294967296';
 

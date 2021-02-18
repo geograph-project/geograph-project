@@ -336,10 +336,10 @@ class RebuildUserStats extends EventHandler
 			$data = $sph->getAll("SELECT auser_id,count(distinct takendays) as days FROM gi_stemmed
 				WHERE auser_id IN (".implode(',',$ids).") GROUP BY auser_id LIMIT 1000");
 
-$this->processor->trace("Found ".count($data)." Rows from manticore");
+			$this->processor->trace("Found ".count($data)." Rows from manticore");
 
 			foreach ($data as $row)
-				$this->Execute("UPDATE user_stat_tmp SET days = {$row['days']} WHERE user_id = {$row['auser_id']}");
+				$db->Execute("UPDATE user_stat_tmp SET days = {$row['days']} WHERE user_id = {$row['auser_id']}");
 
 			$ids = $db->getCol("SELECT user_id FROM user_stat_tmp WHERE days = 0 and user_id > 0 limit 1000");
 			$loop++;

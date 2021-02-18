@@ -57,27 +57,43 @@ class RebuildUserSquares extends EventHandler
 		if (empty($event['event_param'])) //easy way of forcing a full build.
 			$user_gridsquare = $db->getRow("SHOW TABLE STATUS LIKE 'user_gridsquare'");
 
-		//FULL
+		//FULL (as a single query!)
 		if (false) {
 			$where = 1;
 			$sql = $create.$select;
 			$this->Execute(str_replace('$where',$where,$sql));
 
-		//INCREMENTAL
+		//INCREMENTAL (just squares updated recently)
 		} elseif ( !empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*6) ) {
 
-		        $grs = $db->getCol("select grid_reference from gridimage_search where upd_timestamp >
-	                date_sub(now(),interval 6 hour) group by grid_reference order by null");
+		        //$grs = $db->getCol("select grid_reference from gridimage_search where upd_timestamp >
+	                //date_sub(now(),interval 6 hour) group by grid_reference order by null");
 
-			$where = "grid_reference in ('".implode("','",$grs)."')";
+			//now we have last_timestamp on gridsquare column, lets use that. gridimage_search.upd_timestamp is updated if just title etc tweaked. THe gridsquare only updated when something affects the square counts
+			$grs = $db->getCol("select grid_reference from gridsquare where last_timestamp >
+                        date_sub(now(),interval 6 hour)");
+
+			if (empty($grs))
+				return true;
 
 			$this->Execute("CREATE TABLE user_gridsquare_tmp LIKE user_gridsquare");
-			$this->Execute("INSERT INTO user_gridsquare_tmp SELECT * FROM user_gridsquare WHERE NOT ($where)");
 
 			$sql = $insert.$select;
-			$this->Execute(str_replace('$where',$where,$sql));
 
-		//PIECEMEAL
+			if (count($grs) > 50) {
+				while($list = array_splice($grs,0,50)) {
+					$where = "grid_reference in ('".implode("','",$list)."')";
+	                                $this->Execute(str_replace('$where',$where,$sql));
+				}
+			} else {
+				$where = "grid_reference in ('".implode("','",$grs)."')";
+				$this->Execute(str_replace('$where',$where,$sql));
+			}
+
+			$this->Execute("REPLACE INTO user_gridsquare SELECT * FROM user_gridsquare_tmp");
+			return true;
+
+		//PIECEMEAL (loop though all users)
 		} else {
 			$size = 100;
                         $users = $db->getOne("SELECT MAX(user_id) FROM gridimage_search");
