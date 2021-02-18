@@ -881,11 +881,9 @@ split_timer('gridsquare'); //starts the timer
 		//  IF(SUM(moderation_status='geograph')>0,1,0) AS has_geographs,
 
 		//see if we have any geographs (we had the has_geograph column first, added max_ftf for more detail later,
-			//but didnt want to change definition later, and any use of has_geographs, could use max_ftf,
+			//but didnt want to change the behaviour of existing column.
 			//eg currenty have "sum(has_geographs) as geographs", but could convert to "sum(max_ftf>0) as geographs"
 		$updates['has_geographs']=$updates['max_ftf']?1:0;
-
-		$db->Execute('INSERT INTO gridimage_group SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 
 		$db->Execute('UPDATE gridsquare SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE gridsquare_id={$this->gridsquare_id}",
 			array_values($updates));
