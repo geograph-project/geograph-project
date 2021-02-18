@@ -46,7 +46,7 @@ class RebuildCurated1Stat extends EventHandler
 		$insert = "insert into curated1_stat_tmp ";
 
 		foreach (range('a','z') as $idx => $letter) {
-			$this->Execute(($idx?$insert:$create)."
+			$db->Execute(($idx?$insert:$create)."
 select `group`,
 `label`,
 count(*) as images,
