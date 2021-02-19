@@ -70,7 +70,10 @@
 	{/if}
 	</ul><br/>
 	</li>
+	{elseif $recentlink}
+		<li><a href="?recent=1">Click here to view your recent searches</a><br/><br/></li>
 	{/if}
+	<li>
 	<div id="hidemarked">
 		 <small>Marked Images <input type=button value="expand" onclick="show_tree('marked')"/></small>
 	</div>
@@ -80,7 +83,7 @@
 	</small><small style="font-size:0.6em">TIP: Add images to your list by using the [Mark] buttons on the "full + links" and "thumbnails + links"<br/> search results display formats, and the full image page.<br/><br/>
 	<span style="color:red">Note: The Marked list is stored in a <b>temporary</b> cookie in your browser, and limited to about 500 images.<br/>
 	You can use the 'View as Search Results' to save your current list to the server permanently.</small></div>
-	<br/>
+	</li>
 	<script>
 		AttachEvent(window,'load',showMarkedImages,false);
 		{literal}

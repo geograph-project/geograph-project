@@ -1393,10 +1393,11 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$flimit = "";
 			$nlimit = "limit 40";
 			$smarty->assign('more',1);
-		} else {
+		} elseif (isset($_GET['recent'])) {
 			$flimit = "limit 12";
 			$nlimit = "limit 12";
 		}
+		if (!empty($nlimit)) {
 		#group by searchdesc,searchq,displayclass,resultsperpage
 		$recentsearchs = $db->getAssoc("
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries
@@ -1424,6 +1425,9 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		unset($a);
 
 		$smarty->assign_by_ref('recentsearchs',$recentsearchs);
+		} else {
+			$smarty->assign('recentlink',1);
+		}
 	}
 
 	require_once('geograph/imagelist.class.php');
