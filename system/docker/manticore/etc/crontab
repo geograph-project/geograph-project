@@ -33,7 +33,7 @@
 
 30 0-1,7-23 * * *   indexer --config /etc/sphinxsearch/sphinx.conf sample8E --rotate
 
-40 6-23 * * *       indexer --config /etc/sphinxsearch/sphinx.conf snippet --rotate
+40 6-23 * * *       indexer --config /etc/sphinxsearch/sphinx.conf snippet_delta --rotate
 
 ########################
 # Other Misc Indexes
