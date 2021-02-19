@@ -12,17 +12,13 @@
 30 1 * * *          find /var/lib/manticore/data/ -name '*.tmp*' -type f -mtime +1 -delete
 
 ########################
-# Forum Posts
+# Main Indexes
 
 1 5 * * *           indexer --config /etc/sphinxsearch/sphinx.conf post_master post_stemmed post_stemmed_delta --rotate
 
-########################
-# Gridimage - the original main image index
+23 2 * * *          indexer --config /etc/sphinxsearch/sphinx.conf gridimage_master gi_stemmed gi_stemmed_delta --rotate
 
-# disabled to see effect on database load overnight. the delta can just grow
-####23 2 * * *          indexer --config /etc/sphinxsearch/sphinx.conf gridimage_master gi_stemmed gi_stemmed_delta --rotate
-23 2 * * 6	    indexer --config /etc/sphinxsearch/sphinx.conf gridimage_master gi_stemmed gi_stemmed_delta --rotate
-
+30 0 * * *          indexer --config /etc/sphinxsearch/sphinx.conf snippet_master snippet_main snippet_delta --rotate
 
 ########################
 # Sample8 - the NEW image index
@@ -37,15 +33,12 @@
 
 30 0-1,7-23 * * *   indexer --config /etc/sphinxsearch/sphinx.conf sample8E --rotate
 
+40 6-23 * * *       indexer --config /etc/sphinxsearch/sphinx.conf snippet --rotate
+
 ########################
 # Other Misc Indexes
 
-##15,45 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf content_stemmed user snippet --rotate
-
-##split to so can see the effect on each on the database. 
-15 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf content_stemmed  --rotate
-45 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf snippet --rotate
-12 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf user --rotate
+15,45 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf content_stemmed user --rotate
 
 57 */2 * * *        indexer --config /etc/sphinxsearch/sphinx.conf tags tagsstemmed tickets --rotate
 
