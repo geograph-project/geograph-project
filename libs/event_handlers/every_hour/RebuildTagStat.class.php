@@ -72,7 +72,7 @@ WHERE \$where GROUP BY t1.tag_id ORDER BY NULL";
 				$ids = $db->getCol("SELECT DISTINCT tag_id FROM gridimage_tag WHERE updated > date_sub(now(),interval 3 hour)");
 				foreach ($ids as $id) {
 					$where = "t1.tag_id = $id";
-					$this->Execute("REPLACE INTO tag_stat ".str_replace('$where',$where,$sql));
+					$db->Execute("REPLACE INTO tag_stat ".str_replace('$where',$where,$sql));
 				}
 			}
 
