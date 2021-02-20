@@ -58,6 +58,11 @@ $sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,nateastings,na
 
 <h2>Your Submissions on Map (at <? echo date('H:i:s'); ?> today)</h2>
 
+<div class="interestBox">NOTE: A 'Recent Uploads' layer has been added to the <a href="/mapper/combined.php?mine=1">main Coverage Map</a>, which shows recent uploads in similar method to this map.
+It's now recommended to use that instead. As can combine it with other layers already on that map. Also can just turn the layer off, then back on and it automatically refreshes. Dont need to reload the whole page like this function</div>
+
+
+
 <p>The red circles are your 100 most recently submitted images, including unmoderated images <span id="zoomer"></span></p>
 <p>The coloured squares are squares you've submitted images to ever, not just most recent. Doesn't update as regularly as the circles layer</p>
 
@@ -138,6 +143,11 @@ if ($count = $recordSet->RecordCount()) {
 	print "alert('No matching results');";
 }
 $recordSet->Close();
+
+//useful trick so that the coverage map is centered!
+if (empty($_SESSION['gridref']) && !empty($r['grid_reference'])) {
+	$_SESSION['gridref'] = $r['grid_reference'];
+}
 
 	?>
 						map.fitBounds(bounds);
