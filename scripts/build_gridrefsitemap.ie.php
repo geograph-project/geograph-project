@@ -61,10 +61,10 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = $db->Execute(
-		"select grid_reference,date(max(upd_timestamp)) as moddate ".
-		"from gridimage_search gi ".
+		"select grid_reference,date(last_timestamp) as moddate ".
+		"from gridsquare ".
 		"where reference_index = 2 ".
-		"group by grid_reference ".
+		"order by grid_reference ".
 		"limit $offset,$urls_per_sitemap");
 
 	//write one <url> line per result...
