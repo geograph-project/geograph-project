@@ -69,7 +69,7 @@ $sql['wheres'] = array();
 
         if (!empty($_GET['user_id'])) {
 
-		$images = $db->getOne("SELECT gridimage_id from gridimage_search gi WHERE ".implode(' AND ',$sql['wheres'])." AND gi.user_id = ".intval($_GET['user_id']));
+		$images = $db->getOne("SELECT 1 FROM user_gridsquare WHERE ".implode(' AND ',$sql['wheres'])." AND user_id = ".intval($_GET['user_id']));
 		if (empty($images)) {
 			//redirect - rather than just 'fallback', so that the image can actully be served from varnish cache!
 
@@ -78,13 +78,10 @@ $sql['wheres'] = array();
 			exit;
 		}
 
-
                 $sql['tables']['gs'] = 'gridsquare g ';
-                $sql['tables']['gi'] = 'left join gridimage_search gi ON (gi.grid_reference = g.grid_reference and gi.user_id = '.intval($_GET['user_id']).')';
-                $sql['group'] = 'g.gridsquare_id';
-                $sql['order'] = 'null';
+		$sql['tables']['ug'] = 'left join user_gridsquare ug on (ug.grid_reference = g.grid_reference and ug.user_id = '.intval($_GET['user_id']).')';
 
-                $sql['columns'] = "g.x,g.y,g.reference_index as ri,   (has_geographs+has_recent+(max_ftf>2)+(max_ftf>4)+(imagecount>20)+(imagecount>50)+(count(gi.gridimage_id)>0)+(coalesce(max(ftf),0)>0)) as s";
+                $sql['columns'] = "g.x,g.y,g.reference_index as ri, (g.has_geographs+g.has_recent+(g.max_ftf>2)+(g.max_ftf>4)+(g.imagecount>20)+(g.imagecount>50)+(coalesce(ug.imagecount,0)>0)+(coalesce(ug.max_ftf,0)>0)) as s";
                 $sql['wheres'][] = "percent_land > 0 ";
 		$sql['wheres'][0] = str_replace(' point_xy',' g.point_xy',$sql['wheres'][0]);
         } else {
