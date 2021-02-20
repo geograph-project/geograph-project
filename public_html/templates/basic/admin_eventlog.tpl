@@ -57,6 +57,9 @@ td.verbose
 {if $logs}
 	{assign var="last" value=$logs.0.logtime|date_format:'%s'}
 	{foreach from=$logs item=log}
+		{if $log.log|substr:0:9 eq "Including"}
+			<tr><td>&nbsp;
+		{/if}
 		<tr>
 			<td style="white-space:nowrap">{$log.logtime}</td>
 			<td align=right>+{math equation="t-l" t=$log.logtime|date_format:'%s' l=$last}</td>
