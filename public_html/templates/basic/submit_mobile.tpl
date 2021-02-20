@@ -26,6 +26,7 @@
 	<script src="https://www.geograph.org/leaflet/L.Control.Locate.js"></script>
 	<script src="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.min.js"></script>
 
+	<script src="{"/js/Leaflet.GeographRecentUploads.js"|revision}"></script>
 
 <script src="{"/js/to-title-case.js"|revision}"></script>
 <script type="text/javascript" src="https://m.geograph.org.uk/s/exif-js/exif.js"></script>
@@ -305,6 +306,10 @@ function checkMultiFormSubmission() {
                                                 map = L.map('map',{attributionControl:false,doubleClickZoom:false}).addControl(
                                                         L.control.attribution({ position: 'bottomright', prefix: ''}) );
 
+						//needs to be called BEFORE setupOSMTiles (as that sets up the layer control too!) 
+						if (L.GeographRecentUploads)
+							overlayMaps["Recent Uploads"] = L.geographRecentUploads();
+
                                                 setupOSMTiles(map,mapTypeId);
 
                                                 map.on('baselayerchange', function (e) {
@@ -324,6 +329,7 @@ function checkMultiFormSubmission() {
 
         if (L.geographGeocoder && !geocoder)
                 map.addControl(geocoder = L.geographGeocoder());
+
 
         if (L.control.locate)
                 L.control.locate({
@@ -976,6 +982,7 @@ var static_host = '{$static_host}';
 
 		<div><label for=contexts>Geographical Contexts: (Select Multiple)</label>
 			<select name="contexts[]" id="contexts" size=10 multiple=multiple></select></div>
+			(<a href="/tags/primary.php" text="More examples" target="_blank">further details and examples</a>)
 		<br>
 		<hr>
 
