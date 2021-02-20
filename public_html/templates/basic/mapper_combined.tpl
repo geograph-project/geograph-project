@@ -97,6 +97,12 @@
 	<script src="https://unpkg.com/togeojson@0.16.0/togeojson.js"></script>
 	<script src="https://unpkg.com/leaflet-filelayer@1.2.0/src/leaflet.filelayer.js"></script>
 
+{dynamic}
+	{if $stats && $stats.images}
+		<script src="{"/js/Leaflet.GeographRecentUploads.js"|revision}"></script>
+	{/if}
+{/dynamic}
+
 <script>{literal}
 
 	function linkToMap(that) {
@@ -282,6 +288,9 @@
 		{/if}
 
 		stateChangingButton.addTo(map);
+
+		if (L.GeographRecentUploads)
+		        overlayMaps["Recent Uploads"] = L.geographRecentUploads();
 
 	{else}
 		 delete overlayMaps["Coverage - Opportunities"];
