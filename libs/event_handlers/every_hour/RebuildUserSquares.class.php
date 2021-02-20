@@ -47,9 +47,10 @@ class RebuildUserSquares extends EventHandler
                                 (UNIQUE INDEX (user_id,`grid_reference`),INDEX(`grid_reference`))
                                 ENGINE=MyISAM";
 		$insert = "INSERT INTO user_gridsquare_tmp";
-		$select = " SELECT user_id,`grid_reference`,
+		$select = " SELECT user_id,`grid_reference`,x,y,reference_index,
                                 sum(moderation_status='geograph') as has_geographs,count(*) as imagecount,
-                                max(ftf) as max_ftf, sum(points = 'tpoint') as tpoints, min(gridimage_id) as `first`, max(gridimage_id) as `last`
+                                max(ftf) as max_ftf, sum(points = 'tpoint') as tpoints, SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as has_recent,
+				min(gridimage_id) as `first`, max(gridimage_id) as `last`, `point_xy`
                                 FROM gridimage_search
 				WHERE \$where
                                 GROUP BY user_id,`grid_reference` ORDER BY NULL";

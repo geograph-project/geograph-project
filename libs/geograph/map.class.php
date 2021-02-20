@@ -789,15 +789,14 @@ split_timer('map'); //starts the timer
 
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 
-		//because we are only interested if any photos on tile, use limit 1 (added by getOne) rather than a count(*)
-		$sql="select gridimage_id from gridimage_search where 
-				CONTAINS( GeomFromText($rectangle),	point_xy) and
-				user_id = $user_id";
-		$id = $db->getOne($sql);
+		$sql="select 1 from user_gridsquare where
+				CONTAINS( GeomFromText($rectangle),     point_xy) and
+                                user_id = $user_id";
+
+		$id = $db->getOne($sql); //adds 'limit 1' automatically
 
 split_timer('map','needUserTile',$user_id); //logs the wall time
 
-		
 		return !empty($id);
 	}
 
@@ -1022,9 +1021,9 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 							CONTAINS( GeomFromText($rectangle),	point_xy)
 							and imagecount>0";
 					} else {//type_or_user > 0
-						$sql="select x,y,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where
+						$sql="select x,y,has_geographs from user_gridsquare where
 							CONTAINS( GeomFromText($rectangle),	point_xy) and
-							user_id = {$this->type_or_user} group by x,y";
+							user_id = {$this->type_or_user}";
 					}
 				} elseif ($this->type_or_user == -20) {
 
@@ -1054,12 +1053,10 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					$sql="SELECT x,y,has_geographs,user_id,gridimage_id
 						FROM $table";
 
-				} else {
-					if ($this->type_or_user == -6) {
-						$crit = "imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))";
-					} else {//type_or_user > 0
-						$crit = "user_id = {$this->type_or_user}";
-					}
+				} elseif ($this->type_or_user == -6) {
+
+					$crit = "imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))";
+
 					$table = $CONF['db_tempdb'].".gi_render$counter"; $counter++;
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 						SELECT gridimage_id,x,y,user_id,moderation_status FROM gridimage_search WHERE
@@ -1073,6 +1070,12 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					//if the image is a sup then there cant be any geos, due to sort order!
 					$sql="SELECT x,y,(moderation_status = 'geograph') as has_geographs,user_id,gridimage_id
 						FROM $table";
+
+				} else {//type_or_user > 0
+
+					$sql="SELECT x,y,has_geographs,user_id,first as gridimage_id
+						FROM user_gridsquare WHERE
+						CONTAINS( GeomFromText($rectangle),	point_xy) AND user_id = {$this->type_or_user}";
 				}
 			}
 		} else {
@@ -2377,7 +2380,7 @@ split_timer('map'); //starts the timer
 		} elseif ($this->pixels_per_km == 4) {
 			if (!empty($this->type_or_user)) {
 				if ($this->type_or_user > 0) {
-					$sql="select x,y,ug.imagecount,ug.has_geographs,reference_index,
+					$sql="select gs.x,gs.y,ug.imagecount,ug.has_geographs,gs.reference_index,
 						(ug.has_geographs=0 and ug.imagecount > 0) as accepted, 0 as pending
 						from gridsquare gs
 						left join user_gridsquare ug on (gs.grid_reference = ug.grid_reference and user_id = {$this->type_or_user})

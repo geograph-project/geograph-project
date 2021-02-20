@@ -5,11 +5,6 @@ if ($_GET['z'] < 7) {
          exit;
 }
 
-if ($_GET['z'] > 11) {
-         require __DIR__."/tile-coverage-large.php";
-         exit;
-}
-
 
 require_once('geograph/global.inc.php');
 ini_set('memory_limit', '128M');
@@ -79,13 +74,13 @@ $sql['wheres'] = array();
         if (!empty($_GET['user_id'])) {
 		$sql['tables']['us'] = 'user_gridsquare';
 
-		$sql['columns'] = "x,y,reference_index as ri, has_geographs as g, has_recent as r";
-                $sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
+		$sql['columns'] = "x,y,reference_index as ri,   has_geographs as g, has_recent as r";
+		$sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
         } else {
                 $sql['tables']['gs'] = 'gridsquare';
 
-                $sql['columns'] = "x,y,reference_index as ri, has_geographs as g, has_recent as r";
-                $sql['wheres'][] = "percent_land > 0 ";
+                $sql['columns'] = "x,y,reference_index as ri,   has_geographs as g, has_recent as r";
+                $sql['wheres'][] = "percent_land > 0";
         }
 
         $query = sqlBitsToSelect($sql);
@@ -137,9 +132,11 @@ if (!empty($_GET['test'])) {
 		$color = $row['r']?$fg:($row['g']?$supp:$land);
 
                 $p1 = getPixCoord($row['x'],$row['y'],$row['ri']); //getPixCoord gives us location of bottom left corner.
-                $p2 = getPixCoord($row['x']+1,$row['y']+1,$row['ri']);
+                $p2 = getPixCoord($row['x'],$row['y']+1,$row['ri']);
+                $p3 = getPixCoord($row['x']+1,$row['y']+1,$row['ri']); //getPixCoord gives us location of bottom left corner.
+                $p4 = getPixCoord($row['x']+1,$row['y'],$row['ri']);
 
-		imagefilledrectangle($im, $p1->x,$p1->y, $p2->x,$p2->y, $color);
+		imagefilledpolygon($im, array($p1->x,$p1->y, $p2->x,$p2->y, $p3->x,$p3->y, $p4->x,$p4->y), 4, $color);
 	}
 
 	imagesavealpha($im, true);

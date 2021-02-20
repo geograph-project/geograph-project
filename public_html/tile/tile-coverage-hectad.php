@@ -85,13 +85,14 @@ if ($bounds[3] > 62)
         $sql['tables'] = array();
 
         if (!empty($_GET['user_id'])) {
-                $sql['tables']['gi'] = 'gridimage_search gi';
-                $sql['group'] = 'hectad';
-                $sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
-		$sql['wheres'][] = "moderation_status = 'geograph'";
+		$sql['tables']['us'] = 'user_gridsquare';
+		$sql['group'] = 'hectad';
+		$sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
+		$sql['wheres'][] = "has_geographs > 0";
 
-                $sql['columns'] = "CONCAT(SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-3),SUBSTRING(gi.grid_reference,LENGTH(gi.grid_reference)-1,1)) AS hectad,"
-			."x,y,reference_index as ri, COUNT(DISTINCT IF(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR)),grid_reference,null)) AS percent"; //technically its just number in hectad, not a percent!
+                $sql['columns'] = "CONCAT(SUBSTRING(grid_reference,1,LENGTH(grid_reference)-3),SUBSTRING(grid_reference,LENGTH(grid_reference)-1,1)) AS hectad,"
+			."x,y,reference_index as ri, sum(has_recent>0) AS percent"; //technically its just number in hectad, not a percent!
+
         } else {
                 $sql['tables']['hs'] = 'hectad_stat';
 

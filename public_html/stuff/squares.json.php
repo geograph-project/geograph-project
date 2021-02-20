@@ -95,10 +95,9 @@ if (empty($error)) {
 	$sql['tables'] = array();
 
 	if (!empty($_GET['user_id'])) {
-                $sql['tables']['gi'] = 'gridimage_search';
-                $sql['group'] = 'grid_reference';
+		$sql['tables']['us'] = 'user_gridsquare';
+		$sql['columns'] = "imagecount as c,x,y,grid_reference as gr,has_recent as r,has_geographs as g";
                 $sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
-                $sql['columns'] = "count(*) as c,x,y,grid_reference as gr,SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as r,sum(moderation_status='geograph') as g";
 	} else {
 		$sql['tables']['gs'] = 'gridsquare';
 

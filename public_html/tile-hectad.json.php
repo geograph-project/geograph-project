@@ -55,6 +55,8 @@ if (!empty($_GET['hectad'])) {
 		$sql['wheres'][] = "y between $y AND $y+9";
 		$sql['wheres'][] = "reference_index = {$row['reference_index']}"; //just to exclude small number of cross-grids
 
+		//todo, switch to point_xy index!
+
 	} else {
 		$error = "unknown hectad";
 	}
@@ -72,17 +74,10 @@ if (empty($error)) {
 	if (empty($_GET['user_id'])) {
 		$sql['tables']['gs'] = 'gridsquare gs';
 		$sql['columns'] = "grid_reference as gr,x,y,imagecount as c,has_recent as r,percent_land as l,max_ftf as g";
-	} elseif (empty($_GET['user_id'])) {
-		$sql['tables']['gs'] = 'gridsquare gs';
-		$sql['tables']['gi'] = 'LEFT JOIN gridimage gi USING (gridsquare_id)';
-		$sql['group'] = 'gridsquare_id';
-		$sql['wheres'][] = "moderation_status IN ('geograph','accepted')";
-		$sql['columns'] = "grid_reference as gr,x,y,imagecount as c,has_recent as r,percent_land as l,max(ftf) as g";
 	} else {
-		$sql['tables']['gi'] = 'gridimage_search';
-		$sql['group'] = 'grid_reference';
 		$sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
-		$sql['columns'] = "grid_reference as gr,x,y,count(*) as c,max(ftf) as g";
+		$sql['tables']['us'] = 'user_gridsquare';
+		$sql['columns'] = "grid_reference as gr,x,y,imagecount as c,has_recent as r,max_ftf as g";
 	}
 
 	$query = sqlBitsToSelect($sql);

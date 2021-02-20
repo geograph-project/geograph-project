@@ -2502,3 +2502,27 @@ alter table gridsquare add last_timestamp timestamp not null on update current_t
 #################################################
 
 
+ALTER TABLE user_gridsquare 
+	ADD `x` smallint(3) NOT NULL DEFAULT 0 after grid_reference,
+	ADD `y` smallint(4) NOT NULL DEFAULT 0 after x,
+	ADD `reference_index` tinyint(4) DEFAULT 1 after y,
+
+	ADD `has_recent` tinyint(4) NOT NULL DEFAULT 0 after tpoints,
+
+	ADD `point_xy` point NOT NULL DEFAULT '' after last,
+
+	ADD index (x,y);
+		
+update user_gridsquare inner join gridsquare using (`grid_reference`)
+	set user_gridsquare.x = gridsquare.x,
+	user_gridsquare.y = gridsquare.y,
+	user_gridsquare.reference_index = gridsquare.reference_index,
+	user_gridsquare.point_xy = gridsquare.point_xy
+	where user_gridsquare.x = 0;
+
+ALTER TABLE user_gridsquare 
+	ADD SPATIAL KEY `point_xy` (`point_xy`);
+
+
+#################################################
+
