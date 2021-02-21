@@ -126,6 +126,12 @@ ul.tips li {
 	<script src="https://unpkg.com/togeojson@0.16.0/togeojson.js"></script>
 	<script src="https://unpkg.com/leaflet-filelayer@1.2.0/src/leaflet.filelayer.js"></script>
 
+{dynamic}
+       {if $stats && $stats.images}
+               <script src="{"/js/Leaflet.GeographRecentUploads.js"|revision}"></script>
+       {/if}
+{/dynamic}
+
 </head>
 <body>
 <div id="header_block" onclick="document.location='https://m.geograph.org.uk/';">
@@ -261,6 +267,9 @@ ul.tips li {
 		{/if}
 
 		stateChangingButton.addTo(map);
+
+                if (L.GeographRecentUploads)
+                        overlayMaps["Recent Uploads"] = L.geographRecentUploads();
 
 	{else}
 		 delete overlayMaps["(Personalize Coverage)"];
