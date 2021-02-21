@@ -31,12 +31,23 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+
+//insert a FAKE log (just so we can plot on a graph ;)
+$db->Execute("INSERT INTO event_log SET
+        event_id = 0,
+        logtime = NOW(),
+        verbosity = 'trace',
+        log = 'running event_handlers/every_day/".basename($argv[0])."',
+        pid = 33");
+
+############################################
+
 if ($param['debug'])
 	print "Starting. ".date('r')."\n";
 
 $perpage = 1000;
 
-extract($db->GetRow("select min(gridimage_id) as `min`,max(gridimage_id) as `max` from gridimage_search where gridimage_id > 0"),
+extract($db->GetRow("select min(gridimage_id) as `min`,max(gridimage_id) as `max` from gridimage_search"),
 	EXTR_PREFIX_INVALID, 'numeric'); //need to cope with row being either Assoc or Both. Can't assume with be Both. But can assume not Num only.
 
 $start=floor($min / $perpage) * $perpage;

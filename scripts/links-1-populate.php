@@ -41,6 +41,18 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+############################################
+
+//insert a FAKE log (just so we can plot on a graph ;)
+$db->Execute("INSERT INTO event_log SET
+        event_id = 0,
+        logtime = NOW(),
+        verbosity = 'trace',
+        log = 'running event_handlers/every_day/".basename($argv[0])."({$param['mode']})',
+        pid = 33");
+
+############################################
+
 $db->Execute("SET SESSION group_concat_max_len = 1000000");
 
 if (!$db->getOne("SELECT GET_LOCK('".basename($argv[0])."',3600)")) {
