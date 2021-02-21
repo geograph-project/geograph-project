@@ -320,6 +320,10 @@ ul.tips li {
 
 <h3>Coverage Colours</h3>
 <ul class=tips>
+        <li><b>OS National Grid</b>: Displays both OSGB and Irish Grid over the top of the map</li>
+
+        <li><b>Extra Dense Grid</b>: At some scales is able to display extra detailed grid lines, particully useful to be able to see centisquare (100m square) grid.</li>
+
 	<li><b>Photo Subjects</b>: A blue dot presents one or more photos - dot plotted at photo <b>Subject</b> position (only images with 6fig+ grid-reference plotted!)
 		<ul>
 			<li>Note: when zoom out, this layer will change to show coverage by square, darker = more photos. Zoom out further and it shows by 10km (hectad) squares. 
@@ -332,20 +336,35 @@ ul.tips li {
 			<li>Disable one or other layer to remove the lines, keeping just one set of dots
 		</ul></li>
 
-	<li style="padding:3px;"><b>Close</b>: <span style="opacity:0.8">
-		<span style="background-color:#FF0000;padding:3px;">Square with recent Images</span> /
-		<span style="background-color:#FF00FF;padding:3px;">No Images in last 5 years</span> /
-                <span style="background-color:gray;padding:3px;">No Geograph Images</span>
+	<li><b>Coverage - Standard</b>: Shows coverage by squares, optionally personalized to just your images. Split into different versions at different resolution:<ul>
+
+		<li style="padding:3px;"><b>Close</b>: Shows number of photos in square (either 1km or 100m squares), and coloured by what Geograph image(s) in the square<br>
+		<span style="opacity:0.92; font-family:'Trebuchet MS','Comic Sans MS',Georgia,Verdana,Arial,serif; text-shadow:1px 1px 1px black; font-size:16px;">
+                <span style="color:#FF0000;padding:3px;">Square with recent Images</span><br>
+                <span style="color:#FF00FF;padding:3px;">No Images in last 5 years</span><br>
+                <span style="color:gray;padding:3px;">No Geograph Images</span>
 		</span></li>
-	<li style="padding:3px;"><b>Coarse</b>: <span style="opacity:0.6">
-		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span>
-		<span style="background-color:#FF8800;padding:3px;">Only older Geographs</span>
-	 	<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
+
+		<li style="padding:3px;"><b>Coarse</b>: Coloured by what Geograph(s) are in the 1km square. <br>
+		<span style="opacity:0.7">
+		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span><br>
+		<span style="background-color:#FF8800;padding:3px;">Only older Geographs</span><br>
+		<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
 		</span></li>
-	<li><b>Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
+
+                <li>When zoom out, changes to hectad (10km square) grid resolution, and is coloured yellow->red on the number of squares with recent (last 5 years) Geographs</li>
+
+	</ul></li>
+
+	<li><b>Coverage - Large Squares</b>: Duplicates the <i>Coverage - Coarse</i> layer to provide coloured squares at a closer zoom level</li>
+
+	<li><b>Coverage - Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
 		Experimental coverage layer to see if concept works. Exact specififications of layer subject to change or withdrawl. 
 
-	<li>We don't have a key of the BGS layers, but use the link (in [Other Maps...] at top!) to the offical Geology of Britain Viewer, which provides some functions to explain the colouring</li>
+	<li><b>Recent Uploads</b><sup style=color:red>NEW!</sup> (for contributors only!): Shows images submitted in last 3 days. Regardless of moderation (so can see still pending images on map to follow coverage), so this layer should see new images before visible on other layers.
+                Note: Can turn the layer off, and when turn it back on, it will immiidately check for new images, so can use this to follow submissions in real time.
+
+	<li>We don't have a key of the <b>BGS layer(s)</b>, but use the link (in [Other Maps...] at top!) to the offical Geology of Britain Viewer, which provides some functions to explain the colouring</li>
 </ul>
 
 <h3>Other suggestions/requests?</h3>

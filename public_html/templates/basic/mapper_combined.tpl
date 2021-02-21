@@ -455,37 +455,52 @@ function startTour() {
 
 <h3>Key to Overlay Layers</h3>
 <ul class=tips>
+	<li><b>OS National Grid</b>: Displays both OSGB and Irish Grid over the top of the map</li>
+
+	<li><b>Extra Dense Grid</b>: At some scales is able to display extra detailed grid lines, particully useful to be able to see centisquare (100m square) grid.</li>
+
 	<li><b>Photo Subjects</b>: A blue dot presents one or more photos - dot plotted at photo <b>Subject</b> position (only images with 6fig+ grid-reference plotted!)
 		<ul>
 			<li>Note: when zoom out, this layer will change to show coverage by 1km square, darker = more photos. Zoom out further and it shows by 10km (hectad) squares. 
-			(because becomes too many individual dots to plot, and can't see patterns at these scale anyway)</li>
+			<i>(because becomes too many individual dots to plot, and can't see patterns at these scale anyway)</i></li>
 		</ul></li>
 
-	<li><b>Photo Viewpoints</b><sup style=color:red>NEW!</sup>: A purple marker - one per photo, showing where the photo was taken <b>from</b>, (optionally) pointing in the approximate direction of view
+	<li><b>Photo Viewpoints</b>: A purple marker - one per photo, showing where the photo was taken <b>from</b>, (optionally) pointing in the approximate direction of view
 		<ul>
 			<li>If have <b>both</b> Viewpoints and Subjects layers enabled, at close zoom will draw red lines joining each purple to blue dots
 			<li>Disable one or other layer to remove the lines, keeping just one set of dots
 		</ul></li>
 
-	<li style="padding:3px;"><b>Coverage - Close</b>: Shows number of photos in square (either 1km or 100m squares), and coloured by what Geograph image(s) in the square<br>
+	<li><b>Coverage - Standard</b>: Shows coverage by squares, optionally personalized to just your images. Split into seperate versions at different resolutions:<ul>
+	
+		<li style="padding:3px;"><b>Close</b>: Shows number of photos in square (either 1km or 100m squares), and coloured by what Geograph image(s) in the square<br>
 		<span style="opacity:0.92; font-family:'Trebuchet MS','Comic Sans MS',Georgia,Verdana,Arial,serif; text-shadow:1px 1px 1px black; font-size:20px;">
 		<span style="color:#FF0000;padding:3px;">Square with recent Images</span> /
 		<span style="color:#FF00FF;padding:3px;">No Images in last 5 years</span> /
 		<span style="color:gray;padding:3px;">No Geograph Images</span>
 		</span></li>
 
-	<li style="padding:3px;"><b>Coverage - Coarse</b>: Coloured by what Geograph(s) are in the 1km square. <br><span style="opacity:0.6">
+		<li style="padding:3px;"><b>Coarse</b>: Coloured by what Geograph(s) are in the 1km square. <br><span style="opacity:0.6">
 		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span>
 		<span style="background-color:#FF8800;padding:3px;">Only older Geographs</span>
-	 	<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
-		</span> <ul>
-		<li>Note: when zoom out, changes to hectad (10km square) grid resolution, and is coloured yellow->red on the number of squares with recent (last 5 years) Geographs
-		</ul></li>
+		<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
+		</span></li>
+
+		<li>When zoom out, changes to hectad (10km square) grid resolution, and is coloured yellow->red on the number of squares with recent (last 5 years) Geographs</li>
+
+	</ul></li>
+
+	<li><b>Coverage - Large Squares</b>: Duplicates the <i>Coverage - Coarse</i> layer to provide coloured squares at a closer zoom level</li>
 
 	<li><b>Coverage - Opportunities</b>: Lighter (yellow) - more opportunties for points, up to, darker (red) less opportunties, as already lots of photos in square. 
 		Experimental coverage layer to see if concept works. Exact specififications of layer subject to change or withdrawl. 
 
-	<li>The <b>Photo Thumbnails</b> layer, automatically clusters images, to reduce overlap. The number show is a hint of the size of the cluster, but there can be significately more photos, which will load automatically when zoom in!
+	<li><b>Photo Thumbnails</b>: Shows small thumbnails, automatically clustered, to reduce overlap. The number show is a hint of the size of the cluster, but there can be significately more photos, which will load automatically when zoom in!
+	
+	<li><b>Collections</b>: Experimentally plotting approximate location for pages from the Collection section, to be able to locate them geographically</li>
+
+	<li><b>Recent Uploads</b><sup style=color:red>NEW!</sup> (for contributors only!): Shows images submitted in last 3 days. Regardless of moderation (so can see still pending images on map to follow coverage), so this layer should see new images before visible on other layers. 
+		Note: Can turn the layer off, and when turn it back on, it will immiidately check for new images, so can use this to follow submissions in real time. 
 
 	<li>We don't have a key of the <b>BGS Bedrock Geology</b> layers, but use the link (in [Location &amp; Map Links...] at top!) to the offical Geology of Britain Viewer, which provides some functions to explain the colouring</li>
 </ul>
