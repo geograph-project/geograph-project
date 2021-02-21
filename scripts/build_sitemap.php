@@ -45,6 +45,18 @@ require "./_scripts.inc.php";
 
 ############################################
 
+$db = GeographDatabaseConnection(false);
+
+//insert a FAKE log (just so we can plot on a graph ;)
+$db->Execute("INSERT INTO event_log SET
+        event_id = 0,
+        logtime = NOW(),
+        verbosity = 'trace',
+        log = 'running event_handlers/every_day/".basename($argv[0])."({$param['ri']})',
+        pid = 33");
+
+############################################
+
 if (!empty($CONF['db_read_connect2'])) {
         if (!empty($DSN_READ))
                 $DSN_READ = str_replace($CONF['db_read_connect'],$CONF['db_read_connect2'],$DSN_READ);
@@ -68,6 +80,7 @@ $count=0;
 $last_id=0;
 $stat=array();
 $datecrit = date('Y-m-d', time()-86400*3);
+$cols = '';
 
 for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 {
@@ -94,6 +107,8 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 		fprintf($fh3, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
 		fprintf($fh3, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">'."\n");
+
+		$cols = ',title,user_id,realname';
 	}
 
 	$maxdate="";
@@ -106,7 +121,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 		$where[] = "gridimage_id > $last_id"; //still fast, as ordered by id too, it can use it as a index.
 
 	$recordSet = &$db->Execute(
-		"select i.gridimage_id,date(upd_timestamp) as moddate,title,user_id,realname ".
+		"select i.gridimage_id,date(upd_timestamp) as moddate $cols ".
 		"from gridimage_search as i ".
 		"where ".implode(" and ",$where)." ".
 		"order by i.gridimage_id ".
