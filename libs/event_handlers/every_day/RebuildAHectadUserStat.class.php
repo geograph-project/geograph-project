@@ -33,7 +33,7 @@
 require_once("geograph/eventhandler.class.php");
 
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
-class RebuildHectadUserStat extends EventHandler
+class RebuildAHectadUserStat extends EventHandler //A in name to ensure it runs first (as RebuildHectadStat uses this table!)
 {
 	function processEvent(&$event)
 	{
@@ -51,11 +51,12 @@ class RebuildHectadUserStat extends EventHandler
 				  `reference_index` tinyint(4) default '1',
 				  `hectad` varchar(4) NOT NULL default '',
 				  `user_id` int(11) NOT NULL default '0',
-				  `images` bigint(21) NOT NULL default '0',
-				  `geographs` decimal(23,0) default NULL,
-				  `squares` bigint(21) NOT NULL default '0',
-				  `geosquares` bigint(21) NOT NULL default '0',
-				  `firsts` tinyint(4) NOT NULL default '0',
+				  `images` MEDIUMINT UNSIGNED NOT NULL default '0',
+				  `geographs` MEDIUMINT UNSIGNED default NULL,
+				  `squares` TINYINT UNSIGNED NOT NULL default '0',
+				  `geosquares` TINYINT UNSIGNED NOT NULL default '0',
+				  `recentsquares` TINYINT UNSIGNED NOT NULL DEFAULT 0
+				  `firsts` TINYINT UNSIGNED NOT NULL default '0',
 				  `first_submitted` datetime default NULL,
 				  `last_submitted` datetime default NULL,
 				  `first_first_submitted` datetime default NULL,
@@ -87,6 +88,7 @@ class RebuildHectadUserStat extends EventHandler
 				SUM(moderation_status = 'geograph') AS geographs,
 				COUNT(DISTINCT gi.gridsquare_id) AS squares,
 				COUNT(DISTINCT IF(moderation_status='geograph',gi.gridsquare_id,NULL)) AS geosquares,
+				COUNT(DISTINCT IF(has_recent=1,gs.gridsquare_id,NULL)) AS recentsquares,
 				SUM(moderation_status = 'geograph' AND ftf = 1) AS firsts,
 				MIN(submitted) AS first_submitted,
 				MAX(submitted) AS last_submitted,
