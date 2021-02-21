@@ -66,7 +66,7 @@ class RebuildTagSquareStat extends EventHandler
 
 			//for now use MyISAM, as it was optimized that way, and uses disable/enable keys.
 			// there is no primary key!
-			$this->Execute("CREATE TABLE tag_square_stat (index (`tag_id`)) ENGINE=myisam ".str_replace('$where',$where,$sql)) or die(mysql_error());
+			$this->Execute("CREATE TABLE tag_square_stat (unique(`tag_id`,`user_id`,`grid_reference`)) ENGINE=myisam ".str_replace('$where',$where,$sql)) or die(mysql_error());
 		}
 
 		##################################################
@@ -75,12 +75,13 @@ class RebuildTagSquareStat extends EventHandler
 		$db->Execute("DROP TABLE IF EXISTS tag_square_stat_tmp");
 
 		$db->Execute("CREATE TABLE tag_square_stat_tmp LIKE tag_square_stat");
-		$db->Execute("ALTER TABLE tag_square_stat_tmp DISABLE KEYS");
 
 		##################################################
 		# fill the tempory table
 
-               	$prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0");
+		$hours = 26;
+		$prefixes = $db->GetCol("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0 and last_submitted > date_sub(now(),interval $hours hour)");
+
        	        foreach ($prefixes as $prefix => $data) {
                         //$where = "grid_reference LIKE ".$db->Quote("{$prefix}____");
                         //... wasnt using index on gr, was not using ANY index!
@@ -104,9 +105,9 @@ class RebuildTagSquareStat extends EventHandler
 		##################################################
 		# swap the tables into place
 
-		$db->Execute("ALTER TABLE tag_square_stat_tmp ENABLE KEYS");
-		$db->Execute("DROP TABLE IF EXISTS tag_square_stat");
-		$db->Execute("RENAME TABLE tag_square_stat_tmp TO tag_square_stat");
+		$db->Execute("REPLACE INTO tag_square_stat SELECT * FROM tag_square_stat_tmp");
+
+		//todo, this leaves orphan lines, when tags are deleted (or images moved from square)
 
 		##################################################
 
