@@ -96,12 +96,14 @@ CREATE TABLE `hectad_stat` (
 
 		$db->Execute("ALTER TABLE hectad_stat_tmp DISABLE KEYS");
 
+		$hours = 26; //todo, extend this if not updating daily!
+
 ##################################
 
 		foreach (array(1,2) as $ri) {
-			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
-			$prefixes = $db->getAssoc("select prefix,origin_x,origin_y from gridprefix where reference_index = $ri and landcount > 0 ");
+                        $prefixes = $db->GetCol("select substring(grid_reference,1,3 - reference_index) as prefix,max(last_timestamp) as last
+                                 from gridsquare where reference_index = $ri group by prefix having last > date_sub(now(),interval $hours hour)");
 
 			foreach ($prefixes as $prefix => $data) {
 				//used to use "grid_reference LIKE '$prefix%'" but wasnt using index on gr, was using the reference_index index anyway
@@ -116,29 +118,46 @@ CREATE TABLE `hectad_stat` (
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 				$where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
-				$this->Execute("INSERT INTO hectad_stat_tmp
-				SELECT
-					reference_index,min(x) as x,min(y) as y,
-					CONCAT(SUBSTRING(grid_reference,1,".($letterlength+1)."),SUBSTRING(grid_reference,".($letterlength+3).",1)) AS hectad,
-					COUNT(DISTINCT gs.gridsquare_id) AS landsquares,
-					COUNT(gridimage_id) AS images,
-					SUM(moderation_status = 'geograph') AS geographs,
-					COUNT(DISTINCT gi.gridsquare_id) AS squares,
-					COUNT(DISTINCT IF(moderation_status='geograph',gi.gridsquare_id,NULL)) AS geosquares,
-					COUNT(DISTINCT IF(has_recent=1,gs.gridsquare_id,NULL)) AS recentsquares,
-					COUNT(DISTINCT user_id) AS users,
-					MIN(IF(ftf=1,submitted,NULL)) AS first_submitted,
-					MAX(IF(ftf=1,submitted,NULL)) AS last_submitted,
-					'' AS map_token,
-					'' AS largemap_token,
-					COUNT(DISTINCT IF(ftf=1,user_id,NULL)) AS ftfusers
-					FROM gridsquare gs $indexes
-					LEFT JOIN gridimage gi ON (gs.gridsquare_id=gi.gridsquare_id AND moderation_status IN ('geograph','accepted'))
+				$this->Execute("DROP TABLE IF EXISTS hectat_stat_pre");
+				$this->Execute("create TEMPORARY table hectat_stat_pre
+				SELECT gs.reference_index,
+				        min(gs.x) AS `x`,
+				        min(gs.y) AS `y`,
+				        CONCAT(SUBSTRING(gs.grid_reference,1,LENGTH(gs.grid_reference)-3),SUBSTRING(gs.grid_reference,LENGTH(gs.grid_reference)-1,1)) AS `hectad`,
+				        COUNT(DISTINCT gs.gridsquare_id) AS `landsquares`,
+				        SUM(gs.imagecount>0) AS `squares`,
+				        SUM(gs.has_geographs>0) AS `geosquares`,
+				        SUM(gs.has_recent>0) AS `recentsquares`
+					FROM gridsquare gs
 					WHERE reference_index = $ri AND $where AND percent_land >0
 					GROUP BY (x-{$CONF['origins'][$ri][0]}) div 10,(y-{$CONF['origins'][$ri][1]}) div 10
 					ORDER BY NULL");
 				//we group using CONF['origins'] rather than gridprefix.origin_x because while gridprefix should contain whole square, it not nesseraily aligned to hectad boundaries!
 				//todo when the origin is a multiple of 10 (or =0) then can be optimised away - but mysql might do that anyway
+
+				//... because if group by gridsquare and hectat_stat_pre at once, then (upto) 100 rows per square, the sum()s are out by a factor of 100
+
+				$this->Execute("INSERT INTO hectad_stat_tmp
+					SELECT pre.reference_index,
+				        pre.`x`,
+				        pre.`y`,
+				        `hectad`,
+				        pre.`landsquares`,
+				        SUM(uh.images) AS `images`,
+				        SUM(uh.geographs) AS `geographs`,
+				        pre.`squares`,
+				        pre.`geosquares`,
+				        pre.`recentsquares`,
+				        COUNT(DISTINCT user_id) AS `users`,
+				        MIN(first_first_submitted) AS `first_submitted`,
+				        MAX(last_first_submitted) AS `last_submitted`,
+				        '' AS `map_token`,
+				        '' AS `largemap_token`,
+				        SUM(first_first_submitted>'1000-01-01') AS `ftfusers`
+					FROM hectat_stat_pre pre
+				        LEFT JOIN hectad_user_stat uh USING (hectad)
+					GROUP BY hectad
+					ORDER BY NULL");
 
 				//give the server a breather...
 				usleep(500);
