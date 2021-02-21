@@ -29,8 +29,17 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-$sqls = array();
+############################################
 
+//insert a FAKE log (just so we can plot on a graph ;)
+$db->Execute("INSERT INTO event_log SET
+        event_id = 0,
+        logtime = NOW(),
+        verbosity = 'trace',
+        log = 'running event_handlers/every_day/".basename($argv[0])."',
+        pid = 33");
+
+$sqls = array();
 ##################################################
 //generate some fake seqeuences for the few new images!
 // (do this first, before updating sequence, so that new rows are created in gridimage_sequence, so UPDATE works)
