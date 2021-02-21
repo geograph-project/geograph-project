@@ -72,8 +72,12 @@ class RebuildVoteStats extends EventHandler
 
 		if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*24)) {
 
-			$crit = "last_vote > date_sub(now(),interval 24 hour)";
-			$having = " HAVING $crit ";
+			$seconds = time() - strtotime($status['Update_time']);
+			$hours = ceil($seconds/60/60);
+			$hours+=3; //just to be safe
+
+			//having doesnt help much on the select itself (all the agrigation still happens), but cuts down the size of the data in the tmp table
+			$having = " HAVING last_vote > date_sub(now(),interval $hours hour) ";
 		} else {
 			$having = '';
 		}

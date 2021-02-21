@@ -57,7 +57,7 @@ WHERE \$where GROUP BY t1.tag_id ORDER BY NULL";
                 $status = $db->getRow("SHOW TABLE STATUS LIKE 'tag_stat'");
 
 		//incremental
-		if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*6)) {
+		if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*24)) {
 			if (false) {
 				//this works, but can still block for like 40 seconds
 				$this->Execute("CREATE TEMPORARY TABLE tag_updated (PRIMARY KEY(tag_id))
@@ -68,8 +68,12 @@ WHERE \$where GROUP BY t1.tag_id ORDER BY NULL";
 
 				$this->Execute("REPLACE INTO tag_stat ".str_replace('$where',$where,$sql));
 			} else {
+	                        $seconds = time() - strtotime($status['Update_time']);
+	                        $hours = ceil($seconds/60/60);
+        	                $hours++; //just to be safe
+
 				//doing one, by one, is inefficent, but runs better as lots of small queries
-				$ids = $db->getCol("SELECT DISTINCT tag_id FROM gridimage_tag WHERE updated > date_sub(now(),interval 3 hour)");
+				$ids = $db->getCol("SELECT DISTINCT tag_id FROM gridimage_tag WHERE updated > date_sub(now(),interval $hours hour)");
 				foreach ($ids as $id) {
 					$where = "t1.tag_id = $id";
 					$db->Execute("REPLACE INTO tag_stat ".str_replace('$where',$where,$sql));

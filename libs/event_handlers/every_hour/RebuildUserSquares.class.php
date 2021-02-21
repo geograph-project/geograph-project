@@ -65,14 +65,18 @@ class RebuildUserSquares extends EventHandler
 			$this->Execute(str_replace('$where',$where,$sql));
 
 		//INCREMENTAL (just squares updated recently)
-		} elseif ( !empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*6) ) {
+		} elseif ( !empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*12) ) {
+
+			$seconds = time() - strtotime($user_gridsquare['Update_time']);
+			$hours = ceil($seconds/60/60);
+			$hours++; //just to be safe
 
 		        //$grs = $db->getCol("select grid_reference from gridimage_search where upd_timestamp >
-	                //date_sub(now(),interval 6 hour) group by grid_reference order by null");
+	                //date_sub(now(),interval $hours hour) group by grid_reference order by null");
 
 			//now we have last_timestamp on gridsquare column, lets use that. gridimage_search.upd_timestamp is updated if just title etc tweaked. THe gridsquare only updated when something affects the square counts
 			$grs = $db->getCol("select grid_reference from gridsquare where last_timestamp >
-                        date_sub(now(),interval 6 hour)");
+                        date_sub(now(),interval $hours hour)");
 
 			if (empty($grs))
 				return true;
