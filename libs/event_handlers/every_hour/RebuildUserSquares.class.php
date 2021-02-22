@@ -50,7 +50,7 @@ class RebuildUserSquares extends EventHandler
 		$select = " SELECT user_id,`grid_reference`,x,y,reference_index,
                                 sum(moderation_status='geograph') as has_geographs,count(*) as imagecount,
                                 max(ftf) as max_ftf, sum(points = 'tpoint') as tpoints, SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as has_recent,
-				min(gridimage_id) as `first`, max(gridimage_id) as `last`, `point_xy`
+				GROUP_CONCAT(gridimage_id ORDER BY seq_no LIMIT 1) AS first, max(gridimage_id) as `last`, `point_xy`
                                 FROM gridimage_search
 				WHERE \$where
                                 GROUP BY user_id,`grid_reference` ORDER BY NULL";

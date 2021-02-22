@@ -2526,3 +2526,10 @@ ALTER TABLE user_gridsquare
 
 #################################################
 
+
+alter table gridsquare add first int unsigned not null default 0;
+
+
+#################################################
+
+
