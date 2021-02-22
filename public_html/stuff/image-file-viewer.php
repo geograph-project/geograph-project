@@ -22,6 +22,8 @@ if (!$image || !$image->isValid())
   //                      $image->getThumbnail(120,120,true);
 
 
+$filesystem = new FileSystem();
+
 ###################################
 
 if (!empty($_POST['fixed'])) {
@@ -37,22 +39,68 @@ if (!empty($_POST['fixed'])) {
 
 ###################################
 
-if (!empty($_POST['delete'])) {
+if (!empty($_POST['recreate']) || !empty($_POST['delete']) || !empty($_POST['clearcache'])) {
+
+	$seconds = 10;
+	$extra = '';
+
+	if (!empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
+
+	        $db=NewADOConnection($GLOBALS['DSN_READ']);
+
+        	if (!empty($db)) {
+                	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	                $row = $db->getRow("SHOW SLAVE STATUS");
+        	        if (!empty($row)) { //its empty if we actully connected to master!
+                	        if (is_null($row['Seconds_Behind_Master'])) {
+                        	        print "<h3>Replication Status: Offline.</h3>";
+                                	print "<p>Because replication is offline, some parts of the the site may not be showing recent updates.</p>";
+
+	                        } else {
+					$seconds += $row['Seconds_Behind_Master'];
+                	        }
+			}
+                }
+        }
+}
+
+###################################
+
+if (!empty($_POST['recreate']) || !empty($_POST['delete'])) {
+	if (!empty($_POST['recreate'])) {
+		$_POST['delete'] = $_POST['recreate'];
+	}
+
 	if (preg_match('/(\d+)x(\d+)/',$_POST['delete'],$m)) {
 
-		//$filesystem->
-	        if ($filesystem->file_exists(".".$path)) {
-//TODO
-	                // Task 1 - Delete the file
-        	        $cmd = "unlink .$path";
-	                print " $cmd\n";
-	 //               if ($param['execute'])
-	   //                     unlink(".".$path); //use function, so it automatically clears the stat cache!
+		//form our own path, rather than relying on the provided one!
+		$path = $image->_getOriginalpath(false, false, "_{$m[0]}");
 
-			$_POST['clearcache'] = $m[0];
+		if ($m[2] == 640) {
+			//for 640s its very important that they recrated, so emai me so can cehck these!
+			$con = "$path\n";
+			$con .= print_r($_GET,true);
+			$con .= print_r($_POST,true);
+			 mail('geograph@barryhunter.co.uk','[Geograph] FIXING 640 '.date('r'),$con);
+		}
+
+
+	        if ($filesystem->unlink($_SERVER['DOCUMENT_ROOT'].$path, true)) {
+	                // Task 1 - Delete the file
+        	        print "deleted $path\n";
+
+			$seconds +=20;
+			$extra .= "&t=".time();
+
+			$_POST['clearcache'] = $m[0]; //may as well clear the cache too!
         	} else {
 	                print "DEBUG: $path not found\n";
         	}
+
+		if (!empty($_POST['recreate']) && $m[2] >=640) { //we only use this for the large thumbnail for now, so only need to support >=640
+			//for the 640 we need to immidately recreate. because the presence of the 640 is important
+			$path = $image->getImageFromOriginal($m[1],$m[2]);
+		}
 	}
 }
 
@@ -78,28 +126,8 @@ if (!empty($_POST['clearcache'])) {
                 $db->Execute($sql);
                 print "Affected: ".mysql_affected_rows($db->_connectionID)."<br>";
 
-		$seconds = 10;
-
-if (!empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
-
-        $db=NewADOConnection($GLOBALS['DSN_READ']);
-
-        if (!empty($db)) {
-                $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-                $row = $db->getRow("SHOW SLAVE STATUS");
-                if (!empty($row)) { //its empty if we actully connected to master!
-                        if (is_null($row['Seconds_Behind_Master'])) {
-                                print "<h3>Replication Status: Offline.</h3>";
-                                print "<p>Because replication is offline, some parts of the the site may not be showing recent updates.</p>";
-
-                        } else {
-				$seconds += $row['Seconds_Behind_Master'];
-                        }
-                }
-        }
-}
-		print "Please wait <b>$seconds seconds</b> then <a href=\"?id={$id}\">return to viewer</a>";
-		print " (if no change, then can try pressing F5 once)";
+		print "Please wait <b>$seconds seconds</b>, then <a href=\"?id={$id}$extra\">return to viewer</a>";
+		print " (if when get there, see no change, then can try pressing F5 once)";
 		exit;
 	}
 }
@@ -112,7 +140,6 @@ $tag = $image->getFull(true,true); //as used on photo page  - calls getSize etc
 
 $postfix = empty($_GET['v'])?'':("&v=".intval($_GET['v']));
 
-$filesystem = new FileSystem();
 $db = $image->_getDB(true); //can reuse existing connection
 
 $sizes = array(40,60,120,213,'full');
@@ -223,6 +250,9 @@ $url .="&pointsize=45";
 			$url = "{$CONF['TILE_HOST']}/stamp.php?id={$image->gridimage_id}&gravity=SouthEast&hash=".$image->_getAntiLeechHash()."&large=$size";
 //jsut so can see the text in the tiny thumbnail!
 $url .="&pointsize=45";
+if (!empty($_GET['t']))
+	$url .="&t=".intval($_GET['t']); //just to invalidate cache, maybe should invalidate cloudfront!
+
 			print "<td><img src=$url $style>$stylefix</td>";
 
 			//use ths function, rather than getthumb, as want to avoid the magic that done to create the image!
@@ -263,7 +293,7 @@ $url .="&pointsize=45";
 	if (preg_match('/(https?:[\w\/\.]+?_\w+\.jpg)/',$html,$m)) {
 		$url = $m[1];
 		if (strpos(basename($url),'error') !== FALSE) {
-			print "<button disabled>Report Error</button>";
+			print "<button onclick=reportForm()>Report Error</button>";
 		} elseif (is_numeric($size)) {
 			$path = parse_url($url, PHP_URL_PATH);
 			$stat = $filesystem->stat($_SERVER['DOCUMENT_ROOT'].$path); //use stat, rather than file_exists to SKIP running 'getimagesize optimiation'
@@ -279,9 +309,9 @@ $url .="&pointsize=45";
 				}
 			} elseif (!empty($stat[10])) { //use time, not filesize
 				if ($size == 640) //need to be more careful NOT to delete the 640 image as it wont get recreated automatically
-					print "<button disabled>Recreate Thumbnail</button>";
+					print "<button type=submit name=recreate value=\"$path\">Recreate Thumbnail</button>";
 				else
-					print "<button disabled>Delete Thumbnail</button>";
+					print "<button type=submit name=delete value=\"$path\">Delete Thumbnail</button>";
 				print "<button onclick=reportForm()>Report Currupted</button>";
 			} else {
 				print "<button onclick=reportForm()>Report Currupted</button>";
@@ -331,6 +361,8 @@ if (!empty($db)) {
 <p>In theory, all there should be visible images in all the above boxes, unless <i>explicitly</i> marked 'n/a'</p>
 <p>The 'stamped' column should of course have some text overlaid (uses a big font, so it can be seen in small thumbnail)</p>
 <p>Right click image and 'open in new tab' to view full-size</p>
+
+<p>Note, that the 'Delete THumbnail', should really only be used if all three columns missing an image, if only some mising, please use the report function for me to check!</p>
 
 <script>
 function reportForm() {
