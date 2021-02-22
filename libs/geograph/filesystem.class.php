@@ -284,7 +284,7 @@ if (!empty($_GET['debug']))
 			$this->_clearcache($filename);
 
 			if ($r && $invalidate) {
-				$this->_invalidate($bucket, $filename);
+				$this->_invalidate($bucket, "/".$filename); //S3 class wants filesnames without the initial slash, but clountfront wants it with!
 			}
 			return $r;
 		} else {
@@ -297,7 +297,8 @@ if (!empty($_GET['debug']))
 		        if (strpos($domain,"$bucket.") ===0) {
 				if (is_string($filenames))
 			                $filenames = array($filenames);
-	        	        $this->invalidateDistribution($id, $filenames);
+	        	        $r = $this->invalidateDistribution($id, $filenames);
+				$this->_log('invalidate',$bucket,$r);
 				break;
 		        }
 		}
