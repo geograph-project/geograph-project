@@ -48,8 +48,9 @@ if (!empty($_POST)) {
   `affected` varchar(1024) NOT NULL,
   `page_url` varchar(255) NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
-  `status` varchar(32) NOT NULL DEFAULT 'new',
+  `notes` text NOT NULL,
   `updated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE current_timestamp(),
+  `status` ENUM(),
   PRIMARY KEY (`report_id`),
   KEY `gridimage_id` (`gridimage_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -120,6 +121,10 @@ print "</pre>";
 		////////////////////////////////////////////////////////
 
 		ob_start();
+		print "https://{$_SERVER['HTTP_HOST']}/stuff/image-file-viewer.php?id={$updates['gridimage_id']}\n";
+                debug_print_backtrace();
+                print "\n\nHost: ".`hostname`."\n\n";
+
                 print_r($updates);
 
 		if (!empty($updates["gridimage_id"])) {
@@ -186,21 +191,70 @@ print "</pre>";
 		print "<br style=clear:both>";
 	}
 
-	$rows = $db->getAssoc("select gridimage_id,created,status from image_report_form where affected like '%120px%' and status like '%_120x120.jpg:okurl%' order by report_id desc limit 10");
+	$rows = $db->getAssoc("select gridimage_id,created,notes from image_report_form where affected like '%120px%' and notes like '%_120x120.jpg:okurl%' order by report_id desc limit 10");
 	 $thumbw=120; $thumbh=120;
 	outputthumbs($rows,$thumbw,$thumbh);
 
-	$rows = $db->getAssoc("select gridimage_id,created,status from image_report_form where affected like '%213px%' and status like '%_213x160.jpg:okurl%' order by report_id desc limit 10");
+	$rows = $db->getAssoc("select gridimage_id,created,notes from image_report_form where affected like '%213px%' and notes like '%_213x160.jpg:okurl%' order by report_id desc limit 10");
 	 $thumbw=213; $thumbh=160;
 	outputthumbs($rows,$thumbw,$thumbh);
 
-	$rows = $db->getAssoc("select gridimage_id,created,status from image_report_form where affected like '%Photo Page%' and status like '%.jpg:okurl%' order by report_id desc limit 10");
+	$rows = $db->getAssoc("select gridimage_id,created,notes from image_report_form where affected like '%Photo Page%' and notes like '%.jpg:okurl%' order by report_id desc limit 10");
 	 $thumbw=200; $thumbh=200;
 	outputthumbs($rows,$thumbw,$thumbh);
 
 
 	print "If dont see all thumbnails above, press F5 to try reloading<hr>";
+} elseif (!empty($_GET['list'])) {
+	$db = GeographDatabaseConnection(false);
+
+	if ($r = $db->getAll("SELECT * FROM image_report_form WHERE status NOT in ('fixed','deleted') AND gridimage_id > 0 ORDER BY report_id DESC")) {
+		print "<ul>";
+		foreach ($r as $row) {
+			print "<li>{$row['gridimage_id']}, {$row['status']}, {$row['created']} <a href=/stuff/image-file-viewer.php?id={$row['gridimage_id']}>View Images</a> - {$row['affected']}</li>";
+		}
+		print "</ul>";
+		exit;
+	}
 }
+
+
+##############################################################
+
+if (!empty($_GET['id'])) {
+	if (empty($db))
+		$db = GeographDatabaseConnection(false);
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+	$gridimage_id = intval($_GET['id']);
+	$r = $db->getRow("SELECT * FROM image_report_form WHERE gridimage_id = {$gridimage_id} and status in ('new','escalated')");
+
+	if (!empty($_POST['report_id']) && $_POST['report_id'] == $r['report_id']) {
+
+		$db->Execute("UPDATE image_report_form SET status = 'escalated' WHERE report_id = {$r['report_id']}");
+
+		$con = "https://{$_SERVER['HTTP_HOST']}/stuff/image-file-viewer.php?id={$r['gridimage_id']}\n\n";
+                $con .= "Host: ".`hostname`."\n\n";
+                $con .= print_r($r,true);
+
+		mail('geograph@barryhunter.co.uk','[Geograph] Failed Image Report '.date('r'),$con);
+
+	} else if (!empty($r['status']) && empty($_POST)) { //dont show this when submitting a report either!
+
+		print "<form method=post>";
+		print "<input type=hidden name=report_id value={$r['report_id']}>";
+		print "<div class=interestBox>There is already an existing report for this image, there is no need to submit another report";
+		$seconds = time() - strtotime($r['created']);
+		$hours = ceil($seconds/60/60);
+		if ($hours > 72 || $USER->hasPerm('forum')) {
+			print ", however if still need fixing, <button name=submit value=esc>Bring to attention of developer</button>";
+		}
+		print "</div>";
+		print "</form>";
+	}
+}
+
+##############################################################
 
 ?>
 
@@ -219,7 +273,7 @@ if (!empty($_GET['bulk'])) {
 ?>
 <tr>
 	<th>URL of the affected Image</th>
-	<td><input type=text name=image_url placeholder="enter image-id here" maxlength="128" size="60" required ></td>
+	<td><input type=text name=image_url placeholder="enter image-id here" maxlength="128" size="60" required <? if (!empty($_GET['id'])) { echo ' value='.intval($_GET['id']); } ?>></td>
 	<td><small>can be link of the photo page, probably something like "http://www.geograph.org.uk/photo/99999", a direct link to the .jpg file, - or at least just the Image ID. 
 </tr>
 <tr>

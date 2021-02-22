@@ -205,7 +205,7 @@ function update_status($gridimage,$str, $execute=true) {
 	global $db;
 	$str .= ", ".date('Y-m-d H:i:s')."\n";
 	$str = $db->Quote($str);
-	$sql = "UPDATE image_report_form SET status = IF(status = 'new',$str,CONCAT(status,$str)) WHERE gridimage_id = $gridimage";
+	$sql = "UPDATE image_report_form SET notes = CONCAT(notes,$str) WHERE gridimage_id = $gridimage";
 	print "$sql;\n";
 	if ($execute)
 		$db->Execute($sql);

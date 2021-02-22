@@ -2533,3 +2533,11 @@ alter table gridsquare add first int unsigned not null default 0;
 #################################################
 
 
+alter table image_report_form change status notes text not null;
+alter table image_report_form add status enum('new','fixed','escalated','deleted') not null default 'new';
+update image_report_form set status = 'fixed' where notes like '%fixed%';
+update image_report_form set status = 'fixed' where notes like '%okurl%';
+
+
+#################################################
+
