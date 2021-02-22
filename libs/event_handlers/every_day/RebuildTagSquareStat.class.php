@@ -79,8 +79,17 @@ class RebuildTagSquareStat extends EventHandler
 		##################################################
 		# fill the tempory table
 
-		$hours = 26;
-		$prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0 and last_timestamp > date_sub(now(),interval $hours hour)");
+		$status = $db->getRow("SHOW TABLE STATUS LIKE 'tag_square_stat'");
+
+		if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*12) && $status['Comment'] != 'rebuild') {
+			$seconds = time() - strtotime($status['Update_time']);
+			$hours = ceil($seconds/60/60);
+			$hours++; //just to be safe
+
+			$prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0 and last_timestamp > date_sub(now(),interval $hours hour)");
+		} else {
+			$prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0");
+		}
 
        	        foreach ($prefixes as $prefix => $data) {
                         //$where = "grid_reference LIKE ".$db->Quote("{$prefix}____");

@@ -96,15 +96,24 @@ CREATE TABLE `hectad_stat` (
 
 		$db->Execute("ALTER TABLE hectad_stat_tmp DISABLE KEYS");
 
-		$hours = 26; //todo, extend this if not updating daily!
+
+                $status = $db->getRow("SHOW TABLE STATUS LIKE 'hectad_stat'");
+
+                if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*12) && $status['Comment'] != 'rebuild') {
+                        $seconds = time() - strtotime($status['Update_time']);
+                        $hours = ceil($seconds/60/60);
+                        $hours++; //just to be safe
+
+                        $prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0 and last_timestamp > date_sub(now(),interval $hours hour)");
+                } else {
+                        $prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0");
+                }
 
 ##################################
 
-		foreach (array(1,2) as $ri) {
-
-			$prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0 and last_timestamp > date_sub(now(),interval $hours hour)");
-
 			foreach ($prefixes as $prefix => $data) {
+				$ri = $data['reference_index'];
+
 				//used to use "grid_reference LIKE '$prefix%'" but wasnt using index on gr, was using the reference_index index anyway
 				// see scripts/try-hectad-index.php
 				// so could add "FORCE INDEX(grid_reference)" which helps a bit, but can do EVEN better using spatial index...
@@ -161,7 +170,6 @@ CREATE TABLE `hectad_stat` (
 				//give the server a breather...
 				usleep(500);
 			}
-		}
 
 ##################################
 
