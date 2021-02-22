@@ -70,9 +70,10 @@ if ($bounds[3] > 62)
 		if ($x1 > -100 && $x1 < 1000) {
 	                //$rectangle = "'POLYGON(($x1 $y1,$x2 $y1,$x2 $y2,$x1 $y2,$x1 $y1))'";
         	        //$sql['wheres'][] = "CONTAINS( GeomFromText($rectangle), point_xy)";
+			//there is no point_xy on hectad_stat
 
-	                $sql['wheres'][] = "x between $x1 AND $x2";
-	                $sql['wheres'][] = "y between $y1 AND $y2";
+			$sql['wheres'][] = "x between $x1 AND $x2";
+			$sql['wheres'][] = "y between $y1 AND $y2";
 
 		} else {
 			$error = "Zoom in closer to the British Isles to see coverage details";
@@ -85,13 +86,12 @@ if ($bounds[3] > 62)
         $sql['tables'] = array();
 
         if (!empty($_GET['user_id'])) {
-		$sql['tables']['us'] = 'user_gridsquare';
-		$sql['group'] = 'hectad';
+                $sql['tables']['hs'] = 'hectad_stat hs';
+		$sql['tables']['hus'] = 'inner join hectad_user_stat hus using (hectad)';
 		$sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
-		$sql['wheres'][] = "has_geographs > 0";
+		$sql['wheres'][] = "hus.geographs > 0";
 
-                $sql['columns'] = "CONCAT(SUBSTRING(grid_reference,1,LENGTH(grid_reference)-3),SUBSTRING(grid_reference,LENGTH(grid_reference)-1,1)) AS hectad,"
-			."x,y,reference_index as ri, sum(has_recent>0) AS percent"; //technically its just number in hectad, not a percent!
+		$sql['columns'] = "x,y,hs.reference_index as ri,   hus.recentsquares/landsquares*100 AS percent";
 
         } else {
                 $sql['tables']['hs'] = 'hectad_stat';
