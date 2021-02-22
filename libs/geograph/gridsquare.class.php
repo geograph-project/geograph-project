@@ -876,7 +876,7 @@ split_timer('gridsquare'); //starts the timer
 			  IF(SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR)) AND moderation_status='geograph')>0,1,0) AS has_recent,
 			  COALESCE(MAX(ftf),0) AS max_ftf,
 			  COALESCE(SUM(moderation_status = 'geograph' and imagetaken LIKE '1%'),0) AS premill,
-			  GROUP_CONCAT(IF(ftf<=1,gridimage_id,NULL) ORDER BY seq_no LIMIT 1) AS first
+			  GROUP_CONCAT(IF(ftf<=1,gridimage_id,NULL) ORDER BY ftf desc, seq_no LIMIT 1) AS first
 			FROM gridimage
 			WHERE gridsquare_id={$this->gridsquare_id}");
 		//  IF(SUM(moderation_status='geograph')>0,1,0) AS has_geographs,

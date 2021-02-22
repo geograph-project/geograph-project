@@ -45,7 +45,7 @@ for($start = 0; $start <= $max; $start += $limit) {
                           IF(SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR)) AND moderation_status='geograph')>0,1,0) AS has_recent,
                           COALESCE(MAX(ftf),0) AS max_ftf,
                           COALESCE(SUM(moderation_status = 'geograph' and imagetaken LIKE '1%'),0) AS premill,
-			  group_concat(if(ftf<=1,gridimage_id,null) order by seq_no limit 1) AS first,
+			  group_concat(if(ftf<=1,gridimage_id,null) order by ftf desc, seq_no limit 1) AS first,
 			  MAX(upd_timestamp) AS last_timestamp
                         FROM gridimage
                         WHERE $where
