@@ -86,7 +86,7 @@ class RebuildGridimageDuplicate extends EventHandler
 			//$prefixes = $db->GetCol("select substring(grid_reference,1,3 - reference_index) as prefix,max(last_timestamp) as last
 			//	 from gridsquare group by prefix having last > date_sub(now(),interval $hours hour)");
 
-			$prefixes = $db->GetCol("select prefix from gridprefix where landcount > 0 and last_submitted > date_sub(now(),interval $hours hour)");
+			$prefixes = $db->GetCol("select prefix from gridprefix where landcount > 0 and last_timestamp > date_sub(now(),interval $hours hour)");
 		} else {
 			$prefixes = $db->GetCol("select prefix from gridprefix where landcount > 0");
 		}

@@ -80,7 +80,7 @@ class RebuildTagSquareStat extends EventHandler
 		# fill the tempory table
 
 		$hours = 26;
-		$prefixes = $db->GetCol("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0 and last_submitted > date_sub(now(),interval $hours hour)");
+		$prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0 and last_timestamp > date_sub(now(),interval $hours hour)");
 
        	        foreach ($prefixes as $prefix => $data) {
                         //$where = "grid_reference LIKE ".$db->Quote("{$prefix}____");

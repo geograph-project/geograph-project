@@ -102,8 +102,7 @@ CREATE TABLE `hectad_stat` (
 
 		foreach (array(1,2) as $ri) {
 
-                        $prefixes = $db->GetCol("select substring(grid_reference,1,3 - reference_index) as prefix,max(last_timestamp) as last
-                                 from gridsquare where reference_index = $ri group by prefix having last > date_sub(now(),interval $hours hour)");
+			$prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0 and last_timestamp > date_sub(now(),interval $hours hour)");
 
 			foreach ($prefixes as $prefix => $data) {
 				//used to use "grid_reference LIKE '$prefix%'" but wasnt using index on gr, was using the reference_index index anyway
