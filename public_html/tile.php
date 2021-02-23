@@ -254,7 +254,7 @@ if ($_GET['l'] == 'u') {
 				$sql="select x,y,percent_land,has_recent as has_geographs from gridsquare where
 					CONTAINS( GeomFromText($rectangle),	point_xy) and has_recent = 0";
 			} elseif ($_GET['l'] == 'u') {
-				$sql="select x,y,max_ftf as imagecount,percent_land,has_geographs from gridsquare gs
+				$sql="select x,y,max_ftf as imagecount,percent_land,has_geographs from gridsquare gs where
 					CONTAINS( GeomFromText($rectangle),	point_xy)";
 			} else {
 				$sql="select x,y,imagecount,percent_land,has_geographs from gridsquare where
