@@ -1400,6 +1400,12 @@ body {
 	background: #e4e4fc;
 }
 
+img {
+	 /* to match old default, browsers (like Chrome 81+) have started changing the default to [image-orientation: from-image] 
+		... we still have lots of photos that have bad EXIF rotation flag set */
+	image-orientation: none;
+}
+
 #search_block {
 	font-size: 0.9em;
 	background: #333333;

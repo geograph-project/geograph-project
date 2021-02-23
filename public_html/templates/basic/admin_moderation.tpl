@@ -26,7 +26,6 @@
 .photoleft img {
 	max-width:50vw;
 	height:inherit;
-	image-orientation: none; /* to match old default, browsers (like Chrome 81+) have started changing the default */
 }
 .photoright {
 	padding-left:10px;

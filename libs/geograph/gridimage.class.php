@@ -1266,13 +1266,7 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 				$mins[] = 'min-width:'.$size[0].'px';
 			if (empty($this->original_width) || $this->original_width/$this->original_height < 3) // DONT impose min height on REALLY wide panos.
 				$mins[] = 'min-height:'.$size[1].'px';
-			$html=str_replace('/>',' style="'.implode('; ',$mins).';image-orientation: none"/>',$html);
-
-
-//image-orientation: none is there in particualar for Chrome 81+, as it now sets [image-orientation: from-image] as default!
-//we may set this more directly somewhere else, but for the moment, this is the most likely place to see it - on larger uploads
-// even the 640 is probably ok, so wouldnt be spotted at moderation time. Only larger upload affected
-
+			$html=str_replace('/>',' style="'.implode('; ',$mins).'"/>',$html);
 
 			$html="<div class=\"img-responsive\" style=\"max-width:{$largestwidth}px\">$html</div>"; //maxwidth to prevent upscaling
 
