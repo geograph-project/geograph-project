@@ -50,15 +50,17 @@ class RebuildVoteStats extends EventHandler
 		$this->Execute("UPDATE vote_log SET type = 'i19618112' WHERE type = 'i19625903'");
 
 		##########################################
+		// mark the votes as final
 
-		$max_id = $db->getOne("   select vote_id from `vote_log` where final = 1 order by vote_id desc limit 1");
+		$max_id = $db->getOne("select vote_id from `vote_log` where final = 1 order by vote_id desc"); //limit 1 is automatic
 		$max_id -= 10000;
 
-		$db->Execute("CREATE TEMPORARY TABLE vote_final AS SELECT MAX(vote_id) AS vote_id FROM vote_log WHERE vote_id > $max_id GROUP BY type,id,if (user_id>0,user_id,ipaddr)");
+		$db->Execute("CREATE TEMPORARY TABLE vote_final AS SELECT MAX(vote_id) AS vote_id,type,id FROM vote_log WHERE vote_id > $max_id GROUP BY type,id,if (user_id>0,user_id,ipaddr)");
 		$db->Execute("UPDATE `vote_log` SET `final` = 0 WHERE vote_id > $max_id");
 		$db->Execute("UPDATE `vote_log`,vote_final SET vote_log.final = 1 WHERE `vote_log`.vote_id = vote_final.vote_id");
 
 		##########################################
+		// prepare the tmp table
 
 		if ($db->getOne("SHOW TABLES LIKE 'vote_stat_tmp'")) {
 			$db->Execute("TRUNCATE vote_stat_tmp");
@@ -67,10 +69,12 @@ class RebuildVoteStats extends EventHandler
 		}
 
 		##########################################
+		// see if can do a incremenatl update
 
 		$status = $db->getRow("SHOW TABLE STATUS LIKE 'vote_stat'");
 
 		if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*24)) {
+			//do an incremental build
 
 			$seconds = time() - strtotime($status['Update_time']);
 			$hours = ceil($seconds/60/60);
@@ -78,9 +82,20 @@ class RebuildVoteStats extends EventHandler
 
 			//having doesnt help much on the select itself (all the agrigation still happens), but cuts down the size of the data in the tmp table
 			$having = " HAVING last_vote > date_sub(now(),interval $hours hour) ";
+
+			//we just want to use vote_final to find the IDs to update, not to get the specific votes (ie wnat all votes for the id!)
+			$table1 = "INNER JOIN vote_final USING (type,id)";
+
+			//but need to limit it one row per type/id, so the INNER JOIN doesnt balloon (need an index anyway!)
+			$db->Execute("ALTER IGNORE TABLE vote_final ADD UNIQUE(type,id)");
+
 		} else {
-			$having = '';
+			//do a full build
+			$having = $table1 = '';
 		}
+
+		##########################################
+		// first group by type to updated types, (and a per type average for the baysian calculation)
 
 		$types = $db->getAssoc("SELECT type,AVG(vote) AS `avg`,MAX(ts) AS last_vote FROM vote_log
 			WHERE vote > 0 AND `final` = 1 GROUP BY type $having ORDER BY NULL");
@@ -89,11 +104,13 @@ class RebuildVoteStats extends EventHandler
 			return true;
 
 		##########################################
+		// do that actual aggreations
 
 		$db->Execute("ALTER TABLE vote_stat_tmp DISABLE KEYS");
 
 		foreach ($types as $type => $row) {
-			$tables = ($type == 'img' || $type == 'desc')?' INNER JOIN gridimage_search ON (id = gridimage_id AND vote_log.user_id != gridimage_search.user_id)':'';
+			//can exclude votes on own images!
+			$table2 = ($type == 'img' || $type == 'desc')?' INNER JOIN gridimage_search ON (id = gridimage_id AND vote_log.user_id != gridimage_search.user_id)':'';
 			$this->Execute("INSERT INTO vote_stat_tmp
 				SELECT
 					type,
@@ -109,7 +126,7 @@ class RebuildVoteStats extends EventHandler
 					SUM(vote=4) AS v4,
 					SUM(vote=5) AS v5,
 					MAX(ts) AS last_vote
-				FROM vote_log $tables
+				FROM vote_log $table1 $table2
 				WHERE type = '$type' AND vote > 0 AND `final` = 1
 				GROUP BY id
 				$having
@@ -117,12 +134,20 @@ class RebuildVoteStats extends EventHandler
 		}
 
 		##########################################
+		// swap in the new rows.
 
 		if (!empty($status)) {
+			//there an existing table to insert into
 			$this->Execute("REPLACE INTO vote_stat SELECT * FROM vote_stat_tmp");
 		} else {
+			//otherwise make the tmp table live
+			$this->Execute("ALTER TABLE vote_stat_tmp ENABLE KEYS");
+
 			$this->Execute("RENAME TABLE vote_stat_tmp TO vote_stat");
 		}
+
+		##########################################
+		//final bit of clearup
 
 		$db->Execute("UPDATE gridimage_daily,vote_stat SET vote_baysian = baysian,gridimage_daily.updated = gridimage_daily.updated WHERE vote_stat.id = gridimage_id AND type = 'i2136521' AND users > 3");
 
