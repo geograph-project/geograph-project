@@ -1006,7 +1006,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 						}
 					} elseif ($this->type_or_user == -16) {
 						$id = intval($_GET['landcover']);
-						$sql="select x,y,gridsquare_id,1 as has_geographs from gridsquare_test
+						$sql="select x,y,1 as has_geographs from gridsquare_test
 							where
 							landcover_id = $id
 							";
@@ -1017,7 +1017,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 						$sql="select x,y,1 as has_geographs from postcode_codeopen_square";
 
 					} elseif ($this->type_or_user == -6) {
-						$sql="select x,y,gridsquare_id,has_recent as has_geographs from gridsquare where
+						$sql="select x,y,has_recent as has_geographs from gridsquare where
 							CONTAINS( GeomFromText($rectangle),	point_xy)
 							and imagecount>0";
 					} else {//type_or_user > 0
@@ -1081,40 +1081,16 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 		} else {
 			$number = !empty($this->minimum)?intval($this->minimum):0;
 			if ($this->pixels_per_km<40) {
-				$sql="select x,y,gridsquare_id,has_geographs from gridsquare where
+				$sql="select x,y,has_geographs from gridsquare where
 					CONTAINS( GeomFromText($rectangle),	point_xy)
 					and imagecount>$number";
 			} else {
-				$table = $CONF['db_tempdb'].".gi_render$counter"; $counter++;
-
-				if (true) {
-					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-						SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_persquare WHERE
-						CONTAINS( GeomFromText($rectangle),	point_xy)";
-					$db->Execute($sql);
-				} else {
-					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-						SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_search WHERE
-						CONTAINS( GeomFromText($rectangle),	point_xy)
-						AND ftf <= 1
-						ORDER BY moderation_status+0 DESC,seq_no";
-					$db->Execute($sql);
-
-					$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y)";
-					$db->Execute($sql);
-				}
-
-				if ($number) {
-					$sql="SELECT gridsquare.x,gridsquare.y,has_geographs,user_id,gridimage_id
-					FROM gridsquare
-					INNER JOIN $table USING (grid_reference)
-					WHERE
-						CONTAINS( GeomFromText($rectangle),	point_xy)
-						AND imagecount>$number";
-				} else {
-					$sql="SELECT x,y,(moderation_status = 'geograph') as has_geographs,user_id,gridimage_id
-					FROM $table";
-				}
+				$sql="SELECT gs.x,gs.y,has_geographs,user_id,gridimage_id
+				FROM gridsquare gs
+				INNER JOIN gridimage_search ON (gridimage_id = first)
+				WHERE
+					CONTAINS( GeomFromText($rectangle),	gs.point_xy)
+					AND imagecount>$number";
 			}
 		}
 		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_ASSOC);
@@ -2335,16 +2311,14 @@ split_timer('map'); //starts the timer
 				$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
 				$db->Execute($sql);
 				
-			} elseif (true && empty($where_crit)) {
+			} elseif (empty($where_crit)) {
+				//todo, we can now use gridsquare.first to pick the image, but its not very efficient as it uses gridsquare twice!
 				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-					SELECT gridimage_id,grid_reference,x,y $columns FROM gridimage_persquare WHERE 
+					SELECT first as gridimage_id,x,y FROM gridsquare WHERE 
 					CONTAINS( GeomFromText($rectangle),	point_xy)";
 				$db->Execute($sql);
 				
 			} else {
-				if (empty($where_crit)) {
-					$where_crit = "AND ftf <= 1";
-				}
 				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 					SELECT gridimage_id,grid_reference,x,y $columns FROM gridimage_search WHERE 
 					CONTAINS( GeomFromText($rectangle),	point_xy) $where_crit
@@ -2370,13 +2344,14 @@ split_timer('map'); //starts the timer
 			
 			$sql="SELECT gs.* $columns,gi.gridimage_id,gi.realname AS credit_realname,IF(gi.realname!='',gi.realname,user.realname) AS realname,title 
 				FROM gridsquare gs
-				LEFT JOIN gridimage gi USING (gridsquare_id)
-				INNER JOIN $table USING (gridimage_id)
+				INNER JOIN $table USING (x,y)
+				INNER JOIN gridimage gi USING (gridimage_id)
 				INNER JOIN user ON(gi.user_id = user.user_id)
 				WHERE 
-				CONTAINS( GeomFromText($rectangle),	point_xy)
+				CONTAINS( GeomFromText($rectangle),	gs.point_xy)
 				AND percent_land<>0 
 				GROUP BY gs.grid_reference ORDER BY y,x";
+
 		} elseif ($this->pixels_per_km == 4) {
 			if (!empty($this->type_or_user)) {
 				if ($this->type_or_user > 0) {
@@ -2385,7 +2360,7 @@ split_timer('map'); //starts the timer
 						from gridsquare gs
 						left join user_gridsquare ug on (gs.grid_reference = ug.grid_reference and user_id = {$this->type_or_user})
 						where 
-						CONTAINS( GeomFromText($rectangle),	point_xy)
+						CONTAINS( GeomFromText($rectangle),	gs.point_xy)
 						and percent_land<>0";
 						
 				} elseif ($this->type_or_user == -6) {
@@ -2447,10 +2422,9 @@ split_timer('map'); //starts the timer
 				and percent_land<>0 
 				group by gs.gridsquare_id order by y,x";
 		}
-		
-		
+
 		$recordSet = $db->Execute($sql);
-		while (!$recordSet->EOF) 
+		while (!$recordSet->EOF)
 		{
 			$gridx=$recordSet->fields['x'];
 			$gridy=$recordSet->fields['y'];
@@ -2459,7 +2433,7 @@ split_timer('map'); //starts the timer
 			$posy=($top-$bottom) - ($gridy-$bottom);
 			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
 			$grid[$posx][$posy]=$recordSet->fields;
-			
+
 			$recordSet->MoveNext();
 		}
 		if (!empty($recordSet))
