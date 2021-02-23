@@ -26,7 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(false);
 
 $smarty->assign('page_title',"Featured Collections");
 
@@ -46,15 +46,15 @@ if (!empty($_POST)) {
                 }
 
                 if (!empty($updates['url'])) {
-                        $updates['url'] = preg_replace('/(article|gallery)(\/.+)\/\d+$/','$1$2',$updates['url']);
+                        $updates['url'] = preg_replace('/(article|gallery)(\/.+)\/\d+$/','$1$2',$updates['url']); //remove the page number
                         $updates['content_id'] = $db->getOne("SELECT content_id FROM content WHERE url = ".$db->Quote($updates['url']));
 
                         if (!empty($updates['content_id'])) {
                                 if (!empty($_POST['showday']))
                                         $updates['showday'] = $_POST['showday'];
 
-                                $db->Execute('INSERT INTO content_featured SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
-				if (mysql_affected_rows()==1) {
+                                $db->Execute('INSERT IGNORE INTO content_featured SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+				if ($db->Affected_Rows()==1) {
 					print "Thank you for the suggestion.";
 				} else {
 					print "This collection is already on the list.";
