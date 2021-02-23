@@ -1060,7 +1060,7 @@ class UploadManager
 				$image->previewUrl =    $image->_getOriginalpath(true,false,'_preview');
 				$image->pendingUrl =    $image->_getOriginalpath(true,false,'_pending');
 
-				$paths = array();
+				$paths = array(); //cloudfront wants wutls WITH initial slashes, which our paths are!
 				if (basename($image->previewUrl) != "error.jpg")
 					 $paths[]= $image->previewUrl;
 				if (basename($image->pendingUrl) != "error.jpg")

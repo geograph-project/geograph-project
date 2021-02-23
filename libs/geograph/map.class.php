@@ -2282,9 +2282,11 @@ split_timer('map'); //starts the timer
 		if ($isimgmap) {
 			if (!empty($this->type_or_user)) {
 				if ($this->type_or_user > 0) {
+					//todo, should now convert this to use user_gridsquare (as it has a 'first' column)
 					$where_crit = " and user_id = {$this->type_or_user}";
 					$columns = ',0 as imagecount';
 				} elseif ($this->type_or_user == -6) {
+					//todo, should perhaps convert this to use has_recent (at least as a filter)
 					$where_crit = " and imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))";
 					$columns = ',0 as imagecount';
 				} 
@@ -2405,6 +2407,7 @@ split_timer('map'); //starts the timer
 		} else {
 			if (!empty($this->type_or_user)) {
 				if ($this->type_or_user > 0) {
+					//todo, convert this to use user_gridsquare (which now has a 'first' column) 
 					$where_crit = " and gi.user_id = {$this->type_or_user}";
 					$columns = ", sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount";
 				} elseif ($this->type_or_user == -6) {
