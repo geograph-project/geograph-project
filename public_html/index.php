@@ -188,7 +188,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($CONF['template']=='ireland') {
 		$stats= $db->GetRow("SELECT SUM(imagecount) AS images, SUM(has_geographs>0) AS squares,
 				COUNT(*) AS total,SUM(imagecount in (1,2,3)) AS fewphotos FROM gridsquare WHERE reference_index = 2 AND percent_land > 0");
-		$stats += $db->cacheGetRow(3600*24, "SELECT COUNT(distinct user_id) as users from gridimage_search where x<410 and y<648 and reference_index = 2");
+		$stats += $db->cacheGetRow(3600*24, "SELECT COUNT(distinct user_id) AS users FROM hectad_user_stat WHERE reference_index = 2");
 
 	} else {
 		$stats= $db->GetRow("select * from user_stat where user_id = 0");
