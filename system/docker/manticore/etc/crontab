@@ -1,4 +1,4 @@
-# m h  dom mon dow   command
+# m h  dom mon dow   command  (0 - 6) (Sunday to Saturday)
 
 ##############################
 # Manticore
@@ -23,8 +23,10 @@
 ########################
 # Sample8 - the NEW image index
 
-# disabled to see effect on database load overnight. the delta (8E) can just grow
-####35 5 * * *          indexer --config /etc/sphinxsearch/sphinx.conf sample8A sample8B sample8C sample8D sample8E --rotate --sighup-each
+35 5 * * 3          indexer --config /etc/sphinxsearch/sphinx.conf sample8A --rotate --sighup-each
+35 5 * * 4          indexer --config /etc/sphinxsearch/sphinx.conf sample8B --rotate --sighup-each
+35 5 * * 5          indexer --config /etc/sphinxsearch/sphinx.conf sample8C --rotate --sighup-each
+35 5 * * 6          indexer --config /etc/sphinxsearch/sphinx.conf sample8D sample8E --rotate --sighup-each
 
 ########################
 # Update The 'delta' indexes
