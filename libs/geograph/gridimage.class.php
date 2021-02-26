@@ -495,13 +495,19 @@ split_timer('gridimage'); //starts the timer
                 if (!empty($this->imagetaken) && strpos($this->imagetaken,'0000') === FALSE) {
 			$smarty->assign('image_taken', $this->getFormattedTakenDate());
 
-                        $diff = time() - strtotime(str_replace('-00','-01',$this->imagetaken)." 12:00");
+                        $diff = strtotime(date('Y-m-d')) - strtotime(str_replace('-00','-01',$this->imagetaken));
                         if ($diff > (3600*24*365)) {
                                 $takenago = sprintf("%d year%s ago",$int = round($diff/(3600*24*365)),($int!=1)?'s':'');
                         } elseif ($diff > (3600*24*31)) {
                                 $takenago = sprintf("%d month%s ago",$int = round($diff/(3600*24*31)),($int!=1)?'s':'');
-                        } elseif ($diff > (3600*24)) {
-                                $takenago = sprintf("%d day%s ago",$int = round($diff/(3600*24)),($int!=1)?'s':'');
+                        } elseif (strpos($this->imagetaken,'-00') === FALSE) {
+				if ($diff > (3600*24)) {
+	                                $takenago = sprintf("%d day%s ago",$int = round($diff/(3600*24)),($int!=1)?'s':'');
+				} elseif ($diff) {
+					$takenago = 'yesterday';
+				} else {
+					$takenago = 'today';
+				}
                         }
                         if (!empty($takenago))
                                 $smarty->assign('takenago', $takenago);
