@@ -99,7 +99,7 @@ CREATE TABLE `hectad_stat` (
 
                 $status = $db->getRow("SHOW TABLE STATUS LIKE 'hectad_stat'");
 
-                if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*12) && $status['Comment'] != 'rebuild') {
+                if ($status['Rows'] > 100 && !empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*12) && $status['Comment'] != 'rebuild') {
                         $seconds = time() - strtotime($status['Update_time']);
                         $hours = ceil($seconds/60/60);
                         $hours++; //just to be safe
