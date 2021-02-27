@@ -60,73 +60,117 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/imagelist.class.php');
 
         $db = GeographDatabaseConnection(true);
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	$column = ($date == 'taken')?'imagetaken':'submitted';
 
-	if (isset($_GET['week'])) {
-		$from_date = "date(min($column))";
-		$group_date = "yearweek($column,1)";
-	} else {
-		$length = isset($_GET['month'])?10:7;  //month=0 means daily ;-0
-
-		$from_date = "substring( $column, 1, $length )";
-		$group_date = "substring( $column, 1, $length )";
-	}
 	$title = ($date == 'taken')?'Taken':'Submitted';
 	$title = "Breakdown of Images by $title Date";
 
 	$where = array();
 
-	if ($date == 'taken') {
-		$where[] = "$column not like '%-00%'";
-	}
-
-	if ($myriad) {
-		$where[] = "grid_reference like '$myriad%'";
-		$title = "in myriad '$myriad'";
-	}
-
-	if (!empty($ri)) {
+	//the pregrouped table, adn only filter by $ri and $date, not by by the others) 
+	if (!isset($_GET['month']) && !isset($_GET['week']) && empty($u) && empty($myriad)) {
+		//always, filter by $ri, even 0!
 		$where[] = "reference_index=".$ri;
-		$smarty->assign('ri', $ri);
+		$where[] = "type = ".$db->Quote($column);
 
-		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
-		$columns_sql .= ", count( DISTINCT SUBSTRING(grid_reference,1,$letterlength)) as `Different Myriads`";
+		if ($date == 'taken') {
+			$where[] = "month not like '%-00'"; //can be images with year, no month
+		}
 
-		$columns_sql .= ", count( DISTINCT concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) ) as `Different Hectads`";
+		$where[] = "month not like ''"; //the table is built with rollup, so has 'yearly' rows too!
 
-	} else {
-		$columns_sql .= ", count( DISTINCT SUBSTRING(grid_reference,1,3 - reference_index)) as `Different Myriads`";
-		$columns_sql .= ", count( DISTINCT concat(substring(grid_reference,1,3 - reference_index),substring(grid_reference,6 - reference_index,1)) ) as `Different Hectads`";
-	}
-
-	if (!empty($u)) {
-		$where[] = "user_id=".$u;
-		$smarty->assign('u', $u);
-
-		$profile=new GeographUser($u);
-		$smarty->assign_by_ref('profile', $profile);
-		$title .= " for ".($profile->realname);
-	} else {
-		$columns_sql .= ", count( DISTINCT user_id ) AS `Different Users`";
-	}
-	if (count($where))
 		$where_sql = " WHERE ".join(' AND ',$where);
 
-	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$table=$db->GetAll("SELECT
-	$from_date AS `Date`,
-	count( * ) AS `Images`,
-	sum( moderation_status = 'geograph' ) AS `Geographs`,
-	sum( points = 'tpoint' ) AS `TPoints`,
-	sum( ftf =1 ) AS `First Points`,
-	sum( ftf between 1 and 4 ) AS `AllPoints`,
-	sum( ftf >0 ) AS `Personal Points`,
-	count( * ) / count( DISTINCT grid_reference ) AS `Depth`,
-	count( DISTINCT grid_reference ) AS `Different Gridsquares`
-	$columns_sql
-	FROM `gridimage_search` $where_sql
-	GROUP BY $group_date" );
+		$table=$db->GetAll($sql = "SELECT
+		month AS `Date`,
+		images AS `Images`,
+		geographs AS `Geographs`,
+		tpoints AS `TPoints`,
+		points AS `First Points`,
+		visitors AS `AllPoints`,
+		personals AS `Personal Points`,
+		images / squares AS `Depth`,
+		squares AS `Different Gridsquares`,
+		myriads as `Different Myriads`,
+		hectads as `Different Hectads`,
+		users as `Different Contributors`
+		FROM `date_stat` WHERE ".join(' AND ',$where)."
+		ORDER BY month");
+
+	} else {
+		//for the moment, only support monthy, its a lot more work to support week/day!
+		if (isset($_GET['week'])) {
+			$smarty->display('function_disabled.tpl');
+			exit;
+
+			$from_date = "date(min($column))";
+			$group_date = "yearweek($column,1)";
+		} else {
+			$length = isset($_GET['month'])?10:7;  //month=0 means daily ;-0
+			if ($length == 10) {
+				$smarty->display('function_disabled.tpl');
+				exit;
+			}			
+
+			$from_date = "substring( $column, 1, $length )";
+			$group_date = "substring( $column, 1, $length )";
+		}
+
+		if ($date == 'taken') {
+			$where[] = "$column not like '%-00%'";
+		}
+
+		if ($myriad) {
+			$smarty->display('function_disabled.tpl');
+                	exit;
+			$where[] = "grid_reference like '$myriad%'"; //todo, doesnt propetlly support irish myraids ('S' will match 'SH'!)
+			$title .= " in myriad '$myriad'";
+		}
+
+		if (!empty($ri)) {
+			$where[] = "reference_index=".$ri;
+
+			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
+			$columns_sql .= ", count( DISTINCT SUBSTRING(grid_reference,1,$letterlength)) as `Different Myriads`";
+
+			$columns_sql .= ", count( DISTINCT concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) ) as `Different Hectads`";
+
+		} else {
+			$columns_sql .= ", count( DISTINCT SUBSTRING(grid_reference,1,3 - reference_index)) as `Different Myriads`";
+			$columns_sql .= ", count( DISTINCT concat(substring(grid_reference,1,3 - reference_index),substring(grid_reference,6 - reference_index,1)) ) as `Different Hectads`";
+		}
+
+		if (!empty($u)) {
+			$where[] = "user_id=".$u;
+			$smarty->assign('u', $u);
+
+			$profile=new GeographUser($u);
+			$smarty->assign_by_ref('profile', $profile);
+			$title .= " for ".($profile->realname);
+		} else {
+			$columns_sql .= ", count( DISTINCT user_id ) AS `Different Users`";
+		}
+		if (count($where))
+			$where_sql = " WHERE ".join(' AND ',$where);
+
+		$table=$db->GetAll($sql = "SELECT
+		$from_date AS `Date`,
+		count( * ) AS `Images`,
+		sum( moderation_status = 'geograph' ) AS `Geographs`,
+		sum( points = 'tpoint' ) AS `TPoints`,
+		sum( ftf =1 ) AS `First Points`,
+		sum( ftf between 1 and 4 ) AS `AllPoints`,
+		sum( ftf >0 ) AS `Personal Points`,
+		count( * ) / count( DISTINCT grid_reference ) AS `Depth`,
+		count( DISTINCT grid_reference ) AS `Different Gridsquares`
+		$columns_sql
+		FROM `gridimage_search` $where_sql
+		GROUP BY $group_date" );
+	}
+
+header("X-sql-debug: ".preg_replace('/\s+/',' ',$sql));
 
 	if (!isset($_GET['output']) || $_GET['output'] != 'csv')
 	{
@@ -138,6 +182,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$smarty->assign_by_ref('table', $table);
 
+	$smarty->assign('ri', $ri);
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
 	$smarty->assign_by_ref('references',$CONF['references_all']);
