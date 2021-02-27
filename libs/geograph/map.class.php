@@ -2279,19 +2279,12 @@ split_timer('map'); //starts the timer
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		$where_crit = '';
 		$columns = '';
+
+		//this is when drawing mosaics, so need the actual details of the specific images (for tooltip etc)
 		if ($isimgmap) {
-			if (!empty($this->type_or_user)) {
-				if ($this->type_or_user > 0) {
-					//todo, should now convert this to use user_gridsquare (as it has a 'first' column)
-					$where_crit = " and user_id = {$this->type_or_user}";
-					$columns = ',0 as imagecount';
-				} elseif ($this->type_or_user == -6) {
-					//todo, should perhaps convert this to use has_recent (at least as a filter)
-					$where_crit = " and imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))";
-					$columns = ',0 as imagecount';
-				} 
-			}
+
 			$table = $CONF['db_tempdb'].".gi_grid$counter"; $counter++;
+			$gi_join = "LEFT JOIN $table USING (x,y) LEFT JOIN gridimage_search gi USING (gridimage_id)"; //the $table will have a 'gridimage_id' column!
 			
 			if ($this->type_or_user == -20) {
 				//TODO - doesnt cope with multiple assignments for a given hectad!
@@ -2302,31 +2295,29 @@ split_timer('map'); //starts the timer
 					WHERE CONTAINS( GeomFromText($rectangle),	point_xy)";
 				$db->Execute($sql);
 
+				//add the 'first' as a fallback, for when there ISNT an assignment
 				$sql="INSERT INTO $table 
-					SELECT gridimage_id,x,y
-					FROM gridimage_search WHERE 
-					CONTAINS( GeomFromText($rectangle),	point_xy)
-					AND ftf <= 1
-					ORDER BY moderation_status+0 DESC,seq_no";
+					SELECT first as gridimage_id,x,y
+					FROM gridsquare WHERE first > 0 AND
+					CONTAINS( GeomFromText($rectangle),	point_xy)";
 				$db->Execute($sql);
 					
 				$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
 				$db->Execute($sql);
 				
-			} elseif (empty($where_crit)) {
-				//todo, we can now use gridsquare.first to pick the image, but its not very efficient as it uses gridsquare twice!
-				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-					SELECT first as gridimage_id,x,y FROM gridsquare WHERE 
-					CONTAINS( GeomFromText($rectangle),	point_xy)";
-				$db->Execute($sql);
-				
-			} else {
+			} elseif ($this->type_or_user == -6) {
+				//todo, should perhaps convert this to use has_recent (at least as a filter)
+				$where_crit = " and imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))";
+				$columns = ',0 as imagecount';
+
+				//first find all images matching filter...
 				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 					SELECT gridimage_id,grid_reference,x,y $columns FROM gridimage_search WHERE 
 					CONTAINS( GeomFromText($rectangle),	point_xy) $where_crit
 					ORDER BY moderation_status+0 DESC,seq_no";
 				$db->Execute($sql);
 			
+				//then add counts...
 				if (!empty($this->type_or_user) && ($this->type_or_user > 0 || $this->type_or_user == -6)) {
 					$table2 = $table."tmp2";
 					$sql="CREATE TEMPORARY TABLE $table2 ENGINE HEAP 
@@ -2340,21 +2331,34 @@ split_timer('map'); //starts the timer
 					$columns = ", $table.imagecount";
 				}
 
+				//then remove all the duplicates
 				$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
 				$db->Execute($sql);
+
+			} elseif ($this->type_or_user > 0) {
+				$table = "user_gridsquare";
+				$gi_join = "LEFT JOIN $table ON ($table.grid_reference = gs.grid_reference AND $table.user_id = {$this->type_or_user}) ".
+					"LEFT JOIN gridimage_search gi on (gi.gridimage_id = $table.first)";
+
+				$columns = ",$table.imagecount as imagecount";
+
+			} else {
+				//we can now use gridsquare.first to pick the image!
+
+				$gi_join = "LEFT JOIN gridimage_search gi on (gi.gridimage_id = first)";
 			}
 			
-			$sql="SELECT gs.* $columns,gi.gridimage_id,gi.realname AS credit_realname,IF(gi.realname!='',gi.realname,user.realname) AS realname,title 
+			$sql="SELECT gs.* $columns,gi.gridimage_id,gi.credit_realname,gi.realname,gi.title 
 				FROM gridsquare gs
-				INNER JOIN $table USING (x,y)
-				INNER JOIN gridimage gi USING (gridimage_id)
-				INNER JOIN user ON(gi.user_id = user.user_id)
+				$gi_join
 				WHERE 
 				CONTAINS( GeomFromText($rectangle),	gs.point_xy)
 				AND percent_land<>0 
 				GROUP BY gs.grid_reference ORDER BY y,x";
 
+		//at this scale (myriad) only need counts, as just plotting charactor per square
 		} elseif ($this->pixels_per_km == 4) {
+
 			if (!empty($this->type_or_user)) {
 				if ($this->type_or_user > 0) {
 					$sql="select gs.x,gs.y,ug.imagecount,ug.has_geographs,gs.reference_index,
@@ -2394,6 +2398,8 @@ split_timer('map'); //starts the timer
 					CONTAINS( GeomFromText($rectangle),	point_xy)
 					and percent_land<>0";
 			}
+
+		//otherwise need the detailed counts to for the 'hectad' checksheet.
 		} elseif ($this->type_or_user == -13) {
 			$sql="select gs.* $columns,
 				max(ftf) as max_ftf, sum(moderation_status='pending') as pending,
