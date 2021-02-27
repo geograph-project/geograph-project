@@ -52,6 +52,7 @@ class RebuildAGridPrefix extends EventHandler
 		$this->Execute("CREATE TEMPORARY TABLE gridprefix_tmp
 			SELECT SUBSTRING(grid_reference,1,3 - reference_index) AS prefix,
 			SUM(imagecount) AS imagecount,
+			SUM(has_geographs>0) AS geosquares,
 			MAX(last_timestamp) as last_timestamp
 		        FROM gridsquare WHERE imagecount > 0 GROUP BY prefix ORDER BY NULL");
 
@@ -59,6 +60,7 @@ class RebuildAGridPrefix extends EventHandler
 
 		$this->Execute("UPDATE gridprefix INNER JOIN gridprefix_tmp USING (prefix)
 			SET gridprefix.imagecount = gridprefix_tmp.imagecount
+			, gridprefix.geosquares = gridprefix_tmp.geosquares
 			, gridprefix.last_timestamp = gridprefix_tmp.last_timestamp");
 
 		##################################################

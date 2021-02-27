@@ -2541,3 +2541,9 @@ update image_report_form set status = 'fixed' where notes like '%okurl%';
 
 #################################################
 
+
+
+alter table gridprefix add last_timestamp datetime not null;
+alter table gridprefix add imagecount int(10) unsigned DEFAULT NULL;
+alter table gridprefix add geosquares mediumint unsigned DEFAULT NULL;
+
