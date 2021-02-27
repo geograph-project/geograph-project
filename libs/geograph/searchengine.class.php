@@ -326,7 +326,7 @@ $sql_order
 LIMIT $page,$pgsize
 END;
 		if (!empty($_GET['debug'])) {
-			print "<BR><BR>$sql";
+			print "<BR>".__LINE__."<BR>$sql";
 			if ($_GET['debug'] > 5)
 				exit;
 		}
@@ -737,7 +737,7 @@ END;
 
 		$sql_from = str_replace('gridimage_query using (gridimage_id)','gridimage_query on (gi.gridimage_id = gridimage_query.gridimage_id)',$sql_from);
 
-		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly || preg_match('/^WHERE topic_id = (\d+)\s*$/',$sql_where,$m)) {
+		if (($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly || preg_match('/^WHERE topic_id = (\d+)\s*$/',$sql_where,$m)) && !preg_match('/comment !=/',$sql_where)) {
 			$resultCount = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
 			if ($resultCount) {
 				$this->resultCount = $resultCount;
@@ -779,13 +779,10 @@ END;
 			} else {
 				$this->numberOfPages = ceil($this->resultCount/$pgsize);
 			}
-		}
-		if ($this->countOnly
-			|| ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount)
-			|| ( ($this->numberOfPages) && ($pg > $this->numberOfPages) )
-			) {
 
-			return 0;
+			//if no results, from the 'count', then can abort without making the 'real' query
+			if ($this->countOnly || !$this->resultCount || $pg > $this->numberOfPages)
+				return 0;
 		}
 
 
@@ -803,7 +800,7 @@ $sql_order
 LIMIT $page,$pgsize
 END;
 		if (!empty($_GET['debug'])) {
-			print "<BR><BR>$sql";
+			print "<BR>".__LINE__."<BR>$sql";
                         if ($_GET['debug'] > 5)
                                 exit;
                 }
@@ -821,8 +818,12 @@ END;
 		$querytime_after = ((float)$usec + (float)$sec);
 		
 		$this->querytime =  $querytime_after - $querytime_before;
-		
-		if ($pg == 1 && !$CONF['search_count_first_page']) {
+
+		if (preg_match('/comment !=/',$sql_where)) {
+			$this->resultCount = $pgsize;
+			$this->numberOfPages = $pg+1;
+			$this->pageOneOnly = 1;
+		} elseif ($pg == 1 && !$CONF['search_count_first_page']) {
 			$count = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
 			if ($count) {
 				$this->resultCount = $count;
