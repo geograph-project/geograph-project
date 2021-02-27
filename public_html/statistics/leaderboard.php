@@ -57,8 +57,8 @@ if (strlen($myriad) == 2) {
 $minimum = (isset($_GET['minimum']) && is_numeric($_GET['minimum']))?intval($_GET['minimum']):25;
 $maximum = (isset($_GET['maximum']) && is_numeric($_GET['maximum']))?intval($_GET['maximum']):0;
 
-
-$filtered = ($when || $ri || $myriad);
+//we dont treat 'when' as as filtered now, as have user_date_stat, based on user_stat
+$filtered = ($ri || $myriad);
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min($filtered?250:1000,intval($_GET['limit'])):250;
 
@@ -91,7 +91,13 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$db = GeographDatabaseConnection(true);
 
-	$sql_table = "gridimage_search i";
+	if ($filtered) {
+		$sql_table = "gridimage_search i";
+	} elseif ($when && strlen($when)<=7) {
+		$sql_table = "user_date_stat i";
+	} else {
+		$sql_table = "user_stat i";
+	}
 	$sql_where = "1";
 	$sql_orderby = '';
 	$sql_column = "count(*)";
@@ -101,7 +107,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_column = "count(distinct grid_reference)";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "squares";
 		}
 		$heading = "Squares<br/>Photographed";
@@ -112,7 +117,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "count(distinct grid_reference)";
 			$sql_where = "i.moderation_status='geograph'";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "geosquares";
 		}
 		$heading = "Squares<br/>Geographed";
@@ -122,7 +126,6 @@ if (!$smarty->is_cached($template, $cacheid))
                 if ($filtered) {
                         $sql_where = "i.ftf>0 and i.moderation_status='geograph'";
                 } else {
-                        $sql_table = "user_stat i";
                         $sql_column = "geosquares"; //if NOT filtered, personal happens to be the same as geosquares.
                 }
                 $heading = "Personal<br/>Points";
@@ -133,7 +136,6 @@ if (!$smarty->is_cached($template, $cacheid))
                         $sql_column = "count(distinct grid_reference)-sum(i.ftf>0)";
                         $sql_where = "i.moderation_status='geograph'";
                 } else {
-                        $sql_table = "user_stat i";
                         $sql_column = "0"; //will always be zero!
                 }
                 $heading = "Revisited<br/>Squares";
@@ -143,7 +145,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_where = "i.points='tpoint'";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "tpoints";
 		}
 		$heading = "TPoints";
@@ -153,7 +154,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_where = "i.points='tpoint' and ftf!=1";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "round(tpoints*1.0-points)";
 		}
 		$heading = "TPoints-Firsts";
@@ -163,7 +163,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_where = "i.moderation_status='geograph'";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "geographs";
 		}
 		$heading = "Geograph Images";
@@ -178,7 +177,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_where = "i.moderation_status='accepted'";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "images-geographs";
 		}
 		$heading = "Supplemental Images";
@@ -189,7 +187,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, count(*)";
 			$sql_where = "1";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "points, images";
 		}
 		$sql_orderby = ',points desc';
@@ -200,7 +197,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_column = "sum((i.moderation_status = 'geograph') + (ftf=1) + 1)";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "images, (geographs+points+images)";
 		}
 		$heading = "G-Points";
@@ -211,7 +207,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "count(*) as images, count(*)/(sum(ftf=1)+1)";
 			$sql_having_having = "having count(*) > $minimum";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "images, images/(points+1)";
 			$sql_having_having = "having images > $minimum";
 		}
@@ -229,7 +224,6 @@ if (!$smarty->is_cached($template, $cacheid))
 				$desc = "the depth score, and having submitted over $minimum images";
 			}
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "images, depth";
 			if ($maximum) {
 				$sql_having_having = "having images between $minimum and $maximum";
@@ -246,7 +240,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "round(pow(count(*),2)/count(distinct grid_reference))";
 			$sql_having_having = "having count(*) > $minimum";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "images, round(pow(images,2)/squares";
 			$sql_having_having = "having images > $minimum";
 		}
@@ -257,7 +250,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_column = "count(distinct substring(grid_reference,1,3 - reference_index))";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "myriads";
 		}
 		$heading = "Myriads";
@@ -267,7 +259,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_column = "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "images/hectads";
 		}
 		$heading = "AntiSpread Score";
@@ -278,7 +269,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)";
 			$sql_having_having = "having count(*) > $minimum";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "images, hectads/images";
 			$sql_having_having = "having images > $minimum";
 		}
@@ -289,7 +279,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "hectads";
 		}
 		$heading = "Hectads";
@@ -299,7 +288,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_column = "count(distinct imagetaken)";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "days";
 		}
 		$heading = "Days";
@@ -349,7 +337,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			die("invalid request");
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "content";
 			$sql_where = "content > 0";
 		}
@@ -360,7 +347,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_where = "i.ftf=2 and i.moderation_status='geograph'";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "points,seconds";
 		}
 		$heading = "Second Visit<br/>Points";
@@ -370,7 +356,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_where = "i.ftf=3 and i.moderation_status='geograph'";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "thirds";
 		}
 		$heading = "Third Visit<br/>Points";
@@ -380,7 +365,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_where = "i.ftf=4 and i.moderation_status='geograph'";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "images,fourths";
 		}
 		$heading = "Fourth Visit<br/>Points";
@@ -390,7 +374,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_where = "i.ftf between 1 and 4 and i.moderation_status='geograph'";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "images,(points+seconds+thirds+fourths)";
 		}
 		$heading = "Geograph<br/>Points";
@@ -400,7 +383,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($filtered) {
 			$sql_where = "i.ftf=1 and i.moderation_status='geograph'";
 		} else {
-			$sql_table = "user_stat i";
 			$sql_column = "depth,points";
 		}
 		$heading = "First Geograph<br/>Points";
@@ -409,7 +391,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 
 	if ($when) {
-		if ($date == 'both') {
+		if ($sql_table == "user_date_stat i") {
+			if (strlen($when) == 4) {
+				$sql_where .= " and year = '$when' and type=".$db->Quote(($date == 'taken')?'imagetaken':'submitted');
+			} else {
+				$year = substr($when,0,4); //include the year just because its indexed
+				$sql_where .= " and year = '$year' and month = '$when' and type=".$db->Quote(($date == 'taken')?'imagetaken':'submitted');
+			}
+			$title = ($date == 'taken')?'taken':'submitted';
+			$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
+		} elseif ($date == 'both') {
 			$sql_where .= " and imagetaken LIKE '$when%' and submitted LIKE '$when%'";
 			$desc .= ", <b>for images taken and submitted during ".getFormattedDate($when)."</b>";
 		} else {
@@ -426,7 +417,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$desc .= ", <b>for users signed up during quarter $quart of $year</b>";
 	}
 	if ($myriad) {
-		$sql_where .= " and grid_reference LIKE '{$myriad}____'";
+		$sql_where .= " and grid_reference LIKE '{$myriad}____'"; //todo, gridimage search no longer uses this index. convert to spatial index!
 		$desc .= " in Myriad $myriad";
 	}
 	if ($ri) {
@@ -448,7 +439,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$sql_where .= " and $rank_column >= $start_rank";
 
-	} elseif (strpos($sql_table,'user_stat i') !== 0) {
+	} elseif (strpos($sql_table,'_stat i') === FALSE) {
 		$sql_column = "max(gridimage_id) as last,$sql_column";
 	}
 
