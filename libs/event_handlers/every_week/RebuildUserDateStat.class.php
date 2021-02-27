@@ -32,32 +32,12 @@
 
 require_once("geograph/eventhandler.class.php");
 
-###################################
-        declare(ticks = 1);
-        $killed = false;
-
-        pcntl_signal(SIGINT, "signal_handler");
-
-        function signal_handler($signal) {
-                global $killed;
-                if ($signal == SIGINT) {
-                        print "Caught SIGINT\n";
-                        $GLOBALS['killed']=1; // we dont exit here, rather let the script kill the script at the right moment, using $killed
-                }
-        }
-###################################
-
-
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
 class RebuildUserDateStat extends EventHandler
 {
 	function processEvent(&$event)
 	{
 		//perform actions
-
-global $killed; 
-
-$debug = posix_isatty(STDOUT);
 
 		$db=&$this->_getDB();
 
@@ -66,8 +46,6 @@ $debug = posix_isatty(STDOUT);
                         $this->_output(2, "Failed to get Lock");
                          return false;
                 }
-
-
 
 		$db->Execute("DROP TABLE IF EXISTS user_date_stat_tmp");
 
@@ -82,8 +60,6 @@ $debug = posix_isatty(STDOUT);
 
 $weeks = rand(1,5); if ($year == date('Y')) $weeks=0;
 if ($has_table && $db->getOne("select type from user_date_stat where type='$column' and year = '$year' and updated > date_sub(now(),interval $weeks week)")) {
-	if ($debug)
-		print "skipping $column,$year\n"; 
 	continue;
 }
 
@@ -126,18 +102,6 @@ if ($has_table && $db->getOne("select type from user_date_stat where type='$colu
 				WHERE ".implode(' AND ',$where)."
 				GROUP BY user_id,substring($column,1,4),substring($column,1,7)
 				with rollup having year is not null"); //because we are running a seperate query for each year, the rows with NULL year dont work. (they yearly anyway!)
-
-				$rows = $db->Affected_Rows();
-
-if ($debug)
-	print "$column,$year: Affected Rows: $rows\n";
-
-if (!empty($killed)) {
-		$this->Execute("REPLACE INTO user_date_stat SELECT * FROM user_date_stat_tmp");
-
-		$rows = $db->Affected_Rows();
-                die("killed and saved $rows\n");
-}
 
 				$c++;
 			}

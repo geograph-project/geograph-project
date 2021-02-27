@@ -32,30 +32,12 @@
 
 require_once("geograph/eventhandler.class.php");
 
-###################################
-        declare(ticks = 1);
-        $killed = false;
-
-        pcntl_signal(SIGINT, "signal_handler");
-
-        function signal_handler($signal) {
-                global $killed;
-                if ($signal == SIGINT) {
-                        print "Caught SIGINT\n";
-                        $GLOBALS['killed']=1; // we dont exit here, rather let the script kill the script at the right moment, using $killed
-                }
-        }
-###################################
-
-
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
 class RebuildDateStat extends EventHandler
 {
 	function processEvent(&$event)
 	{
 		//perform actions
-
-global $killed; 
 
 		$db=&$this->_getDB();
 
@@ -64,8 +46,6 @@ global $killed;
                         $this->_output(2, "Failed to get Lock");
                          return false;
                 }
-
-
 
 		$db->Execute("DROP TABLE IF EXISTS date_stat_tmp");
 
@@ -79,14 +59,10 @@ global $killed;
 			foreach(range($start,date('Y')) as $year) {
 				foreach (range(0,2) as $ri) {
 
-
 $weeks = rand(1,5); if ($year == date('Y')) $weeks=0;
 if ($has_table && $db->getOne("select type from date_stat where type='$column' and reference_index = $ri and year = '$year' and updated > date_sub(now(),interval $weeks week)")) {
-	print "skipping $column,$ri,$year\n";
 	continue;
 }
-
-
 
 					$where = array();
 					//$where[] = "$column LIKE '$year-%'"; //mariadb doesnt use index for LIKE on dates
@@ -121,16 +97,6 @@ if ($has_table && $db->getOne("select type from date_stat where type='$column' a
 				with rollup having year is not null"); //because we are running a seperate query for each year, the rows with NULL year dont work. (they yearly anyway!)
 
 					$rows = $db->Affected_Rows();
-
-print "$column,$ri,$year: Affected Rows: $rows\n";
-
-
-if (!empty($killed)) {
-		$this->Execute("REPLACE INTO date_stat SELECT * FROM date_stat_tmp");
-
-		$rows = $db->Affected_Rows();
-                die("killed and saved $rows\n");
-}
 
 					if (!$ri && !$rows)
 						break; //if no rows on ri=0, no point doing 1,2!
