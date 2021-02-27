@@ -51,14 +51,15 @@ class RebuildImageTakenStat extends EventHandler
 		$db->Execute("CREATE TABLE imagetaken_stat_tmp (
 			imagetaken date not null,
 			gridimage_id int unsigned not null,
-			images int unsigned not null)");
+			images int unsigned not null,
+			geographs int unsigned not null)");
 
 		$count = $db->getOne("SELECT COUNT(*) FROM gridimage_search");
 
 		for($start=1;$start<$count;$start+=100000) {
 			$crit = sprintf("gridimage_id BETWEEN %d AND %d",$start,$start+99999);
 			$this->Execute("INSERT INTO imagetaken_stat_tmp
-				SELECT imagetaken,gridimage_id,count(*) AS images
+				SELECT imagetaken,gridimage_id,count(*) AS images,sum(moderation_status='geograph') as geographs
 				FROM gridimage_search
 				WHERE $crit
 				GROUP BY imagetaken
@@ -69,14 +70,11 @@ class RebuildImageTakenStat extends EventHandler
 		if ($db->getOne("SHOW TABLES LIKE 'imagetaken_stat'")) {
 			$db->Execute("TRUNCATE imagetaken_stat");
 		} else {
-			$db->Execute("CREATE TABLE imagetaken_stat (
-                        imagetaken date not null primary key,
-                        gridimage_id int unsigned not null,
-                        images int unsigned not null)");
+			$db->Execute("CREATE TABLE imagetaken_stat LIKE imagetaken_stat_tmp");
 		}
 
 		$this->Execute("INSERT INTO imagetaken_stat
-				SELECT imagetaken,gridimage_id,SUM(images) AS images
+				SELECT imagetaken,gridimage_id,SUM(images) AS images,SUM(geographs) AS geographs
 				FROM imagetaken_stat_tmp
 				GROUP BY imagetaken
 				ORDER BY NULL");
