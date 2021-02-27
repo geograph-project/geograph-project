@@ -58,19 +58,17 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	
 	foreach ($myriads as $i => $myriad) {
-		$str = $myriad['tenk_square'].'%';
+		$str = $myriad['tenk_square'].'__';
 		
-		$users = $db->CacheGetAll(3600,"SELECT gi.user_id,u.realname,
-		COUNT(*) AS count,
-		UNIX_TIMESTAMP(MIN(submitted)) as first_date,
-		UNIX_TIMESTAMP(MAX(submitted)) as last_date
+		$users = $db->CacheGetAll(3600,"SELECT user_id,u.realname,
+		SUM(firsts) AS count,
+		UNIX_TIMESTAMP(MIN(first_first_submitted)) as first_date,
+		UNIX_TIMESTAMP(MAX(last_first_submitted)) as last_date
 		FROM 
-			gridimage_search gi
+			hectad_user_stat
 			INNER JOIN user u USING (user_id)
 		WHERE 
-			grid_reference LIKE '$str' AND
-			moderation_status = 'geograph' AND
-			ftf = 1
+			hectad LIKE '$str' AND firsts > 0
 		GROUP BY user_id 
 		ORDER BY last_date DESC");
 		
