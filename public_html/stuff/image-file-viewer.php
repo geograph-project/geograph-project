@@ -26,13 +26,14 @@ $filesystem = new FileSystem();
 
 ###################################
 
-if (!empty($_POST['fixed'])) {
+if (isset($_POST['fixed'])) {
 	$db = GeographDatabaseConnection(false);
 
 	$r = $db->getRow("SELECT * FROM image_report_form WHERE gridimage_id = {$id} and status != 'fixed' ORDER BY report_id DESC");
 
 	if (!empty($_POST['report_id']) && $_POST['report_id'] == $r['report_id']) {
-		$db->Execute("UPDATE image_report_form SET status = 'fixed' WHERE report_id = {$r['report_id']}");
+		$status = $_POST['fixed']?'fixed':'deleted';
+		$db->Execute("UPDATE image_report_form SET status = '$status' WHERE status NOT in ('fixed','deleted') and gridimage_id = $id"); //need to close all 'old' reports too
 		print "Updates = ".$db->Affected_Rows()."\n";
 	}
 }
@@ -181,6 +182,8 @@ if ($image->original_width>10) {
 //$style = " style=\"max-width:640px;max-height:640px\"";
 //$style = " style=\"max-width:320px;max-height:320px\"";
 $style = " style=\"zoom:10%\""; $stylefix = "@10%";
+
+print "<a href=\"/editimage.php?id={$image->gridimage_id}\">Edit Page</a><br>";
 
 print "<form method=post>";
 print "<table border=1 cellpadding=4 cellspacing=0>";
@@ -340,29 +343,34 @@ if ($image->gridimage_id == 197577) {
 }
 
 
-if (!empty($db)) {
-	$r = $db->getRow("SELECT * FROM image_report_form WHERE gridimage_id = {$image->gridimage_id} ORDER BY report_id DESC");
+if (!empty($db) && ($r = $db->getRow("SELECT * FROM image_report_form WHERE gridimage_id = {$image->gridimage_id} ORDER BY report_id DESC"))) {
+	print "<input type=hidden name=report_id value={$r['report_id']}>";
 
 	if ($r['status'] == 'fixed') {
 		print "<p>This has been previouslly fixed, if still an issue should submit a new report at: <button onclick=reportForm()>Report Missing/Currupted</button>";
 	} elseif ($r['status'] == 'new') {
-		print "<input type=hidden name=report_id value={$r['report_id']}>";
 		print "<p>There is already an existing report for this case, if <b>all</b> images above appear, then <button type=submit name=fixed value=1>Mark as Fixed</button>";
 	} elseif ($r['status'] == 'escalated') {
-		print "<input type=hidden name=report_id value={$r['report_id']}>";
 		print "<p>There is already an escalated report for this case, if absolutely sure <b>all</b> images above appear, then <button type=submit name=fixed value=1>Mark as Fixed</button>";
 	}
+	if ($USER->hasPerm("admin"))
+		print " <button type=submit name=fixed value=0>Delete Report</button>";
 }
 
 ?>
 
 </form>
 
-<p>In theory, all there should be visible images in all the above boxes, unless <i>explicitly</i> marked 'n/a'</p>
-<p>The 'stamped' column should of course have some text overlaid (uses a big font, so it can be seen in small thumbnail)</p>
+<ul>
+<li>In theory, all there should be visible images in all the above boxes, unless <i>explicitly</i> marked 'n/a'</li>
+<li>The 'stamped' <i>column</i> should of course have some text overlaid (uses a big font, so it can be seen in small thumbnail)</li>
+<li>All images in a given <i>row</i> should of course show the same dimensions</li>
+<li>Of course as well as checking all images are visible, should check they 'complete' (eg no gray/black bars), and the same in all images (including the same orientation!)
+</ul>
+
 <p>Right click image and 'open in new tab' to view full-size</p>
 
-<p>Note, that the 'Delete THumbnail', should really only be used if all three columns missing an image, if only some mising, please use the report function for me to check!</p>
+<p>Note, that the 'Delete Thumbnail', should really only be used if all three columns missing an image, if only some mising, please use the report function for me to check!</p>
 
 <script>
 function reportForm() {

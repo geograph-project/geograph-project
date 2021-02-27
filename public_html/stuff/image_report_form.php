@@ -37,6 +37,8 @@ $smarty->display("_std_begin.tpl");
 
 print "<h2>Geograph Image Issue Report Form</h2>";
 
+##############################################################
+
 if (!empty($_POST)) {
 
 /*
@@ -70,6 +72,7 @@ function check_path($server,$path, $row) {
         print "$url\n";
 }
 
+##############################################################
 
 	if (!empty($_POST['bulk'])) {
 		$lines = explode("\n",str_replace("\r",'',$_POST['bulk']));
@@ -102,6 +105,8 @@ print_r($updates);
 		print "Count = $count;";
 print "</pre>";
 
+##############################################################
+
 	} elseif (!empty($_POST['image_url'])) {
 		$updates["image_url"] = $_POST['image_url'];
 
@@ -127,7 +132,7 @@ print "</pre>";
 
                 print_r($updates);
 
-		if (!empty($updates["gridimage_id"])) {
+		if (false && !empty($updates["gridimage_id"])) {
 			$image = new Gridimage($updates['gridimage_id']);
 			$path = $image->_getFullpath(true);
 		        print "$path\n";
@@ -159,11 +164,16 @@ print "</pre>";
 		}
 		$con = ob_get_clean();
 
-                debug_message('[Geograph] Failed Image Report '.date('r'),$con);
+		if ($email = $db->getOne("SELECT email FROM user WHERE user_id = 12192 and rights LIKE '%basic%'")) {
+	                mail_wrapper($email,'[Geograph] Failed Image Report '.date('r'),$con);
+		} else {
+	                debug_message('[Geograph] Failed Image Report '.date('r'),$con);
+		}
 
 		////////////////////////////////////////////////////////
-
 	}
+
+##############################################################
 
 } elseif (!empty($_GET['results'])) {
 	$db = GeographDatabaseConnection(true);
@@ -205,19 +215,25 @@ print "</pre>";
 
 
 	print "If dont see all thumbnails above, press F5 to try reloading<hr>";
+
+##############################################################
+
 } elseif (!empty($_GET['list'])) {
 	$db = GeographDatabaseConnection(false);
 
-	if ($r = $db->getAll("SELECT * FROM image_report_form WHERE status NOT in ('fixed','deleted') AND gridimage_id > 0 ORDER BY report_id DESC")) {
+	$status = ($USER->hasPerm("admin") && empty($_GET['new']))?'escalated':'new';
+
+	if ($r = $db->getAll("SELECT * FROM image_report_form WHERE status = '$status' AND gridimage_id > 0 ORDER BY report_id DESC")) {
 		print "<ul>";
 		foreach ($r as $row) {
 			print "<li>{$row['gridimage_id']}, {$row['status']}, {$row['created']} <a href=/stuff/image-file-viewer.php?id={$row['gridimage_id']}>View Images</a> - {$row['affected']}</li>";
 		}
 		print "</ul>";
-		exit;
+	} else {
+		print "none";
 	}
+	exit;
 }
-
 
 ##############################################################
 
