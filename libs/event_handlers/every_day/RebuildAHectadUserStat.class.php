@@ -61,7 +61,8 @@ class RebuildAHectadUserStat extends EventHandler //A in name to ensure it runs 
 				  `last_submitted` datetime default NULL,
 				  `first_first_submitted` datetime default NULL,
 				  `last_first_submitted` datetime default NULL,
-				  PRIMARY KEY  (`hectad`,`user_id`)
+				  PRIMARY KEY  (`hectad`,`user_id`),
+				  INDEX(user_id)
 				) ENGINE=MyISAM");
 		}
 		
@@ -79,6 +80,7 @@ class RebuildAHectadUserStat extends EventHandler //A in name to ensure it runs 
 			//give the server a breather...
 			//sleep(10);
 		
+			//TODO, could convert to user_gridsquare?
 			$db->Execute("INSERT INTO hectad_user_stat_tmp
 			SELECT 
 				reference_index,
