@@ -124,14 +124,27 @@ if (!$smarty->is_cached($template, $cacheid))
 			if ($u)
 				$where .= " AND user_id = $u";
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-			$images=$db->GetAssoc($sql= "SELECT
-			imagetaken,
-			gridimage_id, title, user_id, realname, grid_reference,
-			COUNT(*) AS images,
-			SUM(moderation_status = 'accepted') AS `supps`
-			FROM `gridimage_search`
-			WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where
-			GROUP BY imagetaken" );
+
+			if (empty($where)) { //todo,could perhaps use some sort of view for $u ??
+				$images=$db->GetAssoc($sql= "SELECT
+                                s.imagetaken,
+				gridimage_id, title, user_id, realname, grid_reference,
+				images, 
+				images-geographs as supps
+				FROM imagetaken_stat s
+				INNER JOIN gridimage_search USING (gridimage_id)
+				WHERE s.imagetaken LIKE '$like%' AND s.imagetaken not like '%-00%'
+				ORDER BY imagetaken");
+			} else {
+				$images=$db->GetAssoc($sql= "SELECT
+				imagetaken,
+				gridimage_id, title, user_id, realname, grid_reference,
+				COUNT(*) AS images,
+				SUM(moderation_status = 'accepted') AS `supps`
+				FROM `gridimage_search`
+				WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where
+				GROUP BY imagetaken" );
+			}
 			if (!empty($_GET['debug'])) {
 				print "<pre>$sql</pre>";
 			}
@@ -201,13 +214,24 @@ if (!$smarty->is_cached($template, $cacheid))
 			if ($u)
 				$where .= " AND user_id = $u";
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-			$images=&$db->GetAssoc("SELECT 
-			imagetaken, 
-			COUNT(*) AS images,
-			SUM(moderation_status = 'accepted') AS `supps`
-			FROM `gridimage_search`
-			WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where
-			GROUP BY imagetaken" );
+
+			if (empty($where)) { //todo,could perhaps use some sort of view for $u ??
+				$images=$db->GetAssoc($sql= "SELECT
+                                s.imagetaken,
+				images, 
+				images-geographs as supps
+				FROM imagetaken_stat s
+				WHERE s.imagetaken LIKE '$like%' AND s.imagetaken not like '%-00%'
+				ORDER BY imagetaken");
+			} else {
+				$images=&$db->GetAssoc("SELECT 
+				imagetaken, 
+				COUNT(*) AS images,
+				SUM(moderation_status = 'accepted') AS `supps`
+				FROM `gridimage_search`
+				WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where
+				GROUP BY imagetaken" );
+			}
 
 			foreach ($images as $day=>$arr) {
 				if ($maximages < $arr['images'])
