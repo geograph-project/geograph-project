@@ -25,21 +25,25 @@ if (!empty($param['tables'])) {
 }
 
 foreach ($tables as $row) {
-	print sprintf('%40s',"$color{$row['table_name']}$white");
 
 	$status = $db->getRow("SHOW TABLE STATUS LIKE '{$row['table_name']}'");
-	print "  Update = {$status['Update_time']}";
-
+	$hours = '?';
         if (!empty($status['Update_time']) ) { // && strtotime($status['Update_time']) > (time() - 60*60*12) && $status['Comment'] != 're$
-
                         $seconds = time() - strtotime($status['Update_time']);
                         $hours = ceil($seconds/60/60);
                         $hours++; //just to be safe
-
-		print " ... (interval $hours hour)";
 	}
 
-	print "\n";
+if ($hours > 26)
+	$status['Update_time'] = "$color{$status['Update_time']}$white";
+
+	printf("%-40s  Updated:%19s  (%3s hours)  %12s   %s\n",
+		"$color{$row['table_name']}$white", 
+		$status['Update_time'],
+		$hours,
+		number_format($status['Rows'],0), 
+		$status['Engine']
+		);
 }
 
 $sql = "SELECT i.table_name,i.column_name
@@ -48,7 +52,7 @@ $sql = "SELECT i.table_name,i.column_name
  left join material_view_column c using (table_name,column_name)
  where table_schema = DATABASE() and c.column_name is null";
 
-dump_table($sql,"undefined columns...");
+dump_table($sql,"\n\nundefined columns...");
 
 
 function dump_table($sql,$title = '') {
