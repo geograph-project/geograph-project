@@ -38,7 +38,7 @@ $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 //insert a FAKE log (just so we can plot on a graph ;)
-$db_write->Execute("INSERT INTO event_log SET
+$db->Execute("INSERT INTO event_log SET
         event_id = 0,
         logtime = NOW(),
         verbosity = 'trace',
