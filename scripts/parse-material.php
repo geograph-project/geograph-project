@@ -141,7 +141,7 @@ foreach ($bits as $idx => $bit) {
 		$updates['definition'] = trim($bit);
 		$updates['column_name'] = trim(preg_replace('/^\s*\`?\w+\`?\./','',trim($bit)),' `');
 	}
-	if (strpos($group,$updates['definition']) !== FALSE)
+	if (strpos($group,$updates['definition']) !== FALSE || preg_match('/\b'.$updates['column_name'].'\b/',$group))
 		$updates['grouped'] = 1; //basic version for now!
 
 	//todo $updates['indexed'] =
