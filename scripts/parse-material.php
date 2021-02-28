@@ -144,6 +144,9 @@ foreach ($bits as $idx => $bit) {
 	if (strpos($group,$updates['definition']) !== FALSE || preg_match('/\b'.$updates['column_name'].'\b/',$group))
 		$updates['grouped'] = 1; //basic version for now!
 
+	if ($updates['column_name'] == 'hectad' && strpos($group,'(x) div 10,(y) div 10') !== FALSE)
+		$updates['grouped'] = 1; //hectad columns used a optimized x,y grouping using origin (which is same as hectad) 
+
 	//todo $updates['indexed'] =
 
 	print_r($updates);
