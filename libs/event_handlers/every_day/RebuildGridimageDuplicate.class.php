@@ -65,7 +65,7 @@ class RebuildGridimageDuplicate extends EventHandler
 
 					$this->Execute("INSERT INTO gridimage_duplicate_tmp
 					SELECT grid_reference,title,COUNT(*) AS images,COUNT(DISTINCT user_id) AS users
-					 FROM gridsquare FORCE INDEX(PRIMARY)
+					 FROM gridsquare
 						INNER JOIN gridimage_search USING (grid_reference)
 				                 WHERE last_timestamp > date_sub(now(),interval $hours hour)
 					 AND gridsquare_id BETWEEN $start and $end
