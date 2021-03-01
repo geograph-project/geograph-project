@@ -99,14 +99,16 @@ CREATE TABLE `hectad_stat` (
 
                 $status = $db->getRow("SHOW TABLE STATUS LIKE 'hectad_stat'");
 
-                if ($status['Rows'] > 100 && !empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*12) && $status['Comment'] != 'rebuild') {
+                if ($status['Rows'] > 100 && !empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*52) && $status['Comment'] != 'rebuild') {
                         $seconds = time() - strtotime($status['Update_time']);
                         $hours = ceil($seconds/60/60);
                         $hours++; //just to be safe
 
                         $prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0 and last_timestamp > date_sub(now(),interval $hours hour)");
+			$full = 0;
                 } else {
                         $prefixes = $db->GetAssoc("select prefix,origin_x,origin_y,reference_index from gridprefix where landcount > 0");
+			$full = 1;
                 }
 
 ##################################
@@ -191,14 +193,18 @@ CREATE TABLE `hectad_stat` (
 			$table = $db->getAll("SHOW TABLES LIKE 'hectad_stat_tmp'");
 			if (!empty($table)) {
 
-				//done in one operation so there is always a hectad_stat table, even if the tmp fails
-				//... well we did until it stopped working... http://bugs.mysql.com/bug.php?id=31786
-				//$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old, hectad_stat_tmp TO hectad_stat");
+				if ($full) {
+					//done in one operation so there is always a hectad_stat table, even if the tmp fails
+					//... well we did until it stopped working... http://bugs.mysql.com/bug.php?id=31786
+					//$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old, hectad_stat_tmp TO hectad_stat");
 
-				$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old");
-				$db->Execute("RENAME TABLE hectad_stat_tmp TO hectad_stat");
+					$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old");
+					$db->Execute("RENAME TABLE hectad_stat_tmp TO hectad_stat");
 
-				$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+					$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+				} else {
+					$db->Execute("REPLACE INTO hectad_stat SELECT * FROM hectad_stat_tmp");
+				}
 			}
 			$db->getOne("SELECT RELEASE_LOCK('hectad_stat')");
 
