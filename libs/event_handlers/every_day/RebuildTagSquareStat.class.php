@@ -80,7 +80,7 @@ class RebuildTagSquareStat extends EventHandler
 
 		$status = $db->getRow("SHOW TABLE STATUS LIKE 'tag_square_stat'");
 
-		if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*12) && $status['Comment'] != 'rebuild') {
+		if (!empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*52) && $status['Comment'] != 'rebuild') {
 			$seconds = time() - strtotime($status['Update_time']);
 			$hours = ceil($seconds/60/60);
 			$hours++; //just to be safe
