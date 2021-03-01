@@ -32,6 +32,7 @@ $param=array(
 	'images'=>'0', //which sitemaps to produce
 	'ri'=>'1', //grid
 	'suffix'=>'', //eg '.ie'
+	'start'=>false,
 );
 
 $HELP = <<<ENDHELP
@@ -74,21 +75,65 @@ printf("Counting images...\r");
 $images=$db->GetOne("select sum(images) from hectad_user_stat where user_id != 1695 ".($param['ri']?" and reference_index = {$param['ri']}":''));
 $sitemaps=ceil($images / $urls_per_sitemap);
 
+
 //go through each sitemap file...
 $percent=$last_percent=0;
 $count=0;
 $last_id=0;
 $stat=array();
-$datecrit = date('Y-m-d', time()-86400*3);
 $cols = '';
+$start=1;
+############################################
 
-for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
+//todo only supporting https for now! (but $enforce_https is generally set to 1 now anyway!)
+if ($param['normal'])
+	$fcheck=sprintf('%s/public_html/sitemap/root/sitemap%s-https.xml', $param['dir'], $param['suffix']);
+if ($param['images'])
+	$fcheck=sprintf('%s/public_html/sitemap/root/sitemap-%s%s-https.xml', $param['dir'], $param['secret'], $param['suffix']);
+
+if (!empty($fcheck) && file_exists($fcheck))
+	$datecrit = date('Y-m-d', filemtime($fcheck)-86400);
+else
+	$datecrit = date('Y-m-d', time()-86400*3);
+
+//special mode, to restart from last in sequence, (todo, would be to have auto-mode, eg starting from third last in $fcheck)
+if (!empty($param['start'])) {
+
+	$image=new GridImage;
+	if ($image->enforce_https != 1)
+		die("ERROR, currently can only do delta updates if entire sitemap is https\n");
+
+	$sitemap = $param['start'];
+	if ($param['normal'])
+		$filename=sprintf('%s/public_html/sitemap/root/sitemap%04d%s.xml', $param['dir'], $sitemap, $param['suffix']);
+	if ($param['images'])
+		$filename=sprintf('%s/public_html/sitemap/root/sitemap-%s%04d%s.xml', $param['dir'], $param['secret'], $sitemap, $param['suffix']);
+	$h = gzopen("$filename.gz",'r');
+	while ($h && !feof($h)) {
+		$line = fgets($h);
+		if (preg_match('/\/photo\/(\d+)/',$line,$m)) {
+			$last_id = $m[1] - 1;
+			$start = $param['start'];
+			print "From $start to $sitemaps, starting with id={$m[1]}\n";
+
+			//need to built up the stat, so the get written to index file, despite being skipped
+			for ($sitemap=1; $sitemap<$start; $sitemap++)
+				$stat[$sitemap]['https']=1;
+
+			break;
+		}
+	}
+}
+
+############################################
+
+for ($sitemap=$start; $sitemap<=$sitemaps; $sitemap++)
 {
 	//prepare output file and query
 	printf("Preparing sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps, $percent);
 
 	if ($param['normal']) {
-		$filename=sprintf('%s/public_html/sitemap/root/sitemap%04d%s.xml', $param['dir'], $sitemap, $param['suffix']);
+		$fcheck=$filename=sprintf('%s/public_html/sitemap/root/sitemap%04d%s.xml', $param['dir'], $sitemap, $param['suffix']);
 		$fh=fopen($filename, "w");
 		if (!$fh) {
 			die("unable to write $filename");
@@ -99,7 +144,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	}
 
 	if ($param['images']) {
-		$filename3=sprintf('%s/public_html/sitemap/root/sitemap-%s%04d%s.xml', $param['dir'], $param['secret'], $sitemap, $param['suffix']);
+		$fcheck=$filename3=sprintf('%s/public_html/sitemap/root/sitemap-%s%04d%s.xml', $param['dir'], $param['secret'], $sitemap, $param['suffix']);
 		$fh3=fopen($filename3, "w");
 		if (!$fh3) {
 			die("unable to write $filename3");
@@ -126,6 +171,8 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 		"where ".implode(" and ",$where)." ".
 		"order by i.gridimage_id ".
 		"limit $urls_per_sitemap");
+
+if (file_exists("$fcheck.gz")) { //dont want to abort, in rare cases the file doesnt exist!
 
 	while (!$recordSet->EOF) {
 		//store the id from the LAST row (need to do this now, because may abort running the full build)
@@ -159,6 +206,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	}
 
         $recordSet->moveFirst();
+}
 
 	//write one <url> line per result...
 	while (!$recordSet->EOF)
@@ -254,13 +302,14 @@ function indexEntry($fh, $fname, $protocol = 'http') {
 	global $mtime; //use a global, so can set it outside the function
 	static $mtimestr;
 
-        fprintf($fh, "<sitemap>");
-
 	if (empty($mtime)) {
 		$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
+		if (empty($mtime)) //if the file doesnt exist (maybe aborted?) dont write the index entry?
+			return;
                 $mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
 	}
 
+        fprintf($fh, "<sitemap>");
         fprintf($fh, "<loc>$protocol://{$param['config']}/%s</loc>", $fname);
         fprintf($fh, "<lastmod>%s</lastmod>", $mtimestr);
         fprintf($fh, "</sitemap>\n");
