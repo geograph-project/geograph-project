@@ -17,9 +17,9 @@
 35	1       * * *	/usr/bin/php /var/www/geograph/scripts/createsphinx-delta.php
 51	8-23	* * *	/usr/bin/php /var/www/geograph/scripts/update_tags.php --interval="4 hour" --execute=true
 
-21      */3     * * *	/usr/bin/php /var/www/geograph/scripts/typo-run-phrase.php --debug=1
-25      */6     * * *	/usr/bin/php /var/www/geograph/scripts/typo-run-expression.php --debug=1
-33	*/12	* * *	/usr/bin/php /var/www/geograph/scripts/typo-run-keywords.php --debug=1
+21      */3     * * *	/usr/bin/php /var/www/geograph/scripts/typo-run-phrase.php
+25      */6     * * *	/usr/bin/php /var/www/geograph/scripts/typo-run-expression.php
+33	*/12	* * *	/usr/bin/php /var/www/geograph/scripts/typo-run-keywords.php
 
 45      16      * * *	/usr/bin/php /var/www/geograph/scripts/process-tag-typos.php --action=execute
 
