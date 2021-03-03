@@ -300,7 +300,7 @@ $url .="&pointsize=45";
 		} elseif (is_numeric($size)) {
 			$path = parse_url($url, PHP_URL_PATH);
 			$stat = $filesystem->stat($_SERVER['DOCUMENT_ROOT'].$path); //use stat, rather than file_exists to SKIP running 'getimagesize optimiation'
-			$cache = $db->getOne("SELECT gridimage_id FROM gridimage_thumbsize WHERE gridimage_id = {$image->gridimage_id} and width = $size");
+			$cache = $db->getOne("SELECT gridimage_id FROM gridimage_thumbsize WHERE gridimage_id = {$image->gridimage_id} and maxw = $size");
 			//todo! (will have to find the image filename and check via FS!)
 			if (empty($stat)) {
 				if (!empty($cache)) {
@@ -308,7 +308,7 @@ $url .="&pointsize=45";
 						print "<button type=submit name=clearcache value={$m[0]}>Clear Cache</button>";
 					}
 				} else {
-					print "<button onclick=reportForm()>Report Currupted</button>";
+					print "<button onclick=reportForm()>Report Missing</button>";
 				}
 			} elseif (!empty($stat[10])) { //use time, not filesize
 				if ($size == 640) //need to be more careful NOT to delete the 640 image as it wont get recreated automatically
