@@ -14,7 +14,7 @@
 
 55	7-22	* * *	/usr/bin/php /var/www/geograph/scripts/scan-s3-hashes.php
 
-35	1       * * *	/usr/bin/php /var/www/geograph/scripts/createsphinx-delta.php --rebuild=1
+35	1       * * *	/usr/bin/php /var/www/geograph/scripts/createsphinx-delta.php
 51	8-23	* * *	/usr/bin/php /var/www/geograph/scripts/update_tags.php --interval="4 hour" --execute=true
 
 21      */3     * * *	/usr/bin/php /var/www/geograph/scripts/typo-run-phrase.php --debug=1
