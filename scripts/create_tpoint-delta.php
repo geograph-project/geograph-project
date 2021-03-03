@@ -49,8 +49,12 @@ $db_write->Execute("INSERT INTO event_log SET
 $a = array();
 
 
-	$grs = $db_read->getCol("select grid_reference from gridimage_search where upd_timestamp >
-		date_sub(now(),interval {$param['interval']}) group by grid_reference order by null");
+	//$grs = $db_read->getCol("select grid_reference from gridimage_search where upd_timestamp >
+	//	date_sub(now(),interval {$param['interval']}) group by grid_reference order by null");
+
+	// using gridsquare is even better, as it only updates when images in square change, rather than small changes to title etc
+	$grs = $db_read->getCol("select grid_reference from gridsquare where last_timestamp >
+		date_sub(now(),interval {$param['interval']})");
 
 	$sql = "SELECT gridimage_id,grid_reference,TO_DAYS(REPLACE(imagetaken,'-00','-01')) AS days, points
 		FROM gridimage_search WHERE imagetaken NOT LIKE '0000%'
