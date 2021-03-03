@@ -59,6 +59,35 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$imagelist=new ImageList;
 
+###########################################################
+
+	$db = $imagelist->_getDB(false);
+	//note checking the table status on master, because if connect to slave, and replication lag, wont see the the new table right away
+
+	if ($db->getOne("SELECT GET_LOCK('thumbed-weekly',100)")) {
+		$status = $db->getRow("SHOW TABLE STATUS LIKE 'vote_sorter'");
+		if (empty($status) || (!empty($status['Update_time']) && strtotime($status['Update_time']) < (time() - 60*60*24))) {
+			$db->Execute("DROP TABLE IF EXISTS `vote_sorter_tmp`");
+			$num = $db->getOne("select max(num) from vote_stat where last_vote > date_sub(now(),interval 20 day)");
+
+			$db->Execute("create table vote_sorter_tmp
+				select id,type,num,last_vote,(($num-cast(num as signed))/10) + (crc32(id)/4294967295) + ((unix_timestamp(now())-unix_timestamp(last_vote))/1000000) as sorter
+				 from vote_stat 
+				 where type in ('img','desc') and last_vote > date_sub(now(),interval 10 day)");
+			$db->Execute("alter table vote_sorter_tmp add index (last_vote)");
+
+			if (!empty($status))
+				$db->Execute("RENAME TABLE vote_sorter TO vote_sorter_old");
+                        $db->Execute("RENAME TABLE vote_sorter_tmp TO vote_sorter");
+
+                        $db->Execute("DROP TABLE IF EXISTS vote_sorter_old");
+		}
+
+		$db->Execute("DO RELEASE_LOCK('thumbed-weekly')");
+	}
+
+###########################################################
+
 	if ($type == 'desc' || $type =='img') {
 		$where = "type = '$type'";
 	} else {
@@ -89,6 +118,19 @@ if (!$smarty->is_cached($template, $cacheid))
                 and num > 1
                 group by vs.id
                 order by last_vote desc limit 60) t2
+	order by sorter";
+
+
+        $sql="
+	select * from (
+		select gridimage_id,grid_reference,imagetaken,user_id,realname,title,comment, type,num,last_vote, sorter
+                from vote_sorter as vs
+                inner join gridimage_search as gi on (vs.id = gi.gridimage_id)
+                where $where
+		and gi.user_id != 60859
+                and num > 1
+                order by last_vote desc limit 60) t2
+        group by gridimage_id
 	order by sorter";
 
 
