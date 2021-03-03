@@ -43,8 +43,18 @@ if ($param['size']) {
 
 	$where[] = 'gridimage_id > '.($last_id-$param['size']);
 } else {
-	$where[] = 'upd_timestamp > date_sub(now(),interval '.intval($param['period']).' day)';
-	$param['size'] = $db->getOne("SELECT COUNT(*) FROM gridimage_search WHERE ".implode(' AND ',$where));
+        $max = $db->getOne("SELECT max(last_time) FROM typo WHERE last_user_id = 0 AND profile = 'expression'");
+	if (empty($max) || strtotime($max) < time()-3600*24*4)
+		$max = date('Y-m-d',strtotime("-{$param['period']}"));
+        $where[] = "upd_timestamp > '$max'";
+
+        $param['size'] = $db->getOne("SELECT COUNT(*) FROM gridimage_search WHERE ".implode(' AND ',$where));
+
+        if ($param['size'] == 0) {
+		if ($param['debug'])
+			print ("SELECT COUNT(*) FROM gridimage_search WHERE ".implode(' AND ',$where).";\n\n");
+                exit;
+	}
 }
 
 $where[] = "include!=''";
@@ -95,7 +105,7 @@ if (!empty($rows)) {
 			WHERE typo_id = $typo_id";
 		$db->Execute($sql);
 		if ($param['debug'])
-			print preg_replace('/\s+/',' ',$sql).";\n";
+			print "$sql;\n";
 	}
 }
 
