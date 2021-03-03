@@ -52,10 +52,10 @@ $cacheid='statistics|leaderthread_forum'.$u.$type.'.'.$f;
 if (!$smarty->is_cached($template, $cacheid))
 {
         //lets hobble this!
-#        header("HTTP/1.1 503 Service Unavailable");
- #       $smarty->assign('searchq',stripslashes($_GET['q']));
-  #      $smarty->display('function_disabled.tpl');
-   #     exit;
+        header("HTTP/1.1 503 Service Unavailable");
+        $smarty->assign('searchq',stripslashes($_GET['q']));
+        $smarty->display('function_disabled.tpl');
+        exit;
 
         $db = GeographDatabaseConnection(true);
 
