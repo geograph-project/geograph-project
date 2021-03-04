@@ -878,7 +878,7 @@ split_timer('gridsquare'); //starts the timer
 			  COALESCE(SUM(moderation_status = 'geograph' and imagetaken LIKE '1%'),0) AS premill,
 			  GROUP_CONCAT(IF(ftf<=1,gridimage_id,NULL) ORDER BY ftf desc, seq_no LIMIT 1) AS first
 			FROM gridimage
-			WHERE gridsquare_id={$this->gridsquare_id}");
+			WHERE gridsquare_id={$this->gridsquare_id} and moderation_status in ('accepted','geograph')");
 		//  IF(SUM(moderation_status='geograph')>0,1,0) AS has_geographs,
 
 		//see if we have any geographs (we had the has_geograph column first, added max_ftf for more detail later,
