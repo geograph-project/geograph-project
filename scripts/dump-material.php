@@ -1,7 +1,7 @@
 <?
 
 //these are the arguments we expect
-$param=array('explain'=>false,'tables'=>'');
+$param=array('explain'=>false,'tables'=>'','from'=>'');
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -21,7 +21,11 @@ print "#   ... note that does not currently add any indexes to the table (the re
 $color = "\033[31m";
 $white ="\033[0m";
 
-if (!empty($param['tables'])) {
+if (!empty($param['from'])) {
+	$where = "sql_from REGEXP ".$db->Quote("\b".$param['from']."\b");
+	$where .= " AND description != 'obsolete'";
+	$tables = $db->getAll("SELECT * FROM material_view WHERE $where ORDER BY table_name");
+} elseif (!empty($param['tables'])) {
 	$where = "table_name LIKE '".implode("%' OR table_name LIKE '",explode(',',$param['tables']))."%'";
 	$tables = $db->getAll("SELECT * FROM material_view WHERE $where ORDER BY table_name");
 } else {
