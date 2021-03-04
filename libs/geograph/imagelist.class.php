@@ -206,7 +206,7 @@ split_timer('imagelist'); //starts the timer
 
 		$ids = $sphinx->returnIds($pg,'_images');
 		
-		if (count($ids)) {
+		if (!empty($ids)) {
 			$this->resultCount = $sphinx->resultCount;
 			
 			$c = $this->getImagesByIdList($ids);
@@ -226,6 +226,8 @@ split_timer('imagelist','getImagesBySphinx',"$q"); //logs the wall time
 
 split_timer('imagelist'); //starts the timer
 
+		if (empty($ids))
+			return false;
 
                 if ($advanced) {
 			if (empty($columnlist) || $columnlist == '*')
