@@ -206,6 +206,49 @@ CREATE TABLE `hectad_stat` (
 					$db->Execute("REPLACE INTO hectad_stat SELECT * FROM hectad_stat_tmp");
 				}
 			}
+
+			##################################
+
+			//historically, we've filled this in as we go, but actully its best to just calculate it now!
+		        $missing = $db->GetAll("SELECT
+			        reference_index,x,y,hectad
+			        FROM hectad_stat
+			        WHERE map_token = '' and images > 0");
+			if (!empty($missing)) {
+				require_once('geograph/mapmosaic.class.php');
+			        $mosaic=new GeographMapMosaic;
+			        $mosaic->setScale(40);
+			        $mosaic->setMosaicFactor(2);
+
+			        $largemosaic=new GeographMapMosaic;
+			        $largemosaic->setScale(80);
+			        $largemosaic->setMosaicFactor(2);
+			        $largemosaic->setMosaicSize(800,800);
+
+			        foreach($missing as $id=>$entry) {
+
+		                        $rii = $entry['reference_index'];
+		                        $x = ( intval(($entry['x'] - $CONF['origins'][$rii][0])/10)*10 ) +  $CONF['origins'][$rii][0];
+		                        $y = ( intval(($entry['y'] - $CONF['origins'][$rii][1])/10)*10 ) +  $CONF['origins'][$rii][1];
+					if ($x < 0) {//fix for rockall!
+					        $x -= 10;
+					}
+
+		                        $mosaic->setOrigin($x,$y);
+		                        $largemosaic->setOrigin($x,$y);
+
+		                        $db->Execute(sprintf("UPDATE hectad_stat SET
+		                                map_token = %s,
+						largemap_token = %s
+						WHERE hectad = %s",
+		                                $db->Quote($mosaic->getToken()),
+		                                $db->Quote($largemosaic->getToken()),
+		                                $db->Quote($entry['hectad']) ));
+		                }
+			}
+
+			##################################
+
 			$db->getOne("SELECT RELEASE_LOCK('hectad_stat')");
 
 			//return true to signal completed processing
