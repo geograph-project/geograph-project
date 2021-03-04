@@ -77,7 +77,13 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $smarty->assign_by_ref('references',$CONF['references_all']);	
 
-$bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','myriad' => 'Myriad','user' => 'Contributor');
+$bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','myriad' => 'Myriad (100km Square)','user' => 'Contributor');
+if (empty($i) && empty($when) && empty($sql_crit)) {
+	//these are likely to be furfilled by (user_)date_stat, so we we can be more permissive now!
+	$bys['submittedyear'] = "Submitted (Year)";
+	$bys['submitted'] = "Submitted (Month)";
+	$bys['hectad'] = "Hectad (10km Square)";
+}
 $smarty->assign_by_ref('bys',$bys);
 
 $smarty->assign('by', $by);
@@ -229,33 +235,92 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else {
 		$mysql_order = "ORDER BY field$sql_dir";
 	}
-	
-	if ($by == 'class' && $sql_where == '' && $sql_crit == '' && $sql_from == '') {
-$sql = "select $sql_fieldname as field,c 
-from category_stat 
-$mysql_order
-limit 5000";	
-		$cacheseconds = 3600*6;
-	} elseif ($by == 'user' && $sql_where == '' && $sql_crit == '' && $sql_from == '') {
-$sql = "select $sql_fieldname as field, images as c, user_id
-from user_stat inner join user using (user_id) 
-$mysql_order
-limit 5000";	
-		$cacheseconds = 600;
-	} else {
-$sql = "select 
-$sql_fieldname as field,
-count(*) as c $mysql_fields
-from gridimage_search as gi $sql_from
-where 1 $sql_where
- $sql_crit
-group by $sql_group 
-$mysql_order
-limit 5000";
-		$cacheseconds = 3600*12;
+
+	$cacheseconds = 3600*12;
+
+	//we now have a wide range of pre-grouped tables! (some can even be used with user and/or ri filter!) 
+		//todo, the date tables, could cope with (some!) 'when' filtering!
+	###########################################
+
+	if ($sql_where == " and user_id = $u" && $sql_crit == '') {
+		$date_table = 'user_date_stat';
+	} elseif ($sql_where == '' && ($sql_crit == '' || $sql_crit = " AND reference_index = $ri")) {
+		$date_table = 'date_stat';
+		//note ALWAYS filter by $ri, as this table copes needs =0 for both grids! (its pre-agrigated by $ri with rollup)
+		$sql_where = " AND reference_index = $ri"; 
 	}
+
+	###########################################
+
+	if ($by == 'class' && $sql_where == '' && $sql_crit == '' && $sql_from == '') {
+		$sql = "select $sql_fieldname as field,c from category_stat $mysql_order limit 5000";	
+
+	###########################################
+
+	} elseif (($by == 'myriad' || $by == 'gridsq') && $sql_where == " and user_id = $u" && ($sql_crit == '' || $sql_crit = " AND reference_index = $ri") && $sql_from == '') {
+		$sql_group = $sql_fieldname = "substring(hectad,1,3 - reference_index)";
+		$sql = "select $sql_fieldname as field,SUM(images) as c from hectad_user_stat WHERE squares > 0 $sql_where $sql_crit GROUP BY $sql_group $mysql_order";	
+
+	} elseif (($by == 'myriad' || $by == 'gridsq') && $sql_where == '' && ($sql_crit == '' || $sql_crit = " AND reference_index = $ri") && $sql_from == '') {
+		$sql = "select prefix as field,imagecount as c from gridprefix WHERE landcount > 0 $sql_crit $mysql_order";	
+
+	###########################################
+
+	} elseif ($by == 'hectad' && $sql_where == " and user_id = $u" && ($sql_crit == '' || $sql_crit = " AND reference_index = $ri") && $sql_from == '') {
+		$sql = "select hectad as field,images as c from hectad_user_stat WHERE squares > 0 $sql_where $sql_crit $mysql_order";
+
+	} elseif ($by == 'hectad' && $sql_where == '' && ($sql_crit == '' || $sql_crit = " AND reference_index = $ri") && $sql_from == '') {
+		$sql = "select hectad as field,images as c from hectad_stat WHERE landsquares > 0 $sql_crit $mysql_order";
+
+	###########################################
+
+	} elseif ($by == 'submitted' && !empty($date_table) && $sql_from == '') { 
+		$sql = "select month as field,images as c from $date_table WHERE month != '' AND type = 'submitted' $sql_where $mysql_order limit 5000";
+
+	} elseif ($by == 'taken' && !empty($date_table) && $sql_from == '') { 
+		$sql = "select month as field,images as c from $date_table WHERE month != '' AND type = 'imagetaken' $sql_where $mysql_order limit 5000";	
+
+	###########################################
+
+	} elseif ($by == 'submittedyear' && !empty($date_table) && $sql_from == '') { 
+		$sql = "select year as field,images as c from $date_table WHERE month = '' AND type = 'submitted' $sql_where $mysql_order";
+
+	} elseif ($by == 'takenyear' && !empty($date_table) && $sql_from == '') { 
+		$sql = "select year as field,images as c from $date_table WHERE month = '' AND type = 'imagetaken' $sql_where $mysql_order";
+
+	###########################################
+
+	} elseif ($by == 'takenday' && $sql_where == '' && $sql_crit == '' && $sql_from == '') {
+		$sql = "select $sql_fieldname as field,images as c from imagetaken_stat $mysql_order limit 5000";	
+
+	###########################################
+
+	} elseif ($by == 'user' && $sql_where == '' && $sql_crit == " AND reference_index = $ri" && $sql_from == '') {
+		$sql = "select $sql_fieldname as field, sum(images) as c, user_id from hectad_user_stat inner join user using (user_id) WHERE 1 $sql_crit group by user_id $mysql_order";
+
+	} elseif ($by == 'user' && $sql_where == '' && $sql_crit == '' && $sql_from == '') {
+		$sql = "select $sql_fieldname as field, images as c, user_id from user_stat inner join user using (user_id) $mysql_order limit 5000";
+		$cacheseconds = 600; //this table updates hourly
+
+	###########################################
+
+	} else {
+		$sql = "select 
+		$sql_fieldname as field,
+		count(*) as c $mysql_fields
+		from gridimage_search as gi $sql_from
+		where 1 $sql_where
+		 $sql_crit
+		group by $sql_group 
+		$mysql_order
+		limit 5000";
+	}
+
 	if ($_GET['debug'])
 		print $sql;
+
+	###########################################
+
 	$breakdown=$db->cacheGetAll($cacheseconds,$sql);
 	$total = 0;
 	foreach($breakdown as $idx=>$entry) {
