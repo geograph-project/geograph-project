@@ -48,7 +48,7 @@ for($start = 0; $start <= $max; $start += $limit) {
 			  group_concat(if(ftf<=1,gridimage_id,null) order by ftf desc, seq_no limit 1) AS first,
 			  MAX(upd_timestamp) AS last_timestamp
                         FROM gridimage
-                        WHERE $where
+                        WHERE $where and moderation_status in ('accepted','geograph')
 			GROUP BY gridsquare_id
 			ORDER BY NULL");
 
