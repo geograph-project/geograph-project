@@ -102,10 +102,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 
 	preg_match("/([A-Z]+)(\d)5(\d)5$/",$gridref,$matches);
-	$smarty->assign('hectad',$matches[1].$matches[2].$matches[3] );
+	$smarty->assign('hectad', $hectad = $matches[1].$matches[2].$matches[3] );
 	$smarty->assign('myriad',$matches[1] );
 
-	if ($mosaic->pixels_per_km >= 40) {
+	if ($mosaic->pixels_per_km >= 40 && strlen($hectad) >= 3) {
+/*
 		$left=$mosaic->map_x;
 		$bottom=$mosaic->map_y;
 		$right=$left + floor($mosaic->image_w/$mosaic->pixels_per_km)-1;
@@ -126,7 +127,20 @@ WHERE
 	ftf = 1
 GROUP BY user_id,realname
 ORDER BY count DESC,last_date DESC
+";*/
+
+//for now assume, that the map is aligned to hectad, if not, could use user_gridsquare instead
+$sql="SELECT user_id, realname,
+firsts AS count,
+DATE_FORMAT(last_first_submitted,'%D %b %Y') as last_date
+ FROM hectad_user_stat
+	INNER JOIN user USING (user_id)
+ WHERE hectad = '$hectad' and first_first_submitted is not null
+ ORDER BY firsts DESC, last_first_submitted DESC
 ";
+
+	
+
 		$db = GeographDatabaseConnection(true);
 		if (!$db) die('Database connection failed');  
 
@@ -134,7 +148,7 @@ ORDER BY count DESC,last_date DESC
 		$smarty->assign_by_ref('users', $users);
 		
 		
-		$hectads=&$db->GetAll("select hectad,largemap_token,last_submitted from hectad_stat where x between {$mosaic->map_x}-20 and {$mosaic->map_x}+20 and y between {$mosaic->map_y}-20 and {$mosaic->map_y}+20 and largemap_token != '' order by y desc,x");
+		$hectads=&$db->GetAll("select hectad,largemap_token,last_submitted from hectad_stat where x between {$mosaic->map_x}-20 and {$mosaic->map_x}+20 and y between {$mosaic->map_y}-20 and {$mosaic->map_y}+20 and geosquares >= landsquares order by y desc,x");
 		$smarty->assign_by_ref('hectads', $hectads);
 		
 	}

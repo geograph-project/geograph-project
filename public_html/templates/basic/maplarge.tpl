@@ -70,18 +70,17 @@
 
 {if $users}
 <table class="report">
-<thead><tr><td>Photographer</td><td>Last Submission</td><td>First Geographs</td><td>Days</td><td>Categories</td></tr></thead>
+<thead><tr><td>Photographer</td><td>Last Submission</td><td>First Geographs</td></tr></thead>
 <tbody>
 
 {foreach from=$users key=id item=obj}
 <tr><td><a title="View profile for {$obj.realname}" href="/profile/{$obj.user_id}{if $obj.credit_realname}?a={$obj.realname|escape:'url'}{/if}">{$obj.realname|escape:'html'}</a></td><td>{$obj.last_date}</td>
-<td align="right">{$obj.count}</td><td align="right">{$obj.days}</td><td align="right">{$obj.categories}</td></tr>
+<td align="right">{$obj.count}</td></tr>
 {/foreach}
 
 </tbody>
 </table>
 <br/>
-<small><small>* there is a known problem with this list, it might not add up to the correct total, apologies but we hope to resume normal service shortly...</small></small>
 {if $mosaic->pixels_per_km > 40}
 <p style="clear:both"/>View <a href="/search.php?first={$hectad}">First Geographs for {$hectad} in reverse Date Submitted order</a>.</p>
 {else}
@@ -89,6 +88,7 @@
 {/if}
 {/if}
 
+<div style=max-width:1000px>
 {if $mosaic_updated}
 	<p align="center" style="font-size:0.8em">{$mosaic_updated}</p>
 {/if}
@@ -98,5 +98,6 @@
 <br style="clear:both"/>
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div>
+</div>
 
 {include file="_std_end.tpl"}
