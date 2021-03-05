@@ -229,6 +229,9 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 						break;
 
 					case 'nearby':
+						if (!empty($_GET['gr']) && preg_match('/^([A-Z]{1,2}) (\d{2})\d* (\d{2})\d*$/i',$_GET['gr'],$m)) {
+							$_GET['gr'] = $m[1].$m[2].$m[3];
+						}
 						if (!empty($_GET['gr']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gr'])) {
 							if (empty($sphinx->q)) {
 								$sphinx->q = $_GET['gr'];

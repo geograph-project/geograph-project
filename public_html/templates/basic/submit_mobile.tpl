@@ -708,7 +708,9 @@ $(function() {
 			data: function (term, page) {
 				var mode =$("input[name=selector]:checked").val();
 				var data = {mode: mode, term: term};
-				if (mode == 'nearby' && $("input[name=gr]").length > 0) {
+				if (mode == 'nearby' && $("input[name=grid_reference]").length > 0) {
+					data.gr = $("input[name=grid_reference]").val();
+				} else if (mode == 'nearby' && $("input[name=photographer_gridref]").length > 0) {
 					data.gr = $("input[name=photographer_gridref]").val();
 				} else if (mode == 'selfrecent') {
 					if (term.length > 0 && !$('.experimental').prop('checked')) {
@@ -997,6 +999,7 @@ var static_host = '{$static_host}';
 			<span class="experimental">
 			<input type="radio" name="selector" accesskey="e" value="selfimages" id="sel_selfimages"/> <label for="sel_selfimages">Your Tags - Most Used</label><br/>
 			<input type="radio" name="selector" accesskey="4" value="selfalpha" id="sel_selfalpha"/> <label for="sel_selfalpha">Your Tags - Alphabetical</label><br/></span>
+			<input type="radio" name="selector" accesskey="5" value="nearby" id="sel_nearby"/> <label for="sel_nearby">Nearby Tags</label><br/>
 			<input type="radio" name="selector" accesskey="s" value="subject" id="sel_subject"/> <label for="sel_subject">Subject List</label><br/>
 		</blockquote>
 		<br><br>
