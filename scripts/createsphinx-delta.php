@@ -220,6 +220,25 @@ if (isset($status['sphinx_terms'])) {
 
 #####################################################
 
+if (isset($status['sphinx_placename'])) {
+
+  $sqls = array();
+
+   $sqls[] = "create temporary table sphinx_placename_stat ".
+             "select placename_id,count(distinct gridsquare_id) as squares,sum(imagecount) as images, sum(has_geographs) as has_geographs from gridsquare group by placename_id order by null";
+   $sqls[] = "alter table sphinx_placename_stat add primary key(placename_id)";
+//   $sqls[] = "alter table sphinx_placenames add squares mediumint unsigned default null, add images int unsigned default null, add index(Place)";
+   $sqls[] = "update sphinx_placenames p inner join sphinx_placename_stat s using (placename_id) set p.squares = s.squares, p.images = s.images, p.has_geographs = s.has_geographs";
+
+        foreach ($sqls as $sql) {
+                fwrite(STDERR,date('H:i:s ')." $sql\n\n");
+		$db->Execute($sql);
+	}
+
+}
+
+#####################################################
+
 fwrite(STDERR,date('H:i:s ')."DONE!\n");
 
 

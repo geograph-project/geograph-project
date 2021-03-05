@@ -76,6 +76,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			
 			$table['footnote'] = "This table is using an approximate version of <a href=\"/faq.php#counties\">Historic Counties</a>";
 		} else {
+			/*
 			$table['table']=$db->GetAll("
 			select 
 				full_county as County,
@@ -92,7 +93,23 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			where gs.reference_index = 1 and percent_land > 0
 			group by os_gaz.co_code
 			" );
-			
+			*/
+
+			$table['table']=$db->GetAll("
+			select
+				County,
+				Country,
+				format(sum(squares),0) as `Grid Squares`,
+                                format(sum(has_geographs),0) as `Geographed`,
+                                format(sum(squares)-sum(has_geographs),0) as `To Do`,
+                                format(sum(has_geographs)/sum(squares)*100,2) as Percentage,
+                                format(sum(images),0) as 'Total Photos'
+			from sphinx_placenames
+			where reference_index = 1
+			group by County
+			" );
+
+
 			$table['footnote'] = "This table is using Modern <a href=\"/faq.php#counties\">Administrative Counties</a>";
 		}
 
@@ -108,6 +125,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	
 		$table['title'] = "Ireland";
 
+		/*
 		$table['table']=$db->GetAll("
 		select 
 			loc_adm1.name as County,
@@ -122,6 +140,21 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		where gs.reference_index = 2 and percent_land > 0
 		group by loc_placenames.country,loc_adm1.adm1
 		");
+		*/
+
+		$table['table']=$db->GetAll("
+		select
+			County,
+			Country,
+			format(sum(squares),0) as `Grid Squares`,
+                        format(sum(has_geographs),0) as `Geographed`,
+                        format(sum(squares)-sum(has_geographs),0) as `To Do`,
+                        format(sum(has_geographs)/sum(squares)*100,2) as Percentage,
+                        format(sum(images),0) as 'Total Photos'
+		from sphinx_placenames
+		where reference_index = 2
+		group by County
+		" );
 
 		$table['total'] = count($table['table']);
 
@@ -138,4 +171,3 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 $smarty->display($template, $cacheid);
 
-?>

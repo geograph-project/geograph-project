@@ -59,6 +59,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	
 		$table['title'] = "Great Britain";
 
+		/*
 		$table['table']=$db->GetAll("
 		select 
 			loc_country.name as Country,
@@ -74,10 +75,23 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		where gs.reference_index = 1 and percent_land > 0
 		group by country with rollup
 		" );
-
 		foreach ($table['table'] as $id => $row) {
 			
 		}
+		*/
+
+                $table['table']=$db->GetAll("
+                select
+                        Country,
+                        format(sum(squares),0) as `Grid Squares`,
+                        format(sum(has_geographs),0) as `Geographed`,
+                        format(sum(squares)-sum(has_geographs),0) as `To Do`,
+                        format(sum(has_geographs)/sum(squares)*100,2) as Percentage,
+                        format(sum(images),0) as 'Total Photos'
+                from sphinx_placenames
+                where reference_index = 1
+                group by Country with rollup
+                " );
 
 		$table['total'] = count($table['table']);
 		$table['table'][$table['total']-1]['Country'] = '-Total-';
@@ -91,6 +105,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	
 		$table['title'] = "Ireland";
 
+		/*
 		$table['table']=$db->GetAll("
 		select 
 			loc_country.name as Country,
@@ -105,6 +120,20 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		where gs.reference_index = 2 and percent_land > 0
 		group by country with rollup
 		");
+		*/
+
+                $table['table']=$db->GetAll("
+                select
+                        Country,
+                        format(sum(squares),0) as `Grid Squares`,
+                        format(sum(has_geographs),0) as `Geographed`,
+                        format(sum(squares)-sum(has_geographs),0) as `To Do`,
+                        format(sum(has_geographs)/sum(squares)*100,2) as Percentage,
+                        format(sum(images),0) as 'Total Photos'
+                from sphinx_placenames
+                where reference_index = 2
+                group by Country with rollup
+                " );
 
 		$table['total'] = count($table['table']);
 		$table['table'][$table['total']-1]['Country'] = '-Total-';
