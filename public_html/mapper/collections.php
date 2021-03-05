@@ -6,13 +6,15 @@ init_session();
 
 $smarty = new GeographPage;
 
+$USER->mustHavePerm("basic");
+
 $db = GeographDatabaseConnection(true);
 
 $limit = 2000;
 $graydiv = 15000;
 $order = "stddev(gs.x) desc";
 
-$types = array('centoid'=>'Center of Gravity','square'=>'Choosen Square','image'=>'Featured Image');//,'hectad'=>'All Hectads');
+$types = array('centoid'=>'Center of Gravity','hectad'=>'All Hectads');//,'square'=>'Choosen Square','image'=>'Featured Image');
 $sources = array('article'=>'Articles','gallery'=>'Galleries','themed'=>'Themed Topics','snippet'=>'Shared Descriptions');
 
 if (empty($CONF['forums']))
@@ -33,42 +35,72 @@ if (empty($_GET['source']) || $_GET['source'] == 'article') {
 } elseif ($_GET['source'] == 'snippet') {
 	$gc_table = "gridimage_snippet gc on (c.foreign_id = gc.snippet_id and c.source = 'snippet')";
 	$order = "stddev(gs.x) asc"; //there are too many that dont need to worry about showing bigger sircles first!
+} else {
+	die("huh");
 }
 
+$source = $db->Quote($_GET['source']);
 
 if ($_GET['type'] == 'hectad') {
 	ini_set('memory_limit', '128M');
-	$limit = 12000;
+	$limit = 2000;
 	$graydiv = 3000;
 
+	/*
 	$result = $db->getAll("SELECT c.content_id, url, c.title, count(gc.gridimage_id) as images, avg(gs.x) ax, avg(gs.y) ay, stddev(gs.x) sx, stddev(gs.y) sy
 			,CONCAT(SUBSTRING(gs.grid_reference,1,LENGTH(gs.grid_reference)-3),SUBSTRING(gs.grid_reference,LENGTH(gs.grid_reference)-1,1)) AS hectad
 		from content c inner join $gc_table inner join gridimage_search gs on (gs.gridimage_id = gc.gridimage_id)
 		where c.type != 'document'
 		group by hectad,content_id order by $order limit $limit");
+	*/
+
+	$order = str_replace('stddev(gs.x)', 'sx', $order);
+	$result = $db->getAll("SELECT c.content_id, url, c.title, cl.images, ax, ay, sx, sy, hectad
+		FROM content_location cl INNER JOIN content c USING (content_id)
+		WHERE c.type != 'document' AND source = $source
+		ORDER BY $order LIMIT $limit");
+
 
 } elseif ($_GET['type'] == 'centoid') {
 
+	/*
 	$result = $db->getAll("SELECT c.content_id, url, c.title, count(gc.gridimage_id) as images, avg(gs.x) ax, avg(gs.y) ay, stddev(gs.x) sx, stddev(gs.y) sy
 		from content c inner join $gc_table inner join gridimage_search gs on (gs.gridimage_id = gc.gridimage_id)
 		where c.type != 'document'
 		group by content_id order by $order limit $limit");
+	*/
+
+	$order = str_replace('stddev(gs.x)', 'sx', $order);
+	$result = $db->getAll("SELECT c.content_id, url, c.title, c.images, AVG(ax) AS ax, AVG(ay) AS ay, SUM(sx) AS sx, SUM(sy) AS sy
+		FROM content_location cl INNER JOIN content c USING (content_id)
+		WHERE c.type != 'document' AND source = $source
+		GROUP BY content_id
+		ORDER BY $order LIMIT $limit");
+
+
 
 } elseif ($_GET['type'] == 'square') {
+	die("no longer available. Sorry");
 
+	/*
 	$result = $db->getAll("SELECT c.content_id, url, c.title, count(gc.gridimage_id) as images, g.x ax, g.y ay, stddev(gs.x) sx, stddev(gs.y) sy
 		from content c inner join $gc_table inner join gridimage_search gs on (gs.gridimage_id = gc.gridimage_id)
 			inner join gridsquare g using (gridsquare_id)
 		where c.type != 'document'
 		group by content_id order by $order limit $limit");
+	*/
 
 } elseif ($_GET['type'] == 'image') {
+	die("no longer available. Sorry");
+
+	/*
 
 	$result = $db->getAll("SELECT c.content_id, url, c.title, count(gc.gridimage_id) as images, gi.x ax, gi.y ay, stddev(gs.x) sx, stddev(gs.y) sy
 		from content c inner join $gc_table inner join gridimage_search gs on (gs.gridimage_id = gc.gridimage_id)
 			inner join gridimage_search gi on (gi.gridimage_id = c.gridimage_id)
 		where c.type != 'document'
 		group by content_id order by $order limit $limit");
+	*/
 }
 
 
