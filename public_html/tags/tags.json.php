@@ -144,6 +144,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
         customExpiresHeader(180);
         $sql['columns'] = "gridimage_id,".$sql['columns'];
 
+	//todo, convert  tag_square_stat!
         $sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
         $sql['tables']['gi'] = 'INNER JOIN gridimage_search gi USING (gridimage_id)';
 
@@ -186,7 +187,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 				if (!preg_match('/[@"|-]/',$sphinx->q) && //this doesnt work, if already operatores in the search
 						!preg_match('/(images|alpha)$/',$_GET['mode'])) { //no point doing all this, ebcause going to ignore WEIGHT()
 
-					$sphinx->q = "\"^{$sphinx->q}$ \" | \"^={$sphinx->q}$ \" | \"^{$sphinx->q}\" | \"{$sphinx->q}$ \" | (^$sphinx->q) | (=$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$ \"";
+					$sphinx->q = "\"^{$sphinx->q}$\" | \"=^{$sphinx->q}$ \" | \"^{$sphinx->q}\" | \"{$sphinx->q}$\" | (^$sphinx->q) | (=$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$\"";
 				}
 
 				if (preg_match('/ /',$before) && strpos($before,'@') !== 0)
