@@ -17,6 +17,8 @@ print "# Note these are 'idealized' recreated SQL queries to built the the whole
 print "#   the real script that creates these tables, typically use some scheme to create them piecemeal, and/or incrementally\n";
 print "#   ... note that does not currently add any indexes to the table (the real views probably have indexes)\n\n";
 
+print "#   Also note, some tables appear to use themselves, as a source, because in reality there they are only 'part' material.\n";
+print "#   Where the a column definition uses \$ as part of definition, its in reality computed in PHP, not mysql\n\n";
 
 $color = "\033[31m";
 $white ="\033[0m";

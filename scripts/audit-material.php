@@ -1,7 +1,7 @@
 <?
 
 //these are the arguments we expect
-$param=array('explain'=>false,'tables'=>'');
+$param=array('explain'=>false,'tables'=>'','tree'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -24,6 +24,13 @@ if (!empty($param['tables'])) {
 	$tables = $db->getAll("SELECT * FROM material_view WHERE description != 'obsolete' ORDER BY table_name");
 }
 
+$dates = $db->getAssoc("
+select table_name,count(*) cnt,COLUMN_KEY,group_concat(column_name order by length(definition) limit 1) AS column_name
+ from material_view_column d inner join information_schema.columns using (table_name,column_name)
+ where table_schema = DATABASE() AND DATA_TYPE in ('timestamp','datetime')
+ and (definition like 'now()' OR definition like 'max%' OR definition = 'upd_timestamp')
+ group by table_name");
+
 foreach ($tables as $row) {
 
 	$status = $db->getRow("SHOW TABLE STATUS LIKE '{$row['table_name']}'");
@@ -31,20 +38,31 @@ foreach ($tables as $row) {
         if (!empty($status['Update_time']) ) { // && strtotime($status['Update_time']) > (time() - 60*60*12) && $status['Comment'] != 're$
                         $seconds = time() - strtotime($status['Update_time']);
                         $hours = ceil($seconds/60/60);
-                        $hours++; //just to be safe
 	}
 
-if ($hours > 26)
-	$status['Update_time'] = "$color{$status['Update_time']}$white";
+	if ($hours > 26)
+		$status['Update_time'] = "$color{$status['Update_time']}$white";
+	if ($row['schedule'] == 'every_week')
+		$row['schedule'] = "$color{$row['schedule']}$white";
+	$dateupdated = '';
+	if (!empty($dates[$row['table_name']]) && ($date = $dates[$row['table_name']])) {
+		if ($status['Rows'] < 500000 || ($date['cnt'] == 1 && !empty($date['COLUMN_KEY'])) ) {
+			$dateupdated = $db->getOne("SELECT MAX({$date['column_name']}) FROM {$row['table_name']}")." ({$date['column_name']})";
+		}
+	}
 
-	printf("%-40s  Updated:%19s  (%3s hours)  %12s   %s\n",
+	printf("%-34s %19s (%3s hours) %12s %s %10s %s\n",
 		"$color{$row['table_name']}$white", 
 		$status['Update_time'],
 		$hours,
 		number_format($status['Rows'],0), 
-		$status['Engine']
+		$status['Engine'],
+		$row['schedule'],
+		$dateupdated
 		);
 }
+
+###############################################
 
 $sql = "SELECT i.table_name,i.column_name
  FROM information_schema.columns i
@@ -54,6 +72,34 @@ $sql = "SELECT i.table_name,i.column_name
 
 dump_table($sql,"\n\nundefined columns...");
 
+###############################################
+
+if (empty($param['tree']))
+	exit;
+
+$tree = array();
+foreach ($db->getAll("SELECT table_name, sql_from FROM material_view WHERE description != 'obsolete'") as $row) {
+	if (preg_match_all('/(^|join )(\w+)/',$row['sql_from'],$m)) {
+		foreach ($m[2] as $source)
+			@$tree[$source][] = $row['table_name'];
+	}
+}
+
+$done = array(); //easily be loops!
+output(array_keys($tree),1);
+
+function output($keys,$indent) {
+	global $tree,$done;
+	foreach ($keys as $key) {
+		if (isset($done)) continue;
+		$done[$key]=1;
+		print str_repeat(' ',$indent).$key."\n";
+	}
+}
+
+
+
+###############################################
 
 function dump_table($sql,$title = '') {
         global $db;
