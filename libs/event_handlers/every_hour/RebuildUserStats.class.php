@@ -140,6 +140,8 @@ class RebuildUserStats extends EventHandler
 
 		$GLOBALS['ADODB_FETCH_MODE'] = ADODB_FETCH_ASSOC;
 
+                $this->processor->trace("Computing Ranking data...");
+
 	//get rank data
 		$topusers=$db->GetAll("SELECT user_id,points,geosquares
 		FROM user_stat_tmp
@@ -179,6 +181,8 @@ class RebuildUserStats extends EventHandler
 			$r++;
 		}
 
+                $this->processor->trace("Saving Ranks...");
+
 	//insert ranks
 		foreach ($ranks as $user_id => $rank) {
 			$db->query("UPDATE user_stat_tmp
@@ -188,6 +192,8 @@ class RebuildUserStats extends EventHandler
 			geo_rise = {$grise[$user_id]}
 			WHERE user_id = $user_id");
 		}
+
+                $this->processor->trace("Computing overall stats...");
 
 	//work out overall stat
 		$overall = $db->getRow("select

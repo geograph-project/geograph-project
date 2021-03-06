@@ -97,11 +97,10 @@ if ($has_table && $db->getOne("select type from date_stat where type='$column' a
 				with rollup having year is not null"); //because we are running a seperate query for each year, the rows with NULL year dont work. (they yearly anyway!)
 
 					$rows = $db->Affected_Rows();
+					$c++;
 
 					if (!$ri && !$rows)
 						break; //if no rows on ri=0, no point doing 1,2!
-
-					$c++;
 				}
 			}
 		}
