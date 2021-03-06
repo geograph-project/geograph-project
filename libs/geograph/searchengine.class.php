@@ -110,6 +110,11 @@ class SearchEngine
 				}
 			}
 
+//dont currently have a way of disabling a particular query
+if (strpos($query['searchdesc'],', with unmatched ') === 0)
+	return false;
+
+
 			$this->query_id = $query_id;
 
 			$classname = "SearchCriteria_".$query['searchclass'];
