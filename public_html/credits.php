@@ -57,10 +57,13 @@ if (!$smarty->is_cached($template,$cacheid))
 	if ($when) {
 		if (strlen($when) == 7) {
 			$andwhere = " and submitted < DATE_ADD('$when-01',interval 1 month)";
+			$statwhere = " and month <= '$when' and month != ''";
 		} elseif (strlen($when) == 4) {
 			$andwhere = " and submitted < DATE_ADD('$when-01-01',interval 1 year)";
+			$statwhere = " and year <= '$when' and month = ''";
 		} else {
 			$andwhere = " and submitted < '$when'";
+			$statwhere = " and month <= '$when' and month != ''"; //inaccurate, but kinda works
 		}
 		$smarty->assign_by_ref('when',$when);
 		$smarty->assign('whenname',getFormattedDate($when));
@@ -85,25 +88,33 @@ if (!$smarty->is_cached($template,$cacheid))
 	
 	if ($filter || $when || $where || isset($_GET['cloud'])) {
 		
+		$smarty->assign('what','Contributors');
 
 		if (isset($_GET['cloud'])) {
-			if ($andwhere) {
+			if ($when && !$where) {
 				$users = $db->CacheGetAssoc(3600*6,"select
-					nickname,user.user_id,user.realname,user.user_id,count(*) as images
+					nickname,user_id,realname,sum(images) as images
+					from user
+						inner join user_date_stat uds using (user_id)
+					where nickname != '' and rights IS NOT NULL AND uds.type = 'submitted' $statwhere $andfilter
+					group by user_id
+					order by images desc");
+
+			} elseif ($andwhere) {
+				$users = $db->CacheGetAssoc(3600*6,"select
+					nickname,user_id,user.realname,count(*) as images
 					from user
 						inner join gridimage_search gi using (user_id)
 					where nickname != '' and rights IS NOT NULL $andwhere $andfilter
 					group by gi.user_id
 					order by images desc");
-				$smarty->assign('what','Contributors');
 			} else {
 				$users = $db->CacheGetAssoc(3600*6,"select
-					nickname,user.user_id,user.realname,user.user_id,`us`.images
+					nickname,user_id,realname,`us`.images
 					from user
 						inner join user_stat `us` using (user_id)
 					where nickname != '' and rights IS NOT NULL  $andfilter
 					order by images desc");
-				$smarty->assign('what','Contributors');
 			}
 
 			$size = $startsize = 30;
@@ -125,9 +136,18 @@ if (!$smarty->is_cached($template,$cacheid))
 			}
 			uksort($users, "cmp");
 		} else {
-			if ($andwhere) {
+			if ($when && !$where) {
 				$users = $db->CacheGetAssoc(3600*6,"select
-					user.user_id,nickname,gi.realname as realname,user.realname as user_realname,user.user_id,count(*) as images
+					user_id,nickname,realname,sum(images) as images
+					from user
+						inner join user_date_stat uds using (user_id)
+					where rights IS NOT NULL AND uds.type = 'submitted' $statwhere $andfilter
+					group by user_id
+					order by realname");
+
+			} elseif ($andwhere) {
+				$users = $db->CacheGetAssoc(3600*6,"select
+					user_id,nickname,gi.realname,user.realname as user_realname,count(*) as images
 					from user
 						inner join gridimage_search gi using (user_id)
 					where rights IS NOT NULL $andwhere $andfilter
@@ -136,12 +156,11 @@ if (!$smarty->is_cached($template,$cacheid))
 				$smarty->assign('what','Photographers'); //because we *can*
 			} else {
 				$users = $db->CacheGetAssoc(3600*6,"select
-					user.user_id,nickname,user.realname,user.user_id,`us`.images
+					user_id,nickname,realname,`us`.images
 					from user
 						inner join user_stat `us` using (user_id)
 					where rights IS NOT NULL $andfilter
 					order by realname");
-				$smarty->assign('what','Contributors');
 			}
 		}
 
