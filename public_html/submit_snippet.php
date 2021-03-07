@@ -26,9 +26,16 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$template='submit_snippet.tpl';
 
 $USER->mustHavePerm("basic");
+
+$usenew = $USER->getPreference('snippet.submit_new','0',true);
+
+if ($usenew) {
+        $template='submit_snippet2.tpl';
+} else {
+	$template='submit_snippet.tpl';
+}
 
 $gid = 0;
 
@@ -194,7 +201,16 @@ if ($gid) {
 
 	split_timer('snippet','single',$gid); //logs the wall time
 
+	$text = array();
+	if (!empty($used)) {
+	     $text = array();
+	     foreach ($used as $row) {
+	      $text[] = "{$row['snippet_id']}:{$row['title']}";
+	     }
+	     $smarty->assign('usedtext',implode(';',$text));
+	}
 }
+
 if (empty($_GET['gr']) && !empty($_GET['gr2'])) {
 	$_GET['gr'] = $_GET['gr2'];
 }
