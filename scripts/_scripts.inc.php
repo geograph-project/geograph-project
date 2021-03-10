@@ -96,6 +96,11 @@ function get_loadavg()
         if (!function_exists('posix_uname')) {
                 return -1;
         }
+
+	//if available, this seems the most reliable way
+	if (function_exists('sys_getloadavg'))
+                return array_shift(sys_getloadavg());
+
         $uname = posix_uname();
         switch ($uname['sysname']) {
                 case 'Linux':

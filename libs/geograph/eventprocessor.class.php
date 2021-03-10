@@ -188,6 +188,10 @@ class EventProcessor
 		if ($this->isWindowsServer())
 			return 0;
 
+		//if available, this seems the most reliable way
+		if (function_exists('sys_getloadavg'))
+                	return array_shift(sys_getloadavg());
+
 		//get the uptime
 		$uptime = `uptime`;
 
