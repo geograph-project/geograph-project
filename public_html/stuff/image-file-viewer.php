@@ -149,6 +149,10 @@ $db = $image->_getDB(true); //can reuse existing connection
 $sizes = array(40,60,120,213,'full');
 $res = array();
 
+if ($image->moderation_status == 'rejected') {
+	unset($sizes[0]); //remove the smallest!
+}
+
 if ($image->original_width>10) {
 	$greatest = max($image->original_width,$image->original_height);
 
@@ -186,7 +190,7 @@ if ($image->original_width>10) {
 //$style = " style=\"max-width:320px;max-height:320px\"";
 $style = " style=\"zoom:10%\""; $stylefix = "@10%";
 
-print "<a href=\"/editimage.php?id={$image->gridimage_id}\">Edit Page</a><br>";
+print "<a href=\"/editimage.php?id={$image->gridimage_id}\">Edit Page</a> Moderation Status: {$image->moderation_status}<br>";
 
 print "<form method=post>";
 print "<table border=1 cellpadding=4 cellspacing=0 style=background-color:white>";
@@ -232,16 +236,20 @@ foreach ($sizes as $size) {
 		print "<td><img src=$url $style>$stylefix</td>";
 		$html = $url;
 
-		//stamp
-		$url = "{$CONF['TILE_HOST']}/stamp.php?id={$image->gridimage_id}&gravity=SouthEast&hash=".$image->_getAntiLeechHash();
-//jsut so can see the text in the tiny thumbnail!
-$url .="&pointsize=45";
+		if ($size != 640 && $image->moderation_status != 'rejected') {
+			//stamp
+			$url = "{$CONF['TILE_HOST']}/stamp.php?id={$image->gridimage_id}&gravity=SouthEast&hash=".$image->_getAntiLeechHash();
+			//jsut so can see the text in the tiny thumbnail!
+			$url .="&pointsize=45";
+			print "<td><img src=$url $style>$stylefix</td>";
 
-		print "<td><img src=$url $style>$stylefix</td>";
-
-		//download
-		$url = "/reuse.php?id={$image->gridimage_id}&amp;download=".$image->_getAntiLeechHash();
-		print "<td><img src=$url $style>$stylefix</td>";
+			//download
+			$url = "/reuse.php?id={$image->gridimage_id}&amp;download=".$image->_getAntiLeechHash();
+			print "<td><img src=$url $style>$stylefix</td>";
+		} else {
+			print "<th>n/a";
+			print "<th>n/a";
+		}
 
 	} elseif(is_numeric($size)) {
 		//normal
@@ -251,12 +259,12 @@ $url .="&pointsize=45";
 			print "<td><img src=$url $style>$stylefix";
 			$html = $url;
 		} else print "<th>n/a";
-		if ($size != 640) {
+
+		if ($size != 640 && $image->moderation_status != 'rejected') {
 			//stamp
 			$url = "{$CONF['TILE_HOST']}/stamp.php?id={$image->gridimage_id}&gravity=SouthEast&hash=".$image->_getAntiLeechHash()."&large=$size$postfix";
-//jsut so can see the text in the tiny thumbnail!
-$url .="&pointsize=45";
-
+			//jsut so can see the text in the tiny thumbnail!
+			$url .="&pointsize=45";
 			print "<td><img src=$url $style>$stylefix</td>";
 
 			//use ths function, rather than getthumb, as want to avoid the magic that done to create the image!
@@ -280,15 +288,21 @@ $url .="&pointsize=45";
 			$html = $url;
 		} else print "<th>n/a";
 
-		//stamp
-		$url = "{$CONF['TILE_HOST']}/stamp.php?id={$image->gridimage_id}&gravity=SouthEast&hash=".$image->_getAntiLeechHash()."&large=1$postfix";
-//jsut so can see the text in the tiny thumbnail!
-$url .="&pointsize=45";
-		print "<td><img src=$url $style>$stylefix</td>";
+		if ($image->moderation_status != 'rejected') {
+			//stamp
+			$url = "{$CONF['TILE_HOST']}/stamp.php?id={$image->gridimage_id}&gravity=SouthEast&hash=".$image->_getAntiLeechHash()."&large=1$postfix";
+			//jsut so can see the text in the tiny thumbnail!
+			$url .="&pointsize=45";
+			print "<td><img src=$url $style>$stylefix</td>";
 
-		//download
-		$url = "/reuse.php?id={$image->gridimage_id}&amp;download=".$image->_getAntiLeechHash()."&amp;size=original".$postfix;
-		print "<td><img src=$url $style>$stylefix</td>";
+			//download
+			$url = "/reuse.php?id={$image->gridimage_id}&amp;download=".$image->_getAntiLeechHash()."&amp;size=original".$postfix;
+			print "<td><img src=$url $style>$stylefix</td>";
+		} else {
+                        print "<th>n/a";
+                        print "<th>n/a";
+                }
+
 	} else {
 		print "huh?";
 	}

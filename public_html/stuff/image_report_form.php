@@ -221,6 +221,13 @@ print "</pre>";
 } elseif (!empty($_GET['list'])) {
 	$db = GeographDatabaseConnection(false);
 
+	$stats =  $db->getAssoc("SELECT status,count(*) as reports FROM image_report_form GROUP BY status");
+	print "Counts"; $sep = ':';
+	foreach ($stats as $key => $value) {
+		print "$sep $key = $value"; $sep = ',';
+	}
+	print "<hr>";
+
 	$status = ($USER->hasPerm("admin") && empty($_GET['new']))?'escalated':'new';
 
 	if ($r = $db->getAll("SELECT * FROM image_report_form WHERE status = '$status' AND gridimage_id > 0 ORDER BY report_id DESC")) {
