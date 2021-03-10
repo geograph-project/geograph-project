@@ -26,18 +26,18 @@ if (!empty($_POST) && !empty($_POST['table_name'])) {
 }
 
 if (!empty($_GET['table'])) {
-	$sql = "SELECT TABLE_NAME AS table_name,TABLE_ROWS,DATA_LENGTH,AVG_ROW_LENGTH,UPDATE_TIME,AUTO_INCREMENT,ENGINE,type,updated,shard,backup,backedup,backedup_key,method
+	$sql = "SELECT TABLE_NAME AS table_name,TABLE_ROWS,DATA_LENGTH,AVG_ROW_LENGTH,UPDATE_TIME,AUTO_INCREMENT,ENGINE,type,updated,shard,backup,backedup,backedup_key,method,maxage
         FROM information_schema.tables
                 LEFT JOIN _tables USING (table_name)
         WHERE table_schema = DATABASE()
                 AND TABLE_NAME = ".$db->Quote($_GET['table'])."
         LIMIT 1";
 } else {
-$sql = "SELECT TABLE_NAME AS table_name,TABLE_ROWS,DATA_LENGTH,AVG_ROW_LENGTH,UPDATE_TIME,AUTO_INCREMENT,ENGINE,type,updated,shard,backup,backedup,backedup_key,method
+$sql = "SELECT TABLE_NAME AS table_name,TABLE_ROWS,DATA_LENGTH,AVG_ROW_LENGTH,UPDATE_TIME,AUTO_INCREMENT,ENGINE,type,updated,shard,backup,backedup,backedup_key,method,maxage
         FROM information_schema.tables
                 LEFT JOIN _tables USING (table_name)
         WHERE table_schema = DATABASE()
-                AND backup != 'N' AND method IS NULL
+                AND backup != 'N' AND (method IS NULL OR (DATA_LENGTH>16000000 AND method NOT like '%shard%'))
         LIMIT 1";
 }
 
@@ -88,7 +88,7 @@ if ($tablerow['ENGINE'] != 'MyISAM') {
 	$method = 'full';
 	print "Size under 10Mb, so just use $method";
 } else {
-	if (isset($info['primary'])) {// todo check numberic!
+	if (isset($info['primary']) && strpos($rows[$info['primary']]['Type'],'int')) {// check numberic!
 		if ($tablerow['AUTO_INCREMENT'])
 			print "auto_inc/rows = ".($tablerow['AUTO_INCREMENT']/$tablerow['TABLE_ROWS'])."<br>";
 		$shards = ceil($tablerow['DATA_LENGTH']/units(10,'mb'));
@@ -188,9 +188,10 @@ if (!empty($method))
 print "<form method=post name=theform>";
 print "<h3>Update</h3>";
 
+$desc = $db->getAssoc("DESCRIBE _tables");
 
-foreach (array('table_name','shard','type','backedup_key','backup','method') as $key)
-	print "$key:<input type=text name=$key value=\"".htmlentities($tablerow[$key])."\" size=50><br>";
+foreach (array('table_name','shard','type','backedup_key','backup','method','maxage') as $key)
+	print "$key:<input type=text name=$key value=\"".htmlentities($tablerow[$key])."\" size=50> {$desc[$key]['Type']}<br>";
 
 print "<input type=submit value=Update>";
 
@@ -221,8 +222,9 @@ function dump_row($row) {
 }
 
 function dump_table($rows) {
+	global $db;
 	if (is_string($rows))
-		$rows = getAll($rows);
+		$rows = $db->getAll($rows);
 	print "<table cellspacing=0 cellpadding=3 border=1>";
 	$row = reset($rows);
 	print "<tr><th>".implode("</th><th>",array_map('htmlentities',array_keys($row)))."</th></tr>";
