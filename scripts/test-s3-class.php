@@ -34,13 +34,6 @@ require "./_scripts.inc.php";
 
 ############################################
 
-$local = "/tmp/197537_f6908b09_213x160.jpg";
-$destination = "photos/19/75/197537_f6908b09_213x160.jpg"; //no slash at start!
-
-$destination .= ".test.jpg";
-
-############################################
-
 if (empty($filesystem)) //eventually gloabl will do this!
 	$filesystem = new FileSystem(); //sets up configuation automagically
 
@@ -57,9 +50,11 @@ if (!empty($param['verbose'])) {
 $local = $param['src'];
 $destination = $_SERVER['DOCUMENT_ROOT']."/".$param['dst'];
 
-$r = $filesystem->getBucketPath($destination);
+if (file_exists($local)) {
+	$r = $filesystem->getBucketPath($destination);
 
-print_r($r);
+	print_r($r);
+}
 
 ############################################
 
@@ -92,6 +87,21 @@ if (!empty($param['read'])) {
 	exit;
 }
 
+############################################
+
+if (!empty($param['execute']) && $param['execute'] == 'large') { 
+	//a LARGE  9000x6698 image, that typically uses a lot f memory. 
+	$src = $_SERVER['DOCUMENT_ROOT']."/geophotos/06/08/11/6081114_c73bc04b_original.jpg";
+	$dst = '/dev/null';
+
+	//this is the 'stamp' operation. Resizing doesnt use as much memory, whereas a wrting on the image does use more
+	$cmd = "convert %s -gravity SouthEast -pointsize 45 -stroke '#000C' -strokewidth 2 -annotate 0 'cc-by-sa/2.0 - by Bob Harvey - geograph.org.uk/p/6081114' -stroke none -fill white -annotate 0 'cc-by-sa/2.0 - by Bob Harvey - geograph.org.uk/p/6081114' %d";
+
+	$r = $filesystem->execute($cmd, $src, $dst);
+        var_dump($r);
+        print "\n";
+	exit;
+}
 
 ############################################
 //this is the original basic 'write' test

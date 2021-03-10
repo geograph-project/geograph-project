@@ -326,7 +326,7 @@ if (!empty($_GET['debug']))
 #########################################################
 // special execute wrapper
 
-	//execute, command,  assumes that the command is WRITING a file to fileystem
+	//execute, command,  assumes that the command is WRITING a file to fileystem (so $dst is remote), but now copes with $local being remote too!
 	function execute($cmd, $local, $destination = null, $acl = null, $storage = null) {
 		if (!empty($local)) {
 			list($sbucket, $sfilename) = $this->getBucketPath($local);
@@ -336,6 +336,11 @@ if (!empty($_GET['debug']))
 
 				if (empty($tmp_src))
 					return "error: unable to read file\n";
+
+//bodge, but convert uses to much memory for big images (at least during 'stamp' operations). Maybe should be checking pixel size, (eg if width*height*4 > 200M or somethign) 
+if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 6000000) {
+	$cmd = preg_replace('/(^|\/)convert"?/','$0 -limit memory 100M',$cmd);
+}
 
 				$cmd = str_replace('%s',$tmp_src, $cmd);
 			} else {
