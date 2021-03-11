@@ -39,6 +39,12 @@ $db = GeographDatabaseConnection(false);
 if (!empty($_GET['relinqush'])) {
 	$db->Execute("UPDATE user SET rights = REPLACE(rights,'ticketmod','alumni') WHERE user_id = {$USER->user_id}");
 
+	//need to add the alumni, if no other rights left!
+	$db->Execute("UPDATE user
+		SET rights = CONCAT(rights,',alumni')
+	        WHERE user_id = {$USER->user_id}
+		AND (length(replace(replace(replace(replace(rights,'dormant',''),'basic',''),'member',''),'traineemod','')) < 5 and role = '')");
+
 	//reload the user object
 	$_SESSION['user'] = new GeographUser($USER->user_id);
 

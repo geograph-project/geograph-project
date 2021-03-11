@@ -37,6 +37,13 @@ if (isset($_GET['revoke'])) {
 		$right = !empty($_GET['right'])?$_GET['right']:'moderator';
 		if ($db->Execute("UPDATE user SET rights = REPLACE(rights,'$right','') WHERE user_id = {$u->user_id}")) {
 			$smarty->assign('message', "$right rights removed from ".$u->realname);
+
+			//need to add the alumni, if no other rights left!
+			$db->Execute("UPDATE user
+				SET rights = CONCAT(rights,',alumni')
+				WHERE user_id = {$u->user_id}
+				AND (length(replace(replace(replace(replace(rights,'dormant',''),'basic',''),'member',''),'traineemod','')) < 5 and role = '')");
+
 			if ($USER->user_id == $u->user_id)
 				$_SESSION['user'] = new GeographUser($USER->user_id);
 		}
@@ -45,7 +52,7 @@ if (isset($_GET['revoke'])) {
 	$u = new GeographUser(intval($_GET['grant']));
 	if ($u->registered) {
 		$right = !empty($_GET['right'])?$_GET['right']:'moderator';
-		if ($db->Execute("UPDATE user SET rights = CONCAT(rights,',$right') WHERE user_id = {$u->user_id}")) {
+		if ($db->Execute("UPDATE user SET rights = REPLACE(CONCAT(rights,',$right'),'alumni','') WHERE user_id = {$u->user_id}")) {
 			$smarty->assign('message', "$right rights added for ".$u->realname);
 			if ($USER->user_id == $u->user_id)
 				$_SESSION['user'] = new GeographUser($USER->user_id);
