@@ -91,7 +91,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		} else {
 			$row['role'] = str_replace('Ticket ','',$row['role']);
 			if (!empty($row['role']) && !in_array($row['role'],$rights) && $row['role'] != 'Member')
-				array_unshift($rights,$row['role']);
+				$rights[$row['role']] = $row['role'];
 
 	                if ($row['gravatar'] && $row['gravatar'] == 'found')
 				$team[$key]['md5_email'] = md5(strtolower($row['email']));
