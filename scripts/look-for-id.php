@@ -28,11 +28,17 @@ $param=array(
         'id'=>2405926,
 	'column'=>'gridimage_id',
 	'exif'=>false,
+	'compact'=>false,
 );
 
 if (!empty($_SERVER['argv'][1]) && is_numeric($_SERVER['argv'][1])) {
 	$param['id'] = $_SERVER['argv'][1];
 	unset($_SERVER['argv'][1]); //avoid confusing hte normal parser!
+
+	if (!empty($_SERVER['argv'][2]) && is_numeric($_SERVER['argv'][2])) {
+		$param['compact'] = 1;
+		unset($_SERVER['argv'][2]); //avoid confusing hte normal parser!
+	}
 }
 
 chdir(__DIR__);
@@ -43,12 +49,14 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+if ($param['compact']) {
+	$tables = array('gridimage','gridimage_size','gridimage_thumbsize','gridimage_pending','submission_method');
+} else {
 
-
-$tables = $db->getCol("SELECT TABLE_NAME FROM information_schema.columns where table_schema = DATABASE() AND column_name = '{$param['column']}' and COLUMN_KEY != ''");
-
-if ($param['column'] == 'gridimage_id')
-	$tables[] = 'tag_public'; //its actully a view!
+	$tables = $db->getCol("SELECT TABLE_NAME FROM information_schema.columns where table_schema = DATABASE() AND column_name = '{$param['column']}' and COLUMN_KEY != ''");
+	if ($param['column'] == 'gridimage_id')
+		$tables[] = 'tag_public'; //its actully a view!
+}
 
 foreach ($tables as $table) {
 	$rows = $db->getAll("SELECT * FROM {$table} WHERE {$param['column']} = {$param['id']} LIMIT 10");
