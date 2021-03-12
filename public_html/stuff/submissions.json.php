@@ -34,7 +34,7 @@ if (!empty($_GET['since'])) {
 } else {
 	$db = GeographDatabaseConnection(3600);
 
-	$crit = "g.upd_timestamp > date_sub(now(),interval 3 day)";
+	$crit = "g.submitted > date_sub(now(),interval 3 day)";
 }
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
