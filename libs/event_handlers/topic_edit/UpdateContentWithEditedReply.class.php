@@ -38,6 +38,9 @@ class UpdateContentWithEditedReply extends EventHandler
 
 		$post=$db->GetRow("select forum_id,topic_id from geobb_posts where post_id=$post_id");
 
+		if (empty($post['forum_id'])) //if deleted we can try looking it up from quaranteen. Still want to update teh topic in content. 
+			$post=$db->GetRow("select forum_id,topic_id from geobb_posts_quar where post_id=$post_id");
+
 		if ($post['forum_id'] == 6 || $post['forum_id'] == 11) {//todo gsd 
 			add_topic_to_content($post['topic_id'],$db);
 		}

@@ -49,6 +49,9 @@ class UpdateThumbnailCrossReferencesWithEditedReply extends EventHandler
 
                 $db->query("delete from gridimage_post where post_id=$post_id");
 
+		if (empty($post['post_text'])) //post deleted!
+			return true;
+
                 if (preg_match_all("/\[\[(\[?)(\d+)(\]?)\]\]/",$post['post_text'],$g_matches)) {
                         foreach ($g_matches[2] as $i => $g_id) {
 
