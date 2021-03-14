@@ -27,6 +27,17 @@
 <a target="_top" href="https://m.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
 </div>
 
+	{dynamic}
+		{if $id}
+			<b>Submission Successful</b><br>
+			ID: <a href="/photo/{$id}" target=_blank>{$id}</a>
+			<hr>
+			Submit another image below... (or <a href="/">return to homepage</a>)
+			<hr>
+		{/if}
+	{/dynamic}
+
+
 <form method=post action="/submit-mobile.php">
 <br>
 Choose submission method:

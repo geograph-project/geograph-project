@@ -77,6 +77,12 @@ form {
 	min-height:calc( 100vh - 89px );
 }
 
+@media screen and (min-width: 600px) {
+	form {
+		padding:8px;
+	}
+}
+
 .tab2, .tab3, .tab4, .tab5 {
 	display:none;
 }
@@ -892,6 +898,16 @@ var static_host = '{$static_host}';
 <form action="/api-submit.php?mobile=1" name="theForm" method="post" enctype="multipart/form-data">
 
 <div class="tab1">
+
+	{dynamic}
+		{if $id}
+			<b>Submission Successful</b><br>
+			ID: <a href="/photo/{$id}" target=_blank style="background-color: lightgreen;">{$id}</a>
+			<hr>
+			Submit another image below... (or <a href="/">return to homepage</a>)
+			<hr>
+		{/if}
+	{/dynamic}
 
 	<label for="jpeg_exif">Select image:</label><br>
 

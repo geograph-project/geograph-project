@@ -48,10 +48,14 @@ if (!empty($_POST['choose']) && empty($_GET['redir'])) {
 	}
 
 	$smarty = new GeographPage;
+	if (!empty($_GET['id']))
+		$smarty->assign('id', intval($_GET['id']));
 	$smarty->display('submit_mobile.tpl');
 
 } else {
 
 	$smarty = new GeographPage;
+	if (!empty($_GET['id']))
+		$smarty->assign('id', intval($_GET['id']));
 	$smarty->display('submit_mobile_chooser.tpl');
 }
