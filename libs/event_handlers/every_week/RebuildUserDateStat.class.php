@@ -88,6 +88,8 @@ if ($has_table && $db->getOne("select type from user_date_stat where type='$colu
       sum(ftf=2 and moderation_status = 'geograph') AS `seconds`,
       sum(ftf=3 and moderation_status = 'geograph') AS `thirds`,
       sum(ftf=4 and moderation_status = 'geograph') AS `fourths`,
+        sum( ftf between 1 and 4 and moderation_status = 'geograph') AS `visitors`,
+        sum( ftf >0 and moderation_status = 'geograph') AS `personals`,
       sum(moderation_status = 'geograph') AS `geographs`,
       count(distinct imagetaken) AS `days`,
       count(*)/count(distinct grid_reference) AS `depth`,

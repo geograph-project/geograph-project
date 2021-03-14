@@ -125,7 +125,9 @@ if (!$smarty->is_cached($template, $cacheid))
         } elseif ($type == 'personal') {
                 if ($filtered) {
                         $sql_where = "i.ftf>0 and i.moderation_status='geograph'";
-                } else {
+                } elseif ($sql_table == "user_date_stat i" && $when == '2021') {
+			$sql_column = "personals"; //user_date_stat is already filtered, so can't just use geosquares.
+		} else {
                         $sql_column = "geosquares"; //if NOT filtered, personal happens to be the same as geosquares.
                 }
                 $heading = "Personal<br/>Points";
@@ -513,7 +515,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('extra',$extra);
 	$smarty->assign_by_ref('extralink',$extralink);
 	$smarty->assign_by_ref('limit',$limit);
-	$smarty->assign('filtered',$filtered);
+	$smarty->assign('filtered',$filtered || $when); //actully on the page consider when a filter!
 	$smarty->assign_by_ref('u',$u);
 
 	//lets find some recent photos
