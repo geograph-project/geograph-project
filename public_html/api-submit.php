@@ -111,6 +111,11 @@ function failMessage($text) {
 			$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
 
 			if (!empty($_GET['mobile'])) {
+				header("Location: /submit-mobile.php?another=1&id={$um->gridimage_id}",true,302);
+			}
+
+
+			if (!empty($_GET['mobile'])) {
 				print '<meta name="viewport" content="width=device-width, initial-scale=1">';
 			}
 
