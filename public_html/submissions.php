@@ -66,6 +66,10 @@ if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
 }
 $cacheid .=".$src";
 
+if (!empty($_GET['inner'])) {
+	$smarty->assign('inner', 1);
+	$cacheid .=".inner";
+}
 
 //what style should we use?
 $style = $USER->getStyle();

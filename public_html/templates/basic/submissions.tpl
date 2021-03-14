@@ -1,3 +1,4 @@
+{if !$inner}
 {assign var="page_title" value="Recent Uploads"}
 {assign var="meta_description" value="Lists your most recent submissions for easy editing and review"}
 {include file="_std_begin.tpl"}
@@ -23,7 +24,7 @@
 	<br/>
 
 {if $prev || $next}
-	<div class="interestBox" style=max-width:600px>Navigation: <b>|
+	<div class="interestBox navigation" style=max-width:600px>Navigation: <b>|
 	{if $prev == 1}
 		<a href="{$script_name}">Previous</a> |
 	{elseif $prev}
@@ -35,6 +36,8 @@
 
 	<a href="/stuff/submissions-map.php">On Map</a>
 	</div>
+{/if}
+	<div id="results">
 {/if}
 
 	{foreach from=$images item=image}
@@ -86,8 +89,21 @@
 	  </form>
 
 	{foreachelse}
-	 	nothing to see here
+		nothing to see here
 	{/foreach}
+
+{if $inner}
+	{if $next}
+		<a href="{$script_name}?next={$next|escape:'url'}&amp;inner=1" onclick="return loadMore(this)" style=font-size:1.1em>Load more...</a>
+	{/if}
+
+{else}
+	{if $next}
+		<a href="{$script_name}?next={$next|escape:'url'}&amp;inner=1" onclick="return loadMore(this)">Load more... (experimental - use instead of 'Next' below)</a>
+	{/if}
+
+
+	</div>
 
 	<div style="position:relative">
 	<br/><br/>
@@ -102,7 +118,7 @@
 
 <br/><br/>
 {if $prev || $next}
-	<div class="interestBox">Navigation: <b>|
+	<div class="interestBox navigation">Navigation: <b>|
 	{if $prev == 1}
 		<a href="{$script_name}">Previous</a> |
 	{elseif $prev}
@@ -124,8 +140,29 @@
 	<li><span style="background-color:lightgreen">Green</span>, the contents of the box been saved</li>
 </ul>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script type="text/javascript">
 {literal}
+
+function loadMore(that) {
+	//$('#results').load(that.href); //does a .html(..) not .append(..)
+
+        jQuery.ajax({
+            url: that.href,
+            type: 'GET',
+            dataType: "html",
+        }).done(function (responseText) {
+	    $('#results').append(responseText);
+            if (initLazy && typeof initLazy == 'function') {
+		initLazy();
+            }
+	});
+
+	$(that).remove();
+	$('div.interestBox.navigation').hide(); //they dont work any more!
+	return false;
+}
+
 function tabClick2(tabname,divname,num,count) {
 	var ret = true;
 	if (document.getElementById(tabname+num) && document.getElementById(tabname+num).className == 'tabSelected') {
@@ -185,11 +222,10 @@ function open_nearby(gid,gr,extra) {
 
 function loadSnippetCount(random) {
 	var ids = new Array();
-	{/literal}
-	{foreach from=$images item=image}
-		ids.push({$image->gridimage_id});
-	{/foreach}
-	{literal}
+	for(q=0;q<document.forms.length;q++) {
+		if (document.forms[q] && document.forms[q].name && (match = document.forms[q].name.match(/form(\d+)/)))
+			ids.push(match[1]);
+	}
 	var script = document.createElement("script");
 	script.setAttribute("src", "/api/Snippet/"+ids.join(',')+'?output=json&callback=showSnippetCount'+(random?"&rnd="+Math.random():''));
 	script.setAttribute("type", "text/javascript");
@@ -216,3 +252,4 @@ function showSnippetCount(data) {
 {/if}
 
 {include file="_std_end.tpl"}
+{/if}
