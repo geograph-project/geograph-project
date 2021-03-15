@@ -99,6 +99,15 @@ form {
 	height:400px;
 	max-height:80vh;
 }
+.tab3 #placenames {
+	text-align:right;
+}
+.tab3 #placenames a {
+	padding:3px;
+	margin-right:10px;
+	text-decoration:none;
+	white-space:nowrap;
+}
 
 .tab2 input[type=text] {
         width:50%;
@@ -176,6 +185,10 @@ $.ajaxSetup({
 		if (form.elements['grid_reference'].value.length > 4) $('div.tabs a').eq(1).addClass('done');
 		if (form.elements['title'].value.length > 1) $('div.tabs a').eq(2).addClass('done');
 		if (form.elements['contexts[]'].value) $('div.tabs a').eq(3).addClass('done');
+
+		if (idx == 3 && eastings1 && form.elements['grid_reference'].value.match(/^[A-Z]{2}/)) {
+			$('#placenames').html('<a href="#" onclick="loadplacenames()">Load Placenames</a>');
+		}
 
 		return false;
 	}
@@ -598,6 +611,51 @@ function checkOnline() {
 
 
 /******************************************************************************
+ PLACENAMES */ 
+
+function loadplacenames() {
+        var url = "https://www.geograph.org.uk/stuff/os_open_names.json.php";
+        $.ajax({
+                url: url,
+		data: {e:eastings1,n:northings1},
+                dataType: 'json',
+                cache: true,
+                success: function(data) {
+			var $ele = $('#placenames').empty();
+			if (data && data.rows) {
+				$.each(data.rows, function(index,value) {
+					var $link = $('<a href="#"/>');
+					$link.text(value['name1'] || value['name2']);
+					$ele.append($link);
+				});
+				$ele.find('a').click(useplacename);
+			}
+		}
+	});
+}
+
+function useplacename() {
+	if (!inputElement && document.forms['theForm'].elements['title'].value == '') {
+		inputElement = 'title';
+	}
+	if (inputElement) {
+		var element = document.forms['theForm'].elements[inputElement];
+		if (element.value == '')
+			element.value = $(this).text();
+		else
+			element.value = element.value + ' ' + $(this).text();
+	}
+	return false;
+}
+
+var inputElement = null;
+$(function() {
+	$('.tab3 input, .tab3 textarea').focus(function() {
+		inputElement = this.name;
+	});
+});
+
+/******************************************************************************
  CONTEXTS */ 
 
 $(function() {
@@ -984,6 +1042,7 @@ var static_host = '{$static_host}';
 
 		<label for=title>Title:</label>
 		<input type="text" name="title" id="title" value="" size="50" maxlength="128" placeholder="Title (REQUIRED)"/>
+		<div id="placenames"></div>
 
 		<label for=comment>Description:</label>
 		<textarea name="comment" id=comment cols="60" rows="5" wrap="soft" placeholder="description (optional)"></textarea>
