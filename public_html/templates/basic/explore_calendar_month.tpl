@@ -91,7 +91,7 @@
 
 {if !$blank}
 <p class="no_print">Showing one example image from each day, click a more link to list all images taken that day. 
-<br/><a href="/search.php?taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken&amp;do=1">Search all images taken {$month_name} {$year}</a>		
+<br/><a href="/search.php?taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken&amp;do=1{if $u}&amp;u={$u}{/if}">Search all images taken {$month_name} {$year}</a>
 &nbsp;&nbsp;&nbsp;&nbsp; Key: <span style="font-family:arial;color:green;">G: Geograph Images, <small style="color:blue">(S: Supplemental)</small></span>.</p>
 {/if}
 
