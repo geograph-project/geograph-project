@@ -137,16 +137,30 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 {/if}
 </ul>
 
+{if $is_director}
+<br/><br/>
+<h2>Director Tools - use with care</h2>
+<ul>
+
+<li><a title="Moderators" href="/admin/moderator_admin.php">Moderator Admin</a> - 
+   grant/revoke moderator rights to users</li>
+
+<li><a href="/admin/discuss_reports.php">Forum Reports</a> - 
+   reported inapprirate threads</li>
+
+<li><a href="/admin/viewbounces.php">View Email Bounce/Complains</a> - 
+   issues detected by Amazon system</li>
+
+<li><a title="API Keys" href="/admin/apikeys.php">API Keys</a> - 
+   setup who has access to the API</li>
+
+</ul>
+{/if}
+
 {if $is_admin}
 <br/><br/>
 <h2>Admin Tools - use with care</h2>
 <ul>
-
-<li><a title="Moderators" href="/admin/moderator_admin.php?show_role=-none-">Moderator Admin</a> - 
-   grant/revoke moderator rights to users</li>
-
-<li><a title="API Keys" href="/admin/apikeys.php">API Keys</a> - 
-   setup who has access to the API</li>
 
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
    organise the user submitted categories</li>
@@ -155,34 +169,17 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <h3>Statistics</h3>
 <ul>  
 
+<li><a href="/admin/status.php">Server Status</a></li>
+
+<li><a href="/admin/memcache.php">Memcache Status</a></li>
+
 <li><a title="Web Stats" href="/statistics/pulse.php">Geograph Pulse</a> - 
    upto the minute general site status</li>
-
-<li><a title="Web Stats" href="http://www.geograph.org.uk/logs/">Web Stats</a> - 
-   check the apache activity logs (outdated)</li>
 
 <li><a title="Forum Stats" href="/discuss/?action=stats">Forum Stats</a> - 
    view forum activity stats</li>
 
-
-   
-<li><a title="Search Stats" href="/admin/viewsearches.php">Search Statistics</a> - see the recent Search Activity (very slow)</li>
-
 <li><a title="Events" href="events.php">Event Diagnostics</a> - see what the event system is doing</li>
-
-<li><a title="Server Stats" href="/admin/server.php">Server Stats</a> - 
-   check server status (very slow)</li>
-
-
-</ul>
-<h3>Database Update/Repair</h3>
-<ul>
-
-<li><a title="Recreate Maps" href="/admin/recreatemaps.php">Recreate Maps</a> - 
-   force recreation of the most urgent maps</li>
-
-<li><a title="DB Check" href="/admin/dbcheck.php">Database Check</a> analyse database for
-database or application problems</li>
 
 </ul>
 <h3>Developer Tools</h3>

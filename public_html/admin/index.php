@@ -49,6 +49,10 @@ customExpiresHeader(300,false,true);
 
 	$db = GeographDatabaseConnection(true);
 
+if ($USER->hasPerm("director")) {
+	$smarty->assign('is_director',1);
+}
+
 if ($USER->hasPerm("ticketmod")) {
 
 	$smarty->assign('tickets_new', $db->GetOne("select count(*) from gridimage_ticket where moderator_id=0 and status<>'closed' and deferred < date_sub(NOW(),INTERVAL 24 HOUR)"));
