@@ -169,29 +169,11 @@ ul.methods li div div {
 	</tr>
         <tr>
                 <td align="center">
-			<a href="http://www.livetodot.com/hosting/" rel="nofollow"><img src="{$static_host}/img/livetodot-logo.png" style="padding:10px;" alt="Livetodot Logo"/></a>
-		</td>
-		<td>
-			{external href="http://www.livetodot.com/hosting/" text="Livetodot Hosting"}<br/><br/>
-			- Server Co-location services. Home of the Geograph servers.
-                </td>
-        </tr>
-        <tr>
-                <td align="center">
 			<a href="https://www.tiger-computing.co.uk/" rel="nofollow"><img src="{$static_host}/img/tiger-logo-tl.png" width="200"/></a>
                 </td>
                 <td>
- 			{external href="https://www.tiger-computing.co.uk/" text="Tiger Computing"}<br/><br/>
+			{external href="https://www.tiger-computing.co.uk/" text="Tiger Computing"}<br/><br/>
 			- Linux Support Services. Tiger keep our servers running in tip-top condition. 
-	        </td>
-        </tr>
-        <tr>
-                <td align="center">
-			<a href="http://www.woc.co.uk/" rel="nofollow"><img src="{$static_host}/img/woc.jpg"/></a>
-                </td>
-                <td>
- 			{external href="http://www.woc.co.uk/" text="World of Computers"}<br/><br/>
-			- high quality custom built servers. This site is powered by servers built by WOC. 
 	        </td>
         </tr>
 </table>

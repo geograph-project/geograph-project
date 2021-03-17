@@ -99,13 +99,11 @@
     <ul>
      <li>{external href="https://www.ordnancesurvey.co.uk/education/" text="Ordnance Survey&reg;"} Great Britain have agreed to sponsor the project, allowing us to secure reliable hosting, as well as to develop the project into an educational context.</li>
      
-     <li>{external title="Visit Fubra website" href="http://www.fubra.com/" text="Fubra"}/{external title="Visit Livetodot website" href="http://www.livetodot.com/hosting/" text="Livetodot"} provide superb co-location hosting and support, giving a home to {external href="http://blog.dixo.net/2006/07/28/geograph-servers-coming-to-life/" text="our collection of servers"}.</li> 
-
-     <li>{external title="Visit World of Computers website" href="http://www.woc.co.uk/" text="World of Computers"} build all our servers. Reliable machines coupled with great technical support.</li>
-
      <li>{external title="Visit Tiger Computing website" href="https://www.tiger-computing.co.uk/" text="Tiger Computing"} keep our servers running, performing the routine maintainance, and incident support.</li>
 
      <li><small>During the early days of the project, we relied on a dedicated server generously donated by {external title="Visit Positive Internet website" href="http://www.positive-internet.com/" text="Positive Internet"}.</small></li> 
+
+     <li>Between 2007 and 2020 used Co-Location services from {external title="Visit Fubra website" href="http://www.fubra.com/" text="Fubra"}/{external title="Visit Livetodot website" href="http://www.livetodot.com/hosting/" text="Livetodot"}</li> 
 
     </ul>
 

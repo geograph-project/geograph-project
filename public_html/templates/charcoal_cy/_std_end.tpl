@@ -4,10 +4,7 @@
 {box colour="333"}
 
    <div id="footer_right">
-   Noddwyd y prosiect gan <a href="https://www.ordnancesurvey.co.uk/education/" title="Geograph Britain and Ireland sponsored by Ordnance Survey"><img src="{$static_host}/img/os-logo-pw64.png" width="64" height="50" alt="Ordnance Survey Logo" align="right" style="margin-left:7px"/></a><br/>
-   <small>Lletya gyda <br>
-     {external title="click for livetodot website" href="http://www.livetodot.com/" text="Livetodot" nofollow="true"}<br/></small>
-	</div>
+   Noddwyd y prosiect gan <a href="https://www.ordnancesurvey.co.uk/education/" title="Geograph Britain and Ireland sponsored by Ordnance Survey"><img src="{$static_host}/img/os-logo-pw64.png" width="64" height="50" alt="Ordnance Survey Logo" align="right" style="margin-left:7px"/></a></div>
 	
 	<div id="footer_left"><a href="/help/sitemap" title="Listing of site pages">Map o'r safle</a>
        <span class="sep">|</span>

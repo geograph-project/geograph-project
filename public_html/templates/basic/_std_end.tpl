@@ -150,9 +150,6 @@
        <span class="sep">|</span>
        <a href="/article/Get-Involved" title="contribute to geograph">Get Involved</a>
     </p>
-    <p style="color:#777788;">Website supported by
-    {external title="click to visit the livetodot website" href="http://www.livetodot.com/hosting/" text="Hosting from Livetodot" nofollow="true"}
-    </p>
   </div>
 </div>
 {dynamic}{pagefooter}{/dynamic}

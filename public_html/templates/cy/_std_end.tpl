@@ -149,9 +149,6 @@
        <span class="sep">|</span>
        <a href="/article/Get-Involved" title="contribute to geograph">Cymryd Rhan</a>
     </p>
-    <p style="color:#777788;">Gweithredir y wefan gan
-    {external title="click to visit the livetodot website" href="http://www.livetodot.com/hosting/" text="wasanaeth Lletya Livetodot" nofollow="true"}
-    </p>
   </div>
 </div>
 {dynamic}{pagefooter}{/dynamic}
