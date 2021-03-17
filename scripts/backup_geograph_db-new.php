@@ -120,7 +120,7 @@ if ($count = getOne("SELECT COUNT(distinct table_name) FROM information_schema.t
 		print "#WARNING: There are $count tables in {$CONF['db_db']}, not yet audited\n";
 	} else {
 		$r = print_r(getAll("SELECT TABLE_NAME,TABLE_ROWS,DATA_LENGTH,CREATE_TIME,UPDATE_TIME FROM information_schema.tables LEFT JOIN _tables USING (table_name) WHERE table_schema = DATABASE() AND method IS NULL AND (backup != 'N' OR backup is null)"),true);
-		 mail('geobackup@barryhunter.co.uk',"[{$CONF['db_db']}] Tables not yet audited","There are $count tables in {$CONF['DB_DB']}, not yet audited; goto http://data.geograph.org.uk/bbackup/audit.php\n\n$r");
+		 mail('geobackup@barryhunter.co.uk',"[{$CONF['db_db']}] Tables not yet audited","There are $count tables in {$CONF['DB_DB']}, not yet audited; goto https://www.geograph.org.uk/admin/tables-audit.php\n\n$r");
 	}
 }
 
