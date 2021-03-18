@@ -803,6 +803,17 @@ class GeographPage extends Smarty
 		$this->compile_dir=$this->template_dir."/compiled";
 		$this->config_dir=$this->template_dir."/configs";
 		$this->cache_dir=$this->template_dir."/cache";
+
+		if (!empty($_SERVER['CONF_PROFILE'])) {
+			//test/bodge, when running in Kubernetes, there can be multiple-generations of images running at once, which clobber each others compiled/caches
+			// ... ideally this would be per file - rather than invalidating the entire cacheset on new system image. 
+			// but we cant do that, as files dont have a proper modification time, just the time that the image was built, would have to use a content-hash or something. 
+			//    ... also would have to be vary careful to do it on a per file basis - so a changed included file invalidates the hwole page. 
+			// so for now a global invalidation might work
+		
+			$this->compile_id = filemtime($this->template_dir); //the date/time the 'image' was built, not modified!
+		}
+
 		
 		if (!empty($CONF['memcache']['smarty'])) {
 			$this->compile_dir=$this->template_dir."/compiled-mnt"; ##this seems to fix a bug
