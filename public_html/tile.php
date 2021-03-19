@@ -261,8 +261,8 @@ if ($_GET['l'] == 'u') {
 					CONTAINS( GeomFromText($rectangle),	point_xy)";
 			}
 			if (isset($_GET['dbeug'])) {
-	print $sql;
-}
+				print $sql;
+			}
 			/////////////////////////
 			// fetch from database
 			$arr = $db->getAll($sql);
@@ -295,7 +295,7 @@ if ($_GET['l'] == 'u') {
 						$x2 = intval(($x1 * $pixels_per_centi)+$half);
 						$y2 = $w - intval(($y1 * $pixels_per_centi)+$half);
 
-						$color = $colour[$row['imagecount']];
+						$color = isset($colour[$row['imagecount']])?$colour[$row['imagecount']]:$colour[80];
 						imagefilledellipse($img,$x2,$y2,$pixels_per_centi2,$pixels_per_centi2,$color);
 
 						imageellipse($img,$x2,$y2,$pixels_per_centi2,$pixels_per_centi2,$lastcolour);
@@ -347,7 +347,7 @@ if ($_GET['l'] == 'u') {
 						if ($row['imagecount']) {
 							$l = strlen($row['imagecount']);
 							if ($widthdist > 4) {
-								$color = $colour[$row['imagecount']];
+								$color = isset($colour[$row['imagecount']])?$colour[$row['imagecount']]:$colour[80];
 							} else {
 								$color = ($row['has_geographs'])?$colBack:$colSuppBack;
 							}
@@ -429,15 +429,10 @@ function getStaticColorKey(&$img) {
 }
 
 function getColorKey(&$img) {
-	global $db;
-
-	$sql="select imagecount from gridsquare group by imagecount";
-	$counts = $db->cacheGetCol(3600,$sql);
 
 	$colour=array();
 	$last=$lastcolour=null;
-	for ($p=1; $p<count($counts); $p++) {
-		$o = $counts[$p];
+	for ($o=1; $o<=80; $o++) {
 		//standard green, yellow => red
 		switch (true) {
 			case $o == 1: $r=255; $g=255; $b=0; break;

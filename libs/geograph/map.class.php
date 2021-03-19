@@ -1324,26 +1324,9 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 
 split_timer('map'); //starts the timer
 
-		if ($this->type_or_user == -7 || $this->type_or_user == -8 || $this->type_or_user == -13 || $this->type_or_user == -14 || $this->type_or_user == -17 || $this->type_or_user == -18) {
-
-			set_time_limit(600);
-
-			$counts = range(0,130);
-		} else {
-			if ($this->type_or_user == -3) {
-				$sql="select imagecount from gridsquare_group_count group by imagecount";
-			} elseif ($this->type_or_user == -5) {
-				$sql="select distinct round(log10(hits)*2) from gridsquare_log order by hits";
-			} else {
-				$sql="select imagecount from gridsquare group by imagecount";
-			}
-			$counts = $db->cacheGetCol(3600,$sql);
-		}
 		$colour=array();
 		$last=$lastcolour=null;
-		for ($p=0; $p<count($counts); $p++)
-		{
-			$o = $counts[$p];
+		for ($o=0; $o<=80; $o++) {
 			//standard green, yellow => red
 			switch (true) {
 				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break;
@@ -1504,7 +1487,7 @@ split_timer('map'); //starts the timer
 			$imgx1=round(($gridx-$left) * $this->pixels_per_km);
 			$imgy1=round(($this->image_h-($gridy-$bottom+1)* $this->pixels_per_km));
 
-			$color = $colour[$recordSet->fields[2]];
+			$color = isset($colour[$recordSet->fields[2]])?$colour[$recordSet->fields[2]]:$colour[0];
 
 			if ($this->pixels_per_km==1) {
 				imagesetpixel($img,$imgx1, $imgy1,$color);
