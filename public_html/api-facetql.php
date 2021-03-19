@@ -395,6 +395,25 @@ function getAll($query) {
 		return FALSE;
 	}
 	$a = array();
+	if (!empty($_GET['utf'])) {
+		if ($_GET['utf'] === "2") {
+			//in fact may still need to decode entities!
+			while($row = mysql_fetch_assoc($result)) {
+		                if (!empty($row['title']))
+		                        $row['title'] = manticore_to_utf8($row['title']);
+		                if (!empty($row['realname']))
+                		        $row['realname'] = manticore_to_utf8($row['realname']);
+				$a[] = $row;
+			}
+			return $a;
+		}
+
+		//manticore, should in general already be in utf8, so test without. Should change this to perhaps use 'detect_encoding' to do conditionally!
+		while($row = mysql_fetch_assoc($result)) {
+			$a[] = $row;
+		}
+		return $a;
+	}
 	while($row = mysql_fetch_assoc($result)) {
                 if (!empty($row['title']))
                         $row['title'] = utf8_encode($row['title']);

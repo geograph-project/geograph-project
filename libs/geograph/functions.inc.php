@@ -1083,6 +1083,11 @@ function translit_to_ascii($in, $charset = 'ISO-8859-15') {
 }
 
 
+function manticore_to_utf8($input) {
+	//no longer need to convert to utf8 explicilty, as manticore has data in utf8 already
+	// ie "windows-1252" converted to "utf-8" during indexing, but need to decode entiteis, as utf8 was still left as entities
+	return html_entity_decode($input, ENT_COMPAT, 'UTF-8');
+}
 
 function latin1_to_utf8($input) {
         //our database has charactors encoded as entities (outside ISO-8859-1) - so need to decode entities.
