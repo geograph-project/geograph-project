@@ -123,12 +123,14 @@
 {/if}
 
 </ul>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-  <script src="/js/chosen/chosen.jquery.min.js" type="text/javascript"></script>
-  <link rel="stylesheet" href="/js/chosen/chosen.css" />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="{"/js/select2-3.3.2/select2.js"|revision}"></script>
+<link href="{"/js/select2-3.3.2/select2.css"|revision}" rel="stylesheet"/>
+
 <script type="text/javascript">{literal}
 $(function() {
-	$("#topic_id, #county_id").chosen();
+	$("#topic_id, #county_id").select2();
 });
 
 
