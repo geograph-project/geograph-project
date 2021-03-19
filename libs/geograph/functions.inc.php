@@ -567,7 +567,7 @@ function smarty_function_geographlinks($input,$thumbs = false) {
 
 
 //replace geograph links
-function GeographLinks(&$posterText,$thumbs = false) {
+function GeographLinks(&$posterText,$thumbs = false,$char_set = 'ISO-8859-1') {
 	global $imageCredits,$CONF,$global_thumb_count,$ADODB_FETCH_MODE;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
@@ -624,10 +624,14 @@ function GeographLinks(&$posterText,$thumbs = false) {
 						}
 						$posterText = preg_replace("/\[{2,3}$prefix$g_id\]{2,3}/",'[image no longer available]',$posterText);
 					} elseif ($ok) {
-						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
+						if ($char_set == 'UTF-8')
+							$g_image->title = latin1_to_utf8($g_image->title);
+						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title,ENT_COMPAT,$char_set);
 						if ($g_matches[1][$g_i]) {
 							if ($thumbs) {
-								$g_title.=' by '.htmlentities($g_image->realname);
+								if ($char_set == 'UTF-8')
+									$g_image->realname = latin1_to_utf8($g_image->realname);
+								$g_title.=' by '.htmlentities2($g_image->realname,ENT_COMPAT,$char_set);
 								$g_img = $g_image->getThumbnail(120,120,false,true);
 
 								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
