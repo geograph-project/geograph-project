@@ -811,7 +811,8 @@ class GeographPage extends Smarty
 			//    ... also would have to be vary careful to do it on a per file basis - so a changed included file invalidates the hwole page. 
 			// so for now a global invalidation might work
 		
-			$this->compile_id = filemtime($this->template_dir); //the date/time the 'image' was built, not modified!
+			$this->compile_id = filemtime(dirname($this->template_dir)); //the date/time the 'image' was built, not modified!
+						// the tempalte folder itself gets modified on startup (creating the symlinks), so use the parent folder
 		}
 
 		
