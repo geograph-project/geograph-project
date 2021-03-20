@@ -38,6 +38,11 @@ if ($db->getOne(" show tables from showcase like 'gallery_image'")) {
 		if ($param['debug']) print "executeing...\n";
 		$db->Execute("create table gallery_ids (`id` INT NOT NULL,primary key (`id`)) engine=myisam select floor(substring_index(url,'/',-1)) as id,users,showday,baysian,fetched,first_vote,last_vote from showcase.gallery_image where length(title) > 2");
 
+		//use the public vote as a fallback
+		$db->Execute("update gridimage_daily inner join gallery_ids on (id = gridimage_id)
+		 set  vote_baysian = baysian,gridimage_daily.updated = gridimage_daily.updated
+		 where gridimage_daily.showday is null and vote_baysian =0 and baysian > 3 and gridimage_daily.updated < date_sub(now(),interval 7 day)");
+
 		if ($param['debug']) print "counting...\n";
 		if ($db->getOne("SELECT COUNT(*) FROM gallery_ids") > 20000) {
 			file_get_contents("http://www.geograph.org.uk/project/systemtask.php?id[]=75&spotcheck=1&api=1&method=POST");
