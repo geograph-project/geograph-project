@@ -220,9 +220,9 @@ if (!empty($_GET['bounds'])) {
 				$link = mysql_database();
 
 				$sql = "SELECT TO_DAYS('{$m[1]}') AS result";
-				$result = mysql_query($sql,$link) or die ("Couldn't select query : $sql " . mysql_error($link) . "\n");
-				if (mysql_num_rows($result) > 0) {
-					$row = mysql_fetch_array($result,MYSQL_ASSOC);
+				$result = mysqli_query($link,$sql) or die ("Couldn't select query : $sql " . mysqli_error($link) . "\n");
+				if (mysqli_num_rows($result) > 0) {
+					$row = mysqli_fetch_assoc($result);
 					$select = str_replace($m[0],$row['result'],$select);
 				}
 			}
@@ -309,9 +309,9 @@ if (!empty($_GET['bounds'])) {
 					$row = current($res['matches']);
 
 					$sql = "SELECT FROM_DAYS(".intval($row['attrs']['mn']).") AS mn,FROM_DAYS(".intval($row['attrs']['mx']).") AS mx";
-					$result = mysql_query($sql,$link) or die ("Couldn't select query : $sql " . mysql_error($link) . "\n");
-					if (mysql_num_rows($result) > 0) {
-					     $res['data'] = mysql_fetch_array($result,MYSQL_ASSOC);
+					$result = mysqli_query($link,$sql) or die ("Couldn't select query : $sql " . mysqli_error($link) . "\n");
+					if (mysqli_num_rows($result) > 0) {
+					     $res['data'] = mysqli_fetch_assoc($result);
 					}
 				}
 			###########

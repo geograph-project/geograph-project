@@ -104,7 +104,7 @@ Example Queries:
 		$select = empty($_GET['select'])?'id':$_GET['select'];
 		$where = array();
 		if (!empty($_GET['match']))
-			$where[] = "MATCH('".mysql_real_escape_string($_GET['match'])."')";
+			$where[] = "MATCH('".mysqli_real_escape_string($db,$_GET['match'])."')";
 		if (!empty($_GET['where'])) {
 			if (is_array($_GET['where'])) {
 				foreach($_GET['where'] as $key => $value)
@@ -134,9 +134,9 @@ Example Queries:
 				$link = mysql_database();
 
                                 $sql = "SELECT TO_DAYS('{$m[1]}') AS result";
-                                $result = mysql_query($sql,$link) or die ("Couldn't select query : $sql " . mysql_error($link) . "\n");
-                                if (mysql_num_rows($result) > 0) {
-                                        $row = mysql_fetch_array($result,MYSQL_ASSOC);
+                                $result = mysqli_query($link,$sql) or die ("Couldn't select query : $sql " . mysqli_error($link) . "\n");
+                                if (mysqli_num_rows($result) > 0) {
+                                        $row = mysqli_fetch_assoc($result);
                                         $select = str_replace($m[0],$row['result'],$select);
                                 }
                         }
@@ -165,9 +165,9 @@ Example Queries:
                                 $link = mysql_database();
 
                                 $sql = "SELECT TO_DAYS('{$m[1]}') AS `from`,TO_DAYS('{$m[2]}') as `to`";
-                                $result = mysql_query($sql,$link) or die ("Couldn't select query : $sql " . mysql_error($link) . "\n");
-                                if (mysql_num_rows($result) > 0) {
-                                        $row = mysql_fetch_array($result,MYSQL_ASSOC);
+                                $result = mysqli_query($link,$sql) or die ("Couldn't select query : $sql " . mysqli_error($link) . "\n");
+                                if (mysqli_num_rows($result) > 0) {
+                                        $row = mysqli_fetch_assoc($result);
 					$where[] = "$key BETWEEN ".intval($row['from'])." AND ".intval($row['to']);
                                 }
                         }
@@ -218,7 +218,7 @@ Example Queries:
 	                        $_GET['match'] = geotiles(floatval($bits[0]),floatval($bits[1]),floatval($bits[2]));
 
 		                if (!empty($_GET['match']))
-        		                $where[] = "MATCH('".mysql_real_escape_string($_GET['match'])."')";
+        		                $where[] = "MATCH('".mysqli_real_escape_string($db,$_GET['match'])."')";
 	                }
 
 	                //make a BBOX too?
@@ -343,9 +343,9 @@ if ($order == 'RAND()' && empty($_GET['rnd'])) {
                                         $row = current($res['rows']);
 
                                         $sql = "SELECT FROM_DAYS(".intval($row['mn']).") AS mn,FROM_DAYS(".intval($row['mx']).") AS mx";
-                                        $result = mysql_query($sql,$link) or die ("Couldn't select query : $sql " . mysql_error($link) . "\n");
-                                        if (mysql_num_rows($result) > 0) {
-                                             $res['data'] = mysql_fetch_array($result,MYSQL_ASSOC);
+                                        $result = mysqli_query($link,$sql) or die ("Couldn't select query : $sql " . mysqli_error($link) . "\n");
+                                        if (mysqli_num_rows($result) > 0) {
+                                             $res['data'] = mysqli_fetch_assoc($result);
                                         }
                                 }
 
@@ -388,17 +388,17 @@ if (empty($res['meta'])) {
 
 function getAll($query) {
 	global $db;
-	if (!($result = mysql_query($query, $db))) {
+	if (!($result = mysqli_query($db, $query))) {
 		return FALSE; //SHOW META in sphinx will report the error
 	}
-	if (!mysql_num_rows($result)) {
+	if (!mysqli_num_rows($result)) {
 		return FALSE;
 	}
 	$a = array();
 	if (!empty($_GET['utf'])) {
 		if ($_GET['utf'] === "2") {
 			//in fact may still need to decode entities!
-			while($row = mysql_fetch_assoc($result)) {
+			while($row = mysqli_fetch_assoc($result)) {
 		                if (!empty($row['title']))
 		                        $row['title'] = manticore_to_utf8($row['title']);
 		                if (!empty($row['realname']))
@@ -409,12 +409,12 @@ function getAll($query) {
 		}
 
 		//manticore, should in general already be in utf8, so test without. Should change this to perhaps use 'detect_encoding' to do conditionally!
-		while($row = mysql_fetch_assoc($result)) {
+		while($row = mysqli_fetch_assoc($result)) {
 			$a[] = $row;
 		}
 		return $a;
 	}
-	while($row = mysql_fetch_assoc($result)) {
+	while($row = mysqli_fetch_assoc($result)) {
                 if (!empty($row['title']))
                         $row['title'] = utf8_encode($row['title']);
                 if (!empty($row['realname']))
@@ -427,25 +427,25 @@ function getAll($query) {
 }
 function getAssoc($query) {
 	global $db;
-	if (!($result = mysql_query($query, $db))) {
+	if (!($result = mysqli_query($db, $query))) {
 		return FALSE; //SHOW META in sphinx will report the error
 	}
-	if (!mysql_num_rows($result)) {
+	if (!mysqli_num_rows($result)) {
 		return FALSE;
 	}
 	$a = array();
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 
 	if (count($row) > 2) {
 		do {
 			$i = array_shift($row);
 			$a[$i] = $row;
-		} while($row = mysql_fetch_assoc($result));
+		} while($row = mysqli_fetch_assoc($result));
 	} else {
 		$row = array_values($row);
 		do {
 			$a[$row[0]] = $row[1];
-		} while($row = mysql_fetch_row($result));
+		} while($row = mysqli_fetch_row($result));
 	}
 	return $a;
 }
