@@ -50,7 +50,7 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 		$.ajaxSetup({
 			cache: true
 		});
-		$.getScript('//s1.geograph.org.uk/js/lazy.v7.js',function() {
+		$.getScript('//s1.geograph.org.uk/js/lazy.73715774.js',function() {
 			//initLazy();
 			
 			$('#related').append('<form><select onchange="renderRelatedImage()">'+

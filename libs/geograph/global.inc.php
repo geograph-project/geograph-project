@@ -684,6 +684,8 @@ function init_session()
 #################################################
 
 function recordVisitor() {
+	return;  //hobbled for now
+
 	global $db, $memcache, $USER;
 
 	//sometimes might be able to reuse a global one!
@@ -748,27 +750,75 @@ function smarty_function_pageheader() {
 ///		return newrelic_get_browser_timing_header();
 //	}
 }
+
 function smarty_function_pagefooter() {
-
-	if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' && !empty($_SESSION) && rand(1,10) > 7 && (strpos($_SERVER['HTTP_USER_AGENT'], 'bot') === FALSE) ) {
-		$texts = array('donate to geograph','please support us','donations welcome!','please donate','donations accepted');
-		$text = $texts[array_rand($texts)];
-		return '<div style="position:absolute;top:0;left:400px;width:200px"><a href="/help/donate" style="color:cyan">'.$text.'</a></div>';
-	}
-
-#	if (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 == 0) {
-#		return '<script type="text/javascript">(function(a,b,c){function d(){var a=b.createElement(c),d=b.getElementsByTagName(c)[0];a.async=a.src="http://s2.cdnplanet.com/static/rum/rum.js",d.parentNode.insertBefore(a,d)}if(a.location.protocol=="https:")return;a.addEventListener&&a.addEventListener("load",d,!1)})(window,document,"script")</script>';
-#	}
-
-//        if (isset($_GET['snow']) || (isset($_SESSION['searchq']) && $_SESSION['searchq'] == 'let it snow')) {
-//        	print '<div id="snowFlakeContainer"><p class="snowflake">*</p></div><style>.snowflake {z-index:100000;position: fixed;color: #FFFFFF;}</style><script src="http://kirupa.googlecode.com/svn/trunk/snow.js"></script>';
-//	}
 
 	if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 		ob_start();
 		Profiler::render();
 		return ob_get_clean();
 	}
+
+
+        //doing this in here, means 1) should only be pages that render _std_end, so mostly pages. and 2) already likely to have database setup, and dont session startup etc
+        recordVisitor();
+
+
+	$str = array();
+
+        if (!empty($_GET['mobile'])) {
+$str[] = "
+<script type=\"text/javascript\">
+  <!--
+  if (screen.width <= 800) {
+    window.location = 'http://".str_replace('www.','m.',$_SERVER['HTTP_HOST']).$_SERVER['REQUEST_URI']."';
+  }
+  //-->
+</script>
+";
+        } elseif (!empty($mobile_browser) && !empty($mobile_url) && empty($_SESSION['responsive']) ) {
+                $str[] = "<div style=\"position:absolute;top:2px;left:400px;width:250px\"><a href=\"$mobile_url\" style=\"color:white;\">Switch to Mobile site</a></div>";
+        }
+
+
+/*
+	if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' && !empty($_SESSION) && rand(1,10) > 7 && (strpos($_SERVER['HTTP_USER_AGENT'], 'bot') === FALSE) ) {
+		$texts = array('donate to geograph','please support us','donations welcome!','please donate','donations accepted');
+		$text = $texts[array_rand($texts)];
+		$str[] = '<div style="position:absolute;top:0;left:400px;width:200px"><a href="/help/donate" style="color:cyan">'.$text.'</a></div>';
+	}
+
+	if (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 == 0) {
+		$str[] = '<script type="text/javascript">(function(a,b,c){function d(){var a=b.createElement(c),d=b.getElementsByTagName(c)[0];a.async=a.src="http://s2.cdnplanet.com/static/rum/rum.js",d.parentNode.insertBefore(a,d)}if(a.location.protocol=="https:")return;a.addEventListener&&a.addEventListener("load",d,!1)})(window,document,"script")</script>';
+	}
+
+        if (isset($_GET['snow']) || (isset($_SESSION['searchq']) && $_SESSION['searchq'] == 'let it snow')) {
+        	$str[] = '<div id="snowFlakeContainer"><p class="snowflake">*</p></div><style>.snowflake {z-index:100000;position: fixed;color: #FFFFFF;}</style><script src="http://kirupa.googlecode.com/svn/trunk/snow.js"></script>';
+	}
+*/
+	
+	if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' || $_SERVER['HTTP_HOST'] == 'www.geograph.ie' || $_SERVER['HTTP_HOST'] == 'staging.geograph.org.uk') { //this is mainly to exclude schools!
+
+	        //if (isset($_GET['links']))
+        	if (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 ==1 || !empty($_GET['links']))
+                	$str[] = '<script src="'.smarty_modifier_revision("/js/links.js").'" defer="defer"></script>';
+
+		if (strpos($_SERVER["REQUEST_URI"],'/photo/') === 0) {
+        	        $str[] = '<script src="'.smarty_modifier_revision("/js/related.js").'" type="text/javascript" defer="defer"></script>';
+	        }
+	}
+
+	global $USER;
+	if (!empty($USER) && $USER->user_id == 3)
+        	$str[] = "<div style=\"position:absolute;top:40px;left:300px;width:250px;color:yellow\">Host: ".`hostname`."</div>";
+
+
+        if (!empty($str))
+                return implode("\n",$str);
+        else
+                return '';
+
+
 	
 //	if(extension_loaded('newrelic')) {
 //		return newrelic_get_browser_timing_footer();
