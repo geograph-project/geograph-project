@@ -39,43 +39,46 @@ $smarty->display('_std_begin.tpl',md5($_SERVER['PHP_SELF']));
 </div>
 
 
-<div style="width:100%; height:160px; white-space: nowrap; overflow:hidden">
+<div style="width:100%; height:190px; white-space: nowrap; overflow:hidden">
 <?
 
-$db = GeographDatabaseConnection(true);
+$sph = GeographSphinxConnection('sphinxql',true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
 
 $where = '';
 if (!empty($_GET['g']))
-        $where .= " AND `group` LIKE ".$db->Quote('%'.$_GET['g'].'%');
+        $where .= " AND MATCH(".$sph->Quote('@group '.$_GET['g']);
 if (!empty($_GET['l']))
-        $where .= " AND `label` = ".$db->Quote($_GET['l']);
+        $where .= " AND `label` = ".$sph->Quote($_GET['l']);
+
 
 $cols = "label";
-$sql = "SELECT gridimage_id,gi.user_id,realname,title,grid_reference,$cols,GREATEST(original_width,original_height) AS largest,wgs84_lat,wgs84_long
-        FROM gridimage_search gi
-                INNER JOIN curated1 USING (gridimage_id)
-                INNER JOIN gridimage_size USING (gridimage_id)
+$sql = "SELECT id,user_id,realname,title,grid_reference,$cols, if(larger='',0,1) as has_larger, if(types = '_SEP_ Geograph _SEP_',1,0) as is_geo
+        FROM curated1
         WHERE label NOT IN('weather','season')
-	GROUP BY label HAVING largest > 1000
-	ORDER BY baysian div 5 DESC, sequence LIMIT 10";
+	ORDER BY has_larger DESC, is_geo DESC, hash DESC LIMIT 10";
 
-$images = $db->getAll($sql);
+$images = $sph->getAll($sql);
 if (empty($images))
         die("nothing to display right now, please try later");
 
 $thumbw = 213;
 $thumbh = 160;
 foreach ($images as $row) {
+	$row['gridimage_id'] = $row['id'];
 	$image = new GridImage;
         $image->fastInit($row);
 	?>
-		 <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true); ?></a>
+		<div style="display:inline-block">
+		 <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true); ?></a><br>
+		 <b><? echo $row['label']; ?></b>
+		</div>
 	<?
 }
 ?>
 </div>
-<br><br><br>
+<br><br>
 
 <h2>Key Stage 1 - National Curriculum - England</h2>
 <table cellpadding=10 style="font-size:1.3em;text-align:center">
