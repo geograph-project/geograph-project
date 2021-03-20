@@ -34,7 +34,7 @@ $smarty->display('_std_begin.tpl');
 
 <h2>Geograph PhotoMap</h2>
 
-<p>The PhotoMap layers, have now been intergrated into the main <a href="/mapper/combined.php/">Coverage Map</a>. So dont need this dedicated viewer anymore. 
+<p>The PhotoMap layers, have now been intergrated into the main <a href="/mapper/combined.php">Coverage Map</a>. So dont need this dedicated viewer anymore. 
 
 <p>In the layer switcher top right of the map, select 'Geograph PhotoMap' to get the imagry base layer. You may also want to enable the 'PhotoMap Overlay' which is a basic wireframe map to help orientate. </p>
 
