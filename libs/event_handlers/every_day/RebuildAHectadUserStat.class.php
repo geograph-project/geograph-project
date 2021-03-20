@@ -55,7 +55,7 @@ class RebuildAHectadUserStat extends EventHandler //A in name to ensure it runs 
 				  `geographs` MEDIUMINT UNSIGNED default NULL,
 				  `squares` TINYINT UNSIGNED NOT NULL default '0',
 				  `geosquares` TINYINT UNSIGNED NOT NULL default '0',
-				  `recentsquares` TINYINT UNSIGNED NOT NULL DEFAULT 0
+				  `recentsquares` TINYINT UNSIGNED NOT NULL DEFAULT 0,
 				  `firsts` TINYINT UNSIGNED NOT NULL default '0',
 				  `first_submitted` datetime default NULL,
 				  `last_submitted` datetime default NULL,
