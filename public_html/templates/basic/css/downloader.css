@@ -1,0 +1,69 @@
+
+div.thumbnails:after {
+  visibility: hidden;
+  display: block;
+  content: "";
+  clear: both;
+  height: 0;
+}
+
+div.thumbnails div {
+    float: left;
+    position: relative;
+    width: 223px;
+    height: 190px;
+    text-align: center;
+}
+
+.thumbnails.shadow img {
+	margin-bottom:0;
+}
+.thumbnails a.thumb {
+	display:block;
+}
+.thumbnails a.download, .thumbnails a.reuse {
+	text-decoration:none;
+	color:gray;
+	font-size:0.9em;
+	margin-left:2px;
+	margin-right:2px;
+}
+
+.thumbnails a.reuse::before {
+	content: "/";
+}
+
+.thumbnails a.section {
+	position:absolute;
+	top:0;
+	left:20px;
+	width:183px;
+	opacity:0.7;
+	text-shadow: 0px 0px 13px rgba(0, 0, 0, 1);
+	text-decoration:none;
+	color:white;
+	font-weight:bold;
+	text-align:center;
+	cursor:pointer;
+	padding-top:20px;
+	height:70px;
+	background-color:black;
+}
+.thumbnails a.section:hover {
+	opacity:1;
+}
+
+.progress-bar {
+        height:10px;
+        background-color:lightgreen;
+}
+.hide {
+	display:none;
+}
+p.alert-success {
+	color:green;
+}
+p.alert-danger {
+	color:red;
+}
+

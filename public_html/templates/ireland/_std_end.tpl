@@ -70,7 +70,7 @@
      </ul></li>
 
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a><ul>
-      <li><a title="The Geograph Team" href="/admin/team.php">The Team</a></li>
+      <li><a title="The Geograph Team" href="/team.php">The Team</a></li>
       <li><a href="/help/credits" title="Who built this and how?">Credits</a></li>
      </ul></li>
     </ul></li>

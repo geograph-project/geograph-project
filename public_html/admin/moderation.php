@@ -526,10 +526,7 @@ if (!empty($_GET['full']))
 $smarty->assign('second',!empty($_SESSION['second']));
 $_SESSION['second'] = true;
 
-if (!empty($_GET['old']))
-	$smarty->display('admin_moderation_old.tpl',$style);
-else
-	$smarty->display('admin_moderation.tpl',$style);
+$smarty->display('admin_moderation.tpl',$style);
 
 
 

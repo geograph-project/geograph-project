@@ -49,10 +49,6 @@ $smarty->assign_by_ref('isadmin', $isadmin);
 
 $template = 'blogs.tpl';
 
-if (isset($_GET['preview'])) {
-        $template = 'blogs2.tpl';
-}
-
 if ($isadmin) {
 	if (!empty($_GET['id']) && preg_match('/^\d+$/',$_GET['id'])) {
 		$db = GeographDatabaseConnection(false);
