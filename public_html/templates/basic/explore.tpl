@@ -81,7 +81,7 @@
 
 	<li><a href="/browser/#!start">Geograph Browser</a> - Interactive browser to quickly search and browse images</li>
 
-	<li>SuperLayer: for <a href="/kml.php">Google Earth</a> - dragable/zoomable interactive maps - shows all images</li>
+	<li><a href="/kml.php">View images Google Earth</a> - a few options for displaying images (old and not very functional)</li>
 
 	<li><form method="get" action="/browse.php" style="display:inline">
 	<label for="gridref">Browse</label> by <b>grid reference</b>: 

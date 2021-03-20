@@ -67,10 +67,8 @@
 
 <ul>
 <li><b>{$count.mapcache|thousends}</b> rendered map tiles</li>
-<li><b>{$count.kmlcache|thousends}</b> rendered superlayer tiles</li>
 <!--li><b>{$files.rss|thousends}</b> different syndicated feeds</li>
 <li><b>{$files.tpcompiled|thousends}</b> page templates (made of <b>{$files.tpraw}</b> components)</li-->
-<li><b>{$count.kmlcache|thousends}</b> static sitemap files</li>
 </ul>
 
 <br style="clear:both"/>

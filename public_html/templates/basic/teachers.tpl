@@ -60,8 +60,7 @@
 <h3>View Images in Google Earth</h3>
 	
 <ul>
-	<li>The quickest method is using the <a href="/kml-superlayer.php">Superlayer</a> - will open directly in GE</li>
-	<li>Many more options listed <a href="/kml.php">here</a></li>
+	<li>Options listed <a href="/kml.php">here</a></li>
 	
 	<li>See also <a href="/article/Ways-to-view-Geograph-Images">this page</a> for other software</li>
 	

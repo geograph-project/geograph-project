@@ -174,9 +174,6 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	#	$sql = "select count(distinct id) from vote_stat where type = 'i19618112'";
 	#	calc("Rated Images",$sql);
 
-	#	$sql = "SELECT COUNT(*) FROM kmlcache WHERE rendered = 0";
-	#	calc("Superlayers tiles to update",$sql,3600);
-
 	#	$sql = "SELECT COUNT(DISTINCT url) FROM gridimage_link WHERE next_check < NOW()";
 	#	calc("Links waiting to be checked",$sql);
 
