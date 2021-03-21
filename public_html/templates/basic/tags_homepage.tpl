@@ -64,7 +64,7 @@
 		<ol style="margin-left:18px">
 			{foreach from=$data.tags item=item}
 				<li{if $item.count} value="{$item.count}"{/if}><span class="tag">
-						{if $item.prefix && $item.prefix != 'bucket' && $item.prefix != 'top'}<small>{$item.prefix|escape:'html'}:<br/></small>{/if}<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}" class="taglink"{if $item.description} title="{$item.description|escape:'html'}"{/if}>{$item.tag|escape:'html'}</a>
+						{if $item.prefix && $item.prefix != 'bucket' && $item.prefix != 'top'}<small>{$item.prefix|escape:'html'}:</small>{/if}<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}" class="taglink"{if $item.description} title="{$item.description|escape:'html'}"{/if}>{$item.tag|escape:'html'}</a>
 					</span></li>
 			{/foreach}
 		</ol>
