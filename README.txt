@@ -1,3 +1,13 @@
+NOTE: This the 'master' Branch, is the generic version of the project, it's not actively maintained, but major functions may be committed here. 
+The actual regional projects, currently Geograph "Britain and Ireland", "Germany", and "Channel Islands", have their own active branches. 
+
+https://github.com/geograph-project/geograph-project/tree/british-isles
+https://github.com/geograph-project/geograph-project/tree/germany
+https://github.com/geograph-project/geograph-project/tree/channel-islands
+
+They will typically have more active development. There are other branches used for development of various things, but these are the actively launched sites. 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 =======================================================================
                              GEOGRAPH README
 =======================================================================
