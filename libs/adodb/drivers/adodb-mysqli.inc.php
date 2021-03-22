@@ -142,7 +142,11 @@ class ADODB_mysqli extends ADOConnection {
 	function GetOne($sql,$inputarr=false)
 	{
 		$ret = false;
-		$rs = $this->Execute($sql,$inputarr);
+		if (strncasecmp($sql,'sele',4) == 0) {
+                        $rs = $this->SelectLimit($sql,1,-1,$inputarr);
+		} else {
+			$rs = $this->Execute($sql,$inputarr);
+		}
 		if ($rs) {	
 			if (!$rs->EOF) $ret = reset($rs->fields);
 			$rs->Close();
@@ -1017,4 +1021,3 @@ class ADORecordSet_mysqli extends ADORecordSet{
  
 }
 
-?>
