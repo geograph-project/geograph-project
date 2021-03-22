@@ -29,7 +29,6 @@ $template = 'finder_recent.tpl';
 
 pageMustBeHTTPS();
 
-$cacheid = intval($_GET['page']);
 $extra = array();
 
 $src = 'data-src';
@@ -37,7 +36,6 @@ if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
         (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
 	$src = 'src';//revert back to standard non lazy loading
 }
-$cacheid .=".$src";
 
 if (true) {
 	if (!empty($_GET['q'])) {
