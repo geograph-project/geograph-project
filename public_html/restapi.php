@@ -65,7 +65,7 @@ class RestAPI
 
 	function handleUser()
 	{
-		$_GET['key'] = $this->params[1];
+		$_GET['key'] = @$this->params[1];
 
 		if (preg_match('/nick:(.*)/',$this->params[0],$m)) {
 			$profile = new GeographUser;
@@ -131,7 +131,7 @@ class RestAPI
 		if (!empty($this->params[0])) {
 	                $gridimage_id=intval($this->params[0]);
 
-	                $_GET['key'] = $this->params[1];
+	                $_GET['key'] = @$this->params[1];
 
 		} elseif (!empty($_GET['id'])) {
 			$gridimage_id =  intval($_GET['id']);
@@ -301,7 +301,7 @@ class RestAPI
 		global $CONF;
 
 		$gridimage_id=intval($this->params[0]);
-		$_GET['key'] = $this->params[1];
+		$_GET['key'] = @$this->params[1];
 
 		$image=new GridImage;
 		if ($image->loadFromId($gridimage_id,1))
@@ -375,7 +375,7 @@ class RestAPI
 	function handleSnippet()
 	{
 		$ids = $this->params[0];
-		$_GET['key'] = $this->params[1];
+		$_GET['key'] = @$this->params[1];
 
 		if (preg_match('/^\d+(,\d+)*$/',$ids))
 		{
@@ -410,7 +410,7 @@ class RestAPI
 
 	function handlePotd()
 	{
-		$_GET['key'] = $this->params[0];
+		$_GET['key'] = @$this->params[0];
 
 		$db = GeographDatabaseConnection(true);
 
@@ -436,7 +436,7 @@ class RestAPI
 
 	function handleLast()
 	{
-		$_GET['key'] = $this->params[0];
+		$_GET['key'] = @$this->params[0];
 
 		$db = GeographDatabaseConnection(true);
 
@@ -465,7 +465,7 @@ class RestAPI
 	function handlePost()
 	{
 		$ids = $this->params[0];
-		$_GET['key'] = $this->params[1];
+		$_GET['key'] = @$this->params[1];
 
 		if (preg_match('/^\d+(,\d+)*$/',$ids))
 		{
@@ -501,7 +501,7 @@ class RestAPI
 	function handleArticle()
 	{
 		$ident = $this->params[0];
-		$_GET['key'] = $this->params[1];
+		$_GET['key'] = @$this->params[1];
 
 		if (preg_match('/^[\w-]+$/',$ident))
 		{
@@ -547,7 +547,7 @@ class RestAPI
 	{
 		global $CONF;
 
-		$_GET['key'] = $this->params[2];
+		$_GET['key'] = @$this->params[2];
 
 		if (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$this->params[1],$ll)) {
 			$this->beginResponse();
@@ -630,7 +630,7 @@ class RestAPI
 	        $square=new GridSquare;
                 $grid_given=true;
                 $grid_ok=$square->setByFullGridRef($this->params[0]);
-		$_GET['key'] = $this->params[1];
+		$_GET['key'] = @$this->params[1];
 
                 $image=new GridImage;
                 if ($grid_ok)
@@ -674,7 +674,7 @@ class RestAPI
                 $square=new GridSquare;
                 $grid_given=true;
                 $grid_ok=$square->setByFullGridRef($this->params[0]);
-                $_GET['key'] = $this->params[1];
+                $_GET['key'] = @$this->params[1];
 
                 if ($grid_ok)
                 {
@@ -718,7 +718,7 @@ class RestAPI
 		$square=new GridSquare;
 		$grid_given=true;
 		$grid_ok=$square->setByFullGridRef($this->params[0]);
-		$_GET['key'] = $this->params[1];
+		$_GET['key'] = @$this->params[1];
 
 		ini_set('memory_limit', '128M');
 
@@ -809,7 +809,7 @@ class RestAPI
 	function handleUserTimeline()
 	{
 		$uid=intval($this->params[0]);
-		$_GET['key'] = $this->params[1];
+		$_GET['key'] = @$this->params[1];
 
 		$profile=new GeographUser($uid);
 		if ($profile->realname)
