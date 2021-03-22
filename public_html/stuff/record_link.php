@@ -37,9 +37,7 @@ if (isset($_GET['html'])) {
 flush();
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');
-
+$db = GeographDatabaseConnection(false);
 
 $decode = json_decode(file_get_contents("php://input"),true);
 

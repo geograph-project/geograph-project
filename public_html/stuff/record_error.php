@@ -37,9 +37,7 @@ if (isset($_GET['html'])) {
 flush();
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');
-
+$db = GeographDatabaseConnection(false);
 
 $ins = "INSERT INTO error_log SET
 	message = ".$db->Quote(@$_GET['message']).",

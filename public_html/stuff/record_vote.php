@@ -37,8 +37,7 @@ if (isset($_GET['html'])) {
 flush();
 
 
-$db=NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');
+$db = GeographDatabaseConnection(false);
 
 if (!is_numeric($_GET['id'])) {
 	$id = $db->getOne("SELECT id FROM vote_string WHERE value = ".$db->Quote(@$_GET['id']));
