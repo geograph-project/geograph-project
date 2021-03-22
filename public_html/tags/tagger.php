@@ -39,7 +39,7 @@ if ($usenew) {
 if (!empty($_GET['old']))
 	$smarty->assign('old',1);
 
-//if ($USER->user_id == 3)
+if ($USER->user_id == 3)
 	$smarty->assign('vision',1);
 
 ################################################################
