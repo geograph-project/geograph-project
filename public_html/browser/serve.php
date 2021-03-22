@@ -53,7 +53,7 @@ customGZipHandlerStart();
 		 //ww4 runs around edgecast! we use memcache anyway, so dont need the caching
 	}
         if (rand(1,10) > 5 && $memcache->valid) {
-                $remote =& $memcache->name_get('browser',$mkey);
+                $remote = $memcache->name_get('browser',$mkey);
         }
 
 	if (empty($remote) || strlen($remote) < 512)
@@ -61,7 +61,7 @@ customGZipHandlerStart();
 
 	if (empty($remote) || strlen($remote) < 512) {
 		if ($memcache->valid) {
-			$remote =& $memcache->name_get('browser',$mkey);
+			$remote = $memcache->name_get('browser',$mkey);
 		} else {
 			die("Sorry, unable to load page. Please try later. <a href=\"/\">back to homepage</a>");
 		}
