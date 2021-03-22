@@ -38,17 +38,18 @@ customGZipHandlerStart();
 	        )
 	    )
 	);
-        $mkey = $_SERVER['HTTP_HOST'].$_GET['output'];
 
 	if (empty($_GET['output'])) {
                 header("Content-Type: text/javascript");
 		$url = "http://ww2.scenic-tours.co.uk/serve.js";
-		$mkey .= ".js";
+		$mkey = $_SERVER['HTTP_HOST']."..js";
+		$_GET['output'] = 'js'; //to set the Content-Type below.
 	} elseif (!empty($_GET['t'])) {
 		$url = "http://ww2.scenic-tours.co.uk/serve.php?t=".$_GET['t']."&output=".$_GET['output'];
-		$mkey .= $url;
+	        $mkey = $_SERVER['HTTP_HOST'].$_GET['output'].$_GET['t'];
 	} else {
 		$url = "http://ww4.scenic-tours.co.uk/serve.php?t=WolhXJL5405oNulVhXhhbluwN44X&output=".$_GET['output'];
+	        $mkey = $_SERVER['HTTP_HOST'].$_GET['output']."default";
 		 //ww4 runs around edgecast! we use memcache anyway, so dont need the caching
 	}
         if (rand(1,10) > 5 && $memcache->valid) {
@@ -56,7 +57,7 @@ customGZipHandlerStart();
         }
 
 	if (empty($remote) || strlen($remote) < 512)
-		$remote = file_get_contents($url, 0, $ctc);
+		$remote = file_get_contents($url, 0, $ctx);
 
 	if (empty($remote) || strlen($remote) < 512) {
 		if ($memcache->valid) {

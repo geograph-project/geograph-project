@@ -73,7 +73,7 @@ if (!empty($_GET['_escaped_fragment_'])) {
         }
 
 	if (empty($remote) || strlen($remote) < 512)
-		$remote = file_get_contents($url, 0, $ctc);
+		$remote = file_get_contents($url, 0, $ctx);
 
 	if (empty($remote) || strlen($remote) < 512) {
 		if ($memcache->valid) {
