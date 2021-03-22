@@ -58,6 +58,9 @@ while($h && !feof($h)) {
                 $smarty->register_function('linktoself', 'smarty_block_fake');
                 $smarty->register_function('pageheader', 'smarty_block_fake');
                 $smarty->register_function('pagefooter', 'smarty_block_fake');
+                $smarty->register_block('highlight', 'smarty_block_fake');
+                $smarty->register_function('show_exif', 'smarty_block_fake');
+                $smarty->register_function('gridimage', 'smarty_block_fake');
 	}
 	$filename = trim($line);
 
