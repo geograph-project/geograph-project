@@ -143,7 +143,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach ($rows as $row) {
 		$bits = explode(',',$row);
 		foreach ($bits as $tag) {
-			$tags[trim(strtolower($tag))]++;
+			@$tags[trim(strtolower($tag))]++;
 		}
 	}
 	unset($tags['']);
