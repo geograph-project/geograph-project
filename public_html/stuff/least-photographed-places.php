@@ -95,6 +95,15 @@ if (!empty($_GET['ireland'])) {
 	$sql = "SELECT CONCAT(name1,' - ',local_type,' / images:',images) AS title, geometry_x as x,geometry_y as y, mbr_xmin,mbr_ymin, mbr_xmax,mbr_ymax FROM os_open_places WHERE local_type = 'Village' AND users<2 LIMIT 3000";
 	$desc  = "Settlements, with zero or only 1 visitor within their 'minimum bounding box' rectangle.";
 
+} elseif (!empty($_GET['gblakes'])) {
+	$sql = "SELECT name1 AS title, geometry_x as x,geometry_y as y, mbr_xmin,mbr_ymin, mbr_xmax,mbr_ymax FROM gblakes WHERE images = 0";
+	$desc  = "GBLakes, with <b>zero</b> images of subjects within 200m of lake center.";
+
+	if ($_GET['gblakes'] !== '2') {
+		$sql .= " order by rand() LIMIT 1000";
+		$desc .= " (Sample of 1000)";
+	}
+
 } elseif (!empty($_GET['villages'])) {
 	$sql = "SELECT name1 AS title, geometry_x as x,geometry_y as y, mbr_xmin,mbr_ymin, mbr_xmax,mbr_ymax FROM os_open_places WHERE local_type = 'Village' AND images =0 LIMIT 1000";
 	$desc  = "Villages, with <b>zero</b> images of subjects within their 'minimum bounding box' rectangle.";
