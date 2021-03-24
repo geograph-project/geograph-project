@@ -110,7 +110,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$s = ($q%90==0)?strtoupper(heading_string($q)):ucwords(heading_string($q));
 		$direction = sprintf('%s : %03d deg (%03d > %03d)',
-			str_pad($s,16,' '),
+			str_pad($s,16,chr(160)),
 			$q,
 			($q == 0?$q+360-$jump2:$q-$jump2),
 			$q+$jump2);
