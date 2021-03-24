@@ -1026,7 +1026,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	$engine->display = $display;
 	$template = 'search_results_'.$display.'.tpl';
 
-	if ($display == 'map') {
+	if ($display == 'map' || $display == 'spelling') {
 		//temp as page doesnt work on https (mainly maps!)
 		pageMustBeHTTP();
 	}

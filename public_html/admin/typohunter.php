@@ -39,6 +39,8 @@ if (!empty($CONF['db_read_connect2'])) {
 
 $smarty = new GeographPage;
 
+pageMustBeHTTP(); //becuase the form submitting to http://
+
 customGZipHandlerStart();
 
 
