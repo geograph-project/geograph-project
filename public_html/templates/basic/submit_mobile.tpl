@@ -625,7 +625,7 @@ function loadplacenames() {
 			if (data && data.rows) {
 				$.each(data.rows, function(index,value) {
 					var $link = $('<a href="#"/>');
-					$link.text(value['name1'] || value['name2']);
+					$link.text(value['name1'] || value['name2']).attr('title',value['local_type']);
 					$ele.append($link);
 				});
 				$ele.find('a').click(useplacename);
