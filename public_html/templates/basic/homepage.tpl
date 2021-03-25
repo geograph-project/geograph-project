@@ -272,12 +272,12 @@ AttachEvent(window,'resize',thiswindowresize,false);
 {
    "@context": "http://schema.org",
    "@type": "WebSite",
-   "url": "http://www.geograph.org.uk/",
+   "url": "https://www.geograph.org.uk/",
    "name": "Geograph",
    "alternateName": "Geograph Britain and Ireland",
    "potentialAction": {
      "@type": "SearchAction",
-     "target": "http://www.geograph.org.uk/of/{search_term}",
+     "target": "https://www.geograph.org.uk/of/{search_term}",
      "query-input": "required name=search_term"
    }
 }

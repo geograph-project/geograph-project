@@ -221,7 +221,7 @@ body {
 
   <div class="grid-item">
         <a href="https://schools.geograph.org.uk/">Geograph for Schools</a> 
-	{external href="http://www.geograph.org.gg/" text="Geograph Channel Islands"}
+	{external href="https://www.geograph.org.gg/" text="Geograph Channel Islands"}
 	{external href="https://geo-en.hlipp.de/" text="Geograph Germany"}
   </div>
 
@@ -255,12 +255,12 @@ $(function() {
 {
    "@context": "http://schema.org",
    "@type": "WebSite",
-   "url": "http://www.geograph.org.uk/",
+   "url": "https://www.geograph.org.uk/",
    "name": "Geograph",
    "alternateName": "Geograph Britain and Ireland",
    "potentialAction": {
      "@type": "SearchAction",
-     "target": "http://www.geograph.org.uk/of/{search_term}",
+     "target": "https://www.geograph.org.uk/of/{search_term}",
      "query-input": "required name=search_term"
    }
 }

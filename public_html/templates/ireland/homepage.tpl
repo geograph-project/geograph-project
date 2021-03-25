@@ -69,7 +69,7 @@ we hope you'll enjoy being a part of this great project
 	kilter, but we still welcome any <a href="/contact.php">feedback</a>.</p>
 </div>
 <br/>
-&middot; Geograph on: {external href="http://twitter.com/geograph_bi" text="Twitter"}, {external href="http://www.facebook.com/geograph.org.uk" text="Facebook"}<br/>
+&middot; Geograph on: {external href="https://twitter.com/geograph_bi" text="Twitter"}, {external href="https://www.facebook.com/geograph.org.uk" text="Facebook"}<br/>
 
 
 </div>
@@ -96,7 +96,7 @@ Recently completed hectads:
 
 
 <div class="interestBox">
-        <b>Geograph Ireland</b> is a currently sub-project of {external href="http://www.geograph.org.uk/" text="Geograph Britain and Ireland"}, the two sites share a common database. Photos submitted to one will be available on the other.
+        <b>Geograph Ireland</b> is a currently sub-project of {external href="https://www.geograph.org.uk/" text="Geograph Britain and Ireland"}, the two sites share a common database. Photos submitted to one will be available on the other.
 </div>
 
 {include file="_std_end.tpl"}

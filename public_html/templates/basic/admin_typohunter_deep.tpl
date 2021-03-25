@@ -50,7 +50,7 @@ function fetch(shard) {
 
                 $.ajax({
                   dataType: "json",
-                  url: "http://www.geograph.org.uk/admin/typohunter.php",
+                  url: "/admin/typohunter.php",
                   data: data,
                   cache: true,
                   success: function(result) {

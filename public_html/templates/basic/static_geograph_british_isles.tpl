@@ -3,7 +3,7 @@
 
  <h2>Geograph British Isles</h2>
 
-<p>We are currently experimenting with calling the project "<a href="http://www.geograph.org.uk/">Geograph Britain and Ireland</a>". 
+<p>We are currently experimenting with calling the project "<a href="https://www.geograph.org.uk/">Geograph Britain and Ireland</a>". 
 Until February 2010 we went by the title "Geograph British Isles", and used the following tag line:</p>
 
 
@@ -20,8 +20,8 @@ Until February 2010 we went by the title "Geograph British Isles", and used the 
 
 <p>See also:</p>
 <ul>
-	<li>{external href="http://www.geograph.ie/" text="Geograph Ireland"} - sub-project focusing on Ireland.<br/><br/></li>
-	<li>{external href="http://geo-en.hlipp.de/" text="Geograph Deutschland"} - a version of the site for Germany. {external href="http://geo.hlipp.de/" text="Auch in Deutsch"}</li>
+	<li>{external href="https://www.geograph.ie/" text="Geograph Ireland"} - sub-project focusing on Ireland.<br/><br/></li>
+	<li>{external href="https://geo-en.hlipp.de/" text="Geograph Deutschland"} - a version of the site for Germany. {external href="https://geo.hlipp.de/" text="Auch in Deutsch"}</li>
 </ul>
 
 
