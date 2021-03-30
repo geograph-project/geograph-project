@@ -22,12 +22,15 @@ server {
   ###################################
   # special setup for staging (dont use a seperate 'server' block as most of the rules below are common to all hosts) 
 
-  if ($http_host ~ staging) {
-    rewrite ^/robots.txt /robots-staging.txt last;
-  }
-  if ($http_host ~ development) {
-    rewrite ^/robots.txt /robots-staging.txt last;
-  }
+  if ($http_host ~ staging) {		rewrite ^/robots.txt /robots-staging.txt last;  }
+  if ($http_host ~ development) {	rewrite ^/robots.txt /robots-staging.txt last;  }
+  if ($http_host ~ beta) {		rewrite ^/robots.txt /robots-staging.txt last;  }
+
+  ###################################
+
+  if ($http_host = www.geograph.org.ie) {	rewrite ^/robots.txt /robots.ie.txt last;  }
+
+  if ($http_host !~ "^(www|t0|schools)\." ) {	rewrite ^/robots.txt /robots-none.txt last;  }
 
   ###################################
   # Rules to setup Pretty URLs
