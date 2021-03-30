@@ -58,8 +58,6 @@ $mtime = strtotime($data['Update_time']);
 //can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 customCacheControl($mtime,$cacheid,!($USER->registered));
 
-$smarty->assign("inline",$inline);
-
 
 $order = (isset($_GET['order']) && ctype_lower($_GET['order']))?$_GET['order']:'updated';
 
@@ -438,8 +436,9 @@ if (!empty($_GET['ddd']))
 	$colours = array('E1BBDA','DDEA8E','83E7E1','D5CEA9','E6B875','A7CEE5','E9B1A5','A6E09A','7DE0B8','CED4CF','B2DAAD','C5C474','A0DACA');
 
 	$keys = array_keys($sources);
+	$cnt = count($colours);
 	foreach ($keys as $idx => $key) {
-		$colours[$key] = $colours[$idx];
+		$colours[$key] = $colours[$idx%$cnt];
 	}
 	$smarty->assign_by_ref("colours",$colours);
 

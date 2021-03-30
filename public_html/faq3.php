@@ -247,7 +247,7 @@ if (!empty($tagdata)) {
                         foreach ($bits as $bit) {
                 if (strlen($bit) > 3 && $bit != 'creative commons')
                     $bit = preg_replace('/s$/','',$bit);
-                                $tags[$bit]++;
+                                @$tags[$bit]++;
                         }
                 }
         }

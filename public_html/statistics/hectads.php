@@ -40,7 +40,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db = GeographDatabaseConnection(true);
 	
 	$title = "Hectad Coverages";
-	
+	$where = array();
+	$where_sql = '';
+
 	if ($ri) {
 		$where[] = "reference_index = $ri";
 		$smarty->assign('ri',$ri);

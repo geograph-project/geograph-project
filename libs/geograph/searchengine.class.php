@@ -118,7 +118,7 @@ if (strpos($query['searchdesc'],', with unmatched ') === 0)
 			$this->query_id = $query_id;
 
 			$classname = "SearchCriteria_".$query['searchclass'];
-			$this->criteria = new $classname($query['q']);
+			$this->criteria = new $classname();
 
 			#if ($query['searchclass'] == "Special")	{
 			#	$query['searchq'] = stripslashes($query['searchq']);

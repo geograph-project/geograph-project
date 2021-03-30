@@ -92,7 +92,7 @@ if ($i) {
 			$where_sql = " where ".join(' AND ',$where);
 
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-		$query =& $db->getRow("
+		$query = $db->getRow("
 		select
 			id,searchdesc,comment,created
 		from
@@ -134,7 +134,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$dol = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$queries =& $db->getAll("
+	$queries = $db->getAll("
 	select
 		id,searchdesc,`count`,comment,created,approved,orderby,stickied
 	from
@@ -155,7 +155,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		foreach ($queries as $idx => $row) {
 
 			$mkey = $row['id'];
-			$queries[$idx]['image'] =& $memcache->name_get('fse',$mkey);
+			$queries[$idx]['image'] = $memcache->name_get('fse',$mkey);
 			if (empty($queries[$idx]['image']) && $checked < 10) {
 
 				$engine = new SearchEngine($row['id']);

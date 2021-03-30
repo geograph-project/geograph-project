@@ -437,11 +437,13 @@ function smarty_function_linktoself($params) {
 	$b = explode('?',$_SERVER['REQUEST_URI']);
 	if (isset($b[1])) 
 		parse_str($b[1],$a);
-	if ($params['value'] == 'null') {
-		if (isset($a[$params['name']]))
-			unset($a[$params['name']]);
-	} else {
-		$a[$params['name']] = $params['value'];
+	if (!empty($params['name'])) {
+		if ($params['value'] == 'null') {
+			if (isset($a[$params['name']]))
+				unset($a[$params['name']]);
+		} else {
+			$a[$params['name']] = $params['value'];
+		}
 	}
 	if (!empty($params['delete'])) {
 		unset($a[$params['delete']]);
@@ -778,7 +780,8 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 			sleep(30);
 		}
 		header("HTTP/1.1 503 Service Unavailable");
-		$smarty->assign('searchq',stripslashes($_GET['q']));
+		if (!empty($_GET['q']))
+			$smarty->assign('searchq',stripslashes($_GET['q']));
 		$smarty->display($template);
 		exit;
 	} elseif (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {

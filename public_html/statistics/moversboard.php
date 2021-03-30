@@ -245,8 +245,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		$i++;
 		$geographs += $entry['geographs'];
 		$pending += $entry['pending'];
-		$points += $entry['points'];
-		if (empty($entry['points'])) $topusers[$user_id]['points'] = '';
+		if (!empty($entry['points']))
+			$points += $entry['points'];
+		else
+			$topusers[$user_id]['points'] = '';
 	}
 
 	$smarty->assign('geographs', $geographs);

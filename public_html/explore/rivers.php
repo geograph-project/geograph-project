@@ -60,9 +60,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 
 			if (!empty($name)) {
-				preg_match('/^(River |Afon |Abhainn |Allt |Water of |Burn of |The |)(\w.*)/',$name[1],$m);
-				if ($slug = strtoupper($m[2]))
-					@$stats[substr($slug,0,1)]++;
+				if (preg_match('/^(River |Afon |Abhainn |Allt |Water of |Burn of |The |)(\w.*)/',$name[1],$m))
+					if ($slug = strtoupper($m[2]))
+						@$stats[substr($slug,0,1)]++;
 			}
 
 			if (($ids = $g_matches[1]) && !empty($name) && strpos($slug,$alpha) === 0) {

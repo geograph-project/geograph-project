@@ -206,7 +206,7 @@ class kmlFile extends kmlPrimative {
 		if (empty($this->filename)) {
 			$this->filename = uniqid().".kml";
 		}
-		$content =& $this->returnKML();
+		$content = $this->returnKML();
 		if ($sendheaders && !headers_sent()) {
 			header('Access-Control-Allow-Origin: *');
 			Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($this->filename));
@@ -237,7 +237,7 @@ class kmlFile extends kmlPrimative {
 		// add the binary data stored in the string 'content'
 		$zipfile -> addFile($content, "doc.kml");
 
-		$content =& $zipfile->file();
+		$content = $zipfile->file();
 
 		if ($sendheaders && !headers_sent()) {
 			header('Access-Control-Allow-Origin: *');

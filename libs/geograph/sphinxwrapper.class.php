@@ -545,7 +545,8 @@ if (!empty($_GET['ddeb']))
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-			$this->query_info = "Query '{$q}' retrieved ".count(@$res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$count = empty($res['matches'])?0:count($res['matches']);
+			$this->query_info = "Query '{$q}' retrieved $count of $res[total_found] matches in $res[time] sec.\n";
 			$this->resultCount = $res['total_found'];
 			if (!empty($this->pageSize))
 				$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
@@ -610,7 +611,8 @@ split_timer('sphinx'); //starts the timer
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-			$this->query_info = "Query '{$q}' retrieved ".count(@$res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$count = empty($res['matches'])?0:count($res['matches']);
+			$this->query_info = "Query '{$q}' retrieved $count of $res[total_found] matches in $res[time] sec.\n";
 			$this->resultCount = $res['total_found'];
 			if (!empty($this->pageSize))
 				$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
@@ -853,7 +855,8 @@ split_timer('sphinx'); //starts the timer
 			#if ( $cl->GetLastWarning() )
 			#	print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-			$this->query_info = "Query '{$this->qoutput}' retrieved ".count(@$res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$count = empty($res['matches'])?0:count($res['matches']);
+			$this->query_info = "Query '{$this->qoutput}' retrieved $count of $res[total_found] matches in $res[time] sec.\n";
 
 
 			if (isset($_GET['remote_profile'])) {

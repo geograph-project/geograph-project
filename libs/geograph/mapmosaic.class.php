@@ -799,7 +799,7 @@ class GeographMapMosaic
 		
 		
 		//this sets the most likly reference_index for the center of the map
-		if (!$this->reference_index) {
+		if (empty($this->reference_index)) {
 			$this->setOrigin($bestoriginx, $bestoriginy);
 			$this->getGridRef(-1,-1);
 		}

@@ -175,7 +175,7 @@ split_timer('imagelist'); //starts the timer
 
 		$c = $this->_getImagesBySql($sql);
 
-split_timer('imagelist','getImagesByUser',"$user_id,$statuses,$sort,$count,$advanced"); //logs the wall time
+split_timer('imagelist','getImagesByUser',"$user_id,$statuslist,$sort,$count,$advanced"); //logs the wall time
 
 		return $c;
 	}
@@ -274,7 +274,7 @@ split_timer('imagelist'); //starts the timer
 			}
 		}
 
-split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
+split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 
 		return $i;
 	}

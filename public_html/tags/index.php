@@ -32,7 +32,7 @@ $redirect = array(
 'Park, Open space, Garden'=>'Park and Public Gardens',
 'Telecommunications'=>'Communications');
 
-if (!empty($_GET['tag']) && $redirect[$_GET['tag']]) {
+if (!empty($_GET['tag']) && !empty($redirect[$_GET['tag']])) {
 	$url = smarty_function_linktoself(array('name'=>'tag','value'=>$redirect[$_GET['tag']]));
 }
 

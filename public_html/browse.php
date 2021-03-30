@@ -456,11 +456,11 @@ if ($grid_given)
 
 			if (!$db) $db=GeographDatabaseConnection(false);
 
-			if ($square->imagecount > 15 && $_GET['by'] !== '1') {
+			if ($square->imagecount > 15 && (empty($_GET['by']) || $_GET['by'] !== '1')) {
 				$imagelist = new ImageList();
 
 				$mkey = $square->grid_reference;
-				$imagelist->images =& $memcache->name_get('bx',$mkey);
+				$imagelist->images = $memcache->name_get('bx',$mkey);
 
 				if (empty($imagelist->images)) {
 					$imagelist->_setDB($db);
@@ -482,9 +482,9 @@ if ($grid_given)
                 	                $bits[] = "uniqueserial(takendays)";
         	                        //$bits[] = "uniqueserial(classcrc)";
 	                                $bits[] = "uniqueserial(scenti)";
-                        	        if (!preg_match('/user_id/',$q)) {
+                        	        //if (!preg_match('/user_id/',$q)) {
                 	                        $bits[] = "uniqueserial(auser_id)";
-        	                        }
+        	                        //}
 	                                $client->setSelect(implode('+',$bits)." as myint");
 
                                         if (method_exists($client,'SetOuterSelect')) {
@@ -1009,7 +1009,7 @@ if ($grid_given)
 			$square->assignDiscussionToSmarty($smarty);
 		}
 		if ($db)
-			$smarty->assign_by_ref('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' AND largemap_token != '' LIMIT 1"));
+			$smarty->assign('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' AND largemap_token != '' LIMIT 1"));
 
 		//look for images from here...
 		$sphinx = new sphinxwrapper();
