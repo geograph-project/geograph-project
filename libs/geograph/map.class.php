@@ -1487,7 +1487,7 @@ split_timer('map'); //starts the timer
 			$imgx1=round(($gridx-$left) * $this->pixels_per_km);
 			$imgy1=round(($this->image_h-($gridy-$bottom+1)* $this->pixels_per_km));
 
-			$color = isset($colour[$recordSet->fields[2]])?$colour[$recordSet->fields[2]]:$colour[0];
+			$color = isset($colour[$recordSet->fields[2]])?$colour[$recordSet->fields[2]]:$colour[80];
 
 			if ($this->pixels_per_km==1) {
 				imagesetpixel($img,$imgx1, $imgy1,$color);
