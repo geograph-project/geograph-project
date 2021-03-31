@@ -1,6 +1,6 @@
 <?
 
-$load = $load2 = '';
+$load = $load2 = $load3 = '';
 
 if (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
                 $buffer = "0 0 0";
@@ -23,7 +23,9 @@ if (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
                 $load2 = array_shift(sys_getloadavg());
 
 
+	if (!empty($_SERVER['CONF_PROFILE']))
+		$load3 = `cat /sys/fs/cgroup/cpu/tasks | wc -l`;
 
 
-print date('r ').trim(`hostname`)." $load $load2\n";
+print date('r ').trim(`hostname`)." $load $load2 $load3\n";
 
