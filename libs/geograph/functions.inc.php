@@ -793,9 +793,12 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 		if ($USER->registered) {
 			$threshold *= 2;
 		}
+
 		//check load average, abort if too high
-		$buffer = "0 0 0";
-		if (is_readable("/proc/loadavg")) {
+	        if (function_exists('sys_getloadavg'))
+        	        $load = array_shift(sys_getloadavg());
+		elseif (is_readable("/proc/loadavg")) {
+			$buffer = "0 0 0";
 			$f = fopen("/proc/loadavg","r");
 			if ($f)
 			{
@@ -804,9 +807,9 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 				}
 				fclose($f);
 			}
+			$loads = explode(" ",$buffer);
+			$load=(float)$loads[0];
 		}
-		$loads = explode(" ",$buffer);
-		$load=(float)$loads[0];
 
 		if ($load>$threshold)
 		{
@@ -815,7 +818,8 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 				sleep(30);
 			}
 			header("HTTP/1.1 503 Service Unavailable");
-			$smarty->assign('searchq',stripslashes($_GET['q']));
+			if (!empty($_GET['q']))
+				$smarty->assign('searchq',stripslashes($_GET['q']));
 			$smarty->display($template);
 			exit;
 		}
