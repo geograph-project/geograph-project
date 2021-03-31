@@ -829,7 +829,8 @@ split_timer('search'); //starts the timer
 					break;
 				default:
 					$orderby = $dataarray['orderby'];
-					if ($dataarray['reverse_order_ind']) {
+					if ($orderby == 'submitted') $sortorders[$orderby] = $sortorders['gridimage_id'];
+					if (!empty($dataarray['reverse_order_ind'])) {
 						$orderby = preg_replace('/(,|$)/',' desc$1',$orderby);
 						if (strpos($sortorders[$dataarray['orderby']],'-') > 1) {
 							$searchdesc .= ", in ".(implode('-&gt;',array_reverse(explode('-&gt;',$sortorders[$dataarray['orderby']]))))." order";
@@ -868,7 +869,7 @@ split_timer('search'); //starts the timer
 split_timer('search','create2',$searchdesc); //logs the wall time
 
 			$extra = '';
-			if ($dataarray['submit'] == 'Count')
+			if (!empty($dataarray['submit']) && $dataarray['submit'] == 'Count')
                                 $extra .= '&count=1';
 			return $this->redirectOrReturn($i,$autoredirect,$extra);
 

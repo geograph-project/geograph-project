@@ -147,7 +147,8 @@ if (true) {
 		}
 	}
 
-	$smarty->assign("q",$sphinx->qclean);
+	if (!empty($sphinx->qclean))
+		$smarty->assign("q",$sphinx->qclean);
 	$smarty->assign("src",$src);
         $smarty->assign("yesterday",date('Y-m-d',time()-3600*24));
 }

@@ -295,7 +295,7 @@
 </div>
 
 {if $profile->tags}
-	<div id="most_used_tags" style="float:left;width:200px;background-color:white;font-size:0.7em;line-height:1.4em; text-align:center;margin:10px;{if count($tags) > 100 && $results} height:150px;overflow:auto{/if}">
+	<div id="most_used_tags" style="float:left;width:200px;background-color:white;font-size:0.7em;line-height:1.4em; text-align:center;margin:10px;{if count($profile->tags) > 100 && $results} height:150px;overflow:auto{/if}">
 	<b><a href="/finder/bytag.php?user_id={$profile->user_id}">Most Used Tags</a></b>:<br/><br/>
 	{foreach from=$profile->tags item=item}
 		<span class="tag"><a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="/search.php?searchtext=[{if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}]&user_id={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a></span> <br/>

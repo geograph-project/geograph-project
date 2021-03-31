@@ -735,7 +735,7 @@ class FeedCreator extends HtmlDescribable {
 
 		//uses Geograph specific functions, get them seperatly or just comment out.
 		if (!empty($GLOBALS['memcache']) && $GLOBALS['memcache']->valid) {
-			$contents =& $this->createFeed();
+			$contents = $this->createFeed();
 
 			$mtime = time();
 
