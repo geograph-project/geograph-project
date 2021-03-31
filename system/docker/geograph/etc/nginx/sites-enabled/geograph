@@ -138,6 +138,11 @@ server {
   rewrite ^/m/photo/(\d+)$ https://m.geograph.org.uk/photo/$1 permanent;
   rewrite ^/mobile/photo/(\d+)$ https://m.geograph.org.uk/photo/$1 permanent;
 
+
+  ###################################
+
+  rewrite ^/.well-known/change-password https://$host/forgotten.php permanent;
+
   ###################################
 
   error_page 404 /staticpage.php?page=404;
