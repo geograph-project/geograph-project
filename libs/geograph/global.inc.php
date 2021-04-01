@@ -39,6 +39,13 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
 	        header("HTTP/1.0 403 Forbidden");
         	exit;
 	}
+
+	//temporally fix, the beta domain was accidently indexed by Google!
+	if (!empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],'https://www.google.') === 0 
+	&& strpos($_SERVER['HTTP_HOST'],'beta') !== FALSE ) {
+		header('Location: https://www.geograph.org.uk'.$_SERVER['REQUEST_URI'], true, 301);
+		exit;
+	}
 }
 
 
@@ -651,7 +658,7 @@ function init_session()
 
 		if (!empty($mobile_url) && !isset($_SESSION['mobile'])) {
 			if($mobile_browser>0) {
-				header("Location: $mobile_url", 302);
+				header("Location: $mobile_url", true, 302);
 				header("Vary: User-Agent");
 				print "<a href=\"$mobile_url\">Click here to continue</a>";
 				exit;
