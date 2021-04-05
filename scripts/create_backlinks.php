@@ -60,6 +60,9 @@ $start_date = $db->getOne("SELECT date_sub(now(),interval 1 hour)");//yes know c
 
 for ($from=$start; $start<=$max; $start+=$perpage) {
 
+        if (!empty($_SERVER['BASE_DIR']) && file_exists($_SERVER['BASE_DIR'].'/shutdown-sential'))
+                break;
+
 	$sql = "select gridimage_id,comment from gridimage_search where gridimage_id between $start and ".($start+$perpage-1)." and (comment like '%[[%' or comment like '%/photo/%')";
 
 	$bits = array();

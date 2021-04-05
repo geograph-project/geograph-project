@@ -290,6 +290,9 @@ class EventProcessor
 		{
 			$this->current_event_id=0;
 
+			if (!empty($_SERVER['BASE_DIR']) && file_exists($_SERVER['BASE_DIR'].'/shutdown-sential'))
+				break;
+
 			//are we over our load average?
 			$load=$this->getLoadAverage();
 			if ($load > $this->max_load)
