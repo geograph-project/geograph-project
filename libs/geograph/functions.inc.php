@@ -359,18 +359,12 @@ function smarty_function_gridimage($params)
 	return $html;
 }
 
-if (!function_exists('mb_ucfirst') && function_exists('mb_substr')) {
-	function mb_ucfirst($string) {
-		return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1);
-	}
-}
-
 function recaps($in) {
 	$out = preg_replace_callback('/(^|[ \/-])([^ \/-]{3,})/',
-		function($m) { return $m[1].mb_ucfirst($m[2]); },
-		mb_strtolower($in));
+		function($m) { return $m[1].ucfirst($m[2]); },
+		strtolower($in));
 	return stripslashes(preg_replace_callback('/(^|\/)([^ \/-])/',
-		function($m) { return $m[1].mb_strtoupper($m[2]); },
+		function($m) { return $m[1].strtoupper($m[2]); },
 		$out));
 }
 
