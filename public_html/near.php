@@ -137,6 +137,36 @@ if ($grid_given)
 			$places[] = $square->findNearestPlace(75000,'towns');
 		}
 		$places[] = $square->findNearestPlace(15000,'geonames');
+
+
+if (!empty($_GET['debug'])) {
+
+function urlencode3($in) {
+	return str_replace(array('+','%20'),array(' ',' '),urlencode($in));
+}
+function dumpit($in) {
+	$enc = mb_detect_encoding($in, 'UTF-8, ISO-8859-15, ASCII');
+
+	print "$in : ".htmlentities($in)." : ".htmlentities2($in)." [".urlencode3($in)."] $enc<br>";
+}
+
+	print_r($places);
+	print "<hr>";
+
+	foreach ($places as $place) {
+		dumpit($place['full_name']);
+		dumpit(recaps($place['full_name']));
+		print htmlentities2(smarty_function_place(array('place'=>$place)));
+		print "<hr>";
+	}
+
+
+	exit;
+}
+
+
+
+
 		
 		
 		$smarty->assign_by_ref('places', $places);
