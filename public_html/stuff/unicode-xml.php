@@ -9,7 +9,7 @@ require_once('geograph/global.inc.php');
 $db = GeographDatabaseConnection(true);
 
 
-$result = mysql_query("select gridimage_id,title from gridimage_funny where title is not null order by  gridimage_id IN (1339706,320042,47189,495051,519472,97714,1049262,1036631) desc,reverse(gridimage_id) limit 500");
+$recordSet = $db->Execute("select gridimage_id,title from gridimage_funny where title is not null order by  gridimage_id IN (1339706,320042,47189,495051,519472,97714,1049262,1036631) desc,reverse(gridimage_id) limit 500");
 
 header("Content-Type: text/xml; charset=utf-8");
 
@@ -17,7 +17,8 @@ header("Content-Type: text/xml; charset=utf-8");
   echo '<geograph>';
 
 $default = ini_get("default_charset");
-while ($row = mysql_fetch_assoc($result)) {
+while (!$recordSet->EOF) {
+	$row = $recordSet->fields;
 
         switch ($_GET['method']) {
                 case 'raw': break; //noop!
@@ -50,7 +51,10 @@ while ($row = mysql_fetch_assoc($result)) {
 		echo '<encoded>'.str_replace('+',' ',urlencode($row['title'])).'</encoded>';
 
 	print "\n";
+	$recordSet->MoveNext();
 }
+$recordSet->Close();
+
 echo "<!-- method: {$_GET['method']} (from $default) -->";
 
 echo '</geograph>';
