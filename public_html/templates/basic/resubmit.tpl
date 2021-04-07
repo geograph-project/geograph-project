@@ -50,10 +50,24 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 
 
 
-<h3>Step 2 : Confirm image size</h3>
+<h3>Step 2 : Confirm Rotation and Image Size</h3>
 
 		{if $original_width || $allow_same}
-			
+
+			{if $rotation_warning}
+				<div id="rotation_warning" style="background-color:yellow;border:2px solid red;margin:10px;padding:10px">
+					Warning: <b>This image has EXIF 'Orientation' flag set.</b> 
+					It's highly recommended to use the rotation function to reorientate the image, this resets the flag which prevents potential display issues, as not all Browsers etc will honor the flag.<br><br>
+					So please rotate the image, even if it actully displays <i>correctly</i> in the preview! Rotate it sideways, and then <i>back</i> until displays correctly again.<br>Your browser might be ignoring the flag which is why the preview appears ok to you!
+				</div>
+			{/if}
+
+			<div class="interestBox">
+			Rotate Image by 90 degrees: 
+				<button type=button value=&#8634; title="Anti-Clockwise 90deg rotation" onclick="rotateImage(270)">&#8634;</button> 
+				<button type=button value=&#8635; title="Clockwise 90deg rotation" onclick="rotateImage(90)">&#8635;</button> (updates the preview below)
+			</div>			
+
 			{if !$allow_same}
 				{assign var="hide640" value=1}
 			{/if}
@@ -71,7 +85,7 @@ function hideStep3() {
 </script>
 
 <div id="step3">
-<h3>Step 3 : Confirm image rights</h3>
+<h3>Step 3 : Confirm Image Rights</h3>
 
 	<p>
 	Because we are an open project we want to ensure our content is licensed
@@ -182,5 +196,71 @@ function hideStep3() {
 
 {/if}
 {/dynamic}
+
+
+<script type="text/javascript">
+{literal}
+
+function rotateImage(degrees,force) {
+        //we have to be extra careful checking if a real jquery, as jQl creates a fake jQuery object.
+        if (typeof jQuery === "undefined" || jQuery === null || typeof jQuery.fn === "undefined" || typeof jQuery.fn.load === "undefined") {
+                jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js');
+        }
+
+        $(function() { //will sill execute even after page load!
+		
+	        var theForm = document.forms['theForm'];
+		var upload_id;
+		if (theForm.elements['upload_id'])
+			upload_id = escape(theForm.elements['upload_id'].value);
+		if (theForm.elements['transfer_id'])
+			upload_id = escape(theForm.elements['transfer_id'].value);
+		if (!upload_id || upload_id.length<10) {
+			alert("unable to rotate, please let us know");
+			return;
+		}
+			
+		if (!force)
+			force=0; //just avoids 'undefined'
+		$.getJSON("/submit.php?rotate="+upload_id+"&degrees="+degrees+"&force="+force,
+                         function (result) {
+				if (result.width && result.upload_id) {
+					if (theForm.elements['upload_id'])
+						theForm.elements['upload_id'].value = result.upload_id;
+					if (theForm.elements['transfer_id'])
+						theForm.elements['transfer_id'].value = result.transfer_id;
+
+					var newLandscape = result.width > result.height;
+
+					$('form[name=theForm] img').each(function() {
+						//setup the orientation of the preview!
+						var $this = $(this);
+						var thisLandscape = $this.width() > $this.height();
+						if (newLandscape != thisLandscape) {
+							var tmp = $this.attr('width');
+							$this.attr('width', $this.attr('height'));
+							$this.attr('height', tmp);
+						}
+					}).attr('src',"/submit.php?preview="+result.upload_id);
+
+					if (document.getElementById('rotation_warning')) {
+						document.getElementById('rotation_warning').style.display = 'none';
+					}
+
+				} else if (result.lossy) {
+					if (confirm("This image can not be rotated losslessly, there will be some small quality loss if continue")) {
+						 rotateImage(degrees,1);
+					}
+				} else {
+					alert("Rotation Failed, please try again. Or if persists, let us know!");
+				}
+			}
+		);
+	});
+}
+
+{/literal}
+</script>
+
 
 {include file="_std_end.tpl"}

@@ -122,6 +122,10 @@ if (isset($_REQUEST['id']))
 					$smarty->assign('original_height', $uploadmanager->original_height);
 				}
 
+				if (!empty($uploadmanager->rawExifData) && !empty($uploadmanager->rawExifData['IFD0']['Orientation']) && $uploadmanager->rawExifData['IFD0']['Orientation']!==1) {
+					 $smarty->assign('rotation_warning', true);
+				}
+
 				$fullpath=$image->_getFullpath();
 	                        if ($fullpath == '/photos/error.jpg') {
 					 $smarty->assign('allow_same', 1);
