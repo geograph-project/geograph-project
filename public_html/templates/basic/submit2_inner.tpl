@@ -73,6 +73,15 @@
 			<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 		{/if}
 
+		{if $rotation_warning}
+			<div id="rotation_warning" style="background-color:yellow;border:2px solid red;margin:10px;padding:10px">
+				Warning: <b>This image has EXIF 'Orientation' flag set.</b> 
+				It's highly recommended to use the rotation function to reorientate the image, this resets the flag which prevents potential display issues, as not all Browsers etc will honor the flag.<br><br>
+				So please rotate the image, even if it actully displays <i>correctly</i> in the preview! Rotate it sideways, and then <i>back</i> until displays correctly again.<br>Your browser might be ignoring the flag which is why the preview appears ok to you!<br><br>
+				<i>The rotation buttons are the arrows above the preview image bottom left.</i>
+			</div>
+		{/if}
+
 		{if $original_width}
 
 			{include file="_submit_sizes.tpl"}
@@ -155,7 +164,7 @@ function check_jpeg(ele) {
 {if $success}
 	{literal}
 		AttachEvent(window,'load',parentUpdateVariables,false);
-		AttachEvent(window,'load',function() { window.parent.doneStep({/literal}{$step},{if $original_width}true{else}false{/if}{literal}) },false);
+		AttachEvent(window,'load',function() { window.parent.doneStep({/literal}{$step},{if $original_width || $rotation_warning}true{else}false{/if}{literal}) },false);
 	{/literal}
 	{if $grid_reference}
 		{literal}

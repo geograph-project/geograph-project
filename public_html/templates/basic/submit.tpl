@@ -271,6 +271,7 @@ geographing</a> first.</p>
 		{if $transfer_id}
 		<img src="{$preview_url}" width="{$preview_width*0.2|string_format:"%d"}" height="{$preview_height*0.2|string_format:"%d"}" alt="low resolution reminder image"/>
 		<input name="transfer_id" type="hidden" value="{$transfer_id|escape:"html"}"/>
+		<i>(if the image appears rotated, will be able to correct it in Step 3)</i> 
 		{elseif $jpeg_url}
 		<label for="jpeg_url"><b>JPEG Image URL</b></label>
 		<input id="jpeg_url" name="jpeg_url" type="text" size="40" value="{$jpeg_url|escape:"html"}"/>
@@ -408,8 +409,17 @@ geographing</a> first.</p>
 	<div style="background-color:red; color:white; border:1px solid pink; padding:10px;">We notice the image is quite small, you can continue, but we would welcome a bigger image. Note, small images are usually rejected unless there is something unique about the image.</div>
   {/if}
 
+		{if $rotation_warning}
+			<div id="rotation_warning" style="background-color:yellow;border:2px solid red;margin:10px;padding:10px">
+				Warning: <b>This image has EXIF 'Orientation' flag set.</b> 
+				It's highly recommended to use the rotation function to reorientate the image, this resets the flag which prevents potential display issues, as not all Browsers etc will honor the flag.<br><br>
+				So please rotate the image, even if it actully displays <i>correctly</i> in the preview! Rotate it sideways, and then <i>back</i> until displays correctly again.<br>Your browser might be ignoring the flag which is why the preview appears ok to you!<br><br>
+				<i>The rotation buttons are the arrows just below the preview image below.</i>
+			</div>
+		{/if}
+
 <p>
-Below is a full-size preview of the image we will store for grid reference
+Below is a preview of the image we will store for grid reference
 {$gridref}.<br/><br/>
 
 <img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}" name="mainpreview"/><br>
@@ -792,6 +802,10 @@ function rotateImage(degrees,force) {
 					if (document.getElementById('hidetag')) {
 						hide_tree('tag');
 						hide_tree('share');
+					}
+
+					if (document.getElementById('rotation_warning')) {
+						document.getElementById('rotation_warning').style.display = 'none';
 					}
 
 				} else if (result.lossy) {

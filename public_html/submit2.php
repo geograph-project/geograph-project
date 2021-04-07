@@ -319,6 +319,21 @@ if ($upload_to_process && !empty($uploadmanager) && $uploadmanager->upload_id) {
 		}
 	}
 
+	if (!empty($exif['IFD0']['Orientation']) && $exif['IFD0']['Orientation']!==1) {
+		if (!empty($_GET['transfer_id'])) {
+			//actully, we need to check the file itself. Because it could of been rotated (the exif data (in the .exif file) is NOT updated when rotate the image!
+			$uploadfile = $uploadmanager->_pendingJPEG($uploadmanager->upload_id);
+                        $orginalfile = $uploadmanager->_originalJPEG($uploadmanager->upload_id);
+
+			$to = file_exists($orginalfile)?$orginalfile: $uploadfile;
+			$orient = `exiftool -Orientation -n $to`;
+                        if (strpos($orient,'Orientation') !== FALSE && strpos($orient,'1') === FALSE)
+				 $smarty->assign('rotation_warning', true);
+		} else 
+			//otherwise should be ok to rely on the original exif data
+			$smarty->assign('rotation_warning', true);
+	}
+
 	if (isset($uploadmanager->exifdate)) {
 		$smarty->assign('imagetaken', $uploadmanager->exifdate);
 	}

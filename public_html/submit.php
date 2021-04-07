@@ -575,6 +575,19 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('preview_url', $preview_url);
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
 			$smarty->assign('preview_height', $uploadmanager->upload_height);
+
+
+			if (!empty($uploadmanager->rawExifData) && !empty($uploadmanager->rawExifData['IFD0']['Orientation']) && $uploadmanager->rawExifData['IFD0']['Orientation']!==1) {
+				//actully, we need to check the file itself. Because it could of been rotated - the exif data (in the .exif file) is NOT updated when rotate the image!
+				$uploadfile = $uploadmanager->_pendingJPEG($uploadmanager->upload_id);
+               		        $orginalfile = $uploadmanager->_originalJPEG($uploadmanager->upload_id);
+
+				$to = file_exists($orginalfile)?$orginalfile: $uploadfile;
+				$orient = `exiftool -Orientation -n $to`;
+	                        if (strpos($orient,'Orientation') !== FALSE && strpos($orient,'1') === FALSE)
+					 $smarty->assign('rotation_warning', true);
+			}
+
 			
 			if (max($uploadmanager->upload_width,$uploadmanager->upload_height) < 500) 
 				$smarty->assign('smallimage', 1);
