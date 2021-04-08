@@ -58,9 +58,9 @@ $baselink = $rss->link;
 	$images=new ImageList();
 	$cols = "gi.gridimage_id,title,comment,gi.grid_reference,imagetaken,submitted,upd_timestamp,gi.user_id,credit_realname,tags,gi.wgs84_lat,gi.wgs84_long";
 
-	$db = $images->_getDB(true);
+	$db = $images->_getDB(false);
 
-	$db->Execute("CREATE TABLE IF NOT EXISTS geograph_tmp.newimages (gridimage_id INT UNSIGNED NOT NULL, lookup VARCHAR(255) NOT NULL, created timestamp not null default current_timestamp, unique(`gridimage_id`,`lookup`) )");
+	$db->Execute("CREATE TABLE IF NOT EXISTS newimages (gridimage_id INT UNSIGNED NOT NULL, lookup VARCHAR(255) NOT NULL, created timestamp not null default current_timestamp, unique(`gridimage_id`,`lookup`) )");
 
 	$lookup = $db->Quote($_SERVER['HTTP_USER_AGENT']); //cant use IP as Goolgbot has many
 
@@ -77,24 +77,24 @@ $baselink = $rss->link;
                 if ($_GET['v'] == 1) {
                         //most recent sent!
                         $sql = "SELECT $cols FROM gridimage_search gi
-                                INNER JOIN geograph_tmp.newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
+                                INNER JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
                         WHERE reference_index = $ri $filter
                         ORDER BY gi.gridimage_id DESC LIMIT 100";
                 } elseif ($_GET['v'] == 4) {
                         //mid level sent!
                         $sql = "SELECT $cols FROM gridimage_search gi
-                                INNER JOIN geograph_tmp.newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
+                                INNER JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
                         WHERE reference_index = $ri $filter
                         ORDER BY gi.gridimage_id DESC LIMIT 500,100";
                 } elseif ($_GET['v'] == 2) {
                         //oldest sent!
                         $sql = "SELECT $cols FROM gridimage_search gi
-                                INNER JOIN geograph_tmp.newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
+                                INNER JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
                         WHERE reference_index = $ri $filter
                         ORDER BY gi.gridimage_id ASC LIMIT 100";
                 } elseif ($_GET['v'] == 3) {
                         //newest before setup!
-                        $id = $db->getOne("SELECT MIN(gridimage_id) FROM geograph_tmp.newimages");
+                        $id = $db->getOne("SELECT MIN(gridimage_id) FROM newimages");
                         $sql = "SELECT $cols FROM gridimage_search gi
                         WHERE reference_index = $ri $filter AND gi.gridimage_id < $id
                         ORDER BY gi.gridimage_id DESC LIMIT 100";
@@ -108,13 +108,13 @@ $baselink = $rss->link;
 		//show images from newly created clusters (in theory more unique images!)
 		$sql = "SELECT $cols FROM gridimage_search gi
 			INNER JOIN gridimage_group_stat gs ON (gi.gridimage_id = gs.gridimage_id)
-			LEFT JOIN geograph_tmp.newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
+			LEFT JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
 		WHERE reference_index = $ri $filter AND ni.gridimage_id IS NULL
 		ORDER BY gs.created DESC LIMIT 100";
         } else {
                 //constantly refreshing list!
                 $sql = "SELECT $cols FROM gridimage_search gi
-                        LEFT JOIN geograph_tmp.newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
+                        LEFT JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
 			LEFT JOIN vote_log ON (id = gi.gridimage_id and vote < 3)
                 WHERE reference_index = $ri $filter AND ni.gridimage_id IS NULL AND vote is NULL
                 ORDER BY gi.gridimage_id DESC LIMIT 100";
@@ -163,14 +163,14 @@ print $rss->_feed->createFeed();
 
 
 if (empty($_GET['v']))
-	$db->Execute($sql = "INSERT INTO geograph_tmp.newimages VALUES (".implode("),(",$rows).")");
+	$db->Execute($sql = "INSERT INTO newimages VALUES (".implode("),(",$rows).")");
 
 /*
 if (rand(1,10)==7) {
 	$db->Execute("CREATE TEMPORARY TABLE geograph_tmp.recentimages (UNIQUE(gridimage_id))
 			SELECT gridimage_id FROM gridimage_search WHERE reference_index = $ri ORDER BY gridimage_id DESC LIMIT 1000");
 
-	$db->Execute("DELETE newimages.* FROM geograph_tmp.newimages LEFT JOIN geograph_tmp.recentimages USING(gridimage_id)
+	$db->Execute("DELETE newimages.* FROM newimages LEFT JOIN geograph_tmp.recentimages USING(gridimage_id)
 			WHERE recentimages.gridimage_id IS NULL");
 }
 */
