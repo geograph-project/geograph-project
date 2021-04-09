@@ -782,6 +782,7 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 
 		//fudge it a bit - our servers are generally busier
 		$threshold *= 2; 
+		$threshold += 2;
 
 		//lets give registered users a bit more leaway!
 		if ($USER->registered) {
