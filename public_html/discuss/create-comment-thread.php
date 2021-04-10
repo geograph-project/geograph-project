@@ -157,13 +157,13 @@ if (!empty($_GET['user_id'])) {
 
         $where = array();
         $where[] = "status = 1";
-	if (!empty($_GET['topic_id'])) {
+	if (!empty($_GET['topic_id']))
         	$where[] = "for_topic_id = ".intval($_GET['topic_id']);
-	if (!empty($_GET['post_id'])) {
+	if (!empty($_GET['post_id']))
         	$where[] = "for_post_id = ".intval($_GET['post_id']);
 	else
-		$where[] = "for_post_id = 0"; //kind of want to allow  creating a thread for the whole topic, even if there is one a particular post??
-	if (!empty($_GET['user_id'])) {
+		$where[] = "for_post_id IS NULL"; //kind of want to allow  creating a thread for the whole topic, even if there is one a particular post??
+	if (!empty($_GET['user_id']))
         	$where[] = "for_user_id = ".intval($_GET['user_id']);
 
 //make sure this user can see it
@@ -176,9 +176,12 @@ if (!empty($_GET['user_id'])) {
                 $where[] = "for_right = 'all'";
         }
 
+print_r($where);
+print_r("SELECT * FROM comment_thread WHERE ".implode(' AND ',$where));
+
 //if found redirect to it
         if ($thread = $db->getRow("SELECT * FROM comment_thread WHERE ".implode(' AND ',$where))) {
-		header("Location: /discuss/comment-thread.php?id={$thread['comment_thread_id']]", false, 302);
+		header("Location: /discuss/comment-thread.php?id={$thread['comment_thread_id']}", false, 302);
 		exit;
 	}
 
