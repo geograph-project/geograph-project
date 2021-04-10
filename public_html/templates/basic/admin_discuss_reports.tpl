@@ -37,17 +37,27 @@
 		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 		<tr bgcolor="{$bgcolor}">
 			<td>{$row.created|escape:'html'}</td>
+
 			{if $row.forum_id1}
-				<td><a href="/discuss/?action=vthread&forum={$row.forum_id1}&topic={$row.topic_id}"><b>{$row.thread|escape:'html'|default:$row.topic_id}</b></a><small> [{$row.posts_count}] (<a href="?topic_id={$row.topic_id}">all</a>)</small></td>
+				<td><a href="/discuss/?action=vthread&forum={$row.forum_id1}&topic={$row.topic_id}"><b>{$row.thread|escape:'html'|default:$row.topic_id}</b></a><small> [{$row.posts_count}] (<a href="?topic_id={$row.topic_id}">all</a>)</small>
+				<small><br><br><a href="/discuss/create-comment-thread.php?topic_id={$row.topic_id}">Thread with Topic Creator</a></small>
+				</td>
 			{else}
 				<td><s>{$row.thread|escape:'html'}</s><small> (<a href="?topic_id={$row.topic_id}">all</a>)</small></td>
 			{/if}
+
 			{if $row.post1}
-				<td style="font-size:0.8em" title="{$row.post_text|escape:'html'}">{if $row.type != 'thread'}<a href="/discuss/?action=vpost&forum={$row.forum_id1}&topic={$row.topic_id}&post={$row.post_id}">{$row.post1|escape:'html'}</a>{/if}</td>
+				<td style="font-size:0.8em" title="{$row.post_text|escape:'html'}">{if $row.type != 'thread'}<a href="/discuss/?action=vpost&forum={$row.forum_id1}&topic={$row.topic_id}&post={$row.post_id}">{$row.post1|escape:'html'}</a>{/if}
 			{else}
-				<td style="font-size:0.8em" title="{$row.post_text|escape:'html'}"><s>{if $row.type != 'thread'}{$row.post2|escape:'html'}{/if}</s></td>
+				<td style="font-size:0.8em" title="{$row.post_text|escape:'html'}"><s>{if $row.type != 'thread'}{$row.post2|escape:'html'}{/if}</s>
 			{/if}
-			<td>{$row.realname|escape:'html'}</td>
+			{if $row.post_id}
+				<small><br><br><a href="/discuss/create-comment-thread.php?post_id={$row.post_id}">Thread with Post Creator</a></small>
+			{/if}
+
+			<td>{$row.realname|escape:'html'}
+			<small><br><br><a href="/discuss/create-comment-thread.php?topic_id={$row.topic_id}&amp;user_id={$row.user_id}">Thread with Reporter</a></small>
+
 			<td>{$row.type|escape:'html'}/{$row.resolution|escape:'html'}</td>
 
 				<td><select name="action[{$row.report_id}]">
