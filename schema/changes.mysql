@@ -2547,3 +2547,51 @@ alter table gridprefix add last_timestamp datetime not null;
 alter table gridprefix add imagecount int(10) unsigned DEFAULT NULL;
 alter table gridprefix add geosquares mediumint unsigned DEFAULT NULL;
 
+
+
+#################################################
+
+
+
+CREATE TABLE `comment_thread` (
+  `comment_thread_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `status` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  `title` varchar(64) NOT NULL,
+  
+  `user_id` int(10) unsigned NOT NULL,
+  
+  `for_user_id` int(10) unsigned DEFAULT NULL,
+  `for_right` varchar(32) DEFAULT NULL,
+  `for_topic_id` int(10) unsigned DEFAULT NULL,
+  `for_post_id` int(10) unsigned DEFAULT NULL,
+  `for_content_id` int(10) unsigned DEFAULT NULL,
+  
+  `created` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+
+  PRIMARY KEY (`comment_thread_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+CREATE TABLE `comment_post` (
+  `comment_post_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `comment_thread_id` int(10) unsigned NOT NULL,
+  
+  `status` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  
+  `comment` TEXT NOT NULL,
+  
+  `user_id` int(10) unsigned NOT NULL,
+    
+  `created` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+
+  PRIMARY KEY (`comment_post_id`),
+  KEY (`comment_thread_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+#################################################
+
+

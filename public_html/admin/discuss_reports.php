@@ -188,6 +188,21 @@ $logs = $db->getAll("SELECT l.*,realname FROM discuss_report_log l LEFT JOIN use
 
 $smarty->assign_by_ref('logs',$logs);
 
+if (!empty($_GET['topic_id'])) {
+	$where = array();
+	$where[] = "status = 1";
+	$where[] = "for_topic_id = ".intval($_GET['topic_id']);
+	if (!empty($USER->user_id)) {
+        	$in = explode(',',$USER->rights);
+	        $in[] = 'all';
+	        $where[] = "( for_user_id = {$USER->user_id} OR for_right IN ('".implode("','",$in)."') )";
+	} else {
+        	//dont want to check for_user_id, as it might be a private thread, for a specific right, without user_id)
+	        $where[] = "for_right = 'all'";
+	}
+	$threads = $db->getAll("SELECT * FROM comment_thread WHERE ".implode(' AND ',$where));
+	$smarty->assign_by_ref('threads',$threads);
+}
 
 #############################
 

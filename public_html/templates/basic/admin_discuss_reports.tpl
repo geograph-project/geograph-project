@@ -117,8 +117,17 @@
 <br/>
 </form>
 
+{if $threads}
+	<h3>Comment Thread(s)</h3>
+	<ul>
+	{foreach from=$threads item=thread}
+		<li><a href="/discuss/comment-thread.php?id={$thread.comment_thread_id}">{$thread.title|default:'untitled comment thread'}</a></li>
+	{/foreach}
+	</ul>
+{/if}
 
-<p>Note: Data is incomplete prior to 5/1/12 - no log was kept, and deleted threads can't be restored.</p>
+
+<p>Note: Data is incomplete prior to 5/1/12 - no log was kept, and deleted threads prior to that date, can't be restored.</p>
 
 {/dynamic}
 {include file="_std_end.tpl"}
