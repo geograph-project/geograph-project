@@ -176,9 +176,6 @@ if (!empty($_GET['user_id'])) {
                 $where[] = "for_right = 'all'";
         }
 
-print_r($where);
-print_r("SELECT * FROM comment_thread WHERE ".implode(' AND ',$where));
-
 //if found redirect to it
         if ($thread = $db->getRow("SELECT * FROM comment_thread WHERE ".implode(' AND ',$where))) {
 		header("Location: /discuss/comment-thread.php?id={$thread['comment_thread_id']}", false, 302);
