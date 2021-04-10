@@ -338,7 +338,7 @@ if (!empty($_GET['debug']))
 					return "error: unable to read file\n";
 
 //bodge, but convert uses to much memory for big images (at least during 'stamp' operations). Maybe should be checking pixel size, (eg if width*height*4 > 200M or somethign) 
-if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 6000000) {
+if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
 	$cmd = preg_replace('/(^|\/)convert"?/','$0 -limit memory 100M',$cmd);
 }
 
@@ -362,6 +362,20 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 6000000) {
 		}
 
                 passthru($cmd); //todo, maybe passthur not right version
+
+		if (!empty($destination)) {
+			if ($dbucket) {
+				if (!filesize($tmp_dst)) {
+					 trigger_error("Writing to $tmp_dst failed. Command $cmd (src: $local, dst: $destination)", //output $local param, as command may mention a local file
+						E_USER_ERROR);
+				}
+			} else {
+				if (!file_exists($destination) || !filesize($destination)) {
+					 trigger_error("Writing to $destination failed. Command $cmd (src: $local)", //output $local param, as command may mention a local file
+						E_USER_ERROR);
+				}
+			}
+		}
 
 		if (!empty($tmp_dst)) {
 	                if (filesize($tmp_dst)) //dont bother copying empyu files - probably a command failure
