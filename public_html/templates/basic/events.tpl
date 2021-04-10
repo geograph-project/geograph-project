@@ -91,54 +91,69 @@
 {/dynamic}
 
 
-{if $future && $google_maps_api_key}
-	<script src="https://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+{if $future && $list}
+
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+        <script type="text/javascript" src="{"/js/Leaflet.MetricGrid.js"|revision}"></script>
+        <script type="text/javascript" src="{"/js/mappingLeaflet.js"|revision}"></script>
+
 	
 	{literal}
 	<script type="text/javascript">
-	//<![CDATA[
-	var map;
 
-	function onLoad() {
-		map = new GMap2(document.getElementById("mapCanvas"));
-		map.addMapType(G_PHYSICAL_MAP);
-		map.addControl(new GSmallMapControl());
-		map.addControl(new GMapTypeControl(true));
+        var map = null ;
+        var issubmit = false;
+
+        function loadmap() {
+		var bounds = L.latLngBounds();
+
 		{/literal}
-		
-		var bounds = new GLatLngBounds();
-		
 		{foreach from=$list item=item}
 			{if $item.future == 1}
-				bounds.extend(new GLatLng({$item.wgs84_lat}, {$item.wgs84_long}));
+				bounds.extend([{$item.wgs84_lat}, {$item.wgs84_long}]);
 			{/if}
 		{/foreach}
 		{if $future == 1}
 			//bounds doesnt seem to like one point via extends
-			bounds.extend(new GLatLng({$fitem.wgs84_lat}+1, {$fitem.wgs84_long}+1));
-			bounds.extend(new GLatLng({$fitem.wgs84_lat}-1, {$fitem.wgs84_long}-1));
+			bounds.extend([{$fitem.wgs84_lat}+1, {$fitem.wgs84_long}+1]);
+			bounds.extend([{$fitem.wgs84_lat}-1, {$fitem.wgs84_long}-1]);
 		{/if}
+		{literal}		
 
-		var newZoom = map.getBoundsZoomLevel(bounds);
-		if (newZoom > 10)
-			newZoom = 10;
-		var center = bounds.getCenter();
-		map.setCenter(center, newZoom,G_PHYSICAL_MAP);
-		
-		var xml = new GGeoXml("{$self_host}/events/feed.kml");
-		{literal}
-		map.addOverlay(xml);
+                var newtype = readCookie('GMapType');
 
+                mapTypeId = firstLetterToType(newtype);
 
-		setTimeout(function() {
-			map.setCenter(center, newZoom,G_PHYSICAL_MAP);
-		}, 1000);
+                map = L.map('mapCanvas',{attributionControl:false}).fitBounds(bounds).addControl(
+                        L.control.attribution({ position: 'bottomright', prefix: ''}) );
 
+                setupOSMTiles(map,mapTypeId);
+
+                map.on('baselayerchange', function (e) {
+                        if (e.layer && e.layer.options && e.layer.options.mapLetter) {
+                                 var t = e.layer.options.mapLetter;
+                                 createCookie('GMapType',t,10);
+                        }
+                });
+
+                {/literal}
+                {foreach from=$list item=item}
+                        createMarkerTitle([{$item.wgs84_lat}, {$item.wgs84_long}], '{$item.title|escape:'javascript'} :: {$item.event_time|date_format:"%a, %e %b %Y"}', '/events/event.php?id={$item.geoevent_id}');
+                {/foreach}
+                {literal}
+        }
+
+	//a function to exploit function closure
+	function createMarkerTitle(point,title,link) {
+		L.marker(point, {title: title}).addTo(map)
+			.bindPopup('<a href="'+link+'">'+title+'</a>')
 	}
 
-	AttachEvent(window,'load',onLoad,false);
-	//]]>
+        AttachEvent(window,'load',loadmap,false);
 	</script>
+
 {/literal}{/if}
 
 {include file="_std_end.tpl"}
