@@ -120,7 +120,7 @@ if (!empty($_GET['post_id'])) {
 
 	if (!empty($row['topic_id']))
 		$_GET['topic_id'] = $row['topic_id'];
-	if (!empty($row['poster_id']))
+	if (!empty($row['poster_id']) && empty($_GET['user_id']))
 		$_GET['user_id'] = $row['poster_id'];
 }
 
