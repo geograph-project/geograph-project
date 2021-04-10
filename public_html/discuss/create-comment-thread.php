@@ -151,6 +151,39 @@ if (!empty($_GET['user_id'])) {
 
 /////////////////////////////////////////////////////////////////////////////////////
 
+//check if thread for this topic/etc
+// ... note this also used to rediurect to the newly created thread above!
+
+
+        $where = array();
+        $where[] = "status = 1";
+	if (!empty($_GET['topic_id'])) {
+        	$where[] = "for_topic_id = ".intval($_GET['topic_id']);
+	if (!empty($_GET['post_id'])) {
+        	$where[] = "for_post_id = ".intval($_GET['post_id']);
+	else
+		$where[] = "for_post_id = 0"; //kind of want to allow  creating a thread for the whole topic, even if there is one a particular post??
+	if (!empty($_GET['user_id'])) {
+        	$where[] = "for_user_id = ".intval($_GET['user_id']);
+
+//make sure this user can see it
+/// todo, need to perhaps allow the user to create a thread for a different group, but that could get confusing (if say directors have seperate thread to forum?) 
+        if (!empty($USER->user_id)) {
+                $in = explode(',',$USER->rights);
+                $where[] = "for_right IN ('".implode("','",$in)."')";
+        } else {
+                //dont want to check for_user_id, as it might be a private thread, for a specific right, without user_id)
+                $where[] = "for_right = 'all'";
+        }
+
+//if found redirect to it
+        if ($thread = $db->getRow("SELECT * FROM comment_thread WHERE ".implode(' AND ',$where))) {
+		header("Location: /discuss/comment-thread.php?id={$thread['comment_thread_id']]", false, 302);
+		exit;
+	}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
 
 $smarty->display('discuss_create_comment_thread.tpl');
 
