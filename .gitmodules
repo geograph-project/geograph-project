@@ -1,7 +1,6 @@
 [submodule "src/sphinx-plugins"]
 	path = src/sphinx-plugins
 	url = https://github.com/geograph-project/sphinx-plugins.git
-[submodule "showcase"]
+[submodule "public_html/showcase"]
 	path = public_html/showcase
 	url = https://github.com/geograph-project/showcase-gallery
-	ignore = dirty
