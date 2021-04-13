@@ -830,6 +830,7 @@ split_timer('search'); //starts the timer
 				default:
 					$orderby = $dataarray['orderby'];
 					if ($orderby == 'submitted') $sortorders[$orderby] = $sortorders['gridimage_id'];
+					if ($orderby == 'routeitem_id') $sortorders[$orderby] = "Route";
 					if (!empty($dataarray['reverse_order_ind'])) {
 						$orderby = preg_replace('/(,|$)/',' desc$1',$orderby);
 						if (strpos($sortorders[$dataarray['orderby']],'-') > 1) {

@@ -1108,7 +1108,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			}
 		}
 		
-		if ($engine->fullText 
+		if (!empty($engine->fullText)
 			&& $engine->numberOfPages == $engine->currentPage 
 			&& $engine->resultCount > $engine->maxResults
 			&& count($engine->results)
