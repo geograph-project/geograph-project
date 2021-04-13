@@ -46,12 +46,11 @@ dump_sql_table($query,$type);
 
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
+	global $db;
+        $recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
-        $result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
-
-        $row = mysql_fetch_array($result,MYSQL_ASSOC);
-        if (empty($row))
-                return;
+	if ($recordSet->EOF)
+		return;
 
         print "<H3>$title</H3>";
 
@@ -59,19 +58,19 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	if (!empty($_GET['one']))
 		$break = 4;
 	$max = array();
-	while($row) {
+	while(!$recordSet->EOF) {
+		$row = $recordSet->fields;
 		$last = substr($row['imagetaken'],1,$break);
 		if (!is_null($row['id']))
 			foreach ($row as $key => $value)
 				if(empty($max[$last][$key]) || $value > $max[$last][$key])
 					$max[$last][$key] = $value;
-		$row = mysql_fetch_array($result,MYSQL_ASSOC);
+		$recordSet->MoveNext();
 	}
 
+	$recordSet->Move(0);
 
-	mysql_data_seek($result,0);
-
-        $row = mysql_fetch_array($result,MYSQL_ASSOC);
+	$row = $recordSet->fields;
 
         print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
         foreach ($row as $key => $value) {
@@ -80,7 +79,8 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
         print "</TR>";
 
 	$last = substr($row['imagetaken'],1,$break);
-        while ($row) {
+        while(!$recordSet->EOF) {
+		$row = $recordSet->fields;
 		if ($last != substr($row['imagetaken'],1,$break))
 			print "<tr><td colspan=".count($row).">";
 		$last = substr($row['imagetaken'],1,$break);
@@ -94,20 +94,19 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 			}
                 }
                 print "</TR>";
-		$row = mysql_fetch_array($result,MYSQL_ASSOC);
+		$recordSet->MoveNext();
         }
         print "</TR></TABLE>";
 }
 
 
 
-function dump_logs($sql,$title,$autoorderlimit = false) {
+function dump_logs($sql,$title) {
+	global $db;
 
-        $result = mysql_query($sql) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
+        $recordSet = $db->Execute($sql) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
-        $row = mysql_fetch_array($result,MYSQL_ASSOC);
-        if (empty($row))
-                return;
+	$row = $recordSet->fields;
 
         print "<H3>$title</H3>";
 
@@ -118,7 +117,8 @@ function dump_logs($sql,$title,$autoorderlimit = false) {
         print "</TR>";
 
 	$ui = $ip = $ua = array();
-        while ($row) {
+        while (!$recordSet->EOF) {
+		$row = $recordSet->fields;
 		foreach(array('user_id','ipaddr','useragent','session') as $key)
 			$row[$key] = $row['user_id']?substr(md5($_SERVER['REQUEST_TIME'].$row[$key]),0,6):'anon';
 
@@ -127,7 +127,7 @@ function dump_logs($sql,$title,$autoorderlimit = false) {
                         print "<TD>$value</TD>";
                 }
                 print "</TR>";
-		$row = mysql_fetch_array($result,MYSQL_ASSOC);
+		$recordSet->MoveNext();
         }
         print "</TR></TABLE>";
 }

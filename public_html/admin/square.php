@@ -114,12 +114,13 @@ if (!empty($_GET['log']))
 ################################################
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
-	global $USER;
-	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
+	global $USER, $db;
 
-	$row = mysql_fetch_array($result,MYSQL_ASSOC);
+	$recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
 	print "<H3>$title</H3>";
+
+	$row = $recordSet->fields;
 
 	print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
 	foreach ($row as $key => $value) {
@@ -129,7 +130,9 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	$d= array();
 	$last = 0;
 	$buckets = array();  $five_years_in_days = 365*5;
-	do {
+	while (!$recordSet->EOF) {
+		$row = $recordSet->fields;
+
 		if (isset($row['tpoint'])) {
 			if ($row['moderation_status'] == 'geograph' && !preg_match('/^0000/',$row['imagetaken'])) {
 				$days = $row['tpoint'];
@@ -177,7 +180,8 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 			print "<td><a href=?gr={$row['grid_reference']}&amp;geo=1&amp;first=1 target=squarer>View</a></td>";
 		}
 		print "</TR>";
-	} while ($row = mysql_fetch_array($result,MYSQL_ASSOC));
+		$recordSet->MoveNext();
+	}
 	print "</TR></TABLE>";
 }
 

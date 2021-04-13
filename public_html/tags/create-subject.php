@@ -107,18 +107,19 @@ $db = GeographDatabaseConnection(false);
 $smarty->display('_std_end.tpl');
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
+	global $db;
 	static $idx = 1;
 
-        $result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
-
-        $row = mysql_fetch_array($result,MYSQL_ASSOC);
+        $recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
         print "<H3>$title</H3>";
 
-if (mysql_num_rows($result) ==0) {
+if ($recordSet->recordCount() ==0) {
         print "0 rows";
         return;
 }
+
+	$row = $recordSet->fields;
 
 	if ($idx ==1)
 		print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
@@ -130,7 +131,8 @@ if (mysql_num_rows($result) ==0) {
         print "</TR></THEAD><TBODY>";
         $keys = array_keys($row);
         $first = $keys[0];
-        do {
+	while (!$recordSet->EOF) {
+		$row = $recordSet->fields;
                 print "<TR>";
                 $align = "left";
                 if (is_null($row[$first])) {
@@ -144,7 +146,8 @@ if (mysql_num_rows($result) ==0) {
                         print "<td>".gethostbyaddr($row['ip'])."</TD>";
                 }
                 print "</TR>";
-        } while ($row = mysql_fetch_array($result,MYSQL_ASSOC));
+		$recordSet->MoveNext();
+	}
         print "</TR></TBODY></TABLE>";
 
 	$idx++;

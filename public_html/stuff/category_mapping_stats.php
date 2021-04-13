@@ -82,14 +82,15 @@ dump_sql_table($sql,$title);
 $smarty->display('_std_end.tpl');
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
+	global $db;
+        $recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
-        $result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
-
-        $row = mysql_fetch_array($result,MYSQL_ASSOC);
-	if (empty($row))
+	if ($recordSet->EOF)
 		return;
 
         print "<H3>$title</H3>";
+
+	$row = $recordSet->fields;
 
         print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
         foreach ($row as $key => $value) {
@@ -100,13 +101,15 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
                 print "<TD>$value</TD>";
         }
         print "</TR>";
-        while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+	while (!$recordSet->EOF) {
+		$row = $recordSet->fields;
                 print "<TR>";
                 foreach ($row as $key => $value) {
                         print "<TD>$value</TD>";
                 }
                 print "</TR>";
-        }
+		$recordSet->MoveNext();
+	}
         print "</TR></TABLE>";
 }
 

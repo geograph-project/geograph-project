@@ -75,11 +75,13 @@ dump_sql_table($sql,"recent bounces/complaints");
 
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
-	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
+	global $db;
 
-	$row = mysql_fetch_array($result,MYSQL_ASSOC);
+	$recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
 	print "<H3>$title</H3>";
+
+	$row = $recordSet->fields;
 
 	print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
 	foreach ($row as $key => $value) {
@@ -88,7 +90,9 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	}
 	print "<td>View</td>";
 	print "</TR>";
-	do {
+	while (!$recordSet->EOF) {
+		$row = $recordSet->fields;
+
 		print "<TR style=background-color:#eee;font-weight:bold>";
 		$align = "left";
 		foreach ($row as $key => $value) {
@@ -104,8 +108,9 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 
 		if (!empty($row['diagnosticCode']))
 			print "<tr><td colspan=9 style=font-size:0.8em>".htmlentities($row['diagnosticCode']);
-
-	} while ($row = mysql_fetch_array($result,MYSQL_ASSOC));
+		$recordSet->MoveNext();
+	}
+	
 	print "</TR></TABLE>";
 }
 

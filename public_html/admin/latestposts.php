@@ -38,13 +38,14 @@ if (!empty($_GET['user_id'])) {
 }
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
-	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
+	global $db;
+	$recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 	
-	$row = mysql_fetch_array($result,MYSQL_ASSOC);
-
 	print "<H3>$title</H3>";
 	
-	do {
+	while (!$recordSet->EOF) {
+	        $row = $recordSet->fields;
+
 		foreach ($row as $key => $value) {
 			printf("<pre style=display:inline><b>%20s</b></pre> ",$key);
 			if ($key == 'poster_name') {
@@ -62,7 +63,9 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 			$align = "right";
 		}
 		print "<HR/>";
-	} while ($row = mysql_fetch_array($result,MYSQL_ASSOC));
+        	$recordSet->MoveNext();
+	}
+	$recordSet->Close();
 }
 
 	

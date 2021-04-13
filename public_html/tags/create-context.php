@@ -116,16 +116,18 @@ dump_sql_table("SELECT grouping,sort_order,top,substring_index(description,'|',1
 $smarty->display('_std_end.tpl');
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
-        $result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
+	global $db;
 
-        $row = mysql_fetch_array($result,MYSQL_ASSOC);
+        $recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
         print "<H3>$title</H3>";
 
-if (mysql_num_rows($result) ==0) {
-        print "0 rows";
-        return;
-}
+	if ($recordSet->EOF) {
+	        print "0 rows";
+	        return;
+	}
+
+	$row = $recordSet->fields;
 
         print "<TABLE border='1' cellspacing='0' cellpadding='2'><THEAD><TR>";
         foreach ($row as $key => $value) {
@@ -134,7 +136,9 @@ if (mysql_num_rows($result) ==0) {
         print "</TR></THEAD><TBODY>";
         $keys = array_keys($row);
         $first = $keys[0];
-        do {
+	while (!$recordSet->EOF) {
+		$row = $recordSet->fields;
+
                 print "<TR>";
                 $align = "left";
                 if (is_null($row[$first])) {
@@ -148,7 +152,8 @@ if (mysql_num_rows($result) ==0) {
                         print "<td>".gethostbyaddr($row['ip'])."</TD>";
                 }
                 print "</TR>";
-        } while ($row = mysql_fetch_array($result,MYSQL_ASSOC));
+		$recordSet->MoveNext();
+	}
         print "</TR></TBODY></TABLE>";
 }
 

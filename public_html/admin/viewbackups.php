@@ -92,11 +92,13 @@ dump_sql_table($sql,'Tables');
 
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
-	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
+	global $db;
 
-	$row = mysql_fetch_array($result,MYSQL_ASSOC);
+	$recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
 	print "<H3>$title</H3>";
+
+	$row = $recordSet->fields;
 
 	print "<TABLE border='1' cellspacing='0' cellpadding='2' class='report sortable' id=ttabl style=white-space:nowrap><thead><TR>";
 	foreach ($row as $key => $value) {
@@ -104,7 +106,8 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	}
 //	print "<th>bar</th>";
 	print "</TR></thead><tbody>";
-	do {
+	while (!$recordSet->EOF) {
+		$row = $recordSet->fields;
 		print "<TR>";
 		$align = "left";
 		foreach ($row as $key => $value) {
@@ -121,7 +124,8 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 			print "<td><div style=\"width:{$size}px;height:10px;background-color:red;\"> </div></td>";
 		}*/
 		print "</TR>";
-	} while ($row = mysql_fetch_array($result,MYSQL_ASSOC));
+		$recordSet->MoveNext();
+	}
 	print "</TR></tbody></TABLE>";
 }
 
