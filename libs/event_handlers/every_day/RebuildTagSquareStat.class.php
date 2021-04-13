@@ -65,7 +65,7 @@ class RebuildTagSquareStat extends EventHandler
                         $where = "grid_reference LIKE ".$db->Quote("{$prefix}____");
 
 			//for now use MyISAM, as it was optimized that way, and uses disable/enable keys.
-			$this->Execute("CREATE TABLE tag_square_stat (primary key(`tag_id`,`user_id`,`grid_reference`)) ENGINE=myisam ".str_replace('$where',$where,$sql)) or die(mysql_error());
+			$this->Execute("CREATE TABLE tag_square_stat (primary key(`tag_id`,`user_id`,`grid_reference`)) ENGINE=myisam ".str_replace('$where',$where,$sql)) or die($db->ErrorMsg());
 		}
 
 		##################################################
@@ -94,7 +94,7 @@ class RebuildTagSquareStat extends EventHandler
 				for($start=1;$start<=$max;$start+=50000) {
 					$end = $start + 49999;
 					$where = "gridsquare_id BETWEEN $start and $end";
-					$this->Execute("INSERT INTO tag_square_stat_tmp ".str_replace('$where',$where,$sql)) or die(mysql_error());
+					$this->Execute("INSERT INTO tag_square_stat_tmp ".str_replace('$where',$where,$sql)) or die($db->ErrorMsg());
 				}
 
 				//todo, technically, this could leave some zombie records, if a tag is no longer used in square. But for now lets not worry about that!
@@ -125,7 +125,7 @@ class RebuildTagSquareStat extends EventHandler
 
 			$sql = str_replace('gi USING',"gi $indexes USING",$sql); //hardcoded, as an index on gi
 
-			$this->Execute("INSERT INTO tag_square_stat_tmp ".str_replace('$where',$where,$sql)) or die(mysql_error());
+			$this->Execute("INSERT INTO tag_square_stat_tmp ".str_replace('$where',$where,$sql)) or die($db->ErrorMsg());
 		}
 
 		##################################################
