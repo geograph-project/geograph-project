@@ -24,6 +24,7 @@ stages:
 # Container build jobs
 build/carrot2-dcs:
   extends: .container_build
+  when: manual
 
 build/geograph:
   extends: .container_build
@@ -34,9 +35,11 @@ build/manticore:
   extends: .container_build
   variables:
     GIT_SUBMODULE_STRATEGY: normal
+  when: manual
 
 build/memgator:
   extends: .container_build
+  when: manual
 
 # Template for deployments
 .k8s_deploy:
