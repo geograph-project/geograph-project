@@ -47,6 +47,38 @@ class GeographDatabase {
 	function GeographDatabase($link) {
 		$this->_connectionID = $link;
 	}
+        function ErrorMsg() {
+                return mysqli_error($this->_connectionID);
+        }
+        function Execute($query) {
+                return mysqli_query($this->_connectionID, $query);
+        }
+        function GetOne($query) {
+                $row = $this->getRow($query);
+                return $row[0];
+        }
+        function Insert_ID() {
+                return mysqli_insert_id($this->_connectionID);
+        }
+        function Quote($input) {
+                if (is_numeric($input)) return $input;
+                return "'".mysql_real_escape_string($input)."'";
+        }
+        function getAll($query) {
+                $result = mysqli_query($this->_connectionID, $query);
+                $a = array();
+                if (mysqli_num_rows($result))
+	                while ($r = mysqli_fetch_assoc($result))
+        	                $a[] = $r;
+		return $a;
+        }
+        function getRow($query) {
+		$result = mysqli_query($this->_connectionID, $query);
+		if (mysqli_num_rows($result))
+			return mysqli_fetch_assoc($result);
+		else
+			return false;
+        }
 }
 
 function init_session() {
@@ -70,13 +102,9 @@ function init_session() {
 */
 function GeographDatabaseConnection($allow_readonly = false) {
 	
-	$link = mysql_connect('example.com:3307', 'mysql_user', 'mysql_password');
+	$link = mysqli_connect('example.com:3307', 'mysql_user', 'mysql_password', 'foo');
 	if (!$link) {
-	    die('Could not connect: ' . mysql_error());
-	}
-	$db_selected = mysql_select_db('foo', $link);
-	if (!$db_selected) {
-	    die ('Can\'t use foo : ' . mysql_error());
+	    die('Could not connect: ' . mysqli_error());
 	}
 	$class = new GeographDatabase($link);
 	$class->readonly = false;

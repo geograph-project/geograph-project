@@ -38,7 +38,6 @@ include('./geotrip_func.php');
 
 
 $db = GeographDatabaseConnection(false);
-// can now use mysql_query($sql); directly, or mysql_query($sql,$db->_connectionID);
 
 
   // get track from database
@@ -156,20 +155,20 @@ is still included, or choose a new one.
 <?php
       } else {  // input received - update database
         if ($_POST['type']!=$trip['type'])
-          $db->Execute("update geotrips set type='".mysql_real_escape_string($_POST['type'])."' where id={$trip['id']}");
+          $db->Execute("update geotrips set type=".$db->Quote($_POST['type'])." where id={$trip['id']}");
         if ($_POST['loc']&&$_POST['loc']!=$trip['location'])
-          $db->Execute("update geotrips set location='".mysql_real_escape_string($_POST['loc'])."' where id={$trip['id']}");
+          $db->Execute("update geotrips set location=".$db->Quote($_POST['loc'])." where id={$trip['id']}");
         if ($_POST['start']&&$_POST['start']!=$trip['start'])
-          $db->Execute("update geotrips set start='".mysql_real_escape_string($_POST['start'])."' where id={$trip['id']}");
+          $db->Execute("update geotrips set start=".$db->Quote($_POST['start'])." where id={$trip['id']}");
         if ($_POST['title']!=$trip['title'])
-          $db->Execute("update geotrips set title='".mysql_real_escape_string($_POST['title'])."' where id={$trip['id']}");
+          $db->Execute("update geotrips set title=".$db->Quote($_POST['title'])." where id={$trip['id']}");
         if ($_POST['img']&&$_POST['img']!=$trip['img']) {
           $img=explode('/',$_POST['img']);
           $img=intval($img[sizeof($img)-1]);
           $db->Execute("update geotrips set img=$img where id={$trip['id']}");
         }
         if ($_POST['descr']!=$trip['descr'])
-          $db->Execute("update geotrips set descr='".mysql_real_escape_string(strip_tags($_POST['descr']))."' where id={$trip['id']}");
+          $db->Execute("update geotrips set descr=".$db->Quote(strip_tags($_POST['descr']))." where id={$trip['id']}");
         $db->Execute("update geotrips set updated='".date('U')."' where id={$trip['id']}");
         if ($_POST['search']&&$_POST['search']!=$trip['search']) {
 		require_once('geograph/searchcriteria.class.php');
