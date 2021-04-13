@@ -45,7 +45,7 @@ if (!empty($_POST)) {
 			$label_id = intval($label_id);
 		        $db->Execute('UPDATE curated_headword SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE label_id = '.$label_id,array_values($updates));
 
-		        if (mysql_affected_rows() == 1) {
+		        if ($db->Affected_Rows() == 1) {
 		                print "<h3>Updated #$label_id </h3>";
 		        } else {
 		                print "<h3>Updating label #$label_id failed ".mysql_error()."</h3>";

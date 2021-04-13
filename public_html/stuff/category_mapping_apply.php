@@ -233,7 +233,7 @@ if (!empty($tags) && !empty($_POST['confirm'])) {
 	$total = 0;
 	foreach ($sqls as $sql) {
 		$db->Execute($sql);
-		$affected= mysql_affected_rows();
+		$affected= $db->Affected_Rows();
 		$total+=$affected;
 	}
 

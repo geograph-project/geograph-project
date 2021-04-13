@@ -39,7 +39,7 @@ if (!empty($_GET['build'])) {
 
 		$db->Execute("INSERT INTO year_review2 ".str_replace('%where',$where,$build));
 
-		print "$where => ".mysql_affected_rows()."<br>";
+		print "$where => ".$db->Affected_Rows()."<br>";
 		flush(); ob_flush();
 	}
 	print "DONE!";

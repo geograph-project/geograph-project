@@ -174,7 +174,7 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 				print "$sql;";
 				if (isset($_POST['real'])) {
 					$db->Execute($sql);
-					$rows = mysql_affected_rows($db->_connectionID);
+					$rows = $db->Affected_Rows();
 					print " #$rows rows affected";
 				}
 				print "<br>";
@@ -228,7 +228,7 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 		print "$sql;";
 		if (isset($_POST['real'])) {
 			$db->Execute($sql);
-			$rows = mysql_affected_rows($db->_connectionID);
+			$rows = $db->Affected_Rows();
 			print " #$rows rows affected";
 		}
 		print "<br>";

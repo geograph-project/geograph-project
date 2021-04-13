@@ -85,7 +85,7 @@ if (!empty($_GET['import'])) {
 			$updates['user_id'] = $USER->user_id;
 						
 			$db->Execute('REPLACE INTO category_top_log SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
-			$affected= mysql_affected_rows();
+			$affected= $db->Affected_Rows();
 			
 			$rows++;
 		}
@@ -239,7 +239,7 @@ if (!empty($_GET['import'])) {
 			$updates['imageclass'] = trim($category);
 
 			$db->Execute('REPLACE INTO category_top_log SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
-			$affected += mysql_affected_rows();
+			$affected += $db->Affected_Rows();
 		}
 		
 		print "Thank you, {$affected} records recorded. <a href=\"?\">Continue...</a>";

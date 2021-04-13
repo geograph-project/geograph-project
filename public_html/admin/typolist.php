@@ -76,7 +76,7 @@ if (!empty($_GET['hide'])) {
 			WHERE word = ".$db->Quote($word);
 		$db->Execute($sql);
 
-		print "Images updated = ".mysql_affected_rows();
+		print "Images updated = ".$db->Affected_Rows();
 
 	} elseif (!empty($_GET['profile']) && $_GET['profile'] != 'keywords') {
 		$word = htmlentities($db->getOne("SELECT include FROM typo WHERE typo_id = ".intval($_GET['delete'])));

@@ -184,7 +184,7 @@ if (!empty($_POST['title'])) {
 		}
 		if (!empty($_POST['comment'])) {
 			$db->Execute("UPDATE systemtask SET comment = ".$db->Quote($_POST['comment'])." WHERE systemtask_id = $id");
-			if (mysql_affected_rows() > 0)
+			if ($db->Affected_Rows() > 0)
 				$event = 'comment';
 		}
 		if (empty($_POST['skip']) && !empty($event)) {

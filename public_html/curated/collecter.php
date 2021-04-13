@@ -64,7 +64,7 @@ if (!empty($_GET['x'])) {
 
 		$db->Execute($sql = 'INSERT IGNORE INTO curated1 SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 
-		$done+=mysql_affected_rows();
+		$done+=$db->Affected_Rows();
 	}
 
 	print "<p>$done image(s) added. Thank you.</p>";

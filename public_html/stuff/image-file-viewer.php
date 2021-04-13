@@ -128,7 +128,7 @@ if (!empty($_POST['clearcache'])) {
                 $sql = "DELETE FROM gridimage_thumbsize WHERE gridimage_id = {$id} AND maxw = {$maxd}";
                 print " $sql\n";
                 $db->Execute($sql);
-                print "Affected: ".mysql_affected_rows($db->_connectionID)."<br>";
+                print "Affected: ".$db->Affected_Rows()."<br>";
 
 		print "Please wait <b>$seconds seconds</b>, then <a href=\"?id={$id}$extra\">return to viewer</a>";
 		print " (if when get there, see no change, then can try pressing F5 once)";

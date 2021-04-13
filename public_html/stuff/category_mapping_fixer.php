@@ -40,7 +40,7 @@ if (!empty($_POST['old']) && !empty($_POST['new'])) {
 	$sql = "UPDATE category_mapping SET subject = ".$db->quote($_POST['new'])." WHERE  subject = ".$db->quote($_POST['old']);
 	print "$sql<br>";
 	$db->Execute($sql);
-	print "Rows affected: ".mysql_affected_rows()."<hr>";
+	print "Rows affected: ".$db->Affected_Rows()."<hr>";
 }
 
 
