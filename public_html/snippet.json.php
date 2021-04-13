@@ -62,7 +62,7 @@ if (!empty($USER->registered) && !empty($_GET['snippet_id']) && !empty($_GET['gr
 
 		$db->Execute('INSERT INTO snippet SET created=NOW(),point_en=GeomFromText('.$point.'),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
 
-		$snippet_id = mysql_insert_id();
+		$snippet_id = $db->Insert_ID();
 	} else {
 		$snippet_id = intval($_GET['snippet_id']);
 	}

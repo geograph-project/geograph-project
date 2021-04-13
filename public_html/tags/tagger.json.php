@@ -72,7 +72,7 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 
 		$db->Execute('INSERT INTO tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
 
-		$tag_id = mysql_insert_id();
+		$tag_id = $db->Insert_ID();
 	}
 
 	$u = array();

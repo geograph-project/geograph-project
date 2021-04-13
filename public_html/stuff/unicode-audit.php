@@ -39,7 +39,7 @@ if (!empty($_POST['o'])) {
                 	$updates["user_id"] = intval($USER->user_id);
 
 	                $db->Execute('INSERT INTO sphinx_latin1_map SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
-        	        //$id = mysql_insert_id();
+        	        //$id = $db->Insert_ID();
 		}
 	}
 }
@@ -163,24 +163,26 @@ if (!empty($_GET['done'])) {
 
 if (!empty($_GET['col']) && $USER->hasPerm("admin") && preg_match('/^(\w+)\.(\w+)$/',$_GET['col'],$m)) {
 	$table = $m[1]; $column = $m[2];
-	$result = mysql_query("select `$column` from `$table` where `$column` not rlike binary '^[ -~\\n\\r]*$' OR `$column` LIKE '%&#%;%'");
+	$recordSet = $db->Execute("select `$column` from `$table` where `$column` not rlike binary '^[ -~\\n\\r]*$' OR `$column` LIKE '%&#%;%'");
 
 } elseif (!empty($_GET['tags'])) {
-	$result = mysql_query("select tag from tag where tag not rlike binary '^[ -~\\n\\r]*$'");
+	$recordSet = $db->Execute("select tag from tag where tag not rlike binary '^[ -~\\n\\r]*$'");
 
 } elseif (!empty($_GET['snippets'])) {
-	$result = mysql_query("select DISTINCT title from snippet inner join gridimage_snippet using (snippet_id) where title not rlike binary '^[ -~\\n\\r]*$' and enabled=1");
+	$recordSet = $db->Execute("select DISTINCT title from snippet inner join gridimage_snippet using (snippet_id) where title not rlike binary '^[ -~\\n\\r]*$' and enabled=1");
 
 } elseif (!empty($_GET['descriptions'])) {
-	$result = mysql_query("select comment from gridimage_funny WHERE comment IS NOT NULL");
+	$recordSet = $db->Execute("select comment from gridimage_funny WHERE comment IS NOT NULL");
 
 } else {
-	$result = mysql_query("select title from gridimage_funny WHERE title IS NOT NULL");
+	$recordSet = $db->Execute("select title from gridimage_funny WHERE title IS NOT NULL");
 }
 
 $a = array();
 
-while ($row = mysql_fetch_assoc($result)) {
+while (!$recordSet->EOF) {
+	$row = $recordSet->fields;
+
 	$value = array_pop($row);
 	$encoded = str_replace('+',' ',urlencode($value));
 
@@ -197,8 +199,9 @@ while ($row = mysql_fetch_assoc($result)) {
                 foreach ($m[0] as $c)
                         $a[$c] = $value;
         }
-
+	$recordSet->MoveNext();
 }
+$recordSet->Close();
 
 //print_r($a);
 

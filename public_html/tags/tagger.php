@@ -136,7 +136,7 @@ if (!empty($_POST['save']) && !empty($ids)) {
 
 				$db->Execute('INSERT INTO tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
 
-				$tag_id = mysql_insert_id();
+				$tag_id = $db->Insert_ID();
 			}
 
 			$u = array();
@@ -257,7 +257,7 @@ if (!empty($_POST['save']) && !empty($ids)) {
 					$u['user_id'] = $USER->user_id;
 
 					$db->Execute('INSERT INTO tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
-					$tag_id = mysql_insert_id();
+					$tag_id = $db->Insert_ID();
 				}
 
 				$u = array();

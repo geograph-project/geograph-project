@@ -44,7 +44,7 @@ if (!is_numeric($_GET['id'])) {
 	if (empty($id)) {
 		$ins = "INSERT INTO vote_string SET value = ".$db->Quote(@$_GET['id']).", user_id = ".intval($USER->user_id);
 		$db->Execute($ins);
-		$_GET['id'] = mysql_insert_id();
+		$_GET['id'] = $db->Insert_ID();
 	} else {
 		$_GET['id'] = intval($id);
 	}

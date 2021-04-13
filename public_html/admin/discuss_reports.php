@@ -45,7 +45,7 @@ if (!empty($_POST) && !empty($_POST['action'])) {
 		$u['resolution'] = 'delt'; //close it rightaway!
 
                 $db->Execute('INSERT INTO discuss_report SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
-		$report_id = mysql_insert_id();
+		$report_id = $db->Insert_ID();
 		$_POST['action'][$report_id] = $_POST['action']['new'];
 		unset($_POST['action']['new']);
 	}
