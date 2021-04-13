@@ -45,47 +45,27 @@ if (!defined('SPHINX_INDEX')) {
 ###########################################
 
 
-function getAll($query) {
-	global $db;
-	if (!($result = mysql_query($query, $db))) {
-		return FALSE; //SHOW META in sphinx will report the error
-	}
-	if (!mysql_num_rows($result)) {
-		return FALSE;
-	}
-	$a = array();
-	while($row = mysql_fetch_assoc($result)) {
-                if (!empty($row['title']))
-                        $row['title'] = utf8_encode($row['title']);
-                if (!empty($row['realname']))
-                        $row['realname'] = utf8_encode($row['realname']);
-                if (!empty($row['place']))
-                        $row['place'] = utf8_encode($row['place']);
-		$a[] = $row;
-	}
-	return $a;
-}
 function getAssoc($query) {
 	global $db;
-	if (!($result = mysql_query($query, $db))) {
+	if (!($result = mysqli_query($db, $query))) {
 		return FALSE; //SHOW META in sphinx will report the error
 	}
-	if (!mysql_num_rows($result)) {
+	if (!mysqli_num_rows($result)) {
 		return FALSE;
 	}
 	$a = array();
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 
 	if (count($row) > 2) {
 		do {
 			$i = array_shift($row);
 			$a[$i] = $row;
-		} while($row = mysql_fetch_assoc($result));
+		} while($row = mysqli_fetch_assoc($result));
 	} else {
 		$row = array_values($row);
 		do {
 			$a[$row[0]] = $row[1];
-		} while($row = mysql_fetch_row($result));
+		} while($row = mysqli_fetch_row($result));
 	}
 	return $a;
 }

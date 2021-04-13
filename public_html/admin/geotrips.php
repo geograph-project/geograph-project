@@ -32,7 +32,6 @@ $USER->mustHavePerm("moderator");
 
 
 $db = GeographDatabaseConnection(false);
-// can now use mysql_query($sql); directly, or mysql_query($sql,$db->_connectionID);
 
 
 
