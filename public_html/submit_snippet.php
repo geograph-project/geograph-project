@@ -31,7 +31,7 @@ $USER->mustHavePerm("basic");
 
 $usenew = $USER->getPreference('snippet.submit_new','0',true);
 
-if ($usenew) {
+if ($usenew && empty($_GET['create'])) {
         $template='submit_snippet2.tpl';
 } else {
 	$template='submit_snippet.tpl';

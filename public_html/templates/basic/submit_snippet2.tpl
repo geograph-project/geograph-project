@@ -121,6 +121,9 @@ body {
 			&middot; Having added a description, to start another, just type a comma or semicolon.<br/><br/>
 			&middot; Can add multiple shared descriptions to a image<br/><br/>
 			&middot; If you dont provide normal image description, and add one shared description, it will be used 'as' the description<br/><br/>
+
+			&middot; <b><a href="?create=1{if $upload_id}&amp;upload_id={$upload_id}{/if}{if $gridimage_id}&amp;gridimage_id={$gridimage_id}{/if}{if $ids}&amp;ids={$ids}{/if}{if $gr}&amp;gr={$gr}{/if}">Create New Shared Description</a></b> 
+
 		</div>
 
 	</div>
@@ -161,7 +164,7 @@ $(function() {
 		separator: ';',
 		placeholder: 'enter title or search here',
 		closeOnSelect: false,
-		tokenSeparators: [';',','],
+		//tokenSeparators: [';',','],
 		ajax: {
 			quietMillis: 200,
 			url: "/snippets.json.php",
