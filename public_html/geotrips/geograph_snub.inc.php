@@ -62,7 +62,7 @@ class GeographDatabase {
         }
         function Quote($input) {
                 if (is_numeric($input)) return $input;
-                return "'".mysql_real_escape_string($input)."'";
+                return "'".mysqli_real_escape_string($this->_connectionID, $input)."'";
         }
         function getAll($query) {
                 $result = mysqli_query($this->_connectionID, $query);
@@ -97,9 +97,6 @@ function init_session() {
 	$GLOBALS['USER'] =& $_SESSION['user'];	
 }
 
-/* 
-* After calling this function, can just use mysql_query etc in your code
-*/
 function GeographDatabaseConnection($allow_readonly = false) {
 	
 	$link = mysqli_connect('example.com:3307', 'mysql_user', 'mysql_password', 'foo');
