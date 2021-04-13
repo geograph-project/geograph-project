@@ -190,7 +190,7 @@ class EventProcessor
 
 		//if available, this seems the most reliable way
 		if (function_exists('sys_getloadavg'))
-                	return array_shift(sys_getloadavg());
+                	return @array_shift(sys_getloadavg()); //array_shift accepts by reference, which emits notice when used like this
 
 		//get the uptime
 		$uptime = `uptime`;

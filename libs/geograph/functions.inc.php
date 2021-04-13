@@ -791,7 +791,7 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 
 		//check load average, abort if too high
 	        if (function_exists('sys_getloadavg'))
-        	        $load = array_shift(sys_getloadavg());
+        	        $load = @array_shift(sys_getloadavg()); //array_shift accepts by reference, which emits notice when used like this
 		elseif (is_readable("/proc/loadavg")) {
 			$buffer = "0 0 0";
 			$f = fopen("/proc/loadavg","r");

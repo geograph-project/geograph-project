@@ -20,7 +20,7 @@ if (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
 
 
         if (function_exists('sys_getloadavg'))
-                $load2 = array_shift(sys_getloadavg());
+                $load2 = @array_shift(sys_getloadavg()); //array_shift accepts by reference, which emits notice when used like this
 
 
 	if (!empty($_SERVER['CONF_PROFILE']))
