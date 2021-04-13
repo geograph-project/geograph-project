@@ -48,7 +48,7 @@ if (!empty($_POST)) {
 		        if ($db->Affected_Rows() == 1) {
 		                print "<h3>Updated #$label_id </h3>";
 		        } else {
-		                print "<h3>Updating label #$label_id failed ".mysql_error()."</h3>";
+		                print "<h3>Updating label #$label_id failed ".$db->ErrorMsg()."</h3>";
 		        }
 		}
 	}

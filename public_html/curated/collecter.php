@@ -44,7 +44,7 @@ if (!empty($_GET['x'])) {
 
 	$updates['gridimage_id'] = intval($_GET['x']);
 
-	$db->Execute($sql = 'UPDATE curated1 SET active=0 WHERE `'.implode('` = ? AND `',array_keys($updates)).'` = ?',array_values($updates)) or die("$sql;<hr>".mysql_error());
+	$db->Execute($sql = 'UPDATE curated1 SET active=0 WHERE `'.implode('` = ? AND `',array_keys($updates)).'` = ?',array_values($updates)) or die("$sql;<hr>".$db->ErrorMsg());
 
 } elseif (!empty($_POST['ids'])) {
 

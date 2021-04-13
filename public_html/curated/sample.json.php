@@ -115,8 +115,8 @@ if (!empty($_GET['region']) && $_GET['region'] == 'Group By') {
 
 $data['images'] = $sph->getAll($sqls[] = $sql1." ".implode(" AND ",$where)." ".$sql2);
 
-if (mysql_errno())
-	$data['error'] = mysql_error();
+if ($sph->ErrorNo())
+	$data['error'] = $sph->ErrorMsg();
 
 if (!empty($data['images'])) {
 	foreach ($data['images'] as $idx => &$row) {
