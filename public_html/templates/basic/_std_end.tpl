@@ -20,6 +20,7 @@
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
      <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
      {dynamic}{if $user->registered}
+     <li><a title="Events (Autumn meet and AGM)" href="/events/">Events</a> (1)</li>
      <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
      {/if}{/dynamic}
     </ul></li>
