@@ -32,7 +32,7 @@ if (!$db) {
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');
 }
-if ($wid = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET6_ATON('".mysql_real_escape_string(getRemoteIP())."')")) { 
+if ($wid = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET6_ATON(".$db->Quote(getRemoteIP()).")")) { 
 
 	$row = $db->getRow("SELECT at_home_worker_id FROM at_home_job INNER JOIN at_home_result USING (at_home_job_id) WHERE at_home_worker_id = $wid AND at_home_result.created > DATE_SUB(NOW(),INTERVAL 10 MINUTE)");
 

@@ -461,9 +461,11 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 			}
 
 			if (!empty($_REQUEST['q'])) {
-				$q=mysql_real_escape_string(trim($_REQUEST['q']));
-
-				$where[] = "(title LIKE '%$q%' OR comment LIKE '%$q%' OR s.snippet_id = '$q')";
+				$q=$db->Quote("%".trim($_REQUEST['q'])."%");
+				if (is_numeric($_REQUEST['q']))
+					$where[] = "(title LIKE $q OR comment LIKE $q OR s.snippet_id = ".intval($_REQUEST['q']).")";
+				else
+					$where[] = "(title LIKE $q OR comment LIKE $q)";
 				$smarty->assign('q',trim($_POST['q']));
 			}
 

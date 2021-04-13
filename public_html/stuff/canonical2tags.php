@@ -42,7 +42,7 @@ $smarty = new GeographPage;
 		
 		
 		foreach ($_POST['map'] as $imageclass => $canonical) {
-			$sql = "INSERT INTO category_canonical_2tag SET imageclass = '".mysql_real_escape_string($imageclass)."',canonical = '".mysql_real_escape_string($canonical)."',user_id = {$USER->user_id},created=NOW()";
+			$sql = "INSERT INTO category_canonical_2tag SET imageclass = ".$db->Quote($imageclass).",canonical = ".$db->Quote($canonical).",user_id = {$USER->user_id},created=NOW()";
 			
 			$db->Execute($sql);
 		}

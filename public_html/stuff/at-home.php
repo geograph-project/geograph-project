@@ -39,7 +39,7 @@ if (empty($db)) {
 }
 
 if (isset($_GET['assignToken'])) {
-	if ($id = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET6_ATON('".mysql_real_escape_string(getRemoteIP())."') ORDER BY at_home_worker_id DESC")) { 
+	if ($id = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET6_ATON(".$db->Quote(getRemoteIP()).") ORDER BY at_home_worker_id DESC")) { 
 	
 		$token=new Token;
 		$token->setValue("id", $id);
@@ -54,7 +54,7 @@ if (isset($_GET['assignToken'])) {
 
 if (isset($_GET['getWorkerToken'])) {
 
-	if (empty($_GET['force']) && ($wid = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET6_ATON('".mysql_real_escape_string(getRemoteIP())."') ORDER BY at_home_worker_id DESC"))) { 
+	if (empty($_GET['force']) && ($wid = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET6_ATON(".$db->Quote(getRemoteIP()).") ORDER BY at_home_worker_id DESC"))) { 
 
 		$interval = (!empty($_GET['team']) && $_GET['team'] == 'Amazon AWS')?'1 day':'1 year';
 
@@ -72,7 +72,7 @@ if (isset($_GET['getWorkerToken'])) {
 		die("Error:Please specify a useragent");
 	}
 	$updates['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-	$db->Execute('INSERT INTO at_home_worker SET `ip` = INET6_ATON(\''.mysql_real_escape_string(getRemoteIP()).'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	$db->Execute('INSERT INTO at_home_worker SET `ip` = INET6_ATON('.$db->Quote(getRemoteIP()).'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 	
 	$id = $db->Insert_ID();
 	
