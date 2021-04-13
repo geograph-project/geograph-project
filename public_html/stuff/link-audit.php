@@ -69,7 +69,7 @@ $limit = 200;
 if (!empty($_GET['limit']))
 	$limit = intval($_GET['limit']);
 
-$result = mysql_query("SELECT t.gridimage_id,comment,result,t.url
+$recordSet = $db->Execute("SELECT t.gridimage_id,comment,result,t.url
 FROM gridimage_search inner join tmp_link_examples t using (gridimage_id)
 inner join gridimage_link using (gridimage_link_id,gridimage_id)
 where last_found > upd_timestamp
@@ -85,7 +85,8 @@ This includes, a selection of charactors following the link. Some of these our c
 <?
 
 print "<table cellspacing=0 cellpadding=3 border=1>";
-while ($row = mysql_fetch_assoc($result)) {
+while (!$recordSet->EOF) {
+        $row = $recordSet->fields;
 	if ($row['result'] == 'Yes') {
 		print "<tr style=background-color:lightgreen>";
 	} elseif ($row['result'] == 'No') {
@@ -98,7 +99,9 @@ while ($row = mysql_fetch_assoc($result)) {
 	print "<tr>";
 	print "<td style=\"font-family:monospace;max-width:40vw;overflow:hidden;\">".nl2br(htmlentities($row['comment']))."</td>";
 	print "<td>".GeographLinks(htmlentities2($row['comment']));
+        $recordSet->MoveNext();
 }
+$recordSet->Close();
 
 print "</table>";
 

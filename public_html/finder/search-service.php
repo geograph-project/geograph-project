@@ -392,14 +392,16 @@ if (!empty($_GET['debug'])) {
 			$db = GeographDatabaseConnection(true);
 		}
 
-		$result = mysql_query($sql) or die ("Couldn't select query : $sql " . mysql_error() . "\n");
+		$recordSet = $db->Execute($sql) or die ("Couldn't select query : $sql " . $db->ErrorMsg() . "\n");
 
-		if (mysql_num_rows($result) > 0) {
+		if ($count = $recordSet->RecordCount()) {
 			require_once('geograph/gridimage.class.php');
 
 			$rows = array();
-			while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+			while (!$recordSet->EOF) {
+			        $row = $recordSet->fields;
 				$rows[$row['gridimage_id']] = $row;
+				$recordSet->MoveNext();
 			}
 			$images = array();
 			foreach ($ids as $c => $id) {
@@ -452,10 +454,11 @@ function didYouMean($q,$cl) {
 		WHERE $where
 		LIMIT 60";
 
-		$result = mysql_query($sql) or die ("Couldn't select query : $sql " . mysql_error() . "\n");
+		$recordSet = $db->Execute($sql) or die ("Couldn't select query : $sql " . $db->ErrorMsg() . "\n");
 		$r = '';
-		if (mysql_num_rows($result) > 0) {
-			while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+		if (!$recordSet->EOF) {
+			while (!$recordSet->EOF) {
+			        $row = $recordSet->fields;
 				foreach (preg_split('/[\/,\|]+/',trim(strtolower($row['name']))) as $word) {
 					$word = preg_replace('/[^\w ]+/','',$word);
 					if (strpos($q,$word) !== FALSE) {
@@ -464,6 +467,7 @@ function didYouMean($q,$cl) {
 					}
 
 				}
+				$recordSet->MoveNext();
 			}
 		}
 	}

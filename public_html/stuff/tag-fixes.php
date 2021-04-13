@@ -212,7 +212,7 @@ if (!empty($where)) {
 	where $where
 	group by tag.tag_id
 	having status=1 OR images>0
-	limit 1000"); // or die("$sql;<br>".mysql_error());
+	limit 1000"); 
 
 	if (!empty($tags)) {
 
@@ -289,7 +289,7 @@ if (!empty($where)) {
 				print "<pre>".implode(";\n",$sqls).";</pre>";
 				if (!empty($_GET['run'])) {
 					foreach ($sqls as $sql) {
-						$db->Execute($sql) or die(mysql_error());
+						$db->Execute($sql) or die($db->ErrorMsg());
 					}
 					if ($i > $_GET['run'])
 						exit;

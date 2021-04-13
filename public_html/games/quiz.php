@@ -65,7 +65,7 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 			$updates['ua'] = $_SERVER['HTTP_USER_AGENT'];
 			$updates['session'] = session_id();
 
-			$db->Execute('INSERT INTO game_score SET created=NOW(),`ipaddr` = INET6_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates)) or die(mysql_error());
+			$db->Execute('INSERT INTO game_score SET created=NOW(),`ipaddr` = INET6_ATON(\''.getRemoteIP().'\'),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates)) or die($db->ErrorMsg());
 		}
 
 		header("Location: ?");//todo, if public results, redirect there!
@@ -90,7 +90,7 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 
 	$table = empty($_POST['tag_id'])?'quiz_tag':'quiz';
 
-	$db->Execute('INSERT INTO '.$table.' SET created=NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates)) or die(mysql_error());
+	$db->Execute('INSERT INTO '.$table.' SET created=NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates)) or die($db->ErrorMsg());
 
 	if (empty($_POST['tag_id'])) {
 		//creating a tag
@@ -169,7 +169,7 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 		$updates['options'] = implode(',',array_keys($_POST['options']));
 	$updates['user_id'] = $USER->user_id;
 
-	$db->Execute($sql = 'INSERT INTO quiz_question SET created=NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates)) or die(mysql_error());
+	$db->Execute($sql = 'INSERT INTO quiz_question SET created=NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates)) or die($db->ErrorMsg());
 
 	header("Location: ?create=".intval($_POST['tag_id'])."&done=1");
 	exit;
@@ -189,7 +189,7 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 	else
 		$updates['options'] = '';
 
-	$db->Execute('UPDATE quiz_question SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE user_id = '.$USER->user_id.' AND question_id = '.intval($_POST['question_id']), array_values($updates)) or die(mysql_error());
+	$db->Execute('UPDATE quiz_question SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE user_id = '.$USER->user_id.' AND question_id = '.intval($_POST['question_id']), array_values($updates)) or die($db->ErrorMsg());
 
 	header("Location: ?questions=".intval($_POST['tag_id'])."&done=1");
 	exit;
@@ -198,7 +198,7 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 
 	$USER->mustHavePerm("basic");
 
-	$db->Execute('UPDATE quiz_question SET approved = 0 WHERE user_id = '.$USER->user_id.' AND question_id = '.intval($_GET['delete'])) or die(mysql_error());
+	$db->Execute('UPDATE quiz_question SET approved = 0 WHERE user_id = '.$USER->user_id.' AND question_id = '.intval($_GET['delete'])) or die($db->ErrorMsg());
 
 	header("Location: ?questions=".intval($_GET['tag_id'])."&done=1");
 	exit;
@@ -207,7 +207,7 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 
 	$USER->mustHavePerm("basic");
 
-	$db->Execute('UPDATE quiz SET approved = 0 WHERE user_id = '.$USER->user_id.' AND quiz_id = '.intval($_GET['close'])) or die(mysql_error());
+	$db->Execute('UPDATE quiz SET approved = 0 WHERE user_id = '.$USER->user_id.' AND quiz_id = '.intval($_GET['close'])) or die($db->ErrorMsg());
 
 	header("Location: ?done=1");
 	exit;
@@ -287,7 +287,7 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 		$updates['answer'] = $_POST['answer'];
 		$updates['correct'] = ($_POST['answer']==$question['correct'])?1:0;
 
-		$db->Execute($sql = 'INSERT INTO quiz_log SET created=NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates)) or die(mysql_error());
+		$db->Execute($sql = 'INSERT INTO quiz_log SET created=NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates)) or die($db->ErrorMsg());
 	}
 
 	$question = $db->getRow("SELECT qq.*

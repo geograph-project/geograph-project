@@ -365,7 +365,7 @@ function fakeSample8Clustered($sph,$where,$groupn,$limit) {
                         from sample8
                         where $where
                         order by score desc, w desc
-                        limit 1000") or die (mysql_error());
+                        limit 1000") or die ($sph->ErrorMsg());
 
 	$lookup = array();
 	$reverse = array();
