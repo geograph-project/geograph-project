@@ -46,7 +46,7 @@ if (!empty($_POST) && !empty($_POST['question'])) {
 
     $db->Execute('INSERT INTO answer_question SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 
-    $id = mysql_insert_id();
+    $id = $db->Insert_ID();
 
     $message = "Thank you. Question [<a href=\"faq-answer.php?id=$id\">".htmlentities2($updates['question'])."</a>] saved. You may add another below";
 }

@@ -63,7 +63,7 @@ if (!empty($_POST) && !empty($_POST['content'])) {
     }
 
     $db->Execute('INSERT INTO answer_answer SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
-    $id = mysql_insert_id();
+    $id = $db->Insert_ID();
 
                 foreach ($updates as $key => $value) {
                         if (!is_null($value)) {

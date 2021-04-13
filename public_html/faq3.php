@@ -46,11 +46,11 @@ $mkey = md5($_SERVER['QUERY_STRING']);
 
 
 if (!empty($_GET['q'])) {
-    $q = mysql_real_escape_string(trim($_GET['q']));
-    if ($q == 'os') {
-        $where = " AND (tags REGEXP '[[:<:]]{$q}[[:>:]]')";
+    if ($_GET['q'] == 'os') {
+        $where = " AND (tags REGEXP ".$db-Quote("[[:<:]]os[[:>:]]").")";
     } else {
-        $where = " AND (content LIKE '%$q%' OR title LIKE '%$q%' OR tags LIKE '%$q%')";
+	$q=$db->Quote("%".trim($_GET['q'])."%");
+        $where = " AND (content LIKE $q OR title LIKE $q OR tags LIKE $q)";
     }
 } else {
     $where = '';

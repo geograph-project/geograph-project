@@ -93,7 +93,7 @@ if (count($page)) {
 							print "$sql;<br>";
 							if (!empty($_GET['run'])) {
 								$db->Execute($sql);
-								print "rows: ".mysql_affected_rows()."<br>";
+								print "rows: ".$db->Affected_Rows()."<br>";
 							}
 						}
 					}

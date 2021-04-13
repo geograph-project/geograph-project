@@ -48,7 +48,7 @@ if (!empty($_GET['delete']) && $isadmin) {
 		}
 		$db->Execute($sql);
 
-		if (mysql_affected_rows())
+		if ($db->Affected_Rows())
 			print "<p>Deleted</p>";
 
 		print " <a href=?>Back</a>";

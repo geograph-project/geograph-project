@@ -316,9 +316,9 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 		}
 		
 		if (!empty($_REQUEST['q'])) {
-			$q=mysql_real_escape_string(trim($_REQUEST['q']));
+			$q=$db->Quote("%".trim($_REQUEST['q'])."%");
 			
-			$where[] = "(title LIKE '%$q%' OR comment LIKE '%$q%')";
+			$where[] = "(title LIKE $q OR comment LIKE $q)";
 			$smarty->assign('q',trim($_POST['q']));
 		}
 	}

@@ -44,7 +44,7 @@ if (!empty($_GET['delete']) && $isadmin) {
 		$sql = "UPDATE answer_question SET status = 0 WHERE question_id = $idx";
 		$db->Execute($sql);
 
-		if (mysql_affected_rows())
+		if ($db->Affected_Rows())
 			print "<p>Deleted</p>";
 
 		print " <a href=?>Back</a>";
