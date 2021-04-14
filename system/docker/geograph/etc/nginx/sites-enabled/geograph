@@ -31,7 +31,7 @@ server {
   rewrite ^/photo/(\d+)$ https://www.geograph.org.uk/photo/$1 permanent;
   rewrite ^/profile/(\d+)$ https://www.geograph.org.uk/profile/$1 permanent;
 
-  rewrite ^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$ https://s0.geograph.org.uk$request_uri permanent;
+  rewrite "^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$" https://s0.geograph.org.uk$request_uri permanent;
 
   ###################################
   #List of valid urls on api...
@@ -75,7 +75,7 @@ server {
   if ($http_host ~ development) {	rewrite ^/robots.txt /robots-staging.txt last;  }
   if ($http_host ~ beta) {		rewrite ^/robots.txt /robots-staging.txt last;  }
 
-  rewrite ^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$ https://s0.geograph.org.uk$request_uri permanent;
+  rewrite "^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$" https://s0.geograph.org.uk$request_uri permanent;
 
   ###################################
   #List of valid urls on t0...
@@ -245,7 +245,7 @@ server {
 
   ###################################
 
-  rewrite ^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$ https://s0.geograph.org.uk$request_uri permanent;
+  rewrite "^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$" https://s0.geograph.org.uk$request_uri permanent;
 
   rewrite ^/rss/(.*\.kmz) http://kml.geograph.org.uk/kml/$1 permanent;
   rewrite ^/support/(.*) https://company.geograph.org.uk/support/$1 permanent;
