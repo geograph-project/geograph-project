@@ -55,7 +55,6 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$count = count($cluster->document_ids);
 		printf("%5d. %s\n",$count,$cluster->label);
 
-		$l2 = mysql_real_escape_string($cluster->label);
 		foreach ($cluster->document_ids as $sort_order => $document_id) {
 			$row = $lookup[$document_id];
 

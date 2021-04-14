@@ -40,7 +40,7 @@ for($start = 1; $start < $max_id; $start+=20000) {
 			print_r($r);
 			print "$sql;\n\n";
 
-			print mysql_error()."\n\n";
+			print $db->ErrorMsg()."\n\n";
 			exit;
 		}
 		$c++;
@@ -61,10 +61,10 @@ while($h && !feof($h)) {
                 print_r($r);
                 print "$sql;\n\n";
 
-                print mysql_error()."\n\n";
+                print $db->ErrorMsg()."\n\n";
                 exit;
         }
-	print "deleted = ".mysql_affected_rows()."\n";
+	print "deleted = ".$db->Affected_Rows()."\n";
 }
 
 $cmd = "sudo -u manticore indexer germany --rotate";
