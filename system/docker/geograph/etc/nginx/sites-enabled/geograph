@@ -7,6 +7,77 @@ map $http_x_forwarded_proto $forwarded_proto {
   default "http";
 }
 
+#####################################################
+# API Hosts
+
+server {
+  listen 80;
+  listen [::]:80;
+  server_name api.* *.api.*
+
+  root /var/www/geograph/public_html;
+
+  if ($http_host ~ staging) {		rewrite ^/robots.txt /robots-staging.txt last;  }
+  if ($http_host ~ development) {	rewrite ^/robots.txt /robots-staging.txt last;  }
+  if ($http_host ~ beta) {		rewrite ^/robots.txt /robots-staging.txt last;  }
+
+  rewrite ^/robots.txt /robots-none.txt last;
+
+  ###################################
+  #List of valid urls on api...
+  # direct to php-fpm
+
+  rewrite ^/api/.* /restapi.php last;
+
+  location ~ ^(/api.*\.php|/restapi|/syndicator|/export*.php|.*\.json\.php$) {
+
+    include snippets/fastcgi-php.conf;
+
+    fastcgi_param SCRIPT_FILENAME $request_filename;
+    fastcgi_pass 127.0.0.1:9000;
+  }
+
+  ###################################
+  # redirect everything else
+  return 301 https://www.geograph.org.uk$request_uri;
+}
+
+#####################################################
+# Tile Host
+
+server {
+  listen 80;
+  listen [::]:80;
+  server_name t0.* *.t0.*
+
+  root /var/www/geograph/public_html;
+
+  if ($http_host ~ staging) {		rewrite ^/robots.txt /robots-staging.txt last;  }
+  if ($http_host ~ development) {	rewrite ^/robots.txt /robots-staging.txt last;  }
+  if ($http_host ~ beta) {		rewrite ^/robots.txt /robots-staging.txt last;  }
+
+  ###################################
+  #List of valid urls on t0...
+  # direct to php-fpm
+
+  rewrite ^/stamped/(\d+) /stamp.php?id=$1 last;
+
+  location ~ ^(/tile.*php|/stuff/captcha.php|/stamp.php) {
+
+    include snippets/fastcgi-php.conf;
+
+    fastcgi_param SCRIPT_FILENAME $request_filename;
+    fastcgi_pass 127.0.0.1:9000;
+  }
+
+  ###################################
+  # redirect everything else
+  return 301 https://www.geograph.org.uk$request_uri;
+}
+
+#####################################################
+# Main website block
+
 server {
   listen 80 default_server;
   listen [::]:80 default_server;
