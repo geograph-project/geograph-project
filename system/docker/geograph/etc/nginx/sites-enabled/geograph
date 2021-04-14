@@ -24,6 +24,14 @@ server {
   rewrite ^/robots.txt /robots-none.txt last;
 
   ###################################
+  # some accidental urls have been 'leaked' via relative urls (so we NEED to redirect these)
+
+  rewrite ^/photo/(\d+)$ https://www.geograph.org.uk/photo/$1 permanent;
+  rewrite ^/profile/(\d+)$ https://www.geograph.org.uk/profile/$1 permanent;
+
+  rewrite ^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$ https://s0.geograph.org.uk$request_uri permanent;
+
+  ###################################
   #List of valid urls on api...
   # direct to php-fpm
 
@@ -39,6 +47,7 @@ server {
 
   ###################################
   # redirect everything else
+  #   ... this doesnt seem to work, but doesnt really matter
 
   location ^~ ^(/api.*\.php|/restapi\.php|/syndicator\.php|/export*\.php|.*\.json\.php) {
     return 301 https://www.geograph.org.uk$request_uri;
@@ -64,6 +73,8 @@ server {
   if ($http_host ~ development) {	rewrite ^/robots.txt /robots-staging.txt last;  }
   if ($http_host ~ beta) {		rewrite ^/robots.txt /robots-staging.txt last;  }
 
+  rewrite ^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$ https://s0.geograph.org.uk$request_uri permanent;
+
   ###################################
   #List of valid urls on t0...
   # direct to php-fpm
@@ -80,6 +91,7 @@ server {
 
   ###################################
   # redirect everything else
+  #   ... this doesnt seem to work, but doesnt really matter
 
   location ^~ ^(/tile.*php|/stuff/captcha\.php|/stamp\.php) {
     return 301 https://www.geograph.org.uk$request_uri;
@@ -200,6 +212,8 @@ server {
 
   rewrite ^/(sitemap[\d\w\.-]*\.xml.*)$ /sitemap/root/$1 last;
 
+  ###################################
+
   # RewriteCond %{QUERY_STRING} (.+)\?([0-9]+),([0-9]+)$
   # RewriteRule ^/mapbrowse.php /mapbrowse.php?x=%2&y=%3&%1
 
@@ -215,6 +229,8 @@ server {
     fastcgi_pass 127.0.0.1:9000;
   }
 
+  ###################################
+
   rewrite ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 last;
 
   rewrite ^/g/(.*) https://$host/gridref/$1 permanent;
@@ -225,10 +241,21 @@ server {
   rewrite ^/m/photo/(\d+)$ https://m.geograph.org.uk/photo/$1 permanent;
   rewrite ^/mobile/photo/(\d+)$ https://m.geograph.org.uk/photo/$1 permanent;
 
+  ###################################
+
+  rewrite ^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$ https://s0.geograph.org.uk$request_uri permanent;
+
+  rewrite ^/rss/(.*\.kmz) http://kml.geograph.org.uk/kml/$1 permanent;
+  rewrite ^/support/(.*) https://company.geograph.org.uk/support/$1 permanent;
+  rewrite ^/radar/(.*) https://m.geograph.org.uk/radar/$1 permanent;
 
   ###################################
 
   rewrite ^/.well-known/change-password https://$host/forgotten.php permanent;
+
+  location ~ /sitemap.*\.xml {
+     add_header  X-Robots-Tag "noindex";
+  }
 
   ###################################
 
