@@ -94,7 +94,7 @@ if (isset($_REQUEST['edit']))
 
 	$profile->getStats();
 
-	if ($profile->hasPerm('basic') && !$profile->hasPerm('suspicious') && $profile->stats && $profile->stats['images'] > 100 || $profile->hasPerm('member')) {
+	if (!empty($CONF['company_magic']) && $profile->hasPerm('basic') && !$profile->hasPerm('suspicious') && $profile->stats && $profile->stats['images'] > 100 || $profile->hasPerm('member')) {
 		$token=new Token;
 		$token->magic = $CONF['company_magic'];
 	        $token->setValue("v", $CONF['company_name']);
@@ -303,7 +303,7 @@ if ($template=='profile.tpl')
 				$profile->tickets = 0;
 			}
 
-	if ($profile->hasPerm('basic') && $profile->hasPerm('member')) {
+	if (!empty($CONF['company_magic']) && $profile->hasPerm('basic') && $profile->hasPerm('member')) {
 		$token=new Token;
 		$token->magic = $CONF['company_magic'];
 	        $token->setValue("v", $CONF['company_name']);
