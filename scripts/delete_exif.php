@@ -62,7 +62,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 				if ($param['mode'] == 'run') {
 					$db->Execute($sql);
-					$done = mysql_affected_rows();
+					$done = $db->Affected_Rows();
 					if ($done != $c)
 						print "WARNING, DELETED $done ROWS, BUT EXEPECTED $c\n";
 				}

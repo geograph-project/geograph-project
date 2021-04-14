@@ -123,7 +123,7 @@ if (!$param['execute'])
 			$updates['users'] = count($rr['users']);
 
 			$db->Execute('INSERT INTO gridimage_duplicate SET `'.implode('` = ?,`',array_keys($updates)).'` = ? ',
-		             array_values($updates)) or die(print_r($updates,1)."\n".mysql_error()."\n\n");
+		             array_values($updates)) or die(print_r($updates,1)."\n".$db->ErrorMsg()."\n\n");
 
 			print_r($updates);
 		}

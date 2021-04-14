@@ -82,7 +82,7 @@ if (!$filesystem->file_exists($_SERVER['DOCUMENT_ROOT']."/photos/error.jpg")) {
 		print " $sql\n";
 		if ($param['execute']) {
 			$db->Execute($sql);
-			print "Rows: ".mysql_affected_rows($db->_connectionID)."\n";
+			print "Rows: ".$db->Affected_Rows()."\n";
 		}
 
 		// Task 4 - Invalidate

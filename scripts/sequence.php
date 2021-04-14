@@ -61,7 +61,7 @@ if (!$found) {
 #   ... also this version doesnt try to maniuplate which is chosen first (because no mysql WITHIN GROUP ORDER BY)
 
 //need the unique index on table_id, as we abuse a auto-incrment key to get a running sequence
-$db->Execute($sql = "create temporary table square1 ($table_id int unsigned unique, sequence int unsigned not null auto_increment primary key)") or die("$sql;\n".mysql_error()."\n\n");
+$db->Execute($sql = "create temporary table square1 ($table_id int unsigned unique, sequence int unsigned not null auto_increment primary key)") or die("$sql;\n".$db->ErrorMsg()."\n\n");
 
 $group = 'round( (wgs84_long+90.0)*pow($d+1,1.4) ), round( (wgs84_lat)*pow($d+1,1.4) )';
 $max =30;
@@ -78,11 +78,11 @@ while(1) {
 			from $table left join square1 using ($table_id)
 			where wgs84_lat > 0 AND square1.$table_id IS NULL
 			group by ".str_replace('$d',$d,$group)."
-			order by rand()") or die("$sql;\n".mysql_error()."\n\n");
+			order by rand()") or die("$sql;\n".$db->ErrorMsg()."\n\n");
 
 print "$sql;\n\n";
 
-        $rows = mysql_affected_rows();
+        $rows = $db->Affected_Rows();
         print "$loop, ".date('r')." F=".$rows."\n";
 
 	$db->Execute($sql = "INSERT INTO square1 SELECT $table_id,NULL AS sequence FROM square2");
@@ -116,7 +116,7 @@ if (empty($param['execute']))
 ###############################################################
 
 $db->Execute("update $table inner join square1 using ($table_id) set $table.sequence = square1.sequence  $extra");
-$rows = mysql_affected_rows();
+$rows = $db->Affected_Rows();
 print "Finished, ".date('r')." Affected=".$rows."\n";
 
 ###############################################################

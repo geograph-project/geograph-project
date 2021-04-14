@@ -20,7 +20,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$crit = " source IN ('article','gallery') AND `type` = 'info'";
 //	$crit = " source IN ('snippet')";
 
-	$recordSet = $db->Execute("SELECT content_id,title,extract,url FROM content WHERE $crit LIMIT $limit") or die(mysql_error()."\n");
+	$recordSet = $db->Execute("SELECT content_id,title,extract,url FROM content WHERE $crit LIMIT $limit") or die($db->ErrorMsg()."\n");
 	$lookup = array();
 	while (!$recordSet->EOF) {
 		$row =& $recordSet->fields;
@@ -58,10 +58,10 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$count = count($cluster->document_ids);
 		printf("%5d. %s\n",$count,$cluster->label);
 
-		$l2 = mysql_real_escape_string($cluster->label);
+		$l2 = $db->Quote($cluster->label);
 		foreach ($cluster->document_ids as $sort_order => $document_id) {
 			$content_id = $lookup[$document_id];
-			$sql = "INSERT INTO content_group SET content_id = $content_id, label = '$l2',score = {$cluster->score},sort_order=$sort_order,source='carrot2'";
+			$sql = "INSERT INTO content_group SET content_id = $content_id, label = $l2,score = {$cluster->score},sort_order=$sort_order,source='carrot2'";
 			//print "$sql;\n";
 			$db->Execute($sql);
 		}
@@ -69,7 +69,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$ids = getSphinxIds("@(title,extract) ".$cluster->label." @source -themed @type info",15);
 		if (count($ids)) {
 			foreach ($ids as $sort_order => $content_id) {
-				$sql = "INSERT INTO content_group SET content_id = $content_id, label = '$l2',score = {$cluster->score},sort_order=$sort_order,source='sphinx'";
+				$sql = "INSERT INTO content_group SET content_id = $content_id, label = $l2,score = {$cluster->score},sort_order=$sort_order,source='sphinx'";
 				//print "$sql;\n";
 				$db->Execute($sql);
 			}

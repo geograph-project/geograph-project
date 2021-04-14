@@ -33,7 +33,7 @@ $db->Execute("UPDATE document_words SET uses = 0");
 $inserts = 0;
 foreach ($w as $word => $count) {
 	$updates = "word = ".$db->Quote($word).", uses = $count";
-	$db->Execute("INSERT INTO document_words SET $updates  ON DUPLICATE KEY UPDATE $updates") or die(mysql_error());
+	$db->Execute("INSERT INTO document_words SET $updates  ON DUPLICATE KEY UPDATE $updates") or die($db->ErrorMsg());
 	$inserts++;
 }
 

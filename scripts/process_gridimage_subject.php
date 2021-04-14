@@ -83,7 +83,7 @@ for($start = 1; $start <= $max; $start += $limit) {
 		$sql = "UPDATE gridimage_search SET wgs84_lat = $lat, wgs84_long = $long, point_ll = GeomFromText('POINT($long $lat)'),
 			upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id'];
 
-		$db->Execute($sql) or die("$sql;\n".mysql_error()."\n");
+		$db->Execute($sql) or die("$sql;\n".$db->ErrorMsg()."\n");
 
                 $recordSet->MoveNext();
 		$count++;

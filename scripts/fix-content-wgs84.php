@@ -63,7 +63,7 @@ while (!$recordSet->EOF) {
 
 		if ($param['execute']) {
 			$db->Execute($sql);
-			print "$sql  == ".mysql_affected_rows()."\n";
+			print "$sql  == ".$db->Affected_Rows()."\n";
 		} else {
 			print "$sql\n";
 		}
@@ -84,7 +84,7 @@ if (!$param['execute'])
 
 if ($param['reset']) {
 	$db->Execute("update content set sequence = NULL");
-	$rows = mysql_affected_rows();
+	$rows = $db->Affected_Rows();
 	print "Reset, ".date('r')." F=".$rows."\n";
 }
 
@@ -111,12 +111,12 @@ while(1) {
 
 //print "$sql;\n\n";
 
-        $rows = mysql_affected_rows();
+        $rows = $db->Affected_Rows();
         print "$loop, ".date('r')." F1=".$rows." ";
 
 	$db->Execute($sql = "INSERT INTO square1 SELECT content_id,NULL AS sequence FROM square2");
 
-        $rows = mysql_affected_rows();
+        $rows = $db->Affected_Rows();
         print "F2=".$rows."\n";
 
 ##print "$sql;\n\n";
@@ -135,6 +135,6 @@ while(1) {
 
 
 $db->Execute("update content inner join square1 using (content_id) set content.sequence = square1.sequence");
-$rows = mysql_affected_rows();
+$rows = $db->Affected_Rows();
 print "Finished, ".date('r')." F=".$rows."\n";
 

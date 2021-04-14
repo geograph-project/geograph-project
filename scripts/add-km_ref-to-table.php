@@ -112,7 +112,7 @@ if ($db->getOne("SHOW TABLES LIKE ".$db->Quote($param['table']))) {
 			$sql = "UPDATE `{$param['table']}` SET km_ref = '$gridref' $extra_set WHERE $primary_key = ".$db->Quote($r[$primary_key]);
 			$db->Execute($sql);
 			$c++;
-			$a += mysql_affected_rows();
+			$a += $db->Affected_Rows();
 		}
 
 		if (!($c%1000))

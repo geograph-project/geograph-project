@@ -196,7 +196,7 @@ $sqls[] = "update gridimage_pending set status = 'invalid' where pending_id = {$
 			foreach ($cmds as $c)
 				passthru($c);
 			foreach ($sqls as $s)
-				$db->Execute($s) or die(mysql_error());
+				$db->Execute($s) or die($db->ErrorMsg());
 		}
 	}
 
