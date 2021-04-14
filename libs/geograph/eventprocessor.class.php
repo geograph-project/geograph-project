@@ -170,38 +170,6 @@ class EventProcessor
 	function verbose($text) { $this->_output(4, $text); }
 
 	/**
-	* see if we're running on Windows
-	* @public
-	*/
-	function isWindowsServer()
-	{
-		return (stripos(PHP_OS, "Win")===false)?false:true;
-	}
-
-	/**
-	* get load average
-	* @public
-	*/
-	function getLoadAverage()
-	{
-		//we don't do this on windows
-		if ($this->isWindowsServer())
-			return 0;
-
-		//if available, this seems the most reliable way
-		if (function_exists('sys_getloadavg'))
-                	return @array_shift(sys_getloadavg()); //array_shift accepts by reference, which emits notice when used like this
-
-		//get the uptime
-		$uptime = `uptime`;
-
-		//get the one minute load average
-		$bits=explode(",", $uptime);
-		list($title, $onemin)=explode(":", $bits[3]);
-		return $onemin;
-	}
-
-	/**
 	* build lookup array of available handlers
 	* @private
 	*/
@@ -294,7 +262,7 @@ class EventProcessor
 				break;
 
 			//are we over our load average?
-			$load=$this->getLoadAverage();
+			$load=get_loadavg();
 			if ($load > $this->max_load)
 			{
 				$this->trace("load average of $load exceeds {$this->max_load} sleeping for a bit...");

@@ -765,6 +765,32 @@ function dieIfReadOnly($template = 'function_readonly.tpl') {
 	}
 }
 
+/**
+* get 1 minute load average
+*/
+function get_loadavg()
+{
+        if (!function_exists('posix_uname')) {
+                return -1;
+        }
+
+        //if available, this seems the most reliable way
+        if (function_exists('sys_getloadavg'))
+                return @array_shift(sys_getloadavg()); //array_shift accepts by reference, which emits notice when used like this
+
+	if (is_readable("/proc/loadavg")) {
+	        $buffer = "0 0 0";
+        	$f = fopen("/proc/loadavg","r");
+	        if (!feof($f)) {
+        	        $buffer = fgets($f, 1024);
+	        }
+        	fclose($f);
+	        $load = explode(" ",$buffer);
+        	return (float)$load[0];
+	}
+}
+
+
 //available as a function, as doesn't come into effect if just re-using a smarty cache
 function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl') {
 	global $smarty,$USER,$CONF;
@@ -789,22 +815,7 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 			$threshold *= 2;
 		}
 
-		//check load average, abort if too high
-	        if (function_exists('sys_getloadavg'))
-        	        $load = @array_shift(sys_getloadavg()); //array_shift accepts by reference, which emits notice when used like this
-		elseif (is_readable("/proc/loadavg")) {
-			$buffer = "0 0 0";
-			$f = fopen("/proc/loadavg","r");
-			if ($f)
-			{
-				if (!feof($f)) {
-					$buffer = fgets($f, 1024);
-				}
-				fclose($f);
-			}
-			$loads = explode(" ",$buffer);
-			$load=(float)$loads[0];
-		}
+		$load = get_loadavg();
 
 		if ($load>$threshold)
 		{

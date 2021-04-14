@@ -123,20 +123,7 @@ if (!empty($_GET['worker'])) {
 if (isset($_GET['getJob'])) {
 
 	if (false) {
-                //check load average, abort if too high
-                $buffer = "0 0 0";
-                if (is_readable("/proc/loadavg")) {
-                        $f = fopen("/proc/loadavg","r");
-                        if ($f)
-                        {
-                                if (!feof($f)) {
-                                        $buffer = fgets($f, 1024);
-                                }
-                                fclose($f);
-                        }
-                }
-                $loads = explode(" ",$buffer);
-                $load=(float)$loads[0];
+		$load = get_loadavg();
 		if ($load>1.2) {
 			die_with_error('Server Busy, try later');
 		}

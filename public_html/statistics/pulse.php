@@ -144,24 +144,13 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 
 $table[] = array("Parameter"=>'',"Value"=>'');
 
-	if (strpos($_ENV["OS"],'Windows') === FALSE) {
-		//check load average
-		$buffer = "0 0 0";
-		$f = fopen("/proc/loadavg","r");
-		if ($f)	{
-			if (!feof($f)) {
-				$buffer = fgets($f, 1024);
-				$loads = explode(" ",$buffer);
-				$load = (float)$loads[0];
+	$load=get_loadavg();
+	if ($load > 0) {
+		$table[] = array("Parameter"=>'',"Value"=>'');
 
-				$table[] = array("Parameter"=>'',"Value"=>'');
-
-				$name = "Hamsters currently sweating*";
-				$table[] = array("Parameter"=>$name,"Value"=>sprintf("%d",$load*10));
-				$smarty->assign("footnote","<p>* below 10 is good, above 20 is worse, above 40 is bad.</p>");
-			}
-			fclose($f);
-		}
+		$name = "Hamsters currently sweating*";
+		$table[] = array("Parameter"=>$name,"Value"=>sprintf("%d",$load*10));
+		$smarty->assign("footnote","<p>* below 10 is good, above 20 is worse, above 40 is bad.</p>");
 	}
 
         if (!empty($_GET['advanced'])) {

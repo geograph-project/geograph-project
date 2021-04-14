@@ -33,34 +33,17 @@ $forumName=$row[0]; $forumIcon=$row[1];
 /* actual */
 
 
-
-        if (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
                 $threshold = 3;
 
                 //lets give registered users a bit more leaway!
                 if ($USER->registered) {
                         $threshold *= 2;
                 }
-                //check load average, abort if too high
-                $buffer = "0 0 0";
-                if (is_readable("/proc/loadavg")) {
-                        $f = fopen("/proc/loadavg","r");
-                        if ($f)
-                        {
-                                if (!feof($f)) {
-                                        $buffer = fgets($f, 1024);
-                                }
-                                fclose($f);
-                        }
-                }
-                $loads = explode(" ",$buffer);
-                $load=(float)$loads[0];
 
-                if ($load>$threshold)
-                {
+		$load = get_loadavg();
+                if ($load>$threshold) {
                         $CONF['disable_discuss_thumbs'] = true;
                 }
-        }
 
 
 if (!empty($CONF['disable_discuss_thumbs'])) {
