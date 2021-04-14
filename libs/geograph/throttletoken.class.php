@@ -105,7 +105,7 @@ class ThrottleToken
 			if ($t2 == '') {
 				//todo now what?
 			} else {
-				$vars =& get_object_vars($t2);
+				$vars = get_object_vars($t2);
 				foreach ($vars as $k => $v) {
 					$this->{$k} = $v;
 				}
@@ -146,7 +146,7 @@ class ThrottleToken
 			unset($this->db);
 		}
 		
-		$vars =& get_object_vars($this);
+		$vars = get_object_vars($this);
 		return array_keys($vars);
 	}	
 }
