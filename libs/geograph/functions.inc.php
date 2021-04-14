@@ -770,6 +770,11 @@ function dieIfReadOnly($template = 'function_readonly.tpl') {
 */
 function get_loadavg()
 {
+	if (!empty($_SERVER['CONF_PROFILE']) && is_readable("/sys/fs/cgroup/cpu/tasks")) {
+		$count = trim(`cat /sys/fs/cgroup/cpu/tasks | wc -l`);
+		return pow($count/10,1.3); //fake load from processes!
+	}
+
         if (!function_exists('posix_uname')) {
                 return -1;
         }
