@@ -229,6 +229,9 @@ server {
     include snippets/fastcgi-php.conf;
     fastcgi_param SCRIPT_FILENAME $request_filename;
     fastcgi_pass 127.0.0.1:9000;
+
+    fastcgi_hide_header x-geograph-id;
+    fastcgi_hide_header x-session-id;
   }
 
   ###################################
@@ -272,8 +275,8 @@ server {
     fastcgi_param SCRIPT_FILENAME $request_filename;
     fastcgi_pass 127.0.0.1:9000;
 
-    proxy_hide_header x-geograph-id;
-    proxy_hide_header x-session-id;
+    fastcgi_hide_header x-geograph-id;
+    fastcgi_hide_header x-session-id;
   }
 
   ###################################
