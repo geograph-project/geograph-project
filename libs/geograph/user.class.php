@@ -385,7 +385,41 @@ class GeographUser
 		{
 			$db = $this->_getDB();
 
-			# no need to call connect/pconnect!
+			if (!empty($form['email2']) && $form['email2'] == $form['email'] && !empty($CONF['spam_url'])) {
+				header("HTTP/1.0 409 Conflict");
+				//  die('expectation failed');
+
+			        $check = file_get_contents($CONF['spam_url']."&ip=".getRemoteIP());
+
+			        if (empty($check))
+			                $check = "[error] ".$http_response_header;
+
+			        $con = "CHECK: $check\n\n $con";
+
+				$ins = "INSERT INTO register_spam SET
+					blocked = ".(strpos($check,'<appears>yes</appears>')?1:0).",
+					username = ".$db->Quote($_POST['name']).",
+					email = ".$db->Quote($_POST['email']).",
+				        ipaddr = INET6_ATON('".getRemoteIP()."'),
+					post_data = ".$db->Quote(json_encode($_POST)).",
+				        useragent = ".$db->Quote($_SERVER['HTTP_USER_AGENT']).",
+				        session = ".$db->Quote(session_id());
+				$db->Execute($ins);
+
+			        if (strpos($check,'<appears>yes</appears>') !== FALSE) {
+					die("Blocked, due to spam. If this is an error please <a href='/contact.php'>contact us</a>");
+				}
+			}
+
+			if (preg_match('/\..*\..*\..*@gmail.com/i',$email) && 
+					 $db->getOne("select email from user where user_id > (select max(user_id)-10000 from user)
+					 and replace(email,'.','') = replace(".$db->Quote($email).",'.','')
+					 and email != ".$db->Quote($email)) ) {
+				header("HTTP/1.0 503 Service Unavailable");
+				die('server failure');
+			}
+
+
 			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' and rights is not null limit 1');
 			if (count($arr))
 			{

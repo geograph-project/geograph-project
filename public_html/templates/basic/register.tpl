@@ -79,6 +79,13 @@ function hide_message() {
 
 	<br/><br/>
 
+        <div class="interestBox" style="position:absolute;left:-1000px;top:-200px">
+        <label for="email2">leave this box blank</label><br/>
+        <input id="email2" name="email2" value="" autocomplete="no"/>
+
+        <br/><br/>
+        </div>
+
 	<label for="password1">Choose a password</label><br/>
 	<input size="12" type="password" id="password1" name="password1" value="{$password1|escape:'html'}"/>
 	<span class="formerror">{$errors.password1}</span>
