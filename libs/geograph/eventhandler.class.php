@@ -11,7 +11,7 @@ class EventHandler
 	 * @access private
 	 */
 	function Execute($sql, $slow = 1) {
-		$db=&$this->_getDB();
+		$db=$this->_getDB();
 
 		$start = microtime(true);
 		$r = $db->Execute($sql) or $this->_output(1, "$sql;\n ".$db->ErrorMsg());

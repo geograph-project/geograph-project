@@ -109,7 +109,7 @@ class SpellChecker
 	global $memcache;
 	$mkey = md5($query).$lang.$hl;
 	//fails quickly if not using memcached!
-	$data =& $memcache->name_get('sp',$mkey);
+	$data = $memcache->name_get('sp',$mkey);
 //	if ($data)
 //		return $data;
 

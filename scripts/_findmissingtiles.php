@@ -46,7 +46,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 function recurse_maps($folder) {
 	global $db;
-	$root=&$_SERVER['DOCUMENT_ROOT'];
+	$root=$_SERVER['DOCUMENT_ROOT'];
 	$dh = opendir($root.$folder);
 
 	while (($file = readdir($dh)) !== false) {

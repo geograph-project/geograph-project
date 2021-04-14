@@ -58,7 +58,7 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 		
 		if($stored) {
 			// store the metadata in mysql
-			$db=&$m->_getDB();
+			$db=$m->_getDB();
 			$db->Execute("REPLACE INTO smarty_cache_page VALUES('{$CONF['template']}',".$db->Quote($cache_file).",".$db->Quote($tpl_file).",".$db->Quote($cache_id).",NOW(),".intval($exp_time).")"); 
 		} else {
 			$smarty_obj->trigger_error("cache_handler: set failed.");
@@ -68,7 +68,7 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 		break;
 	
 	case 'clear':
-		$db=&$m->_getDB();
+		$db=$m->_getDB();
 		$where = '1';
 		if (!empty($smarty_obj->clear_this_template_only)){ 
 			$where = " Folder = '{$CONF['template']}'";
@@ -110,4 +110,3 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	return $return;
 }
 
-?>

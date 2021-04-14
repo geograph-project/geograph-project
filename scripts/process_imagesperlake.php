@@ -37,7 +37,7 @@ function queryExecute($sql,$debug) {
 	if ($debug) {
 		print date('r')."\n$sql;\n";
 		$start= microtime(true);
-		if (!($r =& $db->Execute($sql)))
+		if (!($r = $db->Execute($sql)))
 			 die("$sql\n".$db->ErrorMsg()."\n\n");
 		$end= microtime(true);
 		print date('r').sprintf(', took %.3f seconds, %d affected rows.',$end-$start,$db->Affected_Rows())."\n\n";

@@ -81,7 +81,7 @@ while (1) {
 
 			print "memcahce: ".($memcache->valid)."\n\n";
 			$mkey = $m[1];
-			$result =& $memcache->name_get('sid2',$mkey);
+			$result = $memcache->name_get('sid2',$mkey);
 			var_dump($result);
 			print "\n\n";
 			exit;
@@ -100,7 +100,7 @@ while (1) {
 				$str .= "Affected Rows: ".$db->Affected_Rows()."\n";
 
 				$mkey = $m[1];
-				$result =& $memcache->name_delete('sid2',$mkey);
+				$result = $memcache->name_delete('sid2',$mkey);
 				$str .= "Memcache Delete said: $result\n";
 
 			} else {
