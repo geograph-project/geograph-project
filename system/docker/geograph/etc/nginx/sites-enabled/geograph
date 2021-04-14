@@ -13,7 +13,7 @@ map $http_x_forwarded_proto $forwarded_proto {
 server {
   listen 80;
   listen [::]:80;
-  server_name api.* *.api.*;
+  server_name api.* *.api.geograph.org.uk;
 
   root /var/www/geograph/public_html;
 
@@ -48,7 +48,7 @@ server {
 server {
   listen 80;
   listen [::]:80;
-  server_name t0.* *.t0.*;
+  server_name t0.* *.t0.geograph.org.uk;
 
   root /var/www/geograph/public_html;
 
