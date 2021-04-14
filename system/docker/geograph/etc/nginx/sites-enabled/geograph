@@ -29,7 +29,7 @@ server {
 
   rewrite ^/api/.* /restapi.php last;
 
-  location ~ ^(/api.*\.php|/restapi|/syndicator|/export*.php|.*\.json\.php$) {
+  location ~ ^(/api.*\.php|/restapi\.php|/syndicator\.php|/export*\.php|.*\.json\.php) {
 
     include snippets/fastcgi-php.conf;
 
@@ -39,7 +39,10 @@ server {
 
   ###################################
   # redirect everything else
-  return 301 https://www.geograph.org.uk$request_uri;
+
+  location ^~ ^(/api.*\.php|/restapi\.php|/syndicator\.php|/export*\.php|.*\.json\.php) {
+    return 301 https://www.geograph.org.uk$request_uri;
+  }
 }
 
 #####################################################
@@ -62,7 +65,7 @@ server {
 
   rewrite ^/stamped/(\d+) /stamp.php?id=$1 last;
 
-  location ~ ^(/tile.*php|/stuff/captcha.php|/stamp.php) {
+  location ~ ^(/tile.*php|/stuff/captcha\.php|/stamp\.php) {
 
     include snippets/fastcgi-php.conf;
 
@@ -72,7 +75,11 @@ server {
 
   ###################################
   # redirect everything else
-  return 301 https://www.geograph.org.uk$request_uri;
+
+  location ^~ ^(/tile.*php|/stuff/captcha\.php|/stamp\.php) {
+    return 301 https://www.geograph.org.uk$request_uri;
+  }
+
 }
 
 #####################################################
