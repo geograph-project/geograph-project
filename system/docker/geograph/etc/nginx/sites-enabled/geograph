@@ -43,6 +43,11 @@ server {
   location ^~ ^(/api.*\.php|/restapi\.php|/syndicator\.php|/export*\.php|.*\.json\.php) {
     return 301 https://www.geograph.org.uk$request_uri;
   }
+
+  ## this needed to prevent downloading the php source
+  location ~ \.php {
+    deny all;
+  }
 }
 
 #####################################################
@@ -80,6 +85,10 @@ server {
     return 301 https://www.geograph.org.uk$request_uri;
   }
 
+  ## this needed to prevent downloading the php source
+  location ~ \.php {
+    deny all;
+  }
 }
 
 #####################################################
