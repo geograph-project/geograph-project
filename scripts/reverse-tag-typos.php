@@ -88,7 +88,7 @@ while (!$recordSet->EOF)
 			$con = print_r($r,TRUE);
 
 			if ($param['action'] != 'dummy')
-				mail('geograph@barryhunter.co.uk','[Geograph] MISSING TAG IDS',$con);
+				mail_wrapper('geograph@barryhunter.co.uk','[Geograph] MISSING TAG IDS',$con);
 
 			die("MISSING TAG IDS!\n");
 		}

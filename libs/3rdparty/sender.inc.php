@@ -664,8 +664,8 @@ class htmlMimeMail
 
 				$to = $this->_encodeHeader(implode(', ', $recipients), $this->build_params['head_charset']);
 
-				if (defined('MAILER_RPC') && strlen(MAILER_RPC) > 10) {
-					$result = fake_mail2($to, $subject, $this->output, implode(CRLF, $headers), $this->return_path);
+				if (function_exists('mail_wrapper')) {
+					$result = mail_wrapper($to, $subject, $this->output, implode(CRLF, $headers), '-f' . $this->return_path);
 
 				} elseif (!empty($this->return_path)) {
 					$result = mail($to, $subject, $this->output, implode(CRLF, $headers), '-f' . $this->return_path);

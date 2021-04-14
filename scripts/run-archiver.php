@@ -112,7 +112,7 @@ while (1) {
        	        $subject = explode("\n",wordwrap($str));
                	$subject = $subject[0];
 
-                if (!mail('geograph@barryhunter.co.uk', '[Geograph] '.$subject, $str)) {
+                if (!mail_wrapper('geograph@barryhunter.co.uk', '[Geograph] '.$subject, $str)) {
 	                #mail doesnt work on jam for some reason...
 
 	                $str = date('r')."\n".$str;
@@ -124,7 +124,7 @@ while (1) {
         } else {
 
                 if (!empty($subject)) { #we have a subject from the LAST error - so sending a 'all clear' with the same subject.
-			if (!mail('geograph@barryhunter.co.uk', '[Geograph] '.$subject, $str)) {
+			if (!mail_wrapper('geograph@barryhunter.co.uk', '[Geograph] '.$subject, $str)) {
 	                         file_get_contents("http://www.nearby.org.uk/mailme.php?subject=".
         	                urlencode('[Geograph] '.$subject).'&msg='.urlencode($str));
 			}
