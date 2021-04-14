@@ -512,7 +512,8 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 		$GLOBALS['USER'] = new GeographUser;
 		if (function_exists('apache_note'))
 	                apache_note('user_id', 0);
-
+		else
+			header("x-geograph-id: 0");
 
 		if (isset($_GET['responsive'])) //want even if =0 URL!
 			header("X-Robots-Tag: noindex");
@@ -585,6 +586,10 @@ function init_session()
 	//tell apache our ID, handy for logs
 	if (function_exists('apache_note'))
 		apache_note('user_id', $GLOBALS['USER']->user_id);
+	else
+		header("x-geograph-id: ".$GLOBALS['USER']->user_id);
+	if (!empty($_SESSION['session1']))
+		header("x-session-id: {$_SESSION['session1']}");
 
 	global $CONF;
 	//todo, maybe switch on session var too?
