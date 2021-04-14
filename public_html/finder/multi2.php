@@ -238,7 +238,7 @@ if (!empty($_GET['q'])) {
 		                $prev_fetch_mode = $ADODB_FETCH_MODE;
 		                $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-		                $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".$sph->ErrorMsg());
+		                $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to search server");
 
 				$attribute = "group";
 		                $where = "match(".$sph->Quote("@groups ".$sphinx->q).")";

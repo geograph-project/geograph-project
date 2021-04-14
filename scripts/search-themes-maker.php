@@ -13,7 +13,7 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-   $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".$sph->ErrorMsg());
+   $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ");
 
 	require '3rdparty/Carrot2.class.php';
 	$carrot = Carrot2::createDefault();

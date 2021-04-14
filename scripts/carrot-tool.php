@@ -23,7 +23,7 @@ if (count($argv) == 1) //empty!
 $start = microtime(true);
 
 if (!empty($param['sphinx'])) {
-  	$sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
+  	$sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. \n");
 	$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 
 	//dont bother with limit, as sphinx implicit has LIMIT 20 anyway!
@@ -43,7 +43,7 @@ $end = microtime(true);
 
 if (empty($lookup)) {
 	print "no rows\n";
-	print mysql_error()."\n";
+	print $sph->ErrorMsg()."\n";
 	exit;
 }
 
@@ -108,7 +108,6 @@ printf("Got %d clusters in %.3f seconds\n",count($c),$end-$start);
 		$count = count($cluster->document_ids);
 		printf("%5d. %s\n",$count,$cluster->label);
 
-		$l2 = mysql_real_escape_string($cluster->label);
 		foreach ($cluster->document_ids as $sort_order => $document_id) {
 			$row = $lookup[$document_id];
 			print "\t\t{$row[0]}\t{$row[1]}\n";

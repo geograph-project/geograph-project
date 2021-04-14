@@ -11,7 +11,7 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-   $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
+   $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. \n");
 
 	require '3rdparty/Carrot2.class.php';
 	$carrot = Carrot2::createDefault();
@@ -69,10 +69,10 @@ exit;
 		$count = count($cluster->document_ids);
 		printf("%5d. %s\n",$count,$cluster->label);
 
-		$l2 = mysql_real_escape_string($cluster->label);
+		$l2 = $sph->Quote($cluster->label);
 		foreach ($cluster->document_ids as $sort_order => $document_id) {
 			$content_id = $lookup[$document_id];
-			$sql = "INSERT INTO content_group SET content_id = $content_id, label = '$l2',score = {$cluster->score},sort_order=$sort_order,source='carrot2'";
+			$sql = "INSERT INTO content_group SET content_id = $content_id, label = $l2,score = {$cluster->score},sort_order=$sort_order,source='carrot2'";
 			//print "$sql;\n";
 		}
 	}
