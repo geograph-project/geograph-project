@@ -115,9 +115,9 @@ if (!empty($_GET['user_id'])) {
 				 $row['percent'] = pow($row['percent']+1,3);
 			}
 		} else {
-			if ($row['images'] && empty($_GET['lin']))
+			if (!empty($row['images']) && empty($_GET['lin']))
 				$row['percent'] = pow($row['images']+1,3); //tofix, hardcoded test!
-			elseif ($row['images'])
+			elseif (!empty($row['images']))
 				$row['percent'] = $row['images']+1;
 			else
 				$row['percent'] = 0;
