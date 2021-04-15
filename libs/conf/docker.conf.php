@@ -27,41 +27,6 @@ foreach ($_SERVER as $key => $value) {
 $CONF['SELF_HOST'] = $CONF['PROTOCOL'].$_SERVER['HTTP_HOST'];
 
 ########################################################################
-
-$CONF['curtail_level']=0; //deprecated - dont use!
-
-//uncomment one appropriate line below as needed. edting the time as needed.
-$CONF['submission_message'] = 'There will be a brief interuption of service sometime between 2-4pm (BST) - expected about 20 minutes.';
-
-//and if enabling submission_message - set this to be about 20minutes before (and uncomment it!).
-$CONF['critical'] = '1345'; //note: a string, not a number, format HHmm. Eg if closing at 2pm, set '1340'
-
-//uncomment this if want the site to also be marked reasonly. Needs to be used with 'submission_message'
-
-#$CONF['readonly'] = true; // note only affects the submission, as in filesystem readoly, not database readonly!
-
-#~~~~~~~~~~~~~~~~
-# shoudnt need to edit below here often.
-
-if (!empty($CONF['submission_message'])) {
-	//this, just prettifies the message if active.
-
-	$CONF['submission_message'] .= ' It is not recommended to have any submissions in progress during that time, as the site may disappear at any time. Submission will be closed between 2-4pm';
-	$CONF['submission_message'] .= ' Sorry for the inconvenience.';
-
-	if (date('Gi') > $CONF['critical']) {
-		$CONF['submission_message'] .= ' When this message disappears it will be safe to continue.';
-		//$CONF['submission_message'] .= ' Please aim to have all in progress submissions completed <b>ASAP</b> to avoid loosing information.';
-
-		$CONF['submission_message'] = '<div class="interestBox" style="background-color:yellow;border:10px solid red;padding:20px;margin:10px;margin-bottom:200px;">'.$CONF['submission_message'].'</div>';
-	} else {
-		$CONF['submission_message'] = '<div class="interestBox" style="border:1px solid red;padding:20px;margin:10px;">'.$CONF['submission_message'].'</div>';
-	}
-	$CONF['moderation_message'] = str_replace('submission','action',$CONF['submission_message']);
-}
-
-
-########################################################################
 // configure the optional slave, do this, so dont need to duplicate everything in config
 
 if (!empty($CONF['db_read_connect'])) {
