@@ -320,4 +320,3 @@ function useIt(that,attribute,id,label) {
 
 
 
-$smarty->display('_basic_end.tpl');

@@ -131,4 +131,3 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	Game provided by <a href="http://schools.geograph.org.uk/" target="_blank" style="color:gray">schools.geograph.org.uk</a>
 </div>
 
-{include file="_basic_end.tpl"}
