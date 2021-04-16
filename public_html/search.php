@@ -1061,8 +1061,10 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3,'search_unavailable.tpl');
 
-		$smarty->assign_by_ref('google_maps_api_key', $CONF['google_maps_api_key']);
-		$smarty->assign_by_ref('google_maps_api3_key', $CONF['google_maps_api3_key']);
+		if (!empty($CONF['google_maps_api_key']))
+			$smarty->assign_by_ref('google_maps_api_key', $CONF['google_maps_api_key']);
+		if (!empty($CONF['google_maps_api3_key']))
+			$smarty->assign_by_ref('google_maps_api3_key', $CONF['google_maps_api3_key']);
 
 		$smarty->register_function("searchbreak", "smarty_function_searchbreak");
 

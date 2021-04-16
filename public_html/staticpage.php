@@ -74,7 +74,8 @@ if ($mtime) {
 
 
 $smarty->assign("api_host",$CONF['API_HOST']);
-$smarty->assign('google_maps_api3_key',$CONF['google_maps_api3_key']);
+if (!empty($CONF['google_maps_api3_key']))
+	$smarty->assign('google_maps_api3_key',$CONF['google_maps_api3_key']);
 
 
 if ($template == 'static_terms.tpl' && isset($_SERVER['HTTP_REFERER']) && preg_match('/\/photo\/(\d+)/',$_SERVER['HTTP_REFERER'],$m)) {
