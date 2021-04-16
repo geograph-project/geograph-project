@@ -290,6 +290,9 @@ $(function() {
 	if (mode) {
 		defaultMode = mode;
 		$("input[name=selector][value="+mode+"]").prop('checked',true);
+		setTimeout(function() {
+			$('#__newsnippet').select2('open');
+		}, 150);
 	}
 
 });
