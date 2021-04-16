@@ -601,6 +601,9 @@ if ($grid_given)
 				$gridimage_join .= " INNER JOIN gridimage_group gg USING (gridimage_id)";
 			}
 
+			//all the following queries use numeric indexes
+			$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
+
 			if ($_GET['by'] == 'class') {
 				$breakdown_title = "Category";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT imageclass,COUNT(*) AS count,
@@ -936,6 +939,8 @@ if ($grid_given)
 					$i++;
 				}
 			}
+
+			$db->SetFetchMode($prev_fetch_mode);
 			
 			$smarty->assign('by', $_GET['by']);
 			if (!empty($breakdown_title))
