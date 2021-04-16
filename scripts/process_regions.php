@@ -33,13 +33,8 @@ if (empty($param)) { //special support so this script can be 'include()ed'.
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $c=0;
-<<<<<<< HEAD
-$sql = "SELECT DISTINCT gridimage_id,wgs84_lat,wgs84_long FROM {$param['table']} INNER JOIN gridimage_search USING (gridimage_id) WHERE region ='' OR region='Scotland' LIMIT 10000";
-$recordSet = $db->Execute($sql);
-=======
 $sql = "SELECT DISTINCT gridimage_id,wgs84_lat,wgs84_long FROM {$param['table']} INNER JOIN gridimage_search USING (gridimage_id) WHERE region ='' LIMIT 10000";
 $recordSet = &$db->Execute($sql);
->>>>>>> b0fa2f0de... Remove unneeded filter, was added when wanted to reprocess Scotland
 if ($recordSet->RecordCount()) {
 
 	if (!empty($param['debug']))
