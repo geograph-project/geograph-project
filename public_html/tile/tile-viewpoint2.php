@@ -121,7 +121,7 @@ function call_with_results($data) {
 	//$highlight = imagecolorallocatealpha($im, 230, 230, 230, 20);
 	$highlight = imagecolorallocatealpha($im, 0, 0, 0, 20);
 
-	if (!empty($data['rows']))
+	if (!empty($data['rows'])) {
 		$decay = (count($data['rows']) > 1000)?25:15;
 		foreach ($data['rows'] as $row) {
 
