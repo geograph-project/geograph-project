@@ -144,6 +144,11 @@ if (empty($CONF['db_tempdb'])) {
 	$CONF['db_tempdb']=$CONF['db_db'];
 }
 
+// Geogaph code now assumes ADODB_FETCH_ASSOC as the default, rather than BOTH. If code wants NUM (or BOTH), will have to set it!
+//set this NOW, as not all connections, actully use GeographDatabaseConnection, some still use NewADOConnection directly
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+
 function GeographDatabaseConnection($allow_readonly = false) {
 	global $ADODB_FETCH_MODE;
 	static $logged = 1;

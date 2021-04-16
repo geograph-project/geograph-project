@@ -74,6 +74,7 @@ if (isset($_POST['save']) || isset($_GET['start'])) {
 	$smarty->assign($page);
 
 	$groups = array();
+	$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 	$recordSet = $db->Execute("SELECT label FROM content_group WHERE source like 'user%' GROUP BY label");
 	while (!$recordSet->EOF)
 	{
@@ -81,6 +82,7 @@ if (isset($_POST['save']) || isset($_GET['start'])) {
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close();
+	$db->SetFetchMode($prev_fetch_mode);
 	$smarty->assign_by_ref('groups', $groups);
 }
 

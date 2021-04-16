@@ -97,7 +97,8 @@ class MapMaker
 		$sql="select x,y,percent_land,imagecount,reference_index from gridsquare where ".
 			"(x between $left and $right) and ".
 			"(y between $bottom and $top) order by imagecount";
-			
+
+		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);			
 		$recordSet = $this->db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
@@ -120,6 +121,7 @@ class MapMaker
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close(); 
+		$db->SetFetchMode($prev_fetch_mode);
 		
 		//plot all gridprefixes
 		if ($showgrid)
@@ -196,4 +198,3 @@ class MapMaker
 	
 }
 
-?>

@@ -37,6 +37,7 @@ if (!$smarty->is_cached('explore.tpl'))
 	$db = GeographDatabaseConnection(true);
 	
 	$countylist = array();
+	$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 	$recordSet = $db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 
 	while (!$recordSet->EOF) 
 	{
@@ -44,6 +45,7 @@ if (!$smarty->is_cached('explore.tpl'))
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close(); 
+	$db->SetFetchMode($prev_fetch_mode);
 	$smarty->assign_by_ref('countylist', $countylist);
 
 	$topicsraw = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') as title,forum_name from gridimage_post gp

@@ -1614,6 +1614,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$smarty->assign_by_ref('distances',$d);
 
 			$countylist = array();
+			$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 			$recordSet = $db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
 			while (!$recordSet->EOF)
 			{
@@ -1621,6 +1622,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 				$recordSet->MoveNext();
 			}
 			$recordSet->Close();
+			$db->SetFetchMode($prev_fetch_mode);
 			$smarty->assign_by_ref('countylist', $countylist);
 
 			require_once('geograph/gridsquare.class.php');

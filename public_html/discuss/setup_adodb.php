@@ -313,6 +313,7 @@ function db_lastviewed($topic, $user_id, $postID)
 function db_gridreftopics($Tt, $forum, $gridref)
 {
 	global $bbdb;
+	$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 	$result=$bbdb->Execute("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = ".$bbdb->Quote($gridref));
 	$currentgridreftopics = $result->RecordCount();
 		
@@ -323,6 +324,7 @@ function db_gridreftopics($Tt, $forum, $gridref)
 		$action = "vtopic";
 		$topic=0;
 	}
+	$db->SetFetchMode($prev_fetch_mode);
 	return array($currentgridreftopics, $action, $topic);
 }
 

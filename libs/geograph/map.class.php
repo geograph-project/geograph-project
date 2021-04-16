@@ -701,6 +701,7 @@ split_timer('map'); //starts the timer
 		$sql="select x,y,percent_land,reference_index from gridsquare where 
 			CONTAINS( GeomFromText($rectangle),	point_xy)";
 
+		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
@@ -726,6 +727,7 @@ split_timer('map'); //starts the timer
 		}
 		if (!empty($recordSet))
 			$recordSet->Close(); 
+		$db->SetFetchMode($prev_fetch_mode);
 		
 		//resample?
 		if ($imgw!=$this->image_w)
@@ -1477,7 +1479,7 @@ split_timer('map'); //starts the timer
 		}
 
 
-		//todo, one of those rare cases, where we explicitly use NUM, if change the default will need $ADODB_FETCH_MODE = ADODB_FETCH_NUM;
+		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF)
 		{
@@ -1501,6 +1503,7 @@ split_timer('map'); //starts the timer
 		}
 		if (!empty($recordSet))
 			$recordSet->Close();
+		$db->SetFetchMode($prev_fetch_mode);
 
 		if (isset($this->real_pixels_per_km) && $this->real_pixels_per_km < 1) {
 			//render at 1px/km and scale...
@@ -1636,7 +1639,7 @@ split_timer('map'); //starts the timer
 				group by gi.gridsquare_id ";
 		}
 
-
+		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
@@ -1660,6 +1663,7 @@ split_timer('map'); //starts the timer
 		}
 		if (!empty($recordSet))
 			$recordSet->Close(); 
+		$db->SetFetchMode($prev_fetch_mode);
 
 		if ($img) {
 			if (empty($this->transparent)) {
@@ -1788,6 +1792,7 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 		}
 		
 		$usercount=array();
+		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 		$recordSet = $db->Execute($sql);
 		$lines = array();
 		while (!$recordSet->EOF) 
@@ -1830,7 +1835,8 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 		}
 		if (!empty($recordSet))
 			$recordSet->Close(); 
-			
+		$db->SetFetchMode($prev_fetch_mode);		
+
 			fwrite($imagemap,implode("\n",array_reverse($lines)));
 			fwrite($imagemap,"</map>\n");
 			fclose($imagemap);

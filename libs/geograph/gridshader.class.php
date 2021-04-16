@@ -56,6 +56,7 @@ class GridShader
 			"$y between origin_y and (origin_y+height-1) and ".
 			"reference_index=$reference_index";
 		
+		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 		$recordSet = $this->db->Execute($sql);
 		if (!$recordSet->EOF) 
 		{
@@ -66,6 +67,7 @@ class GridShader
 			
 		}
 		$recordSet->Close(); 
+		$db->SetFetchMode($prev_fetch_mode);
 		
 		return $gridref;
 	}
@@ -313,4 +315,3 @@ class GridShader
 	
 }
 
-?>

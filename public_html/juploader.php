@@ -184,8 +184,9 @@ function AuthenticateUser() {
 
 	$dbusername = $db->Quote($username);
 	$sql = "select password,realname,rights,user_id,salt from user where nickname = $dbusername OR email = $dbusername LIMIT 1";
-	
+	$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 	if ($rs = &$db->Execute($sql)) {
+		$db->SetFetchMode($prev_fetch_mode);
 	
 		$md5password=md5($rs->fields[4].$password);
 	
@@ -231,6 +232,7 @@ function AuthenticateUser() {
 		
 		returnXML();
 	}
+	$db->SetFetchMode($prev_fetch_mode);
 }
 
 function GetImageClassList() {
@@ -242,6 +244,7 @@ function GetImageClassList() {
 
 	$classlist = "";
 
+	$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 	if($rs = &$db->Execute($sql)) {
 		while(!$rs->EOF) {
 			if ($classlist == "") {
@@ -252,6 +255,7 @@ function GetImageClassList() {
 			$rs->moveNext();
 		}
 	}
+	$db->SetFetchMode($prev_fetch_mode);
 	$xml['status'] = 'OK';
 	$xml['classlist'] = $classlist;
 	returnXML();
