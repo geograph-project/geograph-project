@@ -75,6 +75,9 @@ server {
   if ($http_host ~ development) {	rewrite ^/robots.txt /robots-staging.txt last;  }
   if ($http_host ~ beta) {		rewrite ^/robots.txt /robots-staging.txt last;  }
 
+  rewrite ^/photo/(\d+)$ https://www.geograph.org.uk/photo/$1 permanent;
+  rewrite ^/profile/(\d+)$ https://www.geograph.org.uk/profile/$1 permanent;
+
   rewrite "^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$" https://s0.geograph.org.uk$request_uri permanent;
 
   ###################################
