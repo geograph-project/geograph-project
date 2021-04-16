@@ -481,7 +481,7 @@ if (!empty($_GET['d']))
 #########################################
 # fallback and use the preview iframe for a few results
 
-	} elseif (count($final)) {
+	} elseif (!empty($final)) {
 		foreach ($final as $idx => $row) {
 			print '<iframe src="'.$CONF['TILE_HOST'].'/tile-info.php?id='.$row['id'].'" width="100%" height="250" frameborder=0></iframe>';
 			print "<hr/><br/>";
@@ -496,7 +496,7 @@ if (!empty($_GET['d']))
 
 		print "<div id=\"location_list\"></div>"; $need_client = true;
 
-	} elseif (empty($final) || count($final) == count(@$rows['single'])) {
+	} elseif (empty($final) || (!empty($rows['single']) && count($final) == count($rows['single']))) {
 
 		//might be too late, but might as well try!
 		header("HTTP/1.0 404 Not Found");
@@ -533,7 +533,7 @@ if (strlen($_GET['q']) > 10 && preg_match('/\b(19|20|21)(\d{2})\b/',$_GET['q'],$
 #########################################
 # footer links
 
-if (!empty($final) && empty($words) && count($final) != count(@$rows['single'])) {
+if (!empty($final) && empty($words) && count($final) != @count($rows['single'])) {
 
 	print "<br><div class=interestBox style=color:white;background-color:gray;font-size:1.05em>";
 	if (!empty($data['total_found']) && $data['total_found'] > 10) {
@@ -637,7 +637,7 @@ if (!empty($USER->registered)) {
 
 	$list = $db->getAll("SELECT * FROM geograph_tmp.random_images where moderation_status = 'geograph'");
 
-	if (count($list)) {
+	if (!empty($list)) {
 
 	print "<p>Enter a search above, for example: ";
 
