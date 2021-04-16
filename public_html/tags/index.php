@@ -50,6 +50,10 @@ if (!empty($_GET['tag']) && preg_match('/_/',$_GET['tag'])) { //todo, could also
         $_GET['tag'] = trim(preg_replace('/[ _]+/',' ',$_GET['tag']));
 }
 
+//nginx seems to have reencoded the + in the URL as %2B by the time reaches PHP, so reading QUERY_STRING gets %2B, which is then decoded as + (not space!)
+if (!empty($_GET['tag']))
+	$_GET['tag'] = str_replace('+',' ',$_GET['tag']);
+
 if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie' &&
                ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
                (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) ) {
