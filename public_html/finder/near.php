@@ -123,7 +123,7 @@ if (!empty($_GET['q'])) {
 	$smarty->display("_std_begin.tpl",substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 
 	if ($memcache->valid) {
-		$str =& $memcache->name_get('near',$mkey);
+		$str = $memcache->name_get('near',$mkey);
 		if (!empty($str)) {
                         if ($CONF['PROTOCOL'] == "https://") {
                                 //it may be a http:// page cached!?!

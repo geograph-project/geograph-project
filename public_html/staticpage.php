@@ -88,7 +88,7 @@ if ($template == 'static_terms.tpl' && isset($_SERVER['HTTP_REFERER']) && preg_m
 	if (empty($remote) || strlen($remote) < 512) {
 		if ($memcache->valid) {
 			$mkey = $_SERVER['HTTP_HOST'];
-			$remote =& $memcache->name_get('links',$mkey);
+			$remote = $memcache->name_get('links',$mkey);
 		}
 	}
 

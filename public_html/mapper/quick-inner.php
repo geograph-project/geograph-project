@@ -46,7 +46,7 @@ elseif (!empty($_GET['c']))
         $mkey = $_SERVER['HTTP_HOST'];
 	$mkey .= $url;
         if (rand(1,10) > 5 && $memcache->valid) {
-                $remote =& $memcache->name_get('quick',$mkey);
+                $remote = $memcache->name_get('quick',$mkey);
         }
 
 	if (empty($remote) || strlen($remote) < 512)
@@ -54,7 +54,7 @@ elseif (!empty($_GET['c']))
 
 	if (empty($remote) || strlen($remote) < 512) {
 		if ($memcache->valid) {
-			$remote =& $memcache->name_get('quick',$mkey);
+			$remote = $memcache->name_get('quick',$mkey);
 		} else {
 			die("Sorry, unable to load page. Please try later. <a href=\"/\">back to homepage</a>");
 		}

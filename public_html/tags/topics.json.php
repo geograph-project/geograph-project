@@ -59,7 +59,7 @@ if (false) {
         # Yahoo Term Extraction API
 
         $mkey = md5($string);
-        $value =& $memcache->name_get('term',$mkey);
+        $value = $memcache->name_get('term',$mkey);
 
         if (empty($value)) {
                 $yahoo_appid = "R7drYPbV34FffYJ1XzR0uw2hACglcoZKtAALrgk3xShTg3M04lzPf9spFg_QEZh.xA--";
@@ -85,7 +85,7 @@ if (false) {
 
 
         $mkey = md5($url);
-        $value =& $memcache->name_get('rpc',$mkey);
+        $value = $memcache->name_get('rpc',$mkey);
 
         if (empty($value)) {
                 ini_set('user_agent', 'Geograph Britain and Ireland - Tagging Interface (+http://www.geograph.org.uk)');

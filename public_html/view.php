@@ -27,7 +27,7 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'BingPreview/1.0b
 
 	$db = GeographDatabaseConnection(true);
 
-        $row =& $db->getRow("select gridimage_id,realname,title,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
+        $row = $db->getRow("select gridimage_id,realname,title,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
 
 	print "<html><head><title>".htmlentities($row['title'])." by ".htmlentities($row['realname'])."</title>";
 	print "</head><body style=\"font-family:georgia;color:white;background-color:#000066\">";
@@ -45,7 +45,7 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'BingPreview/1.0b
 	//die as quickly as possible with the minimum html (with the approval of geourl owner)
 	$db = GeographDatabaseConnection(true);
 
-	$row =& $db->getRow("select gridimage_id,wgs84_lat,wgs84_long,title,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
+	$row = $db->getRow("select gridimage_id,wgs84_lat,wgs84_long,title,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
 
 	if ($row['wgs84_lat']) {
 		$title = htmlentities2($row['title']."::".$row['grid_reference']);
@@ -295,7 +295,7 @@ if ($image->isValid())
 		$smarty->assign("search_keywords",$q);
 
 		$mkey = $image->grid_reference.' '.$q;
-		$info =& $memcache->name_get('sn',$mkey);
+		$info = $memcache->name_get('sn',$mkey);
 
 		if (!empty($info)) {
 			list($count,$when) = $info;

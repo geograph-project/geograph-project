@@ -65,7 +65,7 @@ $mkey = $USER->registered.".".$updated.md5($where);
 
 
 if (empty($_GET['refresh']))
-	$str =& $memcache->name_get('geotrip_home',$mkey);
+	$str = $memcache->name_get('geotrip_home',$mkey);
 
 if (!empty($str)) {
   print $str;

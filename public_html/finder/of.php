@@ -141,7 +141,7 @@ if (!empty($_GET['q'])) {
 	if ($memcache->valid) {
 		$mkey = md5("#".trim($sphinx->q).$_SERVER['HTTP_HOST']).isset($_GET['redir']).$src;
 		if (empty($_GET['refresh'])) {
-			$str =& $memcache->name_get('of-new',$mkey);
+			$str = $memcache->name_get('of-new',$mkey);
 			if (!empty($str)) {
 				if ($CONF['PROTOCOL'] == "https://") {
 					//it may be a http:// page cached!?!

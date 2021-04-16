@@ -54,7 +54,7 @@ customExpiresHeader(86400*3,true);
 
 header("Content-Type: image/png");
 
-$str =& $memcache->name_get('tile',$mapurl);
+$str = $memcache->name_get('tile',$mapurl);
 
 if (empty($str)) {
 	$str =  file_get_contents($mapurl);

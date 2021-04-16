@@ -122,7 +122,7 @@ if (isset($_GET['term'])) {
         	# Yahoo Term Extraction API
 
 	        $mkey = md5($string);
-	        $value =& $memcache->name_get('term',$mkey);
+	        $value = $memcache->name_get('term',$mkey);
 
         	if (empty($value)) {
 	                $yahoo_appid = "R7drYPbV34FffYJ1XzR0uw2hACglcoZKtAALrgk3xShTg3M04lzPf9spFg_QEZh.xA--";

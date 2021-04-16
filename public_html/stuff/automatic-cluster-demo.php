@@ -25,7 +25,7 @@ $data= $db->getAll("SELECT gridimage_id,title,comment,imageclass,grid_reference,
 
 $mkey = "cdemo";
 //fails quickly if not using memcached!
-$c =& $memcache->name_get('carrot',$mkey);
+$c = $memcache->name_get('carrot',$mkey);
 
 if (empty($c) || !empty($_GET['nocache'])) {
 
