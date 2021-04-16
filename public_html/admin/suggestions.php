@@ -29,6 +29,8 @@ $USER->mustHavePerm("ticketmod");
 
 $smarty = new GeographPage;
 
+dieIfReadOnly();
+
 if (!empty($CONF['moderation_message'])) {
         $smarty->assign("status_message",$CONF['moderation_message']);
 }
