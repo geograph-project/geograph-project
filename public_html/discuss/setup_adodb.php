@@ -6,6 +6,8 @@ This file is part of miniBB. miniBB is free discussion forums/message board soft
 if (!defined('INCLUDED776')) die ('Fatal error.');
 
 $bbdb = GeographDatabaseConnection();
+$ADODB_FETCH_MODE = ADODB_FETCH_BOTH;  //minibb uses a lot of numeric indexes, seems to assume 'both' mode
+
 #$bbdb->Execute("SET names 'latin1'"); # FIXME move to GeographDatabaseConnection()
 ##$minibb_link = @mysql_connect($DBhost, $DBusr, $DBpwd) or die ('<b>Database/configuration error.</b>');
 ##mysql_query("SET names 'latin1'",$minibb_link);#FIXME error handling
