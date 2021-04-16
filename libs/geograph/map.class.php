@@ -1934,8 +1934,8 @@ END;
 			$n=$recordSet->fields['n'];
 			
 			$str = floor($e/$div) .' '. floor($n/$div*1.4);
-			if (!$squares[$str]) {// || $recordSet->fields['s'] ==1) {
-				$squares[$str]++;
+			if (empty($squares[$str])) {// || $recordSet->fields['s'] ==1) {
+				$squares[$str]=1;
 			
 				list($x,$y) = $conv->national_to_internal($e,$n,$recordSet->fields['reference_index'] );
 

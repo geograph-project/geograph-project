@@ -44,11 +44,13 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 			die("Sorry, unable to load image! <a href=\"/\" target=\"_top\">Open Geograph Homepage</a>");
 		} else {
 			//bit late doing it now, but at least if smarty doesnt have it cached we might be able to prevent generating the whole page
-			customCacheControl(strtotime($image->upd_timestamp),$cacheid);
+			customCacheControl(strtotime($image->upd_timestamp),$image->gridimage_id);
 			header('Access-Control-Allow-Origin: *');
 
-			if ($image->reference_index == 2)
+			if (!empty($image->reference_index) && $image->reference_index == 2)
 				$_GET['ie'] = true;
+			elseif (!empty($image->grid_square) && !empty($image->grid_square->reference_index) && $image->grid_square->reference_index == 2)
+                                $_GET['ie'] = true;
 		}
 } else {
 	init_session();
