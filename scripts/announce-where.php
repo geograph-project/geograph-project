@@ -35,6 +35,11 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ############################################
 
+if (!$db->getOne("SHOW TABLES LIKE 'whereisit'"))
+	die(posix_isatty(STDOUT)?"whereisit table doesnt exist\n":''); //dont say anything in cron
+
+############################################
+
 
 $topic_id = 14107;
 
