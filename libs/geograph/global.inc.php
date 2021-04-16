@@ -466,7 +466,7 @@ split_timer('autoload'); //starts the timer
         if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/../libs/geograph/'.strtolower($class_name).'.class.php')) {
 		global $CONF;
                 ob_start();
-                print_r($GLOBALS);
+		print "Unable to find $class_name\n";
 		print_r(get_included_files());
                 $con = ob_get_clean();
                 debug_message('[Geograph Error] '.date('r'),$con);
