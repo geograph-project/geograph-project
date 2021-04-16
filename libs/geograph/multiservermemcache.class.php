@@ -127,8 +127,7 @@ if (!is_string($val) && !is_int($val)) {
 	}
 
 	function parent_get($key, &$p1=null, &$p2=null) {
-		$tmp =& parent::get($key, $p1, $p2);
-		return $tmp;
+		return parent::get($key, $p1, $p2);
 	}
 
 	function delete($key, $timeout = 0) {

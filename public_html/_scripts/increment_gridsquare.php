@@ -47,7 +47,7 @@ $db->Execute($sql);
 print "Affected Rows: ".$db->Affected_Rows()."\n";
 
 $mkey = $gs;
-$result =& $memcache->name_delete('sid2',$mkey);
+$result = $memcache->name_delete('sid2',$mkey);
 print "Memcache Delete said: $result\n";
 
 
