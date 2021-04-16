@@ -128,6 +128,7 @@ $db = GeographDatabaseConnection(true);
 
 $where = '';
 $andwhere = '';
+$prefix = '';
 
 if (isset($_GET['prefix'])) {
 

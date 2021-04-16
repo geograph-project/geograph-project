@@ -164,7 +164,7 @@ if (isset($_GET['id']))
 
 	if ($_GET['id'] <= 1600000 || $_GET['id'] >= 2800000 || !empty($_SESSION['large'])) {
 		$_GET['large'] = 1; //using _GET so it can be understood inside gridimage class!
-	} elseif ($_SERVER['HTTP_REFERER'] == 'http://www.geograph.org.uk/' || $_SERVER['HTTP_REFERER'] == 'https://www.geograph.org.uk/') {
+	} elseif (!empty($_SERVER['HTTP_REFERER']) && ($_SERVER['HTTP_REFERER'] == 'http://www.geograph.org.uk/' || $_SERVER['HTTP_REFERER'] == 'https://www.geograph.org.uk/')) {
 		$_GET['large'] = 1;
 	}
 
