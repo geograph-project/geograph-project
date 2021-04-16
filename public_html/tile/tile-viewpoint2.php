@@ -121,43 +121,41 @@ function call_with_results($data) {
 	//$highlight = imagecolorallocatealpha($im, 230, 230, 230, 20);
 	$highlight = imagecolorallocatealpha($im, 0, 0, 0, 20);
 
-	$decay = (count($data['rows']) > 1000)?25:15;
-
 	if (!empty($data['rows']))
-	foreach ($data['rows'] as $row) {
+		$decay = (count($data['rows']) > 1000)?25:15;
+		foreach ($data['rows'] as $row) {
 
-		$lat = rad2deg($row['lat']/1000);
-		$lng = rad2deg($row['lng']/1000);
+			$lat = rad2deg($row['lat']/1000);
+			$lng = rad2deg($row['lng']/1000);
 
-		$p = $g->getOffsetPixelCoords($lat,$lng);
+			$p = $g->getOffsetPixelCoords($lat,$lng);
 
-		if ($row['direction'] > -1) {
-			$points = array_merge(
-				projectpoint($p->x,$p->y,3,$row['direction']-80),
-				projectpoint($p->x,$p->y,8,$row['direction']),
-				projectpoint($p->x,$p->y,3,$row['direction']+80)
-			);
+			if ($row['direction'] > -1) {
+				$points = array_merge(
+					projectpoint($p->x,$p->y,3,$row['direction']-80),
+					projectpoint($p->x,$p->y,8,$row['direction']),
+					projectpoint($p->x,$p->y,3,$row['direction']+80)
+				);
 
-			imagefilledpolygon($im, $points, 3, $arrow);
-		}
+				imagefilledpolygon($im, $points, 3, $arrow);
+			}
 
-		imagefilledellipse($im,$p->x,$p->y,6,6, $arrow);
+			imagefilledellipse($im,$p->x,$p->y,6,6, $arrow);
 
+			if (!empty($row['distance']) && $row['distance']>2 && !empty($row['slt'])) {
+				$slat = rad2deg($row['slt']/1000);
+	        	        $slng = rad2deg($row['slng']/1000);
 
-		if (!empty($row['distance']) && $row['distance']>2 && !empty($row['slt'])) {
-			$slat = rad2deg($row['slt']/1000);
-	                $slng = rad2deg($row['slng']/1000);
-
-			$p2 = $g->getOffsetPixelCoords($slat,$slng);
-			imageline($im, $p->x, $p->y, $p2->x, $p2->y, $line);
-		}
-		if ($row['vgrlen'] > $nopoint) {
-			//draw a tiny dot to present coverage in busy areas
-			//imagesetpixel($im, $p->x, $p->y, $highlight);
-			imagefilledrectangle($im, $p->x-1,$p->y-1, $p->x+1,$p->y+1, $highlight);
+				$p2 = $g->getOffsetPixelCoords($slat,$slng);
+				imageline($im, $p->x, $p->y, $p2->x, $p2->y, $line);
+			}
+			if ($row['vgrlen'] > $nopoint) {
+				//draw a tiny dot to present coverage in busy areas
+				//imagesetpixel($im, $p->x, $p->y, $highlight);
+				imagefilledrectangle($im, $p->x-1,$p->y-1, $p->x+1,$p->y+1, $highlight);
+			}
 		}
 	}
-
 
 	imagesavealpha($im, true);
 	header('Content-type: image/png');

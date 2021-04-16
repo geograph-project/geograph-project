@@ -118,7 +118,7 @@ function call_with_results($data) {
 	#############################
 	//dedup
 
-	if ((count($data['rows']) > 10) && !empty($_GET['div'])) {
+	if (!empty($data['rows']) && (count($data['rows']) > 10) && !empty($_GET['div'])) {
 		global $tilerect;
 
 		//remove close duplicates, data is still in squence order at this point
@@ -170,6 +170,7 @@ if (!empty($_GET['credits'])) {
 
 	$filesystem = new FileSystem();
 
+	if (!empty($data['rows']))
 	foreach ($data['rows'] as $row) {
 
 		$path = getGeographPath($row['id'],$row['hash'],'small');

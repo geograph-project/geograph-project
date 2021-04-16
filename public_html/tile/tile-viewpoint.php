@@ -114,52 +114,52 @@ function call_with_results($data) {
 	//$highlight = imagecolorallocatealpha($im, 230, 230, 230, 20);
 	$highlight = imagecolorallocatealpha($im, 0, 0, 0, 20);
 
-	$decay = (count($data['rows']) > 1000)?25:15;
+	if (!empty($data['rows'])) {
+		$decay = (count($data['rows']) > 1000)?25:15;
 
-	if (!empty($data['rows']))
-	foreach ($data['rows'] as $row) {
+		foreach ($data['rows'] as $row) {
 
-		$lat = rad2deg($row['lat']/1000);
-		$lng = rad2deg($row['lng']/1000);
+			$lat = rad2deg($row['lat']/1000);
+			$lng = rad2deg($row['lng']/1000);
 
-		$p = $g->getOffsetPixelCoords($lat,$lng);
+			$p = $g->getOffsetPixelCoords($lat,$lng);
 
-		if ($row['direction'] > -1) {
-			$points = array_merge(
-				array($p->x,$p->y),
-				projectpoint($p->x,$p->y,8,$row['direction']-27),
-				projectpoint($p->x,$p->y,4,$row['direction']),
-				projectpoint($p->x,$p->y,8,$row['direction']+27)
-			);
+			if ($row['direction'] > -1) {
+				$points = array_merge(
+					array($p->x,$p->y),
+					projectpoint($p->x,$p->y,8,$row['direction']-27),
+					projectpoint($p->x,$p->y,4,$row['direction']),
+					projectpoint($p->x,$p->y,8,$row['direction']+27)
+				);
 				//array($p->x,$p->y); -dont need to close the polygone!
 
-			imagefilledpolygon($im, $points, 4, $arrow);
+				imagefilledpolygon($im, $points, 4, $arrow);
 
-		} else {
-			//php/gd doesnt doesnt have a 'blend alphas' (eg if 20% alpha in square add 20% to make same colour at 40%, so do it manually!
-			for($x=$p->x-3; $x<=$p->x+3; $x++) {
-				for($y=$p->y-3; $y<=$p->y+3; $y++) {
-					$d = sqrt(pow($p->y-$y,2) + pow($p->x-$x,2));
-					imageaddalpha($im, $x, $y, -110+($decay*$d));
+			} else {
+				//php/gd doesnt doesnt have a 'blend alphas' (eg if 20% alpha in square add 20% to make same colour at 40%, so do it manually!
+				for($x=$p->x-3; $x<=$p->x+3; $x++) {
+					for($y=$p->y-3; $y<=$p->y+3; $y++) {
+						$d = sqrt(pow($p->y-$y,2) + pow($p->x-$x,2));
+						imageaddalpha($im, $x, $y, -110+($decay*$d));
+					}
 				}
 			}
-		}
-		if (!empty($row['distance']) && $row['distance']>2 && !empty($row['slt'])) {
-			$slat = rad2deg($row['slt']/1000);
-	                $slng = rad2deg($row['slng']/1000);
+			if (!empty($row['distance']) && $row['distance']>2 && !empty($row['slt'])) {
+				$slat = rad2deg($row['slt']/1000);
+	        	        $slng = rad2deg($row['slng']/1000);
 
-			$p2 = $g->getOffsetPixelCoords($slat,$slng);
-			imageline($im, $p->x, $p->y, $p2->x, $p2->y, $line);
-		}
-		if ($row['vgrlen'] > $nopoint) {
-			//draw a tiny dot to present coverage in busy areas
-			//imagesetpixel($im, $p->x, $p->y, $highlight);
-			imagefilledrectangle($im, $p->x-1,$p->y-1, $p->x+1,$p->y+1, $highlight);
-		} else { //if(!empty($_GET['pp'])) {
-			imagefilledrectangle($im, $p->x-1,$p->y-1, $p->x+1,$p->y+1, $arrow);
+				$p2 = $g->getOffsetPixelCoords($slat,$slng);
+				imageline($im, $p->x, $p->y, $p2->x, $p2->y, $line);
+			}
+			if ($row['vgrlen'] > $nopoint) {
+				//draw a tiny dot to present coverage in busy areas
+				//imagesetpixel($im, $p->x, $p->y, $highlight);
+				imagefilledrectangle($im, $p->x-1,$p->y-1, $p->x+1,$p->y+1, $highlight);
+			} else { //if(!empty($_GET['pp'])) {
+				imagefilledrectangle($im, $p->x-1,$p->y-1, $p->x+1,$p->y+1, $arrow);
+			}
 		}
 	}
-
 
 	imagesavealpha($im, true);
 	header('Content-type: image/png');

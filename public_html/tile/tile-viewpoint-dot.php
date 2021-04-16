@@ -99,26 +99,27 @@ function call_with_results($data) {
 
 	$highlight = imagecolorallocatealpha($im, 230, 230, 230, 20);
 
-	$decay = (count($data['rows']) > 1000)?25:15;
 
-	if (!empty($data['rows']))
-	foreach ($data['rows'] as $row) {
+	if (!empty($data['rows'])) {
+		$decay = (count($data['rows']) > 1000)?25:15;
+		foreach ($data['rows'] as $row) {
 
-		$lat = rad2deg($row['lat']/1000);
-		$lng = rad2deg($row['lng']/1000);
+			$lat = rad2deg($row['lat']/1000);
+			$lng = rad2deg($row['lng']/1000);
 
-		$p = $g->getOffsetPixelCoords($lat,$lng,$_GET['z'],$_GET['x'],$_GET['y']);
+			$p = $g->getOffsetPixelCoords($lat,$lng,$_GET['z'],$_GET['x'],$_GET['y']);
 
-		//php/gd doesnt doesnt have a 'blend alphas' (eg if 20% alpha in square add 20% to make same colour at 40%, so do it manually!
-		for($x=$p->x-3; $x<=$p->x+3; $x++) {
-			for($y=$p->y-3; $y<=$p->y+3; $y++) {
-				$d = sqrt(pow($p->y-$y,2) + pow($p->x-$x,2));
-				imageaddalpha($im, $x, $y, -110+($decay*$d));
+			//php/gd doesnt doesnt have a 'blend alphas' (eg if 20% alpha in square add 20% to make same colour at 40%, so do it manually!
+			for($x=$p->x-3; $x<=$p->x+3; $x++) {
+				for($y=$p->y-3; $y<=$p->y+3; $y++) {
+					$d = sqrt(pow($p->y-$y,2) + pow($p->x-$x,2));
+					imageaddalpha($im, $x, $y, -110+($decay*$d));
+				}
 			}
-		}
-		if ($row['vgrlen'] > $nopoint) {
-			//draw a tiny dot to present coverage in busy areas
-			imagesetpixel($im, $p->x, $p->y, $highlight);
+			if ($row['vgrlen'] > $nopoint) {
+				//draw a tiny dot to present coverage in busy areas
+				imagesetpixel($im, $p->x, $p->y, $highlight);
+			}
 		}
 	}
 
