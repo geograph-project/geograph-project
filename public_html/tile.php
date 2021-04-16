@@ -181,7 +181,7 @@ if (isset($_GET['map']))
 if ($_GET['l'] == 'u') {
 	$mkey .= "...";
 }
-				$lastmod =& $memcache->name_get('tl',$mkey);
+				$lastmod = $memcache->name_get('tl',$mkey);
 				if (!$lastmod) {
 					$lastmod = time();
 					$mustgenerate = true;
@@ -194,7 +194,7 @@ if ($_GET['l'] == 'u') {
 			customExpiresHeader(86400,true);
 
 			if ($memcache->valid && $mkey && !$mustgenerate) {
-				$data =& $memcache->name_get('td',$mkey);
+				$data = $memcache->name_get('td',$mkey);
 				if ($data) {
 
 					split_timer('tile','cached',strlen($data)); //logs the wall time

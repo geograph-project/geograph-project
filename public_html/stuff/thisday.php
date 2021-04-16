@@ -62,7 +62,7 @@ if (!isset($_GET['gr']) && !empty($_SESSION['photos'])) {
 
 $mkey = '2'.@md5($_GET['gr']).$date;
 
-$str =& $memcache->name_get('thisday',$mkey);
+$str = $memcache->name_get('thisday',$mkey);
 
 if (!empty($str)) {
 	print $str;
