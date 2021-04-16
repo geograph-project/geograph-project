@@ -601,8 +601,8 @@ if ($grid_given)
 				$gridimage_join .= " INNER JOIN gridimage_group gg USING (gridimage_id)";
 			}
 
-			//all the following queries use numeric indexes
-			$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
+			//all the following queries use numeric indexes (but also tries fastInit so needs assoc too!) 
+			$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_BOTH); 
 
 			if ($_GET['by'] == 'class') {
 				$breakdown_title = "Category";
