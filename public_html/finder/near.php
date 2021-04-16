@@ -59,6 +59,9 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/near.php') === 0) {
 if (!empty($_GET['q']) && preg_match('/^\/(of|place|near)\/([^\?]+)/',$_SERVER['REQUEST_URI'],$m) && $_GET['q'] != $m[2]) {
         //fix for /of/B&B    (the & is has already been urldcoded in QUERY_STRING)
         $_GET['q'] = urldecode($m[2]);
+
+        //nginx seems to have reencoded the + in the URL as %2B by the time reaches PHP, so reading QUERY_STRING gets %2B, which is then decoded as + (not space!)
+        $_GET['q'] = str_replace('+',' ',$_GET['q']);
 }
 
 #########################################
