@@ -176,9 +176,7 @@ function insertArray($insertArray,$tabh){
 	#$GLOBALS['insres']=mysql_insert_id($GLOBALS['minibb_link']);
 	#return mysql_errno($GLOBALS['minibb_link']);
 	$res=$bbdb->Execute('insert into '.$tabh.' ('.$into.') values ('.$values.')') or die('<p>'.$bbdb->ErrorMsg().'. Please, try another name or value.');
-	trigger_error('insert into '.$tabh.' ('.$into.') values ('.$values.')', E_USER_WARNING);
 	$GLOBALS['insres']=$bbdb->Insert_ID();
-	trigger_error(">{$GLOBALS['insres']}<", E_USER_WARNING);
 	return $bbdb->ErrorNo(); # FIXME how could that be != 0? why assigning $res?
 	
 }
