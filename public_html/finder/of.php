@@ -563,7 +563,7 @@ if (!empty($final) && empty($words) && count($final) != @count($rows['single']))
 	print "</div>";
 
 	$suggestions = array();
-	if ($data['total_found'] > 60) {
+	if ($data['total_found'] > 60 && strpos($_GET['q'],'/') === FALSE) {
 		if (!empty($tag) && strpos($_GET['q'],'[') !== 0) {
 			$suggestions[] = '<a href="/of/['.urlencode2($tag['tagtext']).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities2($tag['tagtext']).']</a>';
 		}
