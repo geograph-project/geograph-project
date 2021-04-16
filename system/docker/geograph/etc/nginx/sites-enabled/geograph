@@ -21,7 +21,6 @@ server {
 
   if ($http_host ~ staging) {		rewrite ^/robots.txt /robots-staging.txt last;  }
   if ($http_host ~ development) {	rewrite ^/robots.txt /robots-staging.txt last;  }
-  if ($http_host ~ beta) {		rewrite ^/robots.txt /robots-staging.txt last;  }
 
   rewrite ^/robots.txt /robots-none.txt last;
 
@@ -73,7 +72,6 @@ server {
 
   if ($http_host ~ staging) {		rewrite ^/robots.txt /robots-staging.txt last;  }
   if ($http_host ~ development) {	rewrite ^/robots.txt /robots-staging.txt last;  }
-  if ($http_host ~ beta) {		rewrite ^/robots.txt /robots-staging.txt last;  }
 
   rewrite ^/photo/(\d+)$ https://www.geograph.org.uk/photo/$1 permanent;
   rewrite ^/profile/(\d+)$ https://www.geograph.org.uk/profile/$1 permanent;
@@ -128,7 +126,6 @@ server {
 
   if ($http_host ~ staging) {		rewrite ^/robots.txt /robots-staging.txt last;  }
   if ($http_host ~ development) {	rewrite ^/robots.txt /robots-staging.txt last;  }
-  if ($http_host ~ beta) {		rewrite ^/robots.txt /robots-staging.txt last;  }
 
   ###################################
 
