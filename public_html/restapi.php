@@ -922,7 +922,8 @@ class RestAPI
 		if (!empty($_SERVER["PATH_INFO"])) {
 			$this->params=explode('/', $_SERVER["PATH_INFO"]);
 		} else {
-			$this->params=explode('/', $_SERVER["REQUEST_URI"]);
+			$bits = explode("?",$_SERVER["REQUEST_URI"]); //this variable still INCLUDES the QUERY_STRING. 
+			$this->params=explode('/', $bits[0]);
 		}
 		//eat params we don't need - empty initial param and 'api'
 		if (strlen($this->params[0])==0)
