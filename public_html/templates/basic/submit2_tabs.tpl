@@ -282,7 +282,7 @@ window.onbeforeunload=unloadMess;
 </script>
 {/literal}
 
-	<div style="float:right;position:relative;text-align:center"><a href="/submit.php?redir=false" id="oldlink">v1</a> / <b>v2</b> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a>{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
+	<div style="float:right;position:relative;text-align:center"><a href="/submit.php?redir=false" id="oldlink">v1</a> / <b>v2</b> / <a href="/submit-mobile.php">mobile</a> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a>{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 
 	<h2>Submit Image <sup style="color:gray">v2 with Tabs</sup></h2>
 
