@@ -41,6 +41,22 @@ require_once('geograph/uploadmanager.class.php');
 
 init_session();
 
+if (empty($USER->registered) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+	ob_start();
+	foreach ($_SERVER as $key => $value) {
+                if (strpos($key,'CONF') === 0 || strpos($key,'SERVICE_') !== FALSE || strpos($key,'_PORT') !== FALSE)
+                        continue;
+                print htmlentities($key).": ".htmlentities($value)."\n";
+        }
+	print_r($_POST);
+	print_r($_COOKIE);
+	print_r($SESSION);
+        $con = ob_get_clean();
+        debug_message('[Geograph] Login Failure',$con);
+}
+
+
+
 $uploadmanager=new UploadManager;
 
 if (isset($_GET['rotate']) && $uploadmanager->validUploadId($_GET['rotate']) && is_numeric($_GET['degrees'])) {
