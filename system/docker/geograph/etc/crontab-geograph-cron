@@ -11,6 +11,12 @@
 15    *       * * * /usr/bin/php /var/www/geograph/scripts/process-events.php --filter=every --max_load=1.2 --max_execution=600 --testmode=0  --verbosity=2
 
 ##############################
+
+20    7       * * *   /usr/bin/php /var/www/geograph/scripts/notification-mailer.php --action=send --schedule=daily
+25    7       * * 5   /usr/bin/php /var/www/geograph/scripts/notification-mailer.php --action=send --schedule=weekly
+23    7       20 * *  /usr/bin/php /var/www/geograph/scripts/notification-mailer.php --action=send --schedule=monthly
+
+##############################
 # Misc scripts
 
 
@@ -37,3 +43,14 @@
 */10	7-23	* * * /usr/bin/php /var/www/geograph/scripts/announce-curated.php --execute=1
 33	1	* * * /usr/bin/php /var/www/geograph/scripts/gallery.downsync.php
 */5     *       * * * /usr/bin/php /var/www/geograph/scripts/announce-where.php
+
+
+45     3       * * *   /var/www/geograph/scripts/build_all_sitemaps.sh
+
+##############################
+# And some for the Gallery
+
+*/15  *       * * * /usr/bin/php /var/www/geograph/public_html/showcase/gallery.cron.php
+37    */6     * * * /usr/bin/php /var/www/geograph/public_html/showcase/gallery.sync.php
+
+##############################
