@@ -849,10 +849,6 @@ class UploadManager
 			return("Must assign square");
 		}
 
-		if (!empty($CONF['use_insertionqueue'])) {
-			$existing = $this->db->getOne("select gridimage_id from gridimage_queue g inner join submission_method m using (gridimage_id) where submitted > date_sub(now(), interval 1 hour) and preview_key = '{$this->upload_id}'");
-		}
-
 		if (empty($existing)) {
 			$existing = $this->db->getOne("select gridimage_id from gridimage g inner join submission_method m using (gridimage_id) where submitted > date_sub(now(), interval 1 hour) and preview_key = '{$this->upload_id}'");
 		}
@@ -873,26 +869,71 @@ class UploadManager
 			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference,true,true);
 		}
 
-		//get sequence number
-	split_timer('upload'); //starts the timer
-
-		$mkey = $this->square->gridsquare_id;
-		$seq_no = $memcache->name_get('sid2',$mkey);
-
-		if (empty($seq_no) && !empty($CONF['use_insertionqueue'])) {
-			$seq_no = $this->db->GetOne("select max(seq_no) from gridimage_queue where gridsquare_id={$this->square->gridsquare_id}");
-		}
-		if (empty($seq_no)) {
-			$seq_no = $this->db->GetOne("select max(seq_no) from gridimage where gridsquare_id={$this->square->gridsquare_id}");
-		}
-		$seq_no=max($seq_no+1, 0);
-
-		$memcache->name_set('sid2',$mkey,$seq_no,false,$memcache->period_long);
-
-	split_timer('upload','startup',"$mkey"); //logs the wall time
-
 		//ftf is zero under image is moderated
 		$ftf=0;
+
+	##############################################
+		// insert the image into database. Uses a transaction because its seq_no is a incementing counter
+			//there is a chance of multiple clients inserting into same square. 
+			// we dont want to lock the tables, as that would be blocking.
+
+	split_timer('upload');
+
+		$gridimage_id = null;
+		$counter = 0;
+
+		//we using exception to 'catch' the failure, and try again
+		require_once('adodb/adodb-exception.inc.php');		
+
+		while (empty($gridimage_id) && $counter < 10) {
+			try {
+				$this->db->beginTrans();
+
+				//get sequence number
+
+				$mkey = $this->square->gridsquare_id;
+				$seq_no = $memcache->name_get('sid2',$mkey);
+
+				if (empty($seq_no)) {
+					$seq_no = $this->db->GetOne("select max(seq_no) from gridimage where gridsquare_id={$this->square->gridsquare_id}");
+				}
+				$seq_no=max($seq_no+1, 0);
+
+				$memcache->name_set('sid2',$mkey,$seq_no,false,$memcache->period_long);
+
+				//create record
+				// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
+				$sql=sprintf("insert into gridimage (".
+					"gridsquare_id, seq_no, user_id, ftf,".
+					"moderation_status,title,comment,nateastings,natnorthings,natgrlen,imageclass,imagetaken,".
+					"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status,realname) values ".
+					"(%d,%d,%d,%d,".
+					"'pending',%s,%s,%d,%d,'%d',%s,%s,".
+					"now(),%d,%d,'%d',%d,%d,%s,%s)",
+					$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
+					$this->db->Quote($this->title), $this->db->Quote($this->comment), 
+					$this->square->nateastings,$this->square->natnorthings,$this->square->natgrlen,
+					$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
+					$viewpoint->nateastings,$viewpoint->natnorthings,$viewpoint->natgrlen,$this->view_direction,
+					$this->use6fig,$this->db->Quote($this->user_status),$this->db->Quote($this->realname));
+
+				$this->db->Query($sql);
+
+				//get the id
+				$gridimage_id=$this->db->Insert_ID();
+
+				$this->db->commitTrans();
+
+			} catch(exception $e) {
+
+				$this->db->rollbackTrans();
+				sleep(1);
+			}
+		}
+
+	split_timer('upload','insert-image',"$mkey");
+
+	##############################################
 
 		//get the exif data
 		$exiffile=$this->_pendingEXIF($this->upload_id);
@@ -904,42 +945,13 @@ class UploadManager
 			fclose($f);
 		}
 
-		if (!empty($CONF['use_insertionqueue'])) {
-			$table = "gridimage_queue";
-		} else {
-			$table = "gridimage";
-		}
-
-	split_timer('upload'); //starts the timer
-
-		//create record
-		// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
-		$sql=sprintf("insert into $table (".
-			"gridsquare_id, seq_no, user_id, ftf,".
-			"moderation_status,title,comment,nateastings,natnorthings,natgrlen,imageclass,imagetaken,".
-			"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status,realname) values ".
-			"(%d,%d,%d,%d,".
-			"'pending',%s,%s,%d,%d,'%d',%s,%s,".
-			"now(),%d,%d,'%d',%d,%d,%s,%s)",
-			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
-			$this->db->Quote($this->title), $this->db->Quote($this->comment), 
-			$this->square->nateastings,$this->square->natnorthings,$this->square->natgrlen,
-			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
-			$viewpoint->nateastings,$viewpoint->natnorthings,$viewpoint->natgrlen,$this->view_direction,
-			$this->use6fig,$this->db->Quote($this->user_status),$this->db->Quote($this->realname));
-
-		$this->db->Query($sql);
-
-		//get the id
-		$gridimage_id=$this->db->Insert_ID();
-
 		//save the exif
 		$sql=sprintf("insert into gridimage_exif (".
 			"gridimage_id,exif) values ".
 			"(%d,%s)",$gridimage_id,$this->db->Quote($exif));
 		$this->db->Query($sql);
 
-	split_timer('upload','insert',"$gridimage_id"); //logs the wall time
+	split_timer('upload','insert-exif',"$gridimage_id"); //logs the wall time
 
 
 		//run this now, before FS operations, so that re record the preview_key, even if ultimately these commands fail!
