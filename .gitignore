@@ -1,4 +1,8 @@
 .svn
 .svn2git.meta
 .git.cherrypick.ignore
-
+upload_tmp_dir
+public_html/*.orig/
+public_html/templates/*/compiled-mnt
+*.swp
+_attic/
