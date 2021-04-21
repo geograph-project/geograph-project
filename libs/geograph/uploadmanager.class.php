@@ -874,7 +874,7 @@ class UploadManager
 
 	##############################################
 		// insert the image into database. Uses a transaction because its seq_no is a incementing counter
-			//there is a chance of multiple clients inserting into same square. 
+			//there is a chance of multiple clients inserting into same square.
 			// we dont want to lock the tables, as that would be blocking.
 
 	split_timer('upload');
@@ -883,7 +883,13 @@ class UploadManager
 		$counter = 0;
 
 		//we using exception to 'catch' the failure, and try again
-		require_once('adodb/adodb-exception.inc.php');		
+		require_once('adodb/adodb-exceptions.inc.php');
+
+//you cant normally load adodb-exceptions.inc.php, AFTER creating the connection. But all it seems to do is set raiseErrorFn.
+//$db->raiseErrorFn = ADODB_ERROR_HANDLER;
+//... actually in case adodb-errorhandler.inc.php was already called, then ADODB_ERROR_HANDLER has NOT been updated., so just use 'adodb_throw'
+$this->db->raiseErrorFn = 'adodb_throw';
+
 
 		while (empty($gridimage_id) && $counter < 10) {
 			try {
@@ -894,7 +900,7 @@ class UploadManager
 				$mkey = $this->square->gridsquare_id;
 				$seq_no = $memcache->name_get('sid2',$mkey);
 
-				if (empty($seq_no)) {
+				if (empty($seq_no) || $counter>5) {
 					$seq_no = $this->db->GetOne("select max(seq_no) from gridimage where gridsquare_id={$this->square->gridsquare_id}");
 				}
 				$seq_no=max($seq_no+1, 0);
@@ -927,11 +933,17 @@ class UploadManager
 			} catch(exception $e) {
 
 				$this->db->rollbackTrans();
-				sleep(1);
+				usleep(20000);
+				$counter++;
 			}
 		}
 
 	split_timer('upload','insert-image',"$mkey");
+
+		if (empty($gridimage_id)) {
+			header('HTTP/1.0 500 Server Error');
+			die("Submission Failure. <a href=/contact_us.php target=_blank>Please let us know</a>! Quote Reference: ".date('c')."/".$_SESSION['session1']);
+		}
 
 	##############################################
 
