@@ -100,8 +100,6 @@ else
 if (!empty($param['start'])) {
 
 	$image=new GridImage;
-	if ($image->enforce_https != 1)
-		die("ERROR, currently can only do delta updates if entire sitemap is https\n");
 
 	$sitemap = $param['start'];
 	if ($param['normal'])
@@ -192,8 +190,6 @@ if (file_exists("$fcheck.gz")) { //dont want to abort, in rare cases the file do
 		//abort early
 		printf("Aborting sitemap %d of %d - %s < %s\n", $sitemap, $sitemaps, $maxdate, $datecrit);
 
-                if ($last_id >= $image->enforce_https) //temporally hotwire
-                        $param['protocol'] = 'https';
 		@$stat[$sitemap][$param['protocol']]++;
 
 		if ($param['normal'])
