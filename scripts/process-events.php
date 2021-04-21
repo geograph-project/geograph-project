@@ -2,6 +2,7 @@
 
 //these are the arguments we expect
 $param=array(
+	'filter'=>'',
 	'testmode'=>1,
 	'verbosity'=>4,
 	'max_execution'=>10, //180,
@@ -23,7 +24,7 @@ if (!$filesystem->hasAuth() && !is_writable($_SERVER['DOCUMENT_ROOT'].'/geophoto
 
 
         $processor=new EventProcessor;
-        //$processor->setFilter($param['filter']);
+        $processor->setFilter($param['filter']);
         $processor->setTestMode($param['testmode']);
         $processor->setVerbosity($param['verbosity']);
         $processor->setMaxTime($param['max_execution']);

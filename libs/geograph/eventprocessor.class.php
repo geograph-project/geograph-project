@@ -50,6 +50,7 @@ class EventProcessor
 	var $logdb=null;
 	var $handlers=array();
 	var $event_handler_dir="";
+	var $filter="";
 
 	//formatting for each level of trace output
 	var $fmt=array(
@@ -110,6 +111,15 @@ class EventProcessor
 	function setMaxTime($seconds)
 	{
 		$this->max_execution=intval($seconds);
+	}
+
+	/**
+	* optiaonl filte
+	* @public
+	*/
+	function setFilter($filter)
+	{
+		$this->filter=$filter;
 	}
 
 	/**
@@ -234,20 +244,23 @@ class EventProcessor
 	*/
 	function start()
 	{
-		$check = $this->logdb->GetRow("select unix_timestamp(now())-unix_timestamp(logtime) as seconds,log like 'Processing complete%' as success from event_log where event_log_id = (select max(event_log_id) from event_log)");
+		$lockkey = get_class($this).md5($this->filter); //note, we DON'T use testmode in the key
 
-		if ($check['seconds'] && $check['seconds'] < ($this->max_execution/2) && !$check['success'])
-		{
-			$this->warning("A processor seems still active - dying (last log entry {$check['seconds']} ago)");
-			return false;
-		}
+                if (!$this->db->getOne("SELECT GET_LOCK('$lockkey',10)")) {
+                        //only execute if can get a lock
+                        $this->warning("Failed to get Lock");
+                        return false;
+                }
 
 		$this->_buildHandlerTable();
-		$this->_gc();
 
 		if ($this->testmode)
 		{
 			$this->warning("testmode active");
+		}
+		else
+		{
+			$this->_gc();
 		}
 
 		$attempted="";
@@ -270,9 +283,17 @@ class EventProcessor
 				continue;
 			}
 
-			$attemptfilter="";
+			$where="";
 			if (strlen($attempted))
-				$attemptfilter=" and event_id not in($attempted)";
+				$where.=" and event_id not in($attempted)";
+
+			if (!empty($this->filter)) {
+				if (preg_match('/-(\w+)/',$this->filter,$m)) {
+					$where.=" and event_name NOT LIKE ".$this->db->Quote($m[1]."%");
+				} else {
+					$where.=" and event_name LIKE ".$this->db->Quote($this->filter."%");
+				}
+			}
 
 			$this->db->Execute("LOCK TABLES event WRITE");
 
@@ -362,6 +383,12 @@ class EventProcessor
 							$this->error("Event handler $classname failed for event $event_id");
 							$success=false;
 						}
+						if ($event_name == 'every_day')
+						{
+							$this->trace("Sleeping for 5 minutes...");
+							//temporally bodge, to space them out, so can align them with IO graphs!
+							sleep(60*5);
+						}
 					}
 				}
 
@@ -391,13 +418,14 @@ class EventProcessor
 
 				//no events to process! let's sleep for a bit
 				$this->verbose("no events in queue, sleeping for a bit...");
-				sleep(30);
+				sleep(11);
 			}
 		}
 
 		//ok, we're going to quit, but lets post some useful diagnostics
 		$count=$this->db->GetOne("select count(*) as cnt from event where status<3");
 		$this->trace("Processing complete - $count events remaining in queue");
+		$this->db->Execute("DO RELEASE_LOCK('$lockkey')");
 	}
 }
 

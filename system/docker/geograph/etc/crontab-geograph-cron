@@ -1,12 +1,14 @@
 ##############################
-# Basic event implemenation
+# Event implemenation
 
-#fire a regular example event
-#1         *       * * *   /usr/bin/php /var/www/geograph/scripts/fire-event.php --event=every_hour --priority=75
+#fire regular events
+13      8-23    * * * /usr/bin/php /var/www/geograph/scripts/fire-event.php --event=every_hour --priority=75
+13      3       * * * /usr/bin/php /var/www/geograph/scripts/fire-event.php --event=every_day --priority=80
+13      1       * * 7 /usr/bin/php /var/www/geograph/scripts/fire-event.php --event=every_week --priority=85
 
 #and process events when available
-#*/5       *       * * *   curl -sSL -A "geograph-cron" "${CONTENT_HOST}/_scripts/process_events.php?start=1&max_execution=290&max_load=1.2"
-#Note this is done via HTTP (rather than CLI) so that the event is processed via a load balanced webserver.
+*/5   *       * * * /usr/bin/php /var/www/geograph/scripts/process-events.php --filter=-every --max_load=1.2 --max_execution=180 --testmode=0  --verbosity=2
+15    *       * * * /usr/bin/php /var/www/geograph/scripts/process-events.php --filter=every --max_load=1.2 --max_execution=600 --testmode=0  --verbosity=2
 
 ##############################
 # Misc scripts

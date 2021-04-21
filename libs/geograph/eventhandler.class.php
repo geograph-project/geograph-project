@@ -7,10 +7,10 @@ class EventHandler
 	var $processor;
 
 	/**
-	 * Execute a SQL query, producing a warning if takes over 1 second
+	 * Execute a SQL query, producing a warning if takes over 5 second
 	 * @access private
 	 */
-	function Execute($sql, $slow = 1) {
+	function Execute($sql, $slow = 5) {
 		$db=$this->_getDB();
 
 		$start = microtime(true);
