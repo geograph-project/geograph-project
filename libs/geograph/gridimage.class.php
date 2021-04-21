@@ -2159,8 +2159,10 @@ if ($old_status == 'pending' && $status != 'rejected') {
 	*/
 	function reassignGridsquare($grid_reference, &$error)
 	{
+		global $memcache;
+
 		$ok=false;
-		
+
 		//is the reference valid?
 		//old one is in $this->grid_square
 		$newsq=new GridSquare;
@@ -2182,6 +2184,9 @@ split_timer('gridimage'); //starts the timer
 					$seq_no = $db->GetOne("select max(seq_no) from gridimage ".
 						"where gridsquare_id={$newsq->gridsquare_id}");
 					$seq_no=max($seq_no+1, 0);
+
+					$mkey = $newsq->gridsquare_id;
+					$memcache->name_set('sid2',$mkey,$seq_no,false,$memcache->period_long);
 				}
 				else
 				{
