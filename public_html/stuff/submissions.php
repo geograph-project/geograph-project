@@ -41,9 +41,6 @@ print "<h2>Your Recent Submissions - live/no caching <sub><a href=?>refresh</a><
 
 print "<table cellspacing=0 border=1 cellpadding=3>";
 
-if (!empty($CONF['use_insertionqueue']))
-	dump_rows("select gridimage_id,title,submitted,moderation_status from gridimage_queue where user_id = {$USER->user_id}", false);
-
 dump_rows("select gridimage_id,title,submitted,moderation_status from gridimage where user_id = {$USER->user_id} ORDER BY gridimage_id DESC LIMIT 20", true);
 
 print "</table>";

@@ -166,8 +166,6 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	#	$sql = "SELECT COUNT(DISTINCT url) FROM gridimage_link WHERE next_check < NOW()";
 	#	calc("Links waiting to be checked",$sql);
 
-		$sql = "SELECT COUNT(*) FROM gridimage_queue";
-		calc("Images in prepending queue",$sql);
 	}
 
 	$smarty->assign_by_ref('table', $table);

@@ -381,7 +381,6 @@ class GridImage
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_id)) 
 		{
-			
 			if ($usesearch) {
 				$row = $db->GetRow("select * from gridimage_search where gridimage_id={$gridimage_id} limit 1");
 			} else {
@@ -390,14 +389,6 @@ class GridImage
 			if (is_array($row))
 			{
 				$this->_initFromArray($row);
-			} 
-			if (empty($row) && !empty($CONF['use_insertionqueue'])) 
-			{
-				$check = $db->GetOne("select gridimage_id from gridimage_queue where gridimage_id={$gridimage_id}");
-				if ($check == $gridimage_id) {
-					$this->unavailable = true;
-					return false;
-				}
 			}
 		}
 		//todo memcache (probably make sure dont serialise the dbs!)
