@@ -66,10 +66,12 @@ if (!empty($_POST))
 	$image->title = strip_tags(trim(stripslashes($_POST['title'])));
 	$image->comment = strip_tags(trim(stripslashes($_POST['comment'])));
 
-	$image->imageclass=strip_tags(trim(stripslashes($_POST['imageclass'])));
+	if (!empty($_POST['imageclass'])) {
+		$image->imageclass=strip_tags(trim(stripslashes($_POST['imageclass'])));
 
-	if ($image->imageclass=="Other") {
-		$image->imageclass = strip_tags(trim(stripslashes($_POST['imageclassother'])));
+		if ($image->imageclass=="Other" && !empty($_POST['imageclassother'])) {
+			$image->imageclass = strip_tags(trim(stripslashes($_POST['imageclassother'])));
+		}
 	}
 
 	if (isset($_POST['imagetakenYear'])) {

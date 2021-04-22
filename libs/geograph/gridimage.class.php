@@ -1252,7 +1252,8 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 	                $srcset = ' srcset="'.implode(', ',$srcset).'"';
 	        } else {
 	                $maxwidth = min(640,$size[0]);
-	                $ratio = $size[1]/$size[0];
+			if (!empty($size[0]))
+		                $ratio = $size[1]/$size[0];
 	                $srcset = '';
 	        }
 
@@ -1269,6 +1270,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 			$html="<div class=\"img-responsive\" style=\"max-width:{$largestwidth}px\">$html</div>"; //maxwidth to prevent upscaling
 
 //temp bodge! (this is a dynamic scale, based on ratio, but want to affect ALL the caption640 elements on the page.)
+if (!empty($ratio))
 $html .= <<<EOT
 
 <script>
