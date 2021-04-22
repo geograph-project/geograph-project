@@ -66,7 +66,7 @@ if (isset($_REQUEST['id']))
 
 		if (isset($_REQUEST['download']) && $_REQUEST['download'] == $image->_getAntiLeechHash()) {
 
-			if (stripos($_SERVER['HTTP_REFERER'], 'seadragon.com')!==FALSE || stripos($_SERVER['HTTP_REFERER'], 'zoom.it')!==FALSE) {
+			if (!empty($_SERVER['HTTP_REFERER']) && (stripos($_SERVER['HTTP_REFERER'], 'seadragon.com')!==FALSE || stripos($_SERVER['HTTP_REFERER'], 'zoom.it')!==FALSE)) {
 				header("HTTP/1.0 307 Temporary Redirect");
 				header("Status: 307 Temporary Redirect");
 				header("Location: /photo/".intval($_REQUEST['id']));
@@ -74,7 +74,7 @@ if (isset($_REQUEST['id']))
 				exit;
 			}
 
-			switch($_REQUEST['size']) {
+			switch($_REQUEST['size'] ?? 'full') {
 				case 640:
 				case 800:
 				case 1024:

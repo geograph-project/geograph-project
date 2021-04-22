@@ -186,13 +186,14 @@ if (isset($_FILES['jpeg_exif']))
 				//bug? in Picasa sends the name in the value if blank, useful! (but only seems to apply to textareas)
 				$uploadmanager->setComment($_POST['comment'][$key]);
 			}
-
-			if (($_POST['imageclass'][$key] == 'Other' || empty($_POST['imageclass'][$key])) && !empty($_POST['imageclassother'][$key])) {
-				$imageclass = stripslashes($_POST['imageclassother'][$key]);
-			} else if ($_POST['imageclass'] != 'Other') {
-				$imageclass =  stripslashes($_POST['imageclass'][$key]);
+			if (!empty($_POST['imageclass'])) {
+				if (($_POST['imageclass'][$key] == 'Other' || empty($_POST['imageclass'][$key])) && !empty($_POST['imageclassother'][$key])) {
+					$imageclass = stripslashes($_POST['imageclassother'][$key]);
+				} else if ($_POST['imageclass'] != 'Other') {
+					$imageclass =  stripslashes($_POST['imageclass'][$key]);
+				}
+				$uploadmanager->setClass($imageclass);
 			}
-			$uploadmanager->setClass($imageclass);
 			
 			if (!empty($_POST['tags'][$key])) {
 				if (is_array($_POST['tags'][$key])) {
@@ -273,7 +274,7 @@ if (isset($_FILES['jpeg_exif']))
 	}
 }
 
-if ($upload_to_process && !empty($uploadmanager) && $uploadmanager->upload_id) {
+if (!empty($upload_to_process) && !empty($uploadmanager) && $uploadmanager->upload_id) {
 
 	$smarty->assign('upload_id', $uploadmanager->upload_id);
 	$smarty->assign('transfer_id', $uploadmanager->upload_id);

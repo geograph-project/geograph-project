@@ -93,7 +93,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			} else {
 				$columns = array();
 				foreach ($res['fields'] as $idx => $attr) {
-					if ($res['attrs'][$attr] == 7 && $attr != 'hash' && $attr != 'status' && $attr != 'takenyear') {
+					if (isset($res['attrs'][$attr]) && $res['attrs'][$attr] == 7 && $attr != 'hash' && $attr != 'status' && $attr != 'takenyear') {
 						$columns[] = $attr;
 					}
 				}

@@ -103,7 +103,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('marker2', $overview2->getBoundingBox($mosaic));
 
 
-	$hectads=&$db->GetAll("select hectad,last_submitted,(geosquares>=landsquares) as completed from hectad_stat where x between {$row['x']}-15 and {$row['x']}+15 and y between {$row['y']}-15 and {$row['y']}+15 order by y desc,x");
+	$hectads=$db->GetAll("select hectad,last_submitted,(geosquares>=landsquares) as completed from hectad_stat where x between {$row['x']}-15 and {$row['x']}+15 and y between {$row['y']}-15 and {$row['y']}+15 order by y desc,x");
 	$smarty->assign_by_ref('hectads', $hectads);
 
 
@@ -121,7 +121,7 @@ if (!$smarty->is_cached($template, $cacheid))
         );
 
 	//calling our own API is ugly, but better than replicating all the code here?
-        $remote = file_get_contents("http://www.geograph.org.uk/finder/bytag.json.php?q=hectad:$hectad",0, $ctc);
+        $remote = file_get_contents("http://www.geograph.org.uk/finder/bytag.json.php?q=hectad:$hectad",0, $ctx);
 
         if (!empty($remote) && strlen($remote) > 110) {
 		require_once '3rdparty/JSON.php';
