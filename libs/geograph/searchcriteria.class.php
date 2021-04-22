@@ -1005,7 +1005,7 @@ class SearchCriteria_All extends SearchCriteria
 	*/
 	function setByUsername($username) {
 		$db = $this->_getDB(true);
-		
+
 split_timer('search'); //starts the timer
 
 		if (preg_match('/^(\d+):/',$username,$m)) {
@@ -1014,11 +1014,11 @@ split_timer('search'); //starts the timer
 			$username2 = $db->Quote($username);
 			$users = $db->GetAll("select user_id,realname,nickname from user inner join user_stat using (user_id) where rights LIKE '%basic%' AND MATCH (realname,nickname) AGAINST ($username2) order by (nickname=$username2 or realname=$username2) desc limit 2");
 		}
-		if (!empty($users)) && 
-		(count($users) == 1 || 
-			( count($users) && 
+		if (!empty($users) &&
+		(count($users) == 1 ||
+			( count($users) &&
 				(strcasecmp($users[0]['realname'],$username) == 0 || strcasecmp($users[0]['nickname'],$username) == 0 )
-			) 
+			)
 		)) {
 			$this->realname = $users[0]['realname'];
 			$this->user_id = $users[0]['user_id'];
@@ -1026,11 +1026,10 @@ split_timer('search'); //starts the timer
 				$this->nickname = $users[0]['nickname'];
 			}
 		}
-		
+
 split_timer('search','setByUsername',$username); //logs the wall time
 
 	}
-	
 }
 
 class SearchCriteria_Placename extends SearchCriteria
