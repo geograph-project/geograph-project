@@ -27,7 +27,7 @@ for ($i=0; $i<=sizeof($ex); $i++){
 if (!empty($ex[$i]) and substr_count($ex[$i],'}')>0) {
 $xx=explode('}',$ex[$i]);
 if (substr_count($xx[0],'[')>0) {
-$clr=explode ('[',$xx[0]); $sp=$clr[1]+0; $clr=$clr[0];
+$clr=explode ('[',$xx[0]); $sp=intval($clr[1]); $clr=$clr[0];
 if (!in_array($clr,$qs)) {$qs[]=$clr; }
 if(isset($GLOBALS[$clr][$sp])) $to=$GLOBALS[$clr][$sp]; else $to='';
 }
