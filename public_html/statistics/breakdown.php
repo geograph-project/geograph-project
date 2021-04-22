@@ -241,7 +241,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	//we now have a wide range of pre-grouped tables! (some can even be used with user and/or ri filter!) 
 		//todo, the date tables, could cope with (some!) 'when' filtering!
 	###########################################
-	if ($by == 'submitted' || $by == 'taken' || $by == 'submittedyear' || by == 'takenyear') {
+	if ($by == 'submitted' || $by == 'taken' || $by == 'submittedyear' || $by == 'takenyear') {
 		if ($sql_where == " and user_id = $u" && $sql_crit == '') {
 			$date_table = 'user_date_stat';
 		} elseif ($sql_where == '' && ($sql_crit == '' || $sql_crit = " AND reference_index = $ri")) {
