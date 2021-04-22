@@ -292,12 +292,12 @@ if (!empty($_GET['debug']))
 		if (!empty($_GET['label'])) {
 			print " Perhaps the images have since been reclustered differently. ";
 
-			$url = "/stuff/list.php?q=".urlencode($_GET['label'])."&gridref=".urlencode($_GET['gridref']);
+			$url = "/stuff/list.php?q=".urlencode($_GET['label'])."&gridref=".urlencode(@$_GET['gridref']);
 			print "<p>For now can try a <a href=\"".htmlentities2($url)."\">keyword search in this square</a></p>";
 		} elseif (!empty($_GET['title'])) {
 			print " Perhaps the images been retitled. ";
 
-			$url = "/stuff/list.php?q=".urlencode($_GET['title'])."&gridref=".urlencode($_GET['gridref']);
+			$url = "/stuff/list.php?q=".urlencode($_GET['title'])."&gridref=".urlencode(@$_GET['gridref']);
 			print "<p>For now can try a <a href=\"".htmlentities2($url)."\">keyword search in this square</a></p>";
 		}
 	}

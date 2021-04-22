@@ -144,11 +144,11 @@ DATE_FORMAT(last_first_submitted,'%D %b %Y') as last_date
 		$db = GeographDatabaseConnection(true);
 		if (!$db) die('Database connection failed');  
 
-		$users=&$db->GetAll($sql);
+		$users=$db->GetAll($sql);
 		$smarty->assign_by_ref('users', $users);
 		
 		
-		$hectads=&$db->GetAll("select hectad,largemap_token,last_submitted from hectad_stat where x between {$mosaic->map_x}-20 and {$mosaic->map_x}+20 and y between {$mosaic->map_y}-20 and {$mosaic->map_y}+20 and geosquares >= landsquares order by y desc,x");
+		$hectads=$db->GetAll("select hectad,largemap_token,last_submitted from hectad_stat where x between {$mosaic->map_x}-20 and {$mosaic->map_x}+20 and y between {$mosaic->map_y}-20 and {$mosaic->map_y}+20 and geosquares >= landsquares order by y desc,x");
 		$smarty->assign_by_ref('hectads', $hectads);
 		
 	}

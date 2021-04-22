@@ -407,29 +407,31 @@ if (isset($_REQUEST['id']))
 
 			$comment=trim(stripslashes($_POST['comment']));
 
-			$imageclass=trim(stripslashes($_POST['imageclass']));
-			$imageclass=strip_tags($imageclass);
+			if (isset($_POST['imageclass'])) {
+				$imageclass=trim(stripslashes($_POST['imageclass']));
+				$imageclass=strip_tags($imageclass);
 
-			$imageclassother=trim(stripslashes($_POST['imageclassother']));
-			$imageclassother=strip_tags($imageclassother);
+				$imageclassother=trim(stripslashes($_POST['imageclassother']));
+				$imageclassother=strip_tags($imageclassother);
 
-			$tmp_class = $imageclass;
-			if ($imageclass=="Other")
-			{
-				$tmp_class = $imageclassother;
-				if (strlen($imageclassother)==0)
+				$tmp_class = $imageclass;
+				if ($imageclass=="Other")
 				{
-					$ok=false;
-					$error['imageclassother']="Please specify the geographical feature";
+					$tmp_class = $imageclassother;
+					if (strlen($imageclassother)==0)
+					{
+						$ok=false;
+						$error['imageclassother']="Please specify the geographical feature";
+					}
 				}
-			}
-			else
-			{
-				$imageclassother="";
-			}
-			if (preg_match('/^(Supplemental|Geograph\b|Accept)/i',$tmp_class) && $tmp_class != 'Geograph meet') {
-				$ok=false;
-				$error['imageclass']="Please choose a geographical feature";
+				else
+				{
+					$imageclassother="";
+				}
+				if (preg_match('/^(Supplemental|Geograph\b|Accept)/i',$tmp_class) && $tmp_class != 'Geograph meet') {
+					$ok=false;
+					$error['imageclass']="Please choose a geographical feature";
+				}
 			}
 
 			//can't always specify this...
@@ -533,13 +535,14 @@ if (isset($_REQUEST['id']))
 				$ticket->setImage($_REQUEST['id']);
 				$ticket->setNotes($updatenote);
 
-				if (strlen($imageclassother))
+				if (!empty($imageclassother))
 					$imageclass=$imageclassother;
 
 				//attach the various field changes
 				$ticket->updateField("title", $image->title, $title, $moderated["title"]);
 				$ticket->updateField("comment", $image->comment, $comment, $moderated["comment"]);
-				$ticket->updateField("imageclass", $image->imageclass, $imageclass, $moderated["imageclass"]);
+				if (isset($imageclass))
+					$ticket->updateField("imageclass", $image->imageclass, $imageclass, $moderated["imageclass"]);
 				$ticket->updateField("imagetaken", $image->imagetaken, $imagetaken, $moderated["imagetaken"]);
 				$ticket->updateField("grid_reference", $image->subject_gridref, $grid_reference, $moderated["grid_reference"]);
 				$ticket->updateField("photographer_gridref", $image->photographer_gridref, $photographer_gridref, $moderated["photographer_gridref"]);
@@ -596,7 +599,8 @@ if (isset($_REQUEST['id']))
 				//populate fields
 				$image->title=$title;
 				$image->comment=$comment;
-				$image->imageclass=$imageclass;
+				if (isset($imageclass))
+					$image->imageclass=$imageclass;
 				$image->imagetaken=$imagetaken;
 				$image->subject_gridref=$grid_reference;
 				$image->photographer_gridref=$photographer_gridref;
@@ -607,7 +611,8 @@ if (isset($_REQUEST['id']))
 
 				$smarty->assign_by_ref('error', $error);
 
-				$smarty->assign('imageclassother',$imageclassother);
+				if (isset($imageclassother))
+					$smarty->assign('imageclassother',$imageclassother);
 
 			}
 

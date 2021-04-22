@@ -1109,7 +1109,7 @@ split_timer('gridimage'); //starts the timer
 			$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
 		}
 
-split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wall time
+split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall time
 
 		return $size;
 	}

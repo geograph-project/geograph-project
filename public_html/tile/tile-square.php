@@ -60,7 +60,7 @@ $_GET['group'] = "grid_reference"; // one dot per square!
 $_GET['order'] = "id asc"; //rand doesnt work for group, could use sequence, but may as well just use id.
 
 
-$_GET['select'] = "x,y,count(*) as images"; //using x,y avoids having to convert the lat/lng to xy, and minimises rounding errors!
+$_GET['select'] = "x,y,scenti,count(*) as images"; //using x,y avoids having to convert the lat/lng to xy, and minimises rounding errors!
 $_GET['group'] = "x,y"; // one dot per square! x/y being simple ints is slightly more effient
 
 
@@ -117,6 +117,7 @@ function call_with_results($data) {
 		} else {
 			$x = $row['x'];
 			$y = $row['y'];
+			$ri = $row['scenti'][0];
 
 	                if ($x == 4294967205) $x = -91; //manticore stores x,y in uint column, which overflows. only used for Rockall
 		}

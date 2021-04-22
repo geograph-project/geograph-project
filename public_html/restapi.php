@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if ( $_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter") {
+if (@$_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter") {
         header('HTTP/1.0 200 OK');
 	header("Cache-Control: max-age=360000");
 //	header("X-Date: ".time());
@@ -962,7 +962,7 @@ if (!empty($CONF['redis_host']))
                 $redis->select($CONF['redis_api_db']);
 
         $bits = array();
-        $bits[] = $_GET['key'];
+        $bits[] = $_GET['key'] ?? '';
         $bits[] = getRemoteIP();
         if (!empty($_SERVER['HTTP_REFERER'])) {
                 $ref = @parse_url($_SERVER['HTTP_REFERER']);
@@ -970,7 +970,7 @@ if (!empty($CONF['redis_host']))
         } else {
                 $bits[] = '';
         }
-        if (strlen($_SERVER['HTTP_USER_AGENT']) > 2) {
+        if (!empty($_SERVER['HTTP_USER_AGENT'])) {
                 $bits[] = preg_replace('/[^\w]+/','_',$_SERVER['HTTP_USER_AGENT']);
         }
 

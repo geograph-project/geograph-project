@@ -363,7 +363,7 @@ if ($template=='profile.tpl')
 	} else {
 		$profile=new GeographUser();
 		$profile->user_id = $uid;
-		if ($uid==$USER->user_id) {
+		if ($uid==$USER->user_id && property_exists($USER,'tickets')) {
 			if (empty($_SESSION['last_ticket_time']) || $USER->last_ticket_time > $_SESSION['last_ticket_time']) {
 				$profile->tickets = $USER->tickets;
 			}

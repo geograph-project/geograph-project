@@ -21,20 +21,23 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if (!empty($_GET['mode']) && $_GET['mode'] == 'suggestions' && !empty($_GET['string'])) {
+if (empty($_GET['mode']))
+	$_GET['mode'] = ''; //just to silence notices later on, when they test this variable.
+
+if ($_GET['mode'] == 'suggestions' && !empty($_GET['string'])) {
 	require("./topics.json.php");
 	exit;
-} elseif (!empty($_GET['mode']) && $_GET['mode'] == 'vision') {
+} elseif ($_GET['mode'] == 'vision') {
 	require("./vision.json.php");
 	exit;
-} elseif (!empty($_GET['mode']) && $_GET['mode'] == 'prospective' && !empty($_GET['string'])) {
+} elseif ($_GET['mode'] == 'prospective' && !empty($_GET['string'])) {
 	require("./prospective.json.php");
 	exit;
-} elseif (!empty($_GET['mode']) && $_GET['mode'] == 'automatic' && !empty($_GET['string'])) {
+} elseif ($_GET['mode'] == 'automatic' && !empty($_GET['string'])) {
 	$_GET['topics'] = 1;
 	require("./prospective.json.php");
 	exit;
-} elseif (!empty($_GET['mode']) && $_GET['mode'] == 'categories') {
+} elseif ($_GET['mode'] == 'categories') {
 	$_REQUEST['q'] = $_GET['q'] = $_GET['term'];
         if (empty($_GET['term'])) {
                 $_REQUEST['q'] = $_GET['q'] = '..'; //falls though as an empty to query
@@ -46,7 +49,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'suggestions' && !empty($_GET['str
 
 require_once('geograph/global.inc.php');
 
-if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && !empty($_SESSION['last_grid_reference'])) { //appears have been uploading recently!
+if ($_GET['mode'] == 'selfrecent' && !empty($_SESSION['last_grid_reference'])) { //appears have been uploading recently!
 	$db = GeographDatabaseConnection(60); //very little lag
 } elseif (!empty($_GET['gridimage_id'])) {
 	$db = GeographDatabaseConnection(false); //no lag!
@@ -74,7 +77,7 @@ if (isset($_GET['term'])) {
 	$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='category' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
 }
 
-if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
+if ($_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
 	init_session();
 	customExpiresHeader(30,false,true);
 
