@@ -1463,12 +1463,12 @@ split_timer('gridimage'); //starts the timer
 
 		$filesystem = GeographFileSystem();
 
-		if (!$filesystem->file_exists($base.$thumbpath))
+		if (!$filesystem->file_exists($base.$thumbpath, true)) //use_get because we about to read it anyway (imagecreatefromgd below)
 		{
 			//get path to fullsize image
-			$fullpath=$this->_getFullpath();
+			$fullpath=$this->_getFullpath(2); //use_get, because we about to load it anyway (imagecreatefromjpeg below)
 
-			if ($fullpath != '/photos/error.jpg' && $filesystem->file_exists($base.$fullpath, true)) //use_get, because we about to load it anyway
+			if ($fullpath != '/photos/error.jpg') //_getFullpath has already checked it exists
 			{
 				//generate resized image
 				$fullimg = $filesystem->imagecreatefromjpeg($base.$fullpath);
