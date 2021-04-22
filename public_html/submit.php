@@ -286,8 +286,8 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 				$smarty->assign('tags', stripslashes($_POST['tags']));
 				$smarty->assign('subject', stripslashes($_POST['subject']));
-				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
-				$smarty->assign('user_status', stripslashes($_POST['user_status']));
+				$smarty->assign('imageclass', stripslashes(@$_POST['imageclass']));
+				$smarty->assign('user_status', stripslashes(@$_POST['user_status']));
 			}
 			$step=2;
 		}
@@ -424,10 +424,14 @@ if (isset($_POST['gridsquare']))
 
 				$smarty->assign('subject', trim(stripslashes($_POST['subject'])));
 
-				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
-					$imageclass = stripslashes($_POST['imageclassother']);
-				} else if ($_POST['imageclass'] != 'Other') {
-					$imageclass =  stripslashes($_POST['imageclass']);
+				if (!empty($_POST['imageclass'])) {
+					if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
+						$imageclass = stripslashes($_POST['imageclassother']);
+					} else if ($_POST['imageclass'] != 'Other') {
+						$imageclass = stripslashes($_POST['imageclass']);
+					}
+				} else {
+					$imageclass='';
 				}
 				if (strlen($imageclass)==0) {
 					if (empty($_POST['tags'])) {
@@ -451,7 +455,8 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('title', $title);
 				$smarty->assign('comment', trim(stripslashes($_POST['comment'])));
 
-				$smarty->assign('user_status', stripslashes($_POST['user_status']));
+				if (!empty($_POST['user_status']))
+					$smarty->assign('user_status', stripslashes($_POST['user_status']));
 
 				if ($ok) {
 					$step=4;
@@ -479,7 +484,8 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setViewpoint(stripslashes($_POST['photographer_gridref']));
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
 				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
-				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
+				if (!empty($_POST['user_status']))
+					$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
 				$uploadmanager->setLargestSize($_POST['largestsize']);
 			
 				if ($_POST['pattrib'] == 'other') {

@@ -156,9 +156,9 @@ include("../api-facetql.php");
 
 function imageaddalpha(&$im, $x, $y, $delta) {
 
-        if ($x<0 || $x > googleMapUtilityClass::TILE_SIZE)
+        if ($x<0 || $x >= googleMapUtilityClass::TILE_SIZE)
                 return;
-        if ($y<0 || $y > googleMapUtilityClass::TILE_SIZE)
+        if ($y<0 || $y >= googleMapUtilityClass::TILE_SIZE)
                 return;
 
 	$rgba = imagecolorat($im, $x, $y);

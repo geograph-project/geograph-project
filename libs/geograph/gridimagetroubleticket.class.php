@@ -418,7 +418,7 @@ class GridImageTroubleTicket
 				$this->suggested,
 				$this->updated,
 				$this->user_id,
-				$this->moderator_id,
+				$this->moderator_id ?? 0,
 				"pending",
 				$this->type,
 				$this->public,
@@ -438,7 +438,7 @@ class GridImageTroubleTicket
 		if (count($this->changes))
 			foreach($this->changes as $change)
 			{
-				if ($change['gridimage_ticket_item_id'])
+				if (!empty($change['gridimage_ticket_item_id']))
 				{
 					//we're updating
 					$sql=sprintf("update gridimage_ticket_item set status='%s', approver_id='%d' where gridimage_ticket_item_id=%d",
@@ -917,7 +917,7 @@ class GridImageTroubleTicket
 	 */
 	function &_getImage()
 	{
-		if (!is_object($this->gridimage))
+		if (empty($this->gridimage) || !is_object($this->gridimage))
 		{
 			$this->gridimage=new GridImage();
 			$this->gridimage->loadFromId($this->gridimage_id);

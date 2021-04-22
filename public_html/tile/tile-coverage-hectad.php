@@ -53,7 +53,7 @@ if ($bounds[3] > 62)
                 list($x2,$y2) = $conv->wgs84_to_internal(floatval($bounds[3]),floatval($bounds[2])); //top-rigth
 
 //BODGE!
-	if ($x1 == 0 && $bounds[0] < -9.5 && $bounds[0-9.5] > -15) { //wgs84_to_national as a small boundary for GB!
+	if ($x1 == 0 && $bounds[0] < -9.5 && $bounds[0]-9.5 > -15) { //wgs84_to_national as a small boundary for GB!
 		$conv2 =  new ConversionsLatLong;
 
 		list($e,$n) = $conv2->wgs84_to_osgb36(floatval($bounds[1]),floatval($bounds[0]));

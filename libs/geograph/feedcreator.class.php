@@ -1274,7 +1274,7 @@ class KMLCreator extends FeedCreator {
 		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n";
 		$feed.= "<Document>\n";
 		$feed.= "<name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>";
-		if ($_GET['LinkControl'])
+		if (!empty($_GET['LinkControl']))
 			$feed.= "<NetworkLinkControl>\n<minRefreshPeriod>3600</minRefreshPeriod>\n</NetworkLinkControl>\n";
 		if (!empty($_GET['simple']) && count($this->items) > 0) {
 			$normalscale = 1;
@@ -1413,7 +1413,7 @@ xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com
 
 		$now = new FeedDate();
 		$feed.= "<desc>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</desc>
-<author>{$http_host}</author>
+<author>{$_SERVER['HTTP_HOST']}</author>
 <url>".htmlspecialchars($this->link)."</url>
 <time>".htmlspecialchars($now->iso8601())."</time>
 \n";

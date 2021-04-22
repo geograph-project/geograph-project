@@ -270,6 +270,7 @@ if ($grid_given)
 		$db = null;
 		$custom_where = '';
 		$extra = '';
+		$filtered_title = '';
 		if (!empty($_GET['user'])) {
 			$custom_where .= " and gi.user_id = ".intval($_GET['user']);
 			$profile=new GeographUser($_GET['user']);

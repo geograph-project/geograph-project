@@ -217,7 +217,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_from = '';
 		$sql_where = '';
 	}
-	$smarty->assign_by_ref('link', str_replace(' ','+',$link));
+	$smarty->assign('link', str_replace(' ','+',$link));
 	$smarty->assign_by_ref('h2title', $title);
 
 	if (strpos($order,'2') !== FALSE) {
@@ -317,7 +317,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		limit 5000";
 	}
 
-	if ($_GET['debug'])
+	if (!empty($_GET['debug']))
 		print $sql;
 
 	###########################################

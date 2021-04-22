@@ -150,6 +150,8 @@ function isLocalIPAddress()
 
 function appearsToBePerson() {
 	global $CONF;
+	if (empty($_SERVER['HTTP_USER_AGENT']))
+		return false;
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
 	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Preview')===FALSE) &&

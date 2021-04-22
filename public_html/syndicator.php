@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if ( $_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || @$_GET['q'] == ',') {
+if (@$_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || @$_GET['q'] == ',') {
 	header('HTTP/1.0 403 Forbidden');
 	header('Cache-Control: max-age=2592000');
 	header("Status: 403 Forbidden");
@@ -71,7 +71,7 @@ if (!empty($CONF['redis_host']))
 	} else {
 		$bits[] = '';
 	}
-	if (strlen($_SERVER['HTTP_USER_AGENT']) > 2) {
+	if (!empty($_SERVER['HTTP_USER_AGENT'])) {
 		$bits[] = preg_replace('/[^\w]+/','_',$_SERVER['HTTP_USER_AGENT']);
 	}
 
@@ -359,7 +359,7 @@ if (isset($sphinx)) {
 }
 
 
-$cnt=count($images->images);
+$cnt=empty($images->images)?0:count($images->images);
 
 $geoformat = ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX' || $format == 'MEDIA' || $format == 'JSON');
 $photoformat = ($format == 'KML' || $format == 'GeoPhotoRSS' || $format == 'BASE' || $format == 'MEDIA' || $format == 'JSON');

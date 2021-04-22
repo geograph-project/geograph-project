@@ -120,7 +120,7 @@ if (empty($_GET['tab'])) {
 		$t = 0;
 		$sql = "SELECT gridimage_id gid,title t,showday FROM gridimage_search INNER JOIN gallery_ids i ON (id = gridimage_id) WHERE user_id = $u AND i.baysian > 3.3 ORDER BY i.baysian DESC";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			$r = $recordSet->fields;
 			if (!$t) {
@@ -149,7 +149,7 @@ if (empty($_GET['tab'])) {
 		$t = $l = '';
 		$sql = "SELECT gridimage_id,region,name1,name2,local_type,county_unitary,grid_reference,title from os_open_places inner join gridimage_search on (gridimage_id = first) where user_id = $u order by region,most_detail_view_res desc,name1";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			$r = $recordSet->fields;
 			if (!$t) {
@@ -319,7 +319,7 @@ if (empty($_GET['tab'])) {
 		$t = '';
 		$sql = "SELECT floor(ln(hits+hits_archive)) as eee,gridimage_id gid,title t,grid_reference r FROM gridimage_search INNER JOIN gridimage_log USING (gridimage_id) WHERE user_id = $u AND hits > 50 ORDER BY 1 DESC, gridimage_id DESC";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			$r = $recordSet->fields;
 			if ($t == $r['eee']) {
@@ -364,7 +364,7 @@ if (empty($_GET['tab'])) {
 			print "<a href=\"?tab=photos&all=1\">Show all photos (including your own)</a><hr/>";
 		}
 
-	        $recordSet = &$db->Execute($sql);
+	        $recordSet = $db->Execute($sql);
 
 	        $last = 0;
 	        while ($recordSet && !$recordSet->EOF)

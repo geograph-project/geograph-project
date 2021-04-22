@@ -904,7 +904,7 @@ split_timer('sphinx'); //starts the timer
 		$res = $cl->Query ( preg_replace('/\s*\b(the|to|of)\b\s*/',' ',$q), 'gaz_stopped' );
 
 		$arr = array();
-		if ( $res!==false && is_array($res["matches"]) && count($res["matches"]))
+		if (!empty($res) && !empty($res["matches"]) && is_array($res["matches"]))
 		{
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
@@ -922,7 +922,7 @@ split_timer('sphinx'); //starts the timer
 
 			$results = $db->getAll($sql);
 			$r = '';
-			if (!empty($results) && count($results)) {
+			if (!empty($results)) {
 				foreach ($results as $row) {
 					foreach (preg_split('/[\/,\|]+/',trim(strtolower($row['name']))) as $word) {
 						$word = preg_replace('/[^\w ]+/','',$word);
