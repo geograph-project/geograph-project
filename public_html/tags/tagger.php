@@ -403,8 +403,9 @@ $buckets = array('Closeup',
 $smarty->assign_by_ref('buckets',$buckets);
 
 
-if ($template=='tags_tagger.tpl' && isset($_GET['form']) && $_GET['form'] == 'submissions') {
-	//stop this working on the old form! BEcause it runs the extraction, even if dont ever visit the tab.
+if ($template=='tags_tagger.tpl') {
+	//stop this working on the old form!  ultimately goes to the Yahoo Terms API, which is offline!
+		//the new form, can use prospective.json.php which might still work!
 
 } elseif (!empty($_GET['title']) || !empty($_GET['comment'])) {
         $string = $_GET['title'].' '.$_GET['comment'];

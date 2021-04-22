@@ -117,7 +117,7 @@ if (!empty($_GET['deb']))
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 if (isset($_GET['term'])) {
 
-	if (isset($_GET['topics'])) {
+	if (false && isset($_GET['topics'])) {
 	        ###################
         	# Yahoo Term Extraction API
 

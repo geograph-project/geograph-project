@@ -58,6 +58,8 @@ if (false) {
         ###################
         # Yahoo Term Extraction API
 
+if (false) {
+
         $mkey = md5($string);
         $value = $memcache->name_get('term',$mkey);
 
@@ -73,6 +75,7 @@ if (false) {
                         $topics[] = array('tag'=>$topic);
                 }
         }
+}
 
         ###################
         # tagthe.net extraction API
