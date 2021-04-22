@@ -340,6 +340,7 @@ if (!empty($upload_to_process) && !empty($uploadmanager) && $uploadmanager->uplo
 	}
 }
 
+$step = null;
 if (isset($_REQUEST['inner'])) {
 	$template='submit2_inner.tpl';
 

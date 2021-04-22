@@ -36,10 +36,10 @@ if (!empty($_GET['q'])) {
 	&& !in_array(strtoupper($pc[1]),array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 		//these prefixs are not postcodes but are valid gridsquares
 
-		if ($pc[1] != 'BT' && $pc[4]) { //GB can do full postcodes now!
+		if ($pc[1] != 'BT' && !empty($pc[4])) { //GB can do full postcodes now!
 			$code = strtoupper($pc[1].$pc[2]." ".$pc[3].$pc[4]);
 		} else {
-			$code = strtoupper($pc[1].$pc[2].($pc[3]?" ".$pc[3]:''));
+			$code = strtoupper($pc[1].$pc[2].(isset($pc[3])?" ".$pc[3]:''));
 		}
 
 		if (empty($db))
