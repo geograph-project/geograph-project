@@ -1211,7 +1211,7 @@ $this->db->raiseErrorFn = 'adodb_throw';
 				if ($exif = file_get_contents($file)) {
 					$exif=unserialize($exif);
 
-					if (!empty($exif['GPS'])) {
+					if (!empty($exif['GPS']) && !empty($exif['GPS']['GPSLatitude'])) { //turns out there are exif without GPSLatitude
 						list($e,$n,$reference_index) = ExifToNational($exif);
 						list ($row['photographer_gridref'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
 						list ($row['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
