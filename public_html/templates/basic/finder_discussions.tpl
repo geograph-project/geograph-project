@@ -66,7 +66,7 @@ AttachEvent(window,'load',focusBox,false);
 	</ul>
 {/if}
 
-{if count($results) eq 15}
+{if $results && count($results) eq 15}
 	<p>
 		<small>&middot; To refine the results simply add more keywords (view <a href="#cheatsheet">Cheatsheet</a>)</small>
 	</p>
@@ -86,7 +86,7 @@ AttachEvent(window,'load',focusBox,false);
 	<b><a href="/discuss/?action=vpost&forum={$item.forum_id}&amp;topic={$item.topic_id}&amp;post={$item.id}" target="_top">{$item.topic_title|escape:'html'|default:'unknown'}</a></b> <small>[thread by <a href="/profile/{$item.topic_poster}">{$item.topic_poster_name|escape:'html'}</a>]</small><br/>
 	<div style="float:right">{$item.post_time|date_format:"%a, %e %b %Y"}</div>
 	<small style="color:gray">{$item.excerpt|replace:'<br>':' '} <span class="nowrap">[post by <a href="/profile/{$item.poster_id}">{$item.poster_name|escape:'html'}</a>]</span></small>
-	{if count($item.results)}
+	{if $item.results}
 		<div id="hide{$key}" class="hidediv">... and <a href="javascript:void(show_tree({$key}));">{$item.result_count} more results from this thread.</a></div>
 		<div id="show{$key}" style="display:none">
 			<ol type="i" class="inner">
