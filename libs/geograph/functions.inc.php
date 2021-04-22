@@ -24,6 +24,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+function dump_env() {
+	print "<div style='margin-left:200px'>\n";//avoids the geograph sidebar!
+	foreach ($_SERVER as $key => $value) {
+		if (strpos($key,'CONF') === 0 || strpos($key,'SERVICE_') !== FALSE || strpos($key,'_PORT') !== FALSE)
+			continue;
+		print "<tt>".htmlentities($key)."</tt>: <b>".htmlentities($value)."</b><br>\n";
+	}
+	print "<hr></div>";
+}
+
 /**
 * This file is included into every requested script
 *
