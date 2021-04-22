@@ -116,18 +116,35 @@ if (count($page)) {
 	$template = 'static_404.tpl';
 }
 
+function preg_replace_array($patterns, $replacements, $s) {
+        foreach ($patterns as $i => $pattern) {
+                if (!isset($replacements[$i])) {
+                        $s = preg_replace($pattern, '', $s);
+                } elseif (is_string($replacements[$i])) {
+                        $s = preg_replace($pattern, $replacements[$i], $s);
+                } else {
+                        $s = preg_replace_callback($pattern, $replacements[$i], $s);
+                }
+        }
+        return $s;
+}
+
 function smarty_function_gallerytext($input) {
 	global $imageCredits,$smarty,$CONF;
 
 	$pattern=array(); $replacement=array();
 
-	$pattern[]='/\[image id=([a-z]*:?\d+)\]/e';
-	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '{description}'))";
+	$pattern[]='/\[image id=([a-z]*:?\d+)\]/';
+	$replacement[] = function($m) {
+	        return smarty_function_gridimage(array('id' => $m[1],'extra' => '{description}'));
+	};
 
-	$pattern[]='/\[image id=([a-z]*:?\d+) text=([^\]]+)\]/e';
-	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
+	$pattern[]='/\[image id=([a-z]*:?\d+) text=([^\]]+)\]/';
+	$replacement[] = function($m) {
+	        return smarty_function_gridimage(array('id' => $m[1],'extra' => $m[2]));
+	};
 
-	$output=preg_replace($pattern, $replacement, $input, 5);
+	$output=preg_replace_array($pattern, $replacement, $input);
 
 	return $output;
 }
