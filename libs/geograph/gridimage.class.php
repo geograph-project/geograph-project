@@ -1337,7 +1337,7 @@ split_timer('gridimage'); //starts the timer
 		if (!$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath, true)) //use_get because we about to read it anyway (for size)
 		{
 			//get path to fullsize image,
-			$fullpath=$this->_getFullpath();
+			$fullpath=$this->_getFullpath(2); //use_get because we about to read it anyway (for imagecreatefromjpeg)
 			if ($fullpath != '/photos/error.jpg')
 			{
 				//generate resized image
@@ -1421,7 +1421,7 @@ split_timer('gridimage'); //starts the timer
 		{
 			$title=htmlentities2($this->title);
 
-			$size=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
+			$size=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath); //todo store the size in memcache
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 			} else {
