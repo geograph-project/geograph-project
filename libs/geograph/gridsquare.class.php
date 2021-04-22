@@ -892,7 +892,7 @@ split_timer('gridsquare'); //starts the timer
 
 		$ADODB_FETCH_MODE = $prev_fetch_mode;
 
-split_timer('gridsquare','updateCounts',"{$this->grid_reference},$imagecount"); //logs the wall time
+split_timer('gridsquare','updateCounts',"{$this->grid_reference},{$updates['imagecount']}"); //logs the wall time
 	}
 }
 
