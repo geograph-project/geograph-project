@@ -27,16 +27,6 @@ init_session();
 
 $smarty = new GeographPage;
 
-        //lets hobble this!
-//needs converting to PHPMailer, to send html messages, mail() doesnt work in our Pods, and mail_wrapper, can't cope with html. 
-        header("HTTP/1.1 503 Service Unavailable");
-        $smarty->assign('searchq',stripslashes($_GET['q']));
-        $smarty->display('function_disabled.tpl');
-        exit;
-
-
-
-
 $template='ecard.tpl';
 
 //you must be logged in to send e-cards
@@ -134,16 +124,39 @@ if (!$throttle && isset($_POST['msg']))
 	{
 		//build message and send it...
 
+############################################
+
+	require_once "3rdparty/class.phpmailer.php";
+	require_once "3rdparty/class.smtp.php";
+
+	$mail = new PHPMailer;
+
+	#########################
+
+	$mail->XMailer = 'x'; //used to SKIP the header
+
+	if (!empty($CONF['smtp_host'])) {
+		$mail->isSMTP();
+		$mail->Host = $CONF['smtp_host'];
+		if (!empty($CONF['smtp_user'])) {
+			$mail->SMTPAuth = true;
+			$mail->Username = $CONF['smtp_user'];
+			$mail->Password = $CONF['smtp_pass'];
+		}
+		if ($CONF['smtp_port']> 25)
+			$mail->SMTPSecure = 'tls';                    // Enable TLS encryption, `ssl` also accepted
+		$mail->Port = $CONF['smtp_port'];                     // TCP port to connect to
+	}
+
+############################################
+
 		$smarty->assign_by_ref('htmlmsg', nl2br($msg));
 
-
-		include "3rdparty/mimePart.inc.php";
 		function smarty_modifier_quotedprintable($input) {
-			$encoder = new Mail_mimePart();
-			return $encoder->_quotedPrintableEncode($input);
+			global $mail;
+			return $mail->encodeQP($input);
 		}
 		$smarty->register_modifier("quotedprintable", "smarty_modifier_quotedprintable");
-
 
 		$body=$smarty->fetch('email_ecard.tpl');
 		$subject="[{$_SERVER['HTTP_HOST']}] $from_name is sending you an e-Card";
@@ -171,32 +184,6 @@ if (!$throttle && isset($_POST['msg']))
 			print $html;
 			exit;
 		} else {
-
-############################################
-
-	require_once "3rdparty/class.phpmailer.php";
-	require_once "3rdparty/class.smtp.php";
-
-	$mail = new PHPMailer;
-
-	#########################
-
-	$mail->XMailer = 'x'; //used to SKIP the header
-
-	if (!empty($CONF['smtp_host'])) {
-		$mail->isSMTP();
-		$mail->Host = $CONF['smtp_host'];
-		if (!empty($CONF['smtp_user'])) {
-			$mail->SMTPAuth = true;
-			$mail->Username = $CONF['smtp_user'];
-			$mail->Password = $CONF['smtp_pass'];
-		}
-		if ($CONF['smtp_port']> 25)
-			$mail->SMTPSecure = 'tls';                    // Enable TLS encryption, `ssl` also accepted
-		$mail->Port = $CONF['smtp_port'];                     // TCP port to connect to
-	}
-
-############################################
 
 			$db->query("insert into throttle set user_id={$USER->user_id},feature = 'ecard'");
 
