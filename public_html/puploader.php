@@ -61,6 +61,10 @@ if (isset($_GET['success'])) {
 	}
 
 } elseif (isset($_POST['selected'])) {  //we dont get the button :(
+
+	list($usec, $sec) = explode(' ',microtime());
+	$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
+
 	$status = array();
 	$filenames = array();
 
@@ -77,21 +81,24 @@ if (isset($_GET['success'])) {
 			// set up attributes from uploaded data
 			$uploadmanager->setSquare($square);
 			$uploadmanager->setViewpoint($_POST['photographer_gridref'][$key]);
-			$uploadmanager->setDirection($_POST['view_direction'][$key]);
+			if (!empty($_POST['view_direction'][$key]))
+				$uploadmanager->setDirection($_POST['view_direction'][$key]);
 			$uploadmanager->setUse6fig(stripslashes($_POST['use6fig'][$key]));
-			$uploadmanager->setTaken($_POST['imagetaken'][$key]);
+			if (!empty($_POST['imagetaken'][$key]))
+				$uploadmanager->setTaken($_POST['imagetaken'][$key]);
 			$uploadmanager->setTitle(utf8_decode($_POST['title'][$key]));
 			if ($_POST['comment'][$key] != "comment[$key]") {
 				//bug? in Picasa sends the name in the value if blank, useful! (but only seems to apply to textareas)
 				$uploadmanager->setComment(utf8_decode($_POST['comment'][$key]));
 			}
-
-			if (($_POST['imageclass'][$key] == 'Other' || empty($_POST['imageclass'][$key])) && !empty($_POST['imageclassother'][$key])) {
-				$imageclass = stripslashes($_POST['imageclassother'][$key]);
-			} else if ($_POST['imageclass'] != 'Other') {
-				$imageclass =  stripslashes($_POST['imageclass'][$key]);
+			if (!empty($_POST['imageclass'][$key])) {
+				if (($_POST['imageclass'][$key] == 'Other' || empty($_POST['imageclass'][$key])) && !empty($_POST['imageclassother'][$key])) {
+					$imageclass = stripslashes($_POST['imageclassother'][$key]);
+				} else if ($_POST['imageclass'][$key] != 'Other') {
+					$imageclass =  stripslashes($_POST['imageclass'][$key]);
+				}
+				$uploadmanager->setClass(utf8_decode($imageclass));
 			}
-			$uploadmanager->setClass(utf8_decode($imageclass));
 
 			if (!empty($_POST['tags'][$key])) {
 				if (is_array($_POST['tags'][$key])) {

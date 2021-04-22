@@ -166,6 +166,9 @@ if (isset($_FILES['jpeg_exif']))
 	$status = array();
 	$filenames = array();
 
+	list($usec, $sec) = explode(' ',microtime());
+	$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
+
 	foreach ($_POST['upload_id'] as $key => $upload_id) {
 		$uploadmanager = new UploadManager();
 		$square = new GridSquare();
