@@ -26,6 +26,17 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
+
+        //lets hobble this!
+//needs converting to PHPMailer, to send html messages, mail() doesnt work in our Pods, and mail_wrapper, can't cope with html. 
+        header("HTTP/1.1 503 Service Unavailable");
+        $smarty->assign('searchq',stripslashes($_GET['q']));
+        $smarty->display('function_disabled.tpl');
+        exit;
+
+
+
+
 $template='ecard.tpl';
 
 //you must be logged in to send e-cards
@@ -160,29 +171,58 @@ if (!$throttle && isset($_POST['msg']))
 			print $html;
 			exit;
 		} else {
+
+############################################
+
+	require_once "3rdparty/class.phpmailer.php";
+	require_once "3rdparty/class.smtp.php";
+
+	$mail = new PHPMailer;
+
+	#########################
+
+	$mail->XMailer = 'x'; //used to SKIP the header
+
+	if (!empty($CONF['smtp_host'])) {
+		$mail->isSMTP();
+		$mail->Host = $CONF['smtp_host'];
+		if (!empty($CONF['smtp_user'])) {
+			$mail->SMTPAuth = true;
+			$mail->Username = $CONF['smtp_user'];
+			$mail->Password = $CONF['smtp_pass'];
+		}
+		if ($CONF['smtp_port']> 25)
+			$mail->SMTPSecure = 'tls';                    // Enable TLS encryption, `ssl` also accepted
+		$mail->Port = $CONF['smtp_port'];                     // TCP port to connect to
+	}
+
+############################################
+
 			$db->query("insert into throttle set user_id={$USER->user_id},feature = 'ecard'");
 
 			$ip=getRemoteIP();
-
-			$headers = array();
-
 			$crc = sprintf("%u", crc32($from_email));
-	                $headers[] = "From: $from_name via Geograph <noreply+$crc@geograph.org.uk>"; //use a 'unique' email address, so receivers dont lump all geograph emails into one 'contact'
-			$headers[] = "Sender: noreply@geograph.org.uk";
-			$headers[] = "Reply-To: $from_name <$from_email>";
 
-			$headers[] = "X-GeographUserId:{$USER->user_id}";
-			$headers[] = "X-IP:$ip";
+			$mail->setFrom("noreply+$crc@geograph.org.uk", "$from_name via Geograph");
+			$mail->Sender = "noreply@geograph.org.uk";
+			$mail->addReplyTo($from_email, $from_name);
 
-			$headers[] = "Content-Type: multipart/alternative;\n	boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"";
+			$mail->addCustomHeader("X-GeographUserId",$USER->user_id);
+			$mail->addCustomHeader("X-IP",$ip);
+
+			$mail->ContentType = "multipart/alternative;\n	boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"";
 
 			$hostname=trim(`hostname`);
-			$received="Received: from [{$ip}]".
+			$mail->addCustomHeader("Received", "from [{$ip}]".
 				" by {$hostname}.geograph.org.uk ".
 				"with HTTP;".
-				strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
+				strftime("%d %b %Y %H:%M:%S -0000", time()));
 
-			@mail("$to_name <$to_email>", $subject, $body, $received.implode("\n",$headers));
+
+			$mail->addAddress($to_email, $to_name);
+			$mail->Subject = $subject;
+			$mail->Body = $body;
+			$mail->send();
 
 			$smarty->assign('sent', 1);
 		}

@@ -38,13 +38,40 @@ require "./_scripts.inc.php";
 
 ############################################
 
+	require_once "3rdparty/class.phpmailer.php";
+	require_once "3rdparty/class.smtp.php";
 
-require_once('3rdparty/sender.inc.php');
+	$mail = new PHPMailer;
 
+	#########################
+	if ($param['action'] == 'fake')
+		$mail->SMTPDebug = 3;                               // Enable verbose debug output
+
+	$mail->XMailer = 'x'; //used to SKIP the header
+
+	if (!empty($CONF['smtp_host'])) {
+		$mail->isSMTP();
+		$mail->Host = $CONF['smtp_host'];
+		if (!empty($CONF['smtp_user'])) {
+			$mail->SMTPAuth = true;
+			$mail->Username = $CONF['smtp_user'];
+			$mail->Password = $CONF['smtp_pass'];
+		}
+		if ($CONF['smtp_port']> 25)
+			$mail->SMTPSecure = 'tls';                    // Enable TLS encryption, `ssl` also accepted
+		$mail->Port = $CONF['smtp_port'];                     // TCP port to connect to
+
+		#########################
+
+		$mail->setFrom($CONF['smtp_from'],'',true);//set sender too
+	} else {
+		$mail->setFrom($CONF['minibb_admin_email'],'',true);
+	}
+
+############################################
 
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
 
 ############################################
 
@@ -191,10 +218,9 @@ unset($todo);
 // actully send some emails!
 
 $subject = "[Geograph] Your ".ucfirst($schedule)." Photo Usage Notification";
-$to = "geo@barryhunter.co.uk";
-$from = $CONF['minibb_admin_email'];
 
 if ($param['action'] == 'fake') {
+	$to = "geo@barryhunter.co.uk";
 	$subject .= " ".date('r');
 }
 
@@ -238,14 +264,19 @@ foreach ($results as $user_id => $collections) {
 
 	"<br>This is still a experimental feature, to provide feedback, please used <a href=\"http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=12&topic=21685\">This thread</a><hr>".$html;
 
-	$mail = new htmlMimeMail();
-	$mail->setHtml($html, $body);
-
-        $mail->setFrom($from);
-        $mail->setSubject($subject);
-
 	if ($param['action'] == 'send' || $param['action'] == 'fake') {
-	        $mail->send(array($to));
+
+		$mail->addAddress($to);
+
+		$mail->Subject = $subject;
+
+		$mail->IsHTML(true);
+		$mail->Body = $html; //if using isHTML will be the HTML verson, AltBody, will be plain text!
+		$mail->AltBody = $body; //plain text version
+
+		$mail->send();
+
+		$mail->clearAllRecipients(); //because more added next time
 	}
 }
 
