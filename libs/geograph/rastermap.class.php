@@ -1171,7 +1171,7 @@ class RasterMap
 		$div = $this->divisor[$service];
 
 		$tilewidth = $this->tilewidth[$service];
-		list($source,$dummy) = explode('-',$service);
+		list($source,) = explode('-',$service);
 
 		//this isn't STRICTLY needed as getOSGBStorePath does the same floor, but do so in case we do exact calculations
 		$east = floor($this->nateastings/$div) * $div;
@@ -1266,7 +1266,7 @@ class RasterMap
 
 		$service = 'OS50k-source';
 		$tilewidth = $this->tilewidth[$service];
-		list($source,$dummy) = explode('-',$service);
+		list($source,) = explode('-',$service);
 
 		$outputwidth = $this->tilewidth['OS50k'];
 
@@ -1483,7 +1483,7 @@ class RasterMap
 			$n3 = floor($this->natnorthings /$div);
 		}
 
-		list($source,$dummy) = explode('-',$service);
+		list($source,) = explode('-',$service);
 
 		$filesystem = GeographFileSystem();
 

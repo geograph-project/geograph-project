@@ -562,7 +562,7 @@ class RestAPI
 
 			$images = new SearchEngine($_GET['i']);
 
-			$images->Execute($pg);
+			$images->Execute(1);
 
 			if (!empty($images->results))
 			{

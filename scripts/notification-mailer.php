@@ -200,16 +200,19 @@ unset($map);
 
 $results = array();
 foreach ($todo as $row) {
-	print "{$row['sql']}\n";
+	if ($param['action'] != 'send')
+		print "{$row['sql']}\n";
 	if ($images = $db->getAll($row['sql'])) {
-		print "found ".count($images)." images\n";
+		if ($param['action'] != 'send')
+			print "found ".count($images)." images\n";
 		foreach ($images as $image) {
 			$image['when'] = $row['when'];
 			$image['date'] = substr($image['date'],0,10);
 			$results[$image['user_id']][$row['title']][] = $image;
 		}
 	}
-	print "\n\n";
+	if ($param['action'] != 'send')
+		print "\n\n";
 }
 
 unset($todo);
@@ -224,6 +227,7 @@ if ($param['action'] == 'fake') {
 	$subject .= " ".date('r');
 }
 
+if (!empty($result))
 foreach ($results as $user_id => $collections) {
 	$html = $body = '';
 	foreach ($collections as $title => $images) {

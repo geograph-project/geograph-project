@@ -159,7 +159,7 @@ if ($grid_ok) {
 	
 	$rastermap->addLatLong($lat,$long);
 	
-	$smarty->assign_by_ref('gridref', strtoupper($gridref));
+	$smarty->assign('gridref', strtoupper($gridref));
 	
 	if (!empty($photographer_gridref))
 	{

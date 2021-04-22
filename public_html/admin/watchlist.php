@@ -90,7 +90,7 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 
 	$where = implode(' AND ',$where);
 
-	$sql="	select gridimage_id,title,realname,user_id,comment,imageclass,moderation_status,grid_reference,submitted,upd_timestamp,word,updated
+	$sql="	select gridimage_id,title,realname,user_id,comment,imageclass,imagetaken,moderation_status,grid_reference,submitted,upd_timestamp,word,updated
 		from gridimage_typo inner join gridimage_search gi using (gridimage_id) $join
 		where $where
 		order by updated desc

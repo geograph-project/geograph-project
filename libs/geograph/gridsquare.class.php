@@ -177,6 +177,7 @@ split_timer('gridsquare'); //starts the timer
 		{
 			$news=array();
 
+			$totalcomments = 0;
 			foreach($topics as $idx=>$topic)
 			{
 				$firstpost=$db->GetRow("select post_text,poster_name,post_time,poster_id from geobb_posts where topic_id={$topic['topic_id']} order by post_time limit 1");

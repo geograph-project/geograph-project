@@ -211,7 +211,7 @@ if (!empty($_GET['debug']))
 		$l = array('grid_reference'=>null,'imagetaken'=>null,'realname'=>null);
 			function ooo($image,$attribute,$value) {
 				global $l;
-				if ($l[$attribute] == $image->{$attribute})
+				if (isset($l[$attribute]) && $l[$attribute] == $image->{$attribute})
 					return $value;
 				$l[$attribute] = $image->{$attribute};
 				return "<b>$value</b>";

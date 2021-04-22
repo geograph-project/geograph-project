@@ -236,11 +236,16 @@ split_timer('search'); //starts the timer
 
 		if ($location)
 			$q = str_replace($location,'',$q);
-		$q = preg_replace('/(?<![":\[])\s*near\s*$/','',$q);
+		$q = preg_replace('/(?<![":\[])\s*near\s*$/','',$q); //remove near from the end (where no actual placename was specified)
 		$q = trim(preg_replace('/\s+/',' ',$q));
 
-		list($q,$placename) = preg_split('/(?<![":\[])\s*near\s+/',$q);
+		if (preg_match('/(?<![":\[])\s*near\s+/',$q)) {
+			list($q,$placename) = preg_split('/(?<![":\[])\s*near\s+/',$q);
+		} else {
+			$placename = '';
+		}
 
+		//use placename class, to check in case $q appears to contain a placename directly. $placename is only set if *explicitly* doing a 'near' query.
 		$criteria = new SearchCriteria_Placename();
 
 		if ($placename != '(anywhere)' && strpos($q,':') === FALSE) {
@@ -319,7 +324,7 @@ split_timer('search'); //starts the timer
 			$searchdesc = ", matching '".$searchtext."' ".$searchdesc;
 		}
 
-		if (($searchtext || $limit1) && !$searchclass) {
+		if ((!empty($searchtext) || $limit1) && !$searchclass) {
 			$searchclass = 'All';
 		}
 
@@ -327,7 +332,7 @@ split_timer('search'); //starts the timer
 			$q = $location;
 		}
 
-		if ($criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {
+		if (!empty($criteria->reference_index) && $criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {
 			$searchdesc = str_replace(" ".$CONF['default_search_distance']."km "," ".$CONF['default_search_distance_2']."km ",$searchdesc);
 			$distance = $CONF['default_search_distance_2'];
 		}

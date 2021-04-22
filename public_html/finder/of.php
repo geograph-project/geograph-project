@@ -24,6 +24,9 @@
 #########################################
 # general page startup
 
+if (empty($_SERVER['HTTP_USER_AGENT']))
+	die("no scraping");
+
 require_once('geograph/global.inc.php');
 
 #header("HTTP/1.0 503 Unavailable");

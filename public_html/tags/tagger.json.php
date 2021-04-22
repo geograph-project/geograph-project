@@ -44,6 +44,7 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 
 	$db = GeographDatabaseConnection(false);
 	$u = array();
+	$u['prefix'] = '';
 	$u['tag'] = str_replace('\\','',$_GET['tag']);
 	$bits = explode(':',$u['tag'],2);
 	if (count($bits) > 1) {
