@@ -238,6 +238,9 @@ foreach ($results as $user_id => $collections) {
 
 	"<br>This is still a experimental feature, to provide feedback, please used <a href=\"http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=12&topic=21685\">This thread</a><hr>".$html;
 
+
+//this ends up going via mail_wrapper, which doesnt work propelly with multipart messages
+//TODO ... so should convert this to PHPMailer!
 	$mail = new htmlMimeMail();
 	$mail->setHtml($html, $body);
 

@@ -26,6 +26,17 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
+
+        //lets hobble this!
+//needs converting to PHPMailer, to send html messages, mail() doesnt work in our Pods, and mail_wrapper, can't cope with html. 
+        header("HTTP/1.1 503 Service Unavailable");
+        $smarty->assign('searchq',stripslashes($_GET['q']));
+        $smarty->display('function_disabled.tpl');
+        exit;
+
+
+
+
 $template='ecard.tpl';
 
 //you must be logged in to send e-cards
