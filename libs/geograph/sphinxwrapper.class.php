@@ -935,10 +935,10 @@ split_timer('sphinx'); //starts the timer
 				}
 			}
 
-			split_timer('sphinx','didYouMean',$this->query_info); //logs the wall time
+			split_timer('sphinx','didYouMean',$q); //logs the wall time
 
 		} else {
-			split_timer('sphinx','didYouMean-zero',$this->query_info); //logs the wall time
+			split_timer('sphinx','didYouMean-zero',$q); //logs the wall time
 		}
 		//todo maybe check users too? ( then skip setByUsername when building search!)
 		return $arr;
