@@ -421,7 +421,7 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
                         $this->statcache[$filename] = array(
                                 7 => $headers['size'],
                                 8 => $headers['date'], //the date of request! is the HTTP 'Date' Header
-                                9 => isset($headers['x-amz-meta-mtime'])?$headers['x-amz-meta-mtime']:$headers['time'], //if have a custom header use that in preference
+                                9 => (!empty($headers['x-amz-meta-mtime']))?$headers['x-amz-meta-mtime']:$headers['time'], //if have a custom header use that in preference
                                 10 => $headers['time'], //time is the 'date-modifed' stored on amazon
                                 20 => $headers['hash'],
                                 30 => $headers['type'],
@@ -491,7 +491,7 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
 					$this->statcache[$filename] = array(
 						7 => $headers['size'],
 						8 => $headers['date'], //the date of request! is the HTTP 'Date' Header
-						9 => isset($headers['x-amz-meta-mtime'])?$headers['x-amz-meta-mtime']:$headers['time'], //if have a custom header use that in preference
+						9 => (!empty($headers['x-amz-meta-mtime']))?$headers['x-amz-meta-mtime']:$headers['time'], //if have a custom header use that in preference
 						10 => $headers['time'], //time is the 'date-modifed' stored on amazon
 						20 => $headers['hash'],
 						30 => $headers['type'],
