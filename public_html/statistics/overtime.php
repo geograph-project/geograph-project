@@ -133,12 +133,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			$where[] = "reference_index=".$ri;
 
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
-			$columns_sql .= ", count( DISTINCT SUBSTRING(grid_reference,1,$letterlength)) as `Different Myriads`";
+			$columns_sql = ", count( DISTINCT SUBSTRING(grid_reference,1,$letterlength)) as `Different Myriads`";
 
 			$columns_sql .= ", count( DISTINCT concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) ) as `Different Hectads`";
 
 		} else {
-			$columns_sql .= ", count( DISTINCT SUBSTRING(grid_reference,1,3 - reference_index)) as `Different Myriads`";
+			$columns_sql = ", count( DISTINCT SUBSTRING(grid_reference,1,3 - reference_index)) as `Different Myriads`";
 			$columns_sql .= ", count( DISTINCT concat(substring(grid_reference,1,3 - reference_index),substring(grid_reference,6 - reference_index,1)) ) as `Different Hectads`";
 		}
 

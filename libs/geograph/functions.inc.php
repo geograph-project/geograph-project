@@ -854,7 +854,7 @@ function datetimeToTimestamp($datetime) {
 }
 
 function getFormattedDate($input) {
-	list($y,$m,$d)=explode('-', $input);
+	@list($y,$m,$d)=explode('-', $input);
 	$date="";
 	if ($d>0) {
 		if ($y>1970) {
