@@ -77,7 +77,7 @@ $rss->link = "{$CONF['SELF_HOST']}";
 require_once('geograph/searchcriteria.class.php');
 require_once('geograph/searchengine.class.php');
 
-	$pg = $_GET['page'];
+	$pg = $_GET['page'] ?? 1;
 	if ($pg == '' or $pg < 1) {$pg = 1;}
 
 $images = new SearchEngine($_GET['i']);
@@ -128,6 +128,6 @@ header("Content-type: application/vnd.google-earth.kml+xml");
 header("Content-Disposition: attachment; filename=\"geograph.kml\"");
 
 //we store in var so can be by reference
-$feed =& $rss->createFeed($format);
+$feed = $rss->createFeed($format);
 echo $feed;
 

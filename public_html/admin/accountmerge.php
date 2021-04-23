@@ -69,14 +69,14 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 	if (!empty($_POST['ids'])) {
 		if (!preg_match('/^\s*\d+(,\s*\d+)*\s*$/',$_POST['ids']))
 			die("invalid id format");
-		$recordSet = &$db->Execute("select * from gridimage where user_id=$from AND gridimage_id IN ({$_POST['ids']})"); //validated above to avoid SQL injection
+		$recordSet = $db->Execute("select * from gridimage where user_id=$from AND gridimage_id IN ({$_POST['ids']})"); //validated above to avoid SQL injection
 	} else {
 		$limit = 1000;
 		if (!empty($_POST['limit'])) {
 			$limit = intval($_POST['limit']);
 		}
 
-		$recordSet = &$db->Execute("select * from gridimage where user_id=$from LIMIT $limit");
+		$recordSet = $db->Execute("select * from gridimage where user_id=$from LIMIT $limit");
 	}
 
 	while (!$recordSet->EOF)

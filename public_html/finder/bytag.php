@@ -86,28 +86,26 @@ if (!empty($_GET['q']) || !empty($_GET['user_id'])) {
 
 			$db = GeographDatabaseConnection(true);
 
-			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$rows = $db->getAssoc("
 			select tag_id,prefix,tag
-			from tag 
+			from tag
 			where status =1 and $where
 			limit $pgsize");
 
 			$imagelist = new ImageList();
 			$imagelist->getImagesByIdList($imageids,"gridimage_id,title,realname,user_id,grid_reference,credit_realname");
-	
+
 			//imagelist profiles all images, including duplicates, but in rare cases wont contain all images in imageids (rejections) - so we have to do things carefully. 
 			foreach ($imagelist->images as $idx => $image) {
-				
-				$res_id = array_search($image->gridimage_id,$imageids);	
+
+				$res_id = array_search($image->gridimage_id,$imageids);
 				unset($imageids[$res_id]); //array_search finds them in order, so remove them once used to move down the list
-				
+
 				$tag_id = $res['matches'][$res_id]['attrs']['@groupby'];
 				$imagelist->images[$idx]->count = $res['matches'][$res_id]['attrs']['@count'];
 				$imagelist->images[$idx]->tag = $rows[$tag_id];
 			}
-						
-		
+
 			$smarty->assign_by_ref('results', $imagelist->images);
 			$smarty->assign("query_info",$sphinx->query_info);
 
@@ -115,9 +113,7 @@ if (!empty($_GET['q']) || !empty($_GET['user_id'])) {
 				$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q).(empty($user_id)?'':'&amp;user_id='.intval($user_id))."&amp;page=") );
 				$smarty->assign("offset",(($pg -1)* $sphinx->pageSize)+1);
 			}
-			$ADODB_FETCH_MODE = $prev_fetch_mode;
-			
-			
+
 			if (count($imagelist->images) < 9) {
 				$smarty->assign('thumbw',213);
 				$smarty->assign('thumbh',160);
@@ -125,12 +121,10 @@ if (!empty($_GET['q']) || !empty($_GET['user_id'])) {
 				$smarty->assign('thumbw',120);
 				$smarty->assign('thumbh',120);
 			}
-			
 		}
 	}
-	
-	$smarty->assign("q",$sphinx->qclean);
 
+	$smarty->assign("q",$sphinx->qclean);
 }
 
 if (isset($_GET['popup'])) {

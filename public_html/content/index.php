@@ -152,7 +152,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 					break;
 			}
 		}
-		if (count($s) == 1 && $sources[$s[0]]) {
+		if (count($s) == 1 && !empty($sources[$s[0]])) {
 			$title = $sources[$s[0]]."s ".$title;
 			$title = str_replace('ys ','ies ',$title);
 		}
@@ -229,7 +229,7 @@ if (!empty($_GET['ddd']))
 		$extra['q'] = $sphinx->qclean;
 		$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
 
-		if (!empty($filters['source']) && count($s) == 1 && $sources[$s[0]]) {
+		if (!empty($filters['source']) && count($s) == 1 && !empty($sources[$s[0]])) {
                         $title = $sources[$s[0]]."s ".$title;
                         $title = str_replace('ys ','ies ',$title);
                 }

@@ -117,7 +117,7 @@ if (!empty($param['debug']))
 
 ##########################################
 
-$recordSet = &$db->Execute($sql) or die("$sql\n".$db->ErrorMsg()."\n\n");
+$recordSet = $db->Execute($sql) or die("$sql\n".$db->ErrorMsg()."\n\n");
 if ($recordSet->RecordCount()) {
 
 	//use a special table, precompiled, pre-filted by RI and ony nateastings>0

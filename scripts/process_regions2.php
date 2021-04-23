@@ -39,7 +39,7 @@ if (empty($param)) { //special support so this script can be 'include()ed'.
 
 $c=0;
 $sql = "SELECT auto_id,geometry_x,geometry_y FROM {$param['table']} WHERE region ='' LIMIT 10000";
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 if ($recordSet->RecordCount()) {
 
 	if (!empty($param['debug']))

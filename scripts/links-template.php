@@ -52,7 +52,7 @@ $sql = "SELECT gridimage_link_id,gridimage_id,content_id,url,first_used,archive_
         GROUP BY url ORDER BY HTTP_Status DESC,updated ASC LIMIT {$param['number']}";
 
 $done = 0;
-$recordSet = &$db->Execute("$sql");
+$recordSet = $db->Execute($sql);
 
 $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)';
 ini_set('user_agent',$ua);

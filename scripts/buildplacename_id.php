@@ -75,7 +75,7 @@ $db->Execute("INSERT INTO event_log SET
 
 	print "$sql;\n";
 
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 	while (!$recordSet->EOF)
 	{
 		$pid = null;

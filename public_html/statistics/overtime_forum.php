@@ -59,6 +59,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$title = "Breakdown of Forum Posts over Time";
 	
 	$where = array();
+	$where_sql = '';
 	if (!empty($u)) {
 		$where[] = "poster_id=".$u;
 		$smarty->assign('u', $u);
@@ -71,18 +72,18 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	if (count($where))
 		$where_sql = " WHERE ".join(' AND ',$where);
-		
+
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$table=$db->GetAll("SELECT 
-	substring( post_time, 1, $length ) AS `Date`, 
-	count( * ) AS `Posts`, 
-	count( DISTINCT forum_id ) AS `Different Forums`, 
+	$table=$db->GetAll("SELECT
+	substring( post_time, 1, $length ) AS `Date`,
+	count( * ) AS `Posts`,
+	count( DISTINCT forum_id ) AS `Different Forums`,
 	count( DISTINCT topic_id ) AS `Different Topics`
 	$columns_sql
 FROM `geobb_posts` $where_sql
 GROUP BY substring( post_time, 1, $length )" );
 
-	if (!isset($_GET['output']) || $_GET['output'] != 'csv') 
+	if (!isset($_GET['output']) || $_GET['output'] != 'csv')
 	{
 		foreach($table as $idx=>$entry)
 		{

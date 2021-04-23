@@ -40,11 +40,12 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
 	if ((empty($_GET['key']) || preg_match("/[^\w\.@]/",$_GET['key'])) && empty($_GET['u']))
 		die("ERROR: no api key or email address");
 
-	$sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_GET['key'])." AND (`ip` = INET6_ATON('".getRemoteIP()."') OR `ip` = 0) AND `enabled` = 'Y'";
+	if (!empty($_GET['key'])) {
+		$sql = "SELECT * FROM `apikeys` WHERE `apikey` = ".$db->Quote($_GET['key'])." AND (`ip` = INET6_ATON('".getRemoteIP()."') OR `ip` = 0) AND `enabled` = 'Y'";
+		$profile = $db->GetRow($sql);
+	}
 
-	$profile = $db->GetRow($sql);
-
-	if ($profile['apikey']) {
+	if (!empty($profile['apikey'])) {
 		$hardlimit = 2500;
 		$sql_hardlimit = " LIMIT $hardlimit";
 	} elseif (!empty($_GET['u']) && preg_match("/^\d+$/",$_GET['u']) && (init_session() || true) && $USER->hasPerm('basic')) {
@@ -53,7 +54,7 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
 		#die("ERROR: invalid api key. contact support at geograph dot co dot uk");
 		$hardlimit = 250;
 		$sql_hardlimit = " LIMIT $hardlimit";
-	} 
+	}
 
 	if (isset($_GET['thumb'])) {
 		if (!empty($profile['apikey'])) {
@@ -220,7 +221,7 @@ if ($i && !$user_crit ) {
 	if (!empty($_GET['sql']))
 		$sql_crit = preg_replace('/( LIMIT \d+\s*|$)/',' LIMIT 1',$sql_crit);
 
-	$recordSet = &$db->Execute($sql = "select gi.gridimage_id,title,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imageclass,nateastings,natnorthings,if(use6fig=1,6,natgrlen) as natgrlen,gi.user_id $sql_from 
+	$recordSet = $db->Execute($sql = "select gi.gridimage_id,title,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imageclass,nateastings,natnorthings,if(use6fig=1,6,natgrlen) as natgrlen,gi.user_id $sql_from 
 	from user 
 	inner join gridimage gi using(user_id) 
 	inner join gridsquare using(gridsquare_id) 
@@ -237,7 +238,7 @@ if ($i && !$user_crit ) {
 	if (!empty($_GET['sql']))
 		$sql_crit = preg_replace('/( LIMIT \d+\s*|$)/',' LIMIT 1',$sql_crit);
 
-	$recordSet = &$db->Execute($sql = "select gi.gridimage_id,title,grid_reference,credit_realname,realname,imageclass,user_id $sql_from 
+	$recordSet = $db->Execute($sql = "select gi.gridimage_id,title,grid_reference,credit_realname,realname,imageclass,user_id $sql_from 
 	from gridimage_search gi 
 	$sql_tables
 	where $mod_sql $sql_crit");

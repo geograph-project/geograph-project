@@ -50,9 +50,8 @@ from gridimage_post gp inner join geobb_topics t using (topic_id) left join grid
 if (!empty($_GET['sample']))
 	$sql .= " LIMIT 100";
 
-
 				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-				$recordSet = &$db->Execute($sql);
+				$recordSet = $db->Execute($sql);
 
 header("Content-type: application/octet-stream");
 header("Content-Disposition: attachment; filename=\"poty-".date('Y-m-d').".csv\"");
@@ -74,4 +73,4 @@ header("Content-Disposition: attachment; filename=\"poty-".date('Y-m-d').".csv\"
 					$recordSet->MoveNext();
 				}
 
-			$recordSet->Close(); 
+			$recordSet->Close();

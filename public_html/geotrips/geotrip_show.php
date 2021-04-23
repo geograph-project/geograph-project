@@ -225,13 +225,11 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
   print('<h4 style=text-align:left>A '.whichtype($trk['type']).' from '.htmlentities2($trk['start']).", $date by <a href=\"/profile/$trk[uid]\">".htmlentities2($trk['user'])."</a></h4>");
 
   if (!empty($trk['contfrom'])||!empty($foll['id'])) {
-    $prec=$trk['contfrom'];
-    $foll=$foll['id'];
     print('<table class="ruled mapwidth"></tr>');
-    if ($prec) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"/geotrips/$prec\">preceding leg</a></td>");
+    if ($trk['contfrom']) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"/geotrips/{$trk['contfrom']}\">preceding leg</a></td>");
     else print('<td></td>');
     print('<td style="margin:20px;text-align:center"><b>This trip is part of a series.</b></td>');
-    if ($foll) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"/geotrips/$foll\">next leg</a></td>");
+    if ($foll) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"/geotrips/{$foll['id']}\">next leg</a></td>");
     else print('<td></td>');
     print('</tr></table>');
   }

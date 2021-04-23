@@ -306,7 +306,7 @@ if (!empty($upload_to_process) && !empty($uploadmanager) && $uploadmanager->uplo
 		$smarty->assign('grid_reference', $grid_reference);
 	}
 
-	if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
+	if (!empty($_FILES['jpeg_exif']['name']) && preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
 		if (strlen($m[3]) != strlen($m[4])) {
 			if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{4,10})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
 				if (strlen($m[3])%2==0) {

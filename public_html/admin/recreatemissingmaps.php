@@ -58,7 +58,7 @@ if (isset($_GET['check2']))
 		$sql2="select * from gridimage where gridsquare_id={$recordSet->fields['gridsquare_id']} ".
 				"and moderation_status<>'rejected' order by moderation_status+0 desc,seq_no limit 1";
 
-		$recordSet2 = &$db->Execute($sql2);
+		$recordSet2 = $db->Execute($sql2);
 		
 		if ($recordSet2->fields['gridimage_id']) {
 			$image=new GridImage;

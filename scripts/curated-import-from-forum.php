@@ -26,7 +26,7 @@ if ($param['delta']) {
         $skipped = $row['skipped'];
 	$next_post_id = 0;
 
-        $recordSet = &$db->Execute("select post_id,gridimage_id,poster_id,post_time
+        $recordSet = $db->Execute("select post_id,gridimage_id,poster_id,post_time
                          from gridimage_post left join geobb_posts using (topic_id,post_id)
                         where topic_id = {$param['topic']} and type ='I' and post_id > {$row['post_id']} order by post_id");
 
@@ -40,7 +40,7 @@ if ($param['delta']) {
 	$skipped = $labels[0]['skipped'];
 	$next_post_id = $labels[1]['post_id'];
 
-	$recordSet = &$db->Execute("select post_id,gridimage_id,poster_id,post_time
+	$recordSet = $db->Execute("select post_id,gridimage_id,poster_id,post_time
 			 from gridimage_post left join geobb_posts using (topic_id,post_id)
 			where topic_id = {$param['topic']} and type ='I' order by post_id");
 }

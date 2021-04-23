@@ -283,7 +283,7 @@ if ($image->isValid())
 		&& ($q = trim(preg_replace('/\b(geograph|photo|photograph|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',$ref_query[$key] )) )
 		&& strlen($q) > 3 ) {
 
-		if ($m[1] == 'prev' && preg_match('/\b(q|query|qry)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$q,$m)) {
+		if (!empty($m[1]) && $m[1] == 'prev' && preg_match('/\b(q|query|qry)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$q,$m)) {
 			$q = trim(urldecode($m[2]));
 		}
 

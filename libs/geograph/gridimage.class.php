@@ -386,7 +386,7 @@ class GridImage
 			} else {
 				$row = $db->GetRow("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
 			}
-			if (is_array($row))
+			if (!empty($row))
 			{
 				$this->_initFromArray($row);
 			}
@@ -702,6 +702,8 @@ split_timer('gridimage'); //starts the timer
 
 			if (preg_match('/[^\[]\[\d+\]/',$this->comment))
 				$this->snippets_as_ref =1;
+			else
+				$this->snippets_as_ref =false;
 		}
 
 		//find tags

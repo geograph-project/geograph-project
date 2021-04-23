@@ -58,7 +58,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 	$data = $db->getRow("SELECT s.*,realname FROM snippet s LEFT JOIN user USING (user_id) WHERE snippet_id = $snippet_id AND enabled = 1");
 
-	if ($data['snippet_id']) {
+	if (!empty($data['snippet_id'])) {
 
 		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/snippet/{$data['snippet_id']}\"/>");
 

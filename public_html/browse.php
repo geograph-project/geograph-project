@@ -372,10 +372,10 @@ if ($grid_given)
 					require_once('geograph/conversions.class.php');
 					$conv = new Conversions;
 					list($_GET['centi'],$len) = $conv->national_to_gridref(
-					$square->getNatEastings()-$correction,
-					$square->getNatNorthings()-$correction,
+					$square->getNatEastings(),
+					$square->getNatNorthings(),
 					6,
-					$square->reference_index,$spaced);
+					$square->reference_index);
 				}
 			
 				preg_match('/^[A-Z]{1,2}\d\d(\d)\d\d(\d)$/',$_GET['centi'],$matches);
@@ -1014,7 +1014,7 @@ if ($grid_given)
 		if ($CONF['forums']) {
 			$square->assignDiscussionToSmarty($smarty);
 		}
-		if ($db)
+		if (!empty($db) || (!empty($square->db) && $db == $square->db))
 			$smarty->assign('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' AND largemap_token != '' LIMIT 1"));
 
 		//look for images from here...
@@ -1057,7 +1057,7 @@ if ($grid_given)
 		}
 	}
 }
-else
+elseif (!empty($_SESSION['gridsquare']))
 {
 	//no square specifed - populate with remembered values
 	$smarty->assign('gridsquare', $_SESSION['gridsquare']);

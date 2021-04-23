@@ -417,12 +417,12 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 				$where[] = "s.snippet_id IN($id_list)";
 				$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
 
-				split_timer('snippet','q',$sphinx->qo); //logs the wall time
+				split_timer('snippet','q',$sphinx->qoutput); //logs the wall time
 
 			} else {
 				$where[] = '0';
 
-				split_timer('snippet','q-zero',$sphinx->qo); //logs the wall time
+				split_timer('snippet','q-zero',$sphinx->qoutput); //logs the wall time
 			}
 
 	####################################################

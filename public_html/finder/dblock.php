@@ -213,8 +213,8 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 		}
 	}
 
-	$smarty->assign("q",$sphinx->qclean);
-
+	if (!empty($sphinx->qclean))
+		$smarty->assign("q",$sphinx->qclean);
 }
 
 if (isset($_GET['popup'])) {

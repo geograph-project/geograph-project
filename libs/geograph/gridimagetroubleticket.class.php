@@ -674,7 +674,7 @@ class GridImageTroubleTicket
 		//if moderator_id is set, just send there, otherwise
 		//we send to all users with moderator status
 		$mods=array();
-		if ($this->moderator_id)
+		if (!empty($this->moderator_id))
 		{
 			$mod=new GeographUser($this->moderator_id);
 			$mods[]=$mod->email;

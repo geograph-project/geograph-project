@@ -132,8 +132,8 @@ $smarty->assign('preview_url', "http://s0.geograph.org.uk/photos/25/31/253172_53
 
 			$token=new Token;
 			$token->setValue("g", !empty($_POST['grid_reference'])?$_POST['grid_reference']:$square->grid_reference);
-			$token->setValue("p", $_POST['photographer_gridref']);
-			$token->setValue("v", $_POST['view_direction']);
+			//$token->setValue("p", $_POST['photographer_gridref']);
+			//$token->setValue("v", $_POST['view_direction']);
 			$smarty->assign('reopenmaptoken', $token->getToken());
 
 

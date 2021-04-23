@@ -35,9 +35,9 @@ $USER->mustHavePerm("basic");
 
 dieIfReadOnly();
 
-if ($_GET['tab'] != 'cloud')
-//temp as page doesnt work on https (mainly maps!)
-pageMustBeHTTP();
+if (empty($$_GET['tab']) || $_GET['tab'] != 'cloud')
+	//temp as page doesnt work on https (mainly maps!)
+	pageMustBeHTTP();
 
 if (!empty($_POST) && !empty($_POST['urls'])) {
 	print ' <meta name="viewport" content="width=device-width, initial-scale=1"> ';

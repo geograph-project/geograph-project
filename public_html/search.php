@@ -964,7 +964,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 		advanced_form($smarty,$db);
 	} else {
-		$smarty->assign('resultsperpage', $USER->search_results?$USER->search_results:15);
+		$smarty->assign('resultsperpage', $USER->search_results ?? 15);
 		$smarty->assign('distance', $CONF['default_search_distance']);
 
 		advanced_form($smarty,$db,true); //we can cache the blank form!
@@ -1358,14 +1358,16 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		$query = $engine->criteria;
 		if ($query->searchclass != 'Special') {
 			$smarty->assign('searchq', $query->searchq);
-			list($q,$loc) = preg_split('/\bnear(\b|$)/',$query->searchq,2);
-			$smarty->assign('searchlocation', $loc);
-			$smarty->assign('searchtext', $q);
+			$bits = preg_split('/\bnear(\b|$)/',$query->searchq,2);
+			$smarty->assign('searchtext', $bits[0]);
+			if (!empty($bits[1]))
+				$smarty->assign('searchlocation', $bits[1]);
 		}
 	} else if (isset($_SESSION['searchq'])) {
-		list($q,$loc) = preg_split('/\s*near\s+/',$_SESSION['searchq'],2);
-		$smarty->assign('searchlocation', $loc);
-		$smarty->assign('searchtext', $q);
+		$bits = preg_split('/\s*near\s+/',$_SESSION['searchq'],2);
+		$smarty->assign('searchtext', $bits[0]);
+		if (!empty($bits[1]))
+			$smarty->assign('searchlocation', $bits[1]);
 	}
 	if (!$smarty->is_cached($template)) {
 		if (empty($db)) {
@@ -1415,7 +1417,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 		$a = array();
 		foreach ($recentsearchs as $i => $row) {
-			if ($a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"]) {
+			if (isset($a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"])) {
 				unset($recentsearchs[$i]);
 			} else {
 				$a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"] = 1;

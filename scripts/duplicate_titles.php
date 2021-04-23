@@ -49,7 +49,7 @@ exit;
 
 	$start = microtime(true);
 
-	$recordSet = &$db->Execute($sql = "
+	$recordSet = $db->Execute($sql = "
 		select title,grid_reference,user_id
 		from gridimage_search as i
 		where grid_reference LIKE '$like'

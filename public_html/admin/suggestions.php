@@ -118,7 +118,7 @@ $locked = (isset($_GET['locked']))?1:0;
 #############################
 # defaults
 
-$table = ($_GET['type'] == 'closed' && !empty($_GET['q']) && $db->getOne("SHOW TABLES LIKE 'gridimage_ticket_merge'"))?"gridimage_ticket_merge":"gridimage_ticket";
+$table = ($type == 'closed' && !empty($_GET['q']) && $db->getOne("SHOW TABLES LIKE 'gridimage_ticket_merge'"))?"gridimage_ticket_merge":"gridimage_ticket";
 
 $locks = array();
 $locks[] = "gridimage_moderation_lock WRITE";

@@ -183,7 +183,7 @@ require_once('geograph/conversions.class.php');
 $conv = new Conversions;
 
 
-$recordSet = &$db->Execute($sql) or die("$sql\n".$db->ErrorMsg()."\n\n");
+$recordSet = $db->Execute($sql) or die("$sql\n".$db->ErrorMsg()."\n\n");
 if ($count = $recordSet->RecordCount()) {
         while (!$recordSet->EOF) {
                 $r = $recordSet->fields;

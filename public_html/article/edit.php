@@ -43,7 +43,7 @@ $cacheid = '';
 
 
 	$db = GeographDatabaseConnection(false);
-	if ($_REQUEST['page'] == 'new' || $_REQUEST['article_id'] == 'new') {
+	if (@$_REQUEST['page'] == 'new' || @$_REQUEST['article_id'] == 'new') {
 		$smarty->assign('article_id', "new");
 		$smarty->assign('title', "New Article");
 		$smarty->assign('realname', $USER->realname);
@@ -129,15 +129,19 @@ $cacheid = '';
 if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$errors = array();
 
-	$smarty->reassignPostedDate('publish_date');
-	$_POST['title'] = preg_replace('/[^\w\-\.,:;\' ]+/','',trim($_POST['title']));
+	if (!empty($_POST['publish_dateDay']))
+		$smarty->reassignPostedDate('publish_date');
+	if (!empty($_POST['title']))
+		$_POST['title'] = preg_replace('/[^\w\-\.,:;\' ]+/','',trim($_POST['title']));
 	if (empty($_POST['url']) && !empty($_POST['title'])) {
 		$_POST['url'] = $_POST['title'];
 	}
-	$_POST['url'] = preg_replace('/ /','-',trim($_POST['url']));
-	$_POST['url'] = preg_replace('/[^\w-]+/','',$_POST['url']);
+	if (!empty($_POST['url'])) {
+		$_POST['url'] = preg_replace('/ /','-',trim($_POST['url']));
+		$_POST['url'] = preg_replace('/[^\w-]+/','',$_POST['url']);
+	}
 
-	if ($_POST['title'] == "New Article")
+	if (!empty($_POST['title']) && $_POST['title'] == "New Article")
 		$errors['title'] = "Please give a meaningful title";
 
 	$gs=new GridSquare();
@@ -152,8 +156,10 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$_POST['content'] = strip_tags($_POST['content']);
 	$_POST['content'] = preg_replace('/[“”]/','',$_POST['content']);
 
-	$_POST['extract'] = strip_tags($_POST['extract']);
-	$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
+	if (!empty($_POST['extract'])) {
+		$_POST['extract'] = strip_tags($_POST['extract']);
+		$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
+	}
 
 	if (strlen($_POST['content']) < 90 && strlen($page['content']) > 90) {
 		$errors['content'] = "Missing article Content";;
@@ -193,7 +199,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		$smarty->assign('error', "No Changes to Save");
 		$errors[1] =1;
 	}
-	if ($_REQUEST['page'] == 'new' || $_REQUEST['article_id'] == 'new') {
+	if (@$_REQUEST['page'] == 'new' || @$_REQUEST['article_id'] == 'new') {
 
 		$updates[] = "`user_id` = {$USER->user_id}";
 		$updates[] = "`create_time` = NOW()";
@@ -225,7 +231,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 
 		exit;
 	} else {
-		if ($errors[1] != 1)
+		if (empty($errors[1]))
 			$smarty->assign('error', "Please see messages below...");
 		$smarty->assign_by_ref('errors',$errors);
 	}
@@ -245,7 +251,7 @@ foreach ($results as $id => $row) {
 	// only check stack if there is one
 	if (count($right)>0) {
 		// check if we should remove a node from the stack
-		while ($right[count($right)-1]<$row['rgt'] && count($right)) {
+		while (count($right) && $right[count($right)-1]<$row['rgt']) {
 			array_pop($right);
 		}
 	}

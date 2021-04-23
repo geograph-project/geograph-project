@@ -1870,9 +1870,9 @@ split_timer('map'); //starts the timer
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
 
-			if (!$this->reference_index) {
+			if (empty($this->reference_index)) {
 				$this->getGridRef(-1,-1);
-				if (!$this->reference_index) {
+				if (empty($this->reference_index)) {
 					$this->getGridRef(-1,-1);
 					$this->reference_index = 1;
 				}
@@ -1934,37 +1934,37 @@ END;
 }
 		$squares=array();
 		$recordSet = $db->Execute($sql);
-		while (!$recordSet->EOF) 
+		while (!$recordSet->EOF)
 		{
 			$e=$recordSet->fields['e'];
 			$n=$recordSet->fields['n'];
-			
+
 			$str = floor($e/$div) .' '. floor($n/$div*1.4);
 			if (empty($squares[$str])) {// || $recordSet->fields['s'] ==1) {
 				$squares[$str]=1;
-			
+
 				list($x,$y) = $conv->national_to_internal($e,$n,$recordSet->fields['reference_index'] );
 
 				$imgx1=($x-$left) * $this->pixels_per_km;
 				$imgy1=($this->image_h-($y-$bottom+1)* $this->pixels_per_km);
-				
-				if ($this->pixels_per_km<=4) {				
+
+				if ($this->pixels_per_km<=4) {
 					imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
 					imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
 				}
-				$font = ($recordSet->fields['s'] ==1)?$cityfont:2;
-				$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad']);
+				$font = (isset($recordSet->fields['s']) && $recordSet->fields['s'] ==1)?$cityfont:2;
+				$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad'] ?? 0);
 				if (count($img1))
 					imageGlowString($img, $font, $img1[0], $img1[1], $recordSet->fields['name'], $gridcol);
 			}
-			
+
 			$recordSet->MoveNext();
 		}
 		if (!empty($_GET['d']))
 			exit;
 		if (!empty($recordSet))
-			$recordSet->Close(); 
-	
+			$recordSet->Close();
+
 split_timer('map','_plotPlacenames'); //logs the wall time
 
 	}

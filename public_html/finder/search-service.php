@@ -139,7 +139,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (strlen($qo) > 64) {
 		$qo = '--complex query--';
 	}
-	if ($r) {
+	if (!empty($r)) {
 		//Handle Error
 
 	} elseif (!empty($e)) {
@@ -359,7 +359,7 @@ if (!empty($_GET['debug'])) {
 			$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 		}
 
-		if (is_array($res["matches"]) ) {
+		if (!empty($res["matches"]) ) {
 
 			$ids = array_keys($res["matches"]);
 
@@ -436,12 +436,12 @@ function didYouMean($q,$cl) {
 	$cl->SetMatchMode ( SPH_MATCH_ANY );
 	$res = $cl->Query ( preg_replace('/\s*\b(the|to|of)\b\s*/',' ',$q), $CONF['sphinx_prefix'].'gaz' );
 	$arr = array();
-	if ( $res!==false && is_array($res["matches"]) )
+	if ( $res!==false && !empty($res["matches"]) )
 	{
 		if ( $cl->GetLastWarning() )
 			print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-		$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+		$query_info = "Query '$q' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 
 		$db=GeographDatabaseConnection(true);
 

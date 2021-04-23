@@ -45,10 +45,8 @@ $cacheid=md5(serialize($_GET));
 
 if (!empty($_POST) && !empty($_POST['retry'])) {
 
-	if (!$db) {
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');
-	}
+	$db=NewADOConnection($GLOBALS['DSN']);
+	if (!$db) die('Database connection failed');
 
 	$a = array_map(array($db,'Quote'),array_unique($_POST['retry']));
 
@@ -64,7 +62,7 @@ if (!empty($_POST) && !empty($_POST['retry'])) {
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	if (!$db) {
+	if (empty($db)) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
 	}

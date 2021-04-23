@@ -235,6 +235,7 @@ if (!empty($_GET['q'])) {
 	}
 
 } else {
+	$mkey = ''; //used by the footer too
 	$smarty->display('_std_begin.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 }
 
@@ -578,7 +579,7 @@ if (false) {
 
 #########################################
 
-if ($memcache->valid && $mkey) {
+if ($memcache->valid && !empty($mkey)) {
 	$str = ob_get_flush();
 
 	if (empty($_GET['d']))

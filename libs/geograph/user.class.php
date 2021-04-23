@@ -1025,7 +1025,7 @@ class GeographUser
 				$profile['age_group'],
 				$profile['use_age_group']?1:0,
 				$gs->gridsquare_id,
-				$db->Quote($profile['ticket_public']),
+				$db->Quote($profile['ticket_public'] ?? $this->ticket_public ?? 'everyone'),
 				$db->Quote($profile['ticket_option']),
 				empty($profile['use_autocomplete'])?0:1,
 				$db->Quote(stripslashes($profile['message_sig'])),
@@ -1033,7 +1033,7 @@ class GeographUser
 				intval($profile['upload_size']),
 				$db->Quote(stripslashes($profile['submission_method'])),
 				$db->Quote(stripslashes($profile['submission_new'])),
-				$db->Quote($profile['gravatar_reset']?'unknown':$this->gravatar),
+				$db->Quote(!empty($profile['gravatar_reset'])?'unknown':$this->gravatar),
 				$db->Quote($salt),
 				$db->Quote($password),
 				$this->user_id
@@ -1070,17 +1070,21 @@ class GeographUser
 				$this->age_group=stripslashes($profile['age_group']);
 				$this->use_age_group=stripslashes($profile['use_age_group']);
 				$this->grid_reference=$gs->grid_reference;
-				$this->ticket_public=stripslashes($profile['ticket_public']);
+				if (isset($profile['ticket_public']))
+					$this->ticket_public=stripslashes($profile['ticket_public']);
 				$this->ticket_option=stripslashes($profile['ticket_option']);
-				$this->use_autocomplete=stripslashes($profile['use_autocomplete']);
+				if (isset($profile['use_autocomplete']))
+					$this->use_autocomplete=stripslashes($profile['use_autocomplete']);
 				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->expand_about=intval($profile['expand_about']);
 				$this->upload_size=intval($profile['upload_size']);
 				$this->submission_method=stripslashes($profile['submission_method']);
 				$this->submission_new=stripslashes($profile['submission_new']);
+				if (isset($profile['gravatar_reset']))
+					$this->gravatar = 'unknown';
 				$this->_forumUpdateProfile();
 				$this->_forumLogin();
-				
+
 				if (!empty($profile['ticket_public_change'])) {
 
 					$sql = sprintf("update gridimage_ticket set `public`=%s where user_id = %d",

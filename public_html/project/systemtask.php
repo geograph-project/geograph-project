@@ -357,7 +357,7 @@ $(function(){
 	print "<p>These are regular system administration tasks performed by a team of volenteers, to keep the Geograph Website online and functional. If you would like to partipate, see <a href=\"/discuss/index.php?&action=vthread&forum=1&topic=25178\">Thread</a>. Also <a href=\"?id=*\">View all recent log entries</a></p>";
 	print "Theme (filter by): ";
 	foreach(explode(',','Disk Space, RAID, SMART,Backup,Offsite,Database,FileSystem,Public DB,Sphinx') as $key) {
-		if ($key == $_GET['q']) {
+		if (isset($_GET['q']) && $key == $_GET['q']) {
 			print "<b>".htmlentities($key)."</b> &middot; ";
 		} else {
 			print "<a href=\"?q=".urlencode($key)."\">".htmlentities($key)."</a> &middot; ";

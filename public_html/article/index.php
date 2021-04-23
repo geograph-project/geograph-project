@@ -201,7 +201,7 @@ foreach ($results as $id => $row) {
         // only check stack if there is one
         if (count($right)>0) {
                 // check if we should remove a node from the stack
-                while ($right[count($right)-1]<$row['rgt'] && count($right)) {
+                while (count($right) && $right[count($right)-1]<$row['rgt']) {
                         array_pop($right);
                 }
         }

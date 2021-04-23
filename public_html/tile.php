@@ -378,8 +378,8 @@ if ($_GET['l'] == 'u') {
 					imagepng($img);
 
 					split_timer('tile','generated'.substr($_GET['l'],0,1),"$e,$n"); //logs the wall time
-
-					$memcache->name_set('td',$mkey,ob_get_flush(),$memcache->compress,$memcache->period_med*2);
+					$data = ob_get_flush();
+					$memcache->name_set('td',$mkey,$data,$memcache->compress,$memcache->period_med*2);
 					$memcache->name_set('tl',$mkey,$lastmod,$memcache->compress,$memcache->period_med*2);
 				} else {
 					imagepng($img);

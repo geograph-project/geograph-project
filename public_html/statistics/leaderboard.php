@@ -488,11 +488,11 @@ if (!$smarty->is_cached($template, $cacheid))
 				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
 				if (array_key_exists('points',$entry)) {
 					$points += $entry['points'];
-					if ($points && empty($entry['points'])) $topusers[$user_id]['points'] = '';
+					if ($points && empty($entry['points'])) $topusers[$idx]['points'] = '';
 				}
 				if (array_key_exists('images',$entry)) {
 					$images += $entry['images'];
-					if ($images && empty($entry['images'])) $topusers[$user_id]['images'] = '';
+					if ($images && empty($entry['images'])) $topusers[$idx]['images'] = '';
 				}
 			}
 			$lastimgcount = $entry['imgcount'];

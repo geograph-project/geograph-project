@@ -661,6 +661,8 @@ if ($_GET['url'] == 'preview') {
 
 	$page = $_POST;
 
+	$page['ctype'] = 'info';
+
 } else {
 	$db = GeographDatabaseConnection(false);
 

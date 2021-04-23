@@ -59,7 +59,7 @@ header("Content-Type:application/json");
 print "[";
 
 $sep = '';
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 
 if ($count = $recordSet->RecordCount()) {
         while (!$recordSet->EOF)

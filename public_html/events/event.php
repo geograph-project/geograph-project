@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $template = 'events_event.tpl';
 $cacheid = 'event|'.$event_id;
-if ($serial = & $memcache->name_get('ep',intval($event_id)) ) {
+if ($serial = $memcache->name_get('ep',intval($event_id)) ) {
 	$cacheid .= '|'.$serial;
 }
 $cacheid .= '|'.$USER->hasPerm('moderator')?1:0;

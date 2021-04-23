@@ -27,7 +27,7 @@
 function dump_env() {
 	print "<div style='margin-left:200px'>\n";//avoids the geograph sidebar!
 	foreach ($_SERVER as $key => $value) {
-		if (strpos($key,'CONF') === 0 || strpos($key,'SERVICE_') !== FALSE || strpos($key,'_PORT') !== FALSE)
+		if (strpos($key,'CONF') === 0 || strpos($key,'SERVICE_') !== FALSE || strpos($key,'_PORT') !== FALSE || strpos($key,'SHOWCASE') === 0)
 			continue;
 		print "<tt>".htmlentities($key)."</tt>: <b>".htmlentities($value)."</b><br>\n";
 	}
@@ -826,7 +826,7 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 		$threshold += 2;
 
 		//lets give registered users a bit more leaway!
-		if ($USER->registered) {
+		if (!empty($USER) && $USER->registered) {
 			$threshold *= 2;
 		}
 

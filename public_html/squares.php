@@ -111,7 +111,7 @@ if ($grid_ok)
 			$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
 		}
 
-		$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
+		$sql_fields = ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 		$sql_order = ' dist_sqd ';
 		
 			$sql = "SELECT grid_reference as id,grid_reference,x,y,imagecount $sql_fields

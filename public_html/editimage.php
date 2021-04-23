@@ -411,7 +411,7 @@ if (isset($_REQUEST['id']))
 				$imageclass=trim(stripslashes($_POST['imageclass']));
 				$imageclass=strip_tags($imageclass);
 
-				$imageclassother=trim(stripslashes($_POST['imageclassother']));
+				$imageclassother=trim(stripslashes($_POST['imageclassother'] ?? ''));
 				$imageclassother=strip_tags($imageclassother);
 
 				$tmp_class = $imageclass;
@@ -510,7 +510,7 @@ if (isset($_REQUEST['id']))
                         }
 
 			$view_direction=intval(trim(stripslashes($_POST['view_direction'])));
-			$use6fig=intval(trim(stripslashes($_POST['use6fig'])));
+			$use6fig=intval(trim(stripslashes(@$_POST['use6fig']))); //its a tickbox, so can be missing
 
 
 			/////////////////////////////////////////////////////////////

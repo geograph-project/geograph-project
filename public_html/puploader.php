@@ -52,6 +52,11 @@ if (isset($_REQUEST['submit2'])) {
 	}
 }
 
+if (empty($GLOBALS['STARTTIME'])) {
+	list($usec, $sec) = explode(' ',microtime());
+	$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
+}
+
 if (isset($_GET['success'])) {
 	$token=new Token;
 	if ($token->parse($_GET['t'])) {
@@ -61,9 +66,6 @@ if (isset($_GET['success'])) {
 	}
 
 } elseif (isset($_POST['selected'])) {  //we dont get the button :(
-
-	list($usec, $sec) = explode(' ',microtime());
-	$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 
 	$status = array();
 	$filenames = array();
@@ -282,7 +284,8 @@ if (isset($_GET['success'])) {
 			$token=new Token;
 			$token->setValue("g", !empty($_REQUEST['grid_reference'])?$_REQUEST['grid_reference']:$square->grid_reference);
 			$token->setValue("p", $_REQUEST['photographer_gridref']);
-			$token->setValue("v", $_REQUEST['view_direction']);
+			if (!empty($_REQUEST['view_direction']))
+				$token->setValue("v", $_REQUEST['view_direction']);
 			$smarty->assign('reopenmaptoken', $token->getToken());
 
 			$smarty->assign_by_ref('square', $square);
@@ -293,7 +296,7 @@ if (isset($_GET['success'])) {
                 	}
 		}
 
-		if ($_REQUEST['imagetaken'] && $_REQUEST['imagetaken'] != '0000-00-00') {
+		if (!empty($_REQUEST['imagetaken']) && $_REQUEST['imagetaken'] != '0000-00-00') {
 			$smarty->assign('imagetaken', stripslashes($_REQUEST['imagetaken']));
 		} elseif ($smarty->get_template_vars('imagetaken')) {
 			//already set

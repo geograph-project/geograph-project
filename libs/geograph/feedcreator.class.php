@@ -1095,7 +1095,7 @@ class RSSCreator091 extends FeedCreator {
 		$feed.= $this->_createGeneratorComment();
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<rss version=\"".$this->RSSVersion."\"";
-		if ($this->format == 'MEDIA') 
+		if (!empty($this->format) && $this->format == 'MEDIA')
 			$feed.= " xmlns:media=\"http://search.yahoo.com/mrss/\"";
 		if (!empty($this->items[0]->licence) || !empty($this->creativeCommons))
 			$feed.= " xmlns:creativeCommons=\"http://backend.userland.com/creativeCommonsRssModule\"";
@@ -1105,7 +1105,7 @@ class RSSCreator091 extends FeedCreator {
 			$feed.= " xmlns:atom=\"http://www.w3.org/2005/Atom\"";
 		$feed.= " xmlns:dc=\"http://purl.org/dc/elements/1.1/\"";
 		$feed.= ">\n";
-		if ($this->format == 'BASE') {
+		if (!empty($this->format) && $this->format == 'BASE') {
 			$feed.= "    <channel xmlns:g=\"http://base.google.com/ns/1.0\">\n";
 		} else {
 			$feed.= "    <channel>\n";
@@ -1114,16 +1114,16 @@ class RSSCreator091 extends FeedCreator {
 		$this->descriptionTruncSize = 500;
 		$feed.= "        <description>".$this->getDescription()."</description>\n";
 		$feed.= "        <link>".$this->link."</link>\n";
-		if ($this->syndicationURL != '') {
+		if (!empty($this->syndicationURL)) {
 			$feed.= "        <atom:link href=\"".$this->syndicationURL."\" rel=\"self\" type=\"".$this->contentType."\" />\n";
 		}
-		if ($this->icon != '') {
+		if (!empty($this->icon)) {
 			$feed.= "        <atom:icon>".$this->icon."</atom:icon>\n";
 		}
-		if ($this->prevURL != '') {
+		if (!empty($this->prevURL)) {
 			$feed.= "        <atom:link href=\"".$this->prevURL."\" rel=\"previous\" type=\"".$this->contentType."\" />\n";
 		}
-		if ($this->nextURL != '') {
+		if (!empty($this->nextURL)) {
 			$feed.= "        <atom:link href=\"".$this->nextURL."\" rel=\"next\" type=\"".$this->contentType."\" />\n";
 		}
 		$now = new FeedDate();
@@ -1552,7 +1552,7 @@ class AtomCreator10 extends FeedCreator {
 		$feed.= $this->_createGeneratorComment();
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<feed xmlns=\"http://www.w3.org/2005/Atom\"";
-		if ($this->format=='TOOLBAR') {
+		if (!empty($this->format) && $this->format=='TOOLBAR') {
 			$feed.= " xmlns:gtb=\"http://toolbar.google.com/custombuttons/\"";
 		}
 		if (!empty($this->language)) {
@@ -1644,7 +1644,7 @@ class AtomCreator03 extends FeedCreator {
 		$feed.= $this->_createGeneratorComment();
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<feed version=\"0.3\" xmlns=\"http://purl.org/atom/ns#\"";
-		if ($this->format=='TOOLBAR') {
+		if (!empty($this->format) && $this->format=='TOOLBAR') {
 			$feed.= " xmlns:gtb=\"http://toolbar.google.com/custombuttons/\"";
 		}
 		if (!empty($this->language)) {

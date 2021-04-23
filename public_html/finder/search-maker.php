@@ -65,7 +65,7 @@ $data['searchq'] = $gr_str;
 if (!$error) {
 	if (empty($data['orderby'])) {
 		$data['orderby'] = 'gridimage_id';
-		if (!preg_match('/\w*(\d{4})/',$_GET['first']))
+		if (empty($_GET['first']) || !preg_match('/\w*(\d{4})/',$_GET['first']))
 			$data['reverse_order_ind'] = '1';
 	}
 

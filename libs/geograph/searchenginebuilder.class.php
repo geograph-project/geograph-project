@@ -122,6 +122,7 @@ split_timer('search'); //starts the timer
 		$has_location = preg_match('/(?<![":\[])\bnear\b/',$q);
 
 		$searchclass = '';
+		$searchdesc = '';
 		$limit1 = '';
 		$location = '';
 		$q = trim(strip_tags($q));
@@ -417,7 +418,7 @@ split_timer('search'); //starts the timer
 				unset($dataarray['location']);
 			}
 			//check if we actully want to perform a user_search
-			if (strpos($dataarray['placename'],'user:') === 0) {
+			if (!empty($dataarray['placename']) && strpos($dataarray['placename'],'user:') === 0) {
 				$dataarray['user_id'] = preg_replace("/^user\:/",'',$dataarray['placename']);
 				unset($dataarray['placename']);
 				if ($dataarray['old-placename'] == $dataarray['q']) {
@@ -433,7 +434,12 @@ split_timer('search'); //starts the timer
 
 		if (!empty($dataarray['q'])) {
 			//we coming from multiple - which means there might be a text search stored in a q
-			list($q,$placename) = preg_split('/(?<![":\[])\s+near\s+/',$dataarray['q']);
+			if (preg_match('/(?<![":\[])\s*near\s+/',$dataarray['q'])) {
+				list($q,$placename) = preg_split('/(?<![":\[])\s+near\s+/',$dataarray['q']);
+			} else {
+				$q = $dataarray['q'];
+				$placename = null;
+			}
 			if (!empty($dataarray['location'])) {
 				$dataarray['searchtext'] = $q;
 				if (empty($dataarray['placename'])) {

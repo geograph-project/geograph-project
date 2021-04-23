@@ -116,7 +116,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$conv = new Conversions;
 	foreach ($list as $i => $row) {
-		if ($row['gridimage_id']) {
+		if (!empty($row['gridimage_id'])) {
 			$list[$i]['image'] = new GridImage;
 			$g_ok = $list[$i]['image']->loadFromId($row['gridimage_id'],true);
 			if ($g_ok && $list[$i]['image']->moderation_status == 'rejected')

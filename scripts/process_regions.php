@@ -34,7 +34,7 @@ if (empty($param)) { //special support so this script can be 'include()ed'.
 
 $c=0;
 $sql = "SELECT DISTINCT gridimage_id,wgs84_lat,wgs84_long FROM {$param['table']} INNER JOIN gridimage_search USING (gridimage_id) WHERE region ='' LIMIT 10000";
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 if ($recordSet->RecordCount()) {
 
 	if (!empty($param['debug']))

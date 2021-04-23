@@ -153,7 +153,7 @@ if (empty($sql))
 print "$sql;\n";
 
 $done = 0;
-$recordSet = &$db->Execute("$sql");
+$recordSet = $db->Execute($sql);
 
 $bindts = $db->BindTimeStamp(time());
 

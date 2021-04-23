@@ -131,7 +131,7 @@ if (empty($_GET['tab'])) {
 				$t=1;
 			}
 
-			print "<li>{$r['s']} <a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a>";
+			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a>";
 			if (!empty($r['showday']))
 				print " (Featured {$r['showday']})";
 			print "</li>";

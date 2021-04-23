@@ -48,6 +48,8 @@ customGZipHandlerStart();
 $template='homepage.tpl';
 if ($CONF['template']!='charcoal' && $CONF['template']!='charcoal_cy') {
 	$cacheid=rand(1,5); //so we get a selection of homepages
+} else {
+	$cacheid=1;
 }
 
 if (isset($_GET['potd'])) {

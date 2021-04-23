@@ -364,9 +364,9 @@ if ($gid) {
 		$smarty->assign_by_ref('suggestions',$suggestions);
 	}
 
-} elseif ($ids) {
+} //elseif ($ids) {
 	//TODO -- look though the images, and compile popular terns/clusters...
-}
+//}
 
 ################################################################
 # setup some variable

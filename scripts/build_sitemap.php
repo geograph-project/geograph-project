@@ -163,7 +163,7 @@ for ($sitemap=$start; $sitemap<=$sitemaps; $sitemap++)
 	if ($last_id)
 		$where[] = "gridimage_id > $last_id"; //still fast, as ordered by id too, it can use it as a index.
 
-	$recordSet = &$db->Execute(
+	$recordSet = $db->Execute(
 		"select i.gridimage_id,date(upd_timestamp) as moddate $cols ".
 		"from gridimage_search as i ".
 		"where ".implode(" and ",$where)." ".
