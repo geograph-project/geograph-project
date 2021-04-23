@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (empty($_SERVER['HTTP_USER_AGENT']) || empty($_SERVER['HTTP_REFERER']))
+        die("no scraping");
+
 define('ALLOW_FRAMED',1); //HAVE to be CAREFUL to taint all input!
 
 require_once('geograph/global.inc.php');
