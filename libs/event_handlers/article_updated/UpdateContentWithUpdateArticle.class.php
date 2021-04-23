@@ -30,8 +30,8 @@ require_once("geograph/gridsquare.class.php");
 class UpdateContentWithUpdateArticle extends EventHandler
 {
 	var $gridimage_ids = array();
-	
-	function add_image_to_list($id1,$id2) {
+
+	function add_image_to_list($id1,$id2 = '') {
 		if (is_numeric($id1)) {
 			$this->gridimage_ids[] = $id1;
 			return " $id1 ";
@@ -83,11 +83,11 @@ class UpdateContentWithUpdateArticle extends EventHandler
 
 			$self = $this;
 			$content = preg_replace_callback('/\[image id=(\d+)/', function($m) use($self) {
-				return $self->add_image_to_list($m[1], $m[2]);
+				return $self->add_image_to_list($m[1]);
 			}, $content);
 
-			$content = preg_replace_callback('/\[\[(\[?)(\d+)(\]?)\]\]/', function($m) use($self) {
-				return $self->add_image_to_list($m[2], $m[2]);
+			$content = preg_replace_callback('/\[\[\[?(\d+)\]?\]\]/', function($m) use($self) {
+				return $self->add_image_to_list($m[1]);
 			}, $content);
 
 			$content = strip_tags(preg_replace('/\[(\/?)(\w+)=?(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)?\]/','<{$1}tag>',$content));
