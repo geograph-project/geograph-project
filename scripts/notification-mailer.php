@@ -227,7 +227,7 @@ if ($param['action'] == 'fake') {
 	$subject .= " ".date('r');
 }
 
-if (!empty($result))
+if (!empty($results))
 foreach ($results as $user_id => $collections) {
 	$html = $body = '';
 	foreach ($collections as $title => $images) {
@@ -236,7 +236,7 @@ foreach ($results as $user_id => $collections) {
 		$last = '';
 		foreach ($images as $idx => $image) {
 			if (!empty($image['special_title']) && $last != $image['special_title']) {
-				$body .= html_entity_decode("{$image['special_title']}, http://{$param['config']}{$image['special_url']}\n\n");
+				$body .= html_entity_decode("{$image['special_title']}, https://{$param['config']}{$image['special_url']}\n\n");
 				if ($image['when'] != 'posted') {
 					//ugly hack because the forum is already entity encoding
 					$image['special_title'] = htmlentities2($image['special_title']);
@@ -244,8 +244,8 @@ foreach ($results as $user_id => $collections) {
 				$html .= "<b><a href=\"http://{$param['config']}{$image['special_url']}\">{$image['special_title']}</a></b><br/>\n";
 				$last = $image['special_title'];
 			}
-			$body .= "* {$image['title']}, http://{$param['config']}/photo/{$image['gridimage_id']} {$image['when']} {$image['date']}\n\n";
-			$html .= "&middot; <a href=\"http://{$param['config']}/photo/{$image['gridimage_id']}\">".htmlentities2($image['title'])."</a> {$image['when']} {$image['date']}<br/>\n";
+			$body .= "* {$image['title']}, https://{$param['config']}/photo/{$image['gridimage_id']} {$image['when']} {$image['date']}\n\n";
+			$html .= "&middot; <a href=\"https://{$param['config']}/photo/{$image['gridimage_id']}\">".htmlentities2($image['title'])."</a> {$image['when']} {$image['date']}<br/>\n";
 		}
 	}
 	if ($param['action'] == 'send') {
@@ -263,10 +263,8 @@ foreach ($results as $user_id => $collections) {
 		print "-------------------\n";
 	}
 
-	$body = "To change your notification preferences, visit http://{$param['config']}/profile.php?notifications=1\n\n".$body;
-	$html = "To change your notification preferences, visit <a href=\"http://{$param['config']}/profile.php?notifications=1\">this page</a><hr/>\n".
-
-	"<br>This is still a experimental feature, to provide feedback, please used <a href=\"http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=12&topic=21685\">This thread</a><hr>".$html;
+	$body = "To change your notification preferences, visit https://{$param['config']}/profile.php?notifications=1\n\n".$body;
+	$html = "To change your notification preferences, visit <a href=\"https://{$param['config']}/profile.php?notifications=1\">this page</a><hr/>\n".$html;
 
 	if ($param['action'] == 'send' || $param['action'] == 'fake') {
 
@@ -282,6 +280,8 @@ foreach ($results as $user_id => $collections) {
 
 		$mail->clearAllRecipients(); //because more added next time
 	}
+        if ($param['action'] != 'send')
+                exit;
 }
 
 if ($param['action'] == 'send' && count($results) > 2) {
