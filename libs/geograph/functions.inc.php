@@ -618,13 +618,13 @@ function GeographLinks($posterText,$thumbs = false,$char_set = 'ISO-8859-1') {
 					} else {
 						$ok = $g_image->loadFromId($g_id);
 					}
-					if ($g_image->moderation_status == 'rejected' && !empty($db)) {
+					if ($ok && $g_image->moderation_status == 'rejected' && !empty($db)) {
 						if ($to = $db->getOne("SELECT destination FROM gridimage_redirect WHERE gridimage_id = ".intval($g_id))) {
 							$ok = $g_image->loadFromId($to);
 						}
 					}
 
-					if ($g_image->moderation_status == 'rejected') {
+					if ($ok && $g_image->moderation_status == 'rejected') {
 						if ($thumbs) {
 							$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="'.$CONF['STATIC_HOST'].'/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
 						}

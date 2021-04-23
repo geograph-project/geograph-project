@@ -27,6 +27,7 @@ init_session();
 $smarty = new GeographPage;
 
 $template = 'tags_report.tpl';
+$cacheid = '';
 
 $USER->mustHavePerm("basic");
 

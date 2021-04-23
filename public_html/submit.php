@@ -486,8 +486,9 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
 				if (!empty($_POST['user_status']))
 					$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
-				$uploadmanager->setLargestSize($_POST['largestsize']);
-			
+				if (!empty($_POST['largestsize']))
+					$uploadmanager->setLargestSize($_POST['largestsize']);
+
 				if ($_POST['pattrib'] == 'other') {
 					$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
 					$smarty->assign('credit_realname',$_POST['pattrib_name']);

@@ -239,7 +239,7 @@ $cacheid = '';
 			$smarty->assign('coverage_updated', strftime("%A, %d %b at %H:%M",$time));
 	}
 
-$smarty->assign('adv', $_GET['adv']);
+$smarty->assign('adv', $_GET['adv'] ?? 0);
 
 
 $smarty->display($template, $cacheid);

@@ -1224,9 +1224,9 @@ $this->db->raiseErrorFn = 'adodb_throw';
 						}
 					}
 					//dont know yet which of these is best but they all seem to be the same on my test images
-					if (($date = $exif['EXIF']['DateTimeOriginal']) ||
-					    ($date = $exif['EXIF']['DateTimeDigitized']) ||
-					    ($date = $exif['IFD0']['DateTime']) )
+					if (($date = @$exif['EXIF']['DateTimeOriginal']) ||
+					    ($date = @$exif['EXIF']['DateTimeDigitized']) ||
+					    ($date = @$exif['IFD0']['DateTime']) )
 					{
 						//Example: ["DateTimeOriginal"]=> string(19) "2004:07:09 14:05:19"
 						 list($date,$time) = explode(' ',$date);

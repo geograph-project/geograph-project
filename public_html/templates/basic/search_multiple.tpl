@@ -7,6 +7,7 @@
 <form action="{$script_name}" method="post" name="theForm">
 <input type="hidden" name="form" value="multiple"/>
 
+{if $criteria->matches}
 {if strlen($criteria->searchq) > 20 || count($criteria->matches) > 10}
 
 	{if $post.q && $post.location}
@@ -16,6 +17,7 @@
 	{/if}
 {elseif count($criteria->matches) > 4}
 	<p><button type="submit" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}">Keywords search for '<b>{$criteria->searchq|escape:"html"}</b>'</button>
+{/if}
 {/if}
 
 	{if $pos_tag}
