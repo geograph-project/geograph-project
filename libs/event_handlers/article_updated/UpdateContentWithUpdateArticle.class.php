@@ -86,7 +86,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 				return $self->add_image_to_list($m[1], $m[2]);
 			}, $content);
 
-			$content = preg_replace_callback('/\[\[(\[?)(?\d+)(\]?)\]\]/', function($m) use($self) {
+			$content = preg_replace_callback('/\[\[(\[?)(\d+)(\]?)\]\]/', function($m) use($self) {
 				return $self->add_image_to_list($m[2], $m[2]);
 			}, $content);
 
