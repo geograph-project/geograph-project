@@ -21,6 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (empty($_GET['id']) || !ctype_digit($_GET['id']) || empty($_GET['source']) || !ctype_alpha($_GET['source'])) {
+	header('HTTP/1.0 403 Forbidden');
+	exit;
+}
 
 require_once('geograph/global.inc.php');
 
