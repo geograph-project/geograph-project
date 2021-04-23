@@ -191,7 +191,7 @@ $cats = array(0=>'');
 
 
 // now, retrieve all descendants of the $root node
-$results = $db->getAssoc('SELECT category_name, category_name, rgt FROM article_cat ORDER BY lft ASC');
+$results = $db->getAssoc('SELECT category_name as id, category_name, rgt FROM article_cat ORDER BY lft ASC');
 
 // start with an empty $right stack
 $right = array();
