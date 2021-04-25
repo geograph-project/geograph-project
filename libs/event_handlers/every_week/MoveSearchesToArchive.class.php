@@ -43,7 +43,9 @@ class MoveSearchesToArchive extends EventHandler
 		if (!$db->getOne("SHOW TABLES LIKE 'queries_archive'"))
 			return true;
 
-		if (!empty($this->processor) && !empty($this->processor->current_event_id)) {
+		if (!empty($this->processor) && !empty($this->processor->current_event_id)
+		&& $db->getOne("select CONNECTION_ID()") == $this->processor->logdb->getOne("select CONNECTION_ID()") //we actully need to make sure its the same connection, it may not be!
+			) {
 			$this->Execute("lock table queries write, queries_archive write, event_log write"); //this->Execute logs results in event_log!
 		} else {
 			$this->Execute("lock table queries write, queries_archive write");
