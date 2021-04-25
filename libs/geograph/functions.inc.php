@@ -1385,11 +1385,13 @@ function mail_wrapper($email, $subject, $body, $headers = '', $param = '', $debu
 function debug_message($subject,$body) {
 	global $CONF;
 
-	$body = "Host: ".`hostname`."\n".
+	$body = @"Host: ".`hostname`."\n".
 		" [HTTP_HOST] => ".$_SERVER['HTTP_HOST']."\n".
 		" [REQUEST_URI] => ".$_SERVER['REQUEST_URI']."\n".
 		" [QUERY_STRING] => ".$_SERVER['QUERY_STRING']."\n".
+		" [HTTP_COOKIE] => ".$_SERVER['HTTP_COOKIE']."\n\n".
 		" [HTTP_USER_AGENT] => ".$_SERVER['HTTP_USER_AGENT']."\n".
+		" [HTTP_REFERER] => ".$_SERVER['HTTP_REFERER']."\n".
 		" [HTTP_X_FORWARDED_FOR] => ".$_SERVER['HTTP_X_FORWARDED_FOR']."\n".
 		" [REQUEST_TIME] => ".$_SERVER['REQUEST_TIME']."\n".
 		" [HTTP_X_AMZN_TRACE_ID] => ".$_SERVER['HTTP_X_AMZN_TRACE_ID']."\n\n".
