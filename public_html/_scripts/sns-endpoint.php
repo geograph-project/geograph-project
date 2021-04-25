@@ -55,8 +55,8 @@ function store_everything($table,$values) {
 
         $keys = array_keys($values);
 
-        $exist = $db->getAssoc("DESCRIBE `$table`");
-        if (!empty($exist)) {
+        if ($db->getOne("SHOW TABLES LIKE '$table'")) {
+	        $exist = $db->getAssoc("DESCRIBE `$table`");
                 $sql = "ALTER TABLE `$table`"; $sep = '';
                 foreach ($keys as $key) {
                         $key = preg_replace('/[^\w]+/','',trim($key));
