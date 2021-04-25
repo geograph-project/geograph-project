@@ -44,7 +44,7 @@ init_session();
 if (empty($USER->registered) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 	ob_start();
 	foreach ($_SERVER as $key => $value) {
-                if (strpos($key,'CONF') === 0 || strpos($key,'SERVICE_') !== FALSE || strpos($key,'_PORT') !== FALSE)
+                if (strpos($key,'CONF') === 0 || strpos($key,'SERVICE_') !== FALSE || strpos($key,'_PORT') !== FALSE || strpos($key,'SHOWCASE') === 0)
                         continue;
                 print htmlentities($key).": ".htmlentities($value)."\n";
         }
