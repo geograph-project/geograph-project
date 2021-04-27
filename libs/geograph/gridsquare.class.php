@@ -263,7 +263,7 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 	{
 		$andwhere = ($ri)?" and reference_index = $ri ":'';
 		$db=&$this->_getDB(true);
-		return $db->CacheGetAssoc(3600*24*7,"select prefix,prefix from gridprefix ".
+		return $db->CacheGetAssoc(3600*24*7,"select prefix as name,prefix from gridprefix ".
 			"where landcount>0 $andwhere".
 			"order by reference_index,prefix");
 
