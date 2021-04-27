@@ -170,24 +170,9 @@ class GridImage
 	function& getImageClasses()
 	{
 		$db=&$this->_getDB(true);
-		
-		$arr = $db->CacheGetAssoc(24*3600,"select imageclass,imageclass from gridimage ".
-			"where length(imageclass)>0 and moderation_status in ('accepted','geograph') ".
-			"group by imageclass");
-		
-		//temp 'defaults' until the group by will pick them up!
-		foreach(array('Urban Landscape',
-		'Urban Landmark',
-		'Open Countryside',
-		'Farmland',
-		'Woodland',
-		'Water Bodies - Lakes and Rivers',
-		'Mountains',
-		'Marshland',
-		'Coastline/Beaches') as $val) {
-			if(!$arr[$val]) 
-				$arr[$val]=$val;
-		}
+
+		$arr = $db->CacheGetAssoc(24*3600,"select imageclass as id,imageclass from category_stat where imageclass != ''");
+
 		natcasesort($arr);
 
 		return $arr;

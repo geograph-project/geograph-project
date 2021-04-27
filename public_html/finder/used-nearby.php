@@ -167,8 +167,8 @@ if (empty($results)) {
 
 		if (!empty($gid)) {
 			$db = GeographDatabaseConnection(true);
-			$tag_ids = $db->getAssoc("SELECT tag_id,tag_id FROM gridimage_tag WHERE status = 2 AND gridimage_id = $gid");
-			$snippet_ids = $db->getAssoc("SELECT snippet_id,snippet_id FROM gridimage_snippet WHERE gridimage_id = $gid");
+			$tag_ids = $db->getAssoc("SELECT tag_id as id,tag_id FROM gridimage_tag WHERE status = 2 AND gridimage_id = $gid");
+			$snippet_ids = $db->getAssoc("SELECT snippet_id as id,snippet_id FROM gridimage_snippet WHERE gridimage_id = $gid");
 		} else {
 			$tag_ids = $snippet_ids = array();
 		}
