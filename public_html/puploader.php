@@ -283,7 +283,8 @@ if (isset($_GET['success'])) {
 		if (!empty($_REQUEST['grid_reference'])) {
 			$token=new Token;
 			$token->setValue("g", !empty($_REQUEST['grid_reference'])?$_REQUEST['grid_reference']:$square->grid_reference);
-			$token->setValue("p", $_REQUEST['photographer_gridref']);
+			if (!empty($_REQUEST['photographer_gridref']))
+				$token->setValue("p", $_REQUEST['photographer_gridref']);
 			if (!empty($_REQUEST['view_direction']))
 				$token->setValue("v", $_REQUEST['view_direction']);
 			$smarty->assign('reopenmaptoken', $token->getToken());

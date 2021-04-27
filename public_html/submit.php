@@ -283,9 +283,9 @@ if (isset($_POST['gridsquare']))
 				//preserve stuff
 				$smarty->assign('title', stripslashes($_POST['title']));
 				$smarty->assign('comment', stripslashes($_POST['comment']));
-				$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
-				$smarty->assign('tags', stripslashes($_POST['tags']));
-				$smarty->assign('subject', stripslashes($_POST['subject']));
+				$smarty->assign('imagetaken', stripslashes(@$_POST['imagetaken']));
+				$smarty->assign('tags', stripslashes(@$_POST['tags']));
+				$smarty->assign('subject', stripslashes(@$_POST['subject']));
 				$smarty->assign('imageclass', stripslashes(@$_POST['imageclass']));
 				$smarty->assign('user_status', stripslashes(@$_POST['user_status']));
 			}
@@ -397,7 +397,6 @@ if (isset($_POST['gridsquare']))
 				if($uploadmanager->validUploadId($_POST['upload_id'])) {
 					$smarty->assign('upload_id', $_POST['upload_id']);
 					$uploadmanager->setUploadId($_POST['upload_id']);
-					
 				}
 
 				$ok=true;
@@ -412,7 +411,7 @@ if (isset($_POST['gridsquare']))
 					$ok=false;
 					$error['imagetaken']="Time machines are not allowed on Planet Geograph";
 				}
-				
+
 				if (!empty($_POST['tags'])) {
 					if (is_array($_POST['tags'])) {
 						$tags = stripslashes(implode('|',$_POST['tags']));
@@ -422,7 +421,8 @@ if (isset($_POST['gridsquare']))
 					$smarty->assign_by_ref('tags', $tags);
 				}
 
-				$smarty->assign('subject', trim(stripslashes($_POST['subject'])));
+				if (!empty($_POST['subject']))
+					$smarty->assign('subject', trim(stripslashes($_POST['subject'])));
 
 				if (!empty($_POST['imageclass'])) {
 					if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
@@ -664,7 +664,7 @@ if (isset($_POST['gridsquare']))
 			if (isset($_POST['photographer_gridref'])) {
 				$square2=new GridSquare;
 				$ok= $square2->setByFullGridRef($_POST['photographer_gridref']);
-				$rastermap->addViewpoint($square2->nateastings,$square2->natnorthings,$square2->natgrlen,$_POST['view_direction']);
+				$rastermap->addViewpoint($square2->nateastings,$square2->natnorthings,$square2->natgrlen,@$_POST['view_direction']);
 			} elseif (isset($_POST['view_direction']) && strlen($_POST['view_direction']) && $_POST['view_direction'] != -1) {
 				$rastermap->addViewDirection($_POST['view_direction']);
 			}

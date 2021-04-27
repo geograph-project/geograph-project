@@ -408,7 +408,7 @@ if ($template=='tags_tagger.tpl') {
 		//the new form, can use prospective.json.php which might still work!
 
 } elseif (!empty($_GET['title']) || !empty($_GET['comment'])) {
-        $string = $_GET['title'].' '.$_GET['comment'];
+        $string = $_GET['title'].' '.@$_GET['comment'];
 
         $smarty->assign('topicstring',$string);
 }

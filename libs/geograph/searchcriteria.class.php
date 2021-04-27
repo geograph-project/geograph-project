@@ -1108,7 +1108,7 @@ split_timer('search'); //starts the timer
 		} else {
 			$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');
 		}
-		if ($postcode['reference_index']) {
+		if (!empty($postcode['reference_index'])) {
 			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
 
 			$this->x = ($postcode['e']/1000) + $origin['origin_x'];

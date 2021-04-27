@@ -145,7 +145,7 @@ if (!empty($_GET['q'])) {
 			foreach ($ids as $c => $id) {
 				$row = $rows[$id];
 				$row['gridimage_id'] = $id;
-				if ($group)
+				if ($group && !empty($matches[$id]['attrs'][$group]))
 					$row['group'] = $matches[$id]['attrs'][$group];
 				$gridimage = new GridImage;
                                 $gridimage->fastInit($row);
@@ -164,9 +164,8 @@ if (!empty($_GET['q'])) {
 			$ADODB_FETCH_MODE = $prev_fetch_mode;
 		}
 	}
-	
-	$smarty->assign("q",$sphinx->qclean);
 
+	$smarty->assign("q",$sphinx->qclean);
 }
 
 
