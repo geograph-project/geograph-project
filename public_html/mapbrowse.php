@@ -31,7 +31,7 @@ require_once('geograph/mapmosaic.class.php');
 if (isset($_GET['map']))
 {
 	require_once('geograph/image.inc.php');
-					
+
 	//render and return a map with token $_GET['map'];
 	$map=new GeographMap;
 	if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && (init_session() || true) && $USER->hasPerm('admin'))
@@ -39,12 +39,9 @@ if (isset($_GET['map']))
 	$map->setToken($_GET['map']);
 	$map->returnImage();
 	exit;
-	
 }
 
 init_session_or_cache(3600, 360); //cache publically, and privately
-
-init_session();
 $template='mapbrowse.tpl';
 
 $smarty = new GeographPage;
@@ -58,7 +55,7 @@ $overview=new GeographMapMosaic('overview');
 
 if (isset($_GET['o']))
 	$overview->setToken($_GET['o']);
-	
+
 if (isset($_GET['t'])) {
 	$mosaic->setToken($_GET['t']);
 } else {
