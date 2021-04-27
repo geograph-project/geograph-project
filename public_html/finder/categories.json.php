@@ -117,7 +117,7 @@ if (!empty($_GET['canonical'])) {
 			$results = array();
 			foreach ($ids as $c => $id) {
 				$row = $rows[$id];
-				if (!preg_match('/^(Supplemental|Geograph|Accept)/i',$row['imageclass'])) {
+				if (!preg_match('/^(Supplemental|Geograph|Accept)/i',$row)) {
 					print $sep;
 					print '"'.trim(addslashes($row)).'"';
 					$sep = ",";
