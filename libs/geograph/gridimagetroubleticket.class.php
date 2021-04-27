@@ -316,7 +316,7 @@ class GridImageTroubleTicket
 		if (!$moderated)
 		{
 			//make the changes right away...
-			$img=&$this->_getImage();
+			$img=$this->_getImage();
 
 			if ($fieldname=="grid_reference")
 			{
@@ -400,7 +400,7 @@ class GridImageTroubleTicket
 		//commit changes to image
 		if ($this->commit_count)
 		{
-			$img=&$this->_getImage();
+			$img=$this->_getImage();
 			$img->commitChanges();
 			$this->commit_count=0;
 		}
@@ -485,7 +485,7 @@ class GridImageTroubleTicket
 		//if ticket is open and a new ticket, we should alert moderators
 		if ($newticket)
 		{
-			$img=&$this->_getImage();
+			$img=$this->_getImage();
 
 			$this->loadItems();
 			$changes = '';
@@ -616,7 +616,7 @@ class GridImageTroubleTicket
 		$msg=array();
 		global $CONF;
 
-		$image=& $this->_getImage();
+		$image= $this->_getImage();
 
 		$ttype = ($this->type == 'minor')?' Minor':'';
 		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
@@ -726,7 +726,7 @@ class GridImageTroubleTicket
 		$comment.="\n\n".$moderator->realname."\nGeograph Moderator\n";
 
 		//email comment to owner
-		$image=& $this->_getImage();
+		$image= $this->_getImage();
 		$owner=new GeographUser($image->user_id);
 
 		if ($owner->ticket_option != 'off') { // the message IS send in case of 'none'!
@@ -769,6 +769,8 @@ class GridImageTroubleTicket
 
 		$db->Execute("update gridimage_ticket set notify = '{$this->notify}' where gridimage_ticket_id={$this->gridimage_ticket_id}");
 
+		$image= $this->_getImage();
+
 		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id && $this->user_id != $this->moderator_id) {
 			//email comment to suggestor
 			$suggestor=new GeographUser($this->user_id);
@@ -803,7 +805,7 @@ class GridImageTroubleTicket
 		$msg =& $this->_buildEmail($comment);
 		$this->_sendModeratorMail($msg);
 
-		$image=& $this->_getImage();
+		$image= $this->_getImage();
 
 		$owner=new GeographUser($image->user_id);
 
@@ -838,7 +840,7 @@ class GridImageTroubleTicket
 
 		$this->_addComment($user_id, $dbcomment);
 
-		$image=& $this->_getImage();
+		$image= $this->_getImage();
 
 		//apply and summarise changes
 		$changes="";
