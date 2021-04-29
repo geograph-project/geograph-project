@@ -339,9 +339,9 @@ and there need to be at least three images matching these criteria in your searc
         $query=$query.$db->Quote($_POST['loc']).",";
         $query=$query.$db->Quote($_POST['start']).",";
         $query=$query.$db->Quote($_POST['title']).",";
-        $query=$query."'".$geograph[0]['imagetaken'].",";
-        $query=$query."'".$bbox."',";
-        $query=$query."'".$trk."',";
+        $query=$query.$db->Quote($geograph[0]['imagetaken']).",";
+        $query=$query.$db->Quote($bbox).",";
+        $query=$query.$db->Quote($trk).",";
         $query=$query.$search.",";
         $query=$query.$img.",";
         $query=$query.$db->Quote($_POST['descr']).",";
