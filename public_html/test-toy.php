@@ -396,7 +396,8 @@ if (!empty($CONF['memcache']['app'])) {
 	if ($value && $value > (time()-604800) && $value < time()) {
 		outputRow($title,'pass','read a recent timestamp: '.$value);
 	} else {
-		$memcache->name_set('test.php',$mkey, time());
+		$time = time(); //the content param is passed by reference
+		$memcache->name_set('test.php',$mkey, $time);
 		sleep(1);
 		$value = $memcache->name_get('test.php',$mkey);
 		if ($value && $value > (time()-3) && $value < time()) {
@@ -407,7 +408,8 @@ if (!empty($CONF['memcache']['app'])) {
 	}
 
 	//set for next time!
-	$memcache->name_set('test.php',$mkey, time());
+	$time = time();
+	$memcache->name_set('test.php',$mkey, $time);
 } else
 	outputRow('MemCache Daemon','notice','memcache not configured');
 
