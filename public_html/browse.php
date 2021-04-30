@@ -1014,7 +1014,7 @@ if ($grid_given)
 		if ($CONF['forums']) {
 			$square->assignDiscussionToSmarty($smarty);
 		}
-		if (!empty($db) || (!empty($square->db) && $db == $square->db))
+		if (!empty($db) || (!empty($square->db) && $db = $square->db))
 			$smarty->assign('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' AND largemap_token != '' LIMIT 1"));
 
 		//look for images from here...
