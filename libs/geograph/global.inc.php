@@ -769,10 +769,12 @@ function smarty_function_pageheader() {
 }
 
 function smarty_function_pagefooter() {
+	global $mobile_browser,$mobile_url;
 
 	if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 		ob_start();
 		Profiler::render();
+		unset($_GET['php_profile']); //hack to prevent further profiling!
 		return ob_get_clean();
 	}
 
