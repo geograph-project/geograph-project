@@ -552,7 +552,7 @@ if (isset($_REQUEST['id']))
 				//finalise the change ticket
 				if (!empty($_REQUEST['mod'])) {
 					switch ($_REQUEST['mod']) {
-						//owner has choosen to notify a modeator
+						//owner has choosen to notify a moderator
 						case 'pending': $status=$ticket->commit('pending'); break;
 
 						//a modwerator wants to close the ticket

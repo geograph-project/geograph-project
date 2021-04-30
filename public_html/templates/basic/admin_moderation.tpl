@@ -399,7 +399,7 @@
 	</form>
 	<div id="skipDiv">
 		<input type=button value="Skip Rest &gt;" onclick="window.location.href='/admin/moderation.php?skip=1'">
-		(Use to goto next page, without moderating all above images. The unmoderated images will be shown to another modeator, and you can continue moderating more images)
+		(Use to goto next page, without moderating all above images. The unmoderated images will be shown to another moderator, and you can continue moderating more images)
 	</div>
 {else}
 
