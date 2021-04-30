@@ -21,9 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if (isset($_SERVER['REDIRECT_SCRIPT_URL']) && preg_match('/120_(ie|ff).gif$/',$_SERVER['REDIRECT_SCRIPT_URL'])) {
-	//you can just go away - Gmaps seem to lookup these urls via GGeoXML for somereason...
-	header('Content-Length: 0');
+if (strpos($_SERVER['REQUEST_URI'],'apple-touch-icon') !== FALSE) {
+	//there are a lot of these, no point rendering the whole HTML page
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	exit;
 }
 
