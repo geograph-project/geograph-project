@@ -1199,7 +1199,7 @@ class GeographUser
 		if (isset($_SERVER['PHP_AUTH_USER']))
 		{
 			$email=stripslashes(trim($_SERVER['PHP_AUTH_USER']));
-			
+
 			$db = $this->_getDB(true);
 
 			$sql="";
@@ -1208,12 +1208,15 @@ class GeographUser
 			elseif (isValidRealName($email))
 				$sql='select * from user where nickname='.$db->Quote($email).' limit 1';
 
-
 			if (strlen($sql))
 			{
 				//user registered?
-				$arr = $db->GetRow($sql);	
-				if (count($arr))
+				$arr = $db->GetRow($sql);
+				if (!$this->checkThrottleToken($arr['user_id'] ?? null)) //Null Coalescing just to prevent a notice!
+				{
+					$error ='Unable to Login at this time. Please try later, or <a href="/contact.php">contact us</a> for assistance';
+				}
+				elseif (!empty($arr))
 				{
 					$md5password=md5($arr['salt'].stripslashes(trim($_SERVER['PHP_AUTH_PW'])));
 
@@ -1243,15 +1246,15 @@ class GeographUser
 					}
 					else
 					{
-						//speak friend and enter					
-						$error ='Wrong password - don\'t forget passwords are case-sensitive';
+						$error ='Wrong email/nickname and/or password - don\'t forget passwords are case-sensitive';
+						$this->addThrottleToken($arr['user_id']);
 					}
-
 				}
 				else
 				{
-					//sorry son, your name's not on the list
-					$error ='This email address or nickname is not registered';
+					//give the same message, not meant to disclose if a valid email
+					$error ='Wrong email/nickname and/or password - don\'t forget passwords are case-sensitive';
+					$this->addThrottleToken();
 				}
 			}
 			else
@@ -1259,16 +1262,15 @@ class GeographUser
 				$error ='This is not a valid email address or nickname';
 
 			}
-		} 
-		else 
+		}
+		else
 		{
 			$error ='No Credentials Supplied';
 		}
-		
-		
+
 		//failure to login means we never return - we show a login page
 		//instead...
-		if (!$logged_in)
+		if (empty($logged_in))
 		{
 			header('WWW-Authenticate: Basic realm="Geograph"');
 			header('HTTP/1.0 401 Unauthorized');
@@ -1276,7 +1278,7 @@ class GeographUser
 			exit;
 		}
 	}
-	
+
 	/**
 	* force inline login if user isn't authenticated
 	* only return after successful login
@@ -1307,9 +1309,15 @@ class GeographUser
 
 				if (strlen($sql))
 				{
-					//user registered?
 					$arr = $db->GetRow($sql);
-					if (count($arr))
+
+					//need to check the token BEFORE verifing password, because want to block even an correct guess!
+					if (!$this->checkThrottleToken($arr['user_id'] ?? null)) //Null Coalescing just to prevent a notice!
+					{
+						$errors['email']='Unable to Login at this time. Please try later, or <a href="/contact.php">contact us</a> for assistance';
+					}
+					//user registered?
+					elseif (!empty($arr))
 					{
 						$md5password=md5($arr['salt'].$password);
 						//passwords match?
@@ -1372,15 +1380,15 @@ class GeographUser
 						}
 						else
 						{
-							//speak friend and enter
-							$errors['password']='Wrong password - don\'t forget passwords are case-sensitive';
+							$errors['password']='Wrong email/nickname and/or password - don\'t forget passwords are case-sensitive';
+							$this->addThrottleToken($arr['user_id']);
 						}
-
 					}
 					else
 					{
-						//sorry son, your name's not on the list
-						$errors['email']='This email address or nickname is not registered';
+						//give the same message, not meant to disclose if a valid email
+						$errors['password']='Wrong email/nickname and/or password - don\'t forget passwords are case-sensitive';
+						$this->addThrottleToken();
 					}
 				}
 				else
@@ -1426,6 +1434,33 @@ class GeographUser
 		//we're logged in
 		return $logged_in;
 	}
+
+	function addThrottleToken($user_id = null) {
+		$db = $this->_getDB();
+		if (!empty($user_id))
+			$db->query("insert into throttle set user_id=$user_id,feature = 'loginid'");
+		$ip=getRemoteIP();
+		$user_id = "inet6_aton('{$ip}')";
+		$db->query("insert into throttle set user_id=$user_id,feature = 'loginip'");
+	}
+
+	function checkThrottleToken($user_id = null) {
+		$db = $this->_getDB();
+		if (!empty($user_id)) {
+			if ($db->getOne("select count(*) from throttle where user_id=$user_id AND feature = 'loginid' AND used>DATE_SUB(NOW(),INTERVAL 2 HOUR)") > 9) {
+				$this->addThrottleToken($user_id); //so that if they keep checking, they STAY blocked, rather than expiring every few hours
+				return false;
+			}
+		}
+		$ip=getRemoteIP();
+		$user_id = "inet6_aton('{$ip}')";
+		if ($db->getOne("select count(*) from throttle where user_id=$user_id AND feature = 'loginip' AND used>DATE_SUB(NOW(),INTERVAL 2 HOUR)") > 19) {
+			$this->addThrottleToken();
+			return false;
+		}
+		return true; //ok!
+	}
+
 
 	/**
 	* attempt to authenticate user from persistent cookie

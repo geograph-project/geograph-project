@@ -2595,3 +2595,16 @@ CREATE TABLE `comment_post` (
 #################################################
 
 
+alter table user_emailchange modify `status` enum('pending','completed','invalidated')  DEFAULT NULL;
+
+
+#################################################
+
+
+alter table `throttle` modify `feature` enum('ecard','usermsg','loginid','loginip') NOT NULL DEFAULT 'ecard';
+
+
+#################################################
+
+
+

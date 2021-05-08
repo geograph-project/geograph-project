@@ -46,7 +46,7 @@ init_session();
 
 $action = isset($_GET['action']) ? $_GET['action'] : "";
 
-$xml = "";
+$xml = array();
 $db = GeographDatabaseConnection(true);
 if (empty($db)) {
 	$xml['status'] = 'Server Error: Unable to connect to database';
@@ -84,7 +84,7 @@ function UploadPicture() {
 		$USER = new GeographUser(intval($_POST['userid']));
 		
 		//TODO: check validation hash?
-		if($_POST['validation'] != md5($_POST['userid'].'#'.$CONF['register_confirmation_secret'])) {
+		if($_POST['validation'] != hash_hmac('md5',$USER->salt,$CONF['register_confirmation_secret'])) {
 			$xml['status'] = 'User not verified';
 			returnXML();
 		}
@@ -176,43 +176,29 @@ function UploadPicture() {
 
 function AuthenticateUser() {
 	global $db, $xml;
-	global $CONF;
+	global $CONF, $USER;
 
-	$username = isset($_GET['username']) ? $_GET['username'] : "";
-	$password = isset($_GET['password']) ? $_GET['password'] : "";
+	if (empty($_GET['username']) || empty($_GET['password'])) {
+		$xml['status'] = 'Invalid';
+		returnXML();
+	}
 
+	//use the basic auth function to validate username/password (rather than doing it outselfs)
+	$_SERVER['PHP_AUTH_USER'] = $_GET['username'];
+	$_SERVER['PHP_AUTH_PW'] = $_GET['password'];
 
-	$dbusername = $db->Quote($username);
-	$sql = "select password,realname,rights,user_id,salt from user where nickname = $dbusername OR email = $dbusername LIMIT 1";
-	$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
-	if ($rs = &$db->Execute($sql)) {
-		$db->SetFetchMode($prev_fetch_mode);
-	
-		$md5password=md5($rs->fields[4].$password);
-	
-		if ($md5password != $rs->fields[0]) {
+	$USER->basicAuthLogin();
+	//this actully never returns if can't login!
 
-			// oops - user specified invlaid password
+	if ($USER->registered && $USER->user_id) {
 
-			$xml['status'] = 'Invalid password';
+                if (!empty($CONF['juppy_minimum_images'])) {
 
-			returnXML();
-		}
-
-		// user must have some rights - I think any will do
-
-		if ($rs->fields[2] == "") {
-			$xml['status'] = 'Not authorised to post';
-			returnXML();
-		}
-
-                if ($CONF['juppy_minimum_images']) {
-                
                         // a user must have submitted a minimum number of images
-                        
-                        $sqlcnt = "select count(*) as icount from gridimage_search where user_id = '" . $rs->fields[3] . "'";
+
+                        $sqlcnt = "select images from user_stat where user_id = " .intval($rs->fields[3]);
                         $icount = 0;
-                        if ($rsimg = &$db->Execute($sqlcnt)) {
+                        if ($rsimg = $db->Execute($sqlcnt)) {
                                 $icount = $rsimg->fields[0];
                         }
                         if ($icount < $CONF['juppy_minimum_images']) {
@@ -221,18 +207,17 @@ function AuthenticateUser() {
                                     returnXML();
                         }
                 }
-                
+
 		// let's assume they're OK to post
 		$xml['status'] = 'OK';
-		$xml['realname'] = $rs->fields[1];
-		$xml['user_id'] = $rs->fields[3];
-		
+		$xml['realname'] = $USER->realname;
+		$xml['user_id'] = $USER->user_id;
+
 		//TODO: send validation hash?
-		$xml['validation'] = md5($rs->fields[3].'#'.$CONF['register_confirmation_secret']);
-		
+		$xml['validation'] = hash_hmac('md5',$USER->salt,$CONF['register_confirmation_secret']);
+
 		returnXML();
 	}
-	$db->SetFetchMode($prev_fetch_mode);
 }
 
 function GetImageClassList() {
