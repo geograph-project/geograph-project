@@ -654,7 +654,7 @@ class GeographUser
 	*/
 	function verifyPasswordChange($change_id, $hash)
 	{
-		global $CONF;
+		global $CONF,$memcache;
 		$ok=true;
 		$status="ok";
 		
@@ -677,7 +677,6 @@ class GeographUser
 			}
 			elseif(isset($arr['user_emailchange_id']))
 			{
-			
 				//change password
 				$salt = substr($arr['newemail'], 0, 8);
 				$md5pw = substr($arr['newemail'], 8);
@@ -687,11 +686,10 @@ class GeographUser
 				$sql="update user_emailchange set completed=now(), status='completed' where user_emailchange_id=$user_emailchange_id";
 				$db->Execute($sql);
 
-
 				$this->user_id=$arr['user_id'];
 				$this->registered=true;
 
-				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');	
+				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');
 				foreach($arr as $name=>$value)
 				{
 					if (!is_numeric($name))
@@ -705,13 +703,20 @@ class GeographUser
 				if (strlen($this->nickname)==0)
 					$this->nickname=str_replace(" ", "", $this->realname);
 
+				//invalidate any currently logged in sessions
+                                if (!empty($memcache) && !empty($memcache->valid))
+                                        $memcache->name_set('usersalt',$this->user_id,$arr['salt'],false,$memcache->period_long);
+
+				//invalidate any Remember Me Cookies
+				$db->Execute('delete from autologin where user_id = '.$db->Quote($this->user_id));
+				$db->Execute('delete from autologin_archive where user_id = '.$db->Quote($this->user_id));
 
 				//setup forum user
 				$this->_forumUpdateProfile();
 
 				//log into forum too
 				$this->_forumLogin();
-				
+
 				$status="ok";
 			}
 			else
@@ -719,12 +724,11 @@ class GeographUser
 				//deleted change request?
 				$status="fail";
 			}
-				
 		}
 
-		return $ok;
+		return $status;
 	}
-	
+
 	/**
 	* verify registration from given hash
 	* can only do this once, returns ok, fail or alreadycomplete
@@ -1466,14 +1470,14 @@ class GeographUser
 					//log the user in
 					$sql='select * from user where user_id='.$db->Quote($bits[0]).' limit 1';
 					$user = $db->GetRow($sql);
-					
-					//log the errornumber (we use in case the db lookup failed) 
+
+					//log the errornumber (we use in case the db lookup failed)
 					$errorNumber = $db->ErrorNo();
-					
-					if (count($user))
+
+					if (!empty($user))
 					{
 						$valid=true;
-						
+
 						foreach($user as $name=>$value)
 						{
 							if (!is_numeric($name))
@@ -1491,7 +1495,7 @@ class GeographUser
 
 						//log into forum
 						$this->_forumLogin();
-	
+
 						if (empty($from_archive)) {
 							//we're changing privilege state, so we should
 							//generate a new session id to avoid fixation attacks
@@ -1642,5 +1646,16 @@ class GeographUser
 		$vars = get_object_vars($this);
 		return array_keys($vars);
 	}
+
+	function __wakeup() {
+		global $memcache;
+
+		if (!empty($this->user_id) && !empty($memcache) && !empty($memcache->valid)) {
+			$value = $memcache->name_get('usersalt',$this->user_id);
+			if (!empty($value) && $value != $this->salt)
+				$this->logout();
+		}
+	}
+
 }
 
