@@ -614,6 +614,9 @@ class GeographUser
 			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' limit 1');
 			if (count($arr))
 			{
+				//first invalidate any previous tokens
+				$db->Execute("update user_emailchange set status = 'invalidated' where status = 'pending' AND user_id = ".intval($arr['user_id'])." AND newemail NOT LIKE '%@%'");
+
 				$salt = $this->randomSalt(8);
 				$db->Execute("insert into user_emailchange ".
 					"(user_id, oldemail,newemail,requested,status)".
@@ -667,15 +670,15 @@ class GeographUser
 		if ($ok)
 		{
 			$db = $this->_getDB();
-			
+
 			$user_emailchange_id=substr($change_id,1);
-			
-			$arr = $db->GetRow('select * from user_emailchange where user_emailchange_id='.$db->Quote($user_emailchange_id));	
+
+			$arr = $db->GetRow('select * from user_emailchange where user_emailchange_id='.$db->Quote($user_emailchange_id));
 			if ($arr['status']=='completed')
 			{
 				$status="alreadycomplete";
 			}
-			elseif(isset($arr['user_emailchange_id']))
+			elseif(isset($arr['user_emailchange_id']) && $arr['status'] == 'pending')
 			{
 				//change password
 				$salt = substr($arr['newemail'], 0, 8);
@@ -738,27 +741,26 @@ class GeographUser
 		global $CONF;
 		$ok=true;
 		$status="ok";
-		
+
 		//validate inputs, they came from outside
 		$ok=$ok && preg_match('/m\d+/', $change_id);
 		$ok=$ok && preg_match('/[0-9a-f]+/', $hash);
-		
+
 		//validate hash
 		$ok=$ok && ($hash==substr(md5($change_id.$CONF['register_confirmation_secret']),0,16));
 		if ($ok)
 		{
 			$db = $this->_getDB();
-			
+
 			$user_emailchange_id=substr($change_id,1);
-			
-			$arr = $db->GetRow('select * from user_emailchange where user_emailchange_id='.$db->Quote($user_emailchange_id));	
+
+			$arr = $db->GetRow('select * from user_emailchange where user_emailchange_id='.$db->Quote($user_emailchange_id));
 			if ($arr['status']=='completed')
 			{
 				$status="alreadycomplete";
 			}
-			elseif(isset($arr['user_emailchange_id']))
+			elseif(isset($arr['user_emailchange_id']) && $arr['status'] == 'pending')
 			{
-			
 				//change email address
 				$sql="update user set email=".$db->Quote($arr['newemail']).",gravatar='unknown' where user_id=".$db->Quote($arr['user_id']);
 				$db->Execute($sql);
@@ -766,11 +768,10 @@ class GeographUser
 				$sql="update user_emailchange set completed=now(), status='completed' where user_emailchange_id=$user_emailchange_id";
 				$db->Execute($sql);
 
-
 				$this->user_id=$arr['user_id'];
 				$this->registered=true;
 
-				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');	
+				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');
 				foreach($arr as $name=>$value)
 				{
 					if (!is_numeric($name))
@@ -790,7 +791,7 @@ class GeographUser
 
 				//log into forum too
 				$this->_forumLogin();
-				
+
 				$status="ok";
 			}
 			else
@@ -798,17 +799,16 @@ class GeographUser
 				//deleted change request?
 				$status="fail";
 			}
-				
 		}
 		else
 		{
 			//hash mismatch or param problem
 			$status="fail";
 		}
-		
+
 		return $status;
 	}
-	
+
 	/**
 	* update user profile
 	* profile array should contain website, nickname, realname flag. A
@@ -820,9 +820,9 @@ class GeographUser
 	{
 		global $CONF;
 		$db = $this->_getDB();
-		
+
 		$ok=true;
-		
+
 		$profile['realname']=stripslashes($profile['realname']);
 		$profile['nickname']=stripslashes($profile['nickname']);
 		$profile['website']=stripslashes($profile['website']);
@@ -845,7 +845,6 @@ class GeographUser
 			}
 		}
 
-			
 		if (strlen($profile['realname']))
 		{
 			if (!isValidRealName($profile['realname']))
@@ -859,8 +858,7 @@ class GeographUser
 			$ok=false;
 			$errors['realname']='Please enter your real name, we use it to credit your photographs';
 		}
-		
-		
+
 		if (strlen($profile['website']) && !isValidURL($profile['website']))
 		{
 			//can we fix it?
@@ -874,8 +872,7 @@ class GeographUser
 				$errors['website']='This doesn\'t appear to be a valid URL';
 			}
 		}
-		
-		
+
 		//unique nickname, since you can log in with it
 		if (isValidRealName($profile['nickname']))
 		{
@@ -923,16 +920,18 @@ class GeographUser
 				'we\'ve sent an email to '.$profile['email'].' which contains '.
 				'instructions on how to confirm the change.';
 				$ok=false;
-				
-				
+
+				//first invalidate any previous tokens
+				$db->Execute("update user_emailchange set status = 'invalidated' where status = 'pending' AND user_id = ".intval($arr['user_id'])." AND newemail LIKE '%@%'");
+
 				//we need to send the user an email with a confirmation link
 				//so we put the information into a table
-				
+
 				$db->Execute("insert into user_emailchange ".
 					"(user_id, oldemail,newemail,requested,status)".
 					"values(?,?,?,now(), 'pending')",
 					array($this->user_id, $this->email, $profile['email']));
-					
+
 				$id=$db->Insert_ID();
 
 				$url=	$CONF['SELF_HOST'].'/reg/m'.$id.
@@ -940,39 +939,35 @@ class GeographUser
 
 				$msg="You recently requested the email address ".
 				"for your account at ".$_SERVER['HTTP_HOST']." be changed to {$profile['email']}.\n\n".
-				
+
 				"To confirm, please click this link:\n\n".
-				
+
 				"$url\n\n".
-				
+
 				"If you do not wish to change your address, simply disregard this message";
-				
+
 				mail_wrapper($profile['email'], 'Please confirm your email address change', $msg,
 				"From: Geograph Website <noreply@geograph.org.uk>");
-				
-				
 			}
 			else
 			{
 				$errors['email']='Invalid email address';
 				$ok=false;
 			}
-			
 		}
 
-		
 		if ($ok)
 		{
 			//about box is always public - col to be removed
 			$profile['public_about']=1;
 			$profile['use_age_group']=0;
-			
+
 			//age info is useless to others, nice for us, no need
 			//to give use a public option
-			
-			if ($this->realname != $profile['realname']) 
+
+			if ($this->realname != $profile['realname'])
 			{
-				$db->Execute(sprintf("insert into user_change set 
+				$db->Execute(sprintf("insert into user_change set
 					user_id = %d,
 					field = 'realname',
 					value = %s
@@ -981,9 +976,9 @@ class GeographUser
 					$db->Quote($profile['realname'])
 					));
 			}
-			if ($this->nickname != $profile['nickname']) 
+			if ($this->nickname != $profile['nickname'])
 			{
-				$db->Execute(sprintf("insert into user_change set 
+				$db->Execute(sprintf("insert into user_change set
 					user_id = %d,
 					field = 'nickname',
 					value = %s
@@ -992,9 +987,8 @@ class GeographUser
 					$db->Quote($profile['nickname'])
 					));
 			}
-			
-			
-			$sql = sprintf("update user set 
+
+			$sql = sprintf("update user set
 				realname=%s,
 				nickname=%s,
 				website=%s,
@@ -1096,20 +1090,18 @@ class GeographUser
 						$this->user_id
 						);
 
-					if ($db->Execute($sql) === false) 
+					if ($db->Execute($sql) === false)
 					{
 						$errors['general']='error updating: '.$db->ErrorMsg();
 						$ok=false;
 					}
 				}
-
 			}
-		
 		}
-		
+
 		return $ok;
 	}
-	
+
 	/**
 	* log the user out
 	*/
