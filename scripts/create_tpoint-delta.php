@@ -80,18 +80,23 @@ $a = array();
 
 		if ($square != $last) {
 			if ($last && $affected) {
-				//we actully need to update the timestamp, as we've updated the count. Ideally we could actully update a tpoint count here too!
-					//but we need to update gridsquare.last_timestamp so things that depend on it update (like user_gridsquare!)
+				//we actully need to update the timestamp, as we've updated the points in square. Ideally we could actully update a tpoint count here too!
+					//we need to update gridsquare.last_timestamp so things that depend on it update (like user_gridsquare!)
 				$db_write->Execute("UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'");
 			}
 			//start fresh for a new square
 			$buckets = array();
 
-			//TODO? , the main query can clear any geographs, need to clear non geos.
-			//UPDATE gridimage_search SET points = '' WHERE grid_reference = '$square' and moderation_status !='geograph' AND points = 'tpoint'
+			//the main query can clear any geographs, need to clear non geos.
+			$db_write->Execute("UPDATE gridimage_search SET points = '',upd_timestamp=upd_timestamp WHERE grid_reference = '$square' and moderation_status !='geograph' AND points = 'tpoint'");
+			$affected = $db_write->Affected_Rows();
+
+			if ($affected) {
+				$gridsquare_id = $db->getOne("SELECT gridsquare_id FROM gridsquare WHERE grid_reference = '$square'");
+				$db_write->Execute("UPDATE gridimage SET points = '',upd_timestamp=upd_timestamp WHERE gridsquare_id=$gridsquare_id and moderation_status !='geograph' AND points = 'tpoint'");
+			}
 
 			$last = $square;
-			$affected = 0;
 		}
 
 		$point = 1;
