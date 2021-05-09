@@ -66,6 +66,7 @@ $a = array();
 
 	$buckets = array();
 	$count = 0;
+	$affected = 0;
 	$last = '';
 
 	$five_years_in_days = 365*5;
@@ -78,14 +79,19 @@ $a = array();
 		$square =  $recordSet->fields['grid_reference'];
 
 		if ($square != $last) {
+			if ($last && $affected) {
+				//we actully need to update the timestamp, as we've updated the count. Ideally we could actully update a tpoint count here too!
+					//but we need to update gridsquare.last_timestamp so things that depend on it update (like user_gridsquare!)
+				$db_write->Execute("UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'");
+			}
 			//start fresh for a new square
 			$buckets = array();
 
 			//TODO? , the main query can clear any geographs, need to clear non geos.
 			//UPDATE gridimage_search SET points = '' WHERE grid_reference = '$square' and moderation_status !='geograph' AND points = 'tpoint'
 
-			//store it anyway
 			$last = $square;
+			$affected = 0;
 		}
 
 		$point = 1;
@@ -107,6 +113,7 @@ $a = array();
                         } else {
 				$db_write->Execute("UPDATE gridimage SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
 				$db_write->Execute("UPDATE gridimage_search SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
+				$affected += $db_write->Affected_Rows();
 			}
 			//print ". ";
 			$count++;
@@ -116,6 +123,7 @@ $a = array();
                         } else {
 				$db_write->Execute("UPDATE gridimage SET points = '',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
 				$db_write->Execute("UPDATE gridimage_search SET points = '',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
+				$affected += $db_write->Affected_Rows();
 			}
 			//print ". ";
 			$count++;
@@ -125,6 +133,10 @@ $a = array();
 	}
 
 	$recordSet->Close();
+
+	if ($last && $affected) {
+		$db_write->Execute("UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'");
+	}
 
 	if ($param['debug'])
 		print "done [$count]\n";
