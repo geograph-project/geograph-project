@@ -152,8 +152,9 @@ function call_with_results($data) {
 				}
 			  	return ($a['s'] > $b['s']) ? -1 : 1;
 			}
-	usort($data['rows'], 'cmp');
 
+	if (!empty($data['rows']))
+		usort($data['rows'], 'cmp');
 
 	#############################
 	//thumbs!
