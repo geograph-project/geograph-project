@@ -66,7 +66,7 @@ class RebuildUserSquares extends EventHandler
 			$this->Execute(str_replace('$where',$where,$sql));
 
 		//INCREMENTAL (just squares updated recently)
-		} elseif ( !empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*12) && $status['Comment'] != 'rebuild') {
+		} elseif ( !empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*12) && $user_gridsquare['Comment'] != 'rebuild') {
 
 			$seconds = time() - strtotime($user_gridsquare['Update_time']);
 			$hours = ceil($seconds/60/60);
