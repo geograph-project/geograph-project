@@ -88,12 +88,22 @@ class RebuildUserSquares extends EventHandler
 
 			if (count($grs) > 50) {
 				while($list = array_splice($grs,0,50)) {
+					//insert current rows for this list of squares
 					$where = "grid_reference in ('".implode("','",$list)."')";
 	                                $this->Execute(str_replace('$where',$where,$sql));
+
+					//we need to delete rows in user_gridsquare, that NO LONGER exist in the square (the $where is critical to delete only processed squares)
+					$this->Execute("DELETE user_gridsquare.* FROM user_gridsquare LEFT JOIN user_gridsquare_tmp USING (user_id,grid_reference)
+					 WHERE $where AND user_gridsquare_tmp.user_id IS NULL");
 				}
 			} else {
+				//insert current rows for updated squares
 				$where = "grid_reference in ('".implode("','",$grs)."')";
 				$this->Execute(str_replace('$where',$where,$sql));
+
+				//we need to delete rows in user_gridsquare, that NO LONGER exist in the square (the $where is critical to delete only processed squares)
+				$this->Execute("DELETE user_gridsquare.* FROM user_gridsquare LEFT JOIN user_gridsquare_tmp USING (user_id,grid_reference)
+				 WHERE $where AND user_gridsquare_tmp.user_id IS NULL");
 			}
 
 			$this->Execute("REPLACE INTO user_gridsquare SELECT * FROM user_gridsquare_tmp");
