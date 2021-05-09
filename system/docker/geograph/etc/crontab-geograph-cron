@@ -45,7 +45,9 @@
 */5     *       * * * /usr/bin/php /var/www/geograph/scripts/announce-where.php
 
 
-45     3       * * *   /var/www/geograph/scripts/build_all_sitemaps.sh
+45      3       * * *   /var/www/geograph/scripts/build_all_sitemaps.sh
+
+15	2	* * *   /usr/bin/php /var/www/geograph/scripts/loki.php --auto=access_log
 
 ##############################
 # And some for the Gallery
