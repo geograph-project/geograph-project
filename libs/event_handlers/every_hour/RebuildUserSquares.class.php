@@ -50,7 +50,8 @@ class RebuildUserSquares extends EventHandler
 		$select = " SELECT user_id,`grid_reference`,x,y,reference_index,
                                 sum(moderation_status='geograph') as has_geographs,count(*) as imagecount,
                                 max(ftf) as max_ftf, sum(points = 'tpoint') as tpoints, SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as has_recent,
-				GROUP_CONCAT(gridimage_id ORDER BY ftf>0 desc,seq_no LIMIT 1) AS first, max(gridimage_id) as `last`, `point_xy`
+				GROUP_CONCAT(gridimage_id ORDER BY ftf>0 desc,seq_no LIMIT 1) AS first, max(gridimage_id) as `last`, `point_xy`,
+				SUM(LENGTH(comment)) AS comment_len
                                 FROM gridimage_search
 				WHERE \$where
                                 GROUP BY user_id,`grid_reference` ORDER BY NULL";
@@ -65,7 +66,7 @@ class RebuildUserSquares extends EventHandler
 			$this->Execute(str_replace('$where',$where,$sql));
 
 		//INCREMENTAL (just squares updated recently)
-		} elseif ( !empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*12) ) {
+		} elseif ( !empty($user_gridsquare['Update_time']) && strtotime($user_gridsquare['Update_time']) > (time() - 60*60*12) && $status['Comment'] != 'rebuild') {
 
 			$seconds = time() - strtotime($user_gridsquare['Update_time']);
 			$hours = ceil($seconds/60/60);
@@ -113,6 +114,9 @@ class RebuildUserSquares extends EventHandler
 
 				$this->Execute(str_replace('$where',$where,$sql));
 			}
+
+			if (@$status['Comment'] == 'rebuild')
+				$db->Execute("ALTER TABLE user_gridsquare_tmp COMMENT=''");
 		}
 
 		$this->Execute("DROP TABLE IF EXISTS user_gridsquare");
