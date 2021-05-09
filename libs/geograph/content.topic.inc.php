@@ -79,7 +79,7 @@ function add_topic_to_content($topic_id,& $db) {
 			return add_image_to_list($m[2], $m[2]);
 		}, $content);
 
-		$content = preg_replace_callback('\[image id=(\d+)/', function($m) {
+		$content = preg_replace_callback('/\[image id=(\d+)/', function($m) {
                         return add_image_to_list($m[1], $m[1]);
                 }, $content);
 
