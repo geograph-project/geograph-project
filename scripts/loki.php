@@ -35,6 +35,7 @@ $param=array(
 
 	'base'=>'{job="production/geograph", container="nginx"}', //a default query
 	'string'=>false, //extra filter to apply
+	'hours'=>false, //specify a number of hours to use with 'string' query. Defaults to one hour!
 
 	//which stream to get
 	'stream'=>'', //get the access_log, nginx container at least, access on stdout, and error on stderr!
@@ -160,7 +161,15 @@ if (empty($CONF['loki_address']))
 		$query = $param['base'];
 		$query .= ' |= "'.str_replace('"','\"',$param['string']).'"';
 
-		$r = getlogs($query, STDOUT, $param['limit']);
+
+		$start = null;
+		if (!empty($param['hours'])) {
+			$start = strtotime("-{$param['hours']} hour");
+
+			$start = $start.'000000000';  //as a nanosecond Unix epoch.
+		}
+
+		$r = getlogs($query, STDOUT, $param['limit'],$start);
 		print_r($r);
 	}
 
@@ -174,6 +183,7 @@ if (empty($CONF['loki_address']))
 		if (empty($param['stream'])) $param['stream'] = 'stdout';
 
 		$r = getlogs($query, STDOUT, $param['limit']); //defaults to last hour!
+		print "$query\n";
 		print_r($r);
 	}
 

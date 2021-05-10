@@ -6,3 +6,6 @@ public_html/*.orig/
 public_html/templates/*/compiled-mnt
 *.swp
 _attic/
+.*_history
+dev-startup.sh
+bin/
