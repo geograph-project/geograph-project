@@ -244,7 +244,9 @@ class EventProcessor
 	*/
 	function start()
 	{
-		$lockkey = get_class($this).md5($this->filter); //note, we DON'T use testmode in the key
+		global $CONF;
+
+		$lockkey = $CONF['db_db'].'.'.get_class($this).md5($this->filter); //note, we DON'T use testmode in the key
 
                 if (!$this->db->getOne("SELECT GET_LOCK('$lockkey',10)")) {
                         //only execute if can get a lock
