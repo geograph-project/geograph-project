@@ -88,7 +88,7 @@ if (empty($CONF['loki_address']))
 			if (!$param['debug'])
 				passthru($cmd);
 
-			$cmd = "php scripts/send-to-s3.php --src=$source --include=\"*.gz\" --dst={$CONF['s3_loki_bucket_path']} --move=1 --dry=0";
+			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst={$CONF['s3_loki_bucket_path']} --move=1 --dry=0";
 			if ($param['debug']) {
 				print "$cmd --config={$param['config']}\n";
 			} else {
@@ -126,13 +126,14 @@ if (empty($CONF['loki_address']))
 		while (1) {
 			// getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) {
 			$r = getlogs($query, $fp, $param['limit'], $start, $end);
-			printf("%d, count:%d, max:%s, last:%s\n", $c, $r['count'], $r['max'], $r['max']?date('r',$r['max']/1000000000):'');
+			if (posix_isatty(STDOUT))
+				printf("%d, count:%d, max:%s, last:%s\n", $c, $r['count'], $r['max'], $r['max']?date('r',$r['max']/1000000000):'');
 
 			//todo if ($r['status'] != 'success') continue; //to retry the last, possibly after a long sleep!
 			if (@$r['status'] != 'success') {
 				$sleep++;
 				$sleep*=2;
-				print "Failed! Needs to retry. Now sleeping for $sleep seconds.... ";
+				print "Failed! Needs to retry $start. Now sleeping for $sleep seconds.... ";
 				sleep($sleep);
 				print " and Trying again...\n";
 				continue;
@@ -170,7 +171,8 @@ if (empty($CONF['loki_address']))
 		}
 
 		$r = getlogs($query, STDOUT, $param['limit'],$start);
-		print_r($r);
+		if (posix_isatty(STDOUT))
+			print_r($r);
 	}
 
 ############################################
@@ -184,7 +186,8 @@ if (empty($CONF['loki_address']))
 
 		$r = getlogs($query, STDOUT, $param['limit']); //defaults to last hour!
 		print "$query\n";
-		print_r($r);
+		if (posix_isatty(STDOUT))
+			print_r($r);
 	}
 
 ############################################
