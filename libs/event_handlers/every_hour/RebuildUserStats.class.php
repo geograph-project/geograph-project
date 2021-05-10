@@ -195,7 +195,7 @@ class RebuildUserStats extends EventHandler
 
                 $this->processor->trace("Computing overall stats...");
 
-	//work out overall stat
+	//work out overall stat (historically this was done with WITH ROLLUP, but now we can just calculate the few we need directly)
 		$overall = $db->getRow("select
 			sum(imagecount) as images,
 			sum(imagecount>0) as squares,
@@ -259,6 +259,7 @@ class RebuildUserStats extends EventHandler
 						`first` int(11) unsigned NOT NULL default '0',
 						`last` int(11) unsigned NOT NULL default '0',
 						`content` mediumint(5) unsigned NOT NULL default '0',
+						`comment_len` decimal(8,1) unsigned default NULL,
 						PRIMARY KEY  (`user_id`),
 						KEY `points` (`points`)
 					) ENGINE=MyISAM");
@@ -287,7 +288,8 @@ class RebuildUserStats extends EventHandler
 					sum(points = 'tpoint') as tpoints,
 					min(gridimage_id) as `first`,
 					max(gridimage_id) as `last`,
-					0 as `content`
+					0 as `content`,
+					avg(length(comment)) as comment_len
 				FROM gridimage_search
 				WHERE $crit
 				GROUP BY user_id
@@ -317,13 +319,15 @@ class RebuildUserStats extends EventHandler
 					sum(tpoints) as tpoints,
 					min(`first`) as `first`,
 					max(`last`) as `last`,
-					0 as `content`
+					0 as `content`,
+					sum(comment_len)/sum(imagecount) as comment_len
 				FROM user_gridsquare
                                 WHERE $crit
                                 GROUP BY user_id
                                 ORDER BY NULL");
 
-/*
+/*	//v1 - using gridimage_search directly
+
 		$this->Execute("
 			create temporary table user_day_stat (primary key(user_id))
 			select user_id,count(distinct imagetaken) as days from gridimage_search
@@ -335,6 +339,7 @@ class RebuildUserStats extends EventHandler
 		$this->Execute("drop temporary table user_day_stat");
 */
 
+	//v2 - using manticore insteasd
 		$sph = GeographSphinxConnection();
 		$db = $this->_getDB();
 
@@ -357,6 +362,11 @@ class RebuildUserStats extends EventHandler
 			if ($loop > 10)
 				return;
 		}
+
+	//v3 - TODO we now have user_date_stat, which could be used, rather than calling manticore
+		//select user_id,sum(days) as days from user_date_stat where type='imagetaken' and month = '' group by user_id;
+		// (the month filter is important as the table contains BOTH month and year groupings, we can just use the yearly one)
+
 	}
 }
 
