@@ -366,7 +366,7 @@ require_once('geograph/security.inc.php');
 // a 'Hack' so that webarchive.org.uk can come crawling... (but lets do the same for
 
 $ip = getRemoteIP();
-if ($ip == '128.86.236.164' || $ip == '194.66.232.85' || (isset($_SERVER['HTTP_USER_AGENT']) && (
+if ($ip == '128.86.236.164' || $ip == '194.66.232.85' || $ip == '207.241.232.185' || (isset($_SERVER['HTTP_USER_AGENT']) && (
 	(strpos($_SERVER['HTTP_USER_AGENT'], 'bl.uk_')!==FALSE) ||
 	(strpos($_SERVER['HTTP_USER_AGENT'], 'ia_archiver')!==FALSE) ||
 	(strpos($_SERVER['HTTP_USER_AGENT'], 'heritrix')!==FALSE) ) ) ) {
@@ -377,10 +377,6 @@ if ($ip == '128.86.236.164' || $ip == '194.66.232.85' || (isset($_SERVER['HTTP_U
 		header("HTTP/1.1 503 Service Unavailable");
 		die("server busy, please try later");
 	}
-	$CONF['template']='archive';
-	$CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
-	$CONF['forums'] = false;
-} elseif (!empty($_GET['arc'])) {
 	$CONF['template']='archive';
 	$CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
 	$CONF['forums'] = false;

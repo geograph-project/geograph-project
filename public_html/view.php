@@ -105,15 +105,7 @@ if (isset($_GET['style'])) {
 
 customGZipHandlerStart();
 
-if ($_SERVER['HTTP_USER_AGENT'] == "curl/7.55.1") {
-	$CONF['template']='archive';
-}
-
 $smarty = new GeographPage;
-
-if ($CONF['template']=='archive') {
-	dieUnderHighLoad(2.5);
-}
 
 $template='view.tpl';
 
