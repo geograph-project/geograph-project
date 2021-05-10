@@ -470,6 +470,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$points = 0;
 	$images = 0;
 	$started_truncate = 0;
+	if (!empty($topusers))
 	foreach($topusers as $idx=>$entry)
 	{
 		$i=$idx+$start_rank;

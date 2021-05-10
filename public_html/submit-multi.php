@@ -35,7 +35,7 @@ $USER->mustHavePerm("basic");
 
 dieIfReadOnly();
 
-if (empty($$_GET['tab']) || $_GET['tab'] != 'cloud')
+if (empty($_GET['tab']) || $_GET['tab'] != 'cloud')
 	//temp as page doesnt work on https (mainly maps!)
 	pageMustBeHTTP();
 

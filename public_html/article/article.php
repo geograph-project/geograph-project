@@ -631,7 +631,8 @@ $smarty->register_modifier("articletext", "smarty_function_articletext");
 
 if ($_GET['url'] == 'preview') {
 
-	$smarty->reassignPostedDate('publish_date');
+	if (!empty($_POST['publish_dateDay']))
+		$smarty->reassignPostedDate('publish_date');
 	$_POST['title'] = preg_replace('/[^\w\-\.,:;\' ]+/','',trim($_POST['title']));
 	if (empty($_POST['url']) && !empty($_POST['title'])) {
 		$_POST['url'] = $_POST['title'];
@@ -650,8 +651,10 @@ if ($_GET['url'] == 'preview') {
 	$_POST['content'] = strip_tags($_POST['content']);
 	$_POST['content'] = preg_replace('/[“”]/','',$_POST['content']);
 
-	$_POST['extract'] = strip_tags($_POST['extract']);
-	$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
+	if (!empty($_POST['extract'])) {
+		$_POST['extract'] = strip_tags($_POST['extract']);
+		$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
+	}
 
 	if (!empty($_POST['page'])) {
 		$_GET['page'] = intval($_POST['page']);
@@ -703,7 +706,7 @@ if ($_GET['url'] == 'preview') {
 		//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 		customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
-		if (preg_match('/\bgeograph\b/i',$page['category_name']) || $page['ctype'] == 'document') {
+		if (preg_match('/\bgeograph\b/i',@$page['category_name']) || @$page['ctype'] == 'document') {
 			$template = 'article_article2.tpl';
 
 			pageMustBeHTTPS();
@@ -746,7 +749,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
 		}
-		if (preg_match('/\bgeograph\b/i',$page['category_name']) || $page['ctype'] == 'document') {
+		if (preg_match('/\bgeograph\b/i',@$page['category_name']) || @$page['ctype'] == 'document') {
 			if (empty($db))
 			        $db = GeographDatabaseConnection(true);
 

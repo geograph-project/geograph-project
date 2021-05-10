@@ -54,7 +54,7 @@ require_once('geograph/feedcreator.class.php');
 
         $rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/faq-feed.$format.$extension";
 
-        $db = GeographDatabaseConnection(truie);
+        $db = GeographDatabaseConnection(true);
 
 
         $data = $db->getAll("
@@ -71,7 +71,8 @@ ORDER BY created DESC");
         if ($data) {
             
             $rss_timeout = 3600;
-            $rss = new UniversalFeedCreator(); 
+            $rss = new UniversalFeedCreator();
+	    $cachepath = ''; //will use auto-filename, which gets saved in memcache anyway
             if (empty($_GET['refresh']))
                 $rss->useCached($format,$cachepath,$rss_timeout); 
             $rss->title = 'Geograph Knowledgebase'; 

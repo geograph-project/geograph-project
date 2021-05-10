@@ -186,7 +186,7 @@ if (!$smarty->is_cached($template, $cacheid))
 //	die("unable to execute query");
 //}
 
-		if ($searchmode) {
+		if (!empty($searchmode)) {
 			switch ($searchmode) {
 				case '1': //default ranking mode
 					#SPH_RANK_PROXIMITY_BM25
@@ -355,11 +355,10 @@ if (!empty($_GET['debug'])) {
 		{
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
-
-			$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 		}
 
 		if (!empty($res["matches"]) ) {
+			$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 
 			$ids = array_keys($res["matches"]);
 
@@ -379,8 +378,8 @@ if (!empty($_GET['debug'])) {
 		}
 	}
 
-	if ($sql) {
-		if ($searchmode) {
+	if (!empty($sql)) {
+		if (!empty($searchmode)) {
 			$db = GeographDatabaseConnection(false);
 			$ins = "INSERT INTO search_ranking_results SET
 				mode = ".intval(@$searchmode).",

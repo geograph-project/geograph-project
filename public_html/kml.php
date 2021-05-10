@@ -137,8 +137,8 @@ $template='kml.tpl';
 $cacheid = '';
 
 	if (isset($_REQUEST['i']) && $i = intval($_REQUEST['i'])) {
-		$pg = $_REQUEST['page'];
-		if ($pg == '' or $pg < 1) {$pg = 1;}
+		$pg = intval($_REQUEST['page'] ?? 1);
+		if ($pg < 1) {$pg = 1;}
 
 		if ($i < 1) {
 			if ($USER->registered) {

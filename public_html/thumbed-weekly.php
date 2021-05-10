@@ -148,8 +148,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 
 		$smarty->assign_by_ref('images', $imagelist->images);
-
-		$count++;
 	}
 }
 

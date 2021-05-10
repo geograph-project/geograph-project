@@ -695,6 +695,7 @@ split_timer('sphinx'); //starts the timer
 
 	function explodeWithQuotes($delimeter, $string) {
 		$insidequotes = false;
+		$currentelement = '';
 		for ($i = 0; $i < strlen($string); $i++) {
 			if ($string{$i} == '"') {
 				if ($insidequotes)

@@ -845,13 +845,13 @@ split_timer('search'); //starts the timer
 					if ($orderby == 'seq_id') $sortorders[$orderby] = "Marked";
 					if (!empty($dataarray['reverse_order_ind'])) {
 						$orderby = preg_replace('/(,|$)/',' desc$1',$orderby);
-						if (strpos($sortorders[$dataarray['orderby']],'-') > 1) {
+						if (strpos(@$sortorders[$dataarray['orderby']],'-') > 1) {
 							$searchdesc .= ", in ".(implode('-&gt;',array_reverse(explode('-&gt;',$sortorders[$dataarray['orderby']]))))." order";
 						} else {
-							$searchdesc .= ", in reverse ".($sortorders[$dataarray['orderby']])." order";
+							$searchdesc .= ", in reverse ".(@$sortorders[$dataarray['orderby']])." order";
 						}
 					} else {
-						$searchdesc .= ", in ".($sortorders[$dataarray['orderby']])." order";
+						$searchdesc .= ", in ".(@$sortorders[$dataarray['orderby']])." order";
 
 					}
 					$sql .= ",orderby = ".$db->Quote($orderby);
@@ -915,7 +915,7 @@ split_timer('search','create2',$searchdesc); //logs the wall time
 					case "dist_sqd":
 						break;
 					default:
-						$searchdesc .= ", in ".($dataarray['reverse_order_ind']?'reverse ':'').($sortorders[$dataarray['orderby']])." order";
+						$searchdesc .= ", in ".($dataarray['reverse_order_ind']?'reverse ':'').(@$sortorders[$dataarray['orderby']])." order";
 				}
 			}
 
@@ -929,7 +929,7 @@ split_timer('search','mulitple2',$searchdesc); //logs the wall time
 
 	function builddate(&$dataarray,$which) {
 		if (isset($dataarray[$which.'Year'])) {
-			$dataarray[$which] = sprintf("%04d-%02d-%02d",$dataarray[$which.'Year'],$dataarray[$which.'Month'],$dataarray[$which.'Day']);
+			$dataarray[$which] = sprintf("%04d-%02d-%02d",$dataarray[$which.'Year'],@$dataarray[$which.'Month'],@$dataarray[$which.'Day']);
 			if ($dataarray[$which] == '0000-00-00') {
 				$dataarray[$which] = '';
 			}
