@@ -98,6 +98,7 @@ if ($has_table && $db->getOne("select type from user_date_stat where type='$colu
       sum(points = 'tpoint') AS `tpoints`,
       min(gridimage_id) AS `first`,
       max(gridimage_id) AS `last`,
+        avg(length(comment)) as comment_len,
 
 				NOW() as updated
 				FROM `gridimage_search`

@@ -306,8 +306,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		$desc = "different categories";
 
 	} elseif ($type == 'clen') {
-		$sql_column = "avg(length(comment))";
-		$sql_having_having = "having count(*) > $minimum";
+		if ($filtered) {
+			$sql_column = "avg(length(comment))";
+			$sql_having_having = "having count(*) > $minimum";
+		} else {
+			$sql_column = "comment_len";
+			$sql_having_having = "having images > $minimum";
+		}
 		$heading = "Average Description Length";
 		$desc = "average length of the description, and having submitted over $minimum images";
 
