@@ -394,8 +394,6 @@ class GeographUser
 			        if (empty($check))
 			                $check = "[error] ".$http_response_header;
 
-			        $con = "CHECK: $check\n\n $con";
-
 				$ins = "INSERT INTO register_spam SET
 					blocked = ".(strpos($check,'<appears>yes</appears>')?1:0).",
 					username = ".$db->Quote($_POST['name']).",

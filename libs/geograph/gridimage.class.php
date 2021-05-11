@@ -2160,12 +2160,14 @@ if ($old_status == 'pending' && $status != 'rejected') {
 		if ($newsq->setByFullGridRef($grid_reference,false,true))
 		{
 			$db=&$this->_getDB();
-			
+
 split_timer('gridimage'); //starts the timer
-			
+
+			$sql_set = '';
+
 			//ensure this is a real change
 			if ($newsq->gridsquare_id != $this->gridsquare_id) {
-			
+
 				//get sequence number of target square - for a rejected image
 				//we use a negative sequence number
 				if ($this->moderation_status!='rejected')
@@ -2184,26 +2186,26 @@ split_timer('gridimage'); //starts the timer
 					$seq_no=min($seq_no-1, -1);
 				}
 
-				//was this image a ftf? 
+				//was this image a ftf?
 				if ($this->ftf)
 				{
 					$original_ftf=$this->ftf;
-					
+
 					//reset the ftf flag
 					$this->ftf=0;
-					
+
 					$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
 						"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' and user_id = {$this->user_id} ".
 						"and gridimage_id<>{$this->gridimage_id} ".
 						"order by seq_no");
-					//if the user has another geograph, then it can inherit the same ftf level. 
+					//if the user has another geograph, then it can inherit the same ftf level.
 					if ($next_geograph)
 					{
 						$db->Query("update gridimage set ftf=$original_ftf where gridimage_id={$next_geograph}");
 						$db->Query("update gridimage_search set ftf=$original_ftf where gridimage_id={$next_geograph}");
 					}
 					//otherwise see if we have other contributors images to shuffle
-					else 
+					else
 					{
 						$next_geographs= $db->GetCol("select gridimage_id from gridimage ".
 							"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
@@ -2213,7 +2215,7 @@ split_timer('gridimage'); //starts the timer
 						//if there some fft's below this one, promote them up the chain!
 						if (!empty($next_geographs) && count($next_geographs))
 						{
-							foreach ($next_geographs as $next_geograph) 
+							foreach ($next_geographs as $next_geograph)
 							{
 								$db->Query("update gridimage set ftf=ftf-1 where gridimage_id={$next_geograph}");
 								$db->Query("update gridimage_search set ftf=ftf-1 where gridimage_id={$next_geograph}");
@@ -2244,38 +2246,35 @@ split_timer('gridimage'); //starts the timer
 			$db->Execute("update gridimage set $sql_set ".
 				"nateastings=$east,natnorthings=$north,natgrlen='{$newsq->natgrlen}' ".
 				"where gridimage_id='$this->gridimage_id'");
-		
+
 		split_timer('gridimage','reassignGridsquare',"{$this->gridimage_id},$grid_reference"); //logs the wall time
 
-		
 			//ensure this is a real change
-			if ($newsq->gridsquare_id != $this->gridsquare_id) 
+			if ($newsq->gridsquare_id != $this->gridsquare_id)
 			{
-				//fire an event (some of the stuff that follows 
+				//fire an event (some of the stuff that follows
 				//might be better as an event handler
 				require_once('geograph/event.class.php');
 				new Event(EVENT_MOVEDPHOTO, "{$this->gridimage_id},{$this->grid_square->grid_reference},{$newsq->grid_reference}");
-				
+
 				//update cached data for old square and new square
 				$this->grid_square->updateCounts();
 				$newsq->updateCounts();
 
 				//invalidate any cached maps
-					//handled by the event above 
-			
+					//handled by the event above
+
 				//update placename cached column
-					//handled by the event above 
+					//handled by the event above
 			}
-			
+
 			//updated cached tables
 				//this isnt needed as reassignGridsquare is only called before commitChanges
 			//$this->updateCachedTables();
 
 			//updateCachedTables needs to know the new gridref for the lat/long calc!
 			$this->newsq =& $newsq;
-			
-			
-			
+
 			$ok=true;
 		}
 		else
@@ -2286,8 +2285,7 @@ split_timer('gridimage'); //starts the timer
 		}
 		return $ok;
 	}
-	
-	
+
 	/**
 	* gets a human readable version of the potentially part date
 	*/

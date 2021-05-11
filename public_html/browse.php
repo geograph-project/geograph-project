@@ -198,7 +198,7 @@ if ($grid_given)
 		$smarty->assign('imagecount', $square->imagecount);
 		
 		//is this just a closest match?
-		if (is_object($square->nearest))
+		if (!empty($square->nearest) && is_object($square->nearest))
 		{
 			$smarty->assign('nearest_distance', $square->nearest->distance);
 			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
@@ -1043,7 +1043,7 @@ if ($grid_given)
 		$smarty->assign('errormsg', $square->errormsg);
 
 		//includes a closest match?
-		if (is_object($square->nearest))
+		if (!empty($square->nearest) && is_object($square->nearest))
 		{
 			$smarty->assign('nearest_distance', $square->nearest->distance);
 			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
