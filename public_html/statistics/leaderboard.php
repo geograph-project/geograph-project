@@ -310,7 +310,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "avg(length(comment))";
 			$sql_having_having = "having count(*) > $minimum";
 		} else {
-			$sql_column = "comment_len";
+			$sql_column = "images, comment_len";
 			$sql_having_having = "having images > $minimum";
 		}
 		$heading = "Average Description Length";
