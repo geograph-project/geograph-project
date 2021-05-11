@@ -18,4 +18,4 @@
 
 
 
-
+12     *       * * *   /usr/bin/php /var/www/geograph/scripts/square-cluster.php --count=1000 --execute --sleep=3
