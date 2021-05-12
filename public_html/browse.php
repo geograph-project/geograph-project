@@ -557,8 +557,8 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'submitted','name'=>'Month Submitted','count'=>$row['submitted'].' Months');
 			$breakdowns[] = array('type'=>'submittedyear','name'=>'Year Submitted','count'=>$row['submittedyear'].' Years');
 
-			if ($square->imagecount > 15) {
-				$c = $db->getOne("SELECT c FROM gridsquare_group_stat WHERE gridsquare_id = {$square->gridsquare_id}");
+			if (@$square->last_grouped > '2000') {
+				$c = $db->getOne("select count(distinct label) from gridimage_group_stat where grid_reference = '{$square->grid_reference}'");
 				if ($c > 1) {
 					array_unshift($breakdowns,array('type'=>'cluster','name'=>'Automatic Cluster','count'=>$c.' Groups'));
 				}
