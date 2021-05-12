@@ -207,7 +207,7 @@ if (!empty($_GET['q'])) {
 		$grid_ok = 1;
 	}
 
-	if ($grid_ok) {
+	if (!empty($grid_ok)) {
 	        require_once('geograph/conversions.class.php');
         	$conv = new Conversions;
 
@@ -333,7 +333,7 @@ if (!empty($_GET['q'])) {
 			$suggestions[] = '<a href="/place/'.urlencode2($place['Place']).'" rel="nofollow">'.$place['images'].' Images <i>nearest</i> '.htmlentities2($place['Place']).', '.htmlentities2($place['County']).'</a>';
 		}
 
-		if ($grid_ok && !empty($square->nateastings) && $square->natgrlen == 4 && $square->reference_index == 1) {
+		if (!empty($grid_ok) && !empty($square->nateastings) && $square->natgrlen == 4 && $square->reference_index == 1) {
 			$sql = sprintf("SELECT geometry_x,geometry_y,dist FROM opennames WHERE MATCH(%s)  AND geometry_x BETWEEN %d AND %d  AND geometry_y BETWEEN %d AND %d",
 				$db->Quote("@(name1,name2) $plain"), $square->nateastings-4000, $square->nateastings+4000, $square->natnorthings-4000, $square->natnorthings+4000);
 			if ($row = $sph->getRow($sql)) {
@@ -355,7 +355,7 @@ if (!empty($_GET['q'])) {
 
 	$limit = 50;
 
-        if ($grid_ok) {
+        if (!empty($grid_ok)) {
 
 #########################################
 # setup search results

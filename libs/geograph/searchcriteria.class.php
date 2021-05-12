@@ -620,7 +620,7 @@ class SearchCriteria
 			$same = ($dates[0] == $dates[1]);
 			
 			//if a 'to' search then we must make blank bits match the end!
-			list($y1,$m1,$d1) = explode('-',$dates[1]);
+			@list($y1,$m1,$d1) = explode('-',$dates[1]);
 			if ($y1 > 0) {
 				if ($m1 == 0) {
 					$m1 = 12;

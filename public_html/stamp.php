@@ -93,10 +93,10 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 				print "<option value=0>Normal size</option>";
 				foreach (array(800,1024,1600) as $size) {
 					if ($image->original_width>$size || $image->original_height>$size) {
-						printf('<option value="%s"%s>%s</option>',$size,($_GET['large'] == $size)?' selected':'',"$size Nominal");
+						printf('<option value="%s"%s>%s</option>',$size,(@$_GET['large'] == $size)?' selected':'',"$size Nominal");
 					}
 				}
-				printf('<option value="%s"%s>%s</option>',1,($_GET['large'] == '1')?' selected':'',"{$image->original_width} x {$image->original_height} px");
+				printf('<option value="%s"%s>%s</option>',1,(@$_GET['large'] == '1')?' selected':'',"{$image->original_width} x {$image->original_height} px");
 				print "</select> &nbsp; ";
 			} ?>
 			Options:
