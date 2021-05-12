@@ -43,6 +43,17 @@ $param=array(
 	'debug'=>false,
 );
 
+//normal parser doesnt support arguments as seperate (because doesnt know which accept them)
+// this allows us to do [[ alias access_grep="php scripts/loki.php --stream=stdout --string" ]] to allow `access_grep busyday`
+if (in_array('--string',$_SERVER['argv'])) {
+	$idx = array_search('--string',$_SERVER['argv']);
+	if (isset($_SERVER['argv'][$idx+1])) {
+		$_SERVER['argv'][$idx] = $_SERVER['argv'][$idx].'='.$_SERVER['argv'][$idx+1];
+		unset($_SERVER['argv'][$idx+1]);
+	}
+}
+
+
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
@@ -171,7 +182,7 @@ if (empty($CONF['loki_address']))
 		}
 
 		$r = getlogs($query, STDOUT, $param['limit'],$start);
-		if (posix_isatty(STDOUT))
+		if (empty($r['count']) && posix_isatty(STDOUT))
 			print_r($r);
 	}
 
