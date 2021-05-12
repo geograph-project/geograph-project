@@ -135,7 +135,7 @@ foreach ($squares as $square => $gridsquare_id) {
 
 	######################
 
-	$db->Execute("UPDATE gridsquare SET last_grouped = NOW() WHERE gridsquare_id = $gridsquare_id");
+	$db->Execute("UPDATE gridsquare SET last_grouped = NOW(),last_timestamp=last_timestamp WHERE gridsquare_id = $gridsquare_id");
 
 	######################
 
