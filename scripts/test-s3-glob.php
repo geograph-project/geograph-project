@@ -23,7 +23,7 @@
 
 ############################################
 
-$param = array('path'=>'','d'=>'/','c'=>true,'max'=>10, 'verbose'=>0, 'log'=>0);
+$param = array('path'=>'','d'=>'/','c'=>true,'max'=>10, 'verbose'=>0, 'log'=>0, 'command'=>false);
 
 if (!empty($argv[1]) && strpos($argv[1],'/') === 0)
 	$_SERVER['argv'][1] = "--path=".$argv[1]; //our parser doesnt understand unprefixed options, so convert to a proper option
@@ -68,9 +68,22 @@ if (!empty($bucket)) {
 		if (!empty($row['prefix'])) { //a virtual directory!
 			printf("%s %10s %16s %16s %s\n",
 				 'd', '', '', '', $filename);
-		} else {
+		} else { // else a file
 			printf("%s %10d %16s %16s %s   %s\n",
 				 '-', $row['size'], date('Y-m-d H:i:s',$row['time']), $row['hash'], $filename, $row['class']);
+
+			if ($param['command']) {
+				//we dont use $filesystem->command(..) becuase we dont have a local path, we only have the internal bucket key
+				$cmd = $param['command'];
+				if (strpos($cmd,'%d')===FALSE)
+	                                $cmd.=" %d"; //add to end!
+
+				$tmp_dst = $filesystem->_get_remote_as_tempfile($bucket, $filename);
+				$cmd = str_replace('%d',$tmp_dst, $cmd);
+				print "$cmd\n";
+				passthru($cmd); //todo, maybe passthur not right version
+				print "\n";
+			}
 		}
 	}
 }
