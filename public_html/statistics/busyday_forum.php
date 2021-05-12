@@ -47,6 +47,11 @@ $cacheid='statistics|busyday_forum'.isset($_GET['users']).$u.'.'.isset($_GET['th
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	//lets hobble this! (dont have a material-view)
+        header("HTTP/1.1 503 Service Unavailable");
+        $smarty->display('function_disabled.tpl');
+        exit;
+
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
@@ -120,5 +125,3 @@ $smarty->assign("filter",2);
 $smarty->assign("nosort",1);
 $smarty->display($template, $cacheid);
 
-	
-?>
