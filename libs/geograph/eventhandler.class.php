@@ -41,6 +41,9 @@ class EventHandler
 	 */
 	function &_getDB()
 	{
+		if (!empty($this->processor) && !empty($this->processor->db))
+			$this->db=$this->processor->db; //we set it here, rather than just returning as some clients still use $this->db-> directly. 
+
 		if (empty($this->db) || !is_object($this->db))
 			$this->db=GeographDatabaseConnection(false);
 
