@@ -63,3 +63,7 @@ foreach (glob($folders) as $folder) {
 }
 
 ##########################################################
+
+//todo ... remove old templates, making sure NOT to delete the latest edition, will have to lookup this timestamp
+//$this->compile_id = filemtime(dirname($this->template_dir)); //the date/time the 'image' was built, not modified!
+//find /mnt/efs/smarty-basic/ -type f -not -name "1619535087*" -delete
