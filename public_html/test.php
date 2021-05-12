@@ -468,10 +468,6 @@ if (empty($CONF['os_licence']) || $CONF['os_licence'] == 'XXXXXXXX') {
 	warn('$CONF[\'os_licence\'] does not appear to have been configured. Only a problem if Geograph British Isles/Britain and Ireland');
 }
 
-if (empty($CONF['flickr_api_key'])) {
-	warn('$CONF[\'flickr_api_key\'] does not appear to have been configured. OK, not really used anyway');
-}
-
 if (empty($CONF['picnik_api_key'])) {
 	warn('$CONF[\'picnik_api_key\'] does not appear to have been configured. RECOMMENDED but not required (code may need changing to take account of this)');
 }
@@ -503,7 +499,7 @@ if (strpos($_ENV["OS"],'Windows') === FALSE) {
 
 #todo? Database check...
 
-#todo? API key checks - flickr, GMaps, metacarta etc...
+#todo? API key checks - GMaps, metacarta etc...
 
 //////////////////////////////////////////////////////////////////
 // END OF TESTING

@@ -267,10 +267,6 @@ $CONF['search_count_first_page'] = true; //true/false
 
 ###################################
 
-//to use the flickr search will need to obtain a flicker api key
-//    http://flickr.com/services/api/misc.api_keys.html
-$CONF['flickr_api_key'] = '';
-
 //to use the picnik service for upload will need to obtain a api key
 //   http://www.picnik.com/keys/request
 $CONF['picnik_api_key'] = '';
