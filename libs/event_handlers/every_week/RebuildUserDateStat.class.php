@@ -103,8 +103,8 @@ if ($has_table && $db->getOne("select type from user_date_stat where type='$colu
 				NOW() as updated
 				FROM `gridimage_search`
 				WHERE ".implode(' AND ',$where)."
-				GROUP BY user_id,substring($column,1,4),substring($column,1,7)
-				with rollup having year is not null"); //because we are running a seperate query for each year, the rows with NULL year dont work. (they yearly anyway!)
+				GROUP BY user_id,substring($column,1,7)
+				with rollup");//group by year is implicit, beucase running query per year!
 
 				$c++;
 			}
