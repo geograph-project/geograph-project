@@ -47,7 +47,7 @@
 		{/if}
 	</form>
 
-	{if count($results) eq 15}
+	{if $results && count($results) eq 15}
 		<p>
 			<small>&middot; To refine the results simply add more keywords (view <a href="#cheatsheet">Cheatsheet</a>)</small>
 		</p>

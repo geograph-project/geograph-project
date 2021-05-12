@@ -57,7 +57,7 @@ if (!empty($_GET['q'])) {
 
 		$ids = $sphinx->returnIds($pg,'user');
 
-		if (count($ids)) {
+		if (!empty($ids)) {
 			$where = "user_id IN(".join(",",$ids).")";
 
 			$db = GeographDatabaseConnection(true);
