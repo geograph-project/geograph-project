@@ -13,7 +13,7 @@ if (empty($argv[1])) {
 //"PHP message: PHP Notice:  Only variables should be assigned by reference in /var/www/geograph/libs/geograph/user.class.php on line 84
 
 $str = array();
-
+$src = array();
 
 while ($h && !feof($h)) {
 	$input = fgets($h);
@@ -21,6 +21,8 @@ while ($h && !feof($h)) {
 	        foreach ($m[2] as $key => $file) {
         	        $uni = $file." ".$m[3][$key];
 	                $str[$uni] = $m[1][$key];
+			if (empty($src[$uni]) && preg_match('/request: "(.+?)"/',$input,$mm))
+				$src[$uni] = $mm[1];
 	        }
 	}
 }
@@ -31,10 +33,11 @@ $white ="\033[0m";
 
 foreach ($str as $uni => $message) {
         print "$color$message\n";
+	@$request = $src[$uni];
 
 	$uni = str_replace("/var/www/geograph/",' ',$uni);
 
-        print "#     $uni$white\n";
+        print "#     $uni$white  {$request}\n";
 
         //print `src $uni`;
 	list($dummy,$file,$line) = explode(" ",$uni);
