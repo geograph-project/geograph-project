@@ -1401,6 +1401,6 @@ function debug_message($subject,$body) {
 	debug_print_backtrace();
         $con = ob_get_clean();
 
-	mail_wrapper($CONF['contact_email'],$subject,$body."\n\n".$con);
+	mail_wrapper($CONF['developer_email'] ?? $CONF['contact_email'],$subject,$body."\n\n".$con);
 }
 
