@@ -140,6 +140,10 @@ foreach ($squares as $square => $gridsquare_id) {
 	######################
 
 	print "done $square.\n";
+
+	if (!empty($_SERVER['BASE_DIR']) && file_exists($_SERVER['BASE_DIR'].'/shutdown-sential'))
+        	break;
+
 	if ($param['sleep'])
 		sleep($param['sleep']);
 	$carrot->clearDocuments();
