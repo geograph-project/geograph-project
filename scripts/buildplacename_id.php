@@ -113,6 +113,8 @@ $db->Execute("INSERT INTO event_log SET
 			$extra = "";
 			if (!empty($recordSet->fields['upd_timestamp']))
 				$extra = ",upd_timestamp = upd_timestamp";
+			if (!empty($recordSet->fields['last_timestamp']))
+				$extra = ",last_timestamp = last_timestamp";
 
 			$db->Execute("update LOW_PRIORITY $table set placename_id = $pid$extra where {$table}_id = $gid");
 		}
