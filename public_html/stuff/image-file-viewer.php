@@ -151,6 +151,16 @@ $res = array();
 
 if ($image->moderation_status == 'rejected') {
 	unset($sizes[0]); //remove the smallest!
+} elseif (!empty($image->square->first)) {
+	if ($image->square->first == $image->gridimage_id)
+		array_unshift($sizes,80);
+} elseif (!empty($image->gridsquare_id)) {
+	if ($db->getOne("SELECT first FROM gridsquare WHERE gridsquare_id = {$image->gridsquare_id}") == $image->gridimage_id)
+		array_unshift($sizes,80);
+}
+if ($db->getOne("SELECT gridimage_id FROM gridimage_daily WHERE gridimage_id = ".intval($image->gridimage_id))) {
+	$sizes[] = 360;
+	$sizes[] = 393;
 }
 
 if ($image->original_width>10) {
@@ -211,6 +221,13 @@ foreach ($sizes as $size) {
 		print "<th>n/a";
 		print "<th>n/a";
 		//dont support $html for now
+	} elseif ($size == 80) {
+		//$url = http://staging.t0.geograph.org.uk/tile/tiny.php?id=197573
+		$url = "{$CONF['TILE_HOST']}/tile/tiny.php?id={$image->gridimage_id}&hash=".$image->_getAntiLeechHash()."&large=1";
+                print "<td><img src=$url></td>";
+		print "<th>n/a";
+		print "<th>n/a";
+		//dont support $html for now
 
 	} elseif ($size == 60) {
                 print "<td>".($html = $image->getSquareThumbnail(60,60))."</td>";
@@ -221,9 +238,17 @@ foreach ($sizes as $size) {
 		print "<td>".($html = $image->getThumbnail(120,120))."</td>";
 		print "<th>n/a";
 		print "<th>n/a";
-
 	} elseif ($size == 213) {
 		print "<td>".($html = $image->getThumbnail(213,160))."</td>";
+		print "<th>n/a";
+		print "<th>n/a";
+
+	} elseif ($size == 393) {
+		print "<td>".($html = $image->getFixedThumbnail(393,300))."</td>";
+		print "<th>n/a";
+		print "<th>n/a";
+	} elseif ($size == 360) {
+		print "<td>".($html = $image->getFixedThumbnail(360,263))."</td>";
 		print "<th>n/a";
 		print "<th>n/a";
 

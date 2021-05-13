@@ -47,4 +47,4 @@ require_once('geograph/global.inc.php');
 		//TODO cehck anti-leach hash
 
 		header("Content-Type: image/jpeg");
-		imagejpeg($image->getSquareThumb(40));
+		imagejpeg($image->getSquareThumb(empty($_GET['large'])?40:80));
