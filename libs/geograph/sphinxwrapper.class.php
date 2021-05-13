@@ -991,7 +991,7 @@ split_timer('sphinx'); //starts the timer
 	function &_getDB($allow_readonly = false)
 	{
 		//check we have a db object or if we need to 'upgrade' it
-		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+		if (empty($this->db) || !is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
 			$this->db=GeographDatabaseConnection($allow_readonly);
 		}
 		return $this->db;
@@ -1004,7 +1004,7 @@ split_timer('sphinx'); //starts the timer
 
 	function &_getClient($new=false)
 	{
-		if (!is_object($this->client))
+		if (empty($this->client) || !is_object($this->client))
 			$this->client = GeographSphinxConnection('client',$new);
 
 		return $this->client;
