@@ -751,22 +751,23 @@ if (isset($_POST['gridsquare']))
 	}
 	else
 	{
-		$smarty->assign('errormsg', $square->errormsg);
-		
+		if (!empty($square->errormsg))
+			$smarty->assign('errormsg', $square->errormsg);
+
 		//we've rejected the gridsquare, but the inputs may be valid...
-		if ($square->validGridPos($_POST['gridsquare'], $_POST['eastings'], $_POST['northings']))
+		if (!empty($_POST['gridsquare']) && $square->validGridPos($_POST['gridsquare'], $_POST['eastings'], $_POST['northings']))
 		{
 			$smarty->assign('gridsquare', $_POST['gridsquare']);
 			$smarty->assign('eastings', $_POST['eastings']);
 			$smarty->assign('northings', $_POST['northings']);
 			$smarty->assign('gridref', sprintf("%s%02d%02d", $_POST['gridsquare'],$_POST['eastings'],$_POST['northings']));
 		}
-		
+
 		if ($step == 1) {
 			//init smarty
 			$smarty->assign('prefixes', $square->getGridPrefixes());
 			$smarty->assign('kmlist', $square->getKMList());
-			
+
 			$USER->getStats();
 		}
 	}

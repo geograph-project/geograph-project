@@ -2429,7 +2429,7 @@ split_timer('map'); //starts the timer
 
 			$posx=$gridx-$this->map_x;
 			$posy=($top-$bottom) - ($gridy-$bottom);
-			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
+			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - @$recordSet->fields['accepted'];
 			$grid[$posx][$posy]=$recordSet->fields;
 
 			$recordSet->MoveNext();

@@ -105,7 +105,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($groupby) {
 		$table = array();
 	
-		$sphinx = new sphinxwrapper($_GET['q']);
+		$sphinx = new sphinxwrapper($_GET['q'] ?? '');
 		if (!empty($sphinx->qclean)) {
 			$smarty->assign('q',$sphinx->qclean);
 		}
