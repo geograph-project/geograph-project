@@ -239,6 +239,7 @@ print "</pre>";
 	} else {
 		print "none";
 	}
+	$smarty->display("_std_end.tpl");
 	exit;
 }
 
