@@ -196,11 +196,7 @@ function AuthenticateUser() {
 
                         // a user must have submitted a minimum number of images
 
-                        $sqlcnt = "select images from user_stat where user_id = " .intval($rs->fields[3]);
-                        $icount = 0;
-                        if ($rsimg = $db->Execute($sqlcnt)) {
-                                $icount = $rsimg->fields[0];
-                        }
+                        $icount = $db->getOne("select images from user_stat where user_id = " .intval($USER->user_id));
                         if ($icount < $CONF['juppy_minimum_images']) {
                                 $xml['status'] = "You need to have submitted " . $CONF['juppy_minimum_images'] .
                                     " image(s) using web submission before you can use JUppy. Sorry";
