@@ -182,9 +182,9 @@ class game {
 			$this->rastermap = new RasterMap($this->image->grid_square,2,!$removeExactPosition);
 			
 			if ($removeExactPosition) {
-				$game->rastermap->nateastings = floor($game->rastermap->nateastings/1000) * 1000;
-				$game->rastermap->natnorthings = floor($game->rastermap->natnorthings/1000) * 1000;
-				$game->rastermap->exactPosition = false;
+				$this->rastermap->nateastings = floor($this->rastermap->nateastings/1000) * 1000;
+				$this->rastermap->natnorthings = floor($this->rastermap->natnorthings/1000) * 1000;
+				$this->rastermap->exactPosition = false;
 			}
 		}
 	}
@@ -246,8 +246,8 @@ class game {
 		global $USER;
 		$where = 1;
 		$dist = $x = 0;
-		if (empty($game->batchsize)) {
-			$game->batchsize = 10;
+		if (empty($this->batchsize)) {
+			$this->batchsize = 10;
 		}
 		switch($level) {
 			case 1: $dist = 3;
@@ -302,7 +302,7 @@ class game {
 
 				$ids = array();
 
-				$needed = ($game->batchsize*3); //we need to allow for users images, ireland, rejected etc
+				$needed = ($this->batchsize*3); //we need to allow for users images, ireland, rejected etc
 
 				if ($maxId < $needed) {
 					die("not enough images submitted");
@@ -332,7 +332,7 @@ class game {
 		$sql = "select gi.*
 			from gridimage_search gi
 			where $where
-			order by rand() limit ".($game->batchsize*2);
+			order by rand() limit ".($this->batchsize*2);
 
 		$imagelist=new ImageList();
 		$this->numberofimages =$imagelist->_getImagesBySql($sql,3600);
@@ -347,14 +347,14 @@ class game {
 		} else {
 			$where = "rating = $rating";
 		}
-		if (empty($game->batchsize)) {
-			$game->batchsize = 10;
+		if (empty($this->batchsize)) {
+			$this->batchsize = 10;
 		}
 		$sql = "select gi.*
 			from game_image_rate 
 				inner join gridimage_search gi using(gridimage_id)
 			where game_id = {$this->game_id} and $where
-			order by rand() limit ".($game->batchsize*2);
+			order by rand() limit ".($this->batchsize*2);
 		
 		$imagelist=new ImageList();
 		$this->numberofimages =$imagelist->_getImagesBySql($sql);
@@ -500,4 +500,3 @@ class game {
 }
 
 
-?>
