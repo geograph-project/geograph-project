@@ -76,6 +76,11 @@
 </tbody>
 </table>
 <br/>
+
+{if $query_info}
+	<p><i>{$query_info|escape:'html'}</i></p><br>
+{/if}
+
 <div class="interestBox" style="padding-left:100px"><a href="/admin/suggestions.php?{$query_string}">Continue &gt;</a> 
 		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
 

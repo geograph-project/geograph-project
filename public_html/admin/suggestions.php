@@ -182,6 +182,7 @@ if (!empty($_GET['q'])) {
 			$sql_where .= " and 0";
 		}
 		$smarty->assign('q', $sphinx->qclean);
+		$smarty->assign('query_info', @$sphinx->query_info);
 	}
 }
 
