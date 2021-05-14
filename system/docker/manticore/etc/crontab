@@ -46,7 +46,8 @@
 
 50 7 * * *          indexer --config /etc/sphinxsearch/sphinx.conf category tagsoup content1 document_stemmed document_words --rotate
 
-47 */6 * * *        indexer --config /etc/sphinxsearch/sphinx.conf tickets_closed --rotate
+47 */6 * * *        indexer --config /etc/sphinxsearch/sphinx.conf tickets_closed_delta --rotate
+47 10  * * 0        indexer --config /etc/sphinxsearch/sphinx.conf tickets_closed_archive --rotate
 
 47 1 * * *          indexer --config /etc/sphinxsearch/sphinx.conf curated1 --rotate
 
