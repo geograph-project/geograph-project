@@ -240,25 +240,21 @@ Wikimedia Commons has recently undertaken to upload Geograph images in bulk, so 
 <b>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=insource%3A%22geograph+`$image->gridimage_id`%22&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been"}</b>.</div>
 <br/>
 
-The following is the recommended template for using on the photo page. You should <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}{if $image->original_width}&amp;size=original{/if}">download the image</a>, and {external href="https://commons.wikimedia.org/wiki/Special:Upload" text="upload to wikimedia commons"}.<br/><br/>
-
-&middot; You can also use the {external href="http://tools.wmflabs.org/geograph2commons/?server=www.geograph.org.uk&amp;photo_id=`$image->gridimage_id`" text="geograph2commons"} to crossload the image (clicking that link should prefill the image-id for you!)<br/><br/>
-
-<form><textarea rows="17" id="wikitext">== {literal}{{int:filedesc}}{/literal} ==
+{capture name=wikitext}== {literal}{{int:filedesc}}{/literal} ==
 {literal}{{{/literal}Information
-|Description={literal}{{{/literal}en|1={$image->title|escape:'html'}{literal}}}{/literal}
+|Description={literal}{{{/literal}en|1={$image->title}{literal}}}{/literal}
 |Source=From [{$self_host}/photo/{$image->gridimage_id} geograph.org.uk]
 {if $image->imagetaken && strpos($image->imagetaken,'0000') !== 0}
 |Date={$image->imagetaken|replace:'-00':''}
 {else}
 |Date={$image->submitted|date_format:'%Y-%m-%dT%H:%M:%S+00:00'}
 {/if}
-|Author=[{$self_host}{$image->profile_link} {$image->realname|escape:'html'}]
+|Author=[{$self_host}{$image->profile_link} {$image->realname}]
 |Permission=Creative Commons Attribution Share-alike license 2.0
 |Other fields={literal}{{{/literal}Credit line
- |Author={$image->realname|escape:'html'}
+ |Author={$image->realname}
  |License=[https://creativecommons.org/licenses/by-sa/2.0/ CC BY-SA 2.0]
- |Other=''{$image->title|escape:'html'}''
+ |Other=''{$image->title}''
 {literal} }}
 }}{/literal}
 {if $photographer_lat}
@@ -267,7 +263,15 @@ The following is the recommended template for using on the photo page. You shoul
 {literal}{{{/literal}Object location|{$lat|string_format:"%.5f"}|{$long|string_format:"%.5f"}|source:geograph-{if $image->grid_square->reference_index==1}osgb36{else}irishgrid{/if}({$image->getSubjectGridref(false)}){if $image->view_direction > -1}_heading:{$image->view_direction}{/if}|prec={$image->subject_gridref_precision}{literal}}}{/literal}
 
 == {literal}{{int:license-header}}{/literal} ==
-{literal}{{{/literal}geograph|{$image->gridimage_id}|{$image->realname|escape:'html'}{literal}}}{/literal}</textarea><br/>
+{literal}{{{/literal}geograph|{$image->gridimage_id}|{$image->realname}{literal}}}{/literal}{/capture}
+{capture name=wikiurl}{$self_host}{$script_name}?id={$image->gridimage_id}&download={$image->_getAntiLeechHash()}{if $image->original_width}&size=original{/if}{/capture}
+{capture name=wikiuploadparams}wpSourceType=url&wpUploadFileURL={$smarty.capture.wikiurl|escape:url}&wpUploadDescription={$smarty.capture.wikitext|escape:'url'}&wpDestFile={$image->title|escape:'url'}%20(geograph%20{$image->gridimage_id}).jpg{/capture}
+
+The following is the recommended template for using on the photo page. You should <a href="{$smarty.capture.wikiurl|escape:'html'}">download the image</a>, and {external href="https://commons.wikimedia.org/wiki/Special:Upload?`$smarty.capture.wikiuploadparams`"|escape:'html' text="upload to wikimedia commons"}.<br/><br/>
+
+&middot; You can also use the {external href="http://tools.wmflabs.org/geograph2commons/?server=www.geograph.org.uk&amp;photo_id=`$image->gridimage_id`" text="geograph2commons"} to crossload the image (clicking that link should prefill the image-id for you!)<br/><br/>
+
+<form><textarea rows="17" id="wikitext">{$smarty.capture.wikitext|escape:'html'}</textarea><br/>
 <small>This template includes the {external href="http://commons.wikimedia.org/wiki/Template:Information" text="information box"} with the relevent data (title, links and licence), {external href="http://commons.wikimedia.org/wiki/Template:Location" text="geotags the image"}, as well as the specific {external href="http://commons.wikimedia.org/wiki/Template:Geograph" text="Geograph Template"}</small></form>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
