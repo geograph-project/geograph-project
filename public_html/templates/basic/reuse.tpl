@@ -267,9 +267,7 @@ Wikimedia Commons has recently undertaken to upload Geograph images in bulk, so 
 {capture name=wikiurl}{$self_host}{$script_name}?id={$image->gridimage_id}&download={$image->_getAntiLeechHash()}{if $image->original_width}&size=original{/if}{/capture}
 {capture name=wikiuploadparams}wpSourceType=url&wpUploadFileURL={$smarty.capture.wikiurl|escape:url}&wpUploadDescription={$smarty.capture.wikitext|escape:'url'}&wpDestFile={$image->title|escape:'url'}%20(geograph%20{$image->gridimage_id}).jpg{/capture}
 
-The following is the recommended template for using on the photo page. You should <a href="{$smarty.capture.wikiurl|escape:'html'}">download the image</a>, and {external href="https://commons.wikimedia.org/wiki/Special:Upload?`$smarty.capture.wikiuploadparams`"|escape:'html' text="upload to wikimedia commons"}.<br/><br/>
-
-&middot; You can also use the {external href="http://tools.wmflabs.org/geograph2commons/?server=www.geograph.org.uk&amp;photo_id=`$image->gridimage_id`" text="geograph2commons"} to crossload the image (clicking that link should prefill the image-id for you!)<br/><br/>
+You can {external href="https://commons.wikimedia.org/wiki/Special:Upload?`$smarty.capture.wikiuploadparams`"|escape:'html' text="directly upload this image to Wikimedia Commons"}.  You will need to add some categories, but that link will automatically fill in the <a href="{$smarty.capture.wikiurl|escape:'html'}">download link</a> and the file description template below.<br/><br/>
 
 <form><textarea rows="17" id="wikitext">{$smarty.capture.wikitext|escape:'html'}</textarea><br/>
 <small>This template includes the {external href="http://commons.wikimedia.org/wiki/Template:Information" text="information box"} with the relevent data (title, links and licence), {external href="http://commons.wikimedia.org/wiki/Template:Location" text="geotags the image"}, as well as the specific {external href="http://commons.wikimedia.org/wiki/Template:Geograph" text="Geograph Template"}</small></form>
