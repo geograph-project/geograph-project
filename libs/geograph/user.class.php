@@ -1533,7 +1533,7 @@ class GeographUser
 							//delete the autologin, we've used it
 							$db->query("delete from autologin where $clause");
 
-	        $db->query("insert autologin_archive set user_id='{$bits[0]}', token='{$bits[1]}', request_time = {$_SERVER['REQUEST_TIME']},
+	        $db->query("insert ignore autologin_archive set user_id='{$bits[0]}', token='{$bits[1]}', request_time = {$_SERVER['REQUEST_TIME']},
 				 remote_port = {$_SERVER['REMOTE_PORT']}, forwarded_for = ".$db->Quote($_SERVER['HTTP_X_FORWARDED_FOR']));
 	
 							//given the user a new one
