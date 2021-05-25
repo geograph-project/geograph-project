@@ -104,4 +104,4 @@
 
 	{/if}
 {/dynamic}
-<div id="maincontent">
+<div id="maincontent" style="positon:relative">

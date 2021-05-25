@@ -92,4 +92,4 @@
 
 	{/if}
 {/dynamic}
-<div id="maincontent">
+<div id="maincontent" style="position:relative">
