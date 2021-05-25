@@ -57,4 +57,51 @@
 {else}
 {dynamic}<div {if $maincontentclass}class="{$maincontentclass}"{else}class="content2"{/if} id="maincontent_block">{/dynamic}
 {/if}
+{dynamic}
+	{if $show_appeal}
+
+<div id="appeal_block" style="background-color:#ffffae;padding:10px;margin-bottom:10px">
+	<div style="float:right">
+		<a href="#" onclick="return hide_appeal()">Dismiss</a>
+	</div>
+	<i>"Geograph - exactly what the Internet was invented for."</i><br>
+
+	Mike Parker, the author of the book "Map Addict" among others, said this on becoming Geograph's esteemed Patron.  Like many of the visitors to our site, Mike is a keen user of the vast resource of images held on the site.  
+	We are all so used to just dipping into the huge amount of information and images on the Internet, of which Geograph is a significant contributor, that it is easy to forget that running a site like this cost money. 
+	You are one of millions of visitors to the website each year.  You and all our other visitors have access to a vast resource of images that may support things like school projects, parish magazines and news articles, or planning your walks and holidays, or just armchair exploring.  Here's just one image of the six million plus to choose from!<br>
+	<br>
+        {if !$pictureoftheday && !$image}
+	<div style=float:left;padding-right:12px>
+		<a href="https://www.geograph.org.uk/photo/14" title="SY8080 : Durdle Door from the east by Helena Downton">
+			<img src="https://s2.geograph.org.uk/photos/00/00/000014_bfd815d0_213x160.jpg" width=213 height=160></a>
+	</div>
+	{/if}
+
+	Access to all this is given to you totally free of charge, as our contributors all share their photographs so that they are free to download and use.
+	But it costs thousands of pounds every year to run Geograph.  This means that we rely entirely on donations from our users, such as you, to keep the site up and running. Costs have increased dramatically as we have moved to Cloud hosting, and we have to pay for technical assistance.  We have no paid employees, everyone is a volunteer. 
+	If you value Geograph, please consider <a href="https://uk.virginmoneygiving.com/donation-web/charity?charityId=1017685&utm_source=extbtn&utm_campaign=donatebtn">donating now</a>.  We are pleased to accept one-off donations, or even better, regular monthly gifts, with Gift Aid if you are eligible. 
+	Your generosity will help us maintain, expand and improve the resources we can give you.<br>
+	Thank you.<br><br>
+
+	Donate: <a href="https://uk.virginmoneygiving.com/charity-web/charity/finalCharityHomepage.action?charityId=1017685" target=_blank>Our page on Virgin Money Giving</a>
+	or <a href="/help/donate">more options</a>...   (<a href="#" onclick="return hide_appeal()">Dismiss Message</a>)
+	<br style=clear:both>
+	{literal}
+	<script>
+	function hide_appeal() {
+		setTimeout(function() {
+			document.getElementById('appeal_block').style.display='none';
+		}, 100);
+		var value = 1;	
+		var date = new Date();
+		date.setTime(date.getTime() + 14*24*60*60*1000); 
+		document.cookie = "appeal="+value+"; path=/; expires=" + date.toGMTString();
+		return false;
+	}
+	</script>
+	{/literal}
+</div>
+
+	{/if}
+{/dynamic}
 <div id="maincontent">
