@@ -184,8 +184,12 @@ div:target {
 <br/><br/>
 
 
-<div class="interestBox" style="background-color:#FFFDD0;text-align:center">
-	Found Geograph Images useful? Please consider <a href="/help/donate">donating</a> to support the Geograph Project!
+<div style="background-color:#ffffae;padding:10px;text-align:center;">
+
+	Found Geograph useful? Please consider <a href="https://www.geograph.org.uk/help/donate">donating</a> to support the Geograph Project!
+	&nbsp;&nbsp;
+	<a href="https://uk.virginmoneygiving.com/donation-web/charity?charityId=1017685&amp;utm_source=extbtn&amp;utm_campaign=donatebtn" target="_blank" title="Donate to us (Link opens in a new window)"><img src="https://uk.virginmoneygiving.com/giving/assets/buttons/DONATE_RED_BUTTON@1x.png" border="0" alt="Make a donation using Virgin Money Giving" width=237 height=50 style=vertical-align:middle></a>
+
 </div>
 
 <br/><br/>

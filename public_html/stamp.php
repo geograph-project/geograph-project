@@ -143,6 +143,15 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 		Right click the image and select "Save image as" (exact wording varies by browser)<br/><br/>
 		<iframe src="<? echo (empty($_GET['id']) || empty($_GET['title']))?"about:blank":($CONF['TILE_HOST']."/stamp.php?".htmlentities($_SERVER['QUERY_STRING'])); ?>" width=650 height=650 name="targetbox" frameborder=0></iframe>
 		</div>
+
+<div style="background-color:#ffffae;padding:10px;text-align:center;">
+
+	Found Geograph useful? Please consider <a href="https://www.geograph.org.uk/help/donate">donating</a> to support the Geograph Project!
+	&nbsp;&nbsp;
+	<a href="https://uk.virginmoneygiving.com/donation-web/charity?charityId=1017685&amp;utm_source=extbtn&amp;utm_campaign=donatebtn" target="_blank" title="Donate to us (Link opens in a new window)"><img src="https://uk.virginmoneygiving.com/giving/assets/buttons/DONATE_RED_BUTTON@1x.png" border="0" alt="Make a donation using Virgin Money Giving" width=237 height=50 style=vertical-align:middle></a>
+
+</div>
+
 	<?
 	$smarty->display("_std_end.tpl",'test');
 
