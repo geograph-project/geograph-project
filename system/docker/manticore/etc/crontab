@@ -54,6 +54,8 @@
 ########################
 # ViewPoint Index
 
-12 8 * * 2          indexer --config /etc/sphinxsearch/sphinx.conf viewpoint --rotate
+12 8 * * 2          indexer --config /etc/sphinxsearch/sphinx.conf viewpoint_master viewpoint_main --rotate
+
+12 */6 * * *        indexer --config /etc/sphinxsearch/sphinx.conf viewpoint_delta --rotate
 
 ########################

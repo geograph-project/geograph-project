@@ -5,6 +5,8 @@
 --css
 --type-add=tpl:ext:tpl
 --tpl
+--type-add=conf:ext:conf
+--conf
 --ignore-dir=.svn
 --ignore-dir=_attic
 --ignore-dir=system
