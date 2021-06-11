@@ -78,13 +78,13 @@ $words[$i]=preg_replace_callback("/^(\!?)([STNH]?[A-Z]{1}|[A-Z]{3})(\d{2,10})([^
 
 
 if ($word!=$words[$i]) {} //we already made a conversion
-elseif(strtolower(substr($words[$i],0,strlen($_SERVER['HTTP_HOST'])+24))=='http://'.$_SERVER['HTTP_HOST'].'/mapbrowse.php?t=') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" rel=\"nofollow\">Geograph Map</a>';}
-elseif(strtolower(substr($words[$i],0,7))=='http://') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" rel=\"nofollow\">'.trim($word).'</a>';}
-elseif(strtolower(substr($words[$i],0,8))=='https://') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" rel=\"nofollow\">'.trim($word).'</a>';}
-elseif(strtolower(substr($words[$i],0,6))=='ftp://') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" target=\"_new\" rel=\"nofollow\">'.trim($word).'</a>';}
-elseif(strtolower(substr($words[$i],0,4))=='ftp.') {$c=1;$word='<a href=\"ftp://'.trim($words[$i]).'\" target=\"_new\" rel=\"nofollow\">'.trim($word).'</a>';}
-elseif(strtolower(substr($words[$i],0,4))=='www.') {$c=1;$word='<a href="http://'.trim($words[$i]).'\" target=\"_new\" rel=\"nofollow\">'.trim($word).'</a>';}
-elseif(strtolower(substr($words[$i],0,7))=='mailto:') {$c=1;$word='<a href=\"'.trim($words[$i]).'\" rel=\"nofollow\">'.trim($word).'</a>';}
+elseif(strtolower(substr($words[$i],0,strlen($_SERVER['HTTP_HOST'])+24))=='http://'.$_SERVER['HTTP_HOST'].'/mapbrowse.php?t=') {$c=1;$word='<a href="'.trim($words[$i]).'" target="_new" rel="nofollow">Geograph Map</a>';}
+elseif(strtolower(substr($words[$i],0,7))=='http://') {$c=1;$word='<a href="'.trim($words[$i]).'" target="_new" rel="nofollow">'.trim($word).'</a>';}
+elseif(strtolower(substr($words[$i],0,8))=='https://') {$c=1;$word='<a href="'.trim($words[$i]).'" target="_new" rel="nofollow">'.trim($word).'</a>';}
+elseif(strtolower(substr($words[$i],0,6))=='ftp://') {$c=1;$word='<a href="'.trim($words[$i]).'" target="_new" rel="nofollow">'.trim($word).'</a>';}
+elseif(strtolower(substr($words[$i],0,4))=='ftp.') {$c=1;$word='<a href="ftp://'.trim($words[$i]).'" target="_new" rel="nofollow">'.trim($word).'</a>';}
+elseif(strtolower(substr($words[$i],0,4))=='www.') {$c=1;$word='<a href="http://'.trim($words[$i]).'" target="_new" rel="nofollow">'.trim($word).'</a>';}
+elseif(strtolower(substr($words[$i],0,7))=='mailto:') {$c=1;$word='<a href="'.trim($words[$i]).'" rel="nofollow">'.trim($word).'</a>';}
 if ($c==1) $words[$i]=$word;
 //$words[$i]=str_replace ("\n ", "\n", $words[$i]);
 }
