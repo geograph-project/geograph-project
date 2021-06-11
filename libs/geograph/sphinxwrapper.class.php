@@ -166,29 +166,30 @@ if (!empty($_GET['ddeb']))
 
 			//seperate out tags!
 		if (preg_match_all('/(-?)\[([^\]]+)\]/',$q,$m)) {
-			$q2 = '';
+			$prefix = $postfix = '';
+			if (preg_match('/@\w+.+\[/',$q) || !empty($newformat)) { //old index doesnt NEED the field modifier, but the new index will, because has many columns using SEP
+				$prefix = " @tags "; $postfix = " @* ";
+			}
 			foreach ($m[2] as $idx => $value) {
-				$q = str_replace($m[0][$idx],'',$q);
 				$value = strtr($value,':-','  ');
 				if (strpos($value,'~~~') > 0) {
 					$bits = explode('~~~',$value,2);
-					$q2 .= " ".$m[1][$idx].'"__TAG__ '.implode(' __TAG__ ',$bits).' __TAG__"';
+					$q2 = $prefix.$m[1][$idx].'"__TAG__ '.implode(' __TAG__ ',$bits).' __TAG__"'.$postfix;
 				} else
-					$q2 .= " ".$m[1][$idx].'"__TAG__ '.$value.' __TAG__"';
+					$q2 = $prefix.$m[1][$idx].'"__TAG__ '.$value.' __TAG__"'.$postfix;
+				$q = str_replace($m[0][$idx],$q2,$q);
 			}
-			if (!empty($q2)) {
-				$q .= " @tags".$q2;
-			}
+			//we add @* to the end for words after the tag, but if there are no words, remove it again!
+			$q = preg_replace('/@\*\s+(\)|\||$)/','$1',$q);
 		}
 
 		$q = preg_replace('/"([^"]+)~~~([^"]+)"/','"$1 __TAG__ $2"',$q);
 
 			//FIX  '@title  @source -themed @tags "__TAG__ footpath __TAG__"'
-		$q = preg_replace('/@(\w+)\s+@/','@',$q);
+		$q = preg_replace('/@(\w+|\*)\s+@/','@',$q);
 
 			//transform 'near gridref' to the put the GR first (thats how processQuery expects it)
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
-
 
 		if (!empty($newformat)) {
         	        //convert gi_stemmed -> sample8 format.
@@ -197,10 +198,13 @@ if (!empty($_GET['ddeb']))
                         $q = preg_replace('/@(year|month|day)\b/','@taken$1',$q);
 
 	                $q = str_ireplace('__TAG__','_SEP_',$q);
+
+			//new index has certain prefixes in their own field (so can group by them)
         	        $q = str_replace('@tags "_SEP_ top _SEP_ ','@contexts "_SEP_ ',$q);
 	                $q = preg_replace('/@tags "_SEP_ (bucket|subject|term|group|wiki|snippet) _SEP_ /','@$1s "_SEP_ ',$q);
 
-			$q = preg_replace('/@tags "_SEP_ (.+?) _SEP_/','@tags "_SEP_ $1 ',$q); //new index does NOT have sep between prefix and tag!
+			//new index does NOT have sep between prefix and tag!
+			$q = preg_replace('/@tags "_SEP_ ([^"]+?) _SEP_ ([^"]+?) _SEP_"/','@tags "_SEP_ $1 $2 _SEP_"',$q);
 
 			if ($newformat === 2) {
 				$bits = explode(' near ',$_GET['q']);
