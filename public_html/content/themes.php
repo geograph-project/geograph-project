@@ -33,9 +33,6 @@ $data = $db->getRow("show table status like 'content_group'");
 
 //when this table was modified
 $mtime = strtotime($data['Update_time']);
-	
-//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
-customCacheControl($mtime,$cacheid,!($USER->registered));
 
 $template = 'content_themes.tpl';
 
@@ -52,6 +49,8 @@ if (!empty($_GET['v'])) {
 }
 $cacheid = $source.'.'.$USER->registered.'.'.$CONF['forums'];
 
+//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
+customCacheControl($mtime,$cacheid,!($USER->registered));
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -73,9 +72,9 @@ if (!$smarty->is_cached($template, $cacheid))
 					//skip...
 				} elseif (preg_match('/^[A-Z]/',$w)) {
 					//give promience to uppercased words
-					$a[strtolower($w)]+=2;
+					@$a[strtolower($w)]+=2;
 				} elseif (!ctype_digit($w)) {
-					$a[$w]++;
+					@$a[$w]++;
 				}
 			}
 		}
