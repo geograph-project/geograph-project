@@ -59,12 +59,15 @@ $rows = $db->getAll("select gridimage_id,original_width,user_id,title,grid_refer
 	 from exif_rotated
 		inner join gridimage_search using (gridimage_id)
 		inner join gridimage_size using (gridimage_id)
-	where orient_original like 'Orientation%' and orient_original not like '%1'
+	where ((orient_original like 'Orientation%' and orient_original not like '%1')
+	or (orient_mid like 'Orientation%' and orient_mid not like '%1'))
 	and result_mid IS NULL
 	 limit $limit");
 
-if (empty($rows))
+if (empty($rows)) {
+	header("Location: /stuff/process-misrotated-full.php");
 	die("no more images to check. Whoop! Thanks for interest");
+}
 
 foreach ($rows as $idx => $row) {
 	$image = new GridImage();

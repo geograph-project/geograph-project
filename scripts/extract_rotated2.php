@@ -34,9 +34,9 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $filesystem = GeographFileSystem();
 
-$data= $db->getAll("SELECT * FROM exif_rotated INNER JOIN gridimage_size USING (gridimage_id) 
-			LEFT JOIN gridimage_pending USING (gridimage_id)    
-			 WHERE orient_full IS NULL AND orient_original IS NULL AND extracted != '1' LIMIT {$param['limit']}");
+$data= $db->getAll("SELECT * FROM exif_rotated INNER JOIN gridimage_size USING (gridimage_id)
+			LEFT JOIN gridimage_pending USING (gridimage_id)
+			 WHERE orient_full IS NULL AND orient_mid IS NULL AND orient_original IS NULL AND extracted != '1' and extracted != '' LIMIT {$param['limit']}");
 
 $c=0;
 foreach ($data as $row) {
@@ -63,27 +63,27 @@ foreach ($data as $row) {
 
 
 	if ($row['original_width']) {
-		$path = $image->_getOriginalpath(FALSE, false);
-		$updates['orient_original'] = process($path);
 
-		if (!empty($updates['orient_original'])) {
+		if (max($row['original_width'],$row['original_height']) > 800) {
+			$path = $image->_getOriginalpath(FALSE, false, '_800x800');
 
-			if (max($row['original_width'],$row['original_height']) > 800) {
-				$path = $image->_getOriginalpath(FALSE, false, '_800x800');
+			$updates['orient_mid'] = process($path);
+		}
 
-				$updates['orient_mid'] = process($path);
-			}
+		if (empty($updates['orient_mid']) && max($row['original_width'],$row['original_height']) > 1024) {
+			$path = $image->_getOriginalpath(FALSE, false, '_1024x1024');
 
-			if (empty($updates['orient_mid']) && max($row['original_width'],$row['original_height']) > 1024) {
-				$path = $image->_getOriginalpath(FALSE, false, '_1024x1024');
+			$updates['orient_mid'] = process($path);
+		}
 
-				$updates['orient_mid'] = process($path);
-			}
+		if (empty($updates['orient_mid'])) {
+			$path = $image->_getOriginalpath(FALSE, false);
+			$updates['orient_original'] = process($path);
 		}
 
 	}
 
-	print $row['gridimage_id'];
+	print "{$row['gridimage_id']} ({$row['original_width']}) ";
 	print_r($updates);
 	if (!empty($updates)) {
 		$db->Execute('UPDATE exif_rotated SET `'.implode('` = ?,`',array_keys($updates)).
