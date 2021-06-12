@@ -33,6 +33,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 # alter table exif_rotated add orient_full varchar(128) default null, add orient_mid varchar(128) default null, add orient_original varchar(128) default null;
 
 $filesystem = GeographFileSystem();
+$filesystem->log = true;
 
 $data= $db->getAll("SELECT * FROM exif_rotated INNER JOIN gridimage_size USING (gridimage_id)
 			LEFT JOIN gridimage_pending USING (gridimage_id)
@@ -113,6 +114,9 @@ function process($path) {
        	        if ($sbucket) {
               	        //download!
                         $tmp_src = $filesystem->_get_remote_as_tempfile($sbucket, $sfilename);
+
+if (empty($tmp_src) || !file_exists($tmp_src))
+	die("unable to read $tmp_src from $sbucket, $sfilename\n");
 
 			$cmd = "exiftool -Orientation -n $tmp_src";
 
