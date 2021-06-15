@@ -1,6 +1,34 @@
 #!/bin/bash
 set -eu -o pipefail
 
+############################################
+# temporally bodge, to fetch the files from remote repository.
+# to save generating them all from scratch!
+
+## echo islands gridimage_funny gaz_meta | 
+## xargs -d' ' -n1 -I{} sh -c 'curl https://data.geograph.org.uk/facets/manticore/{}.tar.gz | tar -xz'
+
+IFS=$'\n' read -d '' -r -a MISSING_INDEXES < <(
+  indextool --quiet --checkconfig \
+    --config /etc/sphinxsearch/sphinx.conf | \
+  awk -F ': ' '/missed index/ { print $2 }' | \
+  sed -e 's/, /\n/g' | \
+  sed -e "s/^'//g" -e "s/'$//g"
+) || true
+
+if [ ${#MISSING_INDEXES[@]} -ne 0 ]; then
+  cd /var/lib/manticore/data/
+
+  echo "Fetching Remote indexes:" "${MISSING_INDEXES[@]}" >&2
+  printf '%s\0' "${MISSING_INDEXES[@]}" | \
+    xargs --null --max-args=1 --max-procs=1 --verbose -I{} -- \
+    sh -c 'curl https://data.geograph.org.uk/facets/manticore/{}.tar.gz | tar -xz'
+fi
+
+############################################
+# ... need to go again, to find ones NOT downloaded above
+
+
 ### Get a list of all the indexes missing on disk
 # This reads the indexes into a bash array. indextool prints the list as a
 # comma-separated string of quoted index names, so we have to strip the prefix,
@@ -17,9 +45,11 @@ IFS=$'\n' read -d '' -r -a MISSING_INDEXES < <(
 
 if [ ${#MISSING_INDEXES[@]} -ne 0 ]; then
   echo "Building missing indexes:" "${MISSING_INDEXES[@]}" >&2
-##  printf '%s\0' "${MISSING_INDEXES[@]}" | \
-##    xargs --null --max-args=1 --max-procs=1 --verbose -- \
-##    indexer --config /etc/sphinxsearch/sphinx.conf
+  printf '%s\0' "${MISSING_INDEXES[@]}" | \
+    xargs --null --max-args=1 --max-procs=1 --verbose -- \
+    indexer --config /etc/sphinxsearch/sphinx.conf
 fi
+
+
 
 # vim: ai ts=2 sw=2 et sts=2 ft=sh
