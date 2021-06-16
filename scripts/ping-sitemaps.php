@@ -7,7 +7,7 @@
 ############################################
 
 //these are the arguments we expect
-$param=array();
+$param=array('execute'=>0);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -49,7 +49,7 @@ while ($h && !feof($h)) {
 
 	$url = "https://www.google.com/webmasters/tools/ping?sitemap=".urlencode($slug.$base);
 
-	if (empty($argv[1])) {
+	if (empty($param['execute'])) {
 		print "$url\n";
 	} else {
 		file_get_contents($url);
@@ -61,7 +61,7 @@ while ($h && !feof($h)) {
 	if (strpos($base,'google') === false) {
 		$url = "http://www.bing.com/ping?sitemap=".urlencode($slug.$base);
 
-		if (empty($argv[1])) {
+		if (empty($param['execute'])) {
 			print "$url\n";
 		} else {
 			file_get_contents($url);
