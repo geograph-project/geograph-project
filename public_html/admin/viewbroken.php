@@ -232,6 +232,7 @@ function dump_sql_table($sql,$title) {
 	}
 	print "</TR>";
 	do {
+		$row = $recordSet->fields;
 		print "<TR>";
 		$align = "right";
 		foreach ($row as $key => $value) {
