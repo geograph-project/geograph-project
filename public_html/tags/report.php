@@ -99,18 +99,27 @@ if (!empty($_GET['finder'])) {
 
 	$report['levenshtein'] = levenshtein($report['tag'],$report['tag2']);
 
-	$tops = $db->getCol("SELECT top FROM category_primary");
 	$best = 99; $top = null; $none = preg_replace('/^\w+:\s*/','',$report['tag']);
-	foreach ($tops as $test) {
+	foreach ($db->getCol("SELECT top FROM category_primary") as $test) {
 		$guess = levenshtein($none,$test);
 		if ($guess < $best) {
 			$best = $guess;
 			$top = $test;
 		}
 	}
-	if ($best < strlen($none)) {
+	if ($best < strlen($none))
 		$smarty->assign('top',$top);
+
+	$best = 99; $subject = null;
+	foreach ($db->getCol("SELECT subject FROM subjects") as $test) {
+		$guess = levenshtein($none,$test);
+		if ($guess < $best) {
+			$best = $guess;
+			$subject = $test;
+		}
 	}
+	if ($best < strlen($none))
+		$smarty->assign('subject',$subject);
 
 	$smarty->assign_by_ref('report',$report);
 

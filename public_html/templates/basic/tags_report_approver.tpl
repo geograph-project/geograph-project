@@ -50,8 +50,13 @@
 		<hr/>
 	{/if}
 	{if $top}
-		<div style="float:left;width:100px">Offical:</div>
-		<b>{$top}</b> (closest offical top level tag)
+		<div style="float:left;width:100px;color:gray">Context:</div>
+		<b>{$top|escape:'html'}</b> (closest offical top level tag)
+		<hr/>
+	{/if}
+	{if $subject}
+		<div style="float:left;width:100px;color:gray">Subject:</div>
+		<b>{$subject|escape:'html'}</b> (closest offical subject)
 		<hr/>
 	{/if}
 
