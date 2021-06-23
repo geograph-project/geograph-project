@@ -110,7 +110,7 @@ print "<!-- $filename -->\n";
                 return false;
 	}
 
-	$c = 0;
+	$c = $d = 0;
         //$prefix = "$id\t";
         //$prefixlen = strlen($prefix);
         while ($h && !feof($h)) {
@@ -139,7 +139,7 @@ if (empty($exif)) {
 			$sql = "INSERT IGNORE INTO exif_rotated SET gridimage_id = {$id}, extracted = ".$db->Quote($exif['IFD0']['Orientation']);
 			if ($param['execute']) {
 				$db->Execute($sql);
-
+				$d++;
 				if (!$c && ($start != $id)) { //always insert the 'start' image too
 					$sql = "INSERT IGNORE INTO exif_rotated SET gridimage_id = $start";
 					$db->Execute($sql);
@@ -154,7 +154,7 @@ if (empty($exif)) {
 
 		$c++;
         }
-	print "Scanned $c images\n";
+	print "Scanned $c images, found $d images\n";
 }
 
 print ".\n";
