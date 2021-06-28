@@ -60,6 +60,7 @@ $rows = $db->getAll("select gridimage_id,user_id,title,grid_reference,realname, 
 		inner join gridimage_search using (gridimage_id)
 	where orient_full like 'Orientation%' and orient_full not like '%1'
 	and result_full IS NULL
+        order by gridimage_id desc
 	 limit $limit");
 
 if (empty($rows))
