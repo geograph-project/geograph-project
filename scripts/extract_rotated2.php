@@ -115,9 +115,10 @@ function process($path) {
               	        //download!
                         $tmp_src = $filesystem->_get_remote_as_tempfile($sbucket, $sfilename);
 
-if (empty($tmp_src) || !file_exists($tmp_src))
+if (empty($tmp_src) || !file_exists($tmp_src)) {
+	return "unknown";
 	die("unable to read $tmp_src from $sbucket, $sfilename\n");
-
+}
 			$cmd = "exiftool -Orientation -n $tmp_src";
 
 			//print "$cmd\n";
