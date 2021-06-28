@@ -17,6 +17,11 @@
 23    7       20 * *  /usr/bin/php /var/www/geograph/scripts/notification-mailer.php --action=send --schedule=monthly
 
 ##############################
+
+12	3	* * * /usr/bin/php /var/www/geograph/extract_rotated.php --delta=1 --execute=1
+15	*	* * * /usr/bin/php /var/www/geograph/extract_rotated2.php --limit=100
+
+##############################
 # Misc scripts
 
 
@@ -43,7 +48,6 @@
 */10	7-23	* * * /usr/bin/php /var/www/geograph/scripts/announce-curated.php --execute=1
 33	1	* * * /usr/bin/php /var/www/geograph/scripts/gallery.downsync.php
 */5     *       * * * /usr/bin/php /var/www/geograph/scripts/announce-where.php
-
 
 45      3       * * *   /var/www/geograph/scripts/build_all_sitemaps.sh
 
