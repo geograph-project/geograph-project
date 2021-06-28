@@ -33,7 +33,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 # alter table exif_rotated add orient_full varchar(128) default null, add orient_mid varchar(128) default null, add orient_original varchar(128) default null;
 
 $filesystem = GeographFileSystem();
-$filesystem->log = true;
+##$filesystem->log = true;
 
 $data= $db->getAll("SELECT * FROM exif_rotated INNER JOIN gridimage_size USING (gridimage_id)
 			LEFT JOIN gridimage_pending USING (gridimage_id)
