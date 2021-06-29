@@ -38,7 +38,7 @@
 
 ######################################################
 
-$param = array('execute'=>false, 'limit' => 10);
+$param = array('execute'=>false, 'limit' => 10, 'auto' => false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -57,6 +57,10 @@ $filesystem->buckets[$destination] = "data.geograph.org.uk/exif/";
 
 
         $row = $db->getRow("SELECT COUNT(*) as count,MIN(gridimage_id) as min,MAX(gridimage_id) AS max FROM $table WHERE gridimage_id > 0");
+
+	if ($param['auto'])
+		$row['min'] = $db->getOne("SELECT max(gridimage_id) FROM exif_rotated WHERE extracted = ''");
+
         print_r($row);
 
         if ($row['count'] < 10000)
@@ -68,7 +72,7 @@ $filesystem->buckets[$destination] = "data.geograph.org.uk/exif/";
 	$i = 0;
         for($start = $from; $start < $stop; $start+=1000) {
                 $end = $start+999;
-                print "#($start,$end,$table)\n";
+                //print "#($start,$end,$table)\n";
                 process_file($start,$end,$table);
 
 	        if (!empty($killed))
@@ -93,7 +97,7 @@ function process_file($start,$end,$table) {
         $dir2 = sprintf("%02d", floor($start/10000)%100);
         $filename = "$destination$dir1/$dir2/$start.exif.gz";
 
-print "<!-- $filename -->\n";
+print "<!-- $filename --> :: ";
 
         list($sbucket, $sfilename) = $filesystem->getBucketPath($filename);
         if ($sbucket) {
