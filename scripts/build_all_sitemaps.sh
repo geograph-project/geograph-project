@@ -19,7 +19,7 @@ if test "$CLI_HTTP_HOST" = 'www.geograph.org.uk'; then
 fi
 
 #this pings ALL the sitemaps rebuilt above
-/usr/bin/php $BASE_DIR/scripts/ping-sitemaps.php execute
+/usr/bin/php $BASE_DIR/scripts/ping-sitemaps.php --execute
 
 ############
 
