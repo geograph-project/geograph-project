@@ -94,7 +94,7 @@ if (isset($_GET['stats'])) {
 	$sql_where .= " and user.user_id = $user";
 }
 
-$moderators = $db->GetAssoc("
+$moderators = $db->GetAll("
 select
 	user.user_id,user.realname,user.nickname,user.rights,role,substring(user.signup_date,1,10) as signup_date,
 	count(distinct moderation_log_id) as log_count,
