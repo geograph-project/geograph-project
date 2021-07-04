@@ -62,7 +62,7 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 				</div>
 			{/if}
 
-			<div class="interestBox">
+			<div class="interestBox" style="max-width:500px">
 			Rotate Image by 90 degrees: 
 				<button type=button value=&#8634; title="Anti-Clockwise 90deg rotation" onclick="rotateImage(270)">&#8634;</button> 
 				<button type=button value=&#8635; title="Clockwise 90deg rotation" onclick="rotateImage(90)">&#8635;</button> (updates the preview below)
