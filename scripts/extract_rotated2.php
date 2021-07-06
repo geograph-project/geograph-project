@@ -87,7 +87,7 @@ foreach ($data as $row) {
 	print "{$row['gridimage_id']} ({$row['original_width']}) ";
 	print_r($updates);
 	if (!empty($updates)) {
-		$db->Execute('UPDATE exif_rotated SET `'.implode('` = ?,`',array_keys($updates)).
+		$db->Execute('UPDATE exif_rotated SET orient_date = NOW(), `'.implode('` = ?,`',array_keys($updates)).
 		'` = ? WHERE gridimage_id = '.$db->Quote($row['gridimage_id']),array_values($updates));
 	}
 

@@ -18,8 +18,8 @@
 
 ##############################
 
-12	3	* * * /usr/bin/php /var/www/geograph/extract_rotated.php --delta=1 --execute=1
-15	*	* * * /usr/bin/php /var/www/geograph/extract_rotated2.php --limit=100
+12	3	* * * /usr/bin/php /var/www/geograph/scripts/extract_rotated.php --delta=1 --execute=1
+15	*	* * * /usr/bin/php /var/www/geograph/scripts/extract_rotated2.php --limit=100
 
 ##############################
 # Misc scripts
