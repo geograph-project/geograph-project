@@ -117,6 +117,13 @@ form {
 .tab2 input.active {
 	background-color:white;
 }
+.tab2 label.gr {
+        padding:2px;
+}
+.tab2 label.active {
+        background-color:yellow;
+}
+
 .tab2 select {
 	max-width: calc( 100vw - 190px );
 }
@@ -322,7 +329,7 @@ function checkMultiFormSubmission() {
 
                                                 mapTypeId = firstLetterToType(newtype);
 
-                                                map = L.map('map',{attributionControl:false,doubleClickZoom:false}).addControl(
+                                                map = L.map('map',{attributionControl:false,doubleClickZoom:false, scrollWheelZoom:'center'}).addControl(
                                                         L.control.attribution({ position: 'bottomright', prefix: ''}) );
 
 						//needs to be called BEFORE setupOSMTiles (as that sets up the layer control too!) 
@@ -381,6 +388,7 @@ function checkMultiFormSubmission() {
 		//first SWAP the active.
 		disableAutoUpdate = true;
 		$('.tab2 input[type=text]').toggleClass('active');
+		$('.tab2 label.gr').toggleClass('active');
 		
 		//then recenter the map (which feeds back to the new location box!) 
 		disableAutoUpdate = false;
@@ -395,7 +403,9 @@ function checkMultiFormSubmission() {
 $(function() {
 	$('.tab2 input[type=text]').focus(function() {
 		$('.tab2 input[type=text]').removeClass('active');
+		$('.tab2 label.gr').removeClass('active');
 		$(this).addClass('active');
+		$(this).prev().addClass('active');
 		if (this.value) {
 			centerMap(this.value);
 		}
@@ -415,7 +425,9 @@ $(function() {
 				$(this).click(function(event) {
 					event.preventDefault(); //prevent it actully focusing the element!
 					$('.tab2 input[type=text]').removeClass('active');
+					$('.tab2 label.gr').removeClass('active');
 					$ele.addClass('active');
+					$ele.prev().addClass('active');
 					if ($ele.val())
 						centerMap($ele.val());
 				})
@@ -998,10 +1010,11 @@ var static_host = '{$static_host}';
 
 <div class="tab2">
 		<br>
-		<label for=photographer_gridref>Camera</label>:
-			<input type="text" name="photographer_gridref" id="photographer_gridref" value="" size="12" maxlength="14" onblur="checkGridref(this)" placeholder="(Camera Location)" class="active"/>
-		<label for=grid_reference>Subject</label>:
-			<input type="text" name="grid_reference" value="" id="grid_reference" size="12" maxlength="14" onblur="checkGridref(this)" placeholder="(Subject Location)"/>
+		<span class=nowrap><label for=photographer_gridref class="gr active">Camera</label>:
+			<input type="text" name="photographer_gridref" id="photographer_gridref" value="" size="12" maxlength="14" onblur="checkGridref(this)" placeholder="(Camera Location)" class="active"/></span>
+		&nbsp;
+		<span class=nowrap><label for=grid_reference class=gr>Subject</label>:
+			<input type="text" name="grid_reference" value="" id="grid_reference" size="12" maxlength="14" onblur="checkGridref(this)" placeholder="(Subject Location)"/></span>
 
 		
 		<div><input type="checkbox" name="use6fig" value="1"/> <label for="use6fig">Only use 6 figures (<span class="nowrap"><a title="Explanation" href="https://www.geograph.org.uk/help/map_precision" target="_blank">Explanation</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>)</label></div> 
