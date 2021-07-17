@@ -43,6 +43,9 @@ Delivery Address:  <i>Hidden</i><br>
 		<tr>
 			<td colspan=3>
 				Image is {$image->width}x{$image->height}px and will print at about <b>{$image->dpi}</b> DPI.
+				{if $image->download}
+					<a class=download href="{$image->download|escape:'html'}" data-filename="{$image->filename}">download image</a>
+				{/if}
 			<hr>
 	{/foreach}
 </table>
@@ -50,6 +53,9 @@ Delivery Address:  <i>Hidden</i><br>
 
 </form>
 
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+{include file="_download-function.tpl"}
 
 {include file="_std_end.tpl"}
 

@@ -63,13 +63,14 @@ foreach ($imagelist->images as $key => &$image) {
 			$image->preview_url = $alturl;
 		} else {
 			//in this case the 640px should serve as an ok preview!
-			$image->preview_url = $image->_getFullpath();
+			$image->preview_url = $image->_getFullpath(true,true);
 		}
 		$image->width  = $image->original_width;
 		$image->height = $image->original_height;
+		$image->download = $image->_getOriginalpath(true,true);
 	} else {
 		//there is no larger version available
-		$image->preview_url = $image->_getFullpath();
+		$image->download = $image->preview_url = $image->_getFullpath(true,true);
 	}
 
 	//A4 = 210 x 297 mm	8.3 x 11.7 inches
@@ -86,6 +87,9 @@ foreach ($imagelist->images as $key => &$image) {
 	}
 
 	$image->month = date('F',strtotime(sprintf('2000-%02d-01',$key+1)));
+
+        $image->filename = sprintf("c%d-u%d-%02d%s-id%d.jpg",
+                        $row['calendar_id'], $row['user_id'], $key+1, date('M',strtotime(sprintf('2000-%02d-01',$key+1))), $image->gridimage_id);
 }
 
 
