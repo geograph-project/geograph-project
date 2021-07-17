@@ -23,12 +23,14 @@
 </fieldset>
 
 <h3>Selected Images</h3>
-<table style="box-sizing: border-box;">
 
+<p>The second column is the image shown at the correct aspect ratio, showing how the image will display on the page (with blank areas)
+
+<table style="box-sizing: border-box;">
 	{foreach from=$images key=index item=image}
 		<tr>
 			<td align=center valign=middle>{$image->getThumbnail(120,120)}</td>
-			<td><div style="width:200px;height:141px;border:1px solid black;padding:0;text-align:center;white-space:nowrap"
+			<td><div style="width:206px;height:147px;border:1px solid gray;padding:2;text-align:center;white-space:nowrap"
 				><span style="display: inline-block; height:100%; vertical-align:middle"></span
 				><img src="{$image->preview_url}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle"></div></td>
 			<td>{$image->month}<br><table>
@@ -46,7 +48,9 @@
 		<tr>
 			<td colspan=3>
 				Image is {$image->width}x{$image->height}px and <span{if $image->dpi < 100} style=color:red{/if}>will print at about <b>{$image->dpi}</b> DPI</span>.
+				{if $image->user_id == $user->user_id}
 				 <a href="upload.php">Upload larger version</a>
+				{/if}
 			<hr>
 	{/foreach}
 </table>

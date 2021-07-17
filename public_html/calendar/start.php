@@ -43,7 +43,7 @@ if (!empty($_POST['ids'])) {
         $str = trim(preg_replace('/[^\d]+/',' ',$str));
 	$done = 0;
         foreach (explode(' ',$str) as $id) {
-		if ($row = $db->getRow("SELECT gridimage_id,grid_reference,title,realname,imagetaken FROM gridimage_search WHERE gridimage_id = ".intval($id))) {
+		if ($row = $db->getRow("SELECT gridimage_id,user_id,grid_reference,title,realname,imagetaken FROM gridimage_search WHERE gridimage_id = ".intval($id))) {
 			foreach ($row as $key => $value)
 				$updates[$key] = $value;
 			$updates['sort_order'] = $done+1;
