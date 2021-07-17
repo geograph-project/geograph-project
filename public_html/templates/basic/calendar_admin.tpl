@@ -6,7 +6,7 @@
 
 <b><a href="start.php">Create a new Calendar Order &gt; &gt;</a></b>
 
-
+{dynamic}
 {if $list}
 	<form method=post>
 	<h3>Current Orders</h3>
@@ -26,6 +26,7 @@
 	<input type=submit value=Save disabled>
 	</form>
 {/if}
+{/dynamic}
 
 
 {include file="_std_end.tpl"}

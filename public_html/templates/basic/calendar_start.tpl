@@ -96,6 +96,7 @@ function parseIds(that) {
 		clearTimeout(debounceDelay);
 	debounceDelay = setTimeout(function() {
 		debounceDelay = null;
+		$('#preview').empty();
 		var ids = str.split(/ /);
 		for(var i=0;i<ids.length;i++) {
 			if (ids[i]) {

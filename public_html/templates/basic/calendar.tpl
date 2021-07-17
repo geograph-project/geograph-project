@@ -41,7 +41,7 @@ calendars, using a professional desk-top publishing program.
 
 <b><a href="start.php">Create a new Calendar Order &gt; &gt;</a></b>
 
-
+{dynamic}
 {if $list}
 	<h3>Current Orders</h3>
 	<table>
@@ -59,6 +59,7 @@ calendars, using a professional desk-top publishing program.
 	<p>You will be able to edit the order right up to order has been processed (even after payment) processing however may happen at any time after payment
 
 {/if}
+{/dynamic}
 
 
 {include file="_std_end.tpl"}
