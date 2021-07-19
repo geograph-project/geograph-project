@@ -37,6 +37,10 @@ $row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = ".intval($_GET['i
 if (empty($row))// || $row['user_id'] != $USER->user_id)
 	die("Calendar not found");
 
+$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND status = 'ordered' ORDER BY calendar_id"); //todo, filter to paid, by ordered date!!
+$idx = array_search($row['calendar_id'],$ids);
+$row['alpha'] = chr(65+$idx); //starting at A
+
 ####################################
 
 $smarty->assign('calendar',$row);
@@ -86,7 +90,10 @@ foreach ($imagelist->images as $key => &$image) {
 		$image->dpi = intval($image->height / $h);
 	}
 
-	$image->month = date('F',strtotime(sprintf('2000-%02d-01',$key+1)));
+	if ($image->sort_order > 0)
+		$image->month = date('F',strtotime(sprintf('2000-%02d-01',$image->sort_order)));
+	else
+		$image->month = "Cover Image";
 
         $image->filename = sprintf("c%d-u%d-%02d%s-id%d.jpg",
                         $row['calendar_id'], $row['user_id'], $key+1, date('M',strtotime(sprintf('2000-%02d-01',$key+1))), $image->gridimage_id);

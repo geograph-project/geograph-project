@@ -6,6 +6,10 @@
 
 <div id="preview" style="float:right;max-width:40vw" class=shadow></div>
 
+<p>First need to select 13 images. The first image as the Cover image, and one per month. </p>
+
+<p>It is highly recommended that the first image be a landscape format, as will be cropped to fill the page.</p>
+
 <form method=post style="background-color:#eee;max-width:700px;padding:20px" name=theForm>
 
 <b>Select Images by ID</b>: (enter unique id(s), or links to images/thumbnails, seperated by spaces, commas or semicolons, or even in [])<br>
@@ -46,7 +50,11 @@ setInterval(function() {
 function useMarked() {
 	var ele = document.getElementById('theids');
 	current = readCookie('markedImages');
-	ele.value = ele.value + ', '+ current.commatrim();
+	if (ele.value.length) {
+		ele.value = ele.value + ', '+ current.commatrim();
+	} else {
+		ele.value = current.commatrim();
+	}
 	parseIds(ele);
 }
 
@@ -66,7 +74,11 @@ $(function() {
 		str = str.replace(/[\w:\/\.]*\/(\d{6,7})_\w{8}(_\w+)?\.jpg/g,'$1'); //replace any thumbnail urls with just the id.
 		str = str.replace(/[\w:\/\.]+\/photo\/(\d{1,7})$/,'$1');
 
-	        this.value = this.value + ", "+ str;
+		if (this.value.length) {
+		        this.value = this.value + ", "+ str;
+		} else {
+			this.value = str;
+		}
 
 		parseIds(this);
 	    return false;
@@ -107,7 +119,7 @@ function parseIds(that) {
 				}
 			}
 		}
-		$('#subutton').val("Add "+ids.length+" image"+(ids.length==1?'':'s')).prop('disabled',ids.length!=12);
+		$('#subutton').val("Add "+ids.length+" image"+(ids.length==1?'':'s')).prop('disabled',ids.length!=13);
 	}, 400);
 }
 

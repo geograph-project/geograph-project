@@ -116,7 +116,10 @@ foreach ($imagelist->images as $key => &$image) {
 	if ($image->dpi > 300)
 		$image->dpi = 300; //todo?
 
-	$image->month = date('F',strtotime(sprintf('2000-%02d-01',$key+1)));
+	if ($image->sort_order > 0)
+		$image->month = date('F',strtotime(sprintf('2000-%02d-01',$image->sort_order)));
+	else
+		$image->month = "Cover Image";
 }
 
 

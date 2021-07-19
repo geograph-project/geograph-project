@@ -88,10 +88,13 @@ foreach ($imagelist->images as $key => &$image) {
 		$image->dpi = intval($image->height / $h);
 	}
 
-	$image->month = date('M',strtotime(sprintf('2000-%02d-01',$key+1)));
+	if ($image->sort_order > 0)
+		$image->month = date('F',strtotime(sprintf('2000-%02d-01',$image->sort_order)));
+	else
+		$image->month = "Cov";
 
 	$filename = sprintf("c%d-u%d-%02d%s-id%d.jpg",
-			$row['calendar_id'], $row['user_id'], $key+1, $image->month, $image->gridimage_id);
+			$row['calendar_id'], $row['user_id'], $sort_order, $image->month, $image->gridimage_id);
 
 	$content = $fullimg = $filesystem->file_get_contents($_SERVER['DOCUMENT_ROOT']. $image->preview_path);
 

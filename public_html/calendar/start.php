@@ -46,7 +46,7 @@ if (!empty($_POST['ids'])) {
 		if ($row = $db->getRow("SELECT gridimage_id,user_id,grid_reference,title,realname,imagetaken FROM gridimage_search WHERE gridimage_id = ".intval($id))) {
 			foreach ($row as $key => $value)
 				$updates[$key] = $value;
-			$updates['sort_order'] = $done+1;
+			$updates['sort_order'] = $done;
 
 			$db->Execute($sql = 'INSERT IGNORE INTO gridimage_calendar SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates))
 				or  die("$sql\n".$db->ErrorMsg()."\n\n");
