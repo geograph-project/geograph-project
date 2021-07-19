@@ -32,10 +32,10 @@
 			<td align=center valign=middle>{$image->getThumbnail(120,120)}</td>
 			<td><div style="width:206px;height:147px;border:1px solid gray;padding:2;text-align:center;white-space:nowrap"
 				><span style="display: inline-block; height:100%; vertical-align:middle"></span
-				><img src="{$image->preview_url}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle"></div></td>
+				><img src="{$image->preview_url}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);"></div></td>
 			<td>{$image->month}<br><table>
 				<tr><th align=right>Title</th>
-					<td><input type=text name="title[{$image->gridimage_id}]" value="{$image->title|escape:"html"}" maxlength="128" size="60"/></td>
+					<td><input type=text name="title[{$image->gridimage_id}]" value="{$image->title|escape:"html"}" maxlength="80" size="60"/></td>
 				<tr><th align=right>Grid Reference</th>
 					<td><input type=text name="grid_reference[{$image->gridimage_id}]" value="{$image->grid_reference|escape:"html"}" maxlength="16" size="10"/></td>
 				<tr><th align=right>Credit</th>
@@ -77,6 +77,18 @@ $(function() {
 
 	if (html5date) //the html5 element uses a 'localized' format, not the standard ISO. 
 		$('.dateformat').hide();
+
+
+	$('input[name*="title"]').each(function() {
+		var $this = $(this);
+		var len = $this.attr('maxlength');
+		var $ele = $('<span style=padding-left:10px;color:gray/>');
+		$this.after($ele);
+		$this.keyup(function() {
+			$ele.text(this.value.length+'/'+len);
+		}).trigger('keyup');
+	});
+
 });
 </script>{/literal}
 

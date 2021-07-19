@@ -21,7 +21,7 @@ Delivery Address:  <i>Hidden</i><br>
 			</td>
 			<td><span style="width:200px;height:141px;border:1px solid black;padding:0;text-align:center;white-space:nowrap;display:inline-block;vertical-align:middle"
 				><span style="display: inline-block; height:100%; vertical-align:middle"></span
-				><img src="{$image->download}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle"></div></td>
+				><img src="{$image->download}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);"></div></td>
 		</table>
 
 			<table>
@@ -33,7 +33,7 @@ Delivery Address:  <i>Hidden</i><br>
 					<td><input type=text name="realname[{$image->gridimage_id}]" value="{$image->realname|escape:"html"}" maxlength="128" size="47" readonly disabled/></td>
 				{if $image->imagetaken != '0000-00-00'}
 					<tr><th align=right>Taken</th>
-						<td><input type=text disabled name="imagetaken[{$image->gridimage_id}]" value="{$image->getFormattedTakenDate()}" size="40"/></td>
+						<td><input type=text disabled name="imagetaken[{$image->gridimage_id}]" value="{$image->getFormattedTakenDate()|regex_replace:"/^[A-Z][\w ]+, /":''}" size="40"/></td>
 				{/if}
 
 			</table>
