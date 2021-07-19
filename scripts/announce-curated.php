@@ -102,27 +102,10 @@ if (!$last) {
 	}
 }
 
+$label = $db->getRow("SELECT label_id,label,description,welsh FROM curated_headword WHERE post_id IS NULL AND description != '' AND description NOT like 'x%' AND notes NOT like 'x%' ORDER BY RAND() LIMIT 1");
 
+if (!empty($label)) {
 
-$labels= $db->getAll("SELECT label_id,label,description,welsh FROM curated_headword where description != '' and description NOT like 'x%' AND notes NOT like 'x%' ORDER BY description like 'Specifically%' ASC, RAND()");
-
-$donecount = $db->getOne("SELECT COUNT(*) FROM geobb_posts WHERE topic_id = $topic_id AND poster_id=23277 AND post_text LIKE '%label#%'");
-
-if ($donecount == count($labels)) {
-	if ($param['debug'])
-		print "($donecount = ".count($labels)."\n";
-	exit;
-}
-
-
-$label = array_pop($labels);
-while (!empty($labels) && $db->getOne("SELECT post_id FROM geobb_posts WHERE topic_id = $topic_id AND poster_id=23277 AND post_text LIKE ".$db->Quote('%label#'.$label['label_id'].')%')) ) {
-	$label = array_pop($labels);
-}
-
-
-
-if ($label) {
 	$title = $label['label'];
 	$message = "Please post pictures of: <br><br><b><big>$title</big></b>";
 	if (!empty($label['welsh']))
@@ -154,7 +137,10 @@ if ($label) {
         $id = $db->Insert_ID();
 
         $sql = "UPDATE geobb_topics SET topic_last_post_id = $id,posts_count=posts_count+1 WHERE topic_id = $topic_id";
-        $result = $db->Execute($sql) or die ("Couldn't insert : $sql " . $db->ErrorMsg() . "\n");
+        $result = $db->Execute($sql) or die ("Couldn't update : $sql " . $db->ErrorMsg() . "\n");
+
+	$sql = "UPDATE curated_headword SET post_id = $id WHERE label_id = {$label['label_id']}";
+        $result = $db->Execute($sql) or die ("Couldn't update : $sql " . $db->ErrorMsg() . "\n");
 
 	if ($param['debug'])
 		print "SAVED $id\n";
