@@ -50,6 +50,8 @@ if (in_array('--string',$_SERVER['argv'])) {
 	if (isset($_SERVER['argv'][$idx+1])) {
 		$_SERVER['argv'][$idx] = $_SERVER['argv'][$idx].'='.$_SERVER['argv'][$idx+1];
 		unset($_SERVER['argv'][$idx+1]);
+
+		$_SERVER['argv'] = array_values($_SERVER['argv']); //reset the keys, so count matches
 	}
 }
 

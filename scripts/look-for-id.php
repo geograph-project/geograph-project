@@ -71,13 +71,14 @@ foreach ($tables as $table) {
 			}
 			if ($param['exif'] && !empty($rows[0]['exif']))
 				print_r(unserialize($rows[0]['exif']));
+			/*
 			if (!empty($rows[0]['upload_id']) && !empty($rows[0]['user_id'])) {
 				 check_keys($rows[0]['upload_id'],$rows[0]['user_id']);
 			} elseif(!empty($rows[0]['preview_key'])) {
 				$user_id = $db->getOne("SELECT user_id FROM gridimage WHERE {$param['column']} = {$param['id']}");
 
 				check_keys($rows[0]['preview_key'],$user_id);
-			}
+			}*/
 		} else {
 			print implode("\t",array_keys($rows[0]))."\n";
 			foreach ($rows as $row) {
