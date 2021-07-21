@@ -54,7 +54,7 @@ if (!empty($_GET['l']))
 
 
 $cols = "label";
-$sql = "SELECT id,user_id,realname,title,grid_reference,$cols, if(larger='',0,1) as has_larger, if(types = '_SEP_ Geograph _SEP_',1,0) as is_geo
+$sql = "SELECT gridimage_id,user_id,realname,title,grid_reference,$cols, if(larger='',0,1) as has_larger, if(types = '_SEP_ Geograph _SEP_',1,0) as is_geo
         FROM curated1
         WHERE label NOT IN('weather','season')
 	ORDER BY has_larger DESC, is_geo DESC, hash DESC LIMIT 10";
@@ -66,7 +66,6 @@ if (empty($images))
 $thumbw = 213;
 $thumbh = 160;
 foreach ($images as $row) {
-	$row['gridimage_id'] = $row['id'];
 	$image = new GridImage;
         $image->fastInit($row);
 	?>

@@ -88,7 +88,7 @@ if (empty($where)) $where[] = "sequence>1";
 // lookup the actual images (which MAY be a group by query!
 
 $cols = "`".implode("`,`",$dimensions)."`";
-$sql1 = "SELECT id,user_id,realname,title,grid_reference,takenday,$cols,larger,wgs84_lat,wgs84_long, if(larger='',0,1) as has_larger, if(types = '_SEP_ Geograph _SEP_',1,0) as is_geo
+$sql1 = "SELECT gridimage_id,user_id,realname,title,grid_reference,takenday,$cols,larger,wgs84_lat,wgs84_long, if(larger='',0,1) as has_larger, if(types = '_SEP_ Geograph _SEP_',1,0) as is_geo
 	FROM curated1
 	WHERE ";
 $sql2 = "ORDER BY has_larger DESC, is_geo DESC, sequence ASC LIMIT 20";
@@ -121,7 +121,6 @@ if ($sph->ErrorNo())
 if (!empty($data['images'])) {
 	foreach ($data['images'] as $idx => &$row) {
 		//convert sphinx column names to mysql names
-		$row['gridimage_id'] = $row['id'];
 		if (preg_match('/(\d{4})(\d{2})(\d{2})/',$row['takenday'],$m))
 			$row['imagetaken'] = $m[1].'-'.$m[2].'-'.$m[3];
 		$row['largest'] = intval($row['larger']); //larger is a (sorted!) list of bigger sizes, latest is expeced to be a number.
