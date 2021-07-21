@@ -82,18 +82,26 @@ $a = array();
 			if ($last && $affected) {
 				//we actully need to update the timestamp, as we've updated the points in square. Ideally we could actully update a tpoint count here too!
 					//we need to update gridsquare.last_timestamp so things that depend on it update (like user_gridsquare!)
-				$db_write->Execute("UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'");
+				$db_write->Execute($sql = "UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'");
+				if ($param['debug'])
+					print "$sql;\n";
 			}
 			//start fresh for a new square
 			$buckets = array();
+			if ($param['debug'])
+				print " == $square\n";
 
 			//the main query can clear any geographs, need to clear non geos.
-			$db_write->Execute("UPDATE gridimage_search SET points = '',upd_timestamp=upd_timestamp WHERE grid_reference = '$square' and moderation_status !='geograph' AND points = 'tpoint'");
+			$db_write->Execute($sql = "UPDATE gridimage_search SET points = '',upd_timestamp=upd_timestamp WHERE grid_reference = '$square' and moderation_status !='geograph' AND points = 'tpoint'");
 			$affected = $db_write->Affected_Rows();
+			if ($param['debug'])
+				print "$sql; $affected affected\n";
 
 			if ($affected) {
 				$gridsquare_id = $db->getOne("SELECT gridsquare_id FROM gridsquare WHERE grid_reference = '$square'");
-				$db_write->Execute("UPDATE gridimage SET points = '',upd_timestamp=upd_timestamp WHERE gridsquare_id=$gridsquare_id and moderation_status !='geograph' AND points = 'tpoint'");
+				$db_write->Execute($sql = "UPDATE gridimage SET points = '',upd_timestamp=upd_timestamp WHERE gridsquare_id=$gridsquare_id and moderation_status !='geograph' AND points = 'tpoint'");
+				if ($param['debug'])
+					print "$sql;\n";
 			}
 
 			$last = $square;
@@ -140,7 +148,9 @@ $a = array();
 	$recordSet->Close();
 
 	if ($last && $affected) {
-		$db_write->Execute("UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'");
+		$db_write->Execute($sql = "UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'");
+		if ($param['debug'])
+			print "$sql;\n";
 	}
 
 	if ($param['debug'])
