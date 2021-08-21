@@ -31,8 +31,6 @@
 	{/foreach}
 
 	<div class="fieldnotes">To change images got back to Step 2</div>
-
-        {if $errors.title}</div>{/if}
 </div>
 
 <hr>
@@ -43,7 +41,7 @@
         <label for="title">Quantity Required:</label>
         <input type="number" name="quantity" value="{$calendar.quantity|escape:"html"}" style="font-size:1.3em" size=2 min="1" max="255" step="1"/>*
 
-        {if $errors.title}</div>{/if}
+        {if $errors.quantity}</div>{/if}
 </div>
 
 <hr>
@@ -76,18 +74,20 @@
         {if $errors.delivery_address}</div>{/if}
 </div>
 
-
-{/dynamic}
-
-
-
 </fieldset>
 
 <br><br>
 
+{if $calendar.paid > '2'}
+	<input type=submit value="Save Changes">
+{else}
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 
 (Payment is processed by PayPal. Paypal account not required. Can pay with normal Credit/Debit Cards as a Guest)
+{/if}
+
+
+{/dynamic}
 
 </form>
 {include file="_std_end.tpl"}

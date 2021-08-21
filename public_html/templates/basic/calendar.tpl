@@ -74,7 +74,7 @@ minimum quantity of 3 calendars per person, which can include more than one orde
 			<td>{$calendar.title|default:'untitled calendar'}</td>
 			<td>{if $calendar.status != 'processed'}<a href="edit.php?id={$calendar.calendar_id}">Review/Edit</a>{/if}
 			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
-			<td>{if $calendar.status == 'new'}<a href="order.php?id={$calendar.calendar_id}"><b>Continue and Order</b></a>{/if}
+			<td>{if $calendar.paid < '2'}<a href="order.php?id={$calendar.calendar_id}"><b>Continue and Order</b></a>{/if}
 		</tr>
 	{/foreach}
 	</table>	

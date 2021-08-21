@@ -64,13 +64,17 @@
 			<hr>
 	{/foreach}
 </table>
-{/dynamic}
 
 <input type=submit name="save" value="Save Changes">
 
-<input type=submit name="proceed" value="Proceed and Order">
+{if $calendar.status == 'new'}
+	<input type=submit name="proceed" value="Proceed and Order">
+{else}
+	<a href="./">Back to Home</a>
+{/if}
 
 </form>
+{/dynamic}
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>

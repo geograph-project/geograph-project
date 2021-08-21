@@ -45,7 +45,7 @@ $row['alpha'] = chr(65+$idx); //starting at A
 ####################################
 
 if (!empty($_POST)) {
-	$updates= $error = array();
+	$updates= $errors = array();
 	if (isset($_POST['calendar_title']) && $_POST['calendar_title'] != $row['title'])
 		$updates['title'] = $_POST['calendar_title'];
 	foreach (array('quantity','delivery_name','delivery_line1','delivery_line2','delivery_line3','delivery_line4','delivery_postcode') as $key) {
@@ -58,12 +58,18 @@ if (!empty($_POST)) {
 	if ($row['status'] == 'new')
 		$updates['status'] = 'ordered';
 
-	if (empty($error) && !empty($updates)) {
+	if (empty($updates))
+		$errors['title'] = 'Nothing to save';
+
+	if (empty($errors) && !empty($updates)) {
 		$db->Execute('UPDATE calendar SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
 			' WHERE calendar_id = '.$row['calendar_id'], array_values($updates));
 
-		$cost = 7.50 * $row['quantity'];
 
+		if ($row['paid'] > '2') {
+			header("Location: ./");
+		} else {
+			$cost = 7.50 * $row['quantity'];
 		?>
 
 Proceeding to payment...
@@ -88,11 +94,11 @@ window.onload = function() {
 </script>
 <p>(Click the button if nothing happens within 5 seconds)</p>
 <?
+		}
 		exit;
 
-		header("Location: ./"); //todo, goto paypal!
 	} else {
-		$smarty->assign('error',$error);
+		$smarty->assign('errors',$errors);
 	}
 }
 
