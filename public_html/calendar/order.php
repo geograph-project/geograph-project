@@ -70,7 +70,7 @@ Proceeding to payment...
 <input type="hidden" name="cmd" value="_xclick">
 <input type="hidden" name="business" value="paypal@geograph.org.uk">
 <input type="hidden" name="lc" value="US">
-<input type="hidden" name="item_name" value="Calendar Order Ref:<? echo "{$row['calendar_id']}/{$row['user_id']}{$row['alpha']}">
+<input type="hidden" name="item_name" value="Calendar Order Ref:<? echo "{$row['calendar_id']}/{$row['user_id']}{$row['alpha']}"; ?>>
 <input type="hidden" name="amount" value="7.50">
 <input type="hidden" name="currency_code" value="GBP">
 <input type="hidden" name="button_subtype" value="services">
