@@ -6,9 +6,10 @@
 
 <div id="preview" style="float:right;max-width:40vw" class=shadow></div>
 
-<p>First need to select 13 images. The first image as the Cover image, and one per month. </p>
+<p>First need to select 13 images. The <b>first image as the Cover image</b>, and then one per month. <br>
+Alternatively select 12 images, then will be able to choose one to use as cover image.</p>
 
-<p>It is highly recommended that the first image be a landscape format, as will be cropped to fill the page.</p>
+<p>It is highly recommended that the cover image be a landscape format, as will be cropped to fill the page.</p>
 
 <form method=post style="background-color:#eee;max-width:700px;padding:20px" name=theForm>
 
@@ -119,7 +120,7 @@ function parseIds(that) {
 				}
 			}
 		}
-		$('#subutton').val("Add "+ids.length+" image"+(ids.length==1?'':'s')).prop('disabled',ids.length!=13);
+		$('#subutton').val("Add "+ids.length+" image"+(ids.length==1?'':'s')).prop('disabled',ids.length!=13 && ids.length!=12);
 	}, 400);
 }
 

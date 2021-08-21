@@ -33,7 +33,15 @@
 			<td><div style="width:206px;height:147px;border:1px solid gray;padding:2;text-align:center;white-space:nowrap"
 				><span style="display: inline-block; height:100%; vertical-align:middle"></span
 				><img src="{$image->preview_url}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);"></div></td>
-			<td>{$image->month}<br><table>
+			<td><b style=color:brown>{$image->month}</b> 
+				{if $image->sort_order > $min}<button type=submit name="move[{$image->gridimage_id}]" value="-1">Move Up /\</button>{/if}
+				{if $image->sort_order < $max}<button type=submit name="move[{$image->gridimage_id}]" value="1">Move Down \/</button>{/if}
+				{if $min == 1}
+					<input type=radio name=cover_image value={$image->gridimage_id} id="cover_image{$image->gridimage_id}" {if $calendar.cover_image == $image->gridimage_id} checked{/if}>
+					<label for="cover_image{$image->gridimage_id}">Use as Cover Image</label>
+				{/if}
+				<br>
+			<table>
 				<tr><th align=right>Title</th>
 					<td><input type=text name="title[{$image->gridimage_id}]" value="{$image->title|escape:"html"}" maxlength="80" size="60"/></td>
 				<tr><th align=right>Grid Reference</th>
@@ -90,7 +98,13 @@ $(function() {
 	});
 
 });
-</script>{/literal}
+</script>
+<style>
+input:checked + label {
+	font-weight:bold;
+}
+</style>
+{/literal}
 
 {include file="_std_end.tpl"}
 

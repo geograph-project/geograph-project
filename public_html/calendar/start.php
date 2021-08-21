@@ -42,11 +42,12 @@ if (!empty($_POST['ids'])) {
 	$str = preg_replace('/[\w:\/\.]*\/(\d{6,7})_\w{8}(_\w+)?\.jpg/','$1',$_POST['ids']); //replace any thumbnail urls with just the id.
         $str = trim(preg_replace('/[^\d]+/',' ',$str));
 	$done = 0;
-        foreach (explode(' ',$str) as $id) {
+	$ids = explode(' ',$str);
+        foreach ($ids as $id) {
 		if ($row = $db->getRow("SELECT gridimage_id,user_id,grid_reference,title,realname,imagetaken FROM gridimage_search WHERE gridimage_id = ".intval($id))) {
 			foreach ($row as $key => $value)
 				$updates[$key] = $value;
-			$updates['sort_order'] = $done;
+			$updates['sort_order'] = $done + (count($ids) == 12)?1:0;
 
 			$db->Execute($sql = 'INSERT IGNORE INTO gridimage_calendar SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates))
 				or  die("$sql\n".$db->ErrorMsg()."\n\n");

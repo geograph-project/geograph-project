@@ -40,10 +40,32 @@ if (empty($row) || $row['user_id'] != $USER->user_id)
 
 ####################################
 
+if (!empty($_POST['move'])) {
+	foreach ($_POST['move'] as $gridimage_id => $move) {
+		$gridimage_id = intval($gridimage_id);
+		$move = intval($move);
+
+		$sort_order = $db->getOne("SELECT sort_order FROM gridimage_calendar WHERE calendar_id = {$row['calendar_id']} AND gridimage_id = $gridimage_id");
+
+		if (is_numeric($sort_order)) {
+			//move the OTHER
+			$db->Execute("UPDATE gridimage_calendar SET sort_order = sort_order - $move WHERE calendar_id = {$row['calendar_id']} AND sort_order = $sort_order + $move");
+
+			//move the image
+			$db->Execute("UPDATE gridimage_calendar SET sort_order = sort_order + $move WHERE calendar_id = {$row['calendar_id']} AND gridimage_id = $gridimage_id");
+		}
+	}
+}
+
+####################################
+
 if (!empty($_POST)) {
 	$updates= array();
 	if (isset($_POST['calendar_title']) && $_POST['calendar_title'] != $row['title'])
 		$updates['title'] = $_POST['calendar_title'];
+
+	if (isset($_POST['cover_image']) && $_POST['cover_image'] != $row['cover_image'])
+		$updates['cover_image']   = $_POST['cover_image'];
 
 	if (!empty($updates))
 		$db->Execute('UPDATE calendar SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
@@ -125,6 +147,8 @@ foreach ($imagelist->images as $key => &$image) {
 
 $smarty->assign_by_ref('images', $imagelist->images);
 
+$smarty->assign('min',(count($imagelist->images) == 13)?0:1);
+$smarty->assign('max',12);
 
 $smarty->display('calendar_edit.tpl');
 
