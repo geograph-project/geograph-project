@@ -1,10 +1,8 @@
 {include file="_std_begin.tpl"}
 
-<h2>Admin Page</h2>
+<h2>Calendar Admin Page</h2>
 
 <hr>
-
-<b><a href="start.php">Create a new Calendar Order &gt; &gt;</a></b>
 
 {dynamic}
 {if $list}
@@ -17,17 +15,30 @@
 			<td>{$calendar.title|default:'untitled calendar'}</td>
 			<td>{$calendar.realname}
 			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
-			<td>{if $calendar.status == 'ordered'}<a href="view.php?id={$calendar.calendar_id}"><b>View</b></a>{/if}
-			<td>{if $calendar.status == 'ordered'}<a href="download.php?id={$calendar.calendar_id}"><b>Download</b></a>{/if}
-			<td>{if $calendar.status == 'ordered'}<input type=checkbox name="processed[{$calendar.calendar_id}]"> Mark as Processed{/if}
+			<td><b>{$calendar.user_id}{$calendar.alpha}</b>
+			<td>{if $calendar.status != 'new'}<a href="view.php?id={$calendar.calendar_id}"><b>View</b></a>{/if}
+			<td>{if $calendar.status == 'ordered'}
+
+				<input type=checkbox name="processed[{$calendar.calendar_id}]" id="processed{$calendar.calendar_id}">
+				<label for="processed{$calendar.calendar_id}"> Mark as Processed</label>
+			{else}
+				Processed
+			{/if}
 		</tr>
 	{/foreach}
 	</table>	
-	<input type=submit value=Save disabled>
+	<input type=submit value="Save Progress"> 
 	</form>
 {/if}
 {/dynamic}
 
+{literal}
+<style>
+input:checked + label {
+        font-weight:bold;
+}
+</style>
+{/literal}
 
 {include file="_std_end.tpl"}
 

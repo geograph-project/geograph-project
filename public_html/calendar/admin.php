@@ -30,9 +30,25 @@ $USER->user_id == 9181 || $USER->mustHavePerm("director");
 
 $db = GeographDatabaseConnection(false);
 
+
 ####################################
 
-$list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id)");
+if (!empty($_POST['processed'])) {
+        foreach ($_POST['processed'] as $calendar_id => $dummy) {
+                $calendar_id = intval($calendar_id);
+		$db->Execute("UPDATE calendar SET status = 'processed' WHERE calendar_id = $calendar_id");
+	}
+}
+
+####################################
+
+$list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE status != 'new' ORDER BY paid,calendar_id");
+
+$stat = array();
+foreach ($list as $idx => &$row) {
+	$row['alpha'] = chr(65+@$stat[$row['user_id']]); //starting at A
+	@$stat[$row['user_id']]++;
+}
 
 $smarty->assign_by_ref('list', $list);
 

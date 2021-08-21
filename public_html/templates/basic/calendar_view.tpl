@@ -1,3 +1,9 @@
+<html>
+	<head>
+		<title>Ref:{$calendar.user_id}{$calendar.alpha} (Geograph Calendar)</title>
+	</head>
+	<body>
+			
 <fieldset style="background-color:#eee">
 	<legend>View Calendar</legend>
 
@@ -6,9 +12,8 @@
 
 <b>Quantity: {$calendar.quantity}</b><br>
 
-Calendar Ref:  {$calendar.user_id}{$calendar.alpha}<br>
+Ref:  <b>{$calendar.user_id}{$calendar.alpha}</b><br>
 Delivery Name:  {$calendar.delivery_name|escape:"html"}<br>
-Delivery Address:  <i>Hidden</i><br>
 
 </fieldset>
 <br>
@@ -16,12 +21,12 @@ Delivery Address:  <i>Hidden</i><br>
 		<table style="box-sizing: border-box;">
 			<tr>
 			<td align=center valign=top>
-				{$image->sort_order} <b>{$image->month}</b><br>
+				{$image->sort_order} <b style=color:brown>{$image->month}</b><br>
 				<a href="/photo/{$image->gridimage_id}" style=vertical-align:middle>{$image->getThumbnail(120,120)}</a>
 			</td>
 			<td><span style="width:200px;height:141px;border:1px solid black;padding:0;text-align:center;white-space:nowrap;display:inline-block;vertical-align:middle"
 				><span style="display: inline-block; height:100%; vertical-align:middle"></span
-				><img src="{$image->download}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);"></div></td>
+				><img src="{$image->download}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);{if $image->sort_order>0}box-shadow: 1px 1px 4px #999;{/if}"></div></td>
 		</table>
 
 			<table>

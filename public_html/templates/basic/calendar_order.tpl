@@ -41,7 +41,7 @@
         {if $errors.quantity}<div class="formerror"><p class="error">{$errors.quantity}</p>{/if}
 
         <label for="title">Quantity Required:</label>
-        <input type="number" name="quantity" value="{$calendar.quantity|escape:"html"}" style="font-size:1.3em" size=2 min="1" max="255" step="1"/>
+        <input type="number" name="quantity" value="{$calendar.quantity|escape:"html"}" style="font-size:1.3em" size=2 min="1" max="255" step="1"/>*
 
         {if $errors.title}</div>{/if}
 </div>
@@ -53,7 +53,7 @@
         {if $errors.delivery_name}<div class="formerror"><p class="error">{$errors.delivery_name}</p>{/if}
 
         <label for="delivery_name">Delivery Name:</label>
-        <input type="text" name="delivery_name" value="{$calendar.delivery_name|escape:"html"}" maxlength="64" size="47" required/>
+        <input type="text" name="delivery_name" value="{$calendar.delivery_name|escape:"html"}" maxlength="64" size="47" required/>*
 
         {if $errors.delivery_name}</div>{/if}
 </div>
@@ -61,10 +61,17 @@
 <div class="field">
         {if $errors.delivery_address}<div class="formerror"><p class="error">{$errors.delivery_address}</p>{/if}
 
-        <label for="delivery_address">Delivery Address:</label>
-        <textarea name="delivery_address" rows=3 cols=80 required>{$calendar.delivery_address|escape:"html"}</textarea>
+        <label for="delivery_address">Delivery Address: (*Required)</label>
 
-	<div class="fieldnotes">UK Addresses only. Please rememeber to include your Postcode!</div>
+	<table>
+		<tr><td>Line 1:</td><td><input type="text" name="delivery_line1" value="{$calendar.delivery_line1|escape:"html"}" maxlength="128" size="47" required/>*
+		<tr><td>Line 2:</td><td><input type="text" name="delivery_line2" value="{$calendar.delivery_line2|escape:"html"}" maxlength="128" size="47"/>
+		<tr><td>City:</td><td><input type="text" name="delivery_line3" value="{$calendar.delivery_line3|escape:"html"}" maxlength="128" size="47" required/>*
+		<tr><td>County:</td><td><input type="text" name="delivery_line4" value="{$calendar.delivery_line4|escape:"html"}" maxlength="128" size="47"/>
+		<tr><td>Postcode:</td><td><input type="text" name="delivery_postcode" value="{$calendar.delivery_postcode|escape:"html"}" maxlength="16" size="10" required/>*
+	</table>
+
+	<div class="fieldnotes">UK Addresses only</div>
 
         {if $errors.delivery_address}</div>{/if}
 </div>
@@ -76,9 +83,11 @@
 
 </fieldset>
 
+<br><br>
 
-<input type=submit name="proceed" value="Proceed to Payment"> (not yet available in demo!)
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 
+(Payment is processed by PayPal. Paypal account not required. Can pay with normal Credit/Debit Cards as a Guest)
 
 </form>
 {include file="_std_end.tpl"}

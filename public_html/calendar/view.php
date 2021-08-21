@@ -37,7 +37,7 @@ $row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = ".intval($_GET['i
 if (empty($row))// || $row['user_id'] != $USER->user_id)
 	die("Calendar not found");
 
-$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND status = 'ordered' ORDER BY calendar_id"); //todo, filter to paid, by ordered date!!
+$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND status != 'new' ORDER BY calendar_id"); //todo, filter to paid, by ordered date!!
 $idx = array_search($row['calendar_id'],$ids);
 $row['alpha'] = chr(65+$idx); //starting at A
 

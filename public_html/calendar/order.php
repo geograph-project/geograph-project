@@ -37,6 +37,10 @@ $row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = ".intval($_GET['i
 if (empty($row) || $row['user_id'] != $USER->user_id)
 	die("Calendar not found");
 
+$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND status != 'new' ORDER BY calendar_id"); //todo, filter to paid, by ordered date!!
+$idx = array_search($row['calendar_id'],$ids);
+$row['alpha'] = chr(65+$idx); //starting at A
+
 
 ####################################
 
@@ -44,10 +48,10 @@ if (!empty($_POST)) {
 	$updates= $error = array();
 	if (isset($_POST['calendar_title']) && $_POST['calendar_title'] != $row['title'])
 		$updates['title'] = $_POST['calendar_title'];
-	foreach (array('quantity','delivery_name','delivery_address') as $key) {
+	foreach (array('quantity','delivery_name','delivery_line1','delivery_line2','delivery_line3','delivery_line4','delivery_postcode') as $key) {
 		if (isset($_POST[$key]) && $_POST[$key] != $row[$key])
 			$updates[$key] = $_POST[$key];
-		if (empty($updates[$key]) && empty($row[$key]))
+		if (empty($updates[$key]) && empty($row[$key]) && $key != 'delivery_line2' && $key != 'delivery_line4')
 			$error[$key] = 'Required';
 	}
 
@@ -57,6 +61,32 @@ if (!empty($_POST)) {
 	if (empty($error) && !empty($updates)) {
 		$db->Execute('UPDATE calendar SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
 			' WHERE calendar_id = '.$row['calendar_id'], array_values($updates));
+
+		?>
+
+Proceeding to payment... 
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_xclick">
+<input type="hidden" name="business" value="paypal@geograph.org.uk">
+<input type="hidden" name="lc" value="US">
+<input type="hidden" name="item_name" value="Calendar Order Ref:<? echo "{$row['calendar_id']}/{$row['user_id']}{$row['alpha']}">
+<input type="hidden" name="amount" value="7.50">
+<input type="hidden" name="currency_code" value="GBP">
+<input type="hidden" name="button_subtype" value="services">
+<input type="hidden" name="no_note" value="0">
+<input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHostedGuest">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+<script>
+window.onload = function() {
+	document.forms[0].submit();
+}
+</script>
+<p>(Click the button if nothing happens within 5 seconds)</p>
+<?
+		exit;
 
 		header("Location: ./"); //todo, goto paypal!
 	} else {
