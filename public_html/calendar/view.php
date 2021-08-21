@@ -43,6 +43,36 @@ $row['alpha'] = chr(65+$idx); //starting at A
 
 ####################################
 
+//display preview image?
+if (!empty($_GET['gid'])) {
+	customExpiresHeader(3600*24*30);
+        header("Content-Type: image/jpeg");
+
+	$row = $db->getRow("SELECT * FROM gridimage_calendar WHERE calendar_id = ".intval($_GET['id'])." AND gridimage_id = ".intval($_GET['gid']));
+	if (!empty($row['upload_id'])) {
+		$image = new GridImage();
+		$image->fastInit($row);
+
+		//in THIS case can CANT use uploadmanager, as it may it someone elses image!
+		$uploadmanager=new UploadManager;
+
+		//so have to do it long form...
+		$id = $image->upload_id;
+		if ($uploadmanager->use_new_upload) {
+                        $u = $image->user_id;
+                        $a = $image->user_id%10;
+                        $b = intval($image->user_id/10)%10;
+                        $orginalfile = "{$uploadmanager->tmppath}/$a/$b/$u/newpic_u{$u}_{$id}.original.jpeg";
+                } else {
+	                $orginalfile = $uploadmanager->tmppath.'/'.($image->user_id%10).'/newpic_u'.$image->user_id.'_'.$id.'.original.jpeg';
+		}
+                readfile($orginalfile);
+	}
+        exit;
+}
+
+####################################
+
 $smarty->assign('calendar',$row);
 
 require_once('geograph/imagelist.class.php');
@@ -56,7 +86,25 @@ $sql = "SELECT * FROM gridimage_calendar
 $imagelist->_getImagesBySql($sql);
 
 foreach ($imagelist->images as $key => &$image) {
-	if (false) { //if external upload!
+	if ($image->upload_id) { //if external upload!
+		//in THIS case can CANT use uploadmanager, as it may it someone elses image!
+		$uploadmanager=new UploadManager;
+
+		//so have to do it long form...
+		$id = $image->upload_id;
+		if ($uploadmanager->use_new_upload) {
+                        $u = $image->user_id;
+                        $a = $image->user_id%10;
+                        $b = intval($image->user_id/10)%10;
+                        $orginalfile = "{$uploadmanager->tmppath}/$a/$b/$u/newpic_u{$u}_{$id}.original.jpeg";
+                } else {
+	                $orginalfile = $uploadmanager->tmppath.'/'.($image->user_id%10).'/newpic_u'.$image->user_id.'_'.$id.'.original.jpeg';
+		}
+                $s=getimagesize($orginalfile);
+
+                $image->width=$s[0];
+                $image->height=$s[1];
+		$image->download = "/calendar/view.php?gid={$image->gridimage_id}&id={$row['calendar_id']}";
 
 	} elseif ($image->original_width > 640) {
 		//actully we should now be downloading the largest available.

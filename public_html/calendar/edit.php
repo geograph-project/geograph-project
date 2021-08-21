@@ -105,7 +105,15 @@ $sql = "SELECT * FROM gridimage_calendar
 $imagelist->_getImagesBySql($sql);
 
 foreach ($imagelist->images as $key => &$image) {
-	if (false) { //if external upload!
+	if ($image->upload_id) { //if external upload!
+		//in THIS case can use upload manager, as its the users OWN image!?!
+		$uploadmanager=new UploadManager;
+		if($uploadmanager->setUploadId($image->upload_id)) {
+			$uploadmanager->initOriginalUploadSize();
+			$image->preview_url = "/resubmit.php?preview=".$uploadmanager->upload_id;
+			$image->width  = $uploadmanager->original_width;
+	                $image->height = $uploadmanager->original_height;
+		}
 
 	} elseif ($image->original_width > 640) {
 		$alturl = $image->_getOriginalpath(true,true,'_640x640');

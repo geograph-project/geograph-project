@@ -55,9 +55,9 @@
 		</tr>
 		<tr>
 			<td colspan=3>
-				Image is {$image->width}x{$image->height}px and <span{if $image->dpi < 100} style=color:red{/if}>will print at about <b>{$image->dpi}</b> DPI</span>.
+				Image is <span style="font-family:verdana">{$image->width}x{$image->height}px</span> and <span{if $image->dpi < 100} style=color:red{/if}>will print at about <b>{$image->dpi}</b> DPI</span>.
 				{if $image->user_id == $user->user_id}
-				 <a href="upload.php">Upload larger version</a>
+				 <a href="upload.php?id={$image->gridimage_id}&amp;cid={$calendar.calendar_id}">Upload {if $image->upload_id}another{/if} larger version</a>
 				{/if}
 			<hr>
 	{/foreach}
