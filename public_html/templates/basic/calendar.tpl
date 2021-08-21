@@ -62,10 +62,8 @@ overrun the panel. Individual photographer names will appear on the appropriate 
 <p>Calendars are priced at &pound;TBA each, inclusive of postage and packing, which includes a donation to Geograph funds. There is a 
 minimum quantity of 3 calendars per person, which can include more than one order.
 
-
-<hr>
-
-<b><a href="start.php">Create a new Calendar Order &gt; &gt;</a></b>
+<p>
+<a href="start.php" style="font-size:large;background-color:#000066;color:white;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a>
 
 {dynamic}
 {if $list}

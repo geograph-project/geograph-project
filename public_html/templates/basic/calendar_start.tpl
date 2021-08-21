@@ -9,7 +9,9 @@
 <p>First need to select 13 images. The <b>first image as the Cover image</b>, and then one per month. <br>
 Alternatively select 12 images, then will be able to choose one to use as cover image.</p>
 
-<p>It is highly recommended that the cover image be a landscape format, as will be cropped to fill the page.</p>
+<p>It is highly recommended that the cover image be a landscape format, as will be cropped to fill the page. Monthly images can be other formats, and will be sized approrately to fill as much of the page as possible.</p>
+
+<p>Note: you need to select 12 different images, can't use the same image for multiple months</p>
 
 <form method=post style="background-color:#eee;max-width:700px;padding:20px" name=theForm>
 

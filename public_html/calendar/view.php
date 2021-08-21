@@ -85,6 +85,22 @@ $sql = "SELECT * FROM gridimage_calendar
 	WHERE calendar_id = {$row['calendar_id']} ORDER BY sort_order";
 $imagelist->_getImagesBySql($sql);
 
+if (!empty($row['cover_image'])) {
+	$image = new Gridimage();
+	$data = $db->getRow("SELECT *,0 as sort_order FROM gridimage_search
+        INNER JOIN gridimage_size using (gridimage_id)
+        WHERE gridimage_id = {$row['cover_image']}");
+	$image->fastInit($data);
+
+	//if a larger file was added to the monthly image, need to duplicate into to the coverage image row!
+	foreach ($imagelist->images as $key => &$img)
+		if ($img->gridimage_id == $image->gridimage_id && !empty($img->upload_id))
+			$image->upload_id = $img->upload_id;
+
+	array_unshift($imagelist->images, $image);
+}
+
+
 foreach ($imagelist->images as $key => &$image) {
 	if ($image->upload_id) { //if external upload!
 		//in THIS case can CANT use uploadmanager, as it may it someone elses image!
