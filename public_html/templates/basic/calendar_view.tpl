@@ -3,7 +3,7 @@
 		<title>Ref:{$calendar.user_id}{$calendar.alpha} (Geograph Calendar)</title>
 	</head>
 	<body>
-			
+
 <fieldset style="background-color:#eee">
 	<legend>View Calendar</legend>
 
@@ -14,7 +14,7 @@
 
 Ref:  <b>{$calendar.user_id}{$calendar.alpha}</b><br>
 Delivery Name:  {$calendar.delivery_name|escape:"html"}<br>
-
+<b>{$message}</b>
 </fieldset>
 <br>
 	{foreach from=$images key=index item=image}

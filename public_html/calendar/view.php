@@ -101,6 +101,7 @@ if (!empty($row['cover_image'])) {
 }
 
 
+$stats = array();
 foreach ($imagelist->images as $key => &$image) {
 	if ($image->upload_id) { //if external upload!
 		//in THIS case can CANT use uploadmanager, as it may it someone elses image!
@@ -161,10 +162,17 @@ foreach ($imagelist->images as $key => &$image) {
 
         $image->filename = sprintf("c%d-u%d-%02d%s-id%d.jpg",
                         $row['calendar_id'], $row['user_id'], $key+1, date('M',strtotime(sprintf('2000-%02d-01',$key+1))), $image->gridimage_id);
+	@$stats[$image->realname]++;
 }
 
 
 $smarty->assign_by_ref('images', $imagelist->images);
+
+if (count($stats) == 1) {
+	$smarty->assign('message',"All images by <tt>".htmlentities2($image->realname)."</tt>");
+} else {
+	$smarty->assign('message',"Images from ".count($stats)." Photographers<br><tt>".htmlentities2(implode(', ',array_keys($stats)))."</tt>");
+}
 
 
 $smarty->display('calendar_view.tpl');
