@@ -2,10 +2,10 @@
 
 <h2>Your personalised Geograph Calendar for 2022</h2>
 
-<div style="float:right;width:213px;margin-right:20px">
-	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Cover_draftB-med.jpg" width=213 height=151><br>
-	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/photopage2B-med.jpg" width=213 height=150><br>
-	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/month-med.jpg" width=213 height=150><br>
+<div style="float:right;width:360px;margin-right:20px;line-height:0.6;background-color:#e4e4fc;padding:10px;">
+	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Cover_draftB.jpg" width=360><br><br><br>
+	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/photopage2B_1_.jpg" width=360>
+	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/month_1_.jpg" width=360 ><br><br>
 </div>
 
 <p>The calendar will be in the familiar A3 wall-hanging format, hinged across the middle, with a picture above a one month calendar. 
@@ -84,6 +84,7 @@ minimum quantity of 3 calendars per person, which can include more than one orde
 {/if}
 {/dynamic}
 
+<br style=clear:both>
 
 {include file="_std_end.tpl"}
 
