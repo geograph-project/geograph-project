@@ -28,9 +28,12 @@
 	<br>
 	{foreach from=$images key=index item=image}
 		{$image->getThumbnail(120,120)}
+		{if $image->sort_order == 0 || $image->sort_order == 4 || $image->sort_order == 8}
+			<br/>
+		{/if}
 	{/foreach}
 
-	<div class="fieldnotes">To change images got back to Step 2</div>
+	<div class="fieldnotes">To change images got back to <a href="edit.php?id={$calendar.calendar_id}">Step 2</a></div>
 </div>
 
 <hr>
@@ -83,7 +86,7 @@
 {else}
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 
-(Payment is processed by PayPal. Paypal account not required. Can pay with normal Credit/Debit Cards as a Guest)
+(Payment is processed by PayPal. PayPal Account not required. Can pay with normal Credit/Debit Cards as a Guest)
 {/if}
 
 

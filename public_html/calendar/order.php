@@ -114,6 +114,18 @@ $sql = "SELECT * FROM gridimage_calendar
 	WHERE calendar_id = {$row['calendar_id']} ORDER BY sort_order";
 $imagelist->_getImagesBySql($sql);
 
+if (!empty($row['cover_image'])) {
+	$image = new Gridimage();
+	$data = $db->getRow("SELECT *,0 as sort_order FROM gridimage_search
+        INNER JOIN gridimage_size using (gridimage_id)
+        WHERE gridimage_id = {$row['cover_image']}");
+	$image->fastInit($data);
+
+	array_unshift($imagelist->images, $image);
+}
+
+
+
 $smarty->assign_by_ref('images', $imagelist->images);
 
 

@@ -24,22 +24,28 @@
 
 <h3>Selected Images</h3>
 
-<p>The second column is the image shown at the correct aspect ratio, showing how the image will display on the page (with blank areas)
+<p>The second column is the image shown at the correct aspect ratio, showing how the image will display on the page (with blank areas).
+The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}A preview is shown below, but may be manually tweaked during production.{/if}
 
-<table style="box-sizing: border-box;">
+<table style="box-sizing: border-box;" cellspacing=0>
 	{foreach from=$images key=index item=image}
-		<tr>
+		<tr class="image{$image->sort_order}">
 			<td align=center valign=middle>{$image->getThumbnail(120,120)}</td>
-			<td><div style="width:206px;height:147px;border:1px solid gray;padding:2;text-align:center;white-space:nowrap"
+			{if $image->sort_order == 0}
+				<td><div style="width:206px;height:147px;background:url({$image->preview_url})  no-repeat center center; background-size:cover;">
+				</div></td>
+			{else}
+				<td><div style="width:206px;height:147px;border:1px solid gray;padding:2;text-align:center;white-space:nowrap"
 				><span style="display: inline-block; height:100%; vertical-align:middle"></span
 				><img src="{$image->preview_url}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);{if $image->sort_order>0}box-shadow: 1px 1px 4px #999;{/if}"></div></td>
+			{/if}
 			<td><table>
 				<tr><td align=center><b style=color:brown>{$image->month}</b></td>
 				<td>
 				{if $image->sort_order > $min}<button type=submit name="move[{$image->gridimage_id}]" value="-1">Move Up /\</button>{/if}
 				{if $image->sort_order < $max}<button type=submit name="move[{$image->gridimage_id}]" value="1">Move Down \/</button>{/if}
 				{if $min == 1}
-					<input type=radio name=cover_image value={$image->gridimage_id} id="cover_image{$image->gridimage_id}" {if $calendar.cover_image == $image->gridimage_id} checked{/if}>
+					<input type=radio name=cover_image value={$image->gridimage_id} id="cover_image{$image->gridimage_id}" {if $calendar.cover_image == $image->gridimage_id} checked{/if} required>
 					<label for="cover_image{$image->gridimage_id}">Use as Cover Image</label>
 				{/if}
 				</td>
@@ -55,7 +61,7 @@
 
 			</table></td>
 		</tr>
-		<tr>
+		<tr class="image{$image->sort_order}">
 			<td colspan=3>
 				Image is <span style="font-family:verdana">{$image->width}x{$image->height}px</span> and <span{if $image->dpi < 100} style=color:red{/if}>will print at about <b>{$image->dpi}</b> DPI</span>.
 				{if $image->user_id == $user->user_id}
@@ -110,6 +116,13 @@ input:checked + label {
 	font-weight:bold;
 	background-color:yellow;
 }
+tr.image0 {
+	background-color:#eee;
+}
+tr.image0 td {
+	padding:2px;
+}
+
 </style>
 {/literal}
 
