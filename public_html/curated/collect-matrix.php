@@ -50,8 +50,6 @@ $rows = $db->getAll("SELECT `group`,label,region,count(*) as images
 		FROM curated1 c INNER JOIN gridimage_size USING (gridimage_id)
 		WHERE $where GROUP BY `group`,label,region") or die(mysql_error());
 
-print $sql;
-
 $matrix = array();
 $cols = array();
 

@@ -36,10 +36,11 @@ $smarty->display('_std_begin.tpl');
 
 <p>We have already been collecting images, using a <a href="all-topics.php">long list of educational themed words from a dictionary</a>.
 We've tried to cross reference this short list of topics, with that long list, the 'label' column shows the suggested label from the long list. 
-If there is no link or description visible, means the word is not actully in the 
+If there is no link or description visible, means the word is not actully in the dictionary.
 
 <p><i>If we have already begun collecting images for the label, use one of the 'curation interface' links to help with the curation process</i>.</p>
 
+<p>Alternatively, if the label doesn't actully exist yet, can click the link to create it as a now formal label, to allow collection of images.
 
 <hr>
 <?
