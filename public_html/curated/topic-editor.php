@@ -97,15 +97,18 @@ foreach ($data as $row) {
 
 //	print "<td style=font-size:0.7em>".htmlentities($row['description']);
 
-	print "<td>".htmlentities($row['label']);
+	$row['group'] = 'Geography and Geology';
 
 	if (empty($row['label_id'])) {
+		print "<td style=color:gray>".htmlentities($row['label']);
 		if (!empty($row['label'])) {
-			$link1 = "create-topic.php?label=".urlencode($row['label'])."&name=".urlencode($row['name']);
-			print "<td colspan=3 style=background-color:#eee><a href=\"$link1\">define label...</a>";
+			$link1 = "create-topic.php?label=".urlencode($row['label'])."&name=".urlencode($row['name'])."&amp;group=".urlencode($row['group']);
+			print "<td colspan=3 style=background-color:#eee><i>Label not found</i> <a href=\"$link1\">create label...</a>";
 		} else
 			print "<td colspan=3 style=background-color:#eee>&nbsp;";
 		continue;
+	} else {
+		print "<td>".htmlentities($row['label']);
 	}
 
 	$row['h_description'] = smarty_modifier_truncate($row['h_description'],140,"...");
@@ -113,7 +116,6 @@ foreach ($data as $row) {
 	if (!empty($row['label_id']))
 		print " <a href=\"headwords.php?id={$row['label_id']}\">edit</a>";
 
-	$row['group'] = 'Geography and Geology';
 	$row['group'] = $row['stack'];
 	if (empty($row['label']))
 		$row['label'] = $row['name'];

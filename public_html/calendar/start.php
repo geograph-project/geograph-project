@@ -30,23 +30,40 @@ $USER->mustHavePerm("basic");
 
 
 if (!empty($_POST['ids'])) {
-	    $db = GeographDatabaseConnection(false);
-
-        $updates = array();
-	$updates['user_id'] = intval($USER->user_id);
-
-	$db->Execute('INSERT IGNORE INTO calendar SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
-
-	$updates['calendar_id'] = $db->Insert_ID();
 
 	$str = preg_replace('/[\w:\/\.]*\/(\d{6,7})_\w{8}(_\w+)?\.jpg/','$1',$_POST['ids']); //replace any thumbnail urls with just the id.
         $str = trim(preg_replace('/[^\d]+/',' ',$str));
 	$done = 0;
-        foreach (explode(' ',$str) as $id) {
+	$ids = explode(' ',$str);
+
+
+	$db = GeographDatabaseConnection(false);
+
+        $updates = array();
+	$updates['user_id'] = intval($USER->user_id);
+
+	if (count($ids) == 13) {
+		//if user uses the same image for cover, then we need to record in cover_image (gridimage_calendar, can't store repeat images!)
+		foreach ($ids as $idx => $id) {
+			if ($idx > 0 && $id == $ids[0]) {
+				$updates['cover_image'] = $ids[0];
+				unset($ids[0]);
+				break;
+			}
+		}
+	}
+
+	$db->Execute('INSERT IGNORE INTO calendar SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+
+	$updates['calendar_id'] = $db->Insert_ID();
+	if (isset($updates['cover_image']))
+		unset($updates['cover_image']);
+
+        foreach ($ids as $id) {
 		if ($row = $db->getRow("SELECT gridimage_id,user_id,grid_reference,title,realname,imagetaken FROM gridimage_search WHERE gridimage_id = ".intval($id))) {
 			foreach ($row as $key => $value)
 				$updates[$key] = $value;
-			$updates['sort_order'] = $done;
+			$updates['sort_order'] = $done + ((count($ids) == 12)?1:0);
 
 			$db->Execute($sql = 'INSERT IGNORE INTO gridimage_calendar SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates))
 				or  die("$sql\n".$db->ErrorMsg()."\n\n");

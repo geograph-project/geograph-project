@@ -24,16 +24,32 @@
 
 <h3>Selected Images</h3>
 
-<p>The second column is the image shown at the correct aspect ratio, showing how the image will display on the page (with blank areas)
+<p>The second column is the image shown at the correct aspect ratio, showing how the image will display on the page (with blank areas).
+The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}A preview is shown below, but may be manually tweaked during production.{/if}
 
-<table style="box-sizing: border-box;">
+<table style="box-sizing: border-box;" cellspacing=0>
 	{foreach from=$images key=index item=image}
-		<tr>
+		<tr class="image{$image->sort_order}">
 			<td align=center valign=middle>{$image->getThumbnail(120,120)}</td>
-			<td><div style="width:206px;height:147px;border:1px solid gray;padding:2;text-align:center;white-space:nowrap"
+			{if $image->sort_order == 0}
+				<td><div style="width:206px;height:147px;background:url({$image->preview_url})  no-repeat center center; background-size:cover;">
+				</div></td>
+			{else}
+				<td><div style="width:206px;height:147px;border:1px solid gray;padding:2;text-align:center;white-space:nowrap"
 				><span style="display: inline-block; height:100%; vertical-align:middle"></span
-				><img src="{$image->preview_url}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);"></div></td>
-			<td>{$image->month}<br><table>
+				><img src="{$image->preview_url}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);{if $image->sort_order>0}box-shadow: 1px 1px 4px #999;{/if}"></div></td>
+			{/if}
+			<td><table>
+				<tr><td align=center><b style=color:brown>{$image->month}</b></td>
+				<td>
+				{if $image->sort_order > $min}<button type=submit name="move[{$image->gridimage_id}]" value="-1">Move Up /\</button>{/if}
+				{if $image->sort_order < $max}<button type=submit name="move[{$image->gridimage_id}]" value="1">Move Down \/</button>{/if}
+				{if $min == 1}
+					<input type=radio name=cover_image value={$image->gridimage_id} id="cover_image{$image->gridimage_id}" {if $calendar.cover_image == $image->gridimage_id} checked{/if} required>
+					<label for="cover_image{$image->gridimage_id}">Use as Cover Image</label>
+				{/if}
+				</td>
+				</tr>
 				<tr><th align=right>Title</th>
 					<td><input type=text name="title[{$image->gridimage_id}]" value="{$image->title|escape:"html"}" maxlength="80" size="60"/></td>
 				<tr><th align=right>Grid Reference</th>
@@ -45,22 +61,26 @@
 
 			</table></td>
 		</tr>
-		<tr>
+		<tr class="image{$image->sort_order}">
 			<td colspan=3>
-				Image is {$image->width}x{$image->height}px and <span{if $image->dpi < 100} style=color:red{/if}>will print at about <b>{$image->dpi}</b> DPI</span>.
+				Image is <span style="font-family:verdana">{$image->width}x{$image->height}px</span> and <span{if $image->dpi < 100} style=color:red{/if}>will print at about <b>{$image->dpi}</b> DPI</span>.
 				{if $image->user_id == $user->user_id}
-				 <a href="upload.php">Upload larger version</a>
+				 <a href="upload.php?id={$image->gridimage_id}&amp;cid={$calendar.calendar_id}">Upload {if $image->upload_id}another{/if} larger version</a>
 				{/if}
 			<hr>
 	{/foreach}
 </table>
-{/dynamic}
 
 <input type=submit name="save" value="Save Changes">
 
-<input type=submit name="proceed" value="Proceed and Order">
+{if $calendar.status == 'new'}
+	<input type=submit name="proceed" value="Proceed and Order">
+{else}
+	<a href="./">Back to Home</a>
+{/if}
 
 </form>
+{/dynamic}
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -90,7 +110,21 @@ $(function() {
 	});
 
 });
-</script>{/literal}
+</script>
+<style>
+input:checked + label {
+	font-weight:bold;
+	background-color:yellow;
+}
+tr.image0 {
+	background-color:#eee;
+}
+tr.image0 td {
+	padding:2px;
+}
+
+</style>
+{/literal}
 
 {include file="_std_end.tpl"}
 

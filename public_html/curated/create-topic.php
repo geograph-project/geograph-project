@@ -77,7 +77,7 @@ or a <a href="/curated/topics.php?group=Geography+and+Geology">more succinct lis
 Group: <select name="group" onchange="document.getElementById('more').style.display = (this.value.indexOf('Geography') == 0)?'':'none';"><option>
 <?
 foreach ($data as $row) {
-	printf('<option>%s</option>',htmlentities($row['group']));
+	@printf('<option %s>%s</option>',($row['group'] == $_GET['group'])?' selected':'',htmlentities($row['group']));
 }
 
 ?></select> or create new: <input type=search name=group_other size=40> <br><br>
@@ -86,7 +86,7 @@ foreach ($data as $row) {
 <b>Label</b>: <input type=search name=label size=20 maxlength=64 <? if (!empty($_GET['label'])) { echo "value=\"".htmlentities($_GET['label'])."\""; } ?>>
 
 <hr>
-<div style="display:none" id="more">
+<div <? if (@empty($_GET['group'])) { ?>style="display:none"<? } ?> id="more">
 	<b><i>Optional:</i></b><br><br>
 
 	We are looking semi-formal definitions of each term. Where a term may have multiple meanings looking for the Geography and Geology themed definition, only.

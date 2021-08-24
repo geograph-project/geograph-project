@@ -135,7 +135,8 @@ if (!empty($data['images'])) {
 
 ########################################################################
 
-//$data['sqls'] = $sqls;
+if (!empty($_GET['d']))
+	$data['sqls'] = $sqls;
 header('Access-Control-Allow-Origin: *');
 customExpiresHeader(3600*24,true);
 outputJSON($data);

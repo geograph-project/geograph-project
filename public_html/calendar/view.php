@@ -37,9 +37,39 @@ $row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = ".intval($_GET['i
 if (empty($row))// || $row['user_id'] != $USER->user_id)
 	die("Calendar not found");
 
-$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND status = 'ordered' ORDER BY calendar_id"); //todo, filter to paid, by ordered date!!
+$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND status != 'new' ORDER BY calendar_id"); //todo, filter to paid, by ordered date!!
 $idx = array_search($row['calendar_id'],$ids);
 $row['alpha'] = chr(65+$idx); //starting at A
+
+####################################
+
+//display preview image?
+if (!empty($_GET['gid'])) {
+	customExpiresHeader(3600*24*30);
+        header("Content-Type: image/jpeg");
+
+	$row = $db->getRow("SELECT * FROM gridimage_calendar WHERE calendar_id = ".intval($_GET['id'])." AND gridimage_id = ".intval($_GET['gid']));
+	if (!empty($row['upload_id'])) {
+		$image = new GridImage();
+		$image->fastInit($row);
+
+		//in THIS case can CANT use uploadmanager, as it may it someone elses image!
+		$uploadmanager=new UploadManager;
+
+		//so have to do it long form...
+		$id = $image->upload_id;
+		if ($uploadmanager->use_new_upload) {
+                        $u = $image->user_id;
+                        $a = $image->user_id%10;
+                        $b = intval($image->user_id/10)%10;
+                        $orginalfile = "{$uploadmanager->tmppath}/$a/$b/$u/newpic_u{$u}_{$id}.original.jpeg";
+                } else {
+	                $orginalfile = $uploadmanager->tmppath.'/'.($image->user_id%10).'/newpic_u'.$image->user_id.'_'.$id.'.original.jpeg';
+		}
+                readfile($orginalfile);
+	}
+        exit;
+}
 
 ####################################
 
@@ -55,8 +85,43 @@ $sql = "SELECT * FROM gridimage_calendar
 	WHERE calendar_id = {$row['calendar_id']} ORDER BY sort_order";
 $imagelist->_getImagesBySql($sql);
 
+if (!empty($row['cover_image'])) {
+	$image = new Gridimage();
+	$data = $db->getRow("SELECT *,0 as sort_order FROM gridimage_search
+        INNER JOIN gridimage_size using (gridimage_id)
+        WHERE gridimage_id = {$row['cover_image']}");
+	$image->fastInit($data);
+
+	//if a larger file was added to the monthly image, need to duplicate into to the coverage image row!
+	foreach ($imagelist->images as $key => &$img)
+		if ($img->gridimage_id == $image->gridimage_id && !empty($img->upload_id))
+			$image->upload_id = $img->upload_id;
+
+	array_unshift($imagelist->images, $image);
+}
+
+
+$stats = array();
 foreach ($imagelist->images as $key => &$image) {
-	if (false) { //if external upload!
+	if ($image->upload_id) { //if external upload!
+		//in THIS case can CANT use uploadmanager, as it may it someone elses image!
+		$uploadmanager=new UploadManager;
+
+		//so have to do it long form...
+		$id = $image->upload_id;
+		if ($uploadmanager->use_new_upload) {
+                        $u = $image->user_id;
+                        $a = $image->user_id%10;
+                        $b = intval($image->user_id/10)%10;
+                        $orginalfile = "{$uploadmanager->tmppath}/$a/$b/$u/newpic_u{$u}_{$id}.original.jpeg";
+                } else {
+	                $orginalfile = $uploadmanager->tmppath.'/'.($image->user_id%10).'/newpic_u'.$image->user_id.'_'.$id.'.original.jpeg';
+		}
+                $s=getimagesize($orginalfile);
+
+                $image->width=$s[0];
+                $image->height=$s[1];
+		$image->download = "/calendar/view.php?gid={$image->gridimage_id}&id={$row['calendar_id']}";
 
 	} elseif ($image->original_width > 640) {
 		//actully we should now be downloading the largest available.
@@ -97,10 +162,17 @@ foreach ($imagelist->images as $key => &$image) {
 
         $image->filename = sprintf("c%d-u%d-%02d%s-id%d.jpg",
                         $row['calendar_id'], $row['user_id'], $key+1, date('M',strtotime(sprintf('2000-%02d-01',$key+1))), $image->gridimage_id);
+	@$stats[$image->realname]++;
 }
 
 
 $smarty->assign_by_ref('images', $imagelist->images);
+
+if (count($stats) == 1) {
+	$smarty->assign('message',"All images by <tt>".htmlentities2($image->realname)."</tt>");
+} else {
+	$smarty->assign('message',"Images from ".count($stats)." Photographers<br><tt>".htmlentities2(implode(', ',array_keys($stats)))."</tt>");
+}
 
 
 $smarty->display('calendar_view.tpl');

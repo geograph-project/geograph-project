@@ -2,44 +2,68 @@
 
 <h2>Your personalised Geograph Calendar for 2022</h2>
 
+<div style="float:right;width:360px;margin-right:20px;line-height:0.6;background-color:#e4e4fc;padding:10px;">
+	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Cover_draftB.jpg" width=360><br><br><br>
+	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/photopage2B_1_.jpg" width=360>
+	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/month_1_.jpg" width=360 ><br><br>
+</div>
+
+<p>The calendar will be in the familiar A3 wall-hanging format, hinged across the middle, with a picture above a one month calendar. 
+This will have space for appointments, events, etc. to be inserted on a day by day basis.
+
+<p>There will be separate single picture for each month plus one picture for the front cover.
+
+<p>All pictures must be ones currently appearing on Geograph and submitted by the person with the ID used when placing the order. There 
+are no restrictions on when the image was taken or submitted. 
+<a href="#" onclick="show_tree('spec');" id="hidespec">Full details of picture specification can be found here.</a>
+
+<blockquote id="showspec" style="display:none">
+	<h3>Picture Specification </h3>
+
+	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/photopage.jpg" width=640 height=452 align=right>
+
+
+	<p>As images on Geograph are not constrained to particular proportions, the calendar will display each monthly image in the 
+	same proportions as it appears on Geograph, on a white background. Image size will be adjusted, maintaining the original 
+	proportions, to leave a narrow border top and bottom or left and right, as appropriate (see right). Portrait and square format 
+	images will be proportionally smaller than landscape images. The submitted image will not be cropped.
+
+	<p>The creation process will select the highest resolution version currently available on Geograph. The dimensions will be 
+	shown on the 'Create Calendar' page, with a nominal dpi figure for the re-sized image. If this shows as 100 dpi or less, picture 
+	print quality will be very poor. For a good quality picture you should aim for at least 200, and preferably 300dpi*. To achieve this 
+	you can upload a high resolution version, which must be from the same original. (Tweaks for brightness, colour, etc and minor 
+	cropping are acceptable.) This uploaded version will NOT be added to the submission on Geograph, and therefore will not be subject 
+	to a Creative Commoms licence.
+
+	<h3>Cover picture</h3>
+
+	<p>The cover picture must be landscape format and will be printed without borders, so will be cropped.  The title panel will be in the 
+	position shown in the draft so your choice of image should take this into account. A high resolution image is recommended. 
+
+	<h3>Titles, etc</h3>
+
+	<p>The ordering system will automatically pick up the relevant grid square, photographer name and date taken. The current title will be 
+	shown as a default but you may change the title text within the specified limit of 80 characters.
+
+	<p>*Approx 3500 px wide or 2500 px high
+
+</blockquote>
+
+<p>As you may be submitting images of a higher resolution than those available on the Geograph 
+website, the calendar will not be produced under a Creative Commons Licence, and your normal copyright will be protected.
+
+<p>There is no restriction on how many different versions of the calendar one person may order, so selections may be tailored to suit 
+intended recipients.
+
+<p>The name that will appear on the front of the calendar will be the normal photographer name for the id used. If some of your 
+chosen pictures were submitted under a different name (e.g. a relative), this can be included on the cover, provided it does not 
+overrun the panel. Individual photographer names will appear on the appropriate calendar pages. 
+
+<p>Calendars are priced at &pound;TBA each, inclusive of postage and packing, which includes a donation to Geograph funds. There is a 
+minimum quantity of 3 calendars per person, which can include more than one order.
+
 <p>
-Many members will have used one of the
-commercial firms which allow them to
-create calendars featuring their own
-photographs. This year Geograph is
-offering members the same opportunity,
-featuring pictures that they have submitted
-to Geograph.</p>
-
-<p>The calendar will be priced very
-competitively with the commercial offers,
-with the bonus that a significant
-proportion of the price will go to swell
-Geograph&#39;s coffers. We hope that as many
-members as possible will take advantage of
-this offer.
-
-<p>The calendar will be A3 hanging format, with a display
-for each month consisting of an A4 landscape photo
-page and an A4 landscape calendar page with ample
-space to write in your appointments on a day-by-day
-basis. There will be a separate photograph for each
-month, presented in a similar way to the normal
-Geograph photo page. (See right).
-
-<p>We are fortunate that one of our members has had contact in the past with a local print
-firm that has a calendar speciality. Further discussions with the printer mean that we can
-benefit from being able to place a single bulk order even though each member&#39;s order may
-only be for a small number, and each member will be providing their own set of pictures.
-The bulk order does not depend on any minimum quantity of calendars, which means that
-there is no financial risk to Geograph.
-Geograph is grateful to the same member for making the initial proposal, including
-producing the layout design, and for volunteering to do the setting out of the individual
-calendars, using a professional desk-top publishing program.
-
-<hr>
-
-<b><a href="start.php">Create a new Calendar Order &gt; &gt;</a></b>
+<a href="start.php" style="font-size:large;background-color:#000066;color:white;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a>
 
 {dynamic}
 {if $list}
@@ -48,10 +72,9 @@ calendars, using a professional desk-top publishing program.
 	{foreach from=$list key=index item=calendar}
 		<tr>
 			<td>{$calendar.title|default:'untitled calendar'}</td>
-			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
 			<td>{if $calendar.status != 'processed'}<a href="edit.php?id={$calendar.calendar_id}">Review/Edit</a>{/if}
-			<td>{if $calendar.status != 'ordered'}<a href="order.php?id={$calendar.calendar_id}"><b>Order</b></a>{/if}
-			<td>{if $calendar.status == 'new'}<a href="?delete={$calendar.calendar_id}" style="color:red">Delete</a>{/if}
+			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
+			<td>{if $calendar.paid < '2'}<a href="order.php?id={$calendar.calendar_id}"><b>Continue and Order</b></a>{/if}
 		</tr>
 	{/foreach}
 	</table>	
@@ -61,6 +84,7 @@ calendars, using a professional desk-top publishing program.
 {/if}
 {/dynamic}
 
+<br style=clear:both>
 
 {include file="_std_end.tpl"}
 

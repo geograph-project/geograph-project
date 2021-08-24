@@ -6,9 +6,12 @@
 
 <div id="preview" style="float:right;max-width:40vw" class=shadow></div>
 
-<p>First need to select 13 images. The first image as the Cover image, and one per month. </p>
+<p>First need to select 13 images. The <b>first image as the Cover image</b>, and then one per month. <br>
+Alternatively select 12 images, then will be able in Step 2 to choose one to use as cover image.</p>
 
-<p>It is highly recommended that the first image be a landscape format, as will be cropped to fill the page.</p>
+<p>The cover image MUST be a landscape format, as will be cropped to fill the page. Monthly images can be other formats, and will be sized approrately to fill as much of the page as possible.</p>
+
+<p>Note: you need to select 12 different images, can't use the same image for multiple months</p>
 
 <form method=post style="background-color:#eee;max-width:700px;padding:20px" name=theForm>
 
@@ -39,7 +42,7 @@ setInterval(function() {
 	if (lastcnt != current.length) {
 		if (current && current != '') {
 			splited = current.commatrim().split(',');
-			$('#markedLink').html('Marked Images['+(splited.length+0)+']: <a title="Insert marked image list" href="#" onclick="useMarked()">Use Current Marked List</a>  <a href="javascript:void(clearMarkedImages())" style="color:red">Clear</a>');
+			$('#markedLink').html('Marked Images['+(splited.length+0)+']: <a title="Insert marked image list" href="#" onclick="useMarked()">Paste Current Marked List</a>');
 		} else {
 			$('#markedLink').empty();
 		}
@@ -119,7 +122,7 @@ function parseIds(that) {
 				}
 			}
 		}
-		$('#subutton').val("Add "+ids.length+" image"+(ids.length==1?'':'s')).prop('disabled',ids.length!=13);
+		$('#subutton').val("Add "+ids.length+" image"+(ids.length==1?'':'s')).prop('disabled',ids.length!=13 && ids.length!=12);
 	}, 400);
 }
 
