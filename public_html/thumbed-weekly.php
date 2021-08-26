@@ -66,13 +66,15 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	if ($db->getOne("SELECT GET_LOCK('thumbed-weekly',100)")) {
 		$status = $db->getRow("SHOW TABLE STATUS LIKE 'vote_sorter'");
+		if (empty($status['Update_time']) && !empty($status['Create_time']))
+			$status['Update_time'] = $status['Create_time']; //if InnoDB we MAY not get the Update (think depends on tablespace)
 		if (empty($status) || (!empty($status['Update_time']) && strtotime($status['Update_time']) < (time() - 60*60*24))) {
 			$db->Execute("DROP TABLE IF EXISTS `vote_sorter_tmp`");
 			$num = $db->getOne("select max(num) from vote_stat where last_vote > date_sub(now(),interval 20 day)");
 
 			$db->Execute("create table vote_sorter_tmp
 				select id,type,num,last_vote,(($num-cast(num as signed))/10) + (crc32(id)/4294967295) + ((unix_timestamp(now())-unix_timestamp(last_vote))/1000000) as sorter
-				 from vote_stat 
+				 from vote_stat
 				 where type in ('img','desc') and last_vote > date_sub(now(),interval 10 day)");
 			$db->Execute("alter table vote_sorter_tmp add index (last_vote)");
 
@@ -97,6 +99,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db = $imagelist->_getDB(true);
 	$num = $db->getOne("select max(num) from vote_stat where last_vote > date_sub(now(),interval 20 day)");
 
+	/*
 	$sql="select gridimage_id,grid_reference,imagetaken,user_id,title,comment,imageclass, type,num,last_vote,
 		(($num-num)/10) + (crc32(id)/4294967295) + ((unix_timestamp(now())-unix_timestamp(last_vote))/1000000) as sorter
 		from vote_stat as vs
@@ -119,7 +122,7 @@ if (!$smarty->is_cached($template, $cacheid))
                 group by vs.id
                 order by last_vote desc limit 60) t2
 	order by sorter";
-
+	*/
 
         $sql="
 	select * from (
