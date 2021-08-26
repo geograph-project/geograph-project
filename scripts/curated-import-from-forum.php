@@ -15,7 +15,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
 if ($param['delta']) {
-	$row = $db->getRow(" select post_id,label, (description like 'x%' OR notes like 'x%') as skipped
+	$row = $db->getRow(" select geobb_posts.post_id,label, (description like 'x%' OR notes like 'x%') as skipped
                 from geobb_posts left join curated_headword on (label_id = substring_index(substring_index(post_text,'(label#',-1),')',1))
                 where topic_id = {$param['topic']} and poster_id = {$param['socket']} order by post_id desc limit 1");
 
@@ -31,7 +31,7 @@ if ($param['delta']) {
                         where topic_id = {$param['topic']} and type ='I' and post_id > {$row['post_id']} order by post_id");
 
 } else {
-	$labels = $db->getAll($sql = " select post_id,label, (description like 'x%' OR notes like 'x%') as skipped
+	$labels = $db->getAll($sql = " select geobb_posts.post_id,label, (description like 'x%' OR notes like 'x%') as skipped
 		from geobb_posts left join curated_headword on (label_id = substring_index(substring_index(post_text,'(label#',-1),')',1))
 		where topic_id = {$param['topic']} and poster_id = {$param['socket']} order by post_id");
 
