@@ -176,7 +176,7 @@ if (!empty($_GET['q'])) {
 	if ($_SERVER['HTTP_HOST'] != 'www.geograph.ie')
 		$domains .= "+OR+site:geograph.org.uk";
 	else
-		print "<div class=interestBox>This page only shows images from Ireland - Great Britain is automatically excluded.</div>";
+		print "<div class=interestBox>This search will mainly show images from Ireland - however some Great Britain may be included. Add the keyword &quot;<tt>Ireland</tt>&quot; to focus the results even more.</div>";
 
 } else {
 	$smarty->display('_std_begin.tpl',md5($_SERVER['PHP_SELF'].$_GET['q']));
