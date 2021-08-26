@@ -8,7 +8,7 @@
 }
 #maptable a {
 	text-decoration:none;
-	color:black;
+	color:silver;
 }
 #maptable a:hover {
 	text-decoration:underline;
@@ -34,6 +34,11 @@
 {else}
 	<a href="?w=2{if $profile}&amp;u={$profile->user_id}{/if}">Coverage Percentage</a>
 {/if} |
+{if $which eq 6}
+	<b>Images</b>
+{else}
+	<a href="?w=6">Images</a>
+{/if} | 
 {if $which eq 3}
 	<b>Land Squares</b>
 {else}

@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: hectadmap.php 8198 2014-11-29 19:30:55Z geograph $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2008 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -48,9 +48,9 @@ function smarty_modifier_colerize($input) {
 		if ($input == $maximages) {
 			return 'ffcc11';
 		}
-		$hex = str_pad(dechex(255 - $input/$maximages*255), 2, '0', STR_PAD_LEFT); 
+		$hex = str_pad(dechex(255 - $input/$maximages*255), 2, '0', STR_PAD_LEFT);
 		return "ffff$hex";
-	} 
+	}
 	return 'ffffff';
 }
 
@@ -60,16 +60,18 @@ $smarty->register_modifier("colerize", "smarty_modifier_colerize");
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db = GeographDatabaseConnection(true);
-	
+
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	$tables = '';
 
 	if ($w == 10) {
 		$columns = 'if(hectad_assignment_id is null,0,100) as percentage,';
-		$tables = " left join hectad_assignment on (hectad_stat.hectad = hectad_assignment.hectad and status = 'accepted')"; 		
+		$tables = " left join hectad_assignment on (hectad_stat.hectad = hectad_assignment.hectad and status = 'accepted')";
 	} elseif ($u) {
 		$columns = '0 as geosquares,0 as percentage,';
+	} elseif ($w == 6) {
+		$columns = 'images as geosquares, least(sqrt(images),100) as percentage, ';
 	} else {
 		$columns = "geosquares,
 			round(geosquares/landsquares*100,1) as percentage,";
@@ -79,18 +81,19 @@ if (!$smarty->is_cached($template, $cacheid))
 			 $columns .= "100-(landsquares-geosquares) as greensquares, ";
 		}
 	}
-	$hectads = $db->getAll("select 
+
+	$hectads = $db->getAll("select
 		hectad_stat.hectad,landsquares,
 		$columns
 		landsquares,x,y,reference_index
-		from hectad_stat 
+		from geograph_live.hectad_stat
 		$tables
 		where landsquares > 0");
-	
+
 	$lookup = $grid = array();
 	$x1 = 9999999;
 	$x2 = 0;
-	
+
 	$o = array();
 	foreach ($CONF['origins'] as $ri => $row) {
 		$o[$ri] = array();
@@ -109,7 +112,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$x1 = min($x,$x1);
 		$x2 = max($x,$x2);
 	}
-	
+
 if (!empty($_GET['dd'])) {
 	print_r($grid);
 }
@@ -122,18 +125,30 @@ if (!empty($_GET['dd'])) {
 			$smarty->assign_by_ref('profile', $profile);
 		}
 		$smarty->assign_by_ref('u', $u);
-		
-		$hectads2 = $db->CacheGetAll(3600*24,"select 
+
+		//todo, should be rewritten to use hectad_user_stat
+		/* $hectads2 = $db->CacheGetAll(3600*24,"select
 		concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as hectad,
 		count(distinct x,y) as geosquares
 		from gridimage_search gs
 		where user_id = $u and moderation_status = 'geograph'
-		group by hectad 
-		order by null");
+		group by hectad
+		order by null"); */
+
+		if ($w == 6) {
+			$hectads2 = $db->CacheGetAll(3600*24,"select hectad, geosquares, least(ln(images)*10,100) as percentage from hectad_user_stat where user_id = $u");
+		} else {
+			$hectads2 = $db->CacheGetAll(3600*24,"select hectad, geosquares from hectad_user_stat where user_id = $u");
+		}
+
 		foreach ($hectads2 as $i => $h) {
 			list($y,$x) = $lookup[$h['hectad']];
 			$grid[$y][$x]['geosquares'] = $h['geosquares'];
-			$grid[$y][$x]['percentage'] = round($h['geosquares']/$grid[$y][$x]['landsquares']*100,1);
+			if (isset($h['percentage'])) {
+				$grid[$y][$x]['percentage'] = round($h['percentage']);
+			} else {
+				$grid[$y][$x]['percentage'] = round($h['geosquares']/$grid[$y][$x]['landsquares']*100,1);
+			}
 			if ($w == 4) {
 				$grid[$y][$x]['greensquares'] = $grid[$y][$x]['landsquares'] - $h['geosquares'];
 			} elseif ($w == 5) {
@@ -141,7 +156,7 @@ if (!empty($_GET['dd'])) {
 			}
 		}
 	}
-	
+
 	$ys = array_keys($grid);
 	$y1 = min($ys);
 	$y2 = max($ys);
@@ -153,15 +168,16 @@ if (!empty($_GET['dd'])) {
 
 	$smarty->assign('which',$w);
 	switch($w) {
-		case '5': 
+		case '5':
 		case '4': $w = "greensquares"; break;
 		case '3': $w = "landsquares"; break;
-		case '10': 
+		case '10':
+		case '6':
 		case '2': $w = "percentage"; break;
 		default: $w = "geosquares"; break;
 	}
 	$smarty->assign('column',$w);
-	
+
 	$smarty->assign_by_ref('grid',$grid);
 	$smarty->assign('x1',$x1);
 	$smarty->assign('x2',$x2);
