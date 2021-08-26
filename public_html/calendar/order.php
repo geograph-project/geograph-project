@@ -69,7 +69,7 @@ if (!empty($_POST)) {
 		if ($row['paid'] > '2') {
 			header("Location: ./");
 		} else {
-			$cost = 7.50 * $row['quantity'];
+			$cost = 7.00 * $row['quantity'];
 		?>
 
 Proceeding to payment...

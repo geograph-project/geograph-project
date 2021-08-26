@@ -59,8 +59,8 @@ intended recipients.
 chosen pictures were submitted under a different name (e.g. a relative), this can be included on the cover, provided it does not 
 overrun the panel. Individual photographer names will appear on the appropriate calendar pages. 
 
-<p>Calendars are priced at &pound;TBA each, inclusive of postage and packing, which includes a donation to Geograph funds. There is a 
-minimum quantity of 3 calendars per person, which can include more than one order.
+<p>Calendars are priced at &pound;7.00 each, inclusive of postage and packing, which includes a donation to Geograph funds. There is a 
+minimum quantity of 2 calendars per person, which can include more than one order.
 
 <p>
 <a href="start.php" style="font-size:large;background-color:#000066;color:white;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a>

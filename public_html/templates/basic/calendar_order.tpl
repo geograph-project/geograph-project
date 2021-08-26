@@ -43,6 +43,7 @@
 
         <label for="title">Quantity Required:</label>
         <input type="number" name="quantity" value="{$calendar.quantity|escape:"html"}" style="font-size:1.3em" size=2 min="1" max="255" step="1"/>*
+	(miniumum order is 2 calendars, can be split over multiple orders)
 
         {if $errors.quantity}</div>{/if}
 </div>
