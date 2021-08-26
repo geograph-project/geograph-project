@@ -6,20 +6,23 @@
 
 <div id="preview" style="float:right;max-width:40vw" class=shadow></div>
 
-<p>First need to select 13 images. The <b>first image as the Cover image</b>, and then one per month. <br>
-Alternatively select 12 images, then will be able in Step 2 to choose one to use as cover image.</p>
+<p>Select 13 images, the <b>first image as the Cover image</b>, and then one per month. <br>
+Alternatively select 12 images, you will then will be able in Step 2 to choose one to use as cover image.</p>
 
-<p>The cover image MUST be a landscape format, as will be cropped to fill the page. Monthly images can be other formats, and will be sized approrately to fill as much of the page as possible.</p>
+<p>The cover image MUST be a landscape format, as will be cropped to fill the page. Monthly images can be other formats, and will be 
+sized appropriately to fill as much of the page as possible.</p>
 
-<p>Note: you need to select 12 different images, can't use the same image for multiple months</p>
+<p>Note: you need to select 12 different monthly images; the same image cannot be used for multiple months.</p>
 
 <form method=post style="background-color:#eee;max-width:700px;padding:20px" name=theForm>
 
-<b>Select Images by ID</b>: (enter unique id(s), or links to images/thumbnails, seperated by spaces, commas or semicolons, or even in [])<br>
+<b>Select Images by ID</b>: (enter unique id(s), or links to images/thumbnails, separated by spaces, commas or semicolons, or even in [])<br>
 
 <div id="markedLink">If use the marked-list function, would be able to insert directly here</div>
-<textarea name=ids id=theids rows=10 cols=80 onkeyup="parseIds(this)" onpaste="parseIds(this)"></textarea><br>
-<i>(tip: You should be able to drag thumbnails direct from Browser or search results, into the box above, and will just be a link. Dont need to add spaces/lines betweem the links!)</i>
+<textarea name=ids id=theids rows=10 cols=80 onkeyup="parseIds(this)" onpaste="parseIds(this)"></textarea><br> 
+
+<i>(Tip: You should be able to drag thumbnails direct from Browser or search results, into the box above, and just the ID will show. 
+Dont need to add spaces/lines betweem the links!)</i>
 
 
 <br>

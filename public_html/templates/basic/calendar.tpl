@@ -11,7 +11,7 @@
 <p>The calendar will be in the familiar A3 wall-hanging format, hinged across the middle, with a picture above a one month calendar. 
 This will have space for appointments, events, etc. to be inserted on a day by day basis.
 
-<p>There will be separate single picture for each month plus one picture for the front cover.
+<p>There will be a separate picture for each month plus one picture for the front cover.
 
 <p>All pictures must be ones currently appearing on Geograph and submitted by the person with the ID used when placing the order. There 
 are no restrictions on when the image was taken or submitted. 
@@ -75,11 +75,12 @@ minimum quantity of 2 calendars per person, which can include more than one orde
 			<td>{if $calendar.status != 'processed'}<a href="edit.php?id={$calendar.calendar_id}">Review/Edit</a>{/if}
 			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
 			<td>{if $calendar.paid < '2'}<a href="order.php?id={$calendar.calendar_id}"><b>Continue and Order</b></a>{/if}
+			<td>{if $status == 'new'}<a href="?delete={$calendar.calendar_id}" style="color:red">Delete</a>{/if}
 		</tr>
 	{/foreach}
 	</table>	
 
-	<p>You will be able to edit the order right up to order has been processed (even after payment) processing however may happen at any time after payment
+	<p>You will be able to edit the order right up to the time the order is has been processed (even after payment). Processing however may happen at any time after payment.
 
 {/if}
 {/dynamic}

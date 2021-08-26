@@ -71,10 +71,11 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 	{/foreach}
 </table>
 
+<a href="start.php" onclick="history.go(-1);return false">&lt; Start again at step 1</a>
 <input type=submit name="save" value="Save Changes">
 
 {if $calendar.status == 'new'}
-	<input type=submit name="proceed" value="Proceed and Order">
+	<input type=submit name="proceed" value="Proceed and Order &gt;">
 {else}
 	<a href="./">Back to Home</a>
 {/if}
