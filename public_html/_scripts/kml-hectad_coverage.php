@@ -33,55 +33,75 @@ $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['t
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 
+$scale = (isset($_GET['scale']) && preg_match('/^\w+$/' , $_GET['scale']))?$_GET['scale']:'scale';
+
+
 set_time_limit(3600);
 
 $hectads = array();
 
 
-$filename = $_SERVER['DOCUMENT_ROOT']."/kml/hectads-$type".($when?"-$when":'').".kml";
+$filename = $_SERVER['DOCUMENT_ROOT']."/kml/hectads-$type".($when?"-$when":'').($scale?"-$scale":'').".kml";
 
 if (file_exists($filename) && empty($_GET['over']))
-	die("done");
-	
+	die("done ".basename($filename));
+
+
 	foreach (array(1,2) as $ri) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
-			
+
 		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri and origin_x > 0 order by origin_x,origin_y limit 1");
-		
-		if ($type == 'points' && !$when) {
-			$most = $db->GetAll("select 
-			x,y,
-			concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
-			sum(has_geographs) as image_count,
-			sum(percent_land >0) as land_count
-			from gridsquare 
-			where reference_index = $ri 
-			group by tenk_square 
-			having land_count > 0
-			order by null");
-		} elseif ($type == 'percentage' && !$when) {
-			$most = $db->GetAll("select 
-			x,y,
-			concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
-			floor(sum(has_geographs)/sum(percent_land >0)*100) as image_count,
-			sum(percent_land >0) as land_count
-			from gridsquare 
-			where reference_index = $ri 
-			group by tenk_square 
-			having land_count > 0
-			order by null");
+
+		if (!$when) {
+			if ($type == 'points') {
+				$sql_column = 'geosquares';
+				$heading="Points";
+			} elseif ($type == 'images') {
+				$sql_column = "images";
+				$heading = "Images";
+			} elseif ($type == 'users') {
+				$sql_column = "users";
+				$heading = "Contributors";
+			} elseif ($type == 'geographs') {
+				$sql_column = "geographs";
+				$heading = "New<br/>Geographs";
+				$desc = "'geograph' images submitted";
+			} elseif ($type == 'percentage') {
+				$sql_column = "geosquares/landsquares*100";
+				$heading = "Percentage Geographed";
+			} elseif ($type == 'recent') {
+				$sql_column = "recentsquares/landsquares*100";
+				$heading = "Recently Geographed";
+			}
+
+			if ($scale == 'sqrt')		$sql_column = "sqrt($sql_column)";
+			elseif ($scale == 'ln')		$sql_column = "ln($sql_column)";
+			elseif ($scale == 'log10')	$sql_column = "log10($sql_column)";
+
+			$most = $db->GetAll("select x,y,hectad as tenk_square, $sql_column as image_count
+			from hectad_stat
+			where reference_index = $ri
+			and landsquares > 0");
 		} else {
 			if ($type == 'points') {
 				$sql_column = "sum(moderation_status='geograph' and ftf=1)"; //as gridimage_search
-				$heading = "Images";	
+				$heading = "Points";
 			} elseif ($type == 'images') {
 				$sql_column = "count(*)"; //as gridimage_search
 				$heading = "Images";
+			} elseif ($type == 'users') {
+				$sql_column = "count(distinct user_id)";
+				$heading = "Contributors";
 			} elseif ($type == 'geographs') {
 				$sql_column = "sum(moderation_status='geograph')";
 				$heading = "New<br/>Geographs";
 				$desc = "'geograph' images submitted";
-			} 
+			}
+
+			if ($scale == 'sqrt')		$sql_column = "sqrt($sql_column)";
+			elseif ($scale == 'ln')		$sql_column = "ln($sql_column)";
+			elseif ($scale == 'log10')	$sql_column = "log10($sql_column)";
+
 			$andwhere = '';
 			if ($when) {
 				if (strlen($when) == 7) {
@@ -95,7 +115,8 @@ if (file_exists($filename) && empty($_GET['over']))
 					$andwhere = " and submitted < '$when'";
 				}
 			}
-			$most = $db->GetAll("select 
+
+			$most = $db->GetAll("select
 			x,y,
 			concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
 			$sql_column as image_count
@@ -104,13 +125,13 @@ if (file_exists($filename) && empty($_GET['over']))
 			group by tenk_square
 			order by null");
 		}
-		
-		foreach($most as $id=>$entry) 
+
+		foreach($most as $id=>$entry)
 		{
 			$most[$id]['x'] = ( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x'];
 			$most[$id]['y'] = ( intval(($most[$id]['y'] - $origin['origin_y'])/10)*10 ) +  $origin['origin_y'];
 			$most[$id]['reference_index'] = $ri;
-		}	
+		}
 		$hectads = array_merge($hectads,$most);
 	}
 
@@ -122,7 +143,7 @@ if (file_exists($filename) && empty($_GET['over']))
 				$totla++;
 		}
 		ksort($statt);
-		
+
 		print "$totla<pre>";
 		print_r($statt);
 		exit;
@@ -147,9 +168,9 @@ ob_start();
 
 <?
 	foreach ($hectads as $square) {
-	
+
 		list($lat,$long) = $conv->internal_to_wgs84($square['x']+5,$square['y']+5,$square['reference_index']);
-		
+
 		$height = $square['image_count'] * 200;
 ?>
   <Placemark>
@@ -196,14 +217,14 @@ ob_start();
 	}
 
 	foreach ($hectads as $square) {
-	
+
 		$bits = array();
-		
+
 		$bits[] = getll($square['x'],$square['y'],$square['reference_index']);
 		$bits[] = getll($square['x']+10,$square['y'],$square['reference_index']);
 		$bits[] = getll($square['x']+10,$square['y']+10,$square['reference_index']);
 		$bits[] = getll($square['x'],$square['y']+10,$square['reference_index']);
-		
+
 		$height = $square['image_count'] * 200;
   ?>
 		<Polygon>
@@ -213,12 +234,12 @@ ob_start();
 			<outerBoundaryIs>
 				<LinearRing>
 					<coordinates>
-					<? 
+					<?
 					foreach ($bits as $bit) {
 						echo "{$bit['long']},{$bit['lat']},$height ";
 					}
 					$bit = $bits[0];
-					echo "{$bit['long']},{$bit['lat']},$height "; 
+					echo "{$bit['long']},{$bit['lat']},$height ";
 					?>
 					</coordinates>
 				</LinearRing>
@@ -229,14 +250,15 @@ ob_start();
 ?>
 </MultiGeometry>
 </Placemark>
-</Document></kml><?	
-		
+</Document></kml><?
+
 $filedata = ob_get_contents();
 ob_end_clean();
 
-file_put_contents ( $filename, $filedata); 
+file_put_contents ( $filename, $filedata);
 
 $type = "$type".($when?"-$when":'');
+$type = "$type".($scale?"-$scale":'');
 
 print "wrote ".strlen($filedata);
 print "<br/><br/><a href=\"/kml/hectads-$type.kml\">Download KML</a>";
@@ -257,4 +279,3 @@ print "<br/><br/><br/><br/>wrote ".strlen($content);
 print "<br/><br/><a href=\"/kml/hectads-$type.kmz\">Download KMZ</a>";
 
 
-?>
