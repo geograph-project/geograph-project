@@ -27,9 +27,8 @@ cat > "${DOCKER_CONFIG}/config.json" <<EOF
       "username": "${CI_REGISTRY_USER}",
       "password": "${CI_REGISTRY_PASSWORD}"
     },
-    "https://index.docker.io/v2/": {
-      "username": "geograph",
-      "password": "3cca644d-03be-4478-9a1e-e2ad7ce866ce"
+    "index.docker.io": {
+      "auth": "Z2VvZ3JhcGg6ZTdkOGYwZjYtNDEyNy00Yzg0LTljODMtZjFiYTM0MWM0NzBl"
     }
   }
 }
