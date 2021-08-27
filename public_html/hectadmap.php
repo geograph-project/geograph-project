@@ -71,7 +71,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	} elseif ($u) {
 		$columns = '0 as geosquares,0 as percentage,';
 	} elseif ($w == 6) {
-		$columns = 'images as geosquares, least(sqrt(images),100) as percentage, ';
+		$columns = 'images as geosquares, least(sqrt(images)/1.5,100) as percentage, ';
 	} else {
 		$columns = "geosquares,
 			round(geosquares/landsquares*100,1) as percentage,";
