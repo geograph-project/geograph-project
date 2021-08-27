@@ -38,10 +38,10 @@ $scale = (isset($_GET['scale']) && preg_match('/^\w+$/' , $_GET['scale']))?$_GET
 
 set_time_limit(3600);
 
-$hectads = array();
+$hectads = $hectadsgray = $hectadsred = $hectadsgreen = array();
 
 
-$filename = $_SERVER['DOCUMENT_ROOT']."/kml/hectads-$type".($when?"-$when":'').($scale?"-$scale":'').".kml";
+$filename = $_SERVER['DOCUMENT_ROOT']."/kml/hectads-$type".($when?"-$when":'').($scale?"-$scale":'')."-color.kml";
 
 if (file_exists($filename) && empty($_GET['over']))
 	die("done ".basename($filename));
@@ -125,84 +125,35 @@ if (file_exists($filename) && empty($_GET['over']))
 			group by tenk_square
 			order by null");
 		}
-
+		$grid = array();
 		foreach($most as $id=>$entry)
 		{
 			$most[$id]['x'] = ( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x'];
 			$most[$id]['y'] = ( intval(($most[$id]['y'] - $origin['origin_y'])/10)*10 ) +  $origin['origin_y'];
 			$most[$id]['reference_index'] = $ri;
+			$grid[$most[$id]['x']][$most[$id]['y']] = $entry['image_count'];
 		}
-		$hectads = array_merge($hectads,$most);
-	}
+		foreach($most as $id=>$entry) {
+			$values = array();
+			foreach(range($entry['x']-10,$entry['x']+10,10) as $x)
+				foreach(range($entry['y']-10,$entry['y']+10,10) as $y)
+					if (isset($grid[$x][$y]))
+						array_push($values,$grid[$x][$y]);
 
-	if (isset($_GET['stat'])) {
-		$statt = array();
-		foreach($hectads as $id=>$entry) {
-			$statt[$entry['image_count']]++;
-			if ($entry['image_count'] && $entry['image_count'] < 10)
-				$totla++;
+			$avg = array_sum($values)/count($values); //should never be zero values, as will include 'self'
+			$delta = $entry['image_count']/10; //=10%
+
+			if (abs($avg-$entry['image_count']) > $delta) {
+				if ($avg < $entry['image_count'])
+					$hectadsred[] = $most[$id];
+				else //if ($avg > $entry['image_count'])
+					$hectadsgreen[] = $most[$id];
+
+			} else {
+				$hectadsgray[] = $most[$id];
+			}
 		}
-		ksort($statt);
-
-		print "$totla<pre>";
-		print_r($statt);
-		exit;
 	}
-
-
-#header("Content-type: application/vnd.google-earth.kml");
-ob_start();
-	print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-?>
-<kml xmlns="http://earth.google.com/kml/2.0">
-<Document>
-<name>Geograph Hectads - <? echo $type; if ($when) echo " - upto $when"; ?></name>
-<Style id="Style1">
-	<IconStyle>
-		<scale>0</scale>
-	</IconStyle>
-</Style>
-<Folder>
-<name>Labels</name>
-<visibility>0</visibility>
-
-<?
-	foreach ($hectads as $square) {
-
-		list($lat,$long) = $conv->internal_to_wgs84($square['x']+5,$square['y']+5,$square['reference_index']);
-
-		$height = $square['image_count'] * 200;
-?>
-  <Placemark>
-  	<name><? echo $square['tenk_square']; ?></name>
-    <visibility>0</visibility>
-    <styleUrl>#Style1</styleUrl>
-	<Point>
-		<coordinates><? echo "$long,$lat,$height"; ?></coordinates>
-		<altitudeMode>relativeToGround</altitudeMode>
-	</Point>
-  </Placemark>
-<?
-	}
-?>
-<? if ($when) { ?>
-	<TimeSpan>
-	  <begin><? echo $whenb; ?></begin>
-	  <end><? echo $when; ?></end>
-	</TimeSpan>
-<? } ?>
-</Folder>
-<Placemark>
-<name>Bars</name>
-<visibility>1</visibility>
-<? if ($when) { ?>
-	<TimeSpan>
-	  <begin><? echo $whenb; ?></begin>
-	  <end><? echo $when; ?></end>
-	</TimeSpan>
-<? } ?>
-<MultiGeometry>
-<?
 
 	$done = array();
 	function getll($x,$y,$ri) {
@@ -216,7 +167,42 @@ ob_start();
 		return $bit;
 	}
 
-	foreach ($hectads as $square) {
+#header("Content-type: application/vnd.google-earth.kml");
+ob_start();
+	print "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+<Document>
+<name>Geograph Hectads - <? echo $type; if ($when) echo " - upto $when"; ?></name>
+<Style id="Style1">
+	<IconStyle>
+		<scale>0</scale>
+	</IconStyle>
+</Style>
+<Style id="StyleRed">
+	<PolyStyle>
+		<color>ff7f55ff</color>
+	</PolyStyle>
+</Style>
+<Style id="StyleGreen">
+	<PolyStyle>
+		<color>ff7fff55</color>
+	</PolyStyle>
+</Style>
+
+<Placemark>
+<name>Bars Gray</name>
+<visibility>1</visibility>
+<? if ($when) { ?>
+	<TimeSpan>
+	  <begin><? echo $whenb; ?></begin>
+	  <end><? echo $when; ?></end>
+	</TimeSpan>
+<? } ?>
+<MultiGeometry>
+<?
+
+	foreach ($hectadsgray as $square) {
 
 		$bits = array();
 
@@ -250,6 +236,107 @@ ob_start();
 ?>
 </MultiGeometry>
 </Placemark>
+
+<Placemark>
+<name>Bars Red</name>
+<visibility>1</visibility>
+<? if ($when) { ?>
+	<TimeSpan>
+	  <begin><? echo $whenb; ?></begin>
+	  <end><? echo $when; ?></end>
+	</TimeSpan>
+<? } ?>
+<styleUrl>#StyleRed</styleUrl>
+
+<MultiGeometry>
+<?
+
+	foreach ($hectadsred as $square) {
+
+		$bits = array();
+
+		$bits[] = getll($square['x'],$square['y'],$square['reference_index']);
+		$bits[] = getll($square['x']+10,$square['y'],$square['reference_index']);
+		$bits[] = getll($square['x']+10,$square['y']+10,$square['reference_index']);
+		$bits[] = getll($square['x'],$square['y']+10,$square['reference_index']);
+
+		$height = $square['image_count'] * 200;
+  ?>
+		<Polygon>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<extrude>1</extrude>
+			<tessellate>1</tessellate>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					<?
+					foreach ($bits as $bit) {
+						echo "{$bit['long']},{$bit['lat']},$height ";
+					}
+					$bit = $bits[0];
+					echo "{$bit['long']},{$bit['lat']},$height ";
+					?>
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+  <?
+  	}
+?>
+</MultiGeometry>
+</Placemark>
+
+<Placemark>
+<name>Bars Green</name>
+<visibility>1</visibility>
+<? if ($when) { ?>
+	<TimeSpan>
+	  <begin><? echo $whenb; ?></begin>
+	  <end><? echo $when; ?></end>
+	</TimeSpan>
+<? } ?>
+<styleUrl>#StyleGreen</styleUrl>
+
+<MultiGeometry>
+<?
+
+	foreach ($hectadsgreen as $square) {
+
+		$bits = array();
+
+		$bits[] = getll($square['x'],$square['y'],$square['reference_index']);
+		$bits[] = getll($square['x']+10,$square['y'],$square['reference_index']);
+		$bits[] = getll($square['x']+10,$square['y']+10,$square['reference_index']);
+		$bits[] = getll($square['x'],$square['y']+10,$square['reference_index']);
+
+		$height = $square['image_count'] * 200;
+  ?>
+		<Polygon>
+			<altitudeMode>relativeToGround</altitudeMode>
+			<extrude>1</extrude>
+			<tessellate>1</tessellate>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					<?
+					foreach ($bits as $bit) {
+						echo "{$bit['long']},{$bit['lat']},$height ";
+					}
+					$bit = $bits[0];
+					echo "{$bit['long']},{$bit['lat']},$height ";
+					?>
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+  <?
+  	}
+?>
+</MultiGeometry>
+</Placemark>
+
+
+
 </Document></kml><?
 
 $filedata = ob_get_contents();
@@ -259,6 +346,7 @@ file_put_contents ( $filename, $filedata);
 
 $type = "$type".($when?"-$when":'');
 $type = "$type".($scale?"-$scale":'');
+$type = "$type"."-color";
 
 print "wrote ".strlen($filedata);
 print "<br/><br/><a href=\"/kml/hectads-$type.kml\">Download KML</a>";
