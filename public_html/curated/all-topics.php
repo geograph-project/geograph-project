@@ -67,15 +67,30 @@ group by label
 	");
 */
 
-        $table = $db->getAll("
+	if (!empty($_GET['other'])) {
+	        $table = $db->getAll("
 
-select `group`,l.label,welsh, images,curators,myriads,hectads,regions,decades
-from curated_headword l
-	inner join curated1_stat using (label)
+select `group`,s.label,welsh, images,curators,myriads,hectads,regions,decades
+from curated1_stat s
+	left join curated_headword l on (l.label = s.label and s.group = 'Geography and Geology')
+where l.label is null
 order by label
 
-        ");
+	        ");
+		$extra['other']=1;
+	} else {
+		$join = empty($_GET['all'])?'inner':'left';
 
+	        $table = $db->getAll("
+
+select `group`,l.label,welsh,length(description) as description, images,curators,myriads,hectads,regions,decades
+from curated_headword l
+	$join join curated1_stat using (label)
+order by label
+
+	        ");
+		@$extra['all']=intval($_GET['all']);
+	}
 
 
 	if ($template=='statistics_table.tpl')
@@ -96,6 +111,7 @@ order by label
 		}
 
 	$smarty->assign_by_ref('table', $table);
+	$smarty->assign_by_ref('extra', $extra);
 
 	$smarty->assign("h2title",'All Curated Topics (with definition)');
 	$smarty->assign("total",count($table));
