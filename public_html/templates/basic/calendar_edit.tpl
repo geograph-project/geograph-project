@@ -40,7 +40,7 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 				><img src="{$image->preview_url}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);{if $image->sort_order>0}box-shadow: 1px 1px 4px #999;{/if}"></div></td>
 			{/if}
 			<td><table>
-				<tr><td align=center><b style=color:brown>{$image->month}</b></td>
+				<tr><td align=center style=background-color:#e4e4fc;font-size:1.3em>{$image->month}</td>
 				<td>
 				{if $image->sort_order > $min}<button type=submit name="move[{$image->gridimage_id}]" value="-1">Move Up /\</button>{/if}
 				{if $image->sort_order < $max}<button type=submit name="move[{$image->gridimage_id}]" value="1">Move Down \/</button>{/if}
