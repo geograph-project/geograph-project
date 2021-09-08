@@ -6,13 +6,19 @@
 
 <div id="preview" style="float:right;max-width:40vw" class=shadow></div>
 
-<p>Select 13 images, the <b>first image as the Cover image</b>, and then one per month. <br>
-Alternatively select 12 images, you will then will be able in Step 2 to choose one to use as cover image.</p>
+<div style="max-width:700px;">
 
-<p>The cover image MUST be a landscape format, as will be cropped to fill the page. Monthly images can be other formats, and will be 
+<p>Select 13 images, the <b>first image as the Cover image</b>, and then one per month. <br>
+<i>Alternatively select 12 images, you will then will be able in Step 2 to choose one to use as cover image.</i></p>
+
+<p>The cover image <b>must</b> be a landscape format, as will be cropped to fill the page. Monthly images can be other formats, and will be 
 sized appropriately to fill as much of the page as possible.</p>
 
+<p>While you can reorder the images in the next step, it may be much easier to select/enter the images in the right order here</p>
+
 <p>Note: you need to select 12 different monthly images; the same image cannot be used for multiple months.</p>
+
+</div>
 
 <form method=post style="background-color:#eee;max-width:700px;padding:20px" name=theForm>
 
@@ -47,7 +53,7 @@ setInterval(function() {
 			splited = current.commatrim().split(',');
 			$('#markedLink').html('Marked Images['+(splited.length+0)+']: <a title="Insert marked image list" href="#" onclick="useMarked()">Paste Current Marked List</a>');
 		} else {
-			$('#markedLink').empty();
+			$('#markedLink').html('If use the marked-list function, would be able to insert directly here');
 		}
 	}
 	lastcnt = current.length;
@@ -128,6 +134,9 @@ function parseIds(that) {
 		$('#subutton').val("Add "+ids.length+" image"+(ids.length==1?'':'s')).prop('disabled',ids.length!=13 && ids.length!=12);
 	}, 400);
 }
+setInterval(function() {
+	 parseIds(document.getElementById('theids'));	
+}, 1000);
 
 var images = new Object();
 function pupulateImage(id) {
