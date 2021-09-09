@@ -66,6 +66,9 @@ if (!empty($_POST)) {
 		if (!empty($updates)) {
 			$db->Execute('UPDATE calendar SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
 				' WHERE calendar_id = '.$row['calendar_id'], array_values($updates));
+
+			if (!empty($updates['quantity'])) //perhaps could reload whole row, but just need the quantity below
+				$row['quantity'] = $updates['quantity'];
 		}
 
 		if ($row['paid'] > '2') {
@@ -88,8 +91,9 @@ Proceeding to payment...
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_xclick">
 <input type="hidden" name="business" value="paypal@geograph.org.uk">
-<input type="hidden" name="lc" value="US">
+<input type="hidden" name="lc" value="GB">
 <input type="hidden" name="item_name" value="Calendar Order Ref:<? echo "{$row['calendar_id']}/{$row['user_id']}{$row['alpha']}"; ?>">
+<input type="hidden" name="invoice" value="<? echo "{$row['user_id']}{$row['alpha']}"; ?>">
 <input type="hidden" name="amount" value="<? echo $cost; ?>">
 <input type="hidden" name="currency_code" value="GBP">
 <input type="hidden" name="button_subtype" value="services">
