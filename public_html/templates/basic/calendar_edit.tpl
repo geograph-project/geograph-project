@@ -3,6 +3,8 @@
 
 <h2>Step 2. Create Geograph Calendar</h2>
 
+<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
+
 <form method=post>
 
 <fieldset>

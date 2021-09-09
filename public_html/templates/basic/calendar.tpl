@@ -8,6 +8,8 @@
 	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/month_1_.jpg" width=360 ><br><br>
 </div>
 
+<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
+
 <p>The calendar will be in the familiar A3 wall-hanging format, hinged across the middle, with a picture above a one month calendar. 
 This will have space for appointments, events, etc. to be inserted on a day by day basis.
 
@@ -64,6 +66,8 @@ minimum quantity of 2 calendars per person, which can include more than one orde
 
 <p>
 <a href="start.php" style="font-size:large;background-color:#000066;color:white;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a>
+
+<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
 
 {dynamic}
 {if $list}

@@ -25,38 +25,9 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$USER->user_id == 9181 || $USER->mustHavePerm("director");
+$USER->mustHavePerm("basic");
 
-
-$db = GeographDatabaseConnection(false);
-
-
-####################################
-
-if (!empty($_POST['processed'])) {
-        foreach ($_POST['processed'] as $calendar_id => $dummy) {
-                $calendar_id = intval($calendar_id);
-		$db->Execute("UPDATE calendar SET status = 'processed' WHERE calendar_id = $calendar_id");
-	}
-}
-
-####################################
-
-$list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE status != 'new' ORDER BY ordered,calendar_id");
-
-$stat = array();
-foreach ($list as $idx => &$row) {
-	if ($row['ordered'] > '1000') {
-		if (empty($row['alpha'])) {
-			$row['alpha'] = chr(65+@$stat[$row['user_id']]); //starting at A
-		}
-		@$stat[$row['user_id']]++;
-	}
-}
-
-$smarty->assign_by_ref('list', $list);
-
-$smarty->display('calendar_admin.tpl');
+$smarty->display('calendar_help.tpl');
 
 
 

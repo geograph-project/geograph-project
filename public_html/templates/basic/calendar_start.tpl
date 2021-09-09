@@ -3,6 +3,7 @@
 
 <h2>Step 1. Create Geograph Calendar</h2>
 
+<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
 
 <div id="preview" style="float:right;max-width:40vw" class=shadow></div>
 

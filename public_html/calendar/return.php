@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$ABORT_GLOBAL_EARLY = 1;
 require_once('geograph/global.inc.php');
+init_session();
 
 
 $db=NewADOConnection($GLOBALS['DSN']);
@@ -32,14 +32,58 @@ if (!$db) failed('Database connection failed');
 store_everything('paypal_return', $_POST);
 
 
+$smarty = new GeographPage;
+$smarty->display('_std_begin.tpl');
+
 ?>
-Thank you for your payment. Your transaction has completed, and we are sending you an email containing the receipt for your purchase.
-
-<a href="/">Return to homepage</a> (this page is very basic at the moment, while still testing!)
-
+<h2>Thank you for your payment.</h2>
 <?
 
+//this needs converting to IGN. The return URL doesnt contain in any identifiers
+if (!empty($_SESSION['calendar_id'])) { ?>
+	 Your transaction has completed, and we are sending you an email containing the receipt for your purchase.
+<?
+	$calendar_id = intval($_SESSION['calendar_id']);
 
+        $db->Execute("UPDATE calendar SET status = 'paid', paid=now() WHERE calendar_id = $calendar_id AND user_id = {$USER->user_id}");
+
+	unset($_SESSION['calendar_id']);
+
+	$row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = $calendar_id");
+
+	if (empty($row) || $row['user_id'] != $USER->user_id)
+        	die("Calendar not found");
+
+
+	$to = $USER->email;
+	$subject = "[Geograph] Calendar Order {$row['user_id']}{$row['alpha']} - Thank you";
+	$body = "Thank you for your order.
+
+This message is to confirm, we have received your order. We will be processing the order shortly, and will let you know when ready to dispatch.
+
+In the meantime you can still edit the order (to rearrange the images, or if you need to update the delivery address).
+https://www.geograph.org.uk/calendar/edit.php?id={$row['calendar_id']}
+
+But once processed, will no longer be able to edit.
+
+If you have any questions, contact us online:
+	https://www.geograph.org.uk/contact.php
+	(we wont see email replies to this message)
+
+Regards,
+
+The Calendar Team at Geograph Towers.
+
+";
+
+
+	mail_wrapper($to, $subject, $body, "From: Geograph NoReply <noreply@geograph.org.uk>");
+} else {
+	print "<a href=/>Continue to Homepage</a>";
+}
+
+
+$smarty->display('_std_end.tpl');
 
 
 

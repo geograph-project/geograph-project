@@ -37,10 +37,11 @@ $row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = ".intval($_GET['i
 if (empty($row) || $row['user_id'] != $USER->user_id)
 	die("Calendar not found");
 
-$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND status != 'new' ORDER BY calendar_id"); //todo, filter to paid, by ordered date!!
-$idx = array_search($row['calendar_id'],$ids);
-$row['alpha'] = chr(65+$idx); //starting at A
-
+if (empty($row['alpha'])) {
+	$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND ordered > '1000-00-00' ORDER BY ordered");
+	$idx = array_search($row['calendar_id'],$ids); //if 'FALSE' will count as zero
+	$row['alpha'] = chr(65+$idx); //starting at A
+}
 
 ####################################
 
@@ -55,21 +56,31 @@ if (!empty($_POST)) {
 			$error[$key] = 'Required';
 	}
 
-	if ($row['status'] == 'new')
-		$updates['status'] = 'ordered';
+	if (empty($errors)) {
+		if ($row['status'] == 'new') {
+			$updates['status'] = 'ordered';
+			$updates['alpha'] = $row['alpha'];
+			$updates['ordered'] = $db->getOne("SELECT NOW()");
+		}
 
-	if (empty($updates))
-		$errors['title'] = 'Nothing to save';
-
-	if (empty($errors) && !empty($updates)) {
-		$db->Execute('UPDATE calendar SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
-			' WHERE calendar_id = '.$row['calendar_id'], array_values($updates));
-
+		if (!empty($updates)) {
+			$db->Execute('UPDATE calendar SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
+				' WHERE calendar_id = '.$row['calendar_id'], array_values($updates));
+		}
 
 		if ($row['paid'] > '2') {
 			header("Location: ./");
 		} else {
+			//this needs converting to IGN. The return URL doesnt contain in any identifiers
+			$_SESSION['calendar_id'] = $row['calendar_id'];
+
 			$cost = 7.00 * $row['quantity'];
+
+			$token=new Token;
+			$token->setValue("i", $row['calendar_id']);
+			$token->setValue("u", $row['user_id']);
+			$token->setValue("a", $row['alpha']);
+
 		?>
 
 Proceeding to payment...
@@ -78,12 +89,14 @@ Proceeding to payment...
 <input type="hidden" name="cmd" value="_xclick">
 <input type="hidden" name="business" value="paypal@geograph.org.uk">
 <input type="hidden" name="lc" value="US">
-<input type="hidden" name="item_name" value="Calendar Order Ref:<? echo "{$row['calendar_id']}/{$row['user_id']}{$row['alpha']}"; ?>>
+<input type="hidden" name="item_name" value="Calendar Order Ref:<? echo "{$row['calendar_id']}/{$row['user_id']}{$row['alpha']}"; ?>">
 <input type="hidden" name="amount" value="<? echo $cost; ?>">
 <input type="hidden" name="currency_code" value="GBP">
 <input type="hidden" name="button_subtype" value="services">
 <input type="hidden" name="no_note" value="0">
 <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHostedGuest">
+<input type="hidden" name="returnurl" value="https://www.geograph.org.uk/calendar/return.php?t=<? echo $token->getToken(); ?>">
+<input type="hidden" name="cancelurl" value="https://www.geograph.org.uk/calendar/order.php?id=<? echo $row['calendar_id']; ?>">
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 </form>

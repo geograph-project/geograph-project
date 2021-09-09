@@ -3,6 +3,8 @@
 
 <h2>Step 3. Order Geograph Calendar</h2>
 
+<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
+
 <form method=post>
 
 <fieldset style="background-color:#eee">
@@ -73,7 +75,7 @@
 		<tr><td>Postcode:</td><td><input type="text" name="delivery_postcode" value="{$calendar.delivery_postcode|escape:"html"}" maxlength="16" size="10" required/>*
 	</table>
 
-	<div class="fieldnotes">UK Addresses only</div>
+	<div class="fieldnotes">UK Addresses only (Note, the Calendar(s) will be delivered to the address <b>above</b>, not the delivery address set in Paypal)</div>
 
         {if $errors.delivery_address}</div>{/if}
 </div>
@@ -85,9 +87,9 @@
 {if $calendar.paid > '2'}
 	<input type=submit value="Save Changes">
 {else}
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+	<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 
-(Payment is processed by PayPal. PayPal Account not required. Can pay with normal Credit/Debit Cards as a Guest)
+	(Payment is processed by PayPal. PayPal Account not required. Can pay with normal Credit/Debit Cards as a Guest)
 {/if}
 
 
