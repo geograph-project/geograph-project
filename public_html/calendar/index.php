@@ -32,15 +32,15 @@ $db = GeographDatabaseConnection(false);
 
 ####################################
 
-if (!empty($_POST['delete'])) {
-	$calendar_id = intval($_POST['delete']);
+if (!empty($_GET['delete'])) {
+	$calendar_id = intval($_GET['delete']);
         $db->Execute("UPDATE calendar SET status = 'deleted' WHERE calendar_id = $calendar_id AND user_id = {$USER->user_id}");
 }
 
 ####################################
 
 
-$list = $db->getAll("SELECT * FROM calendar WHERE user_id = {$USER->user_id}");
+$list = $db->getAll("SELECT * FROM calendar WHERE user_id = {$USER->user_id} AND status > 1");
 
 $smarty->assign_by_ref('list', $list);
 

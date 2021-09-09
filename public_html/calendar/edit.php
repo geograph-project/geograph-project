@@ -67,9 +67,13 @@ if (!empty($_POST)) {
 	if (isset($_POST['cover_image']) && $_POST['cover_image'] != $row['cover_image'])
 		$updates['cover_image']   = $_POST['cover_image'];
 
-	if (!empty($updates))
+	if (!empty($updates)) {
 		$db->Execute('UPDATE calendar SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
 			' WHERE calendar_id = '.$row['calendar_id'], array_values($updates));
+
+		//reload!
+		$row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = ".intval($_GET['id']));
+	}
 
 	foreach ($_POST['title'] as $id => $title) {
 		$updates = array();
@@ -100,7 +104,7 @@ $imagelist->_setDB($db);//to reuse the same connection
 
 //this is NOT normal rows, but gridimage_calendar has enough rows, that it works! (at least to get thumbnails!)
 $sql = "SELECT * FROM gridimage_calendar
-	INNER JOIN gridimage_size using (gridimage_id)
+	LEFT JOIN gridimage_size using (gridimage_id)
 	WHERE calendar_id = {$row['calendar_id']} ORDER BY sort_order";
 $imagelist->_getImagesBySql($sql);
 
@@ -152,11 +156,13 @@ foreach ($imagelist->images as $key => &$image) {
 		$image->month = "Cover Image";
 }
 
-
 $smarty->assign_by_ref('images', $imagelist->images);
 
 $smarty->assign('min',(count($imagelist->images) == 13)?0:1);
 $smarty->assign('max',12);
+
+if (!empty($_GET['back']))
+	$smarty->assign('back',1);
 
 $smarty->display('calendar_edit.tpl');
 

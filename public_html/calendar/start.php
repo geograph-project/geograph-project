@@ -36,7 +36,6 @@ if (!empty($_POST['ids'])) {
 	$done = 0;
 	$ids = explode(' ',$str);
 
-
 	$db = GeographDatabaseConnection(false);
 
         $updates = array();
@@ -75,7 +74,7 @@ if (!empty($_POST['ids'])) {
 	}
 
 	print "<p>$done image(s) added. Thank you.</p>";
-	header("Location: edit.php?id={$updates['calendar_id']}");
+	header("Location: edit.php?id={$updates['calendar_id']}&back=1");
 	exit;
 }
 

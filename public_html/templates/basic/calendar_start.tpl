@@ -29,7 +29,7 @@ sized appropriately to fill as much of the page as possible.</p>
 <textarea name=ids id=theids rows=10 cols=80 onkeyup="parseIds(this)" onpaste="parseIds(this)"></textarea><br> 
 
 <i>(Tip: You should be able to drag thumbnails direct from Browser or search results, into the box above, and just the ID will show. 
-Dont need to add spaces/lines betweem the links!)</i>
+Don't need to add spaces/lines between the links!)</i>
 
 
 <br>

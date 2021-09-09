@@ -48,8 +48,7 @@ added.
 images&#39; button at the bottom shows how many images are selected but is not active if fewer
 or more images are listed.
 
-<img src="https://lh4.googleusercontent.com/Lor3Gvgal7aFbwCyTvroJ090ODt-qDmxXoE8b1vZx0uIZjohvWjGTRHAfe879Nyb8OK6JvOjpbSl5EEt4pHQIMESqI8s_v5YVpxe53N2VbYDxgsjrO6vCGSS1ACFz-VE110g-3-XGM0=s0">
-
+<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Step_1_dump2.jpg">
 
 <h3>Step 2</h3>
 <p>This page displays the set of images in the order in which they will appear in the calendar,
@@ -72,14 +71,13 @@ much space you have left.
 
 <img src="https://lh3.googleusercontent.com/HIA1QbDvSGPB6r9r66GLlwaBABdp4AXa0xR_qsD_HmIUSy0hEgDi8db8cTqatbBbNlWvWj4PnguB_UosVEL4w2gqfahYPQYLl8w9vqhX4jP8oAW62wUdKokYdnGCNSEDT2vvrKFn-SM=s0"><br><br>
 
+<p>If you use the option to select only 12 images, you will see a option alongside the images 
+allowing you to select one as the cover image. <br>
 
 <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 351.40px; height: 67.33px;"><img alt="" src="https://lh3.googleusercontent.com/5GjDXNXDGt9PPCW27rt_up0UhI7-Zr8_wf9I4BcMnUzwd-ugTdSVTDfv_fdLs8bGT8tEHAEExhlyo1VQ6z1vy3iF2iIVQ3ScreJeQOdMPWYQ6adrsyI0TSart0aEc2c3pgfkqfya8GE=s0" style="width: 641.97px; height: 561.06px; margin-left: -227.84px; margin-top: -279.17px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span>
 
-<p>If you use the option to select only 12 images, you will see a button alongside the images 
-allowing you to select one as the cover image. <br> Please note that the details of the cover 
-image do appear on the back cover of the calendar, so if you choose 13 images, the cover is not 
-&#39;anonymous&#39;.
-
+<p>Please note that the details of the cover image do appear on the back cover of the calendar,
+so if you choose 13 images, the cover is not &#39;anonymous&#39;.
 
 
 <h3>Step 3</h3>
@@ -93,8 +91,8 @@ page and proceed to payment.
 <p>You will need to complete a separate order for each selection you make*. These will be 
 combined for dispatch to a single delivery address.
 
-<i>*We regret that technical issues mean that it has not been possible to setup a basket and 
-checkout facility</i>
+<p><small><i>*We regret that technical issues mean that it has not been possible to setup a basket and 
+checkout facility.</i></small>
 
 </div>
 

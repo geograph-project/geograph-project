@@ -96,6 +96,20 @@
 {/dynamic}
 
 </form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script>{literal}
+//prevent enter submitting the form (which will be an arbitary move button!) 
+$('form input').keydown(function (e) {
+    if (e.keyCode == 13) {
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
+{/literal}
+
+
 {include file="_std_end.tpl"}
 
 

@@ -17,7 +17,7 @@
         <label for="title">Title:</label>
         <input type="text" name="calendar_title" value="{$calendar.title|escape:"html"}" style="font-size:1.1em" maxlength="64" size="47"/>
 
-	<div class="fieldnotes">Just for your refernece, not printed on calendar!</div>
+	<div class="fieldnotes">Just for your reference, not printed on calendar!</div>
 
         {if $errors.title}</div>{/if}
 </div>
@@ -65,7 +65,9 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 		</tr>
 		<tr class="image{$image->sort_order}">
 			<td colspan=3>
+				{if $image->width}
 				Image is <span style="font-family:verdana">{$image->width}x{$image->height}px</span> and <span{if $image->dpi < 100} style=color:red{/if}>will print at about <b>{$image->dpi}</b> DPI</span>.
+				{/if}
 				{if $image->user_id == $user->user_id}
 				 <a href="upload.php?id={$image->gridimage_id}&amp;cid={$calendar.calendar_id}">Upload {if $image->upload_id}another{/if} larger version</a>
 				{/if}
@@ -73,13 +75,13 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 	{/foreach}
 </table>
 
-<a href="start.php" onclick="history.go(-1);return false">&lt; Start again at step 1</a>
+<a href="start.php" {if $back} onclick="history.go(-1);return false"{/if}>&lt; Start again at step 1</a>
 <input type=submit name="save" value="Save Changes">
 
 {if $calendar.status == 'new'}
 	<input type=submit name="proceed" value="Proceed and Order &gt;">
 {else}
-	<a href="./">Back to Home</a>
+	<a href="./">Back to Calendar Home</a>
 {/if}
 
 </form>
@@ -91,12 +93,17 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 $(function() {
 	var test = document.createElement('input');
 	var html5date = true; //on by default, gets disabled if not available
-	test.type = 'date';
-	test.value = 'Hello World'; // any not date!
-	if (test.type === 'text')
+	try {
+		test.type = 'date';
+		test.value = 'Hello World'; // any not date!
+		if (test.type === 'text')
+			html5date = false;
+		if (test.value === 'Hello World') //if still the string, then its a plain 'text'!
+			html5date = false;
+	}
+	catch(err) {
 		html5date = false;
-	if (test.value === 'Hello World') //if still the string, then its a plain 'text'!
-		html5date = false;
+	}
 
 	if (html5date) //the html5 element uses a 'localized' format, not the standard ISO. 
 		$('.dateformat').hide();
@@ -109,9 +116,20 @@ $(function() {
 		$this.after($ele);
 		$this.keyup(function() {
 			$ele.text(this.value.length+'/'+len);
+			if (this.value.length>len)
+				$ele.css({color:'red'});
+			else
+				$ele.css({color:'green'});
 		}).trigger('keyup');
 	});
 
+});
+//prevent enter submitting the form (which will be an arbitary move button!) 
+$('form input').keydown(function (e) {
+    if (e.keyCode == 13) {
+        e.preventDefault();
+        return false;
+    }
 });
 </script>
 <style>
