@@ -59,7 +59,7 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 				<tr><th align=right>Credit</th>
 					<td><input type=text name="realname[{$image->gridimage_id}]" value="{$image->realname|escape:"html"}" maxlength="128" size="47" readonly disabled/></td>
 				<tr><th align=right>Image Taken</th>
-					<td><input type=date name="imagetaken[{$image->gridimage_id}]" value="{$image->imagetaken|escape:"html"}" maxlength="10" size="10"/><span class=dateformat>(Format: YYYY-MM-DD)</span></td>
+					<td><input {if strpos($image->imagetaken,'-00')}type=text{else}type=date{/if} name="imagetaken[{$image->gridimage_id}]" value="{$image->imagetaken|escape:"html"}" maxlength="10" size="10"/><span class=dateformat>(Format: YYYY-MM-DD)</span></td>
 
 			</table></td>
 		</tr>

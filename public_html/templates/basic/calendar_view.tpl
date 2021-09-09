@@ -36,10 +36,8 @@ Delivery Name:  {$calendar.delivery_name|escape:"html"}<br>
 					<td><input type=text disabled name="grid_reference[{$image->gridimage_id}]" value="{$image->grid_reference|escape:"html"}" maxlength="16" size="10"/></td>
 				<tr><th align=right>Credit</th>
 					<td><input type=text name="realname[{$image->gridimage_id}]" value="{$image->realname|escape:"html"}" maxlength="128" size="47" readonly disabled/></td>
-				{if $image->imagetaken != '0000-00-00'}
-					<tr><th align=right>Taken</th>
-						<td><input type=text disabled name="imagetaken[{$image->gridimage_id}]" value="{$image->getFormattedTakenDate()|regex_replace:"/^[A-Z][\w ]+, /":''}" size="40"/></td>
-				{/if}
+				<tr><th align=right>Taken</th>
+					<td><input type=text disabled name="imagetaken[{$image->gridimage_id}]" value="{$image->getFormattedTakenDate()|regex_replace:"/^[A-Z][\w ]+, /":''}" size="40"/></td>
 
 			</table>
 		<p class=nowrap>Image is {$image->width}x{$image->height}px and will print at about <b>{$image->dpi}</b> DPI.
