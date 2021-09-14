@@ -1,3 +1,4 @@
+{assign var="page_title" value="Geograph Calendar 2022"}
 {include file="_std_begin.tpl"}
 
 <div style="float:right;width:360px;margin-right:20px;text-align:center">
