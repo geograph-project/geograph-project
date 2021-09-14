@@ -22,23 +22,28 @@
  */
 
 
-$postfix = "";
-foreach ($_GET as $key => $value) {
-	if (is_array($value))
-		$value = implode(' ',$value);
-	$postfix .= "/".urlencode($key)."=".urlencode($value);
-}
-
 if (isset($_GET['mine'])) {
 	require_once('geograph/global.inc.php');
 	init_session();
 
 	$smarty = new GeographPage;
 	$USER->mustHavePerm("basic");
-	//atrribute filters dont follow the = convention!
-	$postfix .= "/user+\"user{$USER->user_id}\"";
+
+	$_GET['@user'] = "user".$USER->user_id;
+	unset($_GET['mine']);
 }
 
+
+$postfix = "";
+foreach ($_GET as $key => $value) {
+	if (is_array($value))
+		$value = implode(' ',$value);
+	if (preg_match('/@(\w+)/',$key,$m)) {
+		//attribute filters uese a different format
+		$postfix .= "/".urlencode($m[1])."+".urlencode("\"$value\"");
+	} else
+		$postfix .= "/".urlencode($key)."=".urlencode($value);
+}
 
 header("Location: /browser/#!$postfix");
 
