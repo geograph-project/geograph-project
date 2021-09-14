@@ -31,6 +31,12 @@
 			{/if}
 		</tr>
 	{/foreach}
+	{if $total}
+		<tr>
+		<td colspan=3>
+		<td>Total Paid: {$total}
+		<td colspan=3>
+	{/if}
 	</table>	
 	<input type=submit value="Save Progress"> 
 	</form>
