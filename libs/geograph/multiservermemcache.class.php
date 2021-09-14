@@ -46,7 +46,7 @@ class MultiServerMemcache extends Memcache {
 	var $db=null;
 	var $redis=null;
 
-	function MultiServerMemcache(&$conf,$debug = false) {
+	function __construct(&$conf,$debug = false) {
 
 		if (isset($conf['redis'])) {
 			//kind of a hack, but functional enough.
@@ -64,7 +64,7 @@ class MultiServerMemcache extends Memcache {
 		if (empty($conf['host']) && empty($conf['host1']))
 			return;
 
-		parent::__construct();
+		//parent::__construct();
 
 		split_timer('memcache'); //starts the timer
 
