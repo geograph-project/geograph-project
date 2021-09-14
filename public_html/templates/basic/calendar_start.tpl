@@ -1,3 +1,4 @@
+{assign var="page_title" value="Geograph Calendar 2022 - Step 1"}
 {include file="_std_begin.tpl"}
 
 
