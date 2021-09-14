@@ -1,14 +1,18 @@
 {include file="_std_begin.tpl"}
 
+<div style="float:right;width:360px;margin-right:20px;text-align:center">
+	<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
+</div>
+
 <h2>Your personalised Geograph Calendar for 2022</h2>
 
-<div style="float:right;width:360px;margin-right:20px;line-height:0.6;background-color:#e4e4fc;padding:10px;">
+<div style="clear:both;float:right;width:360px;margin-right:20px;line-height:0.6;background-color:#e4e4fc;padding:10px;">
+
 	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Cover_draftB.jpg" width=360><br><br><br>
 	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/photopage2B_1_.jpg" width=360>
 	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/month_1_.jpg" width=360 ><br><br>
 </div>
 
-<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
 
 <p>The calendar will be in the familiar A3 wall-hanging format, hinged across the middle, with a picture above a one month calendar. 
 This will have space for appointments, events, etc. to be inserted on a day by day basis.
@@ -61,9 +65,9 @@ intended recipients.
 chosen pictures were submitted under a different name (e.g. a relative), this can be included on the cover, provided it does not 
 overrun the panel. Individual photographer names will appear on the appropriate calendar pages. 
 
-<p>Calendars are priced at &pound;7.00 each, inclusive of postage and packing, which includes a donation to Geograph funds. There is a 
+<p><b>Calendars are priced at &pound;7.00 each, inclusive of postage and packing, which includes a donation to Geograph funds.</b> There is a 
 minimum quantity of 2 calendars per person, which can include more than one order.
-
+<br><br>
 <p>
 <a href="start.php" style="font-size:large;background-color:#000066;color:white;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a>
 

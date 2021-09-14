@@ -27,6 +27,7 @@ init_session();
 $smarty = new GeographPage;
 $USER->mustHavePerm("basic");
 
+pageMustBeHTTPS();
 
 $db = GeographDatabaseConnection(false);
 

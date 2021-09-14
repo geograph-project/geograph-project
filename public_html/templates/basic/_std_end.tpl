@@ -28,6 +28,7 @@
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Your most recent submissions" href="/submissions.php">Recent Uploads</a></li>
+	<li><a href="/calendar/" title="Create your own calendar for 2022 using your favourite photos from Geograph! &pound;7 each.">Order Calendar</a></li>
      {/if}{/dynamic}
      <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li>
      <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>

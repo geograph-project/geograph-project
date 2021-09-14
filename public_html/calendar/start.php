@@ -27,6 +27,7 @@ init_session();
 $smarty = new GeographPage;
 $USER->mustHavePerm("basic");
 
+pageMustBeHTTPS();
 
 
 if (!empty($_POST['ids'])) {
