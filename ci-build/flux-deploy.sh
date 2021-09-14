@@ -19,15 +19,15 @@ image_exists() {
 echo "Deploying image ${IMAGE_NAME}:${IMAGE_TAG} ..."
 echo "  ... to ${WORKLOAD}."
 
-# Check for the image every ten seconds, sixty times, to total a ten-minute
-# window.
+# Check for the image every twenty seconds, sixty times, to total a twenty-minute
+# window. (it sometimes takes a long time for new images to be visible)
 for i in $(seq 60 -1 1); do
   # If the image exists, fall out of the loop
   image_exists && break
 
   if [ $i -gt 1 ]; then
-    echo "[ ... waiting for image to become available ... ]"
-    sleep 10
+    echo "[ ... waiting for image to become available (sleeping for 20 seconds) ... ]"
+    sleep 20
   else
     echo "The image hasn't appeared, giving up."
     echo "Output of 'fluxctl list-images' for debug purposes..."
