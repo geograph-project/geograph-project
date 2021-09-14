@@ -29,6 +29,17 @@ foreach ($_GET as $key => $value) {
 	$postfix .= "/".urlencode($key)."=".urlencode($value);
 }
 
+if (isset($_GET['mine'])) {
+	require_once('geograph/global.inc.php');
+	init_session();
+
+	$smarty = new GeographPage;
+	$USER->mustHavePerm("basic");
+	//atrribute filters dont follow the = convention!
+	$postfix .= "/user+\"user{$USER->user_id}\"";
+}
+
+
 header("Location: /browser/#!$postfix");
 
 
