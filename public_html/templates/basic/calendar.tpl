@@ -3,6 +3,7 @@
 
 <div style="float:right;width:360px;margin-right:20px;text-align:center">
 	<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
+	<p>{newwin href="/calendar/tips.php" text="Tips Page"} (in new window)</p>
 </div>
 
 <h2>Your personalised Geograph Calendar for 2022</h2>
@@ -73,6 +74,7 @@ minimum quantity of 2 calendars per person, which can include more than one orde
 <a href="start.php" style="font-size:large;background-color:#000066;color:white;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a>
 
 <p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
+	<p>{newwin href="/calendar/tips.php" text="Tips Page"} (in new window)</p>
 
 {dynamic}
 {if $list}

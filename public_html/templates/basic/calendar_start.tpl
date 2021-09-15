@@ -5,13 +5,14 @@
 <h2>Step 1. Create Geograph Calendar</h2>
 
 <p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
+<p>{newwin href="/calendar/tips.php" text="Tips for Selecting Images"} (in new window)</p>
 
 <div id="preview" style="float:right;max-width:40vw" class=shadow></div>
 
 <div style="max-width:700px;">
 
-<p>Select 13 images, the <b>first image as the Cover image</b>, and then one per month. <br>
-<i>Alternatively select 12 images, you will then will be able in Step 2 to choose one to use as cover image.</i></p>
+<p><big>Select 13 images, the <b>first image as the Cover image</b>, and then one per month.</big> <br>
+&nbsp;&nbsp;<i>Alternatively select 12 images, you will then will be able in Step 2 to choose one to reuse as cover image.</i></p>
 
 <p>The cover image <b>must</b> be a landscape format, as will be cropped to fill the page. Monthly images can be other formats, and will be 
 sized appropriately to fill as much of the page as possible.</p>

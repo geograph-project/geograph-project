@@ -60,17 +60,6 @@
 
 			<img src="{$preview_url}" name="large640" style="border:2px solid blue"/>
 
-<script type="text/javascript">{literal}
-
-function hideStep3() {
-	document.getElementById("step3").style.display = 'none';
-}
-{/literal}
-{if (!$user->upload_size || $user->upload_size == 640) && !$allow_same}
- AttachEvent(window,'load',hideStep3,false);
-{/if}
-</script>
-
 <div id="step3">
 <h3>Step 3 : Finalize</h3>
 
