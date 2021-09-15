@@ -5,7 +5,7 @@
 
 <p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
 
-<form method=post>
+<form method=post name=theForm>
 
 <fieldset>
 	<legend>Edit Calendar</legend>
@@ -29,6 +29,11 @@
 <p>The second column is the image shown at the correct aspect ratio, showing how the image will display on the page (with blank areas).
 The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}A preview is shown below, but may be manually tweaked during production.{/if}
 
+{if $min==1}
+	<p><button type=button onclick="replaceImage(0)">Specify Cover Image</button> (use this to specify a different image, rather than picking below!)</p>
+{/if}
+
+
 <table style="box-sizing: border-box;" cellspacing=0>
 	{foreach from=$images key=index item=image}
 		<tr class="image{$image->sort_order}">
@@ -50,6 +55,7 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 					<input type=radio name=cover_image value={$image->gridimage_id} id="cover_image{$image->gridimage_id}" {if $calendar.cover_image == $image->gridimage_id} checked{/if} required>
 					<label for="cover_image{$image->gridimage_id}">Use as Cover Image</label>
 				{/if}
+				&nbsp; <button type=button onclick="replaceImage({$image->sort_order})">Replace Image</button>
 				</td>
 				</tr>
 				<tr><th align=right>Title</th>
@@ -84,6 +90,8 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 	<a href="./">Back to Calendar Home</a>
 {/if}
 
+<input type=hidden name=new_position>
+<input type=hidden name=new_id>
 </form>
 {/dynamic}
 
@@ -131,6 +139,18 @@ $('form input').keydown(function (e) {
         return false;
     }
 });
+
+function replaceImage(sort) {
+	var value = prompt("Please enter the Image ID (or page URL) of the new replacement image. (for position "+sort+")");
+
+	if (value && value.length> 0) {
+		var form = document.forms['theForm'];
+		form.elements['new_position'].value = sort;
+		form.elements['new_id'].value = value;
+		form.submit();
+	}
+}
+
 </script>
 <style>
 input:checked + label {

@@ -40,6 +40,39 @@ if (empty($row) || $row['user_id'] != $USER->user_id)
 
 ####################################
 
+if (!empty($_POST['new_id'])) {
+	$str = preg_replace('/[\w:\/\.]*\/(\d{6,7})_\w{8}(_\w+)?\.jpg/','$1',$_POST['new_id']); //replace any thumbnail urls with just the id.
+        $gridimage_id = intval(trim(preg_replace('/[^\d]+/',' ',$str)));
+	if ($gridimage_id > 0) {
+		$sort_order = intval($_POST['new_position']);
+
+		//deal with cover image! ... check if the image is already in the calendar!
+		if ($sort_order == 0 && $db->getOne("SELECT COUNT(*) FROM gridimage_calendar WHERE calendar_id = {$row['calendar_id']} AND gridimage_id = $gridimage_id AND sort_order > 0")) {
+			$_POST['cover_image'] = $gridimage_id; //will fall though to update below!
+			//may need to delete the old image
+			$db->Execute("DELETE FROM gridimage_calendar WHERE calendar_id = {$row['calendar_id']} AND sort_order = $sort_order");
+
+		//otherwise plain old replace
+		} elseif ($updates = $db->getRow("SELECT gridimage_id,user_id,grid_reference,title,realname,imagetaken FROM gridimage_search WHERE gridimage_id = $gridimage_id")) {
+
+		        $updates['calendar_id'] = $row['calendar_id'];
+                       	$updates['sort_order'] = $sort_order;
+
+
+	                $db->Execute($sql = 'INSERT IGNORE INTO gridimage_calendar SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates))
+        	                or  die("$sql\n".$db->ErrorMsg()."\n\n");
+
+			//need to delete the old image
+			if ($db->Affected_Rows() == 1)
+				$db->Execute("DELETE FROM gridimage_calendar WHERE calendar_id = {$row['calendar_id']} AND sort_order = $sort_order and gridimage_id != $gridimage_id");
+
+			$_POST['cover_image'] = 0; //now selected a specific image
+		}
+	}
+}
+
+####################################
+
 if (!empty($_POST['move'])) {
 	foreach ($_POST['move'] as $gridimage_id => $move) {
 		$gridimage_id = intval($gridimage_id);
