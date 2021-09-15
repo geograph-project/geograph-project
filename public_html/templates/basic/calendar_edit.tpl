@@ -1,3 +1,4 @@
+{assign var="page_title" value="Editing Calendar #`$calendar.calendar_id`"}
 {include file="_std_begin.tpl"}
 
 
