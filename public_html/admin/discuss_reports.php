@@ -178,11 +178,17 @@ $query = sqlBitsToSelect($sql);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $data = $db->getAll($query);
 
+
+$first_topic = $db->getOne("select min(topic_id) from geobb_topics where topic_time > '2012-01-05'");
+$early = false;
 foreach ($data as $idx => $row) {
 	$data[$idx]['comment'] = strip_tags($row['comment']);
+	if ($row['topic_id'] < $first_topic)
+		$early = true;
 }
 
 $smarty->assign_by_ref('data',$data);
+$smarty->assign('early',$early);
 
 $logs = $db->getAll("SELECT l.*,realname FROM discuss_report_log l LEFT JOIN user USING (user_id) ORDER BY log_id DESC LIMIT 200");
 
@@ -190,7 +196,8 @@ $smarty->assign_by_ref('logs',$logs);
 
 if (!empty($_GET['topic_id'])) {
 	$where = array();
-	$where[] = "status = 1";
+	$where[] = "t.status = 1";
+	$where[] = "p.status = 1";
 	$where[] = "for_topic_id = ".intval($_GET['topic_id']);
 	if (!empty($USER->user_id)) {
         	$in = explode(',',$USER->rights);
@@ -200,7 +207,13 @@ if (!empty($_GET['topic_id'])) {
         	//dont want to check for_user_id, as it might be a private thread, for a specific right, without user_id)
 	        $where[] = "for_right = 'all'";
 	}
-	$threads = $db->getAll("SELECT * FROM comment_thread WHERE ".implode(' AND ',$where));
+	$threads = $db->getAll("SELECT t.*,count(comment_post_id) as posts, u1.realname as started_by, u2.realname as discussion_with
+	FROM comment_thread t
+	INNER JOIN user u1 USING (user_id)
+	LEFT JOIN user u2 ON (u2.user_id = for_user_id)
+	LEFT JOIN comment_post p USING (comment_thread_id)
+	WHERE ".implode(' AND ',$where)."
+	GROUP BY comment_thread_id DESC");
 	$smarty->assign_by_ref('threads',$threads);
 }
 
@@ -209,3 +222,4 @@ if (!empty($_GET['topic_id'])) {
 $smarty->display('admin_discuss_reports.tpl');
 
 
+print_r($stat);

@@ -10,11 +10,25 @@
 	<h2>Untitled Comment Thread</h2>
 {/if}
 
+{if $thread.for_right == 'forum'}
+	Discussion with Forum Moderators
+{elseif $thread.for_right == '"moderator"'}
+        Discussion with Images Moderators
+{elseif $thread.for_right == 'director'}
+        Discussion with Directors
+{elseif $thread.for_right == 'basic'}
+        Discussion with Any Registered User
+{elseif $thread.for_right == 'all'}
+        Public Discussion
+{/if}
+
+{if $realname}
+	 and User: <a href="/profile/{$thread.for_user_id}">{$realname|escape:'html'}</a></p>
+{/if}
+
+
 {if $topic_title}
 	<p>Reference Thread: <a href="/discuss/?action=vthread&topic={$thread.for_topic_id}">{$topic_title|escape:'html'}</a></p>
-{/if}
-{if $realname}
-	<p>User: <a href="/profile/{$thread.for_user_id}">{$realname|escape:'html'}</a></p>
 {/if}
 
 
@@ -34,6 +48,10 @@
 <form name="postMsg" action="{$script_name}?id={$thread.comment_thread_id}" method="post" class="formStyle">
 
 <textarea name="comment" cols="38" rows="12" class="textForm" tabindex="2" style="width:550px;"></textarea><br/>
+
+
+<input type=checkbox name=anon value="forum"> Sign message from 'Geograph Forum Moderators' rather than you specifically<br>
+
 
 <input type="SUBMIT" value="Post message" class="inputButton" tabindex="5">
 </form>

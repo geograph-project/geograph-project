@@ -59,6 +59,7 @@ if (!empty($_POST)) {
 		$u2['comment_thread_id'] = $db->Insert_ID();
 		$u2['user_id'] = $USER->user_id;
 		$u2['comment'] = $_POST['comment'];
+		$u2['anon'] = @$_POST['anon'];
 
 		$db->Execute('INSERT INTO comment_post SET created=NOW(),`'.implode('` = ?, `',array_keys($u2)).'` = ?',array_values($u2));
 
@@ -73,7 +74,7 @@ if (!empty($_POST)) {
 		if (!empty($u['for_user_id']))
 			$ids[] = $u['for_user_id'];
 
-		$users = $db->getAll("SELECT email,realname 
+		$users = $db->getAll("SELECT email,realname
 			FROM user
 			WHERE user_id IN (".implode(',',$ids).")");
 
@@ -94,7 +95,11 @@ if (!empty($_POST)) {
 					$body .= str_repeat('-',78)."\n\n";
 				}
 			}
-			$body .= "{$USER->realname} has created a new comment thread: \n\n";
+			if ($_POST['anon'] == 'forum') {
+				$body .= "Message from Geograph Forum Moderators: \n\n";
+			} else {
+				$body .= "{$USER->realname} has created a new comment thread: \n\n";
+			}
 			$body .= "{$_POST['comment']}\n\n";
 			$body .= str_repeat('-',78)."\n\n";
 	                $body .= "To respond to this message, please visit\n";
@@ -120,7 +125,7 @@ if (!empty($_GET['post_id'])) {
 
 	if (!empty($row['topic_id']))
 		$_GET['topic_id'] = $row['topic_id'];
-	if (!empty($row['poster_id']) && empty($_GET['user_id']))
+	if (!empty($row['poster_id']) && !isset($_GET['user_id']))
 		$_GET['user_id'] = $row['poster_id'];
 }
 
@@ -131,7 +136,7 @@ if (!empty($_GET['topic_id'])) {
 	if (!empty($row['topic_id']))
 		$smarty->assign('for_topic_id', $row['topic_id']);
 
-        if (!empty($row['topic_poster']) && empty($_GET['user_id']))
+        if (!empty($row['topic_poster']) && !isset($_GET['user_id']))
                 $_GET['user_id'] = $row['topic_poster'];
 
         $smarty->assign('title',"Discussion Topic: ".$row['topic_title']);
@@ -165,12 +170,17 @@ if (!empty($_GET['user_id'])) {
 		$where[] = "for_post_id IS NULL"; //kind of want to allow  creating a thread for the whole topic, even if there is one a particular post??
 	if (!empty($_GET['user_id']))
         	$where[] = "for_user_id = ".intval($_GET['user_id']);
+	elseif (isset($_GET['user_id']))
+        	$where[] = "for_user_id IS NULL";
 
 //make sure this user can see it
 /// todo, need to perhaps allow the user to create a thread for a different group, but that could get confusing (if say directors have seperate thread to forum?) 
         if (!empty($USER->user_id)) {
                 $in = explode(',',$USER->rights);
                 $where[] = "for_right IN ('".implode("','",$in)."')";
+
+		$smarty->assign('has_right', array_flip($in)); //to get an associtive array!
+
         } else {
                 //dont want to check for_user_id, as it might be a private thread, for a specific right, without user_id)
                 $where[] = "for_right = 'all'";

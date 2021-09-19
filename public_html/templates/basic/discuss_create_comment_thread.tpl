@@ -62,9 +62,9 @@
 
                 <label for="for_right">Scope:</label>
 		<select name="for_right">
-			<option value="forum">Forum Moderators</option>
-			<option value="moderator">Image Moderators</option>
-			<option value="director">Directors</option>
+			{if $has_right.forum}<option value="forum">Forum Moderators</option>{/if}
+			{if $has_right.moderator}<option value="moderator">Image Moderators</option>{/if}
+			{if $has_right.director}<option value="director">Directors</option>{/if}
 			<option value="basic">Any Registered User</option>
 			<option value="all">Public</option>
 		</select>
@@ -95,6 +95,19 @@
 
 		{if $errors.message}</div>{/if}
 	</div>
+
+	{if $has_right.forum}
+
+        <div class="field">
+                {if $errors.anon}<div class="formerror"><p class="error">{$errors.anon}</p>{/if}
+
+                <label for="anon">From:</label>
+			<input type=checkbox name=anon value="forum"> Sign message from 'Geograph Forum Moderators' rather than you specifically
+
+                {if $errors.anon}</div>{/if}
+        </div>
+
+	{/if}
 
 	</fieldset>
 

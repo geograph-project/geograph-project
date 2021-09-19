@@ -47,7 +47,6 @@ if (!empty($USER->user_id)) {
 
 $thread = $db->getRow("SELECT * FROM comment_thread WHERE ".implode(' AND ',$where));
 
-
 ###############################################################################
 
 if (!empty($thread) && !empty($_POST)) {
@@ -73,7 +72,7 @@ if (!empty($thread) && !empty($_POST)) {
 
 		$smarty->assign("message",'Comment Posted '.date('r'));
 
-		$users = $db->getAll("SELECT DISTINCT email,realname 
+		$users = $db->getAll("SELECT DISTINCT email,realname
 			FROM comment_post
 			INNER JOIN user USING (user_id)
 			WHERE comment_thread_id = {$u['comment_thread_id']}");
@@ -83,8 +82,11 @@ if (!empty($thread) && !empty($_POST)) {
 		} else {
 			$subject = "[Geograph] Untitled Comment thread #{$u['comment_thread_id']}";
 		}
-
-		$body = "{$USER->realname} as posted a reply to thread: \n\n";
+		if ($_POST['anon'] == 'forum') {
+                        $body .= "Message from Geograph Forum Moderators: \n\n";
+                } else {
+			$body = "{$USER->realname} as posted a reply to thread: \n\n";
+		}
 		$body .= "{$_POST['comment']}\n\n";
 		$body .= str_repeat('-',78)."\n\n";
                 $body .= "To respond to this message, please visit\n";
@@ -119,13 +121,19 @@ if (!empty($thread)) {
         	        $smarty->assign('for_user_id', $row['user_id']);
 	}
 
-	$posts = $db->getAssoc("SELECT comment_post_id, user_id, realname, nickname, created, comment
+	$posts = $db->getAssoc("SELECT comment_post_id, user_id, realname, nickname, created, comment, anon
 				FROM comment_post
-				LEFT JOIN user USING (user_id) 
+				LEFT JOIN user USING (user_id)
 				WHERE comment_thread_id = {$thread['comment_thread_id']}
 				AND status = 1
 				ORDER BY comment_post_id");
-				
+
+	if (!in_array($in,'forum')) {
+		foreach ($posts as $idx => $post)
+			if ($post['anon'] == 'forum')
+				$posts[$idx]['realname'] = 'Geograph Forum Moderator';
+	}
+
 	$smarty->assign('posts',$posts);
 } else {
 	//even if can't view the thread they need the id, for links!
