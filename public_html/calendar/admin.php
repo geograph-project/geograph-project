@@ -25,7 +25,7 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$USER->user_id == 9181 || $USER->mustHavePerm("director");
+$USER->user_id == 135767 || $USER->user_id == 9181 || $USER->mustHavePerm("director");
 
 
 $db = GeographDatabaseConnection(false);
