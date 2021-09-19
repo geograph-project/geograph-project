@@ -73,7 +73,7 @@ $smarty->display('_std_begin.tpl');
 
 print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
 
-if (empty($_GET['q']))
+if (empty($_GET['q']) && @$_GET['date'] != 'past')
 	$_GET['q'] = 'auto vault';
 if (empty($_GET['limit']))
 	$_GET['limit'] = 20;
@@ -104,7 +104,7 @@ if (empty($_GET['page']))
 
 <?
 
-if (!empty($_GET['q'])) {
+if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 	#############################
 	$options = array();
 
@@ -129,21 +129,34 @@ if (!empty($_GET['q'])) {
 
 	$options = $options?(" OPTION ".implode(', ',$options)):'';
 
-	$ids = $sph->getCol($sql = "SELECT id FROM $index WHERE MATCH($q) ORDER BY id DESC LIMIT $limit $option");
-	if (!empty($_GET['d'])) {
-		print_r($ids);print "<hr>";
-		print("$sql;<hr>");
+	if (!empty($_GET['q'])) {
+		$ids = $sph->getCol($sql = "SELECT id FROM $index WHERE MATCH($q) ORDER BY id DESC LIMIT $limit $option");
+		if (!empty($_GET['d'])) {
+			print_r($ids);print "<hr>";
+			print("$sql;<hr>");
+		}
 	}
 
 	#############################
 
-	if (!empty($ids)) {
-		$sql = "SELECT gridimage_id as image, moderation_status as modstat, suggested, notes, review_date
-			FROM gridimage_ticket
-			LEFT JOIN gridimage USING (gridimage_id)
-			LEFT JOIN gridimage_vault USING (gridimage_id)
-			WHERE gridimage_ticket_id IN (".implode(',',$ids).") $where
-			ORDER BY gridimage_ticket_id DESC";
+	if (!empty($ids) || @$_GET['date'] == 'past') {
+		if (empty($ids) && !empty($where)) {
+			//special prvision to work with empty query! (the INNER JOIN gridimage_vault - means only reviewed images, so limtied!)
+			$sql = "SELECT gridimage_id as image, moderation_status as modstat, suggested, notes, review_date
+				FROM gridimage_ticket
+				INNER JOIN gridimage_vault USING (gridimage_id)
+				INNER JOIN gridimage USING (gridimage_id)
+				WHERE 1 $where
+				GROUP BY gridimage_id DESC
+				LIMIT 10000";
+		} else {
+			$sql = "SELECT gridimage_id as image, moderation_status as modstat, suggested, notes, review_date
+				FROM gridimage_ticket
+				INNER JOIN gridimage USING (gridimage_id)
+				LEFT JOIN gridimage_vault USING (gridimage_id)
+				WHERE gridimage_ticket_id IN (".implode(',',$ids).") $where
+				ORDER BY gridimage_ticket_id DESC";
+		}
 		if (!empty($_GET['d'])) {
 			print("$sql;<hr>");
 		}
