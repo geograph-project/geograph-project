@@ -132,7 +132,6 @@ if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 	if (!empty($_GET['q'])) {
 		$ids = $sph->getCol($sql = "SELECT id FROM $index WHERE MATCH($q) ORDER BY id DESC LIMIT $limit $option");
 		if (!empty($_GET['d'])) {
-			print_r($ids);print "<hr>";
 			print("$sql;<hr>");
 		}
 	}
