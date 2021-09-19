@@ -192,8 +192,16 @@ if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 				} elseif ($key == 'notes') {
 					print "<TD>".preg_replace('/^(Auto-generated.*?image because:)/','<span style=color:silver>$1</span><br>',htmlentities($value))."</TD>";
 				} elseif ($key == 'review_date') {
-					print "<TD sortvalue=".htmlentities($value)."><input type=date name=review_date[{$row['image']}] value=\"".htmlentities(str_replace('1000-00-00','',$value))."\"><br>";
-					print " or Invalid Image:<input type=checkbox name=invalid[{$row['image']}]".($value == '1000-00-00'?' checked':'')."></TD>";
+					print "<TD sortvalue=".htmlentities($value)."><input type=date id=d{$row['image']} name=review_date[{$row['image']}] value=\"".htmlentities(str_replace('1000-00-00','',$value))."\"><br>";
+					foreach (array(5,10,15,50) as $y) {
+						$bits = explode('-',$row['suggested']);
+						$bits[0]+= $y;
+						$date= substr(implode('-', $bits),0,10);
+						print "<a href=\"#\" onclick=\"return setDate('d{$row['image']}','$date');\">$y</a> ";
+					}
+					print "<a href=\"#\" onclick=\"return setDate('d{$row['image']}','');\">X</a> ";
+
+					print " or Invalid:<input type=checkbox name=invalid[{$row['image']}]".($value == '1000-00-00'?' checked':'')."></TD>";
 				} else {
 					print "<TD>".htmlentities($value)."</TD>";
 				}
@@ -215,6 +223,12 @@ if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 }
 
 ?><hr>
+<script>
+	function setDate(element,date) {
+		document.getElementById(element).value = date;
+		return false;
+	}
+</script>
 
 <p><small>* Stemming is enabled on the index, so to match exactly say 'vaulted' prefix with =, eg <tt style="border:1px solid gray;padding:2px">=vaulted</tt> ;
  otherwise will match 'vaulting', 'vaulted', and even 'vault'</p>
