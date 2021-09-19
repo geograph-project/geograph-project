@@ -51,11 +51,8 @@
 				<td><a href="/discuss/?action=vthread&forum={$row.forum_id1}&topic={$row.topic_id}"><b>{$row.thread|escape:'html'|default:$row.topic_id}</b></a><small> [{$row.posts_count}]
 				{if $topic_id}
 					<br><br><a href="/discuss/create-comment-thread.php?topic_id={$row.topic_id}">Thread with Topic Creator</a>
-					{if $user_stat[$thread.topic_poster]}
-						**
-					{/if}
 				{else}
-					<br>(<a href="?topic_id={$row.topic_id}">view all for topic #<b>{$row.topic_id}</b></a>)</small>
+					<br>(<a href="?topic_id={$row.topic_id}">view reports for topic #<b>{$row.topic_id}</b></a>)</small>
 				{/if}</small>
 				</td>
 			{else}

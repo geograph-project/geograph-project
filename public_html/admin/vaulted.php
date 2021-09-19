@@ -134,6 +134,7 @@ if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 		if (!empty($_GET['d'])) {
 			print("$sql;<hr>");
 		}
+		$meta = $sph->getAssoc("SHOW META");
 	}
 
 	#############################
@@ -165,6 +166,10 @@ if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 		$row = $recordSet->fields;
 
 		print "<form method=post>";
+
+		print "<p>".$recordSet->recordCount()." records shown";
+		if (!empty($meta['total_found']))
+			print ", of {$meta['total_found']} matching keywords";
 
 		print "<TABLE border='1' cellspacing='0' cellpadding='2' class=\"report sortable\" id=\"photolist\" style=font-size:0.8em><THEAD><TR>";
 		foreach ($row as $key => $value) {
