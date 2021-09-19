@@ -140,10 +140,11 @@ if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 	#############################
 
 	if (!empty($ids) || @$_GET['date'] == 'past') {
+		$merge = $db->getOne("SHOW TABLES LIKE 'gridimage_ticket_merge'")?'_merge':'';
 		if (empty($ids) && !empty($where)) {
 			//special prvision to work with empty query! (the INNER JOIN gridimage_vault - means only reviewed images, so limtied!)
 			$sql = "SELECT gridimage_id as image, moderation_status as modstat, suggested, notes, review_date
-				FROM gridimage_ticket
+				FROM gridimage_ticket$merge
 				INNER JOIN gridimage_vault USING (gridimage_id)
 				INNER JOIN gridimage USING (gridimage_id)
 				WHERE 1 $where
@@ -151,7 +152,7 @@ if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 				LIMIT 10000";
 		} else {
 			$sql = "SELECT gridimage_id as image, moderation_status as modstat, suggested, notes, review_date
-				FROM gridimage_ticket
+				FROM gridimage_ticket$merge
 				INNER JOIN gridimage USING (gridimage_id)
 				LEFT JOIN gridimage_vault USING (gridimage_id)
 				WHERE gridimage_ticket_id IN (".implode(',',$ids).") $where
