@@ -59,7 +59,7 @@ if (!empty($_POST)) {
 		$u2['comment_thread_id'] = $db->Insert_ID();
 		$u2['user_id'] = $USER->user_id;
 		$u2['comment'] = $_POST['comment'];
-		$u2['anon'] = @$_POST['anon'];
+		$u2['anon'] = strval(@$_POST['anon']);
 
 		$db->Execute('INSERT INTO comment_post SET created=NOW(),`'.implode('` = ?, `',array_keys($u2)).'` = ?',array_values($u2));
 
