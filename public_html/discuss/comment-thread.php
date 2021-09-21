@@ -41,7 +41,7 @@ if (!empty($USER->user_id)) {
 	$in[] = 'all';
 	$where[] = "( for_user_id = {$USER->user_id} OR for_right IN ('".implode("','",$in)."') )";
 } else {
-	//dont want to check for_user_id, as it might be a private thread, for a specific right, without user_id) 
+	//dont want to check for_user_id, as it might be a private thread, for a specific right, without user_id)
 	$where[] = "for_right = 'all'";
 }
 
