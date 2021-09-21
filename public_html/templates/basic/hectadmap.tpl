@@ -8,7 +8,7 @@
 }
 #maptable a {
 	text-decoration:none;
-	color:silver;
+	color:transparent;
 }
 #maptable a:hover {
 	text-decoration:underline;
