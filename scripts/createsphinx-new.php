@@ -172,8 +172,8 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_terms'")) {
 
         $count = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
-        for($q=0;$q<$count;$q+=100000) {
-                $between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+100000);
+        for($q=0;$q<$count;$q+=50000) {
+                $between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+50000);
                 $sqls[] = ($q?"INSERT INTO sphinx_terms ":"CREATE TABLE sphinx_terms (gridimage_id INT UNSIGNED) ENGINE=MyISAM").
                          str_replace('__between__',$between, $sql);
         }
