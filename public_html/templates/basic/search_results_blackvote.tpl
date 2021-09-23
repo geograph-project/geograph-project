@@ -36,11 +36,11 @@
 	color:#a9a9a9;
 }
 #maincontent td b, 
-#maincontent td a {
+#maincontent td a.title {
 	color:black;
         text-decoration:none;
 }
-#maincontent td a:hover {
+#maincontent td a.title:hover {
         text-decoration:underline;
 }
 .content_photogray #maincontent td b, .content_photogray #maincontent td a {
@@ -122,11 +122,11 @@ jQuery(document).ready( function() {
 <script src="{"/js/lazy.js"|revision}" type="text/javascript"></script>
 <div id="mapdiv"><img src="{$static_host}/img/blank.gif" name="map"/></div>
 
-<table border="0" cellspacing="0" cellpadding="0" class="shadow shadow_large">
+<table border="0" cellspacing="0" cellpadding="0">
         {foreach from=$engine->results item=image}
         {searchbreak image=$image table=true}
     <tr>
-        <td valign="top" align="right"><a href="/photo/{$image->gridimage_id}" title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string}{if $image->count} - {$image->count|thousends} images in group{/if}" onmouseover="showMap('{$image->wgs84_lat} {$image->wgs84_long}')" onmouseout="hideMap()">{$image->getFull()|replace:'src=':'src="/img/blank.gif" data-src='}</a></td>
+        <td valign="top" align="right" class="shadow shadow_large"><a href="/photo/{$image->gridimage_id}" title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string}{if $image->count} - {$image->count|thousends} images in group{/if}" onmouseover="showMap('{$image->wgs84_lat} {$image->wgs84_long}')" onmouseout="hideMap()">{$image->getFull()|replace:'src=':'src="/img/blank.gif" data-src='}</a></td>
         <td valign="top" align="left" class="lighter">
 	    {if $image->imagetaken > 1 && $image->imagetaken < 2020}<span class="year" title="year photo taken"> {$image->imagetaken|truncate:4:''}</span>{/if}
             <a class=title href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
