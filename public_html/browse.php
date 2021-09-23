@@ -123,9 +123,12 @@ elseif (isset($_GET['setpos']))
 //set by grid ref?
 elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 {
+	//nginx seems to have reencoded the + in the URL as %2B by the time reaches PHP, so reading QUERY_STRING gets %2B, which is then decoded as + (not space!
+	$_GET['gridref'] = str_replace('+',' ',$_GET['gridref']);
+
 	$grid_given=true;
 	$grid_ok=$square->setByFullGridRef($_GET['gridref'],false,true);
-	
+
 	//preserve inputs in smarty
 	if ($grid_ok)
 	{
