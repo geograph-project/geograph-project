@@ -6,6 +6,7 @@ RUN set -eux; \
   apt-get update; \
   apt-get install -y --no-install-recommends \
     curl \
+    rsync \
     imagemagick \
     gsfonts \
     libimage-exiftool-perl \
