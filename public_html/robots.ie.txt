@@ -189,3 +189,4 @@ Disallow: /
 
 
 
+Clean-param: mobile&style
