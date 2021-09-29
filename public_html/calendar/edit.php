@@ -125,6 +125,11 @@ if (!empty($_POST)) {
 		header("Location: order.php?id=".intval($row['calendar_id']));
 		exit;
 	}
+
+	if (!empty($_POST['upload'])) {
+		header("Location: upload.php?id=".intval($_POST['upload'])."&cid=".intval($row['calendar_id']));
+		exit;
+	}
 }
 
 ####################################
