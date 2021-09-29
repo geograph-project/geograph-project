@@ -48,21 +48,47 @@ if (!empty($_POST)) {
 			if (!empty($date)) {
 				$updates['gridimage_id'] = intval($gridimage_id);
 				$updates['review_date'] = $date;
-				$db->Execute('REPLACE INTO gridimage_vault SET `created` = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+				if (!empty($_POST['osticket'][$gridimage_id])) {
+					$updates['osticket'] = $_POST['osticket'][$gridimage_id];
+					unset($_POST['osticket'][$gridimage_id]);
+				} elseif (isset($updates['osticket']))
+					unset($updates['osticket']);
+
+				$db->Execute($sql = 'INSERT INTO gridimage_vault SET `created` = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?'.
+		                        ' ON DUPLICATE KEY UPDATE `'.implode('` = ?,`',array_keys($updates)).'` = ?',
+                			       array_merge(array_values($updates),array_values($updates))) or die("$sql\n".$db->ErrorMsg()."\n\n");;
 			}
 		}
 	}
 
-	$updates['review_date'] = '1000-00-00';
-
 	if (!empty($_POST['invalid'])) {
+		$updates['review_date'] = '1000-00-00';
 		foreach($_POST['invalid'] as $gridimage_id => $dummy) {
 			if (!empty($dummy)) {
 				$updates['gridimage_id'] = intval($gridimage_id);
-				$db->Execute('REPLACE INTO gridimage_vault SET `created` = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+
+				$db->Execute($sql = 'INSERT INTO gridimage_vault SET `created` = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?'.
+		                        ' ON DUPLICATE KEY UPDATE `'.implode('` = ?,`',array_keys($updates)).'` = ?',
+                			       array_merge(array_values($updates),array_values($updates))) or die("$sql\n".$db->ErrorMsg()."\n\n");;
 			}
 		}
 	}
+
+	if (!empty($_POST['osticket'])) {
+		unset($updates['review_date']);
+		foreach($_POST['osticket'] as $gridimage_id => $ref) {
+			if (!empty($ref)) {
+				$updates['gridimage_id'] = intval($gridimage_id);
+				$updates['osticket'] = $ref;
+
+				$db->Execute($sql = 'INSERT INTO gridimage_vault SET `created` = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?'.
+		                        ' ON DUPLICATE KEY UPDATE `'.implode('` = ?,`',array_keys($updates)).'` = ?',
+                			       array_merge(array_values($updates),array_values($updates))) or die("$sql\n".$db->ErrorMsg()."\n\n");;
+			}
+		}
+	}
+
+
 }
 
 ################################################
@@ -143,7 +169,7 @@ if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 		$merge = $db->getOne("SHOW TABLES LIKE 'gridimage_ticket_merge'")?'_merge':'';
 		if (empty($ids) && !empty($where)) {
 			//special prvision to work with empty query! (the INNER JOIN gridimage_vault - means only reviewed images, so limtied!)
-			$sql = "SELECT gridimage_id as image, moderation_status as modstat, suggested, notes, review_date
+			$sql = "SELECT gridimage_id as image, moderation_status as modstat, suggested, notes, review_date, osticket
 				FROM gridimage_ticket$merge
 				INNER JOIN gridimage_vault USING (gridimage_id)
 				INNER JOIN gridimage USING (gridimage_id)
@@ -151,7 +177,7 @@ if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 				GROUP BY gridimage_id DESC
 				LIMIT 10000";
 		} else {
-			$sql = "SELECT gridimage_id as image, moderation_status as modstat, suggested, notes, review_date
+			$sql = "SELECT gridimage_id as image, moderation_status as modstat, suggested, notes, review_date, osticket
 				FROM gridimage_ticket$merge
 				INNER JOIN gridimage USING (gridimage_id)
 				LEFT JOIN gridimage_vault USING (gridimage_id)
@@ -202,6 +228,8 @@ if (!empty($_GET['q']) || @$_GET['date'] == 'past') {
 					print "<a href=\"#\" onclick=\"return setDate('d{$row['image']}','');\">X</a> ";
 
 					print " or Invalid:<input type=checkbox name=invalid[{$row['image']}]".($value == '1000-00-00'?' checked':'')."></TD>";
+				} elseif ($key == 'osticket' && empty($value)) {
+						print "<TD><input type=text name=osticket[{$row['image']}] size=10 maxlength=64>";
 				} else {
 					print "<TD>".htmlentities($value)."</TD>";
 				}
