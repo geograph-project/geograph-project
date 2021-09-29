@@ -40,7 +40,9 @@ if (empty($row) || $row['user_id'] != $USER->user_id)
 
 if (empty($row['alpha'])) {
 	$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND ordered > '1000-00-00' ORDER BY ordered");
-	$idx = array_search($row['calendar_id'],$ids); //if 'FALSE' will count as zero
+	$idx = array_search($row['calendar_id'],$ids);
+	if (!is_numeric($idx)) //not found should be be on the END. (the specific order isnt marked as ordered YET!)
+		$idx = count($ids);
 	$row['alpha'] = chr(65+$idx); //starting at A
 }
 
