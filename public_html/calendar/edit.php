@@ -92,12 +92,6 @@ if (!empty($_POST['move'])) {
 
 ####################################
 
-if ($USER->user_id == 3) {
-	print "<pre>";
-	print_rp($_POST);
-	print "</pre>";
-}
-
 if (!empty($_POST)) {
 	$updates= array();
 	if (isset($_POST['calendar_title']) && $_POST['calendar_title'] != $row['title'])
@@ -134,6 +128,8 @@ if (!empty($_POST)) {
 
 	if (!empty($_POST['upload'])) {
 		header("Location: upload.php?id=".intval($_POST['upload'])."&cid=".intval($row['calendar_id']));
+		print "<a href=upload.php?id=".intval($_POST['upload'])."&cid=".intval($row['calendar_id']).">Continue</a>";
+
 		exit;
 	}
 }

@@ -35,7 +35,7 @@
 		<tr>
 		<td colspan=3>
 		<td>Total Paid: {$total}
-		<td colspan=3>
+		<td colspan=3>Total Processed: {$processed}/{$orders}
 	{/if}
 	</table>	
 	<input type=submit value="Save Progress"> 

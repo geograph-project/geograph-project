@@ -45,7 +45,7 @@ if (!empty($_POST['processed'])) {
 $list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE status != 'new' ORDER BY ordered,calendar_id");
 
 $stat = array();
-$total = 0;
+$total = $orders = $processed = 0;
 foreach ($list as $idx => &$row) {
 	if ($row['ordered'] > '1000') {
 		if (empty($row['alpha'])) {
@@ -53,12 +53,18 @@ foreach ($list as $idx => &$row) {
 		}
 		@$stat[$row['user_id']]++;
 	}
-	if ($row['paid'] > '1000')
+	if ($row['paid'] > '1000') {
 		$total += $row['quantity'];
+		$orders++;
+	}
+	if ($row['status'] == 'processed')
+		$processed++;
 }
 
 $smarty->assign_by_ref('list', $list);
 $smarty->assign('total', $total);
+$smarty->assign('orders', $orders);
+$smarty->assign('processed', $processed);
 
 $smarty->display('calendar_admin.tpl');
 
