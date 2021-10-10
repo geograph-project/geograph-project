@@ -141,15 +141,6 @@
 </ul>
 
 
-<div class="interestBox" style="width:750px;padding:5px;padding-right:100px;text-align:center;border-radius:6px;background-color:#000066;color:white;margin-bottom:10px;overflow:hidden">
-	<div style="position:absolute;top:-13px;right:12px;font-size:3.5em">
-		&pound;7<small style=font-size:14px> each</small>
-	</div>
-	Create your own <b>calendar for 2022</b> using your favourite photos from Geograph!<br>
-	<a href="/calendar/" style=color:yellow>Click here for further information, and to find out how to order</a> 
-</div>
-
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script type="text/javascript">
 {literal}

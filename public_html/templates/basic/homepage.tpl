@@ -14,16 +14,6 @@ representative photographs and information for every square kilometre of <a href
 
 <div style="text-align:center; padding:10px">Since 2005, <b class="nowrap">{$stats.users|thousends} contributors</b> have submitted <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
 
-{dynamic}{if $user->registered}
-<div class="interestBox" style="position:relative;padding:5px;padding-right:100px;text-align:center;border-radius:6px;background-color:#000066;color:white;margin-bottom:10px;overflow:hidden">
-	<div style="position:absolute;top:-13px;right:12px;font-size:3.5em">
-		&pound;7<small style=font-size:14px> each</small>
-	</div>
-	Create your own <b>calendar for 2022</b> using your favourite photos from Geograph!<br>
-	<a href="/calendar/" style=color:yellow>Click here for further information, and to find out how to order</a> 
-</div>
-{/if}{/dynamic}
-
 	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<div style="position:relative;float:right;margin-right:10px">

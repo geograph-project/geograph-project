@@ -47,15 +47,4 @@ The marked list is a temporary list in your current browser session. To keep the
 		</div>
 	{/dynamic}
 
-
-<h4>&nbsp; Help Geograph raise much needed funds by creating your own calendars</h4>
-<ul>
-<li>A great way to showcase your favourite photos from Geograph.
-<li>Ideal Christmas presents for family and friends.
-<li>Straightforward to create, with help and guidance provided.
-<li>Unique to you - a genuine limited edition!
-<li>Fairly priced (only &pound; each!) to be affordable but still make some much-needed money for Geograph.
-<li><a href="/calendar/">Click on this link for full details</a>, and to place an order by 30 September 2021.
-</ul>
-
 {include file="_std_end.tpl"}
