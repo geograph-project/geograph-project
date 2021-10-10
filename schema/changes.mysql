@@ -2608,3 +2608,15 @@ alter table `throttle` modify `feature` enum('ecard','usermsg','loginid','logini
 
 
 
+create table gridimage_group_stat2 (primary key(gridimage_group_stat_id))
+ select max(gridimage_group_stat_id) as gridimage_group_stat_id, grid_reference,label,count(*) as copies
+ from gridimage_group_stat group by grid_reference,label order by null;
+
+alter table gridimage_group_stat2 add primary key(gridimage_group_stat_id);
+
+delete gridimage_group_stat.* from gridimage_group_stat left join gridimage_group_stat2 using (gridimage_group_stat_id)
+ where gridimage_group_stat2.gridimage_group_stat_id is null;
+
+
+
+#################################################
