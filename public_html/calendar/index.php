@@ -44,6 +44,12 @@ $list = $db->getAll("SELECT * FROM calendar WHERE user_id = {$USER->user_id} AND
 
 $smarty->assign_by_ref('list', $list);
 
+
+
+if (date('Y-m-d') > '2021-10-10') {
+	$smarty->assign('closed',true);
+}
+
 $smarty->display('calendar.tpl');
 
 

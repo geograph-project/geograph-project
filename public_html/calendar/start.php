@@ -79,6 +79,10 @@ if (!empty($_POST['ids'])) {
 	exit;
 }
 
+if (date('Y-m-d') > '2021-10-10' && empty($_GET['allow']))) {
+	die("Sorry, we are not currently accepting new orders");
+}
+
 $smarty->display('calendar_start.tpl');
 
 

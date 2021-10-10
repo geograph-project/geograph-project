@@ -37,6 +37,9 @@ $row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = ".intval($_GET['i
 if (empty($row) || $row['user_id'] != $USER->user_id)
 	die("Calendar not found");
 
+if ($row['status'] == 'processed')
+	die("This calendar is now processed, and can no longer be edited");
+
 
 ####################################
 
