@@ -478,8 +478,8 @@ function redrawMainImage() {
 	        "item": "{$self_host}{$image->profile_link|escape:'javascript'}" {literal}
 	      },{
 	        "@type": "ListItem",
-	        "position": 3,
-	        "name": "Looking Down on Llyn Stwlan"
+	        "position": 3,{/literal}
+	        "name": "{$image->title|escape:'javascript'}" {literal}
 	      }]
 	    }
     </script>
