@@ -1,3 +1,4 @@
+{dynamic}
 {assign var="page_title" value="Editing Calendar #`$calendar.calendar_id`"}
 {include file="_std_begin.tpl"}
 
@@ -11,7 +12,6 @@
 <fieldset>
 	<legend>Edit Calendar</legend>
 
-{dynamic}
 <div class="field">
         {if $errors.title}<div class="formerror"><p class="error">{$errors.title}</p>{/if}
 
