@@ -461,6 +461,29 @@ function redrawMainImage() {
 	</div>
 </div>
 
+{literal}
+	    <script type="application/ld+json">
+	    {
+	      "@context": "https://schema.org",
+	      "@type": "BreadcrumbList",
+	      "itemListElement": [{
+	        "@type": "ListItem",
+	        "position": 1,
+	        "name": "Photos",{/literal}
+	        "item": "{$self_host}/" {literal}
+	      },{
+	        "@type": "ListItem",
+	        "position": 2,{/literal}
+	        "name": "by {$image->realname|escape:'javascript'}",
+	        "item": "{$self_host}{$image->profile_link|escape:'javascript'}" {literal}
+	      },{
+	        "@type": "ListItem",
+	        "position": 3,
+	        "name": "Looking Down on Llyn Stwlan"
+	      }]
+	    }
+    </script>
+{/literal}
 
 {if $rastermap->enabled}
 	{$rastermap->getFooterTag()}
