@@ -112,7 +112,7 @@ foreach ($squares as $square => $gridsquare_id) {
 
 	######################
 
-	$db->Execute("delete from gridimage_group_stat where grid_reference = ".$db->Quote($param['square']));
+	$db->Execute("delete from gridimage_group_stat where grid_reference = '{$square}'");
 	if ($param['debug'])
 		print "clear2";
 
