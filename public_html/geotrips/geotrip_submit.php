@@ -309,7 +309,8 @@ and there need to be at least three images matching these criteria in your searc
               $trk=$trk.$bng[0].' '.$bng[1].' ';
             }
           }
-        } else {
+        }
+	if (empty($ee)) { //no track, OR was unable to parse the track
           $len=count($geograph);
           for ($i=0;$i<$len;$i++) {
             $ee[$i]=$geograph[$i]['viewpoint_eastings'];

@@ -264,11 +264,17 @@ If you've made changes to any other fields, these will have been updated.
               $trk=$trk.$bng[0].' '.$bng[1].' ';
             }
           }
-          $bbox=min($ee).' '.min($nn).' '.max($ee).' '.max($nn);
-          $db->Execute("update geotrips set track='$trk', bbox='$bbox' where id={$trip['id']}");
-
+	  if (!empty($ee)) {
+	        $ee=array_filter($ee);  // remove zero eastings/northings (camera position missing)
+        	$nn=array_filter($nn);
+	  }
+          if (!empty($ee)) {
+	          $bbox=min($ee).' '.min($nn).' '.max($ee).' '.max($nn);
+        	  $db->Execute("update geotrips set track='$trk', bbox='$bbox' where id={$trip['id']}");
+	  }
+        }
         //if there is no tracklog and we have some images, we should update the bbox.
-        } elseif (empty($trip['track']) && !empty($geograph)) {
+	if (empty($trip['track']) && empty($bbox) && !empty($geograph)) {
           $ee = array();
           $nn = array();
           $len=count($geograph);
