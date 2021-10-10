@@ -68,7 +68,14 @@ if (!empty($_GET['gid'])) {
                 } else {
 	                $orginalfile = $uploadmanager->tmppath.'/'.($image->user_id%10).'/newpic_u'.$image->user_id.'_'.$id.'.original.jpeg';
 		}
-                readfile($orginalfile);
+
+		$base = basename($orginalfile);
+	        $copy = "/mnt/efs/calendar-files/$base";
+		if (file_exists($copy)) {
+			readfile($copy);
+		} else {
+	                readfile($orginalfile);
+		}
 	}
         exit;
 }
@@ -119,8 +126,13 @@ foreach ($imagelist->images as $key => &$image) {
                 } else {
 	                $orginalfile = $uploadmanager->tmppath.'/'.($image->user_id%10).'/newpic_u'.$image->user_id.'_'.$id.'.original.jpeg';
 		}
-                $s=getimagesize($orginalfile);
-
+		$base = basename($orginalfile);
+	        $copy = "/mnt/efs/calendar-files/$base";
+		if (file_exists($copy)) {
+	                $s=getimagesize($copy);
+		} else {
+	                $s=getimagesize($orginalfile);
+		}
                 $image->width=$s[0];
                 $image->height=$s[1];
 		$image->download = "/calendar/view.php?gid={$image->gridimage_id}&id={$row['calendar_id']}";
