@@ -1398,7 +1398,7 @@ function debug_message($subject,$body) {
 		$body;
 
 	ob_start();
-	debug_print_backtrace();
+	debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $con = ob_get_clean();
 
 	mail_wrapper($CONF['developer_email'] ?? $CONF['contact_email'],$subject,$body."\n\n".$con);
