@@ -1235,6 +1235,8 @@ class RasterMap
 
 			$filesystem->execute($cmd, $path);
 
+			$filesystem->clearstatcache(false, $path);
+
 			if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 				print "<pre>$cmd >>> $path</pre>";
 
@@ -1330,6 +1332,8 @@ class RasterMap
 
 			$filesystem->execute($cmd, $path);
 
+			$filesystem->clearstatcache(false, $path);
+
 			if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 				print "<pre>$cmd >>> $path</pre>";
 
@@ -1354,7 +1358,7 @@ class RasterMap
 
 		$filesystem = GeographFileSystem();
 
-		$cmd = sprintf('%s"%sconvert" png:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld +repage -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 13,114 118,130 3,3" -fill "#000066" -pointsize 10 -draw "text 14,123 \'(c) OSGB %s\'" -colors 128 -depth 8 -type Palette png:%s', 
+		$cmd = sprintf('%s"%sconvert" png:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld +repage -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 13,114 118,130 3,3" -fill "#000066" -pointsize 10 -draw "text 14,-1 \'(c) OSGB %s\'" -colors 128 -depth 8 -type Palette png:%s', 
 			isset($_GET['nice'])?'nice ':'',
 			$CONF['imagemagick_path'],
 			'%s',
@@ -1370,6 +1374,8 @@ class RasterMap
 			$cmd = str_replace('/','\\',$cmd);
 
 		$filesystem->execute($cmd, $input, $output);
+
+		$filesystem->clearstatcache(false, $path);
 
 		if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 			die("<pre>$cmd</pre>");
