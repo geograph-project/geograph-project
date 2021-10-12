@@ -44,7 +44,7 @@ $imagelist->_setDB($db);//to reuse the same connection
 
 //this is NOT normal rows, but gridimage_calendar has enough rows, that it works! (at least to get thumbnails!)
 $sql = "SELECT * FROM gridimage_calendar
-	INNER JOIN gridimage_size using (gridimage_id)
+	LEFT JOIN gridimage_size using (gridimage_id)
 	WHERE calendar_id = {$row['calendar_id']} ORDER BY sort_order";
 $imagelist->_getImagesBySql($sql);
 
