@@ -479,7 +479,7 @@ function redrawMainImage() {
 	      },{
 	        "@type": "ListItem",
 	        "position": 3,{/literal}
-	        "name": "{$image->title|escape:'javascript'}" {literal}
+	        "name": {$image->title|json_encode} {literal}
 	      }]
 	    }
     </script>
