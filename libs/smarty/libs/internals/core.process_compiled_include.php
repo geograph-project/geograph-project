@@ -40,6 +40,7 @@ function smarty_core_process_compiled_include($params, &$smarty)
     if ($count > 0 && function_exists('apc_store') && !apc_fetch('nocache_warning'.$_include_file_path)) {
 
 	ob_start();
+	print $GLOBALS['CONF']['SELF_HOST'].$_SERVER['REQUEST_URI']."\n";
 	print_r($params);
 	print_r(get_included_files());
 	$con = ob_get_clean();
