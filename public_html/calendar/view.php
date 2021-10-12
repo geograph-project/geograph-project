@@ -112,6 +112,9 @@ if (!empty($row['cover_image'])) {
 
 $stats = array();
 foreach ($imagelist->images as $key => &$image) {
+	if (empty($image->upload_id) && empty($image->width))
+		$image->_getFullSize(); //in the rare cases that there is a missing row in gridimage_size, need to lookup the sizes dynamically
+
 	if ($image->upload_id) { //if external upload!
 		//in THIS case can CANT use uploadmanager, as it may it someone elses image!
 		$uploadmanager=new UploadManager;
