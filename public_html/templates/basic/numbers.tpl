@@ -9,6 +9,10 @@
 .redbar {
 	position:relative; float:left; background-color:#FF0000; border-right:1px solid blue; 
 }
+.orangebar {
+	position:relative; float:left; background-color:#FF8800; border-right:1px solid blue; 
+	color:gray;
+}
 .righttextbox {
 	position:relative; float:right; text-align:right; color:#000066; padding-right: 5px; padding-top:10px; padding-bottom:10px
 }
@@ -80,6 +84,7 @@
 <div class="greenbar">{* for 33-66% coverage *}
 	<div class="righttextbox">
 		<b class="nowrap">{$stats.total|thousends}</b><br/>
+		(total squares)
 		<br/>
 	</div>
 	<div class="redbar" style="width:{$stats.percentage}%;">
@@ -95,6 +100,7 @@
 	</div>
 	<br style="clear:both"/>	
 </div>
+
 <br style="clear:both"/>
 <div style="position:relative; width: 100%;">
 	
@@ -144,6 +150,34 @@
 		<a href="/submit.php">add yours now!</a></b>
 	</div>
 </div>
+
+<small><br style="clear:both"/><br/></small>
+<div class="greenbar">{* for 33-66% coverage *}
+	<div class="righttextbox">
+		<b class="nowrap">{$stats.nophotos|thousends}</b><br/>
+		(no photos yet)
+		<br/>
+	</div>
+	<div class="redbar" style="width:{$stats.recentpercentage}%;">
+
+		<div class="righttextbox">
+			<b class="nowrap">{$stats.has_recent|thousends}</b> Squares geographed <b>recently</b><br/>
+			<b class="nowrap">(in last 5 years) {$stats.recentpercentage}%</b><br/>
+		</div>
+		<br style="clear:both"/>
+	</div>
+	<div class="orangebar" style="width:{$stats.nonrecentpercentage}%;">
+
+		<div class="righttextbox">
+			<b class="nowrap">{$stats.non_recent|thousends}</b> Squares geographed<br/>
+			<b class="nowrap">(not in last 5 years) {$stats.nonrecentpercentage}%</b><br/>
+		</div>
+		<br style="clear:both"/>
+	</div>
+	<br style="clear:both"/>	
+</div>
+<b>Keep Geograph up-to-date</b> - <a href="/mapper/combined.php">check your area</a> - look for Orange squares, that have no recent photos.
+
 
 <small><br style="clear:both"/><br/></small>
 <div class="linksbox">
