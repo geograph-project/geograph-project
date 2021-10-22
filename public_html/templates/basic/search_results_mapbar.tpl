@@ -95,7 +95,7 @@ function loadMap() {
 {/literal}{foreach from=$engine->results item=image}
         var markerIcon = new OpenLayers.Icon("{$image->getThumbnail(120,120,true)}", iconSize, iconOffset, null);
 	var markerPoint = new OpenLayers.LonLat({$image->wgs84_long}, {$image->wgs84_lat}).transform("EPSG:4326", olmap.map.getProjection());
-	olmap.images[{$image->gridimage_id}] = createMarker({$image->gridimage_id}, markerPoint, markerIcon, "{$image->title|escape:'javascript'}","{$image->realname|escape:'javascript'}");
+	olmap.images[{$image->gridimage_id}] = createMarker({$image->gridimage_id}, markerPoint, markerIcon, {$image->title|json_encode}, {$image->realname|json_encode});
 
 	olmap.layers['markers'].addMarker(olmap.images[{$image->gridimage_id}]);
 {/foreach}

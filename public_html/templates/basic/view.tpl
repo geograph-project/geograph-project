@@ -461,6 +461,7 @@ function redrawMainImage() {
 	</div>
 </div>
 
+{assign var="byrealname" value="by `$image->realname`"}
 {literal}
 	    <script type="application/ld+json">
 	    {
@@ -474,7 +475,7 @@ function redrawMainImage() {
 	      },{
 	        "@type": "ListItem",
 	        "position": 2,{/literal}
-	        "name": "by {$image->realname|escape:'javascript'}",
+	        "name": {$byrealname|json_encode},
 	        "item": "{$self_host}{$image->profile_link|escape:'javascript'}" {literal}
 	      },{
 	        "@type": "ListItem",
