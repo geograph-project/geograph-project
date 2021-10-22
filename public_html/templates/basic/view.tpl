@@ -475,12 +475,12 @@ function redrawMainImage() {
 	      },{
 	        "@type": "ListItem",
 	        "position": 2,{/literal}
-	        "name": {$byrealname|json_encode},
+	        "name": {$byrealname|latin1_to_utf8|json_encode},
 	        "item": "{$self_host}{$image->profile_link|escape:'javascript'}" {literal}
 	      },{
 	        "@type": "ListItem",
 	        "position": 3,{/literal}
-	        "name": {$image->title|json_encode} {literal}
+	        "name": {$image->title|latin1_to_utf8|json_encode} {literal}
 	      }]
 	    }
     </script>
