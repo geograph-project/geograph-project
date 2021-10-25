@@ -72,6 +72,11 @@ if (isset($_GET['preview']) && $uploadmanager->validUploadId($_GET['preview']))
 	exit;
 }
 
+if (!empty($_GET['grid_reference']) && !empty($_GET['transfer_id']) && !empty($_GET['redir'])) {
+	$_POST = $_GET;
+}
+
+
 list($usec, $sec) = explode(' ',microtime());
 $GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 
@@ -80,6 +85,13 @@ $smarty = new GeographPage;
 
 if (!empty($CONF['submission_message'])) {
         $smarty->assign("status_message",$CONF['submission_message']);
+}
+if ($CONF['PROTOCOL'] == 'https://') {
+	$smarty->assign("is_https",1);
+
+	//if (!empty(transer_id)
+		//Location: http://{$http_host}{$script_name}?method=post&grid_reference={$grid_reference}&gridsquare=1&transfer_id={$transfer_id}&redir=false
+	//TODO... in practice will probably need to do this further down the page AFTER _FILES processed.
 }
 
 $smarty->assign('extra_meta','<link rel="dns-prefetch" href="https://osopenspacepro.ordnancesurvey.co.uk/">');
