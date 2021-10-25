@@ -282,9 +282,9 @@ if (!empty($_GET['id'])) {
 
 ?>
 
-<p>Note: This form is only for images from Geograph Britain and Ireland itself. If issues displaying with images from other projects, please let us know via forum, or vai 'Contact Us'
-
 <p>Please let us know here if unable to view an image on geograph. This includes if having issues with fresh submissions.  </p>
+
+<p><b>Note</b>: This form is only for images from <b>Geograph Britain and Ireland</b> itself. If issues displaying with images from <b>other projects</b>, please let us know via forum, or via 'Contact Us'</p>
 
 <p>If have multiple images to report, will have to submit multiple times</p>
 
