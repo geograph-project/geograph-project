@@ -42,7 +42,7 @@ if (!empty($_POST['processed'])) {
 
 ####################################
 
-$list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE status != 'new' ORDER BY ordered,calendar_id");
+$list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE ordered > '1000-01-01' ORDER BY ordered,calendar_id");
 
 $stat = array();
 $total = $orders = $processed = 0;
