@@ -1386,6 +1386,7 @@ function debug_message($subject,$body) {
 	global $CONF;
 
 	$body = @"Host: ".`hostname`."\n".
+		$CONF['PROTOCOL'].$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."\n\n".
 		" [HTTP_HOST] => ".$_SERVER['HTTP_HOST']."\n".
 		" [REQUEST_URI] => ".$_SERVER['REQUEST_URI']."\n".
 		" [QUERY_STRING] => ".$_SERVER['QUERY_STRING']."\n".

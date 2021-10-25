@@ -21,7 +21,7 @@
 			<td>{$calendar.realname}
 			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
 			<td><b>{$calendar.user_id}{$calendar.alpha}</b>
-			<td>{if $calendar.status != 'new'}<a href="view.php?id={$calendar.calendar_id}"><b>View</b></a>{/if}
+			<td>{if $calendar.status != 'new'}<a href="view.php?id={$calendar.calendar_id}" {if $calendar.status != 'paid'} style=color:silver{/if}><b>View</b></a>{/if}
 			<td>{if $calendar.status == 'paid' || $calendar.status == 'ordered'}
 
 				<input type=checkbox name="processed[{$calendar.calendar_id}]" id="processed{$calendar.calendar_id}">
