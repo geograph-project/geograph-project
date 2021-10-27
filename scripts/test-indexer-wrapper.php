@@ -13,7 +13,7 @@ $server_id = $db->Quote(trim(`hostname`));
 #####################################################
 
 if (!empty($param['prime'])) {
-	//$h = popen("find /var/lib/manticore/data/ -name '*.sph' -printf '%T@ %P\\n'"','r');
+	//$h = popen("find /var/lib/manticore/data/ -name '*.sph' -printf '%T@ %P\\n'",'r');
 	$h = fopen("/var/www/geograph/indexes.txt",'r');
 	while ($h && !feof($h)) {
 		$line = trim(fgets($h));
@@ -23,7 +23,7 @@ if (!empty($param['prime'])) {
 			$parts = explode('.',$bits[1]); //to remove the .sph extension
 
 			$name = $db->Quote(trim($parts[0]));
-			if ($name == 'tickets_closed') $name = 'tickets_closed_delta'; //anoyingly, the index filename, doesnt amtch
+			if ($name == "'tickets_closed'") $name = "'tickets_closed_delta'"; //anoyingly, the index filename, doesnt amtch
 			$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = FROM_UNIXTIME($time)";
 			print "$sql;\n";
 			if ($param['execute'])
@@ -80,7 +80,7 @@ if (!empty($param['single'])) {
 			if ($param['execute'])
 				$db->Execute($sql);
 
-		$sql = "          INSERT INTO sph_log SET index_name = $name, server_id = $server_id, created = NOW(), taken = ".($end-$start);
+		$sql = "          INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), taken = ".($end-$start);
 		print "$sql;\n";
 			if ($param['execute'])
 				$db->Execute($sql);
@@ -119,7 +119,7 @@ foreach ($list as $index => $dummy) {
 			if ($param['execute'])
 				$db->Execute($sql);
 	if ($param['debug']) {
-		$sql = "INSERT INTO sph_log SET index_name = $name, server_id = $server_id, created = NOW()";
+		$sql = "INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW()";
 		print "$sql;\n";
 			if ($param['execute'])
 				$db->Execute($sql);
@@ -149,7 +149,7 @@ CREATE TABLE `sph_server_index` (
   PRIMARY KEY (`index_name`,`server_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE `sph_log` (
+CREATE TABLE `sph_indexer_log` (
   `index_name` varchar(64) NOT NULL,
   `server_id` varchar(64) NOT NULL DEFAULT '?',
   `created` timestamp NOT NULL DEFAULT current_timestamp()

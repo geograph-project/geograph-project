@@ -62,7 +62,7 @@ if (!empty($param['prime'])) {
 			$parts = explode('.',$bits[1]); //to remove the .sph extension
 
 			$name = db_Quote(trim($parts[0]));
-			if ($name == 'tickets_closed') $name = 'tickets_closed_delta'; //anoyingly, the index filename, doesnt amtch
+			if ($name == "'tickets_closed'") $name = "'tickets_closed_delta'"; //anoyingly, the index filename, doesnt amtch
 			$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = FROM_UNIXTIME($time)";
 			print "$sql;\n";
 			db_Execute($sql);
@@ -121,7 +121,7 @@ if (!empty($param['single'])) {
 		$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
 		db_Execute($sql);
 
-		$sql = "INSERT INTO sph_log SET index_name = $name, server_id = $server_id, created = NOW(), taken = ".($end-$start);
+		$sql = "INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), taken = ".($end-$start);
 		db_Execute($sql);
 
 		$done[$row['index_name']] = 1;
@@ -156,7 +156,7 @@ foreach ($list as $index => $dummy) {
 	$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
 	db_Execute($sql);
 
-	$sql = "INSERT INTO sph_log SET index_name = $name, server_id = $server_id, created = NOW()";
+	$sql = "INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW()";
 	db_Execute($sql);
 }
 

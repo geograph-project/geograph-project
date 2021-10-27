@@ -2642,7 +2642,7 @@ CREATE TABLE `sph_server_index` (
   PRIMARY KEY (`index_name`,`server_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE `sph_log` (
+CREATE TABLE `sph_indexer_log` (
   `index_name` varchar(64) NOT NULL,
   `server_id` varchar(64) NOT NULL DEFAULT '?',
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
