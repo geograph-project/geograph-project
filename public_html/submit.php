@@ -72,7 +72,7 @@ if (isset($_GET['preview']) && $uploadmanager->validUploadId($_GET['preview']))
 	exit;
 }
 
-if (!empty($_GET['grid_reference']) && !empty($_GET['transfer_id']) && !empty($_GET['redir'])) {
+if (!empty($_GET['grid_reference']) && (!empty($_GET['transfer_id']) || !empty($_GET['setpos'])) && !empty($_GET['redir'])) {
 	$_POST = $_GET;
 }
 

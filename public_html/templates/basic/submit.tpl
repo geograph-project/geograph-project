@@ -15,12 +15,12 @@
 {dynamic}
 
 
-{if $transfer_id && $step eq 2 && $is_https}
+{if $step eq 2 && $is_https}
 	<div class=interestBox style="margin-bottom:40px;background-color:pink;font-size:1.2em">
 	If you see a message 'HTTP Referer not valid', then you may of been redirected to https:// incorrectly (a security feature in Safari seems to be misbehaving).
 
 	<br><br>
-	 Try clicking: <a href="http://{$http_host}{$script_name}?grid_reference={$grid_reference}&gridsquare=1&transfer_id={$transfer_id}&redir=false">Click here to try to return to http://</a> (the same security prevents doing this automatically)
+	 Try clicking: <a href="http://{$http_host}{$script_name}?grid_reference={$grid_reference}&amp;gridsquare=1&amp;{if $transfer_id}transfer_id={$transfer_id}{else}setpos=1{/if}&amp;redir=false">Click here to try to return to http://</a> (the same security prevents doing this automatically)
 	<br><br>
 
 	If you still see this message AFTER clicking the above button, means we can't stop the redirect happening. <br><br>
