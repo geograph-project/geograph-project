@@ -4,8 +4,7 @@
 # Manticore
 # ... this retrieves the indexes to execute from the database
 
-## just disabled until tested. want to amke sure it ok, before even enabling on staging!
-##*/5 * * * *	    /usr/local/bin/indexer-wrapper.php
+*/5 * * * *	    /usr/local/bin/indexer-wrapper.php
 
 ##############################
 # Clear up Cruft (previous failed index attempts etc) 
