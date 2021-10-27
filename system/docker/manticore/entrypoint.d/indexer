@@ -48,8 +48,9 @@ if [ ${#MISSING_INDEXES[@]} -ne 0 ]; then
   printf '%s\0' "${MISSING_INDEXES[@]}" | \
     xargs --null --max-args=1 --max-procs=1 --verbose -- \
     indexer --config /etc/sphinxsearch/sphinx.conf
-fi
 
+  /usr/local/bin/indexer-wrapper.php --prime
+fi
 
 
 # vim: ai ts=2 sw=2 et sts=2 ft=sh
