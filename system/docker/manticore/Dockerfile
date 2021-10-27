@@ -26,7 +26,7 @@ RUN set -eux; \
     libodbc1 \
     libpq5 \
     mysql-client \
-    php7.3-cli php7.3-mysql \
+    php-cli php-mysql \
     openssl \
     procps \
   ; \
