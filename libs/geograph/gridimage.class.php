@@ -386,6 +386,7 @@ class GridImage
 	*/
 	function loadFromServer($prefix, $gridimage_id)
 	{
+		global $CONF;
                 if ($prefix == 'bi:') { # TODO make configurable
                         $server = 'www.geograph.org.uk';
                 } elseif ($prefix == 'de:') {
@@ -406,6 +407,9 @@ class GridImage
 
 			if (empty($string)) {
 				$url = "http://$server/restapi.php/api/Photo/$gridimage_id";
+				$key = "geographkey_".trim($prefix,':');
+				if (!empty($CONF[$key]))
+					$url .= "/".$CONF[$key];
 				$string = file_get_contents($url);
 
 				//fails quickly if not using memcached!
