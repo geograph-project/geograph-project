@@ -26,6 +26,7 @@ RUN set -eux; \
     libodbc1 \
     libpq5 \
     mysql-client \
+    php7.3-cli php7.3-mysql \
     openssl \
     procps \
   ; \
@@ -91,6 +92,8 @@ COPY system/docker/manticore/usr/share/ /usr/share/
 COPY system/docker/manticore/entrypoint /
 COPY system/docker/manticore/entrypoint.d/ /entrypoint.d/
 COPY system/docker/manticore/etc/ /etc/
+
+COPY system/docker/manticore/usr/local/bin/indexer-wrapper.php /usr/local/bin/indexer-wrapper.php
 
 RUN set -eux; \
   mkdir -p \

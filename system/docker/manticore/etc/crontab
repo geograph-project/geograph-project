@@ -2,60 +2,14 @@
 
 ##############################
 # Manticore
+# ... this retrieves the indexes to execute from the database
 
-#@daily indexer --config /etc/sphinxsearch/sphinx.conf --all --rotate
-## Disable this one for now. Use the more targetted refresh cycle as below.
+## just disabled until tested. want to amke sure it ok, before even enabling on staging!
+##*/5 * * * *	    /usr/local/bin/indexer-wrapper.php
 
 ##############################
 # Clear up Cruft (previous failed index attempts etc) 
 
 30 1 * * *          find /var/lib/manticore/data/ -name '*.tmp*' -type f -mtime +1 -delete
-
-########################
-# Main Indexes
-
-1 5 * * *           indexer --config /etc/sphinxsearch/sphinx.conf post_master post_stemmed post_stemmed_delta --rotate
-
-23 2 * * *          indexer --config /etc/sphinxsearch/sphinx.conf gridimage_master gi_stemmed gi_stemmed_delta --rotate
-
-30 0 * * *          indexer --config /etc/sphinxsearch/sphinx.conf snippet_master snippet_main snippet_delta --rotate
-
-########################
-# Sample8 - the NEW image index
-
-35 5 * * 3          indexer --config /etc/sphinxsearch/sphinx.conf sample8A --rotate --sighup-each
-35 5 * * 4          indexer --config /etc/sphinxsearch/sphinx.conf sample8B --rotate --sighup-each
-35 5 * * 5          indexer --config /etc/sphinxsearch/sphinx.conf sample8C --rotate --sighup-each
-35 5 * * 6          indexer --config /etc/sphinxsearch/sphinx.conf sample8D sample8E --rotate --sighup-each
-
-########################
-# Update The 'delta' indexes
-
-05,20,35,50 * * * * indexer --config /etc/sphinxsearch/sphinx.conf gi_stemmed_delta post_stemmed_delta --rotate
-
-30 0-1,7-23 * * *   indexer --config /etc/sphinxsearch/sphinx.conf sample8E --rotate
-
-40 6-23 * * *       indexer --config /etc/sphinxsearch/sphinx.conf snippet_delta --rotate
-
-########################
-# Other Misc Indexes
-
-15,45 * * * *       indexer --config /etc/sphinxsearch/sphinx.conf content_stemmed user --rotate
-
-57 */2 * * *        indexer --config /etc/sphinxsearch/sphinx.conf tags tagsstemmed tickets --rotate
-
-50 7 * * *          indexer --config /etc/sphinxsearch/sphinx.conf category tagsoup content1 document_stemmed document_words --rotate
-
-47 */6 * * *        indexer --config /etc/sphinxsearch/sphinx.conf tickets_closed_delta --rotate
-47 10  * * 0        indexer --config /etc/sphinxsearch/sphinx.conf tickets_closed_archive --rotate
-
-47 1 * * *          indexer --config /etc/sphinxsearch/sphinx.conf curated1 --rotate
-
-########################
-# ViewPoint Index
-
-12 8 * * 2          indexer --config /etc/sphinxsearch/sphinx.conf viewpoint_master viewpoint_main --rotate
-
-12 */6 * * *        indexer --config /etc/sphinxsearch/sphinx.conf viewpoint_delta --rotate
 
 ########################

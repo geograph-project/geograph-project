@@ -2620,3 +2620,60 @@ delete gridimage_group_stat.* from gridimage_group_stat left join gridimage_grou
 
 
 #################################################
+
+CREATE TABLE `sph_index` (
+  `index_name` varchar(64) NOT NULL,
+  `active` tinyint unsigned not null default 1,
+  `minutes` MEDIUMINT not null default 15,
+   minhour tinyint unsigned not null default 0,
+  `preindex` varchar(64) NOT NULL,
+  `postindex` varchar(64) NOT NULL,
+  `type` enum('master','main','delta','single','static') not null default 'single',
+  `created` DATETIME not null,
+  `updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`index_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `sph_server_index` (
+  `index_name` varchar(64) NOT NULL,
+  `server_id` varchar(64) NOT NULL DEFAULT '?',
+  `last_indexed` DATETIME not null,
+  `updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`index_name`,`server_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `sph_log` (
+  `index_name` varchar(64) NOT NULL,
+  `server_id` varchar(64) NOT NULL DEFAULT '?',
+  `created` timestamp NOT NULL DEFAULT current_timestamp(),
+  `taken` float default null
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO sph_index SET index_name = 'category', minutes=1440, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'content1', minutes=1440, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'content_stemmed', minutes=60, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'curated1', minutes=1440, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'document_stemmed', minutes=1440, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'document_words', minutes=1440, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'gi_stemmed', minutes=1440, minhour=4, preindex = 'gridimage_master', postindex = 'gi_stemmed_delta', type = 'main', created=NOW();
+INSERT INTO sph_index SET index_name = 'gi_stemmed_delta', minutes=15, type = 'delta', created=NOW();
+INSERT INTO sph_index SET index_name = 'post_stemmed', minutes=1440, minhour=2, preindex = 'post_master', postindex = 'post_stemmed_delta', type = 'main', created=NOW();
+INSERT INTO sph_index SET index_name = 'post_stemmed_delta', minutes=15, type = 'delta', created=NOW();
+INSERT INTO sph_index SET index_name = 'sample8A', minutes=10080, minhour=5, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'sample8B', minutes=10080, minhour=5, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'sample8C', minutes=10080, minhour=5, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'sample8D', minutes=10080, minhour=5, postindex = 'sample8E', type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'sample8E', minutes=60, type = 'delta', created=NOW();
+INSERT INTO sph_index SET index_name = 'snippet_delta', minutes=60, type = 'delta', created=NOW();
+INSERT INTO sph_index SET index_name = 'snippet_main', minutes=1440, minhour=2, preindex = 'snippet_master', postindex = 'snippet_delta', type = 'main', created=NOW();
+INSERT INTO sph_index SET index_name = 'tags', minutes=120, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'tagsoup', minutes=1440, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'tagsstemmed', minutes=120, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'tickets', minutes=120, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'tickets_closed_archive', minutes=10080, postindex = 'tickets_closed_delta', type = 'main', created=NOW();
+INSERT INTO sph_index SET index_name = 'tickets_closed_delta', minutes=360, type = 'delta', created=NOW();
+INSERT INTO sph_index SET index_name = 'user', minutes=60, type = 'single', created=NOW();
+INSERT INTO sph_index SET index_name = 'viewpoint_delta', minutes=360, type = 'delta', created=NOW();
+INSERT INTO sph_index SET index_name = 'viewpoint_main', minutes=10080, minhour=3, preindex = 'viewpoint_master', postindex = 'viewpoint_delta', type = 'main', created=NOW();
+
+
