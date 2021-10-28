@@ -15,10 +15,10 @@ SImages = new Array();
 		{$image->_getFullSize()}
 		SImages.push({literal}{{/literal}
 			grid_reference:'{$image->grid_reference}',
-			title:{$image->title|json_encode},
+			title:{$image->title|latin1_to_utf8|json_encode},
 			url:'{$image->getLargestPhotoPath(true)}',
 			taken:'{$image->imagetaken}',
-			realname:{$image->realname|json_encode}
+			realname:{$image->realname|latin1_to_utf8|json_encode}
 		{literal}}{/literal});
 
 	{foreachelse}
