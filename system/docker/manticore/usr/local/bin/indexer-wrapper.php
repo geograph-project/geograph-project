@@ -49,6 +49,7 @@ function db_Execute($sql) {
 #####################################################
 
 $server_id = db_Quote(trim(`hostname`));
+$pid = getmypid();
 
 #####################################################
 
@@ -92,6 +93,41 @@ if (empty($indexes)) {
 
 #####################################################
 
+$done = array();
+
+function process_list($list, $log = null) {
+	global $server_id, $done, $pid, $param;
+
+	$cmd = "indexer --config /etc/sphinxsearch/sphinx.conf ".implode(" ",array_keys($list))." --rotate"; //--sighup-each if large indexes?
+
+	##################
+
+	$start = microtime(true);
+	passthru($cmd);
+	$end = microtime(true);
+
+	foreach ($list as $index => $dummy) {
+
+		$name = db_Quote(trim($index));
+
+		$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
+		print "$sql;\n";
+			if ($param['execute'])
+				db_Execute($sql);
+
+		$sql = "          INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), pid = $pid";
+		if ($index == $log)
+			$sql .=", taken = ".($end-$start);
+		print "$sql;\n";
+			if ($param['execute'])
+				db_Execute($sql);
+		$done[$index]=1;
+	}
+}
+
+#####################################################
+# run each index as a seperate process
+
 if (!empty($param['single'])) {
 	$done = array();
 	foreach ($indexes as $row) {
@@ -106,25 +142,7 @@ if (!empty($param['single'])) {
 		if (!empty($row['postindex']))
 			$list[$row['postindex']]=1;
 
-		$cmd = "indexer --config /etc/sphinxsearch/sphinx.conf ".implode(" ",array_keys($list))." --rotate"; //--sighup-each if large indexes?
-
-		##################
-
-		$start = microtime(true);
-		passthru($cmd);
-		$end = microtime(true);
-
-		##################
-
-		$name = db_Quote(trim($row['index_name']));
-
-		$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
-		db_Execute($sql);
-
-		$sql = "INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), taken = ".($end-$start);
-		db_Execute($sql);
-
-		$done[$row['index_name']] = 1;
+		process_list($list, $row['index_name']);
 	}
 	if (!empty($param['lock']))
 		db_Execute("DO RELEASE_LOCK('indexer_active')");
@@ -132,6 +150,7 @@ if (!empty($param['single'])) {
 }
 
 #####################################################
+# else build just a single list (so it deduplicates)
 
 $list = array();
 
@@ -145,20 +164,7 @@ foreach ($indexes as $row) {
 		$list[$row['postindex']]=1;
 }
 
-#####################################################
-
-$cmd = "indexer --config /etc/sphinxsearch/sphinx.conf ".implode(" ",array_keys($list))." --rotate"; //--sighup-each if large indexes?
-passthru($cmd);
-
-foreach ($list as $index => $dummy) {
-	$name = db_Quote(trim($index));
-
-	$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
-	db_Execute($sql);
-
-	$sql = "INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW()";
-	db_Execute($sql);
-}
+process_list($list);
 
 #####################################################
 

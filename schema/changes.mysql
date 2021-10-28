@@ -2677,3 +2677,13 @@ INSERT INTO sph_index SET index_name = 'viewpoint_delta', minutes=360, type = 'd
 INSERT INTO sph_index SET index_name = 'viewpoint_main', minutes=10080, minhour=3, preindex = 'viewpoint_master', postindex = 'viewpoint_delta', type = 'main', created=NOW();
 
 
+#################################################
+
+
+ alter table sph_index add criteria varchar(2048) not null default '';
+ alter table sph_indexer_log add pid mediumint unsigned default null;
+
+
+#################################################
+
+

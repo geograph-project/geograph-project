@@ -9,6 +9,7 @@ $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $server_id = $db->Quote(trim(`hostname`));
+$pid = getmypid();
 
 #####################################################
 
@@ -46,12 +47,49 @@ if (empty($indexes))
 
 #####################################################
 
+$done = array();
+
+function process_list($list, $log = null) {
+	global $db, $server_id, $done, $pid, $param;
+
+	$cmd = "indexer --config /etc/sphinxsearch/sphinx.conf ".implode(" ",array_keys($list))." --rotate"; //--sighup-each if large indexes?
+
+	##################
+
+	$start = microtime(true);
+
+	print "$cmd\n";
+	sleep(1); //fake!
+
+	$end = microtime(true);
+
+	foreach ($list as $index => $dummy) {
+
+		$name = $db->Quote(trim($index));
+
+		$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
+		print "$sql;\n";
+			if ($param['execute'])
+				$db->Execute($sql);
+
+		$sql = "          INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), pid = $pid";
+		if ($index == $log)
+			$sql .=", taken = ".($end-$start);
+		print "$sql;\n";
+			if ($param['execute'])
+				$db->Execute($sql);
+		$done[$index]=1;
+	}
+}
+
+
+#####################################################
+# run each index as a seperate process
+
 if (!empty($param['single'])) {
-	$done = array();
 	foreach ($indexes as $row) {
 		if (!empty($done[$row['index_name']])) //may of been done as pre/post on previous run!
 			continue;
-
 
 		$list = array();
 		if (!empty($row['preindex']))
@@ -60,37 +98,13 @@ if (!empty($param['single'])) {
 		if (!empty($row['postindex']))
 			$list[$row['postindex']]=1;
 
-		$cmd = "indexer --config /etc/sphinxsearch/sphinx.conf ".implode(" ",array_keys($list))." --rotate"; //--sighup-each if large indexes?
-
-		##################
-
-		$start = microtime(true);
-
-		print "$cmd\n";
-		sleep(1); //fake!
-
-		$end = microtime(true);
-
-		##################
-
-		$name = $db->Quote(trim($row['index_name']));
-
-		$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
-		print "$sql;\n";
-			if ($param['execute'])
-				$db->Execute($sql);
-
-		$sql = "          INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), taken = ".($end-$start);
-		print "$sql;\n";
-			if ($param['execute'])
-				$db->Execute($sql);
-
-		$done[$row['index_name']] = 1;
+		process_list($list, $row['index_name']);
 	}
 	exit;
 }
 
 #####################################################
+# else build just a single list (so it deduplicates)
 
 $list = array();
 
@@ -104,27 +118,7 @@ foreach ($indexes as $row) {
 		$list[$row['postindex']]=1;
 }
 
-#####################################################
-
- # 35 5 * * 3          indexer --config /etc/sphinxsearch/sphinx.conf sample8A --rotate --sighup-each
-
-$cmd = "indexer --config /etc/sphinxsearch/sphinx.conf ".implode(" ",array_keys($list))." --rotate"; //--sighup-each if large indexes?
-print "$cmd\n";
-
-foreach ($list as $index => $dummy) {
-	$name = $db->Quote(trim($index));
-
-	$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
-	print "$sql;\n";
-			if ($param['execute'])
-				$db->Execute($sql);
-	if ($param['debug']) {
-		$sql = "INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW()";
-		print "$sql;\n";
-			if ($param['execute'])
-				$db->Execute($sql);
-	}
-}
+process_list($list);
 
 #####################################################
 
