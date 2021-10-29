@@ -37,10 +37,6 @@ ENDHELP;
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-$con = "hello";
-debug_message('[Geograph] Dev Tester',$con);
-exit;
-
 ############################################
 
 require_once('adodb/adodb-errorhandler.inc.php');
