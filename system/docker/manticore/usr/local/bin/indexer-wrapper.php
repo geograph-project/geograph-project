@@ -111,16 +111,12 @@ function process_list($list, $log = null) {
 		$name = db_Quote(trim($index));
 
 		$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
-		print "$sql;\n";
-			if ($param['execute'])
-				db_Execute($sql);
+		db_Execute($sql);
 
 		$sql = "          INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), pid = $pid";
 		if ($index == $log)
 			$sql .=", taken = ".($end-$start);
-		print "$sql;\n";
-			if ($param['execute'])
-				db_Execute($sql);
+		db_Execute($sql);
 		$done[$index]=1;
 	}
 }
