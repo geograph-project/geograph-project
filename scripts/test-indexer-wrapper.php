@@ -1,6 +1,6 @@
 <?
 
-$param = array('execute'=>0,'single'=>0,'debug'=>1,'prime'=>0);
+$param = array('execute'=>0,'single'=>1,'debug'=>1,'prime'=>0);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -38,9 +38,9 @@ if (!empty($param['prime'])) {
 
 
 $indexes = $db->getAll("
-SELECT sph_index.index_name, preindex, postindex, server_id, last_indexed
+SELECT sph_index.index_name, preindex, postindex, server_id, last_indexed, criteria
 FROM sph_index LEFT JOIN sph_server_index ON (sph_index.index_name = sph_server_index.index_name AND server_id = $server_id)
-WHERE DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() ORDER BY type+0");
+WHERE DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() AND active = 1 ORDER BY type+0");
 
 if (empty($indexes))
 	exit;
@@ -59,7 +59,7 @@ function process_list($list, $log = null) {
 	$start = microtime(true);
 
 	print "$cmd\n";
-	sleep(1); //fake!
+	//sleep(1); //fake!
 
 	$end = microtime(true);
 
@@ -91,12 +91,37 @@ if (!empty($param['single'])) {
 		if (!empty($done[$row['index_name']])) //may of been done as pre/post on previous run!
 			continue;
 
+		if (!empty($row['criteria']) && strpos($row['criteria'],'#') !== 0) { //just so can 'comment out' the query
+			if ($server_id == "'development-0'")
+				$server_id = "'manticore-0'";
+			$query = str_replace("'\$server_id'",$server_id,$row['criteria']);
+
+			if (preg_match('/\((SELECT[^)]+)\)/',$query,$m)) {
+				//run the inner query seperately, to allow the outer query to be 'query cached'
+				$result = $db->getOne($m[1]);
+				$query = str_replace($m[0],$result,$query);
+			}
+
+			$result = $db->getOne($query);
+
+			print "$result from $query;\n\n";
+
+			if ($result < $row['last_indexed']) { //also skip if there are no rows!
+				print "Skipping {$row['index_name']} ($result < {$row['last_indexed']})\n";
+				continue;
+			}
+		}
+
 		$list = array();
 		if (!empty($row['preindex']))
 			$list = array($row['preindex']=>1)+$list;
 		$list[$row['index_name']]=1;
 		if (!empty($row['postindex']))
 			$list[$row['postindex']]=1;
+
+print implode(' ',array_keys($list))."\n";
+foreach ($list as $index => $dummy) $done[$index]=1;
+continue;
 
 		process_list($list, $row['index_name']);
 	}
