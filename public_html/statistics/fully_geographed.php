@@ -81,9 +81,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("total_rows",$db->getOne("SELECT FOUND_ROWS()"));
 	$smarty->assign("shown_rows",count($most));
 
-	foreach($most as $id=>$entry) 
+	foreach($most as $id=>$entry)
 	{
 		if (empty($entry['map_token']) || empty($entry['largemap_token'])) {
+			//if we want to write the map_token back, need to make sure have a write connection!
 			if ($db->readonly) {
 				$db = GeographDatabaseConnection(false);
 			}

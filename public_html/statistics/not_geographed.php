@@ -62,10 +62,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	{
 		if (empty($entry['map_token']))
 		{
-			if ($db->readonly) {
-				$db = GeographDatabaseConnection(false);
-			}
-			
+			//if we want to write the map_token back, need to make sure have a write connection!
+			//if ($db->readonly) {
+			//	$db = GeographDatabaseConnection(false);
+			//}
+
 			$rii = $entry['reference_index'];
 			$x = ( intval(($entry['x'] - $CONF['origins'][$rii][0])/10)*10 ) +  $CONF['origins'][$rii][0];
 			$y = ( intval(($entry['y'] - $CONF['origins'][$rii][1])/10)*10 ) +  $CONF['origins'][$rii][1];

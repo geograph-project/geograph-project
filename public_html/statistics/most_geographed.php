@@ -87,6 +87,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$i++;
 
 		if (empty($entry['map_token'])) {
+			//if we want to write the map_token back, need to make sure have a write connection!
 			if ($db->readonly) {
 				$db = GeographDatabaseConnection(false);
 			}

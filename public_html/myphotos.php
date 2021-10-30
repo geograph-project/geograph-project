@@ -47,7 +47,7 @@ if (!empty($_GET['tab'])) {
 	}
 
 	$db = GeographDatabaseConnection(true);
-	if ($db && $db->readonly) {//if Not readonly, then its just an error message
+	if ($db && (empty($CONF['db_read_driver']) || $db->readonly)) {//if Not readonly, then its just an error message
 		customExpiresHeader(3600*23,false,true);
 	}
 }
@@ -87,7 +87,7 @@ print "<p>NOTE: Updated daily, please don't use Browse refresh/reload function.<
 
 if (empty($_GET['tab'])) {
 	print "<p>Select a tab above</p>";
-} elseif ($db && $db->readonly) {
+} elseif ($db && (empty($CONF['db_read_driver']) || $db->readonly)) {
 	print "<div style=\"float:right\">Generated ".date('r')."</div>";
 
 	$u = intval($USER->user_id);
