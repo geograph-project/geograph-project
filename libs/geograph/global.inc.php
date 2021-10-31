@@ -59,32 +59,39 @@ header("X-Content-Type-Options: nosniff");
 //global routines
 require_once('geograph/functions.inc.php');
 
-
+#################################################
 
 if (!empty($_COOKIE['php_profile']) && !isset($_GET['php_profile'])) {
-	$_GET['php_profile'] = 1;
-	if (!empty($_GET['dde'])) {
-		error_reporting(-1);
-		ini_set("display_errors",1);
-	}
+	$_GET['php_profile'] = $_COOKIE['php_profile'];
 }
 
 if (isset($_GET['php_profile']) && !class_exists('Profiler',false)) {
-	if ($_GET['php_profile'] == 2)
-		setcookie('php_profile','1',time()+3600);
+	if (isset($_GET['enable'])) {
+		if ($_GET['enable'])
+			setcookie('php_profile',$_GET['php_profile'],time()+3600);
+		else
+			setcookie('php_profile','',time()-3600);
+	}
+	$hash = substr(hash_hmac('md5', date('Y-m-d'), $_SERVER['CONF_REGISTER_CONFIRMATION_SECRET']),0,8);
 
-	if (empty($_GET['php_profile']))
-		setcookie('php_profile','',time()-3600);
+	if ($_GET['php_profile'] === $hash) {
+	        if (!empty($_GET['dde'])) {
+        	        error_reporting(-1);
+	                ini_set("display_errors",1);
+        	}
 
-	require "3rdparty/profiler.php";
-	Profiler::enable();
+		require "3rdparty/profiler.php";
+		Profiler::enable();
 
-	ProfilerRenderer::setIncludeJquery(true);
-	ProfilerRenderer::setJqueryLocation('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
+		ProfilerRenderer::setIncludeJquery(true);
+		ProfilerRenderer::setJqueryLocation('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
 
-	ProfilerRenderer::setPrettifyLocation("/js/code-prettify");
+		ProfilerRenderer::setPrettifyLocation("/js/code-prettify");
 
-	$p = Profiler::start("Global");
+		$p = Profiler::start("Global");
+	} else {
+		unset($_GET['php_profile']);
+	}
 }
 
 #################################################
