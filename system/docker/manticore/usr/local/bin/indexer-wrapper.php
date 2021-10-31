@@ -83,7 +83,7 @@ $hour = date('G');
 $indexes = db_getAll("
 SELECT sph_index.index_name, preindex, postindex, server_id, last_indexed
 FROM sph_index LEFT JOIN sph_server_index ON (sph_index.index_name = sph_server_index.index_name AND server_id = $server_id)
-WHERE DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() AND minhour <= $hour ORDER BY type+0");
+WHERE DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() AND minhour <= $hour AND active = 1 ORDER BY type+0");
 
 if (empty($indexes)) {
 	if (!empty($param['lock']))
