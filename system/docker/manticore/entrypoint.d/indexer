@@ -22,7 +22,7 @@ if [ ${#MISSING_INDEXES[@]} -ne 0 ]; then
   echo "Fetching Remote indexes:" "${MISSING_INDEXES[@]}" >&2
   printf '%s\0' "${MISSING_INDEXES[@]}" | \
     xargs --null --max-args=1 --max-procs=1 --verbose -I{} -- \
-    sh -c 'curl https://data.geograph.org.uk/facets/manticore/{}.tar.gz | tar -xz'
+    sh -c 'curl https://data.geograph.org.uk/facets/manticore/{}.tar.gz | tar -xz' || true
 fi
 
 ############################################
