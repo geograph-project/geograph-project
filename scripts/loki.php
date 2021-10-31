@@ -20,6 +20,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+$PREHELP = "Download log files from a loki server. Works in THREE modes: 'auto', 'filename' or 'string'\n";
+//1) 'auto' mode, that doanloads last 16 days of logs and stores in S3 (note only runs the default 'base' query, and doesnt work with 'string' filter) - calls 'filename' mode in a loop!
+//2) 'filename' mode, which writes all logs for a given day. Specify filename, the 'date' and optional 'string' filter. Should normally set 'limit' and 'all'
+	///loki.php --filename=accesslog.2021-05-04.log --date=2021-05-04 --limit=5000 --all=1
+//3) 'string' mode, which just downlaods the last X 'hours' worth of logs (upto 'limit' anyway!) - the default loki period is 1 hour!
+//4) if dont specify any of the above modes, then runs a default example query of 404 logs in stdout
+
 ############################################
 
 $param=array(
@@ -30,15 +37,16 @@ $param=array(
 	'all'=>false, //set to true so loops!
 	'date'=>false, //date to download (eg 2021-05-04) parsed by strtotime
 	'start'=>false, //can supply the full nanosecond timestamp, so can resume a aborted download
+	//'string' is also accepted as a optional param to 'filename' mode
 
-        'limit'=>10, //small number for testing, but set to high number, 5000 seems recommended
+        'limit'=>10, //small number for testing, but set to high number, 5000 seems recommended (both filename and use this)
 
-	'base'=>'{job="production/geograph", container="nginx"}', //a default query
+	'base'=>'{job="production/geograph", container="nginx"}', //the default query (for all modes)
 	'string'=>false, //extra filter to apply
 	'hours'=>false, //specify a number of hours to use with 'string' query. Defaults to one hour!
 
 	//which stream to get
-	'stream'=>'', //get the access_log, nginx container at least, access on stdout, and error on stderr!
+	'stream'=>'', //on nginx container at least, access_log is on stdout, and error on stderr!
 
 	'debug'=>false,
 );

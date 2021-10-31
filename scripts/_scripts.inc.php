@@ -56,9 +56,20 @@ for($i=1; $i<count($_SERVER['argv']); $i++)
 
 if ($param['help'])
 {
+
+if (empty($HELP) && count($param) > 3) {
+	$HELP = "\n";
+	foreach ($param as $key => $value)
+		if ($key != 'help' && $key != 'dir' && $key != 'config')
+			$HELP .= sprintf("    --%-17s : custom param (%s)\n", "$key=...", $value);
+	$HELP = rtrim($HELP);
+}
+
+if (empty($PREHELP))
+	$PREHELP = $_SERVER['PHP_SELF'];
 echo <<<ENDHELP
 ---------------------------------------------------------------------
-{$_SERVER['PHP_SELF']}
+$PREHELP
 ---------------------------------------------------------------------
 php {$_SERVER['PHP_SELF']}
     --dir=<dir>         : base directory ({$param['dir']})
