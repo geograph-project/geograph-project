@@ -201,7 +201,7 @@ div:target {
 <h3>Example HTML snippet, for use on a website</h3>
 
 <form><textarea rows="7"><div style="display:inline-block; font-size:0.9em">
-	<img src="geograph-{$image->gridimage_id}-by-{$image->realname|escape:'html'|replace:' ':'-'}.jpg" alt="{$image->title|escape:'html'}, by {$image->realname|escape:'html'}" width="{$image->cached_size.0}" height="{$image->cached_size.1}"><br>
+	&lt;img src&#61;&quot;geograph-{$image->gridimage_id}-by-{$image->realname|escape:'html'|replace:' ':'-'}.jpg" alt="{$image->title|escape:'html'}, by {$image->realname|escape:'html'}" width="{$image->cached_size.0}" height="{$image->cached_size.1}"&gt;<br>
 	<div style="float:right;">Photo &amp;copy; <a href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
 	<a href="{$self_host}/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if $image->imagetakenString}, {$image->imagetakenString}{/if}
 
