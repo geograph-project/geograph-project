@@ -34,15 +34,15 @@
 $(function() {
 	$("#uploader").plupload({
 		// General settings
-		runtimes : 'html5,silverlight,html4',
+		runtimes : 'html5,html4',
 		url : '{/literal}{$script_name}{literal}',
-		max_file_size : '8mb',
+		max_file_size : '24mb', //we will catch >8M seperately and force use of resize option!
 		max_file_count: 100, // user can add no more then 100 files at a time
 	//	chunk_size : '1mb',
 		unique_names : true,
 		multiple_queues : true,
 
-		// Resize images on clientside if we can
+		// Resize images on clientside if we can (we add this later, if the option is manually selected
 		//resize : {width : 640, height : 640, quality : 90},
 
 		// Rename files by clicking on their titles
@@ -59,11 +59,24 @@ $(function() {
 			{title : "JPG files", extensions : "jpg,jpeg"},
 		],
 
-		// Flash settings
-		flash_swf_url : '/plupload/js/plupload.flash.swf',
+		//the actual 'resize' operation runs in the 'UploadFile' event, so we can't insert anything between 'resizing' and actully uploading :(
 
-		// Silverlight settings
-		silverlight_xap_url : '/plupload/js/plupload.silverlight.xap'
+	        // Post init events, bound after the internal events
+	        init : {
+			//make sure a resize option is selected!                  
+	            FilesAdded: function(up, files) {
+			var ele = document.getElementById('maxSize');
+	                plupload.each(files, function(file) {
+				if (file.size >= 8192000 && !ele.checked) {
+					alert(file.name + " is bigger than 8M, which is too big to upload as is.\n\n"+
+					"However we have enabled the 'Upload Dimensions' option, that should mean it will be resized to be under 8Mb");
+					ele.checked = true;
+					setResize(ele);
+					document.getElementById('noResize').style.display = 'none';
+				}
+		        });
+	            },
+		}
 	});
 
 	// Client side form validation
@@ -109,14 +122,18 @@ function setResize(that) {
 
 			<fieldset>
 				<legend>Upload Dimensions</legend>
+				<span id="noResize">
 				<input type="radio" name="size" value="65536" checked onclick="setResize(this)"/> No Resize |
-				<input type="radio" name="size" value="3840" onclick="setResize(this)"/> 3840 pixels |
+				</span>
+				<input type="radio" name="size" value="6400" onclick="setResize(this)"/> 6400 pixels |
+				<input type="radio" name="size" value="3840" id="maxSize" onclick="setResize(this)"/> 3840 pixels |
 				<input type="radio" name="size" value="3200" onclick="setResize(this)"/> 3200 pixels |
 				<input type="radio" name="size" value="1600" onclick="setResize(this)"/> 1600 pixels |
 				<input type="radio" name="size" value="1024" onclick="setResize(this)"/> 1024 pixels |
 				<input type="radio" name="size" value="800" onclick="setResize(this)"/> 800 pixels |
 				<input type="radio" name="size" value="640" onclick="setResize(this)"/> 640 pixels<br/>
-				(images are resized in your browser before being sent to Geograph - EXIF data <i>may</i> be stripped)
+				images are resized in your browser before being sent to Geograph - EXIF data <i>may</i> be stripped<br>
+				<i>Note: If image is smaller than requested dimension, it will still be opened and resaved with 87% JPEG quality setting before upload (but not resized).</i>
 			</fieldset>
 
 			<div id="uploader">
@@ -125,7 +142,8 @@ function setResize(that) {
 
 			<ol>
 				<li>Choose what size image you want to upload. (By resizing the image using the provided resize option, you save time and bandwidth. But EXIF data will probably not be available to the Geograph website)</li>
-				<li>Click "<b>Add Files</b>" and select image(<b>s</b>) you want to upload. Maximum filesize 8Mb.<ul>
+				<li>Click "<b>Add Files</b>" and select image(<b>s</b>) you want to upload. <b>Maximum filesize 8Mb</b>.<ul>
+					<li style=background-color:yellow>Note, however can now select file upto 24Mb. But it will be resized before upload, can choose the max dimension. Note that even if file is smaller than requested dimension,  it will still be opened and resaved with 87% JPEG quality setting before upload.</li> 
 					<li>Tip: In some browsers can also drag and drop images onto the white area above<br/> (you will see a message to that affect if your browser supports it)</li></ul></li>
 				<li>Once you have selected all files (can repeat step 2. to select upto 100 files) - click "<b>Start Upload</b>"</li>
 				<li>When all files are uploaded, click one of "<b>Submit Images</b>" tabs to continue to next stage using your favorite submission method</li>
