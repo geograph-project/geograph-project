@@ -94,6 +94,7 @@ if (empty($_GET['tab'])) {
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+	$ids = array();
 	if ($_GET['tab'] == 'featured') {
 
 		$t = 0;
@@ -110,6 +111,7 @@ if (empty($_GET['tab'])) {
 
 			print "<li>{$r['s']} <a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a></li>";
 
+			$ids[] = $r['gid'];
 			$recordSet->MoveNext();
 		}
 
@@ -134,6 +136,7 @@ if (empty($_GET['tab'])) {
 			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a>";
 			if (!empty($r['showday']))
 				print " (Featured {$r['showday']})";
+			$ids[] = $r['gid'];
 			print "</li>";
 
 			$recordSet->MoveNext();
@@ -166,6 +169,7 @@ if (empty($_GET['tab'])) {
 			print "<li><a href=\"/photo/{$r['gridimage_id']}\">".htmlentities2($r['title'])."</a>";
 			print " in <b>".htmlentities2($r['name1'].($r['name2']?" / {$r['name2']}":'').', '.$r['county_unitary'])."</b> ({$r['local_type']})</li>";
 
+			$ids[] = $r['gridimage_id'];
 			$recordSet->MoveNext();
 		}
 
@@ -192,6 +196,7 @@ if (empty($_GET['tab'])) {
 
 			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a></li>";
 
+			$ids[] = $r['gid'];
 			$recordSet->MoveNext();
 		}
 
@@ -218,6 +223,7 @@ if (empty($_GET['tab'])) {
 
 			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a></li>";
 
+			$ids[] = $r['gid'];
 			$recordSet->MoveNext();
 		}
 
@@ -265,6 +271,7 @@ if (empty($_GET['tab'])) {
 
 			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a>";
 			print " [<a href=\"/discuss/?action=vpost&amp;forum={$r['f']}&amp;topic={$r['tid']}&amp;post={$r['p']}\">post</a>]</li>";
+			$ids[] = $r['gid'];
 			$recordSet->MoveNext();
 		}
 
@@ -288,6 +295,7 @@ if (empty($_GET['tab'])) {
 
 			print "<li value=\"{$r['c']}\"><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a></li>";
 
+			$ids[] = $r['gid'];
 			$recordSet->MoveNext();
 		}
 
@@ -309,6 +317,7 @@ if (empty($_GET['tab'])) {
 
 			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a> [{$r['s']}]</li>";
 
+			$ids[] = $r['gid'];
 			$recordSet->MoveNext();
 		}
 
@@ -345,6 +354,7 @@ if (empty($_GET['tab'])) {
 
 			print "<li>{$r['r']} <a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a></li>";
 
+			$ids[] = $r['gid'];
 			$recordSet->MoveNext();
 		}
 
@@ -381,6 +391,7 @@ if (empty($_GET['tab'])) {
 
         	        print "<li>{$row['from_grid_reference']} <a href=\"/photo/{$row['from_gridimage_id']}\">".htmlentities2($row['from_title'])."</a> by ".htmlentities2($row['from_realname'])."</li>";
 
+			$ids[] = $row['gridimage_id'];
 	                $last = $row['gridimage_id'];
 	                $recordSet->MoveNext();
 	        }
@@ -389,6 +400,9 @@ if (empty($_GET['tab'])) {
 
 	if (!empty($recordSet) && $recordSet->numRows() === 0)
 		print "<p>No Matching Images</p>";
+
+	if (count($ids) > 1 && count($ids) <= 50)
+		print "<p><a href=\"/search.php?markedImages=".implode(',',$ids)."&amp;do=1&amp;displayclass=black\">View these images as a search results</a></p>";
 
 } else {
 	print "Site over capacity (or disabled due to server issues) - please try again tomorrow";
