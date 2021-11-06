@@ -44,6 +44,7 @@ foreach (explode("\n",$files) as $file) {
 	$data = `git info $file | grep "Commit ID"`;
 	if (preg_match('/: (\w+)/',$data,$m)) {
 		$rev = preg_replace('/[a-f]+/','',$m[1]);
+		$rev = preg_replace('/^0+/','',$rev);
 		$rev = substr($rev,0,8);
 		if (empty($rev)) //unlikely to have nothing, but just in case!
 			$rev = 111;
