@@ -1233,7 +1233,7 @@ class RasterMap
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE)
 				$cmd = str_replace('/','\\',$cmd);
 
-			$filesystem->execute($cmd, $path);
+			$filesystem->execute($cmd, null, $path); //no local file, as we downloaded the tiles manually first
 
 			$filesystem->clearstatcache(false, $path);
 
@@ -1330,7 +1330,7 @@ class RasterMap
 			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE)
 				$cmd = str_replace('/','\\',$cmd);
 
-			$filesystem->execute($cmd, $path);
+			$filesystem->execute($cmd, null, $path); //no local file, as we downloaded the tiles manually first
 
 			$filesystem->clearstatcache(false, $path);
 
