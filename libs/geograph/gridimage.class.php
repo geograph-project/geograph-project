@@ -638,7 +638,7 @@ split_timer('gridimage','assignToSmarty',$this->gridimage_id); //logs the wall t
 
 		if (!empty($this->comment) && (strpos($this->comment,'http') !== FALSE || strpos($this->comment,'www.') !== FALSE) ) {
 			$db=&$this->_getDB(true);
-			$aa = $db->getAll($sql = "select url,archive_url from gridimage_link where gridimage_id = ".intval($this->gridimage_id)."
+			$aa = $db->getAll($sql = "select url,archive_url,match_score from gridimage_link where gridimage_id = ".intval($this->gridimage_id)."
 				AND (HTTP_Status >= 400 || HTTP_Status_final >= 400 || soft_ratio > 0.8) AND archive_url != '' AND next_check < '9999-00-00'");
 			if (!empty($aa)) {
 				foreach ($aa as $row) {
@@ -646,7 +646,11 @@ split_timer('gridimage','assignToSmarty',$this->gridimage_id); //logs the wall t
 					if (preg_match('/#.+$/',$row['url'],$m) && strpos($row['archive_url'],'#') === FALSE) {
 						$row['archive_url'] .= $m[0];
 					}
-					$this->comment = str_replace($row['url'],"{$row['url']} ({$row['archive_url']} ) ",$this->comment);
+					if ($row['match_score'] > 250) { //we consider the original link dangorous
+						$this->comment = str_replace($row['url']," {$row['archive_url']} ",$this->comment);
+					} else {
+						$this->comment = str_replace($row['url'],"{$row['url']} ({$row['archive_url']} ) ",$this->comment);
+					}
 				}
 				//$this->comment .= "\n----\nNote: One or more links in this description no longer seem to be active.\nArchived version of pages may be available: ".implode("  ",$aa);
 			}
