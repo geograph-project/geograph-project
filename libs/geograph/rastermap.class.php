@@ -868,7 +868,23 @@ class RasterMap
 					}
 					AttachEvent(window,'load',loadmap,false);
 				//]]>
-				</script>";
+				</script>
+
+				<style>
+					div#map div.leaflet-control-container .leaflet-top {
+						opacity:0.2;
+					}
+					div#map div.leaflet-control-container .leaflet-bottom {
+						opacity:0.5;
+						background-color:white;
+					}
+					div#map:hover div.leaflet-control-container .leaflet-top, div#map:hover div.leaflet-control-container .leaflet-bottom {
+						opacity:1;
+						background-color:inherit;
+					}
+				</style>
+
+				";
 
 		} elseif ($this->service == 'Google') {
 
