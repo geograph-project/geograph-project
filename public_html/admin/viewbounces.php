@@ -39,12 +39,17 @@ if (!empty($_GET['t'])) {
 
 #################################################
 
+if (empty($_GET))
+	$_GET['grouped'] = 1;
+
 $where = array();
+
+#################################################
 
 $filters = array();
 $filters['notificationType'] = array('Bounce','Complaint');
 $filters['bounceType'] = array('Permanent','Transient');
-$filters['bounceSubType'] = array('OnAccountSuppressionList');
+$filters['SubType'] = array('OnAccountSuppressionList','!OnAccountSuppressionList');
 $filters['user_id'] = 'text';
 $filters['email'] = 'text';
 
@@ -63,16 +68,29 @@ foreach ($filters as $name => $rows) {
 		foreach ($rows as $value) {
 			printf('<option value="%s"%s>%s</option>',$value, (@$_GET[$name] == $value)?' selected':'', $value);
 			if(@$_GET[$name] == $value) {
-				$where[] = "Message LIKE ".$db->Quote("%\"{$name}\":\"{$value}\"%");
+				if (preg_match('/^!(\w+)/',$value,$m)) {
+					$where[] = "Message NOT LIKE ".$db->Quote("%{$name}\":\"{$m[1]}\"%");
+				} else {
+					$where[] = "Message LIKE ".$db->Quote("%{$name}\":\"{$value}\"%");
+				}
 			}
 		}
 		print "</select>";
 	}
 }
+
 $checked = empty($_GET['recent'])?'':' checked';
 print "<input type=checkbox name=recent$checked onclick=this.form.submit()>Recent Only";
 if (!empty($_GET['recent'])) {
 	$where[] = "TimeStamp > DATE(DATE_SUB(NOW(),INTERVAL 7 DAY))";
+}
+
+$checked = empty($_GET['grouped'])?'':' checked';
+print "<input type=checkbox name=grouped$checked onclick=this.form.submit()>Grouped";
+if (!empty($_GET['grouped'])) {
+	$group = "JSON_VALUE(Message,'$.mail.destination[0]'), JSON_VALUE(Message,'$.notificationType')";
+} else {
+	$group = "1"; //timestamp!
 }
 
 print "</form>";
@@ -102,7 +120,7 @@ from sns_message
 	left join user_stat using (user_id)
 	left join gridimage_search on (gridimage_id = last)
 where ".implode(" AND ",$where)."
-group by JSON_VALUE(Message,'$.mail.destination[0]'), JSON_VALUE(Message,'$.notificationType')
+group by $group
 order by TimeStamp DESC
 LIMIT 50";
 
