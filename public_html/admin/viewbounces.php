@@ -37,7 +37,51 @@ if (!empty($_GET['t'])) {
 	exit;
 }
 
+#################################################
 
+$where = array();
+
+$filters = array();
+$filters['notificationType'] = array('Bounce','Complaint');
+$filters['bounceType'] = array('Permanent','Transient');
+$filters['bounceSubType'] = array('OnAccountSuppressionList');
+$filters['user_id'] = 'text';
+$filters['email'] = 'text';
+
+//$filters[''] = array('','');
+
+print "<form method=get>";
+foreach ($filters as $name => $rows) {
+	if ($rows == 'text') {
+		print "<input type=search name=$name value=\"".htmlentities(@$_GET[$name])."\" onkeyup=\"if (event.key == 'Enter') {this.form.submit(); }\" title=$name>";
+		if (!empty($_GET[$name])) {
+			$where[] = "user.$name LIKE ".$db->Quote($_GET[$name]);
+		}
+	} else {
+		print "<select name=$name onchange=this.form.submit() title=$name>";
+		print "<option></option>";
+		foreach ($rows as $value) {
+			printf('<option value="%s"%s>%s</option>',$value, (@$_GET[$name] == $value)?' selected':'', $value);
+			if(@$_GET[$name] == $value) {
+				$where[] = "Message LIKE ".$db->Quote("%\"{$name}\":\"{$value}\"%");
+			}
+		}
+		print "</select>";
+	}
+}
+$checked = empty($_GET['recent'])?'':' checked';
+print "<input type=checkbox name=recent$checked onclick=this.form.submit()>Recent Only";
+if (!empty($_GET['recent'])) {
+	$where[] = "TimeStamp > DATE(DATE_SUB(NOW(),INTERVAL 7 DAY))";
+}
+
+print "</form>";
+
+#################################################
+
+$where[] = "Type = 'Notification'";
+$where[] = "JSON_VALUE(Message,'$.mail.destination[0]') is not null";
+$where[] = "Message NOT like '%@simulator.amazonses.com%'";
 
 $sql = "select TimeStamp,
 CONCAT_WS(', ',
@@ -57,13 +101,12 @@ from sns_message
 	left join user on (user.email = JSON_VALUE(Message,'$.mail.destination[0]'))
 	left join user_stat using (user_id)
 	left join gridimage_search on (gridimage_id = last)
-where Type = 'Notification' and JSON_VALUE(Message,'$.mail.destination[0]') is not null
-and Message NOT like '%@simulator.amazonses.com%'
-
+where ".implode(" AND ",$where)."
 group by JSON_VALUE(Message,'$.mail.destination[0]'), JSON_VALUE(Message,'$.notificationType')
 order by TimeStamp DESC
-
 LIMIT 50";
+
+#################################################
 
 //JSON_VALUE(Message,'$.mail.commonHeaders.replyTo[0]') as `reply`,
 
@@ -71,7 +114,7 @@ LIMIT 50";
 
 dump_sql_table($sql,"recent bounces/complaints");
 
-
+print "Last 50 Results";
 
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
@@ -80,6 +123,8 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	$recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
 	print "<H3>$title</H3>";
+	if ($recordSet->EOF)
+		return;
 
 	$row = $recordSet->fields;
 
@@ -110,7 +155,7 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 			print "<tr><td colspan=9 style=font-size:0.8em>".htmlentities($row['diagnosticCode']);
 		$recordSet->MoveNext();
 	}
-	
+
 	print "</TR></TABLE>";
 }
 
