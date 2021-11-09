@@ -59,10 +59,10 @@ foreach (explode("\n",$files) as $file) {
 }
 
 if ($write) {
-	print "Writing libs/conf/revisions.conf.php.test\n";
+	print "Writing libs/conf/revisions.conf.php\n";
 
 	//duplicated from geograph.pl
-	$h = fopen('libs/conf/revisions.conf.php.test','w');
+	$h = fopen('libs/conf/revisions.conf.php','w');
 	fwrite($h, '<'.'?php'."\n");
 	fwrite($h, '$REVISIONS = array();'."\n");
 	foreach ($REVISIONS as $key => $value) {
