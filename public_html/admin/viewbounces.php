@@ -85,6 +85,12 @@ if (!empty($_GET['recent'])) {
 	$where[] = "TimeStamp > DATE(DATE_SUB(NOW(),INTERVAL 7 DAY))";
 }
 
+$checked = empty($_GET['active'])?'':' checked';
+print "<input type=checkbox name=active$checked onclick=this.form.submit()>Active";
+if (!empty($_GET['active'])) {
+	$where[] = "submitted > DATE(DATE_SUB(NOW(),INTERVAL 6 month))";
+}
+
 $checked = empty($_GET['grouped'])?'':' checked';
 print "<input type=checkbox name=grouped$checked onclick=this.form.submit()>Grouped";
 if (!empty($_GET['grouped'])) {
