@@ -313,17 +313,18 @@ function updateCamIcon() {
 	var overlayMaps = {};
 
 	function firstLetterToType(newtype) {
-		var mapTypeId = 'OSM';
+		var mapTypeId = 'OpenTopoMap';
 
 		//these are odd, but to maintain some compatiblity with GMaps version
                 if (newtype == 's') {mapTypeId = 'Aerial Imagery'}
                 if (newtype == 'h') {mapTypeId = 'Aerial Imagery'}
-                if (newtype == 't') {mapTypeId = 'OSM Terrain'}
+                if (newtype == 't') {mapTypeId = 'OpenTopoMap'} //was OSM Terrain
                 if (newtype == 'n') {mapTypeId = 'Historic OS - GB 1920s';}
                 if (newtype == 'i') {mapTypeId = 'Historic OS - Ireland';}
                 if (newtype == 'o') {mapTypeId = 'OSM';}
-                if (newtype == 'c') {mapTypeId = 'OSM Cycle';}
-                if (newtype == 'p') {mapTypeId = 'OSM Terrain';}
+                if (newtype == 'c') {mapTypeId = 'OSM';} //was OSM Cycle
+                if (newtype == 'p') {mapTypeId = 'OpenTopoMap';} //was OSM Terrain
+                if (newtype == 'l') {mapTypeId = 'OpenTopoMap';}
 
 		return mapTypeId;
 	}
@@ -333,10 +334,10 @@ function updateCamIcon() {
 		var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
 
 		baseMaps['OSM'] = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-			 {mapLetter: 'o', minZoom: 3, maxZoom: 18, attribution: osmAttrib});		
+			 {mapLetter: 'o', minZoom: 3, maxZoom: 18, attribution: osmAttrib});
 
 		        var topoUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
-		        var topoAttribution = 'Data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Legend</a>]';
+		        var topoAttribution = 'Data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Key</a>]';
 		baseMaps["OpenTopoMap"] = L.tileLayer(topoUrl, {mapLetter: 'l', minZoom: 1, maxZoom: 17, detectRetina: false, attribution: topoAttribution});
 
 
