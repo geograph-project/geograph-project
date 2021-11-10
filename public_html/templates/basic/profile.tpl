@@ -15,7 +15,14 @@
 	<br/><br/>
 {/if}
 
-{if $profile->tickets}
+{if $bounce_message}
+	<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px; font-size:0.9em">
+		{$bounce_message}
+		If you have an alternate email address you can use, then <a href=/profile.php?edit=1>Edit your profile</a> to use it.
+		Otherwise we hope to soon have a way to reenable delivery, in the meantime if you have concerns, please <a href="/contact.php">contact us</b>. 
+	</div>
+
+{elseif $profile->tickets}
 	<div id="ticket_message">
 		{if $profile->last_ticket_time}
 			<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px; font-size:0.9em">

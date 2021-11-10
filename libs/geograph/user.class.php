@@ -322,6 +322,39 @@ class GeographUser
 	}
 
 	/**
+	* Create a message, is we have records of email issues
+	*/
+	function getBounceMessage()
+	{
+		$db = $this->_getDB(true);
+		$where = array();
+		$where[] = "user_id = ".intval($this->user_id); //mainly to use the key
+		$where[] = "email = ".$db->Quote($this->email);
+		$where[] = "TimeStamp > date(date_sub(now(),interval 30 day))";
+		//$where[] = "(type LIKE '%Permanent%' OR type LIKE '%OnAccountSuppressionList%')";
+		$row = $db->GetRow("SELECT * FROM sns_summary WHERE ".implode(' AND ', $where));
+		if (empty($row))
+			return false;
+		$common = ". Emails may not be delivered to <tt>".htmlentities($row['email'])."</tt>.";
+		if (strpos($row['type'],'OnAccountSuppressionList') !== FALSE) {
+			if (strpos($row['type'],'Complaint') !== FALSE) {
+				return "Your email is blocked, due to received complaint(s)".$common;
+			} else {
+				return "Your email is blocked, due to email bouncing".$common;
+			}
+		} elseif (strpos($row['type'],'Permanent') !== FALSE) {
+			if (strpos($row['type'],'Complaint') !== FALSE) {
+				return "We are unable to deliever email, due to received complaint(s)".$common;
+			} else {
+				return "We are unable to deliever email, due to email bouncing".$common;
+			}
+		} elseif (strpos($row['type'],'Transient') !== FALSE) {
+			 return "We are having issue delivering email, due to bouncing".$common;
+		}
+		return "We may be having issues delivering email".$common;
+	}
+
+	/**
 	* register user
 	* returns true if successful and false if not. Array of
 	* errors returned via $error param

@@ -318,7 +318,7 @@ if ($template=='profile.tpl')
                 $smarty->assign('company_member', $profile->hasPerm('member'));
 	}
 
-
+			$smarty->assign('bounce_message', $profile->getBounceMessage());
 		}
 		
 		if (empty($_GET['id'])) {
@@ -366,10 +366,13 @@ if ($template=='profile.tpl')
 	} else {
 		$profile=new GeographUser();
 		$profile->user_id = $uid;
-		if ($uid==$USER->user_id && property_exists($USER,'tickets')) {
+		if ($uid==$USER->user_id) {
+			if (property_exists($USER,'tickets'))
 			if (empty($_SESSION['last_ticket_time']) || $USER->last_ticket_time > $_SESSION['last_ticket_time']) {
 				$profile->tickets = $USER->tickets;
 			}
+			$profile->email = $USER->email;
+			$smarty->assign('bounce_message', $profile->getBounceMessage());
 		}
 		$smarty->assign_by_ref('profile', $profile);
 	}
