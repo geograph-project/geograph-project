@@ -164,6 +164,20 @@ if (count($ids) == 2) {
 
 		foreach ($images as $idx => $row) {
 			$images[$idx]['tags'] = $db->getOne("SELECT GROUP_CONCAT(tag) FROM tag_public WHERE gridimage_id = {$row['gridimage_id']}");
+
+					if (strlen($row['width']) == 0) {
+						$image = new GridImage();
+						$image->fastInit($row);
+
+						$image->_getFullSize(); //looks up the values 'fresh'!!
+
+						$images[$idx]['width'] = $image->cached_size[0];
+						$images[$idx]['height'] = $image->cached_size[1];
+						if (!empty($image->original_width)) {
+							$images[$idx]['original_width'] = $image->original_width;
+							$images[$idx]['original_height'] = $image->original_height;
+						}
+					}
 		}
 
 		print "<form method=post>";
@@ -237,7 +251,8 @@ if (count($ids) == 2) {
 			if ($larger)
 				print " | <b><a href=\"/more.php?id={$row['gridimage_id']}\" target=win$idx>More Sizes</a></b>";
 
-			print " <input type=button value=\"Reject\" onclick='moderateImage({$row['gridimage_id']},\"rejected\",".json_encode($message).")'>";
+			if ($row['moderation_status'] != 'rejected')
+				print " | <input type=button value=\"Reject\" onclick='moderateImage({$row['gridimage_id']},\"rejected\",".json_encode($message).")' style=background-color:pink>";
 			print "</td>";
 			//setting it for the NEXT image!
 			$message = "Duplicate of [[[{$row['gridimage_id']}]]]";
@@ -248,7 +263,8 @@ if (count($ids) == 2) {
 
 
 ?>
-	<input type=submit value="copy ticked items">
+	<p>
+	<input type=submit value="Copy Ticked Items" style="font-size:1.2em">
 </form>
 
 
