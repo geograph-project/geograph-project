@@ -33,9 +33,10 @@ $param=array(
 	'auto' => false, //experimental mode, that aims to automate daily downloads
 
 	//main mode, to get loop and download to a filename
-	'filename'=>false, //the filename to save the logs to!
+	'filename'=>false, //the filename to save the logs to! opened in 'a' mode (appends to existing file)
 	'all'=>false, //set to true so loops!
 	'date'=>false, //date to download (eg 2021-05-04) parsed by strtotime
+		'extra' => '', //extra strtotime diff. eg use --extra="+14 hour" to start downloads FROM 2pm!
 	'start'=>false, //can supply the full nanosecond timestamp, so can resume a aborted download
 	//'string' is also accepted as a optional param to 'filename' mode
 
@@ -131,13 +132,23 @@ if (empty($CONF['loki_address']))
 		if (!$fp)
 			die("unable to open $filename\n");
 
+		//hours
+                if (!empty($param['hours'])) {
+                        $start = strtotime("-{$param['hours']} hour");
 
-		$start = strtotime($param['date']);
-		$end = strtotime($param['date']."+1 day");
+                        $start = $start.'000000000';  //as a nanosecond Unix epoch.
+			$end = null; //now
 
-		$start = $start.'000000000';  //as a nanosecond Unix epoch.
-		$end = $end.'000000000';
+		//a single day
+                } elseif (!empty($param['date'])) {
+			$start = strtotime($param['date'].$param['extra']);
+			$end = strtotime($param['date']."+1 day");
 
+			$start = $start.'000000000';  //as a nanosecond Unix epoch.
+			$end = $end.'000000000';
+		}
+
+		//after already set date (so end still set!)
 		if (!empty($param['start'])) {
 			$start = $param['start'];
 		}
