@@ -32,6 +32,7 @@ a.btn {
 	margin:4px;
 	color:white;
 	text-decoration:none;
+	white-space:nowrap;
 }
 {/literal}</style>
 <ul class="methods">
@@ -201,8 +202,12 @@ a.btn {
 
 <p><small>Want your name here? Get in <a href="/contact.php">Contact</a>!</small></p>
 
+<br/>
 <hr/>
 
-<p align="center" style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. The registered office is <span class="nowrap">Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.</span> </p>
+<p align="center" style="font-size:0.9em;"><i class="nowrap">Geograph<sup>&reg</sup> Britain and Ireland</i> is a project <span 
+class="nowrap">by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, a Charity <span 
+class="nowrap">Registered in England and Wales</span>, no <b>1145621</b>. <span class="nowrap">Company no 7473967</span>.<br>
+The registered office is <span class="nowrap">Dept 1706, 43 Owston Road,</span> Carcroft, Doncaster, South Yorkshire. DN6 8DA.</p>
 
 {include file="_std_end.tpl"}
