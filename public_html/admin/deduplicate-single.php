@@ -30,9 +30,24 @@ $USER->mustHavePerm("moderator");
 
 if (empty($_GET['ids'])) {
 	print "<form method=get>";
-	print "<textarea name=ids rows=2 cols=40 placeholder=\"Enter IDS here\"></textarea>";
+	print "<textarea name=ids id=ids rows=2 cols=40 placeholder=\"Enter IDS here\"></textarea>";
 	print "<input type=submit>";
 	print "</form>";
+
+?>
+<script type="text/javascript" src="/js/geograph.js"></script>
+<script>
+current = readCookie('markedImages');
+if (current) {
+	splited = current.commatrim().split(',');
+	if (splited.length>=2) {
+		var ele = document.getElementById('ids');
+		document.write('<a href=# onclick="ele.value = splited.pop() + \' \' + splited.pop();">Use last two images from your marked list</a>');
+	}
+}
+</script>
+<?
+
 	exit;
 }
 
