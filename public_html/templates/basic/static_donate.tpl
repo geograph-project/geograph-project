@@ -10,13 +10,13 @@
 <p>Please consider supporting us:</p>
 <style>{literal}
 ul.methods {
-	border-top:1px solid silver;
+	--border-top:1px solid silver;
         padding-top:10px;
 }
 ul.methods li {
 	padding-bottom:10px;
-	border-bottom:1px solid silver;
-	margin-bottom:10px;
+	--border-bottom:1px solid silver;
+	margin-bottom:20px;
 }
 ul.methods li img {
 	vertical-align:middle;
@@ -25,20 +25,43 @@ ul.methods li div div {
 	position:relative;width:170px;float:left;
 	padding:10px;
 }
+a.btn {
+	background-color:#000066;
+	padding:10px;
+	border-radius:10px;
+	margin:4px;
+	color:white;
+	text-decoration:none;
+}
 {/literal}</style>
 <ul class="methods">
 	<li>
-		<a href="https://uk.virginmoneygiving.com/donation-web/charity?charityId=1017685&utm_source=extbtn&utm_campaign=donatebtn" target="_blank" title="Donate to us (Link opens in a new window)"><img src="https://uk.virginmoneygiving.com/giving/assets/buttons/DONATE_RED_BUTTON@1x.png" border="0" alt="Make a donation using Virgin Money Giving"></a>
+		<b>Charities Aid Foundation</b> is our prefered donation processor. <a href="https://cafdonate.cafonline.org/18714" class=btn onclick="return startDonation(this)" target=_blank>Start Donation</a> or {newwin href="https://cafdonate.cafonline.org/18714" text="Open in a new Window"}<br>
 
+		<iframe id="IframeDonate" name="IframeDonate" frameborder="0" scrolling="no" data-src="https://cafdonate.cafonline.org//Widget/18714?fix=0" width="460px" height="600px" style="padding: 0px; margin: 0px; border:2px solid #e4e4fc; overflow: hidden; width: 460px; height: 600px; display:none"></iframe>
+		<script>{literal}
+		function startDonation(that) {
+			if (window.outerWidth && window.outerWidth < 600) {
+				//if a small window, open directly
+				return true;
+			}
+			var iframe = document.getElementById('IframeDonate');
+			if (iframe.dataset)
+				iframe.src = iframe.dataset.src;
+			else
+				iframe.src = iframe.getAttribute('data-src');
+			iframe.style.display='';
+			that.style.display = 'none';
+			return false;
+		}
+		{/literal}</script>
 
-		via <b>{external href="https://uk.virginmoneygiving.com/charity-web/charity/finalCharityHomepage.action?charityId=1017685" text="Virgin Money Giving"}</b> <br><br>
-
-		Click the button to make a donation with Virgin Money Giving, can choose a one off, or a monthly donation. You can also apply Gift Aid to increase the value of your donation.
-		<br/><br style="clear:both"/>
+		<br style="clear:both"/>
 	</li>
 
-	<li>
-		alternatively can accept direct donations via <b>PayPal</b>, <a href="javascript:void(show_tree('ppay'));" id="hideppay">Read More...</a>
+	<li>    Alternatively can accept direct donations via <b>{newwin href="https://www.paypal.com/gb/fundraiser/charity/126560" text="PayPal Giving Fund"}</b>
+
+		or <a href="javascript:void(show_tree('ppay'));" id="hideppay">pay via paypal directly</a>
 
 		<div id="showppay" style="display:none">
 
@@ -115,8 +138,6 @@ ul.methods li div div {
 		Or can setup <b>{external href="https://smile.amazon.co.uk/gp/chpf/about/ref=smi_se_rspo_laas_aas" text="Amazon Smile"}</b> and Amazon will donate to a charity of your choice for every purchase you make. 
 			{external href="https://smile.amazon.co.uk/gp/chpf/homepage?q=Geograph&orig=%2F&ie=UTF-8" text="Geograph"} is registered there. 
 	</li>
-
-	<li>Otherwise can donate via {external href="https://www.cafonline.org/" text="<b>Charities Aid Foundation</b> (CAF)"}</li>
 
 	<li>{mailto address="treasurer@geograph.org.uk" text="Contact the Treasurer" encode="javascript"} if you wish to set up a <b>standing order</b>.</li>
 
