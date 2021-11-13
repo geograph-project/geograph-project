@@ -75,7 +75,7 @@ if (isset($_REQUEST['id']))
 			}
 
 			switch($_REQUEST['size'] ?? 'full') {
-				case 640:
+				//case 640: -- actully no, want to be careful to not create a 640px preview
 				case 800:
 				case 1024:
 				case 1600:
