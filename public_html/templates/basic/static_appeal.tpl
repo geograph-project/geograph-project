@@ -6,6 +6,14 @@
 
 <p>Geograph is a community project - registered as a Charity in England and Wales (No. 1145621) with the UK Charities Commission. Keeping the project running costs money; for the servers, that keep the site online 24 hours a day; for backups, to make sure all the content is safe; and for the administration to keep everything coordinated.</p>
 
+<div id="CAFDonateButtonContainer"></div> <script type="text/javascript"> var caf_BeneficiaryCampaignId=18714; document.write(unescape('%3Cscript id="CAFDonateButtonLoader_script" src="https://cafdonate.cafonline.org/js/CAF.DonateButtonLoader_script.js" type="text/javascript"%3E%3C/script%3E')); </script>
+
+
+
+
+<div id="CAFDonateWidgetContainer"></div> <script type="text/javascript"> var caf_BeneficiaryCampaignId=18714; document.write(unescape('%3Cscript id="CAFDonateWidgetLoader_script" src="https://cafdonate.cafonline.org/js/CAF.DonateWidgetLoader_script.js" type="text/javascript"%3E%3C/script%3E')); </script>
+
+
 
 <style>{literal}
 ul.methods {
@@ -25,15 +33,6 @@ ul.methods li div {
 {/literal}</style>
 <ul class="methods">
 
-	<li>
-		<a href="https://uk.virginmoneygiving.com/donation-web/charity?charityId=1017685&utm_source=extbtn&utm_campaign=donatebtn" target="_blank" title="Donate to us (Link opens in a new window)"><img src="http://uk.virginmoneygiving.com/giving/assets/buttons/DONATE_RED_BUTTON@1x.png" border="0" alt="Make a donation using Virgin Money Giving"></a>
-
-
-		via <b>{external href="https://uk.virginmoneygiving.com/charity-web/charity/finalCharityHomepage.action?charityId=1017685" text="Virgin Money Giving"}</b> <br><br>
-
-		Click the button to make a donation with Virgin Money Giving, can choose a one off, or a monthly donation. You can also apply Gift Aid to increase the value of your donation.
-		<br/><br style="clear:both"/>
-	</li>
 
 </ul>
 

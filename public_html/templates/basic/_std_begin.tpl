@@ -67,11 +67,11 @@
 
 	Access to all this is given to you totally free of charge, as our contributors all share their photographs so that they are free to download and use.
 	But it costs thousands of pounds every year to run Geograph.  This means that we rely entirely on donations from our users, such as you, to keep the site up and running. Costs have increased dramatically as we have moved to Cloud hosting, and we have to pay for technical assistance.  We have no paid employees, everyone is a volunteer. 
-	If you value Geograph, please consider <a href="https://uk.virginmoneygiving.com/donation-web/charity?charityId=1017685&utm_source=extbtn&utm_campaign=donatebtn">donating now</a>.  We are pleased to accept one-off donations, or even better, regular monthly gifts, with Gift Aid if you are eligible. 
+	If you value Geograph, please consider <a href="https://cafdonate.cafonline.org/18714">donating now</a>.  We are pleased to accept one-off donations, or even better, regular monthly gifts, with Gift Aid if you are eligible. 
 	Your generosity will help us maintain, expand and improve the resources we can give you.<br>
 	Thank you.<br><br>
 
-	Donate: <a href="https://uk.virginmoneygiving.com/charity-web/charity/finalCharityHomepage.action?charityId=1017685" target=_blank>Our page on Virgin Money Giving</a>
+	Donate: <a href="https://cafdonate.cafonline.org/18714" target=_blank>via Charities Aid Foundation</a>
 	or <a href="/help/donate">more options</a>...   (<a href="#" onclick="return hide_appeal()">Dismiss Message</a>)
 	<br style=clear:both>
 	{literal}
