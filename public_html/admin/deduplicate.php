@@ -196,6 +196,7 @@ if (!empty($_GET['offset']) && !empty($_GET['auto'])) {
 	exit;
 }
 
+		print "<a href=\"deduplicate-single.php?ids=".urlencode($str)."\">Load these images into single tool</a>";
 
 		print "<form method=post>";
 		print "<input type=hidden name=md5sum value=\"$md5sum\"/>";
