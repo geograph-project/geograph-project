@@ -29,8 +29,10 @@ $USER->mustHavePerm("moderator");
 ##############################################
 
 if (empty($_GET['ids'])) {
+	print "<h3>Deal with Duplicate Pairs</h3>">
+
 	print "<form method=get>";
-	print "<textarea name=ids id=ids rows=2 cols=40 placeholder=\"Enter IDS here\"></textarea>";
+	print "<textarea name=ids id=ids rows=2 cols=60 placeholder=\"Enter the 2 Image IDs here\"></textarea>";
 	print "<input type=submit>";
 	print "</form>";
 
@@ -122,12 +124,14 @@ if (!empty($_POST)) {
 
 			$src = new GridImage($other);
 			$dst = new GridImage($gridimage_id);
+			$status = null;
 
 			//save the original
 			$src->originalUrl =   $src->_getOriginalpath(true,false,'_original');
 			if (basename($src->originalUrl) != "error.jpg") {
 				$dst->storeImage($_SERVER['DOCUMENT_ROOT'].$src->originalUrl,false,'_original');
 				print "Copying: {$src->originalUrl}<hr>";
+				$status = 'confirmed';
 			}
 
 			// the preview image
@@ -135,6 +139,21 @@ if (!empty($_POST)) {
 			if (basename($src->previewUrl) != "error.jpg") {
 				$dst->storeImage($_SERVER['DOCUMENT_ROOT'].$src->previewUrl,false,'_640x640');
 				print "Copying: {$src->previewUrl}<hr>";
+				$status = 'accepted';
+
+			} elseif (!empty($_POST['close'])) {
+				//need to CREATE the 640px preview!
+				$filepath = $dst->getImageFromOriginal(640,640);
+				$status = 'accepted';
+			}
+
+			if (!empty($status)) {
+				//mainly just logging this, so we have different between 'close' and 'identical' logged somewhere
+				//the more.php page, uses presence of the 640px image to decide.
+				$sql = "insert into gridimage_pending set gridimage_id = $gridimage_id, user_id = {$USER->user_id}, type='original', status = '$status', suggested = NOW()";
+				print "$sql; ";
+				$db->Execute($sql);
+				print "Pending Rows Updated = ".$db->Affected_Rows()."<hr>";
 			}
 
 			//clear memcache
@@ -194,7 +213,23 @@ if (count($ids) == 2) {
 						}
 					}
 		}
+?>
+<h3>Deal with Duplicate Pairs</h3>
 
+<p>If both images are the same, then you can use this page to reject ONE of the images. (rejects button at the bottom)<br>
+... typically would reject the RIGHT one (as shown in id order, the first iamge will usually the one kept) but can work either way
+
+<p>If the other image has a 'larger' upload, then can copy the image from the rejected timage to the remaining image<br>
+<b>Important: If the two images are only 'close' (eg a slightly differnet crop of the same base image) and NOT identical, then be sure to tick the 'Close Enough' tickbox!!</b>
+
+<p>Can also copy the tags from the rejected image to the remaining image. Again tick the box for it.<br>
+Note, when rejecting one image, the tickbox on ythe other image will tick.
+
+<p>Would normally tick the 'redirect other image', which means external users trying to acccess the now rejected image, will <b>automatically</b> be taken to the retained image, rather than seeing a rejected message! (moderators still see the rejected image)
+
+<p>Then click the button at the bottom to actully perform the copy of larger image and/or tags.
+
+<?
 		print "<form method=post>";
 
 		print "<table cellspacing=0 cellpadding=6 border=1>";
@@ -202,10 +237,12 @@ if (count($ids) == 2) {
 			print "<tr>";
 			print "<th>$key</th>";
 			$stat = array();
-			foreach ($images as $row) {
+			foreach ($images as $idx => $row) {
 				if (empty($row[$key]) && $key == 'tags') {
 					print "<td><label><input type=checkbox name=\"tags[{$row['gridimage_id']}]\">Copy Tags from Other</label></td>";
 
+				} elseif ($idx > 0 && $row[$key] != $images[0][$key] && $key != 'gridimage_id' && $key != 'submitted') {
+					print "<td style=background-color:pink>".htmlentities($row[$key])."</td>";
 				} else {
 					print "<td>".htmlentities($row[$key])."</td>";
 				}
@@ -245,7 +282,9 @@ if (count($ids) == 2) {
 
 	        	                        print "<td><a href=\"$url\"><img src=$url /></a><br>$name</td>";
 					} else {
-						print "<td><label><input type=checkbox name=\"original[{$row['gridimage_id']}]\">Copy Image from Other</label></td>";
+						print "<td><label><input type=checkbox name=\"original[{$row['gridimage_id']}]\">Copy Image from Other</label>";
+
+						print "<br><br><label><input type=checkbox name=\"close\">Mark as 'Close Enough'</label><br> - otherwise assumes the images are IDENTICAL</td>";
 					}
 				}
 			}
@@ -268,6 +307,7 @@ if (count($ids) == 2) {
 
 			if ($row['moderation_status'] != 'rejected')
 				print " | <input type=button value=\"Reject\" onclick='moderateImage({$row['gridimage_id']},\"rejected\",".json_encode($message).")' style=background-color:pink>";
+			print "<span id=\"result{$row['gridimage_id']}\"></span>";
 			print "</td>";
 			//setting it for the NEXT image!
 			$message = "Duplicate of [[[{$row['gridimage_id']}]]]";
@@ -319,7 +359,8 @@ function moderateImage(gridimage_id, status, message)
 	$.ajax({
 		url: url,
 		success: function(data) {
-			alert("The Server Said: "+data);
+			//alert("The Server Said: "+data);
+			$('#result'+gridimage_id).html(data);
 		}
 	});
 
@@ -327,6 +368,15 @@ function moderateImage(gridimage_id, status, message)
 }
 </script>
 
+	<ul>
+	<li>Minor tweaking of contrast, brightness etc is fine - even for "Identical"</li>
+	<li>Major tweaking is permissible (such as removing border, overlaid text etc) - but should be marked "Close enough"</li>
+	<li>Minor cropping changes is permissible, but must be marked "Close enough"</li>
+	<li>Major cropping changes, provided the 'subject focal area' is unchanged, should also be marked "Close Enough"<ul>
+		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of - or a frame from - the larger panorama - still marked "Close enough")</li>
+		</ul></li>
+	<li>Anything else, or when they are not the same image shouldn't be allowed</li>
+	</ul>
 
 <?
 
