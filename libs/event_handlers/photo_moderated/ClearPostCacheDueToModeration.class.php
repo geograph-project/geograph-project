@@ -34,24 +34,23 @@ class ClearPostCacheDueToModeration extends EventHandler
 	function processEvent(&$event)
 	{
 		global $memcache;
-		
+
 		if ($memcache->valid) {
 			$db=&$this->_getDB();
-		
+
 			list($gridimage_id,$dummy) = explode(',',$event['event_param']);
-		
-			$posts = $db->getCol("select distinct post_id from gridimage_post where gridimage_id = $gridimage_id");
-			
+
+			$posts = $db->getCol("select post_id from gridimage_post where gridimage_id = $gridimage_id");
+
 			foreach ($posts as $post_id) {
 				//clear any caches involving this post
-				$memcache->name_delete('fp',$post_id);			
+				$memcache->name_delete('fp',$post_id);
 			}
 		}
-		
+
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;
 	}
-	
 }
-?>
+

@@ -41,7 +41,7 @@ class ClearPostCacheDueToUpdate extends EventHandler
 			$bits = explode(',',$event['event_param']);
 			$gridimage_id = $bits[0];
 
-			$posts = $db->getCol("select distinct post_id from gridimage_post where gridimage_id = $gridimage_id");
+			$posts = $db->getCol("select post_id from gridimage_post where gridimage_id = $gridimage_id");
 
 			foreach ($posts as $post_id) {
 				//clear any caches involving this post
