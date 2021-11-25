@@ -348,7 +348,7 @@ if (!empty($_GET['ddeb']))
 				$grs = array_slice($grs,0,100);
 			}
 
-			if (count($grs) == 0) {
+			if (count($grs) == 0 || empty($grs[0])) {
 				//somethig went wrong...
 
 			} elseif ($span > 250000) { //100k ie 1 myriad
