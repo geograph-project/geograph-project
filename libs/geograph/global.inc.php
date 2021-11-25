@@ -984,20 +984,6 @@ class GeographPage extends Smarty
 			}
 		}
 
-		#######################################
-		global $mobile_browser;
-
-		if (empty($mobile_browser) && !empty($_COOKIE) && empty($_COOKIE['appeal'])   //has cookies, so not first time, but hasnt closed the message
-		&& $_SERVER['REQUEST_METHOD'] == 'GET'
-                && empty($GLOBALS['USER']->registered) && empty($GLOBALS['USER']->is_login_form)
-		&& appearsToBePerson() ) {
-
-			$this->assign('show_appeal',1);
-
-		}
-		#######################################
-
-
 //	split_timer('smarty','setup'); //logs the wall time
 
 	}
@@ -1064,9 +1050,6 @@ class GeographPage extends Smarty
 	function display($template, $cache_id = null, $compile_id = null)
 	{
 		global $CONF;
-
-		if ($template=='static_404.tpl' || $template=='static_appeal.tpl')
-			$this->assign('show_appeal',0);
 
 		if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
 			$cache_id = empty($cache_id)?'https':($cache_id."-https");
