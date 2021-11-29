@@ -43,7 +43,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 <div class="interestBox">
         Other Resources: <a href="/submit-example.php">Preview pages of the Submission Process</a> &middot; <a href="/faq3.php?a=49#49">Video Demonstation</a> &middot; 
 		<a href="/faq3.php?q=submit">FAQs</a><br/><br/>
-	&nbsp; &nbsp; We also have a prototype <a href="/guider/submit-demo.html">Guided Demo of the First page of submission</a>.
+	&nbsp; &nbsp; We also have a prototype <a href="http://{$http_host}/guider/submit-demo.html">Guided Demo of the First page of submission</a>.
 	<div style="text-align:right"><a href="/article/Geograph-Introductory-letter">Geograph Introductory letter</a></div>
 </div>
 
