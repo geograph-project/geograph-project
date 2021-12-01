@@ -67,7 +67,7 @@ $mkey = "test.php"; //use the same key, using the namespace to avoid collisions!
 
 foreach ($CONF['memcache'] as $key => $value) {
 	if (isset($value['redis'])) {
-		print "<hr><b>memcache\[$key\] is using redis</b><br>";
+		print "<hr><b>memcache\[$key\] is using redis</b> [{$value['redis']}]<br>";
 		if ($key == 'app') {
 
 			//print "memcache->redis = {$memcache->redis}<br>";
@@ -87,8 +87,11 @@ foreach ($CONF['memcache'] as $key => $value) {
 			print "unknown key!<br>";
 		}
 
-		if ($object->redis)
+		if ($object->redis) {
 			print "Has a 'redis' member<br>";
+			//if (is_object($object->redis))
+			//	print_r($object->redis->client('list'));
+		}
 
 		$value = $object->name_get($key,$mkey);
 		print "> exiting value = $value<br>";
