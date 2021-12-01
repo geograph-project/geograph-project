@@ -121,12 +121,12 @@ if (isset($_GET['gridimage_id']))
 
 				//clear caches involving the image
 				$ab=floor($gridimage_id/10000);
-				$smarty->clear_cache('', "img$ab|{$gridimage_id}|");
+				$smarty->clear_cache(null, "img$ab|{$gridimage_id}|");
 
 				//clear the users profile cache
 				//todo - maybe we only need to do this if a recent image?
 				$ab=floor($image->user_id/10000);
-				$smarty->clear_cache('', "user$ab|{$image->user_id}|");
+				$smarty->clear_cache(null, "user$ab|{$image->user_id}|");
 
 				$memcache->name_delete('us',$image->user_id);
 			}

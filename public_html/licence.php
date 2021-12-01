@@ -75,7 +75,8 @@ if (isset($_REQUEST['id']))
 			$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
 
 			//clear user specific stuff like profile page
-			$smarty->clear_cache(null, "user{$image->user_id}");
+			$ab=floor($image->user_id/10000);
+			$smarty->clear_cache(null, "user$ab|{$image->user_id}");
 		
 			header("Location: /photo/{$_REQUEST['id']}");
 			exit;
@@ -102,5 +103,3 @@ else
 
 $smarty->display($template, $cacheid);
 
-
-?>

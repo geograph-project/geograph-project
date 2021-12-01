@@ -221,8 +221,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE article_id = ".$db->Quote($_REQUEST['article_id']);
 		$db->Execute($sql);
 
-		$smarty->clear_cache('', 'article|'.$_POST['url'].'|');
-		$smarty->clear_cache('article.tpl');
+		$smarty->clear_cache(null, 'articles|'.$_POST['url'].'|');
 
 		header("Location: /article/".(empty($_POST['url'])?$page['url']:$_POST['url']));
 		flush();

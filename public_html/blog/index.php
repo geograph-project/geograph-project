@@ -62,9 +62,7 @@ if ($isadmin) {
 		 	$db->Execute("DELETE FROM content WHERE source = 'blog' AND foreign_id = ".intval($_POST['id']));
 
 		$smarty->clear_cache('blogs.tpl');
-		$smarty->clear_cache('blogs.tpl',$cacheid);
-		$smarty->clear_cache('blog_entry.tpl',$_REQUEST['id']);
-		$smarty->clear_cache('blog_entry.tpl',$_REQUEST['id']."|".$USER->user_id);
+		$smarty->clear_cache('blog_entry.tpl',$_REQUEST['id']."|");
 	}
 }
 

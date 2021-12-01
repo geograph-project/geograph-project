@@ -81,7 +81,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 
 if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
-	$smarty->clear_cache($template, 'places');
+	$smarty->clear_cache($template, 'places|');
 
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
