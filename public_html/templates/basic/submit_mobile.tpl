@@ -1006,6 +1006,9 @@ var static_host = '{$static_host}';
 
 		<hr>
 		<a href="?redir=false">Choose different Submission Process</a>
+
+		<div style="float:right;position:relative"><a href="/submit.php?redir=false">v1</a> / <a href="/submit2.php">v2</a> / <b>mobile</b> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a></div>
+
 </div>
 
 <div class="tab2">
