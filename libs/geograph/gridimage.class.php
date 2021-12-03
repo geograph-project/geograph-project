@@ -1091,7 +1091,7 @@ split_timer('gridimage'); //starts the timer
 					$src = 'file';
 				}
 				//fails quickly if not using memcached!
-				$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
+				$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long*4);
 			}
 			$this->cached_size = $size;
 			$this->original_width = @$size[4];
