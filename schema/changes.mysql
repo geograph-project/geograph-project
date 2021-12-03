@@ -2687,3 +2687,10 @@ INSERT INTO sph_index SET index_name = 'viewpoint_main', minutes=10080, minhour=
 #################################################
 
 
+alter table sns_message add block_cleared tinyint unsigned not null default 0;
+
+
+#################################################
+
+
+

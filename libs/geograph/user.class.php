@@ -328,9 +328,9 @@ class GeographUser
 	{
 		$db = $this->_getDB(true);
 		$where = array();
-		$where[] = "user_id = ".intval($this->user_id); //mainly to use the key
+		$where[] = "email_md5 = md5(LOWER(TRIM(".$db->Quote($this->email).")))"; //mainly to use the key
 		$where[] = "email = ".$db->Quote($this->email);
-		$where[] = "TimeStamp > date(date_sub(now(),interval 30 day))";
+		$where[] = "TimeStamp > date(date_sub(now(),interval 30 day))"; //TimeStamp is not a datetime column, it a varchar
 		//$where[] = "(type LIKE '%Permanent%' OR type LIKE '%OnAccountSuppressionList%')";
 		$row = $db->GetRow("SELECT * FROM sns_summary WHERE ".implode(' AND ', $where));
 		if (empty($row))

@@ -42,8 +42,9 @@ class RebuildSNSSummary extends EventHandler
 		$db->Execute("DROP TABLE IF EXISTS sns_summary_tmp");
 
 		$db->Execute("
-		create table sns_summary_tmp (UNIQUE(user_id,TimeStamp))
-		select user_id, TimeStamp, CONCAT_WS(', ',
+		create table sns_summary_tmp (UNIQUE(email_md5,TimeStamp))
+		select md5(LOWER(TRIM(JSON_VALUE(Message,'$.mail.destination[0]')))) as email_md5, TimeStamp,
+			CONCAT_WS(', ',
 		         JSON_VALUE(Message,'$.notificationType'),
 		         JSON_VALUE(Message,'$.bounce.bounceType'),
 		         NULLIF(JSON_VALUE(Message,'$.bounce.bounceSubType'),'General'),
@@ -52,8 +53,9 @@ class RebuildSNSSummary extends EventHandler
 		         JSON_VALUE(Message,'$.complaint.complaintFeedbackType')) as type,
 			JSON_VALUE(Message,'$.mail.destination[0]') as `email`,
 			JSON_VALUE(Message,'$.mail.commonHeaders.subject') as `subject`
-		from sns_message left join user on (user.email = JSON_VALUE(Message,'$.mail.destination[0]'))
- 		where Type = 'Notification' and JSON_VALUE(Message,'$.mail.destination[0]') is not null");
+		from sns_message
+ 		where Type = 'Notification' and JSON_VALUE(Message,'$.mail.destination[0]') is not null
+		and block_cleared = 0");
 
 		$db->Execute("DROP TABLE IF EXISTS sns_summary");
 		$db->Execute("RENAME TABLE sns_summary_tmp TO sns_summary");

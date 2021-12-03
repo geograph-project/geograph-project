@@ -33,7 +33,12 @@ $db = NewADOConnection($GLOBALS['DSN']);
 if (!empty($_GET['t'])) {
 	$value = $db->getOne("SELECT Message FROM sns_message WHERE TimeStamp = ".$db->Quote($_GET['t']));
 	print "<pre>";
-	print htmlentities(print_r(json_decode($value,true),true));
+	foreach (explode("\n",print_r(json_decode($value,true),true)) as $line) {
+		if (empty($line) || preg_match('/^\s*([(){}]|Array)\s*$/',$line))
+			continue;
+		print htmlentities($line)."\n";
+	}
+	//print htmlentities(print_r(json_decode($value,true),true));
 	exit;
 }
 
@@ -43,6 +48,10 @@ if (empty($_GET))
 	$_GET['grouped'] = 1;
 
 $where = array();
+
+$limit = 50;
+if (!empty($_GET['limit']))
+	$limit = intval($_GET['limit']);
 
 #################################################
 
@@ -60,7 +69,11 @@ foreach ($filters as $name => $rows) {
 	if ($rows == 'text') {
 		print "<input type=search name=$name value=\"".htmlentities(@$_GET[$name])."\" onkeyup=\"if (event.key == 'Enter') {this.form.submit(); }\" title=$name>";
 		if (!empty($_GET[$name])) {
-			$where[] = "user.$name LIKE ".$db->Quote($_GET[$name]);
+			if ($name == 'email') {
+				$where[] = "JSON_VALUE(Message,'$.mail.destination[0]') = ".$db->Quote($_GET[$name]);
+			} else {
+				$where[] = "user.$name LIKE ".$db->Quote($_GET[$name]);
+			}
 		}
 	} else {
 		print "<select name=$name onchange=this.form.submit() title=$name>";
@@ -128,7 +141,7 @@ from sns_message
 where ".implode(" AND ",$where)."
 group by $group
 order by TimeStamp DESC
-LIMIT 50";
+LIMIT $limit";
 
 #################################################
 
@@ -136,9 +149,13 @@ LIMIT 50";
 
 
 
-dump_sql_table($sql,"recent bounces/complaints");
+$count = dump_sql_table($sql,"recent bounces/complaints");
 
-print "Last 50 Results";
+if ($count == $limit) {
+	print "Last $limit Results";
+} else {
+	print "All $count Results";
+}
 
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
@@ -181,5 +198,7 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	}
 
 	print "</TR></TABLE>";
+
+	return $recordSet->RecordCount();
 }
 
