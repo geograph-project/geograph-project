@@ -39,13 +39,35 @@ $smarty = new GeographPage;
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
-		SELECT imagetaken,count(*) AS images, gi.title, grid_reference, COUNT(DISTINCT grid_reference) AS squares, id
+		SELECT gi.imagetaken,count(*) AS images, gi.title, gi.grid_reference, COUNT(DISTINCT grid_reference) AS squares, id
 		FROM gridimage_search gi
-			 LEFT JOIN geotrips t ON (t.uid = user_id AND t.date = imagetaken)
-		WHERE user_id = {$USER->user_id}
-		GROUP BY imagetaken DESC
+			INNER JOIN gridimage USING (gridimage_id)
+			 LEFT JOIN geotrips t ON (t.uid = gi.user_id AND t.date = gi.imagetaken)
+		WHERE gi.user_id = {$USER->user_id}
+			AND nateastings > 0
+			AND viewpoint_eastings > 0
+			AND viewpoint_grlen IN ('10','8','6')
+			AND natgrlen IN ('10','8','6')
+			AND view_direction != -1
+			AND viewpoint_eastings != nateastings
+			AND viewpoint_northings != natnorthings
+
+		GROUP BY gi.imagetaken DESC
+		HAVING images >= 3
 		LIMIT 150
 		");
+
+/*
+                if (    $image['nateastings']
+                    &&  $image['viewpoint_eastings']
+                    #&&  $image['realname'] == $USER->realname
+                    &&  $image['user_id'] == $USER->user_id
+                    &&  $image['viewpoint_grlen'] > 4
+                    &&  $image['natgrlen'] > 4
+                    && (   $image['view_direction'] != -1
+                        || $image['viewpoint_eastings']  != $image['nateastings']
+                        || $image['viewpoint_northings'] != $image['natnorthings'])
+*/
 
 	print "<h2>Recent Trips</h2>";
 
