@@ -23,7 +23,7 @@
 
 ############################################
 
-$param = array('verbose'=>0, 'log'=>0, 'headers'=>0);
+$param = array('verbose'=>0, 'log'=>0, 'headers'=>0, 'execute'=>1);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -118,12 +118,14 @@ foreach ($REVISIONS as $filename => $vid) {
 				$memcache->name_set('fs',$filename,$vid,false,$memcache->period_long);
 			} else {
 				print " copying...";
+				if ($param['execute']) {
 
-				//use a relative local path deliberetly, to avoid it picking up as a bucket path!
-				$r = $filesystem->copy(".".$filename, $_SERVER['DOCUMENT_ROOT'].$destination, null, 'STANDARD');
+					//use a relative local path deliberetly, to avoid it picking up as a bucket path!
+					$r = $filesystem->copy(".".$filename, $_SERVER['DOCUMENT_ROOT'].$destination, null, 'STANDARD');
 
-				if ($r)
-					$memcache->name_set('fs',$filename,$vid,false,$memcache->period_short);
+					if ($r)
+						$memcache->name_set('fs',$filename,$vid,false,$memcache->period_short);
+				}
 			}
 
 			print "\n";
