@@ -41,15 +41,18 @@ if (empty($param['execute']))
 
 ############################################
 
+if (!is_writable("{$CONF['photo_upload_dir']}_old/0/"))
+	die("unable to write to {$CONF['photo_upload_dir']}_old/0/\n");
+
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ############################################
 
-$where = 1; //rely on the inner join gridimage_size
+$where = "gridimage_size.width > 120"; //only delete, once have read it to cache the size
 
 if (!empty($param['start']))
-	$where = "gridimage_id > {$param['start']} and gridimage_size.width > 120";
+	$where .= " and gridimage_id > {$param['start']}";
 
 if (!empty($param['big']))
 	$where .= " and gridimage_size.original_width > 640";
@@ -79,24 +82,28 @@ foreach ($rows as $row) {
 	///var/www/geograph_live/upload_tmp_dir_old/2/newpic_u13502_8e38e115b94a86e275cb0658a97c3503.exif
 	$path = "{$CONF['photo_upload_dir']}_old/$a/newpic_u{$row['user_id']}_{$row['preview_key']}";
 
-	if (!file_exists("$path.exif")) {
-		//just set to something, to show processed, even if WHEN purged is now unknown
-		$db->Execute("UPDATE submission_method SET purged = '0000-00-00' WHERE gridimage_id = {$row['gridimage_id']}");
-		if ($param['print'])
-			print ".";
-		continue;
-	}
-
+	$found = 0;
 	foreach ($exts as $ext) {
 		if (file_exists("$path$ext")) {
+			$found++;
 			if ($param['print'])
 				print "unlink $path$ext\n";
 			if ($param['execute'])
 				unlink("$path$ext");
 		}
 	}
-	if ($param['execute'])
-		$db->Execute("UPDATE submission_method SET purged = NOW() WHERE gridimage_id = {$row['gridimage_id']}");
+	if (!$found) {
+		//just set to something, to show processed, even if WHEN purged is now unknown
+		if ($param['execute'])
+			$db->Execute("UPDATE submission_method SET purged = '0000-00-00' WHERE gridimage_id = {$row['gridimage_id']}");
+		if ($param['print'])
+			print ".";
+	} else {
+		if ($param['execute'])
+			$db->Execute("UPDATE submission_method SET purged = NOW() WHERE gridimage_id = {$row['gridimage_id']}");
+		if ($param['print'])
+			print "+";
+	}
 	if ($param['progress'] && !($c%$d))
 		print " $c.";
 
@@ -111,6 +118,6 @@ foreach ($rows as $row) {
 	$c++;
 }
 
-
-print "\n\n";
+if ($param['print'] || $param['progress'])
+	print "\n\n";
 
