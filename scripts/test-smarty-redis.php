@@ -23,6 +23,9 @@
 
 ############################################
 
+$param = array();
+$param['single'] = 0;
+
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
@@ -37,6 +40,61 @@ print(date('H:i:s')."\tUsing server: $CONF[redis_host]\n");
 
 $smarty = new GeographPage;
 $GLOBALS['memcached_res']->redis->debug=true;
+
+############################################
+
+if (!empty($param['single'])) {
+	$m = $GLOBALS['memcached_res'];
+
+		function test_keys($keys) {
+			global $m,$CONF;
+			foreach ($keys as $cache_file) {
+				$r = $m->redis->get($CONF['template'].$cache_file);
+				print "$cache_file => ".strlen($r)." bytes\n";
+			}
+			print "\n";
+		}
+
+	$tpl_file = 'profile.tpl';
+	$ab = floor($param['single']/10000);
+	$cache_id = "user$ab|{$param['single']}";
+
+                                        if (!preg_match('/\|$/',$cache_id))
+                                                $cache_id .="|"; //our hashes always has | always on the end!
+
+print "Test 1 scanning single template\n";
+
+
+                                                $it = NULL;
+                                                $keys = array();
+                                                /* Don't ever return an empty array until we're done iterating */
+                                                $m->redis->setOption(Redis::OPT_SCAN, Redis::SCAN_RETRY);
+                                                while($keys = $m->redis->hScan($CONF['template'].'tpl'.$tpl_file, $it, "$cache_id*")) {
+                                                        if (!empty($keys)) {
+								test_keys($keys);
+                                                        }
+                                                }
+
+print str_repeat('~',50)."\n\n";
+
+print "Test 2 listing ALL teplate\n";
+
+                                $keys = $m->redis->hGetAll($CONF['template'].'tpl'.$tpl_file); //returns key/value array
+				test_keys($keys);
+
+print str_repeat('~',50)."\n\n";
+
+print "Test 3 listing all prefix {$CONF['template']}pr$cache_id\n";
+
+				$keys = array_keys($m->redis->hGetAll($CONF['template'].'pr'.$cache_id));
+				test_keys($keys);
+
+print str_repeat('~',50)."\n\n";
+
+	exit;
+}
+
+############################################
 
 $template = "_mobile_end.tpl"; //just an arbitary and small file
 $template = "_mobile_begin.tpl";
