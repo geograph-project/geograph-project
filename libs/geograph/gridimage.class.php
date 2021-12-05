@@ -1309,7 +1309,7 @@ EOT;
 	* handy helper for Smarty templates, for instance, given an instance of this
 	* class, you can use this {$image->getSquareThumbnail(100,100)} to show a thumbnail
 	*/
-	function getSquareThumbnail($maxw, $maxh)
+	function getSquareThumbnail($maxw, $maxh, $return = 'html', $check_exists=true, $source='')
 	{
 		
 		global $CONF;
@@ -1330,12 +1330,19 @@ split_timer('gridimage'); //starts the timer
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}XX{$maxh}.jpg"; ##two XX's as windows isnt case sensitive!
 		}
 
+		if (!$check_exists && $return == 'path')
+			return $thumbpath;
+
 		$filesystem = GeographFileSystem();
 
 		if (!$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath, true)) //use_get because we about to read it anyway (for size)
 		{
 			//get path to fullsize image,
-			$fullpath=$this->_getFullpath(2); //use_get because we about to read it anyway (for imagecreatefromjpeg)
+			if (!empty($source)) {
+                                $fullpath=$this->_getOriginalpath(2, false, $source); //2 is special value, to specify filesystems $use_get function
+                        } else {
+				$fullpath=$this->_getFullpath(2); //use_get because we about to read it anyway (for imagecreatefromjpeg)
+			}
 			if ($fullpath != '/photos/error.jpg')
 			{
 				//generate resized image
@@ -1411,15 +1418,17 @@ split_timer('gridimage'); //starts the timer
 			}
 		}
 
+		if ($return == 'path')
+			return $thumbpath;
+
 		if ($thumbpath=='/photos/error.jpg')
 		{
+			if ($return == 'fullpath')
+				return $CONF['CONTENT_HOST'].$thumbpath;
 			$html="<img src=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\"/>";
 		}
 		else
 		{
-			$title=htmlentities2($this->title);
-
-			$size=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath); //todo store the size in memcache
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 			} else {
@@ -1428,6 +1437,12 @@ split_timer('gridimage'); //starts the timer
 			$return['server'] = str_replace('http://','https://',$return['server']);
 
 			$thumbpath = $return['server'].$thumbpath;
+			if ($return == 'fullpath')
+				return $thumbpath;
+
+			$title=htmlentities2($this->title);
+
+			$size=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath); //todo store the size in memcache
 
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}

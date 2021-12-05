@@ -439,7 +439,7 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
 	function _clearcache($filename) {
 		$this->statcache[$filename] = null;
 		if (!empty($this->filecache[$filename])) {
-			unlink($this->filecache[$filename]);
+			@unlink($this->filecache[$filename]);
 			unset($this->filecache[$filename]);
 		}
 	}
@@ -447,7 +447,7 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
 	function shutdown_function() {
 		if (!empty($this->filecache))
 			foreach ($this->filecache as $filename => $tmpfname)
-				unlink($tmpfname);
+				@unlink($tmpfname);
 	}
 	function register_shutdown_function() {
 		static $done = 0;
@@ -734,15 +734,14 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
         	        $tmpfname = tempnam("/tmp", $function);
 			$r = $function($img, $tmpfname, $quality, $filter);
 
-	                if (filesize($tmpfname)) //dont bother copying empty files - probably a command failure
+	                if (filesize($tmpfname)) { //dont bother copying empty files - probably a command failure
 				$this->copy($tmpfname, $original);
 
-				//todo, maybe could cach it?
-				// $this->filecache[$filename] = $tmpfname;
-				// $this->register_shutdown_function();
-
-        	        //always, delete, even if failed
-	                unlink($tmpfname);
+				$this->filecache[$filename] = $tmpfname;
+				$this->register_shutdown_function();
+			} else {
+		                unlink($tmpfname);
+			}
 			return $r;
                 } else {
                         return $function($img, $filename, $quality, $filter);
