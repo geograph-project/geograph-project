@@ -58,7 +58,7 @@ order by stack,name
 */
 
 $data = $db->getAll("
-select stack,name,label,images,length(curated_headword.description) hw
+select `group`,stack,name,label,images,length(curated_headword.description) hw
 from curated_label
  left join curated1_stat using (label)
  left join curated_headword using (label)
@@ -81,8 +81,6 @@ foreach ($data as $row) {
 	print str_repeat('&nbsp;&nbsp;&nbsp;',count($bits)+1);
 	print "<big>".htmlentities($row['name'])."</big>";
 
-	$row['group'] = 'Geography and Geology';
-	$row['group'] = $row['stack'];
 	if (empty($row['label']))
 		$row['label'] = $row['name'];
 

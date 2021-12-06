@@ -35,7 +35,6 @@ $smarty->display('_std_begin.tpl');
 	$db = GeographDatabaseConnection(true);
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-$db->Execute("USE geograph_live");
 
 print "<h2>Curated Education images</h2>";
 
