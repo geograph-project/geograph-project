@@ -87,11 +87,12 @@ foreach ($data as $row) {
 		$row['label'] = $row['name'];
 
 	//$link1 = "sample.php?label=".urlencode($row['label']);
-	$link1 = "/photoset/view.php?label=".urlencode($row['label']);
+	//$link1 = "/photoset/view.php?label=".urlencode($row['label']);
+	$link1 = "viewer.php?group=".urlencode($row['group'])."&amp;label=".urlencode($row['label']);
 	$link2 = "collecter.php?group=".urlencode($row['group'])."&amp;label=".urlencode($row['label']);
 
 	if (!empty($row['images'])) {
-		print " <a href=\"$link1\">{$row['images']} Images so far</a>";
+		print " <a href=\"$link1\"><b>{$row['images']}</b> Images so far</a>";
 	}
 
 	if ($USER->registered && $row['hw']) {
