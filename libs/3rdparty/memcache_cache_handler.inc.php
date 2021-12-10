@@ -24,16 +24,15 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	// ref to the memcache object
 	$m = $GLOBALS['memcached_res'];
 
-	$redis_scan = (!empty($m->redis)); //if has redis member, its actully redis, so we can use it for clear scans! (ultiimately instread of mysql)
-	$mysql_scan = true; //for the moment, later will be !$redis_scan ?
-
-	
 	// check memcache object
 	if (!in_array(strtolower(get_class($m)),array('multiservermemcache','memcached'))) {
 		$smarty_obj->trigger_error('cache_handler: $GLOBALS[\'memcached_res\'] is not a memcached object');
 		return false;
 	}
-	
+
+	$redis_scan = (!empty($m->redis)); //if has redis member, its actully redis, so we can use it for clear scans!
+	$mysql_scan = !$redis_scan;
+
 	// unique cache id
 	$_auto_id = $smarty_obj->_get_auto_id($cache_id,$compile_id);
 	$cache_file = substr($smarty_obj->_get_auto_filename(".",$tpl_file,$_auto_id),2);
