@@ -82,6 +82,8 @@ if (!empty($_POST)) {
 			foreach ($columns as $column => $data) {
 				if ($column == 'gridimage_id')
 					$values[] = intval($gridimage_id)." AS $column";
+				elseif ($column == 'updated')
+					$values[] = "NOW() AS $column";
 				else
 					$values[] = $column;
 			}
@@ -89,6 +91,34 @@ if (!empty($_POST)) {
 
 			print "$sql; ";
 			$db->Execute($sql);
+			print "Tags Copied = ".$db->Affected_Rows()."<hr>";
+		}
+
+##############################################
+
+	if (!empty($_POST['tagsingle']))
+		foreach ($_POST['tagsingle'] as $gridimage_id => $tags) {
+			$other = null;
+			foreach ($ids as $id)
+				if ($id != $gridimage_id)
+					$other = $id;
+			if (empty($id))
+				die("unable to find other for ".intval($gridimage_id));
+
+			$columns = $db->getAssoc("DESCRIBE gridimage_tag");
+			$values = array();
+			foreach ($columns as $column => $data) {
+				if ($column == 'gridimage_id')
+					$values[] = intval($other)." AS $column";
+				elseif ($column == 'updated')
+					$values[] = "NOW() AS $column";
+				else
+					$values[] = $column;
+			}
+			$sql = "INSERT IGNORE INTO gridimage_tag SELECT ".implode(', ',$values)." FROM gridimage_tag WHERE gridimage_id = $gridimage_id AND tag_id IN (".implode(',',array_keys($tags)).")";
+
+			print "$sql; ";
+			$db->Execute($sql) or die($db->ErrorMsg());
 			print "Tags Copied = ".$db->Affected_Rows()."<hr>";
 		}
 
@@ -239,8 +269,18 @@ Note, when rejecting one image, the tickbox on ythe other image will tick.
 			$stat = array();
 			foreach ($images as $idx => $row) {
 				if (empty($row[$key]) && $key == 'tags') {
-					print "<td><label><input type=checkbox name=\"tags[{$row['gridimage_id']}]\">Copy Tags from Other</label></td>";
+					print "<td>No Tags<br><label><input type=checkbox name=\"tags[{$row['gridimage_id']}]\">Copy ALL Tags FROM other image</label></td>";
 
+				} elseif ($key == 'tags') {
+					//we know there must be tags!
+					print "<td valign=top>Copy these tags TO other image:<br>";
+					$tags = $db->getAll("SELECT * FROM tag_public WHERE gridimage_id = {$row['gridimage_id']}");
+					foreach ($tags as $tag) {
+						if ($tag['prefix'] == 'type')
+							continue;
+						$tagtext=htmlentities(($tag['prefix']?"{$tag['prefix']}:":'').$tag['tag']);
+						print "<label><input type=checkbox name=\"tagsingle[{$row['gridimage_id']}][{$tag['tag_id']}]\">$tagtext</label><br>";
+					}
 				} elseif ($idx > 0 && $row[$key] != $images[0][$key] && $key != 'gridimage_id' && $key != 'submitted') {
 					print "<td style=background-color:pink>".htmlentities($row[$key])."</td>";
 				} else {
@@ -342,7 +382,7 @@ function moderateImage(gridimage_id, status, message)
         var url="/admin/moderation.php?gridimage_id="+gridimage_id+"&status="+status;
 
 	$('input[type=checkbox]').each(function() {
-		if (m = this.name.match(/\[(\d+)\]/)) {
+		if (this.name.indexOf('single') == -1 && m = this.name.match(/\[(\d+)\]/)) {
 			if (m[1] != gridimage_id)
 				this.checked = true;
 		}
