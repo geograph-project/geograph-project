@@ -1430,13 +1430,13 @@ split_timer('gridimage'); //starts the timer
 		else
 		{
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
+				$server= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 			} else {
-				$return['server']= $CONF['CONTENT_HOST'];
+				$server= $CONF['CONTENT_HOST'];
 			}
-			$return['server'] = str_replace('http://','https://',$return['server']);
+			$server = str_replace('http://','https://',$server);
 
-			$thumbpath = $return['server'].$thumbpath;
+			$thumbpath = $server.$thumbpath;
 			if ($return == 'fullpath')
 				return $thumbpath;
 
