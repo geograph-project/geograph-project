@@ -382,7 +382,7 @@ function moderateImage(gridimage_id, status, message)
         var url="/admin/moderation.php?gridimage_id="+gridimage_id+"&status="+status;
 
 	$('input[type=checkbox]').each(function() {
-		if (this.name.indexOf('single') == -1 && m = this.name.match(/\[(\d+)\]/)) {
+		if ( (this.name.indexOf('single') == -1) && (m = this.name.match(/\[(\d+)\]/)) ) {
 			if (m[1] != gridimage_id)
 				this.checked = true;
 		}
