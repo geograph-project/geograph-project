@@ -49,6 +49,8 @@ if (!empty($param['single'])) {
 		function test_keys($keys) {
 			global $m,$CONF;
 			foreach ($keys as $cache_file) {
+				if (strpos($cache_file,'user0^3^') !==0)
+					continue;
 				$r = $m->redis->get($CONF['template'].$cache_file);
 				print "$cache_file => ".strlen($r)." bytes\n";
 			}
@@ -68,8 +70,10 @@ print "Test 1 scanning single template\n";
                                                 $it = NULL;
                                                 $keys = array();
                                                 /* Don't ever return an empty array until we're done iterating */
+						$start = microtime(true);
                                                 $m->redis->setOption(Redis::OPT_SCAN, Redis::SCAN_RETRY);
                                                 while($keys = $m->redis->hScan($CONF['template'].'tpl'.$tpl_file, $it, "$cache_id*")) {
+							printf("hScan: %.3f (%d keys)\n",  microtime(true) - $start, @count($keys));
                                                         if (!empty($keys)) {
 								test_keys($keys);
                                                         }
@@ -79,14 +83,18 @@ print str_repeat('~',50)."\n\n";
 
 print "Test 2 listing ALL teplate\n";
 
+				$start = microtime(true);
                                 $keys = $m->redis->hGetAll($CONF['template'].'tpl'.$tpl_file); //returns key/value array
+				printf("hGetAll: %.3f (%d keys)\n",  microtime(true) - $start, @count($keys));
 				test_keys($keys);
 
 print str_repeat('~',50)."\n\n";
 
 print "Test 3 listing all prefix {$CONF['template']}pr$cache_id\n";
 
+				$start = microtime(true);
 				$keys = array_keys($m->redis->hGetAll($CONF['template'].'pr'.$cache_id));
+				printf("hGetAll: %.3f (%d keys)\n",  microtime(true) - $start, @count($keys));
 				test_keys($keys);
 
 print str_repeat('~',50)."\n\n";
