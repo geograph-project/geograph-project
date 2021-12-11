@@ -212,6 +212,8 @@ if (count($ids) == 2) {
 	//if (!empty($_GET['ignore']))
 		$crit = "1";
 
+	$redirects = $db->getOne("SELECT COUNT(*) FROM gridimage_redirect WHERE gridimage_id IN ($str)");
+
 	$images = $db->getAll($sql = "SELECT gridimage_id,
 				width,height,original_width,original_height, original_diff,
 				gi.user_id,IF(gi.realname!='',gi.realname,user.realname) AS realname,title,imageclass,'' as tags,
@@ -224,7 +226,7 @@ if (count($ids) == 2) {
 				ORDER BY gridimage_id");
 
 	if (count($images) > 1) {
-		$larger = false;
+		$larger = array();
 
 		foreach ($images as $idx => $row) {
 			$images[$idx]['tags'] = $db->getOne("SELECT GROUP_CONCAT(tag) FROM tag_public WHERE gridimage_id = {$row['gridimage_id']}");
@@ -242,6 +244,8 @@ if (count($ids) == 2) {
 							$images[$idx]['original_height'] = $image->original_height;
 						}
 					}
+			if ($row['original_width']>640)
+				$larger[$row['gridimage_id']]=1;
 		}
 ?>
 <h3>Deal with Duplicate Pairs</h3>
@@ -307,7 +311,7 @@ Note, when rejecting one image, the tickbox on ythe other image will tick.
 	                        }
 				print "</tr>";
 
-			} elseif ($key == 'original_height') {
+			} elseif ($key == 'original_height' && !empty($larger)) {
 				print "<tr>";
                                 print "<th>original</th>";
 				foreach ($images as $row) {
@@ -330,19 +334,20 @@ Note, when rejecting one image, the tickbox on ythe other image will tick.
 			}
 
 		}
-		print "<tr>";
-                print "<th></th>";
-		foreach ($images as $idx => $row) {
-			print "<td><label><input type=checkbox name=\"redirect[{$row['gridimage_id']}]\">Redirect other image to this one</label></td>";
+		if (!$redirects) {
+			print "<tr>";
+        	        print "<th></th>";
+			foreach ($images as $idx => $row) {
+				print "<td><label><input type=checkbox name=\"redirect[{$row['gridimage_id']}]\">Redirect other image to this one</label></td>";
+			}
 		}
-
 
 		print "<tr>";
                 print "<th></th>";
 		$message = "Duplicate Image";
                 foreach ($images as $idx => $row) {
 	                print "<td><a href=\"/photo/{$row['gridimage_id']}\" target=win$idx>Photo Page</a> | <a href=\"/editimage.php?id={$row['gridimage_id']}\" target=win$idx>Edit Page</a>";
-			if ($larger)
+			if (!empty($larger[$row['gridimage_id']]))
 				print " | <b><a href=\"/more.php?id={$row['gridimage_id']}\" target=win$idx>More Sizes</a></b>";
 
 			if ($row['moderation_status'] != 'rejected')
