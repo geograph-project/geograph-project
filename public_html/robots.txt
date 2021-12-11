@@ -192,5 +192,7 @@ Disallow: /
 User-agent: Screaming Frog SEO Spider
 Disallow: /
 
+User-agent: magpie-crawler
+Disallow: /
 
 Clean-param: mobile&style
