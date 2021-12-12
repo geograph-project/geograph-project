@@ -26,6 +26,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+$USER->mustHavePerm("basic"); //simple way to keep out bots for now.
+
 if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	$template='statistics_table_csv.tpl';
 	# let the browser know what's coming
@@ -40,38 +42,32 @@ $cacheid='statistics|images';
 if (!$smarty->is_cached($template, $cacheid))
 {
 	dieUnderHighLoad();
-	
-	$db = GeographDatabaseConnection(true);	
+
+	$db = GeographDatabaseConnection(true);
 
 	$title = "Geograph Images";
 
-	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	
 
-	$sql = "SELECT 
-	CONCAT(IF(moderation_status = 'geograph' AND ftf BETWEEN 1 AND 4,ELT(ftf,'first ','second ','third ','fourth '),''),moderation_status) as `Classification`, 
+	$sql = "SELECT
+	CONCAT(IF(moderation_status = 'geograph' AND ftf BETWEEN 1 AND 4,ELT(ftf,'first ','second ','third ','fourth '),''),moderation_status) as `Classification`,
 	SUM(submitted > DATE_SUB(NOW() , interval 1 HOUR)) as `In last Hour`,
 	SUM(submitted > DATE_SUB(NOW() , interval 1 DAY)) as `In last 24 Hours`,
 	SUM(submitted > DATE_SUB(NOW() , interval 7 DAY)) as `In last 7 Days`,
 	SUM(submitted > DATE_SUB(NOW() , interval 1 MONTH)) as `In last 7 Days`,
 	SUM(submitted > DATE_SUB(NOW() , interval 1 YEAR)) as `In last Year`,
 	COUNT(*) as `All Time Count`
-	FROM gridimage 
-	GROUP BY `Classification` 
+	FROM gridimage
+	GROUP BY `Classification`
 	ORDER BY ftf BETWEEN 1 AND 4 DESC, ftf ASC, moderation_status+0 DESC";
-	
-	$table = $db->CacheGetAll(3000,$sql);	
-	
+
+	$table = $db->CacheGetAll(3000,$sql);
+
 	$smarty->assign_by_ref('table', $table);
-	
+
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
-
-		
-
-} 
+}
 
 $smarty->display($template, $cacheid);
-
 
