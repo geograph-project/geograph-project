@@ -24,16 +24,13 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-
-
-
 $smarty = new GeographPage;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $template='statistics_monthlyleader.tpl';
-$cacheid=isset($_GET['month']);
+$cacheid='';
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -41,16 +38,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
-	$db = GeographDatabaseConnection(true); 
+	$db = GeographDatabaseConnection(true);
 
-	$length = isset($_GET['month'])?10:7;
-
-	$topusers=$db->GetAll("SELECT gridimage_id,SUBSTRING( submitted, 1, $length ) AS 
-submitted_month , user_id, realname, COUNT(*) as imgcount
-FROM `gridimage_search` 
-GROUP BY SUBSTRING( submitted, 1, $length ) , user_id 
-ORDER BY imgcount DESC 
+	$topusers=$db->GetAll("
+SELECT month AS submitted_month , user_id, realname, images as imgcount
+FROM user_date_stat INNER JOIN user USING (user_id)
+WHERE month != '' and type = 'submitted'
+ORDER BY images DESC
 LIMIT 150");
+
 	$month = array();
 	foreach($topusers as $idx=>$entry)
 	{
@@ -66,14 +62,12 @@ LIMIT 150");
 			$topusers[$idx]['month'] = getFormattedDate($topusers[$idx]['submitted_month']);
 		}
 	}
-	
+
 	$smarty->assign_by_ref('topusers', $topusers);
-	
+
 	//lets find some recent photos
 	new RecentImageList($smarty);
 }
 
 $smarty->display($template, $cacheid);
 
-	
-?>
