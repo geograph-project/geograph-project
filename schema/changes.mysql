@@ -2693,4 +2693,9 @@ alter table sns_message add block_cleared tinyint unsigned not null default 0;
 #################################################
 
 
+ alter table date_stat add days smallint unsigned default null after users;
+
+
+#################################################
+
 

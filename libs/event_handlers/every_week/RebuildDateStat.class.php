@@ -66,10 +66,13 @@ if ($has_table && $db->getOne("select type from date_stat where type='$column' a
 
 					$where = array();
 					//$where[] = "$column LIKE '$year-%'"; //mariadb doesnt use index for LIKE on dates
-					if ($column == 'submitted')
+					if ($column == 'submitted') {
 						$where[] = "$column BETWEEN '$year-01-01 00:00:00' AND '$year-12-31 23:59:59'";
-					else
+						$days = "SUBSTRING($column,1,10)";
+					} else {
 						$where[] = "$column BETWEEN '$year-01-01' AND '$year-12-31'";
+						$days = $column;
+					}
 
 					if ($ri)
 						$where[] = "reference_index = $ri";
@@ -90,6 +93,7 @@ if ($has_table && $db->getOne("select type from date_stat where type='$column' a
 			        count( DISTINCT SUBSTRING(grid_reference,1,3 - reference_index)) as myriads,
 			        count( DISTINCT concat(substring(grid_reference,1,3 - reference_index),substring(grid_reference,6 - reference_index,1)) ) as hectads,
 			        count( DISTINCT user_id ) AS users,
+				count( DISTINCT $days ) AS days,
 				NOW() as updated
 				FROM `gridimage_search`
 				WHERE ".implode(' AND ',$where)."
@@ -106,7 +110,7 @@ if ($has_table && $db->getOne("select type from date_stat where type='$column' a
 		}
 
 		$this->Execute("CREATE TABLE IF NOT EXISTS date_stat LIKE date_stat_tmp");
-		$this->Execute("REPLACE INTO date_stat SELECT * FROM date_stat_tmp");		
+		$this->Execute("REPLACE INTO date_stat SELECT * FROM date_stat_tmp");
 
                 $db->Execute("DO RELEASE_LOCK('".get_class($this)."')");
 

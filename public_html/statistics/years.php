@@ -25,8 +25,6 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-
-
 $smarty = new GeographPage;
 
 $smarty->caching = 2; // lifetime is per cache
@@ -58,45 +56,49 @@ if (!$smarty->is_cached($template, $cacheid))
 
         $db = GeographDatabaseConnection(true);
 
-	$column = ($date == 'submitted')?'substring(submitted, 1, 10 )':'imagetaken';  
-	
-	
-	$title = ($date == 'submitted')?'Submitted':'Taken'; 
+	$column = ($date == 'submitted')?'substring(submitted, 1, 10 )':'imagetaken';
+
+	$title = ($date == 'submitted')?'Submitted':'Taken';
 	$title = "Number of Days Images $title per Year";
 
 	$where = array();
-	
+	$where[] = 'type = '.$db->Quote(($date == 'submitted')?'submitted':'imagetaken');
+	$table = 'date_stat';
+	$where[] = "month = ''"; //only want the year group, not months
+
 	if (!empty($u)) {
+		$table = "user_date_stat";
 		$where[] = "user_id=".$u;
+
 		$smarty->assign('u', $u);
 
 		$profile=new GeographUser($u);
 		$smarty->assign_by_ref('profile', $profile);
 		$title .= " for ".($profile->realname);
-	} 
-	
-	if ($ri) {
+	} else {
 		$where[] = "reference_index = $ri";
-		$smarty->assign('ri',$ri);
-		
-		$title .= " in ".$CONF['references_all'][$ri];
-	} 
-	
-	if (count($where))
-		$where_sql = " AND ".join(' AND ',$where);
-		
-		
-	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		if ($ri) {
+			$smarty->assign('ri',$ri);
+
+			$title .= " in ".$CONF['references_all'][$ri];
+		}
+
+		$smarty->assign_by_ref('references',$CONF['references_all']);
+	}
+
+ini_set('display_errors',1);
+
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table=$db->GetAll("
-	select 
-	SUBSTRING($column,1,4) as Year,
-	count(*)/count(DISTINCT $column) as `Average Images Per Day`,
-	count(DISTINCT $column) as Days 
-	from gridimage_search 
-	where $column not like '00%' and $column not like '%-00%' $where_sql 
-	group by SUBSTRING($column,1,4)
-	order by Year desc;" );
-	
+	select
+	year as Year,
+	images as Images,
+	days as Days,
+	images/days as `Average Images Per Day`
+	from $table
+	where ".join(' AND ',$where)."
+	order by year desc" );
+
 	$thisyear = date('Y');
 	foreach ($table as $id => $row) {
 		if ($row['Year'] == 2005 && ($date == 'submitted')) {
@@ -109,14 +111,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		$table[$id]['Days in Year'] = $days;
 		$table[$id]['Percentage'] = sprintf('%.1f',$row['Days']/$days*100)."%";
 	}
-	
+
 	$smarty->assign_by_ref('table', $table);
-	
+
 	$smarty->assign("footnote","<br/>The Percentage column is the number of days in that year that we do have photos for (taking into account leap years ;)");
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
-	$smarty->assign_by_ref('references',$CONF['references_all']);	
-	
+
 	$extra = array();
 
 	foreach (array('date') as $key) {
@@ -124,7 +125,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$extra[$key] = $_GET[$key];
 		}
 	}
-	$smarty->assign_by_ref('extra',$extra);	
+	$smarty->assign_by_ref('extra',$extra);
 } else {
 	if ($u) {
 		$profile=new GeographUser($u);
@@ -136,5 +137,3 @@ $smarty->assign("filter",2);
 $smarty->assign("nosort",1);
 $smarty->display($template, $cacheid);
 
-	
-?>
