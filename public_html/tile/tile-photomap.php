@@ -94,7 +94,7 @@ function call_with_results($data) {
 ########################################################################
 ########################################################################
 
-	//setup
+	header('Access-Control-Allow-Origin: *'); //needed for Google Earth, in general Leafet etc use std <img> that ignore CORS
 
 	$im = imagecreatetruecolor(googleMapUtilityClass::TILE_SIZE,googleMapUtilityClass::TILE_SIZE);
 

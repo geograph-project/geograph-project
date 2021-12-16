@@ -100,6 +100,8 @@ if (!empty($_GET['dd'])) {
 
 ########################################################################
 
+	header('Access-Control-Allow-Origin: *'); //needed for Google Earth, in general Leafet etc use std <img> that ignore CORS
+
 	$im = imagecreate(googleMapUtilityClass::TILE_SIZE,googleMapUtilityClass::TILE_SIZE);
 
 	$bg = imagecolorallocate($im, 255, 255, 255);

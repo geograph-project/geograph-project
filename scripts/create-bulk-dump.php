@@ -21,27 +21,69 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$param = array('limit' => 10, 'skip'=>0, 'sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_dataset001');
+$param = array('limit' => 10, 'skip'=>0, 'sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_dataset001', 'v'=>0);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false); //get it from the master, just incase slave has a slightly differnt sample table!
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ######################################################################################################################################################
 
+if (empty($param['v'])) {
+	$vs = $db->getAssoc("SELECT v,COUNT(*) FROM gridimage_sample GROUP BY v HAVING COUNT(*) > 9000");
+
+	$check_http = true;
+	foreach ($vs as $v => $count) {
+		$filename = sprintf('geograph_dataset%03d',$v);
+
+		if (file_exists($param['folder'].'facets/'.$filename.'.zip')) {
+			print "#skipping $filename (Zip) [ ".intval(trim(`wc -l {$param['folder']}$filename/$filename.metadata.csv`))." lines ] [ wget https://staging.data.geograph.org.uk/facets/$filename.zip ] \n";
+			continue;
+		}
+
+		if (file_exists($param['folder'].$filename)) {
+			print "#skipping $filename (Folder) [ ".intval(trim(`wc -l {$param['folder']}$filename/$filename.metadata.csv`))." lines ]\n";
+			continue;
+		}
+
+		if ($check_http) {
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, "https://data.geograph.org.uk/datasets/$filename.zip");
+			curl_setopt($ch, CURLOPT_NOBODY, true);
+			//curl_setopt($ch, CURLOPT_VERBOSE, true);
+			curl_exec($ch);
+			$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close($ch);
+
+			if ($code == '200') {
+				print "#skipping $filename (HTTP)\n";
+				continue;
+			}
+		}
+
+		$count+=100;
+		print "php {$argv[0]} --v=$v --filename=$filename --config={$param['config']} --limit={$count}\n";
+		$check_http = false; //once found one missing, stop bothering with http
+	}
+	exit;
+}
+
+
+
+######################################################################################################################################################
+
 $filesystem = GeographFileSystem();
-$filesystem->log = true;
+//$filesystem->log = true;
 
 $data= $db->getAll("
-SELECT gridimage_id,user_id,realname,title,grid_reference,imagetaken, wgs84_lat,wgs84_long, submitted
-	, width, height, original_width
+SELECT gridimage_id,user_id,realname,title,grid_reference,imagetaken, wgs84_lat,wgs84_long
+	, date(submitted) as submitted, width, height, original_width
 FROM gridimage_sample
 	INNER JOIN gridimage_search USING (gridimage_id)
 	LEFT JOIN gridimage_size USING (gridimage_id)
-WHERE v=1
-and height < 255 and original_width > 255
+WHERE v={$param['v']}
 LIMIT {$param['limit']}");
 
 if (empty($data))
@@ -56,7 +98,7 @@ if (!is_dir($param['folder'].$param['filename'])) //create a folder to store the
 
 $h = fopen($param['folder'].$param['filename'].'/'.$param['filename'].'.metadata.csv','wb'); //we writing utf8!
 $keys = array_keys($data[0]);
-array_unshift($keys,'filename'); array_pop($keys); //remove the submited
+array_unshift($keys,'filename'); foreach(range(1,4) as $l) { array_pop($keys); } //remove not needed
 fputcsv($h,$keys);
 
 
@@ -110,6 +152,9 @@ foreach ($data as $row) {
 	$row['title'] = latin1_to_utf8($row['title']);
 	$row['realname'] = latin1_to_utf8($row['realname']);
 	unset($row['submitted']);
+	unset($row['width']);
+	unset($row['height']);
+	unset($row['original_width']);
 
 	fputcsv($h,array($sfilename)+$row);
 
@@ -124,9 +169,39 @@ foreach ($data as $row) {
 			//S3::putObject(): [ExpiredToken] The provided token has expired.
 			$filesystem = new FileSystem(); // dont use GeographFileSystem as it return the same object!
 		}
+
+		if (!empty($param['sleep']))
+			sleep($param['sleep']);
 	}
 }
 print "\n\n";
 
-print "cd {$param['folder']}{$param['filename']}\n";
-print "zip -r {$param['filename']}.zip {$param['filename']}.metadata.csv photos/ geophotos/\n";
+##################################
+
+print "cd {$param['folder']}}{$param['filename']}\n";
+	chdir("{$param['folder']}{$param['filename']}");
+print "cp -p ../LICENCE ./\n";
+	passthru("cp -p ../LICENCE ./");
+print "zip -rq {$param['filename']}.zip LICENCE {$param['filename']}.metadata.csv photos/ geophotos/\n";
+	passthru("zip -rq {$param['filename']}.zip LICENCE {$param['filename']}.metadata.csv photos/ geophotos/");
+
+##################################
+
+if ($_SERVER['CLI_HTTP_HOST'] == 'staging.geograph.org.uk') { //even if using live config
+
+	print "mv {$param['filename']}.zip ../facets/\n";
+		passthru("mv {$param['filename']}.zip ../facets/");
+	print "#--\n";
+	print "cd /mnt/efs/data/datasets\n";
+	print "wget https://staging.data.geograph.org.uk/facets/{$param['filename']}.zip\n";
+	print "#--\n";
+	print "rm ../facets/{$param['filename']}.zip\n";
+} else {
+        print "mv {$param['filename']}.zip ../datasets/\n";
+                passthru("mv {$param['filename']}.zip ../datasets/");
+}
+
+##################################
+
+print "rm {$param['folder']}{$param['filename']} -R\n";
+
