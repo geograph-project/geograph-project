@@ -28,15 +28,6 @@ require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 
-
-
-if (!empty($CONF['db_read_connect2'])) {
-        if (!empty($DSN_READ))
-                $DSN_READ = str_replace($CONF['db_read_connect'],$CONF['db_read_connect2'],$DSN_READ);
-        if (!empty($CONF['db_read_connect']))
-                $CONF['db_read_connect'] = $CONF['db_read_connect2'];
-}
-
 $images=new ImageList();
 
 ###########################################
@@ -157,7 +148,7 @@ if (!empty($_GET['tab'])) {
 		having result <= date(now())
 		limit $limit";
 
-		header("X-Query: ".preg_replace('/\s+/',' ',$lookup));
+		//header("X-Query: ".preg_replace('/\s+/',' ',$lookup));
 
 		if (empty($db)) $db = $images->_getDB(true);
 
@@ -217,7 +208,7 @@ if (!empty($_GET['tab'])) {
 		order by uses desc
                 limit $limit";
 
-                header("X-Query: ".preg_replace('/\s+/',' ',$lookup));
+  //              header("X-Query: ".preg_replace('/\s+/',' ',$lookup));
 
                 if (empty($db)) $db = $images->_getDB(true);
 
@@ -245,7 +236,7 @@ if (!empty($_GET['tab'])) {
 	where $where
 	order by $order limit $limit";
 
-	header("X-QueryFull: ".preg_replace('/\s+/',' ',$sql));
+//	header("X-QueryFull: ".preg_replace('/\s+/',' ',$sql));
 
 	$images->_getImagesBySql($sql);
 

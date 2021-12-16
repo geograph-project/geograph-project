@@ -27,8 +27,34 @@ $db = GeographDatabaseConnection(false);
 
 flush();
 
-if (!empty($_POST)) {
+if (!empty($_POST['delete'])) {
+	$t1 = intval(time()/1787);
+	$t2 = intval($_POST['e']);
+	$hash = hash_hmac('sha1',$_POST['delete'],$CONF['token_secret'].$t2);
+	if ($_POST['hash'] != $hash || abs($t1-$t2) > 3) {
+	        die("[]");
+	}
 
+	//needs to cope with either media.geograph or older nearby urls
+	$url = "/speculative/view.php?id=".intval($_POST['delete']);
+
+	$sql = "DELETE FROM geobb_posts WHERE topic_id = 12804 AND poster_id=23277 AND post_text LIKE '%$url\"%'";
+	$db->Execute($sql) or die("$sql;\n".$db->ErrorMsg()."\n\n");
+
+	if ($rows = $db->Affected_Rows()) {
+		$t = "topic_id = 12804";
+		$sql = "UPDATE geobb_topics SET topic_last_post_id = (SELECT MAX(post_id) FROM geobb_posts WHERE $t),posts_count=(SELECT COUNT(*) FROM geobb_posts WHERE $t) WHERE $t";
+		$db->Execute($sql) or die("$sql;\n".$db->ErrorMsg()."\n\n");
+
+		print "Done $rows\n";
+	} else {
+		print "None\n";
+	}
+	exit;
+}
+
+
+if (!empty($_POST['id'])) {
 	$t1 = intval(time()/1787);
 	$t2 = intval($_POST['e']);
 	$hash = hash_hmac('sha1',$_POST['id'],$CONF['token_secret'].$t2);
