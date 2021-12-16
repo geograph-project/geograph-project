@@ -72,15 +72,16 @@ $tiles = array(
         "PhotoMap" => array(
                 'url' => 'https://t0.geograph.org.uk/tile/tile-photomap.php?z=$[level]&x=$[x]&y=$[y]&match=&6=1&gbt=6',
                 'min' => 10, 'max' => 18,
-                'personalized' => '&user_id=$[user_id]',
         ),
 
-        "Scenicness" => array(
+/*        "Scenicness" => array(
                 'url' => 'https://t0.geograph.org.uk/tile/tilescenic.php?z=$[level]&x=$[x]&y=$[y]&l=1&group=auto&column=avg&text=2',
                 'min' => 16, 'max' => 20,
 		'coverage' => 'Greater London',
 		'index' => 'scenic',
         ),
+... the layer is rather too faded to show in Google Earth
+*/
 
 	"ChannelIslandsCoverage" => array(
 		'url' => 'https://www.geograph.org.gg/tile/tile-coverage.php?z=$[level]&x=$[x]&y=$[y]',
@@ -195,7 +196,8 @@ EOT;
 
 $list = array();
 foreach ($tiles as $name => $data) {
-	$list[$name] = $name;
+	if ($name != 'ChannelIslandsCoverage')
+	$list[$name] = preg_replace('/(\w)Coverage/','\1 :: Coverage',$name);
 	if (!empty($data['personalized']) && $USER->user_id) { //todo check user_stat!
 		$list["personal_$name"] = "$name :: just for ".htmlentities($USER->realname);
 	}
@@ -208,6 +210,8 @@ foreach ($tiles as $name => $data) {
 }
 
 foreach ($tiles as $name => $data) {
+	if ($name == 'ChannelIslandsCoverage')
+		$list[$name] = 'Channel Islands :: Coverage';
 	if (!empty($data['islands'])) {
 		$list["islands_$name"] = "Channel Islands :: $name";
 	}
