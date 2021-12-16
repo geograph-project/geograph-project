@@ -40,6 +40,22 @@ if ($_GET['z'] > 10)
 if ($_GET['z'] > 13)
 	$pxsize=2;
 
+if (!empty($_GET['group']) && $_GET['group'] == 'auto') {
+	switch ($_GET['z']) {
+                 case 10: $_GET['group'] =3000; break;
+                 case 11: $_GET['group'] =5000; break;
+                 case 12: $_GET['group'] =10000; break;
+                 case 13: $_GET['group'] =20000; break;
+                 case 14: $_GET['group'] =40000; break;
+                 case 15: $_GET['group'] =80000; break;
+                 case 16: $_GET['group'] =100000; break;
+                 case 17: $_GET['group'] =200000; break;
+                 case 18: $_GET['group'] =300000; break;
+                 case 19: $_GET['group'] =400000; break;
+                 case 20: $_GET['group'] =500000; break;
+	}
+}
+
 if (isset($_GET['group'])) {
 	$sizee = intval($_GET['group']);
 	$columns = array('max','min','avg');
