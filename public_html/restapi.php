@@ -553,8 +553,11 @@ class RestAPI
 		$_GET['key'] = @$this->params[2];
 
 		if (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$this->params[1],$ll)) {
-			$this->beginResponse();
 
+if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
+} else {
+			$this->beginResponse();
+}
 			//todo - we could do this directly rather than via the search engine
 			require_once('geograph/searchcriteria.class.php');
 			require_once('geograph/searchengine.class.php');
@@ -566,6 +569,14 @@ class RestAPI
 			$images = new SearchEngine($_GET['i']);
 
 			$images->Execute(1);
+
+if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
+        Profiler::render();
+	print "<br><br>Results = ".count($images->results);
+	exit;
+}
+
+
 
 			if (!empty($images->results))
 			{

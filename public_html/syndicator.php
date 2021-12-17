@@ -296,6 +296,13 @@ if (isset($sphinx)) {
 		$rss->description .= " ({$images->resultCount} in total)";
 	}
 
+
+if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
+        Profiler::render();
+       print "<br><br>Results = ".count($images->results);
+       exit;
+}
+
 	if (!empty($images->error)) {
 
 		$item = new FeedItem();
