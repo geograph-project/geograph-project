@@ -2699,3 +2699,23 @@ alter table sns_message add block_cleared tinyint unsigned not null default 0;
 #################################################
 
 
+CREATE TABLE `rate_limiting_log` (
+  `mkey` varchar(64) not null unique key,
+  `slug` varchar(20) NOT NULL,
+  `counter` smallint unsigned default 0,
+  `php_self` varchar(128) NOT NULL,
+  `request_time` int unsigned not null,
+  `ts` timestamp NOT NULL DEFAULT current_timestamp(),
+  `ipaddr` varbinary(16) NOT NULL,
+  `referer` varchar(255) NOT NULL,
+  `useragent` varchar(255) NOT NULL,
+  `session` varchar(32) NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+
+#################################################
+
+
+

@@ -35,6 +35,8 @@ if (empty($_GET['gravity']))
 if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOST'],'t0.') !== FALSE) {
 	customExpiresHeader(3600*24*180,true,true);
 
+	rate_limiting('stamped');
+
 		$image=new GridImage();
 		$ok = $image->loadFromId(intval($_GET['id']));
 
@@ -54,6 +56,8 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 		}
 } else {
 	init_session();
+
+	rate_limiting('stamp.php');
 
 	$smarty = new GeographPage;
 

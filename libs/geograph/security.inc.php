@@ -35,6 +35,53 @@
 * @version $Revision: 8848 $
 */
 
+
+function rate_limiting($slug, $per_minute = 5) {
+	global $USER, $memcache;
+
+	if (empty($memcache) || empty($memcache->redis)) //for now only do if have redis, although we could possibly do this with memcache directly
+		return;
+
+	if (!empty($USER) && $USER->user_id)
+		$per_minute *= 2;
+
+	//todo, this should probably use IP! and/or session/user_id
+	$mkey = 'rate:'.$memcache->prefix.md5($slug.'.'.$_SERVER['HTTP_USER_AGENT']).':'.date('i');
+
+	$counter = $memcache->redis->incr($mkey);
+	$memcache->redis->expire($mkey, 59); //always need to expire!
+
+	if ($counter > $per_minute) {
+		//todo
+		//header(439 too many requests)
+		//if (user_id|session) show_capacha?
+
+		//for now just log it!
+		global $db;
+
+		if (empty($db) || !empty($db->readonly))
+			$db = GeographDatabaseConnection(false);
+
+		$ins = "INSERT INTO rate_limiting_log SET
+		mkey = ".$db->Quote($mkey).",
+	        slug = ".$db->Quote($slug).",
+	        counter = ".intval($counter).",
+	        php_self = ".$db->Quote($_SERVER['REQUEST_URI']).",
+		request_time = ".intval($_SERVER['REQUEST_TIME']).",
+	        ipaddr = INET6_ATON('".getRemoteIP()."'),
+	        referer = ".$db->Quote($_SERVER['HTTP_REFERER']).",
+	        useragent = ".$db->Quote($_SERVER['HTTP_USER_AGENT']).",
+	        session = ".$db->Quote(session_id())."
+
+		ON DUPLICATE KEY UPDATE counter = ".intval($counter); //so we only keep one log line per minute!
+ini_set('display_errors',1);
+		$db->Execute($ins);
+	}
+}
+
+
+
+
 function inEmptyRequestInt($key,$def = 0) {
 	return (!empty($_REQUEST[$key]))?intval($_REQUEST[$key]):$def;
 }

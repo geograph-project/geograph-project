@@ -25,6 +25,8 @@ require_once('geograph/global.inc.php');
 
 init_session();
 
+rate_limiting('more.php');
+
 $smarty = new GeographPage;
 $template='more.tpl';
 

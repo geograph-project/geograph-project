@@ -30,6 +30,9 @@ if (@$_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter") {
 }
 
 require_once('geograph/global.inc.php');
+
+rate_limiting('restapi.php');
+
 require_once('geograph/gridimage.class.php');
 require_once('geograph/imagelist.class.php');
 require_once('geograph/gridsquare.class.php');

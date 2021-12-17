@@ -39,12 +39,12 @@ if (empty($_GET['key']))
 
 require_once('geograph/global.inc.php');
 
+rate_limiting('syndicator.php');
+
 //if (empty($_GET['format']) && strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot')!==FALSE) {
 //	//lets start moving search engine bots. but Sitemaps use format=ATOM, so exclude them!
 //	pageMustBeHTTP();
 //}
-
-
 
 require_once('geograph/feedcreator.class.php');
 require_once('geograph/gridimage.class.php');

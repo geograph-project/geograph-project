@@ -32,6 +32,8 @@ require_once('geograph/global.inc.php');
 session_cache_limiter('none');
 init_session();
 
+rate_limiting('reuse.php');
+
 $smarty = new GeographPage;
 $template='reuse.tpl';
 
