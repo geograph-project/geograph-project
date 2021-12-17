@@ -60,7 +60,7 @@ $count = $a = 0;
 #######################################################################
 
 
-if ($param['source'] == 'myriads') {
+if ($param['source'] == 'hectads') {
 	//even using gridprefix, results in myriads with 200k photos, so lets use hectads,
 	//  x/y are set with MIN(), so might not be the technical orgin, but is gareneteed to contain the images, just might do some squares multiple times
 	$prefixes = $db_read->GetAll('SELECT hectad AS prefix, x as origin_x, y as origin_y, 10 as width, 10 as height FROM hectad_stat WHERE images>0 LIMIT '.$param['limit']);
