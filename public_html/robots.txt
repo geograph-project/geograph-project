@@ -195,4 +195,13 @@ Disallow: /
 User-agent: magpie-crawler
 Disallow: /
 
+User-agent: DataForSeoBot
+Disallow: /
+Allow: /$
+Allow: /photo/
+Allow: /article/
+Allow: /profile/
+Disallow: /article/*.php
+Disallow: /profile/*/feed/
+
 Clean-param: mobile&style
