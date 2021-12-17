@@ -178,7 +178,7 @@ print "\n\n";
 
 ##################################
 
-print "cd {$param['folder']}}{$param['filename']}\n";
+print "cd {$param['folder']}{$param['filename']}\n";
 	chdir("{$param['folder']}{$param['filename']}");
 print "cp -p ../LICENCE ./\n";
 	passthru("cp -p ../LICENCE ./");
