@@ -25,6 +25,7 @@
 $param=array(
 	'debug' => false,
 	'interval' => "72 hour",
+	'repair' => false,
 );
 
 chdir(__DIR__);
@@ -48,13 +49,20 @@ $db_write->Execute("INSERT INTO event_log SET
 
 $a = array();
 
+if (!empty($param['repair'])) {
+	//work on the table created from create_tpoint-dummy.php
+	$grs = $db_read->getCol("select distinct grid_reference from tpoints_check where length(grid_reference) > 4");
 
+} else {
 	//$grs = $db_read->getCol("select grid_reference from gridimage_search where upd_timestamp >
 	//	date_sub(now(),interval {$param['interval']}) group by grid_reference order by null");
 
 	// using gridsquare is even better, as it only updates when images in square change, rather than small changes to title etc
 	$grs = $db_read->getCol("select grid_reference from gridsquare where last_timestamp >
 		date_sub(now(),interval {$param['interval']})");
+}
+
+############################################
 
 	$sql = "SELECT gridimage_id,grid_reference,TO_DAYS(REPLACE(imagetaken,'-00','-01')) AS days, points
 		FROM gridimage_search WHERE imagetaken NOT LIKE '0000%'
@@ -82,9 +90,11 @@ $a = array();
 			if ($last && $affected) {
 				//we actully need to update the timestamp, as we've updated the points in square. Ideally we could actully update a tpoint count here too!
 					//we need to update gridsquare.last_timestamp so things that depend on it update (like user_gridsquare!)
-				$db_write->Execute($sql = "UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'");
+				$sql = "UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'";
 				if ($param['debug'])
 					print "$sql;\n";
+				else
+					$db_write->Execute($sql);
 			}
 			//start fresh for a new square
 			$buckets = array();
@@ -92,16 +102,23 @@ $a = array();
 				print " == $square\n";
 
 			//the main query can clear any geographs, need to clear non geos.
-			$db_write->Execute($sql = "UPDATE gridimage_search SET points = '',upd_timestamp=upd_timestamp WHERE grid_reference = '$square' and moderation_status !='geograph' AND points = 'tpoint'");
-			$affected = $db_write->Affected_Rows();
-			if ($param['debug'])
-				print "$sql; $affected affected\n";
+			$sql = "UPDATE gridimage_search SET points = '',upd_timestamp=upd_timestamp WHERE grid_reference = '$square' and moderation_status !='geograph' AND points = 'tpoint'";
+			if ($param['debug']) {
+				$affected = $db_read->getOne("SELECT COUNT(*) FROM gridimage_search WHERE grid_reference = '$square' and moderation_status !='geograph' AND points = 'tpoint'");
+				if ($affected)
+					print "$sql; #$affected affected\n";
+			} else {
+				$db_write->Execute($sql);
+				$affected = $db_write->Affected_Rows();
+			}
 
 			if ($affected) {
-				$gridsquare_id = $db->getOne("SELECT gridsquare_id FROM gridsquare WHERE grid_reference = '$square'");
-				$db_write->Execute($sql = "UPDATE gridimage SET points = '',upd_timestamp=upd_timestamp WHERE gridsquare_id=$gridsquare_id and moderation_status !='geograph' AND points = 'tpoint'");
+				$gridsquare_id = $db_read->getOne("SELECT gridsquare_id FROM gridsquare WHERE grid_reference = '$square'");
+				$sql = "UPDATE gridimage SET points = '',upd_timestamp=upd_timestamp WHERE gridsquare_id=$gridsquare_id and moderation_status !='geograph' AND points = 'tpoint'";
 				if ($param['debug'])
 					print "$sql;\n";
+				else
+					$db_write->Execute($sql);
 			}
 
 			$last = $square;
@@ -148,9 +165,11 @@ $a = array();
 	$recordSet->Close();
 
 	if ($last && $affected) {
-		$db_write->Execute($sql = "UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'");
+		$sql = "UPDATE gridsquare SET last_timestamp = NOW() WHERE grid_reference = '$last'";
 		if ($param['debug'])
 			print "$sql;\n";
+		else
+			$db_write->Execute($sql);
 	}
 
 	if ($param['debug'])
