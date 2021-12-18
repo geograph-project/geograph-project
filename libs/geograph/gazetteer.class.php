@@ -557,11 +557,11 @@ split_timer('gazetteer'); //starts the timer
 		} else {
 			$limit = (strlen($placename) > 3)?60:20;
 			$limi2 = 40;
-			if ($USER->registered) {
+			if (!empty($USER) && $USER->registered) {
 				$limit *= 2;
 				$limi2 *= 2;
 			}
-			
+
 			//starts with (both gaz's)
 			$places = $db->GetAll($sql = "
 			(select
