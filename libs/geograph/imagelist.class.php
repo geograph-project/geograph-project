@@ -280,7 +280,7 @@ split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 	}
 
 
-	function getImagesBySphinxQL($sql,$new = true, $query = null) {
+	function getImagesBySphinxQL($sql,$new = true, $query = null, $tags_as_array = true) {
 		$sph = GeographSphinxConnection('sphinxql', $new);
 
 		if (!is_null($query) && stripos($sql,'MATCH(?)') !== FALSE) // we offer to do the quoting, as we have the sphinxQL connection!
@@ -294,12 +294,40 @@ split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 		{
 			$this->images[$i]=new GridImage;
 			$row = $recordSet->fields;
+
 			$row['gridimage_id'] = $row['id'];
+			$row['title'] = utf8_to_latin1($row['title']);
 			if (!empty($row['takenday'])) //20040629
 				$row['imagetaken'] = preg_replace('/(\d{4})(\d{2})(\d{2})/','$1-$2-$3',$row['takenday']);
+			if (!empty($row['wgs84_lat'])) {
+				$row['wgs84_lat'] = rad2deg($row['wgs84_lat']);
+				$row['wgs84_long'] = rad2deg($row['wgs84_long']);
+			}
+			if (!empty($row['submitted']))
+				$row['submitted'] = date('Y-m-d H:i:s',$row['submitted']);
+			if (!empty($row['scenti']))
+				$row['reference_index'] = substr($row['scenti'],0,1);
+			if (!empty($row['status']))
+				$row['moderation_status'] = str_replace('supplemental','accepted', $row['status']);
+
 			$this->images[$i]->fastInit($row);
+
 			if (!empty($this->images[$i]->tags) && is_string($this->images[$i]->tags))
-		                $this->images[$i]->tags = array_filter(array_map(explode("_SEP_",$this->images[$i]->tags),'trim'));
+		                $this->images[$i]->tags = array_filter(array_map('trim',explode("_SEP_",$this->images[$i]->tags)));
+			else
+				$this->images[$i]->tags = array();
+			if (!empty($this->images[$i]->subjects) && is_string($this->images[$i]->subjects))
+				foreach (array_filter(array_map('trim',explode("_SEP_",$this->images[$i]->subjects))) as $tag)
+					$this->images[$i]->tags[] = 'subject:'.$tag;
+			if (!empty($this->images[$i]->contexts) && is_string($this->images[$i]->contexts))
+				foreach (array_filter(array_map('trim',explode("_SEP_",$this->images[$i]->contexts))) as $tag)
+					$this->images[$i]->tags[] = 'top:'.$tag;
+			if (!$tags_as_array)
+				$this->images[$i]->tags = implode('?',$this->images[$i]->tags);
+
+			if (!empty($row['geodist']) && $row['geodist'] > 100)
+				$this->images[$i]->dist_string = sprintf("Dist:%.1fkm", $row['geodist']/1000); //provided in meters
+
 			$recordSet->MoveNext();
 			$i++;
 		}
@@ -310,6 +338,76 @@ split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 	}
 
 
+	/**
+	* this is a designed to emulate searchenginebuilder->buildSimpleQuery(), mainly for use by API functions, which run a build a search and immdeaially run it!
+	* althoough ntoably it only lat/long queries at moment - todo!
+	* .. so its like Execute has been run!
+	*/
+	function buildSimpleQuery($q = '',$distance = 10,$autoredirect='auto',$userlimit = 0) {
+
+		$limit = 15;
+		if (!empty($_GET['perpage']))
+			$limit = min(100,intval($_GET['perpage']));
+
+		//these are all the columns getImagesBySphinxQL needs to emulate gridimage_search rows
+		// notably credit_realname is missing, so we gridimage.profile_link wont include the credit!
+		$cols = "id,title,realname,user_id,grid_reference,takenday,submitted,imageclass,scenti,tags,subjects,contexts,status,wgs84_lat,wgs84_long";
+
+		if (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll)) {
+
+			$lat = $ll[1];
+			$long = $ll[2];
+
+			require_once('3rdparty/facet-functions.php');
+			require_once('geograph/conversions.class.php');
+
+       			$where  = array();
+		        if (!empty($userlimit))
+       			        $where[] = "user_id = ".intval($userlimit);
+
+			if ($distance == 1) { //searchengine has a weird legacy feature if distance=1, then just do in 'in same square'. So emulate that!
+				$where[] = "MATCH(?)"; $query = geotiles($lat,$long,0.1); //quoted automatically later - just gets a 'grid_reference' filter
+
+	        		$sql = "SELECT $cols
+                		FROM sample8
+		                WHERE ".implode(" AND ",$where)."
+        		        ORDER BY id DESC
+                		LIMIT $limit
+	                	OPTION ranker=none";
+			} else {
+			        $prefix = 'wgs84_';
+	        		$where[] = "MATCH(?)"; $query = geotiles($lat,$long,$distance*1000); //quoted automatically later
+	        		$where[] = "geodist < ".floatval($distance)*1000;
+
+	        		$sql = "SELECT $cols, geodist({$prefix}lat,{$prefix}long,".deg2rad($lat).','.deg2rad($long).") as geodist
+                		FROM sample8
+		                WHERE ".implode(" AND ",$where)."
+        		        ORDER BY geodist ASC, id ASC
+                		LIMIT $limit
+	                	OPTION max_query_time = 10000";
+			}
+		} else {
+			$sql = "SELECT $cols
+			FROM sample8
+        	        WHERE id = 5403392 ORDER BY takenday DESC, realname ASC, id DESC LIMIT $limit";
+			$query = 'test';
+		}
+
+if (!empty($_GET['debug'])) {
+	print "$sql;<hr>";
+	print "$query<hr>";
+}
+
+		$this->getImagesBySphinxQL($sql, true, $query, false); //tags_as_array=false, because most imagelist functions returns tags as array, but serach engine still provided string
+
+		//provide the same API that SearchEngine has after calling Execute
+		$this->resultCount = $this->meta['total_found'];
+		$this->numberOfPages = ceil($this->meta['total']/$limit);
+		$this->criteria = new ImageList(); //we just want a fake class we can add some members to!
+		$this->criteria->resultsperpage = $limit;
+		$this->criteria->searchdesc = ", matching query";
+		$this->results = &$this->images;
+	}
 
 	/**
 	* get image list based on supplied sql...

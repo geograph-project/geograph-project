@@ -558,17 +558,32 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 } else {
 			$this->beginResponse();
 }
-			//todo - we could do this directly rather than via the search engine
-			require_once('geograph/searchcriteria.class.php');
-			require_once('geograph/searchengine.class.php');
 
-			$engine = new SearchEngineBuilder('#');
-			$engine->searchuse = "syndicator";
-			$_GET['i'] = $engine->buildSimpleQuery($this->params[1],floatval($this->params[0]),false,isset($_GET['u'])?$_GET['u']:0);
+			if (!empty($_GET['limit']))
+				$_GET['perpage'] = intval($_GET['limit']); //perpage param is hardcoded inside buildSimpleQuery!
 
-			$images = new SearchEngine($_GET['i']);
 
-			$images->Execute(1);
+			if (!empty($_GET['new'])) {
+	                        require_once('geograph/imagelist.class.php');
+        	                $images = new ImageList();
+
+				//this is a designed to emulate searchenginebuilder->buildSimpleQuery() - but MUCH more lightweight
+                	        $images->buildSimpleQuery($this->params[1],floatval($this->params[0]),false,isset($_GET['u'])?$_GET['u']:0);
+				//its both build and execute, so engine->Execute(1) is **already** run!
+
+			} else {
+				//old version, using 'inefficnent' method via the search engine
+				require_once('geograph/searchcriteria.class.php');
+				require_once('geograph/searchengine.class.php');
+
+				$engine = new SearchEngineBuilder('#');
+				$engine->searchuse = "syndicator";
+				$_GET['i'] = $engine->buildSimpleQuery($this->params[1],floatval($this->params[0]),false,isset($_GET['u'])?$_GET['u']:0);
+
+				$images = new SearchEngine($_GET['i']);
+
+				$images->Execute(1);
+			}
 
 if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
         Profiler::render();
@@ -577,33 +592,31 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 }
 
 
-
 			if (!empty($images->results))
 			{
-				$images =& $images->results;
-				$count = count($images);
+				$count = count($images->results);
 
 				if ($this->output=='json') {
 					require_once '3rdparty/JSON.php';
 
 					$whitelist = array('image'=>1, 'thumbnail'=>1, 'gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1,'wgs84_lat'=>1,'wgs84_long'=>1);
 
-					foreach ($images as $i => $image) {
-						$images[$i]->image = $image->_getFullpath(true,true);
-						$images[$i]->thumbnail = $image->getThumbnail(120,120,true);
+					foreach ($images->results as $i => &$image) {
+						$image->image = $image->_getFullpath(true,true);
+						$image->thumbnail = $image->getThumbnail(120,120,true);
+						//todo, title should eb converted to utf8?
 
 						//do this last so dont remove anything needed by above functions
 						foreach ($image as $k => $v) {
 							if (empty($v) || empty($whitelist[$k])) {
-								unset($images[$i]->$k);
+								unset($image->$k);
 							}
 						}
 					}
-					print json_encode($images);
+					print json_encode($images->results);
 				} else {
-					echo '<status state="ok" count="'.$count.'" total="'.$images->resultCount.'"/>';
-
-					foreach ($images as $i => $image) {
+					echo '<status state="ok" count="'.$count.'" total="'.($images->resultCount).'"/>';
+					foreach ($images->results as $i => $image) {
 						if ($image->moderation_status=='geograph' || $image->moderation_status=='accepted')
 						{
 							echo " <image url=\"{$CONF['CONTENT_HOST']}/photo/{$image->gridimage_id}\">";

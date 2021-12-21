@@ -214,10 +214,17 @@ if ($CONF['template'] == 'api') {
 }
 $baselink = $rss->link;
 
+###################################################################
+
+/**
+ * A nearby query no longer done via search engine
+ */
+if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && empty($_GET['groupby']) && !empty($_GET['new'])) {
+
 /**
  * Create a query the first time round!
  */
-if (isset($q)) {
+} elseif (isset($q)) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
@@ -246,12 +253,31 @@ if (isset($q)) {
 	}
 }
 
+###################################################################
+
+/**
+ * run a streamlined 'nearby' query
+ */
+if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && empty($_GET['groupby']) && !empty($_GET['new'])) {
+
+	$rss->description = "Images Nearby";
+
+        require_once('geograph/imagelist.class.php');
+        $images = new ImageList();
+
+        //this is a designed to emulate searchenginebuilder->buildSimpleQuery() - but MUCH more lightweight
+        $images->buildSimpleQuery($q,!empty($_GET['distance'])?min(20,floatval($_GET['distance'])):$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
+        //its both build and execute, so engine->Execute(1) is **already** run!
+
+	if ($images->resultCount) {
+		$rss->description .= " ({$images->resultCount} in total)";
+	}
 
 /**
  * A full-text query
  */
-if (isset($sphinx)) {
-	$rss->description = "Images, matching ".$sphinx->qoutput; 
+} elseif (isset($sphinx)) {
+	$rss->description = "Images, matching ".$sphinx->qoutput;
 	if ($sphinx->resultCount) {
 		$rss->description .= " ({$sphinx->resultCount} in total)";
 	}
@@ -365,6 +391,7 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 	$images=new ImageList(array('accepted', 'geograph'), 'gridimage_id desc', 15);
 }
 
+###################################################################
 
 $cnt=empty($images->images)?0:count($images->images);
 
@@ -460,7 +487,7 @@ $rss->saveFeed($format, $rssfile);
  */
 function getTextKey() {
 	$t = '';
-	foreach (array('text','q','location','BBOX','lat','lon','u','perpage','distance','orderby','groupby') as $k) {
+	foreach (array('text','q','location','BBOX','lat','lon','u','perpage','distance','orderby','groupby','new') as $k) {
 		$t .= "|".(empty($_GET[$k])?'':$_GET[$k]);
 	}
 	return md5($t);
