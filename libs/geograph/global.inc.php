@@ -32,7 +32,10 @@
 */
 
 if (isset($_SERVER['HTTP_USER_AGENT'])) {
-	if (strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE) {
+	if (strpos($_SERVER['REQUEST_URI'],'log4shell')!==FALSE) {
+                header("HTTP/1.0 503 Service Unavailable");
+                exit;
+        } elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE) {
 		header("HTTP/1.0 503 Service Unavailable");
 		exit;
 	} elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'mj12bot')!==FALSE) {
