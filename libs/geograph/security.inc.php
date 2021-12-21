@@ -36,17 +36,23 @@
 */
 
 
-function rate_limiting($slug, $per_minute = 5) {
+function rate_limiting($slug, $per_minute = 5, $enforce = false) {
 	global $USER, $memcache;
 
 	if (empty($memcache) || empty($memcache->redis)) //for now only do if have redis, although we could possibly do this with memcache directly
 		return;
 
+	if (!empty($_GET['size']) && $_GET['size'] == 'largest')
+		$enforce = false; //for now allow wikimedia to do their bulk transfer
+
+	if (strpos($_SERVER['HTTP_USER_AGENT'],'MediaWiki') === 0)
+		$enforce = false; //and allow wikipedia 'one off' transfers
+
 	if (!empty($USER) && $USER->user_id)
 		$per_minute *= 2;
 
 	//todo, this should probably use IP! and/or session/user_id
-	$mkey = 'rate:'.$memcache->prefix.md5($slug.'.'.$_SERVER['HTTP_USER_AGENT']).':'.date('i');
+	$mkey = 'rate:'.$memcache->prefix.md5($slug.'.'.getRemoteIP().'@'.$_SERVER['HTTP_USER_AGENT']).':'.date('i');
 
 	$counter = $memcache->redis->incr($mkey);
 	$memcache->redis->expire($mkey, 59); //always need to expire!
@@ -55,6 +61,7 @@ function rate_limiting($slug, $per_minute = 5) {
 		//todo
 		//header(439 too many requests)
 		//if (user_id|session) show_capacha?
+
 
 		//for now just log it!
 		global $db;
@@ -74,8 +81,14 @@ function rate_limiting($slug, $per_minute = 5) {
 	        session = ".$db->Quote(session_id())."
 
 		ON DUPLICATE KEY UPDATE counter = ".intval($counter); //so we only keep one log line per minute!
-ini_set('display_errors',1);
+
 		$db->Execute($ins);
+
+		if ($enforce) {
+			header("HTTP/1.0 429 Too Many Requests");
+			print "Too Many Requests. Please slow down.";
+			exit;
+		}
 	}
 }
 

@@ -1,0 +1,4 @@
+<?
+
+echo filemtime("../templates")."\n";
+

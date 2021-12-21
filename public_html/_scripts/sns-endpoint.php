@@ -26,6 +26,7 @@ require_once('geograph/global.inc.php');
 
 function failed($message) {
 	header("HTTP/1.0 500 Server Error");
+	trigger_error("sns:$message", E_USER_WARNING);
 	die($message);
 }
 
@@ -75,7 +76,7 @@ function store_everything($table,$values) {
                 $sql .= " KEY(`REQUEST_TIME`) ) ENGINE=myisam"; $sep = ",";
         }
         if (!empty($sep)) //at least one column added!
-	        $db->Execute($sql) or failed("$sql;\n<hr>\n".$db->ErrorMsg()."\n");
+	        $db->Execute($sql) or failed("$sql;\n<hr>\n".$db->ErrorMsg()."\n".implode(',',$keys));
 
 
 

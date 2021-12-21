@@ -21,11 +21,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (strpos($_SERVER['HTTP_USER_AGENT'],'ms-office') !== FALSE) {
+	header("HTTP/1.0 429 Too Many Requests");
+	print "Too Many Requests.";
+	exit;
+}
+
 require_once('geograph/global.inc.php');
 
 init_session();
 
-rate_limiting('more.php');
+rate_limiting('more.php', 5, true);
 
 $smarty = new GeographPage;
 $template='more.tpl';
