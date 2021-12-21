@@ -20,8 +20,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$param = array('debug'=>0, 'stream' => 'stdout', 'limit' => 5000, 'date' => '', 'diff'=>'hour', 'hours'=>0, //these are handled by wrapper
- 'string'=>''); //custom params for this script
+$param = array('debug'=>0, 'stream' => 'stdout', 'limit' => 5000, 'date' => '', 'diff'=>'hour', 'hours'=>0, 'minutes'=>0, 'bot'=>1, //these are handled by wrapper
+ 'string'=>'', 'status'=>false, 'count'=>10, 'dump'=>false); //custom params for this script
 
 chdir(__DIR__);
 require "./_loki-wrapper.inc.php";
@@ -33,11 +33,16 @@ require "./_loki-wrapper.inc.php";
 //status!="302" | status!="304" | status!="307" | status!="204"'; todo, for some reason | status>=400 doesnt work (as status seems to be string, not a number, cant do range filters)
 
 $skip = array(200,301,302,304,307,204,405);
-$pattern = 'pattern `<_> - <_> <_> "<_> <path> <_>" "<_>" <status> <_> "<_>" "<_>"`';
+$pattern = 'pattern `<_> - <_> <_> "<_> <path> <_>" "<_>" <status> <_> "<_>" "<agent>"`';
 
 $query = $CONF['loki_query']." | $pattern";
-foreach ($skip as $id)
-	$query .= " | status!=\"$id\"";
+if (!empty($param['status'])) {
+	if (is_numeric($param['status']))
+		$query .= " | status=\"{$param['status']}\"";
+} else {
+	foreach ($skip as $id)
+		$query .= " | status!=\"$id\"";
+}
 
 if (!empty($param['string'])) {
 	$query .= " |= \"".addslashes($param['string'])."\"";
@@ -48,12 +53,20 @@ if (!empty($param['string'])) {
 $generator = getlogs($query, $fp = null, $param['limit'], $start, $end);
 
 $stat = array();
+$requests = $bytes = 0;
 foreach ($generator as $line) {
-	if (preg_match('/^([^ ]+) .* "([A-Z]+) (\/.*?) HTTP\/(\d\.\d)" "(\w+\.[\w\.]+)" (\d+) (\d+) "(.*?)" "(.*?)"/',$line,$m)) {
-	//		   1            2         3           4            5            6     7     8       9
+		//[17/Dec/2021:13:21:34 +0000]
+	if (preg_match('/^([^ ]+) .*\/\d{4}:(\d{2}:\d{2}:\d{2}) .* "[A-Z]+ (\/.*?) HTTP\/(\d\.\d)" "(\w+\.[\w\.]+)" (\d+) (\d+) "(.*?)" "(.*?)"( \d+\.\d+)?/',$line,$m)) {
+	//		   1                    2                              3           4            5            6     7     8       9          10
 
-		if (!empty($param['string'])) {
-			print "{$m[1]} {$m[3]} {$m[6]} \"{$m[8]}\" \"{$m[9]}\"\n";
+		$bytes+=$m[7]; $requests++;
+		if (!empty($param['dump'])) {
+			//timestamp at start for easy sorting!
+
+			$m[9] = str_replace(" (KHTML, like Gecko)",'',$m[9]);
+			$m[9] = preg_replace('/\/\d+\.[\d\.]+/','',$m[9]);
+
+			print "{$m[2]} {$m[1]} {$m[6]} {$m[3]} {$m[7]} \"{$m[8]}\" \"{$m[9]}\"{$m[10]}\n";
 			continue;
 		}
 
@@ -61,6 +74,9 @@ foreach ($generator as $line) {
 		@$stat[$m[6]]['url:'.$m[3]]++;
 		@$stat[$m[6]]['ref:'.$m[8]]++;
 		@$stat[$m[6]]['ua:'.$m[9]]++;
+		if (preg_match('/^\/(\w+[\.\w]+)/',$m[3],$mm))
+			@$stat[$m[6]]['slug:'.$mm[1]]++;
+
 	}
 
  //   echo "$line\n";exit;
@@ -68,12 +84,15 @@ foreach ($generator as $line) {
 
 foreach ($stat as $status => $data) {
 	arsort($data);
-	if (count($data) > 10)
-		$data = array_slice($data,0,10,true);
+	if (count($data) > $param['count'])
+		$data = array_slice($data,0,$param['count'],true);
 	print str_repeat("$status ",10)."\n";
-	foreach ($data as $key => $value)
+	foreach ($data as $key => $value) {
+		if (preg_match('/ip:(\d+\.\d+\.\d+.\d+)$/',$key,$m)) //just last minute, after agregation, not on each log line!
+			$key .= " host:".gethostbyaddr($m[1]);
 		printf("%4d. %s\n",$value,$key);
-
-	print "\n\n";
+	}
+	print "\n";
 }
 
+print "requests = ".number_format($requests,0).", bytes = ".number_format($bytes,0)."\n\n";

@@ -21,6 +21,13 @@ if (!empty($param['hours'])) {
         $start = $start.'000000000';  //as a nanosecond Unix epoch.
         $end = null; //now
 
+//minutes
+} elseif (!empty($param['minutes'])) {
+        $start = strtotime("-{$param['minutes']} minute");
+
+        $start = $start.'000000000';  //as a nanosecond Unix epoch.
+        $end = null; //now
+
 //a single day
 } elseif (!empty($param['date'])) {
         $start = strtotime($param['date']);
@@ -46,6 +53,13 @@ if (!empty($param['start'])) {
 
 function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) {
 	global $server, $param, $CONF;
+
+	if (empty($param['bot'])) {
+		$query .= ' != "Googlebot"';
+		$query .= ' != "bingbot/2.0"';
+		$query .= ' != "archive.org_bot"';
+		$query .= ' != "size=largest"'; //this is a special param that only wikimedia know about
+	}
 
 	//get the access_log, nginx container at least, access on stdout, and error on stderr!
 	//$query .= ' | json | stream="stdout"';
