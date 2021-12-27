@@ -91,6 +91,10 @@ if (!empty($USER->registered) && !empty($_GET['snippet_id']) && !empty($_GET['gr
 				//clear any caches involving this photo
 				$ab=floor($gid/10000);
 				$smarty->clear_cache(null, "img$ab|{$gid}");
+
+				$smarty->clear_cache("snippet.tpl", $gid);
+
+				$memcache->name_delete('sd', $gid);
 			}
 		}
 	}
