@@ -1819,9 +1819,9 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 
 				imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
 
-				$lines[] = "<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$image->gridimage_id}\" title=\"".htmlentities2("{$image->grid_reference} : {$image->title} by {$image->realname}")."\">";
+				$lines[] = "<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$gridimage->gridimage_id}\" title=\"".htmlentities2("{$gridimage->grid_reference} : {$gridimage->title} by {$gridimage->realname}")."\">";
 			}
-			$usercount[$image->realname]++;
+			$usercount[$gridimage->realname]++;
 			$recordSet->MoveNext();
 		}
 		if (!empty($recordSet))
@@ -1831,7 +1831,7 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 		fwrite($imagemap,"</map>\n");
 		fclose($imagemap);
 
-		$h = fopen("imagemap.csv",'w');
+		$h = fopen("$root$target.csv",'w');
 		foreach ($usercount as $user => $uses) {
 			fwrite($h,"$user,$uses\n");
 		}
