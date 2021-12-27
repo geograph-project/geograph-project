@@ -1683,15 +1683,15 @@ split_timer('map'); //starts the timer
 			}
 
 			imagedestroy($img);
-			
+
 split_timer('map','_renderDateImage',$target); //logs the wall time
-	
+
 			return $ok;
 		} else {
 			return false;
 		}
 	}
-	
+
 	/**
 	* render the the special Random Thumbnail Map (in its many variations)
 	* @access private
@@ -1700,7 +1700,7 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 	{
 		global $CONF;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
-		
+
 		//first of all, generate or pull in a cached based map
 		$basemap=$this->getBaseMapFilename();
 		if ($this->caching && @file_exists($root.$basemap))
@@ -1713,15 +1713,15 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 			//we need to generate a basemap
 			$img=&$this->_createBasemap($root.$basemap);
 		}
-		
+
 		$target=$this->getImageFilename();
-		
+
 		$colMarker=imagecolorallocate($img, 255,0,0);
 		$colBorder=imagecolorallocate($img, 255,255,255);
-		
+
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB(true);
-		
+
 		$left=$this->map_x;
 		$bottom=$this->map_y;
 		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
@@ -1729,10 +1729,10 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 
 		//size of a marker in pixels
 		$markerpixels=5;
-		
+
 		//size of marker in km
 		$markerkm=ceil($markerpixels/$this->pixels_per_km);
-		
+
 		//we scan for images a little over the edges so that if
 		//an image lies on a mosaic edge, we still plot the point
 		//on both mosaics
@@ -1741,64 +1741,61 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 		$scanright=$right+$overscan;
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
-		
+
 		//plot grid square?
 		if ($this->pixels_per_km>=0)
 		{
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 		}
-		
+
 		$imagemap = fopen( $root.$target.".html","w");
 		fwrite($imagemap,"<map name=\"imagemap\">\n");
-		
+
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
-				
+
 		if ($this->type_or_user < -2000) {
 			$year = $this->type_or_user * -1;
-			
+
 			if ($year >= 2007) {
 				//tofix - removed the $rectangle - pretty much we only do national xmas maps anyway...
 				$sql="select x,y,gi.gridimage_id,gi.user_id,realname,gi.title,gi.grid_reference from gridimage_search gi
 				left join gridimage_snippet gs using (gridimage_id)
 				left join snippet s using (snippet_id)
 				where imagetaken = '$year-12-25'
-				and ( gi.imageclass = 'christmas day $year' OR s.title = 'midday christmas $year') 
+				and ( gi.imageclass = 'christmas day $year' OR s.title = 'midday christmas $year')
 				group by gi.gridimage_id
 				order by rand()";
 			} else {
 				$sql="select x,y,gi.gridimage_id,gi.user_id,realname,title,grid_reference from gridimage_search gi
-				where 
+				where
 				CONTAINS( GeomFromText($rectangle),	point_xy) and imagetaken = '$year-12-25'
 				 order by ( (gi.title LIKE '%xmas%' OR gi.comment LIKE '%xmas%' OR gi.imageclass LIKE '%xmas%') OR (gi.title LIKE '%christmas%' OR gi.comment LIKE '%christmas%' OR gi.imageclass LIKE '%christmas%') ), rand()";
-			} 
+			}
 		} elseif (1) {
 			$sql="select x,y,gi.gridimage_id,gi.user_id,realname,title,grid_reference from gridimage_search gi
-			where 
+			where
 			CONTAINS( GeomFromText($rectangle),	point_xy)
 			and seq_no = 1 group by FLOOR(x/10),FLOOR(y/10) order by rand() limit 600";
 			#inner join gridimage_post gp on (gi.gridimage_id = gp.gridimage_id and gp.topic_id = 1006)
-			
-			
-		
+
 		} elseif (1) {
 			//temp test - but inaccessible
 			$sql="select x,y,gi.gridimage_id,gi.user_id,realname,title,grid_reference from gridimage_search gi
 			where gridimage_id in (80343,74737,74092,84274,80195,48940,46618,73778,47029,82007,39195,76043,57771,28998,18548,12818,7932,81438,16764,84846,73951,79510,15544,73752,86199,4437,87278,53119,29003,36991,74330,29732,16946,10613,87284,52195,41935,26237,30008,10252,62365,83753,67060,34453,20760,26759,59465,118,12449,4455,46898,12805,87014,401,36956,8098,44193,63206,42732,26145,86473,17469,3323,26989,3324,40212,63829,30948,165,41865,36605,25736,68318,26849,51771,30986,27174,37470,31098,65191,44406,82224,71627,22968,59008,35468,7507,53228,80854,10669,47604,75018,42649,9271,1658,11741,60793,78903,22198,7586,88164,12818,14981,21794,74790,3386,40974,72850,77652,47982,39894,38897,25041,81392,63186,81974,41373,86365,44388,80376,13506,42984,45159,14837,71377,35108,84318,84422,36640,2179,22317,5324,32506,20690,71588,85859,50813,19358,84848,18141,78772,21074,13903,39376,45795,88385,55327,907,37266,82510,78594,17708,84855,7175,85453,23513,18493,68120,26201,18508,32531,84327,88204,55537,41942,47117,22922,22315,46412,88542,46241,67475,63752,63511,98) order by rand()";
 		} else {
 			//broken - but inaccessible
-		$sql="select x,y,grid_reference from gridsquare where 
+			$sql="select x,y,grid_reference from gridsquare where
 			CONTAINS( GeomFromText($rectangle),	point_xy)
 			and imagecount>0 group by FLOOR(x/30),FLOOR(y/30) order by rand() limit 500";
 		}
-		
+
 		$usercount=array();
-		$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 		$recordSet = $db->Execute($sql);
 		$lines = array();
-		while (!$recordSet->EOF) 
+		while (!$recordSet->EOF)
 		{
-			$gridx=$recordSet->fields[0];
-			$gridy=$recordSet->fields[1];
+			$gridx=$recordSet->fields['x'];
+			$gridy=$recordSet->fields['y'];
 
 			$imgx1=($gridx-$left) * $this->pixels_per_km;
 			$imgy1=($this->image_h-($gridy-$bottom+1)* $this->pixels_per_km);
@@ -1810,13 +1807,10 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 
 			$imgx2=$imgx1 + $photopixels;
 			$imgy2=$imgy1 + $photopixels;
-				
-				
-			$gridimage_id=$recordSet->fields[2];
 
 			$gridimage=new GridImage;
-			$gridimage->fastInit($rec = $recordSet->fields);
-			
+			$gridimage->fastInit($recordSet->fields);
+
 			$photo=$gridimage->getSquareThumb($photopixels);
 			if (!is_null($photo))
 			{
@@ -1825,42 +1819,34 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 
 				imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
 
-				$lines[] = "<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$rec['gridimage_id']}\" title=\"".htmlentities2("{$rec['grid_reference']} : {$rec['title']} by {$rec['realname']}")."\">"; 
-
+				$lines[] = "<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$image->gridimage_id}\" title=\"".htmlentities2("{$image->grid_reference} : {$image->title} by {$image->realname}")."\">";
 			}
-			$usercount[$rec['realname']]++;
-			
-			
+			$usercount[$image->realname]++;
 			$recordSet->MoveNext();
 		}
 		if (!empty($recordSet))
-			$recordSet->Close(); 
-		$db->SetFetchMode($prev_fetch_mode);		
+			$recordSet->Close();
 
-			fwrite($imagemap,implode("\n",array_reverse($lines)));
-			fwrite($imagemap,"</map>\n");
-			fclose($imagemap);
-		
-		
-		
-			$h = fopen("imagemap.csv",'w');
-			foreach ($usercount as $user => $uses) {
-				fwrite($h,"$user,$uses\n");
-			}
-			fclose($h);
-		
-		
+		fwrite($imagemap,implode("\n",array_reverse($lines)));
+		fwrite($imagemap,"</map>\n");
+		fclose($imagemap);
+
+		$h = fopen("imagemap.csv",'w');
+		foreach ($usercount as $user => $uses) {
+			fwrite($h,"$user,$uses\n");
+		}
+		fclose($h);
+
 		if (preg_match('/jpg/',$target)) {
 			imagejpeg($img, $root.$target);
 		} else {
 			imagepng($img, $root.$target);
 		}
-		
+
 		imagedestroy($img);
-		
-	}		
-	
-	function _plotPlacenames(&$img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left) {			
+	}
+
+	function _plotPlacenames(&$img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left) {
 		$db=&$this->_getDB(true);
 
 split_timer('map'); //starts the timer
