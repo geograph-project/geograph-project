@@ -21,9 +21,10 @@ if (!empty($_POST['failed'])) {
 } elseif (empty($_POST['confirm'])) { ?>
 
 
-To get started, please let us know how see this test image:<br><br>
+To get started, please let us know how see this test image here (Only as see it below, not anywhere else!):<br><br>
 
-<img src="https://data.geograph.org.uk/6400488_f978ee09_1024x1024.jpg" style="max-width:640px;max-height:480px"><br><br>
+<img src="https://data.geograph.org.uk/6400488_f978ee09_1024x1024.jpg" style="max-width:640px;max-height:480px"><br>
+<? echo htmlentities("ST5445 :: St Cuthbert's Church, Wells by Eirian Evans"); ?><br><br>
 
 <form method=post>
 	Click ONE:
@@ -54,17 +55,20 @@ if (!empty($_POST['result'])) {
 ###########################################
 
 $limit = 2; //load 2, so can 'preload' the second image!
+$where = '';
+if (!empty($_GET['mine']) && !empty($USER->user_id))
+        $where .= " and user_id = ".intval($USER->user_id);
 
 $rows = $db->getAll("select gridimage_id,user_id,title,grid_reference,realname, orient_full
 	 from exif_rotated
 		inner join gridimage_search using (gridimage_id)
 	where orient_full like 'Orientation%' and orient_full not like '%1'
-	and result_full IS NULL
+	and result_full IS NULL $where
         order by gridimage_id desc
 	 limit $limit");
 
 if (empty($rows))
-	die("no more images to check. Whoop! Thanks for interest");
+	die("no more images to check. Whoop! Thanks for interest. (although doesnt mean more wont be found later, please check back again)");
 
 foreach ($rows as $idx => $row) {
 	$image = new GridImage();
@@ -78,7 +82,7 @@ foreach ($rows as $idx => $row) {
 	}
 
 	?>
-Please let us know how see this image:<br><br>
+Please let us know how see this image (Only as see it below, not anywhere else!):<br><br>
 <a href="/photo/<? echo $image->gridimage_id; ?>">
 <img src="<? echo $path; ?>" style="max-width:640px;max-height:480px"><br>
 <? echo htmlentities("{$row['grid_reference']} :: {$row['title']} by {$row['realname']}"); ?>
