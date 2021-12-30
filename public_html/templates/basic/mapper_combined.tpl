@@ -174,6 +174,12 @@
 
 {/literal}
 {dynamic}
+	{if $os_api_key}
+		 var OSAPIKey = "{$os_api_key}";
+	{else}
+		 var OSAPIKey = null;
+	{/if}
+
 	{if $gridref}
 		 var wgs84=new GT_WGS84();
                  wgs84 = wgs84.parseGridRef('{$gridref}'); //technically a factory method

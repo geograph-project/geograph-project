@@ -37,12 +37,10 @@ baseMaps["Ordnance Survey GB"] = L.tileLayer.bing({'bingMapsKey':BING_KEY,'minZo
         var mbAttr = 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 				'Imagery &copy; <a href="https://mapbox.com">Mapbox</a>',
-			mbUrl = 'https://{s}.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + mbToken;
+			mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/256/{z}/{x}/{y}?access_token=' + mbToken + '&';
 
-baseMaps["MapBox Grayscale"] = L.tileLayer(mbUrl, {id: 'geograph.plpdge8b', attribution: mbAttr});
-//baseMaps["MapBox Streets"] = L.tileLayer(mbUrl, {id: 'geograph.plpdi1bk',   attribution: mbAttr}),
-//baseMaps["MapBox Comic Sans"] = L.tileLayer(mbUrl, {id: 'geograph.plpdcipm',   attribution: mbAttr}),
-baseMaps["MapBox Imagery"] = L.tileLayer(mbUrl, {id: 'geograph.plpdjb8m',   attribution: mbAttr});
+baseMaps["MapBox Grayscale"] = L.tileLayer(mbUrl, {id: 'geograph/ckxte5u8hucaf15ns8hz5ucmd', attribution: mbAttr});
+baseMaps["MapBox Imagery"] = L.tileLayer(mbUrl, {id: 'geograph/cjh8zse9f2lq32spb7s5vmvbk',   attribution: mbAttr});
 
 	//https://leaflet-extras.github.io/leaflet-providers/preview/
 baseMaps["Watercolour"] = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png', {
@@ -69,6 +67,21 @@ baseMaps["Bing Imagery"] = L.tileLayer.bing({'bingMapsKey':BING_KEY,'minZoom':7,
         var layerAttrib='&copy; Geograph Project';
         var bounds = L.latLngBounds(L.latLng(49.863788, -13.688451), L.latLng(60.860395, 1.795260));
 baseMaps["Geograph PhotoMap"] = L.tileLayer(layerUrl, {minZoom: 6, maxZoom: 18, attribution: layerAttrib, bounds: bounds, opacity: 0.8});
+
+	////////////////////////////////////////////////
+
+if (window.OSAPIKey) {
+    var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
+    baseMaps["OS Outdoor"] = L.tileLayer(serviceUrl + '/Outdoor_3857/{z}/{x}/{y}.png?key=' + OSAPIKey, {
+	minZoom: 7,
+        maxZoom: 20,
+	bounds: [
+            [ 49.528423, -10.76418 ],
+            [ 61.331151, 1.9134116 ]
+        ],
+	attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
+    });
+}
 
 	////////////////////////////////////////////////
 
@@ -278,6 +291,7 @@ overlayMaps["Photo Viewpoints"] = L.tileLayer2(layerUrl, {j:j, user_id: 0, minZo
 				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 				'Imagery &copy; <a href="https://mapbox.com">Mapbox</a>',
 	mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/256/{z}/{x}/{y}?access_token=' + mbToken + '&';
+
 
 overlayMaps["PhotoMap Overlay"] = L.tileLayer(mbUrl, {id: 'geograph/cjju7ep8g3ypa2spdth1ibmih', attribution: mbAttr, bounds: bounds});
 

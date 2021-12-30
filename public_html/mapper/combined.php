@@ -85,11 +85,12 @@ if (!empty($_GET['views'])) {
 
 $smarty->assign('g_time',filemtime("../guider/mapper_guider.js"));
 
-if (!empty($_GET['dev'])) {
-	$smarty->display('mapper_combined_dev.tpl');
 
-} elseif (!empty($_GET['mobile'])) {
+if (!empty($_GET['mobile'])) {
 	$smarty->display('mapper_combined_mobile.tpl');
 } else {
+	if (!empty($CONF['os_api_key']))
+		$smarty->assign('os_api_key', $CONF['os_api_key']);
+
 	$smarty->display('mapper_combined.tpl');
 }
