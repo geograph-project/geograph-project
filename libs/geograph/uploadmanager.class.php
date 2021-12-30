@@ -626,6 +626,12 @@ class UploadManager
 				@unlink($filename);
 			}
 
+			//we have no use for  this data. and it is potentially HUGE!
+			// the data will ultimately be inserted into a TEXT column (limited to 665535 bytes)
+			if (!empty($exif['IFD0']['StripOffsets']))	unset($exif['IFD0']['StripOffsets']);
+			if (!empty($exif['IFD0']['StripByteCounts']))	unset($exif['IFD0']['StripByteCounts']);
+
+
 			$this->trySetDateFromExif($exif);
 			$this->rawExifData = $exif;
 			$strExif=serialize($exif);
