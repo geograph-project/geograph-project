@@ -14,7 +14,9 @@
 
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+
         <script type="text/javascript" src="{"/js/Leaflet.MetricGrid.js"|revision}"></script>
         <script type="text/javascript" src="{"/js/mappingLeaflet.js"|revision}"></script>
 
@@ -323,47 +325,25 @@ function checkMultiFormSubmission() {
 	var geocoder = null;
 	var disableAutoUpdate = false;
 
+{/literal}
+{dynamic}
+	{if $os_api_key}
+		var OSAPIKey = "{$os_api_key}";
+	{else}
+		var OSAPIKey = null;
+	{/if}
+{/dynamic}
+{literal}
 
-                                        function loadmap() {
-                                                var newtype = readCookie('GMapType');
+function loadmap() {
+	setupBaseMap(map);
 
-                                                mapTypeId = firstLetterToType(newtype);
-
-                                                map = L.map('map',{attributionControl:false,doubleClickZoom:false, scrollWheelZoom:'center'}).addControl(
-                                                        L.control.attribution({ position: 'bottomright', prefix: ''}) );
-
-						//needs to be called BEFORE setupOSMTiles (as that sets up the layer control too!) 
-						if (L.GeographRecentUploads)
-							overlayMaps["Recent Uploads"] = L.geographRecentUploads();
-
-                                                setupOSMTiles(map,mapTypeId);
-
-                                                map.on('baselayerchange', function (e) {
-                                                        if (e.layer && e.layer.options && e.layer.options.mapLetter) {
-                                                                var t = e.layer.options.mapLetter;
-                                                                createCookie('GMapType',t,10);
-                                                        } else {
-                                                                console.log(e);
-                                                        }
-						});
-						if (location.search.length>2 && location.search.indexOf('gridref=')) {
-							if (match = location.search.match(/gridref=([A-Z]{1,2} ?\d{2,5} ?\d{2,5})/)) {
-								disableAutoUpdate = true; //we just centering the map, not setting an exact location!
-								centerMap(match[1]);
-							}
-						}
-
-        if (L.geographGeocoder && !geocoder)
-                map.addControl(geocoder = L.geographGeocoder());
-
-
-        if (L.control.locate)
-                L.control.locate({
-                        keepCurrentZoomLevel: [13,18],
-                        locateOptions: {
-                                maxZoom: 16,
-                                enableHighAccuracy: true
-                }}).addTo(map);
+	if (location.search.length>2 && location.search.indexOf('gridref=')) {
+		if (match = location.search.match(/gridref=([A-Z]{1,2} ?\d{2,5} ?\d{2,5})/)) {
+			disableAutoUpdate = true; //we just centering the map, not setting an exact location!
+			centerMap(match[1]);
+		}
+	}
 
 	L.geotagPhoto.crosshair({
 		crosshairHTML: '<img alt="Center of the map; crosshair location" title="Crosshair" src="https://unpkg.com/leaflet-geotag-photo@0.5.1/images/crosshair.svg" width="100px" />'
@@ -381,7 +361,6 @@ function checkMultiFormSubmission() {
                 disableAutoUpdate = false;
         });
 
-
 	map.on('dblclick',function(event) {
 		console.log(event,event.latlng);
 
@@ -395,10 +374,8 @@ function checkMultiFormSubmission() {
 		map.panTo(event.latlng);
 	});
 
-
-
-						setupMess();
-                                        }
+	setupMess();
+}
 
 $(function() {
 	$('.tab2 input[type=text]').focus(function() {

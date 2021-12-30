@@ -39,7 +39,7 @@ if (!empty($_POST['choose'])) {
 	$_POST['choose'] = $USER->getPreference('submit.mobile','',true);
 }
 
-if (!empty($_POST['choose']) && empty($_GET['redir'])) {
+if ((!empty($_POST['choose']) && empty($_GET['redir'])) || !empty($_GET['os'])) {
 	switch($_POST['choose']) {
 		//case 'single' ... falls though to below!
 		case 'multi': header("Location: /submit-multi.php?tab=upload&mobile=1", false, 302); exit;
@@ -50,6 +50,9 @@ if (!empty($_POST['choose']) && empty($_GET['redir'])) {
 	$smarty = new GeographPage;
 	if (!empty($_GET['id']))
 		$smarty->assign('id', intval($_GET['id']));
+	if (!empty($_GET['os']) && !empty($CONF['os_api_key']))
+		$smarty->assign('os_api_key', $CONF['os_api_key']);
+
 	$smarty->display('submit_mobile.tpl');
 
 } else {

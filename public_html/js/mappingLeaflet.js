@@ -329,6 +329,9 @@ function updateCamIcon() {
 		return mapTypeId;
 	}
 
+///////////////////////////////////////////
+
+	//despite it name, this now sets up many base layers, as well as overlays and controls!
 	function setupOSMTiles(map,mapTypeId) {
 
 		var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
@@ -340,16 +343,15 @@ function updateCamIcon() {
 		        var topoAttribution = 'Data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Key</a>]';
 		baseMaps["OpenTopoMap"] = L.tileLayer(topoUrl, {mapLetter: 'l', minZoom: 1, maxZoom: 17, detectRetina: false, attribution: topoAttribution});
 
-
 /*
-		//baseMaps['OSM Cycle'] = new L.TileLayer('https://tile.thunderforest.com/cycle/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993', 
+		//baseMaps['OSM Cycle'] = new L.TileLayer('https://tile.thunderforest.com/cycle/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993',
 		//	{mapLetter: 'c', maxZoom: 18, attribution: '<a href=https://www.thunderforest.com/>thunderforest.com</a>, '+osmAttrib});
 
-		baseMaps['OSM Terrain'] = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993', 
+		baseMaps['OSM Terrain'] = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993',
 			{mapLetter: 't', maxZoom: 18, attribution: '<a href=https://www.thunderforest.com/>thunderforest.com</a>, '+osmAttrib});
 */
 
-		baseMaps['Aerial Imagery'] = new L.TileLayer('https://api.mapbox.com/styles/v1/geograph/cjh8zse9f2lq32spb7s5vmvbk/tiles/256/{z}/{x}/{y}?access_token={accessToken}', 
+		baseMaps['Aerial Imagery'] = new L.TileLayer('https://api.mapbox.com/styles/v1/geograph/cjh8zse9f2lq32spb7s5vmvbk/tiles/256/{z}/{x}/{y}?access_token={accessToken}',
 			{mapLetter: 'h', maxZoom: 18, attribution: 'Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>',
 				accessToken: 'pk.eyJ1IjoiZ2VvZ3JhcGgiLCJhIjoiY2lteXI3cmlpMDBmenY5bTF5dHFqMnh0NiJ9.sPXF2s1niWNNEfqGjs2HGw'});
 
@@ -375,14 +377,16 @@ function updateCamIcon() {
 		else
 			map.addLayer(baseMaps['OSM']);
 
+///////////////////////////////////////////
+
+		if (L.GeographRecentUploads)
+			overlayMaps["Recent Uploads"] = L.geographRecentUploads();
 
 		// dots layer
 	        var layerUrl='https://t0.geograph.org.uk/tile/tile-density.php?z={z}&x={x}&y={y}&match=&l=1&6=1';
 		var layerAttrib='&copy; Geograph Project';
 		var bounds = L.latLngBounds(L.latLng(49.863788, -13.688451), L.latLng(60.860395, 1.795260)); 
         	overlayMaps['All Dots Layer'] = new L.TileLayer(layerUrl, {minZoom: 6, maxZoom: 18, attribution: layerAttrib, bounds: bounds, opacity: 0.8});
-
-
 
 		if (L.britishGrid) {
 			var gridOptions = {
@@ -395,6 +399,114 @@ function updateCamIcon() {
 			overlayMaps['Irish Grid'] = L.irishGrid(gridOptions).addTo(map)
 		}
 
+		if (L.geographGeocoder && !geocoder)
+			map.addControl(geocoder = L.geographGeocoder());
+
+		if (L.control.locate)
+			L.control.locate({
+				keepCurrentZoomLevel: [13,18],
+				locateOptions: {
+					maxZoom: 16,
+					enableHighAccuracy: true
+			}}).addTo(map);
+
 		L.control.layers(baseMaps,overlayMaps).addTo(map);
 	}
+
+///////////////////////////////////////////
+
+	//creates the highlevel 'map' object. Note this version does NOT initalaize a center/zoom for the map. Will have to do that afterwards
+	function setupBaseMap() {
+
+		if (!OSAPIKey || !proj4) {
+			//just a normal Leafelt Map
+			var newtype = readCookie('GMapType');
+
+			mapTypeId = firstLetterToType(newtype);
+
+			map = window.map = L.map('map',{attributionControl:false,doubleClickZoom:false, scrollWheelZoom:'center'}).addControl(
+				L.control.attribution({ position: 'bottomright', prefix: ''}) );
+
+			setupOSMTiles(map,mapTypeId);
+
+			map.on('baselayerchange', function (e) {
+				if (e.layer && e.layer.options && e.layer.options.mapLetter) {
+					var t = e.layer.options.mapLetter;
+					createCookie('GMapType',t,10);
+				}
+			});
+			return;
+		}
+
+///////////////////////////////////////////
+
+		// alternate map using OSGB projection
+		// due to the different projection setupOSMTiles is NOT called. Will need to add any overlays ourselfs.
+
+		var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
+
+		// Setup the EPSG:27700 (British National Grid) projection.
+		var crs = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs',
+		{
+			resolutions: [ 896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75, 0.875, 0.4375, 0.21875, 0.109375 ],
+			origin: [ -238375.0, 1376256.0 ]
+		});
+
+		// Transform coordinates.
+		var transformCoords = function(arr) {
+			return proj4('EPSG:27700', 'EPSG:4326', arr).reverse();
+		};
+
+		// Initialize the map.
+		var mapOptions = {
+			crs: crs,
+			minZoom: 5,
+			maxZoom: 13,
+			//       center: transformCoords([ 337297, 503695 ]),
+			//     zoom: 7,
+			maxBounds: [
+				transformCoords([ -238375.0, 0.0 ]),
+				transformCoords([ 900000.0, 1376256.0 ])
+			],
+			attributionControl: false,
+			doubleClickZoom: false,
+			scrollWheelZoom: 'center'
+		};
+
+		map = window.map = L.map('map', mapOptions).addControl(
+			L.control.attribution({ position: 'bottomright', prefix: ''}) );
+
+		var basemap1 = L.tileLayer(serviceUrl + '/Leisure_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
+			minZoom: 2,
+			maxZoom: 9
+		}).addTo(map);
+
+		var basemap2 = L.tileLayer(serviceUrl + '/Outdoor_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
+			minZoom: 10,
+			maxZoom: 13
+		});
+
+		L.layerGroup([basemap1,basemap2]).addTo(map);
+
+		if (L.britishGrid) {
+			var gridOptions = {
+				opacity: 0.3,
+				weight: 0.7,
+				showSquareLabels: [100000,10000,100]
+			};
+
+			L.britishGrid(gridOptions).addTo(map);
+		}
+
+		if (L.control.locate)
+			L.control.locate({
+				keepCurrentZoomLevel: [13,18],
+				locateOptions: {
+					maxZoom: 16,
+					enableHighAccuracy: true
+			}}).addTo(map);
+
+	}
+
+///////////////////////////////////////////
 
