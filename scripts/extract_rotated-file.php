@@ -38,7 +38,7 @@
 
 ######################################################
 
-$param = array('execute'=>false, 'limit' => 10, 'auto' => false);
+$param = array('execute'=>false, 'limit' => 10, 'auto' => false, 'cache'=>false,'rerun'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -53,18 +53,18 @@ $filesystem->buckets[$destination] = "data.geograph.org.uk/exif/";
 
 ######################################################
 
-	$table = "gridimage_search";
-
-
-        $row = $db->getRow("SELECT COUNT(*) as count,MIN(gridimage_id) as min,MAX(gridimage_id) AS max FROM $table WHERE gridimage_id > 0");
-
-	if ($param['auto'])
+	if ($param['auto']) {
+		$row = array();
 		$row['min'] = $db->getOne("SELECT max(gridimage_id) FROM exif_rotated WHERE extracted = ''");
+	} else {
+	        $row = $db->getRow("SELECT MIN(gridimage_id) as min,MAX(gridimage_id) AS max FROM gridimage_search WHERE gridimage_id > 0");
+	}
+
+	$row['max'] = $db->getOne("SELECT min(gridimage_id) FROM gridimage_exif") + 10000;
+
+$row['min'] = 2703000;
 
         print_r($row);
-
-        if ($row['count'] < 10000)
-                die("only {$row['count']} rows exist\n");
 
         $from = intval($row['min']/1000)*1000;
         $stop = intval(($row['max'] - 10000)/1000)*1000; //stops a bit early, and rounds DOWN to nearest 1000, in general avoid writing partial files!!
@@ -72,40 +72,68 @@ $filesystem->buckets[$destination] = "data.geograph.org.uk/exif/";
 	$i = 0;
         for($start = $from; $start < $stop; $start+=1000) {
                 $end = $start+999;
-                //print "#($start,$end,$table)\n";
-                process_file($start,$end,$table);
+                //print "#($start,$end)\n";
+                process_file($start,$end);
 
 	        if (!empty($killed))
         	        die("killed\n");
 		$i++;
-		if ($i > $param['limit'])
+		if ($i == $param['limit'])
         	        die("done\n");
+
+                if (!($i%10)) {
+
+	                $filesystem->shutdown_function(); //filesystem class only deletes the temp files on shutdown. We to clear them out as go along
+        	        $filesystem->filecache = array(); //the class doesnt bother clearing the array (as it normally on shutdown anyway)
+                	print "$i. ";
+
+	                if (!($i%100)) {
+        	                //the S3 token doesnt last forever, so recreate the object periodically to get a new secruity token!
+                	        //S3::putObject(): [ExpiredToken] The provided token has expired.
+                        	$filesystem = new FileSystem(); // dont use GeographFileSystem as it return the same object!
+				$filesystem->buckets[$destination] = "data.geograph.org.uk/exif/";
+	                }
+		}
+
         }
 
 
 ######################################################
 
-function process_file($start,$end,$table) {
+function process_file($start,$end) {
 	global $param,$db,$filesystem,$destination;
 
-	if ($db->getOne("SELECT gridimage_id FROM exif_rotated WHERE gridimage_id = $start") == $start) {
+	if (empty($param['rerun']) && $db->getOne("SELECT gridimage_id FROM exif_rotated WHERE gridimage_id = $start") == $start) {
 		print "Already done file starting with $start\n";
 		return;
 	}
 
-        $dir1 = sprintf("%02d", floor($start/1000000)%100);
-        $dir2 = sprintf("%02d", floor($start/10000)%100);
-        $filename = "$destination$dir1/$dir2/$start.exif.gz";
+	if (file_exists("/tmp/exif.$start.gz")) {
+		$filename = "/tmp/exif.$start.gz";
 
-print "<!-- $filename --> :: ";
+		print "<!-- $filename --> :: ";
 
-        list($sbucket, $sfilename) = $filesystem->getBucketPath($filename);
-        if ($sbucket) {
-                //download!
-                $filename = $filesystem->_get_remote_as_tempfile($sbucket, $sfilename);
+	} else {
+
+	        $dir1 = sprintf("%02d", floor($start/1000000)%100);
+        	$dir2 = sprintf("%02d", floor($start/10000)%100);
+	        $filename = "$destination$dir1/$dir2/$start.exif.gz";
+
+		print "<!-- $filename --> :: ";
+
+
+	        list($sbucket, $sfilename) = $filesystem->getBucketPath($filename);
+        	if ($sbucket) {
+                	//download!
+	                $filename = $filesystem->_get_remote_as_tempfile($sbucket, $sfilename);
+		}
+
+		//print "<!-- $filename ( $sbucket, $sfilename) -->\n";
+
+		if ($param['cache'])
+			copy($filename,"/tmp/exif.$start.gz");
 	}
 
-//print "<!-- $filename ( $sbucket, $sfilename) -->\n";
 
         if (file_exists("$filename"))
                 $h = gzopen($opened = $filename,'rb'); //still use gzopen as it reads uncompressed anyway, and needed for gzgets/gzclose
@@ -119,6 +147,8 @@ print "<!-- $filename --> :: ";
         //$prefixlen = strlen($prefix);
         while ($h && !feof($h)) {
                 $string = gzgets($h);
+if (empty($string))
+	continue;
 
 		/*
                 //use prefix compare, rather than split then compare, to avoid splitting all strings.
@@ -128,18 +158,28 @@ print "<!-- $filename --> :: ";
                 }*/
 
 		list($id,$encoded) = explode("\t",$string,2);
-		$exif = unserialize(base64_decode($encoded));
+		$exif = @unserialize(base64_decode($encoded));
 
-if (empty($exif)) {
-	continue;
-	print "enocded = $encoded\n\n";
-	print "decoded = ".base64_decode($encoded)."\n\n";
-	die();
-}
+		if (empty($exif)) {
+			$decoded = base64_decode($encoded);
+		//	print "decoded = ".$decoded."\n\n";
 
-//print "$id,len:".strlen($encoded).",count:".count($exif)."\n";
+			$exif = array();
+			$exif['IFD0'] = array();
+			//we can't decode the the whole string, but might still be there
+				//:"FinePix S3Pro  ";s:11:"Orientation";i:8;s:11:"XResolution";s:4
+			if (preg_match('/"Orientation";i:(\d+);/',$decoded,$m)) {
+				$exif['IFD0']['Orientation'] = $m[1];
+			} else {
+				$exif['IFD0']['Orientation'] = '?'; //we just dont know, so will have to check!
+			}
+			print "$id : Orientation = {$exif['IFD0']['Orientation']}\n";
+		} elseif ($param['rerun']) {
+			$exif['IFD0']['Orientation'] = null; //we doing a 'rerun' so dont need to save it again!
+		}
 
 		if (!empty($exif['IFD0']['Orientation']) && $exif['IFD0']['Orientation']!==1) {
+
 			$sql = "INSERT IGNORE INTO exif_rotated SET gridimage_id = {$id}, extracted = ".$db->Quote($exif['IFD0']['Orientation']);
 			if ($param['execute']) {
 				$db->Execute($sql);

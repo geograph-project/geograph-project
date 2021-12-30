@@ -59,7 +59,7 @@ foreach ($data as $row) {
 
 	if (!$row['original_width'] || $row['upload_id']) {
 	        $path = $image->_getFullpath(FALSE, false);
-        	$updates['orient_full'] = process($path);
+        	$updates['orient_full'] = process($path,'unknown');
 	}
 
 
@@ -68,18 +68,18 @@ foreach ($data as $row) {
 		if (max($row['original_width'],$row['original_height']) > 800) {
 			$path = $image->_getOriginalpath(FALSE, false, '_800x800');
 
-			$updates['orient_mid'] = process($path);
+			$updates['orient_mid'] = process($path,'');
 		}
 
 		if (empty($updates['orient_mid']) && max($row['original_width'],$row['original_height']) > 1024) {
 			$path = $image->_getOriginalpath(FALSE, false, '_1024x1024');
 
-			$updates['orient_mid'] = process($path);
+			$updates['orient_mid'] = process($path,'');
 		}
 
 		if (empty($updates['orient_mid'])) {
 			$path = $image->_getOriginalpath(FALSE, false);
-			$updates['orient_original'] = process($path);
+			$updates['orient_original'] = process($path,'unknown');
 		}
 
 	}
@@ -98,11 +98,17 @@ foreach ($data as $row) {
 	if (!($c%10)) {
 		$filesystem->shutdown_function(); //filesystem class only deletes the temp files on shutdown. We to clear them out as go along
 		$filesystem->filecache = array(); //the class doesnt bother clearing the array (as it normally on shutdown anyway)
+
+                if (!($c%100)) {
+       	                //the S3 token doesnt last forever, so recreate the object periodically to get a new secruity token!
+               	        //S3::putObject(): [ExpiredToken] The provided token has expired.
+                       	$filesystem = new FileSystem(); // dont use GeographFileSystem as it return the same object!
+                }
 	}
 }
 
 
-function process($path) {
+function process($path,$unknown_return) {
 	global $filesystem;
 
 	print "$path\n";
@@ -116,7 +122,7 @@ function process($path) {
                         $tmp_src = $filesystem->_get_remote_as_tempfile($sbucket, $sfilename);
 
 if (empty($tmp_src) || !file_exists($tmp_src)) {
-	return "unknown";
+	return $unknown_return;
 	die("unable to read $tmp_src from $sbucket, $sfilename\n");
 }
 			$cmd = "exiftool -Orientation -n $tmp_src";
@@ -125,11 +131,13 @@ if (empty($tmp_src) || !file_exists($tmp_src)) {
 
 			$result = `$cmd`;
 
-//if (empty($result)) {
-//	print "-------\n";
-//	print `exiftool $tmp_src`;
-//	exit;
-//}
+
+
+if (false && empty($result)) {
+	print "------- $tmp_src -> $result\n";
+	print `exiftool $tmp_src`;
+	exit;
+}
 
 			return trim($result);
 		}
