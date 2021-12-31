@@ -75,7 +75,7 @@ ul.infos li:hover>small {
 	<h4>Exploring images</h4>
 	<ul>
 		<li>Enter a search term in search box top right
-		<li>... or <a href="/mapper/coverage.php">explore on map</a> 
+		<li>... or <a href="/mapper/combined.php">explore on map</a> 
 		<li><a href="/explore/">More exploration methods</a>
 	</ul>
 </div>

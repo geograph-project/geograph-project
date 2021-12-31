@@ -879,20 +879,6 @@ class GeographMapMosaic
 		} else {
 			return $CONF['SELF_HOST']."/mapper/combined.php#$zoom/$lat/$long";
 		}
-
-		switch ($this->pixels_per_km) {
-			case 0.13:
-			case 0.3: $zoom = 5; break;
-			case 1: $zoom = 7; break;
-			case 4: $zoom = 9; break;
-			case 40:
-			case 80: $zoom = 15;
-		}
-		if ($this->reference_index == 1)
-			$zoom = intval($zoom*0.4); //os maps use a different scale :(
-
-		$layers = !empty($CONF['intergrated_layers'][$this->reference_index])?$CONF['intergrated_layers'][$this->reference_index]:'';
-		return $CONF['SELF_HOST']."/mapper/coverage.php#zoom=$zoom&lat=$lat&lon=$long&layers=$layers";
 	}
 
 	/**

@@ -15,9 +15,8 @@ Geograph hosts a variety of mapping applications to view photos on map.
 
 <hr style=clear:both>
 
-<h3>B. Coverage Map V3 - Interactive Coverage Maps</h3>
-	<div style="float:left;margin-right:7px"><a href="/mapper/coverage.php"><img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Geograph_interactive_map-small.png" width=80></a></div>
-	We also have a slightly older <a href="/mapper/coverage.php">interactive and zoomable coverage map</a>. Use the search box to to quickly jump to your location.
+<h3>B. Coverage Map V3 - Interactive Coverage Maps - WITHDRAWN</h3>
+	<div style="float:left;margin-right:7px"><img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Geograph_interactive_map-small.png" width=80></div>
  
 <h3 style=clear:both>C. Coverage Map V2 - Original Zoomable Maps</h3>
 	<div style="float:left;margin-right:7px"><a href="/mapper/"><img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/geograph_zoomable_map-small.png" width=80></a></div>
