@@ -185,9 +185,9 @@ geographing</a> first.</p>
 
 </div>
 		<p>&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
-			<option value="Leaflet">New Zoomable Maps</option>
 			<option value="OSOS">Zoomable Modern OS Mapping</option>
 			<option value="OS50k">OS Modern 1:50,000 Mapping</option>
+			<option value="Leaflet">New Zoomable Maps</option>
 			<option value="Google">Zoomable Google Mapping + OSM + 1920s to 1940s OS</option>
 		</select> <small>(OS Maps not available for Ireland)</small></p>
 
@@ -317,10 +317,6 @@ geographing</a> first.</p>
 		{/if}
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<hr/>
-
-		{if $reference_index == 2}
-		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
-		{/if}
 
 		{if $last_grid_reference || $last_photographer_gridref}
 			<div style="font-size:0.8em">
