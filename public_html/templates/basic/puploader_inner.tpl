@@ -41,9 +41,7 @@
 		<div>
 	{/if}
 
-		{if $reference_index == 2}
-		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
-		{elseif $rastermap->service == 'OSOS'}
+		{if $rastermap->service == 'OSOS'}
 			<small style="font-size:0.8em">Click the icon beside entry boxes to bring to front on map</small> 
 		{/if}
 

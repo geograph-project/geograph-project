@@ -174,7 +174,7 @@ geographing</a> first.</p>
 		Placename or Postcode.</b><br/> Once you have centred the map on the picture location,
 		return here and enter the <i>Grid reference at centre</i> value shown into the box
 		above.<br/><br/></li>
-		<li>{external href="http://www.multimap.com/map/browse.cgi?lat=54.5445&lon=-6.8228&scale=1000000" text="multimap.com"} now displays 1:50,000 <b>Mapping for Northern Ireland</b>. Use our handy <a href="/latlong.php">Lat/Long Convertor</a> to get the correct Grid Square for a picture.<br/><br/>
+		<li>Use our handy <a href="/latlong.php">Lat/Long Convertor</a> to get the correct Grid Square for a picture.<br/><br/>
 
 		Furthermore {external href="http://www.osni.gov.uk/mapstore" text="OSNI"} and {external href="http://www.osi.ie/" text="OSI"} now offer online mapping from their own websites. Coordinate conversion may not be easy - its probably best to rely on visual estimation using the national grid projected on the map.
 		<br/><br/></li>
@@ -232,10 +232,6 @@ geographing</a> first.</p>
 		{/if}
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<hr/>
-
-		{if $reference_index == 2}
-		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
-		{/if}
 
 		{if $last_grid_reference || $last_photographer_gridref}
 			<div style="font-size:0.8em">

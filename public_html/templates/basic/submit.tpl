@@ -318,10 +318,6 @@ geographing</a> first.</p>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<hr/>
 
-		{if $reference_index == 2}
-		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
-		{/if}
-
 		{if $last_grid_reference || $last_photographer_gridref}
 			<div style="font-size:0.8em">
 			<a href="javascript:{if $last_photographer_gridref}void(document.theForm.photographer_gridref.value = '{$last_photographer_gridref}');void(updateMapMarker(document.theForm.photographer_gridref,false));{/if}{if $last_grid_reference}void(document.theForm.grid_reference.value = '{$last_grid_reference}');void(updateMapMarker(document.theForm.grid_reference,false));{/if}">Copy from Last Submission</a></div>
