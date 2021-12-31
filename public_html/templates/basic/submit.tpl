@@ -185,9 +185,9 @@ geographing</a> first.</p>
 
 </div>
 		<p>&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
-			<option value="Leaflet">New Zoomable Maps</option>
 			<option value="OSOS">Zoomable Modern OS Mapping</option>
 			<option value="OS50k">OS Modern 1:50,000 Mapping</option>
+			<option value="Leaflet">New Zoomable Maps</option>
 			<option value="Google">Zoomable Google Mapping + OSM + 1920s to 1940s OS</option>
 		</select> <small>(OS Maps not available for Ireland)</small></p>
 
