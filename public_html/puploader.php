@@ -204,7 +204,9 @@ if (isset($_GET['success'])) {
 		$step = 1;
 
 	if (isset($_REQUEST['service'])) {
-		if ($_REQUEST['service'] == 'Google') {
+		if ($_REQUEST['service'] == 'Leaflet') {
+			$smarty->assign('service', 'Leaflet');
+		} elseif ($_REQUEST['service'] == 'Google') {
 			$smarty->assign('service', 'Google');
 		} elseif ($_REQUEST['service'] == 'OS50k') {
 			$smarty->assign('service', 'OS50k');
@@ -216,7 +218,9 @@ if (isset($_GET['success'])) {
 
 		$rastermap = new RasterMap($square,true);
 		if (isset($_REQUEST['service'])) {
-			if ($_REQUEST['service'] == 'Google') {
+			if ($_REQUEST['service'] == 'Leaflet') {
+				$rastermap->setService('Leaflet');
+			} elseif ($_REQUEST['service'] == 'Google') {
 				$rastermap->setService('Google');
 			} elseif ($_REQUEST['service'] == 'OS50k' && $rastermap->service == 'OSOS') {
 				$rastermap->setService('OS50k');
@@ -230,7 +234,7 @@ if (isset($_GET['success'])) {
 		} elseif (isset($_POST['view_direction']) && strlen($_POST['view_direction']) && $_POST['view_direction'] != -1) {
 			$rastermap->addViewDirection($_POST['view_direction']);
 			$smarty->assign('view_direction', intval($_POST['view_direction']));
-		} 
+		}
 		$smarty->assign_by_ref('rastermap', $rastermap);
 
 		$smarty->assign_by_ref('square', $square);

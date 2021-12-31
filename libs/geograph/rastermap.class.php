@@ -149,10 +149,10 @@ class RasterMap
 				$this->service = 'OSM-Static-Dev';
 			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
 				//$this->enabled = true;
-				if (!$this->issubmit)
+				//if (!$this->issubmit)
 					$this->service = 'Leaflet';
-				else
-					$this->service = 'Google';
+				//else
+				//	$this->service = 'Google';
 				$this->inline = 1; //no need for none inline anymore...
 			}
 			if (isset($this->tilewidth[$this->service])) {
@@ -191,6 +191,8 @@ class RasterMap
 			}
 		} elseif($this->reference_index == 1 && $service == 'OSOS' && in_array('OSOS',$services)) {
 			$this->service = 'OSOS';
+		} elseif($service == 'Leaflet' && in_array('Leaflet',$services)) {
+			$this->service = 'Leaflet';
 		} elseif($service == 'Google' && in_array('Google',$services)) {
 			if (!$this->issubmit)
 				$this->service = 'Leaflet';
@@ -286,7 +288,8 @@ class RasterMap
 			return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px\"></div>";
 		} elseif ($this->service == 'Google' || $this->service == 'Leaflet') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
-				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map... (JavaScript required)</div>";
+				$s = ($this->exactPosition || !$this->issubmit)?'':"Drag the circles from the green box!<br/>";
+				return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px; max-width:calc(50vw - 60px)\">Loading map... (JavaScript required)</div>";
 			} else {
 				$token=new Token;
 
@@ -785,7 +788,7 @@ class RasterMap
 			} elseif ($this->issubmit) {
 				list($lat,$long) = $conv->national_to_wgs84($e-380,$n-520,$this->reference_index);
 				$block .= "
-					var point2 = new google.maps.LatLng({$lat},{$long});
+					var point2 = [{$lat},{$long}];
 					createMarker(point2);\n";
 			}
 			if ($this->issubmit) {
@@ -794,7 +797,7 @@ class RasterMap
 				$zoom=14;
 			}
 			if ($this->issubmit) {
-				$block .= $this->getPolySquareBlock($conv,$e-800,$n-600,$e-200,$n-100);
+				$block .= $this->getPolySquareBlock($conv,$e-900,$n-750,$e-100,$n-300);
 
 				for ($i=100; $i<=900; $i+=100) {
 					$block .= $this->getPolyLineBlock($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
@@ -864,6 +867,11 @@ class RasterMap
 						}
 						if (typeof Attribution == 'function') {
 							Attribution(map,mapTypeId);
+						}
+						if (issubmit) {
+							//this updates the pickupbox
+							map.on('moveend', mapdragend); //both on zoom and drag
+							mapdragend();
 						}
 					}
 					AttachEvent(window,'load',loadmap,false);
@@ -1089,7 +1097,7 @@ class RasterMap
 		if ($this->service == 'OSM-Static-Dev') {
 			return 'Subject Location: <img src="https://data.geograph.org.uk/symbols/27710.png" width="12" height="12"/>, Camera Location: <img src="https://data.geograph.org.uk/symbols/8513.png" width="12" height="12"/><br/>
 			&copy; OpenStreetMap and contributors, <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="">CC-BY-SA</a>';
-		} elseif ($this->service == 'OSOS') {
+		} elseif ($this->service == 'OSOS' || $this->service == 'Leaflet') {
 			if ($this->issubmit) {
 				return '<br/>Centre the blue circle on the subject and mark the camera position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> <a href="javascript:void(enlargeMap());">Enlarge Map</a>';
 			} else

@@ -663,11 +663,13 @@ if (isset($_POST['gridsquare']))
 			require_once('geograph/rastermap.class.php');
 
 			$rastermap = new RasterMap($square,true);
-			if (empty($_REQUEST['service']) && !empty($_COOKIE['MapSrv'])) { 
+			if (empty($_REQUEST['service']) && !empty($_COOKIE['MapSrv'])) {
 				$_REQUEST['service'] = $_COOKIE['MapSrv'];
 			}
 			if (isset($_REQUEST['service'])) {
-				if ($_REQUEST['service'] == 'Google') {
+				if ($_REQUEST['service'] == 'Leaflet') {
+					$rastermap->setService('Leaflet');
+				} elseif ($_REQUEST['service'] == 'Google') {
 					$rastermap->setService('Google');
 				} elseif ($_REQUEST['service'] == 'OS50k' && $rastermap->service == 'OSOS') {
 					$rastermap->setService('OS50k');

@@ -653,7 +653,9 @@ if (isset($_REQUEST['id']))
                                 $_REQUEST['service'] = $_COOKIE['MapSrv'];
                         }
                         if (isset($_REQUEST['service'])) {
-                                if ($_REQUEST['service'] == 'Google') {
+				if ($_REQUEST['service'] == 'Leaflet') {
+					$rastermap->setService('Leaflet');
+                                } elseif ($_REQUEST['service'] == 'Google') {
                                         $rastermap->setService('Google');
                                 } elseif ($_REQUEST['service'] == 'OS50k' && $rastermap->service == 'OSOS') {
                                         $rastermap->setService('OS50k');

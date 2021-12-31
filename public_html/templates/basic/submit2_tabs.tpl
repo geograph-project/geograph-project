@@ -318,6 +318,7 @@ window.onbeforeunload=unloadMess;
 
 	<div id="sd2" class="sd">
 	<div style="background-color:#eeeeee;padding:2px"> <label for="service">Prefered Map service:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
+		<option value="Leaflet">New Zoomable Maps</option>
 		<option value="OSOS">Zoomable Modern OS Mapping</option>
 		<option value="OS50k">OS Modern 1:50,000 Mapping</option>
 		<option value="Google">Zoomable Google Mapping + OSM + 1920s to 1940s OS</option>

@@ -38,13 +38,20 @@
 		marker2 = L.marker(point, {icon: picon, draggable: true}).addTo(map);
  		var marker = marker2;
 	} else {
-		marker1 = L.marker(point, {draggable: true}).addTo(map);
+		var sicon = L.icon({
+		    iconUrl: static_host+"/img/icons/circle.png",
+
+		    iconSize:     [29, 29], // size of the icon
+		    iconAnchor:   [14, 14], // point of the icon which will correspond to marker's location
+		    popupAnchor:  [14, 0] // point from which the popup should open relative to the iconAnchor
+		});
+		marker1 = L.marker(point, {icon: sicon, draggable: true}).addTo(map);
  		var marker = marker1;
 	}
 
-	if (issubmit) { //todo
-		google.maps.event.addListener(marker, "drag", function() {
-			var grid=gmap2grid(marker.getPosition());
+	if (issubmit) {
+		marker.on('drag', function(e) {
+			var grid=gmap2grid(marker.getLatLng());
 			
 			//get a grid reference with 4 digits of precision
 			var gridref = grid.getGridRef(4);
@@ -63,7 +70,7 @@
 				document.theForm.use6fig.checked = true;
 			
 			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
-				pickupbox.setMap(null);
+				pickupbox.remove();
 				pickupbox = null;
 			}
 			
@@ -83,14 +90,37 @@
 
 function createPMarker(ppoint) {
 	var picon = L.icon({
-	    iconUrl: static_host+"/img/icons/camicon-new.png",
+	    iconUrl: static_host+"/img/icons/viewc--1.png",
 
-	    iconSize:     [20, 34], // size of the icon
-	    iconAnchor:   [10, 34], // point of the icon which will correspond to marker's location
-	    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+	    iconSize:     [29, 29], // size of the icon
+	    iconAnchor:   [14, 14], // point of the icon which will correspond to marker's location
+	    popupAnchor:  [14, 0] // point from which the popup should open relative to the iconAnchor
 	});
 	return createMarker(ppoint,picon)
 }
+
+function mapdragend(e) {
+	if (pickupbox) {
+		var height = document.getElementById('map').clientHeight;
+		var toplef = map.containerPointToLatLng([20,height-70]);
+		var botrig = map.containerPointToLatLng([95,height-20]);
+		pickupbox.setLatLngs([
+			[toplef.lat,toplef.lng],
+			[toplef.lat,botrig.lng],
+			[botrig.lat,botrig.lng],
+			[botrig.lat,toplef.lng],
+			[toplef.lat,toplef.lng]
+		]);
+		pickupbox.redraw();
+
+		if (document.theForm.grid_reference.value == '' || document.theForm.grid_reference.value.replace(/ /g,'').length <=6) //to exclude 4fig subject
+			marker1.setLatLng( map.containerPointToLatLng([70,height-45]) );
+
+		if (document.theForm.photographer_gridref.value == '')
+			marker2.setLatLng( map.containerPointToLatLng([44,height-45]) );
+	}
+}
+
 
 function gmap2grid(point) {
 	//create a wgs84 coordinate
@@ -293,6 +323,12 @@ function updateViewDirection() {
 				if (ele.options[q].value == newangle)
 					ele.selectedIndex = q;
 
+                        replaceIcon('camicon',static_host+"/img/icons/viewc-"+parseInt(newangle,10)+".png");
+                        if (document.theForm.photographer_gridref.value == '')
+                                replaceIcon('subicon',static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png");
+                        else
+                                replaceIcon('subicon',static_host+"/img/icons/circle.png");
+
 			if (distance < 100) {
 				distance = Math.round(distance);
 			} else if (distance < 1000) {
@@ -305,9 +341,50 @@ function updateViewDirection() {
 	}
 }
 
-function updateCamIcon() {
-
+//while there is a 'setIcon' for markers, there isnt a getIcon, so modifing is tricky, so we search the DOM!
+function replaceIcon(name,newSrc) {
+        if (name == 'camicon') {
+                var re = new RegExp("icons\/viewc");
+        } else {
+                var re = new RegExp("icons\/(subc|circle)");
+        }
+        for(var q=0;q<document.images.length;q++)
+                if (document.images[q].src.match(re))
+                        document.images[q].src = newSrc;
 }
+
+
+function updateCamIcon() {
+        if (!document.getElementById('map')) {
+                //we have no map!
+                return;
+        }
+        ele = document.theForm.view_direction;
+        realangle = ele.options[ele.selectedIndex].value;
+        if (realangle == -1) {
+                replaceIcon('camicon',static_host+"/img/icons/viewc--1.png");
+                replaceIcon('subicon',static_host+"/img/icons/subc--1.png");
+        } else {
+                jump = 360.0/16.0;
+                newangle = Math.floor(Math.round(realangle/jump)*jump);
+                if (newangle == 360)
+                        newangle = 0;
+                replaceIcon('camicon',static_host+"/img/icons/viewc-"+parseInt(newangle,10)+".png");
+                if (document.theForm.photographer_gridref.value == '')
+                        replaceIcon('subicon',static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png");
+                else
+                        replaceIcon('subicon',static_host+"/img/icons/circle.png");
+        }
+}
+
+
+function enlargeMap() {
+        ele = document.getElementById('map');
+        ele.style.width = "100%";
+        ele.style.height = "450px";
+        map.invalidateSize().zoomIn(2);
+}
+
 
 	var baseMaps = {};
 	var overlayMaps = {};
