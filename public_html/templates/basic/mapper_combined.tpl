@@ -86,6 +86,14 @@
 
         <script src="{"/js/Leaflet.GeographClickLayer.js"|revision}"></script>
 
+<script>
+	{if $os_api_key}
+		 var OSAPIKey = "{$os_api_key}";
+	{else}
+		 var OSAPIKey = null;
+	{/if}
+</script>
+
 	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -174,11 +182,6 @@
 
 {/literal}
 {dynamic}
-	{if $os_api_key}
-		 var OSAPIKey = "{$os_api_key}";
-	{else}
-		 var OSAPIKey = null;
-	{/if}
 
 	{if $gridref}
 		 var wgs84=new GT_WGS84();
