@@ -383,6 +383,10 @@ function enlargeMap() {
         ele.style.width = "100%";
         ele.style.height = "450px";
         map.invalidateSize().zoomIn(2);
+
+	if (typeof resizeContainer == 'function') {
+		resizeContainer();
+	}
 }
 
 
