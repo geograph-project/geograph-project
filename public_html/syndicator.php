@@ -219,7 +219,7 @@ $baselink = $rss->link;
 /**
  * A nearby query no longer done via search engine
  */
-if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && empty($_GET['groupby']) && !empty($_GET['new'])) {
+if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && (empty($_GET['groupby']) || $_GET['groupby']=='scenti') && !empty($_GET['new'])) {
 
 /**
  * Create a query the first time round!
@@ -258,7 +258,7 @@ if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && 
 /**
  * run a streamlined 'nearby' query
  */
-if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && empty($_GET['groupby']) && !empty($_GET['new'])) {
+if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && (empty($_GET['groupby']) || $_GET['groupby'] == 'scenti') && !empty($_GET['new'])) {
 
 	$rss->description = "Images Nearby";
 
