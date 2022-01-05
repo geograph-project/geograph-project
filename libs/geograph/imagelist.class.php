@@ -393,12 +393,29 @@ split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 			$query = 'test';
 		}
 
+		if (!empty($_GET['groupby']) && preg_match('/^\w+$/',$_GET['groupby'])) {
+			 // only cope with 'groupby=scenti' for now - which is same in both legacy and new engine!
+			$sql = str_replace('ORDER BY ',"GROUP BY {$_GET['groupby']} ORDER BY ",$sql);
+		}
+
 if (!empty($_GET['debug'])) {
 	print "$sql;<hr>";
 	print "$query<hr>";
 }
 
 		$this->getImagesBySphinxQL($sql, true, $query, false); //tags_as_array=false, because most imagelist functions returns tags as array, but serach engine still provided string
+
+		//the image description is only thing cant get from search index, need to lookup in database
+		if (!empty($_GET['desc']) && !empty($this->images)) {
+			$ids = array();
+			foreach ($this->images as $image)
+				$ids[] = $image->gridimage_id;
+			$sql = "SELECT gridimage_id,comment FROM gridimage_search WHERE gridimage_id IN(".join(",",$ids).") LIMIT ".count($ids);
+			$db=$this->_getDB(true);
+			$comments = $db->getAssoc($sql);
+			foreach ($this->images as &$image)
+				$image->comment = @$comments[$image->gridimage_id];
+		}
 
 		//provide the same API that SearchEngine has after calling Execute
 		$this->resultCount = $this->meta['total_found'];
