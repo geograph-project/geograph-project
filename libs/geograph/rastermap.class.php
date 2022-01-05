@@ -193,6 +193,9 @@ class RasterMap
 			$this->service = 'OSOS';
 		} elseif($service == 'Leaflet' && in_array('Leaflet',$services)) {
 			$this->service = 'Leaflet';
+			if ($this->issubmit) {
+				$this->tilewidth[$this->service] = 350;
+			}
 		} elseif($service == 'Google' && in_array('Google',$services)) {
 			if (!$this->issubmit)
 				$this->service = 'Leaflet';
@@ -289,7 +292,8 @@ class RasterMap
 		} elseif ($this->service == 'Google' || $this->service == 'Leaflet') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
 				$s = ($this->exactPosition || !$this->issubmit)?'':"Drag the circles from the green box!<br/>";
-				return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px; max-width:calc(50vw - 60px)\">Loading map... (JavaScript required)</div>";
+				$style = ($this->issubmit)?'max-width:calc(50vw - 60px)':'';
+				return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px; $style\">Loading map... (JavaScript required)</div>";
 			} else {
 				$token=new Token;
 
@@ -557,6 +561,7 @@ class RasterMap
 			return "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.css\" />".
 				"<script src=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.js\" type=\"text/javascript\"></script>".
 				"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js\"></script>".
+				((!empty($this->issubmit))?"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js\"></script>":'').
 				"<script src=\"".smarty_modifier_revision("/js/Leaflet.MetricGrid.js")."\"></script>";
 
 		} elseif ($this->service == 'OSOS') {
@@ -808,8 +813,12 @@ class RasterMap
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
 			}
 			$p1 = $p2 = '';
+			$os_api_key = 'null';
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
+				if (!empty($CONF['os_api_key'])) {
+					$os_api_key = json_encode($CONF['os_api_key']);
+				}
 			}
 			return "
 				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/js/mappingLeaflet.js")."\"></script>
@@ -820,54 +829,20 @@ class RasterMap
 					var ri = {$this->reference_index};
 					var map = null;
 					var static_host = '{$CONF['STATIC_HOST']}';
+					var OSAPIKey = $os_api_key;
 
 					function loadmap() {
 						var point = [{$this->lat},{$this->long}];
-						var newtype = readCookie('GMapType');
 
-						mapTypeId = firstLetterToType(newtype);
-
-						map = L.map('map',{attributionControl:false}).setView(point, 13).addControl(
-							L.control.attribution({ position: 'bottomright', prefix: ''}) );
-
-						setupOSMTiles(map,mapTypeId);
+						setupBaseMap(map);
+						map.setView(point, 13);
 
 						$block
-
-						map.on('baselayerchange', function (e) {
-							if (e.layer && e.layer.options && e.layer.options.mapLetter) {
-								var t = e.layer.options.mapLetter;
-								createCookie('GMapType',t,10);
-							} else {
-								console.log(e);
-							}
-
-		var name = null;
-		for(i in baseMaps) {
-			if (baseMaps[i] == e.layer)
-				name = i;
-		}
-		var color = (name && name.indexOf('Imagery') > -1)?'#fff':'#00f';
-		var opacity = (name && name.indexOf('Imagery') > -1)?0.8:0.3;
-		for(i in overlayMaps) {
-			if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color) {
-				overlayMaps[i].options.color = color;
-				overlayMaps[i].setOpacity(opacity);
-				overlayMaps[i]._reset();
-			}
-		}
-
-						});
-
-		if (mapTypeId && mapTypeId.indexOf('Imagery') > -1 && baseMaps[mapTypeId])
-			map.fire('baselayerchange',{layer: baseMaps[mapTypeId]}); // need this to select the white grid!
 
 						if (typeof updateMapMarkers == 'function') {
 							updateMapMarkers();
 						}
-						if (typeof Attribution == 'function') {
-							Attribution(map,mapTypeId);
-						}
+
 						if (issubmit) {
 							//this updates the pickupbox
 							map.on('moveend', mapdragend); //both on zoom and drag
@@ -880,10 +855,10 @@ class RasterMap
 
 				<style>
 					div#map div.leaflet-control-container .leaflet-top {
-						opacity:0.2;
+						opacity:0.8;
 					}
 					div#map div.leaflet-control-container .leaflet-bottom {
-						opacity:0.5;
+						opacity:0.7;
 						background-color:white;
 					}
 					div#map:hover div.leaflet-control-container .leaflet-top, div#map:hover div.leaflet-control-container .leaflet-bottom {

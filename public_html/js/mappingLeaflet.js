@@ -397,13 +397,14 @@ function enlargeMap() {
 		var mapTypeId = 'OpenTopoMap';
 
 		//these are odd, but to maintain some compatiblity with GMaps version
+                if (newtype == 'a') {mapTypeId = 'Modern OS - GB'}
                 if (newtype == 's') {mapTypeId = 'Aerial Imagery'}
                 if (newtype == 'h') {mapTypeId = 'Aerial Imagery'}
                 if (newtype == 't') {mapTypeId = 'OpenTopoMap'} //was OSM Terrain
                 if (newtype == 'n') {mapTypeId = 'Historic OS - GB 1920s';}
                 if (newtype == 'i') {mapTypeId = 'Historic OS - Ireland';}
-                if (newtype == 'o') {mapTypeId = 'OSM';}
-                if (newtype == 'c') {mapTypeId = 'OSM';} //was OSM Cycle
+                if (newtype == 'o') {mapTypeId = 'OpenStreetMap';}
+                if (newtype == 'c') {mapTypeId = 'OpenStreetMap';} //was OSM Cycle
                 if (newtype == 'p') {mapTypeId = 'OpenTopoMap';} //was OSM Terrain
                 if (newtype == 'l') {mapTypeId = 'OpenTopoMap';}
 
@@ -417,7 +418,7 @@ function enlargeMap() {
 
 		var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
 
-		baseMaps['OSM'] = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+		baseMaps['OpenStreetMap'] = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 			 {mapLetter: 'o', minZoom: 3, maxZoom: 18, attribution: osmAttrib});
 
 		        var topoUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
@@ -456,7 +457,7 @@ function enlargeMap() {
 		if (mapTypeId && baseMaps[mapTypeId])
 			map.addLayer(baseMaps[mapTypeId])
 		else
-			map.addLayer(baseMaps['OSM']);
+			map.addLayer(baseMaps['OpenStreetMap']);
 
 ///////////////////////////////////////////
 
@@ -499,7 +500,137 @@ function enlargeMap() {
 	//creates the highlevel 'map' object. Note this version does NOT initalaize a center/zoom for the map. Will have to do that afterwards
 	function setupBaseMap() {
 
-		if (!OSAPIKey || !proj4) {
+		//just a normal Leafelt Map
+		var newtype = readCookie('GMapType');
+
+		mapTypeId = firstLetterToType(newtype);
+
+		map = window.map = L.map('map',{attributionControl:false,doubleClickZoom:false, scrollWheelZoom:'center'}).addControl(
+			L.control.attribution({ position: 'bottomright', prefix: ''}) );
+
+		var defaultCRS = map.options.crs;
+
+		if (window.OSAPIKey && proj4) {
+			var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
+
+			// Setup the EPSG:27700 (British National Grid) projection.
+			var crs = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs',
+			{
+				resolutions: [ 896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75, 0.875, 0.4375, 0.21875, 0.109375 ],
+				origin: [ -238375.0, 1376256.0 ]
+			});
+
+			// Transform coordinates.
+			var transformCoords = function(arr) {
+				return proj4('EPSG:27700', 'EPSG:4326', arr).reverse();
+			};
+
+			var bounds = [
+				transformCoords([ -238375.0, 0.0 ]),
+				transformCoords([ 900000.0, 1376256.0 ])
+			];
+
+			var basemap1 = L.tileLayer(serviceUrl + '/Leisure_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
+				minZoom: 3,
+				maxZoom: 9,
+				bounds
+			})
+
+			var basemap2 = L.tileLayer(serviceUrl + '/Outdoor_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
+				minZoom: 10,
+				maxZoom: 13,
+ 				bounds
+			});
+
+			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1,basemap2], {
+		//		crs: crs,
+				minZoom: 3,
+				maxZoom: 13,
+				mapLetter: 'a'
+			}); //.addTo(map);
+
+//this is a hack, because the built in function, notices that the newly added layer, has differnet zoom levels, and that the zoom is outside the rage
+L.Map.prototype._updateZoomLevels = function() {};
+// eg when change to OS map, the currnet zoom is for example 13. basemap1 is added to the map, but as it 3..9, _updateZoomLevels, notices current (13) is out of range, and calls setZoom
+//... the setzoom happens async, so even though we then set a new zoom in the 'add' function below, the setZoom in _updateZoomLevels is STILL called.
+// ULITIMATEY we may still need SOME of the logic from real function
+// See https://github.com/Leaflet/Leaflet/blob/4b2946c205d0a6e51f324cfff6536d1ef7caf463/src/layer/Layer.js#L245
+
+			baseMaps['Modern OS - GB'].on('add', function(e) {
+
+				var center = map.getCenter();
+				var zoom = map.getZoom();
+
+				for(i in overlayMaps) {
+					if (i.indexOf('Grid') == -1) { //the grid layers do cope with differnet crs!
+						overlayMaps[i].removeFrom(map); //seems to be a NOOP, if not on the map, so just call regardless!
+//for some reason, it not removing the layer, so just 'disable' it instead; although this also prevents the user enabling it!
+overlayMaps[i].options.minZoom += 100;
+					}
+				}
+
+				map.options.crs = crs;
+				map.setView(center, zoom-6); //we need this, because after changing crs the center is shifted
+                                map._resetView(map.getCenter(), map.getZoom(), true); //we need this to redraw all layers (polygons, markers...) in the new projection.
+
+//to emulate what happens in the original _updateZoomLevels
+map._layersMaxZoom = 13;
+map._layersMinZoom = 3;
+			}).on('remove', function(e) {
+				var center = map.getCenter();
+				var zoom = map.getZoom();
+
+				for(i in overlayMaps) {
+					if (i.indexOf('Grid') == -1) { //the grid layers do cope with differnet crs!
+overlayMaps[i].options.minZoom -= 100;
+					}
+				}
+
+				map.options.crs = defaultCRS;
+				map.setView(center, zoom+6); //we need this, because after changing crs the center is shifted
+                                map._resetView(map.getCenter(), map.getZoom(), true); //we need this to redraw all layers (polygons, markers...) in the new projection.
+
+map._layersMaxZoom = 18; //todo, look this up from the actual layer! e.layer.options.maxZoom ??
+map._layersMinZoom = 3;
+			});
+
+		}
+
+		setupOSMTiles(map,mapTypeId);
+
+		map.on('baselayerchange', function (e) {
+			if (e.layer && e.layer.options && e.layer.options.mapLetter) {
+				var t = e.layer.options.mapLetter;
+				createCookie('GMapType',t,10);
+			}
+
+			var name = null;
+			for(i in baseMaps) {
+				if (baseMaps[i] == e.layer)
+					name = i;
+			}
+			var color = (name && name.indexOf('Imagery') > -1)?'#fff':'#00f';
+			var opacity = (name && name.indexOf('Imagery') > -1)?0.8:0.3;
+			for(i in overlayMaps) {
+				if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color) {
+					overlayMaps[i].options.color = color;
+					overlayMaps[i].setOpacity(opacity);
+					overlayMaps[i]._reset();
+				}
+			}
+		});
+
+		if (mapTypeId && mapTypeId.indexOf('Imagery') > -1 && baseMaps[mapTypeId])
+			map.fire('baselayerchange',{layer: baseMaps[mapTypeId]}); // need this to select the white grid!
+
+	}
+
+///////////////////////////////////////////
+
+	//creates the highlevel 'map' object. Note this version does NOT initalaize a center/zoom for the map. Will have to do that afterwards
+	function setupBaseMapOLD() {
+
+		if (!window.OSAPIKey || !proj4) {
 			//just a normal Leafelt Map
 			var newtype = readCookie('GMapType');
 
@@ -515,7 +646,26 @@ function enlargeMap() {
 					var t = e.layer.options.mapLetter;
 					createCookie('GMapType',t,10);
 				}
+
+				var name = null;
+				for(i in baseMaps) {
+					if (baseMaps[i] == e.layer)
+						name = i;
+				}
+				var color = (name && name.indexOf('Imagery') > -1)?'#fff':'#00f';
+				var opacity = (name && name.indexOf('Imagery') > -1)?0.8:0.3;
+				for(i in overlayMaps) {
+					if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color) {
+						overlayMaps[i].options.color = color;
+						overlayMaps[i].setOpacity(opacity);
+						overlayMaps[i]._reset();
+					}
+				}
 			});
+
+			if (mapTypeId && mapTypeId.indexOf('Imagery') > -1 && baseMaps[mapTypeId])
+				map.fire('baselayerchange',{layer: baseMaps[mapTypeId]}); // need this to select the white grid!
+
 			return;
 		}
 
@@ -560,7 +710,7 @@ function enlargeMap() {
 		var basemap1 = L.tileLayer(serviceUrl + '/Leisure_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
 			minZoom: 2,
 			maxZoom: 9
-		}).addTo(map);
+		});
 
 		var basemap2 = L.tileLayer(serviceUrl + '/Outdoor_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
 			minZoom: 10,
