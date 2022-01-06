@@ -544,8 +544,6 @@ function enlargeMap() {
 
 			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1,basemap2], {
 		//		crs: crs,
-				minZoom: 3,
-				maxZoom: 13,
 				mapLetter: 'a'
 			}); //.addTo(map);
 
