@@ -3,10 +3,6 @@ include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   - local: /ci-build/variables.yaml
 
-variables:
-  FLUXCTL_IMAGE: fluxcd/fluxctl:1.21.0
-  FLUX_FORWARD_NAMESPACE: tcl-system
-
 stages:
   - build
   - staging
@@ -43,13 +39,11 @@ build/memgator:
 
 # Template for deployments
 .k8s_deploy:
-  image: $FLUXCTL_IMAGE
+  image: quay.io/skopeo/stable:latest
   environment:
     name: $CI_JOB_NAME
-  variables:
-    FLUX_KIND: deployment
   script:
-    - ash ci-build/flux-deploy.sh
+    - bash ci-build/skopeo-promote.sh
 
 # Deployments to staging environment
 .k8s_deploy_staging:
@@ -69,8 +63,7 @@ staging/carrot2-dcs:
 staging/development:
   extends: .k8s_deploy_staging
   variables:
-    FLUX_IMAGE: geograph
-    FLUX_KIND: statefulset
+    SOURCE_IMAGE: geograph
   needs:
     - build/geograph
 
@@ -83,21 +76,19 @@ staging/geograph:
 staging/geograph-cron:
   extends: .k8s_deploy_staging
   variables:
-    FLUX_IMAGE: geograph
+    SOURCE_IMAGE: geograph
   needs:
     - build/geograph
 
 staging/geograph-bot:
   extends: .k8s_deploy_staging
   variables:
-    FLUX_IMAGE: geograph
+    SOURCE_IMAGE: geograph
   needs:
     - build/geograph
 
 staging/manticore:
   extends: .k8s_deploy_staging
-  variables:
-    FLUX_KIND: statefulset
   needs:
     - build/manticore
 
@@ -132,21 +123,19 @@ production/geograph:
 production/geograph-cron:
   extends: .k8s_deploy_production
   variables:
-    FLUX_IMAGE: geograph
+    SOURCE_IMAGE: geograph
   needs:
     - staging/geograph-cron
 
 production/geograph-bot:
   extends: .k8s_deploy_production
   variables:
-    FLUX_IMAGE: geograph
+    SOURCE_IMAGE: geograph
   needs:
     - staging/geograph-bot
 
 production/manticore:
   extends: .k8s_deploy_production
-  variables:
-    FLUX_KIND: statefulset
   needs:
     - staging/manticore
 
