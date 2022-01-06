@@ -59,6 +59,7 @@ class RebuildUserDateStat extends EventHandler
 			foreach(range($start,date('Y')) as $year) {
 
 $weeks = rand(1,5); if ($year == date('Y')) $weeks=0;
+if ($year == date('Y')-1 && date('z')<10) $weeks=0; //and also update last year in first week of new year!
 if ($has_table && $db->getOne("select type from user_date_stat where type='$column' and year = '$year' and updated > date_sub(now(),interval $weeks week)")) {
 	continue;
 }

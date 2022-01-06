@@ -60,7 +60,8 @@ class RebuildDateStat extends EventHandler
 				foreach (range(0,2) as $ri) {
 
 $weeks = rand(1,5); if ($year == date('Y')) $weeks=0;
-if ($has_table && $db->getOne("select type from date_stat where type='$column' and reference_index = $ri and year = '$year' and updated > date_sub(now(),interval $weeks week)")) {
+if ($year == date('Y')-1 && date('z')<10) $weeks=0; //and also update last year in first week of new year!
+if ($has_table && $weeks && $db->getOne("select type from date_stat where type='$column' and reference_index = $ri and year = '$year' and updated > date_sub(now(),interval $weeks week)")) {
 	continue;
 }
 
