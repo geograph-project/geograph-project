@@ -125,7 +125,7 @@ if (!$smarty->is_cached($template, $cacheid))
         } elseif ($type == 'personal') {
                 if ($filtered) {
                         $sql_where = "i.ftf>0 and i.moderation_status='geograph'";
-                } elseif ($sql_table == "user_date_stat i" && $when == '2021') {
+                } elseif ($sql_table == "user_date_stat i") {
 			$sql_column = "personals"; //user_date_stat is already filtered, so can't just use geosquares.
 		} else {
                         $sql_column = "geosquares"; //if NOT filtered, personal happens to be the same as geosquares.
