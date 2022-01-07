@@ -528,6 +528,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('filtered',$filtered || $when); //actully on the page consider when a filter!
 	$smarty->assign_by_ref('u',$u);
 
+	if (preg_match('/^\w+/',$sql_table,$m) && !empty($db)) {
+		$status = $db->getRow("SHOW TABLE STATUS LIKE 'tag_square_stat'");
+		$smarty->assign('stats_updated', @$status['Update_time']);
+	}
+
 	//lets find some recent photos
 	new RecentImageList($smarty);
 }

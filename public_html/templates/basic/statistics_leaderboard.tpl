@@ -30,6 +30,9 @@
 <big>{$desc}</big> (see this <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
 for details).</p>
 </div>
+{if $stats_updated}
+       <div style="float:right;font-size:0.8em; color:gray;">Last updated: {$stats_updated}</div>
+{/if}
 <br/>
 
 <table class="report">
