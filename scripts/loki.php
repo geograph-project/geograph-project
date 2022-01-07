@@ -34,6 +34,7 @@ $param=array(
 
 	//main mode, to get loop and download to a filename
 	'filename'=>false, //the filename to save the logs to! opened in 'a' mode (appends to existing file)
+	'compress'=>false, //auto-gzip the file (only happens if the file finishes building)
 	'all'=>false, //set to true so loops!
 	'date'=>false, //date to download (eg 2021-05-04) parsed by strtotime
 		'extra' => '', //extra strtotime diff. eg use --extra="+14 hour" to start downloads FROM 2pm!
@@ -96,7 +97,7 @@ if (empty($CONF['loki_address']))
 			if (!is_dir($source))
 				mkdir($source);
 
-			$cmd = "php ".__DIR__."/loki.php --filename=$source$base --date=$d --limit=5000 --all=1";
+			$cmd = "php ".__DIR__."/loki.php --filename=$source$base --date=$d --limit=5000 --all=1 --compress=1";
 			if ($param['debug']) {
 				print "$cmd --config={$param['config']}\n";
 			} else {
@@ -105,11 +106,6 @@ if (empty($CONF['loki_address']))
 		}
 
 		if (!empty($cmd)) { //actully did something!
-			$cmd = "gzip $source*.log";
-			print "$cmd\n";
-			if (!$param['debug'])
-				passthru($cmd);
-
 			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst={$CONF['s3_loki_bucket_path']} --move=1 --dry=0";
 			if ($param['debug']) {
 				print "$cmd --config={$param['config']}\n";
@@ -184,6 +180,9 @@ if (empty($CONF['loki_address']))
 		//always output the last one!
 		print_r($r);
 		print "Written to {$param['filename']}\n";
+                if ($param['compress']) {
+                        passthru("gzip -v {$param['filename']}");
+                }
 	}
 
 
