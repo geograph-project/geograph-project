@@ -433,6 +433,9 @@ function startTour() {
 		$('input#enableContrast').click(function() {
 			$('div.leaflet-tile-pane').toggleClass('applyContrast',this.checked);
 		});
+		$('input#enableHighContrast').click(function() {
+			$('div.leaflet-tile-pane').toggleClass('applyHighContrast',this.checked);
+		});
 	});
 
 {/literal}</script>
@@ -440,6 +443,7 @@ function startTour() {
 <br><br>
 <input type=checkbox id=enableUnsharp><label for=enableUnsharp>Apply 'unsharp' filter to imagery layers</label> - may help with clarity<br>
 <input type=checkbox id=enableContrast><label for=enableContrast>Apply 'contrast enhance' filter to imagery layers</label> - may also help with clarity<br>
+<input type=checkbox id=enableHighContrast><label for=enableContrast>Apply 'high contrast' filter to imagery layers</label> - extreme version<br>
 
 <svg class="svgFilter">
     <defs>
@@ -448,6 +452,12 @@ function startTour() {
             <feComposite operator="arithmetic" k1="0" k2="1.3" k3="-0.3" k4="0"
             in="SourceGraphic" in2="blurOut" />
         </filter>
+
+	<filter id="highcontrast">
+		<feComponentTransfer>
+			<feFuncR type="gamma" exponent="3.0"/><feFuncG type="gamma" exponent="3.0"/><feFuncB type="gamma" exponent="3.0"/>
+		</feComponentTransfer>
+	</filter>
     </defs>
 </svg>
 
@@ -548,6 +558,10 @@ ul.tips li {
 .applyUnsharp {
 	filter: url(#unsharpy);
 }
+.applyHighContrast {
+	filter: url(#highcontrast);
+}
+
 svg.svgFilter {
 	display:none;
 }
