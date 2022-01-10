@@ -427,23 +427,21 @@ function startTour() {
 		if ($('div#maincontent').width() > 1024) {
 			$('#map').parent().after(' &middot; <a href=# onclick="return enlargeMap()" id=enlargelink>Enlarge Map</a> ');
 		}
-		$('input#enableUnsharp').click(function() {
-			$('div.leaflet-tile-pane').toggleClass('applyUnsharp',this.checked);
-		});
-		$('input#enableContrast').click(function() {
-			$('div.leaflet-tile-pane').toggleClass('applyContrast',this.checked);
-		});
-		$('input#enableHighContrast').click(function() {
-			$('div.leaflet-tile-pane').toggleClass('applyHighContrast',this.checked);
+		$('input[name=enhance]').click(function() {
+			$('input[name=enhance]').each(function() {
+				$('div.leaflet-tile-pane').removeClass(this.value);
+			});
+			$('div.leaflet-tile-pane').addClass(this.value);
 		});
 	});
 
 {/literal}</script>
 
 <br><br>
-<input type=checkbox id=enableUnsharp><label for=enableUnsharp>Apply 'unsharp' filter to imagery layers</label> - may help with clarity<br>
-<input type=checkbox id=enableContrast><label for=enableContrast>Apply 'contrast enhance' filter to imagery layers</label> - may also help with clarity<br>
-<input type=checkbox id=enableHighContrast><label for=enableContrast>Apply 'high contrast' filter to imagery layers</label> - extreme version<br>
+<input type=radio name="enhance" value="applyNone" checked id="enableNone"><label for=enableNone>Original / No Enhancement</label><br>
+<input type=radio name="enhance" value="applyUnsharp" id=enableUnsharp><label for=enableUnsharp>Apply 'unsharp' filter to imagery layers</label> - may help with clarity<br>
+<input type=radio name="enhance" value="applyContrast" id=enableContrast><label for=enableContrast>Apply 'contrast enhance' filter to imagery layers</label> - may also help with clarity<br>
+<input type=radio name="enhance" value="applyHighContrast" id=enableHighContrast><label for=enableContrast>Apply 'high contrast' filter to imagery layers</label> - extreme version<br>
 
 <svg class="svgFilter">
     <defs>
