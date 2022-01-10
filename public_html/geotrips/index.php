@@ -73,30 +73,100 @@ if (!empty($str)) {
 } else {
   ob_start();
 
-  $trks=$db->getAll("select * from geotrips where $where order by id desc");
+  $trks=$db->getAssoc("select * from geotrips where $where order by id desc");
+
+
+require_once('geograph/conversions.class.php');
+$conv = new Conversions;
+
 
 ?>
 
   <!--RSS feed via Geograph-->
   <link rel="alternate" type="application/rss+xml" title="Geo-Trips RSS" href="/content/syndicator.php?scope[]=trip" />
 
-<script src="https://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3" type="text/javascript"></script>
+
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+        <script type="text/javascript" src="<? echo smarty_modifier_revision("/js/Leaflet.MetricGrid.js"); ?>"></script>
+        <script src="https://www.geograph.org/leaflet/leaflet-hash.js"></script>
+        <script src="<? echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
+
+<script>
+ var OSAPIKey = <? echo json_encode(@$CONF['os_api_key']); ?>;
+</script>
+
+	<script src="<? echo smarty_modifier_revision("/js/Leaflet.base-layers.js"); ?>"></script>
 
 <script type="text/javascript">
-  var osMap;
-  var trkLayer,trk,trkFeature,trkString;
-  var cont,contFeature,contString;
-  var style_trk={strokeColor:"#000000",strokeOpacity:.7,strokeWidth:4.};
-  function initmap() {
-    osMap=new OpenSpace.Map('map',{controls:[],centreInfoWindow:false});
-    osMap.addControl(new OpenSpace.Control.PoweredBy());             //  needed for T/C compliance
-    osMap.addControl(new OpenSpace.Control.CopyrightCollection());   //  needed for T/C compliance
-    osMap.addControl(new OpenSpace.Control.SmallMapControl());       //  compass and zoom buttons
-    osMap.addControl(new OpenLayers.Control.Navigation({'zoomBoxEnabled':true}));  //  mouse panning, shift-mouse to zoom into box
-    <?php print("osMap.setCenter(new OpenSpace.MapPoint(350000,630000),1);\n"); ?>
-    trkLayer=osMap.getVectorLayer();
+        var map = null ;
+        var issubmit = false;
+	var static_host = <? echo json_encode($CONF['STATIC_HOST']); ?>;
+
+	function loadmap() {
+
+	        var mapOptions =  {
+	              //  center: [54.4266, -3.1557], zoom: 13,
+        	        minZoom: 5, maxZoom: 21
+	        };
+	        var bounds = L.latLngBounds();
+
+		<?php
+		    $min = $max = array(0,0);
+		    foreach ($trks as $track) {
+		      $bbox=explode(' ',$track['bbox']);
+		      $cen[0]=(int)(($bbox[0]+$bbox[2])/2);
+		      $cen[1]=(int)(($bbox[1]+$bbox[3])/2);
+			if (!$min[0] || $cen[0] < $min[0]) $min[0] = $cen[0];
+			if (!$min[1] || $cen[1] < $min[1]) $min[1] = $cen[1];
+			if ($cen[0] > $max[0]) $max[0] = $cen[0];
+			if ($cen[1] > $max[1]) $max[1] = $cen[1];
+		    }
+			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($min[0],$min[1], 1); //$ri=1 is GB
+		    print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
+
+			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($max[0],$max[1], 1); //$ri=1 is GB
+		    print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
+		?>
+
+	        map = L.map('map', mapOptions);
+	        var hash = new L.Hash(map);
+
+		//////////////////////////////////////////////////////
+
+		if ($.localStorage && $.localStorage('LeafletBaseMap')) {
+			basemap = $.localStorage('LeafletBaseMap');
+			if (baseMaps[basemap] && basemap != "Ordnance Survey GB" && (
+				//we can also check, if the baselayer covers the location (not ideal, as it just using bounds, eg much of Ireland are on overlaps bounds of GB.
+				!(baseMaps[basemap].options)
+				 || typeof baseMaps[basemap].bounds == 'undefined'
+				 || L.latLngBounds(baseMaps[basemap].bounds).contains(mapOptions.center)     //(need to construct, as MIGHT be object liternal!
+				))
+				map.addLayer(baseMaps[basemap]);
+			else
+				map.addLayer(baseMaps["OpenStreetMap"]);
+		} else {
+			map.addLayer(baseMaps["OpenStreetMap"]);
+		}
+		if ($.localStorage) {
+			map.on('baselayerchange', function(e) {
+		  		$.localStorage('LeafletBaseMap', e.name);
+			});
+		}
+
+		map.addLayer(overlayMaps["OS National Grid"]);
+
+        	map.fitBounds(bounds, {padding:[30,30], maxZoom: 14});
+
+		addOurControls(map)
+
+		//////////////////////////////////////////////////////
+
 <?php
-    foreach ($trks as $track) {
+
+    foreach ($trks as $track_id => $track) {
       $bbox=explode(' ',$track['bbox']);
       $cen[0]=(int)(($bbox[0]+$bbox[2])/2);
       $cen[1]=(int)(($bbox[1]+$bbox[3])/2);
@@ -111,16 +181,10 @@ if (!empty($str)) {
       if ($track['title']) $title=$track['title'];
       else $title=$track['location'].' from '.$track['start'];
       $loc=$track['location'];
+
 ?>
-      // Define marker
-      pos=new OpenSpace.MapPoint(<?php print("$cen[0],$cen[1]");?>);
-      size=new OpenLayers.Size(9,9);
-      offset=new OpenLayers.Pixel(-5,-5);
-      infoWindowAnchor=new OpenLayers.Pixel(5,5);
-      icon=new OpenSpace.Icon('<?php print("{$track['type']}.png");?>',size,offset,null,infoWindowAnchor);
-//<![CDATA[
-      content='<p>';
-      content+='<a href=\"<?php print("/geotrips/{$track['id']}");?>\">';
+      var content='<p>';
+      content+='<a href=\"<?php print("/geotrips/{$track_id}");?>\">';
       content+='<img alt=\"<?php print(str_replace("'","\'",$loc));?>\" src=\"';
       content+='<?php print($thumb);?>\" />';
       content+='</a>';
@@ -129,28 +193,51 @@ if (!empty($str)) {
       content+='<?php print("by <a href=\"/profile/{$track['uid']}\">".addslashes(htmlentities2($track['user']))."</a> - $date<br />");?>';
       content+='<small>Click image to see details of this trip.</small>';
       content+='</p>';
-//]]>
-      popUpSize=new OpenLayers.Size(400,300);
-      osMap.createMarker(pos,icon,content,popUpSize);
+
 <?php
+
+	list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($cen[0],$cen[1], 1); //$ri=1
+	print "createMarker([$wgs84_lat,$wgs84_long],'{$track['type']}', content);\n";
+
       // Link multi-day trips
-      if ($track['contfrom'] && ($prevbbox=$db->getRow("select bbox from geotrips where id={$track['contfrom']}"))) {
+      if ($track['contfrom'] && ($prevbbox=$trks[$track['contfrom']])) {
         $prevbbox=explode(' ',$prevbbox['bbox']);
         $pcen[0]=(int)(($prevbbox[0]+$prevbbox[2])/2);
         $pcen[1]=(int)(($prevbbox[1]+$prevbbox[3])/2);
 ?>
-        cont=new Array();
-        cont.push(new OpenLayers.Geometry.Point(<?php print("$pcen[0],$pcen[1]");?>));
-        cont.push(new OpenLayers.Geometry.Point(<?php print("$cen[0],$cen[1]");?>));
-        contString=new OpenLayers.Geometry.LineString(cont);
-        contFeature=new OpenLayers.Feature.Vector(contString,null,style_trk);
-        trkLayer.addFeatures([contFeature]);
+			L.polyline([
+                                <? echo "[$wgs84_lat,$wgs84_long],\n";
+				list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($pcen[0],$pcen[1], 1); //$ri=1
+				echo "[$wgs84_lat,$wgs84_long]\n"; ?>
+                        ],{
+                        color: "#000000",
+                        weight: 4,
+                        opacity: 0.7
+                        }).addTo(map);
 <?php
-      }
-    }
+      } //if contfrom
+
+    } //foreach
 ?>
-  }
-   AttachEvent(window,'load',initmap,false);
+  }  //loadmap
+
+	 var icons = [];
+	 function createMarker(point,icon,html) {
+                if (!icons[icon]) {
+	                icons[icon] = L.icon({
+        	            iconUrl: static_host+"/geotrips/"+icon+".png",
+	                    iconSize:     [9, 9], // size of the icon
+        	            iconAnchor:   [5, 5], // point of the icon which will correspond to marker's location
+                	    popupAnchor:  [0, -5] // point from which the popup should open relative to the iconAnchor
+	                });
+		}
+                var marker = L.marker(point, {icon: icons[icon], draggable: false}).addTo(map);
+		if (html)
+			marker.bindPopup(html);
+      		return marker;
+	}
+
+   AttachEvent(window,'load',loadmap,false);
 
 </script>
 
@@ -180,8 +267,7 @@ You can also <a href="geotrip_edit.php">edit your existing Geo-Trips</a>.
   </p>
   <?php } ?>
   <p>
-Please note that Geo-Trips currently only work in England, Scotland, Wales and the Isle of Man as the
-map is based on the <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a>'s OpenSpace mapping.
+Please note that Geo-Trips currently only work in England, Scotland, Wales and the Isle of Man. (Support for Ireland coming soon)
   </p>
 
 <form method=get action="/content/" class="panel" style="padding:10px;margin:10px">
@@ -191,22 +277,22 @@ map is based on the <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a
 
   <table class="ruled"><tr>
     <td><b>Legend:</b></td>
-    <td><a href="?type=walk"><img src="walk.png" alt="" title="Fig.: Walk symbol"></a> Walk</td><td></td>
-    <td><a href="?type=bike"><img src="bike.png" alt="" title="Fig.: Bike symbol"></a> Cycle ride</td><td></td>
-    <td><a href="?type=boat"><img src="boat.png" alt="" title="Fig.: Boat symbol"></a> Boat trip</td><td></td>
-    <td><a href="?type=rail"><img src="rail.png" alt="" title="Fig.: Rail symbol"></a> Train ride</td><td></td>
-    <td><a href="?type=road"><img src="road.png" alt="" title="Fig.: Road symbol"></a> Drive</td><td></td>
-    <td><a href="?type=bus"><img src="bus.png"  alt="" title="Fig.: Bus symbol"></a>  Scheduled public transport</td>
+    <td><a href="?type=walk"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/walk.png" alt="" title="Fig.: Walk symbol"></a> Walk</td><td></td>
+    <td><a href="?type=bike"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/bike.png" alt="" title="Fig.: Bike symbol"></a> Cycle ride</td><td></td>
+    <td><a href="?type=boat"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/boat.png" alt="" title="Fig.: Boat symbol"></a> Boat trip</td><td></td>
+    <td><a href="?type=rail"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/rail.png" alt="" title="Fig.: Rail symbol"></a> Train ride</td><td></td>
+    <td><a href="?type=road"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/road.png" alt="" title="Fig.: Road symbol"></a> Drive</td><td></td>
+    <td><a href="?type=bus"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/bus.png"  alt="" title="Fig.: Bus symbol"></a>  Scheduled public transport</td>
   </td></tr></table>
   <div id="map" class="inner" style="width:798px;height:1300px"></div>
   <table class="ruled"><tr>
     <td><b>Legend:</b></td>
-    <td><img src="walk.png" alt="" title="Fig.: Walk symbol"> Walk</td><td></td>
-    <td><img src="bike.png" alt="" title="Fig.: Bike symbol"> Cycle ride</td><td></td>
-    <td><img src="boat.png" alt="" title="Fig.: Boat symbol"> Boat trip</td><td></td>
-    <td><img src="rail.png" alt="" title="Fig.: Rail symbol"> Train ride</td><td></td>
-    <td><img src="road.png" alt="" title="Fig.: Road symbol"> Drive</td><td></td>
-    <td><img src="bus.png"  alt="" title="Fig.: Bus symbol">  Scheduled public transport</td>
+    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/walk.png" alt="" title="Fig.: Walk symbol"> Walk</td><td></td>
+    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/bike.png" alt="" title="Fig.: Bike symbol"> Cycle ride</td><td></td>
+    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/boat.png" alt="" title="Fig.: Boat symbol"> Boat trip</td><td></td>
+    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/rail.png" alt="" title="Fig.: Rail symbol"> Train ride</td><td></td>
+    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/road.png" alt="" title="Fig.: Road symbol"> Drive</td><td></td>
+    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/bus.png"  alt="" title="Fig.: Bus symbol">  Scheduled public transport</td>
   </td></tr></table>
   <p>
 In the spirit if not the scope of Geo-Trips, here's <b>Thomas Nugent</b>'s
@@ -225,33 +311,39 @@ subscribe to an
 come in.  The list below includes all trips uploaded in the last 24 hours.
   </p>
 <?php
-  $i=0;
+  $i=1;
   if (!empty($_GET['max'])) $max=$_GET['max'];
   else $max=3;
-  while ($trks[$i]['updated']>date('U')-86400||$i<$max) {  // show all uploaded in last 24 hours, but at least three
-    if ($trks[$i]['title']) $title=htmlentities2($trks[$i]['title']);
-    else $title=htmlentities2($trks[$i]['location'].' from '.$trks[$i]['start']);
-    $descr=str_replace("\n",'</p><p>',htmlentities2($trks[$i]['descr']));
+
+  foreach ($trks as $track_id => $track) {
+    if ($track['title']) $title=htmlentities2($track['title']);
+    else $title=htmlentities2($track['location'].' from '.$track['start']);
+    $descr=str_replace("\n",'</p><p>',htmlentities2($track['descr']));
     if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
-    $gr=bbox2gr($trks[$i]['bbox']);
+    $gr=bbox2gr($track['bbox']);
     // fetch Geograph thumbnail
-    $image = new GridImage($trks[$i]['img'],true);
+    $image = new GridImage($track['img'],true);
       if ($image->isValid() && $image->moderation_status!='rejected') {
         $thumb=$image->getThumbnail(213,160,true);
       } else {
         $thumb=$CONF['STATIC_HOST'].'/photos/error120.jpg';
       }
-    $mmmyy=explode('-',$trks[$i]['date']);
-    $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities2($trks[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
+    $mmmyy=explode('-',$track['date']);
+    $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$track['uid']}\">".htmlentities2($track['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
     print('<div class="inner">');
     print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
     print("<b>$title</b><br />");
-    print("<em>".htmlentities2($trks[$i]['location'])."</em> -- A ".whichtype($trks[$i]['type'])." from ".htmlentities2($trks[$i]['start'])."<br />");
-    print("by <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities2($trks[$i]['user'])."</a>");
+    print("<em>".htmlentities2($track['location'])."</em> -- A ".whichtype($track['type'])." from ".htmlentities2($track['start'])."<br />");
+    print("by <a href=\"/profile/{$track['uid']}\">".htmlentities2($track['user'])."</a>");
     print("<div class=\"inner flt_r\">$gr</div>");
-    print("<p>$descr&nbsp;[<a href=\"/geotrips/{$trks[$i]['id']}\">more</a>]</p>");
+    print("<p>$descr&nbsp;[<a href=\"/geotrips/{$track_id}\">more</a>]</p>");
     print('<div class="row"></div>');
     print('</div>');
+
+    // show all uploaded in last 24 hours, but at least three
+    if ($track['updated']<date('U')-86400 && $i >= $max)
+	break;
+
     $i++;
   }
 ?>
