@@ -430,11 +430,16 @@ function startTour() {
 		$('input#enableUnsharp').click(function() {
 			$('div.leaflet-tile-pane').toggleClass('applyUnsharp',this.checked);
 		});
+		$('input#enableContrast').click(function() {
+			$('div.leaflet-tile-pane').toggleClass('applyContrast',this.checked);
+		});
 	});
 
 {/literal}</script>
 
-<br><br><input type=checkbox id=enableUnsharp><label for=enableUnsharp>Apply 'unsharp' filter to imagery layers</label> - may help with clarity<br>
+<br><br>
+<input type=checkbox id=enableUnsharp><label for=enableUnsharp>Apply 'unsharp' filter to imagery layers</label> - may help with clarity<br>
+<input type=checkbox id=enableContrast><label for=enableContrast>Apply 'contrast enhance' filter to imagery layers</label> - may also help with clarity<br>
 
 <svg class="svgFilter">
     <defs>
@@ -545,6 +550,10 @@ ul.tips li {
 }
 svg.svgFilter {
 	display:none;
+}
+
+.applyContrast {
+	filter: brightness(90%) contrast(130%);
 }
 
 {/literal}</style>
