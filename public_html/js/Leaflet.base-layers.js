@@ -74,7 +74,7 @@ if (window.OSAPIKey) {
     var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
     baseMaps["OS Outdoor"] = L.tileLayer(serviceUrl + '/Outdoor_3857/{z}/{x}/{y}.png?key=' + OSAPIKey, {
 	minZoom: 7,
-        maxZoom: 20,
+        maxZoom: 16,
 	bounds: [
             [ 49.528423, -10.76418 ],
             [ 61.331151, 1.9134116 ]
