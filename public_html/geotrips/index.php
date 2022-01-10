@@ -94,6 +94,9 @@ $conv = new Conversions;
         <script src="https://www.geograph.org/leaflet/leaflet-hash.js"></script>
         <script src="<? echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="<? echo smarty_modifier_revision("/js/jquery.storage.js"); ?>"></script>
+
 <script>
  var OSAPIKey = <? echo json_encode(@$CONF['os_api_key']); ?>;
 </script>
