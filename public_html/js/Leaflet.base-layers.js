@@ -70,17 +70,106 @@ baseMaps["Geograph PhotoMap"] = L.tileLayer(layerUrl, {minZoom: 6, maxZoom: 18, 
 
 	////////////////////////////////////////////////
 
+
 if (window.OSAPIKey) {
-    var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
-    baseMaps["OS Outdoor"] = L.tileLayer(serviceUrl + '/Outdoor_3857/{z}/{x}/{y}.png?key=' + OSAPIKey, {
-	minZoom: 7,
-        maxZoom: 16,
-	bounds: [
-            [ 49.528423, -10.76418 ],
-            [ 61.331151, 1.9134116 ]
-        ],
-	attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
-    });
+	var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
+
+	if (L.Proj && L.Proj.CRS) {
+		var defaultCRS = null;//map.options.crs;
+
+			// Setup the EPSG:27700 (British National Grid) projection.
+			var osgbCRS = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs',
+			{
+				resolutions: [ 896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75, 0.875, 0.4375, 0.21875, 0.109375 ],
+				origin: [ -238375.0, 1376256.0 ]
+			});
+
+			// Transform coordinates.
+			var transformCoords = function(arr) {
+				return proj4('EPSG:27700', 'EPSG:4326', arr).reverse();
+			};
+
+			var bounds = [
+				transformCoords([ -238375.0, 0.0 ]),
+				transformCoords([ 900000.0, 1376256.0 ])
+			];
+
+			var basemap1 = L.tileLayer(serviceUrl + '/Leisure_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
+				minZoom: 3,
+				maxZoom: 9,
+				bounds
+			})
+
+			var basemap2 = L.tileLayer(serviceUrl + '/Outdoor_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
+				minZoom: 10,
+				maxZoom: 13,
+ 				bounds
+			});
+
+			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1,basemap2], {
+				mapLetter: 'a',
+				attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
+			});
+
+			//this is a hack, because the built in function, notices that the newly added layer, has differnet zoom levels, and that the zoom is outside the rage
+			L.Map.prototype._updateZoomLevels = function() {};
+			// eg when change to OS map, the currnet zoom is for example 13. basemap1 is added to the map, but as it 3..9, _updateZoomLevels, notices current (13) is out of range, and calls setZoom
+			//... the setzoom happens async, so even though we then set a new zoom in the 'add' function below, the setZoom in _updateZoomLevels is STILL called.
+			// ULITIMATEY we may still need SOME of the logic from real function
+			// See https://github.com/Leaflet/Leaflet/blob/4b2946c205d0a6e51f324cfff6536d1ef7caf463/src/layer/Layer.js#L245
+
+			baseMaps['Modern OS - GB'].on('add', function(e) {
+				if (!defaultCRS)
+					defaultCRS = map.options.crs;
+
+				var center = map.getCenter();
+				var zoom = map.getZoom();
+
+				for(i in overlayMaps) {
+					if (i.indexOf('Grid') == -1) { //the grid layers do cope with differnet crs!
+						//overlayMaps[i].removeFrom(map); //seems to be a NOOP, if not on the map, so just call regardless!
+						//for some reason, it not removing the layer, so just 'disable' it instead; although this also prevents the user enabling it!
+						overlayMaps[i].options.minZoom += 100;
+					}
+				}
+
+				map.options.crs = osgbCRS;
+				map.setView(center, zoom-6); //we need this, because after changing crs the center is shifted
+                                map._resetView(map.getCenter(), map.getZoom(), true); //we need this to redraw all layers (polygons, markers...) in the new projection.
+
+				//to emulate what happens in the original _updateZoomLevels
+				map._layersMaxZoom = 13;
+				map._layersMinZoom = 3;
+
+			}).on('remove', function(e) {
+				var center = map.getCenter();
+				var zoom = map.getZoom();
+
+				for(i in overlayMaps) {
+					if (i.indexOf('Grid') == -1) { //the grid layers do cope with differnet crs!
+						overlayMaps[i].options.minZoom -= 100;
+					}
+				}
+
+				map.options.crs = defaultCRS;
+				map.setView(center, zoom+6); //we need this, because after changing crs the center is shifted
+                                map._resetView(map.getCenter(), map.getZoom(), true); //we need this to redraw all layers (polygons, markers...) in the new projection.
+
+				map._layersMaxZoom = 18; //todo, look this up from the actual layer! e.layer.options.maxZoom ??
+				map._layersMinZoom = 3;
+			});
+
+	} else {
+		baseMaps["OS Outdoor"] = L.tileLayer(serviceUrl + '/Outdoor_3857/{z}/{x}/{y}.png?key=' + OSAPIKey, {
+			minZoom: 7,
+		        maxZoom: 16,
+			bounds: [
+		            [ 49.528423, -10.76418 ],
+		            [ 61.331151, 1.9134116 ]
+		        ],
+			attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
+		});
+	}
 }
 
 	////////////////////////////////////////////////

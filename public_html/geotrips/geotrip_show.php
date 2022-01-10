@@ -42,8 +42,7 @@ require_once('geograph/searchengine.class.php');
 
 init_session();
 
-//temp as page doesnt work on https (mainly maps!)
-pageMustBeHTTP();
+pageMustBeHTTPS();
 
 
 $src = 'data-src';
@@ -81,9 +80,94 @@ $smarty->display('_std_begin.tpl','trip'.$trk['id']);
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 
+
+require_once('geograph/conversions.class.php');
+$conv = new Conversions;
+
 ?>
 
-<script src="https://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3" type="text/javascript"></script>
+
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+
+        <script type="text/javascript" src="<? echo smarty_modifier_revision("/js/Leaflet.MetricGrid.js"); ?>"></script>
+        <script src="https://www.geograph.org/leaflet/leaflet-hash.js"></script>
+        <script src="<? echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="<? echo smarty_modifier_revision("/js/jquery.storage.js"); ?>"></script>
+
+<script>
+ var OSAPIKey = <? echo json_encode(@$CONF['os_api_key']); ?>;
+</script>
+
+	<script src="<? echo smarty_modifier_revision("/js/Leaflet.base-layers.js"); ?>"></script>
+
+<script type="text/javascript">
+        var map = null ;
+        var issubmit = false;
+	var static_host = <? echo json_encode($CONF['STATIC_HOST']); ?>;
+  var points = [];
+  var moveTimer = null;
+var trackline = null;
+
+	function loadmap() {
+
+	        var mapOptions =  {
+	              //  center: [54.4266, -3.1557], zoom: 13,
+        	        minZoom: 5, maxZoom: 21
+	        };
+	        var bounds = L.latLngBounds();
+
+		<?php
+		      $bbox=explode(' ',$trk['bbox']);
+
+			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($bbox[0],$bbox[1], 1); //$ri=1 is GB
+		    print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
+
+			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($bbox[2],$bbox[3], 1); //$ri=1 is GB
+		    print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
+		?>
+
+	        map = L.map('map', mapOptions);
+	        var hash = new L.Hash(map);
+
+        	map.fitBounds(bounds, {padding:[30,30], maxZoom: 14});
+
+		//////////////////////////////////////////////////////
+
+		if ($.localStorage && $.localStorage('LeafletBaseMap')) {
+			basemap = $.localStorage('LeafletBaseMap');
+			if (baseMaps[basemap] && basemap != "Ordnance Survey GB" && (
+				//we can also check, if the baselayer covers the location (not ideal, as it just using bounds, eg much of Ireland are on overlaps bounds of GB.
+				!(baseMaps[basemap].options)
+				 || typeof baseMaps[basemap].bounds == 'undefined'
+				 || L.latLngBounds(baseMaps[basemap].bounds).contains(mapOptions.center)     //(need to construct, as MIGHT be object liternal!
+				))
+				map.addLayer(baseMaps[basemap]);
+			else
+				map.addLayer(baseMaps["OpenStreetMap"]);
+		} else if (baseMaps['Modern OS - GB']) { // && ri=1
+			map.addLayer(baseMaps['Modern OS - GB']);
+		} else {
+			map.addLayer(baseMaps["OpenStreetMap"]);
+		}
+		if ($.localStorage) {
+			map.on('baselayerchange', function(e) {
+		  		$.localStorage('LeafletBaseMap', e.name);
+			});
+		}
+
+		map.addLayer(overlayMaps["OS National Grid"]);
+
+        	map.fitBounds(bounds, {padding:[30,30], maxZoom: 14});
+
+		addOurControls(map)
+
+		//////////////////////////////////////////////////////
 
 <?php
   $bbox=explode(' ',$trk['bbox']);
@@ -91,12 +175,15 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
   $cen[1]=(int)(($bbox[1]+$bbox[3])/2);
   if ($bbox[2]-$bbox[0]>4000||$bbox[3]-$bbox[1]>3000) $scale=7;
   else $scale=8;
+
   $track=explode(' ',$trk['track']);
   $len=count($track);
+
   // fetch Geograph data
 	$engine = new SearchEngine($trk['search']);
 	$engine->criteria->resultsperpage = 250; // FIXME really?
 	$recordSet = $engine->ReturnRecordset(0, true);
+
 	while (!$recordSet->EOF) {
 		$image = $recordSet->fields;
 		if (    $image['nateastings']
@@ -113,92 +200,68 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 		}
 		$recordSet->MoveNext();
 	}
-?>
 
-<script type="text/javascript">
-  var osMap;
-  var trkLayer,trk,trkFeature,trkString;                             // track
-  var vdir,vdirFeature,vdirString;                                   // view directions
-  var style_trk={strokeColor:"#000000",strokeOpacity:.7,strokeWidth:4.};
-  var style_vdir={strokeColor:"#0000ff",strokeOpacity:1.,strokeWidth:2.};
-  var points = [];
-  var moveTimer = null;
-  function initmap() {
-    osMap=new OpenSpace.Map('map',{products: ["OV0", "OV1", "OV2", "MSR", "MS", "250KR", "250K", "50KR", "50K", "25KR", "25K", "VMLR", "VML"], controls:[],centreInfoWindow:false});
-    osMap.addControl(new OpenSpace.Control.PoweredBy());             //  needed for T/C compliance
-    osMap.addControl(new OpenSpace.Control.CopyrightCollection());   //  needed for T/C compliance
-    osMap.addControl(new OpenSpace.Control.SmallMapControl());       //  compass and zoom buttons
-    osMap.addControl(new OpenLayers.Control.Navigation({'zoomBoxEnabled':true}));  //  mouse panning, shift-mouse to zoom into box
-    <?php print("osMap.setCenter(new OpenSpace.MapPoint($cen[0],$cen[1]),$scale);\n"); ?>
-    trkLayer=osMap.getVectorLayer();
-    <? if (!empty($trk['track']) && $len>0) { ?>
-    // Define track
-    trk=new Array();
-    <?php for ($i=0;$i<$len-1;$i+=2) print("trk.push(new OpenLayers.Geometry.Point({$track[$i]},{$track[$i+1]}));\n"); ?>
-    trkString=new OpenLayers.Geometry.LineString(trk);
-    trkFeature=new OpenLayers.Feature.Vector(trkString,null,style_trk);
-    trkLayer.addFeatures([trkFeature]);
-<?php 
-    }
+	if (!empty($trk['track']) && $len>0) { ?>
+		    // Define track
+               trackline = L.polyline([
+                                <?
+				$points = array();
+				for ($i=0;$i<$len-1;$i+=2) {
+	                                list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($track[$i], $track[$i+1], 1); //$ri=1
+               		                $points[] = "[$wgs84_lat,$wgs84_long]";
+				}
+				echo implode(", ",$points); ?>
+                        ],{
+                        color: "#000000",
+                        weight: 4,
+                        opacity: 0.7
+                        }).addTo(map);
+	<?php }
+
+
     $len=count($geograph);
+
     for ($i=0;$i<$len;$i++) {
       // shift marker to centre of square indicated by GR
       fake_precision($geograph[$i]);
       $image = new GridImage();
       $image->fastInit($geograph[$i]);
-?>
-      // Define camera marker
-      pos=new OpenSpace.MapPoint(<?php print("{$geograph[$i]['viewpoint_eastings']},{$geograph[$i]['viewpoint_northings']}");?>);
-      size=new OpenLayers.Size(9,9);
-      offset=new OpenLayers.Pixel(-4,-4);
-      infoWindowAnchor=new OpenLayers.Pixel(4,4);
-      icon=new OpenSpace.Icon('walk.png',size,offset,null,infoWindowAnchor);
-      popUpSize=new OpenLayers.Size(300,320);
-      var marker = osMap.createMarker(pos,icon,null,popUpSize);
-      marker.events.register('click', marker, function(evt) {
-          scrollIntoView(<?php echo $geograph[$i]['gridimage_id']; ?>);
-      });
-      points.push([<?php print("{$geograph[$i]['viewpoint_eastings']},{$geograph[$i]['viewpoint_northings']},{$geograph[$i]['gridimage_id']}");?>]);
 
+      list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($geograph[$i]['viewpoint_eastings'], $geograph[$i]['viewpoint_northings'], 1); //$ri=1
 
-      // Define view direction
-      vdir=new Array();
-      vdir.push(new OpenLayers.Geometry.Point(<?php print("{$geograph[$i]['viewpoint_eastings']},{$geograph[$i]['viewpoint_northings']}");?>));
-<?php
       if ($geograph[$i]['nateastings']!=$geograph[$i]['viewpoint_eastings']||$geograph[$i]['natnorthings']!=$geograph[$i]['viewpoint_northings']) {  // subject GR != camera GR
-?>
-        vdir.push(new OpenLayers.Geometry.Point(<?php print("{$geograph[$i]['nateastings']},{$geograph[$i]['natnorthings']}");?>));
-<?php
+
+	list($wgs84_lat2,$wgs84_long2) = $conv->national_to_wgs84($geograph[$i]['nateastings'] , $geograph[$i]['natnorthings'], 1); //$ri=1
       } else {
         $ea=$geograph[$i]['nateastings']+round(100.*sin($geograph[$i]['view_direction']*M_PI/180.));
         $no=$geograph[$i]['natnorthings']+round(100.*cos($geograph[$i]['view_direction']*M_PI/180.));
-?>
-        vdir.push(new OpenLayers.Geometry.Point(<?php print("$ea,$no");?>));
-<?php
+
+	list($wgs84_lat2,$wgs84_long2) = $conv->national_to_wgs84($ea , $no, 1); //$ri=1
       }
+
+      // Define camera marker
 ?>
-      vdirString=new OpenLayers.Geometry.LineString(vdir);
-      vdirFeature=new OpenLayers.Feature.Vector(vdirString,null,style_vdir);
-      trkLayer.addFeatures([vdirFeature]);
+        createMarker(<? echo "[$wgs84_lat,$wgs84_long], 'walk', {$geograph[$i]['gridimage_id']}, [$wgs84_lat2,$wgs84_long2]"; ?>);
+	points.push(<? echo "[$wgs84_lat,$wgs84_long,{$geograph[$i]['gridimage_id']}]"; ?>);
 <?php
+
+	$geograph[$i]['position'] = "$wgs84_lat,$wgs84_long,$wgs84_lat2,$wgs84_long2";
     }
 ?>
 
-    osMap.events.register('move', osMap, function(evt) {
+    map.on('idle', function(evt) {
       if (moveTimer) {
         clearTimeout(moveTimer);
       }
 	if (!document.getElementById('enableScroll').checked)
 		return;
       moveTimer = setTimeout(function() {
-      var point = osMap.getCenter();
-      var east = point.getEasting();
-      var north = point.getNorthing();
+      var point = map.getCenter();
       var distance;
       var idx = -1;
       for(i=0;i<points.length;i++) {
-        var d = Math.pow(east  - points[i][0],2) +
-                Math.pow(north - points[i][1],2); //no point bothering with sqrt, as just want shortest.
+        var d = Math.pow(point.lat - points[i][0],2) +
+                Math.pow(point.lng - points[i][1],2); //no point bothering with sqrt, as just want shortest.
         if (idx == -1 || d < distance) {
           distance = d;
           idx = i;
@@ -211,9 +274,39 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
     });
 
 
-  }
+  } //loadmap
 
-  AttachEvent(window,'load',initmap,false);
+  AttachEvent(window,'load',loadmap,false);
+
+
+         var icons = [];
+         function createMarker(point,icon,gridimage_id,point2) {
+                if (!icons[icon]) {
+                        icons[icon] = L.icon({
+                            iconUrl: static_host+"/geotrips/"+icon+".png",
+                            iconSize:     [9, 9], // size of the icon
+                            iconAnchor:   [5, 5], // point of the icon which will correspond to marker's location
+                            popupAnchor:  [0, -5] // point from which the popup should open relative to the iconAnchor
+                        });
+                }
+                var marker = L.marker(point, {icon: icons[icon], draggable: false}).addTo(map);
+
+		if (gridimage_id)
+		      marker.on('click', function(evt) {
+		          scrollIntoView(gridimage_id);
+		      });
+
+		if (point2)
+                        L.polyline([point, point2],{
+                        color: "#0000ff",
+                        weight: 2,
+                        opacity: 1
+                        }).addTo(map);
+
+                return marker;
+        }
+
+
 
 </script>
 
@@ -270,21 +363,15 @@ the direction of view.  There is also a
   for ($i=0;$i<$len;$i++) {
       $image = new GridImage();
       $image->fastInit($geograph[$i]);
-      print("<p data-id=\"{$geograph[$i]['gridimage_id']}\" data-position=\"{$geograph[$i]['viewpoint_eastings']},{$geograph[$i]['viewpoint_northings']}");
-      if ($geograph[$i]['nateastings']!=$geograph[$i]['viewpoint_eastings']||$geograph[$i]['natnorthings']!=$geograph[$i]['viewpoint_northings']) {  // subject GR != camera GR
-		print ",{$geograph[$i]['nateastings']},{$geograph[$i]['natnorthings']}";
-      } else {
-        $ea=$geograph[$i]['nateastings']+round(100.*sin($geograph[$i]['view_direction']*M_PI/180.));
-        $no=$geograph[$i]['natnorthings']+round(100.*cos($geograph[$i]['view_direction']*M_PI/180.));
-		print ",$ea,$no";
-      }
-      print("\"><a href=\"/photo/{$geograph[$i]['gridimage_id']}\" title=\"".htmlentities2($geograph[$i]['title'])."\" target=\"_blank\">");
+      print("<p data-id=\"{$geograph[$i]['gridimage_id']}\" data-position=\"{$geograph[$i]['position']}\">");
+      print("<a href=\"/photo/{$geograph[$i]['gridimage_id']}\" title=\"".htmlentities2($geograph[$i]['title'])."\" target=\"_blank\">");
       print($image->getThumbnail(213,160,false,true,$src)."</a><br>");
       print("<strong>".htmlentities2($geograph[$i]['title'])."</strong>");
 	if (!empty($geograph[$i]['comment'])) {
 		print("<br><small title=\"".htmlentities2($geograph[$i]['comment'])."\">".smarty_modifier_truncate(htmlentities2($geograph[$i]['comment']),90,"... <i><a href=\"/photo/{$geograph[$i]['gridimage_id']}\" target=_blank>more</a></i>")."</small>");
 	}
       print("</p>");
+	print "\n\n";
   }
 ?>
 	</div>
@@ -332,10 +419,12 @@ $('#scroller').scroll(function() {
 
 			var bits = element.data('position').split(/,/);
 			if (bits.length > 1) {
-				var pos = new OpenSpace.MapPoint(bits[0],bits[1]);
+				var pos = [bits[0],bits[1]];
 				var zoom = (moveTimer)?null:10;
-				if (document.getElementById('enableScroll').checked)
-					osMap.setCenter(pos,zoom,false);
+				if (document.getElementById('enableScroll').checked) {
+				//	if (!map.getBounds().contains(pos).pad(-0.25)) //for some strange reason this exceeds the call stack!
+						map.panTo(pos);
+				}
 				newHighlightMarker(bits);
 			}
 		}
@@ -343,30 +432,37 @@ $('#scroller').scroll(function() {
 });
 
 function newHighlightMarker(bits) {
+
 	if (highlightMarker) {
-		osMap.removeMarker(highlightMarker);
-	        trkLayer.removeFeatures([highlightFeature]);
+		highlightMarker.removeFrom(map);
+		if (highlightFeature)
+			highlightFeature.removeFrom(map);
 	}
 
-      var pos = new OpenSpace.MapPoint(bits[0],bits[1]);
-      var size=new OpenLayers.Size(35,35);
-      var offset=new OpenLayers.Pixel(-17,-17);
-      var infoWindowAnchor=new OpenLayers.Pixel(17,17);
-      var icon=new OpenSpace.Icon('walk_focus_big_dark.png',size,offset,null,infoWindowAnchor);
-      highlightMarker = osMap.createMarker(pos,icon);
+	var icon = 'walk_focus_big_dark';
+                if (!icons[icon]) {
+                        icons[icon] = L.icon({
+                            iconUrl: static_host+"/geotrips/"+icon+".png",
+                            iconSize:     [35, 35], // size of the icon
+                            iconAnchor:   [17, 17], // point of the icon which will correspond to marker's location
+                        });
+                }
 
-     if (bits.length==2)
-	return;
+       highlightMarker = createMarker([bits[0],bits[1]], icon);
+
+       if (bits.length==2)
+		return;
 
       // Define view direction
-      var vdir=new Array();
-      vdir.push(new OpenLayers.Geometry.Point(bits[0],bits[1]));
-      vdir.push(new OpenLayers.Geometry.Point(bits[2],bits[3]));
-      var vdirString=new OpenLayers.Geometry.LineString(vdir);
-      var style_vdir={strokeColor:"#880088",strokeOpacity:0.3,strokeWidth:9.};
-      highlightFeature=new OpenLayers.Feature.Vector(vdirString,null,style_vdir);
-      trkLayer.addFeatures([highlightFeature]);
 
+       highlightFeature = L.polyline([
+				[bits[0],bits[1]],
+				[bits[2],bits[3]]
+                        ],{
+                        color: "#800080",
+                        weight: 9,
+                        opacity: 0.3
+                        }).addTo(map);
 }
 
 function scrollIntoView(gridimage_id) {
@@ -383,7 +479,6 @@ function scrollIntoView(gridimage_id) {
 
 			var bits = $(this).data('position').split(/,/);
 			if (bits.length > 1) {
-				pos = new OpenSpace.MapPoint(bits[0],bits[1]);
 				newHighlightMarker(bits);
 			}
              }

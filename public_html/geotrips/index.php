@@ -31,8 +31,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-//temp as page doesnt work on https (mainly maps!)
-pageMustBeHTTP();
+pageMustBeHTTPS();
 
 include('./geotrip_func.php');
 $db = GeographDatabaseConnection(false);
