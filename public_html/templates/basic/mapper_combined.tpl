@@ -427,10 +427,24 @@ function startTour() {
 		if ($('div#maincontent').width() > 1024) {
 			$('#map').parent().after(' &middot; <a href=# onclick="return enlargeMap()" id=enlargelink>Enlarge Map</a> ');
 		}
+		$('input#enableUnsharp').click(function() {
+			$('div.leaflet-tile-pane').toggleClass('applyUnsharp',this.checked);
+		});
 	});
 
 {/literal}</script>
 
+<br><br><input type=checkbox id=enableUnsharp><label for=enableUnsharp>Apply 'unsharp' filter to imagery layers</label> - may help with clarity<br>
+
+<svg class="svgFilter">
+    <defs>
+        <filter id="unsharpy">
+            <feGaussianBlur  result="blurOut" in="SourceGraphic" stdDeviation="5"/>
+            <feComposite operator="arithmetic" k1="0" k2="1.3" k3="-0.3" k4="0"
+            in="SourceGraphic" in2="blurOut" />
+        </filter>
+    </defs>
+</svg>
 
 
 <h3>Map Functions</h3>
@@ -524,6 +538,13 @@ ul.tips li {
 
 .easy-button-container button span {
 	line-height:30px;
+}
+
+.applyUnsharp {
+	filter: url(#unsharpy);
+}
+svg.svgFilter {
+	display:none;
 }
 
 {/literal}</style>
