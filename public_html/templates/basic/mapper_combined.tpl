@@ -441,7 +441,7 @@ function startTour() {
 <input type=radio name="enhance" value="applyNone" checked id="enableNone"><label for=enableNone>Original / No Enhancement</label><br>
 <input type=radio name="enhance" value="applyUnsharp" id=enableUnsharp><label for=enableUnsharp>Apply 'unsharp' filter to imagery layers</label> - may help with clarity<br>
 <input type=radio name="enhance" value="applyContrast" id=enableContrast><label for=enableContrast>Apply 'contrast enhance' filter to imagery layers</label> - may also help with clarity<br>
-<input type=radio name="enhance" value="applyHighContrast" id=enableHighContrast><label for=enableContrast>Apply 'high contrast' filter to imagery layers</label> - extreme version<br>
+<input type=radio name="enhance" value="applyHighContrast" id=enableHighContrast><label for=enableHighContrast>Apply 'high contrast' filter to imagery layers</label> - extreme version<br>
 
 <svg class="svgFilter">
     <defs>
