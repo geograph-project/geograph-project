@@ -173,6 +173,7 @@ representative photographs and information for every square kilometre of <a href
 
 <div style="text-align:center;clear:both;padding:10px;">
         &middot; Geograph <a href="https://schools.geograph.org.uk/">For Schools</a> 
+	&middot; {external href="https://www.geograph.org.gg/" text="Geograph Channel Islands"}
 	&middot; {external href="https://geo-en.hlipp.de/" text="Geograph Germany"}
         &middot;
 </div>
