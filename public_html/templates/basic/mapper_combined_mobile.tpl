@@ -166,6 +166,7 @@ ul.tips li {
 		mapOptions.zoom = {$zoom};
 	{/if}
 {/dynamic}
+	var static_host = '{$static_host}';
 {literal}
 
 	var map = L.map('map', mapOptions);

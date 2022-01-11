@@ -99,13 +99,13 @@
         <script type="text/javascript" src="{"/js/Leaflet.MetricGrid.js"|revision}"></script>
         <script type="text/javascript" src="{"/js/mappingLeaflet.js"|revision}"></script>
 
-	
-	{literal}
 	<script type="text/javascript">
 
         var map = null ;
         var issubmit = false;
+	var static_host = '{$static_host}';
 
+	{literal}
         function loadmap() {
 		var bounds = L.latLngBounds();
 

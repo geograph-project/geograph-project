@@ -327,6 +327,8 @@ function checkMultiFormSubmission() {
 
 {/literal}
 {dynamic}
+	var static_host = '{$static_host}';
+
 	{if $os_api_key}
 		var OSAPIKey = "{$os_api_key}";
 	{else}
@@ -922,9 +924,6 @@ $(function() {
 });
 
 {/literal}
-
-var static_host = '{$static_host}';
-
 </script>
 </head>
 <body style="background-color:white">

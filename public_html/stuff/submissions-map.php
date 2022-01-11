@@ -79,7 +79,7 @@ It's now recommended to use that instead. As can combine it with other layers al
         <script type="text/javascript">
         var map = null ;
         var issubmit = false;
-
+	var static_host = '<? echo $CONF['STATIC_HOST']; ?>';
 
                                         function loadmap() {
                                                 var newtype = readCookie('GMapType');

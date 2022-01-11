@@ -147,7 +147,7 @@ print "<p>$desc</p>";
         <script type="text/javascript">
         var map = null ;
         var issubmit = false;
-
+	var static_host = '<? echo $CONF['STATIC_HOST']; ?>';
 
                                         function loadmap() {
                                                 var newtype = readCookie('GMapType');
