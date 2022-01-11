@@ -111,7 +111,7 @@
 {/if}
 
 {if $engine->resultCount}
-	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
+	<br/><span class="pageLinks">( Page {$engine->pagesString()})</span> {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
 {/if}
 
 	{if $engine->fullText && $engine->criteria->searchclass != 'Special' && ($engine->resultCount || !($engine->display=='full' || $engine->display=='thumbs' || $engine->display=='text'))}
