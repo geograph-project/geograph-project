@@ -1,4 +1,10 @@
-{include file="_search_begin.tpl"}
+<html style="margin:0">
+<head>
+<title>Search Results</title>
+<script type="text/javascript" src="{"/js/geograph.js"|revision}"></script>
+</head>
+<body style="margin:0;padding:0">
+
 
 {if $engine->resultCount}
 <style>{literal}
@@ -19,8 +25,8 @@
 
         <link rel="stylesheet" href="https://www.geograph.org/leaflet/Leaflet.Photo/Leaflet.Photo.css?v=2" />
 
-	<div style="position:relative; width:800px; height:600px; max-width:95vw; max-height:95vh">
-		<div id="map" style="width:800px; height:600px; max-width:95vw; max-height:95vh"></div>
+	<div style="position:relative; width:800px; height:600px; max-width:100vw; max-height:100vh">
+		<div id="map" style="width:800px; height:600px; max-width:100vw; max-height:100vh"></div>
 		<div id="message" style="z-index:10000;position:absolute;top:0;left:50px;background-color:white;font-size:1em;font-family:sans-serif;opacity:0.8"></div>
 		<div id="gridref" style="z-index:10000;position:absolute;top:0;right:180px;background-color:white;font-size:1em;font-family:sans-serif;opacity:0.8;padding:1px;"></div>
 	</div>
@@ -66,7 +72,7 @@ function loadMap() {
 		        minZoom: 5, maxZoom: 21
 	        };
 	        map = L.map('map', mapOptions);
-	        var hash = new L.Hash(map);
+	        //var hash = new L.Hash(map);
 
 		//////////////////////////////////////////////////////
 
@@ -118,7 +124,7 @@ function loadMap() {
 
 		var rows = [];
 
-		//this format is basically emulating the 'json' feed format. So both can just be passed to addRows!
+		//this format is emulating the 'json' feed format. So both can just be passed to addRows!
 {/literal}{foreach from=$engine->results item=image}
 		{literal}rows.push({{/literal}
 			title: {"`$image->grid_reference` : `$image->title`"|latin1_to_utf8|json_encode},
@@ -140,70 +146,7 @@ function loadMap() {
                 {/if}
 
 {literal}
-	$('.pageLinks a[href*="page="]').click(loadResults);
 }
-
-//////////////////////////////////////////////////////
-
-var lastPage = null;
-function loadResults(e) {
-	if ($(this).hasClass('disabled')) {
-                e.preventDefault();
-                return false;
-	}
-	
-	if (m = this.href.match(/i=(\d+)&.*page=(\d+)/)) {
-		var url = "/feed/results/"+m[1]+"/"+m[2]+".json";
-		if (!done[url]) {
-			done[url] = 1;
-			$('#message').show().text('Fetching Results for page '+m[2]+'...');
-
-			 $.ajax({
-			      url: url,
-			      dataType: 'json',
-			      cache: true,
-			      success: function(results) {
-				if (results && results.items && results.items.length)
-					addRows(results.items);
-                                setTimeout(function() {
-					$('.pageLinks a[href]').css({cursor:'pointer'}).removeClass('disabled');
-			        }, 2500);
-			      }
-			 });
-
-			if (!lastPage && $('.pageLinks a:contains("last")').length) {
-				if (m2 = $('.pageLinks a:contains("last")').attr('href').match(/i=(\d+)&.*page=(\d+)/) )
-					lastPage = m2[2];
-			}
-			if ($('.pageLinks a:contains("next")').length && lastPage) {
-				var nextPage = parseInt(m[2],10)+1;
-				if (nextPage <= lastPage) {
-					$('.pageLinks a:contains("next")').attr('href','/search.php?i='+m[1]+'&page='+nextPage); //this is just a fake URL enough for this event!
-				} else {
-					$('.pageLinks a:contains("next")').remove();
-				}
-			}
-
-			var pagelinks = $('.pageLinks a[href$="page='+m[2]+'"], .pageLinks a[href*="page='+m[2]+'&"]');
-
-			if (pagelinks.length) {
-				pagelinks.removeAttr('href').css({fontWeight:'bold'});
-			} else {
-				if ($('.pageLinks a:contains("next")').length) {
-					$('.pageLinks a:contains("next")').before(' <b>'+m[2]+'</b> ');
-				} else {
-					$('.pageLinks').append(' <b>'+m[2]+'</b>');
-				}
-			}
-			$('.pageLinks a[href]').css({cursor:'not-allowed'}).addClass('disabled');
-
-			//prevent the normal click as we hijacked it!
-			e.preventDefault();
-			return false;
-		}
-	}
-}
-
 
 //////////////////////////////////////////////////////
 
@@ -263,20 +206,11 @@ AttachEvent(window,'load',loadMap,false);
 //]]>
 </script>
 	{/literal}{/if}
-	{if $nofirstmatch}
-	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq|escape:"html"}, <a href="/submit.php?gridreference={$engine->criteria->searchq|escape:"url"}">Submit Yours Now</a>!]</p>
-	{/if}
-	{if $singlesquares}
-	<p style="font-size:0.8em">[<a href="/squares.php?p={math equation="900*floor(y)+900-floor(x)" x=$engine->criteria->x y=$engine->criteria->y}&amp;distance={$singlesquare_radius}">{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo</a> - can you <a href="/submit.php">add more</a>?]</p>
-	{/if}
-
-
-	{if $engine->results}
-	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, <span class="pageLinks">( Page {$engine->pagesString()})</span>
-	
-	{/if}
 {else}
 	{include file="_search_noresults.tpl"}
 {/if}
 
-{include file="_search_end.tpl"}
+</body>
+</html>
+
+

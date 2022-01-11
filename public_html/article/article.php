@@ -494,7 +494,7 @@ function smarty_function_articletext($input) {
 	$replacement[]='<iframe src="/search.php?i=\1&amp;temp_displayclass=mooflow_embed" width="750" height="430"></iframe>';
 
 	$pattern[]='/\[gmap=(\d+)\]/';
-	$replacement[]='<iframe src="/search.php?i=\1&amp;temp_displayclass=gmap_embed" width="750" height="430"></iframe>';
+	$replacement[]='<iframe src="/search.php?i=\1&amp;temp_displayclass=map_embed" width="750" height="430"></iframe>';
 
 	$pattern[]='/\[slidebig=(\d+)\]/';
 	$replacement[]='<iframe src="/search.php?i=\1&amp;temp_displayclass=slidebig" width="750" height="750"></iframe>';
