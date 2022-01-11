@@ -105,6 +105,11 @@ if (isset($_POST['msg']))
 		$errors['msg']="Sorry, this looks like spam";
 	}
 
+	if ($from_email == 'sample@email.tst') {
+		$ok=false;
+		$errors['msg']="Sorry, this looks like spam";
+	}
+
 	//if not logged in or they been busy - lets ask them if a person! (plus jump though a few hoops to make it harder to program a bot)
 	if ($ok && ($USER->user_id == 0 || $throttle || empty($_SERVER['HTTP_REFERER']) )) {
 
