@@ -133,9 +133,10 @@ var trackline = null;
 		?>
 
 	        map = L.map('map', mapOptions);
-	        var hash = new L.Hash(map);
+	        //var hash = new L.Hash(map);
 
         	map.fitBounds(bounds, {padding:[30,30], maxZoom: 14});
+		map.setMaxBounds(bounds.pad(2.5));
 
 		//////////////////////////////////////////////////////
 
