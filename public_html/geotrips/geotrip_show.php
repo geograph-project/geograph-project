@@ -344,7 +344,7 @@ the direction of view.  There is also a
 <a href="/search.php?i=<?php print($trk['search']);?>&amp;displayclass=slide">slideshow</a> of this trip.
   </small>
 
-( <i> <input type=checkbox id="enableScroll" checked> <label for="enableScroll">Auto-sync scrolling and map dragging</label></i> )
+<span class=nowrap>( <input type=checkbox id="enableScroll" checked> <i><label for="enableScroll">Auto-sync scrolling and map dragging</label></i> )</span>
 
 </p></div>
 
@@ -420,11 +420,11 @@ $('#scroller').scroll(function() {
 
 			var bits = element.data('position').split(/,/);
 			if (bits.length > 1) {
-				var pos = [bits[0],bits[1]];
-				var zoom = (moveTimer)?null:10;
 				if (document.getElementById('enableScroll').checked) {
-				//	if (!map.getBounds().contains(pos).pad(-0.25)) //for some strange reason this exceeds the call stack!
-						map.panTo(pos);
+					//calling getBounds directly here exceeds the call stack!, so launder it via setTimeout
+					setTimeout("var pos = ["+bits.slice(0,2).join(',')+"];"+
+						"if (!map.getBounds().pad(-0.25).contains(pos)) "+
+						"	map.panTo(pos);", 50);
 				}
 				newHighlightMarker(bits);
 			}
