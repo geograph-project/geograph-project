@@ -303,12 +303,13 @@ if (isset($_GET['fav']) && $i) {
 		$data['description'] = $page['title'];
 
 		$ids = array();
+		$last = null; //filter for immidate duplicates. (eg when there s a thumbnail AND a textlink) - but dont filter all duplicates, in case still displaying images in sequences... 
 		if (preg_match_all("/\[\[\[?(\d+)\]?\]\]|\[image id=(\d+)/",$page['content'],$g_matches)) {
                          foreach ($g_matches[1] as $idx => $g_id) {
-                                if (!empty($g_id))
-					$ids[] = $g_id;
-                                if (!empty($g_matches[2][$idx]))
-					$ids[] = $g_matches[2][$idx];
+                                if (!empty($g_id) && $last != $g_id)
+					$ids[] = $last = $g_id;
+                                if (!empty($g_matches[2][$idx]) && $last != $g_matches[2][$idx])
+					$ids[] = $last = $g_matches[2][$idx];
                         }
 		}
 
