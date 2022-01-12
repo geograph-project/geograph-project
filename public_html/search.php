@@ -1027,10 +1027,12 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	$engine->display = $display;
 	$template = 'search_results_'.$display.'.tpl';
 
-	if ($display == 'map' || $display == 'spelling') {
-		//temp as page doesnt work on https (mainly maps!)
+	if ($display == 'map')
+		//Access to XMLHttpRequest at 'http://www.geograph.org.uk/feed/results/150319469/2.json' from origin 'http://www.geograph.org.uk' has been blocked by CORS policy: The request client is not a secure context and the resource is in more-private address space `local`.
+		pageMustBeHTTPS();
+	if ($display == 'spelling')
+		//temp as page submits to non-secure editimage.php
 		pageMustBeHTTP();
-	}
 
 	$ab=floor($i%10000);
 	$cacheid="search|$ab|$i.$pg";
