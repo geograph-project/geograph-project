@@ -36,6 +36,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 	<script src="{"/js/Leaflet.MetricGrid.js"|revision}"></script>
 
+	<script src="https://www.geograph.org/leaflet/leaflet-maskcanvas-master/src/QuadTree.js"></script>
+	<script src="https://www.geograph.org/leaflet/leaflet-maskcanvas-master/src/L.GridLayer.MaskCanvas.js"></script>
+
         <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
         <script src="https://www.geograph.org/leaflet/Leaflet.Photo/Leaflet.Photo.js"></script>
 
