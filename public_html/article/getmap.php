@@ -38,7 +38,7 @@ $mkey = intval($_GET['content_id']);
 
 $i = $memcache->name_get('content2search',$mkey);
 
-if (empty($i)) {
+if (empty($i) || !empty($_GET['refresh'])) {
 	if ($row = $db->getRow("SELECT content_id,source,title FROM content WHERE content_id= ".intval($_GET['content_id']))) { //todo, could also check has rows in 'gridiamge_content'!!?
 		$data = array();
                 $data['orderby'] = 'seq_id';
