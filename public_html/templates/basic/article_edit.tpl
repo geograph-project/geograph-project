@@ -260,7 +260,12 @@ function makeUneditable() {
 	<label for="content">Content:</label> (see markup reference at bottom of page)
 	<textarea rows="40" cols="80" name="content" style="width:58em">{$content|escape:"html"}</textarea></p>
 
-		<div class="fieldnotes">Note: If use a external image [img=http://othersite.com...] the URL will be automatically replaced with a copy hosted on https://media.geograph.org.uk/ - see <a href="/discuss/?action=vthread&topic=29847">this thread</a> for more info.</div>
+		<div class="fieldnotes">Note: If use a external image [img=http://othersite.com...] the URL will be automatically replaced with a copy hosted on https://media.geograph.org.uk/ - see <a href="/discuss/?action=vthread&topic=29847">this thread</a> for more info.
+
+		{if $content_id && $images}<br><br>
+			Tip: Can now get a <a href="getmap.php?content_id={$content_id}" target="_blank">embeddable map of images [{$images}] used in this article</a>
+		{/if}
+		</div>
 
 
 	{if $errors.content}</div>{/if}

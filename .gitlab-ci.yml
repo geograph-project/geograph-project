@@ -51,8 +51,6 @@ build/memgator:
   stage: staging
   environment:
     url: https://cloud.geograph.org.uk
-    kubernetes:
-      namespace: staging
   when: manual
 
 staging/carrot2-dcs:
@@ -103,8 +101,6 @@ staging/memgator:
   stage: production
   environment:
     url: https://www.geograph.org.uk/
-    kubernetes:
-      namespace: production
   rules:
     - if: '$CI_COMMIT_BRANCH != $GEO_REGION'
       when: never

@@ -72,7 +72,10 @@ if (!empty($_GET['q']))
 #########################################
 
 if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
-        $mobile_url = "https://m.geograph.org.uk/of/".urlencode2($_GET['q']);
+	if (!empty($_GET['place']))
+	        $mobile_url = "https://m.geograph.org.uk/place/".urlencode2($_GET['q']);
+	else
+	        $mobile_url = "https://m.geograph.org.uk/of/".urlencode2($_GET['q']);
 }
 
 init_session();

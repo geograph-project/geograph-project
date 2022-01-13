@@ -10,7 +10,7 @@ var baseMaps = {};
 
 	var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 	var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
-baseMaps["OpenStreetMap"] = L.tileLayer(osmUrl, {minZoom: 5, maxZoom: 21, attribution: osmAttrib});
+baseMaps["OpenStreetMap"] = L.tileLayer(osmUrl, {minZoom: 5, maxZoom: 19, attribution: osmAttrib});
 
 /*
         var cycleUrl='https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=42a8aaad46fa4fd784104f2870221993';
@@ -39,8 +39,8 @@ baseMaps["Ordnance Survey GB"] = L.tileLayer.bing({'bingMapsKey':BING_KEY,'minZo
 				'Imagery &copy; <a href="https://mapbox.com">Mapbox</a>',
 			mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/256/{z}/{x}/{y}?access_token=' + mbToken + '&';
 
-baseMaps["MapBox Grayscale"] = L.tileLayer(mbUrl, {id: 'geograph/ckxte5u8hucaf15ns8hz5ucmd', attribution: mbAttr});
-baseMaps["MapBox Imagery"] = L.tileLayer(mbUrl, {id: 'geograph/cjh8zse9f2lq32spb7s5vmvbk',   attribution: mbAttr});
+baseMaps["MapBox Grayscale"] = L.tileLayer(mbUrl, {id: 'geograph/ckxte5u8hucaf15ns8hz5ucmd', attribution: mbAttr, minZoom: 1, maxZoom: 18});
+baseMaps["MapBox Imagery"] = L.tileLayer(mbUrl, {id: 'geograph/cjh8zse9f2lq32spb7s5vmvbk',   attribution: mbAttr, minZoom: 1, maxZoom: 18});
 
 	//https://leaflet-extras.github.io/leaflet-providers/preview/
 baseMaps["Watercolour"] = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png', {
@@ -51,6 +51,7 @@ baseMaps["Watercolour"] = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net
 	});
 
 baseMaps["ESRI Imagery"] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+		minZoom: 1, maxZoom: 18,
 		attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 	});
 
@@ -95,19 +96,22 @@ if (window.OSAPIKey) {
 			];
 
 			var basemap1 = L.tileLayer(serviceUrl + '/Leisure_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
-				minZoom: 3,
+				//crs: osgbCRS, its hardcoded into the 'add' event below, rather than from options atm
+				minZoom: 3, //these are in osgbCRS, not the default
 				maxZoom: 9,
 				bounds
 			})
 
 			var basemap2 = L.tileLayer(serviceUrl + '/Outdoor_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
-				minZoom: 10,
+				//crs: osgbCRS,
+				minZoom: 10, //these are in osgbCRS, not the default
 				maxZoom: 13,
  				bounds
 			});
 
 			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1,basemap2], {
 				mapLetter: 'a',
+				//todo, could add zoom range (in default CRS) so that LayerControl can dynamically enable/dsable tickbox
 				attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
 			});
 
