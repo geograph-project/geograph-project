@@ -72,7 +72,7 @@ function loadMap() {
 
 	        var mapOptions =  {
 	              //  center: [54.4266, -3.1557], zoom: 13,
-		        minZoom: 5, maxZoom: 21
+//		        minZoom: 5, maxZoom: 21
 	        };
 	        map = L.map('map', mapOptions);
 	        //var hash = new L.Hash(map);

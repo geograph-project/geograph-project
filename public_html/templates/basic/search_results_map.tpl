@@ -66,7 +66,7 @@ function loadMap() {
 
 	        var mapOptions =  {
 	              //  center: [54.4266, -3.1557], zoom: 13,
-		        minZoom: 5, maxZoom: 21
+//		        minZoom: 5, maxZoom: 21
 	        };
 	        map = L.map('map', mapOptions);
 	        var hash = new L.Hash(map);
@@ -243,6 +243,8 @@ function addRows(rows,updateLayer) {
 
 		if (!map._loaded || !map.getBounds().contains(overlayMaps['Search Results'].getBounds()) )
 			map.fitBounds(overlayMaps['Search Results'].getBounds());
+			//todo, should also set a 'minZoom', eg OS Outdoor, has minZoom of 7!
+			// .. and/or should check if results are outside of bounds of tiellayer (eg irelend only layers) 
 
 		$('#message').show().text('Added '+newRows.length+' images, now '+totalImages+' total');
 		if (messageTimer)
