@@ -95,6 +95,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 
 			$content = preg_replace("/\n{2,}/","\n",$content);
 
+			$updates[] = "`images` = ".count($this->gridimage_ids);
 			$updates[] = "`words` = ".$db->Quote($content);
 
 			#todo tags.
