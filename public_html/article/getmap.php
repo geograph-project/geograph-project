@@ -44,13 +44,19 @@ if (empty($i)) {
                 $data['orderby'] = 'seq_id';
                 $data['description'] = "in ".ucfirst($row['source']).": ".$row['title'];
 		$data['searchq'] = "inner join gridimage_content using (gridimage_id) where content_id = {$row['content_id']}";
-		$data['resultsperpage'] = 250;
+
+		//$data['resultsperpage'] = 250; --- anoyingly, this enfoices a limit of 100, so have to work aournd that.. 
+		$before = $USER->search_results ?? null;
+		$USER->search_results = 250;
+
                 $data['adminoverride'] = 1; //this allows it as a 'Special' search
 
 		$engine = new SearchEngineBuilder('#');
         	$i = $engine->buildAdvancedQuery($data,false);
 
 		$memcache->name_set('content2search',$mkey,$i,$memcache->compress,$memcache->period_long*4);
+
+		$USER->search_results = $before;
 	} else {
 		header("HTTP/1.0 404 Not Found");
 		header("Status: 404 Not Found");
