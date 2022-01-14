@@ -13,6 +13,14 @@ function unloadMess() {
 //this is unreliable with AttachEvent
 window.onbeforeunload=unloadMess;
 
+function cancelMess() {
+	window.onbeforeunload=null;
+}
+function setupSubmitForm() {
+	AttachEvent(document.forms['theForm'],'submit',cancelMess,false);
+}
+AttachEvent(window,'load',setupSubmitForm,false);
+
 {/literal}</script>
 
 {if $error}
@@ -64,6 +72,7 @@ window.onbeforeunload=unloadMess;
 
 <div class="field">
 	{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
+	{if $errors.gridsquare_id}<div class="formerror"><p class="error">{$errors.gridsquare_id}</p>{/if}
 
 	<label for="grid_reference">Relevant Grid Square:</label>
 	<input type="text" name="grid_reference" value="{$grid_reference|escape:"html"}" maxlength="12" size="6"/>
@@ -71,6 +80,7 @@ window.onbeforeunload=unloadMess;
 	<div class="fieldnotes">Square in which this event is located</div>
 
 	{if $errors.grid_reference}</div>{/if}
+	{if $errors.gridsquare_id}</div>{/if}
 </div>
 
 <div class="field">
