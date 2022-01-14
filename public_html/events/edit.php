@@ -75,10 +75,9 @@ $cacheid = '';
 if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$errors = array();
 	
-
 	$_POST['event_date']=sprintf("%04d-%02d-%02d",$_POST['event_dateYear'],$_POST['event_dateMonth'],$_POST['event_dateDay']);
 	$_POST['event_time']=$_POST['event_date'];
-	$_POST['title'] = preg_replace('/[^\w-\., ]+/','',trim($_POST['title']));
+	$_POST['title'] = preg_replace('/[^\w\., -]+/','',trim($_POST['title']));
 	
 	if ($_POST['title'] == "New Event")
 		$errors['title'] = "Please give a meaningful title";
@@ -90,8 +89,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		} else 
 			$errors['grid_reference'] = $gs->errormsg;
 	}
-	
-	
+
 	$updates = array();
 	foreach (array('url','title','description','event_time','gridsquare_id','gridimage_id') as $key) {
 		if ($page[$key] != $_POST[$key]) {
@@ -113,6 +111,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		
 		$sql = "UPDATE geoevent SET ".implode(',',$updates)." WHERE geoevent_id = ".$db->Quote($_REQUEST['id']);
 	}
+
 	if (!count($errors) && count($updates)) {
 		
 		$db->Execute($sql);
@@ -138,4 +137,3 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 $smarty->display($template, $cacheid);
 
 	
-?>
