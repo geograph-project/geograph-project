@@ -81,7 +81,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	
 
 	$_POST['published']=sprintf("%04d-%02d-%02d %02d:%02d:%02d",$_POST['publishedYear'],$_POST['publishedMonth'],$_POST['publishedDay'],$_POST['publishedHour'],$_POST['publishedMinute'],$_POST['publishedSecond']);
-	$_POST['title'] = preg_replace('/[^\w-\.,\' ]+/','',trim($_POST['title']));
+	$_POST['title'] = preg_replace('/[^\w\.,\' -]+/','',trim($_POST['title']));
 	
 	if ($_POST['title'] == "New Entry")
 		$errors['title'] = "Please give a meaningful title";

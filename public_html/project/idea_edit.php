@@ -79,7 +79,7 @@ $cacheid = '';
 if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$errors = array();
 
-	$_POST['title'] = preg_replace('/[^\w-\.,\' ]+/','',trim($_POST['title']));
+	$_POST['title'] = preg_replace('/[^\w\.,\' -]+/','',trim($_POST['title']));
 
 	if ($_POST['title'] == "New Entry")
 		$errors['title'] = "Please give a meaningful title";
