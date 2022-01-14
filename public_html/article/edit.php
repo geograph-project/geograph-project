@@ -271,8 +271,6 @@ foreach ($results as $id => $row) {
 	if (!empty($page['article_id']) && is_numeric($page['article_id']))
 		$smarty->assign($db->getRow("select content_id,article_stat.images from article left join content on (foreign_id = article_id and source = 'article') left join article_stat using (article_id) where article_id = {$page['article_id']}"));
 
-print_r($smarty);
-
 $smarty->display($template, $cacheid);
 
 
