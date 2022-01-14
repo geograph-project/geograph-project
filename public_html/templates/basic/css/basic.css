@@ -1581,3 +1581,10 @@ a.about {
 .content_photogray .shadow img, .content_photogray img.shadow {
         box-shadow: 3px 3px 8px #333;
 }
+
+/* this is mathing what related.js will do */
+@media all and (min-width : 1024px) {
+	.photopage {
+		margin-right:150px;
+	}
+}
