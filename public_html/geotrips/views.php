@@ -37,7 +37,7 @@ print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
 
 $sql = "select id,if(title='', concat(location,' from ',start),title) as title,views,if(first_view > '2020-03-31',date(first_view),'unknown') as first,date(last_view) as last from geotrips where uid = {$USER->user_id} order by last_view desc";
 
-print "<p>We only started counting views for geotrips in March 2020. Views prior to that are NOT counted. This in theory is only people, but some counts may be inflated by bots viewing the page. Note these figures including you (and moderators) viewing the trip as well.</p>";
+print "<p>We only started counting views for geotrips <b>in March 2020. Views prior to that are NOT counted.</b> This in theory is only people, but some counts may be inflated by bots viewing the page. Note these figures including you (and moderators) viewing the trip as well.</p>";
 
 dump_sql_table($sql,'Views Since 23rd March 2020');
 
