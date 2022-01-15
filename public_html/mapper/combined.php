@@ -71,6 +71,9 @@ if (isset($_GET['t'])) {
 		$smarty->assign('zoom', 12);
 	}
 
+} elseif (!empty($_GET['gridref']) && preg_match('/^[A-Z]{1,2}\s*\d+\s*\d$/',$_GET['gridref'])) {
+        $smarty->assign('gridref',$_GET['gridref']);
+
 } elseif (!empty($_SESSION['gridref'])) {
         $smarty->assign('gridref',$_SESSION['gridref']);
 }

@@ -165,10 +165,10 @@ ul.tips li {
 {dynamic}
 	{if $gridref}
 		 var wgs84=new GT_WGS84();
-                 wgs84 = wgs84.parseGridRef('{$gridref}'); //technically a factory method
+                 wgs84 = wgs84.parseGridRef(gridref = '{$gridref}'); //technically a factory method
 
                  if (wgs84)
-                          mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
+                        mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
 	{/if}
 	{if $zoom}
 		mapOptions.zoom = {$zoom};
@@ -294,6 +294,11 @@ ul.tips li {
 	clickOptions['limit'] = 6;
 	
 	map.addLayer(L.geographClickLayer(clickOptions));
+
+
+	if (wgs84 && gridref && gridref.length > 6)
+		L.marker(mapOptions.center).addTo(map);
+
 
 {/literal}</script>
 

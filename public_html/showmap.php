@@ -38,7 +38,8 @@ if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
 	exit;
 }
 
-if (!empty($_SERVER['HTTP_REFERER']) && !preg_match('/^https?:\/\/(www|m|schools)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER'])	) {
+
+if (!empty($_SERVER['HTTP_REFERER']) && !preg_match('/^https?:\/\/(www|m|schools|development)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER'])	) {
 
 	header("HTTP/1.0 401 Forbidden");
         print "<h3>Access Denied</h3>" ;
@@ -51,6 +52,19 @@ if (!empty($_SERVER['HTTP_REFERER']) && !preg_match('/^https?:\/\/(www|m|schools
 
         exit;
 }
+
+##########################################################
+
+if (!empty($_GET['gridref']) && preg_match('/^[A-Z]{1,2}\s*\d+\s*\d$/',$_GET['gridref'])) {
+	header("Location: /mapper/combined.php?mobile=1&gridref=".preg_replace('/\s+/','',$_GET['gridref']));
+} else {
+	print "404";
+}
+
+exit;
+
+##########################################################
+
 
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
