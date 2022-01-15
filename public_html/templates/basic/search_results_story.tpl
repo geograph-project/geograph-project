@@ -60,7 +60,7 @@ the direction of view.
 {/literal}{foreach from=$engine->results item=image}
 	{if $image->viewpoint_eastings && $image->nateastings}
 
-		<p data-id="{$image->gridimage_id}" data-position="{$image->viewpoint_eastings},{$image->viewpoint_northings},{$image->nateastings},{$image->natnorthings}">
+		<p data-id="{$image->gridimage_id}">
 
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true,$src)}</a><br>
 
@@ -71,7 +71,7 @@ the direction of view.
 		{/if}
 		</p>
 	{/if}
-{/foreach}{literal}
+{/foreach}
 
 	</div>
   </div>
@@ -80,98 +80,158 @@ the direction of view.
   <p class="mapwidth"><small></small></p>
   
 
-<script src="https://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3&debug=true" type="text/javascript"></script>
+
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+
+        <script type="text/javascript" src="{"/js/Leaflet.MetricGrid.js"|revision}"></script>
+        <script src="https://www.geograph.org/leaflet/leaflet-hash.js"></script>
+        <script src="{"/mapper/geotools2.js"|revision}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+	<script src="{"/js/jquery.storage.js"|revision}"></script>
 <script src="//cdn.jsdelivr.net/jquery.scrollto/2.1.2/jquery.scrollTo.min.js"></script>
 
+<script>
+ var OSAPIKey = '{$os_api_key}';
+</script>
+
+	<script src="{"/js/Leaflet.base-layers.js"|revision}"></script>
+
 <script type="text/javascript">
-  var osMap;
-  var trkLayer,trk,trkFeature,trkString;                             // track
-  var vdir,vdirFeature,vdirString;                                   // view directions
-  var style_trk={strokeColor:"#000000",strokeOpacity:.7,strokeWidth:4.};
-  var style_vdir={strokeColor:"#0000ff",strokeOpacity:1.,strokeWidth:2.};
+        var map = null ;
+        var issubmit = false;
+	var static_host = '{$static_host}';
   var points = [];
   var moveTimer = null;
-  function initmap() {
-    osMap=new OpenSpace.Map('map',{products: ["OV0", "OV1", "OV2", "MSR", "MS", "250KR", "250K", "50KR", "50K", "25KR", "25K", "VMLR", "VML"], controls:[],centreInfoWindow:false});
-    osMap.addControl(new OpenSpace.Control.PoweredBy());             //  needed for T/C compliance
-    osMap.addControl(new OpenSpace.Control.CopyrightCollection());   //  needed for T/C compliance
-    osMap.addControl(new OpenSpace.Control.SmallMapControl());       //  compass and zoom buttons
-    osMap.addControl(new OpenLayers.Control.Navigation({'zoomBoxEnabled':true}));  //  mouse panning, shift-mouse to zoom into box
-   
-   osMap.setCenter(new OpenSpace.MapPoint(350000,630000),1);
-   bounds = new OpenLayers.Bounds();
- 
-    trkLayer=osMap.getVectorLayer();
-   
+  
+{literal}
+	function loadmap() {
+
+	        var mapOptions =  {
+	              //  center: [54.4266, -3.1557], zoom: 13,
+        	//        minZoom: 5, maxZoom: 21
+	        };
+	        var bounds = L.latLngBounds();
+
+	        map = L.map('map', mapOptions);
+	        //var hash = new L.Hash(map);
+
+        	//////////////////////////////////////////////////////
+
+		if ($.localStorage && $.localStorage('LeafletBaseMap')) {
+			basemap = $.localStorage('LeafletBaseMap');
+			if (baseMaps[basemap] && basemap != "Ordnance Survey GB" && (
+				//we can also check, if the baselayer covers the location (not ideal, as it just using bounds, eg much of Ireland are on overlaps bounds of GB.
+				!(baseMaps[basemap].options)
+				 || typeof baseMaps[basemap].bounds == 'undefined'
+				 || L.latLngBounds(baseMaps[basemap].bounds).contains(mapOptions.center)     //(need to construct, as MIGHT be object liternal!
+				))
+				map.addLayer(baseMaps[basemap]);
+			else
+				map.addLayer(baseMaps["OpenStreetMap"]);
+		} else if (baseMaps['Modern OS - GB']) { // && ri=1
+			map.addLayer(baseMaps['Modern OS - GB']);
+		} else {
+			map.addLayer(baseMaps["OpenStreetMap"]);
+		}
+		if ($.localStorage) {
+			map.on('baselayerchange', function(e) {
+		  		$.localStorage('LeafletBaseMap', e.name);
+			});
+		}
+
+		map.addLayer(overlayMaps["OS National Grid"]);
+
+		addOurControls(map)
+
+		//////////////////////////////////////////////////////
 {/literal}{foreach from=$engine->results item=image}
 	{if $image->viewpoint_eastings && $image->nateastings}
-   
-      // Define camera marker
-      pos=new OpenSpace.MapPoint({$image->viewpoint_eastings},{$image->viewpoint_northings});
-      size=new OpenLayers.Size(9,9);
-      offset=new OpenLayers.Pixel(-4,-9);    // No idea why offset=-9 rather than -4 but otherwise the view line doesn't start at the centre
-      infoWindowAnchor=new OpenLayers.Pixel(4,4);
-      icon=new OpenSpace.Icon('/geotrips/walk.png',size,offset,null,infoWindowAnchor);
-      popUpSize=new OpenLayers.Size(300,320);
-      var marker = osMap.createMarker(pos,icon,null,popUpSize);
-      marker.events.register('click', marker, function(evt) {literal}{{/literal}
-          scrollIntoView({$image->gridimage_id});
-      {literal}}{/literal});
-      points.push([{$image->viewpoint_eastings},{$image->viewpoint_northings},{$image->gridimage_id}]);
-	bounds.extend(new OpenLayers.LonLat({$image->viewpoint_eastings},{$image->viewpoint_northings}));
-	bounds.extend(new OpenLayers.LonLat({$image->nateastings},{$image->natnorthings}));
-
-      // Define view direction
-      vdir=new Array();
-      vdir.push(new OpenLayers.Geometry.Point({$image->viewpoint_eastings},{$image->viewpoint_northings}));
-      {if $image->nateastings && ($image->nateastings!=$image->viewpoint_eastings || $image->natnorthings!=$image->viewpoint_northings)}
-      		vdir.push(new OpenLayers.Geometry.Point({$image->nateastings},{$image->natnorthings}));
-      {else}
-	        var ea={$image->nateastings} +Math.round(100.0*Math.sin({$image->view_direction}*Math.PI/180.0));
-	        var no={$image->natnorthings}+Math.round(100.0*Math.cos({$image->view_direction}*Math.PI/180.0));
-	        vdir.push(new OpenLayers.Geometry.Point(ea,no));
-      {/if}     
-      vdirString=new OpenLayers.Geometry.LineString(vdir);
-      vdirFeature=new OpenLayers.Feature.Vector(vdirString,null,style_vdir);
-      trkLayer.addFeatures([vdirFeature]);
+		wgs84 = en2ll('{$image->grid_reference}',{$image->viewpoint_eastings},{$image->viewpoint_northings});
+		wgs842= en2ll('{$image->grid_reference}',{$image->nateastings},{$image->natnorthings});
+		createMarker([wgs84.latitude,wgs84.longitude], 'walk', {$image->gridimage_id}, [wgs842.latitude,wgs842.longitude]);
+		points[{$image->gridimage_id}] = [wgs84.latitude,wgs84.longitude, wgs842.latitude,wgs842.longitude];
+		bounds.extend([wgs84.latitude,wgs84.longitude]);
+	//	bounds.extend([wgs842.latitude,wgs842.longitude]);
 
 	{/if}
 {/foreach}{literal}
 
-    osMap.zoomToExtent(bounds,false);
+		map.fitBounds(bounds, {padding:[30,30], maxZoom: 14});
+		map.setMaxBounds(bounds.pad(2.5));
 
-
-    osMap.events.register('move', osMap, function(evt) {
+    map.on('drag', function(evt) {
       if (moveTimer) {
         clearTimeout(moveTimer);
       }
 	if (!document.getElementById('enableScroll').checked)
 		return;
       moveTimer = setTimeout(function() {
-      var point = osMap.getCenter();
-      var east = point.getEasting();
-      var north = point.getNorthing();
+      var point = map.getCenter();
       var distance;
       var idx = -1;
-      for(i=0;i<points.length;i++) {
-        var d = Math.pow(east  - points[i][0],2) +
-                Math.pow(north - points[i][1],2); //no point bothering with sqrt, as just want shortest.
+      for(i in points) {
+        var d = Math.pow(point.lat - points[i][0],2) +
+                Math.pow(point.lng - points[i][1],2); //no point bothering with sqrt, as just want shortest.
         if (idx == -1 || d < distance) {
           distance = d;
           idx = i;
         }
       }
       if (idx > 0) {
-        scrollIntoView(points[idx][2]);
+        scrollIntoView(idx);
       }
       },100);
     });
 
 
-  }
+  } //loadmap
 
-  AttachEvent(window,'load',initmap,false);
+  AttachEvent(window,'load',loadmap,false);
+
+	function en2ll(gridref,eastings,northings) {
+		if (gridref.length%2 == 0)
+			var grid=new GT_OSGB();
+		else
+			var grid=new GT_Irish();
+		grid.eastings = eastings;
+		grid.northings = northings;
+		
+		return grid.getWGS84(true);
+	}
+
+
+         var icons = [];
+         function createMarker(point,icon,gridimage_id,point2) {
+                if (!icons[icon]) {
+                        icons[icon] = L.icon({
+                            iconUrl: static_host+"/geotrips/"+icon+".png",
+                            iconSize:     [9, 9], // size of the icon
+                            iconAnchor:   [5, 5], // point of the icon which will correspond to marker's location
+                            popupAnchor:  [0, -5] // point from which the popup should open relative to the iconAnchor
+                        });
+                }
+                var marker = L.marker(point, {icon: icons[icon], draggable: false}).addTo(map);
+
+		if (gridimage_id)
+		      marker.on('click', function(evt) {
+		          scrollIntoView(gridimage_id);
+		      });
+
+		if (point2)
+                        L.polyline([point, point2],{
+                        color: "#0000ff",
+                        weight: 2,
+                        opacity: 1
+                        }).addTo(map);
+
+                return marker;
+        }
+
+
 
 
 
@@ -204,12 +264,15 @@ $('#scroller').scroll(function() {
 			elements.removeClass('selected');
 			element.addClass('selected');
 
-			var bits = element.data('position').split(/,/);
+			var id = element.data('id')
+			var bits = points[id];
 			if (bits.length > 1) {
-				var pos = new OpenSpace.MapPoint(bits[0],bits[1]);
-				var zoom = (moveTimer)?null:10;
-				if (document.getElementById('enableScroll').checked)
-					osMap.setCenter(pos,zoom,false);
+				if (document.getElementById('enableScroll').checked) {
+					//calling getBounds directly here exceeds the call stack!, so launder it via setTimeout
+					setTimeout("var pos = ["+bits.slice(0,2).join(',')+"];"+
+						"if (!map.getBounds().pad(-0.25).contains(pos)) "+
+						"	map.panTo(pos);", 50);
+				}
 				newHighlightMarker(bits);
 			}
 		}
@@ -217,30 +280,37 @@ $('#scroller').scroll(function() {
 });
 
 function newHighlightMarker(bits) {
+
 	if (highlightMarker) {
-		osMap.removeMarker(highlightMarker);
-	        trkLayer.removeFeatures([highlightFeature]);
+		highlightMarker.removeFrom(map);
+		if (highlightFeature)
+			highlightFeature.removeFrom(map);
 	}
 
-      var pos = new OpenSpace.MapPoint(bits[0],bits[1]);
-      size=new OpenLayers.Size(35,35);
-      offset=new OpenLayers.Pixel(-17,-21);    // No idea why offset=-9 rather than -4 but otherwise the view line doesn't start at the centre
-      infoWindowAnchor=new OpenLayers.Pixel(17,17);
-      icon=new OpenSpace.Icon('/geotrips/walk_focus_big_dark.png',size,offset,null,infoWindowAnchor);
-      highlightMarker = osMap.createMarker(pos,icon);
+	var icon = 'walk_focus_big_dark';
+                if (!icons[icon]) {
+                        icons[icon] = L.icon({
+                            iconUrl: static_host+"/geotrips/"+icon+".png",
+                            iconSize:     [35, 35], // size of the icon
+                            iconAnchor:   [17, 17], // point of the icon which will correspond to marker's location
+                        });
+                }
 
-     if (bits.length==2)
-	return;
+       highlightMarker = createMarker([bits[0],bits[1]], icon);
+
+       if (bits.length==2)
+		return;
 
       // Define view direction
-      var vdir=new Array();
-      vdir.push(new OpenLayers.Geometry.Point(bits[0],bits[1]));
-      vdir.push(new OpenLayers.Geometry.Point(bits[2],bits[3]));
-      var vdirString=new OpenLayers.Geometry.LineString(vdir);
-      var style_vdir={strokeColor:"#880088",strokeOpacity:0.3,strokeWidth:9.};
-      highlightFeature=new OpenLayers.Feature.Vector(vdirString,null,style_vdir);
-      trkLayer.addFeatures([highlightFeature]);
 
+       highlightFeature = L.polyline([
+				[bits[0],bits[1]],
+				[bits[2],bits[3]]
+                        ],{
+                        color: "#800080",
+                        weight: 9,
+                        opacity: 0.3
+                        }).addTo(map);
 }
 
 function scrollIntoView(gridimage_id) {
@@ -255,9 +325,9 @@ function scrollIntoView(gridimage_id) {
                     //$('#scroller').scrollTop($(this).position().top-200);
                     $('#scroller').scrollTo($(this),0,{offset:-200});
 
-			var bits = $(this).data('position').split(/,/);
+			var id = $(this).data('id');
+			var bits = points[id];
 			if (bits.length > 1) {
-				pos = new OpenSpace.MapPoint(bits[0],bits[1]);
 				newHighlightMarker(bits);
 			}
              }
@@ -289,3 +359,4 @@ function scrollIntoView(gridimage_id) {
 {/if}
 
 {include file="_search_end.tpl"}
+
