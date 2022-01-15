@@ -22,6 +22,7 @@
      {dynamic}{if $user->registered}
      <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
      {/if}{/dynamic}
+     <li><a title="Geograph Events" href="/events/">Events</a>(1)</li>
     </ul></li>
     <li>Contributors<ul>
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
