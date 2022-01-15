@@ -39,7 +39,7 @@ if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
 }
 
 
-if (!empty($_SERVER['HTTP_REFERER']) && !preg_match('/^https?:\/\/(www|m|schools|development)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER'])	) {
+if (!empty($_SERVER['HTTP_REFERER']) && !preg_match('/^https?:\/\/(www|m|schools)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER'])	) {
 
 	header("HTTP/1.0 401 Forbidden");
         print "<h3>Access Denied</h3>" ;
