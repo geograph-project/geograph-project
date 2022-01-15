@@ -35,7 +35,7 @@
  
  function createMarker(point,picon) {
  	if (picon) {
-		marker2 = L.marker(point, {icon: picon, draggable: true}).addTo(map);
+		marker2 = L.marker(point, {icon: picon, draggable: true, riseOnHover:true}).addTo(map);
  		var marker = marker2;
 	} else {
 		var sicon = L.icon({
@@ -45,7 +45,7 @@
 		    iconAnchor:   [14, 14], // point of the icon which will correspond to marker's location
 		    popupAnchor:  [14, 0] // point from which the popup should open relative to the iconAnchor
 		});
-		marker1 = L.marker(point, {icon: sicon, draggable: true}).addTo(map);
+		marker1 = L.marker(point, {icon: sicon, draggable: true, riseOnHover:true}).addTo(map);
  		var marker = marker1;
 	}
 
