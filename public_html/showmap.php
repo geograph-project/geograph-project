@@ -44,7 +44,7 @@ if (!empty($_SERVER['HTTP_REFERER']) && !preg_match('/^https?:\/\/(www|m|schools
 	header("HTTP/1.0 401 Forbidden");
         print "<h3>Access Denied</h3>" ;
 
-	print "<p><b>This popup is for internal use of Geograph Project websites</b>. <br><br>Make your own with the <a href=\"http://www.ordnancesurvey.co.uk/oswebsite/web-services/os-openspace/index.html\">OS OpenSpace API</a>.</p>";
+	print "<p><b>This popup is for internal use of Geograph Project websites</b>. <br><br>Make your own with the <a href=\"https://osdatahub.os.uk/\">OS DataHub</a>.</p>";
 
         if (!empty($_GET['gridref']) && preg_match('/^\w{2}\s?\d+\s?\d*$/',$_GET['gridref'])) {
                 print "<p>However you may still be able to view <a href=\"/gridref/".urlencode($_GET['gridref'])."\">our Gridsquare Browse page</a>.</p>";
@@ -169,8 +169,8 @@ if ($grid_ok) {
 		$rastermap->service = 'Leaflet'; 
 		$rastermap->inline = true;
 		$rastermap->enable_os = true;
-		$rastermap->width = 350;
 	}
+	$rastermap->width = 350;
 	
 	$rastermap->addLatLong($lat,$long);
 	
