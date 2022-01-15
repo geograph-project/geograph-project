@@ -1261,12 +1261,22 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 				$mins[] = 'min-width:'.$size[0].'px';
 			if (empty($this->original_width) || $this->original_width/$this->original_height < 3) // DONT impose min height on REALLY wide panos.
 				$mins[] = 'min-height:'.$size[1].'px';
+
+//hack to avoid a CLS!
+$mins[] = "width:{$largestwidth}px"; //to override the 'auto' in CSS! (and the image starts at 'full' size, rather then the attribute width, but expand later!
+$mins[] = "height:auto"; //already in css, but worth making sure! (browser should maintain the aspect ratio! based on the html attributes from size[3])
+
 			$html=str_replace('/>',' style="'.implode('; ',$mins).'"/>',$html);
 
 			$html="<div class=\"img-responsive\" style=\"max-width:{$largestwidth}px\">$html</div>"; //maxwidth to prevent upscaling
 
 //temp bodge! (this is a dynamic scale, based on ratio, but want to affect ALL the caption640 elements on the page.)
-if (!empty($ratio))
+if (!empty($ratio)) {
+			//constrain the main div too, so whole image gets reduced width based on height of window
+				//this allows us to still define a width (rather than auto), to avoid a CLS!
+				//the repeat of the min-width; is just to keep the image centered;
+			$html = "<div style=\"min-width:{$size[0]}px; max-width:calc(94vh / $ratio); margin-left:auto; margin-right:auto;\">$html</div>";
+
 $html .= <<<EOT
 
 <script>
@@ -1277,6 +1287,7 @@ document.getElementsByTagName('head')[0].appendChild(style);
 </script>
 
 EOT;
+}
 
 		}
 
