@@ -20,7 +20,7 @@
     
     <h3>Original Idea</h3>
     <ul>
-    <li><a href="/profile/1">Gary Rogers</a> came up with original concept.</li>
+    <li><a href="/profile/1">Gary Rogers</a> came up with original concept, launching Geograph as part of a online Geocaching magazine.</li>
     </ul>
 
         <a name="photos"></a>
