@@ -508,10 +508,9 @@ function enlargeMap() {
 		map = window.map = L.map('map',{attributionControl:false,doubleClickZoom:false, scrollWheelZoom:'center'}).addControl(
 			L.control.attribution({ position: 'bottomright', prefix: ''}) );
 
-		var defaultCRS = map.options.crs;
-
-		if (window.OSAPIKey && proj4) {
-			var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
+		var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
+		if (window.OSAPIKey && L.Proj && L.Proj.CRS) {
+			var defaultCRS = map.options.crs;
 
 			// Setup the EPSG:27700 (British National Grid) projection.
 			var crs = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs',
@@ -592,6 +591,16 @@ map._layersMaxZoom = 18; //todo, look this up from the actual layer! e.layer.opt
 map._layersMinZoom = 3;
 			});
 
+		} else if(window.OSAPIKey) {
+			baseMaps["OS Outdoor"] = L.tileLayer(serviceUrl + '/Outdoor_3857/{z}/{x}/{y}.png?key=' + OSAPIKey, {
+				minZoom: 7,
+			        maxZoom: 16,
+				bounds: [
+			            [ 49.528423, -10.76418 ],
+			            [ 61.331151, 1.9134116 ]
+			        ],
+				attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
+			});
 		}
 
 		setupOSMTiles(map,mapTypeId);
