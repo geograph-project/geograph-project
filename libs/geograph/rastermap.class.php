@@ -816,7 +816,7 @@ class RasterMap
 			$os_api_key = 'null';
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
-				if (!empty($CONF['os_api_key'])) {
+				if (!empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
 					$os_api_key = json_encode($CONF['os_api_key']);
 				}
 			}
