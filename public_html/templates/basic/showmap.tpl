@@ -45,25 +45,24 @@
 				var marker = null;
 				var pt;
 
-				var nicon;
 				function createNMarker(npoint) {
-
-					var size = new OpenLayers.Size(29, 29);
-					var offset = new OpenLayers.Pixel(-14, -15);
-					nicon = new OpenSpace.Icon(static_host+"/img/icons/marker.png", size, offset);
-
+					var nicon = L.icon({
+					    iconUrl: static_host+"/img/icons/marker.png",
+					    iconSize:     [29, 29], // size of the icon
+					    iconAnchor:   [14, 14] // point of the icon which will correspond to marker's location
+					});
 					return createMarker(npoint,nicon);
 				}
 
 				function loadmap2() {
-					map.events.register("mousemove", map, function(e) {
+					var bounds = map.getBounds();
+					map.setMaxBounds(bounds.pad(3));
+					map.on("mousemove", function(e) {
 						if (enabled || !e) {
 							if (e)
-								pt = map.getLonLatFromViewPortPx(e.xy);
+								pt = e.latlng;
 
-							var gro = new GT_OSGB();
-							gro.northings = parseInt(pt.lat,10);
-							gro.eastings = parseInt(pt.lon,10);
+							var gro=gmap2grid(pt);
 
 							curgr = gro.getGridRef(digits);
 
@@ -74,9 +73,9 @@
 								&& gro.northings > 464530 && gro.northings < 505100)?'':'none';
 						}
 					});
-					map.events.register("click", map, function(e) {
+					map.on("click", function(e) {
 						if (enabled) {
-							var pt = map.getLonLatFromViewPortPx(e.xy);
+							var pt = e.latlng;
 							marker = createNMarker(pt);
 
 							var img = static_host+"/img/icons/marker.png";
@@ -85,9 +84,9 @@
 
 						} else {
 							if (marker)
-								map.removeMarker(marker);
+								map.removeLayer(marker);
 							marker = null;
-							map.events.triggerEvent("mousemove",'');
+							map.fire("mousemove");
 						}
 						enabled = !enabled;
 					});

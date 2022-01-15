@@ -561,7 +561,7 @@ class RasterMap
 			return "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.css\" />".
 				"<script src=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.js\" type=\"text/javascript\"></script>".
 				"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js\"></script>".
-				((!empty($this->issubmit))?"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js\"></script>":'').
+				((!empty($this->issubmit) || !empty($this->enable_os))?"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js\"></script>":'').
 				"<script src=\"".smarty_modifier_revision("/js/Leaflet.MetricGrid.js")."\"></script>";
 
 		} elseif ($this->service == 'OSOS') {
@@ -819,6 +819,8 @@ class RasterMap
 				if (!empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
 					$os_api_key = json_encode($CONF['os_api_key']);
 				}
+			} elseif(!empty($this->enable_os) && !empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
+				$os_api_key = json_encode($CONF['os_api_key']);
 			}
 			return "
 				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/js/mappingLeaflet.js")."\"></script>

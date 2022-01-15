@@ -55,6 +55,7 @@ if (!empty($_SERVER['HTTP_REFERER']) && !preg_match('/^https?:\/\/(www|m|schools
 
 ##########################################################
 
+/*
 if (!empty($_GET['gridref']) && preg_match('/^[A-Z]{1,2}\s*\d+\s*\d$/',$_GET['gridref'])) {
 	header("Location: /mapper/combined.php?mobile=1&gridref=".preg_replace('/\s+/','',$_GET['gridref']));
 } else {
@@ -62,6 +63,7 @@ if (!empty($_GET['gridref']) && preg_match('/^[A-Z]{1,2}\s*\d+\s*\d$/',$_GET['gr
 }
 
 exit;
+*/
 
 ##########################################################
 
@@ -90,14 +92,11 @@ if (0 && !isset($_SESSION['user'])) {
 
 $smarty = new GeographPage;
 
-//temp as page doesnt work on https (mainly maps!)
-pageMustBeHTTP();
+pageMustBeHTTPS();
 
 
 $template='showmap.tpl';
-$cacheid='2232';
-
-$smarty->assign('extra_meta','<link rel="dns-prefetch" href="//osopenspacepro.ordnancesurvey.co.uk"> <meta name="viewport" content="width=device-width, initial-scale=1">');
+$cacheid='';
 
 $square=new GridSquare;
 
@@ -167,8 +166,10 @@ if ($grid_ok) {
 	$rastermap = new RasterMap($square,false,$square->natspecified,true);
 	
 	if ($square->reference_index==1) {//HACK alart
-		$rastermap->service = 'OSOS'; 
-		$rastermap->width = $rastermap->tilewidth[$rastermap->service];
+		$rastermap->service = 'Leaflet'; 
+		$rastermap->inline = true;
+		$rastermap->enable_os = true;
+		$rastermap->width = 350;
 	}
 	
 	$rastermap->addLatLong($lat,$long);
