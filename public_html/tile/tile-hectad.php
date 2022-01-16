@@ -31,7 +31,10 @@ $_GET['olbounds'] = implode(",",$bounds);
 $_GET['limit'] = 1000;
 
 if (!empty($_GET['l'])) {
-	if ($_GET['z'] <6) {
+	if ($_GET['z'] == 6) {
+		$_GET['limit'] = 2000;
+		$_GET['option'] = "max_matches=2000";
+	} elseif ($_GET['z'] <6) {
 		$_GET['limit'] = 4000;
 		$_GET['option'] = "max_matches=4000";
 	}
