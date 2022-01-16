@@ -60,8 +60,7 @@ $smarty->display('_std_begin.tpl','trip_home');
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 
-$mkey = $USER->registered.".".$updated.md5($where);
-
+$mkey = $USER->registered.".".$updated.md5($where.$_SERVER['HTTP_HOST']);
 
 if (empty($_GET['refresh']))
 	$str = $memcache->name_get('geotrip_home',$mkey);
@@ -72,7 +71,7 @@ if (!empty($str)) {
 } else {
   ob_start();
 
-  $trks=$db->getAssoc("select * from geotrips where $where order by id desc");
+  $trks=$db->getAssoc("select geotrips.*,reference_index from geotrips left join gridimage_search on (gridimage_id = img) where $where order by id desc");
 
 
 require_once('geograph/conversions.class.php');
@@ -121,16 +120,28 @@ $conv = new Conversions;
 		      $bbox=explode(' ',$track['bbox']);
 		      $cen[0]=(int)(($bbox[0]+$bbox[2])/2);
 		      $cen[1]=(int)(($bbox[1]+$bbox[3])/2);
+
+		        //if there is a 'track' then bbox, was created via wgs2bng() so its actully ri=1! (even for ireland!)
+		        // ... but if created from the images, then COULD be 2!
+			if (strlen($track['track']) < 10 && $track['reference_index'] == 2) {
+				list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($cen[0],$cen[1], 2); //$ri=2 is Ireland
+				print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
+				continue;
+			}
+
 			if (!$min[0] || $cen[0] < $min[0]) $min[0] = $cen[0];
 			if (!$min[1] || $cen[1] < $min[1]) $min[1] = $cen[1];
 			if ($cen[0] > $max[0]) $max[0] = $cen[0];
 			if ($cen[1] > $max[1]) $max[1] = $cen[1];
 		    }
+
+		    if (!empty($max[1])) {
 			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($min[0],$min[1], 1); //$ri=1 is GB
-		    print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
+			print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
 
 			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($max[0],$max[1], 1); //$ri=1 is GB
-		    print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
+		    	print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
+		    }
 		?>
 
 	        map = L.map('map', mapOptions);
@@ -174,7 +185,9 @@ $conv = new Conversions;
       $cen[1]=(int)(($bbox[1]+$bbox[3])/2);
       $date=date('D, j M Y',strtotime($track['date']));
       // fetch Geograph thumbnail
-      $image = new GridImage($track['img'],true);
+      $image = new GridImage();
+	$image->_setDB($db); //reuse the existing connection
+	$image->loadFromId($track['img'],true);
       if ($image->isValid() && $image->moderation_status!='rejected') {
         $thumb=$image->getThumbnail(213,160,true);
       } else {
@@ -197,8 +210,13 @@ $conv = new Conversions;
       content+='</p>';
 
 <?php
+	$ri = 1; //$ri=1 is GB
+	//if there is a 'track' then bbox, was created via wgs2bng() so its actully ri=1! (even for ireland!)
+	// ... but if created from the images, then COULD be 2!
+	if (strlen($track['track']) < 10 && $image->reference_index == 2)
+	        $ri = 2;
 
-	list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($cen[0],$cen[1], 1); //$ri=1
+	list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($cen[0],$cen[1], $ri);
 	print "createMarker([$wgs84_lat,$wgs84_long],'{$track['type']}', content);\n";
 
       // Link multi-day trips
@@ -209,7 +227,7 @@ $conv = new Conversions;
 ?>
 			L.polyline([
                                 <? echo "[$wgs84_lat,$wgs84_long],\n";
-				list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($pcen[0],$pcen[1], 1); //$ri=1
+				list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($pcen[0],$pcen[1], $ri);
 				echo "[$wgs84_lat,$wgs84_long]\n"; ?>
                         ],{
                         color: "#000000",
@@ -269,7 +287,7 @@ You can also <a href="geotrip_edit.php">edit your existing Geo-Trips</a>.
   </p>
   <?php } ?>
   <p>
-Please note that Geo-Trips currently only work in England, Scotland, Wales and the Isle of Man. (Support for Ireland coming soon)
+Please note that up until recently Geo-Trips currently only worked in England, Scotland, Wales and the Isle of Man, hence why not many trips in Ireland, however Ireland is now supported.
   </p>
 
 <form method=get action="/content/" class="panel" style="padding:10px;margin:10px">

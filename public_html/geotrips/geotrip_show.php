@@ -84,6 +84,30 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 require_once('geograph/conversions.class.php');
 $conv = new Conversions;
 
+  // fetch Geograph data
+	$engine = new SearchEngine($trk['search']);
+	$engine->criteria->resultsperpage = 250; // FIXME really?
+	$recordSet = $engine->ReturnRecordset(0, true);
+
+	while (!$recordSet->EOF) {
+		$image = $recordSet->fields;
+		if (    $image['nateastings']
+		    &&  $image['viewpoint_eastings']
+		    &&  $image['user_id'] == $trk['uid']
+		    &&  $image['viewpoint_grlen'] > 4
+		    &&  $image['natgrlen'] > 4
+		    && (   $image['view_direction'] != -1
+		        || $image['viewpoint_eastings']  != $image['nateastings']
+		        || $image['viewpoint_northings'] != $image['natnorthings'])
+		    &&  $image['imagetaken'] === $trk['date']
+		) {
+			$geograph[] = $image;
+		}
+		$recordSet->MoveNext();
+	}
+
+
+
 ?>
 
 
@@ -125,10 +149,16 @@ var trackline = null;
 		<?php
 		      $bbox=explode(' ',$trk['bbox']);
 
-			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($bbox[0],$bbox[1], 1); //$ri=1 is GB
+			$ri = 1; //$ri=1 is GB
+			//if there is a 'track' then bbox, was created via wgs2bng() so its actully ri=1! (even for ireland!)
+			// ... but if created from the images, then COULD be 2!
+			if (strlen($trk['track']) < 10 && $geograph[0]['reference_index'] == 2)
+				$ri = 2;
+
+			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($bbox[0],$bbox[1], $ri);
 		    print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
 
-			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($bbox[2],$bbox[3], 1); //$ri=1 is GB
+			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($bbox[2],$bbox[3], $ri);
 		    print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
 		?>
 
@@ -142,20 +172,32 @@ var trackline = null;
 
 		if ($.localStorage && $.localStorage('LeafletBaseMap')) {
 			basemap = $.localStorage('LeafletBaseMap');
-			if (baseMaps[basemap] && basemap != "Ordnance Survey GB" && (
+			<? if ($geograph[0]['reference_index'] == '2') { ?>
+				if (basemap.indexOf('- GB') > -1)
+					basemap = "OpenTopoMap";
+			<? } else { ?>
+				if (basemap.indexOf('- Ireland') > -1)
+					basemap = "Historic OS - GB";
+			<? } ?>
+
+			if (!baseMaps[basemap] || !(
 				//we can also check, if the baselayer covers the location (not ideal, as it just using bounds, eg much of Ireland are on overlaps bounds of GB.
 				!(baseMaps[basemap].options)
-				 || typeof baseMaps[basemap].bounds == 'undefined'
-				 || L.latLngBounds(baseMaps[basemap].bounds).contains(mapOptions.center)     //(need to construct, as MIGHT be object liternal!
-				))
-				map.addLayer(baseMaps[basemap]);
-			else
-				map.addLayer(baseMaps["OpenStreetMap"]);
-		} else if (baseMaps['Modern OS - GB']) { // && ri=1
-			map.addLayer(baseMaps['Modern OS - GB']);
+				 || typeof baseMaps[basemap].options.bounds == 'undefined'
+				 || L.latLngBounds(baseMaps[basemap].options.bounds).contains(map.getCenter())     //(need to construct, as MIGHT be object liternal!
+				)) {
+				basemap = "OpenTopoMap";
+			}
+		<? if ($geograph[0]['reference_index'] == '1') { ?>
+		} else if (baseMaps['Modern OS - GB']) {
+			basemap = 'Modern OS - GB';
+		<? } ?>
 		} else {
-			map.addLayer(baseMaps["OpenStreetMap"]);
+			basemap = "OpenTopoMap";
 		}
+
+		map.addLayer(baseMaps[basemap]);
+
 		if ($.localStorage) {
 			map.on('baselayerchange', function(e) {
 		  		$.localStorage('LeafletBaseMap', e.name);
@@ -179,28 +221,6 @@ var trackline = null;
 
   $track=explode(' ',$trk['track']);
   $len=count($track);
-
-  // fetch Geograph data
-	$engine = new SearchEngine($trk['search']);
-	$engine->criteria->resultsperpage = 250; // FIXME really?
-	$recordSet = $engine->ReturnRecordset(0, true);
-
-	while (!$recordSet->EOF) {
-		$image = $recordSet->fields;
-		if (    $image['nateastings']
-		    &&  $image['viewpoint_eastings']
-		    &&  $image['user_id'] == $trk['uid']
-		    &&  $image['viewpoint_grlen'] > 4
-		    &&  $image['natgrlen'] > 4
-		    && (   $image['view_direction'] != -1
-		        || $image['viewpoint_eastings']  != $image['nateastings']
-		        || $image['viewpoint_northings'] != $image['natnorthings'])
-		    &&  $image['imagetaken'] === $trk['date']
-		) {
-			$geograph[] = $image;
-		}
-		$recordSet->MoveNext();
-	}
 
 	if (!empty($trk['track']) && $len>0) { ?>
 		    // Define track
@@ -228,16 +248,16 @@ var trackline = null;
       $image = new GridImage();
       $image->fastInit($geograph[$i]);
 
-      list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($geograph[$i]['viewpoint_eastings'], $geograph[$i]['viewpoint_northings'], 1); //$ri=1
+      list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($geograph[$i]['viewpoint_eastings'], $geograph[$i]['viewpoint_northings'], $geograph[$i]['reference_index']);
 
       if ($geograph[$i]['nateastings']!=$geograph[$i]['viewpoint_eastings']||$geograph[$i]['natnorthings']!=$geograph[$i]['viewpoint_northings']) {  // subject GR != camera GR
 
-	list($wgs84_lat2,$wgs84_long2) = $conv->national_to_wgs84($geograph[$i]['nateastings'] , $geograph[$i]['natnorthings'], 1); //$ri=1
+	list($wgs84_lat2,$wgs84_long2) = $conv->national_to_wgs84($geograph[$i]['nateastings'] , $geograph[$i]['natnorthings'], $geograph[$i]['reference_index']); 
       } else {
         $ea=$geograph[$i]['nateastings']+round(100.*sin($geograph[$i]['view_direction']*M_PI/180.));
         $no=$geograph[$i]['natnorthings']+round(100.*cos($geograph[$i]['view_direction']*M_PI/180.));
 
-	list($wgs84_lat2,$wgs84_long2) = $conv->national_to_wgs84($ea , $no, 1); //$ri=1
+	list($wgs84_lat2,$wgs84_long2) = $conv->national_to_wgs84($ea , $no, $geograph[$i]['reference_index']);
       }
 
       // Define camera marker
