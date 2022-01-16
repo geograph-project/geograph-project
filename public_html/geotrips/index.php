@@ -126,6 +126,7 @@ $conv = new Conversions;
 			if (strlen($track['track']) < 10 && $track['reference_index'] == 2) {
 				list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($cen[0],$cen[1], 2); //$ri=2 is Ireland
 				print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
+				$ri2=1;
 				continue;
 			}
 
@@ -141,6 +142,7 @@ $conv = new Conversions;
 
 			list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($max[0],$max[1], 1); //$ri=1 is GB
 		    	print "bounds.extend([$wgs84_lat,$wgs84_long]);\n";
+			$ri1=1;
 		    }
 		?>
 
@@ -151,6 +153,15 @@ $conv = new Conversions;
 
 		if ($.localStorage && $.localStorage('LeafletBaseMap')) {
 			basemap = $.localStorage('LeafletBaseMap');
+                        <? if (!empty($ri2)) { ?>
+                                if (basemap.indexOf('- GB') > -1)
+                                        basemap = "OpenTopoMap";
+                        <? } elseif (!empty($ri1)) { ?>
+                                if (basemap.indexOf('- Ireland') > -1)
+                                        basemap = "Historic OS - GB";
+                        <? } ?>
+
+
 			if (baseMaps[basemap] && basemap != "Ordnance Survey GB" && (
 				//we can also check, if the baselayer covers the location (not ideal, as it just using bounds, eg much of Ireland are on overlaps bounds of GB.
 				!(baseMaps[basemap].options)
