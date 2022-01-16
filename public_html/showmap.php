@@ -157,6 +157,12 @@ if ($grid_ok) {
 	//geotag the page	
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;
+
+if ($square->natgrlen == 4) {
+        $square->nateastings += 500;
+        $square->natnorthings += 500;
+}
+
 	list($lat,$long) = $conv->gridsquare_to_wgs84($square);
 	$smarty->assign('lat', $lat);
 	$smarty->assign('long', $long);
@@ -170,7 +176,7 @@ if ($grid_ok) {
 		$rastermap->inline = true;
 		$rastermap->enable_os = true;
 	}
-	$rastermap->width = 350;
+	$rastermap->width = 390;
 	
 	$rastermap->addLatLong($lat,$long);
 	

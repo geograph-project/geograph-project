@@ -194,7 +194,7 @@ class RasterMap
 		} elseif($service == 'Leaflet' && in_array('Leaflet',$services)) {
 			$this->service = 'Leaflet';
 			if ($this->issubmit) {
-				$this->tilewidth[$this->service] = 350;
+				$this->tilewidth[$this->service] = 390;
 			}
 		} elseif($service == 'Google' && in_array('Google',$services)) {
 			if (!$this->issubmit)
@@ -797,11 +797,6 @@ class RasterMap
 					createMarker(point2);\n";
 			}
 			if ($this->issubmit) {
-				$zoom=13;
-			} else {
-				$zoom=14;
-			}
-			if ($this->issubmit) {
 				$block .= $this->getPolySquareBlock($conv,$e-900,$n-750,$e-100,$n-300);
 
 				for ($i=100; $i<=900; $i+=100) {
@@ -837,7 +832,7 @@ class RasterMap
 						var point = [{$this->lat},{$this->long}];
 
 						setupBaseMap(map);
-						map.setView(point, 13);
+						map.setView(point, 14);
 
 						$block
 

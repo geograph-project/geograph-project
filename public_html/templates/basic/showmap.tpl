@@ -6,7 +6,7 @@
 		<p>ERROR: {$error}</p>
 	{else}
 		{if $rastermap->enabled}
-			<div style="float:left; position:relative; width: 372px">
+			<div style="float:left; position:relative; width: 412px">
 			<div class="interestBox">Grid Reference: <b>{$gridref}</b></div>
 
 			<div class="rastermap">
