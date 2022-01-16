@@ -99,20 +99,21 @@ if (window.OSAPIKey) {
 				//crs: osgbCRS, its hardcoded into the 'add' event below, rather than from options atm
 				minZoom: 3, //these are in osgbCRS, not the default
 				maxZoom: 9,
-				bounds
+ 				bounds: bounds
 			})
 
 			var basemap2 = L.tileLayer(serviceUrl + '/Outdoor_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
 				//crs: osgbCRS,
 				minZoom: 10, //these are in osgbCRS, not the default
 				maxZoom: 13,
- 				bounds
+ 				bounds: bounds
 			});
 
 			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1,basemap2], {
 				mapLetter: 'a',
 				//todo, could add zoom range (in default CRS) so that LayerControl can dynamically enable/dsable tickbox
 				attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
+ 				bounds: bounds
 			});
 
 			//this is a hack, because the built in function, notices that the newly added layer, has differnet zoom levels, and that the zoom is outside the rage
