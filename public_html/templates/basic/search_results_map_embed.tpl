@@ -67,6 +67,7 @@ var totalImages = 0;
 
 var layerData = new Array;
 var messageTimer = null;
+var fallbackLayer = false;
 
 function loadMap() {
 
@@ -97,7 +98,32 @@ function loadMap() {
 		}
 		if ($.localStorage) {
 			map.on('baselayerchange', function(e) {
-				$.localStorage('LeafletBaseMap', e.name);
+				if (!fallbackLayer)
+					$.localStorage('LeafletBaseMap', e.name);
+			});
+
+			map.on('zoom', function(e) {
+				var currentbase = $.localStorage('LeafletBaseMap'); //leaflet doesnt have a easy way to find the base layer, but the Layers control fires an event which we store!
+				if (currentbase != "OpenTopoMap" && baseMaps[currentbase] && baseMaps[currentbase].options && baseMaps[currentbase].options.minZoom) {
+					if (baseMaps[currentbase].options.crs || currentbase == 'Modern OS - GB')
+						return; // the current basemap has a non-standard crs!
+					if (map.getZoom() < baseMaps[currentbase].options.minZoom) {
+						if (!fallbackLayer) { // might already be added!
+							fallbackLayer = "OpenTopoMap";
+							map.addLayer(baseMaps[fallbackLayer]);
+						}
+					} else if (map.getZoom() > baseMaps[currentbase].options.maxZoom) {
+						if (!fallbackLayer) { // might already be added!
+							fallbackLayer = "OpenStreetMap";
+							map.addLayer(baseMaps[fallbackLayer]);
+						}
+					} else {
+						if (fallbackLayer) {
+							map.removeLayer(baseMaps[fallbackLayer]);
+							fallbackLayer = false;
+						}
+					}
+				}
 			});
 		}
 
