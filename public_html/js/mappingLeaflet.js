@@ -543,6 +543,7 @@ function enlargeMap() {
 
 			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1,basemap2], {
 		//		crs: crs,
+				attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
 				mapLetter: 'a'
 			}); //.addTo(map);
 
