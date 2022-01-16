@@ -7,16 +7,12 @@ function popupOSMap(gridref,gridref2)
 {
 	if (!gridref && gridref2.length)
 		gridref = gridref2;
-        var wWidth = 400;
+        var wWidth = 440;
         var wHeight = 460;
         var wLeft = Math.round(0.5 * (screen.availWidth - wWidth));
         var wTop = Math.round(0.5 * (screen.availHeight - wHeight)) - 20;
         if (gridref.length > 0) {
 		var newWin = window.open('/showmap.php?gridref='+gridref, 
-		'gam',
-		'left='+wLeft+',screenX='+wLeft+',top='+wTop+',screenY='+wTop+',width='+wWidth+',height='+wHeight+',status,scrolling=no');
-	} else {
-		var newWin = window.open('http://getamap.ordnancesurvey.co.uk/getamap/frames.htm', 
 		'gam',
 		'left='+wLeft+',screenX='+wLeft+',top='+wTop+',screenY='+wTop+',width='+wWidth+',height='+wHeight+',status,scrolling=no');
 	}
