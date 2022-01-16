@@ -25,7 +25,8 @@ function smarty_core_write_compiled_include($params, &$smarty)
     if (count($_match_source)==0) return;
 
     // convert the matched php-code to functions
-    $_include_compiled =  "<?php /* Smarty version ".$smarty->_version.", created on ".strftime("%Y-%m-%d %H:%M:%S")."\n";
+	$pid = @getmypid();
+    $_include_compiled =  "<?php /* Smarty version ".$smarty->_version.", created on ".strftime("%Y-%m-%d %H:%M:%S")." pid=$pid\n";
     $_include_compiled .= "         compiled from " . strtr(urlencode($params['resource_name']), array('%2F'=>'/', '%3A'=>':')) . " */\n\n";
 
     $_compile_path = $params['include_file_path'];
