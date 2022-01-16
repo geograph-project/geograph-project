@@ -64,12 +64,9 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 			
 			$('#related').append('<div class="thumbs shadow" style="padding:5px">Loading...</div>');
 
-			$('#related').append('<a href="https://docs.google.com/forms/d/1d_-2JGWxL6E-A51KHEkRZCRuw-PrLDNfAeMfS9yOLJo/viewform" target="_blank">Feedback Form</a>');
-
 			//todo, check if a search result active, and if so use that to show images?
 
 			renderRelatedImage();
-			
 		});
 	});
 
@@ -202,18 +199,22 @@ function processImage(row) {
 				else if (row.myriad == value.myriad)						caption.push("same Myriad");
 				if (row.user_id == value.user_id)						caption.push("same Contributor");
 				if (row.place == value.place && row.grid_reference != value.grid_reference)	caption.push("also near "+value.place);
-				
+
 				value.thumbnail = getGeographUrl(value.id, value.hash, 'small');
-				$('#related .thumbs').append('<div class="thumb"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' by '+value.realname+' /'+space_date(value.takenday)+'\n'+caption.join(', ')+'" class="i"><img '+attrib+'="'+value.thumbnail+'"/></a></div>');
+				window.requestAnimationFrame(function() {
+					$('#related .thumbs').append('<div class="thumb"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' by '+value.realname+' /'+space_date(value.takenday)+'\n'+caption.join(', ')+'" class="i"><img '+attrib+'="'+value.thumbnail+'"/></a></div>');
+				});
 				attrib = 'data-src';
 			});
+			setTimeout(function() { //delay adding these, to give some time for thumbnails to load, minimising CLS!
 			$('#related .thumbs').append('<br style=clear:both>');
 
 			$('#related .thumbs').append('<p><a href="/related.php?id='+encodeURIComponent(gridimage_id)+'&method=quick">More related images</a>');
-			
+
 			$('#related .thumbs').append('<p><a href="/browser/#!/q='+encodeURIComponent(match)+'">View more results in browser</a>');
 
 			$('#related .thumbs').append('<p><a href="/finder/grouped.php?q='+row.grid_reference+'&number=3&group=all">Whats around here</a>');
+			}, 2000);
 
 			setTimeout(initLazy,50);
 
@@ -222,7 +223,6 @@ function processImage(row) {
 		}
 
 	});
-	
 }
 
 /**************************************
@@ -260,4 +260,18 @@ function zeroFill(number, width) {
 }
 function space_date(datestr) {
 	return datestr.substring(0,4)+'-'+datestr.substring(4,6)+'-'+datestr.substring(6,8);
+}
+
+/**
+* window.requestAnimationFrame()
+* version 0.0.0
+* Browser Compatibility:
+* https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame#browser_compatibility
+*/
+if (!window.requestAnimationFrame) {
+  window.requestAnimationFrame = function (callback) {
+    return window.setTimeout(function () {
+      callback(Date.now());
+    }, 1000 / 60);
+  };
 }
