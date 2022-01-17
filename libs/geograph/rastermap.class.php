@@ -558,8 +558,8 @@ class RasterMap
 		if ((!empty($this->inline) || !empty($this->issubmit)) && $this->service == 'Google') {
 			return "<script src=\"//maps.googleapis.com/maps/api/js?v=3&key={$CONF['google_maps_api3_key']}\" type=\"text/javascript\"></script>";
 		} elseif ((!empty($this->inline) || !empty($this->issubmit)) && $this->service == 'Leaflet') {
-			return "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.css\" />".
-				"<script src=\"https://unpkg.com/leaflet@1.3.1/dist/leaflet.js\" type=\"text/javascript\"></script>".
+			return "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://unpkg.com/leaflet@1.3.4/dist/leaflet.css\" />".
+				"<script src=\"https://unpkg.com/leaflet@1.3.4/dist/leaflet.js\" type=\"text/javascript\"></script>".
 				"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js\"></script>".
 				((!empty($this->issubmit) || !empty($this->enable_os))?"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js\"></script>":'').
 				"<script src=\"".smarty_modifier_revision("/js/Leaflet.MetricGrid.js")."\"></script>";
@@ -814,6 +814,9 @@ class RasterMap
 				if (!empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
 					$os_api_key = json_encode($CONF['os_api_key']);
 				}
+
+				$os_api_key .= ";\n if (!readCookie('GMapType')) { createCookie('GMapType','a',10) }";
+
 			} elseif(!empty($this->enable_os) && !empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
 				$os_api_key = json_encode($CONF['os_api_key']);
 			}
