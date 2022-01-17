@@ -255,10 +255,10 @@ function clearSubmission() {
 	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>:<br/>
 
 	&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
-		<option value="OSOS">Zoomable Modern OS Mapping</option>
-		<option value="OS50k">OS Modern 1:50,000 Mapping</option>
-		<option value="Leaflet">New Zoomable Maps</option>
-		<option value="Google">Zoomable Google Mapping + OSM + 1920s to 1940s OS</option>
+		<option value="Leaflet">Zoomable Maps (Combines Modern OS, OpenStreetMap, Aerial Imagery and Historic Maps)</option>
+		<option value="Google">Zoomable Google Mapping (still includes OSM + Historic Maps)</option>
+		<option value="OSOS">Zoomable Modern OS Mapping (Old Interface to just OS Maps, will be removed soon)</option>
+		<option value="OS50k">OS Modern 1:50,000 Mapping (Very simple OS Map, only use if above don't work)</option>
 	</select> <small>(OS Maps not available for Ireland)</small></p>
 
 
