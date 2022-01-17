@@ -50,7 +50,7 @@ if ((!empty($_POST['choose']) && empty($_GET['redir'])) || !empty($_GET['os'])) 
 	$smarty = new GeographPage;
 	if (!empty($_GET['id']))
 		$smarty->assign('id', intval($_GET['id']));
-	if (!empty($_GET['os']) && !empty($CONF['os_api_key']))
+	if (!empty($CONF['os_api_key']))
 		$smarty->assign('os_api_key', $CONF['os_api_key']);
 
 	$smarty->display('submit_mobile.tpl');
