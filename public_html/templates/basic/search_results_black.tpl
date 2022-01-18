@@ -49,25 +49,15 @@
                  document.getElementById("mapdiv").style.display = 'none';
         }
 </script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
-<script>
-
-jQuery(document).ready( function() {
-        hideMap();
-});
-
-</script>
 {/literal}
 
-
-<script src="{"/js/lazy.js"|revision}" type="text/javascript"></script>
-<div id="mapdiv"><img src="{$static_host}/img/blank.gif" name="map"/></div>
+<div id="mapdiv" style="display:none"><img src="{$static_host}/img/blank.gif" name="map"/></div>
 
 <table border="0" cellspacing="0" cellpadding="5">
         {foreach from=$engine->results item=image}
         {searchbreak image=$image table=true}
     <tr>
-        <td valign="middle" align="center" class="shadow shadow_large"><a href="/photo/{$image->gridimage_id}" title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string}{if $image->count} - {$image->count|thousends} images in group{/if}" onmouseover="showMap('{$image->wgs84_lat} {$image->wgs84_long}')" onmouseout="hideMap()">{$image->getFull()|replace:'src=':'src="/img/blank.gif" data-src='}</a></td>
+        <td valign="middle" align="center" class="shadow shadow_large"><a href="/photo/{$image->gridimage_id}" title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string}{if $image->count} - {$image->count|thousends} images in group{/if}" onmouseover="showMap('{$image->wgs84_lat} {$image->wgs84_long}')" onmouseout="hideMap()">{$image->getFull()|replace:'src=':'loading="lazy" src='}</a></td>
         <td valign="middle" align="center">
             <a href="/photo/{$image->gridimage_id}" class=title>{$image->title|escape:'html'}</a>{if $image->imagetaken > 1 && $image->imagetaken < 2020}<span class="year lighter" title="year taken" style="color:gray;font-size:1.5em"> {$image->imagetaken|truncate:4:''}</span>{/if}<br/>
             {if $image->comment}

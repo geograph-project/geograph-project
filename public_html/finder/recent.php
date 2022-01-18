@@ -37,6 +37,8 @@ if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
 	$src = 'src';//revert back to standard non lazy loading
 }
 
+$src = 'loading="lazy" src'; //experimenting with moving to it permentanty!
+
 if (true) {
 	if (!empty($_GET['q'])) {
 		$q=trim($_GET['q']);
@@ -71,7 +73,7 @@ if (true) {
 
 		$sphinx->q .= " @status {$_REQUEST['status']}";
         }
-
+	$cacheid = md5($cacheid);
 
 	if (!$smarty->is_cached($template, $cacheid)) {
 
