@@ -775,7 +775,7 @@ function smarty_function_pageheader() {
 }
 
 function smarty_function_pagefooter() {
-	global $mobile_browser,$mobile_url;
+	global $mobile_browser,$mobile_url,$CONF;
 
 	if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 		ob_start();
@@ -822,7 +822,7 @@ $str[] = "
 	}
 */
 	
-	if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' || $_SERVER['HTTP_HOST'] == 'www.geograph.ie' || $_SERVER['HTTP_HOST'] == 'staging.geograph.org.uk') { //this is mainly to exclude schools!
+	if ($CONF['template']!='charcoal' && $CONF['template']!='archive') { //this is mainly to exclude schools!
 
 	        //if (isset($_GET['links']))
         	if (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 ==1 || !empty($_GET['links']))

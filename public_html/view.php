@@ -302,7 +302,7 @@ if ($image->isValid())
 		}
 	}
 
-	if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' || $_SERVER['HTTP_HOST'] == 'www.geograph.ie' || $_SERVER['HTTP_HOST'] == 'staging.geograph.org.uk') { //this is mainly to exclude schools!
+	if ($CONF['template']!='charcoal' && $CONF['template']!='archive') { //this is mainly to exclude schools!
 		//temporally patch, so that we can put set the margin, just like related.js WILL!
 		$smarty->assign('maincontentclass', 'content_photo'.$style.' photopage');
 	} else {
