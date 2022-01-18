@@ -256,12 +256,11 @@ if (isset($_POST['msg']))
 		else
 		{
 			debug_message('Mail Error Report from '.$_SERVER['HTTP_HOST'],
-				'Mail Error Report from '.$_SERVER['HTTP_HOST'],
+				@$GLOBALS['mailer_error']."\n\n".
 				"Original Subject: $subject\n".
 				"Original To: {$recipient->email}\n".
 				"Original From: $from_name <$from_email>\n".
-				"Original Subject:\n\n$body");
-
+				"Original:\n\n$body");
 
 			$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
 		}
@@ -272,12 +271,12 @@ if (isset($_POST['msg']))
 			if (!mail_wrapper($from_email, $subject, $body, $fromheader, '-fnoreply@geograph.org.uk')) {
 
 				debug_message('Mail Error Report from '.$_SERVER['HTTP_HOST'],
+					@$GLOBALS['mailer_error']."\n\n".
 					"Original Subject: $subject\n".
 					"Original To: {$from_email}\n".
 					"Original From: $from_name <$from_email>\n".
 					"Copy of message sent to {$recipient->realname}\n".
-					"Original Subject:\n\n$body",
-					'From:webserver@'.$_SERVER['HTTP_HOST']);
+					"Original:\n\n$body");
 
 				$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
 			}

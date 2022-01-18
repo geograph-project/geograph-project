@@ -502,11 +502,13 @@ function smarty_function_capitalizetag($i) {
 * smarty function to get revision number
 */
 function smarty_modifier_revision($filename) {
-	global $REVISIONS,$CONF;
-	if (isset($REVISIONS[$filename])) {
+	global $REVISIONS,$CONF,$LIVE;
+
+	if (isset($LIVE[$filename])) {
+		return $filename."?".filemtime($_SERVER['DOCUMENT_ROOT'].$filename);
+	} elseif (isset($REVISIONS[$filename])) {
 		return $CONF['STATIC_HOST'].preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
 	} else {
-		#return $CONF['STATIC_HOST'].preg_replace('/\.(js|css)$/',".v".time().".$1",$filename); //should use filemtime(), rather tham time()
         	return $filename;
 	}
 }
@@ -1376,7 +1378,9 @@ function mail_wrapper($email, $subject, $body, $headers = '', $param = '', $debu
 		$mail->Subject = $subject;
 		$mail->Body = $body; //if using isHTML will be the HTML verson, AltBody, will be plain text!
 
-		return $mail->send();
+		$r = $mail->send();
+		$GLOBALS['mailer_error'] = $mail->ErrorInfo;
+		return $r;
 	} else {
 		return mail($email, $subject, $body, $headers, $param);
 	}

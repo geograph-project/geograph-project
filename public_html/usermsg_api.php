@@ -143,10 +143,11 @@ if (mail_wrapper($email, $subject, $body, $received.$fromheader))
 else
 {
 	debug_message('Mail Error Report from '.$_SERVER['HTTP_HOST'],
+		@$GLOBALS['mailer_error']."\n\n".
 		"Original Subject: $subject\n".
 		"Original To: {$recipient->email}\n".
 		"Original From: $from_name <$from_email>\n".
-		"Original Subject:\n\n$body");
+		"Original:\n\n$body");
 
 	die("ERROR: fatal error, Please let us know");
 }
