@@ -1,21 +1,21 @@
 var gridimage_id = null;
 
 var as_sidebar = (window.innerWidth >= 1024);
+var supportsLazyLoad = ('loading' in document.createElement('img'))
 
 if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 
-	if (as_sidebar) {	
+	if (as_sidebar) {
 		//we can do this before even jquery loads...
 		document.getElementById('maincontent_block').style.marginRight = "150px";
 	}
 
-	//we have to be extra careful checking if a real jquery, as jQl creates a fake jQuery object. 
+	//we have to be extra careful checking if a real jquery, as jQl creates a fake jQuery object.
 	if (typeof jQuery === "undefined" || jQuery === null || typeof jQuery.fn === "undefined" || typeof jQuery.fn.load === "undefined") {
 		jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js');
 	}
 
-	
-	$(function() { 
+	$(function() {
 
 		if (m = window.location.pathname.match(/photo\/(\d+)/)) {
 			gridimage_id = parseInt(m[1],10);
@@ -29,11 +29,10 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 		} else {
 			$('body').append('<div id="related" style="background-color:white;border-top:1px solid silver;padding:10px;text-align:center;max-width:680px;margin-left:auto;margin-right:auto; margin-bottom:100px"></div>');
 		}
-		
+
 		if ($('#maincontent_block').length)
 			$('#related').css('backgroundColor',$('#maincontent_block').css('backgroundColor'));
-			
-			
+
 		$("<style type='text/css'> #related a { color: "+$('#maincontent_block a').css('color')+"} #related .thumb { float:left; } </style>").appendTo("head");
 
 		if (as_sidebar) //dynamiclly hide the sidebar, when make window small. todo, maybe could change its class and make it a bottom one.
@@ -50,24 +49,28 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 		$.ajaxSetup({
 			cache: true
 		});
-		$.getScript('//s1.geograph.org.uk/js/lazy.v73715774.js',function() {
-			//initLazy();
-			
-			$('#related').append('<form><select onchange="renderRelatedImage()">'+
-				'<option value="">Related Images</option>'+
-				'<option value="recent">Recent Nearby</option>'+
-				'<option value="takenday">Same Day</option>'+
-				'<option value="contributor">Same Contributor</option>'+
-				'<option value="centisquare">Same Centisquare</option>'+
-				'<option value="grid_reference">Same Grid-Square</option>'+
-				'</select></form>');
-			
-			$('#related').append('<div class="thumbs shadow" style="padding:5px">Loading...</div>');
 
-			//todo, check if a search result active, and if so use that to show images?
+		$('#related').append('<form><select onchange="renderRelatedImage()">'+
+			'<option value="">Related Images</option>'+
+			'<option value="recent">Recent Nearby</option>'+
+			'<option value="takenday">Same Day</option>'+
+			'<option value="contributor">Same Contributor</option>'+
+			'<option value="centisquare">Same Centisquare</option>'+
+			'<option value="grid_reference">Same Grid-Square</option>'+
+			'</select></form>');
 
+		$('#related').append('<div class="thumbs shadow" style="padding:5px">Loading...</div>');
+
+		if (supportsLazyLoad) {
 			renderRelatedImage();
-		});
+		} else {
+			$.getScript('//s1.geograph.org.uk/js/lazy.v73715774.js',function() {
+				//initLazy(); //done after loading thumbnails now!
+
+				//todo, check if a search result active, and if so use that to show images?
+				renderRelatedImage();
+			});
+		}
 	});
 
 }
@@ -78,7 +81,6 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 
 
 function renderRelatedImage() {
-	
 	var data = {
 		select: 'myriad,hectad,grid_reference,takenyear,takenmonth,takenday,groups,tags,types,contexts,snippets,subjects,place,county,country,scenti,user_id,realname,imageclass',
 		where: 'id='+gridimage_id
@@ -103,24 +105,22 @@ function renderRelatedImage() {
 			processImage(data);
 		});
 	});
-	
 }
 
 function processImage(row) {
 	if (!row)
 		return;
-	
+
 	var mode = $('#related select').val();
-	
+
 	var required = [];
 	var optional = [];
 	if (mode == 'grid_reference') {
 		required.push(row.grid_reference);
 	} else {
 		required.push(row.myriad);
-	
 		optional.push(row.hectad);
-	
+
 		if (mode == 'recent') {
 			required.push(row.hectad);
 		}
@@ -133,7 +133,7 @@ function processImage(row) {
 		optional.push(row.takenmonth);
 	}
 	optional.push(row.takenday);
-	
+
 	var splits = ['contexts','groups','tags','snippets','subjects'];
 	for(var g=0;g<splits.length;g++)
 		if (row[splits[g]] && row[splits[g]].length > 5) {
@@ -142,7 +142,7 @@ function processImage(row) {
 				optional.push('"'+list[i]+'"');
 			}
 		}
-	
+
 	if (row.place && row.place.length > 2) {
 		optional.push('"'+row.place+'"');
 	}
@@ -184,10 +184,10 @@ function processImage(row) {
 		data: data,
 		cache: true,
 		dataType: 'json'
-	}).done(function(data){ 
+	}).done(function(data){
 		if (data && data.rows && data.rows.length) {
 			$('#related .thumbs').empty();
-			var attrib = 'src';
+			var attrib = 'loading="lazy" src';
 			$.each(data.rows, function(index,value) {
 				var caption = [];
 				if (row.takenday == value.takenday)						caption.push("taken same Day");
@@ -204,8 +204,10 @@ function processImage(row) {
 				window.requestAnimationFrame(function() {
 					$('#related .thumbs').append('<div class="thumb"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' by '+value.realname+' /'+space_date(value.takenday)+'\n'+caption.join(', ')+'" class="i"><img '+attrib+'="'+value.thumbnail+'"/></a></div>');
 				});
-				attrib = 'data-src';
+				if (!supportsLazyLoad)
+					attrib = 'data-src';
 			});
+
 			setTimeout(function() { //delay adding these, to give some time for thumbnails to load, minimising CLS!
 			$('#related .thumbs').append('<br style=clear:both>');
 
@@ -216,8 +218,8 @@ function processImage(row) {
 			$('#related .thumbs').append('<p><a href="/finder/grouped.php?q='+row.grid_reference+'&number=3&group=all">Whats around here</a>');
 			}, 2000);
 
-			setTimeout(initLazy,50);
-
+			if (!supportsLazyLoad)
+				setTimeout(initLazy,50);
 		} else {
 			$('#related .thumbs').html("No Related Images Found");
 		}
@@ -230,24 +232,24 @@ function processImage(row) {
 */
 
 
-function getGeographUrl(gridimage_id, hash, size) { 
+function getGeographUrl(gridimage_id, hash, size) {
 
-	yz=zeroFill(Math.floor(gridimage_id/1000000),2); 
-	ab=zeroFill(Math.floor((gridimage_id%1000000)/10000),2); 
+	yz=zeroFill(Math.floor(gridimage_id/1000000),2);
+	ab=zeroFill(Math.floor((gridimage_id%1000000)/10000),2);
 	cd=zeroFill(Math.floor((gridimage_id%10000)/100),2);
-	abcdef=zeroFill(gridimage_id,6); 
+	abcdef=zeroFill(gridimage_id,6);
 
 	if (yz == '00') {
-		fullpath="/photos/"+ab+"/"+cd+"/"+abcdef+"_"+hash; 
+		fullpath="/photos/"+ab+"/"+cd+"/"+abcdef+"_"+hash;
 	} else {
-		fullpath="/geophotos/"+yz+"/"+ab+"/"+cd+"/"+abcdef+"_"+hash; 
+		fullpath="/geophotos/"+yz+"/"+ab+"/"+cd+"/"+abcdef+"_"+hash;
 	}
-	
-	switch(size) { 
-		case 'full': return "https://s0.geograph.org.uk"+fullpath+".jpg"; break; 
-		case 'med': return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_213x160.jpg"; break; 
-		case 'small': 
-		default: return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_120x120.jpg"; 
+
+	switch(size) {
+		case 'full': return "https://s0.geograph.org.uk"+fullpath+".jpg"; break;
+		case 'med': return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_213x160.jpg"; break;
+		case 'small':
+		default: return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_120x120.jpg";
 	}
 }
 
