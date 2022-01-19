@@ -98,6 +98,13 @@ color: #000000;
 /* height: 19px; */
 }
 
+.inputButton:active {
+    background-color: silver;
+    border: 1px solid gray;
+    color: gray;
+}
+
+
 .textForm {
 font-family: Georgia, Verdana, Arial;
 background: #FFFFFF;
