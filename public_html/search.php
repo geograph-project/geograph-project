@@ -1089,6 +1089,8 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		        $src = 'src';//revert back to standard non lazy loading
 		}
 
+		$src = 'loading="lazy" src'; //experimenting with moving to it permentanty!
+
 		$smarty->assign('src', $src);
 
 		$smarty->assign('querytime', $engine->Execute($pg));
