@@ -104,9 +104,9 @@ if (!empty($_POST) && !empty($_POST['urls'])) {
 
 	if (!empty($_GET['mobile'])) {
 		print "<p>Tip: Can also open these URLs on desktop browser, and continue the submission there.</p>";
-		$url = "http://{$_SERVER['HTTP_HOST']}/submit-multi.php?tab=submit";
+		$url = "https://{$_SERVER['HTTP_HOST']}/submit-multi.php?tab=submit";
 		print "<p>v1: <a href=$url>$url</a></p>";
-		$url = "http://{$_SERVER['HTTP_HOST']}/submit2.php?multi=true";
+		$url = "https://{$_SERVER['HTTP_HOST']}/submit2.php?multi=true";
 		print "<p>v2: <a href=$url>$url</a></p>";
 		print "or just goto the 'multi' submission method, the files are uploaded to general upload area";
 	}
@@ -197,7 +197,7 @@ if (!empty($CONF['submission_message'])) {
 }
 
 if (isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTTP_X_PSS_LOOP'] == 'pagespeed_proxy') {
-	$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:6px solid red;padding:20px;margin:20px;font-size:1.1em;">geograph.org.uk is currently in reduced functionality mode - to deal with traffic levels. <b>The maximum filesize that can be uploaded is now 5Mb.</b> To upload a larger image, please use <a href="http://www.geograph.ie/submit2.php">www.geograph.ie</a> or <a href="http://schools.geograph.org.uk/submit2.php" onclick="location.host = \'schools.geograph.org.uk\'; return false">schools.geograph.org.uk</a> <small>(they upload to the same database)</small></div>');
+	$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:6px solid red;padding:20px;margin:20px;font-size:1.1em;">geograph.org.uk is currently in reduced functionality mode - to deal with traffic levels. <b>The maximum filesize that can be uploaded is now 5Mb.</b> To upload a larger image, please use <a href="https://www.geograph.ie/submit2.php">www.geograph.ie</a> or <a href="http://schools.geograph.org.uk/submit2.php" onclick="location.host = \'schools.geograph.org.uk\'; return false">schools.geograph.org.uk</a> <small>(they upload to the same database)</small></div>');
 	$smarty->assign("small_upload",1);
 }
 

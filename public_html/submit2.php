@@ -43,7 +43,7 @@ dieIfReadOnly();
                         $q = array();
                         $q['_apikey'] = $CONF['picnik_api_key'];
                         $q['_page'] = '/in/upload';
-                        $q['_export'] = "http://{$_SERVER['HTTP_HOST']}/submit2.php";
+                        $q['_export'] = "https://{$_SERVER['HTTP_HOST']}/submit2.php";
                         $q['_export_field'] = 'jpeg_url';
                         $q['_export_agent'] = 'browser';
                         $q['_export_method'] = 'POST';

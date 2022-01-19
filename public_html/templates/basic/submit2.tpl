@@ -303,7 +303,7 @@ function clearSubmission() {
 	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1,null,event.shiftKey)"><span id="se1">-</span> Step 1 - Upload Photo</a>
 
 	<div id="sd1" class="sd" style="display:block">
-		<iframe src="http://{$http_host}/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{if $transfer_id}&amp;transfer_id={$transfer_id|escape:'url'}{/if}{/dynamic}&amp;container=iframe1#sort=Uploaded%A0%A0%u2193" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
+		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{if $transfer_id}&amp;transfer_id={$transfer_id|escape:'url'}{/if}{/dynamic}&amp;container=iframe1#sort=Uploaded%A0%A0%u2193" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
 	</div>
 <!-- # -->
 	<a id="sh9" href="#" class="sh sn" onclick="return clicker(9,null,event.shiftKey)" style="font-size:0.9em"><span id="se9">+</span> Find Square on Map (optional tool)</a>
