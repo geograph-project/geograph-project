@@ -12,7 +12,7 @@
 			<img src="{$image->_getFullpath(false,true)}" width="100%">
 		</div>
 		<div style="position:absolute;top:0;width:100%;">
-	  <form action="http://{$http_host}/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="display:inline">
+	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="display:inline">
 	  <div class="shadow" style="float:left; position:relative; width:226px; text-align:center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true,$src)}</a><br/>
 		<div class="caption">{if $image->moderation_status eq "pending"}{$image->moderation_status}{/if}</div>

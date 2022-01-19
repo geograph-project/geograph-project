@@ -35,9 +35,12 @@ customGZipHandlerStart();
 $USER->mustHavePerm("basic");
 
 
-//temp as edit page doesnt work on https (mainly maps!)
-pageMustBeHTTP();
-
+if (!empty($_COOKIE['MapSrv']) && $_COOKIE['MapSrv'] == "OSOS") {
+        //temp as page submits to non-secure editimage.php
+        pageMustBeHTTP();
+} else {
+        pageMustBeHTTPS();
+}
 
 
 $template='submissions.tpl';

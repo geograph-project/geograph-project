@@ -56,9 +56,12 @@ $smarty = new GeographPage;
 //you must be logged in to request changes
 $USER->mustHavePerm("basic");
 
-//temp as page doesnt work on https (mainly maps!)
-pageMustBeHTTP();
-
+if (!empty($_COOKIE['MapSrv']) && $_COOKIE['MapSrv'] == "OSOS") {
+        //temp as page doesnt work on https (mainly maps!)
+        pageMustBeHTTP();
+} else {
+        pageMustBeHTTPS();
+}
 
 $template='editimage.tpl';
 $cacheid='';

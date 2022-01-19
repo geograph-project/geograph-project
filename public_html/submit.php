@@ -86,15 +86,13 @@ $smarty = new GeographPage;
 if (!empty($CONF['submission_message'])) {
         $smarty->assign("status_message",$CONF['submission_message']);
 }
-if ($CONF['PROTOCOL'] == 'https://') {
+if ($CONF['PROTOCOL'] == 'https://' && @$_COOKIE['MapSrv'] == "OSOS") {
 	$smarty->assign("is_https",1);
 
 	//if (!empty(transer_id)
 		//Location: http://{$http_host}{$script_name}?method=post&grid_reference={$grid_reference}&gridsquare=1&transfer_id={$transfer_id}&redir=false
 	//TODO... in practice will probably need to do this further down the page AFTER _FILES processed.
 }
-
-$smarty->assign('extra_meta','<link rel="dns-prefetch" href="https://osopenspacepro.ordnancesurvey.co.uk/">');
 
 if (isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTTP_X_PSS_LOOP'] == 'pagespeed_proxy') {
 	$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:6px solid red;padding:20px;margin:20px;font-size:1.1em;">geograph.org.uk is currently in reduced functionality mode - to deal with traffic levels. <b>The maximum filesize that can be uploaded is now 5Mb.</b> To upload a larger image, please use <a href="http://www.geograph.ie/submit2.php">www.geograph.ie</a> or <a href="http://schools.geograph.org.uk/submit2.php" onclick="location.host = \'schools.geograph.org.uk\'; return false">schools.geograph.org.uk</a> <small>(they upload to the same database)</small></div>');
@@ -107,8 +105,12 @@ if (!$USER->hasPerm("basic")) {
 	exit;
 }
 
-//temp as page doesnt work on https (mainly maps!)
-pageMustBeHTTP();
+if (!empty($_COOKIE['MapSrv']) && $_COOKIE['MapSrv'] == "OSOS") {
+	//temp as page doesnt work on https (mainly maps!)
+	pageMustBeHTTP();
+} else {
+	pageMustBeHTTPS();
+}
 
 if (!empty($_REQUEST['use_autocomplete'])) {
 	$USER->use_autocomplete = 1;

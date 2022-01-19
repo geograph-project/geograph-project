@@ -39,7 +39,12 @@ if (!empty($CONF['db_read_connect2'])) {
 
 $smarty = new GeographPage;
 
-pageMustBeHTTP(); //becuase the form submitting to http://
+if (!empty($_COOKIE['MapSrv']) && $_COOKIE['MapSrv'] == "OSOS") {
+        //temp as page doesnt work on https (mainly maps!)
+        pageMustBeHTTP();
+} else {
+        pageMustBeHTTPS();
+}
 
 customGZipHandlerStart();
 

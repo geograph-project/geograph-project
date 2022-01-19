@@ -39,7 +39,7 @@
 	<br/>
 
 	{foreach from=$images item=image}
-	  <form action="http://{$http_host}/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" target="editor" style="background-color:#{cycle values="eaeaea,f8f8f8"};padding:8px 0;">
+	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" target="editor" style="background-color:#{cycle values="eaeaea,f8f8f8"};padding:8px 0;">
 		<a name="{$image->gridimage_id}"><input type="text" name="title" size="80" value="{$image->title|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''" style="max-width:80%"/></a>
 		<br/>
 		{if $image->title_html}

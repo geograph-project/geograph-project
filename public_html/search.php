@@ -1030,9 +1030,14 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	if ($display == 'map')
 		//Access to XMLHttpRequest at 'http://www.geograph.org.uk/feed/results/150319469/2.json' from origin 'http://www.geograph.org.uk' has been blocked by CORS policy: The request client is not a secure context and the resource is in more-private address space `local`.
 		pageMustBeHTTPS();
-	if ($display == 'spelling')
-		//temp as page submits to non-secure editimage.php
-		pageMustBeHTTP();
+	if ($display == 'spelling') {
+		if (!empty($_COOKIE['MapSrv']) && $_COOKIE['MapSrv'] == "OSOS") {
+			//temp as page submits to non-secure editimage.php
+		        pageMustBeHTTP();
+		} else {
+		        pageMustBeHTTPS();
+		}
+	}
 
 	$ab=floor($i%10000);
 	$cacheid="search|$ab|$i.$pg";
@@ -1083,6 +1088,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		        (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
 		        $src = 'src';//revert back to standard non lazy loading
 		}
+
 		$smarty->assign('src', $src);
 
 		$smarty->assign('querytime', $engine->Execute($pg));
