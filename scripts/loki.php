@@ -45,6 +45,7 @@ $param=array(
 
 	'base'=>'{job="production/geograph", container="nginx"}', //the default query (for all modes)
 	'string'=>false, //extra filter to apply
+	'not'=>false,
 	'hours'=>false, //specify a number of hours to use with 'string' query. Defaults to one hour!
 
 	//which stream to get
@@ -192,6 +193,9 @@ if (empty($CONF['loki_address']))
 	elseif ($param['string']) {
 		$query = $param['base'];
 		$query .= ' |= "'.str_replace('"','\"',$param['string']).'"';
+
+		if (!empty($param['not']))
+			$query .= ' != "'.str_replace('"','\"',$param['not']).'"';
 
 
 		$start = null;
