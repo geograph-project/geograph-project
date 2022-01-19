@@ -494,7 +494,7 @@
 {/if}
 
 	{if $rastermap->enabled}
-		<div class="rastermap" style="float:right;  width:350px;position:relative">
+		<div class="rastermap" style="float:right;  width:390px;position:relative">
 
 		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
 		{$rastermap->getImageTag()}<br/>
