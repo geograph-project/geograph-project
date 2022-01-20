@@ -548,7 +548,7 @@ function openMap(input) {
 			return;
 		}
 	}
-	window.open('http://www.geograph.org.uk/showmap.php?gridref='+encodeURIComponent(input),'_blank');
+	window.open('/showmap.php?gridref='+encodeURIComponent(input),'_blank');
 }
 
 function checkGridref(that) {
