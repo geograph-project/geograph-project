@@ -1,7 +1,7 @@
 <?php
 $REVISIONS = array();
 $REVISIONS['/admin/moderation.js']=1;
-$REVISIONS['/discuss/bb_default_style.css']=7639;
+$REVISIONS['/discuss/bb_default_style.css']=57783434;
 $REVISIONS['/games/markit.js']=8179;
 $REVISIONS['/games/place-memory.js']=3997;
 $REVISIONS['/geotrips/geotrips.css']=7809;
@@ -17,7 +17,7 @@ $REVISIONS['/js/Leaflet.GeographRecentUploads.js']=51994108;
 $REVISIONS['/js/Leaflet.MetricGrid.js']=8933;
 $REVISIONS['/js/Leaflet.Photo.css']=8862;
 $REVISIONS['/js/Leaflet.Photo.js']=8861;
-$REVISIONS['/js/Leaflet.base-layers.js']=31310615;
+$REVISIONS['/js/Leaflet.base-layers.js']=34987369;
 $REVISIONS['/js/MooFlow.css']=4953;
 $REVISIONS['/js/MooFlow.js']=4953;
 $REVISIONS['/js/Observer.js']=5510;
@@ -36,7 +36,8 @@ $REVISIONS['/js/lazynew.js']=8536;
 $REVISIONS['/js/leaflet-bing-layer.min.js']=8861;
 $REVISIONS['/js/links.js']=50453912;
 $REVISIONS['/js/mappingG3.js']=9046;
-$REVISIONS['/js/mappingLeaflet.js']=62978415;
+$REVISIONS['/js/mappingLeaflet.js']=34987369;
+$REVISIONS['/js/mappingLeaflet.css']=34987369;
 $REVISIONS['/js/mappingOS.js']=8455;
 $REVISIONS['/js/mootools-1.2-core.js']=4953;
 $REVISIONS['/js/mootools-1.2-more.js']=4953;
