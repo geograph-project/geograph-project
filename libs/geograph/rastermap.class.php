@@ -853,19 +853,7 @@ class RasterMap
 				//]]>
 				</script>
 
-				<style>
-					div#map div.leaflet-control-container .leaflet-top {
-						opacity:0.8;
-					}
-					div#map div.leaflet-control-container .leaflet-bottom {
-						opacity:0.7;
-						background-color:white;
-					}
-					div#map:hover div.leaflet-control-container .leaflet-top, div#map:hover div.leaflet-control-container .leaflet-bottom {
-						opacity:1;
-						background-color:inherit;
-					}
-				</style>
+				<link rel=\"stylesheet\" type=\"text/css\" href=\"".smarty_modifier_revision("/js/mappingLeaflet.css")."\" />
 
 				";
 

@@ -1,4 +1,5 @@
 var baseMaps = {};
+var logodiv = null;
 
 ////////////////////////
 // PLEASE READ!
@@ -112,7 +113,7 @@ if (window.OSAPIKey) {
 			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1,basemap2], {
 				mapLetter: 'a',
 				//todo, could add zoom range (in default CRS) so that LayerControl can dynamically enable/dsable tickbox
-				attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
+				attribution: 'Contains OS data &copy; Crown copyright and database rights 2022',
  				bounds: bounds
 			});
 
@@ -126,6 +127,19 @@ if (window.OSAPIKey) {
 			baseMaps['Modern OS - GB'].on('add', function(e) {
 				if (!defaultCRS)
 					defaultCRS = map.options.crs;
+
+				// Append the API logo.
+				//https://labs.os.uk/public/os-api-branding/v0.3.0/os-api-branding.js
+				logodiv = document.createElement('div');
+				logodiv.className = 'os-api-branding logo';
+				map._container.appendChild(logodiv);
+
+				if (map._container.clientWidth < 420 && document.querySelectorAll) {
+				        var elements = document.querySelectorAll('.leaflet-control-attribution');
+				        for(var i=0;i<elements.length;i++)
+				                //elements[i].style.display='none';
+				                elements[i].style.maxWidth=(map._container.clientWidth-120)+'px';
+				}
 
 				var center = map.getCenter();
 				var zoom = map.getZoom();
@@ -147,6 +161,14 @@ if (window.OSAPIKey) {
 				map._layersMinZoom = 3;
 
 			}).on('remove', function(e) {
+				if (logodiv) {
+				        map._container.removeChild(logodiv);
+				        var elements = document.querySelectorAll('.leaflet-control-attribution');
+				        for(var i=0;i<elements.length;i++)
+				                //elements[i].style.display='';
+				                elements[i].style.maxWidth='';
+				}
+
 				var center = map.getCenter();
 				var zoom = map.getZoom();
 
@@ -174,6 +196,30 @@ if (window.OSAPIKey) {
 		        ],
 			attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
 		});
+
+		baseMaps['OS Outdoor'].on('add', function(e) {
+			// Append the API logo.
+			//https://labs.os.uk/public/os-api-branding/v0.3.0/os-api-branding.js
+			logodiv = document.createElement('div');
+			logodiv.className = 'os-api-branding logo';
+			map._container.appendChild(logodiv);
+
+			if (map._container.clientWidth < 420 && document.querySelectorAll) {
+			        var elements = document.querySelectorAll('.leaflet-control-attribution');
+			        for(var i=0;i<elements.length;i++)
+			                //elements[i].style.display='none';
+			                elements[i].style.maxWidth=(map._container.clientWidth-120)+'px';
+			}
+		}).on('remove', function(e) {
+			if (logodiv) {
+			        map._container.removeChild(logodiv);
+			        var elements = document.querySelectorAll('.leaflet-control-attribution');
+			        for(var i=0;i<elements.length;i++)
+			                //elements[i].style.display='';
+			                elements[i].style.maxWidth='';
+			}
+		});
+
 	}
 }
 

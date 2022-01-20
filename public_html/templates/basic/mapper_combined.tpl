@@ -34,6 +34,7 @@
 <h2>Geograph Coverage Map (v4) {dynamic}{if $realname} for {$realname|escape:'html'}{/if}{/dynamic}</h2>
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="{"/js/mappingLeaflet.css"|revision}" />
 
         <link rel="stylesheet" href="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.css" />
 

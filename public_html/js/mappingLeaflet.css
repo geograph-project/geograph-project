@@ -1,0 +1,36 @@
+
+.os-api-branding {
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  display: block;
+  z-index: 1000;
+  pointer-events: none;
+  box-sizing: content-box;
+}
+
+.os-api-branding.logo {
+  left: 0;
+  padding: 8px;
+  width: 90px;
+  height: 24px;
+  background-image: url(https://labs.os.uk/public/os-api-branding/v0.3.0/img/os-logo-maps.svg);
+  background-size: 90px 24px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+@media (hover: hover) {
+	div#map div.leaflet-control-container .leaflet-top {
+		opacity:0.8;
+	}
+	div#map div.leaflet-control-container .leaflet-bottom {
+		opacity:0.7;
+		background-color:white;
+	}
+	div#map:hover div.leaflet-control-container .leaflet-top, div#map:hover div.leaflet-control-container .leaflet-bottom {
+		opacity:1;
+		background-color:inherit;
+	}
+}

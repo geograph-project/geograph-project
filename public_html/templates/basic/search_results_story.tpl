@@ -82,6 +82,7 @@ the direction of view.
 
 
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+	<link rel="stylesheet" type="text/css" href="{"/js/mappingLeaflet.css"|revision}" />
         <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>

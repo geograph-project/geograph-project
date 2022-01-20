@@ -30,6 +30,7 @@
  var northings2 = 0;
  
  var pickupbox = null;
+ var logodiv = null;
  
  var distance;
  
@@ -102,8 +103,8 @@ function createPMarker(ppoint) {
 function mapdragend(e) {
 	if (pickupbox) {
 		var height = document.getElementById('map').clientHeight;
-		var toplef = map.containerPointToLatLng([20,height-70]);
-		var botrig = map.containerPointToLatLng([95,height-20]);
+		var toplef = map.containerPointToLatLng([20,height-90]);
+		var botrig = map.containerPointToLatLng([95,height-40]);
 		pickupbox.setLatLngs([
 			[toplef.lat,toplef.lng],
 			[toplef.lat,botrig.lng],
@@ -114,10 +115,10 @@ function mapdragend(e) {
 		pickupbox.redraw();
 
 		if (document.theForm.grid_reference.value == '' || document.theForm.grid_reference.value.replace(/ /g,'').length <=6) //to exclude 4fig subject
-			marker1.setLatLng( map.containerPointToLatLng([70,height-45]) );
+			marker1.setLatLng( map.containerPointToLatLng([70,height-65]) );
 
 		if (document.theForm.photographer_gridref.value == '')
-			marker2.setLatLng( map.containerPointToLatLng([44,height-45]) );
+			marker2.setLatLng( map.containerPointToLatLng([44,height-65]) );
 	}
 }
 
@@ -543,7 +544,7 @@ function enlargeMap() {
 
 			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1,basemap2], {
 		//		crs: crs,
-				attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
+				attribution: 'Contains OS data &copy; Crown copyright and database rights 2022',
 				mapLetter: 'a'
 			}); //.addTo(map);
 
@@ -555,6 +556,20 @@ L.Map.prototype._updateZoomLevels = function() {};
 // See https://github.com/Leaflet/Leaflet/blob/4b2946c205d0a6e51f324cfff6536d1ef7caf463/src/layer/Layer.js#L245
 
 			baseMaps['Modern OS - GB'].on('add', function(e) {
+
+			        // Append the API logo.
+				//https://labs.os.uk/public/os-api-branding/v0.3.0/os-api-branding.js
+			        logodiv = document.createElement('div');
+			        logodiv.className = 'os-api-branding logo';
+			        map._container.appendChild(logodiv);
+
+				if (map._container.clientWidth < 420 && document.querySelectorAll) {
+					var elements = document.querySelectorAll('.leaflet-control-attribution');
+					for(var i=0;i<elements.length;i++)
+						//elements[i].style.display='none';
+						elements[i].style.maxWidth=(map._container.clientWidth-120)+'px';
+				}
+
 
 				var center = map.getCenter();
 				var zoom = map.getZoom();
@@ -575,6 +590,14 @@ overlayMaps[i].options.minZoom += 100;
 map._layersMaxZoom = 13;
 map._layersMinZoom = 3;
 			}).on('remove', function(e) {
+				if (logodiv) {
+					map._container.removeChild(logodiv);
+					var elements = document.querySelectorAll('.leaflet-control-attribution');
+					for(var i=0;i<elements.length;i++)
+						//elements[i].style.display='';
+						elements[i].style.maxWidth='';
+				}
+
 				var center = map.getCenter();
 				var zoom = map.getZoom();
 
@@ -600,8 +623,32 @@ map._layersMinZoom = 3;
 			            [ 49.528423, -10.76418 ],
 			            [ 61.331151, 1.9134116 ]
 			        ],
-				attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
+				attribution: 'Contains OS data &copy; Crown copyright and database rights 2022',
 			});
+
+        	        baseMaps['OS Outdoor'].on('add', function(e) {
+	                        // Append the API logo.
+	                        //https://labs.os.uk/public/os-api-branding/v0.3.0/os-api-branding.js
+	                        logodiv = document.createElement('div');
+	                        logodiv.className = 'os-api-branding logo';
+                	        map._container.appendChild(logodiv);
+
+        	                if (map._container.clientWidth < 420 && document.querySelectorAll) {
+	                                var elements = document.querySelectorAll('.leaflet-control-attribution');
+                	                for(var i=0;i<elements.length;i++)
+        	                                //elements[i].style.display='none';
+	                                        elements[i].style.maxWidth=(map._container.clientWidth-120)+'px';
+                	        }
+        	        }).on('remove', function(e) {
+	                        if (logodiv) {
+                	                map._container.removeChild(logodiv);
+        	                        var elements = document.querySelectorAll('.leaflet-control-attribution');
+	                                for(var i=0;i<elements.length;i++)
+                        	                //elements[i].style.display='';
+                	                        elements[i].style.maxWidth='';
+        	                }
+	                });
+
 		}
 
 		setupOSMTiles(map,mapTypeId);
