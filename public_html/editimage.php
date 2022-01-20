@@ -51,17 +51,12 @@ require_once('geograph/gridimagetroubleticket.class.php');
 
 init_session();
 
+pageMustBeHTTPS();
+
 $smarty = new GeographPage;
 
 //you must be logged in to request changes
 $USER->mustHavePerm("basic");
-
-if (!empty($_COOKIE['MapSrv']) && $_COOKIE['MapSrv'] == "OSOS") {
-        //temp as page doesnt work on https (mainly maps!)
-        pageMustBeHTTP();
-} else {
-        pageMustBeHTTPS();
-}
 
 $template='editimage.tpl';
 $cacheid='';
@@ -652,6 +647,8 @@ if (isset($_REQUEST['id']))
 		require_once('geograph/rastermap.class.php');
 
 		$rastermap = new RasterMap($image->grid_square,true);
+			$rastermap->setService('Leaflet'); //want leaflet by default OSOS might still sometimes be choosen by default
+
 			if (empty($_REQUEST['service']) && !empty($_COOKIE['MapSrv'])) {
                                 $_REQUEST['service'] = $_COOKIE['MapSrv'];
                         }
@@ -664,7 +661,6 @@ if (isset($_REQUEST['id']))
                                         $rastermap->setService('OS50k');
                                 }
                         }
-
 
 		if (!empty($image->viewpoint_northings)) {
 			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);

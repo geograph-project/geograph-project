@@ -293,6 +293,10 @@ class RasterMap
 			if (!empty($this->inline) || !empty($this->issubmit)) {
 				$s = ($this->exactPosition || !$this->issubmit)?'':"Drag the circles from the green box!<br/>";
 				$style = ($this->issubmit)?'max-width:calc(50vw - 60px)':'';
+
+				if ($this->service == 'Leaflet' && !empty($CONF['os_api_key']) && @$this->reference_index !== '2')
+					$s .=" (If missing the OS Map, you may need to select 'Modern OS' in the layer switcher on the map)<br>";
+
 				return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px; $style\">Loading map... (JavaScript required)</div>";
 			} else {
 				$token=new Token;

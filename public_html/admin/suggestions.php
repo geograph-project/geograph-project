@@ -25,6 +25,8 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+pageMustBeHTTPS();
+
 $USER->mustHavePerm("ticketmod");
 
 $smarty = new GeographPage;
