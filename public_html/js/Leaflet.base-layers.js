@@ -225,7 +225,7 @@ if (window.OSAPIKey) {
 
 	////////////////////////////////////////////////
 
-baseMaps['Historic OS - GB'] = L.tileLayer('https://nls-0.tileserver.com/nls/{z}/{x}/{y}.jpg',
+baseMaps['Historic OS - GB 1920s'] = L.tileLayer('https://nls-0.tileserver.com/nls/{z}/{x}/{y}.jpg',
                         {mapLetter: 'n', minZoom: 1, maxZoom:18 , attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
                                 bounds: [[49.6, -9], [61.7, 3]] });
 
