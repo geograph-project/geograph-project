@@ -111,8 +111,8 @@ function createPMarker(ppoint) {
 function mapdragend(e) {
 	if (pickupbox) {
 		var height = document.getElementById('map').clientHeight;
-		var toplef = map.containerPointToLatLng([20,height-90]);
-		var botrig = map.containerPointToLatLng([95,height-40]);
+		var toplef = map.containerPointToLatLng([10,height-125]);
+		var botrig = map.containerPointToLatLng([48,height-55]);
 		pickupbox.setLatLngs([
 			[toplef.lat,toplef.lng],
 			[toplef.lat,botrig.lng],
@@ -123,10 +123,10 @@ function mapdragend(e) {
 		pickupbox.redraw();
 
 		if (document.theForm.grid_reference.value == '' || document.theForm.grid_reference.value.replace(/ /g,'').length <=6) //to exclude 4fig subject
-			marker1.setLatLng( map.containerPointToLatLng([70,height-65]) );
+			marker1.setLatLng( map.containerPointToLatLng([30,height-105]) );
 
 		if (document.theForm.photographer_gridref.value == '')
-			marker2.setLatLng( map.containerPointToLatLng([44,height-65]) );
+			marker2.setLatLng( map.containerPointToLatLng([30,height-75]) );
 	}
 }
 
