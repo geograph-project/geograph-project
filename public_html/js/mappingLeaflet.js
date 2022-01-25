@@ -19,21 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
+
  var currentelement = null;
- 
+
  var marker1 = null;
  var eastings1 = 0;
  var northings1 = 0;
  var marker2 = null;
  var eastings2 = 0;
  var northings2 = 0;
- 
+
  var pickupbox = null;
  var logodiv = null;
- 
+
  var distance;
- 
+ var checkedonce = false;
+
  function createMarker(point,picon) {
  	if (picon) {
 		marker2 = L.marker(point, {icon: picon, draggable: true, riseOnHover:true}).addTo(map);
@@ -53,7 +54,7 @@
 	if (issubmit) {
 		marker.on('drag', function(e) {
 			var grid=gmap2grid(marker.getLatLng());
-			
+
 			//get a grid reference with 4 digits of precision
 			var gridref = grid.getGridRef(4);
 
@@ -65,18 +66,25 @@
 				eastings1 = grid.eastings;
 				northings1 = grid.northings;
 				document.theForm.grid_reference.value = gridref;
-			}  
-			
-			if (document.theForm.use6fig)
-				document.theForm.use6fig.checked = true;
-			
+			}
+
+			if (document.theForm.use6fig && !document.theForm.use6fig.checked && !checkedonce) {
+				var z=14; //zoom level on normal web tile maps.
+				if (map.options && map.options.crs && map.options.crs.code && map.options.crs.code == "EPSG:27700") //the OS maps use a differet CRS, with differnt zooms
+					z = 7;
+				if (map.getZoom() <= z) {
+					document.theForm.use6fig.checked = true;
+					checkedonce = true;
+				}
+			}
+
 			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
 				pickupbox.remove();
 				pickupbox = null;
 			}
-			
+
 			updateViewDirection();
-			
+
 			if (typeof parentUpdateVariables != 'undefined') {
 				parentUpdateVariables();
 			}
