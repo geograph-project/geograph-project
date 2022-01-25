@@ -11,7 +11,7 @@
 
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
 	<div style="color:red; background-color:white">Marker only shows grid square, see description for exact location</div><br/>
-	<div style="width:500px; height:450px;" id="mapCanvas">Loading map...</div>
+	<div style="width:500px; height:450px;" id="map">Loading map...</div>
 </div>
 
 <dl class="picinfo">
@@ -151,25 +151,11 @@
 						{/literal}
                                                 var point = [{$lat},{$long}];
 						{literal}
-                                                var newtype = readCookie('GMapType');
 
-                                                mapTypeId = firstLetterToType(newtype);
+                                                setupBaseMap(); //creates the map, but does not initialize a view
+                                                map.setView(point, 8);
 
-                                                map = L.map('mapCanvas',{attributionControl:false}).setView(point, 8).addControl(
-                                                        L.control.attribution({ position: 'bottomright', prefix: ''}) );
-
-                                                setupOSMTiles(map,mapTypeId);
-
-                                                map.on('baselayerchange', function (e) {
-                                                        if (e.layer && e.layer.options && e.layer.options.mapLetter) {
-                                                                var t = e.layer.options.mapLetter;
-                                                                createCookie('GMapType',t,10);
-                                                        } else {
-                                                                console.log(e);
-                                                        }
-                                                });
-
-						 createMarker(point);
+						createMarker(point);
                                         }
                                         AttachEvent(window,'load',loadmap,false);
 

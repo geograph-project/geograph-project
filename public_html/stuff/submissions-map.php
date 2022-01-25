@@ -66,7 +66,7 @@ It's now recommended to use that instead. As can combine it with other layers al
 <p>The red circles are your 100 most recently submitted images, including unmoderated images <span id="zoomer"></span></p>
 <p>The coloured squares are squares you've submitted images to ever, not just most recent. Doesn't update as regularly as the circles layer</p>
 
-<div id="mapCanvas" style="width:800px; height:700px; max-height:90vh; max-width:80vw;"></div>
+<div id="map" style="width:800px; height:700px; max-height:90vh; max-width:80vw;"></div>
 <div id="results"></div>
 <a href="?reload">Reload Map</a> - Use to see latest images, please use instead of F5/Refresh in browser!
 
@@ -82,31 +82,17 @@ It's now recommended to use that instead. As can combine it with other layers al
 	var static_host = '<? echo $CONF['STATIC_HOST']; ?>';
 
                                         function loadmap() {
-                                                var newtype = readCookie('GMapType');
-
-                                                mapTypeId = firstLetterToType(newtype);
-
-                                                map = L.map('mapCanvas',{attributionControl:false}).addControl(
-                                                        L.control.attribution({ position: 'bottomright', prefix: ''}) );
 
 		//stolen from Leaflet.base-layers.js - alas that file no compatible with mappingLeaflet.js at the moment :(
 
 		var layerAttrib='&copy; Geograph Project';
                 var layerUrl='https://t0.geograph.org.uk/tile/tile-coverage.php?z={z}&x={x}&y={y}&user_id=<? echo $USER->user_id; ?>';
-                var coverageCoarse = new L.TileLayer(layerUrl, {user_id: <? echo $USER->user_id; ?>, minZoom: 5, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6}).addTo(map);
+                var coverageCoarse = new L.TileLayer(layerUrl, {user_id: <? echo $USER->user_id; ?>, minZoom: 5, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
                 overlayMaps["Personalized Coverage"] = coverageCoarse;
 
+						setupBaseMap(); //creates the map, but does not initialize a view
 
-                                                setupOSMTiles(map,mapTypeId);
-
-                                                map.on('baselayerchange', function (e) {
-                                                        if (e.layer && e.layer.options && e.layer.options.mapLetter) {
-                                                                var t = e.layer.options.mapLetter;
-                                                                createCookie('GMapType',t,10);
-                                                        } else {
-                                                                console.log(e);
-                                                        }
-                                                });
+						overlayMaps["Personalized Coverage"].addTo(map);
 
 						var bounds = L.latLngBounds();
 	<?
@@ -150,7 +136,7 @@ if (empty($_SESSION['gridref']) && !empty($r['grid_reference'])) {
 }
 
 	?>
-						map.fitBounds(bounds);
+						map.fitBounds(bounds,{maxZoom:15});
 
                                         }
                                         AttachEvent(window,'load',loadmap,false);

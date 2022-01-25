@@ -294,9 +294,6 @@ class RasterMap
 				$s = ($this->exactPosition || !$this->issubmit)?'':"Drag the circles from the green box!<br/>";
 				$style = ($this->issubmit)?'max-width:calc(50vw - 60px)':'';
 
-				if ($this->service == 'Leaflet' && !empty($CONF['os_api_key']) && @$this->reference_index !== '2')
-					$s .=" (If missing the OS Map, you may need to select 'Modern OS' in the layer switcher on the map)<br>";
-
 				return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px; $style\">Loading map... (JavaScript required)</div>";
 			} else {
 				$token=new Token;
@@ -827,9 +824,6 @@ class RasterMap
 				if (!empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
 					$os_api_key = json_encode($CONF['os_api_key']);
 				}
-
-				$os_api_key .= ";\n if (!readCookie('GMapType')) { createCookie('GMapType','a',10) }";
-
 			} elseif(!empty($this->enable_os) && !empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
 				$os_api_key = json_encode($CONF['os_api_key']);
 			}
@@ -843,12 +837,13 @@ class RasterMap
 					var map = null;
 					var static_host = '{$CONF['STATIC_HOST']}';
 					var OSAPIKey = $os_api_key;
+					var leafletBaseKey = 'LeafletBase{$this->reference_index}';
 
 					function loadmap() {
 						var point = [{$this->lat},{$this->long}];
 						$preblock
 
-						setupBaseMap(map);
+						setupBaseMap();
 						map.setView(point, 14);
 
 						$block

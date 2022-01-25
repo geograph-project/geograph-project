@@ -406,24 +406,6 @@ function enlargeMap() {
 	var baseMaps = {};
 	var overlayMaps = {};
 
-	function firstLetterToType(newtype) {
-		var mapTypeId = 'OpenTopoMap';
-
-		//these are odd, but to maintain some compatiblity with GMaps version
-                if (newtype == 'a') {mapTypeId = 'Modern OS - GB'}
-                if (newtype == 's') {mapTypeId = 'Aerial Imagery'}
-                if (newtype == 'h') {mapTypeId = 'Aerial Imagery'}
-                if (newtype == 't') {mapTypeId = 'OpenTopoMap'} //was OSM Terrain
-                if (newtype == 'n') {mapTypeId = 'Historic OS - GB 1920s';}
-                if (newtype == 'i') {mapTypeId = 'Historic OS - Ireland';}
-                if (newtype == 'o') {mapTypeId = 'OpenStreetMap';}
-                if (newtype == 'c') {mapTypeId = 'OpenStreetMap';} //was OSM Cycle
-                if (newtype == 'p') {mapTypeId = 'OpenTopoMap';} //was OSM Terrain
-                if (newtype == 'l') {mapTypeId = 'OpenTopoMap';}
-
-		return mapTypeId;
-	}
-
 ///////////////////////////////////////////
 
 	//despite it name, this now sets up many base layers, as well as overlays and controls!
@@ -465,7 +447,6 @@ function enlargeMap() {
 			baseMaps["Ordnance Survey GB"] = L.tileLayer.bing({mapLetter: 'b', 'bingMapsKey':BING_KEY,'minZoom':12,'maxZoom':17,'imagerySet':'OrdnanceSurvey', attribution:bingAttribution,
 		                bounds: [[49.6, -12], [61.7, 3]] });
 		}
-
 
 		if (mapTypeId && baseMaps[mapTypeId])
 			map.addLayer(baseMaps[mapTypeId])
@@ -511,14 +492,15 @@ function enlargeMap() {
 ///////////////////////////////////////////
 
 	//creates the highlevel 'map' object. Note this version does NOT initalaize a center/zoom for the map. Will have to do that afterwards
-	function setupBaseMap() {
+	function setupBaseMap(options) {
+		var mapOptions = {
+			attributionControl:false //we add our own manually!
+		};
+		if (options)
+			 L.extend(mapOptions, options);
 
 		//just a normal Leafelt Map
-		var newtype = readCookie('GMapType');
-
-		mapTypeId = firstLetterToType(newtype);
-
-		map = window.map = L.map('map',{attributionControl:false,doubleClickZoom:false, scrollWheelZoom:'center'}).addControl(
+		map = window.map = L.map('map', mapOptions).addControl(
 			L.control.attribution({ position: 'bottomright', prefix: ''}) );
 
 		var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
@@ -663,19 +645,29 @@ map._layersMinZoom = 3;
 
 		}
 
+		var mapTypeId = "OpenTopoMap";
+		if (baseMaps['Modern OS - GB'])
+			mapTypeId = 'Modern OS - GB';
+
+		if (window.localStorage && window.localStorage.getItem) {
+			if (!window.leafletBaseKey)
+				leafletBaseKey = 'LeafletBase';
+			if (window.localStorage.getItem(leafletBaseKey)) //we can't check it a valid basemap here!
+				mapTypeId = window.localStorage.getItem(leafletBaseKey);
+		}
+
 		setupOSMTiles(map,mapTypeId);
 
 		map.on('baselayerchange', function (e) {
-			if (e.layer && e.layer.options && e.layer.options.mapLetter) {
-				var t = e.layer.options.mapLetter;
-				createCookie('GMapType',t,10);
-			}
-
 			var name = null;
 			for(i in baseMaps) {
 				if (baseMaps[i] == e.layer)
 					name = i;
 			}
+
+			if (window.localStorage && window.localStorage.getItem)
+				window.localStorage.setItem(window.leafletBaseKey, name);
+
 			var color = (name && name.indexOf('Imagery') > -1)?'#fff':'#00f';
 			var opacity = (name && name.indexOf('Imagery') > -1)?0.8:0.3;
 			for(i in overlayMaps) {
@@ -693,4 +685,5 @@ map._layersMinZoom = 3;
 	}
 
 ///////////////////////////////////////////
+
 

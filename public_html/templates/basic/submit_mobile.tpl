@@ -326,6 +326,7 @@ function checkMultiFormSubmission() {
 	var issubmit = false; //we do it manually. 
 	var geocoder = null;
 	var disableAutoUpdate = false;
+	var leafletBaseKey = 'LeafletBaseMap'; //at the moment, we dont know what grid it will be!
 	var checkedonce = false;
 
 {/literal}
@@ -341,7 +342,7 @@ function checkMultiFormSubmission() {
 {literal}
 
 function loadmap() {
-	setupBaseMap(map);
+	setupBaseMap({doubleClickZoom:false, scrollWheelZoom:'center'});
 
 	if (location.search.length>2 && location.search.indexOf('gridref=')) {
 		if (match = location.search.match(/gridref=([A-Z]{1,2} ?\d{2,5} ?\d{2,5})/)) {
