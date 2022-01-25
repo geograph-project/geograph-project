@@ -388,10 +388,14 @@ function updateCamIcon() {
 
 
 function enlargeMap() {
+	if (map._loaded)
+		var bounds = map.getBounds();
         ele = document.getElementById('map');
         ele.style.width = "100%";
         ele.style.height = "450px";
-        map.invalidateSize().zoomIn(2);
+        map.invalidateSize();
+	if (map._loaded)
+		map.fitBounds(bounds);
 
 	if (typeof resizeContainer == 'function') {
 		resizeContainer();
