@@ -667,7 +667,7 @@ map._layersMinZoom = 3;
 			var color = (name && name.indexOf('Imagery') > -1)?'#fff':'#00f';
 			var opacity = (name && name.indexOf('Imagery') > -1)?0.8:0.3;
 			for(i in overlayMaps) {
-				if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color) {
+				if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color && overlayMaps[i].setOpacity) {
 					overlayMaps[i].options.color = color;
 					overlayMaps[i].setOpacity(opacity);
 					overlayMaps[i]._reset();
@@ -710,7 +710,7 @@ map._layersMinZoom = 3;
 				var color = (name && name.indexOf('Imagery') > -1)?'#fff':'#00f';
 				var opacity = (name && name.indexOf('Imagery') > -1)?0.8:0.3;
 				for(i in overlayMaps) {
-					if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color) {
+					if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color && overlayMaps[i].setOpacity) {
 						overlayMaps[i].options.color = color;
 						overlayMaps[i].setOpacity(opacity);
 						overlayMaps[i]._reset();
