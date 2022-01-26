@@ -71,7 +71,7 @@ if ($has_table && $weeks && $db->getOne("select type from date_stat where type='
 						$where[] = "$column BETWEEN '$year-01-01 00:00:00' AND '$year-12-31 23:59:59'";
 						$days = "SUBSTRING($column,1,10)";
 					} else {
-						$where[] = "$column BETWEEN '$year-01-01' AND '$year-12-31'";
+						$where[] = "$column BETWEEN '$year-01-00' AND '$year-12-31'";
 						$days = $column;
 					}
 
