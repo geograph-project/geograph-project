@@ -326,7 +326,7 @@ function checkMultiFormSubmission() {
 	var issubmit = false; //we do it manually. 
 	var geocoder = null;
 	var disableAutoUpdate = false;
-	var leafletBaseKey = 'LeafletBaseMap'; //at the moment, we dont know what grid it will be!
+	var leafletBaseKey = 'LeafletBase'; //at the moment, we dont know what grid it will be!
 	var checkedonce = false;
 
 {/literal}
