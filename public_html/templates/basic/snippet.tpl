@@ -79,7 +79,7 @@
 	{foreach from=$results item=image}
 	  <div style="float:left;position:relative; width:{$thumbw+10}px; height:{$thumbh+10}px">
 	  <div align="center">
-	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full-size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full-size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true,'loading="lazy" src')}</a></div>
 	  </div>
 	{foreachelse}
 		<p><i>No images to display{if $images}, this could be because they are still pending and/or recently rejected{/if}</i></p>
