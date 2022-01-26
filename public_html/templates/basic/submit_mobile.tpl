@@ -13,6 +13,8 @@
 <script src="{"/js/jquery.storage.js"|revision}"></script>
 
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+        <link rel="stylesheet" type="text/css" href="{"/js/mappingLeaflet.css"|revision}" />
+
         <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
@@ -324,6 +326,8 @@ function checkMultiFormSubmission() {
 	var issubmit = false; //we do it manually. 
 	var geocoder = null;
 	var disableAutoUpdate = false;
+	var leafletBaseKey = 'LeafletBase'; //at the moment, we dont know what grid it will be!
+	var checkedonce = false;
 
 {/literal}
 {dynamic}
@@ -338,7 +342,7 @@ function checkMultiFormSubmission() {
 {literal}
 
 function loadmap() {
-	setupBaseMap(map);
+	setupBaseMap({doubleClickZoom:false, scrollWheelZoom:'center'});
 
 	if (location.search.length>2 && location.search.indexOf('gridref=')) {
 		if (match = location.search.match(/gridref=([A-Z]{1,2} ?\d{2,5} ?\d{2,5})/)) {
@@ -350,6 +354,8 @@ function loadmap() {
 	L.geotagPhoto.crosshair({
 		crosshairHTML: '<img alt="Center of the map; crosshair location" title="Crosshair" src="https://unpkg.com/leaflet-geotag-photo@0.5.1/images/crosshair.svg" width="100px" />'
 	}).addTo(map).on('input', function (event) { //really jsut called when the map is recentered!
+		if (!map._loaded) //dragging the map before setup, fails!
+			return;
 	   var point = this.getCrosshairLatLng(); //really just getting center of the map!
            if (point && point.lat && !disableAutoUpdate)
 		   setLatLong(point.lat, point.lng);
@@ -364,7 +370,8 @@ function loadmap() {
         });
 
 	map.on('dblclick',function(event) {
-		console.log(event,event.latlng);
+		if (!map._loaded) //dragging the map before setup, fails!
+			return;
 
 		//first SWAP the active.
 		disableAutoUpdate = true;
@@ -374,6 +381,20 @@ function loadmap() {
 		//then recenter the map (which feeds back to the new location box!) 
 		disableAutoUpdate = false;
 		map.panTo(event.latlng);
+	});
+	map.on('dragend',function(event) {
+		if (!map._loaded) //dragging the map before setup, fails!
+			return;
+
+		if (document.theForm.use6fig && !document.theForm.use6fig.checked && !checkedonce) {
+			var z=13; //zoom level on normal web tile maps.
+			if (map.options && map.options.crs && map.options.crs.code && map.options.crs.code == "EPSG:27700") //the OS maps use a differet CRS, with differnt zooms
+				z = 7;
+			if (map.getZoom() <= z) {
+				document.theForm.use6fig.checked = true;
+				checkedonce = true;
+			}
+		}
 	});
 
 	setupMess();

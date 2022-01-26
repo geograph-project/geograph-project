@@ -19,20 +19,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
+
  var currentelement = null;
- 
+
  var marker1 = null;
  var eastings1 = 0;
  var northings1 = 0;
  var marker2 = null;
  var eastings2 = 0;
  var northings2 = 0;
- 
+
  var pickupbox = null;
- 
+ var logodiv = null;
+
  var distance;
- 
+ var checkedonce = false;
+
  function createMarker(point,picon) {
  	if (picon) {
 		marker2 = L.marker(point, {icon: picon, draggable: true, riseOnHover:true}).addTo(map);
@@ -52,7 +54,7 @@
 	if (issubmit) {
 		marker.on('drag', function(e) {
 			var grid=gmap2grid(marker.getLatLng());
-			
+
 			//get a grid reference with 4 digits of precision
 			var gridref = grid.getGridRef(4);
 
@@ -64,18 +66,25 @@
 				eastings1 = grid.eastings;
 				northings1 = grid.northings;
 				document.theForm.grid_reference.value = gridref;
-			}  
-			
-			if (document.theForm.use6fig)
-				document.theForm.use6fig.checked = true;
-			
+			}
+
+			if (document.theForm.use6fig && !document.theForm.use6fig.checked && !checkedonce) {
+				var z=14; //zoom level on normal web tile maps.
+				if (map.options && map.options.crs && map.options.crs.code && map.options.crs.code == "EPSG:27700") //the OS maps use a differet CRS, with differnt zooms
+					z = 7;
+				if (map.getZoom() <= z) {
+					document.theForm.use6fig.checked = true;
+					checkedonce = true;
+				}
+			}
+
 			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
 				pickupbox.remove();
 				pickupbox = null;
 			}
-			
+
 			updateViewDirection();
-			
+
 			if (typeof parentUpdateVariables != 'undefined') {
 				parentUpdateVariables();
 			}
@@ -102,8 +111,8 @@ function createPMarker(ppoint) {
 function mapdragend(e) {
 	if (pickupbox) {
 		var height = document.getElementById('map').clientHeight;
-		var toplef = map.containerPointToLatLng([20,height-70]);
-		var botrig = map.containerPointToLatLng([95,height-20]);
+		var toplef = map.containerPointToLatLng([10,height-125]);
+		var botrig = map.containerPointToLatLng([48,height-55]);
 		pickupbox.setLatLngs([
 			[toplef.lat,toplef.lng],
 			[toplef.lat,botrig.lng],
@@ -114,10 +123,10 @@ function mapdragend(e) {
 		pickupbox.redraw();
 
 		if (document.theForm.grid_reference.value == '' || document.theForm.grid_reference.value.replace(/ /g,'').length <=6) //to exclude 4fig subject
-			marker1.setLatLng( map.containerPointToLatLng([70,height-45]) );
+			marker1.setLatLng( map.containerPointToLatLng([30,height-105]) );
 
 		if (document.theForm.photographer_gridref.value == '')
-			marker2.setLatLng( map.containerPointToLatLng([44,height-45]) );
+			marker2.setLatLng( map.containerPointToLatLng([30,height-75]) );
 	}
 }
 
@@ -379,10 +388,14 @@ function updateCamIcon() {
 
 
 function enlargeMap() {
+	if (map._loaded)
+		var bounds = map.getBounds();
         ele = document.getElementById('map');
         ele.style.width = "100%";
         ele.style.height = "450px";
-        map.invalidateSize().zoomIn(2);
+        map.invalidateSize();
+	if (map._loaded)
+		map.fitBounds(bounds);
 
 	if (typeof resizeContainer == 'function') {
 		resizeContainer();
@@ -392,24 +405,6 @@ function enlargeMap() {
 
 	var baseMaps = {};
 	var overlayMaps = {};
-
-	function firstLetterToType(newtype) {
-		var mapTypeId = 'OpenTopoMap';
-
-		//these are odd, but to maintain some compatiblity with GMaps version
-                if (newtype == 'a') {mapTypeId = 'Modern OS - GB'}
-                if (newtype == 's') {mapTypeId = 'Aerial Imagery'}
-                if (newtype == 'h') {mapTypeId = 'Aerial Imagery'}
-                if (newtype == 't') {mapTypeId = 'OpenTopoMap'} //was OSM Terrain
-                if (newtype == 'n') {mapTypeId = 'Historic OS - GB 1920s';}
-                if (newtype == 'i') {mapTypeId = 'Historic OS - Ireland';}
-                if (newtype == 'o') {mapTypeId = 'OpenStreetMap';}
-                if (newtype == 'c') {mapTypeId = 'OpenStreetMap';} //was OSM Cycle
-                if (newtype == 'p') {mapTypeId = 'OpenTopoMap';} //was OSM Terrain
-                if (newtype == 'l') {mapTypeId = 'OpenTopoMap';}
-
-		return mapTypeId;
-	}
 
 ///////////////////////////////////////////
 
@@ -433,17 +428,17 @@ function enlargeMap() {
 			{mapLetter: 't', maxZoom: 18, attribution: '<a href=https://www.thunderforest.com/>thunderforest.com</a>, '+osmAttrib});
 */
 
-		baseMaps['Aerial Imagery'] = new L.TileLayer('https://api.mapbox.com/styles/v1/geograph/cjh8zse9f2lq32spb7s5vmvbk/tiles/256/{z}/{x}/{y}?access_token={accessToken}',
+		baseMaps['MapBox Imagery'] = new L.TileLayer('https://api.mapbox.com/styles/v1/geograph/cjh8zse9f2lq32spb7s5vmvbk/tiles/256/{z}/{x}/{y}?access_token={accessToken}',
 			{mapLetter: 'h', maxZoom: 18, attribution: 'Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>',
 				accessToken: 'pk.eyJ1IjoiZ2VvZ3JhcGgiLCJhIjoiY2lteXI3cmlpMDBmenY5bTF5dHFqMnh0NiJ9.sPXF2s1niWNNEfqGjs2HGw'});
-
-		baseMaps['Historic OS - Ireland'] = new L.TileLayer('https://geo.nls.uk/maps/ireland/gsgs4136/{z}/{x}/{y}.png',
-		        {mapLetter: 'i', tms: true, minZoom: 5, maxZoom: 15, attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
-				bounds: [[51.371780, -10.810546], [55.422779, -5.262451]] });
 
 		baseMaps['Historic OS - GB 1920s'] = new L.TileLayer('https://nls-0.tileserver.com/nls/{z}/{x}/{y}.jpg',
 		        {mapLetter: 'n', minZoom: 1, maxZoom:18 , attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
 				bounds: [[49.6, -12], [61.7, 3]] });
+
+		baseMaps['Historic OS - Ireland'] = new L.TileLayer('https://geo.nls.uk/maps/ireland/gsgs4136/{z}/{x}/{y}.png',
+		        {mapLetter: 'i', tms: true, minZoom: 5, maxZoom: 15, attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
+				bounds: [[51.371780, -10.810546], [55.422779, -5.262451]] });
 
 
 		if (L.tileLayer.bing) {
@@ -452,7 +447,6 @@ function enlargeMap() {
 			baseMaps["Ordnance Survey GB"] = L.tileLayer.bing({mapLetter: 'b', 'bingMapsKey':BING_KEY,'minZoom':12,'maxZoom':17,'imagerySet':'OrdnanceSurvey', attribution:bingAttribution,
 		                bounds: [[49.6, -12], [61.7, 3]] });
 		}
-
 
 		if (mapTypeId && baseMaps[mapTypeId])
 			map.addLayer(baseMaps[mapTypeId])
@@ -498,14 +492,15 @@ function enlargeMap() {
 ///////////////////////////////////////////
 
 	//creates the highlevel 'map' object. Note this version does NOT initalaize a center/zoom for the map. Will have to do that afterwards
-	function setupBaseMap() {
+	function setupBaseMap(options) {
+		var mapOptions = {
+			attributionControl:false //we add our own manually!
+		};
+		if (options)
+			 L.extend(mapOptions, options);
 
 		//just a normal Leafelt Map
-		var newtype = readCookie('GMapType');
-
-		mapTypeId = firstLetterToType(newtype);
-
-		map = window.map = L.map('map',{attributionControl:false,doubleClickZoom:false, scrollWheelZoom:'center'}).addControl(
+		map = window.map = L.map('map', mapOptions).addControl(
 			L.control.attribution({ position: 'bottomright', prefix: ''}) );
 
 		var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
@@ -543,7 +538,7 @@ function enlargeMap() {
 
 			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1,basemap2], {
 		//		crs: crs,
-				attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
+				attribution: 'Contains OS data &copy; Crown copyright and database rights 2022',
 				mapLetter: 'a'
 			}); //.addTo(map);
 
@@ -555,6 +550,20 @@ L.Map.prototype._updateZoomLevels = function() {};
 // See https://github.com/Leaflet/Leaflet/blob/4b2946c205d0a6e51f324cfff6536d1ef7caf463/src/layer/Layer.js#L245
 
 			baseMaps['Modern OS - GB'].on('add', function(e) {
+
+			        // Append the API logo.
+				//https://labs.os.uk/public/os-api-branding/v0.3.0/os-api-branding.js
+			        logodiv = document.createElement('div');
+			        logodiv.className = 'os-api-branding logo';
+			        map._container.appendChild(logodiv);
+
+				if (map._container.clientWidth < 420 && document.querySelectorAll) {
+					var elements = document.querySelectorAll('.leaflet-control-attribution');
+					for(var i=0;i<elements.length;i++)
+						//elements[i].style.display='none';
+						elements[i].style.maxWidth=(map._container.clientWidth-120)+'px';
+				}
+
 
 				var center = map.getCenter();
 				var zoom = map.getZoom();
@@ -575,6 +584,14 @@ overlayMaps[i].options.minZoom += 100;
 map._layersMaxZoom = 13;
 map._layersMinZoom = 3;
 			}).on('remove', function(e) {
+				if (logodiv) {
+					map._container.removeChild(logodiv);
+					var elements = document.querySelectorAll('.leaflet-control-attribution');
+					for(var i=0;i<elements.length;i++)
+						//elements[i].style.display='';
+						elements[i].style.maxWidth='';
+				}
+
 				var center = map.getCenter();
 				var zoom = map.getZoom();
 
@@ -600,27 +617,61 @@ map._layersMinZoom = 3;
 			            [ 49.528423, -10.76418 ],
 			            [ 61.331151, 1.9134116 ]
 			        ],
-				attribution: 'Contains OS data &copy; Crown copyright and database rights 2021',
+				attribution: 'Contains OS data &copy; Crown copyright and database rights 2022',
 			});
+
+        	        baseMaps['OS Outdoor'].on('add', function(e) {
+	                        // Append the API logo.
+	                        //https://labs.os.uk/public/os-api-branding/v0.3.0/os-api-branding.js
+	                        logodiv = document.createElement('div');
+	                        logodiv.className = 'os-api-branding logo';
+                	        map._container.appendChild(logodiv);
+
+        	                if (map._container.clientWidth < 420 && document.querySelectorAll) {
+	                                var elements = document.querySelectorAll('.leaflet-control-attribution');
+                	                for(var i=0;i<elements.length;i++)
+        	                                //elements[i].style.display='none';
+	                                        elements[i].style.maxWidth=(map._container.clientWidth-120)+'px';
+                	        }
+        	        }).on('remove', function(e) {
+	                        if (logodiv) {
+                	                map._container.removeChild(logodiv);
+        	                        var elements = document.querySelectorAll('.leaflet-control-attribution');
+	                                for(var i=0;i<elements.length;i++)
+                        	                //elements[i].style.display='';
+                	                        elements[i].style.maxWidth='';
+        	                }
+	                });
+
+		}
+
+		var mapTypeId = "OpenTopoMap";
+		if (baseMaps['Modern OS - GB'])
+			mapTypeId = 'Modern OS - GB';
+
+		if (window.localStorage && window.localStorage.getItem) {
+			if (!window.leafletBaseKey)
+				leafletBaseKey = 'LeafletBase';
+			if (window.localStorage.getItem(leafletBaseKey)) //we can't check it a valid basemap here!
+				mapTypeId = window.localStorage.getItem(leafletBaseKey);
 		}
 
 		setupOSMTiles(map,mapTypeId);
 
 		map.on('baselayerchange', function (e) {
-			if (e.layer && e.layer.options && e.layer.options.mapLetter) {
-				var t = e.layer.options.mapLetter;
-				createCookie('GMapType',t,10);
-			}
-
 			var name = null;
 			for(i in baseMaps) {
 				if (baseMaps[i] == e.layer)
 					name = i;
 			}
+
+			if (window.localStorage && window.localStorage.getItem)
+				window.localStorage.setItem(window.leafletBaseKey, name);
+
 			var color = (name && name.indexOf('Imagery') > -1)?'#fff':'#00f';
 			var opacity = (name && name.indexOf('Imagery') > -1)?0.8:0.3;
 			for(i in overlayMaps) {
-				if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color) {
+				if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color && overlayMaps[i].setOpacity) {
 					overlayMaps[i].options.color = color;
 					overlayMaps[i].setOpacity(opacity);
 					overlayMaps[i]._reset();
@@ -635,117 +686,4 @@ map._layersMinZoom = 3;
 
 ///////////////////////////////////////////
 
-	//creates the highlevel 'map' object. Note this version does NOT initalaize a center/zoom for the map. Will have to do that afterwards
-	function setupBaseMapOLD() {
-
-		if (!window.OSAPIKey || !proj4) {
-			//just a normal Leafelt Map
-			var newtype = readCookie('GMapType');
-
-			mapTypeId = firstLetterToType(newtype);
-
-			map = window.map = L.map('map',{attributionControl:false,doubleClickZoom:false, scrollWheelZoom:'center'}).addControl(
-				L.control.attribution({ position: 'bottomright', prefix: ''}) );
-
-			setupOSMTiles(map,mapTypeId);
-
-			map.on('baselayerchange', function (e) {
-				if (e.layer && e.layer.options && e.layer.options.mapLetter) {
-					var t = e.layer.options.mapLetter;
-					createCookie('GMapType',t,10);
-				}
-
-				var name = null;
-				for(i in baseMaps) {
-					if (baseMaps[i] == e.layer)
-						name = i;
-				}
-				var color = (name && name.indexOf('Imagery') > -1)?'#fff':'#00f';
-				var opacity = (name && name.indexOf('Imagery') > -1)?0.8:0.3;
-				for(i in overlayMaps) {
-					if (i.indexOf('Grid') > 0 && overlayMaps[i].options.color != color) {
-						overlayMaps[i].options.color = color;
-						overlayMaps[i].setOpacity(opacity);
-						overlayMaps[i]._reset();
-					}
-				}
-			});
-
-			if (mapTypeId && mapTypeId.indexOf('Imagery') > -1 && baseMaps[mapTypeId])
-				map.fire('baselayerchange',{layer: baseMaps[mapTypeId]}); // need this to select the white grid!
-
-			return;
-		}
-
-///////////////////////////////////////////
-
-		// alternate map using OSGB projection
-		// due to the different projection setupOSMTiles is NOT called. Will need to add any overlays ourselfs.
-
-		var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
-
-		// Setup the EPSG:27700 (British National Grid) projection.
-		var crs = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs',
-		{
-			resolutions: [ 896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75, 0.875, 0.4375, 0.21875, 0.109375 ],
-			origin: [ -238375.0, 1376256.0 ]
-		});
-
-		// Transform coordinates.
-		var transformCoords = function(arr) {
-			return proj4('EPSG:27700', 'EPSG:4326', arr).reverse();
-		};
-
-		// Initialize the map.
-		var mapOptions = {
-			crs: crs,
-			minZoom: 5,
-			maxZoom: 13,
-			//       center: transformCoords([ 337297, 503695 ]),
-			//     zoom: 7,
-			maxBounds: [
-				transformCoords([ -238375.0, 0.0 ]),
-				transformCoords([ 900000.0, 1376256.0 ])
-			],
-			attributionControl: false,
-			doubleClickZoom: false,
-			scrollWheelZoom: 'center'
-		};
-
-		map = window.map = L.map('map', mapOptions).addControl(
-			L.control.attribution({ position: 'bottomright', prefix: ''}) );
-
-		var basemap1 = L.tileLayer(serviceUrl + '/Leisure_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
-			minZoom: 2,
-			maxZoom: 9
-		});
-
-		var basemap2 = L.tileLayer(serviceUrl + '/Outdoor_27700/{z}/{x}/{y}.png?key=' + OSAPIKey, {
-			minZoom: 10,
-			maxZoom: 13
-		});
-
-		L.layerGroup([basemap1,basemap2]).addTo(map);
-
-		if (L.britishGrid) {
-			var gridOptions = {
-				opacity: 0.3,
-				weight: 0.7,
-				showSquareLabels: [100000,10000,100]
-			};
-
-			L.britishGrid(gridOptions).addTo(map);
-		}
-
-		if (L.control.locate)
-			L.control.locate({
-				keepCurrentZoomLevel: [13,18],
-				locateOptions: {
-					maxZoom: 16,
-					enableHighAccuracy: true
-			}}).addTo(map);
-
-	}
-
-///////////////////////////////////////////
 

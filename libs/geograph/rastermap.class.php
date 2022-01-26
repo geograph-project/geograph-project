@@ -294,9 +294,6 @@ class RasterMap
 				$s = ($this->exactPosition || !$this->issubmit)?'':"Drag the circles from the green box!<br/>";
 				$style = ($this->issubmit)?'max-width:calc(50vw - 60px)':'';
 
-				if ($this->service == 'Leaflet' && !empty($CONF['os_api_key']) && @$this->reference_index !== '2')
-					$s .=" (If missing the OS Map, you may need to select 'Modern OS' in the layer switcher on the map)<br>";
-
 				return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px; $style\">Loading map... (JavaScript required)</div>";
 			} else {
 				$token=new Token;
@@ -583,20 +580,24 @@ class RasterMap
 		return "&d{$l}p0lat=$lat1&d{$l}p0lon=$long1&d{$l}p1lat=$lat2&d{$l}p1lon=$long2";
 	}
 
-	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2,$op=1) {
+	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2,$op=1, $layergroup = null) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-		if ($this->service == 'Leaflet')
-			return "
-			var polyline = L.polyline([
+		if ($this->service == 'Leaflet') {
+			$line = "L.polyline([
                                 [$lat1,$long1],
                                 [$lat2,$long2]
                         ],{
                         color: \"#0000FF\",
                         weight: 1,
                         opacity: $op
-                        }).addTo(map);\n";
-		else
+                        })";
+			if ($layergroup) {
+				return "$layergroup.addLayer($line);\n";
+			} else {
+				return "$line.addTo(map);\n";
+			}
+		} else
 			return "
 			var polyline = new google.maps.Polyline({
 			path: [
@@ -748,6 +749,7 @@ class RasterMap
 
 			$e = floor($this->nateastings/1000) * 1000;
 			$n = floor($this->natnorthings/1000) * 1000;
+			$preblock = '';
 
 			if (strpos($CONF['raster_service'],'Grid') !== FALSE) {
 
@@ -803,10 +805,14 @@ class RasterMap
 			if ($this->issubmit) {
 				$block .= $this->getPolySquareBlock($conv,$e-900,$n-750,$e-100,$n-300);
 
+				$preblock .= " overlayMaps['CentiSquare Grid'] = L.layerGroup()\n";
+
 				for ($i=100; $i<=900; $i+=100) {
-					$block .= $this->getPolyLineBlock($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
-					$block .= $this->getPolyLineBlock($conv,$e+$i,$n,   $e+$i,  $n+1000, 0.25);
+					$preblock .= $this->getPolyLineBlock($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25, "overlayMaps['CentiSquare Grid']");
+					$preblock .= $this->getPolyLineBlock($conv,$e+$i,$n,   $e+$i,  $n+1000, 0.25, "overlayMaps['CentiSquare Grid']");
 				}
+
+				$block .= " overlayMaps['CentiSquare Grid'].addTo(map);\n";
 			}
 			if (empty($this->lat)) {
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
@@ -818,9 +824,6 @@ class RasterMap
 				if (!empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
 					$os_api_key = json_encode($CONF['os_api_key']);
 				}
-
-				$os_api_key .= ";\n if (!readCookie('GMapType')) { createCookie('GMapType','a',10) }";
-
 			} elseif(!empty($this->enable_os) && !empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
 				$os_api_key = json_encode($CONF['os_api_key']);
 			}
@@ -834,11 +837,13 @@ class RasterMap
 					var map = null;
 					var static_host = '{$CONF['STATIC_HOST']}';
 					var OSAPIKey = $os_api_key;
+					var leafletBaseKey = 'LeafletBase{$this->reference_index}';
 
 					function loadmap() {
 						var point = [{$this->lat},{$this->long}];
+						$preblock
 
-						setupBaseMap(map);
+						setupBaseMap();
 						map.setView(point, 14);
 
 						$block
@@ -857,19 +862,7 @@ class RasterMap
 				//]]>
 				</script>
 
-				<style>
-					div#map div.leaflet-control-container .leaflet-top {
-						opacity:0.8;
-					}
-					div#map div.leaflet-control-container .leaflet-bottom {
-						opacity:0.7;
-						background-color:white;
-					}
-					div#map:hover div.leaflet-control-container .leaflet-top, div#map:hover div.leaflet-control-container .leaflet-bottom {
-						opacity:1;
-						background-color:inherit;
-					}
-				</style>
+				<link rel=\"stylesheet\" type=\"text/css\" href=\"".smarty_modifier_revision("/js/mappingLeaflet.css")."\" />
 
 				";
 

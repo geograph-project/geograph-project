@@ -7,7 +7,7 @@
 
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
 	<small style="color:red">Marker only shows grid square, see description for exact location<small><br/><br/></small></small>
-	<div style="width:400px; height:320px;" id="mapCanvas"></div>
+	<div style="width:400px; height:320px;" id="map"></div>
 </div>
 
 <h2>Geograph Events</h2>
@@ -115,28 +115,10 @@
 				bounds.extend([{$item.wgs84_lat}, {$item.wgs84_long}]);
 			{/if}
 		{/foreach}
-		{if $future == 1}
-			//bounds doesnt seem to like one point via extends
-			bounds.extend([{$fitem.wgs84_lat}+1, {$fitem.wgs84_long}+1]);
-			bounds.extend([{$fitem.wgs84_lat}-1, {$fitem.wgs84_long}-1]);
-		{/if}
 		{literal}		
 
-                var newtype = readCookie('GMapType');
-
-                mapTypeId = firstLetterToType(newtype);
-
-                map = L.map('mapCanvas',{attributionControl:false}).fitBounds(bounds).addControl(
-                        L.control.attribution({ position: 'bottomright', prefix: ''}) );
-
-                setupOSMTiles(map,mapTypeId);
-
-                map.on('baselayerchange', function (e) {
-                        if (e.layer && e.layer.options && e.layer.options.mapLetter) {
-                                 var t = e.layer.options.mapLetter;
-                                 createCookie('GMapType',t,10);
-                        }
-                });
+                setupBaseMap(); //creates the map, but does not initialize a view
+		map.fitBounds(bounds,{maxZoom:13})
 
                 {/literal}
                 {foreach from=$list item=item}

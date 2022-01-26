@@ -135,7 +135,7 @@ print "<p>$desc</p>";
 
 ?>
 
-<div id="mapCanvas" style="width:800px; height:700px; max-height:90vh; max-width:80vw;"></div>
+<div id="map" style="width:800px; height:700px; max-height:90vh; max-width:80vw;"></div>
 <div id="results"></div>
 
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
@@ -150,31 +150,17 @@ print "<p>$desc</p>";
 	var static_host = '<? echo $CONF['STATIC_HOST']; ?>';
 
                                         function loadmap() {
-                                                var newtype = readCookie('GMapType');
-
-                                                mapTypeId = firstLetterToType(newtype);
-
-                                                map = L.map('mapCanvas',{attributionControl:false}).addControl(
-                                                        L.control.attribution({ position: 'bottomright', prefix: ''}) );
 
 		//stolen from Leaflet.base-layers.js - alas that file no compatible with mappingLeaflet.js at the moment :(
 
 		var layerAttrib='&copy; Geograph Project';
                 var layerUrl='https://t0.geograph.org.uk/tile/tile-coverage.php?z={z}&x={x}&y={y}';
-                var coverageCoarse = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6}).addTo(map);
+                var coverageCoarse = new L.TileLayer(layerUrl, {user_id: 0, minZoom: 5, maxZoom: 12, attribution: layerAttrib, bounds: bounds, opacity:0.6});
                 overlayMaps["Geograph Coverage"] = coverageCoarse;
 
+						setupBaseMap(); //creates the map, but does not initialize a view
 
-                                                setupOSMTiles(map,mapTypeId);
-
-                                                map.on('baselayerchange', function (e) {
-                                                        if (e.layer && e.layer.options && e.layer.options.mapLetter) {
-                                                                var t = e.layer.options.mapLetter;
-                                                                createCookie('GMapType',t,10);
-                                                        } else {
-                                                                console.log(e);
-                                                        }
-                                                });
+						overlayMaps["Geograph Coverage"].addTo(map);
 
 						var bounds = L.latLngBounds();
 	<?
@@ -213,7 +199,7 @@ if ($count = $recordSet->RecordCount()) {
 $recordSet->Close();
 
 	?>
-						map.fitBounds(bounds);
+						map.fitBounds(bounds,{maxZoom:15});
 
                                         }
                                         AttachEvent(window,'load',loadmap,false);
