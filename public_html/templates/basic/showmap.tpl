@@ -25,7 +25,6 @@
 		{if $rastermap->enabled}
 			{$rastermap->getFooterTag()}
 
-			{if $square->reference_index == 1}
 				{literal}
 				<style type="text/css"> 
 					#coordoutput {
@@ -106,7 +105,6 @@
 				</script>
 				{/literal}
 				<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
-			{/if}
 		{/if}
 
 
