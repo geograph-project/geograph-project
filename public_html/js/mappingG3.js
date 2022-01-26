@@ -19,20 +19,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
+
  var currentelement = null;
- 
+
  var marker1 = null;
  var eastings1 = 0;
  var northings1 = 0;
  var marker2 = null;
  var eastings2 = 0;
  var northings2 = 0;
- 
+
  var pickupbox = null;
- 
+
  var distance;
- 
+ var checkedonce = false;
+
  function createMarker(point,picon) {
  	if (picon) {
  		marker2 = new google.maps.Marker({
@@ -54,7 +55,7 @@
 	if (issubmit) {
 		google.maps.event.addListener(marker, "drag", function() {
 			var grid=gmap2grid(marker.getPosition());
-			
+
 			//get a grid reference with 4 digits of precision
 			var gridref = grid.getGridRef(4);
 
@@ -66,18 +67,23 @@
 				eastings1 = grid.eastings;
 				northings1 = grid.northings;
 				document.theForm.grid_reference.value = gridref;
-			}  
-			
-			if (document.theForm.use6fig)
-				document.theForm.use6fig.checked = true;
-			
+			}
+
+			if (document.theForm.use6fig && !document.theForm.use6fig.checked && !checkedonce) {
+				var z=14; //zoom level on normal web tile maps.
+				if (map.getZoom() <= z) {
+					document.theForm.use6fig.checked = true;
+					checkedonce = true;
+				}
+			}
+
 			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
 				pickupbox.setMap(null);
 				pickupbox = null;
 			}
-			
+
 			updateViewDirection();
-			
+
 			if (typeof parentUpdateVariables != 'undefined') {
 				parentUpdateVariables();
 			}
