@@ -616,8 +616,8 @@ basemap2.beforeAdd = function() {};
 				map._layersMaxZoom = undefined;
 				map._layersMinZoom = undefined;
 
-				var padw = map._container.clientWidth/-8;
-				var padh = map._container.clientHeight/-8;
+				var padw = map._container.clientWidth/-7;
+				var padh = map._container.clientHeight/-7;
 
 				map.fitBounds(bounds, {animate:false, padding: [padw,padh]});
 			});
