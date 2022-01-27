@@ -814,6 +814,11 @@ class RasterMap
 
 				$block .= " overlayMaps['CentiSquare Grid'].addTo(map);\n";
 			}
+			if ($this->issubmit) {
+				$zoom=15;
+			} else {
+				$zoom=14;
+			}
 			if (empty($this->lat)) {
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
 			}
@@ -844,7 +849,7 @@ class RasterMap
 						$preblock
 
 						setupBaseMap();
-						map.setView(point, 15);
+						map.setView(point, $zoom);
 
 						$block
 
