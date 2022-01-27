@@ -118,31 +118,32 @@ if (window.OSAPIKey) {
 			});
 
 			//this is a hack, because the built in function, notices that the newly added layer, has differnet zoom levels, and that the zoom is outside the rage
-			L.Map.prototype._updateZoomLevels = function() {};
-			// eg when change to OS map, the currnet zoom is for example 13. basemap1 is added to the map, but as it 3..9, _updateZoomLevels, notices current (13) is out of range, and calls setZoom
-			//... the setzoom happens async, so even though we then set a new zoom in the 'add' function below, the setZoom in _updateZoomLevels is STILL called.
-			// ULITIMATEY we may still need SOME of the logic from real function
-			// See https://github.com/Leaflet/Leaflet/blob/4b2946c205d0a6e51f324cfff6536d1ef7caf463/src/layer/Layer.js#L245
+			// .. the goal here is to prevent the OS layers, being added to the internal '_zoomBoundLayers' list!
+			// so when adding OS layers to map, it doesnt change the zoom of the map because the zoom range of new layers is less
+			// dont need to worry about diabling the 'onRemove' call of _removeZoomLimit, because OS map range is smaller than all others
+			basemap1.beforeAdd = function() {};
+			basemap2.beforeAdd = function() {};
 
 			baseMaps['Modern OS - GB'].on('add', function(e) {
 				if (!defaultCRS)
 					defaultCRS = map.options.crs;
 
-				// Append the API logo.
-				//https://labs.os.uk/public/os-api-branding/v0.3.0/os-api-branding.js
-				logodiv = document.createElement('div');
-				logodiv.className = 'os-api-branding logo';
-				map._container.appendChild(logodiv);
-
-				if (map._container.clientWidth < 420 && document.querySelectorAll) {
-				        var elements = document.querySelectorAll('.leaflet-control-attribution');
-				        for(var i=0;i<elements.length;i++)
-				                //elements[i].style.display='none';
-				                elements[i].style.maxWidth=(map._container.clientWidth-120)+'px';
-				}
-
+				var bounds = map.getBounds();
 				var center = map.getCenter();
 				var zoom = map.getZoom();
+
+			        // Append the API logo.
+				//https://labs.os.uk/public/os-api-branding/v0.3.0/os-api-branding.js
+			        logodiv = document.createElement('div');
+			        logodiv.className = 'os-api-branding logo';
+			        map._container.appendChild(logodiv);
+
+				if (map._container.clientWidth < 420 && document.querySelectorAll) {
+					var elements = document.querySelectorAll('.leaflet-control-attribution');
+					for(var i=0;i<elements.length;i++)
+						//elements[i].style.display='none';
+						elements[i].style.maxWidth=(map._container.clientWidth-120)+'px';
+				}
 
 				for(i in overlayMaps) {
 					if (i.indexOf('Grid') == -1) { //the grid layers do cope with differnet crs!
@@ -153,24 +154,31 @@ if (window.OSAPIKey) {
 				}
 
 				map.options.crs = osgbCRS;
-				map.setView(center, zoom-6); //we need this, because after changing crs the center is shifted
+				map.setView(center, zoom-6, {animate:false}); //we need this, because after changing crs the center is shifted
                                 map._resetView(map.getCenter(), map.getZoom(), true); //we need this to redraw all layers (polygons, markers...) in the new projection.
 
-				//to emulate what happens in the original _updateZoomLevels
+				//to emulate what happens in the original _updateZoomLevels (which is never called now, because beforeAdd is hobbled)
 				map._layersMaxZoom = 13;
 				map._layersMinZoom = 3;
 
-			}).on('remove', function(e) {
-				if (logodiv) {
-				        map._container.removeChild(logodiv);
-				        var elements = document.querySelectorAll('.leaflet-control-attribution');
-				        for(var i=0;i<elements.length;i++)
-				                //elements[i].style.display='';
-				                elements[i].style.maxWidth='';
-				}
+				//[-50,50] worked ok with a 390 square map in submission! (-25 did not!)
+				var padw = map._container.clientWidth/-8;
+				var padh = map._container.clientHeight/-8;
 
+				map.fitBounds(bounds, {animate:false, padding: [padw,padh]}); //-padding is is prevent creep as switch back/forward
+
+			}).on('remove', function(e) {
+				var bounds = map.getBounds();
 				var center = map.getCenter();
 				var zoom = map.getZoom();
+
+				if (logodiv) {
+					map._container.removeChild(logodiv);
+					var elements = document.querySelectorAll('.leaflet-control-attribution');
+					for(var i=0;i<elements.length;i++)
+						//elements[i].style.display='';
+						elements[i].style.maxWidth='';
+				}
 
 				for(i in overlayMaps) {
 					if (i.indexOf('Grid') == -1) { //the grid layers do cope with differnet crs!
@@ -180,10 +188,16 @@ if (window.OSAPIKey) {
 
 				map.options.crs = defaultCRS;
 				map.setView(center, zoom+6); //we need this, because after changing crs the center is shifted
-                                map._resetView(map.getCenter(), map.getZoom(), true); //we need this to redraw all layers (polygons, markers...) in the new projection.
+                             	map._resetView(map.getCenter(), map.getZoom(), true); //we need this to redraw all layers (polygons, markers...) in the new projection.
 
-				map._layersMaxZoom = 18; //todo, look this up from the actual layer! e.layer.options.maxZoom ??
-				map._layersMinZoom = 3;
+				//even though _updateZoomLevels should be setting this for the other layer, it seems more reliavle to remove outselfs
+				map._layersMaxZoom = undefined;
+				map._layersMinZoom = undefined;
+
+				var padw = map._container.clientWidth/-8;
+				var padh = map._container.clientHeight/-8;
+
+				map.fitBounds(bounds, {animate:false, padding: [padw,padh]});
 			});
 
 	} else {
