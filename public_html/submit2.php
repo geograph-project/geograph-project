@@ -68,12 +68,7 @@ if (empty($_GET['multi']) && isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTT
 //you must be logged in to submit images
 $USER->mustHavePerm("basic");
 
-if (!empty($_COOKIE['MapSrv']) && $_COOKIE['MapSrv'] == "OSOS") {
-        //temp as page doesnt work on https (mainly maps!)
-        pageMustBeHTTP();
-} else {
-        pageMustBeHTTPS();
-}
+pageMustBeHTTPS();
 
 $template = 'submit2.tpl';
 

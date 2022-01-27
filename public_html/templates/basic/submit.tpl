@@ -14,24 +14,6 @@
 </style>{/literal}
 {dynamic}
 
-
-{if $step eq 2 && $is_https}
-	<div class=interestBox style="margin-bottom:40px;background-color:pink;font-size:1.2em">
-	If you see a message 'HTTP Referer not valid', then you may of been redirected to https:// incorrectly (a security feature in Safari seems to be misbehaving).
-
-	<br><br>
-	 Try clicking: <a href="http://{$http_host}{$script_name}?grid_reference={$grid_reference}&amp;gridsquare=1&amp;{if $transfer_id}transfer_id={$transfer_id}{else}setpos=1{/if}&amp;redir=false">Click here to try to return to http://</a> (the same security prevents doing this automatically)
-	<br><br>
-
-	If you still see this message AFTER clicking the above button, means we can't stop the redirect happening. <br><br>
-	Can either return to <a href="/submit.php?redir=false">step 1</a> and choose a different map option (it's the Zoomable OS map that produces the "HTTP Referer" message). Or can continue with the submission, but will have to enter the Grid-Referneces manually. 
-	</div>
-
-{/if}
-
-
-
-
     <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" {if $step ne 1}style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;"{/if}>
 
 {if $step eq 1 || $step eq 2}
@@ -187,7 +169,6 @@ geographing</a> first.</p>
 		<p>&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
 			<option value="Leaflet">Zoomable Maps (Combines Modern OS, OpenStreetMap, Aerial Imagery and Historic Maps)</option>
 			<option value="Google">Zoomable Google Mapping (still includes OSM + Historic Maps)</option>
-			<option value="OSOS">Zoomable Modern OS Mapping (Old Interface to just OS Maps, will be removed soon)</option>
 			<option value="OS50k">OS Modern 1:50,000 Mapping (Very simple OS Map, only use if above don't work)</option>
 		</select> <small>(OS Maps not available for Ireland)</small></p>
 

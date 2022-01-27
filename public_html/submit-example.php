@@ -72,7 +72,7 @@ $smarty->assign('step', 1);
 			if (isset($_REQUEST['service'])) {
 				if ($_REQUEST['service'] == 'Google') {
 					$rastermap->setService('Google');
-				} elseif ($_REQUEST['service'] == 'OS50k' && $rastermap->service == 'OSOS') {
+				} elseif ($_REQUEST['service'] == 'OS50k') {
 					$rastermap->setService('OS50k');
 				}
 			}

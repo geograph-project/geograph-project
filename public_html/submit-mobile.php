@@ -40,17 +40,11 @@ if (!empty($_POST['choose'])) {
 }
 
 if (!empty($_POST['choose']) && empty($_GET['redir'])) {
-	if (!empty($_COOKIE['MapSrv']) && $_COOKIE['MapSrv'] == "OSOS") {
-	        //temp as page doesnt work on https (mainly maps!)
-		$protocol = "http://";
-	} else {
-		$protocol = "https://";
-	}
 	switch($_POST['choose']) {
 		//case 'single' ... falls though to below!
 		case 'multi': header("Location: /submit-multi.php?tab=upload&mobile=1", false, 302); exit;
-		case 'v1': header("Location: $protocol{$_SERVER['HTTP_HOST']}/submit.php?redir=false", false, 302); exit;
-		case 'v2': header("Location: $protocol{$_SERVER['HTTP_HOST']}/submit2.php?display=mobile&redir=false", false, 302); exit;
+		case 'v1': header("Location: /submit.php?redir=false", false, 302); exit;
+		case 'v2': header("Location: /submit2.php?display=mobile&redir=false", false, 302); exit;
 	}
 
 	$smarty = new GeographPage;

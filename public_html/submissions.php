@@ -34,13 +34,7 @@ customGZipHandlerStart();
 
 $USER->mustHavePerm("basic");
 
-
-if (!empty($_COOKIE['MapSrv']) && $_COOKIE['MapSrv'] == "OSOS") {
-        //temp as page submits to non-secure editimage.php
-        pageMustBeHTTP();
-} else {
-        pageMustBeHTTPS();
-}
+pageMustBeHTTPS();
 
 
 $template='submissions.tpl';

@@ -647,7 +647,6 @@ if (isset($_REQUEST['id']))
 		require_once('geograph/rastermap.class.php');
 
 		$rastermap = new RasterMap($image->grid_square,true);
-			$rastermap->setService('Leaflet'); //want leaflet by default OSOS might still sometimes be choosen by default
 
 			if (empty($_REQUEST['service']) && !empty($_COOKIE['MapSrv'])) {
                                 $_REQUEST['service'] = $_COOKIE['MapSrv'];
@@ -657,7 +656,7 @@ if (isset($_REQUEST['id']))
 					$rastermap->setService('Leaflet');
                                 } elseif ($_REQUEST['service'] == 'Google') {
                                         $rastermap->setService('Google');
-                                } elseif ($_REQUEST['service'] == 'OS50k' && $rastermap->service == 'OSOS') {
+                                } elseif ($_REQUEST['service'] == 'OS50k') {
                                         $rastermap->setService('OS50k');
                                 }
                         }

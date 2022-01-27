@@ -222,7 +222,7 @@ if (isset($_GET['success'])) {
 				$rastermap->setService('Leaflet');
 			} elseif ($_REQUEST['service'] == 'Google') {
 				$rastermap->setService('Google');
-			} elseif ($_REQUEST['service'] == 'OS50k' && $rastermap->service == 'OSOS') {
+			} elseif ($_REQUEST['service'] == 'OS50k') {
 				$rastermap->setService('OS50k');
 			}
 		}

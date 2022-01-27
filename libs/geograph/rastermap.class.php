@@ -130,7 +130,12 @@ class RasterMap
 			$services = explode(',',$CONF['raster_service']);
 
 			if ($square->reference_index == 1) {
-				if ($this->issubmit === true && in_array('OSOS',$services) && $square->x > 0) {
+				if ($this->issubmit === true && in_array('Leaflet',$services) && $square->x > 0) {
+                                        $this->enabled = true;
+                                        $this->service = 'Leaflet';
+					$this->tilewidth[$this->service] = 390; //allow a bigger map in submission
+
+                                } elseif ($this->issubmit === true && in_array('OSOS',$services) && $square->x > 0) {
 					$this->enabled = true;
 					$this->service = 'OSOS';
 
@@ -145,14 +150,20 @@ class RasterMap
 					$this->enabled = true;
 					$this->service = 'NPE';
 				}
+
 			} elseif($CONF['template'] == 'archive') {
 				$this->service = 'OSM-Static-Dev';
+
+			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Leaflet',$services)) {
+				$this->enabled = true;
+				$this->service = 'Leaflet';
+				$this->inline = 1; //no need for none inline anymore...
+				if ($this->issubmit)
+					$this->tilewidth[$this->service] = 390;
+
 			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
-				//$this->enabled = true;
-				//if (!$this->issubmit)
-					$this->service = 'Leaflet';
-				//else
-				//	$this->service = 'Google';
+				$this->enabled = true;
+				$this->service = 'Google';
 				$this->inline = 1; //no need for none inline anymore...
 			}
 			if (isset($this->tilewidth[$this->service])) {
