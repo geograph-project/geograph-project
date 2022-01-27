@@ -844,7 +844,7 @@ class RasterMap
 						$preblock
 
 						setupBaseMap();
-						map.setView(point, 14);
+						map.setView(point, 15);
 
 						$block
 
