@@ -101,6 +101,7 @@ if (!empty($m->redis->debug))
 		break;
 
 	case 'clear':
+		$r = 0;
 		if ($mysql_scan) {
 			$db=$m->_getDB();
 			$where = '1';
@@ -119,7 +120,6 @@ if (!empty($m->redis->debug))
 				$where.=" AND CacheID=".$db->Quote($cache_file);
 				}
 			}
-			$r = 1;
 			$recordSet = $db->Execute("SELECT Folder,CacheID FROM smarty_cache_page WHERE $where");
 			while (!$recordSet->EOF) {
 				$r += $m->delete($recordSet->fields['Folder'].$recordSet->fields['CacheID']);
@@ -187,7 +187,7 @@ if (!empty($m->redis->debug)) {
 	print_r($keys);
 }
 				foreach ($keys as $cache_file)
-					$m->delete($CONF['template'].$cache_file);
+					$r += $m->delete($CONF['template'].$cache_file);
 			} else {
 if (!empty($m->redis->debug))
 	print " No Keys\n";
