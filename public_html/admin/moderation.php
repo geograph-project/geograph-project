@@ -227,7 +227,7 @@ Regards,
 	$smarty->assign('apply', 1);
 
 } elseif (isset($_GET['moderator'])) {
-	($USER->user_id == 10124) || $USER->hasPerm("director") || $USER->mustHavePerm('admin');
+	$USER->hasPerm("coordinator") || $USER->hasPerm("director") || $USER->mustHavePerm('admin');
 } else {
 	$USER->mustHavePerm('moderator');
 }
