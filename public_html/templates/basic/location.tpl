@@ -159,8 +159,8 @@ title="{$long|string_format:"%.6f"}">{$longdm}</abbr></span><br>
 	{if $square->reference_index eq 1}
 		<li>{getamap gridref=$gridrefraw text="Geograph Map Popup"}</li>
 		<li>{external href="http://www.old-maps.co.uk/maps.html?txtXCoord=`$square->nateastings`&amp;txtYCoord=`$square->natnorthings`" text="old-maps.co.uk"}</li>
-		<li>{external href="http://maps.nls.uk/geo/find/#zoom=13&lat=$lat&lon=$long&layers=102" text="maps.nls.uk"}
-			({external href="https://maps.nls.uk/geo/explore/side-by-side/#zoom=16&lat=$lat&lon=$long" text="side by side viewer"})	</li>
+		<li>{external href="https://maps.nls.uk/geo/find/marker/#zoom=13&lat=5$lat&lon=$long&f=1&z=1&marker=$lat,$long" text="maps.nls.uk"}
+			({external href="https://maps.nls.uk/geo/explore/side-by-side/#zoom=16&lat=$lat&lon=$long&layers=6&right=BingHyb" text="side by side viewer"})	</li>
 		<li>{external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&amp;xygridref=`$square->nateastings`,`$square->natnorthings`&amp;startscale=10000" text="magic.defra.gov.uk"}{if $gridref6} ({external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&xygridref=`$square->nateastings`,`$square->natnorthings`&startscale=5000" text="closer"}){/if}</li> 
 		<li>{external href="https://streetmap.co.uk/map?X=`$square->nateastings`&Y=`$square->natnorthings`&amp;A=Y&amp;Z=110`" text="streetmap.co.uk"}</li> 
 		
