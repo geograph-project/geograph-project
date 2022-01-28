@@ -55,6 +55,13 @@
 
 ////////////////////////////////////////////
 
+	if ($.localStorage && $.localStorage('SubmitMap')) {
+		var view = $.localStorage('SubmitMap');
+		map.setView(view, view.zoom, {animate:false});
+		var grid=gmap2grid(view);
+                var gridref = grid.getGridRef(2);
+		document.theForm.grid_reference.value = gridref;
+	}
 
         if ($.localStorage && $.localStorage('LeafletBaseMap')) {
                 basemap = $.localStorage('LeafletBaseMap');
@@ -81,6 +88,14 @@
         map.addLayer(overlayMaps["OS National Grid"]);
 
         addOurControls(map);
+
+	map.on('moveend', function (e) {
+		if (!map._loaded || !$.localStorage) return;
+		
+		var view = map.getCenter();
+		view.zoom = map.getZoom();
+		$.localStorage('SubmitMap', view); //auto json encodes
+        });
 
 ////////////////////////////////////////////
 
