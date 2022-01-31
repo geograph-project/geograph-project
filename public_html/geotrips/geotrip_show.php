@@ -111,6 +111,39 @@ $conv = new Conversions;
 
 ?>
 
+<style>
+.mapwidth {
+	width:800px;
+	clear:both;
+}
+#map {
+	width:700px;
+	height:800px;
+	float:left;
+}
+#scroller {
+	position:relative;
+	float:left;
+	height:800px;
+	width:300px;
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+
+#scroller div {
+	padding-bottom:500px;
+	text-align:center;
+}
+
+#scroller p {
+	border:1px solid white;
+}
+#scroller p.selected {
+	background-color:#eee;
+	border:1px solid DarkOrchid;
+}
+</style>
+
 
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
@@ -508,40 +541,6 @@ function scrollIntoView(gridimage_id) {
 	});
 }
 </script>
-
-<style>
-.mapwidth {
-	width:800px;
-	clear:both;
-}
-#map {
-	width:700px;
-	height:800px;
-	float:left;
-}
-#scroller {
-	position:relative;
-	float:left;
-	height:800px;
-	width:300px;
-	overflow-y:scroll;
-	overflow-x:hidden;
-}
-
-#scroller div {
-	padding-bottom:500px;
-	text-align:center;
-}
-
-#scroller p {
-	border:1px solid white;
-}
-#scroller p.selected {
-	background-color:#eee;
-	border:1px solid DarkOrchid;
-}
-</style>
-
 
 <?php
 
