@@ -67,7 +67,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		if ($data['images']) {
 			$imagelist = new ImageList();
 
-			$sql = "SELECT gridimage_id,gi.user_id,realname,credit_realname,gi.title,imageclass,grid_reference FROM gridimage_snippet gs INNER JOIN gridimage_search gi USING (gridimage_id) WHERE snippet_id = $snippet_id AND gridimage_id < 4294967296 ORDER BY crc32(concat(gridimage_id,yearweek(now()))) LIMIT 25";
+			$sql = "SELECT gridimage_id,gi.user_id,realname,credit_realname,gi.title,imageclass,grid_reference,reference_index FROM gridimage_snippet gs INNER JOIN gridimage_search gi USING (gridimage_id) WHERE snippet_id = $snippet_id AND gridimage_id < 4294967296 ORDER BY crc32(concat(gridimage_id,yearweek(now()))) LIMIT 25";
 
 			$imagelist->_getImagesBySql($sql);
 			$smarty->assign_by_ref('results', $imagelist->images);
@@ -81,7 +81,6 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 		}
 
-
 		if ($data['nateastings'] && intval($data['natgrlen']) > 4) {
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
@@ -93,6 +92,17 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				$data['reference_index'],false);
 
 			$data['grid_reference'] = $gr;
+		}
+
+		if (empty($data['reference_index']) && !empty($data['images']) && !empty($imagelist->images)) {
+			foreach ($imagelist->images as $i => $image)
+				if (!empty($image->reference_index)) {
+					$data['reference_index'] = $image->reference_index;
+					break; //not ideal if mix, but for now, just use the first one!
+				}
+		}
+		if (!empty($data['reference_index'])) {
+		         $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$data['reference_index']]}/snippet/{$data['snippet_id']}\"/>");
 		}
 
                 if (empty($CONF['forums']) && !empty($data['comment']) && preg_match('/geograph\.(org\.uk|uk|ie)\/discuss\//',$data['comment'])) {
