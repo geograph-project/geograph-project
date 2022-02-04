@@ -11,6 +11,11 @@ $type = "i53295783";
 if (!empty($_GET['type']) && preg_match('/^\w+$/',$_GET['type']))
 	$type = $_GET['type'];
 
+$break = 7;
+if (!empty($_GET['one']))
+	$break = 4;
+
+
 //select type,max(users) as users,avg(avg),count(*) as count,last_vote from vote_stat group by type having count between 52 and 53 order by last_vote;
 
 if (!empty($_GET['simple'])) {
@@ -40,23 +45,20 @@ print "Total Voters = {$row['max']}, Overall Average = {$row['avg']} (used in th
 
 $query = "select imagetaken,id,(@max-users) as v0,' ',v1,v2,v3,v4,v5,'.',users,avg,v.baysian,round(avg*users) as total, (avg*users)/@max as avg0,
 	((avg*users)+(@max-users)*3)/@max as avg3,last_vote
-	from vote_stat v inner join gridimage_search on (id = gridimage_id) where type='$type' ORDER BY month(imagetaken),v.baysian DESC LIMIT 1000";
+	from vote_stat v inner join gridimage_search on (id = gridimage_id) where type='$type' ORDER BY substring(imagetaken,1,$break),v.baysian DESC LIMIT 1000";
 
-dump_sql_table($query,$type);
+dump_sql_table($query,$type,$break);
 
 
-function dump_sql_table($sql,$title,$autoorderlimit = false) {
+function dump_sql_table($sql,$title,$break = 7) {
 	global $db;
-        $recordSet = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
+        $recordSet = $db->Execute($sql) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
 	if ($recordSet->EOF)
 		return;
 
         print "<H3>$title</H3>";
 
-	$break = 7;
-	if (!empty($_GET['one']))
-		$break = 4;
 	$max = array();
 	while(!$recordSet->EOF) {
 		$row = $recordSet->fields;
