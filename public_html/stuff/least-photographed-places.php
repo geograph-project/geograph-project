@@ -31,19 +31,7 @@ $smarty = new GeographPage;
 $smarty->display('_std_begin.tpl');
 
 
-        //$db = GeographDatabaseConnection(false);
-
-if (!empty($CONF['db_read_connect2'])) {
-        //concoct a special writable connection to SECOND slave!
-        $DSN_READ = $CONF['db_read_driver'].'://'.
-                $CONF['db_user'].':'.$CONF['db_pwd'].
-                '@'.$CONF['db_read_connect2'].
-                '/'.$CONF['db_db'].$CONF['db_read_persist'];
-}
-
-        $db=NewADOConnection($DSN_READ);
-
-        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        $db = GeographDatabaseConnection(true);
 
 $reference_index = 1;
 
