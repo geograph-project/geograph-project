@@ -23,12 +23,24 @@ if (!empty($_POST['name'])) {
         user_id = ".intval($USER->user_id);
 
 	$db->Execute($ins);
+} elseif (!empty($_GET['delete'])) {
+        $db = GeographDatabaseConnection(false);
+
+	$sql = "UPDATE cluster_region SET active=0 WHERE region_id = ".intval($_GET['delete'])." AND user_id = ".intval($USER->user_id);
+	$db->Execute($sql);
+
+} elseif (!empty($_GET['update'])) {
+        $db = GeographDatabaseConnection(false);
+
+	$sql = "UPDATE cluster_region SET name = ".$db->Quote($_GET['name'])." WHERE region_id = ".intval($_GET['update'])." AND user_id = ".intval($USER->user_id);
+	$db->Execute($sql);
 }
 
 
 ?>
 <html>
 <head>
+	<title>Geograph Friendly Area Names</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
@@ -76,21 +88,23 @@ if (!empty($_POST['name'])) {
     <script src="https://leaflet.github.io/Leaflet.draw/src/edit/handler/Edit.Circle.js"></script>
     <script src="https://leaflet.github.io/Leaflet.draw/src/edit/handler/Edit.Rectangle.js"></script>
 
+
+	<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 </head>
 
 
 <body>
 
-<h2>Geograph Friendly Region Names</h2>
-<p>The goal of this page is to create a database of <b>very approximate</b> regions covering common names</p>
+<h2>Geograph Friendly Area Names</h2>
+<p>The goal of this page is to create a database of <b>very approximate</b> areas, using relatively familar names. The idea being would know roughly where the area is. </p>
 
-<p>If you want to add a region to the datbase, click the polygone icon top left of the map. Click on the map to add points. 
+<p>If you want to add a area to the database, click the polygon icon top left of the map. Click on the map to add points.
 Click on the start point to 'finish' the shape. You will then be able to Name and save the shape to the database.
-(TIP: can turn off the current regions via the Layer Switcher, to make it easier to seee the map to draw your own) 
+(TIP: can turn off the current areas via the Layer Switcher, to make it easier to seee the map to draw your own) 
 
-<p>The Goal it to have LOTS of different and overlapping regions, so that can pick the best match from the shapes. 
+<p>The Goal it to have LOTS of different and overlapping areas, so that can pick the best match from the shapes. 
 Do not need to trace or define the border exactly. The shape should eb slightly larger (to encompose) than the actual area,
- to make sure it covers it completely. We are looking for different size regions, that people would have a fair idea of its general area, 
+ to make sure it covers it completely. We are looking for different size areas, that people would have a fair idea of its general area, 
 so things like 'Snowdonia' and 'Norfolk Broads' equally useful as 'Wales'. 
 
 
@@ -126,33 +140,46 @@ function loadmap() {
 if (empty($db))
 	$db = GeographDatabaseConnection(true);
 
-$data = $db->getAll("SELECT * FROM cluster_region WHERE active=1 order by area desc");
-foreach ($data as $row) {
+$data = $db->getAll("SELECT *,round(log(1+sqrt(area),2)) as scale FROM cluster_region WHERE active=1 order by area desc");
+$scales= array();
+
+$last = count($data)-1;
+print "var color = d3.scale.category20().domain(d3.range([0, $last]));\n";
+
+foreach ($data as $idx=>$row) {
 	//LatLng(55.37911, -7.207031),LatLng(53.357109, -10.327148),La ...
 	if ($row['active'] && preg_match('/^(LatLng\(-?\d+\.\d+,\s*-?\d+\.\d+\),?)+$/', $row['points'])) {
-		$options = json_encode(array('title'=>$row['name']));
-		print "L.polygon([".str_replace('LatLng','L.latLng',$row['points'])."], $options)";
-		print ".addTo(drawnItems); \n\n";
+
+		if (empty($scales[$row['scale']])) {
+			print "drawnItems[{$row['scale']}] = new L.FeatureGroup();\n";
+			$scales[$row['scale']] = 1;
+		}
+
+		print "L.polygon([".str_replace('LatLng','L.latLng',$row['points'])."], {title:".json_encode($row['name']).", color:color($idx)})";
+		print ".addTo(drawnItems[{$row['scale']}]); \n\n";
 	}
 }
 
+foreach ($scales as $scale =>$dummy) {
 ?>
-
-                drawnItems.bindTooltip(function(layer) {
+                drawnItems[<? echo $scale; ?>].bindTooltip(function(layer) {
                         if (layer.options && layer.options.title)
                                 return layer.options.title.toString();
                         else
                                 return 'untitled';
                 });
 
-	overlayMaps['Current Regions'] = drawnItems;
-
+	overlayMaps['Current Areas (Scale <? echo $scale; ?>)'] = drawnItems[<? echo $scale; ?>];
+<? } ?>
 /////////////////////////////////////
 
         setupBaseMap(); //creates the map, but does not initialize a view
 
 	map.setView([54.4266, -3.1557], 5);
-        map.addLayer(drawnItems);
+
+<? foreach ($scales as $scale =>$dummy) {
+        print "map.addLayer(drawnItems[$scale]);\n";
+} ?>
 
      var drawControl = new L.Control.Draw({
 	draw: {
@@ -171,10 +198,10 @@ map.on(L.Draw.Event.CREATED, function (e) {
 
    map.addLayer(layer);
 
-layer.bindPopup('<form method=post>Provide Name for your Region: <input type=text name=name placeholder="enter name here" maxlength=64><br>'+
+layer.bindPopup('<form method=post>Provide Name for your Area: <input type=text name=name placeholder="enter name here" maxlength=64><br>'+
 '<input type=hidden name=points value="'+layer.getLatLngs().toString()+'">'+
 '<input type=hidden name=bbox value="'+layer.getBounds().toBBoxString()+'">'+
-'<input type=submit value="Save New Region"></form>');
+'<input type=submit value="Save New Area"></form>');
 layer.openPopup();
 
 });
@@ -193,7 +220,13 @@ layer.openPopup();
                  loadmap() ;
         });
 
-
+	function renameArea(region_id,region_name) {
+		var result = prompt('Edit the name as required:', region_name);
+		if (result) {
+			location.href='?update='+region_id+'&name='+encodeURIComponent(result);
+		}
+		return false;
+	}
 </script>
 
 Current List: <ul>
@@ -201,6 +234,10 @@ Current List: <ul>
 
 foreach ($data as $row) {
 	print "<li>".htmlentities($row['name']);
+	if ($row['user_id'] == $USER->user_id) {
+		print " <a href=# onclick='return renameArea({$row['region_id']},".json_encode($row['name']).");'>Rename</a>";
+		print " <a href=\"?delete={$row['region_id']}\" onclick='return confirm(".json_encode("Are you sure you wish to delete {$row['name']}?").");'>Delete</a>";
+	}
 }
 ?>
 </ul>
