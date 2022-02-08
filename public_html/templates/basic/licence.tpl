@@ -28,6 +28,7 @@
    <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 <input type="hidden" name="id" value="{$image->gridimage_id}"/>
 
+{assign var="no_agree" value=1}
 {include file="_submit_agreetext.tpl"}
 
 {assign var="credit" value=$image->credit_realname}	
