@@ -90,12 +90,7 @@
 		
 	<div id="sd6" class="sd">
 
-		<p>
-		Because we are an open project we want to ensure our content is licensed
-		as openly as possible and so we ask that all images are released under a <b>Attribution-Share Alike</b> {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"}
-		licence, including accompanying metadata.</p>
-
-		<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
+		{include file="_submit_agreetext.tpl"}
 	
 		<p>If you agree with these terms, click "I agree" and your image will be stored in the grid square.<br/><br/>
 		<input style="background-color:pink; width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>

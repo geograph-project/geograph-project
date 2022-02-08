@@ -87,24 +87,7 @@ function hideStep3() {
 <div id="step3">
 <h3>Step 3 : Confirm Image Rights</h3>
 
-	<p>
-	Because we are an open project we want to ensure our content is licensed
-	as openly as possible and so we ask that all images are released under a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"}
-	Licence, including accompanying metadata.</p>
-	
-	<p>With a Creative Commons Licence, the photographer <b>keeps the copyright</b> but allows 
-	people to copy and distribute the work provided they <b>give credit</b>.</p>
-	
-	<p>Since we want to ensure we can use your work to fund the running costs of
-	this site, and allow us to create montages of grid images, we ask that you
-	allow the following</p>
-	
-	<ul>
-	<li>The right to use the work commercially</li>
-	<li>The right to modify the work to create derivative works</li>
-	</ul>
-	
-	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
+        {include file="_submit_agreetext.tpl"}
 		
 	<p>If you do
 	not agree with these terms, click "I do not agree" and your upload will

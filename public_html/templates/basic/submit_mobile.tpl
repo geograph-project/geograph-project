@@ -1124,12 +1124,7 @@ $(function() {
 		
 	<div id="sd6" class="sd">
 
-		<p>
-		Because we are an open project we want to ensure our content is licensed
-		as openly as possible and so we ask that all images are released under a <b>Attribution-Share Alike</b> <span><a title="Learn more about Creative Commons" href="https://creativecommons.org" target="_blank">Creative Commons</a><img style="padding-left:2px;" alt="External link" title="External link - opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>
-		licence, including accompanying metadata.</p>
-
-		<p><span><a title="View licence" href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Here is the Commons Deed outlining the licence terms</a><img style="padding-left:2px;" alt="External link" title="External link - opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span></p>
+		{include file="_submit_agreetext.tpl"}
 	
 		<div id="submissionAvailable" style="display:none;padding:10px;">
 			<p>If you agree with these terms, click "I agree" and your image will be stored in the grid square.<br/><br/>
