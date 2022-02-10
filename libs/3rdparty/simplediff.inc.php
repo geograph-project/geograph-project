@@ -4,25 +4,25 @@
 	Paul's Simple Diff Algorithm v 0.1
 	(C) Paul Butler 2007 <http://www.paulbutler.org/>
 	May be used and distributed under the zlib/libpng license.
-	
+
 	This code is intended for learning purposes; it was written with short
 	code taking priority over performance. It could be used in a practical
 	application, but there are a few ways it could be optimized.
-	
+
 	Given two arrays, the function diff will return an array of the changes.
 	I won't describe the format of the array, but it will be obvious
 	if you use print_r() on the result of a diff on some test data.
-	
+
 	htmlDiff is a wrapper for the diff command, it takes two strings and
 	returns the differences in HTML. The tags used are <ins> and <del>,
-	which can easily be styled with CSS.  
-	
+	which can easily be styled with CSS.
+
 	http://paulbutler.org/archives/a-simple-diff-algorithm-in-php/
 	http://github.com/paulgb/simplediff/blob/5bfe1d2a8f967c7901ace50f04ac2d9308ed3169/simplediff.php
-	
 */
- 
+
 function diff($old, $new){
+	$maxlen=0;
 	foreach($old as $oindex => $ovalue){
 		$nkeys = array_keys($new, $ovalue);
 		foreach($nkeys as $nindex){
@@ -33,7 +33,7 @@ function diff($old, $new){
 				$omax = $oindex + 1 - $maxlen;
 				$nmax = $nindex + 1 - $maxlen;
 			}
-		}	
+		}
 	}
 	if($maxlen == 0) return array(array('d'=>$old, 'i'=>$new));
 	return array_merge(
@@ -41,7 +41,7 @@ function diff($old, $new){
 		array_slice($new, $nmax, $maxlen),
 		diff(array_slice($old, $omax + $maxlen), array_slice($new, $nmax + $maxlen)));
 }
-  
+
 function htmlDiff($old, $new){
 	$diff = diff(explode(' ', $old), explode(' ', $new));
 	foreach($diff as $k){
@@ -52,3 +52,33 @@ function htmlDiff($old, $new){
 	}
 	return $ret;
 }
+
+
+function htmlCharDiff($old,$new) {
+	if (strlen($old) > 500 || strlen($new) > 500 || !preg_match('/^[\w -]+$/',$old) || !preg_match('/^[\w -]+$/',$new)) {
+		 //long or complicated will do by words! - prevents splitting html entities etc
+		$o = preg_split('/\s+/',htmlentities2($old));
+		$t = preg_split('/\s+/',htmlentities2($new));
+		$join = ' ';
+	} else {
+		//if short (and contains no special chars) then can di a char-by-char (this doesnt need to be mb_ safe)
+		$o = str_split($old);
+		$t = str_split($new);
+		$join = '';
+	}
+
+	$oo = array();
+	$tt = array();
+	foreach (diff($o,$t) as $w) {
+		if (is_array($w)) {
+			$oo[] = "<b>".implode($join,$w['d'])."</b>";
+			$tt[] = "<b>".implode($join,$w['i'])."</b>";
+		} else {
+			$oo[] = $w;
+			$tt[] = $w;
+		}
+	}
+
+	return array(implode($join,$oo), implode($join,$tt));
+}
+

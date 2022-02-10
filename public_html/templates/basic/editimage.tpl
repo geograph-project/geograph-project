@@ -312,6 +312,8 @@
 			{else}
 			Change {$item.field} from
 			{/if}
+			</label>
+
 			{if $item.field eq "grid_reference"}
 				{assign var="field" value="current_subject_gridref"}
 			{else}
@@ -321,27 +323,25 @@
 			{if $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
 
 				<span{if $editable && $item.oldvalue != $image->$field} style="text-decoration: line-through"{/if}>
-					{getamap gridref=$item.oldvalue|default:'blank'}
+					{getamap gridref=$item.oldvalue|default:'blank' text=$item.oldhtml|default:'blank'}
 				</span>
 				to
-				{getamap gridref=$item.newvalue|default:'blank'}
+				{getamap gridref=$item.newvalue|default:'blank' text=$item.newhtml|default:'blank'}
 
 			{elseif $item.field eq "comment"}
 			  <br/>
-			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span><br/>
+			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldhtml|default:'blank'}</span><br/>
 			  to<br/>
-			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
+			  <span style="border:1px solid #dddddd">{$item.newhtml|default:'blank'}</span>
 			{else}
-			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span>
+			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldhtml|default:'blank'}</span>
 			  to
-			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
+			  <span style="border:1px solid #dddddd">{$item.newhtml|default:'blank'}</span>
 			{/if}
 
 			{if $editable && $item.newvalue == $image->$field}
 				<b>Changes already applied</b>
 			{/if}
-
-			</label>
 
 			</div>
 		{/foreach}
@@ -381,7 +381,6 @@
 				<div class="ticketnote">
 					<div class="ticketnotehdr">{$ticket->lastcomment.realname} {if $ticket->lastcomment.moderator}(Moderator){/if} wrote on {$ticket->lastcomment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
 					{$ticket->lastcomment.comment|escape:'html'|geographlinks}
-
 				</div>
 				{/if}
 			{/if}

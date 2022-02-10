@@ -1012,13 +1012,21 @@ class GridImageTroubleTicket
 
 			if (count($this->changes)) {
 				$token=new Token;
-				foreach ($this->changes as $i => $row) {
+				foreach ($this->changes as $i => &$row) {
 					if (!empty($row['newvalue']) && $row['newvalue'] != -1) {
 						switch($row['field']) {
 							case 'grid_reference':		$token->setValue("g", $row['newvalue']); break;
 							case 'photographer_gridref':	$token->setValue("p", $row['newvalue']); break;
 							case 'view_direction':		$token->setValue("v", $row['newvalue']); break;
 						}
+					}
+					if ($row['newvalue'] != $row['oldvalue'] && !is_numeric(row['newvalue']) && !is_numeric($row['oldvalue'])) {
+						require_once "3rdparty/simplediff.inc.php";
+
+						list($row['oldhtml'], $row['newhtml']) = htmlCharDiff($row['oldvalue'], $row['newvalue']); //automatically calls htmlentities2
+					} else {
+						$row['oldhtml'] = htmlentities2($row['oldvalue']);
+						$row['newhtml'] = htmlentities2($row['newvalue']);
 					}
 				}
 				$count = count($token->data);
