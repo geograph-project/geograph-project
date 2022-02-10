@@ -329,10 +329,9 @@
 				{getamap gridref=$item.newvalue|default:'blank' text=$item.newhtml|default:'blank'}
 
 			{elseif $item.field eq "comment"}
-			  <br/>
-			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldhtml|default:'blank'}</span><br/>
-			  to<br/>
-			  <span style="border:1px solid #dddddd">{$item.newhtml|default:'blank'}</span>
+			  <div style="border:1px solid #dddddd;padding:2px{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldhtml|default:'blank'}</div>
+			  to
+			  <div style="border:1px solid #dddddd;padding:2px">{$item.newhtml|default:'blank'}</div>
 			{else}
 			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldhtml|default:'blank'}</span>
 			  to
