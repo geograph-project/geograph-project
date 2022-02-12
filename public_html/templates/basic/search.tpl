@@ -26,7 +26,7 @@
 			&nbsp;&nbsp;&nbsp;<i>For&nbsp;&nbsp;</i> <input id="searchq" type="text" name="q" value="{$searchtext|escape:"html"|default:"(anything)"}" size="30" style="font-size:1.3em" onfocus="if (this.value=='(anything)') this.value=''" onblur="if (this.value=='') this.value='(anything)'"/>
 		</div>
 		<div style="position:relative;margin-top:10px;margin-bottom:5px">
-			<label for="searchlocation" style="line-height:1.8em">and/or a <b>Placename, Postcode, Grid Reference</b>:</label><br/>
+			<label for="searchlocation" style="line-height:1.8em">and/or a <b>Placename, Postcode, Grid Reference</b>:</label> <span id="placeMessage"></span> <br/>
 			&nbsp;&nbsp;&nbsp;<i>near</i> <input id="searchlocation" type="text" name="location" value="{$searchlocation|escape:"html"|default:"(anywhere)"}" size="30" style="font-size:1.3em" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/>&nbsp;&nbsp;&nbsp;
 			<input id="searchgo" type="submit" name="go" value="Search..." style="font-size:1.3em"/>
 		</div>
@@ -123,6 +123,66 @@
 </div>
 
    <br/><br/>
-<!--div class="copyright">Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}, Copyright MetaCarta 2006</div-->
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/themes/ui-lightness/jquery-ui.css" rel="stylesheet"/>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+
+<script>{literal}
+	function setLocationBox(value,wgs84,skipautoload) {
+		 $("#searchlocation").val(value);
+	}
+
+$(function () {
+	$("#searchlocation").autocomplete({
+		minLength: 2,
+                search: function(event, ui) {
+                        if (this.value.search(/^\s*\w{1,2}\d{2,10}\s*$/) > -1) {
+				ok = getWgs84FromGrid(this.value);
+		                if (ok) {
+					setLocationBox(this.value,ok);
+				} else {
+					$("#message").html("Does not appear to be a valid grid-reference '"+this.value+"'");
+                                        $("#placeMessage").show().html("Does not appear to be a valid grid-reference '"+this.value+"'");
+                                        setTimeout('$("#placeMessage").hide()',3500);
+				}
+                                $( "#location" ).autocomplete( "close" );
+                                return false;
+                        }
+                },
+                source: function( request, response ) {
+			$.ajax('/finder/places.json.php?q='+encodeURIComponent(request.term), {
+				success: function(data) {
+					if (!data || !data.items || data.items.length < 1) {
+						$("#message").html("No places found matching '"+request.term+"'");
+			                        $("#placeMessage").show().html("No places found matching '"+request.term+"'");
+				                setTimeout('$("#placeMessage").hide()',3500);
+					        return;
+					}
+		                        var results = [];
+					$.each(data.items, function(i,item){
+				                results.push({value:item.gr+' '+item.name,label:item.name,gr:item.gr,title:item.localities});
+					});
+					results.push({value:'',label:'',title:data.query_info});
+					results.push({value:'',label:'',title:data.copyright});
+					response(results);
+				}
+			});
+		},
+                select: function(event,ui) {
+                        setLocationBox(ui.item.value,false,false);
+                        return false;
+                }
+	})
+        .data( "autocomplete" )._renderItem = function( ul, item ) {
+                var re=new RegExp('('+$("#location").val()+')','gi');
+		return $( "<li></li>" )
+			.data( "item.autocomplete", item )
+			.append( "<a>" + item.label.replace(re,'<b>$1</b>') + " <small> " + (item.gr||'') + "<br>" + item.title.replace(re,'<b>$1</b>') + "</small></a>" )
+			.appendTo( ul );
+	};  
+});
+
+</script>{/literal}
 
 {include file="_std_end.tpl"}
