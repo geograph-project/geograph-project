@@ -660,7 +660,8 @@ class GridImageTroubleTicket
 			return;
 		}
 		mail_wrapper($to, $msg['subject'], $msg['body'],
-				"From: Geograph - Reply Using Link <noreply@geograph.org.uk>");
+				"From: Geograph - Reply Using Link <noreply@geograph.org.uk>",
+				'', false, @$msg['html']);
 	}
 
 	/**

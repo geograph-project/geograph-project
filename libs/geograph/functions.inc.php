@@ -1309,7 +1309,7 @@ function cleanTag($text, $fix_apos = true) {
 }
 
 
-function mail_wrapper($email, $subject, $body, $headers = '', $param = '', $debug = false) {
+function mail_wrapper($email, $subject, $body, $headers = '', $param = '', $debug = false, $htmlbody = false) {
 	global $CONF;
 
 	if (!empty($CONF['smtp_host'])) {
@@ -1376,12 +1376,20 @@ function mail_wrapper($email, $subject, $body, $headers = '', $param = '', $debu
 			$mail->addAddress($email);
 
 		$mail->Subject = $subject;
-		$mail->Body = $body; //if using isHTML will be the HTML verson, AltBody, will be plain text!
+
+		if (!empty($htmlbody)) {
+			$mail->IsHTML(true);
+			$mail->Body = $htmlbody; //the HTML verson
+			$mail->AltBody = $body; //plain text version
+		} else {
+			$mail->Body = $body; //if using isHTML will be the HTML verson, AltBody, will be plain text!
+		}
 
 		$r = $mail->send();
 		$GLOBALS['mailer_error'] = $mail->ErrorInfo;
 		return $r;
 	} else {
+		//todo, if (!empty($htmlbody)) { ... we could build a HTML messsage with mail() - creating mutli-parts manually.
 		return mail($email, $subject, $body, $headers, $param);
 	}
 }
