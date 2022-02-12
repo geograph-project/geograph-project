@@ -493,7 +493,23 @@ class GridImageTroubleTicket
 			{
 				if ($item['oldvalue']!=$item['newvalue'])
 				{
-					$changes.=" {$item['field']} changed from \"{$item['oldvalue']}\" to \"{$item['newvalue']}\"\n";
+					if ($item['newvalue'] != $item['oldvalue'] && !is_numeric($item['newvalue']) && !is_numeric($item['oldvalue'])) {
+						require_once "3rdparty/simplediff.inc.php";
+
+						list($item['oldhtml'], $item['newhtml']) = htmlCharDiff($item['oldvalue'], $item['newvalue']); //automatically calls htmlentities2
+					} else {
+						$item['oldhtml'] = htmlentities2($item['oldvalue']);
+						$item['newhtml'] = htmlentities2($item['newvalue']);
+					}
+
+					if ($item['field'] == 'comment') {
+						$changes.=" {$item['field']} changed from <br>".
+							str_repeat('~',70)."<br>{$item['oldhtml']}<br>".str_repeat('~',70)."<br>".
+							" {$item['field']} changed to ".
+							str_repeat('~',70)."<br>{$item['newhtml']}<br>".str_repeat('~',70)."<br>";
+					} else {
+						$changes.=" {$item['field']} changed from \"{$item['oldhtml']}\" to \"{$item['newhtml']}\"<br>";
+					}
 				}
 			}
 
@@ -504,7 +520,7 @@ class GridImageTroubleTicket
 				if ($this->status=="pending")  //A open ticker can only be created by moderators so no need to notify
 				{
 					//email alert to moderators
-					$msg =& $this->_buildEmail("A new$ttype change request has been submitted.\n\n".$this->notes);
+					$msg =& $this->_buildEmail("A new$ttype change request has been submitted.<br><br>".htmlentities2($this->notes));
 					$this->_sendModeratorMail($msg);
 				}
 
@@ -514,7 +530,7 @@ class GridImageTroubleTicket
 					if ($this->public == 'no') {
 						$comment = "A visitor to the site";
 					} else {
-						$comment = $this->suggester_name;
+						$comment = htmlentities2($this->suggester_name);
 					}
 
 					$comment .= " has suggested$ttype changes to this photo submission. ".
@@ -523,11 +539,11 @@ class GridImageTroubleTicket
 						"changes by following the links in this message. ";
 					if (!empty($changes))
 					{
-						$comment.="\n\n\nThe following changes have been suggested:\n\n";
+						$comment.="<br><br><br>The following changes have been suggested:<br><br>";
 						$comment.=$changes;
 					}
 					if (!empty($this->notes)) {
-						$comment.="\n\nComment: {$this->notes}";
+						$comment.="<br><br>Comment: ".htmlentities2($this->notes);
 					}
 
 					$owner=new GeographUser($img->user_id);
@@ -553,11 +569,11 @@ class GridImageTroubleTicket
 					}
 					if (!empty($changes))
 					{
-						$comment.="\n\n\nThe following changes have been made:\n\n";
+						$comment.="<br><br><br>The following changes have been made:<br><br>";
 						$comment.=$changes;
 					}
 					if (strlen($this->notes))
-						$comment.="\n\nModerator Comment: {$this->notes}";
+						$comment.="<br><br>Moderator Comment: ".htmlentities2($this->notes);
 
 					$owner=new GeographUser($img->user_id);
 					if ( ($owner->ticket_option == 'all') ||
@@ -609,6 +625,7 @@ class GridImageTroubleTicket
 
 	/**
 	* returns an array containing email body and subject
+	* Note $comment should be already HTML encoded!
 	* @access private
 	*/
 	function & _buildEmail($comment, $realname = '', $for_owner = false)
@@ -621,31 +638,34 @@ class GridImageTroubleTicket
 		$ttype = ($this->type == 'minor')?' Minor':'';
 		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
 
-		$msg['body']="To respond to this message, please visit\n";
-                $msg['body'].="{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}\n";
-       	        $msg['body'].="Please, do NOT reply by email\n";
-		$msg['body'].="---------------------------------------\n\n";
+		$msg['html']="To respond to this message, please visit<br>";
+                $msg['html'].="<a href=\"{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}\">{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}</a><br>"; //show full text, so strip_tag still works!
+       	        $msg['html'].="Please, do NOT reply by email<br>";
+		$msg['html'].="---------------------------------------<br><br>";
 
 		if (!empty($realname)) {
-			$msg['body'].="Dear {$realname},\n";
-			$msg['body'].="	This is a message about the following photo:\n";
-			$msg['body'].="	{$image->grid_reference} {$image->title}\n";
+			$msg['html'].="Dear ".htmlentities2($realname).",<br>";
+			$msg['html'].="	This is a message about the following photo:<br>";
+			$msg['html'].="	{$image->grid_reference} ".htmlentities2($image->title)."<br>";
 		} else {
-			$msg['body'].="Re: {$image->grid_reference} {$image->title}\n";
+			$msg['html'].="Re: {$image->grid_reference} ".htmlentities2($image->title)."<br>";
 		}
 
-		$msg['body'].="---------------------------------------\n\n";
-		$msg['body'].=$comment."\n";
-		$msg['body'].="---------------------------------------\n\n";
+		$msg['html'].="---------------------------------------<br><br>";
+		$msg['html'].=$comment."<br>"; //we assume its ALREADY html safe!
+		$msg['html'].="---------------------------------------<br><br>";
 
-		$msg['body'].="To respond to this message, please visit\n";
-		$msg['body'].="{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}\n";
-		$msg['body'].="Please, do NOT reply by email";
+		$msg['html'].="To respond to this message, please visit<br>";
+                $msg['html'].="<a href=\"{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}\">{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}</a><br>";
+		$msg['html'].="Please, do NOT reply by email";
 
 		if ($for_owner) {
-			$msg['body'].="\n\nNote, can change preferences for notification emails, see option on profile:\n";
-			$msg['body'].="{$CONF['SELF_HOST']}/profile.php?edit=1#prefs";
+			$msg['html'].="<br><br>Note, can change preferences for notification emails, see option on profile:<br>";
+			$msg['html'].="<a href=\"{$CONF['SELF_HOST']}/profile.php?edit=1#prefs\">{$CONF['SELF_HOST']}/profile.php?edit=1#prefs</a><br>";
 		}
+
+		//create the plain text version directly from html
+		$msg['body'] = strip_tags(str_replace('<br>',"\n", $msg['html']));
 
 		return $msg;
 	}
@@ -723,8 +743,10 @@ class GridImageTroubleTicket
 		}
 		$db->Execute("update gridimage_ticket set status='open', notify = '{$this->notify}' $sets where gridimage_ticket_id={$this->gridimage_ticket_id}");
 
+		$comment = nl2br(htmlentities2($comment)); //we now going to use in email, which is now HTML
+
 		$moderator=new GeographUser($user_id);
-		$comment.="\n\n".$moderator->realname."\nGeograph Moderator\n";
+		$comment.="<br><br>".htmlentities2($moderator->realname)."<br>Geograph Moderator<br>";
 
 		//email comment to owner
 		$image= $this->_getImage();
@@ -761,8 +783,10 @@ class GridImageTroubleTicket
 
 		$this->_addComment($user_id, $comment);
 
+		$comment = nl2br(htmlentities2($comment)); //we now going to use in email, which is now HTML
+
 		$owner=new GeographUser($user_id);
-		$comment.="\n\n".$owner->realname."\nPhoto owner\n";
+		$comment.="<br><br>".htmlentities2($owner->realname)."<br>Photo owner<br>";
 
 		//email comment to moderators
 		$msg =& $this->_buildEmail($comment);
@@ -797,9 +821,11 @@ class GridImageTroubleTicket
 
 		$this->_addComment($user_id, $comment);
 
+		$comment = nl2br(htmlentities2($comment)); //we now going to use in email, which is now HTML
+
 		if ($this->public != 'no') {
 			$suggestor=new GeographUser($user_id);
-			$comment.="\n\n".$suggestor->realname."\nSuggestor\n";
+			$comment.="<br><br>".htmlentities2($suggestor->realname)."<br>Suggestor<br>";
 		}
 
 		//email comment to moderators
@@ -860,7 +886,14 @@ class GridImageTroubleTicket
 
 				if ($item['oldvalue']!=$item['newvalue'])
 				{
-					$changes.="{$item['field']} changed from \"{$item['oldvalue']}\" to \"{$item['newvalue']}\"\n";
+					if ($item['field'] == 'comment') {
+						$changes.="{$item['field']} changed from <br>".
+							str_repeat('~',70)."<br>".nl2br($item['oldhtml'],false)."<br>".str_repeat('~',70)."<br>".
+							"{$item['field']} changed to <br>".
+							str_repeat('~',70)."<br>".nl2br($item['newhtml'],false)."<br>".str_repeat('~',70)."<br>";
+					} else {
+						$changes.="{$item['field']} changed from \"{$item['oldhtml']}\" to \"{$item['newhtml']}\"<br>";
+					}
 				}
 			}
 			elseif ($this->changes[$idx]['status'] != 'immediate')
@@ -878,13 +911,13 @@ class GridImageTroubleTicket
 			$suggester_msg="Many thanks for your feedback on this photo, we've now closed this issue.";
 			if (!empty($changes))
 			{
-				$suggester_msg.=" The following changes were made:\n\n";
-				$suggester_msg.=$changes;
+				$suggester_msg.=" The following changes were made:<br><br>";
+				$suggester_msg.=$changes; //assume its already html safe!
 			}
 			if (!empty($dbcomment) && $dbcomment != "Suggestion is now closed")
 			{
-				$suggester_msg.="\n Moderators Comment:\n\n";
-				$suggester_msg.=$dbcomment;
+				$suggester_msg.="<br> Moderators Comment:<br><br>";
+				$suggester_msg.=htmlentities2($dbcomment);
 			}
 
 			$suggester=new GeographUser($this->user_id);
@@ -897,13 +930,13 @@ class GridImageTroubleTicket
 		$owner_msg="We've now closed this issue. ";
 		if (!empty($changes))
 		{
-			$owner_msg.=" The following changes were made:\n\n";
+			$owner_msg.=" The following changes were made:<br><br>";
 			$owner_msg.=$changes;
 		}
 		if (!empty($dbcomment) && $dbcomment != "Suggestion is now closed")
 		{
-			$owner_msg.="\n Moderators Comment:\n\n";
-			$owner_msg.=$dbcomment;
+			$owner_msg.="<br> Moderators Comment:<br><br>";
+			$owner_msg.=htmlentities2($dbcomment);
 		}
 		$owner=new GeographUser($image->user_id);
 		if ($owner->ticket_option != 'off') { // the message IS send in case of 'none'!
@@ -1021,7 +1054,7 @@ class GridImageTroubleTicket
 							case 'view_direction':		$token->setValue("v", $row['newvalue']); break;
 						}
 					}
-					if ($row['newvalue'] != $row['oldvalue'] && !is_numeric(row['newvalue']) && !is_numeric($row['oldvalue'])) {
+					if ($row['newvalue'] != $row['oldvalue'] && !is_numeric($row['newvalue']) && !is_numeric($row['oldvalue'])) {
 						require_once "3rdparty/simplediff.inc.php";
 
 						list($row['oldhtml'], $row['newhtml']) = htmlCharDiff($row['oldvalue'], $row['newvalue']); //automatically calls htmlentities2
