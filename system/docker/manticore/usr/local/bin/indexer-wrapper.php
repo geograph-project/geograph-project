@@ -81,9 +81,9 @@ if (!empty($param['lock']))
 
 $hour = date('G');
 $indexes = db_getAll("
-SELECT sph_index.index_name, preindex, postindex, server_id, last_indexed
+SELECT sph_index.index_name, preindex, postindex, posttrigger, server_id, last_indexed
 FROM sph_index LEFT JOIN sph_server_index ON (sph_index.index_name = sph_server_index.index_name AND server_id = $server_id)
-WHERE DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() AND minhour <= $hour AND active = 1 ORDER BY type+0");
+WHERE (DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() OR triggered > 0) AND minhour <= $hour AND active = 1 ORDER BY type+0");
 
 if (empty($indexes)) {
 	if (!empty($param['lock']))
@@ -94,6 +94,23 @@ if (empty($indexes)) {
 #####################################################
 
 $done = array();
+$trigger = array();
+
+function trigger_post() {
+	global $db, $done, $trigger, $server_id, $param;
+	if (!empty($trigger)) {
+		foreach ($trigger as $name => $dummy) {
+			if (empty($done[$name])) {
+				$sql = "UPDATE sph_server_index SET triggered=1 WHERE index_name = $name AND server_id = $server_id";
+				db_Execute($sql);
+			}
+		}
+	}
+}
+
+register_shutdown_function('trigger_post');
+
+#####################################################
 
 function process_list($list, $log = null) {
 	global $server_id, $done, $pid, $param;
@@ -130,13 +147,14 @@ if (!empty($param['single'])) {
 		if (!empty($done[$row['index_name']])) //may of been done as pre/post on previous run!
 			continue;
 
-
 		$list = array();
 		if (!empty($row['preindex']))
 			$list = array($row['preindex']=>1)+$list;
 		$list[$row['index_name']]=1;
 		if (!empty($row['postindex']))
 			$list[$row['postindex']]=1;
+		if (!empty($row['posttrigger']))
+			$trigger[$row['posttrigger']]=1;
 
 		process_list($list, $row['index_name']);
 	}
@@ -158,6 +176,8 @@ foreach ($indexes as $row) {
 
 	if (!empty($row['postindex']))
 		$list[$row['postindex']]=1;
+	if (!empty($row['posttrigger']))
+		$trigger[$row['posttrigger']]=1;
 }
 
 process_list($list);

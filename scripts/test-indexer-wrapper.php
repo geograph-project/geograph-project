@@ -1,6 +1,6 @@
 <?
 
-$param = array('execute'=>0,'single'=>1,'debug'=>1,'prime'=>0);
+$param = array('execute'=>0,'single'=>1,'debug'=>1,'prime'=>0, 'server_id'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -8,7 +8,10 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-$server_id = $db->Quote(trim(`hostname`));
+if (!empty($param['server_id']))
+	$server_id = $db->Quote(trim($param['server_id']));
+else
+	$server_id = $db->Quote(trim(`hostname`));
 $pid = getmypid();
 
 #####################################################
@@ -38,9 +41,9 @@ if (!empty($param['prime'])) {
 
 
 $indexes = $db->getAll("
-SELECT sph_index.index_name, preindex, postindex, server_id, last_indexed, criteria
+SELECT sph_index.index_name, preindex, postindex, posttrigger, server_id, last_indexed, criteria
 FROM sph_index LEFT JOIN sph_server_index ON (sph_index.index_name = sph_server_index.index_name AND server_id = $server_id)
-WHERE DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() AND active = 1 ORDER BY type+0");
+WHERE (DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() OR triggered > 0) AND active = 1 ORDER BY type+0");
 
 if (empty($indexes))
 	exit;
@@ -48,6 +51,25 @@ if (empty($indexes))
 #####################################################
 
 $done = array();
+$trigger = array();
+
+function trigger_post() {
+	global $db, $done, $trigger, $server_id, $param;
+	if (!empty($trigger)) {
+		foreach ($trigger as $name => $dummy) {
+			if (empty($done[$name])) {
+				$sql = "UPDATE sph_server_index SET triggered=1 WHERE index_name = $name AND server_id = $server_id";
+		                print "$sql;\n";
+				if ($param['execute'])
+					$db->Execute($sql);
+			}
+		}
+	}
+}
+
+register_shutdown_function('trigger_post');
+
+#####################################################
 
 function process_list($list, $log = null) {
 	global $db, $server_id, $done, $pid, $param;
@@ -118,6 +140,8 @@ if (!empty($param['single'])) {
 		$list[$row['index_name']]=1;
 		if (!empty($row['postindex']))
 			$list[$row['postindex']]=1;
+		if (!empty($row['posttrigger']))
+			$trigger[$row['posttrigger']]=1;
 
 print implode(' ',array_keys($list))."\n";
 foreach ($list as $index => $dummy) $done[$index]=1;
@@ -141,6 +165,8 @@ foreach ($indexes as $row) {
 
 	if (!empty($row['postindex']))
 		$list[$row['postindex']]=1;
+	if (!empty($row['posttrigger']))
+		$trigger[$row['posttrigger']]=1;
 }
 
 process_list($list);
@@ -154,6 +180,7 @@ CREATE TABLE `sph_index` (
   `minutes` MEDIUMINT not null default 15,
   `preindex` varchar(64) NOT NULL,
   `postindex` varchar(64) NOT NULL,
+  `posttrigger` varchar(64) NOT NULL,
   `type` enum('master','main','delta','single','static') not null default 'single',
   `created` DATETIME not null,
   `updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -165,6 +192,7 @@ CREATE TABLE `sph_server_index` (
   `server_id` varchar(64) NOT NULL DEFAULT '?',
   `last_indexed` DATETIME not null,
   `updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `triggered` tinyint(3) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`index_name`,`server_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
