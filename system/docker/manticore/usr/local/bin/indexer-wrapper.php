@@ -67,6 +67,11 @@ if (!empty($param['prime'])) {
 			$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = FROM_UNIXTIME($time)";
 			print "$sql;\n";
 			db_Execute($sql);
+
+			if (mysqli_affected_rows($db) == 1) { //if =1 then first time created, if 2 then it just rewriting existing!
+				$sql = "INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), pid = $pid";
+				db_Execute($sql);
+			}
 		}
 	}
 	exit;
@@ -99,8 +104,10 @@ $trigger = array();
 function trigger_post() {
 	global $db, $done, $trigger, $server_id, $param;
 	if (!empty($trigger)) {
-		foreach ($trigger as $name => $dummy) {
-			if (empty($done[$name])) {
+		foreach ($trigger as $index => $dummy) {
+			if (empty($done[$index])) {
+				$name = db_Quote(trim($index));
+
 				$sql = "UPDATE sph_server_index SET triggered=1 WHERE index_name = $name AND server_id = $server_id";
 				db_Execute($sql);
 			}
@@ -130,7 +137,7 @@ function process_list($list, $log = null) {
 		$sql = "REPLACE INTO sph_server_index SET index_name = $name, server_id = $server_id, last_indexed = NOW()";
 		db_Execute($sql);
 
-		$sql = "          INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), pid = $pid";
+		$sql = "INSERT INTO sph_indexer_log SET index_name = $name, server_id = $server_id, created = NOW(), pid = $pid";
 		if ($index == $log)
 			$sql .=", taken = ".($end-$start);
 		db_Execute($sql);
