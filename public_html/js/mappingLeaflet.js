@@ -536,11 +536,13 @@ function enlargeMap() {
  				bounds
 			});
 
-			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1,basemap2], {
+			baseMaps['Modern OS - GB'] = L.layerGroup([basemap1], {
 		//		crs: crs,
 				attribution: 'Contains OS data &copy; Crown copyright and database rights 2022',
 				mapLetter: 'a'
 			}); //.addTo(map);
+			if (window.enhancedOSZoom)
+				baseMaps['Modern OS - GB'].addLayer(basemap2);
 
 //this is a hack, because the built in function, notices that the newly added layer, has differnet zoom levels, and that the zoom is outside the rage
 // .. the goal here is to prevent the OS layers, being added to the internal '_zoomBoundLayers' list!
@@ -580,7 +582,7 @@ basemap2.beforeAdd = function() {};
                                 map._resetView(map.getCenter(), map.getZoom(), true); //we need this to redraw all layers (polygons, markers...) in the new projection.
 
 				//to emulate what happens in the original _updateZoomLevels (which is never called now, because beforeAdd is hobbled)
-				map._layersMaxZoom = 13;
+				map._layersMaxZoom = (window.enhancedOSZoom)?13:9;
 				map._layersMinZoom = 3;
 
 				//[-50,50] worked ok with a 390 square map in submission! (-25 did not!)

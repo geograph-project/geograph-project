@@ -835,10 +835,12 @@ class RasterMap
 			}
 			$p1 = $p2 = '';
 			$os_api_key = 'null';
+			$enhancedZoom = 'false';
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
 				if (!empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
 					$os_api_key = json_encode($CONF['os_api_key']);
+					$enhancedZoom = 'true';
 				}
 			} elseif(!empty($this->enable_os) && !empty($CONF['os_api_key'])	&& @$this->reference_index !== '2') {
 				$os_api_key = json_encode($CONF['os_api_key']);
@@ -853,6 +855,7 @@ class RasterMap
 					var map = null;
 					var static_host = '{$CONF['STATIC_HOST']}';
 					var OSAPIKey = $os_api_key;
+					var enhancedOSZoom = $enhancedZoom;
 					var leafletBaseKey = 'LeafletBase{$this->reference_index}';
 
 					function loadmap() {
