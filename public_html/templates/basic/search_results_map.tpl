@@ -141,6 +141,13 @@ function loadMap() {
 			}).openPopup();
 		}).addTo(map);
 
+		if (overlayMaps["Photo Subjects"])
+			overlayMaps["Photo Subjects"].on('add',nonFilteredWarning);
+		if (overlayMaps["Photo Viewpoints"])
+			overlayMaps["Photo Viewpoints"].on('add',nonFilteredWarning);
+		if (baseMaps["Geograph PhotoMap"])
+			baseMaps["Geograph PhotoMap"].on('add',nonFilteredWarning);
+
 
 		addOurControls(map)
 
@@ -171,6 +178,14 @@ function loadMap() {
 
 {literal}
 	$('.pageLinks a[href*="page="]').click(loadResults);
+}
+
+var warningshown = false;
+function nonFilteredWarning() {
+	if (warningshown)
+		return;
+	alert("Note these layers are NOT filtered to your current query, and show all images. You may be able to use the search function built into the 'Image Browser' function to see filtered layers. Note the 'Search Points' and 'Search Results' layer ARE filtered.");
+	warningshown = true;
 }
 
 //////////////////////////////////////////////////////
