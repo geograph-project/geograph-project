@@ -1401,7 +1401,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$flimit = "";
 			$nlimit = "limit 10000";
 			$smarty->assign('all',1);
-		} elseif (isset($_GET['more'])) {
+		} elseif (isset($_GET['more']) || isset($_GET['d'])) {
 			$flimit = "";
 			$nlimit = "limit 40";
 			$smarty->assign('more',1);
