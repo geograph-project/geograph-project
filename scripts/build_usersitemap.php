@@ -94,7 +94,6 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 		fprintf($fh,"<url>".
 			"<loc>https://{$param['config']}/profile/%d</loc>".
 			"<lastmod>%s</lastmod>".
-			"<changefreq>monthly</changefreq>".
 			"</url>\n",
 			$recordSet->fields['user_id'],
 			$date

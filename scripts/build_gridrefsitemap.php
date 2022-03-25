@@ -57,7 +57,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$recordSet = $db->Execute(
 		"select grid_reference,date(last_timestamp) as moddate ".
 		"from gridsquare ".
-		"where reference_index = 1 ".
+		"where reference_index = 1 and imagecount > 0 ".
 		"order by grid_reference ".
 		"limit $offset,$urls_per_sitemap");
 
@@ -73,7 +73,6 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 		fprintf($fh,"<url>".
 			"<loc>https://{$param['config']}/gridref/%s</loc>".
 			"<lastmod>%s</lastmod>".
-			"<changefreq>monthly</changefreq>".
 			"</url>\n",
 			$recordSet->fields['grid_reference'],
 			$date
