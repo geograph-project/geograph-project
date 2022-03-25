@@ -1,5 +1,10 @@
 log_format custom '$http_x_forwarded_for - $upstream_http_x_geograph_id [$time_local] "$request" "$host" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_time $http_x_forwarded_proto $upstream_http_x_session_id';
 
+# disable default internal logs, to save cluttering disk space (individual server blocks may add their own!)
+error_log off;
+access_log off;
+
+
 map $http_x_forwarded_proto $forwarded_proto {
   "http" "http";
   "https" "https";
@@ -13,10 +18,6 @@ server {
   listen 80;
   listen [::]:80;
   server_name api.* *.api.geograph.org.uk;
-
-  # disable default internal logs, to save cluttering disk space 
-  error_log off;
-  access_log off;
 
   # then setup the custom logs - containers write the log to standard output
   error_log stderr notice;
@@ -73,10 +74,6 @@ server {
   listen [::]:80;
   server_name t0.* *.t0.geograph.org.uk;
 
-  # disable default internal logs, to save cluttering disk space 
-  error_log off;
-  access_log off;
-
   # then setup the custom logs - containers write the log to standard output
   error_log stderr notice;
   access_log /dev/stdout custom;
@@ -125,10 +122,6 @@ server {
 server {
   listen 80 default_server;
   listen [::]:80 default_server;
-
-  # disable default internal logs, to save cluttering disk space 
-  error_log off;
-  access_log off;
 
   # then setup the custom logs - containers write the log to standard output
   error_log stderr notice;
