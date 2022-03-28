@@ -1233,10 +1233,14 @@ $this->db->raiseErrorFn = 'adodb_throw';
 						}
 					}
 					//dont know yet which of these is best but they all seem to be the same on my test images
-					if (($date = @$exif['EXIF']['DateTimeOriginal']) ||
+					if ((($date = @$exif['EXIF']['DateTimeOriginal']) ||
 					    ($date = @$exif['EXIF']['DateTimeDigitized']) ||
 					    ($date = @$exif['IFD0']['DateTime']) )
-					{
+						//Data format is "YYYY:MM:DD HH:MM:SS"+0x00, total 20bytes. If clock has not set or digicam doesn't have clock, the field may be filled with spaces.
+						&&
+			                    preg_match('/^\d{4}:\d{2}:\d{2} /',$date) // ... we dont care if time etc is missing or currupt etc. Or someone added a timezone etc
+
+					) {
 						//Example: ["DateTimeOriginal"]=> string(19) "2004:07:09 14:05:19"
 						 list($date,$time) = explode(' ',$date);
 						 $dates = explode(':',$date);

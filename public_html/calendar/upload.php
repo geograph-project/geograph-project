@@ -164,9 +164,13 @@ if (isset($_REQUEST['id']))
 				if (!empty($exif['IFD0']['DocumentName'])) {
 					$exif2['filename'] = $exif['IFD0']['DocumentName'];
 				}
-				if (($date = $exif['EXIF']['DateTimeOriginal']) ||
+				if ((($date = $exif['EXIF']['DateTimeOriginal']) ||
 				    ($date = $exif['EXIF']['DateTimeDigitized']) ||
-				    ($date = $exif['IFD0']['DateTime']) ) {
+				    ($date = $exif['IFD0']['DateTime']))
+					//Data format is "YYYY:MM:DD HH:MM:SS"+0x00, total 20bytes. If clock has not set or digicam doesn't have clock, the field may be filled with spaces.
+					&&
+		                    preg_match('/^\d{4}:\d{2}:\d{2} \d{2}:\d{2}:\d{2}$/',$date)
+				) {
 
 					$exif2['datetime'] = $date;
 				}
