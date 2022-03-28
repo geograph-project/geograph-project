@@ -126,7 +126,6 @@
 			
 		}
 
-
 function gmap2grid(point) {
         //create a wgs84 coordinate
         wgs84=new GT_WGS84();
@@ -143,11 +142,9 @@ function gmap2grid(point) {
         return grid;
 }
 
-
 {/literal}
 
 		AttachEvent(window,'load',loadmap,false);
-
 
 		{dynamic}
 		{if $container}
@@ -167,11 +164,11 @@ function gmap2grid(point) {
 
 	</script>
 
+<p>Use the Magnifying Glass icon on the map, to Search by placename or postcode.</p>
 
 <p>Click on the map to create a point, pick it up and drag to move to better location...</p>
 
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
-
 
 <div style="width:600px; text-align:center;">
 <label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
@@ -183,7 +180,6 @@ function gmap2grid(point) {
 <input type="hidden" name="setpos" value=""/>
 
 </form>
-
 
 {if $inner}
 </body>
