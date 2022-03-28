@@ -50,7 +50,7 @@ if (empty($USER->registered) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 	print_r($_POST);
 	print_r($_COOKIE);
-	print_r($SESSION);
+	print_r($_SESSION);
         $con = ob_get_clean();
         debug_message('[Geograph] Login Failure',$con);
 }

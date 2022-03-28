@@ -1407,7 +1407,7 @@ function debug_message($subject,$body) {
 		" [HTTP_REFERER] => ".$_SERVER['HTTP_REFERER']."\n".
 		" [HTTP_X_FORWARDED_FOR] => ".$_SERVER['HTTP_X_FORWARDED_FOR']."\n".
 		" [REQUEST_TIME] => ".$_SERVER['REQUEST_TIME']."\n".
-		" [HTTP_X_AMZN_TRACE_ID] => ".$_SERVER['HTTP_X_AMZN_TRACE_ID']."\n\n".
+		@" [HTTP_X_AMZN_TRACE_ID] => ".$_SERVER['HTTP_X_AMZN_TRACE_ID']."\n\n".
 		$body;
 
 	ob_start();
