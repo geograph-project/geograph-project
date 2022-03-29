@@ -14,8 +14,8 @@
 	<a href="/statistics.php#more">more...</a> &nbsp;
 	
 	<a class="tab" href="/statistics/leaderboard.php?type={$type}">all time</a> 
-        <a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear=2021">2021</a>
-        <a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear=2020">2020</a>
+	<a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear={$yearc}">{$yearc}</a>
+	<a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear={$yearm1}">{$yearm1}</a>
 	<span class="tabSelected">weekly</span>
 	
 </div>
@@ -53,5 +53,4 @@ how much each person will climb when their pictures are moderated!{/if}</p>
 
 <hr/>
 
- 		
 {include file="_std_end.tpl"}

@@ -260,6 +260,9 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$smarty->assign('types', array('tpoints','first','second','allpoints','personal','images','depth'));
 
+	$smarty->assign('yearc',$yearc = date('Y'));
+	$smarty->assign('yearm1',$yearc-1);
+
 	//lets find some recent photos
 	new RecentImageList($smarty);
 }
