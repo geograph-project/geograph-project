@@ -59,8 +59,8 @@
 		var view = $.localStorage('SubmitMap');
 		map.setView(view, view.zoom, {animate:false});
 		var grid=gmap2grid(view);
-                var gridref = grid.getGridRef(2);
-		document.theForm.grid_reference.value = gridref;
+		if (view && grid && grid.status && grid.status == 'OK')
+			document.theForm.grid_reference.value = grid.getGridRef(2);
 	}
 
         if ($.localStorage && $.localStorage('LeafletBaseMap')) {
@@ -109,17 +109,40 @@
 				marker.on('move',function() {
 					var grid=gmap2grid(marker.getLatLng());
 
-					 //get a grid reference with 4 digits of precision
-		                        var gridref = grid.getGridRef(4);
+					//get a grid reference with 4 digits of precision
+					if (grid && grid.status && grid.status == 'OK')
+						document.theForm.grid_reference.value = grid.getGridRef(4);
 
-					 document.theForm.grid_reference.value = gridref;
 				}).fire('move');
+			});
+
+			var savedgr;
+			map.on('mousemove',function(event) {
+				if (document.theForm.grid_reference.value.length > 1 && document.theForm.grid_reference !== document.activeElement) {
+					var nospace = document.theForm.grid_reference.value.replace(/ /g,'');
+					if (nospace.length == 5 || nospace.length == 6) {
+						savedgr = document.theForm.grid_reference.value;
+						document.theForm.grid_reference.value = '';
+					}
+				} 
+				if (document.theForm.grid_reference.value == '') {
+					var grid=gmap2grid(event.latlng);
+
+                                        //get a grid reference with 4 digits of precision
+                                        if (grid && grid.status && grid.status == 'OK')
+                                                document.theForm.grid_reference.placeholder = grid.getGridRef(4);
+				}
+			});
+			map.on('mouseout',function(event) {
+				if (savedgr && document.theForm.grid_reference.value == '')
+					document.theForm.grid_reference.value = savedgr;
 			});
 
 			geocoder.on('search:locationfound',function(event) {
 				var grid=gmap2grid(event.latlng)
-	                        var gridref = grid.getGridRef(4);
-                                document.theForm.grid_reference.value = gridref;
+				
+				if (grid && grid.status && grid.status == 'OK')
+	                                document.theForm.grid_reference.value = grid.getGridRef(4);
 			});
 
 ////////////////////////////////////////////
@@ -171,7 +194,7 @@ function gmap2grid(point) {
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 <div style="width:600px; text-align:center;">
-<label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
+<label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="search" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
 <input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
 
 <div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>

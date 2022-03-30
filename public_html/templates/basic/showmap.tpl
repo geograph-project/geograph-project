@@ -63,7 +63,11 @@
 
 							var gro=gmap2grid(pt);
 
-							curgr = gro.getGridRef(digits);
+							if (gro && gro.status && gro.status == 'OK') {
+								curgr = gro.getGridRef(digits);
+							} else {
+								return;
+							}
 
 							document.getElementById('coordoutput').innerHTML = curgr+" <small>E: "+gro.eastings+" N: "+gro.northings+"</small>";
 
