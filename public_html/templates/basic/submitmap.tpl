@@ -136,6 +136,7 @@
 			map.on('mouseout',function(event) {
 				if (savedgr && document.theForm.grid_reference.value == '')
 					document.theForm.grid_reference.value = savedgr;
+				document.theForm.grid_reference.placeholder = '';
 			});
 
 			geocoder.on('search:locationfound',function(event) {
