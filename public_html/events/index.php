@@ -74,6 +74,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$conv = new Conversions;
 	$f = 0;
+	$fitem = null;
 	foreach ($list as $i => $row) {
 		list($list[$i]['wgs84_lat'],$list[$i]['wgs84_long']) = $conv->internal_to_wgs84($row['x'],$row['y']);
 		if ($row['future']) {
