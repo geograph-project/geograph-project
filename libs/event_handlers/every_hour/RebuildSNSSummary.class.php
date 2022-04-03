@@ -43,6 +43,7 @@ class RebuildSNSSummary extends EventHandler
 
 		$db->Execute("
 		create table sns_summary_tmp (UNIQUE(email_md5,TimeStamp))
+		IGNORE
 		select md5(LOWER(TRIM(JSON_VALUE(Message,'$.mail.destination[0]')))) as email_md5, TimeStamp,
 			CONCAT_WS(', ',
 		         JSON_VALUE(Message,'$.notificationType'),
