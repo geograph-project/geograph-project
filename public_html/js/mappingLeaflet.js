@@ -412,13 +412,12 @@ function enlargeMap() {
 	function setupOSMTiles(map,mapTypeId) {
 
 		var osmAttrib='Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
-
 		baseMaps['OpenStreetMap'] = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 			 {mapLetter: 'o', minZoom: 3, maxZoom: 18, attribution: osmAttrib});
 
-		        var topoUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
-		        var topoAttribution = 'Data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Key</a>]';
-		baseMaps["OpenTopoMap"] = L.tileLayer(topoUrl, {mapLetter: 'l', minZoom: 1, maxZoom: 17, detectRetina: false, attribution: topoAttribution});
+		var topoAttribution = 'Data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map Style: &copy; (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>) <a href="https://opentopomap.org">OpenTopoMap</a> - [<a href="https://www.geograph.org/leaflet/otm-legend.php">Key</a>]';
+		baseMaps["OpenTopoMap"] = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+			{mapLetter: 'l', minZoom: 1, maxZoom: 17, detectRetina: false, attribution: topoAttribution});
 
 /*
 		//baseMaps['OSM Cycle'] = new L.TileLayer('https://tile.thunderforest.com/cycle/{z}/{x}/{y}{r}.png?apikey=42a8aaad46fa4fd784104f2870221993',
@@ -432,12 +431,18 @@ function enlargeMap() {
 			{mapLetter: 'h', maxZoom: 18, attribution: 'Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>',
 				accessToken: 'pk.eyJ1IjoiZ2VvZ3JhcGgiLCJhIjoiY2lteXI3cmlpMDBmenY5bTF5dHFqMnh0NiJ9.sPXF2s1niWNNEfqGjs2HGw'});
 
-		baseMaps['Historic OS - GB 1920s'] = new L.TileLayer('https://nls-0.tileserver.com/nls/{z}/{x}/{y}.jpg',
-		        {mapLetter: 'n', minZoom: 1, maxZoom:18 , attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
+		var nlsAttrib = "\u003ca href=\"http://maps.nls.uk/projects/subscription-api/\"\u003eNational Library of Scotland\u003c/a\u003e";
+		baseMaps['Historic OS - GB 1920s'] = new L.TileLayer('https://api.maptiler.com/tiles/uk-osgb1919/{z}/{x}/{y}.jpg?key=RJOABq94aMWBy2AuidnK',
+		        {mapLetter: 'n', minZoom: 1, maxZoom:14 , attribution: nlsAttrib, crossOrigin: true,
 				bounds: [[49.6, -12], [61.7, 3]] });
 
+		//note this layer is used with specific permission of NLS, need to ask before using it in other sites
 		baseMaps['Historic OS - Ireland'] = new L.TileLayer('https://geo.nls.uk/maps/ireland/gsgs4136/{z}/{x}/{y}.png',
 		        {mapLetter: 'i', tms: true, minZoom: 5, maxZoom: 15, attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
+				bounds: [[51.371780, -10.810546], [55.422779, -5.262451]] });
+
+		baseMaps['Bartholomew Ireland 1940s'] = new L.TileLayer('https://api.maptiler.com/tiles/uk-baire250k1940/{z}/{x}/{y}.png?key=RJOABq94aMWBy2AuidnK',
+		        {minZoom: 5, maxZoom:12 , attribution: nlsAttrib, crossOrigin: true,
 				bounds: [[51.371780, -10.810546], [55.422779, -5.262451]] });
 
 

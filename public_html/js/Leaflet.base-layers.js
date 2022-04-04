@@ -241,12 +241,20 @@ if (window.OSAPIKey) {
 
 	////////////////////////////////////////////////
 
-baseMaps['Historic OS - GB 1920s'] = L.tileLayer('https://nls-0.tileserver.com/nls/{z}/{x}/{y}.jpg',
-                        {mapLetter: 'n', minZoom: 1, maxZoom:18 , attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
+	var nlsAttrib = "\u003ca href=\"http://maps.nls.uk/projects/subscription-api/\"\u003eNational Library of Scotland\u003c/a\u003e";
+
+	//get your own key at https://cloud.maptiler.com/tiles/
+baseMaps['Historic OS - GB 1920s'] = L.tileLayer('https://api.maptiler.com/tiles/uk-osgb1919/{z}/{x}/{y}.jpg?key=RJOABq94aMWBy2AuidnK',
+                        {mapLetter: 'n', minZoom: 1, maxZoom:14 , attribution: nlsAttrib, crossOrigin: true,
                                 bounds: [[49.6, -9], [61.7, 3]] });
 
+	//note this layer is used with specific permission of NLS, need to ask before using it in other sites
 baseMaps['Historic OS - Ireland'] = L.tileLayer('https://geo.nls.uk/maps/ireland/gsgs4136/{z}/{x}/{y}.png',
                         {mapLetter: 'i', tms: true, minZoom: 5, maxZoom: 15, attribution: 'Provided by <a href="https://geo.nls.uk/">NLS Geo</a>',
+                                bounds: [[51.371780, -10.810546], [55.422779, -5.262451]] });
+
+baseMaps['Bartholomew Ireland 1940s'] = new L.TileLayer('https://api.maptiler.com/tiles/uk-baire250k1940/{z}/{x}/{y}.png?key=RJOABq94aMWBy2AuidnK',
+                        {minZoom: 5, maxZoom:12 , attribution: nlsAttrib, crossOrigin: true,
                                 bounds: [[51.371780, -10.810546], [55.422779, -5.262451]] });
 
 	////////////////////////////////////////////////

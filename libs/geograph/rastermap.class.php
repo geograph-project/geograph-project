@@ -964,13 +964,6 @@ class RasterMap
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
 
-				if ($this->reference_index == 1) {
-					//$p1 .= "<script type=\"text/javascript\" src=\"http://nls.tileserver.com/api.js\"></script>";
-					$p1 .= "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/js/nls.tileserver.com-api.js")."\"></script>";
-
-					$block .= " setupNLSTiles(map); \n";
-				}
-
 				$block .= '
 				var panorama = map.getStreetView();
 				google.maps.event.addListener(panorama, "position_changed", function() {
