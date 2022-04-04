@@ -322,9 +322,6 @@ var mapTypeIds;
 	function firstLetterToType(newtype) {
 		mapTypeIds = [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN];
 
-                if (typeof NLSTileUrlOS == 'function') {
-	                mapTypeIds.push("nls");
-                }
                 mapTypeIds.push("osm");
                 mapTypeIds.push("otm");
                 mapTypeIds.push("cm");
