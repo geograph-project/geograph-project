@@ -41,7 +41,6 @@ $REVISIONS['/js/mappingLeaflet.css']=34987369;
 $REVISIONS['/js/mappingOS.js']=8455;
 $REVISIONS['/js/mootools-1.2-core.js']=4953;
 $REVISIONS['/js/mootools-1.2-more.js']=4953;
-$REVISIONS['/js/nls.tileserver.com-api.js']=8575;
 $REVISIONS['/js/preview.js']=8541;
 $REVISIONS['/js/preview2.js']=8536;
 $REVISIONS['/js/puploader.js']=8455;
