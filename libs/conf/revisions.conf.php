@@ -36,7 +36,7 @@ $REVISIONS['/js/lazynew.js']=8536;
 $REVISIONS['/js/leaflet-bing-layer.min.js']=8861;
 $REVISIONS['/js/links.js']=50453912;
 $REVISIONS['/js/mappingG3.js']=19901317;
-$REVISIONS['/js/mappingLeaflet.js']=86295566;
+$REVISIONS['/js/mappingLeaflet.js']=51654326;
 $REVISIONS['/js/mappingLeaflet.css']=34987369;
 $REVISIONS['/js/mappingOS.js']=8455;
 $REVISIONS['/js/mootools-1.2-core.js']=4953;
@@ -96,4 +96,5 @@ $REVISIONS['/templates/ireland/css/basic.css']=53999790;
 $REVISIONS['/templates/new/css/content.css']=24878839;
 $REVISIONS['/templates/new2/css/content.css']=24878839;
 $REVISIONS['/templates/r/css/content.css']=24878839;
+$REVISIONS['/js/jquery.storage.js']=111;
 ?>
