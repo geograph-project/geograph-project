@@ -10,5 +10,5 @@ $CONF['template']='ireland';
 
 $CONF['google_maps_api_key'] = 'ABQIAAAAw3BrxANqPQrDF3i-BIABYxTmuuy-uNtb-hPxfvT1_u5ELsEdTxSMBQk-NOk1ARewPPP_76QqjP3omw';
 
-$CONF['raster_service']='OS50k,NPE,Google,Grid'; #Google
+$CONF['raster_service']='Leaflet,Google,Grid';
 
