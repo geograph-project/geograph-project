@@ -23,10 +23,9 @@
 
 require_once('geograph/global.inc.php');
 
-$seconds = 3600;
+$seconds = 3600*24*60;
 
-//init_session();
-init_session_or_cache($seconds, 900); //cache publically, and privately
+customExpiresHeader($seconds,true);
 
 customGZipHandlerStart();
 
