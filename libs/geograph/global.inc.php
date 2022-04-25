@@ -821,7 +821,7 @@ $str[] = "
         	$str[] = '<div id="snowFlakeContainer"><p class="snowflake">*</p></div><style>.snowflake {z-index:100000;position: fixed;color: #FFFFFF;}</style><script src="http://kirupa.googlecode.com/svn/trunk/snow.js"></script>';
 	}
 */
-	
+
 	if ($CONF['template']!='charcoal' && $CONF['template']!='archive') { //this is mainly to exclude schools!
 
 	        //if (isset($_GET['links']))
@@ -833,6 +833,19 @@ $str[] = "
 	        }
 	}
 
+
+	/* if (strpos($_SERVER["REQUEST_URI"],'/article/') === 0 && strpos($_SERVER["REQUEST_URI"],'.php') === FALSE && $GLOBALS['template'] != 'article_article2.tpl') {
+		$_GET['ads'] = 1;
+	} else */
+	if (strpos($_SERVER["REQUEST_URI"],'/blog/') === 0 && strpos($_SERVER["REQUEST_URI"],'.php') === FALSE) {
+		$_GET['ads'] = 1;
+	}
+
+	if (!empty($_GET['ads'])) {
+		$str[] = '<script type="text/javascript"> var infolinks_pid = 3361577; var infolinks_wsid = 0; </script> <script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>';
+	}
+
+
 	global $USER;
 	if (!empty($USER) && $USER->user_id == 3)
         	$str[] = "<div style=\"position:absolute;top:40px;left:300px;width:250px;color:yellow\">Host: ".`hostname`."</div>";
@@ -843,8 +856,6 @@ $str[] = "
         else
                 return '';
 
-
-	
 //	if(extension_loaded('newrelic')) {
 //		return newrelic_get_browser_timing_footer();
 //	}
