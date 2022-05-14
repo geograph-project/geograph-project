@@ -43,6 +43,17 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
         	exit;
 	}
 
+       if (@$_SERVER['HTTP_X_FORWARDED_FOR'] == "122.142.198.166" || @$_SERVER['HTTP_X_FORWARDED_FOR'] == "5.181.40.115") {
+                header("HTTP/1.0 403 Forbidden");
+               exit;
+       }
+
+//HTTP_CONTENT_TYPE: multipart/form-data; boundary=-----AcunetixBoundary_PYAHFBXIFU
+       if (!empty($_SERVER['HTTP_CONTENT_TYPE']) && strpos($_SERVER['HTTP_CONTENT_TYPE'],'AcunetixBoundary_')) {
+               header("HTTP/1.0 503 Service Unavailable");
+                exit;
+       }
+
 	//temporally fix, the beta domain was accidently indexed by Google!
 	if (!empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],'https://www.google.') === 0 
 	&& strpos($_SERVER['HTTP_HOST'],'beta') !== FALSE ) {
