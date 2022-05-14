@@ -7,9 +7,6 @@ require "./_scripts.inc.php";
 
 chdir($_SERVER['DOCUMENT_ROOT']); //even as a script this is updated!
 
-if ($param['execute'] && trim(`whoami`) != 'www-data') {
-	die("ERROR: Needs to be run as www-data!\n");
-}
 
 if ($param['execute']) $db = GeographDatabaseConnection(false);
 $db_read = GeographDatabaseConnection(true);
@@ -29,7 +26,10 @@ if (!$filesystem->file_exists($_SERVER['DOCUMENT_ROOT']."/photos/error.jpg")) {
 
 	$image = new GridImage($param['id']);
 
-	if ($maxd < 640) {
+	if ($maxd < 100) {
+		$path = $image->getSquareThumb($maxd, true);
+
+	} elseif ($maxd < 640) {
 
 		$CONF['template']='archive' ; //this actully make it avoid checking existance!
 
@@ -97,7 +97,10 @@ if (!$filesystem->file_exists($_SERVER['DOCUMENT_ROOT']."/photos/error.jpg")) {
 sleep(3); //not ideal, but try to deal with S3 eventual consistency. No longer using s3fs, that makes sure updates are visible right after being done (using its own cache!)
 $image = new GridImage($param['id']);
 
-			if ($maxd < 640) {
+			if ($maxd < 100) {
+				$path = $image->getSquareThumb($maxd, true);
+
+			} elseif ($maxd < 640) {
 				$resized = $image->getThumbnail($maxd,$maxd==216?160:$maxd, 2);
 				$path = $resized['url'];
 			} else {

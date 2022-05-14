@@ -1466,7 +1466,7 @@ split_timer('gridimage','getSquareThumbnail'.(isset($srcw)?'-create':''),$thumbp
 	/**
 	* returns a GD image instance for a square thumbnail of the image
 	*/
-	function getSquareThumb($size)
+	function getSquareThumb($size, $return_path_only = false)
 	{
 
 split_timer('gridimage'); //starts the timer
@@ -1484,6 +1484,10 @@ split_timer('gridimage'); //starts the timer
 			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}.gd";
 		}
+
+		if ($return_path_only)
+			return $thumbpath;
+
 
 		$filesystem = GeographFileSystem();
 

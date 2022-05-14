@@ -5,6 +5,7 @@ if (empty($_GET['id'])) {
 }
 
 require_once('geograph/global.inc.php');
+init_session();
 
 //to set the image rotation
 print '<link rel="stylesheet" type="text/css" title="Monitor" href="'.smarty_modifier_revision("/templates/basic/css/basic.css").'" media="screen" />';
@@ -75,10 +76,18 @@ if (!empty($_POST['recreate']) || !empty($_POST['delete'])) {
 		$_POST['delete'] = $_POST['recreate'];
 	}
 
+	//for the moment, only support resized thumbnails, so CANT delete the 'full' or 'original' images
 	if (preg_match('/(\d+)x(\d+)/',$_POST['delete'],$m)) {
 
 		//form our own path, rather than relying on the provided one!
-		$path = $image->_getOriginalpath(false, false, "_{$m[0]}");
+		if ($m[1] == 40 || $m[1] == 80) {
+			//its a path to a .gd file!
+			$path = $image->getSquareThumb($m[1], true);
+		// } elseif (XX - sqyare-thumb)
+		} else {
+			//this can only return .jpg paths
+			$path = $image->_getOriginalpath(false, false, "_{$m[0]}");
+		}
 
 		if ($m[2] == 640) {
 			//for 640s its very important that they recrated, so emai me so can cehck these!
@@ -96,7 +105,8 @@ if (!empty($_POST['recreate']) || !empty($_POST['delete'])) {
 			$seconds +=20;
 			$extra .= "&t=".time();
 
-			$_POST['clearcache'] = $m[0]; //may as well clear the cache too!
+			if (strpos($url,'.jpg'))
+				$_POST['clearcache'] = $m[0]; //may as well clear the cache too!
         	} else {
 	                print "DEBUG: $path not found\n";
         	}
@@ -216,19 +226,18 @@ foreach ($sizes as $size) {
 
 	if ($size == 40) {
 		//$url = http://staging.t0.geograph.org.uk/tile/tiny.php?id=197573
-		$url = "{$CONF['TILE_HOST']}/tile/tiny.php?id={$image->gridimage_id}&hash=".$image->_getAntiLeechHash();
+		$url = "{$CONF['TILE_HOST']}/tile/tiny.php?id={$image->gridimage_id}&hash=".$image->_getAntiLeechHash().$postfix;
                 print "<td><img src=$url></td>";
 		print "<th>n/a";
 		print "<th>n/a";
 		//dont support $html for now
 	} elseif ($size == 80) {
 		//$url = http://staging.t0.geograph.org.uk/tile/tiny.php?id=197573
-		$url = "{$CONF['TILE_HOST']}/tile/tiny.php?id={$image->gridimage_id}&hash=".$image->_getAntiLeechHash()."&large=1";
+		$url = "{$CONF['TILE_HOST']}/tile/tiny.php?id={$image->gridimage_id}&hash=".$image->_getAntiLeechHash()."&large=1$postfix";
                 print "<td><img src=$url></td>";
 		print "<th>n/a";
 		print "<th>n/a";
 		//dont support $html for now
-
 	} elseif ($size == 60) {
                 print "<td>".($html = $image->getSquareThumbnail(60,60))."</td>";
 		print "<th>n/a";
@@ -269,7 +278,7 @@ foreach ($sizes as $size) {
 			print "<td><img src=$url $style>$stylefix</td>";
 
 			//download
-			$url = "/reuse.php?id={$image->gridimage_id}&amp;download=".$image->_getAntiLeechHash();
+			$url = "{$CONF['CONTENT_HOST']}/reuse.php?id={$image->gridimage_id}&amp;download=".$image->_getAntiLeechHash();
 			print "<td><img src=$url $style>$stylefix</td>";
 		} else {
 			print "<th>n/a";
@@ -298,7 +307,7 @@ foreach ($sizes as $size) {
 				$html = $image->_getOriginalpath(false, true, "_{$size}x{$size}");
 
 			//download
-			$url = "/reuse.php?id={$image->gridimage_id}&amp;download=".$image->_getAntiLeechHash()."&amp;size={$size}".$postfix;
+			$url = "{$CONF['CONTENT_HOST']}/reuse.php?id={$image->gridimage_id}&amp;download=".$image->_getAntiLeechHash()."&amp;size={$size}".$postfix;
 			print "<td><img src=$url $style>$stylefix</td>";
 		} else {
 			print "<th>n/a";
@@ -321,7 +330,7 @@ foreach ($sizes as $size) {
 			print "<td><img src=$url $style>$stylefix</td>";
 
 			//download
-			$url = "/reuse.php?id={$image->gridimage_id}&amp;download=".$image->_getAntiLeechHash()."&amp;size=original".$postfix;
+			$url = "{$CONF['CONTENT_HOST']}/reuse.php?id={$image->gridimage_id}&amp;download=".$image->_getAntiLeechHash()."&amp;size=original".$postfix;
 			print "<td><img src=$url $style>$stylefix</td>";
 		} else {
                         print "<th>n/a";
@@ -332,7 +341,6 @@ foreach ($sizes as $size) {
 		print "huh?";
 	}
 	print "<th>";
-
 	if (preg_match('/(https?:[\w\/\.]+?_\w+\.jpg)/',$html,$m)) {
 		$url = $m[1];
 		if (strpos(basename($url),'error') !== FALSE) {
@@ -353,7 +361,7 @@ foreach ($sizes as $size) {
 			} elseif (!empty($stat[10])) { //use time, not filesize
 				if ($size == 640) //need to be more careful NOT to delete the 640 image as it wont get recreated automatically
 					print "<button type=submit name=recreate value=\"$path\">Recreate Thumbnail</button>";
-				else
+				elseif (preg_match('/(\d+)x(\d+)/',$url,$m))
 					print "<button type=submit name=delete value=\"$path\">Delete Thumbnail</button>";
 				print "<button onclick=reportForm()>Report Currupted</button>";
 			} else {
@@ -362,8 +370,12 @@ foreach ($sizes as $size) {
 		} else {
 			print "<button onclick=reportForm()>Report Missing/Currupted</button>";
 		}
-	} else {
+	} elseif ($size == 40 || $size == 80) {
+		$path = "{$size}x{$size}.gd";
+		print "<button type=submit name=delete value=\"$path\">Delete Thumbnail</button>";
 		print "<button onclick=reportForm()>Report Missing/Currupted</button>";
+	} else {
+		print "<button onclick=reportForm()>Report Missing / Currupted</button>";
 	}
 
 	print "</tr>\n";
