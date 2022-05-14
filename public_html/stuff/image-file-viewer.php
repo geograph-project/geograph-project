@@ -94,7 +94,7 @@ if (!empty($_POST['recreate']) || !empty($_POST['delete'])) {
 			$con = "$path\n";
 			$con .= print_r($_GET,true);
 			$con .= print_r($_POST,true);
-			 mail('geograph@barryhunter.co.uk','[Geograph] FIXING 640 '.date('r'),$con);
+			debug_message('[Geograph] FIXING 640 '.date('r'),$con);
 		}
 
 

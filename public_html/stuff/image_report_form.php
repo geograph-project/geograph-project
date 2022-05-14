@@ -261,7 +261,7 @@ if (!empty($_GET['id'])) {
                 $con .= "Host: ".`hostname`."\n\n";
                 $con .= print_r($r,true);
 
-		mail('geograph@barryhunter.co.uk','[Geograph] Failed Image Report '.date('r'),$con);
+		debug_message('[Geograph] Failed Image Report '.date('r'),$con);
 
 	} else if (!empty($r['status']) && empty($_POST)) { //dont show this when submitting a report either!
 
