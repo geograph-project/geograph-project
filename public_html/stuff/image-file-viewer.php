@@ -83,6 +83,7 @@ if (!empty($_POST['recreate']) || !empty($_POST['delete'])) {
 		if ($m[1] == 40 || $m[1] == 80) {
 			//its a path to a .gd file!
 			$path = $image->getSquareThumb($m[1], true);
+			@$_GET['v']+=1;
 		// } elseif (XX - sqyare-thumb)
 		} else {
 			//this can only return .jpg paths
