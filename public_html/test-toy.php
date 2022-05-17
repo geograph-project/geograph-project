@@ -86,9 +86,28 @@ $filesystem = GeographFileSystem();
 ###################################
 
 if ($filesystem->hasAuth()) {
-	outputRow('Photo Dir Writable?', 'pass', 'Seems setup for writing to S3, assume it functional, not tested here');
+	outputRow('Photo Dir Writable?', 'pass', 'Seems setup for writing to S3, assume writable');
 } else
-	outputRow('Photo Dir Writable?', is_writable("photos/")?'pass':'error');
+	outputRow('Photo Dir Writable?', is_writable("geophotos/")?'pass':'error','tested the local filesystem folder');
+
+//todo, maybe support this even if not container (eg running on ec2 'bare')
+if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
+	$iamrole = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/");
+	if (!empty($iamrole)) {
+		$json = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/$iamrole");
+
+		$decode = json_decode($json,true);
+
+		if (empty($json) || empty($decode) || empty($decode['AccessKeyId'])) {
+			outputRow('IAM-Role', 'fail', 'No Key/token Retrieved');
+		} else {
+			outputRow('IAM-Role', 'pass', 'Temporary Access-Key Obtained');
+		}
+	} else {
+		//only a notice as MAYBE not in use
+		outputRow('IAM-Role', 'notice', 'No IAM-Role obtained');
+	}
+}
 
 outputRow('Upload Dir Writable?', is_writable($CONF['photo_upload_dir'])?'pass':'error');
 

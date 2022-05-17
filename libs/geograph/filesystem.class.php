@@ -57,17 +57,32 @@ class FileSystem extends S3 {
 
 	function __construct() {
 		global $CONF;
+		global $memcache;
 
 		//fetch folder first to find the only creds available?
 		$iamrole = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/");
 
-		if (empty($iamrole))
-			return; //no more construction needed, the class can run without S3.
+		if (empty($iamrole)) {
+			$iamrole = $memcache->name_get('iam','local-role');
+			if (empty($iamrole))
+				return; //no more construction needed, the class can run without S3.
+		}
 
 		$json = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/$iamrole");
 
 		// assume it never fails for now! tofix (use memcache/apc??)
 		$decode = json_decode($json,true);
+
+		//always fetch live, only use memcache version if fetching failed
+		if (empty($json) || empty($decode) || empty($decode['AccessKeyId'])) {
+			$json = $memcache->name_get('iam','security-credentials');
+			$decode = json_decode($json,true);
+		} else {
+			//todo, could perhaps use the Expiration directly from the responce?
+			$memcache->name_set('iam','local-role',$iamrole,false,30000);
+			$memcache->name_set('iam','security-credentials',$json,false,300);
+		}
+
 
 //todo, get buckets from $CONF ?
 if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
