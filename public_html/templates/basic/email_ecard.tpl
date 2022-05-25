@@ -15,8 +15,8 @@ Content-Transfer-Encoding: quoted-printable
 
 {$self_host}/photo/{$image->gridimage_id}
 
-{$image->title|escape:'html'}
-{$image->comment|escape:'html'}
+{$image->title|escape:'html'|quotedprintable}
+{$image->comment|escape:'html'|quotedprintable}
 
 View Online at {$self_host}/photo/{$image->gridimage_id}
 --------------------------------

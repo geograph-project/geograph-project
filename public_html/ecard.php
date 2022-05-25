@@ -83,6 +83,13 @@ if (isset($_REQUEST['image']))
 	$smarty->assign_by_ref('image', $image);
 }
 
+function smarty_modifier_quotedprintable($input) {
+	global $mail;
+	return $mail->encodeQP($input);
+}
+$smarty->register_modifier("quotedprintable", "smarty_modifier_quotedprintable");
+
+
 //try and send?
 if (!$throttle && isset($_POST['msg']))
 {
@@ -126,37 +133,32 @@ if (!$throttle && isset($_POST['msg']))
 
 ############################################
 
-	require_once "3rdparty/class.phpmailer.php";
-	require_once "3rdparty/class.smtp.php";
+		require_once "3rdparty/class.phpmailer.php";
+		require_once "3rdparty/class.smtp.php";
 
-	$mail = new PHPMailer;
+		$mail = new PHPMailer;
 
-	#########################
+		#########################
 
-	$mail->XMailer = 'x'; //used to SKIP the header
+		$mail->XMailer = 'x'; //used to SKIP the header
 
-	if (!empty($CONF['smtp_host'])) {
-		$mail->isSMTP();
-		$mail->Host = $CONF['smtp_host'];
-		if (!empty($CONF['smtp_user'])) {
-			$mail->SMTPAuth = true;
-			$mail->Username = $CONF['smtp_user'];
-			$mail->Password = $CONF['smtp_pass'];
+		if (!empty($CONF['smtp_host'])) {
+			$mail->isSMTP();
+			$mail->Host = $CONF['smtp_host'];
+			if (!empty($CONF['smtp_user'])) {
+				$mail->SMTPAuth = true;
+				$mail->Username = $CONF['smtp_user'];
+				$mail->Password = $CONF['smtp_pass'];
+			}
+			if ($CONF['smtp_port']> 25)
+				$mail->SMTPSecure = 'tls';                    // Enable TLS encryption, `ssl` also accepted
+			$mail->Port = $CONF['smtp_port'];                     // TCP port to connect to
 		}
-		if ($CONF['smtp_port']> 25)
-			$mail->SMTPSecure = 'tls';                    // Enable TLS encryption, `ssl` also accepted
-		$mail->Port = $CONF['smtp_port'];                     // TCP port to connect to
-	}
 
 ############################################
 
 		$smarty->assign_by_ref('htmlmsg', nl2br($msg));
 
-		function smarty_modifier_quotedprintable($input) {
-			global $mail;
-			return $mail->encodeQP($input);
-		}
-		$smarty->register_modifier("quotedprintable", "smarty_modifier_quotedprintable");
 
 		$body=$smarty->fetch('email_ecard.tpl');
 		$subject="[{$_SERVER['HTTP_HOST']}] $from_name is sending you an e-Card";
@@ -177,7 +179,7 @@ if (!$throttle && isset($_POST['msg']))
 			print "</FORM>";
 
 			print "<h3 align=center><font face=\"Georgia\">Subject: $subject</font></h3>";
-			$html = preg_replace("/=[\n\r]+/s","\n",$matches[1][0]);
+			$html = preg_replace("/=[\n\r]+/s","",$matches[1][0]);
 			$html = preg_replace_callback("/=(\w{2})/", function($m) {
 				return chr(hexdec($m[1]));
 			},$html);
