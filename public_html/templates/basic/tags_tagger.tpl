@@ -290,10 +290,12 @@ function addTag(text,suggestion,clearText) {
 		$('#tags i').remove();
 	}
 
+	//'trim' the tag first, so dont get the message just for a trailing space
+	text = text.replace(/(^\s+|\s+$)/g, "");
 
 	newtext = cleanTag(text);
 	if (newtext != text) {
-		if (!confirm("The tag has been changed to ["+newtext+"], due to unsupported charactors. Press OK to continue with changed tag, or Cancel to change the tag yourself, will need to press the Add button again")) {
+		if (!confirm("The tag has been changed to ["+newtext+"], due to unsupported characters. Press OK to continue with changed tag, or Cancel to change the tag yourself, will need to press the Add button again.")) {
 			failedTags.push(newtext);
 			return;
 		}
