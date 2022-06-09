@@ -558,7 +558,7 @@ if (!empty($final) && empty($words) && count($final) != @count($rows['single']))
 		$bits[] = '<a href="/browser/#!/q='.$qu.'" style=color:yellow>in the Browser</a>';
 
 	if (!preg_match('/\b(decade|monthname|user|contexts|subjects|types|buckets|groups|terms|snippets|wikis|distance|direction|format|place|county|country|hash|larger|landcover):.+/',$_GET['q'])) //sample8 fields!, not in old search
-		$bits[] = '<a href="/search.php?do=1&searchtext='.(empty($words)?'':'~').$qu.'" style=color:yellow>in the standard search</a>';
+		$bits[] = '<a href="/search.php?do=1&amp;searchtext='.(empty($words)?'':'~').$qu.'&amp;sugg_off=1" style=color:yellow>in the standard search</a>';
 
 	if (!empty($bits)) {
 		print 'Explore these images more: <b>'.implode('</b> or <b>',$bits)."</b>";

@@ -72,6 +72,8 @@ class SearchEngineBuilder extends SearchEngine
                                 $extra .= "&BBOX=".$_GET['BBOX'];
 			if (!empty($_GET['format']))
                                 $extra .= "&format=".$_GET['format'];
+			if (!empty($_GET['sugg_off']))
+                                $extra .= "&sugg_off=1";
                         header("Location:{$CONF['SELF_HOST']}/{$this->page}?i={$i}$extra");
                         $extra = str_replace('&','&amp;',$extra);
                         print "<a href=\"{$CONF['SELF_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";
@@ -151,6 +153,7 @@ split_timer('search'); //starts the timer
 			}
 		}
 
+	//look like a postcode
 		if (preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$qlocation,$pc)
 		&& !in_array(strtoupper($pc[1]),array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 			//these prefixs are not postcodes but are valid gridsquares
@@ -174,6 +177,8 @@ split_timer('search'); //starts the timer
 					$this->errormsg .= ", or use just the outcode [ {$pc[1]}{$pc[2]} ]";
 				}
 			}
+
+	//look like a Grid Reference
 		} elseif (preg_match("/^[^:]*\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$qlocation,$gr)) {
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
@@ -213,6 +218,8 @@ split_timer('search'); //starts the timer
 			} else {
 				$this->errormsg = $square->errormsg;
 			}
+
+	//looks like lat/long
 		} elseif (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll)) {
 			require_once('geograph/conversions.class.php');
 			require_once('geograph/gridsquare.class.php');
