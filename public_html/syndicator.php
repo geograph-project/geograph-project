@@ -135,6 +135,11 @@ if (isset($_GET['q']) || !empty($_GET['location'])) {
 		$_GET['location'] = '(anywhere)';
 	}
 	if (!empty($_GET['location'])) {
+		if (preg_match('/^-+\d+$/',$_GET['location'])) {
+			header('HTTP/1.0 403 Forbidden');
+			print '{error:"invalid location"}';
+			exit;
+		}
 		if (!empty($_GET['text'])) {
 			$q=trim($_GET['text']).' near '.trim($_GET['location']);
 		} elseif (!empty($_GET['q'])) {
