@@ -75,6 +75,7 @@
 
 		{if $rotation_warning}
 			<div id="rotation_warning" style="background-color:yellow;border:2px solid red;margin:10px;padding:10px">
+				<div style="float:left;font-size:3em;color:red;padding-right:10px">&#9888;</div>
 				Warning: <b>This image has EXIF 'Orientation' flag set.</b> 
 				It's highly recommended to use the rotation function to reorientate the image, this resets the flag which prevents potential display issues, as not all Browsers etc will honor the flag.<br><br>
 				So please rotate the image, even if it actully displays <i>correctly</i> in the preview! Rotate it sideways, and then <i>back</i> until displays correctly again.<br>Your browser might be ignoring the flag which is why the preview appears ok to you!<br><br>
