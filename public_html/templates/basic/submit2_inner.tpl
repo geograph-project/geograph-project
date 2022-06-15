@@ -161,47 +161,39 @@ function check_jpeg(ele) {
 }
 {/literal}
 {dynamic}
-{if $success}
 	{literal}
-		AttachEvent(window,'load',parentUpdateVariables,false);
-		AttachEvent(window,'load',function() { window.parent.doneStep({/literal}{$step},{if $original_width || $rotation_warning}true{else}false{/if}{literal}) },false);
+	AttachEvent(window,'load', function() {
 	{/literal}
+{if $success}
+		window.parent.doneStep({$step},{if $original_width || $rotation_warning}true{else}false{/if});
+
 	{if $grid_reference}
-		{literal}
-			AttachEvent(window,'load',function() { window.parent.doneStep(9) },false);
-			AttachEvent(window,'load',function() { window.parent.clicker(2,1) },false);
-		{/literal}
-	{else}
-		{literal}
-			//AttachEvent(window,'load',function() { window.parent.clicker(2,1) },false);
-		{/literal}
+		window.parent.doneStep(9);
+		window.parent.clicker(2,1);
 	{/if}
+
+        {if $original_width || $rotation_warning}
+		//click back on step 1, on tabs it moves focus back to 1; on non-tabs, it just makes sure 1 stays open
+                window.parent.clicker(1,1);
+	{/if}
+
 	{if $imagetaken}
-		{literal}
-		AttachEvent(window,'load',function() { window.parent.setTakenDate({/literal}'{$imagetaken}'{literal}) },false);
-		{/literal}
+		window.parent.setTakenDate('{$imagetaken}');
 	{/if}
 	{if $preview_url}
-		{literal}
-		AttachEvent(window,'load',function() { window.parent.showPreview({/literal}'{$preview_url}',{$preview_width},{$preview_height},'{$filename|escape:'javascript'}'{literal}) },false);
-		{/literal}
+		window.parent.showPreview('{$preview_url}',{$preview_width},{$preview_height},'{$filename|escape:'javascript'}');
 	{/if}
 {/if}
+		setTimeout("setupTheForm()",100);
+
+	{if $container}
+		var FramePageHeight = document.body.offsetHeight + 10;
+		window.parent.document.getElementById('{$container|escape:'javascript'}').style.height=FramePageHeight+'px';
+	{/if}
+
 	{literal}
-		AttachEvent(window,'load',function() { setTimeout("setupTheForm()",100); },false);
+	}, false);
 	{/literal}
-
-{if $container}
-	{literal}
-
-	function resizeContainer() {
-		var FramePageHeight =  document.body.offsetHeight + 10;
-		window.parent.document.getElementById('{/literal}{$container|escape:'javascript'}{literal}').style.height=FramePageHeight+'px';
-	}
-
-	AttachEvent(window,'load',resizeContainer,false);
-	{/literal}
-{/if}
 
 </script>
 </form>
