@@ -165,6 +165,7 @@ function check_jpeg(ele) {
 	AttachEvent(window,'load', function() {
 	{/literal}
 {if $success}
+		parentUpdateVariables();
 		window.parent.doneStep({$step},{if $original_width || $rotation_warning}true{else}false{/if});
 
 	{if $grid_reference}
