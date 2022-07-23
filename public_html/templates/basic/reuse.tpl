@@ -55,6 +55,8 @@ div:target {
 <div>by <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
 
 <br style="clear:both;"/>
+    <p align=center style="width:750px;margin-left:auto;margin-right:auto;text-align:center">All photos on Geograph are Creative Commons licensed.
+    In general, as long as you credit the photographer (see below) when you use the image, you can use it for most purposes. </p>
 
 	<div class="interestBox" style="width:750px;margin-left:auto;margin-right:auto;text-align:center">
 	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img
