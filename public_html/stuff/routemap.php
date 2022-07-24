@@ -79,7 +79,7 @@ print "<p>Grid-Squares with photo(s) posted in the thread, are shown in red. Thi
 	<div style="position:absolute;top:0;left:0">
 		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
 	</div>
-	<? if ($route == 27300) { ?>
+	<? if ($route == 27300 || $route == 32922 || !empty($_GET['p'])) { ?>
 	<div style="position:absolute;top:1px;left:0">
 		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
 	</div>
