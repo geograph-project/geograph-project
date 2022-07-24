@@ -395,31 +395,17 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </div>
 
 </div>
-<div style="text-align:center;margin-top:3px" class="interestBox" id="styleLinks"></div>
+<div style="text-align:center;margin-top:3px" class="interestBox" data-nosnippet>{dynamic}
+	Background for photo viewing: <a href="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="{if $maincontentclass eq "content_photowhite"} hidelink{/if}">White</a> / <a href="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="{if $maincontentclass eq "content_photoblack"} hidelink{/if}">Black</a> / <a href="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="{if $maincontentclass eq "content_photogray"} hidelink{/if}">Grey</a>
+{/dynamic}</div>
+
 <script type="text/javascript">
-/* <![CDATA[ */
 {literal}
-function addStyleLinks() {
-{/literal}
-	document.getElementById('styleLinks').innerHTML = 'Background for photo viewing: <a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photowhite"} hidelink{/if}{/dynamic}">White</a> / <a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photoblack"} hidelink{/if}{/dynamic}">Black</a> / <a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photogray"} hidelink{/if}{/dynamic}">Grey</a>';
-{literal}
-}
- AttachEvent(window,'load',addStyleLinks,false);
-
-
-function redrawMainImage() {
-	el = document.getElementById('mainphoto');
-	el.style.display = 'none';
-	el.style.display = '';
-}
- AttachEvent(window,'load',redrawMainImage,false);
  AttachEvent(window,'load',showMarkedImages,false);
  AttachEvent(window,'load',function () {
 		collapseSnippets({/literal}{$image->snippet_count}{literal});
 	},false);
-
 {/literal}
-/* ]]> */
 </script>
 
 
