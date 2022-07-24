@@ -134,8 +134,8 @@ if (isset($_POST['submit'])) {
 
 	if (!empty($_GET['adv'])) {
 		$cols = "*";
-	} elseif ($USER->user_id == 20032) {
-		$cols = "user_id,realname,credit_realname,nickname,email,public_email,website,home_gridsquare,about_yourself,signup_date,confirmed,deceased_date,rights,role,ticket_option";
+	} elseif ($USER->hasPerm("director")) {
+		$cols = "user_id,realname,nickname,email,public_email,website,home_gridsquare,about_yourself,public_about,deceased_date,rights,role,ticket_option";
 	} else {
 		$cols = "user_id,realname,nickname,email,public_email,website,ticket_option";
 	}
