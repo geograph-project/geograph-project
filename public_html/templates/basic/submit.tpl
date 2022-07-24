@@ -84,11 +84,8 @@ geographing</a> first.</p>
 		{if $grid_reference}<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">clear</a>)<br/></small></small>{/if}
 		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
 		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or enter location above and <input type="submit" name="picnik" value="Upload via Picmonkey &gt;"/>
+		<input type="submit" name="setpos" value="Next &gt;"/>
 		</p>
-
-		<p><small>Clicking the <i>Upload via Picmonkey</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>
-		{/if}</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
@@ -111,10 +108,7 @@ geographing</a> first.</p>
 		</select>
 		<small><sup><a href="javascript:doMove2(0,1);">N</a></sup><sub><a href="javascript:doMove2(0,-1);">S</a></sub></small>
 		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="setpos2" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or select location above and <input type="submit" name="picnik" value="Upload via Picmonkey &gt;"/>
-		</p>
-
-		<p><small>Clicking the <i>Upload via Picmonkey</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>{/if}
+		<input type="submit" name="setpos2" value="Next &gt;"/>
 		</p>
 	</div>
 

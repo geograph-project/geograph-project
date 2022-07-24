@@ -23,13 +23,22 @@
 		{foreach key=name item=value from=$row name=loop}
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'">
 			 <td><b>{$name}</b> {$map.$name}</td>
-			 {if $desc.$name.values}
+			 {if $desc.$name.values && $desc.$name.multiple}
+				<td colspan=2>{foreach item=item from=$desc.$name.values name=inner}
+					<label class=nowrap><input type=checkbox name="{$name}[]" value="{$item}" {if in_array($item, $value) !== FALSE}checked{/if}>
+						{$item}</label> &nbsp;
+				{/foreach}</td>
+			 {elseif $desc.$name.values}
 			 	<td><select name="{$name}[]" {$desc.$name.multiple} value="{$value|escape:'html'}">
 			 	
 			 		{html_options options=$desc.$name.values selected=$value} 
 				
 			 	</select></td>
 			 
+			 {elseif $name == 'public_about' || $name == 'public_email'}
+				<td>
+					<input type="hidden" name="{$name}" value="0">
+					<input type="checkbox" name="{$name}" value="1" {if $value}checked{/if}>
 			 {elseif $name == 'message_sig'}
 			 	<td><textarea name="{$name}" rows="3" cols="60">{$value|escape:'html'}</textarea></td>
 			 {elseif $desc.$name.Type == 'text'}
@@ -39,7 +48,9 @@
 			 {else}
 			 	<td><input type="text" name="{$name}" value="{$value|escape:'html'}" size="{$desc.$name.size}" maxlength="{$desc.$name.maxlength}" {if $name == 'user_id'} readonly{/if}></td>
 			 {/if}
-			 <td>{$desc.$name.Type}</td>
+			{if $name != 'rights'}
+			 <td style=color:silver>{$desc.$name.Type}</td>
+			{/if}
 		  </tr>
 		{/foreach}
 		  <tr>
@@ -48,18 +59,22 @@
 		  </tr>
 	</table></form>
 
-
+{else}
+	<form method=get>
+		Enter Profile ID: <input type=number name=id size=6> (eg 1234)<br>
+		<input type=submit value=continue>
+	</form>
 {/if}	 
    
     
 {if $id && $row.rights}
 <hr>
-<h3>Reference - in particulare reference to Deceased members</h3>
+<h3>Reference - in particular reference to Deceased members</h3>
 The main fields you need to consider:
 <ul>
 <li><b>realname, nickname, website, about_yourself</b> are hopefully all clear, can be edited/cleared if need be. </li>
 
-<li>But don't leave <b>realname</b> empty - needs to contain something. Changing it changes the credit on existing images. 
+<li><big>But don't leave <b>realname</b> empty - needs to contain something. <u>Changing it changes the credit on existing images</u>.</big>
 
 <li>Sometimes a message is added to <b>about_yourself</b>, sometimes not. Other times its just emptied.
 
@@ -76,6 +91,9 @@ format, YYYY-MM-DD - but can omit the day, by using 00, eg 2013-03-00
   (but only set this to on, if the user has a nickname and/or email address still active) 
 
   <li><b>dormant</b> - set this on, which removes the 'contact the contributor' link. 
+
+  <li><b>alumni</b> - set this on, if they have helped in a offical capcity (their name will show at bottom of the 'team' page) 
+
 
   <li>... otherwise, ALL the other rights can be removed once deceased.
 

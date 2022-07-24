@@ -238,30 +238,6 @@ if (isset($_POST['gridsquare']))
 
 		$square->rememberInSession();
 
-		if (isset($_POST['picnik'])) {
-			$q = array();
-			$q['_apikey'] = $CONF['picnik_api_key'];
-			$q['_page'] = '/in/upload';
-			$q['_export'] = "{$CONF['SELF_HOST']}/submit.php";
-			$q['_export_field'] = 'jpeg_url';
-			$q['_export_agent'] = 'browser';
-			$q['_export_method'] = 'POST';
-			$q['_userid'] = md5($USER->user_id.$CONF['register_confirmation_secret']);
-			$q['_export_title'] = 'Send to Geograph';
-			$q['_host_name'] = 'Geograph';
-			$q['setpos'] = 1;
-			$q['grid_reference'] = str_replace(' ','',$grid_reference);
-			$q['gridsquare'] = $square->gridsquare;
-			if (isset($_POST['photographer_gridref'])) {
-				$q['photographer_gridref'] = str_replace(' ','',$_POST['photographer_gridref']);
-			}
-			if (isset($_POST['view_direction']) && strlen($_POST['view_direction'])) {
-				$q['view_direction'] = $_POST['view_direction'];
-			}
-			header('Location: http://www.picmonkey.com/service?'.http_build_query($q));
-			exit;
-		}
-
 		//preserve inputs in smarty
 		$smarty->assign('gridsquare', $square->gridsquare);
 		$smarty->assign('eastings', $square->eastings);
@@ -859,8 +835,6 @@ else
 		$USER->getStats();
 	}
 }
-
-$smarty->assign('picnik_api_key', $CONF['picnik_api_key']);
 
 if (strlen($uploadmanager->errormsg))
 {

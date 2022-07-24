@@ -1,5 +1,5 @@
 {include file="_std_begin.tpl"}
-
+<!--INFOLINKS_OFF-->
 {if $image}
 <div style="float:right; position:relative; width:5em; height:4em;"></div>
 <div style="float:right; position:relative; width:30px; height:33px; margin-right:2px;"></div>
@@ -481,5 +481,5 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 the image was rejected after submission - please <a title="Contact Us" href="/contact.php">contact us</a>
 if you have queries</p>
 {/if}
-
+<!--INFOLINKS_ON-->
 {include file="_std_end.tpl"}

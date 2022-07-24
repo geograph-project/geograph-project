@@ -1454,6 +1454,8 @@ class GeographUser
 				$smarty->assign('errors', $errors);
 				$smarty->assign_by_ref('_post', $_POST);
 				$smarty->display('login.tpl');
+
+				$this->is_login_form = false;//need to reset, as user is peristed in sessioN!
 				exit;
 			}
 		}
