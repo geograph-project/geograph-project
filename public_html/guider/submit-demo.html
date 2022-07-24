@@ -71,12 +71,9 @@ name="grid_reference" value="" size="14"/><small class="navButtons"><small><a hr
 href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a 
 href="javascript:doMove('grid_reference',1,0);">E</a></small></small> 
 		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="setpos" id="setpos" value="Next &gt;"/> <hr/><br/>or enter location above and <input type="submit" name="picnik" id="picnik" value="Upload via Picnik &gt;"/> 
+		<input type="submit" name="setpos" id="setpos" value="Next &gt;"/>
 		</p> 
  
-		<p><small>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically 
-transferring it to Geograph.</small> 
-		</p> 
 	</div> 
  
 	<div style="position:relative;display:none" class="interestBox" id="div2"> 
@@ -374,11 +371,8 @@ transferring it to Geograph.</small>
 		</select> 
 		<small><sup><a href="javascript:doMove2(0,1);">N</a></sup><sub><a href="javascript:doMove2(0,-1);">S</a></sub></small> 
 		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="setpos2" value="Next &gt;"/> <hr/><br/>or select location above and <input type="submit" name="picnik" value="Upload via Picnik &gt;"/> 
+		<input type="submit" name="setpos2" value="Next &gt;"/>
 		</p> 
- 
-		<p><small>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically 
-transferring it to Geograph.</small>		</p> 
 	</div> 
  
 	<div style="position:relative;display:none" class="interestBox" id="div3"> 
@@ -615,7 +609,7 @@ height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>
       buttons: [{name: "Continue", onclick: guiders.next},{name: "I dont know the grid-reference",onclick: locateOnMap}],
       description: "Enter the grid-reference of the square you wish to submit an image for in this box, eg TQ7064. Once you have done so, click the 'Continue' button",
       id: "third",
-      next: "fourth",
+      next: "fifth",
       position: 3,
       title: "Enter the Grid Reference of the square"
     });
@@ -641,19 +635,9 @@ function autoNextStep() {
 	}
 	if (ok) {
 	        guiders.hideAll();
-        	guiders.show('fourth');
+        	guiders.show('fifth');
 	}
 }
-
-    guiders.createGuider({
-      attachTo: "#picnik",
-      buttons: [{name: "Continue", onclick: guiders.next}],
-      description: "If you need to tweak the image, such as changing contrast, sharpening, or streightening the horizon you can use Picnik. <br/><br/> Otherwise if your image is suitable for use directly, click the 'Continue' button",
-      id: "fourth",
-      next: "fifth",
-      position: 3,
-      title: "Need to tweak the image?"
-    });
 
 
     guiders.createGuider({
