@@ -195,8 +195,17 @@ boilerplate...</p>
  property and copyright of the original author. If You submit Submissions to the
  Site, You must adhere to any applicable submission guidelines
  that may be posted from time to time on the Site. All submitted photographs and accompanying
-metadata are licensed under a Creative Commons Licence. For all
-other types of site submission, you grant Geograph Project Ltd a worldwide, non-
+ metadata are licensed under a Creative Commons Licence.</p>
+
+ <p>This means that anyone can copy and/or distribute and/or modify the image and its
+ attached metadata, provided that they abide by the terms of the Creative Commons
+ licence. It is important to note that the Creative Commons licence allows
+ commercial use, including offering images for sale, and that you cannot object to
+ anyone using your image where that use is allowed by the Creative Commons licence.
+ If you are not happy for your images to be made available on these terms, you
+ should not upload them to this Site.</p>
+
+ <p>For all other types of site submission, you grant Geograph Project Ltd a worldwide, non-
  exclusive, transferable, perpetual, irrevocable, fully-paid royalty-free licence and
  right to use, reproduce, distribute, import, broadcast, transmit, modify and create
  derivative works of, license, offer to sell, and sell, rent, lease or lend copies of,
