@@ -70,14 +70,6 @@
   <td></td>
  </tr>
  <tr>
-  <td>Upload via PicMonkey</td>
-  <td style="background-color:lightgreen" align="center">*</td>
-  <td></td>
-  <td></td>
-  <td></td>
-  <td></td>
- </tr>
- <tr>
   <td >Upload via Application</td>
   <td></td>
   <td></td>
