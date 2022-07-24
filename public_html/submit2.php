@@ -39,22 +39,6 @@ $smarty = new GeographPage;
 
 dieIfReadOnly();
 
-               if (isset($_GET['picnik'])) {
-                        $q = array();
-                        $q['_apikey'] = $CONF['picnik_api_key'];
-                        $q['_page'] = '/in/upload';
-                        $q['_export'] = "https://{$_SERVER['HTTP_HOST']}/submit2.php";
-                        $q['_export_field'] = 'jpeg_url';
-                        $q['_export_agent'] = 'browser';
-                        $q['_export_method'] = 'POST';
-                        $q['_userid'] = md5($USER->user_id.$CONF['register_confirmation_secret']);
-                        $q['_export_title'] = 'Send to Geograph';
-                        $q['_host_name'] = 'Geograph';
-                        header('Location: http://www.picmonkey.com/service?'.http_build_query($q));
-                        exit;
-                }
-
-
 if (!empty($CONF['submission_message'])) {
         $smarty->assign("status_message",$CONF['submission_message']);
 }
