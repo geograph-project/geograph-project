@@ -1,5 +1,5 @@
 {include file="_std_begin.tpl"}
-
+<!--INFOLINKS_OFF-->
 {if $image}
 <div style="float:right; position:relative; width:5em; height:4em;"></div>
 <div style="float:right; position:relative; width:30px; height:33px; margin-right:2px;"></div>
@@ -407,12 +407,6 @@ function addStyleLinks() {
  AttachEvent(window,'load',addStyleLinks,false);
 
 
-function redrawMainImage() {
-	el = document.getElementById('mainphoto');
-	el.style.display = 'none';
-	el.style.display = '';
-}
- AttachEvent(window,'load',redrawMainImage,false);
  AttachEvent(window,'load',showMarkedImages,false);
  AttachEvent(window,'load',function () {
 		collapseSnippets({/literal}{$image->snippet_count}{literal});
@@ -495,5 +489,5 @@ function redrawMainImage() {
 the image was rejected after submission - please <a title="Contact Us" href="/contact.php">contact us</a>
 if you have queries</p>
 {/if}
-
+<!--INFOLINKS_ON-->
 {include file="_std_end.tpl"}
