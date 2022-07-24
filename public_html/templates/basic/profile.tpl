@@ -341,7 +341,7 @@
 				<li><b>Submissions</b>: <a href="/submissions.php" rel="nofollow">Edit my recent submissions</a></li>
 			{/if}
 			<li><b>Uses</b>: <a href="/myphotos.php">Use of my photos around the site</a></li>
-			<li><b>2013</b>: <a href="/stuff/your-year.php?choose=1">Your Pictures by Year</a></li>
+			<li><b>Annual showcase</b>: <a href="/stuff/your-year.php?choose=1">Your Pictures by Year</a></li>
 		{/if}
 	</ul>
 	{if $user->user_id eq $profile->user_id}

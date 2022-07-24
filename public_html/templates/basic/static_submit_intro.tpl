@@ -52,15 +52,15 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 <p>As well as the above submission processes, we have the following alternatives:</p>
 
 <ul class="spaced">
-	<li>Upload a <b>Geotagged image</b> instead of entering location in step 1<ul>
+	<li>Upload a <b>Geotagged image</b> instead of entering location in step 1
+  <ul>
 		<li>(either Geo Extensions to the EXIF specification, or the file named with the grid reference)</li>
-	</ul></li>
-	
-	<li>Pre-process the image with <b>{external href="http://www.picmonkey.com/" text="PicMonkey"} online image manipulation</b> service, transferring the image automatically to continue the above process.</li>
-	
- 	<li>Bulk upload photos using an on <b>offline Java application</b>, locate and describe your images offline, and then upload when ready to connect to the internet (this does not include the draggable icons on map).</li>
+	</ul>
+  </li>
+	<li>Bulk upload photos using an on <b>offline Java application</b>, locate and describe your images offline, and then upload when ready to connect to the internet (this does not include the draggable icons on map).</li>
  </ul>	
- {dynamic}
+
+{dynamic}
 {if $user->registered}
  <p>Continue to the <a href="/submit.php">submit process</a> to access the above options</p>
 {else}
