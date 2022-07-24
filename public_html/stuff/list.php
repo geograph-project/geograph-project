@@ -305,6 +305,9 @@ if (!empty($_GET['debug']))
 		}
 	}
 
+	print '<input type="hidden" name="IL_IN_ARTICLE">';
+
+
 	if (!empty($_GET['label']) && !empty($_GET['gridref'])) {
 		$label = $db->Quote($_GET['label']);
 		$gr = $db->Quote($_GET['gridref']);
@@ -430,6 +433,11 @@ function highlightImage() {
 }
 AttachEvent(window,'load',highlightImage,false);
 </script>
+
+<div style="background-color:#efefd2;border-top: 1px solid gray;padding:3px;">
+<input type="hidden" name="IL_IN_TAG" value="2"/>
+</div>
+
 <?
 
 
