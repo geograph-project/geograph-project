@@ -6,8 +6,9 @@
 		<select id="mapLinkSelector" onchange="linkToMap(this)">
 			<option value="">Location &amp; Map Links...</option>
 			<option value="/browser/#!/loc=$gridref/dist=2000/display=map_dots">Image Browser Map (use for keyword searches etc)</a>
-			<option value="/mapper/combined.php?mobile=1">Mobile Coverage Map</option>
+			<option value="/mapper/combined.php?mobile=1">Mobile Coverage Map (for small screens)</option>
 			<option value="/mapbrowse.php?zoom=$zoom&lat=$lat&lon=$long">Coverage Map V1</option>
+			<option value="/mapper/?zoom=$zoom&lat=$lat&lon=$long">Coverage Map V2 (GB only)</option>
 			<option value="/mapsheet.php?zoom=$zoom&lat=$lat&lon=$long">Printable Checksheet</option>
 
 {dynamic}
