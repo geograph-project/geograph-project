@@ -17,10 +17,24 @@
         <label for="title">Title:</label>
         <input type="text" name="calendar_title" value="{$calendar.title|escape:"html"}" style="font-size:1.1em" maxlength="64" size="47"/>
 
-	<div class="fieldnotes">Just for your reference, not printed on calendar!</div>
+	<div class="fieldnotes">Optional title. <b>If entered WILL appear on the cover page of calendar!</b></div>
 
         {if $errors.title}</div>{/if}
 </div>
+
+<br>
+
+<div class="field">
+        {if $errors.show_id}<div class="formerror"><p class="error">{$errors.show_id}</p>{/if}
+
+        <label for="show_id">Show ID on Cover:</label>
+        <input type="checkbox" name="show_id" value="1" {if $calendar.show_id} checked{/if}>
+
+	<div class="fieldnotes"> Show your Geograph User-Id on front cover, if not will only be on the back</div>
+
+        {if $errors.show_id}</div>{/if}
+</div>
+
 
 <hr>
 
