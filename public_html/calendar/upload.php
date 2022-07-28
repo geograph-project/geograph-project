@@ -166,6 +166,7 @@ if (isset($_REQUEST['id']))
 				}
 				if ((($date = $exif['EXIF']['DateTimeOriginal']) ||
 				    ($date = $exif['EXIF']['DateTimeDigitized']) ||
+				    ($date = $exif['EXIF']['DateTime']) ||
 				    ($date = $exif['IFD0']['DateTime']))
 					//Data format is "YYYY:MM:DD HH:MM:SS"+0x00, total 20bytes. If clock has not set or digicam doesn't have clock, the field may be filled with spaces.
 					&&
