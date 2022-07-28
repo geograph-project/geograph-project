@@ -42,7 +42,9 @@ if (!empty($_POST['processed'])) {
 
 ####################################
 
-$list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE ordered > '1000-01-01' ORDER BY ordered,calendar_id");
+$year = date('Y')+1; // we currently working on next years calendar
+
+$list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE ordered > '1000-01-01' and year = '$year' ORDER BY ordered,calendar_id");
 
 $stat = array();
 $total = $orders = $processed = 0;
