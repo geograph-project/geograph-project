@@ -29,6 +29,9 @@ $USER->mustHavePerm("basic");
 
 pageMustBeHTTPS();
 
+$year = date('Y')+1; // we currently working on next years calendar
+
+ini_set('display_errors', 1);
 
 if (!empty($_POST['ids'])) {
 
@@ -79,9 +82,11 @@ if (!empty($_POST['ids'])) {
 	exit;
 }
 
-if (date('Y-m-d') > '2021-10-10' && empty($_GET['allow'])) {
+if (date('Y-m-d') > '2021-10-10' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
 	die("Sorry, we are not currently accepting new orders");
 }
+
+$smarty->assign('year', $year);
 
 $smarty->display('calendar_start.tpl');
 

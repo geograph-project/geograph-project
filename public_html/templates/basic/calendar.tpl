@@ -1,4 +1,4 @@
-{assign var="page_title" value="Geograph Calendar 2022"}
+{assign var="page_title" value="Geograph Calendar `$year`"}
 {include file="_std_begin.tpl"}
 
 <div style="float:right;width:360px;margin-right:20px;text-align:center">
@@ -6,7 +6,7 @@
 	<p>{newwin href="/calendar/tips.php" text="Tips Page"} (in new window)</p>
 </div>
 
-<h2>Your personalised Geograph Calendar for 2022</h2>
+<h2>Your personalised Geograph Calendar for {$year}</h2>
 
 <div style="clear:both;float:right;width:360px;margin-right:20px;line-height:0.6;background-color:#e4e4fc;padding:10px;">
 

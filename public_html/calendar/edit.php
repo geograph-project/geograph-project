@@ -100,6 +100,8 @@ if (!empty($_POST)) {
 	if (isset($_POST['calendar_title']) && $_POST['calendar_title'] != $row['title'])
 		$updates['title'] = $_POST['calendar_title'];
 
+	$updates['show_id'] = @$_POST['show_id']+0;
+
 	if (isset($_POST['cover_image']) && $_POST['cover_image'] != $row['cover_image'])
 		$updates['cover_image']   = $_POST['cover_image'];
 
@@ -117,6 +119,8 @@ if (!empty($_POST)) {
 		$updates['grid_reference'] = $_POST['grid_reference'][$id];
 		//realname. We dont allow this be edited?
 		$updates['imagetaken'] = $_POST['imagetaken'][$id];
+		$updates['place'] = $_POST['place'][$id];
+		$updates['background'] = @$_POST['background'][$id]+0;
 
 		if (!empty($updates))
 			$db->Execute('UPDATE gridimage_calendar SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
@@ -176,6 +180,15 @@ foreach ($imagelist->images as $key => &$image) {
 	} else {
 		//there is no larger version available
 		$image->preview_url = $image->_getFullpath(true,true);
+	}
+
+	if (empty($image->place)) {
+		$row = array();
+		$row['gridsquare_id'] = $db->getOne("SELECT gridsquare_id FROM gridsquare WHERE grid_reference = ".$db->Quote($image->grid_reference)); //no easy way to trigger loading with just the GR. perhaps shoudl sore in gridimage_calednar table?
+		$image->_setDB($db);//to reuse the same connection
+		$image->_initFromArray($row); //this is needed to load the ->grid_square member!
+		$place = $image->grid_square->findNearestPlace(25000);
+		$image->place = strip_tags(smarty_function_place(array('place'=>$place)));
 	}
 
 	//A4 = 210 x 297 mm	8.3 x 11.7 inches

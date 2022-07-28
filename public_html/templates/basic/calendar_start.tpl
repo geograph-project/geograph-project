@@ -1,8 +1,8 @@
-{assign var="page_title" value="Geograph Calendar 2022 - Step 1"}
+{assign var="page_title" value="Geograph Calendar `$year` - Step 1"}
 {include file="_std_begin.tpl"}
 
 
-<h2>Step 1. Create Geograph Calendar</h2>
+<h2>Step 1. Create Geograph Calendar for {$year}</h2>
 
 <p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
 <p>{newwin href="/calendar/tips.php" text="Tips for Selecting Images"} (in new window)</p>

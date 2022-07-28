@@ -39,16 +39,19 @@ if (!empty($_GET['delete'])) {
 
 ####################################
 
+$year = date('Y')+1; // we currently working on next years calendar
 
-$list = $db->getAll("SELECT * FROM calendar WHERE user_id = {$USER->user_id} AND status > 1");
+$list = $db->getAll("SELECT * FROM calendar WHERE user_id = {$USER->user_id} AND year = '$year' AND status > 1");
 
 $smarty->assign_by_ref('list', $list);
 
 
 
-if (date('Y-m-d') > '2021-10-10') {
+if (date('Y-m-d') > '2021-10-10' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
 	$smarty->assign('closed',true);
 }
+
+$smarty->assign('year', $year);
 
 $smarty->display('calendar.tpl');
 
