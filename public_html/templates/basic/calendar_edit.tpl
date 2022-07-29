@@ -127,9 +127,11 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 
 
 <script>
+{if $calendar.background}
  {literal}$(function() {{/literal}
          setBackAll($('input#background').get(0));
  {literal}});{/literal}
+{/if}
 
 {/dynamic}
 
