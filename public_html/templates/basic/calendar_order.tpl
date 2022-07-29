@@ -17,11 +17,12 @@
         <label for="title">Title:</label>
         <input type="text" name="calendar_title" value="{$calendar.title|escape:"html"}" style="font-size:1.1em" maxlength="64" size="47"/>
 
-	<div class="fieldnotes">Optional title. <b>If entered WILL appear on the cover page of calendar!</b></div>
+	<div class="fieldnotes">Optional title. </div>
 
         {if $errors.title}</div>{/if}
 </div>
 
+{if $images}
 <br>
 
 <div class="field">
@@ -72,6 +73,19 @@
         <label for="title">Quantity Required:</label>
         <input type="number" name="quantity" value="{$calendar.quantity|escape:"html"}" style="font-size:1.3em" size=2 min="1" max="255" step="1"/>*
 	(miniumum order is 2 calendars, can be split over multiple orders)
+
+        {if $errors.quantity}</div>{/if}
+</div>
+
+{/if}
+
+<hr>
+
+<div class="field">
+        {if $errors.best_quantity}<div class="formerror"><p class="error">{$errors.best_quantity}</p>{/if}
+
+        <label for="title">'Best of Geograph' Quantity:</label>
+        <input type="number" name="best_quantity" value="{$calendar.best_quantity|escape:"html"}" style="font-size:1.3em" size=2 min="1" max="255" step="1"/>*
 
         {if $errors.quantity}</div>{/if}
 </div>

@@ -33,6 +33,20 @@ $db = GeographDatabaseConnection(false);
 
 ####################################
 
+if (empty($_GET['id'])) {
+        $updates = array();
+	$updates['user_id'] = intval($USER->user_id);
+	$updates['title'] = 'Best Of Geograph only order';
+	$updates['quantity'] = 0;
+	$updates['best_quantity'] = 2;
+
+	$db->Execute('INSERT IGNORE INTO calendar SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+
+	$_GET['id'] = $db->Insert_ID();
+}
+
+####################################
+
 $row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = ".intval($_GET['id']));
 
 if (empty($row) || $row['user_id'] != $USER->user_id)
@@ -92,7 +106,7 @@ if (!empty($_POST)) {
 			//this needs converting to IGN. The return URL doesnt contain in any identifiers
 			$_SESSION['calendar_id'] = $row['calendar_id'];
 
-			$cost = 7.00 * $row['quantity'];
+			$cost = (8.00 * $row['quantity']) + (8.00 * $row['best_quantity']) + 3.00;
 
 			$token=new Token;
 			$token->setValue("i", $row['calendar_id']);

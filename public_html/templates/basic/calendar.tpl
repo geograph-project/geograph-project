@@ -77,26 +77,31 @@ minimum quantity of 2 calendars per person, which can include more than one vers
 {dynamic}{if $closed}
 	<h1>Sorry, we are no longer accepting new orders</h1>
 {else}
-<a href="start.php" style="font-size:large;background-color:#000066;color:white;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a>
-{/if}{/dynamic}
+<a href="start.php" style="font-size:large;background-color:#000066;color:yellow;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a> (will be able to order 'Best Of Geograph' as well)
 
 <p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
 	<p>{newwin href="/calendar/tips.php" text="Tips Page"} (in new window)</p>
+<br>
+<p>or
+<a href="order.php" style="font-size:large;background-color:#000066;color:yellow;padding:10px;border-radius:10px">Just order 'Best Of Geograph' Calendar &gt; &gt;</a>
+{/if}{/dynamic}
+
 
 {dynamic}
 {if $list}
 	<h3>Current Orders</h3>
-	<table>
+	<table style="border:1px solid black; background:#000066;color:white" cellpadding=4>
 	{foreach from=$list key=index item=calendar}
 		<tr>
+			<td>{$index+1}.</td>
 			<td>{$calendar.title|default:'untitled calendar'}</td>
-			<td>{if $calendar.status != 'processed'}<a href="edit.php?id={$calendar.calendar_id}">Review/Edit</a>{/if}
+			<td>{if $calendar.status != 'processed' && $calendar.quantity>0}<a href="edit.php?id={$calendar.calendar_id}" style="color:yellow">Review/Edit</a>{/if}
 			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
-			<td>{if $calendar.paid < '2' and $calendar.status!='deleted' and $calendar.status != 'processed'}<a href="order.php?id={$calendar.calendar_id}"><b>Continue and Order</b></a>{/if}
+			<td>{if $calendar.paid < '2' and $calendar.status!='deleted' and $calendar.status != 'processed'}<a href="order.php?id={$calendar.calendar_id}" style="color:yellow"><b>Continue and Order</b></a>{/if}
 			<td>{if $calendar.status == 'new'}<a href="?delete={$calendar.calendar_id}" style="color:red">Delete</a>{/if}
 		</tr>
 	{/foreach}
-	</table>	
+	</table>
 
 	<p>You will be able to edit the order right up to the time the order is has been processed (even after payment). Processing however may happen at any time after payment.
 
