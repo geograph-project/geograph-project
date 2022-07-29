@@ -25,16 +25,28 @@
 <br>
 
 <div class="field">
-        {if $errors.show_id}<div class="formerror"><p class="error">{$errors.show_id}</p>{/if}
+        {if $errors.print_title}<div class="formerror"><p class="error">{$errors.print_title}</p>{/if}
 
-        <label for="show_id">Show ID on Cover:</label>
-        <input type="checkbox" name="show_id" value="1" {if $calendar.show_id} checked{/if}>
+        <label for="print_title">Show Title on Cover:</label>
+        <input type="checkbox" name="print_title" value="1" {if $calendar.print_title} checked{/if}>
 
-	<div class="fieldnotes"> Show your Geograph User-Id on front cover, if not will only be on the back</div>
+	<div class="fieldnotes"> Show your custom title (above) on front cover - otherwise will just be for reference purposes here</div>
+
+        {if $errors.print_title}</div>{/if}
+</div>
+
+<br>
+
+<div class="field">
+        {if $errors.background}<div class="formerror"><p class="error">{$errors.background}</p>{/if}
+
+        <label for="show_id">Black Background:</label>
+        <input type="checkbox" name="background" id="background" value="1" {if $calendar.background} checked{/if} onclick="setBackAll(this)">
+
+	<div class="fieldnotes">Use a black background around photos (optional) - otherwise will use white+shadow frame</div>
 
         {if $errors.show_id}</div>{/if}
 </div>
-
 
 <hr>
 

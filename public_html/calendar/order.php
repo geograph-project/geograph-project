@@ -61,7 +61,8 @@ if (!empty($_POST)) {
 	if (isset($_POST['calendar_title']) && $_POST['calendar_title'] != $row['title'])
 		$updates['title'] = $_POST['calendar_title'];
 
-	$updates['show_id'] = @$_POST['show_id']+0;
+	$updates['print_title'] = @$_POST['print_title']+0;
+	$updates['background'] = @$_POST['background']+0;
 
 	foreach (array('quantity','delivery_name','delivery_line1','delivery_line2','delivery_line3','delivery_line4','delivery_postcode') as $key) {
 		if (isset($_POST[$key]) && $_POST[$key] != $row[$key])

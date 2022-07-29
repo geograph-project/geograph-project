@@ -100,7 +100,9 @@ if (!empty($_POST)) {
 	if (isset($_POST['calendar_title']) && $_POST['calendar_title'] != $row['title'])
 		$updates['title'] = $_POST['calendar_title'];
 
-	$updates['show_id'] = @$_POST['show_id']+0;
+	$updates['print_title'] = @$_POST['print_title']+0;
+	$updates['background'] = @$_POST['background']+0;
+
 
 	if (isset($_POST['cover_image']) && $_POST['cover_image'] != $row['cover_image'])
 		$updates['cover_image']   = $_POST['cover_image'];
@@ -120,7 +122,6 @@ if (!empty($_POST)) {
 		//realname. We dont allow this be edited?
 		$updates['imagetaken'] = $_POST['imagetaken'][$id];
 		$updates['place'] = $_POST['place'][$id];
-		$updates['background'] = @$_POST['background'][$id]+0;
 
 		if (!empty($updates))
 			$db->Execute('UPDATE gridimage_calendar SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.

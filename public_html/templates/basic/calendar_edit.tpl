@@ -16,9 +16,9 @@
         {if $errors.title}<div class="formerror"><p class="error">{$errors.title}</p>{/if}
 
         <label for="title">Title:</label>
-        <input type="text" name="calendar_title" value="{$calendar.title|escape:"html"}" style="font-size:1.1em" maxlength="64" size="47"/>
+        <input type="text" name="calendar_title" value="{$calendar.title|escape:"html"}" style="font-size:1.1em" maxlength="40" size="40"/>
 
-	<div class="fieldnotes">Optional title. <b>If entered WILL appear on the cover page of calendar!</b></div>
+	<div class="fieldnotes">Optional title for this calendar</div>
 
         {if $errors.title}</div>{/if}
 </div>
@@ -26,12 +26,25 @@
 <br>
 
 <div class="field">
-        {if $errors.show_id}<div class="formerror"><p class="error">{$errors.show_id}</p>{/if}
+        {if $errors.print_title}<div class="formerror"><p class="error">{$errors.print_title}</p>{/if}
 
-        <label for="show_id">Show ID on Cover:</label>
-        <input type="checkbox" name="show_id" value="1" {if $calendar.show_id} checked{/if}>
+        <label for="print_title">Show Title on Cover:</label>
+        <input type="checkbox" name="print_title" value="1" {if $calendar.print_title} checked{/if}>
 
-	<div class="fieldnotes"> Show your Geograph User-Id on front cover, if not will only be on the back</div>
+	<div class="fieldnotes"> Show your custom title (above) on front cover - otherwise will just be for reference purposes here</div>
+
+        {if $errors.print_title}</div>{/if}
+</div>
+
+<br>
+
+<div class="field">
+        {if $errors.background}<div class="formerror"><p class="error">{$errors.background}</p>{/if}
+
+        <label for="show_id">Black Background:</label>
+        <input type="checkbox" name="background" id="background" value="1" {if $calendar.background} checked{/if} onclick="setBackAll(this)">
+
+	<div class="fieldnotes">Use a black background around photos (optional) - otherwise will use white+shadow frame</div>
 
         {if $errors.show_id}</div>{/if}
 </div>
@@ -59,7 +72,7 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 				<td><div style="width:206px;height:147px;background:url({$image->preview_url})  no-repeat center center; background-size:cover;">
 				</div></td>
 			{else}
-				<td id="td{$image->gridimage_id}"><div style="width:206px;height:147px;border:1px solid gray;padding:2;text-align:center;white-space:nowrap"
+				<td class="innerImage"><div style="width:206px;height:147px;border:1px solid gray;padding:2;text-align:center;white-space:nowrap"
 				><span style="display: inline-block; height:100%; vertical-align:middle"></span
 				><img src="{$image->preview_url}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);{if $image->sort_order>0}box-shadow: 1px 1px 4px #999;{/if}"></div></td>
 			{/if}
@@ -76,26 +89,15 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 				</td>
 				</tr>
 				<tr><th align=right>Title</th>
-					<td><input type=text name="title[{$image->gridimage_id}]" value="{$image->title|escape:"html"}" maxlength="80" size="60"/></td>
+					<td><input type=text name="title[{$image->gridimage_id}]" value="{$image->title|escape:"html"}" maxlength="120" size="60"/></td>
 				<tr><th align=right>Grid Reference</th>
 					<td><input type=text name="grid_reference[{$image->gridimage_id}]" value="{$image->grid_reference|escape:"html"}" maxlength="16" size="10"/></td>
 				<tr><th align=right>Place</th>
-					<td><input type=text name="place[{$image->gridimage_id}]" value="{$image->place|escape:"html"}" maxlength="128" size="47"/></td>
+					<td><input type=text name="place[{$image->gridimage_id}]" value="{$image->place|escape:"html"}" maxlength="80" size="47"/></td>
 				<tr><th align=right>Credit</th>
 					<td><input type=text name="realname[{$image->gridimage_id}]" value="{$image->realname|escape:"html"}" maxlength="128" size="47" readonly disabled/></td>
 				<tr><th align=right>Image Taken</th>
 					<td><input {if strpos($image->imagetaken,'-00')}type=text{else}type=date{/if} name="imagetaken[{$image->gridimage_id}]" value="{$image->imagetaken|escape:"html"}" maxlength="10" size="10"/><span class=dateformat>(Format: YYYY-MM-DD)</span>
-				{if $image->sort_order > 0}
-					&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					( <input type=checkbox name="background[{$image->gridimage_id}]" value=1 id="b{$image->gridimage_id}" onclick="setBackG({$image->gridimage_id}, this)" {if $image->background} checked{/if}> <label for="b{$image->gridimage_id}">Use Black Background</label> )
-					{if $image->background}
-						<script>
-						{literal}$(function() {{/literal}
-							setBackG({$image->gridimage_id},$('input#b{$image->gridimage_id}').get(0));
-						{literal}});{/literal}
-						</script>
-					{/if}
-				{/if}
 			</table></td>
 		</tr>
 		<tr class="image{$image->sort_order}">
@@ -122,16 +124,22 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 <input type=hidden name=new_position>
 <input type=hidden name=new_id>
 </form>
+
+
+<script>
+ {literal}$(function() {{/literal}
+         setBackAll($('input#background').get(0));
+ {literal}});{/literal}
+
 {/dynamic}
 
+{literal}
 
-<script>{literal}
-
-function setBackG(gridimage_id, that) {
+function setBackAll(that) {
 	var color = that.checked?'black':'white';
 	var shadow = that.checked?'':'1px 1px 4px #999';
-	$('td#td'+gridimage_id+' div').css('backgroundColor',color);
-	$('td#td'+gridimage_id+' img').css('boxShadow',shadow);
+	$('td.innerImage div').css('backgroundColor',color);
+	$('td.innerImage img').css('boxShadow',shadow);
 }
 
 $(function() {
@@ -153,7 +161,7 @@ $(function() {
 		$('.dateformat').hide();
 
 
-	$('input[name*="title"]').each(function() {
+	$('input[type=text][name*="title"], input[type=text][name*="place"]').each(function() {
 		var $this = $(this);
 		var len = $this.attr('maxlength');
 		var $ele = $('<span style=padding-left:10px;color:gray/>');
