@@ -18,7 +18,7 @@
 	</div>
 {/if}
 
-<h2>Add temporally high resolution image to <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
+<h2>Add temporary high resolution image to <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
 
 
 {if $error}
@@ -48,7 +48,7 @@
 				<div id="rotation_warning" style="background-color:yellow;border:2px solid red;margin:10px;padding:10px">
 					Warning: <b>This image has EXIF 'Orientation' flag set.</b> 
 					It's highly recommended to use the rotation function to reorientate the image, this resets the flag which prevents potential display issues, as not all Browsers etc will honor the flag.<br><br>
-					So please rotate the image, even if it actully displays <i>correctly</i> in the preview! Rotate it sideways, and then <i>back</i> until displays correctly again.<br>Your browser might be ignoring the flag which is why the preview appears ok to you!
+					So please rotate the image, even if it actually displays <i>correctly</i> in the preview! Rotate it sideways, and then <i>back</i> until displays correctly again.<br>Your browser might be ignoring the flag which is why the preview appears ok to you!
 				</div>
 			{/if}
 
@@ -63,7 +63,7 @@
 <div id="step3">
 <h3>Step 3 : Finalize</h3>
 
-	<p>Note this image is NOT being released as Creative Commons, its only been stored for use on this single Calendar. 
+	<p>Note this image is NOT being released as Creative Commons, it's only being stored for use on this single Calendar. 
 	Otherwise the image is only being processed as per standard Geograph Terms of Use</p>
 
 	<input style="background-color:pink; width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>
