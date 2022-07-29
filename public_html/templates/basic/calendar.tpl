@@ -16,7 +16,7 @@
 </div>
 
 
-<p>The calendar will be in the familiar A3 wall-hanging format, hinged across the middle, with a picture above a one month calendar. 
+<p>The calendar will be in the familiar A3 wall-hanging format, wire-bound across the middle, with a picture above a one month calendar. 
 This will have space for appointments, events, etc. to be inserted on a day by day basis.
 
 <p>There will be a separate picture for each month plus one picture for the front cover.
@@ -45,16 +45,17 @@ are no restrictions on when the image was taken or submitted.
 
 	<h3>Cover picture</h3>
 
-	<p>The cover picture must be landscape format and will be printed without borders, so will be cropped.  The title panel will be in the 
-	position shown in the draft so your choice of image should take this into account. A high resolution image is recommended. 
+	<p>The cover picture must be landscape format and will be printed without borders, so will be cropped.  <b>The title panel will be in the 
+	position shown in the draft so your choice of image should take this into account</b>. A high resolution image is recommended. 
 
-	<h3>Titles, etc</h3>
+	<h3>Picture titles, etc</h3>
 
-	<p>The ordering system will automatically pick up the relevant grid square, photographer name and date taken. The current title will be 
-	shown as a default but you may change the title text within the specified limit of 80 characters.
+	<p>The ordering system will automatically pick up the relevant grid square, location, title, photographer name and date taken. The current title will be 
+	shown as a default but you may change the title text within the specified limit of 120 characters.
+  The location will also default to the image page display but can also be edited. (The gazetteer sometimes selects an inappropriate default!)
 
 	<p>*Approx 3500 px wide or 2500 px high
-
+  
 </blockquote>
 
 <p>As you may be submitting images of a higher resolution than those available on the Geograph 
@@ -65,10 +66,12 @@ intended recipients.
 
 <p>The name that will appear on the front of the calendar will be the normal photographer name for the id used. If some of your 
 chosen pictures were submitted under a different name (e.g. a relative), this can be included on the cover, provided it does not 
-overrun the panel. Individual photographer names will appear on the appropriate calendar pages. 
+overrun the panel. Individual photographer names will appear on the appropriate calendar pages.
 
-<p><b>Calendars are priced at &pound;7.00 each, inclusive of postage and packing, which includes a donation to Geograph funds.</b> There is a 
-minimum quantity of 2 calendars per person, which can include more than one order.
+<p>You have the option to have a calendar title which will appear on the fron cover.
+
+<p><b>Calendars are priced at &pound;8.00 each, which includes a donation to Geograph funds. There is a separate postage and packing charge of &pound;3.00 per order which may include more than one version, including the 'Best of Geograph'</b> There is a 
+minimum quantity of 2 calendars per person, which can include more than one version.
 <br><br>
 <p>
 {dynamic}{if $closed}
