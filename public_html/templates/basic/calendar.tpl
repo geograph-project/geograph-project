@@ -45,8 +45,8 @@ are no restrictions on when the image was taken or submitted.
 
 	<h3>Cover picture</h3>
 
-	<p>The cover picture must be landscape format and will be printed without borders, so will be cropped.  The title panel will be in the 
-	position shown in the draft so your choice of image should take this into account. A high resolution image is recommended. 
+	<p>The cover picture must be landscape format and will be printed without borders, so will be cropped.  <b>The title panel will be in the 
+	position shown in the draft so your choice of image should take this into account</b>. A high resolution image is recommended. 
 
 	<h3>Picture titles, etc</h3>
 
