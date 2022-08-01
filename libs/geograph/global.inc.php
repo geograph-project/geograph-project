@@ -844,6 +844,9 @@ $str[] = "
 	        }
 	}
 
+	global $USER;
+
+	####################################################
 
 	/* if (strpos($_SERVER["REQUEST_URI"],'/article/') === 0 && strpos($_SERVER["REQUEST_URI"],'.php') === FALSE && $GLOBALS['template'] != 'article_article2.tpl') {
 		$_GET['ads'] = 1;
@@ -852,12 +855,31 @@ $str[] = "
 		$_GET['ads'] = 1;
 	}
 
-	if (!empty($_GET['ads']) && $_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
-		$str[] = '<script type="text/javascript"> var infolinks_pid = 3361577; var infolinks_wsid = 0; </script> <script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>';
+	if (!empty($USER) && empty($USER->registered) && appearsToBePerson() && $_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
+		if (strpos($_SERVER["REQUEST_URI"],'/photo/') === 0)
+			$_GET['ads'] = 1;
+		elseif ($_SERVER["PHP_SELF"] == '/stuff/list.php')
+                        $_GET['ads'] = 1;
 	}
 
+	if (!empty($_GET['ads'])
+		&& empty($USER->is_login_form) //catch inline logins!
+		&& $_SERVER["PHP_SELF"] != '/login.php'
+		&& $_SERVER["PHP_SELF"] != '/register.php'
+		&& $_SERVER["PHP_SELF"] != '/profile.php' //to prevent on pags when changing password!
+		&& strstr($_SERVER["PHP_SELF"],0,7) != '/submit'
+		&& strstr($_SERVER["PHP_SELF"],0,6) != '/admin'
+		&& $_SERVER['REQUEST_METHOD'] == 'GET'
+	) {
+		if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk')
+			$str[] = '<script type="text/javascript"> var infolinks_pid = 3361577; var infolinks_wsid = 0; </script> <script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>';
+		elseif ($_SERVER['HTTP_HOST'] == 'www.geograph.ie')
+			$str[] = '<script type="text/javascript"> var infolinks_pid = 3361577; var infolinks_wsid = 1; </script> <script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>';
+		$str[] = '<style>body { padding-bottom:130px }</style>';
+	}
 
-	global $USER;
+	####################################################
+
 	if (!empty($USER) && $USER->user_id == 3)
         	$str[] = "<div style=\"position:absolute;top:40px;left:300px;width:250px;color:yellow\">Host: ".`hostname`."</div>";
 
