@@ -375,13 +375,13 @@ String.prototype.commatrim = function () {
 }
 
 function importToMarkedImages() {
-	newCookie = readCookie('markedImages');
+	var newCookie = readCookie('markedImages');
 	if (!newCookie)
 		newCookie = new String();
-	list = prompt('Paste your current list, either comma or space separated\n or just surrounded with [[[ ]]] ','');
+	var list = prompt('Paste your current list, either comma or space separated\n or just surrounded with [[[ ]]] ','');
 	if (list && list != '') {
 		splited = list.split(/[^\d]+/);
-		count=0;	
+		var count=0;
 		for(i=0; i < splited.length; i++) {
 			image = splited[i];
 			if (image != '')
@@ -392,7 +392,7 @@ function importToMarkedImages() {
 		}
 		createCookie('markedImages',newCookie,10);
 		showMarkedImages();
-		leng = newCookie.commatrim().split(',').length;
+		var leng = newCookie.commatrim().split(',').length;
 		alert("Added "+count+" image(s) to your list, now contains "+leng+" images in total.");
 	} else {
 		alert("Nothing to add");
@@ -400,10 +400,10 @@ function importToMarkedImages() {
 }
 
 function displayMarkedImages() {
-	current = readCookie('markedImages');
+	var current = readCookie('markedImages');
 	if (current) {
-		splited = current.commatrim().split(',');
-		newstring = '[[['+splited.join(']]] [[[')+']]]';
+		var splited = current.commatrim().split(',');
+		var newstring = '[[['+splited.join(']]] [[[')+']]]';
 		prompt("Copy and Paste the following into the forum",newstring);
 	} else {
 		alert("You haven't marked any images yet. Or cookies are disabled");
@@ -411,9 +411,9 @@ function displayMarkedImages() {
 }
 
 function returnMarkedImages() {
-	current = readCookie('markedImages');
+	var current = readCookie('markedImages');
 	if (current) {
-		splited = current.commatrim().split(',');
+		var splited = current.commatrim().split(',');
 		return '[[['+splited.join(']]] [[[')+']]]';
 	} else {
 		alert("You haven't marked any images yet. Or cookies are disabled");
@@ -422,13 +422,13 @@ function returnMarkedImages() {
 }
 
 function showMarkedImages() {
-	current = readCookie('markedImages');
+	var current = readCookie('markedImages');
 	if (current) {
-		splited = current.commatrim().split(',');
-		
+		var splited = current.commatrim().split(',');
+
 		var hasInnerText = (document.getElementsByTagName('body')[0].innerText != undefined)?true:false;
-		
-		for(i=0; i < splited.length; i++) 
+
+		for(i=0; i < splited.length; i++)
 			if (document.getElementById('mark'+splited[i])) {
 				ele = document.getElementById('mark'+splited[i])
 				if(hasInnerText) {
@@ -443,20 +443,20 @@ function showMarkedImages() {
 		if (splited.length > 0 && document.getElementById('markedLink')) {
 			document.getElementById('markedLink').style.display='';
 		}
-	} 
+	}
 }
 
 
 function clearMarkedImages() {
-	current = readCookie('markedImages');
+	var current = readCookie('markedImages');
 	if (current && confirm('Are you sure?')) {
-		splited = current.commatrim().split(',');
+		var splited = current.commatrim().split(',');
 
 		var hasInnerText = (document.getElementsByTagName('body')[0].innerText != undefined)?true:false;
-		
-		for(i=0; i < splited.length; i++) 
+
+		for(i=0; i < splited.length; i++)
 			if (document.getElementById('mark'+splited[i])) {
-				ele = document.getElementById('mark'+splited[i])
+				var ele = document.getElementById('mark'+splited[i])
 				if(hasInnerText) {
 				    ele.innerText = 'Mark';
 				} else {
@@ -473,7 +473,7 @@ function clearMarkedImages() {
 
 function showMarkedLink() {
 	if (document.getElementById('markedLink')) {
-	        current = readCookie('markedImages');
+	        var current = readCookie('markedImages');
         	if (current && current != '') {
 	                document.getElementById('markedLink').style.display='';
 		}
