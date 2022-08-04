@@ -22,7 +22,6 @@
      {dynamic}{if $user->registered}
      <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
      {/if}{/dynamic}
-     <li><a title="Geograph Events" href="/events/">Events</a>(1)</li>
     </ul></li>
     <li>Contributors<ul>
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
@@ -44,10 +43,10 @@
     <li>Admin<ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      {if $is_mod}
-     	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
+	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
      {/if}
      {if $is_tickmod}
-     	<li><a title="Trouble Tickets" href="/admin/suggestions.php">Suggestions</a></li>
+	<li><a title="Trouble Tickets" href="/admin/suggestions.php">Suggestions</a></li>
      {/if}
      <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
     </ul></li>
@@ -119,11 +118,11 @@
   <div id="login"><span class="nowrap">
   {dynamic}
   {if $user->registered}
-  	  Logged in as {$user->realname|escape:'html'}
-  	  <span class="sep">|</span>
-  	  <a title="Profile" href="/profile.php">profile</a>
-  	  <span class="sep">|</span></span>
-  	  <a title="Log out" href="/logout.php">logout</a>
+	  Logged in as {$user->realname|escape:'html'}
+	  <span class="sep">|</span>
+	  <a title="Profile" href="/profile.php">profile</a>
+	  <span class="sep">|</span></span>
+	  <a title="Log out" href="/logout.php">logout</a>
   {else}
 	  You are not logged in
 	  <a title="Already registered? Login in here" href="/login.php">login</a>
