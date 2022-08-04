@@ -84,8 +84,14 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/mapmosaic.class.php');
 require_once('geograph/rastermap.class.php');
 
+if (!empty($_POST['style'])) {
+	session_cache_limiter('private_no_expire'); //this is just to override the default no-store that gets added (so user can use backbutton)
 
-if (isset($_GET['style'])) {
+	init_session();
+	$_GET['style'] = $_POST['style']; //getStyle still uses _GET
+	// getStyle is called later down the page
+
+} elseif (isset($_GET['style'])) {
 	init_session();
 	$USER->getStyle();
 	if (isset($_GET['id'])) {

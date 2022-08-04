@@ -642,7 +642,7 @@
 
 
 
-			<div class="interestBox" style="text-align:center">
+			<div class="interestBox" style="text-align:center" data-nosnippet>
 			<form action="/gridref/{$gridref}" method="get" style="display:inline">
 			<label for="displayclass">Display Format:</label>
 			<select name="displayclass" id="displayclass" size="1" onchange="this.form.submit()">
@@ -654,13 +654,12 @@
 			</noscript>
 			</form> &nbsp;&nbsp; | &nbsp;&nbsp;
 
-			Background Colour: [
-				<a href="{linktoself name="style" value="white"}" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photowhite"} hidelink{/if}{/dynamic}">White</a>
-			/
-				<a href="{linktoself name="style" value="black"}" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photoblack"} hidelink{/if}{/dynamic}">Black</a>
-			/
-				<a href="{linktoself name="style" value="gray"}" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photogray"} hidelink{/if}{/dynamic}">Grey</a>
-			 ]
+			<form method=post style="display:inline-block">{dynamic}
+				Background Colour: {if strpos($maincontentclass, "photowhite")}White{else}<button type=submit name=style value=white>White</button>{/if}
+				 / {if strpos($maincontentclass, "photoblack")}Black{else}<button type=submit name=style value=black>Black</button>{/if}
+				 / {if strpos($maincontentclass, "photogray")}Gray{else}<button type=submit name=style value=gray>Grey</button>{/if}
+			{/dynamic}</form>
+
 			</div>
 
 		{/if}

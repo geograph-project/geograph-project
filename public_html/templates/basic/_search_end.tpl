@@ -68,7 +68,7 @@
 
 
 {if $engine->resultCount}
-<div class="interestBox" style="text-align:center">
+<div class="interestBox" style="text-align:center" data-nosnippet>
 <form action="/search.php" method="get" style="display:inline">
 <input type="hidden" name="i" value="{$i}"/>
 {if $engine->currentPage > 1}<input type="hidden" name="page" value="{$engine->currentPage}"/>{/if}
@@ -82,13 +82,14 @@
 </noscript>
 </form> &nbsp;&nbsp; | &nbsp;&nbsp;
 
-Background Colour: [
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=white" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photowhite"} hidelink{/if}{/dynamic}">White</a>
-/
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=black" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photoblack"} hidelink{/if}{/dynamic}">Black</a>
-/
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=gray" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photogray"} hidelink{/if}{/dynamic}">Grey</a>
- ]
+{dynamic}
+<form method=post style="display:inline-block">
+	Background Colour: {if strpos($maincontentclass, "photowhite")}White{else}<button type=submit name=style value=white>White</button>{/if}
+				 / {if strpos($maincontentclass, "photoblack")}Black{else}<button type=submit name=style value=black>Black</button>{/if}
+				 / {if strpos($maincontentclass, "photogray")}Gray{else}<button type=submit name=style value=gray>Grey</button>{/if}
+</div></form>
+{/dynamic}
+
 </div>
 {/if}
 

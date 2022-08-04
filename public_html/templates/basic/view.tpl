@@ -395,9 +395,11 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </div>
 
 </div>
-<div style="text-align:center;margin-top:3px" class="interestBox" data-nosnippet>{dynamic}
-	Background for photo viewing: <a href="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="{if $maincontentclass eq "content_photowhite"} hidelink{/if}">White</a> / <a href="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="{if $maincontentclass eq "content_photoblack"} hidelink{/if}">Black</a> / <a href="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="{if $maincontentclass eq "content_photogray"} hidelink{/if}">Grey</a>
-{/dynamic}</div>
+<form method=post style="text-align:center;margin-top:3px"><div class="interestBox" data-nosnippet>{dynamic}
+	Background for photo viewing: {if strpos($maincontentclass, "photowhite")}White{else}<button type=submit name=style value=white>White</button>{/if}
+				 / {if strpos($maincontentclass, "photoblack")}Black{else}<button type=submit name=style value=black>Black</button>{/if}
+				 / {if strpos($maincontentclass, "photogray")}Gray{else}<button type=submit name=style value=gray>Grey</button>{/if}
+{/dynamic}</div></form>
 
 <script type="text/javascript">
 {literal}

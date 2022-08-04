@@ -29,7 +29,14 @@ require_once('geograph/map.class.php');
 require_once('geograph/mapmosaic.class.php');
 require_once('geograph/rastermap.class.php');
 
-if (empty($_GET['style'])) {
+if (!empty($_POST['style'])) {
+	session_cache_limiter('private_no_expire'); //this is just to override the default no-store that gets added (so user can use backbutton)
+
+        init_session();
+        $_GET['style'] = $_POST['style']; //getStyle still uses _GET
+        // && no redirect is performed! & getStyle is called later down the page
+
+} elseif (empty($_GET['style'])) {
 	init_session_or_cache(3600, 360); //cache publically, and privately
 } else {
 	init_session();

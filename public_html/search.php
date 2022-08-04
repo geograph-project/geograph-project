@@ -36,7 +36,15 @@ if (!empty($_GET['debug'])) {
 	ini_set("display_errors",true);
 }
 
-if (!empty($_GET['style'])) {
+if (!empty($_POST['style']) && !empty($_GET['i'])) {
+	session_cache_limiter('private_no_expire'); //this is just to override the default no-store that gets added (so user can use backbutton)
+
+        init_session();
+        $_GET['style'] = $_POST['style']; //getStyle still uses _GET
+        // && no redirect is performed! & getStyle is called later down the page
+	$_SERVER['REQUEST_METHOD'] = 'GET'; //horrible cheat, as code uses REQUEST_METHOD below, to accept form submissions
+
+} elseif (!empty($_GET['style'])) {
 	init_session();
 	$USER->getStyle();
 	if (!empty($_SERVER['QUERY_STRING'])) {
