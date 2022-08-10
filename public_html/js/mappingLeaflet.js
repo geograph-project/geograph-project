@@ -476,8 +476,12 @@ function enlargeMap() {
 		                showSquareLabels: [100000,10000,100]
 		        };
 
-			overlayMaps['OSGB Grid'] = L.britishGrid(gridOptions).addTo(map);
-			overlayMaps['Irish Grid'] = L.irishGrid(gridOptions).addTo(map)
+			overlayMaps['OSGB Grid'] = L.britishGrid(gridOptions);
+			overlayMaps['Irish Grid'] = L.irishGrid(gridOptions);
+			if (!issubmit) {
+				overlayMaps['OSGB Grid'].addTo(map);
+				overlayMaps['Irish Grid'].addTo(map);
+			}
 		}
 
 		if (L.geographGeocoder && !geocoder)
