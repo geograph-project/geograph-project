@@ -810,7 +810,6 @@ function get_loadavg()
 
 //available as a function, as doesn't come into effect if just re-using a smarty cache
 function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl') {
-return;
 	global $smarty,$USER,$CONF;
 	if ($threshold == 0) {
 		if ($CONF['template']=='archive') {
