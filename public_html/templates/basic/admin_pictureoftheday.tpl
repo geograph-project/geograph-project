@@ -9,7 +9,7 @@
 <div class="interestBox" style="width:230px;float:right">
 	You can leave the 'When' blank to add the image to a pool of images used
 	when a particular day hasn't been assigned, or specify the date
-	with any <a href="http://www.gnu.org/software/tar/manual/html_node/tar_109.html">strtotime</a> format, e.g.
+	with any <a href="https://www.php.net/manual/en/function.strtotime.php">strtotime</a> format, e.g.
 	<ul>
 	<li>2007-05-29 </li>
 	<li>24 Sep</li>
