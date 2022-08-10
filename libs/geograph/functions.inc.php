@@ -73,7 +73,7 @@ function log_script_timing()
 		if ($h)
 		{
 			$time = date("i:s");
-			$logline = "$timetaken,$time,{$_SERVER['SCRIPT_URL']},{$_SERVER['REQUEST_METHOD']},\"{$_SERVER['QUERY_STRING']}\",{$_SERVER['REMOTE_ADDR']},{$USER->user_id},\"{$_SERVER['HTTP_REFERER']}\"\n";
+			$logline = "$timetaken,$time,{$_SERVER['SCRIPT_NAME']},{$_SERVER['REQUEST_METHOD']},\"{$_SERVER['QUERY_STRING']}\",{$_SERVER['REMOTE_ADDR']},{$USER->user_id},\"{$_SERVER['HTTP_REFERER']}\"\n";
 
 			fwrite($h,$logline);
 
@@ -810,6 +810,7 @@ function get_loadavg()
 
 //available as a function, as doesn't come into effect if just re-using a smarty cache
 function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl') {
+return;
 	global $smarty,$USER,$CONF;
 	if ($threshold == 0) {
 		if ($CONF['template']=='archive') {
