@@ -9,7 +9,7 @@
 	}
 </style>{/literal}
 
-<h2>Your personalised Geograph Calendar for 2022</h2>
+<h2>Your personalised Geograph Calendar</h2>
 
 <div class="helptext">
 
