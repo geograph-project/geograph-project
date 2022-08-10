@@ -126,7 +126,7 @@
 			<div style="font-size:0.8em;"><b>{$day.number}</b> 
 			
 			{if $day.image}
-				(<a href="/search.php?taken_endDay={$day.number}&amp;taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startDay={$day.number}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken&amp;do=1">more</a>)</div>
+				(<a href="/search.php?taken_endDay={$day.number}&amp;taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startDay={$day.number}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken&amp;do=1{if $u}&amp;u={$u}{/if}">more</a>)</div>
 				
 				<div style="text-align:center;width:120px;height:120px;vertical-align:middle">
 					<a title="{$day.image->grid_reference} : {$day.image->title|escape:'html'} by {$day.image->realname|escape:'html'} - click to view full size image" href="/photo/{$day.image->gridimage_id}">{$day.image->getThumbnail(120,120)}</a>
