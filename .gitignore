@@ -10,3 +10,5 @@ _attic/
 dev-startup.sh
 bin/
 fakedump/
+google-api-php-client/
+backups/by-table/

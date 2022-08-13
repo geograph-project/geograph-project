@@ -21,9 +21,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (strlen(`whereis xz`) < 5) die("xz is not installed\n");
+if (strlen(`whereis gpg`) < 6) die("gpg is not installed\n"); //todo check the geograph public key is installed!
+if (strlen(`whereis mysqldump`) < 12) die("mysqldump is not installed\n");
+if (!extension_loaded('mysqli')) die("mysqli extension not available\n");
+
 //these are the arguments we expect
 $param=array(
-	'dir'=>'/var/www/geograph_svn',		//base installation dir
+	'dir'=>'/var/www/geograph',		//base installation dir
 	'config'=>'staging.geograph.org.uk', //effective config
 	'type'=>'',
 	'size'=>0,
@@ -72,8 +77,13 @@ $gray = "\033[32m"; //https://stackoverflow.com/questions/5947742/how-to-change-
 //--------------------------------------------
 # here we connect manually, to avoid having to load adodb and global (to make this script as portable as possible!)
 
-//todo, use docker config
-require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
+if (stream_resolve_include_path('conf/'.$_SERVER['HTTP_HOST'].'.conf.php')) {
+	//even if using CONF_PROFILE, there MAY be a specific config file to use
+	require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php'); //this file will STILL need to use CONF_PROFILE
+
+} elseif (!empty($_SERVER['CONF_PROFILE'])) {
+	require('conf/'.$_SERVER['CONF_PROFILE'].'.conf.php');
+}
 
 $db = mysqli_connect($CONF['db_connect'], $CONF['db_user'], $CONF['db_pwd'], $CONF['db_db']);
 
@@ -411,6 +421,25 @@ foreach(getAll($sql) as $row) {
 
 	command(""); //just to output a newline!
 }
+
+#################################################################
+
+if (!empty($CONF['s3_bytable_bucket_path'])) {
+	//send-to-s3 cant do recursive, so we need to find each folder!
+	$h = popen("find $folder -type f -printf '%h\\n' | uniq", 'r');
+	while ($h && !feof($h)) {
+		$line = trim(fgets($h));
+		if (empty($line))
+			continue;
+
+		$dest = str_replace($folder,'/mnt/s3/by-table/', $line); //this fake folder is known by the filesystem class!
+
+		$cmd = "php ".__DIR__."/send-to-s3.php --src=$line/ --dst=$dest/ --include=\"*$ext\" --config={$param['config']} --move=1 --dry=".$param['dry'];
+		command($cmd);
+	}
+}
+
+#################################################################
 
 print "all done\n";
 
