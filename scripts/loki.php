@@ -88,7 +88,7 @@ if (empty($CONF['loki_address']))
 
 		$filesystem->buckets[$destination] = $CONF['s3_loki_bucket_path'];
 
-		foreach (range(-16,-1) as $offset) {
+		foreach (range(-15,-1) as $offset) { //loki only keeps 16 days, but cant use 16, and day 16 will be partial! (and loki hard errors, if outside its time!)
 			$d = date('Y-m-d',strtotime($offset.' day'));
 			$base = "nginxaccess.$d.log";
 
@@ -160,6 +160,10 @@ if (empty($CONF['loki_address']))
 
 			//todo if ($r['status'] != 'success') continue; //to retry the last, possibly after a long sleep!
 			if (@$r['status'] != 'success') {
+				if ($sleep > 16) {
+					debug_message('[Geograph] Loki Fetch failure '.$start, print_r($param,true).print_r($r,true) );
+					die("Aborting\n");
+				}
 				$sleep++;
 				$sleep*=2;
 				print "Failed! Needs to retry $start. Now sleeping for $sleep seconds.... ";
@@ -182,7 +186,7 @@ if (empty($CONF['loki_address']))
 		print_r($r);
 		print "Written to {$param['filename']}\n";
                 if ($param['compress']) {
-                        passthru("gzip -v {$param['filename']}");
+                        passthru("gzip -vf {$param['filename']}");
                 }
 	}
 
