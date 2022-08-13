@@ -54,9 +54,9 @@ class RebuildImageTakenStat extends EventHandler
 			images int unsigned not null,
 			geographs int unsigned not null)");
 
-		$count = $db->getOne("SELECT COUNT(*) FROM gridimage_search");
+		$max_id = $db->getOne("SELECT max(gridimage_id) FROM gridimage_search");
 
-		for($start=1;$start<$count;$start+=100000) {
+		for($start=1;$start<$max_id;$start+=100000) {
 			$crit = sprintf("gridimage_id BETWEEN %d AND %d",$start,$start+99999);
 			$this->Execute("INSERT INTO imagetaken_stat_tmp
 				SELECT imagetaken,gridimage_id,count(*) AS images,sum(moderation_status='geograph') as geographs
