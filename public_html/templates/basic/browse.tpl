@@ -10,7 +10,7 @@
 {include file="_std_begin.tpl"}
 
 
-<div style="position:relative;margin-top:5px; margin-left:10px; width:850px;">
+<div style="position:relative;padding-top:5px; padding-left:10px; width:850px;">
 <div style="position:relative;float:left;width:530px">
 
 {if $showresult}
