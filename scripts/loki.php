@@ -84,9 +84,7 @@ if (empty($CONF['loki_address']))
 		if (empty($filesystem)) //eventually gloabl will do this!
 		        $filesystem = new FileSystem(); //sets up configuation automagically
 		$source = "/tmp/loki-logs/";
-		$destination = "/mnt/s3/fake/";
-
-		$filesystem->buckets[$destination] = $CONF['s3_loki_bucket_path'];
+		$destination = "/mnt/s3/logs/"; //this is a virtual folder - maps to 's3_loki_bucket_path'
 
 		foreach (range(-15,-1) as $offset) { //loki only keeps 16 days, but cant use 16, and day 16 will be partial! (and loki hard errors, if outside its time!)
 			$d = date('Y-m-d',strtotime($offset.' day'));
@@ -120,7 +118,7 @@ if (empty($CONF['loki_address']))
 		}
 
 		if (!empty($cmd)) { //actully did something!
-			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst={$CONF['s3_loki_bucket_path']} --move=1 --dry=0 --config={$param['config']}";
+			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst=$destination --move=1 --dry=0 --config={$param['config']}";
 			if ($param['debug']) {
 				print "$cmd\n";
 			} else {

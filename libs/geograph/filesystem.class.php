@@ -89,6 +89,8 @@ if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
 	$this->buckets = array(
                 "{$_SERVER['BASE_DIR']}/public_html/" => $CONF['s3_photos_bucket_path'],
 		"{$_SERVER['BASE_DIR']}/rastermaps/" => $CONF['s3_rastermaps_bucket_path'],
+		"{$_SERVER['BASE_DIR']}/backups/by-table/" => $CONF['s3_bytable_bucket_path'],
+		"/mnt/s3/logs/" => $CONF['s3_loki_bucket_path'],
 	);
 }
 
