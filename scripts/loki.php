@@ -30,7 +30,7 @@ $PREHELP = "Download log files from a loki server. Works in THREE modes: 'auto',
 ############################################
 
 $param=array(
-	'auto' => false, //experimental mode, that aims to automate daily downloads
+	'auto' => false, //special mode that downloads a daily log, and archives to S3. either true for nginx or use 'ingress' to save the production ingress logs
 
 	//main mode, to get loop and download to a filename
 	'filename'=>false, //the filename to save the logs to! opened in 'a' mode (appends to existing file)
@@ -90,26 +90,39 @@ if (empty($CONF['loki_address']))
 
 		foreach (range(-15,-1) as $offset) { //loki only keeps 16 days, but cant use 16, and day 16 will be partial! (and loki hard errors, if outside its time!)
 			$d = date('Y-m-d',strtotime($offset.' day'));
-			$base = "nginxaccess.$d.log";
+			if ($param['auto'] == 'ingress')
+				$base = "ingress.$d.log";
+			else
+				$base = "nginxaccess.$d.log";
 
+			//if have the file locally can skip, if it .gz, then it must be complete. partial files wouldnt be compressed
+			if (file_exists($source.$base.".gz"))
+				continue;
+
+			//if already on remote
 			if ($filesystem->file_exists($destination.$base.".gz"))
 				continue;
 
 			if (!is_dir($source))
 				mkdir($source);
 
-			$cmd = "php ".__DIR__."/loki.php --filename=$source$base --date=$d --limit=5000 --all=1 --compress=1";
+			$cmd = "php ".__DIR__."/loki.php --filename=$source$base --date=$d --limit=5000 --all=1 --compress=1 --config={$param['config']}";
+
+			if ($param['auto'] == 'ingress')
+				//{job="tcl-ingress/ingress-nginx", stream="stdout"} |= "production-geograph-http"
+				$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/ingress-nginx", stream="stdout"}')." --string=production-geograph-http";
+
 			if ($param['debug']) {
-				print "$cmd --config={$param['config']}\n";
+				print "$cmd\n";
 			} else {
 				passthru($cmd);
 			}
 		}
 
 		if (!empty($cmd)) { //actully did something!
-			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst={$CONF['s3_loki_bucket_path']} --move=1 --dry=0";
+			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst={$CONF['s3_loki_bucket_path']} --move=1 --dry=0 --config={$param['config']}";
 			if ($param['debug']) {
-				print "$cmd --config={$param['config']}\n";
+				print "$cmd\n";
 			} else {
 				passthru($cmd);
 			}
