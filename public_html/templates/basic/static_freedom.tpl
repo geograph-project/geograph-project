@@ -15,11 +15,12 @@ who help create it or use it. To bring that about:</p>
 <ul>
 <li>The source code for the website is open source and
 licensed under the GNU General Public Licence (GPL).</li>
-<li>All photographic submissions are licensed by the original submitter under
+
+<li>All photographic and attached metadata submissions are licensed by the original submitter under
 a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">
 Creative Commons Attribution-ShareAlike licence</a> 
 granting everyone the rights to use the image
-for any purpose (including commercial use), as long as credit is given 
+for any purpose (including commercial use and including the sale of the images and attached metadata), as long as credit is given 
 to the copyright holder and that derivative works use the same licence.</li>
 </ul>
 
