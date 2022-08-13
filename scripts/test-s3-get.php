@@ -23,10 +23,17 @@
 
 ############################################
 
-$param = array('path'=>'','d'=>'/','c'=>true,'max'=>'', 'verbose'=>0, 'log'=>0, 'command'=>false);
+$param = array('path'=>'','dst'=>'', 'verbose'=>0, 'log'=>0, 'execute'=>false);
 
+//has to tbe FIRST!
 if (!empty($argv[1]) && strpos($argv[1],'/') === 0)
 	$_SERVER['argv'][1] = "--path=".$argv[1]; //our parser doesnt understand unprefixed options, so convert to a proper option
+
+//hast to be LAST!
+$last = count($_SERVER['argv']);
+if (strpos($argv[$last-1],'/') === 0) {
+	$_SERVER['argv'][$last-1] = "--dst=".$argv[$last-1];
+}
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -47,46 +54,31 @@ if (!empty($param['verbose'])) {
 
 ############################################
 
-list($bucket,$prefix) = $r = $filesystem->getBucketPath($param['path']);
+list($bucket,$filename) = $r = $filesystem->getBucketPath($param['path']);
 //print_r($r);
 print "# Bucket = $bucket\n";
-print "# Prefix = $prefix\n";
-print "# Max = {$param['max']}\n";
+print "# filename = $filename\n";
+
+if (empty($bucket))
+	die("unknown bucket\n");
 
 ############################################
 
-// public static function getBucket($bucket, $prefix = null, $marker = null, $maxKeys = null, $delimiter = null, $returnCommonPrefixes = false)
+$dir = dirname($param['dst']);
 
-if (!empty($bucket)) {
-	$marker = null;
+if (is_dir($param['dst']))
+	$dst = rtrim($param['dst'],'/').'/'.basename($filename);
+elseif(is_dir($dir) && is_writable($dir))
+	$dst = rtrim($dir,'/').'/'.basename($filename);
 
-//$i = $filesystem->getBucket($bucket);
+print "# dest = $dst\n";
 
-
-//$i = $filesystem->getBucket($bucket, $prefix, $marker, null, '/');
-
-	$list = $filesystem->getBucket($bucket, $prefix, $marker, $param['max'], $param['d'], $param['c']);
-	foreach ($list as $filename => $row) {
-		if (!empty($row['prefix'])) { //a virtual directory!
-			printf("%s %10s %16s %16s %s\n",
-				 'd', '', '', '', $filename);
-		} else { // else a file
-			printf("%s %10d %16s %16s %s   %s\n",
-				 '-', $row['size'], date('Y-m-d H:i:s',$row['time']), $row['hash'], $filename, $row['class']);
-
-			if ($param['command']) {
-				//we dont use $filesystem->command(..) becuase we dont have a local path, we only have the internal bucket key
-				$cmd = $param['command'];
-				if (strpos($cmd,'%d')===FALSE)
-	                                $cmd.=" %d"; //add to end!
-
-				$tmp_dst = $filesystem->_get_remote_as_tempfile($bucket, $filename);
-				$cmd = str_replace('%d',$tmp_dst, $cmd);
-				print "$cmd\n";
-				passthru($cmd); //todo, maybe passthur not right version
-				print "\n";
-			}
-		}
+if (!empty($dst) && !empty($param['execute'])) {
+	$tmp_dst = $filesystem->_get_remote_as_tempfile($bucket, $filename);
+	if ($tmp_dst && file_exists($tmp_dst)) {
+		rename($tmp_dst, $dst);
+	} else {
+		die("unable to fetch file?\n");
 	}
 }
 

@@ -53,9 +53,6 @@ print $DSN."\n";
 
 print "database: ".$db->getOne("SELECT DATABASE()")."\n";
 
-
-print_r($db->getAll("SHOW MASTER STATUS"));
-
 ############################################
 
 $where = array();
@@ -89,79 +86,59 @@ $r = '';
 foreach ($rows as $row) {
 	if ($row['table_name'] == 'gridimage_queue'
 		 || strpos($row['table_name'],'checksum') !== FALSE
-		 || preg_match('/^(test|tmp)/',$row['table_name'])
+		 || strpos($row['table_name'],'tmp') === 0
 		 || preg_match('/_(old|backup|back|merge|test|tmp|tmp2)$/',$row['table_name'])) {
 		print "SKIPPING {$row['table_name']}\n\n";
 		continue;
 	}
 
-	restart:
-	print str_repeat('#',80)."\n";
-	print implode("\t",$row)."\n";
+	$bits = $db->getRow("SHOW CREATE TABLE {$row['table_name']}");
+	$create = array_pop($bits);
+	print "/* $create; */\n";
 
-	$sql = "select TABLE_NAME,INDEX_NAME,SEQ_IN_INDEX,COLUMN_NAME,INDEX_TYPE,CARDINALITY,DATA_TYPE 
-	from information_schema.STATISTICS inner join information_schema.columns using (TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME) 
-	where TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ".$db->Quote($row['table_name']);
-	$data = $db->getAll($sql);
-	$primary = 0;
-	if ($data) foreach ($data as $index) {
-		if ($index['INDEX_NAME'] == 'PRIMARY')
-			$primary++;
-		if ($index['INDEX_NAME'] == 'PRIMARY' && $index['SEQ_IN_INDEX'] > 1)
-			print "Compound Primary key ({$index['COLUMN_NAME']})\n";
-		if ($index['INDEX_NAME'] == 'PRIMARY' && strpos($index['DATA_TYPE'],'int') === FALSE)
-			print "Non-Int Primary key ({$index['COLUMN_NAME']} : {$index['DATA_TYPE']})\n";
+	$describe = $db->getAssoc("DESCRIBE {$row['table_name']}");
 
-		if ($index['INDEX_TYPE'] == 'SPATIAL')
-			print "Has Spatial Index ({$index['COLUMN_NAME']})\n";
-		elseif ($index['INDEX_TYPE'] == 'FULLTEXT')
-			print "Has FullText Index ({$index['COLUMN_NAME']})\n";
+	$sep = "ALTER TABLE {$row['table_name']}\n";
 
-		//todo
-		//PHP Fatal error:  mysqli error: [1118: Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.] in EX
-		//sum up lengs of varchar?
-	}
-	if (empty($data))
-		print "No Keys at all!\n";
-	elseif (empty($primary))
-		print "No Primary Key!\n";
+	print "/* SELECT * FROM {$row['table_name']} PROCEDURE ANALYSE() */ \n";
+$result = $db->getAll("SELECT * FROM {$row['table_name']} PROCEDURE ANALYSE()");
 
+/*
+             Field_name: geograph_live.gridimage_tag.updated
+              Min_value: 0000-00-00 00:00:00
+              Max_value: 2022-08-12 12:14:27
+             Min_length: 19
+             Max_length: 19
+       Empties_or_zeros: 0
+                  Nulls: 0
+Avg_value_or_avg_length: 19.0000
+                    Std: NULL
+      Optimal_fieldtype: CHAR(19) NOT NULL
+*/
+	$sql = '';
+	foreach ($result as $row) {
+		$bits = explode('.',$row['Field_name']);
+		$column = array_pop($bits);
+		$sql .= "$sep  MODIFY `$column` {$row['Optimal_fieldtype']}";
 
-
-	$sql = "ALTER TABLE `{$row['table_name']}` ENGINE={$param['d']}";
-
-
-	print "$sql;\n";
-	if ($r != 'a')
-		$r = readline('Execute (c/l/d/y)? ');
-	if ($r == 'c') {
-		$c = $db->getRow("SHOW CREATE TABLE `{$row['table_name']}`");
-		print array_pop($c).";\n";
-		goto restart;
-
-	} elseif ($r == 'l') {
-		$r = $db->getRow("SHOW TABLE STATUS FROM `geograph_live` LIKE '{$row['table_name']}'");
-		print_r($r);
-		goto restart;
-
-	} elseif ($r == 'd') {
-		$sql = "UPDATE _tables SET type = 'derivied' WHERE table_name = ".$db->Quote($row['table_name']);
-		$db->Execute($sql);
-		$sql = "UPDATE geograph_live._tables SET type = 'derivied' WHERE table_name = ".$db->Quote($row['table_name']);
-		$db->Execute($sql);
-
-	} elseif ($r == 'y' || $r == 'a') {
-
-		$start = microtime(true);
-		$db->Execute($sql);
-		$end = microtime(true);
-		print date('r').sprintf(', took %.3f seconds, %d affected rows.',$end-$start,$db->Affected_Rows())."\n\n";
-
-		if ($param['d'] == 'InnoDB') {
-			$seconds = round($end-$start);
-			$sql = "UPDATE _tables SET toidb_seconds = $seconds WHERE table_name = ".$db->Quote($row['table_name']);
-			$db->Execute($sql);
+		if (!empty($describe[$column]['Extra'])) {
+			//the suggested type, does not include this, eg auto_increment
+			 $sql .= " ".$describe[$column]['Extra'];
 		}
+		$sep = ",\n";
+	}
+	print "$sql;\n\n";
+
+        if ($r != 'a')
+	        $r = readline('Execute (n/y)? ');
+
+        if ($r == 'y' || $r == 'a') {
+
+                $start = microtime(true);
+                $db->Execute($sql);
+                $end = microtime(true);
+                print date('r').sprintf(', took %.3f seconds, %d affected rows.',$end-$start,$db->Affected_Rows())."\n\n";
+
 	}
 }
 

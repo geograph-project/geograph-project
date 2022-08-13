@@ -25,6 +25,7 @@
 
 //these are the arguments we expect
 $param=array(
+	'host'=>'',
 	'rows'=>0,
 	's' => 'MRG_MyISAM',
 	'd' => 'InnoDB',
@@ -35,6 +36,14 @@ require "./_scripts.inc.php";
 
 ############################################
 
+$host = $CONF['db_connect'];
+if ($param['host']) {
+    $host = $param['host'];
+}
+print(date('H:i:s')."\tUsing server: $host\n");
+$DSN = str_replace($CONF['db_connect'],$host,$DSN);
+
+//uses $GLOBALS['DSN']
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 

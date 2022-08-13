@@ -27,6 +27,7 @@
 $param=array(
 	'tables'=>'',
 	'count'=>10,
+	'host'=>'',
 );
 
 chdir(__DIR__);
@@ -34,6 +35,14 @@ require "./_scripts.inc.php";
 
 ############################################
 
+$host = $CONF['db_connect'];
+if ($param['host']) {
+    $host = $param['host'];
+}
+print(date('H:i:s')."\tUsing server: $host\n");
+$DSN = str_replace($CONF['db_connect'],$host,$DSN);
+
+//uses $GLOBALS['DSN']
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
@@ -48,6 +57,8 @@ if (!empty($param['tables'])) {
 	$tables = explode(',',$param['tables']);
 
 	$rows = $db->getAll("SELECT grid_reference,x,y FROM gridsquare WHERE imagecount > 5 ORDER BY RAND() LIMIT {$param['count']}");
+
+	print "testing ".count($rows)." queries:\n";
 
 	$stat = array();
 	foreach ($rows as $row) {
@@ -100,6 +111,15 @@ foreach ($rows as $row) {
         $end = microtime(true);
 
         print date('r').sprintf(', took %.3f seconds, %d rows.',$end-$start,$result->_numOfRows)."\n\n";
+
+	if ($db->getOne("show columns from $table LIKE 'x'")) {
+
+	        $start = microtime(true);
+        	$result = getSpatialAll($table,'count(*)');
+	        $end = microtime(true);
+
+	        print date('r').sprintf(', took %.3f seconds, %d rows.',$end-$start,$result->_numOfRows)."\n\n";
+	}
 }
 
 
@@ -116,6 +136,29 @@ foreach ($rows as $row) {
                                         $right=$x+$d-1;
                                         $top=$y+$d-1;
                                         $bottom=$y-$d;
+
+                                        $rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+                                        $sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
+
+		$sql = "SELECT SQL_NO_CACHE $select FROM $table WHERE $sql_where";
+
+		return $db->Execute($sql);
+	}
+
+
+
+	function getSpatialAll($table,$select = "COUNT(*)") {
+		global $db;
+
+		$sql_where = '';
+
+			$row = $db->getRow("select min(x),min(y),max(x),max(y) from $table"); //this can be query cached!
+
+                                        $left=$row['min(x)'];
+                                        $right=$row['max(x)'];
+                                        $top=$row['max(y)'];
+                                        $bottom=$row['min(y)'];
 
                                         $rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
