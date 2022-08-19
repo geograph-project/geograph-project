@@ -295,7 +295,9 @@ SELECT
 	REPLACE(gi.imagetaken,'-','') AS takenday, 
 	REPLACE(substring(gi.imagetaken,1,7),'-','') AS takenmonth, 
 	substring(gi.imagetaken,1,4) AS takenyear,
-	gi.user_id, 
+        CONCAT(substring(gi.imagetaken,1,3),'tt') AS decade, 
+      coalesce(MONTHNAME(gi.imagetaken),'Unknown') AS monthname, 
+        gi.user_id, CONCAT('user',gi.user_id) as user, 
 	gi.realname, 
 	gi.title, 
 	gi.comment,
@@ -303,12 +305,15 @@ SELECT
 	CONCAT(SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-3),SUBSTRING(gi.grid_reference,LENGTH(gi.grid_reference)-1,1)) AS hectad,
 	gi.imageclass, 
 	gi.grid_reference,
+      g2.natgrlen,
         (gi.reference_index * 1000000000 + IF(g2.natgrlen+0 <= 3,(g2.nateastings DIV 100) * 100000 + (g2.natnorthings DIV 100),0)) AS scenti,
 	RADIANS(wgs84_lat) AS wgs84_lat,
 	RADIANS(wgs84_long) AS wgs84_long,
+      gi.x, gi.y, 
+      CONCAT('ftf',gi.ftf) AS ftf,
 	CONCAT('_SEP_ ',REPLACE(contexts,';',' _SEP_ '),' _SEP_') AS contexts, context_ids,
 	CONCAT('_SEP_ ',REPLACE(subjects,';',' _SEP_ '),' _SEP_') AS subjects, subject_ids,
-	CONCAT('_SEP_ ',coalesce(REPLACE(types,';',' _SEP_ '), IF(gi.moderation_status='accepted','Supplemental','Geograph') ,' _SEP_') AS types,
+	CONCAT('_SEP_ ',coalesce(REPLACE(types,';',' _SEP_ '), IF(gi.moderation_status='accepted','Supplemental','Geograph')) ,' _SEP_') AS types,
 		    coalesce(type_ids, IF(gi.moderation_status='accepted',195749,172412) ) as type_ids,
 	CONCAT('_SEP_ ',REPLACE(t.tags,  ';',' _SEP_ '),' _SEP_') AS tags,     t.tag_ids,
 	CONCAT('_SEP_ ',REPLACE(groups,  ';',' _SEP_ '),' _SEP_') AS groups,   group_ids,
@@ -316,21 +321,31 @@ SELECT
 	CONCAT('_SEP_ ',REPLACE(snippets,';',' _SEP_ '),' _SEP_') AS snippets, snippet_ids,
 	CONCAT('_SEP_ ',REPLACE(wikis,   ';',' _SEP_ '),' _SEP_') AS wikis,    wiki_ids,
 	IF(gi.moderation_status='accepted','supplemental',gi.moderation_status) AS status,
+        RADIANS(vlat) AS vlat,
+        RADIANS(vlong) AS vlong,
+        g2.viewpoint_grlen as vgrlen,
 	(gi.reference_index * 1000000 + (viewpoint_northings DIV 1000) * 1000 + viewpoint_eastings DIV 1000) AS viewsquare,
-	IF(natnorthings>0 AND viewpoint_eastings>0,
-		pow(2,floor(log2(SQRT(
-			(nateastings-viewpoint_eastings)*(nateastings-viewpoint_eastings)
-			+(natnorthings-viewpoint_northings)*(natnorthings-viewpoint_northings)
-		))))
-		,'Unknown') AS distance,
+        IF(natnorthings>0 AND viewpoint_eastings>0,
+                pow(2,floor(log2(SQRT(
+                        pow(cast(nateastings as signed)-cast(viewpoint_eastings as signed),2)
+                        +pow(cast(natnorthings as signed)-cast(viewpoint_northings as signed),2)
+                ))))
+                ,'Unknown') AS distance,
 	IF(view_direction=-1,'Unknown',view_direction) AS direction,
-	IF(ABS(width-height) <= 60,'square',IF(width>height,IF(width>(height*2),'panorama','landscape'),'portrait')) AS format,
+	IF(ABS(cast(width as signed)-cast(height as signed)) <= 60,'square',IF(width>height,IF(width>(height*2),'panorama','landscape'),'portrait')) AS format,
 	gs.placename_id, 
 	sequence, 
-	Place as place,
-	County as county,
-	Country as country,
-	SUBSTRING(MD5(CONCAT(gi.gridimage_id,gi.user_id,'{$CONF['photo_hashing_secret']}')),1,8) AS hash
+        coalesce(score,130) AS score, 
+        coalesce(baysian*100,300) AS baysian, 
+        coalesce(Place,'Unknown') as place,
+        coalesce(County,'Unknown') as county,
+        coalesce(Country,'Unknown') as country,
+        SUBSTRING(MD5(CONCAT(gi.gridimage_id,gi.user_id,'secret-hash')),1,8) AS hash, 
+      concat( if(greatest(original_width,original_height) >= 3000,'3000 ',''), if(greatest(original_width,original_height) >= 1600,'1600 ',''), if(greatest(original_width,original_height) >= 1024,'1024 ',''), if(greatest(original_width,original_height) >= 800,'800 ',''), if(greatest(original_width,original_height) >= 640,'641 ','') ) AS larger, 
+      greatest(original_width,original_height) as original, 
+      width, height, 
+      coalesce(l.name,'Unknown') AS landcover, 
+      gs.percent_land AS land 
 FROM gridimage_search gi
 	INNER JOIN gridimage g2 USING (gridimage_id)
 	INNER JOIN gridimage_size USING (gridimage_id)
@@ -338,6 +353,7 @@ FROM gridimage_search gi
 	LEFT JOIN sphinx_placenames p ON (p.placename_id = gs.placename_id)
 	LEFT JOIN sphinx_tags t ON  (gi.gridimage_id = t.gridimage_id)
 	LEFT JOIN sphinx_terms c ON (gi.gridimage_id = c.gridimage_id)
+      LEFT JOIN landcover l USING (landcover_id)
 ";
 //BE WEARY OF ADDING GROUP BY TO THIS QUERY, AS THE SCHEMA BELOW USING LIMIT 1 WILL STRUGGLE.
 
