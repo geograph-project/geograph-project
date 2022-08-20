@@ -25,7 +25,8 @@
 //these are the arguments we expect
 $param=array(
         'rebuild'=>false, //force rebuild tags/terms - false only creates if not exist
-        'schema'=>false, //show the schema used to create a new sphinx index. 
+        'schema'=>false, //show the schema used to create a new sphinx index.
+	'view'=>false,  //create a actual database view!
 );
 
 
@@ -282,14 +283,14 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_placenames'")) {
 
 #####################################################
 
-if (empty($param['schema'])) {
+if (empty($param['schema']) && empty($param['view'])) {
         fwrite(STDERR,date('H:i:s ')."ALL DONE\n");
 	exit();
 }
 
 $sql = "
 SELECT 
-	gi.gridimage_id, 
+	gi.gridimage_id AS id, 
 	UNIX_TIMESTAMP(gi.submitted) AS submitted, 
 	TO_DAYS(REPLACE(gi.imagetaken,'-00','-01')) AS takendays,
 	REPLACE(gi.imagetaken,'-','') AS takenday, 
@@ -340,7 +341,7 @@ SELECT
         coalesce(Place,'Unknown') as place,
         coalesce(County,'Unknown') as county,
         coalesce(Country,'Unknown') as country,
-        SUBSTRING(MD5(CONCAT(gi.gridimage_id,gi.user_id,'secret-hash')),1,8) AS hash, 
+        SUBSTRING(MD5(CONCAT(gi.gridimage_id,gi.user_id,'{$CONF['photo_hashing_secret']}')),1,8) AS hash, 
       concat( if(greatest(original_width,original_height) >= 3000,'3000 ',''), if(greatest(original_width,original_height) >= 1600,'1600 ',''), if(greatest(original_width,original_height) >= 1024,'1024 ',''), if(greatest(original_width,original_height) >= 800,'800 ',''), if(greatest(original_width,original_height) >= 640,'641 ','') ) AS larger, 
       greatest(original_width,original_height) as original, 
       width, height, 
@@ -357,8 +358,26 @@ FROM gridimage_search gi
 ";
 //BE WEARY OF ADDING GROUP BY TO THIS QUERY, AS THE SCHEMA BELOW USING LIMIT 1 WILL STRUGGLE.
 
-fwrite(STDERR,date('H:i:s ')."Getting Schema...\n");
 
+####################################################
+
+if (!empty($param['view'])) {
+	if ($param['view'] > 1) {
+		$db->Execute("DROP VIEW IF EXISTS sphinx_view");
+	}
+
+	fwrite(STDERR,date('H:i:s ')."Creating view...\n");
+
+	$sql = "CREATE VIEW sphinx_view AS $sql";
+
+	$db->Execute($sql);
+
+	exit;
+}
+
+####################################################
+
+fwrite(STDERR,date('H:i:s ')."Getting Schema...\n");
 
 $result = $db->Execute("$sql LIMIT 1") or die($db->ErrorMsg());
 
