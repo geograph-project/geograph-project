@@ -73,6 +73,7 @@ Disallow: /faq-
 User-Agent: Googlebot
 User-Agent: Slurp
 User-Agent: Yandex
+User-Agent: ia_archiver
 Disallow: /stuff/canonical.php
 Disallow: /browser/?
 Disallow: /browser/#
