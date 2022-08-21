@@ -509,7 +509,7 @@ function addOurControls(map) {
 		}}).addTo(map);
 
 	if (L.Control.fileLayerLoad) {
-		filelayer = L.Control.fileLayerLoad().addTo(map);
+		filelayer = L.Control.fileLayerLoad({fileSizeLimit:10240}).addTo(map);
 
 	        filelayer.loader.on('data:loaded', function (event) {
         	    // event.layer gives you access to the layers you just uploaded!
@@ -517,5 +517,8 @@ function addOurControls(map) {
 	            // Add to map layer switcher
         	    layerswitcher.addOverlay(event.layer, event.filename);
 	        });
+		filelayer.loader.on('data:error', function (error) {
+		        alert(error);
+		});
 	}
 }
