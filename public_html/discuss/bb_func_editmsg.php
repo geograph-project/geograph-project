@@ -10,6 +10,8 @@ $useredit=86400*7;
 //nice hack huh? :(
 if ($_REQUEST['forum']==6 || $_REQUEST['forum']==11)
 	$useredit=86400*365*5;
+if ($_REQUEST['post'] == 32743)
+	$useredit=86400*365;
 
 if(isset($_GET['post'])) $post=$_GET['post']; elseif(isset($_POST['post'])) $post=$_POST['post']; else $post=0;
 if(isset($_GET['anchor'])) $anchor=$_GET['anchor']; elseif(isset($_POST['anchor'])) $anchor=$_POST['anchor']; else $anchor=0;
