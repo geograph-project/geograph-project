@@ -157,12 +157,30 @@ split_timer('gazetteer'); //starts the timer
 			$places = array();
 			$left=$e-$radius;
 			$right=$e+$radius;
-			$top=$n-$radius;
+			$top=$n-$radius; //top/bottom are reversed, as spatial query works best 'down' the map, rather than numerically
 			$bottom=$n+$radius;
 
-			$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+			if (!empty($CONF['manticorert_host'])) {
+				if (empty($rt))
+					$sprt = GeographSphinxConnection('manticorert',true);
+				//manticore can optimize this quite well. as it keeps stuff in memory. or can use columnar!
+				$places = $sprt->GetRow("select
+					`def_nam` as full_name,
+					CONCAT('PPL') as dsg,
+					1 as reference_index,
+					`full_county` as adm1_name,
+					(id + 2000000) as pid,
+					( pow(east-{$e},2)+pow(north-{$n},2) ) as distance,
+					CONCAT('OS250') as gaz
+				from os_gaz_250
+				where east between $left and $right
+					and north between $top and $bottom
+				order by distance asc limit 1"); //east/north are already signed bigint, so signed maths works
 
-			$places = $db->GetRow("select
+			} else {
+				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
+
+				$places = $db->GetRow("select
 					`def_nam` as full_name,
 					'PPL' as dsg,
 					1 as reference_index,
@@ -177,6 +195,7 @@ split_timer('gazetteer'); //starts the timer
 						GeomFromText($rectangle),
 						point_en)
 				order by distance asc limit 1");
+			}
 
 			$placeradius = 5005;
 			if (!empty($places) && sqrt($places['distance']) > $placeradius) {
@@ -198,7 +217,27 @@ split_timer('gazetteer'); //starts the timer
 				
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-				$places2 = $db->GetRow("select
+				if (!empty($CONF['manticorert_host'])) {
+					$places2 = $sprt->GetRow("select
+                                                `def_nam` as full_name,
+                                                CONCAT('PPL') as dsg,
+                                                1 as reference_index,
+                                                `full_county` as adm1_name,
+                                                `hcounty` as hist_county,
+                                                (id + 1000000) as pid,
+                                                pow(east-{$e},2)+pow(north-{$n},2) as distance,
+                                                f_code,
+                                                CONCAT('OS') as gaz
+                                        from
+                                                os_gaz
+                                        where
+		                                east between $left and $right
+                	                        and north between $top and $bottom
+                                                and f_code not in ($codes)
+                                                AND full_county != 'XXXXXXXX'
+                                        order by distance asc,f_code asc limit 1"); //todo, ordering by f_code doesnt really work here. (its a string attribute, not enum)
+				} else {
+					$places2 = $db->GetRow("select
 						`def_nam` as full_name,
 						'PPL' as dsg,
 						1 as reference_index,
@@ -217,6 +256,7 @@ split_timer('gazetteer'); //starts the timer
 						f_code not in ($codes)
 						AND full_county != 'XXXXXXXX'
 					order by distance asc,f_code+0 asc limit 1");
+				}
 				if (count($places2) && sqrt($places2['distance']) < $placeradius) {
 					$places = $places2;
 					$places['full_name'] .= ' ['.$db->getOne("select code_name from os_gaz_code where f_code = '".$places['f_code']."'")."]";
@@ -330,7 +370,7 @@ split_timer('gazetteer'); //starts the timer
 				}
 			}
 		} else if ($gazetteer == 'open' && $reference_index == 1) {
-			$sss = array();
+
 			$cols = "	if(populated_place='',name1,populated_place) AS full_name,
                                         local_type as dsg,
                                         1 as reference_index,
@@ -346,8 +386,8 @@ split_timer('gazetteer'); //starts the timer
                                                 GeomFromText($rectangle),
                                                 point_en)";
 
-			$places = $db->GetRow($sss[] = "select $cols from os_open_names2 where $where order by distance asc limit 1");
-
+			//first general attempt, might not find an actual place
+			$places = $db->GetRow("select $cols from os_open_names2 where $where order by distance asc limit 1");
 
 			//sometimes its a close road/postcode WITHOUT a populated_place.
 			// (most roads/postcdes HAVE populated_place - so just use it directly!)
@@ -359,16 +399,14 @@ split_timer('gazetteer'); //starts the timer
 				}
 
 				//find a settlement in the right postcode area
-				$places = $db->GetRow($sss[] = "select $cols from os_open_names2 where $where
+				$places = $db->GetRow("select $cols from os_open_names2 where $where
 					and postcode_district = ".$db->Quote($places['postcode_district'])." and type='populatedPlace' order by distance asc limit 1");
 			}
 
 			//if still fail, just find any old settlement.
 			if (empty($places) || (empty($places['populated_place']) && $places['type'] != 'populatedPlace') ) {
-				$places = $db->GetRow($sss[] = "select $cols from os_open_names2 where $where and type='populatedPlace' order by distance asc limit 1");
+				$places = $db->GetRow("select $cols from os_open_names2 where $where and type='populatedPlace' order by distance asc limit 1");
 			}
-
-			print "<!-- ".implode(";\n",$sss)."; -->";
 
 		} else if ($gazetteer == 'hist' && $reference_index == 1) {
 			$places = $db->GetRow("select
@@ -406,7 +444,32 @@ split_timer('gazetteer'); //starts the timer
 				order by distance asc limit 1");
 		} else {
 	//lookup a nearby settlement
-			$places = $db->GetRow("select
+                        if (!empty($CONF['manticorert_host'])) {
+                                if (empty($sprt))
+                                        $sprt = GeographSphinxConnection('manticorert',true);
+                                //manticore can optimize this quite well. as it keeps stuff in memory. or can use columnar!
+				//the 'gaz' index, is based on placename_index, which is in turn on loc_placenames, but not optimized for geo queries
+                                $places = $sprt->GetRow("select
+                                        full_name,
+                                        dsg,
+                                        reference_index,
+                                        adm1_name,
+                                        id as pid,
+                                        pow(e-{$e},2)+pow(n-{$n},2) as distance,
+					CONCAT('geonames') as gaz,
+					country
+                                from
+                                        loc_placenames
+                                where
+                                        MATCH('@dsg PPL*')
+	                                and e between $left and $right
+                                        and n between $top and $bottom
+                                        and reference_index = {$reference_index}
+                                group by gns_ufi
+                                order by distance asc limit 1");
+
+			} else {
+				$places = $db->GetRow("select
 					full_name,
 					dsg,
 					loc_placenames.reference_index,
@@ -415,38 +478,58 @@ split_timer('gazetteer'); //starts the timer
 					pow(e-{$e},2)+pow(n-{$n},2) as distance,
 					'geonames' as gaz,
 					coalesce(loc_adm1.country,loc_placenames.country) as country
-				from 
+				from
 					loc_placenames
 					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 				where
-					dsg LIKE 'PPL%' AND 
-					CONTAINS( 	
+					dsg LIKE 'PPL%' AND
+					CONTAINS(
 						GeomFromText($rectangle),
 						point_en) AND
 					loc_placenames.reference_index = {$reference_index}
 				order by distance asc limit 1");
+			}
 
 	//if found very close then lookup mutliple
-			$d = 2500*2500;	
+			$d = 2500*2500;
 			if (isset($places['distance']) && $places['distance'] < $d) {
-				$nearest = $db->GetAll("select
-					distinct full_name,
-					loc_placenames.id as pid,
-					pow(e-{$e},2)+pow(n-{$n},2) as distance,
-					'geonames' as gaz,
-					coalesce(loc_adm1.country,loc_placenames.country) as country
-				from 
-					loc_placenames
-					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
-				where
-					dsg LIKE 'PPL%' AND 
-					CONTAINS( 	
-						GeomFromText($rectangle),
-						point_en) AND
-					loc_placenames.reference_index = {$reference_index} and
-					pow(e-{$e},2)+pow(n-{$n},2) < $d
-				group by gns_ufi
-				order by distance asc limit 5");
+	                        if (!empty($CONF['manticorert_host'])) {
+        	                        $places = $sprt->GetRow("select
+	                                        full_name,
+	                                        id as pid,
+	                                        pow(e-{$e},2)+pow(n-{$n},2) as distance,
+						CONCAT('geonames') as gaz,
+						country
+                        	        from
+                	                        loc_placenames
+        	                        where
+	                                        MATCH('@dsg PPL*')
+	                        	        and e between $left and $right
+                        	                and n between $top and $bottom
+                	                        and reference_index = {$reference_index}
+						and distance < $d
+        	                        group by gns_ufi
+	                                order by distance asc limit 5");
+				} else {
+					$nearest = $db->GetAll("select
+						distinct full_name,
+						loc_placenames.id as pid,
+						pow(e-{$e},2)+pow(n-{$n},2) as distance,
+						'geonames' as gaz,
+						coalesce(loc_adm1.country,loc_placenames.country) as country
+					from
+						loc_placenames
+						left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
+					where
+						dsg LIKE 'PPL%' AND
+						CONTAINS(
+							GeomFromText($rectangle),
+							point_en) AND
+						loc_placenames.reference_index = {$reference_index} and
+						pow(e-{$e},2)+pow(n-{$n},2) < $d
+					group by gns_ufi
+					order by distance asc limit 5");
+				}
 				$values = array();
 				foreach ($nearest as $id => $value) {
 					$values[] = $value['full_name'];
@@ -466,10 +549,9 @@ split_timer('gazetteer'); //starts the timer
 
 split_timer('gazetteer','findByNational',$mkey); //logs the wall time
 
-	
 		//fails quickly if not using memcached!
 		$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
-		
+
 		return $places;
 	}
 
