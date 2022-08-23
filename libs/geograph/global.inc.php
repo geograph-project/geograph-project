@@ -316,7 +316,15 @@ if (empty($CONF['sphinxql_dsn']) && !empty($CONF['sphinx_host']))
 function GeographSphinxConnection($type='sphinxql',$new = false) { //the new param is legacy and now ignored. all indexes are on the same host!
 	global $CONF;
 
-	if ($type=='sphinxql' || $type=='mysql') {
+	if ($type=='manticorert') {
+
+		$sph = NewADOConnection("{$CONF['db_driver']}://{$CONF['manticorert_host']}:{$CONF['sphinx_portql']}/") or die("unable to connect to search engine");
+		if ($type=='mysql') {
+			return $sph->_connectionID;
+		}
+		return $sph;
+
+	} if ($type=='sphinxql' || $type=='mysql') {
 
 		$sph = NewADOConnection("{$CONF['db_driver']}://{$CONF['sphinx_host']}:{$CONF['sphinx_portql']}/") or die("unable to connect to search engine");
 		if ($type=='mysql') {
