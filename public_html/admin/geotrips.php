@@ -52,13 +52,14 @@ if (!empty($_POST['delete'])) {
 
 print "<p>NOTE: This page is just a stop-gap until we develop a full moderation section. Use it to delete any spam</p>";
 
-print "<p>Use with caution as there is no backup made to be able to undo deletions/alterations</p>";
+print "<p>Use with caution as there is no backup made to be able to undo deletions/alterations. The trip really is fully deleted.</p>";
 
 print "<table cellspacing=0 cellpadding=2 border=1>";
 print "<tr>";
 print "<th>ID</th>";
 print "<th>Title</th>";
 print "<th>By</th>";
+print "<th>Created</th>";
 print "<th>Action</th>";
 print "</tr>";
 
@@ -66,12 +67,13 @@ $limit = 100;
 if (!empty($_GET['all']))
 	$limit = 10000;
 
-$data = $db->getAll("SELECT id,title,start,location,uid,user,FROM_UNIXTIME(updated) as updated FROM geotrips ORDER BY id DESC LIMIT $limit");
+$data = $db->getAll("SELECT id,title,start,location,uid,user,DATE(created) as created FROM geotrips ORDER BY id DESC LIMIT $limit");
 foreach ($data as $row) {
 	print "<tr>";
 	print "<td>#".htmlentities2($row['id'])."</td>";
 	print "<td><a href=\"/geotrips/{$row['id']}\">".htmlentities2($row['title']?$row['title']:'untitled')."</a><br/><span style=\"font-size:0.7em\">".htmlentities2($row['location'])." from ".htmlentities2($row['start'])."</td>";
 	print "<td><a href=\"/profile/{$row['uid']}\">".htmlentities2($row['user'])."</a></td>";
+	print "<td>{$row['created']}</td>";
 	print "<td><a href=\"/geotrips/geotrip_edit.php?trip={$row['id']}\">Edit</a> ";
 	print "<form method=post style=\"display:inline\" onclick=\"return confirm('Are you sure you wish to delete #{$row['id']} - ".htmlentities2($row['title']?$row['title']:'untitled')." - by ".htmlentities2($row['user'])."? THIS CAN NOT BE UNDONE. THERE IS NO BACKUP.')\">";
 	print "<input type=hidden name=delete value=".htmlentities2($row['id']).">";
