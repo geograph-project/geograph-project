@@ -73,16 +73,4 @@ $CONF['origins'] = array(1 => array(206,0), 2 => array(10,149));
 
 $CONF['content_sources'] = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'Contributor', 'category'=>'Category', 'context'=>'Geographical Context', 'other'=>'Other', 'faq'=>'FAQ Answer', 'link' => 'Website Page','cluster' => 'Photo Cluster');
 
-
-
 ########################################################################
-// Hack, just for now. Mutate the config a bit for testing, to save having to have whole seperate configmap for dev
-
-if ($_SERVER['HOSTNAME'] == 'development-0') {
-	$keys = array('CONTENT_HOST'); //at the moment, we dont have other domains setup
-	foreach ($keys as $key)
-		$CONF[$key] = str_replace('staging','development', $CONF[$key]);
-}
-
-
-
