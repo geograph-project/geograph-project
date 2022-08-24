@@ -9,10 +9,10 @@
 <h2>Your personalised Geograph Calendar for {$year}</h2>
 
 <div style="clear:both;float:right;width:360px;margin-right:20px;line-height:0.6;background-color:#e4e4fc;padding:10px;">
+	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Coverthumb2023.jpg" width=360><br><br><br>
+       <img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Imagethumb2023.jpg" width=360><br><br>
+       <img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Monththumb2023.jpg" width=360><br><br>
 
-	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Cover_draftB.jpg" width=360><br><br><br>
-	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/photopage2B_1_.jpg" width=360>
-	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/month_1_.jpg" width=360 ><br><br>
 </div>
 
 

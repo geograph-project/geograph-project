@@ -80,7 +80,7 @@ if (!empty($_POST)) {
 	$updates['print_title'] = @$_POST['print_title']+0;
 	$updates['background'] = @$_POST['background']+0;
 
-	foreach (array('quantity','delivery_name','delivery_line1','delivery_line2','delivery_line3','delivery_line4','delivery_postcode') as $key) {
+	foreach (array('quantity','best_quantity','delivery_name','delivery_line1','delivery_line2','delivery_line3','delivery_line4','delivery_postcode') as $key) {
 		if (isset($_POST[$key]) && $_POST[$key] != $row[$key])
 			$updates[$key] = $_POST[$key];
 		if (empty($updates[$key]) && empty($row[$key]) && $key != 'delivery_line2' && $key != 'delivery_line4')
@@ -98,8 +98,8 @@ if (!empty($_POST)) {
 			$db->Execute('UPDATE calendar SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
 				' WHERE calendar_id = '.$row['calendar_id'], array_values($updates));
 
-			if (!empty($updates['quantity'])) //perhaps could reload whole row, but just need the quantity below
-				$row['quantity'] = $updates['quantity'];
+			foreach($updates as $key => $value)
+				$row[$key] = $updates[$key];
 		}
 
 		if ($row['paid'] > '2') {
@@ -123,7 +123,7 @@ Proceeding to payment...
 <input type="hidden" name="cmd" value="_xclick">
 <input type="hidden" name="business" value="paypal@geograph.org.uk">
 <input type="hidden" name="lc" value="GB">
-<input type="hidden" name="item_name" value="Calendar Order Ref:<? echo "{$row['calendar_id']}/{$row['user_id']}{$row['alpha']}"; ?>">
+<input type="hidden" name="item_name" value="Calendar Order Ref:<? echo "{$row['calendar_id']}/{$row['user_id']}{$row['alpha']}/{$row['year']}"; ?>">
 <input type="hidden" name="invoice" value="<? echo "{$row['user_id']}{$row['alpha']}"; ?>">
 <input type="hidden" name="amount" value="<? echo $cost; ?>">
 <input type="hidden" name="currency_code" value="GBP">
