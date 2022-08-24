@@ -1,19 +1,26 @@
 <html>
 	<head>
-		<title>Ref:{$calendar.user_id}{$calendar.alpha} (Geograph Calendar)</title>
+		<title>Ref:{$calendar.user_id}{$calendar.alpha}/{$calendar.year} (Geograph Calendar)</title>
 	</head>
 	<body>
 
-<fieldset style="background-color:#eee">
-	<legend>View Calendar</legend>
-
 {dynamic}
-<h3 style=margin-top:0>{$calendar.title|escape:"html"|default:'Untitled Calendar'}</h3>
 
-<b>Quantity: {$calendar.quantity}</b><br>
+<fieldset style="background-color:#eee">
+	<legend>View Calendar #{$calendar.calendar_id} Ref:{$calendar.user_id}{$calendar.alpha} /<b>{$calendar.year}</b></legend>
+
+Title: <input type=text size=80 disabled value="{$calendar.title|escape:"html"|default:'Untitled Calendar'}"><br>
+ (include on calendar: {if $calendar.print_title}yes{else}NO{/if})
+
+<hr>
+
+<b>Background:</b> {if $calendar.background}black{else}normal{/if}<br>
+<b>Custom Quantity: {$calendar.quantity}</b><br>
+<b>Best Quantity: {$calendar.best_quantity}</b><br>
 
 Ref:  <b>{$calendar.user_id}{$calendar.alpha}</b><br>
 Delivery Name:  {$calendar.delivery_name|escape:"html"}<br>
+<hr>
 <b>{$message}</b>
 </fieldset>
 <br>
@@ -24,7 +31,7 @@ Delivery Name:  {$calendar.delivery_name|escape:"html"}<br>
 				{$image->sort_order} <b style=color:brown>{$image->month}</b><br>
 				<a href="/photo/{$image->gridimage_id}" style=vertical-align:middle>{$image->getThumbnail(120,120)}</a>
 			</td>
-			<td><span style="width:200px;height:141px;border:1px solid black;padding:0;text-align:center;white-space:nowrap;display:inline-block;vertical-align:middle"
+			<td class=innerImage><div style="width:200px;height:141px;border:1px solid black;padding:0;text-align:center;white-space:nowrap;display:inline-block;vertical-align:middle"
 				><span style="display: inline-block; height:100%; vertical-align:middle"></span
 				><img src="{$image->download}" style="max-width:200px;max-height:141px;display:inline-block;vertical-align: middle;transform: translateZ(0);{if $image->sort_order>0}box-shadow: 1px 1px 4px #999;{/if}"></div></td>
 		</table>
@@ -36,8 +43,10 @@ Delivery Name:  {$calendar.delivery_name|escape:"html"}<br>
 					<td><input type=text disabled name="grid_reference[{$image->gridimage_id}]" value="{$image->grid_reference|escape:"html"}" maxlength="16" size="10"/></td>
 				<tr><th align=right>Credit</th>
 					<td><input type=text name="realname[{$image->gridimage_id}]" value="{$image->realname|escape:"html"}" maxlength="128" size="47" readonly disabled/></td>
+				<tr><th align=right>Place</th>
+					<td><input type=text name="place[{$image->gridimage_id}]" value="{$image->place|escape:"html"}" maxlength="128" size="47" readonly disabled/></td>
 				<tr><th align=right>Taken</th>
-					<td><input type=text disabled name="imagetaken[{$image->gridimage_id}]" value="{$image->getFormattedTakenDate()|regex_replace:"/^[A-Z][\w ]+, /":''}" size="40"/></td>
+					<td><input type=text disabled name="imagetaken[{$image->gridimage_id}]" value="{if $image->imagetaken && strpos($image->imagetaken,'-00') === false && strpos($image->imagetaken,'0000-') === false}{$image->imagetaken|date_format:"%e %B %Y"}{/if}" size="40"/>{$image->imagetaken}</td>
 
 			</table>
 		<p class=nowrap>Image is {$image->width}x{$image->height}px and will print at about <b>{$image->dpi}</b> DPI.
@@ -46,5 +55,27 @@ Delivery Name:  {$calendar.delivery_name|escape:"html"}<br>
 				{/if}</p>
 			<hr>
 	{/foreach}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+<script>
+{if $calendar.background}
+ {literal}$(function() {{/literal}
+         setBackAll(1);
+ {literal}});{/literal}
+{/if}
+
 {/dynamic}
+
+{literal}
+
+function setBackAll(that) {
+        var color = that?'black':'white';
+        var shadow = that?'':'1px 1px 4px #999';
+        $('td.innerImage div').css('backgroundColor',color);
+        $('td.innerImage img').css('boxShadow',shadow);
+}
+</script>
+{/literal}
+
 

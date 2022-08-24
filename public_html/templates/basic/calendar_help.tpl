@@ -49,7 +49,7 @@ added.
 images&#39; button at the bottom shows how many images are selected but is not active if fewer
 or more images are listed.
 
-<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Step_1_dump2.jpg">
+<p><img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Step_1_dump2.jpg" style=padding-left:20px>
 
 <hr>
 <h3>Step 2</h3>
@@ -75,14 +75,14 @@ following the instructions.
 text you wish, up to a maximum of 120 characters. There is a countdown to show you how
 much space you have left.
 
-<p>The place displayed by default is the location shown on the normal photo page. This is taken from a gazetteer which occasionally provides an 'incorrect' location, so this field is also editable, up to a maximum of 32 characters..
+<p>The place displayed by default is the location shown on the normal photo page. This is taken from a gazetteer which occasionally provides an 'incorrect' location, so this field is also editable, up to a maximum of 60 characters..
 
-<img src="https://lh3.googleusercontent.com/HIA1QbDvSGPB6r9r66GLlwaBABdp4AXa0xR_qsD_HmIUSy0hEgDi8db8cTqatbBbNlWvWj4PnguB_UosVEL4w2gqfahYPQYLl8w9vqhX4jP8oAW62wUdKokYdnGCNSEDT2vvrKFn-SM=s0"><br><br>
+<p><img src="https://lh3.googleusercontent.com/HIA1QbDvSGPB6r9r66GLlwaBABdp4AXa0xR_qsD_HmIUSy0hEgDi8db8cTqatbBbNlWvWj4PnguB_UosVEL4w2gqfahYPQYLl8w9vqhX4jP8oAW62wUdKokYdnGCNSEDT2vvrKFn-SM=s0" style=padding-left:20px><br><br>
 
 <p>If you use the option to select only 12 images, you will see a option alongside the images 
 allowing you to select one as the cover image. <br>
 
-<span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 351.40px; height: 67.33px;"><img alt="" src="https://lh3.googleusercontent.com/5GjDXNXDGt9PPCW27rt_up0UhI7-Zr8_wf9I4BcMnUzwd-ugTdSVTDfv_fdLs8bGT8tEHAEExhlyo1VQ6z1vy3iF2iIVQ3ScreJeQOdMPWYQ6adrsyI0TSart0aEc2c3pgfkqfya8GE=s0" style="width: 641.97px; height: 561.06px; margin-left: -227.84px; margin-top: -279.17px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span>
+<p style=padding-left:20px><span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 351.40px; height: 67.33px;"><img alt="" src="https://lh3.googleusercontent.com/5GjDXNXDGt9PPCW27rt_up0UhI7-Zr8_wf9I4BcMnUzwd-ugTdSVTDfv_fdLs8bGT8tEHAEExhlyo1VQ6z1vy3iF2iIVQ3ScreJeQOdMPWYQ6adrsyI0TSart0aEc2c3pgfkqfya8GE=s0" style="width: 641.97px; height: 561.06px; margin-left: -227.84px; margin-top: -279.17px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span>
 
 <p>Or if you now decide that you want an additional image for the cover, you can add this by clicking the 
 'Specify Cover Image' button near the top of the page.<br>
@@ -93,7 +93,7 @@ so if you choose 13 images, the cover is not &#39;anonymous&#39;.
 <hr>
 <h3>Step 3</h3>
 
-<img alt="" src="https://lh6.googleusercontent.com/8i_Yzfp2Ru5Wl6UPsvAOYagC0wA2YPy9n3DKuzD9HP7271w3UKDegwAx3IyCY11C85tZeVVDWivQboteA2fZbmAw4hs61OLIhYquZ3DtexqNI8zuHLIpmKdc-s2v_fk-1uJEQvpDi3w=s0" style="width: 503.81px; height: 698.78px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title="">
+<p style=padding-left:20px><img alt="" src="https://lh6.googleusercontent.com/8i_Yzfp2Ru5Wl6UPsvAOYagC0wA2YPy9n3DKuzD9HP7271w3UKDegwAx3IyCY11C85tZeVVDWivQboteA2fZbmAw4hs61OLIhYquZ3DtexqNI8zuHLIpmKdc-s2v_fk-1uJEQvpDi3w=s0" style="width: 503.81px; height: 698.78px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title="">
 
 <p>This is the final order page. It displays thumbnails of your selected images, with the cover 
 image separate at the top. If satisfied, fill in the necessary details at the bottom of the 

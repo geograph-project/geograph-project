@@ -1,6 +1,6 @@
 {include file="_std_begin.tpl"}
 
-<h2>Calendar Admin Page</h2>
+<h2>Calendar Admin Page {$year}</h2>
 
 <hr>
 <p>Orders marked as 'Paid' are ready to be processed. 

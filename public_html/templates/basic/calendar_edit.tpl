@@ -93,7 +93,7 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 				<tr><th align=right>Grid Reference</th>
 					<td><input type=text name="grid_reference[{$image->gridimage_id}]" value="{$image->grid_reference|escape:"html"}" maxlength="16" size="10"/></td>
 				<tr><th align=right>Place</th>
-					<td><input type=text name="place[{$image->gridimage_id}]" value="{$image->place|escape:"html"}" maxlength="80" size="47"/></td>
+					<td><input type=text name="place[{$image->gridimage_id}]" value="{$image->place|escape:"html"}" maxlength="60" size="47"/></td>
 				<tr><th align=right>Credit</th>
 					<td><input type=text name="realname[{$image->gridimage_id}]" value="{$image->realname|escape:"html"}" maxlength="128" size="47" readonly disabled/></td>
 				<tr><th align=right>Image Taken</th>

@@ -30,6 +30,8 @@ $USER->user_id == 135767 || $USER->user_id == 9181 || $USER->mustHavePerm("direc
 
 $db = GeographDatabaseConnection(false);
 
+$year = date('Y')+1; // we currently working on next years calendar
+
 ####################################
 
 $row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = ".intval($_GET['id']));
@@ -38,7 +40,7 @@ if (empty($row))// || $row['user_id'] != $USER->user_id)
 	die("Calendar not found");
 
 if (empty($row['alpha'])) {
-	$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND ordered > '1000-00-00' ORDER BY ordered");
+	$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND ordered > '1000-00-00' AND year = '$year' ORDER BY ordered");
 	$idx = array_search($row['calendar_id'],$ids);
 	$row['alpha'] = chr(65+$idx); //starting at A
 }

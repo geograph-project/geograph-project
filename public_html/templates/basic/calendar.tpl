@@ -68,7 +68,7 @@ intended recipients.
 chosen pictures were submitted under a different name (e.g. a relative), this can be included on the cover, provided it does not 
 overrun the panel. Individual photographer names will appear on the appropriate calendar pages.
 
-<p>You have the option to have a calendar title which will appear on the fron cover.
+<p>You have the option to have a calendar title which will appear on the front cover.
 
 <p><b>Calendars are priced at &pound;8.00 each, which includes a donation to Geograph funds. There is a separate postage and packing charge of &pound;3.00 per order which may include more than one version, including the 'Best of Geograph'</b> There is a 
 minimum quantity of 2 calendars per person, which can include more than one version.
@@ -97,6 +97,7 @@ minimum quantity of 2 calendars per person, which can include more than one vers
 			<td>{$calendar.title|default:'untitled calendar'}</td>
 			<td>{if $calendar.status != 'processed' && $calendar.quantity>0}<a href="edit.php?id={$calendar.calendar_id}" style="color:yellow">Review/Edit</a>{/if}
 			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
+			{if $calendar.best_quantity}({$calendar.best_quantity} best of){/if}
 			<td>{if $calendar.paid < '2' and $calendar.status!='deleted' and $calendar.status != 'processed'}<a href="order.php?id={$calendar.calendar_id}" style="color:yellow"><b>Continue and Order</b></a>{/if}
 			<td>{if $calendar.status == 'new'}<a href="?delete={$calendar.calendar_id}" style="color:red">Delete</a>{/if}
 		</tr>

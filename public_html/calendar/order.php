@@ -31,6 +31,8 @@ pageMustBeHTTPS();
 
 $db = GeographDatabaseConnection(false);
 
+$year = date('Y')+1; // we currently working on next years calendar
+
 ####################################
 
 if (empty($_GET['id'])) {
@@ -61,7 +63,7 @@ if (date('Y-m-d') > '2021-10-10' && !in_array($USER->user_id, array(3,9181,11141
 }
 
 if (empty($row['alpha'])) {
-	$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND ordered > '1000-00-00' ORDER BY ordered");
+	$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND ordered > '1000-00-00' AND year = '$year' ORDER BY ordered");
 	$idx = array_search($row['calendar_id'],$ids);
 	if (!is_numeric($idx)) //not found should be be on the END. (the specific order isnt marked as ordered YET!)
 		$idx = count($ids);

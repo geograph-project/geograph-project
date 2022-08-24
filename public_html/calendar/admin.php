@@ -67,6 +67,7 @@ $smarty->assign_by_ref('list', $list);
 $smarty->assign('total', $total);
 $smarty->assign('orders', $orders);
 $smarty->assign('processed', $processed);
+$smarty->assign('year', $year);
 
 $smarty->display('calendar_admin.tpl');
 
