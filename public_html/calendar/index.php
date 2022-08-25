@@ -47,7 +47,7 @@ $smarty->assign_by_ref('list', $list);
 
 
 
-if (date('Y-m-d') > '2021-10-10' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
+if (date('Y-m-d') > '2022-10-10' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
 	$smarty->assign('closed',true);
 }
 
