@@ -77,6 +77,7 @@ print "Host = $hostname";
 
 print "<hr/>";
 
+/* todo - needs converting to report on filesystem - check AWS creds?
 print "<h2>Folders</h2>";
 
 $folders = array();
@@ -92,6 +93,7 @@ foreach ($folders as $folder) {
 }
 
 print "<hr/>";
+*/
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
@@ -100,7 +102,6 @@ print "<h2>Main Database Status ";
 print "<tt>{$CONF['db_user']}@{$CONF['db_connect']}/{$CONF['db_db']}</tt></h2>";
 $db = database_status($DSN);
 
-print "<hr/>";
 
 
 if (!empty($DSN_READ) && $DSN_READ != $DSN) {
@@ -128,7 +129,6 @@ if (function_exists('apc_store')) {
 }
 	if ($db = database_status($DSN_READ)) {
 
-		print "<hr/>";
 		?>
 		<div id="hideslave" style="text-align:center"><a href="javascript:void(show_tree('slave'));">Show Slave Detail</a></div>
 		<div id="showslave" class="interestBox" style="display:none"><pre>
@@ -166,14 +166,63 @@ if ($DSN2 != $DSN) {
 	print "<h2>Second Database Status ";
 	print "<tt>{$CONF['db_user2']}@{$CONF['db_connect2']}/{$CONF['db_db2']}</tt></h2>";
 	$db = database_status($DSN2);
-
-} else {
-	print "<h4 style='color:gray'>no second database</h4>";
+	print "<hr/>";
 }
-print "<hr/>";
 
 
-if ($memcache->valid) {
+if (!empty($CONF['redis_host'])) {
+	print "<h2>Redis ";
+	print "<tt>{$CONF['redis_host']}</tt></h2>";
+
+	if (!empty($memcache->redis)) {
+		//redis can be used to power the memcache interface, and so has a connection already
+		$info = $memcache->redis->info();
+	} else {
+		//cope with redis being active, but not used for memcache
+		$redis_handler = new Redis();
+                $success = $redis_handler->connect($CONF['redis_host'], $CONF['redis_port']);
+		$info = $redis_handler->info();
+	}
+
+	print "Uptime: {$info['uptime_in_days']} Days, Role: {$info['role']}, Slaves: {$info['connected_slaves']}, Clients: {$info['connected_clients']}, Used Memory: {$info['used_memory_human']}";
+
+	if (!empty($info)) {
+		?>
+		<div id="hideredis" style="text-align:center"><a href="javascript:void(show_tree('redis'));">Show Redis Detail</a></div>
+		<div id="showredis" class="interestBox" style="display:none">
+		<?
+
+		print "<table border=1 cellspacing=0>";
+
+		foreach ($info as $key => $value) {
+			print "<tr>";
+				print "<th>{$key}</th>";
+				print "<td>{$value}</td>";
+			print "</tr>";
+		}
+		print "</table>";
+
+		print "</div>";
+	}
+}
+
+if (!empty($memcache->redis)) {
+	print "<small style=color:gray>Redis is powering the memcache interface</small><br>";
+
+	//just add these to the CONF variable for use in the foreach loop below!
+	if (!empty($CONF['redis_session_db']))
+		@$CONF['memcache']['session']['redis'] = $CONF['redis_session_db'];
+	if (!empty($CONF['redis_api_db']))
+		@$CONF['memcache']['api']['redis'] = $CONF['redis_api_db'];
+	foreach ($CONF['memcache'] as $key => $value) {
+		if (isset($value['redis'])) { //has a db!
+			$k = "db".$value['redis'];
+			if (isset($info[$k]))
+				print "&nbsp;$key($k):: {$info[$k]}<br>";
+		}
+	}
+
+} elseif ($memcache->valid) {
 	print "<h2>Overview Memcache Statistics</h2>";
 	memcache_status();
 } else {
@@ -183,8 +232,48 @@ if ($memcache->valid) {
 print "<hr/>";
 
 
+if (!empty($CONF['manticorert_host'])) {
+        print "<h2>ManticoreRT connection ";
+        print "<tt>{$CONF['manticorert_host']}</tt></h2>";
+        $rt = GeographSphinxConnection('manticorert');
+
+	$tables = $rt->getCol("SHOW TABLES");
+	print "<p>Tables(".count($tables)."): ".implode(", ",$tables);
+	$ids = $rt->getCol("SELECT id FROM gaz WHERE MATCH('test')");
+	if (!empty($ids) && count($ids)) {
+		print "<p>Ids returned: ".count($ids)."</p>";
+
+		$info = array();
+		foreach ($rt->getAll("SHOW STATUS") as $row)
+			$info[$row['Counter']] = $row['Value'];
+
+		print "<p>Cluster Status: ".$info['cluster_manticore_status'];
+		print ", Cluster Indexes: ".$info['cluster_manticore_indexes'];
+
+		?>
+		<div id="hidemantrt" style="text-align:center"><a href="javascript:void(show_tree('mantrt'));">Show RT Detail</a></div>
+		<div id="showmantrt" class="interestBox" style="display:none">
+		<?
+
+		print "<table border=1 cellspacing=0>";
+		foreach ($info as $key => $value) {
+			print "<tr>";
+				print "<th>{$key}</th>";
+				print "<td>{$value}</td>";
+			print "</tr>";
+		}
+		print "</table>";
+
+		print "</div>";
+	}
+
+	print "<hr/>";
+}
+
+
 if (!empty($CONF['sphinx_host'])) {
-	print "<h2>Sphinx connection</h2>";
+	print "<h2>Sphinx/Manticore connection ";
+	print "<tt>{$CONF['sphinx_host']}</tt></h2>";
 	$sphinx = new sphinxwrapper('test');
 
 	$ids = $sphinx->returnIds(1,'gaz');
@@ -249,7 +338,7 @@ function database_status($DSN) {
 
 	#print_r($data);
 	print "<p>Uptime: ".$data['Uptime'].", ";
-	print "Threads_connected: ".$data['Threads_connected'].", ";
+	print "Connections: ".$data['Threads_connected'].", ";
 
 	if ($db && $CONF['db_tempdb']) {
 		$table = $CONF['db_tempdb'].".mytmp".uniqid();
