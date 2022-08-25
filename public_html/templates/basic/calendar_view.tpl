@@ -56,6 +56,33 @@ Delivery Name:  {$calendar.delivery_name|escape:"html"}<br>
 			<hr>
 	{/foreach}
 
+
+
+<table>
+	<tr>
+		<td>#{$calendar.calendar_id}
+		<td>Ref:{$calendar.user_id}{$calendar.alpha} /<b>{$calendar.year}</b>
+		<td>{if $calendar.background}black{else}normal{/if}
+		<td>
+		<td>{if $calendar.print_title}{$calendar.title|escape:"html"}{/if}
+	{foreach from=$images key=index item=image}
+		<tr>
+			<td>{$image->sort_order}
+			<td>{$image->month}
+			<td><a href="{$image->download}">{$image->download}</a>
+			<td>{$image->gridimage_id}
+			<td>{$image->title|escape:"html"}
+			<td>{$image->grid_reference|escape:"html"}
+			<td>{$image->realname|escape:"html"}
+			<td>{$image->place|escape:"html"}
+			<td>{if $image->imagetaken && strpos($image->imagetaken,'-00') === false && strpos($image->imagetaken,'0000-') === false}{$image->imagetaken|date_format:"%e %B %Y"}{/if}
+			<td>{$image->imagetaken}</td>
+			<td>{$image->width}x{$image->height}px
+		</tr>
+	{/foreach}
+</table>
+
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
 <script>
