@@ -160,7 +160,7 @@ split_timer('gazetteer'); //starts the timer
 			$top=$n-$radius; //top/bottom are reversed, as spatial query works best 'down' the map, rather than numerically
 			$bottom=$n+$radius;
 
-			if (!empty($CONF['manticorert_host'])) {
+			if (!empty($CONF['manticorert_host'])) { //index:os_gaz_250
 				if (empty($rt))
 					$sprt = GeographSphinxConnection('manticorert',true);
 				//manticore can optimize this quite well. as it keeps stuff in memory. or can use columnar!
@@ -217,7 +217,7 @@ split_timer('gazetteer'); //starts the timer
 				
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-				if (!empty($CONF['manticorert_host'])) {
+				if (!empty($CONF['manticorert_host'])) { //index:os_gaz
 					$places2 = $sprt->GetRow("select
                                                 `def_nam` as full_name,
                                                 CONCAT('PPL') as dsg,
@@ -444,7 +444,7 @@ split_timer('gazetteer'); //starts the timer
 				order by distance asc limit 1");
 		} else {
 	//lookup a nearby settlement
-                        if (!empty($CONF['manticorert_host'])) {
+                        if (!empty($CONF['manticorert_host'])) { //index:loc_placenames
                                 if (empty($sprt))
                                         $sprt = GeographSphinxConnection('manticorert',true);
                                 //manticore can optimize this quite well. as it keeps stuff in memory. or can use columnar!
@@ -493,7 +493,7 @@ split_timer('gazetteer'); //starts the timer
 	//if found very close then lookup mutliple
 			$d = 2500*2500;
 			if (isset($places['distance']) && $places['distance'] < $d) {
-	                        if (!empty($CONF['manticorert_host'])) {
+	                        if (!empty($CONF['manticorert_host'])) { //index:loc_placenames
         	                        $places = $sprt->GetRow("select
 	                                        full_name,
 	                                        id as pid,
