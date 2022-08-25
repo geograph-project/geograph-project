@@ -98,13 +98,13 @@ minimum quantity of 2 calendars per person, which can include more than one vers
 			<td>{if $calendar.status != 'processed' && $calendar.quantity>0}<a href="edit.php?id={$calendar.calendar_id}" style="color:yellow">Review/Edit</a>{/if}
 			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
 			{if $calendar.best_quantity}({$calendar.best_quantity} best of){/if}
-			<td>{if $calendar.paid < '2' and $calendar.status!='deleted' and $calendar.status != 'processed'}<a href="order.php?id={$calendar.calendar_id}" style="color:yellow"><b>Continue and Order</b></a>{/if}
+			<td>{if $calendar.paid < '2' and $calendar.status!='deleted' and $calendar.status != 'processed'}<a href="order.php?id={$calendar.calendar_id}" style="color:yellow"><b>Continue and Order/Pay</b></a>{/if}
 			<td>{if $calendar.status == 'new'}<a href="?delete={$calendar.calendar_id}" style="color:red">Delete</a>{/if}
 		</tr>
 	{/foreach}
 	</table>
 
-	<p>You will be able to edit the order right up to the time the order is has been processed (even after payment). Processing however may happen at any time after payment.
+	<p>You will be able to edit the order right up to the time the order is has been processed (even after payment). Processing however may happen at any time after payment, once processed, will no longer be able to edit.
 
 {/if}
 {/dynamic}
