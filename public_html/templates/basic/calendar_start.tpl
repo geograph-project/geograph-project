@@ -21,6 +21,10 @@ sized appropriately to fill as much of the page as possible.</p>
 
 <p>Note: you need to select 12 different monthly images; the same image cannot be used for multiple months.</p>
 
+{dynamic}
+<p>As inspiration, here is a <a href="/browser/#!/taken=2021-08-01,/user+%22user{$user.user_id}%22/display=group/group=takenmonth/n=4/gorder=alpha%20asc/sort=score" target=_blank>Starter Selection</a> of your photos.
+{/dynamic}
+
 </div>
 
 <form method=post style="background-color:#eee;max-width:700px;padding:20px" name=theForm>
