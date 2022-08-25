@@ -19,14 +19,15 @@
     <li>Interact<ul>
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
      <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
-     {dynamic}{if $user->registered}
      <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
-     {/if}{/dynamic}
     </ul></li>
     <li>Contributors<ul>
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Your most recent submissions" href="/submissions.php">Recent Uploads</a></li>
+
+     <li style=margin-left:-20px>&#128197; <a title="Order a customized calendar for 2023" href="/calendar/">Order Calendar</a></li>
+
      {/if}{/dynamic}
      <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li>
      <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>
