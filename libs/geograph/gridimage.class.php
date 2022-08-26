@@ -786,20 +786,33 @@ split_timer('gridimage'); //starts the timer
 				ORDER BY post_id DESC"));
 
 			//todo -experimental - might be removed...
-			if ($collections2 = $db->getAll("
-				SELECT '' AS url,CONCAT(label,' [',images,']') AS title,'Automatic Cluster' AS `type`
+			if (!empty($CONF['manticorert_host'])) { //index:gridimage_group_stat
+				if (empty($sprt))
+					$sprt = GeographSphinxConnection('manticorert',true);
+				$collections2 = $sprt->getAll("SELECT label, images
+				FROM gridimage_group_stat
+				WHERE MATCH('{$this->grid_reference}') AND ANY(image_ids) IN ({$this->gridimage_id})
+				ORDER BY images DESC
+				LIMIT 50"); //has a default limit of 20
+			} else {
+				$collections2 = $db->getAll("
+				SELECT label, images
 				FROM gridimage_group INNER JOIN gridimage_group_stat USING (label)
 				WHERE gridimage_group.gridimage_id = {$this->gridimage_id} AND grid_reference = '{$this->grid_reference}'
 				AND label != 'Other Topics' AND images > 1
-				ORDER BY score DESC")) {
-
+				ORDER BY score DESC");
+			}
+			if (!empty($collections2)) {
+print_r($collections2);
 				foreach ($collections2 as $i => $row) {
-					if (empty($row['url']) && !empty($row['title'])) {
-                                                $collections2[$i]['url'] = "/stuff/list.php?label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&amp;gridref={$this->grid_reference}";
-						//$collections2[$i]['url'] = "/search.php?gridref={$this->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&amp;do=1";
-					}
+					$this->collections[] = array(
+						'url' => "/stuff/list.php?label=".urlencode($row['label'])."&amp;gridref={$this->grid_reference}",
+						'title' => $row['label'].' ['.$row['images'].']',
+						'type' => 'Automatic Cluster',
+					);
+
+					//$collections2[$i]['url'] = "/search.php?gridref={$this->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode(preg_replace('/ \[\d+\]$/','',$row['title']))."&amp;do=1";
 				}
-				$this->collections = array_merge($this->collections,$collections2);
 			}
 
 			//TODO - need a 'update' mechanism for this table.
@@ -2152,42 +2165,38 @@ split_timer('gridimage','setModerationStatus',"{$this->gridimage_id},$status,$mo
 					//or was ftf (cos new ftf should take place
 			//now rejected
 				//was ftf or supp (cos might not be any ftf)
-				
-		
-		
+
 		//invalidate any cached maps (on anything except rejecting a pending image)
 		$updatemaps = ( !($status == 'rejected' && $this->moderation_status == 'pending') );
 
 		$old_status = $this->moderation_status;
-	
-		//fire an event (a lot of the stuff that follows should 
+
+		//fire an event (a lot of the stuff that follows should
 		//really be done asynchronously by an event handler
 		require_once('geograph/event.class.php');
 		new Event(EVENT_MODERATEDPHOTO, "{$this->gridimage_id},$updatemaps");
-		
-		
+
 		//ok, update the image
 		$this->moderation_status=$status;
-	
+
 		//updated cached tables
-		$this->updateCachedTables();	
-		
+		$this->updateCachedTables();
+
 		//finally, we update status information for the gridsquare
 		$this->grid_square->updateCounts();
-		
+
 if ($old_status == 'pending' && $status != 'rejected') {
-	$db->Execute("insert into gridimage_counter select {$this->gridimage_id} as gridimage_id,count(*) as count,now() as created from gridimage_search");
+	//for innodb at least is quicker to sum the 200k values from gridsquare, than it is to count the 8M rows from gridimage_search
+	//we do have other views with lower cardinalty, but gridsquare is updated live, others are lazy updated
+	$db->Execute("insert into gridimage_counter select {$this->gridimage_id} as gridimage_id,sum(imagecount) as count,now() as created from gridsquare");
 }
-	
-		
-		return "Classification is now $status";	
-			
-		
+
+		return "Classification is now $status";
 	}
 
 	/**
 	* Reassigns the reference of this image - callers of this are responsible for ensuring
-	* only authorized calls can be made, but the method performs full error checking of 
+	* only authorized calls can be made, but the method performs full error checking of
 	* the supplied reference
 	*/
 	function reassignGridsquare($grid_reference, &$error)
