@@ -28,10 +28,12 @@ $param=array(
 
         'schema'=>false, //show the schema used to create a new sphinx index.
 		'drop' => false,
+	'debug'=>false,
 	'data'=>true,
 
 	'file'=>false, //read a sphinx.conf file and output similar index (overrides index, select, and $options)
 	'table'=>false, //read a table, and automatically create a select statement
+		'where'=>false,
 
 	'cluster' => 'manticore',
 	'index' => 'gridimage', // : as part of clusrter
@@ -41,7 +43,7 @@ $param=array(
 	'limit' => 1, //if sepcified, myst be under 1000!
 );
 
-$multis = array();
+$multis = $joineds = array();
 $options = array();
 
 #########################################################
@@ -50,6 +52,8 @@ $cwdir = getcwd();
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
+
+############################################
 
 //bodge for now! - could be rad from sample6.conf
 if (strpos($param['select'], 'sphinx_view') && empty($param['file']) && empty($param['table'])) {
@@ -63,6 +67,14 @@ if (strpos($param['select'], 'sphinx_view') && empty($param['file']) && empty($p
         UNION (select 2 as content_id from gridimage_daily where showday <= date(now()) and gridimage_id = $id)
         UNION (select content_id from content inner join gridimage_post gp on (foreign_id=topic_id) where source in (\'gallery\',\'themed\',\'gsd\') and  gp.gridimage_id = $id)
         UNION (select content_id from content inner join gridimage_snippet gs on (foreign_id=snippet_id) where source = \'snippet\' AND gs.gridimage_id = $id)';
+
+} elseif ($param['table'] == 'snippet') {
+	//in theory better do with GROUP_CONCAT, but here may be MANY rows!
+
+	$multis['image_ids'] = 'SELECT gridimage_id FROM gridimage_snippet WHERE snippet_id = $id';
+
+	//lookup the squares that use the image
+	$joineds['image_squares'] = 'SELECT DISTINCT grid_reference FROM gridimage_snippet INNER JOIN gridimage_search USING (gridimage_id) WHERE snippet_id = $id';
 }
 
 ############################################
@@ -119,7 +131,9 @@ if (!empty($param['file'])) {
 
 if (!empty($param['table'])) {
 	$columns = $db->getAssoc("DESCRIBE {$param['table']}");
-	$cols = $sheets = array();
+	$cols = $sheets = $wheres = array();
+	if (!empty($param['where']))
+		$wheres[] = $param['where'];
 	foreach ($columns as $name => $row) {
 		if ($row['Type'] == 'point') //its just a index for other cols
 			continue;
@@ -131,20 +145,40 @@ if (!empty($param['table'])) {
 			continue;
 fwrite(STDERR,"$name ".substr($row['Type'],0,40)."\n");
 
-		if (preg_match('/sheet_\d/',$name)) {
+		if ($name == 'enabled' || $name == 'status' || $name == 'approved') {
+			//the index should only include enabled rows!
+			if ($param['table'] == 'gridimage_tag')
+				$wheres[] = "$name = 2";
+			else
+				$wheres[] = "$name > 0";
+		} elseif (preg_match('/sheet_\d/',$name)) {
 			$sheets[] = $name;
+	//general ints
 		} elseif (strpos($row['Type'],'int(') !== FALSE) {
 			if ($row['Key'] == 'PRI')
 				array_unshift($cols,"{$name} AS id"); //make sure it first in index, even if not first in table
 			else
 				$cols[] = $name; //probably want it as attribute!
+		} elseif ($name == 'wgs84_lat' || $name == 'wgs84_long' || $name == 'vlat' || $name == 'vlong') {
+			$cols[] = "RADIANS($name) as $name";
 		} elseif (preg_match('/(\w+)_utf/',$name,$m)) {
 			if (($idx = array_search($m[1],$cols)) !== FALSE)
 				$cols[$idx] = "$name as {$m[1]}"; //replace it!
 			else
 				$cols[] = "$name as {$m[1]}";
-		} elseif (preg_match('/char\((\d+)/',$row['Type'],$m) || $row['Type'] == 'text' || preg_match('/enum\(/',$row['Type'],$m)) {
+		} elseif ($name == 'grid_reference') {
 			$cols[] = $name;
+			$cols[] = "CONCAT(SUBSTRING(grid_reference,1,LENGTH(grid_reference)-3),SUBSTRING(grid_reference,LENGTH(grid_reference)-1,1)) AS hectad";
+			//$cols[] = "SUBSTRING(grid_reference,1,LENGTH(grid_reference)-4) AS myriad";
+	//general varchar
+		} elseif (preg_match('/char\((\d+)/',$row['Type'],$m) || $row['Type'] == 'text' || preg_match('/enum\(/',$row['Type'],$m)) {
+			if ($name == 'id') //the os_open_names table has a text column called id - shouldnt confuse it with sphinx doc_id
+				continue;
+			$cols[] = $name;
+		} elseif ($row['Type'] == 'datetime' || $row['Type'] == 'timestamp') {
+			$cols[] = "UNIX_TIMESTAMP($name) AS $name";
+		} elseif ($row['Type'] == 'date') {
+			$cols[] = "TO_DAYS($name) AS $name";
 		} else
 			fwrite(STDERR,"$name {$row['Type']} unknown\n");
 	}
@@ -154,6 +188,8 @@ fwrite(STDERR,"$name ".substr($row['Type'],0,40)."\n");
 
 	$cols = implode(", ",$cols);
 	$param['select'] = "SELECT $cols FROM {$param['table']}";
+	if (!empty($wheres))
+		$param['select'] .= " WHERE ".implode(' AND ',$wheres);
 
 	fwrite(STDERR,"Generated: {$param['select']};\n");
 
@@ -184,8 +220,8 @@ if (!empty($param['schema'])) {
 		$name  = $r->name;
 			//the numberic is mysqli - todo, maybe swithc to MetaType?
 
-//if ($name == 'snippets')
-//	print_r($r);
+		if ($param['debug'] === $name)
+			print_r($r);
 
 		$enc = mb_detect_encoding($row[$name], 'UTF-8, ISO-8859-15, ASCII');
 		if ($enc == 'ISO-8859-15')
@@ -193,12 +229,19 @@ if (!empty($param['schema'])) {
 
 
 		$type = "text"; //defaults to 'indexed stored'
-		switch ($r->type) {
+
+		if (in_array($name,array('east','north','e','n','y','x','nateastings','natnorthings','geometry_x','geometry_y'))) { //for the moment assume it a coordinate, if these names, we have all sorts of types!
+			//todo, some are float - might need to cope with that
+
+			 //we need signed int for coordinates - to do the maths correctly!
+			 $type = 'bigint'; //only signed type manticore has!
+
+		} else switch ($r->type) {
 			case 'string': case 253:
 			case 'blob':   case 252:
 			case 'mediumblob': case 250:
 			case 'longblob': case 251:
-				if ($name == 'comment' || $name == 'words' || $name == 'url' || $name=='tags') {
+				if ($name == 'comment' || $name == 'words' || $name == 'url' || $name=='tags' || $name == 'label') {
 					//leave a simple field - dont want attribute
 					$type = 'text'; //defaults to 'indexed stored'
 				} elseif (preg_match('/s$/',$name) && array_key_exists(preg_replace('/s$/','_ids',$name),$row)) { //isset doesnt find columns will null in them!
@@ -210,7 +253,7 @@ if (!empty($param['schema'])) {
 					$type = 'json';
 				} elseif ($name == 'user' || $name == 'larger') {
 					$type = 'text indexed'; //no point storing, we have proper atttibute to get the value (these are just 'fake' keywords)
-				} elseif ($name == 'hash') {
+				} elseif ($name == 'hash' || $name == 'adm1' || strpos($name,'_lang')) {
 					$type = 'string'; //only need to sort+retrive, no indexing
 				} else {
 					//most fields want a string atttribute too
@@ -224,6 +267,8 @@ if (!empty($param['schema'])) {
 					//todo - They are saved in 32-bit chunks, so in order to save space they should be grouped at the end of attributes definitions
 				} elseif ($name == 'source' && array_key_exists('asource',$row)) { //this is from the content table
 					$type = 'text indexed'; //no point storing, we have proper atttibute to get the value
+				} elseif ($name == 'adm1' || strpos($name,'_lang')) {
+					$type = 'string'; //only need to sort+retrive, no indexing
 				} elseif (empty($r->binary)) {
 					//appears to be enum, comes as binary type, but not actully binary!
 					$type = 'string attribute indexed';
@@ -233,13 +278,17 @@ if (!empty($param['schema'])) {
 				break;
 			case 'smallint': case 2:
 					case 1: //percent_land is currently coming out as bool! but us really 0-100 and even -1
-				if ($r->unsigned && $name != 'east' && $name != 'north' && $name != 'y' && $name != 'x') //we need signed int for coordinates - to do the maths correctly!
+				if ($name == 'reference_index' || strpos($name,'has_') === 0)
+					$type = 'bit(4)';
+				elseif ($r->unsigned)
 					$type = 'bit(24)';
 				else
 					$type = 'bigint'; //only signed type manticore has!
 				break;
 			case 'mediumint': case 9:
-				if ($r->unsigned && $name != 'east' && $name != 'north' && $name != 'y' && $name != 'x') //we need signed int for coordinates - to do the maths correctly!
+				if ($name == 'most_detail_view_res')
+					$type = 'interger';
+				elseif ($r->unsigned)
 					$type = 'bit(16)';
                                 else
                                         $type = 'bigint'; //only signed type manticore has!
@@ -251,10 +300,16 @@ if (!empty($param['schema'])) {
 					//todo - set bits based on $len
 					//print "sql_attr_uint		= $name\n";
 				}
-				$type = 'integer'; //todo, bigint if unsigned!
+				if ($name == 'imagecount')
+					$type = 'integer';
+				elseif (in_array($name,array('e','n','gns_ufi')) || !$r->unsigned)
+					$type = 'bigint'; //only signed type manticore has!
+				else
+					$type = 'integer';
 				break;
 			case 'bigint': case 8:
-				if (in_array($name,array('viewsquare','submitted','asource','updated','created')) || $r->unsigned || strpos($name,'timestamp') !== FALSE)
+				if (in_array($name,array('viewsquare','submitted','asource','updated','created','last_grouped','last_stat','images','users','geosquares'))
+				 || $r->unsigned || strpos($name,'timestamp') !== FALSE)
 					$type = 'integer'; //actully fine in this case
 				else
 					$type = 'bigint';
@@ -277,8 +332,16 @@ if (!empty($param['schema'])) {
 	}
 	foreach($multis as $name => $query)
 		print "$sep\t`$name` multi";
+	foreach($joineds as $name => $query)
+		print "$sep\t`$name` text indexed"; //dont want stored, nor attribute?
 
 	print ")";
+
+if (isset($row['dsg'])) {
+	$options['min_prefix_len'] = '2';
+	$options['prefix_fields'] = 'dsg';
+}
+
 	if (!empty($options)) {
 		foreach ($options as $key => $value) {
 			print " $key=".$db->Quote($value);
@@ -296,6 +359,7 @@ if (!empty($param['data'])) {
 		$param['index'] = "{$param['cluster']}:{$param['index']}";
 
 	$lastid = 0;
+	$converted = array();
 	while(true) {
 		//todo, this looping is designd for selecting FROM manticore, not really needed for selecting from DB!
 
@@ -350,8 +414,10 @@ if (!empty($param['data'])) {
 		}
 		foreach($multis as $name => $query)
 			$names[] = $name;
+		foreach($joineds as $name => $query)
+			$names[] = $name;
 
-		//print "INSERT INTO {$param['index']} VALUES (";
+		//really need to always do 'complete' inserts, as manticore expects columns in same order as EXPLAIN, which is typically diffent to create table, eg all fields first. Also 'string attribute index' then need inserting twice, by naming columns dont need to duplicate!
 		print "REPLACE INTO {$param['index']} (".implode(",",$names).") VALUES\n";
 		$line = "";
 		while($row = mysqli_fetch_row($result)) {
@@ -365,11 +431,16 @@ if (!empty($param['data'])) {
 				elseif (is_null($value))
 					$value = "''"; //doesnt support null!
 				elseif ($types[$idx] != 'int' && $types[$idx] != 'real') { //Don't just use 'is_numeric', as inserting a number into string attribute, silently fails!
+
+//print "\n$name: ".urlencode(substr($value,0,40))."\n";
+
 					$enc = mb_detect_encoding($value, 'UTF-8, ISO-8859-15, ASCII');
-					if ($enc == 'ISO-8859-15') {//dont just blindly convert, as while MOST columns in database are latin1, not quite all!
+					if ($enc == 'ISO-8859-15' || strpos($value,'&#')!==FALSE) { //dont just blindly convert, as while MOST columns in database are latin1, not quite all!
 						$value = latin1_to_utf8($value);
-						fwrite(STDERR,"converted $name\n");
+						@$converted[$names[$idx]]++;
 					}
+
+//print "$name: ".urlencode(substr($value,0,40))."\n";
 
 					$value = "'".mysqli_real_escape_string($db->_connectionID,$value)."'";
 				}
@@ -379,8 +450,12 @@ if (!empty($param['data'])) {
 			foreach($multis as $name => $query) {
 				$query = str_replace('$id',$row[0],$query);
 				$ids = $db->getCol($query);
-				$value = "(".implode(',',$ids).")";
-				print "$sep$value";
+				print "$sep(".implode(',',$ids).")";
+			}
+			foreach($joineds as $name => $query) {
+				$query = str_replace('$id',$row[0],$query);
+				$words = $db->getCol($query);
+				print "$sep".$db->Quote(implode(' ',$words));
 			}
 			print ")";
 			$line = ",\n";
@@ -393,6 +468,8 @@ if (!empty($param['data'])) {
 	}
 
         fwrite(STDERR,date('H:i:s ')."ALL DONE\n");
+	if (!empty($converted))
+		fwrite(STDERR,print_r($converted,TRUE)."\n");
 	exit();
 }
 
