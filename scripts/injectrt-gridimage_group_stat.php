@@ -166,7 +166,7 @@ if ($param['execute'] > 1)
 ############################################
 
 //use stderr, so if piping output to sh to execute above commands, stil doesnt run this one!
-$cmd = "cat {$param['tmpfile']} | sprt";
+$cmd = "cat {$param['tmpfile']} | mysql -h{$CONF['manticorert_host']} -P{$CONF['sphinx_portql']} --default-character-set=utf8 -A";
 fwrite(STDERR, "$cmd\n");
 
 if ($param['execute'] > 1)
