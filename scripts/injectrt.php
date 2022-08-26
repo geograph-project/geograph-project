@@ -40,6 +40,7 @@ $param=array(
 	'select' => "SELECT * FROM sphinx_view",
 	//BE WEARY OF ADDING GROUP BY TO THIS QUERY, AS THE SCHEMA BELOW USING LIMIT 1 WILL STRUGGLE.
 
+	'extended' => true, //output extended inserts
 	'limit' => 1, //if sepcified, myst be under 1000!
 );
 
@@ -84,10 +85,10 @@ if ($param['host']) {
     $host = $param['host'];
 }
 fwrite(STDERR,date('H:i:s')."\tUsing db server: $host\n");
-$DSN = str_replace($CONF['db_connect'],$host,$DSN);
+$DSN_READ = str_replace($CONF['db_connect'],$host,$DSN);
 
-//uses $GLOBALS['DSN'] (which is already setup by global.inc) rather than $CONF['db_connect']
-$db = GeographDatabaseConnection(false);
+//we've setup $DSN_READ, even using $param[host] even if isn't a db_read_connect
+$db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 #########################################################
@@ -308,9 +309,11 @@ if (!empty($param['schema'])) {
 					$type = 'integer';
 				break;
 			case 'bigint': case 8:
-				if (in_array($name,array('viewsquare','submitted','asource','updated','created','last_grouped','last_stat','images','users','geosquares'))
+				if (in_array($name,array('images','users','geosquares')))
+					$type = 'bit(16)';
+				elseif (in_array($name,array('viewsquare','submitted','asource','updated','created','last_grouped','last_stat'))
 				 || $r->unsigned || strpos($name,'timestamp') !== FALSE)
-					$type = 'integer'; //actully fine in this case
+					$type = 'integer'; //actully fine in these cases
 				else
 					$type = 'bigint';
 				break;
@@ -418,30 +421,28 @@ if (!empty($param['data'])) {
 			$names[] = $name;
 
 		//really need to always do 'complete' inserts, as manticore expects columns in same order as EXPLAIN, which is typically diffent to create table, eg all fields first. Also 'string attribute index' then need inserting twice, by naming columns dont need to duplicate!
-		print "REPLACE INTO {$param['index']} (".implode(",",$names).") VALUES\n";
-		$line = "";
-		while($row = mysqli_fetch_row($result)) {
-			print "$line(";
-			$sep = '';
+		$insert = "REPLACE INTO {$param['index']} (".implode(",",$names).") VALUES\n";
 
-			//todo, would be to transform the data to utf8! (as done in latin1plus_encoded index)
+		$c=0;
+		while($row = mysqli_fetch_row($result)) {
+		        if ($param['extended'] && $c%100) { //ideally should work on length of line, but just number of lines. (so each insert fits in one packet (16M?)
+		                $sep = "),\n(";
+		        } elseif ($c) {
+		                $sep = ");\n$insert(";
+		        } else {
+		                $sep = "$insert(";
+		        }
 			foreach($row as $idx => $value) {
 				if ($types[$idx] == 'mva') //mva's need special treatment if importing into index
 					$value = "(".mysqli_real_escape_string($db->_connectionID,$value).")";
 				elseif (is_null($value))
 					$value = "''"; //doesnt support null!
 				elseif ($types[$idx] != 'int' && $types[$idx] != 'real') { //Don't just use 'is_numeric', as inserting a number into string attribute, silently fails!
-
-//print "\n$name: ".urlencode(substr($value,0,40))."\n";
-
 					$enc = mb_detect_encoding($value, 'UTF-8, ISO-8859-15, ASCII');
 					if ($enc == 'ISO-8859-15' || strpos($value,'&#')!==FALSE) { //dont just blindly convert, as while MOST columns in database are latin1, not quite all!
 						$value = latin1_to_utf8($value);
 						@$converted[$names[$idx]]++;
 					}
-
-//print "$name: ".urlencode(substr($value,0,40))."\n";
-
 					$value = "'".mysqli_real_escape_string($db->_connectionID,$value)."'";
 				}
 				print "$sep$value";
@@ -457,11 +458,10 @@ if (!empty($param['data'])) {
 				$words = $db->getCol($query);
 				print "$sep".$db->Quote(implode(' ',$words));
 			}
-			print ")";
-			$line = ",\n";
 			$lastid = $row[0];
+			$c++; //ideally should work on length of line,
 		}
-		print ";\n";
+		print ");\n";
 
 	        if (mysqli_num_rows($result) < $limit) //can exit as got all rows!
         	        break;
