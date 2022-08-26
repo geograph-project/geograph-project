@@ -161,7 +161,7 @@ split_timer('gazetteer'); //starts the timer
 			$bottom=$n+$radius;
 
 			if (!empty($CONF['manticorert_host'])) { //index:os_gaz_250
-				if (empty($rt))
+				if (empty($sprt))
 					$sprt = GeographSphinxConnection('manticorert',true);
 				//manticore can optimize this quite well. as it keeps stuff in memory. or can use columnar!
 				$places = $sprt->GetRow("select
@@ -494,12 +494,9 @@ split_timer('gazetteer'); //starts the timer
 			$d = 2500*2500;
 			if (isset($places['distance']) && $places['distance'] < $d) {
 	                        if (!empty($CONF['manticorert_host'])) { //index:loc_placenames
-        	                        $places = $sprt->GetRow("select
+        	                        $nearest = $sprt->GetAll("select
 	                                        full_name,
-	                                        id as pid,
-	                                        pow(e-{$e},2)+pow(n-{$n},2) as distance,
-						CONCAT('geonames') as gaz,
-						country
+	                                        pow(e-{$e},2)+pow(n-{$n},2) as distance
                         	        from
                 	                        loc_placenames
         	                        where
@@ -509,17 +506,14 @@ split_timer('gazetteer'); //starts the timer
                 	                        and reference_index = {$reference_index}
 						and distance < $d
         	                        group by gns_ufi
-	                                order by distance asc limit 5");
+	                                order by distance asc limit 5
+					option ranker=none");
 				} else {
 					$nearest = $db->GetAll("select
 						distinct full_name,
-						loc_placenames.id as pid,
-						pow(e-{$e},2)+pow(n-{$n},2) as distance,
-						'geonames' as gaz,
-						coalesce(loc_adm1.country,loc_placenames.country) as country
+						pow(e-{$e},2)+pow(n-{$n},2) as distance
 					from
 						loc_placenames
-						left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
 					where
 						dsg LIKE 'PPL%' AND
 						CONTAINS(
