@@ -25,6 +25,7 @@
 
 //these are the arguments we expect
 $param=array(
+	'rt'=>false, //override rt host
 	'disk'=>true,
 );
 
@@ -37,6 +38,11 @@ $db = GeographDatabaseConnection(false);
 
 ############################################
 
+//if setup to use the balancer, we actully need a worker to get actual status info
+$CONF['manticorert_host'] = str_replace('balancer','worker', $CONF['manticorert_host']);
+
+if (!empty($param['rt']))
+      $CONF['manticorert_host'] = $param['rt'];
 print(date('H:i:s')."\tUsing rt server: {$CONF['manticorert_host']}\n");
 
 $rt = GeographSphinxConnection('manticorert',true);
