@@ -319,9 +319,6 @@ function GeographSphinxConnection($type='sphinxql',$new = false) { //the new par
 	if ($type=='manticorert') {
 
 		$sph = NewADOConnection("{$CONF['db_driver']}://{$CONF['manticorert_host']}:{$CONF['sphinx_portql']}/") or die("unable to connect to search engine");
-		if ($type=='mysql') {
-			return $sph->_connectionID;
-		}
 		return $sph;
 
 	} if ($type=='sphinxql' || $type=='mysql') {
