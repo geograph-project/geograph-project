@@ -803,7 +803,6 @@ split_timer('gridimage'); //starts the timer
 				ORDER BY score DESC");
 			}
 			if (!empty($collections2)) {
-print_r($collections2);
 				foreach ($collections2 as $i => $row) {
 					$this->collections[] = array(
 						'url' => "/stuff/list.php?label=".urlencode($row['label'])."&amp;gridref={$this->grid_reference}",
