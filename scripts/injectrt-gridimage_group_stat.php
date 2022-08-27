@@ -21,15 +21,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$cwd = getcwd();
-
 ############################################
 //these are the arguments we expect
 
 $param=array(
     'host'=>false, //override mysql host
     'cluster'=>'manticore',
-    'tmpfile'=>'gridimage_group_stat.rt',
+    'tmpfile'=>'/tmp/gridimage_group_stat.rt',
     'execute'=>false,
 );
 
@@ -37,6 +35,9 @@ $ABORT_GLOBAL_EARLY=1; //avoids global.inc.php auto connecteding to redis to wit
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
+
+if (empty($CONF['manticorert_host']))
+	die("No manticorert host\n");
 
 ############################################
 //connect first to the REAL primary
@@ -108,8 +109,7 @@ gridimage_group_stat --schema=rt > gridimage_group_stat.rt
 ############################################
 //setup the schema
 
-chdir($cwd);
-
+/*
 if (file_exists("{$param['tmpfile']}.schema")) {
 	$cmd = "cp {$param['tmpfile']}.schema {$param['tmpfile']}";
 } else {
@@ -119,7 +119,7 @@ if (file_exists("{$param['tmpfile']}.schema")) {
 	$query = preg_replace_callback('/\{\$(\w+)\}/', function($m) use ($prefix) { return $prefix[$m[1]]; }, $sql);
 
 	$cmd = "php fakedump/fakedump.php $crit ".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." gridimage_group_stat --schema=rt > {$param['tmpfile']}";
-}
+}*/
 $cmd = "echo '' > {$param['tmpfile']}"; //... using injectrt.php can directly create the schema!
 print "$cmd\n\n";
 if ($param['execute'])
@@ -136,7 +136,7 @@ foreach ($prefixes as $idx => $prefix) {
 
 	$schema = (!$idx)+0; //only on first!
 	$limit = 100000000; //use really high limit, rather than relying on =0 as unlimited, as that runs piecemeal, that wont work with this group by query!
-	$cmd = "php scripts/injectrt.php --config={$param['config']} --host=$host --select=".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." --index=gridimage_group_stat --schema=$schema --limit=$limit --cluster=0 --drop >> {$param['tmpfile']}"; //will add to cluster at end!
+	$cmd = "php ".__DIR__."/injectrt.php --config={$param['config']} --host=$host --select=".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." --index=gridimage_group_stat --schema=$schema --limit=$limit --cluster=0 --drop >> {$param['tmpfile']}"; //will add to cluster at end!
 
 	print "$cmd\n\n";
         if ($param['execute'])

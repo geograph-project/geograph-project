@@ -21,8 +21,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$cwd = getcwd();
-
 ############################################
 //these are the arguments we expect
 
@@ -30,7 +28,7 @@ $param=array(
     'host'=>false, //override mysql host
     'date'=>false, //date filter
     'cluster'=>'manticore',
-    'tmpfile'=>'gridimage_group_stat-delta.rt',
+    'tmpfile'=>'/tmp/gridimage_group_stat-delta.rt',
     'execute'=>false,
 );
 
@@ -39,13 +37,16 @@ $ABORT_GLOBAL_EARLY=1; //avoids global.inc.php auto connecteding to redis to wit
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
+if (empty($CONF['manticorert_host']))
+	die("No manticorert host\n");
+
 ############################################
 //connect first to the REAL primary
 
 $db_primary = GeographDatabaseConnection(false);
 
 //can be running in many containers, so make sure only one running at a time
-                if (!$db_primary->getOne("SELECT GET_LOCK(".basename($argv[0]).",5)")) {
+                if (!$db_primary->getOne("SELECT GET_LOCK('".basename($argv[0])."',5)")) {
 			die("unable to get lock\n");
                 }
 
@@ -62,6 +63,10 @@ if ($param['execute'] > 1) {
 if (empty($param['date'])) {
 	$bits = explode('.',$CONF['manticorert_host']);
 	$param['date'] = $db_primary->getOne($sql = "SELECT last_indexed FROM sph_server_index WHERE index_name = 'gridimage_group_stat' AND server_id = '{$bits[0]}'");
+
+	if (empty($param['date'])) {
+		die("#ERROR: unable to find last index date\n");
+	}
 }
 
 ############################################
@@ -100,16 +105,13 @@ $crit = "-h$host -u{$CONF['db_user']} -p{$CONF['db_pwd']} {$CONF['db_db']}";
                 where label not in (\'(other)\',\'Other Topics\') and last_grouped > \'{$date}\'
                 group by grid_reference, label having images > 1 order by null';
 
-
-
 ############################################
 // delete the old data
 
-chdir($cwd);
-
+print "# Checking for records since {$param['date']}\n";
 $recordSet = $db->Execute("select grid_reference from gridsquare where last_grouped > '{$param['date']}'");
 if (!$recordSet->RecordCount()) {
-	die("# Nothing to do. no squares available\n");
+	die("# Nothing to do. No new squares available\n");
 }
 if ($param['execute']) {
 	$c = 0;
@@ -142,7 +144,7 @@ $recordSet->Close();
 	//$cmd = "php fakedump/fakedump.php $crit ".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." gridimage_group_stat --schema=0 --extended=1 --complete=1 >> {$param['tmpfile']}";
 
 	$limit = 100000000; //use really high limit, rather than relying on =0 as unlimited, as that runs piecemeal, that wont work with this group by query!
-	$cmd = "php scripts/injectrt.php --config={$param['config']} --host=$host --cluster={$param['cluster']} --select=".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." --index=gridimage_group_stat --schema=0 --limit=$limit >> {$param['tmpfile']}";
+	$cmd = "php ".__DIR__."/injectrt.php --config={$param['config']} --host=$host --cluster={$param['cluster']} --select=".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." --index=gridimage_group_stat --schema=0 --limit=$limit >> {$param['tmpfile']}";
 
 	print "$cmd\n";
 	if ($param['execute'])
@@ -167,11 +169,39 @@ if ($param['execute'] > 1)
 $cmd = "cat {$param['tmpfile']} | mysql  -h{$CONF['manticorert_host']} -P{$CONF['sphinx_portql']} --default-character-set=utf8 -A";
 fwrite(STDERR, "$cmd\n");
 
-if ($param['execute'] > 1)
-	 passthru($cmd);
+if ($param['execute'] > 1) {
+	if (strlen(`whereis mysql`) > 1000)
+		 passthru($cmd);
+	else {
+		//alas, the production pods dont have the 'mysql' binary installed (and injectrt.php can't run the commands directly yet!)
+		//luckly, we know the files have a fairly strict format. dont have to worry about ';\n' the middle of strings (as we know all encoded), and dont have to worry about comments etc in the script file!
+		$rt = GeographSphinxConnection('manticorert');
+
+		$h = fopen($param['tmpfile'],'r');
+		$buffer = '';
+		while($h && !feof($h)) {
+			$line = fgets($h);
+			if (substr_compare($line, ";\n", -2) ===0) {
+				$buffer .= rtrim($line,";\n");
+				//print "EXECUTE: ".preg_replace('/\s+/',' ',$buffer)."\n\n";
+				$rt->Execute($buffer);
+				//print "affected: ".$rt->Affected_Rows()."\n";
+				$buffer = '';
+			} else {
+				$buffer .= rtrim($line,"\n");
+			}
+		}
+		fclose($h);
+		if (!empty($buffer)) {
+			//print "EXECUTE: ".preg_replace('/\s+/',' ',$buffer)."\n\n";
+			$rt->Execute($buffer);
+			//print "affected: ".$rt->Affected_Rows()."\n";
+		}
+	}
+}
 
 ############################################
 
-$db->Execute("DO RELEASE_LOCK('".basename($argv[0])."')");
+$db_primary->Execute("DO RELEASE_LOCK('".basename($argv[0])."')");
 
 

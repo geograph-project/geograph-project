@@ -18,4 +18,4 @@
 
 
 
-12     *       * * *   /usr/bin/php /var/www/geograph/scripts/square-cluster.php --count=1000 --execute --sleep=3
+12     *       * * *   /usr/bin/php /var/www/geograph/scripts/square-cluster.php --count=1000 --execute --sleep=3 && /usr/bin/php /var/www/geograph/scripts/injectrt-gridimage_group_stat-delta.php --execute=2

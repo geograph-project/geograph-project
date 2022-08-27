@@ -9,6 +9,12 @@ require "./_scripts.inc.php";
 ############################################
 
 $db = GeographDatabaseConnection(false);
+
+if (!empty($DSN_READ)) {
+	$db_read = GeographDatabaseConnection(true);
+} else {
+	$db_read = $db;
+}
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	require '3rdparty/Carrot2.class.php';
@@ -20,16 +26,19 @@ if (posix_isatty(STDOUT) && !$param['debug'])
 ############################################
 
 if (!empty($param['count'])) {
-	$squares = $db->getAssoc("SELECT grid_reference,gridsquare_id FROM gridsquare WHERE imagecount BETWEEN 5 AND {$param['limit']} AND last_grouped < last_timestamp LIMIT {$param['count']}");
+	$squares = $db_read->getAssoc("SELECT grid_reference,gridsquare_id FROM gridsquare WHERE imagecount BETWEEN 5 AND {$param['limit']} AND last_grouped < last_timestamp LIMIT {$param['count']}");
 
 } elseif (!empty($param['square'])) {
 	$squares = array(
-		$param['square'] => $db->getOne("SELECT gridsquare_id FROM gridsquare WHERE grid_reference = ".$db->Quote($param['square']))
+		$param['square'] => $db_read->getOne("SELECT gridsquare_id FROM gridsquare WHERE grid_reference = ".$db->Quote($param['square']))
 	);
-} else {
-	die("specify command\n");
 }
 
+if (empty($squares)) {
+	if ($param['debug'])
+		print "No squares to process\n";
+	exit(1); //status 1 means the next command in chain doesnt execute!
+}
 ############################################
 
 		function cmp(&$a, &$b) {
@@ -37,10 +46,12 @@ if (!empty($param['count'])) {
 		}
 
 foreach ($squares as $square => $gridsquare_id) {
-	if (empty($gridsquare_id))
-		die("unknown id for $square\n");
+	if (empty($gridsquare_id)) {
+		print "unknown id for $square\n";
+		exit(1);
+	}
 
-	$recordSet = $db->Execute("SELECT gridimage_id,title,comment FROM gridimage_search WHERE grid_reference = '{$square}' LIMIT {$param['limit']}");
+	$recordSet = $db_read->Execute("SELECT gridimage_id,title,comment FROM gridimage_search WHERE grid_reference = '{$square}' LIMIT {$param['limit']}");
 	$lookup = array();
 	while (!$recordSet->EOF) {
 		$row =& $recordSet->fields;
