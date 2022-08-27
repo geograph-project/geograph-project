@@ -24,24 +24,28 @@
 
 //these are the arguments we expect
 $param=array(
-	'host'=>false,
+	'host'=>false, //override the mysql host to dump from
 
         'schema'=>false, //show the schema used to create a new sphinx index.
-		'drop' => false,
-	'debug'=>false,
-	'data'=>true,
+		'drop' => false, //add drop table to output
+	'data'=>true, //include the actual data (can use to just get schema, but the default limit=1 means usually safe to test data queries.
 
 	'file'=>false, //read a sphinx.conf file and output similar index (overrides index, select, and $options)
-	'table'=>false, //read a table, and automatically create a select statement
-		'where'=>false,
 
-	'cluster' => 'manticore',
-	'index' => 'gridimage', // : as part of clusrter
-	'select' => "SELECT * FROM sphinx_view",
+	'table'=>false, //read a table, and automatically create a select statement
+		'delta'=>false, //specify a column to just get new rows
+		'where'=>false, //optional filter ANDed to generated SELECT query.
+
+	'index' => 'gridimage', //name of index to create (cluster name will add auotmatically)
+	'select' => "SELECT * FROM sphinx_view", //the query will be used for getting data (using 'table' will automatically define this!)
 	//BE WEARY OF ADDING GROUP BY TO THIS QUERY, AS THE SCHEMA BELOW USING LIMIT 1 WILL STRUGGLE.
 
+	'cluster' => 'manticore',
 	'extended' => true, //output extended inserts
 	'limit' => 1, //if sepcified, myst be under 1000!
+
+	'execute'=>false,
+	'debug'=>false,
 );
 
 $multis = $joineds = array();
@@ -79,6 +83,15 @@ if (strpos($param['select'], 'sphinx_view') && empty($param['file']) && empty($p
 }
 
 ############################################
+//connect first to the REAL primary
+
+if (!empty($param['delta'])) {
+	//we need to get the current value from primary database!
+	$db_primary = GeographDatabaseConnection(false);
+}
+
+############################################
+// then the db to dump from
 
 $host = empty($CONF['db_read_connect'])?$CONF['db_connect']:$CONF['db_read_connect'];
 if ($param['host']) {
@@ -92,6 +105,7 @@ $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 #########################################################
+// extract query from a sphinx.conf file
 
 if (!empty($param['file'])) {
 	chdir($cwdir);
@@ -129,6 +143,7 @@ if (!empty($param['file'])) {
 }
 
 #########################################################
+// generate a SELECT directly from the table definition
 
 if (!empty($param['table'])) {
 	$columns = $db->getAssoc("DESCRIBE {$param['table']}");
@@ -189,13 +204,24 @@ fwrite(STDERR,"$name ".substr($row['Type'],0,40)."\n");
 
 	$cols = implode(", ",$cols);
 	$param['select'] = "SELECT $cols FROM {$param['table']}";
+	if ($param['index'] == 'gridimage') //just looking if still the 'default!
+		$param['index'] = $param['table']; //create index of same name
+
+	if (!empty($param['delta'])) {
+	        $bits = explode('.',$CONF['manticorert_host']);
+	        $param['date'] = $db_primary->getOne($sql = "SELECT last_indexed FROM sph_server_index WHERE index_name = '{$param['index']}' AND server_id = '{$bits[0]}'");
+
+	        if (empty($param['date'])) {
+        	       fwrite(STDERR,"#Warning: unable to find last index date - doing a full dump\n");
+			$param['schema'] = 1; //almost certainly going to need schema!
+		} else
+			$wheres[] = "{$param['delta']} > ".$db_primary->Quote($param['date']);
+	}
+
 	if (!empty($wheres))
 		$param['select'] .= " WHERE ".implode(' AND ',$wheres);
 
 	fwrite(STDERR,"Generated: {$param['select']};\n");
-
-	if ($param['index'] == 'gridimage') //just looking if still the 'default!
-		$param['index'] = $param['table']; //create index of same name
 }
 
 #########################################################
@@ -467,15 +493,30 @@ if (!empty($param['data'])) {
         	        break;
 	}
 
-        fwrite(STDERR,date('H:i:s ')."ALL DONE\n");
 	if (!empty($converted))
 		fwrite(STDERR,print_r($converted,TRUE)."\n");
-	exit();
 }
 
 #########################################################
 
+if ($param['execute'] > 1)
+	fwrite(STDERR,"IMPORTANT! This script doesn't current execute the actual commands, above. will still need to pipe outout to manticore!\n\n");
 
+#########################################################
+
+if (!empty($param['delta']) && !empty($param['table'])) {
+	//get the last date from database we connected to... (eg it could be a lagging replica!)
+	$row = $db->getRow("SELECT {$param['delta']} FROM {$param['table']} ORDER BY {$param['delta']} desc LIMIT 1");
+
+	$bits = explode('.',$CONF['manticorert_host']);
+	$sql = "REPLACE INTO sph_server_index SET index_name = '{$param['index']}', server_id = '{$bits[0]}', last_indexed = '{$row[$param['delta']]}', updated=NOW()";
+	fwrite(STDERR, "\nRun this on PRIMARY database: $sql;\n");
+
+	if ($param['execute'] > 1)
+        	$db_primary->Execute($sql);
+}
+
+#########################################################
 
 fwrite(STDERR,date('H:i:s ')."DONE!\n");
 
