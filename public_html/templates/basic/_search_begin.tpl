@@ -128,7 +128,7 @@
 				| <a href="javascript:void(hide_tree(101));">close</a></div>
 			</form>
 		</div>
-	{elseif $engine->criteria->markedlist}
+	{elseif $engine->criteria->markedlist && $user->user_id == $engine->criteria->user_id}
 		[<a href="/refine.php?i={$i}">Refine Search</a>]
 	{else}
 	</p>
