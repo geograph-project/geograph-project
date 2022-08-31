@@ -10,6 +10,9 @@
 .content_photoblack #maincontent a img {
 	padding:0;
 }
+#maincontent .votediv {
+	white-space: nowrap;
+}
 #maincontent .votediv a img {
 	margin:0;
 	padding:2px;
