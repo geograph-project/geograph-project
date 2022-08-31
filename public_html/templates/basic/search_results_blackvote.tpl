@@ -97,6 +97,15 @@
 	border-radius:2px;
 	z-index:10000;
 }
+.content_photoblack table.maintable {
+	background-color:black;
+}
+.content_photowhite table.maintable {
+	background-color:white;
+}
+.content_photogray table.maintable {
+	background-color:gray;
+}
 </style>
 
 <script type="text/javascript">
@@ -116,7 +125,7 @@
 
 <div id="mapdiv" style="display:none"><img src="{$static_host}/img/blank.gif" name="map"/></div>
 
-<table border="0" cellspacing="0" cellpadding="0">
+<table border="0" cellspacing="0" cellpadding="0" class="maintable">
         {foreach from=$engine->results item=image}
         {searchbreak image=$image table=true}
     <tr>
