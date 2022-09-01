@@ -483,6 +483,7 @@ class UploadManager
 		//dont know yet which of these is best but they all seem to be the same on my test images
 		if ((($date = @$exif['EXIF']['DateTimeOriginal']) ||
 		    ($date = @$exif['EXIF']['DateTimeDigitized']) ||
+		    ($date = @$exif['EXIF']['DateTime']) ||
 		    ($date = @$exif['IFD0']['DateTime']) )
 			//Data format is "YYYY:MM:DD HH:MM:SS"+0x00, total 20bytes. If clock has not set or digicam doesn't have clock, the field may be filled with spaces.
 			&&
@@ -1201,8 +1202,10 @@ $this->db->raiseErrorFn = 'adodb_throw';
 				$files = explode(" ",trim(`echo newpic_u{$USER->user_id}_*.exif`,"\n"));
 			}
 
+			$calendar = $this->db->getAssoc("SELECT upload_id, gridimage_id FROM gridimage_calendar WHERE user_id = {$USER->user_id} AND upload_id != ''");
+
 			foreach ($files as $file) {
-				if (preg_match('/^newpic_u(\d+)_(\w+).exif$/',$file,$m)) {
+				if (preg_match('/^newpic_u(\d+)_(\w+).exif$/',$file,$m) && empty($calendar[$m[2]])) {
 					if ($m[1] != $USER->user_id)
 						continue;
 					$row = array('transfer_id'=>$m[2],'uploaded'=>filemtime($file));
@@ -1235,6 +1238,7 @@ $this->db->raiseErrorFn = 'adodb_throw';
 					//dont know yet which of these is best but they all seem to be the same on my test images
 					if ((($date = @$exif['EXIF']['DateTimeOriginal']) ||
 					    ($date = @$exif['EXIF']['DateTimeDigitized']) ||
+					    ($date = @$exif['EXIF']['DateTime']) ||
 					    ($date = @$exif['IFD0']['DateTime']) )
 						//Data format is "YYYY:MM:DD HH:MM:SS"+0x00, total 20bytes. If clock has not set or digicam doesn't have clock, the field may be filled with spaces.
 						&&
