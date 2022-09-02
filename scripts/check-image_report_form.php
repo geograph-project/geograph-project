@@ -32,9 +32,6 @@ $param=array(
 	'id'=>false,
 );
 
-        $param['dir'] ='/var/www/geograph_live';
-        $param['config']='www.geograph.org.uk';
-
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
