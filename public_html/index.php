@@ -292,9 +292,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$extra_meta = array();
 
 	if (!empty($_GET['lang']))
-		$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/?lang=cy\"/>";
+		$extra_meta[] = "<link rel=\"canonical\" href=\"https://{$_SERVER['HTTP_HOST']}/?lang=cy\"/>";
 	else
-		$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/\"/>";
+		$extra_meta[] = "<link rel=\"canonical\" href=\"https://{$_SERVER['HTTP_HOST']}/\"/>";
 
 	//hard to do this dynamically
 	if ($CONF['template']=='charcoal' ||  $CONF['template']=='charcoal_cy') {
