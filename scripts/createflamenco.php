@@ -203,7 +203,7 @@ while (!$recordSet->EOF)
 	//write out progress and send mysql keepalive every 500 results...
 	if (!($p%500)) {
 		print "...done $p\n";
-		$dummy = $db->getOne("SELECT COUNT(*) FROM queries");
+		//$dummy = $db->getOne("SELECT COUNT(*) FROM queries");
 		sleep(1);
 	}
 	$p++;
