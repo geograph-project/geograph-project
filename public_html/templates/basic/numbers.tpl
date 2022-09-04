@@ -183,7 +183,6 @@
 <div class="linksbox">
 <h3>Further Statistics</h3>
 | <b><a href="/statistics.php">More Numbers...</a></b> | <a href="/statistics.php#more">More Pages...</a> | 
-<a href="/statistics/tables.php">Totals</a> |
 <a href="/statistics/pulse.php">Geograph Pulse</a> |
 <a href="/statistics/estimate.php">Future Estimates</a> |
    
