@@ -1,6 +1,13 @@
 <?
 
+ini_set('display_errors',1);
+
 require_once('geograph/global.inc.php');
+
+$smarty = new GeographPage;
+
+init_session();
+$USER->mustHavePerm("admin");
 
 
 $db=NewADOConnection($GLOBALS['DSN']);
@@ -11,9 +18,13 @@ $type = "i53295783";
 if (!empty($_GET['type']) && preg_match('/^\w+$/',$_GET['type']))
 	$type = $_GET['type'];
 
+
+$start = 0;
 $break = 7;
 if (!empty($_GET['one']))
 	$break = 4;
+if (!empty($_GET['month']))
+        $start = 5;
 
 
 //select type,max(users) as users,avg(avg),count(*) as count,last_vote from vote_stat group by type having count between 52 and 53 order by last_vote;
@@ -45,13 +56,13 @@ print "Total Voters = {$row['max']}, Overall Average = {$row['avg']} (used in th
 
 $query = "select imagetaken,id,(@max-users) as v0,' ',v1,v2,v3,v4,v5,'.',users,avg,v.baysian,round(avg*users) as total, (avg*users)/@max as avg0,
 	((avg*users)+(@max-users)*3)/@max as avg3,last_vote
-	from vote_stat v inner join gridimage_search on (id = gridimage_id) where type='$type' ORDER BY substring(imagetaken,1,$break),v.baysian DESC LIMIT 1000";
+	from vote_stat v inner join gridimage_search on (id = gridimage_id) where type='$type' ORDER BY substring(imagetaken,$start+1,$break-$start),v.baysian DESC LIMIT 1000";
 
-dump_sql_table($query,$type,$break);
+dump_sql_table($query,$type);
 
 
-function dump_sql_table($sql,$title,$break = 7) {
-	global $db;
+function dump_sql_table($sql,$title) {
+	global $db,$start,$break;
         $recordSet = $db->Execute($sql) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
 	if ($recordSet->EOF)
@@ -62,11 +73,11 @@ function dump_sql_table($sql,$title,$break = 7) {
 	$max = array();
 	while(!$recordSet->EOF) {
 		$row = $recordSet->fields;
-		$last = substr($row['imagetaken'],1,$break);
+		$breaker = substr($row['imagetaken'],$start,$break-$start);
 		if (!is_null($row['id']))
 			foreach ($row as $key => $value)
-				if(empty($max[$last][$key]) || $value > $max[$last][$key])
-					$max[$last][$key] = $value;
+				if(empty($max[$breaker][$key]) || $value > $max[$breaker][$key])
+					$max[$breaker][$key] = $value;
 		$recordSet->MoveNext();
 	}
 
@@ -80,16 +91,17 @@ function dump_sql_table($sql,$title,$break = 7) {
         }
         print "</TR>";
 
-	$last = substr($row['imagetaken'],1,$break);
+	$last = '';
         while(!$recordSet->EOF) {
 		$row = $recordSet->fields;
-		if ($last != substr($row['imagetaken'],1,$break))
+		$breaker = substr($row['imagetaken'],$start,$break-$start);
+		if ($last != $breaker)
 			print "<tr><td colspan=".count($row).">";
-		$last = substr($row['imagetaken'],1,$break);
+		$last = $breaker;
 
                 print "<TR>";
                 foreach ($row as $key => $value) {
-			if ($value == $max[$last][$key]) {
+			if ($value == $max[$breaker][$key]) {
 				print "<TD style='background-color:lightgreen'>$value</TD>";
 			} else {
 	                        print "<TD>$value</TD>";
