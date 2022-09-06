@@ -74,3 +74,7 @@ $CONF['origins'] = array(1 => array(206,0), 2 => array(10,149));
 $CONF['content_sources'] = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'Contributor', 'category'=>'Category', 'context'=>'Geographical Context', 'other'=>'Other', 'faq'=>'FAQ Answer', 'link' => 'Website Page','cluster' => 'Photo Cluster');
 
 ########################################################################
+
+$CONF['manticorert_host'] = "manticorert-worker-svc.production.svc.cluster.local"; //test instance!
+
+
