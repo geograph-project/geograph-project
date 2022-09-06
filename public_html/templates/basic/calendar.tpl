@@ -84,6 +84,9 @@ minimum quantity of 2 calendars per person, which can include more than one vers
 	<br>
 	<p>or
 	<a href="order.php" style="font-size:large;background-color:#000066;color:yellow;padding:10px;border-radius:10px">Just order 'Best Of Geograph' Calendar &gt; &gt;</a>
+	<br><br>
+	- or <a href="bestof.php">vote here</a> for what photos will be included on the final calendar
+	<i> (can order before choosen, or wait until after 18th Sept to order)</i>
 {/if}
 
 {if $list}

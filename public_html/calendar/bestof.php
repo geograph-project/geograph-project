@@ -19,7 +19,8 @@ $smarty->display('_std_begin.tpl');
 print "<div style=padding:10px>"; //content_photoblack has no padding so photo page can put stuff right upto edges
 print "<h2>Image Voting</h2>";
 
-print "<p>Click the stars under each image to give your rating. Your last vote on an image counts (so can change vote)</p>";
+print "<p>Click the stars under each image to give your rating. Your last vote on an image counts (so can change vote).<br>";
+print "<i>Consider 3 stars the average within this set, so give higher score to your favorite(s). Although if prefer can just give 5 stars to your top image each month.</i></p>";
 
 
 $type = "i164568868"; //still needed for voting
