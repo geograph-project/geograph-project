@@ -44,7 +44,7 @@ class RebuildUserSquares extends EventHandler
 		$this->Execute("DROP TABLE IF EXISTS user_gridsquare_tmp");
 
 		$create = "CREATE TABLE user_gridsquare_tmp
-                                (UNIQUE INDEX (user_id,`grid_reference`),INDEX(`grid_reference`))
+                                (UNIQUE INDEX (user_id,`grid_reference`),INDEX(`grid_reference`),SPATIAL KEY (`point_xy`))
                                 ENGINE=MyISAM";
 		$insert = "INSERT INTO user_gridsquare_tmp";
 		$select = " SELECT user_id,`grid_reference`,x,y,reference_index,
