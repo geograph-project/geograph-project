@@ -73,11 +73,19 @@ WHERE \$where GROUP BY t1.tag_id ORDER BY NULL";
         	                $hours++; //just to be safe
 
 				//doing one, by one, is inefficent, but runs better as lots of small queries
-				$ids = $db->getCol("SELECT DISTINCT tag_id FROM gridimage_tag WHERE updated > date_sub(now(),interval $hours hour)");
+				$ids = $db->getCol("SELECT DISTINCT tag_id FROM gridimage_tag WHERE updated > date_sub(now(),interval $hours hour)"); //important to run directly on gridimage_tag to get status = 0!
 				foreach ($ids as $id) {
 					$where = "t1.tag_id = $id";
 					$db->Execute("REPLACE INTO tag_stat ".str_replace('$where',$where,$sql));
 				}
+			}
+
+			if (date('G') === '3') { //todo <7 ??
+				//delete orphans //do this first, as slightly quicker
+				$this->Execute("DELETE tag_stat.* FROM tag INNER JOIN tag_stat USING (tag_id) WHERE status=0");
+
+				//might still need to delete ones where no rows in gridimage_tag
+				$this->Execute("DELETE tag_stat.* FROM tag_stat LEFT JOIN tag_public USING (tag_id) WHERE tag_public.tag_id IS NULL");
 			}
 
 		//do a (full) inplace update
