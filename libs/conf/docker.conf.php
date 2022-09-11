@@ -75,6 +75,5 @@ $CONF['content_sources'] = array('portal'=>'Portal', 'article'=>'Article', 'blog
 
 ########################################################################
 
-$CONF['manticorert_host'] = "manticorert-worker-svc.production.svc.cluster.local"; //test instance!
 
 
