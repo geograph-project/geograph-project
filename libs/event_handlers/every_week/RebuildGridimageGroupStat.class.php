@@ -45,21 +45,46 @@ class RebuildGridimageGroupStat extends EventHandler
 			return false;
 		}
 
+		##################################################
+		//we really go our of our way to NOT run this update. Its really expensive to create table from scratch, so avoid if possible
 
                 $status = $db->getRow("SHOW TABLE STATUS LIKE 'gridimage_group'");
 
-                if (!empty($status['Update_time']) && strtotime($status['Update_time']) < time()-3600*24*8) {
-                        $this->_output(2, "No updates to process");
-                        return true;
+                if (!empty($status['Update_time'])) {
+			if (strtotime($status['Update_time']) < time()-3600*24*8) {
+	                        $this->_output(2, "No updates to process");
+        	                return true;
+			}
+		} else {
+			 //fallback if Update_time not available (innodb!)
+			//new rows are always added on the end
+			$row = $db->getRow("SELECT updated from gridimage_group order by seq_id desc"); //limit 1 added by getRow!
+			if (strtotime($row['updated']) < time()-3600*24*8) {
+                                $this->_output(2, "No updates to process");
+                                return true;
+                        }
 		}
 
                 $status = $db->getRow("SHOW TABLE STATUS LIKE 'gridimage_group_stat'");
 
-                if (!empty($status['Update_time']) && strtotime($status['Update_time']) > time()-3600*24*5) {
-                        $this->_output(2, "Assume that table is being incrementally updated");  //this script runs weekly, so if recent updates something else must be doing it!
-                        return true;
+                if (!empty($status['Update_time'])) {
+			if (strtotime($status['Update_time']) > time()-3600*24*5) {
+	                        $this->_output(2, "Assume that table is being incrementally updated");  //this script runs weekly, so if recent updates something else must be doing it!
+        	                return true;
+			}
+		} elseif (!empty($status['Create_time'])) { //confirm there really is a table!
+
+			//fallback if Update_time not available (innodb!)
+			//while new rows are added at end, there isnt a timestamp column (the updated is from images using that group)
+			$row = $db->getRow("select max(updated) from gridimage_group_stat where gridimage_group_stat_id > (select max(gridimage_group_stat_id)-1000 from gridimage_group_stat)");
+			if (strtotime($row['max(updated)'])  > time()-3600*24*5) {
+				$this->_output(2, "Assume that table is being incrementally updated");
+				return;
+			}
 		}
 
+		##################################################
+		// if got this far need to build it in the end anyway.
 
 		$sql = '
 		select null as gridimage_group_stat_id, grid_reference, label
