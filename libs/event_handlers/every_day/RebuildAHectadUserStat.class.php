@@ -38,15 +38,13 @@ class RebuildAHectadUserStat extends EventHandler //A in name to ensure it runs 
 	function processEvent(&$event)
 	{
 		global $CONF;
-		
-		//perform actions
-		
+
 		$db=&$this->_getDB();
-		
+
 		$tables = $db->getCol("SHOW TABLES LIKE 'hectad_user_stat%'");
-		
+
 		if (!in_array('hectad_user_stat',$tables)) {
-		
+
 			$db->Execute("CREATE TABLE IF NOT EXISTS `hectad_user_stat` (
 				  `reference_index` tinyint(4) default '1',
 				  `hectad` varchar(4) NOT NULL default '',
@@ -63,23 +61,21 @@ class RebuildAHectadUserStat extends EventHandler //A in name to ensure it runs 
 				  `last_first_submitted` datetime default NULL,
 				  PRIMARY KEY  (`hectad`,`user_id`),
 				  INDEX(user_id)
-				) ENGINE=MyISAM");
+				)");
 		}
-		
+
 		if (!in_array('hectad_user_stat_tmp',$tables)) {
 			$db->Execute("CREATE TABLE IF NOT EXISTS hectad_user_stat_tmp LIKE hectad_user_stat");
 		} else {
 			$db->Execute("TRUNCATE hectad_user_stat_tmp"); //just incase we inheritied a old table.
 		}
-		
-		$db->Execute("ALTER TABLE hectad_user_stat_tmp DISABLE KEYS"); 
-		
+
 		foreach (array(1,2) as $ri) {
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
-			
+
 			//give the server a breather...
 			//sleep(10);
-		
+
 			//TODO, could convert to user_gridsquare?
 			$db->Execute("INSERT INTO hectad_user_stat_tmp
 			SELECT 
@@ -102,20 +98,17 @@ class RebuildAHectadUserStat extends EventHandler //A in name to ensure it runs 
 				GROUP BY (x-{$CONF['origins'][$ri][0]}) div 10,(y-{$CONF['origins'][$ri][1]}) div 10,user_id");
 			//todo when the origin is a multiple of 10 (or =0) then can be optimised away - but mysql might do that anyway
 		}
-		
+
 		sleep(5);
-		$db->Execute("ALTER TABLE hectad_user_stat_tmp ENABLE KEYS"); 
-		
-		
+
 		$db->Execute("DROP TABLE IF EXISTS hectad_user_stat");
-		
+
 		$db->Execute("RENAME TABLE hectad_user_stat_tmp TO hectad_user_stat");
-		
+
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;
 	}
-	
 }
 
 
