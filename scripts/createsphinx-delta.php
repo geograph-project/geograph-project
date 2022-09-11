@@ -200,13 +200,11 @@ if (isset($status['sphinx_terms'])) {
 
         for($q=$minmax['min'];$q<$minmax['max'];$q+=100000) {
 		$between = "gridimage_id BETWEEN ".($q)." AND ".($q+99999);
-                $sqls[] = (count($sqls)?"INSERT INTO sphinx_terms_tmp ":"CREATE TABLE sphinx_terms_tmp (gridimage_id INT UNSIGNED) ENGINE=MyISAM").
+                $sqls[] = (count($sqls)?"INSERT INTO sphinx_terms_tmp ":"CREATE TABLE sphinx_terms_tmp (gridimage_id INT UNSIGNED PRIMARY KEY)").
                          str_replace('__between__',$between, $sql);
         }
 
 	$sqls[] = "DELETE FROM sphinx_terms_tmp WHERE groups IS NULL AND terms IS NULL AND snippets IS NULL AND wikis IS NULL";
-
-	$sqls[] = "ALTER TABLE sphinx_terms_tmp ADD PRIMARY KEY(gridimage_id)";
 
 	foreach ($sqls as $sql) {
 		fwrite(STDERR,date('H:i:s ')." $sql\n\n");

@@ -175,11 +175,9 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_terms'")) {
 
         for($q=0;$q<$count;$q+=50000) {
                 $between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+50000);
-                $sqls[] = ($q?"INSERT INTO sphinx_terms ":"CREATE TABLE sphinx_terms (gridimage_id INT UNSIGNED) ENGINE=MyISAM").
+                $sqls[] = ($q?"INSERT INTO sphinx_terms ":"CREATE TABLE sphinx_terms (gridimage_id INT UNSIGNED PRIMARY KEY)").
                          str_replace('__between__',$between, $sql);
         }
-
-	$sqls[] = "ALTER TABLE sphinx_terms ADD PRIMARY KEY(gridimage_id)";
 
 	$sqls[] = "DELETE FROM sphinx_terms WHERE groups IS NULL AND terms IS NULL AND snippets IS NULL AND wikis IS NULL";
 

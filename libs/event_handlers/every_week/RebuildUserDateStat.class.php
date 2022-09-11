@@ -49,7 +49,7 @@ class RebuildUserDateStat extends EventHandler
 
 		$db->Execute("DROP TABLE IF EXISTS user_date_stat_tmp");
 
-		$create = "CREATE TABLE user_date_stat_tmp (primary key (user_id,type,year,month),index(type,year)) ";
+		$create = "CREATE TABLE user_date_stat_tmp (unique key (user_id,type,year,month),index(type,year)) ";
 		$insert = "INSERT INTO user_date_stat_tmp ";
 
 		$c = 0;
