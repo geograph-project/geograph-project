@@ -31,15 +31,18 @@ if (!empty($param['from'])) {
 	$where = "table_name LIKE '".implode("%' OR table_name LIKE '",explode(',',$param['tables']))."%'";
 	$tables = $db->getAll("SELECT * FROM material_view WHERE $where ORDER BY table_name");
 } else {
-	$tables = $db->getAll("SELECT * FROM material_view ORDER BY table_name");
+	$tables = $db->getAll("SELECT * FROM material_view WHERE schedule != 'disabled' ORDER BY table_name");
 }
 
 foreach ($tables as $row) {
 	//recreate from parsed
 	$columns = $db->getAll("SELECT * FROM material_view_column WHERE table_name = '{$row['table_name']}' ORDER BY sort_order,column_id");
-	$bits = array();
+	$bits = array(); $dynamic=false;
 	foreach ($columns as $col) {
-		if ($col['definition'] != $col['column_name'])
+		if ($col['definition'] === '0' || preg_match('/\$(\w+)/',$col['definition'])) { //these are just placeholders, the real table must have some PHP to set these!
+			$bits[] = "{$color}{$col['definition']} AS `{$col['column_name']}`{$white}";
+			$dynamic=true;
+		} elseif ($col['definition'] != $col['column_name'])
 			$bits[] = "{$col['definition']} AS `{$col['column_name']}`";
 		else
 			$bits[] = $col['column_name'];
@@ -65,7 +68,13 @@ foreach ($tables as $row) {
 	if (!empty($row['sql_limit']))
 		$sql .= "\n LIMIT {$row['sql_limit']}";
 
-	print "{$color}CREATE TABLE `{$row['table_name']}` {$white}\n";
+	if ($dynamic)
+		print "{$color}--{$row['table_name']} can't be re-created with this query, as the real material view is created in PHP \n";
+	elseif (preg_match('/\b'.preg_quote($row['table_name'],'/').'\b/',$row['sql_from']))
+		print "{$color}--{$row['table_name']} can't be created as view, as it actully a real table\n";
+	else
+		print "{$color}CREATE TABLE `{$row['table_name']}` {$white}\n";
+
 	print "$sql;\n\n";
 
 	if ($param['explain'])
