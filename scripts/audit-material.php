@@ -1,7 +1,7 @@
 <?
 
 //these are the arguments we expect
-$param=array('explain'=>false,'tables'=>'','tree'=>false);
+$param=array('explain'=>false,'tables'=>'','tree'=>false,'squares'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -10,6 +10,44 @@ require "./_scripts.inc.php";
 
 	$db = GeographDatabaseConnection(false);
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+############################################
+
+if (!empty($param['squares'])) {
+
+$tables = $db->getCol("SELECT table_name FROM material_view_column WHERE column_name='squares' AND table_name like '%_stat' AND table_name NOT like '%old'");
+
+$data = $db->getAll("SELECT * FROM material_view_column WHERE table_name IN ('".implode("','",$tables)."') ORDER BY table_name,sort_order");
+
+$matrix = array();
+$tables = array();
+foreach ($data as $row) {
+	if ($row['grouped'])
+		continue; //skip the actual grouped columns, will be differetnt!
+
+	@$matrix[$row['column_name']][$row['table_name']] = $row;
+	@$tables[$row['table_name']]++;
+}
+
+printf("%40s ",'');
+foreach ($tables as $table_name => $dummy)
+	print "$table_name\t";
+print "\n";
+
+foreach ($matrix as $column_name => $row) {
+	printf("%40s ",$column_name);
+	foreach ($tables as $table_name => $dummy) {
+		if (!empty($row[$table_name])) {
+			print "X\t";
+		} else {
+			print ".\t";
+		}
+	}
+	print "\n";
+}
+
+exit;
+}
 
 ############################################
 
@@ -30,6 +68,9 @@ select table_name,count(*) cnt,COLUMN_KEY,group_concat(column_name order by leng
  where table_schema = DATABASE() AND DATA_TYPE in ('timestamp','datetime')
  and (definition like 'now()' OR definition like 'max%' OR definition = 'upd_timestamp')
  group by table_name");
+
+printf("%-25s %19s             %12s %s %10s %s\n",
+	'Table Name', 'Update_time', 'Rows', 'Engine', 'Schedule', 'Timestamp (if found)');
 
 foreach ($tables as $row) {
 
@@ -60,6 +101,7 @@ foreach ($tables as $row) {
 		$row['schedule'],
 		$dateupdated
 		);
+
 }
 
 ###############################################
