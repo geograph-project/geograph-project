@@ -46,6 +46,8 @@ if ($row['status'] == 'processed')
 if (!empty($_POST['new_id'])) {
 	$str = preg_replace('/[\w:\/\.]*\/(\d{6,7})_\w{8}(_\w+)?\.jpg/','$1',$_POST['new_id']); //replace any thumbnail urls with just the id.
         $gridimage_id = intval(trim(preg_replace('/[^\d]+/',' ',$str)));
+
+
 	if ($gridimage_id > 0) {
 		$sort_order = intval($_POST['new_position']);
 
@@ -61,7 +63,6 @@ if (!empty($_POST['new_id'])) {
 		        $updates['calendar_id'] = $row['calendar_id'];
                        	$updates['sort_order'] = $sort_order;
 
-
 	                $db->Execute($sql = 'INSERT IGNORE INTO gridimage_calendar SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates))
         	                or  die("$sql\n".$db->ErrorMsg()."\n\n");
 
@@ -69,7 +70,8 @@ if (!empty($_POST['new_id'])) {
 			if ($db->Affected_Rows() == 1)
 				$db->Execute("DELETE FROM gridimage_calendar WHERE calendar_id = {$row['calendar_id']} AND sort_order = $sort_order and gridimage_id != $gridimage_id");
 
-			$_POST['cover_image'] = 0; //now selected a specific image
+			if ($sort_order == 0)
+				$_POST['cover_image'] = 0; //now selected a specific image
 		}
 	}
 }
