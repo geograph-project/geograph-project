@@ -193,6 +193,15 @@ if (!empty($_REQUEST['edit'])) {
 	foreach ($_REQUEST['delete'] as $id => $text) {
 		
 		$db->Execute("UPDATE snippet SET enabled = 0 WHERE $where snippet_id = ".intval($id));
+
+                                        $inserts = array();
+                                        $inserts['snippet_id'] = $id;
+                                        $inserts['user_id'] = $USER->user_id;
+                                        $inserts['field'] = 'enabled';
+                                        $inserts['oldvalue'] = "1"; //must of been!
+                                        $inserts['newvalue'] = "0";
+
+                                        $db->Execute('INSERT INTO snippet_item SET `'.implode('` = ?,`',array_keys($inserts)).'` = ?',array_values($inserts));
 	}
 }
 
