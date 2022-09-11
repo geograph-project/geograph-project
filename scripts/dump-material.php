@@ -23,6 +23,9 @@ print "#   Where the a column definition uses \$ as part of definition, its in r
 $color = "\033[31m";
 $white ="\033[0m";
 
+
+print "$color# DO NOT JUST DROP THE ANY OF THESE TABLES AND BLINDLY EXPECT THESE QUERIES TO SUCCESSFULLY RECREATE THE TABLE$white\n";
+
 if (!empty($param['from'])) {
 	$where = "sql_from REGEXP ".$db->Quote("\b".$param['from']."\b");
 	$where .= " AND description != 'obsolete'";

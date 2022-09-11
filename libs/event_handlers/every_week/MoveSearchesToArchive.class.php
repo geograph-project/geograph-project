@@ -43,6 +43,7 @@ class MoveSearchesToArchive extends EventHandler
 		if (!$db->getOne("SHOW TABLES LIKE 'queries_archive'"))
 			return true;
 
+//todo, use BEGIN TRANSACTION instead, now innodb!
 		if (!empty($this->processor) && !empty($this->processor->current_event_id)
 		&& $db->getOne("select CONNECTION_ID()") == $this->processor->logdb->getOne("select CONNECTION_ID()") //we actully need to make sure its the same connection, it may not be!
 			) {
