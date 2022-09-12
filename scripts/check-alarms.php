@@ -43,7 +43,7 @@ if (!$db->readonly) {
 
 ############################################
 
-$rows = $db->getAll("SELECT * FROM alarm WHERE active = 1 ORDER BY alarm_id DESC");
+$rows = $db->getAll("SELECT * FROM alarm WHERE active = 1 and metric2 is not null ORDER BY alarm_id DESC");
 
 print "Found ".count($rows)." check(s)\n";
 $good = $bad = 0;
@@ -84,23 +84,28 @@ foreach ($rows as $row) {
 
 	foreach ($results as $result) {
 
-		//checks "at least" this number
-		if (!is_null($row['min_value'])) { //could be number or string!
-			if (strpos($row['min_value'],'now') === 0) { //pretty fragile test
-				$row['min_value'] = strtotime($row['min_value']);
-				$result[$row['metric']] = strtotime($result[$row['metric']]);
+		$c = '';
+		while (!empty($row['metric'.$c])) {
+
+			//checks "at least" this number
+			if (!is_null($row['min_value'.$c])) { //could be number or string!
+				if (strpos($row['min_value'.$c],'now') === 0) { //pretty fragile test
+					$row['min_value'.$c] = strtotime($row['min_value'.$c]);
+					$result[$row['metric'.$c]] = strtotime($result[$row['metric'.$c]]);
+				}
+
+				$max_value = is_numeric($row['min_value'.$c])?$row['min_value'.$c]:$result[$row['min_value'.$c]]; //find the max for this one line!
+
+				result($result[$row['metric'.$c]], $result[$row['metric'.$c]] >= $max_value, $row, $result[$row['label'.$c]]);
 			}
 
-			$max_value = is_numeric($row['min_value'])?$row['min_value']:$result[$row['min_value']]; //find the max for this one line!
+			//checks "at most"
+			if (!is_null($row['max_value'.$c])) { //could be number or string!
+				$max_value = is_numeric($row['max_value'.$c])?$row['max_value'.$c]:$result[$row['max_value'.$c]]; //find the max for this one line!
 
-			result($result[$row['metric']], $result[$row['metric']] >= $max_value, $row, $result[$row['label']]);
-		}
-
-		//checks "at most"
-		if (!is_null($row['max_value'])) { //could be number or string!
-			$max_value = is_numeric($row['max_value'])?$row['max_value']:$result[$row['max_value']]; //find the max for this one line!
-
-			result($result[$row['metric']], $result[$row['metric']] <= $max_value, $row, $result[$row['label']]);
+				result($result[$row['metric'.$c]], $result[$row['metric'.$c]] <= $max_value, $row, $result[$row['label'.$c]]);
+			}
+			$c?$c++:@$c+=2; //first time, it adding to empty string!
 		}
 	}
 }

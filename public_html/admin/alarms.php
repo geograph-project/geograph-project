@@ -98,7 +98,6 @@ if ($is_admin && isset($_GET['edit'])) { //zero used for creation!
 
 $rows = $db->getAll("SELECT * FROM alarm WHERE active = 1");
 
-print "<hr>";
 foreach ($rows as $row) {
 	if (!empty($row['url_head'])) {
 		$ch = curl_init();
@@ -128,10 +127,11 @@ foreach ($rows as $row) {
 		continue;
 	}
 
+	print "<div style=\"width:340px; float:left; border:1px solid silver; margin:2px; padding:3px; min-height:150px\">";
 	if ($is_admin)
 		print "<div style=float:right><a href=?edit={$row['alarm_id']}>Edit</a></div>";
 
-	print "<h3>".htmlentities($row['alarm_name'])."</h3>";
+	print "<h3 style=\"margin-top:0;background-color:silver;padding:2px \">".htmlentities($row['alarm_name'])."</h3>";
 	print "<small>".htmlentities($row['description'])."</small>";
 
 	$good = $bad = 0;
@@ -143,30 +143,34 @@ foreach ($rows as $row) {
 		result(count($results), count($results) <= $row['max_rows'], $row,'max_rows');
 
 	foreach ($results as $result) {
+		$c = '';
+		while (!empty($row['metric'.$c])) {
 
-		//checks "at least" this number
-		if (!is_null($row['min_value'])) { //could be number or string!
-			if (strpos($row['min_value'],'now') === 0) { //pretty fragile test
-				$row['min_value'] = strtotime($row['min_value']);
-				$result[$row['metric']] = strtotime($result[$row['metric']]);
+			//checks "at least" this number
+			if (!is_null($row['min_value'.$c])) { //could be number or string!
+				if (strpos($row['min_value'.$c],'now') === 0) { //pretty fragile test
+					$row['min_value'.$c] = strtotime($row['min_value'.$c]);
+					$result[$row['metric'.$c]] = strtotime($result[$row['metric'.$c]]);
+				}
+
+				$max_value = is_numeric($row['min_value'.$c])?$row['min_value'.$c]:$result[$row['min_value'.$c]]; //find the max for this one line!
+
+				result($result[$row['metric'.$c]], $result[$row['metric'.$c]] >= $max_value, $row, $result[$row['label'.$c]]);
 			}
 
-			$max_value = is_numeric($row['min_value'])?$row['min_value']:$result[$row['min_value']]; //find the max for this one line!
+			//checks "at most"
+			if (!is_null($row['max_value'.$c])) { //could be number or string!
+				$max_value = is_numeric($row['max_value'.$c])?$row['max_value'.$c]:$result[$row['max_value'.$c]]; //find the max for this one line!
 
-			result($result[$row['metric']], $result[$row['metric']] >= $max_value, $row, $result[$row['label']]);
-		}
-
-		//checks "at most"
-		if (!is_null($row['max_value'])) { //could be number or string!
-			$max_value = is_numeric($row['max_value'])?$row['max_value']:$result[$row['max_value']]; //find the max for this one line!
-
-			result($result[$row['metric']], $result[$row['metric']] <= $max_value, $row, $result[$row['label']]);
+				result($result[$row['metric'.$c]], $result[$row['metric'.$c]] <= $max_value, $row, $result[$row['label'.$c]]);
+			}
+			$c?$c++:@$c+=2; //first time, it adding to empty string!
 		}
 	}
 	print "</table>";
 	if (!$bad)
 		print "<p>$good test".(($good==1)?'':'s')." ok</p>";
-	print "<hr>";
+	print "</div>";
 }
 
 ############################################
