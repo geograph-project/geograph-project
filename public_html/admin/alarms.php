@@ -96,12 +96,37 @@ if ($is_admin && isset($_GET['edit'])) { //zero used for creation!
 
 ############################################
 
-$rows = $db->getAll("SELECT * FROM alarm WHERE active = 1 AND LENGTH(sql_query) > 20 "); //sql_query filter, just because may end up with non-sql alarms?
+$rows = $db->getAll("SELECT * FROM alarm WHERE active = 1");
 
 print "<hr>";
 foreach ($rows as $row) {
-	if (strpos($row['sql_query'],'$recent_ticket_item_id'))
-		$row['sql_query'] = str_replace('$recent_ticket_item_id', $db->getOne("SELECT  max(gridimage_ticket_item_id)-1000 from gridimage_ticket_item"), $row['sql_query']);
+	if (!empty($row['url_head'])) {
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, $row['url_head']);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_NOBODY, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+
+		$response = curl_exec($ch);
+		if (curl_errno($ch)) {
+		    echo 'Error:' . curl_error($ch);
+		    exit();
+		}
+		curl_close($ch);
+		$results = array(array());
+		foreach (explode("\n",str_replace("\r",'',$response)) as $line)
+			if (preg_match('/^(\w+[\w-]*\w): (.*)/',$line,$m))
+				$results[0][$m[1]] = $m[2];
+
+	} elseif (!empty($row['sql_query'])) {
+		if (strpos($row['sql_query'],'$recent_ticket_item_id'))
+			$row['sql_query'] = str_replace('$recent_ticket_item_id', $db->getOne("SELECT  max(gridimage_ticket_item_id)-1000 from gridimage_ticket_item"), $row['sql_query']);
+
+		$results = $db->getAll($row['sql_query']);
+	} else {
+		continue;
+	}
 
 	if ($is_admin)
 		print "<div style=float:right><a href=?edit={$row['alarm_id']}>Edit</a></div>";
@@ -111,7 +136,6 @@ foreach ($rows as $row) {
 
 	$good = $bad = 0;
 	print "<table>";
-	$results = $db->getAll($row['sql_query']);
 
 	if (is_numeric($row['min_rows'])) //could be zero!
 		result(count($results), count($results) >= $row['min_rows'], $row,'min_rows');
@@ -122,6 +146,11 @@ foreach ($rows as $row) {
 
 		//checks "at least" this number
 		if (!is_null($row['min_value'])) { //could be number or string!
+			if (strpos($row['min_value'],'now') === 0) { //pretty fragile test
+				$row['min_value'] = strtotime($row['min_value']);
+				$result[$row['metric']] = strtotime($result[$row['metric']]);
+			}
+
 			$max_value = is_numeric($row['min_value'])?$row['min_value']:$result[$row['min_value']]; //find the max for this one line!
 
 			result($result[$row['metric']], $result[$row['metric']] >= $max_value, $row, $result[$row['label']]);
@@ -154,41 +183,5 @@ function result($value,$result,$row,$label) {
 
 	$style = $result?'':'background-color:yellow;font-weight:bold';
 	printf("<tr style=\"%s\"><td>%30s</td><td>%-40s</td><td>%s</td><td>%s</td>\n", $style, $row['alarm_name'], $label, $value, $result?'ok':'ALARM');
-
-}
-
-
-function dump_sql_table($sql,$title,$autoorderlimit = false) {
-	global $db;
-
-	$result = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
-
-	print "<H3>$title</H3>";
-
-	if ($result->EOF) {
-		print "<i>empty</i>";
-		return;
-	}
-
-	$row = $result->GetRowAssoc(false);
-	$result->MoveNext();
-
-	print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
-	foreach ($row as $key => $value) {
-		print "<TH>$key</TH>";
-	}
-	print "</TR>";
-	do {
-		print "<TR>";
-		$align = "left";
-		foreach ($row as $key => $value) {
-			print "<TD ALIGN=$align>".htmlentities($value)."</TD>";
-			$align = "right";
-		}
-		print "</TR>";
-		$row = $result->GetRowAssoc(false);
-		$result->MoveNext();
-	} while (!$result->EOF);
-	print "</TR></TABLE>";
 }
 
