@@ -21,7 +21,7 @@
  */
 
 $PREHELP = "Download log files from a loki server. Works in THREE modes: 'auto', 'filename' or 'string'\n";
-//1) 'auto' mode, that doanloads last 16 days of logs and stores in S3 (note only runs the default 'base' query, and doesnt work with 'string' filter) - calls 'filename' mode in a loop!
+//1) 'auto' mode, that doanloads last 15 days of logs and stores in S3 (note only runs the default 'base' query, and doesnt work with 'string' filter) - calls 'filename' mode in a loop!
 //2) 'filename' mode, which writes all logs for a given day. Specify filename, the 'date' and optional 'string' filter. Should normally set 'limit' and 'all'
 	///loki.php --filename=accesslog.2021-05-04.log --date=2021-05-04 --limit=5000 --all=1
 //3) 'string' mode, which just downlaods the last X 'hours' worth of logs (upto 'limit' anyway!) - the default loki period is 1 hour!
@@ -31,6 +31,7 @@ $PREHELP = "Download log files from a loki server. Works in THREE modes: 'auto',
 
 $param=array(
 	'auto' => false, //special mode that downloads a daily log, and archives to S3. either true for nginx or use 'ingress' to save the production ingress logs
+	'move' => 1, //once the files downloaded from loki, move them to S3. if 0 then they will still be uploaded, but will remain in the /tmp/
 
 	//main mode, to get loop and download to a filename
 	'filename'=>false, //the filename to save the logs to! opened in 'a' mode (appends to existing file)
@@ -41,11 +42,11 @@ $param=array(
 	'start'=>false, //can supply the full nanosecond timestamp, so can resume a aborted download
 	//'string' is also accepted as a optional param to 'filename' mode
 
-        'limit'=>10, //small number for testing, but set to high number, 5000 seems recommended (both filename and use this)
+        'limit'=>10, //small number for testing, but set to high number, 5000 seems recommended (both filename and string use this - auto sets to 5000)
 
 	'base'=>'{job="production/geograph", container="nginx"}', //the default query (for all modes)
 	'string'=>false, //extra filter to apply
-	'not'=>false,
+	'not'=>false, //extra not filter (only works in single string mode)
 	'hours'=>false, //specify a number of hours to use with 'string' query. Defaults to one hour!
 
 	//which stream to get
@@ -90,6 +91,8 @@ if (empty($CONF['loki_address']))
 			$d = date('Y-m-d',strtotime($offset.' day'));
 			if ($param['auto'] == 'ingress')
 				$base = "ingress.$d.log";
+			elseif ($param['auto'] == 'dataserver')
+				$base = "dataserver.$d.log";
 			else
 				$base = "nginxaccess.$d.log";
 
@@ -109,16 +112,24 @@ if (empty($CONF['loki_address']))
 			if ($param['auto'] == 'ingress')
 				//{job="tcl-ingress/ingress-nginx", stream="stdout"} |= "production-geograph-http"
 				$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/ingress-nginx", stream="stdout"}')." --string=production-geograph-http";
+			elseif ($param['auto'] == 'dataserver')
+				$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/ingress-nginx", stream="stdout"}')." --string=production-dataserver-http --not=monitoring-plugins";
 
 			if ($param['debug']) {
+				if (file_exists($source.$base))
+					print "unlink $source$base\n";
 				print "$cmd\n";
 			} else {
+				//but if a non-compressed file, need to remove it, its almost certainly partial. This auto mode doesnt resume partial download!
+				if (file_exists($source.$base))
+					unlink($source.$base);
+
 				passthru($cmd);
 			}
 		}
 
 		if (!empty($cmd)) { //actully did something!
-			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst=$destination --move=1 --dry=0 --config={$param['config']}";
+			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst=$destination --move={$param['move']} --dry=0 --config={$param['config']}";
 			if ($param['debug']) {
 				print "$cmd\n";
 			} else {
@@ -135,6 +146,9 @@ if (empty($CONF['loki_address']))
 
 		if ($param['string'])
 	                $query .= ' |= "'.str_replace('"','\"',$param['string']).'"';
+
+		if (!empty($param['not']))
+			$query .= ' != "'.str_replace('"','\"',$param['not']).'"';
 
 		$fp = fopen($param['filename'],'a');
 		if (!$fp)
