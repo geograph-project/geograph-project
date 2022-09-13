@@ -7,6 +7,9 @@
 
 {dynamic}
 {if $list}
+	<form method=get>
+		<input type=checkbox name=paid value=1 {if $paid} checked{/if} id=paid onclick=this.form.submit()> <label for=paid>Only show Paid orders</label>
+	</form>
 	<form method=post>
 	<h3>Current Orders</h3>
 	<table border=1 cellspacing=0 cellpadding=5>

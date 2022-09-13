@@ -44,7 +44,11 @@ if (!empty($_POST['processed'])) {
 
 $year = date('Y')+1; // we currently working on next years calendar
 
-$list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE ordered > '1000-01-01' and year = '$year' ORDER BY ordered,calendar_id");
+$where = '';
+if (!empty($_GET['paid']))
+	$where = " AND paid > '2000-00-00'";
+
+$list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE ordered > '1000-01-01' and year = '$year' $where ORDER BY ordered,calendar_id");
 
 $stat = array();
 $total = $orders = $processed = 0;
@@ -68,6 +72,7 @@ $smarty->assign('total', $total);
 $smarty->assign('orders', $orders);
 $smarty->assign('processed', $processed);
 $smarty->assign('year', $year);
+$smarty->assign('paid', !empty($_GET['paid']));
 
 $smarty->display('calendar_admin.tpl');
 
