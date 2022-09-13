@@ -124,7 +124,7 @@ Proceeding to payment...
 <input type="hidden" name="business" value="paypal@geograph.org.uk">
 <input type="hidden" name="lc" value="GB">
 <input type="hidden" name="item_name" value="Calendar Order Ref:<? echo "{$row['calendar_id']}/{$row['user_id']}{$row['alpha']}/{$row['year']}"; ?>">
-<input type="hidden" name="invoice" value="<? echo "{$row['user_id']}{$row['alpha']}"; ?>">
+<input type="hidden" name="invoice" value="<? echo "{$row['user_id']}{$row['alpha']}{$row['year']}"; ?>">
 <input type="hidden" name="amount" value="<? echo $cost; ?>">
 <input type="hidden" name="currency_code" value="GBP">
 <input type="hidden" name="button_subtype" value="services">
