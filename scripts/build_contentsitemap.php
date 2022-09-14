@@ -84,7 +84,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			$maxdate=$date;
 
 		fprintf($fh,"<url>".
-			"<loc>http://{$param['config']}%s</loc>".
+			"<loc>https://{$param['config']}%s</loc>".
 			"<lastmod>%s</lastmod>".
 			($date>$filter?"<changefreq>monthly</changefreq>":'').
 			"</url>\n",
