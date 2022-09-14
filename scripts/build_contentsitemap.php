@@ -134,7 +134,7 @@ for ($s=1; $s<=$sitemaps; $s++)
 	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
 
-	fprintf($fh, "<loc>http://{$param['config']}/%s</loc>", $fname);
+	fprintf($fh, "<loc>https://{$param['config']}/%s</loc>", $fname);
 	fprintf($fh, "<lastmod>$mtimestr</lastmod>", $fname);
 	fprintf($fh, "</sitemap>\n");
 }
