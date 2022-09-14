@@ -708,9 +708,9 @@ if ($_GET['url'] == 'preview') {
 
 		if (preg_match('/\bgeograph\b/i',@$page['category_name']) || @$page['ctype'] == 'document') {
 			$template = 'article_article2.tpl';
-
-			pageMustBeHTTPS();
 		}
+
+		pageMustBeHTTPS();
 
 		if (strlen($page['content']) < 100) {
 			header("HTTP/1.1 503 Service Unavailable");

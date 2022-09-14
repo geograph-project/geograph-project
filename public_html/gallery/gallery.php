@@ -66,6 +66,8 @@ select t.topic_id,topic_title,topic_poster,topic_poster_name,topic_time,post_tim
 
 if (count($page)) {
 
+	pageMustBeHTTPS();
+
 	//when this page was modified
 	$mtime = strtotime($page['post_time']);
 
