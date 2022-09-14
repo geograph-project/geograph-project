@@ -51,30 +51,29 @@ $rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/article-{$format}-"
 
 
 $rss = new UniversalFeedCreator();
-if (empty($_GET['refresh'])) 
+if (empty($_GET['refresh']))
 	$rss->useCached($format,$rssfile);
 
-$rss->title = 'Geograph Articles'; 
+$rss->title = 'Geograph Articles';
 $rss->link = "{$CONF['SELF_HOST']}/article/";
- 
-	
-$rss->description = "Recently updated articles on Geograph British Isles"; 
+
+$rss->description = "Recently updated articles on Geograph British Isles";
 
 if (!empty($_GET['admin'])) {
 	header("X-Robots-Tag: noindex, nofollow");
 	$sql_where = "(licence = 'none' or approved = 0)";
-	$rss->title = 'Geograph Pending Articles'; 
+	$rss->title = 'Geograph Pending Articles';
 	$rss->syndicationURL = "{$CONF['SELF_HOST']}/article/syndicator.php?format=$format&amp;admin=1";
 
 } elseif (!empty($_GET['revdocs'])) {
-	$sql_where = "approved > 0 and category_name regexp '[[:<:]]Geograph[[:>:]]'"; 
-	$rss->title = 'Geograph Document Revisions'; 
+	$sql_where = "approved > 0 and category_name regexp '[[:<:]]Geograph[[:>:]]'";
+	$rss->title = 'Geograph Document Revisions';
 	$rss->syndicationURL = "{$CONF['SELF_HOST']}/article/syndicator.php?format=$format&amp;revdocs=1";
 
 } elseif (!empty($_GET['revisions'])) {
         header("X-Robots-Tag: noindex, nofollow");
 	$sql_where = "approved > -1";
-	$rss->title = 'Geograph Article Revisions'; 
+	$rss->title = 'Geograph Article Revisions';
 	$rss->syndicationURL = "{$CONF['SELF_HOST']}/article/syndicator.php?format=$format&amp;revisions=1";
 
 } else {
@@ -86,7 +85,7 @@ if (!empty($_GET['admin'])) {
 if (!empty($_GET['user_id'])) {
 	$sql_where .= " and user_id=".intval($_GET['user_id']);
 	$rss->syndicationURL .= "&amp;user_id=".intval($_GET['user_id']);
-} 
+}
 
 if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 	require_once('geograph/conversions.class.php');
@@ -97,10 +96,9 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 }
 
 $db = GeographDatabaseConnection(true);
-	
 
 $sql="select article_id, article.article_cat_id, category_name, article.user_id, url, title, extract, licence, publish_date, approved, update_time, create_time, realname, article.gridsquare_id
-	from article 
+	from article
 		left join user using (user_id)
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 	where $sql_where
@@ -111,26 +109,25 @@ $recordSet = $db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();
-	
+
 	$version = $db->getOne("
 		select count(*)
 		from article_revisions
 		where article_id = {$recordSet->fields['article_id']}
 		group by article_id");
-	
-	
+
 	$item->title = $recordSet->fields['title'];
-	
+
 	if (!empty($_GET['revisions']) || !empty($_GET['revdocs'])) {
 		$realname = $db->getOne("
 			select realname
 			from article_revisions
 				left join user on (article_revisions.modifier = user.user_id)
 			where article_id = {$recordSet->fields['article_id']} and update_time = '{$recordSet->fields['update_time']}'");
-	
+
 		$item->title .= " [rev #$version by $realname]";
 		$recordSet->fields['url'] = "history.php?page={$recordSet->fields['url']}&v=$version";
-		
+
 		$item->author = $realname;
 		$item->date = strtotime($recordSet->fields['update_time']);
 	} else {
@@ -140,9 +137,9 @@ while (!$recordSet->EOF)
 	}
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->guid = $item->link = "{$CONF['SELF_HOST']}/article/{$recordSet->fields['url']}";
-	
-	
+	$item->guid = "{$CONF['SELF_HOST']}/article/{$recordSet->fields['url']}";
+	$item->link = $CONF['canonical_domain'][1]."/article/{$recordSet->fields['url']}";
+
 	$description = $recordSet->fields['extract'];
 	if (strlen($description) > 160)
 		$description = substr($description,0,157)."...";
@@ -155,7 +152,7 @@ while (!$recordSet->EOF)
 
 		if ($grid_ok)
 			list($item->lat,$item->long) = $conv->gridsquare_to_wgs84($gridsquare);
-	
+
 		$rss->addItem($item);
 	} elseif ($format != 'KML') {
 		$rss->addItem($item);
@@ -163,7 +160,6 @@ while (!$recordSet->EOF)
 
 	$recordSet->MoveNext();
 }
-
 
 
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past
@@ -174,7 +170,5 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 
-
 $rss->saveFeed($format, $rssfile);
 
-?>

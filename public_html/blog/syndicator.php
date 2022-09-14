@@ -109,7 +109,7 @@ while (!$recordSet->EOF)
 	$item->title = $recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->link = "{$CONF['SELF_HOST']}/blog/".$recordSet->fields['blog_id'];
+	$item->link = $CONF['canonical_domain'][1]."/blog/".$recordSet->fields['blog_id'];
 
 	$item->description = GeographLinks(nl2br($recordSet->fields['content']),1);
 	$item->descriptionHtmlSyndicated = true;

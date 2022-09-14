@@ -195,7 +195,7 @@ while (!$recordSet->EOF)
 
 	//htmlspecialchars is called on link so dont use &amp;
 	if (strpos($recordSet->fields['url'],'/')===0) {
-		$item->link = "{$CONF['SELF_HOST']}{$recordSet->fields['url']}";
+		$item->link = $CONF['canonical_domain'][1].$recordSet->fields['url'];
 	} else {
 		$item->link = $recordSet->fields['url'];
 	}
