@@ -26,6 +26,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+pageMustBeHTTPS();
+
 $db = GeographDatabaseConnection(false);
 
 $smarty->assign('page_title',"Featured Collections");
