@@ -267,6 +267,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			$list[$i][$datecolumn] = sprintf(($_GET['lang']=='cy')?"%d munudau yn &ocirc;l":"%d minutes ago",$diff/60);
 		}
 	}
+	if (!empty($list[0]['url']))
+		$list[0]['url'] = "https://{$_SERVER['HTTP_HOST']}".$list[0]['url'];
 
 	$sources = $CONF['content_sources'];
 	unset($sources['themed']);
