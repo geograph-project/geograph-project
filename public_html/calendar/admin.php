@@ -51,7 +51,7 @@ if (!empty($_GET['paid']))
 $list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE ordered > '1000-01-01' and year = '$year' $where ORDER BY ordered,calendar_id");
 
 $stat = array();
-$total = $orders = $processed = 0;
+$total = $best = $orders = $processed = 0;
 foreach ($list as $idx => &$row) {
 	if ($row['ordered'] > '1000') {
 		if (empty($row['alpha'])) {
@@ -61,6 +61,7 @@ foreach ($list as $idx => &$row) {
 	}
 	if ($row['paid'] > '1000') {
 		$total += $row['quantity'];
+		$best += $row['best_quantity'];
 		$orders++;
 	}
 	if ($row['status'] == 'processed')
@@ -69,6 +70,7 @@ foreach ($list as $idx => &$row) {
 
 $smarty->assign_by_ref('list', $list);
 $smarty->assign('total', $total);
+$smarty->assign('best', $best);
 $smarty->assign('orders', $orders);
 $smarty->assign('processed', $processed);
 $smarty->assign('year', $year);

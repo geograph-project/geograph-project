@@ -13,6 +13,16 @@
 	<form method=post>
 	<h3>Current Orders</h3>
 	<table border=1 cellspacing=0 cellpadding=5>
+	<tr>
+		<th>id
+		<th>title
+		<th>user
+		<th>status
+		<th>custom
+		<th>bestof
+		<th>ref
+		<th colspan=2>
+	</tr>
 	{foreach from=$list key=index item=calendar}
 		{if $calendar.ordered < '1000'}
 		<tr style=color:silver>
@@ -22,10 +32,12 @@
 			<td>#{$calendar.calendar_id}.
 			<td>{$calendar.title|default:'untitled calendar'}</td>
 			<td>{$calendar.realname}
-			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
+			<td>{$calendar.status}</td>
+			<td align=right>{if $calendar.quantity}{$calendar.quantity}{/if}</td>
+			<td align=right>{if $calendar.best_quantity}{$calendar.best_quantity}{/if}</td>
 			<td><b>{$calendar.user_id}{$calendar.alpha}</b>
-			<td>{if $calendar.status != 'new'}<a href="view.php?id={$calendar.calendar_id}" {if $calendar.status != 'paid'} style=color:silver{/if}><b>View</b></a>{/if}
-			<td>{if $calendar.status == 'paid' || $calendar.status == 'ordered'}
+			<td>{if $calendar.status != 'new' && $calendar.quantity}<a href="view.php?id={$calendar.calendar_id}" {if $calendar.status != 'paid'} style=color:silver{/if}><b>View</b></a>{/if}
+			<td>{if ($calendar.status == 'paid' || $calendar.status == 'ordered') && $calendar.quantity}
 
 				<input type=checkbox name="processed[{$calendar.calendar_id}]" id="processed{$calendar.calendar_id}">
 				<b><label for="processed{$calendar.calendar_id}"> Mark as Processed</label></b>
@@ -37,7 +49,9 @@
 	{if $total}
 		<tr>
 		<td colspan=3>
-		<td>Total Paid: {$total}
+		<td>Total Paid:</td>
+		<td align=right>{$total}
+		<td align=right>{$best}
 		<td colspan=3>Total Processed: {$processed}/{$orders}
 	{/if}
 	</table>	
