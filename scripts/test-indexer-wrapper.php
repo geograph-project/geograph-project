@@ -114,8 +114,6 @@ if (!empty($param['single'])) {
 			continue;
 
 		if (!empty($row['criteria']) && strpos($row['criteria'],'#') !== 0) { //just so can 'comment out' the query
-			if ($server_id == "'development-0'")
-				$server_id = "'manticore-0'";
 			$query = str_replace("'\$server_id'",$server_id,$row['criteria']);
 
 			if (preg_match('/\((SELECT[^)]+)\)/',$query,$m)) {
