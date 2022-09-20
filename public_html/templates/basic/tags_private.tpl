@@ -28,6 +28,12 @@
 	<h2>Images for the "Geographical Features" project</h2>
 
 {elseif $private}
+	{if $results}
+		<div style="float:right">
+			<a href="?export=true">Export list of privately tagged images</a>
+		</div>
+	{/if}
+
 	<h2>Private Tags</h2>
 
 	<p>These are images you have tagged with "Private Tags", these lists are only visible to you.</p>

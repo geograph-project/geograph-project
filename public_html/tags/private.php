@@ -22,13 +22,43 @@
 
 require_once('geograph/global.inc.php');
 
-
-
 init_session();
 
 $smarty = new GeographPage;
 
 $USER->mustHavePerm("basic");
+
+if (!empty($_GET['export']) && !empty($USER->user_id)) {
+	$db = GeographDatabaseConnection(true);
+
+	$sql = "select prefix,tag,gt.created,gridimage_id,grid_reference,title,realname,gi.user_id,imagetaken
+	 from gridimage_tag gt inner join tag using (tag_id) inner join gridimage_search gi using (gridimage_id) where gt.user_id = {$USER->user_id} and gt.status = 1";
+
+	$recordSet = $db->Execute($sql);
+	if (!$recordSet->RecordCount())
+		die("No Private Tags found\n");
+
+	header("Content-type: application/octet-stream");
+	header("Content-Disposition: attachment; filename=\"geograph-private-tags-".date('Y-m-d').".csv\"");
+
+	$f = fopen("php://output", "w");
+	if (!$f) {
+		die("ERROR:unable to open output stream");
+	}
+
+	fputcsv($f,array_keys($recordSet->fields));
+	while (!$recordSet->EOF) {
+		$recordSet->fields['title'] = latin1_to_utf8($recordSet->fields['title']);
+		$recordSet->fields['realname'] = utf8_encode($recordSet->fields['realname']);
+
+		fputcsv($f,$recordSet->fields);
+		$recordSet->MoveNext();
+	}
+
+	$recordSet->Close();
+	exit;
+}
+
 
 $template = 'tags_private.tpl';
 $cacheid = $USER->user_id.'.'.md5(serialize($_GET));
