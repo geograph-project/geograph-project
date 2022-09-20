@@ -22,7 +22,7 @@ if (!empty($_GET['type']) && preg_match('/^\w+$/',$_GET['type']))
 $start = 0;
 $break = 7;
 if (!empty($_GET['one']))
-	$break = 4;
+	$break = 2;
 if (!empty($_GET['month']))
         $start = 5;
 
@@ -55,7 +55,7 @@ print "Total Voters = {$row['max']}, Overall Average = {$row['avg']} (used in th
 
 
 $query = "select imagetaken,id,(@max-users) as v0,' ',v1,v2,v3,v4,v5,'.',users,avg,v.baysian,round(avg*users) as total, (avg*users)/@max as avg0,
-	((avg*users)+(@max-users)*3)/@max as avg3,last_vote
+	((avg*users)+(@max-users)*3)/@max as avg3,last_vote, realname
 	from vote_stat v inner join gridimage_search on (id = gridimage_id) where type='$type' ORDER BY substring(imagetaken,$start+1,$break-$start),v.baysian DESC LIMIT 1000";
 
 dump_sql_table($query,$type);
@@ -92,6 +92,7 @@ function dump_sql_table($sql,$title) {
         print "</TR>";
 
 	$last = '';
+	$done = array(); $unique = 1;
         while(!$recordSet->EOF) {
 		$row = $recordSet->fields;
 		$breaker = substr($row['imagetaken'],$start,$break-$start);
@@ -107,9 +108,21 @@ function dump_sql_table($sql,$title) {
 	                        print "<TD>$value</TD>";
 			}
                 }
+		$date = substr($row['imagetaken'],5,2); //always just the month, ignore $start/$break
+		if (!empty($_GET['dup']) && $row['id'] != 7222444) {
+			if (empty($done[$date]) && empty($done[$row['realname']])) {
+				print "<td>unique$unique";
+
+				@$done[$date]++;
+				@$done[$row['realname']]++;
+				$unique++;
+			}
+			//print "<td align=right>".@($done[$date]+$done[$row['realname']])."</td>";
+		}
                 print "</TR>";
 		$recordSet->MoveNext();
         }
+	print_r($done);
         print "</TR></TABLE>";
 }
 

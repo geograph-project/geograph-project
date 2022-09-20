@@ -100,7 +100,7 @@ if ($param['host']) {
 fwrite(STDERR,date('H:i:s')."\tUsing db server: $host\n");
 $DSN_READ = str_replace($CONF['db_connect'],$host,$DSN);
 
-//we've setup $DSN_READ, even using $param[host] even if isn't a db_read_connect
+//we've setup $DSN_READ, using $param[host] even if isn't a db_read_connect
 $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
@@ -184,7 +184,8 @@ fwrite(STDERR,"$name ".substr($row['Type'],0,40)."\n");
 				$cols[] = "$name as {$m[1]}";
 		} elseif ($name == 'grid_reference') {
 			$cols[] = $name;
-			$cols[] = "CONCAT(SUBSTRING(grid_reference,1,LENGTH(grid_reference)-3),SUBSTRING(grid_reference,LENGTH(grid_reference)-1,1)) AS hectad";
+			if (empty($columns['hectad']))
+				$cols[] = "CONCAT(SUBSTRING(grid_reference,1,LENGTH(grid_reference)-3),SUBSTRING(grid_reference,LENGTH(grid_reference)-1,1)) AS hectad";
 			//$cols[] = "SUBSTRING(grid_reference,1,LENGTH(grid_reference)-4) AS myriad";
 	//general varchar
 		} elseif (preg_match('/char\((\d+)/',$row['Type'],$m) || $row['Type'] == 'text' || preg_match('/enum\(/',$row['Type'],$m)) {
