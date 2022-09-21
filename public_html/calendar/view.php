@@ -52,23 +52,23 @@ if (!empty($_GET['gid'])) {
 	customExpiresHeader(3600*24*30);
         header("Content-Type: image/jpeg");
 
-	$row = $db->getRow("SELECT * FROM gridimage_calendar WHERE calendar_id = ".intval($_GET['id'])." AND gridimage_id = ".intval($_GET['gid']));
-	if (!empty($row['upload_id'])) {
+	$irow = $db->getRow("SELECT * FROM gridimage_calendar WHERE calendar_id = ".intval($_GET['id'])." AND gridimage_id = ".intval($_GET['gid']));
+	if (!empty($irow['upload_id'])) {
 		$image = new GridImage();
-		$image->fastInit($row);
+		$image->fastInit($irow);
 
 		//in THIS case can CANT use uploadmanager, as it may it someone elses image!
 		$uploadmanager=new UploadManager;
 
 		//so have to do it long form...
 		$id = $image->upload_id;
+		$u = $row['user_id']; //the uploaded image, will be owned by the calendar owner, which wont always be the image upload
 		if ($uploadmanager->use_new_upload) {
-                        $u = $image->user_id;
-                        $a = $image->user_id%10;
-                        $b = intval($image->user_id/10)%10;
+                        $a = $u%10;
+                        $b = intval($u/10)%10;
                         $orginalfile = "{$uploadmanager->tmppath}/$a/$b/$u/newpic_u{$u}_{$id}.original.jpeg";
                 } else {
-	                $orginalfile = $uploadmanager->tmppath.'/'.($image->user_id%10).'/newpic_u'.$image->user_id.'_'.$id.'.original.jpeg';
+	                $orginalfile = $uploadmanager->tmppath.'/'.($u%10).'/newpic_u'.$u.'_'.$id.'.original.jpeg';
 		}
 
 		$base = basename($orginalfile);
@@ -90,7 +90,7 @@ require_once('geograph/imagelist.class.php');
 $imagelist=new ImageList;
 $imagelist->_setDB($db);//to reuse the same connection
 
-//this is NOT normal rows, but gridimage_calendar has enough rows, that it works! (at least to get thumbnails!)
+//this is NOT normal rows, but gridimage_calendar has enough cols, that it works! (at least to get thumbnails!)
 $sql = "SELECT * FROM gridimage_calendar
 	LEFT JOIN gridimage_size using (gridimage_id)
 	WHERE calendar_id = {$row['calendar_id']} ORDER BY sort_order";
@@ -98,15 +98,12 @@ $imagelist->_getImagesBySql($sql);
 
 if (!empty($row['cover_image'])) {
 	$image = new Gridimage();
-	$data = $db->getRow("SELECT *,0 as sort_order FROM gridimage_search
+	//will always be an image already in the calendar. cover_image is specifcally for duplicating an existing image
+	// could just duplicate the object in $imagelist->images, but would have to find it.
+	$data = $db->getRow("SELECT *,0 as sort_order FROM gridimage_calendar
         LEFT JOIN gridimage_size using (gridimage_id)
-        WHERE gridimage_id = {$row['cover_image']}");
+        WHERE  calendar_id = {$row['calendar_id']} AND gridimage_id = {$row['cover_image']}");
 	$image->fastInit($data);
-
-	//if a larger file was added to the monthly image, need to duplicate into to the coverage image row!
-	foreach ($imagelist->images as $key => &$img)
-		if ($img->gridimage_id == $image->gridimage_id && !empty($img->upload_id))
-			$image->upload_id = $img->upload_id;
 
 	array_unshift($imagelist->images, $image);
 }
@@ -123,13 +120,13 @@ foreach ($imagelist->images as $key => &$image) {
 
 		//so have to do it long form...
 		$id = $image->upload_id;
+		$u = $row['user_id'];
 		if ($uploadmanager->use_new_upload) {
-                        $u = $image->user_id;
-                        $a = $image->user_id%10;
-                        $b = intval($image->user_id/10)%10;
+                        $a = $u%10;
+                        $b = intval($u/10)%10;
                         $orginalfile = "{$uploadmanager->tmppath}/$a/$b/$u/newpic_u{$u}_{$id}.original.jpeg";
                 } else {
-	                $orginalfile = $uploadmanager->tmppath.'/'.($image->user_id%10).'/newpic_u'.$image->user_id.'_'.$id.'.original.jpeg';
+	                $orginalfile = $uploadmanager->tmppath.'/'.($u%10).'/newpic_u'.$u.'_'.$id.'.original.jpeg';
 		}
 		$base = basename($orginalfile);
 	        $copy = "/mnt/efs/calendar-files/$base";

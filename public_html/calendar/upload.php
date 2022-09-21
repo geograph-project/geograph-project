@@ -88,8 +88,7 @@ if (isset($_REQUEST['id']))
 
 				$db->Execute($sql = "UPDATE gridimage_calendar SET upload_id = ".$db->Quote($_POST['upload_id'])."
 					WHERE calendar_id = ".intval($_GET['cid'])."
-					AND gridimage_id = {$image->gridimage_id}
-					AND user_id = {$USER->user_id}"); //just add user_id to prevent someone editing someone else calednar. They should only be using this form on their own images!
+					AND gridimage_id = {$image->gridimage_id}");
 
 				$result = $db->Affected_Rows();
 

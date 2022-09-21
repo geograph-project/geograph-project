@@ -105,9 +105,7 @@ The Cover Image is expanded to fill the page, so will be cropped. {if $min == 0}
 				{if $image->width}
 				Image is <span style="font-family:verdana">{$image->width}x{$image->height}px</span> and <span{if $image->dpi < 100} style=color:red{/if}>will print at about <b>{$image->dpi}</b> DPI</span>.
 				{/if}
-				{if $image->user_id == $user->user_id}
-					<button type=submit name=upload value={$image->gridimage_id}>Upload {if $image->upload_id}another{/if} larger version</button>
-				{/if}
+				<button type=submit name=upload value={$image->gridimage_id}>Upload {if $image->upload_id}another{/if} larger version</button>
 			<hr>
 	{/foreach}
 </table>
