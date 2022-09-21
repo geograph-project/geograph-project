@@ -53,6 +53,10 @@ if (!empty($_POST['choose']) && empty($_GET['redir'])) {
 	if (!empty($CONF['os_api_key']))
 		$smarty->assign('os_api_key', $CONF['os_api_key']);
 
+	if (!empty($CONF['submission_message'])) {
+	        $smarty->assign("status_message",$CONF['submission_message']);
+	}
+
 	$smarty->display('submit_mobile.tpl');
 
 } else {

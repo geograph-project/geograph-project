@@ -967,6 +967,8 @@ $(function() {
 <div class="tab1">
 
 	{dynamic}
+		{if $status_message}{$status_message}{/if}
+
 		{if $id}
 			<b>Submission Successful</b><br>
 			ID: <a href="/photo/{$id}" target=_blank style="background-color: lightgreen;">{$id}</a>
