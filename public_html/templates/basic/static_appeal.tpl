@@ -12,7 +12,7 @@
 &copy; <a href="/profile/43729" style=color:yellow>David Dixon</a> cc-by-sa/2.0, December, 2021
 </div>
 
-<p>Mike Parker, the author of the book 'Map Addict' among others, said this on becoming Geograph's esteemed
+<p><a href="/profile/33645">Mike Parker</a>, the author of the book 'Map Addict' among others, said this on becoming Geograph's esteemed
 Patron.  Like many of the visitors to our site, Mike is a keen user of our archive - now well over 7 million
 images of the British Isles.</p>
 
@@ -23,7 +23,7 @@ download and use. Here's just one image of the over seven million images to choo
 
 
 <p>We need you to understand that it costs thousands of pounds every year to run Geograph.  Alongside
-fundraising efforts such as our calendar project and recent advertising trial, we are primarily reliant on
+fundraising efforts such as our <a href="/calendar/">calendar project</a> and recent advertising trial, we are primarily reliant on
 donations from our users, such as you, to keep the site up and running. Hosting and support costs continue to
 rise in line with current economic conditions. We have no paid employees - everyone is a volunteer. </p>
 
