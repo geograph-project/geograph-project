@@ -385,7 +385,7 @@ class RasterMap
 
 		} elseif ($this->service == 'OS50k') {
 			if (!empty($CONF['fetch_on_demand'])) {
-				$mapurl = "http://{$CONF['fetch_on_demand']}/tile.php?r=".$this->getToken();
+				$mapurl = "https://{$CONF['fetch_on_demand']}/tile.php?r=".$this->getToken();
 			} else {
 				$mapurl = "{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
 			}
