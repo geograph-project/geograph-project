@@ -54,10 +54,26 @@ if (!empty($_SESSION['calendar_id'])) { ?>
 	if (empty($row) || $row['user_id'] != $USER->user_id)
         	die("Calendar not found");
 
+	if (!empty($row['delivery_email'])) {
+		$to = $row['delivery_email'];
+		$subject = "[Geograph] Calendar Order - Thank you";
+		$body = "Thank you for your order.
 
-	$to = $USER->email;
-	$subject = "[Geograph] Calendar Order {$row['user_id']}{$row['alpha']} - Thank you";
-	$body = "Thank you for your order.
+This message is to confirm, we have received your order. We will be processing the order shortly, and will let you know when ready to dispatch.
+
+If you have any questions, contact us online:
+	https://www.geograph.org.uk/contact.php
+	(we wont see email replies to this message)
+
+Regards,
+
+The Calendar Team at Geograph Towers.
+
+";
+	} else {
+		$to = $USER->email;
+		$subject = "[Geograph] Calendar Order {$row['user_id']}{$row['alpha']} - Thank you";
+		$body = "Thank you for your order.
 
 This message is to confirm, we have received your order. We will be processing the order shortly, and will let you know when ready to dispatch.
 
@@ -75,7 +91,7 @@ Regards,
 The Calendar Team at Geograph Towers.
 
 ";
-
+	}
 
 	mail_wrapper($to, $subject, $body, "From: Geograph NoReply <noreply@geograph.org.uk>");
 } else {

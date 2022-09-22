@@ -86,6 +86,13 @@ if (!empty($_POST)) {
 		if (empty($updates[$key]) && empty($row[$key]) && $key != 'delivery_line2' && $key != 'delivery_line4')
 			$error[$key] = 'Required';
 	}
+	if (empty($USER->user_id)) {
+		$key = 'delivery_email';
+		if (!empty($_POST[$key]))
+			$updates[$key] = $_POST[$key];
+		else
+			$error[$key] = 'Required';
+	}
 
 	if (empty($errors)) {
 		if ($row['status'] == 'new') {
