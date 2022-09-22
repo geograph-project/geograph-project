@@ -95,6 +95,19 @@ function mysqli_reconnect() {
 	}
 }
 
+        declare(ticks = 1);
+        $killed = false;
+
+        pcntl_signal(SIGINT, "signal_handler");
+
+        function signal_handler($signal) {
+                global $killed;
+                if ($signal == SIGINT) {
+                        print "Caught SIGINT\n";
+                        $GLOBALS['killed']=1; // we dont exit here, rather let the script kill the script at the right moment, using $killed
+                }
+        }
+
 ##############################
 
 $folder =  $param['dir'].'/backups/by-table/';
@@ -187,6 +200,7 @@ foreach(getAll($sql) as $row) {
 # if Sharded, then need to save a 'schema' file :)
 
 	if ($row['shard'] && empty(glob("$folder$table/*$ext"))) { //todo, also check if CREATE_TIME is later than schema file??
+		//todo, we are going to have to check S3, the file - even if dumped before - wont be on local disk!
 			$dir = "$folder$table/";
 			if (!file_exists($dir))
 				command("mkdir -p $dir");
@@ -377,7 +391,6 @@ foreach(getAll($sql) as $row) {
 	if ($param['dry']) {
 		print "$gray#WARNING: Integrity of $file NOT checked!$white\n";
 	} else {
-
 		$dir = "$folder$table/";
 
 		$files = `find $dir -mtime -1 -type f`;
@@ -415,16 +428,26 @@ foreach(getAll($sql) as $row) {
                         $files .= "\n\n".`find $dir -mtime -1 -type f | xargs md5sum`;
                        	mail('geobackup@barryhunter.co.uk',"[{$CONF['db_db']}] Backup Failure for $table","OK=$ok, BAD=$bad, bytes=$bytes\n".print_r($files,1) );
 		}
+
+
+
+		if (!empty($_SERVER['BASE_DIR']) && file_exists($_SERVER['BASE_DIR'].'/shutdown-sential')) {
+ 		   break; //break, not exit, sowe can still try sending to S3 (otherwise the backups might be lost!)
+		}
 	}
 
 ############
 
 	command(""); //just to output a newline!
+
+        if (!empty($killed))
+                 die("killed\n");
 }
 
 #################################################################
 
-if (!empty($CONF['s3_bytable_bucket_path'])) {
+if (!empty($CONF['s3_backups_bucket_path'])) {
+	$folder = $param['dir'].'/backups/';
 	//send-to-s3 cant do recursive, so we need to find each folder!
 	$h = popen("find $folder -type f -printf '%h\\n' | uniq", 'r');
 	while ($h && !feof($h)) {
@@ -432,7 +455,7 @@ if (!empty($CONF['s3_bytable_bucket_path'])) {
 		if (empty($line))
 			continue;
 
-		$dest = str_replace($folder,'/mnt/s3/by-table/', $line); //this fake folder is known by the filesystem class!
+		$dest = str_replace($folder,'/mnt/s3/backups/', $line); //this fake folder is known by the filesystem class!
 
 		$cmd = "php ".__DIR__."/send-to-s3.php --src=$line/ --dst=$dest/ --include=\"*$ext\" --config={$param['config']} --move=1 --dry=".$param['dry'];
 		command($cmd);
