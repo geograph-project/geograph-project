@@ -754,6 +754,10 @@ END;
 						$matches[1] = 'gi.gridimage_id';
 					}
 					$sql = "SELECT count(DISTINCT {$matches[1]}) FROM gridimage_search as gi $sql_from $sql_where2";
+				} elseif(empty($sql_where)) {
+					//todo, count(*) is slow on innodb
+					//for innodb at least is quicker to sum the 200k values from gridsquare, than it is to count the 8M rows from gridimage_search
+					$sql = "SELECT SUM(imagecount) FROM gridsquare";
 				} else {
 					$sql = "SELECT count(*) FROM gridimage_search as gi $sql_from $sql_where";
 				}
