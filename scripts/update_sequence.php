@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$param = array('limit' => 100000);
+$param = array('limit' => 100000,'update'=>true);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -65,9 +65,10 @@ if ($db->getOne("SHOW TABLES LIKE 'gridimage_square2'")) {
 		set gs.sequence = t.sequence2, upd_timestamp=upd_timestamp
 		WHERE \$where";
 
+	$min = $db->getOne("SELECT MIN(gridimage_id) FROM gridimage_square2");
 	$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_square2");
 
-	for($start = 1;$start<$max;$start+=$param['limit']) {
+	for($start = $min;$start<$max;$start+=$param['limit']) {
 	        $end = $start+$param['limit']-1;
         	$sqls[] = str_replace("\$where","gridimage_id BETWEEN $start AND $end",$build);
         	$sqls[] = str_replace("\$where","gridimage_id BETWEEN $start AND $end",$build2);
@@ -79,17 +80,20 @@ if ($db->getOne("SHOW TABLES LIKE 'gridimage_square2'")) {
 ##################################################
 //fill in/update the the score and baysian figures.
 
-$build = "update gridimage_search gs inner join gridimage_log using (gridimage_id) left join gallery_ids i on (id = gridimage_id)
+if ($param['update']) { //so can abort early (only import gridimage_square2) without doing a full update
+
+	$build = "update gridimage_search gs inner join gridimage_log using (gridimage_id) left join gallery_ids i on (id = gridimage_id)
 		set gs.score = (hits+hits_archive)*COALESCE(i.baysian,3.2),
 			gs.baysian = i.baysian, upd_timestamp=upd_timestamp
 		WHERE \$where";
 
-//$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_sequence"); #cant use this, new rows may be inserted via the first query above!
-$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+	//$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_sequence"); #cant use this, new rows may be inserted via the first query above!
+	$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
-for($start = 1;$start<$max;$start+=$param['limit']) {
-        $end = $start+$param['limit']-1;
-        $sqls[] = str_replace("\$where","gridimage_id BETWEEN $start AND $end",$build);
+	for($start = 1;$start<$max;$start+=$param['limit']) {
+        	$end = $start+$param['limit']-1;
+	        $sqls[] = str_replace("\$where","gridimage_id BETWEEN $start AND $end",$build);
+	}
 }
 
 ######################################################################################################################################################
