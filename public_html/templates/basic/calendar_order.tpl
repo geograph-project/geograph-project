@@ -17,7 +17,7 @@
         <label for="title">Title:</label>
         <input type="text" name="calendar_title" value="{$calendar.title|escape:"html"}" style="font-size:1.1em" maxlength="64" size="47"/>
 
-	<div class="fieldnotes">Optional title. </div>
+	<div class="fieldnotes">Optional title. {if !$images}For your reference only{/if}</div>
 
         {if $errors.title}</div>{/if}
 </div>

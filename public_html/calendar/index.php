@@ -25,12 +25,44 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$USER->mustHavePerm("basic");
 
+$year = date('Y')+1; // we currently working on next years calendar
 
-$db = GeographDatabaseConnection(false);
+$smarty->assign('year', $year);
+
+if (date('Y-m-d') > '2022-10-10' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
+	$smarty->assign('closed',true);
+}
 
 ####################################
+
+if (!$USER->hasPerm("basic") || !empty($_GET['best'])) {
+
+	$imagelist=new ImageList;
+
+	if (false) {
+		//this is NOT normal rows, but gridimage_calendar has enough rows, that it works! (at least to get thumbnails!)
+		$sql = "SELECT * FROM gridimage_calendar
+	        	LEFT JOIN gridimage_size using (gridimage_id)
+		        WHERE calendar_id = {$row['calendar_id']} ORDER BY sort_order";
+	} else {
+		$sql = "SELECT * FROM gridimage_search INNER JOIN gridimage_query USING (gridimage_id)
+			WHERE query_id = 165587901
+			ORDER BY month(imagetaken)";
+	}
+	$imagelist->_getImagesBySql($sql);
+
+	$smarty->assign_by_ref('images', $imagelist->images);
+
+	$smarty->display('calendar_bestof.tpl');
+	exit;
+}
+
+####################################
+
+$USER->mustHavePerm("basic");
+
+$db = GeographDatabaseConnection(false);
 
 if (!empty($_GET['delete'])) {
 	$calendar_id = intval($_GET['delete']);
@@ -39,19 +71,9 @@ if (!empty($_GET['delete'])) {
 
 ####################################
 
-$year = date('Y')+1; // we currently working on next years calendar
-
 $list = $db->getAll("SELECT * FROM calendar WHERE user_id = {$USER->user_id} AND year = '$year' AND status > 1");
 
 $smarty->assign_by_ref('list', $list);
-
-
-
-if (date('Y-m-d') > '2022-10-10' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
-	$smarty->assign('closed',true);
-}
-
-$smarty->assign('year', $year);
 
 $smarty->display('calendar.tpl');
 

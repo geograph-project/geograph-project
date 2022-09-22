@@ -25,7 +25,7 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$USER->mustHavePerm("basic");
+//$USER->mustHavePerm("basic");
 
 pageMustBeHTTPS();
 
