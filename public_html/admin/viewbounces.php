@@ -61,16 +61,19 @@ $filters['bounceType'] = array('Permanent','Transient');
 $filters['SubType'] = array('OnAccountSuppressionList','!OnAccountSuppressionList');
 $filters['user_id'] = 'text';
 $filters['email'] = 'text';
+$filters['subject'] = 'text';
 
 //$filters[''] = array('','');
 
 print "<form method=get>";
 foreach ($filters as $name => $rows) {
 	if ($rows == 'text') {
-		print "<input type=search name=$name value=\"".htmlentities(@$_GET[$name])."\" onkeyup=\"if (event.key == 'Enter') {this.form.submit(); }\" title=$name>";
+		print "<input type=search name=$name value=\"".htmlentities(@$_GET[$name])."\" onkeyup=\"if (event.key == 'Enter') {this.form.submit(); }\" title=$name size=10>";
 		if (!empty($_GET[$name])) {
 			if ($name == 'email') {
 				$where[] = "JSON_VALUE(Message,'$.mail.destination[0]') = ".$db->Quote($_GET[$name]);
+			} elseif ($name == 'subject') {
+				$where[] = "JSON_VALUE(Message,'$.mail.commonHeaders.subject') = ".$db->Quote($_GET[$name]);
 			} else {
 				$where[] = "user.$name LIKE ".$db->Quote($_GET[$name]);
 			}
@@ -186,7 +189,7 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 			if ($key != 'diagnosticCode' && $key != 'subject')
 				print "<TD ALIGN=$align>".htmlentities($value)."</TD>";
 		}
-		print "<td><a href=\"?t={$row['TimeStamp']}\">View</a></td>";
+		print "<td><a href=\"?t={$row['TimeStamp']}\">View</a> / <a href=\"?email=".urlencode($row['to'])."\">Others</a></td>";
 		print "</TR>";
 
 		if (!empty($row['subject']))
