@@ -90,6 +90,10 @@ if ($is_admin && isset($_GET['edit'])) { //zero used for creation!
 	}
 	print "</table>";
 	print "<button type=submit>Submit</button>";
+
+	if (!empty($_GET['edit'])) {
+		print "<button type=submit formaction=\"?edit=0\">Create a new Alarm</button>";
+	}
 	print "</form>";
 	exit;
 }
@@ -171,6 +175,8 @@ foreach ($rows as $row) {
 	if (!$bad)
 		print "<p>$good test".(($good==1)?'':'s')." ok</p>";
 	print "</div>";
+	ob_flush();
+	flush();
 }
 
 ############################################
