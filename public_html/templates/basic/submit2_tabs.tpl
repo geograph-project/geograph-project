@@ -293,7 +293,7 @@ window.onbeforeunload=unloadMess;
 	</noscript>
 
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).
-	 A overview map is provided to help locate a square, but is optional. You can directly enter a grid reference in step 2 if you wish.
+	 An overview map is provided to help locate a square, but is optional. You can directly enter a grid reference in step 2 if you wish.
 	 If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
 
 
