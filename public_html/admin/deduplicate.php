@@ -34,7 +34,7 @@ $db = GeographDatabaseConnection(false);
 
 if (!empty($_POST['md5sum']) && !empty($_POST['status'])) {
 	switch ($_POST['status']) {
-		case 'Delt': $status = 'pending'; break;
+		case 'Dealt': $status = 'pending'; break;
 		case 'Invalid': $status = 'invalid'; break;
 		case 'Unknown': $status = 'unknown'; break;
 	}
@@ -59,7 +59,7 @@ $status = 'new'; if (!empty($_GET['status']) && ctype_alpha($_GET['status'])) $s
 ##############################################
 
 if (!empty($_GET['list'])) {
-	$rows = $db->getAll($sql = "select status,count(*) cnt,md5sum from full_dup where (user_id > 0 and status != 'delt') or status = 'new' group by status");
+	$rows = $db->getAll($sql = "select status,count(*) cnt,md5sum from full_dup where (user_id > 0 and status != 'dealt') or status = 'new' group by status");
 	print "<ol>";
 	foreach ($rows as $row) {
 		$link = ($row['status']=='new')?'?':"?list=1&status={$row['status']}";
@@ -201,9 +201,9 @@ if (!empty($_GET['offset']) && !empty($_GET['auto'])) {
 		print "<form method=post>";
 		print "<input type=hidden name=md5sum value=\"$md5sum\"/>";
 		print "Mark as: <br/>";
-		print " <input type=submit name=status value=\"Delt\"> There should only be one of the images left active<br/>";
-		print " <input type=submit name=status value=\"Invalid\"> This is not actully a real duplicate (false positive)<br/>";
-		print " <input type=submit name=status value=\"Unknown\"> Skip this duplicate but flag it for closer insepection by someone else ";
+		print " <input type=submit name=status value=\"Dealt\"> There should only be one of the images left active<br/>";
+		print " <input type=submit name=status value=\"Invalid\"> This is not actually a real duplicate (false positive)<br/>";
+		print " <input type=submit name=status value=\"Unknown\"> Skip this duplicate but flag it for closer inspection by someone else ";
 		print "</form>";
 
 ?>
@@ -225,10 +225,10 @@ Do look at both images in full (either on edit page or photo page) and compare m
 	} else {
 		if (empty($_GET['md5sum']))
 			print "<meta http-equiv=\"refresh\" content=\"1\"/>";
-		print "Found a set [$md5sum] that appears to have already been rejected/delt.";
+		print "Found a set [$md5sum] that appears to have already been rejected/dealt.";
 		if (empty($_GET['md5sum']))
 	                print " This page will refresh in 1 second and try another. Please wait...";
-		$db->Execute($sql = "UPDATE full_dup SET status = 'delt' WHERE md5sum='$md5sum'");
+		$db->Execute($sql = "UPDATE full_dup SET status = 'dealt' WHERE md5sum='$md5sum'");
 
 		if (count($ids) == 2 && count($images) == 1) {
 			$to = $images[0]['gridimage_id'];
