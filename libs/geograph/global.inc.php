@@ -561,7 +561,7 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 	        	if ($_GET['responsive'] == 2)
                			$CONF['template'] = 'new2';
 		        if ($_GET['responsive'] == 3)
-                		$CONF['template'] = 'r';
+                		$CONF['template'] = 'resp';
 		}
 
 	} else {
@@ -963,7 +963,6 @@ class GeographPage extends Smarty
 		// set the default handler
 		if ($CONF['template']!='basic')
 			$this->default_template_handler_func = array('GeographPage', 'basicTemplateLoader');
-		
 
 		//setup optimisations
 		$this->compile_check = $CONF['smarty_compile_check'];
@@ -1107,6 +1106,14 @@ class GeographPage extends Smarty
 			$cache_id = empty($cache_id)?'https':($cache_id."-https");
 		}
 
+		if ($CONF['template']=='resp') {
+			if ($template == '_std_begin.tpl') {
+				if (!isset($this->_tpl_vars['responsive'])) //ie if set explicitly before, keep it!
+					$this->assign('responsive',false);
+			} else
+				$this->assign('responsive',true); //assume on, will reset if load from basic folder!
+		}
+
 //	split_timer('smarty'); //starts the timer
 
 		if (!empty($this->disable_caching)) {
@@ -1123,9 +1130,9 @@ class GeographPage extends Smarty
 				unlink($this->wroteLock);
 			}
 		}
-		
+
 //	split_timer('smarty','display',$template.'.'.$cache_id); //logs the wall time
-	
+
 		return $ret;
 	}
 
@@ -1167,7 +1174,11 @@ class GeographPage extends Smarty
 				 $template_timestamp=filemtime($basic);
 				 
 				 split_timer('smarty','loader',$resource_name); //logs the wall time
-				 
+
+				global $CONF;
+				if ($CONF['template']=='resp')
+					$smarty_obj->assign('responsive',false);
+
 				 return true;
 			}
 			else

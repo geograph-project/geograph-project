@@ -1,0 +1,29 @@
+input#nav_toggle, label#nav_label {
+	display:none;
+}
+input#search_toggle, label#search_label {
+	display:none;
+}
+#searchterm {
+	background-image:none; /* done with palceholder now! */
+}
+#searchoptions {
+	display:none;
+	width:250px;
+	text-align:left;
+	color:#000066;
+}
+
+#searchterm:focus ~ #searchoptions {
+	display:block;
+	position:absolute;
+	top:34px;
+	right:30px;
+        background-color:#eeeeff;
+	z-index:10000;
+}
+
+
+.longLinks a {
+	white-space:nowrap;
+}

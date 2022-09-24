@@ -1,0 +1,134 @@
+@media (any-pointer: coarse) {
+	#nav_block {
+		line-height:1.5em;
+	}
+	#nav_block .nav ul {
+		padding:0;
+	}
+	#nav_block a {
+		padding: 0.8em;
+		white-space: nowrap;
+	}
+	.longLinks {
+		line-height:2em;
+	}
+}
+
+
+@media only screen and (max-width: 712px) {
+
+	#header {
+		text-align:center;
+	}
+	#header h1 {
+		display: inline-block;
+		height: 40px;
+		background-size:139px 40px;
+		background-repeat: no-repeat;
+	}
+
+	.content_photoblack, .content_photogray, .content_photowhite, .content3, .content2, .content1, .maincontent {
+		margin-left:0;
+		border-left:none;
+	}
+
+	/* ----------------- */
+
+	label#nav_label {
+		display:block;
+		position:absolute;
+		top:10px;
+		left:10px;
+		z-index:10000;
+		color:yellow;
+	}
+
+	#nav_block {
+		top:44px;
+		display:none;
+		border-right:1px solid silver;
+		max-height: calc( 100vh - 44px );
+		overflow-x: auto;
+	}
+	#nav_block > div > ul {
+		padding-left:4px;
+	}
+	input#nav_toggle:checked ~ #nav_label:before {
+		content: "<";
+	}
+	input#nav_toggle:checked ~ #nav_block {
+		display:block;
+		position:fixed;
+		z-index:10000;	
+	}
+
+	/* ----------------- */
+
+        label#search_label {
+                display:block;
+                position:absolute;
+                top:10px;
+                right:10px;
+                z-index:10000;
+                color:yellow;
+        }
+
+	#search_block {
+		display:none;
+	}
+	input#search_toggle:checked ~ #search_label:after {
+		content: "^";
+	}
+
+	input#search_toggle:checked ~ #search_block {
+		display:block;
+		position:fixed;
+		top:44px;
+		left:0px;
+		right:0px;
+		width:100%;
+		z-index:10000;	
+		background-color:#eeeeff;
+		min-height:160px;
+	}
+	#search_block #search {
+		position:relative;
+		top:initial;
+		left:initial;
+	}
+	#searchbutton {
+		font-size: 1em;
+		background:none;
+		border:1px solid silver;
+		border-radius: 6px;
+		width: initial;
+	}
+	#searchoptions {
+		display:block;
+		margin-left:auto;
+	}
+	#searchoptions ul {
+		margin:0;
+		padding: 0 0 0 1em;
+
+	}
+	#searchoptions ul li {
+		list-style-type: none;
+	}
+
+	/* ----------------- */
+
+	#login {
+		position:relative;
+                top:initial;
+                left:initial;
+		float:left;
+		color:#000066;
+	}
+	#login a {
+		color:blue;
+	}
+
+	
+}
+

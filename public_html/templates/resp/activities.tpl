@@ -1,0 +1,27 @@
+{assign var="page_title" value="Activities"}
+{assign var="meta_description" value="Here at Geograph we have developed a number of interactive activies to explore our images, check back regually to see the latest additions"}
+{include file="_std_begin.tpl"}
+
+<h2>Activities on Geograph</h2>
+
+<div class="interestBox" style="margin:20px"><b>Are you involved in education?</b> We have a new <a href="/help/education_feedback">feedback form</a>, please take a moment to fill it out.</div>
+ 
+<p>Welcome to Geograph's new Activities section, there's not much here at the moment, we hope to add more as we can. However please do <a href="/contact.php">let us know</a> of any ideas you have for new activities that we could enable.</p>
+
+
+<div style="float:right; padding-right:20px"><img src="{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" alt="Perdita the Geograph hamster" style="max-width:20vw; height:auto" /></div>
+	
+<ul>
+	<li><a href="/help/imagine">Imagine slideshow</a> - imagine the landscape behind the map<br/><br/></li>
+	<li><a href="/activities/compare.php">Compare-a-pair</a> - compare and contrast pairs of similar pictures<br/><br/></li>
+	<li><a href="/games/">Geograph games</a> - fun games involving images and maps<br/><br/></li>
+	<li><a href="/article/?q=symbols">OS Map symbols</a> - exploring map symbols in pictures <sub>(<a href="/article/Ordnance-Survey-Map-Symbols">Introductory article</a>)</sub><br/><br/></li>
+	<li><a href="/gallery/">Galleries</a> - hand picked images on various themes<br/><br/></li>
+</ul>
+
+<hr/>
+
+<p><small>See also <a href="/teachers/">Teachers' Homepage</a>.</small></p>
+
+
+{include file="_std_end.tpl"}
