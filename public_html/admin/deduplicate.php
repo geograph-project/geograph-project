@@ -59,7 +59,7 @@ $status = 'new'; if (!empty($_GET['status']) && ctype_alpha($_GET['status'])) $s
 ##############################################
 
 if (!empty($_GET['list'])) {
-	$rows = $db->getAll($sql = "select status,count(*) cnt,md5sum from full_dup where (user_id > 0 and status != 'dealt') or status = 'new' group by status");
+	$rows = $db->getAll($sql = "select status,count(*) cnt,md5sum from full_dup where (user_id > 0 and status != 'delt') or status = 'new' group by status");
 	print "<ol>";
 	foreach ($rows as $row) {
 		$link = ($row['status']=='new')?'?':"?list=1&status={$row['status']}";
@@ -228,7 +228,7 @@ Do look at both images in full (either on edit page or photo page) and compare m
 		print "Found a set [$md5sum] that appears to have already been rejected/dealt.";
 		if (empty($_GET['md5sum']))
 	                print " This page will refresh in 1 second and try another. Please wait...";
-		$db->Execute($sql = "UPDATE full_dup SET status = 'dealt' WHERE md5sum='$md5sum'");
+		$db->Execute($sql = "UPDATE full_dup SET status = 'delt' WHERE md5sum='$md5sum'");
 
 		if (count($ids) == 2 && count($images) == 1) {
 			$to = $images[0]['gridimage_id'];
