@@ -3,7 +3,7 @@
 
 {if $user->upload_size <= 1024 && ($original_width >=1024 || $original_height >=1024)}
 	<div class="interestBox">
-		<span style="color:red">&middot; Note </span>: We've recently changed the <i>default size</i> from 640px to 1024px, please double check this image is sized such that you happy to release under Creative Commons for others to use. (You can still choose to only release smaller images)
+		<span style="color:red">&middot; Note </span>: We've recently changed the <i>default size</i> from 640px to 1024px, please double check this image is sized such that you are happy to release under Creative Commons for others to use. (You can still choose to only release smaller images)
 	</div>
 	<br><br>
 {/if}
