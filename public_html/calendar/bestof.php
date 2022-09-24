@@ -1,5 +1,8 @@
 <?
 
+header("Location: ./?best=1");
+exit;
+
 
 require_once('geograph/global.inc.php');
 
