@@ -4,7 +4,7 @@
 		</div>
 
 	<p>Because we are an open project we want to ensure our content is licensed as 
-	openly as possible and so we ask that all images are released under an 
+	openly as possible and so we ask that all images are released under a 
 	{external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"} 
 	licence, including accompanying metadata.</p>
 
@@ -36,7 +36,7 @@
 	including location references, title/description, tags, and date taken. This includes 
 	which (if any) shared descriptions are attached to this image.</i>
 
-	<p>On submission, contributors licence their images at one or more specific 
+	<p>On submission, contributors license their images at one or more specific 
 	sizes. Once a licence is granted it is irrevocable, as that image and licence may 
 	legally have been downloaded and used elsewhere.
 

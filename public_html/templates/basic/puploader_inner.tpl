@@ -195,7 +195,7 @@
 		<div id="div1" class="interestBox">
 			<div style="float:right"><a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">About Context/Tags</a></div>
 			<div style="font-size:0.8em;padding-bottom:5px;">
-			&middot; Tick as many Geogaphical Contexts as required.<br/>
+			&middot; Tick as many Geographical Contexts as required.<br/>
 			&middot; Hover over name for a description, see also <a href="/tags/primary.php" text="More examples" target="_blank">further details and examples</a><br/>
 			&middot; If in doubt about the exact context, simply pick the best match from Natural Environment or Human Habitat.<br/>
 			&middot; As we have been adding Context to the previous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.<br/>
