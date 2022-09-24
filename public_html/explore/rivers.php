@@ -29,6 +29,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+pageMustBeHTTPS();
+
 $alpha = (!empty($_GET['alpha']) && ctype_upper($_GET['alpha']) )?$_GET['alpha']:'G';
 
 $template='explore_rivers.tpl';

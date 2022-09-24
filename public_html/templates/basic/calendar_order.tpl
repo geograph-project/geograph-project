@@ -17,7 +17,7 @@
         <label for="title">Title:</label>
         <input type="text" name="calendar_title" value="{$calendar.title|escape:"html"}" style="font-size:1.1em" maxlength="64" size="47"/>
 
-	<div class="fieldnotes">Optional title. </div>
+	<div class="fieldnotes">Optional title. {if !$images}For your reference only{/if}</div>
 
         {if $errors.title}</div>{/if}
 </div>
@@ -101,6 +101,17 @@
 
         {if $errors.delivery_name}</div>{/if}
 </div>
+
+{if !$user->user_id}
+<div class="field">
+        {if $errors.delivery_email}<div class="formerror"><p class="error">{$errors.delivery_email}</p>{/if}
+
+        <label for="delivery_email">Email Address:</label>
+        <input type="email" name="delivery_email" value="{$calendar.delivery_email|escape:"html"}" maxlength="128" size="47" required/>*
+
+        {if $errors.delivery_email}</div>{/if}
+</div>
+{/if}
 
 <div class="field">
         {if $errors.delivery_address}<div class="formerror"><p class="error">{$errors.delivery_address}</p>{/if}

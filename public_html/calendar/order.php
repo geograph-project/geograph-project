@@ -25,7 +25,7 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$USER->mustHavePerm("basic");
+//$USER->mustHavePerm("basic");
 
 pageMustBeHTTPS();
 
@@ -84,6 +84,13 @@ if (!empty($_POST)) {
 		if (isset($_POST[$key]) && $_POST[$key] != $row[$key])
 			$updates[$key] = $_POST[$key];
 		if (empty($updates[$key]) && empty($row[$key]) && $key != 'delivery_line2' && $key != 'delivery_line4')
+			$error[$key] = 'Required';
+	}
+	if (empty($USER->user_id)) {
+		$key = 'delivery_email';
+		if (!empty($_POST[$key]))
+			$updates[$key] = $_POST[$key];
+		else
 			$error[$key] = 'Required';
 	}
 

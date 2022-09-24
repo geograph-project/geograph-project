@@ -98,6 +98,7 @@ INNER JOIN information_schema.tables USING (table_schema,TABLE_NAME)
 
 ############################################
 
+chdir("/var/www/geograph");
 
 foreach ($rows as $row) {
 
@@ -114,8 +115,13 @@ foreach ($rows as $row) {
 
 	if ($db->getOne("show columns from $table LIKE 'x'")) {
 
+		//done out here, so not part of timing!
+			$extent = $db->getRow("select min(x),min(y),max(x),max(y) from $table"); //this can be query cached!
+			//print date('r').", got bounds\n";
+
+
 	        $start = microtime(true);
-        	$result = getSpatialAll($table,'count(*)');
+        	$result = getSpatialAll($extent,$table,'count(*)');
 	        $end = microtime(true);
 
 	        print date('r').sprintf(', took %.3f seconds, %d rows.',$end-$start,$result->_numOfRows)."\n\n";
@@ -143,17 +149,18 @@ foreach ($rows as $row) {
 
 		$sql = "SELECT SQL_NO_CACHE $select FROM $table WHERE $sql_where";
 
+		if (is_dir("perftest/") && !file_exists("perftest/spatial.$table.mysql"))
+			file_put_contents("perftest/spatial.$table.mysql", "$sql\n");
+
 		return $db->Execute($sql);
 	}
 
 
 
-	function getSpatialAll($table,$select = "COUNT(*)") {
+	function getSpatialAll($row, $table,$select = "COUNT(*)") {
 		global $db;
 
 		$sql_where = '';
-
-			$row = $db->getRow("select min(x),min(y),max(x),max(y) from $table"); //this can be query cached!
 
                                         $left=$row['min(x)'];
                                         $right=$row['max(x)'];
@@ -165,6 +172,9 @@ foreach ($rows as $row) {
                                         $sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 		$sql = "SELECT SQL_NO_CACHE $select FROM $table WHERE $sql_where";
+
+		if (is_dir("perftest/") && !file_exists("perftest/spatial2.$table.mysql"))
+			file_put_contents("perftest/spatial2.$table.mysql", "$sql\n");
 
 		return $db->Execute($sql);
 	}
