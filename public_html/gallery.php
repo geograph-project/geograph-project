@@ -43,8 +43,8 @@ customGZipHandlerStart();
 body {
 	background-color:black;
 }
-iframe {
-	position:absolute;top:0;left;0;width:100%;height:100%;padding-top:74px;border:0;
+iframe.full_screen {
+	position:absolute;top:0;left:0;width:100%;height:100%;padding-top:74px;border:0;
 	background-color:black;
 }
 #header_block {
@@ -73,7 +73,7 @@ function hideMenu() {
 </script>
 </head>
 <body>
-<iframe src="<? echo $CONF['gallery_url'].smarty_function_linktoself(array()); if (!empty($_GET['id'])) { print "#!/www.geograph.org.uk/photo/".intval($_GET['id']); } ?>" width="100%" height="100%" frameborder="0" allow="geolocation"></iframe>
+<iframe src="<? echo $CONF['gallery_url'].smarty_function_linktoself(array()); if (!empty($_GET['id'])) { print "#!/www.geograph.org.uk/photo/".intval($_GET['id']); } ?>" width="100%" height="100%" frameborder="0" allow="geolocation" class="full_screen"></iframe>
 
 <div id="header_block">
   <div id="header" click="document.location='/';">

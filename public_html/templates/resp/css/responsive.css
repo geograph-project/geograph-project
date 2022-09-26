@@ -134,6 +134,9 @@
 		color:blue;
 	}
 
-	
+
+	body iframe.full_screen {
+		padding-top: 40px;
+	}
 }
 
