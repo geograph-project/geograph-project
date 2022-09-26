@@ -12,3 +12,5 @@ bin/
 fakedump/
 google-api-php-client/
 backups/by-table/
+perftest/
+.cache/
