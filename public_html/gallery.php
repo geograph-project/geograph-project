@@ -14,6 +14,13 @@ if (empty($CONF['gallery_url'])) {
 if ($CONF['template'] == 'ireland' && empty($_GET['crit']))
 	$_GET['crit'] = "Country:Republic of Ireland";
 
+if (!empty($mobile_browser))
+	$_GET['mobile']= 1;
+
+//awkward, but linktoself, uses REQUEST_URI
+$_SERVER['REQUEST_URI'] = "?".http_build_query($_GET,'','&');
+
+
 customGZipHandlerStart();
 
 ?><html>
@@ -23,6 +30,11 @@ customGZipHandlerStart();
 <link rel="apple-touch-icon" href="https://www.geograph.org.uk/apple-touch-icon.png">
 <meta name="description" content="Used rated gallery of high quality photos">
 <link rel="stylesheet" type="text/css" title="Monitor" href="<? echo smarty_modifier_revision("/templates/basic/css/basic.css"); ?>" media="screen">
+<? if (!empty($mobile_browser)) { ?>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" title="Monitor" href="<? echo smarty_modifier_revision("/templates/resp/css/modification.css"); ?>" media="screen">
+	<link rel="stylesheet" type="text/css" title="Monitor" href="<? echo smarty_modifier_revision("/templates/resp/css/responsive.css"); ?>" media="screen">
+<? } ?>
 <script type="text/javascript" src="<? echo smarty_modifier_revision("/js/geograph.js"); ?>"></script>
 
 <style>
