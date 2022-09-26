@@ -241,6 +241,6 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 
 $smarty->assign('from', $from);
 $smarty->assign('to', $to);
-$smarty->display('accountmerge.tpl');
+$smarty->display('admin_accountmerge.tpl');
 
 
