@@ -1,6 +1,8 @@
 @media (any-pointer: coarse) {
 	#nav_block {
 		line-height:1.5em;
+		font-size:1.4em;
+		width:160px !important;
 	}
 	#nav_block .nav ul {
 		padding:0;
@@ -11,6 +13,9 @@
 	}
 	.longLinks {
 		line-height:2em;
+	}
+	ul.touchPadding li {
+		padding-bottom:16px;
 	}
 }
 
