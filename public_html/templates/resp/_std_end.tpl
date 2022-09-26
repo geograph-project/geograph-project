@@ -1,7 +1,7 @@
 </div>
 </div>
 
-<input type=checkbox id="nav_toggle" checked>
+<input type=checkbox id="nav_toggle">
 <label id="nav_label" for="nav_toggle">&#9776;</label>
 <div id="nav_block" class="no_print">
  <div class="nav">
