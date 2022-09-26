@@ -560,7 +560,7 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 		                $CONF['template'] = 'new';
 	        	if ($_GET['responsive'] == 2)
                			$CONF['template'] = 'new2';
-		        if ($_GET['responsive'] == 3)
+		        if ($_GET['responsive'] == 3 || $_GET['responsive'] == 4)
                 		$CONF['template'] = 'resp';
 		}
 
@@ -641,8 +641,8 @@ function init_session()
 				$CONF['template'] = 'new';
 			if ($_SESSION['responsive'] == 2)
 				$CONF['template'] = 'new2';
-			if ($_SESSION['responsive'] == 3)
-				$CONF['template'] = 'r';
+			if ($_SESSION['responsive'] == 3 || $_SESSION['responsive'] == 4)
+				$CONF['template'] = 'resp';
 		}
 	}
 
@@ -885,8 +885,8 @@ $str[] = "
 
 	####################################################
 
-	if (!empty($USER) && $USER->user_id == 3)
-        	$str[] = "<div style=\"position:absolute;top:40px;left:300px;width:250px;color:yellow\">Host: ".`hostname`."</div>";
+//	if (!empty($USER) && $USER->user_id == 3)
+  //      	$str[] = "<div style=\"position:absolute;top:0px;left:0px;width:250px;color:yellow\">Host: ".`hostname`."</div>";
 
 
         if (!empty($str))
@@ -1107,7 +1107,11 @@ class GeographPage extends Smarty
 		}
 
 		if ($CONF['template']=='resp') {
-			if ($template == '_std_begin.tpl') {
+			if (!empty($_SESSION['responsive']) && $_SESSION['responsive'] == "4") {
+				$this->assign('responsive',true);
+				 $cache_id = empty($cache_id)?'resp':($cache_id."-resp");
+
+			} elseif ($template == '_std_begin.tpl') {
 				if (!isset($this->_tpl_vars['responsive'])) //ie if set explicitly before, keep it!
 					$this->assign('responsive',false);
 			} else
@@ -1172,11 +1176,11 @@ class GeographPage extends Smarty
 			{
 				 $template_source=file_get_contents($basic);
 				 $template_timestamp=filemtime($basic);
-				 
+
 				 split_timer('smarty','loader',$resource_name); //logs the wall time
 
 				global $CONF;
-				if ($CONF['template']=='resp')
+				if ($CONF['template']=='resp' && @$_SESSION['responsive'] != 4)
 					$smarty_obj->assign('responsive',false);
 
 				 return true;
