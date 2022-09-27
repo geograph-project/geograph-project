@@ -97,6 +97,6 @@ $REVISIONS['/templates/new/css/content.css']=24878839;
 $REVISIONS['/templates/new2/css/content.css']=24878839;
 $REVISIONS['/templates/r/css/content.css']=24878839;
 $REVISIONS['/js/jquery.storage.js']=111;
-$REVISIONS['/templates/resp/css/responsive.css']=11788515;
+$REVISIONS['/templates/resp/css/responsive.css']=45030021;
 $REVISIONS['/templates/resp/css/modification.css']=11788515;
 ?>
