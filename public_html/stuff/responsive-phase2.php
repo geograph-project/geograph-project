@@ -49,7 +49,7 @@ if (!empty($_GET['id'])) {
 				$where = array();
 				$where[] = "status in ('converted','whitelisted')";
 				$where[] = "url != ''";
-				$where[] = "responsive_template.responsive_id IS NULL";
+				$where[] = "responsive_test.responsive_id IS NULL";
 				if (!empty($_SESSION['skip'])) {
 					$ids = implode(',',$_SESSION['skip']);
 					if (preg_match('/^\d+(,\d+)*$/',$ids))
