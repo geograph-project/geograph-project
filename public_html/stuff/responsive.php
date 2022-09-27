@@ -51,6 +51,7 @@ if (!empty($_GET['id'])) {
 						$where[] = "responsive_id NOT IN ($ids)";
 				}
 		//		if ($USER->user_id != 3) {
+					$where[] = "url != 'none'";
 					$where[] = "file NOT like 'admin_%'";
 					$where[] = "file NOT like '%/admin%'";
 					$where[] = "file NOT like '%adopt%'";
@@ -76,7 +77,7 @@ if (!empty($_GET['id'])) {
 	<?
 	if (empty($row['url'])) {
 		print "We dont know a good test URL for this page, a possible URL has been autofilled below, will need to confirm you really ARE testing the specific template, might need to figure out a different URL to find the right template!";
-		if (preg_match('/search_results_(\w+)\.tpl/',$file,$m)) {
+		if (preg_match('/search_results_(\w+)\.tpl/',$row['file'],$m)) {
                         $row['url'] = "https://staging.geograph.org.uk/search.php?i=1522&temp_displayclass=".$m[1];
 		} elseif (preg_match('/static_(\w[\w-]+)\.tpl/',$row['file'],$m)) {
                         $row['url'] = "https://staging.geograph.org.uk/help/{$m[1]}?responsive=4";
@@ -162,9 +163,11 @@ if (!empty($_GET['id'])) {
 	$where = array();
 	$where[] = "status != 'invalid'";
 	$where[] = "status != 'infeasible'";
+	$where[] = "url != 'none'";
 	$where[] = "file NOT LIKE '%/stuff/%'";
 	$where[] = "file NOT like '%/admin/%'";
 	$where[] = "file NOT like 'admin_%.tpl'";
+	$where[] = "file NOT like '%curated%'";
 	$recordSet = $db->Execute("SELECT * FROM responsive_template WHERE ".implode(" AND ",$where)." ORDER BY status, file");
 
 	print "<table>";

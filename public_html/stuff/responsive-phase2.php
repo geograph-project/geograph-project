@@ -49,6 +49,7 @@ if (!empty($_GET['id'])) {
 				$where = array();
 				$where[] = "status in ('converted','whitelisted','enabled')";
 				$where[] = "url != ''";
+				$where[] = "url != 'none'";
 				$where[] = "responsive_test.responsive_id IS NULL";
 				if (!empty($_SESSION['skip'])) {
 					$ids = implode(',',$_SESSION['skip']);
@@ -157,7 +158,7 @@ if (!empty($_GET['id'])) {
 	$recordSet = $db->Execute("SELECT t.*,count(responsive_test_id) as tests,SUM(IF(user_id = {$USER->user_id},1,0)) as own
 	 FROM responsive_template t
 	 LEFT JOIN responsive_test USING (responsive_id)
-	 WHERE status in ('converted','whitelisted','enabled') AND url != '' GROUP BY responsive_id ORDER BY tests, file");
+	 WHERE status in ('converted','whitelisted','enabled') AND url != '' AND url != 'none' GROUP BY responsive_id ORDER BY tests, file");
 
 	print "<h2>Pages to be tested on small screens</h2>";
 
