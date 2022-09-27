@@ -79,7 +79,9 @@ if (!empty($_GET['id'])) {
 		<h2><a href=?>&lt;-- back</a> :: <? echo $row['file']; ?></h2>
 
 	<form method=post style=background-color:#eee;padding:10px>
-		Test URL: <input type=text name=url value="<? echo htmlentities($row['url']); ?>" size=90 maxlength=255 readonly style="max-width:85vw"><button type=button id=openlink>Open in new window</button><br>
+		Test URL: <input type=text name=url value="<? echo htmlentities($row['url']); ?>" size=90 maxlength=255 readonly style="max-width:85vw"><button type=button id=openlink>Open in new window</button>
+		<button type=button id=openqr>Open QR Code</button>
+		<br>
 		<blockquote>
 	<? if ($row['file'] == 'mapper_combined.tpl') { ?>
 		Note, this is one of a few special cases. <b>Can't test using the 'Responsive' DevTools mode</b>, as it doesn't respond to just resizing windows. Will need to load the page directly on a mobile device (not just a small window) to test.
@@ -113,8 +115,8 @@ if (!empty($_GET['id'])) {
 		<label><input type=checkbox name="test_desktop" value=1 <? if (!empty($r2['test_desktop'])) { echo "checked"; } ?>>
 			 I've tested this on <b>desktop</b> (ideally at various sizes)</label><br><br>
 
-		<label><input type=checkbox name="test_google" value=1 <? if (!empty($r2['test_google'])) { echo "checked"; } ?>>
-			 I've tested this on</label> <a href="https://search.google.com/test/mobile-friendly?url=<? echo urlencode($row['url']); ?>">Google Mobile Friendly Test</a>, which says 'Page is usable on mobile'. <small>(note getting 'crawl failed' is normal, the test itself runs, the crawl fails as the test URL is blocked from accidently indexing)</small><br><br>
+		<!--label><input type=checkbox name="test_google" value=1 <? if (!empty($r2['test_google'])) { echo "checked"; } ?>>
+			 I've tested this on</label> <a href="https://search.google.com/test/mobile-friendly?url=<? echo urlencode($row['url']); ?>">Google Mobile Friendly Test</a>, which says 'Page is usable on mobile'. <small>(note getting 'crawl failed' is normal, the test itself runs, the crawl fails as the test URL is blocked from accidently indexing)</small><br><br-->
 
 		<label><input type=checkbox name="test_bing" value=1 <? if (!empty($r2['test_bing'])) { echo "checked"; } ?>>
 			 I've tested this on</label> <a href="https://www.bing.com/webmaster/tools/mobile-friendliness?url=<? echo urlencode($row['url']); ?>">Bing Mobile Friendly Test</a>, which says 'This page is mobile friendly'.<br><br>
@@ -125,6 +127,7 @@ if (!empty($_GET['id'])) {
 	<br><br>
 	<input type=submit value="Save changes">   (<input type=checkbox name="auto" <? if (empty($_POST) || @$_REQUEST['auto']) { echo "checked"; } ?>> automatically load next template)
 	</form>
+	(Google also have a mobile friendly tester, but we going to call that programmatically)
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script>
 	$(function() {
@@ -132,7 +135,17 @@ if (!empty($_GET['id'])) {
 			window.open(this.form.elements['url'].value,'_blank');
 			return false;
 		});
+		$('button#openqr').click(function(e) {
+			getQR(this.form.elements['url'].value);
+			return false;
+		});
 	});
+	function getQR(url) {
+		$.getScript("https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js", function() {
+			$('body').append('<div style="position:fixed; top:30px; right:30px; left:30px; background-color:white;padding:20px; z-index:50000" onclick="$(this).remove()"><div id=qrcode style="width:250px;height:250px"></div><br><br>Click to Close</div>');
+			new QRCode(document.getElementById("qrcode"), url);
+		});
+	}
 	</script>
 	<?
 
@@ -225,6 +238,8 @@ if (!empty($_GET['id'])) {
 	#############################################
 
 	print "<p>(grey lines are ones, you've already tested)</p>";
+	print "Note: if 'stuck' in responsive template around the rest of the site, click <a href=\"$domain/?responsive=0\">this link</a>, and should revert to normal template";
+
 }
 
 $smarty->display('_std_end.tpl',true);
