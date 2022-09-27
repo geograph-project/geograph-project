@@ -83,6 +83,9 @@ $GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 $square=new GridSquare;
 $smarty = new GeographPage;
 
+if (!empty($mobile_browser))
+	 $smarty->assign("mobile_browser", 1);
+
 if (!empty($CONF['submission_message'])) {
         $smarty->assign("status_message",$CONF['submission_message']);
 }

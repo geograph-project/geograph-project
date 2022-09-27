@@ -39,6 +39,9 @@ $smarty = new GeographPage;
 
 dieIfReadOnly();
 
+if (!empty($mobile_browser))
+	 $smarty->assign("mobile_browser", 1);
+
 if (!empty($CONF['submission_message'])) {
         $smarty->assign("status_message",$CONF['submission_message']);
 }

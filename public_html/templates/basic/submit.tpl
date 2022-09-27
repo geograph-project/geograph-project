@@ -21,6 +21,13 @@
 {/if}
 
 {if $step eq 1}
+		{if $mobile_browser}
+			<div style="padding:10px">
+			 Note, while this process should mostly work, we have a dedicated <a href="/submit-mobile.php?redir=false" class=nowrap>submission process</a>
+			 optimised for small/touch screens, which may prefer to use.</div>
+			<hr>
+		{/if}
+
 	{if $user->stats.images > 10}
 		<div style="float:right;position:relative"><b>v1</b> / <a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">v2</a> / <a href="/submit-mobile.php">mobile</a> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a>
 		<small><br/><br/><a href="/help/submit_intro">submit help page</a></small></div>
