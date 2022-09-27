@@ -88,13 +88,13 @@ if (!empty($_GET['id'])) {
 		<hr>
 		Although you can still use the Chrome DevTools Device Emulator, but will need to explicitly set a mobile device, eg 'iPhone SE' and say 'iPad' for tablet.
 		<hr>
-		<b>Goto <a href="https://staging.geograph.org.uk/explore/?responsive=4">https://staging.geograph.org.uk/explore/?responsive=4</a> on the device, THEN click 'Maps' in the sidebar/menu to test.</b>
+		<b>Goto <a href="<? echo $domain; ?>/explore/?responsive=4"><? echo $domain; ?>/explore/?responsive=4</a> on the device, THEN click 'Maps' in the sidebar/menu to test.</b>
 	<? } elseif ($row['file'] == 'public_html/gallery.php') { ?>
 		Note, this is one of a few special cases. <b>Can't test using the 'Responsive' DevTools mode</b>, as it doesn't respond to just resizing windows. Will need to load the page directly on a mobile device (not just a small window) to test.
 		<hr>
 		Although you can still use the Chrome DevTools Device Emulator, but will need to explicitly set a mobile device, eg 'iPhone SE' and say 'iPad' for tablet.
 		<hr>
-		<b>Goto <a href="https://staging.geograph.org.uk/explore/?responsive=4">https://staging.geograph.org.uk/explore/?responsive=4</a> on the device, THEN click 'Showcase' in the sidebar/menu to test.</b>
+		<b>Goto <a href="<? echo $domain; ?>/explore/?responsive=4"><? echo $domain; ?>/explore/?responsive=4</a> on the device, THEN click 'Showcase' in the sidebar/menu to test.</b>
 	<? } else { ?>
 			When testing the page, suggest using the Chrome DevTools <a href="https://developer.chrome.com/docs/devtools/device-mode/">Device Mode</a>.
                         Set to 'Responsive' mode, and try resizing window both narrow AND wide.<hr>
