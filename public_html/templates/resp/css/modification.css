@@ -14,7 +14,7 @@ input#search_toggle, label#search_label {
 	color:#000066;
 }
 
-#searchterm:focus ~ #searchoptions {
+#searchterm:focus ~ #searchoptions, #searchoptions:hover {
 	display:block;
 	position:absolute;
 	top:34px;
@@ -25,5 +25,9 @@ input#search_toggle, label#search_label {
 
 
 .longLinks a {
+	white-space:nowrap;
+}
+
+.tabHolder a, .tabHolder span {
 	white-space:nowrap;
 }
