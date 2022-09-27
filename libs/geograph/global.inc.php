@@ -1111,6 +1111,10 @@ class GeographPage extends Smarty
 				$this->assign('responsive',true);
 				 $cache_id = empty($cache_id)?'resp':($cache_id."-resp");
 
+			} elseif (!empty($_GET['responsive']) && $_GET['responsive'] == "4") {
+				$this->assign('responsive',true);
+				 $cache_id = empty($cache_id)?'resp':($cache_id."-resp");
+
 			} elseif ($template == '_std_begin.tpl') {
 				if (!isset($this->_tpl_vars['responsive'])) //ie if set explicitly before, keep it!
 					$this->assign('responsive',false);
@@ -1180,7 +1184,7 @@ class GeographPage extends Smarty
 				 split_timer('smarty','loader',$resource_name); //logs the wall time
 
 				global $CONF;
-				if ($CONF['template']=='resp' && @$_SESSION['responsive'] != 4)
+				if ($CONF['template']=='resp' && @$_SESSION['responsive'] != 4 && @$_GET['responsive'] != 4)
 					$smarty_obj->assign('responsive',false);
 
 				 return true;
