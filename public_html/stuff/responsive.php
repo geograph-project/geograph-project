@@ -13,6 +13,9 @@ $smarty->display('_std_begin.tpl');
 
 $is_admin = $USER->hasPerm('admin') || ($USER->user_id == 1469); // or dsp!
 
+$domain = $db->getOne("SELECT domain FROM responsive_domain WHERE user_id = {$USER->user_id}");
+if (empty($domain))
+	$domain = "https://www.geograph.org.uk";
 
 if (!empty($_GET['id'])) {
 	$row = $db->getRow("SELECT * FROM responsive_template WHERE responsive_id=".intval($_GET['id']));
