@@ -145,7 +145,7 @@ if (!empty($_GET['id'])) {
 				ele.value = this.value;
 		});
 		$('button#openlink').click(function(e) {
-			window.open(this.form.elements['url'].value,'_blank');
+			window.open(this.form.elements['url'].value,'testwindow');
 			return false;
 		});
 	});

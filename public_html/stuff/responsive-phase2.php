@@ -49,6 +49,7 @@ if (!empty($_GET['id'])) {
 				$where = array();
 				$where[] = "status in ('converted','whitelisted')";
 				$where[] = "url != ''";
+				$where[] = "responsive_template.responsive_id IS NULL";
 				if (!empty($_SESSION['skip'])) {
 					$ids = implode(',',$_SESSION['skip']);
 					if (preg_match('/^\d+(,\d+)*$/',$ids))
@@ -119,7 +120,7 @@ if (!empty($_GET['id'])) {
 			 I've tested this on</label> <a href="https://search.google.com/test/mobile-friendly?url=<? echo urlencode($row['url']); ?>">Google Mobile Friendly Test</a>, which says 'Page is usable on mobile'. <small>(note getting 'crawl failed' is normal, the test itself runs, the crawl fails as the test URL is blocked from accidently indexing)</small><br><br-->
 
 		<label><input type=checkbox name="test_bing" value=1 <? if (!empty($r2['test_bing'])) { echo "checked"; } ?>>
-			 I've tested this on</label> <a href="https://www.bing.com/webmaster/tools/mobile-friendliness?url=<? echo urlencode($row['url']); ?>">Bing Mobile Friendly Test</a>, which says 'This page is mobile friendly'.<br><br>
+			 I've tested this on</label> <a href="https://www.bing.com/webmaster/tools/mobile-friendliness?url=<? echo urlencode($row['url']); ?>" target=testwindow>Bing Mobile Friendly Test</a>, which says 'This page is mobile friendly'.<br><br>
 
 		Comments: (optional) - no need to enter anything if page seems to work fine on all screen sizes, but can add explanation, if something doesn't work!<br>
 		<textarea name=comments rows=4 cols=80 style="max-width:85vw"><? echo htmlentities(@$r2['comments']); ?></textarea>
@@ -132,7 +133,7 @@ if (!empty($_GET['id'])) {
 	<script>
 	$(function() {
 		$('button#openlink').click(function(e) {
-			window.open(this.form.elements['url'].value,'_blank');
+			window.open(this.form.elements['url'].value,'testwindow');
 			return false;
 		});
 		$('button#openqr').click(function(e) {
