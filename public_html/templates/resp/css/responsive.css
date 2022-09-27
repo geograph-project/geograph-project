@@ -1,3 +1,5 @@
+/* Add Padding around tap-targets, do this for touch devices, rathe specifically smalls screens! */
+
 @media (any-pointer: coarse) {
 	#nav_block {
 		line-height:1.5em;
@@ -20,8 +22,15 @@
 	ul.touchPadding li {
 		padding-bottom:16px;
 	}
+	div#footer {
+		line-height: 1.6em;
+	}
+	div#footer a {
+		white-space: nowrap;
+	}
 }
 
+/* Customise the page for smalls screens. Mostly about hiding the sidebar, menu, and search by default */
 
 @media only screen and (max-width: 712px) {
 
@@ -137,6 +146,7 @@
 		color:blue;
 	}
 
+	/* Above is changes to the template, any custom CSS for content, will go below */
 
 	body iframe.full_screen {
 		padding-top: 40px;
