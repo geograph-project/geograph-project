@@ -53,6 +53,10 @@ if (!empty($_GET['id'])) {
 		//		if ($USER->user_id != 3) {
 					$where[] = "file NOT like 'admin_%'";
 					$where[] = "file NOT like '%/admin%'";
+					$where[] = "file NOT like '%adopt%'";
+					$where[] = "file NOT like '%human%'";
+					$where[] = "file NOT like '%photoset%'";
+					$where[] = "file NOT like '%curated%'";
 		//		}
 				$id = $db->getOne($sql = "SELECT responsive_id FROM responsive_template WHERE ".implode(' AND ',$where));
 			}
@@ -72,7 +76,9 @@ if (!empty($_GET['id'])) {
 	<?
 	if (empty($row['url'])) {
 		print "We dont know a good test URL for this page, a possible URL has been autofilled below, will need to confirm you really ARE testing the specific template, might need to figure out a different URL to find the right template!";
-		if (preg_match('/static_(\w[\w-]+)\.tpl/',$row['file'],$m)) {
+		if (preg_match('/search_results_(\w+)\.tpl/',$file,$m)) {
+                        $row['url'] = "https://staging.geograph.org.uk/search.php?i=1522&temp_displayclass=".$m[1];
+		} elseif (preg_match('/static_(\w[\w-]+)\.tpl/',$row['file'],$m)) {
                         $row['url'] = "https://staging.geograph.org.uk/help/{$m[1]}?responsive=4";
                 } elseif (!empty($row['used_by'])) {
 			if (preg_match('/public_html(\/\w+.*?\.php)/',$row['used_by'],$m))

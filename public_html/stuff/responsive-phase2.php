@@ -47,7 +47,7 @@ if (!empty($_GET['id'])) {
 		if (true) {
 			if (!empty($_POST['auto'])) {
 				$where = array();
-				$where[] = "status in ('converted','whitelisted')";
+				$where[] = "status in ('converted','whitelisted','enabled')";
 				$where[] = "url != ''";
 				$where[] = "responsive_test.responsive_id IS NULL";
 				if (!empty($_SESSION['skip'])) {
@@ -96,6 +96,9 @@ if (!empty($_GET['id'])) {
 		Although you can still use the Chrome DevTools Device Emulator, but will need to explicitly set a mobile device, eg 'iPhone SE' and say 'iPad' for tablet.
 		<hr>
 		<b>Goto <a href="<? echo $domain; ?>/explore/?responsive=4"><? echo $domain; ?>/explore/?responsive=4</a> on the device, THEN click 'Showcase' in the sidebar/menu to test.</b>
+	<? } elseif ($row['status'] == 'enabled') { ?>
+		Note, this is one of a few special cases. <b>The page may not be totally responsive itself, but should have special handling</b>
+		... for this page in particular, can flag the page as ok, even if it not perfect. It just needs to load enough to be usable, and to read the message, suggesting an alternative.
 	<? } else { ?>
 			When testing the page, suggest using the Chrome DevTools <a href="https://developer.chrome.com/docs/devtools/device-mode/">Device Mode</a>.
                         Set to 'Responsive' mode, and try resizing window both narrow AND wide.<hr>
@@ -154,7 +157,7 @@ if (!empty($_GET['id'])) {
 	$recordSet = $db->Execute("SELECT t.*,count(responsive_test_id) as tests,SUM(IF(user_id = {$USER->user_id},1,0)) as own
 	 FROM responsive_template t
 	 LEFT JOIN responsive_test USING (responsive_id)
-	 WHERE status in ('converted','whitelisted') AND url != '' GROUP BY responsive_id ORDER BY tests, file");
+	 WHERE status in ('converted','whitelisted','enabled') AND url != '' GROUP BY responsive_id ORDER BY tests, file");
 
 	print "<h2>Pages to be tested on small screens</h2>";
 
