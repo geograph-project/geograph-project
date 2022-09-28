@@ -5,12 +5,13 @@ init_session();
 
 $db = GeographDatabaseConnection(true);
 
+$CONF['template'] = 'resp'; //need to do BEFORE new GeographPage!
+
 $smarty = new GeographPage;
 
 $USER->mustHavePerm("basic");
 
-$CONF['template'] = 'resp';
-$smarty->assign('responsive',true);
+$smarty->assign('responsive',true); //for this page, we force respsonive, so can open this page on mobile!
 
 $smarty->display('_std_begin.tpl',true);
 
