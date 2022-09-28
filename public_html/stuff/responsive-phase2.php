@@ -200,7 +200,8 @@ if (!empty($_GET['id'])) {
 		else
 			print "<div class=grid>";
 		print "<span><tt>{$row['file']}</tt></span>";
-		$base = preg_replace('/^https?:\/\/\w[\w.]+/','',str_replace('?responsive=4','',$row['url']));
+		$base = preg_replace('/^https?:\/\/\w[\w.]+/','',$row['url']);
+		$base = preg_replace('/\?.*/','',$base);
 		print "<span>{$base}</span>";
 		print "<span>{$row['status']}</span>";
 		print "<span>{$row['tests']} done</span>";
