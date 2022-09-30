@@ -21,7 +21,7 @@ $REVISIONS['/js/Leaflet.base-layers.js']=77569264;
 $REVISIONS['/js/MooFlow.css']=4953;
 $REVISIONS['/js/MooFlow.js']=4953;
 $REVISIONS['/js/Observer.js']=5510;
-$REVISIONS['/js/appeal.js']=35500176;
+$REVISIONS['/js/appeal.js']=39826112;
 $REVISIONS['/js/dragtable.js']=5881;
 $REVISIONS['/js/finder.cy.js']=9095;
 $REVISIONS['/js/finder.js']=9050;
@@ -97,6 +97,6 @@ $REVISIONS['/templates/new/css/content.css']=24878839;
 $REVISIONS['/templates/new2/css/content.css']=24878839;
 $REVISIONS['/templates/r/css/content.css']=24878839;
 $REVISIONS['/js/jquery.storage.js']=111;
-$REVISIONS['/templates/resp/css/responsive.css']=45030021;
-$REVISIONS['/templates/resp/css/modification.css']=11788515;
+$REVISIONS['/templates/resp/css/responsive.css']=66205401;
+$REVISIONS['/templates/resp/css/modification.css']=48556414;
 ?>
