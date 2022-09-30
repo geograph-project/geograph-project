@@ -853,50 +853,54 @@ $str[] = "
 
 	####################################################
 
-	/* if (strpos($_SERVER["REQUEST_URI"],'/article/') === 0 && strpos($_SERVER["REQUEST_URI"],'.php') === FALSE && $GLOBALS['template'] != 'article_article2.tpl') {
-		$_GET['ads'] = 1;
-	} else */
 	if (strpos($_SERVER["REQUEST_URI"],'/blog/') === 0 && strpos($_SERVER["REQUEST_URI"],'.php') === FALSE) {
 		$_GET['ads'] = 1;
-	}
 
-	if (!empty($USER) && empty($USER->registered) && appearsToBePerson() && $_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
-		if (strpos($_SERVER["REQUEST_URI"],'/photo/') === 0)
+	} elseif (!empty($USER) && empty($USER->registered) && appearsToBePerson()) {
+		if (empty($_COOKIE['appeal']))
+		        $_GET['appeal'] = 1;
+		elseif (strpos($_SERVER["REQUEST_URI"],'/photo/') === 0)
 			$_GET['ads'] = 1;
 		elseif ($_SERVER["PHP_SELF"] == '/stuff/list.php')
                         $_GET['ads'] = 1;
+		// if (strpos($_SERVER["REQUEST_URI"],'/article/') === 0 && strpos($_SERVER["REQUEST_URI"],'.php') === FALSE && $GLOBALS['template'] != 'article_article2.tpl') {
 	}
 
-	if (!empty($_GET['ads'])
+	if ((!empty($_GET['appeal']) || !empty($_GET['ads']))
 		&& empty($USER->is_login_form) //catch inline logins!
 		&& $_SERVER["PHP_SELF"] != '/login.php'
 		&& $_SERVER["PHP_SELF"] != '/register.php'
+		&& $_SERVER["PHP_SELF"] != '/contact.php'
+		&& $_SERVER["PHP_SELF"] != '/faq3.php'
+		&& $_SERVER["PHP_SELF"] != '/staticpage.php' //mainly to prevent on donate/appeal page, but lets just hide for all
 		&& $_SERVER["PHP_SELF"] != '/profile.php' //to prevent on pags when changing password!
-		&& strstr($_SERVER["PHP_SELF"],0,7) != '/submit'
-		&& strstr($_SERVER["PHP_SELF"],0,6) != '/admin'
+		&& substr($_SERVER["PHP_SELF"],0,9) != '/calendar' //the appeal links here, so hide it! (and is already asking for money)
+		&& substr($_SERVER["PHP_SELF"],0,7) != '/submit'
+		&& substr($_SERVER["PHP_SELF"],0,6) != '/admin'
 		&& $_SERVER['REQUEST_METHOD'] == 'GET'
+		&& $CONF['template']!='charcoal' && $CONF['template']!='archive' && $CONF['template']!='charcoal_cy'
+		&& $_SERVER['HTTP_HOST'] != 'schools.geograph.org.uk'
 	) {
-		if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk')
-			$str[] = '<script type="text/javascript"> var infolinks_pid = 3361577; var infolinks_wsid = 0; </script> <script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>';
-		elseif ($_SERVER['HTTP_HOST'] == 'www.geograph.ie')
-			$str[] = '<script type="text/javascript"> var infolinks_pid = 3361577; var infolinks_wsid = 1; </script> <script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>';
-		$str[] = '<style>body { padding-bottom:130px }</style>';
+		if (!empty($_GET['appeal'])) {
+		        $str[] = '<script src="'.smarty_modifier_revision("/js/appeal.js").'"></script>';
+		} elseif (!empty($_GET['ads'])) {
+			if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk')
+				$str[] = '<script type="text/javascript"> var infolinks_pid = 3361577; var infolinks_wsid = 0; </script> <script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>';
+			elseif ($_SERVER['HTTP_HOST'] == 'www.geograph.ie')
+				$str[] = '<script type="text/javascript"> var infolinks_pid = 3361577; var infolinks_wsid = 1; </script> <script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>';
+			$str[] = '<style>body { padding-bottom:130px }</style>';
+		}
 	}
 
 	####################################################
 
-//	if (!empty($USER) && $USER->user_id == 3)
-  //      	$str[] = "<div style=\"position:absolute;top:0px;left:0px;width:250px;color:yellow\">Host: ".`hostname`."</div>";
-
+	//if (!empty($USER) && $USER->user_id == 3)
+ 	//     	$str[] = "<div style=\"position:absolute;top:0px;left:0px;width:250px;color:yellow\">Host: ".`hostname`."</div>";
 
         if (!empty($str))
                 return implode("\n",$str);
         else
                 return '';
-
-//	if(extension_loaded('newrelic')) {
-//		return newrelic_get_browser_timing_footer();
-//	}
 }
 
 /**
