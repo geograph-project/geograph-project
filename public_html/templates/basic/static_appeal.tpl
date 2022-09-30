@@ -22,10 +22,12 @@ holidays, or just armchair exploring. Our contributors share their photographs s
 download and use. Here's just one image of the over seven million images to choose from!</p>
 
 
-<p>We need you to understand that it costs thousands of pounds every year to run Geograph.  Alongside
-fundraising efforts such as our <a href="/calendar/">calendar project</a> and recent advertising trial, we are primarily reliant on
-donations from our users, such as you, to keep the site up and running. Hosting and support costs continue to
-rise in line with current economic conditions. We have no paid employees - everyone is a volunteer. </p>
+<p>We need you to understand that it costs thousands of pounds every year to run Geograph.  Alongside 
+fundraising efforts such as our <a href="/calendar/">calendar project</a> and recent advertising trial 
+({external href="https://forms.gle/3rb3FCfJNJuszRLRA" text="Consultation"}), we are primarily reliant 
+on donations from our users, such as you, to keep the site up and running. Hosting and support costs 
+continue to rise in line with current economic conditions. We have no paid employees - everyone is a 
+volunteer. </p>
 
 <p>If you value Geograph, please consider donating now.  We understand these are difficult times, but are
 pleased to accept one-off donations, or even better, regular monthly gifts, with Gift Aid if you are
