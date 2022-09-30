@@ -104,6 +104,8 @@ $displayclasses =  array(
 			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
+if (!empty($_GET['q']))
+	$_GET['gridref'] = $_GET['q'];
 
 //set by encoded p param
 if (isset($_GET['p']))

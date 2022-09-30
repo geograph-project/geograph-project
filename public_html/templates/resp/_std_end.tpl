@@ -121,11 +121,17 @@
 	<div id="searchoptions">
 		 what to search:<ul>
                                 <li><label><input type=radio name=type checked onclick="this.form.action = '/of/'">Photos</label> &nbsp;
-                                <li><label><input type=radio name=type onclick="this.form.action = '/finder/places.php'">Places</label> &nbsp;
+                                <li><label><input type=radio name=type onclick="this.form.action = '/browse.php'">Grid Reference</label> &nbsp;
+                                <li><label><input type=radio name=type onclick="this.form.action = '/finder/places.php'">Placenames</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/content/'">Collections</label> &nbsp;
+				{dynamic}{if $user->registered}
+                                  <li><label><input type=radio name=type onclick="this.form.action = '/finder/discussion.php'">Discussions</label> &nbsp;
+				{/if}{/dynamic}
                                 <li><label><input type=radio name=type onclick="this.form.action = '/content/documentation.php'">Website Pages</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/finder/multi2.php'">Everything</label> &nbsp;
 		</ul>
+		(enter postcodes using Photos option)
+		Tip: If wanting to just browse images by location, may prefer using the <a href="/mapper/combined.php">Map</a> option. Click the map to view photos.
 	</div>
       </div>
     </form>

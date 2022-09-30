@@ -12,6 +12,7 @@ input#search_toggle, label#search_label {
 	width:250px;
 	text-align:left;
 	color:#000066;
+	font-weight:normal;
 }
 
 #searchterm:focus ~ #searchoptions, #searchoptions:hover {
