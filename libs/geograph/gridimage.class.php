@@ -787,6 +787,7 @@ split_timer('gridimage'); //starts the timer
 
 			//todo -experimental - might be removed...
 			if (!empty($CONF['manticorert_host'])) { //index:gridimage_group_stat
+				global $sprt;
 				if (empty($sprt))
 					$sprt = GeographSphinxConnection('manticorert',true);
 				$collections2 = $sprt->getAll("SELECT label, images
@@ -814,7 +815,6 @@ split_timer('gridimage'); //starts the timer
 				}
 			}
 
-			//TODO - need a 'update' mechanism for this table.
 			$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,$sql = "
 				SELECT CONCAT('/photo/',from_gridimage_id) AS url, title, 'Other Photo' AS `type`
 				FROM gridimage_backlink ba
@@ -1278,6 +1278,20 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 				$mins[] = 'min-width:'.$size[0].'px';
 			if (empty($this->original_width) || $this->original_width/$this->original_height < 3) // DONT impose min height on REALLY wide panos.
 				$mins[] = 'min-height:'.$size[1].'px';
+
+
+			if (!empty($CONF['manticorert_host'])) { //index:gallery_ids
+				global $sprt;
+				if (empty($sprt))
+					$sprt = GeographSphinxConnection('manticorert',true);
+
+				$row = $sprt->getAll("SELECT * FROM gallery_ids WHERE id = {$this->gridimage_id}");
+				if (!empty($row)) {
+					if (empty($original))
+						$original = $this->_getOriginalpath(true,true);
+					$html = "<a href=\"$original\" onclick=\"this.href='/more.php?id={$this->gridimage_id}';\">$html</a>";
+				}
+			}
 
 //hack to avoid a CLS!
 $mins[] = "width:{$largestwidth}px"; //to override the 'auto' in CSS! (and the image starts at 'full' size, rather then the attribute width, but expand later!
