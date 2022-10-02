@@ -151,5 +151,26 @@
 	body iframe.full_screen {
 		padding-top: 40px;
 	}
+
+	form.simpleform {
+		min-width: inherit;
+		max-width: 100%;
+	}
+	form.simpleform fieldset {
+		padding:3px;
+	}
+	form.simpleform div.field label {
+		display:block;
+		float:inherit;
+	}
+	form.simpleform div.field input,
+	form.simpleform div.field textarea, 
+	form.simpleform div.field select {
+		max-width: calc( 100vw - 50px );
+	}
+	form.simpleform div.fieldnotes {
+		margin-left:5px;
+	}
+
 }
 
