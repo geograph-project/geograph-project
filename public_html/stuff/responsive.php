@@ -39,9 +39,15 @@ if (!empty($_GET['id'])) {
 		if (!empty($_POST['skip']))
 			@$_SESSION['skip'][$row['responsive_id']] = $row['responsive_id'];
 
+		//for this one want to honour custom domain, but most people should still use the general editor
+		$domain2 = str_replace('https://www.geograph.org.uk', $db->getOne("SELECT domain FROM responsive_domain WHERE user_id = 3"),$domain);
+
 		if ($updates['status'] == 'in progress') {
-			print "<script>window.open('https://development.geograph.org.uk/git/auto-edit-resp.php?file={$row['file']}','_blank');</script>";
+			print "<script>window.open('$domain2/git/auto-edit-resp.php?file={$row['file']}','_blank');</script>";
 		} else {
+			if ($updates['status'] == 'whitelisted') {
+				print "<script>window.open('$domain2/git/auto-edit-resp.php?file={$row['file']}&symlink=true','_blank');</script>";
+			}
 			if (!empty($_POST['auto'])) {
 				$where = array();
 				$where[] = "status = 'unknown'";
