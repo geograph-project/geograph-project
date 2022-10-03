@@ -110,9 +110,6 @@ body {
 		{if $topicstring}
 			<input type="radio" name="selector" accesskey="7" value="automatic" id="sel_automatic" checked/> <label for="sel_automatic">Tags derived from description</label><br/>
 		{/if}
-		{if $vision}
-			<input type="radio" name="selector" value="vision" id="sel_vision"/> <label for="sel_vision">Computer Generated</label><br/>
-		{/if}
 		{if $hide_context}<span class="experimental">{/if}
 		<input type="radio" name="selector" accesskey="8" value="top" id="sel_top"/> <label for="sel_top">Context List</label><br/>
 		{if $hide_context}</span>{/if}
@@ -249,12 +246,6 @@ $(function() {
 				if ((mode == 'suggestions' || mode == 'prospective' || mode == 'automatic') && $("input[name=topicstring]").length > 0) {
 					data.term = ''; //send a empty string to help with caching
 					data.string = $("input[name=topicstring]").val();
-				} else if (mode == 'vision') {
-					data.term = ''; //send a empty string to help with caching
-					if ($("input[name=upload_id]").length)
-						data.upload_id = $("input[name=upload_id]").val();
-					if ($("input[name=gridimage_id]").length)
-						data.gridimage_id = $("input[name=gridimage_id]").val();
 				} else if (mode == 'nearby' && $("input[name=gr]").length > 0) {
 					data.gr = $("input[name=gr]").val();
 				} else if (mode == 'selfrecent') {

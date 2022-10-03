@@ -27,9 +27,6 @@ if (empty($_GET['mode']))
 if ($_GET['mode'] == 'suggestions' && !empty($_GET['string'])) {
 	require("./topics.json.php");
 	exit;
-} elseif ($_GET['mode'] == 'vision') {
-	require("./vision.json.php");
-	exit;
 } elseif ($_GET['mode'] == 'prospective' && !empty($_GET['string'])) {
 	require("./prospective.json.php");
 	exit;

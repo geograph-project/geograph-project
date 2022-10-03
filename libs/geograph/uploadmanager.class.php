@@ -1023,9 +1023,6 @@ $this->db->raiseErrorFn = 'adodb_throw';
 
 		$this->db->Execute($sql = "UPDATE gridimage_snippet SET gridimage_id = $gridimage_id WHERE gridimage_id = ".$gid);
 
-		//assign the vision descriptions now we know the real id.
-		$this->db->Execute($sql = "UPDATE vision_results SET id = $gridimage_id WHERE id = ".$gid);
-
 		//assign the tags now we know the real id.
 		require_once('geograph/tags.class.php');
 		$tags = new Tags;
