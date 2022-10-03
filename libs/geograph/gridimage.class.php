@@ -1285,7 +1285,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 				if (empty($sprt))
 					$sprt = GeographSphinxConnection('manticorert',true);
 
-				$row = $sprt->getAll("SELECT * FROM gallery_ids WHERE id = {$this->gridimage_id}");
+				$row = $sprt->getAll("SELECT * FROM gallery_ids WHERE id = {$this->gridimage_id} AND baysian > 4");
 				if (!empty($row)) {
 					if (empty($original))
 						$original = $this->_getOriginalpath(true,true);
