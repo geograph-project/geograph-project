@@ -114,6 +114,13 @@ if ($param['table'] == 'gridprefix') {
 	//harcdoded example!
 	replace_into_index('gridprefix','gridprefix',null, array("prefix = 'TQ'"), $param['execute'], true);
 
+} elseif ($param['index'] == 'gallery_ids') { //special case that does NOT need to use delta or where for now! (its used with views, that have the where AND limit defined!)
+	$wheres = array();
+	if (!empty($param['where']))
+		$wheres[] = $param['where'];
+
+	replace_into_index($param['table'], $param['index'], $param['delta'], $wheres, true, false);
+
 } elseif (!empty($param['table']) && (!empty($param['delta']) || !empty($param['where'])) ) {
 	$wheres = array();
 	if (!empty($param['where']))
@@ -132,6 +139,8 @@ if ($param['table'] == 'gridprefix') {
 //replace_into_index('gridsquare','gridsquare',null, array("gridsquare_id = {$this->gridsquare_id}"), true);
 //replace_into_index('gridprefix','gridprefix',null, array("prefix = '{$this->prefix}'"), true, true); //no ID column, so REPLACE into wouldnt work, need to delete!
 
+//replace_into_index('gallery_view','gallery_ids',null, array(), true, false);
+//replace_into_index('gallery_view_delta','gallery_ids',null, array(), true, false);
 
 #########################################################
 // mostly duplicates injectrt.php, but doesnt need most of the magic, it just gathers columns to copy from the actual index!
@@ -285,6 +294,8 @@ function replace_into_index($table, $index = null, $delta = null, $wheres = arra
 		        } elseif ($c) {
 				if ($buffer && !empty($param['execute'])) {
 					$buffer .= ")";
+					if ($param['debug'] === '2')
+						print "$buffer;\n";
 					$rt->Execute($buffer);
 					if ($param['debug'])
 						 fwrite(STDERR,"affected: ".$rt->Affected_Rows()."\n");
@@ -324,6 +335,8 @@ function replace_into_index($table, $index = null, $delta = null, $wheres = arra
 		}
 		$buffer .= ")";
 		if ($buffer && !empty($param['execute'])) {
+			if ($param['debug'] === '2')
+				print "$buffer;\n";
 			$rt->Execute($buffer);
 			if ($param['debug'])
 				 fwrite(STDERR,"affected: ".$rt->Affected_Rows()."\n");

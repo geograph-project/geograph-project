@@ -60,6 +60,8 @@
 
 22      *       * * *   /usr/bin/php /var/www/geograph/scripts/injectrt-delta-function.php --table=gridsquare --delta=last_timestamp --limit=1000 --execute=2
 
+25	*       * * *   /usr/bin/php /var/www/geograph/scripts/injectrt-delta-function.php --table=gallery_view_delta --index=gallery_ids  --execute=2
+
 ##############################
 # And some for the Gallery
 

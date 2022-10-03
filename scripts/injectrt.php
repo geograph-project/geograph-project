@@ -393,7 +393,12 @@ if (!empty($param['data'])) {
 	while(true) {
 		//todo, this looping is designd for selecting FROM manticore, not really needed for selecting from DB!
 
-		if (!empty($param['limit'])) { // && $param['limit']<=1000) { //TODO: if there is a limit, but over 1000, will have to just keep looping until get the right number!
+		if (preg_match('/ LIMIT (\d+,)?(\d+)\s*$/i',$param['select'],$m)) {
+			//assume user knows what doing, and just let it run one big loop!
+			$postfix = '';
+			$limit = intval($m[2])+1; //always want limit higher, so it 'appear' got all rows
+
+		} elseif (!empty($param['limit'])) { // && $param['limit']<=1000) { //TODO: if there is a limit, but over 1000, will have to just keep looping until get the right number!
 			$postfix = " LIMIT ".$param['limit'];
 			$limit = max(1000,$param['limit']);
 		} else {
