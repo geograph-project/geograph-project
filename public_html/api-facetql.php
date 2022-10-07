@@ -13,6 +13,8 @@ require_once('3rdparty/facet-functions.php');
 if (!defined('SPHINX_INDEX')) {
 	if (!empty($_GET['cc'])) {
 	        define('SPHINX_INDEX',"content_stemmed");
+	} elseif (!empty($_GET['suggest'])) {
+	        define('SPHINX_INDEX',"suggestor");
 	} elseif (!empty($_GET['gg'])) {
 	        define('SPHINX_INDEX',"germany");
 	} elseif (!empty($_GET['is'])) {
