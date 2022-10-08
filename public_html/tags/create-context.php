@@ -94,7 +94,7 @@ $db = GeographDatabaseConnection(false);
 
 		Longer Desc:<textarea name="description[]" required rows=3 cols=70></textarea> (shown after the short version, as a continuation)<br><br>
 
-		Images: <input type="text" name="ids" required size="64" maxlength="64"> (List of FIVE image ids seperated by comma, dont actully need to be using the tag)<br><br>
+		Images: <input type="text" name="ids" required size="64" maxlength="64"> (List of FIVE image ids separated by comma, dont actully need to be using the tag)<br><br>
 
 		Insert before: <select name="sort_order" required><option></option>
                         <?
