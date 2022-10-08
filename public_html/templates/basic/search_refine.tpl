@@ -41,7 +41,7 @@
 		  </tr> 
 		  <!--tr> 
 			 <td><label for="pastebox">paste</label></td> 
-			 <td colspan="2"> Paste your list here, either comma or space seperated or just surrounded with [[[ ]]] <br/>
+			 <td colspan="2"> Paste your list here, either comma or space separated or just surrounded with [[[ ]]] <br/>
 				
 				<script type="text/javascript">{literal}
 				current = readCookie('markedImages')
