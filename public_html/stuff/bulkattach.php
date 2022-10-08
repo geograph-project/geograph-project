@@ -178,7 +178,7 @@ if (!empty($_POST)) {
 <h3>Images</h3>
 
 <h4>Paste Image IDs</h4>
-Long list of ids, seperated by spaces, commas, newlines, whatever. Can even past in whole links to the photo page, or the [[[..]]] [[[...]]] format from marked lists.<br/>
+Long list of ids, separated by spaces, commas, newlines, whatever. Can even past in whole links to the photo page, or the [[[..]]] [[[...]]] format from marked lists.<br/>
 
 <script type="text/javascript">
 current = readCookie('markedImages')
