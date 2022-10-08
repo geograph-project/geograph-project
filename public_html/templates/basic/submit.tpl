@@ -167,7 +167,7 @@ geographing</a> first.</p>
 	</script>
 
 </div>
-		<p>&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
+		<p>&middot; <label for="service">Preferred Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
 			<option value="Leaflet">Zoomable Maps (Combines Modern OS, OpenStreetMap, Aerial Imagery and Historic Maps)</option>
 			<option value="Google">Zoomable Google Mapping (still includes OSM + Historic Maps)</option>
 			<option value="OS50k">OS Modern 1:50,000 Mapping (Very simple OS Map, only use if above don't work)</option>
