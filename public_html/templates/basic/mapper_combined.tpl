@@ -508,7 +508,7 @@ function startTour() {
 			<li>Disable one or other layer to remove the lines, keeping just one set of dots
 		</ul></li>
 
-	<li><b>Coverage - Standard</b>: Shows coverage by squares, optionally personalized to just your images. Split into seperate versions at different resolutions:<ul>
+	<li><b>Coverage - Standard</b>: Shows coverage by squares, optionally personalized to just your images. Split into separate versions at different resolutions:<ul>
 	
 		<li style="padding:3px;"><b>Close</b>: Shows number of photos in square (either 1km or 100m squares), and coloured by what Geograph image(s) in the square<br>
 		<span style="opacity:0.92; font-family:'Trebuchet MS','Comic Sans MS',Georgia,Verdana,Arial,serif; text-shadow:1px 1px 1px black; font-size:20px;">
