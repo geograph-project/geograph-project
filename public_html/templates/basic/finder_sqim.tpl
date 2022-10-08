@@ -11,7 +11,7 @@
 
 <h2><a href="/finder/">Finder</a> :: Search by Gridsquare</h2>
 
-<p>Search all images in a square at once. So can find squares that match keywords in seperate images. For example a query of "bridge river" would match a square that has one image that matches "bridge" and a sperate image that matches "river".</p>
+<p>Search all images in a square at once. So can find squares that match keywords in separate images. For example a query of "bridge river" would match a square that has one image that matches "bridge" and a separate image that matches "river".</p>
 
 <p>Note: Due to performance issues, currently not all squares show thumbnails of images in the square. This will be done in the future.</p>
 
