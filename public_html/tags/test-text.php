@@ -59,7 +59,7 @@
      }
    </script>
              <fieldset id="example_6">
-               <legend><b>Tag(s)</b> [You can enter mulitple tags seperated by comma]</legend>
+               <legend><b>Tag(s)</b> [You can enter multiple tags separated by comma]</legend>
  		
  		<div style="float:right">
  			<b>Topics</b>:<br/>
