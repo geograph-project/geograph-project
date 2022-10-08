@@ -279,7 +279,7 @@ if (empty($_GET['tab'])) {
 
 	} elseif ($_GET['tab'] == 'search') {
 
-		print '<p>Shows the number of times an image has been saved in a seperate search, via the <a href="/article/The-Mark-facility">Mark facility</a>. Does not show why, or does it discount the same person saving the same list multiple times</p>';
+		print '<p>Shows the number of times an image has been saved in a separate search, via the <a href="/article/The-Mark-facility">Mark facility</a>. Does not show why, or does it discount the same person saving the same list multiple times</p>';
 
 		$t = '';
 		$sql = "SELECT gridimage_id gid,title t,count(*) c FROM gridimage_search INNER JOIN gridimage_query USING (gridimage_id) WHERE user_id = $u GROUP BY gridimage_id HAVING c > 1 ORDER BY c DESC";
