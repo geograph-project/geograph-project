@@ -40,7 +40,7 @@ if (empty($_GET['category'])) {
 ?>
 <p>We've devied the task list, by device type (and location) - as often the tasks want to do vary by location. </p>
 
-<p>Some tasks might well be in each multiple categories, but should be added seperately. Just concentrate on one category at the time</p>
+<p>Some tasks might well be in each multiple categories, but should be added separately. Just concentrate on one category at the time</p>
 
 <?
 	print "<form method=get>";

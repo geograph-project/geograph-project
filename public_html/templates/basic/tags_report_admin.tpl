@@ -126,7 +126,7 @@
 	<textarea name="tags" rows="5" cols="50" wordwrap=off onkeyup="checkMultiTags(this,event)" onpaste="checkMultiTags(this,event)" oninput="checkMultiTags(this,event)">
 	</textarea>
 
-        <div class="fieldnotes">Enter the seperate tags ONE PER LINE.</div>
+        <div class="fieldnotes">Enter the separate tags ONE PER LINE.</div>
 
 </div>
 

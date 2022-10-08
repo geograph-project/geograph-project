@@ -14,7 +14,7 @@
 
 <form name="theForm" onsubmit="return false">
 	<div class="interestBox">
-		<label for="fq">Search</label>: <input type="text" name="q" id="fq" size="40" onkeyup="{literal}loadTagSuggestions(this,event){/literal}"/> (seperate multiple tags with "|" charactor)
+		<label for="fq">Search</label>: <input type="text" name="q" id="fq" size="40" onkeyup="{literal}loadTagSuggestions(this,event){/literal}"/> (separate multiple tags with "|" character)
 	</div>
 	<ol id="results" style="margin-left:100px"></ol>
 </form>

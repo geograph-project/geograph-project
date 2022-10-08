@@ -244,7 +244,7 @@ if (!empty($message)) {
 
 <b>Tags</b>:<br/>
  &nbsp; &nbsp; &nbsp; <input type="text" name="tags" value="" size="80"/><br/>
- (optional - seperate tags by commas - helps makes answers categorizable and keyword searchable)<br/>
+ (optional - separate tags by commas - helps makes answers categorizable and keyword searchable)<br/>
 
 <?
 

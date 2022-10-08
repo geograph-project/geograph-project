@@ -310,7 +310,7 @@ for(var i=0;i<ele.options.length;i++)
 
 <b>Tags</b>:<br/>
  &nbsp; &nbsp; &nbsp; <input type="text" name="tags" value="<? print htmlentities2($row['tags']); ?>" size="80" onfocus="showtags(true)" onblur="showtags(false)"/><br/>
- (optional - seperate tags by commas - helps makes answers categorizable and keyword searchable)<br/>
+ (optional - separate tags by commas - helps makes answers categorizable and keyword searchable)<br/>
 
 <?
 

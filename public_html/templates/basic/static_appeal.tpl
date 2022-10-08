@@ -7,7 +7,7 @@
 
 <div style="float:right;text-align:center; background-color:black;color:white;padding-left:10px;padding-right:10px;border-radius:20px">
 <a href="/photo/7043466" title="North Bay and MediaCityUK, Lightwaves 2021 by David Dixon">
-<img src="https://s2.geograph.org.uk/geophotos/07/04/34/7043466_6034ee67.jpg" width="640" height="427" style="border-radius:20px"></a><br>
+<img src="https://s2.geograph.org.uk/geophotos/07/04/34/7043466_6034ee67.jpg" width="640" height="427" style="border-radius:20px; max-width:85vw; height:auto"></a><br>
 <a href="/photo/7043466" style=color:yellow>North Bay and MediaCityUK, Lightwaves 2021</a><br>
 &copy; <a href="/profile/43729" style=color:yellow>David Dixon</a> cc-by-sa/2.0, December, 2021
 </div>
@@ -62,7 +62,7 @@ a.btn {
 {/literal}</style>
 <ul class="methods">
 	<li>
-		<b>Charities Aid Foundation</b> is our prefered donation processor. <a href="https://cafdonate.cafonline.org/18714" class=btn onclick="return startDonation(this)" target=_blank>Start Donation</a> or {newwin href="https://cafdonate.cafonline.org/18714" text="Open in a new Window"}<br>
+		<b>Charities Aid Foundation</b> is our preferred donation processor. <a href="https://cafdonate.cafonline.org/18714" class=btn onclick="return startDonation(this)" target=_blank>Start Donation</a> or {newwin href="https://cafdonate.cafonline.org/18714" text="Open in a new Window"}<br>
 
 		<iframe id="IframeDonate" name="IframeDonate" frameborder="0" scrolling="no" data-src="https://cafdonate.cafonline.org//Widget/18714?fix=0" width="460px" height="600px" style="padding: 0px; margin: 0px; border:2px solid #e4e4fc; overflow: hidden; width: 460px; height: 600px; display:none"></iframe>
 		<script>{literal}

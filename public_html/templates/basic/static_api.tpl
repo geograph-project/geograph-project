@@ -666,7 +666,7 @@ Note:the distance should be 10km or below.
 		</tr> 
 		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT">&amp;points=1</th> 
-		  <td colspan="2">points awared (1/2/3/4/personal/tpoint) space seperated</td> 
+		  <td colspan="2">points awared (1/2/3/4/personal/tpoint) space separated</td> 
 		</tr> 
 		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT">&amp;tags=1</th> 
