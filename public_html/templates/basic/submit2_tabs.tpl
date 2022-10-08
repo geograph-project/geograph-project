@@ -325,7 +325,7 @@ window.onbeforeunload=unloadMess;
 <!-- # -->
 
 	<div id="sd2" class="sd">
-	<div style="background-color:#eeeeee;padding:2px"> <label for="service">Prefered Map service:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
+	<div style="background-color:#eeeeee;padding:2px"> <label for="service">Preferred Map service:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
 		<option value="Leaflet">Zoomable Maps (Combines Modern OS, OpenStreetMap, Aerial Imagery and Historic Maps)</option>
 		<option value="Google">Zoomable Google Mapping (still includes OSM + Historic Maps)</option>
 		<option value="OS50k">OS Modern 1:50,000 Mapping (Very simple OS Map, only use if above don't work)</option>
