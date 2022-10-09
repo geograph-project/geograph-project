@@ -82,6 +82,12 @@
     {/if}
     {/dynamic}
 
+		<select name="displayclass" onchange="this.form.submit()">
+    <option value="full">Search results format</option>
+			{foreach from=$displayclasses key=key item=name}
+				<option value="{$key}"{if $displayclass eq $key} selected{/if}>{$name}</option>
+			{/foreach}
+		</select>
 
 <noscript><input type="submit" value="Update"/></noscript></p> 
 {if $image}
@@ -91,7 +97,7 @@
 
 {if !$blank}
 <p class="no_print">Showing one example image from each day, click a more link to list all images taken that day. 
-<br/><a href="/search.php?taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken&amp;do=1{if $u}&amp;u={$u}{/if}">Search all images taken {$month_name} {$year}</a>
+<br/><a href="/search.php?taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken{if $u}&amp;u={$u}{/if}&amp;displayclass={$displayclass}&amp;do=1">Search all images taken {$month_name} {$year}</a>
 &nbsp;&nbsp;&nbsp;&nbsp; Key: <span style="font-family:arial;color:green;">G: Geograph Images, <small style="color:blue">(S: Supplemental)</small></span>.</p>
 {/if}
 
@@ -126,7 +132,7 @@
 			<div style="font-size:0.8em;"><b>{$day.number}</b> 
 			
 			{if $day.image}
-				(<a href="/search.php?taken_endDay={$day.number}&amp;taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startDay={$day.number}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken&amp;do=1{if $u}&amp;u={$u}{/if}">more</a>)</div>
+				(<a href="/search.php?taken_endDay={$day.number}&amp;taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startDay={$day.number}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken{if $u}&amp;u={$u}{/if}&amp;displayclass={$displayclass}&amp;do=1">more</a>)</div>
 				
 				<div style="text-align:center;width:120px;height:120px;vertical-align:middle">
 					<a title="{$day.image->grid_reference} : {$day.image->title|escape:'html'} by {$day.image->realname|escape:'html'} - click to view full size image" href="/photo/{$day.image->gridimage_id}">{$day.image->getThumbnail(120,120)}</a>
