@@ -388,7 +388,7 @@ $(function(){
 	print "<td>Task</td>";
 	print "<td>Last Spot Check</td>";
 	print "<td>Last Thorough Check</td>";
-	print "<td>Volenteer</th></tr></thead><tbody>";
+	print "<td>Volunteer</th></tr></thead><tbody>";
 	$i = 0;
 	foreach ($rows as $row) {
 		$span = (!empty($_GET['desc']) && !empty($row['comment']))?' rowspan=2':'';

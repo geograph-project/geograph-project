@@ -37,7 +37,7 @@ a.btn {
 {/literal}</style>
 <ul class="methods">
 	<li>
-		<b>Charities Aid Foundation</b> is our prefered donation processor. <a href="https://cafdonate.cafonline.org/18714" class=btn onclick="return startDonation(this)" target=_blank>Start Donation</a> or {newwin href="https://cafdonate.cafonline.org/18714" text="Open in a new Window"}<br>
+		<b>Charities Aid Foundation</b> is our preferred donation processor. <a href="https://cafdonate.cafonline.org/18714" class=btn onclick="return startDonation(this)" target=_blank>Start Donation</a> or {newwin href="https://cafdonate.cafonline.org/18714" text="Open in a new Window"}<br>
 
 		<iframe id="IframeDonate" name="IframeDonate" frameborder="0" scrolling="no" data-src="https://cafdonate.cafonline.org//Widget/18714?fix=0" width="460px" height="600px" style="padding: 0px; margin: 0px; border:2px solid #e4e4fc; overflow: hidden; width: 460px; height: 600px; display:none"></iframe>
 		<script>{literal}

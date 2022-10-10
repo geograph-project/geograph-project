@@ -205,7 +205,7 @@ if (strpos($row['group'],'ks1') !== FALSE)
 <input type=hidden name=group value="<? echo htmlentities($row['group']); ?>">
 <input type=hidden name=label value="<? echo htmlentities($row['label']); ?>">
 
-<b>Add <b><? echo htmlentities($row['label']); ?></b> Image(s) by ID</b>: (enter unique id(s), or links to images/thumbnails, seperated by spaces, commas or semicolons, or even in [])<br>
+<b>Add <b><? echo htmlentities($row['label']); ?></b> Image(s) by ID</b>: (enter unique id(s), or links to images/thumbnails, separated by spaces, commas or semicolons, or even in [])<br>
 
 <div id="markedLink"></div>
 <textarea name=ids id=theids rows=10 cols=80 onkeyup="parseIds(this)" onpaste="parseIds(this)"></textarea><br>

@@ -41,7 +41,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 
 <p>Idea: {$idea.title|escape:'html'}</p>
 
-<p>Add your support by adding a pledge and/or a reason why you think this this idea would be good. Please aim to be short and consise. If you have multiple reasons to support this idea, please submit them seperately. Thank you.</p> 
+<p>Add your support by adding a pledge and/or a reason why you think this this idea would be good. Please aim to be short and consise. If you have multiple reasons to support this idea, please submit them separately. Thank you.</p> 
 
 <div class="field">
 	{if $errors.pledge}<div class="formerror"><p class="error">{$errors.pledge}</p>{/if}

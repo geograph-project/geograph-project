@@ -11,7 +11,7 @@
 
 <div class="interestBox" style="margin:10px;margin-bottom:40px;">
 <ul>
-        <li>Note: This form is for reporting typos and obvious mistakes in tags. Please do not use it to suggest 'merging' multiple tags that mean the same thing. We are still developing a seperate feature to that.  <br/><br/></li>
+        <li>Note: This form is for reporting typos and obvious mistakes in tags. Please do not use it to suggest 'merging' multiple tags that mean the same thing. We are still developing a separate feature for this.  <br/><br/></li>
 	
 	<li>While you can use this tool to suggest change to the case of a tag, it's NOT recommended. In many cases the case of the tag is ignored (eg shown all lowercase). As well as been thankless, its also ineffectual!</li> 
 </ul>

@@ -45,7 +45,7 @@ div.ideas div.number big {
 		Use this page to view{if $user->registered}, and suggest new{/if} ideas for improving the Geograph website. 
 		Use the dropdown below to choose a different ordering. 
 		{if $user->registered}
-			Use the items below to add specific support for ideas, or can <a href="ideas_vote.php">vote for your favorites, on seperate page</a>.
+			Use the items below to add specific support for ideas, or can <a href="ideas_vote.php">vote for your favorites, on separate page</a>.
 		{else}
 			Registered site users can vote on and suggest new ideas.
 		{/if}

@@ -69,7 +69,7 @@ function loadMap() {
 	oslayer.tileSize = new OpenLayers.Size(250,250);
 	oslayer.getURL = geographURL;
 
-	//Photographs and coverages are available under a seperate Creative Commons Licence, but NO spidering - see Terms.
+	//Photographs and coverages are available under a separate Creative Commons Licence, but NO spidering - see Terms.
 	glayer = new OpenLayers.Layer.WMS("Gridsquare Coverage", ttileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, resolutions: [40000/250,10000/250,4000/250,2000/250], buffer:0{/literal}{if $centi || $scenic || $recent || $contrib}, visibility:false, opacity: 1{else}, opacity: 0.3{/if}{literal}});
 	glayer.tileSize = new OpenLayers.Size(250,250);
 	glayer.getURL = geographURL;
