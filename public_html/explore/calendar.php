@@ -54,6 +54,14 @@ if (isset($_GET['supp'])) {
         $cacheid .= "supp";
 }
 
+if (!empty($_GET['displayclass']) &&  ctype_alnum($_GET['displayclass'])) {
+   $smarty->assign("displayclass", $_GET['displayclass']);
+     $cacheid .= ".".$_GET['displayclass'];  
+} else {
+  $smarty->assign("displayclass", 'full');  
+}
+$displayclasses = array('full'=>'Full details','thumbs'=>'Thumbnail','thumbsmore'=>'Thumbnail + links','bigger'=>'Thumbnails - bigger','grid'=>'Thumbnail grid','slide'=>'Slideshow','map'=>'Map','black'=>'GeoRiver','text'=>'Text');
+$smarty->assign_by_ref("displayclasses",$displayclasses);
 
 $smarty->caching = 2; // lifetime is per cache
 if ($month == date('n') && $year == date('Y')) {
