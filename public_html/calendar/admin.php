@@ -48,7 +48,7 @@ $where = '';
 if (!empty($_GET['paid']))
 	$where = " AND paid > '2000-00-00'";
 
-$list = $db->getAll("SELECT c.*,realname FROM calendar c INNER JOIN user USING (user_id) WHERE ordered > '1000-01-01' and year = '$year' $where ORDER BY ordered,calendar_id");
+$list = $db->getAll("SELECT c.*,realname FROM calendar c LEFT JOIN user USING (user_id) WHERE ordered > '1000-01-01' and year = '$year' $where ORDER BY ordered,calendar_id");
 
 $stat = array();
 $total = $best = $orders = $processed = 0;
