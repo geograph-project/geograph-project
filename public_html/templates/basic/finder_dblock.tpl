@@ -109,9 +109,23 @@
 {/if}
 </div>
 
-{if $query_info}
+{if $comments}
+	<h3>Example written accounts from this D-block</h3>
+	<ul>
+		{foreach from=$comments item=image}
+			<li>{$image->comment|escape:'html'|truncate:300:"... (<u>more</u>)"|geographlinks}
+			on <a href="/photo/{$image->title}">{$image->title|escape:'html'}</a> by <a href="{$image->profile_link}">{$image->realname|escape:'html'}</a>
+			</li>
+		{/foreach}
+	</ul>
+	<i>(these are descriptions added to individual images)</i>
+	<a href="/search.php?searchtext=@comment+the+{$q|escape:'urlplus'}&amp;displayclass=full&amp;do=1">more...</a>
+{/if}
+
+{if $query_info && $pagesString}
 	<p>{$query_info}</p>
 {/if}
+
 
 {if $inner}
 </body>

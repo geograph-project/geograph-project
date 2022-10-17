@@ -35,15 +35,15 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 
 	$sphinx = new sphinxwrapper($q);
 
-	//gets a cleaned up verion of the query (suitable for filename etc) 
+	//gets a cleaned up verion of the query (suitable for filename etc)
 	$cacheid = $sphinx->q;
-	
+
 	$square=new GridSquare;
 
 
 	//set by grid components?
 	if (isset($_GET['p']))
-	{	
+	{
 		//p=900y + (900-x);
 		$p = intval($_GET['p']);
 		$x = ($p % 900);
@@ -55,7 +55,7 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 
 	//set by grid components?
 	elseif (isset($_GET['setpos']))
-	{	
+	{
 		$grid_ok=$square->setGridPos($_GET['gridsquare'], $_GET['eastings'], $_GET['northings']);
 		$smarty->assign('gridref', $square->grid_reference);
 	}
@@ -77,7 +77,7 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 			$smarty->assign('gridref', stripslashes($_GET['gridref']));
 		}
 	}
-	
+
 	if ($grid_ok && ($square->reference_index == 1 || ($square->reference_index ==2 && $square->getNatNorthings() >=300000)))
 	{
 		$square->rememberInSession();
@@ -87,7 +87,7 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 	if (!empty($_GET['year'])) {
 		$cacheid .= "|".intval($_GET['year']);
 	}
-	
+
 		$sphinx->pageSize = $pgsize = 15;
 
 
@@ -103,10 +103,10 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 				$e = (intval(($square->getNatEastings()+2000)/4000)*4)-2;
 				$n = (intval(($square->getNatNorthings()+1000)/3000)*3)-1;
 			} else {
-			
+
 				$e = intval($square->getNatEastings()/4000)*4;
 				$n = intval($square->getNatNorthings()/3000)*3;
-			}			
+			}
 
 			if ($square->reference_index == 1) {
 				$dblock = sprintf("GB-%d-%d",$e*1000,$n*1000);
@@ -114,7 +114,7 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 				$dblock = sprintf("NI-%d-%d",$e*1000,$n*1000);
 			}
 			$smarty->assign("dblock",$dblock);
-			
+
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
 
@@ -129,7 +129,7 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 			}
 			$sphinx->q .= " @grid_reference (".join(" | ",$grs).")";
 
-			$sphinx->sort = "@weight DESC, @id ASC"; //this is the WITHIN GROUP ordering 
+			$sphinx->sort = "@weight DESC, @id ASC"; //this is the WITHIN GROUP ordering
 
 			$client = $sphinx->_getClient();
 			$client->SetArrayResult(true);
@@ -139,18 +139,18 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 	//can we use setselect to reduce the attributes returned?
 	//should use RANK_NONE
 	$sphinx->pageSize = 200;
-	$sphinx->SetGroupBy('atakenyear', SPH_GROUPBY_ATTR, 'atakenyear ASC'); 
-	$res = $sphinx->groupByQuery(1,'_images'); 
+	$sphinx->SetGroupBy('atakenyear', SPH_GROUPBY_ATTR, 'atakenyear ASC');
+	$res = $sphinx->groupByQuery(1,'_images');
 
-	if (!empty($res['matches'])) { 
-		$years = array(); 
-		foreach ($res['matches'] as $idx => $row) { 
-			$years[$row['attrs']['@groupby']] = $row['attrs']['@count']; 
+	if (!empty($res['matches'])) {
+		$years = array();
+		foreach ($res['matches'] as $idx => $row) {
+			$years[$row['attrs']['@groupby']] = $row['attrs']['@count'];
 		}
 		$smarty->assign_by_ref('years',$years);
-	} 
+	}
 	$sphinx->pageSize = 15;
-	
+
 	if (!empty($_GET['year'])) {
 		$sphinx->q .= " @takenyear (".intval($_GET['year']).")";
 		$smarty->assign('year',intval($_GET['year']));
@@ -161,7 +161,6 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 			$res = $sphinx->groupByQuery($pg,'_images');
 
 
-
 			$imageids = array();
 
 			if (!empty($res['matches'])) {
@@ -169,25 +168,31 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 					$imageids[$idx] = $row['id'];
 				}
 			}
-			
+
 			if (!empty($imageids)) {
 
 				$imagelist = new ImageList();
-				$imagelist->getImagesByIdList($imageids,"gridimage_id,title,realname,user_id,grid_reference,credit_realname,x,y");
+				$imagelist->getImagesByIdList($imageids,"gridimage_id,title,realname,user_id,grid_reference,credit_realname,x,y,comment");
 
 				$results = array();
+				$comments = array();
 				foreach ($imagelist->images as $idx => $image) {
 
-					$res_id = array_search($image->gridimage_id,$imageids);	
+					$res_id = array_search($image->gridimage_id,$imageids);
 					unset($imageids[$res_id]); //array_search finds them in order, so remove them once used to move down the list
 
 					$image->count = $res['matches'][$res_id]['attrs']['@count'];
 					$results[$image->x][$image->y] = $image;
 
+					if (!empty($image->comment) && strlen($image->comment) > 100) {
+						$comments[] = $image;
+					}
 				}
-			
+
 				$smarty->assign_by_ref('results', $results);
+				$smarty->assign_by_ref('comments', $comments);
 				$smarty->assign("query_info",$sphinx->query_info);
+				$smarty->assign("q",$sphinx->q);
 
 				if ($sphinx->numberOfPages > 1) {
 					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=") );
@@ -202,9 +207,9 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 					$smarty->assign('thumbw',120);
 					$smarty->assign('thumbh',120);
 				}
-				
+
 				list($x,$y) = $conv->national_to_internal($e*1000,$n*1000,$square->reference_index);
-				
+
 				$smarty->assign("x",$x);
 				$smarty->assign("y",$y);
 				$smarty->assign("xarr",range($x,$x+3));
