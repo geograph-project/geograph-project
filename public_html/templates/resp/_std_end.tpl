@@ -5,6 +5,14 @@
 <label id="nav_label" for="nav_toggle">&#9776;</label>
 <div id="nav_block" class="no_print">
  <div class="nav">
+
+{if $welsh_url}
+<div>
+	<a href="{$welsh_url}">Fersiwn Cymraeg</a>
+</div>
+{/if}
+
+
   <ul>
     <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/">Home</a></li>
     <li>View<ul>
@@ -28,9 +36,6 @@
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Your most recent submissions" href="/submissions.php">Recent Uploads</a></li>
-
-     <li style=margin-left:-20px>&#128197; <a title="Order a customized calendar for 2023" href="/calendar/">Order Calendar</a></li>
-
      {/if}{/dynamic}
      <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li>
      <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>
@@ -103,11 +108,6 @@
 {/if}
   </div>
 </div>
-{if $welsh_url}
-<div id="language_block">
-	[<a href="{$welsh_url}">Cymraeg</a>/English]
-</div>
-{/if}
 <input type=checkbox id="search_toggle">
 <label id="search_label" for="search_toggle">&#128269;</label>
 <div id="search_block" class="no_print">
@@ -125,7 +125,7 @@
                                 <li><label><input type=radio name=type onclick="this.form.action = '/finder/places.php'">Placenames</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/content/'">Collections</label> &nbsp;
 				{dynamic}{if $user->registered}
-                                  <li><label><input type=radio name=type onclick="this.form.action = '/finder/discussion.php'">Discussions</label> &nbsp;
+                                  <li><label><input type=radio name=type onclick="this.form.action = '/finder/discussions.php'">Discussions</label> &nbsp;
 				{/if}{/dynamic}
                                 <li><label><input type=radio name=type onclick="this.form.action = '/content/documentation.php'">Website Pages</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/finder/multi2.php'">Everything</label> &nbsp;
