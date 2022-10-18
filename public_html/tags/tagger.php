@@ -124,6 +124,9 @@ if (!empty($_POST['save']) && !empty($ids)) {
 				$tag_id = $m[1];
 			} else {
 				$tag_id = $db->getOne("SELECT tag_id FROM `tag` WHERE `tag` = ".$db->Quote($u['tag'])." AND `prefix` = ".$db->Quote($u['prefix']));
+
+				//Make tag is enabled! noop, if already enabled. Rare, but can be reusing a old deleted tag.
+				$db->Execute("UPDATE tag SET status = 1 WHERE tag_id = $tag_id");
 			}
 
 			if (empty($tag_id)) {

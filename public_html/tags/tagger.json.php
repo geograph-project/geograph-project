@@ -121,6 +121,9 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 
 			$db->Execute('INSERT INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ? ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
 
+			//Make tag is enabled! noop, if already enabled. Rare, but can be reusing a old deleted tag.
+			$db->Execute("UPDATE tag SET status = 1 WHERE tag_id = $tag_id");
+
 			if ($u['status'] == 2 && $gid < 4294967296) {
 				$smarty = new GeographPage;
 
