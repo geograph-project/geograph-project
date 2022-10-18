@@ -1051,6 +1051,14 @@ class GeographPage extends Smarty
 			$cache_id = empty($cache_id)?'https':($cache_id."-https");
 		}
 
+		if ($CONF['template']=='resp') {
+			if (!empty($_SESSION['responsive']) && $_SESSION['responsive'] == "4") {
+				 $cache_id = empty($cache_id)?'resp':($cache_id."-resp");
+			} elseif (!empty($_GET['responsive']) && $_GET['responsive'] == "4") {
+				 $cache_id = empty($cache_id)?'resp':($cache_id."-resp");
+			}
+		}
+
 //	split_timer('smarty'); //starts the timer
 
 		if (!empty($this->disable_caching)) {
