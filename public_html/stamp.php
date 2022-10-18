@@ -215,6 +215,9 @@ if (!empty($_GET['title'])) {
 }
 if (!(isset($_GET['link']) && empty($_GET['link'])))
 	$title .= " - geograph.".(empty($_GET['ie'])?'org.uk':'ie')."/p/$id";
+elseif (!empty($_GET['link']) && $_GET['link'] === 's')
+        $title .= " - schools.geograph.".(empty($_GET['ie'])?'org.uk':'ie')."/p/$id";
+
 
 $options = '';
 
