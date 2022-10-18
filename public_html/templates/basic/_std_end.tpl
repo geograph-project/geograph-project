@@ -25,9 +25,6 @@
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Your most recent submissions" href="/submissions.php">Recent Uploads</a></li>
-
-     <li style=margin-left:-20px>&#128197; <a title="Order a customized calendar for 2023" href="/calendar/">Order Calendar</a></li>
-
      {/if}{/dynamic}
      <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li>
      <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>

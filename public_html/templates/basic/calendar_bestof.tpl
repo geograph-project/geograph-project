@@ -23,11 +23,14 @@
 	{/foreach}
 </div>
 
+{if $closed}
+	We are no longer accepting orders for this year
+{else}
 <p style="clear:both;padding-top:20px;">
    <a href="order.php" style="font-size:large;background-color:#000066;color:yellow;padding:10px;border-radius:10px">Order 'Best Of Geograph' Calendar &gt; &gt;</a>
 </p>
 Or if you are a Geograph contributor, can <a href="/login.php">sign in</a> to make a custom calendar of your own images
-
+{/if}
 
 {include file="_std_end.tpl"}
 
