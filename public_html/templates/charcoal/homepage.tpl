@@ -188,4 +188,22 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 <br style="clear:both"/>
 &nbsp;
 
+{literal}
+<script type="application/ld+json">
+{
+   "@context": "http://schema.org",
+   "@type": "WebSite",
+   "url": "https://schools.geograph.org.uk/",
+   "name": "Geograph for Schools",
+   "alternateName": "Geograph",
+   "potentialAction": {
+     "@type": "SearchAction",
+     "target": "https://schools.geograph.org.uk/of/{search_term}",
+     "query-input": "required name=search_term"
+   }
+}
+</script>
+
+{/literal}
+
 {include file="_std_end.tpl"}

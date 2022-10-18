@@ -99,4 +99,22 @@ Recently completed hectads:
         <b>Geograph Ireland</b> is a currently sub-project of {external href="https://www.geograph.org.uk/" text="Geograph Britain and Ireland"}, the two sites share a common database. Photos submitted to one will be available on the other.
 </div>
 
+{literal}
+<script type="application/ld+json">
+{
+   "@context": "http://schema.org",
+   "@type": "WebSite",
+   "name": "Geograph Ireland",
+   "alternateName": "Geograph",
+   "url": "https://www.geograph.ie/",
+   "potentialAction": {
+     "@type": "SearchAction",
+     "target": "https://www.geograph.ie/of/{search_term}",
+     "query-input": "required name=search_term"
+   }
+}
+</script>
+
+{/literal}
+
 {include file="_std_end.tpl"}

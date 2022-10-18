@@ -274,8 +274,8 @@ AttachEvent(window,'resize',thiswindowresize,false);
    "@context": "http://schema.org",
    "@type": "WebSite",
    "url": "https://www.geograph.org.uk/",
-   "name": "Geograph",
-   "alternateName": "Geograph Britain and Ireland",
+   "name": "Geograph Britain and Ireland",
+   "alternateName": "Geograph",
    "potentialAction": {
      "@type": "SearchAction",
      "target": "https://www.geograph.org.uk/of/{search_term}",
