@@ -1,17 +1,10 @@
 <?
 
-/**
-* basic email address check
-*/
-function isValidEmailAddress($email) 
-{
-	return preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9\._\-\+])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/' , $email)?true:false; 
-}
-
+require_once('geograph/global.inc.php');
 
 if (!empty($_POST['email'])) {
 	if (isValidEmailAddress($_POST['email'])) {
-		
+
 		$msg = "Hi,\n\nSomeone, hopefully you, requested to be sent a link to our Feedback form:\n\n";
 
 		$msg .= "{$CONF['SELF_HOST']}/help/education_feedback\n\n";
@@ -27,7 +20,6 @@ if (!empty($_POST['email'])) {
 	} else {
 		die("Does not appear to be a valid email address - press back, and try again");
 	}
-	
 }
 
-header("Location: /help/teaching_feedback");
+header("Location: /help/education_feedback");
