@@ -7,8 +7,8 @@
 
 <h2>Ordnance Survey to sponsor the Geograph Project</h2>
 
-<div style="float:right;width:280px;margin-left:16px;margin-bottom:20px;position:relative;">
-	<div><img src="/img/team_thumb.jpg" width="280" height="280"/></div>
+<div style="float:right;width:280px;margin-left:16px;margin-bottom:20px;position:relative; max-width:40vw;">
+	<div><img src="/img/team_thumb.jpg" width="280" height="280" style="max-width:40vw; height:auto" /></div>
 	<div style="font-size:0.8em;font-style:italic;">The Geograph Project team, Gary Rogers,
 	Barry Hunter and Paul Dixon, outside the Ordnance Survey offices in Southampton. </div>
 
