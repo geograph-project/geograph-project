@@ -807,24 +807,34 @@ else
 
 	if ($step == 1) {
 		if (isset($USER->submission_method) && !isset($_GET['redir'])) {
-			if ($USER->submission_method == 'submit2') {
+			//on mobile, honour the seperate mobile preference
+			if (!empty($mobile_browser)) {
+				//note, we COULD just redirect blindly and let submit-mobile do the redirect
+				//But, may end up redirecting BACK here, so avoid back&fourth
+				$choose = $USER->getPreference('submit.mobile','',true);
+
+			        switch($_POST['choose']) {
+			                case 'multi': $url = "/submit-multi.php?tab=upload&mobile=1"; break;
+			                case 'v1': $smarty->assign("mobile_browser", 0); break; // just stay on this page! (doesn't have a mobile template anyway!)
+        			        case 'v2': $url = "/submit2.php?display=mobile&redir=false"; break;
+					default: $url = "/submit-mobile.php"; break;
+			        }
+
+			//otherwise on desktop, check if choosen a method!
+			} elseif ($USER->submission_method == 'submit2') {
 				$url = "/submit2.php";
-				if (!empty($grid_reference))
-					$url .= "#gridref=$grid_reference";
 			} elseif ($USER->submission_method == 'submit2tabs') {
 				$url = "/submit2.php?display=tabs";
-				if (!empty($grid_reference))
-					$url .= "#gridref=$grid_reference";
 			} elseif ($USER->submission_method == 'multi') {
 				$url = "/submit-multi.php";
-				if (!empty($grid_reference))
-					$url .= "#gridref=$grid_reference";
 			} elseif ($USER->submission_method == 'mobile') {
 				$url = "/submit-mobile.php";
-				if (!empty($grid_reference))
-					$url .= "?gridref=$grid_reference";
 			}
 			if (!empty($url)) {
+				if (!empty($grid_reference)) {
+					$sep = strpos($url,'submit2')?'#':(strpos($url,'?')?'&':'?');
+					$url .= "{$sep}gridref=$grid_reference";
+				}
 				header("Location: $url");
 				print "<a href=\"$url\">Continue</a>";
 				exit;
