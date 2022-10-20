@@ -33,7 +33,7 @@ dieIfReadOnly();
 
 if (!empty($_POST['choose'])) {
 	if (!empty($_POST['save'])) {
-		$USER->setPreference('submit.mobile',$_POST['choose']);
+		$USER->setPreference('submit.mobile',$_POST['choose'],true);
 	}
 } else {
 	$_POST['choose'] = $USER->getPreference('submit.mobile','',true);
