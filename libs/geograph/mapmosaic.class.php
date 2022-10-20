@@ -183,6 +183,13 @@ class GeographMapMosaic
 				$this->setMosaicFactor(1);
 				$this->setPalette(1);
 				break;
+			case 'overview_plain':
+				$this->setOrigin(10,-10);
+				$this->setMosaicSize(144,210);
+				$this->setScale(0.16);
+				$this->setMosaicFactor(1);
+				$this->setPalette(2);
+				break;
 			case 'largeoverview':
 				$this->setOrigin(0,-10);//will get recented
 				$this->setMosaicSize(120,170);
@@ -192,11 +199,9 @@ class GeographMapMosaic
 			default:
 				trigger_error("GeographMapMosaic::setPreset unknown preset $name", E_USER_ERROR);
 				break;
-			
 		}
-		
 	}
-	
+
 	function setPalette($idx)
 	{
 		$this->palette=$idx;

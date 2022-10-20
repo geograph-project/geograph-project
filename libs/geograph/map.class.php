@@ -225,9 +225,7 @@ class GeographMap
 					$this->searchId = $token->getValue("i");
 				}
 			}
-			
 		}
-		
 		return $ok;
 	}
 
@@ -239,30 +237,34 @@ class GeographMap
 	function setPalette($idx)
 	{
 		$this->palette=$idx;
-		
+
 		$this->colour=array();
-		
+
 		//common to all
 		$this->colour['marker']=array(255,0,0);
 		$this->colour['suppmarker']=array(236,206,64);
 		$this->colour['border']=array(255,255,255);
 		$this->colour['land']=array(117,255,101);
-		
+
 		//specific to a palette...
 		switch ($idx)
 		{
+			case 2:
+				//plain
+				$this->colour['sea']=array(255,255,255);
+				break;
+
 			case 1:
 				//charcoal
 				$this->colour['sea']=array(51,51,51);
 				break;
-				
+
 			case 0:
 			default:
 				//basic
 				$this->colour['sea']=array(101,117,255);
 				break;
 		}
-		
 	}
 
 	/**

@@ -76,8 +76,10 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	if ($CONF['template'] == 'ireland' && !isset($_GET['preview']))
 		$preset = 'overview_ireland';
+	elseif ($CONF['template'] == 'resp')
+		$preset = 'overview_plain';
 	else
-		$preset = 'overview_charcoal';
+		$preset = 'overview_charcoal'; //used even for basic template!
 
 	$overview=new GeographMapMosaic($preset);
 	$overview->type_or_user = -1;

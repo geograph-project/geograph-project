@@ -50,7 +50,7 @@
                                         {/foreach}
                                 </div>
                         </div>
-			Click the map to start browsing photos
+			<div class="prompt">Click the map to start browsing photos</div>
 		</div>
 
 		<div class="listContainer">
@@ -148,7 +148,12 @@
 	{/foreach}
 
 
-
+	<div class="homepageBox">Related Sites:
+		&middot; Geograph <a href="https://schools.geograph.org.uk/">For Schools</a> 
+		&middot; {external href="https://www.geograph.org.gg/" text="Geograph Channel Islands"}
+		&middot; {external href="https://geo-en.hlipp.de/" text="Geograph Germany"}
+	        &middot;
+	</div>
 
 	<div class="interestBox homepageBox">
 		<i class="nowrap">Geograph<sup>&reg;</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page" class=nowrap>Geograph Project Limited</a>,
@@ -190,12 +195,17 @@ div.homepage {
 /* ********************** */
 
 .pictureOfTheDay {
+	box-sizing:border-box;
 	display:flex;
 	gap:10px;
+	align-items:stretch;
 }
 @media only screen and (max-width: 912px) {
 	.pictureOfTheDay {
 		flex-direction:column;
+	}
+	.homepage .pictureOfTheDay .mapContainer {
+		max-width:inherit;
 	}
 	.homepage .pictureOfTheDay .listContainer {
 		max-width:inherit;
@@ -212,20 +222,18 @@ div.homepage {
 }
 
 .pictureOfTheDay .mapContainer {
-	box-sizing:border-box;
-	height:300px;
-	background-color:#333333;
-	color:white;
 	border-radius:6px;
-	text-align:center;
-	padding:10px;
+	max-width:154px;
+	padding-top:4px;
 }
 .pictureOfTheDay .mapContainer .map {
 	margin-left:auto;
         margin-right:auto;
-	margin-bottom:10px;
 }
-
+.pictureOfTheDay .mapContainer .prompt {
+	padding:10px;
+	text-align:center;
+}
 .pictureOfTheDay .listContainer {
 	max-width:30%;
 }
