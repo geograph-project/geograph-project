@@ -8,6 +8,11 @@
 
 <h2>Contributing Photos to Geograph!</h2>
 
+<div class="interestBox">
+	Choose which one to use by default on <a href="/profile.php?edit=1">your profile</a> for Desktop.
+	Or for <a href="/submit-mobile.php?redir=false">here</a> for Mobile/Tablet.
+</div>
+
 <ul>
 	<li>
 		<b style="font-size:1.2em"><a href="/submit.php?redir=false">Original Submission Method</a></b> (v1)<br/><br/>
