@@ -5,6 +5,7 @@
 
 <p>This page is born out of the confusion of what to call different sized squares. The proposal is to refer to the squares as referenced in the top line of the table below; included in the table are various other names they could be called.</p>
 
+<div style="overflow:auto;">
  <table border="1" cellpadding="5" cellspacing="0" class="report"> 
 	<thead>
 		<tr> 
@@ -101,6 +102,7 @@
 		</tr> 
 	</tbody>
  </table>
+ </div>
 
 {include file="_std_end.tpl"}
 
