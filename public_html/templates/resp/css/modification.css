@@ -9,10 +9,11 @@ input#search_toggle, label#search_label {
 }
 #searchoptions {
 	display:none;
-	width:250px;
+	width:280px;
 	text-align:left;
 	color:#000066;
 	font-weight:normal;
+	padding:8px;
 }
 
 #searchterm:focus ~ #searchoptions, #searchoptions:hover {
@@ -22,6 +23,11 @@ input#search_toggle, label#search_label {
 	right:30px;
         background-color:#eeeeff;
 	z-index:10000;
+}
+#login {
+	position:absolute;
+	left:inherit;
+	right:8em;
 }
 
 

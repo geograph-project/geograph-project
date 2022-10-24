@@ -35,7 +35,7 @@
 @media only screen and (max-width: 712px) {
 
 	#header {
-		text-align:center;
+		padding-left:40px;
 	}
 	#header h1 {
 		display: inline-block;
@@ -45,6 +45,7 @@
 	}
 
 	.content_photoblack, .content_photogray, .content_photowhite, .content3, .content2, .content1, .maincontent {
+		margin-top:18px;
 		margin-left:0;
 		border-left:none;
 	}
@@ -120,9 +121,12 @@
 		border-radius: 6px;
 		width: initial;
 	}
-	#searchoptions {
+	#search_block #searchform #searchoptions {
 		display:block;
 		margin-left:auto;
+		top:inherit;
+		left:inherit;
+		position:inherit;
 	}
 	#searchoptions ul {
 		margin:0;
@@ -136,10 +140,9 @@
 	/* ----------------- */
 
 	#login {
-		position:relative;
-                top:initial;
+                top:45px;
                 left:initial;
-		float:left;
+		right:1em;
 		color:#000066;
 	}
 	#login a {
@@ -149,7 +152,7 @@
 	/* Above is changes to the template, any custom CSS for content, will go below */
 
 	body iframe.full_screen {
-		padding-top: 40px;
+		padding-top: 52px;
 	}
 
 	form.simpleform {

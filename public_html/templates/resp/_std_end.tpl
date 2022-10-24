@@ -116,10 +116,10 @@
     <form method="get" action="/search.php">
     <div id="searchfield">
     <input type="hidden" name="form" value="simple"/>
-    {dynamic}<input id="searchterm" type="text" name="q" placeholder="enter search query" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search" onfocus="search_focus(this)" onblur="search_blur(this)"/>{/dynamic}
+    {dynamic}<input id="searchterm" type="text" name="q" placeholder="enter search query" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search"/>{/dynamic}
     <input id="searchbutton" type="submit" name="go" value="Find"/>
 	<div id="searchoptions">
-		 what to search:<ul>
+		 What to search:<ul class="touchPadding">
                                 <li><label><input type=radio name=type checked onclick="this.form.action = '/of/'">Photos</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/browse.php'">Grid Reference</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/finder/places.php'">Placenames</label> &nbsp;
@@ -137,7 +137,8 @@
     </form>
     </div>
   </div>
-  <div id="login"><span class="nowrap">
+</div>
+  <div id="login" class="no_print"><span class="nowrap">
   {dynamic}
   {if $user->registered}
 	  Logged in as {$user->realname|escape:'html'}
@@ -153,7 +154,6 @@
   {/if}
   {/dynamic}
   </div>
-</div>
 {if $right_block}
 	{include file=$right_block}
 	<div class="content3" id="footer_block">
