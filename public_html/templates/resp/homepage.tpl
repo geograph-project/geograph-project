@@ -224,6 +224,7 @@ div.homepage {
 .pictureOfTheDay .mapContainer {
 	border-radius:6px;
 	max-width:154px;
+	margin-top:39px;
 	padding-top:4px;
 }
 .pictureOfTheDay .mapContainer .map {
@@ -281,6 +282,10 @@ div.homepage {
 		display:block;
 	}
 	.content3 { margin-right:0}
+
+	.pictureOfTheDay .mapContainer {
+		margin-top:2px;
+	}
 }
 
 </style>
