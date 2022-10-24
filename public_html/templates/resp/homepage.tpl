@@ -114,7 +114,7 @@
 	{foreach from=$collections item=item}
 		{assign var="source" value=$item.source}
 
-		<div class="interestBox titleBox" style="background-color: #{$colours.$source}">
+		<div class="interestBox titleBox">
 	                <div class="rightLinks">
 				<a href="/content/featured.php">view previous &gt;</a> &nbsp; <a href="/content/">all collections &gt;</a>
 			</div>
