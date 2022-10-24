@@ -1,0 +1,1 @@
+../basic/stuff_geobrowser.tpl
