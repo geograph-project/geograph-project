@@ -1220,7 +1220,11 @@ function sqlBitsToCount(&$sql) {
 }
 
 function sqlBitsToSelect($sql) {
-	$query = "SELECT {$sql['columns']}";
+	if (is_array($sql['columns'])) {
+		$query = "SELECT ".implode(', ',$sql['columns']);
+	} else {
+		$query = "SELECT {$sql['columns']}";
+	}
 	if (!empty($sql['tables'])) {
 		$query .= " FROM ".join(' ',$sql['tables']);
 	}
