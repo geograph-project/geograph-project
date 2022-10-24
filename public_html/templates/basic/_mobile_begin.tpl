@@ -12,7 +12,7 @@
 {/dynamic}
 
 <div style="background-color:#000066">
-<a target="_top" href="https://m.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
+<a target="_top" href="https://www.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
 - <a href="{$canonical}" style="color:white">View Desktop Page</a>
 </div>
 

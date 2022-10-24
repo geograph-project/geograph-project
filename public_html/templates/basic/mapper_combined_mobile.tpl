@@ -143,7 +143,7 @@ ul.tips li {
 
 </head>
 <body>
-<div id="header_block" onclick="document.location='https://m.geograph.org.uk/';">
+<div id="header_block" onclick="document.location='/';">
   <div id="header">
     <h1><a title="Geograph home page" href="/">GeoGraph - photograph every grid square</a></h1>
   </div>

@@ -62,7 +62,7 @@
 <body style="background-color:white">
 
 <div style="background-color:#000066">
-<a target="_top" href="https://m.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
+<a target="_top" href="https://www.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
 </div>
 
 <script type="text/javascript" src="{"/js/puploader.js"|revision}"></script>
@@ -387,7 +387,7 @@ function clearSubmission() {
 
 
 <hr>
-- <a href="https://m.geograph.org.uk/">Homepage</a>
+- <a href="https://www.geograph.org.uk/">Homepage</a>
 - <a href="https://www.geograph.org.uk/submit2.php">View Desktop Page</a>
 
 </body>

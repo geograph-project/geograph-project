@@ -12,7 +12,7 @@
 {/dynamic}
 
 <div style="background-color:#000066">
-<a target="_top" href="https://m.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
+<a target="_top" href="https://www.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
 - <a href="/search.php?i={$i}&amp;displayclass=full" style="color:white">View Desktop Results</a>
 </div>
 
@@ -55,7 +55,7 @@
 </p>
 
 <hr>
-- <a href="https://m.geograph.org.uk/">Homepage</a>
+- <a href="https://www.geograph.org.uk/">Homepage</a>
 - <a href="https://www.geograph.org.uk/search.php?i={$i}&amp;displayclass=full">View Desktop Results</a>
 - <a href="/search.php?i={$i}&amp;displayclass=slidebig">View as Slideshow</a>
 
