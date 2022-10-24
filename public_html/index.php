@@ -24,24 +24,26 @@
 if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
 	if (!empty($_GET['lang']))
 		$mobile_url = "https://m.geograph.org.uk/?lang=cy";
-	else
-		$mobile_url = "https://m.geograph.org.uk/";
+	//else
+	//	$mobile_url = "https://m.geograph.org.uk/";
 }
 
 if (empty($smarty)) {
+	require_once('geograph/global.inc.php');
+	init_session();
 
-require_once('geograph/global.inc.php');
-init_session();
+	//forward the homepage right now!
+	if ($CONF['template']=='basic') { //if welsh, the template will aready be changed, so checking current value is safest way!
+		$CONF['template'] = 'resp';
+	}
 
-
-$smarty = new GeographPage;
+	$smarty = new GeographPage;
 }
 
 if ($CONF['template']!='ireland') {
 	$smarty->assign('welsh_url',"/?lang=cy"); //needed by the english template!
 	$smarty->assign('english_url',"/"); //needed by the welsh template!
 }
-
 
 customGZipHandlerStart();
 
@@ -316,6 +318,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('extra_meta',implode('',$extra_meta));
 }
 
+if (!empty($mobile_browser))
+         $smarty->assign("mobile_browser", 1);
 
 $smarty->display($template, $cacheid);
 

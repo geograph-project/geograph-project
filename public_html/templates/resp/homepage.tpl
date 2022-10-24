@@ -147,6 +147,17 @@
                 </div>
 	{/foreach}
 
+{dynamic}{if $mobile_browser}
+	<br>
+	<div class="interestBox homepageBox">
+		Tools for Mobile Devices:<br>
+		&middot; <a href="https://m.geograph.org.uk/nearest">Nearest Image</a>
+		&middot; <a href="/mapper/combined.php?mobile=1">Coverage Map</a>
+		&middot; <a href="/submit-mobile.php">Submit Image</a>
+		&middot; <a href="https://m.geograph.org.uk/radar/">Geograph Radar</a>
+		&middot; 
+	</div><br>
+{/if}{/dynamic}
 
 	<div class="homepageBox">Related Sites:
 		&middot; Geograph <a href="https://schools.geograph.org.uk/">For Schools</a> 
