@@ -43,9 +43,17 @@ if (!empty($_GET['id'])) {
 		$domain2 = str_replace('https://www.geograph.org.uk', $db->getOne("SELECT domain FROM responsive_domain WHERE user_id = 3"),$domain);
 
 		if ($updates['status'] == 'in progress') {
-			print "<script>window.open('$domain2/git/auto-edit-resp.php?file={$row['file']}','_blank');</script>";
+			if (preg_match('/\.tpl$/',$row['file'])) {
+				print "<script>window.open('$domain2/git/auto-edit-resp.php?file={$row['file']}','_blank');</script>";
+			} else {
+				//file=public_html/finder/near.php
+				//../git/edit.php?path=/public_html/discuss/&file=/public_html/discuss/bb_codes.php
+				$dir = dirname($row['file']);
+				print "<script>window.open('$domain2/git/edit.php?path=/$dir/&file=/{$row['file']}','_blank');</script>";
+
+			}
 		} else {
-			if ($updates['status'] == 'whitelisted') {
+			if ($updates['status'] == 'whitelisted' && preg_match('/\.tpl$/',$row['file'])) {
 				print "<script>window.open('$domain2/git/auto-edit-resp.php?file={$row['file']}&symlink=true','_blank');</script>";
 			}
 			if (!empty($_POST['auto'])) {
@@ -174,6 +182,10 @@ if (!empty($_GET['id'])) {
 	$where[] = "file NOT like '%/admin/%'";
 	$where[] = "file NOT like 'admin_%.tpl'";
 	$where[] = "file NOT like '%curated%'";
+
+if (!empty($_GET['q']))
+	$where[] = "file like ".$db->Quote("%{$_GET['q']}%");
+
 	$recordSet = $db->Execute("SELECT * FROM responsive_template WHERE ".implode(" AND ",$where)." ORDER BY status, file");
 
 	print "<table>";
