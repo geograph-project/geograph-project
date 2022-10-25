@@ -247,7 +247,7 @@ div.homepage {
 	text-align:center;
 }
 .pictureOfTheDay .listContainer {
-	max-width:30%;
+	max-width:28%;
 }
 .pictureOfTheDay .listContainer h3 {
 	margin-top:0;
