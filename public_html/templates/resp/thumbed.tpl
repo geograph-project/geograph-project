@@ -1,0 +1,1 @@
+../basic/thumbed.tpl
