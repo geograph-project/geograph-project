@@ -207,6 +207,14 @@ if ($mosaic->pixels_per_km > 40) {
 	$mosaic->image_h /= 2;
 }
 
+if (!empty($_GET['new']) && in_array(intval($mosaic->type_or_user),[0,-1,$USER->user_id])) { //works, even if user_id = 0!
+	$url = $mosaic->getCoverageMapLink();
+	header("Location: $url");
+	print "<a href=\"$url\">Click to continue</a>";
+	exit;
+}
+
+
 //get token, we'll use it as a cache id
 $token=$mosaic->getToken();
 
@@ -218,11 +226,6 @@ $smarty->cache_lifetime = 3600*6; //6hr cache
 
 if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,2}\d{4}$/',$_GET['gridref_from'])) {
 	$smarty->assign('gridref_from', $_GET['gridref_from']);
-}
-
-if (!empty($_GET['ds'])) {
-	print_r($mosaic);
-	exit;
 }
 
 
