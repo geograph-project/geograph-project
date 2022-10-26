@@ -220,6 +220,7 @@ function updateBreakBy(that) {
 		if (ele.options[q].selected && !enabled)
 			ele.selectedIndex = 0;
 	}
+	that.form.reverse_order_ind.disabled = (that.value == 'dist_sqd' || that.value == 'sequence' || that.value == 'random' || that.value == 'relevance' || that.value == '');
 }
 
 
