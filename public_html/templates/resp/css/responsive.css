@@ -149,6 +149,14 @@
 		color:blue;
 	}
 
+  /*Hide recent images sidebar on small screens */
+  
+  #right_block {
+                display:none;
+        }
+        .content3 { margin-right:0}
+}
+  
 	/* Above is changes to the template, any custom CSS for content, will go below */
 
 	body iframe.full_screen {
