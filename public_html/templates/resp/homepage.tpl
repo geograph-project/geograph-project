@@ -3,6 +3,130 @@
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
+{literal}
+<style>
+
+div.homepage {
+	max-width:800px;
+	margin-left:auto;
+	margin-right:auto;
+}
+.rightLinks {
+	position:relative;float:right;
+	white-space:nowrap;
+}
+.interestBox {
+	border-radius: 6px;
+}
+.interestBox h3 {
+	margin:0;
+}
+.homepageBox {
+	padding:5px;text-align:center;border-radius:6px;
+}
+.titleBox {
+	margin-bottom:8px;
+	text-align:left;
+}
+
+/* ********************** */
+
+.pictureOfTheDay {
+	box-sizing:border-box;
+	display:flex;
+	gap:10px;
+	align-items:stretch;
+}
+@media only screen and (max-width: 912px) {
+	.pictureOfTheDay {
+		flex-direction:column;
+	}
+	.homepage .pictureOfTheDay .mapContainer {
+		max-width:inherit;
+	}
+	.homepage .pictureOfTheDay .listContainer {
+		max-width:inherit;
+	}
+}
+
+.pictureOfTheDay .imageContainer {
+	text-align:center;
+}
+.pictureOfTheDay .shadow img {
+	border-radius: 6px;
+	max-width:100%;
+	height:auto;
+}
+
+.pictureOfTheDay .mapContainer {
+	border-radius:6px;
+	max-width:154px;
+	margin-top:39px;
+	padding-top:4px;
+}
+.pictureOfTheDay .mapContainer .map {
+	margin-left:auto;
+        margin-right:auto;
+}
+.pictureOfTheDay .mapContainer .prompt {
+	padding:10px;
+	text-align:center;
+}
+.pictureOfTheDay .listContainer {
+	max-width:28%;
+}
+.pictureOfTheDay .listContainer h3 {
+	margin-top:0;
+}
+.pictureOfTheDay .listContainer ul {
+	padding:0 0 0 1em;
+}
+.pictureOfTheDay .listContainer li {
+	padding-bottom:4px;
+}
+
+/* ********************** */
+
+.photoCarousel {
+	font-size:0.8em;
+	height: 190px;
+	overflow-x: scroll;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+	-webkit-overflow-scrolling: touch;
+}
+.photoCarousel > div {
+	width:800px;
+}
+.photoCarousel div.shadow {
+	float:left;
+	width:150px;
+	text-align:center;
+}
+#photo_block {
+	display:none;
+	position:relative;margin-left:auto;margin-right:auto;max-width:750px; margin-top:10px;
+}
+
+/* ********************** */
+
+@media only screen and (max-width: 712px) {
+	#right_block {
+		display:none;
+	}
+	#photo_block {
+		display:block;
+	}
+	.content3 { margin-right:0}
+
+	.pictureOfTheDay .mapContainer {
+		margin-top:2px;
+	}
+}
+</style>
+{/literal}
+
 <div class="homepage">
 
 	<div class="interestBox homepageBox">
@@ -178,128 +302,6 @@
 </div>
 
 {literal}
-<style>
-
-div.homepage {
-	max-width:800px;
-	margin-left:auto;
-	margin-right:auto;
-}
-.rightLinks {
-	position:relative;float:right;
-	white-space:nowrap;
-}
-.interestBox {
-	border-radius: 6px;
-}
-.interestBox h3 {
-	margin:0;
-}
-.homepageBox {
-	padding:5px;text-align:center;border-radius:6px;
-}
-.titleBox {
-	margin-bottom:8px;
-	text-align:left;
-}
-
-/* ********************** */
-
-.pictureOfTheDay {
-	box-sizing:border-box;
-	display:flex;
-	gap:10px;
-	align-items:stretch;
-}
-@media only screen and (max-width: 912px) {
-	.pictureOfTheDay {
-		flex-direction:column;
-	}
-	.homepage .pictureOfTheDay .mapContainer {
-		max-width:inherit;
-	}
-	.homepage .pictureOfTheDay .listContainer {
-		max-width:inherit;
-	}
-}
-
-.pictureOfTheDay .imageContainer {
-	text-align:center;
-}
-.pictureOfTheDay .shadow img {
-	border-radius: 6px;
-	max-width:100%;
-	height:auto;
-}
-
-.pictureOfTheDay .mapContainer {
-	border-radius:6px;
-	max-width:154px;
-	margin-top:39px;
-	padding-top:4px;
-}
-.pictureOfTheDay .mapContainer .map {
-	margin-left:auto;
-        margin-right:auto;
-}
-.pictureOfTheDay .mapContainer .prompt {
-	padding:10px;
-	text-align:center;
-}
-.pictureOfTheDay .listContainer {
-	max-width:28%;
-}
-.pictureOfTheDay .listContainer h3 {
-	margin-top:0;
-}
-.pictureOfTheDay .listContainer ul {
-	padding:0 0 0 1em;
-}
-.pictureOfTheDay .listContainer li {
-	padding-bottom:4px;
-}
-
-/* ********************** */
-
-.photoCarousel {
-	font-size:0.8em;
-	height: 190px;
-	overflow-x: scroll;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
-	-webkit-overflow-scrolling: touch;
-}
-.photoCarousel > div {
-	width:800px;
-}
-.photoCarousel div.shadow {
-	float:left;
-	width:150px;
-	text-align:center;
-}
-#photo_block {
-	display:none;
-	position:relative;margin-left:auto;margin-right:auto;max-width:750px; margin-top:10px;
-}
-
-/* ********************** */
-
-@media only screen and (max-width: 712px) {
-	#right_block {
-		display:none;
-	}
-	#photo_block {
-		display:block;
-	}
-	.content3 { margin-right:0}
-
-	.pictureOfTheDay .mapContainer {
-		margin-top:2px;
-	}
-}
-
-</style>
 <script type="application/ld+json">
 {
    "@context": "http://schema.org",
