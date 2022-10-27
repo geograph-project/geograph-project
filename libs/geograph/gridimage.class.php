@@ -1274,10 +1274,15 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 
 		if (!empty($maxwidth) && !empty($_GET['large'])) {
 			$mins = array();
-			//if (...) // todo could also prevent this one on really tall thin images.
-				$mins[] = 'min-width:'.$size[0].'px';
-			if (empty($this->original_width) || $this->original_width/$this->original_height < 3) // DONT impose min height on REALLY wide panos.
-				$mins[] = 'min-height:'.$size[1].'px';
+
+			if ($CONF['template'] != 'resp') { //the new reponsive template specifically supports small screens.
+				//non-responisve templates still want to prevent too small, as page will zoom out,
+
+				//if (...) // todo could also prevent this one on really tall thin images.
+					$mins[] = 'min-width:'.$size[0].'px';
+				if (empty($this->original_width) || $this->original_width/$this->original_height < 3) // DONT impose min height on REALLY wide panos.
+					$mins[] = 'min-height:'.$size[1].'px';
+			}
 
 
 			if (!empty($CONF['manticorert_host'])) { //index:gallery_ids
@@ -1301,13 +1306,16 @@ $mins[] = "height:auto"; //already in css, but worth making sure! (browser shoul
 
 			$html="<div class=\"img-responsive\" style=\"max-width:{$largestwidth}px\">$html</div>"; //maxwidth to prevent upscaling
 
-//temp bodge! (this is a dynamic scale, based on ratio, but want to affect ALL the caption640 elements on the page.)
-if (!empty($ratio)) {
-			//constrain the main div too, so whole image gets reduced width based on height of window
+			//temp bodge! (this is a dynamic scale, based on ratio, but want to affect ALL the caption640 elements on the page.)
+			if (!empty($ratio)) {
+				//constrain the main div too, so whole image gets reduced width based on height of window
 				//this allows us to still define a width (rather than auto), to avoid a CLS!
-				//the repeat of the min-width; is just to keep the image centered;
-			$html = "<div style=\"min-width:{$size[0]}px; max-width:calc(94vh / $ratio); margin-left:auto; margin-right:auto;\">$html</div>";
 
+				if ($CONF['template'] == 'resp') {
+					$html = "<div style=\"max-width:calc(94vh / $ratio); margin-left:auto; margin-right:auto;\">$html</div>";
+				} else {
+					//the repeat of the min-width; is just to keep the image centered;
+					$html = "<div style=\"min-width:{$size[0]}px; max-width:calc(94vh / $ratio); margin-left:auto; margin-right:auto;\">$html</div>";
 $html .= <<<EOT
 
 <script>
@@ -1318,8 +1326,8 @@ document.getElementsByTagName('head')[0].appendChild(style);
 </script>
 
 EOT;
-}
-
+				}
+			}
 		}
 
 		/*
