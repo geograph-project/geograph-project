@@ -1,0 +1,1 @@
+../basic/tags_tagornot.tpl

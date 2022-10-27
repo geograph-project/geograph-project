@@ -1,0 +1,1 @@
+../basic/statistics_most_geographed_gridsquare.tpl
