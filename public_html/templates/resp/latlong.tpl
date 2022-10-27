@@ -13,10 +13,12 @@
 	  <tr>
     <form action="{$script_name}"> 
 		 <td align="right">lat</td> 
-		 <td><input type="text" name="lat" size="10" value="{$lat|escape:'html'}"/></td> 
+		 <td><input type="text" name="lat" size="15" value="{$lat|escape:'html'}"/></td> 
+     <td rowspan="2"><input type="submit" name="From" value="convert"/></td>
+    </tr>
+    <tr>
 		 <td align="right">long</td> 
-		 <td><input type="text" name="long" size="10" value="{$long|escape:'html'}"/></td>
-     <td><input type="submit" name="From" value="convert"/></td>
+		 <td><input type="text" name="long" size="15" value="{$long|escape:'html'}"/></td>
      </form>
 	  </tr>
 	</table>
@@ -72,7 +74,7 @@
   <td colspan="2">Paste in a lat/long string:</td>
   </tr>
   <tr>
-	<td><input type="text" name="multimap" size=35/></td>
+	<td><input type="text" name="multimap" size=30/></td>
 	<td><input type="submit" name="From" value="convert"/></td>
 	</tr>
   <tr>
@@ -94,7 +96,7 @@
 		<hr>
 
 {if $overview}
-<h2>Results</h2>
+<a name="results"></a><h2>Results</h2>
 <div style="max-width:600px">
 <div style="float:right; width:{$overview_width+30}px; position:relative">
 
