@@ -1,0 +1,1 @@
+../basic/statistics_tables.tpl

@@ -1,0 +1,1 @@
+../basic/stuff_at_home_yahoo_terms.tpl

@@ -1,0 +1,1 @@
+../basic/stuff_canonical_list.tpl
