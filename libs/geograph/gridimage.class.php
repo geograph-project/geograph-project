@@ -1972,6 +1972,10 @@ if (!empty($_GET['ddd'])) {
 		$params['bestfit']=false;
 		$params['bevel']=false;
 		$params['unsharp']=false;
+
+		if (!empty($this->brightness) && $this->brightness > 45)
+			$params['attribname'] = 'style="filter: brightness(90%) contrast(130%);" src';
+
 		$resized=$this->_getResized($params);
 
 		if (!empty($urlonly)) {

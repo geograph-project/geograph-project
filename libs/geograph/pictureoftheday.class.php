@@ -131,6 +131,9 @@ class PictureOfTheDay
 		$pictureoftheday['image']=new GridImage($this->gridimage_id);
 		$pictureoftheday['image']->compact();
 
+		$db=$this->_getDB(true);
+		$pictureoftheday['image']->brightness = $db->getOne("SELECT brightness FROM gridimage_daily WHERE gridimage_id = {$this->gridimage_id}");
+
 		$smarty->assign('pictureoftheday', $pictureoftheday);
 
 		$this->image =& $pictureoftheday['image'];

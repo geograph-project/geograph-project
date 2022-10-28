@@ -84,6 +84,11 @@ if (!$smarty->is_cached($template, $cacheid)) {
         $q['more'] = "SELECT $gi_columns, NULL AS showday FROM gridimage_search inner join gridimage_daily using (gridimage_id) WHERE showday IS NULL AND updated < DATE_SUB(NOW(),INTERVAL 5 YEAR) ORDER BY RAND(YEARWEEK(NOW())) DESC";
 
 	if (isset($q[$_GET['tab']])) {
+                //todo, can only - for now, do if not using UNION
+                if ($_GET['tab'] == 'potd') {
+			$q['potd'] = str_replace(' FROM ',',brightness FROM ',$q['potd']);
+                }
+
 		$imagelist->_getImagesBySql($q[$_GET['tab']]." LIMIT 24");
 
 	} elseif ($_GET['tab'] == 'mixed') {

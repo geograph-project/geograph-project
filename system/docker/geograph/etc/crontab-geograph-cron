@@ -41,6 +41,7 @@
 
 17	*	* * *	/usr/bin/php /var/www/geograph/scripts/gravatar-update.php --action=execute
 
+36	5	* * *   /usr/bin/php /var/www/geograph/scripts/process_brightness.php --limit=24
 
 13	2	* * * /usr/bin/php /var/www/geograph/scripts/update_sequence.php
 5	3	* * * /usr/bin/php /var/www/geograph/scripts/buildplacename_id.php
