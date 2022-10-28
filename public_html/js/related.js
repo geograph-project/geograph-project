@@ -169,7 +169,7 @@ function processImage(row) {
 
 	var data = {
 		mode: mode,
-		select: 'id,title,myriad,hectad,grid_reference,takenyear,takenmonth,takenday,hash,realname,user_id,place,county,country,hash,scenti',
+		select: 'id,title,myriad,hectad,grid_reference,takenyear,takenmonth,takenday,hash,realname,user_id,place,county,country,hash,scenti,width,height',
 		match: match,
 		where: 'id!='+gridimage_id,
 		limit: 10
@@ -187,7 +187,7 @@ function processImage(row) {
 	}).done(function(data){
 		if (data && data.rows && data.rows.length) {
 			$('#related .thumbs').empty();
-			var attrib = 'loading="lazy" src';
+			var attrib = 'loading="lazy" src'; //the first is always a normal src, not data-src
 			$.each(data.rows, function(index,value) {
 				var caption = [];
 				if (row.takenday == value.takenday)						caption.push("taken same Day");
@@ -200,9 +200,15 @@ function processImage(row) {
 				if (row.user_id == value.user_id)						caption.push("same Contributor");
 				if (row.place == value.place && row.grid_reference != value.grid_reference)	caption.push("also near "+value.place);
 
+				var width=120, height=120;
+				if (value.width > value.height) { //landscape
+					height=Math.round(120*value.height/value.width);
+				} else { //portrait
+					width=Math.round(120*value.width/value.height);
+				}
 				value.thumbnail = getGeographUrl(value.id, value.hash, 'small');
 				window.requestAnimationFrame(function() {
-					$('#related .thumbs').append('<div class="thumb"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' by '+value.realname+' /'+space_date(value.takenday)+'\n'+caption.join(', ')+'" class="i"><img '+attrib+'="'+value.thumbnail+'"/></a></div>');
+					$('#related .thumbs').append('<div class="thumb"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' by '+value.realname+' /'+space_date(value.takenday)+'\n'+caption.join(', ')+'" class="i"><img '+attrib+'="'+value.thumbnail+'" width="'+width+'" height="'+height+'"></a></div>');
 				});
 				if (!supportsLazyLoad)
 					attrib = 'data-src';
