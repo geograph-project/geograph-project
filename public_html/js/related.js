@@ -1,7 +1,7 @@
 var gridimage_id = null;
 
 var as_sidebar = (window.innerWidth >= 1024);
-var supportsLazyLoad = ('loading' in document.createElement('img'))
+var supportsLazyLoad = ('loading' in document.createElement('img'));
 
 if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 
