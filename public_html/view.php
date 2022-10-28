@@ -392,6 +392,9 @@ if ($image->isValid())
 	$template = "static_404.tpl";
 }
 
+if (!empty($mobile_browser))
+         $smarty->assign("mobile_browser", 1);
+
 $smarty->display($template, $cacheid);
 
 
