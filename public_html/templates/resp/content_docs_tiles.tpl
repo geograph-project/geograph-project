@@ -1,0 +1,1 @@
+../basic/content_docs_tiles.tpl
