@@ -1,0 +1,1 @@
+../basic/games_moversboard.tpl
