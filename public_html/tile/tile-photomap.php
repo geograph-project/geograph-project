@@ -1,5 +1,8 @@
 <?
 
+
+$ABORT_GLOBAL_EARLY = false; //we going to use filesystem, which needs memcache etc
+
 define('SPHINX_INDEX',"sample8");
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php

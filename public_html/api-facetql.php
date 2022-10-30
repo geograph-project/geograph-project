@@ -5,7 +5,8 @@
 //	exit;
 //}
 
-$ABORT_GLOBAL_EARLY = true;
+if (!isset($ABORT_GLOBAL_EARLY))
+	$ABORT_GLOBAL_EARLY = true;
 
 require_once('geograph/global.inc.php');
 require_once('3rdparty/facet-functions.php');
