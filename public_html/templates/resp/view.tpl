@@ -1,11 +1,12 @@
 {include file="_std_begin.tpl"}
 <!--INFOLINKS_OFF-->
 
-{if $image->imagetaken && $image->imagetaken > 1000}
-	<div class=numeric style="float:right;color:gray;font-size:1.8em">{$image->imagetaken|date_format:"%Y"}</div>
-{/if}
-
-<h2><a class=numeric title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
+<div class="titlebar">
+	<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
+	{if $image->imagetaken && $image->imagetaken > 1000}
+		<div class=numeric style="color:gray;font-size:clamp( 1rem , 2vw, 3rem );">{$image->imagetaken|date_format:"%Y"}</div>
+	{/if}
+</div>
 {if $place.distance}
 	{place place=$place h3=true takenago=$takenago}
 {/if}
@@ -46,6 +47,18 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 {literal}<style>
 /* todo, move this to modification.css, just here while in development! */
 
+div.titlebar {
+	display:flex;
+        align-items:baseline;
+	justify-content: space-between;
+	gap:10px;
+	padding-left:10px;
+	padding-top:10px;
+}
+#maincontent h2 {
+	padding:0;
+}
+
 div.caption {
 	max-width:900px;
 	margin:0 auto;
@@ -67,6 +80,8 @@ div.ccmessage {
 	font-family:verdana, arial, sans serif; /* Georgia not great for numbers */
 	font-size:0.9em; /* verdana is bit bigger than Georgia */
 	font-weight:bold;
+	max-width:1024px;
+	margin:0 auto;
 }
 .buttonbar li {
 	background-color:#eee;
@@ -100,11 +115,13 @@ div.ccmessage {
         justify-content: space-between;
 	gap:10px;
 	padding:10px;
+	max-width:1024px;
+	margin:0 auto;
 }
 div.rastermap {
 	border:none;
 	padding:0;
-	margin:0;
+	margin:0 auto;
 }
 div.rastermap img[name=tile] {
 	border:1px solid silver;
@@ -119,8 +136,12 @@ div.rastermap .footnote {
 .detailbar .picinfo {
 	margin-top:0;
 }
+.detailbar div.overview {
+	min-width:200px;
+}
 .detailbar div.map {
 	border: 1px solid #000066 !important;
+	margin:0 auto !important;
 }
 .bottombar {
 	margin:5px;
@@ -132,7 +153,13 @@ div.rastermap .footnote {
 	font-size:0.9em; /* verdana is bit bigger than Georgia */
 }
 @media only screen and (max-width: 912px) {
-	.detailbar {
+	div.titlebar {
+		display:block;
+	}
+	.titlebar > * {
+		display:inline;
+	}
+	.detailbar, .bottombar {
 		flex-direction:column;
 	}
 }
@@ -156,12 +183,12 @@ div.rastermap .footnote {
 
 		<li><a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}" title="Add this image to your site marked list">Mark</a>
 
-		<li><img src="{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side');" alt="thumbs up icon"/>
-		<a href="/todo">Like Image</a>
+		<li id="votediv{$image->gridimage_id}img"><img src="{$static_host}/img/thumbs.png" width="16" height="16" alt="thumbs up icon"/>
+		<a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));">Like Image</a>
 
 		{if $image->comment}
-			<li><img src="{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side');" alt="thumbs up icon"/>
-			<a href="/todo">Like Description</a>
+			<li id="votediv{$image->gridimage_id}desc"><img src="{$static_host}/img/thumbs.png" width="16" height="16" alt="thumbs up icon"/>
+			<a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));">Like Description</a>
 		{/if}
 	{/if}
 
@@ -225,7 +252,7 @@ div.rastermap .footnote {
 			{if $image->canonical}
 				<a href="/search.php?gridref={$image->grid_reference}&amp;canonical={$image->canonical|escape:'url'}&amp;do=1">{$image->canonical|escape:'html'}</a> &gt;
 			{/if}
-			<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">{$image->imageclass|escape:'html'}</a>)
+			<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">{$image->imageclass|escape:'html'}</a>
 		{/if}
 
 		{if $image->tags && ($image->tag_prefix_stat.$blank || $image->tag_prefix_stat.term || $image->tag_prefix_stat.cluster || $image->tag_prefix_stat.wiki)}
@@ -317,7 +344,7 @@ div.rastermap .footnote {
 <!-- ----------------------------------------------------- -->
 
 	{if $overview}
-		<div>
+		<div class="overview">
 		        {include file="_overview.tpl"}
 		</div>
 	{/if}
