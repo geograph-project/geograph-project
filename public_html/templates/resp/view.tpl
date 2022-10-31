@@ -346,6 +346,26 @@ div.rastermap .footnote {
 	{if $overview}
 		<div class="overview">
 		        {include file="_overview.tpl"}
+
+			<br><br>
+			<select onchange="window.location.href=this.value" style=width:200px>
+				<option value="">View this location on ...</option>
+
+				<option value="/mapper/combined.php#14/{$lat}/{$long}">Geograph Coverage Map (includes OSM etc)</option>
+				<option value="/gridref/{$image->subject_gridref}/links?{if $image_taken}&amp;taken={$image->imagetaken}{/if}&amp;title={$image->title|escape:'urlplus'}&amp;id={$image->gridimage_id}">Geograph Links Page</a>
+
+				<option value="https://www.google.co.uk/maps?q={$lat},{$long}&amp;t=h&amp;z=14">Open in Google Maps</option>
+				<option value="https://maps.google.com/maps?daddr=loc:{$lat},{$long}">Navigate on Google Maps</option>
+
+				<option value="{$self_host}/photo/{$image->gridimage_id}.kml">Google Earth Pro</option>
+				<option value="https://earth.google.com/web/search/{$lat},{$long}/">Google Earth for Web</option>
+
+				<option value="https://www.bing.com/maps?where1={$lat},{$long}&amp;style=h&amp;lvl=14">Open in Bing Maps</option>
+			</select>
+			{if $image->grid_square->reference_index eq 1}
+				<br><br>
+				<div>{external href="http://www.nearby.org.uk/coord.cgi?p=`$image->subject_gridref`&amp;f=lookup" text="Lookup nearest Postcode"}</div>
+			{/if}
 		</div>
 	{/if}
 </div>
