@@ -208,13 +208,13 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}" itemprop="acquireLic
 
 {if $image->credit_realname}
 	<dt>Photographer</dt>
-	 <dd property="dc:creator" itemprop="author" rel="author"><span itemprop="name">{$image->realname|escape:'html'}</span> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;searchtext=name:%22{$image->realname|escape:'url'}%22&amp;do=1" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+	 <dd property="dc:creator" itemscope itemprop="author" itemtype="http://schema.org/Person" rel="author"><span itemprop="name">{$image->realname|escape:'html'}</span> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;searchtext=name:%22{$image->realname|escape:'url'}%22&amp;do=1" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 
 	<dt>Contributed by</dt>
 	 <dd><a title="View profile" href="/profile/{$image->user_id}" itemprop="publisher"><span itemprop="name">{$image->user_realname|escape:'html'}</span></a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {else}
 	<dt>Photographer</dt>
-	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator" itemprop="author" rel="author"><span itemprop="name">{$image->realname|escape:'html'}</span></a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+	 <dd itemscope itemprop="author" itemtype="http://schema.org/Person"><a title="View profile" href="{$image->profile_link}" property="dc:creator" itemprop="url" rel="author"><span itemprop="name">{$image->realname|escape:'html'}</span></a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
 {if $image_taken}
