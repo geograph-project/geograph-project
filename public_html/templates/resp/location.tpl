@@ -126,7 +126,9 @@
   </p>
 </form>
 </div>
-
+</div>
+<br style="clear:both"/>
+<div class="threecolsetup">
   
   <div class="threecolumn">
   	<h3>Geograph links</h3>
@@ -178,9 +180,6 @@
 
   <h4>Surrounding area</h4>
   <ul>
-  {if strlen($gridrefraw) < 5}
-		<li><img src="{$static_host}/img/links/20/hectad.png" width="20" height="20" alt="hectad icon" align="absmiddle"/> <a title="First Geographs within {$gridrefraw|escape:'html'}" href="/search.php?first={$gridrefraw|escape:'url'}">Find <b>First Geographs for hectad</b> {$gridrefraw|escape:'html'}</a></li>
-	{/if}
 	<li><img src="{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/> <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}">Search for images near {$gridref}</a>
 	{if $gridref6}
 		(<a href="/search.php?q={$gridref6}">near {$gridref6}</a>)
@@ -190,7 +189,9 @@
 	<li><img src="{$static_host}/img/links/20/no-photos.png" width="20" height="20" alt="no photos icon" align="absmiddle"/> <a title="Empty Squares" href="/squares.php?gridref={$gridref}&amp;type=without">View list of nearby squares without images</a></li>
   <li><img src="{$static_host}/img/links/20/no-photos.png" width="20" height="20" alt="no photos icon" align="absmiddle"/><a title="Few Squares" href="/squares.php?gridref={$gridref}&amp;type=few">Nearby squares with few images</a></li>
 	<li><img src="{$static_host}/img/links/20/checksheet.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">View a printable check sheet for {if strlen($gridrefraw) < 5}{$gridrefraw|escape:'html'}{else}{$gridref}{/if}</a></li>
-  <li><a href="/gridref/{$hectad}">View Hectad {$hectad}</a></li>
+  <li><a href="/gridref/{$hectad}">View Hectad {$hectad}</a>
+  <li><img src="{$static_host}/img/links/20/hectad.png" width="20" height="20" alt="hectad icon" align="absmiddle"/> <a title="First Geographs within {$gridrefraw|escape:'html'}" href="/search.php?q={$hectad}%20ftf:1&amp;orderby=submitted">Find First Geographs for hectad {$hectad}</a></li>
+	</li>
   </ul>
 
   
@@ -211,12 +212,13 @@
 		</ul>
     <h4>OpenStreetMap</h4>
     <ul>
-    <li>{external href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14" text="OpenStreetMap"} {external href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14&amp;layers=C" text="(Cycling)"} {external href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14&amp;layers=T" text="(Transport)"}</li>
+    <li>{external href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14" text="OpenStreetMap"} {external href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14&amp;layers=C" text="(Cycling)"} {external href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14&amp;layers=T" text="(Transport)"}  {external href="http://www.openstreetmap.cymru/?h=$lat&amp;ll=$long&amp;ch=14" text="(Cymru)"}</li>
     <li>{external href="https://www.opencyclemap.org/?zoom=14&amp;lat=$lat&amp;lon=$long" text="OpenCycleMap"}</li>
     <li>{external href="https://opentopomap.org/&#35;map&equals;14/$lat/$long" text="OpenTopoMap"}</li>
     <li>{external href="https://www.openrailwaymap.org/?style=standard&amp;lat=$lat&amp;lon=$long&amp;zoom=14" text="OpenRailwayMap"}</li>
     <li>{external href="https://map.openseamap.org/?zoom=14&amp;lat=$lat&amp;lon=$long" text="OpenSeaMap"}</li>
     <li>{external href="https://openinframap.org/&#35;14/$lat/$long" text="OpenInfrastructureMap"}</li>
+    <li>{external href="https://osmlanduse.org/&#35;14/$long/$lat/0/" text="OSM Landuse"}</li>
     <li>{external href="http://gk.historic.place/historische_objekte/translate/en/index-en.html?zoom=14&amp;lat=$lat&amp;lon=$long" text="Historical Objects"}</li>
     <li>{external href="https://hiking.waymarkedtrails.org/&#35;?map=14/$lat/$long" text="Waymarked Trails"} {external href="https://cycling.waymarkedtrails.org/&#35;?map=14/$lat/$long" text="(Cycling)"}</li>
     <li>{external href="https://www.opensnowmap.org/&#35;map&equals;14/$long/$lat&amp;b&equals;snowmap&amp;m&equals;false&amp;h&equals;false" text="OpenSnowMap"}</li>
@@ -225,8 +227,7 @@
     {if $square->reference_index eq 1}
     <h4>Historic mapping</h4>
     <ul>
-    <li>##Broken link##{external href="http://www.old-maps.co.uk/maps.html?txtXCoord=`$square->nateastings`&amp;txtYCoord=`$square->natnorthings`" text="old-maps.co.uk"}</li>
-    <li>{external href="https://maps.nls.uk/geo/find/marker/#zoom=13&lat=$lat&lon=$long&f=1&z=1&marker=$lat,$long" text="maps.nls.uk"}
+      <li>{external href="https://maps.nls.uk/geo/find/marker/#zoom=13&lat=$lat&lon=$long&f=1&z=1&marker=$lat,$long" text="maps.nls.uk"}
 			({external href="https://maps.nls.uk/geo/explore/side-by-side/#zoom=16&lat=$lat&lon=$long&layers=6&right=BingHyb" text="side by side viewer"})</li>
       <li>{external href="http://wtp2.appspot.com/wheresthepath.htm?lat=$lat&amp;lon=$long" text="Where's the path?"}</li>
     </ul>
@@ -249,7 +250,7 @@
 		{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;MONTH=%m&amp;YEAR=%Y"}
 		<li>{external href="http://www.weatheronline.co.uk/cgi-bin/geotarget?LAT=`$lat`&amp;LON=`$long``$imagetakenurl`" text="weatheronline.co.uk" title="weather at the time this photo was taken from weatheronline.co.uk"}</li>
     {else}
-    <li>{external href="http://www.weatheronline.co.uk/cgi-bin/geotarget?LAT=`$lat`&amp;LON=`$long``$imagetakenurl`" text="weatheronline.co.uk" title="Current weather near to $gridref weatheronline.co.uk"}</li>
+    <li>##Broken##{external href="http://www.weatheronline.co.uk/cgi-bin/geotarget?LAT=`$lat`&amp;LON=`$long``$imagetakenurl`" text="weatheronline.co.uk" title="Current weather near to $gridref weatheronline.co.uk"}</li>
 	{/if}
   {if $dblock}
 		<li>{external href="http://webarchive.nationalarchives.gov.uk/20120320232950/http://www.bbc.co.uk/history/domesday/dblock/`$dblock`" text="bbc.co.uk/domesday" title="Domesday Reloaded via BBC History"} 
