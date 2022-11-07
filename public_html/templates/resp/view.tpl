@@ -24,6 +24,47 @@
 
 <!-- ----------------------------------------------------- -->
 
+{dynamic}
+{if $current_search}
+	<div class="interestBox" style="text-align:center; font-size:0.9em;width:400px;margin-left:auto;margin-right:auto">
+		{if $current_search.l}
+			<a href="/photo/{$current_search.l}">&lt; prev image</a>
+		{elseif $current_search.c > 1}
+                        <a href="/search.php?i={$current_search.i}&amp;page={$current_search.p-1}">&lt; prev page</a>
+                {else}
+			<s style="color:silver" title="first image on this page - you may be able to get to another page via the 'back to search results' itself">&lt; prev image</s>
+		{/if} |
+		<a href="/search.php?i={$current_search.i}&amp;page={$current_search.p}"><b>back to search results</b></a> |
+		{if $current_search.n}
+			<a href="/photo/{$current_search.n}">next image &gt;</a>
+		{elseif $current_search.c < $current_search.t}
+                        <a href="/search.php?i={$current_search.i}&amp;page={$current_search.p+1}">next page &gt;</a>
+                {else}
+			<s style="color:silver" title="last image on this page - you may be able to get to another page via the 'back to search results' itself">next image &gt;</s>
+		{/if}
+	</div>
+{elseif $search_keywords && $search_count}
+	<div class="interestBox" style="text-align:center; font-size:0.9em">
+		{if !$user->registered}
+		<div style="width:640px;margin-left:auto;margin-right:auto"><i>The Geograph Britain and Ireland project aims to collect geographically representative photographs and information for every square kilometre of Great Britain and Ireland, and you can be part of it.</i> <br/><a href="/faq.php">Read more...</a></div><br/>
+		{/if}
+
+		<b>We have at least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1&amp;form=external">View them now</a></b>
+	</div>
+{/if}
+{/dynamic}
+{if $ireland_prompt}
+	<div class="interestBox" style="text-align:center; font-size:0.9em">
+		<a href="http://www.geograph.ie/photo/{$image->gridimage_id}" title="View {$image->bigtitle|escape:'html'} on Geograph Ireland">View this photo on Geograph Ireland</a>
+	</div>
+{elseif $prompt}
+	 <div class="interestBox" style="text-align:center; font-size:0.9em">
+		{$prompt}
+	</div>
+{/if}
+
+<!-- ----------------------------------------------------- -->
+
 <div style="text-align:center">
 	<div class="shadow shadow_large" id="mainphoto">{$image->getFull(true,true)}</div>
 
@@ -32,6 +73,30 @@
 	{if $image->comment}
 		<div class=caption>{$image->comment|escape:'html'|nl2br|geographlinks:$expand}</div>
 	{/if}
+
+	{if $image->snippet_count}
+		{if !$image->comment && $image->snippet_count == 1}
+			{assign var="item" value=$image->snippets[0]}
+			<div class="caption">
+			{$item.comment|escape:'html'|nl2br|geographlinks}{if $item.title}<br/><br/>
+			<small>See other images of <a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname && $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'}</a></small>{/if}
+			</div>
+		{else}
+			{foreach from=$image->snippets item=item name=used}
+				{if !$image->snippets_as_ref && !$item.comment}
+					<div class="caption640 searchresults"><br/>
+					<small>See other images of <a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname && $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'}</a></small>
+					</div>
+				{else}
+					<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
+					{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}<b><a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname && $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small>{/if}
+					<blockquote><p>{$item.comment|escape:'html'|nl2br|geographlinks}</p></blockquote>
+					</div>
+				{/if}
+			{/foreach}
+		{/if}
+	{/if}
+
 </div>
 
 <br>
@@ -290,6 +355,9 @@ div.rastermap .footnote {
 		{/if}
 
 		{if $image->tags && ($image->tag_prefix_stat.$blank || $image->tag_prefix_stat.term || $image->tag_prefix_stat.cluster || $image->tag_prefix_stat.wiki)}
+			{if count($image->tag_prefix_stat) > 1}
+				other tags:
+			{/if}
 			{foreach from=$image->tags item=item name=used}{if $item.prefix eq '' || $item.prefix eq 'term' || $item.prefix eq 'cluster' || $item.prefix eq 'wiki'}
 				<span class="tag"><a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span>&nbsp;
 			{/if}{/foreach}
