@@ -34,6 +34,7 @@ div.homepage {
 .pictureOfTheDay {
 	box-sizing:border-box;
 	display:flex;
+	margin-top:10px;
 	gap:10px;
 	align-items:stretch;
 }
@@ -41,16 +42,24 @@ div.homepage {
 	.pictureOfTheDay {
 		flex-direction:column;
 	}
+	.homepage .pictureOfTheDay .imageContainer {
+		max-width:inherit;
+		order:1;
+	}
 	.homepage .pictureOfTheDay .mapContainer {
 		max-width:inherit;
+		order:2;
 	}
 	.homepage .pictureOfTheDay .listContainer {
 		max-width:inherit;
+		order:3;
 	}
 }
 
 .pictureOfTheDay .imageContainer {
 	text-align:center;
+	max-width:393px;
+	order:2;
 }
 .pictureOfTheDay .shadow img {
 	border-radius: 6px;
@@ -61,8 +70,7 @@ div.homepage {
 .pictureOfTheDay .mapContainer {
 	border-radius:6px;
 	max-width:154px;
-	margin-top:39px;
-	padding-top:4px;
+	order:3;
 }
 .pictureOfTheDay .mapContainer .map {
 	margin-left:auto;
@@ -74,6 +82,7 @@ div.homepage {
 }
 .pictureOfTheDay .listContainer {
 	max-width:28%;
+	order:1;
 }
 .pictureOfTheDay .listContainer h3 {
 	margin-top:0;
@@ -156,6 +165,9 @@ div.homepage {
 	        </div>
 
 		<div class="mapContainer">
+			<div class="interestBox titleBox">
+		                <h3>Coverage Map</h3>
+			</div>
                         <div class="map" style="height:{$overview2_height}px;width:{$overview2_width}px">
                                 <div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
 
