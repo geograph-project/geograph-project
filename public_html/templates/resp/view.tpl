@@ -94,8 +94,16 @@ div.ccmessage {
 .buttonbar a {
 	text-decoration:none;
 }
+.buttonbar select {
+	background:none;
+	border:0;
+	color:blue;
+	font-family:verdana, arial, sans serif;
+	font-weight:bold;
+}
 
 .tagbar {
+	margin-top:10px;
 	text-align:center;
 }
 .tagbar a {
@@ -178,7 +186,15 @@ div.rastermap .footnote {
 		{/if}
 
 		{if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
-			<li><a href="/share.todo">Share</a>
+			<li><select onchange="window.open(this.value,'share','width=500;height=400'); return false;" style="width:80px">
+				<option value="">Share...</option>
+				<option value="https://twitter.com/intent/tweet?text={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Twitter</option>
+				<option value="https://www.facebook.com/sharer/sharer.php?u={$self_host}/photo/{$image->gridimage_id}">Share this photo via Facebook</option>
+				<option value="http://www.pinterest.com/pin/create/button/?media={$imageurl}&amp;url={$self_host}/photo/{$image->gridimage_id}&amp;description={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}">Share this photo via Pinterest</option>
+				<option value="https://share.flipboard.com/bookmarklet/popout?v=2&amp;title={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Flipboard</option>
+				<option value="/ecard.php?image={$image->gridimage_id}">Share this photo via email/e-card</option>
+				<option value="/stamp.php?id={$image->gridimage_id}">Grab a Stamped/Watermarked Image</option>
+			</select></li>
 		{/if}
 
 		<li><a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}" title="Add this image to your site marked list">Mark</a>
@@ -211,11 +227,29 @@ div.rastermap .footnote {
 	{/if}
 
 	<li><img src="{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/>
-	<a href="/gridref/{$image->subject_gridref}/links?{if $image_taken}&amp;taken={$image->imagetaken}{/if}&amp;title={$image->title|escape:'urlplus'}&amp;id={$image->gridimage_id}">Links</a>
+			<select onchange="window.location.href=this.value" style=width:200px>
+				<option value="">View this location on ...</option>
+
+				<option value="/mapper/combined.php#14/{$lat}/{$long}">Geograph Coverage Map (includes OSM etc)</option>
+				<option value="/gridref/{$image->subject_gridref}/links?{if $image_taken}&amp;taken={$image->imagetaken}{/if}&amp;title={$image->title|escape:'urlplus'}&amp;id={$image->gridimage_id}">Geograph Links Page</a>
+
+				<option value="https://www.google.co.uk/maps?q={$lat},{$long}&amp;t=h&amp;z=14">Open in Google Maps</option>
+				<option value="https://maps.google.com/maps?daddr=loc:{$lat},{$long}">Navigate to location with Google Maps</option>
+
+				<option value="{$self_host}/photo/{$image->gridimage_id}.kml">Open in Google Earth Pro</option>
+				<option value="https://earth.google.com/web/search/{$lat},{$long}/">Open in Google Earth for Web</option>
+
+				<option value="https://www.bing.com/maps?where1={$lat},{$long}&amp;style=h&amp;lvl=14">Open in Bing Maps</option>
+			</select></li>
 
 	{dynamic}{if $mobile_browser}
 		<li><a href="https://maps.google.com/maps?daddr=loc:{$lat},{$long}">Navigate</a>
 	{/if}{/dynamic}
+
+	{if $image->grid_square->reference_index eq 1}
+		<li>{external href="http://www.nearby.org.uk/coord.cgi?p=`$image->subject_gridref`&amp;f=lookup" text="Lookup nearest Postcode"}</li>
+	{/if}
+
 </ul>
 
 <!-- ----------------------------------------------------- -->
@@ -304,13 +338,13 @@ div.rastermap .footnote {
 
 		{if $image->credit_realname}
 			<dt>Photographer</dt>
-				<dd>{$image->realname|escape:'html'} &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;searchtext=name:%22{$image->realname|escape:'url'}%22&amp;do=1" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+				<dd>{$image->realname|escape:'html'} &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;searchtext=name:%22{$image->realname|escape:'url'}%22&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
 
 			<dt>Contributed by</dt>
-				<dd><a title="View profile" href="/profile/{$image->user_id}">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+				<dd><a title="View profile" href="/profile/{$image->user_id}">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">more nearby</a>)</dd>
 		{else}
 			<dt>Photographer</dt>
-				<dd><a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+				<dd><a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">more nearby</a>)</dd>
 		{/if}
 
 		{if $image_taken}
@@ -346,26 +380,6 @@ div.rastermap .footnote {
 	{if $overview}
 		<div class="overview">
 		        {include file="_overview.tpl"}
-
-			<br><br>
-			<select onchange="window.location.href=this.value" style=width:200px>
-				<option value="">View this location on ...</option>
-
-				<option value="/mapper/combined.php#14/{$lat}/{$long}">Geograph Coverage Map (includes OSM etc)</option>
-				<option value="/gridref/{$image->subject_gridref}/links?{if $image_taken}&amp;taken={$image->imagetaken}{/if}&amp;title={$image->title|escape:'urlplus'}&amp;id={$image->gridimage_id}">Geograph Links Page</a>
-
-				<option value="https://www.google.co.uk/maps?q={$lat},{$long}&amp;t=h&amp;z=14">Open in Google Maps</option>
-				<option value="https://maps.google.com/maps?daddr=loc:{$lat},{$long}">Navigate on Google Maps</option>
-
-				<option value="{$self_host}/photo/{$image->gridimage_id}.kml">Google Earth Pro</option>
-				<option value="https://earth.google.com/web/search/{$lat},{$long}/">Google Earth for Web</option>
-
-				<option value="https://www.bing.com/maps?where1={$lat},{$long}&amp;style=h&amp;lvl=14">Open in Bing Maps</option>
-			</select>
-			{if $image->grid_square->reference_index eq 1}
-				<br><br>
-				<div>{external href="http://www.nearby.org.uk/coord.cgi?p=`$image->subject_gridref`&amp;f=lookup" text="Lookup nearest Postcode"}</div>
-			{/if}
 		</div>
 	{/if}
 </div>
