@@ -816,10 +816,15 @@ split_timer('gridsquare'); //starts the timer
 		if ($inc_all_user && ctype_digit($inc_all_user)) {
 			$inc_all_user = "=$inc_all_user";
 		}
+		$gridimage_join = '';
+                if (strpos($custom_where_sql,' label = ') !== FALSE) {
+                        $gridimage_join .= " INNER JOIN gridimage_group gg USING (gridimage_id)";
+                }
+
 		$i=0;
 		$recordSet = $db->Execute("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname ".
 			"from gridimage gi ".
-			"inner join user using(user_id) ".
+			"inner join user using(user_id) $gridimage_join ".
 			"where gridsquare_id={$this->gridsquare_id} $custom_where_sql ".
 			"and (moderation_status in ('accepted', 'geograph') ".
 			($inc_all_user?"or user.user_id $inc_all_user":'').") ".
