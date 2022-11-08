@@ -2034,9 +2034,8 @@ class S3
 	* @param string $data
 	* @return array $headers
 	*/
-	public static function __getSignatureV4($aHeaders, $headers, $method='GET', $uri='', $data = '')
-	{		
-		$service = 's3';
+	public static function __getSignatureV4($aHeaders, $headers, $method='GET', $uri='', $data = '', $service = 's3')
+	{
 		$region = S3::getRegion();
 		
 		$algorithm = 'AWS4-HMAC-SHA256';

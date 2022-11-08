@@ -92,20 +92,49 @@ if ($filesystem->hasAuth()) {
 
 //todo, maybe support this even if not container (eg running on ec2 'bare')
 if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
-	$iamrole = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/");
-	if (!empty($iamrole)) {
-		$json = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/$iamrole");
 
-		$decode = json_decode($json,true);
+	//Use IRSA is possible
+	if (!empty($_SERVER['AWS_WEB_IDENTITY_TOKEN_FILE'])) {
+		$p = array();
+                $p['Action'] = 'AssumeRoleWithWebIdentity';
+                $p['DurationSeconds'] = '3600';
+                $p['RoleSessionName'] = 'geograph';
+                $p['RoleArn'] = $_SERVER['AWS_ROLE_ARN'];
+                $p['WebIdentityToken'] = file_get_contents($_SERVER['AWS_WEB_IDENTITY_TOKEN_FILE']);
+                $p['Version'] = '2011-06-15';
 
-		if (empty($json) || empty($decode) || empty($decode['AccessKeyId'])) {
-			outputRow('IAM-Role', 'fail', 'No Key/token Retrieved');
-		} else {
-			outputRow('IAM-Role', 'pass', 'Temporary Access-Key Obtained');
+                $url = "https://sts.{$_SERVER['AWS_REGION']}.amazonaws.com/?".http_build_query($p,'','&');
+                $xml = file_get_contents($url);
+
+                if (preg_match_all('/<(\w+)>(.*?)<\/\1>/',$xml,$m)) {
+                        $decode = array_combine($m[1],$m[2]);
+
+                        if (empty($decode['AccessKeyId'])) {
+                                outputRow('IAM-Role', 'fail', 'No Key/token Retrieved');
+                        } else {
+                                outputRow('IAM-Role', 'pass', 'Temporary Access-Key Obtained via STS');
+                        }
+                } else {
+			 outputRow('IAM-Role', 'notice', 'No reply from STS');
 		}
+
+	//otherwise assume AWS metadata (that might actully be kiam!)
 	} else {
-		//only a notice as MAYBE not in use
-		outputRow('IAM-Role', 'notice', 'No IAM-Role obtained');
+		$iamrole = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/");
+		if (!empty($iamrole)) {
+			$json = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/$iamrole");
+
+			$decode = json_decode($json,true);
+
+			if (empty($json) || empty($decode) || empty($decode['AccessKeyId'])) {
+				outputRow('IAM-Role', 'fail', 'No Key/token Retrieved');
+			} else {
+				outputRow('IAM-Role', 'pass', 'Temporary Access-Key Obtained');
+			}
+		} else {
+			//only a notice as MAYBE not in use
+			outputRow('IAM-Role', 'notice', 'No IAM-Role obtained');
+		}
 	}
 }
 
@@ -334,9 +363,9 @@ if (!empty($CONF['sphinx_host'])) {
 
 	if (!empty($result) && count($result) > 4) {
 		//$info = $sph->ServerInfo(); //doesnt work on Sphinx! adodb doesnt have wrapper for mysqli_get_server_info
-		if ($CONF['db_read_driver'] == 'mysql') {
+		if ($CONF['db_driver'] == 'mysql') {
 			$info['description'] =  mysql_get_server_info();
-		} elseif ($CONF['db_read_driver'] == 'mysqli') {
+		} elseif ($CONF['db_driver'] == 'mysqli') {
 			$info['description'] =  mysqli_get_server_info($sph->_connectionID);
 		} else {
 			$info['description'] =  "unknown db driver";
