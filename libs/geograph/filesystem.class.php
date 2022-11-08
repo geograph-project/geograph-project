@@ -59,42 +59,83 @@ class FileSystem extends S3 {
 		global $CONF;
 		global $memcache;
 
-		//fetch folder first to find the only creds available?
-		$iamrole = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/");
+		/////////////////////////////////////////////////
+		//Use IRSA is possible
 
-		if (empty($iamrole)) {
-			$iamrole = $memcache->name_get('iam','local-role');
-			if (empty($iamrole))
-				return; //no more construction needed, the class can run without S3.
-		}
+		if (!empty($_SERVER['AWS_WEB_IDENTITY_TOKEN_FILE'])) {
 
-		$json = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/$iamrole");
+			$decode = $memcache->name_get('iam','IRSA-credentials');
 
-		// assume it never fails for now! tofix (use memcache/apc??)
-		$decode = json_decode($json,true);
+			if (empty($decode)) {
+				$p = array();
+				$p['Action'] = 'AssumeRoleWithWebIdentity';
+				$p['DurationSeconds'] = '3600';
+				$p['RoleSessionName'] = 'geograph';
+				$p['RoleArn'] = $_SERVER['AWS_ROLE_ARN'];
+				$p['WebIdentityToken'] = file_get_contents($_SERVER['AWS_WEB_IDENTITY_TOKEN_FILE']);
+				$p['Version'] = '2011-06-15';
 
-		//always fetch live, only use memcache version if fetching failed
-		if (empty($json) || empty($decode) || empty($decode['AccessKeyId'])) {
-			$json = $memcache->name_get('iam','security-credentials');
-			$decode = json_decode($json,true);
+				$url = "https://sts.{$_SERVER['AWS_REGION']}.amazonaws.com/?".http_build_query($p,'','&');
+				$xml = file_get_contents($url);
+
+				if (preg_match_all('/<(\w+)>(.*?)<\/\1>/',$xml,$m)) {
+			       		$decode = array_combine($m[1],$m[2]);
+
+					$decode["Token"] = $decode['SessionToken']; unset($decode['SessionToken']);
+				}
+
+				if (!empty($decode['AccessKeyId']))
+					$memcache->name_set('iam','IRSA-credentials',$decode,false,3000);
+			}
+
+		/////////////////////////////////////////////////
+		//otherwise assume AWS metadata (that might actully be kiam!)
+
 		} else {
-			//todo, could perhaps use the Expiration directly from the responce?
-			$memcache->name_set('iam','local-role',$iamrole,false,30000);
-			$memcache->name_set('iam','security-credentials',$json,false,300);
+			//fetch folder first to find the only creds available?
+			$iamrole = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/");
+
+			if (empty($iamrole)) {
+				$iamrole = $memcache->name_get('iam','local-role');
+				if (empty($iamrole))
+					return; //no more construction needed, the class can run without S3.
+			}
+
+			$json = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/$iamrole");
+
+			// assume it never fails for now! tofix (use memcache/apc??)
+			$decode = json_decode($json,true);
+
+			//always fetch live, only use memcache version if fetching failed
+			if (empty($json) || empty($decode) || empty($decode['AccessKeyId'])) {
+				$json = $memcache->name_get('iam','security-credentials');
+				$decode = json_decode($json,true);
+			} else {
+				//todo, could perhaps use the Expiration directly from the responce?
+				$memcache->name_set('iam','local-role',$iamrole,false,30000);
+				$memcache->name_set('iam','security-credentials',$json,false,300);
+			}
 		}
 
+		/////////////////////////////////////////////////
+		// get buckets from $CONF
 
-//todo, get buckets from $CONF ?
-if (!empty($_SERVER['BASE_DIR'])) {//running inside a container
-	$this->buckets = array(
-                "{$_SERVER['BASE_DIR']}/public_html/" => $CONF['s3_photos_bucket_path'],
-		"{$_SERVER['BASE_DIR']}/rastermaps/" => $CONF['s3_rastermaps_bucket_path'],
-	);
-	if (!empty($CONF['s3_backups_bucket_path']))
-		$this->buckets["/mnt/s3/backups/"] = $CONF['s3_backups_bucket_path'];
-	if (!empty($CONF['s3_loki_bucket_path']))
-		$this->buckets["/mnt/s3/logs/"] = $CONF['s3_loki_bucket_path'];
-}
+		if (!empty($_SERVER['BASE_DIR'])) { //running inside a container
+               		$this->buckets["{$_SERVER['BASE_DIR']}/public_html/"] = $CONF['s3_photos_bucket_path'];
+			$this->buckets["{$_SERVER['BASE_DIR']}/rastermaps/"] = $CONF['s3_rastermaps_bucket_path'];
+		} else {
+			//this is kinda funky but should mostly work
+			$this->buckets["{$_SERVER['DOCUMENT_ROOT']}/"] = $CONF['s3_photos_bucket_path'];
+			$this->buckets[realpath("{$_SERVER['DOCUMENT_ROOT']}/../rastermaps")."/"] = $CONF['s3_rastermaps_bucket_path'];
+		}
+
+		if (!empty($CONF['s3_backups_bucket_path']))
+			$this->buckets["/mnt/s3/backups/"] = $CONF['s3_backups_bucket_path'];
+
+		if (!empty($CONF['s3_loki_bucket_path']))
+			$this->buckets["/mnt/s3/logs/"] = $CONF['s3_loki_bucket_path'];
+
+		/////////////////////////////////////////////////
 
 		parent::__construct($decode['AccessKeyId'], $decode['SecretAccessKey'], false);
 
