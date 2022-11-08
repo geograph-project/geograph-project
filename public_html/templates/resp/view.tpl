@@ -46,7 +46,7 @@
 {elseif $search_keywords && $search_count}
 	<div class="interestBox" style="text-align:center; font-size:0.9em">
 		{if !$user->registered}
-		<div style="width:640px;margin-left:auto;margin-right:auto"><i>The Geograph Britain and Ireland project aims to collect geographically representative photographs and information for every square kilometre of Great Britain and Ireland, and you can be part of it.</i> <br/><a href="/faq.php">Read more...</a></div><br/>
+		<div style="width:640px;margin-left:auto;margin-right:auto"><i>The Geograph Britain and Ireland project aims to collect geographically representative photographs and information for every square kilometre of Great Britain and Ireland.</i> <br/><a href="/article/About-Geograph-page">Read about the Geograph Project.</a></div><br/>
 		{/if}
 
 		<b>We have at least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1&amp;form=external">View them now</a></b>
@@ -129,59 +129,6 @@ div.caption {
 	margin:0 auto;
 	font-size:1em;
 }
-div.ccmessage {
-	font-size:1em;
-	color:#000066;
-}
-
-.buttonbar { /* there is an existing buttonbar, which may need to check compatibltiy */
-	background-color:white;
-	padding:5px;
-	display: flex;
-	justify-content: space-between;
-	flex-wrap:wrap;
-	align-items:baseline;
-	gap:6px;
-	font-family:verdana, arial, sans serif; /* Georgia not great for numbers */
-	font-size:0.9em; /* verdana is bit bigger than Georgia */
-	font-weight:bold;
-	max-width:1024px;
-	margin:0 auto;
-}
-.buttonbar li {
-	background-color:#eee;
-	border-radius:10px;
-	flex: auto ;
-	list-style:none;
-	text-align:center;
-	padding:4px;
-}
-.buttonbar a {
-	text-decoration:none;
-}
-.buttonbar select {
-	background:none;
-	border:0;
-	color:blue;
-	font-family:verdana, arial, sans serif;
-	font-weight:bold;
-}
-
-.tagbar {
-	margin-top:10px;
-	text-align:center;
-}
-.tagbar a {
-	border-radius:4px;
-	text-decoration:none;
-}
-.tagbar small {
-	color:gray;
-	font-style:italic;
-}
-.tagbar > * {
-	white-space:nowrap;
-}
 
 .detailbar {
         display: flex;
@@ -190,21 +137,6 @@ div.ccmessage {
 	padding:10px;
 	max-width:1024px;
 	margin:0 auto;
-}
-div.rastermap {
-	border:none;
-	padding:0;
-	margin:0 auto;
-}
-div.rastermap img[name=tile] {
-	border:1px solid silver;
-}
-div.rastermap .footnote {
-	background:none;
-	color:gray;
-        font-style:italic;
-	padding:3px;
-	text-align:center;
 }
 .detailbar .picinfo {
 	margin-top:0;
@@ -216,15 +148,13 @@ div.rastermap .footnote {
 	border: 1px solid #000066 !important;
 	margin:0 auto !important;
 }
+
 .bottombar {
 	margin:5px;
         display: flex;
 	justify-content: space-between;
 }
-.numeric {
-	font-family:verdana, arial, sans serif; /* Georgia not great for numbers */
-	font-size:0.9em; /* verdana is bit bigger than Georgia */
-}
+
 @media only screen and (max-width: 912px) {
 	div.titlebar {
 		display:block;

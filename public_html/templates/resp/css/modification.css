@@ -1,3 +1,7 @@
+#header h1 {
+    background: url(https://user-images.githubusercontent.com/6320793/200399221-c0a0e206-e936-4069-ae18-bf20bafccd1e.svg) no-repeat center/92%;
+}
+
 input#nav_toggle, label#nav_label {
 	display:none;
 }
@@ -47,5 +51,85 @@ div.photo66
 div.photoguide
 {
   max-width:90%;
+}
+
+
+/* some general new styling, mainly used for the photo page, overrides stuff in basic.css */
+
+.numeric {
+	font-family:verdana, arial, sans serif; /* Georgia not great for numbers */
+	font-size:0.9em; /* verdana is bit bigger than Georgia */
+}
+
+div.ccmessage {
+	font-size:1em;
+	color:#000066;
+}
+
+.buttonbar { /* there is an existing buttonbar, which may need to check compatibltiy */
+	background-color:white;
+	padding:5px;
+	display: flex;
+	justify-content: space-between;
+	flex-wrap:wrap;
+	align-items:baseline;
+	gap:6px;
+	font-family:verdana, arial, sans serif; /* Georgia not great for numbers */
+	font-size:0.9em; /* verdana is bit bigger than Georgia */
+	font-weight:bold;
+	max-width:1024px;
+	margin:0 auto;
+}
+.buttonbar li {
+	background-color:#eee;
+	border-radius:10px;
+	flex: auto ;
+	list-style:none;
+	text-align:center;
+	padding:4px;
+}
+.buttonbar a {
+	text-decoration:none;
+}
+.buttonbar select {
+	background:none;
+	border:0;
+	color:blue;
+	font-family:verdana, arial, sans serif;
+	font-weight:bold;
+}
+
+.tagbar {
+	margin-top:10px;
+	text-align:center;
+}
+.tagbar a {
+	border-radius:4px;
+	text-decoration:none;
+}
+.tagbar small {
+	color:gray;
+	font-style:italic;
+}
+.tagbar > * {
+	white-space:nowrap;
+}
+
+/* move to simpler style for the rastermap */
+
+div.rastermap {
+	border:none;
+	padding:0;
+	margin:0 auto;
+}
+div.rastermap img[name=tile] {
+	border:1px solid silver;
+}
+div.rastermap .footnote {
+	background:none;
+	color:gray;
+        font-style:italic;
+	padding:3px;
+	text-align:center;
 }
 
