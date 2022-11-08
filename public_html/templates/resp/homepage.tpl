@@ -120,7 +120,7 @@ div.homepage {
 
 /* ********************** */
 
-@media only screen and (max-width: 712px) {
+@media only screen and (max-width: 970px) {
 	#right_block {
 		display:none;
 	}
