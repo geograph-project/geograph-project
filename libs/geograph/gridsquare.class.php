@@ -724,7 +724,8 @@ split_timer('gridsquare'); //starts the timer
 		$this->collections = $db->CacheGetAll(3600*6,"
 			SELECT c.url,c.title,'Collection' AS `type`
 			FROM content c
-			WHERE c.gridsquare_id = {$this->gridsquare_id} 
+			WHERE c.gridsquare_id = {$this->gridsquare_id}
+			AND source IN ('blog','article','gallery')
 			ORDER BY content_id DESC");
 
 		$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,"
@@ -739,6 +740,7 @@ split_timer('gridsquare'); //starts the timer
 		# search grid_reference in content.text (using sphinx)
 		# list content using an image in square (using gridimage_post and gridimage_content)
 		# search grid_reference in image.text (using sphinx) - duplicating 'mentioning' ;)
+		# gridimage_group_stat - automatic clusters
 
 
 		if ($CONF['sphinx_host']) {
