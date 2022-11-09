@@ -64,16 +64,7 @@
   </ul>
 <div class="sponsor">sponsored by <br/> <br/>
 <a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="{$static_host}/img/os-logo-p64.png" width="64" height="50" alt="Ordnance Survey"/></a></div>
-{if $image && $image->collections}
-	<h3 class="newstitle">This photo is linked from:</h3>
-	{assign var="lasttype" value="0"}
-	{foreach from=$image->collections item=item}
-		{if $lasttype != $item.type}
-			<div class="newsheader">{$item.type|regex_replace:"/y$/":'ie'}s</div>
-		{/if}{assign var="lasttype" value=$item.type}
-		<div class="collection">&middot; <a href="{$item.url}" title="{$item.type|escape:'html'}">{$item.title|escape:'html'}</a></div>
-	{/foreach}
-{elseif $square && $square->collections}
+{if $square && $square->collections}
 	<h3 class="newstitle">Collections:</h3>
 	{assign var="lasttype" value="0"}
 	{foreach from=$square->collections item=item}

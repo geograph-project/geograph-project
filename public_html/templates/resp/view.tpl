@@ -309,6 +309,22 @@ div.caption {
 
 <!-- ----------------------------------------------------- -->
 
+{if $image && $image->collections}
+	<div class=tagbar>
+		This photo is linked from: 
+		{assign var="lasttype" value="0"}
+		{foreach from=$image->collections item=item}
+			{if $lasttype != $item.type}
+				<b>{$item.type|regex_replace:"/y$/":'ie'}s</b>:
+			{/if}{assign var="lasttype" value=$item.type}
+			&middot; <a href="{$item.url}" title="{$item.type|escape:'html'}">{$item.title|escape:'html'}</a>
+		{/foreach}
+		&middot;
+	</div>
+{/if}
+
+<!-- ----------------------------------------------------- -->
+
 <div class="detailbar">
 	{if $rastermap->enabled}
 	        <div class="rastermap" style="width:{$rastermap->width}px; position:relative">
