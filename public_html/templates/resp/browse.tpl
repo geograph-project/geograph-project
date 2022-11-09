@@ -786,24 +786,5 @@
 		{$rastermap->getFooterTag()}
 	{/if}
 
-{literal}
-<script>
-var coll = document.getElementsByClassName("collapsible");
-var i;
-
-for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var collapsedcontent = this.nextElementSibling;
-    if (collapsedcontent.style.display === "block") {
-      collapsedcontent.style.display = "none";
-    } else {
-      collapsedcontent.style.display = "block";
-    }
-  });
-}
-</script>
-{/literal}
-
 {include file="_std_end.tpl"}
 {/dynamic}
