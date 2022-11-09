@@ -7,6 +7,9 @@
 *{
 	box-sizing:border-box;
 }
+.broken{
+background-color:yellow;
+}
 {/literal}
 </style>
 
@@ -23,14 +26,10 @@
 	<td align="right"><a href="/location.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
 	</table>
 </div>
-<h2>Links for <a href="/gridref/{$gridrefraw|escape:'url'}">{if $gridref6}{$gridref6}{else}{$gridref}{/if}</a></h2>
-<p><b><a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;do=1" title="Show a search of images in this square">{$square->imagecount} images</a></b></p>
-<p>near to ##########, ########</p>
-<p>
-	{if $place}
-	<div style="font-size:0.8em;border-bottom:1px solid silver;margin-bottom:2px">{place place=$place}</div>
-	{/if}
-  </p>
+<h2 style="margin-bottom:0;">Grid reference <a href="/gridref/{$gridrefraw|escape:'url'}">{if $gridref6}{$gridref6}{else}{$gridref}{/if}</a>: Links</h2>
+{if $place}<div style="color:grey; margin-bottom:0; padding-top:2px">{place place=$place}</div>{/if}
+
+{if $square->imagecount > 2}<div style="padding-top:10px"><a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;do=1" title="Show a search of images in this square">We have {$square->imagecount} images in {$gridref}</a></div>{/if}  
 
 
 
@@ -71,7 +70,7 @@
 {foreach from=$overview key=y item=maprow}
 	<div>
 	{foreach from=$maprow key=x item=mapcell}
-	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
+	<a href="/mapbrowse.php?new=1&amp;o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
 	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 	{/foreach}
 	</div>
@@ -144,7 +143,19 @@
 		<input type="hidden" name="do" value="1"/>
 		</form>	
     
-    <h4>This gridsquare</h4>
+    
+    
+    
+   {if $gridref6}
+  <h4>In centisquare {$gridref6}</h4>
+  <ul>
+		<li><img src="{$static_host}/img/links/20/centi.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/> <a href="/gridref/{$gridref}?viewcenti={$gridref6}">Image(s) taken in {$gridref6}</a></li>
+    <li><a href="/gridref/{$gridref}?centi={$gridref6}">Subjects in {$gridref6} (if any)</a></li>
+    </ul>
+	{/if}
+    
+    
+    <h4>In gridsquare {$gridref}</h4>
     <ul>
     <li><img src="{$static_host}/img/links/20/submit.png" width="20" height="20" alt="submit icon" align="absmiddle"/><a href="{if $user->submission_method == 'submit2'}/submit2.php#gridref={$gridrefraw|escape:'url'}{else}/submit.php?gridreference={$gridrefraw|escape:'url'}{/if}">Submit your own picture for {$gridref}</a></li>
     <li><img src="{$static_host}/img/links/20/browse.png" width="20" height="20" alt="browse icon" align="absmiddle"/><a href="/gridref/{$gridrefraw|escape:'url'}">View the Grid Square page</a></li>
@@ -169,14 +180,6 @@
     </ul>
     
       
-  {if $gridref6}
-  <h4>In centisquare {$gridref6}</h4>
-  <ul>
-		<li><img src="{$static_host}/img/links/20/centi.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/> <a href="/gridref/{$gridref}?viewcenti={$gridref6}">Image(s) taken in {$gridref6}</a></li>
-    <li><a href="/gridref/{$gridref}?centi={$gridref6}">Subjects in {$gridref6} (if any)</a></li>
-    </ul>
-	{/if}
-
 
   <h4>Surrounding area</h4>
   <ul>
@@ -227,7 +230,7 @@
     {if $square->reference_index eq 1}
     <h4>Historic mapping</h4>
     <ul>
-      <li>{external href="https://maps.nls.uk/geo/find/marker/#zoom=13&lat=$lat&lon=$long&f=1&z=1&marker=$lat,$long" text="maps.nls.uk"}
+      <li>{external href="https://maps.nls.uk/geo/find/marker/#zoom=13&lat=$lat&lon=$long&f=1&z=1&marker=$lat,$long" text="National Library of Scotland"}
 			({external href="https://maps.nls.uk/geo/explore/side-by-side/#zoom=16&lat=$lat&lon=$long&layers=6&right=BingHyb" text="side by side viewer"})</li>
       <li>{external href="http://wtp2.appspot.com/wheresthepath.htm?lat=$lat&amp;lon=$long" text="Where's the path?"}</li>
     </ul>
@@ -240,17 +243,22 @@
 		<li>{external href="https://streetmap.co.uk/map?X=`$square->nateastings`&Y=`$square->natnorthings`&amp;A=Y&amp;Z=110`" text="streetmap.co.uk"}</li> 
 		{/if}
     <li>{external href="https://explore.osmaps.com/?lat=$lat&amp;lon=$long&amp;zoom=14" text="OS Maps"}</li>
+    <li>{external href="https://www.geograph.org/leaflet/all.php#16/$lat/$long" text="Geograph Projects"}</li>
     </ul>
   </div>
   <div class="threecolumn">
   <h3>Local links</h3>
     <h4>Nearby information</h4>
     <ul>
-    	{if $image_taken}
-		{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;MONTH=%m&amp;YEAR=%Y"}
-		<li>{external href="http://www.weatheronline.co.uk/cgi-bin/geotarget?LAT=`$lat`&amp;LON=`$long``$imagetakenurl`" text="weatheronline.co.uk" title="weather at the time this photo was taken from weatheronline.co.uk"}</li>
+    <!--todo modify links as no pre-1982 weather-->
+    {if $image_taken}
+    	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;MONTH=%m&amp;YEAR=%Y"}
+		{else}
+    	{assign var="imagetakenurl" value=$smarty.now|date_format:"&amp;MONTH=1&amp;YEAR=%Y"}
+		{/if}
+    {if $image_taken}<li>{external href="http://www.weatheronline.co.uk/cgi-bin/geotarget?LAT=`$lat`&amp;LON=`$long``$imagetakenurl`" text="weatheronline.co.uk" title="weather at the time this photo was taken from weatheronline.co.uk"}</li>
     {else}
-    <li>##Broken##{external href="http://www.weatheronline.co.uk/cgi-bin/geotarget?LAT=`$lat`&amp;LON=`$long``$imagetakenurl`" text="weatheronline.co.uk" title="Current weather near to $gridref weatheronline.co.uk"}</li>
+    <li>{external href="http://www.weatheronline.co.uk/cgi-bin/geotarget?LAT=`$lat`&amp;LON=`$long``$imagetakenurl`" text="weatheronline.co.uk" title="Current weather near to $gridref weatheronline.co.uk"}</li>
 	{/if}
   {if $dblock}
 		<li>{external href="http://webarchive.nationalarchives.gov.uk/20120320232950/http://www.bbc.co.uk/history/domesday/dblock/`$dblock`" text="bbc.co.uk/domesday" title="Domesday Reloaded via BBC History"} 
@@ -259,7 +267,7 @@
 	{/if}
 
 	{if $square->reference_index eq 1}
-			<li>{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="geocaching.com" title="Geocaches from geocaching.com"}</li>
+			<li class="broken">{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="geocaching.com" title="Geocaches from geocaching.com"}</li>
 			<li>{external title="Trigpoints from trigpointing.uk" href="http://trigpointing.uk/trigtools/find.php?t=`$gridrefraw`" text="trigpointing.uk"}</li>
 	{else}
 			<li>{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="Geocaches" title="Geocaches from geocaching.com"}</li>
@@ -272,21 +280,23 @@
     <h4>Historic Databases</h4>
     <ul>
 		
-		<li>{external href="https://canmore.org.uk/site/search/result?LOCAT_XY_RADIUS_M=3000&LOCAT_X_COORD=`$square->nateastings`&LOCAT_Y_COORD=`$square->natnorthings`" text="canmore.org.uk" title="historic environment database via canmore.org.uk"}</li>
-    <li>{external href="http://www.pastscape.org.uk/SearchResults.aspx?rational=m&mapist=os&&mapigrn=`$square->natnorthings`&mapigre=`$square->nateastings`&mapisa=1000&sort=2&recordsperpage=10" text="pastscape.org.uk" title="historic environment database via pastscape.org.uk"} (England Only)</li>
-		<li>{external href="http://pastmap.org.uk/?zoom=8&lonlat=lon=`$square->nateastings`,lat=`$square->natnorthings`" text="pastmap.org.uk"} (Scotland Only)</li>
-		<li>{external href="http://map.coflein.gov.uk/index.php?action=do_advanced&ngr=`$gridrefraw`&radiusm=3000&submit=Search" text="map.coflein.gov.uk" title="historic environment database via map.coflein.gov.uk"} (Wales Only)</li>
+		<li>{external href="https://canmore.org.uk/site/search/result?LOCAT_XY_RADIUS_M=3000&LOCAT_X_COORD=`$square->nateastings`&LOCAT_Y_COORD=`$square->natnorthings`" text="canmore.org.uk" title="historic environment database via canmore.org.uk"} (Mainly Scotland)</li>
+    <li>{external href="https://www.heritagegateway.org.uk/Gateway/Advanced_Search.aspx" text="heritagegateway.org.uk" title="Heritage Gateway"} (England only)*</li>
+    <li>{external href="https://historicengland.org.uk/listing/the-list/map-search?clearresults=True" text="historicengland.org.uk" title="Historic England"} (England only)*</li>
+		<li>{external href="https://pastmap.org.uk/map" text="pastmap.org.uk"} (Scotland only)*</li>
+		<li class="broken">{external href="http://map.coflein.gov.uk/index.php?action=do_advanced&ngr=`$gridrefraw`&radiusm=3000&submit=Search" text="map.coflein.gov.uk" title="historic environment database via map.coflein.gov.uk"} (Wales only)</li>
     </ul>
-
+<p>*These sites allow searching via grid reference via the pages linked, but their search results are not able to be linked to directly. Copy the grid reference ({$gridref}) and paste into the search box on the page.</p>
   {/if}
   
   <h4>Other location links</h4>
   <ul>
+  <li>{external title="View nearby places from Wikidata" href="https://www.wikidata.org/wiki/Special:Nearby#/coord/`$lat`,`$long`" text="Wikidata nearby places"}</li>
   {if $square->reference_index eq 1}
-		<li>{external title="find local features and maps with wikimedia" href="https://tools.wmflabs.org/geohack/en/`$lat`;`$long`_region:GB_scale:25000?pagename=Geograph" text="wikimedia geohack"}</li>
+		<li>{external title="find local features and maps with wikimedia" href="https://tools.wmflabs.org/geohack/en/`$lat`;`$long`_region:GB_scale:25000?pagename=Geograph" text="Wikimedia geohack"}</li>
 		<li>{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`" text="nearby.org.uk"}</li>
 	{else}
-		<li>{external title="find local features and maps with wikimedia" href="https://tools.wmflabs.org/geohack/en/`$lat`;`$long`_region:IE-D?pagename=Geograph" text="wikimedia geohack"}</li>
+		<li>{external title="find local features and maps with wikimedia" href="https://tools.wmflabs.org/geohack/en/`$lat`;`$long`_region:IE-D?pagename=Geograph" text="Wikimedia geohack"}</li>
 		<li>{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`+OSI" text="nearby.org.uk"}</li>
 	{/if}
   </ul>
