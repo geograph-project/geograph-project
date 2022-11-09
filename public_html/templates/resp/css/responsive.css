@@ -13,6 +13,9 @@
 		padding: 0.8em;
 		white-space: nowrap;
 	}
+	#nav_block .newsbody, #nav_block .newsfooter {
+		line-height:1.2rem;
+	}
 	.content_photoblack, .content_photogray, .content_photowhite, .content3, .content2, .content1, .maincontent {
 		margin-left:160px;
 	}
