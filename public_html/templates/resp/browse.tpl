@@ -80,10 +80,10 @@
 {if $gridref6}
 <h4>In centiquare {$gridref6}</h4>
 <ul class="buttonbar">
-
+{if $imagecount}
 <li><a href="/gridref/{$gridref}?viewcenti={$gridref6}">View image(s) taken in {$gridref6}</a></li>
 <li><a href="/gridref/{$gridref}?centi={$gridref6}">View subjects in {$gridref6}</a> (if any)</li>
-
+{/if}
 <li><select onchange="window.location.href=this.value" style="width:300px">
 				<option value="">Search images by distance</option>
 				<option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=full&amp;do=1">Full details</option>
@@ -120,11 +120,28 @@
 		</div>
     
     <br/>
+    
+    {else}
+		{* There are no images in this square (yet) *}
+
+		<div style="text-align:center"><big>We have no images for <b>{$gridref}</b> yet.</big></div>
+    
+		{if $nearest_distance}
+			<p>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance} km away.</p>
+		{else}
+			<p>There are no pictures for any grid square within 100km.</p>
+		{/if}
+    
+    
+    
+    
+	{/if}
 
 <ul class="buttonbar">
 
 <li><a href="{if $user->submission_method == 'submit2'}/submit2.php#gridref={$gridrefraw}{else}/submit.php?gridreference={$gridrefraw}{/if}">Submit your own photo</a></li>
 
+{if $imagecount}
 <li><select onchange="window.location.href=this.value" style="width:300px">
 				<option value="">View all {$imagecount} images in the search</option>
 				<option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
@@ -136,6 +153,7 @@
         <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
         <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
 </select></li>
+
 
 <li><select onchange="window.location.href=this.value" style="width:300px">
 				<option value="">View images grouped by...</option>
@@ -162,7 +180,7 @@
 {if $by ne 'centi' && $by ne 'viewcenti' && $mode eq 'normal'}
 		<li><a href="{linktoself name="by" value="centi"}">Show a geographical distribution of images</a></li>
 {/if}
-
+{/if}
 <li><select onchange="window.location.href=this.value" style="width:300px">
 				<option value="">Geograph coverage maps</option>
 				<option value="/mapbrowse.php?new=1&amp;o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1">Interactive coverage map</option>
@@ -212,37 +230,7 @@
 
 
 
-	{else}
-		{* There are no images in this square (yet) *}
-
-		<div style="text-align:center"><big>We have no images for <b>{$gridref}</b> yet.</big></div>
-    
-		{if $nearest_distance}
-			<p>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance} km away.</p>
-		{else}
-			<p>There are no pictures for any grid square within 100km.</p>
-		{/if}
-    
-    <ul class="buttonbar">
-		<li><a href="{if $user->submission_method == 'submit2'}/submit2.php#gridref={$gridrefraw}{else}/submit.php?gridreference={$gridrefraw}{/if}"><b>Submit your own picture</b></a></li>
-
-		{if $enable_forums}
-			<li>
-			{if $discuss}
-				There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
-				<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left)
-			{else}
-				{if $user->registered}
-					<a href="/discuss/index.php?gridref={$gridref}">Start a <b>discussion</b> about {$gridref}</a>
-				{else}
-					<a href="/discuss/index.php?gridref={$gridref}">login</a> to start a <b>discussion</b> about {$gridref}</a>
-				{/if}
-			{/if}</li>
-      </ul>
-		{/if}    
-    
-    
-	{/if}
+	
 
 
 
