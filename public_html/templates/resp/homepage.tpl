@@ -97,8 +97,7 @@ div.homepage {
 /* ********************** */
 
 .photoCarousel {
-	font-size:0.8em;
-	height: 190px;
+	height: 225px;
 	overflow-x: scroll;
         overflow-y: hidden;
         scroll-snap-type: x mandatory;
@@ -116,6 +115,16 @@ div.homepage {
 #photo_block {
 	display:none;
 	position:relative;margin-left:auto;margin-right:auto;max-width:750px; margin-top:10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background-color: #ffffff;
 }
 
 /* ********************** */
@@ -274,10 +283,10 @@ div.homepage {
                         {/if}
 
                         <b><a href="{$item.url}">{$item.title|escape:'html'}</a></b><br/>
-                        <small><small style="background-color:#{$colours.$source}">{$sources.$source}</small><small style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
-                        {if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</small></small>
+                        <span style="background-color:#{$colours.$source}">{$sources.$source}</span><span style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
+                        {if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</span>
                         {if $item.extract}
-                                <div title="{$item.extract|escape:'html'}" style="font-size:0.7em;">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
+                                <div title="{$item.extract|escape:'html'}">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
                         {/if}
                         <br style="clear:left">
                 </div>
@@ -308,7 +317,7 @@ div.homepage {
 		The registered office is Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.
 	</div>
 
-	<div class="homepageBox" style="font-size:0.8em"><i>
+	<div class="homepageBox"><i>
 		This site is archived for preservation by the <a href="/help/webarchive">UK Web Archive, Internet Archive and WikiMedia Commons</a> projects.</i>
 	</div>
 </div>
