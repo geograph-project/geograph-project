@@ -27,7 +27,7 @@
 function dump_env() {
 	print "<div style='margin-left:200px'>\n";//avoids the geograph sidebar!
 	foreach ($_SERVER as $key => $value) {
-		if (strpos($key,'CONF') === 0 || strpos($key,'SERVICE_') !== FALSE || strpos($key,'_PORT') !== FALSE || strpos($key,'SHOWCASE') === 0)
+		if (strpos($key,'CONF') === 0 || strpos($key,'SERVICE_') !== FALSE || strpos($key,'_PORT') !== FALSE || strpos($key,'SHOWCASE') === 0 || strpos($key,'AWS_') === 0)
 			continue;
 		print "<tt>".htmlentities($key)."</tt>: <b>".htmlentities($value)."</b><br>\n";
 	}
