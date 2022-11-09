@@ -141,6 +141,9 @@
 
 <li><a href="{if $user->submission_method == 'submit2'}/submit2.php#gridref={$gridrefraw}{else}/submit.php?gridreference={$gridrefraw}{/if}">Submit your own photo</a></li>
 
+
+
+
 {if $imagecount}
 <li><select onchange="window.location.href=this.value" style="width:300px">
 				<option value="">View all {$imagecount} images in the search</option>
@@ -154,6 +157,23 @@
         <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
 </select></li>
 
+{else}
+<li><select onchange="window.location.href=this.value" style="width:300px">
+				<option value="">Search for nearby images</option>
+				<option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=full&amp;do=1">Full details</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=grid&amp;do=1">Thumbnails grid</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=slide&amp;do=1">Slideshow</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=map&amp;do=1">Map</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=black&amp;do=1">Georiver</option>
+</select></li>
+
+{/if}
+
+
+{if $imagecount}
 
 <li><select onchange="window.location.href=this.value" style="width:300px">
 				<option value="">View images grouped by...</option>
