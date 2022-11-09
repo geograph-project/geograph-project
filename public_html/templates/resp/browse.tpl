@@ -213,15 +213,20 @@
 
 {* Collections in the gridsquare*}
 {if $square && $square->collections}
-    <li><select onchange="window.location.href=this.value" style="width:300px"><option value="">Collections</option>
-    {assign var="lasttype" value="0"}
-    {foreach from=$square->collections item=item}    	
-            {if $lasttype != $item.type}{$item.type|regex_replace:"/y$/":'ie'}s{/if}
-            {assign var="lasttype" value=$item.type}
-        <optgroup label="{$item.type}">
-        <option value="{$item.url}">{$item.title|escape:'html'}</option>
-    </optgroup>
-    {/foreach}
+    <li><select onchange="window.location.href=this.value" style="width:300px">
+        <option value="">Collections</option>
+        {assign var="lasttype" value="0"}
+        {foreach from=$square->collections item=item}
+            {if $lasttype != $item.type}
+                {if $lasttype}
+                    </optgroup>
+                {/if}
+                <optgroup label="{$item.type|regex_replace:"/y$/":'ie'}s">
+                {assign var="lasttype" value=$item.type}
+            {/if}
+            <option value="{$item.url}">{$item.title|escape:'html'}</option>
+        {/foreach}
+        </optgroup>
     </select></li>
 {/if}
 
