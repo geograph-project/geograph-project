@@ -1,0 +1,1 @@
+../basic/static_geograph_british_isles.tpl

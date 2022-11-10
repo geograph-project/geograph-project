@@ -1,0 +1,1 @@
+../basic/adopt_statistics.tpl

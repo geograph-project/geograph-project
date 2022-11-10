@@ -1,0 +1,1 @@
+../basic/mapper_captcha.tpl

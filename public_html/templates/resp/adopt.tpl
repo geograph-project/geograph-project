@@ -1,0 +1,1 @@
+../basic/adopt.tpl

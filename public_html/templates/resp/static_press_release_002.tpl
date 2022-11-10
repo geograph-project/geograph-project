@@ -1,0 +1,1 @@
+../basic/static_press_release_002.tpl

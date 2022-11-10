@@ -77,6 +77,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+$smarty->assign('responsive',true);
+
 if ($CONF['template']!='ireland') {
         $smarty->assign('welsh_url',"/chwilio/?loc=".urlencode($_GET['q'])."&lang=cy");
         //$smarty->assign('english_url',"/"); //needed by the welsh template!

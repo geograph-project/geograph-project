@@ -1,0 +1,1 @@
+../basic/static_temp_submit_mockup.tpl

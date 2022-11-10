@@ -1,0 +1,1 @@
+../basic/static_map_precision.tpl

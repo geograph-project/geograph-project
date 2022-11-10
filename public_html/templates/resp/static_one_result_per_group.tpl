@@ -1,0 +1,1 @@
+../basic/static_one_result_per_group.tpl

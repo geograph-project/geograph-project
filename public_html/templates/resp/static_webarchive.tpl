@@ -1,0 +1,1 @@
+../basic/static_webarchive.tpl

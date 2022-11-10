@@ -1,0 +1,1 @@
+../basic/blog_entry.tpl

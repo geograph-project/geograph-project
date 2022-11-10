@@ -54,6 +54,8 @@ if (!empty($_GET['tab'])) {
 
 $smarty->assign("page_title",'Your Photos around the site');
 
+$smarty->assign('responsive',true);
+
 //we dont use smarty caching because the page is so big!
 $smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
 

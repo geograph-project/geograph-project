@@ -1,0 +1,1 @@
+../basic/submit_competition.tpl

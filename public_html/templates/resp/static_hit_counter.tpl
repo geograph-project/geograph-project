@@ -1,0 +1,1 @@
+../basic/static_hit_counter.tpl
