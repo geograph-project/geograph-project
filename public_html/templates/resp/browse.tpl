@@ -12,7 +12,7 @@
 
 <style>
 {literal}
-*{
+#maincontent *{
 	box-sizing:border-box;
 }
 {/literal}
