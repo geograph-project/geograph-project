@@ -4,7 +4,7 @@
 <div class="titlebar">
 	<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 	{if $image->imagetaken && $image->imagetaken > 1000}
-		<div class=numeric style="color:gray;font-size:clamp( 1rem , 2vw, 3rem );">{$image->imagetaken|date_format:"%Y"}</div>
+		<div class="numeric lighter" style="font-size:clamp( 1rem , 2vw, 3rem );">{$image->imagetaken|date_format:"%Y"}</div>
 	{/if}
 </div>
 {if $place.distance}

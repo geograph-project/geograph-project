@@ -63,11 +63,12 @@ div.photoguide
 
 div.ccmessage {
 	font-size:1em;
-	color:#000066;
 }
 
+/* -------------------- */
+
 .buttonbar { /* there is an existing buttonbar, which may need to check compatibltiy */
-	background-color:white;
+	background-color:inherit;
 	padding:5px;
 	display: flex;
 	justify-content: space-between;
@@ -98,6 +99,51 @@ div.ccmessage {
 	font-family:verdana, arial, sans serif;
 	font-weight:bold;
 }
+.buttonbar select optgroup {
+	color:gray;
+}
+.buttonbar select option {
+	color:blue;
+}
+.buttonbar select option[value=""] {
+	color:silver;
+}
+
+/* -------------------- */
+
+.content_photoblack .buttonbar li {
+	background-color:#333333;
+        color:#bbbbbb;
+}
+.content_photoblack .buttonbar a {
+	color:cyan;
+}
+.content_photoblack .buttonbar select {
+	background-color:#333333;
+	color:cyan;
+}
+.content_photoblack .buttonbar select option {
+	color:cyan;
+}
+
+/* -------------------- */
+
+.content_photogray .buttonbar li {
+	background-color:#cccccc;
+        color:#444444;
+}
+.content_photogray .buttonbar a {
+	color:#2E9AFE;
+}
+.content_photogray .buttonbar select {
+	background-color:#cccccc;
+	color:#2E9AFE;
+}
+.content_photogray .buttonbar select option {
+	color:#2E9AFE;
+}
+
+/* -------------------- */
 
 .tagbar {
 	margin-top:10px;
@@ -115,6 +161,7 @@ div.ccmessage {
 	white-space:nowrap;
 }
 
+/* -------------------- */
 /* move to simpler style for the rastermap */
 
 div.rastermap {
