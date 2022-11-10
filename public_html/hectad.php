@@ -96,6 +96,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		$mosaic->setToken($row['map_token']);
 	}
 
+
+        list ($x,$y) = $mosaic->getCentre();
+        $conv = new Conversions;
+        list($lat,$long) = $conv->internal_to_wgs84($x,$y,$mosaic->reference_index);
+        $smarty->assign('lat', $lat);
+        $smarty->assign('long', $long);
+
+
 	$overview->assignToSmarty($smarty, 'overview');
 	$smarty->assign('marker', $overview->getBoundingBox($mosaic));
 
@@ -115,13 +123,13 @@ if (!$smarty->is_cached($template, $cacheid))
 
         $ctx = stream_context_create(array(
             'http' => array(
-                'timeout' => 1
+                'timeout' => 3
                 )
             )
         );
 
 	//calling our own API is ugly, but better than replicating all the code here?
-        $remote = file_get_contents("http://www.geograph.org.uk/finder/bytag.json.php?q=hectad:$hectad",0, $ctx);
+        $remote = file_get_contents("https://api.geograph.org.uk/finder/bytag.json.php?q=hectad:$hectad",0, $ctx);
 
         if (!empty($remote) && strlen($remote) > 110) {
 		require_once '3rdparty/JSON.php';

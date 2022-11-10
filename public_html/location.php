@@ -134,7 +134,8 @@ if ($grid_given)
 		$smarty->assign('northings', $square->northings);
 		$smarty->assign('x', $square->x);
 		$smarty->assign('y', $square->y);
-
+		$smarty->assign('place', $square->findNearestPlace(135000));
+    
 		//geotag the page
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;

@@ -1,0 +1,1 @@
+../basic/stuff_canonical_moderename.tpl

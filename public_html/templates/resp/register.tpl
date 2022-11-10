@@ -1,6 +1,7 @@
 {assign var="page_title" value="Register"}
 {include file="_std_begin.tpl"}
 
+<div style="max-width:600px">
 <h2>Register</h2>
 
 {dynamic}
@@ -52,47 +53,47 @@ function hide_message() {
 <a href="javascript:void(hide_message());" id="show101">close message</a>
 <div id="hide101" style="display:none">
 {else}
-<div class="interestBox" style="max-width:600px">
-	The websites:
+<div class="interestBox">
+	Our websites:
 	<ul>
-		<li><b>Geograph Britain and Ireland</b><br/><br/></li>
-		<li><b>Geograph Ireland</b><br/><br/></li>
+		<li><b>Geograph Britain and Ireland</b></li>
+		<li><b>Geograph Ireland</b></li>
 	</ul>
-	... share the same user/registration database. An account created here can be used right away on either site.
+	... share the same database. You can use either login here.
 </div>
 {/if}
 
-	<p>You must register before you can upload photos, but it's quick
-	and painless and free. </p>
+	<p>You need to register before you can upload photos or use the forums. Registration is simple, quick
+	and free. </p>
 
 	<p>We will send you a one-off email, to confirm your registration.</p>
 
 	<label for="name">Your name</label><br/>
-	<input id="name" name="name" value="{$name|escape:'html'}"/>
+	<input size="15" id="name" name="name" value="{$name|escape:'html'}"/>
 	<span class="formerror">{$errors.name}</span>
 
 	<br/><br/>
 
 	<label for="email">Your email address</label><br/>
-	<input id="email" name="email" value="{$email|escape:'html'}"/>
+	<input size="15" id="email" name="email" value="{$email|escape:'html'}"/>
 	<span class="formerror">{$errors.email}</span>
 
 	<br/><br/>
 
         <div class="interestBox" style="position:absolute;left:-1000px;top:-200px">
         <label for="email2">leave this box blank</label><br/>
-        <input id="email2" name="email2" value="" autocomplete="no"/>
+        <input size="15" id="email2" name="email2" value="" autocomplete="no"/>
 
         <br/><br/>
         </div>
 
 	<label for="password1">Choose a password</label><br/>
-	<input size="12" type="password" id="password1" name="password1" value="{$password1|escape:'html'}"/>
+	<input size="15" type="password" id="password1" name="password1" value="{$password1|escape:'html'}"/>
 	<span class="formerror">{$errors.password1}</span>
 
 	<br/><br/>
 	<label for="password2">Confirm password</label><br/>
-	<input size="12" type="password" id="password2" name="password2" value="{$password2|escape:'html'}"/>
+	<input size="15" type="password" id="password2" name="password2" value="{$password2|escape:'html'}"/>
 	<span class="formerror">{$errors.password2}</span>
 	<br/>
 	<span class="formerror">{$errors.general}</span>
@@ -115,5 +116,6 @@ function hide_message() {
 {/if}
 
 {/dynamic}
+</div>
     
 {include file="_std_end.tpl"}

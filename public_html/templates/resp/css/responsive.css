@@ -13,9 +13,6 @@
 		padding: 0.8em;
 		white-space: nowrap;
 	}
-	#nav_block .newsbody, #nav_block .newsfooter {
-		line-height:1.2rem;
-	}
 	.content_photoblack, .content_photogray, .content_photowhite, .content3, .content2, .content1, .maincontent {
 		margin-left:160px;
 	}
@@ -188,12 +185,82 @@
 
 }
 
+/*Three column responsive layout */
+.threecolsetup{
+	box-sizing:border-box;
+}
+.threecolumn{
+	float:left;
+	width:100%;
+	padding:0 8px;
+}
+.threecolumn h3{
+	color: black;
+	text-align: center;
+	background: silver;
+  border-radius: 10px;
+  padding: 2px;
+}
+@media (min-width:1000px){
+	.threecolumn{
+		width:33.33333%;
+	}
+}
+/*Two column responsive layout */
+.twocolsetup{
+	box-sizing:border-box;
+}
+.twocolumn{
+	float:left;
+	width:100%;
+	padding:0 8px;
+}
+.twocolumn h3{
+	color: black;
+  font-weight:bold;
+	text-align: center;
+	background: silver;
+  border-radius: 10px;
+  padding: 2px;
+}
+@media (min-width:800px){
+	.twocolumn{
+		width:50%;
+	}
+}
 
-@media only screen and (max-width: 1200px) {
-	body>#right_block {
-	    width: 130px;
+
+/*Collapsing menus on small screens */
+.collapsible {
+  background-color: whitesmoke;
+  color: black;
+	font-family: "Georgia", serif;
+	font-weight: bold;
+  cursor: pointer;
+  padding: 5px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 1.0em;
+  border-radius: 5px;
+  margin-bottom: 2px;
+}
+
+.collapsible:hover {
+  background-color: Gainsboro;
+}
+
+.collapsedcontent {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+}
+@media (min-width:800px){
+	.collapsedcontent{
+		display: block;
 	}
-	.content3 {
-	    margin-right: 152px;
-	}
+  .collapsible {
+    background-color: white;
+  }
 }

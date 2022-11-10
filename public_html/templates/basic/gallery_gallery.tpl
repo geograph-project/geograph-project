@@ -60,12 +60,24 @@
 <br style="clear:both"/>
 
 
-<p align=right><a href="/search.php?do=1&amp;orderby=post_id,seq_id&amp;topic_id={$topic_id}">View Image Detail</a>
-- <a href="/browser/content-redirect.php?id={$topic_id}&amp;source={if $forum_id == '11'}gallery{else}themed{/if}">View in Browser</a>
-- <a href="/search.php?do=1&amp;topic_id={$topic_id}&amp;orderby=post_id,seq_id&amp;displayclass=slide">View as Slide Show</a>
-- <a title="View these images in Google Earth" href="/search.php?do=1&amp;orderby=post_id,seq_id&amp;topic_id={$topic_id}&amp;kml" class="xml-kml">KML</a>
-- <a title="RSS Feed for images" href="/search.php?do=1&amp;topic_id={$topic_id}&amp;orderby=post_id,seq_id&amp;reverse_order_ind=1&amp;rss" class="xml-rss">photo RSS</a>
-- <a title="RSS Feed for this Topic" href="/discuss/syndicator.php?forum={$forum_id}&amp;topic={$topic_id}" class="xml-rss">topic RSS</a></p>
+<p align=right>
+<select onchange="window.open(this.value)" style="width:200px">
+	<option>View images in search</option>
+	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=full">Full details</option>
+	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=thumbs">Thumbnails</option>
+	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=thumbsmore">Thumbnails + links</option>
+	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=bigger">Thumbnails - bigger</option>
+	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=grid">Thumbnails grid</option>
+	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=slide">Slideshow</option>
+	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=map">Map</option>
+  <option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=black">Georiver</option>
+</select>  
+  
+ 
+- <a title="View these images in Google Earth" href="/search.php?do=1&amp;orderby=post_id,seq_id&amp;topic_id={$topic}&amp;kml" class="xml-kml">KML</a>
+- <a title="RSS Feed for images" href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;reverse_order_ind=1&amp;rss" class="xml-rss">photo RSS</a>
+- <a title="RSS Feed for this Topic" href="/discuss/syndicator.php?topic={$topic}" class="xml-rss">gallery RSS</a>
+</p>
 
 {dynamic}
 {if $user->registered && $enable_forums}
