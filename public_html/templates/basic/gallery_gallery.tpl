@@ -61,7 +61,7 @@
 
 
 <p align=right>
-<select onchange="window.location.href=this.value" style="width:300px">
+<select onchange="window.open(this.value)" style="width:200px">
 	<option>View images in search</option>
 	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=full">Full details</option>
 	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=thumbs">Thumbnails</option>
