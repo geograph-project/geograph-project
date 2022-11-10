@@ -1,11 +1,11 @@
 {include file="_std_begin.tpl"}
 <!--INFOLINKS_OFF-->
 
-<div class="titlebar">
-	<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
+<div style="padding-left:10px;padding-top:10px">
 	{if $image->imagetaken && $image->imagetaken > 1000}
-		<div class="numeric lighter" style="font-size:clamp( 1rem , 2vw, 3rem );">{$image->imagetaken|date_format:"%Y"}</div>
+		<div class="numeric lighter" style="float:right;font-size:clamp( 1rem , 2vw, 3rem );">{$image->imagetaken|date_format:"%Y"}</div>
 	{/if}
+	<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 </div>
 {if $place.distance}
 	{place place=$place h3=true takenago=$takenago}
