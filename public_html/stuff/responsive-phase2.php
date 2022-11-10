@@ -17,6 +17,7 @@ $smarty->display('_std_begin.tpl',true);
 
 $is_admin = $USER->hasPerm('admin') || ($USER->user_id == 1469); // or dsp!
 
+$db->Execute('USE geograph_live');
 $domain = $db->getOne("SELECT domain FROM responsive_domain WHERE user_id = {$USER->user_id}");
 if (empty($domain))
 	$domain = "https://www.geograph.org.uk";
@@ -45,7 +46,10 @@ if (!empty($_GET['id'])) {
 		if (!empty($_POST['skip']))
 			@$_SESSION['skip'][$row['responsive_id']] = $row['responsive_id'];
 
-		if (true) {
+		if (!empty($_GET['auto'])) {
+			print "<script>location.href = 'responsive-viewer.php';</script>";
+			exit;
+		} else {
 			if (!empty($_POST['auto'])) {
 				$where = array();
 				$where[] = "status in ('converted','whitelisted','enabled')";
@@ -57,7 +61,7 @@ if (!empty($_GET['id'])) {
 					if (preg_match('/^\d+(,\d+)*$/',$ids))
 						$where[] = "responsive_id NOT IN ($ids)";
 				}
-				$id = $db->getOne($sql = "SELECT responsive_template.responsive_id FROM responsive_template
+				$id = $db->getOne($sql = "SELECT responsive_id FROM responsive_template
 				 LEFT JOIN responsive_test ON (responsive_test.responsive_id = responsive_template.responsive_id AND user_id = {$USER->user_id})
 				WHERE ".implode(' AND ',$where));
 			}
@@ -79,7 +83,7 @@ if (!empty($_GET['id'])) {
 	}
 
 	?>
-		<h2><a href=?>&lt;-- back</a> :: <? echo $row['file']; ?></h2>
+		<h2><a href=<? echo empty($_GET['auto'])?'?':'responsive-viewer.php'; ?>>&lt;-- back</a> :: <? echo $row['file']; ?></h2>
 
 	<form method=post style=background-color:#eee;padding:10px>
 		Test URL: <input type=text name=url value="<? echo htmlentities($row['url']); ?>" size=90 maxlength=255 readonly style="max-width:85vw"><button type=button id=openlink>Open in new window</button>
@@ -108,24 +112,30 @@ if (!empty($_GET['id'])) {
 	<? } ?>
 		</blockquote>
 
-		Tick, for all test(s) that pass:<br>
-		<label><input type=checkbox name="test_mobile" value=1 <? if (!empty($r2['test_mobile'])) { echo "checked"; } ?>>
-			 I've tested this on mobile - '<b>portrait</b>' format</label><br><br>
+			 I've tested this on mobile - '<b>portrait</b>' format:
+			<input type=radio name=test_mobile value=0 <? if (strlen(@$r2['test_mobile'])) { echo "checked"; } ?>>Broken &middot;
+			<input type=radio name=test_mobile value=1 <? if (!empty(@$r2['test_mobile'])) { echo "checked"; } ?>>Working &middot;
+			<br><br>
 
-		<label><input type=checkbox name="test_landscape" value=1 <? if (!empty($r2['test_landscape'])) { echo "checked"; } ?>>
-			 I've tested this on mobile - '<b>landscape</b>' format</label><br><br>
+			 I've tested this on mobile - '<b>landscape</b>' format:
+			<input type=radio name=test_landscape value=0 <? if (strlen(@$r2['test_landscape'])) { echo "checked"; } ?>>Broken &middot;
+			<input type=radio name=test_landscape value=1 <? if (!empty(@$r2['test_landscape'])) { echo "checked"; } ?>>Working &middot;
+			<br><br>
 
-		<label><input type=checkbox name="test_tablet" value=1 <? if (!empty($r2['test_tablet'])) { echo "checked"; } ?>>
-			 I've tested this on <b>tablet</b> (ideally at various sizes)</label><br><br>
+			 I've tested this on <b>tablet</b> (ideally at various sizes):
+			<input type=radio name=test_tablet value=0 <? if (strlen(@$r2['test_tablet'])) { echo "checked"; } ?>>Broken &middot;
+			<input type=radio name=test_tablet value=1 <? if (!empty(@$r2['test_tablet'])) { echo "checked"; } ?>>Working &middot;
+			<br><br>
 
-		<label><input type=checkbox name="test_desktop" value=1 <? if (!empty($r2['test_desktop'])) { echo "checked"; } ?>>
-			 I've tested this on <b>desktop</b> (ideally at various sizes)</label><br><br>
+			 I've tested this on <b>desktop</b> (ideally at various sizes):
+			<input type=radio name=test_desktop value=0 <? if (strlen(@$r2['test_desktop'])) { echo "checked"; } ?>>Broken &middot;
+			<input type=radio name=test_desktop value=1 <? if (!empty(@$r2['test_desktop'])) { echo "checked"; } ?>>Working &middot;
+			<br><br>
 
-		<!--label><input type=checkbox name="test_google" value=1 <? if (!empty($r2['test_google'])) { echo "checked"; } ?>>
-			 I've tested this on</label> <a href="https://search.google.com/test/mobile-friendly?url=<? echo urlencode($row['url']); ?>">Google Mobile Friendly Test</a>, which says 'Page is usable on mobile'. <small>(note getting 'crawl failed' is normal, the test itself runs, the crawl fails as the test URL is blocked from accidently indexing)</small><br><br-->
-
-		<label><input type=checkbox name="test_bing" value=1 <? if (!empty($r2['test_bing'])) { echo "checked"; } ?>>
-			 I've tested this on</label> <a href="https://www.bing.com/webmaster/tools/mobile-friendliness?url=<? echo urlencode($row['url']); ?>" target=testwindow>Bing Mobile Friendly Test</a>, which says 'This page is mobile friendly'.<br><br>
+			 I've tested this on</label> <a href="https://www.bing.com/webmaster/tools/mobile-friendliness?url=<? echo urlencode($row['url']); ?>" target=testwindow>Bing Mobile Friendly Test</a>:
+			<input type=radio name=test_bing value=0 <? if (strlen(@$r2['test_bing'])) { echo "checked"; } ?>>Broken &middot;
+			<input type=radio name=test_bing value=1 <? if (!empty(@$r2['test_bing'])) { echo "checked"; } ?>>Working &middot;
+			<br><br>
 
 		Comments: (optional) - no need to enter anything if page seems to work fine on all screen sizes, but can add explanation, if something doesn't work!<br>
 		<textarea name=comments rows=4 cols=80 style="max-width:85vw"><? echo htmlentities(@$r2['comments']); ?></textarea>
