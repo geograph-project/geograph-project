@@ -768,15 +768,6 @@ split_timer('gridimage'); //starts the timer
 				ORDER BY content_id DESC"));
 			//todo - could add themed topics (if a registered user) and gsds (if they become part of content)
 
-			//todo -experimental and duplicate anyway!
-			if (!empty($this->snippet_count)) {
-				foreach ($this->snippets as $i => $row) {
-					if (!empty($row['title'])) {
-						$this->collections[] = array('url'=>"/snippet/".$row['snippet_id'],'title'=>$row['title'],'type'=>'Shared Description');
-					}
-				}
-			}
-
 			$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,"
 				SELECT CONCAT('/stuff/post.php?id=',post_id) AS url,topic_title AS title,'Grouping' AS `type`
 				FROM gridimage_post gp
