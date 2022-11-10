@@ -83,17 +83,16 @@
         <option value="/mapbrowse.php?t={$map_token}">Original coverage maps</option>
 </select></li>
 
-{*No $lat or $long available to this page, so hidden until code added!
+
 
 <li><select onchange="window.location.href=this.value" style="width:300px">
 				<option value="">Mapping links</option>
-				<option value="https://www.google.co.uk/maps/search/{$lat},{$long}/">Google maps</option>
+				<option value="https://www.google.com/maps/@?api=1&map_action=map&center={$lat}%2C{$long}&zoom=12">Google maps</option>
         <option value="http://www.openstreetmap.org/?mlat={$lat}&amp;mlon={$long}&amp;zoom=12">OpenStreetMaps</option>
         <option value="https://maps.nls.uk/geo/find/marker/#zoom=12&lat={$lat}&lon={$long}&f=1&z=1&marker={$lat},{$long}">National Library of Scotland</option>
         <option value="http://wtp2.appspot.com/wheresthepath.htm?lat={$lat}&amp;lon={$long}">Where's the path</option>
         <option value="https://www.bing.com/maps?v=2&amp;cp={$lat}~{$long}&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1">Bing maps</option>
 </select></li>
-*}
 
 <li><a title="open geograph browser - search/browse and map in one" href="/browser/#!/hectad+%22{$hectad}%22">Open {$hectad} in Geograph Browser</a></li>
 
