@@ -177,9 +177,9 @@
         <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
     </optgroup>
     <optgroup label="One image per">
-        <option value="/search.php?gridref=TQ3080&amp;distance=1&amp;displayclass=full&amp;groupby=takendays&amp;do=1">Day taken</option>
-        <option value="/search.php?gridref=TQ3080&amp;distance=1&amp;displayclass=full&amp;groupby=auser_id&amp;do=1">Contributor</option>
-        <option value="/search.php?gridref=TQ3080&amp;distance=1&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
     </optgroup>
 </select>
 </li>
@@ -424,51 +424,7 @@
 		{/if}] &nbsp;
 	{/if}
 	</div>
-	{if $sample && $groupbys}
-		<div align=center>
-			<form action="/finder/groups.php" method="get" style="display:inline">
-				<input type="hidden" name="q" value="^{$gridref}"/>
-				View images grouped by:
-				<select name="group" id="fgroup">
-					<option value=":1"></option>
-					<option value="context_ids">Geographical Contexts</option>
-					<option value="tag_ids">Tags</option>
-					<option value="snippet_ids">Shared Descriptions</option>
-					<option value="group_ids">Automatic Clusters</option>
-					<option value="subject_ids">Subject</option>
-					<option value=":3"></option>
-					<option value="user_id">Contributor</option>
-					<option value=":4"></option>
-					<option value="decade">Decade Taken</option>
-					<option value="takenyear">Year Taken</option>
-					<option value="takenmonth">Month Taken</option>
-					<option value="takenday">Day Taken</option>
-					<option value=":5"></option>
-					<option value="segment" selected="selected">When Submitted</option>
-					<option value=":6"></option>
-					<option value="direction">View Direction</option>
-					<option value="distance">Subject Distance</option>
-					<option value=":7"></option>
-					<option value="format">Image Format</option>
-					<option value="status">Moderation Status</option>
 
-				</select><input type="submit" value="Go"/>
-			</form>
-
-			or
-			<form method="get" action="/search.php" style="display:inline">
-				View a sample by:
-				<select name="groupby" id="groupby" size="1">
-					{html_options options=$groupbys selected='scenti'}
-				</select>
-				<input type="submit" value="Go"/>
-				<input type="hidden" name="location" value="{$gridref}"/>
-				<input type="hidden" name="distance" value="1"/>
-				<input type="hidden" name="do" value="1"/>
-			</form>
-
-		</div>
-	{/if}
 	{if $breakdown}
 		{* We want to display a breakdown list *}
 		<blockquote>
