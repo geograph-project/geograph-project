@@ -10,7 +10,8 @@ $smarty = new GeographPage;
 $USER->mustHavePerm("basic");
 
 $db->Execute('USE geograph_live');
-$domain = "https://www.geograph.org.uk";
+$domain = $CONF['SELF_HOST']; //need to use current domain, becaues of iframe!
+
 
 if (!empty($_POST['id'])) {
             if ($db->readonly)
@@ -44,30 +45,33 @@ if (!empty($_POST['id'])) {
 
 
 
+if (!empty($_GET['id'])) {
+	$row = $db->getRow("SELECT * FROM responsive_template WHERE responsive_id = ".intval($_GET['id']));
+} else {
+	$where = array();
+        $where[] = "status IN ('whitelisted','converted')";
+        if (!empty($_SESSION['skip'])) {
+                $ids = implode(',',$_SESSION['skip']);
+                if (preg_match('/^\d+(,\d+)*$/',$ids))
+                        $where[] = "responsive_id NOT IN ($ids)";
+        }
+        $where[] = "url != ''";
+        $where[] = "url != 'none'";
+	$where[] = "responsive_test.responsive_id IS NULL";
 
-$where = array();
-                                $where[] = "status IN ('whitelisted','converted')";
-                                if (!empty($_SESSION['skip'])) {
-                                        $ids = implode(',',$_SESSION['skip']);
-                                        if (preg_match('/^\d+(,\d+)*$/',$ids))
-                                                $where[] = "responsive_id NOT IN ($ids)";
-                                }
-                                $where[] = "url != ''";
-                                $where[] = "url != 'none'";
-				$where[] = "responsive_test.responsive_id IS NULL";
+        if ($USER->user_id != 3) {
+                $where[] = "file NOT like 'admin_%'";
+                $where[] = "file NOT like '%/admin%'";
+                $where[] = "file NOT like '%adopt%'";
+                $where[] = "file NOT like '%human%'";
+                $where[] = "file NOT like '%photoset%'";
+                $where[] = "file NOT like '%curated%'";
+        }
 
-                              if ($USER->user_id != 3) {
-                                        $where[] = "file NOT like 'admin_%'";
-                                        $where[] = "file NOT like '%/admin%'";
-                                        $where[] = "file NOT like '%adopt%'";
-                                        $where[] = "file NOT like '%human%'";
-                                        $where[] = "file NOT like '%photoset%'";
-                                        $where[] = "file NOT like '%curated%'";
-                              }
-
-$row = $db->getRow($sql = "SELECT responsive_template.* FROM responsive_template
+	$row = $db->getRow($sql = "SELECT responsive_template.* FROM responsive_template
 		LEFT JOIN responsive_test ON (responsive_test.responsive_id = responsive_template.responsive_id AND user_id = {$USER->user_id})
 		WHERE ".implode(' AND ',$where)." LIMIT 1");
+}
 
 $row['url'] = preg_replace('/^https?:\/\/\w[\w.]+/',$domain,$row['url']);
 
@@ -130,7 +134,7 @@ html, body {
   max-height: 100%; 
   border: none;
   box-shadow: 0 0 80px rgba(0,0,0,0.3); 
-  transform: scale(0.8);
+  --transform: scale(0.8);
 }
 .size-select { 
   position: absolute; 
