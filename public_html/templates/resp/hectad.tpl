@@ -17,9 +17,9 @@
 
 
 
-<div class="threecolsetup">
+<div class="twocolsetup">
  
-<div class="threecolumn">
+<div class="twocolumn">
 <h3>Coverage</h3>
 
 
@@ -83,6 +83,7 @@
         <option value="/mapbrowse.php?t={$map_token}">Original coverage maps</option>
 </select></li>
 
+{*No $lat or $long available to this page, so hidden until code added!
 
 <li><select onchange="window.location.href=this.value" style="width:300px">
 				<option value="">Mapping links</option>
@@ -92,7 +93,7 @@
         <option value="http://wtp2.appspot.com/wheresthepath.htm?lat={$lat}&amp;lon={$long}">Where's the path</option>
         <option value="https://www.bing.com/maps?v=2&amp;cp={$lat}~{$long}&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1">Bing maps</option>
 </select></li>
-
+*}
 
 <li><a title="open geograph browser - search/browse and map in one" href="/browser/#!/hectad+%22{$hectad}%22">Open {$hectad} in Geograph Browser</a></li>
 
@@ -112,8 +113,8 @@
 <ul class="buttonbar">
 <li><a href="/statistics/groupby.php?groupby=auser_id&amp;filter%5Bahectad%5D={$hectad}&amp;distinct=agridsquare">List of contributors</a></li>
 <li><a href="/statistics/groupby.php?groupby=takendays_year&amp;filter%5Bahectad%5D={$hectad}&amp;distinct=agridsquare">Year Breakdown</a></li>		
-<li><a href="/sitemap/clusters/{$myriad}/{$hectad}.html">Common Clusters</a></li>
-<li><a href="/sitemap/terms/{$myriad}/{$hectad}.html">Common Terms</a></li>
+<li><a href="/finder/groups.php?q=hectad:{$hectad}&group=group_ids">Common Clusters</a></li>
+<li><a href="/finder/groups.php?q=hectad:{$hectad}&group=term_ids">Common Terms</a></li>
 <li><a href="/finder/bytag.php?q=hectad:{$hectad}">Most Used Tags</a></li>
 </ul>
 
@@ -155,7 +156,7 @@
 
 </div>
   
-<div class="threecolumn">
+<div class="twocolumn">
 <h3>Maps</h3>
 
 <div style="width:100%; text-align:center;">
@@ -178,7 +179,15 @@
 </div>
 </div>
 
-<div class="threecolumn">
+
+</div>
+<br style="clear:both"/>
+
+
+
+
+<div class="twocolsetup">
+<div class="twocolumn">
 <h3>Statistics</h3>
 
 <ul>
@@ -193,22 +202,6 @@
                 <li>Contributors:  <b>{$users|thousends}</b></li>
         </ul>{/if}</li>
 </ul>
-
-
-
-
-</div>
-</div>
-<br style="clear:both"/>
-
-
-
-
-<div class="twocolsetup">
-<div class="twocolumn">
-
-
-<h3>Links</h3>
 
 
 
