@@ -245,7 +245,7 @@ if ($image->isValid())
 		$smarty->assign_by_ref('current_search',$s);
 	}
 
-	if (appearsToBePerson()) {
+	if (appearsToBePerson() && empty($_SESSION['responsive']) && empty($_GET['responsive'])) {
 		if (empty($_SESSION['photos'][$image->gridimage_id])) {
 			if (empty($db) || $db->readonly)
 				$db = GeographDatabaseConnection(false);
