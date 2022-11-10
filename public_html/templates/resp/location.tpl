@@ -7,9 +7,6 @@
 *{
 	box-sizing:border-box;
 }
-.broken{
-background-color:yellow;
-}
 {/literal}
 </style>
 
@@ -205,7 +202,7 @@ background-color:yellow;
     <h3>Mapping</h3>
     <h4>Google</h4>
     <ul>
-    <li>{external title="Open in Google Maps" href="https://www.google.co.uk/maps/search/`$lat`,`$long`/" text="Google Maps"}</li>
+    <li>{external title="Open in Google Maps" href="https://www.google.co.uk/maps/search/`$lat`,`$long`/" text="Google Maps"} ({external title="Navigate here using Google Maps" href="https://www.google.co.uk/maps/dir/?api=1&amp;destination=`$lat`,`$long`" text="Navigate"})</li>
     <li>{external title="Open in Google Earth" href="https://earth.google.com/web/search/`$lat`,`$long`/" text="Google Earth for Web"}</li>
     {if $id}
 				<li>{external href="http://gokml.net/maps?q=`$self_host`/photo/`$id`.kml" text="ClassyGMaps" title="Google Maps view via ClassyGMaps"}</li>
@@ -250,7 +247,7 @@ background-color:yellow;
   <h3>Local links</h3>
     <h4>Nearby information</h4>
     <ul>
-    <!--todo modify links as no pre-1982 weather-->
+    {*todo modify links as no pre-1982 weather*}
     {if $image_taken}
     	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;MONTH=%m&amp;YEAR=%Y"}
 		{else}
@@ -267,7 +264,7 @@ background-color:yellow;
 	{/if}
 
 	{if $square->reference_index eq 1}
-			<li class="broken">{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="geocaching.com" title="Geocaches from geocaching.com"}</li>
+			<li>{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="geocaching.com" title="Geocaches from geocaching.com"}</li>
 			<li>{external title="Trigpoints from trigpointing.uk" href="http://trigpointing.uk/trigtools/find.php?t=`$gridrefraw`" text="trigpointing.uk"}</li>
 	{else}
 			<li>{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="Geocaches" title="Geocaches from geocaching.com"}</li>
@@ -284,7 +281,7 @@ background-color:yellow;
     <li>{external href="https://www.heritagegateway.org.uk/Gateway/Advanced_Search.aspx" text="heritagegateway.org.uk" title="Heritage Gateway"} (England only)*</li>
     <li>{external href="https://historicengland.org.uk/listing/the-list/map-search?clearresults=True" text="historicengland.org.uk" title="Historic England"} (England only)*</li>
 		<li>{external href="https://pastmap.org.uk/map" text="pastmap.org.uk"} (Scotland only)*</li>
-		<li class="broken">{external href="http://map.coflein.gov.uk/index.php?action=do_advanced&ngr=`$gridrefraw`&radiusm=3000&submit=Search" text="map.coflein.gov.uk" title="historic environment database via map.coflein.gov.uk"} (Wales only)</li>
+		<li>{external href="http://map.coflein.gov.uk/index.php?action=do_advanced&ngr=`$gridrefraw`&radiusm=3000&submit=Search" text="map.coflein.gov.uk" title="historic environment database via map.coflein.gov.uk"} (Wales only)</li>
     </ul>
 <p>*These sites allow searching via grid reference via the pages linked, but their search results are not able to be linked to directly. Copy the grid reference ({$gridref}) and paste into the search box on the page.</p>
   {/if}
