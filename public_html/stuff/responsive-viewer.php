@@ -74,6 +74,7 @@ if (!empty($_GET['id'])) {
 }
 
 $row['url'] = preg_replace('/^https?:\/\/\w[\w.]+/',$domain,$row['url']);
+$row['url'] = str_replace('responsive=4','responsive=3', $row['url']); //=4 was for forcing a non-enabled to responsive, for testing. =3 is actully a better test as only works for converted ones!
 
 $url = htmlentities($row['url']);
 

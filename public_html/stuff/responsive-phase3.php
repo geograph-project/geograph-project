@@ -83,6 +83,7 @@ $found = array();
                 foreach ($row as $key => $value) {
 			if ($key == 'file') {
 				$row['url'] = preg_replace('/^https?:\/\/\w[\w.]+/',$domain,$row['url']);
+				$row['url'] = str_replace('responsive=4','responsive=3', $row['url']); //=4 was for forcing a non-enabled to responsive, for testing. =3 is actully a better test as only works for converted ones!
                                 print "<TD style=\"$style\"><a href=\"{$row['url']}\">".htmlentities($value)."</a></TD>";
 			} elseif ($key == 'url') {
 			} elseif (is_numeric($value)) {
