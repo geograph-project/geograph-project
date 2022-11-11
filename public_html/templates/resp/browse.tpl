@@ -35,7 +35,7 @@
 
 
 <h2 style="margin-bottom:0;">Grid reference {if $gridref6}{$gridref6}{else}{$gridref}{/if}</h2>
-{if $place}<div style="color:grey; margin-bottom:0; padding-top:2px">{place place=$place}</div>{/if}
+{if $place}<h3>{place place=$place}</h3>{/if}
 
 <br style="clear:both; padding:10px"/>
 
