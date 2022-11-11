@@ -1197,7 +1197,8 @@ class GeographPage extends Smarty
 
 				global $CONF;
 				if ($CONF['template']=='resp' && @$_SESSION['responsive'] != 4 && @$_GET['responsive'] != 4)
-					$smarty_obj->assign('responsive',false);
+					if (strpos($resource_name,'_') !== 0) //only do for main files, not included files
+						$smarty_obj->assign('responsive',false);
 
 				 return true;
 			}
