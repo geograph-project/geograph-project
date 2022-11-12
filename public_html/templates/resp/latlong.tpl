@@ -109,6 +109,7 @@
 <div class="threecolsetup">
 
 	{if $errormgs}
+<br><br><hr><br>
   <a name="results"></a><h2>Results</h2>
 		<p>{$errormgs}{if $lat || $long}, 
 		however {external href="http://www.nearby.org.uk/coord.cgi?p=`$lat`+`$long`"|escape:html title="More information about this location" text="nearby.org.uk"} may understand it.
@@ -118,7 +119,7 @@
 	
 {if $e || $n}
 
-
+<br><br><hr><br>
 <a name="results"></a><h2>Results</h2>
 
 
