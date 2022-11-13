@@ -37,7 +37,7 @@ a.btn {
 {/literal}</style>
 <ul class="methods">
 	<li><p>
-		<b>Charities Aid Foundation</b> is our preferred donation processor.</p><p><a href="https://cafdonate.cafonline.org/18714" class=btn onclick="return startDonation(this)" target=_blank>Start Donation</a> or {newwin href="https://cafdonate.cafonline.org/18714" text="Open in a new Window"}</p>
+		<b>Charities Aid Foundation</b> is our preferred donation processor.</p><p><a href="https://cafdonate.cafonline.org/18714" class=btn onclick="return startDonation(this)" target=_blank>Start Donation</a></p><p>or {newwin href="https://cafdonate.cafonline.org/18714" text="Open in a new Window"}</p>
 
 		<iframe id="IframeDonate" name="IframeDonate" frameborder="0" scrolling="no" data-src="https://cafdonate.cafonline.org//Widget/18714?fix=0" width="460px" height="600px" style="padding: 0px; margin: 0px; border:2px solid #e4e4fc; overflow: hidden; width: 460px; height: 600px; display:none"></iframe>
 		<script>{literal}
@@ -179,26 +179,31 @@ a.btn {
 
 <p>In order to make the most of your donation we rely on support from the following organizations:</p>
 
-<table cellspacing=0 cellpadding=10 border=0> 
-	<tr>
-		<td align="center">
-			<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/" rel="nofollow"><img src="{$static_host}/img/os-logo-p85.png" width="85" height="67" alt="Ordnance Survey"/></a>
-		</td>
-		<td>
-			{external href="https://www.ordnancesurvey.co.uk/education/" text="Ordnance Survey"}<br/><br/>
-			- National Mapping Agency of Great Britain. OS Sponsor Geograph.
-		</td>
-	</tr>
-        <tr>
-                <td align="center">
-			<a href="https://www.tiger-computing.co.uk/" rel="nofollow"><img src="{$static_host}/img/tiger-logo-tl.png" width="200"/></a>
-                </td>
-                <td>
-			{external href="https://www.tiger-computing.co.uk/" text="Tiger Computing"}<br/><br/>
-			- Linux Support Services. Tiger keep our servers running in tip-top condition. 
-	        </td>
-        </tr>
-</table>
+
+<div style="display: inline-block; text-align:center; padding:20px">
+<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/" rel="nofollow"><img src="{$static_host}/img/os-logo-p85.png" width="85" height="67" alt="Ordnance Survey"/></a>
+<br/><br/>
+{external href="https://www.ordnancesurvey.co.uk/education/" text="Ordnance Survey"}
+<br/><br/>
+National Mapping Agency of Great Britain.
+<br/>
+OS Sponsor Geograph.
+</div>
+
+<div style="display: inline-block; text-align:center; padding:20px">
+<a href="https://www.tiger-computing.co.uk/" rel="nofollow"><img src="{$static_host}/img/tiger-logo-tl.png" width="200"/></a>
+<br/><br/>
+{external href="https://www.tiger-computing.co.uk/" text="Tiger Computing"}
+<br/><br/>
+Linux Support Services.
+<br/>
+Tiger keep our servers running in tip-top condition.
+</div>
+
+<br style="clear:both"/>
+
+
+
 
 <p><small>Want your name here? Get in <a href="/contact.php">Contact</a>!</small></p>
 
