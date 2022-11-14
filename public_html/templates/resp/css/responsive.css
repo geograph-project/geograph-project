@@ -209,6 +209,15 @@
 		width:33.33333%;
 	}
 }
+.content_photoblack  .threecolumn h3 {
+  background-color:#333333;
+  color:cyan
+}
+
+.content_photogray  .threecolumn h3 {
+  background-color:#cccccc;
+}
+
 /*Two column responsive layout */
 .twocolsetup{
 	box-sizing:border-box;
@@ -231,7 +240,14 @@
 		width:50%;
 	}
 }
+.content_photoblack  .twocolumn h3 {
+  background-color:#333333;
+  color:cyan
+}
 
+.content_photogray  .twocolumn h3 {
+  background-color:#cccccc;
+}
 
 /*Collapsing menus on small screens */
 .collapsible {
