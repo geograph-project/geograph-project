@@ -79,7 +79,7 @@
 
 
 <h4>This shared description</h4>
-<p>The 'Shared Description' text on this page is Copyright {$created|date_format:"%Y"} <a href="/profile/{$user_id}">{$realname|escape:'html'}</a>.<p>
+<p>The 'Shared Description' text on this page is &copy; copyright {$created|date_format:"%Y"} <a href="/profile/{$user_id}">{$realname|escape:'html'}</a>.<p>
 <p>Shared descriptions are specifically licensed so that contributors can reuse them on their own images, without restriction.</p>
 
 
