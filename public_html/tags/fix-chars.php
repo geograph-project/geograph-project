@@ -52,8 +52,6 @@ if (!empty($_POST['tag'])) {
 			$u['type'] = 'spelling';
 			$u['status'] = 'approved';
 			$db->Execute('INSERT INTO tag_report SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
-
-			@$_SESSION['skip_tags'][intval($tag_id)]=1;
 		}
 	}
 }
@@ -66,15 +64,18 @@ if (!empty($_POST['tag'])) {
 
 	print "<p>Note this form, can only be used to edit the tags (to remove the unsupported chars) - not to split, or delete a tag";
 
-	$data = $db->getAll("select tag_id,prefix,tag,count(*) as count,gridimage_id from tag_public where binary tag regexp '[^\\\\w ()+\\.&\\/!?%@#-]' and prefix != 'top' and gridimage_id < 10000000 group by tag_id");
+	$data = $db->getAll("select p.tag_id,prefix,p.tag,count(gridimage_id) as count,gridimage_id
+		from tag_public p
+			left join tag_report r using (tag_id)
+		where binary p.tag regexp '[^\\\\w ()+\\.&\\/!?%@#-]' and prefix != 'top' and gridimage_id < 10000000
+			and r.tag_id IS NULL
+		group by p.tag_id");
 
 	if (!empty($data)) {
 		print "<p>Allows chars: A-Z a-z 0-9 _ ( ) + . & / ! ? % @ # - (plus space)</p>";
 		print "<form method=post>";
 		print "<table>";
 		foreach ($data as $row) {
-			if (!empty($_SESSION['skip_tags'][$row['tag_id']]))
-				continue;
 			print "<tr>";
 			print "<td>{$row['tag_id']}</td>";
 			print "<td align=right>".htmlentities($row['prefix'])."</td>";
