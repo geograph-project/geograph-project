@@ -28,6 +28,7 @@ init_session();
 
 
 $smarty = new GeographPage;
+$USER->mustHavePerm("tagsmod");
 
 	$db = GeographDatabaseConnection(false);
 
