@@ -69,6 +69,8 @@ if (!empty($_POST['tag'])) {
 		$regexp = "'&([a-z]|#?[0-9])'";
 	} elseif (!empty($_GET['fullstop'])) {
 		$regexp = "'\\\\.$'";
+	} elseif (!empty($_GET['long'])) {
+		$regexp = "'.{50,}'";
 	} else {
 		$regexp = "'[^\\\\w ()+\\.&\\/!?%@#-]'"; //as a SQL quoted string, inside PHP quoted string!
 	}
