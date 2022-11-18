@@ -65,10 +65,19 @@ if (!empty($_POST['tag'])) {
 
 	print "<p>Note this form, can only be used to edit the tags (to remove the unsupported chars) - not to split, or delete a tag";
 
+	if (!empty($_GET['entity'])) {
+		$regexp = "'&([a-z]|#?[0-9])'";
+	} elseif (!empty($_GET['fullstop'])) {
+		$regexp = "'\\\\.$'";
+	} else {
+		$regexp = "'[^\\\\w ()+\\.&\\/!?%@#-]'"; //as a SQL quoted string, inside PHP quoted string!
+	}
+
+
 	$data = $db->getAll("select p.tag_id,prefix,p.tag,count(gridimage_id) as count,gridimage_id
 		from tag_public p
 			left join tag_report r using (tag_id)
-		where binary p.tag regexp '[^\\\\w ()+\\.&\\/!?%@#-]' and prefix != 'top' and gridimage_id < 10000000
+		where binary p.tag regexp $regexp and prefix != 'top' and gridimage_id < 10000000
 			and r.tag_id IS NULL
 		group by p.tag_id");
 
