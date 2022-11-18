@@ -69,19 +69,23 @@ if (!empty($_POST['tag'])) {
 		$regexp = "'&([a-z]|#?[0-9])'";
 	} elseif (!empty($_GET['fullstop'])) {
 		$regexp = "'\\\\.$'";
+	} elseif (!empty($_GET['contraction'])) {
+		$regexp = "'\\\\b\\\\w{2,3}\\\\.\\\\b'";
 	} elseif (!empty($_GET['long'])) {
 		$regexp = "'.{50,}'";
+	} elseif (!empty($_GET['short'])) {
+		$regexp = "'^.{0,4}$'";
 	} else {
 		$regexp = "'[^\\\\w ()+\\.&\\/!?%@#-]'"; //as a SQL quoted string, inside PHP quoted string!
 	}
 
 
-	$data = $db->getAll("select p.tag_id,prefix,p.tag,count(gridimage_id) as count,gridimage_id
+	$data = $db->getAll($sql = "select p.tag_id,prefix,p.tag,count(gridimage_id) as count,gridimage_id
 		from tag_public p
 			left join tag_report r using (tag_id)
 		where binary p.tag regexp $regexp and prefix != 'top' and gridimage_id < 10000000
 			and r.tag_id IS NULL
-		group by p.tag_id");
+		group by p.tag_id limit 1000");
 
 	if (!empty($data)) {
 		print "<p>Allows chars: A-Z a-z 0-9 _ ( ) + . & / ! ? % @ # - (plus space)</p>";
