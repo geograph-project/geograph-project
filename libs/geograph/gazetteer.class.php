@@ -177,6 +177,9 @@ split_timer('gazetteer'); //starts the timer
 					and north between $top and $bottom
 				order by distance asc limit 1"); //east/north are already signed bigint, so signed maths works
 
+				if (!empty($places['full_name'])) //manticore has data in utf8, but most legacy code expecs latin1
+					$places['full_name'] = utf8_to_latin1($places['full_name']);
+
 			} else {
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
@@ -236,6 +239,10 @@ split_timer('gazetteer'); //starts the timer
                                                 and f_code not in ($codes)
                                                 AND full_county != 'XXXXXXXX'
                                         order by distance asc,f_code asc limit 1"); //todo, ordering by f_code doesnt really work here. (its a string attribute, not enum)
+
+					if (!empty($places['full_name'])) //manticore has data in utf8, but most legacy code expecs latin1
+						$places['full_name'] = utf8_to_latin1($places['full_name']);
+
 				} else {
 					$places2 = $db->GetRow("select
 						`def_nam` as full_name,
@@ -468,6 +475,9 @@ split_timer('gazetteer'); //starts the timer
                                 group by gns_ufi
                                 order by distance asc limit 1");
 
+				if (!empty($places['full_name'])) //manticore has data in utf8, but most legacy code expecs latin1
+					$places['full_name'] = utf8_to_latin1($places['full_name']);
+
 			} else {
 				$places = $db->GetRow("select
 					full_name,
@@ -508,6 +518,11 @@ split_timer('gazetteer'); //starts the timer
         	                        group by gns_ufi
 	                                order by distance asc limit 5
 					option ranker=none");
+
+					if (!empty($nearest)) //manticore has data in utf8, but most legacy code expecs latin1
+						foreach ($nearest as &$place)
+							$place['full_name'] = utf8_to_latin1($place['full_name']);
+
 				} else {
 					$nearest = $db->GetAll("select
 						distinct full_name,
