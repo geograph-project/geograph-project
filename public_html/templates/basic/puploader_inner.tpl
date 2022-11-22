@@ -140,7 +140,9 @@
 
 	{if $reopenmaptoken}
 	<div class="interestBox" style="z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> <small>(and view list of placenames)</small>,
-	<a href="/gridref/{$square->grid_reference}" target="_blank">Open {$square->grid_reference} Page</a> <small>(in new window)</small></div>
+	<a href="/gridref/{$square->grid_reference}" target="_blank">Open {$square->grid_reference} Page</a> &nbsp; 
+	<img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/>  <a href="/gridref/{$square->grid_reference}/links" target="_blank">More links for {$square->grid_reference}</a>
+	<small>(in new window)</small></div>
 	{/if}
 
 	<p>Please provide a short title for the image, and any other comments about where
