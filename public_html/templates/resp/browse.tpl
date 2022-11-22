@@ -35,7 +35,7 @@
 
 
 <h2 style="margin-bottom:0;">Grid reference {if $gridref6}{$gridref6}{else}{$gridref}{/if}</h2>
-{if $place}<div style="color:grey; margin-bottom:0; padding-top:2px">{place place=$place}</div>{/if}
+{if $place}<h3>{place place=$place}</h3>{/if}
 
 <br style="clear:both; padding:10px"/>
 
@@ -157,14 +157,14 @@
 <select onchange="window.location.href=this.value" style="width:300px">
     <option>View all {$imagecount} images in the search</option>
     <optgroup label="Most recent first">
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Full details</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbsmore&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=bigger&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=grid&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Slideshow</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=map&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Map</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=black&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Georiver</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Full details</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbsmore&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails + links</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=bigger&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails - bigger</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=grid&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails grid</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Slideshow</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=map&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Map</option>
+        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=black&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Georiver</option>
     </optgroup>
     <optgroup label="Oldest first">
         <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
