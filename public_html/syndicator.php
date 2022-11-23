@@ -36,6 +36,8 @@ if (@$_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || @$_GET['q'] == ',') {
 
 if (empty($_GET['key']))
 	$_SERVER['HTTPS'] = 'on'; //cheeky, but forces generation of https:// urls :)
+elseif ($_GET['key'] == 'c743e78c04')
+	$_GET['new'] = 1; //as a test, lets start redirecting certain high-volumn users to the new engine!
 
 require_once('geograph/global.inc.php');
 

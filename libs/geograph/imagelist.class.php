@@ -393,14 +393,22 @@ split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 			$query = 'test';
 		}
 
+		//query now contains a location search, we can add back the text serach!
+		if (preg_match('/^(.+?) near /',$q,$m)) {
+			$query = $m[1]." ".$query;
+		}
+
 		if (!empty($_GET['groupby']) && preg_match('/^\w+$/',$_GET['groupby'])) {
 			 // only cope with 'groupby=scenti' for now - which is same in both legacy and new engine!
 			$sql = str_replace('ORDER BY ',"GROUP BY {$_GET['groupby']} ORDER BY ",$sql);
 		}
 
 if (!empty($_GET['debug'])) {
-	print "$sql;<hr>";
-	print "$query<hr>";
+	print htmlentities($q)."<hr>";
+	print htmlentities($sql)."<hr>";
+	print htmlentities($query)."<hr>";
+	if ($_GET['debug'] > 2)
+		exit;
 }
 
 		$this->getImagesBySphinxQL($sql, true, $query, false); //tags_as_array=false, because most imagelist functions returns tags as array, but serach engine still provided string
@@ -422,7 +430,7 @@ if (!empty($_GET['debug'])) {
 		$this->numberOfPages = ceil($this->meta['total']/$limit);
 		$this->criteria = new ImageList(); //we just want a fake class we can add some members to!
 		$this->criteria->resultsperpage = $limit;
-		$this->criteria->searchdesc = ", matching query";
+		$this->criteria->searchdesc = ", matching query"; //todo, could be more expressive here, but as used by API, not that important
 		$this->results = &$this->images;
 	}
 

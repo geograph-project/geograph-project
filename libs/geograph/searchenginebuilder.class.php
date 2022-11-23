@@ -255,8 +255,7 @@ split_timer('search'); //starts the timer
 
 		//use placename class, to check in case $q appears to contain a placename directly. $placename is only set if *explicitly* doing a 'near' query.
 		$criteria = new SearchCriteria_Placename();
-
-		if ($placename != '(anywhere)' && strpos($q,':') === FALSE) {
+		if ($placename != '(anywhere)' && strpos($q,':') === FALSE && empty($searchy)) {
 			if (!empty($placename)) {
 				$criteria->setByPlacename($placename,$location);
 			} elseif (!$location) {
