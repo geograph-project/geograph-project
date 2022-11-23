@@ -52,6 +52,8 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 
 
+###################################################################
+// step -1 - log in refis
 
 if (!empty($CONF['redis_host']))
 {
@@ -82,7 +84,8 @@ if (!empty($CONF['redis_host']))
 	$redis->hIncrBy('s|'.$identy,date("Y-m-d H"),1);
 }
 
-
+###################################################################
+// step 0 - validate the format requested
 
 $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX','TOOLBAR','MEDIA','JSON');
 
@@ -112,9 +115,9 @@ if ($format == 'KML') {
 
 $format_extension = strtolower(str_replace('.','_',$format));
 
-/**
- * We are building a text search for the first time
- */
+###################################################################
+// step 1 - figure out a cache token, to potentially short circuit further processing
+
 if (!empty($_GET['tag'])) {
 	if (strpos($_GET['tag'],':') !== false) {
 		$_GET['text'] = 'tags:"'.str_replace(':',' ',trim($_GET['tag'])).'"';
@@ -156,16 +159,6 @@ if (isset($_GET['q']) || !empty($_GET['location'])) {
 
 		//gets a cleaned up verion of the query (suitable for filename etc)
 		$cacheid = $sphinx->q;
-
-		$sphinx->pageSize = $pgsize = 15;
-
-		$sphinx->processQuery();
-
-		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
-		if (empty($pg) || $pg < 1) {$pg = 1;}
-
-		$ids = $sphinx->returnIds($pg,'_images');
-		unset($q);
 	} else {
 		$cacheid = getTextKey();
 		$pg = 1;
@@ -206,7 +199,8 @@ if (isset($_GET['callback'])) {
 
 $rss = new UniversalFeedCreator();
 if (empty($_GET['refresh']))
-	$rss->useCached($format,$rssfile,$rss_timeout);
+	$rss->useCached($format,$rssfile,$rss_timeout); //if cached available, it returned and no more done below!
+
 if ($CONF['template'] == 'ireland') {
 	$rss->title = 'Geograph Ireland';
 } else {
@@ -220,11 +214,28 @@ if ($CONF['template'] == 'api') {
 $baselink = $rss->link;
 
 ###################################################################
+// step 2 - build query object
 
 /**
  * A nearby query no longer done via search engine
  */
 if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && (empty($_GET['groupby']) || $_GET['groupby']=='scenti') && !empty($_GET['new'])) {
+
+	//the new system builds+fetches in one function! (below)
+
+
+/**
+ * the sphinx object already created
+ */
+} elseif (isset($sphinx)) {
+	$sphinx->pageSize = $pgsize = 15;
+
+	$sphinx->processQuery();
+
+	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
+	if (empty($pg) || $pg < 1) {$pg = 1;}
+
+	$ids = $sphinx->returnIds($pg,'_images');
 
 /**
  * Create a query the first time round!
@@ -259,6 +270,7 @@ if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && 
 }
 
 ###################################################################
+// step 3 - fetch images
 
 /**
  * run a streamlined 'nearby' query
@@ -397,6 +409,7 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 }
 
 ###################################################################
+// Step 4 - render feed
 
 $cnt=empty($images->images)?0:count($images->images);
 
