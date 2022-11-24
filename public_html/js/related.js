@@ -146,12 +146,13 @@ function processImage(row) {
 	if (row.place && row.place.length > 2) {
 		optional.push('"'+row.place+'"');
 	}
+	/* disabled for now, they greatly inflate the number of matches (partiucully 'England'!)
 	if (row.county && row.county.length > 2) {
 		optional.push('"'+row.county+'"');
 	}
 	if (row.country && row.country.length > 2) {
 		optional.push('"'+row.country+'"');
-	}
+	}*/
 	if (mode == 'contributor') {
 		required.push("user"+row.user_id);
 	} else {
