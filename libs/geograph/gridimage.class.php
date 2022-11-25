@@ -1208,6 +1208,8 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 			}
 		}
 
+		//build the srcset
+		$simple = array();
 	        if (!empty($this->original_width) && $linkoriginal && max($this->original_width,$this->original_height) > 640 && $returntotalpath && !empty($_GET['large'])) {
 	                $maxwidth = min(1024,$this->original_width);
                 	$ratio = $this->original_height/$this->original_width;
@@ -1241,6 +1243,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 				if (basename($bigurl) != 'error.jpg') {
 			                $srcset[] = "$bigurl {$bigwidth}w";
 					$largestwidth = $bigwidth;
+					$simple[] = "{$bigwidth}px";
 				}
 		        }
 
@@ -1250,6 +1253,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 				if (basename($original) != 'error.jpg') {
 		                        $srcset[] = "$original {$this->original_width}w";
 					$largestwidth = $this->original_width;
+					$simple[] = "{$this->original_width}px";
 				}
 	                }
 
@@ -1259,11 +1263,24 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 			if (!empty($size[0]))
 		                $ratio = $size[1]/$size[0];
 	                $srcset = '';
+			$simple[] = "{$size[0]}px";
 	        }
 
+		//the normal tag, but with additional srcset
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}$srcset/>";
 
-		if (!empty($maxwidth) && !empty($_GET['large'])) {
+		//then add responsive sizing
+		if (!empty($simple) && $CONF['template'] == 'resp') {
+			//now there is css min() function can set mutliple max-widths at once, rather than needing to nest!
+
+			if ($ratio)
+				$simple[] = intval(94/$ratio)."vh"; //this prevents image being taller than screen
+
+			$html=str_replace('/>',' style="width:100%; max-width:min('.implode(' , ',$simple).'); height:auto;">',$html);
+
+			//also dont need to bother with sizing caption640 here
+
+		} elseif (!empty($maxwidth) && !empty($_GET['large'])) {
 			$mins = array();
 
 			if ($CONF['template'] != 'resp') { //the new reponsive template specifically supports small screens.
