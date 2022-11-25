@@ -347,7 +347,7 @@ div.caption {
 
 		<dt>Grid Square</dt>
 			<dd class=numeric><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->subject_gridref|escape:'url'}" rel="nofollow">more nearby</a>
-				<a href="/browser/#!/loc={$image->subject_gridref|replace:' ':''|escape:'url'}/dist=2000" title="view area in Browser"><img src="{$static_host}/img/links/20/search.png" width="14" height="14" alt="search"/></a>)
+				<a href="/browser/#!/loc={$image->subject_gridref|replace:' ':''|escape:'url'}/dist=2000" title="view area in Browser">&#128269;</a>)
 			</dd>
 
 		{if $image->credit_realname}
