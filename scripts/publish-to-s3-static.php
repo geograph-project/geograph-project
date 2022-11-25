@@ -52,7 +52,7 @@ chdir($_SERVER['DOCUMENT_ROOT']);
 
 
 
-$h = popen('find -xdev -type f -name "*.png" -or -name "*.gif" -or -name "*.jpg" -or -name "blank.html" -or -name "*.bmp" -or -name "*.ico"','r');
+$h = popen('find -xdev -type f -name "*.png" -or -name "*.gif" -or -name "*.jpg" -or -name "blank.html" -or -name "*.bmp" -or -name "*.ico" -or -name "*.svg"','r');
 
 $last = '';
 while ($h && !feof($h)) {
@@ -72,7 +72,7 @@ while ($h && !feof($h)) {
 		if (!empty($bucket)) {
 		        // public static function getBucket($bucket, $prefix = null, $marker = null, $maxKeys = null, $delimiter = null, $returnCommonPrefixes = fa$
 
-	                //we set unlimited, but make sure to only specify a deep folder.
+	                //we set unlimited, but make sure to use delimiter
         	        $list = $filesystem->getBucket($bucket, $prefix, null, null, '/', true, true);
 		}
 		$last = $dir;
@@ -91,7 +91,6 @@ while ($h && !feof($h)) {
 	############################################
 
 	} else {
-		
                 if ($param['headers'] && !$memcache->name_get('fs_full',$destination)) {
 
                         if ($param['headers']==='http') {
