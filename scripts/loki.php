@@ -77,6 +77,7 @@ if (empty($CONF['loki_address']))
 	die("Loki Not Configured\n");
 
 ############################################
+// automatic function to get daily logs and storing in S3. Checks if exists first. 
 
 	if ($param['auto']) {
 		if (empty($CONF['s3_loki_bucket_path']))
@@ -140,6 +141,7 @@ if (empty($CONF['loki_address']))
 	}
 
 ############################################
+//downloads all the logs for to a file (looping to get them all) - typically used with 'date'
 
 	elseif ($param['filename']) {
 		$query = $param['base'];
@@ -217,8 +219,8 @@ if (empty($CONF['loki_address']))
 
 
 ############################################
+//basic none-looping string search function! (logs to STDOUT)
 
-	//basic none-looping test function!
 	elseif ($param['string']) {
 		$query = $param['base'];
 		$query .= ' |= "'.str_replace('"','\"',$param['string']).'"';
@@ -232,6 +234,12 @@ if (empty($CONF['loki_address']))
 			$start = strtotime("-{$param['hours']} hour");
 
 			$start = $start.'000000000';  //as a nanosecond Unix epoch.
+
+		//a single day
+                } elseif (!empty($param['date'])) {
+			$start = strtotime($param['date'].$param['extra']);
+
+			$start = $start.'000000000';  //as a nanosecond Unix epoch.
 		}
 
 		$r = getlogs($query, STDOUT, $param['limit'],$start);
@@ -240,8 +248,8 @@ if (empty($CONF['loki_address']))
 	}
 
 ############################################
+//fallback really small tester! (outputs some 404s to STDOUT)
 
-	//fallback really small tester!
 	else {
 		$query = $param['base'];
 		$query .= ' |= "\" 404 " '; //note the query is specifically matching agasint the encoded json!
