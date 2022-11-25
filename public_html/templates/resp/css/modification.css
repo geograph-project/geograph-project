@@ -43,6 +43,10 @@ input#search_toggle, label#search_label {
 	white-space:nowrap;
 }
 
+div.snippet640 {
+	font-size:inherit;
+}
+
 /* styling for a 66% resized photo*/
 div.photo66
 {
