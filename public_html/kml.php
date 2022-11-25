@@ -28,6 +28,11 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/kmlfile.class.php');
 require_once('geograph/kmlfile2.class.php');
 
+if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
+     header('HTTP/1.0 403 Forbidden');
+     exit;
+}
+
 
 if (isset($_GET['id']))  {
 	require_once('geograph/gridimage.class.php');

@@ -33,6 +33,10 @@ if (@$_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || @$_GET['q'] == ',') {
 	header("Status: 403 Forbidden");
         exit;
 }
+if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
+     header('HTTP/1.0 403 Forbidden');
+     exit;
+}
 
 if (empty($_GET['key']))
 	$_SERVER['HTTPS'] = 'on'; //cheeky, but forces generation of https:// urls :)

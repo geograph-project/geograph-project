@@ -28,13 +28,13 @@ if (!empty($_GET['do']) && !empty($_GET['page']) && $_GET['page'] > 20) {
 	header('HTTP/1.0 403 Forbidden');
 	exit;
 }
+if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
+     header('HTTP/1.0 403 Forbidden');
+     exit;
+}
 
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
-
-if (!empty($_GET['debug'])) {
-	ini_set("display_errors",true);
-}
 
 if (!empty($_POST['style']) && !empty($_GET['i'])) {
 	session_cache_limiter('private_no_expire'); //this is just to override the default no-store that gets added (so user can use backbutton)
