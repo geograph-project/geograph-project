@@ -517,7 +517,7 @@ class RasterMap
 
 	//overlay (for dragging)
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;z-index:3\">";
-			$imagestr = "<img src=\"{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\" nopin=\"true\"/>";
+			$imagestr = "<img src=\"data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\" nopin=\"true\"/>";
 			if (!empty($gridref) && $this->nateastings > 0) {
 				$this->clickable = true;
 				$str .= smarty_function_getamap(array('text'=>$imagestr,'gridref'=>$gridref,'title'=>$title,'icon'=>'no'));
