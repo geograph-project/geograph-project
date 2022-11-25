@@ -488,11 +488,25 @@ div.caption {
 	      "@context": "https://schema.org/",
 	      "@type": "ImageObject",{/literal}
 	      "name": {$image->title|latin1_to_utf8|json_encode},
+	      {if $image_taken}
+	      "temporal": "{$image->imagetaken}",
+	      "caption": {"Image taken `$image_taken` by `$image->realname`"|latin1_to_utf8|json_encode},
+	      {/if}
+	      "datePublished": "{$image->submitted|substr:0:10}",
+	      "dateModified": "{$image->upd_timestamp|date_format:'%Y-%m-%dT%H:%M:%SZ'}",
 	      "contentUrl": {$imageurl|json_encode},
 	      "license": "http://creativecommons.org/licenses/by-sa/2.0/",
 	      "acquireLicensePage": "{$self_host}/reuse.php?id={$image->gridimage_id}",
-	      "copyrightNotice": {$image->realname|latin1_to_utf8|json_encode}, {literal}
-	      "creator": {{/literal}
+	      "creditText": {$image->realname|latin1_to_utf8|json_encode},
+	      "copyrightNotice": {"&copy; `$image->realname` and licenced for reuse under cc-by-sa/2.0"|latin1_to_utf8|json_encode},
+	      "copyrightYear": "{$image->submitted|substr:0:4}", {literal}
+	      "contentLocation": { {/literal}
+		"@type": "Place",
+		"name": "{$place.distance-0.01} km from {$place.full_name}",
+		"latitude": {$lat},
+		"longitude": {$long}{literal}
+	      },
+	      "creator": { {/literal}
 	        "@type": "Person",
 	        "name": {$image->realname|latin1_to_utf8|json_encode},
                 "url": "{$self_host}{$image->profile_link|escape:'javascript'}" {literal}
