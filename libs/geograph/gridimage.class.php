@@ -1270,7 +1270,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}$srcset/>";
 
 		//then add responsive sizing
-		if (!empty($simple) && $CONF['template'] == 'resp') {
+		if (!empty($simple) && $CONF['template'] == 'resp' && !empty($_GET['large'])) {
 			//now there is css min() function can set mutliple max-widths at once, rather than needing to nest!
 
 			if ($ratio)
