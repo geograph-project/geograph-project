@@ -102,6 +102,7 @@ div.ccmessage {
 	color:blue;
 	font-family:verdana, arial, sans serif;
 	font-weight:bold;
+	max-width:300px;
 }
 .buttonbar select optgroup {
 	color:gray;
