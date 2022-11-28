@@ -2718,4 +2718,86 @@ CREATE TABLE `rate_limiting_log` (
 #################################################
 
 
+alter table gridimage_ticket
+	modify `type` enum('normal','minor','revert') NOT NULL DEFAULT 'normal',
+	add reverted_by int(11) NOT NULL default 0;
+
+alter table gridimage_ticket_archive
+	modify `type` enum('normal','minor','revert') NOT NULL DEFAULT 'normal',
+	add reverted_by int(11) NOT NULL default 0;
+
+create table gridimage_ticket_merge (
+  `gridimage_ticket_id` int(11) NOT NULL,
+  `gridimage_id` int(11) DEFAULT NULL,
+  `suggested` datetime DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `moderator_id` int(11) DEFAULT NULL,
+  `updated` datetime DEFAULT NULL,
+  `status` enum('pending','open','closed') DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `type` enum('normal','minor','revert') NOT NULL DEFAULT 'normal',
+  `notify` enum('','suggestor') NOT NULL DEFAULT 'suggestor',
+  `deferred` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `public` enum('no','owner','everyone') NOT NULL DEFAULT 'everyone',
+  `reverted_by` int(11) NOT NULL DEFAULT 0
+) engine=merge union=(gridimage_ticket_archive,gridimage_ticket) insert_method=last;
+
+
+#################################################
+
+
+drop table if exists duplication_stat;
+
+create table duplication_stat (
+`gridimage_id` int unsigned not null primary key,
+`same_title` mediumint unsigned not null default 0,
+`same_comment` mediumint unsigned not null default 0,
+`same_tags` mediumint unsigned not null default 0,
+`same_imageclass` mediumint unsigned not null default 0,
+`same_imagetaken` mediumint unsigned not null default 0,
+`same_user_id` mediumint unsigned not null default 0,
+`same_snippets` mediumint unsigned not null default 0,
+`same_serial` mediumint unsigned not null default 0,
+`same_title_prefix` mediumint unsigned not null default 0);
+
+alter table duplication_stat 
+add same_centi mediumint unsigned null default null, 
+add same_naten mediumint unsigned null default null;
+
+alter table gridsquare
+add `last_stat` datetime NOT NULL;
+
+
+#################################################
+
+
+update content set images = 0 where source = 'article';
+
+
+#################################################
+
+
+alter table calendar add year varchar(4) not null default '2022' after calendar_id;
+alter table calendar modify year varchar(4) not null default '2023';
+
+alter table gridimage_calendar add place varchar(128) not null, add background tinyint unsigned not null;
+
+alter table calendar add show_id tinyint unsigned not null default 1;
+alter table calendar modify show_id tinyint unsigned not null default 0;
+
+
+#################################################
+
+
+alter table calendar add background tinyint unsigned not null default 0, add print_title tinyint unsigned not null default 0;
+
+
+#################################################
+
+
+alter table snippet add has_dup tinyint unsigned not null default 1;
+
+
+#################################################
+
 
