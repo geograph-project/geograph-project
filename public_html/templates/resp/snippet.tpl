@@ -79,7 +79,7 @@
 
 
 <h4>This shared description</h4>
-<p>The 'Shared Description' text on this page is &copy; copyright {$created|date_format:"%Y"} <a href="/profile/{$user_id}">{$realname|escape:'html'}</a>.<p>
+<p>The 'Shared Description' text on this page <span class=nowrap>is &copy; copyright {$created|date_format:"%Y"} <a href="/profile/{$user_id}">{$realname|escape:'html'}</a>.</span></p>
 <p>Shared descriptions are specifically licensed so that contributors can reuse them on their own images, without restriction.</p>
 
 
@@ -93,153 +93,159 @@
 <div class="threecolumn">
 <h3>Explore images</h3>
   
+{if $title}
+	<h4>View images using {if $has_dup==1}this{/if} "{$title|escape:'html'}" Shared Description{if $has_dup>1}s{/if}</h4>
+	<ul class="buttonbar">
+	<li>
+	<select onchange="window.location.href=this.value">
+	    <option>In the search</option>
+	    <optgroup label="Most recent first">
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=full&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Full details</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=thumbsmore&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails + links</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=bigger&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails - bigger</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=grid&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails grid</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=slide&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Slideshow</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=map&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Map</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=black&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Georiver</option>
+	    </optgroup>
+	    <optgroup label="Oldest first">
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
+	    </optgroup>
+	    <optgroup label="One image per">
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</option>
+	        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
+	    </optgroup>
+	</select>
+	</li>
+	<li><a href="/browser/#!/snippets+%22{$title|escape:'url'}%22">In the Browser</a></li>
+	</ul>
+{/if}
 
-<h4>View images using "{$title|escape:'html'}" Shared Description(s)</h4>
-<ul class="buttonbar">
-<li>
-<select onchange="window.location.href=this.value" style="width:300px">
-    <option>In the search</option>
-    <optgroup label="Most recent first">
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=full&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Full details</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=thumbsmore&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=bigger&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=grid&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=slide&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Slideshow</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=map&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Map</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=black&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="Oldest first">
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="One image per">
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</option>
-        <option value="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
-    </optgroup>
-</select>
-</li>
-<li><a href="/browser/content-redirect.php?id={$snippet_id}&amp;source=snippet">In the Browser</a></li>
-</ul>
-
-<h4>View images using just this shared description</h4>
-<ul class="buttonbar">
-<li>
-<select onchange="window.location.href=this.value" style="width:300px">
-    <option>In the search</option>
-    <optgroup label="Most recent first">
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=full&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Full details</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=thumbsmore&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=bigger&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=grid&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=slide&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Slideshow</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=map&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Map</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=black&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="Oldest first">
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="One image per">
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</option>
-        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
-    </optgroup>
-</select>
-</li>
-</ul>
+{if $has_dup > 1 || !$title}
+	<h4>View images using just this shared description</h4>
+	There are multiple descriptions with the same title
+	<ul class="buttonbar">
+	<li>
+	<select onchange="window.location.href=this.value">
+	    <option>In the search</option>
+	    <optgroup label="Most recent first">
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=full&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Full details</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=thumbsmore&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails + links</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=bigger&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails - bigger</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=grid&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails grid</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=slide&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Slideshow</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=map&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Map</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=black&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Georiver</option>
+	    </optgroup>
+	    <optgroup label="Oldest first">
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
+	    </optgroup>
+	    <optgroup label="One image per">
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</option>
+	        <option value="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
+	    </optgroup>
+	</select>
+	</li>
+	<li><a href="/browser/content-redirect.php?id={$snippet_id}&amp;source=snippet">In the Browser</a></li>
+	</ul>
+{/if}
 
 {if $title}
-<h4>View images mentioning the words [{$title|escape:'html'}]</h4>
-<ul class="buttonbar">
-<li>
-<select onchange="window.location.href=this.value" style="width:300px">
-    <option>In the search</option>
-    <optgroup label="Most recent first">
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=full&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Full details</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=thumbsmore&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=bigger&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=grid&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=slide&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Slideshow</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=map&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Map</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=black&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="Oldest first">
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="One image per">
-        <option value="/search.php?searchtext={$title|escape:'url'}&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</option>
-        <option value="/search.php?searchtext={$title|escape:'url'}&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
-    </optgroup>
-</select>
-</li>
-<li><a href="/browser/#!/q={$title|escape:'url'}/">In the Browser</a></li>
-</ul>
+	<h4>View images mentioning the words [{$title|escape:'html'}] anywhere in text</h4>
+	<ul class="buttonbar">
+	<li>
+	<select onchange="window.location.href=this.value">
+	    <option>In the search</option>
+	    <optgroup label="Most recent first">
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=full&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Full details</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=thumbsmore&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails + links</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=bigger&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails - bigger</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=grid&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails grid</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=slide&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Slideshow</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=map&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Map</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=black&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Georiver</option>
+	    </optgroup>
+	    <optgroup label="Oldest first">
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
+	    </optgroup>
+	    <optgroup label="One image per">
+	        <option value="/search.php?searchtext={$title|escape:'url'}&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</option>
+	        <option value="/search.php?searchtext={$title|escape:'url'}&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
+	    </optgroup>
+	</select>
+	</li>
+	<li><a href="/browser/#!/q={$title|escape:'url'}/">In the Browser</a></li>
+	</ul>
 {/if}
 
 {if $grid_reference}
-<h4>Links for {$grid_reference}</h4>
-<p>This description is located in {$grid_reference}.</p>
+	<br>
+	<h3>Links for {$grid_reference}</h3>
+	<p>This description is located in {$grid_reference}.</p>
 
-<ul class="buttonbar">
-<li><a href="/gridref/{$grid_reference}">Browse page for {$grid_reference}</a></li>
+	<ul class="buttonbar">
+	<li><a href="/gridref/{$grid_reference}">Browse page for {$grid_reference}</a></li>
 
-<li>
-<select onchange="window.location.href=this.value" style="width:300px">
-    <option>Search for images in {$grid_reference}</option>
-    <optgroup label="Most recent first">
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Full details</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=thumbs&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=thumbsmore&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=bigger&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=grid&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=slide&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Slideshow</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=map&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Map</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=black&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="Oldest first">
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="One image per">
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</option>
-        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
-    </optgroup>
-</select>
-</li>
+	<li>
+	<select onchange="window.location.href=this.value">
+	    <option>Search for images in {$grid_reference}</option>
+	    <optgroup label="Most recent first">
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Full details</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=thumbs&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=thumbsmore&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=bigger&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=grid&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=slide&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Slideshow</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=map&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Map</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=black&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Georiver</option>
+	    </optgroup>
+	    <optgroup label="Oldest first">
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
+	    </optgroup>
+	    <optgroup label="One image per">
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</option>
+	        <option value="/search.php?gridref={$grid_reference}&amp;distance=1&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
+	    </optgroup>
+	</select>
+	</li>
 
-<li><a href="/gridref/{$grid_reference}/links"><img src="{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> <a href="/gridref/{$grid_reference}/links">More links for {$grid_reference}</a></li>
-</ul>
+	<li><a href="/gridref/{$grid_reference}/links"><img src="{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> <a href="/gridref/{$grid_reference}/links">More links for {$grid_reference}</a></li>
+	</ul>
 {/if}
 
 
@@ -298,7 +304,7 @@
 			<p>The above selections are automatic and approximate, it might not always select closely matching descriptions</p>
 		{/if}
 {else}
-<p>Search for other <a href="/snippets.php">Shared Descriptions</a>.</p>
+	<p>Search for other <a href="/snippets.php">Shared Descriptions</a>.</p>
 {/if}
 
 
