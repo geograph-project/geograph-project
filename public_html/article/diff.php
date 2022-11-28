@@ -86,6 +86,10 @@ if (!$smarty->is_cached($template, $cacheid))
 				$a1 = getRevisionArray($page['article_id'],intval($r1));
 				$a2 = getRevisionArray($page['article_id'],intval($r2),true);
 			}
+			if (!empty($_GET['w'])) {
+				$a1 = array_map('rtrim',$a1);
+				$a2 = array_map('rtrim',$a2);
+			}
 			if (count($a1) > 1300 || count($a2) > 1300 || !empty($_GET['c'])) {
 				$l1 = array_shift($a1);
 				$l2 = array_shift($a2);
