@@ -222,7 +222,7 @@ div.caption {
 	{/if}
 
 	<li><img src="{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/>
-			<select onchange="window.location.href=this.value" style=width:200px>
+			<select onchange="window.location.href=this.value">
 				<option value="">View this location on ...</option>
 
 				<option value="/mapper/combined.php#14/{$lat}/{$long}">Geograph Coverage Map (includes OSM etc)</option>
