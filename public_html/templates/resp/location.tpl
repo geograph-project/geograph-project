@@ -149,7 +149,7 @@
   <h4>In centisquare {$gridref6}</h4>
   <ul>
 		<li><img src="{$static_host}/img/links/20/centi.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/> <a href="/gridref/{$gridref}?viewcenti={$gridref6}">Image(s) taken in {$gridref6}</a></li>
-    <li><a href="/gridref/{$gridref}?centi={$gridref6}">Subjects in {$gridref6} (if any)</a></li>
+    <li><a href="/gridref/{$gridref}?centi={$gridref6}">Subjects in {$gridref6}</a> (if any)</li>
     </ul>
 	{/if}
     
@@ -182,12 +182,9 @@
 
   <h4>Surrounding area</h4>
   <ul>
-	<li><img src="{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/> <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}">Search for images near {$gridref}</a>
-	{if $gridref6}
-		(<a href="/search.php?q={$gridref6}">near {$gridref6}</a>)
-	{/if}	
+	<li><img src="{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/> <a title="search for nearby images to {$gridrefraw|escape:'html'}" href="/search.php?q={$gridrefraw|escape:'html'}">Search for images near {$gridrefraw|escape:'html'}</a>
 	</li>
-	<li><img src="{$static_host}/img/links/20/place.png" width="20" height="20" alt="places icon" align="absmiddle"/> <a href="/finder/places.php?q={$gridref}">Places near {$gridref}</a></li>
+	<li><img src="{$static_host}/img/links/20/place.png" width="20" height="20" alt="places icon" align="absmiddle"/> <a href="/finder/places.php?q={$gridrefraw|escape:'html'}">Places near {$gridrefraw|escape:'html'}</a></li>
 	<li><img src="{$static_host}/img/links/20/no-photos.png" width="20" height="20" alt="no photos icon" align="absmiddle"/> <a title="Empty Squares" href="/squares.php?gridref={$gridref}&amp;type=without">View list of nearby squares without images</a></li>
   <li><img src="{$static_host}/img/links/20/no-photos.png" width="20" height="20" alt="no photos icon" align="absmiddle"/><a title="Few Squares" href="/squares.php?gridref={$gridref}&amp;type=few">Nearby squares with few images</a></li>
 	<li><img src="{$static_host}/img/links/20/checksheet.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">View a printable check sheet for {if strlen($gridrefraw) < 5}{$gridrefraw|escape:'html'}{else}{$gridref}{/if}</a></li>
