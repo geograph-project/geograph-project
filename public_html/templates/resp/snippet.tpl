@@ -66,9 +66,7 @@
 	{if $images > 25}
 		... and {$images-25} more images.
 	{/if}
-{if $others || $related}
-	</div>
-{/if}
+
 
 <br style="clear:both"/>
 
@@ -93,7 +91,7 @@
 <div class="threecolumn">
 <h3>Explore images</h3>
   
-{if $title}
+{if $title && ($images || $has_dup > 1)}
 	<h4>View images using {if $has_dup==1}this{/if} "{$title|escape:'html'}" Shared Description{if $has_dup>1}s{/if}</h4>
 	<ul class="buttonbar">
 	<li>
@@ -130,7 +128,7 @@
 	</ul>
 {/if}
 
-{if $has_dup > 1 || !$title}
+{if $images && ($has_dup > 1 || !$title)}
 	<h4>View images using just this shared description</h4>
 	There are multiple descriptions with the same title
 	<ul class="buttonbar">
@@ -243,7 +241,7 @@
 	    </optgroup>
 	</select>
 	</li>
-
+	<li><a href="/browser/#!/q={$grid_reference}/display=map_dots">In the Browser</a></li>
 	<li><a href="/gridref/{$grid_reference}/links"><img src="{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> <a href="/gridref/{$grid_reference}/links">More links for {$grid_reference}</a></li>
 	</ul>
 {/if}
