@@ -67,6 +67,8 @@ if (count($page)) {
 		$cacheid .= "|$r1.$r2";
 		if (!empty($_GET['c']))
 			$cacheid .= "++";
+		if (!empty($_GET['w']))
+			$cacheid .= "WW";
 	} else {
 		$cacheid = '';
 	}
