@@ -25,7 +25,7 @@
 </div>
 
 
-<h2 style="margin-bottom:0; color: black;">Grid reference <a href="/gridref/{$gridrefraw|escape:'url'}">{if $gridref6}{$gridref6}{else}{$gridref}{/if}</a>: Links</h2>
+<h2 style="margin-bottom:0; color: black;">Grid reference <a href="/gridref/{$gridrefraw|escape:'url'}">{$gridrefraw|escape:'html'}</a>: Links</h2>
 {if $place}<h3 style="margin-top:0; font-weight:normal; color:#999;">{place place=$place}</h3>{/if}
 
 {if $square->imagecount > 2}<div style="padding-top:10px"><a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;do=1" title="Show a search of images in this square">We have {$square->imagecount} images in {$gridref}</a></div>{/if}  
