@@ -285,7 +285,7 @@
 		<li>{external href="https://pastmap.org.uk/map" text="pastmap.org.uk"} (Scotland only)*</li>
 		<li>{external href="http://map.coflein.gov.uk/index.php?action=do_advanced&ngr=`$gridrefraw`&radiusm=3000&submit=Search" text="map.coflein.gov.uk" title="historic environment database via map.coflein.gov.uk"} (Wales only)</li>
     </ul>
-<p>*These sites allow searching via grid reference via the pages linked, but their search results are not able to be linked to directly. Copy the grid reference ({$gridref}) and paste into the search box on the page.</p>
+<p>*These sites allow searching via grid reference via the pages linked, but their search results are not able to be linked to directly. Copy the grid reference ({$gridrefraw|escape:'html'}) and paste into the search box on the page.</p>
   {/if}
   
   <h4>Other location links</h4>
