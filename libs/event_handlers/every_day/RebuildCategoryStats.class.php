@@ -58,11 +58,10 @@ class RebuildCategoryStats extends EventHandler
 					`last` datetime NOT NULL,
 					PRIMARY KEY (`category_id`),
 					INDEX (c))
-				ENGINE=MyISAM
 				SELECT CRC32(LOWER(imageclass)) AS category_id,imageclass,count(*) AS c,gridimage_id, MIN(submitted) AS first, MAX(submitted) AS last
 				FROM gridimage_search
 				WHERE imageclass != ''
-				GROUP BY imageclass"); //the autoincrement column doesnt need 'null' for some reason. 
+				GROUP BY imageclass ORDER BY category_id");
 
 		$db->Execute("DROP TABLE IF EXISTS category_stat");
 		$db->Execute("RENAME TABLE category_stat_tmp TO category_stat");
