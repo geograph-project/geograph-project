@@ -81,17 +81,15 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 				GROUP_CONCAT(DISTINCT IF(prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject',NULL,final_id) ORDER BY final_id SEPARATOR ',') AS tag_ids
 			FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) INNER JOIN tag_stat USING (tag_id)
 			WHERE gt.status = 2 and t.status = 1 AND __between__
-			GROUP BY gridimage_id ORDER BY NULL";
+			GROUP BY gridimage_id";
 
 	$count = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
 	for($q=0;$q<$count;$q+=100000) {
 		$between = "gridimage_id BETWEEN ".($q+1)." AND ".($q+100000);
-		$sqls[] = ($q?"INSERT INTO sphinx_tags ":"CREATE TABLE sphinx_tags (gridimage_id INT UNSIGNED) ENGINE=MyISAM").
+		$sqls[] = ($q?"INSERT INTO sphinx_tags ":"CREATE TABLE sphinx_tags (gridimage_id INT UNSIGNED PRIMARY KEY)").
 			str_replace('__between__',$between, $sql);
 	}
-
-	$sqls[] = "ALTER TABLE sphinx_tags ADD PRIMARY KEY(gridimage_id)";
 
 	foreach ($sqls as $sql) {
 		fwrite(STDERR,date('H:i:s ')." $sql\n\n");
@@ -130,7 +128,7 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 		 INNER join tag on (prefix='subject' AND tag = subject)
 		WHERE gi.tags = '' AND gi.imageclass!=''
 		AND __between__
-		GROUP BY gridimage_id ORDER BY NULL";
+		GROUP BY gridimage_id";
 
 	        $count = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search where imageclass != '' and tags = ''");  //in theory long term will be few without so can exclude them
 
@@ -169,7 +167,7 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_terms'")) {
 				LEFT JOIN gridimage_snippet gs ON (gs.gridimage_id = m.gridimage_id) LEFT JOIN snippet s USING (snippet_id)
 				LEFT JOIN gridimage_wiki w ON (w.gridimage_id = m.gridimage_id)
 			WHERE m.__between__
-			GROUP BY gridimage_id ORDER BY NULL";
+			GROUP BY gridimage_id";
 
         $count = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
@@ -266,9 +264,8 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_placenames'")) {
 
 	$sqls = array();
 
-	$sqls[] = "create temporary table sphinx_placename_stat ".
-			"select placename_id,count(distinct gridsquare_id) as squares,sum(imagecount) as images, sum(has_geographs) as has_geographs from gridsquare group by placename_id order by null";
-	$sqls[] = "alter table sphinx_placename_stat add primary key(placename_id)";
+	$sqls[] = "create temporary table sphinx_placename_stat (primary key(placename_id)) ".
+			"select placename_id,count(distinct gridsquare_id) as squares,sum(imagecount) as images, sum(has_geographs) as has_geographs from gridsquare group by placename_id";
 	$sqls[] = "alter table sphinx_placenames add squares mediumint unsigned default null, add images int unsigned default null, add has_geographs int unsigned default null, add index(Place)";
 	$sqls[] = "update sphinx_placenames p inner join sphinx_placename_stat s using (placename_id) set p.squares = s.squares, p.images = s.images, p.has_geographs = s.has_geographs";
 
