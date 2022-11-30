@@ -24,10 +24,12 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+$smarty = new GeographPage;
+
 //lets hobble this!
 header("HTTP/1.1 503 Service Unavailable");
 $smarty->display('function_disabled.tpl');
-
+exit;
 
 if (isset($_COOKIE['workerActive'])) {
 	die("You can only run one browser window at once. If the other window has died, please wait 15 minutes and try again.");
@@ -47,7 +49,6 @@ if ($wid = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` 
 }
 
 
-$smarty = new GeographPage;
 
 $template='stuff_at_home_yahoo_terms.tpl';
 
