@@ -81,7 +81,7 @@ CREATE TABLE `hectad_stat` (
   KEY `reference_index` (`reference_index`),
   KEY `geosquares` (`geosquares`),
   KEY `y` (`y`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1
+) DEFAULT CHARSET=latin1
 			");
 		}
 
@@ -94,10 +94,13 @@ CREATE TABLE `hectad_stat` (
 			$db->Execute("TRUNCATE hectad_stat_tmp");
 		}
 
-		$db->Execute("ALTER TABLE hectad_stat_tmp DISABLE KEYS");
-
-
                 $status = $db->getRow("SHOW TABLE STATUS LIKE 'hectad_stat'");
+
+		if ($status['Rows'] > 100 && empty($status['Update_time'])) {
+			//innodb, does now set Update_time, but does NOT persist when reboot
+			// ... so still need a fallback!
+			$status['Update_time'] = $db->getOne("SELECT MAX(last_submitted) FROM hectad_stat");
+		}
 
                 if ($status['Rows'] > 100 && !empty($status['Update_time']) && strtotime($status['Update_time']) > (time() - 60*60*52) && $status['Comment'] != 'rebuild') {
                         $seconds = time() - strtotime($status['Update_time']);
@@ -182,10 +185,6 @@ CREATE TABLE `hectad_stat` (
 
 ##################################
 
-		$db->Execute("ALTER TABLE hectad_stat_tmp ENABLE KEYS");
-
-##################################
-
 		$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
 
 		if ($db->getOne("SELECT GET_LOCK('hectad_stat',10)")) {
@@ -202,6 +201,8 @@ CREATE TABLE `hectad_stat` (
 					$db->Execute("RENAME TABLE hectad_stat_tmp TO hectad_stat");
 
 					$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+
+					$db->Execute("ALTER TABLE user_stat COMMENT=''"); //remove rebuild
 				} else {
 					$db->Execute("REPLACE INTO hectad_stat SELECT * FROM hectad_stat_tmp");
 				}
@@ -214,6 +215,7 @@ CREATE TABLE `hectad_stat` (
 			        reference_index,x,y,hectad
 			        FROM hectad_stat
 			        WHERE map_token = '' and images > 0");
+
 			if (!empty($missing)) {
 				require_once('geograph/mapmosaic.class.php');
 			        $mosaic=new GeographMapMosaic;
