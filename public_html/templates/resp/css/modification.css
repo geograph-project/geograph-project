@@ -45,6 +45,11 @@ input#search_toggle, label#search_label {
 
 div.snippet640 {
 	font-size:inherit;
+	max-width:100%;
+}
+div.snippetexpander {
+	left:inherit;
+	right:20px;
 }
 
 /* styling for a 66% resized photo*/
