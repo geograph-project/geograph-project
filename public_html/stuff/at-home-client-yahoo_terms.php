@@ -24,15 +24,20 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+//lets hobble this!
+header("HTTP/1.1 503 Service Unavailable");
+$smarty->display('function_disabled.tpl');
+
+
 if (isset($_COOKIE['workerActive'])) {
 	die("You can only run one browser window at once. If the other window has died, please wait 15 minutes and try again.");
-} 
+}
 
 if (!$db) {
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');
 }
-if ($wid = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET6_ATON(".$db->Quote(getRemoteIP()).")")) { 
+if ($wid = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET6_ATON(".$db->Quote(getRemoteIP()).")")) {
 
 	$row = $db->getRow("SELECT at_home_worker_id FROM at_home_job INNER JOIN at_home_result USING (at_home_job_id) WHERE at_home_worker_id = $wid AND at_home_result.created > DATE_SUB(NOW(),INTERVAL 10 MINUTE)");
 
