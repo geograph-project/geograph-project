@@ -238,7 +238,7 @@ div.caption {
 			</select></li>
 
 	{dynamic}{if $mobile_browser}
-		<li><a href="https://maps.google.com/maps?daddr=loc:{$lat},{$long}">Navigate</a>
+		<li><a href="https://maps.google.com/maps?daddr=loc:{$lat},{$long}/">Navigate</a>
 	{/if}{/dynamic}
 
 	{if $image->grid_square->reference_index eq 1}
