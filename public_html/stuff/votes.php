@@ -1,12 +1,11 @@
 <?
 
-ini_set('display_errors',1);
-
 require_once('geograph/global.inc.php');
+
+init_session();
 
 $smarty = new GeographPage;
 
-init_session();
 $USER->mustHavePerm("admin");
 
 

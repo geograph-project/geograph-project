@@ -6,12 +6,10 @@ exit;
 
 require_once('geograph/global.inc.php');
 
+init_session();
 
 $smarty = new GeographPage;
-
-init_session();
 $USER->mustHavePerm("basic");
-
 
 $db = GeographDatabaseConnection(true);
 
