@@ -53,9 +53,9 @@ if (isset($status['sphinx_tags']) && !empty($status['sphinx_tags']['Update_time'
 	fwrite(STDERR,date('H:i:s ')."Building DELTA...\n");
 
 	$crit = $status['sphinx_tags']['Update_time'];
-	$sqls[] = "CREATE TEMPORARY TABLE sph_delta_ids (primary key (gridimage_id)) ENGINE=MyISAM".
+	$sqls[] = "CREATE TEMPORARY TABLE sph_delta_ids (primary key (gridimage_id))".
 		" SELECT gridimage_id FROM gridimage_search WHERE upd_timestamp >= '$crit'";
-	 
+
 	$sqls[] = "insert ignore into sph_delta_ids select distinct gridimage_id FROM gridimage_tag WHERE updated >= '$crit' and gridimage_id < 4294967296";
 
 	foreach ($sqls as $sql) {
@@ -96,24 +96,15 @@ if (isset($status['sphinx_tags'])) {
 			FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) INNER JOIN tag_stat USING (tag_id)
 			INNER JOIN sph_delta_ids USING (gridimage_id)
 			WHERE gt.status = 2 and t.status = 1 AND __between__
-			GROUP BY gridimage_id ORDER BY NULL";
+			GROUP BY gridimage_id";
 
         for($q=$minmax['min'];$q<$minmax['max'];$q+=100000) {
 		$between = "gridimage_id BETWEEN ".($q)." AND ".($q+99999);
-		$sqls[] = (count($sqls)?"INSERT INTO sphinx_tags_tmp ":"CREATE TABLE sphinx_tags_tmp (gridimage_id INT UNSIGNED) ENGINE=MyISAM").
+		$sqls[] = (count($sqls)?"INSERT INTO sphinx_tags_tmp ":"CREATE TABLE sphinx_tags_tmp (gridimage_id INT UNSIGNED PRIMARY KEY)").
 			str_replace('__between__',$between, $sql);
 	}
 
-	$sqls[] = "ALTER TABLE sphinx_tags_tmp ADD PRIMARY KEY(gridimage_id)";
-
-	foreach ($sqls as $sql) {
-		fwrite(STDERR,date('H:i:s ')." $sql\n\n");
-		$db->Execute($sql);
-	}
-
 	#####################################################
-
-	$sqls = array();
 
         fwrite(STDERR,date('H:i:s ')."Building Fake Subject Tags...\n");
 
@@ -144,7 +135,7 @@ if (isset($status['sphinx_tags'])) {
 		 INNER join tag on (prefix='subject' AND tag = subject)
 		WHERE gi.tags = '' AND gi.imageclass!=''
 		AND __between__
-		GROUP BY gridimage_id ORDER BY NULL";
+		GROUP BY gridimage_id";
 
 
         for($q=$minmax['min'];$q<$minmax['max'];$q+=100000) {
@@ -152,14 +143,16 @@ if (isset($status['sphinx_tags'])) {
                 $sqls[] = str_replace('__between__',$between, $sql);
         }
 
-	foreach ($sqls as $sql) {
-		fwrite(STDERR,date('H:i:s ')." $sql\n\n");
-		$db->Execute($sql);
-	}
-
 	#####################################################
 
-	$db->Execute("REPLACE INTO sphinx_tags SELECT * FROM sphinx_tags_tmp");
+	if (!empty($sqls)) {
+		foreach ($sqls as $sql) {
+			fwrite(STDERR,date('H:i:s ')." $sql\n\n");
+			$db->Execute($sql);
+		}
+
+		$db->Execute("REPLACE INTO sphinx_tags SELECT * FROM sphinx_tags_tmp");
+	}
 }
 
 #####################################################
@@ -196,7 +189,7 @@ if (isset($status['sphinx_terms'])) {
 				LEFT JOIN gridimage_snippet gs ON (gs.gridimage_id = m.gridimage_id) LEFT JOIN snippet s USING (snippet_id)
 				LEFT JOIN gridimage_wiki w ON (w.gridimage_id = m.gridimage_id)
 			WHERE m.__between__
-			GROUP BY gridimage_id ORDER BY NULL";
+			GROUP BY gridimage_id";
 
         for($q=$minmax['min'];$q<$minmax['max'];$q+=100000) {
 		$between = "gridimage_id BETWEEN ".($q)." AND ".($q+99999);
@@ -204,16 +197,19 @@ if (isset($status['sphinx_terms'])) {
                          str_replace('__between__',$between, $sql);
         }
 
-	$sqls[] = "DELETE FROM sphinx_terms_tmp WHERE groups IS NULL AND terms IS NULL AND snippets IS NULL AND wikis IS NULL";
-
-	foreach ($sqls as $sql) {
-		fwrite(STDERR,date('H:i:s ')." $sql\n\n");
-		$db->Execute($sql);
-	}
-
 	#####################################################
 
-	$db->Execute("REPLACE INTO sphinx_terms SELECT * FROM sphinx_terms_tmp");
+	if (!empty($sqls)) {
+		//only need to bother clearing out, if there were some added
+		$sqls[] = "DELETE FROM sphinx_terms_tmp WHERE groups IS NULL AND terms IS NULL AND snippets IS NULL AND wikis IS NULL";
+
+		foreach ($sqls as $sql) {
+			fwrite(STDERR,date('H:i:s ')." $sql\n\n");
+			$db->Execute($sql);
+		}
+
+		$db->Execute("REPLACE INTO sphinx_terms SELECT * FROM sphinx_terms_tmp");
+	}
 }
 
 #####################################################
@@ -222,9 +218,8 @@ if (isset($status['sphinx_placename'])) {
 
   $sqls = array();
 
-   $sqls[] = "create temporary table sphinx_placename_stat ".
-             "select placename_id,count(distinct gridsquare_id) as squares,sum(imagecount) as images, sum(has_geographs) as has_geographs from gridsquare group by placename_id order by null";
-   $sqls[] = "alter table sphinx_placename_stat add primary key(placename_id)";
+   $sqls[] = "create temporary table sphinx_placename_stat (placename_id INT UNSIGNED PRIMARY KEY) ".
+             "select placename_id,count(distinct gridsquare_id) as squares,sum(imagecount) as images, sum(has_geographs) as has_geographs from gridsquare group by placename_id";
 //   $sqls[] = "alter table sphinx_placenames add squares mediumint unsigned default null, add images int unsigned default null, add index(Place)";
    $sqls[] = "update sphinx_placenames p inner join sphinx_placename_stat s using (placename_id) set p.squares = s.squares, p.images = s.images, p.has_geographs = s.has_geographs";
 
