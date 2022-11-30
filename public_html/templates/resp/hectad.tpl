@@ -29,7 +29,7 @@
 
 
 <li>
-<select onchange="window.location.href=this.value" style="width:300px">
+<select onchange="window.location.href=this.value">
     <option>Search images in {$hectad}</option>
     <optgroup label="One image per">
         <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;groupby=agridsquare&amp;orderby=grid_reference&amp;do=1">Grid square</option>
@@ -71,7 +71,7 @@
 
 
 
-<li><select onchange="window.location.href=this.value" style="width:300px">
+<li><select onchange="window.location.href=this.value">
 				<option value="">Geograph coverage maps</option>
 				<option value="/mapper/combined.php?t={$map_token}">Interactive coverage map</option>
         {if $largemap_token}<option value="/maplarge.php?t={$largemap_token}">Photo mosaic</option>{/if}
@@ -85,7 +85,7 @@
 
 
 
-<li><select onchange="window.location.href=this.value" style="width:300px">
+<li><select onchange="window.location.href=this.value">
 				<option value="">Mapping links</option>
 				<option value="https://www.google.com/maps/@?api=1&map_action=map&center={$lat}%2C{$long}&zoom=12">Google maps</option>
         <option value="http://www.openstreetmap.org/?mlat={$lat}&amp;mlon={$long}&amp;zoom=12">OpenStreetMaps</option>

@@ -88,7 +88,7 @@
 		{/if}
     
     <ul class="buttonbar">
-<li><select onchange="window.location.href=this.value" style="width:300px">
+<li><select onchange="window.location.href=this.value">
 				<option value="">Search for nearby images</option>
 				<option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=full&amp;do=1">Full details</option>
         <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
@@ -130,7 +130,7 @@
 <li><a href="/gridref/{$gridref}?viewcenti={$gridref6}">View image(s) taken in {$gridref6}</a></li>
 <li><a href="/gridref/{$gridref}?centi={$gridref6}">View subjects in {$gridref6}</a> (if any)</li>
 {/if}
-<li><select onchange="window.location.href=this.value" style="width:300px">
+<li><select onchange="window.location.href=this.value">
 				<option value="">Search images by distance</option>
 				<option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=full&amp;do=1">Full details</option>
         <option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
@@ -154,7 +154,7 @@
 <ul class="buttonbar">
 
 <li>
-<select onchange="window.location.href=this.value" style="width:300px">
+<select onchange="window.location.href=this.value">
     <option>View all {$imagecount} images in the search</option>
     <optgroup label="Most recent first">
         <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Full details</option>
@@ -188,7 +188,7 @@
 
 <li><a href="/browser/#!/grid_reference+%22{$gridref}%22">View this square in the browser</a></li>
 
-<li><select onchange="window.location.href=this.value" style="width:300px">
+<li><select onchange="window.location.href=this.value">
 <option value="">View images in Finder grouped by...</option>
 		<optgroup label="Subject">
 				<option value="/finder/groups.php?q=%5E{$gridref}&amp;group=context_ids">Geographical context</option>
@@ -213,7 +213,7 @@
 
 {* Collections in the gridsquare*}
 {if $square && $square->collections}
-    <li><select onchange="window.location.href=this.value" style="width:300px">
+    <li><select onchange="window.location.href=this.value">
         <option value="">Collections</option>
         {assign var="lasttype" value="0"}
         {foreach from=$square->collections item=item}
@@ -238,7 +238,7 @@
 <h4 style="margin-bottom:0; margin-top:2px;">Surrounding area</h4>
 
 <ul class="buttonbar">
-<li><select onchange="window.location.href=this.value" style="width:300px">
+<li><select onchange="window.location.href=this.value">
 				<option value="">Geograph coverage maps</option>
 				<option value="/mapbrowse.php?new=1&amp;o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1">Interactive coverage map</option>
         <option value="/maplarge.php?t={$hectad_row.largemap_token}">Photo mosaic</option>
@@ -250,7 +250,7 @@
         <option value="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1">Original coverage maps</option>
 </select></li>
 
-<li><select onchange="window.location.href=this.value" style="width:300px">
+<li><select onchange="window.location.href=this.value">
 				<option value="">Mapping links</option>
 				<option value="https://www.google.co.uk/maps/search/{$lat},{$long}/">Google maps</option>
         <option value="https://www.google.co.uk/maps/dir/?api=1&amp;destination={$lat},{$long}">Google maps - Navigate to {if $gridref6}{$gridref6}{else}{$gridref}{/if}</option>
@@ -263,7 +263,7 @@
 
 
 
-<li><select onchange="window.location.href=this.value" style="width:300px">
+<li><select onchange="window.location.href=this.value">
 				<option value="">Explore</option>
 				<option value="/gridref/{$hectad}">Hectad {$hectad}</option>
         <option value="/gridref/{$gridsquare}">Myriad {$gridsquare}</option>
