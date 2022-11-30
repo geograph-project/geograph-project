@@ -62,7 +62,7 @@
     </ul>
 <div style="clear:both; margin:auto; width:{$overview_width+30}px">
 
-<div class="map" style="margin-left:20px;border:2px solid black; height:{$overview_height}px;width:{$overview_width}px">
+<div class="map" style="margin-left:20px;border:1px solid black; height:{$overview_height}px;width:{$overview_width}px; box-sizing:content-box">
 
 <div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
 
