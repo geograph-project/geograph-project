@@ -211,11 +211,7 @@ div.caption {
 		{/if}
 	{/if}
 
-        {if $user->user_id eq $image->user_id}
-                <li><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}>Change Image Details</a>
-        {else}
-                <li><a href="/editimage.php?id={$image->gridimage_id}">Suggest an Update</a>
-        {/if}
+        <li><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}>Update Information</a>
 
 	{if $user->user_id ne $image->user_id}
 	        <li><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact Contributor</a>
