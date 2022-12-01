@@ -1,0 +1,1 @@
+../basic/finder_recent.tpl

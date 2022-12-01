@@ -32,6 +32,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+$smarty->assign('responsive',true);
+
 pageMustBeHTTPS();
 
 customExpiresHeader(3600,false,true);
