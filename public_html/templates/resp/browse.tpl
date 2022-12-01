@@ -251,16 +251,27 @@
 </select></li>
 
 <li><select onchange="window.location.href=this.value">
-				<option value="">Mapping links</option>
-				<option value="https://www.google.co.uk/maps/search/{$lat},{$long}/">Google maps</option>
+<option value="">Mapping links</option>
+		<optgroup label="Google Maps">
+	<option value="https://www.google.co.uk/maps/search/{$lat},{$long}/">Google maps</option>
         <option value="https://www.google.co.uk/maps/dir/?api=1&amp;destination={$lat},{$long}">Google maps - Navigate to {if $gridref6}{$gridref6}{else}{$gridref}{/if}</option>
+		</optgroup>
+		<optgroup label="OpenStreetMap">
         <option value="http://www.openstreetmap.org/?mlat={$lat}&amp;mlon={$long}&amp;zoom=14">OpenStreetMaps</option>
+        <option value="https://www.opencyclemap.org/?zoom=14&amp;lat=$lat&amp;lon=$long">OpenCycleMap</option>
+        <option value="https://opentopomap.org/&#35;map&equals;14/$lat/$long">OpenTopoMap</option>
+        <option value="https://map.openseamap.org/?zoom=14&amp;lat=$lat&amp;lon=$long">OpenSeaMap</option>    
+		</optgroup>
+    <optgroup label="Other">
         <option value="https://maps.nls.uk/geo/find/marker/#zoom=13&lat={$lat}&lon={$long}&f=1&z=1&marker={$lat},{$long}">National Library of Scotland</option>
         <option value="http://wtp2.appspot.com/wheresthepath.htm?lat={$lat}&amp;lon={$long}">Where's the path</option>
         <option value="https://www.bing.com/maps?v=2&amp;cp={$lat}~{$long}&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1">Bing maps</option>
-        <option value="/gridref/{$gridrefraw}/links">Links page with additional map choices</option>
+        <option value="https://explore.osmaps.com/?lat=$lat&amp;lon=$long&amp;zoom=14">Ordnance Survey</option>    
+		</optgroup>
+    <optgroup label="More choices">
+        <option value="/gridref/{$gridrefraw}/links">Geograph links page</option>
+		</optgroup>
 </select></li>
-
 
 
 <li><select onchange="window.location.href=this.value">
