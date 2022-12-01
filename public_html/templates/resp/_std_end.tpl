@@ -112,6 +112,12 @@
 	<div id="searchoptions">
 		 What to search:<ul class="touchPadding">
                                 <li><label><input type=radio name=type checked onclick="this.form.action = '/of/'">Photos</label> &nbsp;
+				{if $square && $square->grid_reference}
+                                <li><label><input type=radio name=type onclick="this.form.action = '/gridref/{$square->grid_reference}/'">Photos in Grid Square {$square->grid_reference}</label> &nbsp;
+                                <li><label><input type=radio name=type onclick="this.form.action = '/near/{$square->grid_reference}'">Photos near {$square->grid_reference}</label> &nbsp;
+				{elseif $image && $image->grid_square && $image->grid_square->grid_reference}
+                                <li><label><input type=radio name=type onclick="this.form.action = '/near/{$image->grid_square->grid_reference}'">Photos near {$image->grid_square->grid_reference}</label> &nbsp;
+				{/if}
                                 <li><label><input type=radio name=type onclick="this.form.action = '/browse.php'">Grid Reference</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/finder/places.php'">Placenames</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/content/'">Collections</label> &nbsp;
