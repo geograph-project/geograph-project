@@ -67,6 +67,10 @@ if (!empty($_GET['q']))
         //nginx seems to have reencoded the + in the URL as %2B by the time reaches PHP, so reading QUERY_STRING gets %2B, which is then decoded as + (not space!)
         $_GET['q'] = str_replace('+',' ',$_GET['q']);
 
+if (preg_match('/q=.+&q=([^&]+)/',$_SERVER['QUERY_STRING'],$m))
+	//the first q= has been extracted above, need to extract the second one into the filter var!!!
+	$_GET['filter'] = urldecode($m[1]);
+
 #########################################
 
 init_session();
