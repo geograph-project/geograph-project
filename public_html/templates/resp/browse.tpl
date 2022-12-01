@@ -66,7 +66,7 @@
     
       <div style="text-align:center;">
       <big>We have
-			{if $imagecount eq 1}just one image{else}<b>{$imagecount|thousends}</b> images{/if}
+			<a href="#images">{if $imagecount eq 1}just one image{else}<b>{$imagecount|thousends}</b> images{/if}</a>
 			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
 			{if $mode eq 'takenfrom'} of other squares, taken from <b>{$gridref}</b>
 			{elseif $mode eq 'mentioning'} mentioning <b>{$gridref}</b> <sup>[Note: currently only matches 4 figure grid references]</sup>
@@ -82,9 +82,9 @@
 		<div style="text-align:center"><big>We have no images for <b>{$gridref}</b> yet.</big></div>
     
 		{if $nearest_distance}
-			<p>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance} km away.</p>
+			<p style="text-align:center">The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance} km away.</p>
 		{else}
-			<p>There are no pictures for any grid square within 100km.</p>
+			<p style="text-align:center">There are no pictures for any grid square within 100km.</p>
 		{/if}
     
     <ul class="buttonbar">
@@ -184,8 +184,6 @@
 </select>
 </li>
 
-
-
 <li><a href="/browser/#!/grid_reference+%22{$gridref}%22">View this square in the browser</a></li>
 
 <li><select onchange="window.location.href=this.value">
@@ -209,7 +207,6 @@
 				<option value="/finder/groups.php?q=%5E{$gridref}&amp;group=segment">When submitted</option>
 		</optgroup>
 </select></li>
-
 
 {* Collections in the gridsquare*}
 {if $square && $square->collections}
@@ -330,7 +327,6 @@
 		{* There are some thumbnails to display *}
 
 
-
 {if $showresult}
 	{if $totalimagecount && !$square->has_recent && $user->registered}
 		<div class="interestBox" style="text-align:center;margin-bottom:20px">
@@ -356,7 +352,7 @@
 		{assign var="tab" value="2"}
 	{/if}
 
-	<div class="tabHolder" style="margin-left:10px">
+	<div id="images" class="tabHolder" style="margin-left:10px">
 		{if $sample}
 			<b class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1">Sample images</b>
 		{elseif $imagecount >= 15}
