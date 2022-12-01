@@ -1,1 +1,0 @@
-../basic/search_results_bytag.tpl

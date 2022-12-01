@@ -1,0 +1,1 @@
+../basic/search_results_bigger.tpl
