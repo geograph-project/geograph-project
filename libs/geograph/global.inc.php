@@ -637,6 +637,8 @@ function init_session()
 
 		//for logged in users, set from session which may of been updated above!
 		if (!empty($_SESSION['responsive'])) {
+			if ($_SESSION['responsive'] == 0 && $_SERVER['HTTP_HOST'] == 'www.geograph.org.uk')
+				$CONF['template'] = 'basic';
 			if ($_SESSION['responsive'] == 1)
 				$CONF['template'] = 'new';
 			if ($_SESSION['responsive'] == 2)
