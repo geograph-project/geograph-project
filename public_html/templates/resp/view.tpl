@@ -390,8 +390,22 @@ div.caption {
 <!-- ----------------------------------------------------- -->
 
 	{if $overview}
-		<div class="overview">
+		<div class="overview" style="text-align:center">
 		        {include file="_overview.tpl"}
+
+			<div class="interestBox" style="display:inline-block;margin-top:15px">
+				<table border="0" cellspacing="0" cellpadding="2">
+					<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
+					<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
+					<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
+					<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
+					<td><b>Go</b></td>
+					<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
+					<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
+					<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
+					<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
+				</table>
+			</div>
 		</div>
 	{/if}
 </div>
