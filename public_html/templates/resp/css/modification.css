@@ -108,9 +108,12 @@ div.ccmessage {
 	font-family:verdana, arial, sans serif;
 	font-weight:bold;
 	max-width:300px;
+	cursor: pointer;
+	text-align:center;
 }
 .buttonbar select optgroup {
 	color:gray;
+	text-align:left;
 }
 .buttonbar select option {
 	color:blue;
