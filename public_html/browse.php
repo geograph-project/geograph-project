@@ -104,12 +104,20 @@ $displayclasses =  array(
 			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
-if (!empty($_GET['q']))
-	$_GET['gridref'] = $_GET['q'];
+if (!empty($_GET['q'])) {
+	if (preg_match('/^[A-Z]{1,2}\s*\d\d\d*\s*&\d\d\d*$/',trim($_GET['q']))) {
+		$_GET['gridref'] = $_GET['q'];
+	} elseif (!empty($_GET['gridref'])) {
+		$url = "/search.php?q=".urlencode($_GET['q'])."&location=".urlencode($_GET['gridref'])."&distance=1&do=1";
+		header("Location: $url");
+		print "<a href=\"".htmlentities($url)."\">Click here</a>";
+		exit;
+	}
+}
 
 //set by encoded p param
 if (isset($_GET['p']))
-{	
+{
 	$grid_given=true;
 	//p=900y + (900-x);
 	$p = intval($_GET['p']);
@@ -123,7 +131,7 @@ if (isset($_GET['p']))
 
 //set by grid components?
 elseif (isset($_GET['setpos']))
-{	
+{
 	$grid_given=true;
 	$grid_ok=$square->setGridPos($_GET['gridsquare'], $_GET['eastings'], $_GET['northings'],true);
 	$smarty->assign('gridrefraw', $square->grid_reference);
