@@ -237,9 +237,7 @@ div.caption {
 				<option value="https://www.bing.com/maps?where1={$lat},{$long}&amp;style=h&amp;lvl=14">Open in Bing Maps</option>
 			</select></li>
 
-	{dynamic}{if $mobile_browser}
-		<li><a href="https://maps.google.com/maps?daddr=loc:{$lat},{$long}/">Navigate</a>
-	{/if}{/dynamic}
+	<li><a href="https://maps.google.com/maps?daddr=loc:{$lat},{$long}">Navigate with Google Maps</a>
 
 	{if $image->grid_square->reference_index eq 1}
 		<li>{external href="http://www.nearby.org.uk/coord.cgi?p=`$image->subject_gridref`&amp;f=lookup" text="Lookup nearest Postcode"}</li>
