@@ -291,7 +291,7 @@ ul.tips li {
         addOurControls(map);
 
 	clickOptions['touch'] = true;
-	clickOptions['domain'] = 'https://m.geograph.org.uk';
+	clickOptions['domain'] = 'https://www.geograph.org.uk';
 	clickOptions['limit'] = 6;
 	
 	map.addLayer(L.geographClickLayer(clickOptions));

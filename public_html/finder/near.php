@@ -69,10 +69,6 @@ if (!empty($_GET['q']))
 
 #########################################
 
-if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
-        $mobile_url = "https://m.geograph.org.uk/near/".urlencode2($_GET['q']);
-}
-
 init_session();
 
 $smarty = new GeographPage;
