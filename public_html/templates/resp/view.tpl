@@ -246,15 +246,17 @@ div.caption {
 {if $image->tags || $image->imageclass}
 	<div class=tagbar>
 		{if $image->tag_prefix_stat.top}
-			Geographical Context:
+			<span class="nowrap">Geographical Context:
 				{foreach from=$image->tags item=item name=used}{if $item.prefix eq 'top'}
 				<span class="tag">
-				<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span>&nbsp;
+				<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span></span> <span class="nowrap">
 			{/if}{/foreach}
+			</span>
 		{/if}
 
 		{foreach from=$image->tag_prefix_stat key=prefix item=count}
 			{if $prefix ne 'top' && $prefix ne '' && $prefix ne 'term' && $prefix ne 'cluster' && $prefix ne 'wiki' && $prefix ne 'type'}
+				<span class="nowrap">
 				{if $prefix == 'bucket'}
 					Image Buckets <sup><a href="/article/Image-Buckets" class="about" style="font-size:0.7em">?</a></sup>:
 				{elseif $prefix == 'subject'}
@@ -264,27 +266,29 @@ div.caption {
 				{/if}
 				{foreach from=$image->tags item=item name=used}{if $item.prefix == $prefix}
 					<span class="tag">
-					<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span>&nbsp;
+					<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span></span> <span class="nowrap">
 				{/if}{/foreach}
+				</span>
 			{/if}
 		{/foreach}
 
 		{if $image->imageclass}
-			Category:
+			<span class="nowrap">Category:
 
 			{if $image->canonical}
 				<a href="/search.php?gridref={$image->grid_reference}&amp;canonical={$image->canonical|escape:'url'}&amp;do=1">{$image->canonical|escape:'html'}</a> &gt;
 			{/if}
 			<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">{$image->imageclass|escape:'html'}</a>
+			</span>
 		{/if}
 
 		{if $image->tags && ($image->tag_prefix_stat.$blank || $image->tag_prefix_stat.term || $image->tag_prefix_stat.cluster || $image->tag_prefix_stat.wiki)}
-			{if count($image->tag_prefix_stat) > 1}
+			<span class="nowrap">{if count($image->tag_prefix_stat) > 1}
 				other tags:
 			{/if}
 			{foreach from=$image->tags item=item name=used}{if $item.prefix eq '' || $item.prefix eq 'term' || $item.prefix eq 'cluster' || $item.prefix eq 'wiki'}
-				<span class="tag"><a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span>&nbsp;
-			{/if}{/foreach}
+				<span class="tag"><a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span></span> <span class="nowrap">
+			{/if}{/foreach}</span>
 
 			<small>Click a tag, to view other nearby images.</small>
 		{/if}
@@ -306,14 +310,15 @@ div.caption {
 {if $image && $image->collections}
 	<div class=tagbar>
 		This photo is linked from: 
+		<span class="nowrap">
 		{assign var="lasttype" value="0"}
 		{foreach from=$image->collections item=item}
 			{if $lasttype != $item.type}
 				<b>{$item.type|regex_replace:"/y$/":'ie'}s</b>:
 			{/if}{assign var="lasttype" value=$item.type}
-			&middot; <a href="{$item.url}" title="{$item.type|escape:'html'}">{$item.title|escape:'html'}</a>
+			&middot; <a href="{$item.url}" title="{$item.type|escape:'html'}">{$item.title|escape:'html'}</a></span> <span class="nowrap">
 		{/foreach}
-		&middot;
+		&middot;</span>
 	</div>
 {/if}
 
