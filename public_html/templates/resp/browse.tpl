@@ -241,7 +241,7 @@
         <option value="/maplarge.php?t={$hectad_row.largemap_token}">Photo mosaic</option>
         <option value="/mapper/combined.php?mobile=1&#35;15/{$lat}/{$long}">Mobile coverage map</option>
         <option value="/browser/#!/grid_reference+%22{$gridref}%22">Browser map</option>
-        <option value="/leaflet/all.php#16/{$lat}/{$long}">All Geograph projects map</option>
+        <option value="https://www.geograph.org/leaflet/all.php#16/{$lat}/{$long}">All Geograph projects map</option>
 				<option value="/mapsheet.php?zoom=15&lat={$lat}&lon={$long}">Printable Checksheet</option>
         {if $user}<option value="/mapsheet.php?zoom=15&lat={$lat}&lon={$long}&mine=1">Printable Checksheet (personalised)</option>{/if}
         <option value="/mapbrowse.php?t={$map_token}">Original coverage maps</option>
