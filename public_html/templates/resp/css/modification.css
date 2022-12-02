@@ -43,11 +43,11 @@ input#search_toggle, label#search_label {
 	white-space:nowrap;
 }
 
-div.snippet640 {
+.photopage div.snippet640 {
 	font-size:inherit;
 	max-width:100%;
 }
-div.snippetexpander {
+.photopage div.snippetexpander {
 	left:inherit;
 	right:20px;
 }
