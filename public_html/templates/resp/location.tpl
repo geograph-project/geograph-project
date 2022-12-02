@@ -80,14 +80,9 @@
 </div>
 </div>
 </div>
-<ul>
-<li><a title="Download GPX file" href="/gpx.php?gridref={$gridref}" class="xml-gpx">GPX</a> <a title="Download GPX" href="/gpx.php?gridref={$gridref}">Download a GPX coverage file around this area</a></li>
-{if $id}
-		<li><a title="Download KML file" href="{$self_host}/photo/{$id|escape:'url'}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> <a title="Download KML file" href="{$self_host}/photo/{$id|escape:'url'}.kml" type="application/vnd.google-earth.kml+xml">Download a KML file for this photo</a> (eg for Google Earth Pro)</li>
-		{else}
-		<li><a title="Download KML file" href="http://www.nearby.org.uk/googleEarth.kml.php?lat={$lat}&amp;long={$long}&amp;p={$gridrefraw}" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> <a title="Download KML file" href="http://www.nearby.org.uk/googleEarth.kml.php?lat={$lat}&amp;long={$long}&amp;p={$gridrefraw}" type="application/vnd.google-earth.kml+xml">Download a KML coverage file around this area</a> (eg for Google Earth Pro)</li>
-		{/if}
-</ul>
+
+<a title="Download GPX file" href="/gpx.php?gridref={$gridref}" class="xml-gpx">GPX</a> <a title="Download GPX" href="/gpx.php?gridref={$gridref}">Download a GPX coverage file around this area</a>
+
 </div>
 {/if}
 
@@ -204,6 +199,12 @@
     <li>{external title="Open in Google Maps" href="https://www.google.co.uk/maps/search/`$lat`,`$long`/" text="Google Maps"} ({external title="Navigate here using Google Maps" href="https://www.google.co.uk/maps/dir/?api=1&amp;destination=`$lat`,`$long`" text="Navigate"})</li>
     <li>{external title="Open in Google Earth" href="https://earth.google.com/web/search/`$lat`,`$long`/" text="Google Earth for Web"}</li>
     {if $id}
+		<li><a title="Download KML file" href="{$self_host}/photo/{$id|escape:'url'}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> <a title="Download KML file" href="{$self_host}/photo/{$id|escape:'url'}.kml" type="application/vnd.google-earth.kml+xml">Download a KML file for this photo</a> (eg for Google Earth Pro)</li>
+    {else}
+		<li><a title="Download KML file" href="http://www.nearby.org.uk/googleEarth.kml.php?lat={$lat}&amp;long={$long}&amp;p={$gridrefraw}" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> <a title="Download KML file" href="http://www.nearby.org.uk/googleEarth.kml.php?lat={$lat}&amp;long={$long}&amp;p={$gridrefraw}" type="application/vnd.google-earth.kml+xml">Marker for this location</a> (eg for Google Earth Pro)</li>
+    {/if}
+
+    {if $id}
 				<li>{external href="http://gokml.net/maps?q=`$self_host`/photo/`$id`.kml" text="ClassyGMaps" title="Google Maps view via ClassyGMaps"}</li>
 		{else}
 				<li>{external href="http://gokml.net/maps?q=`$lat`,`$long`&amp;ll=`$lat`,`$long`&amp;z=11" text="ClassyGMaps" title="Google Maps view via ClassyGMaps"}</li>
@@ -239,7 +240,7 @@
 		<li>{external href="https://streetmap.co.uk/map?X=`$square->nateastings`&Y=`$square->natnorthings`&amp;A=Y&amp;Z=110`" text="streetmap.co.uk"}</li> 
 		{/if}
     <li>{external href="https://explore.osmaps.com/?lat=$lat&amp;lon=$long&amp;zoom=14" text="OS Maps"}</li>
-    <li>{external href="https://www.geograph.org/leaflet/all.php#16/$lat/$long" text="Geograph Projects"}</li>
+    <li>{external href="https://www.geograph.org/leaflet/all.php#16/$lat/$long" text="Images from All Geograph Projects"}</li>
     </ul>
   </div>
   <div class="threecolumn">
