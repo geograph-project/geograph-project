@@ -69,9 +69,13 @@ div.photoguide
 	font-family:verdana, arial, sans serif; /* Georgia not great for numbers */
 	font-size:0.9em; /* verdana is bit bigger than Georgia */
 }
+.numeric .text {
+	font-family: Georgia, Verdana, Arial, serif;
+	font-size:1rem;
+}
 
 div.ccmessage {
-	font-size:1em;
+	font-size:1rem;
 }
 
 /* -------------------- */
