@@ -548,7 +548,7 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 		global $CONF;
 		//note at this point, wouldn't have a session var!
 		if (!empty($_GET['lang']) && $_GET['lang'] == 'cy') {
-			if ($CONF['template'] == 'basic' || $CONF['template'] == 'archive')
+			if ($CONF['template'] == 'basic' || $CONF['template'] == 'resp' || $CONF['template'] == 'archive')
 				$CONF['template'] = 'cy';
 			elseif ($CONF['template'] == 'charcoal')
 				$CONF['template'] = 'charcoal_cy';
