@@ -9,7 +9,7 @@
 			<td align="center" valign="top">
 				<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 			</td>
-			<td style="border-bottom:1px solid silver" valign="top">
+			<td style="border-bottom:1px solid silver;overflow-wrap:anywhere" valign="top">
 
 
 	  {if $image->count}
