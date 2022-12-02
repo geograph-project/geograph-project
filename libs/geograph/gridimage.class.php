@@ -1273,10 +1273,12 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 		if (!empty($simple) && $CONF['template'] == 'resp' && !empty($_GET['large'])) {
 			//now there is css min() function can set mutliple max-widths at once, rather than needing to nest!
 
+			$simple[] = "100%";
+
 			if ($ratio)
 				$simple[] = intval(94/$ratio)."vh"; //this prevents image being taller than screen
 
-			$html=str_replace('/>',' style="width:100%; max-width:min('.implode(' , ',$simple).'); height:auto;">',$html);
+			$html=str_replace('/>',' style="width:'.array_shift($simple).'; max-width:min('.implode(' , ',$simple).'); height:auto;">',$html);
 
 			//also dont need to bother with sizing caption640 here
 
