@@ -28,7 +28,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$lookup[] = $row;
 		$carrot->addDocument(
 			'',
-			utf8_encode(htmlentities($row['tagtext'])),
+			latin1_to_utf8($row['tagtext']), //in tehory shouldnt be dealing with non-ascii
 			''
 		);
 		$recordSet->MoveNext();

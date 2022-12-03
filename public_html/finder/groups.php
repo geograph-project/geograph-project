@@ -391,8 +391,8 @@ function fakeSample8Clustered($sph,$where,$groupn,$limit) {
 
 		$carrot->addDocument(
 			(string)$row['id'],
-			(string)utf8_encode(htmlentities($row['title'])),
-			(string)utf8_encode(htmlentities(implode('. ',array_keys($tags))))
+			(string)$row['title'],
+			(string)implode('. ',array_keys($tags))
 		);
 
 		$recordSet->MoveNext();

@@ -1,7 +1,7 @@
 <?
 
 //these are the arguments we expect
-$param=array('execute'=>0,'count'=>0,'square'=>'NS5965', 'limit'=>1000, 'query'=>'', 'debug'=>false,'sleep'=>0);
+$param=array('execute'=>0,'count'=>0,'square'=>'NS5965', 'limit'=>1000, 'query'=>'', 'debug'=>false,'sleep'=>0, 'fix'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -25,7 +25,13 @@ if (posix_isatty(STDOUT) && !$param['debug'])
 
 ############################################
 
-if (!empty($param['count'])) {
+if (!empty($param['fix'])) {
+	//$where = " label regexp '&\\\\w+' "; //regex, inside sql, inside php, hence 4 slashes!
+	$where = " label regexp binary '&[a-z]{2,}' ";
+
+	$squares = $db_read->getAssoc("SELECT grid_reference,gridsquare_id FROM gridimage_group_stat INNER JOIN gridsquare USING (grid_reference) WHERE $where LIMIT {$param['count']}");
+
+} elseif (!empty($param['count'])) {
 	$squares = $db_read->getAssoc("SELECT grid_reference,gridsquare_id FROM gridsquare WHERE imagecount BETWEEN 5 AND {$param['limit']} AND last_grouped < last_timestamp LIMIT {$param['count']}");
 
 } elseif (!empty($param['square'])) {

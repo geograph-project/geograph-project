@@ -27,8 +27,8 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$lookup[] = $row['content_id'];
 		$carrot->addDocument(
 			(string)$row['url'],
-			(string)utf8_encode(htmlentities($row['title'])),
-			str_replace(str_replace('...','',$row['title']),'',strip_tags(str_replace('<br>',' ',utf8_encode(htmlentities($row['extract'])))))
+			latin1_to_utf8($row['title']),
+			str_replace(str_replace('...','',$row['title']),'',strip_tags(str_replace('<br>',' ',latin1_to_utf8($row['extract']))))
 		);
 		$recordSet->MoveNext();
 	}

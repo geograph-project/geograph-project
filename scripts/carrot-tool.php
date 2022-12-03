@@ -62,8 +62,8 @@ $start = microtime(true);
 	foreach ($lookup as $row) {
 		$carrot->addDocument(
 			$row[0],
-			utf8_encode(htmlentities($row[1])),
-			utf8_encode(htmlentities($row[2]))
+			latin1_to_utf8($row[1]), //careful, if from manticore, it probably ALREADY utf8
+			latin1_to_utf8($row[2])
 		);
 	}
 

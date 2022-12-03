@@ -22,8 +22,8 @@ if (empty($c)) {
 
 		$carrot->addDocument(
 			(string)$row['gridimage_id'],
-			utf8_encode(htmlentities($row['title'])),
-			utf8_encode(htmlentities($row['comment']." ".$row['imageclass'])) #." ".$row['realname']
+			latin1_to_utf8($row['title']),
+			latin1_to_utf8($row['comment']." ".$row['imageclass']) #." ".$row['realname']
 		);
 
 	}

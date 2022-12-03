@@ -517,7 +517,7 @@ if (!empty($CONF['carrot2_dcs_url']) || !empty($CONF['carrot2_dcs_host'])) {
         foreach ($data as $row) {
                 $carrot->addDocument(
                         (string)$row['gridimage_id'],
-                        utf8_encode($row['title']),
+                        latin1_to_utf8($row['title']),
 			''
                 );
         }

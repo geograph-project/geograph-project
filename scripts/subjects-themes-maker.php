@@ -40,8 +40,8 @@ print "$q\n";
 		$lookup[] = $subject;
 		$carrot->addDocument(
 			(string)$subject,
-			(string)utf8_encode(htmlentities($subject)),
-			(string)utf8_encode(htmlentities($extract))
+			latin1_to_utf8($subject), //shouldnt be dealing with non-ascii, as in theory tags are ascii only
+			latin1_to_utf8($extract)
 		);
 		$recordSet->MoveNext();
 	}

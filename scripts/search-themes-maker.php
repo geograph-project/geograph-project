@@ -58,8 +58,8 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 		$carrot->addDocument(
 			(string)$row['id'],
-			(string)utf8_encode(htmlentities($row['title'])),
-			(string)utf8_encode(htmlentities(implode('. ',array_keys($tags))))
+			$row['title'],
+			implode('. ',array_keys($tags))
 		);
 
 		$recordSet->MoveNext();
@@ -110,8 +110,8 @@ print "C=".count($labels)."\n";
 		foreach ($labels as $idx => $label)
 	                $carrot->addDocument(
         	                (string)$idx.$label,
-                	        (string)utf8_encode(htmlentities($label)),
-	                        (string)utf8_encode(htmlentities($label))
+                	        $label,
+	                        ''
         	        );
 	        $c = $carrot->clusterQuery('Castle',true);
                 usort($c, "cmp");

@@ -28,8 +28,8 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 		$carrot->addDocument(
 			(string)$row['gridimage_id'],
-			(string)utf8_encode(htmlentities($row['title'])),
-			(string)utf8_encode(htmlentities($row['comment']))
+			latin1_to_utf8($row['title']),
+			latin1_to_utf8($row['comment'])
 		);
 
 		$recordSet->MoveNext();
