@@ -546,5 +546,9 @@ div.caption {
 
 {/literal}
 
+{if $rastermap->enabled}
+	{$rastermap->getFooterTag()}
+{/if}
+
 <!--INFOLINKS_ON-->
 {include file="_std_end.tpl"}
