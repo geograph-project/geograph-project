@@ -57,11 +57,11 @@ foreach ($squares as $square => $gridsquare_id) {
 		$row =& $recordSet->fields;
 
 		$lookup[] = $row['gridimage_id'];
+
 		$carrot->addDocument(
 			$row['gridimage_id'],
-			utf8_encode(htmlentities($row['title'])),
+			latin1_to_utf8($row['title']),
                         strip_tags(str_replace('<br>',' ',latin1_to_utf8($row['comment'])))
-
 		);
 		$recordSet->MoveNext();
 	}
