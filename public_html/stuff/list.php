@@ -131,15 +131,20 @@ if (!empty($_GET['debug']))
 
 } else {
 	if (!empty($_GET['title'])) {
+		//in general we intending URLs will be UTF-8, but titles in particular may come in "ISO-8859-1" (from gridimage_duplicate)
+		if (mb_detect_encoding($_GET['title'], 'UTF-8, ISO-8859-1') == "ISO-8859-1") {
+			//manticore is already utf8 so in general lets do processing in utf8
+			$_GET['title'] = latin1_to_utf8($_GET['title']);
+		}
 		if (substr($_GET['title'],-2) == ' #') {
 			$prefix = preg_replace('/ #$/','',$_GET['title']);
-			$title = "Images titled: ".$prefix;
+			$title = "Images titled: ".utf8_to_latin1($prefix);
 			$q = '@title "^'.$prefix.'"';
 		} elseif (substr($_GET['title'],-1) == ' ') { //the space would already invalidate the field end modifier, but can give it a nice page title!
-			$title = "Image titles starting with: ".$_GET['title'];
+			$title = "Image titles starting with: ".utf8_to_latin1($_GET['title']);
 			$q = '@title "^'.$_GET['title'].'"';
 		} else {
-			$title = "Images titled: ".$_GET['title'];
+			$title = "Images titled: ".utf8_to_latin1($_GET['title']);
 			$q = '@title "^'.$_GET['title'].'$"';
 		}
 
@@ -152,6 +157,10 @@ if (!empty($_GET['debug']))
 		$q = '@groups "_SEP_ '.$_GET['label'].' _SEP_"';
 
 	} elseif (!empty($_GET['q'])) {
+		if (mb_detect_encoding($_GET['q'], 'UTF-8, ISO-8859-1') == "ISO-8859-1") {
+			//manticore is already utf8 so in general lets do processing in utf8
+			$_GET['q'] = latin1_to_utf8($_GET['q']);
+		}
 		$title = "Images matching: ".utf8_to_latin1($_GET['q']);
 		$q = $_GET['q']; //todo, run this via sphinxClient?
 
