@@ -33,8 +33,17 @@ include('geograph/export.inc.php');
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
 # let the browser know what's coming
-header("Content-type: application/octet-stream");
 header("Content-Disposition: attachment; filename=\"geograph.csv\"");
+
+if (!empty($_GET['encoding']) && $_GET['encoding'] == 'utf8') {
+	echo "\xEF\xBB\xBF";
+	header("Content-type: application/octet-stream; charset=UTF-8");
+	$utf=1;
+} else {
+	//PHP should be adding the 'default' charset!
+	header("Content-type: application/octet-stream");
+}
+
 
 if (isset($_GET['headers']) && $_GET['headers'] == 'lower') {
 	echo str_replace(array('photographer','easting','northing','figures','view_direction','image_'),array('photo','e','n','figs','dir',''),
@@ -52,6 +61,14 @@ $counter = -1;
 while (!$recordSet->EOF)
 {
 	$image = $recordSet->fields;
+	if (!empty($utf)) {
+		$image['title'] = latin1_to_utf8($image['title']);
+		$image['realname'] = latin1_to_utf8($image['realname']);
+		$image['imageclass'] = latin1_to_utf8($image['imageclass']);
+		if (!empty($_GET['desc']) && !empty($image['comment']))
+			$image['comment'] = latin1_to_utf8($image['comment']);
+		//in theory tags shouldnt contain non-ascii! certainly wont contain entities. so could use utf8_encode
+	}
 	if (strpos($image['title'],',') !== FALSE || strpos($image['title'],'"') !== FALSE)
 		$image['title'] = '"'.str_replace('"', '""', $image['title']).'"';
 	if (strpos($image['imageclass'],',') !== FALSE || strpos($image['imageclass'],'"') !== FALSE)
