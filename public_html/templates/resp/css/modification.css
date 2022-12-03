@@ -62,12 +62,11 @@ div.photoguide
   max-width:90%;
 }
 
-
 /* some general new styling, mainly used for the photo page, overrides stuff in basic.css */
 
 .numeric {
-	font-family:verdana, arial, sans serif; /* Georgia not great for numbers */
-	font-size:0.9em; /* verdana is bit bigger than Georgia */
+	font-family: "Times New Roman", Georgia, Verdana, Arial; /* Georgia not great for numbers */
+        font-size: 1.05em;
 }
 .numeric .text {
 	font-family: Georgia, Verdana, Arial, serif;
@@ -76,6 +75,13 @@ div.photoguide
 
 div.ccmessage {
 	font-size:1rem;
+}
+
+.content_photowhite.photopage abbr[title] {
+	text-decoration-color: silver;
+}
+.content_photoblack.photopage abbr[title] {
+	text-decoration-color: #555;
 }
 
 /* -------------------- */
@@ -88,9 +94,7 @@ div.ccmessage {
 	flex-wrap:wrap;
 	align-items:baseline;
 	gap:6px;
-	font-family:verdana, arial, sans serif; /* Georgia not great for numbers */
-	font-size:0.9em; /* verdana is bit bigger than Georgia */
-	font-weight:bold;
+	font-family: Georgia, Arial, sans serif; /* Georgia not great for numbers */
 	max-width:1024px;
 	margin:0 auto;
 }
@@ -109,8 +113,8 @@ div.ccmessage {
 	background:none;
 	border:0;
 	color:blue;
-	font-family:verdana, arial, sans serif;
-	font-weight:bold;
+	font-family: Georgia, Arial, sans serif;
+	font-size:1.02em;
 	max-width:300px;
 	cursor: pointer;
 	text-align:center;
