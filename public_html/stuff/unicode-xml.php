@@ -9,7 +9,11 @@ require_once('geograph/global.inc.php');
 $db = GeographDatabaseConnection(true);
 
 
+if (!empty($_GET['group'])) {
+$recordSet = $db->Execute("select gridimage_id, label as title from gridimage_group_stat where grid_reference = 'NF6906'"); // a square with known non-ascii
+} else {
 $recordSet = $db->Execute("select gridimage_id,title from gridimage_funny where title is not null order by  gridimage_id IN (1339706,320042,47189,495051,519472,97714,1049262,1036631) desc,reverse(gridimage_id) limit 500");
+}
 
 header("Content-Type: text/xml; charset=utf-8");
 
@@ -19,6 +23,10 @@ header("Content-Type: text/xml; charset=utf-8");
 $default = ini_get("default_charset");
 while (!$recordSet->EOF) {
 	$row = $recordSet->fields;
+	if (!empty($_GET['detect'])) {
+		$enc = mb_detect_encoding($row['title'], 'UTF-8, ISO-8859-15, ASCII');
+		print "<encoding>$enc</encoding>\n";
+	}
 
         switch ($_GET['method']) {
                 case 'raw': break; //noop!
@@ -47,6 +55,10 @@ while (!$recordSet->EOF) {
                         $_GET['method'] = "xml2_iconv";
         }
 	echo '<title id="'.$row['gridimage_id'].'">'.$row['title'].'</title>';
+	if (!empty($_GET['detect'])) {
+		$enc = mb_detect_encoding($row['title'], 'UTF-8, ISO-8859-15, ASCII');
+		print "<encoding>$enc</encoding>\n";
+	}
 	if (!empty($_GET['encode']))
 		echo '<encoded>'.str_replace('+',' ',urlencode($row['title'])).'</encoded>';
 

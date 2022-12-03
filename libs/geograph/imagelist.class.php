@@ -297,6 +297,8 @@ split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 
 			$row['gridimage_id'] = $row['id'];
 			$row['title'] = utf8_to_latin1($row['title']);
+			if (!empty($row['place']))
+				$row['place'] = utf8_to_latin1($row['place']);
 			if (!empty($row['takenday'])) //20040629
 				$row['imagetaken'] = preg_replace('/(\d{4})(\d{2})(\d{2})/','$1-$2-$3',$row['takenday']);
 			if (!empty($row['wgs84_lat'])) {

@@ -148,11 +148,11 @@ if (!empty($_GET['debug']))
 		}
 
 	} elseif (!empty($_GET['label'])) {
-		$title = "images in cluster ".$_GET['label'];
+		$title = "images in cluster ".utf8_to_latin1($_GET['label']);
 		$q = '@groups "_SEP_ '.$_GET['label'].' _SEP_"';
 
 	} elseif (!empty($_GET['q'])) {
-		$title = "Images matching: ".$_GET['q'];
+		$title = "Images matching: ".utf8_to_latin1($_GET['q']);
 		$q = $_GET['q']; //todo, run this via sphinxClient?
 
 	} elseif (!empty($_GET['premill'])) {
@@ -202,7 +202,7 @@ if (!empty($_GET['debug']))
 		if (count($s['grid_reference']) == 1 && reset($s['grid_reference']) && ($value = key($s['grid_reference'])) )
 			$v[] = "in <a href=\"/gridref/$value\">$value</a>";
 		if (count($s['place']) == 1 && reset($s['place']) && ($value = key($s['place'])) )
-			$v[] = "near <a href=\"/place/".urlencode2($value)."\">".htmlentities2($value)."</a>";
+			$v[] = "near <a href=\"/place/".urlencode2(latin1_to_utf8($value))."\">".htmlentities2($value)."</a>";
 		if (count($s['imagetaken']) == 1 && reset($s['imagetaken']) && ($value = key($s['imagetaken'])) )
 			$v[] = "taken <b>".getFormattedDate($value)."</b>";
 		if (count($s['realname']) == 1 && reset($s['realname']) && ($value = key($s['realname'])) )
@@ -334,10 +334,10 @@ if (!empty($_GET['debug']))
 					continue;
 				print "<li value={$row['count']}>";
 				if ($row['label'] == $_GET['label']) {
-					print "<b>".htmlentities2($row['label'])."</b>";
+					print "<b>".htmlentities2(utf8_to_latin1($row['label']))."</b>";
 				} else {
 					$url = "/stuff/list.php?label=".urlencode($row['label'])."&gridref=$gr";
-					print "<a href=\"".htmlentities($url)."\">".htmlentities2($row['label'])."</a>";
+					print "<a href=\"".htmlentities($url)."\">".htmlentities2(utf8_to_latin1($row['label']))."</a>";
 					if (!empty($row['matched'])) {
 						print " <small>(of which {$row['matched']} shown above)</small>";
 					}
