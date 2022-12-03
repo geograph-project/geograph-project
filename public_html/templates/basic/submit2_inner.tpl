@@ -12,7 +12,7 @@
 	{/if}
 
 {if $step eq 0}
-	<div class="interestBox" style="float:right;width:160px;">&middot; {$data|@count} images pending submission<br/>&middot; <a href="/submit-multi.php" target="_top">Upload a batch of images</a><br/>
+	<div class="interestBox" style="float:right;width:160px;">&middot; {$data|@count} image(s) pending submission<br/>&middot; <a href="/submit-multi.php" target="_top">Upload a batch of images</a><br/>
 			&middot; <a href="/submit2.php?inner&amp;step=1&amp;container={$container|escape:'html'}" targer="_self">Upload a single image</a></div>
 
 	{if $one && $item}
