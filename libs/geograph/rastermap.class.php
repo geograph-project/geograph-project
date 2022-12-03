@@ -1093,6 +1093,7 @@ class RasterMap
 			"<span id=\"mapFootNoteNPE\"".($this->service == 'NPE'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.npemap.org.uk/tileLicence.html\">npemap.org.uk</a> and <a href=\"http://www.getmapping.com/\">getmapping.com</a></span>";
 		} elseif ($this->service == 'OS50k' && $CONF['template']!='archive') {
 			$str = '';
+			/*
 			if (empty($this->service2)) {
 				$token=new Token;
 
@@ -1108,10 +1109,10 @@ class RasterMap
 				$iframe = rawurlencode("<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map...</iframe>");
 
 				$str = "<br/><a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); if (document.getElementById('mapFootNoteOS50k')) { document.getElementById('mapFootNoteOS50k').style.display = 'none';} return false;\">Change to interactive Map &gt;</a>";
-			}
+			}*/
 
 			if (!empty($this->clickable)) {
-				return "<span id=\"mapFootNoteOS50k\">TIP: Click the map for Large scale mapping$str</span><span id=\"mapFootNoteNPE\"></span>";
+				return "<span id=\"mapFootNoteOS50k\">TIP: Click the map for more Large scale mapping$str</span><span id=\"mapFootNoteNPE\"></span>";
 			} else {
 				return "<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide$str</span><span id=\"mapFootNoteNPE\"></span>";
 			}
