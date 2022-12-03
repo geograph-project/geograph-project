@@ -798,7 +798,7 @@ split_timer('gridimage'); //starts the timer
 				foreach ($collections2 as $i => $row) {
 					$this->collections[] = array(
 						'url' => "/stuff/list.php?label=".urlencode($row['label'])."&amp;gridref={$this->grid_reference}",
-						'title' => $row['label'].' ['.$row['images'].']',
+						'title' => utf8_to_latin1($row['label']).' ['.$row['images'].']',
 						'type' => 'Automatic Cluster',
 					);
 
