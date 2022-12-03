@@ -171,7 +171,7 @@ div.caption {
 <ul class="buttonbar">
 	{if $image->gridimage_id}
 		{if $user->user_id ne $image->user_id}
-			<li><a href="/reuse.php?id={$image->gridimage_id}">Licencing</a>
+			<li><a href="/reuse.php?id={$image->gridimage_id}">Licensing</a>
 
 			<li><a href="/{if $image->original_width}more{else}reuse{/if}.php?id={$image->gridimage_id}">Download</a>
 		{/if}
@@ -187,7 +187,7 @@ div.caption {
 				<option value="">Share...</option>
 				<option value="https://twitter.com/intent/tweet?text={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Twitter</option>
 				<option value="https://www.facebook.com/sharer/sharer.php?u={$self_host}/photo/{$image->gridimage_id}">Share this photo via Facebook</option>
-				<option value="http://www.pinterest.com/pin/create/button/?media={$imageurl}&amp;url={$self_host}/photo/{$image->gridimage_id}&amp;description={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}">Share this photo via Pinterest</option>
+				<option value="https://www.pinterest.com/pin/create/button/?media={$imageurl}&amp;url={$self_host}/photo/{$image->gridimage_id}&amp;description={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}">Share this photo via Pinterest</option>
 				<option value="https://share.flipboard.com/bookmarklet/popout?v=2&amp;title={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Flipboard</option>
 				<option value="/ecard.php?image={$image->gridimage_id}">Share this photo via email/e-card</option>
 				<option value="/stamp.php?id={$image->gridimage_id}">Grab a Stamped/Watermarked Image</option>
