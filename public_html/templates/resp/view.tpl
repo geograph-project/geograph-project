@@ -170,9 +170,11 @@ div.caption {
 
 <ul class="buttonbar">
 	{if $image->gridimage_id}
-		<li><a href="/reuse.php?id={$image->gridimage_id}">Licencing</a>
+		{if $user->user_id ne $image->user_id}
+			<li><a href="/reuse.php?id={$image->gridimage_id}">Licencing</a>
 
-		<li><a href="/{if $image->original_width}more{else}reuse{/if}.php?id={$image->gridimage_id}">Download</a>
+			<li><a href="/{if $image->original_width}more{else}reuse{/if}.php?id={$image->gridimage_id}">Download</a>
+		{/if}
 
 		{if $image->original_width}
 			<li><a href="/more.php?id={$image->gridimage_id}">More Sizes</a></li>
@@ -194,20 +196,14 @@ div.caption {
 
 		<li><a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}" title="Add this image to your site marked list">Mark</a>
 
-		<li id="votediv{$image->gridimage_id}img">&#128077;
-		<a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));">Like Image</a>
+		{if $user->user_id ne $image->user_id}
+			<li id="votediv{$image->gridimage_id}img">&#128077;
+			<a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));">Like Image</a>
 
-		{if $image->comment}
-			<li id="votediv{$image->gridimage_id}desc">&#128077;
-			<a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));">Like Description</a>
-		{/if}
-	{/if}
-
-	{if $enable_forums}
-		{if $discuss}
-			<li><a href="/discuss/index.php?gridref={$image->grid_reference}">View Discussion</a>
-		{else}
-			<li><a href="/discuss/index.php?gridref={$image->grid_reference}">Discuss {$image->grid_reference}</a>
+			{if $image->comment}
+				<li id="votediv{$image->gridimage_id}desc">&#128077;
+				<a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));">Like Description</a>
+			{/if}
 		{/if}
 	{/if}
 
@@ -215,28 +211,6 @@ div.caption {
 
 	{if $user->user_id ne $image->user_id}
 	        <li><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact Contributor</a>
-	{/if}
-
-	<li><img src="{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/>
-			<select onchange="window.location.href=this.value">
-				<option value="">View this location on ...</option>
-
-				<option value="/mapper/combined.php#14/{$lat}/{$long}">Geograph Coverage Map (includes OSM etc)</option>
-				<option value="/gridref/{$image->subject_gridref}/links?{if $image_taken}&amp;taken={$image->imagetaken}{/if}&amp;title={$image->title|escape:'urlplus'}&amp;id={$image->gridimage_id}">Geograph Links Page</a>
-
-				<option value="https://www.google.co.uk/maps?q={$lat},{$long}&amp;t=h&amp;z=14">Open in Google Maps</option>
-				<option value="https://maps.google.com/maps?daddr=loc:{$lat},{$long}">Navigate to location with Google Maps</option>
-
-				<option value="{$self_host}/photo/{$image->gridimage_id}.kml">Open in Google Earth Pro</option>
-				<option value="https://earth.google.com/web/search/{$lat},{$long}/">Open in Google Earth for Web</option>
-
-				<option value="https://www.bing.com/maps?where1={$lat},{$long}&amp;style=h&amp;lvl=14">Open in Bing Maps</option>
-			</select></li>
-
-	<li><a href="https://maps.google.com/maps?daddr=loc:{$lat},{$long}">Navigate with Google Maps</a>
-
-	{if $image->grid_square->reference_index eq 1}
-		<li>{external href="http://www.nearby.org.uk/coord.cgi?p=`$image->subject_gridref`&amp;f=lookup" text="Lookup nearest Postcode"}</li>
 	{/if}
 
 </ul>
@@ -415,6 +389,40 @@ div.caption {
 <!-- ----------------------------------------------------- -->
 
 <br style="clear:both"/>
+
+<ul class="buttonbar">
+	{if $enable_forums}
+		{if $discuss}
+			<li><a href="/discuss/index.php?gridref={$image->grid_reference}">View Discussion for {$image->grid_reference}</a>
+		{else}
+			<li><a href="/discuss/index.php?gridref={$image->grid_reference}">Discuss {$image->grid_reference}</a>
+		{/if}
+	{/if}
+
+	<li><img src="{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/>
+			<select onchange="window.location.href=this.value">
+				<option value="">View this location on ...</option>
+
+				<option value="/mapper/combined.php#14/{$lat}/{$long}">Geograph Coverage Map (includes OSM etc)</option>
+				<option value="/gridref/{$image->subject_gridref}/links?{if $image_taken}&amp;taken={$image->imagetaken}{/if}&amp;title={$image->title|escape:'urlplus'}&amp;id={$image->gridimage_id}">Geograph Links Page</a>
+
+				<option value="https://www.google.co.uk/maps?q={$lat},{$long}&amp;t=h&amp;z=14">Open in Google Maps</option>
+				<option value="https://maps.google.com/maps?daddr=loc:{$lat},{$long}">Navigate to location with Google Maps</option>
+
+				<option value="{$self_host}/photo/{$image->gridimage_id}.kml">Open in Google Earth Pro</option>
+				<option value="https://earth.google.com/web/search/{$lat},{$long}/">Open in Google Earth for Web</option>
+
+				<option value="https://www.bing.com/maps?where1={$lat},{$long}&amp;style=h&amp;lvl=14">Open in Bing Maps</option>
+			</select></li>
+
+	<li><a href="https://maps.google.com/maps?daddr=loc:{$lat},{$long}">Navigate with Google Maps</a>
+
+	{if $image->grid_square->reference_index eq 1}
+		<li>{external href="http://www.nearby.org.uk/coord.cgi?p=`$image->subject_gridref`&amp;f=lookup" text="Lookup nearest Postcode"}</li>
+	{/if}
+</ul>
+
+<!-- ----------------------------------------------------- -->
 
 <div class="bottombar">
 	<div>
