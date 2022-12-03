@@ -509,6 +509,20 @@ Note:the distance should be 10km or below.
 			 <a 
 			  href="{$api_host}/export.csv.php?key=[apikey]&i=12345" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
+
+		<tr> 
+		  <th rowspan="2">encoding=utf8</th> 
+		  <td><b>Get the CSV in UTF-8 encoding</b> - otherwise will get latin1/ISO-8859-1 (with HTML Entities for extended chars).<br/>
+			<i>Most other APIs output UTF-8 anyway, but for legacy reasons the CSV export would output latin1 (which is the encoding in our internal database)</i>
+			<span style="color:#990000;">NOTE: can be used with all of the above parameters</span></td> 
+		</tr> 
+		<tr> 
+		  <td>
+			 <a 
+			  href="{$api_host}/export.csv.php?key=[apikey]&amp;encoding=utf8" rel="nofollow">{$api_host}/export.csv.php?key=[apikey]&amp;encoding=utf8</a></td>
+		</tr> 
+	
+
 	 </table> 
 	 <p>* because these results also return images modified within the period
 		it's possible you will receive updates to images you already have. You can
