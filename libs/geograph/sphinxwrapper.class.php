@@ -951,6 +951,10 @@ split_timer('sphinx'); //starts the timer
 
 	function BuildExcerpts($docs, $index, $words, $opts=array() ) {
 		global $CONF;
+
+		if (empty($docs))
+			return array();
+
 		$cl = $this->_getClient();
 
 		//sphinx is now fully utf8!
