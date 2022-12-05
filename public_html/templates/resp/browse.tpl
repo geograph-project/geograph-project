@@ -309,6 +309,10 @@
   <div style="color:gray"><small>Tip: Click the map to open the coverage map</small></div>
 	</div>
   {/if}
+  {if $imagecount > 5}
+	<br>
+      <div><a href="/mapper/combined.php{if $by eq 'viewcenti'}?views=1{/if}#15/{$lat}/{$long}">Interactive Centisquare <b>Coverage Map</b></a>	</div>
+  {/if}
 </div>
 
 </div>

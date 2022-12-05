@@ -57,7 +57,9 @@
   <div class="threecolumn">
     <h3>Coverage map</h3>
 		<ul>
-    <li><a href="/mapper/combined.php#13/{$lat}/{$long}">Coverage Map</a></li>
+    <li><a href="/mapper/combined.php#13/{$lat}/{$long}">Coverage Map</a>
+	 (<a href="/mapper/combined.php#15/{$lat}/{$long}">Centisquare Scale</a>)
+    </li>
     <li><a href="/browser/#!/grid_reference+%22{$gridref}%22/display=map_dots/pagesize=100">Browser Map</a></li>
     </ul>
 <div style="clear:both; margin:auto; width:{$overview_width+30}px">
