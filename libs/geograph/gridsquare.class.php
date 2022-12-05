@@ -753,6 +753,8 @@ split_timer('gridsquare'); //starts the timer
 
 			$sphinx->prepareQuery($this->grid_reference);
 			$sphinx->processQuery(); //if the query starts with a GR it expands it to search nearby squares
+
+			$before = $sphinx->q;
 			$sphinx->q = str_replace('@grid_reference ','@(grid_reference,image_square) ',$sphinx->q);
 
 			$ids = $sphinx->returnIds($pg,'snippet');
@@ -770,7 +772,7 @@ split_timer('gridsquare'); //starts the timer
 					ORDER BY FIELD(s.snippet_id,$id_list)"));
 			}
 
-			$sphinx->q .= " @source -themed";
+			$sphinx->q = "$before @source -themed -snippet"; //use $before, so it doesnt include image_square (doesnt exist on content_stemmed)
 			$ids = $sphinx->returnIds($pg,'content_stemmed');
 
 			if (!empty($ids) && count($ids) > 0) {
