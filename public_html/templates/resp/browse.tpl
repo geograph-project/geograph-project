@@ -19,6 +19,12 @@
 </style>
 
 
+{if $showresult}
+	{if $bby}
+		{assign var="byextra" value="&amp;by=$bby"}
+	{elseif $by && $by != 1}
+		{assign var="byextra" value="&amp;by=$by"}
+	{/if}
 <div class="interestBox" style="float: right; position:relative; padding:2px; margin-right:25px">
 	<table border="0" cellspacing="0" cellpadding="2">
 	<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}{$byextra}">NW</a></td>
@@ -32,7 +38,7 @@
 	<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}{$byextra}">SE</a></td></tr>
 	</table>
 </div>
-
+{/if}
 
 <h2 style="margin-bottom:0;">Grid reference {if $gridref6}{$gridref6}{else}{$gridref}{/if}</h2>
 {if $place}<h3>{place place=$place}</h3>{/if}
@@ -239,6 +245,7 @@
 				<option value="">Geograph coverage maps</option>
 				<option value="/mapper/combined.php#13/{$lat}/{$long}">Interactive coverage map</option>
         <option value="/maplarge.php?t={$hectad_row.largemap_token}">Photo mosaic</option>
+        <option value="/mapper/combined.php?mobile=1&#35;15/{$lat}/{$long}">Mobile coverage map</option>
         <option value="/browser/#!/grid_reference+%22{$gridref}%22">Browser map</option>
         <option value="https://www.geograph.org/leaflet/all.php#16/{$lat}/{$long}">All Geograph projects map</option>
 				<option value="/mapsheet.php?zoom=15&lat={$lat}&lon={$long}">Printable Checksheet</option>
@@ -307,10 +314,6 @@
 	{include file="_overview.tpl"}
   <div style="color:gray"><small>Tip: Click the map to open the coverage map</small></div>
 	</div>
-  {/if}
-  {if $imagecount > 5}
-	<br>
-      <div><a href="/mapper/combined.php{if $by eq 'viewcenti'}?views=1{/if}#15/{$lat}/{$long}">Interactive Centisquare <b>Coverage Map</b></a>	</div>
   {/if}
 </div>
 
