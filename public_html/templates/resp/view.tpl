@@ -197,11 +197,11 @@ div.caption {
 		<li><a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}" title="Add this image to your site marked list">Mark</a>
 
 		{if $user->user_id ne $image->user_id}
-			<li id="votediv{$image->gridimage_id}img">&#128077;
-			<a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));">Like Image</a>
+			<li id="votediv{$image->gridimage_id}img">&#128077;&#127995;
+			<a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));">Like{if $image->comment} Image{/if}</a>
 
 			{if $image->comment}
-				<li id="votediv{$image->gridimage_id}desc">&#128077;
+				<li id="votediv{$image->gridimage_id}desc">&#128077;&#127995;
 				<a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));">Like Description</a>
 			{/if}
 		{/if}
