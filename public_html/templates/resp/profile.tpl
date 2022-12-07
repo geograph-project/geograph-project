@@ -16,6 +16,14 @@
 
 <h2><a name="top"></a><img src="{if $profile->md5_email}https://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50{else}https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=30{/if}" align="absmiddle" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>Profile for {$profile->realname|escape:'html'}</h2>
 
+{if $user->user_id eq $profile->user_id}
+<div style="border-style: double; padding: 6px; border-color: grey"><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>
+{if $simplified}
+This is a simplified view of your own profile. You can also view your <a href="/profile/{$user->user_id}">full public profile</a>.<br/><br/>
+{/if}
+<a href="/profile.php?edit=1">Edit your profile</a> if there's anything you'd like to change.</div><br/>
+{/if}
+
 
 {*-------------------------Warning messages---------------------------*}
 
@@ -141,14 +149,9 @@
 {/if}
 
 
-{if $simplified}
-	<p><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/> This is a simplified view of your own profile, you can also view your <a href="/profile/{$user->user_id}">full public profile</a>.</p>
-{else}
-{/if}
 
-{if $profile->blog.blog_id}
-	<p>&middot; My latest blog entry: <a href="/blog/{$profile->blog.blog_id}">{$profile->blog.title|escape:'html'}</a> <small>({$profile->blog.created})</small></p>
-{/if}
+
+
 
 </div>
 
@@ -248,7 +251,9 @@
         </ul>
 {/if}
 
-
+{if $profile->blog.blog_id}
+	<p>&middot; My latest blog entry: <a href="/blog/{$profile->blog.blog_id}">{$profile->blog.title|escape:'html'}</a> <small>({$profile->blog.created})</small></p>
+{/if}
 
 {elseif !$userimages}
 	<ul>
@@ -347,7 +352,7 @@
 
 
 {if $user->user_id eq $profile->user_id}
-<li><a href="/mapper/combined.php?mine=1#5/56.317/-2.769">Coverage Map of your Photos</a></li>
+<li><a href="/mapper/combined.php?mine=1#5/56.317/-2.769">Personalised coverage map</a></li>
 {/if}
 <li><a href="/browser/#!/q=user{$profile->user_id}/realname+%22{$profile->realname|escape:'url'}%22">Browser</a></li>
 
@@ -436,11 +441,6 @@
 
 {/if}
 
-
-{if $user->user_id eq $profile->user_id && $simplified}
-	<p><a href="/profile.php?edit=1">Edit your profile</a> if there's anything you'd like to change.</p>
-
-{/if}
 
 {*-------------------------Photographs---------------------------*}
 
