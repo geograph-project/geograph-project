@@ -177,11 +177,6 @@ This is a simplified view of your own profile. You can also view your <a href="/
 </ul>
 {/if}
 
-{if !$profile->deceased_date}
-<div style="float:right;font-size:0.8em; color:gray;">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
-{/if}
-
-
 <h4>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if} submitted</h4>
 
 {if $profile->stats.squares gt 1}
@@ -255,6 +250,11 @@ This is a simplified view of your own profile. You can also view your <a href="/
 	<p>&middot; My latest blog entry: <a href="/blog/{$profile->blog.blog_id}">{$profile->blog.title|escape:'html'}</a> <small>({$profile->blog.created})</small></p>
 {/if}
 
+{if !$profile->deceased_date}
+<div style="float:right;font-size:0.8em; color:gray;">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
+{/if}
+
+
 {elseif !$userimages}
 	<ul>
 		  <li>No photographs submitted</li>
@@ -273,7 +273,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 <div class="threecolumn">
 
 {if $userimages}
-<h3>Explore images by {$profile->realname|escape:'html'}</h3>
+<h3>Explore images</h3>
 
 <form action="/search.php" style="text-align:center">
   <input type="hidden" name="form" value="profile"/>
@@ -412,12 +412,12 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {if $profile->tags}
 <h3>Most Used Tags</h3>
 
-<p><a href="/finder/bytag.php?user_id={$profile->user_id}">View in Finder</a></p>
 <ul class="buttonbar">
 	{foreach from=$profile->tags item=item}
 		<li><a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="/search.php?searchtext=[{if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}]&user_id={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a></li>
 	{/foreach}
 </ul>
+<p>View a full breakdown of tags used  by {$profile->realname|escape:'html'} <a href="/finder/bytag.php?user_id={$profile->user_id}">in the Finder</a></p>
 {/if}
 
 </div>
