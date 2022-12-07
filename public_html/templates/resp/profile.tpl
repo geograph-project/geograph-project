@@ -144,6 +144,7 @@
 {if $simplified}
 	<p><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/> This is a simplified view of your own profile, you can also view your <a href="/profile/{$user->user_id}">full public profile</a>.</p>
 {else}
+{/if}
 
 {if $profile->blog.blog_id}
 	<p>&middot; My latest blog entry: <a href="/blog/{$profile->blog.blog_id}">{$profile->blog.title|escape:'html'}</a> <small>({$profile->blog.created})</small></p>
@@ -257,7 +258,6 @@
 
 
 
-{/if}
 
 </div>
 
