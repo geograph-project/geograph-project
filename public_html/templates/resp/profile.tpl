@@ -60,38 +60,18 @@
 {*---------------------------Two col setup-------------------------*}
 
 
-<div class="twocolsetup">
+<div class="threecolsetup">
 
 
-<div class="twocolumn">
+
 {*------------------------Basic details----------------------------*}
+<div class="threecolumn">
 <h3>Basic details</h3>
 
-{if $overview}
-  <div style="float:right; width:{$overview_width+30}px; position:relative">
-  {include file="_overview.tpl"}
-
-  </div>
-{/if}
 
 
-
-{if $profile->role && $profile->role ne 'Member'}
-	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: {$profile->role}</div>
-{elseif strpos($profile->rights,'admin') > 0}
-	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Developer</div>
-{elseif strpos($profile->rights,'moderator') > 0}
-	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Moderator</div>
-{/if}
-{if strpos($profile->rights,'member') > 0}
-        <div style="margin-top:-1px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 3px; font-size:0.9em">Geograph Project Limited Company Member
-		{if $company_link}<br>
-			<a href="{$company_link|escape:'html'}" target="_blank">Follow this link to be taken to the company mini-site</a>
-		{/if}
-	</div>
-{/if}
-
-
+<div style="display: flex; flex-direction: row; flex-wrap: wrap">
+<div>
 <ul>
 	<li><b>Name</b>: {$profile->realname|escape:'html'}</li>
 
@@ -133,6 +113,33 @@
 		</li>
 	{/if}
 </ul>
+</div>
+
+{if $overview}
+  <div style="width:{$overview_width+30}px; margin: auto">
+  {include file="_overview.tpl"}
+  </div>
+{/if}
+</div>
+
+<br style="clear:both; margin-bottom: 12px"/>
+
+
+{if $profile->role && $profile->role ne 'Member'}
+	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: {$profile->role}</div>
+{elseif strpos($profile->rights,'admin') > 0}
+	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Developer</div>
+{elseif strpos($profile->rights,'moderator') > 0}
+	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Moderator</div>
+{/if}
+{if strpos($profile->rights,'member') > 0}
+        <div style="margin-top:-1px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 3px; font-size:0.9em">Geograph Project Limited Company Member
+		{if $company_link}<br>
+			<a href="{$company_link|escape:'html'}" target="_blank">Follow this link to be taken to the company mini-site</a>
+		{/if}
+	</div>
+{/if}
+
 
 {if $simplified}
 	<p><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/> This is a simplified view of your own profile, you can also view your <a href="/profile/{$user->user_id}">full public profile</a>.</p>
@@ -142,109 +149,15 @@
 	<p>&middot; My latest blog entry: <a href="/blog/{$profile->blog.blog_id}">{$profile->blog.title|escape:'html'}</a> <small>({$profile->blog.created})</small></p>
 {/if}
 
+</div>
 
-{*------------------------About----------------------------*}
-{if $profile->about_yourself && $profile->public_about && ($userimages || $user->user_id eq $profile->user_id)}
 
-	{if !$profile->deceased_date}
-			<h3 style="margin-top:0px;margin-bottom:0px">About Me</h3>
-
-		<div style="padding-left:10px">
-			{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}
-		</div>
-	{else}
-		{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}
-	{/if}
-
-{/if}
-{/if}
-
-{if $user->user_id eq $profile->user_id && $simplified}
-	<p><a href="/profile.php?edit=1">Edit your profile</a> if there's anything you'd like to change.</p>
-
-{/if}
-
-<br style="clear:both"/>
 
 {*---------------------------Statistics-------------------------*}
-
+<div class="threecolumn">
 <h3>Statistics</h3>
 
 {if $profile->stats.images gt 0}
-
-<h4>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if} submitted</h4>
-
-{if $profile->stats.squares gt 1}
-      <ul>
-					{if $profile->stats.geographs}
-						<li><b>{$profile->stats.geographs}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
-						{if $profile->stats.geographs != $profile->stats.images}
-							and <b>{$profile->stats.images-$profile->stats.geographs}</b> others
-						{/if}
-						</li>
-					{/if}
-					<li><b>{$profile->stats.squares}</b> grid square{if $profile->stats.squares ne 1}s{/if},
-					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b>
-					</li>
-					{if $profile->stats.hectads > 1}
-						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> myriads{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
-					{/if}
-     </ul>
-{/if}
-
-<h4>Points</h4>
-<ul>
-
-			{if $profile->stats.points}
-				<li><b>{$profile->stats.points}</b> First Geograph points
-					{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
-						<ul style="font-size:0.8em;margin-bottom:2px">
-						<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to rise rank){/if}</li>
-						</ul>
-					{/if}
-				</li>
-			{/if}
-			{if $profile->stats.seconds || $profile->stats.thirds || $profile->stats.fourths}
-				<li style="padding-bottom:3px">
-				{if $profile->stats.seconds}
-					<b>{$profile->stats.seconds}</b> Second Visitor points,
-				{/if}
-				{if $profile->stats.thirds}
-					<b>{$profile->stats.thirds}</b> Third Visitor points,
-				{/if}
-				{if $profile->stats.fourths}
-					<b>{$profile->stats.fourths}</b> Fourth Visitor points
-				{/if}
-				</li>
-			{/if}
-			{if $profile->stats.geosquares}
-				<li><b>{$profile->stats.geosquares}</b> Personal points (grid square{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
-					{if $user->user_id eq $profile->user_id && $profile->stats.geo_rank > 0}
-						<ul style="font-size:0.8em;margin-bottom:2px">
-						<li>Overall Rank: <b>{$profile->stats.geo_rank|ordinal}</b> {if $profile->stats.geo_rank > 1}({$profile->stats.geo_rise} more needed to rise rank){/if}</li>
-						</ul>
-					{/if}
-				</li>
-			{/if}
-			{if $profile->stats.tpoints}
-				<li style="padding-bottom:3px"><b>{$profile->stats.tpoints}</b> TPoints (Time-gap points <sup><a href="/help/stats_faq#tpoints" class="about" style="font-size:0.6em">About</a></sup>)</li>
-			{/if}
-			
-</ul>
-      
-      
-			{if $profile->stats.content}
-      <h4>Collections</h4>
-      <ul>
-				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}&amp;scope=article,gallery,blog,trip" title="view content submitted by {$profile->realname|escape:'html'}">Collections submitted</a>
-					{if $user->user_id eq $profile->user_id}
-						[<a href="/article/?user_id={$profile->user_id}">Article list</a>]
-					{/if}
-				</li>
-        </ul>
-			{/if}
-
-
 
 
 {if $profile->stats.images > 2}
@@ -261,13 +174,82 @@
 {/if}
 
 {if !$profile->deceased_date}
-<div style="text-align:right;font-size:0.8em; color:gray;">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
+<div style="float:right;font-size:0.8em; color:gray;">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
+{/if}
+
+
+<h4>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if} submitted</h4>
+
+{if $profile->stats.squares gt 1}
+      <ul>
+					{if $profile->stats.geographs}<li><b>{$profile->stats.geographs}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
+						{if $profile->stats.geographs != $profile->stats.images} and <b>{$profile->stats.images-$profile->stats.geographs}</b> others{/if}
+						</li>
+					{/if}
+					<li>in <b>{$profile->stats.squares}</b> grid square{if $profile->stats.squares ne 1}s{/if},	giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b></li>
+					{if $profile->stats.hectads > 1}
+						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> myriads{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
+					{/if}
+     </ul>
+{/if}
+
+
+
+
+<h4>Points</h4>
+<ul>
+{if $profile->stats.points}
+				<li><b>{$profile->stats.points}</b> First Geograph points
+					{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
+						<ul style="font-size:0.8em;margin-bottom:2px">
+						<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to rise rank){/if}</li>
+						</ul>
+					{/if}
+				</li>
+{/if}
+{if $profile->stats.seconds || $profile->stats.thirds || $profile->stats.fourths}
+				<li style="padding-bottom:3px">
+				{if $profile->stats.seconds}
+					<b>{$profile->stats.seconds}</b> Second Visitor points,
+				{/if}
+				{if $profile->stats.thirds}
+					<b>{$profile->stats.thirds}</b> Third Visitor points,
+				{/if}
+				{if $profile->stats.fourths}
+					<b>{$profile->stats.fourths}</b> Fourth Visitor points
+				{/if}
+				</li>
+{/if}
+{if $profile->stats.geosquares}
+				<li><b>{$profile->stats.geosquares}</b> Personal points (grid square{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
+					{if $user->user_id eq $profile->user_id && $profile->stats.geo_rank > 0}
+						<ul style="font-size:0.8em;margin-bottom:2px">
+						<li>Overall Rank: <b>{$profile->stats.geo_rank|ordinal}</b> {if $profile->stats.geo_rank > 1}({$profile->stats.geo_rise} more needed to rise rank){/if}</li>
+						</ul>
+					{/if}
+				</li>
+{/if}
+{if $profile->stats.tpoints}
+				<li style="padding-bottom:3px"><b>{$profile->stats.tpoints}</b> TPoints (Time-gap points <sup><a href="/help/stats_faq#tpoints" class="about" style="font-size:0.6em">About</a></sup>)</li>
+{/if}
+			
+</ul>
+      
+      
+{if $profile->stats.content}
+      <h4>Collections</h4>
+      <ul>
+				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}&amp;scope=article,gallery,blog,trip" title="view content submitted by {$profile->realname|escape:'html'}">Collections submitted</a>
+					{if $user->user_id eq $profile->user_id}
+						[<a href="/article/?user_id={$profile->user_id}">Article list</a>]
+					{/if}
+				</li>
+        </ul>
 {/if}
 
 
 
 {elseif !$userimages}
-	<h3>My Statistics</h3>
 	<ul>
 		  <li>No photographs submitted</li>
 	</ul>
@@ -275,12 +257,18 @@
 
 
 
+{/if}
+
 </div>
-{*------------------------Search----------------------------*}
-<div class="twocolumn">
+
+
+
+
+{*------------------------Explore----------------------------*}
+<div class="threecolumn">
 
 {if $userimages}
-<h3>Search images by {$profile->realname|escape:'html'}</h3>
+<h3>Explore images by {$profile->realname|escape:'html'}</h3>
 
 <form action="/search.php" style="text-align:center">
   <input type="hidden" name="form" value="profile"/>
@@ -350,23 +338,14 @@
         </optgroup>
 </select></li>
 
-</ul>
-
-
-<div style="text-align:right">
-<a title="View images by {$profile->realname|escape:'html'} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml" class="xml-kml">KML</a> 
-<a title="RSS Feed for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.rss" class="xml-rss">RSS</a> 
-<a title="GPX file for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a>
-</div>
 
 
 
-{/if}
 
-{*------------------------Explore----------------------------*}
-<h3>Explore</h3>
 
-<ul class="buttonbar">
+
+
+
 {if $user->user_id eq $profile->user_id}
 <li><a href="/mapper/combined.php?mine=1#5/56.317/-2.769">Coverage Map of your Photos</a></li>
 {/if}
@@ -393,7 +372,7 @@
 
 <li><a href="/suggestions.php" rel="nofollow">Recent change suggestions</a></li>
 {if !$enable_forums}
-<li><b>Submissions</b>: <a href="/submissions.php" rel="nofollow">Edit my recent submissions</a></li>
+<li><a href="/submissions.php" rel="nofollow">Edit my recent submissions</a></li>
 {/if}
 <li><a href="/myphotos.php">My photos used around the site</a></li>
 <li><a href="/stuff/your-year.php?choose=1">Annual showcase</a></li>
@@ -409,11 +388,17 @@
 
 
 
-
-
 </ul>
 
 
+<div style="text-align:right">
+<a title="View images by {$profile->realname|escape:'html'} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml" class="xml-kml">KML</a> 
+<a title="RSS Feed for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.rss" class="xml-rss">RSS</a> 
+<a title="GPX file for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a>
+</div>
+
+
+{/if}
 
 
 
@@ -436,13 +421,34 @@
 
 <br style="clear:both">
 
+{*------------------------About----------------------------*}
+{if $profile->about_yourself && $profile->public_about && ($userimages || $user->user_id eq $profile->user_id)}
+
+	{if !$profile->deceased_date}
+			<h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">About Me</h3>
+
+		<div style="padding-left:10px">
+			{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}
+		</div>
+	{else}
+		{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}
+	{/if}
+
+{/if}
+
+
+{if $user->user_id eq $profile->user_id && $simplified}
+	<p><a href="/profile.php?edit=1">Edit your profile</a> if there's anything you'd like to change.</p>
+
+{/if}
+
 {*-------------------------Photographs---------------------------*}
 
 {if $userimages}
 
 <h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">Photographs</h3>
 
-<div style="overflow:auto;">
+<div align="center" style="overflow:auto;">
 
 <table class="report sortable" id="photolist" style="clear:none;background-color:white">
 	<thead><tr>
