@@ -25,6 +25,9 @@
 	ul.touchPadding li {
 		padding-bottom:16px;
 	}
+	div.tagbar {
+		line-height:1.8em;
+	}
 	div#footer {
 		line-height: 1.6em;
 	}

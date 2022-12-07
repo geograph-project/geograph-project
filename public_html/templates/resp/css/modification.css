@@ -169,6 +169,8 @@ div.ccmessage {
 .tagbar {
 	margin-top:10px;
 	text-align:center;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .tagbar a {
 	border-radius:4px;
