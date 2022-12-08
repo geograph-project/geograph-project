@@ -43,6 +43,11 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
         	exit;
 	}
 
+if ($_SERVER['HTTP_USER_AGENT'] == 'Zeno') {
+        header("HTTP/1.0 403 Forbidden");
+       exit;
+}
+
        if (@$_SERVER['HTTP_X_FORWARDED_FOR'] == "122.142.198.166" || @$_SERVER['HTTP_X_FORWARDED_FOR'] == "5.181.40.115") {
                 header("HTTP/1.0 403 Forbidden");
                exit;

@@ -32,6 +32,18 @@ if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
      header('HTTP/1.0 403 Forbidden');
      exit;
 }
+if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'SpiderLing')!==FALSE) {
+     header('HTTP/1.0 403 Forbidden');
+     exit;
+}
+if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'MegaIndex.ru')!==FALSE) {
+     header('HTTP/1.0 403 Forbidden');
+     exit;
+}
+if ($_SERVER['HTTP_USER_AGENT'] == 'Zeno') {
+        header("HTTP/1.0 403 Forbidden");
+       exit;
+}
 
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
