@@ -262,7 +262,7 @@
         <option value="https://maps.nls.uk/geo/find/marker/#zoom=13&lat={$lat}&lon={$long}&f=1&z=1&marker={$lat},{$long}">National Library of Scotland</option>
         <option value="http://wtp2.appspot.com/wheresthepath.htm?lat={$lat}&amp;lon={$long}">Where's the path</option>
         <option value="https://www.bing.com/maps?v=2&amp;cp={$lat}~{$long}&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1">Bing maps</option>
-        <option value="https://explore.osmaps.com/?lat=$lat&amp;lon=$long&amp;zoom=14">Ordnance Survey</option>    
+        <option value="https://explore.osmaps.com/?lat={$lat}&amp;lon={$long}&amp;zoom=14">Ordnance Survey</option>    
 		</optgroup>
     <optgroup label="More choices">
         <option value="/gridref/{$gridrefraw}/links">Geograph links page</option>
