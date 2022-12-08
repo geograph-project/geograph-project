@@ -89,6 +89,7 @@ if (0 && !isset($_SESSION['user'])) {
         exit;
 }
 
+rate_limiting('showmap.php');
 
 $smarty = new GeographPage;
 

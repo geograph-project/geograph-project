@@ -26,6 +26,8 @@ require_once('geograph/global.inc.php');
 session_cache_limiter('none');
 init_session();
 
+rate_limiting('related.php');
+
 $smarty = new GeographPage;
 
 #$smarty->display("sample8_unavailable.tpl");

@@ -130,6 +130,8 @@ if (isset($_GET['fav']) && $i) {
 
 } else if (!empty($_GET['first']) || !empty($_GET['blank']) || !empty($_GET['glue']) || (!empty($_GET['my_squares']) &&  intval($_GET['user_id'])) ) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
+	rate_limiting('search.php');
+
 	// -------------------------------
 	//  special handler to build a special query for myriads/numberical squares.
 	// -------------------------------
@@ -239,6 +241,7 @@ if (isset($_GET['fav']) && $i) {
 
 } else if (!empty($_GET['marked']) && isset($_COOKIE['markedImages']) || isset($_GET['markedImages'])) { //
 	dieUnderHighLoad(2,'search_unavailable.tpl');
+	rate_limiting('search.php');
 	// -------------------------------
 	//  special handler to build a special query for marked list.
 	// -------------------------------
@@ -275,6 +278,7 @@ if (isset($_GET['fav']) && $i) {
 
 } else if (!empty($_GET['article_id']) || !empty($_GET['profile_id'])) { //
 	dieUnderHighLoad(2,'search_unavailable.tpl');
+	rate_limiting('search.php');
 	// -------------------------------
 	//  special handler to build a search from an article
 	// -------------------------------
@@ -335,6 +339,7 @@ if (isset($_GET['fav']) && $i) {
 	fallBackForm($data);
 
 } elseif (is_int($i) && !empty($_GET['redo'])) {
+	rate_limiting('search.php');
 	// -------------------------------
 	//  special handler to 'refine' a query by setting a new 'text' string.
 	// -------------------------------
@@ -457,6 +462,7 @@ if (isset($_GET['fav']) && $i) {
 	
 } else if (isset($_GET['cluster2'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
+	rate_limiting('search.php');
 	// -------------------------------
 	//  special handler to build a advanced query experimental cluster 
 	// -------------------------------
@@ -534,6 +540,7 @@ if (isset($_GET['fav']) && $i) {
 		
 } else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
+	rate_limiting('search.php');
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.
 	// -------------------------------
@@ -591,6 +598,7 @@ if (isset($_GET['fav']) && $i) {
 
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
+	rate_limiting('search.php');
 	// -------------------------------
 	//  Build advacned query
 	// -------------------------------
@@ -641,6 +649,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 } elseif ((!empty($_GET['q']) && $_GET['q'] != '(anything)') || !empty($_GET['text']) || (!empty($_GET['location']) && $_GET['location'] != '(anywhere)')) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
+	rate_limiting('search.php');
 
 	// -------------------------------
 	//  Build a query from simple text
