@@ -238,7 +238,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {if $profile->stats.content}
       <h4>Collections</h4>
       <ul>
-				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}&amp;scope=article,gallery,blog,trip" title="view content submitted by {$profile->realname|escape:'html'}">Collections submitted</a>
+				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}&amp;scope=article,gallery,blog,trip" title="view content submitted by {$profile->realname|escape:'html'}">collections submitted</a>
 					{if $user->user_id eq $profile->user_id}
 						[<a href="/article/?user_id={$profile->user_id}">Article list</a>]
 					{/if}
