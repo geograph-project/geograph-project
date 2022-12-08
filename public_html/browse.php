@@ -149,7 +149,7 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	//preserve inputs in smarty
 	if ($grid_ok)
 	{
-		//redirect a myriad/hectad reference to clean url (which then uses rewriterule to load the relevent page directly) 
+		//redirect a myriad/hectad reference to clean url (which then uses rewriterule to load the relevent page directly)
 		if (preg_match('/^[a-z]{1,3}(\s*\d{2}|)$/i',trim($_GET['gridref']))) {
 			$gr = strtoupper(preg_replace('/^([a-z]{1,3})\s*(\d{2}|)$/i','$1$2',trim($_GET['gridref'])));
 			header("Location: /gridref/$gr");
@@ -163,6 +163,7 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	{
 		//preserve the input at least
 		$smarty->assign('gridref', preg_replace('/[^\w]+/',' ',$_GET['gridref']));
+		$smarty->assign('gridrefraw', $_GET['gridref']);
 	}
 }
 
@@ -170,10 +171,10 @@ $cacheid='';
 
 //what style should we use?
 $style = $USER->getStyle();
-	
+
 $smarty->assign('maincontentclass', 'content_photo'.$style);
 
-	#not ready for primetime yet, the user_id SHOULD to be replaced by visitor/has pending-or-rejects/mod switch 
+	#not ready for primetime yet, the user_id SHOULD to be replaced by visitor/has pending-or-rejects/mod switch
 # when ready to go live, should change the tpl file to remove most of the dynamic tags!
 #$cacheid=($square->gridsquare_id).'.'.md5($_SERVER['QUERY_STRING']).'.'.($USER->user_id);
 
