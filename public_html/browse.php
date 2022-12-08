@@ -1084,6 +1084,12 @@ elseif (!empty($_SESSION['gridsquare']))
 	$smarty->assign('eastings', $_SESSION['eastings']);
 	$smarty->assign('northings', $_SESSION['northings']);
 }
+else
+{
+	//the browse page doesnt work that well if no GR any more.
+	header("Location: /search.php",true,302);
+	exit;
+}
 
 if (!isset($_GET['inner'])) {
 	#//lets find some recent photos
