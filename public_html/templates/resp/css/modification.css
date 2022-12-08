@@ -52,6 +52,11 @@ input#search_toggle, label#search_label {
 	right:20px;
 }
 
+.full-width {
+	box-sizing:border-box;
+	max-width:100%;
+}
+
 /* styling for a 66% resized photo*/
 div.photo66
 {
