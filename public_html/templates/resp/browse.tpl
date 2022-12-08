@@ -254,9 +254,9 @@
 		</optgroup>
 		<optgroup label="OpenStreetMap">
         <option value="http://www.openstreetmap.org/?mlat={$lat}&amp;mlon={$long}&amp;zoom=14">OpenStreetMaps</option>
-        <option value="https://www.opencyclemap.org/?zoom=14&amp;lat=$lat&amp;lon=$long">OpenCycleMap</option>
-        <option value="https://opentopomap.org/&#35;map&equals;14/$lat/$long">OpenTopoMap</option>
-        <option value="https://map.openseamap.org/?zoom=14&amp;lat=$lat&amp;lon=$long">OpenSeaMap</option>    
+        <option value="https://www.opencyclemap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenCycleMap</option>
+        <option value="https://opentopomap.org/#map=14/{$lat}/{$long}">OpenTopoMap</option>
+        <option value="https://map.openseamap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenSeaMap</option>    
 		</optgroup>
     <optgroup label="Other">
         <option value="https://maps.nls.uk/geo/find/marker/#zoom=13&lat={$lat}&lon={$long}&f=1&z=1&marker={$lat},{$long}">National Library of Scotland</option>
