@@ -449,7 +449,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 <h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">Photographs</h3>
 
 
-<table class="report sortable" id="photolist" style="clear:none;background-color:white">
+<table class="report width700 sortable" id="photolist" style="clear:none;background-color:white">
 	<thead><tr>
 		<th>Grid Ref</td>
 		<th>Title</td>
@@ -463,7 +463,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 		<tr>
 		<td data-title="Grid reference" sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
 		<td data-title="Title" sortvalue="{$image->title|escape:'html'}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
-		<td data-title="Submitted" sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
+		<td data-title="Submitted" sortvalue="{$image->gridimage_id}" class="nowrap">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
 		<td data-title="Image type" class="nowrap">
 			{assign var="seperator" value=""}
 			{if $image->tags}
@@ -481,7 +481,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 				{if $image->points eq 'tpoint'}tpoint{/if}
 			{/if}
 		</td>
-		<td data-title="Taken" sortvalue="{$image->imagetaken}" class="nowrap" align="right">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e %b %Y"}{/if}</td>
+		<td data-title="Taken" sortvalue="{$image->imagetaken}" class="nowrap">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e %b %Y"}{/if}</td>
 		</tr>
 	{/foreach}
 	</tbody></table>
