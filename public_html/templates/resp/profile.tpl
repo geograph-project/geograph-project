@@ -448,24 +448,23 @@ This is a simplified view of your own profile. You can also view your <a href="/
 
 <h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">Photographs</h3>
 
-<div align="center" style="overflow:auto;">
 
 <table class="report sortable" id="photolist" style="clear:none;background-color:white">
 	<thead><tr>
-		<td>Grid Ref</td>
-		<td>Title</td>
-		<td sorted="desc">Submitted</td>
-		<td>Image Type</td>
-		<td>Points</td>
-		<td>Taken</td>
+		<th>Grid Ref</td>
+		<th>Title</td>
+		<th sorted="desc">Submitted</td>
+		<th>Image Type</td>
+		<th>Points</td>
+		<th>Taken</td>
 	</tr></thead>
 	<tbody>
 	{foreach from=$userimages item=image}
 		<tr>
-		<td sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
-		<td sortvalue="{$image->title|escape:'html'}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
-		<td sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
-		<td class="nowrap">
+		<td data-title="Grid reference" sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
+		<td data-title="Title" sortvalue="{$image->title|escape:'html'}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
+		<td data-title="Submitted" sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
+		<td data-title="Image type" class="nowrap">
 			{assign var="seperator" value=""}
 			{if $image->tags}
 				{foreach from=$image->tags item=tag}{if strpos($tag,'type:') === 0}{$seperator} {$tag|replace:'type:':''|escape:'html'}{assign var="seperator" value=","}{/if}{/foreach}
@@ -475,19 +474,18 @@ This is a simplified view of your own profile. You can also view your <a href="/
 				{$seperator} {if $image->moderation_status eq "accepted"}<i style=color:gray>not yet allocated</i>{else}{$image->moderation_status|ucfirst}{/if}
 			{/if}
 		</td>
-		<td>
+		<td data-title="Points">
 			{if  $image->moderation_status ne "rejected"}
 				{if $image->ftf eq 1}first{elseif $image->ftf eq 2}second{elseif $image->ftf eq 3}third{elseif $image->ftf eq 4}fourth{/if}
 				{if $image->ftf gt 0}personal{/if}
 				{if $image->points eq 'tpoint'}tpoint{/if}
 			{/if}
 		</td>
-		<td sortvalue="{$image->imagetaken}" class="nowrap" align="right">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e %b %Y"}{/if}</td>
+		<td data-title="Taken" sortvalue="{$image->imagetaken}" class="nowrap" align="right">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e %b %Y"}{/if}</td>
 		</tr>
 	{/foreach}
 	</tbody></table>
 
-</div>
 
 
 {if $limit}
