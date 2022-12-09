@@ -322,5 +322,7 @@
 	.report.width700 tbody tr td::before {
 		content: attr(data-title);
 	}
-
+.report td {
+  text-align: left !important;
+  } 
 }
