@@ -286,3 +286,41 @@
     background-color: white;
   }
 }
+
+/*Make Report tables responsive with 700px break point*/
+@media (max-width: 700px) {
+
+     .report thead tr {  /* hide the header row by default */
+          display:none;
+     }
+    .report.sortable thead tr { /* but if sortable re-enable it and display as buttons */
+		display: flex;
+		justify-content: space-between;
+   		flex-wrap: wrap;
+   		padding:10px;
+   		gap:8px;
+   		white-space:nowrap;
+    }
+     .report tr, .report td, .report th, .report thead, .report tbody, table.report {
+		display: block;
+	}
+
+	tbody tr:nth-child(2n+1) {
+		background-color: silver;
+
+	}
+
+	tbody tr td::before {
+		display: inline-block;
+		width: 25%;
+		min-width: 100px;
+		margin-right: 10px;
+		font-weight: bold;
+
+	}
+
+	tbody tr td::before {
+		content: attr(data-title);
+	}
+
+}
