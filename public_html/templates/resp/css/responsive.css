@@ -290,10 +290,10 @@
 /*Make Report tables responsive with 700px break point*/
 @media (max-width: 700px) {
 
-     .report thead tr {  /* hide the header row by default */
+     .report.width700 thead tr {  /* hide the header row by default */
           display:none;
      }
-    .report.sortable thead tr { /* but if sortable re-enable it and display as buttons */
+    .report.width700.sortable thead tr { /* but if sortable re-enable it and display as buttons */
 		display: flex;
 		justify-content: space-between;
    		flex-wrap: wrap;
@@ -301,16 +301,16 @@
    		gap:8px;
    		white-space:nowrap;
     }
-     .report tr, .report td, .report th, .report thead, .report tbody, table.report {
+     .report.width700 tr, .report td, .report th, .report thead, .report tbody, table.report {
 		display: block;
 	}
 
-	tbody tr:nth-child(2n+1) {
+	.report.width700 tbody tr:nth-child(2n+1) {
 		background-color: silver;
 
 	}
 
-	tbody tr td::before {
+	.report.width700 tbody tr td::before {
 		display: inline-block;
 		width: 25%;
 		min-width: 100px;
@@ -319,7 +319,7 @@
 
 	}
 
-	tbody tr td::before {
+	.report.width700 tbody tr td::before {
 		content: attr(data-title);
 	}
 
