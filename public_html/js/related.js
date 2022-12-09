@@ -129,7 +129,8 @@ function processImage(row) {
 	if (mode == 'takenday') {
 		required.push(row.takenday);
 	} else {
-		optional.push(row.takenyear);
+		if (row.takenyear > '1' && row.takenyear < 2010) //recent years have LOTS of matches
+			optional.push(row.takenyear);
 		optional.push(row.takenmonth);
 	}
 	optional.push(row.takenday);
@@ -139,6 +140,9 @@ function processImage(row) {
 		if (row[splits[g]] && row[splits[g]].length > 5) {
 			var list = row[splits[g]].replace(/(^\s*_SEP_\s*|\s*_SEP_\s*$)/g,'').replace(/(top|subject):/g,'').split(/ _SEP_ /);
 			for(var i = 0; i < list.length; i++) {
+				if (row['tags'] && row['tags'].length > 5 && (list[i] == 'Farm, Fishery, Market Gardening' || list[i] == 'Roads, Road transport' || list[i] == 'Wild Animals, Plants and Mushrooms'))
+					continue; //these contexts have so many matches, now lets skip if have some tags
+				list[i] = list[i].replace(/ and /,' * '); //context in particular have 'and' which is a very common keyword!
 				optional.push('"'+list[i]+'"');
 			}
 		}

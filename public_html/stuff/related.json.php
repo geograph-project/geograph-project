@@ -41,7 +41,7 @@ if (empty($rows))
 	$rows = rowsFromDB($id);
 
 if (!empty($rows)) {
-	$row = $rows[0];
+	$row = $rows[0]; //its actully always one row!
 
         $required = array();
         $optional = array();
@@ -53,7 +53,8 @@ if (!empty($rows)) {
 
 	$optional[] = $row['grid_reference'];
 
-	@$optional[] = $row['takenyear'];
+	if ($row['takenyear'] > '1' && $row['takenyear'] < 2010) //recent years have LOTS of matches
+		@$optional[] = $row['takenyear'];
 	@$optional[] = $row['takenmonth'];
 	@$optional[] = $row['takenday'];
 
@@ -61,17 +62,22 @@ if (!empty($rows)) {
 	foreach ($splits as $split)
 		if (!empty($row[$split]) && strlen($row[$split]) > 5) {
 			$list = explode(' _SEP_ ',preg_replace('/(top|subject):/','',preg_replace('/(^\s*_SEP_\s*|\s*_SEP_\s*$)/','', $row[$split])));
-			foreach ($list as $bit)
+			foreach ($list as $bit) {
+				if ($row['tags'] && strlen($row['tags']) > 5 && ($bit == 'Farm, Fishery, Market Gardening' || $bit == 'Roads, Road transport' || $bit == 'Wild Animals, Plants and Mushrooms'))
+                                        continue; //these contexts have so many matches, now lets skip if have some tags
+				$bit = str_replace(' the ',' * ',$bit); //context in particular have 'and' which is a very common keyword!
 				$optional[] = '"'.$bit.'"';
+			}
 		}
 
 	if (!empty($row['place']) && strlen($row['place']) > 2)
 		$optional[] = '"'.$row['place'].'"';
+	/* disabled for now, they greatly inflate the number of matches (partiucully 'England'!)
 	if (!empty($row['county']) && strlen($row['county']) > 2)
 		$optional[] = '"'.$row['county'].'"';
 	if (!empty($row['country']) && strlen($row['country']) > 2)
 		$optional[] = '"'.$row['country'].'"';
-
+	*/
 	$optional[] = 'user'.$row['user_id'];
 
 	if (!empty($row['imageclass']) && strlen($row['imageclass']) > 2)
