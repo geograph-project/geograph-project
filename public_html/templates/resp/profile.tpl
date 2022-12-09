@@ -300,7 +300,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 
 
 <li><select onchange="window.location.href=this.value">
-				<option value="">One per...</option>
+				<option value="">One image per...</option>
         <optgroup label="Day taken">
 				<option value="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=full&amp;do=1">Full details</option>
         <option value="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
