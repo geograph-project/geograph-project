@@ -253,6 +253,12 @@ if (!empty($_GET['deb']))
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	$data = $db->getAll($query);
+	if (!empty($data))
+		//json expects utf8
+		foreach ($data as $idx => $row) {
+			$data[$idx]['title'] = latin1_to_utf8($row['title']);
+			$data[$idx]['comment'] = latin1_to_utf8($row['comment']);
+		}
 	if (!empty($_GET['counts']) && !empty($sphinx) && !empty($sphinx->res)) {
 		foreach ($data as $idx => $row) {
 			$data[$idx]['images'] = $sphinx->res['matches'][$row['snippet_id']]['attrs']['images'];
