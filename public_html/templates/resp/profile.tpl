@@ -158,17 +158,20 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {if $profile->stats.images gt 0}
 
 
-<h4>{$profile->stats.images}</b> <a href="#images">Photograph{if $profile->stats.images ne 1}s{/if}</a> submitted</h4>
+<h4>{$profile->stats.images|thousends}</b> <a href="#images">Photograph{if $profile->stats.images ne 1}s{/if}</a> submitted</h4>
 
 {if $profile->stats.squares gt 1}
       <ul>
-					{if $profile->stats.geographs}<li><b>{$profile->stats.geographs}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
-						{if $profile->stats.geographs != $profile->stats.images} and <b>{$profile->stats.images-$profile->stats.geographs}</b> others{/if}
+					{if $profile->stats.geographs}<li><b>{$profile->stats.geographs|thousends}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
+						{if $profile->stats.geographs != $profile->stats.images} and <b>{$profile->stats.images-$profile->stats.geographs|thousends}</b> others{/if}
 						</li>
 					{/if}
-					<li>in <b>{$profile->stats.squares}</b> grid square{if $profile->stats.squares ne 1}s{/if},	giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b></li>
+					<li>in <b>{$profile->stats.squares|thousends}</b> grid square{if $profile->stats.squares ne 1}s{/if}{if $profile->stats.squares>3322} (<b>{math equation="x/332182*100" x=$profile->stats.squares format="%.1f"}%</b>){/if},
+						<span class=nowrap>giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b></span></li>
 					{if $profile->stats.hectads > 1}
-						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> myriads{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
+						<li>in <b>{$profile->stats.hectads|thousends}</b> different <span class=nowrap>hectads{if $profile->stats.hectads > 38} (<b>{math equation="x/3877*100" x=$profile->stats.hectads format="%.1f"}%</b>){/if}</span>
+							<span class=nowrap>and <b>{$profile->stats.myriads}</b> myriads{if $profile->stats.myriads > 7} (<b>{math equation="x/76*100" x=$profile->stats.myriads format="%.1f"}%</b>){/if}</span>
+							{if $profile->stats.days > 3}and <span class=nowrap>taken on <b>{$profile->stats.days|thousends}</b> different days</span>{/if}</li>
 					{/if}
      </ul>
 {/if}
@@ -179,7 +182,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 <h4>Points</h4>
 <ul>
 {if $profile->stats.points}
-				<li><b>{$profile->stats.points}</b> First Geograph points
+				<li><b>{$profile->stats.points|thousends}</b> First Geograph points
 					{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
 						<ul style="font-size:0.8em;margin-bottom:2px">
 						<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to rise rank){/if}</li>
@@ -190,18 +193,18 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {if $profile->stats.seconds || $profile->stats.thirds || $profile->stats.fourths}
 				<li style="padding-bottom:3px">
 				{if $profile->stats.seconds}
-					<b>{$profile->stats.seconds}</b> Second Visitor points,
+					<b>{$profile->stats.seconds|thousends}</b> Second Visitor points,
 				{/if}
 				{if $profile->stats.thirds}
-					<b>{$profile->stats.thirds}</b> Third Visitor points,
+					<span class=nowrap><b>{$profile->stats.thirds|thousends}</b> Third Visitor points,</span>
 				{/if}
 				{if $profile->stats.fourths}
-					<b>{$profile->stats.fourths}</b> Fourth Visitor points
+					<span class=nowrap><b>{$profile->stats.fourths|thousends}</b> Fourth Visitor points</span>
 				{/if}
 				</li>
 {/if}
 {if $profile->stats.geosquares}
-				<li><b>{$profile->stats.geosquares}</b> Personal points (grid square{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
+				<li><b>{$profile->stats.geosquares|thousends}</b> Personal points (grid square{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
 					{if $user->user_id eq $profile->user_id && $profile->stats.geo_rank > 0}
 						<ul style="font-size:0.8em;margin-bottom:2px">
 						<li>Overall Rank: <b>{$profile->stats.geo_rank|ordinal}</b> {if $profile->stats.geo_rank > 1}({$profile->stats.geo_rise} more needed to rise rank){/if}</li>
@@ -210,7 +213,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 				</li>
 {/if}
 {if $profile->stats.tpoints}
-				<li style="padding-bottom:3px"><b>{$profile->stats.tpoints}</b> TPoints (Time-gap points <sup><a href="/help/stats_faq#tpoints" class="about" style="font-size:0.6em">About</a></sup>)</li>
+				<li style="padding-bottom:3px"><b>{$profile->stats.tpoints|thousends}</b> TPoints (Time-gap points <sup><a href="/help/stats_faq#tpoints" class="about" style="font-size:0.6em">About</a></sup>)</li>
 {/if}
 			
 </ul>
@@ -219,7 +222,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {if $profile->stats.content}
       <h4>Collections</h4>
       <ul>
-				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}&amp;scope=article,gallery,blog,trip" title="view content submitted by {$profile->realname|escape:'html'}">collections submitted</a>
+				<li style="margin-top:10px"><b>{$profile->stats.content|thousends}</b> items of <a href="/content/?user_id={$profile->user_id}&amp;scope=article,gallery,blog,trip" title="view content submitted by {$profile->realname|escape:'html'}">collections submitted</a>
 					{if $user->user_id eq $profile->user_id && $simplified}
 						[<a href="/article/?user_id={$profile->user_id}">just articles</a>]
 					{/if}
