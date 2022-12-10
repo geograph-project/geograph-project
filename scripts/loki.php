@@ -42,17 +42,20 @@ $param=array(
 	'start'=>false, //can supply the full nanosecond timestamp, so can resume a aborted download
 	//'string' is also accepted as a optional param to 'filename' mode
 
+	'direction' => 'forward',
         'limit'=>10, //small number for testing, but set to high number, 5000 seems recommended (both filename and string use this - auto sets to 5000)
 
 	'base'=>'{job="production/geograph", container="nginx"}', //the default query (for all modes)
 	'string'=>false, //extra filter to apply
 	'not'=>false, //extra not filter (only works in single string mode)
+	'duration'=>false, //extra duration filter
 	'hours'=>false, //specify a number of hours to use with 'string' query. Defaults to one hour!
 
 	//which stream to get
 	'stream'=>'', //on nginx container at least, access_log is on stdout, and error on stderr!
 
 	'debug'=>false,
+	'stats'=>false,
 );
 
 //normal parser doesnt support arguments as seperate (because doesnt know which accept them)
@@ -146,11 +149,7 @@ if (empty($CONF['loki_address']))
 	elseif ($param['filename']) {
 		$query = $param['base'];
 
-		if ($param['string'])
-	                $query .= ' |= "'.str_replace('"','\"',$param['string']).'"';
-
-		if (!empty($param['not']))
-			$query .= ' != "'.str_replace('"','\"',$param['not']).'"';
+		//getlogs automatcially adds filters, like $param['string'] anyway!
 
 		$fp = fopen($param['filename'],'a');
 		if (!$fp)
@@ -223,11 +222,8 @@ if (empty($CONF['loki_address']))
 
 	elseif ($param['string']) {
 		$query = $param['base'];
-		$query .= ' |= "'.str_replace('"','\"',$param['string']).'"';
 
-		if (!empty($param['not']))
-			$query .= ' != "'.str_replace('"','\"',$param['not']).'"';
-
+		//getlogs automatcially adds $param['string'] anyway!
 
 		$start = null;
 		if (!empty($param['hours'])) {
@@ -245,6 +241,10 @@ if (empty($CONF['loki_address']))
 		$r = getlogs($query, STDOUT, $param['limit'],$start);
 		if (empty($r['count']) && posix_isatty(STDOUT))
 			print_r($r);
+		elseif (!empty($param['stats'])) {
+			foreach($r['times'] as $pod => $a)
+				printf("%50s  %4d  %.3f\n", $pod, $c = count($a), array_sum($a)/ $c);
+		}
 	}
 
 ############################################
@@ -280,6 +280,19 @@ direction: Determines the sort order of logs. Supported values are forward or ba
 function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) {
 	global $server, $param, $CONF;
 
+	#####################
+
+	if ($param['string'])
+                $query .= ' |= "'.str_replace('"','\"',$param['string']).'"';
+
+	if (!empty($param['not']))
+		$query .= ' != "'.str_replace('"','\"',$param['not']).'"';
+
+	if (!empty($param['duration']) && strpos($param['base'],'manticore"'))
+		$query .= ' | regexp `\] (?P<duration>\\d+\.\\d+) sec \\d+\\.\\d+ sec ` | duration > '.$param['duration'];
+
+	#####################
+
 	//get the access_log, nginx container at least, access on stdout, and error on stderr!
 	//$query .= ' | json | stream="stdout"';
 	if ($param['stream']) {
@@ -295,7 +308,7 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
 	$data = array(
 		'query' => $query,
 		'limit' => $limit,
-		'direction' => 'forward',
+		'direction' => $param['direction'],
 	);
 	if (!empty($start)) $data['start'] = $start;
 	if (!empty($end)) $data['end'] = $end;
@@ -342,6 +355,8 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
 						$str = $d['log'];
 					}
 					fwrite($fp,$str);
+					if ($param['stats'] && preg_match('/" (\d+.\d+) http/',$str,$m))
+						@$r['times'][$result['stream']['pod']][] = $m[1];
 				}
 			}
 		}
