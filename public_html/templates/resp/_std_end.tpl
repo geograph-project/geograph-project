@@ -36,7 +36,9 @@
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
      {dynamic}{if $user->registered && $user->stats.images}
      <li><a title="Your most recent submissions" href="/submissions.php">Recent Uploads</a></li>
-     <li><a title="Active suggestions" href="/suggestions.php">Suggestions</a></li>
+	{if $user->tickets !== 0}
+	     <li><a title="Active image change/suggestions" href="/suggestions.php">Suggestions</a></li>
+	{/if}
      {/if}{/dynamic}
      <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li>
      <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>
