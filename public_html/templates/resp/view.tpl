@@ -3,7 +3,7 @@
 
 <div style="padding-left:10px;padding-top:10px">
 	{if $image->imagetaken && $image->imagetaken > 1000 && $image->imagetaken < 2022}
-		<div class="numeric lighter" style="float:right;font-size:clamp( 1rem , 2vw, 3rem );">{$image->imagetaken|date_format:"%Y"}</div>
+		<div class="numeric lighter" style="float:right;font-size:clamp( 1rem , 2vw, 3rem );">{$image->imagetaken|substr:0:4}</div>
 	{/if}
 	<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 </div>
