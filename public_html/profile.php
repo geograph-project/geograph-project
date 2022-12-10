@@ -289,7 +289,7 @@ if ($template=='profile.tpl')
 			exit;
 		}
 
-		$profile->getStats(!empty($_GET['id']));
+		$profile->getStats(!empty($_GET['id']) && isset($_GET['more']));
 
 		if ($uid==$USER->user_id && empty($_GET['id'])) {
 			$profile->countTickets();

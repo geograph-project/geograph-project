@@ -334,8 +334,10 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {if $profile->stats.images > 2}
 	<li><select onchange="window.location.href=this.value">
 		<option value="">Detailed breakdown</option>
-		<option value="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}">Date taken</option>
-		<option value="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}">Myriad</option>
+		<option value="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}">by Date taken</option>
+		<option value="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}">by Myriad</option>
+		<option value="/finder/bytag.php?user_id={$profile->user_id}">by Tags</option>
+		<option value="/finder/groups.php?q=user{$profile->user_id}&amp;group=context_ids">by Geographical Context</option>
 	</select></li>
 {/if}
 
