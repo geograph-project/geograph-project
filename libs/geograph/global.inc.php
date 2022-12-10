@@ -1136,8 +1136,8 @@ class GeographPage extends Smarty
 
 			} elseif ($template == '_std_begin.tpl') {
 				if (!isset($this->_tpl_vars['responsive'])) //ie if set explicitly before, keep it!
-					$this->assign('responsive',false);
-			} else
+					$this->assign('responsive',false); //assume false here, because wont be doing auto-false by folder check
+			} elseif (file_exists($this->template_dir.'/'.$template))
 				$this->assign('responsive',true); //assume on, will reset if load from basic folder!
 		}
 
