@@ -723,7 +723,7 @@ class GeographUser
 				$this->user_id=$arr['user_id'];
 				$this->registered=true;
 
-				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');
+				$arr = $db->GetRow('select user.*,images from user left join user_stat using (user_id) where user_id='.$db->Quote($this->user_id).' limit 1');
 				foreach($arr as $name=>$value)
 				{
 					if (!is_numeric($name))
@@ -732,6 +732,8 @@ class GeographUser
 				}
 				if (empty($this->upload_size))
 					$this->upload_size = 1024;
+				if ($arr['images'])
+					$this->stats['images']=$arr['images'];
 
 				//temporary nickname fix for beta accounts
 				if (strlen($this->nickname)==0)
@@ -802,7 +804,7 @@ class GeographUser
 				$this->user_id=$arr['user_id'];
 				$this->registered=true;
 
-				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');
+				$arr = $db->GetRow('select user.*,images from user left join user_stat using (user_id) where user_id='.$db->Quote($this->user_id).' limit 1');
 				foreach($arr as $name=>$value)
 				{
 					if (!is_numeric($name))
@@ -811,6 +813,8 @@ class GeographUser
 				}
 				if (empty($this->upload_size))
 					$this->upload_size = 1024;
+				if ($user['images'])
+					$this->stats['images']=$user['images'];
 
 				//temporary nickname fix for beta accounts
 				if (strlen($this->nickname)==0)
@@ -1334,9 +1338,9 @@ class GeographUser
 
 				$sql="";
 				if (isValidEmailAddress($email))
-					$sql='select * from user where email='.$db->Quote($email).' limit 1';
+					$sql='select user.*,images from user left join user_stat using (user_id) where email='.$db->Quote($email).' limit 1';
 				elseif (isValidRealName($email))
-					$sql='select * from user where nickname='.$db->Quote($email).' limit 1';
+					$sql='select user.*,images from user left join user_stat using (user_id) where nickname='.$db->Quote($email).' limit 1';
 
 				if (strlen($sql))
 				{
@@ -1366,6 +1370,8 @@ class GeographUser
 								}
 								if (empty($this->upload_size))
 									$this->upload_size = 1024;
+								if ($arr['images'])
+									$this->stats['images']=$arr['images'];
 
 								//temporary nickname fix for beta accounts
 								if (strlen($this->nickname)==0)
@@ -1528,7 +1534,7 @@ class GeographUser
 				if (count($row))
 				{
 					//log the user in
-					$sql='select * from user where user_id='.$db->Quote($bits[0]).' limit 1';
+					$sql='select user.*,images from user left join user_stat using (user_id) where user_id='.$db->Quote($bits[0]).' limit 1';
 					$user = $db->GetRow($sql);
 
 					//log the errornumber (we use in case the db lookup failed)
@@ -1552,6 +1558,8 @@ class GeographUser
 
 						$this->registered=true;
 						$this->autologin=true;
+						if ($user['images'])
+							$this->stats['images']=$user['images'];
 
 						//log into forum
 						$this->_forumLogin();
