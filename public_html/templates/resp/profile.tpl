@@ -449,7 +449,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 <h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">Photographs</h3>
 
 
-<table class="report width700 sortable" id="photolist" style="clear:none;background-color:white">
+<table class="report width1000 sortable" id="photolist" style="clear:none;background-color:white">
 	<thead><tr>
 		<th>Grid Ref</td>
 		<th>Title</td>
