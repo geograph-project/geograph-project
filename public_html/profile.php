@@ -299,17 +299,17 @@ if ($template=='profile.tpl')
 				$profile->tickets = 0;
 			}
 
-	if (!empty($CONF['company_magic']) && $profile->hasPerm('basic') && $profile->hasPerm('member')) {
-		$token=new Token;
-		$token->magic = $CONF['company_magic'];
-	        $token->setValue("v", $CONF['company_name']);
+			if (!empty($CONF['company_magic']) && $profile->hasPerm('basic') && $profile->hasPerm('member')) {
+				$token=new Token;
+				$token->magic = $CONF['company_magic'];
+			        $token->setValue("v", $CONF['company_name']);
 
-		$token->setValue("id", intval($USER->user_id));
-		$token->setValue("expire", time()+21600);
+				$token->setValue("id", intval($USER->user_id));
+				$token->setValue("expire", time()+21600);
 
-		$smarty->assign('company_link', $CONF['company_link'].'?t='.$token->getToken());
-                $smarty->assign('company_member', $profile->hasPerm('member'));
-	}
+				$smarty->assign('company_link', $CONF['company_link'].'?t='.$token->getToken());
+		                $smarty->assign('company_member', $profile->hasPerm('member'));
+			}
 
 			$smarty->assign('bounce_message', $profile->getBounceMessage());
 		}
