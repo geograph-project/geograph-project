@@ -326,3 +326,42 @@
   text-align: left !important;
   } 
 }
+/*Make Report tables responsive with 1000px break point*/
+@media (max-width: 1000px) {
+
+     .report.width1000 thead tr {  /* hide the header row by default */
+          display:none;
+     }
+    .report.width1000.sortable thead tr { /* but if sortable re-enable it and display as buttons */
+		display: flex;
+		justify-content: space-between;
+   		flex-wrap: wrap;
+   		padding:10px;
+   		gap:8px;
+   		white-space:nowrap;
+    }
+     .report.width1000 tr, .report td, .report th, .report thead, .report tbody, table.report {
+		display: block;
+	}
+
+	.report.width1000 tbody tr:nth-child(2n+1) {
+		background-color: silver;
+
+	}
+
+	.report.width1000 tbody tr td::before {
+		display: inline-block;
+		width: 25%;
+		min-width: 100px;
+		margin-right: 10px;
+		font-weight: bold;
+
+	}
+
+	.report.width1000 tbody tr td::before {
+		content: attr(data-title);
+	}
+.report td {
+  text-align: left !important;
+  } 
+}
