@@ -423,7 +423,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 <h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">{if $limit && $userimages[0]->submitted>date('Y')}Recent {/if}Photographs</h3>
 
 
-<table class="report width1000 sortable" id="photolist" style="clear:none;background-color:white">
+<table class="report width700 sortable" id="photolist" style="clear:none;background-color:white">
 	<thead><tr>
 		<th>Grid Ref</td>
 		<th>Title</td>
@@ -438,7 +438,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 		<td data-title="Grid reference" sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
 		<td data-title="Title" sortvalue="{$image->title|escape:'html'}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
 		<td data-title="Submitted" sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
-		<td data-title="Image type" class="nowrap">
+		<td data-title="Image type">
 			{assign var="seperator" value=""}
 			{if $image->tags}
 				{foreach from=$image->tags item=tag}{if strpos($tag,'type:') === 0}{$seperator} {$tag|replace:'type:':''|escape:'html'}{assign var="seperator" value=","}{/if}{/foreach}
