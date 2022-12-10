@@ -46,16 +46,19 @@ $db->Execute("INSERT INTO event_log SET
 
 $status = $db->getAssoc("SHOW TABLE STATUS LIKE 'sphinx_%'");
 
-if (isset($status['sphinx_tags']) && !empty($status['sphinx_tags']['Update_time'])) {
+if (isset($status['sphinx_tags'])) {
 
 	$sqls = array();
 
 	fwrite(STDERR,date('H:i:s ')."Building DELTA...\n");
 
-	$crit = $status['sphinx_tags']['Update_time'];
+	//we cant rely on status.update_date as the table is innodb (it does get populaed on an update, but not persisted though reboots!)
+	$crit = $db->getOne("SELECT MAX(updated) FROM sphinx_tags");
+
 	$sqls[] = "CREATE TEMPORARY TABLE sph_delta_ids (primary key (gridimage_id))".
 		" SELECT gridimage_id FROM gridimage_search WHERE upd_timestamp >= '$crit'";
 
+	//importantly this gets tags that have been deleted too!
 	$sqls[] = "insert ignore into sph_delta_ids select distinct gridimage_id FROM gridimage_tag WHERE updated >= '$crit' and gridimage_id < 4294967296";
 
 	foreach ($sqls as $sql) {
@@ -92,7 +95,8 @@ if (isset($status['sphinx_tags'])) {
 				GROUP_CONCAT(DISTINCT IF(prefix='type',tag,NULL) ORDER BY tag_id SEPARATOR ';') AS types,
 				GROUP_CONCAT(DISTINCT IF(prefix='type',tag_id,NULL) ORDER BY tag_id SEPARATOR ',') AS type_ids,
 				GROUP_CONCAT(DISTINCT IF(prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject',NULL,tagtext) ORDER BY final_id SEPARATOR ';') AS tags,
-				GROUP_CONCAT(DISTINCT IF(prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject',NULL,final_id) ORDER BY final_id SEPARATOR ',') AS tag_ids
+				GROUP_CONCAT(DISTINCT IF(prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject',NULL,final_id) ORDER BY final_id SEPARATOR ',') AS tag_ids,
+				NOW() AS updated
 			FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) INNER JOIN tag_stat USING (tag_id)
 			INNER JOIN sph_delta_ids USING (gridimage_id)
 			WHERE gt.status = 2 and t.status = 1 AND __between__
@@ -121,6 +125,8 @@ if (isset($status['sphinx_tags'])) {
 			$cols[] = "GROUP_CONCAT(DISTINCT IF(prefix='subject',tag_id,NULL) ORDER BY tag_id SEPARATOR ',') AS subject_ids";
 		} elseif (is_null($data['Default'])) {
 			$cols[] = "NULL as $column";
+		} elseif ($column == 'updated') {
+			$cols[] = "NOW() as $column";
 		} else {
 			$cols[] = $db->Quote($data['Default'])." as $column";
 		}

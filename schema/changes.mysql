@@ -2801,3 +2801,13 @@ alter table snippet add has_dup tinyint unsigned not null default 1;
 #################################################
 
 
+alter table sphinx_tags add updated  timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp();
+
+update sphinx_tags set updated = '2022-11-30 12:17:09';
+--  ... having looked when the _tmp table was actully created!
+
+
+#################################################
+
+
+

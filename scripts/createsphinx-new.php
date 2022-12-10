@@ -78,7 +78,8 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 				GROUP_CONCAT(DISTINCT IF(prefix='type',tag,NULL) ORDER BY tag_id SEPARATOR ';') AS types,
 				GROUP_CONCAT(DISTINCT IF(prefix='type',tag_id,NULL) ORDER BY tag_id SEPARATOR ',') AS type_ids,
 				GROUP_CONCAT(DISTINCT IF(prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject',NULL,tagtext) ORDER BY final_id SEPARATOR ';') AS tags,
-				GROUP_CONCAT(DISTINCT IF(prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject',NULL,final_id) ORDER BY final_id SEPARATOR ',') AS tag_ids
+				GROUP_CONCAT(DISTINCT IF(prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject',NULL,final_id) ORDER BY final_id SEPARATOR ',') AS tag_ids,
+				NOW() AS updated
 			FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) INNER JOIN tag_stat USING (tag_id)
 			WHERE gt.status = 2 and t.status = 1 AND __between__
 			GROUP BY gridimage_id";
@@ -115,6 +116,8 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 			$cols[] = "GROUP_CONCAT(DISTINCT IF(prefix='subject',tag_id,NULL) ORDER BY tag_id SEPARATOR ',') AS subject_ids";
 		} elseif (is_null($data['Default'])) {
 			$cols[] = "NULL as $column";
+		} elseif ($column == 'updated') {
+			$cols[] = "NOW() as $column";
 		} else {
 			$cols[] = $db->Quote($data['Default'])." as $column";
 		}
