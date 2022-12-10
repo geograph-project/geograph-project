@@ -106,8 +106,15 @@ if (isset($_GET['tags'])) {
 	arsort($wordcount,SORT_NUMERIC);
 }
 
+if(empty($wordcount))
+	die("no data to plot");
+
 if (count($wordcount) > 250)
 	$wordcount = array_slice($wordcount,0,250,true);
+
+if (array_sum($wordcount) > 1500)
+	foreach ($wordcount as $word => &$count)
+		$count = floor(sqrt($count));
 
 ?>
 <html>
