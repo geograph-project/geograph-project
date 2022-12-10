@@ -14,7 +14,7 @@
 {/literal}
 </style>
 
-<h2><a name="top"></a><img src="{if $profile->md5_email}https://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50{else}https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=30{/if}" align="absmiddle" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>Profile for {$profile->realname|escape:'html'}</h2>
+<h2 style=margin-bottom:0><a name="top"></a><img src="{if $profile->md5_email}https://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50{else}https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=30{/if}" align="absmiddle" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>Profile for {$profile->realname|escape:'html'}</h2>
 
 {if $user->user_id eq $profile->user_id}
 <div style="border-style: double; padding: 6px; border-color: grey"><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>
@@ -80,7 +80,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 
 <div style="display: flex; flex-direction: row; flex-wrap: wrap">
 <div>
-<ul>
+<ul style="margin-top:0">
 	<li><b>Name</b>: {$profile->realname|escape:'html'}</li>
 
 	{if $profile->nickname}
@@ -95,9 +95,9 @@ This is a simplified view of your own profile. You can also view your <a href="/
 		{/if}
 	{/if}
 
- 	{if $profile->hasPerm('dormant',true)}
- 		<!--<li><i>We do not hold contact details for this user.</i></li>-->
- 	{elseif $user->user_id ne $profile->user_id}
+	{if $profile->hasPerm('dormant',true)}
+		<!--<li><i>We do not hold contact details for this user.</i></li>-->
+	{elseif $user->user_id ne $profile->user_id}
 		{if $profile->public_email eq 1}
 			<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}</li>
 		{/if}
@@ -119,6 +119,22 @@ This is a simplified view of your own profile. You can also view your <a href="/
 		<li><b>Site Member since</b>:
 			{$profile->signup_date|date_format:"%B %Y"}
 		</li>
+
+		{if $profile->role && $profile->role ne 'Member'}
+			<li><b>Geograph Role</b>: {$profile->role}</li>
+		{elseif strpos($profile->rights,'admin') > 0}
+			<li><b>Geograph Role</b>: Developer</li>
+		{elseif strpos($profile->rights,'moderator') > 0}
+			<li><b>Geograph Role</b>: Moderator</li>
+		{/if}
+		{if strpos($profile->rights,'member') > 0}
+		        <li><i>Geograph Project Limited Company Member</i>
+				{if $company_link}<br>
+					<a href="{$company_link|escape:'html'}" target="_blank">Follow this link to be taken to the company mini-site</a>
+				{/if}
+			</li>
+		{/if}
+
 	{/if}
 </ul>
 </div>
@@ -129,28 +145,6 @@ This is a simplified view of your own profile. You can also view your <a href="/
   </div>
 {/if}
 </div>
-
-<br style="clear:both; margin-bottom: 12px"/>
-
-
-{if $profile->role && $profile->role ne 'Member'}
-	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: {$profile->role}</div>
-{elseif strpos($profile->rights,'admin') > 0}
-	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Developer</div>
-{elseif strpos($profile->rights,'moderator') > 0}
-	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Moderator</div>
-{/if}
-{if strpos($profile->rights,'member') > 0}
-        <div style="margin-top:-1px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 3px; font-size:0.9em">Geograph Project Limited Company Member
-		{if $company_link}<br>
-			<a href="{$company_link|escape:'html'}" target="_blank">Follow this link to be taken to the company mini-site</a>
-		{/if}
-	</div>
-{/if}
-
-
-
-
 
 
 </div>
@@ -164,20 +158,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {if $profile->stats.images gt 0}
 
 
-{if $profile->stats.images > 2}
-<ul class="buttonbar">
-
-<li><select onchange="window.location.href=this.value">
-				<option value="">Detailed breakdown</option>
-				<option value="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}">Date taken</option>
-        <option value="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}">Myriad</option>
-</select></li>
-
-
-</ul>
-{/if}
-
-<h4>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if} submitted</h4>
+<h4>{$profile->stats.images}</b> <a href="#images">Photograph{if $profile->stats.images ne 1}s{/if}</a> submitted</h4>
 
 {if $profile->stats.squares gt 1}
       <ul>
@@ -239,8 +220,8 @@ This is a simplified view of your own profile. You can also view your <a href="/
       <h4>Collections</h4>
       <ul>
 				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}&amp;scope=article,gallery,blog,trip" title="view content submitted by {$profile->realname|escape:'html'}">collections submitted</a>
-					{if $user->user_id eq $profile->user_id}
-						[<a href="/article/?user_id={$profile->user_id}">Article list</a>]
+					{if $user->user_id eq $profile->user_id && $simplified}
+						[<a href="/article/?user_id={$profile->user_id}">just articles</a>]
 					{/if}
 				</li>
         </ul>
@@ -277,12 +258,10 @@ This is a simplified view of your own profile. You can also view your <a href="/
 
 <form action="/search.php" style="text-align:center">
   <input type="hidden" name="form" value="profile"/>
-  <input type="text" name="q" id="fq" {dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic} style="width: 400px;max-width: 70%"/>
+  <input type="text" name="q" placeholder="enter search query" id="fq" {dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic} style="width: 400px;max-width: 70%"/>
 	<input type="hidden" name="user_id" value="{$profile->user_id}"/>
 	<input type="submit" value="Find"/>
 </form>
-
-<br/>
 
 <ul class="buttonbar">
 
@@ -344,59 +323,46 @@ This is a simplified view of your own profile. You can also view your <a href="/
 </select></li>
 
 
-
-
-
-
-
-
-
-{if $user->user_id eq $profile->user_id}
-<li><a href="/mapper/combined.php?mine=1#5/56.317/-2.769">Personalised coverage map</a></li>
+{if $user->user_id eq $profile->user_id && $simplified}
+	<li><a href="/mapper/combined.php?mine=1#5/56.317/-2.769">Personalised coverage map</a></li>
 {/if}
 <li><a href="/browser/#!/q=user{$profile->user_id}/realname+%22{$profile->realname|escape:'url'}%22">Browser</a></li>
 
-{if $profile->stats.images gt 10}
-{if $user->registered}
-<li><a title="Comma Seperated Values - file for images by {$profile->realname|escape:'html'}" href="/export.csv.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1{/if}">Download CSV file</a></li>
-{/if}
-{if $user->user_id eq $profile->user_id}
-<li><a title="Excel 2003 XML - file for images by {$profile->realname|escape:'html'}" href="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1{/if}">Download XLSX file for Excel</a></li>
-{/if}
-{/if}
-
-
-{if $user->user_id eq $profile->user_id}
-
-<li><select onchange="window.location.href=this.value">
-				<option value="">Wordle</option>
-				<option value="/stuff/make-wordle.php?u={$profile->user_id}">Image titles</option>
-				<option value="/stuff/make-wordle.php?u={$profile->user_id}&amp;tags=1">Tags</option>
-</select></li>
-
-
-<li><a href="/suggestions.php" rel="nofollow">Recent change suggestions</a></li>
-{if !$enable_forums}
-<li><a href="/submissions.php" rel="nofollow">Edit my recent submissions</a></li>
-{/if}
-<li><a href="/myphotos.php">My photos used around the site</a></li>
-<li><a href="/stuff/your-year.php?choose=1">Annual showcase</a></li>
+{if $profile->stats.images > 2}
+	<li><select onchange="window.location.href=this.value">
+		<option value="">Detailed breakdown</option>
+		<option value="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}">Date taken</option>
+		<option value="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}">Myriad</option>
+	</select></li>
 {/if}
 
-{if $user->user_id eq $profile->user_id}
-<li><select onchange="window.location.href=this.value">
+{if $user->user_id eq $profile->user_id && $simplified && $profile->stats.images gt 2}
+	<li><a title="Comma Seperated Values - file for images by {$profile->realname|escape:'html'}" href="/export.csv.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1{/if}">Download CSV file</a></li>
+	<li><a title="Excel 2003 XML - file for images by {$profile->realname|escape:'html'}" href="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1{/if}">Download XML file for Excel 2003</a></li>
+
+	<li><select onchange="window.location.href=this.value">
+					<option value="">Wordle</option>
+					<option value="/stuff/make-wordle.php?u={$profile->user_id}">Image titles</option>
+					<option value="/stuff/make-wordle.php?u={$profile->user_id}&amp;tags=1">Tags</option>
+	</select></li>
+
+	<li><a href="/myphotos.php">My photos used around the site</a></li>
+
+	{if $profile->stats.images gt 24}
+		<li><a href="/stuff/your-year.php?choose=1">Annual showcase</a></li>
+	{/if}
+
+	<li><select onchange="window.location.href=this.value">
 				<option value="">Browse submissions in last 30 days in squares I have photographed</option>
 				<option value="/browser/my_squares-redirect.php?days=30">In the Browser</option>
 				<option value="/search.php?my_squares=1&amp;user_id={$profile->user_id}&amp;user_invert_ind=1&amp;submitted_startDay=30&amp;submitted_startYear">In the old search</option>
-</select></li>
+	</select></li>
 {/if}
-
-
 
 </ul>
 
 
-<div style="text-align:right">
+<div style="text-align:center"><span style="color:gray">Recent Images:</span>
 <a title="View images by {$profile->realname|escape:'html'} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml" class="xml-kml">KML</a> 
 <a title="RSS Feed for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.rss" class="xml-rss">RSS</a> 
 <a title="GPX file for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a>
@@ -414,10 +380,12 @@ This is a simplified view of your own profile. You can also view your <a href="/
 
 <ul class="buttonbar">
 	{foreach from=$profile->tags item=item}
-		<li><a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="/search.php?searchtext=[{if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}]&user_id={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a></li>
+		{if $item.prefix != 'type'}
+			<li><a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="/search.php?searchtext=[{if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}]&user_id={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a></li>
+		{/if}
 	{/foreach}
 </ul>
-<p>View a full breakdown of tags used  by {$profile->realname|escape:'html'} <a href="/finder/bytag.php?user_id={$profile->user_id}">in the Finder</a></p>
+<p align="center">View a <a href="/finder/bytag.php?user_id={$profile->user_id}">full breakdown of tags</a></p>
 {/if}
 
 </div>
@@ -427,7 +395,8 @@ This is a simplified view of your own profile. You can also view your <a href="/
 <br style="clear:both">
 
 {*------------------------About----------------------------*}
-{if $profile->about_yourself && $profile->public_about && ($userimages || $user->user_id eq $profile->user_id)}
+
+{if $profile->about_yourself && $profile->public_about && ($userimages || $user->user_id eq $profile->user_id) && !$simplified}
 
 	{if !$profile->deceased_date}
 			<h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">About Me</h3>
@@ -441,12 +410,12 @@ This is a simplified view of your own profile. You can also view your <a href="/
 
 {/if}
 
-
 {*-------------------------Photographs---------------------------*}
 
 {if $userimages}
 
-<h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">Photographs</h3>
+<a name="images"></a>
+<h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">{if $limit && $userimages[0]->submitted>date('Y')}Recent {/if}Photographs</h3>
 
 
 <table class="report width1000 sortable" id="photolist" style="clear:none;background-color:white">

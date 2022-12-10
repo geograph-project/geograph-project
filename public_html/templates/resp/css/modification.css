@@ -118,6 +118,8 @@ abbr {
 	list-style:none;
 	text-align:center;
 	padding:4px;
+	overflow:hidden;
+	text-overflow: ellipsis;
 }
 .buttonbar a {
 	text-decoration:none;
