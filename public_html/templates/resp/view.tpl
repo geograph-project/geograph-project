@@ -130,6 +130,14 @@ div.caption {
 	font-size:1em;
 }
 
+.tagbar {
+	border:1px dashed silver;
+	border-radius:20px;
+	max-width:1004px;
+	margin:0 auto;
+	margin-top:-1px;
+	padding:10px;
+}
 .detailbar {
         display: flex;
         justify-content: space-between;
@@ -137,7 +145,14 @@ div.caption {
 	padding:10px;
 	max-width:1024px;
 	margin:0 auto;
+	margin-top:20px;
 }
+
+.detailbar > * { flex: 1; }
+.detailbar .rastermap > div {
+	margin:auto;
+}
+
 .detailbar .picinfo {
 	margin-top:0;
 }
@@ -387,8 +402,6 @@ div.caption {
 
 
 <!-- ----------------------------------------------------- -->
-
-<br style="clear:both"/>
 
 <ul class="buttonbar">
 	{if $enable_forums}

@@ -79,9 +79,16 @@ div.photoguide
 }
 
 div.ccmessage {
-	font-size:1rem;
+	font-size:1.05rem;
+}
+div.ccmessage a {
+	font-weight:600;
+	text-underline-offset:3px;
 }
 
+abbr {
+	text-underline-offset:0.2em;
+}
 .content_photowhite.photopage abbr[title] {
 	text-decoration-color: silver;
 }
@@ -101,7 +108,8 @@ div.ccmessage {
 	gap:6px;
 	font-family: Georgia, Arial, sans serif; /* Georgia not great for numbers */
 	max-width:1024px;
-	margin:0 auto;
+	margin:16px auto;
+	-webkit-text-stroke: 0.2px blue;
 }
 .buttonbar li {
 	background-color:#eee;
