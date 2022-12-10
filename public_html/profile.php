@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: profile.php 8706 2018-02-03 18:28:52Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -81,7 +81,7 @@ if (isset($_REQUEST['edit']))
 				$profile->$name=strip_tags(stripslashes($value));
 			}
 		}
-	} 
+	}
 	else
 	{
 		$profile=new GeographUser($USER->user_id);
@@ -146,7 +146,6 @@ elseif (isset($_REQUEST['notifications']))
 		'photos'=>array('title'=>'Photo Descriptions (Other photos that link directly to yours)'),
 		);
 
-
 		$bits = explode('|',$USER->getPreference('notification.myphotos',''));
 		$smarty->assign('freq',$bits[0]);
 		if (!empty($bits[1])) {
@@ -157,7 +156,6 @@ elseif (isset($_REQUEST['notifications']))
 
 		$smarty->assign_by_ref('freqs', $freqs);
 		$smarty->assign_by_ref('items', $items);
-
 	}
 }
 
@@ -171,18 +169,18 @@ if ($template=='profile.tpl')
 	if (isset($_GET['u']) && preg_match('/^[0-9]+$/' , $_GET['u']))
 	{
 		$uid=$_GET['u'];
-	} 
+	}
 	elseif (isset($_GET['id']) && preg_match('/^[0-9]+$/' , $_GET['id']))
 	{
 		$uid=$_GET['id'];
-	} 
+	}
 	elseif (isset($_GET['user']) && isValidRealName($_GET['user']))
 	{
 		if ($_GET['user'] == $USER->nickname)
 		{
 			$uid=$USER->user_id;
-		} 
-		else 
+		}
+		else
 		{
 			$profile=new GeographUser();
 			$profile->loadByNickname($_GET['user']);
@@ -205,20 +203,17 @@ if ($template=='profile.tpl')
 
 		//to reach here, user must be logged in...
 		$uid=$USER->user_id;
-		
+
 		if (isset($_GET['hide_message'])) {
 			#header("HTTP/1.0 200 OK");
 			#header("Content-Length: 0");
-			
+
 			$USER->countTickets();
-			
 			$_SESSION['last_ticket_time'] = $USER->last_ticket_time;
 
 			print '1';
-			
 			exit;
 		}
-		
 	} else {
 		if (isset($_GET['user']) || isset($_GET['u'])) {
 			header("HTTP/1.0 301 Moved Permanently");
@@ -227,8 +222,7 @@ if ($template=='profile.tpl')
 			exit;
 		}
 	}
-	
-	
+
 	if ($uid==$USER->user_id) {
 		$level = 1;
 		customExpiresHeader(60,false,true);
@@ -239,11 +233,10 @@ if ($template=='profile.tpl')
 		$level = 0;
 		#customExpiresHeader(600,false,true);
 	}
-	
+
 	$ab=floor($uid/10000);
-	
 	$cacheid="user$ab|{$uid}|{$level}";
-	
+
 	if (isset($_GET['all']) && $USER->registered) {
 		$limit = 5000;
 	} elseif (isset($_GET['more'])) {
@@ -252,7 +245,7 @@ if ($template=='profile.tpl')
 		$limit = 100;
 	}
 	$cacheid.="_$limit";
-	
+
 	if ($CONF['template']=='archive') {
 		 $_GET['expand'] = true;
 	}
@@ -272,7 +265,7 @@ if ($template=='profile.tpl')
 		if (isset($_GET['all']) || isset($_GET['more']) || isset($_GET['expand'])) {
 			dieUnderHighLoad();
 		}
-		
+
 		require_once('geograph/imagelist.class.php');
 		require_once('geograph/gridimage.class.php');
 		require_once('geograph/gridsquare.class.php');
@@ -280,14 +273,14 @@ if ($template=='profile.tpl')
 		if (!$profile) {
 			$profile=new GeographUser($uid);
 		}
-		
+
 		if (!empty($_GET['a']) && $_GET['a'] == $profile->realname) {
 			header("HTTP/1.0 301 Moved Permanently");
 			header("Status: 301 Moved Permanently");
 			header("Location: /profile/{$uid}");
 			exit;
 		}
-		
+
 		if ($profile->user_id==0)
 		{
 			header("HTTP/1.0 404 Not Found");
@@ -295,9 +288,9 @@ if ($template=='profile.tpl')
 			$smarty->display('static_404.tpl');
 			exit;
 		}
-		
+
 		$profile->getStats(!empty($_GET['id']));
-		
+
 		if ($uid==$USER->user_id && empty($_GET['id'])) {
 			$profile->countTickets();
 			$USER->tickets = $profile->tickets;
@@ -320,7 +313,7 @@ if ($template=='profile.tpl')
 
 			$smarty->assign('bounce_message', $profile->getBounceMessage());
 		}
-		
+
 		if (empty($_GET['id'])) {
 			$smarty->assign('simplified',1);
 		} elseif ($CONF['forums']) {
@@ -328,33 +321,34 @@ if ($template=='profile.tpl')
 		}
 
 		if (!empty($_GET['a'])) {
+			//tofix the page_title ends up cached, not in a {dynamic} - so this can mean the title is reused
 			$smarty->assign('page_title', 'Profile for '.$_GET['a'].'/'.$profile->realname);
 			$smarty->assign('meta_description', 'Profile page for '.$_GET['a'].'/'.$profile->realname.', listing recent images, statistics and links to further information.');
 		} else {
 			$smarty->assign('page_title', 'Profile for '.$profile->realname);
 			$smarty->assign('meta_description', 'Profile page for '.$profile->realname.', listing recent images, statistics and links to further information.');
 		}
-		
+
 		$smarty->assign_by_ref('profile', $profile);
-		
+
 		$images=new ImageList;
-		
+
 		if ($uid==$USER->user_id || $USER->hasPerm('moderator')) {
 			if (isset($_GET['reject']) && empty($_GET['reject'])) {
 				$statuses=array('pending', 'accepted', 'geograph');
 			} else {
 				$statuses='';//all
-			} 
+			}
 		} else
 			$statuses=array('accepted', 'geograph');
-		
+
 		$images->getImagesByUser($uid, $statuses,'gridimage_id desc',$limit,true);
 		$images->assignSmarty($smarty, 'userimages');
-		
+
 		if (count($images->images) == $limit) {
 			$smarty->assign('limit',$limit);
-		}	
-		
+		}
+
 		if (count($images->images)) {
 			$overview=new GeographMapMosaic('overview');
 			$overview->type_or_user = $uid;
@@ -380,11 +374,11 @@ if ($template=='profile.tpl')
 
 function smarty_function_TruncateWithExpand($input,$more = 'Click here to Read More...') {
 	global $USER;
-	
+
 	if (strlen($input) > 300 && empty($_GET['expand'])
 			&& (empty($USER->expand_about) || $USER->expand_about == 2)
 		) {
-	
+
 		if (strpos($input,'[--more--]') !== FALSE && $USER->expand_about != 2) {
 			$bits = explode('[--more--]',$input,2);
 			preg_match('/^(.{2000,}?)(?![\w\d\[\]\'])/s',$bits[0],$m); //still impose a hard limit of 2000 chars!
@@ -405,15 +399,14 @@ function smarty_function_TruncateWithExpand($input,$more = 'Click here to Read M
 			}
 			if (!trim($input)) {
 				$before = "";
-			} 
-			
+			}
+
 			$input .= "<div style=\"text-align:center;border-top:1px solid silver;margin-top:10px\">$before<a href=\"?expand=1\">$more</a></div>";
-		
 		}
 	} else {
 		$input = str_replace('[--more--]',' ',$input);
 	}
-	
+
 	return $input;
 }
 $smarty->register_modifier("TruncateWithExpand", "smarty_function_TruncateWithExpand");
@@ -424,4 +417,3 @@ if (!empty($_GET['a']))
 
 $smarty->display($template, $cacheid);
 
-?>
