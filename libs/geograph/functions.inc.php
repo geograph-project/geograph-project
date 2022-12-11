@@ -175,7 +175,7 @@ function smarty_block_dynamic($param, $content, &$smarty)
 function smarty_function_getamap($params)
 {
 	global $CONF;
-	$icon=empty($params['icon'])?"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/>":'';
+	$icon=empty($params['icon'])?"<img style=\"margin-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/>":'';
 
 	//get params
 	$matches=array();
@@ -290,7 +290,7 @@ function smarty_function_external($params)
 		$title .= "\" rel=\"".implode(" ",$rel);
 
 	return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\">$text</a>".
-		"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"$prompt\" src=\"{$CONF['STATIC_HOST']}$icon\" width=\"10\" height=\"10\"/></span>";
+		"<img style=\"margin-left:2px;\" alt=\"External link\" title=\"$prompt\" src=\"{$CONF['STATIC_HOST']}$icon\" width=\"10\" height=\"10\"/></span>";
 }
 
 /**
