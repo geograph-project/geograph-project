@@ -305,7 +305,7 @@
 	}
 
 	.report.width700 tbody tr:nth-child(2n+1) {
-		background-color: silver;
+		background-color: #eee;
 	}
 
 	.report.width700 tbody tr td::before {
@@ -343,7 +343,7 @@
 	}
 
 	.report.width1000 tbody tr:nth-child(2n+1) {
-		background-color: silver;
+		background-color: #eee;
 	}
 
 	.report.width1000 tbody tr td::before {

@@ -96,6 +96,13 @@ abbr {
 	text-decoration-color: #555;
 }
 
+.content_photowhite h3 {
+	color:#666;
+}
+.content_photowhite div.statuscaption {
+	color:#606060;
+}
+
 /* -------------------- */
 
 .buttonbar { /* there is an existing buttonbar, which may need to check compatibltiy */

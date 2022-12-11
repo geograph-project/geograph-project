@@ -52,7 +52,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 			</div>
 			<br/><br/>
 		{else}
-			<div style="text-align:center;color:gray">You have <b>{$profile->tickets}</b> ongoing suggestions on your images, please go to <a href="/suggestions.php">your suggestions page</a> to review them. <a href="javascript:void(hide_message())">hide this</a></div>
+			<div style="text-align:center">You have <b>{$profile->tickets}</b> ongoing suggestions on your images, please go to <a href="/suggestions.php">your suggestions page</a> to review them. <a href="javascript:void(hide_message())">hide this</a></div>
 		{/if}
 	</div>
 	<script type="text/javascript">{literal}
@@ -235,7 +235,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {/if}
 
 {if !$profile->deceased_date}
-<div style="float:right;font-size:0.8em; color:gray;">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
+<div style="float:right;">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
 {/if}
 
 
@@ -363,7 +363,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 </ul>
 
 
-<div style="text-align:center"><span style="color:gray">Recent Images:</span>
+<div style="text-align:center">Recent Images:
 <a title="View images by {$profile->realname|escape:'html'} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml" class="xml-kml">KML</a> 
 <a title="RSS Feed for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.rss" class="xml-rss">RSS</a> 
 <a title="GPX file for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a>

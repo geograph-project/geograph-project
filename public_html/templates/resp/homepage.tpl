@@ -274,7 +274,7 @@ div.homepage {
                         </div>
                         {if $item.images > 2 && ($item.source == 'themed' || $item.source == 'gallery' || $item.source == 'snippet' || $item.source == 'article')}
                                 <div style="position:relative;float:right;margin-right:10px">
-                                        <a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="View Images"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0" alt="view images in this collection"/></a>
+                                        <a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="View Images"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0" alt="view images in this collection" width=20 height=15></a>
                                 </div>
                         {elseif $item.source == 'user' && $item.images > 2}
                                 <div style="position:relative;float:right;margin-right:10px">
@@ -283,10 +283,10 @@ div.homepage {
                         {/if}
 
                         <b><a href="{$item.url}">{$item.title|escape:'html'}</a></b><br/>
-                        <span style="background-color:#{$colours.$source}">{$sources.$source}</span><span style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
+                        &nbsp;<span style="background-color:#{$colours.$source}">{$sources.$source}</span><span style="color:#666">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
                         {if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</span>
                         {if $item.extract}
-                                <div title="{$item.extract|escape:'html'}">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
+                                <div style="margin-top:10px;" title="{$item.extract|escape:'html'}">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
                         {/if}
                         <br style="clear:left">
                 </div>
