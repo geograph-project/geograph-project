@@ -32,7 +32,7 @@ $db = GeographDatabaseConnection(true);
 $where = array();
 if (isset($_GET['mine']) && $USER->user_id) {
 	$where[] = "user_id = {$USER->user_id}";
-} 
+}
 
 if (!empty($_GET['u'])) {
 	$where[] = "user_id = ".intval($_GET['u']);
@@ -116,31 +116,17 @@ if (array_sum($wordcount) > 1500)
 	foreach ($wordcount as $word => &$count)
 		$count = floor(sqrt($count));
 
+$smarty = new GeographPage;
+$smarty->display('_std_begin.tpl');
+
 ?>
-<html>
-<head>
-<title>Word Cloud</title>
-<style>
-body {
-	font-family:georgia;
-	--background-color:#e4e4fc;
-}
-
-</style>
-<script src="/js/d3.v2.min.js"></script>
-<script src="/js/d3.layout.cloud.js"></script>
-
-</head>
-<body>
 
 <h2>Geograph Word Clouds</h2>
 
-<h3>3d-cloud</h3>
-
-<p>Rendered using <a href="https://github.com/jasondavies/d3-cloud">https://github.com/jasondavies/d3-cloud</a>, using basic default settings.</p>
-
 	<div id="vis"></div>
 
+<script src="/js/d3.v2.min.js"></script>
+<script src="/js/d3.layout.cloud.js"></script>
 <script>
 var fill = d3.scale.category20();
 
@@ -164,7 +150,7 @@ $basesize = (max($wordcount) > 150)?12:18;
 layout.start();
 
 function draw(words) {
-  d3.select("body").append("svg")
+  d3.select("div#vis").append("svg")
       .attr("width", layout.size()[0])
       .attr("height", layout.size()[1])
     .append("g")
@@ -184,8 +170,11 @@ function draw(words) {
 
 </script>
 
+<p>Rendered using <a href="https://github.com/jasondavies/d3-cloud">https://github.com/jasondavies/d3-cloud</a>, using basic default settings.</p>
+
 <hr/>
 
+<? if (!empty($_GET['advanced'])) { ?>
 <form>
 You may also be able copy this text: (all should select when click the box, then just press Ctrl-C to copy it)<br>
 	<textarea rows=3 cols=50 onclick="this.select()"><?
@@ -195,13 +184,16 @@ foreach ($wordcount as $word => $count) {
 ?></textarea><br>
  into the demo at <a href="https://www.jasondavies.com/wordcloud/">https://www.jasondavies.com/wordcloud/</a> - which gives you more options to play around. Alas the demo itself doesnt seem to be open-source, so can't put the interactive interface here.
 </form>
+<? } else { ?>
+	<a href="<? echo smarty_function_linktoself(array('name'=>'advanced','value'=>1)); ?>">More Options</a>
+<? } ?>
 
-
+<? if (!empty($_GET['wordle'])) { ?>
 <hr/>
 <h3>Wordle.net</h3>
 <p>Can still try loading the words on wordle.net using the button below, alas its still based on Java technology, that doesnt work in many modern browsers. </p>
 
-<form action="http://www.wordle.net/compose" method="post" name="theForm">
+<form action="https://www.wordle.net/compose" method="post" name="theForm">
 <input type=hidden name=wordcounts value="<?
 foreach ($wordcount as $word => $count) {
 	print "$word:$count,";
@@ -209,5 +201,9 @@ foreach ($wordcount as $word => $count) {
 ?>">
 <input type=submit value="load on wordle.com">
 </form>
-</body>
-</html>
+</div>
+<? }
+
+$smarty->display('_std_end.tpl');
+
+

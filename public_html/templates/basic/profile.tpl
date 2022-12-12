@@ -334,7 +334,7 @@
 			{/if}{/dynamic}
 		{/if}
 		{if $user->user_id eq $profile->user_id}
-			<li><b>Wordle</b>: {external href="`$self_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View words from image titles as a <i>Wordle</i>"} or
+			<li><b>Word Cloud</b>: {external href="`$self_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View words from image titles as a <i>Word Cloud</i>"} or
 				{external href="`$self_host`/stuff/make-wordle.php?u=`$profile->user_id`&amp;tags=1" text="View your tags"}</li>
 			<li><b>Change Requests</b>: <a href="/suggestions.php" rel="nofollow">View recent suggestions</a></li>
 			{if !$enable_forums}

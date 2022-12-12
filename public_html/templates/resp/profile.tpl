@@ -342,7 +342,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 	<li><a title="Excel 2003 XML - file for images by {$profile->realname|escape:'html'}" href="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1{/if}">Download XML file for Excel 2003</a></li>
 
 	<li><select onchange="window.location.href=this.value">
-					<option value="">Wordle</option>
+					<option value="">Word Cloud</option>
 					<option value="/stuff/make-wordle.php?u={$profile->user_id}">Image titles</option>
 					<option value="/stuff/make-wordle.php?u={$profile->user_id}&amp;tags=1">Tags</option>
 	</select></li>
