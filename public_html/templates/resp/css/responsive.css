@@ -2,7 +2,7 @@
 
 @media (any-pointer: coarse) {
 	#nav_block {
-		line-height:1.5em;
+		line-height:1.4em;
 		font-size:1.4em;
 		width:160px !important;
 	}
@@ -10,8 +10,11 @@
 		padding:0;
 	}
 	#nav_block a {
-		padding: 0.8em;
+		padding: 0.8em 0.4em;
 		white-space: nowrap;
+	}
+	#nav_block .nav > ul > li {
+		padding-left:3px;
 	}
 	#nav_block .newsbody, #nav_block .newsfooter {
         	line-height:1.2rem;
@@ -23,13 +26,13 @@
 		line-height:2em;
 	}
 	ul.touchPadding li {
-		padding-bottom:16px;
+		padding-bottom:1em;
 	}
 	div.tagbar {
 		line-height:1.8em;
 	}
 	div#footer {
-		line-height: 1.6em;
+		line-height: 1.5em;
 	}
 	div#footer a {
 		white-space: nowrap;

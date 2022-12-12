@@ -7,7 +7,7 @@
  <div class="nav">
 
 {if $welsh_url}
-<div>
+<div style="text-align:center">
 	<a href="{$welsh_url}">Fersiwn Cymraeg</a>
 </div>
 {/if}

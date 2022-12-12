@@ -40,7 +40,7 @@
 
 <li>Here are a couple of example searches:<br/>
 <div style="float:left; margin-top:3px;  width:60%; position:relative">
-	<ul style="margin-left:0;padding:0 0 0 1em;font-size:0.8em">
+	<ul style="margin-left:0;padding:0 0 0 1em;" class="touchPadding">
 	{foreach from=$featured key=id item=row}
 	<li><a href="/search.php?i={$row.id|escape:url}">{$row.searchdesc|regex_replace:'/^, /':''|escape:html}</a></li>
 	{/foreach}
@@ -48,7 +48,7 @@
 	</ul>
 </div>
 <div style="float:left; margin-top:3px;  width:40%; position:relative">
-	<ul style="font-size:0.8em">
+	<ul class="touchPadding">
         {foreach from=$taglist key=id item=count}
         <li>[<a href="/search.php?searchtext=[{$id|escape:url}]&amp;do=1&amp;displayclass=full" title="Show images tagged with {$id|escape:html}">{$id|escape:html}</a>] x{$count}</li>
         {/foreach}
@@ -61,7 +61,7 @@
 {if $user->registered}
 	{if $recentsearchs}
 	<li>And a list of your recent searches:
-	<ul style="margin-left:-10px; margin-top:3px; padding:0 0 0 0em; list-style-type:none">
+	<ul style="margin-left:-10px; margin-top:3px; padding:0 0 0 0em; list-style-type:none" class="touchPadding">
 	{foreach from=$recentsearchs key=id item=obj}
 	<li>{if $obj.favorite == 'Y'}<a href="/search.php?i={$id}&amp;fav=0" title="remove favorite flag"><img src="{$static_host}/img/star-on.png" width="14" height="14" alt="remove favorite flag" onmouseover="this.src='{$static_host}/img/star-light.png'" onmouseout="this.src='{$static_host}/img/star-on.png'"></a> <b>{else}<a href="/search.php?i={$id}&amp;fav=1" title="make favorite - starred items stay near top"><img src="{$static_host}/img/star-light.png" width="14" height="14" alt="make favorite" onmouseover="this.src='{$static_host}/img/star-on.png'" onmouseout="this.src='{$static_host}/img/star-light.png'"></a> {/if}{if $obj.searchclass == 'Special'}<i>{/if}<a href="/search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc|escape:"html"}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if} (Display: {$obj.displayclass})">{$obj.searchdesc|escape:"html"|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.searchclass == 'Special'}</i>{/if}{if $obj.favorite == 'Y'}</b>{/if} {if $obj.edit}<a href="/refine.php?i={$id}" style="color:red">Edit</a>{/if}</li>
 	{/foreach}
