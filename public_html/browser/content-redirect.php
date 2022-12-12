@@ -37,7 +37,7 @@ if (isset($_GET['map'])) {
 
 if ($row = $db->getRow("SELECT content_id,title FROM content WHERE foreign_id = ".intval($_GET['id'])." AND source = ".$db->Quote($_GET['source']))) {
 	$id = $row['content_id'];
-	$postfix = "/content_title=".urlencode($row['title'])."/content_id=$id".$postfix;
+	$postfix = "/content_title=".urlencode(latin1_to_utf8($row['title']))."/content_id=$id".$postfix;
 }
 
 header("Location: /browser/#!$postfix");
