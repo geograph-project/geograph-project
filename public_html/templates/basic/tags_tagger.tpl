@@ -199,7 +199,10 @@
 	margin-left:5px;
 	white-space:nowrap;
 }
-</style><script type="text/javascript">
+</style>
+
+<script src="/js/anyascii.js"></script>
+<script type="text/javascript">
 
 var failedTags = new Array();
 
@@ -226,23 +229,33 @@ function useTags(ele) {
 var recordNext = '';
 
 function cleanTag(text) {
+	//Allows chars: A-Z a-z 0-9 _ ( ) + . & / ! ? % @ # - (plus space)
+
 	//basic HTML injection protection
 	text = text.replace(/\\/g, "").replace(/<[^>]*>/g, "").replace(/[<>]+/ig, " ");
 
+	//clean up text, doing fairly full unicode->ascii transliteration
+	text = anyAscii(text);
+
+	//standardize brackets
+	text = text.replace(/[\{\(\[<]+/g, "(").replace(/[\}\)\]>]+/g, ")");
+
+	//hive off the prefix
 	var prefix = null;
 	if (text.indexOf(':') > -1) {
 		var bits = text.split(/\s*:+\s*/,2);
-		text = bits[1];
+		text = bits[1].replace(/:/g,' ');
 
 		//prefixes have particully restricted charactor set.
 		prefix = bits[0].toLowerCase().replace(/[^\w]+/," ").replace(/[ _]+/g, " ").replace(/(^\s+|\s+$)/g, "");
 	}
 
+	//special support for listin building rating
+	text = text.replace(/\*/g,'(star)');
+
+	//then remove any none supported chars (by now only have ascii left to deal with)
 	if (prefix != 'top') {
-		//this is just a short list of charactors we KNOW not support, plenty more.
-		//Todo.. change to whitelist, rather than blacklist. 
-		text = text.replace(/[?|;,]+/g, " "); 
-		// in general the whitelist is [A-Za-z0-9/\.& ()\*!-]
+		text = text.replace(/[^\w()\+\.&\/!?%@#-]+/g, " "); 
 		//NOTE: do still have legacy with '?' and ',' can be allowed in top: tags only!
 	}
 
@@ -255,6 +268,7 @@ function cleanTag(text) {
 	//just to catch odd cases were tag ends up actully blank!
 	text = text.replace(/^\s*$/,'blank');
 
+	//add the prefix again
 	if (prefix)
 		text = prefix+':'+text;
 	return text;
@@ -426,10 +440,10 @@ function toggleTag(text) {
 
 		// on search completion, process the results
 		function (data) {
+			var div = document.getElementById('div1');
+
 			if (data && data.length > 0) {
 				tabClick('tab','div',1,10);recordNext='';
-
-				var div = document.getElementById('div1');
 
 				str = '';
 				for(var tag_id in data) {
