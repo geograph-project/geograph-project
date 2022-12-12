@@ -194,15 +194,14 @@
 	&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".
 </div>
 
+<script src="{"/js/anyascii.js"|revision}"></script>
+
 {literal}<style type="text/css">
 .interestBox .tag {
 	margin-left:5px;
 	white-space:nowrap;
 }
-</style>
-
-<script src="/js/anyascii.js"></script>
-<script type="text/javascript">
+</style><script type="text/javascript">
 
 var failedTags = new Array();
 
@@ -253,14 +252,14 @@ function cleanTag(text) {
 	//special support for listin building rating
 	text = text.replace(/\*/g,'(star)');
 
-	//then remove any none supported chars (by now only have ascii left to deal with)
-	if (prefix != 'top') {
-		text = text.replace(/[^\w()\+\.&\/!?%@#-]+/g, " "); 
-		//NOTE: do still have legacy with '?' and ',' can be allowed in top: tags only!
-	}
+	//quotes not supported
+	text = text.replace(/['"`]+/g, ""); //dont want to replace with space, because of apos
 
-	//quotes not supported, clean whitespace.
-	text = text.replace(/['"]+/g, "").replace(/[ _\t\n\r]+/g, " ").replace(/(^\s+|\s+$)/g, "");
+	//then remove any none supported chars (by now only have ascii left to deal with)
+	text = text.replace(/[^\w()\+\.&\/!?%@#-]+/g, " "); 
+
+	//clean/collapse whitespace
+	text = text.replace(/[ _\t\n\r]+/g, " ").replace(/(^\s+|\s+$)/g, "");
 
 	//this is a well known and common issue to fix, our house style doesnt have dot after st. 
 	text = text.replace(/\b(st)\.+\s*/i, '$1 ');

@@ -36,9 +36,6 @@ if ($usenew) {
 	$template='tags_tagger.tpl';
 }
 
-if (!empty($_GET['old']))
-	$smarty->assign('old',1);
-
 ################################################################
 # Read Params
 

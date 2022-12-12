@@ -3349,12 +3349,11 @@ for (var COLLECTION_NAME in DOMIterables) {
 
 handlePrototype(DOMTokenListPrototype, 'DOMTokenList');
 
-var $ = _export;
 var isArray = isArray$4;
 
 // `Array.isArray` method
 // https://tc39.es/ecma262/#sec-array.isarray
-$({ target: 'Array', stat: true }, {
+_export({ target: 'Array', stat: true }, {
   isArray: isArray
 });
 

@@ -3,13 +3,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <link href="{"/js/select2-3.3.2/select2.css"|revision}" rel="stylesheet"/>
 <script src="{"/js/select2-3.3.2/select2.js"|revision}"></script>
-{dynamic}
-{if $old}
-	<script src="http://s0.geograph.org.uk/js/to-title-case.v8159.js"></script>
-{else}
-	<script src="{"/js/to-title-case.js"|revision}"></script>
-{/if}{/dynamic}
-<script src="/js/jquery.storage.js"></script>
+<script src="{"/js/to-title-case.js"|revision}"></script>
+<script src="{"/js/jquery.storage.js"|revision}"></script>
 <div style="position:fixed;top:200px;left:10px;border:1px solid red"></div>
 <div style="padding:6px">
 <style>{literal}
@@ -149,8 +144,9 @@ body {
 </form>
 
 
-{literal}
+<script src="{"/js/anyascii.js"|revision}"></script>
 
+{literal}
 <script type="text/javascript">
 
 String.prototype.capitalizeTag = function () {
@@ -164,26 +160,38 @@ String.prototype.capitalizeTag = function () {
 
 
 function cleanTag(text) {
+	//Allows chars: A-Z a-z 0-9 _ ( ) + . & / ! ? % @ # - (plus space)
+
         //basic HTML injection protection
         text = text.replace(/\\/g, "").replace(/<[^>]*>/g, "").replace(/[<>]+/ig, " ");
 
+	//clean up text, doing fairly full unicode->ascii transliteration
+	text = anyAscii(text);
+
+	//standardize brackets
+	text = text.replace(/[\{\(\[<]+/g, "(").replace(/[\}\)\]>]+/g, ")");
+
+	//hive off the prefix
         var prefix = null;
         if (text.indexOf(':') > -1) {
                 var bits = text.split(/\s*:+\s*/,2);
-                text = bits[1];
+                text = bits[1].replace(/:/g,' ');
 
                 //prefixes have particully restricted charactor set.
                 prefix = bits[0].toLowerCase().replace(/[^\w]+/," ").replace(/[ _]+/g, " ").replace(/(^\s+|\s+$)/g, "");
         }
+	
+	//special support for listin building rating
+	text = text.replace(/\*/g,'(star)');
 
-        //this is just a short list of charactors we KNOW not support, plenty more.
-        //Todo.. change to whitelist, rather than blacklist.
-        text = text.replace(/[?|;,]+/g, " ");
-        // in general the whitelist is [A-Za-z0-9/\.& ()\*!-]
-        //NOTE: do still have legacy with '?' and ',' can be allowed in top: tags only!
+	//quotes not supported
+	text = text.replace(/['"`]+/g, ""); //dont want to replace with space, because of apos
 
-        //quotes not supported, clean whitespace.
-        text = text.replace(/['"]+/g, "").replace(/[ _\t\n\r]+/g, " ").replace(/(^\s+|\s+$)/g, "");
+	//then remove any none supported chars (by now only have ascii left to deal with)
+	text = text.replace(/[^\w()\+\.&\/!?%@#-]+/g, " ");
+
+        //clean/collapse whitespace
+        text = text.replace(/[ _\t\n\r]+/g, " ").replace(/(^\s+|\s+$)/g, "");
 
         //this is a well known and common issue to fix, our house style doesnt have dot after st.
         text = text.replace(/\b(st)\.+\s*/i, '$1 ');
@@ -191,6 +199,7 @@ function cleanTag(text) {
         //just to catch odd cases were tag ends up actully blank!
         text = text.replace(/^\s*$/,'blank');
 
+	//add the prefix again
         if (prefix)
                 text = prefix+':'+text;
         return text;
