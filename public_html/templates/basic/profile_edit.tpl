@@ -271,7 +271,7 @@
 	</select>
 
 	 
-	<div class="fieldnotes">If you choose "Submit v2" then you will be taken direct to the new version, but you can still choose to use version 1 on a per image basis. <br/><a href="/help/submit" target="_blank">View alternative submission methods</a>. Note the setting here only applies on desktop, no mobile will go direct to mobile method, but can override that via the setting in the mobile submission itself.</div>
+	<div class="fieldnotes">If you choose "Submit v2" then you will be taken direct to the new version, but you can still choose to use version 1 on a per image basis. <br/><a href="/help/submit" target="_blank">View alternative submission methods</a>. Note the setting here only applies on desktop, on mobile will go direct to mobile method, but can override that via the setting in the mobile submission itself.</div>
 </div>
 
 <div class="field"> 
