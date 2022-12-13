@@ -344,7 +344,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 	<li><select onchange="window.location.href=this.value">
 		<option value="">Download a list of submissions</option>
 		<option value="/export.csv.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as a CSV file (Comma separated values)</option>
-		<option value="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as an XLSX file (XML for Excel 2003 or later)</option>
+		<option value="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as an XML file for Excel 2003</option>
 	</select></li>
 
 	<li><select onchange="window.location.href=this.value">
