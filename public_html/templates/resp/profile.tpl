@@ -17,7 +17,7 @@
 <h2 style=margin-bottom:0><a name="top"></a><img src="{if $profile->md5_email}https://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50{else}https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=30{/if}" align="absmiddle" alt="{$profile->realname|escape:'html'}'s Gravatar" {if $profile->md5_email}width=50 height=50{else}width=30 height=30{/if} style="margin-right:10px"/>Profile for {$profile->realname|escape:'html'}</h2>
 
 {if $user->user_id eq $profile->user_id}
-<div style="border-style: double; padding: 6px; border-color: grey"><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>
+<div style="margin-top: 12px; border-style: double; padding: 6px; border-color: grey"><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>
 {if $simplified}
 This is a simplified view of your own profile. You can also view your <a href="/profile/{$user->user_id}">full public profile</a>.<br/><br/>
 {/if}
@@ -269,7 +269,8 @@ This is a simplified view of your own profile. You can also view your <a href="/
 <ul class="buttonbar">
 
 <li><select onchange="window.location.href=this.value">
-				<option value="">Recent submissions</option>
+				<option value="">View images in the search</option>
+				<optgroup label="Recent submissions">
 				<option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=full&amp;do=1">Full details</option>
         <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
         <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</option>
@@ -278,6 +279,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
         <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</option>
         <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</option>
         <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</option>
+        </optgroup>
 </select></li>
 
 
@@ -338,8 +340,12 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {/if}
 
 {if $user->user_id eq $profile->user_id && $simplified && $profile->stats.images gt 2}
-	<li><a title="Comma Seperated Values - file for images by {$profile->realname|escape:'html'}" href="/export.csv.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1{/if}">Download CSV file</a></li>
-	<li><a title="Excel 2003 XML - file for images by {$profile->realname|escape:'html'}" href="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1{/if}">Download XML file for Excel 2003</a></li>
+
+	<li><select onchange="window.location.href=this.value">
+		<option value="">Download a list of submissions</option>
+		<option value="/export.csv.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as a CSV file (Comma separated values)</option>
+		<option value="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as an XLSX file (XML for Excel 2003 or later)</option>
+	</select></li>
 
 	<li><select onchange="window.location.href=this.value">
 					<option value="">Word Cloud</option>
