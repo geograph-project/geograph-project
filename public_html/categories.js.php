@@ -56,31 +56,30 @@ if (!$smarty->is_cached($template, $cacheid))
 	$filter = "(imageclass NOT LIKE 'Supplemental%' AND imageclass NOT LIKE 'Geograph%' AND imageclass NOT LIKE 'Accept%')";
 
 	if (!empty($_GET['canonical'])) {
-		
+
 		$smarty->assign('varname','catList');
-		
+
 		$table = isset($_GET['more'])?'category_canonical_log':'category_canonical';
-		
+
 		$arr = $db->getCol("SELECT canonical AS imageclass,COUNT(*) AS cnt FROM $table GROUP BY LOWER(canonical)");
-		
+
 	} elseif ($u) {
 		$where = "WHERE submitted > DATE_SUB(NOW(),INTERVAL {$_GET['days']} DAY) AND user_id = $u";
 		$having = isset($_GET['full'])?'':"HAVING cnt>5 AND $filter";
 		$table = 'gridimage';
 		$smarty->assign('varname','catListUser');
-		
+
 		$arr = $db->getCol("SELECT imageclass,COUNT(*) AS cnt FROM $table $where GROUP BY imageclass $having");
-		
+
 	} else {
 		$where = isset($_GET['full'])?'':"WHERE c>5 AND $filter";
 		$table = 'category_stat';
 		$smarty->assign('varname','catList');
-	
-		$arr = $db->getCol("SELECT imageclass,c AS cnt FROM $table $where");
+
+		$arr = $db->getCol("SELECT imageclass,c AS cnt FROM $table $where ORDER BY imageclass");
 	}
-	
+
 	$smarty->assign_by_ref('classes',$arr);
-	
 }
 
 if ($u) {

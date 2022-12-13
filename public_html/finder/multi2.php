@@ -556,6 +556,7 @@ if (!empty($_GET['q'])) {
 				$sql = "SELECT imageclass as title,c as images
 				FROM category_stat
 				WHERE $where
+				ORDER BY imageclass
 				LIMIT {$sphinx->pageSize}";
 
 				$result = array();

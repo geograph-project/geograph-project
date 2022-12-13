@@ -171,7 +171,7 @@ class GridImage
 	{
 		$db=&$this->_getDB(true);
 
-		$arr = $db->CacheGetAssoc(24*3600,"select imageclass as id,imageclass from category_stat where imageclass != ''");
+		$arr = $db->CacheGetAssoc(24*3600,"select imageclass as id,imageclass from category_stat where imageclass != '' order by imageclass");
 
 		natcasesort($arr);
 

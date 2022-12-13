@@ -43,7 +43,7 @@ if (isset($_GET['unused'])) {
 	} else {
 		$count = 100;
 	}
-	$col = $db->getCol("SELECT imageclass FROM category_stat LEFT JOIN category_top USING (imageclass) WHERE category_map_id IS NULL LIMIT $count");
+	$col = $db->getCol("SELECT imageclass FROM category_stat LEFT JOIN category_top USING (imageclass) WHERE category_map_id IS NULL ORDER BY imageclass LIMIT $count");
 
 } elseif (isset($_GET['mine'])) {
         $col = $db->getCol("SELECT imageclass FROM gridimage_search WHERE user_id = {$USER->user_id} GROUP BY imageclass");
@@ -67,7 +67,7 @@ if (isset($_GET['unused'])) {
 
         }
 
-        $col = $db->getCol("SELECT imageclass FROM category_stat LIMIT $offset,$count");
+        $col = $db->getCol("SELECT imageclass FROM category_stat ORDER BY imageclass LIMIT $offset,$count");
 }
 
 foreach ($col as $class) {

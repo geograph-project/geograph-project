@@ -111,6 +111,7 @@ if (!empty($_GET['canonical'])) {
 			SELECT category_id,imageclass
 			FROM category_stat
 			WHERE $where
+			ORDER BY imageclass
 			LIMIT $limit");
 
 			$sep = "[";
