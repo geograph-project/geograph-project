@@ -39,10 +39,6 @@ $USER->mustHavePerm("basic");
 $template='puploader.tpl';
 $cacheid='';
 
-if (!empty($_REQUEST['use_autocomplete'])) {
-	$USER->use_autocomplete = 1;
-}
-
 if (isset($_REQUEST['submit2'])) {
 	$cacheid .= 'submit2';
 	$smarty->assign('submit2',1);
@@ -277,8 +273,6 @@ if (isset($_GET['success'])) {
 
 		//find a possible place within 25km
 		$smarty->assign('place', $square->findNearestPlace(25000));
-
-		$smarty->assign('use_autocomplete', $USER->use_autocomplete);
 
 		$tags = new Tags;
 		$tags->assignPrimarySmarty($smarty);

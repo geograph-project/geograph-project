@@ -106,9 +106,6 @@ function count_section($output) {
 	if (preg_match_all('/\[youtube=(\w+)\]/',$output,$matches))
 		print "<div>YouTube Videos: ".count($matches[1]).showmessage(count($matches[1]),30,5,10)."</div>";
 
-	if (preg_match_all('/\[mooflow=(\w+)\]/',$output,$matches))
-		print "<div>MooFlow Embeds: ".count($matches[1]).showmessage(count($matches[1]),50,1,4)."</div>";
-
 	if (preg_match_all('/\[img=([^\] ]+)(| [^\]]+)\]/',$output,$matches))
 		print "<div>External Images: ".count($matches[1]).showmessage(count($matches[1]),2,20,40)."</div>";
 

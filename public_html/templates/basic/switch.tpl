@@ -32,7 +32,6 @@
 	<p>Please consider disabling it, do so by <a href="?new=1">clicking here</a>. This will allow us to move forward with the transition.</p>
 
 	<ul>
-		<li>You can see what the new tab based submission method looks like <a href="/stuff/category.php?type=top&v=3" target="_blank">on this mockup</a>.<br/><br/></li>
 		<li>It's almost identical to the current submission, but the dropwdown to select the category from a mamoth 9000+ list, you just choose from a short compact list. Please try it!</li>
 	</ul>
 

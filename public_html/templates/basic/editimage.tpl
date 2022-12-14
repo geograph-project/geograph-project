@@ -613,37 +613,6 @@ AttachEvent(window,'load',onChangeImageclass,false);
 {/if}
 
 {if $image->imageclass}
-{if $use_autocomplete}
-
-<p><label for="imageclass"><b>Image Category</b> (Optional, if supply Tags)</label> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
-	{if $error.imageclass}
-	<span class="formerror">{$error.imageclass}</span><br/>
-	{/if}
-
-	<input size="32" id="imageclass" name="imageclass" value="{$image->imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
-	</p>
-{literal}
-<script type="text/javascript">
-<!--
-
-AttachEvent(window,'load', function() {
- 	var inputWord = $('imageclass');
-
-    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
-        'postVar': 'q',
-        'minLength': 2,
-        maxChoices: 60
-    });
-
-},false);
-
-//-->
-</script>
-{/literal}
-
-
-{else}
-
 	<p><label for="imageclass"><b>Image Category</b> (Optional, if supply Tags) {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
 		{if $error.imageclass}
 		<span class="formerror">{$error.imageclass}</span><br/>
@@ -655,9 +624,7 @@ AttachEvent(window,'load', function() {
 				<option value="{$image->imageclass}" selected="selected">{$image->imageclass}</option>
 			{/if}
 		</select><input type="button" name="imageclass_enable_button" value="change" onclick="prePopulateImageclass()"/>
-
 	</p>
-{/if}
 {/if}
 
 {if $user->user_id eq $image->user_id || $isadmin}
@@ -802,16 +769,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 
 {if $image->imageclass}
-{if $use_autocomplete}
-	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" />
-
-	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script>
-{else}
 <script type="text/javascript" src="/categories.js.php"></script>
-{/if}
 {/if}
 
 {if $rastermap->enabled}

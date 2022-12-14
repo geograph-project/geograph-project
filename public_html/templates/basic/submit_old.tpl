@@ -158,9 +158,6 @@ geographing</a> first.</p>
 	</script>
 
 </div>
-	{if !$user->use_autocomplete && $user->stats.images gt 10}
-	(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1">profile settings page</a></label>)
-	{/if}
 
 	<br/><br/><br/>
 	<p>If you are unsure of the photo location there are a number of online
@@ -447,34 +444,6 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			<iframe src="about:blank" height="300" width="100%" id="tagframe" style="border:0">
 			</iframe>
 
-			{if $use_autocomplete}
-
-			<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-				<br/><span class="formerror">{$error.imageclass} or select some Geographical Context</span>
-				{/if}<br />
-				<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
-				</p>
-			{literal}
-			<script type="text/javascript">
-			<!--
-
-			AttachEvent(window,'load', function() {
-			 	var inputWord = $('imageclass');
-
-			    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
-			        'postVar': 'q',
-			        'minLength': 2,
-			        maxChoices: 60
-			    });
-
-			},false);
-
-			//-->
-			</script>
-			{/literal}
-
-			{else}
-
 			{literal}
 			<script type="text/javascript">
 			<!--
@@ -513,10 +482,6 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 				</select>
 
 				<input type=button value="Add" onclick="addCategoryTag(this.form)"/></p>
-
-			{/if}
-
-
 
 		</div>
 
@@ -616,17 +581,8 @@ function rehighlight(that,check) {
 <input type="submit" name="goback" value="&lt; Back" onclick="return confirm('Please confirm. All details entered on this page - will be lost.');"/>
 <input type="submit" name="next" value="Next &gt;"/></p>
 
-{if $use_autocomplete}
-	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" />
-
-	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script>
-{else}
 <script type="text/javascript" src="/categories.js.php"></script>
 <script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
-{/if}
 
 {else}
 	<input type="hidden" name="title" value="{$title|escape:'html'}"/>

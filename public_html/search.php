@@ -114,7 +114,6 @@ $displayclasses =  array(
 			'reveal' => 'slideshow - map imagine',
 			'black' => 'georiver - full images + detail',
 			//'cooliris' => 'cooliris 3d wall',
-			//'mooflow' => 'cover flow',
 			'text' => 'text list only',
 			'spelling' => 'multi editor'
 			);

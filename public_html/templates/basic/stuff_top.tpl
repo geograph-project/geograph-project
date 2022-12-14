@@ -146,9 +146,6 @@
 	<b>View confirmed results</b><br/>
 	&middot; <a href="?final=1">Category tree</a> &middot;
 
-	<!--b>Demo</b>
-	 &middot; <a href="/stuff/category.php?type=top">Example of a category selector using Geographical Context</a> &middot;-->
-
 
 	</blockquote>
 {/if}

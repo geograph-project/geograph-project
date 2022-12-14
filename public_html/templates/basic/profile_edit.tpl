@@ -386,16 +386,6 @@
 </div>
 
 
-<div class="field" {if $profile->submission_new} style="display:none"{/if}> 
-  
-	<label for="use_autocomplete" class="nowrap">Use Auto Complete</label>
-	
-	<input {if $profile->use_autocomplete eq 1}checked{/if} type="checkbox" name="use_autocomplete" id="use_autocomplete" value="1">
-	
-	<div class="fieldnotes">Changes the category dropdown to an autocomplete text field - EXPERIMENTAL</div>  
-</div>
-
-
 </fieldset>
 
 

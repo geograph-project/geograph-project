@@ -68,10 +68,6 @@ if (!empty($_GET['display']) && $_GET['display'] == 'mobile') {
 
 $cacheid='';
 
-if (!empty($_REQUEST['use_autocomplete'])) {
-	$USER->use_autocomplete = 1;
-}
-
 $clear_cache = array();
 
 if (isset($_FILES['jpeg_exif']))
@@ -88,10 +84,8 @@ if (isset($_FILES['jpeg_exif']))
 			elseif ($uploadmanager->processUpload($_FILES['jpeg_exif']['tmp_name']))
 			{
 				$upload_to_process=true;
-				
-				
-				$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg_exif']['name'])));
 
+				$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg_exif']['name'])));
 
 				$smarty->assign('success', 1);
 			} else {

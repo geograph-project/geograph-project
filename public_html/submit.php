@@ -103,10 +103,6 @@ if (!$USER->hasPerm("basic")) {
 
 pageMustBeHTTPS();
 
-if (!empty($_REQUEST['use_autocomplete'])) {
-	$USER->use_autocomplete = 1;
-}
-
 if (isset($_SESSION['tab'])) {
 	$selectedtab=$_SESSION['tab'];
 } else {
@@ -573,8 +569,6 @@ if (isset($_POST['gridsquare']))
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(25000));
 
-			$smarty->assign('use_autocomplete', $USER->use_autocomplete);
-
 			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
 			$smarty->assign('preview_url', $preview_url);
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
@@ -592,17 +586,16 @@ if (isset($_POST['gridsquare']))
 					 $smarty->assign('rotation_warning', true);
 			}
 
-			
-			if (max($uploadmanager->upload_width,$uploadmanager->upload_height) < 500) 
+			if (max($uploadmanager->upload_width,$uploadmanager->upload_height) < 500)
 				$smarty->assign('smallimage', 1);
-				
+
 			$token=new Token;
 			$token->setValue("g", !empty($_POST['grid_reference'])?$_POST['grid_reference']:$square->grid_reference);
 			$token->setValue("p", $_POST['photographer_gridref']);
 			$token->setValue("v", $_POST['view_direction']);
 			$smarty->assign('reopenmaptoken', $token->getToken());
-		
-		
+
+
 			if ($_POST['imagetaken'] && $_POST['imagetaken'] != '0000-00-00') {
 				$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 			} elseif ($smarty->get_template_vars('imagetaken')) {

@@ -490,9 +490,6 @@ function smarty_function_articletext($input) {
 	$pattern[]='/\[img=([^\]" ]+)(| [^\]"]+)\]/';
 	$replacement[]='<img src="\1" alt="\2" title="\2"/>';
 
-	$pattern[]='/\[mooflow=(\d+)\]/';
-	$replacement[]='<iframe src="/search.php?i=\1&amp;temp_displayclass=mooflow_embed" width="750" height="430"></iframe>';
-
 	$pattern[]='/\[gmap=(\d+)\]/';
 	$replacement[]='<iframe src="/search.php?i=\1&amp;temp_displayclass=map_embed" width="750" height="430"></iframe>';
 
