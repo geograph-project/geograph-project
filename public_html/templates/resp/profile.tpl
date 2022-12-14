@@ -21,7 +21,7 @@
 {if $simplified}
 This is your <b>private profile</b> and includes additional information and links which aren't shown on your <a href="/profile/{$user->user_id}">full public profile</a>. {if $profile->about_yourself && $profile->public_about}Your 'About me' box is hidden in your private profile, and is only visible on your public profile.{/if}
 {else}
-This is your <b>public profile</b> and appears as it will to site visitors. For additional links, view your <a href="/profile/{$user->user_id}">private profile</a>.
+This is your <b>public profile</b> and appears as it will to site visitors. For additional links, view your <a href="/profile.php">private profile</a>.
 {/if}
 <br/><br/>
 <a href="/profile.php?edit=1">Edit your profile</a> if there's anything you'd like to change.</div><br/>
