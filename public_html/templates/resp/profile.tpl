@@ -17,7 +17,7 @@
 <h2 style=margin-bottom:0><a name="top"></a><img src="{if $profile->md5_email}https://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50{else}https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=30{/if}" align="absmiddle" alt="{$profile->realname|escape:'html'}'s Gravatar" {if $profile->md5_email}width=50 height=50{else}width=30 height=30{/if} style="margin-right:10px"/>Profile for {$profile->realname|escape:'html'}</h2>
 
 {if $user->user_id eq $profile->user_id}
-<div style="margin-top: 12px; border-style: double; padding: 6px; border-color: grey"><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>
+<div style="margin-top: 12px; border-style: double; padding: 6px; border-color: grey"><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>&#128712;
 {if $simplified}
 This is your <b>private profile</b> and includes additional information and links which aren't shown on your <a href="/profile/{$user->user_id}">full public profile</a>. {if $profile->about_yourself && $profile->public_about}Your 'About me' box is hidden in your private profile, and is only visible on your public profile.{/if}
 {else}
@@ -330,7 +330,11 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 {if $user->user_id eq $profile->user_id && $simplified}
 	<li><a href="/mapper/combined.php?mine=1#5/56.317/-2.769">Personalised coverage map</a></li>
 {/if}
+
 <li><a href="/browser/#!/q=user{$profile->user_id}/realname+%22{$profile->realname|escape:'url'}%22">Browser</a></li>
+
+<li><a href="/explore/calendar.php?u={$profile->user_id}">Calendar</a></li>
+
 
 {if $profile->stats.images > 2}
 	<li><select onchange="window.location.href=this.value">
