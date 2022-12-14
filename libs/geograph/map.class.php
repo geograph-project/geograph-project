@@ -528,7 +528,7 @@ split_timer('map'); //starts the timer
 		//use the filename as a hash
 		//can use if-last-mod as file is not unique per user
 		customCacheControl($t,$full,true);
-		customExpiresHeader(3600*6,true);
+		customExpiresHeader(3600*($this->pixels_per_km<1?72:6),true);
 
 		$size=filesize($full);
 		header("Content-Type: $type");
@@ -754,48 +754,54 @@ split_timer('map','_createBasemap-sized',$file); //logs the wall time
 split_timer('map','_createBasemap',$file); //logs the wall time
 
 			return $img;
-			
 		}
 	}
-	
+
 	/**
-	* checks if specified user has any images on map, (so can use standard blank tile otherwise) 
+	* checks if specified user has any images on map, (so can use standard blank tile otherwise)
 	* @access private
 	*/
 	function needUserTile($user_id)
 	{
 		global $CONF;
-		
+
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB(true);
-		
+
 split_timer('map'); //starts the timer
 
-		$left=$this->map_x;
-		$bottom=$this->map_y;
-		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
-		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
+		$biggest = max($this->image_w,$this->image_h)/$this->pixels_per_km;
+		if ($biggest >= 500) {
+			//if large area (its going to be an overview map!), might as well just user_stat, rather than run full geospatial query
+			$sql = "SELECT 1 FROM user_stat WHERE user_id = $user_id";
 
-		//size of a marker in pixels
-		$markerpixels=$this->pixels_per_km;
-		
-		//size of marker in km
-		$markerkm=ceil($markerpixels/$this->pixels_per_km);
-		
-		//we scan for images a little over the edges so that if
-		//an image lies on a mosaic edge, we still plot the point
-		//on both mosaics
-		$overscan=$markerkm;
-		$scanleft=$left-$overscan;
-		$scanright=$right+$overscan;
-		$scanbottom=$bottom-$overscan;
-		$scantop=$top+$overscan;
+		} else {
+			$left=$this->map_x;
+			$bottom=$this->map_y;
+			$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
+			$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
 
-		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+			//size of a marker in pixels
+			$markerpixels=$this->pixels_per_km;
 
-		$sql="select 1 from user_gridsquare where
-				CONTAINS( GeomFromText($rectangle),     point_xy) and
-                                user_id = $user_id";
+			//size of marker in km
+			$markerkm=ceil($markerpixels/$this->pixels_per_km);
+
+			//we scan for images a little over the edges so that if
+			//an image lies on a mosaic edge, we still plot the point
+			//on both mosaics
+			$overscan=$markerkm;
+			$scanleft=$left-$overscan;
+			$scanright=$right+$overscan;
+			$scanbottom=$bottom-$overscan;
+			$scantop=$top+$overscan;
+
+			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+
+			$sql="select 1 from user_gridsquare where
+					CONTAINS( GeomFromText($rectangle),     point_xy) and
+	                                user_id = $user_id";
+		}
 
 		$id = $db->getOne($sql); //adds 'limit 1' automatically
 
