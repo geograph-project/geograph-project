@@ -19,8 +19,11 @@
 {if $user->user_id eq $profile->user_id}
 <div style="margin-top: 12px; border-style: double; padding: 6px; border-color: grey"><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>
 {if $simplified}
-This is a simplified view of your own profile. You can also view your <a href="/profile/{$user->user_id}">full public profile</a>.<br/><br/>
+This is your <b>private profile</b> and includes additional information and links which aren't shown on your <a href="/profile/{$user->user_id}">full public profile</a>.
+{else}
+This is your <b>public profile</b> and appears as it will to site visitors. For additional links, view your <a href="/profile/{$user->user_id}">private profile</a>.
 {/if}
+<br/><br/>
 <a href="/profile.php?edit=1">Edit your profile</a> if there's anything you'd like to change.</div><br/>
 {/if}
 
@@ -437,7 +440,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 	<tbody>
 	{foreach from=$userimages item=image}
 		<tr>
-		<td data-title="Grid reference" sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
+		<td data-title="Grid ref" sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
 		<td data-title="Title" sortvalue="{$image->title|escape:'html'}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
 		<td data-title="Submitted" sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
 		<td data-title="Image type">
