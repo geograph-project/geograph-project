@@ -209,7 +209,7 @@ div.caption {
 			</select></li>
 		{/if}
 
-		<li><a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}" title="Add this image to your site marked list">Mark</a>
+		<li><a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}" title="Add this image to your site Marked List">Mark</a>
 
 		{if $user->user_id ne $image->user_id}
 			<li id="votediv{$image->gridimage_id}img">&#128077;&#127995;
@@ -554,6 +554,12 @@ div.caption {
  AttachEvent(window,'load',showMarkedImages,false);
  AttachEvent(window,'load',function () {
 		collapseSnippets({/literal}{$image->snippet_count}{literal});
+
+		if (document.querySelector && document.querySelector("#mainphoto img")) {
+			document.querySelector("#mainphoto img").addEventListener("dblclick", function() {
+				 markImage({/literal}{$image->gridimage_id}{literal});
+			});
+		}
 	},false);
 </script>
 

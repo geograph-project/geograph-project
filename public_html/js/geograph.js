@@ -339,7 +339,7 @@ function markImage(image) {
 	createCookie('markedImages',newCookie,10);
 
 	if (document.getElementById('marked_number')) {
-		if (!newCookie) {//chrome needs this... 
+		if (!newCookie) {//chrome needs this...
 			document.getElementById('marked_number').innerHTML = '[0]';
 		} else {
 			splited = newCookie.commatrim().split(',');
@@ -350,13 +350,20 @@ function markImage(image) {
                 document.getElementById('markedLink').style.display='';
         }
 
-	ele = document.getElementById('mark'+image);
+	var ele = document.getElementById('mark'+image);
 	if(ele.innerText != undefined) {
 		ele.innerText = newtext;
 	} else {
 		ele.textContent = newtext;
 	}
-	
+
+	if (document.getElementById('mainphoto')) {
+		if (newtext == 'marked')
+			document.getElementById('mainphoto').style.border = '2px solid red';
+		else
+			document.getElementById('mainphoto').style.border = 'none';
+	}
+
 	var i=new Image();
 	id = encodeURIComponent(image);
 	i.src= "/stuff/record_mark.php?id="+id;
@@ -430,6 +437,10 @@ function showMarkedImages() {
 
 		for(i=0; i < splited.length; i++)
 			if (document.getElementById('mark'+splited[i])) {
+
+				if (document.getElementById('mainphoto')) //there can only be one main photo, and if the has the specific mark link, it must be this photo!
+					document.getElementById('mainphoto').style.border = '2px solid red';
+
 				ele = document.getElementById('mark'+splited[i])
 				if(hasInnerText) {
 				    ele.innerText = 'marked';
