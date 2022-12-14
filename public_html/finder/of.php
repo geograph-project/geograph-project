@@ -186,7 +186,7 @@ if (!empty($_GET['q'])) {
 ?>
 <form onsubmit="location.href = '/of/'+encodeURIComponent(this.q.value); return false;">
 <div class="interestBox">
-	<? if (!empty($_GET['q'])) { ?>
+	<? if (!empty($_GET['q']) && !preg_match('/^\d+(,\d+)*$/',$_GET['q'])) { ?>
 	<div style="float:right">
 		More:
 		<a href="/browser/#!/q=<? echo $qu; ?>/display=group/group=decade/n=4/gorder=alpha%20desc">Over Time</a> &middot;

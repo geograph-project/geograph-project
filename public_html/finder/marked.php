@@ -50,12 +50,13 @@ if (isset($_COOKIE['markedImages']) && !empty($_COOKIE['markedImages'])) {
 
 	$smarty->assign('count',count($ids));
 
-	while(count($ids) > 100) {
-		array_pop($ids);
-	}
+	if (count($ids) > 100)
+		$ids = array_slice($ids,0,100);
+
 	if ($ids) {
 		$imagelist->getImagesByIdList($ids);
 		$smarty->assign_by_ref('results', $imagelist->images);
+		$smarty->assign_by_ref('ids', implode(',',$ids));
 	}
 }
 

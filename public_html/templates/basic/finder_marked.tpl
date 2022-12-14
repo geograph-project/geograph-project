@@ -16,14 +16,21 @@
 
 		<div style="padding:10px;">
 
-		<p>
+		<p style="max-width:1024px">
 The marked list is a temporary list in your current browser session. To keep the current list long term can use the 'View as Search Result' above - which creates a permanent result page of these images. Can share that url with others to see the same images.
 {if $user->registered}As logged in{else}If you were logged in{/if}, will also be saved in your profile, and available in the 'recent searches' list on <a href="/search.php">search homepage</a>.</p>
 
-		<p>Note: You can also <a href="/browser/#!/marked=1">View marked images in the Browser function</a> (look for the 'Marked List' menu top right)</p>
-
 		{if $results}
-			<h3 style=color:black>Currently Marked Images - <small><a href="{$script_name}">Reload</a></small></h3>
+			<div class="tabHolder">
+			        <a href="{$script_name}" class="tab">Reload this list</a>
+				<a href="/search.php?marked=1" class="tab">As Search Result</a>
+				<a href="/browser/#!/marked=1" class="tab">In Browser</a>
+				<a href="/of/{$ids}" class="tab">As Shareable URL</a>
+			</div>
+			<div class="interestBox">
+				<h2 style="color:black;margin:0">Currently Marked Images</h2>
+			</div>
+			<br>
 			{if $count > 100}
 				<p><i>Preview of 100 (of {$count}) images shown below. To view the full list, use the 'View as Search Result' above (although may still be split into pages), or use the Browser function</i></p>
 			{/if}
