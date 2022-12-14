@@ -319,6 +319,8 @@ if (!empty($_GET['q'])) {
 # special handler to catch entered id numbers
 
 		if (empty($words) && preg_match_all('/(?<!:)\b(\d{2,})\b/',$_GET['q'],$m) && !preg_match("/^\s*([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\s*$/",$_GET['q'])) {
+			if (count($m[1]) > 100)
+				$m[1] = array_slice($m[1],0,100);
 			$rows['single'] = $sph->getAll($sql = "
                                 select id,realname,user_id,title,grid_reference
                                 from sample8
