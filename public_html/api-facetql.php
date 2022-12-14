@@ -197,6 +197,9 @@ Example Queries:
                 }
         }
 
+	if (empty($_GET['match']) && $offset+$limit > 950 && !empty($_GET['filterrange']['submitted']) && $bits[1] - $bits[0] < 1814397)
+		$option[] = 'max_matches=3000';
+
 ###################################################
 # geo filter helpers
 
