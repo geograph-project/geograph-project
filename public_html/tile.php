@@ -22,6 +22,7 @@
  */
 
 if (empty($_SERVER['HTTP_USER_AGENT']) || $_SERVER['HTTP_USER_AGENT'] == "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0"
+|| strlen($_SERVER['HTTP_USER_AGENT']) < 12
 || strpos($_SERVER['HTTP_USER_AGENT'], 'img2dataset')!==FALSE) {
         header("HTTP/1.0 401 Forbidden");
         header("Status: 401 Forbidden");
