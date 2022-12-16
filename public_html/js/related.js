@@ -61,7 +61,11 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 
 		$('#related').append('<div class="thumbs shadow" style="padding:5px">Loading...</div>');
 
-		if (supportsLazyLoad) {
+		if (related && related.rows) {
+			//if related data was already provided by host page, can skip direct to rendering thumbs
+			renderThumbs(related.row, related);
+
+		} else if (supportsLazyLoad) {
 			renderRelatedImage();
 		} else {
 			$.getScript('//s1.geograph.org.uk/js/lazy.v73715774.js',function() {
@@ -191,6 +195,16 @@ function processImage(row) {
 		dataType: 'json'
 	}).done(function(data){
 		if (data && data.rows && data.rows.length) {
+			renderThumbs(row,data);
+		} else {
+			$('#related .thumbs').html("No Related Images Found");
+		}
+	});
+}
+
+
+function renderThumbs(row,data) {
+
 			$('#related .thumbs').empty();
 			var attrib = 'loading="lazy" src'; //the first is always a normal src, not data-src
 			$.each(data.rows, function(index,value) {
@@ -231,11 +245,7 @@ function processImage(row) {
 
 			if (!supportsLazyLoad)
 				setTimeout(initLazy,50);
-		} else {
-			$('#related .thumbs').html("No Related Images Found");
-		}
 
-	});
 }
 
 /**************************************

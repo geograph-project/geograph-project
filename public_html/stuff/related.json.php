@@ -28,7 +28,7 @@ require_once('geograph/global.inc.php');
 if (!empty($_GET['id'])) {
 	$id = intval($_GET['id']);
 } else {
-	die("'unknown id'");
+	die('{"error":"unknown id"}');
 }
 
 $sph = GeographSphinxConnection('sphinxql', true);
@@ -43,10 +43,16 @@ if (empty($rows))
 if (!empty($rows)) {
 	$row = $rows[0]; //its actully always one row!
 
+	$data = array();
+	$data['row'] = $row;
+	foreach($data['row'] as $key => $value)
+		if (preg_match('/s$/',$key))
+			unset($data['row'][$key]);
+
         $required = array();
         $optional = array();
 
-	//NOte this is only only emulating the defautl 'related' mode, JS can do other modes too!
+	//Note this is only only emulating the default 'related' mode, JS can do other modes too!
 
 		$required[] = $row['myriad'];
 		$optional[] = $row['hectad'];
@@ -86,15 +92,15 @@ if (!empty($rows)) {
 	$match = implode(" ",$required);
 	$match .= " (".implode('|',$optional).")";
 
-
-	$rows = queryQL('id,title,myriad,hectad,grid_reference,takenyear,takenmonth,takenday,hash,realname,user_id,place,county,country,hash,scenti',
+	$data['rows'] = queryQL('id,title,myriad,hectad,grid_reference,takenyear,takenmonth,takenday,hash,realname,user_id,place,county,country,hash,scenti,width,height',
                 $match, array("id!=$id"), 10);
 
-	outputJSON($rows);
+	//dont bother with $data['meta'] - the client doesnt use it.
+
+	outputJSON($data);
 
 } else {
-	die("'no results'");
-
+	die('{"error":"no results"}');
 }
 
 ###############################
@@ -118,7 +124,7 @@ function rowsFromDB($id) {
 	$db = GeographDatabaseConnection(true);
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-	return $db->getRow("SELECT
+	return $db->getAll("SELECT
         SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-4) AS myriad,
         CONCAT(SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-3),SUBSTRING(gi.grid_reference,LENGTH(gi.grid_reference)-1,1)) AS hectad,
         grid_reference,

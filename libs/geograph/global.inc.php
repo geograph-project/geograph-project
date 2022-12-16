@@ -852,6 +852,11 @@ $str[] = "
                 	$str[] = '<script src="'.smarty_modifier_revision("/js/links.js").'" defer="defer"></script>';
 
 		if (strpos($_SERVER["REQUEST_URI"],'/photo/') === 0) {
+			if (strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot')!==FALSE && preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m)) {
+				//todo, memcache etc??
+				$url = "https://www.geograph.org.uk/stuff/related.json.php?id={$m[1]}";
+				$str[] = '<script>var related = '.file_get_contents($url).';</script>';
+			}
         	        $str[] = '<script src="'.smarty_modifier_revision("/js/related.js").'" type="text/javascript" defer="defer"></script>';
 	        }
 	}
