@@ -85,6 +85,9 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 
 
 function renderRelatedImage() {
+	if (related && related.row) {
+		processImage(related.row);
+	}
 	var data = {
 		select: 'myriad,hectad,grid_reference,takenyear,takenmonth,takenday,groups,tags,types,contexts,snippets,subjects,place,county,country,scenti,user_id,realname,imageclass',
 		where: 'id='+gridimage_id
