@@ -48,7 +48,7 @@
 {*-------------------------Location map---------------------------*}
  {if $rastermap->enabled}
   <div class="threecolumn">
-    <h3>Location map</h3>
+    <h3 id="map">Location map</h3>
 	<div style="width:{$rastermap->width}px; font-size:0.8em; margin:auto">
 	{$rastermap->getImageTag($gridrefraw)}
 	<div style="color:gray"><small>{$rastermap->getFootNote()}</small></div>
@@ -59,7 +59,7 @@
 {*-------------------------Coverage map---------------------------*} 
   {if $overview}  
   <div class="threecolumn">
-    <h3>Coverage map</h3>
+    <h3 id="coverage">Coverage map</h3>
 		<ul>
     <li><a href="/mapper/combined.php#13/{$lat}/{$long}">Coverage Map</a>
 	 (<a href="/mapper/combined.php#15/{$lat}/{$long}">Centisquare Scale</a>)
@@ -94,7 +94,7 @@
 
 {*-------------------------Coordinates---------------------------*}
   <div class="threecolumn">
-    <h3>Coordinate Information</h3>
+    <h3 id="coordinates">Coordinate Information</h3>
     <p>{if $square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$gridrefraw text=$gridrefraw} [{$square->precision} m precision]</p>
     <p>Easting/Northing: {$square->nateastings}, {$square->natnorthings} {if $square->reference_index eq 2}OSI{/if} [meters]</p>
     <p>WGS84: <abbr class="latitude" title="{$lat|string_format:"%.6f"}">{$latdm}</abbr> <abbr class="longitude" title="{$long|string_format:"%.6f"}">{$longdm}</abbr></p>
@@ -132,7 +132,7 @@
   
 {*-------------------------Geograph links---------------------------*}
   <div class="threecolumn">
-  	<h3>Geograph links</h3>
+  	<h3 id="geolinks">Geograph links</h3>
   	<h4>Search local images</h4>   
   	<form method="get" action="/search.php">
 		<input type="hidden" name="form" value="location"/>
@@ -204,7 +204,7 @@
 
 {if $lat}
   <div class="threecolumn">
-    <h3>Mapping</h3>
+    <h3 id="mapping">Mapping</h3>
     <h4>Google</h4>
     <ul>
     <li>{external title="Open in Google Maps" href="https://www.google.co.uk/maps/search/`$lat`,`$long`/" text="Google Maps"} ({external title="Navigate here using Google Maps" href="https://www.google.co.uk/maps/dir/?api=1&amp;destination=`$lat`,`$long`" text="Navigate"})</li>
@@ -258,7 +258,7 @@
   
 {*-------------------------Local links---------------------------*}  
   
-  <h3>Local links</h3>
+  <h3 id="locallinks">Local links</h3>
     <h4>Nearby information</h4>
     <ul>
     {*todo modify links as no pre-1982 weather*}
