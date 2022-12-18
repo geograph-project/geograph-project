@@ -238,7 +238,7 @@
 
 {/if}
 
-
+{if $lat}
 <h4 style="margin-bottom:0; margin-top:2px;">Surrounding area</h4>
 
 <ul class="buttonbar">
@@ -286,7 +286,7 @@
 </select></li>
     
 </ul>
-
+{/if}
 
 <br/>
 <div style="text-align:center"><big><img src="{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$gridrefraw}/links">More Links for {$gridrefraw}</a></big></div>
