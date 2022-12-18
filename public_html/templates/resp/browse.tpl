@@ -45,14 +45,17 @@
 
 <br style="clear:both; padding:10px"/>
 
-{if $showresult}
-	{* We have a valid GridRef *}
-{/if}
-
 
 {if $errormsg}
 	<p>{$errormsg}</p>
 {/if}
+
+{if $showresult}
+	{* We have a valid GridRef *}
+
+
+
+
 
 <div class="twocolsetup">
 	<div class="twocolumn">
@@ -762,6 +765,9 @@
    	{if $rastermap->enabled}
 		{$rastermap->getFooterTag()}
 	{/if}
+
+{/if}
+
 
 {include file="_std_end.tpl"}
 {/dynamic}
