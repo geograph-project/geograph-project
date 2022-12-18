@@ -10,6 +10,9 @@
 {/literal}
 </style>
 
+
+{if $showresult}
+
 <div class="interestBox" style="float: right; position:relative; padding:2px; margin-right:25px">
 	<table border="0" cellspacing="0" cellpadding="2">
 	<tr><td><a href="/location.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
@@ -42,6 +45,7 @@
 
 <div class="threecolsetup">
  
+{*-------------------------Location map---------------------------*}
  {if $rastermap->enabled}
   <div class="threecolumn">
     <h3>Location map</h3>
@@ -52,7 +56,7 @@
 	</div>
   </div>
 	{/if}
-  
+{*-------------------------Coverage map---------------------------*} 
   {if $overview}  
   <div class="threecolumn">
     <h3>Coverage map</h3>
@@ -88,6 +92,7 @@
 </div>
 {/if}
 
+{*-------------------------Coordinates---------------------------*}
   <div class="threecolumn">
     <h3>Coordinate Information</h3>
     <p>{if $square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$gridrefraw text=$gridrefraw} [{$square->precision} m precision]</p>
@@ -125,6 +130,7 @@
 <br style="clear:both"/>
 <div class="threecolsetup">
   
+{*-------------------------Geograph links---------------------------*}
   <div class="threecolumn">
   	<h3>Geograph links</h3>
   	<h4>Search local images</h4>   
@@ -193,7 +199,10 @@
   
   
   </div>
-  
+
+{*-------------------------Mapping---------------------------*}
+
+{if $lat}
   <div class="threecolumn">
     <h3>Mapping</h3>
     <h4>Google</h4>
@@ -246,6 +255,9 @@
     </ul>
   </div>
   <div class="threecolumn">
+  
+{*-------------------------Local links---------------------------*}  
+  
   <h3>Local links</h3>
     <h4>Nearby information</h4>
     <ul>
@@ -302,6 +314,9 @@
   
   
 </div>  
+
+{/if}
+
 </div>
 
 
@@ -309,6 +324,12 @@
 		<br style="clear:both"/>
 		{$rastermap->getFooterTag()}
 	{/if}
+
+{else}
+<big>The grid reference entered does not appear to be valid. You may wish to try browsing the <a href="/mapper/combined.php">Geograph Coverage Map.</a></big>
+{/if}
+
+
 
 <!--Break to ensure footer is pushed below columns-->
 <br style="clear:both"/>
