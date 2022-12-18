@@ -326,6 +326,7 @@
 	{/if}
 
 {else}
+<h2>Geograph Links Page</h2>
 <big>The grid reference entered does not appear to be valid. You may wish to try browsing the <a href="/mapper/combined.php">Geograph Coverage Map.</a></big>
 {/if}
 
