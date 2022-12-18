@@ -60,8 +60,7 @@
 <div class="twocolsetup">
 	<div class="twocolumn">
 {*-------------------------Coverage---------------------------*}
-<a name="coverage"></a>
-<h3>Coverage</h3>
+<h3 id="coverage">Coverage</h3>
 
 {if $square->percent_land < 50 && $square->percent_land != -1}
 	<form action="/mapfixer.php" method="get">
@@ -301,8 +300,7 @@
  
 {*-------------------------Maps---------------------------*}
 <div class="twocolumn">
-<a name="maps"></a>
-<h3>Maps</h3>
+<h3 id="maps">Maps</h3>
   <div style="width:100%; text-align:center;">
   {if $rastermap->enabled}
 	<div style="display: inline-block; vertical-align: middle; text-align:center; width:{$rastermap->width}px; font-size:0.8em; margin:5px;">
