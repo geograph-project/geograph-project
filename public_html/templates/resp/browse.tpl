@@ -56,7 +56,8 @@
 
 <div class="twocolsetup">
 	<div class="twocolumn">
-
+{*-------------------------Coverage---------------------------*}
+<a name="coverage"></a>
 <h3>Coverage</h3>
 
 {if $square->percent_land < 50 && $square->percent_land != -1}
@@ -295,8 +296,9 @@
 <br style="clear:both"/>
 </div>
  
-
+{*-------------------------Maps---------------------------*}
 <div class="twocolumn">
+<a name="maps"></a>
 <h3>Maps</h3>
   <div style="width:100%; text-align:center;">
   {if $rastermap->enabled}
@@ -327,6 +329,8 @@
 
 <br style="clear:both"/>
 </div>
+
+{*-------------------------Images---------------------------*}
 
 {if $imagecount}
 		{* There are some thumbnails to display *}
