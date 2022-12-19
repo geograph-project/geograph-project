@@ -22,16 +22,16 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 
 <div class="threecolumn">
 
-<h3>Text formatting </h3>
+<h3 id="text">Text formatting </h3>
 
 <h4>Bold</h4>
-<div class="interestBox"><tt class="bbcode">[b]some text here[/b]</tt> shows as <span class="preview"><b>some text here</b></span> <span class="explain">(bold)</span></div>
+<div class="interestBox"><tt class="bbcode">[b]some&nbsp;text&nbsp;here[/b]</tt> shows as <span class="preview"><b>some&nbsp;text&nbsp;here</b></span> <span class="explain">(bold)</span></div>
 
 <h4>Italic</h4>
-<div class="interestBox"><tt class="bbcode">[u]some&nbsp;&nbsp;text here[/u]</tt> shows as <span class="preview"><u>some  text here</u></span> <span class="explain">(underlined)</span></div>
+<div class="interestBox"><tt class="bbcode">[i]some&nbsp;text&nbsp;here[/i]</tt> shows as <span class="preview"><i>some&nbsp;text&nbsp;here</i></span> <span class="explain">(italic)</span></div>
 
 <h4>Underline</h4>
-<div class="interestBox"><tt class="bbcode">[u]some&nbsp;&nbsp;text here[/u]</tt> shows as <span class="preview"><u>some  text here</u></span> <span class="explain">(underlined)</span></div>
+<div class="interestBox"><tt class="bbcode">[u]some&nbsp;&nbsp;text here[/u]</tt> shows as <span class="preview"><u>some&nbsp;text&nbsp;here</u></span> <span class="explain">(underlined)</span></div>
 
 <h4>Code</h4>
 <div class="interestBox"><tt class="bbcode">[code]some&nbsp;&nbsp;&nbsp;text&nbsp;&nbsp;here[/code]</tt> shows as <pre class="preview">some&nbsp;&nbsp;&nbsp;text&nbsp;&nbsp;here</pre> <span class="explain">(maintains white space and uses fixed font)</span></div>
@@ -41,7 +41,7 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 
 
 
-<h3>Linking and quoting forum posts</h3>
+<h3 id="links">Linking and quoting forum posts</h3>
 
 <h4>Including a posters name from the thread</h4>
 <p>Clicking the name of the contributor beside their post will insert their name into the comment reply box. The contributors name will be inserted with bold formatting <tt class="bbcode">[b]Contributors name[/b]</tt>.</p>
@@ -57,7 +57,7 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 
 <div class="threecolumn">
 
-<h3>Image links</h3>
+<h3 id="images">Image links</h3>
 
 <h4>Finding the image ID</h4>
 
@@ -115,7 +115,7 @@ shows as
 
 <div class="threecolumn">
 
-<h3>Grid reference links</h3>
+<h3 id="gridref">Grid reference links</h3>
 
 
 <h4>Link to Browse page for a Square</h4>
@@ -132,7 +132,7 @@ To stop text that looks like a grid reference being converted, prefix the text w
 
 
 
-<h3>External links</h3>
+<h3 id="extlinks">External links</h3>
 
 <h4>Inserting a webpage link</h4>
 <p>Pasting a URL into a post will result in the URL automatically being formatted as a link once posted.</p>
@@ -147,7 +147,7 @@ To stop text that looks like a grid reference being converted, prefix the text w
 
 
 
-<h3>Inserting images</h3>
+<h3 id="extimages">Inserting images</h3>
 
 <h4>Inserting images into posts</h4>
 <p>External images can be inserted into discussion posts using the code below. You may wish to upload images to the <a href="http://media.geograph.org.uk/">Geograph Media Server</a> in order to do this.</p>

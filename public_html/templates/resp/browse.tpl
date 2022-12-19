@@ -45,19 +45,22 @@
 
 <br style="clear:both; padding:10px"/>
 
-{if $showresult}
-	{* We have a valid GridRef *}
-{/if}
-
 
 {if $errormsg}
 	<p>{$errormsg}</p>
 {/if}
 
+{if $showresult}
+	{* We have a valid GridRef *}
+
+
+
+
+
 <div class="twocolsetup">
 	<div class="twocolumn">
-
-<h3>Coverage</h3>
+{*-------------------------Coverage---------------------------*}
+<h3 id="coverage">Coverage</h3>
 
 {if $square->percent_land < 50 && $square->percent_land != -1}
 	<form action="/mapfixer.php" method="get">
@@ -237,7 +240,7 @@
 
 {/if}
 
-
+{if $lat}
 <h4 style="margin-bottom:0; margin-top:2px;">Surrounding area</h4>
 
 <ul class="buttonbar">
@@ -285,7 +288,7 @@
 </select></li>
     
 </ul>
-
+{/if}
 
 <br/>
 <div style="text-align:center"><big><img src="{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$gridrefraw}/links">More Links for {$gridrefraw}</a></big></div>
@@ -295,9 +298,9 @@
 <br style="clear:both"/>
 </div>
  
-
+{*-------------------------Maps---------------------------*}
 <div class="twocolumn">
-<h3>Maps</h3>
+<h3 id="maps">Maps</h3>
   <div style="width:100%; text-align:center;">
   {if $rastermap->enabled}
 	<div style="display: inline-block; vertical-align: middle; text-align:center; width:{$rastermap->width}px; font-size:0.8em; margin:5px;">
@@ -327,6 +330,8 @@
 
 <br style="clear:both"/>
 </div>
+
+{*-------------------------Images---------------------------*}
 
 {if $imagecount}
 		{* There are some thumbnails to display *}
@@ -758,6 +763,9 @@
    	{if $rastermap->enabled}
 		{$rastermap->getFooterTag()}
 	{/if}
+
+{/if}
+
 
 {include file="_std_end.tpl"}
 {/dynamic}
