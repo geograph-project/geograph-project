@@ -14,13 +14,31 @@
 {/literal}
 </style>
 
+<div style="float:right; background-color: white; margin:auto; text-align:right">
+<details>
+<summary>Navigation</summary>
+<ul style="list-style-type: none;">
+<li><a href="#basicdetails">Basic details</a></li>
+<li><a href="#statistics">Statistics</a></li>
+{if $userimages}<li><a href="#explore">Explore images</a></li>{/if}
+{if $profile->about_yourself && $profile->public_about}<li><a href="#about">About me</a></li>{/if}
+{if $userimages}<li><a href="#images">Photos</a></li>{/if}
+</ul>
+</details>
+</div>
+
 <h2 style=margin-bottom:0><a name="top"></a><img src="{if $profile->md5_email}https://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50{else}https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=30{/if}" align="absmiddle" alt="{$profile->realname|escape:'html'}'s Gravatar" {if $profile->md5_email}width=50 height=50{else}width=30 height=30{/if} style="margin-right:10px"/>Profile for {$profile->realname|escape:'html'}</h2>
+
+<br style="clear:both"/>
 
 {if $user->user_id eq $profile->user_id}
 <div style="border-style: double; padding: 6px; border-color: grey"><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>
 {if $simplified}
-This is a simplified view of your own profile. You can also view your <a href="/profile/{$user->user_id}">full public profile</a>.<br/><br/>
+This is your <b>private profile</b> and includes additional information and links which aren't shown on your <a href="/profile/{$user->user_id}">full public profile</a>. {if $profile->about_yourself && $profile->public_about}Your 'About me' box is hidden in your private profile, and is only visible on your public profile.{/if}
+{else}
+This is your <b>public profile</b> and appears as it will to site visitors. For additional links, view your <a href="/profile.php">private profile</a>.
 {/if}
+<br/><br/>
 <a href="/profile.php?edit=1">Edit your profile</a> if there's anything you'd like to change.</div><br/>
 {/if}
 
@@ -74,6 +92,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 
 {*------------------------Basic details----------------------------*}
 <div class="threecolumn">
+<a name="basicdetails"></a>
 <h3>Basic details</h3>
 
 
@@ -153,6 +172,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 
 {*---------------------------Statistics-------------------------*}
 <div class="threecolumn">
+<a name="statistics"></a>
 <h3>Statistics</h3>
 
 {if $profile->stats.images gt 0}
@@ -257,6 +277,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 <div class="threecolumn">
 
 {if $userimages}
+<a name="explore"></a>
 <h3>Explore images</h3>
 
 <form action="/search.php" style="text-align:center">
@@ -269,7 +290,8 @@ This is a simplified view of your own profile. You can also view your <a href="/
 <ul class="buttonbar">
 
 <li><select onchange="window.location.href=this.value">
-				<option value="">Recent submissions</option>
+				<option value="">View images in the search</option>
+				<optgroup label="Recent submissions">
 				<option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=full&amp;do=1">Full details</option>
         <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
         <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</option>
@@ -278,6 +300,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
         <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</option>
         <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</option>
         <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</option>
+        </optgroup>
 </select></li>
 
 
@@ -325,7 +348,11 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {if $user->user_id eq $profile->user_id && $simplified}
 	<li><a href="/mapper/combined.php?mine=1#5/56.317/-2.769">Personalised coverage map</a></li>
 {/if}
+
 <li><a href="/browser/#!/q=user{$profile->user_id}/realname+%22{$profile->realname|escape:'url'}%22">Browser</a></li>
+
+<li><a href="/explore/calendar.php?u={$profile->user_id}">Calendar</a></li>
+
 
 {if $profile->stats.images > 2}
 	<li><select onchange="window.location.href=this.value">
@@ -333,13 +360,17 @@ This is a simplified view of your own profile. You can also view your <a href="/
 		<option value="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}">by Date taken</option>
 		<option value="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}">by Myriad</option>
 		<option value="/finder/bytag.php?user_id={$profile->user_id}">by Tags</option>
-		<option value="/finder/groups.php?q=user{$profile->user_id}&amp;group=context_ids">by Geographical Context</option>
+		<option value="/finder/groups.php?q=user{$profile->user_id}&amp;group=context_ids">by Geographical context</option>
 	</select></li>
 {/if}
 
 {if $user->user_id eq $profile->user_id && $simplified && $profile->stats.images gt 2}
-	<li><a title="Comma Seperated Values - file for images by {$profile->realname|escape:'html'}" href="/export.csv.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1{/if}">Download CSV file</a></li>
-	<li><a title="Excel 2003 XML - file for images by {$profile->realname|escape:'html'}" href="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1{/if}">Download XML file for Excel 2003</a></li>
+
+	<li><select onchange="window.location.href=this.value">
+		<option value="">Download a list of submissions</option>
+		<option value="/export.csv.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as a CSV file (Comma separated values)</option>
+		<option value="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as an XML file for Excel 2003</option>
+	</select></li>
 
 	<li><select onchange="window.location.href=this.value">
 					<option value="">Word Cloud</option>
@@ -377,6 +408,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {*------------------------Tags----------------------------*}
 
 {if $profile->tags}
+<a name="tags"></a>
 <h3>Most Used Tags</h3>
 
 <ul class="buttonbar">
@@ -400,6 +432,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 {if $profile->about_yourself && $profile->public_about && ($userimages || $user->user_id eq $profile->user_id) && !$simplified}
 
 	{if !$profile->deceased_date}
+  <a name="about"></a>
 			<h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">About Me</h3>
 
 		<div style="padding-left:10px">
@@ -431,7 +464,7 @@ This is a simplified view of your own profile. You can also view your <a href="/
 	<tbody>
 	{foreach from=$userimages item=image}
 		<tr>
-		<td data-title="Grid reference" sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
+		<td data-title="Grid ref" sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
 		<td data-title="Title" sortvalue="{$image->title|escape:'html'}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
 		<td data-title="Submitted" sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
 		<td data-title="Image type">
