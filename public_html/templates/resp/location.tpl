@@ -11,7 +11,7 @@
 </style>
 
 
-{if $showresult}
+
 
 <div class="interestBox" style="float: right; position:relative; padding:2px; margin-right:25px">
 	<table border="0" cellspacing="0" cellpadding="2">
@@ -325,10 +325,7 @@
 		{$rastermap->getFooterTag()}
 	{/if}
 
-{else}
-<h2>Geograph Links Page</h2>
-<big>The grid reference entered does not appear to be valid. You may wish to try browsing the <a href="/mapper/combined.php">Geograph Coverage Map.</a></big>
-{/if}
+
 
 
 
