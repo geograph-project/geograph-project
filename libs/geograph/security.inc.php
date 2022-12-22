@@ -76,7 +76,7 @@ function rate_limiting($slug, $per_minute = 5, $enforce = false) {
 	        php_self = ".$db->Quote($_SERVER['REQUEST_URI']).",
 		request_time = ".intval($_SERVER['REQUEST_TIME']).",
 	        ipaddr = INET6_ATON('".getRemoteIP()."'),
-	        referer = ".$db->Quote($_SERVER['HTTP_REFERER']).",
+	        referer = ".$db->Quote(@$_SERVER['HTTP_REFERER']).",
 	        useragent = ".$db->Quote($_SERVER['HTTP_USER_AGENT']).",
 	        session = ".$db->Quote(session_id())."
 
