@@ -28,6 +28,10 @@ if (@$_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter") {
 	header("Content-Length: 0");
         exit;
 }
+if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
+     header('HTTP/1.0 403 Forbidden');
+     exit;
+}
 
 require_once('geograph/global.inc.php');
 
