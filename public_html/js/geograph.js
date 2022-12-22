@@ -356,6 +356,10 @@ function markImage(image) {
 	} else {
 		ele.textContent = newtext;
 	}
+	if (newtext == 'marked')
+		ele.style.color = 'red';
+	else
+		ele.style.color = '';
 
 	if (document.getElementById('mainphoto')) {
 		if (newtext == 'marked')
@@ -441,7 +445,8 @@ function showMarkedImages() {
 				if (document.getElementById('mainphoto')) //there can only be one main photo, and if the has the specific mark link, it must be this photo!
 					document.getElementById('mainphoto').style.border = '2px solid red';
 
-				ele = document.getElementById('mark'+splited[i])
+				var ele = document.getElementById('mark'+splited[i])
+				ele.style.color = 'red';
 				if(hasInnerText) {
 				    ele.innerText = 'marked';
 				} else {
@@ -468,6 +473,7 @@ function clearMarkedImages() {
 		for(i=0; i < splited.length; i++)
 			if (document.getElementById('mark'+splited[i])) {
 				var ele = document.getElementById('mark'+splited[i])
+				ele.style.color = '';
 				if(hasInnerText) {
 				    ele.innerText = 'Mark';
 				} else {
