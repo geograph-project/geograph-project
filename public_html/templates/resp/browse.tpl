@@ -246,9 +246,12 @@
 <ul class="buttonbar">
 <li><select onchange="window.location.href=this.value">
 				<option value="">Geograph coverage maps</option>
-				<option value="/mapper/combined.php#13/{$lat}/{$long}">Interactive coverage map</option>
+				<option value="/mapper/combined.php#13/{$lat}/{$long}">Interactive coverage map (squares)</option>
+				<option value="/mapper/combined.php#15/{$lat}/{$long}">Interactive coverage map (centisquares)</option>
+        {if $hectad_row && $hectad_row.largemap_token}
         <option value="/maplarge.php?t={$hectad_row.largemap_token}">Photo mosaic</option>
-        <option value="/browser/#!/grid_reference+%22{$gridref}%22">Browser map</option>
+	{/if}
+        <option value="/browser/#!/loc={$gridrefraw}/dist=1000/display=map_dots">Browser map</option>
         <option value="https://www.geograph.org/leaflet/all.php#16/{$lat}/{$long}">All Geograph projects map</option>
 				<option value="/mapsheet.php?zoom=15&lat={$lat}&lon={$long}">Printable Checksheet</option>
         {if $user}<option value="/mapsheet.php?zoom=15&lat={$lat}&lon={$long}&mine=1">Printable Checksheet (personalised)</option>{/if}
