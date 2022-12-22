@@ -1496,15 +1496,14 @@ split_timer('gridimage'); //starts the timer
 			}
 			$server = str_replace('http://','https://',$server);
 
-			$thumbpath = $server.$thumbpath;
 			if ($return == 'fullpath')
-				return $thumbpath;
+				return $server.$thumbpath;
 
 			$title=htmlentities2($this->title);
 
 			$size=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath); //todo store the size in memcache
 
-			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
+			$html="<img alt=\"$title\" src=\"$server$thumbpath\" {$size[3]}/>";
 		}
 
 split_timer('gridimage','getSquareThumbnail'.(isset($srcw)?'-create':''),$thumbpath); //logs the wall time
