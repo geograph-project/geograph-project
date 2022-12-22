@@ -30,16 +30,19 @@
     <li>Interact<ul>
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
      <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
-     <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
+     <li><a title="Blog Posts by Members" href="/blog/">Blog</a></li>
+     {dynamic}{if $user->registered}
+     <li><a title="Upcoming Meet/Events" href="/events/">Events</a></li>
+     {/if}
     </ul></li>
     <li>Contributors<ul>
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
-     {dynamic}{if $user->registered && $user->stats.images}
+     {if $user->registered && $user->stats.images}
      <li><a title="Your most recent submissions" href="/submissions.php">Recent Uploads</a></li>
 	{if $user->tickets !== 0}
 	     <li><a title="Active image change/suggestions" href="/suggestions.php">Suggestions</a></li>
 	{/if}
-     {/if}{/dynamic}
+     {/if}
      <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li>
      <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>
     </ul></li>
@@ -50,7 +53,6 @@
      <li><a title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
      <li><a title="Donate to Geograph Project" href="/help/donate">Support Us</a></li>
     </ul></li>
-  {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
     <li>Admin<ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
