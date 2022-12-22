@@ -22,20 +22,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if (@$_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || @$_GET['q'] == ',') {
+if (empty($_SERVER['HTTP_USER_AGENT'])
+ || ($_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || @$_GET['q'] == ',')
+ || (isset($_GET['key']) && $_GET['key'] == '[apikey]' && strpos($_SERVER['HTTP_USER_AGENT'],'LWP') === 0)
+ || ($_SERVER['HTTP_USER_AGENT'] == "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0" && $_SERVER['HTTP_REFERER'] == "https://www.google.com/")
+ || (strpos($_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE)) {
 	header('HTTP/1.0 403 Forbidden');
 	header('Cache-Control: max-age=2592000');
-	header("Status: 403 Forbidden");
 	exit;
-} elseif(isset($_GET['key']) && $_GET['key'] == '[apikey]' && strpos($_SERVER['HTTP_USER_AGENT'],'LWP') === 0) {
-        header('HTTP/1.0 403 Forbidden');
-	header('Cache-Control: max-age=2592000');
-	header("Status: 403 Forbidden");
-        exit;
-}
-if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
-     header('HTTP/1.0 403 Forbidden');
-     exit;
 }
 
 if (empty($_GET['key']))
