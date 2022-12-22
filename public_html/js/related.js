@@ -63,7 +63,7 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 
 		if (related && related.rows) {
 			//if related data was already provided by host page, can skip direct to rendering thumbs
-			renderThumbs(related.row, related);
+			renderThumbs(related.row, related, related.match);
 
 		} else if (supportsLazyLoad) {
 			renderRelatedImage();
@@ -198,7 +198,7 @@ function processImage(row) {
 		dataType: 'json'
 	}).done(function(data){
 		if (data && data.rows && data.rows.length) {
-			renderThumbs(row,data);
+			renderThumbs(row,data,match);
 		} else {
 			$('#related .thumbs').html("No Related Images Found");
 		}
@@ -206,7 +206,7 @@ function processImage(row) {
 }
 
 
-function renderThumbs(row,data) {
+function renderThumbs(row,data,match) {
 
 			$('#related .thumbs').empty();
 			var attrib = 'loading="lazy" src'; //the first is always a normal src, not data-src
@@ -236,15 +236,16 @@ function renderThumbs(row,data) {
 					attrib = 'data-src';
 			});
 
-			setTimeout(function() { //delay adding these, to give some time for thumbnails to load, minimising CLS!
+			window.requestAnimationFrame(function() {
 			$('#related .thumbs').append('<br style=clear:both>');
 
 			$('#related .thumbs').append('<p><a href="/related.php?id='+encodeURIComponent(gridimage_id)+'&method=quick">More related images</a>');
 
-			$('#related .thumbs').append('<p><a href="/browser/#!/q='+encodeURIComponent(match)+'">View more results in browser</a>');
+			if (match)
+				$('#related .thumbs').append('<p><a href="/browser/#!/q='+encodeURIComponent(match)+'">View more results in browser</a>');
 
 			$('#related .thumbs').append('<p><a href="/finder/grouped.php?q='+row.grid_reference+'&number=3&group=all">Whats around here</a>');
-			}, 2000);
+			});
 
 			if (!supportsLazyLoad)
 				setTimeout(initLazy,50);

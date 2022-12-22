@@ -92,6 +92,7 @@ if (!empty($rows)) {
 	$match = implode(" ",$required);
 	$match .= " (".implode('|',$optional).")";
 
+	$data['match'] = $match;
 	$data['rows'] = queryQL('id,title,myriad,hectad,grid_reference,takenyear,takenmonth,takenday,hash,realname,user_id,place,county,country,hash,scenti,width,height',
                 $match, array("id!=$id"), 10);
 
