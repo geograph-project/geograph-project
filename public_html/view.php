@@ -24,6 +24,9 @@
 if (empty($_SERVER['HTTP_USER_AGENT']))
         die("no scraping");
 
+if ($_SERVER['HTTP_USER_AGENT'] == "python-requests/2.25.1")
+        die("no scraping");
+
 require_once('geograph/global.inc.php');
 
 if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'BingPreview/1.0b')!==FALSE) ) {
@@ -201,7 +204,7 @@ if ($image->isValid())
 			(stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) ) {
 		header("HTTP/1.0 301 Moved Permanently");
 		header("Status: 301 Moved Permanently");
-		header("Location: {$CONF['PROTOCOL']}www.geograph.org.uk/photo/".intval($_GET['id']));
+		header("Location: ".$CONF['canonical_domain'][1]."/photo/".intval($_GET['id']));
 		exit;
 	} elseif ($image->grid_square->reference_index == 2 && $_SERVER['HTTP_HOST'] != 'www.geograph.ie' && $CONF['template']!='archive') {
 		$smarty->assign("ireland_prompt",1);
@@ -354,7 +357,7 @@ if ($image->isValid())
                                 	$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title ".htmlentities(preg_replace('/ #$/','',$title))."</a> in this square");
                         	}
 */
-			} elseif (substr_count($image->title,' ') > 1) {
+			} elseif (false && substr_count($image->title,' ') > 1) {
 				$words = explode(' ',trim($image->title));
 				array_pop($words);
 				$title = preg_replace('/[^\w]+$/','',implode(' ',$words))."%";  //the replace removes commas etc from end of words (so 'The Black Horse, Nuthurst', necomes 'The Black Horse')
