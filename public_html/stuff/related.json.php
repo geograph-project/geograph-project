@@ -132,7 +132,7 @@ if (!empty($rows)) {
 		$filesystem->file_put_contents($cachefile, $content, 'bucket-owner-full-control'); //we need to specify a ACL, because the cache bucket doesnt allow public-read (which is used for photo bucket)
 	} else {
 		outputJSON($data);
-	}q
+	}
 } else {
 	die('{"error":"no results"}');
 }
