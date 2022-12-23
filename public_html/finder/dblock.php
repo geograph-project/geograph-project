@@ -27,6 +27,13 @@ init_session();
 
 rate_limiting('dblock.php');
 
+if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie' && !appearsToBePerson()) {
+	header('Location: https://www.geograph.org.uk'.$_SERVER['REQUEST_URI'], true, 301);
+	exit;
+}
+
+pageMustBeHTTPS();
+
 $smarty = new GeographPage;
 $template = 'finder_dblock.tpl';
 
