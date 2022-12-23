@@ -28,21 +28,14 @@ if (!empty($_GET['do']) && !empty($_GET['page']) && $_GET['page'] > 20) {
 	header('HTTP/1.0 403 Forbidden');
 	exit;
 }
-if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
+if (empty($_SERVER['HTTP_USER_AGENT'])
+|| (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE)
+|| (@$_SERVER['HTTP_USER_AGENT'] == "Opera/9.80 (X11; Linux i686; U; pl) Presto/2.6.30 Version/10.61")
+|| (strpos(@$_SERVER['HTTP_USER_AGENT'], 'SpiderLing')!==FALSE)
+|| (strpos(@$_SERVER['HTTP_USER_AGENT'], 'sqlmap/')!==FALSE)
+|| (strpos(@$_SERVER['HTTP_USER_AGENT'], 'MegaIndex.ru')!==FALSE) ) {
      header('HTTP/1.0 403 Forbidden');
      exit;
-}
-if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'SpiderLing')!==FALSE) {
-     header('HTTP/1.0 403 Forbidden');
-     exit;
-}
-if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'MegaIndex.ru')!==FALSE) {
-     header('HTTP/1.0 403 Forbidden');
-     exit;
-}
-if ($_SERVER['HTTP_USER_AGENT'] == 'Zeno') {
-        header("HTTP/1.0 403 Forbidden");
-       exit;
 }
 
 require_once('geograph/global.inc.php');

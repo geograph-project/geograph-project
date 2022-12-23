@@ -32,38 +32,19 @@
 */
 
 if (isset($_SERVER['HTTP_USER_AGENT'])) {
-	if (strpos($_SERVER['REQUEST_URI'],'log4shell')!==FALSE) {
-                header("HTTP/1.0 503 Service Unavailable");
-                exit;
-        } elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE) {
-		header("HTTP/1.0 503 Service Unavailable");
-		exit;
-	} elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'mj12bot')!==FALSE) {
+	if ((strpos($_SERVER['REQUEST_URI'],'log4shell')!==FALSE)
+         || (strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE)
+	 || (strpos($_SERVER['HTTP_USER_AGENT'], 'mj12bot')!==FALSE)
+         || (strpos($_SERVER['HTTP_USER_AGENT'], 'facebookexternalhit/1.1 Facebot Twitterbot')!==FALSE)
+	 || ($_SERVER['HTTP_USER_AGENT'] == 'Zeno')
+	 || ($_SERVER['HTTP_USER_AGENT'] == "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36")
+         || (@$_SERVER['HTTP_X_FORWARDED_FOR'] == "122.142.198.166" || @$_SERVER['HTTP_X_FORWARDED_FOR'] == "5.181.40.115")
+		//HTTP_CONTENT_TYPE: multipart/form-data; boundary=-----AcunetixBoundary_PYAHFBXIFU
+         || (!empty($_SERVER['HTTP_CONTENT_TYPE']) && strpos($_SERVER['HTTP_CONTENT_TYPE'],'AcunetixBoundary_'))
+	) {
 	        header("HTTP/1.0 403 Forbidden");
+	        header("Cache-Control: max-age=360000");
         	exit;
-	}
-
-if ($_SERVER['HTTP_USER_AGENT'] == 'Zeno') {
-        header("HTTP/1.0 403 Forbidden");
-       exit;
-}
-
-       if (@$_SERVER['HTTP_X_FORWARDED_FOR'] == "122.142.198.166" || @$_SERVER['HTTP_X_FORWARDED_FOR'] == "5.181.40.115") {
-                header("HTTP/1.0 403 Forbidden");
-               exit;
-       }
-
-//HTTP_CONTENT_TYPE: multipart/form-data; boundary=-----AcunetixBoundary_PYAHFBXIFU
-       if (!empty($_SERVER['HTTP_CONTENT_TYPE']) && strpos($_SERVER['HTTP_CONTENT_TYPE'],'AcunetixBoundary_')) {
-               header("HTTP/1.0 503 Service Unavailable");
-                exit;
-       }
-
-	//temporally fix, the beta domain was accidently indexed by Google!
-	if (!empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],'https://www.google.') === 0 
-	&& strpos($_SERVER['HTTP_HOST'],'beta') !== FALSE ) {
-		header('Location: https://www.geograph.org.uk'.$_SERVER['REQUEST_URI'], true, 301);
-		exit;
 	}
 }
 
