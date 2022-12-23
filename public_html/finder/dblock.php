@@ -25,7 +25,7 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-
+rate_limiting('dblock.php');
 
 $smarty = new GeographPage;
 $template = 'finder_dblock.tpl';
