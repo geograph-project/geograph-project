@@ -21,16 +21,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if (@$_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter") {
-        header('HTTP/1.0 200 OK');
+if (empty($_SERVER['HTTP_USER_AGENT'])
+ || ($_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter")
+ || (strpos($_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE)
+ || (strpos($_SERVER["REQUEST_URI"], 'f20e868609')!==FALSE) ) {
+	header('HTTP/1.0 403 Forbidden');
 	header("Cache-Control: max-age=360000");
-//	header("X-Date: ".time());
-	header("Content-Length: 0");
-        exit;
-}
-if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
-     header('HTTP/1.0 403 Forbidden');
-     exit;
+	exit;
 }
 
 require_once('geograph/global.inc.php');
