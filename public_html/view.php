@@ -139,11 +139,9 @@ $image=new GridImage;
 
 if (isset($_GET['id']))
 {
+	pageMustBeHTTPS(); //in here so doesnt affect preview - but does mean we redirect everything even nonexistant images (means may create a redirect-chain)
+
 	$image->loadFromId(intval($_GET['id']));
-
-        if ($image->isValid() && $image->moderation_status!='rejected')
-		pageMustBeHTTPS();
-
 
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$ismoderator=($USER->hasPerm('moderator')||$USER->hasPerm('director'))?1:0;
