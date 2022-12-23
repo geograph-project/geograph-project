@@ -2634,21 +2634,23 @@ if (!empty($GLOBALS['curl_verbose']))
                                 }
                         }
 
-                        $mtime = isset($headers['x-amz-meta-mtime'])?$headers['x-amz-meta-mtime']:$headers['time'];
-                        $gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
-                        header("Last-Modified: $gmdate_mod");
+			if (!empty($headers['time'])) {
+	                        $mtime = isset($headers['x-amz-meta-mtime'])?$headers['x-amz-meta-mtime']:$headers['time'];
+        	                $gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
+                	        header("Last-Modified: $gmdate_mod");
 
-			if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
-		                $if_modified_since = preg_replace('/;.*$/', '', $_SERVER['HTTP_IF_MODIFIED_SINCE']);
+				if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+			                $if_modified_since = preg_replace('/;.*$/', '', $_SERVER['HTTP_IF_MODIFIED_SINCE']);
 
-		                if ($if_modified_since == $gmdate_mod) {
-		                        header("HTTP/1.0 304 Not Modified");
-		                        header('Content-Length: 0');
-		                        exit;
-		                }
+			                if ($if_modified_since == $gmdate_mod) {
+			                        header("HTTP/1.0 304 Not Modified");
+			                        header('Content-Length: 0');
+		                        	exit;
+		                	}
+				}
 			}
-
-                        header("Content-Length: {$headers['size']}");
+			if (!empty($headers['size']))
+	                        header("Content-Length: {$headers['size']}");
 		}
 
 		return $strlen;

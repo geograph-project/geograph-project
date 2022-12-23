@@ -23,13 +23,32 @@
 
 require_once('geograph/global.inc.php');
 
-
-
 if (!empty($_GET['id'])) {
 	$id = intval($_GET['id']);
 } else {
 	die('{"error":"unknown id"}');
 }
+
+#########################################
+
+if (!empty($CONF['s3_cache_bucket_path'])) {
+	header("Content-Type:application/json"); //need to set the header first!
+
+	$filesystem = new FileSystem();
+	$cachefile = "/mnt/s3/cache/related/$id.json";
+
+	// could use this...
+	//  if ($filesystem->file_exists($path, true)) { //true to download the file and put in a temp file
+	//      $content = $filesystem->file_get_contents($path); //will read from the temp file
+
+	// or can use readfile, which can avoid writing to a tempory file
+
+	$bytes = $filesystem->readfile($cachefile, true); //outputs it directly if exists! avoiding a temp file
+	if (!empty($bytes))
+		exit; //we done!
+}
+
+#########################################
 
 $sph = GeographSphinxConnection('sphinxql', true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -98,8 +117,22 @@ if (!empty($rows)) {
 
 	//dont bother with $data['meta'] - the client doesnt use it.
 
-	outputJSON($data);
+	if (!empty($CONF['s3_cache_bucket_path']) && $cachefile) {
+		//will have already outputed a Content-Type above!
 
+		if (!empty($data['row']))
+			http_response_code(200); //readfile above, might of proxied the 404 from S3!
+
+		//dont need to support callback here!
+		$content = json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR );
+
+		header("Etag: \"".md5($content)."\""); //for compatibity with filesystem->readfile above
+		print $content;
+
+		$filesystem->file_put_contents($cachefile, $content, 'bucket-owner-full-control'); //we need to specify a ACL, because the cache bucket doesnt allow public-read (which is used for photo bucket)
+	} else {
+		outputJSON($data);
+	}q
 } else {
 	die('{"error":"no results"}');
 }

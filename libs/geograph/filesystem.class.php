@@ -135,9 +135,12 @@ class FileSystem extends S3 {
 		if (!empty($CONF['s3_loki_bucket_path']))
 			$this->buckets["/mnt/s3/logs/"] = $CONF['s3_loki_bucket_path'];
 
+		if (!empty($CONF['s3_cache_bucket_path']))
+			$this->buckets["/mnt/s3/cache/"] = $CONF['s3_cache_bucket_path'];
+
 		/////////////////////////////////////////////////
 
-		parent::__construct($decode['AccessKeyId'], $decode['SecretAccessKey'], false);
+		parent::__construct($decode['AccessKeyId'], $decode['SecretAccessKey'], false, "s3.{$_SERVER['AWS_REGION']}.amazonaws.com");
 
 		if (!empty($CONF['s3_storage']))
 			$this->defaultStorage = $CONF['s3_storage'];
@@ -707,7 +710,7 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
 	function file_get_contents($filename) {
 		list($bucket, $filename) = $this->getBucketPath($filename);
 		if ($bucket) {
-			//use temp file for now. maybe could use getObject directly, to avoid wrtiing to a temp file?
+			//use temp file for now. maybe could use getObject directly, to avoid wrtiing to a temp file? (readfile does this!)
 			$tmpfname = $this->_get_remote_as_tempfile($bucket, $filename);
 			return file_get_contents($tmpfname);
 		} else {
@@ -736,8 +739,10 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
 				$GLOBALS['proxy_headers'] = true; //tell S3 class to output the Content-Length etc headers.
 				$r = @$this->getObject($bucket, $filename, $stdout);
 
+				$GLOBALS['proxy_headers'] = false; //turn it off again, just in case some other call is made
+
 		                $this->_log('getObject','readfile('.basename($filename).')',$r);
-				return;
+				return @$r->headers['size'];
 			}
 
 			header('X-Debug: readfile-tempfile');
