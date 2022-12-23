@@ -39,7 +39,9 @@ $param=array(
 	'all'=>false, //set to true so loops!
 	'date'=>false, //date to download (eg 2021-05-04) parsed by strtotime
 		'extra' => '', //extra strtotime diff. eg use --extra="+14 hour" to start downloads FROM 2pm!
+		'extra2'=> '+1 day', //used for for end of day
 	'start'=>false, //can supply the full nanosecond timestamp, so can resume a aborted download
+	'end'=>false,
 	//'string' is also accepted as a optional param to 'filename' mode
 
 	'direction' => 'forward',
@@ -165,7 +167,7 @@ if (empty($CONF['loki_address']))
 		//a single day
                 } elseif (!empty($param['date'])) {
 			$start = strtotime($param['date'].$param['extra']);
-			$end = strtotime($param['date']."+1 day");
+			$end = strtotime($param['date'].$param['extra2']);
 
 			$start = $start.'000000000';  //as a nanosecond Unix epoch.
 			$end = $end.'000000000';
@@ -174,6 +176,9 @@ if (empty($CONF['loki_address']))
 		//after already set date (so end still set!)
 		if (!empty($param['start'])) {
 			$start = $param['start'];
+		}
+		if (!empty($param['end'])) {
+			$end = $param['end'];
 		}
 
 		$c =1;
@@ -290,6 +295,8 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
 
 	if (!empty($param['duration']) && strpos($param['base'],'manticore"'))
 		$query .= ' | regexp `\] (?P<duration>\\d+\.\\d+) sec \\d+\\.\\d+ sec ` | duration > '.$param['duration'];
+	if (!empty($param['duration']) && strpos($param['base'],'nginx"'))
+		$query .= ' | regexp `" (?P<duration>\\d+\.\\d+) http` | duration > '.$param['duration'];
 
 	#####################
 
