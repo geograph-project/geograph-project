@@ -92,10 +92,10 @@
 
 	<table class="report width700 sortable" id="events">
 	<thead><tr>
-		<th sorted="asc">Updated</td>
-		<th>Who</td>
-		<th>Message{dynamic}{if $user->registered} <small>(<i>optional</i>, 160 characters max)</small>{/if}{/dynamic}</td>
-		<th>Intention</td>
+		<th sorted="asc">Updated</th>
+		<th>Who</th>
+		<th>Message{dynamic}{if $user->registered} <small>(<i>optional</i>, 160 characters max)</small>{/if}{/dynamic}</th>
+		<th>Intention</th>
 	</tr></thead>
 	<tbody>
 	{dynamic}
