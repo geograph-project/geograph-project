@@ -198,7 +198,7 @@ div.caption {
 		{/if}
 
 		{if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
-			<li><select onchange="window.open(this.value,'share','width=500;height=400'); return false;" style="width:80px">
+			<li><select onchange="openShare(this.value,'share','width=500;height=400'); return false;" style="width:80px">
 				<option value="">Share...</option>
 				<option value="https://twitter.com/intent/tweet?text={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Twitter</option>
 				<option value="https://www.facebook.com/sharer/sharer.php?u={$self_host}/photo/{$image->gridimage_id}">Share this photo via Facebook</option>
@@ -561,6 +561,12 @@ div.caption {
 			});
 		}
 	},false);
+
+function openShare(url,name,options) {
+	var newWin = window.open(url,name,options);             
+	if(!newWin || newWin.closed || typeof newWin.closed=='undefined') 
+		window.open(url,'_blank');
+}
 </script>
 
 {/literal}
