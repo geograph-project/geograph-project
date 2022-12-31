@@ -105,7 +105,7 @@ $displayclasses =  array(
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
 if (!empty($_GET['q'])) {
-	if (preg_match('/^[A-Z]{1,2}\s*\d\d\d*\s*&\d\d\d*$/',trim($_GET['q']))) {
+	if (preg_match('/^[A-Z]{1,2}\s*\d\d\d*\s*\d\d\d*$/',trim($_GET['q']))) {
 		$_GET['gridref'] = $_GET['q'];
 	} elseif (!empty($_GET['gridref'])) {
 		$url = "/search.php?q=".urlencode($_GET['q'])."&location=".urlencode($_GET['gridref'])."&distance=1&do=1";
