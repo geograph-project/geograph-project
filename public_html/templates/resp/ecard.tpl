@@ -28,22 +28,22 @@
 		<input type="hidden" name="image" value="{$image->gridimage_id|escape:'html'}">
 
 		<p><label for="from_name">Your Name</label><br />
-		<input type="text" name="from_name" id="from_name" value="{$from_name|escape:'html'}"/>
+		<input type="text" name="from_name" id="from_name" value="{$from_name|escape:'html'}"style="width: 100%"/>
 		<span class="formerror">{$errors.from_name}</span>
 
 		<br/><br/>
 		<label for="from_email">Your Email (Reply Address)</label><br />
-		<input type="text" name="from_email" id="from_email" value="{$from_email|escape:'html'}" size="40"/>
+		<input type="text" name="from_email" id="from_email" value="{$from_email|escape:'html'}" style="width: 100%"/>
 		<span class="formerror">{$errors.from_email}</span>
 
 		<br/><br/>
 		<label for="to_name">Friend's Name</label><br />
-		<input type="text" name="to_name" id="to_name" value="{$to_name|escape:'html'}"/>
+		<input type="text" name="to_name" id="to_name" value="{$to_name|escape:'html'}" style="width: 100%"/>
 		<span class="formerror">{$errors.to_name}</span>
 
 		<br/><br/>
 		<label for="to_email">Friend's Email</label><br />
-		<input type="text" name="to_email" id="to_email" value="{$to_email|escape:'html'}" size="40"/>
+		<input type="text" name="to_email" id="to_email" value="{$to_email|escape:'html'}" style="width: 100%"/>
 		<span class="formerror">{$errors.to_email}</span>
 
 		<br/><br/>
