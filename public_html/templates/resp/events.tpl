@@ -47,10 +47,9 @@
 
 <div class="twocolumn">
 <h3>Map</h3>
-	<small style="color:red">Marker only shows grid square, see description for exact location<small><br/><br/></small></small>
-	<div style="width:400px; height:320px;" id="map"></div>
+	<div style="padding:10px; width:100%; max-width:400px; height:320px;" id="map"></div>
+  	<small style="color:red">The markers are plotted to show the grid square not the precise event location. Seethe event descriptions for exact locations.</small>
 </div>
-
 </div>
 
 
