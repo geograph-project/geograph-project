@@ -65,7 +65,7 @@ a.hidelink {
 {
 	margin:0px;
 	--background-image: url('/templates/basic/img/logo.gif');
-        background: url(/img/geograph-logo-xmas.png) no-repeat 10px center/94%;
+        background: url(/img/geograph-logo.svg) no-repeat 10px center/94%;
 	height:74px;
 	width:257px;
 	cursor:pointer;
