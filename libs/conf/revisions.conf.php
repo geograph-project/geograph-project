@@ -79,7 +79,7 @@ $REVISIONS['/prototype.js']=2600;
 $REVISIONS['/showcase/jquery.geolocation.js']=90849162;
 $REVISIONS['/slideshow.js']=7821;
 $REVISIONS['/sorttable.js']=7274;
-$REVISIONS['/templates/basic/css/basic.css']=69712853;
+$REVISIONS['/templates/basic/css/basic.css']=53563975;
 $REVISIONS['/templates/basic/css/basicp.css']=236;
 $REVISIONS['/templates/basic/css/mapper.css']=3798;
 $REVISIONS['/templates/charcoal/css/charcoal.css']=24878839;
@@ -89,6 +89,6 @@ $REVISIONS['/templates/new2/css/content.css']=24878839;
 $REVISIONS['/templates/r/css/content.css']=24878839;
 $REVISIONS['/js/jquery.storage.js']=111;
 $REVISIONS['/templates/resp/css/responsive.css']=72015581;
-$REVISIONS['/templates/resp/css/modification.css']=69712853;
+$REVISIONS['/templates/resp/css/modification.css']=53563975;
 $REVISIONS['/js/anyascii.js']=69351707;
 ?>
