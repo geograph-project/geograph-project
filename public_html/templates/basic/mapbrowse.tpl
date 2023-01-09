@@ -360,17 +360,17 @@ south_F2 = new Image(30,29); south_F2.src = "{$static_host}/templates/basic/mapn
 
 <div style="padding:10px;border:1px solid cyan;" id="explain">
 
-	This map is starting to show its age, it was made over 12 years ago, with what is now old technology; which alas many modern browsers no longer fully support. 
-	In particular the "open in new window"/tab does NOT function propelly, nor normal left-clicking on the map at thumbnail scale for some squares. And using other than 100% page zoom can cause issues.
+	This map is based on old technology, which many modern browsers no longer fully support. 
+	In particular the "open in new window"/tab does NOT function properly, and some left-clicking on the map at thumbnail scale may not behave correctly. Using zoom levels other than 100% page zoom can cause issues.
 	For best results use Internet Explorer 10 or below (yes really!), or Firefox still seems functional.
 
 	{if $coveragelink}
 		<br><br>
-		We have a new mapping interface: <a href="{$coveragelink}">Coverage Map V4</a>, not finished, but probably recommended over this map.
+		We have a new mapping interface: <a href="{$coveragelink}">Coverage Map V4</a> which offers a more reliable interface.
 	{/if}
 	{if !$token_zoomout}
 		<br><br>
-		There is also a  <a href="/browser/#!{if $realname}/realname+%22{$realname|escape:'url'}%22{/if}/display=map">Interactive Mapping function</a> in the Geograph Photo Browser.
+		There is also an <a href="/browser/#!{if $realname}/realname+%22{$realname|escape:'url'}%22{/if}/display=map">Interactive Mapping function</a> in the Geograph Photo Browser.
 	{/if}
 	<br><br>
 	<a href="/help/maps">View other mapping available</a>
@@ -393,14 +393,6 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 
  <hr/>
 
-<b>Update 2019:</b><br>
-<div style="margin-left:40px">This map is starting to show its age, it was made over 15 years ago, with what is now old technology; which alas many modern browsers no longer fully support. 
-In particular the "open in new window"/tab does NOT function propelly, nor normal left-clicking on the map at thumbnail scale for some squares. And using other than 100% page zoom can cause issues.
-For best results use Internet Explorer 10 or below (yes really!), or Firefox still seems functional.</div>
-<br>
-<b>We have a new mapping interface: <a href="{$coveragelink}">Coverage Map V4</a>, not finished, but probably recommended over this map.</b>
-
- <hr/>
 
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project and
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div>
