@@ -102,7 +102,7 @@ if (empty($error)) {
 		$sql['tables']['gs'] = 'gridsquare';
 
 		$sql['columns'] = "imagecount as c,x,y,grid_reference as gr,has_recent as r,has_geographs as g";
-		$sql['wheres'][] = "imagecount > 0";
+		$sql['wheres'][] = "(percent_land > 0 OR imagecount > 0)";
 	}
 
 	$query = sqlBitsToSelect($sql);
