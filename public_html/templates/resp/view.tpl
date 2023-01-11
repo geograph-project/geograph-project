@@ -2,7 +2,7 @@
 <!--INFOLINKS_OFF-->
 
 <div style="padding-left:10px;padding-top:10px">
-	{if $image->imagetaken && $image->imagetaken > 1000 && $image->imagetaken < 2022}
+	{if $image->imagetaken && $image->imagetaken > 1000 && $image->imagetaken < date('Y')}
 		<div class="numeric lighter" style="float:right;font-size:clamp( 1rem , 2vw, 3rem );">{$image->imagetaken|substr:0:4}</div>
 	{/if}
 	<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
@@ -12,21 +12,20 @@
 {/if}
 
 {if $image->moderation_status eq 'rejected'}
-	<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+	<div class="interestBox" style="background-color:pink; color:black;">
 		<h3 style="color:black"><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Rejected</h3>
 
 		<p>This photograph has been rejected by the site moderators, and is only viewable by you.</p>
 
 		<p>You can find any messages related to this image on the <a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">edit page</a>, where you can reply or raise new concerns in the "Please tell us what is wrong..." box. These will be communicated to site moderators. You may also like to read this general article on common <a href="/article/Reasons-for-rejection">reasons for rejection</a>.
 	</div>
-	<br/>
 {/if}
 
 <!-- ----------------------------------------------------- -->
 
 {dynamic}
 {if $current_search}
-	<div class="interestBox" style="text-align:center; font-size:0.9em;width:400px;margin-left:auto;margin-right:auto">
+	<div class="interestBox" style="width:400px;margin-left:auto;margin-right:auto">
 		{if $current_search.l}
 			<a href="/photo/{$current_search.l}">&lt; prev image</a>
 		{elseif $current_search.c > 1}
@@ -44,7 +43,7 @@
 		{/if}
 	</div>
 {elseif $search_keywords && $search_count}
-	<div class="interestBox" style="text-align:center; font-size:0.9em">
+	<div class="interestBox">
 		{if !$user->registered}
 		<div style="width:640px;margin-left:auto;margin-right:auto"><i>The Geograph Britain and Ireland project aims to collect geographically representative photographs and information for every square kilometre of Great Britain and Ireland.</i> <br/><a href="/article/About-Geograph-page">Read about the Geograph Project.</a></div><br/>
 		{/if}
@@ -54,11 +53,11 @@
 {/if}
 {/dynamic}
 {if $ireland_prompt}
-	<div class="interestBox" style="text-align:center; font-size:0.9em">
-		<a href="http://www.geograph.ie/photo/{$image->gridimage_id}" title="View {$image->bigtitle|escape:'html'} on Geograph Ireland">View this photo on Geograph Ireland</a>
+	<div class="interestBox">
+		<a href="https://www.geograph.ie/photo/{$image->gridimage_id}" title="View {$image->bigtitle|escape:'html'} on Geograph Ireland">View this photo on Geograph Ireland</a>
 	</div>
 {elseif $prompt}
-	 <div class="interestBox" style="text-align:center; font-size:0.9em">
+	 <div class="interestBox">
 		{$prompt}
 	</div>
 {/if}
@@ -122,6 +121,12 @@ div.titlebar {
 }
 #maincontent h2 {
 	padding:0;
+}
+#maincontent .interestBox {
+	text-align:center;
+	font-size:1rem;
+	margin-bottom:10px;
+	margin-right:-10px;
 }
 
 div.caption {
