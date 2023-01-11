@@ -779,7 +779,7 @@ function smarty_function_pageheader() {
 }
 
 function smarty_function_pagefooter() {
-	global $mobile_browser,$mobile_url,$CONF;
+	global $mobile_browser,$mobile_url,$CONF,$memcache;
 
 	if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 		ob_start();
@@ -832,11 +832,14 @@ $str[] = "
         	if (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 ==1 || !empty($_GET['links']))
                 	$str[] = '<script src="'.smarty_modifier_revision("/js/links.js").'" defer="defer"></script>';
 
-		if (strpos($_SERVER["REQUEST_URI"],'/photo/') === 0) {
-			if (strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot')!==FALSE && preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m)) {
-				//todo, memcache etc??
+		if (preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m)) {
+			if (strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot')!==FALSE || $memcache->name_get('reljs',$m[1])) { //if created, might as well use it!
 				$url = "https://www.geograph.org.uk/stuff/related.json.php?id={$m[1]}";
-				$str[] = '<script>var related = '.file_get_contents($url).';</script>';
+				$content = file_get_contents($url);
+				if (strlen($content) > 5) {
+					$str[] = '<script>var related = '.$content.';</script>';
+					$memcache->name_set('reljs',$m[1],1,false,$memcache->period_long);
+				}
 			}
         	        $str[] = '<script src="'.smarty_modifier_revision("/js/related.js").'" type="text/javascript" defer="defer"></script>';
 	        }
