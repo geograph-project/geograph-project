@@ -332,7 +332,7 @@ if (!empty($_GET['debug']))
 					group by g.label order by matched desc, count desc"); */
 
 		//... actully for now, lets do the simpler query, as the above query is using lots of IO
-		$others = $db->getAll("SELECT label,images AS count FROM gridimage_group_stat WHERE grid_reference = $gr ORDER BY images DESC LIMIT 100");
+		$others = $db->getAll("SELECT label,images AS count FROM gridimage_group_stat WHERE grid_reference = $gr AND label NOT like '% #' ORDER BY images DESC LIMIT 100");
 		if (!empty($others)) {
 			print "<hr>";
 			print "<p>Other Automatic clusters in ".htmlentities($_GET['gridref'])."</p>";

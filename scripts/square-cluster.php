@@ -57,12 +57,18 @@ foreach ($squares as $square => $gridsquare_id) {
 		exit(1);
 	}
 
+	######################
+	// fetch text
+
 	$recordSet = $db_read->Execute("SELECT gridimage_id,title,comment FROM gridimage_search WHERE grid_reference = '{$square}' LIMIT {$param['limit']}");
 	$lookup = array();
+	$titles = array();
 	while (!$recordSet->EOF) {
 		$row =& $recordSet->fields;
 
 		$lookup[] = $row['gridimage_id'];
+		if (substr_count($row['title'],' ') > 0) //skip single words for now (we remove the last word!)
+			@$titles[trim($row['title'],' .')][] = $row['gridimage_id'];
 
 		$carrot->addDocument(
 			$row['gridimage_id'],
@@ -72,6 +78,9 @@ foreach ($squares as $square => $gridsquare_id) {
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close();
+
+	######################
+	// do the carrot processing
 
 	$c = $carrot->clusterQuery($param['query'],$param['debug']==='2');
 	if (empty($c)) {
@@ -87,6 +96,9 @@ foreach ($squares as $square => $gridsquare_id) {
 			print "{$cluster->label}   x{$cluster->score}    ($count docs)\n";
 		}
 		//print_r($c);
+		foreach ($titles as $title => $ids)
+			if (count($ids) > 1)
+				print "Title: $title  (".count($ids)." docs)\n";
 		exit;
 	}
 
@@ -94,8 +106,9 @@ foreach ($squares as $square => $gridsquare_id) {
 		print "found ".count($c)." clusters for $square\n";
 
 	######################
+	// store the carrot2 data
 
-	$db->Execute("delete gridimage_group.* from gridimage inner join gridimage_group using (gridimage_id) where gridsquare_id = $gridsquare_id and source='carrot2'");
+	$db->Execute("delete gridimage_group.* from gridimage inner join gridimage_group using (gridimage_id) where gridsquare_id = $gridsquare_id and source in ('carrot2','title')");
 	if ($param['debug'])
 		print "clear1\n";
 
@@ -127,7 +140,65 @@ foreach ($squares as $square => $gridsquare_id) {
 			print ".. ".$db->Affected_Rows()." affected\n";
 	}
 
+	#############################
+	// do custom title prefix custering
+
+	$group_by_id = array();
+	$group_by_stem = array();
+	foreach ($titles as $title => $ids) {
+	        $words = explode(' ',trim($title,'. '));
+	        array_pop($words); //remove the LAST word!
+	        $stem = preg_replace('/[^\w]+$/','',implode(' ',$words));  //the replace removes commas etc from end of words (so 'The Black Horse, Nuthurst', necomes 'The Black Horse')
+
+		foreach ($titles as $title2 => $ids2) {
+			//if ($title != $title2)
+			//	print "$title != $title2 && strpos($title2,$stem) == ".strpos($title2,$stem)."\n";
+			if ($title != $title2 && strpos($title2,$stem) === 0) {
+				foreach ($ids as $id)	@$group_by_id[$id][$stem]=1;
+				foreach ($ids2 as $id)	@$group_by_id[$id][$stem]=1;
+
+				foreach ($ids as $id)	@$group_by_stem[$stem][$id]=1; //need to store ides to deduplciate
+				foreach ($ids2 as $id)	@$group_by_stem[$stem][$id]=1;
+			}
+        	}
+	}
+	//print_r2($group_by_id);
+	//print_r2($group_by_stem);
+	$values = array();
+	foreach ($group_by_id as $id => $stems) {
+		$longest = null;
+		$length = 0;
+		foreach ($stems as $stem => $dummy)
+			if (strlen($stem) > $length && count($group_by_stem[$stem]) > 1) { //only interested in stems with multiple anyway!
+				$longest = $stem;
+				$length = strlen($stem);
+			}
+		if ($param['debug'])
+			print "$id, $longest (".count($group_by_stem[$stem])." docs)\n";
+		if ($longest) {
+			if ($longest == 'The' || $longest == 'Looking') //may need to blacklist more, but this one to start!
+				continue;
+                        $updates = array();
+
+                        $updates['gridimage_id'] = $id;
+                        $updates['label'] = $longest." #";
+                        $updates['source'] = 'title';
+
+			$updates['label'] = $db->Quote($updates['label']);
+			$updates['source'] = $db->Quote($updates['source']);
+			$values[] = "(".implode(',',$updates).")";
+		}
+	}
+
+	if (!empty($values)) {
+		$sql = "INSERT INTO gridimage_group (`".implode('`,`',array_keys($updates))."`) VALUES ".implode(',',$values);
+		$db->Execute($sql);
+		if ($param['debug'])
+			print ".. ".$db->Affected_Rows()." affected\n";
+	}
+
 	######################
+	//update the stats table
 
 	$db->Execute("delete from gridimage_group_stat where grid_reference = '{$square}'");
 	if ($param['debug'])
@@ -164,4 +235,19 @@ foreach ($squares as $square => $gridsquare_id) {
 	if ($param['sleep'])
 		sleep($param['sleep']);
 	$carrot->clearDocuments();
+}
+
+
+
+
+function print_r2($var) {
+	print str_repeat('#',80)."\n";
+		$trace = debug_backtrace();
+		print ' In ' . $trace[0]['file'] .' on line ' . $trace[0]['line']."\n";
+
+		if (empty($var))
+			var_dump($var);
+		else
+			print_r($var);
+	print str_repeat('~',80)."\n";
 }

@@ -355,6 +355,11 @@ if ($image->isValid())
                                 	$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title ".htmlentities(preg_replace('/ #$/','',$title))."</a> in this square");
                         	}
 */
+
+			} elseif (!empty($image->prompt)) {
+				//the loadCollections sets this, when loading pre-computed title clusters
+				$smarty->assign('prompt', $image->prompt);
+
 			} elseif (false && substr_count($image->title,' ') > 1) {
 				$words = explode(' ',trim($image->title));
 				array_pop($words);

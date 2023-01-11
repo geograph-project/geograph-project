@@ -796,6 +796,11 @@ split_timer('gridimage'); //starts the timer
 			}
 			if (!empty($collections2)) {
 				foreach ($collections2 as $i => $row) {
+					if (preg_match('/(.* )#$/',$row['label'],$m)) { //want the space on the end for the list.php link!!
+						$url = "/stuff/list.php?title=".urlencode($m[1])."&amp;gridref={$this->grid_reference}";
+						$this->prompt = "This is 1 of <a href=\"$url\">{$row['images']} images, with title starting with ".htmlentities($m[1])."</a> in this square";
+						continue;
+					}
 					$this->collections[] = array(
 						'url' => "/stuff/list.php?label=".urlencode($row['label'])."&amp;gridref={$this->grid_reference}",
 						'title' => utf8_to_latin1($row['label']).' ['.$row['images'].']',
