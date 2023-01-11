@@ -853,9 +853,10 @@ $str[] = "
 		$_GET['ads'] = 1;
 
 	} elseif (!empty($USER) && empty($USER->registered) && appearsToBePerson()) {
-		if (empty($_COOKIE['appeal']) && !empty($_SERVER['HTTP_REFERER']) && preg_match('/^https?:\/\/(\w+)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER']))
-		        $_GET['appeal'] = 1;
-		elseif (strpos($_SERVER["REQUEST_URI"],'/photo/') === 0)
+		//if (empty($_COOKIE['appeal']) && !empty($_SERVER['HTTP_REFERER']) && preg_match('/^https?:\/\/(\w+)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER']))
+		//        $_GET['appeal'] = 1;
+		//else
+		if (strpos($_SERVER["REQUEST_URI"],'/photo/') === 0)
 			$_GET['ads'] = 1;
 		elseif ($_SERVER["PHP_SELF"] == '/stuff/list.php')
                         $_GET['ads'] = 1;
