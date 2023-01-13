@@ -16,7 +16,6 @@
 #maincontent a.title {
 		color:inherit;
     text-decoration:none;
-    font-family: verdana;
     font-size:1.2em;
     font-weight: bold;
 }
@@ -40,12 +39,13 @@
 .georiver{
 	  float:left;
 	  width:100%;
-	  padding:18px 8px;
+	  padding:18px 0px;
     text-align: center;
 }
 @media (min-width:1000px){
 	  .georiver{
 		    width:50%;
+        padding:18px 8px;
         }
    	#maincontent hr{
     display:none;
