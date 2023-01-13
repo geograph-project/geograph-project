@@ -188,6 +188,16 @@ ul.buttonbar details div, ul.buttonbar details ul, details.dropdown ul {
 	color:cyan;
 }
 
+.content_photoblack ul.buttonbar details > summary {
+	color:cyan;
+}
+.content_photoblack ul.buttonbar details div, .content_photoblack ul.buttonbar details ul {
+	background-color:#333333;
+}
+.content_photoblack ul.buttonbar details a {
+	color:cyan;
+}
+
 /* -------------------- */
 
 .content_photogray .buttonbar li {
@@ -202,6 +212,9 @@ ul.buttonbar details div, ul.buttonbar details ul, details.dropdown ul {
 	color:#2E9AFE;
 }
 .content_photogray .buttonbar select option {
+	color:#2E9AFE;
+}
+.content_photogray ul.buttonbar details > summary {
 	color:#2E9AFE;
 }
 
