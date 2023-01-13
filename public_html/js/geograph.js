@@ -579,11 +579,11 @@ function expandSnippet(c) {
 
 
 function setupDetailsEvents() {
-	if (document.querySelector && document.querySelector(".buttonbar details")) {
-		var links = document.querySelectorAll(".buttonbar details a");
+	if (document.querySelector && document.querySelector("details")) {
+		var links = document.querySelectorAll("details a");
 		for(var q=0;q<links.length;q++)
 		links[q].addEventListener("click", function(event) {
-			var details = document.querySelectorAll(".buttonbar details");
+			var details = document.querySelectorAll("details");
 			for(var i=0;i<details.length;i++)
 				details[i].removeAttribute("open");
 				return false;
@@ -591,7 +591,7 @@ function setupDetailsEvents() {
 	}
 	AttachEvent(document,'keyup',function(event) {
 		if((event.key && event.key === "Escape" || event.key === "Esc" ) || event.keyCode === 27) {
-			var details = document.querySelectorAll(".buttonbar details");
+			var details = document.querySelectorAll("details");
                         for(var i=0;i<details.length;i++)
                                details[i].removeAttribute("open");
 		}
