@@ -186,6 +186,22 @@ div.caption {
 		flex-direction:column;
 	}
 }
+
+ul.buttonbar details > summary {
+  cursor: pointer;
+  color: blue;
+}
+ul.buttonbar details div {
+	position: absolute;
+	background-color:#eee;
+	border:1px solid gray;
+	border-radius:10px;
+	padding:10px;
+	line-height:1.8em;
+	z-index:10000;
+	text-align:left;
+}
+
 </style>{/literal}
 
 <ul class="buttonbar">
@@ -203,15 +219,17 @@ div.caption {
 		{/if}
 
 		{if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
-			<li><select onchange="openShare(this.value,'share','width=500;height=400'); return false;" style="width:80px">
-				<option value="">Share...</option>
-				<option value="https://twitter.com/intent/tweet?text={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Twitter</option>
-				<option value="https://www.facebook.com/sharer/sharer.php?u={$self_host}/photo/{$image->gridimage_id}">Share this photo via Facebook</option>
-				<option value="https://www.pinterest.com/pin/create/button/?media={$imageurl}&amp;url={$self_host}/photo/{$image->gridimage_id}&amp;description={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}">Share this photo via Pinterest</option>
-				<option value="https://share.flipboard.com/bookmarklet/popout?v=2&amp;title={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Flipboard</option>
-				<option value="/ecard.php?image={$image->gridimage_id}">Share this photo via email/e-card</option>
-				<option value="/stamp.php?id={$image->gridimage_id}">Grab a Stamped/Watermarked Image</option>
-			</select></li>
+			<li><details>
+				<summary>Share...</summary>
+				<div>
+					<a href="https://twitter.com/intent/tweet?text={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Twitter</a><br>
+					<a href="https://www.facebook.com/sharer/sharer.php?u={$self_host}/photo/{$image->gridimage_id}">Share this photo via Facebook</a><br>
+					<a href="https://www.pinterest.com/pin/create/button/?media={$imageurl}&amp;url={$self_host}/photo/{$image->gridimage_id}&amp;description={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}">Share this photo via Pinterest</a><br>
+					<a href="https://share.flipboard.com/bookmarklet/popout?v=2&amp;title={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Flipboard</a><br>
+					<a href="/ecard.php?image={$image->gridimage_id}">Share this photo via email/e-card</a><br>
+					<a href="/stamp.php?id={$image->gridimage_id}">Grab a Stamped/Watermarked Image</a>
+				</div>
+			</details></li>
 		{/if}
 
 		<li><a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}" title="Add this image to your site Marked List">Mark</a>
@@ -564,6 +582,18 @@ div.caption {
 			document.querySelector("#mainphoto img").addEventListener("dblclick", function() {
 				 markImage({/literal}{$image->gridimage_id}{literal});
 			});
+		}
+		if (document.querySelector && document.querySelector(".buttonbar details")) {
+			var links = document.querySelectorAll(".buttonbar details a");
+			for(var q=0;q<links.length;q++)
+				links[q].addEventListener("click", function(event) {
+					openShare(this.href,'share','width=500;height=400');
+					var details = document.querySelectorAll(".buttonbar details");
+					for(var i=0;i<details.length;i++)
+						details[i].removeAttribute("open");
+					event.preventDefault();
+					return false;
+				});
 		}
 	},false);
 
