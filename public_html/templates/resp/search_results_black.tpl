@@ -18,6 +18,7 @@
     text-decoration:none;
     font-family: verdana;
     font-size:1.2em;
+    font-weight: bold;
 }
 #maincontent a.title:hover {
     text-decoration:underline;
@@ -57,12 +58,12 @@
 .yeartaken {
     float:right;
     font-family:verdana;
-    font-size:1.2em;
+    font-size:1.0em;
 }
 .gridref {
     float:left;
     font-family:verdana;
-    font-size:1.2em;
+    font-size:1.0em;
 }
 .gridref a {
     color:black;
@@ -116,9 +117,9 @@
 
 <div class="gridref"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
 
-{if $image->imagetaken > 1 && $image->imagetaken < date('Y')}<div class="yeartaken" title="year taken">{$image->imagetaken|truncate:4:''}</div>{/if}
+{if $image->imagetaken > 1}<div class="yeartaken" title="year taken">{$image->imagetaken|truncate:4:''}</div>{/if}
 
-<br style="clear:both"/>
+<br style="clear:both; margin: 6px;"/>
 
 <div><a href="/photo/{$image->gridimage_id}" class=title>{$image->title|escape:'html'}</a></div>
 
