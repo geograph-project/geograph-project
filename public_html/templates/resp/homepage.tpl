@@ -81,7 +81,7 @@ div.homepage {
 	text-align:center;
 }
 .pictureOfTheDay .listContainer {
-	max-width:28%;
+	max-width:29%;
 	order:1;
 }
 .pictureOfTheDay .listContainer h3 {
@@ -136,7 +136,7 @@ div.homepage {
 	#photo_block {
 		display:block;
 	}
-	.content3 { margin-right:0}
+	.content3 { margin-right:0; padding-right:10px }
 
 	.pictureOfTheDay .mapContainer {
 		margin-top:2px;

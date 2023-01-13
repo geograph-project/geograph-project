@@ -1,6 +1,6 @@
 {include file="_std_begin.tpl"}
 
-<div style="padding:10px;max-height:1000000px;" class="searchresults">
+<div style="padding:10px;padding-right:0;max-height:1000000px;" class="searchresults">
 
 {if $suggestions}
 	<div><b>Alternative suggestions:</b>
