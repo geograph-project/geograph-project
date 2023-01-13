@@ -15,9 +15,9 @@
 </style>
 
 <div style="float:right; background-color: white; margin:auto; text-align:right">
-<details>
+<details class="dropdown">
 <summary>Navigation</summary>
-<ul style="list-style-type: none;">
+<ul style="list-style-type:none; right:0;">
 <li><a href="#basicdetails">Basic details</a></li>
 <li><a href="#statistics">Statistics</a></li>
 {if $userimages}<li><a href="#explore">Explore images</a></li>{/if}

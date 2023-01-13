@@ -159,7 +159,7 @@ abbr {
 ul.buttonbar details > summary {
 	color: blue;
 }
-ul.buttonbar details div, ul.buttonbar details ul {
+ul.buttonbar details div, ul.buttonbar details ul, details.dropdown ul {
 	position: absolute;
 	min-width:120px;
 	background-color:#eee;
