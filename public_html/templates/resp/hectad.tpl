@@ -28,81 +28,84 @@
 <ul class="buttonbar">
 
 
-<li>
-<select onchange="window.location.href=this.value">
-    <option>Search images in {$hectad}</option>
-    <optgroup label="One image per">
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;groupby=agridsquare&amp;orderby=grid_reference&amp;do=1">Grid square</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;groupby=auser_id&amp;do=1">Contributor</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;groupby=takendays&amp;orderby=imagetaken&amp;do=1">Day taken</option>
-    </optgroup>
-        <optgroup label="First Geographs">
-        <option value="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=full&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Full details</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=thumbs&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Thumbnails</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=thumbsmore&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=bigger&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=grid&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=slide&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Slideshow</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=map&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Map</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=black&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="Most recent first">
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Full details</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbs&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbsmore&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=bigger&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=grid&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=slide&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Slideshow</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=map&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Map</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=black&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="Oldest first">
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
-        <option value="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
-    </optgroup>
-</select>
+<li><details>
+    <summary>Search images in {$hectad}</summary>
+    <div>
+    <b>One image per</b><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;groupby=agridsquare&amp;orderby=grid_reference&amp;do=1">Grid square</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;groupby=auser_id&amp;do=1">Contributor</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;groupby=takendays&amp;orderby=imagetaken&amp;do=1">Day taken</a><br>
+
+    <b>First Geographs</b><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=full&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Full details</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=thumbs&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Thumbnails</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=thumbsmore&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Thumbnails + links</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=bigger&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Thumbnails - bigger</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=grid&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Thumbnails grid</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=slide&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Slideshow</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=map&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Map</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=black&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Georiver</a><br>
+
+    <b>Most recent first</b><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Full details</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbs&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbsmore&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails + links</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=bigger&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=grid&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails grid</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=slide&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Slideshow</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=map&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Map</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=black&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Georiver</a><br>
+
+    <b>Oldest first</b><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;orderby=submitted&amp;do=1">Full details</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=map&amp;orderby=submitted&amp;do=1">Map</a><br>
+        <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</a><br>
+    </div>
+</details>
 </li>
 
 
 
-<li><select onchange="window.location.href=this.value">
-				<option value="">Geograph coverage maps</option>
-				<option value="/mapper/combined.php?t={$map_token}">Interactive coverage map</option>
-        {if $largemap_token}<option value="/maplarge.php?t={$largemap_token}">Photo mosaic</option>{/if}
-        <option value="/browser/#!/hectad+%22{$hectad}%22">Browser map</option>
-        <option value="https://www.geograph.org/leaflet/all.php#12/{$lat}/{$long}">All Geograph projects map</option>
-				<option value="/mapsheet.php?t={$map_token}"">Printable Checksheet</option>
-        {if $user}<option value="/mapsheet.php?t={$map_token}&mine=1">Printable Checksheet (personalised)</option>{/if}
-        <option value="/mapbrowse.php?t={$map_token}">Original coverage maps</option>
-</select></li>
+<li><details>
+     <summary>Geograph coverage maps</summary>
+     <div>
+				<a href="/mapper/combined.php?t={$map_token}">Interactive coverage map</a><br>
+        {if $largemap_token}<a href="/maplarge.php?t={$largemap_token}">Photo mosaic</a><br>{/if}
+        <a href="/browser/#!/hectad+%22{$hectad}%22">Browser map</a><br>
+        <a href="https://www.geograph.org/leaflet/all.php#12/{$lat}/{$long}">All Geograph projects map</a><br>
+				<a href="/mapsheet.php?t={$map_token}"">Printable Checksheet</a><br>
+        {if $user}<a href="/mapsheet.php?t={$map_token}&mine=1">Printable Checksheet (personalised)</a><br>{/if}
+        <a href="/mapbrowse.php?t={$map_token}">Original coverage maps</a><br>
+     </div>
+</details></li>
 
 
 
-<li><select onchange="window.location.href=this.value">
-<option value="">Mapping links</option>
-		<optgroup label="Google Maps">
-	<option value="https://www.google.co.uk/maps/search/{$lat},{$long}/">Google maps</option>
-        <option value="https://www.google.co.uk/maps/dir/?api=1&amp;destination={$lat},{$long}">Google maps - Navigate to Area</option>
-		</optgroup>
-		<optgroup label="OpenStreetMap">
-        <option value="http://www.openstreetmap.org/?mlat={$lat}&amp;mlon={$long}&amp;zoom=14">OpenStreetMaps</option>
-        <option value="https://www.opencyclemap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenCycleMap</option>
-        <option value="https://opentopomap.org/#map=14/{$lat}/{$long}">OpenTopoMap</option>
-        <option value="https://map.openseamap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenSeaMap</option>    
-		</optgroup>
-    <optgroup label="Other">
-        <option value="https://maps.nls.uk/geo/find/marker/#zoom=13&lat={$lat}&lon={$long}&f=1&z=1&marker={$lat},{$long}">National Library of Scotland</option>
-        <option value="http://wtp2.appspot.com/wheresthepath.htm?lat={$lat}&amp;lon={$long}">Where's the path</option>
-        <option value="https://www.bing.com/maps?v=2&amp;cp={$lat}~{$long}&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1">Bing maps</option>
-        <option value="https://explore.osmaps.com/?lat={$lat}&amp;lon={$long}&amp;zoom=14">Ordnance Survey</option>    
-		</optgroup>
-</select></li>
+<li><details>
+	<summary>Mapping links</summary>
+	<div>
+    <b>Google Maps</b><br>
+	<a href="https://www.google.co.uk/maps/search/{$lat},{$long}/">Google maps</a><br>
+        <a href="https://www.google.co.uk/maps/dir/?api=1&amp;destination={$lat},{$long}">Google maps - Navigate to Area</a><br>
+
+    <b>OpenStreetMap</b><br>
+        <a href="http://www.openstreetmap.org/?mlat={$lat}&amp;mlon={$long}&amp;zoom=14">OpenStreetMaps</a><br>
+        <a href="https://www.opencyclemap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenCycleMap</a><br>
+        <a href="https://opentopomap.org/#map=14/{$lat}/{$long}">OpenTopoMap</a><br>
+        <a href="https://map.openseamap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenSeaMap</a><br>    
+
+    <b>Other</b><br>
+        <a href="https://maps.nls.uk/geo/find/marker/#zoom=13&lat={$lat}&lon={$long}&f=1&z=1&marker={$lat},{$long}">National Library of Scotland</a><br>
+        <a href="http://wtp2.appspot.com/wheresthepath.htm?lat={$lat}&amp;lon={$long}">Where's the path</a><br>
+        <a href="https://www.bing.com/maps?v=2&amp;cp={$lat}~{$long}&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1">Bing maps</a><br>
+        <a href="https://explore.osmaps.com/?lat={$lat}&amp;lon={$long}&amp;zoom=14">Ordnance Survey</a><br>    
+        </div>
+</details></li>
 
 <li><a title="open geograph browser - search/browse and map in one" href="/browser/#!/hectad+%22{$hectad}%22">Open {$hectad} in Geograph Browser</a></li>
 
@@ -169,7 +172,7 @@
 <h3>Maps</h3>
 
 <div style="width:100%; text-align:center;">
- 	{if $overview}
+	{if $overview}
 		<div style="display: inline-block; vertical-align: middle; text-align:center; width:{$overview_width+30}px; position:relative; margin-right:20px">
 		{include file="_overview.tpl"}
 		</div>
