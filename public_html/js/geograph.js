@@ -577,23 +577,32 @@ function expandSnippet(c) {
 
 //	-	-	-	-	-	-	-	-
 
-
+function closeAllDetails() {
+	var details = document.querySelectorAll("details");
+        for(var i=0;i<details.length;i++)
+                details[i].removeAttribute("open");
+}
 function setupDetailsEvents() {
 	if (document.querySelector && document.querySelector("details")) {
 		var links = document.querySelectorAll("details a");
 		for(var q=0;q<links.length;q++)
-		links[q].addEventListener("click", function(event) {
-			var details = document.querySelectorAll("details");
-			for(var i=0;i<details.length;i++)
-				details[i].removeAttribute("open");
+			links[q].addEventListener("click", function(event) {
+				closeAllDetails();
 				return false;
 	                });
+		var details = document.querySelectorAll("details");
+		for(var i=0;i<details.length;i++)
+			details[i].addEventListener("toggle", function(event) {
+				if (this.open) {
+					document.addEventListener('click', closeAllDetails, true);
+				} else {
+					document.removeEventListener('click', closeAllDetails, true);
+				}
+			});
 	}
 	AttachEvent(document,'keyup',function(event) {
 		if((event.key && event.key === "Escape" || event.key === "Esc" ) || event.keyCode === 27) {
-			var details = document.querySelectorAll("details");
-                        for(var i=0;i<details.length;i++)
-                               details[i].removeAttribute("open");
+			closeAllDetails();
 		}
 	},false);
 }
