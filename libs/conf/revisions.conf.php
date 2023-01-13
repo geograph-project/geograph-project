@@ -19,7 +19,7 @@ $REVISIONS['/js/dragtable.js']=5881;
 $REVISIONS['/js/finder.cy.js']=9095;
 $REVISIONS['/js/finder.js']=9050;
 $REVISIONS['/js/geobrowser.js']=8455;
-$REVISIONS['/js/geograph.js']=52492880;
+$REVISIONS['/js/geograph.js']=90552878;
 $REVISIONS['/js/geograph.v6152.js']=6153;
 $REVISIONS['/js/jquery.jqzoom.js']=7226;
 $REVISIONS['/js/jquery.smart_autocomplete.js']=7424;
@@ -89,6 +89,6 @@ $REVISIONS['/templates/new2/css/content.css']=24878839;
 $REVISIONS['/templates/r/css/content.css']=24878839;
 $REVISIONS['/js/jquery.storage.js']=111;
 $REVISIONS['/templates/resp/css/responsive.css']=72015581;
-$REVISIONS['/templates/resp/css/modification.css']=53563975;
+$REVISIONS['/templates/resp/css/modification.css']=54489411;
 $REVISIONS['/js/anyascii.js']=69351707;
 ?>
