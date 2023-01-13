@@ -57,6 +57,10 @@ input#search_toggle, label#search_label {
 	max-width:100%;
 }
 
+details > summary {
+	cursor: pointer;
+}
+
 /* styling for a 66% resized photo*/
 div.photo66
 {
@@ -150,6 +154,21 @@ abbr {
 }
 .buttonbar select option[value=""] {
 	color:silver;
+}
+
+ul.buttonbar details > summary {
+	color: blue;
+}
+ul.buttonbar details div, ul.buttonbar details ul {
+	position: absolute;
+	min-width:120px;
+	background-color:#eee;
+	border:1px solid gray;
+	border-radius:10px;
+	padding:10px;
+	line-height:1.8em;
+	z-index:10000;
+	text-align:left;
 }
 
 /* -------------------- */

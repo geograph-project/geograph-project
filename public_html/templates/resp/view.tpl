@@ -186,22 +186,6 @@ div.caption {
 		flex-direction:column;
 	}
 }
-
-ul.buttonbar details > summary {
-  cursor: pointer;
-  color: blue;
-}
-ul.buttonbar details div {
-	position: absolute;
-	background-color:#eee;
-	border:1px solid gray;
-	border-radius:10px;
-	padding:10px;
-	line-height:1.8em;
-	z-index:10000;
-	text-align:left;
-}
-
 </style>{/literal}
 
 <ul class="buttonbar">
@@ -219,7 +203,7 @@ ul.buttonbar details div {
 		{/if}
 
 		{if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
-			<li><details>
+			<li><details class=share>
 				<summary>Share...</summary>
 				<div>
 					<a href="https://twitter.com/intent/tweet?text={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Twitter</a><br>
@@ -583,14 +567,12 @@ ul.buttonbar details div {
 				 markImage({/literal}{$image->gridimage_id}{literal});
 			});
 		}
-		if (document.querySelector && document.querySelector(".buttonbar details")) {
-			var links = document.querySelectorAll(".buttonbar details a");
+
+		if (document.querySelector && document.querySelector(".buttonbar details.share")) {
+			var links = document.querySelectorAll(".buttonbar details.share a");
 			for(var q=0;q<links.length;q++)
 				links[q].addEventListener("click", function(event) {
 					openShare(this.href,'share','width=500;height=400');
-					var details = document.querySelectorAll(".buttonbar details");
-					for(var i=0;i<details.length;i++)
-						details[i].removeAttribute("open");
 					event.preventDefault();
 					return false;
 				});

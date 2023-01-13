@@ -577,6 +577,31 @@ function expandSnippet(c) {
 
 //	-	-	-	-	-	-	-	-
 
+
+function setupDetailsEvents() {
+	if (document.querySelector && document.querySelector(".buttonbar details")) {
+		var links = document.querySelectorAll(".buttonbar details a");
+		for(var q=0;q<links.length;q++)
+		links[q].addEventListener("click", function(event) {
+			var details = document.querySelectorAll(".buttonbar details");
+			for(var i=0;i<details.length;i++)
+				details[i].removeAttribute("open");
+				return false;
+	                });
+	}
+	AttachEvent(document,'keyup',function(event) {
+		if((event.key && event.key === "Escape" || event.key === "Esc" ) || event.keyCode === 27) {
+			var details = document.querySelectorAll(".buttonbar details");
+                        for(var i=0;i<details.length;i++)
+                               details[i].removeAttribute("open");
+		}
+	},false);
+}
+
+AttachEvent(window,window.addEventListener?'DOMContentLoaded':'load',setupDetailsEvents,false);
+
+//	-	-	-	-	-	-	-	-
+
 var marker1left = 14;
 var marker1top = 14;
 
