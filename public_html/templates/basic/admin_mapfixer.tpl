@@ -4,6 +4,9 @@
 {dynamic}
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> : {if $gridref_ok}<a href="/admin/mapfixer.php">{/if}Map Fixer</a></h2>
 
+<div style="max-width:800px">
+
+
 {if $gridref_ok || count($unknowns)}
 <div style="border:2px silver solid;background:#eeeeee;padding:10px;">
 
@@ -28,10 +31,9 @@ Land percent for <span id="voteref" style="font-weight:bold"></span>&nbsp; is
 
 <div style="margin-top:10px" id="voteinfo"></div>
 
-<iframe src="about:blank" id="mapframe" width=430 height=480 style=display:none></iframe>
+<iframe src="about:blank" id="mapframe" width=430 height=540 style=display:none></iframe>
 
 </div>
-<div style="font-size:0.7em">Great Britain our own OpenSpace Map, Ireland opens our 'Location' page which displays Google Maps.</div>
 
 <script language="javascript">
 
@@ -188,9 +190,9 @@ Land percentage for {$gridref} is
 
 
 <h3>Map Fix queue</h3>
-<p>The following squares are in the queue for checking - click one each one to update its
+<p>The following squares are in the queue for checking - click on each one to update its
 land percentage. The "instant updater" at the top of the page provides a far
-quicker process though! As the updater progresses though the list, the reference will turn gray. </p>
+quicker process though! As the updater progresses through the list, the reference will turn grey.</p>
 
 <p>Any comments entered will also be shown, the numbers in square brackets are the previous transitions the square has had. (-1 represents unknown, which is used to put the square in this queue)</p>
 
@@ -206,5 +208,8 @@ quicker process though! As the updater progresses though the list, the reference
 
 {/if}
 
-{/dynamic}    
+{/dynamic}
+
+</div>
+
 {include file="_std_end.tpl"}
