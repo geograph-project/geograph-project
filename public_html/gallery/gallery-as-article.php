@@ -36,13 +36,13 @@ $page = $db->getRow("
 select t.topic_id,topic_title,topic_poster,topic_poster_name,topic_time,post_time,posts_count,t.forum_id
 	from geobb_topics t
 	inner join geobb_posts on (post_id = topic_last_post_id)
-	where t.topic_id = $topic_id and (t.forum_id = 11 or t.topic_poster = {$USER->user_id} or {$USER->user_id} = 3)");
-	
+	where t.topic_id = $topic_id");
+
 if (count($page)) {
-	
+
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	
+
 	$list = $db->getAll("
 		select post_id,poster_id,poster_name,post_text,post_time
 		from geobb_posts
