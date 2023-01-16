@@ -858,6 +858,12 @@ $str[] = "
 		//else
 		if (strpos($_SERVER["REQUEST_URI"],'/photo/') === 0)
 			$_GET['ads'] = 1;
+		elseif (strpos($_SERVER["REQUEST_URI"],'/gridref/') === 0 || $_SERVER["PHP_SELF"] == '/browse.php')
+			$_GET['ads'] = 1;
+		elseif (strpos($_SERVER["REQUEST_URI"],'/tagged/') === 0)
+			$_GET['ads'] = 1;
+		elseif (@$GLOBALS['template'] == 'article_article.tpl') //dont want to do with ALL article URLs etc
+			$_GET['ads'] = 1;
 		elseif ($_SERVER["PHP_SELF"] == '/stuff/list.php')
                         $_GET['ads'] = 1;
 		// if (strpos($_SERVER["REQUEST_URI"],'/article/') === 0 && strpos($_SERVER["REQUEST_URI"],'.php') === FALSE && $GLOBALS['template'] != 'article_article2.tpl') {
