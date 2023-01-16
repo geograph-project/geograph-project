@@ -34,23 +34,36 @@
     border-radius:2px;
 }
 .georivercols{
-	  box-sizing:border-box;
+	box-sizing:border-box;
 }
 .georiver{
-	  float:left;
-	  width:100%;
-	  padding:18px 0px;
-    text-align: center;
+	float:left;
+	width:100%;
+	padding:18px 0px;
+	text-align: center;
 }
-@media (min-width:1000px){
-	  .georiver{
-		    width:50%;
-        padding:18px 8px;
+.georiver:first-child {
+	text-align:right;
+}
+
+@media (min-width:800px){
+        .georiver:first-child {
+                width:60%;
         }
-   	#maincontent hr{
-    display:none;
+        .georiver:last-child {
+                width:40%;
+        }
+	#maincontent hr{
+		display:none;
 	}
 }
+@media (min-width:1000px){
+	.georiver{
+		width:50% !important;
+		padding:18px 8px;
+        }
+}
+
 .copyrightmessage {
     padding-top: 10px;
     padding-bottom: 10px;
