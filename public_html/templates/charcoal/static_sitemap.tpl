@@ -38,7 +38,6 @@
  
 <h3>Getting started...</h3>
 <ul>
-	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
 	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Submit a photograph" href="/submit.php?redir=false"><b>upload</b> your own <b>pictures</b></a> (Version 1)<ul>
 		<li><a title="Submit Version 2" href="/submit2.php">Newer Submission Method (Version 2)</a></li>
@@ -49,7 +48,6 @@
  
 <h3>Exploring in more depth...</h3>
 <ul>
-	<li><a title="Browse by Grid Reference" href="/browse.php">browse by <b>grid square</b></a></li>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a> (<a href="#stats">more below</a>)</li>
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
 	<li><a title="Photo Gallery" href="/gallery/">view some <b>themed galleries</b></a></li>

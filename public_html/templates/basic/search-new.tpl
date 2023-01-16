@@ -133,11 +133,9 @@
 		(e.g. from a GPS receiver, or from multimap site), then see our
 		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li>
 
-
 <li>You may prefer to browse images on a <a title="Geograph Map Browser" href="/mapbrowse.php">map of the British Isles</a>.<br/><br/></li>
 
-
-<li>Or you can browse a <a title="choose a photograph" href="/browse.php">particular grid square</a>.<br/><br/></li>
+<li>If you have just want to view a particular square, enter the Grid-Reference directly in the search box top right of the page.</li>
 
 {if $enable_forums}
 <li>Registered users can also <a href="/finder/discussions.php">search the forum</a>.</li>

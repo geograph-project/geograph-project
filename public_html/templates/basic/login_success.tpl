@@ -5,8 +5,7 @@
 {/dynamic}
 
 <p>You are logged into the site and can <a href="/submit.php">upload pictures</a> - 
-you can also use the <a href="/search.php">search</a>, a <a href="/map/">map</a> (or <a href="/mapper/combined.php">new version</a>), or the 
-<a href="/browse.php">browse</a> pages to find the square you want to upload.</p>
+you can also use the <a href="/search.php">search</a>, or the <a href="/mapper/combined.php">coverage map</a>),  to find the square you want to upload.</p>
 
 <h3>Geograph Announcements</h3>
 
