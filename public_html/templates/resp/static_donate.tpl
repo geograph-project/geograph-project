@@ -140,6 +140,9 @@ a.btn {
 			{external href="https://smile.amazon.co.uk/gp/chpf/homepage?q=Geograph&orig=%2F&ie=UTF-8" text="Geograph"} is registered there. 
 	</li>
 
+	<li>Make a donation directly to our bank account.<br>
+	Sort code: 20-67-90  Account No: 43479838  Name: Geograph Project Limited</li>
+
 	<li>{mailto address="treasurer@geograph.org.uk" text="Contact the Treasurer" encode="javascript"} if you wish to set up a <b>standing order</b>.</li>
 
 	<li>Also can a leave a <b>gift in your will</b>. <a href="javascript:void(show_tree('gift'));" id="hidegift">Read More...</a>
