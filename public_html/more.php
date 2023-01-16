@@ -36,7 +36,6 @@ rate_limiting('more.php', 5, true);
 $smarty = new GeographPage;
 $template='more.tpl';
 
-
 if (isset($_REQUEST['id']))
 {
 	//initialise message
@@ -44,7 +43,7 @@ if (isset($_REQUEST['id']))
 	require_once('geograph/gridimage.class.php');
 
 	$image=new GridImage();
-	$ok = $image->loadFromId($_REQUEST['id']);
+	$ok = $image->loadFromId($_REQUEST['id'],true);
 
 	if (!$ok || $image->moderation_status=='rejected') {
 		//clear the image
@@ -53,6 +52,18 @@ if (isset($_REQUEST['id']))
 		header("Status: 410 Gone");
 		$template = "static_404.tpl";
 	} else {
+		if (strpos($image->tags,"panorama") !== FALSE) {
+			foreach (explode('?',$image->tags)  as $str) {
+				list($prefix,$tag) = explode(':',$str,2);
+				if ($prefix == 'panorama') { //only wooried about this one prefix!
+					if (!is_array($image->tags))
+						$image->tags = array();
+					$image->tags[] = array('prefix'=>$prefix,'tag'=>$tag);
+					@$image->tag_prefix_stat[$prefix]++;
+				}
+			}
+		}
+
 		$image->altUrl = $image->_getOriginalpath(true,true,'_640x640');
 
 		$image->originalPath = $image->_getOriginalpath(true,false);

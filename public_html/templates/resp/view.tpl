@@ -98,6 +98,19 @@
 
 </div>
 
+{if $image->tag_prefix_stat.panorama}
+	<br>
+	{foreach from=$image->tags item=item name=used}{if $item.prefix eq 'panorama'}
+		{if $item.tag eq 'photosphere'}
+			<div class="interestBox">This image has a 360&deg; <b>PhotoSphere</b> Panorama attached. <a href="/pano.php?id={$image->gridimage_id}">Open Viewer</a></div>
+		{elseif $item.tag eq '360'}
+			<div class="interestBox">This image has a 360&deg; Panorama attached. <a href="/pano.php?id={$image->gridimage_id}">Open Viewer</a></div>
+		{elseif $item.tag eq 'wideangle'}
+			<div class="interestBox">This image has a WideAngle Panorama attached. <a href="/pano.php?id={$image->gridimage_id}">Open Viewer</a></div>
+		{/if}
+        {/if}{/foreach}
+{/if}
+
 <br>
 
 <!-- Creative Commons Licence -->
