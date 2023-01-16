@@ -72,29 +72,44 @@ print "<p>Map rendered: ".date('M, jS \a\t H:m',filemtime($target))."</p>";
 print "<p>Grid-Squares with photo(s) posted in the thread, are shown in red. This includes images from the whole thread, no paging.</p>";
 
 ?>
-<div style="position:relative; height:1300px;width:900px">
-	<div style="position:absolute;top:0;left:0">
-		<img src="<? echo $blankurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
+<div class=map style="position:relative; height:1300px;width:900px">
+	<div>
+		<img src="<? echo $blankurl; ?>"/>
 	</div>
-	<div style="position:absolute;top:0;left:0">
-		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
+	<div>
+		<img src="<? echo $overlayurl; ?>" class="main"/>
 	</div>
 	<? if ($route == 27300 || $route == 32922 || !empty($_GET['p'])) { ?>
-	<div style="position:absolute;top:1px;left:0">
-		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
-	</div>
-	<div style="position:absolute;top:0;left:1px">
-		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
-	</div>
-	<div style="position:absolute;top:0;left:-1px">
-		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
-	</div>
-	<div style="position:absolute;top:-1px;left:0">
-		<img src="<? echo $overlayurl; ?>" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges"/>
-	</div>
+		<div style="position:absolute;top:1px;left:0">
+			<img src="<? echo $overlayurl; ?>"/>
+		</div>
+		<div style="position:absolute;top:0;left:1px">
+			<img src="<? echo $overlayurl; ?>"/>
+		</div>
+		<div style="position:absolute;top:0;left:-1px">
+			<img src="<? echo $overlayurl; ?>"/>
+		</div>
+		<div style="position:absolute;top:-1px;left:0">
+			<img src="<? echo $overlayurl; ?>"/>
+		</div>
 
 	<? } ?>
 </div>
+<style>
+	div.map div {
+		position:absolute;top:0;left:0;
+	}
+	div.map img {
+		image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;
+	}
+	div.map img.main {
+		filter: drop-shadow(0px 0px 3px black);
+	}
+	div.map img.main:hover {
+                filter: drop-shadow(0px 0px 1px black);
+        }
+</style>
+
 
 <?
 
