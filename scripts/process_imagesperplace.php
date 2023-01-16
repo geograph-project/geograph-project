@@ -96,7 +96,11 @@ if (empty($col))
 ##########################################
 
 $where = array();
-$where[] = "first IS NULL"; //this allows us to 'prime' the table, later will be something like 'images_updated < date_sub(now(),interval 30 day)";
+//$where[] = "first IS NULL"; //this allows us to 'prime' the table, later will be something like 'images_updated < date_sub(now(),interval 30 day)";
+//$where[] = "first =0 ";
+
+$where[] = "images_updated < date_sub(now(),interval 30 day)";
+
 if (isset($columns['reference_index']))
 	$where[] = "reference_index = {$param['ri']}";
 
