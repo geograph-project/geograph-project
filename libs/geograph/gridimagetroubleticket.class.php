@@ -558,7 +558,7 @@ class GridImageTroubleTicket
 			{
 				//a new ticket has been closed - if the ticket wasn't from the owner,
 				//then we should alert them to changes that have been made
-				if ($this->user_id != $img->user_id)
+				if ($this->user_id != $img->user_id && $this->type != 'revert')
 				{
 					if ($this->type == 'minor') {
 						$comment="A site moderator has made minor modifications to this photo submission. ".
