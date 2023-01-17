@@ -38,6 +38,7 @@ Show your images matching: <input type=search name=q value="<? echo htmlentities
 		<th>Panorama:</th>
 		<th>vfov:</th>
 		<th>hfov:</th>
+		<th>panodirection:</th>
 	</tr>
 <?
 
@@ -77,8 +78,9 @@ foreach ($images as $id => $row) {
 	$type = print_tag($id,@$tags[$id]['panorama'],'X');
 	print_tag($id,@$tags[$id]['vfov'],($type == '360' || $type == 'wideangle')?'X':'-');
 	print_tag($id,@$tags[$id]['hfov'],($type == 'wideangle')?'X':'-');
+	print_tag($id,@$tags[$id]['panodirection'],'-');
 
-	print "<tr><td colspan=6>";
+	print "<tr><td colspan=7>";
 ?>
 <div style="text-align:center" id="hidetag<? echo $id; ?>"><a href="#" onclick="document.getElementById('tagframe<? echo $id; ?>').src='/tags/tagger.php?gridimage_id=<? echo $id; ?>';show_tree('tag<? echo $id; ?>');return false;">Open <b>Tagging</b> Box</a></div>
         <div class="interestBox" id="showtag<? echo $id; ?>" style="display:none">
@@ -87,7 +89,7 @@ foreach ($images as $id => $row) {
                 <div><a href="#" onclick="hide_tree('tag<? echo $id; ?>');return false">- Close <i>Tagging</I> box</a> </div>
         </div>
 <?
-	print "<tr><td colspan=6 style=background-color:gray>";
+	print "<tr><td colspan=7 style=background-color:gray>";
 }
 print "</table>";
 
