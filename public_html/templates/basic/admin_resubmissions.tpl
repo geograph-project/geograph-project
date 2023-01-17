@@ -4,6 +4,12 @@
 
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> : Verify Resubmission</h2>
 
+<p>NOTE: We have recently begun explicirly supporting/encourging uploading a high resolution wideangle, or even full 360/spherical panorama, which get a special viewer. <br><br>
+<img src="https://s0.geograph.org.uk/geophotos/04/87/10/4871032_e3fc4352_120x120.jpg" align=right>
+So you might see contributors adding a wideangle photo here, even if the original image is not wideangle. So might see flattened versions here, like the example on right. 
+Please allow (with 'Close Enough') such images here, but should be from the same source imagery, even if the distortion is differnt.
+
+
 {if $message}
 	<p>{$message|escape:'html'}</p>
 {/if}
