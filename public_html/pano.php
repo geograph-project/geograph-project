@@ -24,7 +24,10 @@ if (empty($image) || !$image->isValid() || $image->moderation_status=='rejected'
         exit;
 }
 
-if (stripos($image->tags,"panorama") === FALSE) {
+$db = $image->_getDB(true);
+
+if (stripos($image->tags,"panorama") === FALSE && !$db->getOne("SELECT tag_id FROM tag_public WHERE gridimage_id = $id AND prefix = 'panorama'")) { //check tag_public in case freshly added!
+
 	header("HTTP/1.0 404 Not Found");
 
 	$smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
@@ -50,7 +53,6 @@ if ($id == 5087080) {
         $id = 5085553;
 }
 
-$db = $image->_getDB(true);
 
 $row2 = $db->getRow("SELECT * FROM gridimage_size WHERE gridimage_id = $id");
 $great = max($row2['width'],$row2['height'],$row2['original_width'],$row2['original_height']);
