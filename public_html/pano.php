@@ -24,7 +24,7 @@ if (empty($image) || !$image->isValid() || $image->moderation_status=='rejected'
         exit;
 }
 
-if (strpos($image->tags,"panorama") === FALSE) {
+if (stripos($image->tags,"panorama") === FALSE) {
 	header("HTTP/1.0 404 Not Found");
 
 	$smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
@@ -79,15 +79,22 @@ $json = array(
         "autoRotate"=> 3,
 );
 
+################
+//set defaults feild of view
+
+$type='photosphere'; //default for pannellum too!
+
 if (strpos($image->tags,"sphere") === FALSE  && strpos($row['comment'],"photosynth") === FALSE
         && (strpos($image->tags,"360") !== FALSE || strpos($row['title'],"360") !== FALSE || strpos($row['comment'],"360") !== FALSE)) {
         //default, maybe make this dynamic? maybe a [vfov:50] tag?
         $json["vaov"] = 50;
+	$type='360';
 }
 
 if ($id == 2271694 || stripos($image->tags,"wideangle") !== FALSE || stripos($image->tags,"panoramic") !== FALSE) {
         $json["vaov"] = 40;
         $json["haov"] = 120;
+	$type='wideangle';
 }
 
 if (!isset($json["vaov"]) && !empty($_GET['n'])) {
@@ -96,11 +103,27 @@ if (!isset($json["vaov"]) && !empty($_GET['n'])) {
         $json["haov"] = 12; //max view of image
 }
 
-if (!empty($_GET['v']))
-        $json["vaov"] = intval($_GET['v']);
-if (!empty($_GET['h']))
-        $json["haov"] = intval($_GET['h']);
+################
+//allow override
 
+if (preg_match('/vfov:(\d+\.?\d*)/',$image->tags,$m))
+	$json["vaov"] = floatval($m[1]);
+if (preg_match('/hfov:(\d+\.?\d*)/',$image->tags,$m))
+	$json["haov"] = floatval($m[1]);
+
+if (!empty($_GET['v']))
+        $json["vaov"] = floatval($_GET['v']);
+if (!empty($_GET['h']))
+        $json["haov"] = floatval($_GET['h']);
+
+if (!empty($_GET['v']) || !empty($_GET['h'])) {
+	print "TAGS: <tt>panorama:$type;vfov:{$json['vaov']}";
+	if (!empty($json['haov']))
+		print ";hfov:{$json['haov']}";
+	print "</tt><hr>";
+}
+
+################
 
 if (isset($json["haov"]) && $json["haov"]< 60) {
         $json["hfov"] = $json["haov"]+ 3; //the starting (setting this means we start 'zoomed' in!
@@ -110,7 +133,11 @@ if (isset($json["haov"]) && $json["haov"]< 60) {
 if (isset($json["haov"]))
         unset($json["autoRotate"]);
 
-if (!empty($image->view_direction) && $image->view_direction > -1)
+################
+
+if (preg_match('/panodirection:(\d+\.?\d*)/',$image->tags,$m))
+	$json["northOffset"] = floatval($m[1]);
+elseif (!empty($image->view_direction) && $image->view_direction > -1)
 	$json["northOffset"] = floatval($image->view_direction);
 
 ?>
