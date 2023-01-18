@@ -66,13 +66,13 @@
       <li><a title="Geograph Documents" href="/content/documentation.php">Help Pages</a></li>
      </ul></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a><ul>
-      <li><a title="View More Pages" href="/help/more_pages">More Pages</a><ul>
+      <li><a title="View More Pages" href="/help/more_pages">More Pages</a></li>
      </ul></li>
-
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a><ul>
       <li><a title="The Geograph Team" href="/team.php">The Team</a></li>
       <li><a href="/help/credits" title="Who built this and how?">Credits</a></li>
      </ul></li>
+     <li><a title="Donate to Geograph Project" href="/help/donate">Support Us</a></li>
     </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}

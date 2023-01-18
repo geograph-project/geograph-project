@@ -70,8 +70,8 @@ we hope you'll enjoy being a part of this great project
 </div>
 <br/>
 &middot; Geograph on: {external href="https://twitter.com/geograph_bi" text="Twitter"}, {external href="https://www.facebook.com/geograph.org.uk" text="Facebook"}<br/>
-
-
+<br>
+<a href="/help/donate" style="background-color:purple;color:white;text-decoration:none;font-size:1.1em;padding:4px;margin:5px;border-radius:4px">Donate/Support Us</a>
 </div>
 
 
