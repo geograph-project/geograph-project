@@ -26,7 +26,11 @@ if (empty($image) || !$image->isValid() || $image->moderation_status=='rejected'
 
 $db = $image->_getDB(true);
 
-if (stripos($image->tags,"panorama") === FALSE && !$db->getOne("SELECT tag_id FROM tag_public WHERE gridimage_id = $id AND prefix = 'panorama'")) { //check tag_public in case freshly added!
+//check tag_public in case freshly added!
+$image->tags = $db->getOne("SELECT COALESCE(group_concat(distinct if(prefix!='',concat(prefix,':',tag),tag) order by prefix = 'top' desc,tag SEPARATOR '?'),'') as tags FROM tag_public WHERE gridimage_id = $id");
+
+
+if (stripos($image->tags,"panorama") === FALSE) {
 
 	header("HTTP/1.0 404 Not Found");
 
@@ -79,6 +83,7 @@ $json = array(
         "panorama"=> $CONF['STATIC_HOST'].$path,
         "autoLoad"=> true,
         "autoRotate"=> 3,
+	"backgroundColor"=>[250,250,250]
 );
 
 ################
@@ -127,19 +132,25 @@ if (!empty($_GET['v']) || !empty($_GET['h'])) {
 
 ################
 
-if (isset($json["haov"]) && $json["haov"]< 60) {
-        $json["hfov"] = $json["haov"]+ 3; //the starting (setting this means we start 'zoomed' in!
+if (!empty($_GET['s'])) {
+        $json["hfov"] = min($json["vaov"]?$json["vaov"]:180,100) * 1000 / 700;
          $json["minHfov"] = 3;
-}
+
+} elseif (isset($json["haov"]) && $json["haov"]< 60)
+        $json["hfov"] = $json["haov"]+ 3; //the starting (setting this means we start 'zoomed' in!
+
+if ($great > 2000)
+	$json["minHfov"] = 3;
 
 if (isset($json["haov"]))
         unset($json["autoRotate"]);
 
 ################
 
-if (preg_match('/panodirection:(\d+\.?\d*)/',$image->tags,$m))
+if (preg_match('/panodirection:(\d+\.?\d*)/',$image->tags,$m)) {
 	$json["northOffset"] = floatval($m[1]);
-elseif (!empty($image->view_direction) && $image->view_direction > -1)
+	$json["compass"] = true;
+} elseif (!empty($image->view_direction) && $image->view_direction > -1)
 	$json["northOffset"] = floatval($image->view_direction);
 
 ?>
@@ -166,14 +177,18 @@ elseif (!empty($image->view_direction) && $image->view_direction > -1)
                 <span>And in fact appears to be a full photosphere, so can look up and down too!</span>
         <? } ?>
         </i></p>
-
+<? } elseif ($json["haov"] > 60) { ?>
+	<p>Drag the image below to rotate the view. Can probably zoom in too.
 <? } ?>
 
 <div id="panorama"></div>
-<p class=compassnote><i>Note: The compass is only accurate if the photographer set the view direction of the center of the panorama</i></p>
 <script>
 pannellum.viewer('panorama', <? print json_encode($json); ?>);
 </script>
+
+<? if (!empty($json["compass"]) || $type=='photosphere') { ?>
+	<p class=compassnote><i>Note: The compass is only accurate if the photographer set the view direction of the center of the panorama</i></p>
+<? } ?>
 
 <p>&copy; Copyright <a href="https://www.geograph.org.uk<? echo $image->profile_link; ?>"><? print htmlentities($image->realname); ?></a> and licensed for reuse under this <a href="http://creativecommons.org/licenses/by-sa/2.0/" rel=licence>Creative Commons Licence</a>.</p>
 
