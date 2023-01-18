@@ -252,7 +252,7 @@ div.homepage {
 	        &middot; Geograph on <b>{external href="https://twitter.com/geograph_bi" text="Twitter"},
 	        {external href="https://www.facebook.com/geograph.org.uk" text="Facebook"}</b>
 	        &middot; <b><a href="/news.php">Project News</a></b>
-		&middot; <a href="/help/donate">Donate/Support Us</a> &middot;
+		&middot; <a href="/help/donate" style="background-color:purple;color:white;text-decoration:none;font-size:1.1em;padding:4px;margin:5px;border-radius:4px">Donate/Support Us</a> &middot;
 	</div>
 	<br>
 
