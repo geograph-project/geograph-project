@@ -54,12 +54,13 @@ $smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
 if ($id == 5087080) {
         //this is a special case, the 360 image was rejected, and a single frame was uploaded as a new image.
         /// so when viewing the single image, use the larger upload fro mthe rejected image! (confused yet?)
-        $id = 5085553;
+        $image->gridimage_id = $id = 5085553;
 }
 
 
 $row2 = $db->getRow("SELECT * FROM gridimage_size WHERE gridimage_id = $id");
 $great = max($row2['width'],$row2['height'],$row2['original_width'],$row2['original_height']);
+$ratio = $row2['original_width']/$row2['original_height'];
 if (!empty($_GET['full']) && $great > 640)
 	$path = $image->_getOriginalpath(true, false);
 elseif ($great > 1600)
@@ -72,8 +73,10 @@ elseif ($great > 640 && $great < 1024 && $row2['original_diff'] == 'yes')
 	$path = $image->getImageFromOriginal(640,640);
 elseif ($great > 640)
 	$path = $image->_getOriginalpath(true, false);
-else
+else {
 	$path = $image->_getFullpath();
+	$ratio = $row2['width']/$row2['height'];
+}
 
 ######################
 
@@ -93,38 +96,40 @@ $type='photosphere'; //default for pannellum too!
 
 if (strpos($image->tags,"sphere") === FALSE  && strpos($row['comment'],"photosynth") === FALSE
         && (strpos($image->tags,"360") !== FALSE || strpos($row['title'],"360") !== FALSE || strpos($row['comment'],"360") !== FALSE)) {
-        //default, maybe make this dynamic? maybe a [vfov:50] tag?
-        $json["vaov"] = 50;
+        //todo, maybe make this dynamic? maybe a [vfov:50] tag? or based on $ratio
 	$type='360';
 }
 
 if ($id == 2271694 || stripos($image->tags,"wideangle") !== FALSE || stripos($image->tags,"panoramic") !== FALSE) {
-        $json["vaov"] = 40;
         $json["haov"] = 120;
 	$type='wideangle';
 }
 
 if (!isset($json["vaov"]) && !empty($_GET['n'])) {
 //5359187
-        $json["vaov"] = 8; //set VERY small, so its flat, and not very distorted!
-        $json["haov"] = 12; //max view of image
+        $json["haov"] = 12; //set VERY small, so its flat, and not very distorted!
 }
 
 ################
 //allow override
 
-if (preg_match('/vfov:(\d+\.?\d*)/',$image->tags,$m))
-	$json["vaov"] = floatval($m[1]);
-if (preg_match('/hfov:(\d+\.?\d*)/',$image->tags,$m))
-	$json["haov"] = floatval($m[1]);
-
-if (!empty($_GET['v']))
-        $json["vaov"] = floatval($_GET['v']);
+//set horizontal first
 if (!empty($_GET['h']))
         $json["haov"] = floatval($_GET['h']);
+elseif (preg_match('/hfov:(\d+\.?\d*)/',$image->tags,$m))
+	$json["haov"] = floatval($m[1]);
 
+//then set vertical, as default to based on horizontal - works even for photospheres!
+if (!empty($_GET['v']))
+        $json["vaov"] = floatval($_GET['v']);
+elseif (preg_match('/vfov:(\d+\.?\d*)/',$image->tags,$m))
+	$json["vaov"] = floatval($m[1]);
+elseif (!empty($json["haov"])) //use same aspect ratio as image
+	$json["vaov"] = $json["haov"] / $ratio;
+
+//provide the tags for easy copy/paste
 if (!empty($_GET['v']) || !empty($_GET['h'])) {
-	print "TAGS: <tt>panorama:$type;vfov:{$json['vaov']}";
+	print "Copy these Tags: <tt>panorama:$type;vfov:{$json['vaov']}";
 	if (!empty($json['haov']))
 		print ";hfov:{$json['haov']}";
 	print "</tt><hr>";
@@ -132,18 +137,21 @@ if (!empty($_GET['v']) || !empty($_GET['h'])) {
 
 ################
 
-if (!empty($_GET['s'])) {
-        $json["hfov"] = min($json["vaov"]?$json["vaov"]:180,100) * 1000 / 700;
-         $json["minHfov"] = 3;
-
-} elseif (isset($json["haov"]) && $json["haov"]< 60)
-        $json["hfov"] = $json["haov"]+ 3; //the starting (setting this means we start 'zoomed' in!
-
 if ($great > 2000)
 	$json["minHfov"] = 3;
 
+//base the starting view on the vertical height! (so that the pano is shown full height - with lots of sideway scrolling)
+if (!empty($_GET['s'])) {
+        $json["hfov"] = min($json["vaov"]?$json["vaov"]:180,100) * 1000 / 700;
+        $json["minHfov"] = $json["hfov"]/4; //todo, should base this on the resolution!
+
+//otherwise set it based on the width (so whole image should be visible)
+} elseif (isset($json["haov"]) && $json["haov"] <= 60)
+        $json["hfov"] = $json["haov"]+ 3; //the starting (setting this means we start 'zoomed' in!
+// else "hfov" defaults to 100 degrees wide.
+
 if (isset($json["haov"]))
-        unset($json["autoRotate"]);
+        unset($json["autoRotate"]); //only autorotate full spheres
 
 ################
 
