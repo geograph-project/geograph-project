@@ -49,7 +49,7 @@ $mkey = md5($_SERVER['QUERY_STRING']);
 
 if (!empty($_GET['q'])) {
     if ($_GET['q'] == 'os') {
-        $where = " AND (tags REGEXP ".$db-Quote("[[:<:]]os[[:>:]]").")";
+        $where = " AND (tags REGEXP ".$db->Quote("[[:<:]]os[[:>:]]").")";
     } else {
 	$q=$db->Quote("%".trim($_GET['q'])."%");
         $where = " AND (content LIKE $q OR title LIKE $q OR tags LIKE $q)";
