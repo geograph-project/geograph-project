@@ -838,7 +838,8 @@ $str[] = "
 				$content = file_get_contents($url);
 				if (strlen($content) > 5) {
 					$str[] = '<script>var related = '.$content.';</script>';
-					$memcache->name_set('reljs',$m[1],1,false,$memcache->period_long);
+					$one = 1; //its passed by reference"
+					$memcache->name_set('reljs',$m[1],$one,false,$memcache->period_long);
 				}
 			}
         	        $str[] = '<script src="'.smarty_modifier_revision("/js/related.js").'" type="text/javascript" defer="defer"></script>';
