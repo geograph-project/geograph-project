@@ -95,6 +95,8 @@ if ($image->isValid())
 		$smarty->assign_by_ref("image",$image); //we dont need the full assignToSmarty
 	}
 
+	$smarty->assign('canonical_domain',$CONF['canonical_domain'][$image->grid_square->reference_index]);
+
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
 	header("Status: 410 Gone");
