@@ -23,10 +23,16 @@ function slide_go(delta) {
 		} else {
 			document.getElementById("result"+cs).style.display = '';
 		}
-		document.images['image'+cs].src = document.images['image'+cs].getAttribute('data-src');
+		if (document.images['image'+cs] && document.images['image'+cs].getAttribute('data-src'))
+			document.images['image'+cs].src = document.images['image'+cs].getAttribute('data-src');
+		else
+			document.images['image'+cs].removeAttribute('loading');
 		csnext = cs + delta;
 		if (document.getElementById("result"+csnext)) {
-			document.images['image'+csnext].src = document.images['image'+csnext].getAttribute('data-src');
+			if (document.images['image'+csnext] && document.images['image'+csnext].getAttribute('data-src'))
+				document.images['image'+csnext].src = document.images['image'+csnext].getAttribute('data-src');
+			else
+				document.images['image'+csnext].removeAttribute('loading');
 			if (document.getElementById("mapA"+csnext)) {
 				document.images['mapC'+csnext].src = document.images['mapC'+csnext].getAttribute('data-src');
 				document.images['mapD'+csnext].src = document.images['mapD'+csnext].getAttribute('data-src');
