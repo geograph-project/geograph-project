@@ -38,7 +38,6 @@ $votes = $db->getAssoc("select id,vote from vote_log where type='$type' and user
 
 $last = '';
 $c = 0;
-$_GET['large'] =0;
 foreach ($imagelist->images as $idx => $image) {
 	$month = substr($image->imagetaken,5,2);
 	if ($last != $month) {

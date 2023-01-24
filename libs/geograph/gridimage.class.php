@@ -1194,7 +1194,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 	/**
 	* returns HTML img tag to display this image at full size
 	*/
-	function getFull($returntotalpath = true, $linkoriginal = false)
+	function getFull($returntotalpath = true, $responsive = false, $linkoriginal = false)
 	{
 		global $CONF;
 
@@ -1215,7 +1215,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 
 		//build the srcset
 		$simple = array();
-	        if (!empty($this->original_width) && $linkoriginal && max($this->original_width,$this->original_height) > 640 && $returntotalpath && !empty($_GET['large'])) {
+	        if (!empty($this->original_width) && $linkoriginal && max($this->original_width,$this->original_height) > 640 && $returntotalpath && $responsive) {
 	                $maxwidth = min(1024,$this->original_width);
                 	$ratio = $this->original_height/$this->original_width;
         	        $srcset = array();
@@ -1275,7 +1275,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}$srcset/>";
 
 		//then add responsive sizing
-		if (!empty($simple) && $CONF['template'] == 'resp' && !empty($_GET['large'])) {
+		if (!empty($simple) && $CONF['template'] == 'resp' && $responsive) {
 			//now there is css min() function can set mutliple max-widths at once, rather than needing to nest!
 
 			$simple[] = "100%";
@@ -1287,7 +1287,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 
 			//also dont need to bother with sizing caption640 here
 
-		} elseif (!empty($maxwidth) && !empty($_GET['large'])) {
+		} elseif (!empty($maxwidth) && $responsive) {
 			$mins = array();
 
 			if ($CONF['template'] != 'resp') { //the new reponsive template specifically supports small screens.
@@ -1300,7 +1300,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 			}
 
 
-			if (!empty($CONF['manticorert_host'])) { //index:gallery_ids
+			if (!empty($CONF['manticorert_host']) && $linkoriginal) { //index:gallery_ids
 				global $sprt;
 				if (empty($sprt))
 					$sprt = GeographSphinxConnection('manticorert',true);

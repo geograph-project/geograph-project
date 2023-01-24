@@ -150,8 +150,7 @@ if (!empty($_POST['clearcache'])) {
 ###################################
 
 
-$_GET['large'] = 1;  //make sure t responsive.
-$tag = $image->getFull(true,true); //as used on photo page  - calls getSize etc
+$tag = $image->getFull(); //as used on photo page  - calls getSize etc
 
 $postfix = empty($_GET['v'])?'':("&v=".intval($_GET['v']));
 

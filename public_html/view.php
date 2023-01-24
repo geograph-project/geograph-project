@@ -156,18 +156,6 @@ if (isset($_GET['id']))
 		$CONF['global_thumb_limit'] = 4;
 	}
 
-	if ($_GET['id'] <= 1600000 || $_GET['id'] >= 2800000 || !empty($_SESSION['large'])) {
-		$_GET['large'] = 1; //using _GET so it can be understood inside gridimage class!
-	} elseif (!empty($_SERVER['HTTP_REFERER']) && ($_SERVER['HTTP_REFERER'] == 'http://www.geograph.org.uk/' || $_SERVER['HTTP_REFERER'] == 'https://www.geograph.org.uk/')) {
-		$_GET['large'] = 1;
-	}
-
-	if (!empty($_GET['large'])) {
-		if (!isset($_SESSION['large']))
-			$_SESSION['large'] = 1;
-		$cacheid .= "LL";
-	}
-
 	//is the image rejected? - only the owner and administrator should see it
 	if ($image->moderation_status=='rejected')
 	{
@@ -331,13 +319,14 @@ if ($image->isValid())
 		//}
 
 		$image->assignToSmarty($smarty);
+		$smarty->assign('larger',true);
 
 		$image->loadSnippets();
 		$image->loadCollections();
 
 		//disable large image for [panorama: ] tagged images, needs to be done here, AFTER loadSnippets()!
-		if (!empty($image->tag_prefix_stat['panorama']) && !empty($_GET['large']) && strpos($_SERVER['QUERY_STRING'],'large')===false) //ensure user didnt specifically ask in URL!
-			$_GET['large']=0;
+		if (!empty($image->tag_prefix_stat['panorama']))
+			$smarty->assign('larger',false);
 
 		if ($CONF['template']!='archive' && empty($q) && !empty($db)) {
 			if ($same = $db->getOne("SELECT images from gridimage_duplicate where grid_reference = '{$image->grid_reference}' and title = ".$db->Quote($image->title))) {

@@ -65,7 +65,7 @@
 <!-- ----------------------------------------------------- -->
 
 <div style="text-align:center">
-	<div class="shadow shadow_large" id="mainphoto">{$image->getFull(true,true)}</div>
+	<div class="shadow shadow_large" id="mainphoto">{$image->getFull(true,true,$larger)}</div>
 
 	<div><strong>{$image->title|escape:'html'}</strong></div>
 

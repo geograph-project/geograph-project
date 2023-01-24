@@ -70,7 +70,7 @@
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
 	{/if}
 
-  <div class="shadow shadow_large" id="mainphoto">{$image->getFull(true,true)|replace:'/>':' itemprop="contentURL url"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
+  <div class="shadow shadow_large" id="mainphoto">{$image->getFull(true,true,$larger)|replace:'/>':' itemprop="contentURL url"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
 
   <div class="caption640"><strong property="dct:title" itemprop="name">{$image->title|escape:'html'}</strong></div>
 
