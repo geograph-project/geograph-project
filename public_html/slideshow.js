@@ -18,8 +18,12 @@ function slide_go(delta) {
 			if (timer != false) {
 				setTimeout('show_slide_part2('+cs+')',mapdelayinsec*1000);
 			}
-			document.images['mapC'+cs].src = document.images['mapC'+cs].getAttribute('data-src');
-			document.images['mapD'+cs].src = document.images['mapD'+cs].getAttribute('data-src');
+			if (document.images['mapC'+cs].getAttribute('data-src')) {
+				document.images['mapC'+cs].src = document.images['mapC'+cs].getAttribute('data-src');
+				document.images['mapD'+cs].src = document.images['mapD'+cs].getAttribute('data-src');
+			} else {
+				document.images['mapC'+cs].removeAttribute('loading');
+			}
 		} else {
 			document.getElementById("result"+cs).style.display = '';
 		}
@@ -33,9 +37,13 @@ function slide_go(delta) {
 				document.images['image'+csnext].src = document.images['image'+csnext].getAttribute('data-src');
 			else
 				document.images['image'+csnext].removeAttribute('loading');
-			if (document.getElementById("mapA"+csnext)) {
-				document.images['mapC'+csnext].src = document.images['mapC'+csnext].getAttribute('data-src');
-				document.images['mapD'+csnext].src = document.images['mapD'+csnext].getAttribute('data-src');
+			if (document.getElementById("mapA"+csnext) {
+				if (document.images['mapC'+csnext].getAttribute('data-src')) {
+					document.images['mapC'+csnext].src = document.images['mapC'+csnext].getAttribute('data-src');
+					document.images['mapD'+csnext].src = document.images['mapD'+csnext].getAttribute('data-src');
+				} else {
+					document.images['mapC'+csnext].removeAttribute('loading');
+				}
 			}
 		}
 	} else {
