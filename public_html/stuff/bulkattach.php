@@ -126,12 +126,12 @@ if (!empty($_POST)) {
 
 		case 'add_snippet':
 			if (empty($snippet)) die("Invalid snippet");
-			$sqls[] = "INSERT IGNORE INTO gridimage_snippet SELECT gridimage_id,{$snippet['snippet_id']} AS snippet_id,$uid AS user_id,NOW() FROM gridimage_search WHERE user_id = $uid AND gridimage_id IN ($idstr)";
+			$sqls[] = "INSERT INTO gridimage_snippet_real SELECT gridimage_id,{$snippet['snippet_id']} AS snippet_id,$uid AS user_id,NOW(),2,NOW() FROM gridimage_search WHERE user_id = $uid AND gridimage_id IN ($idstr)  ON DUPLICATE KEY UPDATE status=2";
 			break;
 
 		case 'remove_snippet':
 			if (empty($snippet)) die("Invalid snippet");
-			$sqls[] = "DELETE gridimage_snippet.* FROM gridimage_snippet INNER JOIN gridimage_search USING (gridimage_id) WHERE gridimage_snippet.user_id = $uid AND snippet_id = {$snippet['snippet_id']} AND gridimage_search.user_id = $uid AND gridimage_id IN ($idstr)";
+			$sqls[] = "UPDATE gridimage_snippet_real INNER JOIN gridimage_search USING (gridimage_id) SET status = 0 WHERE gridimage_snippet.user_id = $uid AND snippet_id = {$snippet['snippet_id']} AND gridimage_search.user_id = $uid AND gridimage_id IN ($idstr)";
 			break;
 		default:
 			print "Please select what action to perform.";

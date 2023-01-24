@@ -118,7 +118,7 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		$updates['snippet_id'] = $db->Insert_ID();
 		$updates['gridimage_id'] = $gid;
 
-		$db->Execute('INSERT INTO gridimage_snippet SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		$db->Execute('INSERT INTO gridimage_snippet_real SET `'.implode('` = ?,`',array_keys($updates)).'` = ? ON DUPLICATE KEY UPDATE status=2',array_values($updates));
 
 		$_SESSION['last_snippet'] = intval($updates['snippet_id']);
 	}
@@ -145,7 +145,7 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 
 		$criteria['snippet_id'] = $id;
 
-		$db->Execute('DELETE FROM gridimage_snippet WHERE `'.implode('` = ? AND `',array_keys($criteria)).'` = ?',array_values($criteria));
+		$db->Execute('UPDATE gridimage_snippet_real SET status = 0 WHERE `'.implode('` = ? AND `',array_keys($criteria)).'` = ?',array_values($criteria));
 	}
 
 	if ($gid < 4294967296) {
@@ -172,7 +172,7 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 
 		$updates['snippet_id'] = $id;
 
-		$db->Execute('INSERT IGNORE INTO gridimage_snippet SET `'.implode('` = ?, `',array_keys($updates)).'` = ?',array_values($updates));
+		$db->Execute('INSERT INTO gridimage_snippet_real SET `'.implode('` = ?, `',array_keys($updates)).'` = ? ON DUPLICATE KEY UPDATE status=2',array_values($updates));
 
 		$_SESSION['last_snippet'] = intval($id);
 

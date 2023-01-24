@@ -66,8 +66,8 @@ $db->Execute("DROP TABLE IF EXISTS sph_delta_ids");
 	//as we update terms too, need to know any updated squares (image itself might not be updated, but the clusters might have!)
 	$sqls[] = "insert ignore into sph_delta_ids select distinct gridimage_id from gridimage_search inner join gridsquare using (grid_reference) where last_grouped >= '$crit'";
 
-	//also snippets! (also we can't detect when a snippet is removed!) row in gridimage_snippet is simply deleted
-	$sqls[] = "insert ignore into sph_delta_ids select distinct gridimage_id from gridimage_snippet where created >= '$crit' and gridimage_id < 4294967296";
+	//also snippets! (gets sippets that have been deleted too!)
+	$sqls[] = "insert ignore into sph_delta_ids select distinct gridimage_id from gridimage_snippet_real where updated >= '$crit' and gridimage_id < 4294967296";
 
 	//ignore gridimage_term and gridimage_wiki - which we not currently updating
 

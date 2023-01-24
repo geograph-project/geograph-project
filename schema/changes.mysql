@@ -2810,4 +2810,16 @@ update sphinx_tags set updated = '2022-11-30 12:17:09';
 #################################################
 
 
+rename table gridimage_snippet to gridimage_snippet_real;
+
+create view gridimage_snippet as select * from gridimage_snippet_real where status = 2;
+
+alter table gridimage_snippet_real 
+	add status tinyint unsigned not null default 2,
+	add updated timestamp NOT NULL DEFAULT current_timestamp() on update current_timestamp();
+update gridimage_snippet_real set updated = created;
+
+
+#################################################
+
 

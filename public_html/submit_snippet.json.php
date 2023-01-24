@@ -53,10 +53,10 @@ if (!empty($USER->registered) && !empty($_GET['snippet_id']) && !empty($_GET['gr
 		}
 
 		if ($_GET['status'] == 0) {
-			$db->Execute('DELETE FROM gridimage_snippet WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
+			$db->Execute('UPDATE gridimage_snippet_real SET status = 0 WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
 
 		} else {
-			$db->Execute('INSERT IGNORE INTO gridimage_snippet SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+			$db->Execute('INSERT INTO gridimage_snippet_real SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ? ON DUPLICATE KEY UPDATE status=2',array_values($u));
 		}
 
 		if ($gid < 4294967296) {
