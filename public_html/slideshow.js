@@ -37,7 +37,7 @@ function slide_go(delta) {
 				document.images['image'+csnext].src = document.images['image'+csnext].getAttribute('data-src');
 			else
 				document.images['image'+csnext].removeAttribute('loading');
-			if (document.getElementById("mapA"+csnext) {
+			if (document.getElementById("mapA"+csnext)) {
 				if (document.images['mapC'+csnext].getAttribute('data-src')) {
 					document.images['mapC'+csnext].src = document.images['mapC'+csnext].getAttribute('data-src');
 					document.images['mapD'+csnext].src = document.images['mapD'+csnext].getAttribute('data-src');
