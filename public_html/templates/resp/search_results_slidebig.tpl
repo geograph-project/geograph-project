@@ -61,8 +61,7 @@ form.buttons input {
 <script>//<![CDATA[
 var resultcount = {$engine->numberofimages};
 var hasnextpage = {if $engine->numberOfPages > $engine->currentPage}1{else}0{/if};
-setTimeout("document.images['image1'].src = document.images['image1'].getAttribute('data-src')",300);
-setTimeout("document.images['image2'].src = document.images['image2'].getAttribute('data-src')",600);
+setTimeout("document.images[1].removeAttribute('loading')",600); //remove off second image, so it will start loading
 {dynamic}
 var delayinsec = {$user->slideshow_delay|default:5};
 {/dynamic}
