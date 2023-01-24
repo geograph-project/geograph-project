@@ -92,8 +92,8 @@ var resultcount = {$engine->numberofimages};
 var hasnextpage = {if $engine->numberOfPages > $engine->currentPage}1{else}0{/if};
 {literal}
 AttachEvent(window,'load',function () {
-        document.images['image1'].src = document.images['image1'].getAttribute('data-src');
-        setTimeout("document.images['image2'].src = document.images['image2'].getAttribute('data-src')",600);
+	if (document.images['image2'])
+	        setTimeout("document.images['image2'].removeAttribute('loading')",600);
 },false);
 {/literal}
 {dynamic}
