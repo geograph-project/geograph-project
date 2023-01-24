@@ -45,7 +45,7 @@
 	</div>
 	</div>
 
-		<div class="shadow shadow_large" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` data-src="}</a></div>
+		<div class="shadow shadow_large" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` src="}</a></div>
 		{if $image->comment}
 		  <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
   		{/if}
@@ -76,8 +76,7 @@ var resultcount = {$engine->numberofimages};
 var hasnextpage = {if $engine->numberOfPages > $engine->currentPage}1{else}0{/if};
 {literal}
 AttachEvent(window,'load',function () {
-        document.images['image1'].src = document.images['image1'].getAttribute('data-src');
-        setTimeout("document.images['image2'].src = document.images['image2'].getAttribute('data-src')",600);
+        setTimeout("document.images['image2'].removeAttribute('loading')",600);
 },false);
 {/literal}
 {dynamic}

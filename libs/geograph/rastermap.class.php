@@ -243,6 +243,8 @@ class RasterMap
 	function getImageTag($gridref = '')
 	{
 		global $CONF;
+		static $counter = 0;
+
 		$east = floor($this->nateastings/1000) * 1000;
 		$nort = floor($this->natnorthings/1000) * 1000;
 
@@ -417,7 +419,8 @@ class RasterMap
 			$str = "<div style=\"position:relative;height:".($width+$extra)."px;width:{$this->width}px;\" id=\"rastermap\">";
 
 	//map image
-			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img name=\"tile\" src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" alt=\"$title\" nopin=\"true\"/></div>";
+			$loading = $counter?' loading=lazy':''; $counter++;
+			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img name=\"tile\" src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" alt=\"$title\" nopin=\"true\"$loading/></div>";
 
 	//drag prompt
 			if ($this->issubmit)
