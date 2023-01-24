@@ -117,6 +117,10 @@ foreach ($squares as $square => $gridsquare_id) {
 			$count = count($cluster->document_ids);
 			printf("%5d. %s ",$count,$cluster->label);
 		}
+		//we always filter these out, so might as well not bother even saving!
+		// where label not in ('(other)','Other Topics')
+		if ($cluster->label == 'Other Topics' || $cluster->label == '(Other)')
+			continue;
 
 		$values = array();
 		foreach ($cluster->document_ids as $sort_order => $document_id) {
