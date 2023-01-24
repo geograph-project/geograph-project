@@ -11,13 +11,16 @@ if (empty($argv[1])) {
 
 
 //"PHP message: PHP Notice:  Only variables should be assigned by reference in /var/www/geograph/libs/geograph/user.class.php on line 84
+//"NOTICE: PHP message: PHP Fatal error:  Uncaught Error: Cannot pass parameter 3 by reference in /var/www/geograph/libs/geograph/global.inc.php:841"
+
 
 $str = array();
 $src = array();
 
 while ($h && !feof($h)) {
 	$input = fgets($h);
-	if (preg_match_all('/PHP message: (.+?) in (.+?) on line (\d+)/',$input,$m)) {
+	if (preg_match_all('/PHP message: (.+?) in (.+?) on line (\d+)/',$input,$m)
+	|| preg_match_all('/PHP message: (.+?) in (.+?php):(\d+)/',$input,$m)) {
 	        foreach ($m[2] as $key => $file) {
         	        $uni = $file." ".$m[3][$key];
 	                $str[$uni] = $m[1][$key];
