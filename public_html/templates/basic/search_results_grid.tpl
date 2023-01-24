@@ -122,7 +122,7 @@ AttachEvent(window,'load',remarkAllImages,false);
 			<div class="floater">
 				<a href="/editimage.php?id={$image->gridimage_id}">Edit</a> <a href="/reuse.php?id={$image->gridimage_id}">Download</a>
 				[<a href="#" onclick="markImage({$image->gridimage_id});remarkImage({$image->gridimage_id}); return false" id="mark{$image->gridimage_id}">Mark</a>]</div>
-			<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getResponsiveImgTag(120,640,true)}</a>
+			<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getResponsiveImgTag(120,640)}</a>
 		</div>
 	{foreachelse}
 	 	{if $engine->resultCount}

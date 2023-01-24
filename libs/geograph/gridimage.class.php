@@ -1126,6 +1126,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 
         function getResponsiveImgTag($min = 120, $max = 640, $lazy = false) {
 		global $CONF;
+		static $counter = 0;
 
                 $db=&$this->_getDB(true);
 
@@ -1160,14 +1161,26 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
                 if (empty($srcset))
                         return ''; //todo, error image instread?
 
-		if ($lazy) {
-			//https://github.com/aFarkas/lazysizes is already loaded!
-	                $srcset = ' data-srcset="'.implode(', ',$srcset).'"';
-        	        return "<img class=\"lazyload\" data-src=\"$thumbpath\" $srcset data-sizes=\"auto\" id=\"img{$this->gridimage_id}\" style=\"max-width:{$maxwidth}px;min-width:{$minwidth}px\"/>";
-		}
+		$tags= array();
 
-                $srcset = ' srcset="'.implode(', ',$srcset).'"';
-                return "<img src=\"$thumbpath\" $srcset id=\"img{$this->gridimage_id}\"/>";
+		if ($lazy && $counter) {
+			//https://github.com/aFarkas/lazysizes is already loaded!
+        	        $tags[] = 'class="lazyload"';
+			$tags[] = "data-src=\"$thumbpath\"";
+	                $tags[] = 'data-srcset="'.implode(', ',$srcset).'"';
+			$tags[] = "data-sizes=\"auto\"";
+		} else {
+			$tags[] = "src=\"$thumbpath\"";
+	                $tags[] = 'srcset="'.implode(', ',$srcset).'"';
+	                if ($counter)
+				$tags[] = 'loading="lazy"';
+		}
+       	        $counter++;
+
+		$tags[] = "id=\"img{$this->gridimage_id}\"";
+		$tags[] = "style=\"max-width:{$maxwidth}px;min-width:{$minwidth}px\"";
+
+                return "<img ". implode(" ",$tags)."/>";
         }
 
 
@@ -1197,6 +1210,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 	function getFull($returntotalpath = true, $responsive = false, $linkoriginal = false)
 	{
 		global $CONF;
+		static $counter=0;
 
 		$size = $this->_getFullSize();
 
@@ -1270,6 +1284,10 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 	                $srcset = '';
 			$simple[] = "{$size[0]}px";
 	        }
+
+		if ($counter)
+			$srcset .=' loading="lazy"';
+		$counter++;
 
 		//the normal tag, but with additional srcset
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}$srcset/>";
