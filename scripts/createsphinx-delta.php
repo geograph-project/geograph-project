@@ -55,11 +55,21 @@ if (isset($status['sphinx_tags'])) {
 	//we cant rely on status.update_date as the table is innodb (it does get populaed on an update, but not persisted though reboots!)
 	$crit = $db->getOne("SELECT MAX(updated) FROM sphinx_tags");
 
-	$sqls[] = "CREATE TEMPORARY TABLE sph_delta_ids (primary key (gridimage_id))".
+$db->Execute("DROP TABLE IF EXISTS sph_delta_ids");
+
+	$sqls[] = "CREATE TABLE sph_delta_ids (primary key (gridimage_id))".
 		" SELECT gridimage_id FROM gridimage_search WHERE upd_timestamp >= '$crit'";
 
 	//importantly this gets tags that have been deleted too!
 	$sqls[] = "insert ignore into sph_delta_ids select distinct gridimage_id FROM gridimage_tag WHERE updated >= '$crit' and gridimage_id < 4294967296";
+
+	//as we update terms too, need to know any updated squares (image itself might not be updated, but the clusters might have!)
+	$sqls[] = "insert ignore into sph_delta_ids select distinct gridimage_id from gridimage_search inner join gridsquare using (grid_reference) where last_grouped >= '$crit'";
+
+	//also snippets! (also we can't detect when a snippet is removed!) row in gridimage_snippet is simply deleted
+	$sqls[] = "insert ignore into sph_delta_ids select distinct gridimage_id from gridimage_snippet where created >= '$crit' and gridimage_id < 4294967296";
+
+	//ignore gridimage_term and gridimage_wiki - which we not currently updating
 
 	foreach ($sqls as $sql) {
 		fwrite(STDERR,date('H:i:s ')." $sql\n\n");
@@ -166,13 +176,6 @@ if (isset($status['sphinx_tags'])) {
 if (isset($status['sphinx_terms'])) {
 
 	$db->Execute("DROP TABLE IF EXISTS sphinx_terms_tmp");
-
-	#####################################################
-	## note while gridimage_group is not CURRENTLY being updated, and term/wiki are effectively static,
-	##   ... gridimage_snippet is being updated
-	##  a TODO would be to add 'insert into sph_delta_ids select gridimage_id from gridiamge_snippet where > $crit
-	## and even gridimage_group as well, once that starts updating! (as could create new cluster term, without updating the image itself!)
-	#####################################################
 
 	$sqls = array();
 
