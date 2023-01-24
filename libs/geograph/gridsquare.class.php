@@ -337,14 +337,15 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 				//we could be reassigning the square!
 				unset($this->nateastings);
 				
-				//use this function to work out the major easting/northing then convert to our exact values
+				//use this function to work out the major easting/northing (of the center of the square) then convert to our exact values
 				$eastings=$this->getNatEastings();
 				$northings=$this->getNatNorthings();
 				
-				$emajor = floor($eastings / 100000);
+				$emajor = floor($eastings / 100000); //floor rounds down, rather tha using intval which routd to zero
 				$nmajor = floor($northings / 100000);
 	
-				$this->nateastings = $emajor.sprintf("%05d",$e);
+				//$this->nateastings = $emajor.sprintf("%05d",$e);
+				$this->nateastings = ($emajor*100000)+$e; //cope with negative! (for Rockall...)
 				$this->natnorthings = $nmajor.sprintf("%05d",$n);
 				$this->natgrlen = $natgrlen;
 				$this->precision=pow(10,6-($natgrlen/2))/10;
