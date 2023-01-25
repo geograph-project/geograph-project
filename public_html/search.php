@@ -1164,6 +1164,9 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		if ($engine->resultCount) {
 
 		if ($display == 'reveal') {
+			require_once('geograph/conversions.class.php');
+                        $conv = new Conversions;
+
 			foreach ($engine->results as $idx => $image) {
 				if ($engine->results[$idx]->gridsquare_id) {
 					$engine->results[$idx]->grid_square=new GridSquare;
@@ -1176,9 +1179,14 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 						$engine->results[$idx]->grid_square->nateastings=$engine->results[$idx]->nateastings;
 						$engine->results[$idx]->grid_square->natnorthings=$engine->results[$idx]->natnorthings;
 					}
-				
+
 					//lets add an rastermap too
 					$engine->results[$idx]->rastermap = new RasterMap($engine->results[$idx]->grid_square,false);
+					if ($engine->results[$idx]->grid_square->reference_index==2) {
+						$engine->results[$idx]->rastermap->service = 'OSM-Static-Dev';
+			                        list($lat,$long) = $conv->gridsquare_to_wgs84($engine->results[$idx]->grid_square);
+						$engine->results[$idx]->rastermap->addLatLong($lat,$long);
+					}
 
 					if (!empty($engine->results[$idx]->viewpoint_northings)) {
 						$engine->results[$idx]->rastermap->addViewpoint($engine->results[$idx]->viewpoint_eastings,$engine->results[$idx]->viewpoint_northings,$engine->results[$idx]->viewpoint_grlen,$engine->results[$idx]->view_direction);
@@ -1337,7 +1345,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		}
 		if (empty($db->readonly)) { //not used yet, but ultimately we may get to stage that running on a readonly slave.
 			$db->query("UPDATE queries SET use_timestamp = null WHERE id = $i");
-			if (!$db->Affected_Rows()) {
+			if (!$db->Affected_Rows() && $db->getOne("SHOW TABLES LIKE 'queries_archive'")) {
 				$db->query("UPDATE queries_archive SET use_timestamp = null WHERE id = $i");
 			}
 		}
