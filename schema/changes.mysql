@@ -2812,12 +2812,20 @@ update sphinx_tags set updated = '2022-11-30 12:17:09';
 
 rename table gridimage_snippet to gridimage_snippet_real;
 
-create view gridimage_snippet as select * from gridimage_snippet_real where status = 2;
-
 alter table gridimage_snippet_real 
 	add status tinyint unsigned not null default 2,
 	add updated timestamp NOT NULL DEFAULT current_timestamp() on update current_timestamp();
+
+create view gridimage_snippet as select gridimage_id,snippet_id,user_id,created from gridimage_snippet_real where status=2;
+
 update gridimage_snippet_real set updated = created;
+
+
+#################################################
+
+
+alter table sphinx_placenames add postcode varchar(10) default null;
+alter table sphinx_placenames add open_id int unsigned default null;
 
 
 #################################################
