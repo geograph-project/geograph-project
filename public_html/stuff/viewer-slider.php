@@ -31,6 +31,7 @@ $smarty = new GeographPage;
 
 $USER->mustHavePerm("basic");
 
+$smarty->assign("responsive",1);
 $smarty->display('_std_begin.tpl');
 
 //$db = GeographDatabaseConnection(false);
@@ -86,10 +87,10 @@ function updateYear() {
 		var $ele = $('div#y'+y);
 		if(y == year) {
 			$ele.show().addClass('main').css('opacity',1);
-		} else if ((diff = Math.abs(y-year)) < range) {
+		} else if ((diff = Math.abs(y-year)) <= range) {
+			diff--;
 			var opp = 1-(diff/range);
-			console.log(year,y,range,opp);
-			$ele.show().removeClass('main').css('opacity',opp);
+			$ele.show().removeClass('main').css('opacity',opp*0.8);
 		} else {
 			$ele.hide().removeClass('main');
 		}
@@ -133,6 +134,15 @@ $(function() {
 	div.map:hover div.main img {
                 filter: drop-shadow(0px 0px 1px black);
         }
+
+	input[type=range] {
+		max-width:70vw;
+	}
+	/* resize the div and the images directly using vw, so that everything resizes together */
+	div.map, div.map img {
+		max-width: min(100vw,130vh);
+		height:auto;
+	}
 </style>
 
 
