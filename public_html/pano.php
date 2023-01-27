@@ -116,6 +116,8 @@ if (!isset($json["vaov"]) && !empty($_GET['n'])) {
 //set horizontal first
 if (!empty($_GET['h']))
         $json["haov"] = floatval($_GET['h']);
+elseif (preg_match('/(\d+\.?\d*)( degree|)panorama/i',$image->tags,$m))
+	$json["haov"] = floatval($m[1]);
 elseif (preg_match('/hfov:(\d+\.?\d*)/',$image->tags,$m))
 	$json["haov"] = floatval($m[1]);
 

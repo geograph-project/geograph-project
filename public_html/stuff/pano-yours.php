@@ -11,7 +11,7 @@ $sph = GeographSphinxConnection('sphinxql',true);
 
 ######################
 
-if (empty($_GET['q']) || !preg_match('/\bpano\b/',$_GET['q']))
+if (empty($_GET['q']))
 	$_GET['q'] = "(pano|panorama|360)";
 
 $query = $sph->Quote("user{$USER->user_id} ".$_GET['q']);

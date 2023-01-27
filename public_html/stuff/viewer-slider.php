@@ -63,7 +63,7 @@ $base = "https://t0.geograph.org.uk/maps/detail/0/-10/detail_0_-10_900_1300_1_-2
 <h2>By Taken Year - Geograph Coverage - Viewer</h2>
 
 <form>
-	Year: <input type=range name=year value=<? echo date('Y'); ?> min=1900 max=<? echo date('Y'); ?> style=width:800px><span id="txtyear"></span><br>
+	Year: <input type=range name=year value=<? echo date('Y'); ?> min=1900 max=<? echo date('Y'); ?> style=width:800px><span class="txtyear"></span><br>
 	Scale: <input type=range name=scale value=0.5 min=0.2 max=1.5 step=0.05 list=scales> &nbsp;
 
 	Range: <input type=range name=range value=3 min=0 max=10><span id="txtrange"></span><br>
@@ -78,17 +78,17 @@ $base = "https://t0.geograph.org.uk/maps/detail/0/-10/detail_0_-10_900_1300_1_-2
 <script>
 function updateYear() {
 	var year = $('input[name=year]').val();
-	$('#txtyear').text(year);
+	$('.txtyear').text(year);
 
 	var range = $('input[name=range]').val();
-	$('#txtrange').text("+/- "+range);
+	$('#txtrange').text("+/- "+range+" years");
 
 	for(y=<? echo date('Y'); ?>; y>=1900; y--) {
 		var $ele = $('div#y'+y);
 		if(y == year) {
 			$ele.show().addClass('main').css('opacity',1);
 		} else if ((diff = Math.abs(y-year)) <= range) {
-			diff--;
+			diff--; //gives bit extra range
 			var opp = 1-(diff/range);
 			$ele.show().removeClass('main').css('opacity',opp*0.8);
 		} else {
@@ -143,9 +143,18 @@ $(function() {
 		max-width: min(100vw,130vh);
 		height:auto;
 	}
+
+	div.txtyear {
+		position:fixed;
+		left:0;
+		bottom:0;
+		background-color:white;
+		padding:2px;
+		z-index:1000;
+	}
 </style>
 
-
+<div class="txtyear"></div>
 <?
 
 
