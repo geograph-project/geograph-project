@@ -1401,6 +1401,15 @@ function mail_wrapper($email, $subject, $body, $headers = '', $param = '', $debu
 function debug_message($subject,$body) {
 	global $CONF;
 
+	if (!empty($hours)) {
+                $mkey = md5($body);
+                $sent = $GLOBALS['memcache']->name_get('debug',$mkey);
+                if ($sent)
+                        return;
+                $GLOBALS['memcache']->name_set('debug',$mkey,$mkey,false,$hours*3600);
+        }
+
+
 	$body = @"Host: ".`hostname`."\n".
 		$CONF['PROTOCOL'].$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."\n\n".
 		" [HTTP_HOST] => ".$_SERVER['HTTP_HOST']."\n".

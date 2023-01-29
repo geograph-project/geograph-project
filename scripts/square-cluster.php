@@ -84,6 +84,7 @@ foreach ($squares as $square => $gridsquare_id) {
 
 	$c = $carrot->clusterQuery($param['query'],$param['debug']==='2');
 	if (empty($c)) {
+		debug_message('[Geograph] Cluster Fail', "No results for $square from Carrot2 (dying without processing any more squares)", 24);
 		die("no results for $square (dieing without processing any more squares)\n");
 	}
 
