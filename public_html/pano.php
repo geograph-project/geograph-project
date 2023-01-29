@@ -16,7 +16,7 @@ if (empty($_GET['id'])) {
 $id = intval($_GET['id']);
 $_GET['full'] = 1; //always load the full version for now!
 
-$image = new Gridimage($id, true); //only gets mod images, and includs the 'tags' value!
+$image = new Gridimage($id,false); // use gridimage to load the image - so will grab pending images too (we loading ->tags directly anyway
 
 if (empty($image) || !$image->isValid() || $image->moderation_status=='rejected') {
 	header("HTTP/1.0 404 Not Found");
