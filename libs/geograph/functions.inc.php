@@ -1398,7 +1398,7 @@ function mail_wrapper($email, $subject, $body, $headers = '', $param = '', $debu
 	}
 }
 
-function debug_message($subject,$body) {
+function debug_message($subject,$body, $hours=null) {
 	global $CONF;
 
 	if (!empty($hours)) {
