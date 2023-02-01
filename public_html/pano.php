@@ -1,6 +1,7 @@
 <?
 
 require_once('geograph/global.inc.php');
+init_session();
 
 $smarty = new GeographPage;
 
@@ -128,10 +129,13 @@ elseif (preg_match('/vfov:(\d+\.?\d*)/',$image->tags,$m))
 	$json["vaov"] = floatval($m[1]);
 elseif (!empty($json["haov"])) //use same aspect ratio as image
 	$json["vaov"] = $json["haov"] / $ratio;
+else
+	$json["vaov"] = 360 / $ratio;
+
 
 //provide the tags for easy copy/paste
-if (!empty($_GET['v']) || !empty($_GET['h'])) {
-	print "Copy these Tags: <tt>panorama:$type;vfov:{$json['vaov']}";
+if (!empty($_GET['v']) || !empty($_GET['h']) || !empty($_GET['d'])) {
+	print "$ratio. Copy these Tags: <tt>panorama:$type;vfov:{$json['vaov']}";
 	if (!empty($json['haov']))
 		print ";hfov:{$json['haov']}";
 	print "</tt><hr>";
