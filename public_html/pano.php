@@ -135,7 +135,9 @@ else
 
 //provide the tags for easy copy/paste
 if (!empty($_GET['v']) || !empty($_GET['h']) || !empty($_GET['d'])) {
-	print "$ratio. Copy these Tags: <tt>panorama:$type;vfov:{$json['vaov']}";
+	print "Copy these Tags: <tt>panorama:$type";
+	if (!empty($json['haov']))
+		print ";vfov:{$json['vaov']}";
 	if (!empty($json['haov']))
 		print ";hfov:{$json['haov']}";
 	print "</tt><hr>";
@@ -185,14 +187,31 @@ if (preg_match('/panodirection:(\d+\.?\d*)/',$image->tags,$m)) {
 
 <h2><a href="/photo/<? echo $image->gridimage_id; ?>"><? print htmlentities($image->title); ?></a> by <? print htmlentities($image->realname); ?></h2>
 
-<? if (empty($json["haov"])) { ?>
+<? if (!empty($_GET['debug'])) { ?>
+	<script>
+	var gl = document.createElement('canvas').getContext('experimental-webgl');
+	var maxWidth = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+
+	document.write('this device\'s maximum supported size is ' + (maxWidth * 2) + 'px.<br>');
+	</script>
+	<?
+	print "Aspect Ratio: $ratio<br>";
+	print "Image: <b>{$row2['original_width']}</b> x {$row2['original_height']}<br>";
+	foreach ($json as $key => $value) {
+		if (!is_array($value))
+			print "$key: <b>".htmlentities($value)."</b><br>";
+	}
+	print "<hr>";
+}
+
+ if (empty($json["haov"]) || $json["vaov"] == 360) { ?>
         <p><i>The image appears to be a full 360 degree panorama, <span>so can fully rotate the view in the viewer below (drag with mouse).</span>
-        <? if (empty($json["vaov"])) { ?>
+        <? if (empty($json["vaov"]) || $json["vaov"] == 180) { ?>
                 <span>And in fact appears to be a full photosphere, so can look up and down too!</span>
         <? } ?>
         </i></p>
 <? } elseif ($json["haov"] > 60) { ?>
-	<p>Drag the image below to rotate the view. Can probably zoom in too.
+	<p>Drag the image below to rotate the view. <? if ($greatest > 640) { print "Use the +/- buttons, or mousewheel to zoom in/out."; } ?>
 <? } ?>
 
 <div id="panorama"></div>
