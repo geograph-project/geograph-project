@@ -46,9 +46,9 @@ if (stripos($image->tags,"panorama") === FALSE) {
 
 ######################
 
-$smarty->assign('responsive', true);
+$smarty->assign('responsive', 1);
 
-$smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
+$smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']).'1');
 
 ######################
 
@@ -62,7 +62,11 @@ if ($id == 5087080) {
 $row2 = $db->getRow("SELECT * FROM gridimage_size WHERE gridimage_id = $id");
 $great = max($row2['width'],$row2['height'],$row2['original_width'],$row2['original_height']);
 $ratio = $row2['original_width']/$row2['original_height'];
-if (!empty($_GET['full']) && $great > 640)
+if (!empty($_GET['size']) && $_GET['size'] == 8192 && $great > 8192) {
+	$path = $image->getImageFromOriginal(8192,8192);
+	$row2['original_width'] = 8192;
+	$row2['original_height'] = 8192 /$ratio;
+} elseif (!empty($_GET['full']) && $great > 640)
 	$path = $image->_getOriginalpath(true, false);
 elseif ($great > 1600)
 	$path = $image->getImageFromOriginal(1600,1600);
@@ -194,6 +198,7 @@ if (preg_match('/panodirection:(\d+\.?\d*)/',$image->tags,$m)) {
 
 	document.write('this device\'s maximum supported size is ' + (maxWidth * 2) + 'px.<br>');
 	</script>
+	<div style=" overflow-wrap: break-word; ">
 	<?
 	print "Aspect Ratio: $ratio<br>";
 	print "Image: <b>{$row2['original_width']}</b> x {$row2['original_height']}<br>";
@@ -202,6 +207,7 @@ if (preg_match('/panodirection:(\d+\.?\d*)/',$image->tags,$m)) {
 			print "$key: <b>".htmlentities($value)."</b><br>";
 	}
 	print "<hr>";
+	print "</div>";
 }
 
  if (empty($json["haov"]) || $json["vaov"] == 360) { ?>
