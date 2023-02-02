@@ -32,9 +32,10 @@ $db = NewADOConnection($GLOBALS['DSN']);
 if (empty($_GET['topic_id'])) {
 	?>
 	<form>
-		Enter tthe topic-ID of the thread to move posts FROM:
-		<input name="topic_id"><input type=submit> (will choose the specicifc posts in next page)
+		Enter the topic-ID of the thread to move posts FROM:
+		<input name="topic_id" required><input type=submit> (will choose the specicifc posts in next page)
 	</form>
+	For example, for the thread at /discuss/index.php?&amp;action=vthread&amp;forum=4&amp;<b>topic=<u>33306</u></b>&amp;page=2#4, enter just the <b>33306</b> number in box above.
 	<?
 	exit;
 }
@@ -92,8 +93,10 @@ foreach ($data as $row) {
 
 ?>
 </table>
+<br>
+<hr>
 Enter the topic-ID of the NEW thread to move TO:
-<input name="new_id"> (needs to be created first!)<br>
+<input name="new_id" required> (needs to be created first!)<br>
 <input type=submit>
 </form>
 

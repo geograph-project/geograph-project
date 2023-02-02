@@ -69,6 +69,8 @@ $sql .= " limit 200"; //need to be careful, as could split a ticket in half!
 	print "<hr><span style=color:blue>Blue - the new value (that is currently on image)</span>";
 	print "<hr><span style=color:Red>Red - the new value the ticket introduced, does NOT match what is currently on image.</span>";
 	print "<br><br>";
+	print "<div style=\"background-color:black;color:yellow;padding:2px;\">This page just lists all applied changes. It doesnt check the edit is actually removing data. Hence the check here. Need to confirm that it an actual <i>malicious</i> edit. I.e. generally only revert tickets where te 'blue' is worse than the 'green'. If values in red, then would need manual intervention</div>";
+	print "<br>";
 
 
 $recordSet = $db->Execute($sql);
@@ -79,12 +81,12 @@ $updated = array();
 $changes = array();
 
 print "<form method=post>";
-print "Suggestions created will be owned by:<br>";
+print "The reversion suggestion should be owned by:<br>";
 print "<input type=radio name=suggestor value=".$USER->user_id.">Your acccount (".htmlentities($USER->realname).")<br>";
 print "<input type=radio name=suggestor value=123491 checked>Trustees Account (123491)";
 
+print "<hr><p>".$recordSet->recordCount()." records shown</p>";
 print "<table border=1 cellpadding=4 cellspacing=0 bordercolor=#eeeeee>";
-print "<p>".$recordSet->recordCount()." records shown</p>";
 while (!$recordSet->EOF) {
         $row = $recordSet->fields;
 
@@ -140,7 +142,7 @@ while (!$recordSet->EOF) {
 }
 
 if ($last && $recordSet->recordCount() < $limit) {
-	print "<tr><td colspan=7 bgcolor=black style=color:white>Last...";
+	print "<tr><td colspan=7 bgcolor=black style=color:white>";
 	applyChanges($changes);
 } else {
 	print "<tr><td colspan=7 bgcolor=black style=color:white>Cant revert last one in list";
@@ -177,7 +179,7 @@ function applyChanges($changes) {
 		$ticket->commit('closed'); //commits 'immdate' changes, and creates and closes the ticket!
 		if (!empty($ticket->gridimage_ticket_id)) {
 			$db->Execute("UPDATE gridimage_ticket SET reverted_by = {$ticket->gridimage_ticket_id}, updated=updated WHERE gridimage_ticket_id = {$first['gridimage_ticket_id']}");
-			print "Created Ticket #<a href=\"/editimage.php?id=".htmlentities($first['gridimage_id'])."\">".$ticket->gridimage_ticket_id."</a>";
+			print "Created Suggestion #<a href=\"/editimage.php?id=".htmlentities($first['gridimage_id'])."\">".$ticket->gridimage_ticket_id."</a>";
 		}
 	} else {
 		$ticket->db = null;
@@ -185,7 +187,7 @@ function applyChanges($changes) {
 		$ticket->gridimage->grid_square->db = null;
 		if (!empty($_GET['print']))
 			print_r($ticket->changes);
-		print "Revert this ticket? <input type=checkbox name=\"tickets[{$first['gridimage_ticket_id']}]\">";
+		print "Revert this Suggestion? <input type=checkbox name=\"tickets[{$first['gridimage_ticket_id']}]\">";
 	}
 }
 
