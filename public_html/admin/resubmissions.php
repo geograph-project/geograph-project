@@ -219,9 +219,10 @@ if ($data) {
 	$image = new GridImage;
 	$image->_initFromArray($data);
 
+	$image->loadTags(true); //want array version to get prefix_stat
+
 	$image->pendingUrl = $image->_getOriginalpath(true,false,'_pending');
 	$image->previewUrl = $image->_getOriginalpath(true,false,'_preview');
-
 
 	if ($image->previewUrl == "/photos/error.jpg" && !empty($_GET['review'])) {
 		//deal when its already approved!

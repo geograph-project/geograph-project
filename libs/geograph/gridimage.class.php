@@ -705,14 +705,8 @@ split_timer('gridimage'); //starts the timer
 				$this->snippets_as_ref =false;
 		}
 
-		//find tags
-		if (empty($db)) $db=&$this->_getDB(true);
-		$this->tags = $db->getAll("SELECT prefix,tag,description FROM tag_public WHERE gridimage_id = {$this->gridimage_id} GROUP BY tag_id ORDER BY created");
-		if (!empty($this->tags)) {
-			$this->tag_prefix_stat = array();
-			foreach ($this->tags as $row)
-				@$this->tag_prefix_stat[$row['prefix']]++;
-		}
+		//might as well load tags too?
+		$this->loadTags(true);
 
 split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall time
 
@@ -1778,6 +1772,12 @@ split_timer('gridimage','after-lock',$thumbpath); //logs the wall time
 					} else {
 						list($width, $height) = $info;
 
+                               //todo, if large image may need vips
+                                //  vipsthumbnail 7395828_e967c39b_original.jpg --size 8192x8192
+                                // ... will then craete thumb as tn_7395828_e967c39b_original.jpg
+                                // may need to rename!
+
+
 						if (($width>$maxw) || ($height>$maxh)) {
 							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
 						} elseif (!$bestfit) {
@@ -2503,6 +2503,23 @@ split_timer('gridimage'); //starts the timer
 split_timer('gridimage','updateCachedTables',"{$this->gridimage_id}"); //logs the wall time
 
 	}
+
+	function loadTags($as_array = false) {
+		$db=&$this->_getDB(true);
+		if ($as_array) {
+			//this is same format as loadSnippets used to set (as used by photo page)
+	                $this->tags = $db->getAll("SELECT prefix,tag,description FROM tag_public WHERE gridimage_id = {$this->gridimage_id} GROUP BY tag_id ORDER BY created");
+        	        if (!empty($this->tags)) {
+                	        $this->tag_prefix_stat = array();
+	                        foreach ($this->tags as $row)
+        	                        @$this->tag_prefix_stat[$row['prefix']]++;
+                	}
+		} else {
+			//this is the same format as gridimage_search table uses
+			return $this->tags = $db->getOne("SELECT COALESCE(group_concat(distinct if(prefix!='',concat(prefix,':',tag),tag) order by prefix = 'top' desc,tag SEPARATOR '?'),'') as tags FROM tag_public WHERE gridimage_id = {$this->gridimage_id}");
+		}
+	}
+
 
 	/**
 	* Saves update tables based on gridimage

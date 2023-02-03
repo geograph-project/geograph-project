@@ -27,8 +27,8 @@ if (empty($image) || !$image->isValid() || $image->moderation_status=='rejected'
 
 $db = $image->_getDB(true);
 
-//check tag_public in case freshly added!
-$image->tags = $db->getOne("SELECT COALESCE(group_concat(distinct if(prefix!='',concat(prefix,':',tag),tag) order by prefix = 'top' desc,tag SEPARATOR '?'),'') as tags FROM tag_public WHERE gridimage_id = $id");
+//check tag_public in case freshly added! (plus might not be from gridiamge_search anyway)
+$image->loadTags();
 
 
 if (stripos($image->tags,"panorama") === FALSE) {

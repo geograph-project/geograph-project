@@ -10,6 +10,20 @@ So you might see contributors adding a wideangle photo here, even if the origina
 Please allow (with 'Close Enough') such images here, but should be from the same source imagery, even if the distortion is different.
 
 
+{if $image->tag_prefix_stat.panorama}
+        {foreach from=$image->tags item=item name=used}{if $item.prefix eq 'panorama'}
+              {if $item.tag eq 'photosphere'}
+                <div class="interestBox">Has the 360&deg; <b>PhotoSphere</b> Panorama Tag attached. <a href="/pano.php?id={$image->gridimage_id}">Open Viewer</a></div>
+              {elseif $item.tag eq '360'}
+                <div class="interestBox">Has the 360&deg; Panorama Tag attached. <a href="/pano.php?id={$image->gridimage_id}">Open Viewer</a></div>
+              {elseif $item.tag eq 'wideangle'}
+                <div class="interestBox">Has the WideAngle Panorama Tag attached. <a href="/pano.php?id={$image->gridimage_id}">Open Viewer</a></div>
+              {/if}
+        {/if}{/foreach}
+	(note the viewer link may not currently work!)
+        <br>
+{/if}
+
 {if $message}
 	<p>{$message|escape:'html'}</p>
 {/if}
