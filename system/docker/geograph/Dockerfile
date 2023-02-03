@@ -11,6 +11,7 @@ RUN set -eux; \
     gsfonts \
     libimage-exiftool-perl \
     libjpeg-turbo-progs \
+    libvips-tools \
     nginx \
     php-bz2 \
     php-memcache \

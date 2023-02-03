@@ -252,6 +252,12 @@ if (($ar = $filesystem->getimagesize($file,2)) !== FALSE && isset($ar['channels'
 }
 */
 
+                                //todo, if large image may need vips
+                                //  vipsthumbnail 7395828_e967c39b_original.jpg --size 8192x8192
+                                // ... will then craete thumb as tn_7395828_e967c39b_original.jpg
+                                // may need to rename!
+
+
 $command = "convert %s $options jpg:-";
 
 if (!empty($_GET['cmd'])) {

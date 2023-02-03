@@ -330,6 +330,8 @@ class UploadManager
 					return array('lossy'=>$lossy);
 				}
 
+				//todo, if large image, might need vips?
+
 				//note, could not set quality, and would try to maintain current or fallback to 92
 				// also -orient only UPDATES the Orientation tag, if none existing, its not added, but thats OK!
 				$cmd = sprintf ("\"%sconvert\" jpg:%s -rotate $degrees -orient TopLeft -quality 87 jpg:%s", $CONF['imagemagick_path'], $from, $to);
@@ -727,6 +729,11 @@ class UploadManager
 
 				//removed the unsharp as it makes some images worse - needs to be optional
 				// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
+
+				//todo, if large image may need vips
+				//  vipsthumbnail 7395828_e967c39b_original.jpg --size 8192x8192
+				// ... will then craete thumb as tn_7395828_e967c39b_original.jpg
+				// may need to rename!
 
 				if ($source) {
 					$cmd = sprintf ("\"%sconvert\" -resize %ldx%ld -quality 87 -strip jpg:%s jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $source, $filename);
