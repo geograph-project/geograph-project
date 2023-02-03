@@ -705,9 +705,6 @@ split_timer('gridimage'); //starts the timer
 				$this->snippets_as_ref =false;
 		}
 
-		//might as well load tags too?
-		$this->loadTags(true);
-
 split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall time
 
 	}
@@ -2504,11 +2501,14 @@ split_timer('gridimage','updateCachedTables',"{$this->gridimage_id}"); //logs th
 
 	}
 
-	function loadTags($as_array = false) {
+	function loadTags($as_array = false, $gid = null) {
 		$db=&$this->_getDB(true);
+		if (empty($gid)) {
+                        $gid = $this->gridimage_id;
+		}
 		if ($as_array) {
 			//this is same format as loadSnippets used to set (as used by photo page)
-	                $this->tags = $db->getAll("SELECT prefix,tag,description FROM tag_public WHERE gridimage_id = {$this->gridimage_id} GROUP BY tag_id ORDER BY created");
+	                $this->tags = $db->getAll("SELECT prefix,tag,description FROM tag_public WHERE gridimage_id = {$gid} GROUP BY tag_id ORDER BY created");
         	        if (!empty($this->tags)) {
                 	        $this->tag_prefix_stat = array();
 	                        foreach ($this->tags as $row)
@@ -2516,7 +2516,7 @@ split_timer('gridimage','updateCachedTables',"{$this->gridimage_id}"); //logs th
                 	}
 		} else {
 			//this is the same format as gridimage_search table uses
-			return $this->tags = $db->getOne("SELECT COALESCE(group_concat(distinct if(prefix!='',concat(prefix,':',tag),tag) order by prefix = 'top' desc,tag SEPARATOR '?'),'') as tags FROM tag_public WHERE gridimage_id = {$this->gridimage_id}");
+			return $this->tags = $db->getOne("SELECT COALESCE(group_concat(distinct if(prefix!='',concat(prefix,':',tag),tag) order by prefix = 'top' desc,tag SEPARATOR '?'),'') as tags FROM tag_public WHERE gridimage_id = {$gid}");
 		}
 	}
 

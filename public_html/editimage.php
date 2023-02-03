@@ -703,8 +703,10 @@ if (isset($_REQUEST['id']))
 
 			$image->lookupModerator();
 			$image->loadSnippets();
+			$image->loadTags(true); //request array format (same as loadSnippets used to do)
 
 			if (!empty($image->tags)) {
+				//we want a flat list of strings here
 				foreach ($image->tags as $row) {
 					if (isset($row['tag']))
 						$image->tags[] = empty($row['prefix'])?$row['tag']:"{$row['prefix']}:{$row['tag']}";

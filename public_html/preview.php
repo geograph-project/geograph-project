@@ -122,8 +122,10 @@ if (!empty($_POST))
 			$gid = sprintf('%0.0f',$gid);
 
 			$image->loadSnippets($gid);
+			$image->loadTags(true, $gid);
 		} elseif (!empty($_POST['id'])) {
 			$image->loadSnippets();
+			$image->loadTags(true); //request array format (same as loadSnippets used to do)
 		}
 	#}
 } else {

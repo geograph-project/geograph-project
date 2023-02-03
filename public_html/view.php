@@ -323,6 +323,7 @@ if ($image->isValid())
 
 		$image->loadSnippets();
 		$image->loadCollections();
+		$image->loadTags(true); //request array format (same as loadSnippets used to do)
 
 		//disable large image for [panorama: ] tagged images, needs to be done here, AFTER loadSnippets()!
 		if (!empty($image->tag_prefix_stat['panorama']))
