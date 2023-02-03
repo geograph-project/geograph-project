@@ -22,7 +22,7 @@
 
 ############################################
 
-$param = array('src'=>false, 'dst'=>false, 'move'=>false,
+$param = array('src'=>false, 'dst'=>false, 'move'=>false, 'overwrite'=>false,
 	'include'=>'*.gz', 'acl'=>'private', 'storage'=>'STANDARD_IA',
 	'dry'=>true, 'log'=>false);
 
@@ -54,8 +54,12 @@ list($bucket,$prefix) = $r = $filesystem->getBucketPath($param['dst']);
 //getBucket is the S3 function, it doesnt have our own wrapper, so need to supply the full bucket&prefix
 // public static function getBucket($bucket, $prefix = null, $marker = null, $maxKeys = null, $delimiter = null, $returnCommonPrefixes = false, $v2 = true)
 
-//we set unlimited, but make sure to only specify a deep folder.
-$list = $filesystem->getBucket($bucket, $prefix, null, null, '/', true, true);
+if ($param['overwrite']) {
+	$list = array();
+} else {
+	//we set unlimited, but make sure to only specify a deep folder.
+	$list = $filesystem->getBucket($bucket, $prefix, null, null, '/', true, true);
+}
 
 ############################################
 
