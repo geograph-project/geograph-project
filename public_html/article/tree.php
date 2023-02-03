@@ -165,7 +165,7 @@ $db = GeographDatabaseConnection(true);
 
 
 $smarty = new GeographPage;
-$smarty->assign('responsive', 1)
+$smarty->assign('responsive', 1);
 $smarty->display('_std_begin.tpl');
 
 print "<a href=\"/article/\">Back to Article List</a>";
