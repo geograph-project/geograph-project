@@ -159,7 +159,7 @@ if (isset($_POST['gridimage_id']))
 
 		}
 		if (!empty($status))
-			$db->Execute("UPDATE gridimage_pending gp SET status = '$status' WHERE gridimage_id = {$gridimage_id} AND (pending_id = {$pending_id} OR status IN ('new','open'))");
+			$db->Execute("UPDATE gridimage_pending gp SET status = '$status',moderator_id = {$USER->user_id} WHERE gridimage_id = {$gridimage_id} AND (pending_id = {$pending_id} OR status IN ('new','open'))");
 
 		$smarty->assign("last_id", $gridimage_id);
 	}

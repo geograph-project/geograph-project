@@ -2831,3 +2831,9 @@ alter table sphinx_placenames add open_id int unsigned default null;
 #################################################
 
 
+alter table gridimage_pending add moderator_id int unsigned default null after status;
+
+
+#################################################
+
+
