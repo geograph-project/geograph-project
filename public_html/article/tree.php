@@ -163,12 +163,23 @@ $db = GeographDatabaseConnection(true);
 
 	}
 
+
+$smarty = new GeographPage;
+$smarty->assign('responsive', 1)
+$smarty->display('_std_begin.tpl');
+
 print "<a href=\"/article/\">Back to Article List</a>";
+
+print "<h2>List of Articles presented in a Tree / Article Sitemap</h2>";
+
 print "<ul>";
 foreach ($t as $idx => $row) {
 	dump_list($row);
 }
 print "</ul>";
+
+$smarty->display('_std_end.tpl');
+
 
 function dump_list($in) {
 	if (is_array($in) && (!empty($in['children']) || !empty($in['url']))) {
