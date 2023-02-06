@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-	$param = array('table'=>'feature_item', 'debug'=>1, 'limit'=>10, 'ri'=>1, 'd'=>250, 'views'=>false);
+	$param = array('table'=>'feature_item', 'debug'=>1, 'limit'=>10, 'ri'=>1, 'd'=>250, 'views'=>false, 'where'=>'');
 
 	chdir(__DIR__);
 	require "./_scripts.inc.php";
@@ -56,7 +56,7 @@ if (!empty($param['views'])) {
 //todo, should make nateastings/narnortings SIGNED - so that easier to do maths without casting
 //alter table gb_images modify `nateastings` mediumint(8) NOT NULL DEFAULT 0, modify `natnorthings` mediumint(8) NOT NULL DEFAULT 0;
 
-		queryExecute("alter table {$key}_images add primary key(gridimage_id), add index(natnorthings), comment=".$db->Quote($sql),true);
+		queryExecute("alter table {$key}_images modify `nateastings` mediumint(8) NOT NULL DEFAULT 0, modify `natnorthings` mediumint(8) NOT NULL DEFAULT 0, add primary key(gridimage_id), add index(natnorthings), comment=".$db->Quote($sql),true);
 	}
 }
 
@@ -88,11 +88,17 @@ $c=0;
 
 $where[] = "(e > 0 OR wgs84_lat > 0)";
 
-$sql = "SELECT $col,gridref,wgs84_lat,wgs84_long,radius,reference_index,e,n,gridimage_id FROM {$param['table']}
+if (!empty($param['where']))
+	$where[] = $param['where'];
+
+$sql = "SELECT $col,feature_type_id,gridref,wgs84_lat,wgs84_long,radius,reference_index,e,n,gridimage_id FROM {$param['table']}
 	WHERE ".implode(" AND ",$where)." LIMIT {$param['limit']}";
 
 if (!empty($param['debug']))
 	print "$sql\n";
+
+$default_radius = $db->getAssoc("SELECT feature_type_id,default_radius FROM feature_type");
+$default_grlen = $db->getAssoc("SELECT feature_type_id,default_grlen FROM feature_type");
 
 ##########################################
 
@@ -126,10 +132,14 @@ if ($recordSet->RecordCount()) {
 
 	while (!$recordSet->EOF) {
 		$r = $recordSet->fields;
+
+		##################
+		//todo, compute e/n from gridref!
+
 		##################
 		//compute missing e/n (from lat/long)
 
-		if (empty($r['e']) && !empty($r['wgs84_lat'])) { //remember longitude could be 0!
+		if (empty($r['e']) && $r['wgs84_lat']>1) { //remember longitude could be 0!
 
 			list($e,$n,$reference_index) = $conv->wgs84_to_national($r['wgs84_lat'],$r['wgs84_long'],true);
 			if ($reference_index != $param['ri']) {
@@ -137,24 +147,39 @@ if ($recordSet->RecordCount()) {
 				$recordSet->MoveNext();
 				continue;
 			}
-			$e = intval($e);
-			$n = intval($n);
+
+			//put directly in $r, for the calculations below
+			$r['e'] = $e = intval($e);
+			$r['n'] = $n = intval($n);
 
 			//put in $cols so they get fed though to $updates!
-			$r['e'] = $e; $cols['e'] = "$e as e";
-			$r['n'] = $n; $cols['n'] = "$n as n";
+			$cols['e'] = "$e as e";
+			$cols['n'] = "$n as n";
 			$cols['reference_index'] = "$reference_index as reference_index";
 
-		} else {
+		} else { //unsetting any added by a previous row!
 			unset($cols['e']);
 			unset($cols['n']);
 			unset($cols['reference_index']);
 		}
+
+		##################
+		//compute missing lat/long
+
+		if ($r['wgs84_lat']<1 && !empty($r['e'])) { //remember longitude could be 0!
+			list($lat,$long) = $conv->national_to_wgs84($r['e'],$r['n'],$r['reference_index']);
+			$cols['wgs84_lat'] = "$lat as wgs84_lat";
+			$cols['wgs84_long'] = "$long as wgs84_long";
+		} else {
+			unset($cols['wgs84_lat']);
+			unset($cols['wgs84_long']);
+		}
+
 		##################
 		//compute missing gridref
 
 		if (empty($r['gridref'])) {
-			list($cols['gridref'],) = $conv->national_to_gridref($r['e'],$r['n'],8,$r['reference_index']); //8 shouldnt be harccoded!
+			list($cols['gridref'],) = $conv->national_to_gridref($r['e'],$r['n'],$default_grlen[$r['feature_type_id']] ?? 8,$r['reference_index']);
 			$cols['gridref'] = "'{$cols['gridref']}' as gridref";
 		} else {
 			unset($cols['gridref']);
@@ -171,7 +196,18 @@ if ($recordSet->RecordCount()) {
 		}
 		##################
 
-		$d = $r['radius'] ?? $param['d'];
+		$d = $r['radius']; //d=distance, not diameter!
+		if (empty($d)) $d = $default_radius[$r['feature_type_id']];
+		if (empty($d)) $d = $param['d'];
+if ($d < 1) {
+	print_r($r);
+	die("d fail\n");
+}
+if ($r['e'] < 1) {
+	print_r($r);
+	die("e fail\n");
+}
+
 		$r['mbr_ymin'] = $r['n'] - $d;
 		$r['mbr_ymax'] = $r['n'] + $d;
 		$r['mbr_xmin'] = $r['e'] - $d;
@@ -180,8 +216,10 @@ if ($recordSet->RecordCount()) {
 		$colstr = implode(', ',$cols);
 		$sql = "SELECT $colstr from $iamges_table where natnorthings between {$r['mbr_ymin']} and {$r['mbr_ymax']} AND nateastings between {$r['mbr_xmin']} and {$r['mbr_xmax']}";
 
-		if (!empty($param['debug']) && !$c)
+		if (!empty($param['debug']) && !$c) {
+			print_r($r);
 			print "$sql\n";
+		}
 
 		$updates = $db->getRow($sql);
 
