@@ -40,11 +40,11 @@ customGZipHandlerStart();
 
 	if (empty($_GET['output'])) {
                 header("Content-Type: text/javascript");
-		$url = "http://ww2.scenic-tours.co.uk/serve.js";
+		$url = "http://ww4.scenic-tours.co.uk/serve.js";
 		$mkey = $_SERVER['HTTP_HOST']."..js";
 		$_GET['output'] = 'js'; //to set the Content-Type below.
 	} elseif (!empty($_GET['t'])) {
-		$url = "http://ww2.scenic-tours.co.uk/serve.php?t=".$_GET['t']."&output=".$_GET['output'];
+		$url = "http://ww4.scenic-tours.co.uk/serve.php?t=".$_GET['t']."&output=".$_GET['output'];
 	        $mkey = $_SERVER['HTTP_HOST'].$_GET['output'].$_GET['t'];
 	} else {
 		$url = "http://ww4.scenic-tours.co.uk/serve.php?t=WolhXJL5405oNulVhXhhbluwN44X&output=".$_GET['output'];

@@ -88,7 +88,7 @@ if (!empty($_GET['_escaped_fragment_'])) {
 	}
 
 	//these are now local
-	//$remote = str_replace('<head>','<head><base href="http://ww2.scenic-tours.co.uk/"/>',$remote);
+	//$remote = str_replace('<head>','<head><base href="http://ww4.scenic-tours.co.uk/"/>',$remote);
 	$remote = preg_replace('/"serve\.v(\d+)\.js"/','"serve.php?v=$1"',$remote);
 
 if (isset($_GET['inner'])) {

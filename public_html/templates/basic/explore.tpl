@@ -46,7 +46,7 @@
 
 	<li><a href="/explore/searches.php"><b>Featured searches</b></a> - hand-picked example searches</li>
 
-	<!--li>{external href="http://ww2.scenic-tours.co.uk/serve.php?t=WolNuJvoMhXMJL5405olNblMbhZjaMtNXNh#station=achnasheen%3ANH1658" text="Geograph Stations Viewer"} - experimental interative station viewer</li-->
+	<!--li>{external href="http://ww4.scenic-tours.co.uk/serve.php?t=WolNuJvoMhXMJL5405olNblMbhZjaMtNXNh#station=achnasheen%3ANH1658" text="Geograph Stations Viewer"} - experimental interative station viewer</li-->
 
 	<li><a href="/explore/rivers.php">Prime <b>Rivers</b> of Great Britain</a> - sample of images for all major rivers</li>
 

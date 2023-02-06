@@ -42,7 +42,7 @@ if ($_SERVER['HTTP_HOST'] == 'staging.geograph.org.uk') {
 	print "<p>NOTE: This is a remote application, and is picking images from the live site, despite this page being on staging site</p>";
 }
 
-print "<iframe src=\"http://ww2.scenic-tours.co.uk/serve.php?t=WoNlVJvoblNlJL5405o44hahObuu4ZaNVwV\" width=850 height=850></iframe>";
+print "<iframe src=\"http://ww4.scenic-tours.co.uk/serve.php?t=WoNlVJvoblNlJL5405o44hahObuu4ZaNVwV\" width=850 height=850></iframe>";
 
 $smarty->display('_std_end.tpl');
 
