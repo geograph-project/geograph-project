@@ -81,7 +81,7 @@
 	</div>
 {/if}
 
-<h2 style="margin-bottom:0px" class="nowrap">{$title|escape:'html'}</h2>
+<h2 style="margin-bottom:0px" class="nowrap"><a href="/features/">Datasets</a> :: {$title|escape:'html'}</h2>
 <div>By <a title="View profile" href="/profile/{$user_id}">{$realname|escape:'html'}</a></div>
 <br>
 
