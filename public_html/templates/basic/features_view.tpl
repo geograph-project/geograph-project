@@ -126,7 +126,7 @@ var resultCount = {$count};
 
 <div id="light" class="white_content">
 <iframe src="about:blank" id="iframe" width="100%" height="100%"></iframe>
-</div><div id="fade" class="black_overlay"></div>
+</div><div id="fade" class="black_overlay" onclick="closePopup()"></div>
 
 
 {include file="_std_end.tpl"}
