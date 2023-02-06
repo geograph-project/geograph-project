@@ -114,7 +114,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
         {if $errors.source}<div class="formerror"><p class="error">{$errors.source}</p>{/if}
 
 	<label for="source">Data Source:</label>
-	<textarea rows="4" cols="80" name="source" style="width:58em">{$content|escape:"html"}</textarea>
+	<textarea rows="4" cols="80" name="source" style="width:58em">{$source|escape:"html"}</textarea>
 
 	<div class="fieldnotes">Where the data comes from, including any copyright notice needed. Can include URL hyperlinks</div>
 
@@ -131,6 +131,56 @@ AttachEvent(window,'load',setupSubmitForm,false);
 	{html_select_time prefix="published" time=`$published` use_24_hours=true}
 
 	{if $errors.published}</div>{/if}
+</div>
+
+
+<div class="field">
+        {if $errors.item_columns}<div class="formerror"><p class="error">{$errors.item_columns}</p>{/if}
+
+        <label for="item_columns">Columns:</label>
+
+	<table>
+        {foreach from=$columns key=name item=data}
+                <tr>
+                        <td>{$name}
+			<td><input type=checkbox name=item_columns[] value="{$name}" {if $data.required} disabled{/if}{if $data.enabled} checked{/if}>
+                        <td>{$data.info|escape:'html'}</td>
+                </tr>
+        {/foreach}
+        </table>
+
+	<div class="fieldnotes">Can enable as many or as few columns as needed. Don't have to enable any location based columns, if features dont have a location. 
+	Note also, generally should just enable one set, either gridref, e/n or lat/long. 
+	<br>
+	The multiple 'category' columns - category, subcategory, county, country, region, are all just textual fields, and contain any value. 
+	So can choose combination of columns that make sence for this datase, we dont have any formal requiremment of what category or county system choose to use!
+	</div>
+
+        {if $errors.item_columns}</div>{/if}
+</div>
+
+
+<div class="field">
+        {if $errors.default_radius}<div class="formerror"><p class="error">{$errors.default_radius}</p>{/if}
+
+        <label for="default_radius">Default Radius:</label>
+        <input type="number" name="default_radius" value="{$default_radius|escape:"html"}" size="4" />
+
+        <div class="fieldnotes">Default Size in Meters of features (if a location based dataset). This is used to set default size fo location searches. (eg for a postbox, might want to only search a 10m radius from selected point, but a Castle might use 100m. Can enable as a column, so store a value per feature</div>
+
+        {if $errors.default_radius}</div>{/if}
+</div>
+
+
+<div class="field">
+        {if $errors.default_grlen}<div class="formerror"><p class="error">{$errors.default_grlen}</p>{/if}
+
+        <label for="default_grlen">Default Grid Reference Length:</label>
+        <input type="number" name="default_grlen" value="{$default_grlen|escape:"html"}" size="1"/>
+
+        <div class="fieldnotes">When creating a Grid-Reference (if allow entrying of e/n, or lat/long) what resolusion to create. 8 = 8 figure gr - which is a 10m square.</div>
+
+        {if $errors.default_grlen}</div>{/if}
 </div>
 
 

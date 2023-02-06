@@ -46,6 +46,10 @@ $cacheid = '';
 		$smarty->assign('realname', $USER->realname);
 		$smarty->assign('user_id', $USER->user_id);
 		$page = array();
+		$page['item_columns'] = 'name,category,gridref,gridimage_id';
+		$page['default_grlen'] = '8';
+		$page['default_radius'] = '100';
+		$smarty->assign($page);
 
 		$USER->getStats();
 	        if ($USER->stats['images'] < 5) {
@@ -92,9 +96,14 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	if ($_POST['title'] == "New Dateset")
 		$errors['title'] = "Please give a meaningful title";
 
+	if (!empty($_POST['item_columns'])) {
+		array_unshift($_POST['item_columns'],'name'); //always want this!
+		$_POST['item_columns'] = implode(",",$_POST['item_columns']);
+	}
+
 	$updates = array();
-	foreach (array('title','url','content','extract','footnote','licence','source','published') as $key) {
-		if ($page[$key] != $_POST[$key]) {
+	foreach (array('title','url','content','extract','footnote','licence','source','published','default_grlen','item_columns','default_radius') as $key) {
+		if (@$page[$key] != $_POST[$key]) {
 			$updates[$key] = trim(strip_tags($_POST[$key]));
 			$smarty->assign($key, $_POST[$key]);
 		}
@@ -147,6 +156,31 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 }
 
 $smarty->assign('licences', array('none' => '(Temporarily) Not Published','pd' => 'Public Domain','cc-by-sa/2.0' => 'Creative Commons BY-SA/2.0' ,'copyright' => 'Copyright'));
+
+$list = array(
+        'name' => array('info'=>'the main name for the feature','required'=>1),
+        'label' => array('info'=>'optional textual label, useful to add supplemental info to each row. Could also a unique id'),
+        'category' => array('info'=>'optional category, useful to filter/sort items'),
+        'subcategory' => array('info'=>'another optional cagegory, again for filtering etc'),
+        'county' => array('info'=>'can allocate items to county for better filtering'),
+        'country' => array('info'=>'can allocate items to country for filtering'),
+        'region' => array('info'=>'can allocate items to region for filtering'),
+        'gridref' => array('info'=>'Grid-Reference, of arbitary precision, if features have a location, this is recommended way to refer to it'),
+        'e' => array('info'=>'eastings on national grid (either osgb or irish grid)'),
+        'n' => array('info'=>'northings on national grid (either osgb or irish grid)'),
+        'reference_index' => array('info'=>'1=osgb36, 2=irish grid'),
+        'wgs84_lat' => array('info'=>'latitude (wgs84)'),
+        'wgs84_long' => array('info'=>'longitude (wgs84)'),
+        'radius' => array('info'=>'allows storing an approximate radius (in meters) of the feature, to make more refine local searches for "images nearby"'),
+        'gridimage_id' => array('info'=>'stores the ID of a selected image. As the whole point of function is to link images, would be unusual not to enable this one!'),
+        'nearby_images' => array('info'=>'automated column of count of nearby images (only works, if have location AND radius)'),
+        'sorter' => array('info'=>'supplementry numberic column, intended for users to sort the table. Could be size or population based'),
+);
+foreach (explode(',',$page['item_columns']) as $key)
+	$list[$key]['enabled']=1;
+
+
+$smarty->assign('columns',$list);
 
 $smarty->display($template, $cacheid);
 
