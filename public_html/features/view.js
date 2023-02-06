@@ -218,11 +218,21 @@ function renderTable(data) {
 
 		for(q=0;q<columns.length;q++) {
                         var name = columns[q];
-			if (row[name] === null || row[name] === 'null') //would output the word null
+			if (row[name] === null || row[name] === 'null') { //would output the word null
 	                        $tr.append($('<td/>'));
-			else if (name == 'gridref') {
+			} else if (name == 'gridref') {
 				var $a = $('<a></a>').text(row[name]).attr('href','/gridref/'+encodeURIComponent(row[name])+'/links');
 				$tr.append($('<td/>').append($a));
+			} else if (name == 'nearby_images') {
+				if (row['gridref']) {
+					var url = '/features/near.php?q='+encodeURIComponent(row['gridref'])+'&type_id='+feature_type_id;
+					if (row['radius'] && row['radius']>1)
+						url = url + "&dist=" + Math.floor(row['radius']*1.2);
+					var $a = $('<a></a>').text(row[name]).attr('href',url).addClass('popupLink');
+					$tr.append($('<td align=right/>').append($a));
+				} else {
+					$tr.append($('<td align=right/>').text(row[name]));
+				}
 			} else if (name == 'gridimage_id') {
 				if (row[name] && row['thumbnail']) {
 					var $a = $('<a><img loading="lazy"/></a>');
@@ -235,6 +245,8 @@ function renderTable(data) {
 				} else {
 					$tr.append($('<td/>'));
 				}
+			} else if (name == 'sorter' || name == 'radius') {
+	                        $tr.append($('<td align=right/>').text(row[name]));
 			} else
 	                        $tr.append($('<td/>').text(row[name]));
 		}
