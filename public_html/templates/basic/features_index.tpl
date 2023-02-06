@@ -14,6 +14,7 @@
 			<td>{$index+1}.</td>
 			<td><b><a href="/features/view.php?id={$type.feature_type_id}" style="color:yellow">{$type.title|default:'untitled dataset'|escape:'html'}</b></td>
 			<td align=right>{$type.rows|thousends} features</td>
+			<td align=right>{$type.percent}% photographed</td>
 		</tr>
 		{if $type.extract}
 			<tr>
