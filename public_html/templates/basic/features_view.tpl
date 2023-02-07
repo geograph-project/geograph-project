@@ -92,6 +92,56 @@
 	</details>
 {/if}
 
+{if $licence && $licence != 'none'}
+	<details open>
+		<summary>Dataset Licence</summary>
+
+		{if $licence == 'copyright'}
+			<small>&copy;</small> Copyright <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>, {$published|date_format:" %B %Y"}
+
+		{elseif $licence == 'cc-by-sa/2.0'}
+			<!-- Creative Commons Licence -->
+				&copy; Copyright {$published|date_format:" %B %Y"}, <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>;
+				licensed for re-use under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+			<!-- /Creative Commons Licence -->
+
+		{elseif $licence == 'cc-by-sa/4.0'}
+			<!-- Creative Commons Licence -->
+				&copy; Copyright {$published|date_format:" %B %Y"}, <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>;
+				licensed for re-use under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" class="nowrap">Creative Commons Licence</a>.</div>
+			<!-- /Creative Commons Licence -->
+
+		{elseif $licence == 'geograph'}
+			<!-- Creative Commons Licence -->
+				&copy; Copyright {$published|date_format:" %B %Y"}, <a href="/" title="Geograph Project">Geograph Project LTD</a>;
+				licensed for re-use under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" class="nowrap">Creative Commons Licence</a>.</div>
+			<!-- /Creative Commons Licence -->
+
+		{elseif $licence == 'odbl'}
+			This {$title|escape:'html'} is made available under the Open Database License: <a rel="license" href="http://opendatacommons.org/licenses/odbl/1.0/">http://opendatacommons.org/licenses/odbl/1.0/</a>. 
+			Any rights in individual contents of the database are licensed under the Database Contents License: <a href="http://opendatacommons.org/licenses/dbcl/1.0/" class="nowrap">http://opendatacommons.org/licenses/dbcl/1.0/</a>
+
+		{elseif $licence == 'ogl'}
+			Contains public sector information licensed under the Open Government Licence v3.0.
+			<a rel="license" href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/</a>
+
+		{else}
+			by <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>, {$published|date_format:" %B %Y"};
+			This work is dedicated to the <a rel="license" href="http://creativecommons.org/licenses/publicdomain/">Public Domain</a>.</div>
+		{/if}
+
+		{if $moreCredits}
+			<div class="ccmessage" style="color:gray; font-size:0.8em; text-align:right">With contributions by {$moreCredits}. (<a href="/article/history.php?page={$url|escape:'url'}">details</a>)</div>
+		{/if}
+		{if $imageCredits && $licence != 'cc-by-sa/2.0'}
+			<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images are under a separate <a href="#imlicence">Creative Commons Licence</a>.</div>
+		{elseif $imageCredits}
+			<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images also under a similar <a href="#imlicence">Creative Commons Licence</a>.</div>
+		{/if}
+
+	</details>
+{/if}
+
 {if $source}
 	<details open>
 		<summary>Data Source</summary>

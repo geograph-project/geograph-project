@@ -155,7 +155,15 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	}
 }
 
-$smarty->assign('licences', array('none' => '(Temporarily) Not Published','pd' => 'Public Domain','cc-by-sa/2.0' => 'Creative Commons BY-SA/2.0' ,'copyright' => 'Copyright'));
+$smarty->assign('licences', array('none' => '(Temporarily) Not Published',
+	'pd' => 'Public Domain',
+	'cc-by-sa/2.0' => 'Creative Commons BY-SA/2.0',
+	'cc-by-sa/4.0' => 'Creative Commons BY-SA/4.0',
+	'geograph' => 'CC-BY-SA/4.0 attributed to Geograph Project',
+	'odbl' => 'Open Database License + Database Contents License',
+	'ogl' => 'Open Government Licence v3.0',
+	'copyright' => 'Copyright to you'
+));
 
 $list = array(
         'name' => array('info'=>'the main name for the feature','required'=>1),

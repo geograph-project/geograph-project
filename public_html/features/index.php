@@ -38,7 +38,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$db = GeographDatabaseConnection(true);
 
 	$list = $db->getAll("SELECT f.*,count(feature_item_id) as `rows`,format(sum(gridimage_id>0)/count(feature_item_id)*100,1) as percent
-		 FROM feature_type f INNER JOIN feature_item i USING (feature_type_id,status) WHERE status = 1 GROUP BY feature_type_id");
+		 FROM feature_type f INNER JOIN feature_item i USING (feature_type_id,status)
+		 WHERE status = 1 AND licence != 'none' GROUP BY feature_type_id");
 
 	$smarty->assign_by_ref('list', $list);
 }
