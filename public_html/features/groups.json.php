@@ -60,7 +60,7 @@ print "{";
 
 print "\"count\":$count\n"; $sep = ",";
 
-foreach (array('name','label','category','subcategory','county','country','region') as $col) {
+foreach (array('name','category','subcategory','county','country','region') as $col) {
 	//todo, check the col is 'active' on this dataset!
 
 	if ($col == 'name') {

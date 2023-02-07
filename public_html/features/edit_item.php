@@ -91,7 +91,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$errors = array();
 	$updates = array();
 	foreach (explode(',',$row['item_columns']) as $key) {
-		if ($page[$key] != $_POST[$key]) {
+		if ($page[$key] != $_POST[$key] && $key != 'nearby_images') {
 			$updates[$key] = trim(strip_tags($_POST[$key]));
 			$smarty->assign($key, $_POST[$key]);
 		}

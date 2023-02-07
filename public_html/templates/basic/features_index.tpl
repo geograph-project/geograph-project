@@ -18,7 +18,7 @@
 		</tr>
 		{if $type.extract}
 			<tr>
-	                        <td colspan=3>{$type.extract|escape:'html'}</td>
+	                        <td colspan=4 style="border-bottom:2px solid gray">{$type.extract|escape:'html'}</td>
 			</tr>
 		{/if}
 	{/foreach}

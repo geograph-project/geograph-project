@@ -43,7 +43,7 @@ function add_by_name($name, $names) {
 	//we want the first from $names that exist on $in
 	foreach($names as $key)
 		if (isset($in[$key]))
-                        return $cols[$name] = $key; //only want to add one!
+                        return $cols[$name] = "`$key`"; //only want to add one!
 
 }
 foreach ($out as $name => $data) {
@@ -61,12 +61,12 @@ foreach ($out as $name => $data) {
 			if (isset($in['name1']) && isset($in['name2']))
 				 $cols['name'] = "concat_ws(' / ',nullif(name1,''),nullif(name2,''))";
 			else
-				add_by_name($name, array('name','title','def_name','def_nam')); break;
+				add_by_name($name, array('name','title','def_name','def_nam','stationName')); break;
 		//case 'name': add_by_name($name, array()); break;
 		case 'label':
 			if ($param['table'] == 'tuktrig')
                                 $cols[$name] = "id"; //the TP id is non-numeric
-                        else add_by_name($name, array('postcode_district'));
+                        else add_by_name($name, array('postcode_district','crsCode'));
 			break;
 		case 'category':
 			if ($param['table'] == 'tuktrig')
