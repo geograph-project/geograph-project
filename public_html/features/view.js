@@ -7,7 +7,7 @@ $(function() {
 		var $div = $('<div>Show:</div>');
 		$div.append('<input type=radio name=gridimage value="" checked>All &nbsp;');
 		$div.append('<input type=radio name=gridimage value="1">With Image &nbsp;');
-		$div.append('<input type=radio name=gridimage value="0">without Image &nbsp;');
+		$div.append('<input type=radio name=gridimage value="0">Without Image &nbsp;');
 		$div.append('<input type=radio name=gridimage value="2">Automatic Selected Images Only &nbsp;');
 		$div.appendTo($form);
 	}
@@ -15,14 +15,12 @@ $(function() {
 
 
 	$('div#maincontent').on('click', 'a.popupLink', function(event) {
-		//console.log(this.href);
-		//window.open(this.href+"&inner=1");
 
 	        document.getElementById('light').style.display='block';
 	        document.getElementById('fade').style.display='block';
 		document.getElementById('light').style.position = 'fixed';
 
-		if (item_id = $(this).data('item_id'))
+		if (item_id = $(this).closest('tr').data('item_id'))
 			current_item_id = item_id;
 		document.getElementById('iframe').src = this.href+"&inner=1";
 
