@@ -243,7 +243,7 @@ function renderTable(data) {
 				near_url = near_url + "&name=" + encodeURIComponent(row['name']);
 			if (editing)
 				near_url = near_url + "&editing=true";
-			var links_url = '/gridref/'+encodeURIComponent(row[name])+'/links'
+			var links_url = '/gridref/'+encodeURIComponent(row['gridref'])+'/links'
 		}
 		var edit_url = 'edit_item.php?id='+row['feature_item_id']+'&type_id='+feature_type_id;
 
@@ -252,7 +252,7 @@ function renderTable(data) {
 			if (row[name] === null || row[name] === 'null') { //would output the word null
 	                        $tr.append($('<td/>'));
 			} else if (name == 'gridref' && row['gridref']) {
-				$tr.append($('<td/>').append( $('<a></a>').text(row[name]).attr('href',links_url) ));
+				$tr.append($('<td/>').append( $('<a></a>').text(row[name]).attr('href',links_url).attr('target','_blank') ));
 			} else if (name == 'nearby_images') {
 				if (row['gridref']) {
 					$tr.append($('<td align=right/>').append( $('<a></a>').text(row[name]).attr('href',near_url).addClass('popupLink') ));
@@ -263,7 +263,7 @@ function renderTable(data) {
 				if (row[name] && row['thumbnail']) {
 					var $a = $('<a><img loading="lazy"/></a>');
 					$a.find('img').attr('src',row['thumbnail']);
-					$a.attr('href','/photo/'+row['gridimage_id']);
+					$a.attr('href','/photo/'+row['gridimage_id']).attr('target','_blank');
 		                        $tr.append($('<td/>').append($a));
 				} else if (editing) {
 		                        $tr.append($('<td/>').append( $('<a>Suggest an Image</a>').attr('href',row['gridref']?near_url:edit_url).addClass('popupLink') ));
