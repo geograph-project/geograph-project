@@ -102,19 +102,19 @@
 		{elseif $licence == 'cc-by-sa/2.0'}
 			<!-- Creative Commons Licence -->
 				&copy; Copyright {$published|date_format:" %B %Y"}, <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>;
-				licensed for re-use under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+				licensed for re-use under a BY-SA/2.0 <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.
 			<!-- /Creative Commons Licence -->
 
 		{elseif $licence == 'cc-by-sa/4.0'}
 			<!-- Creative Commons Licence -->
 				&copy; Copyright {$published|date_format:" %B %Y"}, <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>;
-				licensed for re-use under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" class="nowrap">Creative Commons Licence</a>.</div>
+				licensed for re-use under a BY-SA/4.0 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" class="nowrap">Creative Commons Licence</a>.
 			<!-- /Creative Commons Licence -->
 
 		{elseif $licence == 'geograph'}
 			<!-- Creative Commons Licence -->
-				&copy; Copyright {$published|date_format:" %B %Y"}, <a href="/" title="Geograph Project">Geograph Project LTD</a>;
-				licensed for re-use under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" class="nowrap">Creative Commons Licence</a>.</div>
+				&copy; Copyright {$published|date_format:" %B %Y"}, <a href="/" title="Geograph Project">Geograph Project Ltd</a>;
+				licensed for re-use under a BY-SA/4.0 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" class="nowrap">Creative Commons Licence</a>.
 			<!-- /Creative Commons Licence -->
 
 		{elseif $licence == 'odbl'}
@@ -127,7 +127,7 @@
 
 		{else}
 			by <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>, {$published|date_format:" %B %Y"};
-			This work is dedicated to the <a rel="license" href="http://creativecommons.org/licenses/publicdomain/">Public Domain</a>.</div>
+			This work is dedicated to the <a rel="license" href="http://creativecommons.org/licenses/publicdomain/">Public Domain</a>.
 		{/if}
 
 		{if $moreCredits}
