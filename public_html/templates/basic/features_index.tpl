@@ -11,8 +11,8 @@
 	<table style="border:1px solid black; background:#000066;color:white" cellpadding=4>
 	{foreach from=$list key=index item=type}
 		<tr>
-			<td>{$index+1}.</td>
-			<td><b><a href="/features/view.php?id={$type.feature_type_id}" style="color:yellow">{$type.title|default:'untitled dataset'|escape:'html'}</b></td>
+			<td><b><a href="/features/view.php?id={$type.feature_type_id}" 
+				style="color:yellow">{$type.title|escape:'html'|regex_replace:'/(Images|Photos|Photographs) of/':'</b>$1 of<b>'|regex_replace:'/(in )?(Great Britain|GB|Ireland|British|Irish|UK)/':'</b>$1<i>$2</i><b>'}</b></td>
 			<td align=right>{$type.rows|thousends} features</td>
 			<td align=right>{$type.percent}% photographed</td>
 		</tr>

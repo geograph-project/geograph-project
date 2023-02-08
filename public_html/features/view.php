@@ -10,13 +10,14 @@ $smarty = new GeographPage;
 $template = 'features_view.tpl'; $cacheid = '';
 
 $db = GeographDatabaseConnection(true);
+$isadmin=($USER->hasPerm('moderator') || $USER->hasPerm('director'))?1:0;
 
 $id = intval($_GET['id']);
 
 $cacheid = $id;
 
-//todo, honour licewnce=none?!
-$row = $db->getRow("SELECT t.*,realname FROM feature_type t LEFT JOIN user USING (user_id) WHERE feature_type_id = $id AND status > 0");
+$row = $db->getRow("SELECT t.*,realname FROM feature_type t LEFT JOIN user USING (user_id)
+	 WHERE feature_type_id = $id AND status > 0 AND (licence!='none' OR $isadmin OR user_id = {$USER->user_id})");
 
 if (empty($row)) {
 	header("HTTP/1.0 410 Gone");

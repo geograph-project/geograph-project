@@ -67,7 +67,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
         <label for="extract">Short Description:</label>
         <input type="text" name="extract" value="{$extract|escape:"html"}" maxlength="255" size="90" style="width:58em"/>
 
-        <div class="fieldnotes">Please provide a meaningful short description of the content.</div>
+        <div class="fieldnotes">A short description of the dataset, shown on the dataset listing pages.</div>
 
         {if $errors.extract}</div>{/if}
 </div>
@@ -91,7 +91,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 	<label for="footnote">Foot Note:</label>
 	<textarea rows="5" cols="80" name="footnote" style="width:58em">{$footnote|escape:"html"}</textarea>
 
-	<div class="fieldnotes">Optional extra information, to put at the end, below the data table</div>
+	<div class="fieldnotes">Optional extra information, to put at the end, below the data table.</div>
 
 	{if $errors.content}</div>{/if}
 </div>
@@ -103,8 +103,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
         <label for="licence">Licence:</label>
         <select name="licence">
         {html_options options=$licences selected=$licence}
-        </select> by
-        <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>
+        </select> 
 
         {if $errors.licence}</div>{/if}
 </div>

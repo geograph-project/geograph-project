@@ -96,8 +96,12 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 			$smarty->assign($key, $_POST[$key]);
 		}
 	}
+
+	if (!empty($updates['gridimage_id'])) //already only set if user changed it!
+		$updates['gridimage_id_user_id'] = $USER->user_id;
+
 	//todo, when edit 'gridref' need to invalidae the eastings/norhting/ri + lat/long
-	//same is was enable editing easting/northing directly for example. 
+	//same is was enable editing easting/northing directly for example.
 
 	if (!count($updates)) {
 		$smarty->assign('error', "No Changes to Save");
