@@ -417,6 +417,7 @@ print "<!-- ($lat,$lng) -->";
 	                        order by w desc, distance asc, sequence asc
         	                limit {$limit}");
 		} else {
+			$ordered = true; //so can group the images by distance
 	                $rows['ordered'] = $sph->getAll($sql = "
         	                select id,realname,user_id,title,grid_reference $columns
                 	        from sample8
@@ -493,7 +494,7 @@ if (!empty($rows)) {
 			$row['gridimage_id'] = $row['id'];
                         $image = new GridImage();
                         $image->fastInit($row);
-			if (isset($row['distance']) && !empty($rows['ordered'])) {
+			if (isset($row['distance']) && !empty($ordered)) {
 				if ($image->distance < 800 && $square->precision < 1000) {
 					if ($image->distance < 10 && $square->precision <= 100) {
 						$d2 = 0.01;
