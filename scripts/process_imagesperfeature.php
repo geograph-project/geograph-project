@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-	$param = array('table'=>'feature_item', 'debug'=>1, 'limit'=>10, 'ri'=>1, 'd'=>250, 'views'=>false, 'where'=>'');
+	$param = array('table'=>'feature_item', 'debug'=>1, 'limit'=>10, 'ri'=>0, 'd'=>250, 'views'=>false, 'where'=>'');
 
 	chdir(__DIR__);
 	require "./_scripts.inc.php";
@@ -81,12 +81,12 @@ $where = array();
 
 $where[] = "(".implode(' OR ',$or).")";
 
-if (isset($columns['reference_index']))
+if (isset($columns['reference_index']) && $param['ri'])
 	$where[] = "reference_index = {$param['ri']}";
 
 $c=0;
 
-$where[] = "(e > 0 OR wgs84_lat > 0)";
+$where[] = "(e > 0 OR wgs84_lat > 0 OR gridref!='')";
 
 if (!empty($param['where']))
 	$where[] = $param['where'];
@@ -111,10 +111,9 @@ $recordSet = $db->Execute($sql) or die("$sql\n".$db->ErrorMsg()."\n\n");
 if ($recordSet->RecordCount()) {
 
 	//use a special table, precompiled, pre-filted by RI and ony nateastings>0
-	$iamges_table = ($param['ri'] == 2)?'ie_images':'gb_images';
 
 	if (!empty($param['debug']))
-		print "Start = {$recordSet->fields[$col]} via $iamges_table: ";
+		print "Start = {$recordSet->fields[$col]}: ";
 
 	$cols = array();
 	if (isset($columns['images']))		$cols[] = 'COUNT(*) as images';
@@ -133,36 +132,44 @@ if ($recordSet->RecordCount()) {
 	while (!$recordSet->EOF) {
 		$r = $recordSet->fields;
 
-		##################
-		//todo, compute e/n from gridref!
+		//NOTE!! Careful NOT to use continue here, as need to call MoveNext, but allow need the unset($col's)
 
+		##################
+		//compute e/n from gridref
+
+		if (!empty($r['gridref']) && empty($r['e'])) {
+			$square=new GridSquare;
+			$square->_setDB($db);
+
+			$grid_ok=$square->setByFullGridRef($r['gridref'],true,true);
+			if ( $grid_ok ) {
+				$r['e'] = $e = $square->nateastings;
+				$r['n'] = $n = $square->natnorthings;
+			        $r['reference_index'] = $square->reference_index;
+
+				//put in $cols so they get fed though to $updates!
+				$cols['e'] = "$e as e";
+				$cols['n'] = "$n as n";
+				$cols['reference_index'] = "{$r['reference_index']} as reference_index";
+			}
+		}
 		##################
 		//compute missing e/n (from lat/long)
 
 		if (empty($r['e']) && $r['wgs84_lat']>1) { //remember longitude could be 0!
 
 			list($e,$n,$reference_index) = $conv->wgs84_to_national($r['wgs84_lat'],$r['wgs84_long'],true);
-			if ($reference_index != $param['ri']) {
-				//todo, we could still store the coordinate! having computed it!
-				$recordSet->MoveNext();
-				continue;
-			}
 
 			//put directly in $r, for the calculations below
 			$r['e'] = $e = intval($e);
 			$r['n'] = $n = intval($n);
+		        $r['reference_index'] = $reference_index;
 
 			//put in $cols so they get fed though to $updates!
 			$cols['e'] = "$e as e";
 			$cols['n'] = "$n as n";
 			$cols['reference_index'] = "$reference_index as reference_index";
-
-		} else { //unsetting any added by a previous row!
-			unset($cols['e']);
-			unset($cols['n']);
-			unset($cols['reference_index']);
 		}
-
 		##################
 		//compute missing lat/long
 
@@ -170,19 +177,13 @@ if ($recordSet->RecordCount()) {
 			list($lat,$long) = $conv->national_to_wgs84($r['e'],$r['n'],$r['reference_index']);
 			$cols['wgs84_lat'] = "$lat as wgs84_lat";
 			$cols['wgs84_long'] = "$long as wgs84_long";
-		} else {
-			unset($cols['wgs84_lat']);
-			unset($cols['wgs84_long']);
 		}
-
 		##################
 		//compute missing gridref
 
 		if (empty($r['gridref'])) {
 			list($cols['gridref'],) = $conv->national_to_gridref($r['e'],$r['n'],$default_grlen[$r['feature_type_id']] ?? 8,$r['reference_index']);
 			$cols['gridref'] = "'{$cols['gridref']}' as gridref";
-		} else {
-			unset($cols['gridref']);
 		}
 		##################
 		//find nearest image (needs dynamic coordinate!) but also only if there ISNT an image already!
@@ -191,8 +192,6 @@ if ($recordSet->RecordCount()) {
 			//$cols['gridimage_id'] = 'MIN(gridimage_id) as gridimage';
 			$dist_sq = "pow(nateastings-{$r['e']},2)+pow(natnorthings-{$r['n']},2)"; //no bother sqrt as we only order anyway!
 			$cols['gridimage_id'] = "GROUP_CONCAT(gridimage_id ORDER BY $dist_sq LIMIT 1) AS gridimage_id";
-		} else {
-			unset($cols['gridimage_id']);
 		}
 		##################
 
@@ -213,6 +212,8 @@ if ($r['e'] < 1) {
 		$r['mbr_xmin'] = $r['e'] - $d;
 		$r['mbr_xmax'] = $r['e'] + $d;
 
+		$iamges_table = ($r['reference_index'] == 2)?'ie_images':'gb_images';
+
 		$colstr = implode(', ',$cols);
 		$sql = "SELECT $colstr from $iamges_table where natnorthings between {$r['mbr_ymin']} and {$r['mbr_ymax']} AND nateastings between {$r['mbr_xmin']} and {$r['mbr_xmax']}";
 
@@ -226,7 +227,6 @@ if ($r['e'] < 1) {
 		if (empty($updates['nearby_images']))
 			$updates['nearby_images'] = 0; //if there are no images, get null, but we use null to track progress!
 
-
 		$sql = "UPDATE {$param['table']} SET `".implode('` = ?,`',array_keys($updates))."` = ? WHERE {$col} = ".$db->Quote($recordSet->fields[$col]);
 
 		if (!empty($param['debug']) && !$c) {
@@ -238,6 +238,15 @@ if ($r['e'] < 1) {
 		$recordSet->MoveNext();
 		$c++;
 		if (!empty($param['debug']) && !($c%100)) print "$c. ";
+
+		//these only for the one image
+		unset($cols['gridref']);
+		unset($cols['e']);
+		unset($cols['n']);
+		unset($cols['reference_index']);
+		unset($cols['wgs84_lat']);
+		unset($cols['wgs84_long']);
+		unset($cols['gridimage_id']);
 	}
 }
 
