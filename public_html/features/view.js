@@ -266,7 +266,7 @@ function renderTable(data) {
 					$a.attr('href','/photo/'+row['gridimage_id']);
 		                        $tr.append($('<td/>').append($a));
 				} else if (editing) {
-		                        $tr.append( $('<td/>').html('<a>Suggest an Image</a>').find('a').attr('href',row['gridref']?near_url:edit_url).addClass('popupLink') );
+		                        $tr.append($('<td/>').append( $('<a>Suggest an Image</a>').attr('href',row['gridref']?near_url:edit_url).addClass('popupLink') ));
 				} else {
 					$tr.append($('<td/>'));
 				}
