@@ -56,7 +56,6 @@ if (!empty($_GET['q'])) {
 		$_GET['q'] = utf8_to_latin1($_GET['q']); //even though this page is latin1, browsers can still send us UTF8 queries
 	}
 
-
 	$qu = urlencode(trim($_GET['q']));
 	$qu2 = urlencode2(trim($_GET['q']));
 	$qh = htmlentities2(trim($_GET['q']));
@@ -73,13 +72,13 @@ if (!empty($_GET['q'])) {
 	}
 
 	$smarty->assign("page_title",'Photos near '.$_GET['q']);
-	$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/near/$qu2\"/>");
+	$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/near/$qu2\"/>"); //this is not actully the near page, but just in case this gets crawlled!
 
 	print "<base target=_blank>";
 
 	$smarty->display("_basic_begin.tpl",substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 
-	if ($memcache->valid) {
+	if ($memcache->valid && empty($_GET['refresh'])) {
 		$str = $memcache->name_get('fnear',$mkey);
 		if (!empty($str)) {
                         if ($CONF['PROTOCOL'] == "https://") {
@@ -94,8 +93,6 @@ if (!empty($_GET['q'])) {
 			}
 
 			print $str;
-
-			//print "<hr><p style='background-color:purple;color:white;padding:1em;margin:0'>Dissatisfied with these results? <a style='color:yellow' href='#' onclick=\"jQl.loadjQ('/js/search-feedback.js');return false\">Please take this short survey</a>.</p>";
 
 			//$smarty->display('_basic_end.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 			exit;
@@ -124,7 +121,7 @@ if (!empty($_GET['q'])) {
 		$_GET['q'] = $gr;
 
 	} else {
-		$str = file_get_contents("http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1");
+		$str = file_get_contents("https://api.geograph.org.uk/finder/places.json.php?q=$qu&new=1");
 		if (strlen($str) > 40) {
         		$decode = json_decode($str);
 		}
@@ -196,26 +193,10 @@ if (!empty($_GET['q'])) {
 ?>
 <form target="_self">
 <div class="interestBox">
-	<? if (!empty($_GET['q'])) { ?>
-	<div style="float:right">
-		More:
-		<a href="/of/<? echo urlencode2($_GET['q']); ?>?redir=false" rel="nofollow">Keyword Search</a> &middot;
-		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=decade">Over Time</a> &middot;
-                <a href="/gridref/<? echo strtoupper($gru); ?>">Browse Page</a> &middot;
-		<? if (!empty($square->reference_index) && $square->reference_index == 1) { ?>
-		        <a href="/search.php?do=1&gridref=<? echo $gru.$qfiltmain; ?>&amp;displayclass=map">OS Map</a> &middot;
-		        <a href="/finder/dblock.php?gridref=<? echo $gru; ?>">D-block</a> &middot;
-		<? } else { ?>
-			<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=50"><b>Map</b></a> &middot;
-		<? } ?>
-		<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/pagesize=50">Browser</a> &middot;
-	</div>
-	<? } ?>
-	Images near: <input type=search name=q value="<? echo $qh; ?>" size=40><input type=submit value=go><br/>
+	match:<input type=search name=filter value="<? echo htmlentities2($_GET['filter']); ?>">
+	within:<input type=number name=dist value="<? echo $distance; ?>" step=0.05 max=20000 min=0.05 style="width:100px;text-align:right">m
+	of:<input type=search name=q value="<? echo $qh; ?>" size=16><input type=submit value=go><br/>
 <?
-	if (isset($_GET['filter'])) {
-		print "Matching: <input type=text name=filter value=\"".htmlentities2($_GET['filter'])."\">";
-	}
 
 #########################################
 # display the location results dropdown, for directing to near page.
@@ -231,7 +212,7 @@ if (!empty($_GET['q'])) {
 			print "Matched Location: <b>{$object->name}</b>".($object->localities?", ".$object->localities:'');
 
 		} elseif ($decode->total_found > 0) {
-			print "Possible Locations: <select onchange=\"location.href = '/near/'+encodeURI(this.value);\"><option value=''>Choose Location...</option>";
+			print "Possible Locations: <select onchange=\"this.form.q.value = encodeURIComponent(this.value);\"><option value=''>Choose Location...</option>";
 			foreach ($decode->items as $object) {
 				$object->name = utf8_decode($object->name);
 				if (strpos($object->name,$object->gr) === false)
@@ -265,43 +246,6 @@ if (!empty($_GET['q'])) {
 	$sph = GeographSphinxConnection('sphinxql',true);
         $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-
-	if (!empty($decode) && $decode->total_found == 1) {
-		$db = GeographDatabaseConnection(true);
-	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
-		$suggestions = array();
-		$name = $db->Quote($plain = preg_replace('/\/.+$/','',$_GET['q']));
-
-		if ($tag = $db->getRow("SELECT * FROM tag WHERE status = 1 AND tag = $name ORDER BY prefix='place' DESC,prefix='near' DESC")) {
-			$t = $tag['tag']; //we need to use the actual tag, rather than the query, because it might be a prefixed tag!
-                        if (!empty($tag['prefix']))
-                                $t = $tag['prefix'].':'.$t;
-       	                $suggestions[] = '<a href="/of/['.urlencode($t).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities2($t).']</a>';
-		}
-		$name2= $db->Quote("$plain/{$square->grid_reference}");
-		if ($place = $db->getRow("SELECT * FROM sphinx_placenames WHERE (Place = $name OR Place = $name2) AND images > 0")) {
-			$suggestions[] = '<a href="/place/'.urlencode2($place['Place']).'" rel="nofollow">'.$place['images'].' Images <i>nearest</i> '.htmlentities2($place['Place']).', '.htmlentities2($place['County']).'</a>';
-		}
-
-		if (!empty($grid_ok) && !empty($square->nateastings) && $square->natgrlen == 4 && $square->reference_index == 1) {
-			$sql = sprintf("SELECT geometry_x,geometry_y,dist FROM opennames WHERE MATCH(%s)  AND geometry_x BETWEEN %d AND %d  AND geometry_y BETWEEN %d AND %d",
-				$db->Quote("@(name1,name2) $plain"), $square->nateastings-4000, $square->nateastings+4000, $square->natnorthings-4000, $square->natnorthings+4000);
-			if ($row = $sph->getRow($sql)) {
-				list($gr,$len) = $conv->national_to_gridref($row['geometry_x'],$row['geometry_y'],8,$square->reference_index,false);
-				$row['dist'] = round($row['dist'],-2);
-				$suggestions[] = 'Badly centered? Try centering on <a href="/near/'.urlencode2($plain).'/'.$gr.'?dist='.$row['dist'].'">'.$gr.'</a>';
-			}
-		}
-
-		if (!empty($suggestions)) {
-			print "<div style=\"font-size:0.9em;padding:4px;border-bottom:1px solid gray\">Showing nearby results, alternatively: ";
-			print implode(" &middot; ",$suggestions);
-			print "</div>";
-		}
-	}
-
-
 #########################################
 
 	$limit = 50;
@@ -328,19 +272,6 @@ print "<!-- ($lat,$lng) -->";
 		$where = implode(' and ',$where);
 
 		$rows = array();
-
-#########################################
-# retreive a small number of high scoring images
-
-		if (!empty($_GET['score'])) {
-			$rows['score'] = $sph->getAll($sql = "
-        	                select id,realname,user_id,title,grid_reference,contexts $columns
-                	        from sample8
-                        	where $where
-	                        order by score desc
-        	                limit 8
-				option ranker=none, max_query_time=800");
-		}
 
 #########################################
 # the main results set!
@@ -413,14 +344,6 @@ if (!empty($_GET['d']))
           </div>
 <?
 
-                        if (!empty($row['contexts'])) {
-                                foreach (explode('_SEP_',$row['contexts']) as $context) {
-                                        if (strlen($context = trim($context)) > 1) {
-                                                @$contexts[$context]++;
-                                        }
-                                }
-                        }
-
 		}
 
 		print "<br style=clear:both></div>";
@@ -438,12 +361,12 @@ if (!empty($_GET['d']))
 			$sph = GeographSphinxConnection('sphinxql',true);
 		}
 		print "<p>No Results found. Try a <a href=\"/of/$qu\" rel=\"nofollow\">keyword search for <b>$qh</b></a> ";
+		/*
 		$sph->query("SELECT id FROM sample8 WHERE MATCH(".$sph->quote($_GET['q']).") LIMIT 0");
 		$data = $sph->getAssoc("SHOW META");
 		if (!empty($data['total_found']))
 			print " (finds about <b>{$data['total_found']}</b> images)";
-
-
+		*/
 		print '<a href="#" onclick="parent.closePopup(); return false">Close Window</a>';
 	}
 }
