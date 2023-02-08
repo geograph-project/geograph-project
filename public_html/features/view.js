@@ -21,6 +21,8 @@ $(function() {
 	        document.getElementById('fade').style.display='block';
 		document.getElementById('light').style.position = 'fixed';
 
+		if (item_id = $(this).data('item_id'))
+			current_item_id = item_id;
 		document.getElementById('iframe').src = this.href+"&inner=1";
 
 		event.preventDefault();
@@ -35,6 +37,22 @@ function closePopup(trigger) {
 		uniqueSerial++;
 		refreshTable();
 	}
+}
+
+var current_item_id = null;
+function useImage(gridimage_id) {
+	if (editing) {
+		var data = {};
+		data['id'] = current_item_id;
+		data['gridimage_id'] = gridimage_id;
+		data['submit'] = 1;
+		$.post('edit_item.php?type_id='+feature_type_id, data, function(result) {
+			//only update table after got response!
+			uniqueSerial++;
+        	        refreshTable();
+		});
+	}
+	closePopup(false); //close right away
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -214,22 +232,30 @@ function renderTable(data) {
 	// render features
 
 	$.each(data,function(index,row) {
-		var $tr = $('<tr/>')
+		var $tr = $('<tr/>').data('item_id',row['feature_item_id']);
+		if (row['gridref']) {
+			var near_url = '/features/near.php?q='+encodeURIComponent(row['gridref'])+'&type_id='+feature_type_id;
+			if (row['radius'] && row['radius']>1)
+				near_url = near_url + "&dist=" + Math.floor(row['radius']*1.2);
+			if (row['gridimage_id'] && row['gridimage_id']>0)
+				near_url = near_url + "&img=" + parseInt(row['gridimage_id'],10);
+			if (row['name'])
+				near_url = near_url + "&name=" + encodeURIComponent(row['name']);
+			if (editing)
+				near_url = near_url + "&editing=true";
+			var links_url = '/gridref/'+encodeURIComponent(row[name])+'/links'
+		}
+		var edit_url = 'edit_item.php?id='+row['feature_item_id']+'&type_id='+feature_type_id;
 
 		for(q=0;q<columns.length;q++) {
                         var name = columns[q];
 			if (row[name] === null || row[name] === 'null') { //would output the word null
 	                        $tr.append($('<td/>'));
-			} else if (name == 'gridref') {
-				var $a = $('<a></a>').text(row[name]).attr('href','/gridref/'+encodeURIComponent(row[name])+'/links');
-				$tr.append($('<td/>').append($a));
+			} else if (name == 'gridref' && row['gridref']) {
+				$tr.append($('<td/>').append( $('<a></a>').text(row[name]).attr('href',links_url) ));
 			} else if (name == 'nearby_images') {
 				if (row['gridref']) {
-					var url = '/features/near.php?q='+encodeURIComponent(row['gridref'])+'&type_id='+feature_type_id;
-					if (row['radius'] && row['radius']>1)
-						url = url + "&dist=" + Math.floor(row['radius']*1.2);
-					var $a = $('<a></a>').text(row[name]).attr('href',url).addClass('popupLink');
-					$tr.append($('<td align=right/>').append($a));
+					$tr.append($('<td align=right/>').append( $('<a></a>').text(row[name]).attr('href',near_url).addClass('popupLink') ));
 				} else {
 					$tr.append($('<td align=right/>').text(row[name]));
 				}
@@ -240,8 +266,7 @@ function renderTable(data) {
 					$a.attr('href','/photo/'+row['gridimage_id']);
 		                        $tr.append($('<td/>').append($a));
 				} else if (editing) {
-		                        $tr.append($('<td/>').html('<a>Suggest an Image</a>').find('a').attr('href','edit_item.php?id='+row['feature_item_id']+'&type_id='+feature_type_id).addClass('popupLink'));
-
+		                        $tr.append( $('<td/>').html('<a>Suggest an Image</a>').find('a').attr('href',row['gridref']?near_url:edit_url).addClass('popupLink') );
 				} else {
 					$tr.append($('<td/>'));
 				}
@@ -251,9 +276,7 @@ function renderTable(data) {
 	                        $tr.append($('<td/>').text(row[name]));
 		}
 		if (editing) {
-			var $a = $('<a>Edit</a>');
-                        $a.attr('href','edit_item.php?id='+row['feature_item_id']+'&type_id='+feature_type_id).addClass('popupLink');
-                        $tr.append($('<td/>').append($a));
+                        $tr.append($('<td/>').append( $('<a>Edit</a>').attr('href',edit_url).addClass('popupLink') ));
 		}
                 $tr.appendTo($body);
 	});

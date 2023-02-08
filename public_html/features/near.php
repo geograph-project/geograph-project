@@ -89,7 +89,7 @@ if (!empty($_GET['q'])) {
 
 	$smarty->display("_basic_begin.tpl",substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 
-	if ($memcache->valid && empty($_GET['refresh'])) {
+	if ($memcache->valid && empty($_GET['refresh']) && false) {
 		$str = $memcache->name_get('fnear',$mkey);
 		if (!empty($str)) {
                         if ($CONF['PROTOCOL'] == "https://") {
@@ -239,19 +239,98 @@ span.slider:hover span {
 span.slider input[type=range] {
 	width:300px;
 }
+div#thumbs div.header {
+	font-size:0.8em;padding:2px;background-color:gray;color:white;
+}
+div#thumbs div.header b {
+	font-family:verdana;
+	font-size:1.2em;
+	font-weight:normal;
+}
+div#thumbs div.group {
+	float:left;
+	margin:4px;
+}
+div#thumbs div.thumb {
+	float:left;position:relative; width:120px; height:118px;
+	text-align:center;
+	border:3px solid transparent;
+}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.js"></script>
 <script>
+	var selectedImage = null;
 	window.addEventListener('DOMContentLoaded', function() {
 		document.getElementById("dslider").addEventListener("input", function(event) {
 			var value = Math.exp(event.target.value);
 			document.getElementById("dtext").value = Math.round(value);
 		});
+
+		var name = 'dataset item';
+	        if (location.search && location.search.length) {
+	                if (match = location.search.match(/img=(\d+)/)) {
+				selectedImage = parseInt(match[1],10);
+				if ( document.getElementById('img'+match[1]) )
+					document.getElementById('img'+match[1]).style.border = "3px solid red";
+				$('form').append($('<input type=hidden name=img />').val(match[1]));
+	                }
+			if (match = location.search.match(/name=([^&]+)/)) {
+				name = decodeURIComponent(match[1]);
+				$('form').append($('<input type=hidden name=name />').val(match[1]));
+			}
+	        }
+
+
+		var originalLink = null;
+		if (location.search && location.search.length && location.search.match(/editing=true/)) {
+				$('form').append($('<input type=hidden name=editing value=true />'));
+
+		    $.contextMenu({
+		        selector: 'div#thumbs a',
+		        trigger: 'left',
+			build: function($triggerElement, e){
+				originalLink = $triggerElement[0];
+			},
+		        callback: function(key, options,e) {
+				console.log(key,originalLink.href);
+				if (key == 'edit')
+					window.open(originalLink.href,'_blank');
+				if (key == 'select' || key == 'quit') {
+					if (selectedImage)
+						if ( document.getElementById('img'+selectedImage) )
+        	                                        document.getElementById('img'+selectedImage).style.border = "3px solid transparent";
+					if (match = originalLink.href.match(/photo\/(\d+)/)) {
+                		                selectedImage = match[1];
+        	                	        if ( document.getElementById('img'+match[1]) )
+	                                	        document.getElementById('img'+match[1]).style.border = "3px solid red";
+
+						if (key == 'quit') {
+							parent.useImage(selectedImage);
+	                        		} else {
+							//show save buton!
+						}
+					}
+				}
+				if (key == 'delete')
+					$(originalLink).parent().remove();
+		        },
+		        items: {
+		            "select": {name: "Select for "+name, icon: "add"},
+		            "quit": {name: "Select and Close", icon: "quit"},
+		            "edit": {name: "View Photo Page", icon: "edit"},
+		            "delete": {name: "Delete", icon: "cut"},
+		        }
+		    });
+		}
 	});
 </script>
 <div class="interestBox">
 	match:<input type=search name=filter value="<? echo htmlentities2($_GET['filter']); ?>">
 	<span class="slider">
-	within:<input type=number name=dist id=dtext value="<? echo $distance; ?>" step=10 max=20000 min=10 style="width:50px;text-align:right">m
+	within:<input type=number name=dist id=dtext value="<? echo $distance; ?>" step=1 max=20000 min=10 style="width:6em;text-align:right">m
 	<span><input type=range id=dslider min="<? echo log(10); ?>" max="<? echo log(20000); ?>" step="0.1" value="<? echo log($distance); ?>"></span>
 	</span>
 	of:<input type=search name=q value="<? echo $qh; ?>" size=16><input type=submit value=go><br/>
@@ -330,13 +409,22 @@ print "<!-- ($lat,$lng) -->";
 		#########################################
 		# the main 'location' results set!
 
-                $rows['ordered'] = $sph->getAll($sql = "
-                        select id,realname,user_id,title,grid_reference $columns
-                        from sample8
-                        where $where
-                        order by distance asc, sequence asc
-                        limit {$limit}
-			option ranker=none"); //todo, change this whe $pref=1
+		if (!empty($_GET['filter']) && !empty($_GET['pref'])) {
+	                $rows['mixed'] = $sph->getAll($sql = "
+        	                select id,realname,user_id,title,grid_reference $columns, WEIGHT() as w
+                	        from sample8
+                        	where $where
+	                        order by w desc, distance asc, sequence asc
+        	                limit {$limit}");
+		} else {
+	                $rows['ordered'] = $sph->getAll($sql = "
+        	                select id,realname,user_id,title,grid_reference $columns
+                	        from sample8
+                        	where $where
+	                        order by distance asc, sequence asc
+        	                limit {$limit}
+				option ranker=none");
+		}
 
 ##################################################################################
 //just a keyword match
@@ -390,12 +478,14 @@ if (!empty($rows)) {
 		$thumbh = 120;
 		$thumbw = 120;
 
-		print "<div id=thumbs>";
-
+		/*
 	        if (!empty($data['total_found']) && $data['total_found'] > 10 && !empty($gru))
 			print '<div style="position:relative;float:right">About '.number_format($data['total_found'])." photos within ".($distance/1000)."km of $gru</div>";
 		elseif (!empty($data['total_found']))
 			print '<div style="position:relative;float:right">'.count($final).'/'.number_format($data['total_found'])." results</div>";
+		*/
+
+		print "<div id=thumbs>";
 
 		$last = 0;
 		$contexts = array();
@@ -403,7 +493,7 @@ if (!empty($rows)) {
 			$row['gridimage_id'] = $row['id'];
                         $image = new GridImage();
                         $image->fastInit($row);
-			if (isset($row['distance'])) {
+			if (isset($row['distance']) && !empty($rows['ordered'])) {
 				if ($image->distance < 800 && $square->precision < 1000) {
 					if ($image->distance < 10 && $square->precision <= 100) {
 						$d2 = 0.01;
@@ -414,19 +504,26 @@ if (!empty($rows)) {
 				} else
 					$d2 = intval($image->distance/1000)+1;
 				if ($last != $d2) {
-					print "<div style=\"clear:left;font-size:0.8em;padding:2px;background-color:#eee\">Within <b>$d2</b> km</div>";
+					if ($last) {
+						print "</div>";
+					}
+					print "<div class=group>";
+					print "<div class=header >Within <b>$d2</b> km</div>";
 					$last = $d2;
 				}
 			}
 
 ?>
-          <div style="float:left;position:relative; width:120px; height:120px;padding:1px;">
-          <div align="center">
-          <a title="<? if (isset($row['distance'])) { printf("%.1f km, ",$image->distance/1000); } echo $image->grid_reference; ?> : <? echo htmlentities2($image->title) ?> by <? echo htmlentities2($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src'); ?></a></div>
+          <div class="thumb shadow" id="img<? echo $image->gridimage_id; ?>">
+	          <a title="<? if (isset($row['distance'])) { printf("%.1f km, ",$image->distance/1000); } echo $image->grid_reference; ?> : <? echo htmlentities2($image->title) ?> by <? echo htmlentities2($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src'); ?></a>
           </div>
 <?
 
 		}
+		if ($last) {
+                        print "</div>";
+                }
+
 
 		print "<br style=clear:both></div>";
 
@@ -478,6 +575,9 @@ if (!empty($final)) {
 	</b>
 
 	<a href="#" onclick="parent.closePopup(); return false">Close Window</a>
+
+	<a href="#" onclick="parent.useImage(selectedImage); return false">Save and Close</a>
+
 	</div>
 
 <?

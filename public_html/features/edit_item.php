@@ -91,7 +91,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$errors = array();
 	$updates = array();
 	foreach (explode(',',$row['item_columns']) as $key) {
-		if ($page[$key] != $_POST[$key] && $key != 'nearby_images') {
+		if (isset($_POST[$key]) && $page[$key] != $_POST[$key] && $key != 'nearby_images') {
 			$updates[$key] = trim(strip_tags($_POST[$key]));
 			$smarty->assign($key, $_POST[$key]);
 		}
@@ -121,23 +121,24 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 			$_REQUEST['id'] = $db->Insert_ID();
 		}
 
-                        foreach ($updates as $key => $value) {
-                                if ($value != @$page[$key]) {
-                                        $inserts = array();
-                                        $inserts['feature_item_id'] = $_REQUEST['id'];
+                $inserts = array();
+                $inserts['feature_item_id'] = $_REQUEST['id'];
 
 		//store the type_id and table_id - just in case a future import does a 'replace into'!!
 		$inserts['feature_type_id'] = $page['feature_type_id'] ?? $_REQUEST['type_id'];
 		$inserts['table_id'] = $page['table_id'];
 
-                                        $inserts['user_id'] = $USER->user_id;
-                                        $inserts['field'] = $key;
-                                        $inserts['oldvalue'] = @$page[$key];
-                                        $inserts['newvalue'] = $value;
+                $inserts['user_id'] = $USER->user_id;
 
-                                        $db->Execute('INSERT INTO feature_item_log SET `'.implode('` = ?,`',array_keys($inserts)).'` = ?',array_values($inserts));
-                                }
+                foreach ($updates as $key => $value) {
+                        if ($value != @$page[$key] && $key != 'gridimage_id_user_id') { //gridimage_id_user_id ends up kinda duplicating user_id anyway
+                                $inserts['field'] = $key;
+                                $inserts['oldvalue'] = @$page[$key];
+                                $inserts['newvalue'] = $value;
+
+                                $db->Execute('INSERT INTO feature_item_log SET `'.implode('` = ?,`',array_keys($inserts)).'` = ?',array_values($inserts));
                         }
+                }
 
 		if (!empty($_GET['inner'])) {
 			print "<script>parent.closePopup(true);</script>";
