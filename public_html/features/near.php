@@ -222,9 +222,38 @@ if (!empty($_GET['q'])) {
 
 ?>
 <form target="_self">
+<style>
+span.slider {
+	position:relative; display:inline-block;
+}
+span.slider span {
+	display:none;
+}
+span.slider:hover span {
+	display:block;
+	background-color:silver;
+	position:absolute;
+	top:18px;
+	left:0;
+}
+span.slider input[type=range] {
+	width:300px;
+}
+</style>
+<script>
+	window.addEventListener('DOMContentLoaded', function() {
+		document.getElementById("dslider").addEventListener("input", function(event) {
+			var value = Math.exp(event.target.value);
+			document.getElementById("dtext").value = Math.round(value);
+		});
+	});
+</script>
 <div class="interestBox">
 	match:<input type=search name=filter value="<? echo htmlentities2($_GET['filter']); ?>">
-	within:<input type=number name=dist value="<? echo $distance; ?>" step=0.05 max=20000 min=0.05 style="width:100px;text-align:right">m
+	<span class="slider">
+	within:<input type=number name=dist id=dtext value="<? echo $distance; ?>" step=10 max=20000 min=10 style="width:50px;text-align:right">m
+	<span><input type=range id=dslider min="<? echo log(10); ?>" max="<? echo log(20000); ?>" step="0.1" value="<? echo log($distance); ?>"></span>
+	</span>
 	of:<input type=search name=q value="<? echo $qh; ?>" size=16><input type=submit value=go><br/>
 	type: <input type=radio name=pref value=0 <? if ( empty($_GET['pref'])) { echo "checked"; } ?> id="p0"><label for=p0>absolute match</label>
 	      <input type=radio name=pref value=1 <? if (!empty($_GET['pref'])) { echo "checked"; } ?> id="p1"><label for=p1>prefer matches</label>
@@ -393,7 +422,7 @@ if (!empty($rows)) {
 ?>
           <div style="float:left;position:relative; width:120px; height:120px;padding:1px;">
           <div align="center">
-          <a title="<? printf("%.1f km, ",$image->distance/1000); echo $image->grid_reference; ?> : <? echo htmlentities2($image->title) ?> by <? echo htmlentities2($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src'); ?></a></div>
+          <a title="<? if (isset($row['distance'])) { printf("%.1f km, ",$image->distance/1000); } echo $image->grid_reference; ?> : <? echo htmlentities2($image->title) ?> by <? echo htmlentities2($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src'); ?></a></div>
           </div>
 <?
 
