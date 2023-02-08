@@ -48,8 +48,14 @@ if (!empty($_GET['dist']))
 if ($distance < 1) $distance = 1;
 if ($distance > 20000) $distance = 20000;
 
+$pref = empty($_GET['pref'])?0:1;
+
+$limit = 50;
 
 $qh = $qu = ''; $qfiltbrow = ''; $qfiltmain = '';
+
+#########################################
+//its a location query
 if (!empty($_GET['q'])) {
 
 	if (mb_detect_encoding($_GET['q'], 'UTF-8, ISO-8859-1') == "UTF-8") {
@@ -62,10 +68,15 @@ if (!empty($_GET['q'])) {
 
 	$sphinxq = '';
 
-	$mkey = md5('#'.trim($_GET['q']).$src.$distance);
+	$mkey = md5('#'.trim($_GET['q']).".$distance.$pref");
 	if (!empty($_GET['filter'])) {
 		$sphinx = new sphinxwrapper(trim($_GET['filter']), true); //this is for sample8 index.
-		$sphinxq = $sphinx->q;
+		if ($pref) {
+			//this might not be ideal, but in thery _SEP_ matches ALL documents. But because matches everything it a HUGE doclist. Maybe reuse hectads etc??
+			$sphinxq = "_SEP_ | ({$sphinx->q})";
+		} else {
+			$sphinxq = $sphinx->q;
+		}
 		$mkey = md5($sphinxq.'.'.$mkey);
 		$qfiltbrow = "/q=".urlencode($sphinxq);
 		$qfiltmain = "&searchtext=".urlencode($sphinxq);
@@ -165,14 +176,14 @@ if (!empty($_GET['q'])) {
 		//todo - make the radius dynamic (maybeing checking square->imagecount as a proxy for now popular the area is
 		// - also should be redone with geoTiles from facet-functions
 		$d = 10; //units is km! but need in 10km hectad resoilution for now
-		$d = ceil($distance/10000)*10;
+		$d = ceil($distance/1000);
 
 			$grs = array();
-                        for($x=$e-$d;$x<=$e+$d;$x+=10) {
-                                for($y=$n-$d;$y<=$n+$d;$y+=10) {
+                        for($x=$e-$d;$x<=$e+$d;$x+=$d) {
+                                for($y=$n-$d;$y<=$n+$d;$y+=$d) {
                                         list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,2,$square->reference_index,false);
                                         if (strlen($gr2) > 2)
-                                                $grs[] = $gr2;
+                                                $grs[$gr2] = $gr2;
                                 }
                         }
                         $sphinxq .= " @hectad (".join(" | ",$grs).")";
@@ -181,6 +192,25 @@ if (!empty($_GET['q'])) {
 	} else {
 		print "<!-- Couldn't identify Grid Reference -->";
 	}
+
+#########################################
+//this page can query without locaiton too
+
+} elseif (!empty($_GET['filter'])) {
+
+	$sphinx = new sphinxwrapper(trim($_GET['filter']), true); //this is for sample8 index.
+
+	//note this does NOT honour the 'pref' option!
+	$sphinxq = $sphinx->q;
+
+	$mkey = md5($sphinxq);
+	$qfiltbrow = "/q=".urlencode($sphinxq);
+	$qfiltmain = "&searchtext=".urlencode($sphinxq);
+
+	$smarty->display('_basic_begin.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
+
+#########################################
+//just a empty form
 
 } else {
 	$mkey = ''; //used by the footer too
@@ -196,6 +226,9 @@ if (!empty($_GET['q'])) {
 	match:<input type=search name=filter value="<? echo htmlentities2($_GET['filter']); ?>">
 	within:<input type=number name=dist value="<? echo $distance; ?>" step=0.05 max=20000 min=0.05 style="width:100px;text-align:right">m
 	of:<input type=search name=q value="<? echo $qh; ?>" size=16><input type=submit value=go><br/>
+	type: <input type=radio name=pref value=0 <? if ( empty($_GET['pref'])) { echo "checked"; } ?> id="p0"><label for=p0>absolute match</label>
+	      <input type=radio name=pref value=1 <? if (!empty($_GET['pref'])) { echo "checked"; } ?> id="p1"><label for=p1>prefer matches</label>
+	&middot;
 <?
 
 #########################################
@@ -209,7 +242,7 @@ if (!empty($_GET['q'])) {
 			$object->name = utf8_decode($object->name);
 			if (strpos($object->name,$object->gr) === false)
                                  $object->name .= " / {$object->gr}";
-			print "Matched Location: <b>{$object->name}</b>".($object->localities?", ".$object->localities:'');
+			print "<small>Matched Location: <b>{$object->name}</b>".($object->localities?", ".$object->localities:'')."</small>";
 
 		} elseif ($decode->total_found > 0) {
 			print "Possible Locations: <select onchange=\"this.form.q.value = encodeURIComponent(this.value);\"><option value=''>Choose Location...</option>";
@@ -229,7 +262,6 @@ if (!empty($_GET['q'])) {
 			print "</select> ({$decode->total_found})";
 		}
 	}
-
 }
 
 #########################################
@@ -240,25 +272,21 @@ if (!empty($_GET['q'])) {
 </form>
 <?
 
+##################################################################################
+##################################################################################
 
-if (!empty($_GET['q'])) {
+$sph = GeographSphinxConnection('sphinxql',true);
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+$rows = array();
 
-	$sph = GeographSphinxConnection('sphinxql',true);
-        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+if (!empty($_GET['q']) && !empty($grid_ok)) {
 
-#########################################
-
-	$limit = 50;
-
-        if (!empty($grid_ok)) {
-
-#########################################
-# setup search results
+		#########################################
+		# setup 'location' search results (handles optional filter)
 
 		list($lat,$lng) = $conv->national_to_wgs84($square->nateastings,$square->natnorthings,$square->reference_index);
 
 print "<!-- ($lat,$lng) -->";
-
 
 		$where = array();
                 if (!empty($sphinxq))
@@ -268,41 +296,61 @@ print "<!-- ($lat,$lng) -->";
 		$columns = ", GEODIST($lat, $lng, wgs84_lat, wgs84_long) as distance";
 		$where[] = "distance < $distance";
 
-
 		$where = implode(' and ',$where);
 
-		$rows = array();
-
-#########################################
-# the main results set!
+		#########################################
+		# the main 'location' results set!
 
                 $rows['ordered'] = $sph->getAll($sql = "
-                        select id,realname,user_id,title,grid_reference,contexts $columns
+                        select id,realname,user_id,title,grid_reference $columns
                         from sample8
                         where $where
                         order by distance asc, sequence asc
                         limit {$limit}
-			option ranker=none");
+			option ranker=none"); //todo, change this whe $pref=1
+
+##################################################################################
+//just a keyword match
+
+} elseif (!empty($_GET['filter'])) {
+	$where = array();
+        if (!empty($sphinxq))
+                $where[] = "match(".$sph->Quote($sphinxq).")";
+
+	$where = implode(' and ',$where);
+
+	$rows['matches'] = $sph->getAll($sql = "
+                select id,realname,user_id,title,grid_reference
+                from sample8
+                where $where
+                limit {$limit}");
+
+}
 
 if (!empty($_GET['d']))
 	print $sql;
 
+##################################################################################
+##################################################################################
+// the general results rendering
+
+if (!empty($rows)) {
+
 #########################################
 # merge all the results into one
 
-		if (empty($data))
-			$data = $sph->getAssoc("SHOW META");
+	if (empty($data))
+		$data = $sph->getAssoc("SHOW META");
 
-		$final = array();
-		foreach ($rows as $idx => $arr) {
-			if (!empty($arr)) {
-				foreach ($arr as $row)
-					$final[$row['id']] = $row;
-				unset($rows[$idx]);
-			}
+	$final = array();
+	foreach ($rows as $idx => $arr) {
+		if (!empty($arr)) {
+			foreach ($arr as $row)
+				$final[$row['id']] = $row;
+			unset($rows[$idx]);
 		}
-
 	}
+
 
         print "<br style=clear:both>";
 
@@ -315,8 +363,10 @@ if (!empty($_GET['d']))
 
 		print "<div id=thumbs>";
 
-	        if (!empty($data['total_found']) && $data['total_found'] > 10)
+	        if (!empty($data['total_found']) && $data['total_found'] > 10 && !empty($gru))
 			print '<div style="position:relative;float:right">About '.number_format($data['total_found'])." photos within ".($distance/1000)."km of $gru</div>";
+		elseif (!empty($data['total_found']))
+			print '<div style="position:relative;float:right">'.count($final).'/'.number_format($data['total_found'])." results</div>";
 
 		$last = 0;
 		$contexts = array();
@@ -324,19 +374,22 @@ if (!empty($_GET['d']))
 			$row['gridimage_id'] = $row['id'];
                         $image = new GridImage();
                         $image->fastInit($row);
-			if ($image->distance < 800 && $square->precision < 1000) {
-				if ($image->distance < 10 && $square->precision <= 100) {
-					$d2 = 0.01;
-				} elseif ($image->distance < 100) {
-					$d2 = 0.1;
+			if (isset($row['distance'])) {
+				if ($image->distance < 800 && $square->precision < 1000) {
+					if ($image->distance < 10 && $square->precision <= 100) {
+						$d2 = 0.01;
+					} elseif ($image->distance < 100) {
+						$d2 = 0.1;
+					} else
+						$d2 = sprintf("%0.1f",(intval($image->distance/300)/3)+0.3);
 				} else
-					$d2 = sprintf("%0.1f",(intval($image->distance/300)/3)+0.3);
-			} else
-				$d2 = intval($image->distance/1000)+1;
-			if ($last != $d2) {
-				print "<div style=\"clear:left;font-size:0.8em;padding:2px;background-color:#eee\">Within <b>$d2</b> km</div>";
-				$last = $d2;
+					$d2 = intval($image->distance/1000)+1;
+				if ($last != $d2) {
+					print "<div style=\"clear:left;font-size:0.8em;padding:2px;background-color:#eee\">Within <b>$d2</b> km</div>";
+					$last = $d2;
+				}
 			}
+
 ?>
           <div style="float:left;position:relative; width:120px; height:120px;padding:1px;">
           <div align="center">
@@ -378,14 +431,16 @@ if (!empty($final)) {
 	print "<p><small>";
 	if (!empty($data['total_found']) && (count($final) <  $data['total_found']))
 		print "only first ".count($final)." images shown. Use the links below to explore more. ";
-	print "This is a selection of photos centred on the geographical midpoint of the $location you have entered. Our coverage of different areas will vary</small></p>";
 
-	if (!empty($data['total_found']) && $data['total_found'] > 10)
+	if (!empty($_GET['q']))
+		print "This is a selection of photos centred on the geographical midpoint of the $location you have entered. Our coverage of different areas will vary</small></p>";
+
+	if (!empty($data['total_found']) && $data['total_found'] > 10 && !empty($gru))
 		print "About <b style='font-family:verdana'>".number_format($data['total_found'])."</tt> photos within ".($distance/1000)."km</b>. ";
 ?>
 	<div style="position:fixed;background-color:silver;bottom:0;left:0;width:100%">
 
-	Explore these images more: <b><a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>" style=color:yellow>in the Browser</a>
+	Explore these <? echo @$data['total_found']; ?> images more: <b><a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>" style=color:yellow>in the Browser</a>
 	(<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=100" style=color:yellow>On Map</a>)
 	<? if (!preg_match('/(_SEP|%40terms|%40groups)/',$qfiltmain)) {  //not ideal, but can blacklist some functions we know wont work!
 	?>
