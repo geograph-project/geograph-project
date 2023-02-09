@@ -23,8 +23,13 @@
 		border-radius:3px;
 		padding:10px;
 	}
+	form#filter input[type=search] {
+		font-family:inherit;
+		font-size:1em;
+	}
 	form#filter span.select {
-		padding-right:10px;
+		padding-left:10px;
+		white-space:nowrap;
 	}
 	div.pages {
 		margin:8px;
@@ -150,6 +155,8 @@
 {/if}
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link href="{"/js/select2-3.3.2/select2.css"|revision}" rel="stylesheet"/>
+<script src="{"/js/select2-3.3.2/select2.js"|revision}"></script>
 <script src="{"/features/view.js"|revision}"></script>
 <script>
 var feature_type_id = {$feature_type_id};

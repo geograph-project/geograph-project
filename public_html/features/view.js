@@ -1,8 +1,13 @@
+var debounceTimer1 = null;
+var debounceTimer2 = null;
+
 $(function() {
 	$('table#output').html('Loading...');
-	refreshTable();
+	refreshData();
 
 	var $form = $('form#filter');
+
+	//add the image filters
 	if (columns.indexOf('gridimage_id') > -1) {
 		var $div = $('<div>Show:</div>');
 		$div.append('<input type=radio name=gridimage value="" checked>All &nbsp;');
@@ -11,8 +16,21 @@ $(function() {
 		$div.append('<input type=radio name=gridimage value="2">Automatic Selected Images Only &nbsp;');
 		$div.appendTo($form);
 	}
-	$form.find('input[type=radio]').on('click',refreshTable);
+	$form.find('input[type=radio]').on('click',refreshData);
 
+	//add the name filter (most/all datasets should have name?)
+	var $span = $('<span><input type=search><datalist></datalist></span>');
+	$span.find('datalist').attr('id','name_options');
+	$span.find('input').attr('name','name').attr('list','name_options').attr('id','name');
+	$span.prepend($('<label>').text('name:').attr('for','name'));
+	$span.appendTo($form);
+	$form.find('input[type="search"]').keyup(function() {
+		if (debounceTimer1) clearTimeout(debounceTimer1);
+		debounceTimer1 = setTimeout('refreshData(1)',250);
+
+		if (debounceTimer2) clearTimeout(debounceTimer2);
+		debounceTimer2 = setTimeout('refreshData()',2500);
+	});
 
 	$('div#maincontent').on('click', 'a.popupLink', function(event) {
 
@@ -26,7 +44,6 @@ $(function() {
 
 		event.preventDefault();
 	});
-
 });
 
 function closePopup(trigger) {
@@ -34,7 +51,7 @@ function closePopup(trigger) {
 	document.getElementById('fade').style.display='none';
 	if (trigger) {
 		uniqueSerial++;
-		refreshTable();
+		refreshData();
 	}
 }
 
@@ -48,7 +65,7 @@ function useImage(gridimage_id) {
 		$.post('edit_item.php?type_id='+feature_type_id, data, function(result) {
 			//only update table after got response!
 			uniqueSerial++;
-        	        refreshTable();
+        	        refreshData();
 		});
 	}
 	closePopup(false); //close right away
@@ -68,7 +85,7 @@ function selectPage(page) {
 		currentPage = totalPages;
 	else
 		currentPage = page;
-	refreshTable(); //should automatically only refresh the table, not the group data!
+	refreshData(); //should automatically only refresh the table, not the group data!
 	renderPages(); //but this still needs to be updated even if no group data
 }
 function reorderTable() {
@@ -76,11 +93,11 @@ function reorderTable() {
 	currentDir = $this.hasClass('up')?'desc':'asc'; //the table does down, so assending is desc!
 	currentSorter = $this.parent().attr('title');
 	currentPage = 1; //need to reset back to page 1!
-	refreshTable();
+	refreshData();
 	renderPages(); //but this still needs to be updated even if no group data
 }
 
-function refreshTable() {
+function refreshData(skip_group) {
 	//var url = "https://api.geograph.org.uk/curated/sample.json.php"; //api can cache it!
 	var url1 = "/features/features.json.php";
 	var url2 = "/features/groups.json.php";
@@ -94,7 +111,7 @@ function refreshTable() {
 
 	/////////////////////////////////////////
 
-	if (data != lastGroupData) {
+	if (data != lastGroupData && !skip_group) {
 		currentPage = 1; //need to reset back to page 1!
 		$.ajax({
 		  dataType: "json",
@@ -131,7 +148,7 @@ function renderGroups(data) {
 	$.each(before,function(key,row) {
 		beforeArray[row.name] = row.value;
 	});
-
+	$form.find('select').select2('destroy');
 	$form.find('span.select').remove();
 	$.each(data,function(key,rows) {
 		if (key == 'count') {
@@ -141,23 +158,33 @@ function renderGroups(data) {
 			renderPages();
 
 		} else if (rows.length > 1 || (beforeArray[key] && beforeArray[key] != '.any.')) {
-			var $div = $('<span class=select><select><option value=".any.">{any}</option></select></span>');
-			var $select = $div.find('select');
-			$div.prepend($('<label>').text(key+':').attr('for',key));
-			$select.attr('name',key).attr('id',key);
-			for(q=0;q<rows.length;q++) {
-				$select.append($('<option>').attr('value',rows[q][key]).text(((rows[q][key] && rows[q][key] !== ' ')?rows[q][key]:'{blank}')+' ['+rows[q].count+' rows]'));
-				if (!rows[q][key] || rows[q][key] === ' ')
-					$select.append($('<option>').attr('value','.nonblank.').text('{non-blank}'));
+			var $div, $list;
+			if (key == 'name') {
+				//we dont recreate the name selector each time, as it now a textbox, that allows typing!
+				$list = $('datalist#name_options').empty();
+			} else {
+				$div = $('<span class=select><select><option value=".any.">{any}</option></select></span>');
+				$list = $div.find('select').attr('name',key).attr('id',key);
+				$div.prepend($('<label>').text(key+':').attr('for',key));
+				$div.appendTo($form);
 			}
-			$div.appendTo($form);
+			//both <select> and <datalist> use <option>
+			for(q=0;q<rows.length;q++) {
+				$list.append($('<option>').attr('value',rows[q][key]).text(((rows[q][key] && rows[q][key] !== ' ')?rows[q][key]:'{blank}')+' ['+rows[q].count+' rows]'));
+				if (!rows[q][key] || rows[q][key] === ' ')
+					$list.append($('<option>').attr('value','.nonblank.').text('{non-blank}'));
+			}
 		}
 	});
 	$.each(before,function(key,row) {
-		$form.find('select[name="'+row.name+'"]').val(row.value);
+		$form.find('[name="'+row.name+'"]').val(row.value); //works even for selects now!
 	});
-	$form.find('select').on('change',refreshTable);
+
+	/////////////////////
+
+	$form.find('select').on('change',refreshData).select2({width:"300px"});
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -262,7 +289,8 @@ function renderTable(data) {
 				if (row[name] && row['thumbnail']) {
 					var $a = $('<a><img loading="lazy"/></a>');
 					$a.find('img').attr('src',row['thumbnail']);
-					$a.attr('href','/photo/'+row['gridimage_id']).attr('target','_blank');
+					var title = row.grid_reference+' : '+row.title+' by '+row.realname;
+					$a.attr('href','/photo/'+row['gridimage_id']).attr('target','_blank').attr('title',title);
 		                        $tr.append($('<td/>').append($a));
 				} else if (editing) {
 		                        $tr.append($('<td/>').append( $('<a>Suggest an Image</a>').attr('href',row['gridref']?near_url:edit_url).addClass('popupLink') ));
