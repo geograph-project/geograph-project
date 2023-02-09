@@ -177,7 +177,7 @@ function renderGroups(data) {
 		}
 	});
 	$.each(before,function(key,row) {
-		$form.find('[name="'+row.name+'"]').val(row.value); //works even for selects now!
+		$form.find('select[name="'+row.name+'"]').val(row.value); //works even for selects now!
 	});
 
 	/////////////////////
