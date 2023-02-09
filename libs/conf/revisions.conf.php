@@ -91,5 +91,5 @@ $REVISIONS['/js/jquery.storage.js']=111;
 $REVISIONS['/templates/resp/css/responsive.css']=72015581;
 $REVISIONS['/templates/resp/css/modification.css']=59043895;
 $REVISIONS['/js/anyascii.js']=69351707;
-$REVISIONS['/features/view.js']=95317253;
+$REVISIONS['/features/view.js']=33840418;
 ?>
