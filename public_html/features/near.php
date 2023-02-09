@@ -275,11 +275,11 @@ div#thumbs div.thumb {
 				selectedImage = parseInt(match[1],10);
 				if ( document.getElementById('img'+match[1]) )
 					document.getElementById('img'+match[1]).style.border = "3px solid red";
-				$('form').append($('<input type=hidden name=img />').val(match[1]));
+				$('form').append($('<input type=hidden name=img />').val(selectedImage));
 	                }
 			if (match = location.search.match(/name=([^&]+)/)) {
 				name = decodeURIComponent(match[1]);
-				$('form').append($('<input type=hidden name=name />').val(match[1]));
+				$('form').append($('<input type=hidden name=name />').val(name));
 			}
 	        }
 
