@@ -99,6 +99,9 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 
 	if (!empty($updates['gridimage_id'])) //already only set if user changed it!
 		$updates['gridimage_id_user_id'] = $USER->user_id;
+	elseif (!empty($_POST['gridimage_id']) && empty($page['gridimage_id_user_id']) && !isset($_POST['name']))
+		//but also allow them to 'claim' an previously auto selected image. But not if doing a general edit of all feilds
+		$updates['gridimage_id_user_id'] = $USER->user_id;
 
 	//todo, when edit 'gridref' need to invalidae the eastings/norhting/ri + lat/long
 	//same is was enable editing easting/northing directly for example.
