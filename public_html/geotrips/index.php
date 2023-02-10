@@ -157,7 +157,7 @@ $conv = new Conversions;
 			basemap = $.localStorage('LeafletBaseMap');
                         <? if (!empty($ri2)) { ?>
                                 if (basemap.indexOf('- GB') > -1 || basemap.indexOf('OS Outdoor') > -1)
-                                        basemap = "OpenTopoMap";
+                                        basemap = "OpenStreetMap";
                         <? } elseif (!empty($ri1)) { ?>
                                 if (basemap.indexOf('- Ireland') > -1)
                                         basemap = "Historic OS - GB";

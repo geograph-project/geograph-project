@@ -209,7 +209,7 @@ var trackline = null;
 			basemap = $.localStorage('LeafletBaseMap');
 			<? if ($geograph[0]['reference_index'] == '2') { ?>
 				if (basemap.indexOf('- GB') > -1)
-					basemap = "OpenTopoMap";
+					basemap = "OpenStreetMap";
 			<? } else { ?>
 				if (basemap.indexOf('- Ireland') > -1)
 					basemap = "Historic OS - GB";
@@ -221,14 +221,14 @@ var trackline = null;
 				 || typeof baseMaps[basemap].options.bounds == 'undefined'
 				 || L.latLngBounds(baseMaps[basemap].options.bounds).contains(map.getCenter())     //(need to construct, as MIGHT be object liternal!
 				)) {
-				basemap = "OpenTopoMap";
+				basemap = "OpenStreetMap";
 			}
 		<? if ($geograph[0]['reference_index'] == '1') { ?>
 		} else if (baseMaps['Modern OS - GB']) {
 			basemap = 'Modern OS - GB';
 		<? } ?>
 		} else {
-			basemap = "OpenTopoMap";
+			basemap = "OpenStreetMap";
 		}
 
 		map.addLayer(baseMaps[basemap]);

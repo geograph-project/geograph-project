@@ -669,7 +669,7 @@ basemap2.beforeAdd = function() {};
 
 		}
 
-		var mapTypeId = "OpenTopoMap";
+		var mapTypeId = "OpenStreetMap";
 		if (baseMaps['Modern OS - GB'])
 			mapTypeId = 'Modern OS - GB';
 
