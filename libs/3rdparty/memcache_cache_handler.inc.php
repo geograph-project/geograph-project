@@ -1,9 +1,8 @@
 <?php
-
 /**
  * Project: Smarty memcached cache handler function
  * Author: Mads Sülau Jørgensen <php at mads dot sulau dot dk>
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -20,7 +19,7 @@
  */
 function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_file=null, $cache_id=null, $compile_id=null, $exp_time=null) {
 	global $CONF;
-	
+
 	// ref to the memcache object
 	$m = $GLOBALS['memcached_res'];
 
@@ -36,17 +35,17 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	// unique cache id
 	$_auto_id = $smarty_obj->_get_auto_id($cache_id,$compile_id);
 	$cache_file = substr($smarty_obj->_get_auto_filename(".",$tpl_file,$_auto_id),2);
-	
+
 	switch ($action) {
 	case 'read':
 		// grab the key from memcached
 		$cache_content = $m->get($CONF['template'].$cache_file);
-		
+
 		// use compression?
 		if(!empty($smarty_obj->use_gzip) && function_exists("gzuncompress")) {
 			$cache_content = gzuncompress($cache_content);
-		} 
-		
+		}
+
 		$return = true;
 		break;
 
@@ -56,14 +55,20 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 			$cache_content = gzcompress($cache_content);
 		}
 
+		$current_time = time();
+		if (is_null($exp_time) || $exp_time < $current_time)
+		        $ttl = 3600;
+		else
+		        $ttl = $exp_time - $current_time;
+
 		// store the value in memcached
-		$stored = $m->set($CONF['template'].$cache_file, $cache_content, false, (int)$exp_time);
+		$stored = $m->set($CONF['template'].$cache_file, $cache_content, false, (int)$ttl);
 
 		if($stored) {
 			if ($mysql_scan) {
 				// store the metadata in mysql
 				$db=$m->_getDB();
-				$db->Execute("REPLACE INTO smarty_cache_page VALUES('{$CONF['template']}',".$db->Quote($cache_file).",".$db->Quote($tpl_file).",".$db->Quote($cache_id).",NOW(),".intval($exp_time).")"); 
+				$db->Execute("REPLACE INTO smarty_cache_page VALUES('{$CONF['template']}',".$db->Quote($cache_file).",".$db->Quote($tpl_file).",".$db->Quote($cache_id).",NOW(),".intval($exp_time).")");
 			}
 			if ($redis_scan) {
 				//write a secondary index in redis
