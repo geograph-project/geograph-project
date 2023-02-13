@@ -111,7 +111,7 @@ function refreshData(skip_group) {
 
 	/////////////////////////////////////////
 
-	if (data != lastGroupData && !skip_group) {
+	if (data != lastGroupData && typeof skip_group !== "boolean") {
 		currentPage = 1; //need to reset back to page 1!
 		$.ajax({
 		  dataType: "json",
