@@ -57,10 +57,6 @@ input#search_toggle, label#search_label {
 	max-width:100%;
 }
 
-details > summary {
-	cursor: pointer;
-}
-
 /* styling for a 66% resized photo*/
 div.photo66
 {
@@ -156,21 +152,6 @@ abbr {
 	color:silver;
 }
 
-ul.buttonbar details > summary {
-	color: blue;
-}
-ul.buttonbar details div, ul.buttonbar details ul, details.dropdown ul {
-	position: absolute;
-	min-width:120px;
-	background-color:#eee;
-	border:1px solid gray;
-	border-radius:10px;
-	padding:10px;
-	line-height:1.8em;
-	z-index:10000;
-	text-align:left;
-}
-
 /* -------------------- */
 
 .content_photoblack .buttonbar li {
@@ -188,16 +169,6 @@ ul.buttonbar details div, ul.buttonbar details ul, details.dropdown ul {
 	color:cyan;
 }
 
-.content_photoblack ul.buttonbar details > summary {
-	color:cyan;
-}
-.content_photoblack ul.buttonbar details div, .content_photoblack ul.buttonbar details ul {
-	background-color:#333333;
-}
-.content_photoblack ul.buttonbar details a {
-	color:cyan;
-}
-
 /* -------------------- */
 
 .content_photogray .buttonbar li {
@@ -212,9 +183,6 @@ ul.buttonbar details div, ul.buttonbar details ul, details.dropdown ul {
 	color:#2E9AFE;
 }
 .content_photogray .buttonbar select option {
-	color:#2E9AFE;
-}
-.content_photogray ul.buttonbar details > summary {
 	color:#2E9AFE;
 }
 
@@ -257,3 +225,11 @@ div.rastermap .footnote {
 	text-align:center;
 }
 
+/* Change fonts for title and comment boxes */
+
+input[type="text"][name="title"] {
+        font-family: Georgia, Verdana, Arial, serif;
+}
+textarea[name="comment"] {
+        font-family: Georgia, Verdana, Arial, serif;
+}
