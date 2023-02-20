@@ -89,7 +89,7 @@ $imagestatuses = array('geograph' => 'geograph only','accepted' => 'supplemental
 
 $sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance','count'=>'Number in Group','sequence'=>'Geographically');
 
-$breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','realname'=>'Contributor Name','user_id'=>'Contributor','imageclass'=>'Image Category',' '=>'','grid_reference'=>'Grid Square','myriad'=>'Myriad','hectad'=>'Hectad');
+$breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','realname'=>'Photographer Name','user_id'=>'Contributor','imageclass'=>'Image Category',' '=>'','grid_reference'=>'Grid Square','myriad'=>'Myriad','hectad'=>'Hectad');
 
 $groupbys = array(''=>'','takendays'=>'Day Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','auser_id'=>'Contributor','classcrc'=>'Image Category',' '=>'','agridsquare'=>'Grid Square','amyriad'=>'Myriad','ahectad'=>'Hectad','scenti'=>'Centisquare');
 
