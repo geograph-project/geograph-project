@@ -133,9 +133,21 @@ function cmp($a, $b) {
 uasort($rows, "cmp");
 
 $data = array();
-$alltypes = array();
+$alltypes = array('field'=>1); //fields should be first column!
 foreach ($rows as $row) {
-	$data[$row['Field']][$row['Type']] = 1;
+	if (!empty($_GET['c']) && (preg_match('/^a(\w+)/',$row['Field'],$m) || $row['Field'] == 'classcrc')) {
+		//there is a attribute, by different name!
+		$name = $m[1];
+		if ($row['Field'] == 'classcrc') $name = 'imageclass';
+		if ($name == 'imagetaken') $name = 'takenday'; //takendays is also a duplicate
+		if ($name == 'gridsquare') $name = 'grid_reference';
+		$data[$name][$row['Type']] = 1;
+	} elseif (!empty($_GET['c']) && preg_match('/^(\w+)_ids$/',$row['Field'],$m) && $row['Type'] == 'mva' && $row['Field'] != 'content_ids') {
+		$name = $m[1].'s';
+		$data[$name][$row['Type']] = 1;
+	} else {
+		$data[$row['Field']][$row['Type']] = 1;
+	}
 	$alltypes[$row['Type']] = 1;
 }
 print "<table border=1 cellspacing=0 cellpadding=3><tr>";
