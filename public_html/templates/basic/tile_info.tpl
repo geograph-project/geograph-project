@@ -1,3 +1,4 @@
+<base target="_parent">
 {include file="_basic_begin.tpl"}
 <style>{literal}
 body {overflow:hidden;}
@@ -9,7 +10,7 @@ body {overflow:hidden;}
 <small><b>&nbsp; &copy; Copyright <a title="View profile" href="{$canonical_domain}{$image->profile_link}" target="_blank">{$image->realname|escape:'html'}</a></small>
 		</td>
 		<td valign="top" width="75%" style="padding:4px;">
-  			<div style="{if $image->title|strlen < 40}font-size:2.3em{else}font-weight:bold;font-size:1.5em{/if};margin-bottom:3px;background-color:#eee;padding:1px;">{$image->title|escape:'html'}</div>
+			<div style="{if $image->title|strlen < 40}font-size:2.3em{else}font-weight:bold;font-size:1.5em{/if};margin-bottom:3px;background-color:#eee;padding:1px;">{$image->title|escape:'html'}</div>
 
 {if $overview}
   <div style="float:right; position:relative;margin-right:10px;">
@@ -49,5 +50,9 @@ body {overflow:hidden;}
 {if $rastermap->enabled}
         {$rastermap->getFooterTag()}
 {/if}
+
+<script>
+document.querySelectorAll("a").forEach( el => el.addEventListener("click", e => e.stopPropagation() ) );
+</script>
 
 </body></html>
