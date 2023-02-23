@@ -28,6 +28,22 @@ if (!empty($_GET['do']) && !empty($_GET['page']) && $_GET['page'] > 20) {
 	header('HTTP/1.0 403 Forbidden');
 	exit;
 }
+foreach(array('orderby','groupby','breakby','form','displayclass','moderation_status','gridsquare') as $key)
+	if (!empty($_REQUEST[$key]) && !preg_match('/^[a-z_]+$/',$_REQUEST[$key])) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     exit;
+	}
+foreach(array('distance','reference_index','first','resultsperpage','reverse_order_ind','topic_id','page') as $key) //todo, could check all the Day/Month/Year values are numberic too!
+	if (!empty($_REQUEST[$key]) && !is_numeric($_REQUEST[$key]) && $_REQUEST[$key] !== 'on') {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     exit;
+	}
+foreach(array('do') as $key)
+	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w ]+$/',$_REQUEST[$key])) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     exit;
+	}
+
 if (empty($_SERVER['HTTP_USER_AGENT'])
 || (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE)
 || (@$_SERVER['HTTP_USER_AGENT'] == "Opera/9.80 (X11; Linux i686; U; pl) Presto/2.6.30 Version/10.61")
