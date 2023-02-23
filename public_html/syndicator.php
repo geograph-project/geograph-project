@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if (empty($_SERVER['HTTP_USER_AGENT'])
+if ((empty($_SERVER['HTTP_USER_AGENT']) && empty($_GET['key']))
  || ($_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || @$_GET['q'] == ',')
  || (isset($_GET['key']) && $_GET['key'] == '[apikey]' && strpos($_SERVER['HTTP_USER_AGENT'],'LWP') === 0)
  || ($_SERVER['HTTP_USER_AGENT'] == "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0" && $_SERVER['HTTP_REFERER'] == "https://www.google.com/")
@@ -34,7 +34,7 @@ if (empty($_SERVER['HTTP_USER_AGENT'])
 
 if (empty($_GET['key']))
 	$_SERVER['HTTPS'] = 'on'; //cheeky, but forces generation of https:// urls :)
-elseif ($_GET['key'] == 'c743e78c04')
+elseif ($_GET['key'] == 'c743e78c04' || $_GET['key'] == '71e8285f66' || $_GET['key'] == 'm3g411th13')
 	$_GET['new'] = 1; //as a test, lets start redirecting certain high-volumn users to the new engine!
 
 require_once('geograph/global.inc.php');
