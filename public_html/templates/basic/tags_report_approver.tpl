@@ -73,7 +73,7 @@
 	<p>Use Skip, to abstain from dealing with this suggestion.</p>
 
 	<ul>
-		<li>Remember this process is only for correctly clear mistakes and typos. Reject any suggestion that changes the wording, meaning or 'style' of the tag. This includes any suggestion clearly just intended to 'merge' multiple similar tags.</li>
+		<li>Remember this process is only for correcting clear mistakes and typos. Reject any suggestion that changes the wording, meaning or 'style' of the tag. This includes any suggestion clearly just intended to 'merge' multiple similar tags.</li>
 		{if $report.tag2 && $report.levenshtein}
 			<li>Pay close attention to suggestions with a high number of changes, these indicate not simple typo fixing</li>
 		{/if}
