@@ -50,7 +50,7 @@ function ExifConvertDegMinSecToDD($deg, $min, $sec) {
 
 function ExifToNational($exif) {
 	$conv = new Conversions;
-					
+
 	if (is_array($exif['GPS']['GPSLatitude'])) {
 		$deg = FractionToDecimal($exif['GPS']['GPSLatitude'][0]);
 		$min = FractionToDecimal($exif['GPS']['GPSLatitude'][1]);
@@ -61,7 +61,7 @@ function ExifToNational($exif) {
 		$lat = $exif['GPS']['GPSLatitude'];
 	}
 
-	if ($exif['GPS']['GPSLatitudeRef'] == 'S') 
+	if ($exif['GPS']['GPSLatitudeRef'] == 'S')
 		$lat *= -1;
 
 	if (is_array($exif['GPS']['GPSLongitude'])) {
@@ -74,7 +74,9 @@ function ExifToNational($exif) {
 		$long = $exif['GPS']['GPSLongitude'];
 	}
 
-	if ($exif['GPS']['GPSLongitudeRef'] == 'W') 
+	if ($long > 180) //some apps (like geosetter) encode longitude as E 0-360 - but >180 is W
+		$long -= 360.0;
+	elseif ($exif['GPS']['GPSLongitudeRef'] == 'W')
 		$long *= -1;
 
 	return $conv->wgs84_to_national($lat,$long);

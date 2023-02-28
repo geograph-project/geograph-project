@@ -899,6 +899,7 @@ $(function() {
 				long = toDecimal(long);
 				lat = toDecimal(lat);
 
+				if (long > 180) long = long - 360.0; //some apps (like geosetter) encode longitude as E 0-360 - but >180 is W
 				if (EXIF.getTag(this, 'GPSLongitudeRef') == 'W') long = long * -1;
 				if (EXIF.getTag(this, 'GPSLatitudeRef') == 'S') lat = lat * -1;
 
