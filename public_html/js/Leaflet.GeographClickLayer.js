@@ -242,7 +242,8 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 		if (this._line)
 			this._line.removeFrom(this._map);
 		if (this._mapBounds && this._returnwhenoff)
-			this._map.fitBounds(this._mapBounds);
+			//this._map.fitBounds(this._mapBounds); //fitbounds tends to introduce some 'creap' as may zoom so whole bounds is visible
+			map.flyToBounds(_mapBounds,{duration:0.5});
 	},
 
 ///////////////////////////////////////////////////
