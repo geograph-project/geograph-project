@@ -247,7 +247,7 @@ function openInNewWindow() {
 }
 
 function clearSubmission() {
-	document.getElementById('iframe'+1).src = '/submit2.php?inner&step={/literal}{dynamic}{if $multi}0{else}1{/if}{/dynamic}{literal}&container=iframe1#sort=Uploaded%A0%A0%u2193';
+	document.getElementById('iframe'+1).src = '/submit2.php?inner&step={/literal}{dynamic}{if $multi}0{else}1{/if}{/dynamic}{literal}&container=iframe1';
 	for(q=1;q<=3;q++)
 		document.getElementById('sh'+q).className = "tab sh sn";
 	clicker(1,true);
@@ -319,7 +319,7 @@ window.onbeforeunload=unloadMess;
 	</div>
 
 	<div id="sd1" class="sd" style="display:block">
-		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1#sort=Uploaded%A0%A0%u2193" id="iframe1" width="100%" height="520px" style="border:0"></iframe>
+		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1" id="iframe1" width="100%" height="520px" style="border:0"></iframe>
 	</div>
 
 <!-- # -->

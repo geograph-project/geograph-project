@@ -18,7 +18,7 @@
 	{if $one && $item}
 			
 
-				<a href="{$script_name}?inner&amp;step=0&amp;one=1&amp;delete={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193" onclick="return confirm('Are you sure?');" style="color:red" targer="_self">Delete this image</a>
+				<a href="{$script_name}?inner&amp;step=0&amp;one=1&amp;delete={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}" onclick="return confirm('Are you sure?');" style="color:red" targer="_self">Delete this image</a>
 				<a href="{$script_name}?inner&amp;step=1&amp;transfer_id={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}">Submit this image &gt;</a>
 				<br>
 				Uploaded: {$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"} 
@@ -46,7 +46,7 @@
 					<td><a href="{$script_name}?inner&amp;step=1&amp;transfer_id={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}">continue &gt;</a></td>
 					<td sortvalue="{$item.uploaded}">{$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"}</td>
 					<td sortvalue="{$item.imagetaken}">{if $item.imagetaken}{$item.imagetaken|date_format:"%a, %e %b %Y at %H:%M"}{/if}</td>
-					<td><a href="{$script_name}?inner&amp;step=0&amp;delete={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193" onclick="return confirm('Are you sure?');" style="color:red" targer="_self">Delete</a></td>
+					<td><a href="{$script_name}?inner&amp;step=0&amp;delete={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}" onclick="return confirm('Are you sure?');" style="color:red" targer="_self">Delete</a></td>
 				</tr>
 			{foreachelse}
 				<tr><td colspan="4">No images yet. <a href="/submit-multi.php" target="_top">Upload some now!</a></td></tr>
@@ -54,6 +54,9 @@
 			</tbody>
 		</table>
 
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script src="{"/js/jquery.storage.js"|revision}"></script>
+		<script> var sorterKey = 'multi-submit-sort'; </script>
 		<script src="{"/sorttable.js"|revision}"></script>
 	{/if}
 
@@ -93,12 +96,12 @@
 		{/if}
 
 		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1{if $container}&amp;container={$container|escape:'url'}{/if}">Upload a new image</a> 
-		or <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193">Select an different uploaded image</a>
+		or <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}">Select an different uploaded image</a>
 		(<a href="/submit2.php?inner&amp;step=0&amp;one=1{if $container}&amp;container={$container|escape:'url'}{/if}">Submit one uploaded image</a>)
 		</p>
 	{else}
 		<div class="interestBox" style="float:right;width:200px;">&middot; <a href="/submit-multi.php" target="_top">Upload multiple images</a><br/>
-		&middot; <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193">Select an uploaded image</a><br> 
+		&middot; <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}">Select an uploaded image</a><br> 
 		&middot; <a href="/submit2.php?inner&amp;step=0&amp;one=1{if $container}&amp;container={$container|escape:'url'}{/if}">Submit an uploaded image</a> </div>
 		{if $error}
 			<p style="color:#990000;font-weight:bold;">{$error}</p>

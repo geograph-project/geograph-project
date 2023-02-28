@@ -60,8 +60,13 @@ function sortables_init() {
             ts_makeSortable(thisTbl);
         }
     }
-    
-    
+
+        if (window.sorterKey && window.$ && $.localStorage && location.hash.length < 2) {
+                if (v = $.localStorage(sorterKey)) {
+			location.hash = v;
+		}
+        }
+
 	if (location.hash.length) {
 		// If there are any parameters at the end of the URL,
 		// looking something like  "#sort=name%A0%A0%u2191"
@@ -78,22 +83,29 @@ function sortables_init() {
 
 			if (argname == "sort") {
 				var bits = value.split(unescape('%A0'));
-				
+
 				var ele = document.getElementsByClassName('sortheader');
 				if (bits[2].length == 1) {
 					//ie/firefox do things diffenently with auto unescaping
 					bits[2] = escape(bits[2]);
 				}
-				
+
 				for(var q = 0;q<ele.length;q++) {
-					
+
 					if (bits[0] == ts_getInnerText(ele[q]).replace(/  /,unescape('%A0%A0')).nbsptrim()) {
 						var link = ele[q];
-						
-						ts_resortTable(link);
-						
+
+					        var span = null;
 						if (bits[2] == '%u2191') {
-							
+							for (var ci=0;ci<link.childNodes.length;ci++) {
+								if (link.childNodes[ci].tagName && link.childNodes[ci].tagName.toLowerCase() == 'span') span = link.childNodes[ci];
+							}
+							span.setAttribute('sortdir','down'); //set down, so it immidately switches TO up!
+						}
+
+						ts_resortTable(link);
+
+						if (bits[2] == '%u2191' && !span) { //fallback, incase span was not found
 							setTimeout(function() {
 								ts_resortTable(link);
 							}, 100);
@@ -101,7 +113,6 @@ function sortables_init() {
 					}
 				}
 			}
-			
 		}
 	}
 
@@ -244,6 +255,10 @@ function ts_resortTable(lnk) {
     
    	location.hash = "sort="+escape(ts_getInnerText(lnk)).replace(/%20%20/,'%A0%A0');
 
+	if (window.sorterKey && window.$ && $.localStorage) {
+		$.localStorage(sorterKey,location.hash);
+	}
+
 	if (typeof reGroup != 'undefined') {
 		reGroup();
 	}
@@ -305,3 +320,4 @@ function compare(a,b) {
     if (a>b) {return 1;}
     return 0;
 }
+

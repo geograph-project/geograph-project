@@ -1,4 +1,7 @@
 {include file="_std_begin.tpl"}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="{"/js/jquery.storage.js"|revision}"></script>
+<script> var sorterKey = 'multi-submit-sort'; </script>
 <script src="{"/sorttable.js"|revision}"></script>
 
 <div style="float:right;position:relative"><a href="/submit.php?redir=false">v1</a> / <a href="/submit2.php">v2</a> / <b>multi</b> / <a href="/help/submit">more...</a></div>
