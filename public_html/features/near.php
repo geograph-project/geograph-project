@@ -327,8 +327,21 @@ div#thumbs div.thumb {
 		}
 	});
 </script>
+<? if (!empty($_GET['name'])) {
+	if (!empty($_GET['editing']))
+		print "Choosing image for ";
+	print "<b>".htmlentities2($_GET['name'])."</b> feature";
+	if (!empty($_GET['type_id'])) {
+		$type_id = intval($_GET['type_id']);
+		if (empty($db))
+			$db = GeographDatabaseConnection(true);
+		$row = $db->getRow("SELECT t.*,realname FROM feature_type t LEFT JOIN user USING (user_id) WHERE feature_type_id = $type_id AND status > 0");
+		if (!empty($row['title']))
+			print ", in the <b>".htmlentities2($row['title'])."</b> dataset";
+	}
+} ?>
 <div class="interestBox">
-	match:<input type=search name=filter value="<? echo htmlentities2($_GET['filter']); ?>">
+	match:<input type=search name=filter value="<? echo htmlentities2(@$_GET['filter']); ?>">
 	<span class="slider">
 	within:<input type=number name=dist id=dtext value="<? echo $distance; ?>" step=1 max=20000 min=10 style="width:6em;text-align:right">m
 	<span><input type=range id=dslider min="<? echo log(10); ?>" max="<? echo log(20000); ?>" step="0.1" value="<? echo log($distance); ?>"></span>
@@ -534,8 +547,8 @@ if (!empty($rows)) {
 
 	} else {
 		//might be too late, but might as well try!
-		header("HTTP/1.0 404 Not Found");
-		header("Status: 404 Not Found");
+		@header("HTTP/1.0 404 Not Found");
+		@header("Status: 404 Not Found");
 
 		if (empty($sph)) {
 			$sph = GeographSphinxConnection('sphinxql',true);
