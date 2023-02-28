@@ -57,11 +57,9 @@ if (isset($_POST['go']))
 		$datefrom = makeTimeStamp('datefrom');
 		$dateto = makeTimeStamp('dateto');
 		$funct = $_GET['function'];
-		
-		
-print "<PRE>"; print_r($_POST); print "</PRE>";		
+
 		print "$datefrom - $dateto<BR>";
-	
+
 	$recordSet = $db->Execute("select * from gridimage");
 	while (!$recordSet->EOF) 
 	{

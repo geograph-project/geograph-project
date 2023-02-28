@@ -40,11 +40,6 @@ pageMustBeHTTPS();
 if (!empty($_POST) && !empty($_POST['urls'])) {
 	print ' <meta name="viewport" content="width=device-width, initial-scale=1"> ';
 
-	if (!empty($_POST['debug'])) {
-		print "<pre>";
-		print_r($_POST);
-		print "</pre>";
-	}
 	$ids = array();
 	if (preg_match_all('/https\:\/\/ucarecdn.com\/(\w[\w-]+)~(\d+)/',$_POST['urls'],$m)) {
 		foreach ($m[1] as $idx => $uuid) {

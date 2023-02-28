@@ -34,11 +34,6 @@ $USER->hasPerm("director") || $USER->mustHavePerm("moderator");
 $db = GeographDatabaseConnection(false); //the job creation/update statements are not replication safe, so need to use master
 
 if (!empty($_POST)) {
-	if (!empty($_GET['d'])) {
-		print "<pre>";
-		print_r($_POST);
-		print "</pre>";
-	}
 
 	$updates = array();
 	$updates['user_id'] = $USER->user_id;

@@ -226,9 +226,7 @@ if (!empty($_GET['import'])) {
 } elseif (!empty($_GET['bulk'])) {
 
 	if (!empty($_POST['top']) && !empty($_POST['imageclass'])) {
-		print "<pre>";
-		print_r($_POST);
-	
+
 		$db = GeographDatabaseConnection(false);
 	
 		$updates = array();
