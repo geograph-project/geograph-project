@@ -13,7 +13,8 @@ $(function() {
 		$div.append('<input type=radio name=gridimage value="" checked>All &nbsp;');
 		$div.append('<input type=radio name=gridimage value="1">With Image &nbsp;');
 		$div.append('<input type=radio name=gridimage value="0">Without Image &nbsp;');
-		$div.append('<input type=radio name=gridimage value="2">Automatic Selected Images Only &nbsp;');
+		$div.append('<input type=radio name=gridimage value="2">Automatic Selected Images Only &nbsp;'); //todo, hide if no gridref column?
+		$div.append('<input type=radio name=gridimage value="3">Unphotographed &nbsp;');
 		$div.appendTo($form);
 	}
 	$form.find('input[type=radio]').on('click',refreshData);
