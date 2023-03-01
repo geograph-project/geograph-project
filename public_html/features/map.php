@@ -126,7 +126,9 @@ $where[] = "status = 1";
 $where[] = "(e > 0 OR f.wgs84_lat > 0)"; //only mapped features
 
 if (isset($_GET['gridimage']) && strlen($_GET['gridimage'])) { //strlen, not empty to allow =0
-        if ($_GET['gridimage'] === '2')
+        if ($_GET['gridimage'] === '3')
+                $where[] = "gridimage_id = 0 AND gridimage_id_user_id > 0";
+        elseif ($_GET['gridimage'] === '2')
                 $where[] = "gridimage_id > 0 AND gridimage_id_user_id IS NULL";
         elseif ($_GET['gridimage'])
                 $where[] = "gridimage_id > 0";
@@ -201,12 +203,16 @@ Number:
 <input type=radio name=all value=0 <? if (empty($_GET['all'])) { echo "checked"; } ?>> 1000 Random /
 <input type=radio name=all value=1 <? if (!empty($_GET['all'])) { echo "checked"; } ?>> All (Note: Markers wont be clickable, if over 1000)<br>
 
-Show:<input type="radio" name="gridimage" value="" <? if (!strlen(@$_GET['gridimage'])) { echo "checked"; } ?>>Any
-&nbsp;<input type="radio" name="gridimage" value="1" <? if (@$_GET['gridimage'] === "1") { echo "checked"; } ?>>With Image
-&nbsp;<input type="radio" name="gridimage" value="0" <? if (@$_GET['gridimage'] === "0") { echo "checked"; } ?>>Without Image
-&nbsp;<input type="radio" name="gridimage" value="2" <? if (@$_GET['gridimage'] === "2") { echo "checked"; } ?>>Automatic Selected Images Only &nbsp;
+<div style=float:right>
+	<button type=submit>Update</button>
+</div>
 
-<button type=submit>Update</button>
+Show:<input type="radio" name="gridimage" value="" <? if (!strlen(@$_GET['gridimage'])) { echo "checked"; } ?>>Any /
+<input type="radio" name="gridimage" value="1" <? if (@$_GET['gridimage'] === "1") { echo "checked"; } ?>>With Image /
+<input type="radio" name="gridimage" value="0" <? if (@$_GET['gridimage'] === "0") { echo "checked"; } ?>>Without Image /
+<input type="radio" name="gridimage" value="2" <? if (@$_GET['gridimage'] === "2") { echo "checked"; } ?>>Automatic Images Only /
+<input type="radio" name="gridimage" value="3" <? if (@$_GET['gridimage'] === "3") { echo "checked"; } ?>>Unphotographed
+
 </form>
 <?
 

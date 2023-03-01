@@ -98,7 +98,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		}
 	}
 
-	if (!empty($updates['gridimage_id'])) //already only set if user changed it!
+	if (isset($updates['gridimage_id'])) //only set if user changed it!
 		$updates['gridimage_id_user_id'] = $USER->user_id;
 	elseif (!empty($_POST['gridimage_id']) && empty($page['gridimage_id_user_id']) && !isset($_POST['name']))
 		//but also allow them to 'claim' an previously auto selected image. But not if doing a general edit of all feilds

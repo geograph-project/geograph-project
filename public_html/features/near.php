@@ -574,7 +574,9 @@ if (!empty($rows)) {
 		if (!empty($data['total_found']))
 			print " (finds about <b>{$data['total_found']}</b> images)";
 		*/
-		print '<a href="#" onclick="parent.closePopup(); return false">Close Window</a>';
+		print ' &nbsp; <a href="#" onclick="parent.closePopup(); return false">Close Window</a>';
+
+		print ' &nbsp; <a href="#" onclick="parent.useImage(0); return false">Mark as Unphotographed</a>';
 	}
 }
 
@@ -602,9 +604,9 @@ if (!empty($final)) {
 	<? } ?>
 	</b>
 
-	<a href="#" onclick="parent.closePopup(); return false">Close Window</a>
-
 	<a href="#" onclick="parent.useImage(selectedImage); return false">Save and Close</a>
+
+	<a href="#" onclick="parent.useImage(0); return false">Mark as Unphotographed</a>
 
 	</div>
 
