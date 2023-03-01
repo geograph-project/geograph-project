@@ -53,6 +53,7 @@ $param = array(
 );
 
 $where = array();
+$order = "";
 $type_id = 0;
 
 /////////////////////////////////////////////////////
@@ -66,7 +67,9 @@ if (!empty($type_id)) {
 	$row = $db->getRow("SELECT t.*,realname FROM feature_type t LEFT JOIN user USING (user_id) WHERE feature_type_id = $type_id AND status > 0");
 	if (!empty($row['title']))
 		print "<h2>".htmlentities($row['title'])."</h2>";
-	if (!empty($row['query_string']))
+	if (!empty($_GET['q']))
+		$param['q'] = $_GET['q'];
+	elseif (!empty($row['query_string']))
 		$param['q'] = $row['query_string'];
 	$where[] = "feature_type_id = $type_id";
 }
@@ -110,7 +113,7 @@ print "<!-- ($lat,$lng) -->";
 	$param['limit'] = 100000; //still not all!
 
 } elseif (!empty($_GET['rand'])) {
-	$where[] = "1 ORDER BY RAND()";
+	$order = "ORDER BY RAND()";
 	$desc  = "{$param['limit']} random features";
 } else {
 	$where[] = "nearby_images = 0";
@@ -121,6 +124,15 @@ print "<!-- ($lat,$lng) -->";
 
 $where[] = "status = 1";
 $where[] = "(e > 0 OR f.wgs84_lat > 0)"; //only mapped features
+
+if (isset($_GET['gridimage']) && strlen($_GET['gridimage'])) { //strlen, not empty to allow =0
+        if ($_GET['gridimage'] === '2')
+                $where[] = "gridimage_id > 0 AND gridimage_id_user_id IS NULL";
+        elseif ($_GET['gridimage'])
+                $where[] = "gridimage_id > 0";
+        else
+                $where[] = "gridimage_id = 0";
+}
 
 $where = implode(" AND ",$where);
 $cols = array();
@@ -135,10 +147,10 @@ $cols[] = "e,n,f.reference_index"; //should be rate, but include these as a fall
 if (!empty($_GET['thumbs'])) {
 	//specically using feature loation! (not image location)
 	$cols[] = "title,realname,gi.user_id,f.wgs84_lat,f.wgs84_long,gridimage_id,credit_realname";
-	$sql = "SELECT ".implode(",",$cols)." FROM feature_item f LEFT JOIN gridimage_search gi USING (gridimage_id) WHERE $where LIMIT {$param['limit']}";
+	$sql = "SELECT ".implode(",",$cols)." FROM feature_item f LEFT JOIN gridimage_search gi USING (gridimage_id) WHERE $where $order LIMIT {$param['limit']}";
 } else {
 	$cols[] = "wgs84_lat,wgs84_long,gridimage_id";
-	$sql = "SELECT ".implode(",",$cols)." FROM feature_item f WHERE $where LIMIT {$param['limit']}";
+	$sql = "SELECT ".implode(",",$cols)." FROM feature_item f WHERE $where $order LIMIT {$param['limit']}";
 }
 
 /////////////////////////////////////////////////////
@@ -148,7 +160,7 @@ $recordSet = $db->Execute($sql) or die("$sql\n".$db->ErrorMsg()."\n\n");
 $count = $recordSet->RecordCount();
 
 if ($count <= 1000) {
-	if (!empty($_GET['thumbs']) && $count <= 100)
+	if (!empty($_GET['thumbs']))
 		$param['thumbs'] = true;
 	else {
 		$param['markers'] = true;
@@ -158,19 +170,48 @@ if ($count <= 1000) {
 			if (strpos($row['item_columns'],'gridimage_id') !== false || !$type_id) //will just have to assume all layers have it
 				$param['select'] = true;
 		}
-
-                while (!$recordSet->EOF) {
-                        $r = $recordSet->fields;
-			$image = $r['gridimage_id']?1:0;
-			@$param["photos".$image]++;
-			$recordSet->MoveNext();
-		}
+	}
+}
+if ($param['markers'] || $param['masklayer']) {
+        while (!$recordSet->EOF) {
+                $r = $recordSet->fields;
+		$image = $r['gridimage_id']?1:0;
+		@$param["photos".$image]++;
+		$recordSet->MoveNext();
 	}
 }
 
 /////////////////////////////////////////////////////
-// full render of page.
 
+?>
+<form method=get style="background-color:#eee;padding:10px;">
+Dataset: <select name=id>
+<option value=0>All</option>
+<?
+foreach ($db->getAll("SELECT feature_type_id,title FROM feature_type WHERE status = 1 AND licence != 'none'") as $r)
+	printf('<option value="%d"%s>%s</option>',$r['feature_type_id'],(isset($_GET['id']) && $_GET['id'] == $r['feature_type_id'])?' selected':'',htmlentities($r['title']));
+?>
+</select><br>
+Location: <input type=search name=loc value="<? echo htmlentities(@$_GET['loc']); ?>"> (eg enter a Grid-Reference)<br>
+
+Filter: <input type=search name=q value="<? echo htmlentities(@$param['q']); ?>"> (for the Photos Subjects Layer, does not filter features)<br>
+<input type=hidden name=rand value=1>
+
+Number:
+<input type=radio name=all value=0 <? if (empty($_GET['all'])) { echo "checked"; } ?>> 1000 Random /
+<input type=radio name=all value=1 <? if (!empty($_GET['all'])) { echo "checked"; } ?>> All (Note: Markers wont be clickable, if over 1000)<br>
+
+Show:<input type="radio" name="gridimage" value="" <? if (!strlen(@$_GET['gridimage'])) { echo "checked"; } ?>>Any
+&nbsp;<input type="radio" name="gridimage" value="1" <? if (@$_GET['gridimage'] === "1") { echo "checked"; } ?>>With Image
+&nbsp;<input type="radio" name="gridimage" value="0" <? if (@$_GET['gridimage'] === "0") { echo "checked"; } ?>>Without Image
+&nbsp;<input type="radio" name="gridimage" value="2" <? if (@$_GET['gridimage'] === "2") { echo "checked"; } ?>>Automatic Selected Images Only &nbsp;
+
+<button type=submit>Update</button>
+</form>
+<?
+
+/////////////////////////////////////////////////////
+// full render of page.
 
 print "<ul>";
 	print "<li>$desc</li>";
@@ -192,6 +233,13 @@ print "<ul>";
 			print "<img src=\"".$CONF['STATIC_HOST']."/geotrips/boat.png\"> With Image. ";
 		if ($param['select'])
 			print " (<b>Click a <img src=\"".$CONF['STATIC_HOST']."/geotrips/bike.png\"> Icon</b> to select an image for that feature). ";
+	} elseif ($param['masklayer']) {
+		print "<li>";
+		if (!empty($param['photos0']))
+                        print " <span style=color:#ff0000;opacity:0.6>&bull; Without Image.</span> ";
+		if (!empty($param['photos1']))
+                        print " <span style=color:#000000;opacity:0.6>&bull; With Image.</span> ";
+		print " Points are not clickable";
 	}
 	?>
 	<li id="results"><? echo $count; if (!$param['markers']) { echo " (NON CLICKABLE!)"; } ?> results</li>
