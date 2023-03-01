@@ -262,6 +262,16 @@ div#thumbs div.thumb {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.js"></script>
 <script>
+	$(function() {
+		$('#thumbs').on('mouseover','a', function(event) {
+			var $this = $(this);
+			if ($this.data('wgs84_lat') && window.parent && parent.zoomMap) {
+				var lat = parseFloat($this.data('wgs84_lat'));
+				var lng = parseFloat($this.data('wgs84_long'));
+				parent.zoomMap(lat,lng);
+			}
+		});
+	});
 	var selectedImage = null;
 	window.addEventListener('DOMContentLoaded', function() {
 		document.getElementById("dslider").addEventListener("input", function(event) {
@@ -295,7 +305,6 @@ div#thumbs div.thumb {
 				originalLink = $triggerElement[0];
 			},
 		        callback: function(key, options,e) {
-				console.log(key,originalLink.href);
 				if (key == 'edit')
 					window.open(originalLink.href,'_blank');
 				if (key == 'select' || key == 'quit') {
@@ -424,7 +433,7 @@ print "<!-- ($lat,$lng) -->";
 
 		if (!empty($_GET['filter']) && !empty($_GET['pref'])) {
 	                $rows['mixed'] = $sph->getAll($sql = "
-        	                select id,realname,user_id,title,grid_reference $columns, WEIGHT() as w
+        	                select id,realname,user_id,title,grid_reference,wgs84_lat,wgs84_long $columns, WEIGHT() as w
                 	        from sample8
                         	where $where
 	                        order by w desc, distance asc, sequence asc
@@ -432,7 +441,7 @@ print "<!-- ($lat,$lng) -->";
 		} else {
 			$ordered = true; //so can group the images by distance
 	                $rows['ordered'] = $sph->getAll($sql = "
-        	                select id,realname,user_id,title,grid_reference $columns
+        	                select id,realname,user_id,title,grid_reference,wgs84_lat,wgs84_long $columns
                 	        from sample8
                         	where $where
 	                        order by distance asc, sequence asc
@@ -451,7 +460,7 @@ print "<!-- ($lat,$lng) -->";
 	$where = implode(' and ',$where);
 
 	$rows['matches'] = $sph->getAll($sql = "
-                select id,realname,user_id,title,grid_reference
+                select id,realname,user_id,title,grid_reference,wgs84_lat,wgs84_long
                 from sample8
                 where $where
                 limit {$limit}");
@@ -526,12 +535,17 @@ if (!empty($rows)) {
 					$last = $d2;
 				}
 			}
-
-?>
-          <div class="thumb shadow" id="img<? echo $image->gridimage_id; ?>">
-	          <a title="<? if (isset($row['distance'])) { printf("%.1f km, ",$image->distance/1000); } echo $image->grid_reference; ?> : <? echo htmlentities2($image->title) ?> by <? echo htmlentities2($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src'); ?></a>
-          </div>
-<?
+			$attrs = array();
+			$attrs[] = "title=\"".(isset($row['distance'])?sprintf("%.1f km, ",$image->distance/1000):'')."{$image->grid_reference} : ".htmlentities2($image->title)." by ".htmlentities2($image->realname)." - click to view full size image\"";
+			$attrs[] = "href=\"/photo/{$image->gridimage_id}\"";
+			$attrs[] = "data-wgs84_lat=".rad2deg($row['wgs84_lat']);
+			$attrs[] = "data-wgs84_long=".rad2deg($row['wgs84_long']);
+			//todo, vlat!
+			?>
+		          <div class="thumb shadow" id="img<? echo $image->gridimage_id; ?>">
+	        		  <a <? echo implode(' ',$attrs); ?>><? echo $image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src'); ?></a>
+		          </div>
+			<?
 
 		}
 		if ($last) {

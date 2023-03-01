@@ -64,7 +64,8 @@ $cacheid = '';
 		$smarty->assign('item', array(
 			'name' => "New Item",
 			'user_id' => $USER->user_id,
-			'feature_type_id' => intval($_REQUEST['type_id'])
+			'feature_type_id' => intval($_REQUEST['type_id']),
+			'gridref' => @$_GET['gridref']
 		));
 		$smarty->assign('id', "new");
 	} else {

@@ -39,7 +39,7 @@ $smarty->display('_std_begin.tpl');
 $param = array(
 	'id' => 0,
 	'gridref'=> false,
-	'limit'=>100,
+	'limit'=>1000,
 
 	'q'=>false,
 
@@ -53,9 +53,6 @@ $param = array(
 );
 
 $where = array();
-$where[] = "status = 1";
-$where[] = "(e > 0 OR f.wgs84_lat > 0)";
-$limit = 100;
 $type_id = 0;
 
 /////////////////////////////////////////////////////
@@ -74,19 +71,56 @@ if (!empty($type_id)) {
 	$where[] = "feature_type_id = $type_id";
 }
 
-if (!empty($_GET['all'])) {
+
+if (!empty($_GET['loc'])) {
+
+        require "geograph/location-decode.inc.php";
+
+        if (!empty($lat) && isset($lng)) {
+
+print "<!-- ($lat,$lng) -->";
+		$distance = $type_id?25000:10000;
+		$desc = sprintf("Features with %.1fkm of (%.5f,%.5f)",$distance/1000,$lat,$lng);
+
+                //need to use sphinx for this, to get WITHIN GROUP ORDER BY!
+                $sph = GeographSphinxConnection('sphinxql',true);
+                $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+                $where2 = $where;
+		//dont need status=1 as the index is pre filtered!
+		$where2[] = 'wgs84_lat > 0';
+                if (!empty($sphinxq))
+                        $where2[] = "match(".$sph->Quote($sphinxq).")";
+                $lat = deg2rad($lat);
+                $lng = deg2rad($lng);
+                $columns = ", GEODIST($lat, $lng, wgs84_lat, wgs84_long) as distance";
+                $where2[] = "distance < $distance";
+		//tood, add BBOX
+		$where2 = implode(' and ',$where2);
+		$sql = "SELECT id $columns FROM feature_item WHERE $where2 LIMIT {$param['limit']}";
+		$ids = $sph->getCol($sql);
+		if (count($ids))
+			$where[] = "feature_item_id in (".implode(',',$ids).")";
+		else
+			$where[] = "0";
+	}
+
+} elseif (!empty($_GET['all'])) {
 	$desc = "all rows from ".htmlentities($row['title'])." dataset";
-	$limit = 100000; //still not all!
+	$param['limit'] = 100000; //still not all!
 
 } elseif (!empty($_GET['rand'])) {
 	$where[] = "1 ORDER BY RAND()";
-	$desc  = "$limit random features";
+	$desc  = "{$param['limit']} random features";
 } else {
 	$where[] = "nearby_images = 0";
-	$desc  = "$limit sample features, with <b>zero</b> images";
+	$desc  = "{$param['limit']} sample features, with <b>zero</b> images";
 }
 
 /////////////////////
+
+$where[] = "status = 1";
+$where[] = "(e > 0 OR f.wgs84_lat > 0)"; //only mapped features
 
 $where = implode(" AND ",$where);
 $cols = array();
@@ -96,11 +130,11 @@ $cols[] = "name";
 if (!$type_id)
 	$cols[] = "feature_type_id"; //to deal with mutliepl datasets!
 //$cols should always have wgs84_lat,wgs84_long,gridimage_id but do incase the join changes it
-$cols[] = "e,n,reference_index"; //should be rate, but include these as a fallback if wgs84 not available.
+$cols[] = "e,n,f.reference_index"; //should be rate, but include these as a fallback if wgs84 not available.
 
 if (!empty($_GET['thumbs'])) {
 	//specically using feature loation! (not image location)
-	$cols[] = "realname,gi.user_id,f.wgs84_lat,f.wgs84_long,gridimage_id,credit_realname";
+	$cols[] = "title,realname,gi.user_id,f.wgs84_lat,f.wgs84_long,gridimage_id,credit_realname";
 	$sql = "SELECT ".implode(",",$cols)." FROM feature_item f LEFT JOIN gridimage_search gi USING (gridimage_id) WHERE $where LIMIT {$param['limit']}";
 } else {
 	$cols[] = "wgs84_lat,wgs84_long,gridimage_id";
@@ -113,17 +147,17 @@ if (!empty($_GET['thumbs'])) {
 $recordSet = $db->Execute($sql) or die("$sql\n".$db->ErrorMsg()."\n\n");
 $count = $recordSet->RecordCount();
 
-print $sql;
-
-if ($count <= 100) {
-	if (!empty($_GET['thumbs']))
+if ($count <= 1000) {
+	if (!empty($_GET['thumbs']) && $count <= 100)
 		$param['thumbs'] = true;
 	else {
 		$param['markers'] = true;
-		if (!empty($row['create_enabled']))
-			$param['create'] = true;
-		if (strpos($row['item_columns'],'gridimage_id') !== false || !$type_id) //will just have to assume all layers have it
-			$param['select'] = true;
+		if ($USER->registered) {
+			if (!empty($row['create_enabled']))
+				$param['create'] = true;
+			if (strpos($row['item_columns'],'gridimage_id') !== false || !$type_id) //will just have to assume all layers have it
+				$param['select'] = true;
+		}
 
                 while (!$recordSet->EOF) {
                         $r = $recordSet->fields;
@@ -175,19 +209,19 @@ print "<ul>";
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
 <script type="text/javascript" src="<? echo smarty_modifier_revision("/js/Leaflet.MetricGrid.js"); ?>"></script>
 <script type="text/javascript" src="<? echo smarty_modifier_revision("/js/mappingLeaflet.js"); ?>"></script>
-<script type="text/javascript" src="//s1.geograph.org.uk/mapper/geotools2.v7300.js"></script>
+<script type="text/javascript" src="<? echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
 
 <? if (!empty($param['thumbs'])) { ?>
         <link type="text/css" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" rel="stylesheet"/>
 	<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
 
-        <link type="text/css" href="https://s1.geograph.org.uk/js/Leaflet.Photo.v8862.css" rel="stylesheet"/>
-	<script src="https://s1.geograph.org.uk/js/Leaflet.Photo.v8861.js"></script>
+        <link type="text/css" href="<? echo smarty_modifier_revision("/js/Leaflet.Photo.css"); ?>" rel="stylesheet"/>
+	<script src="<? echo smarty_modifier_revision("/js/Leaflet.Photo.js"); ?>"></script>
 <? }
 
 if (true || !empty($param['q'])) { ?>
-        <link type="text/css" href="https://s1.geograph.org.uk/js/Leaflet.GeographClickLayer.v8952.css" rel="stylesheet"/>
-        <script src="https://s1.geograph.org.uk/js/Leaflet.GeographClickLayer.v17887446.js"></script>
+        <link type="text/css" href="<? echo smarty_modifier_revision("/js/Leaflet.GeographClickLayer.css"); ?>" rel="stylesheet"/>
+        <script src="<? echo smarty_modifier_revision("/js/Leaflet.GeographClickLayer.js"); ?>"></script>
 <? }
 
 if (!empty($param['masklayer'])) { ?>
@@ -199,10 +233,10 @@ if (!empty($param['masklayer'])) { ?>
 div#container {
 	position:relative;
 	width:800px; height:700px; max-height:90vh; max-width:80vw;
+	margin-bottom: 50vh ;
 }
 div#map {
 	width:800px; height:700px; max-height:90vh; max-width:80vw;
-	margin-bottom: 50vh ;
 }
 div#gridref {
 	z-index:10000;position:absolute;top:0;right:180px;background-color:white;font-size:1em;font-family:sans-serif;opacity:0.8;padding:1px;
@@ -244,6 +278,16 @@ div#gridref {
             overflow: hidden;
         }
 	.white_content iframe {
+		width:100%;
+		height:100%;
+		border:0;
+	}
+	#clicklayer_thumbs {
+		padding:0;
+		height:calc( 100% - 30px );
+		overflow:hidden;
+	}
+	#clicklayer_thumbs iframe {
 		width:100%;
 		height:100%;
 		border:0;
@@ -340,8 +384,6 @@ div#gridref {
 		if ($param['masklayer']) {
 			print "var layerData1 = new Array();\n";
 			print "var layerData2 = new Array();\n";
-			//map.addLayer(this._masklayer);
-			//masklayer.setData(this._layerData);
 
 			$recordSet->moveFirst();
 		        while (!$recordSet->EOF) {
@@ -440,6 +482,7 @@ div#gridref {
 				if ($param['select']) { ?>
 					marker.on('click',function() {
 						current_item_id = <? echo $r['feature_item_id']; ?>;
+						current_marker = this;
 						<? if (!empty($r['feature_type_id'])) { echo "feature_type_id = {$r['feature_type_id']};\n"; } ?>
 						var near_url = "/features/near.php?q=<? echo urlencode($r['gridref']); ?>&type_id="+feature_type_id;
                         			<? if ($r['radius'] && $r['radius']>1) { ?>
@@ -504,20 +547,109 @@ div#gridref {
 
 	var uniqueSerial = 0;
 	var current_item_id = 0;
+	var current_marker = null;
 	var feature_type_id = <? echo $param['id']; ?>;
-
+	var _mapBounds = null;
+	var _marker = null;
 	function openPopup(href) {
+		_mapBounds = map.getBounds().pad(-0.2); //it often zooms out a step
+
+		if (true) {
+			$('#clicklayer_lightback').fadeIn('fast');
+			$('#clicklayer_thumbs').removeClass('small').removeClass('med');
+			$('#clicklayer_thumbs').html('<iframe></iframe>').find('iframe').attr('src',href+"&inner=1");
+			$('#clicklayer_lightfront').show();
+			$('#clicklayer_links').hide();
+
+			var offset = $(map._container).offset();
+			$('html, body').scrollTop(offset.top);
+			$(map._container).addClass('click_smallmap');
+			map.invalidateSize();
+
+			$('.leaflet-control-container .leaflet-top').hide(); //hides top controls, but not attribution!
+			return;
+		}
+
 	        document.getElementById('light').style.display='block';
         	document.getElementById('fade').style.display='block';
 		document.getElementById('light').style.position = 'fixed';
 		document.getElementById('iframe').src = href+"&inner=1";
 	}
 	function closePopup(trigger) {
+		if (_mapBounds) {
+			//map.fitBounds(_mapBounds);
+			map.flyToBounds(_mapBounds,{duration:0.5});
+			_mapBounds = null;
+		}
+		if (_marker) {
+			_marker.removeFrom(map);
+			_marker = null;
+		}
+
+		$(map._container).removeClass('click_smallmap');
+		map.invalidateSize();
+
+		$('.leaflet-control-container .leaflet-top').show(); //hides top controls, but not attribution!
+
+		//if (true) {
+			$('#clicklayer_lightfront').hide();
+			$('#clicklayer_lightback').fadeOut('fast');
+			$('#clicklayer_show').hide();
+		//}
 		document.getElementById('light').style.display='none';
 		document.getElementById('fade').style.display='none';
 		if (trigger) {
 			uniqueSerial++;
 			// refreshData();
+		}
+	}
+	function zoomMap(lat,lng) {
+		if (_marker)
+			_marker.removeFrom(map);
+		_marker = L.circleMarker([lat,lng],{color:'blue'}).addTo(map);
+
+		//the click defines has it own close event, by connecting the two here, means it will revert our version when closing too!
+		clickLayer._circle = _marker;
+		clickLayer._mapBounds = _mapBounds;
+		clickLayer._returnwhenoff = true;
+
+		var bounds = L.latLngBounds();
+		bounds.extend([lat,lng]);
+
+		var testBounds = map.getBounds().pad(-0.2);
+
+//console.log(bounds, bounds.getNorthWest().distanceTo(bounds.getSouthEast()), map.getBoundsZoom(bounds));
+
+		if (testBounds.contains(bounds)) {
+			//todo, might still want to check if worth zooming in. with setZoomAround
+			//if (bounds.getNorthWest().distanceTo(bounds.getSouthEast()) > 20) {
+				var possibleZoom = map.getBoundsZoom(bounds);
+
+				if (Math.abs(map.getZoom() - possibleZoom) > 4) {
+					map.setZoomAround(bounds.getCenter(),possibleZoom-2);
+				}
+			//}
+			return;
+		}
+
+		if (bounds.getNorthWest().distanceTo(bounds.getSouthEast()) > 20) {
+
+			var possibleZoom = map.getBoundsZoom(bounds);
+			if (Math.abs(map.getZoom() - possibleZoom) <= 2) {
+				//if close, just try panning, to minimis jumping around
+				map.panInsideBounds(bounds.pad(0.1));
+			} else {
+				//todo, could perhaps note, when target bounds are in view (its just really just zoom!)
+					// and instead use setZoomAround to avoid recentering
+
+				//todo dont zoom beyond the maxZoom of the baselayer
+				map.fitBounds(bounds);
+			}
+
+		} else {
+			//if points are same or only a single point, then just make sure in view at current zoom
+
+			map.panInsideBounds(bounds.pad(0.1));
 		}
 	}
 	function useImage(gridimage_id) {
@@ -531,6 +663,12 @@ div#gridref {
                         	uniqueSerial++;
                 	       // refreshData();
         	        });
+			//todo, we should also change the colour of the dot!
+			if (current_marker && gridimage_id && current_marker._icon) {
+				//tehre isnt a 'getIcon' in this version!
+				icon = 'boat';
+				current_marker._icon.src = static_host+"/geotrips/"+icon+".png";
+			}
 	        <? } ?>
 
 		closePopup(false); //close right away
