@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # this file mostly duplicates what the Dockerfile does on normal containers.
 # ... because a dev container uses a persistantvolumn for /var/www/geograph, it has to be repeated
@@ -12,10 +12,8 @@ if [[ $HOSTNAME == dev* ]]; then
 	        apt -f install nano git ack wget colordiff dos2unix jq -y
 	fi
 
-	ch $BASE_DIR;
-
-	if [ ! -d "public_html" ]; then
-		git clone -b british-isles https://github.com/geograph-project/geograph-project/ ./
+	if [ ! -d "/var/www/geograph/public_html" ]; then
+		git clone -b british-isles https://github.com/geograph-project/geograph-project/ /var/www/geograph/
 	fi
 
 	ln -sn /mnt/efs/upload_tmp_dir /var/www/geograph/upload_tmp_dir 2>/dev/null
