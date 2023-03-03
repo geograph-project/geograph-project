@@ -42,7 +42,7 @@
 
 			{foreach from=$data item=item}
 				<tr>
-					<td><a href="/submit.php?preview={$item.transfer_id}" target="_blank"><img src="/submit.php?preview={$item.transfer_id}" width="160"/></a></td>
+					<td style="min-height:100px"><a href="/submit.php?preview={$item.transfer_id}" target="_blank"><img loading="lazy" src="/submit.php?preview={$item.transfer_id}" width="160"/></a></td>
 					<td><a href="{$script_name}?inner&amp;step=1&amp;transfer_id={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}">continue &gt;</a></td>
 					<td sortvalue="{$item.uploaded}">{$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"}</td>
 					<td sortvalue="{$item.imagetaken}">{if $item.imagetaken}{$item.imagetaken|date_format:"%a, %e %b %Y at %H:%M"}{/if}</td>
