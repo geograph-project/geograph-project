@@ -32,6 +32,13 @@ if ((empty($_SERVER['HTTP_USER_AGENT']) && empty($_GET['key']))
 	exit;
 }
 
+foreach(array('distance','simple','i','u','reference_index','first','resultsperpage','reverse_order_ind','topic_id','page') as $key)
+        if (!empty($_REQUEST[$key]) && !is_numeric($_REQUEST[$key]) && $_REQUEST[$key] !== 'on') {
+             header('HTTP/1.0 451 Unavailable For Legal Reasons');
+             exit;
+        }
+
+
 if (empty($_GET['key']))
 	$_SERVER['HTTPS'] = 'on'; //cheeky, but forces generation of https:// urls :)
 elseif ($_GET['key'] == 'c743e78c04' || $_GET['key'] == '71e8285f66' || $_GET['key'] == 'm3g411th13')
