@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# this file mostly duplicates what the Dockerfile does on normal containers.
+# ... because a dev container uses a persistantvolumn for /var/www/geograph, it has to be repeated
+
+if [[ $HOSTNAME == dev* ]]; then
+
+	if [ ! -x "/bin/nano" ]; then
+	        #need to restore the caches, as the base image deletes them after startup
+	        apt update
+
+	        apt -f install nano git ack wget colordiff dos2unix jq -y
+	fi
+
+	ch $BASE_DIR;
+
+	if [ ! -d "public_html" ]; then
+		git clone -b british-isles https://github.com/geograph-project/geograph-project/ ./
+	fi
+
+	ln -sn /mnt/efs/upload_tmp_dir /var/www/geograph/upload_tmp_dir 2>/dev/null
+	ln -sn /mnt/efs/upload_tmp_dir_old /var/www/geograph/upload_tmp_dir_old 2>/dev/null
+	ln -sn /mnt/efs/maps /var/www/geograph/public_html/maps 2>/dev/null
+	ln -sn /mnt/efs/kml /var/www/geograph/public_html/kml 2>/dev/null
+	ln -sn /mnt/efs/rss /var/www/geograph/public_html/rss 2>/dev/null
+	ln -sn /mnt/efs/sitemap /var/www/geograph/public_html/sitemap 2>/dev/null
+	ln -sn /var/www/geograph/scripts /scripts 2>/dev/null
+
+fi
