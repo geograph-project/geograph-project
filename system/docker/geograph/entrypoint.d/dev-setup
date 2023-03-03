@@ -25,3 +25,6 @@ if [[ $HOSTNAME == dev* ]]; then
 	ln -sn /var/www/geograph/scripts /scripts 2>/dev/null
 
 fi
+
+# always exit with 0, as the symlink above may exit with 1 when already exists, upsetting run-parts
+exit 0
