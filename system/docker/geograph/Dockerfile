@@ -11,7 +11,7 @@ RUN set -eux; \
     gsfonts \
     libimage-exiftool-perl \
     libjpeg-turbo-progs \
-    libvips-tools \
+    libvips-tools icc-profiles-free \
     nginx \
     php-bz2 \
     php-memcache \
@@ -56,7 +56,7 @@ RUN ln -s /mnt/efs/kml /var/www/geograph/public_html/kml
 RUN ln -s /mnt/efs/rss /var/www/geograph/public_html/rss
 RUN ln -s /mnt/efs/sitemap /var/www/geograph/public_html/sitemap
 
-# Note, the smarty symlinks, are set in 'init-container.php' as they have more logic
+# Note, the smarty symlinks, are set in '/entrypoint.d/create-smarty-links' as they have more logic
 
 WORKDIR /var/www/geograph
 ENV CONF_PROFILE=docker

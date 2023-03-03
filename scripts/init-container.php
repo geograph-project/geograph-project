@@ -46,6 +46,8 @@ Scan 'resources' (CSS/JS etc)    $exts = 'js,css,png,jpg,gif,ico,txt,xml,html,ht
 
 //symlink  /var/www/geograph_svn/public_html/templates/*/compiled-mnt -> /mnt/efs-staging/smarty-$1
 
+/* now done in entrypoint.d/create-smarty-links instead
+
 $folders = $_SERVER['BASE_DIR']."/public_html/templates/*";
 $pattern = '/mnt/efs/smarty-{NAME}';
 
@@ -60,7 +62,7 @@ foreach (glob($folders) as $folder) {
 
 	//then create the symlink
 	symlink($destination, $mountpoint);
-}
+} */
 
 ##########################################################
 
