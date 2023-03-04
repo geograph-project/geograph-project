@@ -150,7 +150,7 @@ if (!empty($_POST['clearcache'])) {
 ###################################
 
 
-$tag = $image->getFull(); //as used on photo page  - calls getSize etc
+$tag = $image->getFull(true,true,true); //as used on photo page  - calls getSize etc
 
 $postfix = empty($_GET['v'])?'':("&v=".intval($_GET['v']));
 
