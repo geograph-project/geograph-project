@@ -255,6 +255,16 @@ if (count($ids) == 2) {
 
 <p>If the other image has a 'larger' upload, then can copy the image from the rejected image to the remaining image<br>
 <b>Important: If the two images are only 'close' (eg a slightly differnet crop of the same base image) and NOT identical, then be sure to tick the 'Close Enough' tickbox!!</b>
+  
+	<ul>
+	<li>Minor tweaking of contrast, brightness etc is fine - even for "Identical"</li>
+	<li>Major tweaking is permissible (such as removing border, overlaid text etc) - but should be marked "Close enough"</li>
+	<li>Minor cropping changes is permissible, but must be marked "Close enough"</li>
+	<li>Major cropping changes, provided the 'subject focal area' is unchanged, should also be marked "Close Enough"<ul>
+		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of - or a frame from - the larger panorama - still marked "Close enough")</li>
+		</ul></li>
+	<li>Anything else, or when they are not the same image shouldn't be allowed</li>
+	</ul>
 
 <p>Can also copy the tags from the rejected image to the remaining image. Again tick the box for it.<br>
 Note, when rejecting one image, the tickbox on the other image will tick.
@@ -413,15 +423,7 @@ function moderateImage(gridimage_id, status, message)
 }
 </script>
 
-	<ul>
-	<li>Minor tweaking of contrast, brightness etc is fine - even for "Identical"</li>
-	<li>Major tweaking is permissible (such as removing border, overlaid text etc) - but should be marked "Close enough"</li>
-	<li>Minor cropping changes is permissible, but must be marked "Close enough"</li>
-	<li>Major cropping changes, provided the 'subject focal area' is unchanged, should also be marked "Close Enough"<ul>
-		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of - or a frame from - the larger panorama - still marked "Close enough")</li>
-		</ul></li>
-	<li>Anything else, or when they are not the same image shouldn't be allowed</li>
-	</ul>
+
 
 <?
 
