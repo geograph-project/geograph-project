@@ -171,9 +171,7 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	$smarty->assign_by_ref('table', $table);
 
 	$smarty->assign("h2title",$title);
-	if (!empty($_GET['advanced'])) {
-		$smarty->assign("headnote","<p>We have recently begun making <a href='http://munin.geograph.org.uk/'>raw server graphs</a> available. Also <a href='/project/systemtask.php'>Systam Admin Tasks Status</a> - and <a href='http://status.geograph.org.uk/status/'>System Status Overview</a></p>");
-	} else {
+	if (empty($_GET['advanced'])) {
 		$smarty->assign("headnote","<p><a href=?advanced=1>Switch to Advanced View</a></p>");
 	}
 	$smarty->assign("total",count($table));
