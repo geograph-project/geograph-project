@@ -9,7 +9,75 @@
     max-width: 100%;
     height: auto;
 }
-
+#maincontent a.title {
+		color:inherit;
+    text-decoration:none;
+    font-size:1.2em;
+    font-weight: bold;
+}
+#maincontent a.title:hover {
+    text-decoration:underline;
+}
+.copyrightmessage {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.yeartaken {
+    float:right;
+    font-family:verdana;
+    font-size:1.0em;
+}
+.gridref {
+    float:left;
+    font-family:verdana;
+    font-size:1.0em;
+}
+.gridref a {
+    color:black;
+    text-decoration:none;
+}
+.gridref a:hover {
+    text-decoration:underline;
+}
+.takendate {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.comment {
+    font-size:1.0em;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.likemenu {
+  display: inline-block;
+  position: relative;
+  float:right;
+  margin-bottom:10px;
+}
+.likemenu-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  white-space: nowrap;
+  background-color: white;
+  width: auto;
+  overflow: auto;
+  box-shadow: 0px 10px 10px 0px silver;
+}
+.likemenu:hover .likemenu-content {
+  display: block;
+}
+.likemenu-content a {
+  display: block;
+  color: black;
+  padding: 5px;
+  text-decoration: none;
+}
+.likemenu-content a:hover {
+  color: white;
+  background-color: grey;
+}
 </style>
 
 
@@ -18,64 +86,67 @@
 
 <script src="{"/slideshow.js"|revision}"></script>
 	
-
-	<form><p align="center"><input type="button" id="prevautobutton" value="&lt; Auto" disabled="disabled" onclick="auto_slide_go(-1)"/><input type="button" id="prevbutton" value="&lt; Prev" disabled="disabled" onclick="slide_go(-1)"/>
-	<input type="button" id="stopbutton" value="stop" onclick="slide_stop()" disabled="disabled"/>
-	<input type="button" id="nextbutton" value="Next &gt;" onclick="slide_go(1)"/><input type="button" id="nextautobutton" value="Auto &gt;" onclick="auto_slide_go(1)"/></p></form>
-
-	{foreach from=$engine->results item=image name=results}
-	 <div id="result{$smarty.foreach.results.iteration}"{if !$smarty.foreach.results.first} style="display:none;"{/if} class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}" style="position:relative">
-	 <div style="float:right; position:relative;">{$smarty.foreach.results.iteration}/{$engine->numberofimages}</div>
-		<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
-		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
-		<i class="nowrap">{$image->dist_string}</i><br/>
-		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
-		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
-		</div>
-
-	<div class="interestBox" style="float:right;position:relative;width:20px"><span  id="hideside{$image->gridimage_id}"></span>
-		<img src="{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side{$image->gridimage_id}');refreshMainList({$image->gridimage_id});"/>
-	</div>
-
-	<div style="float:right;position:relative">
-	<div style="position:absolute;left:-210px;top:-20px;width:220px;padding:10px;display:none;text-align:left;z-index:1000" id="showside{$image->gridimage_id}" onmouseout="hide_tree('side{$image->gridimage_id}')">
-		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
-			<img src="{$static_host}/img/thumbs.png" width="20" height="20" style="float:left;padding:4px"/>
-			<div id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree">I like this image!</a></div>
-			{if $image->comment}
-				<div id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree">I like this description!</a></div>
-			{/if}
-			<br style="clear:both"/>
-			<b>Image Buckets</b><br/>
-			{foreach from=$buckets item=item}
-					<label id="{$image->gridimage_id}label{$item|escape:'html'}" for="{$image->gridimage_id}check{$item|escape:'html'}" style="color:gray">
-					<input type=checkbox id="{$image->gridimage_id}check{$item|escape:'html'}" onclick="submitBucket({$image->gridimage_id},'{$item|escape:'html'}',this.checked?1:0,this.value);"> {$item|escape:'html'}
-					{if $item == 'CloseCrop'} (was Telephoto){/if}
-					</label><br/>
-
-			{/foreach}<br/>
-			<small>IMPORTANT: Please read the {newwin href="/article/Image-Buckets" title="Article about Buckets" text="Buckets Article"} before picking from this list</small>
+<form class="buttons"><p align="center"><input type="button" id="prevautobutton" value="&lt; Auto" disabled="disabled" onclick="auto_slide_go(-1)"/>
+<input type="button" id="prevbutton" value="&lt; Prev" disabled="disabled" onclick="slide_go(-1)"/>
+<input type="button" id="stopbutton" value="stop" onclick="slide_stop()" disabled="disabled"/>
+<input type="button" id="nextbutton" value="Next &gt;" onclick="slide_go(1)"/>
+<input type="button" id="nextautobutton" value="Auto &gt;" onclick="auto_slide_go(1)"/></p>
+</form>
 
 
-		</div>
-	</div>
-	</div>
+{foreach from=$engine->results item=image name=results}
+<div id="result{$smarty.foreach.results.iteration}"{if !$smarty.foreach.results.first} style="display:none;"{/if} class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}" style="position:relative">
 
-		<div class="shadow shadow_large" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull(true,true,true)|replace:'src=':"name=image`$smarty.foreach.results.iteration` src="}</a></div>
-		{if $image->comment}
-		  <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
-  		{/if}
 
-		<br/><br/>
-                <div style="font-size:0.8em">&copy; Copyright <b><a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></b> and licensed for reuse under <a href="http://creativecommons.org/licenses/by-sa/2.0/">a Creative Commons licence</a> </div>
+<div style="float:left; margin-bottom:10px">{$smarty.foreach.results.iteration}/{$engine->numberofimages}</div>
 
-	 </div>
-	{foreachelse}
-	 	{if $engine->resultCount}
-	 		<p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}{if $engine->temp_displayclass}&amp;displayclass={$engine->temp_displayclass}{/if}"><b>continue to results</b> &gt; &gt;</a></p>
-	 	{/if}
-	{/foreach}
-	{if $engine->results}
+<div style="float:right" class="likemenu"><img src="{$static_host}/img/thumbs.png"/>
+<div class="likemenu-content">
+  <div id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));">Like image</a></div>
+  {if $image->comment}<div id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));">Like description</a></div>{/if}
+  </div></div>
+
+<div class="shadow shadow_large">
+<a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull(true,true,true)|replace:'src=':"name=image`$smarty.foreach.results.iteration` src="}</a>
+</div>
+
+<div style="max-width:1024px; text-align:center; margin:auto">
+<div class="gridref"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
+
+{if $image->imagetaken > 1}<div class="yeartaken" title="year taken">{$image->imagetaken|truncate:4:''}</div>{/if}
+
+<br style="clear:both; margin: 6px;"/>
+
+<div><a href="/photo/{$image->gridimage_id}" class=title>{$image->title|escape:'html'}</a></div>
+
+
+
+{if $image->comment}
+<div class="comment">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
+{/if}
+
+
+
+<div class="copyrightmessage">&copy; Copyright <b><a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></b> and licensed for reuse under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a></div>
+
+{if $image->imagetaken > 1}
+<div class="takendate">Image taken: {$image->imagetakenString}</div>
+{/if}
+
+<div class="mark">[<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]</div>
+
+</div>
+
+
+</div>
+{foreachelse}
+	{if $engine->resultCount}
+		<p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}{if $engine->temp_displayclass}&amp;displayclass={$engine->temp_displayclass}{/if}"><b>continue to results</b> &gt; &gt;</a></p>
+	{/if}
+{/foreach}
+
+</div>
+{if $engine->results}
 
 		<div id="marker_start" style="display:none; text-align:center; background-color:#dddddd; padding:10px;">
 		You have reached the beginning of this page of results.
