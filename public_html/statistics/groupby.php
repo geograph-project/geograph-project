@@ -92,7 +92,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 		}
 	}
-	
+
 	if (empty($filters['scenti'])) {//todo, also disable when select an of the other GRs too?
 		$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 		
@@ -152,8 +152,29 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (count($filters)) {
 			$sphinx->addFilters($filters);
 		}
+
+		if (!empty($_GET['nofour'])) {
+			if (!empty($_GET['ri'])) {
+				$client->setFilter("scenti",$_GET['ri']*000000000,true);
+			} else {
+				$client->setFilter("scenti",array(1000000000,2000000000),true); //true for exclude
+			}
+		}
+		$max_matches = 1000;
+		if (!empty($_GET['more']) && empty($_GET['filter']['ahectad'])) {
+                        if (!empty($_GET['filter']['amyriad'])) {
+				$max_matches = 10000;
+			} elseif (@$_GET['ri'] === "1") {
+				$max_matches = 200000;
+			} elseif (@$_GET['ri'] === "2") {
+				$max_matches = 100000;
+			} else {
+				$max_matches = 300000;
+			}
+		}
+
 		$index = empty($_GET['less'])?'_images':"{$CONF['sphinx_prefix']}gi_stemmed";		
-		$res = $sphinx->groupByQuery($pg,$index);
+		$res = $sphinx->groupByQuery($pg, $index, $max_matches);
 		
 		if ($res && $res['matches']) {
 			if ($groupby == 'auser_id') {
@@ -197,6 +218,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	if (!empty($_GET['less']))
 		$smarty->assign("less",1);
+	if (!empty($_GET['more']))
+		$smarty->assign("more",1);
+	if (!empty($_GET['nofour']))
+		$smarty->assign("nofour",1);
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
 	$smarty->assign_by_ref('references',$CONF['references_all']);	

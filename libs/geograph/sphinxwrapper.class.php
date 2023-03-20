@@ -480,7 +480,7 @@ if (!empty($_GET['ddeb']))
 		return $this->_getClient()->SetGroupDistinct($attribute);
 	}
 
-	public function groupByQuery($page = 1,$index_in = "_images") {
+	public function groupByQuery($page = 1,$index_in = "_images",$max_matches = 1000) {
 		global $CONF;
 		$cl = $this->_getClient();
 
@@ -496,7 +496,7 @@ if (!empty($_GET['ddeb']))
 		}
 
 		$sqlpage = ($page -1)* $this->pageSize;
-		$cl->SetLimits($sqlpage,$this->pageSize);
+		$cl->SetLimits($sqlpage, $this->pageSize, $max_matches);
 
 		if (!empty($this->upper_limit)) {
 			//todo a bodge to run on dev/staging
