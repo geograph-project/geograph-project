@@ -53,6 +53,7 @@ function slide_go(delta) {
 					window.location.href = document.links[q].href+((timer != false)?"#autonext":'');
 		}
 		marker = (delta > 0)?'marker_end':'marker_start';
+		document.getElementById("prevbutton").disabled = !(delta > 0);
 		if (document.getElementById(marker))
 			document.getElementById(marker).style.display = '';
 		if (timer != false)
@@ -72,7 +73,7 @@ function show_slide_part2(cs) {
 	document.getElementById("result"+cs).style.display = '';
 	if (document.getElementById("mapA"+cs)) {
 		document.getElementById("mapA"+cs).style.display = 'none';
-	} 
+	}
 }
 
 function slide_stop() {
@@ -98,3 +99,40 @@ function auto_slide_go(delta) {
 if (!document.getElementById) {
 	document.getElementById = my_getElementById;
 }
+
+AttachEvent(window,'load',function () {
+	//need to disable buttons in case of only one result!
+	document.getElementById("nextbutton").disabled = (cs >= resultcount && !hasnextpage);
+	document.getElementById("nextautobutton").disabled = (cs >= resultcount);
+
+	if (cs < resultcount)
+		for(q=1;q<=resultcount;q++)
+			if (document.images['image'+q])
+				AttachEvent(document.images['image'+q], 'wheel', wheelEvent);
+
+},false);
+
+function wheelEvent(e) {
+	e.preventDefault();
+	if (event.deltaY < 0) {
+		if (!document.getElementById("prevbutton").disabled)
+			slide_go(-1);
+	} else {
+		if (!document.getElementById("nextbutton").disabled)
+			slide_go(1);
+	}
+	return false;
+}
+
+AttachEvent(document,'keyup',function(e) {
+	if (e.key === "Escape") { // escape key maps to keycode `27`
+		slide_stop();
+	} else if (e.keyCode == 37) { //left arrow
+		if (!document.getElementById("prevbutton").disabled)
+			slide_go(-1);
+	} else if (e.keyCode == 39) { //rigth arrow
+		if (!document.getElementById("nextbutton").disabled)
+			slide_go(1);
+	}
+},false);
+
