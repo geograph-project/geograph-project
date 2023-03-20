@@ -66,6 +66,8 @@
 	</table>
   </div>
 	<input type="checkbox" name="less" {if $less}checked="checked"{/if} id="less"/> <label for="less">Ignore recent images</label> <small>(doesn't include images submitted in last 48 hours or so - however in general aggregate statistics will be more accurate)</small><br/>
+	<input type="checkbox" name="more" {if $more}checked="checked"{/if} id="more"/> <label for="more">High Accuracy</label> <small>(allocates more computing resources to allow for more accurate results, use sparingly)</small><br/>
+	<input type="checkbox" name="nofour" {if $nofour}checked="checked"{/if} id="nofour"/> <label for="nofour">Exclude 4fig Subject</label> <small>(if for example counting centisquares, then dont want to count images without a centisquare)</small><br/>
 	<input type="submit" value="Update" style="font-size:1.1em"/></p></form>
 {/if}
 
