@@ -77,7 +77,7 @@ $REVISIONS['/plupload/js/plupload.js']=7433;
 $REVISIONS['/plupload/js/plupload.silverlight.js']=7433;
 $REVISIONS['/prototype.js']=2600;
 $REVISIONS['/showcase/jquery.geolocation.js']=90849162;
-$REVISIONS['/slideshow.js']=86550678;
+$REVISIONS['/slideshow.js']=20622790;
 $REVISIONS['/sorttable.js']=62961456;
 $REVISIONS['/templates/basic/css/basic.css']=53563975;
 $REVISIONS['/templates/basic/css/basicp.css']=236;
@@ -89,7 +89,7 @@ $REVISIONS['/templates/new2/css/content.css']=24878839;
 $REVISIONS['/templates/r/css/content.css']=24878839;
 $REVISIONS['/js/jquery.storage.js']=111;
 $REVISIONS['/templates/resp/css/responsive.css']=72015581;
-$REVISIONS['/templates/resp/css/modification.css']=59043895;
+$REVISIONS['/templates/resp/css/modification.css']=76133089;
 $REVISIONS['/js/anyascii.js']=69351707;
 $REVISIONS['/features/view.js']=65689534;
 ?>
