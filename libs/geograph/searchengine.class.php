@@ -940,7 +940,7 @@ END;
 			$this->results=array();
 			$i=0;
 
-			$showtaken = ($this->criteria->limit7 || preg_match('/^imagetaken/',$this->criteria->orderby) || preg_match('/black|grid2/',$this->getDisplayclass()));
+			$showtaken = ($this->criteria->limit7 || preg_match('/^imagetaken/',$this->criteria->orderby) || preg_match('/black|slide|grid2/',$this->getDisplayclass()));
 
 			while (!$recordSet->EOF)
 			{
