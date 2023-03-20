@@ -10,7 +10,7 @@ Geograph hosts a variety of mapping applications to view photos on map.
 <h3>A. Coverage Map V4 - Geograph Photos and Square Coverage</h3>
 	<div style="float:left;margin-right:7px"><a href="/mapper/combined.php"><img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Capture_opportuniies-small.PNG" width=80></a></div>
 	<a href="/mapper/combined.php">Coverage Map V4</a> is our most modern and advanced map. Plots coverage by square, as well as offering layers plotting individual photos, by subject and/or viewpoint location. 
-	<b>Recommended map to use!</b> If a Geograph contributor, can easily personalize to just show your own covarage/photos.<br><br>
+	<b>Recommended map to use!</b> If a Geograph contributor, can easily personalize to just show your own coverage/photos.<br><br>
 	<small>Note, there is also a slightly simplified version for use on small screen mobile devices, open <a href="https://m.geograph.org.uk/">m.geograph.org.uk</a> on device and click the button bottom left. </small>
 
 <hr style=clear:both>
