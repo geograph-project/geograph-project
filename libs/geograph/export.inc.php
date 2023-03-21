@@ -160,14 +160,27 @@ if (!empty($_GET['u']) && preg_match("/^\d+$/",$_GET['u'])) {
 if (!empty($_GET['ids']) && preg_match("/^\d+(\,\d+)*$/",$_GET['ids']) ) {
 	$sql_crit .= " AND gi.gridimage_id IN ({$_GET['ids']})";
 } elseif (!empty($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
-	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}' $sql_hardlimit";
+	if ($hardlimit) {
+		if (empty($_GET['limit'])) {
+			$_GET['limit'] = $hardlimit;
+		} elseif (preg_match("/^(\d+),(\d+)?$/",$_GET['limit'],$m)) {
+			$offset = min(intval($m[1]), $hardlimit*10);
+			$_GET['limit'] = "$offset,$hardlimit";
+		} else {
+			$_GET['limit'] = min(intval($_GET['limit']),$hardlimit);
+		}
+	} else {
+		$_GET['limit'] = 2500;
+	}
+	$sql_crit .= " AND upd_timestamp >= '{$_GET['since']}' LIMIT {$_GET['limit']}";
 } elseif (!empty($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 	$_GET['last'] = preg_replace("/s$/",'',$_GET['last']);
 	$sql_crit .= " AND upd_timestamp > date_sub(now(), interval {$_GET['last']}) $sql_hardlimit";
 } elseif (!empty($_GET['limit']) && preg_match("/^\d+(,\d+|)?$/",$_GET['limit'])) {
 	if ($hardlimit) {
 		if (preg_match("/^(\d+),(\d+)?$/",$_GET['limit'],$m)) {
-			$_GET['limit'] = "{$m[1]},$hardlimit";
+			$offset = min(intval($m[1]), $hardlimit*10);
+			$_GET['limit'] = "$offset,$hardlimit";
 		} else {
 			$_GET['limit'] = min($_GET['limit'],$hardlimit);
 		}
@@ -218,9 +231,6 @@ if ($i && !$user_crit ) {
 		$mod_sql .= " and ftf = 1"; 
 	}
 
-	if (!empty($_GET['sql']))
-		$sql_crit = preg_replace('/( LIMIT \d+\s*|$)/',' LIMIT 1',$sql_crit);
-
 	$recordSet = $db->Execute($sql = "select gi.gridimage_id,title,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imageclass,nateastings,natnorthings,if(use6fig=1,6,natgrlen) as natgrlen,gi.user_id $sql_from 
 	from user 
 	inner join gridimage gi using(user_id) 
@@ -235,15 +245,9 @@ if ($i && !$user_crit ) {
 		$mod_sql .= " and ftf = 1"; 
 	}
 
-	if (!empty($_GET['sql']))
-		$sql_crit = preg_replace('/( LIMIT \d+\s*|$)/',' LIMIT 1',$sql_crit);
-
 	$recordSet = $db->Execute($sql = "select gi.gridimage_id,title,grid_reference,credit_realname,realname,imageclass,user_id $sql_from 
 	from gridimage_search gi 
 	$sql_tables
 	where $mod_sql $sql_crit");
 }
-
-if (!empty($_GET['sql']))
-	die($sql);
 
