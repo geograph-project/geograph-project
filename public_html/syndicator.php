@@ -32,6 +32,10 @@ if ((empty($_SERVER['HTTP_USER_AGENT']) && empty($_GET['key']))
 	exit;
 }
 
+//feed/ URL may still have a slash in the page param
+if (!empty($_REQUEST['page']))
+	$_REQUEST['page'] = str_replace('/','',$_REQUEST['page']);
+
 foreach(array('distance','simple','i','u','reference_index','first','resultsperpage','reverse_order_ind','topic_id','page') as $key)
         if (!empty($_REQUEST[$key]) && !is_numeric($_REQUEST[$key]) && $_REQUEST[$key] !== 'on') {
              header('HTTP/1.0 451 Unavailable For Legal Reasons');
