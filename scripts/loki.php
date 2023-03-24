@@ -31,6 +31,7 @@ $PREHELP = "Download log files from a loki server. Works in THREE modes: 'auto',
 
 $param=array(
 	'auto' => false, //special mode that downloads a daily log, and archives to S3. either true for nginx or use 'ingress' to save the production ingress logs
+	'overwrite' => 0, //sets to overwrite, even already on s3 (only affects auto mode, not single filenames, that always appends. 
 	'move' => 1, //once the files downloaded from loki, move them to S3. if 0 then they will still be uploaded, but will remain in the /tmp/
 
 	//main mode, to get loop and download to a filename
@@ -95,6 +96,10 @@ if (empty($CONF['loki_address']))
 
 		foreach (range(-15,-1) as $offset) { //loki only keeps 16 days, but cant use 16, and day 16 will be partial! (and loki hard errors, if outside its time!)
 			$d = date('Y-m-d',strtotime($offset.' day'));
+
+if ($d == '2023-03-09')
+	continue;
+
 			if ($param['auto'] == 'ingress')
 				$base = "ingress.$d.log";
 			elseif ($param['auto'] == 'dataserver')
@@ -107,7 +112,7 @@ if (empty($CONF['loki_address']))
 				continue;
 
 			//if already on remote
-			if ($filesystem->file_exists($destination.$base.".gz"))
+			if (!$param['overwrite'] && $filesystem->file_exists($destination.$base.".gz"))
 				continue;
 
 			if (!is_dir($source))
@@ -135,7 +140,7 @@ if (empty($CONF['loki_address']))
 		}
 
 		if (!empty($cmd)) { //actully did something!
-			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst=$destination --move={$param['move']} --dry=0 --config={$param['config']}";
+			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst=$destination --overwrite={$param['overwrite']} --move={$param['move']} --dry=0 --config={$param['config']}";
 			if ($param['debug']) {
 				print "$cmd\n";
 			} else {
@@ -361,7 +366,7 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
 						$d = json_decode($str,true);
 						$str = $d['log'];
 					}
-					fwrite($fp,$str);
+					fwrite($fp,rtrim($str)."\n"); //loki no longer provides the newline, but used to, so should real with it still present!
 					if ($param['stats'] && preg_match('/" (\d+.\d+) http/',$str,$m))
 						@$r['times'][$result['stream']['pod']][] = $m[1];
 				}
