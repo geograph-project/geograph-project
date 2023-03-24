@@ -92,9 +92,10 @@
 	}
 	print "<title>".htmlentities($text)."</title>";
 	print "<h1>Geograph Britain and Ireland</h1>";
+	print "<!-- ?q=".urlencode($query)."& -->";
 	print "<h2>".htmlentities($text)."</h2>";
 
-	$url = "http://api.geograph.org.uk/api-facet.php?q=".urlencode($query)."&limit=5&select=title,grid_reference,realname,hash";
+	$url = "https://api.geograph.org.uk/api-facet.php?q=".urlencode($query)."&limit=5&select=title,grid_reference,realname,hash";
 
   switch($sort) {
      case 'taken_down': $url .= "&sort=takendays+DESC"; $url .= "&rank=2";  break;
@@ -116,7 +117,7 @@
 			foreach ($d->matches as $gridimage_id => $row) {
 
 				$thumbnail = getGeographUrl($gridimage_id,$row->attrs->hash,'med');
-				print '<a href="http://www.geograph.org.uk/photo/'.$gridimage_id.'" title="'.htmlentities("{$row->attrs->grid_reference} : {$row->attrs->title} by {$row->attrs->realname}").'"><img src="'.$thumbnail.'"></a> ';
+				print '<a href="/photo/'.$gridimage_id.'" title="'.htmlentities("{$row->attrs->grid_reference} : {$row->attrs->title} by {$row->attrs->realname}").'"><img src="'.$thumbnail.'"></a> ';
 			}
 			if (!empty($d->total_found) && $d->total_found > 5) {
 				print "<br/><b>{$d->total_found} images in total</b>";
