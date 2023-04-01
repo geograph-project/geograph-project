@@ -431,6 +431,11 @@ function enlargeMap() {
 			{mapLetter: 'h', maxZoom: 18, attribution: 'Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>',
 				accessToken: 'pk.eyJ1IjoiZ2VvZ3JhcGgiLCJhIjoiY2lteXI3cmlpMDBmenY5bTF5dHFqMnh0NiJ9.sPXF2s1niWNNEfqGjs2HGw'});
 
+		baseMaps["ESRI Imagery"] = new L.TileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+			minZoom: 1, maxZoom: 18,
+			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'});
+
+
 		var nlsAttrib = "\u003ca href=\"http://maps.nls.uk/projects/subscription-api/\"\u003eNational Library of Scotland\u003c/a\u003e";
 		baseMaps['Historic OS - GB 1920s'] = new L.TileLayer('https://api.maptiler.com/tiles/uk-osgb1919/{z}/{x}/{y}.jpg?key=RJOABq94aMWBy2AuidnK',
 		        {mapLetter: 'n', minZoom: 1, maxZoom:14 , attribution: nlsAttrib, crossOrigin: true,
