@@ -121,8 +121,8 @@ if (!empty($map['gallery'])) {
         $todo[] = array(
                 'title' => 'Showcase Gallery',
 		'when' => 'added',
-                'sql' => "SELECT $columns,fetched AS date FROM gridimage_search gi INNER JOIN gallery_ids ON (id = gridimage_id)
-				WHERE gallery_ids.baysian > 3.5 AND user_id IN ($ids) AND fetched > $crit AND showday IS NULL ORDER BY fetched DESC"
+                'sql' => "SELECT $columns,first_vote AS date FROM gridimage_search gi INNER JOIN gallery_ids ON (id = gridimage_id)
+				WHERE gallery_ids.baysian > 3.5 AND user_id IN ($ids) AND first_vote > $crit AND showday IS NULL ORDER BY first_vote DESC"
         );
 }
 
