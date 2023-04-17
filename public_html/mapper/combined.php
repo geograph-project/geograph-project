@@ -76,6 +76,9 @@ if (isset($_GET['t'])) {
 
 } elseif (!empty($_SESSION['gridref'])) {
         $smarty->assign('gridref',$_SESSION['gridref']);
+
+} elseif ($CONF['template']=='ireland') {
+	$smarty->assign('ireland',1);
 }
 
 

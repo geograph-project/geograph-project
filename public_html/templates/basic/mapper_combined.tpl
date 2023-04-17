@@ -189,7 +189,11 @@
 
                  if (wgs84)
                           mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
+	{elseif $ireland}
+		mapOptions.center = [53.416,-7.877];
+		mapOptions.zoom = 7;
 	{/if}
+
 	{if $zoom}
 		mapOptions.zoom = {$zoom};
 	{/if}
