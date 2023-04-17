@@ -20,17 +20,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
- 
-
-if ((!preg_match('/\/geotrips\/\d+/',$_SERVER["REQUEST_URI"]) && isset($_GET['trip'])) || strlen($_GET['trip']) !== strlen(intval($_GET['trip']))) {
-        //keep urls nice and clean - esp. for search engines!
-        header("HTTP/1.0 301 Moved Permanently");
-        header("Status: 301 Moved Permanently");
-        header("Location: /geotrips/".intval($_GET['trip']));
-        print "<a href=\"/geotrips/".intval($_GET['trip'])."\">Continue to view this trip</a>";
-        exit;
-}
-
 
 if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
 	require_once('./geograph_snub.inc.php');
@@ -42,6 +31,14 @@ require_once('geograph/searchengine.class.php');
 
 init_session();
 
+if ((!preg_match('/\/geotrips\/\d+/',$_SERVER["REQUEST_URI"]) && isset($_GET['trip'])) || strlen($_GET['trip']) !== strlen(intval($_GET['trip']))) {
+        //keep urls nice and clean - esp. for search engines!
+        header("HTTP/1.0 301 Moved Permanently");
+        header("Status: 301 Moved Permanently");
+        header("Location: ".$CONF['canonical_domain'][1]."/geotrips/".intval($_GET['trip']));
+        print "<a href=\"".$CONF['canonical_domain'][1]."/geotrips/".intval($_GET['trip'])."\">Continue to view this trip</a>";
+        exit;
+}
 pageMustBeHTTPS();
 
 
@@ -87,6 +84,10 @@ $conv = new Conversions;
 
   // fetch Geograph data
 	$engine = new SearchEngine($trk['search']);
+
+if (!empty($engine->query_id)) {
+	//shouldnt happen, but catch failure to load the search. Without the search, page will be broken anyway!
+		
 	$engine->criteria->resultsperpage = 250; // FIXME really?
 	$recordSet = $engine->ReturnRecordset(0, true);
 
@@ -107,7 +108,7 @@ $conv = new Conversions;
 		$recordSet->MoveNext();
 	}
 
-
+}
 
 ?>
 

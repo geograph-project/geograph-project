@@ -21,21 +21,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if ((strpos($_SERVER["REQUEST_URI"],'/snippet/') === FALSE && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
-	//keep urls nice and clean - esp. for search engines!
-	header("HTTP/1.0 301 Moved Permanently");
-	header("Status: 301 Moved Permanently");
-	header("Location: /snippet/".intval($_GET['id']));
-	print "<a href=\"/snippet/".intval($_GET['id'])."\">View shared description page</a>";
-	exit;
-}
-
-
 require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
 
+if ((strpos($_SERVER["REQUEST_URI"],'/snippet/') === FALSE && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
+	//keep urls nice and clean - esp. for search engines!
+	header("HTTP/1.0 301 Moved Permanently");
+	header("Status: 301 Moved Permanently");
+	header("Location: ".$CONF['canonical_domain'][1]."/snippet/".intval($_GET['id']));
+	print "<a href=\"".$CONF['canonical_domain'][1]."/snippet/".intval($_GET['id'])."\">View shared description page</a>";
+	exit;
+}
 pageMustBeHTTPS();
 
 $template='snippet.tpl';
