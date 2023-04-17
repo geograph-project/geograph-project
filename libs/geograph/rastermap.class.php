@@ -149,6 +149,10 @@ class RasterMap
 				} elseif($this->issubmit && in_array('NPE',$services)) {
 					$this->enabled = true;
 					$this->service = 'NPE';
+				} elseif(in_array('Leaflet',$services)) {
+					$this->enabled = true;
+					$this->service = 'Leaflet';
+					$this->inline = 1; //no need for none inline anymore...
 				}
 
 			} elseif($CONF['template'] == 'archive') {
@@ -166,6 +170,7 @@ class RasterMap
 				$this->service = 'Google';
 				$this->inline = 1; //no need for none inline anymore...
 			}
+
 			if (isset($this->tilewidth[$this->service])) {
 				$this->width = $this->tilewidth[$this->service];
 			}
