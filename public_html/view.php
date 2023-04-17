@@ -72,12 +72,13 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'BingPreview/1.0b
 		print "<title>Image no longer available</title>";
 	}
 	exit;
+
 } elseif ((strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
 	//keep urls nice and clean - esp. for search engines!
 	header("HTTP/1.0 301 Moved Permanently");
 	header("Status: 301 Moved Permanently");
-	header("Location: /photo/".intval($_GET['id']));
-	print "<a href=\"{$CONF['SELF_HOST']}/photo/".intval($_GET['id'])."\">View image page</a>";
+	header("Location: ".$CONF['canonical_domain'][1]."/photo/".intval($_GET['id']));
+	print "<a href=\"".$CONF['canonical_domain'][1]."/photo/".intval($_GET['id'])."\">View image page</a>";
 	exit;
 }
 
@@ -101,7 +102,7 @@ if (!empty($_POST['style'])) {
 		$_SESSION['setstyle'] = 1;
 		header("HTTP/1.0 301 Moved Permanently");
 		header("Status: 301 Moved Permanently");
-		header("Location: /photo/".intval($_GET['id']));
+		header("Location: ".$CONF['canonical_domain'][1]."/photo/".intval($_GET['id']));
 		exit;
 	}
 	header("Location: /");
@@ -139,8 +140,6 @@ $image=new GridImage;
 
 if (isset($_GET['id']))
 {
-	pageMustBeHTTPS(); //in here so doesnt affect preview - but does mean we redirect everything even nonexistant images (means may create a redirect-chain)
-
 	$image->loadFromId(intval($_GET['id']));
 
 	$isowner=($image->user_id==$USER->user_id)?1:0;
@@ -166,10 +165,11 @@ if (isset($_GET['id']))
 		else
 		{
 			$db = GeographDatabaseConnection(true);
-			if ($to = $db->getOne("SELECT destination FROM gridimage_redirect WHERE gridimage_id = ".intval($_GET['id']))) {
+			if ($row = $db->getRow("select destination,reference_index from gridimage_redirect r inner join gridimage_search gi on (destination = gi.gridimage_id) where r.gridimage_id = ".intval($_GET['id']))) {
+				$to = $row['destination'];
 		                header("HTTP/1.0 301 Moved Permanently");
                 		header("Status: 301 Moved Permanently");
-		                header("Location: /photo/".intval($to));
+		                header("Location: ".$CONF['canonical_domain'][$row['reference_index']]."/photo/".intval($to));
                 		exit;
 			}
 
@@ -195,6 +195,8 @@ if ($image->isValid())
 	} elseif ($image->grid_square->reference_index == 2 && $_SERVER['HTTP_HOST'] != 'www.geograph.ie' && $CONF['template']!='archive') {
 		$smarty->assign("ireland_prompt",1);
 	}
+
+	pageMustBeHTTPS(); //in here so doesnt affect preview - and after all other redirects
 
 	if ($image->grid_square) {
 		$image->grid_square->rememberInSession();
