@@ -304,7 +304,11 @@ function InternetCombineUrl($absolute, $relative) {
 		return 'javascript:void(0);';
 	}
 	extract(parse_url($absolute));
-	if($relative{0} == '/') {
+        if (preg_match('/^https?:\/\//',$relative))
+                return $relative; //its a full absolute URL anyway!
+        elseif (preg_match('/^\/\//',$relative))
+                return $scheme.$relative; //use the scheme from the absolute, otherwise its full protocol relaitve URL
+	elseif($relative{0} == '/') {
 		$cparts = array_filter(explode("/", $relative));
 	}
 	else {
