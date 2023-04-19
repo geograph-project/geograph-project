@@ -76,6 +76,9 @@ function check_path($server,$path, $row) {
 
 	if (!empty($_POST['bulk'])) {
 		$lines = explode("\n",str_replace("\r",'',$_POST['bulk']));
+
+                $updates["user_id"] = intval($USER->user_id);
+
 print "<pre>";
 		$count = 0;
 		foreach ($lines as $line) {
@@ -85,6 +88,7 @@ print "<pre>";
 			if ($bits[0] == "Timestamp" || empty($bits[1]))
 				continue;
 
+//date,image_url,affected,page_url (TAB seperated!
 
 //get dates like "19/08/2018 09:32:21" which Google DOcs provided in UK format, but strtotime is US absed?
 $bits[0] = preg_replace('/(\d+)\/(\d+)\/(\d{4})/','$2/$1/$3', $bits[0]);
@@ -118,11 +122,18 @@ print "</pre>";
 
 		if (!empty($_POST['page_url']))
 			$updates["page_url"] = $_POST['page_url'];
+
                 $updates["user_id"] = intval($USER->user_id);
+		if ($USER->hasPerm("admin"))
+			$updates["status"] = 'escalated'; //go streight, do not pass go
 
 		$db->Execute('INSERT INTO image_report_form SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 		print "<p>Thank you, report recorded for {$updates["gridimage_id"]}</p>";
 
+		if ($USER->hasPerm("admin")) {
+			$db->Execute("DELETE FROM assessment WHERE gridimage_id = {$updates['gridimage_id']} AND technical IS NULL");
+			exit; //mainly to avoid sending the email below!
+		}
 		////////////////////////////////////////////////////////
 
 		ob_start();
@@ -293,7 +304,7 @@ if (!empty($_GET['id'])) {
 <?
 
 if (!empty($_GET['bulk'])) {
-	print "<textarea name=bulk cols=80 rows=30></textarea>";
+	print "<textarea name=bulk cols=80 rows=30 placeholder=\"date,image_url,affected,page_url (TAB seperated!)\"></textarea>";
 }
 
 ?>
