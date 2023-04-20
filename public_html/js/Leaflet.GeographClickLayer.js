@@ -546,6 +546,15 @@ L.GeographClickLayer = L.FeatureGroup.extend({
 			$('#clicklayer_select').change(function() {
 				that.displayThumbs();
 			});
+			$('#clicklayer_lightback').on('wheel',function(e) {
+				e.preventDefault();
+				if (!that._map)
+					return;
+				if (event.deltaY < 0)
+					that._map.zoomIn();
+				else
+					that._map.zoomOut();
+			});
 		}
 	}
 
