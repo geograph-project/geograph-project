@@ -29,7 +29,7 @@ if (!empty($_GET['do']) && !empty($_GET['page']) && $_GET['page'] > 20) {
 	exit;
 }
 foreach(array('orderby','groupby','breakby','displayclass','moderation_status','gridsquare') as $key)
-	if (!empty($_REQUEST[$key]) && !preg_match('/^[a-z_ ,]+2?$/',$_REQUEST[$key])) {
+	if (!empty($_REQUEST[$key]) && !preg_match('/^[A-Za-z_ ,]+2?$/',$_REQUEST[$key])) {
 	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
 	     exit;
 	}
