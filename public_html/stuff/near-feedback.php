@@ -235,7 +235,7 @@ $smarty->display("_std_begin.tpl");
 <h2>Feedback on 'near'</h2>
 
 <? if (!empty($saved)) {
-	print "$saved report(s) saved";
+	print "$saved report(s) saved. Can submit another... ";
 } ?>
 
 <form method=post name=theForm>
@@ -263,7 +263,7 @@ $smarty->display("_std_begin.tpl");
   <option value="The gazetteer entry is misspelled"></option>
   <option value="The gazetteer entry is currupted (eg accents not displaying correctly)"></option>
   <option value="The gazetteer entry is wrong (might be misplaced)"></option>
-  <option value=""></option>
+  <option value="The location selected is great (select the same place in dropdown to confirm)"></option>
 </datalist> (or can type other explanation)<hr><br>
 
 
