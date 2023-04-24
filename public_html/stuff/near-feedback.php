@@ -231,6 +231,15 @@ if (empty($db))
 
 $smarty->display("_std_begin.tpl");
 
+if (!empty($_GET['list'])) {
+	$data = "select gridref as location,gr,text as original
+	,concat_ws(' / ',nullif(os_gaz,''),nullif(os_gaz_250,''),nullif(os_open_names,''),nullif(loc_placenames,''),nullif(ie_open_data,'')) as suggeestion, explanation
+	 from near_feedback limit 1000";
+	dump_sql_table($data,'Existing Reports');
+}
+
+
+
 ?>
 <h2>Feedback on 'near'</h2>
 
@@ -268,12 +277,12 @@ $smarty->display("_std_begin.tpl");
 
 
 
-	3. Please select a result you think is better: (just one, from one dropdown) <br>
-	50k Gazetteer: <select name="os_gaz"></select> <hr>
+	3. Please select a result you think is better: (Just select one place, from the first dropdown that has the place you looking for!) <br>
 	250k Gazetteer: <select name="os_gaz_250"></select> <hr>
+	50k Gazetteer: <select name="os_gaz"></select> <hr>
 	Open Names Gazetteer: <select name="os_open_names"></select> <hr>
-	GNS Gazetteer: <select name="loc_placenames"></select> <hr>
 	Irish Open Data: <select name="ie_open_data"></select> <hr>
+	GNS Gazetteer: <select name="loc_placenames"></select> <hr>
 
 	4. <input type=submit>
 </div>
@@ -360,4 +369,34 @@ var f_code = <? print json_encode($db->getAssoc("SELECT f_code,IF(f_code IN ('C'
 <?
 
 $smarty->display("_std_end.tpl");
+
+function dump_sql_table($sql,$title) {
+        global $db;
+        $recordSet = $db->Execute($sql) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
+
+        if (!$recordSet->RecordCount())
+                return;
+
+        $row = $recordSet->fields;
+
+        print "<H3>$title</H3>";
+
+        print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
+        foreach ($row as $key => $value) {
+                print "<TH>$key</TH>";
+        }
+        print "</TR>";
+        do {
+                $row = $recordSet->fields;
+                print "<TR>";
+                foreach ($row as $key => $value) {
+                        print "<TD>".htmlentities($value)."</TD>";
+                }
+                print "</TR>";
+                $recordSet->MoveNext();
+        } while ($recordSet && !$recordSet->EOF);
+        print "</TR></TABLE>";
+}
+
+
 
