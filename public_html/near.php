@@ -131,7 +131,7 @@ if ($grid_given)
 		$places = array();
 		if ($square->reference_index == 1) {
 			$places[] = $square->findNearestPlace(7500,'open');
-			$places[] = $square->findNearestPlace(7500,'OS250');
+			$places[] = $square->findNearestPlace(25000,'OS250');
 			$places[] = $square->findNearestPlace(7500,'OS');
 			$places[] = $square->findNearestPlace(75000,'hist');
 			$places[] = $square->findNearestPlace(75000,'towns');
