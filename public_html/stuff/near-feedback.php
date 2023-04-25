@@ -159,7 +159,7 @@ CREATE TABLE near_feedback (
                                                 GeomFromText($rectangle),
                                                 point_en)
                                 order by distance asc
-                                limit 100");
+                                limit 250");
 
 		###############################
 
@@ -232,8 +232,8 @@ if (empty($db))
 $smarty->display("_std_begin.tpl");
 
 if (!empty($_GET['list'])) {
-	$data = "select gridref as location,gr,text as original
-	,concat_ws(' / ',nullif(os_gaz,''),nullif(os_gaz_250,''),nullif(os_open_names,''),nullif(loc_placenames,''),nullif(ie_open_data,'')) as suggeestion, explanation
+	$data = "select gridref as location,gr,distance,text as original
+	,COALESCE(nullif(os_gaz_250,''),nullif(os_gaz,''),nullif(os_open_names,''),nullif(loc_placenames,''),nullif(ie_open_data,'')) as suggestion, explanation
 	 from near_feedback limit 1000";
 	dump_sql_table($data,'Existing Reports');
 }
@@ -289,6 +289,8 @@ if (!empty($_GET['list'])) {
 
 </form>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+<link href="<? echo smarty_modifier_revision("/js/select2-3.3.2/select2.css"); ?>" rel="stylesheet"/>
+<script src="<? echo smarty_modifier_revision("/js/select2-3.3.2/select2.js"); ?>"></script>
 <script>
 var url = "?";
 
@@ -303,7 +305,7 @@ function lookup() {
 
 	$('div#more').show();
 	 eles['text'].value = "Loading, please wait...";
-	 $('div#more select').empty();
+	 $('div#more select').select2('destroy').empty();
 
 	$.getJSON(url+'&gridref='+encodeURIComponent(value), function(data) {
 		console.log(data);
@@ -325,7 +327,14 @@ function lookup() {
 			renderSelect($(eles['ie_open_data']), data.ie_open_data);
 		if (data.loc_placenames)
 			renderSelect($(eles['loc_placenames']), data.loc_placenames);
+
+		$('div#more select').each(function() {
+			if (this.options.length> 5)
+				$(this).select2({width:"600px"});
+		});
 	});
+
+
 }
 
 function renderSelect($ele,values) {
