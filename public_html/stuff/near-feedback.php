@@ -151,7 +151,7 @@ CREATE TABLE near_feedback (
 					county_unitary AS adm1_name,
 					(seq + 100000000) as pid,
 					pow(e-{$e},2)+pow(n-{$n},2) as distance,
-					local_type
+					IF(type='populatedPlace',CONCAT(local_type,' ***'),local_type) AS local_type
 		                from
                                         os_open_names2
                                 where
