@@ -42,7 +42,7 @@
 
 			{foreach from=$data item=item}
 				<tr>
-					<td style="min-height:100px"><a href="/submit.php?preview={$item.transfer_id}" target="_blank"><img loading="lazy" src="/submit.php?preview={$item.transfer_id}" width="160"/></a></td>
+					<td height="100"><a href="/submit.php?preview={$item.transfer_id}" target="_blank"><img loading="lazy" src="/submit.php?preview={$item.transfer_id}" width="160"/></a></td>
 					<td><a href="{$script_name}?inner&amp;step=1&amp;transfer_id={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}">continue &gt;</a></td>
 					<td sortvalue="{$item.uploaded}">{$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"}</td>
 					<td sortvalue="{$item.imagetaken}">{if $item.imagetaken}{$item.imagetaken|date_format:"%a, %e %b %Y at %H:%M"}{/if}</td>
@@ -194,6 +194,7 @@ function check_jpeg(ele) {
 	{if $container}
 		var FramePageHeight = document.body.offsetHeight + 10;
 		window.parent.document.getElementById('{$container|escape:'javascript'}').style.height=FramePageHeight+'px';
+		//window.parent.document.getElementById('{$container|escape:'javascript'}').style.maxHeight='80vh';
 	{/if}
 
 	{literal}
