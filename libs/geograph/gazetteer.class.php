@@ -132,7 +132,7 @@ split_timer('gazetteer','findListByNational',$mkey); //logs the wall time
 		$mkey = "$reference_index,$e,$n,$radius,$f_codes,$gazetteer";
 		//fails quickly if not using memcached!
 		$places = $memcache->name_get('g',$mkey);
-		if ($places)
+		if ($places && empty($_GET['refresh']))
 			return $places;
 
 split_timer('gazetteer'); //starts the timer
@@ -171,6 +171,7 @@ split_timer('gazetteer'); //starts the timer
 					`full_county` as adm1_name,
 					(id + 2000000) as pid,
 					( pow(east-{$e},2)+pow(north-{$n},2) ) as distance,
+					island_name, country,
 					CONCAT('OS250') as gaz
 				from os_gaz_250
 				where east between $left and $right
@@ -190,6 +191,7 @@ split_timer('gazetteer'); //starts the timer
 					`full_county` as adm1_name,
 					(seq + 2000000) as pid,
 					( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
+					island_name, country,
 					'OS250' as gaz
 				from
 					os_gaz_250

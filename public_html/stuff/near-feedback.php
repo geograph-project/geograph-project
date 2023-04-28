@@ -263,14 +263,34 @@ if (empty($db))
 
 $smarty->display("_std_begin.tpl");
 
-if (!empty($_GET['list'])) {
 	$data = "select gridref as location,gr,distance,text as original
 	,COALESCE(nullif(os_gaz_250,''),nullif(os_gaz,''),nullif(os_open_names,''),nullif(loc_placenames,''),nullif(ie_open_data,'')) as suggestion, explanation
 	 from near_feedback limit 1000";
+
+if (!empty($_GET['list'])) {
 	dump_sql_table($data,'Existing Reports');
+
+} elseif (!empty($_GET['test'])) {
+	$data = $db->getAll($data);
+	foreach ($data as $row) {
+		print "<b>{$row['gr']}</b> (<span style=color:gray>".htmlentities($row['explanation'])."</span><br>";
+		print "<div style=color:red>{$row['original']}</div>";
+
+                $square=new GridSquare;
+                $grid_ok=$square->setByFullGridRef($row['gr'],true);
+
+	        if ($grid_ok) {
+	                $place = $square->findNearestPlace(75000); //same as photo-page!
+        	        $place['html'] = smarty_function_place(array('place'=>$place));
+	                $place['text'] = strip_tags($place['html']);
+			print "<div style=color:green>{$place['text']}</div>";
+
+		}
+		print "<hr>";
+	}
+	$smarty->display("_std_end.tpl");
+	exit;
 }
-
-
 
 ?>
 <h2>Feedback on 'near'</h2>

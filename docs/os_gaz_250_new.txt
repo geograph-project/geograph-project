@@ -69,11 +69,20 @@ select seq,km_ref,def_nam,island_name,full_county,country from os_gaz_250_new wh
 update os_gaz_250_new set island_name = NULL where island_name like '%ukni_mainland' OR island_name = 'eilean_buidhe';
 	## todo, could also remove feature_item_id from country_region - its the linking of island labels that wrong, the country snapping was ok!
 
+#the island 'gerva_stacks' must be connected to unst mainland in Boundaryline!
+update os_gaz_250_new set island_name = 'unst' where island_name = 'gerva_stacks_off_unst';
+
+#similally land_holm' is connected to mainland!
+update os_gaz_250 set island_name = 'mainland_orkney' where island_name = 'lamb_holm';
+	##todo, should be fixing the boundaries, not the island_name!
+
 select full_county,count(distinct country) f,group_concat(distinct country) from os_gaz_250_new group by full_county having f>1;
 
 update os_gaz_250_new set country = 'Wales' where country = 'England' and full_county = 'POWYS/POWYS';
 
 update os_gaz_250_new set country = 'England' where country = 'Wales' and full_county = 'SHROPSHIRE';
+
+
 
 #############################
 

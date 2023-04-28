@@ -390,13 +390,26 @@ function smarty_function_place($params) {
 		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
 
 	$t .= "<span itemprop=\"contentLocation\" itemscope itemtype=\"http://schema.org/Place\"><span itemprop=\"name\">";
+	//placename
 	if (!ctype_lower($place['full_name'])) {
 		$t .= "<b>".recaps($place['full_name'])."</b><small><i>";
 	} else {
 		$t .= "<b>{$place['full_name']}</b><small><i>";
 	}
 	$t = str_replace(' And ','</b> and <b>',$t);
-	if (!empty($place['adm1_name']) && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
+
+	//island
+	if (!empty($place['island_name'])) {
+		$place['island_name'] = recaps(str_replace('_',' ',$place['island_name']));
+
+		if (strcasecmp($place['island_name'],$place['full_name']) !== 0 && strncmp($place['adm1_name'], $place['island_name'], strlen($place['island_name'])) !== 0)
+			$t .= ", {$place['island_name']}";
+	}
+
+	//county
+	if (!empty($place['adm1_name']) && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])
+		&& !($place['adm1_name'] == 'ORKNEY ISLANDS' && $place['island_name'] == 'Mainland Orkney')
+		&& !($place['adm1_name'] == 'SHETLAND ISLANDS' && $place['island_name'] == 'Mainland Shetland')) { //no point saying near to Lerwick, Mainland Shetland, Shetland Islands, Scotland
 		$parts = explode('/',$place['adm1_name']);
 		if (!ctype_lower($parts[0])) {
 			if (isset($parts[1]) && $parts[0] == $parts[1]) {
@@ -408,7 +421,14 @@ function smarty_function_place($params) {
 		}
 	} elseif (!empty($place['hist_county']))
 		$t .= ", {$place['hist_county']}";
-	$t .= ", {$place['reference_name']}</i></small></span>";
+
+	//country
+	if (!empty($place['country']))
+		$t .= ", {$place['country']}";
+	else
+		$t .= ", {$place['reference_name']}";
+
+	$t .= "</i></small></span>";
 
 	if (!empty($params['lat'])) { //we only check latitude, as technically longitude can be exactly 0 in GB!
 	  $t .= sprintf('<span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
