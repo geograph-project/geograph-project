@@ -402,12 +402,19 @@ function smarty_function_place($params) {
 	if (!empty($place['island_name'])) {
 		$place['island_name'] = recaps(str_replace('_',' ',$place['island_name']));
 
+		//alterate to below, which surpresses the adm1 name, for Mainland, could instead remove group from island
+		//so near .., Mainland, Orkney Islands, Scotland 
+		//rather than .., Mainland Orkney, Scotland
+		//if (preg_match('/(Mainland) (\w+)/',$place['island_name'],$m) && strncmp($place['adm1_name'], $m[2], strlen($m[2]) === 0)
+		//	$place['island_name'] = $m[1];
+
 		if (strcasecmp($place['island_name'],$place['full_name']) !== 0 && strncmp($place['adm1_name'], $place['island_name'], strlen($place['island_name'])) !== 0)
 			$t .= ", {$place['island_name']}";
 	}
 
 	//county
 	if (!empty($place['adm1_name']) && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])
+		&& !($place['adm1_name'] == 'HIGHLAND' && !empty($place['island_name'])) //the islands ARE in the Highland admin area, but seems misleading
 		&& !($place['adm1_name'] == 'ORKNEY ISLANDS' && $place['island_name'] == 'Mainland Orkney')
 		&& !($place['adm1_name'] == 'SHETLAND ISLANDS' && $place['island_name'] == 'Mainland Shetland')) { //no point saying near to Lerwick, Mainland Shetland, Shetland Islands, Scotland
 		$parts = explode('/',$place['adm1_name']);
@@ -425,7 +432,7 @@ function smarty_function_place($params) {
 	//country
 	if (!empty($place['country']))
 		$t .= ", {$place['country']}";
-	else
+	elseif ($place['adm1_name'] != 'Northern Ireland') //if dont have proper counties, no point listing these
 		$t .= ", {$place['reference_name']}";
 
 	$t .= "</i></small></span>";
