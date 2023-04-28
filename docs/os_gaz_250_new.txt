@@ -1,0 +1,86 @@
+###################
+# 1. Import csv file
+########
+
+# the csv is extacted from the 250k raster fownload on OS OpenData .
+
+php scripts/import-250k-gaz.php ...
+
+###################
+# 2. ... first figure out the island name for region polygons
+# using the 'region' data as a source of boundary loops, in theory all islands should be one region (except mainland!) 
+########
+
+# country_region.csv was created by QGIS - extracting data from BoundaryLine ShapeFiles!
+
+php scripts/import_csv.php --file=/tmp/country_region.csv --table=country_region --bom=0 --replace=0 --limit=100000 --split=1 --execute=1 --print=0 --drop
+
+
+alter table country_region add auto_id ...
+
+alter table country_region add feature_item_id ... # technically just a reference to an island name!
+
+update geograph_live.feature_item f inner join country_region c on ST_Contains(WKT,GeomFromText(CONCAT('POINT(',e,' ',n,')'))) 
+	set c.feature_item_id = f.feature_item_id where feature_type_id = 1 ;
+
+###################
+# 3. then cross reference island names with gaz. 
+
+# add the country_region_id - we dont need the actual region as such, but it useful source of polyons!
+alter table os_gaz_250_new add country_region_id int unsigned default null;
+
+   #.. we can set country_region_id for all, even so not all with have feature_item_id (which is only when update above, found a matching island label!)
+update os_gaz_250_new g inner join country_region c on ST_Contains(WKT,point_en) set country_region_id = auto_id;
+#	(this 'works' but is TERRIBLY slow, mysql doesnt use spatial indexe on such joins!) 
+
+##... so instead created a PHP scrtip
+php scripts/spatial_join.php --execute limit=10000 
+# loop until done!
+
+###################
+# 4. add the island_name (already added feature_item_id to country_region - which is islands from geograph_live.feature_item!!
+
+alter table os_gaz_250_new add island_name varchar(128) default null;
+
+update os_gaz_250_new g inner join country_region c on country_region_id = auto_id inner join geograph_live.feature_item using (feature_item_id)
+	set island_name = feature_item.name where island_name is null and country_region_id is not null;
+
+###################
+# 5. as we looked up country_region_id, can also get a country name. (could do this from county, but might as well just reuse what already done!) 
+
+alter table os_gaz_250_new add country varchar(30) not null;
+
+update os_gaz_250_new g inner join country_region c on country_region_id = auto_id set country = NAME where country = '' and country_region_id is not null;
+
+###################
+
+## Finally, View the augmented dataset (island_name, and country added!) 
+
+
+select island_name,full_county,count(*) as places,def_nam  as example from os_gaz_250_new where island_name is not null and island_name not like '%ukni_mainland' and island_name != 'eilean_buidhe' group by island_name,full_county;
+
+select seq,km_ref,def_nam,island_name,full_county,country from os_gaz_250_new where island_name not like '%ukni_mainland' and island_name != 'eilean_buidhe' limit 10;
+
+
+## eilean_buidhe, is a small island, connected to scotland mainland in boundary-line, so all mainland scotland appears to be on the tiny island (it did grab a name from rspb_islands dataset!) 
+# and some small islands very near ukni_mainland, also within boundary-line ploygon, so ignore that suropus island name too!
+
+
+update os_gaz_250_new set island_name = NULL where island_name like '%ukni_mainland' OR island_name = 'eilean_buidhe';
+	## todo, could also remove feature_item_id from country_region - its the linking of island labels that wrong, the country snapping was ok!
+
+select full_county,count(distinct country) f,group_concat(distinct country) from os_gaz_250_new group by full_county having f>1;
+
+update os_gaz_250_new set country = 'Wales' where country = 'England' and full_county = 'POWYS/POWYS';
+
+update os_gaz_250_new set country = 'England' where country = 'Wales' and full_county = 'SHROPSHIRE';
+
+#############################
+
+
+rename table os_gaz_250 to os_gaz_250_old, os_gaz_250_new to os_gaz_250;
+
+php scripts/injectrt.php --schema --table=os_gaz_250 --limit=100000 --drop --cluster=manticore_cluster | sprts
+
+
+php scripts/injectrt.php --schema --table=os_gaz_250 --limit=100000 --drop --cluster=manticore --config=live | sprt

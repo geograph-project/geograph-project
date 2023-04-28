@@ -235,7 +235,7 @@ if (!empty($param['schema'])) {
 
 	if (!empty($param['drop'])) {
 		if (!empty($param['cluster']))
-			print "ALTER CLUSTER manticore DROP {$param['index']};\n";
+			print "ALTER CLUSTER {$param['cluster']} DROP {$param['index']};\n";
 		print "DROP TABLE IF EXISTS {$param['index']};\n";
 	}
 
