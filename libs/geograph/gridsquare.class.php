@@ -208,7 +208,10 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 	*/
 	function get6FigGridRef()
 	{
-		return sprintf("%s%03d%03d", $this->gridsquare, $this->eastings*10 + 5, $this->northings*10 + 5);
+		if ($this->natgrlen>4) //if natgrlen is set, nateastings should already be set!
+			return sprintf("%s%02d%d%02d%d", $this->gridsquare, $this->eastings, $this->nateastings%1000 / 100, $this->northings, $this->natnorthings%1000 / 100);
+		else
+			return sprintf("%s%03d%03d", $this->gridsquare, $this->eastings*10 + 5, $this->northings*10 + 5);
 	}
 
 	/**

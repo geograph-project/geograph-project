@@ -60,8 +60,39 @@ CREATE TABLE near_feedback (
 
 	$saved = $db->Affected_Rows();
 
+} elseif (!empty($_GET['fix_gr']) && $USER->hasPerm('admin')) {
+	$db = GeographDatabaseConnection(false);
+
+	$data = $db->getAll("SELECT feedback_id,gr,gridref from near_feedback");
+	foreach ($data as $row) {
+		$_GET['gridref'] = $row['gridref'];
+		$grid_ok = false;
+	        if (is_numeric($_GET['gridref'])) {
+	                $image = new Gridimage();
+        	        $image->loadFromId(intval($_GET['gridref']));
+	                if ($image->isValid() && $image->moderation_status!='rejected') {
+	                        $grid_ok = 1;
+        	                $square = $image->grid_square;
+	                }
+	        } else {
+	                $square=new GridSquare;
+	                $grid_ok=$square->setByFullGridRef($_GET['gridref'],true);
+	        }
+
+		if ($grid_ok) {
+			$updates = array();
+			$updates['gr'] = $square->get6FigGridRef();
+
+	                $sql = 'UPDATE near_feedback SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE feedback_id = '.$db->Quote($row['feedback_id']);
+			$db->Execute($sql, array_values($updates));
+			print "affected: ".$db->Affected_Rows()."<br>\n";
+		}
+	}
+
+
 } elseif (!empty($_GET['gridref'])) {
 
+	$place = array();
 
 	if (is_numeric($_GET['gridref'])) {
 		$image = new Gridimage();
@@ -73,14 +104,15 @@ CREATE TABLE near_feedback (
 	} else {
 		$square=new GridSquare;
         	$grid_ok=$square->setByFullGridRef($_GET['gridref'],true);
-		$place = array();
 	}
+
 
 	if ($grid_ok) {
 		$place = $square->findNearestPlace(75000); //same as photo-page!
 
 		$place['html'] = smarty_function_place(array('place'=>$place));
 		$place['text'] = strip_tags($place['html']);
+
 
 		$square->getNatEastings(); //set nateastings IF NOT already set! (eg by loadFromId/setByFullGridRef)
 		$place['gr'] = $square->get6FigGridRef();
