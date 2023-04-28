@@ -451,7 +451,26 @@ split_timer('gazetteer'); //starts the timer
 						point_en) AND
 					reference_index = {$reference_index}
 				order by distance asc limit 1");
+		} else if (($gazetteer == 'open' || $gazetteer == '' || $gazetteer == 'OS250')&& $reference_index == 2) { //todo maybe should just be !='geonames'
+			//no index yet!
+			$places = $db->GetRow("select
+                                        name as full_name,
+                                        'PPL' as dsg,
+                                        2 AS reference_index,
+                                        county as adm1_name,
+                                        (id) as pid,
+                                        ( pow(cast(e as signed)-{$e},2)+pow(cast(n as signed)-{$n},2) ) as distance,
+                                        'ieopen' as gaz
+                                from
+                                        ie_open_data
+                                where
+                                        e between $left and $right
+                                        and n between $top and $bottom
+                                order by distance asc limit 1");
+
+
 		} else {
+
 	//lookup a nearby settlement
                         if (!empty($CONF['manticorert_host'])) { //index:loc_placenames
                                 if (empty($sprt))

@@ -106,6 +106,12 @@ if (!empty($_GET['ireland'])) {
 		        WHERE images < 100 AND local_type in ('town','city') LIMIT 1000";
 	$desc  = "Town/City,  with <b>less than 100</b> images of subjects within their 'minimum bounding box' rectangle.";
 
+} elseif (!empty($_GET['ie'])) {
+
+	//just a convenien place to test this table!
+	$sql = "SELECT name AS title, e as x, n as y, 2 as reference_index FROM ie_open_data";
+	$desc  = "ALL plaes in ie_open_names";
+
 } elseif (!empty($_GET['large'])) {
 	$sql = "SELECT CONCAT(name1,' - ',local_type, ' / images:',images, ' (first id:',first,')') AS title, geometry_x as x,geometry_y as y, mbr_xmin,mbr_ymin, mbr_xmax,mbr_ymax FROM os_open_places WHERE most_detail_view_res > 15000 and centis < (mbr_xmax-mbr_xmin)*(mbr_ymax-mbr_ymin) div 100000 ";
 	$desc  = "Larger places with less than 10% coverage by area";

@@ -91,6 +91,18 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	 		<br/>
 	 		<div class="copyright">Placename/Toponymic information is based on the Geographic Names Data Base, containing official standard names approved by the United States Board on Geographic Names and maintained by the National Geospatial-Intelligence Agency. More information is available at the Products and Services link at {external href="http://www.nga.mil/" text="www.nga.mil"}</div>
 	 		<br/>
+		{elseif $place.gaz == 'ieopen'}
+			<h3>Ireland Open Data</h3>
+			{place place=$place}
+			<br/>
+			<div class="copyright">
+				<a href="https://data-osi.opendata.arcgis.com/datasets/osi::centres-of-population-national-placenames-gazetteer/explore">
+				Centres of Population - OSi National Placenames Gazetteer</a> CC BY 4.0
+				AND 
+				<a href="https://www.data.gov.uk/dataset/25ac7a78-af01-4727-b8b7-265ba8ee96b4/osni-open-data-gazetteer-place-names">
+				OSNI Open Data - Placename Gazetteer</a> LPS Open Government Data Licence.
+			</div>
+			<br/>
                 {else}
                         <p>Unknow Gazetter {$place.gaz}</p>
                 {/if}

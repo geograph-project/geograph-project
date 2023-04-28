@@ -129,8 +129,8 @@ if ($grid_given)
 		$smarty->assign('nl', ($lat > 0)?'N':'S');
 		
 		$places = array();
+		$places[] = $square->findNearestPlace(7500,'open');
 		if ($square->reference_index == 1) {
-			$places[] = $square->findNearestPlace(7500,'open');
 			$places[] = $square->findNearestPlace(25000,'OS250');
 			$places[] = $square->findNearestPlace(7500,'OS');
 			$places[] = $square->findNearestPlace(75000,'hist');
