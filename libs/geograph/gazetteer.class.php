@@ -242,8 +242,8 @@ split_timer('gazetteer'); //starts the timer
                                                 AND full_county != 'XXXXXXXX'
                                         order by distance asc,f_code asc limit 1"); //todo, ordering by f_code doesnt really work here. (its a string attribute, not enum)
 
-					if (!empty($places['full_name'])) //manticore has data in utf8, but most legacy code expecs latin1
-						$places['full_name'] = utf8_to_latin1($places['full_name']);
+					if (!empty($places2['full_name'])) //manticore has data in utf8, but most legacy code expecs latin1
+						$places2['full_name'] = utf8_to_latin1($places2['full_name']);
 
 				} else {
 					$places2 = $db->GetRow("select
