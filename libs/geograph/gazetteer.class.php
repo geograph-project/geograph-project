@@ -200,6 +200,10 @@ split_timer('gazetteer'); //starts the timer
 						GeomFromText($rectangle),
 						point_en)
 				order by distance asc limit 1");
+
+				if (!empty($places['full_name'])) //the new version of os_gaz_250 uses utf8, but most legacy code expects latin1
+					$places['full_name'] = utf8_to_latin1($places['full_name']);
+
 			}
 
 			$placeradius = 5005;
@@ -460,6 +464,7 @@ split_timer('gazetteer'); //starts the timer
                                         county as adm1_name,
                                         (id) as pid,
                                         ( pow(cast(e as signed)-{$e},2)+pow(cast(n as signed)-{$n},2) ) as distance,
+					island_name,country,
                                         'ieopen' as gaz
                                 from
                                         ie_open_data

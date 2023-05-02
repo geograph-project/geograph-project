@@ -2,7 +2,7 @@
 
 $d = getcwd();
 
-$param = array('execute'=>0, 'file'=>'islands.latng.csv', 'table'=>'rsgb_islands', 'create'=>1, 'print'=>1, 'limit'=>10, 'bom'=>true, 'replace'=>1, 'split'=>0, 'drop'=>0);
+$param = array('execute'=>0, 'file'=>'islands.latng.csv', 'table'=>'rsgb_islands', 'create'=>1, 'auto_id'=>false, 'print'=>1, 'limit'=>10, 'bom'=>true, 'replace'=>0, 'split'=>0, 'drop'=>0, 'break'=>100);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -85,6 +85,9 @@ if ($param['split'] && $idx > $param['limit'] && !$param['execute'])
 
 		$sep = ",\n";
 	}
+	if (!empty($param['auto_id'])) {
+		$str .= "$sep `auto_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY\n";
+	}
 	$str .=")";
 
 	print "$str;\n";
@@ -113,9 +116,8 @@ $db->Execute("SET NAMES utf8"); //dont know if this really enough!
 
 
 $c=0;
-$break = 100;
+$break = $param['break'];
 
-$break = 1;
 	if ($param['replace']) {
 		$str = $insert = "REPLACE INTO {$param['table']} (`".implode("`,`",$head)."`) VALUES ";
 	} else {

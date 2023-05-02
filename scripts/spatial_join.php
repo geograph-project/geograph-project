@@ -2,7 +2,15 @@
 
 $d = getcwd();
 
-$param = array('execute'=>0, 'limit'=>100);
+$param = array('execute'=>0, 'limit'=>10,
+	'table' => 'os_gaz_250_new',
+		'point_column' => 'point_en', //either a 'spatial' column, or specify two cols like 'e,n' and will use GEOMFROMTEXT automatially!
+		'key' => 'country_region_id',
+		'pkey' => 'seq', //needs a primary key from table!
+		'where'=>'country_region_id IS NULL',
+	'gis_table' => 'country_region',
+		'value'=>'auto_id', //this column from gis table to set 'key' to - does NOT need be a real key
+);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -11,6 +19,72 @@ $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 #####################################################
+
+/*
+$param = array(
+);
+
+//simple
+$sql = "UPDATE {table} INNER JOIN {gis_table} ON ST_Contains(WKT,{point_column}) SET {table}.{key} = {gis_table}.{value} WHERE {where}";
+
+//alternative
+$sql = "UPDATE {table} SET {table}.{key} = (SELECT {value} FROM {gis_table}  WHERE ST_Contains(WKT,{point_column}) LIMIT 1) WHERE {where}";
+
+... alas mysql doesnt use indexes, on both the above queries, so we break it down!
+*/
+
+$select = "SELECT asText({point_column}) AS point, {pkey} FROM {table} WHERE {where} LIMIT {limit}";
+
+$lookup = "SELECT {value} FROM {gis_table} WHERE ST_Contains(WKT,geomfromtext('{point_value}'))"; //should use index!
+
+$update = "UPDATE {table} SET {key} = {str_value} WHERE {pkey} = {pkey_value}";
+
+#######################################################
+// new 'generic' version
+
+	//shortcut so dont have to say --point_column="GEOMFROMTEXT(CONCAT('POINT(',e,' ',n,')'))"
+if (preg_match('/^(\w+),(\w+)$/',$param['point_column'],$m))
+	$param['point_column'] = "GEOMFROMTEXT(CONCAT('POINT(',{$m[1]},' ',{$m[2]},')'))";
+
+
+
+$sql = preg_replace_callback('/\{(\w+)\}/', function($m) use ($param) { return $param[$m[1]]; }, $select);
+$sql = preg_replace('/asText\(geomfromtext\((.+?)\)\)/i','$1',$sql); //if point_column was created dymaically, with geomfromtext might as well just use it directly
+		print "$sql;\n";
+$data = $db->getAll($sql);
+
+$c=0;
+foreach ($data as $row) {
+	$param['point_value'] = $row['point']; //param used in the placeholder!
+	$sql = preg_replace_callback('/\{(\w+)\}/', function($m) use ($param) { return $param[$m[1]]; }, $lookup);
+		print "\t$sql;\n";
+
+	$str_value = $db->getOne($sql); //adds limit 1 automatically!
+
+	//if ($str_value) { //still want to set even if empty! (empty string vs null is important!
+
+		$param['str_value'] = $db->Quote($str_value);
+		$param['pkey_value'] = $db->Quote($row[$param['pkey']]);
+
+		$sql = preg_replace_callback('/\{(\w+)\}/', function($m) use ($param) { return $param[$m[1]]; }, $update);
+		if ($param['execute'])
+			$db->Execute($sql);
+		else {
+			print "\t\t$sql;\n";
+		}
+	//}
+
+	$c++;
+	if (!($c%10))
+		print "$c ";
+}
+
+print "$c. \n";
+exit;
+
+
+#####################################################
+//old hardcoded version
 
 /* works, but SLOW!
 
