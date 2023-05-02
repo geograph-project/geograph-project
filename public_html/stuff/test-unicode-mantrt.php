@@ -31,7 +31,7 @@ ini_set('default_charset','UTF-8');
 
 $sph = GeographSphinxConnection('manticorert', true);
 
-runRow("SELECT * FROM os_gaz WHERE id in (36,10)");
+runRow("SELECT * FROM os_gaz WHERE id in (36,10,53653)");
 
 runRow("SELECT * FROM os_gaz_250 WHERE id in (26093,26178)");
 
