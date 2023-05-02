@@ -1,0 +1,59 @@
+# ie_open_data is 'new' custom gazetteer created for Geograph, by combining two OpenData sets (and augmenting with further Open Data) 
+
+# Centres of Population - OSi National Placenames Gazetteer CC BY 4.0 
+# https://data-osi.opendata.arcgis.com/datasets/osi::centres-of-population-national-placenames-gazetteer/explore
+
+# OSNI Open Data - Placename Gazetteer LPS Open Government Data Licence.
+# https://www.data.gov.uk/dataset/25ac7a78-af01-4727-b8b7-265ba8ee96b4/osni-open-data-gazetteer-place-names
+
+
+#using a (no longer available) script that originally imported from 117e5c3d0f0b41208d1caec1ddbd1330_1.kml and a608be9bebfb41668096d00cd0e0f8b0_2.kml
+# ... being careful to extract the IG coordinates for the OSi dataset. 
+
+################################
+
+alter table ie_open_data add country varchar(64) not null, add island_name varchar(64) default null;
+
+# the original dataset used a 'county' of Northern Ireland, as didnt have a seperate 'country' column at time. 
+update ie_open_data set country = 'Northern Ireland', county = '' where county = 'Northern Ireland';
+update ie_open_data set country = 'Ireland' where country = '' and class = 'CoP';
+
+################################
+# The OSNI Placename gazetteer, does NOT include counties, so needs adding
+
+# ni_counties.csv was created in QGIS from OSNI_Open_Data_-_50K_Boundaries_-_NI_Counties.shp
+
+php scripts/import_csv.php --file=/tmp/ni_counties.csv --table=ni_counties  --bom=0 --auto_id --split --limit=10000 --execute --print=0
+
+php scripts/spatial_join.php --table=ie_open_data --pkey=id --point_column=e,n --key=county --gis_table=ni_counties --value=CountyName --where="county = '' and country = 'Northern Ireland'" --execute=1 --limit=100
+
+# CARRIGANS is actully in Republic of Ireland, but appears in the NI gazetter (proably as so close to border, so parts are in NI
+delete from ie_open_data where name = 'CARRIGANS' and country = 'Northern Ireland';
+
+#DUNDRUM didnt work in JOIN, as the point for the down is slightly offshore!
+update ie_open_data set county = 'DOWN' where name = 'DUNDRUM' and country = 'Northern Ireland';
+
+################################
+# We import the boundaries of islands so, can list what island the place is on, eg 
+#   7 km from Harboursmouth, Sherkin, Co Cork, Ireland    (Sherkin is the island name!) 
+
+# islands_ireland.csv was created in QGIS from Islands___1m_Map_Of_Ireland.shp (making sure to convert ITM to IG!) 
+
+php scripts/import_csv.php --file=/tmp/islands_ireland.csv --table=islands_ireland --bom=0 --auto_id --split --execute
+
+php scripts/spatial_join.php --table=ie_open_data --pkey=id --point_column="e,n" --key=island_name --gis_table=islands_ireland --value=NAMN1 --where="island_name IS NULL and country='Ireland'" --limit=1000 --execute
+
+################################
+# add spatial index 
+
+alter table ie_open_data add index (e,n);
+
+## todo should add point_en column as well?
+
+##... todo import into ManticoreRT
+
+#################################
+
+# Todo, consider adding a NEW Gazetteer entry for Rathlin Island (and maybe even Cape Clear Island) - as doesnt exist in the OSNI data
+##... either a generic 'island' placename, or maybe pick hamlet on island. 
+
