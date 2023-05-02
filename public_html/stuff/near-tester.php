@@ -16,9 +16,10 @@ $smarty = new GeographPage;
 		FROM gridimage
 		INNER JOIN gridsquare USING (gridsquare_id)
 		WHERE reference_index = 2
+		AND moderation_status != 'rejected'
 		group by gridsquare_id
 		order by gridimage_id
-		LIMIT 100
+		LIMIT 75
 		");
 
 	foreach ($data as $row) {

@@ -419,6 +419,8 @@ function smarty_function_place($params) {
 			if (isset($parts[1]) && $parts[0] == $parts[1]) {
 				unset($parts[1]);
 			}
+			if (!empty($place['country']) && preg_match('/Ireland/',$place['country']) && $parts[0] != 'DUBLIN')
+				$parts[0] = 'Co '.$parts[0];
 			$t .= ", ".recaps(implode('/',$parts));
 		} else {
 			$t .= ", {$place['adm1_name']}";
