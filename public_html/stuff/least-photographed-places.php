@@ -110,7 +110,13 @@ if (!empty($_GET['ireland'])) {
 
 	//just a convenien place to test this table!
 	$sql = "SELECT name AS title, e as x, n as y, 2 as reference_index FROM ie_open_data";
-	$desc  = "ALL plaes in ie_open_names";
+	$desc  = "ALL places in ie_open_names";
+
+} elseif (!empty($_GET['ie_is'])) {
+
+	//just a convenien place to test this table!
+	$sql = "SELECT name AS title, e as x, n as y, 2 as reference_index FROM ie_open_data WHERE island_name!='' and country='Ireland' ";
+	$desc  = "Islands in ie_open_names";
 
 } elseif (!empty($_GET['large'])) {
 	$sql = "SELECT CONCAT(name1,' - ',local_type, ' / images:',images, ' (first id:',first,')') AS title, geometry_x as x,geometry_y as y, mbr_xmin,mbr_ymin, mbr_xmax,mbr_ymax FROM os_open_places WHERE most_detail_view_res > 15000 and centis < (mbr_xmax-mbr_xmin)*(mbr_ymax-mbr_ymin) div 100000 ";
