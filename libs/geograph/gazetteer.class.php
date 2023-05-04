@@ -393,7 +393,7 @@ split_timer('gazetteer'); //starts the timer
                                         ( (e-{$e})*(e-{$e})+(n-{$n})*(n-{$n}) ) as distance,
                                         'open' as gaz,
                                         populated_place,
-					type,
+					type, country,
 					postcode_district";
 			$where = "	CONTAINS(
                                                 GeomFromText($rectangle),
