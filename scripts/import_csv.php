@@ -29,38 +29,43 @@ if (!function_exists('str_starts_with')) {
 #####################################################
 
 chdir($d);
-$h = gzopen($param['file'],'r');
-if ($param['bom'])
-	fseek($h, 3);
 
 if ($param['create']) {
-	$head = fgetcsv($h);
-
 	$s = array();
-	while($h && !feof($h)) {
-		$line = fgetcsv($h);
-		foreach($line as $idx => $value) {
-			if (empty($value)) {
-				@$s[$idx]['empty']++;
-			} elseif (is_numeric($value)) {
-				if (floor($value) == $value) {
-					@$s[$idx]['int']++; //dont bother checking sign, to allow for unsigned. e/n is best signed to allow for distnace math easier
-					if ($value > @$s[$idx]['max'])
-						$s[$idx]['max'] = $value;
-				} else
-					@$s[$idx]['float']++;
-			} else {
-				$len = strlen($value);
-				if ($len > @$s[$idx]['maxlen'])
-					$s[$idx]['maxlen'] = $len;
-				@$s[$idx]['totlen'] += $len;
-				@$s[$idx]['count']++;
-				@$s[$idx]['values'][$value]++;
+
+	//this allows importing multiple files into one table. but it assumes they all have the same schema!
+	foreach(explode(',',$param['file']) as $filename) {
+		$h = gzopen($filename,'r');
+		if ($param['bom'])
+			fseek($h, 3);
+
+		$head = fgetcsv($h);
+
+		while($h && !feof($h)) {
+			$line = fgetcsv($h);
+			foreach($line as $idx => $value) {
+				if (empty($value)) {
+					@$s[$idx]['empty']++;
+				} elseif (is_numeric($value)) {
+					if (floor($value) == $value) {
+						@$s[$idx]['int']++; //dont bother checking sign, to allow for unsigned. e/n is best signed to allow for distnace math easier
+						if ($value > @$s[$idx]['max'])
+							$s[$idx]['max'] = $value;
+					} else
+						@$s[$idx]['float']++;
+				} else {
+					$len = strlen($value);
+					if ($len > @$s[$idx]['maxlen'])
+						$s[$idx]['maxlen'] = $len;
+					@$s[$idx]['totlen'] += $len;
+					@$s[$idx]['count']++;
+					@$s[$idx]['values'][$value]++;
+				}
+
+//if ($param['split'] && $idx > $param['limit'] && !$param['execute'])
+//	break;
+
 			}
-
-if ($param['split'] && $idx > $param['limit'] && !$param['execute'])
-	break;
-
 		}
 	}
 
@@ -101,22 +106,20 @@ if ($param['split'] && $idx > $param['limit'] && !$param['execute'])
 
 #####################################################
 
-if ($param['bom'])
-	fseek($h, 3);
-else
-	fseek($h, 0);
+foreach(explode(',',$param['file']) as $filename) {
+	$h = gzopen($filename,'r');
 
-$head = fgetcsv($h); //we already read it, do again just to move to next line
+	if ($param['bom'])
+		fseek($h, 3);
+	else
+		fseek($h, 0);
 
-$db->Execute("SET NAMES utf8"); //dont know if this really enough!
+	$head = fgetcsv($h); //we already read it, do again just to move to next line
 
+	$db->Execute("SET NAMES utf8"); //dont know if this really enough!
 
-//$db->Execute("set session net_buffer_length=1000000");
-//$db->Execute("set session max_allowed_packet=1000000000");
-
-
-$c=0;
-$break = $param['break'];
+	$c=0;
+	$break = $param['break'];
 
 	if ($param['replace']) {
 		$str = $insert = "REPLACE INTO {$param['table']} (`".implode("`,`",$head)."`) VALUES ";
@@ -138,15 +141,8 @@ $break = $param['break'];
 
 				$c++;
 
-				if (!($c%$break)) {
-					if ($param['print'])
-						print "$str;\n";
-					if ($param['execute']) {
-				                $db->Execute($str);
-						print "affected: ".$db->Affected_Rows()." ($c)\n";
-					}
-					$str = $insert;  $sep = "\n";
-				}
+				if (!($c%$break))
+					execute($str, $sep);
 			}
 		} else {
 			$str .= $sep.'('.implode(',',array_map('myquote',$line)).')';
@@ -155,21 +151,24 @@ $break = $param['break'];
 			$c++;
 			if ($c == $param['limit'])
 				break;
-			if (!($c%$break)) {
-				if ($param['print'])
-					print "$str;\n";
-				if ($param['execute']) {
-			                $db->Execute($str);
-					print "affected: ".$db->Affected_Rows()." ($c)\n";
-				}
-				$str = $insert;  $sep = "\n";
-			}
+			if (!($c%$break))
+				execute($str, $sep);
 		}
 	}
+}
 
-if (!empty($str) && $param['print'])
-	print "$str;\n";
-if (!empty($sep) && $param['execute']) {
-        $db->Execute($str);
-	print "affected: ".$db->Affected_Rows()." ($c)\n";
+execute($str, $sep);
+
+#######################
+
+function execute(&$str, &$sep) {
+	global $insert, $db, $param;
+
+	if ($param['print'])
+		print "$str;\n";
+	if ($param['execute']) {
+                $db->Execute($str);
+		print "affected: ".$db->Affected_Rows()." ($c)\n";
+	}
+	$str = $insert;  $sep = "\n";
 }
