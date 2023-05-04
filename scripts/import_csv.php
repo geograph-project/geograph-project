@@ -73,7 +73,7 @@ if ($param['create']) {
 	foreach ($head as $idx => $name) {
 		$str .= "$sep `$name`";
 		if ($name == 'WKT')
-			$str .= " GEOMETRYCOLLECTION NOT NULL";
+			$str .= $param['split']?" POLYGON NOT NULL":" GEOMETRYCOLLECTION NOT NULL";
 		elseif (empty($s[$idx]['count'])) { // means as string!
 			if (@$s[$idx]['float'])
 				$str .= " FLOAT NOT NULL";
@@ -162,7 +162,7 @@ execute($str, $sep);
 #######################
 
 function execute(&$str, &$sep) {
-	global $insert, $db, $param;
+	global $insert, $db, $param, $c;
 
 	if ($param['print'])
 		print "$str;\n";
