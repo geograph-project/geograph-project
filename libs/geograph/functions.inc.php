@@ -423,7 +423,8 @@ function smarty_function_place($params) {
 			}
 			if (!empty($place['country']) && preg_match('/Ireland/',$place['country']) && $parts[0] != 'DUBLIN')
 				$parts[0] = 'Co '.$parts[0];
-			$t .= ", ".recaps(implode('/',$parts));
+			if (strcasecmp($parts[0],$place['full_name']) !== 0) //need to test again, after removing 'City of'
+				$t .= ", ".recaps(implode('/',$parts));
 		} else {
 			$t .= ", {$place['adm1_name']}";
 		}
