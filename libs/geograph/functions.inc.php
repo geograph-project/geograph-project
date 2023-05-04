@@ -414,6 +414,8 @@ function smarty_function_place($params) {
 	if (!empty($place['adm1_name']) && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])
 		&& !($place['adm1_name'] == 'HIGHLAND' && !empty($place['island_name'])) //the islands ARE in the Highland admin area, but seems misleading
 		) {
+		//suppress City/County from offical Unitary Authority and County names. Notably NOT removing County from the start of UA names!
+		$place['adm1_name'] = preg_replace('/(^CITY AND COUNTY OF |^CITY OF | CITY$| COUNTY$)/i','',$place['adm1_name']);
 		$parts = explode('/',$place['adm1_name']);
 		if (!ctype_lower($parts[0])) {
 			if (isset($parts[1]) && $parts[0] == $parts[1]) {
