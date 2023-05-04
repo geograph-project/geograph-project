@@ -12,13 +12,28 @@ $smarty = new GeographPage;
 
 	$db = GeographDatabaseConnection(false);
 
+	//Note, at this time, this page is ONLY for testing Ireland!
+		// dont have a way of testing what would happen with os_gaz_250_old
+
+	if (false) {
+		$where = "reference_index = 2
+                AND moderation_status != 'rejected'
+                group by gridsquare_id"; //the group by to cut down on duplicates!
+	} else {
+		//WHERE CONTAINS(GeomFromText('POLYGON((27 168,377 168,377 613,27 613,27 168))'),point_xy)  order by sequence is still slow!
+
+		$sph = GeographSphinxConnection('sphinxql',true);
+		$ids = $sph->getCol("select id from sample8 where scenti >= 2000000000 order by sequence asc LIMIT 75");
+
+		$where = "gridimage_id IN (".implode(',',$ids).") AND moderation_status != 'rejected'"; //shouldnt get rejected from sample8, but just in case!
+	}
+
+
 	$data = $db->getAll("SELECT gridimage_id,gridsquare_id,nateastings,natnorthings,natgrlen,grid_reference
 		FROM gridimage
 		INNER JOIN gridsquare USING (gridsquare_id)
-		WHERE reference_index = 2
-		AND moderation_status != 'rejected'
-		group by gridsquare_id
-		order by gridimage_id
+		WHERE $where
+		ORDER BY grid_reference
 		LIMIT 75
 		");
 
@@ -51,6 +66,7 @@ $smarty = new GeographPage;
 
 			print "<div style=color:green>{$new}</div>";
 			print "<hr>";
+			flush();
 		}
 	}
 

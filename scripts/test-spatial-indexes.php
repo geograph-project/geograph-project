@@ -28,6 +28,7 @@ $param=array(
 	'tables'=>'',
 	'count'=>10,
 	'host'=>'',
+	'ri'=>0,
 );
 
 chdir(__DIR__);
@@ -81,6 +82,21 @@ if (!empty($param['tables'])) {
 		printf("%40s : %.3f   (%.3f) \n",$table, $sum/$count, $sum);
 	}
 
+	exit;
+}
+
+############################################
+
+if (!empty($param['ri'])) {
+
+	$table = "gridsquare"; //could use gridprefix?
+	$where = "reference_index = {$param['ri']} AND percent_land > 0";
+
+        $extent = $db->getRow("select min(x),min(y),max(x),max(y) from $table WHERE $where");
+
+        $result = getSpatialAll($extent, $table, 'count(*)', false);
+
+	print "$result;\n";
 	exit;
 }
 
@@ -157,7 +173,7 @@ foreach ($rows as $row) {
 
 
 
-	function getSpatialAll($row, $table,$select = "COUNT(*)") {
+	function getSpatialAll($row, $table,$select = "COUNT(*)",$execute=true) {
 		global $db;
 
 		$sql_where = '';
@@ -172,6 +188,9 @@ foreach ($rows as $row) {
                                         $sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 		$sql = "SELECT SQL_NO_CACHE $select FROM $table WHERE $sql_where";
+
+		if (empty($param))
+			return $sql;
 
 		if (is_dir("perftest/") && !file_exists("perftest/spatial2.$table.mysql"))
 			file_put_contents("perftest/spatial2.$table.mysql", "$sql\n");
