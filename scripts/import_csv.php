@@ -164,6 +164,9 @@ execute($str, $sep);
 function execute(&$str, &$sep) {
 	global $insert, $db, $param, $c;
 
+	if (empty($sep)) //could perhaps just say || ($str == $insert)
+		return;
+
 	if ($param['print'])
 		print "$str;\n";
 	if ($param['execute']) {
