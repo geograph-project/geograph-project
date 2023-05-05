@@ -7,7 +7,7 @@ $param = array('execute'=>0, 'limit'=>10,
 		'point_column' => 'point_en', //either a 'spatial' column, or specify two cols like 'e,n' and will use GEOMFROMTEXT automatially!
 		'key' => 'country_region_id',
 		'pkey' => 'seq', //needs a primary key from table!
-		'where'=>'country_region_id IS NULL',
+		'where'=>'', //defaults to 'country_region_id IS NULL'
 	'gis_table' => 'country_region',
 		'value'=>'auto_id', //this column from gis table to set 'key' to - does NOT need be a real key
 );
@@ -40,16 +40,27 @@ $lookup = "SELECT {value} FROM {gis_table} WHERE ST_Contains(WKT,geomfromtext('{
 $update = "UPDATE {table} SET {key} = {str_value} WHERE {pkey} = {pkey_value}";
 
 #######################################################
-// new 'generic' version
+//shortcuts
 
-	//shortcut so dont have to say --point_column="GEOMFROMTEXT(CONCAT('POINT(',e,' ',n,')'))"
+//todo, check if need to add a spatial index
+//alter table {gis_table} add spatial index(`WKT`);
+
+//so dont have to say --point_column="GEOMFROMTEXT(CONCAT('POINT(',e,' ',n,')'))"
 if (preg_match('/^(\w+),(\w+)$/',$param['point_column'],$m))
 	$param['point_column'] = "GEOMFROMTEXT(CONCAT('POINT(',{$m[1]},' ',{$m[2]},')'))";
 
+//this is how keep track!
+if (empty($param['where']))
+	$param['where'] = "`{$param['key']}` IS NULL";
+else
+	$param['where'] .= " AND `{$param['key']}` IS NULL";
+
+#######################################################
+// new 'generic' version
 
 
 $sql = preg_replace_callback('/\{(\w+)\}/', function($m) use ($param) { return $param[$m[1]]; }, $select);
-$sql = preg_replace('/asText\(geomfromtext\((.+?)\)\)/i','$1',$sql); //if point_column was created dymaically, with geomfromtext might as well just use it directly
+$sql = preg_replace('/asText\((st_)?geomfromtext\((.+?)\)\)/i','$2',$sql); //if point_column was created dymaically, with geomfromtext might as well just use it directly
 		print "$sql;\n";
 $data = $db->getAll($sql);
 
