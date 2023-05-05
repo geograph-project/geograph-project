@@ -1,0 +1,61 @@
+#####################################
+
+# Layers imported from Boundary Line
+
+https://osdatahub.os.uk/downloads/open/BoundaryLine
+
+# I downloaded the 'ShapeFile' and used QGIS to convert to a .csv
+
+#####################################
+# country_region
+
+# Imported the 'country_region' table (in the GB folder) ... it was used in grabbing boundaries for GB Islands to augment the os_gaz_250_new table. 
+
+# The "Country" boundary was used becaue has borders for each island, and other that GB mainland (has E/W/S!), all islands are one single Country. 
+
+# note the --split option on import was very important so each polygon is its own 'row' in the table, so can match island. 
+
+# (probably count of used the regions tables, dont think subdevides any islands (again other than mainland) but as each country a seperate table, thought easier to use a single table.)
+
+# ... in the end also used it to figure the 'country' for each place, (as had, by then, already matched each placename to a country polygon!)
+
+#	(exact process is documented in the os_gaz_250_new.txt file!!) 
+
+#####################################
+# full_county
+
+# Then have imported Both 'district_borough_unitary_region' and 'county_region' - as this seems to match [full_county] from os_gaz_250
+
+# So using "County" from 'county_region' - ignoring the "Greater London Authority" polygon. (not a real County?)
+
+# And "Unitary Authority", "Metropolitan District" and "London borough" from 'district_borough_unitary_region' - importantly ignoring the "District" polygons (which are subdevisions of "County" - os_gaz_250 uses "county"s not "district"s) 
+
+	# imported in one so the ENUMs include all the posibities from both files!
+php scripts/import_csv.php --file=/tmp/county_region.csv,/tmp/district_borough_unitary_region.csv --table=full_county --bom=0 --auto_id --split --limit=100000 --execute --print=0 --break=1 --drop
+	#--break=1 is needed due to large polygons!
+
+
+delete from full_county where DESCRIPTIO = 'Greater London Authority'; # its in the county_region file - but dont want it, using "London borough" from other!
+
+delete from full_county where DESCRIPTIO = 'District'; # thse are in the 'district_borough_unitary_region' file, but os_gaz_250 uses "County" instead!
+		# In fact I removed these using 'Filter Layer' in GQIS, but may need this command in future!
+		# important, dont confuse with "Metropolitan District" - different areas!
+
+
+#####################################
+
+# Notes posted on forum. 
+	###
+
+	Where there is a modern "County" will use that. Does NOT use the "District" subdevision. (the County file does however contain a "County" called, 'Greater London Authority' 
+	which have to ignore, that as have the "London borough" instead )
+
+	For London its "London borough"
+
+	Otherwise its "Unitary Authority" and "Metropolitan District"
+
+	... Wales and Scotland, seem to have just "Unitary Authority" all over.
+	###
+
+
+

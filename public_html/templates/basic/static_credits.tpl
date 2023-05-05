@@ -60,6 +60,7 @@
     <ul>
     <li>A growing number of volunteer moderators drawn from the contributor list, donate their time and effort to help sort and maintain the image archive. View <a href="/team.php">the Geograph Team</a> for the list of current and past moderators.</li>
     </ul>
+
     
 	<a name="data"></a>    
     <h3>Mapping &amp; Location Data</h3>
@@ -80,19 +81,36 @@
     <li>Historic County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
     <li>National Trail routes compiled with the help of {external href="http://www.magic.gov.uk/" text="magic.gov.uk"} and contributor <a href="http://geograph.local/profile/1324">Tony Atkin</a>! (subject to Copyright, used under licence)</li>
     <li>National Cycle routes provided by {external href="http://www.systrans.org.uk/" text="sustrans.org.uk"}. (subject to Copyright, used with permission)</li>
-    <li>Great Britain Gazetteer based upon {external href="http://www.ordnancesurvey.co.uk/" text="Ordnance Survey&reg;"} 1:50 000 Scale Gazetteer, &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<ul>
-    	<li>and enhanced with the Gazetteer of British Place Names, &copy; {external href="http://www.abcounties.co.uk/" text="Association of British Counties"}, used with permission.</li>
+    <li>Great Britain Gazetteer based upon {external href="http://www.ordnancesurvey.co.uk/" text="Ordnance Survey&reg;"} 1:50 000 Scale Gazetteer, &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616. Later available in OS OpenData (no longer maintained)<ul>
+	<li>and enhanced with the Gazetteer of British Place Names, &copy; {external href="http://www.abcounties.co.uk/" text="Association of British Counties"}, used with permission.</li>
     </ul>
     </li>
     <li>Great Britain 1:50 000 Scale Colour Raster Mapping (Same as paper based Landranger&trade; product). &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616. Provided as part of Sponsorship deal.</li>
+    <li>Great Britain {external href="https://beta.ordnancesurvey.co.uk/products/250k-raster" text="1:250 000 Scale Colour Raster Mapping"} Contains OS data &copy; Crown Copyright and database right 2022</li>
     <li>Maps for Ireland and also during the search using the {external href="https://developers.google.com/maps/web/" text="Google Maps API"}.</li>
     <li>Selected map extracts are from the {external href="http://www.openstreetmap.org/" text="OpenStreetMap project"}, via the {external href="http://www.gravitystorm.co.uk/shine/cycle-info/" text="Cycle Map"} rendering.</li>
     <li>UK Unit Postcodes, from OS OpenData : <i>Contains Royal Mail data &copy Royal mail copyright and database right 2010.</i></li>
     <li>{external href="https://www.ceh.ac.uk/services/land-cover-map-2015" text="Landcover Classification"}: <i>LCM2015 &copy; and database right NERC (CEH) 2017. All rights reserved. Contains Ordnance Survey data &copy; Crown copyright and database right 2007.</i></li>
 
-
+	<li>Note also we use a wide range of baselayers in our coverage mapping. The appriate credit appears when select a different base layer.</li>
 
     </ul>
+
+	<a name="gazetteer"></a>    
+    <h3>Reverse Geocoding Gazetter</h3>
+We have compiled an agorithm to show a 'near to' place, to help provide context when viewing a photo. 
+Compiled with with a range of Gazetteer Products
+
+    <ul>
+    <li>{external href="https://beta.ordnancesurvey.co.uk/products/250k-raster" text="OS 250K Gazetteer"} Contains OS data &copy; Crown Copyright and database right 2022</li>
+    <li>{external href="https://www.data.gov.uk/dataset/25ac7a78-af01-4727-b8b7-265ba8ee96b4/osni-open-data-gazetteer-place-names" text="OSNI Open Data - Placename Gazetteer"}  CC BY 4.0</li>
+    <li>{external href="https://data-osi.opendata.arcgis.com/datasets/osi::centres-of-population-national-placenames-gazetteer/explore" text="Centres of Population - OSi National Placenames Gazetteer"} LPS Open Government Data Licence</li>
+    <li>{external href="https://opendata-rspb.opendata.arcgis.com/datasets/RSPB::uk-islands/about" text="UK Island Names"} Copyright Maps RSPB, CC BY 4.0</li>
+    <li>{external href="https://data-osi.opendata.arcgis.com/maps/00f0f87e6efe476bbd55c3c4353393a8_0" text="Islands - National 1m Map Of Ireland"} CC BY 4.0</li>
+    <li>Data was also processed using data from {external href="https://beta.ordnancesurvey.co.uk/products/boundary-line" text="OS Boundary-Line"} Contains OS data &copy; Crown Copyright [and database right] (2021)</li>
+    </ul>
+
+
     
 	<a name="hosting"></a>    
     <h3>Hosting</h3>
