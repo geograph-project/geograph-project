@@ -6,10 +6,21 @@
 <style>
 {literal}
 @media screen and (max-width: 600px) {
-input,text,textarea {
-     width:100%;
-     display:block;
-}}
+	#maincontent input, #maincontent textarea {
+	     width:100%;
+	     display:block;
+	}
+}
+@media screen and (min-width: 1100px) {
+	#maincontent input[type=text], #maincontent textarea {
+		width:900px;
+		font-size:1em; /* to match the text on photo page */
+		max-width:90vw;
+	}
+	#maincontent input[type=text] {
+		font-size:1.2em;
+	}
+}
 {/literal}
 </style>
 
@@ -61,10 +72,10 @@ input,text,textarea {
 		<br/>
 		for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $image->realname} by <a title="view user profile" href="/profile/{$user->user_id}?a={$image->realname|escape:'url'}">{$image->realname}</a>{/if}
 		(<a href="/browser/#!/loc={$image->grid_reference}/dist=20000/days=365/display=group/group=user_id/n=4/gorder=images%20desc">local leaderboard</a>)<br/>
-		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
-		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
+		{if $image->imagetakenString}Taken: {$image->imagetakenString}<br/>{/if}
+		{if $image->imageclass}Category: {$image->imageclass}{/if}
 
-		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;" onclick="mark_color(this.form,'yellow')"/>{if $image->moderation_status == 'pending' || $user->stats.images > 100}<input type="submit" name="apply" value="Apply changes" onclick="mark_color(this.form,'lightgreen')"/>{/if}
+		<div><textarea name="comment" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;" onclick="mark_color(this.form,'yellow')"/>{if $image->moderation_status == 'pending' || $user->stats.images > 100}<input type="submit" name="apply" value="Apply changes" onclick="mark_color(this.form,'lightgreen')"/>{/if}
 		<div style="font-size:0.7em;padding-top:7px">[[[{$image->gridimage_id}]]]</div>
 
 		<div class="tabHolder" style="font-size:1em;padding-top:10px">		
