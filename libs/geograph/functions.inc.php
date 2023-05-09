@@ -437,7 +437,7 @@ function smarty_function_place($params) {
 	//country
 	if (!empty($place['country']))
 		$t .= ", {$place['country']}";
-	elseif ($place['adm1_name'] != 'Northern Ireland' and $place['adm1_name'] != 'Isle of Man') //as have no county, the adm1 contains the country! (todo, may be best fixed in the gazetteers)
+	elseif ($place['adm1_name'] != 'Northern Ireland' and $place['adm1_name'] != 'ISLE OF MAN') //as have no county, the adm1 contains the country! (todo, may be best fixed in the gazetteers)
 		$t .= ", {$place['reference_name']}";
 
 	$t .= "</i></small></span>";
