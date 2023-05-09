@@ -384,9 +384,12 @@ function smarty_function_place($params) {
 	$t = '';
 	if (!empty($params['takenago']))
 		$t .= "<span title=\"{$params['taken']}\">taken <b>{$params['takenago']}</b></span>, ";
-	if (!empty($place['distance']) && $place['distance'] > 3)
-		$t .= ($place['distance']-0.01)." km from ";
-	elseif (empty($place['isin']))
+	if (!empty($place['distance']) && $place['distance'] > 3) {
+		$t .= ($place['distance']-0.01)." km ";
+		if (isset($place['direction']) && $place['distance'] > 4) //might be zero (north)!
+			$t .= heading_string_short($place['direction'])." ";
+		$t .= "from ";
+	} elseif (empty($place['isin']))
 		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
 
 	$t .= "<span itemprop=\"contentLocation\" itemscope itemtype=\"http://schema.org/Place\"><span itemprop=\"name\">";
@@ -434,7 +437,7 @@ function smarty_function_place($params) {
 	//country
 	if (!empty($place['country']))
 		$t .= ", {$place['country']}";
-	elseif ($place['adm1_name'] != 'Northern Ireland') //if dont have proper counties, no point listing these
+	elseif ($place['adm1_name'] != 'Northern Ireland' and $place['adm1_name'] != 'Isle of Man') //as have no county, the adm1 contains the country! (todo, may be best fixed in the gazetteers)
 		$t .= ", {$place['reference_name']}";
 
 	$t .= "</i></small></span>";
@@ -1212,8 +1215,7 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
 /**
  * returns a standard textual representation of a number
  */
-function heading_string($deg) {
-	$dirs = array('north','east','south','west');
+function heading_string($deg, $dirs = array('north','east','south','west')) {
 	$rounded = round($deg / 22.5) % 16;
 	if ($rounded < 0)
 		$rounded += 16;
@@ -1227,6 +1229,9 @@ function heading_string($deg) {
 		}
 	}
 	return $s;
+}
+function heading_string_short($deg) {
+	return str_replace('-','',heading_string($deg,array('N','E','S','W')));
 }
 
 function sqlBitsToCount(&$sql) {

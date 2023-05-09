@@ -170,6 +170,7 @@ split_timer('gazetteer'); //starts the timer
 					1 as reference_index,
 					`full_county` as adm1_name,
 					(id + 2000000) as pid,
+					east as e, north as n,
 					( pow(east-{$e},2)+pow(north-{$n},2) ) as distance,
 					island_name, country,
 					CONCAT('OS250') as gaz
@@ -190,6 +191,7 @@ split_timer('gazetteer'); //starts the timer
 					1 as reference_index,
 					`full_county` as adm1_name,
 					(seq + 2000000) as pid,
+					east as e, north as n,
 					( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
 					island_name, country,
 					'OS250' as gaz
@@ -234,6 +236,7 @@ split_timer('gazetteer'); //starts the timer
                                                 `full_county` as adm1_name,
                                                 `hcounty` as hist_county,
                                                 (id + 1000000) as pid,
+						east as e, north as n,
                                                 pow(east-{$e},2)+pow(north-{$n},2) as distance,
                                                 f_code,
                                                 CONCAT('OS') as gaz
@@ -257,6 +260,7 @@ split_timer('gazetteer'); //starts the timer
 						`full_county` as adm1_name,
 						`hcounty` as hist_county,
 						(seq + 1000000) as pid,
+						east as e, north as n,
 						( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
 						f_code,
 						'OS' as gaz
@@ -298,6 +302,7 @@ split_timer('gazetteer'); //starts the timer
 						`full_county` as adm1_name,
 						`hcounty` as hist_county,
 						(seq + 1000000) as pid,
+						east as e, north as n,
 						( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
 						1 as isin,
 						'OS' as gaz
@@ -332,6 +337,7 @@ split_timer('gazetteer'); //starts the timer
 						`full_county` as adm1_name,
 						`hcounty` as hist_county,
 						(seq + 1000000) as pid,
+						east as e, north as n,
 						( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
 						'OS' as gaz
 					from
@@ -364,6 +370,7 @@ split_timer('gazetteer'); //starts the timer
 							`full_county` as adm1_name,
 							`hcounty` as hist_county,
 							(seq + 1000000) as pid,
+							east as e, north as n,
 							( pow(cast(east as signed)-{$e},2)+pow(cast(north as signed)-{$n},2) ) as distance,
 							f_code,
 							'OS' as gaz
@@ -390,6 +397,7 @@ split_timer('gazetteer'); //starts the timer
                                         county_unitary as adm1_name,
                                         '' as hist_county,
                                         (seq + 40000000) as pid,
+					e, n,
                                         ( (e-{$e})*(e-{$e})+(n-{$n})*(n-{$n}) ) as distance,
                                         'open' as gaz,
                                         populated_place,
@@ -429,6 +437,7 @@ split_timer('gazetteer'); //starts the timer
 					`acounty` as adm1_name,
 					`hcounty` as hist_county,
 					(gaz_id + 800000) as pid,
+					e, n,
 					( pow(cast(e as signed)-{$e},2)+pow(cast(n as signed)-{$n},2) ) as distance,
 					'hist' as gaz
 				from
@@ -445,6 +454,7 @@ split_timer('gazetteer'); //starts the timer
 					reference_index,
 					'' as adm1_name,
 					(id + 900000) as pid,
+					e, n,
 					( pow(cast(e as signed)-{$e},2)+pow(cast(n as signed)-{$n},2) ) as distance,
 					'towns' as gaz
 				from 
@@ -455,14 +465,15 @@ split_timer('gazetteer'); //starts the timer
 						point_en) AND
 					reference_index = {$reference_index}
 				order by distance asc limit 1");
-		} else if (($gazetteer == 'open' || $gazetteer == '' || $gazetteer == 'OS250')&& $reference_index == 2) { //todo maybe should just be !='geonames'
+		} else if (($gazetteer == 'open' || $gazetteer == '' || $gazetteer == 'OS250')&& $reference_index == 2) { //todo maybe should just be !='geonames' && != 'OS' (speciing 'OS' is what buildplacename_id, which wants geonames for ireland!
 			//no index yet!
 			$places = $db->GetRow("select
                                         name as full_name,
                                         'PPL' as dsg,
                                         2 AS reference_index,
                                         county as adm1_name,
-                                        (id) as pid,
+                                        (id + 3000000) as pid,
+					e, n,
                                         ( pow(cast(e as signed)-{$e},2)+pow(cast(n as signed)-{$n},2) ) as distance,
 					island_name,country,
                                         'ieopen' as gaz
@@ -472,7 +483,6 @@ split_timer('gazetteer'); //starts the timer
                                         e between $left and $right
                                         and n between $top and $bottom
                                 order by distance asc limit 1");
-
 
 		} else {
 
@@ -488,6 +498,7 @@ split_timer('gazetteer'); //starts the timer
                                         reference_index,
                                         adm1_name,
                                         id as pid,
+					e, n,
                                         pow(e-{$e},2)+pow(n-{$n},2) as distance,
 					CONCAT('geonames') as gaz,
 					country
@@ -511,6 +522,7 @@ split_timer('gazetteer'); //starts the timer
 					loc_placenames.reference_index,
 					loc_adm1.name as adm1_name,
 					loc_placenames.id as pid,
+					e, n,
 					pow(e-{$e},2)+pow(n-{$n},2) as distance,
 					'geonames' as gaz,
 					coalesce(loc_adm1.country,loc_placenames.country) as country
@@ -573,6 +585,8 @@ split_timer('gazetteer'); //starts the timer
 				$places['full_name'] = preg_replace('/\,([^\,]+)$/',' and $1',$places['full_name']);
 			}
 		}
+		if (!empty($places['distance']) && !empty($places['e']) && $places['distance'] > 1) //dist is squared
+			$places['direction'] = rad2deg(atan2( $e-$places['e'], $n-$places['n'] ));
 		if (isset($places['distance']))
 			$places['distance'] = round(sqrt($places['distance'])/1000)+0.01;
 		if (!empty($places['reference_index'])) {
