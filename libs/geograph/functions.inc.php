@@ -387,8 +387,9 @@ function smarty_function_place($params) {
 	if (!empty($place['distance']) && $place['distance'] > 3) {
 		$t .= ($place['distance']-0.01)." km ";
 		if (isset($place['direction']) && $place['distance'] > 4) //might be zero (north)!
-			$t .= heading_string_short($place['direction'])." ";
-		$t .= "from ";
+			$t .= heading_string_short($place['direction'])." of ";
+		else
+			$t .= "from ";
 	} elseif (empty($place['isin']))
 		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
 
