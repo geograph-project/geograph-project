@@ -61,7 +61,7 @@ foreach ($out as $name => $data) {
 			if (isset($in['name1']) && isset($in['name2']))
 				 $cols['name'] = "concat_ws(' / ',nullif(name1,''),nullif(name2,''))";
 			else
-				add_by_name($name, array('name','title','def_name','def_nam','stationName')); break;
+				add_by_name($name, array('name','title','def_name','def_nam','stationName','lnr_name')); break;
 		//case 'name': add_by_name($name, array()); break;
 		case 'label':
 			if ($param['table'] == 'tuktrig')
@@ -83,11 +83,11 @@ foreach ($out as $name => $data) {
 			if ($param['table'] == 'rsgb_islands')
 				$cols['gridref'] = "IF(country = 'northern_ireland','',gridref)"; //the table has osgb gridrefs, we want irishgrid!
 			else
-				 add_by_name($name, array('gridref')); //note we dont use 'grid_reference' or 'km_ref' etc, as the are generally only 4fig. We will compute a more accurate GR based on e/n etc 
+				 add_by_name($name, array('gridref','reference')); //note we dont use 'grid_reference' or 'km_ref' etc, as the are generally only 4fig. We will compute a more accurate GR based on e/n etc 
 			 break;
 		case 'gridsquare_id': break;
-		case 'e': add_by_name($name, array('e','east','eastings','nateastings','geometry_x')); break;
-		case 'n': add_by_name($name, array('n','northings','northings','natnorthings','geometry_y')); break;
+		case 'e': add_by_name($name, array('e','easting0','east','easting','eastings','nateastings','geometry_x')); break;
+		case 'n': add_by_name($name, array('n','northing0','north','northing','northings','natnorthings','geometry_y')); break;
 		case 'reference_index':
 			if ($param['table'] == 'rsgb_islands')
                                 $cols['reference_index'] = "IF(country = 'northern_ireland',2,1)"; //the table has osgb gridrefs, we want irishgrid!
@@ -109,7 +109,7 @@ foreach ($out as $name => $data) {
 		case 'gridimage_id': add_by_name($name, array('gridimage_id','first','last')); break;
 		case 'nearby_images': add_by_name($name, array('images')); break;
 		case 'stat_updated': break; //we dont add 'images_updated' (some tables have it) - as we want to allow entire table to calculate anyway
-		case 'sorter': add_by_name($name, array('population','river_length','least_detail_view_res','most_detail_view_res','meters')); break;
+		case 'sorter': add_by_name($name, array('population','river_length','least_detail_view_res','most_detail_view_res','meters','st_area_sh')); break;
 	}
 }
 

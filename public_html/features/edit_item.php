@@ -92,7 +92,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$errors = array();
 	$updates = array();
 	foreach (explode(',',$row['item_columns']) as $key) {
-		if (isset($_POST[$key]) && $page[$key] != $_POST[$key] && $key != 'nearby_images') {
+		if (isset($_POST[$key]) && $page[$key] != $_POST[$key] && !preg_match('/_images$/',$key)) { //the _images columns are auto-maintained!
 			$updates[$key] = trim(strip_tags($_POST[$key]));
 			$smarty->assign($key, $_POST[$key]);
 		}

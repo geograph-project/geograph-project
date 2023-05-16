@@ -85,7 +85,6 @@ print "<!-- ($lat,$lng) -->";
 		$distance = $type_id?25000:10000;
 		$desc = sprintf("Features with %.1fkm of (%.5f,%.5f)",$distance/1000,$lat,$lng);
 
-                //need to use sphinx for this, to get WITHIN GROUP ORDER BY!
                 $sph = GeographSphinxConnection('sphinxql',true);
                 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
@@ -196,6 +195,22 @@ foreach ($db->getAll("SELECT feature_type_id,title FROM feature_type WHERE statu
 </select><br>
 Location: <input type=search name=loc value="<? echo htmlentities(@$_GET['loc']); ?>"> (eg enter a Grid-Reference)<br>
 
+<? /*
+Collection(s): <select name="content_id[]" multiple id="content_ids">
+<option value=0>None</option>
+<?
+	if (empty($sph)) {
+                $sph = GeographSphinxConnection('sphinxql',true);
+	}
+foreach ($sph->getAll("select id,title,source,images from content1 where source in ('article','gallery','themed') and images > 5 order by title asc limit 1000") as $r) {
+	$r['title'] = utf8_to_latin1(html_entity_decode($r['title'])); //manitcore has utf8, but also its already has entities!
+
+	printf('<option value="%d"%s>%s [%s : %d images]</option>',$r['id'],(@in_array($r['id'],$_GET['content_id']))?' selected':'',$r['title'],$r['source'],$r['images']);
+}
+?>
+</select><br>
+*/ ?>
+
 Filter: <input type=search name=q value="<? echo htmlentities(@$param['q']); ?>"> (for the Photos Subjects Layer, does not filter features)<br>
 <input type=hidden name=rand value=1>
 
@@ -209,10 +224,11 @@ Number:
 
 Show:<input type="radio" name="gridimage" value="" <? if (!strlen(@$_GET['gridimage'])) { echo "checked"; } ?>>Any /
 <input type="radio" name="gridimage" value="1" <? if (@$_GET['gridimage'] === "1") { echo "checked"; } ?>>With Image /
-<input type="radio" name="gridimage" value="0" <? if (@$_GET['gridimage'] === "0") { echo "checked"; } ?>>Without Image /
+<input type="radio" name="gridimage" value="0" <? if (@$_GET['gridimage'] === "0") { echo "checked"; } ?>>Without Image
+<? if (strpos($row['item_columns'],'nearby_images') !== false) { ?> /
 <input type="radio" name="gridimage" value="2" <? if (@$_GET['gridimage'] === "2") { echo "checked"; } ?>>Automatic Images Only /
 <input type="radio" name="gridimage" value="3" <? if (@$_GET['gridimage'] === "3") { echo "checked"; } ?>>Unphotographed
-
+<? } ?>
 </form>
 <?
 
@@ -236,7 +252,7 @@ print "<ul>";
 		if (!empty($param['photos0']))
 			print "<img src=\"".$CONF['STATIC_HOST']."/geotrips/bike.png\"> Without Image. ";
 		if (!empty($param['photos1']))
-			print "<img src=\"".$CONF['STATIC_HOST']."/geotrips/boat.png\"> With Image. ";
+			print "<img src=\"".$CONF['STATIC_HOST']."/geotrips/rail.png\"> With Image. ";
 		if ($param['select'])
 			print " (<b>Click a <img src=\"".$CONF['STATIC_HOST']."/geotrips/bike.png\"> Icon</b> to select an image for that feature). ";
 	} elseif ($param['masklayer']) {
@@ -257,6 +273,8 @@ print "<ul>";
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<link href="<? echo smarty_modifier_revision("/js/select2-3.3.2/select2.css"); ?>" rel="stylesheet"/>
+<script src="<? echo smarty_modifier_revision("/js/select2-3.3.2/select2.js"); ?>"></script>
 
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
@@ -350,6 +368,10 @@ div#gridref {
 </style>
 
 <script type="text/javascript">
+	$(function() {
+		$('select#content_ids').select2({width:"600px"});
+	});
+
         var map = null ;
         var issubmit = false;
 	var static_host = '<? echo $CONF['STATIC_HOST']; ?>';
@@ -527,7 +549,7 @@ div#gridref {
 				$title = json_encode($r['name']);
 				if (empty($title)) $title= "''";
 		//bike,boat,bus,rail,road,walk
-				$icon = ($r['gridimage_id'])?'boat':'bike';
+				$icon = ($r['gridimage_id'])?'bus':'bike';
 
 				print "marker = createMarker([$wgs84_lat,$wgs84_long], '$icon', $title)\n";
 				if (!$param['masklayer'])
@@ -720,7 +742,7 @@ div#gridref {
 			//todo, we should also change the colour of the dot!
 			if (current_marker && gridimage_id && current_marker._icon) {
 				//tehre isnt a 'getIcon' in this version!
-				icon = 'boat';
+				icon = 'rail';
 				current_marker._icon.src = static_host+"/geotrips/"+icon+".png";
 			}
 	        <? } ?>

@@ -182,6 +182,7 @@ $list = array(
         'radius' => array('info'=>'allows storing an approximate radius (in meters) of the feature, to make more refine local searches for "images nearby"'),
         'gridimage_id' => array('info'=>'stores the ID of a selected image. As the whole point of function is to link images, would be unusual not to enable this one!'),
         'nearby_images' => array('info'=>'automated column of count of nearby images (only works, if have location AND radius)'),
+        'bound_images' => array('info'=>'automated column of count of images within bounds (only works, if have boundary geometry)'),
         'sorter' => array('info'=>'supplementry numberic column, intended for users to sort the table. Could be size or population based'),
 );
 foreach (explode(',',$page['item_columns']) as $key)
