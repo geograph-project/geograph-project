@@ -46,7 +46,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 		{if $errors.$name}<div class="formerror"><p class="error">{$errors.$name}</p>{/if}
 
 		<label for="{$name}">{$name}:</label>
-		{if $name == 'nearby_images'}
+		{if $name == 'nearby_images' || $name == 'bound_images'}
 			<input type="text" disabled value="{$item.$name|escape:"html"}" size=5>(Automatically calculated)
 		{elseif $name == 'sorter' || $name == 'radius' || $name == 'gridimage_id'}
 			<input type="number" name="{$name}" value="{$item.$name|escape:"html"}" style="font-size:1.1em" size="10"/> (number only)
