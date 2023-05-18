@@ -245,7 +245,8 @@ print "<ul>";
 		print "<li>Similally, click anywhere on the map to view nearby photos (also unfiltered) - shows photos within the blue circle. ";
 	}
 	if (!empty($param['create'])) {
-		print "<li><b>Right click</b> the map to create a new <tt>".htmlentities($row['title'])."</tt> feature at that location. ";
+		print "<li>This list is <b>incomplete</b>; you can help by adding missing items. <b>Right click</b> the map to create a new <tt>".htmlentities($row['title'])."</tt> feature at that location";
+		if (strlen(@$_GET['gridimage'])) { print ". Although, please revert to 'Any' filter, to check that not already part of the dataset."; }
 	}
 	if ($param['markers']) {
 		print "<li>";

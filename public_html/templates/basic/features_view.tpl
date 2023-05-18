@@ -150,9 +150,19 @@
 {if $source}
 	<details open>
 		<summary>Data Source</summary>
-		{$source|escape:'html'|nl2br}
+		{$source|escape:'html'|nl2br|GeographLinks:false}
 	</details>
 {/if}
+
+{if $create_enabled}
+	<div style="border:1px solid #a2a9b1;margin:10px;padding:6px;border-radius:6px;display:inline-block">
+	&#128712;
+	This list is <b>incomplete</b>; you can help by <a href="edit_item.php?id=new&amp;type_id={$feature_type_id}" class="popupLink">adding missing items</a>.
+	The dataset is being created by Geograph.
+	</div>
+{/if}
+
+
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <link href="{"/js/select2-3.3.2/select2.css"|revision}" rel="stylesheet"/>
@@ -172,7 +182,12 @@ var resultCount = {$count};
 <table id="output" cellspacing=0 cellpadding=2 border=1 bordercolor=#eee></table>
 <div class="pages"></div>
 
-<a href="edit_item.php?id=new&amp;type_id={$feature_type_id}" class="popupLink">Add a new Feature</a>
+<br>
+{if $create_enabled}
+	<a href="edit_item.php?id=new&amp;type_id={$feature_type_id}" class="popupLink">Add a new Feature</a>
+{else}
+	This is an imported dataset. If there is missing or inaccurate data, the original dataset needs updating. Please contact us, if the dataset has updated, and our copy is now outdated. 
+{/if}
 
 {if $footnote}
 	<details open>
