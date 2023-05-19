@@ -218,6 +218,7 @@ function appearsToBePerson() {
             (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'curl')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'Siege')===FALSE) &&
+            (strpos($_SERVER['HTTP_USER_AGENT'], 'InspectionTool')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'The Knowledge AI')===FALSE) &&
 	    $_SERVER['HTTP_USER_AGENT'] != "GoogleOther" &&
 	    empty($_SERVER['HTTP_X_PURPOSE']) && empty($_SERVER['HTTP_PURPOSE']) && empty($_SERVER['HTTP_X_MOZ']) &&  //'prefetch' and 'preview' requests
