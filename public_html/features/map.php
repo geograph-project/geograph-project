@@ -72,6 +72,10 @@ if (!empty($type_id)) {
 	elseif (!empty($row['query_string']))
 		$param['q'] = $row['query_string'];
 	$where[] = "feature_type_id = $type_id";
+} else {
+	$ids = $db->getCol("SELECT feature_type_id from feature_type where licence != 'none'"); //later use =none to exclude?
+	$ids = implode(',',$ids);
+	$where[] = "feature_type_id IN ($ids)";
 }
 
 
@@ -253,7 +257,7 @@ print "<ul>";
 		if (!empty($param['photos0']))
 			print "<img src=\"".$CONF['STATIC_HOST']."/geotrips/bike.png\"> Without Image. ";
 		if (!empty($param['photos1']))
-			print "<img src=\"".$CONF['STATIC_HOST']."/geotrips/rail.png\"> With Image. ";
+			print "<img src=\"".$CONF['STATIC_HOST']."/geotrips/bus.png\"> With Image. ";
 		if ($param['select'])
 			print " (<b>Click a <img src=\"".$CONF['STATIC_HOST']."/geotrips/bike.png\"> Icon</b> to select an image for that feature). ";
 	} elseif ($param['masklayer']) {
