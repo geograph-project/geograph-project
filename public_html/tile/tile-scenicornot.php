@@ -16,7 +16,7 @@ ini_set('memory_limit', '128M');
 
 $maxspan = 10;
 
-//customExpiresHeader(empty($_GET['user_id'])?3600*24*3:3600*6,true);
+customExpiresHeader(3600*24*30);
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
 require_once ('3rdparty/googleMapUtilityClass.php');

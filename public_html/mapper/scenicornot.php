@@ -68,8 +68,11 @@ $smarty->display('_std_begin.tpl');
 
 		layerAttrib='&copy; Geograph Project &amp; Scenic Or Not';
                 layerUrl='https://t0.geograph.org.uk/tile/tile-scenicornot.php?z={z}&x={x}&y={y}';
-		var sceniclayer =  new L.TileLayer(layerUrl, {user_id: 0, minZoom: 7, maxZoom: 10, attribution: layerAttrib, bounds: bounds, opacity:0.9});
+		var sceniclayer =  new L.TileLayer(layerUrl, {minZoom: 7, maxZoom: 10, attribution: layerAttrib, bounds: bounds, opacity:0.9});
                 overlayMaps["ScenicOrNot"] = sceniclayer;
+
+		var sceniclaye2 =  new L.TileLayer(layerUrl, {minZoom: 7, maxZoom: 10, attribution: layerAttrib, bounds: bounds, opacity:0.3});
+                overlayMaps["ScenicOrNot (faded)"] = sceniclaye2;
 
 						setupBaseMap(); //creates the map, but does not initialize a view
 
