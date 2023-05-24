@@ -71,7 +71,7 @@ $smarty->display('_std_begin.tpl');
 		var sceniclayer =  new L.TileLayer(layerUrl, {minZoom: 7, maxZoom: 10, attribution: layerAttrib, bounds: bounds, opacity:0.9});
                 overlayMaps["ScenicOrNot"] = sceniclayer;
 
-		var sceniclaye2 =  new L.TileLayer(layerUrl, {minZoom: 7, maxZoom: 10, attribution: layerAttrib, bounds: bounds, opacity:0.3});
+		var sceniclaye2 =  new L.TileLayer(layerUrl, {minZoom: 7, maxZoom: 10, attribution: layerAttrib, bounds: bounds, opacity:0.5});
                 overlayMaps["ScenicOrNot (faded)"] = sceniclaye2;
 
 						setupBaseMap(); //creates the map, but does not initialize a view
