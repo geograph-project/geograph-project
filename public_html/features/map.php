@@ -64,13 +64,13 @@ if (!empty($_GET['id']))
 
 if (!empty($type_id)) {
 	$param['id'] = $type_id;
-	$row = $db->getRow("SELECT t.*,realname FROM feature_type t LEFT JOIN user USING (user_id) WHERE feature_type_id = $type_id AND status > 0");
-	if (!empty($row['title']))
-		print "<h2>".htmlentities($row['title'])."</h2>";
+	$type_row = $db->getRow("SELECT t.*,realname FROM feature_type t LEFT JOIN user USING (user_id) WHERE feature_type_id = $type_id AND status > 0");
+	if (!empty($type_row['title']))
+		print "<h2>".htmlentities($type_row['title'])."</h2>";
 	if (!empty($_GET['q']))
 		$param['q'] = $_GET['q'];
-	elseif (!empty($row['query_string']))
-		$param['q'] = $row['query_string'];
+	elseif (!empty($type_row['query_string']))
+		$param['q'] = $type_row['query_string'];
 	$where[] = "feature_type_id = $type_id";
 } else {
 	$ids = $db->getCol("SELECT feature_type_id from feature_type where licence != 'none'"); //later use =none to exclude?
@@ -86,7 +86,7 @@ if (!empty($_GET['loc'])) {
         if (!empty($lat) && isset($lng)) {
 
 print "<!-- ($lat,$lng) -->";
-		$distance = $type_id?25000:10000;
+		$distance = $type_id?20000:10000;
 		$desc = sprintf("Features with %.1fkm of (%.5f,%.5f)",$distance/1000,$lat,$lng);
 
                 $sph = GeographSphinxConnection('sphinxql',true);
@@ -112,7 +112,7 @@ print "<!-- ($lat,$lng) -->";
 	}
 
 } elseif (!empty($_GET['all'])) {
-	$desc = "all rows from ".htmlentities($row['title'])." dataset";
+	$desc = "all rows from ".htmlentities($type_row['title'])." dataset";
 	$param['limit'] = 100000; //still not all!
 
 } elseif (!empty($_GET['rand'])) {
@@ -129,7 +129,9 @@ $where[] = "status = 1";
 $where[] = "(e > 0 OR f.wgs84_lat > 0)"; //only mapped features
 
 if (isset($_GET['gridimage']) && strlen($_GET['gridimage'])) { //strlen, not empty to allow =0
-        if ($_GET['gridimage'] === '3')
+        if ($_GET['gridimage'] === '4')
+                $where[] = "bound_images = 0";
+        elseif ($_GET['gridimage'] === '3')
                 $where[] = "gridimage_id = 0 AND gridimage_id_user_id > 0";
         elseif ($_GET['gridimage'] === '2')
                 $where[] = "gridimage_id > 0 AND gridimage_id_user_id IS NULL";
@@ -170,9 +172,9 @@ if ($count <= 1000) {
 	else {
 		$param['markers'] = true;
 		if ($USER->registered) {
-			if (!empty($row['create_enabled']))
+			if (!empty($type_row['create_enabled']))
 				$param['create'] = true;
-			if (strpos($row['item_columns'],'gridimage_id') !== false || !$type_id) //will just have to assume all layers have it
+			if (strpos($type_row['item_columns'],'gridimage_id') !== false || !$type_id) //will just have to assume all layers have it
 				$param['select'] = true;
 		}
 	}
@@ -229,9 +231,12 @@ Number:
 Show:<input type="radio" name="gridimage" value="" <? if (!strlen(@$_GET['gridimage'])) { echo "checked"; } ?>>Any /
 <input type="radio" name="gridimage" value="1" <? if (@$_GET['gridimage'] === "1") { echo "checked"; } ?>>With Image /
 <input type="radio" name="gridimage" value="0" <? if (@$_GET['gridimage'] === "0") { echo "checked"; } ?>>Without Image
-<? if (strpos($row['item_columns'],'nearby_images') !== false) { ?> /
+<? if (strpos($type_row['item_columns'],'nearby_images') !== false) { ?> /
 <input type="radio" name="gridimage" value="2" <? if (@$_GET['gridimage'] === "2") { echo "checked"; } ?>>Automatic Images Only /
 <input type="radio" name="gridimage" value="3" <? if (@$_GET['gridimage'] === "3") { echo "checked"; } ?>>Unphotographed
+<? } ?>
+<? if (strpos($type_row['item_columns'],'bound_images') !== false) { ?> /
+<input type="radio" name="gridimage" value="4" <? if (@$_GET['gridimage'] === "4") { echo "checked"; } ?>>No images within Boundry
 <? } ?>
 </form>
 <?
@@ -249,7 +254,7 @@ print "<ul>";
 		print "<li>Similally, click anywhere on the map to view nearby photos (also unfiltered) - shows photos within the blue circle. ";
 	}
 	if (!empty($param['create'])) {
-		print "<li>This list is <b>incomplete</b>; you can help by adding missing items. <b>Right click</b> the map to create a new <tt>".htmlentities($row['title'])."</tt> feature at that location";
+		print "<li>This list is <b>incomplete</b>; you can help by adding missing items. <b>Right click</b> the map to create a new <tt>".htmlentities($type_row['title'])."</tt> feature at that location";
 		if (strlen(@$_GET['gridimage'])) { print ". Although, please revert to 'Any' filter, to check that not already part of the dataset."; }
 	}
 	if ($param['markers']) {
@@ -568,12 +573,14 @@ div#gridref {
 						var near_url = "/features/near.php?q=<? echo urlencode($r['gridref']); ?>&type_id="+feature_type_id;
                         			<? if ($r['radius'] && $r['radius']>1) { ?>
 			                                near_url = near_url + "&dist=" + Math.floor(<? echo $r['radius']; ?>*1.2);
-                        			<? } elseif ($row['default_radius'] && $row['default_radius']>1) { ?>
-			                                near_url = near_url + "&dist=" + Math.floor(<? echo $row['default_radius']; ?>*1.2);
+                        			<? } elseif ($type_row['default_radius'] && $type_row['default_radius']>1) { ?>
+			                                near_url = near_url + "&dist=" + Math.floor(<? echo $type_row['default_radius']; ?>*1.2);
 			                        <? } if ($r['gridimage_id'] && $r['gridimage_id']>0) { ?>
 			                                near_url = near_url + "&img=<? echo $r['gridimage_id']; ?>";
 			                        <? } if ($r['name']) { ?>
 			                                near_url = near_url + "&name=<? echo urlencode($r['name']); ?>";
+						<? } else { ?>
+			                                near_url = near_url + "&name=unnamed"; //todo might still use category?
 						<? } ?>
 		                                near_url = near_url + "&editing=true";
 						openPopup(near_url);

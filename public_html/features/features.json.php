@@ -18,7 +18,9 @@ $sql['wheres'][] = "feature_type_id = $id";
 $sql['wheres'][] = "status > 0";
 
 if (isset($_GET['gridimage']) && strlen($_GET['gridimage'])) { //strlen, not empty to allow =0
-	if ($_GET['gridimage'] === '3')
+	if ($_GET['gridimage'] === '4')
+		$sql['wheres'][] = "bound_images = 0";
+	elseif ($_GET['gridimage'] === '3')
 		$sql['wheres'][] = "gridimage_id = 0 AND gridimage_id_user_id > 0";
 	elseif ($_GET['gridimage'] === '2')
 		$sql['wheres'][] = "gridimage_id > 0 AND gi.gridimage_id IS NOT NULL AND gridimage_id_user_id IS NULL";
