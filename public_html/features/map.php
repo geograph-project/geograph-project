@@ -103,7 +103,11 @@ print "<!-- ($lat,$lng) -->";
                 $where2[] = "distance < $distance";
 		//tood, add BBOX
 		$where2 = implode(' and ',$where2);
-		$sql = "SELECT id $columns FROM feature_item WHERE $where2 LIMIT {$param['limit']}";
+		$sql = "SELECT id $columns FROM feature_item WHERE $where2 ORDER BY distance ASC LIMIT {$param['limit']}";
+
+if (!empty($_GET['deb']))
+	print_r("$sql;<hr>");
+
 		$ids = $sph->getCol($sql);
 		if (count($ids))
 			$where[] = "feature_item_id in (".implode(',',$ids).")";
@@ -161,7 +165,10 @@ if (!empty($_GET['thumbs'])) {
 }
 
 /////////////////////////////////////////////////////
-//runing the query
+//running the query
+
+if (!empty($_GET['deb']))
+	print_r("$sql;<hr>");
 
 $recordSet = $db->Execute($sql) or die("$sql\n".$db->ErrorMsg()."\n\n");
 $count = $recordSet->RecordCount();
@@ -557,11 +564,11 @@ div#gridref {
 				}
 
 				$title = json_encode($r['name']);
-				if (empty($title)) $title= "''";
+				if (empty($title)) $title= "'unnamed'";
 		//bike,boat,bus,rail,road,walk
 				$icon = ($r['gridimage_id'])?'bus':'bike';
 
-				print "marker = createMarker([$wgs84_lat,$wgs84_long], '$icon', $title)\n";
+				print "marker = createMarker([$wgs84_lat,$wgs84_long], '$icon', $title, ".(@$param['select']?'true':'false').")\n";
 				if (!$param['masklayer'])
 					print "bounds.extend([$wgs84_lat,$wgs84_long]);\n\n";
 
@@ -646,6 +653,7 @@ div#gridref {
 			$('#clicklayer_lightback').fadeIn('fast');
 			$('#clicklayer_thumbs').removeClass('small').removeClass('med');
 			$('#clicklayer_thumbs').html('<iframe></iframe>').find('iframe').attr('src',href+"&inner=1");
+			$('#clicklayer_select').prop('disabled',true);
 			$('#clicklayer_lightfront').show();
 			$('#clicklayer_links').hide();
 
@@ -683,6 +691,7 @@ div#gridref {
 			$('#clicklayer_lightfront').hide();
 			$('#clicklayer_lightback').fadeOut('fast');
 			$('#clicklayer_show').hide();
+			$('#clicklayer_select').prop('disabled',false);
 		//}
 		document.getElementById('light').style.display='none';
 		document.getElementById('fade').style.display='none';
@@ -765,7 +774,7 @@ div#gridref {
 	////////////////////////////////////////////////////
 
 	 var icons = [];
-	 function createMarker(point,icon,title,html) {
+	 function createMarker(point,icon,title,interactive) {
                 if (!icons[icon]) {
 	                icons[icon] = L.icon({
         	            iconUrl: static_host+"/geotrips/"+icon+".png",
@@ -775,8 +784,6 @@ div#gridref {
 	                });
 		}
                 var marker = L.marker(point, {title: title, icon: icons[icon], draggable: false}).addTo(map);
-		if (html)
-			marker.bindPopup(html);
       		return marker;
 	}
 
