@@ -331,6 +331,16 @@ if (isset($_REQUEST['inner'])) {
 		$ok= $square->setByFullGridRef($_REQUEST['grid_reference']);
 
 		if ($ok) {
+			if ($ok && $square->natgrlen > 4 && !preg_match('/^[A-Z]/',$_REQUEST['grid_reference'])) {
+				//setByFullGridRef will now accept lat/long, which need to convert back to a GR
+				$conv = new Conversions('');
+				list($_REQUEST['grid_reference'],$len) = $conv->national_to_gridref(
+					$square->getNatEastings(),
+					$square->getNatNorthings(),
+					$square->natgrlen,
+					$square->reference_index,false);
+			}
+
 			$smarty->assign('grid_reference', $grid_reference = $_REQUEST['grid_reference']);
 
 			$smarty->assign('success', 1);

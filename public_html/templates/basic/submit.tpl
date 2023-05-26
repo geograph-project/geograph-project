@@ -81,18 +81,18 @@ geographing</a> first.</p>
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
 		<p>Begin by choosing the grid square for which you wish to submit.</p>
 
-		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; specify the camera location in the next step.</p>
-
-		<p><label for="grid_reference">Enter the grid reference
+		<p><label for="grid_reference"><b>Enter the grid reference
 		(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
 		<u title="e.g. TQ435646 or TQ 435 646">6</u>,
 		<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or
-		<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the subject grid square</label><br /><br />
-		{if $grid_reference}<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">clear</a>)<br/></small></small>{/if}
-		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
+		<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the subject of the photo</b>, alternatively enter WGS84 lat/long like [ 51.36299,0.06015 ]</label><br /><br />
+		<input id="grid_reference" type="search" name="grid_reference" value="{$grid_reference|escape:'html'}" size="20"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
 		&nbsp;&nbsp;&nbsp;
 		<input type="submit" name="setpos" value="Next &gt;"/>
 		</p>
+
+		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; specify the camera location in the next step (with the aid of a map).</p>
+
 	</div>
 
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
@@ -146,7 +146,7 @@ geographing</a> first.</p>
 	{literal}
 	function check_jpeg(ele) {
 	    if (ele && ele.value && ele.value.length > 0 && !ele.value.match(/.jpe?g$/i)) {
-	    	return confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel");
+		return confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel");
 	    }
 
 	    if (ele && ele.files) {
@@ -167,43 +167,27 @@ geographing</a> first.</p>
 	</script>
 
 </div>
-		<p>&middot; <label for="service">Preferred Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
-			<option value="Leaflet">Zoomable Maps (Combines Modern OS, OpenStreetMap, Aerial Imagery and Historic Maps)</option>
-			<option value="Google">Zoomable Google Mapping (still includes OSM + Historic Maps)</option>
-			<option value="OS50k">OS Modern 1:50,000 Mapping (Very simple OS Map, only use if above don't work)</option>
-		</select> <small>(OS Maps not available for Ireland)</small></p>
 
-		<script>{literal}
-		function saveService(that) {
-			createCookie("MapSrv",that.options[that.selectedIndex].value,10);
-		}
-
-		function restoreService() {
-			var newservice = readCookie('MapSrv');
-			if (newservice) {
-				var ele = document.getElementById('service');
-				for(var q=0;q<ele.options.length;q++)
-					if (ele.options[q].value == newservice)
-						ele.options[q].selected = true;
-			}
-		}
-		AttachEvent(window,'load',restoreService,false);
-		{/literal}</script>
-
-
-	<br/><br/><br/>
+	<br/><br/>
 
 	<b>Tips for locationing photos:</b>
 	<ul>
 		<li>If the image already has location attached (in EXIF), eg taken from a smartphone, GPS-Enabled camera, or geolocated via {external href="https://piclocata.inchworks.com/" text="PicLocata"} 
 		and similar GPS-Log correlation software - then use the 'GeoTagged Image' option. 
-		(you upload the image first, and the location data is extracted) <br/><br/></li>
+		(you upload the image first, and the location data is extracted) <br/><br/><ul>
+
+			<li>We are aware that some mobile devices strip the location data from an image, before providing to a website. This is a recent privacy driven function 
+			to make it harder to accidently 'share' a photo that leaks your location. It means the 'Geotagged' upload doesn't work on such devices. At the moment, 
+			will have to extract location seperately (eg using the Investigator App on iPhone) and enter it via the 'Enter Grid Reference' tab above, then upload 
+			the image.
+
+		</ul><br/></li>
 
 		<li>Can locate the approximate location using the 'Locate on Map' function, an interactive zoomable map to zoom to the right area 
 		(includes a placename/postcode search). Once located, can refine the locations on a detailed map. <br/><br/></li>
 
-		<li>If you have a WGS84 latitude & longitude coordinate (e.g. from a GPS receiver, or from multimap site), then see our 
-		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a>.<br/><br/></li>
+		<li>If you have a WGS84 latitude & longitude coordinate (e.g. from a GPS receiver), then see our 
+		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a>, or enter it above in the 'Enter Grid Reference' tab.<br/><br/></li>
 
 		<li>See our <a href="/map/">Overview Map</a> for the layout of the Myriad Prefix letters.<br/><br/></li> 
 
@@ -235,6 +219,32 @@ geographing</a> first.</p>
 
 		<li>We have a useful article: <a href="/article/Locating-photos---Republic-of-Ireland">Locating photos - Ireland</a> with some further tips (covers Northern and Republic of Ireland.<br/><br/></li>
 	</ul>
+
+
+		<p>&middot; <label for="service">Preferred Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
+			<option value="Leaflet">Zoomable Maps (Combines Modern OS, OpenStreetMap, Aerial Imagery and Historic Maps)</option>
+			<option value="Google">Zoomable Google Mapping (still includes OSM + Historic Maps)</option>
+			<option value="OS50k">OS Modern 1:50,000 Mapping (Very simple OS Map, only use if above don't work)</option>
+		</select> <small>(OS Maps not available for Ireland)</small></p>
+
+		<script>{literal}
+		function saveService(that) {
+			createCookie("MapSrv",that.options[that.selectedIndex].value,10);
+		}
+
+		function restoreService() {
+			var newservice = readCookie('MapSrv');
+			if (newservice) {
+				var ele = document.getElementById('service');
+				for(var q=0;q<ele.options.length;q++)
+					if (ele.options[q].value == newservice)
+						ele.options[q].selected = true;
+			}
+		}
+		AttachEvent(window,'load',restoreService,false);
+		{/literal}</script>
+
+
 
 	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
 	<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>

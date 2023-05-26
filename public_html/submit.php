@@ -217,6 +217,15 @@ if (isset($_POST['gridsquare']))
 		if (!empty($_POST['setpos']) && empty($exif)) { //$exif will be set if processed a geotagged image
 			$selectedtab =1;
 		}
+			if ($ok && $square->natgrlen > 4 && !preg_match('/^[A-Z]/',$_POST['grid_reference'])) {
+				//setByFullGridRef will now accept lat/long, which need to convert back to a GR
+				$conv = new Conversions('');
+				list($_POST['grid_reference'],$len) = $conv->national_to_gridref(
+					$square->getNatEastings(),
+					$square->getNatNorthings(),
+					$square->natgrlen,
+					$square->reference_index,false);
+			}
 
 		//preserve inputs in smarty
 		$smarty->assign('grid_reference', $grid_reference = $_POST['grid_reference']);

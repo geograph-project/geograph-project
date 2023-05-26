@@ -284,7 +284,7 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 		}
 		return $kmlist;
 	}
-	
+
 	/**
 	* Store grid reference in session
 	*/
@@ -296,10 +296,9 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 			$_SESSION['gridsquare']=$this->gridsquare;
 			$_SESSION['eastings']=$this->eastings;
 			$_SESSION['northings']= $this->northings;
-			
 		}
 	}
-	
+
 	/**
 	*
 	*/
@@ -307,8 +306,30 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 	{
 		$matches=array();
 		$isfour=false;
-		
-		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matches)) {
+
+		if (preg_match("/^\s*\b(-?\d+\.?\d*)\xB0?\s*[NS]*\s*[, ]+(-?\d+\.?\d*)\xB0?\s*([EW]*)\s*$/i",$gridreference,$ll)) {
+                        require_once('geograph/conversions.class.php');
+                        $conv = new Conversions;
+
+			//dont need to bother with S
+			if (strtolower($ll[3]) === 'w')
+				$ll[2] *= -1;
+
+			list($e,$n,$reference_index) = $conv->wgs84_to_national($ll[1],$ll[2],true);
+			list($x,$y) = $conv->national_to_internal($e,$n,$reference_index,false);
+                        $ok=$this->loadFromPosition(intval($x), intval($y), true);
+			if ($ok) {
+				$this->natspecified = 1;
+                                $this->nateastings = $e;
+                                $this->natnorthings = $n;
+                                $this->natgrlen = $natgrlen = 10; //?
+                                $this->precision=pow(10,6-($natgrlen/2))/10;
+			} else {
+				$this->_error(htmlentities($gridreference).' is was not understood as a GB/Ireland location');
+			}
+			return $ok;
+
+		} else if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],$matches[2],$matches[3]);
 			$this->natspecified = 1;
 			$natgrlen = $this->natgrlen = 10;
@@ -330,7 +351,7 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 		} else if (preg_match("/\b([a-zA-Z]{1,2})\b/",$gridreference,$matches)) {
 			list ($prefix,$e,$n) = array($matches[1],"50000","50000");
 			$natgrlen = $this->natgrlen = 0;
-		} 		
+		}
 		if (!empty($prefix))
 		{
 			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
@@ -339,14 +360,14 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 			{
 				//we could be reassigning the square!
 				unset($this->nateastings);
-				
+
 				//use this function to work out the major easting/northing (of the center of the square) then convert to our exact values
 				$eastings=$this->getNatEastings();
 				$northings=$this->getNatNorthings();
-				
+
 				$emajor = floor($eastings / 100000); //floor rounds down, rather tha using intval which routd to zero
 				$nmajor = floor($northings / 100000);
-	
+
 				//$this->nateastings = $emajor.sprintf("%05d",$e);
 				$this->nateastings = ($emajor*100000)+$e; //cope with negative! (for Rockall...)
 				$this->natnorthings = $nmajor.sprintf("%05d",$n);
@@ -358,14 +379,13 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 		} else {
 			$ok=false;
 			$this->_error(htmlentities($gridreference).' is not a valid grid reference');
-
 		}
-				
+
 		return $ok;
 	}
-	
+
 	/**
-	* Stores the grid reference along with handy exploded elements 
+	* Stores the grid reference along with handy exploded elements
 	*/
 	function _storeGridRef($gridref)
 	{
@@ -376,10 +396,8 @@ split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
 			$this->eastings=$matches[2];
 			$this->northings=$matches[3];
 		}
-		
 	}
-	
-	
+
 	/**
 	* Just checks that a grid position is syntactically valid
 	* No attempt is made to see if its a real grid position, just to ensure
