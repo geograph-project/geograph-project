@@ -38,7 +38,7 @@ $smarty->display('_std_begin.tpl');
 We've tried to cross reference this short list of topics, with that long list, the 'label' column shows the suggested label from the long list. 
 If there is no link or description visible, means the word is not actully in the dictionary.
 
-<p><i>If we have already begun collecting images for the label, use one of the 'curation interface' links to help with the curation process</i>.</p>
+<p><i>If we have already begun collecting images for the label, use one of the 'Suggest Image(s)' links to help with the curation process</i>.</p>
 
 <p>Alternatively, if the label doesn't actully exist yet, can click the link to create it as a now formal label, to allow collection of images.
 
@@ -75,13 +75,14 @@ order by stack,name
 $last = array();
 
 
-print "<table cellspacing=0 cellpadding=4 border=1>";
+print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=silver>";
 print "<tr>";
 	print "<td>Name";
 //	print "<td>Description";
 	print "<td>Suggested Label";
 	print "<td>Label Decription";
 	print "<td>Images for Label";
+	print "<td>Refine";
 	print "<td>Curation";
 
 foreach ($data as $row) {
@@ -94,7 +95,7 @@ foreach ($data as $row) {
 
 	print "<tr><td>";
 	print str_repeat('&nbsp;&nbsp;&nbsp;',count($bits)+1);
-	print "<big>".htmlentities($row['name'])."</big>";
+	print "<big style=\"font-weight:600\">".htmlentities($row['name'])."</big>";
 
 //	print "<td style=font-size:0.7em>".htmlentities($row['description']);
 
@@ -104,14 +105,15 @@ foreach ($data as $row) {
 		print "<td style=color:gray>".htmlentities($row['label']);
 		if (!empty($row['label'])) {
 			$link1 = "create-topic.php?label=".urlencode($row['label'])."&name=".urlencode($row['name'])."&amp;group=".urlencode($row['group']);
-			print "<td colspan=3 style=background-color:#eee><i>Label not found</i> <a href=\"$link1\">create label...</a>";
+			print "<td colspan=4 style=background-color:#eee><i>Label description not found</i> <a href=\"$link1\">create description...</a>";
 		} else
-			print "<td colspan=3 style=background-color:#eee>&nbsp;";
+			print "<td colspan=4 style=background-color:#eee>&nbsp;";
 		continue;
 	} else {
 		print "<td>".htmlentities($row['label']);
 	}
 
+	$row['h_description'] = preg_replace('/^Specifically in the (.+) geographical category. /','',$row['h_description']);
 	$row['h_description'] = smarty_modifier_truncate($row['h_description'],140,"...");
 	print "<td style=font-size:0.7em>".htmlentities($row['h_description']);
 	if (!empty($row['label_id']))
@@ -126,13 +128,18 @@ foreach ($data as $row) {
 	$link2 = "collecter.php?group=".urlencode($row['group'])."&amp;label=".urlencode($row['label']);
 
 	print "<td>";
-	if (!empty($row['images'])) {
+	if (!empty($row['images']))
 		print "<a href=\"$link1\">{$row['images']} Images</a>";
+
+	print "<td>";
+	if ($row['images'] > 10) {
+		$link3 = "recurate.php?label=".urlencode($row['label']);
+		print "<a href=\"$link3\">Refine Images</a>";
 	}
 
 	print "<td>";
 	if ($row['h_description']) {
-		print "<i><a href=\"$link2\">Curation</a></i>";
+		print "<i><a href=\"$link2\">Suggest Image(s)</a></i>";
 	}
 	print "</tr>";
 }
