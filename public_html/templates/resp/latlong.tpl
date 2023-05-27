@@ -43,9 +43,9 @@
 			 <td rowspan="3">lat</td>
        <td class=nowrap>deg</td>
        <td><input type="text" size="6" name="lat" value="{$yd|escape:'html'}"/></td>
-       <td align="center" rowspan="3"><input type="radio" name="ns" value="N"{if $nl == 'N'} checked="checked"{/if}/>N
+       <td align="center" rowspan="3"><input type="radio" name="ns" value="N" checked="checked"/>N
        <br/>
-       <input type="radio" name="ns" value="S"{if $nl == 'S'} checked="checked"{/if}/>S</td>
+       <input type="radio" name="ns" value="S" disabled>S</td>
        <td rowspan="6" align="left"><input type="submit" name="From" value="convert"/></td>
       </tr>
       <tr>
