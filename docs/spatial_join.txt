@@ -1,0 +1,136 @@
+The issue is mariadb, doesnt use a index when joining two spatial columns
+
+However https://stackoverflow.com/questions/8244535/joins-on-spatial-mysql-indexes
+suggests:
+	You can force MySQL to use the index by encapsulating the subselect in a function.
+
+Below is an example function created to test that!
+
+############################
+
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS `GetCountIE`$$
+
+CREATE FUNCTION `GetCountIE`(p POLYGON) RETURNS INTEGER
+BEGIN
+
+DECLARE ret INTEGER;
+
+SET ret = ( SELECT COUNT(*) FROM ie_images WHERE ST_CONTAINS(p, point_en) );
+
+RETURN ret;
+
+END$$
+
+
+DROP FUNCTION IF EXISTS `GetCountGB`$$
+
+CREATE FUNCTION `GetCountGB`(p POLYGON) RETURNS INTEGER
+BEGIN
+
+DECLARE ret INTEGER;
+
+SET ret = ( SELECT COUNT(*) FROM gb_images WHERE ST_CONTAINS(p, point_en) );
+
+RETURN ret;
+
+END$$
+
+
+
+############################
+
+Testing it. The second query is the a test using subquery. Much slower!
+
+Primary.geograph_live>SELECT NAMN1,GetCountIE(WKT) FROM geograph_staging.islands_ireland limit 10;
++-----------------+-----------------+
+| NAMN1           | GetCountIE(WKT) |
++-----------------+-----------------+
+| Inishmore       |               0 |
+| Coney           |               0 |
+| Inishmacnaghtan |               0 |
+| Innishkea North |               1 |
+| Innishkea South |               0 |
+| Duvillaun More  |               0 |
+| Achill          |             455 |
+| Innishbiggle    |               0 |
+| Annagh          |               0 |
+| Achillbeg       |               0 |
++-----------------+-----------------+
+10 rows in set (0.022 sec)
+
+Primary.geograph_live>SELECT NAMN1,(SELECT COUNT(*) FROM ie_images WHERE ST_Contains(WKT,point_en)) as bound_images FROM geograph_staging.islands_ireland limit 10;
++-----------------+--------------+
+| NAMN1           | bound_images |
++-----------------+--------------+
+| Inishmore       |            0 |
+| Coney           |            0 |
+| Inishmacnaghtan |            0 |
+| Innishkea North |            1 |
+| Innishkea South |            0 |
+| Duvillaun More  |            0 |
+| Achill          |          455 |
+| Innishbiggle    |            0 |
+| Annagh          |            0 |
+| Achillbeg       |            0 |
++-----------------+--------------+
+10 rows in set (3.047 sec)
+
+#############
+
+Primary.geograph_live>alter table geograph_staging.islands_ireland add bound_images int unsigned default null;
+Query OK, 0 rows affected (0.018 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+Primary.geograph_live>update geograph_staging.islands_ireland set bound_images = GetCountIE(WKT);
+Query OK, 62 rows affected (0.057 sec)
+Rows matched: 62  Changed: 62  Warnings: 0
+
+
+alter table geograph_staging.islands_ireland add buffed100_images int unsigned default null;
+update geograph_staging.islands_ireland set buffed100_images = GetCountIE(ST_BUFFER(WKT,100));
+
+
+
+alter table geograph_staging.ni_counties add bound_images int unsigned default null;
+update geograph_staging.ni_counties set bound_images = GetCountIE(WKT);
+
+
+
+
+#####################
+# This what mean by not using an index to JOIN 
+
+Primary.geograph_live>explain SELECT NAMN1,count(*) from ie_images inner join geograph_staging.islands_ireland on ST_Contains(WKT,point_en) where NAMN1 = 'Achill';
++------+-------------+-----------------+------+---------------+------+---------+------+--------+------------------------------------------------+
+| id   | select_type | table           | type | possible_keys | key  | key_len | ref  | rows   | Extra                                          |
++------+-------------+-----------------+------+---------------+------+---------+------+--------+------------------------------------------------+
+|    1 | SIMPLE      | islands_ireland | ALL  | WKT           | NULL | NULL    | NULL | 62     | Using where                                    |
+|    1 | SIMPLE      | ie_images       | ALL  | point_en      | NULL | NULL    | NULL | 317785 | Range checked for each record (index map: 0x4) |
++------+-------------+-----------------+------+---------------+------+---------+------+--------+------------------------------------------------+
+2 rows in set (0.003 sec)
+
+# but turns out it WILL use index, if arrange for the left side to have EXACTLY one row!
+Primary.geograph_live>explain SELECT NAMN1,count(*) from ie_images inner join geograph_staging.islands_ireland on ST_Contains(WKT,point_en) where auto_id=7;
++------+-------------+-----------------+-------+---------------+----------+---------+-------+------+-------------+
+| id   | select_type | table           | type  | possible_keys | key      | key_len | ref   | rows | Extra       |
++------+-------------+-----------------+-------+---------------+----------+---------+-------+------+-------------+
+|    1 | SIMPLE      | islands_ireland | const | PRIMARY,WKT   | PRIMARY  | 4       | const | 1    |             |
+|    1 | SIMPLE      | ie_images       | range | point_en      | point_en | 34      | NULL  | 478  | Using where |
++------+-------------+-----------------+-------+---------------+----------+---------+-------+------+-------------+
+2 rows in set (0.002 sec)
+
+# seems even works with a subquery
+Primary.geograph_live>explain SELECT NAMN1,(SELECT COUNT(*) FROM ie_images WHERE ST_Contains(WKT,point_en)) as bound_images FROM geograph_staging.islands_ireland where auto_id = 7;
++------+-------------+-----------------+-------+---------------+----------+---------+-------+------+-------------+
+| id   | select_type | table           | type  | possible_keys | key      | key_len | ref   | rows | Extra       |
++------+-------------+-----------------+-------+---------------+----------+---------+-------+------+-------------+
+|    1 | PRIMARY     | islands_ireland | const | PRIMARY       | PRIMARY  | 4       | const | 1    |             |
+|    2 | SUBQUERY    | ie_images       | range | point_en      | point_en | 34      | NULL  | 478  | Using where |
++------+-------------+-----------------+-------+---------------+----------+---------+-------+------+-------------+
+2 rows in set (0.001 sec)
+
+
+# but still using procedure (or function) is best at the moment, will use index for multi-row
+
