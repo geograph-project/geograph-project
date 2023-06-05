@@ -1,0 +1,62 @@
+While GetImagesGB/GetImagesIE functions work pretty well for finding images withing a boundary (see spatial_join.txt!) 
+
+... BUT it doesnt work too well with really complex boundaries (eg ST_NumPoints(ST_ExteriorRing(WKT)) > 2000) 
+(persumably as really complex geometry ends up not using th eindex too well!) 
+
+
+So this proposal is to split the table up inot small bits (using hectads as a convenient method!) 
+
+##################
+1. Create hectad_boundary table (makes it easy to join)
+
+php scripts/create_hectad_boundary.php --limit=10
+
+php scripts/create_hectad_boundary.php --limit=5000
+(use theres about 3500 rows to create!) 
+
+
+##################
+2. Create a 'Split' table, ie the 'per hectad' table
+
+php scripts/create_hectad_table.php --name=ni_counties --ri=2
+... creates ni_counties_hectad
+
+##################
+3. Now an more concieveably use GetImagesGB/GetImagesIE on the _hectad table!
+
+update ni_counties_hectad set bound_images = GetCountIE(WKT) where bound_images is null AND  ST_GeometryType(WKT) = 'POLYGON';
+
+update ni_counties_hectad set bound_images = GetCountIE_M(WKT) where bound_images is null AND  ST_GeometryType(WKT) = 'MULTIPOLYGON';
+
+update ni_counties_hectad set bound_images = GetCountIE_G(WKT) where bound_images is null;
+
+(the ST_GeometryType filtera, is because currently GetCountIE is hardcoded to POLYGON, may change!
+
+
+
+##################
+
+select auto_id,CountyName,sum(ni_counties_hectad.bound_images) from ni_counties left join ni_counties_hectad using (auto_id) group by auto_id;
++---------+-------------+--------------------------------------+
+| auto_id | CountyName  | sum(ni_counties_hectad.bound_images) |
++---------+-------------+--------------------------------------+
+|       1 | ANTRIM      |                                    1 |
+|       2 | ANTRIM      |                                    0 |
+|       3 | ANTRIM      |                                26135 |
+|       4 | ANTRIM      |                                  312 |
+|       5 | ARMAGH      |                                12538 |
+|       6 | DOWN        |                                46899 |
+|       7 | DOWN        |                                    1 |
+|       8 | DOWN        |                                    0 |
+|       9 | DOWN        |                                    0 |
+|      10 | DOWN        |                                    0 |
+|      11 | DOWN        |                                    0 |
+|      12 | DOWN        |                                   16 |
+|      13 | DOWN        |                                    0 |
+|      14 | DOWN        |                                   10 |
+|      15 | FERMANAGH   |                                 8216 |
+|      16 | LONDONDERRY |                                 8825 |
+|      17 | TYRONE      |                               103119 |
++---------+-------------+--------------------------------------+
+17 rows in set (0.001 sec)
+
