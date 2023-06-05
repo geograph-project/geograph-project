@@ -1,0 +1,1 @@
+../basic/admin_index.tpl
