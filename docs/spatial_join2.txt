@@ -18,7 +18,9 @@ php scripts/create_hectad_boundary.php --limit=5000
 ##################
 2. Create a 'Split' table, ie the 'per hectad' table
 
-php scripts/create_hectad_table.php --name=ni_counties --ri=2
+php scripts/create_hectad_table.php --table=ni_counties --ri=2
+
+php scripts/create_hectad_table.php --table=ni_counties --ri=2 --limit=10000
 ... creates ni_counties_hectad
 
 ##################
@@ -32,7 +34,11 @@ update ni_counties_hectad set bound_images = GetCountIE_G(WKT) where bound_image
 
 (the ST_GeometryType filtera, is because currently GetCountIE is hardcoded to POLYGON, may change!
 
+##################
 
+4. There is now a script to run GetCountXX function on all hectad tables
+
+php scripts/process_imagesperhectadbound.php
 
 ##################
 

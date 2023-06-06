@@ -49,6 +49,7 @@ if (!$db->getOne("SHOW TABLES LIKE '$table'")) {
 	WKT GEOMETRY NOT NULL,
 	area int unsigned not null,
 	bound_images int unsigned default null,
+	stat_updated timestamp not null on update current_timestamp(),
 	primary key(auto_id,hectad),
 	SPATIAL INDEX(WKT)
 	)");
@@ -63,9 +64,12 @@ $rows = $db->getAll("SELECT auto_id FROM {$param['table']} LEFT JOIN $table USIN
 foreach ($rows as $row) {
 
 		//by ensuring only one row on the left table, should use the, using MBRIntersects for very quick 'initial' join against all hectads!
-	$sql = "select auto_id,hectad,ST_INTERSECTION(WKT,boundary_en) AS `WKT`,ST_AREA(ST_INTERSECTION(WKT,boundary_en)) AS area, NULL AS bound_images
+	$sql = "select auto_id,hectad,ST_INTERSECTION(WKT,boundary_en) AS `WKT`,ROUND(ST_AREA(ST_INTERSECTION(WKT,boundary_en))) AS area, NULL AS bound_images, 0 as stat_updated
 	FROM {$param['table']} INNER JOIN hectad_boundary ON MBRIntersects(boundary_en,WKT)
 	WHERE auto_id = {$row['auto_id']} AND reference_index = {$param['ri']}";
+
+if ($param['debug'] === "2")
+	die("$sql;\n");
 
 	// actually, still using the GIS index for the join! but then post filters anyway!
 	//$sql .= " AND ST_AREA(ST_INTERSECTION(WKT,boundary_en)) > 0";
