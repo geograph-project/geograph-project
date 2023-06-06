@@ -48,8 +48,8 @@ foreach ($rows as $row) {
 
 	$e1 = intval($e/10000)*10000;
 	$n1 = intval($n/10000)*10000;
-	$e2 = $e1+10000;
-	$n2 = $n1+10000;
+	$e2 = $e1+9999.9999;
+	$n2 = $n1+9999.9999;
 
 	//winding order seems to be counter-clockwise from bottom left
 
