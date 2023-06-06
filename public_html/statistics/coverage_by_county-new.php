@@ -108,7 +108,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 		$table['table']=$db->GetAll("
 			select
-				PROVINCE AS Province
+				PROVINCE AS Province,
 				COUNTY as Name,
 				count(distinct hectad) as hectads,
 				sum(h.bound_images) as geographs,
