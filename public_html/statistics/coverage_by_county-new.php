@@ -102,6 +102,28 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 	###################
 
+	$table = array();
+
+		$table['title'] = "Republic of Ireland";
+
+		$table['table']=$db->GetAll("
+			select
+				PROVINCE AS Province
+				COUNTY as Name,
+				count(distinct hectad) as hectads,
+				sum(h.bound_images) as geographs,
+				sum(h.area) as area,
+				sum(h.bound_images)/sum(h.area)*1000000 as geographs_per1km_square
+			from ireland_counties_hectad h inner join ireland_counties c using (auto_id)
+			group by COUNTY order by Province,6 desc
+		" );
+
+		$table['total'] = count($table['table']);
+
+	$tables[] = $table;
+
+	###################
+
 	$smarty->assign_by_ref('tables', $tables);
 
 	$smarty->assign("headnote","See also <a href=\"/statistics/coverage_by_country.php\">Coverage by Country</a>. This data is computed using the exact county borders");
