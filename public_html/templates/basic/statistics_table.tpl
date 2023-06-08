@@ -51,8 +51,8 @@
 	<p><small>Click a column header to change the sort order.</small></p>
 	{/if}
 	
-	<table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">
-	<thead><tr>
+	<table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5" style="position:relative">
+	<thead><tr style="position:sticky;top:0;">
 	{foreach from=$table.0 key=name item=value}
 	<td style="direction: rtl; writing-mode: tb-rl;">{$name}</td>
 	{/foreach}

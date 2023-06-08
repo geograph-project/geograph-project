@@ -452,8 +452,8 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 <h3 style="color: black; font-weight:bold; text-align: center; background: silver; border-radius: 10px; padding: 2px;">{if $limit && $userimages[0]->submitted>date('Y')}Recent {/if}Photographs</h3>
 
 
-<table class="report width700 sortable" id="photolist" style="clear:none;background-color:white">
-	<thead><tr>
+<table class="report width700 sortable" id="photolist" style="clear:none;background-color:white;position:relative">
+	<thead><tr style="position:sticky;top:0;">
 		<th>Grid Ref</td>
 		<th>Title</td>
 		<th sorted="desc">Submitted</td>
