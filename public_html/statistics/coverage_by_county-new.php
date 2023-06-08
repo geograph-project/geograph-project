@@ -64,16 +64,14 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				DESCRIPTIO as Description,
 				NAME as Name,
 				count(distinct hectad) as hectads,
-				sum(h.bound_images) as geographs,
-				sum(h.area) as area_m2,
-				sum(h.bound_images)/sum(h.area)*1000000 as geographs_per1km_square
+				format(sum(h.bound_images),0) as geographs,
+				format(sum(h.area)/10000,1) as area,
+				format(sum(h.bound_images)/sum(h.area)*10000,3) as geographs_per
 			from full_county_hectad h inner join full_county c using (auto_id)
 			group by NAME order by 6 desc
 			" );
 
-
 			$table['footnote'] = "This table is using Modern <a href=\"/faq.php#counties\">Administrative Counties</a>";
-
 
 		$table['total'] = count($table['table']);
 
@@ -90,8 +88,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				CountyName as Name,
 				count(distinct hectad) as hectads,
 				sum(h.bound_images) as geographs,
-				sum(h.area) as area,
-				sum(h.bound_images)/sum(h.area)*1000000 as geographs_per1km_square
+				format(sum(h.area)/10000,1) as area,
+				format(sum(h.bound_images)/sum(h.area)*10000,3) as geographs_per
 			from ni_counties_hectad h inner join ni_counties c using (auto_id)
 			group by CountyName order by 5 desc
 		" );
@@ -112,13 +110,15 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				COUNTY as Name,
 				count(distinct hectad) as hectads,
 				sum(h.bound_images) as geographs,
-				sum(h.area) as area,
-				sum(h.bound_images)/sum(h.area)*1000000 as geographs_per1km_square
+				format(sum(h.area)/10000,1) as area,
+				format(sum(h.bound_images)/sum(h.area)*10000,3) as geographs_per
 			from ireland_counties_hectad h inner join ireland_counties c using (auto_id)
 			group by COUNTY order by Province,6 desc
 		" );
 
 		$table['total'] = count($table['table']);
+
+		$table['footnote'] = "The 'hectads' column is just the number of hectads it overlaps, not an exact measure of area.";
 
 	$tables[] = $table;
 
@@ -126,7 +126,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 	$smarty->assign_by_ref('tables', $tables);
 
-	$smarty->assign("headnote","See also <a href=\"/statistics/coverage_by_country.php\">Coverage by Country</a>. This data is computed using the exact county borders");
+	$smarty->assign("headnote","See also <a href=\"/statistics/coverage_by_country.php\">Coverage by Country</a>. This data is computed using the exact county borders. The <b>'area' is quoted in hectares</b>, which is 100m x 100m, which equares to our Centisquares. The 'geographs_per' is the average number of images per hectare/centisquare to compare density.");
+
 
 	$smarty->assign("h2title",'Coverage by Exact County');
 }
