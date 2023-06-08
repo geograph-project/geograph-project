@@ -125,6 +125,25 @@ foreach ($tables as $rr) {
 	if ($param['execute']) {
 		$db->Execute($sql);
 		$c+=$db->Affected_Rows();
+
+
+		$t2 = str_replace('_hectad','',$param['table']);
+		$t3 = $t2."_counter";
+		//cant run a update with a group by query!
+		$sql1 = "create temporary table $t3 (primary key (auto_id)) SELECT auto_id,SUM(bound_images) AS bound_images FROM {$param['table']} GROUP BY auto_id";
+
+		//in theory should always be a non-hectad table (that the hectad table was created from!
+		if ($db->getOne("show columns from $t2 like 'bound_images'")) {
+			print "$sql1;\n";
+			$db->Execute($sql1);
+			$sql = "UPDATE {$t2} INNER JOIN {$t3} USING (auto_id) SET $t2.bound_images = $t3.bound_images";
+			print "$sql;\n";
+		}
+		/* if ($type_id = $db->getOne("SELECT feature_type_id FROM feature_type WHERE source_table = '$t2' and item_columns LIKE '%bound_images%'"))
+			$db->Execute($sql1);
+			$sql = "UPDATE feature_item INNER JOIN {$t3} ON (feature_type_id = $type_id AND table_id = auto_id) SET feature_item.bound_images = $t3.bound_images"; //TODO check what timestamp columns need updatig!
+			$db->Execute($sql);
+		*/
 	}
 
 	##########################################

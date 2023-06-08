@@ -1,14 +1,20 @@
 <?
 
+//this script loops though all the points (one by one) in the main 'table',
+// and finds the area from 'gis_table' that the point IS IN,
+// records the 'value' column from 'gis_table' in the 'key' column in 'table'
+
+//... the example founds what country each place in the 250k gazetter is in
+
 $d = getcwd();
 
 $param = array('execute'=>0, 'limit'=>10,
-	'table' => 'os_gaz_250_new',
+	'table' => 'os_gaz_250_new', //... the table containing a POINT column - that want to find which area the point is in
 		'point_column' => 'point_en', //either a 'spatial' column, or specify two cols like 'e,n' and will use GEOMFROMTEXT automatially!
 		'key' => 'country_region_id',
 		'pkey' => 'seq', //needs a primary key from table!
 		'where'=>'', //defaults to 'country_region_id IS NULL'
-	'gis_table' => 'country_region',
+	'gis_table' => 'country_region', //... the table containiing a POLYGON/GEOMETRY column (called WKT!)
 		'value'=>'auto_id', //this column from gis table to set 'key' to - does NOT need be a real key
 );
 
@@ -42,8 +48,9 @@ $update = "UPDATE {table} SET {key} = {str_value} WHERE {pkey} = {pkey_value}";
 #######################################################
 //shortcuts
 
-//todo, check if need to add a spatial index
-//alter table {gis_table} add spatial index(`WKT`);
+//check if need to add a spatial index
+if (!$db->getOne("show indexes from {$param['gis_table']} where Column_name = 'WKT'"))
+	$db->Execute("alter table {$param['gis_table']} add spatial index (WKT)");
 
 //so dont have to say --point_column="GEOMFROMTEXT(CONCAT('POINT(',e,' ',n,')'))"
 if (preg_match('/^(\w+),(\w+)$/',$param['point_column'],$m))

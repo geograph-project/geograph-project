@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$param = array('debug'=>false,'table'=>'ni_counties','ri'=>2, 'limit'=>10);
+$param = array('debug'=>false,'table'=>'ni_counties','ri'=>2, 'limit'=>10,'exact'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -68,12 +68,14 @@ foreach ($rows as $row) {
 	FROM {$param['table']} INNER JOIN hectad_boundary ON MBRIntersects(boundary_en,WKT)
 	WHERE auto_id = {$row['auto_id']} AND reference_index = {$param['ri']}";
 
-if ($param['debug'] === "2")
-	die("$sql;\n");
+	if ($param['debug'] === "2")
+		die("$sql;\n");
 
-	// actually, still using the GIS index for the join! but then post filters anyway!
-	//$sql .= " AND ST_AREA(ST_INTERSECTION(WKT,boundary_en)) > 0";
-//	$sql .= " AND ST_INTERSECTS(WKT,boundary_en)";
+	if ($param['exact']) {
+		// actually, still using the GIS index for the join! but then post filters anyway!
+		//$sql .= " AND ST_AREA(ST_INTERSECTION(WKT,boundary_en)) > 0";
+		$sql .= " AND ST_INTERSECTS(WKT,boundary_en)";
+	}
 
 	$sql = "INSERT INTO $table $sql";
 	//print "$sql;\n";
@@ -87,11 +89,13 @@ if ($param['debug'])
 
 ############################################
 
-/* (actully dont need this, now have the ST_INTERSECTS as well as MBRIntersects!)
+if (!$param['exact'] && empty($rows)) {
+	//because we join USING MBR (for better query performance) - can end up with hectads that dont actully overlapp the exact boundary
 
-//because we join USING MBR (for better query performance) - can end up with hectads that dont actully overlapp the exact boundary
-$sql = "DELETE FROM $table WHERE area = 0";
-$db->Execute($sql);
+	//but only want to do it right at end, once no more created. If doing it ongoing, might delete rows that get recreated each time
 
-print "Deleted Rows = ".$db->Affected_Rows()."\n";
-*/
+	$sql = "DELETE FROM $table WHERE area = 0";
+	$db->Execute($sql);
+
+	print "Deleted Rows = ".$db->Affected_Rows()."\n";
+}
