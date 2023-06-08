@@ -1,0 +1,52 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# data import 
+
+scripts/import-250k-gaz.php
+... imports the file from the OS, into our table, trying to maintain the primary key
+	(NOTE: we have since added more columns to our table, so on reimport, will need to run those other steps see os_gaz_250_new.txt )
+
+scripts/import_csv.php
+... general CSV import to database table script. But has particular support for WKT (from qGIS) column, including splitting MULTIPOLYGON
+
+scripts/import_features.php
+... coplies features from a sepereate table into feature_item
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# finding the area for each point
+
+scripts/spatial_join.php
+... fills a column in a POINTS table listing what AREA the point is within from another table
+
+scripts/spatial_join2.php
+... more effient version of spatial_join by looping over each area (rather than loopping over each point!) 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# find nearby images to a point
+
+scripts/process_imagesperfeature.php
+... for each row in 'feature_item' tries to find the nearest image. might work for other tables, but designef for that table
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# count points in an area (ok for small areas)
+
+scripts/process_imagesperbound.php
+... tries to count images within a boundary for each row in feature_item (updates the bound_images column and more)
+
+scripts/process_imagesperbound-test.php
+... an attempt a making a more generic function, to work on any table that has bound_images
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# count points in an area (optimzed for large areas like counties) 
+
+scripts/create_hectad_boundary.php
+... creates a table with spatial column of hectad boundaries - use this to create the table needed by create_hectad_table.php
+
+scripts/create_hectad_table.php
+... creates _hectad table, to split large area boundaries into more manageable parts. even with spatial index, 'complex geometry is slow to process' 
+    so a 'per hectad' boundary is a lot less complex
+
+scripts/process_imagesperhectadbound.php
+... loops though ALL _hectad tables, and updates the 'bound_images' column
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
