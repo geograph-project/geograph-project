@@ -71,7 +71,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			group by NAME order by 6 desc
 			" );
 
-			$table['footnote'] = "This table is using Modern <a href=\"/faq.php#counties\">Administrative Counties</a>";
+			$table['footnote'] = "This table is using Modern <a href=\"/faq.php#counties\">Administrative Counties</a>. Data is from OS Boundary-Line, and is the 'extent of the realm' EOR Boundaries.";
 
 		$table['total'] = count($table['table']);
 
@@ -93,6 +93,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			from ni_counties_hectad h inner join ni_counties c using (auto_id)
 			group by CountyName order by 5 desc
 		" );
+
+		$table['footnote'] = "Data from OSNI Open Data, OGDL. Appears to be High-Water Mark boundary, and includes Lough Neagh.".
 
 		$table['total'] = count($table['table']);
 
@@ -118,7 +120,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 		$table['total'] = count($table['table']);
 
-		$table['footnote'] = "The 'hectads' column is just the number of hectads it overlaps, not an exact measure of area.";
+		$table['footnote'] = "Administrative_Areas_Ungeneralised_-_National_Statutory_Boundaries_-_2015 - appears to be High-Water Mark boundary.";
 
 	$tables[] = $table;
 
@@ -126,7 +128,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 	$smarty->assign_by_ref('tables', $tables);
 
-	$smarty->assign("headnote","See also <a href=\"/statistics/coverage_by_country.php\">Coverage by Country</a>. This data is computed using the exact county borders. The <b>'area' is quoted in hectares</b>, which is 100m x 100m, which equares to our Centisquares. The 'geographs_per' is the average number of images per hectare/centisquare to compare density.");
+	$smarty->assign("headnote","See also <a href=\"/statistics/coverage_by_country.php\">Coverage by Country</a>. This data is computed using the exact county borders. The <b>'area' is quoted in hectares</b>, which is 100m x 100m, which equares to our Centisquares. The 'geographs_per' is the average number of images per hectare/centisquare to compare density. The 'hectads' column is just the number of hectads it overlaps, not an exact measure of area.");
 
 
 	$smarty->assign("h2title",'Coverage by Exact County');
