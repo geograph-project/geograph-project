@@ -196,7 +196,7 @@ if (strpos($query['searchdesc'],', with unmatched ') === 0)
 				(COUNT(DISTINCT SUBSTRING(submitted,1,10))/DATEDIFF(DATE_ADD('{$m[2]}',INTERVAL 1 DAY), '{$m[1]}'))*100
 				FROM gridimage gi WHERE ".$this->criteria->sql['where'];
 
-			$this->criteria->searchdesc .= sprintf(" (%.1f%% moderated)", $db->getOne($sq));
+			$this->criteria->searchdesc .= sprintf(" (%.1f%% moderated)", floor($db->getOne($sq)*10)/10);
 		}
 		return $upper_limit;
 	}
