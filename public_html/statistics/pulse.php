@@ -65,6 +65,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	calc("All moderated upto ID",$sql);
 
+	$last = end($table);
+	$sql = "select date_format(submitted,'%a, %D %b') from gridimage_search where gridimage_id = ".$last['Value'];
+	calc("All moderated upto Date",$sql);
+
         if (!empty($_GET['advanced'])) {
 
 		$data = $db->GetRow("select count(*) as `count`,(unix_timestamp(now()) - unix_timestamp(min(submitted))) as age from gridimage where moderation_status='pending'");
