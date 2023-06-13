@@ -772,6 +772,11 @@ function pageMustBeHTTPS($status = 301) {
 		&& !empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') //checks it really is a https request
 		return; //page is already HTTPS via proxy!
 
+	//this to HTTPS redirect is going to be unconditional, and permenant, dont need any previouslly set caching headers
+	header_remove("Expires");
+        header_remove("Cache-Control");
+        header_remove("Vary");
+
 	//TODO/TOFIX, should perhaps be using SELF_HOST but that might not be https yet.
 	header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}", true, $status);
 	exit;
