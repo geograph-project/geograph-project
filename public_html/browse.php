@@ -181,20 +181,18 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 #if (!$smarty->is_cached($template, $cacheid))
 #{
 
-	
+
 function smarty_modifier_colerize($input) {
 	global $maximages;
 	if ($input) {
 
-		$hex = str_pad(dechex(255 - $input/$maximages*255), 2, '0', STR_PAD_LEFT); 
+		$hex = str_pad(dechex(255 - $input/$maximages*255), 2, '0', STR_PAD_LEFT);
 		return "ffff$hex";
-	} 
+	}
 	return 'ffffff';
 }
 
 $smarty->register_modifier("colerize", "smarty_modifier_colerize");
-				
-				
 
 //process grid reference
 if ($grid_given)
@@ -204,6 +202,8 @@ if ($grid_given)
 	//now we see if the grid reference is actually available...
 	if ($grid_ok)
 	{
+		pageMustBeHTTPS(); //in here so doesnt redirect to a 404
+
 		$smarty->assign('gridref', $square->grid_reference);
 	        $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$square->reference_index]}/gridref/{$square->grid_reference}\"/>");
 
@@ -213,57 +213,55 @@ if ($grid_given)
 		$smarty->assign('hectad', $hectad = $square->gridsquare.intval($square->eastings/10).intval($square->northings/10));
 		$smarty->assign('x', $square->x);
 		$smarty->assign('y', $square->y);
-		
+
 		//store details the browser manager has figured out
 		$smarty->assign('showresult', 1);
 		$smarty->assign('imagecount', $square->imagecount);
-		
+
 		//is this just a closest match?
 		if (!empty($square->nearest) && is_object($square->nearest))
 		{
 			$smarty->assign('nearest_distance', $square->nearest->distance);
 			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
 		}
-		
+
 		if ($square->percent_land > 0) {
 			//find a possible place within 25km
 			$smarty->assign('place', $place = $square->findNearestPlace(75000));
-			
-			$place_name = strip_tags(smarty_function_place(array('place'=>$place)));
-			
-			$smarty->assign('meta_description', "Geograph currently has {$square->imagecount} photos in {$square->grid_reference}, $place_name");
 
-			
+			$place_name = strip_tags(smarty_function_place(array('place'=>$place)));
+
+			$smarty->assign('meta_description', "Geograph currently has {$square->imagecount} photos in {$square->grid_reference}, $place_name");
 		}
-		
 	}
+
 	$smarty->assign('mode','normal');
 	if ($grid_ok && (isset($_GET['takenfrom']) || isset($_GET['mentioning'])) ) {
-		
+
 		$sphinx = new sphinxwrapper();
 		$sphinx->pageSize = 15;
-		
+
 		if (isset($_GET['takenfrom'])) {
-				
+
 			$ids = $sphinx->returnIdsViewpoint($square->getNatEastings(),$square->getNatNorthings(),$square->reference_index,$square->grid_reference);
 			$smarty->assign('viewpoint_query', $sphinx->q);
-			
+
 			$viewpoint_count = 0; //set this to zero to suppress the prompt!
-			
+
 			$smarty->assign('mode','takenfrom');
 		} else {
 			$sphinx->prepareQuery("{$square->grid_reference} -grid_reference:{$square->grid_reference}");
 			$ids = $sphinx->returnIds(1,"_images");
 			$smarty->assign('mode','mentioning');
-			
+
 			$mention_count = 0; //set this to zero to suppress the prompt!
 		}
-		
+
 		if (!empty($ids) && count($ids)) {
-			
+
 			$images=new ImageList();
 			$images->getImagesByIdList($ids);
-			
+
 			$square->totalimagecount = $sphinx->resultCount;
 
 			//otherwise, lets gether the info we need to display some thumbs
@@ -286,7 +284,7 @@ if ($grid_given)
 		} else {
 			$smarty->assign('imagecount', 0);
 		}
-		
+
 	} elseif ($grid_ok) {
 		$db = null;
 		$custom_where = '';
@@ -1061,6 +1059,9 @@ if ($grid_given)
 	}
 	else
 	{
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+
 		$smarty->assign('errormsg', $square->errormsg);
 
 		//includes a closest match?
