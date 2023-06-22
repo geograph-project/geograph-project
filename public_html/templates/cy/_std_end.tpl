@@ -5,6 +5,13 @@
 <label id="nav_label" for="nav_toggle">&#9776;</label>
 <div id="nav_block" class="no_print">
  <div class="nav">
+
+{if $english_url}
+<div style="text-align:center">
+        <a href="{$english_url}">English Version</a>
+</div>
+{/if}
+
   <ul>
     <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/?lang=cy">Hafan</a></li>
     <li>Gweld<ul>
@@ -101,12 +108,11 @@
 {/if}
   </div>
 </div>
-{if $english_url}
-<div id="language_block">
-	[Cymraeg/<a href="{$english_url}">English</a>]
-</div>
-{/if}
-<div id="search_block" class="no_print">
+
+<input type=checkbox id="search_toggle">
+<label id="search_label" for="search_toggle">&#128269;</label>
+
+<div id="search_block" class="no_print" style="min-height:inherit">
   <div id="search">
     <div id="searchform">
     <form method="get" action="/chwilio/">
