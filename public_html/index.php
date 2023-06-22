@@ -21,12 +21,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+/*
 if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
 	if (!empty($_GET['lang']))
 		$mobile_url = "https://m.geograph.org.uk/?lang=cy";
-	//else
-	//	$mobile_url = "https://m.geograph.org.uk/";
-}
+	else
+		$mobile_url = "https://m.geograph.org.uk/";
+}*/
 
 if (empty($smarty)) {
 	require_once('geograph/global.inc.php');
