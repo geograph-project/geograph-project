@@ -209,6 +209,11 @@ if ($mosaic->pixels_per_km > 40) {
 
 if (!empty($_GET['new']) && in_array(intval($mosaic->type_or_user),[0,-1,$USER->user_id])) { //works, even if user_id = 0!
 	$url = $mosaic->getCoverageMapLink();
+	if (!empty($_GET['lang'])) {
+		$extra = "lang=".urlencode($_GET['lang']);
+		$url = str_replace('?',"?$extra&",$url); //when already has a query string
+		$url = str_replace('php#',"php?$extra#",$url); //when no query string
+	}
 	header("Location: $url");
 	print "<a href=\"$url\">Click to continue</a>";
 	exit;
