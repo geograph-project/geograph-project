@@ -1,17 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"{if $rastermap->service == 'Google'} xmlns:v="urn:schemas-microsoft-com:vml"{/if} lang="cy" id="geograph">
+<!DOCTYPE html>
+<html lang="cy" id="geograph">
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
 	{pageheader}
 	{if $page_title}<title>{$page_title|escape:'html'} :: Geograph Prydain ac Iwerddon</title>
 	{else}<title>Geograph Prydain ac Iwerddon - llun o bob sgw&acirc;r y grid!</title>{/if}
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	{if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... mwy"}" />
 	{else}<meta name="description" content="Nod prosiect Geograph Prydain ac Iwerddon yw casglu lluniau a gwybodaeth ar gyfer pob cilometr sgw&acirc;r ym Mhrydain Fawr ac Iwerddon, a gallwch chi fod yn rhan o hynny."/>{/if}
 	{if $lat && $long}<meta name="ICBM" content="{$lat|escape:'html'}, {$long|escape:'html'}"/>{/if}
 	<meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 	{$extra_meta}
 	<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
+	<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/resp/css/modification.css"|revision}" media="screen" />
+		<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/resp/css/responsive.css"|revision}" media="screen" />
 	<link rel="shortcut icon" type="image/x-icon" href="{$static_host}/favicon.ico"/>
 	{if $rss_url}
 		<link rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}"/>
@@ -33,6 +36,7 @@
 	{/if}
 	<link rel="search" type="application/opensearchdescription+xml" title="Chwilio Geograph Prydain ac Iwerddon" href="/stuff/osd.xml" />
 	<script type="text/javascript" src="{"/js/geograph.js"|revision}"></script>
+	<meta name="format-detection" content="telephone=no">
 	<style>{literal}
 		#header h1 {
 			background-image: url({/literal}{$static_host}{literal}/templates/basic/img/geograph-logo-welsh-small.png);

@@ -1,5 +1,8 @@
 </div>
 </div>
+
+<input type=checkbox id="nav_toggle">
+<label id="nav_label" for="nav_toggle">&#9776;</label>
 <div id="nav_block" class="no_print">
  <div class="nav">
   <ul>
@@ -114,7 +117,8 @@
     </form>
     </div>
   </div>
-  <div id="login"><span class="nowrap">
+</div>
+  <div id="login" class="no_print"><span class="nowrap">
   {dynamic}
   {if $user->registered}
   	  Wedi mewngofnodi fel {$user->realname|escape:'html'}
@@ -129,7 +133,6 @@
 	  <a title="Register to upload photos" href="/register.php">cofrestru</a>
   {/if}
   {/dynamic}
-  </div>
 </div>
 {if $right_block}
 	{include file=$right_block}
