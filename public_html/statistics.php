@@ -42,7 +42,7 @@ if (isset($_GET['save'])) {
 	$USER->setPreference('statistics.advanced',1,true);
 }
 
-
+pageMustBeHTTPS();
 
 $template='statistics.tpl';
 $cacheid='statistics|main';
@@ -50,7 +50,7 @@ $cacheid='statistics|main';
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hr cache
 
-$smarty->assign_by_ref('references',$CONF['references_all']);		
+$smarty->assign_by_ref('references',$CONF['references_all']);
 
 $bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken','gridsq' => 'Myriad');
 $smarty->assign_by_ref('bys',$bys);

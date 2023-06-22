@@ -179,7 +179,29 @@ if (strpos($query['searchdesc'],', with unmatched ') === 0)
 		}
 		$ADODB_FETCH_MODE = $oldmode;
 	}
-	
+
+
+	//used by 'safe' mode
+	function getSafeUpperLimit() {
+		$db=$this->_getDB(true);
+
+		$upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'"));
+
+		if (empty($this->criteria->searchq) && preg_match('/^(\d{4}-\d{2}-\d{2})\^(\d{4}-\d{2}-\d{2})$/', $this->criteria->limit6, $m)) {
+
+			//datediff(DATE_ADD('2023-05-02',INTERVAL 1 DAY), '2023-04-22')
+			//submitted BETWEEN '2023-04-22' AND DATE_ADD('2023-05-02',INTERVAL 1 DAY) and imagetaken BETWEEN '2023-04-22' AND '2023-04-28';
+
+			$sq = "SELECT (SUM(moderation_status != 'pending')/COUNT(*))*
+				(COUNT(DISTINCT SUBSTRING(submitted,1,10))/DATEDIFF(DATE_ADD('{$m[2]}',INTERVAL 1 DAY), '{$m[1]}'))*100
+				FROM gridimage gi WHERE ".$this->criteria->sql['where'];
+
+			$this->criteria->searchdesc .= sprintf(" (%.1f%% moderated)", floor($db->getOne($sq)*10)/10);
+		}
+		return $upper_limit;
+	}
+
+
 	/**
 	 * run a search via the gridimage table
 	 * @access private
@@ -248,9 +270,9 @@ if (strpos($query['searchdesc'],', with unmatched ') === 0)
 			if (strpos($sql_where,'moderation_status') === FALSE) 
 				$sql_where = " moderation_status in ('accepted','geograph') and $sql_where";
 		}
-		
+
 		if (!empty($_GET['safe'])) {
-			$this->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'"));
+			$this->upper_limit = $this->getSafeUpperLimit();
 			if ($this->upper_limit>1) {
 				if (!empty($sql_where)) {
 					$sql_where .= " AND ";
@@ -258,9 +280,9 @@ if (strpos($query['searchdesc'],', with unmatched ') === 0)
 				$sql_where .= " gi.gridimage_id < {$this->upper_limit}";
 			}
 		}
-		
+
 		$sql_from = str_replace('gridimage_query using (gridimage_id)','gridimage_query on (gi.gridimage_id = gridimage_query.gridimage_id)',$sql_from);
-		
+
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
 			$resultCount = $db->getOne("select `count` from queries_count where id = {$this->query_id}");
 			if ($resultCount) {
@@ -531,7 +553,7 @@ END;
 			$sphinx->upper_limit = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 		}
 		if (!empty($_GET['safe'])) {
-			$sphinx->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id)-1 FROM gridimage WHERE moderation_status = 'pending'"));
+			$sphinx->upper_limit = $this->getSafeUpperLimit();
 		}
 
 		if (is_array($this->criteria->sphinx['filters']) && count($this->criteria->sphinx['filters'])) {
@@ -718,7 +740,7 @@ END;
 		}
 
 		if (!empty($_GET['safe'])) {
-			$this->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'"));
+			$this->upper_limit = $this->getSafeUpperLimit();
 			if ($this->upper_limit>1) {
 				if (!empty($sql_where)) {
 					$sql_where .= " AND ";
@@ -726,7 +748,7 @@ END;
 				$sql_where .= " gi.gridimage_id < {$this->upper_limit}";
 			}
 		}
-		
+
 		if (!empty($sql_where)) {
 			$sql_where = "WHERE $sql_where";
 			$this->islimited = true;
