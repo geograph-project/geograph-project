@@ -52,6 +52,22 @@
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
 
+	<div class="tabHolder" style="width:800px;">
+		<div style="float:right;color:gray">
+			<i>More in layer switcher</i> &#11167;
+		</div>
+		Quick Mode: 
+		{dynamic}
+	        <a class="tab{if !$filter}Selected{/if}" data-layer="Coverage - Standard">Coverage</a>
+	        {if $stats && $stats.images}
+			<a class="tab{if $filter}Selected{/if}" data-layer="(Personalize Coverage)">Personalized</a>
+		{/if}
+		{/dynamic}
+	        <a class="tab" data-layer="Photo Subjects">Subjects</a>
+	        <a class="tab" data-layer="Photo Viewpoints">Viewpoints</a>
+	        <a class="tab" data-layer="Photo Thumbnails">Thumbnails</a>
+	</div>
+
 	<div style="position:relative; width:800px; height:600px">
 		<div id="map" style="width:800px; height:600px"></div>
 		<div id="message" style="z-index:10000;position:absolute;top:0;left:50px;background-color:white;font-size:1em;font-family:sans-serif;opacity:0.8"></div>
@@ -429,6 +445,25 @@ function startTour() {
 		return false;
 	}
 	$(function() {
+
+		$('.tabHolder a').on('click',function() {
+			var layeron = $(this).data('layer');
+			$('.tabHolder a.tabSelected').each(function() {
+				var layeroff = $(this).data('layer');
+				if (overlayMaps[layeroff] && layeron != '(Personalize Coverage)') {
+					overlayMaps[layeroff].removeFrom(map);
+					$(this).addClass('tab').removeClass('tabSelected');
+				}
+			});
+			if (overlayMaps[layeron]) {
+				overlayMaps[layeron].addTo(map);
+				$(this).addClass('tabSelected').removeClass('tab');
+				if (layeron == 'Photo Viewpoints' && map.getZoom() < 11)
+					map.setZoom(11);
+			}
+		});
+
+
 		if ($('div#maincontent').width() > 1024) {
 			$('#map').parent().after(' &middot; <a href=# onclick="return enlargeMap()" id=enlargelink>Enlarge Map</a> ');
 		}
