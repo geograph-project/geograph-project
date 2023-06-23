@@ -232,7 +232,8 @@ if (!empty($_GET['q'])) {
 
 	$bits = explode(' near ',$_GET['q']);
 	if (count($bits) == 2) {
-		print "<div>Looking for keywords '<b>".htmlentities2($bits[0])."</b>' <i>near</i> place '<b>".htmlentities2($bits[1])."</b>'? If so <a href=\"/search.php?q=$qu\">click here</a>.</div><br><br>";
+		$url = "/near/".urlencode2($bits[1])."?filter=".urlencode($bits[0]);
+		print "<div>Looking for keywords '<b>".htmlentities2($bits[0])."</b>' <i>near</i> place '<b>".htmlentities2($bits[1])."</b>'? If so <a href=\"$url\">click here</a>.</div><br><br>";
 		$sphinx->q = str_replace(' near ',' @(Place,County,Country) ',$sphinx->q);
 
 	} elseif (!empty($prefixMatch) && $prefixMatch > 1 && empty($_GET['place'])) {

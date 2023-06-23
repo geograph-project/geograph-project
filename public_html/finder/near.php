@@ -265,8 +265,12 @@ if (!empty($_GET['q'])) {
 	Images near: <input type=search name=q value="<? echo $qh; ?>" size=40><input type=submit value=go><br/>
 <?
 	if (isset($_GET['filter'])) {
-		print "Matching: <input type=text name=filter value=\"".htmlentities2($_GET['filter'])."\">";
+		print "<span>";
+	} else {
+		print "<span id=\"hidefilter\"><a href=\"javascript:void(show_tree('filter'));\">Add Keyword Filter &#11167;</a></span><span id=\"showfilter\" style=display:none>";
 	}
+	print "Matching: <input type=text name=filter value=\"".htmlentities2(@$_GET['filter'])."\" placeholder=\"{optional keywords}\">";
+	print "</span>";
 
 #########################################
 # display the location results dropdown, for directing to near page.
@@ -282,7 +286,8 @@ if (!empty($_GET['q'])) {
 			print "Matched Location: <b>{$object->name}</b>".($object->localities?", ".$object->localities:'');
 
 		} elseif ($decode->total_found > 0) {
-			print "Possible Locations: <select onchange=\"location.href = '/near/'+encodeURI(this.value);\"><option value=''>Choose Location...</option>";
+
+			print "Possible Locations: <select onchange=\"this.form.elements['q'].value=this.value;this.form.onsubmit()\"><option value=''>Choose Location...</option>";
 			foreach ($decode->items as $object) {
 				$object->name = utf8_decode($object->name);
 				if (strpos($object->name,$object->gr) === false)
