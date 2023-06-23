@@ -673,7 +673,10 @@ function GeographLinks($posterText,$thumbs = false,$char_set = 'ISO-8859-1') {
 								if ($char_set == 'UTF-8')
 									$g_image->realname = latin1_to_utf8($g_image->realname);
 								$g_title.=' by '.htmlentities2($g_image->realname,ENT_COMPAT,$char_set);
-								$g_img = $g_image->getThumbnail(120,120,false,true);
+
+
+								$attribname = ($global_thumb_count > 10)?'loading="lazy" src':'src';
+								$g_img = $g_image->getThumbnail(120,120,false,true,$attribname);
 
 								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
 								if (isset($imageCredits[$g_image->realname])) {
