@@ -116,14 +116,14 @@
     <input id="searchbutton" type="submit" name="go" value="Find"/>
 	<div id="searchoptions">
 		 What to search:<ul class="touchPadding">
-                                <li><label><input type=radio name=type checked onclick="this.form.action = '/of/'">Photos</label> &nbsp;
+                                <li><label><input type=radio name=type checked onclick="this.form.action = '/of/'">Photos</label> &nbsp; <i>Enter keywords or a location/postcode to search nearby images</i>
 				{if $square && $square->grid_reference}
                                 <li><label><input type=radio name=type onclick="this.form.action = '/gridref/{$square->grid_reference}/'">Photos in Grid Square {$square->grid_reference}</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/near/{$square->grid_reference}'">Photos near {$square->grid_reference}</label> &nbsp;
 				{elseif $image && $image->grid_square && $image->grid_square->grid_reference}
                                 <li><label><input type=radio name=type onclick="this.form.action = '/near/{$image->grid_square->grid_reference}'">Photos near {$image->grid_square->grid_reference}</label> &nbsp;
 				{/if}
-                                <li><label><input type=radio name=type onclick="this.form.action = '/browse.php'">Grid Reference</label> &nbsp;
+                                <li><label><input type=radio name=type onclick="this.form.action = '/browse.php'">Enter a Grid Reference</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/finder/places.php'">Placenames</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/content/'">Collections</label> &nbsp;
 				{dynamic}{if $user->registered}
@@ -132,8 +132,9 @@
                                 <li><label><input type=radio name=type onclick="this.form.action = '/content/documentation.php'">Website Pages</label> &nbsp;
                                 <li><label><input type=radio name=type onclick="this.form.action = '/finder/multi2.php'">Everything</label> &nbsp;
 		</ul>
-		(enter postcodes using Photos option)
-		Tip: If wanting to just browse images by location, may prefer using the <a href="/mapper/combined.php">Map</a> option. Click the map to view photos.
+		<hr>
+		Others: <a href="/search.php?form=text">Advanced Search</a> | <a href="/browser/">Image Browser</a><br><br>
+		Or: <a href="/mapper/combined.php">Coverage Map</a> | <a href="/browser/#!/display=map_dots">Searchable Map</a>
 	</div>
       </div>
     </form>
