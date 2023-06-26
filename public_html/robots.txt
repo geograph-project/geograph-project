@@ -63,6 +63,7 @@ Disallow: /article/history.php
 Disallow: /article/source.php
 Disallow: /article/diff.php
 Disallow: /content/syndicator.php
+Disallow: /content/index.php
 Disallow: /squares.php
 Disallow: /tags/
 Disallow: /tagged/*exclude=
@@ -144,6 +145,7 @@ Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /content/syndicator.php?*q=
 Disallow: /content/?*q=
+Disallow: /content/index.php
 Disallow: /squares.php
 Disallow: /*?*apikey
 Disallow: /api/*apikey
