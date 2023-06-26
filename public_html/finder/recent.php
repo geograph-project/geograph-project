@@ -124,7 +124,7 @@ if (true) {
 			$prev_fetch_mode = $ADODB_FETCH_MODE;
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$rows = $db->getAssoc("
-			select gridimage_id,realname,user_id,title,grid_reference,imagetaken
+			select gridimage_id,realname,user_id,title,grid_reference,imagetaken,reference_index
 			from gridimage_search
 			where $where
 			limit $limit");
@@ -133,6 +133,7 @@ if (true) {
 			foreach ($ids as $c => $id) {
 				$row = $rows[$id];
 				$row['gridimage_id'] = $id;
+				$row['canonical_domain'] = $CONF['canonical_domain'][$row['reference_index']];
 				$gridimage = new GridImage;
                                 $gridimage->fastInit($row);
 				$results[] = $gridimage;
