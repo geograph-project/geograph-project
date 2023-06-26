@@ -10,6 +10,15 @@
 
 <h2>Exploring the photographs</h2>
 
+{if $squares}
+	<div style="clear:both;background-color:silver;padding:10px;float:right;margin-left:20px;width:80px">
+		<h4 style=margin:0>Recently Updated Squares</h4><br>
+		{foreach from=$squares item=square}
+			<a href="/gridref/{$square}">{$square}</a><br>
+		{/foreach}
+	</div>
+{/if}
+
 
 <h3>Outstanding achievement...</h3>
 <ul class="explore">
@@ -21,6 +30,7 @@
         <li>{external href="http://www.geograph.org/coverage/" text="<b>Historic coverage maps</b>"} - includes build-up animations!</li>
 
 </ul>
+
 <h3>Selections...</h3>
 <ul class="explore">
 
