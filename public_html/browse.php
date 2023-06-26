@@ -486,6 +486,9 @@ if ($grid_given)
 					$imagelist->_setDB($db);
 
 					$columns = "gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference,comment,substring(imagetaken,1,4) as year";
+
+				$columns .= ",upd_timestamp";
+
 					$gis_where = "grid_reference = '{$square->grid_reference}'";
 					$limit = 12;
 
@@ -524,6 +527,7 @@ if ($grid_given)
 						$method = 'sphinx';
 					} else {
 						$sql = "SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC, seq_no DESC LIMIT $limit";
+						$imagelist->_getImagesBySql($sql);
 						$total = $square->imagecount;
 						$method = 'latest';
 					}
@@ -531,8 +535,12 @@ if ($grid_given)
 					$endtime = ((float)$usec + (float)$sec);
 					$timetaken = $endtime - $starttime;
 
+					$upd_timestamp = null;
+					foreach ($imagelist->images as $image)
+						if($image->upd_timestamp > $upd_timestamp)
+							$upd_timestamp = $image->upd_timestamp;
 
-					$updates = "timetaken = $timetaken,total = $total,results = ".count($imagelist->images);
+					$updates = "timetaken = $timetaken,total = $total,results = ".count($imagelist->images).',upd_timestamp = '.$db->Quote($upd_timestamp);
 
 					$db->Execute("INSERT INTO browse_cluster
 							SET gridsquare_id = {$square->gridsquare_id},method = '$method',$updates,created=NOW()
