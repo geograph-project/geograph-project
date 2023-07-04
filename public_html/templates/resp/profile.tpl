@@ -289,60 +289,58 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 
 <ul class="buttonbar">
 
-<li><select onchange="window.location.href=this.value">
-				<option value="">View images in the search</option>
-				<optgroup label="Recent submissions">
-				<option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=full&amp;do=1">Full details</option>
-        <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
-        <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=grid&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</option>
-        <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</option>
-        <option value="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</option>
-        </optgroup>
-</select></li>
+<div class="buttonbar-dropdown">
+  <button>View images in the search &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+    <b>Recent submissions</b>
+				<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</a>
+  </div>
+</div> 
 
-
-<li><select onchange="window.location.href=this.value">
-				<option value="">One image per...</option>
-        <optgroup label="Day taken">
-				<option value="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=full&amp;do=1">Full details</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=grid&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=slide&amp;do=1">Slideshow</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=map&amp;do=1">Map</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=black&amp;do=1">Georiver</option>
-        </optgroup>
-        <optgroup label="Gridsquare">
-				<option value="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=full&amp;do=1">Full details</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=grid&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=slide&amp;do=1">Slideshow</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=map&amp;do=1">Map</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=black&amp;do=1">Georiver</option>
-        </optgroup>
-        <optgroup label="Hectad">
-				<option value="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=full&amp;do=1">Full details</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=grid&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=slide&amp;do=1">Slideshow</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=map&amp;do=1">Map</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=black&amp;do=1">Georiver</option>
-        </optgroup>
-        <optgroup label="Myriad">
-				<option value="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=full&amp;do=1">Full details</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=grid&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=slide&amp;do=1">Slideshow</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=map&amp;do=1">Map</option>
-        <option value="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=black&amp;do=1">Georiver</option>
-        </optgroup>
-</select></li>
+<div class="buttonbar-dropdown">
+  <button>One image per... &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+    <b>Day taken</b>
+				<a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=black&amp;do=1">Georiver</a>
+    <b>Gridsquare</b>
+				<a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=black&amp;do=1">Georiver</a>
+    <b>Hectad</b>
+				<a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=black&amp;do=1">Georiver</a>
+    <b>Myriad</b>
+				<a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=black&amp;do=1">Georiver</a>
+  </div>
+</div> 
 
 
 {if $user->user_id eq $profile->user_id && $simplified}
@@ -355,28 +353,34 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 
 
 {if $profile->stats.images > 2}
-	<li><select onchange="window.location.href=this.value">
-		<option value="">Detailed breakdown</option>
-		<option value="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}">by Date taken</option>
-		<option value="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}">by Myriad</option>
-		<option value="/finder/bytag.php?user_id={$profile->user_id}">by Tags</option>
-		<option value="/finder/groups.php?q=user{$profile->user_id}&amp;group=context_ids">by Geographical context</option>
-	</select></li>
+<div class="buttonbar-dropdown">
+  <button>Detailed breakdown &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+	<a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}">by Date taken</a>
+	<a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}">by Myriad</a>
+	<a href="/finder/bytag.php?user_id={$profile->user_id}">by Tags</a>
+	<a href="/finder/groups.php?q=user{$profile->user_id}&amp;group=context_ids">by Geographical context</a>
+  </div>
+</div> 
 {/if}
 
 {if $user->user_id eq $profile->user_id && $simplified && $profile->stats.images gt 2}
 
-	<li><select onchange="window.location.href=this.value">
-		<option value="">Download a list of submissions</option>
-		<option value="/export.csv.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as a CSV file (Comma separated values)</option>
-		<option value="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as an XML file for Excel 2003</option>
-	</select></li>
+<div class="buttonbar-dropdown">
+  <button>Download a list of submissions &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+	<a href="/export.csv.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as a CSV file (Comma separated values)</a>
+	<a href="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1&amp;points=1">as an XML file for Excel 2003</a>
+  </div>
+</div>
 
-	<li><select onchange="window.location.href=this.value">
-					<option value="">Word Cloud</option>
-					<option value="/stuff/make-wordle.php?u={$profile->user_id}">Image titles</option>
-					<option value="/stuff/make-wordle.php?u={$profile->user_id}&amp;tags=1">Tags</option>
-	</select></li>
+<div class="buttonbar-dropdown">
+  <button>Word Cloud &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+	<a href="/stuff/make-wordle.php?u={$profile->user_id}">Image titles</a>
+	<a href="/stuff/make-wordle.php?u={$profile->user_id}&amp;tags=1">Tags</a>
+  </div>
+</div>
 
 	<li><a href="/myphotos.php">My photos used around the site</a></li>
 
@@ -384,11 +388,13 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 		<li><a href="/stuff/your-year.php?choose=1">Annual showcase</a></li>
 	{/if}
 
-	<li><select onchange="window.location.href=this.value">
-				<option value="">Browse submissions in last 30 days in squares I have photographed</option>
-				<option value="/browser/my_squares-redirect.php?days=30">In the Browser</option>
-				<option value="/search.php?my_squares=1&amp;user_id={$profile->user_id}&amp;user_invert_ind=1&amp;submitted_startDay=30&amp;submitted_startYear">In the old search</option>
-	</select></li>
+<div class="buttonbar-dropdown">
+  <button>Browse submissions in last 30 days in squares I have photographed &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+	<a href="/browser/my_squares-redirect.php?days=30">In the Browser</a>
+	<a href="/search.php?my_squares=1&amp;user_id={$profile->user_id}&amp;user_invert_ind=1&amp;submitted_startDay=30&amp;submitted_startYear">In the old search</a>
+  </div>
+</div>
 {/if}
 
 </ul>
