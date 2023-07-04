@@ -121,7 +121,7 @@ abbr {
 .buttonbar li {
 	background-color:#eee;
 	border-radius:10px;
-	flex: auto ;
+	flex: auto;
 	list-style:none;
 	text-align:center;
 	padding:4px;
@@ -150,6 +150,47 @@ abbr {
 }
 .buttonbar select option[value=""] {
 	color:silver;
+}
+.buttonbar button {
+	background-color:#eee;
+	border-radius:10px;
+	padding:4px;
+	border:0;
+	color:blue;
+	font-family: Georgia, Arial, sans serif;
+	font-size:1.02em;
+	cursor: pointer;
+	text-align:center;
+}
+.buttonbar-dropdown {
+  display: inline-block;
+  position: relative;
+}
+.buttonbar-dropdown-content {
+  display: none;
+  background: white;
+  position: absolute;
+  width: 100%;
+  padding: 5px;
+  max-height: 50vh;
+  overflow-y: auto;
+  box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.4);
+  z-index:1000;
+}
+.buttonbar-dropdown:hover .buttonbar-dropdown-content {
+  display: block;
+}
+.buttonbar-dropdown-content a {
+  display: block;
+  padding: 5px;
+  text-decoration: none;
+}
+.buttonbar-dropdown-content a:hover {
+  color: black;
+  background-color: silver;
+}
+.buttonbar-dropdown-content b {
+  line-height: 1.8;
 }
 
 /* -------------------- */
