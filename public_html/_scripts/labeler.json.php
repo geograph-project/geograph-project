@@ -36,12 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		print "{$image['image_id']}: ";
 		$updates = array();
 		$updates['gridimage_id'] = intval($image['image_id']); //remember that gridimage_id is used as (part of!) unique key
-		$updates['filename'] = $image['image_id'];
 		$updates['model'] = @$_GET['model'];
 		$updates['label'] = $image['label'];
 		$updates['score'] = $image['score'];
 
-		$db->Execute('REPLACE INTO gridimage_group SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		$db->Execute('REPLACE INTO gridimage_label SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 		print $db->Affected_Rows();
 		print "\n";
 	}
@@ -49,21 +48,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
 	####################
 
+	$cols = ',realname';
+	$join = '';
+	$where = array();
+	$where[] = "l.seq_id IS null"; //not already labled
 	$limit = 50;
 	$limit = rand(40,60); //to 'desync' multiple clients!
 	if (!empty($_GET['limit']))
 		$limit = min(100,intval($_GET['limit']));
-
 
 	$sleep = ceil(sqrt($limit));
 
 	if (!empty($_GET['offset']))
 		$limit = intval($_GET['offset']).",$limit";
 
-	####################
+	if (!empty($_GET['large'])) {
+		$cols .= ", original_width";
+		$join .= "inner join gridimage_size using (gridimage_id)";
+	}
 
-	$where = array();
-	$where[] = "seq_id IS null";
+	####################
 
 	if (empty($_GET['all'])) {
 		if (empty($_GET['model']) || $_GET['model'] == 'type') {
@@ -74,10 +78,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$where[] = "tags NOT like '%top:%'";
 		} elseif ($_GET['model'] == 'subject') {
 			$where[] = "tags NOT like '%subject:%'";
+		} elseif ($_GET['model'] == 'city') {
+			//for the moment, the city dataset we wanting to retest the images used for training.
+			//... later will ahve to get this data from sphinx or sphinx_placename
+			$join .= " inner join gridimage_label_training t on (t.gridimage_id = gi.gridimage_id and folder = 'geograph_visiondata015')";
 		} elseif ($_GET['model'] == 'class') {
 			$where[] = "imageclass=''";
 		}
 	}
+
+	if (!empty($_GET['user_id']))
+		$where[] = "gi.user_id = ".intval($_GET['user_id']);
+
+	//only recent users!
+	$join .= "inner join user_stat using (user_id)";
+	$where[] = "last > 7300000";
 
 	####################
 
@@ -85,9 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$qmod = $imagelist->_getDb()->Quote($_GET['model']);
 	$where = implode(" AND ",$where);
 
-	$sql = "select gi.gridimage_id,user_id,original_width
+	$sql = "select gi.gridimage_id,user_id $cols
 		from gridimage_search gi
-		inner join gridimage_size using (gridimage_id)
+		$join
 		left join gridimage_label l on (l.gridimage_id = gi.gridimage_id and `model` = $qmod)
 		where $where
 		limit $limit";
@@ -98,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	if (count($imagelist->images)) {
 		foreach ($imagelist->images as $i => $image) {
-			if ($imagelist->images[$i]->original_width && isset($_GET['large'])) {
+			if (!empty($imagelist->images[$i]->original_width) && isset($_GET['large'])) {
 				$imagelist->images[$i]->original = $imagelist->images[$i]->_getOriginalpath();
 
 				//the original is missing!!?
