@@ -90,9 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	if (!empty($_GET['user_id']))
 		$where[] = "gi.user_id = ".intval($_GET['user_id']);
 
-	//only recent users!
-	$join .= "inner join user_stat using (user_id)";
-	$where[] = "last > 7300000";
+	if (empty($_GET['recent']) && empty($_GET['all'])) {
+		//only recent users!
+		$join .= "inner join user_stat using (user_id)";
+		$where[] = "last > 7300000";
+	}
 
 	####################
 
@@ -100,12 +102,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$qmod = $imagelist->_getDb()->Quote($_GET['model']);
 	$where = implode(" AND ",$where);
 
-	$sql = "select gi.gridimage_id,user_id $cols
+	if (!empty($_GET['recent'])) {
+		$sql = "select gi.gridimage_id,user_id $cols
+		from gridimage gi
+		$join
+		left join gridimage_label l on (l.gridimage_id = gi.gridimage_id and `model` = $qmod)
+		where $where
+		order by gridimage_id desc
+		limit $limit";
+	} else {
+		$sql = "select gi.gridimage_id,user_id $cols
 		from gridimage_search gi
 		$join
 		left join gridimage_label l on (l.gridimage_id = gi.gridimage_id and `model` = $qmod)
 		where $where
 		limit $limit";
+	}
 
 	$imagelist->_getImagesBySql($sql);
 
@@ -113,7 +125,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	if (count($imagelist->images)) {
 		foreach ($imagelist->images as $i => $image) {
-			if (!empty($imagelist->images[$i]->original_width) && isset($_GET['large'])) {
+			if (empty($_GET['full'])) {
+				$imagelist->images[$i]->fullpath = $image->getSquareThumbnail(224,224,'path');
+
+			} elseif (!empty($imagelist->images[$i]->original_width) && isset($_GET['large'])) {
 				$imagelist->images[$i]->original = $imagelist->images[$i]->_getOriginalpath();
 
 				//the original is missing!!?
