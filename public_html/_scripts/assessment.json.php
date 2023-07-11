@@ -57,16 +57,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	$sleep = ceil(sqrt($limit));
 
-	if (!empty($_GET['offset']))
+	if (!empty($_GET['offset'])) {
 		$limit = intval($_GET['offset']).",$limit";
+	} else {
+		$db = $imagelist->_getDb(false);
+		$w = array();
+		$w[] = "model = 'assessment'";
+		$w[] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
 
+		$offset = $db->getOne("SELECT offset FROM labeler_agent WHERE ".implode(' AND ',$w)." AND updated > date_sub(now(),interval 24 hour)");
+		if (is_null($offset) || strlen($offset) == 0) { //offset="0" is a valid offset!
+			$offsets = explode(',',$db->getOne("SELECT GROUP_CONCAT(offset) FROM labeler_agent WHERE ".implode(' AND NOT ',$w)." AND updated > date_sub(now(),interval 24 hour)"));
+			$offset = 0;
+			while (in_array("$offset",$offsets,true))
+				$offset+=100;
+			$w[] = "offset = $offset";
+			$db->Execute($sql = "INSERT INTO labeler_agent SET ".implode(',',$w)." ON DUPLICATE KEY UPDATE ".array_pop($w));
+
+			$limit = "$offset,$limit";
+		}
+	}
 
 	$imagelist=new ImageList;
 
-	$sql = "select gridimage_id,user_id,original_width
+	$join = $cols = '';
+
+	if (!empty($_GET['large'])) {
+	        $cols .= ", original_width";
+        	$join .= "inner join gridimage_size using (gridimage_id)";
+	}
+
+	$sql = "select gridimage_id,user_id $cols
 		from gridimage
 		inner join assessment using (gridimage_id)
-		left join gridimage_size using (gridimage_id)
+		$join
 		where aesthetic IS NULL OR technical IS NULL
 		limit $limit";
 
@@ -74,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	if (count($imagelist->images)) {
 		foreach ($imagelist->images as $i => $image) {
-			if ($imagelist->images[$i]->original_width && !isset($_GET['small'])) {
+			if ($imagelist->images[$i]->original_width && isset($_GET['large'])) {
 				$imagelist->images[$i]->original = $imagelist->images[$i]->_getOriginalpath();
 
 				//the original is missing!!?
@@ -108,5 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 		$data = array('prefix'=>$CONF['STATIC_HOST'],'sleep'=>$sleep,'rows'=>$imagelist->images);
 		outputJSON($data); //passed by ref
+	} else {
+		print "[]";
 	}
 }
