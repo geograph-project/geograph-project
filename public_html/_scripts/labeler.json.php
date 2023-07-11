@@ -25,6 +25,30 @@
 require_once('geograph/global.inc.php');
 require_once('geograph/imagelist.class.php');
 
+####################################
+
+if (!empty($_GET['models'])) {
+	$db = GeographDatabaseConnection(true);
+	$data = $db->getAll("select model,model_download,model_dir,folder,grouper,images from dataset where model_download != ''");
+        outputJSON($data);
+	exit;
+
+} elseif (!empty($_GET['training'])) {
+	$db = GeographDatabaseConnection(true);
+	$data = $db->getAll("select folder,src_format,imagesize,src_download,grouper,images,model_dir from dataset where src_download != '' and `grouper` != ''");
+        outputJSON($data);
+	exit;
+}
+
+####################################
+
+if (empty($_GET['model'])) {
+	die('{"error":"No model"}');
+} //todo, aos check it a valid model!
+	//select model from dataset where model = _GET[model] AND model_download != ''
+
+
+####################################
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$db = GeographDatabaseConnection(false);
@@ -36,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		print "{$image['image_id']}: ";
 		$updates = array();
 		$updates['gridimage_id'] = intval($image['image_id']); //remember that gridimage_id is used as (part of!) unique key
-		$updates['model'] = @$_GET['model'];
+		$updates['model'] = $_GET['model'];
 		$updates['label'] = $image['label'];
 		$updates['score'] = $image['score'];
 
@@ -45,7 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		print "\n";
 	}
 
+####################################
+
 } else {
+	$imagelist=new ImageList;
 	####################
 
 	$cols = ',realname';
@@ -55,12 +82,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$limit = 50;
 	$limit = rand(40,60); //to 'desync' multiple clients!
 	if (!empty($_GET['limit']))
-		$limit = min(100,intval($_GET['limit']));
+		$limit = min(250,intval($_GET['limit']));
 
 	$sleep = ceil(sqrt($limit));
 
-	if (!empty($_GET['offset']))
+	if (!empty($_GET['offset'])) {
 		$limit = intval($_GET['offset']).",$limit";
+	} else {
+		$db = $imagelist->_getDb(false);
+		$w = array();
+		$w[] = "model = ".$db->Quote($_GET['model']);
+		$w[] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
+
+		$offset = $db->getOne("SELECT offset FROM labeler_agent WHERE ".implode(' AND ',$w)." AND updated > date_sub(now(),interval 24 hour)");
+		if (is_null($offset) || strlen($offset) == 0) { //offset="0" is a valid offset!
+			$offsets = explode(',',$db->getOne("SELECT GROUP_CONCAT(offset) FROM labeler_agent WHERE ".implode(' AND NOT ',$w)." AND updated > date_sub(now(),interval 24 hour)"));
+			$offset = 0;
+			while (in_array("$offset",$offsets,true))
+				$offset+=100;
+			$w[] = "offset = $offset";
+			$db->Execute($sql = "INSERT INTO labeler_agent SET ".implode(',',$w)." ON DUPLICATE KEY UPDATE ".array_pop($w));
+
+			$limit = "$offset,$limit";
+		}
+	}
 
 	if (!empty($_GET['large'])) {
 		$cols .= ", original_width";
@@ -70,10 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	####################
 
 	if (empty($_GET['all'])) {
-		if (empty($_GET['model']) || $_GET['model'] == 'type') {
+		if ($_GET['model'] == 'type') {
 			$where[] = "moderation_status = 'accepted'"; //todo, we might want to also check geos? eg spot potential long-distance/cross grid
 			$where[] = "tags NOT like '%type:%'";
-			$_GET['model'] = 'type';
 		} elseif ($_GET['model'] == 'top') {
 			$where[] = "tags NOT like '%top:%'";
 		} elseif ($_GET['model'] == 'subject') {
@@ -98,7 +142,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	####################
 
-	$imagelist=new ImageList;
 	$qmod = $imagelist->_getDb()->Quote($_GET['model']);
 	$where = implode(" AND ",$where);
 
