@@ -73,6 +73,29 @@ $smarty = new GeographPage;
 
 ####################################################
 
+	} elseif (!empty($_GET['label']) && !empty($_GET['looks'])) {
+		$imagelist=new ImageList;
+
+		$thumbw=213; $thumbh=160;
+
+		print "<p>AI model predicted ".htmlentities($_GET['label'])." but the image is actully of another city (shown in tooltip)</p>";
+
+		$imagelist->cols = preg_replace('/(\w+)/','gi.$1',$imagelist->cols);
+		$sql = "SELECT {$imagelist->cols} ,t.label as grid_reference
+		FROM gridimage_search gi
+		INNER JOIN gridimage_label_single l USING (gridimage_id)
+		INNER JOIN gridimage_label_training t USING (gridimage_id)
+		WHERE l.label = ".$db->Quote($_GET['label'])." AND model = 'city'
+		AND folder = 'geograph_visiondata015'
+		and t.label != l.label
+		$geofilter
+		ORDER BY l.score DESC LIMIT 24";
+
+		$imagelist->_getImagesBySql($sql);
+		$imagelist->outputThumbs($thumbw,$thumbh);
+
+####################################################
+
 	//the join with gridimage_label_training means we only show images where the AI model predicted correctly!
 
 	} elseif (!empty($_GET['label'])) {
