@@ -103,8 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$w[] = "offset = $offset";
 			$db->Execute($sql = "INSERT INTO labeler_agent SET ".implode(',',$w)." ON DUPLICATE KEY UPDATE ".array_pop($w));
 
-			$limit = "$offset,$limit";
 		}
+		$limit = "$offset,$limit";
 	}
 
 	if (!empty($_GET['large'])) {
