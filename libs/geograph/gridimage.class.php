@@ -406,7 +406,7 @@ class GridImage
 			$string = $memcache->name_get('e2',$mkey);
 
 			if (empty($string)) {
-				$url = "http://$server/restapi.php/api/Photo/$gridimage_id";
+				$url = "http://$server/api/Photo/$gridimage_id";
 				$key = "geographkey_".trim($prefix,':');
 				if (!empty($CONF[$key]))
 					$url .= "/".$CONF[$key];
