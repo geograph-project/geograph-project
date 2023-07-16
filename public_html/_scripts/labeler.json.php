@@ -29,7 +29,7 @@ require_once('geograph/imagelist.class.php');
 
 if (!empty($_GET['models'])) {
 	$db = GeographDatabaseConnection(true);
-	$data = $db->getAll("select model,model_download,model_dir,folder,grouper,images from dataset where model_download != ''");
+	$data = $db->getAll("select model,model_download,model_dir,folder,grouper,images from dataset where model_download != '' and model != ''");
         outputJSON($data);
 	exit;
 
@@ -47,6 +47,15 @@ if (empty($_GET['model'])) {
 } //todo, aos check it a valid model!
 	//select model from dataset where model = _GET[model] AND model_download != ''
 
+if ($_GET['model'] == 'auto') {
+	//auto is a special value, meaning the server is free to choose, but it should choose from downloadable models, as need to fetch from one of the models being submitted
+
+	if ($_SERVER['REQUEST_METHOD'] == 'POST')
+		die('{"error":"Something went horribly wrong"}');
+
+	$_GET['model'] = 'type'; //for now, hardcoded!
+	//todo... $_GET['model'] = db->getOne("SELECT model FROM dataset where model_download != '' and model != '' ORDER BY RAND()");
+}
 
 ####################################
 
@@ -55,6 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	$json = file_get_contents('php://input');
 	$data = json_decode($json,true);
+
+	//might as well do updates all in one transaction
+	$db->Execute('start transaction');
 
 	foreach($data as $image) {
 		print "{$image['image_id']}: ";
@@ -68,6 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		print $db->Affected_Rows();
 		print "\n";
 	}
+
+	$db->Execute('commit');
 
 ####################################
 
@@ -161,6 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		where $where
 		limit $limit";
 	}
+
 
 	$imagelist->_getImagesBySql($sql);
 
