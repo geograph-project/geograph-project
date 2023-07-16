@@ -132,8 +132,8 @@ server {
 
   server_name _;
 
-  # need to allow uploads upto 8Mb (there is overhead in the HTTP protocol in how transfered)
-  client_max_body_size 15M;
+  # need to allow uploads upto 16Mb (there is overhead in the HTTP protocol in how transfered)
+  client_max_body_size 32M;
 
   ###################################
   # special setup for staging (dont use a seperate 'server' block as most of the rules below are common to all hosts) 
