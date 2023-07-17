@@ -75,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$updates['model'] = $_GET['model'];
 		$updates['label'] = $image['label'];
 		$updates['score'] = $image['score'];
+		$updates['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
 		$db->Execute('REPLACE INTO gridimage_label SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 		print $db->Affected_Rows();
