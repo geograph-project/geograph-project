@@ -66,7 +66,7 @@ if (empty($tables) || strtotime($tables['content_with_links']['Update_time']) < 
 		$db->Execute($sql) or die($db->ErrorMsg());
 	}
 
-	$sql = "select content_id, c.created, c.updated, foreign_id, source, COALESCE(b.content, g.post_text, a.content, s.comment, t.descr) AS content, 0 as skip
+	$sql = "select content_id, c.created, c.updated, foreign_id, source, COALESCE(b.content, GROUP_CONCAT(g.post_text), a.content, s.comment, t.descr) AS content, 0 as skip
 from content c
 left join blog b on (source = 'blog' AND b.blog_id = foreign_id AND (b.content LIKE '%http%' OR b.content LIKE '%www.%') )
 left join geobb_posts g on (source IN ('gallery','themed') AND g.topic_id = foreign_id AND (g.post_text LIKE '%http%' OR g.post_text LIKE '%www.%') )
@@ -75,7 +75,7 @@ left join snippet s on (source = 'snippet' AND s.snippet_id = foreign_id AND (s.
 left join geotrips t on (source = 'trip' AND t.id = foreign_id AND (t.descr LIKE '%http%' OR t.descr LIKE '%www.%') )
 where source in ('blog','gallery','themed','article','snippet','trip')
 and (b.content IS NOT NULL OR g.post_text IS NOT NULL OR a.content IS NOT NULL OR s.comment IS NOT NULL OR t.descr IS NOT NULL)
-group by content_id, g.post_text
+group by content_id
 order by null
 limit {$param['number']}";
 
@@ -144,11 +144,10 @@ print "Rows = ".$recordSet->RecordCount()."\n";
 
 $bindts = $db->BindTimeStamp(time());
 
-while (!$recordSet->EOF)
-{
+while (!$recordSet->EOF) {
+
 	//some people do " also >http://www.ge...", which breaks our 'anti-HTML' extraction
 	$recordSet->fields['content'] = preg_replace('/ >http/',' > http',$recordSet->fields['content']);
-
 
 $all = array();
 
@@ -157,7 +156,7 @@ $all = array();
 			$all[$url]=1;
 	}
 
-	if (preg_match_all('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/',$recordSet->fields['content'],$m)) {
+	if (preg_match_all('/(?<![>\/F\."\'])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/',$recordSet->fields['content'],$m)) {
 		foreach ($m[1] as $url)
 			$all[$url]=1;
 	}
@@ -174,18 +173,15 @@ $all = array();
 	#print_r($recordSet->fields['urls']);
 	#exit;
 
-if (empty($all)) {
-	die("No URLS found.\n".print_r($recordSet->fields,true));
+	if (empty($all)) {
+		die("No URLS found.\n".print_r($recordSet->fields,true));
 
 
-	$db->Execute("UPDATE geograph_tmp.content_with_links SET skip=1 WHERE unique_id = {$recordSet->fields['unique_id']}");
-	print "SKIP ";
-	$recordSet->MoveNext();
-	continue;
-
-
-
-}
+		$db->Execute("UPDATE geograph_tmp.content_with_links SET skip=1 WHERE unique_id = {$recordSet->fields['unique_id']}");
+		print "SKIP ";
+		$recordSet->MoveNext();
+		continue;
+	}
 
 	$all = array_keys($all);
 

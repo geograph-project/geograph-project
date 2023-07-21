@@ -165,7 +165,7 @@ while (!$recordSet->EOF)
 
 	preg_match_all('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/',$recordSet->fields['comment'],$m1);
 
-	preg_match_all('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/',$recordSet->fields['comment'],$m2);
+	preg_match_all('/(?<![>\/F\."\'])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/',$recordSet->fields['comment'],$m2);
 
 	#print $recordSet->fields['comment'];
 	#print "<hr><pre>";
