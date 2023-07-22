@@ -3,7 +3,7 @@
 <div style="padding:10px;padding-right:0;max-height:1000000px;" class="searchresults">
 
 {if $suggestions}
-	<div><b>Alternative suggestions:</b>
+	<div style="max-height:140px; overflow:auto; max-width:800px; background-color:#DDEA8E; padding:4px;"><b>Alternative suggestions:</b>
 	<ul>
 	{foreach from=$suggestions item=row}
 		<li><b><a href="{if $row.link}{$row.link}{else}/search.php?i={$i}&amp;text={$row.query|escape:'url'}&amp;gridref={$row.gr}&amp;redo=1{/if}">{$row.query}{if $row.name} <i>near</i> {$row.name}{/if}</a></b>? {if $row.localities}<small style="font-size:0.7em">({$row.localities})</small>{/if}</li>
