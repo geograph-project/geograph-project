@@ -161,6 +161,7 @@ abbr {
 	font-size:1.02em;
 	cursor: pointer;
 	text-align:center;
+  min-width: 200px;
 }
 .buttonbar-dropdown {
   display: inline-block;
