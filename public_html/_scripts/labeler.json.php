@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$db->Execute('start transaction');
 
 	foreach($data as $image) {
-		print "{$image['image_id']}: ";
+		print intval($image['image_id']).": ";
 		$updates = array();
 		$updates['gridimage_id'] = intval($image['image_id']); //remember that gridimage_id is used as (part of!) unique key
 		$updates['model'] = $_GET['model'];
@@ -114,9 +114,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$offsets = explode(',',$db->getOne("SELECT GROUP_CONCAT(offset) FROM labeler_agent WHERE ".implode(' AND NOT ',$w)." AND updated > date_sub(now(),interval 24 hour)"));
 			$offset = 0;
 			while (in_array("$offset",$offsets,true))
-				$offset+=100;
+				$offset+=200; //should be 50*number-of-clients, but chicken and egg, dont know how many clients will be
 			$w[] = "offset = $offset";
-			$db->Execute($sql = "INSERT INTO labeler_agent SET ".implode(',',$w)." ON DUPLICATE KEY UPDATE ".array_pop($w));
+			$db->Execute($sql = "INSERT INTO labeler_agent SET ".implode(',',$w)." ON DUPLICATE KEY UPDATE ".array_pop($w).", updated = NOW()");
 
 		}
 		$limit = "$offset,$limit";
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	if (empty($_GET['all'])) {
 		if ($_GET['model'] == 'type') {
-			$where[] = "moderation_status = 'accepted'"; //todo, we might want to also check geos? eg spot potential long-distance/cross grid
+//			$where[] = "moderation_status = 'accepted'"; //todo, we might want to also check geos? eg spot potential long-distance/cross grid
 			$where[] = "tags NOT like '%type:%'";
 		} elseif ($_GET['model'] == 'top') {
 			$where[] = "tags NOT like '%top:%'";
@@ -152,7 +152,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	if (empty($_GET['recent']) && empty($_GET['all'])) {
 		//only recent users!
 		$join .= "inner join user_stat using (user_id)";
-		$where[] = "last > 7300000";
+		//$where[] = "last > 7300000";
+		$where[] = "last > 5300000";
 	}
 
 	####################
@@ -176,6 +177,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		where $where
 		limit $limit";
 	}
+
+	if (!empty($_GET['ddd']))
+		die("$sql;\n");
 
 
 	$imagelist->_getImagesBySql($sql);
@@ -202,6 +206,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 					$db->Execute("DELETE FROM assessment WHERE gridimage_id = {$image->gridimage_id}");
 
 					//todo, delete from assessment where gridimage_id = as will never be updated anyway
+
+				debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
 
 					unset($imagelist->images[$i]);
 					$deleted=1;
