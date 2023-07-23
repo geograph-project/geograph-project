@@ -46,7 +46,7 @@
         <a href="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=map&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Map</a>
         <a href="/search.php?searchtext=hectad:{$hectad}+ftf:1&amp;displayclass=black&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Georiver</a>
 
-    <b>Most recent first</b>
+    <b>Most recent images</b>
         <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;orderby=submitted&reverse_order_ind=1&amp;do=1">Full details</a>
         <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbs&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails</a>
         <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbsmore&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Thumbnails + links</a>
@@ -56,7 +56,7 @@
         <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=map&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Map</a>
         <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=black&reverse_order_ind=1&amp;orderby=submitted&amp;do=1">Georiver</a>
 
-    <b>Oldest first</b>
+    <b>Oldest images</b>
         <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=full&amp;orderby=submitted&amp;do=1">Full details</a>
         <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</a>
         <a href="/search.php?searchtext=hectad:{$hectad}&amp;displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</a>
