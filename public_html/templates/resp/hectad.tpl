@@ -93,7 +93,7 @@
         <a href="https://www.google.co.uk/maps/dir/?api=1&amp;destination={$lat},{$long}">Google maps - Navigate to Area</a>
 
     <b>OpenStreetMap</b>
-        <a href="http://www.openstreetmap.org/?mlat={$lat}&amp;mlon={$long}&amp;zoom=14">OpenStreetMaps</a>
+        <a href="http://www.openstreetmap.org/?mlat={$lat}&amp;mlon={$long}&amp;zoom=14">OpenStreetMap</a>
         <a href="https://www.opencyclemap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenCycleMap</a>
         <a href="https://opentopomap.org/#map=14/{$lat}/{$long}">OpenTopoMap</a>
         <a href="https://map.openseamap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenSeaMap</a>    
