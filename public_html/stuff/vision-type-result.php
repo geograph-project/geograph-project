@@ -24,7 +24,7 @@
 require_once('geograph/global.inc.php');
 
 
-init_session();
+//init_session();
 
 
 $smarty = new GeographPage;
@@ -47,8 +47,12 @@ if (!empty($_GET['views'])) {
 exit;
 }
 
+	$model = 'type';
+	if (!empty($_GET['model']) && preg_match('/^\w+$/',$_GET['model']))
+		$model = $_GET['model'];
 
-	if (!empty($_GET['label']) || !empty($_GET['type'])) {
+
+	if (!empty($_GET['label']) && !empty($_GET['type'])) {
 		$imagelist=new ImageList;
 
 		$thumbw=213; $thumbh=160;
@@ -61,20 +65,45 @@ exit;
 		FROM gridimage_search gi
 		INNER JOIN gridimage_label_single l USING (gridimage_id)
 		STRAIGHT_JOIN  tag_public t on (t.gridimage_id = l.gridimage_id)
-		WHERE label = ".$db->Quote($_GET['label'])." AND model = 'type'
+		WHERE label = ".$db->Quote($_GET['label'])." AND model = '$model'
 		AND prefix = 'type'
 		AND tag = ".$db->Quote($_GET['type'])."
 		ORDER BY gridimage_id DESC LIMIT 24";
 
 		$imagelist->_getImagesBySql($sql);
 		$imagelist->outputThumbs($thumbw,$thumbh);
+
+		if (count($imagelist->images) == 24)
+			print "Only 24 examples shown, there may be more";
+
+	} elseif (!empty($_GET['label'])) {
+		$imagelist=new ImageList;
+
+		$thumbw=213; $thumbh=160;
+
+		print "<p>AI model predicted ".htmlentities($_GET['label']).", on supplemental image without type tag</p>";
+
+		$imagelist->cols = preg_replace('/(\w+)/','gi.$1',$imagelist->cols);
+		$sql = "SELECT {$imagelist->cols}
+		FROM gridimage_search gi
+		INNER JOIN gridimage_label_single l USING (gridimage_id)
+		WHERE label = ".$db->Quote($_GET['label'])." AND model = '$model'
+		AND tags NOT like '%type:%' AND moderation_status = 'accepted'
+		LIMIT 24";
+
+		$imagelist->_getImagesBySql($sql);
+		$imagelist->outputThumbs($thumbw,$thumbh);
+
+		if (count($imagelist->images) == 24)
+			print "Only 24 examples shown, there may be more";
+
 	} else {
                         $thumbh = 120;
                         $thumbw = 120;
 
 
-		$data = $db->getAll("
-			select l.gridimage_id,count(*),tag as type,label,avg(label = replace(tag,' ',''))*100 as correct from gridimage_label_single l STRAIGHT_JOIN  tag_public t on (t.gridimage_id = l.gridimage_id) where model = 'type' and prefix = 'type' and l.gridimage_id > 7530000 group by tag,label with rollup limit 100
+		$data = $db->getAll($sql = "
+			select l.gridimage_id,count(*),tag as type,label,avg(label = replace(tag,' ',''))*100 as correct from gridimage_label_single l STRAIGHT_JOIN  tag_public t on (t.gridimage_id = l.gridimage_id) where model = '$model' and prefix = 'type' and l.gridimage_id > 7530000 group by tag,label with rollup limit 100
 		");
 
 		print "<table cellspacing=0 cellpadding=2 border=1 bordercolor=#eee>";
@@ -85,7 +114,7 @@ exit;
 			if (!empty($row['label'])) { //with rollup, so empty labels are total rows!
 				$image = new GridImage($row['gridimage_id'], true); //should be moderateod!
                                 print '<a title="'.$image->grid_reference.' : '.htmlentities($image->title).' by '.htmlentities($image->realname).' - click to view full size image"';
-                                print ' href="/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true).'</a>';
+                                print ' href="'.$CONF['canonical_domain'][$image->reference_index].'/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true).'</a>';
 			}
 
 			print "<td>".htmlentities($row['type'])."</td>";
