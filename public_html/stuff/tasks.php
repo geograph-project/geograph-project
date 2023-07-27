@@ -32,12 +32,13 @@ $tasks = array(
 		SELECT $cols, l.label
 		FROM gridimage_search gi inner join gridimage using (gridimage_id) inner join gridimage_label_single l using (gridimage_id)
 			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
-		WHERE gi.moderation_status = 'accepted' AND tags NOT like '%type:%' AND model = 'typev2' AND l.score > 0.75
+		WHERE gi.moderation_status = 'accepted' AND tags NOT like '%type:%' AND model = 'typev2'
 		 AND nateastings div 1000 = viewpoint_eastings div 1000 AND natnorthings div 1000 = viewpoint_northings div 1000
 		 AND l.label != 'CrossGrid'
 		 AND l.label != 'Geograph'
 		 AND ts.gridimage_id IS NULL ",
 		'label_column' => 'l.label', //needed to add a label filter
+		'score_column' => 'l.score', 'default_score' => 0.75,
 
 		// in this example 'verified' is used to keep track of verification progress
 		'yes' => "UPDATE gridimage_label SET verified = 1,verified_by = {user_id} WHERE gridimage_id = {gridimage_id} AND label = {label} AND model = 'typev2'",
@@ -61,13 +62,51 @@ $tasks = array(
 		SELECT $cols, l.label
 		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
 			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
-		WHERE tags NOT like '%subject:%' AND model = 'subject' AND l.score > 0.75
+		WHERE tags NOT like '%subject:%' AND model = 'subject'
 		 AND gi.user_id = {user_id}
 		 AND ts.gridimage_id IS NULL ",
-		'label_column' => 'l.label', //needed to add a label filter
+		'label_column' => 'l.label',
+		'score_column' => 'l.score', 'default_score' => 0.75,
 
-		'yes' => "UPDATE gridimage_label SET verified = 1,verified_by = {user_id} WHERE gridimage_id = {gridimage_id} AND label = {label} AND model = 'typev2'",
-		'no' => "UPDATE gridimage_label SET verified = 0,verified_by = {user_id} WHERE gridimage_id = {gridimage_id} AND label = {label} AND model = 'typev2'",
+		'promote' => "select gridimage_id,tag_id,user_id,r.created,2 as status, now() as updated
+			 from task_result r inner join label_to_tag_id using (label) inner join gridimage_search using (gridimage_id,user_id)
+			 where result = 'y' and task_id = 'subject' and model = 'subject' group by gridimage_id",
+
+		'list'=>true,
+	),
+
+	'aerial' => array(
+		'title' => "Is this an Aerial Shot?",
+		'question' => 'Does this image appear to be taken from Aircraft of some sort?',
+		'notes' => 'Any sort of aerodene or even drone (i.e. not taken by person with feet on ground, or other ground based structure). If unsure, e.g. it could be from a nearby hill, then use Skip.',
+		'responces' => 'Yes,No,Skip',
+		'source' => "
+		SELECT $cols, l.label
+		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
+			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
+		WHERE tags NOT like '%type:%' AND model = 'typev2'
+		 AND l.label = 'Aerial'
+		 AND ts.gridimage_id IS NULL ",
+		'label_column' => 'l.label',
+		'score_column' => 'l.score', 'default_score' => 0.75,
+
+		'list'=>true,
+	),
+
+	'fromdrone' => array(
+		'title' => "Is this taken by Drone?",
+		'question' => 'Does this image appear to be specifically <b>taken from a drone</b>? ',
+		'notes' => 'Specically looking for images from unmanned drones. If unsure, e.g. it could be from a aircraft of some sort, or even the ground, then use Skip.',
+		'responces' => 'Yes,No,Skip',
+		'source' => "
+		SELECT $cols, l.label
+		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
+			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
+		WHERE tags NOT like '%type:%' AND model = 'typev2'
+		 AND l.label = 'FromDrone'
+		 AND ts.gridimage_id IS NULL ",
+		'label_column' => 'l.label',
+		'score_column' => 'l.score', 'default_score' => 0.65,
 
 		'list'=>true,
 	),
@@ -153,6 +192,12 @@ if (empty($_GET['task'])) {
 		$db = GeographDatabaseConnection(true);
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+		if (!empty($t['score_column'])) {
+			$score = $t['default_score'];
+			if (!empty($_GET['score']))
+				$score = floatval($_GET['score'])/100;
+			$t['source'] .= " AND {$t['score_column']} > ".$score;
+		}
 		$col = $t['label_column'] ?? 'label';
 		$sql = preg_replace('/SELECT (.+?)\bFROM /s',"SELECT $col AS label,COUNT(*) AS images FROM ", $t['source'])." GROUP BY $col LIMIT 100";
 		$sql = str_replace('{user_id}',$USER->user_id,$sql);
@@ -160,6 +205,9 @@ if (empty($_GET['task'])) {
 		//print $sql;
 
 		$data = $db->getAll($sql);
+		if (count($data) == 1) {
+			//todo redirect?
+		}
 
 		print "<h2>".htmlentities($t['title'])."</h2>";
 
@@ -170,11 +218,30 @@ if (empty($_GET['task'])) {
 		}
 
 		print "<h3>Please select a label... </h3>";
+
+		if (!empty($t['warning']))
+			print "<p>".htmlentities($t['warning'])."</p>";
+
 		print "<ul>";
+		$link = "?task={$task_id}";
+		if (!empty($_GET['score']))
+			$link .= "&amp;score=".floatval($_GET['score']);
 		foreach ($data as $row) {
-			print "<li><a href=\"?task={$task_id}&amp;label=".urlencode($row['label'])."\">".htmlentities($row['label'])."</a> ({$row['images']} images)";
+			print "<li><a href=\"{$link}&amp;label=".urlencode($row['label'])."\">".htmlentities($row['label'])."</a> ({$row['images']} images)";
 		}
 		print "</ul>";
+
+                if (!empty($t['score_column']) && !empty($_GET['score'])) {
+			$score = sprintf('%.1f',$score*100);
+			$default = sprintf('%.1f',$t['default_score']*100);
+			print "<form method=get>";
+			print "<input type=hidden name=task value=$task_id>";
+			print "Minimum score: <input type=number name=score step=0.1 value=\"$score\" min=5 max=99.9 style=text-align:right>%  (about $default% recommended)<br>";
+			print "<input type=submit value=Update>";
+			print "</form>";
+                }
+
+		print "<hr><a href=\"?\">Back to Task List</a>";
 
 	} else {
 		die("huh");
@@ -217,6 +284,12 @@ if (empty($_GET['task'])) {
 
 		$v = $db->Quote($_GET['label']);
 
+		if (!empty($t['score_column'])) {
+			$score = $t['default_score'];
+			if (!empty($_GET['score']))
+				$score = floatval($t['default_score'])/100;
+			$t['source'] .= " AND {$t['score_column']} > ".$score;
+		}
 		$col = $t['label_column'] ?? 'label';
 		$sql = $t['source']." AND $col = $v LIMIT 25";
 		$sql = str_replace('{user_id}',$USER->user_id,$sql);
@@ -227,7 +300,12 @@ if (empty($_GET['task'])) {
 
 		if (empty($data)) {
 			$smarty->display('_std_begin.tpl');
-			print "No images available. Check back later, or <a href=\"?task={$task_id}\">try another term</a>";
+
+			$link = "?task={$task_id}";
+			if (!empty($_GET['score']))
+				$link .= "&amp;score=".floatval($_GET['score']);
+
+			print "No images available. Check back later, or <a href=\"{$link}\">try another term</a>";
 			$smarty->display('_std_end.tpl');
 			exit;
 		}
@@ -267,7 +345,6 @@ $smarty->display('_std_begin.tpl');
 	print "var title = ".json_encode($t['title']).";\n";
 	print "var question = ".json_encode($t['question']).";\n";
 	print "var responces = ".json_encode(explode(',',$t['responces'])).";\n";
-	print "var warning = ".json_encode($t['warning'] ?? '').";\n";
 	print "var notes = ".json_encode($t['notes'] ?? '').";\n";
 	print "</script>";
 
@@ -292,6 +369,8 @@ if (!empty($a))
 <input type=submit id="subBtn" value="Submit Results"> (sends what worked on so far, even if not done all images)
 
 </form>
+<a href="?task=<?= $task_id ?>\">Back to Term/Label List</a>
+
 <br><br>
 <input type=button value="Reopen Slideshow" onclick="showLightbox(currentIdx)">
 
@@ -317,6 +396,8 @@ if (!empty($a))
 	width:700px;
 	max-width:95vw;
 
+        max-height:95vh;
+
     left: 50%;
     transform: translate(-50%, 0);
 
@@ -327,9 +408,17 @@ if (!empty($a))
 border-radius:22px;
 	text-align:center;
 }
-
+@media (max-height: 800px) {
+  #lightbox {
+    top: -10px;
+  }
+}
 #lightbox .notes {
 	color:gray;
+}
+#lightbox img {
+	max-width: 90vw;
+	height:auto;
 }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -396,9 +485,6 @@ document.addEventListener('keyup', function(event) { //keyup used, as keydown au
 
 $(function() {
 	showLightbox();
-
-	if (warning.length)
-		alert(warning);
 
 	var html = ""; var sep = "Press ";
         for (i = 0; i < responces.length; i++) {
