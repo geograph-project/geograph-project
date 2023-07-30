@@ -604,7 +604,9 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 	 */
 	function outputThumbs($thumbw = 120,$thumbh = 120, $clear = true)
 	{
+		global $CONF;
        		if (count($this->images)) {
+			$domain = '';
 	                foreach ($this->images as $idx => $row) {
 
 				if (is_array($row)) {
@@ -614,10 +616,17 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 					$image = $row;
 				}
 
+				if (!empty($image->reference_index))
+					$domain = $CONF['canonical_domain'][$image->reference_index];
+
 				print '<div style="float:left;position:relative; width:'.($thumbw+10).'px; height:'.($thumbh+10).'px">';
-				print '<div align="center">';
+				if (!empty($image->highlight)) {
+					print '<div align="center" style="border:2px solid red;border-radius:3px;background-color:pink">';
+				} else {
+					print '<div align="center">';
+				}
 				print '<a title="'.$image->grid_reference.' : '.htmlentities($image->title).' by '.htmlentities($image->realname).' - click to view full size image"';
-				print ' href="/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true).'</a>';
+				print ' href="'.$domain.'/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true).'</a>';
 				print '</div></div>';
         	        }
 			if ($clear)
@@ -632,12 +641,8 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 	 */
 	function &_getDB($allow_readonly = false)
 	{
-
-///$allow_readonly = false; //todo, temp overright as slave non-functional.
-
-
 		//check we have a db object or if we need to 'upgrade' it
-		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+		if (empty($this->db) || !is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
 			$this->db=GeographDatabaseConnection($allow_readonly);
 		}
 		return $this->db;

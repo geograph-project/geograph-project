@@ -47,19 +47,12 @@ if (empty($_GET['model'])) {
 } //todo, aos check it a valid model!
 	//select model from dataset where model = _GET[model] AND model_download != ''
 
-if ($_GET['model'] == 'auto') {
-	//auto is a special value, meaning the server is free to choose, but it should choose from downloadable models, as need to fetch from one of the models being submitted
-
-	if ($_SERVER['REQUEST_METHOD'] == 'POST')
-		die('{"error":"Something went horribly wrong"}');
-
-	$_GET['model'] = 'typev2'; //for now, hardcoded!
-	//todo... $_GET['model'] = db->getOne("SELECT model FROM dataset where model_download != '' and model != '' ORDER BY RAND()");
-}
-
 ####################################
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	if ($_GET['model'] == 'auto')
+		die('{"error":"Something went horribly wrong"}');
+
 	$db = GeographDatabaseConnection(false);
 
 	$json = file_get_contents('php://input');
@@ -88,6 +81,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 } else {
 	$imagelist=new ImageList;
+
+	$db = $imagelist->_getDb(false); //make sure not readonly, even thogh we may only be selecting, use primary to always get most uptodate list
+
+	####################
+
+	if ($_GET['model'] == 'auto') {
+		//auto is a special value, meaning the server is free to choose, but it should choose from downloadable models, as need to fetch from one of the models being submitted
+
+		//$_GET['model'] = 'typev2'; //for now, hardcoded!
+
+		//make sure to pick one used in auto, ordering by labels, is just a contrivaance to most preferntially pick "type/typev2"
+		$_GET['model'] = $db->getOne("select model from dataset where model_download != '' and model != '' and model_dir != '' order by labels");
+	}
+
 	####################
 
 	$cols = ',realname';
@@ -104,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	if (!empty($_GET['offset'])) {
 		$limit = intval($_GET['offset']).",$limit";
 	} else {
-		$db = $imagelist->_getDb(false);
 		$w = array();
 		$w[] = "model = ".$db->Quote($_GET['model']);
 		$w[] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
@@ -158,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	####################
 
-	$qmod = $imagelist->_getDb()->Quote($_GET['model']);
+	$qmod = $db->Quote($_GET['model']);
 	$where = implode(" AND ",$where);
 
 	if (!empty($_GET['recent'])) {
@@ -206,12 +212,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				$imagelist->images[$i]->fullpath = $imagelist->images[$i]->_getFullpath();
 
 				if (basename($imagelist->images[$i]->fullpath) == 'error.jpg') {
-					$db = GeographDatabaseConnection(false);
 					$db->Execute("DELETE FROM assessment WHERE gridimage_id = {$image->gridimage_id}");
 
-					//todo, delete from assessment where gridimage_id = as will never be updated anyway
-
-				debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
+					debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
 
 					unset($imagelist->images[$i]);
 					$deleted=1;
