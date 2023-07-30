@@ -29,7 +29,7 @@ require_once('geograph/imagelist.class.php');
 
 if (!empty($_GET['models'])) {
 	$db = GeographDatabaseConnection(true);
-	$data = $db->getAll("select model,model_download,model_dir,folder,grouper,images from dataset where model_download != '' and model != ''");
+	$data = $db->getAll("select model,model_download,model_dir,folder,grouper,images from dataset where model_download != '' and model != '' and model_dir != ''");
         outputJSON($data);
 	exit;
 
@@ -53,7 +53,7 @@ if ($_GET['model'] == 'auto') {
 	if ($_SERVER['REQUEST_METHOD'] == 'POST')
 		die('{"error":"Something went horribly wrong"}');
 
-	$_GET['model'] = 'type'; //for now, hardcoded!
+	$_GET['model'] = 'typev2'; //for now, hardcoded!
 	//todo... $_GET['model'] = db->getOne("SELECT model FROM dataset where model_download != '' and model != '' ORDER BY RAND()");
 }
 
@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	####################
 
 	if (empty($_GET['all'])) {
-		if ($_GET['model'] == 'type') {
+		if ($_GET['model'] == 'type' || $_GET['model'] == 'typev2') {
 //			$where[] = "moderation_status = 'accepted'"; //todo, we might want to also check geos? eg spot potential long-distance/cross grid
 			$where[] = "tags NOT like '%type:%'";
 		} elseif ($_GET['model'] == 'top') {
@@ -162,6 +162,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$where = implode(" AND ",$where);
 
 	if (!empty($_GET['recent'])) {
+		if (strpos($join,'gridimage_size') === 0)
+			$join .= "inner join gridimage_size using (gridimage_id)"; //to help avoid failed uploads!
+			//we ottherwise still want to process pending/rejects here!
+
 		$sql = "select gi.gridimage_id,user_id $cols
 		from gridimage gi
 		$join
