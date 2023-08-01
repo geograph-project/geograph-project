@@ -55,7 +55,7 @@ $urls_per_sitemap=1000;
 
 //how many sitemap files must we write?
 printf("Counting users...\r");
-$images=$db->GetOne("select count(*) from content left join gridsquare using (gridsquare_id) where source = 'snippet' and (length(grid_reference)=6 OR grid_reference is null)"); //content table, already excludes empty snippets
+$images=$db->GetOne("select count(*) from content left join gridsquare using (gridsquare_id) where source = 'snippet' and length(grid_reference)=5"); //content table, already excludes empty snippets
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
@@ -66,7 +66,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	//prepare output file and query
 	printf("Preparing user sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
 
-	$filename=sprintf('%s/public_html/sitemap/root/sitemap-snippet%04d.xml', $param['dir'], $sitemap);
+	$filename=sprintf('%s/public_html/sitemap/root/sitemap-snippet%04d.ie.xml', $param['dir'], $sitemap);
 	$fh=fopen($filename, "w");
 
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -74,13 +74,13 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 
 	$maxdate="";
 
-	//ireland snippets, will be 'non-canonical' on .org.uk so should be excluded
+	//ireland snippets, are only 'canonical' on .ie so should be filtered
 
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = $db->Execute(
 		"select foreign_id as snippet_id,date(updated) as updated ".
 		"from content left join gridsquare using (gridsquare_id) where source = 'snippet' ".
-		"and (length(grid_reference)=6 OR grid_reference is null) ".
+		"and length(grid_reference)=5 ".
 		"order by updated asc ".
 		"limit $offset,$urls_per_sitemap");
 
@@ -130,7 +130,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 }
 
 //now we write an index file pointing to our generated ones above
-$filename=sprintf('%s/public_html/sitemap/root/sitemap-snippet.xml', $param['dir']);
+$filename=sprintf('%s/public_html/sitemap/root/sitemap-snippet.ie.xml', $param['dir']);
 $fh=fopen($filename, "w");
 
 fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -140,7 +140,7 @@ for ($s=1; $s<=$sitemaps; $s++)
 {
 	fprintf($fh, "<sitemap>");
 
-	$fname=sprintf("sitemap-snippet%04d.xml.gz", $s);
+	$fname=sprintf("sitemap-snippet%04d.ie.xml.gz", $s);
 
 	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);

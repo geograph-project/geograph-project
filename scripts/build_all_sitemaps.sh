@@ -16,6 +16,8 @@ if test "$CLI_HTTP_HOST" = 'www.geograph.org.uk'; then
 	/usr/bin/php $BASE_DIR/scripts/build_sitemap.php  --config=www.geograph.ie --ri=2 --suffix=.ie --normal=0 --images=1 --secret=$CONF_SITEMAP_SECRET --per=10000 --start=30
 
 	/usr/bin/php $BASE_DIR/scripts/build_usersitemap.ie.php  --config=www.geograph.ie
+
+	/usr/bin/php $BASE_DIR/scripts/build_snippetsitemap.ie.php  --config=www.geograph.ie
 fi
 
 #this pings ALL the sitemaps rebuilt above
