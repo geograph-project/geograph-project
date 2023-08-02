@@ -179,6 +179,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		where $where
 		order by gridimage_id desc
 		limit $limit";
+
+	} elseif ($_GET['model'] == 'typev2' && empty($_GET['large'])) {
+		$sql = "select t.*
+		from tmp_typev2_images t
+		left join gridimage_label l on (l.gridimage_id = t.gridimage_id and `model` = $qmod)
+		where l.seq_id IS null
+		limit $limit";
+
 	} else {
 		$sql = "select gi.gridimage_id,user_id $cols
 		from gridimage_search gi
