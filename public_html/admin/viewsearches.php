@@ -104,29 +104,23 @@ function dump_sql_table($sql,$title,$autoorderlimit = true) {
 		return;
 	}
 
-	$row = $result->GetRowAssoc(false);
-	$result->MoveNext();
+	$row =& $result->fields;
 
 	print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
 	foreach ($row as $key => $value) {
 		print "<TH>$key</TH>";
 	}
-	print "</TR><TR>";
-	foreach ($row as $key => $value) {
-		print "<TD>$value</TD>";
-	}
 	print "</TR>";
-	while (!$result->EOF) {
-		$row = $result->GetRowAssoc(false);
-		$result->MoveNext();
+	do {
+		$row =& $result->fields;
 		print "<TR>";
 		foreach ($row as $key => $value) {
 			print "<TD>$value</TD>";
 		}
 		print "</TR>";
-	}
+		$result->MoveNext();
+	} while (!$result->EOF);
+
 	print "</TR></TABLE>";
 }
 
-	
-?>

@@ -41,18 +41,17 @@ if (!empty($GLOBALS['DSN_READ'])) {
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	global $db;
-	
+
 	$result = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
-	
+
 	print "<H3>$title</H3>";
-	
+
 	if ($result->EOF) {
 		print "<i>empty</i>";
 		return;
 	}
 
-	$row = $result->GetRowAssoc(false);
-	$result->MoveNext();
+	$row =& $result->fields;
 
 	print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
 	foreach ($row as $key => $value) {
@@ -60,6 +59,7 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	}
 	print "</TR>";
 	do {
+		$row =& $result->fields;
 		print "<TR>";
 		$align = "left";
 		foreach ($row as $key => $value) {
@@ -67,7 +67,6 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 			$align = "right";
 		}
 		print "</TR>";
-		$row = $result->GetRowAssoc(false);
 		$result->MoveNext();
 	} while (!$result->EOF);
 	print "</TR></TABLE>";
