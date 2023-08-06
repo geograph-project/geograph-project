@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$param = array('limit' => 10, 'skip'=>0, 'sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_visiondata010', 'source'=>'sample8',
-	'query'=>'london','group'=>'type_ids','n'=>3,'debug'=>1,'sample'=>false,'minimum'=>false,'missing'=>false,'top'=>false);
+$param = array('limit' => 10, 'skip'=>0, 'sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_visiondata010', 'source'=>'sample8', 'large'=>false, 'shard' => '',
+	'query'=>'london','group'=>'type_ids','n'=>3,'debug'=>1,'sample'=>false,'minimum'=>false,'missing'=>false,'top'=>false,'extends'=>false,'skipprefixes'=>1);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -180,7 +180,7 @@ if ($param['group'] == 'drone') {
 	$db = GeographDatabaseConnection(true);
 
 			//minimum is hardcoded for now! (currently < 1000 so dont need top)
-	$groups = $db->getAll("select content_id,foreign_id,source,title from content where images>20 and source in ('article','gallery','themed') LIMIT {$param['limit']}");
+	$groups = $db->getAll("select content_id,foreign_id,source,title from content where images>20 and source in ('article','gallery','themed') AND title NOT like 'SCIMPY%' AND title NOT like 'YOMP %' LIMIT {$param['limit']}");
 
 	$extractfrom = '';  //there isnt a 'contents' column
 	$pop = 1;
@@ -188,7 +188,6 @@ if ($param['group'] == 'drone') {
 	$cols = "gridimage_id, user_id,realname,title,grid_reference";
 	$data = array();
 	foreach ($groups as $row) {
-
 		$title = $db->Quote($row['title']);
 
 		if ($row['source'] == 'article') {
@@ -203,7 +202,7 @@ if ($param['group'] == 'drone') {
 			$data = array_merge($data, $db->getAll($sql = "
 			SELECT DISTINCT $cols, $title as `content_ids`, UNIX_TIMESTAMP(submitted) AS submitted
 			FROM gridimage_search
-			INNER JOIN gridimage_post USIN (gridimage_id)
+			INNER JOIN gridimage_post USING (gridimage_id)
 			WHERE topic_id = ".intval($row['foreign_id'])."
 			LIMIT {$param['n']}"));
 		}
@@ -242,7 +241,7 @@ if ($param['group'] == 'drone') {
 	$sql['limit'] = $param['limit'];
 
 	if ($param['group'] == 'imageclass') {
-		$sql['wheres'][] = "imageclass!=''";
+//		$sql['wheres'][] = "imageclass!=''";
 		$sql['wheres'][] = "id > 3000000"; //only use images, after tags added, so in theory it just stallwarts using categories, which MIGHt lead to better quality selections?
 	}
 
@@ -254,30 +253,49 @@ if ($param['group'] == 'drone') {
 		$sql['columns']['images'] = "COUNT(*) AS images";
 		$sql['order'] = "images DESC";
 	}
-	if ($param['limit'] > 1000)
-		$sql['option'] = "max_matches=".array_sum(explode(',',$param['limit']));
+	$total = array_sum(explode(',',$param['limit']));
+	if ($total > 1000)
+		$sql['option'] = "max_matches=".($total+100);
 
-	print sqlBitsToSelect($sql).";\n\n";
-	if ($param['debug'])
-		exit;
-
-	if (!empty($extractfrom) && $param['missing']) {
+	if (!empty($extractfrom) && ($param['missing'] || $param['skipprefixes'])) {
 		//we only need the extra columns if checking missing. otherwise this outer loop doesnt need to do extraction
 		$sql['columns'][] = "{$extractfrom}s";
 		$sql['columns'][] = $param['group'];
 
+		print sqlBitsToSelect($sql).";\n\n";
 		$groups = $sph->getAll(sqlBitsToSelect($sql));
 	} else {
 
+		print sqlBitsToSelect($sql).";\n\n";
 		$groups = $sph->getCol(sqlBitsToSelect($sql));
 	}
 
 	$data = array();
+	$value = ''; //gets set by extractfrom
 	foreach ($groups as $group) {
 		if ($group === 'Unknown')
 			continue;
 
 		if (!empty($extractfrom)) {
+			if ($param['skipprefixes']) {
+				$ids = explode(',',$group[$extractfrom.'_ids']);
+                		$names = explode('_SEP_',$group[$extractfrom.'s']);array_shift($names); //the first is always blank!
+		                $value = trim($names[array_search($group['group'],$ids)]);
+
+if (strlen($param['shard'])) {
+	$crc = sprintf("%u", crc32($value));
+	if ($crc%10 != $param['shard']) {
+		 print "Skipping $value (crc $crc % ".($crc%10).")\n";
+	         continue;
+	}
+	//todo, keep a list of labels, so can output a custom zip command! (for now use inodes-shard.php!)
+}
+					//top/type/subject etc, should already be excluded in sample8 index, but include here just in case!
+				if (preg_match('/^(top|subject|type|camera|place|season|country|county|suburb|district|island|islands|london borough|bucket|postcode district|postcode|postcode area|time|taken|area postcode|region|near|at|wiki|category|of|off|in|month|name|area|location|approaching|district|p150 hill|p600 hill|location|to|city|between):/',$value)) {
+					print "Skipping $value\n";
+                                        continue;
+				}
+			}
 			if ($param['missing']) {
 				$ids = explode(',',$group[$extractfrom.'_ids']);
                 		$names = explode('_SEP_',$group[$extractfrom.'s']);array_shift($names); //the first is always blank!
@@ -289,9 +307,10 @@ if ($param['group'] == 'drone') {
 					print "Skipping $value\n";
 					continue;
 				}
-
-				$group = $group['group']; //$group actully a array, turn it back to just GROUPBY()
 			}
+
+			if (is_array($group)) //because missing/skipprefixes needed a lookup!
+				$group = $group['group']; //$group actully a array, turn it back to just GROUPBY()
 			$second = ", {$extractfrom}s, $group AS `group`";
 
 		} elseif ($param['missing']) {
@@ -335,9 +354,11 @@ if ($param['group'] == 'drone') {
 		WHERE MATCH($match) AND $where
 		LIMIT $limit"));
 
-		print "$group ==> ".count($data)."\n";
-		if ($param['debug'])
+		print "$group($value) ==> ".count($data)."\n";
+		if ($param['debug']) {
 			print "$sql;\n";
+			exit;
+		}
 		$labels++;
 	}
 }
@@ -353,8 +374,6 @@ if ($param['debug'])
 
 ######################################################################################################################################################
 
-print "Writing ".count($data)." to {$param['folder']}{$param['filename']}\n";
-
 if (!is_dir($param['folder'].$param['filename'])) //create a folder to store the tmp files
 	mkdir($param['folder'].$param['filename'], null, true);
 
@@ -365,17 +384,23 @@ fclose($h);
 
 // ... scan if already already have the file!
 $files = array();
-//find /mnt/efs/data/geograph_visiondata0* -regextype posix-extended -regex '.*/[0-9]+\.jpg$'
-$h = popen("find {$param['folder']}geograph_visiondata*  -regextype posix-extended -regex '.*/[0-9]+\\.jpg$'",'r');
-while($h&&!feof($h)) {
-	$line = trim(fgets($h));
-	if (empty($line))
-		continue;
-	$files[basename($line)] = $line;
+if (empty($param['large'])) {
+	print "Scanning {$param['folder']}geograph_visiondata* for .jpg\n";
+	//find /mnt/efs/data/geograph_visiondata0* -regextype posix-extended -regex '.*/[0-9]+\.jpg$'
+	$h = popen("find {$param['folder']}geograph_visiondata*  -regextype posix-extended -regex '.*/[0-9]+\\.jpg$'",'r');
+	while($h&&!feof($h)) {
+		$line = trim(fgets($h));
+		if (empty($line))
+			continue;
+		$files[basename($line)] = $line;
+	}
+	fclose($h);
+	print "Found ".count($files)." existing files\n";
 }
-fclose($h);
 
 ######################################################################################################################################################
+
+print "Writing ".count($data)." to {$param['folder']}{$param['filename']}\n";
 
 $h = fopen($param['folder'].$param['filename'].'/'.$param['filename'].'.metadata.csv','ab'); //we writing utf8!
 if (!filesize($param['folder'].$param['filename'].'/'.$param['filename'].'.metadata.csv')) {
@@ -411,7 +436,7 @@ foreach ($data as $idx => $row) {
 
 	$value = preg_replace('/[^\w]+/','',$value);
 	if (empty($value))
-		continue;
+		$value = 'None';
 	if ($value == 'CrossGrid' && !empty($row['distance']) && is_numeric($row['distance']) && $row['distance'] < 500)
 		continue;
 
@@ -423,6 +448,9 @@ foreach ($data as $idx => $row) {
 
 	$output .= '/'.$filename;
 
+	if (!empty($param['extends']) && file_exists($param['folder'].$param['extends'].'/'.$value.'/'.$filename))
+		continue;
+
 ########################################
 
 	if ($c > $param['skip'] && !file_exists($output) ) {
@@ -432,7 +460,9 @@ foreach ($data as $idx => $row) {
 			link($files[$filename], $output);
 			//if (!empty($row['submitted'])) touch($output, $row['submitted']);
 		} else {
-			if (isset($row['width']) && ($row['width'] < 224 || $row['height'] < 224) && $row['original'] > 224) {
+			if ($param['large'] && $row['original'] > 224) {
+				$path = $image->getSquareThumbnail(224,224,'path', true, '_original');
+			} elseif (isset($row['width']) && ($row['width'] < 224 || $row['height'] < 224) && $row['original'] > 224) {
 				$path = $image->getSquareThumbnail(224,224,'path', true, '_original');
 			} else {
 				$path = $image->getSquareThumbnail(224,224,'path');
@@ -503,11 +533,20 @@ print "zip -rq {$param['filename']}.zip LICENCE {$param['filename']}.metadata.cs
 //	passthru("zip -rq {$param['filename']}.zip LICENCE {$param['filename']}.metadata.csv */");
 
 
-print "mv {$param['folder']}{$param['filename']}/*.zip {$param['folder']}/facets/\n";
+//print "mv {$param['folder']}{$param['filename']}/*.zip {$param['folder']}/facets/\n";
+
+print "./aws/dist/aws s3 mv --storage-class INTELLIGENT_TIERING --acl public-read {$param['folder']}{$param['filename']}/{$param['filename']}.zip s3://data.geograph.org.uk/datasets/{$param['filename']}.zip\n";
 
 
-print "insert into dataset set src_format = 'subdir', folder = '{$param['filename']}', imagesize = '224XX224.jpg'";
-print ", src_download = 'https://staging.data.geograph.org.uk/facets/{$param['filename']}.zip', grouper='{$param['group']}'";
+print "insert into dataset set src_format = 'subdir', folder = '{$param['filename']}', imagesize = '224XX224.jpg', grouper='{$param['group']}'";
+//print ", src_download = 'https://staging.data.geograph.org.uk/facets/{$param['filename']}.zip'";
+print ", src_download = 'https://s3.eu-west-1.amazonaws.com/data.geograph.org.uk/datasets/{$param['filename']}.zip'";
+ $size = filesize("{$param['filename']}.zip");
+ $time = filemtime("{$param['filename']}.zip");
+print ", src_size=$size,src_time=FROM_UNIXTIME($time)";
+
+if (!empty($param['extends']))
+	print ", extends = '{$param['extends']}'";
 print ", query = '{$param['query']}', images = {$images}, labels = {$labels};\n\n";
 
 print "find {$param['folder']}{$param['filename']}/ -name '*.jpg' | wc -l\n\n";
