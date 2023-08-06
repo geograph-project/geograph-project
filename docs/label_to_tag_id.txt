@@ -1,0 +1,38 @@
+# NOTE: we now 'duplicate' the tag prefix into the table, so it can be part of unique index. 
+# ... for imageclass mode we want possiblity both subject AND normal unprefixed tag!
+
+create table label_to_tag_id 
+	select prefix as model, trim(regexp_replace(tag, '[^\\w]+','')) as label,tag_id, prefix
+	from tag 
+	where status = 1 and (prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject');
+
+
+insert into label_to_tag_id
+ select 'typev2' as model, label, tag_id, prefix from label_to_tag_id where model = 'type';
+
+alter table label_to_tag_id add unique(model,label,prefix);
+
+# turns out there was a few duplicate subject tags, taht needed clearing before could add the index
+
+
+# add where category is mapped to subject
+insert ignore into label_to_tag_id 
+ select 'imageclass' as model, regexp_replace(imageclass,'[^\\w]+','') as label, tag_id, prefix
+ from category_mapping left join tag on (prefix = 'subject' and tag = subject and status = 1) 
+ where subject != '' and tag_id is not null;
+
+# and where there IS already a tag by the same name (but exclude when the subject tag was of the same name anyway!) - ie still add a plain tag, even when there is an subject (as subject might be less precise than the category)
+insert ignore into label_to_tag_id
+ select 'imageclass' as model, regexp_replace(imageclass,'[^\\w]+','') as label, t2.tag_id, t2.prefix
+ from category_stat s
+  inner join tag t2 on (t2.prefix in ('','category') and t2.tag = s.imageclass and t2.status = 1)
+  left join  category_mapping using (imageclass) left join tag t1 on (t1.prefix = 'subject' and t1.tag = subject and t1.status = 1) 
+ where imageclass != '' 
+   and (t1.tag_id IS NULL OR t1.tag != s.imageclass)
+ group by s.imageclass;
+ 
+
+# The IGNORE is because tehre are multiple categories, with same label (ie without spaces), eg "Well house" and "Wellhouse"
+... doesnt really matter which we expand to.
+... although annoyingly a few have different expandsions. Pipe bridge=>subject:bridge and Pipebridge=>subject:pipe
+... we loose that and effectivly pick one at random!
