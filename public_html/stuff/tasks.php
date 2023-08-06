@@ -148,6 +148,20 @@ $tasks = array(
 
 		'list'=>true,
 	),
+
+	'seasons' => array(
+		'title' => 'Seasonal Images',
+		'question' => 'Does this image look stereotypically <big>{label}</big>?',
+		'notes' => 'It does not have to actully be taken in {label}, just that it looks like it (eg winter would look snowy or at least "cold"). If indeterminate (common in the British Isles!) then select No.',
+		'responces' => 'Yes,No,Skip',
+		'source' => "SELECT $cols, tag as label
+		FROM gridimage_search gi INNER JOIN tag_public USING (gridimage_id)
+		 LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
+		WHERE prefix = 'season'
+		 AND ts.gridimage_id IS NULL
+		",
+		'label_column' => 'tag',
+	),
 );
 
 
@@ -161,6 +175,7 @@ $tasks = array(
 		WHERE ....
 		 AND ts.gridimage_id IS NULL
 		",
+		'label_column' => 'p.label', //needed to add a label filter
 */
 
 #####################################
@@ -369,7 +384,7 @@ if (!empty($a))
 <input type=submit id="subBtn" value="Submit Results"> (sends what worked on so far, even if not done all images)
 
 </form>
-<a href="?task=<?= $task_id ?>\">Back to Term/Label List</a>
+<a href="?task=<?= $task_id ?>">Back to Term/Label List</a>
 
 <br><br>
 <input type=button value="Reopen Slideshow" onclick="showLightbox(currentIdx)">
