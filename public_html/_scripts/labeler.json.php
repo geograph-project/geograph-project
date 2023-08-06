@@ -29,7 +29,10 @@ require_once('geograph/imagelist.class.php');
 
 if (!empty($_GET['models'])) {
 	$db = GeographDatabaseConnection(true);
-	$data = $db->getAll("select model,model_download,model_dir,folder,grouper,images from dataset where model_download != '' and model != '' and model_dir != ''");
+	$format = '224XX224.jpg';
+	if (!empty($_GET['title']))
+		$format = 'title.txt';
+	$data = $db->getAll("select model,model_download,model_dir,folder,grouper,images from dataset where model_download != '' and model != '' and model_dir != '' and imagesize='$format'");
         outputJSON($data);
 	exit;
 
@@ -91,8 +94,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 		//$_GET['model'] = 'typev2'; //for now, hardcoded!
 
+		$format = '224XX224.jpg';
+		if (!empty($_GET['title']))
+			$format = 'title.txt';
+
 		//make sure to pick one used in auto, ordering by labels, is just a contrivaance to most preferntially pick "type/typev2"
-		$_GET['model'] = $db->getOne("select model from dataset where model_download != '' and model != '' and model_dir != '' order by labels");
+		$_GET['model'] = $db->getOne("select model from dataset where model_download != '' and model != '' and model_dir != '' and imagesize='$format' order by labels");
 	}
 
 	####################
@@ -136,13 +143,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	####################
 
 	if (empty($_GET['all'])) {
-		if ($_GET['model'] == 'type' || $_GET['model'] == 'typev2') {
+		if (strpos($_GET['model'],'type') === 0) {
 //			$where[] = "moderation_status = 'accepted'"; //todo, we might want to also check geos? eg spot potential long-distance/cross grid
 			$where[] = "tags NOT like '%type:%'";
-		} elseif ($_GET['model'] == 'top') {
+		} elseif (strpos($_GET['model'],'top') === 0) {
 			$where[] = "tags NOT like '%top:%'";
-		} elseif ($_GET['model'] == 'subject') {
+		} elseif (strpos($_GET['model'],'subject') === 0) {
 			$where[] = "tags NOT like '%subject:%'";
+			$where[] = "imageclass=''"; //if has a category can proabbly infer subject from that
 		} elseif ($_GET['model'] == 'city') {
 			//for the moment, the city dataset we wanting to retest the images used for training.
 			//... later will ahve to get this data from sphinx or sphinx_placename
@@ -162,16 +170,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$where[] = "last > 5300000";
 	}
 
+	if (!empty($_GET['title']))
+		$cols .= ", title";
+
 	####################
 
 	$qmod = $db->Quote($_GET['model']);
 	$where = implode(" AND ",$where);
 
 	if (!empty($_GET['recent'])) {
-		if (strpos($join,'gridimage_size') === 0)
-			$join .= "inner join gridimage_size using (gridimage_id)"; //to help avoid failed uploads!
+		if (strpos($join,'gridimage_size') === FALSE)
+ 			$join .= "inner join gridimage_size using (gridimage_id)"; //to help avoid failed uploads!
 			//we ottherwise still want to process pending/rejects here!
 
+		//todo, to get realname, should be joining on user table!
 		$sql = "select gi.gridimage_id,user_id $cols
 		from gridimage gi
 		$join
@@ -206,7 +218,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	if (count($imagelist->images)) {
 		foreach ($imagelist->images as $i => $image) {
-			if (empty($_GET['full'])) {
+			if (!empty($_GET['title'])) {
+        	                $imagelist->images[$i]->title = latin1_to_utf8($imagelist->images[$i]->title);
+	                        //$row['realname'] = latin1_to_utf8($row['realname']);
+
+                        	//liner doesnt actully cope with utf8 - even with a BOM - so transliterate
+                                //note we STILL convert to utf8 first, rather than detect ISO-8859-15 directly (ie more than ascii), because latin1_to_utf8 first decodes entities, which$
+                	        $enc = mb_detect_encoding($imagelist->images[$i]->title, 'UTF-8, ISO-8859-15, ASCII');
+        	                if ($enc == 'UTF-8') // should no longer ever detect ISO-8859-15
+	                                $imagelist->images[$i]->title = translit_to_ascii($imagelist->images[$i]->title, "UTF-8");
+
+			} elseif (empty($_GET['full'])) {
 				$imagelist->images[$i]->fullpath = $image->getSquareThumbnail(224,224,'path');
 
 			} elseif (!empty($imagelist->images[$i]->original_width) && isset($_GET['large'])) {
