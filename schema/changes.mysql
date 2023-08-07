@@ -2837,3 +2837,12 @@ alter table gridimage_pending add moderator_id int unsigned default null after s
 #################################################
 
 
+drop table label_to_tag_id;
+
+create table label_to_tag_id select prefix as model, trim(regexp_replace(tag, '[^\\w]+','')) as label,tag_id
+ from tag where status = 1 and (prefix='top' OR prefix='bucket' OR prefix='type' OR prefix='subject');
+
+insert into label_to_tag_id select 'typev2' as model, label, tag_id from label_to_tag_id where model = 'type';
+
+alter table add unique(model,label);
+
