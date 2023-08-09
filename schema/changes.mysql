@@ -2846,3 +2846,38 @@ insert into label_to_tag_id select 'typev2' as model, label, tag_id from label_t
 
 alter table add unique(model,label);
 
+
+#################################################
+
+CREATE TABLE `task` (
+  `task_id` varchar(24) NOT NULL,
+  
+  `title` varchar(128) NOT NULL,
+  `question` varchar(255) NOT NULL,
+  `responces` varchar(255) NOT NULL,
+  `warning` TEXT NOT NULL,
+  `notes` TEXT NOT NULL,
+
+  `source` TEXT NOT NULL,
+
+  `label_column` varchar(128) NOT NULL,
+  `score_column` varchar(128) NOT NULL,
+   default_score decimal(5,2) NOT NULL,
+   
+   `yes` TEXT NOT NULL,
+   `no` TEXT NOT NULL,
+   `good` TEXT NOT NULL,
+   `bad` TEXT NOT NULL,
+   
+   `promote` TEXT NOT NULL,
+
+ `list` tinyint unsigned NOT NULL default 0,
+  
+  `created` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated` timestamp NOT NULL ON UPDATE current_timestamp(),
+
+  PRIMARY KEY (`task_id`)
+)
+
+
+#################################################

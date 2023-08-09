@@ -29,7 +29,7 @@ $tasks = array(
 		'question' => 'Does this image look like {label}?',
 		'responces' => 'Yes,No,Skip',
 		'source' => "
-		SELECT $cols, l.label
+		SELECT {cols}, l.label
 		FROM gridimage_search gi inner join gridimage using (gridimage_id) inner join gridimage_label_single l using (gridimage_id)
 			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
 		WHERE gi.moderation_status = 'accepted' AND tags NOT like '%type:%' AND model = 'typev2'
@@ -54,12 +54,12 @@ $tasks = array(
 	),
 
 	'subject' => array(
-		'title' => "Subject Tags for your Images",
+		'title' => "Subject Tags for your Images (vision)",
 		'question' => 'Does this image have the primary <b>subject</b> of <big>{label}</big>?',
 		'warning' => 'Selecting Yes will actully add the subject tag to your image. Remember these labels are suggested by a computer vision experiment, it can make wrong (or even humorous) suggestions, so just select N in those cases.',
 		'responces' => 'Yes,No,Skip',
 		'source' => "
-		SELECT $cols, l.label
+		SELECT {cols}, l.label
 		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
 			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
 		WHERE tags NOT like '%subject:%' AND model = 'subject'
@@ -75,13 +75,33 @@ $tasks = array(
 		'list'=>true,
 	),
 
+	'subjectlabel' => array(
+		'title' => "Subject Tags for your Images (from title)",
+		'question' => 'Does this image have the primary <b>subject</b> of <big>{label}</big>?',
+		'warning' => 'Selecting Yes will actully add the subject tag to your image. Remember these labels are suggested by a computer vision experiment, it can make wrong (or even humorous) suggestions, so just select N in those cases.',
+		'responces' => 'Yes,No,Skip',
+		'source' => "
+		SELECT {cols}, t.tag as label
+		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
+			INNER JOIN label_to_tag_id USING (model,label)
+			INNER JOIN tag t USING (tag_id)
+			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
+		WHERE tags NOT like '%subject:%' AND model = 'subjectlabel'
+		 AND gi.user_id = {user_id}
+		 AND ts.gridimage_id IS NULL ",
+		'label_column' => 't.tag',
+		'score_column' => 'l.score', 'default_score' => 0.6,
+
+		'list'=>true,
+	),
+
 	'aerial' => array(
 		'title' => "Is this an Aerial Shot?",
 		'question' => 'Does this image appear to be taken from Aircraft of some sort?',
 		'notes' => 'Any sort of aerodene or even drone (i.e. not taken by person with feet on ground, or other ground based structure). If unsure, e.g. it could be from a nearby hill, then use Skip.',
 		'responces' => 'Yes,No,Skip',
 		'source' => "
-		SELECT $cols, l.label
+		SELECT {cols}, l.label
 		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
 			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
 		WHERE tags NOT like '%type:%' AND model = 'typev2'
@@ -99,7 +119,7 @@ $tasks = array(
 		'notes' => 'Specically looking for images from unmanned drones. If unsure, e.g. it could be from a aircraft of some sort, or even the ground, then use Skip.',
 		'responces' => 'Yes,No,Skip',
 		'source' => "
-		SELECT $cols, l.label
+		SELECT {cols}, l.label
 		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
 			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
 		WHERE tags NOT like '%type:%' AND model = 'typev2'
@@ -116,7 +136,7 @@ $tasks = array(
 		'question' => 'Does this image <b>really illustrate</b> <big>{label}</big>?',
 		'notes' => "It doesn't just need to to match the term, but should be particully representative of {label} and the subject clearly visible in the image. Please only vote on the subject of the photo, not the technical quality or resolution etc of the image (i.e. don't downvote low resolution images).",
 		'responces' => 'Good,Ok,Bad,Skip',
-		'source' => "SELECT $cols, c.label, curated_id as table_id
+		'source' => "SELECT {cols}, c.label, curated_id as table_id
 		FROM gridimage_search gi INNER JOIN curated1 c USING (gridimage_id)
                  INNER JOIN curated_label USING (label,active)
 		 LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
@@ -134,7 +154,7 @@ $tasks = array(
 		'question' => 'Does this image <b>really illustrate</b> <big>{label}</big>?',
 		'notes' => "It doesn't just need to to match the term, but should be particully representive of {label} and the subject clearly visible in the image.",
 		'responces' => 'Yes,No,Skip',
-		'source' => "SELECT $cols, p.label
+		'source' => "SELECT {cols}, p.label
 		FROM gridimage_search gi INNER JOIN curated_preselect p USING (gridimage_id)
 		 LEFT JOIN curated1 c USING (gridimage_id,label)
 		 LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
@@ -154,7 +174,7 @@ $tasks = array(
 		'question' => 'Does this image look stereotypically <big>{label}</big>?',
 		'notes' => 'It does not have to actully be taken in {label}, just that it looks like it (eg winter would look snowy or at least "cold"). If indeterminate (common in the British Isles!) then select No.',
 		'responces' => 'Yes,No,Skip',
-		'source' => "SELECT $cols, tag as label
+		'source' => "SELECT {cols}, tag as label
 		FROM gridimage_search gi INNER JOIN tag_public USING (gridimage_id)
 		 LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
 		WHERE prefix = 'season'
@@ -165,11 +185,29 @@ $tasks = array(
 );
 
 
+$db = GeographDatabaseConnection(false);
+
+foreach ($tasks as $task_id => $row) {
+	$inserts = $row;
+	$inserts['task_id'] = $task_id;
+	$inserts['list'] = ($inserts['list'])?1:0;
+
+	print "<pre>";
+	print_r($inserts);
+	print "</pre>";
+	print "<hr>";
+
+	$db->Execute('INSERT INTO `task` SET `'.implode('` = ?,`',array_keys($inserts)).'` = ?',array_values($inserts));
+}
+
+
+exit;
+
 /*
 		'title' => '',
 		'question' => '',
 		'responces' => 'Good,Ok,Bad,Skip',
-		'source' => "SELECT $cols, label, .... as table_id
+		'source' => "SELECT {cols}, label, .... as table_id
 		FROM gridimage_search gi INNER JOIN .... USING (gridimage_id)
 		 LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
 		WHERE ....
@@ -302,11 +340,12 @@ if (empty($_GET['task'])) {
 		if (!empty($t['score_column'])) {
 			$score = $t['default_score'];
 			if (!empty($_GET['score']))
-				$score = floatval($t['default_score'])/100;
+				$score = floatval($_GET['score'])/100;
 			$t['source'] .= " AND {$t['score_column']} > ".$score;
 		}
 		$col = $t['label_column'] ?? 'label';
 		$sql = $t['source']." AND $col = $v LIMIT 25";
+		$sql = str_replace('{cols}',$cols,$sql);
 		$sql = str_replace('{user_id}',$USER->user_id,$sql);
 		$sql = str_replace('{task_id}',$db->Quote($task_id),$sql);
 		//print $sql;
@@ -383,7 +422,8 @@ if (!empty($a))
 <input type=hidden name="results">
 <input type=submit id="subBtn" value="Submit Results"> (sends what worked on so far, even if not done all images)
 
-</form>
+</form><br><br>
+
 <a href="?task=<?= $task_id ?>">Back to Term/Label List</a>
 
 <br><br>

@@ -36,3 +36,13 @@ insert ignore into label_to_tag_id
 ... doesnt really matter which we expand to.
 ... although annoyingly a few have different expandsions. Pipe bridge=>subject:bridge and Pipebridge=>subject:pipe
 ... we loose that and effectivly pick one at random!
+
+
+
+insert into label_to_tag_id
+ select 'subjectlabel' as model, label, tag_id, prefix from label_to_tag_id where model = 'subject';
+
+
+alter table label_to_tag_id modify label varchar(512) not null;
+alter table label_to_tag_id add index(label,model);
+
