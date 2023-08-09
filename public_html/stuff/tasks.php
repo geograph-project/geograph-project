@@ -8,8 +8,8 @@ $smarty = new GeographPage;
 
 $USER->mustHavePerm("basic");
 
-//$db = GeographDatabaseConnection(true);
-//$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+$db = GeographDatabaseConnection(true);
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $imagelist=new ImageList;
 $cols = preg_replace('/(\w+)/','gi.$1',$imagelist->cols);
@@ -23,185 +23,7 @@ and     WHERE ... AND ts.gridimage_id IS NULL
 All results are recorded in task_result, but should tasks, should generally record results ongoing with success/failure query and can then use that to keep track
 */
 
-$tasks = array(
-	'typev2' => array(
-		'title' => "Type Tags for Historic Supplementals",
-		'question' => 'Does this image look like {label}?',
-		'responces' => 'Yes,No,Skip',
-		'source' => "
-		SELECT {cols}, l.label
-		FROM gridimage_search gi inner join gridimage using (gridimage_id) inner join gridimage_label_single l using (gridimage_id)
-			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
-		WHERE gi.moderation_status = 'accepted' AND tags NOT like '%type:%' AND model = 'typev2'
-		 AND nateastings div 1000 = viewpoint_eastings div 1000 AND natnorthings div 1000 = viewpoint_northings div 1000
-		 AND l.label != 'CrossGrid'
-		 AND l.label != 'Geograph'
-		 AND ts.gridimage_id IS NULL ",
-		'label_column' => 'l.label', //needed to add a label filter
-		'score_column' => 'l.score', 'default_score' => 0.75,
-
-		// in this example 'verified' is used to keep track of verification progress
-		'yes' => "UPDATE gridimage_label SET verified = 1,verified_by = {user_id} WHERE gridimage_id = {gridimage_id} AND label = {label} AND model = 'typev2'",
-		'no' => "UPDATE gridimage_label SET verified = 0,verified_by = {user_id} WHERE gridimage_id = {gridimage_id} AND label = {label} AND model = 'typev2'",
-
-			//prototype, not used yet!
-		'promote' => "INSERT INTO gridimage_tag SELECT gridimage_id, j.tag_id, verified_by AS user_id
-				FROM gridimage_label l
-				INNER JOIN label_to_tag_id j USING (label,model)
-					LEFT JOIN tag_public t ON (t.gridimage_id = l.gridimage_id and prefix = 'type')
-				WHERE verified = 1 AND t.tag_id IS NULL
-				AND model = 'typev2'",
-	),
-
-	'subject' => array(
-		'title' => "Subject Tags for your Images (vision)",
-		'question' => 'Does this image have the primary <b>subject</b> of <big>{label}</big>?',
-		'warning' => 'Selecting Yes will actully add the subject tag to your image. Remember these labels are suggested by a computer vision experiment, it can make wrong (or even humorous) suggestions, so just select N in those cases.',
-		'responces' => 'Yes,No,Skip',
-		'source' => "
-		SELECT {cols}, l.label
-		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
-			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
-		WHERE tags NOT like '%subject:%' AND model = 'subject'
-		 AND gi.user_id = {user_id}
-		 AND ts.gridimage_id IS NULL ",
-		'label_column' => 'l.label',
-		'score_column' => 'l.score', 'default_score' => 0.75,
-
-		'promote' => "select gridimage_id,tag_id,user_id,r.created,2 as status, now() as updated
-			 from task_result r inner join label_to_tag_id using (label) inner join gridimage_search using (gridimage_id,user_id)
-			 where result = 'y' and task_id = 'subject' and model = 'subject' group by gridimage_id",
-
-		'list'=>true,
-	),
-
-	'subjectlabel' => array(
-		'title' => "Subject Tags for your Images (from title)",
-		'question' => 'Does this image have the primary <b>subject</b> of <big>{label}</big>?',
-		'warning' => 'Selecting Yes will actully add the subject tag to your image. Remember these labels are suggested by a computer vision experiment, it can make wrong (or even humorous) suggestions, so just select N in those cases.',
-		'responces' => 'Yes,No,Skip',
-		'source' => "
-		SELECT {cols}, t.tag as label
-		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
-			INNER JOIN label_to_tag_id USING (model,label)
-			INNER JOIN tag t USING (tag_id)
-			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
-		WHERE tags NOT like '%subject:%' AND model = 'subjectlabel'
-		 AND gi.user_id = {user_id}
-		 AND ts.gridimage_id IS NULL ",
-		'label_column' => 't.tag',
-		'score_column' => 'l.score', 'default_score' => 0.6,
-
-		'list'=>true,
-	),
-
-	'aerial' => array(
-		'title' => "Is this an Aerial Shot?",
-		'question' => 'Does this image appear to be taken from Aircraft of some sort?',
-		'notes' => 'Any sort of aerodene or even drone (i.e. not taken by person with feet on ground, or other ground based structure). If unsure, e.g. it could be from a nearby hill, then use Skip.',
-		'responces' => 'Yes,No,Skip',
-		'source' => "
-		SELECT {cols}, l.label
-		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
-			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
-		WHERE tags NOT like '%type:%' AND model = 'typev2'
-		 AND l.label = 'Aerial'
-		 AND ts.gridimage_id IS NULL ",
-		'label_column' => 'l.label',
-		'score_column' => 'l.score', 'default_score' => 0.75,
-
-		'list'=>true,
-	),
-
-	'fromdrone' => array(
-		'title' => "Is this taken by Drone?",
-		'question' => 'Does this image appear to be specifically <b>taken from a drone</b>? ',
-		'notes' => 'Specically looking for images from unmanned drones. If unsure, e.g. it could be from a aircraft of some sort, or even the ground, then use Skip.',
-		'responces' => 'Yes,No,Skip',
-		'source' => "
-		SELECT {cols}, l.label
-		FROM gridimage_search gi inner join gridimage_label_single l using (gridimage_id)
-			LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
-		WHERE tags NOT like '%type:%' AND model = 'typev2'
-		 AND l.label = 'FromDrone'
-		 AND ts.gridimage_id IS NULL ",
-		'label_column' => 'l.label',
-		'score_column' => 'l.score', 'default_score' => 0.65,
-
-		'list'=>true,
-	),
-
-	'curated1' => array(
-		'title' => 'Check Initial Curation',
-		'question' => 'Does this image <b>really illustrate</b> <big>{label}</big>?',
-		'notes' => "It doesn't just need to to match the term, but should be particully representative of {label} and the subject clearly visible in the image. Please only vote on the subject of the photo, not the technical quality or resolution etc of the image (i.e. don't downvote low resolution images).",
-		'responces' => 'Good,Ok,Bad,Skip',
-		'source' => "SELECT {cols}, c.label, curated_id as table_id
-		FROM gridimage_search gi INNER JOIN curated1 c USING (gridimage_id)
-                 INNER JOIN curated_label USING (label,active)
-		 LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
-		WHERE active > 0 AND c.score>7 AND stack != ''
-		 AND ts.gridimage_id IS NULL ",
-		'label_column' => 'c.label', //needed to add a label filter
-
-		'good' => "UPDATE curated_id SET score=score+1 WHERE curated_id = {table_id}",
-		//'ok' => "",
-		'bad' => "UPDATE curated_id SET score=score-1 WHERE curated_id = {table_id}",
-	),
-
-	'curated_preselect' => array(
-		'title' => 'Initial Keyword Curation',
-		'question' => 'Does this image <b>really illustrate</b> <big>{label}</big>?',
-		'notes' => "It doesn't just need to to match the term, but should be particully representive of {label} and the subject clearly visible in the image.",
-		'responces' => 'Yes,No,Skip',
-		'source' => "SELECT {cols}, p.label
-		FROM gridimage_search gi INNER JOIN curated_preselect p USING (gridimage_id)
-		 LEFT JOIN curated1 c USING (gridimage_id,label)
-		 LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
-		WHERE p.active = 1 AND c.gridimage_id IS NULL
-		 AND ts.gridimage_id IS NULL
-		",
-		'label_column' => 'p.label', //needed to add a label filter
-
-		'yes' => "INSERT IGNORE INTO curated1 SET created=NOW(),user_id={user_id},label={label},active=1,score=5,gridimage_id={gridimage_id},`group`='Geography and Geology'",
-		'no' => "UPDATE curated_preselect SET active=0 WHERE label={label} AND gridimage_id={gridimage_id}",
-
-		'list'=>true,
-	),
-
-	'seasons' => array(
-		'title' => 'Seasonal Images',
-		'question' => 'Does this image look stereotypically <big>{label}</big>?',
-		'notes' => 'It does not have to actully be taken in {label}, just that it looks like it (eg winter would look snowy or at least "cold"). If indeterminate (common in the British Isles!) then select No.',
-		'responces' => 'Yes,No,Skip',
-		'source' => "SELECT {cols}, tag as label
-		FROM gridimage_search gi INNER JOIN tag_public USING (gridimage_id)
-		 LEFT JOIN task_result ts ON (ts.gridimage_id = gi.gridimage_id AND ts.user_id = {user_id} AND ts.task_id = {task_id})
-		WHERE prefix = 'season'
-		 AND ts.gridimage_id IS NULL
-		",
-		'label_column' => 'tag',
-	),
-);
-
-
-$db = GeographDatabaseConnection(false);
-
-foreach ($tasks as $task_id => $row) {
-	$inserts = $row;
-	$inserts['task_id'] = $task_id;
-	$inserts['list'] = ($inserts['list'])?1:0;
-
-	print "<pre>";
-	print_r($inserts);
-	print "</pre>";
-	print "<hr>";
-
-	$db->Execute('INSERT INTO `task` SET `'.implode('` = ?,`',array_keys($inserts)).'` = ?',array_values($inserts));
-}
-
-
-exit;
+$tasks = $db->getAssoc("SELECT * FROM task");
 
 /*
 		'title' => '',
@@ -241,9 +63,6 @@ if (empty($_GET['task'])) {
 	if (isset($tasks[$_GET['task']])) {
 		$task_id = $_GET['task'];
 		$t = $tasks[$_GET['task']];
-
-		$db = GeographDatabaseConnection(true);
-		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 		if (!empty($t['score_column'])) {
 			$score = $t['default_score'];
@@ -312,11 +131,10 @@ if (empty($_GET['task'])) {
 
 
 		if (!empty($_POST['results'])) {
-			$db = GeographDatabaseConnection(false);
-/*			print "<pre>";
-			print_r($_POST);
-			print "</pre>";
-*/			$data = json_decode($_POST['results'], true);
+			if (empty($db) || !empty($db->readonly))
+				$db = GeographDatabaseConnection(false);
+
+			$data = json_decode($_POST['results'], true);
 			$updates = array();
 			$updates['user_id'] = $USER->user_id;
 			$updates['task_id'] = $_GET['task'];
@@ -329,11 +147,7 @@ if (empty($_GET['task'])) {
 				$db->Execute('REPLACE INTO task_result SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
                 		$a += $db->Affected_Rows();
 			}
-
-		} else {
-			$db = GeographDatabaseConnection(true);
 		}
-		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 		$v = $db->Quote($_GET['label']);
 
@@ -348,7 +162,10 @@ if (empty($_GET['task'])) {
 		$sql = str_replace('{cols}',$cols,$sql);
 		$sql = str_replace('{user_id}',$USER->user_id,$sql);
 		$sql = str_replace('{task_id}',$db->Quote($task_id),$sql);
-		//print $sql;
+
+
+		if (!empty($_GET['ddd']) && $USER->hasPerm("admin"))
+			die($sql);
 
 		$data = $db->getAll($sql);
 
