@@ -24,6 +24,8 @@
 $param = array('limit' => 10, 'skip'=>0, 'sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_visiondata010', 'source'=>'sample8', 'large'=>false, 'shard' => '',
 	'query'=>'london','group'=>'type_ids','n'=>3,'debug'=>1,'sample'=>false,'minimum'=>false,'missing'=>false,'top'=>false,'extends'=>false,'skipprefixes'=>1);
 
+//WARNING the 'large' param should be used with caution. There is no way to cache differnt thumbs for same image
+
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
@@ -270,6 +272,14 @@ if ($param['group'] == 'drone') {
 		$groups = $sph->getCol(sqlBitsToSelect($sql));
 	}
 
+
+$shards = array(
+	0=>explode(' ','Lowlands DefenceMilitary Canals HeathScrub LakesWetlandBog ParkandPublicGardens DocksHarbours Historicsitesandartefacts SuburbUrbanfringe FarmFisheryMarketGardening'),
+	1=>explode(' ','Paths Communications SportLeisure HousingDwellings RocksScreeCliffs Geologicalinterest AirSkyWeather BusinessRetailServices EstuaryMarine Flatlandscapes BoundaryBarrier BarrenPlateaux Uplands Religioussites'),
+	2=>explode(' ','VillageRuralsettlement Industry Grassland Educationalsites WildAnimalsPlantsandMushrooms Moorland PeopleEvents WoodlandForest RiversStreamsDrainage Countryestates Railways QuarryingMining ConstructionDevelopment Waterresources'),
+	3=>explode(' ','RoadsRoadtransport BurialgroundCrematorium Airtransport Coastal Healthandsocialservices WasteWastemanagement DerelictDisused Publicbuildingsandspaces CityTowncentre Energyinfrastructure Islands'),
+);
+
 	$data = array();
 	$value = ''; //gets set by extractfrom
 	foreach ($groups as $group) {
@@ -281,6 +291,14 @@ if ($param['group'] == 'drone') {
 				$ids = explode(',',$group[$extractfrom.'_ids']);
                 		$names = explode('_SEP_',$group[$extractfrom.'s']);array_shift($names); //the first is always blank!
 		                $value = trim($names[array_search($group['group'],$ids)]);
+
+if ($param['group'] == 'context_ids' && strlen($param['shard'])) {
+	$value = preg_replace('/[^\w]+/','',$value);
+	if (!empty($shards[$param['shard']]) && !in_array($value,$shards[$param['shard']])) {
+		 print "Skipping $value\n";
+        	 continue;
+	}
+}
 
 if (strlen($param['shard'])) {
 	$crc = sprintf("%u", crc32($value));
@@ -382,21 +400,51 @@ $h = fopen($param['folder'].$param['filename']."/cmd.txt", 'a');
 fwrite($h, implode(' ',$argv)."\n");
 fclose($h);
 
+######################################################################################################################################################
 // ... scan if already already have the file!
+
 $files = array();
-if (empty($param['large'])) {
+
+if (empty($param['large'])) // There is no way to cache differnt thumbs for same image
+if (true) {
+	//scan using caches
+
+	$dirs = glob("{$param['folder']}geograph_visiondata*");
+
+	foreach ($dirs as $dir) {
+		print "Scanning $dir\n";
+	        $filename = "$dir/files.txt";
+		//todo, if $param['sahrd'] && dir == $param['folder'].$param['filename']) assume self is changing!
+
+	        if (!file_exists($filename) || filemtime($dir) > filemtime($filename)+300 && $dir == $param['folder'].$param['filename']) {
+	                $cmd = "find $dir  -regextype posix-extended -regex '.*/[0-9]+\\.jpg$'";
+
+	                print "$cmd > $filename\n";
+                        passthru("$cmd > $filename");
+	        }
+
+		$h = fopen($filename,'r');
+		while($h&&!feof($h)) {
+			$line = trim(fgets($h));
+			if (!empty($line))
+				$files[basename($line)] = str_replace("{$param['folder']}geograph_visiondata",'X',$line);
+		}
+		fclose($h);
+	}
+
+} else {
 	print "Scanning {$param['folder']}geograph_visiondata* for .jpg\n";
 	//find /mnt/efs/data/geograph_visiondata0* -regextype posix-extended -regex '.*/[0-9]+\.jpg$'
 	$h = popen("find {$param['folder']}geograph_visiondata*  -regextype posix-extended -regex '.*/[0-9]+\\.jpg$'",'r');
 	while($h&&!feof($h)) {
 		$line = trim(fgets($h));
-		if (empty($line))
-			continue;
-		$files[basename($line)] = $line;
+		if (!empty($line))
+			$files[basename($line)] = str_replace("{$param['folder']}geograph_visiondata",'X',$line);
 	}
 	fclose($h);
-	print "Found ".count($files)." existing files\n";
 }
+
+print "Found ".count($files)." existing files\n";
 
 ######################################################################################################################################################
 
@@ -453,11 +501,15 @@ foreach ($data as $idx => $row) {
 
 ########################################
 
+//	print "$c. $output\n";
+
 	if ($c > $param['skip'] && !file_exists($output) ) {
 		if (isset($files[$filename])) {
-			print "{$files[$filename]} => $output\n";
-			//copy($files[$filename], $output);
-			link($files[$filename], $output);
+			$expanded = preg_replace('/^X/',"{$param['folder']}geograph_visiondata", $files[$filename]);
+
+			print "$expanded => $output\n";
+			//copy($expanded, $output);
+			link($expanded, $output);
 			//if (!empty($row['submitted'])) touch($output, $row['submitted']);
 		} else {
 			if ($param['large'] && $row['original'] > 224) {
