@@ -23,7 +23,7 @@
 
 ############################################
 
-$param = array('mtime'=>1);
+$param = array('mtime'=>1,'dest'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -37,15 +37,19 @@ $h = popen($cmd = 'find '.$CONF['photo_upload_dir'].'/ -type f -mtime -'.$param[
 
 print "$cmd\n";
 
-while ($h && !feof($h)) {
-	$line = trim(fgets($h));
-	if (empty($line))
-		continue;
-	list($filename, $time) = explode(' ',$line);
+##########################################
+
+if ($param['dest'] == 'full_md5') {
+
+	while ($h && !feof($h)) {
+		$line = trim(fgets($h));
+		if (empty($line))
+			continue;
+		list($filename, $time) = explode(' ',$line);
 
 			$start = microtime(true);
 
-print "$line\n";
+		print "$line\n";
 			$updates= array();
 			$updates['basename'] = basename($filename);
 			$updates['class'] = 'upload';
@@ -61,6 +65,51 @@ print "$line\n";
 
 			print ".";
 			usleep(($end-$start)*1000); ///make the delay dynamic.
+	}
+
+##########################################
+
+} elseif ($param['dest'] == 'tmp_upload_dir') {
+
+	while ($h && !feof($h)) {
+		$line = trim(fgets($h));
+		if (empty($line))
+			continue;
+		list($filename, $time) = explode(' ',$line);
+
+		print "$line\n";
+
+		if (preg_match('/_u(\d+)_([a-f0-9]+)\.jpeg/',$filename,$m)) {
+			$start = microtime(true);
+
+                        $gid = crc32($m[2])+4294967296;
+                        $gid += $m[1] * 4294967296;
+                        $gid = sprintf('%0.0f',$gid);
+                                //$row['gridimage_id'] = $gid;
+                                //$row['user_id'] = $m[1];
+
+			$updates= array();
+			$updates['gid'] = $gid;
+			$updates['user_id'] = $m[1];
+			$updates['preview_key'] = $m[2];
+			$updates['filesize'] = filesize($filename);
+			$updates['md5sum'] = md5_file($filename);
+
+			$updates['created'] = date('Y-m-d H:i:s', intval($time));
+
+ 		        $db->Execute($sql = 'INSERT INTO tmp_upload_dir SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
+		 	        	   ' ON DUPLICATE KEY UPDATE `'.implode('` = ?,`',array_keys($updates)).'` = ?',
+        	              		  array_merge(array_values($updates),array_values($updates))) or die("$sql\n\n".$db->ErrorMsg()."\n");
+
+			$end = microtime(true);
+
+			print ".";
+			usleep(($end-$start)*1000); ///make the delay dynamic.
+		}
+	}
 }
+
+##########################################
+
 print "\n";
 
