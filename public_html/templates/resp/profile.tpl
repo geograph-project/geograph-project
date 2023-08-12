@@ -356,6 +356,7 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 <div class="buttonbar-dropdown">
   <button>Detailed breakdown &#9660;</button>
   <div class="buttonbar-dropdown-content">
+  <b>Statistics</b>
 	<a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}">by Date taken</a>
 	<a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}">by Myriad</a>
 	<a href="/finder/bytag.php?user_id={$profile->user_id}">by Tags</a>
