@@ -40,16 +40,20 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
 
-$models = $db->getAll("SELECT m.*,grouper from dataset_model m inner join dataset using (folder) where model = '' and model_file LIKE '%.zip'");
+$models = $db->getAll("SELECT m.*,grouper,query from dataset_model m inner join dataset using (folder) where model = '' and model_file LIKE '%.zip'");
 
 foreach ($models as $row) {
 
 	$basename = $row['model_file'];
 	$base = str_replace('.zip','',$basename);
 
+	if (preg_match('/shard(\d)/',$row['query'],$m))
+		$row['grouper'] = str_replace('_ids','s'.$m[1],$row['grouper']);
+
 	$sql = "UPDATE dataset SET ";
 	$sql .= "model = '{$row['grouper']}', ";
 	$sql .= "model_dir = '$base', ";
+	$sql .= "model_auto = 1, ";
 	$sql .= "model_download = 'https://staging.data.geograph.org.uk/facets/{$basename}', ";
 	if ($row['accuracy'])
 		$sql .= "accuracy = {$row['accuracy']}";

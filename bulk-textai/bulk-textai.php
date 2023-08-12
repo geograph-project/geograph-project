@@ -62,13 +62,27 @@ fclose($h);
 
 #########################################
 
-$sql = "SELECT gridimage_id, tag, realname, title, upd_timestamp
+if (strlen($param['shard'])) {
+        $sql = "SELECT gridimage_id, tag, realname, title, upd_timestamp
+        FROM gridimage_search
+	inner join gridimage_tag using (gridimage_id)
+	inner join tmp_subject_shard using (tag_id)
+	where shard = {$param['shard']} and status = 2
+        LIMIT {$param['limit']}";
+	/* create table tmp_subject_shard select tag_id,tag,regexp_replace(tag,'[^\\w]+','') as `value`,crc32(regexp_replace(tag,'[^\\w]+','')) mod 10 as shard
+		 from  tag_stat inner join tag using (tag_id)
+		 where `count` > 20 and prefix = 'subject';
+	*/
+} else {
+	$sql = "SELECT gridimage_id, tag, realname, title, upd_timestamp
 	FROM gridimage_search
 	INNER JOIN tag_public USING (gridimage_id)
 	INNER JOIN tag_stat USING (tag_id)
 	WHERE prefix = '{$param['prefix']}'
 	AND `count` > 20
 	LIMIT {$param['limit']}";
+}
+
 $pop = 2; ///dont write last column to metadata file!
 
 //	$recordSet = $db->Execute($sql);
@@ -112,7 +126,7 @@ $tar->create($param['folder'].$param['filename'].'/'.$param['filename'].'.tar.gz
 
 		$value = preg_replace('/[^\w]+/','',$row['tag']);
 
-
+/*
 if (strlen($param['shard'])) {
         $crc = sprintf("%u", crc32($value));
         if ($crc%10 != $param['shard']) {
@@ -120,6 +134,7 @@ if (strlen($param['shard'])) {
                  continue;
         }
 }
+*/
 
 		$filename = sprintf('%d.txt', $row['gridimage_id']);
 

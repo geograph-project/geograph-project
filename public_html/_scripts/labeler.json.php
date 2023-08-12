@@ -27,18 +27,25 @@ require_once('geograph/imagelist.class.php');
 
 ####################################
 
+$format = '224XX224.jpg';
+if (!empty($_GET['title']))
+	$format = 'title.txt';
+
 if (!empty($_GET['models'])) {
 	$db = GeographDatabaseConnection(true);
-	$format = '224XX224.jpg';
-	if (!empty($_GET['title']))
-		$format = 'title.txt';
-	$data = $db->getAll("select model,model_download,model_dir,folder,grouper,images from dataset where model_download != '' and model != '' and model_dir != '' and imagesize='$format'");
+	$data = $db->getAll("select model,model_download,model_dir,folder,grouper,images from dataset where model_auto > 0 and model_download != '' and model != '' and model_dir != '' and imagesize='$format'");
         outputJSON($data);
 	exit;
 
 } elseif (!empty($_GET['training'])) {
 	$db = GeographDatabaseConnection(true);
-	$data = $db->getAll("select folder,src_format,imagesize,src_download,grouper,images,model_dir from dataset where src_download != '' and `grouper` != ''");
+
+	//Note, this returns in theory all training datasets.
+	// clients should provably still filter, eg check [ src_format = 'subdir' AND accuracy IS NULL ]
+		//if a client can use other formats, can use src_format
+		//or if client wants to try training a BETTER model, it can try to beat accuracy of the existing model
+
+	$data = $db->getAll("select folder,src_format,imagesize,src_download,grouper,images,labels,model_dir,accuracy from dataset where src_download != '' and `grouper` != '' and imagesize='$format'");
         outputJSON($data);
 	exit;
 }
@@ -94,10 +101,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 		//$_GET['model'] = 'typev2'; //for now, hardcoded!
 
-		$format = '224XX224.jpg';
-		if (!empty($_GET['title']))
-			$format = 'title.txt';
-
 		//make sure to pick one used in auto, ordering by labels, is just a contrivaance to most preferntially pick "type/typev2"
 		$_GET['model'] = $db->getOne("select model from dataset where model_download != '' and model != '' and model_dir != '' and imagesize='$format' order by labels");
 	}
@@ -110,7 +113,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$where[] = "l.seq_id IS null"; //not already labled
 	$limit = 50;
 	$limit = rand(40,60); //to 'desync' multiple clients!
-	if (!empty($_GET['limit']))
+	if (!empty($_GET['title']) && !empty($_GET['limit']))
+		$limit = min(1000,intval($_GET['limit']));
+	elseif (!empty($_GET['limit']))
 		$limit = min(250,intval($_GET['limit']));
 
 	$sleep = ceil(sqrt($limit));
@@ -199,6 +204,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		where l.seq_id IS null
 		limit $limit";
 
+	} elseif ($_GET['model'] == 'subjectlabel') {
+		$sql = "select t.*
+		from tmp_subjectlabel_images t
+		left join gridimage_label l on (l.gridimage_id = t.gridimage_id and `model` = $qmod)
+		where l.seq_id IS null
+		limit $limit";
+
 	} else {
 		$sql = "select gi.gridimage_id,user_id $cols
 		from gridimage_search gi
@@ -218,6 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	if (count($imagelist->images)) {
 		foreach ($imagelist->images as $i => $image) {
+		//title
 			if (!empty($_GET['title'])) {
         	                $imagelist->images[$i]->title = latin1_to_utf8($imagelist->images[$i]->title);
 	                        //$row['realname'] = latin1_to_utf8($row['realname']);
@@ -228,9 +241,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         	                if ($enc == 'UTF-8') // should no longer ever detect ISO-8859-15
 	                                $imagelist->images[$i]->title = translit_to_ascii($imagelist->images[$i]->title, "UTF-8");
 
+		//square thumbnail (default!)
 			} elseif (empty($_GET['full'])) {
 				$imagelist->images[$i]->fullpath = $image->getSquareThumbnail(224,224,'path');
 
+				if (basename($imagelist->images[$i]->fullpath) == 'error.jpg') {
+					debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
+
+					unset($imagelist->images[$i]);
+					$deleted=1;
+					continue;
+				}
+
+		//original
 			} elseif (!empty($imagelist->images[$i]->original_width) && isset($_GET['large'])) {
 				$imagelist->images[$i]->original = $imagelist->images[$i]->_getOriginalpath();
 
@@ -238,12 +261,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if ($image->gridimage_id == 29 || $image->gridimage_id == 5378158 || $image->gridimage_id == 1401219)
 					$imagelist->images[$i]->original = str_replace('original','1024x1024',$imagelist->images[$i]->original);
 
+		//full/640px version
 			} else {
 				$imagelist->images[$i]->fullpath = $imagelist->images[$i]->_getFullpath();
 
 				if (basename($imagelist->images[$i]->fullpath) == 'error.jpg') {
-					$db->Execute("DELETE FROM assessment WHERE gridimage_id = {$image->gridimage_id}");
-
 					debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
 
 					unset($imagelist->images[$i]);
@@ -252,7 +274,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				}
 			}
 
-
+		//remove empty values (make the json more compact)
 			foreach (get_object_vars($image) as $key => $value) {
 				if (empty($value))
 					unset($imagelist->images[$i]->{$key});
