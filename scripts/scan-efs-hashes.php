@@ -32,6 +32,8 @@ require "./_scripts.inc.php";
 
 $db = GeographDatabaseConnection(false);
 
+if ($param['dest'] == 'tmp_upload_dir_old')
+	$CONF['photo_upload_dir'] .= "_old";
 
 $h = popen($cmd = 'find '.$CONF['photo_upload_dir'].'/ -type f -mtime -'.$param['mtime'].' -not -name "*.exif" -not -name "*.original.jpeg" -printf "%p %T@\n"', 'r');
 
@@ -69,7 +71,7 @@ if ($param['dest'] == 'full_md5') {
 
 ##########################################
 
-} elseif ($param['dest'] == 'tmp_upload_dir') {
+} elseif ($param['dest'] == 'tmp_upload_dir' || $param['dest'] == 'tmp_upload_dir_old') {
 
 	while ($h && !feof($h)) {
 		$line = trim(fgets($h));
@@ -97,7 +99,7 @@ if ($param['dest'] == 'full_md5') {
 
 			$updates['created'] = date('Y-m-d H:i:s', intval($time));
 
- 		        $db->Execute($sql = 'INSERT INTO tmp_upload_dir SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
+ 		        $db->Execute($sql = 'INSERT INTO '.$param['dest'].' SET `'.implode('` = ?,`',array_keys($updates)).'` = ?'.
 		 	        	   ' ON DUPLICATE KEY UPDATE `'.implode('` = ?,`',array_keys($updates)).'` = ?',
         	              		  array_merge(array_values($updates),array_values($updates))) or die("$sql\n\n".$db->ErrorMsg()."\n");
 
@@ -107,6 +109,8 @@ if ($param['dest'] == 'full_md5') {
 			usleep(($end-$start)*1000); ///make the delay dynamic.
 		}
 	}
+} else {
+	print "Please specify dest";
 }
 
 ##########################################
