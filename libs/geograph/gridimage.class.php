@@ -149,7 +149,7 @@ class GridImage
 	function &_getDB($allow_readonly = false)
 	{
 		//check we have a db object or if we need to 'upgrade' it
-		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+		if (empty($this->db) || !is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
 			$this->db=GeographDatabaseConnection($allow_readonly);
 		}
 		return $this->db;
@@ -1419,6 +1419,32 @@ split_timer('gridimage'); //starts the timer
 			}
 			if ($fullpath != '/photos/error.jpg')
 			{
+			    $size=$filesystem->getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+
+			    if (preg_match('/X(\d+)/',$maxh) || $size[0] > 3000 || $size[1] > 3000) {
+
+				//now we have vips, could use smartcrop!
+
+				//https://development.geograph.org.uk/photo/197577
+				//embedded profile incompatible with image vipsthumbnail: unable to thumbnail /tmp/r31vKBz9A icc_transform: no input profile
+				//--iprofile /var/www/geograph/libs/3rdparty/cmyk.icm
+				//https://github.com/libvips/nip2/blob/master/share/nip2/data/cmyk.icm
+
+				//vipsthumbnail --vips-info 7395828_e967c39b_8192x8192.jpg --smartcrop attention -s 128  --eprofile /usr/share/color/icc/sRGB.icc --delete -o 7395828_e967c39b_128xxx128.jpg[strip,Q=87]
+
+	//TODO, vips, doesnt do any sharpening (the --sharpen mild doesnt seem to actully work)
+
+				$cmd = array();
+				$cmd[] = "vipsthumbnail";
+				$cmd[] = "%s --iprofile /var/www/geograph/libs/3rdparty/cmyk.icm";
+                                $cmd[] = "--smartcrop attention -s $maxw";
+				$cmd[] = "--interpolator bicubic"; //the default is bilinear
+                                //$cmd[] = "--eprofile /usr/share/color/icc/sRGB.icc --delete"; //fails on monocrome!
+                                $cmd[] = "-o %d.jpg[strip,Q=87]";
+
+				$filesystem->execute(implode(' ',$cmd), $_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+
+			    } else {
 				//generate resized image
 				$fullimg = $filesystem->imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$fullpath);
 				if ($fullimg)
@@ -1484,6 +1510,7 @@ split_timer('gridimage'); //starts the timer
 					//couldn't load full jpeg
 					$thumbpath="/photos/error.jpg";
 				}
+			    }
 			}
 			else
 			{
@@ -1769,12 +1796,6 @@ split_timer('gridimage','after-lock',$thumbpath); //logs the wall time
 					} else {
 						list($width, $height) = $info;
 
-                               //todo, if large image may need vips
-                                //  vipsthumbnail 7395828_e967c39b_original.jpg --size 8192x8192
-                                // ... will then craete thumb as tn_7395828_e967c39b_original.jpg
-                                // may need to rename!
-
-
 						if (($width>$maxw) || ($height>$maxh)) {
 							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
 						} elseif (!$bestfit) {
@@ -1788,7 +1809,35 @@ split_timer('gridimage','after-lock',$thumbpath); //logs the wall time
 
 							$operation = ($maxw+$maxh < 400)?'thumbnail':'resize';
 
-							if ($bestfit)
+							if ($width > 5000 || $height > 5000 || $maxh == 302 || $maxh == 512|| $maxh == 900) { //302 is a test height, so slightly different to std image!
+
+				//TODO, does NOT support $bevel NOR $unsharpen!!
+				//... probably ok, as bevelled thumbnails usually created from 640px, not the larger files anyway
+				//tosupport, would have to first resize with vips, then add bevel using convert/mogrify (maybe using non-lossy intermediate image?)
+
+								//https://development.geograph.org.uk/photo/197577
+								//embedded profile incompatible with image vipsthumbnail: unable to thumbnail /tmp/r31vKBz9A icc_transform: no input profile
+								//--iprofile /var/www/geograph/libs/3rdparty/cmyk.icm
+								//https://github.com/libvips/nip2/blob/master/share/nip2/data/cmyk.icm
+
+								//vipsthumbnail --vips-info 7395828_e967c39b_8192x8192.jpg --smartcrop attention -s 128  --eprofile /usr/share/color/icc/sRGB.icc --delete -o 7395828_e967c39b_128xxx128.jpg[strip,Q=87]
+
+								$cmd = array();
+								$cmd[] = "vipsthumbnail";
+								$cmd[] = "%s"; //--iprofile /var/www/geograph/libs/3rdparty/cmyk.icm";
+								$cmd[] = "--interpolator bicubic"; //the default is bilinear
+								if (!$bestfit) //the default behaviour is bestfit anyway
+					                                $cmd[] = "--smartcrop attention";
+								$cmd[] = "-s {$maxw}x{$maxh}";
+				                                //$cmd[] = "--eprofile /usr/share/color/icc/sRGB.icc --delete"; //fails on monocrome!
+								if ($width < 3000 && $height < 3000)
+									$cmd[] = "--linear"; //its slow on big images!
+				                                $cmd[] = "-o %d.jpg[strip,Q=87]";
+
+								$cmd[] = "2>&1";
+								$filesystem->execute(implode(' ',$cmd), $_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
+							}
+							elseif ($bestfit) //the default convert behaviour is 'bestfit'
 							{
 								$cmd = sprintf ("\"%sconvert\" -$operation %ldx%ld  $unsharpen $raised -quality 87 jpg:%s jpg:%s",
 								$CONF['imagemagick_path'],
@@ -1798,7 +1847,7 @@ split_timer('gridimage','after-lock',$thumbpath); //logs the wall time
 								$filesystem->execute($cmd, $_SERVER['DOCUMENT_ROOT'].$fullpath, $_SERVER['DOCUMENT_ROOT'].$thumbpath);
 
 							}
-							else
+							else //otherwise crop to exact size
 							{
 								$aspect_src=$width/$height;
 								$aspect_dest=$maxw/$maxh;

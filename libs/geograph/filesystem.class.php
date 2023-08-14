@@ -414,11 +414,14 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
 		if (!empty($destination)) {
 			if (strpos($cmd,'%d')===FALSE)
 				$cmd.="%d"; //add to end!
+			$is_jpg = strpos($cmd,'%d.jpg'); //the cmd needs the file extension, even for the temp file
 			list($dbucket, $dfilename) = $this->getBucketPath($destination);
 			if ($dbucket) {
 				//upload
 				$tmp_dst = tempnam("/tmp", "l".getmypid());
 				$cmd = str_replace('%d',$tmp_dst, $cmd);
+				if ($is_jpg)
+					$tmp_dst .= ".jpg";
 			} else {
 				$cmd = str_replace('%d',$destination, $cmd);
 			}
@@ -446,6 +449,8 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
 
 			//always, delete, even if failed
 	                unlink($tmp_dst);
+			if ($is_jpg)
+				unlink(str_replace('.jpg','',$tmp_dst));
 		} else {
 			//if writing to local file, nothing more todo?
 		}

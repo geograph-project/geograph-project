@@ -727,20 +727,39 @@ class UploadManager
 
 			if ($width > $max_dimension || $height > $max_dimension) {
 
+				//if large image may need vips (its not the filesize that issue its the 'uncompressed' image, is stored in memory.
+				if ($width > 5000 || $height > 5000) {
+					$cmd = array();
+                                        $cmd[] = "vipsthumbnail";
+                                        $cmd[] = "%s"; //--iprofile /var/www/geograph/libs/3rdparty/cmyk.icm";
+                                        $cmd[] = "-s {$max_dimension}x{$max_dimension}";
+					$cmd[] = "--interpolator bicubic"; //the default is bilinear
+                                        //$cmd[] = "--eprofile /usr/share/color/icc/sRGB.icc --delete"; //fails on monocrome!
+                                        if ($width < 3000 && $height < 3000)
+                                                $cmd[] = "--linear"; //its slow on big images!
+                                        $cmd[] = "-o %s[strip,Q=87]";
+					if ($source) {
+						$cmd = sprintf(implode(' ',$cmd), $source, $filename);
+					} else {
+						//vipsthumbnail cant 'overwrite' the image!
+						$tmpfile = tempnam("/tmp",'upload');
+						$cmd = sprintf(implode(' ',$cmd), $filename, $tmpfile);
+					}
+
 				//removed the unsharp as it makes some images worse - needs to be optional
 				// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
 
-				//todo, if large image may need vips
-				//  vipsthumbnail 7395828_e967c39b_original.jpg --size 8192x8192
-				// ... will then craete thumb as tn_7395828_e967c39b_original.jpg
-				// may need to rename!
-
-				if ($source) {
-					$cmd = sprintf ("\"%sconvert\" -resize %ldx%ld -quality 87 -strip jpg:%s jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $source, $filename);
+				} elseif ($source) {
+					$cmd = sprintf("\"%sconvert\" -resize %ldx%ld -quality 87 -strip jpg:%s jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $source, $filename);
 				} else {
-					$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $filename);
+					$cmd = sprintf("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $filename);
 				}
-				passthru ($cmd);
+
+				passthru($cmd);
+
+				if (!empty($tmpfile)) {
+					rename($tmpfile, $filename);
+				}
 
 				list($width, $height, $type, $attr) = getimagesize($filename);
 			}
@@ -756,7 +775,7 @@ class UploadManager
 
 		if (!$ok) {
 			//generate a resized image
-			$uploadimg = @imagecreatefromjpeg ($source?$source:$filename);
+			$uploadimg = @imagecreatefromjpeg($source?$source:$filename);
 			if ($uploadimg)
 			{
 				$srcw=imagesx($uploadimg);
