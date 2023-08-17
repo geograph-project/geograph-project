@@ -99,7 +99,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
         list ($x,$y) = $mosaic->getCentre();
         $conv = new Conversions;
-        list($lat,$long) = $conv->internal_to_wgs84($x,$y,$mosaic->reference_index);
+        list($lat,$long) = $conv->internal_to_wgs84($x,$y,$row['reference_index']);
         $smarty->assign('lat', $lat);
         $smarty->assign('long', $long);
 
