@@ -33,16 +33,29 @@ class CreateThumbnail extends EventHandler
 {
 	function processEvent(&$event)
 	{
-		list($gridimage_id,$user_id) = explode(',',$event['event_param']);
+		list($gridimage_id,$user_id,$original) = explode(',',$event['event_param']);
+
+		$db = $this->_getDB();
 
 		$image=new GridImage();
+		if (empty($db->realonly))
+			$image->_setDB($db);
+
 		$image->gridimage_id = $gridimage_id;
 		$image->user_id = $user_id;
+		$image->title = 'fake'; //_getResized wont save to memcache if title empty!
+		$image->grid_reference = 'fake'; //most code expect it always defined! (just avoids notices)
 
 		//beware image is not a full image object.
-		//this wont be a full normal valid thumbnail, html, but it will have at least created the thumbnail.jpg which is the object of this exercise. 
+		//this wont be a full normal valid thumbnail, html, but it will have at least created the thumbnail.jpg which is the object of this exercise.
 
+		$image->getThumbnail(120,120, 2); //urlonly avoids the html tag!
 		$image->getThumbnail(213,160, 2); //urlonly avoids the html tag!
+
+		if ($original) {
+			//will call getSize - and the fullsize image should generall already be downloaded. (the origianl may download too!)
+			$h = $image->getFull(true,true,true); //should generate the 800/1024 versions - as needed!
+		}
 
 		//return true to signal completed processing
 		//return false to have another attempt later

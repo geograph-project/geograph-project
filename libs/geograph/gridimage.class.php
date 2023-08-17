@@ -1237,7 +1237,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
         	                        $midwidth = 800;
 	                        else
                 	                $midwidth = round(800*$this->original_width/$this->original_height);
-        			if (basename($minurl) != 'error.jpg') {
+				if (basename($midurl) != 'error.jpg') {
 			                $srcset[] = "$midurl {$midwidth}w";
 					$largestwidth = $midwidth;
 				}
