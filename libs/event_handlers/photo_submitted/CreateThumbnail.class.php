@@ -46,15 +46,22 @@ class CreateThumbnail extends EventHandler
 		$image->title = 'fake'; //_getResized wont save to memcache if title empty!
 		$image->grid_reference = 'fake'; //most code expect it always defined! (just avoids notices)
 
-		//beware image is not a full image object.
-		//this wont be a full normal valid thumbnail, html, but it will have at least created the thumbnail.jpg which is the object of this exercise.
+		//beware image is not a full image object
+		//this wont be a full normal valid thumbnail, html, but it will have at least created the thumbnail.jpg which is the object of this exercise
 
 		$image->getThumbnail(120,120, 2); //urlonly avoids the html tag!
-		$image->getThumbnail(213,160, 2); //urlonly avoids the html tag!
+		$image->getThumbnail(213,160, 2);
 
 		if ($original) {
-			//will call getSize - and the fullsize image should generall already be downloaded. (the origianl may download too!)
-			$h = $image->getFull(true,true,true); //should generate the 800/1024 versions - as needed!
+			//will call getSize - and the fullsize image should generall already be downloaded. (the origianl may download too to get size)
+			$image->getFull(true,true,true); //should generate the 800/1024 versions - as needed (all three params needed for responsive to work!)
+		}
+
+		//might as as well create the vision thumbnail too (we probably already downloaded the fullsize)
+		if (isset($image->cached_size[0]) && ($image->cached_size[0] < 224 || $image->cached_size[1] < 224) && $image->original_width > 224) {
+			$image->getSquareThumbnail(224,224,'path', true, '_original');
+                } else {
+			$image->getSquareThumbnail(224,224,'path');
 		}
 
 		//return true to signal completed processing
