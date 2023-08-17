@@ -131,7 +131,7 @@
 	</div>
 	{if $others}
 		<div style="font-size:0.8em;text-align:center">Other tags: {foreach from=$others item=item}
-			<span class="tag">{if $item.prefix}{$item.prefix|escape:'html'|lower}:{/if}<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}?exact=1" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a></span>
+			<span class="tag">{if $item.prefix}{$item.prefix|escape:'html'|lower}:{/if}<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}{if !$item.prefix}?exact=1{/if}" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a></span>
 			&nbsp; &nbsp;
 		{/foreach}
 		</div>
