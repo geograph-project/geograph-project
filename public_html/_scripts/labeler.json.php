@@ -30,6 +30,8 @@ require_once('geograph/imagelist.class.php');
 $format = '224XX224.jpg';
 if (!empty($_GET['title']))
 	$format = 'title.txt';
+elseif (!empty($_GET['comment']))
+	$format = 'comment.txt';
 
 if (!empty($_GET['models'])) {
 	$db = GeographDatabaseConnection(true);
@@ -113,11 +115,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$where[] = "l.seq_id IS null"; //not already labled
 	$limit = 50;
 	$limit = rand(40,60); //to 'desync' multiple clients!
-	if (!empty($_GET['title']) && !empty($_GET['limit']))
-		$limit = min(1000,intval($_GET['limit']));
-	elseif (!empty($_GET['limit']))
-		$limit = min(250,intval($_GET['limit']));
-
+	if (!empty($_GET['limit'])) {
+		$limit = (!empty($_GET['comment']) || !empty($_GET['title'])) ? 1000 : 250;
+		$limit = min($limit,intval($_GET['limit']));
+	}
 	$sleep = ceil(sqrt($limit));
 
 	if (!empty($_GET['offset'])) {
@@ -163,6 +164,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		} elseif ($_GET['model'] == 'class') {
 			$where[] = "imageclass=''";
 		}
+		if (!empty($_GET['comment']))
+			$where[] = "LENGTH(comment)>10";
 	}
 
 	if (!empty($_GET['user_id']))
@@ -177,6 +180,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	if (!empty($_GET['title']))
 		$cols .= ", title";
+	elseif (!empty($_GET['comment']))
+		$cols .= ", title, comment";
 
 	####################
 
@@ -211,6 +216,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		where l.seq_id IS null
 		limit $limit";
 
+	} elseif ($_GET['model'] == 'subjectcomment') {
+		$sql = "select t.*
+		from tmp_subjectcomment_images t
+		left join gridimage_label l on (l.gridimage_id = t.gridimage_id and `model` = $qmod)
+		where l.seq_id IS null
+		limit $limit";
+
 	} else {
 		$sql = "select gi.gridimage_id,user_id $cols
 		from gridimage_search gi
@@ -231,9 +243,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	if (count($imagelist->images)) {
 		foreach ($imagelist->images as $i => $image) {
 		//title
-			if (!empty($_GET['title'])) {
+			if (!empty($_GET['title']) || !empty($_GET['comment'])) {
         	                $imagelist->images[$i]->title = latin1_to_utf8($imagelist->images[$i]->title);
-	                        //$row['realname'] = latin1_to_utf8($row['realname']);
 
                         	//liner doesnt actully cope with utf8 - even with a BOM - so transliterate
                                 //note we STILL convert to utf8 first, rather than detect ISO-8859-15 directly (ie more than ascii), because latin1_to_utf8 first decodes entities, which$
@@ -241,9 +252,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         	                if ($enc == 'UTF-8') // should no longer ever detect ISO-8859-15
 	                                $imagelist->images[$i]->title = translit_to_ascii($imagelist->images[$i]->title, "UTF-8");
 
+				//may as well do the join here in server, so dont need to do it in client
+				if (!empty($_GET['comment']) && !empty($imagelist->images[$i]->comment)) {
+					$comment = latin1_to_utf8($imagelist->images[$i]->comment);
+
+					//remove the links. Probably wont help
+	                                $comment = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/', '', $comment);
+        	                        $comment = preg_replace('/(?<![>\/F\."\'])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/', '', $comment);
+
+	                                //remove geograph links too!
+        	                        $comment = preg_replace('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/', '', $comment);
+
+					$enc = mb_detect_encoding($comment, 'UTF-8, ISO-8859-15, ASCII');
+	                                if ($enc == 'UTF-8') // should no longer ever detect ISO-8859-15
+        	                                $comment = translit_to_ascii($comment, "UTF-8");
+
+					$imagelist->images[$i]->title .= ".\n\n".$comment;
+					unset($imagelist->images[$i]->comment);
+				}
+
 		//square thumbnail (default!)
 			} elseif (empty($_GET['full'])) {
-				$imagelist->images[$i]->fullpath = $image->getSquareThumbnail(224,224,'path');
+				/* //real wide panos, that a 'thin strip' at 640px might be very low resolution
+				... need gridimage_size hoined in for this to work
+				if (isset($row['width']) && ($row['width'] < 224 || $row['height'] < 224) && $row['original'] > 224) {
+	                                $path = $image->getSquareThumbnail(224,224,'path', true, '_original');
+        	                } else { */
+					$imagelist->images[$i]->fullpath = $image->getSquareThumbnail(224,224,'path');
+				//}
 
 				if (basename($imagelist->images[$i]->fullpath) == 'error.jpg') {
 					debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
