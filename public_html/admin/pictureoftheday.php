@@ -159,7 +159,7 @@ if (empty($assigned)) {
 	$days=28;
 	$coming_up=$db->GetAssoc("select showday,gridimage_id,1 as assigned from gridimage_daily where showday > date(now()) and showday < date(date_add(now(),interval $days day))");
 
-	$ids = $db->getCol("select distinct user_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday > date_sub(now(),interval 30 day)");
+	$ids = $db->getCol("select distinct user_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday > date_sub(now(),interval 120 day)");
 	if (empty($ids)) {
 		$ids = 0;
 	} else {
@@ -169,7 +169,7 @@ if (empty($assigned)) {
 	//get ordered list of pool images
 	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id)
 		where showday is null and (vote_baysian > 3.1) and (user_id not in ($ids))
-		order by moderation_status+0 desc, coalesce((abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()>0.7,7,0),floor(rand()*20)) asc, crc32(concat(gridimage_id,yearweek(now()))) desc
+		order by moderation_status+0 desc, coalesce((182.5-abs((datediff(now(),imagetaken) mod 365)-182.5) div 14)-if(rand()>0.7,7,0),floor(rand()*20)) asc, crc32(concat(gridimage_id,yearweek(now()))) desc
 		limit $days");
 
 	//fill in blanks

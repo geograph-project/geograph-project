@@ -90,7 +90,7 @@ class PictureOfTheDay
 				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id)
 				where showday is null
 				order by (user_id in ($ids)), (vote_baysian >= 3.2) desc,(vote_baysian > 3.0) desc,(vote_baysian > 2.5) desc,
-					moderation_status+0 desc, coalesce((abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()> 0.7,7,0),floor(rand()*20)) asc,
+					moderation_status+0 desc, coalesce((182.5-abs((datediff(now(),imagetaken) mod 365)-182.5) div 14)-if(rand()> 0.7,7,0),floor(rand()*20)) asc,
 					crc32(concat(gridimage_id,yearweek(now()))) desc");
 
 				if (!empty($gridimage_id)) {
