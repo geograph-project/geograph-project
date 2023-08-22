@@ -21,7 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$param = array('sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_labeldata_001', 'limit' => 100, 'prefix'=>'subject','n'=>0, 'shard'=>'');
+$param = array('sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_labeldata_001', 'limit' => 100, 'prefix'=>'subject','n'=>0,
+	 'shard'=>'', 'comment'=>false, 'minimum'=>20);
 
 //chdir(__DIR__);
 //require "./_scripts.inc.php";
@@ -62,6 +63,8 @@ fclose($h);
 
 #########################################
 
+//todo, combine tmp_subject_shard & tmp_subject_stat to allo using shard&comment at once!
+
 if (strlen($param['shard'])) {
         $sql = "SELECT gridimage_id, tag, realname, title, upd_timestamp
         FROM gridimage_search
@@ -73,13 +76,29 @@ if (strlen($param['shard'])) {
 		 from  tag_stat inner join tag using (tag_id)
 		 where `count` > 20 and prefix = 'subject';
 	*/
+} elseif ($param['comment']) {
+	//this is specifically looking for long comments
+
+	$sql = "SELECT gridimage_id, tag, realname, title, comment, upd_timestamp
+	FROM gridimage_search
+	INNER JOIN gridimage_tag USING (gridimage_id)
+	INNER JOIN tmp_subject_stat USING (tag_id)
+	WHERE status=2
+	AND longcomments > {$param['minimum']}
+	AND length(comment) > 250
+	AND length(comment) < 8000
+	LIMIT {$param['limit']}";
+	//the prejoined table is just subject, ignoring $param['prefix']
+
+	//Dont know limit in for liner.ai, but 12392 bytes failed, so use 8k for now?
+
 } else {
 	$sql = "SELECT gridimage_id, tag, realname, title, upd_timestamp
 	FROM gridimage_search
 	INNER JOIN tag_public USING (gridimage_id)
 	INNER JOIN tag_stat USING (tag_id)
 	WHERE prefix = '{$param['prefix']}'
-	AND `count` > 20
+	AND `count` > {$param['minimum']}
 	LIMIT {$param['limit']}";
 }
 
@@ -118,6 +137,7 @@ $tar->create($param['folder'].$param['filename'].'/'.$param['filename'].'.tar.gz
 
 
 	$c=0;
+	$labels = array();
 	$done = array();
 	do {
 		if ($param['n'] && @$done[$row['tag']] > $param['n'])
@@ -126,6 +146,7 @@ $tar->create($param['folder'].$param['filename'].'/'.$param['filename'].'.tar.gz
 
 		$value = preg_replace('/[^\w]+/','',$row['tag']);
 
+		@$labels[$value]++;
 /*
 if (strlen($param['shard'])) {
         $crc = sprintf("%u", crc32($value));
@@ -148,6 +169,26 @@ if (strlen($param['shard'])) {
 			$enc = mb_detect_encoding($row['title'], 'UTF-8, ISO-8859-15, ASCII');
 			if ($enc == 'UTF-8') // should no longer ever detect ISO-8859-15
 				$row['title'] = translit_to_ascii($row['title'], "UTF-8");
+
+			//add the comment to the text...
+			if (!empty($row['comment'])) {
+				$row['comment'] = latin1_to_utf8($row['comment']);
+
+				//remove the links. Probably wont help
+				$row['comment'] = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/', '', $row['comment']);
+				   $row['comment'] = preg_replace('/(?<![>\/F\."\'])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/', '', $row['comment']);
+
+				//remove geograph links too!
+				$row['comment'] = preg_replace('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/', '', $row['comment']);
+
+				//... and append
+				$enc = mb_detect_encoding($row['comment'], 'UTF-8, ISO-8859-15, ASCII');
+				if ($enc == 'UTF-8') { // should no longer ever detect ISO-8859-15
+					$row['title'] .= ".\n\n".translit_to_ascii($row['comment'], "UTF-8");
+				} else {
+					$row['title'] .= ".\n\n".$row['comment'];
+				}
+			}
 
 			$info = new FileInfo($relative);
 			$info->setMTime(strtotime($row['upd_timestamp']));
@@ -180,6 +221,24 @@ $tar->addFile("LICENCE");
 $tar->addFile("{$param['filename']}.metadata.csv");
 $tar->close();
 
+
+##################################
+
+
+print "./aws/dist/aws s3 mv --storage-class INTELLIGENT_TIERING --acl public-read {$param['folder']}{$param['filename']}/{$param['filename']}.tar.gz s3://data.geograph.org.uk/datasets/{$param['filename']}.tar.gz\n";
+
+$format = 'title.txt';
+if ($param['comment'])
+	$format = 'comment.txt';
+$labels = count($labels);
+
+print "insert into dataset set src_format = 'subdir', folder = '{$param['filename']}', imagesize = '$format', grouper='{$param['prefix']}'";
+print ", src_download = 'https://s3.eu-west-1.amazonaws.com/data.geograph.org.uk/datasets/{$param['filename']}.tar.gz'";
+ $size = filesize("{$param['filename']}.tar.gz");
+ $time = filemtime("{$param['filename']}.tar.gz");
+print ", src_size=$size,src_time=FROM_UNIXTIME($time)";
+
+print ", images = {$images}, labels = {$labels};\n\n";
 
 
 ##################################
