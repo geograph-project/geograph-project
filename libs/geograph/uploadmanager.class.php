@@ -741,9 +741,9 @@ class UploadManager
 					if ($source) {
 						$cmd = sprintf(implode(' ',$cmd), $source, $filename);
 					} else {
-						//vipsthumbnail cant 'overwrite' the image!
+						//vipsthumbnail cant 'overwrite' the image! (no built in mogrify)
 						$tmpfile = tempnam("/tmp",'upload');
-						$cmd = sprintf(implode(' ',$cmd), $filename, $tmpfile);
+						$cmd = sprintf(implode(' ',$cmd), $filename, "$tmpfile.jpg"); //note, vips needs the file extension to write it
 					}
 
 				//removed the unsharp as it makes some images worse - needs to be optional
@@ -758,7 +758,8 @@ class UploadManager
 				passthru($cmd);
 
 				if (!empty($tmpfile)) {
-					rename($tmpfile, $filename);
+					rename("$tmpfile.jpg", $filename);
+					unlink($tmpfile);
 				}
 
 				list($width, $height, $type, $attr) = getimagesize($filename);
