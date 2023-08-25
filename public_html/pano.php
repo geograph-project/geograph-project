@@ -66,6 +66,10 @@ if (!empty($_GET['size']) && $_GET['size'] == 8192 && $great > 8192) {
 	$path = $image->getImageFromOriginal(8192,8192);
 	$row2['original_width'] = 8192;
 	$row2['original_height'] = 8192 /$ratio;
+} elseif (!empty($_GET['size']) && $_GET['size'] == 4096 && $great > 4096) {
+	$path = $image->getImageFromOriginal(4096,4096);
+	$row2['original_width'] = 4096;
+	$row2['original_height'] = 4096 /$ratio;
 } elseif (!empty($_GET['full']) && $great > 640)
 	$path = $image->_getOriginalpath(true, false);
 elseif ($great > 1600)
@@ -210,7 +214,22 @@ if (preg_match('/panodirection:(\d+\.?\d*)/',$image->tags,$m)) {
 	print "</div>";
 }
 
- if (empty($json["haov"]) || $json["vaov"] == 360) { ?>
+if ($row2['original_width'] > 8192) {
+	print "<p>This image is very high resolution, and may have issues on some devices.<br> If the image doesnt display below, ";
+	print "then try midscale <a href=\"?id={$image->gridimage_id}&amp;size=8192\">8192 pixels</a> version.</a>";
+} elseif ($row2['original_width'] > 4096) {
+	if ($_GET['size'] && $_GET['size'] > 4096) {
+		print "<p>If the image still doesn't display below,";
+	} else {
+		print "<p>This image is very high resolution, and may have issues on some devices. If the image doesnt display below, ";
+	}
+	print " then try <a href=\"?id={$image->gridimage_id}&amp;size=4096\">4096 pixels</a>.<br>";
+}
+if ($great > 4096 && !empty($_GET['size'])) {
+	print "Viewing reduced resolution version. Can still download the full resolution version from <a href=\"more.php?id={$image->gridimage_id}\">More Sizes</a> page";
+}
+
+if (empty($json["haov"]) || $json["vaov"] == 360) { ?>
         <p><i>The image appears to be a full 360 degree panorama, <span>so can fully rotate the view in the viewer below (drag with mouse).</span>
         <? if (empty($json["vaov"]) || $json["vaov"] == 180) { ?>
                 <span>And in fact appears to be a full photosphere, so can look up and down too!</span>
