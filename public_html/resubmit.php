@@ -78,6 +78,14 @@ if (isset($_REQUEST['id']))
 			exit;
 		}
 
+		$image->loadTags();
+		$MAX_FILE_SIZE = 8388608;
+		if (stripos($image->tags,"panorama:") !== FALSE) {
+			$MAX_FILE_SIZE *= 1.5;
+		}
+		$smarty->assign('MAX_FILE_SIZE',$MAX_FILE_SIZE);
+		$smarty->assign('MAX_FILE_SIZE_MB',$MAX_FILE_SIZE/1048576);
+
 		$smarty->assign_by_ref('image',$image);
 
 		if (isset($_POST['finalise']))
