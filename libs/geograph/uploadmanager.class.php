@@ -737,10 +737,12 @@ class UploadManager
                                         //$cmd[] = "--eprofile /usr/share/color/icc/sRGB.icc --delete"; //fails on monocrome!
                                         if ($width < 3000 && $height < 3000)
                                                 $cmd[] = "--linear"; //its slow on big images!
-                                        $cmd[] = "-o %s[strip,Q=87]";
+
 					if ($source) {
+	                                        $cmd[] = "-o %s[strip,Q=87]"; //this is creating an intermediate thumbnail, so ok to strip exif
 						$cmd = sprintf(implode(' ',$cmd), $source, $filename);
 					} else {
+	                                        $cmd[] = "-o %s[Q=87]"; //this is storing a final downsized version, so DONT want strip
 						//vipsthumbnail cant 'overwrite' the image! (no built in mogrify)
 						$tmpfile = tempnam("/tmp",'upload');
 						$cmd = sprintf(implode(' ',$cmd), $filename, "$tmpfile.jpg"); //note, vips needs the file extension to write it
