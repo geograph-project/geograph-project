@@ -217,6 +217,7 @@ if (isset($_POST['gridsquare']))
 		if (!empty($_POST['setpos']) && empty($exif)) { //$exif will be set if processed a geotagged image
 			$selectedtab =1;
 		}
+
 			if ($ok && $square->natgrlen > 4 && !preg_match('/^[A-Z]/',$_POST['grid_reference'])) {
 				//setByFullGridRef will now accept lat/long, which need to convert back to a GR
 				$conv = new Conversions('');
@@ -226,6 +227,13 @@ if (isset($_POST['gridsquare']))
 					$square->natgrlen,
 					$square->reference_index,false);
 			}
+
+		if (!empty($_POST['location_type']) && $_POST['location_type'] == 'viewpoint') {
+			//shift the location into phtographer! (kinda like we do with exif!
+			$_POST['photographer_gridref'] = $_POST['grid_reference'];
+			$_POST['grid_reference'] = ''; //could use $square->grid_reference, but we've already setup the square, so can leave the box blank
+			$smarty->assign('photographer_gridref', $_POST['photographer_gridref']);
+		}
 
 		//preserve inputs in smarty
 		$smarty->assign('grid_reference', $grid_reference = $_POST['grid_reference']);

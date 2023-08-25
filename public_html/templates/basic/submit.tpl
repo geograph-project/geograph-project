@@ -85,14 +85,24 @@ geographing</a> first.</p>
 		(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
 		<u title="e.g. TQ435646 or TQ 435 646">6</u>,
 		<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or
-		<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the subject of the photo</b>, alternatively enter WGS84 lat/long like [ 51.36299,0.06015 ]</label><br /><br />
-		<input id="grid_reference" type="search" name="grid_reference" value="{$grid_reference|escape:'html'}" size="20"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
+		<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the photo</b>, alternatively enter WGS84 lat/long like [ 51.36299,0.06015 ]</label><br /><br />
+		<input id="grid_reference" type="search" name="grid_reference" value="{$grid_reference|escape:'html'}" onkeyup="showPhotoToggle(this)" onpaste="showPhotoToggle(this)" size="20"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
 		&nbsp;&nbsp;&nbsp;
 		<input type="submit" name="setpos" value="Next &gt;"/>
 		</p>
 
-		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; specify the camera location in the next step (with the aid of a map).</p>
-
+		<div id="photoToggle" style="display:none">
+			Choose the type of location reference you entering: 
+			<input type=radio name="location_type" id="type_s" value="subject" checked><label for="type_s">Subject</label> /
+			<input type=radio name="location_type" id="type_v" value="viewpoint"><label for="type_v">Camera (or Photographer)</label>
+		</div>
+		<script>{literal}
+		function showPhotoToggle(that) {
+			if (that.value.match(/\d{5,}/))
+				document.getElementById('photoToggle').style.display='';
+		}
+		{/literal}</script>
+		
 	</div>
 
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
@@ -122,8 +132,8 @@ geographing</a> first.</p>
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
 		<p><label for="jpeg_exif"><b>Upload an image with locational information attached</b></label> <br/>
 
-		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" accept="image/jpeg"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
+		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" accept="image/jpeg"/>
 
 		<input type="submit" name="setpos" value="Next &gt;" onclick="return check_jpeg(this.form.jpeg_exif)"/> <br/>
 
