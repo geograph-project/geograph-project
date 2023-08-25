@@ -187,7 +187,7 @@ $.ajaxSetup({
 		if (form.elements['jpeg_exif'].value.length > 2) {
 			if (form.elements['jpeg_exif'].files && form.elements['jpeg_exif'].files[0]) {
 				var file = form.elements['jpeg_exif'].files[0];
-				if (file.size > 10000 && file.size <= 8192000 && file.type && file.type == "image/jpeg")
+				if (file.size > 10000 && file.size <= 8388608 && file.type && file.type == "image/jpeg")
 					$('div.tabs a').eq(0).addClass('done');
 			} else {
 				$('div.tabs a').eq(0).addClass('done');
@@ -239,7 +239,7 @@ function checkMultiFormSubmission() {
 	}
         if (form.elements['jpeg_exif'].files && form.elements['jpeg_exif'].files[0]) {
             var file = form.elements['jpeg_exif'].files[0];
-            if (file && file.size && file.size > 8192000) {
+            if (file && file.size && file.size > 8388608) {
                 alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize image to be under 8 Megabytes');
 		return false;
             }
@@ -871,7 +871,7 @@ function toDecimal(number) {
 $(function() {
 	document.getElementById("jpeg_exif").onchange = function(e) {
             var file = e.target.files[0];
-	    if (file && file.size && file.size > 8192000) {
+	    if (file && file.size && file.size > 8388608) {
 		$('#jpeg_exif').after('<div class=toobig><b>File appears to be '+file.size+' bytes, which is too big for final submission</b>. Please downsize the image to be under 8 Megabytes</div>');
 	    } else {
 		$('.toobig').remove();
@@ -981,8 +981,9 @@ $(function() {
 
 	<label for="jpeg_exif">Select image:</label><br>
 
+		<input type="hidden" name="MAX_FILE_SIZE" value="8388608"/>
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white" accept="image/jpeg"/>
-		<input type="hidden" name="MAX_FILE_SIZE" value="8192000"/><br><br>
+		<br><br>
 
 		<div id="preview" style="display:none">
 			Full image preview:<br>

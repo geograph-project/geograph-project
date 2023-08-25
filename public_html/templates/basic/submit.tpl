@@ -132,7 +132,7 @@ geographing</a> first.</p>
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
 		<p><label for="jpeg_exif"><b>Upload an image with locational information attached</b></label> <br/>
 
-		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
+		<input type="hidden" name="MAX_FILE_SIZE" value="8388608" />
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" accept="image/jpeg"/>
 
 		<input type="submit" name="setpos" value="Next &gt;" onclick="return check_jpeg(this.form.jpeg_exif)"/> <br/>
@@ -161,7 +161,7 @@ geographing</a> first.</p>
 
 	    if (ele && ele.files) {
             var file = ele.files[0];
-            if (file && file.size && file.size > 8192000) {
+            if (file && file.size && file.size > 8388608) {
                 alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
 		return false;
             } else if (file && file.type && file.type != "image/jpeg") {
@@ -297,14 +297,14 @@ geographing</a> first.</p>
 		<label for="jpeg_url"><b>JPEG Image URL</b></label>
 		<input id="jpeg_url" name="jpeg_url" type="text" size="40" value="{$jpeg_url|escape:"html"}"/>
 		{else}
-		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
+		<input type="hidden" name="MAX_FILE_SIZE" value="8388608" />
 		<label for="jpeg"><b>JPEG Image File</b></label>
 		<input id="jpeg" name="jpeg" type="file" accept="image/jpeg"/>
 
         {literal}<script>
         document.getElementById("jpeg").onchange = function(e) {
             var file = e.target.files[0];
-            if (file && file.size && file.size > 8192000) {
+            if (file && file.size && file.size > 8388608) {
                 alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
             } else if (file && file.type && file.type != "image/jpeg") {
                 alert('File appears to not be a JPEG image. We only accept .jpg files');

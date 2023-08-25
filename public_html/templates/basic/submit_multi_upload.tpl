@@ -67,7 +67,7 @@ $(function() {
 	            FilesAdded: function(up, files) {
 			var ele = document.getElementById('maxSize');
 	                plupload.each(files, function(file) {
-				if (file.size >= 8192000 && !ele.checked) {
+				if (file.size >= 8388608 && !ele.checked) {
 					alert(file.name + " is bigger than 8M, which is too big to upload as is.\n\n"+
 					"However we have enabled the 'Upload Dimensions' option, that should mean it will be resized to be under 8Mb");
 					ele.checked = true;

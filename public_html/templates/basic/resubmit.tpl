@@ -154,7 +154,7 @@ function hideStep3() {
 
 <h3>Step 1 : Select Image File</h3>
 
-<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
+<input type="hidden" name="MAX_FILE_SIZE" value="8388608" />
 <label for="jpeg"><b>JPEG Image File</b></label>
 <input id="jpeg" name="jpeg" type="file" accept="image/jpeg"/><br/>
 
@@ -163,7 +163,7 @@ function hideStep3() {
         {literal}<script>
         document.getElementById("jpeg").onchange = function(e) {
             var file = e.target.files[0];
-            if (file && file.size && file.size > 8192000) {
+            if (file && file.size && file.size > 8388608) {
                 alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
             } else if (file && file.type && file.type != "image/jpeg") {
                 alert('File appears to not be a JPEG image. We only accept .jpg files');
