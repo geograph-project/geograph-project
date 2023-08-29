@@ -60,6 +60,8 @@ if (!is_writable("{$CONF['photo_upload_dir']}_old/0/"))
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+$exts = array('.jpeg','.original.jpeg','.exif');
+
 ############################################
 // 1) Repair failed submissions (run revive-temp-uploads.php)
 
@@ -75,6 +77,8 @@ if ($param['step'] == 1) {
 		$sql = "select gridimage_id,gi.user_id,preview_key,width
 		 from gridimage gi inner join submission_method using (gridimage_id) inner join $table using (preview_key) left join gridimage_size s using (gridimage_id)
 		 where moderation_status = 'rejected' and $where order by gridimage_id desc limit {$param['limit']}";
+
+	//could also do [ left join full_md5 using (md5sum) where basename is null ] to exclude where uploaded on another id!
 
 		$data = $db->getAll($sql);
 		foreach ($data as $row) {
@@ -95,9 +99,9 @@ if ($param['step'] == 1) {
 
 } elseif ($param['step'] == 2) {
 
-	print "Done by remove-temp-uploads.php for now (which purges tmp_upload_dir_old)\n";
+	print "Done by remove-temp-uploads.php for now (which purges file from upload folder)\n";
 
-	//step4 will actull purge tmp_upload_dir of successful uploads (ie by finding content match, not preview_key match)
+	//also step4 will actull purge tmp_upload_dir of successful uploads (ie by finding content match, not preview_key match)
 	//select * from submission_method inner join tmp_upload_dir using (preview_key) might also find them!
 
 ############################################
@@ -121,13 +125,13 @@ if ($param['step'] == 1) {
 		        ///var/www/geograph_live/upload_tmp_dir_old/2/newpic_u13502_8e38e115b94a86e275cb0658a97c3503.exif
 		        $path = "$folder/$a/newpic_u{$row['user_id']}_{$row['preview_key']}";
 
-			$cmd = "unlink $path*";
-			$sql = "UPDATE $table SET status = 0 WHERE user_id = {$row['user_id']} AND preview_key = '{$row['preview_key']}'";
+			delete_path($path);
 
-			if ($param['print']) {
-				print "$cmd\n";
+			$sql = "UPDATE $table SET status = 0 WHERE user_id = {$row['user_id']} AND preview_key = '{$row['preview_key']}'";
+			if ($param['print'])
 				print "$sql;\n";
-			}
+			if ($param['execute'])
+				$db->Execute($sql);
 		}
 		if (empty($data) && $param['print'])
 			print "No Rows for $table\n";
@@ -189,13 +193,13 @@ if ($param['step'] == 1) {
 			$a = $row['user_id']%10;
 		        $path = "$folder/$a/newpic_u{$row['user_id']}_{$row['preview_key']}";
 
-			$cmd = "unlink $path*";
-			$sql = "UPDATE $table SET status = 0 WHERE user_id = {$row['user_id']} AND preview_key = '{$row['preview_key']}'";
+			delete_path($path);
 
-			if ($param['print']) {
-				print "$cmd\n";
+			$sql = "UPDATE $table SET status = 0 WHERE user_id = {$row['user_id']} AND preview_key = '{$row['preview_key']}'";
+			if ($param['print'])
 				print "$sql;\n\n";
-			}
+			if ($param['execute'])
+				$db->Execute($sql);
 		}
 		if (empty($data) && $param['print'])
 			print "No Rows for $table\n";
@@ -205,4 +209,18 @@ if ($param['step'] == 1) {
 	find_submitted("tmp_upload_dir_old", "{$CONF['photo_upload_dir']}_old");
 
 ############################################
+}
+
+function delete_path($path) {
+	global $exts, $param;
+
+        foreach ($exts as $ext) {
+                if (file_exists("$path$ext")) {
+                        $found++;
+                        if ($param['print'])
+                                print "unlink $path$ext\n";
+                        if ($param['execute'])
+                                unlink("$path$ext");
+                }
+        }
 }

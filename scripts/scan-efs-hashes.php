@@ -73,6 +73,8 @@ if ($param['dest'] == 'full_md5') {
 
 } elseif ($param['dest'] == 'tmp_upload_dir' || $param['dest'] == 'tmp_upload_dir_old') {
 
+	$done = $db->getAssoc("SELECT preview_key,status FROM {$param['dest']} WHERE status = 2");
+
 	while ($h && !feof($h)) {
 		$line = trim(fgets($h));
 		if (empty($line))
@@ -82,6 +84,13 @@ if ($param['dest'] == 'full_md5') {
 		print "$line\n";
 
 		if (preg_match('/_u(\d+)_([a-f0-9]+)\.jpeg/',$filename,$m)) {
+
+			//avoid repeating already done (could use insert ignore, but doing it here, prevents the unneeded md5_file() call!)
+			if (isset($done[$m[2]])) {
+				unset($done[$m[2]]);
+				continue;
+			}
+
 			$start = microtime(true);
 
                         $gid = crc32($m[2])+4294967296;
@@ -96,6 +105,7 @@ if ($param['dest'] == 'full_md5') {
 			$updates['preview_key'] = $m[2];
 			$updates['filesize'] = filesize($filename);
 			$updates['md5sum'] = md5_file($filename);
+			$updates['status'] = 2;
 
 			$updates['created'] = date('Y-m-d H:i:s', intval($time));
 
@@ -109,6 +119,16 @@ if ($param['dest'] == 'full_md5') {
 			usleep(($end-$start)*1000); ///make the delay dynamic.
 		}
 	}
+
+	if (!empty($done)) {
+		print "deleting ".count($done)."\n";
+		//anything left in $done, was not found on disk!
+		foreach ($done as $key => $dummy) {
+			$sql = "UPDATE {$param['dest']} SET status = 0 WHERE preview_key = '$key'";
+			$db->Execute($sql) or die("$sql\n\n".$db->ErrorMsg()."\n");
+		}
+	}
+
 } else {
 	print "Please specify dest";
 }

@@ -94,13 +94,16 @@ foreach ($rows as $row) {
 	}
 	if (!$found) {
 		//just set to something, to show processed, even if WHEN purged is now unknown
+		//TODO, these should be checked!
 		if ($param['execute'])
 			$db->Execute("UPDATE submission_method SET purged = '0000-00-00' WHERE gridimage_id = {$row['gridimage_id']}");
 		if ($param['print'])
 			print ".";
 	} else {
-		if ($param['execute'])
+		if ($param['execute']) {
+			$db->Execute("UPDATE tmp_upload_dir_old SET status = 0 WHERE user_id = {$row['user_id']} AND preview_key = '{$row['preview_key']}'");
 			$db->Execute("UPDATE submission_method SET purged = NOW() WHERE gridimage_id = {$row['gridimage_id']}");
+		}
 		if ($param['print'])
 			print "+";
 	}
