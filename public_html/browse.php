@@ -105,8 +105,18 @@ $displayclasses =  array(
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
 if (!empty($_GET['q'])) {
-	if (preg_match('/^[A-Z]{1,2}\s*\d\d\d*\s*\d\d\d*$/',trim($_GET['q']))) {
+        // redirect a myriad/hectad reference to clean url (which then uses rewriterule to load the relevent page directly)
+        if (preg_match('/^[a-z]{1,3}(\s*\d{2}|)$/i',trim($_GET['q']))) {
+                $gr = strtoupper(preg_replace('/^([a-z]{1,3})\s*(\d{2}|)$/i','$1$2',trim($_GET['q'])));
+                header("Location: /gridref/$gr");
+                print "<a href='/gridref/$gr'>Go here</a>";
+                exit;
+
+	// used by 'Enter a Grid Reference' Search box
+        } elseif (preg_match('/^[A-Z]{1,2}\s*\d\d\d*\s*\d\d\d*$/',trim($_GET['q']))) {
 		$_GET['gridref'] = $_GET['q'];
+
+	// handler for qyery+location searches
 	} elseif (!empty($_GET['gridref'])) {
 		$url = "/search.php?q=".urlencode($_GET['q'])."&location=".urlencode($_GET['gridref'])."&distance=1&do=1";
 		header("Location: $url");
@@ -1086,13 +1096,6 @@ if ($grid_given)
 			}
 		}
 	}
-}
-elseif (!empty($_SESSION['gridsquare']))
-{
-	//no square specifed - populate with remembered values
-	$smarty->assign('gridsquare', $_SESSION['gridsquare']);
-	$smarty->assign('eastings', $_SESSION['eastings']);
-	$smarty->assign('northings', $_SESSION['northings']);
 }
 else
 {
