@@ -34,8 +34,10 @@ $template='hectad.tpl';
 $hectad = (isset($_GET['hectad']) && preg_match('/^\w{1,3}\s*\d{2}$/',$_GET['hectad']))?strtoupper($_GET['hectad']):'';
 
 if (empty($hectad)) {
-	$db = GeographDatabaseConnection(true);
+	header("Location: /hectadmap.php");
+	exit;
 
+	$db = GeographDatabaseConnection(true);
 	$hectad = $db->getOne("select hectad from hectad_stat where landsquares > 0 order by rand()");
 }
 
