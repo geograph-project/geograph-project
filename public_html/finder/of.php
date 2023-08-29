@@ -624,6 +624,35 @@ if (!empty($USER->registered)) {
 #########################################
 
         $smarty->display('_std_end.tpl',md5($_SERVER['PHP_SELF'].$_GET['q']));
+
+if (!empty($final) && empty($words) && count($final) != @count($rows['single']) && !empty($data['total_found']) && $data['total_found'] > 20) {
+
+	print "<div class=interestBox style=\"position:fixed;bottom:0;left:0;right:0;z-index:1000;color:white;background-color:gray;\">";
+	if (!empty($data['total_found']) && $data['total_found'] > 10) {
+		if (count($final) < $data['total_found'])
+			print "showing ".count($final)." of ";
+		print "About <b>".number_format($data['total_found'])."</b> results. ";
+	}
+
+	$bits = array();
+	if (!empty($_GET['place']))
+		$bits[] = '<a href="/browser/#!/place+%22'.$qu.'%22" style=color:yellow>in the Browser</a>';
+	elseif (!preg_match('/\b(user_id|snippet_id|snippet|snippet_title|month|points|viewsquare|grid):.+/',$_GET['q'])) //gi_stemmed fields!, not in new search
+		$bits[] = '<a href="/browser/#!/q='.$qu.'" style=color:yellow>in the Browser</a>';
+
+	if (!preg_match('/\b(decade|monthname|user|contexts|subjects|types|buckets|groups|terms|snippets|wikis|distance|direction|format|place|county|country|hash|larger|landcover):.+/',$_GET['q'])) //sample8 fields!, not in old search
+		$bits[] = '<a href="/search.php?do=1&amp;searchtext='.(empty($words)?'':'~').$qu.'&amp;sugg_off=1" style=color:yellow>in the standard search</a>';
+
+	if (!empty($bits)) {
+		print 'Explore these images more: <b>'.implode('</b> or <b>',$bits)."</b>";
+		if (count($bits) > 1) {
+			print " (may return slightly different results).";
+		}
+	}
+	print "</div>";
+	print "<br><br><br><br><br>"; //so the fixed bar, doesnt overlapp real footer
+}
+
         exit;
 
 #########################################

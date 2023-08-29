@@ -646,3 +646,20 @@ function vote_log(action,param,value) {
 
 	$smarty->display('_std_end.tpl',substr(md5($_SERVER['PHP_SELF']),0,6).$mkey);
 
+
+
+if (!empty($final) && !empty($data['total_found']) && $data['total_found'] > 20) {
+	print "<div class=interestBox style=\"position:fixed;bottom:0;left:0;right:0;z-index:1000;color:white;background-color:gray;\">";
+
+	if (!empty($data['total_found']) && $data['total_found'] > 10)
+		print "About <b style='font-family:verdana'>".number_format($data['total_found'])."</tt> photos within ".($distance/1000)."km</b>. ";
+?>
+	Explore these images more: <b><a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>" style=color:yellow>in the Browser</a>
+	(<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=100" style=color:yellow>On Map</a>)
+	<? if (!preg_match('/(_SEP|%40terms|%40groups)/',$qfiltmain)) {  //not ideal, but can blacklist some functions we know wont work!
+	?>
+	or <a href="/search.php?do=1&gridref=<? echo $gru.$qfiltmain; ?>" style=color:yellow>in the standard search</a>.
+	<? } ?>
+	</b></div>
+	<br><br><br><br><br><br>
+<? }
