@@ -259,7 +259,16 @@ if (isset($_GET['fav']) && $i) {
 
 	fallBackForm($data);
 
-} else if (!empty($_GET['marked']) && isset($_COOKIE['markedImages']) || isset($_GET['markedImages'])) { //
+} else if (!empty($_GET['marked']) || !empty($_GET['markedImages'])) {
+
+	customNoCacheHeader(); //as depends on _COOKIE, dont want to cache!
+
+	if (empty($_COOKIE['markedImages']) && empty($_GET['markedImages'])) {
+		print "<script>alert('your marked list is currently empty');</script>";
+		print "<script>history.go(-1);</script>";
+		exit;
+	}
+
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	rate_limiting('search.php');
 	// -------------------------------
@@ -268,7 +277,6 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
- customNoCacheHeader();
 	$data = $_GET;
 	$error = false;
 
