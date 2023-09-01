@@ -403,7 +403,7 @@ if (empty($_GET['tab'])) {
 	if (!empty($recordSet) && $recordSet->numRows() === 0)
 		print "<p>No Matching Images</p>";
 
-	if (count($ids) > 1 && count($ids) <= 50)
+	if (count($ids) > 1 && count($ids) <= 350)
 		print "<p><a href=\"/search.php?markedImages=".implode(',',$ids)."&amp;do=1&amp;displayclass=black\">View these images as a search results</a></p>";
 
 } else {
