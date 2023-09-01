@@ -68,15 +68,6 @@
         padding:3px;
 }
 
-#popupMsg {
-	position: fixed; top: 20vh; bottom: 20vh; left: 20vw; right: 20vw; 
-	z-index: 10000;
-	background-color: white; padding: 20px; border: 3px solid red;
-	display: none;
-}
-#popupMsg li {
-	padding-bottom:10px;
-}	
 </style>
 
 <script type="text/javascript">
@@ -180,9 +171,6 @@
                         var url = $(this).data('src');
                         if (this.src != url) this.src = url;
                 });
-		if (!$.localStorage('admin_mod_message')) {
-			$('#popupMsg').show('fast');
-		}
 
 		//setup auto clicking of the moderation button on stars 
 		$('span.votediv a').click(function() {
@@ -206,12 +194,6 @@
 
 	function autoScrollUpdate() {
 		$.localStorage('admin_autoscroll_not', !$('#autoScroll').get(0).checked);
-	}
-
-	function hideMsg() {
-		$('#popupMsg').hide('fast');
-		$.localStorage('admin_mod_message',1);
-		return false;
 	}
 
 </script>
@@ -238,26 +220,6 @@
 {if $unmoderatedcount}
 
 	{if !$second}
-
-	<div id="popupMsg">
-		<h2>Important Message</h2>
-		<p>The way this page works has changed!</p>
-		<ul>
-			<li>No longer need to wait for the 'reply' to the previous moderation before moving on to next. 
-			<b>Can move (use auto-scroll to do it automatically!) on as soon as the next image 'ungrays'.</b> Moving on is only 'paused' for the reply if a point is at stake. 
-
-			<li>Still should progress down the page in order, don't skip, or do them out of sequence. 
-
-			<li>However, <b>still need to wait for all the replies to come back before moving to another page</b>, including using 'Continue'. 
-			Use the counter at the bottom to confirm, the continue button also only appears once all replies received. 
-
-			<li>If a update is still 'in progress' when try to navigate away, will get a warning message. Please cancel to let the request process, dont 'Leave' anyway. 
-
-			<li>Can still 'Finish' early, again make sure any inflight requests are done before doing so. 
-		</ul>
-		<a href=# onclick="return hideMsg();">Dismiss</a>
-	</div>
-
 
 	<ul>
 
