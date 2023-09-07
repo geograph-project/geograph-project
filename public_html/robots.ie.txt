@@ -208,4 +208,10 @@ Allow: /$
 User-agent: BLEXBot
 Disallow: /
 
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Sogou web spider
+Disallow: /
+
 Clean-param: mobile&style
