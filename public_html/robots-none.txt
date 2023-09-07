@@ -6,3 +6,5 @@ Allow: /$
 Allow: /?lang=cy$
 Allow: /api-facetql.php
 
+User-agent: GPTBot
+Disallow: /

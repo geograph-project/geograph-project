@@ -5,3 +5,6 @@ Disallow: /
 Allow: /*responsive=4
 Allow: /js/*.js?
 Allow: /templates/*.css?
+
+User-agent: GPTBot
+Disallow: /
