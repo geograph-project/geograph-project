@@ -1,0 +1,23 @@
+# s0.geograph.org.uk robot exclusion file
+
+User-agent: Googlebot-Image
+Disallow: /*_120x120.jpg$
+Disallow: /*_213x160.jpg$
+
+User-agent: bingbot
+Disallow: /*_120x120.jpg$
+Disallow: /*_213x160.jpg$
+
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
