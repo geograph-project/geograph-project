@@ -31,12 +31,6 @@ pageMustBeHTTPS();
 
 $extra = array();
 
-$src = 'data-src';
-if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
-        (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
-	$src = 'src';//revert back to standard non lazy loading
-}
-
 $src = 'loading="lazy" src'; //experimenting with moving to it permentanty!
 
 if (true) {
@@ -58,7 +52,7 @@ if (true) {
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	if (empty($pg) || $pg < 1) {$pg = 1;}
 
-	$cacheid .=".".$pg.$src;
+	$cacheid .=".".$pg; //.$src;
 
 	if (isset($_REQUEST['inner'])) {
 		$cacheid .= '.iframe';

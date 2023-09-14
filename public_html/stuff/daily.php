@@ -54,15 +54,9 @@ $style = $USER->getStyle();
 
 $smarty->assign('maincontentclass', 'content_photo'.$style);
 
-$src = 'data-src';
-if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
-        (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
-        $src = 'src';//revert back to standard non lazy loading
-}
-
-$src = 'loading="lazy" src'; //experimenting with moving to it permentanty!
-
-$cacheid .=".$src";
+//lets use native lazy loading all the time. Simpler that way
+$src = 'loading="lazy" src';
+//$cacheid .=".$src";
 
 $smarty->assign('src',$src);
 

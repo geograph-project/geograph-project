@@ -88,11 +88,7 @@ if ($CONF['template']!='ireland') {
 
 customExpiresHeader(3600,false,true);
 
-$src = 'data-src';
-if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
-        (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
-	$src = 'src';//revert back to standard non lazy loading
-}
+$src = 'loading="lazy" src'; //experimenting with moving to it permentanty!
 
 #########################################
 # quick query parsing, to possibly redirect to the nearby page.
@@ -143,7 +139,7 @@ if (!empty($_GET['q'])) {
 	$smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF'].$_GET['q']));
 
 	if ($memcache->valid) {
-		$mkey = md5("#".trim($sphinx->q).$_SERVER['HTTP_HOST']).isset($_GET['redir']).$src;
+		$mkey = md5("#".trim($sphinx->q).$_SERVER['HTTP_HOST']).isset($_GET['redir']); //.$src;
 		if (empty($_GET['refresh'])) {
 			$str = $memcache->name_get('of-new',$mkey);
 			if (!empty($str)) {
