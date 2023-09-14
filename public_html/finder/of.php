@@ -152,7 +152,7 @@ if (!empty($_GET['q'])) {
 					$str = str_replace('http://',$CONF['PROTOCOL'],$str);
 				}
 
-				if (strpos($str,"No keywords Results found.") !== FALSE) {
+				if (strpos($str,"No keywords Results found.") !== FALSE || strpos($str,"No results found for") !== FALSE) {
 			                //might be too late, but might as well try!
 			                header("HTTP/1.0 404 Not Found");
                 			header("Status: 404 Not Found");
@@ -328,7 +328,7 @@ if (!empty($_GET['q'])) {
                                 where id IN (".implode(',',$m[1]).") limit ".count($m[1]) );
 
 			if (!empty($_GET['d']))
-				print $sql;
+				print "$sql;<hr>";
 			if (!empty($rows['single'])) {
 				$s = (count($rows['single'])>1)?'s':'';
 				print "<p><i>Including image$s with ID$s: ".implode(', ',$m[1]).".</i></p>";
@@ -356,8 +356,6 @@ if (!empty($_GET['q'])) {
 			$option = ", ranker=expr('sum((word_count+(lcs-1)*max_lcs)*user_weight)')";
 		}
 
-restart:
-
 		$rank = 'floor(ln(weight()*weight()))';
 		$order = "w2ln desc, combined asc";
 		$columns = ", sequence / baysian as combined";
@@ -382,7 +380,7 @@ restart:
 			, cutoff=1000000 $option ");
 
 if (!empty($_GET['d']))
-	print $sql;
+	print "$sql;<hr>";
 
 		if (empty($data))
 			$data = $sph->getAssoc("SHOW META");
@@ -391,7 +389,9 @@ if (!empty($_GET['d']))
 # retreive a small number of high scoring images
 
 		if (empty($_GET['sort'])) {
-			$rows['score'] = $sph->getAll($sql = "
+			// if lots of results, make sure to add a few highly rated ones
+			if (count($rows['combined']) > 16) {
+				$rows['score'] = $sph->getAll($sql = "
         	                select id,realname,user_id,title,grid_reference, $rank as w2ln $columns
                 	        from sample8
                         	where $where
@@ -399,16 +399,25 @@ if (!empty($_GET['d']))
         	                limit 8
 				option field_weights=(place=8,county=6,country=4,title=12,tags=10,imageclass=5)
 				, max_query_time=800 $option");
+if (!empty($_GET['d']))
+	print "$sql;<hr>";
 
-			if (empty($data) && !empty($rows['score']))
-				$data = $sph->getAssoc("SHOW META");
+				if (empty($data) && !empty($rows['score']))
+					$data = $sph->getAssoc("SHOW META");
+			}
 
 #########################################
 # in case of no matches retry as a quorum search
 
-			if (empty($restarted) && empty($rows['score']) && empty($rows['single']) && preg_match('/\s\w+\s+\w/',$_GET['q'])) {
+			if (empty($rows['combined']) && empty($rows['single']) && preg_match('/\s\w+\s+\w/',$_GET['q'])) {
 
-				print "<div id=\"geocode_results\"></div>";  $need_client = true;
+				if (!appearsToBePerson()) {
+					//might be too late, but might as well try!
+					header("HTTP/1.0 404 Not Found");
+					header("Status: 404 Not Found");
+				} else {
+					print "<div id=\"geocode_results\"></div>";  $need_client = true;
+				}
 
 				print "<i>No results found for '".htmlentities($_GET['q'])."', showing results containing only <b>some of the words</b>...</i><br/>";
 				$words = $_GET['q'];
@@ -416,8 +425,70 @@ if (!empty($_GET['d']))
         	                $words = trim(preg_replace('/[^\w]+/',' ',$words));
                 	        $where = "match(".$sph->Quote('"'.$words.'"/0.5').")";
 
-				$restarted = true;
-				goto restart;
+
+		                $rows['any'] = $sph->getAll($sql = "
+		                        select id,realname,user_id,title,grid_reference, $rank as w2ln $columns
+		                        from sample8
+		                        where $where
+		                        order by $order
+		                        limit {$limit}
+					option field_weights=(place=8,county=6,country=4,title=12,tags=10,imageclass=5)
+					, cutoff=1000000 $option ");
+
+				if (empty($data) && !empty($rows['any'])) {
+					$data = $sph->getAssoc("SHOW META");
+				}
+
+				if (!empty($rows['any']) && appearsToBePerson()) {
+					//cant use 'META' as it has already been normalized with morphology etc!
+					$keywords = $sph->getAssoc($sql = "call keywords(".$sph->Quote($words).",'sample8',1)");
+					$sep = "<p>Word Statistics: ";
+					$zero = 0;
+					foreach ($keywords as $row) {
+						if ($row['docs'] > 0 && $row['docs'] < 10000) {
+							print $sep."<b><a href=\"/of/".urlencode($row['tokenized'])."\">".htmlentities($row['tokenized'])."</a></b> about ".number_format($row['docs'],0)." images";
+						} else {
+							print $sep."<b>".htmlentities($row['tokenized'])."</b> about ".number_format($row['docs'])." images";
+						}
+						$sep = ', ';
+						if (!$row['docs'])
+							$zero++;
+					}
+					if (!$zero)
+						print " (just none with all)</p>";
+
+					if ($zero == 1) {
+						$words = array();
+						foreach ($keywords as $row)
+							if ($row['docs'])
+								$words[] = $row['tokenized'];
+						$words = implode(' ',$words);
+						$count = $sph->getOne($sql = "  SELECT COUNT(*) FROM sample8 WHERE MATCH(".$sph->Quote($words).") OPTION ranker=none");
+						if ($count)
+							print "<p>Search instead for: <a href=\"/of/".urlencode($words)."\">".htmlentities($words)."</a> (about ".number_format($count,0)." images)</p>";
+
+					} elseif (count($keywords) > 2) {
+						$sep = "<p>Alternatives queries: ";
+						foreach ($keywords as $row) {
+							$words = array();
+                        	                        foreach ($keywords as $row2)
+                	                                        if ($row2['docs'] && $row['tokenized'] != $row2['tokenized'])
+        	                                                        $words[] = $row2['tokenized'];
+	                                                $words = implode(' ',$words);
+							$count = $sph->getOne($sql = "  SELECT COUNT(*) FROM sample8 WHERE MATCH(".$sph->Quote($words).") OPTION ranker=none");
+							if ($count) {
+								print $sep."<a href=\"/of/".urlencode($words)."\">".htmlentities($words)."</a> (about ".number_format($count,0)." images)";
+								$sep = ', ';
+							}
+						}
+						if ($count)
+							print " - Each omitting a word";
+					}
+				}
+if (!empty($_GET['d']))
+	print "$sql;<hr>";
+
+				print "<h4>Partial Matches...</h4>";
 			}
 		}
 
