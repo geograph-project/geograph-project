@@ -99,7 +99,7 @@
 	<input id="searchgo" type="submit" value="Go"/>
 	</form></li>
 
-	<li><b><a href="/explore/random.php">Image Randomizer</a></b><sup style="color:red">new!</sup> or <a href="/stuff/browse-random.php">Jump to a <b>random</b> grid square</a>.</li>
+	<li><b><a href="http://www.geograph.org.uk/explore/random.php">Image Randomizer</a></b> or <a href="/stuff/browse-random.php">Jump to a <b>random</b> grid square</a>.</li>
 
 	<li><a href="/mapper/combined.php">View a <b>Draggable map</b></a> shows coverage and individial photos. (use the search button on the map to jump to your area of interest)</li>
 

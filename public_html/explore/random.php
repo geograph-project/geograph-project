@@ -28,8 +28,6 @@ init_session();
 
 $smarty = new GeographPage;
 
-pageMustBeHTTP();
-
 $smarty->assign('page_title','Image Randomizer');
 $smarty->display('_std_begin.tpl',md5($_SERVER['PHP_SELF']));
 
@@ -42,7 +40,13 @@ if ($_SERVER['HTTP_HOST'] == 'staging.geograph.org.uk') {
 	print "<p>NOTE: This is a remote application, and is picking images from the live site, despite this page being on staging site</p>";
 }
 
-print "<iframe src=\"http://ww4.scenic-tours.co.uk/serve.php?t=WoNlVJvoblNlJL5405o44hahObuu4ZaNVwV\" width=850 height=850></iframe>";
+if ($CONF['PROTOCOL'] == "https://") {
+	//for now, https:// not functional, on playground
+	print "<p>The application can't be displayed here, but you should still be able to: <b><a href=\"http://ww4.scenic-tours.co.uk/serve.php?t=WoNlVJvoblNlJL5405o44hahObuu4ZaNVwV\" target=_blank>Open in new Window/Tab</a></b>";
+	print "<p>We are working on fixing this, but in the meantime, use the above link";
+} else {
+	print "<iframe src=\"http://ww4.scenic-tours.co.uk/serve.php?t=WoNlVJvoblNlJL5405o44hahObuu4ZaNVwV\" width=850 height=850></iframe>";
+}
 
 $smarty->display('_std_end.tpl');
 
