@@ -1161,6 +1161,10 @@ function manticore_to_utf8($input) {
 }
 
 function latin1_to_utf8($input) {
+
+	//a very small number of our images have a Vertical Tab control charactor, which end up invalind in XML etc. Bit of a bodge putting it here!
+	$input = preg_replace('/\\x0B/',"\n",$input);
+
         //our database has charactors encoded as entities (outside ISO-8859-1) - so need to decode entities.
         //and while we declare ISO-8859-1 as the html charset, we actully using windows-1252, as some browsers are sending us chars not valid in ISO-8859-1.
         //todo detect iconv not installed, and use utf8_encode as a fallback??
@@ -1453,17 +1457,17 @@ function debug_message($subject,$body, $hours=null) {
         }
 
 
-	$body = @"Host: ".`hostname`."\n".
+	$body = "Host: ".`hostname`."\n".
 		$CONF['PROTOCOL'].$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."\n\n".
 		" [HTTP_HOST] => ".$_SERVER['HTTP_HOST']."\n".
 		" [REQUEST_URI] => ".$_SERVER['REQUEST_URI']."\n".
-		" [QUERY_STRING] => ".$_SERVER['QUERY_STRING']."\n".
-		" [HTTP_COOKIE] => ".$_SERVER['HTTP_COOKIE']."\n\n".
-		" [HTTP_USER_AGENT] => ".$_SERVER['HTTP_USER_AGENT']."\n".
-		" [HTTP_REFERER] => ".$_SERVER['HTTP_REFERER']."\n".
+		" [QUERY_STRING] => ".@$_SERVER['QUERY_STRING']."\n".
+		" [HTTP_COOKIE] => ".@$_SERVER['HTTP_COOKIE']."\n\n".
+		" [HTTP_USER_AGENT] => ".@$_SERVER['HTTP_USER_AGENT']."\n".
+		" [HTTP_REFERER] => ".@$_SERVER['HTTP_REFERER']."\n".
 		" [HTTP_X_FORWARDED_FOR] => ".$_SERVER['HTTP_X_FORWARDED_FOR']."\n".
 		" [REQUEST_TIME] => ".$_SERVER['REQUEST_TIME']."\n".
-		@" [HTTP_X_AMZN_TRACE_ID] => ".$_SERVER['HTTP_X_AMZN_TRACE_ID']."\n\n".
+		" [HTTP_X_AMZN_TRACE_ID] => ".@$_SERVER['HTTP_X_AMZN_TRACE_ID']."\n\n".
 		$body;
 
 	ob_start();
