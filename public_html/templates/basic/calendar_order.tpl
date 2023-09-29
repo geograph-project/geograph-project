@@ -82,18 +82,6 @@
 <hr>
 
 <div class="field">
-        {if $errors.best_quantity}<div class="formerror"><p class="error">{$errors.best_quantity}</p>{/if}
-
-        <label for="title">'Best of Geograph' Quantity:</label>
-        <input type="number" name="best_quantity" value="{$calendar.best_quantity|escape:"html"}" style="font-size:1.3em" size=2 min="{if $images}0{else}2{/if}" max="255" step="1"/>*
-
-        {if $errors.quantity}</div>{/if}
-</div>
-
-<hr>
-
-
-<div class="field">
         {if $errors.delivery_name}<div class="formerror"><p class="error">{$errors.delivery_name}</p>{/if}
 
         <label for="delivery_name">Delivery Name:</label>

@@ -19,13 +19,7 @@ sized appropriately to fill as much of the page as possible.</p>
 
 <p>While you can reorder the images in the next step, it may be much easier to select/enter the images in the right order here</p>
 
-<p>Note: you need to select 12 different monthly images; the same image cannot be used for multiple months.</p>
-
-{dynamic}
-{if $user && $user->user_id}
-<p>As inspiration, here is a <a href="/browser/#!/taken=2021-08-01,/user+%22user{$user->user_id}%22/display=group/group=takenmonth/n=4/gorder=alpha%20asc/sort=score" target=_blank>Starter Selection</a> of your photos. It's in the Image browser function, so can tweak the perams to explore more images.
-{/if}
-{/dynamic}
+<p>Note: you need to <b>select 12 different monthly images</b>; the same image cannot be used for multiple months.</p>
 
 </div>
 
@@ -239,6 +233,26 @@ AttachEvent(window,'load',setupSubmitForm,false);
 </script>
 
 
+<h4>Quick Image Search</h4>
+Use this form to open a search to look for potential image.
+
+                <form method="get" action="https://www.geograph.org.uk/browser/redirect.php" style="background-color:#eee;padding:10px" target="_blank">
+                        <label for="fq">Keywords </label> <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic} placeholder="optional">
+                        <input type="submit" value="Search"/><br>
+
+			<input type=checkbox name=larger value=1600 checked> Only images with 1600px high resolution version available<br>
+			<input type=checkbox name=mine value=on> Only Your images, &nbsp;
+			<input type=checkbox name=taken value="2022-09-19,"> Taken in Last Year, &nbsp;
+			<input type=checkbox name=decade value="202tt"> Taken in the 2020s<br>
+			<br>
+			<input type=checkbox name=display value=group checked> Group by Calendar Month (any year), &nbsp;
+			<input type=hidden name=group value=monthname>
+			<input type=checkbox name=sort value=score checked> Highly rated images first, &nbsp; or
+			<input type=checkbox name=content_id value=1> Only Highly rated images<br><br>
+			<div style=float:right;max-width:700px>&middot; Powered by Image Browser function, can change the options directly in the browser interface. 
+			Opens in a seperate tab. Can drag and drop images into the box above from the browser/search.</div>
+			<br style=clear:both>
+                </form>
 
 
 {include file="_std_end.tpl"}

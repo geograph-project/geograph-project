@@ -9,6 +9,7 @@
 <h2>Your personalised Geograph Calendar for {$year}</h2>
 
 <div style="clear:both;float:right;width:360px;margin-right:20px;line-height:0.6;background-color:#e4e4fc;padding:10px;">
+	(the actual calendar will display {$year})<br><br>
 	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Coverthumb2023.jpg" width=360><br><br><br>
        <img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Imagethumb2023.jpg" width=360><br><br>
        <img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Monththumb2023.jpg" width=360><br><br>
@@ -21,9 +22,16 @@ This will have space for appointments, events, etc. to be inserted on a day by d
 
 <p>There will be a separate picture for each month plus one picture for the front cover.
 
-<p>All pictures must be ones currently appearing on Geograph and submitted by the person with the ID used when placing the order. There 
+<p>All pictures must be ones currently appearing on Geograph. This year you now have the
+flexibility to choose pictures submitted by any photographer. There 
 are no restrictions on when the image was taken or submitted. 
 <a href="#" onclick="show_tree('spec');" id="hidespec">Full details of picture specification can be found here.</a>
+
+If you include higher resolution images for your own submissions than those available on
+the Geograph website, your normal copyright will be protected. If you decide to use
+images that you have not submitted yourself, these will be covered by the normal Creative
+Commons provisions and will be suitably credited during production.
+
 
 <blockquote id="showspec" style="display:none">
 	<h3>Picture Specification </h3>
@@ -70,23 +78,19 @@ overrun the panel. Individual photographer names will appear on the appropriate 
 
 <p>You have the option to have a calendar title which will appear on the front cover.
 
-<p><b>Calendars are priced at &pound;8.00 each, which includes a donation to Geograph funds. There is a separate postage and packing charge of &pound;3.00 per order which may include more than one version, including the 'Best of Geograph'</b> There is a 
+<p><b>Calendars are priced at &pound;8.50 each, which includes a donation to Geograph funds. There is a separate postage and packing charge of &pound;3.00 per order which may include more than one version.</b> There is a 
 minimum quantity of 2 calendars per person, which can include more than one version.
 <br><br>
+
 <p>
 {dynamic}{if $closed}
 	<h1>Sorry, we are no longer accepting new orders</h1>
 {else}
-	<a href="start.php" style="font-size:large;background-color:#000066;color:yellow;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a> (will be able to order 'Best Of Geograph' as well)
+	<a href="start.php" style="font-size:large;background-color:#000066;color:yellow;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a>
 
 	<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
 	<p>{newwin href="/calendar/tips.php" text="Tips Page"} (in new window)</p>
-	<br>
-	<p>or
-	<a href="order.php" style="font-size:large;background-color:#000066;color:yellow;padding:10px;border-radius:10px">Just order 'Best Of Geograph' Calendar &gt; &gt;</a>
 	<br><br>
-	- preview the <a href="?best=1">selected images here</a> which be included on the final calendar
-	<i> (have until 10th Oct to order just "Best Of Geograph" calendars)</i>
 {/if}
 
 {if $list}
@@ -98,7 +102,6 @@ minimum quantity of 2 calendars per person, which can include more than one vers
 			<td>{$calendar.title|default:'untitled calendar'}</td>
 			<td>{if $calendar.status != 'processed' && $calendar.quantity>0}<a href="edit.php?id={$calendar.calendar_id}" style="color:yellow">Review/Edit</a>{/if}
 			<td>{$calendar.status} {if $calendar.quantity}x{$calendar.quantity}{/if}
-			{if $calendar.best_quantity}({$calendar.best_quantity} best of){/if}
 			<td>{if $calendar.paid < '2' and $calendar.status!='deleted' and $calendar.status != 'processed'}<a href="order.php?id={$calendar.calendar_id}" style="color:yellow"><b>Continue and Order/Pay</b></a>{/if}
 			<td>{if $calendar.status == 'new'}<a href="?delete={$calendar.calendar_id}" style="color:red">Delete</a>{/if}
 		</tr>
@@ -111,6 +114,29 @@ minimum quantity of 2 calendars per person, which can include more than one vers
 {/dynamic}
 
 <br style=clear:both>
+
+
+<h4>Quick Image Search</h4>
+Use this form to quickly search for potential images for a calendar. 
+
+                <form method="get" action="https://www.geograph.org.uk/browser/redirect.php" style="background-color:#eee;padding:10px">
+                        <label for="fq">Keywords </label> <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic} placeholder="optional">
+                        <input type="submit" value="Search"/><br>
+
+			<input type=checkbox name=larger value=1600 checked> Only images with 1600px high resolution version available<br>
+			<input type=checkbox name=mine value=on> Only Your images, &nbsp;
+			<input type=checkbox name=taken value="2022-09-19,"> Taken in Last Year, &nbsp;
+			<input type=checkbox name=decade value="202tt"> Taken in the 2020s<br>
+			<br>
+			<input type=checkbox name=display value=group checked> Group by Calendar Month (any year), &nbsp;
+			<input type=hidden name=group value=monthname>
+			<input type=checkbox name=sort value=score checked> Highly rated images first, &nbsp; or
+			<input type=checkbox name=content_id value=1> Only Highly rated images<br><br>
+			<div style=text-align:right>&middot; Powered by Image Browser function, can change the options directly in the browser interface. </div>
+                </form>
+
+
+
 
 {include file="_std_end.tpl"}
 

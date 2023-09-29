@@ -35,20 +35,6 @@ $year = date('Y')+1; // we currently working on next years calendar
 
 ####################################
 
-if (empty($_GET['id'])) {
-        $updates = array();
-	$updates['user_id'] = intval($USER->user_id);
-	$updates['title'] = 'Best Of Geograph only order';
-	$updates['quantity'] = 0;
-	$updates['best_quantity'] = 2;
-
-	$db->Execute('INSERT IGNORE INTO calendar SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
-
-	$_GET['id'] = $db->Insert_ID();
-}
-
-####################################
-
 $row = $db->getRow("SELECT * FROM calendar WHERE calendar_id = ".intval($_GET['id']));
 
 if (empty($row) || $row['user_id'] != $USER->user_id)
@@ -58,7 +44,7 @@ if ($row['status'] == 'processed')
         die("This calendar is now processed, and can no longer be edited");
 
 
-if (date('Y-m-d') > '2022-10-10' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
+if (date('Y-m-d') > '2023-10-10' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
         die("Sorry, we are not currently accepting new orders");
 }
 
@@ -80,7 +66,7 @@ if (!empty($_POST)) {
 	$updates['print_title'] = @$_POST['print_title']+0;
 	$updates['background'] = @$_POST['background']+0;
 
-	foreach (array('quantity','best_quantity','delivery_name','delivery_line1','delivery_line2','delivery_line3','delivery_line4','delivery_postcode') as $key) {
+	foreach (array('quantity','delivery_name','delivery_line1','delivery_line2','delivery_line3','delivery_line4','delivery_postcode') as $key) {
 		if (isset($_POST[$key]) && $_POST[$key] != $row[$key])
 			$updates[$key] = $_POST[$key];
 		if (empty($updates[$key]) && empty($row[$key]) && $key != 'delivery_line2' && $key != 'delivery_line4')
@@ -115,7 +101,7 @@ if (!empty($_POST)) {
 			//this needs converting to IGN. The return URL doesnt contain in any identifiers
 			$_SESSION['calendar_id'] = $row['calendar_id'];
 
-			$cost = (8.00 * $row['quantity']) + (8.00 * $row['best_quantity']) + 3.00;
+			$cost = (8.50 * $row['quantity']) + 3.00;
 
 			$token=new Token;
 			$token->setValue("i", $row['calendar_id']);

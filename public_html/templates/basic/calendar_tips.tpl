@@ -27,22 +27,43 @@ https://www.geograph.org.uk/browser/redirect.php?mine&display=group&group=monthn
 <p>This will open a page in the Geograph internal browser showing the top six rated images
 for each month-name covering your entire portfolio.
 
+<div style="float:left;padding-right:10px"><img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Special_Filters_1.jpg" style="zoom:0.7"></div>
+Alternatively in the sidebar click &#39;Special Filters&#39;, &#39;From the Gallery&#39;
+to give a similarly pre-selected set. Whether you are using your
+own images or other people&#39;s, the filter &#39;At least 1600px&#39; will ensure
+that your choice is restricted to higher resolution images.
+<br style="clear:both">
+
+<p>You can expand the month group by clicking the blue month name. Adjust the display
+using the &#39;Mode&#39; drop-down top- right of the page as required. To return to monthly
+grouping, select &#39;Grouped&#39;.</p>
+
+<p>To select an image, click on it to open it in the browser, and click &#39;Mark&#39; above the top right
+hand corner of the image. Click &#39;Prev&#39; or &#39;Next&#39; to move to other displayed images if you
+want to mark more than one. Then click &#39;Close&#39; above the image to return to the normal
+browser display.
+
 <p>You can narrow down the range of images by using the sidebar on the left, e.g. by selecting
 a single year, area, grid square, etc. For more information on the browser sidebar, see
 <a href="ttps://www.geograph.org.uk/article/Attribute-Sidebars-in-Browser">
 https://www.geograph.org.uk/article/Attribute-Sidebars-in-Browser</a>
 
-<p>
-<span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 165.73px; height: 144.27px;"><img alt="" src="https://lh3.googleusercontent.com/GQevHAKZ-xs6iu8eDU2kca0s_InML9ovSVPubVyJ8YFjY45Maf4eWEbVy8dLd6huNHdnlU5DHmsgjOqElLuhKD_mMJZ2x70IrXTN39ZMnyXn4bUmfeAqBiCzFUqFUJemv9mDyperFcs=s0" style="width: 165.64px; height: 144.17px; margin-left: 0.05px; margin-top: 0.05px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span>
+<p>Here are a couple of useful quick tips to help make a selection.
 
-<p>You can expand the month group by clicking the blue month
-name. Adjust the display using the &#39;Mode&#39; drop-down top-
-right of the page as required. To return to monthly grouping,
-select &#39;Grouped&#39;.
+<div style="float:left;padding-right:10px"><img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Sidebar_1.jpg" style="zoom:0.7"></div>
+You can use the &#39;Format&#39; section of the sidebar to restrict your selection to, for example, 
+only landscape or square images. Hover the cursor so the &#39;(or exclude)&#39; appears, and click to 
+exclude one or more elements
+<br style="clear:both">
 
-<p>To select an image, click on it to open it in the browser, and click &#39;Mark&#39; above the top right
-hand corner of the image. Then click &#39;Close&#39; above the image to return to the normal
-browser display.
+<p>Normally if you select two or more items from the same sidebar group, the image needs to match both. 
+Here is an example of how to select images in two specific gridsquares. Use the sidebar to select two 
+gridsquare, giving this display:<br>
+<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/BrowseSelect_1.jpg">
+
+<p>Obviously no results will be found because no image can be allocated to 2 gridsquares. However, you 
+can drag one of the green gridsquare panels onto the other and they will merge to give this result:<br>
+<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/BrowseSelect_2.jpg">
 
 <hr>
 <h3>Marked Images</h3>

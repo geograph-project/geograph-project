@@ -30,32 +30,8 @@ $year = date('Y')+1; // we currently working on next years calendar
 
 $smarty->assign('year', $year);
 
-if (date('Y-m-d') > '2022-10-10' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
+if (date('Y-m-d') > '2023-10-10' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
 	$smarty->assign('closed',true);
-}
-
-####################################
-
-if (!$USER->hasPerm("basic") || !empty($_GET['best'])) {
-
-	$imagelist=new ImageList;
-
-	if (false) {
-		//this is NOT normal rows, but gridimage_calendar has enough rows, that it works! (at least to get thumbnails!)
-		$sql = "SELECT * FROM gridimage_calendar
-	        	LEFT JOIN gridimage_size using (gridimage_id)
-		        WHERE calendar_id = {$row['calendar_id']} ORDER BY sort_order";
-	} else {
-		$sql = "SELECT * FROM gridimage_search INNER JOIN gridimage_query USING (gridimage_id)
-			WHERE query_id = 165587901
-			ORDER BY month(imagetaken)";
-	}
-	$imagelist->_getImagesBySql($sql);
-
-	$smarty->assign_by_ref('images', $imagelist->images);
-
-	$smarty->display('calendar_bestof.tpl');
-	exit;
 }
 
 ####################################
