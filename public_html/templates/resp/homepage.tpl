@@ -156,6 +156,10 @@ div.homepage {
 		class="nowrap">{$stats.images|thousends} images</b> covering <b span="nowrap">{$stats.squares|thousends} grid squares</b>, or <b 
 		class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
 
+        <div class="homepageBox" style="background-color:#e4e4fc">Order your own <b><a href="/calendar/">custom calendar for 2024</a></b>!
+	 You can select the 12 images, from your own contributions, or the wider geograph collection. 
+	<a href="/calendar/">Read nore here</a> (only available to UK addresses) </div>
+
 	<div class="pictureOfTheDay">
 		<div class="imageContainer shadow">
 		        <div class="interestBox titleBox">

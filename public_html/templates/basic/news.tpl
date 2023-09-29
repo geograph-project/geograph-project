@@ -1,6 +1,8 @@
 {include file="_std_begin.tpl"}
 
-<div class="interestBox"><b>Are you involved in education?</b> We have a new <a href="/help/education_feedback">feedback form</a>, please take a moment to fill it out.</div>
+        <div class="interestBox" style="background-color:#e4e4fc;color:black">Order your own <b><a href="/calendar/" style=color:blue>custom calendar for 2024</a></b>!
+	 You can select the 12 images, from your own contributions, or the wider geograph collection. 
+	<a href="/calendar/" style=color:blue>Read nore here</a> (only available to UK addresses) </div>
 
 <br/>
 

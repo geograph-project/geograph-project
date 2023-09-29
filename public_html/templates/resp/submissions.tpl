@@ -24,6 +24,11 @@
 {/literal}
 </style>
 
+        <div class="interestBox" style="background-color:#e4e4fc;color:black">Order your own <b><a href="/calendar/" style=color:blue>custom calendar for 2024</a></b>!
+	 You can select the 12 images, from your own contributions, or the wider geograph collection. 
+	<a href="/calendar/" style=color:blue>Read nore here</a> (only available to UK addresses) </div>
+
+
 <h2>Recent Uploads{if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
 
 <p>
