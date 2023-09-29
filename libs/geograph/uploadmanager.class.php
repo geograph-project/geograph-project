@@ -760,7 +760,8 @@ class UploadManager
 				passthru($cmd);
 
 				if (!empty($tmpfile)) {
-					rename("$tmpfile.jpg", $filename);
+					if (filesize("$tmpfile.jpg") > 100)
+						rename("$tmpfile.jpg", $filename);
 					unlink($tmpfile);
 				}
 
@@ -981,6 +982,11 @@ $this->db->raiseErrorFn = 'adodb_throw';
 
 		if (empty($gridimage_id)) {
 			header('HTTP/1.0 500 Server Error');
+			$con = "$sql;\n\n";
+			$con .= print_r($_POST,TRUE);
+			$con .= print_r($_FILES,TRUE);
+			$con .= print_r($_SESSION,TRUE);
+			debug_message('[Geograph] Submission Failure '.$_SESSION['session1']."/$counter",$con);
 			die("Submission Failure. <a href=/contact_us.php target=_blank>Please let us know</a>! Quote Reference: ".date('c')."/".$_SESSION['session1']);
 		}
 
