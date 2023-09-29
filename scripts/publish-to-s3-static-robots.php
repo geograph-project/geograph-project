@@ -146,8 +146,12 @@ if ($filename) {
 			//src us using a relative path deliberately (so doesnt use 'remote')
 			//dst will is a full absolute path, so works on the bucket!
 			$r = $filesystem->copy(".".$source, $_SERVER['DOCUMENT_ROOT'].$destination, null, 'STANDARD'); //use standard, as might be small, and going to be used by cloudfront, so probably not IA anyway!
-			if ($r)
+			if ($r) {
+				//the copy command maps, DOCUMENT_ROOT to bucket, but _invalidate maps the bucket name to cloudfront (we just happen to know s3_photos_bucket_path is always root of bucket)
+				$filesystem->_invalidate(trim($CONF['s3_photos_bucket_path'],'/'), $destination);
+
                        	        $memcache->name_set('fs_full',$destination,$upload,false,$memcache->period_long);
+			}
 		} else {
 			print " ... uploading due to $upload";
 		}
