@@ -1163,7 +1163,8 @@ function manticore_to_utf8($input) {
 function latin1_to_utf8($input) {
 
 	//a very small number of our images have a Vertical Tab control charactor, which end up invalind in XML etc. Bit of a bodge putting it here!
-	$input = preg_replace('/\\x0B/',"\n",$input);
+	//... actully turns out some other control chars, like Horitontal Tab, and "Start of" chars
+	$input = preg_replace('/[\\x01-\\x09\\x0B]/'," ",$input);
 
         //our database has charactors encoded as entities (outside ISO-8859-1) - so need to decode entities.
         //and while we declare ISO-8859-1 as the html charset, we actully using windows-1252, as some browsers are sending us chars not valid in ISO-8859-1.
