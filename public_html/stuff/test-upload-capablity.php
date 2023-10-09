@@ -68,12 +68,12 @@ if (!empty($_FILES['jpeg'])) {
                                         $cmd[] = "-s {$max_dimension}x{$max_dimension}";
                                         $cmd[] = "--interpolator bicubic"; //the default is bilinear
                                         //$cmd[] = "--eprofile /usr/share/color/icc/sRGB.icc --delete"; //fails on monocrome!
-                                        if ($width < 3000 && $height < 3000)
+                                        if ($data['width'] < 3000 && $data['height'] < 3000)
                                                 $cmd[] = "--linear"; //its slow on big images!
 
                                         $cmd[] = "-o %s[strip,Q=87]"; //this is creating an intermediate thumbnail, so ok to strip exif
 
-                                        $cmd = sprintf(implode(' ',$cmd), $filename, "$dest.jpg"); //note, vips needs the file extension to write it
+                                        $cmd = sprintf(implode(' ',$cmd), $source, "$dest.jpg"); //note, vips needs the file extension to write it
 
 		$start = microtime(true);
 		passthru($cmd);
