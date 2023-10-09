@@ -1231,7 +1231,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			foreach ($engine->results as $idx => $image) {
 				$docs[$idx] = strip_tags($image->comment?$image->comment:$image->title).(empty($image->imageclass)?'':(" Category: ".strip_tags($image->imageclass)));
 			}
-			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $sphinx->q, array("query_mode"=>(strpos($sphinx->q,'~')===FALSE)?1:0,"limit"=>350));
+			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', preg_replace('/@\(?\w+(,\w+)*\)? /','',$sphinx->q), array("query_mode"=>(strpos($sphinx->q,'~')===FALSE)?1:0,"limit"=>350));
 			
 			foreach ($engine->results as $idx => $image) {
 				$engine->results[$idx]->excerpt = $reply[$idx];
