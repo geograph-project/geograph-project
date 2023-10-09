@@ -156,7 +156,8 @@ geographing</a> first.</p>
 	{literal}
 	function check_jpeg(ele) {
 	    if (ele && ele.value && ele.value.length > 0 && !ele.value.match(/.jpe?g$/i)) {
-		return confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel");
+		if (!confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel"))
+			return false;
 	    }
 
 	    if (ele && ele.files) {
