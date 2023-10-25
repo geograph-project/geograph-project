@@ -26,7 +26,6 @@
     </ul></li>
     <li><ul>
      <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Collections</a></li>
-     <li><a title="2024 Custom Printed Calendar Order" href="/calendar/">Order Calendar</a></li>
     </ul></li>
     <li>Interact<ul>
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
