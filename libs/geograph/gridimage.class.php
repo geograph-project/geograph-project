@@ -405,6 +405,7 @@ class GridImage
 			//fails quickly if not using memcached!
 			$string = $memcache->name_get('e2',$mkey);
 
+			ini_set("user_agent",$_SERVER['HTTP_HOST']);
 			if (empty($string)) {
 				$url = "http://$server/api/Photo/$gridimage_id";
 				$key = "geographkey_".trim($prefix,':');
