@@ -301,6 +301,24 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
         <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</a>
         <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</a>
         <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</a>
+    <b>Oldest submissions</b>
+				<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=black&amp;do=1">Georiver</a>
+    <b>Random order</b>
+				<a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=black&amp;do=1">Georiver</a>
   </div>
 </div> 
 
