@@ -169,6 +169,7 @@ function isSpam($msg)
 function getRemoteIP()
 {
 	//get IP address of user
+	//todo, could use HTTP_CF_CONNECTING_IP - but CF does set X_FORWARDED_FOR anyway
 	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 	{
 		$ips=explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -218,6 +219,7 @@ function appearsToBePerson() {
             (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'curl')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'Siege')===FALSE) &&
+            (strpos($_SERVER['HTTP_USER_AGENT'], 'HeadlessChrome')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'InspectionTool')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'The Knowledge AI')===FALSE) &&
 	    $_SERVER['HTTP_USER_AGENT'] != "GoogleOther" &&
