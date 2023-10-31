@@ -27,6 +27,12 @@ require_once('geograph/conversionslatlong.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/mapmosaic.class.php');
 
+if (!empty($_GET['From']) && !appearsToBePerson()) {
+     header('HTTP/1.0 403 Forbidden');
+	print "This is not an API";
+     exit;
+}
+
 init_session();
 
 

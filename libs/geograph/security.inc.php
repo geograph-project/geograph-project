@@ -218,11 +218,13 @@ function appearsToBePerson() {
 	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Preview')===FALSE) &&
             (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'curl')===FALSE) &&
+            (strpos($_SERVER['HTTP_USER_AGENT'], 'python-requests')===FALSE) &&
+            (strpos($_SERVER['HTTP_USER_AGENT'], 'LWP::Simple')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'Siege')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'HeadlessChrome')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'InspectionTool')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'The Knowledge AI')===FALSE) &&
-	    $_SERVER['HTTP_USER_AGENT'] != "GoogleOther" &&
+            (strpos($_SERVER['HTTP_USER_AGENT'], 'GoogleOther')===FALSE) &&
 	    empty($_SERVER['HTTP_X_PURPOSE']) && empty($_SERVER['HTTP_PURPOSE']) && empty($_SERVER['HTTP_X_MOZ']) &&  //'prefetch' and 'preview' requests
 	    $CONF['template']!='archive')
 		return true;
