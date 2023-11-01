@@ -37,6 +37,7 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
 	 || (strpos($_SERVER['HTTP_USER_AGENT'], 'mj12bot')!==FALSE)
          || (strpos($_SERVER['HTTP_USER_AGENT'], 'facebookexternalhit/1.1 Facebot Twitterbot')!==FALSE)
 	 || ($_SERVER['HTTP_USER_AGENT'] == 'Zeno')
+	 || ($_SERVER['HTTP_USER_AGENT'] == "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/117.0.5938.88 Safari/537.36")
 	 || ($_SERVER['HTTP_USER_AGENT'] == "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36")
          || (@$_SERVER['HTTP_X_FORWARDED_FOR'] == "122.142.198.166" || @$_SERVER['HTTP_X_FORWARDED_FOR'] == "5.181.40.115")
 		//HTTP_CONTENT_TYPE: multipart/form-data; boundary=-----AcunetixBoundary_PYAHFBXIFU
