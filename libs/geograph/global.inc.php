@@ -834,9 +834,21 @@ $str[] = "
                 	$str[] = '<script src="'.smarty_modifier_revision("/js/links.js").'" defer="defer"></script>';
 
 		if (preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m)) {
-			if (strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot')!==FALSE || $memcache->name_get('reljs',$m[1])) { //if created, might as well use it!
-				$url = "https://www.geograph.org.uk/stuff/related.json.php?id={$m[1]}";
-				$content = file_get_contents($url);
+			$cached = $memcache->name_get('reljs',$m[1]);
+			if (strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot')!==FALSE || strpos($_SERVER['HTTP_USER_AGENT'], 'GoogleOther')!==FALSE || $cached) { //if created, might as well use it!
+				if ($cached) {
+					//as we know it already in cached, might as well read directly, avoiding a self API call!
+					global $filesystem;
+					if (empty($filesystem))
+						$filesystem = new FileSystem();
+				        $cachefile = "/mnt/s3/cache/related/{$m[1]}.json";
+					if ($filesystem->file_exists($cachefile, true)) //true to download the file and put in a temp file
+				                $content = $filesystem->file_get_contents($cachefile); //will read from the temp file
+				}
+				if (empty($content)) {
+					$url = "{$CONF['CONTENT_HOST']}/stuff/related.json.php?id={$m[1]}";
+					$content = file_get_contents($url);
+				}
 				if (strlen($content) > 5) {
 					$str[] = '<script>var related = '.$content.';</script>';
 					$one = 1; //its passed by reference"
