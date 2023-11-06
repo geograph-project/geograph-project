@@ -79,8 +79,10 @@
     font-size:1.0em;
 }
 .gridref a {
-    color:black;
     text-decoration:none;
+}
+.content_photowhite .gridref a {
+    color:black;
 }
 .gridref a:hover {
     text-decoration:underline;
