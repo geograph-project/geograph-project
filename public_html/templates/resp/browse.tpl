@@ -96,18 +96,21 @@
 			<p style="text-align:center">There are no pictures for any grid square within 100km.</p>
 		{/if}
     
-    <ul class="buttonbar">
-<li><select onchange="window.location.href=this.value">
-				<option value="">Search for nearby images</option>
-				<option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=full&amp;do=1">Full details</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=grid&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=slide&amp;do=1">Slideshow</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=map&amp;do=1">Map</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=black&amp;do=1">Georiver</option>
-</select></li></ul>
+<ul class="buttonbar">
+<div class="buttonbar-dropdown">
+  <button>Search for nearby images &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+	<a href="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=full&amp;do=1">Full details</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=slide&amp;do=1">Slideshow</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=map&amp;do=1">Map</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=20&amp;displayclass=black&amp;do=1">Georiver</a>
+  </div>
+</div>
+</ul>
     
 {/if} 
   
@@ -139,19 +142,25 @@
 <li><a href="/gridref/{$gridref}?viewcenti={$gridref6}">View image(s) taken in {$gridref6}</a></li>
 <li><a href="/gridref/{$gridref}?centi={$gridref6}">View subjects in {$gridref6}</a> (if any)</li>
 {/if}
-<li><select onchange="window.location.href=this.value">
-				<option value="">Search images by distance</option>
-				<option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=full&amp;do=1">Full details</option>
-        <option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=thumbs&amp;do=1">Thumbnails</option>
-        <option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=grid&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=slide&amp;do=1">Slideshow</option>
-        <option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=map&amp;do=1">Map</option>
-        <option value="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=black&amp;do=1">Georiver</option>
-</select></li>
+
+<div class="buttonbar-dropdown">
+  <button>Search images by distance &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+	<a href="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=full&amp;do=1">Full details</a>
+	<a href="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+	<a href="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+	<a href="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+	<a href="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+	<a href="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=slide&amp;do=1">Slideshow</a>
+	<a href="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=map&amp;do=1">Map</a>
+	<a href="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=black&amp;do=1">Georiver</a>
+  </div>
+</div>
+
 
 </ul>
+
+
 
 {/if}
 
@@ -162,60 +171,58 @@
 
 <ul class="buttonbar">
 
-<li>
-<select onchange="window.location.href=this.value">
-    <option>View all {$imagecount} images in the search</option>
-    <optgroup label="Most recent first">
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Full details</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbsmore&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=bigger&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=grid&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Slideshow</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=map&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Map</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=black&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="Oldest first">
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;orderby=submitted&amp;do=1">Full details</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1">Thumbnails</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbsmore&amp;orderby=submitted&amp;do=1">Thumbnails + links</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=bigger&amp;orderby=submitted&amp;do=1">Thumbnails - bigger</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=grid&amp;orderby=submitted&amp;do=1">Thumbnails grid</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1">Slideshow</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=map&amp;orderby=submitted&amp;do=1">Map</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=black&amp;orderby=submitted&amp;do=1">Georiver</option>
-    </optgroup>
-    <optgroup label="One image per">
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</option>
-        <option value="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</option>
-    </optgroup>
-</select>
-</li>
+<div class="buttonbar-dropdown">
+  <button>View all {$imagecount} images in the search &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+  <b>Most recent first</b>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=full&amp;do=1">Full details</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</a>
+  <b>Oldest first</b>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;displayclass=full&amp;do=1">Full details</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;displayclass=slide&amp;do=1">Slideshow</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;displayclass=map&amp;do=1">Map</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;displayclass=black&amp;do=1">Georiver</a>
+  <b>One image per</b>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=full&amp;do=1">Day taken</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;groupby=auser_id&amp;breakby=user_id&amp;displayclass=full&amp;do=1">Contributor</a>
+	<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;groupby=scenti&amp;displayclass=full&amp;do=1">Centisquare</a>
+  </div>
+</div>
 
 <li><a href="/browser/#!/grid_reference+%22{$gridref}%22">View this square in the browser</a></li>
 
-<li><select onchange="window.location.href=this.value">
-<option value="">View images in Finder grouped by...</option>
-		<optgroup label="Subject">
-				<option value="/finder/groups.php?q=%5E{$gridref}&amp;group=context_ids">Geographical context</option>
-        <option value="/finder/groups.php?q=%5E{$gridref}&amp;group=tag_ids">Tags</option>
-				<option value="/finder/groups.php?q=%5E{$gridref}&amp;group=snippet_ids">Shared description</option>
-        <option value="/finder/groups.php?q=%5E{$gridref}&amp;group=group_ids">Clusters</option>
-        <option value="/finder/groups.php?q=%5E{$gridref}&amp;group=subject_ids">Subject</option>
-		</optgroup>
-    		<optgroup label="Date taken">
-				<option value="/finder/groups.php?q=%5E{$gridref}&amp;group=decade">Decade taken</option>
-        <option value="/finder/groups.php?q=%5E{$gridref}&amp;group=takenyear">Year taken</option>
-				<option value="/finder/groups.php?q=%5E{$gridref}&amp;group=takenmonth">Month taken</option>
-        <option value="/finder/groups.php?q=%5E{$gridref}&amp;group=takenday">Day taken</option>
-		</optgroup>
-    <optgroup label="Other">
-				<option value="/finder/groups.php?q=%5E{$gridref}&amp;group=format">Image format</option>
-        <option value="/finder/groups.php?q=%5E{$gridref}&amp;group=user_id">Contributor</option>
-				<option value="/finder/groups.php?q=%5E{$gridref}&amp;group=segment">When submitted</option>
-		</optgroup>
-</select></li>
+<div class="buttonbar-dropdown">
+  <button>View images in Finder grouped by... &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+  <b>Subject</b>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=context_ids">Geographical context</a>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=tag_ids">Tags</a>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=snippet_ids">Shared description</a>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=group_ids">Clusters</a>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=subject_ids">Subject</a>
+  <b>Date taken</b>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=decade">Decade taken</a>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=takenyear">Year taken</a>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=takenmonth">Month taken</a>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=takenday">Day taken</a>
+  <b>Other</b>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=format">Image format">Day taken</a>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=user_id">Contributor</a>
+	<a href="/finder/groups.php?q=%5E{$gridref}&amp;group=segment">When submitted</a>
+  </div>
+</div>
+
+
 
 {* Collections in the gridsquare*}
 {if $square && $square->collections}
@@ -244,51 +251,52 @@
 <h4 style="margin-bottom:0; margin-top:2px;">Surrounding area</h4>
 
 <ul class="buttonbar">
-<li><select onchange="window.location.href=this.value">
-				<option value="">Geograph coverage maps</option>
-				<option value="/mapper/combined.php#13/{$lat}/{$long}">Interactive coverage map (squares)</option>
-				<option value="/mapper/combined.php#15/{$lat}/{$long}">Interactive coverage map (centisquares)</option>
-        {if $hectad_row && $hectad_row.largemap_token}
-        <option value="/maplarge.php?t={$hectad_row.largemap_token}">Photo mosaic</option>
-	{/if}
-        <option value="/browser/#!/loc={$gridrefraw}/dist=1000/display=map_dots">Browser map</option>
-        <option value="https://www.geograph.org/leaflet/all.php#16/{$lat}/{$long}">All Geograph projects map</option>
-				<option value="/mapsheet.php?zoom=15&lat={$lat}&lon={$long}">Printable Checksheet</option>
-        {if $user}<option value="/mapsheet.php?zoom=15&lat={$lat}&lon={$long}&mine=1">Printable Checksheet (personalised)</option>{/if}
-        <option value="/mapbrowse.php?t={$map_token}">Original coverage maps</option>
-</select></li>
+<div class="buttonbar-dropdown">
+  <button>Geograph coverage maps &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+	<a href="/mapper/combined.php#13/{$lat}/{$long}">Interactive coverage map (squares)</a>
+	<a href="/mapper/combined.php#15/{$lat}/{$long}">Interactive coverage map (centisquares)</a>
+	{if $hectad_row && $hectad_row.largemap_token}<a href="/maplarge.php?t={$hectad_row.largemap_token}">Photo mosaic</a>{/if}
+	<a href="/browser/#!/loc={$gridrefraw}/dist=1000/display=map_dots">Browser map</a>
+	<a href="https://www.geograph.org/leaflet/all.php#16/{$lat}/{$long}">All Geograph projects map</a>
+	<a href="/mapsheet.php?zoom=15&lat={$lat}&lon={$long}">Printable Checksheet</a>
+	{if $user}<a href="/mapsheet.php?zoom=15&lat={$lat}&lon={$long}&mine=1">Printable Checksheet (personalised)</a>{/if}
+	<a href="/mapbrowse.php?t={$map_token}">Original coverage maps</a>
+  </div>
+</div>
 
-<li><select onchange="window.location.href=this.value">
-<option value="">Mapping links</option>
-		<optgroup label="Google Maps">
-	<option value="https://www.google.co.uk/maps/search/{$lat},{$long}/">Google maps</option>
-        <option value="https://www.google.co.uk/maps/dir/?api=1&amp;destination={$lat},{$long}">Google maps - Navigate to {if $gridref6}{$gridref6}{else}{$gridref}{/if}</option>
-		</optgroup>
-		<optgroup label="OpenStreetMap">
-        <option value="http://www.openstreetmap.org/?mlat={$lat}&amp;mlon={$long}&amp;zoom=14">OpenStreetMaps</option>
-        <option value="https://www.opencyclemap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenCycleMap</option>
-        <option value="https://opentopomap.org/#map=14/{$lat}/{$long}">OpenTopoMap</option>
-        <option value="https://map.openseamap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenSeaMap</option>    
-		</optgroup>
-    <optgroup label="Other">
-        <option value="https://maps.nls.uk/geo/find/marker/#zoom=13&lat={$lat}&lon={$long}&f=1&z=1&marker={$lat},{$long}">National Library of Scotland</option>
-        <option value="http://wtp2.appspot.com/wheresthepath.htm?lat={$lat}&amp;lon={$long}">Where's the path</option>
-        <option value="https://www.bing.com/maps?v=2&amp;cp={$lat}~{$long}&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1">Bing maps</option>
-        <option value="https://explore.osmaps.com/?lat={$lat}&amp;lon={$long}&amp;zoom=14">Ordnance Survey</option>    
-		</optgroup>
-    <optgroup label="More choices">
-        <option value="/gridref/{$gridrefraw}/links">Geograph links page</option>
-		</optgroup>
-</select></li>
+<div class="buttonbar-dropdown">
+  <button>Mapping links &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+  <b>Google Maps</b>
+	<a href="https://www.google.co.uk/maps/search/{$lat},{$long}/">Google maps</a>
+	<a href="https://www.google.co.uk/maps/dir/?api=1&amp;destination={$lat},{$long}">Google maps - Navigate to {if $gridref6}{$gridref6}{else}{$gridref}{/if}</a>
+  <b>OpenStreetMap</b>
+	<a href="http://www.openstreetmap.org/?mlat={$lat}&amp;mlon={$long}&amp;zoom=14">OpenStreetMaps</a>
+	<a href="https://www.opencyclemap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenCycleMap</a>
+	<a href="https://opentopomap.org/#map=14/{$lat}/{$long}">OpenTopoMap</a>
+	<a href="https://map.openseamap.org/?zoom=14&amp;lat={$lat}&amp;lon={$long}">OpenSeaMap</a>
+  <b>Other</b>
+	<a href="https://maps.nls.uk/geo/find/marker/#zoom=13&lat={$lat}&lon={$long}&f=1&z=1&marker={$lat},{$long}">National Library of Scotland</a>
+	<a href="http://wtp2.appspot.com/wheresthepath.htm?lat={$lat}&amp;lon={$long}">Where's the path</a>
+	<a href="https://www.bing.com/maps?v=2&amp;cp={$lat}~{$long}&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1">Bing maps</a>
+  <a href="https://explore.osmaps.com/?lat={$lat}&amp;lon={$long}&amp;zoom=14">Ordnance Survey</a>
+	{if $square->reference_index eq 1}<a href="http://www.npemap.org.uk/tiles/map.html#{$square->nateastings|truncate:3:"":true:false},{$square->natnorthings|truncate:3:"":true:false},1">NPE</a>{/if}
+  <b>More choices</b>
+  <a href="/gridref/{$gridrefraw}/links">Geograph links page</a>
+  </div>
+</div>
 
 
-<li><select onchange="window.location.href=this.value">
-				<option value="">Explore</option>
-				<option value="/gridref/{$hectad}">Hectad {$hectad}</option>
-        <option value="/gridref/{$gridsquare}">Myriad {$gridsquare}</option>
-        <option value="/content/?q={$gridref}">Nearby collections</option>
-        <option value="/finder/bytag.php?q={$gridref}">Tags used nearby</option>
-</select></li>
+<div class="buttonbar-dropdown">
+  <button>Explore &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+	<a href="/gridref/{$hectad}">Hectad {$hectad}</a>
+	<a href="/gridref/{$gridsquare}">Myriad {$gridsquare}</a>
+	<a href="/content/?q={$gridref}">Nearby collections</a>
+	<a href="/finder/bytag.php?q={$gridref}">Tags used nearby</a>
+  </div>
+</div>
     
 </ul>
 {/if}
