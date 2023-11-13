@@ -148,7 +148,7 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 				<tr>
 				
 					<td valign="top"><div class="interestBox">{$preview_width} x {$preview_height}</div><br/>
-					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}"/></a><br/><br/>
+					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}" crossorigin onerror="retryCross(this)"/></a><br/><br/>
 					</td>
 				
 				{if basename($image->altUrl) != "error.jpg"}
@@ -163,7 +163,7 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					{/if}
 					
 					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
-					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=640"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></a>
+					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=640"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" crossorigin onerror="retryCross(this)"/></a>
 					</td>
 				{/if}
 				
@@ -178,7 +178,7 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					{/if}
 					
 					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
-					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=800"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></a>
+					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=800"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" crossorigin onerror="retryCross(this)"/></a>
 					</td>
 				{/if}
 				
@@ -193,13 +193,13 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					{/if}
 					
 					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
-					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=1024"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></a>
+					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=1024"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" crossorigin onerror="retryCross(this)"/></a>
 					</td>
 				{/if}
 				
 
 					<td valign="top"><div class="interestBox">{$original_width} x {$original_height}</div><br/>
-					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}"/></a>
+					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}" crossorigin onerror="retryCross(this)"/></a>
 					
 					{if $image->originalSize}
 						<br/><br/><div class="interestBox">Filesize: {$image->originalSize|thousends} bytes</div>

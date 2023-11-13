@@ -221,6 +221,10 @@ elseif (!empty($_GET['link']) && $_GET['link'] === 's')
 
 $options = '';
 
+//most of geograph displays images ignoring the exif oritentation, so there are images where its set incorrectly.
+// strip it here, to match the rest of Geograph - its PROBABLY on the image in error.
+$options = ' -orient undefined'; //slightly better than -strip?
+
 foreach ($attribs as $attrib) {
 	if (!empty($_GET[$attrib]) && preg_match('/^[\w-]+$/',$_GET[$attrib])) {
 		$options .= " -$attrib {$_GET[$attrib]}";

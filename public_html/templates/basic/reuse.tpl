@@ -35,10 +35,14 @@ div:target {
 
 .previewHover > div {
 	display:inline-block;
-	position:relative;width:580px;height:22px;overflow:hidden;
-	background-position:right bottom;
-	background-repeat:no-repeat;
+	position:relative;width:580px;height:28px;overflow:hidden;
 	box-shadow: inset 0px 5px 3px 0px rgba(255,255,255,1);
+}
+.previewHover img {
+	position:absolute;
+	bottom:0;
+	right:0;
+	z-index:-1; /* to put behind the box-shadow! */
 }
 
 {/literal}
@@ -77,7 +81,7 @@ div:target {
 
 		<td>
 			<a href="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&download=1"><img 
-                            src="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}" width=250></a>
+                            src="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}" width=250 crossorigin onerror="retryCross(this)"></a>
 		</td>
 	</tr>
 
@@ -85,7 +89,7 @@ div:target {
 	<tr>
 		<td colspan=2 align=right class="previewHover">
 			Actual size:
-			<div style='background-image:url("{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}")'>
+			<div><img src="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}" crossorigin onerror="retryCross(this)">
 			</div>
 		</td>
 	</tr>
@@ -112,7 +116,7 @@ div:target {
 		</td>
 
 		<td valign=top align=center>
-			<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$image->_getFullpath(true,true)}" width=250></a><br>
+			<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$image->_getFullpath(true,true)}" width=250 crossorigin onerror="retryCross(this)"></a><br>
 			<small class="sized">(<b>{$image->cached_size.0}</b>x<b>{$image->cached_size.1}</b>px jpeg)</small>
 
 	                <p style="color:red">

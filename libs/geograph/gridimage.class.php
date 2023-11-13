@@ -1282,7 +1282,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 		$counter++;
 
 		//the normal tag, but with additional srcset
-		$html="<img alt=\"$title\" src=\"$fullpath\" crossorigin {$size[3]}$srcset/>";
+		$html="<img alt=\"$title\" src=\"$fullpath\" crossorigin {$size[3]}$srcset onerror=\"retryCross(this)\"/>";
 
 		//then add responsive sizing
 		if (!empty($simple) && $CONF['template'] == 'resp' && $responsive) {
