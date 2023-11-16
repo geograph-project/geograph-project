@@ -57,6 +57,8 @@
 
 45	2	* * *   /usr/bin/php /var/www/geograph/scripts/loki.php --auto=ingress
 
+15	3	* * *   /usr/bin/php /var/www/geograph/scripts/loki.php --auto=dataserver
+
 ##############################
 
 22      *       * * *   /usr/bin/php /var/www/geograph/scripts/injectrt-delta-function.php --table=gridsquare --delta=last_timestamp --limit=1000 --execute=2
