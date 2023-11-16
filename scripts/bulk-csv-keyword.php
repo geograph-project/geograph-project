@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$param = array('sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_railway_images',
-	 'keyword' => '@(tags,contexts) "_SEP_ railway _SEP_"', 'geo'=>false, 'prefix'=>'', 'original'=>false);
+$param = array('sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_railway_images', 'start'=>0,
+	 'keyword' => '@(tags,contexts) "_SEP_ railway _SEP_"', 'geo'=>false, 'prefix'=>'', 'original'=>false, '1024'=>true);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -77,68 +77,84 @@ if (!empty($param['geo'])) {
 print "Writing to {$param['folder']}/{$param['filename']}\n";
 print preg_replace('/\s+/',' ',$sql).";\n";
 
+//log the command
+$h = fopen($param['folder'].'/'.$param['filename'].".cmd.txt", 'a');
+fwrite($h, implode(' ',$argv)."\n");
+fclose($h);
+
+######################################################################################################################################################
+
 $h = fopen($param['folder'].'/'.$param['filename'].'.metadata.csv','wb'); //we writing utf8!
 
 $loop = 1;
 $c = 0;
-$lastid = 0;
-while (true) {
-	print "Loop $loop from $lastid";
-	if (!($c%10)) {
-		if (disk_free_space('/tmp') < 20000000)
-			die("Not enough freespace on /tmp\n");
-	}
 
-	$and = ($lastid)?" AND id > $lastid":'';
+//in theory is MUCH quicker to loop though shards one at a time....
+foreach (array('sample8A','sample8B','sample8C','sample8D','sample8E') as $index) {
+	$sql = preg_replace('/ sample8\w? /'," $index ",$sql);
+	$lastid = $param['start'];
+	while (true) {
+		print "Loop $index.$loop from $lastid";
 
-	$recordSet = $sph->Execute(str_replace('$and', $and, $sql));
-	$meta = $sph->getAssoc("SHOW META");
+		$and = ($lastid)?" AND id > $lastid":'';
 
-	if ($loop == 1) {
-		print_r($meta);
-		$keys = array_keys($recordSet->fields);
-		array_unshift($keys,'filename'); foreach(range(1,$pop) as $l) { array_pop($keys); } //remove not needed
-		fputcsv($h,$keys);
-	}
+		$recordSet = $sph->Execute(str_replace('$and', $and, $sql));
+		$meta = $sph->getAssoc("SHOW META");
 
-	$count = $recordSet->RecordCount();
-	if (!$count)
-		break;
-	print "=$count/{$meta['total_found']}. ";
+		if ($loop == 1)
+			print_r($meta);
 
-	while (!$recordSet->EOF) {
-		$row =& $recordSet->fields;
-		$row['takenday'] = preg_replace('/(\d{4})(\d{2})(\d{2})/','$1-$2-$3',$row['takenday']);
+		$count = $recordSet->RecordCount();
+		if (!$count)
+			break;
+		print "=$count/{$meta['total_found']}. ";
 
-		$image = new GridImage();
-		$image->fastInit($row);
-
-		if (!empty($row['original']) && $param['original']) {
-			$path = $image->_getOriginalpath(false, false);
-		} else {
-			$path = $image->_getFullpath(false, false); //we dont check existinence, but if did then use $use_get=2 so that it downloads it, rather than just using HEAD
+		if ($loop == 1) {
+			$keys = array_keys($recordSet->fields);
+			array_unshift($keys,'filename'); foreach(range(1,$pop) as $l) { array_pop($keys); } //remove not needed
+			fputcsv($h,$keys);
 		}
 
-		//sphinx/manticore is already utf8
-		//$row['title'] = latin1_to_utf8($row['title']);
-		//$row['realname'] = latin1_to_utf8($row['realname']);
-		$row['wgs84_lat'] = rad2deg($row['wgs84_lat']);
-		$row['wgs84_long'] = rad2deg($row['wgs84_long']);
+		while (!$recordSet->EOF) {
+			$row =& $recordSet->fields;
+			$row['takenday'] = preg_replace('/(\d{4})(\d{2})(\d{2})/','$1-$2-$3',$row['takenday']);
 
-		foreach(range(1,$pop) as $l) { array_pop($row); } //remove not needed
+			$image = new GridImage();
+			$image->fastInit($row);
 
-		fputcsv($h,array($param['prefix'].$path)+$row);
+			if (!empty($row['original']) && $param['original']) {
+				if ($param['1024'] && $row['original'] > 1024) {
+					//in theory should use getImageFromOriginal, but _getOriginalpath is simpler
+					// - just at risk of returning a path that doesnt exist (ie the 1024 hasnt actully been created yet) - it WONT be created.
+					$path = $image->_getOriginalpath(FALSE, false, '_1024x1024');
+				} else {
+					$path = $image->_getOriginalpath(false, false);
+				}
+			} else {
+				$path = $image->_getFullpath(false, false); //we dont check existinence, but if did then use $use_get=2 so that it downloads it, rather than just using HEAD
+			}
 
-		$lastid = $image->gridimage_id;
-		$c++;
-	        $recordSet->MoveNext();
+			//sphinx/manticore is already utf8
+			//$row['title'] = latin1_to_utf8($row['title']);
+			//$row['realname'] = latin1_to_utf8($row['realname']);
+			$row['wgs84_lat'] = round(rad2deg($row['wgs84_lat']),6);
+			$row['wgs84_long'] = round(rad2deg($row['wgs84_long']),6);
+
+			foreach(range(1,$pop) as $l) { array_pop($row); } //remove not needed
+
+			fputcsv($h,array($param['prefix'].$path)+$row);
+
+			$lastid = $image->gridimage_id;
+			$c++;
+		        $recordSet->MoveNext();
+		}
+		$recordSet->Close();
+
+
+		if (!empty($param['sleep']))
+			sleep($param['sleep']);
+		$loop++;
 	}
-	$recordSet->Close();
-
-
-	if (!empty($param['sleep']))
-		sleep($param['sleep']);
-	$loop++;
 }
 print "\n\n";
 
