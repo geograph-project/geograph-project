@@ -48,7 +48,7 @@ $param=array(
 	'direction' => 'forward',
         'limit'=>10, //small number for testing, but set to high number, 5000 seems recommended (both filename and string use this - auto sets to 5000)
 
-	'base'=>'{job="production/geograph", container="nginx"}', //the default query (for all modes)
+	'base'=>'{job="production/geograph", container="nginx", stream="stdout"}', //the default query (for all modes)
 	'string'=>false, //extra filter to apply
 	'second'=>false, //extra filter to apply
 	'not'=>false, //extra not filter (only works in single string mode)
@@ -124,7 +124,9 @@ if (empty($CONF['loki_address']))
 				$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/ingress-nginx", stream="stdout"}')." --string=production-geograph-http";
 			elseif ($param['auto'] == 'dataserver')
 				$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/ingress-nginx", stream="stdout"}')." --string=production-dataserver-http --not=monitoring-plugins";
-			//base is ok, for 'nginxaccess'
+			else
+				//base is ok, for 'nginxaccess', but histroically have included all streams
+				$cmd .= " --stream=all";
 
 			if ($param['debug']) {
 				if (file_exists($source.$base))
@@ -267,8 +269,6 @@ if (empty($CONF['loki_address']))
 		$query = $param['base'];
 		$query .= ' |= "\" 404 " '; //note the query is specifically matching agasint the encoded json!
 
-		if (empty($param['stream'])) $param['stream'] = 'stdout';
-
 		$r = getlogs($query, STDOUT, $param['limit']); //defaults to last hour!
 		print "$query\n";
 		if (posix_isatty(STDOUT))
@@ -321,9 +321,14 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
 	//$query .= ' | json | stream="stdout"';
 	if ($param['stream']) {
 		$count = 0;
-		$query = preg_replace('/stream="\w+"/','stream="'.$param['stream'].'"',$query, -1, $count);
-		if ($count == 0)
-			$query .= ' | json | stream="'.$param['stream'].'"';
+		if ($param['stream'] === 'all' || $param['stream'] === 'any') {
+			$query = preg_replace('/, stream="\w+"/','',$query);
+		} else {
+			$query = preg_replace('/stream="\w+"/','stream="'.$param['stream'].'"',$query, -1, $count);
+			if ($count == 0)
+				//todo, this would be better added to base query, rather than using JSON parser
+				$query .= ' | json | stream="'.$param['stream'].'"';
+		}
 	}
 
 	if ($param['debug'])
