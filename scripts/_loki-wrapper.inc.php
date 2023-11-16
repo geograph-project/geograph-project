@@ -30,8 +30,8 @@ if (!empty($param['hours'])) {
 
 //a single day
 } elseif (!empty($param['date'])) {
-        $start = strtotime($param['date']);
-        $end = strtotime($param['date']."+1 ".$param['diff']);
+        $start = strtotime($param['date']].$param['extra']);
+        $end = strtotime($param['date'].$param['extra2']);
 
         $start = $start.'000000000';  //as a nanosecond Unix epoch.
         $end = $end.'000000000';
@@ -104,6 +104,74 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
                                         $d = json_decode($str,true);
                                         $str = $d['log'];
                                 }
+				if (!empty($fp)) {
+					fwrite($fp,$str);
+				} else {
+					yield $str;
+				}
+                        }
+		}
+	}
+}
+
+############################################
+
+function getgroups($query, $grouper, $funct = 'rate', $period = '10m',  $fp = null, $start = null, $end = null) {
+	global $server, $param, $CONF;
+
+	//convenience function to hide some common bots
+	if (empty($param['bot'])) {
+		$query .= ' != "Googlebot"';
+		$query .= ' != "bingbot/2.0"';
+		$query .= ' != "archive.org_bot"';
+		$query .= ' != "size=largest"'; //this is a special param that only wikimedia know about
+	}
+
+	//get the access_log, nginx container at least, access on stdout, and error on stderr!
+	//$query .= ' | json | stream="stdout"';
+	if ($param['stream']) {
+		$count = 0;
+		$query = preg_replace('/stream="\w+"/','stream="'.$param['stream'].'"',$query, -1, $count);
+		if ($count == 0)
+			$query .= ' | json | stream="'.$param['stream'].'"';
+	}
+
+
+	$query = "sum by ($grouper) ($funct($query [$period]))";
+
+	if ($param['debug'])
+		print "$query\n";
+
+	$data = array(
+		'query' => $query,
+		'direction' => 'forward',
+		'step' => $period, //this ensures only get one point per period. Otherwise get multiple points per period (I think so could plot a graph and it bar for the period)
+	);
+	if (!empty($start)) $data['start'] = $start;
+	if (!empty($end)) $data['end'] = $end;
+
+	$url = "{$CONF['loki_address']}loki/api/v1/query_range?".http_build_query($data);
+	if ($param['debug'])
+		print "$url\n";
+
+	if ($param['debug'] == '2')
+		exit;
+
+	//todo, perhaps should use some sort of streaming reader, rather than reading all into memory!
+	$data = file_get_contents($url);
+
+	$json = json_decode($data, true);
+	if ($param['debug'])
+		print_r($json);
+
+	if (!empty($json['data']) && !empty($json['data']['result'])) {
+		//split into multiple streams
+		foreach ($json['data']['result'] as $idx => $result) {
+			$group = $result['metric'][$grouper];
+                        foreach ($result['values'] as $line) {
+				//todo, this it outputing one line per value, maybe should be one line per group?
+                                //$str = $group.','.implode(",",$line);
+				$str = array($group, $line[0], $line[1]);
 				if (!empty($fp)) {
 					fwrite($fp,$str);
 				} else {

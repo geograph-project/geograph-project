@@ -50,7 +50,9 @@ $param=array(
 
 	'base'=>'{job="production/geograph", container="nginx"}', //the default query (for all modes)
 	'string'=>false, //extra filter to apply
+	'second'=>false, //extra filter to apply
 	'not'=>false, //extra not filter (only works in single string mode)
+	'status'=>false, //limit resuts to specifc https status (not compatible with json/stream filter!)
 	'duration'=>false, //extra duration filter
 	'hours'=>false, //specify a number of hours to use with 'string' query. Defaults to one hour!
 
@@ -97,9 +99,6 @@ if (empty($CONF['loki_address']))
 		foreach (range(-15,-1) as $offset) { //loki only keeps 16 days, but cant use 16, and day 16 will be partial! (and loki hard errors, if outside its time!)
 			$d = date('Y-m-d',strtotime($offset.' day'));
 
-if ($d == '2023-03-09')
-	continue;
-
 			if ($param['auto'] == 'ingress')
 				$base = "ingress.$d.log";
 			elseif ($param['auto'] == 'dataserver')
@@ -125,6 +124,7 @@ if ($d == '2023-03-09')
 				$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/ingress-nginx", stream="stdout"}')." --string=production-geograph-http";
 			elseif ($param['auto'] == 'dataserver')
 				$cmd .= " --base=".escapeshellarg('{job="tcl-ingress/ingress-nginx", stream="stdout"}')." --string=production-dataserver-http --not=monitoring-plugins";
+			//base is ok, for 'nginxaccess'
 
 			if ($param['debug']) {
 				if (file_exists($source.$base))
@@ -137,9 +137,9 @@ if ($d == '2023-03-09')
 
 				passthru($cmd);
 			}
-		}
+//		}
 
-		if (!empty($cmd)) { //actully did something!
+//		if (!empty($cmd)) { //actully did something!
 			$cmd = "php ".__DIR__."/send-to-s3.php --src=$source --include='*.gz' --dst=$destination --overwrite={$param['overwrite']} --move={$param['move']} --dry=0 --config={$param['config']}";
 			if ($param['debug']) {
 				print "$cmd\n";
@@ -185,6 +185,9 @@ if ($d == '2023-03-09')
 		if (!empty($param['end'])) {
 			$end = $param['end'];
 		}
+
+		if ($param['limit'] == 10 && $param['all']) //limit of 10 is fine for interactive use, but with filename&all a small number is very ineffient
+			$param['limit'] = 5000;
 
 		$c =1;
 		$sleep=0;
@@ -298,10 +301,19 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
 	if (!empty($param['not']))
 		$query .= ' != "'.str_replace('"','\"',$param['not']).'"';
 
+	if (!empty($param['second']))
+                $query .= ' |= "'.str_replace('"','\"',$param['second']).'"';
+
 	if (!empty($param['duration']) && strpos($param['base'],'manticore"'))
 		$query .= ' | regexp `\] (?P<duration>\\d+\.\\d+) sec \\d+\\.\\d+ sec ` | duration > '.$param['duration'];
 	if (!empty($param['duration']) && strpos($param['base'],'nginx"'))
 		$query .= ' | regexp `" (?P<duration>\\d+\.\\d+) http` | duration > '.$param['duration'];
+
+	if (!empty($param['status'])) {
+		$pattern = 'pattern `<_> - <_> <_> "<_> <path> <_>" "<_>" <status> <_> "<_>" "<agent>"`';
+		$query .= " | $pattern";
+		$query .= " | status=\"{$param['status']}\"";
+	}
 
 	#####################
 
@@ -373,5 +385,6 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
 			}
 		}
 	}
+//print_r($json['data']['stats']);
 	return $r;
 }

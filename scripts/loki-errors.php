@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$param = array('debug'=>0, 'stream' => 'stdout', 'limit' => 5000, 'date' => '', 'diff'=>'hour', 'hours'=>0, 'minutes'=>0, 'bot'=>1, //these are handled by wrapper
+$param = array('debug'=>0, 'stream' => 'stdout', 'limit' => 5000, 'date' => '', 'extra'=>'', 'extra2'=> '+1 day', 'hours'=>0, 'minutes'=>0, 'bot'=>1, //these are handled by wrapper
  'string'=>'', 'status'=>false, 'count'=>10, 'dump'=>false); //custom params for this script
 
 chdir(__DIR__);
