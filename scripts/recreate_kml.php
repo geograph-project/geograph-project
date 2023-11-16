@@ -58,6 +58,8 @@ $end_time = $start_time + (60*$param['timeout']);
 $map=new GeographMap;
 $debug = false;
 
+ini_set("user_agent","Internal Request");
+
 while (1) {
 	#$db = NewADOConnection($GLOBALS['DSN']);
 	$invalid_maps = $db->GetOne("select SQL_NO_CACHE count(*) from kmlcache where rendered != 1");

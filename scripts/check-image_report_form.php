@@ -172,6 +172,7 @@ function check_path($server,$path, $row) {
 		$url = $server.$path;
 		print "$url\n";
 
+		ini_set("user_agent","Internal Request");
 		$str= file_get_contents($url);
 		if (strlen($str) == $size) {
 
