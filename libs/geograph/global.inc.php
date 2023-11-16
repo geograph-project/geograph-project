@@ -847,6 +847,7 @@ $str[] = "
 				}
 				if (empty($content)) {
 					$url = "{$CONF['CONTENT_HOST']}/stuff/related.json.php?id={$m[1]}";
+					ini_set("user_agent","Internal Request");
 					$content = file_get_contents($url);
 				}
 				if (strlen($content) > 5) {

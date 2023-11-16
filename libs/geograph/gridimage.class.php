@@ -1018,6 +1018,7 @@ split_timer('gridimage'); //starts the timer
 			{
 				$url='http://'.$CONF['fetch_on_demand'].$fullpath;
 				//storeImage wraps S3 class, and so only deals with real local files, not via URL wrapper.
+				ini_set("user_agent",$_SERVER['HTTP_HOST']);
 				$contents = @file_get_contents($url); //surpress 404 warning
 				if (strlen($contents)>100) {
 					$tmpfname = tempnam("/tmp", "demand".getmypid());

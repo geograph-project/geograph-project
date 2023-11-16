@@ -57,6 +57,7 @@ header("Content-Type: image/png");
 $str = $memcache->name_get('tile',$mapurl);
 
 if (empty($str)) {
+	ini_set("user_agent","Internal Request");
 	$str =  file_get_contents($mapurl);
 
 

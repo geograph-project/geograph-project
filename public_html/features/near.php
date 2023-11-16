@@ -132,6 +132,7 @@ if (!empty($_GET['q'])) {
 		$_GET['q'] = $gr;
 
 	} else {
+		ini_set("user_agent","Internal Request");
 		$str = file_get_contents("https://api.geograph.org.uk/finder/places.json.php?q=$qu&new=1");
 		if (strlen($str) > 40) {
         		$decode = json_decode($str);

@@ -131,6 +131,7 @@ if (!$smarty->is_cached($template, $cacheid))
         );
 
 	//calling our own API is ugly, but better than replicating all the code here?
+	ini_set("user_agent","Internal Request");
         $remote = file_get_contents("https://api.geograph.org.uk/finder/bytag.json.php?q=hectad:$hectad",0, $ctx);
 
         if (!empty($remote) && strlen($remote) > 110) {

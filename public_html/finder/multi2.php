@@ -423,6 +423,7 @@ if (!empty($_GET['q'])) {
 
 			##########################################################
 
+			ini_set("user_agent","Internal Request");
 			$data = file_get_contents("http://www.geograph.org/links/search.json.php?q=".urlencode($old));
 			$decode = json_decode($data,true);
 			if (!empty($decode['rows'])) {

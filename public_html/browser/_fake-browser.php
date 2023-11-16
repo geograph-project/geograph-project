@@ -106,6 +106,7 @@
      case 'distance':  $url .= "&sort=@geodist+ASC"; $url .= "&rank=2";  break;
      case 'random':  $url .= "&sort=@random";  break;
   }
+	ini_set("user_agent","Internal Request");
 	$data = file_get_contents($url);
 
 	if (!empty($data)) {

@@ -85,6 +85,7 @@ if ($template == 'static_terms.tpl' && isset($_SERVER['HTTP_REFERER']) && preg_m
 
 } elseif ($template == 'static_sitemap.tpl' && !$smarty->is_cached($template)) {
 
+	ini_set("user_agent","Internal Request");
 	$remote = file_get_contents("http://www.geograph.org/links/sitemap2.php?ajax&experimental=N&internal=Y&depreciated=N&site=www.geograph.org.uk");
 
 	if (empty($remote) || strlen($remote) < 512) {

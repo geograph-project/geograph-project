@@ -47,6 +47,7 @@ if (!empty($_GET['loc'])) {
 		//otherwise look it up...
 		$qu = urlencode(trim($_GET['loc']));
 
+		ini_set("user_agent","Internal Request");
                 $str = file_get_contents("http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1");
                 if (strlen($str) > 40) {
                         $decode = json_decode($str);
