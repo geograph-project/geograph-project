@@ -217,4 +217,7 @@ Disallow: /
 User-agent: Sogou web spider
 Disallow: /
 
+User-agent: SeekportBot
+Disallow: /
+
 Clean-param: mobile&style
