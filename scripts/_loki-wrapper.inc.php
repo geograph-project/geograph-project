@@ -30,7 +30,7 @@ if (!empty($param['hours'])) {
 
 //a single day
 } elseif (!empty($param['date'])) {
-        $start = strtotime($param['date']].$param['extra']);
+        $start = strtotime($param['date'].$param['extra']);
         $end = strtotime($param['date'].$param['extra2']);
 
         $start = $start.'000000000';  //as a nanosecond Unix epoch.
