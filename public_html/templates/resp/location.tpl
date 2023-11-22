@@ -241,6 +241,7 @@
       <li>{external href="https://maps.nls.uk/geo/find/marker/#zoom=13&lat=$lat&lon=$long&f=1&z=1&marker=$lat,$long" text="National Library of Scotland"}
 			({external href="https://maps.nls.uk/geo/explore/side-by-side/#zoom=16&lat=$lat&lon=$long&layers=6&right=BingHyb" text="side by side viewer"})</li>
       <li>{external href="http://wtp2.appspot.com/wheresthepath.htm?lat=$lat&amp;lon=$long" text="Where's the path?"}</li>
+      <li><a href="http://www.npemap.org.uk/tiles/map.html#{$square->nateastings|truncate:3:"":true:false},{$square->natnorthings|truncate:3:"":true:false},1">NPE</a></li>
     </ul>
     {/if}
     <h4>Other</h4>

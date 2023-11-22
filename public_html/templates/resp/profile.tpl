@@ -301,6 +301,24 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
         <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</a>
         <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</a>
         <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</a>
+    <b>Oldest submissions</b>
+				<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;displayclass=black&amp;do=1">Georiver</a>
+    <b>Random order</b>
+				<a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?u={$profile->user_id}&amp;orderby=random&amp;displayclass=black&amp;do=1">Georiver</a>
   </div>
 </div> 
 
@@ -311,6 +329,7 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 				<a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=full&amp;do=1">Full details</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=slide&amp;do=1">Slideshow</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;displayclass=map&amp;do=1">Map</a>
@@ -319,6 +338,7 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 				<a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=full&amp;do=1">Full details</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=slide&amp;do=1">Slideshow</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=agridsquare&amp;breakby=grid_reference&amp;orderby=sequence&amp;displayclass=map&amp;do=1">Map</a>
@@ -327,6 +347,7 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 				<a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=full&amp;do=1">Full details</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=slide&amp;do=1">Slideshow</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=ahectad&amp;breakby=hectad&amp;orderby=sequence&amp;displayclass=map&amp;do=1">Map</a>
@@ -335,6 +356,7 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 				<a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=full&amp;do=1">Full details</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=slide&amp;do=1">Slideshow</a>
         <a href="/search.php?u={$profile->user_id}&amp;groupby=amyriad&amp;breakby=myriad&amp;orderby=sequence&amp;displayclass=map&amp;do=1">Map</a>
@@ -356,6 +378,7 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 <div class="buttonbar-dropdown">
   <button>Detailed breakdown &#9660;</button>
   <div class="buttonbar-dropdown-content">
+  <b>Statistics</b>
 	<a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}">by Date taken</a>
 	<a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}">by Myriad</a>
 	<a href="/finder/bytag.php?user_id={$profile->user_id}">by Tags</a>

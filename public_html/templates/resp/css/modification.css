@@ -151,7 +151,7 @@ abbr {
 .buttonbar select option[value=""] {
 	color:silver;
 }
-.buttonbar button {
+.buttonbar-dropdown button {
 	background-color:#eee;
 	border-radius:10px;
 	padding:4px;
@@ -162,10 +162,12 @@ abbr {
 	cursor: pointer;
 	text-align:center;
   min-width: 200px;
+  width:100%;
 }
 .buttonbar-dropdown {
   display: inline-block;
   position: relative;
+	flex: auto;
 }
 .buttonbar-dropdown-content {
   display: none;

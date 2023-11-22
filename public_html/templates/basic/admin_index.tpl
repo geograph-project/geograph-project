@@ -86,7 +86,7 @@
 	<li><a title="Picture of the day" href="/admin/pictureoftheday.php">Picture of the Day</a> - 
 	   choose daily picture selections
 	   {if $pics_no_vote > 0}
-		<br/><small><b>there are {$pics_no_vote} images waiting to to be rated, please <a href="/search.php?i=5761957&amp;temp_displayclass=vote">Vote now</a> or <a href="/search.php?i=5761957&amp;temp_displayclass=blackvote">as GeoRiver</a> (only shows unrated)</b> - don't disclose this url</small>
+		<br/><small><b>there are {$pics_no_vote} images waiting to be rated, please <a href="/search.php?i=5761957&amp;temp_displayclass=vote">Vote now</a> or <a href="/search.php?i=5761957&amp;temp_displayclass=blackvote">as GeoRiver</a> (only shows unrated)</b> - don't disclose this url</small>
 	   {elseif $pics_pending < 5}
 		<br/><small><b>There are only {$pics_pending} images waiting to be displayed as picture of the day, please consider adding some!</b></small>
 	   {else}
