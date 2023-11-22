@@ -114,7 +114,7 @@
 
 {*------------------------Image pool----------------------------*}
 <div class="threecolumn">
-<h3>Image pool</h3>
+<h3>Image Pool</h3>
 
 <p>Images submitted to the pool for <i>Picture of the Day</i> are selected for display using an algorithm, which is partly influenced by the voting scores given to images. Higher rated images are more likely to be selected to be displayed. Please review the images below, and rate each image in the searches, as this helps to improve the selection.</p>
 
