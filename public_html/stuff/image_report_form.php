@@ -295,7 +295,7 @@ if (!empty($_GET['id'])) {
 
 <style>
 {literal}
-input[type=text] {
+input[type=text], input[type=submit] {
   width: 100%;
   margin: 8px 0;
   max-width: 500px;
@@ -305,9 +305,9 @@ input[type=text] {
 
 <p>This form is for reporting images that are not displaying correctly on Geograph, including issues with recent submissions.</p>
 
-<p><b>Note</b>: This form is only for images from <b><a href="/">Geograph Britain and Ireland</b></a>. If you are having issues displaying images from <b>other projects</b>, please let us know via the <a href="/discuss/">forum</a>, or via '<a href="/contact.php">Contact Us</a>'</p>
+<p><b>Note</b>: This form is only for images from <b><a href="/">Geograph Britain and Ireland</b></a>. If you are having issues displaying images from <b>other projects</b>, please let us know via the <a href="/discuss/">forum</a>, or via '<a href="/contact.php">Contact Us</a>'.</p>
 
-<p>If you have multiple images to report, submit a form for each affected image.</p>
+<p>If you have multiple images to report, please submit a form for each affected image.</p>
 
 <form method=post>
 
@@ -319,7 +319,7 @@ if (!empty($_GET['bulk'])) {
 
 ?>
 <h3>ID number of the affected Image</h3>
-<p>The photo ID number (e.g. 99999), or a link to the photo page (e.g. "http://www.geograph.org.uk/photo/99999"), or a direct link to the .jpg file.</p>
+<p>The photo ID number (e.g. "99999"), or a link to the photo page (e.g. "http://www.geograph.org.uk/photo/99999"), or a direct link to the .jpg file.</p>
 <input type=text name=image_url placeholder="enter image-id here" maxlength="128" size="60" required <? if (!empty($_GET['id'])) { echo ' value='.intval($_GET['id']); } ?>>
   
 
@@ -352,7 +352,7 @@ foreach (explode("\n",trim($list)) as $idx => $value) { ?>
 
 <br/><br/>
 
-<input type=submit value="Submit" style="width:200px;">
+<input type=submit value="Submit">
 
 </form>
 <?
