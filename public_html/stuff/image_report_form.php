@@ -293,14 +293,24 @@ if (!empty($_GET['id'])) {
 
 ?>
 
-<p>Please let us know here if unable to view an image on geograph. This includes if having issues with fresh submissions.  </p>
+<style>
+{literal}
+input[type=text] {
+  width: 100%;
+  margin: 8px 0;
+  max-width: 500px;
+}
+{/literal}
+</style>
 
-<p><b>Note</b>: This form is only for images from <b>Geograph Britain and Ireland</b> itself. If issues displaying with images from <b>other projects</b>, please let us know via forum, or via 'Contact Us'</p>
+<p>This form is for reporting images that are not displaying correctly on Geograph, including issues with recent submissions.</p>
 
-<p>If have multiple images to report, will have to submit multiple times</p>
+<p><b>Note</b>: This form is only for images from <b><a href="/">Geograph Britain and Ireland</b></a>. If you are having issues displaying images from <b>other projects</b>, please let us know via the <a href="/discuss/">forum</a>, or via '<a href="/contact.php">Contact Us</a>'</p>
+
+<p>If you have multiple images to report, submit a form for each affected image.</p>
 
 <form method=post>
-<table border=0 cellspacing=0 cellpadding=5>
+
 <?
 
 if (!empty($_GET['bulk'])) {
@@ -308,15 +318,14 @@ if (!empty($_GET['bulk'])) {
 }
 
 ?>
-<tr>
-	<th>URL of the affected Image</th>
-	<td><input type=text name=image_url placeholder="enter image-id here" maxlength="128" size="60" required <? if (!empty($_GET['id'])) { echo ' value='.intval($_GET['id']); } ?>></td>
-	<td><small>can be link of the photo page, probably something like "http://www.geograph.org.uk/photo/99999", a direct link to the .jpg file, - or at least just the Image ID. 
-</tr>
-<tr>
-	<th>What's affected?</th>
-	<td><small>Tick any that you know are affected, tick as many as needed
-</tr>
+<h3>ID number of the affected Image</h3>
+<p>The photo ID number (e.g. 99999), or a link to the photo page (e.g. "http://www.geograph.org.uk/photo/99999"), or a direct link to the .jpg file.</p>
+<input type=text name=image_url placeholder="enter image-id here" maxlength="128" size="60" required <? if (!empty($_GET['id'])) { echo ' value='.intval($_GET['id']); } ?>>
+  
+
+<h3>What's affected?</h3>  
+<p>Select the places you are seeing issues with images being correctly displayed.</p>
+<ul>
 <?
 $list = "
 Tiny Thumbnail (on Map Mosaic)
@@ -332,21 +341,19 @@ The Stamped Image
 ";
 
 foreach (explode("\n",trim($list)) as $idx => $value) { ?>
-	<tr>
-        	<th></th>
-	        <td colspan=2><input type=checkbox name="affected[]" value="<? echo $value; ?>" id="c<? echo $idx; ?>">
-		<label for="c<? echo $idx; ?>"><? echo $value; ?>
+	<li><input type=checkbox name="affected[]" value="<? echo $value; ?>" id="c<? echo $idx; ?>">
+  <label for="c<? echo $idx; ?>"><? echo $value; ?></li>
 <? } ?>
-<tr>
-	<th>URL of page where see this</th>
-	<td><input type=text name=page_url placeholder="https://www.geograph.org.uk/...." maxlength="128" size="60"> (optional)</td>
-	<td><small>Page where seeing the missing image - eg forum thread, article, search result, etc. If its not the Photo Page itself.
-</tr>
-<tr>
-	<td>
-	<td><input type=submit value="submit"></td>
-</tr>
-</table>
+</ul>
+  
+<h3>URL of page where see this</h3>
+<p>The page where you are seeing the missing image. E.g. a forum thread, article, search result, etc (optional).</p>
+<input type=text name=page_url placeholder="https://www.geograph.org.uk/...." maxlength="128" size="60">
+
+<br/><br/>
+
+<input type=submit value="Submit" style="width:200px;">
+
 </form>
 <?
 
