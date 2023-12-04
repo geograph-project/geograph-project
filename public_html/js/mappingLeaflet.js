@@ -675,7 +675,7 @@ basemap2.beforeAdd = function() {};
 		}
 
 		var mapTypeId = "OpenStreetMap";
-		if (baseMaps['Modern OS - GB'])
+		if (baseMaps['Modern OS - GB'] && leafletBaseKey != 'LeafletBaseIoM')
 			mapTypeId = 'Modern OS - GB';
 
 		if (window.localStorage && window.localStorage.getItem) {

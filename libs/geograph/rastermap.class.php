@@ -870,6 +870,9 @@ class RasterMap
 						var point = [{$this->lat},{$this->long}];
 						$preblock
 
+						if ({$this->lat} > 53.929 && {$this->lat} < 54.4947 && {$this->long} > -4.972 && {$this->long} < -4.077)
+							leafletBaseKey = 'LeafletBaseIoM';
+
 						setupBaseMap();
 						map.setView(point, $zoom);
 
