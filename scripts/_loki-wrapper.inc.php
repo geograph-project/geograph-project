@@ -44,6 +44,49 @@ if (!empty($param['start'])) {
 
 ############################################
 
+$pattern = 'pattern `<_> - <_> <_> "<_> <path> <_>" "<_>" <status> <_> "<_>" "<agent>"`';
+
+function get_base_query($param, $add_pattern = false) {
+	global $CONF, $pattern;
+
+	$query = $CONF['loki_query'];
+
+	if (!empty($param['string']))
+		$query .= " |= \"".addslashes($param['string'])."\"";
+
+	if (!empty($param['second']))
+	        $query .= ' |= "'.str_replace('"','\"',$param['second']).'"';
+
+        if (!empty($param['common'])) {
+		//some internal requests
+		$query .= ' != "Geograph Mobile Site"';
+		$query .= ' != "Internal Request"';
+		$query .= ' != "/stuff/related.json.php"'; //doesnt have a UA!
+		//TODO, also have internal requests on places.json.php - can't exclude all of them thou, as it can be used by others too
+
+		$query .= ' != "Amazon CloudFront"'; //these ARE real request, but as CloudFront hides the UA, no point counting here?
+	}
+
+	if (!empty($param['not']))
+	        $query .= ' != "'.str_replace('"','\"',$param['not']).'"';
+
+	if (!empty($param['duration'])) // && strpos($param['base'],'nginx"'))
+	        $query .= ' | regexp `" (?P<duration>\\d+\.\\d+) http` | duration > '.$param['duration'];
+
+	if ($add_pattern || !empty($param['status']))
+		$query .= " | $pattern";
+
+	if (!empty($param['status']) && is_numeric($param['status']))
+	        $query .= " | status={$param['status']}";
+
+	if (!empty($param['ua']) && is_string($param['ua']))
+		$query .= " | agent=~\"{$param['ua']}\"";
+
+	return $query;
+}
+
+############################################
+
 //main loop, WITHOUT $fp, its a generator, with yeald
 // $generator = getlogs($query, $fp = null, $param['limit'], $start, $end);
 // foreach ($generator as $str) {
@@ -167,6 +210,11 @@ function getgroups($query, $grouper, $funct = 'rate', $period = '10m',  $fp = nu
 	if (!empty($json['data']) && !empty($json['data']['result'])) {
 		//split into multiple streams
 		foreach ($json['data']['result'] as $idx => $result) {
+
+if (!isset( $result['metric'][$grouper])) {
+	print_r($result);
+}
+
 			$group = $result['metric'][$grouper];
                         foreach ($result['values'] as $line) {
 				//todo, this it outputing one line per value, maybe should be one line per group?

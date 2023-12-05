@@ -33,19 +33,16 @@ require "./_loki-wrapper.inc.php";
 //status!="302" | status!="304" | status!="307" | status!="204"'; todo, for some reason | status>=400 doesnt work (as status seems to be string, not a number, cant do range filters)
 
 $skip = array(200,301,302,304,307,204,405);
-$pattern = 'pattern `<_> - <_> <_> "<_> <path> <_>" "<_>" <status> <_> "<_>" "<agent>"`';
 
-$query = $CONF['loki_query']." | $pattern";
+//sets up common filters, from $param (including 'string')
+$query = get_base_query($param, $add_pattern = true);
+
 if (!empty($param['status'])) {
 	if (is_numeric($param['status']))
 		$query .= " | status=\"{$param['status']}\"";
 } else {
 	foreach ($skip as $id)
 		$query .= " | status!=\"$id\"";
-}
-
-if (!empty($param['string'])) {
-	$query .= " |= \"".addslashes($param['string'])."\"";
 }
 
 ############################################

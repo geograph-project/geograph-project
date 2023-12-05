@@ -27,6 +27,9 @@ require "./_loki-wrapper.inc.php";
 
 ############################################
 
+//TODO!
+//should use get_base_query, and we now know how to process the duration inside loki, eg with a 'sum() by' query!
+
 $query = '{job="production/geograph", container="nginx"} |= "Googlebot" |= " 200 "';
 
 $generator = getlogs($query, $fp = null, $param['limit'], $start, $end);
