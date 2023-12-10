@@ -89,8 +89,8 @@ display:none;
 {/if}
 
 <div class="sticky">
- 	<input type="submit" name="savechanges" value="Save Changes" style="width:200px; max-width:40vw; font-weight:bold;"/>
- 	<input type="submit" name="cancel" value="Cancel" style="width:200px; max-width:40vw; font-weight:bold;"/>
+ 	<input type="submit" name="savechanges" value="Save Changes" style="width:200px; max-width:40vw; font-weight:bold; background-color: #b7e1cd;"/>
+ 	<input type="submit" name="cancel" value="Cancel" style="width:200px; max-width:40vw; font-weight:bold; background-color: #f4c7c3;"/>
 </div>
 
 {*---------------------------Three col setup-------------------------*}
