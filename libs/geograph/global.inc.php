@@ -49,6 +49,14 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
 	}
 }
 
+//todo, maybe just check whole of QUERY_STRING
+foreach(array('q','place','location','loc','searchtext','filter','title','sort') as $key)
+	if (!empty($_REQUEST[$key]) && preg_match('/(sleep|print_r|eval) ?\(/i',$_REQUEST[$key])) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+		print "Unable to run query, please contact us";
+	     exit;
+	}
+
 
 //some security headers!
 if (!defined('ALLOW_FRAMED'))

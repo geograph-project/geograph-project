@@ -31,7 +31,7 @@ $template='stuff_feedback.tpl';
 
 $cacheid='';
 
-
+rate_limiting('feedback.php', 5, true);
 
 $db = NewADOConnection($GLOBALS['DSN']);
 

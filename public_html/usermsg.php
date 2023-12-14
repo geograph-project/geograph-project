@@ -23,13 +23,29 @@
 
 require_once('geograph/global.inc.php');
 
+if (empty($_REQUEST['to']) || !is_numeric($_REQUEST['to'])) {
+	header('HTTP/1.0 451 Unavailable For Legal Reasons');
+        exit;
+}
+
 init_session();
+
+//gather what we need
+$recipient=new GeographUser($_REQUEST['to']);
+
+if (empty($recipient->realname)) {
+	header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	print 1;
+        exit;
+}
+
+rate_limiting('usermsg.php', 15, true);
+
+###############################################################
 
 $smarty = new GeographPage;
 $template='usermsg.tpl';
 
-//gather what we need
-$recipient=new GeographUser($_REQUEST['to']);
 $from_name= $_POST['from_name'] ?? $USER->realname ?? '';
 $from_email=$_POST['from_email'] ?? $USER->email ?? '';
 $sendcopy=$_POST['sendcopy'] ?? false;
