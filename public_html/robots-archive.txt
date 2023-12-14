@@ -1,5 +1,4 @@
 # www.geograph.org.uk (archive) robot exclusion file
-# * $Id: robots-archive.txt 7471 2011-11-08 22:06:46Z barry $
 
 User-agent: *
 Crawl-Delay: 7
