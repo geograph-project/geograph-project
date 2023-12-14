@@ -8,7 +8,9 @@ if (!empty($argv[1]))
 if (is_dir($dir)) {
 	chdir($dir);
 	if (!file_exists('inodes.txt') || !empty($argv[2])) {
-		if (file_exists('files.txt')) {
+		if (file_exists('files.txt.gz')) {
+			`zcat files.txt | cut -d/ -f 6 | sort | uniq -c > inodes.txt`;
+		} elseif (file_exists('files.txt')) {
 			# /mnt/efs/data/geograph_visiondata020/gatepoststone/6644661.jpg
 			#1  2   3   4     5                     6
 			`cut -d/ -f 6 files.txt | sort | uniq -c > inodes.txt`;
