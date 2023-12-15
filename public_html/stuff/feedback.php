@@ -39,7 +39,7 @@ if (!empty($_POST['submit'])) {
 	foreach ($_POST as $key => $value) {
 		if (preg_match('/radio(\d+)/',$key,$m)) {
 			$id = intval($m[1]);
-			
+
 			$ins = "INSERT INTO vote_log SET
 			type = 'f',
 			id = $id,
@@ -53,10 +53,10 @@ if (!empty($_POST['submit'])) {
 	$subject = "Feedback Form";
 	$msg=stripslashes(trim($_POST['comments']));
 	if (!empty($msg)) {
-		if (!empty($_POST['name'])) {
+		if (!empty($_POST['name']) || is_numeric($msg) || preg_match('/^[a-z]+[A-Z]\w+$/',$msg)) {
 			die("Spam, Spam, Eggs, Spam, Cheese and Spam!");
 		}
-		
+
 		$msg.="\n\n-------------------------------\n";
 		if (!empty($_POST['template'])) {
 			if (preg_match('/(search.php\?i=|results\/)(\d+)/',$_SERVER['HTTP_REFERER'],$m)) {
@@ -82,15 +82,15 @@ if (!empty($_POST['submit'])) {
 		}
 		$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
 
-		mail_wrapper($CONF['contact_email'], 
+		mail_wrapper($CONF['contact_email'],
 			'[Geograph] '.$subject,
 			$msg,
-			'From:'.$from);	
+			'From:'.$from);
 	}
-	
-	$smarty->assign('thanks', 1);
-} else {
 
+	$smarty->assign('thanks', 1);
+
+} else {
 
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -116,5 +116,3 @@ if (!empty($_POST['submit'])) {
 
 $smarty->display($template,$cacheid);
 
-	
-?>
