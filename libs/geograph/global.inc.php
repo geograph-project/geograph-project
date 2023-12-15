@@ -60,10 +60,13 @@ foreach(array('HTTP_X_FORWARDED_FOR','HTTP_USER_AGENT','HTTP_REFERER') as $key)
 	if (!empty($_SERVER[$key]) && strpos($_SERVER[$key],'\\x22') !== FALSE) { //looking for literal, not the actual quote char!
 	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
 	     exit;
+	} elseif (!empty($_SERVER[$key]) && strpos($_SERVER[$key],'waitfor delay') !== FALSE) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     exit;
 	}
 
 //todo, maybe just check whole of QUERY_STRING
-foreach(array('q','place','location','loc','searchtext','filter','title','sort') as $key)
+foreach(array('q','place','location','loc','searchtext','filter','title','sort','tag','exclude','prefix') as $key)
 	if (!empty($_REQUEST[$key]) && preg_match('/(sleep|print_r|eval) ?\(/i',$_REQUEST[$key])) {
 	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
 		print "Unable to run query, please contact us";
