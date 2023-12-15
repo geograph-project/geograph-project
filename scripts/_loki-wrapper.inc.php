@@ -44,7 +44,7 @@ if (!empty($param['start'])) {
 
 ############################################
 
-$pattern = 'pattern `<_> - <_> <_> "<_> <path> <_>" "<_>" <status> <_> "<_>" "<agent>"`';
+$pattern = 'pattern `<ip> - <_> <_> "<_> <path> <_>" "<_>" <status> <_> "<_>" "<agent>"`';
 
 function get_base_query($param, $add_pattern = false) {
 	global $CONF, $pattern;
@@ -81,6 +81,9 @@ function get_base_query($param, $add_pattern = false) {
 
 	if (!empty($param['ua']) && is_string($param['ua']))
 		$query .= " | agent=~\"{$param['ua']}\"";
+
+	if (!empty($param['ip']) && is_string($param['ip']))
+		$query .= " | ip=~\"{$param['ip']}\"";
 
 	return $query;
 }

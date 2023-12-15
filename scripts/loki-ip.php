@@ -21,7 +21,7 @@
  */
 
 $param = array('debug'=>0, 'date' => '', 'extra'=>'', 'extra2'=> '+1 day', 'hours'=>0, 'minutes'=>0, 'bot'=>1, //these are handled by wrapper
- 'string'=>'', 'not'=>'', 'second'=>'', 'status'=>false, 'common'=>1, 'robots'=>1, 'duration'=>false); //custom params for this script
+ 'string'=>'', 'not'=>'', 'second'=>'', 'status'=>false, 'ua'=>false); //custom params for this script
 
 chdir(__DIR__);
 require "./_loki-wrapper.inc.php";
@@ -32,8 +32,7 @@ require "./_loki-wrapper.inc.php";
 //$query = '{job="production/geograph", container="nginx"} | json | stream="stdout" | pattern `<_> - <_> <_> "<method> <path> <_>" "<_>" <status> <_> "<_>" "<_>"` | status!="200" | status!="301" | 
 //status!="302" | status!="304" | status!="307" | status!="204"'; todo, for some reason | status>=400 doesnt work (as status seems to be string, not a number, cant do range filters)
 
-//pattern is setup inside get_base_query()
-$grouper = 'agent'; //from the pattern above!
+$grouper = 'ip'; //from the pattern above!
 
 // json  doesn work with with pattern! so put stream into the 'base' query.
 $param['stream'] = '';
@@ -42,27 +41,6 @@ $param['stream'] = '';
 
 //sets up common filters, from $param (including 'string')
 $query = get_base_query($param, $add_pattern = true);
-
-############################################
-
-$robots = array();
-
-if ($param['robots']) {
-	//todo perhaps look over last 48 hours?? (not use start/end)
-	$start2 = strtotime("-48 hour");
-	$start2 = $start2.'000000000';  //as a nanosecond Unix epoch.
-	$end2 = null; //now
-	$bef = $param['debug']; $param['debug'] = 0;
-		//intentionally NOT using $query, as dont want all the magic filters
-	$generator = getgroups($CONF['loki_query']." |= \" /robots.txt \" | $pattern", $grouper, 'count_over_time', $period = '1h',
-             $fp = null, $start2, $end2);
-	foreach ($generator as $line) {
-		list($agent,$time,$value) = $line;
-		@$robots[$agent]+=$value;
-	}
-	$param['debug'] = $bef;
-	//TODO should cache $robots?
-}
 
 ############################################
 
@@ -81,57 +59,19 @@ $generator = getgroups($query, $grouper, 'count_over_time', $period = '10m',
 foreach ($generator as $line) {
 	//the function is only executed once loop once!
 
-	//print "$line\n";
-	//array(agent,time,value)
-	list($agent,$time,$value) = $line;
+	list($ip,$time,$value) = $line;
 
-	//print "list($agent,".date('r',$time).",$value)\n";
-
-	// we get one row for each $period. If $period > $end-$start, will only get one row per agent
-	// but if the time can be longer, we need to reaggreate
-
-	@$stat[$agent]+=$value;
+	@$stat[$ip]+=$value;
 }
 //print_r($stat);
 
-asort($stat);
+ksort($stat);
 
-foreach($stat as $ua => $count) {
-
-        $bot = '   ';
-        if (isset($robots[$ua])) $bot = '???';
-        if (!appearsToBePerson2($ua)) $bot = 'BOT';
-
-        printf("%6d. %s %s\n",  $count, $bot, $ua);
+foreach($stat as $ip => $count) {
+        printf("%6d. %s\n",  $count, $ip);
 }
-printf("%6d. %s (%d agents)\n", array_sum($stat), 'TOTAL', count($stat));
+printf("%6d. %s (%d ips)\n", array_sum($stat), 'TOTAL', count($stat));
 //print ".\n";
 
 
 
-//TODO, we could populate $robots via a seperate query " php scripts/loki-agents.php --config=live --string=/robots.txt "
-
-
-##################################
-// the built in version works on SERVER not a passwed in UA
-
-function appearsToBePerson2($user_agent) {
-	if (empty($user_agent))
-		return false;
-	if ( (stripos($user_agent, 'http')===FALSE) &&
-	    (stripos($user_agent, 'bot')===FALSE) &&
-	    (strpos($user_agent, 'Preview')===FALSE) &&
-            (stripos($user_agent, 'Magnus')===FALSE) &&
-            (strpos($user_agent, 'curl')===FALSE) &&
-	    (strpos($user_agent, 'python-requests')===FALSE) &&
-	    (strpos($user_agent, 'LWP::Simple')===FALSE) &&
-            (strpos($user_agent, 'Siege')===FALSE) &&
-            (strpos($user_agent, 'HeadlessChrome')===FALSE) &&
-            (strpos($user_agent, 'InspectionTool')===FALSE) &&
-            (strpos($user_agent, 'The Knowledge AI')===FALSE) &&
-            (strpos($user_agent, 'GoogleOther')===FALSE)
-		)
-		return true;
-
-	return false;
-}
