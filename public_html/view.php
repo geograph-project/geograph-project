@@ -47,32 +47,6 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'BingPreview/1.0b
 	print "</body></html>";
 	exit;
 
-} elseif (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.org/bot')!==FALSE) ) {
-	//die as quickly as possible with the minimum html (with the approval of geourl owner)
-	$db = GeographDatabaseConnection(true);
-
-	$row = $db->getRow("select gridimage_id,wgs84_lat,wgs84_long,title,grid_reference from gridimage_search where gridimage_id=".intval($_GET['id']) );
-
-	if ($row['wgs84_lat']) {
-		$title = htmlentities2($row['title']."::".$row['grid_reference']);
-
-		print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\n";
-		print "<title>$title</title>\n";
-		print "<meta name=\"ICBM\" content=\"{$row['wgs84_lat']}, {$row['wgs84_long']}\"/>\n";
-		print "<meta name=\"DC.title\" content=\"Geograph::$title\"/>\n";
-		print "<a href=\"{$CONF['SELF_HOST']}/photo/{$row['gridimage_id']}\">View image page</a>";
-	} elseif ($row['gridimage_id']) {
-		header("HTTP/1.0 500 Server Error");
-		header("Status: 500 Server Error");
-		print "<title>Lat/Long not available, try again later</title>";
-		print "<a href=\"{$CONF['SELF_HOST']}/photo/{$row['gridimage_id']}\">View image page</a>";
-	} else {
-		header("HTTP/1.0 404 Not Found");
-		header("Status: 404 Not Found");
-		print "<title>Image no longer available</title>";
-	}
-	exit;
-
 } elseif ((strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
 	//keep urls nice and clean - esp. for search engines!
 	header("HTTP/1.0 301 Moved Permanently");
