@@ -65,7 +65,7 @@
 			<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a>
 				 <div style="font-size:0.7em">
 					  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
-					  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
+					  by <a title="view user profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a>
 					  for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 				</div>
 			</div>
