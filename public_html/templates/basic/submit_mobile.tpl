@@ -1112,7 +1112,7 @@ $(function() {
 		<dt id="dt_other"><input type="radio" name="pattrib" value="other" id="pattrib_other" onclick="updateAttribDivs()" /><label for="pattrib_other">I am not the photographer, and need to assign the appropriate credit to this image</label></dt>
 		<dd id="dd_other" style="border:1px solid gray; padding:5px;margin-left:0px;display:none">By selecting the above option you certify that you as the '<i>Geograph Account Holder</i>',<br/> act as an authorised '<i>Licensor</i>' (<span><a title="What does this mean?" href="/help/what_is_a_licensor" target="_blank">What does this mean?</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>) for the photographer named below:
 		<br/><br/>
-		Photographer Name: <input type="text" name="pattrib_name" value="" size="40" style="width:100%"/>
+		Photographer Name: <input type="text" name="pattrib_name" value="" size="40" style="width:100%" pattern="^[a-zA-Z0-9\-\s\']+$" title="Only letters A-Z, a-z, hyphens and apostrophes allowed"/>
 		<br/><br/>
 		Note: It's vitally important to be sure you are a valid '<i>Licensor</i>' on behalf of the '<i>Original Author</i>' mentioned here. 
 		<br/><br/>

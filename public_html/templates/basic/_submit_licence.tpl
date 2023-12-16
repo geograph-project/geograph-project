@@ -8,7 +8,7 @@
 		<dt id="dt_other"><input type="radio" name="pattrib" value="other" id="pattrib_other" onclick="updateAttribDivs()" {if $credit}checked="checked"{/if}/><label for="pattrib_other">I am not the photographer, and need to assign the appropriate credit to this image</label></dt>
 		<dd id="dd_other" style="border:1px solid gray; padding:5px{if !$credit};display:none{/if}">By selecting the above option you certify that you as the '<i>Geograph Account Holder</i>',<br/> act as an authorised '<i>Licensor</i>' ({newwin href="/help/what_is_a_licensor" text="What does this mean?"}) for the photographer named below:
 		<br/><br/>
-		Photographer Name: <input type="text" name="pattrib_name" value="{$credit|escape:"html"}" size="40"/>
+		Photographer Name: <input type="text" name="pattrib_name" value="{$credit|escape:"html"}" size="40" pattern="[a-zA-Z0-9\-\s\']+" title="Only letters A-Z, a-z, hyphens and apostrophes allowed"/>
 		<br/><br/>
 		Note: It's vitally important to be sure you are a valid '<i>Licensor</i>' on behalf of the '<i>Original Author</i>' mentioned here. 
 		<br/><br/>
@@ -33,6 +33,11 @@
 			}
 			AttachEvent(window,'load',updateAttribDivs,false);
 		</script>
+		<style>
+input:invalid {
+  border: red solid 3px;
+}
+		</style>
 	{/literal}
 	
 	</div>
