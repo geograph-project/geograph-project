@@ -24,7 +24,7 @@
 if (empty($_SERVER['HTTP_USER_AGENT']))
         die("no scraping");
 
-if ($_SERVER['HTTP_USER_AGENT'] == "python-requests/2.25.1")
+if (strpos($_SERVER['HTTP_USER_AGENT'], 'python-requests')!==FALSE)
         die("no scraping");
 
 require_once('geograph/global.inc.php');
