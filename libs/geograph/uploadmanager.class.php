@@ -889,6 +889,9 @@ class UploadManager
 			return("Must assign square");
 		}
 
+		if (!empty($this->realname) && !isValidRealName($this->realname))
+			return 'Only letters A-Z, a-z, hyphens and apostrophes allowed';
+
 		if (empty($existing)) {
 			$existing = $this->db->getOne("select gridimage_id from gridimage g inner join submission_method m using (gridimage_id) where submitted > date_sub(now(), interval 1 hour) and preview_key = '{$this->upload_id}'");
 		}

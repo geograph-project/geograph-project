@@ -203,6 +203,9 @@ class GeographUser
 	function setCreditDefault($realname) {
 		$db = $this->_getDB();
 
+		if (!isValidRealName($realname))
+			return 'Only letters A-Z, a-z, hyphens and apostrophes allowed';
+
 		$db->Execute(sprintf("update user set credit_realname = %s where user_id=%d",$db->Quote($realname),$this->user_id));
 		$this->credit_realname = $realname;
 	}

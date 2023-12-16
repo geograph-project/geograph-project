@@ -2138,6 +2138,9 @@ if (!empty($_GET['ddd'])) {
 	function setCredit($realname) {
 		global $USER;
 
+		if (!isValidRealName($realname))
+			return 'Only letters A-Z, a-z, hyphens and apostrophes allowed';
+
 		if (!$this->isValid())
 			return "Invalid image";
 

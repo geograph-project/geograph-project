@@ -62,11 +62,16 @@ if (isset($_REQUEST['id']))
 		
 		if (isset($_POST['pattrib'])) {
 			if ($_POST['pattrib'] == 'other') {
+				if (!isValidRealName($_POST['pattrib_name']))
+					die('Only letters A-Z, a-z, hyphens and apostrophes allowed');
+
 				$image->setCredit(stripslashes($_POST['pattrib_name']));
 			} elseif ($_POST['pattrib'] == 'self') {
 				$image->setCredit('');
 			}
 			if (!empty($_POST['pattrib_default'])) {
+				if (!isValidRealName($_POST['pattrib_name']))
+					die('Only letters A-Z, a-z, hyphens and apostrophes allowed');
 				$USER->setCreditDefault(($_POST['pattrib'] == 'other')?stripslashes($_POST['pattrib_name']):'');
 			}
 		
