@@ -41,6 +41,12 @@ if (empty($recipient->realname)) {
 
 rate_limiting('usermsg.php', 15, true);
 
+if (!empty($_POST['from_email']) && preg_match('/@example.com$/',$_POST['from_email'])) {
+        header('HTTP/1.0 451 Unavailable For Legal Reasons');
+        print 2;
+        exit;
+}
+
 ###############################################################
 
 $smarty = new GeographPage;
