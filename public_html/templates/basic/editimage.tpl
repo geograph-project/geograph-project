@@ -53,7 +53,7 @@
   	{/if}
   	<div class="shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getFull()}</a></div>
   {/if}
-  <div class="caption"><b>{$image->current_title|escape:'html'}</b> by <a href="{$image->profile_link}">{$image->realname}</a>{if $isowner} (<a href="/licence.php?id={$image->gridimage_id}">change credit</a>){/if}</div>
+  <div class="caption"><b>{$image->current_title|escape:'html'}</b> by <a href="{$image->profile_link}">{$image->realname|escape:'html'}</a>{if $isowner} (<a href="/licence.php?id={$image->gridimage_id}">change credit</a>){/if}</div>
 
   {if $image->comment}
   <div class="caption" style="border:1px dotted lightgrey;">{$image->current_comment|escape:'html'|geographlinks}</div>
@@ -88,7 +88,7 @@
 	{/literal}
   {/if}
   <div class="statuscaption">classification: {$image->moderation_status}
-   {if $image->mod_realname}(moderator: <a href="/profile/{$image->moderator_id}" class="statuscaption">{$image->mod_realname}</a>){/if}</div>
+   {if $image->mod_realname}(moderator: <a href="/profile/{$image->moderator_id}" class="statuscaption">{$image->mod_realname|escape:'html'}</a>){/if}</div>
 </div>
 {if $showfull}
   	{if $isowner and $image->moderation_status eq 'pending'}
@@ -168,7 +168,7 @@
         	</div>
 	  {/if}
 	  
-	  <span class="caption" id="modinfo{$image->gridimage_id}">Current Classification: {$image->moderation_status}{if $image->mod_realname}<abbr title="Approximate date of last moderation: {$image->moderated|date_format:"%a, %e %b %Y"}"><small><small>, by <a href="/usermsg.php?to={$image->moderator_id}&amp;image={$image->gridimage_id}">{$image->mod_realname}</a></small></small></abbr>{/if}</span>
+	  <span class="caption" id="modinfo{$image->gridimage_id}">Current Classification: {$image->moderation_status}{if $image->mod_realname}<abbr title="Approximate date of last moderation: {$image->moderated|date_format:"%a, %e %b %Y"}"><small><small>, by <a href="/usermsg.php?to={$image->moderator_id}&amp;image={$image->gridimage_id}">{$image->mod_realname|escape:'html'}</a></small></small></abbr>{/if}</span>
 	  </form>
   {/if}
 
@@ -361,7 +361,7 @@
 				<div class="ticketnote">
 					<div class="ticketnotehdr">
 					{if $comment.user_id ne $ticket->user_id or ($isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner')) }
-						{$comment.realname} {if $ticket->public ne 'everyone' && $ticket->user_id eq $comment.user_id}(anonymously){/if}
+						{$comment.realname|escape:'html'} {if $ticket->public ne 'everyone' && $ticket->user_id eq $comment.user_id}(anonymously){/if}
 					{else}
 						suggestor
 					{/if}
@@ -378,7 +378,7 @@
 			{else}
 				{if ($user->user_id eq $ticket->user_id) and ($ticket->status eq "closed") && $ticket->lastcomment.moderator}
 				<div class="ticketnote">
-					<div class="ticketnotehdr">{$ticket->lastcomment.realname} {if $ticket->lastcomment.moderator}(Moderator){/if} wrote on {$ticket->lastcomment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
+					<div class="ticketnotehdr">{$ticket->lastcomment.realname|escape:'html'} {if $ticket->lastcomment.moderator}(Moderator){/if} wrote on {$ticket->lastcomment.added|date_format:"%a, %e %b %Y at %H:%M"}</div>
 					{$ticket->lastcomment.comment|escape:'html'|geographlinks}
 				</div>
 				{/if}
