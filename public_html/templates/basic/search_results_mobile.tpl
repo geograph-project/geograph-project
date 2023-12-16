@@ -12,7 +12,7 @@
 {/dynamic}
 
 <div style="background-color:#000066">
-<a target="_top" href="https://www.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
+<a target="_top" href="https://www.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/xmaslogo.gif" height="50"></a>
 - <a href="/search.php?i={$i}&amp;displayclass=full" style="color:white">View Desktop Results</a>
 </div>
 
