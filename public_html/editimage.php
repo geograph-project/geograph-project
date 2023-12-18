@@ -22,6 +22,11 @@
  */
 
 
+if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
+	header('HTTP/1.0 403 Forbidden');
+	exit;
+}
+
 /*
 to do
 

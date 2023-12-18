@@ -21,13 +21,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-require_once('geograph/global.inc.php');
+if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
+	header('HTTP/1.0 403 Forbidden');
+	exit;
+}
 
 if (empty($_REQUEST['to']) || !is_numeric($_REQUEST['to'])) {
 	header('HTTP/1.0 451 Unavailable For Legal Reasons');
         exit;
 }
 
+require_once('geograph/global.inc.php');
 init_session();
 
 //gather what we need
