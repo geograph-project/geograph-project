@@ -2058,6 +2058,8 @@ if (!empty($_GET['ddd'])) {
 
 		$resized=$this->_getResized($params);
 
+		$resized['html'] = str_replace("<img", "<img crossorigin onerror=\"retryCross(this)\"", $resized['html']);
+
 		if (!empty($urlonly)) {
 			if ($urlonly === 2)
 				return $resized;
