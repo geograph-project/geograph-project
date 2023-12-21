@@ -3,7 +3,7 @@
 {literal}
 <style>
 #mapcontainer {
- 	position:relative; float:left; width:800px; height:500px; max-width:49%;
+	position:relative; float:left; width:800px; height:500px; max-width:49%;
 }
 #firstcontainer {
 	position:relative; float:left; width:800px; height:500px; max-width:49%;
@@ -140,6 +140,7 @@ p.alert-danger {
 	<small>{place place=$place}</small>
 {/if}</p>
 
+	{if $map}
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" rel="stylesheet" />
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.css" />
@@ -156,16 +157,19 @@ p.alert-danger {
 		</div>
 		<br style=clear:both>
 	</div>
+	{/if}
 	<div id="buttonbar">
-		<input type=button value="Open Map Viewer for these images" onclick="showMap()">
+		{if $map}
+			<input type=button value="Open Map Viewer for these images" onclick="showMap()">
+		{/if}
 		{if $label && $imagecount > 50}
 			<input type=button value="View all {$imagecount} Curated Images" onclick="location.href='/curated/sample.php?label={$label|escape:'url'}'">
 			{if !$place}
 				<input type=button value="View images by Region" onclick="location.href='/curated/sample.php?label={$label|escape:'url'}&amp;region=Group+By'">
 			{/if}
 		{/if}
-		<input type=button value="View {$keywordcount} Keyword Matches" onclick="location.href='/browser/#!/q={$label|escape:'url'}'">
 		{if $label}
+			<input type=button value="View {$keywordcount} Keyword Matches" onclick="location.href='/browser/#!/q={$label|escape:'url'}'">
 			<a href="/photoset/labels.php">Other Topics...</a>
 		{/if}
 	</div>
@@ -176,10 +180,10 @@ p.alert-danger {
 		Columns: 
 		<a href="#1" onclick="return setColumns(this.text)">1</a>
 		<a href="#2" onclick="return setColumns(this.text)">2</a>
-		<a href="#3" onclick="return setColumns(this.text)">3</a>
-		<a href="#4" onclick="return setColumns(this.text)">4</a>
-		<a href="#6" onclick="return setColumns(this.text)">6</a>
-		<a href="#8" onclick="return setColumns(this.text)">8</a>
+		{if $count >= 3}<a href="#3" onclick="return setColumns(this.text)">3</a>{/if}
+		{if $count >= 4}<a href="#4" onclick="return setColumns(this.text)">4</a>{/if}
+		{if $count >= 6}<a href="#6" onclick="return setColumns(this.text)">6</a>{/if}
+		{if $count >= 8}<a href="#8" onclick="return setColumns(this.text)">8</a>{/if}
 	</div>
 
 	<div class="gridded med cols4" id="gridcontainer">
@@ -302,6 +306,7 @@ loadColumnsFromCookie(); //inline, not async. But needs be here, AFTER gridconta
 {/literal}
 </script>
 
+{if $map}
 	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
@@ -343,7 +348,7 @@ function setupMap() {
 
 	{foreach from=$images item=image}
 	        bounds.extend([{$image->lat1},{$image->long1}]);
-        	bounds.extend([{$image->lat2},{$image->long2}]);
+		bounds.extend([{$image->lat2},{$image->long2}]);
 	{/foreach}
 
 {literal}
@@ -379,7 +384,7 @@ function setupMap() {
 	}
 	if ($.localStorage) {
 		map.on('baselayerchange', function(e) {
-		  	$.localStorage('LeafletBaseMap', e.name);
+			$.localStorage('LeafletBaseMap', e.name);
 			reinstateOS = false;
 		});
 	}
@@ -462,5 +467,6 @@ var cameraOptions = {
 {literal}}{/literal}
 
 </script>
+{/if}
 
 {include file="_std_end.tpl"}

@@ -114,9 +114,10 @@ $baselink = $rss->link;
         } else {
                 //constantly refreshing list!
                 $sql = "SELECT $cols FROM gridimage_search gi
+			LEFT JOIN duplication_stat USING (gridimage_id)
                         LEFT JOIN newimages ni ON (gi.gridimage_id = ni.gridimage_id AND lookup = $lookup)
 			LEFT JOIN vote_log ON (id = gi.gridimage_id and vote < 3)
-                WHERE reference_index = $ri $filter AND ni.gridimage_id IS NULL AND vote is NULL
+                WHERE reference_index = $ri $filter AND ni.gridimage_id IS NULL AND vote is NULL AND serial IS NULL
                 ORDER BY gi.gridimage_id DESC LIMIT 100";
         }
 

@@ -30,6 +30,7 @@ $template = 'photoset_view.tpl';
 $db = GeographDatabaseConnection(true);
 
 ######################################
+//normal photoset
 
 if (!empty($_GET['id'])) {
 	$cacheid = "set:".intval($_GET['id']);
@@ -40,6 +41,30 @@ if (!empty($_GET['id'])) {
 		$ids = $db->getCol("SELECT gridimage_id FROM gridimage_photoset WHERE photoset_id = ".intval($_GET['id'])." ORDER BY sort_order"); //and sort by imagetakne?
 
 ######################################
+// serial dup set
+
+} elseif (!empty($_GET['serial']) && !empty($_GET['gridref'])) {
+
+	$set = array();
+	$ids = $db->getCol("SELECT gridimage_id FROM gridimage_search INNER JOIN duplication_stat USING (gridimage_id)
+	WHERE grid_reference = ".$db->Quote($_GET['gridref'])." AND serial = ".$db->Quote($_GET['serial'])." ORDER BY gridimage_id");
+
+	//todo lookup SDs + tags?
+
+	if (!empty($ids)) {
+		//because all in a set, can just grab the description from the first image!
+
+		$set = $db->getRow("SELECT title AS label,comment AS description,reference_index FROM gridimage_search WHERE gridimage_id = ".$ids[0]);
+
+		$url = $CONF['canonical_domain'][$set['reference_index']]."/photoset/".urlencode($_GET['gridref'])."/".urlencode($_GET['serial']);
+		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"$url\"/>");
+	}
+	$cacheid = "label".filemtime(__FILE__)."-".md5($_GET['serial'].$_GET['gridref']);
+
+	//todo, incrment photo views for all iamges??
+
+######################################
+// a curated label
 
 } elseif (!empty($_GET['label'])) {
 	$cacheid = md5($_GET['label']).filemtime(__FILE__);
@@ -129,6 +154,8 @@ if (!empty($_GET['id'])) {
 		$smarty->assign("label", $_GET['label']);
 	}
 	$smarty->assign("limit", $limit);
+
+	$smarty->assign("map", 1);
 }
 
 ######################################
@@ -164,7 +191,7 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
                 if (count($s['imagetaken']) == 1 && reset($s['imagetaken']) && ($value = key($s['imagetaken'])) )
                         $v[] = "taken <b>".getFormattedDate($value)."</b>";
                 if (count($s['realname']) == 1 && reset($s['realname']) && ($value = key($s['realname'])) )
-                        $v[] = "by <a href=\"/profile/{$imagelist->images[0]->user_id}\">".htmlentities2($value)."</a>";
+                        $v[] = "by <a href=\"/profile/{$images->images[0]->user_id}\">".htmlentities2($value)."</a>";
                 if (!empty($v))
                         $smarty->assign("headlinks_html", implode(', ',$v));
 
@@ -288,6 +315,7 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 	}
 
 	$smarty->assign('images',$images->images);
+	$smarty->assign('count',count($images->images));
 
 ######################################
 

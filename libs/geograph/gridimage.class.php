@@ -556,7 +556,12 @@ split_timer('gridimage'); //starts the timer
 		}
 
 		$extra_meta = array();
-		$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$this->grid_square->reference_index]}/photo/{$this->gridimage_id}\" />";
+
+		if ($this->gridimage_id > 7500000 && ($serial = $this->db->getOne("SELECT serial FROM duplication_stat WHERE same_serial > 1 AND gridimage_id = ".intval($this->gridimage_id)))) {
+			$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$this->grid_square->reference_index]}/photoset/{$this->grid_square->grid_reference}/{$serial}\" />";
+		} else {
+			$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$this->grid_square->reference_index]}/photo/{$this->gridimage_id}\" />";
+		}
 
 		if ($CONF['template']!='archive') {
 
