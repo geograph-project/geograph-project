@@ -3,7 +3,9 @@
 {include file="_std_begin.tpl"}
 
 <style>{literal}
-
+#maincontent *{
+	box-sizing:border-box;
+}
 div.picks {
 	float:right;
 	max-width: 250px;
@@ -56,72 +58,99 @@ ul.infos li:hover>small {
 	<h2 style="margin:0">Geograph Project Information, Guides and Tutorials</h2>
 </div>
 
-
-
+{*---------------------------Search-------------------------*}
 {include file="_doc_search.tpl"}
+<div id="searchresults"></div>
 
 
-<div class="picks">
-<h3>Quick Links</h3>
-<div class="pickbox">
-	<h4>About the project</h4>
-	<ul>
-		<li><a href="/article/About-Geograph-page">About Geograph project</a>
-		<li>{external href="https://en.wikipedia.org/wiki/Geograph_Britain_and_Ireland" text="more on Wikipedia"}</li>
-		<li><a href="/help/freedom">Freedom - The Geograph Manifesto</a>
-	</ul>
-</div>
-<div class="pickbox">
-	<h4>Exploring images</h4>
-	<ul>
-		<li>Enter a search term in search box top right
-		<li>... or <a href="/mapper/combined.php">explore on map</a> 
-		<li><a href="/explore/">More exploration methods</a>
-	</ul>
-</div>
-<div class="pickbox">
-	<h4>Contributing Images</h4>
-	<ul>
-		<li><a href="/help/submit_intro">Submission Overview</a>
-		<li><a href="/article/Geograph-Introductory-letter">Contributors Introductory letter</a>
-	</ul>
-</div>
-<div class="pickbox">	
-	<h4>Contributing Collections</h4>
-	<ul>
-		<li><a href="/article/Content-on-Geograph">Collections on Geograph</a>
-	</ul>
-</div>
-<div class="pickbox">
-	<h4>More...</h4>
-	<ul>
-		<li><a href="/article/Get-Involved">Get Involved page</a>
-		<li><a href="/article/Geograph-for-Developers">for Developers</a> and <a href="/article/Geograph-Image-APIs">Reusing our content</a>
-	</li>	
-</div>
-<div class="pickbox">
-	<div style="padding:10px;">
-		See also <a href="https://www.geograph.org/">www.geograph.org</a> for information about other Geograph Projects (for Germany and the Channel Islands) 
-	</div>
+
+<div class="twocolsetup">
+<div class="twocolumn">
+<p>This page provides information about the Geograph Britain and Ireland project. Listed below are the collected guides and tutorials relating to the project where you can find lots of help with using the site. The <a href="/discuss/">Forums</a> are also a good place to get help.</p>
+
+<div style="text-align:center; padding:5px;"><b>Can't find what you are looking for?<br/>Get in touch and <a href="/ask.php">ask us</a>!</b></div>
 </div>
 
-<br class="final">
+{*---------------------------Quick links-------------------------*}
+<div class="twocolumn">
+
+
+<ul class="buttonbar">
+<div class="buttonbar-dropdown">
+<button>About the project &#9660;</button>
+<div class="buttonbar-dropdown-content">
+<a href="/article/About-Geograph-page">About Geograph project</a>
+<a href="https://en.wikipedia.org/wiki/Geograph_Britain_and_Ireland">View the Wikipedia article on Geograph</a>
+<a href="/help/freedom">Freedom - The Geograph Manifesto</a>
+</div>
+</div>
+
+<div class="buttonbar-dropdown">
+<button>Exploring images &#9660;</button>
+<div class="buttonbar-dropdown-content">
+<a href="/mapper/combined.php">Explore on a map</a>
+<a href="/explore/">More exploration methods</a>
+</div>
+</div>
+
+<div class="buttonbar-dropdown">
+<button>Contributing Images &#9660;</button>
+<div class="buttonbar-dropdown-content">
+<a href="/help/submit_intro">Submission Overview</a>
+<a href="/article/Geograph-Introductory-letter">Contributors Introductory letter</a>
+</div>
+</div>
+
+<div class="buttonbar-dropdown">
+<button>Contributing Collections &#9660;</button>
+<div class="buttonbar-dropdown-content">
+<a href="/article/Content-on-Geograph">Collections on Geograph</a>
+
+</div>
+</div>
+
+<div class="buttonbar-dropdown">
+<button>More... &#9660;</button>
+<div class="buttonbar-dropdown-content">
+<a href="/article/Get-Involved">Get Involved page</a>
+<a href="/article/Geograph-for-Developers">Info for Developers</a>
+<a href="/article/Geograph-Image-APIs">Reusing our content</a>
+</div>
+</div>
+
+<div class="buttonbar-dropdown">
+<button>Other projects &#9660;</button>
+<div class="buttonbar-dropdown-content">
+<a href="https://www.geograph.org/">Geograph projects worldwide</a>
+<a href="http://geo.hlipp.de/">Geograph Germany</a>
+<a href="http://www.geograph.org.gg/">Geograph Channel Islands</a>
+</div>
+</div>
+
+</ul>
+
+
+</div>
+
 </div>
 
 
 
+<br style="clear:both;"/>
 
-	<div id="searchresults"></div>
-
-
+  
+  
+{*---------------------------Articles-------------------------*}
+<div class="threecolsetup">
 {assign var="lastid" value="0"}
 {foreach from=$list item=item}
 	{if $lastcat != $item.category_name}
 		{if $lastcat}
-			</ul>
+			</div>
 		{/if}
 
-		<h3>{$item.category_name}</h3>
+		<div class="threecolumn">
+    <h3>{$item.category_name}</h3>
 		<ul class="infos">
 		{assign var="lastname" value=""}
 	{/if}
@@ -132,15 +161,19 @@ ul.infos li:hover>small {
 	{assign var="lastname" value=$item.realname}
 	{assign var="lastcat" value=$item.category_name}
 	{assign var="lastid" value=$lastid+1}
+  </ul>
+  </div>
 {foreachelse}
-	<li><i>There are no Articles to display at this time.</i></li>
+	<ul>
+  <li><i>There are no Articles to display at this time.</i></li>
+  </ul>
 {/foreach}
 
-</ul>
 
+
+</div>
 <br style="clear:both"/>
-
-	<div class="interestBox" style="font-size:1.3em;margin-bottom:20px">Can't find what you looking for? <a href="/ask.php">Ask us</a>!</div>
+<hr style="color:silver"/>
 
 	<p align="center">Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967.<br> Registered office: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA. <a href="/article/About-Geograph-page">About Geograph Project</a>.</p>
 
