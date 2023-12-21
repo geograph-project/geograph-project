@@ -194,7 +194,7 @@ server {
   rewrite ^/gallery/([\w-]+)/?([0-9]*)/?$ /gallery/gallery.php?url=$1&page=$2 last;
   rewrite ^/explore/places/([0-9]?)/?([\w-]*)/? /explore/places.php?ri=$1&adm1=$2 last;
 
-  rewrite ^/photoset/(\w{1,2}\d{4})/(\w+)/? /photoset/view.php?gridref=$1&serial=$2 last;
+  rewrite "^/photoset/([A-Z]{1,2}\d{4})/([0-9a-f]+)/?" /photoset/view.php?gridref=$1&serial=$2 last;
 
   rewrite ^/reg/([^/]+)/(.*) /register.php?u=$1&confirm=$2 last;
 
