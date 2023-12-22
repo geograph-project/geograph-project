@@ -213,6 +213,32 @@ p.alert-danger {
 	<script type="application/ld+json">{$json}</script>
 	{/if}
 
+	{if $gridref}
+        <script type="application/ld+json">
+	{literal}
+        {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Photos",{/literal}
+                "item": "{$self_host}/" {literal}
+              },{
+                "@type": "ListItem",
+                "position": 2,{/literal}
+                "name": {"in `$gridref`"|json_encode},
+                "item": "{$self_host}/gridref/{$gridref}" {literal}
+              },{
+                "@type": "ListItem",
+                "position": 3,{/literal}
+                "name": {$page_title|latin1_to_utf8|json_encode} {literal}
+              }]
+        }
+	{/literal}
+        </script>
+	{/if}
+
 	<hr><p><img src="{$static_host}/img/80x15.png" alt="Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0)"> All images 
 	{if $singlename}
 		are <b>&copy; {$singlename|escape:'html'}</b> and

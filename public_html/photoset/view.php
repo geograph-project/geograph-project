@@ -45,7 +45,7 @@ if (!empty($_GET['id'])) {
 ######################################
 // serial dup set
 
-} elseif (!empty($_GET['serial']) && !empty($_GET['gridref'])) {
+} elseif (!empty($_GET['serial']) && !empty($_GET['gridref']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gridref'])) {
 
 	$smarty->assign("maxsize", 1024);
 
@@ -66,6 +66,7 @@ if (!empty($_GET['id'])) {
 		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"$url\"/>");
 	}
 	$cacheid = "label".filemtime(__FILE__)."-".md5($_GET['serial'].$_GET['gridref']);
+	$smarty->assign("gridref", $_GET['gridref']);
 
 	//todo, incrment photo views for all iamges??
 
