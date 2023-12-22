@@ -306,8 +306,15 @@ if ($image->isValid())
 			$smarty->assign('larger',false);
 
 		if ($CONF['template']!='archive' && empty($q) && !empty($db)) {
+
 			if ($same = $db->getOne("SELECT images from gridimage_duplicate where grid_reference = '{$image->grid_reference}' and title = ".$db->Quote($image->title))) {
-				$url = "/stuff/list.php?title=".urlencode($image->title)."&amp;gridref={$image->grid_reference}";
+				//todo, should check duplication_stat as well, if part of that, then link directly there.
+				// but ONLY if same_serial = gridimage_duplicate.images (because may be multiple serials, better to link to list.php, as list all contributors?)
+				if ($serial = $db->getOne("SELECT serial FROM duplication_stat WHERE gridimage_id = {$image->gridimage_id} AND same_serial = $same")) {
+					$url = "/photoset/{$image->grid_reference}/".urlencode($serial); //todo, use getDirectLink?
+				} else {
+					$url = "/stuff/list.php?title=".urlencode($image->title)."&amp;gridref={$image->grid_reference}";
+				}
 				$smarty->assign('prompt', "This is 1 of <a href=\"$url\">$same images, with title ".htmlentities($image->title)."</a> in this square");
 
 				if (!empty($image->collections))

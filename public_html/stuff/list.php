@@ -152,6 +152,25 @@ if (!empty($_GET['debug']))
 			$q = $_GET['q'].' '.$q; //put at start so it before the @title!
 		}
 
+		/*
+		TODO - if this 'title cluster' duplicates a same_serial cluster, set rel=canonical on this one, as that is a 'better' page!
+
+		select gridimage_id,title,same_title,same_serial,serial from duplication_stat inner join gridimage_search using (gridimage_id)
+		 where grid_reference = 'NX1898' and title = 'Girvan Harbour Jetty' and serial is not null limit 10;
+
+		if ($this->gridimage_id > 7500000 && ($serial = $this->db->getOne("SELECT serial FROM duplication_stat WHERE same_serial > 1 AND gridimage_id = ".intval($this->gridimage_id)))) {
+                        $extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$this->grid_square->reference_index]}/photoset/{$this->grid_square->grid_reference}/{$serial}\" />";
+                }
+		*/
+		if (!empty($_GET['gridref']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gridref'])) {
+			$crit = "grid_reference = ".$db->Quote($_GET['gridref'])." and title = ".$db->Quote($_GET['title'])." and serial is not null AND same_title = same_serial"; //checking same_title, mans tehre isnt multiple serials with same title!
+			if ($serial = $db->getOne("SELECT serial FROM duplication_stat INNER JOIN gridimage_search USING (gridimage_id) WHERE $crit")) {
+				$ri = (strlen($_GET['gridref'])==6)?1:2;
+				$url = $CONF['canonical_domain'][$reference_index]."/photoset/".urlencode($_GET['gridref'])."/".urlencode($serial);
+				$smarty->assign('extra_meta',"<link rel=\"canonical\" href=\"$url\" />");
+			}
+		}
+
 	} elseif (!empty($_GET['label'])) {
 		$title = "images in cluster ".utf8_to_latin1($_GET['label']);
 		$q = '@groups "_SEP_ '.$_GET['label'].' _SEP_"';
