@@ -553,10 +553,10 @@
 				{foreach from=$images item=image}
 					<tr>
 						<td valign="top" align="center" class=shadow>
-							<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
+							<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string} - click to view full size image" href="{$image->getDirectLink()}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
 						</td>
 						<td valign="top" style="border-bottom:1px solid silver">
-							{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>
+							{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="{$image->getDirectLink()}"><b>{$image->title|escape:'html'}</b></a>
 							<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
 							{if $image->comment}
 									<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:250:"... (<u>more</u>)"|geographlinks}</div>
@@ -572,7 +572,7 @@
 					<tr>
 					{foreach from=$images item=image name="loop"}
 						<td valign="top" align="center" width="{$thumbw+50}" bgcolor="{cycle values="#666666,#6C6C6C"}">
-							<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
+							<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string} - click to view full size image" href="{$image->getDirectLink()}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
 						</td>
 					{/foreach}
 					</tr>
@@ -580,7 +580,7 @@
 					{foreach from=$images item=image name="loop"}
 						<td valign="top" align="center" bgcolor="{cycle values="#6C6C6C,#666666"}">
 							<div class="caption">
-							{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a></div>
+							{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="{$image->getDirectLink()}"><b>{$image->title|escape:'html'}</b></a></div>
 							<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
 						</td>
 					{/foreach}
@@ -592,7 +592,7 @@
 				<div class="shadow" style="position:relative;margin-top:3px; margin-left:20px">
 				{foreach from=$images item=image}
 					<div style="float:left;position:relative; width:{$thumbw+10}px; height:{$thumbh+10}px">
-					<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+					<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string} - click to view full size image" href="{$image->getDirectLink()}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
 				{/foreach}
 				</div>
 			{else} 
@@ -602,8 +602,8 @@
 				{/if}
 
 				{foreach from=$images item=image}
-					<div class="photo33 shadow" style="border:0;float:left; {if $sample && $displayclass != 'tilesbig'}width:180px{/if}"><div style="height:{$thumbh+8}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
-					<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
+					<div class="photo33 shadow" style="border:0;float:left; {if $sample && $displayclass != 'tilesbig'}width:180px{/if}"><div style="height:{$thumbh+8}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string} - click to view full size image" href="{$image->getDirectLink()}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+					<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="{$image->getDirectLink()}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
 					<div class="statuscaption">{if $image->year && $image->year > '1'}{$image->year} {/if}by <a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
 					</div>
 				{/foreach}

@@ -534,18 +534,29 @@ if ($grid_given)
                                         }
 
 					$ids = $sphinx->returnIds($pg,'_images');
+
+//todo, also join on duplicate_stat, and if serial, then should link to the photoset page!
+//select ....,serial from duplication_stat inner join gridimage_search using (gridimage_id) where grid_reference = 'HY4012' group by ifnull(serial,gridimage_id);
+
 					if ($ids) {
 						$ids = join(",",$ids);
 						$sql = "SELECT $columns FROM gridimage_search WHERE gridimage_id IN($ids) ORDER BY FIELD(gridimage_id,$ids)";
+
+$sql = "SELECT $columns,serial,same_serial FROM gridimage_search LEFT JOIN duplication_stat USING (gridimage_id) WHERE gridimage_id IN($ids) GROUP BY ifnull(serial,gridimage_id) ORDER BY FIELD(gridimage_id,$ids)";
+
 						$imagelist->_getImagesBySql($sql);
 						$total = $sphinx->resultCount;
 						$method = 'sphinx';
 					} else {
 						$sql = "SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC, seq_no DESC LIMIT $limit";
+$sql = "SELECT $columns,serial,same_serial FROM gridimage_search LEFT JOIN duplication_stat USING (gridimage_id) WHERE $gis_where GROUP BY ifnull(serial,gridimage_id) ORDER BY ftf BETWEEN 1 AND 4 DESC, seq_no DESC LIMIT $limit";
+
 						$imagelist->_getImagesBySql($sql);
 						$total = $square->imagecount;
 						$method = 'latest';
 					}
+
+print "$sql;\n";//exit;
 					list($usec, $sec) = explode(' ',microtime());
 					$endtime = ((float)$usec + (float)$sec);
 					$timetaken = $endtime - $starttime;

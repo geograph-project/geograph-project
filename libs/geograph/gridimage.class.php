@@ -2591,26 +2591,50 @@ split_timer('gridimage','updateCachedTables',"{$this->gridimage_id}"); //logs th
 		$db=&$this->_getDB();
 
 split_timer('gridimage'); //starts the timer
-		
-		if (!$gridsquare) 
+
+		if (!$gridsquare)
 			$gridsquare = $this->grid_square;
-		
+
 		if (!isset($gridsquare->nateastings))
 			$gridsquare->getNatEastings();
 
 		$gaz = new Gazetteer();
-		
+
 		//to optimise the query, we scan a square centred on the
 		//the required point
 		$radius = 30000;
 
-		$places = $gaz->findBySquare($gridsquare,$radius,array('C','T'));	
-		
+		$places = $gaz->findBySquare($gridsquare,$radius,array('C','T'));
+
 		$db->Execute("update gridimage set placename_id = '{$places['pid']}',upd_timestamp = '{$this->upd_timestamp}' where gridimage_id = {$this->gridimage_id}");
-		
+
 split_timer('gridimage','updatePlaceNameId',"{$this->gridimage_id}"); //logs the wall time
 
-	}	
-	
+	}
+
+        /**
+        * get alink to image, in particular it will actully direct to photoset, when multiple
+	* NOTE: the serial, and same_serial values have to be setup externally, this class can't fetch them yet!
+        */
+        function getDirectLink() {
+
+		if (!empty($this->serial) && $this->same_serial > 1) {
+
+			if (empty($this->addedtitle)) {
+				$this->title .= " (set of {$this->same_serial} images)";
+				$this->addedtitle=1;
+			}
+
+			//direct to the photoset!
+			if (!empty($this->grid_reference))
+				return "/photoset/{$this->grid_reference}/".urlencode($this->serial);
+			else
+				return "/photoset/{$this->grid_square->grid_reference}/".urlencode($this->serial);
+		} else {
+			//else just a standad link
+			return "/photo/".$this->gridimage_id;
+		}
+
+	}
 }
 
