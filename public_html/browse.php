@@ -556,7 +556,6 @@ $sql = "SELECT $columns,serial,same_serial FROM gridimage_search LEFT JOIN dupli
 						$method = 'latest';
 					}
 
-print "$sql;\n";//exit;
 					list($usec, $sec) = explode(' ',microtime());
 					$endtime = ((float)$usec + (float)$sec);
 					$timetaken = $endtime - $starttime;

@@ -145,7 +145,7 @@ p.alert-danger {
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.css" />
 
-	<div id="mapbar" style="display:none">
+	<div id="mapbar" style="display:none" data-nosnippet>
 		<div id="mapcontainer">
 			<div id="map" style="width:100%; height:500px"></div>
 			<div id="message" style="z-index:10000;position:absolute;top:0;left:50px;background-color:white;font-size:1em;font-family:sans-serif;opacity:0.8"></div>
@@ -158,7 +158,7 @@ p.alert-danger {
 		<br style=clear:both>
 	</div>
 	{/if}
-	<div id="buttonbar">
+	<div id="buttonbar" data-nosnippet>
 		{if $map}
 			<input type=button value="Open Map Viewer for these images" onclick="showMap()">
 		{/if}
@@ -176,7 +176,7 @@ p.alert-danger {
 
 	<br><br>
 
-	<div style="text-align:right;margin-top:-2em;padding-bottom:8px">
+	<div style="text-align:right;margin-top:-2em;padding-bottom:8px" data-nosnippet>
 		Columns: 
 		<a href="#1" onclick="return setColumns(this.text)">1</a>
 		<a href="#2" onclick="return setColumns(this.text)">2</a>
