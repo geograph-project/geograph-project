@@ -61,7 +61,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++) {
 	$maxdate="";
 
 	$offset=($sitemap-1)*$urls_per_sitemap;
-	$recordSet = $db->Execute("select grid_reference,serial, max(submitted) as last_used
+	$recordSet = $db->Execute("select grid_reference,serial, date(max(submitted)) as last_used
 	 from duplication_stat inner join gridimage_search using (gridimage_id)
 	 where $crit group by serial order by last_used
 	 limit $offset,$urls_per_sitemap") or die($db->ErrorMsg());
@@ -100,7 +100,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++) {
 	fclose($fh);
 
 	//set datestamp on file
-	$unixtime=strtotime($maxdate);
+	$unixtime=strtotime($maxdate." 23:59:59");
 	touch($filename,$unixtime);
 
 	//gzip it

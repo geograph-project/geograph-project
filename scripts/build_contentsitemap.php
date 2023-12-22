@@ -110,7 +110,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	fclose($fh);
 
 	//set datestamp on file
-	$unixtime=strtotime($maxdate);
+	$unixtime=strtotime($maxdate." 23:59:59");
 	touch($filename,$unixtime);
 
 	//gzip it
