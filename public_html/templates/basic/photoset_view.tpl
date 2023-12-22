@@ -197,7 +197,7 @@ p.alert-danger {
 						{$image->links}
 					{/if}
 				</div>
-				<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getResponsiveImgTag(120,640,true)}</a>
+				<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getResponsiveImgTag(120,$maxsize,true)}</a>
 			</div>
 			{if $image->htmltext}
 				<div class="part2">
@@ -209,6 +209,9 @@ p.alert-danger {
 	<br style="clear:both"/>
 	</div>
 
+	{if $json}
+	<script type="application/ld+json">{$json}</script>
+	{/if}
 
 	<hr><p><img src="{$static_host}/img/80x15.png" alt="Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0)"> All images 
 	{if $singlename}
@@ -282,6 +285,7 @@ function setColumns(num,skip_cookie) {
 
 function loadColumnsFromCookie() {
 	var num = readCookie('GridCols');
+	//todo, check if num > $count, then might as well just clamp to $count
 	if (num && num > 0)
 		setColumns(num,true);
 

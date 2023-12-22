@@ -1,0 +1,1 @@
+../basic/photoset_view.tpl

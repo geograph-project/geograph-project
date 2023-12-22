@@ -27,6 +27,8 @@ init_session();
 $smarty = new GeographPage;
 $template = 'photoset_view.tpl';
 
+$smarty->assign("maxsize", 640);
+
 $db = GeographDatabaseConnection(true);
 
 ######################################
@@ -45,11 +47,15 @@ if (!empty($_GET['id'])) {
 
 } elseif (!empty($_GET['serial']) && !empty($_GET['gridref'])) {
 
+	$smarty->assign("maxsize", 1024);
+
 	$set = array();
 	$ids = $db->getCol("SELECT gridimage_id FROM gridimage_search INNER JOIN duplication_stat USING (gridimage_id)
 	WHERE grid_reference = ".$db->Quote($_GET['gridref'])." AND serial = ".$db->Quote($_GET['serial'])." ORDER BY gridimage_id");
 
 	//todo lookup SDs + tags?
+	//todo add rastermap?
+	//todo output coordinates subject/camera+direction may actully be different, despite all other details being idential
 
 	if (!empty($ids)) {
 		//because all in a set, can just grab the description from the first image!
@@ -220,6 +226,7 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 
                 $conv = new Conversions;
 
+		$json= array();
 		foreach ($images->images as $i => $image) {
 
 	                //get the grid references
@@ -304,6 +311,38 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 
 ######################################
 
+			$js = array(
+		              "@context" => "https://schema.org/",
+		              "@type" => "ImageObject",
+		              "name" => latin1_to_utf8($image->title),
+		              "datePublished" => substr($image->submitted,0,10),
+		              "dateModified" => strftime('%Y-%m-%dT%H:%M:%SZ',$image->upd_timestamp),
+		              "contentUrl" => $image->_getFullpath(false, true),
+		              "license" => "http://creativecommons.org/licenses/by-sa/2.0/",
+		              "acquireLicensePage" => $CONF['SELF_HOST']."/reuse.php?id={$image->gridimage_id}",
+		              "creditText" => $realname = latin1_to_utf8($image->realname),
+		              "copyrightNotice" => "&copy; $realname` and licenced for reuse under cc-by-sa/2.0",
+		              "copyrightYear" => substr($image->submitted,0,4),
+		              "contentLocation" => array(
+		                "@type" => "Place",
+		                "latitude" => $image->lat1,
+		                "longitude" => $image->long1,
+			      ),
+		              "creator" => array(
+		                "@type" => "Person",
+		                "name" => $realname,
+		                "url" => $image->profile_link,
+		              ),
+		              "isFamilyFriendly" => true,
+			);
+			if ($image->imagetaken > '1000') {
+				$js["temporal"] = $image->imagetaken;
+				$js["caption"] = "Image taken ".getFormattedDate($image->imagetaken)." by $realname";
+			}
+			$json[] = $js;
+
+######################################
+
 		}
 		$smarty->assign_by_ref('first',$images->images[0]);
 
@@ -316,6 +355,9 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 
 	$smarty->assign('images',$images->images);
 	$smarty->assign('count',count($images->images));
+
+	if (!empty($json))
+		 $smarty->assign('json',json_encode($json));
 
 ######################################
 
