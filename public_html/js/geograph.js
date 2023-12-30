@@ -3,8 +3,11 @@ var IE = document.all?true:false;
 
 function retryCross(that) {
 	//this function allows retry of tags with crossorigin. Note the query string doesnt do anything on the server, its just to bust the local browser cache (that might have the non-cors image cached)
-        if (that.src.indexOf('crossorigin') == -1 && that.hasAttribute('crossorigin'))
+        if (that.src.indexOf('crossorigin') == -1 && that.hasAttribute('crossorigin')) {
                 that.src = that.src + '?crossorigin';
+		if (that.hasAttribute('srcset'))
+			that.srcset = that.srcset.replace(/\.jpg/g,'.jpg?crossorigin');
+	}
 }
 
 function popupOSMap(gridref,gridref2)
