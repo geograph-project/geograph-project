@@ -64,18 +64,24 @@ foreach ($squares as $square => $gridsquare_id) {
 		die("unknown id for $square\n");
 
 	$rows = $dbreplica->getAssoc("SELECT gridimage_id,title,md5(comment) as comment,length(comment) as comment_len,tags,imageclass,imagetaken,gi.user_id
-		, GROUP_CONCAT(snippet_id ORDER BY snippet_id) as snippets
+		, GROUP_CONCAT(snippet_id ORDER BY snippet_id) as snippets,manual
 		FROM gridimage_search gi LEFT JOIN gridimage_snippet USING (gridimage_id)
+			LEFT JOIN duplication_stat USING (gridimage_id)
 		WHERE grid_reference = '{$square}'
 		GROUP BY gridimage_id ORDER BY NULL");
 
 	$matrix = array();
 	foreach ($rows as &$row) {
-		$row['serial'] = md5(serialize($row)); //excludes gridimage_id!
+		$row2 = $row;
+		unset($row2['manual']);
+			//if add centi/naten etc, then would remove from $row2 too! (not part of serial)
+		$row['serial'] = md5(serialize($row2)); //excludes gridimage_id! (+manual)
 		if (empty($row['tags']) && !empty($row['imageclass']))
 			$row['tags'] = $row['imageclass'];
 		foreach ($row as $key => $value) {
 			if ($key == 'comment_len')
+				continue;
+			if (empty($value) || ($key == 'comment' && !$row['comment_len']) || $value == '0000-00-00')
 				continue;
 			@$matrix[$key][$row[$key]]++;
 		}
@@ -91,7 +97,7 @@ foreach ($squares as $square => $gridsquare_id) {
 		foreach ($row as $key => $value) {
                         if ($key == 'comment_len')
                                 continue;
-			$updates['same_'.$key] = $matrix[$key][$row[$key]];
+			$updates['same_'.$key] = $matrix[$key][$row[$key]]??'NULL';
 		}
 		//if (empty($row['tags'])) $updates['same_tags'] = 'NULL'; //a string, because no escaping is done!
 		//if (empty($row['snippets'])) $updates['same_snippets'] = 'NULL';

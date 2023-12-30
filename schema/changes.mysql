@@ -2881,3 +2881,20 @@ CREATE TABLE `task` (
 
 
 #################################################
+
+
+alter table gridimage_duplicate drop key grid_reference_2, add primary key (`grid_reference`,`title`);
+
+
+
+#################################################
+
+alter table duplication_stat add same_centi mediumint unsigned null default null, add same_naten mediumint unsigned null default null;
+alter table duplication_stat add `serial` varchar(32) default null;
+alter table duplication_stat add manual varchar(32) DEFAULT NULL, add `same_manual` mediumint(8) unsigned DEFAULT NULL;
+alter table duplication_stat
+	modify same_imageclass  mediumint(8) unsigned DEFAULT 0,
+	modify `same_comment` mediumint(8) unsigned DEFAULT 0,
+	modify `same_tags` mediumint(8) unsigned DEFAULT 0,
+	modify `same_imagetaken` mediumint(8) unsigned DEFAULT 0;
+
