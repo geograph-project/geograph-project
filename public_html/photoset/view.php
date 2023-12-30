@@ -64,6 +64,12 @@ if (!empty($_GET['id'])) {
 
 		$url = $CONF['canonical_domain'][$set['reference_index']]."/photoset/".urlencode($_GET['gridref'])."/".urlencode($_GET['serial']);
 		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"$url\"/>");
+
+
+		$stat = $db->getRow("SELECT * FROM duplication_stat WHERE gridimage_id = ".$ids[0]);
+		if ($stat['same_title'] > $stat['same_serial']) {
+			$smarty->assign("same_title", $stat['same_title']);
+		}
 	}
 	$cacheid = "label".filemtime(__FILE__)."-".md5($_GET['serial'].$_GET['gridref']);
 	$smarty->assign("gridref", $_GET['gridref']);
@@ -146,7 +152,7 @@ if (!empty($_GET['id'])) {
 
 		$ids = array_keys($clusters);
 		if ($count > $limit) {
-			$smarty->assign("imagecount", $count);
+			$smarty->assign("totalimagecount", $count);
 		}
 
 		$set['label'] =  to_title_case($set['label']);
@@ -158,7 +164,7 @@ if (!empty($_GET['id'])) {
 
 		if (count($ids) == $limit) {
                 	$count = $db->getOne("select count(*) from curated1 inner join gridimage_search gi using (gridimage_id) where label = ".$db->Quote($_GET['label'])." and active = 1");
-			$smarty->assign("imagecount", $count);
+			$smarty->assign("totalimagecount", $count);
 		}
 		$smarty->assign("label", $_GET['label']);
 	}
@@ -372,7 +378,7 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 	}
 
 	$smarty->assign('images',$images->images);
-	$smarty->assign('count',count($images->images));
+	$smarty->assign('imagecount',count($images->images));
 
 	if (!empty($json))
 		 $smarty->assign('json',json_encode($json));

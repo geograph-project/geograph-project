@@ -167,7 +167,7 @@ p.alert-danger {
 
 	This is only a small selection of our entire collection. To explore more images on Geograph, <a href="/curated/sample.php">View Curated Images</a> or enter keywords in the search box above.</i>
 
-	{if $loc || $region || $imagecount>50}
+	{if $loc || $region || $totalimagecount>50}
 		<hr>
 		{include file="_location-selector.tpl"}
 		<hr>
@@ -256,8 +256,8 @@ p.alert-danger {
 		{if $map}
 			<input type=button value="Open Map Viewer for these images" onclick="showMap()">
 		{/if}
-		{if $label && $imagecount > 50}
-			<input type=button value="View all {$imagecount} Curated Images" onclick="location.href='/curated/sample.php?label={$label|escape:'url'}'">
+		{if $label && $totalimagecount > 50}
+			<input type=button value="View all {$totalimagecount} Curated Images" onclick="location.href='/curated/sample.php?label={$label|escape:'url'}'">
 			{if !$place}
 				<input type=button value="View images by Region" onclick="location.href='/curated/sample.php?label={$label|escape:'url'}&amp;region=Group+By'">
 			{/if}
@@ -274,10 +274,10 @@ p.alert-danger {
 		Columns: 
 		<a href="#1" onclick="return setColumns(this.text)">1</a>
 		<a href="#2" onclick="return setColumns(this.text)">2</a>
-		{if $count >= 3}<a href="#3" onclick="return setColumns(this.text)">3</a>{/if}
-		{if $count >= 4}<a href="#4" onclick="return setColumns(this.text)">4</a>{/if}
-		{if $count >= 6}<a href="#6" onclick="return setColumns(this.text)">6</a>{/if}
-		{if $count >= 8}<a href="#8" onclick="return setColumns(this.text)">8</a>{/if}
+		{if $imagecount >= 3}<a href="#3" onclick="return setColumns(this.text)">3</a>{/if}
+		{if $imagecount >= 4}<a href="#4" onclick="return setColumns(this.text)">4</a>{/if}
+		{if $imagecount >= 6}<a href="#6" onclick="return setColumns(this.text)">6</a>{/if}
+		{if $imagecount >= 8}<a href="#8" onclick="return setColumns(this.text)">8</a>{/if}
 	</div>
 
 	<div class="gridded med cols4" id="gridcontainer">
@@ -331,6 +331,10 @@ p.alert-danger {
         }
 	{/literal}
         </script>
+	{/if}
+
+	{if $same_title} 
+		<p><i>These are {$imagecount} of <a href="/stuff/list.php?title={$first->title|escape:'url'}&amp;gridref={$first->grid_reference}">{$same_title} images, with title {$first->title|escape:'html'}</a> in this square</i></p>
 	{/if}
 
 	<hr><p><img src="{$static_host}/img/80x15.png" alt="Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0)"> &nbsp; All images 
@@ -407,7 +411,7 @@ function setColumns(num,skip_cookie) {
 
 function loadColumnsFromCookie() {
 	var num = readCookie('GridCols');
-	//todo, check if num > $count, then might as well just clamp to $count
+	//todo, check if num > $imagecount, then might as well just clamp to $imagecount
 	if (num && num > 0)
 		setColumns(num,true);
 
