@@ -13,6 +13,24 @@
 	max-width:95%;
 }
 
+h2 span {
+	color:gray;
+}
+
+div.snippet640 {
+	max-width:1004px;
+	width:inherit;
+	margin:0;
+	font-size:1em;
+}
+
+.tagbar {
+	border:1px dashed silver;
+	border-radius:20px;
+	max-width:1004px;
+	padding:6px;
+}
+
 .gridded.med {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -112,11 +130,35 @@ p.alert-danger {
 	</div>
 {/if}
 
-<h2>{$page_title|escape:'html'}</h2>
+<h2>{$page_title|escape:'html'|replace:'(set of':'<span>(set of'}</span></h2>
 
 {if $description}
 	<p>{$description|escape:'html'}</p>
 {/if}
+
+	{if $first->snippet_count}
+		{if !$first->comment && $first->snippet_count == 1}
+			{assign var="item" value=$first->snippets[0]}
+			<div class="caption">
+			{$item.comment|escape:'html'|nl2br|geographlinks}{if $item.title}<br/><br/>
+			<small>See other images of <a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname && $item.realname ne $first->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'}</a></small>{/if}
+			</div>
+		{else}
+			{foreach from=$first->snippets item=item name=used}
+				{if !$first->snippets_as_ref && !$item.comment}
+					<div class="caption640 searchresults"><br/>
+					<small>See other images of <a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname && $item.realname ne $first->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'}</a></small>
+					</div>
+				{else}
+					<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
+					{if $first->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}<b><a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname && $item.realname ne $first->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $first->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small>{/if}
+					<blockquote><p>{$item.comment|escape:'html'|nl2br|geographlinks}</p></blockquote>
+					</div>
+				{/if}
+			{/foreach}
+		{/if}
+	{/if}
+
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
@@ -133,12 +175,64 @@ p.alert-danger {
 
 {/if}
 
-
 <p style=font-size:1.1em>
 {if $headlinks_html}All images {$headlinks_html}{if $place}, {/if}{/if}
 {if $place}
 	<small>{place place=$place}</small>
 {/if}</p>
+
+{if $first->tags || $first->imageclass}
+	<div class=tagbar>
+		{if $first->tag_prefix_stat.top}
+			<span class="nowrap">Geographical Context:
+				{foreach from=$first->tags item=item name=used}{if $item.prefix eq 'top'}
+				<span class="tag">
+				<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$first->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span></span> <span class="nowrap">
+			{/if}{/foreach}
+			</span>
+		{/if}
+
+		{foreach from=$first->tag_prefix_stat key=prefix item=count}
+			{if $prefix ne 'top' && $prefix ne '' && $prefix ne 'term' && $prefix ne 'cluster' && $prefix ne 'wiki' && $prefix ne 'type'}
+				<span class="nowrap">
+				{if $prefix == 'bucket'}
+					Image Buckets <sup><a href="/article/Image-Buckets" class="about" style="font-size:0.7em">?</a></sup>:
+				{elseif $prefix == 'subject'}
+					Primary Subject:
+				{else}
+					{$prefix|capitalize|escape:'html'}:
+				{/if}
+				{foreach from=$first->tags item=item name=used}{if $item.prefix == $prefix}
+					<span class="tag">
+					<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$first->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span></span> <span class="nowrap">
+				{/if}{/foreach}
+				</span>
+			{/if}
+		{/foreach}
+
+		{if $first->imageclass}
+			<span class="nowrap">Category:
+
+			{if $first->canonical}
+				<a href="/search.php?gridref={$first->grid_reference}&amp;canonical={$first->canonical|escape:'url'}&amp;do=1">{$first->canonical|escape:'html'}</a> &gt;
+			{/if}
+			<a title="pictures near {$first->grid_reference} of {$first->imageclass|escape:'html'}" href="/search.php?gridref={$first->subject_gridref|escape:'url'}&amp;imageclass={$first->imageclass|escape:'url'}" rel="nofollow">{$first->imageclass|escape:'html'}</a>
+			</span>
+		{/if}
+
+		{if $first->tags && ($first->tag_prefix_stat.$blank || $first->tag_prefix_stat.term || $first->tag_prefix_stat.cluster || $first->tag_prefix_stat.wiki)}
+			<span class="nowrap">{if count($first->tag_prefix_stat) > 1}
+				other tags:
+			{/if}
+			{foreach from=$first->tags item=item name=used}{if $item.prefix eq '' || $item.prefix eq 'term' || $item.prefix eq 'cluster' || $item.prefix eq 'wiki'}
+				<span class="tag"><a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$first->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span></span> <span class="nowrap">
+			{/if}{/foreach}</span>
+
+			<small>Click a tag, to view other nearby images.</small>
+		{/if}
+	</div>
+{/if}
+
 
 	{if $map}
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" rel="stylesheet" />
@@ -153,7 +247,7 @@ p.alert-danger {
 		</div>
 
 		<div id="firstcontainer">
-			 <a title="{$first->grid_reference} : {$first->title|escape:'html'} by {$first->realname|escape:'html'} {$image->dist_string} - click to view full size image" href="/photo/{$first->gridimage_id}">{$first->getResponsiveImgTag(120,640)}</a>	
+			 <a title="{$first->grid_reference} : {$first->title|escape:'html'} by {$first->realname|escape:'html'} {$first->dist_string} - click to view full size image" href="/photo/{$first->gridimage_id}">{$first->getResponsiveImgTag(120,640)}</a>	
 		</div>
 		<br style=clear:both>
 	</div>
@@ -239,7 +333,7 @@ p.alert-danger {
         </script>
 	{/if}
 
-	<hr><p><img src="{$static_host}/img/80x15.png" alt="Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0)"> All images 
+	<hr><p><img src="{$static_host}/img/80x15.png" alt="Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0)"> &nbsp; All images 
 	{if $singlename}
 		are <b>&copy; {$singlename|escape:'html'}</b> and
 	{/if}
@@ -255,6 +349,8 @@ p.alert-danger {
 
         <script src="{$static_host}/js/lazysizes.min.js"></script>
 
+
+	<p data-nosnippet>Click an image to view more details, including the exact location on a map (may be different for each image)</p>
 
 {if $label}
 

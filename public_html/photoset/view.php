@@ -68,6 +68,8 @@ if (!empty($_GET['id'])) {
 	$cacheid = "label".filemtime(__FILE__)."-".md5($_GET['serial'].$_GET['gridref']);
 	$smarty->assign("gridref", $_GET['gridref']);
 
+	$set['identical'] = 1; //triggers loading sds/tags from first image. we assured they are same on ALL images in the duplication set! (same_serial!)
+
 	//todo, incrment photo views for all iamges??
 
 ######################################
@@ -162,10 +164,12 @@ if (!empty($_GET['id'])) {
 	}
 	$smarty->assign("limit", $limit);
 
+	$set['map'] = true;
 	$smarty->assign("map", 1);
 }
 
 ######################################
+// load the images
 
 if (!empty($ids))
 	pageMustBeHTTPS();
@@ -184,6 +188,7 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 	if (!empty($images->images)) {
 
 ######################################
+// check how similar they are
 
 		$s = array('grid_reference'=>array(),'imagetaken'=>array(),'realname'=>array(),'title'=>array());
 		$years = array();
@@ -224,52 +229,56 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 		}
 
 ######################################
+// loop though all and set values
 
                 $conv = new Conversions;
 
 		$json= array();
 		foreach ($images->images as $i => $image) {
 
+######################################
+//lat longs, (for the map)
+
 	                //get the grid references
         	        $image->getSubjectGridref();
-	                $image->getPhotographerGridref();
-
-######################################
 
 			//this by 'magic' uses the exact eastings/northings, if it can!
         	        list($lat1,$long1) = $conv->gridsquare_to_wgs84($image->grid_square);
 			$image->lat1 = $lat1;
 			$image->long1 = $long1;
 
-######################################
+			if (!empty($set['map'])) {
+		                $image->getPhotographerGridref();
 
-	                if (!empty($image->viewpoint_northings)) {
-        	              //  $rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
+		                if (!empty($image->viewpoint_northings)) {
+	        	              //  $rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
 
+					  $ve = $image->viewpoint_eastings;        $vn = $image->viewpoint_northings;
+	                                        if (false) { //this isn't done by gridsquare_to_wgs84 - so doesnt make sence to do it here...
+	                                                if ($image->viewpoint_grlen == '4') {
+	                                                        $ve +=500; $vn += 500;
+	                                                }
+	                                                if ($image->viewpoint_grlen == '6') {
+	                                                        $ve +=50; $vn += 50;
+	                                                }
+	                                        }
+	                                        list($lat2,$long2) = $conv->national_to_wgs84($ve,$vn,$image->grid_square->reference_index,true,true);
 
-				  $ve = $image->viewpoint_eastings;        $vn = $image->viewpoint_northings;
-                                        if (false) { //this isn't done by gridsquare_to_wgs84 - so doesnt make sence to do it here...
-                                                if ($image->viewpoint_grlen == '4') {
-                                                        $ve +=500; $vn += 500;
-                                                }
-                                                if ($image->viewpoint_grlen == '6') {
-                                                        $ve +=50; $vn += 50;
-                                                }
-                                        }
-                                        list($lat2,$long2) = $conv->national_to_wgs84($ve,$vn,$image->grid_square->reference_index,true,true);
+		                } else {
+					//TODO, use view_direction to 'project' a point (but will still be at arbitary distance!)
 
+					$lat2 = $lat1+0.001;
+					$long2 = $long1+0.001;
+				}
 
-	                } else {
-				//TODO, use view_direction to 'project' a point (but will still be at arbitary distance!)
+				$image->lat2 = $lat2;
+				$image->long2 = $long2;
 
-				$lat2 = $lat1+0.001;
-				$long2 = $long1+0.001;
 			}
 
-			$image->lat2 = $lat2;
-			$image->long2 = $long2;
-
 ######################################
+//set individual labels - if different
+//todo add description! (could render in 1 column view!)
 
 			$links = $v = array();
                         if (count($s['title']) > 1)
@@ -281,7 +290,7 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
                         if (count($s['realname']) > 1)
                                 $v[] = '<span style="color:gray">By:</span> '.ooo($image,'realname',"<a href=\"/profile/{$image->user_id}\">".htmlentities2($image->realname)."</a>");
 
-			if (!empty($_GET['label'])) {
+			if (!empty($_GET['label'])) { //testing!
 				$hash = $image->_getAntiLeechHash();
 				$download = "https://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash=$hash&download=1";
 				if (empty($image->cached_size))
@@ -311,13 +320,14 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 				$image->htmltext = implode("<br>",$v);
 
 ######################################
+// should add json meta-data
 
 			$js = array(
 		              "@context" => "https://schema.org/",
 		              "@type" => "ImageObject",
 		              "name" => latin1_to_utf8($image->title),
-		              "datePublished" => substr($image->submitted,0,10),
-		              "dateModified" => strftime('%Y-%m-%dT%H:%M:%SZ',$image->upd_timestamp),
+		              "datePublished" => substr($image->submitted,0,10), //maybe moderated time?
+		              "dateModified" => strftime('%Y-%m-%dT%H:%M:%SZ',strtotime($image->upd_timestamp)),
 		              "contentUrl" => $image->_getFullpath(false, true),
 		              "license" => "http://creativecommons.org/licenses/by-sa/2.0/",
 		              "acquireLicensePage" => $CONF['SELF_HOST']."/reuse.php?id={$image->gridimage_id}",
@@ -343,8 +353,15 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 			$json[] = $js;
 
 ######################################
-
+//final setup
 		}
+
+		if (!empty($set['identical'])) {
+		        $images->images[0]->loadSnippets();
+	                //$images->images[0]->loadCollections();
+        	        $images->images[0]->loadTags(true); //request array format (same as loadSnippets used to do)
+		}
+
 		$smarty->assign_by_ref('first',$images->images[0]);
 
 		if (count($s['grid_reference']) == 1)
@@ -361,7 +378,7 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 		 $smarty->assign('json',json_encode($json));
 
 ######################################
-
+// if no images
 } elseif (empty($ids)) {
         header("HTTP/1.0 404 Not Found");
         header("Status: 404 Not Found");
@@ -370,6 +387,9 @@ if (!empty($ids) && !$smarty->is_cached($template, $cacheid)) {
 
 
 $smarty->display($template,$cacheid);
+
+######################################
+//common functions
 
 function highlight_changes($str) {
         static $prev = '';
