@@ -62,7 +62,8 @@ if (!empty($_GET['user_id']))
 
 if (!empty($_GET['6']) && $_GET['z'] > 10) {
 	//$_GET['where'] = 'vcenti not in(1000000000,2000000000)'; //exclude 4fig GRs!
-        $_GET['where'] = 'vgrlen>4';
+        add_to_where('vgrlen>4',false);
+
         //todo, this could use natgrlen attribute instead now!
         //in fact for viewpoint, NEED to use vgrlen, as viewpoint columns set eastings/northing even on 4figs!
 }
@@ -183,7 +184,7 @@ function projectpoint($x,$y,$d,$a) {//x/y/distance/angle
 	$a = deg2rad($a);
 	$xx = sin($a)*$d;
 	$yy = cos($a)*$d;
-	return array(round($x+$xx),round($y-$yy));     //minus, because images use top/left origin, e/n use bottom left, and $a is relative to north. 
+	return array(round($x+$xx),round($y-$yy));     //minus, because images use top/left origin, e/n use bottom left, and $a is relative to north.
 }
 
 
@@ -208,4 +209,17 @@ function imageaddalpha(&$im, $x, $y, $delta) {
 
 	imagesetpixel($im, $x, $y, $color);
 }
+
+
+	function add_to_where($filter,$all = true) {
+		if (!empty($_GET['where'])) {
+			if (is_array($_GET['where'])) {
+		        	$_GET['where'][] = $filter;
+			} elseif ($all || strpos($_GET['where'],'id ') !== 0) { //special case of it being a 'id' filter, skip adding this filter
+				$_GET['where'] = array($_GET['where'],$filter);
+			}
+		} else {
+	        	$_GET['where'] = $filter;
+		}
+	}
 

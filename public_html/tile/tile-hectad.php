@@ -47,7 +47,7 @@ if (!empty($_GET['user_id']))
 	@$_GET['match'] .= " @user user".intval($_GET['user_id']);
 
 if (!empty($_GET['6']) && $_GET['z'] > 10)
-	$_GET['where'] = 'scenti not in(1000000000,2000000000)'; //exclude 4fig GRs!
+	add_to_where('scenti not in(1000000000,2000000000)', false); //exclude 4fig GRs!
 
 
 $_GET['order'] = "id asc"; //rand doesnt work for group, could use sequence, but may as well just use id.
@@ -145,3 +145,15 @@ function call_with_results($data) {
 
 
 include("../api-facetql.php");
+
+	function add_to_where($filter,$all = true) {
+		if (!empty($_GET['where'])) {
+			if (is_array($_GET['where'])) {
+		        	$_GET['where'][] = $filter;
+			} elseif ($all || strpos($_GET['where'],'id ') !== 0) { //special case of it being a 'id' filter, skip adding this filter
+				$_GET['where'] = array($_GET['where'],$filter);
+			}
+		} else {
+	        	$_GET['where'] = $filter;
+		}
+	}
