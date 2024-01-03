@@ -348,7 +348,10 @@ class RestAPI
 					echo '<gridref>'.xmlentities($image->grid_reference).'</gridref>';
 					echo "<user profile=\"{$CONF['CONTENT_HOST']}{$image->profile_link}\">".xmlentities(latin1_to_utf8($image->realname)).'</user>';
 
-					echo preg_replace('/alt=".*?" /','',$image->getFull());
+					echo preg_replace('/alt=".*?" /','',
+						str_replace(' crossorigin ',' crossorigin="anonymous" ', //xml doesnt allow valueless atttibutes
+						str_replace(' onerror="retryCross(this)"',' style="image-orientation:none"',
+						$image->getFull() )));
 
 					$details = $image->getThumbnail(120,120,2);
 					echo '<thumbnail>'.$details['server'].$details['url'].'</thumbnail>';
