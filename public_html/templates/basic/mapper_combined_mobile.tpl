@@ -161,11 +161,11 @@ ul.tips li {
 		zoomControl: false
         };
 	var clickOptions = {};
-
+	var wgs84;
 {/literal}
 {dynamic}
 	{if $gridref}
-		 var wgs84=new GT_WGS84();
+		 wgs84=new GT_WGS84();
                  wgs84 = wgs84.parseGridRef(gridref = '{$gridref}'); //technically a factory method
 
                  if (wgs84)
