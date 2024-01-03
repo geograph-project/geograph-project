@@ -308,9 +308,9 @@ We would much perfer to work with you to find a suitable API, than forcing you t
   &lt;title&gt;Bascote&lt;/title&gt; 
   &lt;gridref&gt;SP4063&lt;/gridref&gt; 
   &lt;user profile="{$self_host}/profile/120"&gt;David Stowell&lt;/user&gt; 
-  &lt;img src="{$self_host}/photos/00/34/003456_e10e23bc.jpg"
-     width="640" height="480" /&gt; 
+  &lt;img src="{$self_host}/photos/00/34/003456_e10e23bc.jpg" crossorigin="anonymous" width="640" height="480" style="image-orientation:none"/&gt; 
 &lt;/geograph&gt;</pre>
+		(the crossorigin and style, are needed if you going to render the image in a webpage, as it forces the browser to ignore the EXIF rotation/oritentiation flag, which is incorrectly set on a small minority of images. If going to take a copy and serve the file from your own domain, it not needed)
   </td> 
 		</tr> 
 		<tr> 
