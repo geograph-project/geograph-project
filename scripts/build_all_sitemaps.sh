@@ -24,9 +24,6 @@ if test "$CLI_HTTP_HOST" = 'www.geograph.org.uk'; then
 	/usr/bin/php $BASE_DIR/scripts/build_photosetsitemap.php  --config=www.geograph.ie --ri=2 --suffix=.ie
 fi
 
-#this pings ALL the sitemaps rebuilt above
-/usr/bin/php $BASE_DIR/scripts/ping-sitemaps.php --execute
-
 ############
 
 /usr/bin/php $BASE_DIR/scripts/build_userhtml.php
