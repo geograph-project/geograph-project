@@ -181,6 +181,7 @@
         {if $engine->results}
         <p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
         {/if}
+
 {else}
         {include file="_search_noresults.tpl"}
 {/if}

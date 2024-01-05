@@ -226,6 +226,9 @@ if (window.location.hash == '#autonext') {
  	<br style="clear:both"/>
 	<div style="font-size:0.9em">&nbsp;Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})</div>
 	{/if}
+        <script>
+        AttachEvent(window,'load',showMarkedImages,false);
+        </script>
 {else}
 	{include file="_search_noresults.tpl"}
 {/if}

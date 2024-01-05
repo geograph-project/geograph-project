@@ -185,6 +185,10 @@ if (window.location.hash == '#autonext') {
  		<div style="text-align:center;padding-top:40px"><a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slidebig">Full Page Slide-Show</a></div>
  	<br style="clear:both"/>
 	<p>Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
+
+<script>
+AttachEvent(window,'load',showMarkedImages,false);
+</script>
 	{/if}
 {else}
 	{include file="_search_noresults.tpl"}
