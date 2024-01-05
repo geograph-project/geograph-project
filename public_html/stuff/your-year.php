@@ -57,6 +57,7 @@ if (!empty($_GET['force']))
 	$user_id = intval($_GET['force']);
 
 if (!empty($_GET['choose'])) {
+  $smarty->assign('responsive', true);
 	$smarty->display('_std_begin.tpl');
 	print "<h2>Your Pictures by year</h2>";
 	print "<p>Click a year to view a selection of your images taken that year...</p>";
