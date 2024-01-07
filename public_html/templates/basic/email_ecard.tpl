@@ -49,7 +49,7 @@ MARGINWIDTH=3D"0">
     <TD bgColor=3D#000066>&nbsp;</TD>
     <TD bgColor=3D#000066><A href=3D"{$self_host}/"><IMG =
 height=3D74=20
-      src=3D"{$self_host}/templates/basic/img/xmaslogo.gif" width=3D257 =
+      src=3D"{$self_host}/templates/basic/img/logo.gif" width=3D257 =
 border=3D0></A></TD>
     <TD vAlign=3Dtop align=3Dcenter bgColor=3D#000066><A=20
       href=3D"{$self_host}/"><FONT face=3DGeorgia =

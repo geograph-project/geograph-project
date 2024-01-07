@@ -29,7 +29,7 @@
 	}
 	#header h1 {
 	    margin: 0px;
-	    background-image: url(https://s1.geograph.org.uk/templates/basic/img/xmaslogo.gif);
+	    background-image: url(https://s1.geograph.org.uk/templates/basic/img/logo.gif);
 	    height: 74px;
 	    width: 257px;
 	    cursor: pointer;
@@ -310,7 +310,7 @@ ul.tips li {
 
 <div id="sidebar">
 
-<a href="/"><img src="https://s1.geograph.org.uk/templates/basic/img/xmaslogo.gif"></a>
+<a href="/"><img src="https://s1.geograph.org.uk/templates/basic/img/logo.gif"></a>
 
 <h3>Tips</h3>
 <ul class=tips>
