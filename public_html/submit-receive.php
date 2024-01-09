@@ -77,7 +77,16 @@ list ($photographer_gridref,$len) = $conv->national_to_gridref(intval($e),intval
 list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
 
 
-print "Subject: $grid_reference. Photographer: $photographer_gridref.<hr>";
+//print "Subject: $grid_reference. Photographer: $photographer_gridref.<hr>";
+
+?>
+<html>
+<head>
+ <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#000066" />
+</head>
+<body>
+
 
 $url = "/submit2.php?transfer_id={$upload_id}&gridref=$photographer_gridref"; //gr is NOT used, but submit it incase!
 
