@@ -9,6 +9,7 @@ init_session();
 
 //to set the image rotation
 print '<link rel="stylesheet" type="text/css" title="Monitor" href="'.smarty_modifier_revision("/templates/basic/css/basic.css").'" media="screen" />';
+print "<script src=\"".smarty_modifier_revision("/js/geograph.js")."\"></script>";
 
 init_session();
 
@@ -267,7 +268,10 @@ foreach ($sizes as $size) {
 		preg_match('/src="(https?:[\w\/\.]+?_\w+\.jpg)/',$tag,$m);
 
 		$url = $m[1];
-		print "<td><img src=$url $style>$stylefix</td>";
+		print "<td><img src=$url $style>$stylefix";
+
+		print "<br><img src=\"$url\" $style crossorigin onerror=\"retryCross(this)\">(crossorigin)";
+		print "</td>";
 		$html = $url;
 
 		if ($size != 640 && $image->moderation_status != 'rejected') {
