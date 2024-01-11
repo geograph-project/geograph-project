@@ -11,6 +11,8 @@ $smarty = new GeographPage;
 
 
 if (!empty($_GET['build'])) {
+	die('please use script version!');
+
 	$USER->mustHavePerm("admin");
 	$db = GeographDatabaseConnection(false);
 
@@ -24,7 +26,7 @@ if (!empty($_GET['build'])) {
 	if($_GET['build'] === '2')
 		$db->Execute("DROP TABLE IF EXISTS year_review2");
 
-	$db->Execute("CREATE TABLE year_review2 LIKE year_review");
+	$db->Execute("CREATE TABLE IF NOT EXISTS year_review2 LIKE year_review");
 
 //	for (var $start=1; $start < $max; $start+=1000) {
 //		$end = $start+999;
@@ -36,13 +38,17 @@ if (!empty($_GET['build'])) {
 		$end = $start+$step-1;
 
 		$where = "user_id BETWEEN $start AND $end";
+		if (!empty($_GET['year']))
+			//LIKE '2015-%' for exmaple, wont use index; BETWEEN will use index!
+			$where .= sprintf(" AND imagetaken BETWEEN '%d-01-01' AND '%d-12-31'",$_GET['year'],$_GET['year']);
 
 		$db->Execute("INSERT INTO year_review2 ".str_replace('%where',$where,$build));
 
 		print "$where => ".$db->Affected_Rows()."<br>";
 		flush(); ob_flush();
 	}
-	print "DONE!";
+	print "DONE!<br>";
+	print "REPLACE INTO year_review SELECT * FROM year_review2;<br>";
 
 	exit;
 }
