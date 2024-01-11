@@ -159,6 +159,8 @@ if (!empty($_GET['tag'])) {
 	}
 }
 
+////////////////////////////////////////////////////////
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	if ($template == 'tags_homepage.tpl') {
@@ -339,9 +341,9 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 					if ($idlist = implode(',',array_keys($ids))) {
 						$sql = "SELECT gridimage_id,tag,prefix FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE gt.status = 2 AND gridimage_id IN ($idlist) ORDER BY tag";
 
-						$tags = $db->getAll($sql);
-						if ($tags) {
-							foreach ($tags as $row) {
+						$alltags = $db->getAll($sql);
+						if ($alltags) {
+							foreach ($alltags as $row) {
 								$idx = $ids[$row['gridimage_id']];
 								$imagelist->images[$idx]->tags[] = $row;
 							}
@@ -349,6 +351,24 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 					}
 
 					$smarty->assign_by_ref('results', $imagelist->images);
+				}
+
+				if (count($tags) == 1) {
+					reset($tags);
+                                        $row = $tags[key($tags)];
+
+					if ($row['prefix'] == 'recreates' && is_numeric($row['tag'])) {
+						$mainimage = new GridImage($row['tag'],true);
+						if ($mainimage->isValid()) {
+							$mainimage->loadTags(true); //this page wants array format, not the string format
+							$mainimage->imagetakenString = getFormattedDate($mainimage->imagetaken);
+							$smarty->assign_by_ref('mainimage',$mainimage);
+
+							if (!empty($imagelist->images))
+								foreach ($imagelist->images as $i => $image)
+									$imagelist->images[$i]->imagetakenString = getFormattedDate($image->imagetaken);
+						}
+					}
 				}
 
 			} else {
@@ -394,6 +414,10 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 			$smarty->assign_by_ref('tags', $tags);
 		}
 	}
+
+////////////////////////////////////////////////////////
+//special handler, only used when displaying a cached version (some stuff still needed for 'dynamic' blocks
+
 } elseif (!empty($_GET['tag'])) {
 	$tags= $db->getAssoc($sql = "SELECT tag_id,prefix,tag,canonical,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id)	WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
 
@@ -427,6 +451,7 @@ $sphinxq = str_replace('-',' ',$sphinxq);
                 }
 		$smarty->assign('onetag',1);
 		$smarty->assign('description',$tags[key($tags)]['description']);
+
 	} elseif (empty($prefix)) {
                 foreach ($tags as $tag_id => $row) {
                         if (!empty($row['tag']) && empty($row['prefix']) && strcasecmp($row['tag'],$_GET['tag']) == 0) {
@@ -436,8 +461,10 @@ $sphinxq = str_replace('-',' ',$sphinxq);
                         }
                 }
         }
-
 }
+
+////////////////////////////////////////////////////////
+
 
 $smarty->display($template, $cacheid);
 

@@ -128,6 +128,40 @@
 			{/if}{/dynamic}
 		{/if}
 
+		{if $mainimage}
+			<p>This tag implies that the tagged image(s) are taken at same location as this image: 
+		<table cellspacing="0" cellpadding="2" border="0">
+			<tr bgcolor="#{cycle values="e1e1e1,f3f3f3"}">
+				<td align="center">
+					<a title="{$mainimage->title|escape:'html'} - click to view full size image" href="/photo/{$mainimage->gridimage_id}">{$mainimage->getThumbnail(120,120)}</a>
+				</td>
+				<td>
+				<a title="view full size image" href="/photo/{$mainimage->gridimage_id}"><b>{$mainimage->title|escape:'html'}</b></a>
+				by <a title="view user profile" href="{$mainimage->profile_link}">{$mainimage->realname}</a><br/>
+				{if $mainimage->moderation_status == 'geograph'}geograph{else}{if $mainimage->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$mainimage->grid_reference}" href="/gridref/{$mainimage->grid_reference}">{$mainimage->grid_reference}</a>
+				<br/>
+
+				{if $mainimage->imagetakenString}<small>Taken: {$mainimage->imagetakenString}</small><br/>{/if}
+				{if $mainimage->imageclass}<small>Category: {$mainimage->imageclass}</small>{/if}
+
+				{if $mainimage->comment}
+				<div class="caption" style="clear:none" title="{$mainimage->comment|escape:'html'}" style="font-size:0.7em;">{$mainimage->comment|escape:'html'|truncate:90:"... (<u>more</u>)"|geographlinks}</div>
+				{/if}
+				{if $mainimage->tags}
+				<div class="caption" style="clear:none;font-size:0.9em">Tags:
+				{foreach from=$mainimage->tags item=item name=used}
+					<span class="tag">
+					{if $item.prefix}{$item.prefix|escape:'html'|lower}:{/if}<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$mainimage->gridimage_id}" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a>{if $item.tag != $thetag}<a href="/tagged/{$thetag|escape:'urlplus'}?exclude={$item.tag|escape:'url'}" rel="nofollow" class="delete" title="Exclude this tag">X</a>{/if}
+					</span>&nbsp;
+				{/foreach}
+				</div>
+				{/if}
+				</td>
+			</tr>
+		</table>
+
+		{/if}
+
 	</div>
 	{if $others}
 		<div style="font-size:0.8em;text-align:center">Other tags: {foreach from=$others item=item}
