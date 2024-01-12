@@ -32,7 +32,7 @@ $USER->mustHavePerm("basic");
 
 customGZipHandlerStart();
 
-
+$smarty->assign('responsive', true);
 $smarty->display("_std_begin.tpl");
 
 print "<h2>Geograph Image Issue Report Form</h2>";
