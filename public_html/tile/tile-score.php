@@ -11,6 +11,7 @@ customCacheControl(filemtime(__FILE__),$_SERVER['QUERY_STRING']);
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
 require_once ('3rdparty/googleMapUtilityClass.php');
+require_once ('geograph/tile.inc.php');
 
 $g = new googleMapUtilityClass($_GET['x'], $_GET['y'], $_GET['z']);
 
@@ -144,28 +145,3 @@ if (!empty($_GET['dd'])) {
 	imagepng($im);
 
 
-########################################################################
-
-
-////////////////////////////////////
-
-function getStaticColorKey(&$img) {
-        $colour=array();
-
-        for ($p=1; $p<=10; $p++) {
-                switch (true) {
-                        case $p == 1: $r=255; $g=255; $b=0; break;
-                        case $p == 2: $r=255; $g=196; $b=0; break;
-                        case $p == 3: $r=255; $g=132; $b=0; break;
-                        case $p == 4: $r=255; $g=64; $b=0; break;
-                        case $p == 5: $r=225; $g=0; $b=0; break;
-                        case $p == 6: $r=200; $g=0; $b=0; break;
-                        case $p == 7: $r=168; $g=0; $b=0; break;
-                        case $p == 8: $r=136; $g=0; $b=0; break;
-                        case $p == 9: $r=112; $g=0; $b=0; break;
-                        case $p ==10: $r=80; $g=0; $b=0; break;
-                }
-                $colour[$p]=imagecolorallocate($img, $r,$g,$b);
-        }
-        return $colour;
-}

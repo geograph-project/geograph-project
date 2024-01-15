@@ -19,6 +19,7 @@ if (!empty($_GET['gg'])) {
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
 require_once ('3rdparty/googleMapUtilityClass.php');
+require_once ('geograph/tile.inc.php');
 
 $g = new GoogleMapUtilityClass($_GET['x'], $_GET['y'], $_GET['z']);
 
@@ -177,21 +178,3 @@ function call_with_results($data) {
 
 include("../api-facetql.php");
 
-function projectpoint($x,$y,$d,$a) {//x/y/distance/angle
-	$a = deg2rad($a);
-	$xx = sin($a)*$d;
-	$yy = cos($a)*$d;
-	return array(round($x+$xx),round($y-$yy));     //minus, because images use top/left origin, e/n use bottom left, and $a is relative to north. 
-}
-
-	function add_to_where($filter,$all = true) {
-		if (!empty($_GET['where'])) {
-			if (is_array($_GET['where'])) {
-		        	$_GET['where'][] = $filter;
-			} elseif ($all || strpos($_GET['where'],'id ') !== 0) { //special case of it being a 'id' filter, skip adding this filter
-				$_GET['where'] = array($_GET['where'],$filter);
-			}
-		} else {
-	        	$_GET['where'] = $filter;
-		}
-	}
