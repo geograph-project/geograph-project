@@ -21,6 +21,7 @@ if (!empty($_GET['gg'])) {
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
 require_once ('3rdparty/googleMapUtilityClass.php');
+require_once ('geograph/tile.inc.php');
 
 $g = new googleMapUtilityClass($_GET['x'], $_GET['y'], $_GET['z']);
 
@@ -155,35 +156,3 @@ function call_with_results($data) {
 include("../api-facetql.php");
 
 
-function imageaddalpha(&$im, $x, $y, $delta) {
-
-        if ($x<0 || $x >= googleMapUtilityClass::TILE_SIZE)
-                return;
-        if ($y<0 || $y >= googleMapUtilityClass::TILE_SIZE)
-                return;
-
-	$rgba = imagecolorat($im, $x, $y);
-
-		$r = ($rgba >> 16) & 0xFF;
-		$g = ($rgba >> 8) & 0xFF;
-		$b = $rgba & 0xFF;
-		$a = ($rgba & 0x7F000000) >> 24;
-
-	$a+=round($delta);
-	if ($a<=0) $a = 0;
-	$color = imagecolorallocatealpha($im, $r, $g, $b, $a);
-
-	imagesetpixel($im, $x, $y, $color);
-}
-
-	function add_to_where($filter,$all = true) {
-		if (!empty($_GET['where'])) {
-			if (is_array($_GET['where'])) {
-		        	$_GET['where'][] = $filter;
-			} elseif ($all || strpos($_GET['where'],'id ') !== 0) { //special case of it being a 'id' filter, skip adding this filter
-				$_GET['where'] = array($_GET['where'],$filter);
-			}
-		} else {
-	        	$_GET['where'] = $filter;
-		}
-	}
