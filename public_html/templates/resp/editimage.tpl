@@ -22,6 +22,9 @@
   clear: both;
   display: table;
 }
+div#map {
+	max-width:100% !important;
+}
 </style>
 {/literal}
 
