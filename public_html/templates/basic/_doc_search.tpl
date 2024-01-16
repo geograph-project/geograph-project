@@ -4,7 +4,7 @@
 <div style="position:relative;float:right;">
         <input type="submit" value="Find" onclick="loadSearchResults(this.form.q.value,true);$('ul.smart_autocomplete_container').html('');return false;"/>
 </div>
-<lable for="type_ahead_autocomplete_field">Keyword Search:</label>
+<label for="type_ahead_autocomplete_field">Keyword Search:</label>
 <br style="clear:both"/>
 <input type="text" name="q" size="20" autocomplete="off" id="type_ahead_autocomplete_field"/>
 <input type=hidden name="scope" value="document"/>
