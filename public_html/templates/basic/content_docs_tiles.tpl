@@ -11,7 +11,7 @@
 
 <form action="/content/" method="get">
 <div class="interestBox" style="margin-top:2px;width:420px">
-<lable for="qs">Search:</label>
+<label for="qs">Search:</label>
 <input type="text" name="q" id="qs" size="20" {if $q} value="{$q|escape:'html'}"{/if}/>
 Scope: <select name="scope" style="width:90px">
 	<option value="">All</option>
