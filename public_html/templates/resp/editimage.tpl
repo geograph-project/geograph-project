@@ -12,7 +12,7 @@
 	width:100%;
 	padding:0 8px;
 }
-@media (min-width:1200px){
+@media (min-width:1000px){
 	.twocolumn{
 		width:50%;
 	}
