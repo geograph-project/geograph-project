@@ -33,7 +33,7 @@
 
 <form action="/content/" method="get">
 <div class="interestBox" style="margin-top:2px;width:420px;float:left">
-<lable for="qs">Search:</label>
+<label for="qs">Search:</label>
 <input type="text" name="q" id="qs" size="22" {if $q} value="{$q|escape:'html'}"{/if}/>
 Scope: <select name="scope" style="width:80px">
 	<option value="">All</option>
