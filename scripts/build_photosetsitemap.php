@@ -35,7 +35,7 @@ $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $urls_per_sitemap=5000;
-$crit = "serial is not null and gridimage_id > {$param['start']} and same_serial > 1";
+$crit = "(serial is not null OR manual is not null) and gridimage_id > {$param['start']}";
 
 if ($param['ri'])
         $crit .= " AND reference_index = {$param['ri']}";
@@ -61,9 +61,9 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++) {
 	$maxdate="";
 
 	$offset=($sitemap-1)*$urls_per_sitemap;
-	$recordSet = $db->Execute("select grid_reference,serial, date(max(submitted)) as last_used
+	$recordSet = $db->Execute("select grid_reference, coalesce(manual,serial) as serials, date(max(submitted)) as last_used
 	 from duplication_stat inner join gridimage_search using (gridimage_id)
-	 where $crit group by serial order by last_used
+	 where $crit group by coalesce(manual,serial) order by last_used
 	 limit $offset,$urls_per_sitemap") or die($db->ErrorMsg());
 
 	//write one <url> line per result...
@@ -79,7 +79,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++) {
 			"<lastmod>%s</lastmod>".
 			"</url>\n",
 			urlencode2($recordSet->fields['grid_reference']),
-			urlencode2($recordSet->fields['serial']),
+			urlencode2($recordSet->fields['serials']),
 			$date
 			);
 

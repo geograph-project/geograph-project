@@ -63,6 +63,7 @@ foreach ($squares as $square => $gridsquare_id) {
 	if (empty($gridsquare_id))
 		die("unknown id for $square\n");
 
+		//same_user_id not particilly useful (it duplicates user_gridsquare, but important user_id is part of serial!
 	$rows = $dbreplica->getAssoc("SELECT gridimage_id,title,md5(comment) as comment,length(comment) as comment_len,tags,imageclass,imagetaken,gi.user_id
 		, GROUP_CONCAT(snippet_id ORDER BY snippet_id) as snippets,manual
 		FROM gridimage_search gi LEFT JOIN gridimage_snippet USING (gridimage_id)
@@ -99,8 +100,6 @@ foreach ($squares as $square => $gridsquare_id) {
                                 continue;
 			$updates['same_'.$key] = $matrix[$key][$row[$key]]??'NULL';
 		}
-		//if (empty($row['tags'])) $updates['same_tags'] = 'NULL'; //a string, because no escaping is done!
-		//if (empty($row['snippets'])) $updates['same_snippets'] = 'NULL';
 
 		//should always find itself, so will update something. //todo, is to strip postfixes (like numbers)
 		foreach ($matrix['title'] as $title => $count) {
@@ -114,7 +113,7 @@ foreach ($squares as $square => $gridsquare_id) {
 		else
 			$updates['serial']='NULL';
 
-		//todo, this does not do escaping. only ok for numeric updates!
+		//todo, this does not do escaping. only ok for numeric updates! (and 'NULL'!)
 		$values[] = "(".implode(',',$updates).")";
 	}
 
