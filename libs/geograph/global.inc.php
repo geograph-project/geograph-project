@@ -792,16 +792,18 @@ if (!empty($_GET['ddddd']))
 
 #################################################
 
-
 function smarty_function_pageheader() {
-	//if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
-	//	return '<script type="application/javascript">var _prum={id:"5166ef76e6e53d853b000000"};var PRUM_EPISODES=PRUM_EPISODES||{};PRUM_EPISODES.q=[];PRUM_EPISODES.mark=function(b,a){PRUM_EPISODES.q.push(["mark",b,a||new Date().getTime()])};PRUM_EPISODES.measure=function(b,a,b){PRUM_EPISODES.q.push(["measure",b,a,b||new Date().getTime()])};PRUM_EPISODES.done=function(a){PRUM_EPISODES.q.push(["done",a])};PRUM_EPISODES.mark("firstbyte");(function(){var b=document.getElementsByTagName("script")[0];var a=document.createElement("script");a.type="text/javascript";a.async=true;a.charset="UTF-8";a.src="//rum-static.pingdom.net/prum.min.js";b.parentNode.insertBefore(a,b)})();</script>';
-	//}
 
-//	if(extension_loaded('newrelic')) {
-///		return newrelic_get_browser_timing_header();
-//	}
+	if (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 == 0 || !empty($_GET['timing'])) { //&& appearsToBePerson?
+		//should be inlined to avoid an extra HTTP request!
+		return "<script>".file_get_contents($_SERVER['DOCUMENT_ROOT']."/js/cwv.js")."</script>";
+
+		//return '<script src="'.smarty_modifier_revision("/js/cwv.js").'"></script>';
+	}
+
 }
+
+#################################################
 
 function smarty_function_pagefooter() {
 	global $mobile_browser,$mobile_url,$CONF,$memcache;
