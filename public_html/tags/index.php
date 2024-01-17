@@ -451,7 +451,6 @@ $sphinxq = str_replace('-',' ',$sphinxq);
                 }
 		$smarty->assign('onetag',1);
 		$smarty->assign('description',$tags[key($tags)]['description']);
-
 	} elseif (empty($prefix)) {
                 foreach ($tags as $tag_id => $row) {
                         if (!empty($row['tag']) && empty($row['prefix']) && strcasecmp($row['tag'],$_GET['tag']) == 0) {

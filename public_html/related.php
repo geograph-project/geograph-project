@@ -58,6 +58,10 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			header("HTTP/1.0 410 Gone");
 			header("Status: 410 Gone");
 			$template = "static_404.tpl";
+
+/////////////////////////////////////
+//sample/quick
+
 		} elseif ($_GET['method'] == 'sample' || $_GET['method'] == 'quick') {
 			$results = array();
 
@@ -196,6 +200,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
                         $smarty->assign_by_ref('results', $results);
                         $smarty->assign('method',$_GET['method']);
 
+//////////////////////////////////////
+// combined
+
 		} elseif (!empty($_GET['method']) && $_GET['method'] == 'combined') {
 			$results = array();
 
@@ -272,11 +279,38 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 			$smarty->assign_by_ref('results', $results);
 			$smarty->assign('method','combined');
+
+///////////////////////////////////////////////////
+// split
+
 		} else {
 
 			$results = array();
 
+
+/* TODO. could add some more..
+
+* Tags! + Subject
+* Context?
+* Automatic Clusters - DONE!
+* Currated labels
+* Same title (via gridimage_duplicate)
+* Photoset (via duplication_stat)
+* Manual Photosets (if implemeneted)
+* others from duplication_stat
+* terms?
+* vision groups? (bother hold google AI, plus our own experimental models)
+* wikipedia groups
+* collections (mainly articles)
+* gridimage_post_highlight
+* recreates: tag (although done with backlink for now!)
+* computer vision
+* taken in same location - eg centisquare+direction, but probably same addtional verificaton that same view - computer vision?
+
+*/
+
 			###########################
+			//similar title
 
 			$t2 = preg_replace('/\b(\d+|\w{1,2})\b/',' ',$image->title);
 			$t2 = str_replace("'",'',$t2);
@@ -290,6 +324,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			if (!empty($res)) $results[] = $res;
 
 			###########################
+			//taken same day
 
 			if (!preg_match('/(0000|-00)/',$image->imagetaken)) {
 /*				$res = check_images(
@@ -310,6 +345,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 
 			###########################
+			//same category
 
 			$res = check_images(
 				"In similar category near {$image->grid_reference}",
@@ -319,6 +355,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			if (!empty($res)) $results[] = $res;
 
 			###########################
+			//backlinks
 
 			$db = GeographDatabaseConnection(true);
 
@@ -335,6 +372,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 
 			###########################
+			//shared description
 
 			$image->loadSnippets();
 			if ($image->snippet_count) {
@@ -358,6 +396,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 
 			###########################
+			//automatic clusters
 
 			$labels = $db->getCol("SELECT label 
 						FROM gridimage_group 
@@ -396,6 +435,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 
 			###########################
+			//contributor
 
 			$res = check_images(
 				"By same Contributor near {$image->grid_reference}",
@@ -418,6 +458,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 		                       $smarty->assign('thumbw',120);
                                         $smarty->assign('thumbh',120);
+
+/////////////////////////////////////////////
 
 	} else {
 		header("HTTP/1.0 404 Not Found");
