@@ -12,7 +12,7 @@
 	width:100%;
 	padding:0 8px;
 }
-@media (min-width:1200px){
+@media (min-width:1000px){
 	.twocolumn{
 		width:50%;
 	}
@@ -22,11 +22,9 @@
   clear: both;
   display: table;
 }
-
 div#map {
 	max-width:100% !important;
 }
-
 </style>
 {/literal}
 
@@ -562,7 +560,7 @@ div#map {
 <p><label for="comment"><b>Description</b> {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
  <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span><br/></span>
 {if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
-<textarea id="comment" name="comment" rows="7"  style="width:100%;" title="Original: {$image->current_comment|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$image->comment|escape:'html'}</textarea>
+<textarea id="comment" name="comment" rows="7" cols="70" style="max-width:100%;" title="Original: {$image->current_comment|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$image->comment|escape:'html'}</textarea>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a grid square or <span style="color:blue">[[54631]]</span> to link to another image.<br/>
 For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 </p>
@@ -749,7 +747,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 {*------------------------Change comments box----------------------------*}
 <div class="twocolumn">
-<textarea id="updatenote" name="updatenote" rows="8" style="width:100%;" {if $user->message_sig} onfocus="if (this.value=='') {literal}{{/literal}this.value='{$user->message_sig|escape:'javascript'}';setCaretTo(this,0); {literal}}{/literal}"{/if}>{$updatenote|escape:'html'}</textarea>
+<textarea id="updatenote" name="updatenote" rows="8" cols="70"  style="max-width:100%; font-family: Georgia, Verdana, Arial, serif;" {if $user->message_sig} onfocus="if (this.value=='') {literal}{{/literal}this.value='{$user->message_sig|escape:'javascript'}';setCaretTo(this,0); {literal}}{/literal}"{/if}>{$updatenote|escape:'html'}</textarea>
 
 
 </div>

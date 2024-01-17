@@ -146,7 +146,7 @@ ul.infos li:hover>small {
 {foreach from=$list item=item}
 	{if $lastcat != $item.category_name}
 		{if $lastcat}
-			</div>
+			
 		{/if}
 
 		<div class="threecolumn">
