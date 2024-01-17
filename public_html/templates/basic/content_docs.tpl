@@ -169,8 +169,10 @@ ul.infos li:hover>small {
 	  </ul>
 	{/foreach}
 
-	</ul>
-	</div>
+	{if $lastcat}
+			</ul>
+		</div>
+	{/if}
 
 	<br style="clear:both"/>
 </div>
