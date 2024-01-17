@@ -92,4 +92,5 @@ $REVISIONS['/templates/resp/css/responsive.css']=72015581;
 $REVISIONS['/templates/resp/css/modification.css']=32672144;
 $REVISIONS['/js/anyascii.js']=69351707;
 $REVISIONS['/features/view.js']=65689534;
+$REVISIONS['/js/cwv.js']=77315308;
 ?>
