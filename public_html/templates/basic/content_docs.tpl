@@ -141,38 +141,40 @@ ul.infos li:hover>small {
   
   
 {*---------------------------Articles-------------------------*}
+
 <div class="threecolsetup">
-{assign var="lastid" value="0"}
-{foreach from=$list item=item}
-	{if $lastcat != $item.category_name}
-		{if $lastcat}
-			
+	{assign var="lastid" value="0"}
+	{foreach from=$list item=item}
+		{if $lastcat != $item.category_name}
+			{if $lastcat}
+			        </ul>
+			</div>
+			{/if}
+
+			<div class="threecolumn">
+				<h3>{$item.category_name}</h3>
+				<ul class="infos">
+					{assign var="lastname" value=""}
 		{/if}
+		<li><a title="{$item.extract|default:'View Article'}" href="{$item.url}">{$item.title}</a>
+			<small id="att{$lastid+1}"><small style="color:lightgrey">{if $item.user_id}by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a>{/if}
+			</small></small>
+		</li>
+		{assign var="lastname" value=$item.realname}
+		{assign var="lastcat" value=$item.category_name}
+		{assign var="lastid" value=$lastid+1}
+	{foreachelse}
+	  <ul>
+	  <li><i>There are no Articles to display at this time.</i></li>
+	  </ul>
+	{/foreach}
 
-		<div class="threecolumn">
-    <h3>{$item.category_name}</h3>
-		<ul class="infos">
-		{assign var="lastname" value=""}
-	{/if}
-	<li><a title="{$item.extract|default:'View Article'}" href="{$item.url}">{$item.title}</a>
-		<small id="att{$lastid+1}"><small style="color:lightgrey">{if $item.user_id}by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a>{/if}
-		</small></small>
-	</li>
-	{assign var="lastname" value=$item.realname}
-	{assign var="lastcat" value=$item.category_name}
-	{assign var="lastid" value=$lastid+1}
-  </ul>
-  </div>
-{foreachelse}
-	<ul>
-  <li><i>There are no Articles to display at this time.</i></li>
-  </ul>
-{/foreach}
+	</ul>
+	</div>
 
-
-
+	<br style="clear:both"/>
 </div>
-<br style="clear:both"/>
+
 <hr style="color:silver"/>
 
 	<p align="center">Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967.<br> Registered office: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA. <a href="/article/About-Geograph-page">About Geograph Project</a>.</p>
