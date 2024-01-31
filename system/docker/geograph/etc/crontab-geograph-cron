@@ -29,7 +29,7 @@
 47	*	* * *   /usr/bin/php /var/www/geograph/scripts/remove-temp-uploads.php --limit=250 --execute=true
 
 35	1       * * *	/usr/bin/php /var/www/geograph/scripts/createsphinx-delta.php
-51	8-23	* * *	/usr/bin/php /var/www/geograph/scripts/update_tags.php --interval="4 hour" --execute=true
+51	*	* * *	/usr/bin/php /var/www/geograph/scripts/update_tags.php --interval="4 hour" --execute=true
 
 21      */3     * * *	/usr/bin/php /var/www/geograph/scripts/typo-run-phrase.php
 25      */6     * * *	/usr/bin/php /var/www/geograph/scripts/typo-run-expression.php

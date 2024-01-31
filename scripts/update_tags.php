@@ -44,8 +44,11 @@ if (!empty($param['tag_days']))
 		select distinct gridimage_id FROM gridimage_tag INNER JOIN tag USING (tag_id) WHERE tag.updated > DATE_SUB(NOW(),interval {$param['tag_days']} day) and gridimage_id < 4294967296 and gridimage_tag.status = 2 AND tag.updated != tag.created";
 
 elseif (!empty($param['interval']))
+	//this specifically looks for all updates, even if status becomes =0 (or =1) such that no longer public
 	$s[] = "create temporary table tagids (primary key(gridimage_id))
 		select distinct gridimage_id FROM gridimage_tag WHERE updated > DATE_SUB(NOW(),interval {$param['interval']}) and gridimage_id < 4294967296";
+else
+	die("unknown option\n");
 
 ######################################################################################################################################################
 
@@ -66,7 +69,7 @@ else
 $where = "where gt.status = 2 and t.status = 1 and gridimage_id < 4294967296";
 $group = "group by gridimage_id order by null";
 
-if (preg_match('/(\d+) day/',$param['interval'],$m) && $m[1]>10) {
+if (!empty($param['tag_days']) || (preg_match('/(\d+) day/',$param['interval'],$m) && $m[1]>10)) {
 	$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 
 	for($start = 1;$start<$max;$start+=100000) {
@@ -92,6 +95,11 @@ foreach ($s as $sql) {
 		if (!empty($param['debug']))
 			print date('r')." (started)\n";
 		$db->Execute($sql);
+
+		if (strpos($sql,'create temporary table tagids') === 0 && !$db->Affected_Rows()) {
+			die("No new tags. Closing early\n");
+		}
+
 		if (!empty($param['debug'])) {
 			print date('r')." (done)\n";
 			print "Rows Affected: ".$db->Affected_Rows()."\n";
