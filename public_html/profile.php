@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (!empty($_SERVER['PATH_INFO'])) {
+	header('HTTP/1.0 400 Bad Request');
+        exit;
+}
+
 if (empty($_SERVER['HTTP_USER_AGENT']))
         die("no scraping");
 

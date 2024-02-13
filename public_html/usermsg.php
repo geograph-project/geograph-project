@@ -31,6 +31,11 @@ if (empty($_REQUEST['to']) || !is_numeric($_REQUEST['to'])) {
         exit;
 }
 
+if (!empty($_SERVER['PATH_INFO'])) {
+	header('HTTP/1.0 400 Bad Request');
+        exit;
+}
+
 require_once('geograph/global.inc.php');
 init_session();
 

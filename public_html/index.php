@@ -29,6 +29,19 @@ if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
 		$mobile_url = "https://m.geograph.org.uk/";
 }*/
 
+if (!empty($_SERVER['PATH_INFO'])) {
+	header('HTTP/1.0 400 Bad Request');
+        exit;
+}
+
+if (!empty($_GET)) {
+	$allowed = array('lang','potd','preview');//only ones allowed
+	if (array_diff(array_keys($_GET),$allowed)) {
+		header('HTTP/1.0 400 Bad Request');
+        	exit;
+	}
+}
+
 if (empty($smarty)) {
 	require_once('geograph/global.inc.php');
 	init_session();
