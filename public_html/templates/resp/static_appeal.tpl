@@ -164,11 +164,6 @@ a.btn {
 		See {external text="our page on <b>Give as you Live</b>" href="https://www.giveasyoulive.com/join/geograph-project-limited"}, for how can raise free donations simply by shopping online.
 	</li>
 
-	<li>
-		Or can setup <b>{external href="https://smile.amazon.co.uk/gp/chpf/about/ref=smi_se_rspo_laas_aas" text="Amazon Smile"}</b> and Amazon will donate to a charity of your choice for every purchase you make. 
-			{external href="https://smile.amazon.co.uk/gp/chpf/homepage?q=Geograph&orig=%2F&ie=UTF-8" text="Geograph"} is registered there. 
-	</li>
-
 	<li>{mailto address="treasurer@geograph.org.uk" text="Contact the Treasurer" encode="javascript"} if you wish to set up a <b>standing order</b>.</li>
 
 	<li>Also can a leave a <b>gift in your will</b>. <a href="javascript:void(show_tree('gift'));" id="hidegift">Read More...</a>
