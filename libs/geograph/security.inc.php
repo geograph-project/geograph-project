@@ -51,8 +51,20 @@ function rate_limiting($slug, $per_minute = 5, $enforce = false) {
 	if (!empty($USER) && $USER->user_id)
 		$per_minute *= 2;
 
+	if (preg_replace('/Chrome\/[67]/',$_SERVER['HTTP_USER_AGENT'])) {
+		//we starting to get a lot of requests, were the 'minor' version appears randomized.
+		//2		Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.2123.122 Safari/537.36
+		//2		Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.2124.18 Safari/537.36
+		//2		Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.2130.125 Safari/537.36
+		//2		Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.2130.64 Safari/537.36
+		//2		Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.2135.105 Safari/537.36
+		$ua = preg_replace('/\/(\d+)\.[\d\.]+/',"/$1.x",$_SERVER['HTTP_USER_AGENT']);
+	} else {
+		$ua = $_SERVER['HTTP_USER_AGENT'];
+	}
+
 	//todo, this should probably use IP! and/or session/user_id
-	$mkey = 'rate:'.$memcache->prefix.md5($slug.'.'.getRemoteIP().'@'.$_SERVER['HTTP_USER_AGENT']).':'.date('i');
+	$mkey = 'rate:'.$memcache->prefix.md5($slug.'.'.getRemoteIP().'@'.$ua).':'.date('i');
 
 	$counter = $memcache->redis->incr($mkey);
 	$memcache->redis->expire($mkey, 59); //always need to expire!
@@ -81,6 +93,7 @@ function rate_limiting($slug, $per_minute = 5, $enforce = false) {
 	        session = ".$db->Quote(session_id())."
 
 		ON DUPLICATE KEY UPDATE counter = ".intval($counter); //so we only keep one log line per minute!
+		//todo, add HTTP_REFERER (if external) to UPDATE, so we can record an external referer, even if wasnt on the first hit!
 
 		$db->Execute($ins);
 
