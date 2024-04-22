@@ -36,6 +36,28 @@
 */
 
 
+function validateGooglebot() {
+	if (empty($_SERVER['HTTP_USER_AGENT']))
+		return;
+
+	if (stripos($_SERVER['HTTP_USER_AGENT'],'Googlebot/') !== FALSE) {
+		$ip = getRemoteIP();
+		$host = gethostbyaddr($ip);
+		//if dns fails, get $host=$ip - ignore that for now!
+		if (!preg_match('/\.google(bot)?\.com$/i', $host)) { //sometimes, it might be a legitmate google proxy
+			header("HTTP/1.0 403 Forbidden");
+                	exit;
+		}
+		//we also need to do a forward check! As the PTR record COULD be spooffed!
+		$ip2 = gethostbyname($host);
+		if ($ip != $ip2) {
+			header('HTTP/1.0 451 Unavailable For Legal Reasons');
+                	exit;
+		}
+	}
+}
+
+
 function rate_limiting($slug, $per_minute = 5, $enforce = false) {
 	global $USER, $memcache;
 

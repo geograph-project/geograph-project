@@ -57,6 +57,8 @@ if (empty($_SERVER['HTTP_USER_AGENT'])
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 
+validateGooglebot(); //needs to be after global, as needs getRemoteIP
+
 if (!empty($_POST['style']) && !empty($_GET['i'])) {
 	session_cache_limiter('private_no_expire'); //this is just to override the default no-store that gets added (so user can use backbutton)
 
