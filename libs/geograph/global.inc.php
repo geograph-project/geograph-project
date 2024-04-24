@@ -41,12 +41,18 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
 	 || ($_SERVER['HTTP_USER_AGENT'] == "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36")
 	 || (@$_SERVER['HTTP_REFERER'] == 'https://www.google.com/search?hl=en&q=testing') //seems to be common in some testers
          || (@$_SERVER['HTTP_X_FORWARDED_FOR'] == "122.142.198.166" || @$_SERVER['HTTP_X_FORWARDED_FOR'] == "5.181.40.115")
+         || (@$_SERVER['HTTP_X_FORWARDED_FOR'] == "213.109.202.67")
 		//HTTP_CONTENT_TYPE: multipart/form-data; boundary=-----AcunetixBoundary_PYAHFBXIFU
          || (!empty($_SERVER['HTTP_CONTENT_TYPE']) && strpos($_SERVER['HTTP_CONTENT_TYPE'],'AcunetixBoundary_'))
 	) {
 	        header("HTTP/1.0 403 Forbidden");
 	        header("Cache-Control: max-age=360000");
         	exit;
+	}
+
+	if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'],"47.76.") === 0 && preg_match("/Chrome\/[67]/",$_SERVER['HTTP_USER_AGENT'])) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     exit;
 	}
 }
 
