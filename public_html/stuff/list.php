@@ -163,12 +163,14 @@ if (!empty($_GET['debug']))
                 }
 		*/
 		if (!empty($_GET['gridref']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gridref'])) {
+			$reference_index = (strlen($_GET['gridref'])==6)?1:2;
 			$crit = "grid_reference = ".$db->Quote($_GET['gridref'])." and title = ".$db->Quote($_GET['title'])." and serial is not null AND same_title = same_serial"; //checking same_title, mans tehre isnt multiple serials with same title!
 			if ($serial = $db->getOne("SELECT serial FROM duplication_stat INNER JOIN gridimage_search USING (gridimage_id) WHERE $crit")) {
-				$ri = (strlen($_GET['gridref'])==6)?1:2;
 				$url = $CONF['canonical_domain'][$reference_index]."/photoset/".urlencode($_GET['gridref'])."/".urlencode($serial);
-				$smarty->assign('extra_meta',"<link rel=\"canonical\" href=\"$url\" />");
+			} else {
+				$url = $CONF['canonical_domain'][$reference_index]."/stuff/list.php?title=".urlencode($_GET['title'])."&amp;gridref=".strtoupper(urlencode($_GET['gridref']));
 			}
+			$smarty->assign('extra_meta',"<link rel=\"canonical\" href=\"$url\" />");
 		}
 
 	} elseif (!empty($_GET['label'])) {
@@ -191,7 +193,7 @@ if (!empty($_GET['debug']))
 		die("unknown query");
 	}
 
-	if (!empty($_GET['gridref']) && preg_match('/^\w{1,3}\d{4,10}/',$_GET['gridref'])) {
+	if (!empty($_GET['gridref']) && preg_match('/^\w{1,2}\d{4,10}/',$_GET['gridref'],$m)) {
 		$q .= " @grid_reference {$_GET['gridref']}";
 		$title .= " in {$_GET['gridref']}";
 	}
