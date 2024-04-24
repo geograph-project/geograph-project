@@ -35,7 +35,7 @@
 <ol start="{$offset}">
 {foreach from=$results item=item}
 	<li>
-	<b><a href="/stuff/list.php?label={$item.label|escape:'url'}&amp;gridref={$item.grid_reference|escape:'url'}" target="_top">{$item.label|escape:'html'|default:'unknown'}</a></b> {$item.grid_reference}
+	<b><a href="/stuff/list.php?label={$item.label|escape:'urlplus'}&amp;gridref={$item.grid_reference|escape:'url'}" target="_top">{$item.label|escape:'html'|default:'unknown'}</a></b> {$item.grid_reference}
 	
 	{if $item.images}
 	<small><small style="color:gray">{$item.images} images</small></small>{/if}
@@ -60,7 +60,7 @@
 {/if}
 
 {if $q} 
-<p>&middot; can get similar results from <a href="/finder/groups.php?q=groups%3A{$q|escape:'url'}&amp;group=group_ids">Group By Search</a> filtered to only show results from the cluster labels</p>
+<p>&middot; can get similar results from <a href="/finder/groups.php?q=groups%3A{$q|escape:'urlplus'}&amp;group=group_ids">Group By Search</a> filtered to only show results from the cluster labels</p>
 {/if}
 
 <div class="interestBox" style="margin-top:60px;">

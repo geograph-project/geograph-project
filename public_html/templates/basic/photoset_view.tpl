@@ -257,9 +257,9 @@ p.alert-danger {
 			<input type=button value="Open Map Viewer for these images" onclick="showMap()">
 		{/if}
 		{if $label && $totalimagecount > 50}
-			<input type=button value="View all {$totalimagecount} Curated Images" onclick="location.href='/curated/sample.php?label={$label|escape:'url'}'">
+			<input type=button value="View all {$totalimagecount} Curated Images" onclick="location.href='/curated/sample.php?label={$label|escape:'urlplus'}'">
 			{if !$place}
-				<input type=button value="View images by Region" onclick="location.href='/curated/sample.php?label={$label|escape:'url'}&amp;region=Group+By'">
+				<input type=button value="View images by Region" onclick="location.href='/curated/sample.php?label={$label|escape:'urlplus'}&amp;region=Group+By'">
 			{/if}
 		{/if}
 		{if $label}
@@ -334,7 +334,7 @@ p.alert-danger {
 	{/if}
 
 	{if $same_title} 
-		<p><i>These are {$imagecount} of <a href="/stuff/list.php?title={$first->title|escape:'url'}&amp;gridref={$first->grid_reference}">{$same_title} images, with title {$first->title|escape:'html'}</a> in this square</i></p>
+		<p><i>These are {$imagecount} of <a href="/stuff/list.php?title={$first->title|escape:'urlplus'}&amp;gridref={$first->grid_reference}">{$same_title} images, with title {$first->title|escape:'html'}</a> in this square</i></p>
 	{/if}
 
 	<hr><p><img src="{$static_host}/img/80x15.png" alt="Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0)"> &nbsp; All images 
