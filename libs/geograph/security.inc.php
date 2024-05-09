@@ -73,7 +73,7 @@ function rate_limiting($slug, $per_minute = 5, $enforce = false) {
 	if (!empty($USER) && $USER->user_id)
 		$per_minute *= 2;
 
-	if (preg_replace('/Chrome\/[67]/',$_SERVER['HTTP_USER_AGENT'])) {
+	if (preg_match('/Chrome\/[67]/',$_SERVER['HTTP_USER_AGENT'])) {
 		//we starting to get a lot of requests, were the 'minor' version appears randomized.
 		//2		Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.2123.122 Safari/537.36
 		//2		Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.2124.18 Safari/537.36
