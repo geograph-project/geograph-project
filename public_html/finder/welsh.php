@@ -43,6 +43,11 @@ if ($CONF['template']!='ireland') {
 	$smarty->assign('english_url',"/of/"); //linkt to the simple search, as the most similar to this!
 }
 
+if (preg_match('/Postcode ([A-Z]+)/',$_GET['loc'],$m)) {
+        if (!in_array($m[1],array('LL','CH','SY','SA','LD','HR','NP','CF')))
+		header("X-Robots-Tag: noindex");
+}
+
         if (!$smarty->is_cached($template, $cacheid)) {
 
                 $db = GeographDatabaseConnection(true);

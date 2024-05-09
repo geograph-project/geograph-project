@@ -80,7 +80,13 @@ $smarty = new GeographPage;
 $smarty->assign('responsive',true);
 
 if ($CONF['template']!='ireland') {
-        $smarty->assign('welsh_url',"/chwilio/?loc=".urlencode($_GET['q'])."&lang=cy");
+	if (preg_match('/Postcode ([A-Z]+)/',$_GET['q'],$m)) {
+		if (in_array($m[1],array('LL','CH','SY','SA','LD','HR','NP','CF')))
+		        $smarty->assign('welsh_url',"/chwilio/?loc=".urlencode($_GET['q'])."&lang=cy");
+		//dont add for non-Wales postcodes
+	} else {
+	        $smarty->assign('welsh_url',"/chwilio/?loc=".urlencode($_GET['q'])."&lang=cy");
+	}
         //$smarty->assign('english_url',"/"); //needed by the welsh template!
 }
 
