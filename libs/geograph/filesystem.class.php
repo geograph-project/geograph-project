@@ -64,7 +64,8 @@ class FileSystem extends S3 {
 
 		if (!empty($_SERVER['AWS_WEB_IDENTITY_TOKEN_FILE'])) {
 
-			$decode = $memcache->name_get('iam','IRSA-credentials');
+			if (!empty($memcache) && $memcache->valid)
+				$decode = $memcache->name_get('iam','IRSA-credentials');
 
 			if (empty($decode)) {
 				$p = array();
@@ -84,7 +85,7 @@ class FileSystem extends S3 {
 					$decode["Token"] = $decode['SessionToken']; unset($decode['SessionToken']);
 				}
 
-				if (!empty($decode['AccessKeyId']))
+				if (!empty($decode['AccessKeyId']) && !empty($memcache) && $memcache->valid)
 					$memcache->name_set('iam','IRSA-credentials',$decode,false,3000);
 			}
 
@@ -96,7 +97,8 @@ class FileSystem extends S3 {
 			$iamrole = file_get_contents("http://169.254.169.254/latest/meta-data/iam/security-credentials/");
 
 			if (empty($iamrole)) {
-				$iamrole = $memcache->name_get('iam','local-role');
+				if (!empty($memcache) && $memcache->valid)
+					$iamrole = $memcache->name_get('iam','local-role');
 				if (empty($iamrole))
 					return; //no more construction needed, the class can run without S3.
 			}
@@ -107,6 +109,7 @@ class FileSystem extends S3 {
 			$decode = json_decode($json,true);
 
 			//always fetch live, only use memcache version if fetching failed
+			if (!empty($memcache) && $memcache->valid)
 			if (empty($json) || empty($decode) || empty($decode['AccessKeyId'])) {
 				$json = $memcache->name_get('iam','security-credentials');
 				$decode = json_decode($json,true);
@@ -364,6 +367,12 @@ if (!empty($_GET['debug']))
 				$this->_log('invalidate',$bucket,$r);
 				break;
 		        }
+		}
+
+		//temporty bodge. We can't send invalidations to R3 currently, so keep a log, so can do it later!
+		$db=&$this->_getDB(true);
+		foreach($filenames as $filename) {
+			$db->Execute("INSERT INTO invalidations SET bucket=".$db->Quote($bucket).", filename=".$db->Quote($filename)); //created column set automatically
 		}
 	}
 
