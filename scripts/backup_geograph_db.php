@@ -122,7 +122,7 @@ foreach ($status as $table => $s) {
 
 	if ($backup) {
 		//create the SQL before dumping the table, so updates happen after are caught in next backip
-		$sql = "UPDATE `_tables` SET `backedup` = '".date('Y-m-d H-i-s')."' WHERE `table_name` = '".mysqli_real_escape_string($db,$table)."'";
+		$sql = "UPDATE `_tables` SET `factor` = `factor` + 1, `backedup` = '".date('Y-m-d H-i-s')."' WHERE `table_name` = '".mysqli_real_escape_string($db,$table)."'";
 
 		if (!is_dir($folder.$table.'/'))
 			mkdir($folder.$table.'/');
