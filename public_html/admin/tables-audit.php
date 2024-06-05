@@ -37,7 +37,7 @@ $sql = "SELECT TABLE_NAME AS table_name,TABLE_ROWS,DATA_LENGTH,AVG_ROW_LENGTH,UP
         FROM information_schema.tables
                 LEFT JOIN _tables USING (table_name)
         WHERE table_schema = DATABASE()
-                AND backup != 'N' AND (method IS NULL OR (DATA_LENGTH>16000000 AND method NOT like '%shard%'))
+                AND backup != 'N' AND (method IS NULL OR (DATA_LENGTH>36000000 AND method NOT like '%shard%'))
         LIMIT 1";
 }
 

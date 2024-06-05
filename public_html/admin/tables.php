@@ -24,7 +24,7 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-($USER->user_id == 2520) || $USER->mustHavePerm("admin");
+$USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 

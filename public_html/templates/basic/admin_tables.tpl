@@ -21,21 +21,21 @@
 		  </tr>
 		  <tr>
 			 <td><b>Type</b></td>
-			 <td><select name="type" id="type" size="1"> 
-				{html_options options=$types selected=$arr.type}
-			     </select></td>
+			 <td> 
+				{html_radios name="type" options=$types checked=$arr.type}
+			 </td>
 		  </tr>
 		  <tr>
 			 <td><b>Backup</b></td>
-			 <td><select name="backup" id="type" size="1"> 
-				{html_options options=$backups selected=$arr.backup}
-			     </select></td>
+			 <td>
+				{html_radios name="backup" options=$backups checked=$arr.backup}
+			 </td>
 		  </tr>
 		  <tr>
 			 <td><b>Sensitive</b></td>
-			 <td><select name="sensitive" id="type" size="1"> 
-				{html_options options=$sensitives selected=$arr.sensitive}
-			     </select></td>
+			 <td>
+				{html_radios name="sensitive" options=$sensitives checked=$arr.sensitive}
+			 </td>
 		  </tr>
 		  <tr>
 			 <td><b>description</b></td>
