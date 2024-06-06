@@ -47,7 +47,7 @@ if (isset($_GET['assignToken'])) {
 		setcookie('workerToken', $token->getToken(), time()+3600*24*365,'/');
 		print "Thank You. You may now begin processing jobs.";
 	} else {
-		die("Error: no worker token found for your IP");
+		die(json_encode(array('error'=>"no worker token found for your IP")));
 	}
 	exit;
 }
@@ -544,7 +544,7 @@ if (isset($_GET['downloadJobData'])) {
 
 function die_with_error($message) {
 	if (isset($_GET['output']) && $_GET['output']=='json') {
-                die("{error: '$message'}");
+                die(json_encode(array('error'=>$message)));
         } else {
                 die("ERROR:$message");
         }

@@ -43,7 +43,7 @@ sphinx</a></p>
 <table>
 <tr><td align="right">?match=</td><td><input name="match" value="bridge"></td><td>The full-text query (in SPH_MATCH_EXTENDED format)</td></tr>
 <tr><td align="right">&amp;callback=</td><td><input name="callback"></td><td>callback function name for JSONP</td></tr>
-<tr><td align="right">&amp;where=/td><td><input name="where" value="user_id = 93"></td><td>General WHERE clause for filtering attributes</td></tr>
+<tr><td align="right">&amp;where=</td><td><input name="where" value="user_id = 93"></td><td>General WHERE clause for filtering attributes</td></tr>
 <tr><td align="right">&amp;order=</td><td><input name="order" value="WEIGHT() DESC, id DESC"></td><td>ORDER BY (When grouping)</td></tr>
 <tr><td align="right">&amp;group=</td><td><input name="group"></td><td>Group by (attribute name) - see <a href="?q=&limit=1&select=*&attrs=list">list</a></td></tr>
 <tr><td align="right">&amp;within=</td><td><input name="within" value=""></td><td>Within Group ORDER</td></tr>
@@ -100,7 +100,7 @@ Example Queries:
 			header("HTTP/1.1 503 Service Unavailable");
 			header('Content-type: application/json');
 			header('Access-Control-Allow-Origin: *');
-			die("{'error': 'Service Unavailable'}");
+			die(json_encode(array('error'=>'Service Unavailable')));
 		}
 
 

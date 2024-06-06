@@ -49,7 +49,7 @@ if (!empty($USER->registered) && !empty($_GET['snippet_id']) && !empty($_GET['gr
 		$u['gridimage_id'] = $gid;
 
 		if ($gid < 4294967296 && !$db->getOne("SELECT gridimage_id FROM gridimage WHERE gridimage_id = $gid AND user_id = {$USER->user_id}")) {
-			die('{error:"invalid image"}');
+			die(json_encode(array('error'=>"invalid image")));
 		}
 
 		if ($_GET['status'] == 0) {
@@ -72,6 +72,6 @@ if (!empty($USER->registered) && !empty($_GET['snippet_id']) && !empty($_GET['gr
 		}
 	}
 } else {
-	die('{error:"invalid user"}');
+	die(json_encode(array('error'=>"invalid user")));
 }
 

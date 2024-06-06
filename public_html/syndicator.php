@@ -151,7 +151,7 @@ if (isset($_GET['q']) || !empty($_GET['location'])) {
 	if (!empty($_GET['location'])) {
 		if (preg_match('/^-+\d+$/',$_GET['location'])) {
 			header('HTTP/1.0 403 Forbidden');
-			print '{error:"invalid location"}';
+			print json_encode(array('error'=>"invalid location"));
 			exit;
 		}
 		if (!empty($_GET['text'])) {
@@ -273,10 +273,10 @@ if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && 
 	}
 
 	if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {
-		die('error: '.$engine->errormsg);
+		die(json_encode(array('error'=>$engine->errormsg)));
 	}
 	if (isset($engine->criteria) && $engine->criteria->is_multiple) {
-		die('error: unable to identify a unique location');
+		die(json_encode(array('error'=>'unable to identify a unique location')));
 	}
 }
 

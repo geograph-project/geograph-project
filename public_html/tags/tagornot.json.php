@@ -25,7 +25,7 @@ require_once('geograph/global.inc.php');
 
 init_session();
 if (!$USER->registered) {
-	die("{error: 'not logged in'}");
+	die(json_encode(array('error'=>'not logged in')));
 }
 
 $db = GeographDatabaseConnection(false);
@@ -86,19 +86,17 @@ $data = $db->getRow($query);
 
 if (!empty($data['tagornot_id']))
 	$db->Execute("UPDATE tagornot SET user_ids = CONCAT(user_ids,'|{$USER->user_id}|') WHERE tagornot_id = {$data['tagornot_id']}");
-	
+
 if (!empty($data['gridimage_id'])) {
 	$image = new Gridimage();
 	$image->gridimage_id = $data['gridimage_id'];
 	$image->user_id = $data['user_id'];
-	$data['image'] = $image->_getFullpath(true,true);	
+	$data['image'] = $image->_getFullpath(true,true);
 } else {
-	die("{error: 'no more images'}");
+	die(json_encode(array('error'=>'no more images')));
 }
 
 ########
 
 outputJSON($data);
-
-
 

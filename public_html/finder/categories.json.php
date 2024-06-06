@@ -89,7 +89,7 @@ if (!empty($_GET['canonical'])) {
                 if (isset($_GET['mine'])) {
                         init_session();
                         if (!$USER->registered) {
-                                die("{error: 'not logged in'}");
+                                die(json_encode(array('error'=>'not logged in')));
                         }
                         $sphinx->addFilters(array('user_id'=>array($USER->user_id)));
 

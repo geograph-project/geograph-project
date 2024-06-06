@@ -115,7 +115,7 @@ if ($_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
 } elseif (!empty($_GET['gridimage_id'])) {
 	init_session();
 	if (!$USER->registered) {
-		die("{error: 'not logged in'}");
+		die(json_encode(array('error'=>'not logged in')));
 	}
 	customExpiresHeader(180,false,true);
 
@@ -278,7 +278,7 @@ if ($_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
 			if (isset($_GET['mine'])) {
 			        init_session();
 			        if (!$USER->registered) {
-			                die("{error: 'not logged in'}");
+			                die(json_encode(array('error'=>'not logged in')));
 			        }
 				$sphinx->addFilters(array('user_id'=>array($USER->user_id)));
 			} elseif (isset($_GET['user_id'])) {
