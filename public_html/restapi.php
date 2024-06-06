@@ -87,8 +87,6 @@ class RestAPI
 				$this->beginResponse();
 
                                 if ($this->output=='json') {
-
-                                        require_once '3rdparty/JSON.php';
                                         $obj = new EmptyClass;
 
                                         $obj->user_id = $profile->user_id;
@@ -278,7 +276,6 @@ class RestAPI
                                 $this->beginResponse(true);
 
                                 if ($this->output=='json') {
-                                        require_once '3rdparty/JSON.php';
                                         print json_encode($obj);
                                 } else {
                                         echo '<oembed>';
@@ -316,7 +313,6 @@ class RestAPI
 
 				if ($this->output=='json') {
 
-					require_once '3rdparty/JSON.php';
 					$obj = new EmptyClass;
 
 					$obj->title = latin1_to_utf8($image->title);
@@ -395,9 +391,6 @@ class RestAPI
 			$this->beginResponse();
 
 			if ($this->output=='json') {
-
-				require_once '3rdparty/JSON.php';
-
 				print json_encode($images);
 			} else {
 				echo '<status state="ok"/>';
@@ -426,9 +419,6 @@ class RestAPI
 		$this->beginResponse();
 
 		if ($this->output=='json') {
-
-			require_once '3rdparty/JSON.php';
-
 			print json_encode($images);
 		} else {
 			echo '<status state="ok"/>';
@@ -454,9 +444,6 @@ class RestAPI
 		$this->beginResponse();
 
 		if ($this->output=='json') {
-
-			require_once '3rdparty/JSON.php';
-
 			print json_encode($images);
 		} else {
 			echo '<status state="ok"/>';
@@ -485,9 +472,6 @@ class RestAPI
 			$this->beginResponse();
 
 			if ($this->output=='json') {
-
-				require_once '3rdparty/JSON.php';
-
 				print json_encode($images);
 			} else {
 				echo '<status state="ok"/>';
@@ -530,9 +514,6 @@ class RestAPI
 			$this->beginResponse();
 
 			if ($this->output=='json') {
-
-				require_once '3rdparty/JSON.php';
-
 				print json_encode($images);
 			} else {
 				echo '<status state="ok"/>';
@@ -601,7 +582,6 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 				$count = count($images->results);
 
 				if ($this->output=='json') {
-					require_once '3rdparty/JSON.php';
 
 					$whitelist = array('image'=>1, 'thumbnail'=>1, 'gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1,'wgs84_lat'=>1,'wgs84_long'=>1);
 
@@ -643,7 +623,7 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 			else
 			{
 				if ($this->output=='json') {
-					print "{error: '0 results'}";
+					print json_encode(array('error'=>'0 results'));
 				} else {
 					echo '<status state="ok" count="0"/>';
 				}
@@ -675,9 +655,6 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
         	                $images = $db->getAll("SELECT (nateastings MOD 1000) DIV 100 AS e,(natnorthings MOD 1000) DIV 100 AS n,COUNT(*) AS c FROM gridimage WHERE gridsquare_id = {$square->gridsquare_id} AND nateastings > 0 AND moderation_status IN ('geograph','accepted') GROUP BY nateastings DIV 100,natnorthings DIV 100 ORDER BY NULL");
 
                 	        if ($this->output=='json') {
-
-                        	        require_once '3rdparty/JSON.php';
-
 	                                print json_encode($images);
         	                } else {
                 	                echo '<status state="ok"/>'."\n";
@@ -689,7 +666,7 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 
 			} else {
                                 if ($this->output=='json') {
-                                        print "{error: '0 results'}";
+					print json_encode(array('error'=>'0 results'));
                                 } else {
                                         echo '<status state="ok" count="0"/>';
                                 }
@@ -720,9 +697,6 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 			}
 
 				if ($this->output=='json') {
-
-                                        require_once '3rdparty/JSON.php';
-
                                         print json_encode($square);
                                 } else {
                                         echo '<status state="ok"/>'."\n";
@@ -771,8 +745,6 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 				$count = count($images);
 
 				if ($this->output=='json') {
-					if (!function_exists('json_encode'))
-						require_once '3rdparty/JSON.php';
 
 					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'tags'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1,'reference_index'=>1,'grid_reference'=>1);
 
@@ -824,7 +796,7 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 			else
 			{
 				if ($this->output=='json') {
-					print "{error: '0 results'}";
+					print json_encode(array('error'=>'0 results'));
 				} else {
 					echo '<status state="ok" count="0"/>';
 				}
@@ -918,7 +890,7 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 		$this->beginResponse();
 
 		if ($this->output=='json') {
-			print("{error: '".addslashes($msg)."'}");
+			print json_encode(array('error'=>$msg));
 		} else {
 			echo '<status state="failed">';
 			echo '<error code="400">';

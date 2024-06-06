@@ -25,11 +25,6 @@ require_once('geograph/global.inc.php');
 require_once('geograph/imagelist.class.php');
 init_session();
 
-if (!function_exists('json_decode')) {
-        require_once('/var/www/geograph_svn/libs/3rdparty/JSON.php');
-}
-
-
 
 $smarty = new GeographPage;
 
