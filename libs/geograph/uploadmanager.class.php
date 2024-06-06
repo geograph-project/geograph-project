@@ -933,7 +933,8 @@ class UploadManager
 //... actually in case adodb-errorhandler.inc.php was already called, then ADODB_ERROR_HANDLER has NOT been updated., so just use 'adodb_throw'
 $this->db->raiseErrorFn = 'adodb_throw';
 
-
+		$messages = array();
+		$sql = 'unknown';
 		while (empty($gridimage_id) && $counter < 10) {
 			try {
 				$this->db->beginTrans();
@@ -974,7 +975,7 @@ $this->db->raiseErrorFn = 'adodb_throw';
 				$this->db->commitTrans();
 
 			} catch(exception $e) {
-
+				$messages[] = $e->getMessage();
 				$this->db->rollbackTrans();
 				usleep(20000);
 				$counter++;
@@ -986,6 +987,7 @@ $this->db->raiseErrorFn = 'adodb_throw';
 		if (empty($gridimage_id)) {
 			header('HTTP/1.0 500 Server Error');
 			$con = "$sql;\n\n";
+			$con .= print_r($messages,TRUE);
 			$con .= print_r($_POST,TRUE);
 			$con .= print_r($_FILES,TRUE);
 			$con .= print_r($_SESSION,TRUE);
