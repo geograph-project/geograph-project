@@ -926,7 +926,7 @@ class SearchCriteria
 	function &_getDB($allow_readonly = false)
 	{
 		//check we have a db object or if we need to 'upgrade' it
-		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+		if (!is_object($this->db) || (!empty($this->db->readonly) && !$allow_readonly) ) {
 			$this->db=GeographDatabaseConnection($allow_readonly);
 		}
 		return $this->db;
