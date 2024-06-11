@@ -949,7 +949,9 @@ $this->db->raiseErrorFn = 'adodb_throw';
 				}
 				$seq_no=max($seq_no+1, 0);
 
-				$memcache->name_set('sid2',$mkey,$seq_no,false,$memcache->period_long);
+				//We dont actully NEED memcache. "NOREPLICAS Not enough good replicas to write" causes an exception, which aborts the transaction.
+				if ($counter < 8)
+					$memcache->name_set('sid2',$mkey,$seq_no,false,$memcache->period_long);
 
 				//create record
 				// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
@@ -961,7 +963,7 @@ $this->db->raiseErrorFn = 'adodb_throw';
 					"'pending',%s,%s,%d,%d,'%d',%s,%s,".
 					"now(),%d,%d,'%d',%d,%d,%s,%s)",
 					$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
-					$this->db->Quote($this->title), $this->db->Quote($this->comment), 
+					$this->db->Quote($this->title), $this->db->Quote($this->comment),
 					$this->square->nateastings,$this->square->natnorthings,$this->square->natgrlen,
 					$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
 					$viewpoint->nateastings,$viewpoint->natnorthings,$viewpoint->natgrlen,$this->view_direction,
