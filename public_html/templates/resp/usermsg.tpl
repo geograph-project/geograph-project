@@ -149,7 +149,7 @@
 		</div>
 
 		<div style="float:right; position:relative; vertical-align:top;">
-			- <b>{external href="http://recaptcha.net/" text="Protected by reCAPTCHA"}</b></span> -
+			- <b>{external href="https://www.google.com/recaptcha/about/" text="Protected by reCAPTCHA"}</b></span> -
 		</div>
 		<br>
 		</form>
