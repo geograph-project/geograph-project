@@ -62,7 +62,12 @@ if ($id == 5087080) {
 $row2 = $db->getRow("SELECT * FROM gridimage_size WHERE gridimage_id = $id");
 $great = max($row2['width'],$row2['height'],$row2['original_width'],$row2['original_height']);
 $ratio = $row2['original_width']/$row2['original_height'];
-if (!empty($_GET['size']) && $_GET['size'] == 8192 && $great > 8192) {
+
+if (!empty($_GET['size']) && $_GET['size'] == 12000 && $great >= 12000) {
+	$path = $image->getImageFromOriginal(12000,12000);
+	$row2['original_width'] = 12000;
+	$row2['original_height'] = 12000 /$ratio;
+} elseif (!empty($_GET['size']) && $_GET['size'] == 8192 && $great > 8192) {
 	$path = $image->getImageFromOriginal(8192,8192);
 	$row2['original_width'] = 8192;
 	$row2['original_height'] = 8192 /$ratio;
@@ -86,6 +91,7 @@ else {
 	$path = $image->_getFullpath();
 	$ratio = $row2['width']/$row2['height'];
 }
+
 
 ######################
 
