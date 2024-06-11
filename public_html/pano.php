@@ -17,6 +17,9 @@ if (empty($_GET['id'])) {
 $id = intval($_GET['id']);
 $_GET['full'] = 1; //always load the full version for now!
 
+if ($id == 7793712 && empty($_GET['size']))
+	$_GET['size'] = 12000; //temporally bodge. Need to autodetect when needed!
+
 $image = new Gridimage($id,false); // use gridimage to load the image - so will grab pending images too (we loading ->tags directly anyway
 
 if (empty($image) || !$image->isValid() || $image->moderation_status=='rejected') {
