@@ -38,7 +38,7 @@ class CreateThumbnail extends EventHandler
 		$db = $this->_getDB();
 
 		$image=new GridImage();
-		if (empty($db->realonly))
+		if (empty($db->readonly))
 			$image->_setDB($db);
 
 		$image->gridimage_id = $gridimage_id;
