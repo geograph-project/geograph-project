@@ -90,6 +90,18 @@ Please allow (with 'Close Enough') such images here, but should be from the same
 
 	<input style="background-color:lightgrey; color:green; width:200px" type="submit" name="similar" value="Close enough" onclick="autoDisable(this);" id="closebutton"/>
 
+
+{if $image->tag_prefix_stat.panorama}
+	<div class=interestBox>
+        {foreach from=$image->tags item=item name=used}{if $item.prefix eq 'panorama'}
+              {if $item.tag eq 'photosphere' or $item.tag eq '360'}
+	<p>Note, for panoramas, we are now encouraging 360 degree photospheres, so these are expressly allowed as the 'Large Upload' on an image.
+		... <b>So if the new image appears to be a full 360 panorama, then can click 'Close Enough'</b>. 
+	      {/if}
+	{/if}{/foreach}
+	</div>
+{/if}
+
 	<ul>
 	<li>Minor tweaking of contrast, brightness etc is fine - even for "Identical"</li>
 	<li>Major tweaking is permissible (such as removing border, overlaid text etc) - but should be marked "Close enough"</li>
