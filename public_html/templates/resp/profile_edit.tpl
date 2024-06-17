@@ -549,7 +549,7 @@ display:none;
 	<div class="field"> 
 
 		<label for="moderator" class="nowrap">Suggestions</label>
-      <div class="fieldnotes">If you are no longer able to help with ticket moderation then click the button below (you will have to re-apply).</div>
+      <div class="fieldnotes">If you are no longer able to help with suggestion moderation then click the button below (you will have to re-apply).</div>
       <center><div class="relinquish"><a href="/admin/suggestions.php?relinqush=1" onclick="return confirm('Are you sure you wish to relinquish your role as a suggestion moderator? Press OK to confirm.')">Relinqush suggestion moderator rights</a></div></center>
 
 	</div>
