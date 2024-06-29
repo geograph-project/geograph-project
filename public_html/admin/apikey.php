@@ -60,12 +60,12 @@ $arr= array();
 			$smarty->assign('message', "Thank you for requesting a key. Here it is: <b><tt>$key</tt></b> - please let us know if you have any questions. <a href='/help/api'>Back to documentation</a>");
 
 
-mail("barry@barryhunter.co.uk","[Geograph] New API Key Issued",
+mail_wrapper($CONF['developer_email'], "[Geograph] New API Key Issued",
 "New key: $key, issued to {$_POST['name']} \n\n{$_POST['homepage_url']}\n\n {$_POST['comments']}\n\nType: {$_POST['type']}",
 "From: Geograph Website <noreply@geograph.org.uk>");
 
-mail($_POST['email'],"[Geograph] New API Key Issued",
-"Thank you for requesting a API for geograph.org.uk. Please find below the key for your records:\n\n$key\n\n Thank you, Geograph Team.\n\n PS. Link to documentation: http://www.geograph.org.uk/help/api \n\nand if you have any questions, please get in http://www.geograph.org.uk/contact.php",
+mail_wrapper($_POST['email'], "[Geograph] New API Key Issued",
+"Thank you for requesting a API for geograph.org.uk. Please find below the key for your records:\n\n$key\n\n Thank you, Geograph Team.\n\n PS. Link to documentation: https://www.geograph.org.uk/help/api \n\nand if you have any questions, please get in https://www.geograph.org.uk/contact.php",
 "From: Geograph Website <noreply@geograph.org.uk>");
 
 
