@@ -30,8 +30,6 @@ $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');
 
 
-        ini_set('display_errors',1);
-
 if (!empty($_POST['url'])) {
 
 	if (!empty($_POST['submit'])) {
@@ -102,7 +100,7 @@ function count_urls($pattern) {
 
 $smarty->display('_std_begin.tpl');
 
-if (!empty($message));
+if (!empty($message))
 	print "<p>".htmlentities($message);
 
 ?>
