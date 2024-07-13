@@ -156,6 +156,13 @@ div.homepage {
 		class="nowrap">{$stats.images|thousends} images</b> covering <b span="nowrap">{$stats.squares|thousends} grid squares</b>, or <b 
 		class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
 
+	<div class="interestBox homepageBox" style="vertical-align:middle">
+		Watch our Geograph Intro video, on YouTube: 
+		<a href="https://www.youtube.com/watch?v=Y6QNJDEQ58Y">
+		 <img alt="Video thumbnail: Geograph Britain and Ireland - Intro" style="vertical-align:middle;border:1px solid gray;border-radius:6px" src="https://i9.ytimg.com/vi/Y6QNJDEQ58Y/mqdefault.jpg?sqp=CKTyybQG-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGUgZShlMA8=&amp;rs=AOn4CLDAv-qN-_in6DJ9jvQ6arhwVVq76Q" width=100 height=56></a>
+		</a>
+	</div>
+
 	<div class="pictureOfTheDay">
 		<div class="imageContainer shadow">
 		        <div class="interestBox titleBox">
