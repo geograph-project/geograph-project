@@ -89,7 +89,7 @@ if ($USER->hasPerm("moderator")) {
 
 $smarty->assign('names_pending', $db->GetOne("select count(*) from game_score where approved=0"));
 
-$smarty->assign('pics_pending', $db->GetOne("select count(*) from gridimage_daily where showday is null and (vote_baysian > 3.5)"));
+$smarty->assign('pics_pending', $db->GetOne("select count(*) from gridimage_daily where showday is null and (vote_baysian > 3.1)"));
 $smarty->assign('pics_no_vote', $db->GetOne("select count(*) from gridimage_daily where showday is null and (vote_baysian = 0)"));
 
 $smarty->assign('unanswered_faq', $db->GetOne("select COUNT(*) FROM answer_question q    WHERE q.status = 1 AND question_id NOT IN (SELECT question_id FROM answer_answer WHERE status=1) AND created > date_sub(now(),interval 14 day)"));

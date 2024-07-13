@@ -153,7 +153,7 @@ if (empty($assigned)) {
 	}
 
 	//count how many are in the kitty
-	$pending=$db->GetCol("select gridimage_id from gridimage_daily where showday is null and (vote_baysian > 3)");
+	//$pending=$db->GetCol("select gridimage_id from gridimage_daily where showday is null and (vote_baysian > 3)");
 
 	//get the next 4 weeks of assignments
 	$days=28;
@@ -168,8 +168,13 @@ if (empty($assigned)) {
 
 	//get ordered list of pool images
 	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id)
-		where showday is null and (vote_baysian > 3.1) and (user_id not in ($ids))
-		order by moderation_status+0 desc, coalesce((182.5-abs((datediff(now(),imagetaken) mod 365)-182.5) div 14)-if(rand()>0.7,7,0),floor(rand()*20)) asc, crc32(concat(gridimage_id,yearweek(now()))) desc
+		where showday is null
+			 and (vote_baysian > 3.1)
+			 and (user_id not in ($ids))
+		order by
+			moderation_status+0 desc,
+			coalesce((182.5-abs((datediff(now(),imagetaken) mod 365)-182.5) div 14)-if(rand()>0.7,7,0),floor(rand()*20)) asc,
+			crc32(concat(gridimage_id,yearweek(now()))) desc
 		limit $days");
 
 	//fill in blanks
@@ -196,8 +201,8 @@ if (empty($assigned)) {
 	}
 	ksort($coming_up);
 	$smarty->assign_by_ref("coming_up", $coming_up);
-	$smarty->assign_by_ref("pending", $pending);
-	$smarty->assign_by_ref("pendingcount", count($pending));
+	//$smarty->assign_by_ref("pending", $pending);
+	//$smarty->assign_by_ref("pendingcount", count($pending));
 }
 
 $smarty->display($template,$cacheid);
