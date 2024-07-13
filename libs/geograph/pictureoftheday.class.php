@@ -78,11 +78,10 @@ class PictureOfTheDay
 			if (empty($gridimage_id))
 			{
 				$ids = $db->getCol("select distinct user_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday > date_sub(now(),interval 120 day)");
-				if (empty($ids)) {
-					$ids = 0;
-				} else {
-					$ids = implode(',',$ids);
-				}
+				$ids = empty($ids)?'0':implode(',',$ids);
+
+				$ids2 = $db->getCol("select distinct user_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday > date_sub(now(),interval 60 day)");
+				$ids2 = empty($ids2)?'0':implode(',',$ids2);
 
 				//ok, there is still no image for today, and we have a
 				//lock on the table - assign the first available image
@@ -91,6 +90,7 @@ class PictureOfTheDay
 				where showday is null
 				order by
 					(user_id in ($ids)),
+					(user_id in ($ids2)),
 					(vote_baysian >= 3.2) desc,
 					(vote_baysian > 3.0) desc,
 					(vote_baysian > 2.5) desc,
