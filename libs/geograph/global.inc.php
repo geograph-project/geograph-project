@@ -36,6 +36,7 @@ if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'
 	if ((strpos($_SERVER['REQUEST_URI'],'log4shell')!==FALSE)
          || (strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE)
 	 || (strpos($_SERVER['HTTP_USER_AGENT'], 'mj12bot')!==FALSE)
+ 	 || (strpos($_SERVER['HTTP_USER_AGENT'], 'QQDownload')!==FALSE)
          || (strpos($_SERVER['HTTP_USER_AGENT'], 'facebookexternalhit/1.1 Facebot Twitterbot')!==FALSE)
 	 || ($_SERVER['HTTP_USER_AGENT'] == 'Zeno')
 	 || ($_SERVER['HTTP_USER_AGENT'] == "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/117.0.5938.88 Safari/537.36")
