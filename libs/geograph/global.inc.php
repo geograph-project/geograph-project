@@ -31,7 +31,8 @@
 * @version $Revision: 9061 $
 */
 
-if (isset($_SERVER['HTTP_USER_AGENT'])) {
+if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ) { //mainly so only checking 'web' requests!
+
 	if ((strpos($_SERVER['REQUEST_URI'],'log4shell')!==FALSE)
          || (strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE)
 	 || (strpos($_SERVER['HTTP_USER_AGENT'], 'mj12bot')!==FALSE)
@@ -40,8 +41,8 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
 	 || ($_SERVER['HTTP_USER_AGENT'] == "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/117.0.5938.88 Safari/537.36")
 	 || ($_SERVER['HTTP_USER_AGENT'] == "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36")
 	 || (@$_SERVER['HTTP_REFERER'] == 'https://www.google.com/search?hl=en&q=testing') //seems to be common in some testers
-         || (@$_SERVER['HTTP_X_FORWARDED_FOR'] == "122.142.198.166" || @$_SERVER['HTTP_X_FORWARDED_FOR'] == "5.181.40.115")
-         || (@$_SERVER['HTTP_X_FORWARDED_FOR'] == "213.109.202.67")
+         || ($_SERVER['HTTP_X_FORWARDED_FOR'] == "122.142.198.166" || $_SERVER['HTTP_X_FORWARDED_FOR'] == "5.181.40.115")
+         || ($_SERVER['HTTP_X_FORWARDED_FOR'] == "213.109.202.67")
 		//HTTP_CONTENT_TYPE: multipart/form-data; boundary=-----AcunetixBoundary_PYAHFBXIFU
          || (!empty($_SERVER['HTTP_CONTENT_TYPE']) && strpos($_SERVER['HTTP_CONTENT_TYPE'],'AcunetixBoundary_'))
 	) {
@@ -54,22 +55,32 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
 	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
 	     exit;
 	}
+
+        if (preg_match("/Chrome\/[678]\d\.0\./",$_SERVER['HTTP_USER_AGENT'])) {
+             header('HTTP/1.0 451 Unavailable For Legal Reasons');
+             exit;
+        }
+	if (preg_match("/; MSIE /",$_SERVER['HTTP_USER_AGENT'])) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     print "Non-Supported Browser, if you see this please contact us at company.geograph.org.uk/support/";
+	     exit;
+	}
+
+	foreach(array('HTTP_X_FORWARDED_FOR','HTTP_USER_AGENT') as $key) //COULD check HTTP_REFERER?
+		if (!empty($_SERVER[$key]) && preg_match('/(sleep|print_r|eval|sysdate|chr) ?\(/i',$_SERVER[$key])) {
+		     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+		     exit;
+		}
+
+	foreach(array('HTTP_X_FORWARDED_FOR','HTTP_USER_AGENT','HTTP_REFERER') as $key)
+		if (!empty($_SERVER[$key]) && strpos($_SERVER[$key],'\\x22') !== FALSE) { //looking for literal, not the actual quote char!
+		     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+		     exit;
+		} elseif (!empty($_SERVER[$key]) && strpos($_SERVER[$key],'waitfor delay') !== FALSE) {
+		     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+		     exit;
+		}
 }
-
-foreach(array('HTTP_X_FORWARDED_FOR','HTTP_USER_AGENT') as $key) //COULD check HTTP_REFERER?
-	if (!empty($_SERVER[$key]) && preg_match('/(sleep|print_r|eval|sysdate|chr) ?\(/i',$_SERVER[$key])) {
-	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
-	     exit;
-	}
-
-foreach(array('HTTP_X_FORWARDED_FOR','HTTP_USER_AGENT','HTTP_REFERER') as $key)
-	if (!empty($_SERVER[$key]) && strpos($_SERVER[$key],'\\x22') !== FALSE) { //looking for literal, not the actual quote char!
-	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
-	     exit;
-	} elseif (!empty($_SERVER[$key]) && strpos($_SERVER[$key],'waitfor delay') !== FALSE) {
-	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
-	     exit;
-	}
 
 //todo, maybe just check whole of QUERY_STRING
 foreach(array('q','place','location','loc','searchtext','filter','title','sort','tag','exclude','prefix') as $key)
