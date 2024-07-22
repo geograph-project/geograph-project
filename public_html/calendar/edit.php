@@ -58,7 +58,9 @@ if (!empty($_POST['new_id'])) {
 			$db->Execute("DELETE FROM gridimage_calendar WHERE calendar_id = {$row['calendar_id']} AND sort_order = $sort_order");
 
 		//otherwise plain old replace
-		} elseif ($updates = $db->getRow("SELECT gridimage_id,user_id,grid_reference,title,realname,imagetaken FROM gridimage_search WHERE gridimage_id = $gridimage_id")) {
+		} elseif ($updates = $db->getRow("SELECT gridimage_id,user_id,grid_reference,title,if(gi.realname!='',gi.realname,user.realname) as realname,imagetaken
+			 FROM gridimage gi INNER JOIN user USING (user_id) INNER JOIN gridsquare using (gridsquare_id)
+			 WHERE ( user_id = {$USER->user_id} OR moderation_status in ('accepted','geograph') ) AND gridimage_id = ".intval($gridimage_id))) {
 
 		        $updates['calendar_id'] = $row['calendar_id'];
                        	$updates['sort_order'] = $sort_order;

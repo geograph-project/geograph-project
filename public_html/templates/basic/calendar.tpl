@@ -9,8 +9,7 @@
 <h2>Your personalised Geograph Calendar for {$year}</h2>
 
 <div style="clear:both;float:right;width:360px;margin-right:20px;line-height:0.6;background-color:#e4e4fc;padding:10px;text-align:center">
-	(the actual calendar will display year <b>{$year}</b>)<br><br>
-	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Coverthumb2023.jpg" width=360><br><br><br>
+	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Calendar2024_cover1.jpg" width=360><br><br><br>
        <img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Imagethumb2023.jpg" width=360><br><br>
        <img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Monththumb2023.jpg" width=360><br><br>
 	(the actual calendar will display year <b>{$year}</b>)<br><br>

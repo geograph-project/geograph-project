@@ -30,7 +30,7 @@ $year = date('Y')+1; // we currently working on next years calendar
 
 $smarty->assign('year', $year);
 
-if (date('Y-m-d') > '2023-10-15' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
+if (date('Y-m-d') > '2024-10-01' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
 	$smarty->assign('closed',true);
 }
 

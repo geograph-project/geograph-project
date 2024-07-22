@@ -63,7 +63,9 @@ if (!empty($_POST['ids'])) {
 		unset($updates['cover_image']);
 
         foreach ($ids as $id) {
-		if ($row = $db->getRow("SELECT gridimage_id,user_id,grid_reference,title,realname,imagetaken FROM gridimage_search WHERE gridimage_id = ".intval($id))) {
+		if ($row = $db->getRow("SELECT gridimage_id,user_id,grid_reference,title,if(gi.realname!='',gi.realname,user.realname) as realname,imagetaken
+			 FROM gridimage gi INNER JOIN user USING (user_id) INNER JOIN gridsquare using (gridsquare_id)
+			 WHERE ( user_id = {$USER->user_id} OR moderation_status in ('accepted','geograph') ) AND gridimage_id = ".intval($id))) {
 			foreach ($row as $key => $value)
 				$updates[$key] = $value;
 			$updates['sort_order'] = $done + ((count($ids) == 12)?1:0);
@@ -82,7 +84,7 @@ if (!empty($_POST['ids'])) {
 	exit;
 }
 
-if (date('Y-m-d') > '2023-10-15' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
+if (date('Y-m-d') > '2024-10-01' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
 	die("Sorry, we are not currently accepting new orders");
 }
 
