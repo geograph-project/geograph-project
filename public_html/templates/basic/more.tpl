@@ -78,7 +78,7 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 
 	<p>Click a thumbnail to download the JPEG file...</p>
 
-	<p>&middot; The 'Stamped' version which includes the Create Commons reference and Contributor attribution, written onto the image. Making it easy to comply with the creative commons licence. <a href="/stamp.php?id={$image->gridimage_id}">More Stamping options...</a></p>
+	<p>&middot; The 'Stamped' version includes the Creative Commons reference and Contributor attribution, which is written onto the image making it easy to comply with the Creative Commons licence. <a href="/stamp.php?id={$image->gridimage_id}">More Stamping options...</a></p>
 
 {else}
 	{assign var="ratio" value=1}

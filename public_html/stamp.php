@@ -80,7 +80,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 
 	?>
 		<h2>Get CC-Stamped image</h2>
-		<p>This tool produces a .jpg file for any Geograph image, which includes the Create Commons reference and attribution required - to make it easy to comply with the CC reuse requirements. You can download and use the resultant image in your project, knowing that suitable attribution is preserved.</p>
+		<p>This tool produces a .jpg file for any Geograph image, which includes the Creative Commons reference and attribution required - to make it easy to comply with the CC reuse requirements. You can download and use the resultant image in your project, knowing that suitable attribution is preserved.</p>
 
 		<? if (!empty($_GET['id'])) { ?>
 			<p>&middot; <i>More details about the Creative Commons Licence, and complying with the requirements, are available via our <a href="/reuse.php?id=<? echo @htmlentities($_GET['id']); ?>">Image Reuse Page</a>.</i></p>

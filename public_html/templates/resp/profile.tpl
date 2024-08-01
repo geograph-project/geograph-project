@@ -406,6 +406,7 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 </div>
 
 	<li><a href="/myphotos.php">My photos used around the site</a></li>
+  <li><a href="/suggestions.php">Change suggestions</a></li>
 
 	{if $profile->stats.images gt 24}
 		<li><a href="/stuff/your-year.php?choose=1">Annual showcase</a></li>
