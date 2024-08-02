@@ -127,7 +127,7 @@ include ($pathToFiles."lang/$lang.php");
 
 if($logged_admin==1){
 
-$l_adminpanel_link="<p><a href=\"$bb_admin\">".$l_adminpanel."</a></p>";
+$l_adminpanel_link='<li>Forum Admin<ul><li><a title="MiniBB Admin Panel" href="'.$bb_admin.'">'.$l_adminpanel.'</a></li></ul></li>';
 
 switch ($action) {
 case 'addforum1':
