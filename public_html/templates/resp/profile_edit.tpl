@@ -59,6 +59,14 @@ div.fieldnotes {
 legend {
 display:none;
 }
+.relinquish a:link, .relinquish a:visited {
+  background-color: red;
+  color: white;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
 {/literal}
 </style>
 
@@ -519,9 +527,8 @@ display:none;
 
 		<label for="moderator" class="nowrap">Moderator</label>
 		{if strpos($profile->rights,'moderator') > 0}
-			<input type="button" value="Relinquish moderator rights" onclick="location.href = '/admin/moderation.php?relinquish=1';"/>
-
-			<div class="fieldnotes">If you are no longer able to help with moderation then click the button above (you will have to re-apply).</div>  
+			<div class="fieldnotes">If you are no longer able to help with moderation then click the button below (you will have to re-apply).</div>
+      <center><div class="relinquish"><a href="/admin/moderation.php?relinquish=1" onclick="return confirm('Are you sure you wish to relinquish your role as a moderator? Press OK to confirm.')">Relinquish moderator rights</a></div></center>
 		{else}
 			{if strpos($profile->rights,'traineemod') > 0}
 				<input type="button" value="Visit Demo Moderation Page" onclick="location.href = '/admin/moderation.php?apply=1';"/>
@@ -542,7 +549,8 @@ display:none;
 	<div class="field"> 
 
 		<label for="moderator" class="nowrap">Suggestions</label>
-			<input type="button" value="Relinqush suggestion moderator rights" onclick="location.href = '/admin/suggestions.php?relinqush=1';"/>
+      <div class="fieldnotes">If you are no longer able to help with suggestion moderation then click the button below (you will have to re-apply).</div>
+      <center><div class="relinquish"><a href="/admin/suggestions.php?relinqush=1" onclick="return confirm('Are you sure you wish to relinquish your role as a suggestion moderator? Press OK to confirm.')">Relinqush suggestion moderator rights</a></div></center>
 
 	</div>
 	{/if}

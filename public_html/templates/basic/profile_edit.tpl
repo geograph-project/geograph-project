@@ -438,7 +438,7 @@
 	<div class="field"> 
 
 		<label for="moderator" class="nowrap">Suggestions</label>
-			<input type="button" value="Relinqush suggestion moderator rights" onclick="location.href = '/admin/suggestions.php?relinqush=1';"/>
+			<input type="button" value="Relinquish suggestion moderator rights" onclick="location.href = '/admin/suggestions.php?relinqush=1';"/>
 
 	</div>
 	{/if}
