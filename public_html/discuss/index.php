@@ -200,7 +200,7 @@ echo ParseTpl(makeUp('protect_forums')); exit;
 if(!isset($logged_admin)) $logged_admin=0;
 
 if ($logged_admin==1) {
-$l_adminpanel_link='<span class=txtNr><a href="'.$bb_admin.'">'.$l_adminpanel.'</a></span><br>';
+$l_adminpanel_link='<li>Forum Admin<ul><li><a title="MiniBB Admin Panel" href="'.$bb_admin.'">'.$l_adminpanel.'</a></li></ul></li>';
 }
 else $l_adminpanel_link='';
 
