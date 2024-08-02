@@ -35,3 +35,7 @@ Disallow: /
 
 User-agent: Bytespider
 Disallow: /
+
+User-agent: meta-externalagent
+Disallow: /
+

@@ -215,6 +215,9 @@ Disallow: /
 User-agent: PerplexityBot
 Disallow: /
 
+User-agent: meta-externalagent
+Disallow: /
+
 User-agent: GoogleOther
 Disallow: /
 
