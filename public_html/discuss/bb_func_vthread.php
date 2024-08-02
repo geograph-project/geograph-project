@@ -146,7 +146,7 @@ if ($cols[5]==0) {
 $editedBy='';
 }
 else {
-$editedBy=" $l_sepr $l_editedBy";
+$editedBy="<br/>$l_editedBy";
 if($cols[5]==2) $we="<a href=\"{$main_url}/{$indexphp}action=userinfo&amp;user=1\">{$l_admin}</a>";
 elseif($cols[5]==1) $we=$cols[1];
 elseif($cols[5]==3) $we="<a href=\"{$main_url}/{$indexphp}action=stats#mods\">{$l_moderator}</a>";
