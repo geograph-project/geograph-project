@@ -5,7 +5,13 @@
 <link rel="apple-touch-icon" href="{$self_host}/apple-touch-icon.png"/>
 {$l_meta}
 <link rel="stylesheet" type="text/css" title="Monitor" href="{$static_host}/templates/basic/css/basic{$revision_templatesbasiccssbasiccss}.css" media="screen" />
-<link rel="stylesheet" type="text/css" title="Monitor" href="{$static_host}/discuss/bb_{$skin}_style{$revision_discussbb_default_stylecss}.css" media="screen" />
+<!--<link rel="stylesheet" type="text/css" title="Monitor" href="{$static_host}/discuss/bb_{$skin}_style{$revision_discussbb_default_stylecss}.css" media="screen" />-->
+<link rel="stylesheet" type="text/css" title="Monitor" href="/discuss/bb_{$skin}_style.css" media="screen" />
+<!--<link rel="stylesheet" type="text/css" title="Monitor" href="{$static_host}/templates/resp/css/modification{$revision_templatesrespcssmodificationcss}.css" media="screen" />
+<link rel="stylesheet" type="text/css" title="Monitor" href="{$static_host}/templates/resp/css/responsive{$revision_templatesrespcssresponsivecss}.css" media="screen" />-->
+<link rel="stylesheet" type="text/css" title="Monitor" href="/templates/resp/css/modification.css" media="screen" />
+<link rel="stylesheet" type="text/css" title="Monitor" href="/templates/resp/css/responsive.css" media="screen" />
+
 
 <link rel="alternate" type="application/rss+xml" title="Geograph Forum RSS" href="/discuss/syndicator.php?sortBy={$sortBy}&amp;topic={$topic}&amp;forum={$forum}"/>
 <script type="text/javascript" src="{$static_host}/js/geograph{$revision_jsgeographjs}.js"></script>
@@ -24,5 +30,5 @@ table.forums pre {
     <h1 onclick="document.location='/';"><a title="Geograph home page" href="/">GeoGraph - photograph every grid square</a></h1>
   </div>
 </div>
-<div class="content2" id="maincontent_block" style="width: 790px;">
+<div class="content2" id="maincontent_block" style="max-width: 100ch;">
   <div id="maincontent">
