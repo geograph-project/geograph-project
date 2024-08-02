@@ -33,8 +33,15 @@
 
 if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ) { //mainly so only checking 'web' requests!
 
+        //this is does not seem to be the legitmiate faceboook
+	if ($_SERVER['HTTP_USER_AGENT'] == "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)") {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     exit;
+	}
+
 	if ((strpos($_SERVER['REQUEST_URI'],'log4shell')!==FALSE)
          || (strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE)
+	 || (strpos($_SERVER['HTTP_USER_AGENT'], 'PetalBot')!==FALSE)
 	 || (strpos($_SERVER['HTTP_USER_AGENT'], 'mj12bot')!==FALSE)
  	 || (strpos($_SERVER['HTTP_USER_AGENT'], 'QQDownload')!==FALSE)
          || (strpos($_SERVER['HTTP_USER_AGENT'], 'facebookexternalhit/1.1 Facebot Twitterbot')!==FALSE)
@@ -81,6 +88,16 @@ if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'
 		     header('HTTP/1.0 451 Unavailable For Legal Reasons');
 		     exit;
 		}
+
+	#################################################
+
+	if (isset($_GET['dev']) && is_numeric($_GET['dev'])) {
+		setcookie('dev', intval($_GET['dev']), time()+3600);
+	} elseif (empty($_COOKIE['dev']) && strpos($_SERVER['CONF_DB_DB'],'staging') !== FALSE && strpos($_SERVER['HTTP_USER_AGENT'],'monitoring-plugins') === FALSE && strpos($_SERVER['HTTP_HOST'],'t0.') === FALSE) {
+		header('HTTP/1.0 429 Too Many Requests');
+		die("not public");
+	}
+
 }
 
 //todo, maybe just check whole of QUERY_STRING
@@ -98,6 +115,7 @@ if (!defined('ALLOW_FRAMED'))
 header("X-XSS-Protection: 1; mode=block");
 header("X-Content-Type-Options: nosniff");
 
+#################################################
 
 //global routines
 require_once('geograph/functions.inc.php');
