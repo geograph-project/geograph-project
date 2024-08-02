@@ -1,19 +1,17 @@
-<br>
-<div align="center">
-<table class="tbTransparent">
-<tr>
-<td>
-{$l_adminpanel_link}
+
+
+
 <span class="txtSm">
 Powered by <a target="_blank" title="Go miniBB website (in new window)" href="http://www.miniBB.net">miniBB {$version}</a> &copy; 2001-{$currY}
 </span>
-</td>
-</tr>
-</table>
+
 </div>
 </div>
-</div>
-<div id="nav_block">
+
+
+<input type=checkbox id="nav_toggle">
+<label id="nav_label" for="nav_toggle">&#9776;</label>
+<div id="nav_block" class="no_print">
  <div class="nav">
   <ul>
     <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/">Home</a></li>
@@ -49,11 +47,17 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
      <li><a title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
      <li><a title="Donate to Geograph Project" href="/help/donate">Donate</a></li>
     </ul></li>
+		{$l_adminpanel_link}
 </ul>
+
+   
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
 <a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="{$static_host}/img/os-logo-p64.png" width="64" height="50" alt="Ordnance Survey"/></a></div>
   </div>
+
 </div>
+<input type=checkbox id="search_toggle">
+<label id="search_label" for="search_toggle">&#128269;</label>
 <div id="search_block">
   <div id="search">
     <div id="searchform">
@@ -64,7 +68,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
 	</form>
     </div>
   </div>
-  <div id="login">
+  <div id="login" class="no_print"><span class="nowrap">
 	{$user_login}
   </div>
 </div>
@@ -72,13 +76,13 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
   <div id="footer" class="no_print">
    <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>
        <span class="sep">|</span>
+       <a href="/article/Use-of-Cookies-on-Geograph-Website" title="How this site uses cookies">Cookies</a>
+       <span class="sep">|</span>
        <a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>
        <a href="/help/terms" title="Terms and Conditions">Terms of use</a>
        <span class="sep">|</span>
-       <a href="http://validator.w3.org/check/referer" title="check our xhtml standards compliance">XHTML</a>
-       <span class="sep">|</span>
-       <a href="http://jigsaw.w3.org/css-validator/validator?uri={$static_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
+       <a href="/article/Get-Involved" title="contribute to geograph">Get Involved</a>
     </p>
   </div>
 </div>
