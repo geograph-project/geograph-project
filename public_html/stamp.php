@@ -112,6 +112,12 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 		foreach ($attribs as $list) {
 			if ($list == 'pointsize') {
 				$lines = range(8,36);
+				if (!empty($image) && $image->original_width>640) {
+					$lines[] = 48;
+					$lines[] = 64;
+					$lines[] = 96;
+					$lines[] = 128;
+				}
 			} elseif ($list == 'weight') {//list weight doesnt work?
 				$lines = array('All','Bold','Bolder','Lighter','Normal');
 			} else {
