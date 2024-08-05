@@ -93,9 +93,7 @@ border-top: #CCCCCC 1px solid;
 border-right: #CCCCCC 1px solid;
 border-left: #CCCCCC 1px solid;
 border-bottom: #CCCCCC 1px solid;
-font-size: 10px;
 color: #000000;
-/* height: 19px; */
 }
 
 .inputButton:active {
@@ -112,7 +110,6 @@ border-bottom: #CCCCCC 1px solid;
 border-left: #CCCCCC 1px solid;
 border-right: #CCCCCC 1px solid;
 border-top: #CCCCCC 1px solid;
-font-size: 11px;
 }
 
 /* Caption 1 (the one for displaying sub-headers like "topics, posted" etc) */
@@ -274,13 +271,37 @@ body {
 }
 .forum-inline > div {
   flex-grow: 1;
-  #border: solid red;
   flex-basis: 0;
 }
 
 
 {*forum thread views*}
 
+.forum-post-title {
+  width: 100%;
+  font-size: 1.5em;
+  padding: 5px;
+  font-weight: bold;
+   
+}
+.forum-post-breadcrumbs {
+  width: 100%;
+  padding: 5px;
+  margin: 5px;
+  white-space: nowrap;   
+}
+.forum-post-pages {
+  width: 100%;
+  padding: 5px;
+  text-align: right;
+  margin: 5px;
+  white-space: nowrap;   
+}
+.forum-post-continued {
+  text-align: right;
+  font-weight: bold;
+  padding-bottom: 5px;
+}
 .forum-post-grid {
   display: grid;
   grid-template-areas:
@@ -311,6 +332,7 @@ body {
   padding: 0.5em;
   background: #000080;
   color: #FFFFFF;
+  line-height: 1.5;
 }
 .forum-post-header a:link, .forum-post-header a:visited {
   color:white;
@@ -339,21 +361,22 @@ body {
 .forum-post-ip {
   text-align: left;
   font-size: 0.8em;
-  margin-top: 2px;
+  margin-bottom: 5px;
 }
 .forum-post-postid {
   text-align: right;
   font-size: 1.0em;
 }
 .forum-post-username {
-  min-width: 20ch;
+  min-width: 15ch;
   text-align: left;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 .forum-post-role {
   text-align: left;
-  min-width: 20ch;
+  min-width: 15ch;
   font-size: 0.875em;
+  margin-bottom: 5px;
 }
 .forum-post-quote {
   text-align: left;
@@ -377,4 +400,64 @@ body {
   .forum-post-username {
     margin-bottom: 0px;
   }
+}
+.forum-post-posts {
+  width:100%;
+}
+.forum-post-reply {
+  text-align: left;
+  width:100%;
+  padding:5px;
+}
+.forum-post-reply-header {
+  text-align: left;
+  width:100%;
+  background: silver;
+  font-weight: bold;
+  font-size: 1.2em;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.forum-post-reply-help {
+  text-align: right;
+  width:100%;
+}
+.forum-post-reply-formatting {
+  text-align: left;
+  width:100%;
+}
+.forum-post-reply-noformatting {
+  text-align: right;
+  width:100%;
+}
+.forum-post-reply-textbox textarea {
+  max-width: 100%;
+  width:100%;
+}
+.forum-post-reply-buttons {
+  width:100%;
+  text-align: right;
+  margin: 5px;
+  box-sizing: border-box;
+}
+.forum-post-reply-submit {
+  background-color: #b7e1cd;
+  font-weight:bold;
+  width: 30vw;
+  max-width: 200px;
+  box-sizing: border-box;
+}
+.forum-post-reply-preview {
+  background-color: powderblue;
+  font-weight:bold;
+  width: 30vw;
+  max-width: 200px;
+  box-sizing: border-box;
+}
+.forum-post-reply-reset {
+  background-color: #f4c7c3;
+  font-weight:bold;
+  width: 30vw;
+  max-width: 200px;
+  box-sizing: border-box;
 }
