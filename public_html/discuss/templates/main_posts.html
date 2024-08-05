@@ -40,65 +40,45 @@ document.location='{$main_url}/{$indexphp}'+url;
 //-->
 </script>
 
-<div align=center>
-<table class=forums>
-<tr>
-<td width=25 align=center class=caption3><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""></td>
-<td width="100%" class=caption3><b><a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b><a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></b> / <b>{$topic_reverse}{$topicName}</b></td>
-</tr>
-</table>
+<!--Forum topic name and breadcrumbs-->
 
-<table class=tbTransparent>
-<tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
-</table>
+<div class="forum-post-title">{$topic_reverse}{$topicName}</div>
+<hr>
+<div class="forum-inline">
+
+<div class="forum-post-breadcrumbs"><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt="">&nbsp;&nbsp;<a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a> &gt; <a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></div>
+
+<div class="forum-post-pages">{$pageNav}</div>
+
+</div>
+
 
 {$gridThumbs}
 
   
 <!--Pulls in main_posts_cell.html -->
-{$listPosts}
+<div class="forum-post-posts">{$listPosts}</div>
 
+<div class="forum-post-pages">{$pageNav}</div>
 
-
-<br/>
-<table class=forums>
-<tr>
-<td width=25 align=center class=caption3><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""></td>
-<td width="100%" class=caption3><b><a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b><a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></b> / <b>{$topic_reverse}{$topicName}</b></td>
-</tr>
-</table>
-
-<table class=tbTransparent>
-<tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
-</table>
-<br/>
-</div>
 
 <a name=newreply></a>
 
-{$mainPostArea}
-
-<div align=center>
-<table class=tbTransparent>
-<tr>
-<td class=tbTransparent>{$muteTopic} {$closeTopic} {$moveTopic} {$deleteTopic} {$stickyTopic} {$subsTopic}&nbsp;</td>
-</tr>
-</table>
+<!--Pulls in main_post_area.html (and within it main_post_form.html)-->
+<div class="forum-post-reply">{$mainPostArea}</div>
 
 
 
-<table class=forums>
-<tr>
-<td class=caption3 align=center>
+
+
+{$muteTopic} {$closeTopic} {$moveTopic} {$deleteTopic} {$stickyTopic} {$subsTopic}
+
+
 
 {$forumsList}
 
-</td>
-</tr>
-</table>
 
-</div>
-<p align=right><a title="RSS Feed for this Topic" href="/discuss/syndicator.php?topic={$topic}" class="xml-rss">RSS</a></p>
+<div align=right><a title="RSS Feed for this Topic" href="/discuss/syndicator.php?topic={$topic}" class="xml-rss">RSS</a></div>
 
 <script language="JavaScript">
 function prevThis(){
