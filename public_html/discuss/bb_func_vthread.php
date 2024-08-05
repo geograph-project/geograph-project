@@ -335,7 +335,7 @@ $mainPostArea=ParseTpl($mainPostArea);
 		$muteTopic = "$l_sepr <a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=0\">Unmute Topic</a>";
 	} else {
 		//link to mute the thread;
-		$muteTopic = "$l_sepr <a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=1\">Mute Topic</a> (Muted topics show a Gray rather than Red dot when updated)";
+		$muteTopic = "$l_sepr <a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=1\" title=\"Muted topics show a Gray rather than Red dot when updated\">Mute Topic</a>";
 	}
 
 #############
