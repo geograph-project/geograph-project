@@ -54,6 +54,31 @@ if (empty($_SERVER['HTTP_USER_AGENT'])
      exit;
 }
 
+###########################
+
+$secret = md5($_SERVER['MANTICORERT_BALANCER_SVC_PORT']);
+
+//need to set this outside of referere check, as user submission will have a referer!
+if (isset($_POST['number']) && is_numeric($_POST['number']) && $_POST['number'] === "2") {
+	setcookie('refsecret', hash_hmac('md5', $_SERVER['HTTP_X_FORWARDED_FOR'], $secret), 3600);
+
+} elseif ( (empty($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == '-' || !empty($_POST['number'])) && !empty($_GET) ) {
+
+	if (empty($_COOKIE['refsecret']) || $_COOKIE['refsecret'] != hash_hmac('md5', $_SERVER['HTTP_X_FORWARDED_FOR'], $secret)) {
+		header('HTTP/1.0 429 Too Many Requests');
+		?>
+		<form method=post style="background-color:silver;padding:20px">
+			<p>We are having problems with lots of bots crawling this search. Please enter the number of 'g' letters in the word "geograph" in the box below to prove you a human!</p>
+
+			<p>Letters: <input type=number name=number size=3 style="width:50px"> <input type=submit name=continue value="Continue...">
+		</form>
+		<?
+		exit;
+	}
+}
+
+###########################
+
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 
