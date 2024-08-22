@@ -44,6 +44,13 @@
 			 please note what you want to use the key for, and expected traffic levels etc</td>
 		  </tr>
 		  <tr>
+			 <td><b>robot?</b></td>
+			 <td>
+				<p>We are having problems with lots of bots crawling. Please enter the number of 'g' letters in the word "geograph" in the box below to prove you a human!</p>
+
+				<p>Letters: <input type=number name=number size=3 style="width:50px">
+			 </td>
+		  <tr>
 			 <td>&nbsp;</td>
 			 <td><input type="submit" value="Request Key" name="submit"></td>
 		  </tr>

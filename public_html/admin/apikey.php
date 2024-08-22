@@ -31,7 +31,9 @@ if (!$db) die('Database connection failed');
 
 $arr= array();
 
-	if (!empty($_POST['submit'])) {
+rate_limiting('apikey.php', 2, true);
+
+	if (!empty($_POST['submit']) && $_POST['number'] === '2') {
 
 		if (empty($_POST['email']) || !isValidEmailAddress($_POST['email'])) {
 			$arr = $_POST;
