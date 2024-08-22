@@ -561,8 +561,11 @@ if (isset($_GET['fav']) && $i) {
 				$data['description'] .= ", $nearstring grid reference ".$square->grid_reference;
 				$data['x'] = $square->x;
 				$data['y'] = $square->y;
-			} 
-		} 
+			}
+		} else {
+			//dont want to continue if invalid, the resultant search would be wrong
+			die("invalid grid-reference");
+		}
 		unset($data['gridref']);
 	}
 	
