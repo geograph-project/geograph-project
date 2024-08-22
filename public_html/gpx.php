@@ -21,6 +21,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+foreach(array('distance','gridref','submit','type') as $key)
+	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w \.>]*$/',$_REQUEST[$key])) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     exit;
+	}
+
 require_once('geograph/global.inc.php');
 require_once('geograph/searchcriteria.class.php');
 require_once('geograph/searchengine.class.php');

@@ -21,6 +21,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+foreach(array('group','page','gridref','skip') as $key)
+	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w \.>]*$/',$_REQUEST[$key])) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     exit;
+	}
+
 require_once('geograph/global.inc.php');
 init_session();
 
@@ -126,6 +132,7 @@ if (true) { //actully we can run the code, even in the case of an empty query...
 'myriad' => 'Myriad Square',
 'hectad' => 'Hectad Square',
 'grid_reference' => 'Grid Square',
+'scenti' => 'Centisquare',
 ':3' => '',
 'user_id' => 'Contributor',
 ':8' => '',

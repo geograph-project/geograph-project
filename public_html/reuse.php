@@ -32,6 +32,12 @@ if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE && empty($_R
 	exit;
 }
 
+foreach(array('id','download','size') as $key)
+	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w \.>]*$/',$_REQUEST[$key])) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     exit;
+	}
+
 require_once('geograph/global.inc.php');
 
 session_cache_limiter('none');

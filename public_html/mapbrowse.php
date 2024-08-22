@@ -26,6 +26,12 @@ if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
 	exit;
 }
 
+foreach(array('i','j','mine','x','y','lang','lat','lon','gridref_from','zoom','center','recenter','depth') as $key)
+	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w \.>]*$/',$_REQUEST[$key])) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	     exit;
+	}
+
 require_once('geograph/global.inc.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/gridimage.class.php');
