@@ -91,9 +91,10 @@ if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'
 
 	#################################################
 
-	if (isset($_GET['dev']) && is_numeric($_GET['dev'])) {
-		setcookie('dev', intval($_GET['dev']), time()+3600);
-	} elseif (empty($_COOKIE['dev']) && strpos($_SERVER['CONF_DB_DB'],'staging') !== FALSE && strpos($_SERVER['HTTP_USER_AGENT'],'monitoring-plugins') === FALSE && strpos($_SERVER['HTTP_HOST'],'t0.') === FALSE) {
+	if (isset($_GET['ddev']) && is_numeric($_GET['ddev'])) {
+		setcookie('ddev', intval($_GET['ddev']), time()+3600, '/', null, true, true);
+
+	} elseif (empty($_COOKIE['ddev']) && strpos($_SERVER['CONF_DB_DB'],'staging') !== FALSE && strpos($_SERVER['HTTP_USER_AGENT'],'monitoring-plugins') === FALSE && strpos($_SERVER['HTTP_HOST'],'t0.') === FALSE) {
 		header('HTTP/1.0 429 Too Many Requests');
 		die("not public");
 	}
