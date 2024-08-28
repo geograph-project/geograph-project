@@ -91,6 +91,16 @@ if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'
 
 	#################################################
 
+	//bad bot uses, all lower case uas!
+	//mozilla/5.0 (macintosh; intel mac os x 10_10_4; en-us) applewebkit/533.15 (khtml, like gecko) chrome/50.0.3307.140 safari/535	
+
+	if (strpos($_SERVER['HTTP_USER_AGENT'],'mozilla/5.0 (') === 0 && !preg_match('/[A-Z]/',$_SERVER['HTTP_USER_AGENT'])) {
+		header("HTTP/1.0 418 I'm a teapot");
+		exit;
+	}
+
+	#################################################
+
 	if (isset($_GET['ddev']) && is_numeric($_GET['ddev'])) {
 		setcookie('ddev', intval($_GET['ddev']), time()+3600, '/', null, true, true);
 
