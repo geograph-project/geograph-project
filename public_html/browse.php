@@ -27,7 +27,7 @@ if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
 }
 
 foreach(array('p','setpos','setpos2','grid_reference','gridref','eastings','northings','gridsquare') as $key)
-	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w \.>]*\/?$/',$_REQUEST[$key])) {
+	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w \.>+]*\/?$/',$_REQUEST[$key])) {
 	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
 	     exit;
 	}
