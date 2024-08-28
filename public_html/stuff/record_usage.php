@@ -23,7 +23,7 @@
 
 
 foreach(array('action','param') as $key)
-	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w \.>]*$/',$_REQUEST[$key])) {
+	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w \.>,]*$/',$_REQUEST[$key])) {
 	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
 	     exit;
 	}
