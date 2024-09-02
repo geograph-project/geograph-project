@@ -56,7 +56,7 @@ if (empty($_SERVER['HTTP_USER_AGENT'])
 
 ###########################
 
-if ( (empty($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == '-' || !empty($_POST['number'])) && !empty($_GET) ) {
+if ( (empty($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == '-' || !empty($_POST['number'])) && !empty($_GET) && empty($_COOKIE['autologin']) && strpos(@$_SERVER['HTTP_USER_AGENT'], 'Googlebot') === FALSE) {
 	$secret = md5($_SERVER['MANTICORERT_BALANCER_SVC_PORT']);
 
 	if (isset($_POST['number']) && is_numeric($_POST['number']) && $_POST['number'] === "2") {
