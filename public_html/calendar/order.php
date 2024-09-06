@@ -101,7 +101,7 @@ if (!empty($_POST)) {
 			//this needs converting to IGN. The return URL doesnt contain in any identifiers
 			$_SESSION['calendar_id'] = $row['calendar_id'];
 
-			$cost = (8.50 * $row['quantity']) + 3.00;
+			$cost = (9.00 * $row['quantity']) + 5.00;
 
 			$token=new Token;
 			$token->setValue("i", $row['calendar_id']);
@@ -165,10 +165,19 @@ if (!empty($row['cover_image'])) {
 	array_unshift($imagelist->images, $image);
 }
 
+$users = array();
+foreach ($imagelist->images as $image)
+	@$users[$image->realname]++;
+if (count($users) == 1 && !empty($users[$USER->realname]))
+	$cover_name = $USER->realname;
+else
+	$cover_name = "Geograph Contributors";
+$smarty->assign('cover_name',$cover_name);
 
 
 $smarty->assign_by_ref('images', $imagelist->images);
 
+$smarty->assign('year', $year);
 
 $smarty->display('calendar_order.tpl');
 

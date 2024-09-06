@@ -27,6 +27,9 @@
     <li><ul>
      <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Collections</a></li>
     </ul></li>
+    <li><ul>
+     <li><a title="Order a custom printed calendar for 2025 featuring Geograph Images" href="/calendar/">2025 Calendar</a></li>
+    </ul></li>
     <li>Interact<ul>
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
      <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
