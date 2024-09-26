@@ -13,6 +13,7 @@ $smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
 ######################
 
 ?>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
     <style>
@@ -46,10 +47,24 @@ $smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
 
 $db = GeographDatabaseConnection(true);
 
+$where = array();
+$where[] = "original_width > 640";
+$where[] = "prefix = 'panorama'";
+
+if (!empty($_GET['tag']) && $_GET['tag'] == 360)
+	$where[] = "tag IN ('360','photosphere')"; //photosphere are still 360!
+elseif (!empty($_GET['tag']) && preg_match('/^\w+$/',$_GET['tag']))
+	$where[] = "tag = ".$db->Quote($_GET['tag']);
+
+if (!empty($_GET['user_id']))
+	$where[] = "g.user_id = ".intval($_GET['user_id']);
+
+$where = implode(' AND ',$where);
+
 $rows = $db->getAll("
-select gridimage_id,width,height,original_width,original_height,original_diff, g.user_id,tags,title,realname,grid_reference
+select distinct gridimage_id,width,height,original_width,original_height,original_diff, g.user_id,tags,title,realname,grid_reference,comment, imagetaken
  from gridimage_size s inner join gridimage_search g using (gridimage_id) inner join tag_public t using (gridimage_id)
- where prefix = 'panorama' and original_width > 640
+ where $where
  order by t.created desc limit 20
 ");
 
@@ -70,9 +85,13 @@ foreach ($rows as $row) {
 		$path = $image->getImageFromOriginal(800,800);
 	*/
 	$preview = $image->_getFullpath();
-	if ($great > 640)
-		$path = $image->_getOriginalpath(true, false);
-	else {
+	if ($great > 640) {
+//		if ($great > 800) {
+//			$path = $image->getImageFromOriginal(800,800);
+//		} else
+		         $path = $image->_getOriginalpath(true, false);
+
+	} else {
 		$path = $preview; //$image->_getFullpath();
 		$ratio = $row['width']/$row['height'];
 	}
@@ -100,7 +119,7 @@ foreach ($rows as $row) {
 		$type='360';
 	}
 
-	if ($id == 2271694 || stripos($image->tags,"wideangle") !== FALSE || stripos($image->tags,"panoramic") !== FALSE) {
+	if ($image->gridimage_id == 2271694 || stripos($image->tags,"wideangle") !== FALSE || stripos($image->tags,"panoramic") !== FALSE) {
 	        $json["haov"] = 120;
 		$type='wideangle';
 	}
@@ -143,8 +162,29 @@ foreach ($rows as $row) {
 	} elseif (!empty($image->view_direction) && $image->view_direction > -1)
 		$json["northOffset"] = floatval($image->view_direction);
 
+	$bits = array();
+	$bits[] = "Click to";
+	if ($great >= 8000)
+		$bits[] = "Load High-Resolution";
+	else
+		$bits[] = "Load";
+	if ($type=='360')
+		$bits[] = "360&deg; Panorama";
+	elseif ($type=='photosphere')
+		$bits[] = "Photosphere";
+	else
+		$bits[] = "Panorama";
+	$json['strings'] = array('loadButtonLabel' => implode('<br>',$bits));
+
+
 	$json['title'] = $image->title;
 	$json['author'] = $image->realname." / cc-by-sa/2.0";
+
+	if ($image->imagetaken > date('Y'))
+		$json['author'] .= " - taken ".date('M Y',strtotime($image->imagetaken));
+	elseif ($image->imagetaken > 1000)
+		$json['author'] .= " - taken ".substr($image->imagetaken,0,4);
+
 	//$json['authorURL'] = $image->profile_link;
 	$json['authorURL'] = "/photo/".$image->gridimage_id; //only get one link per image!
 
@@ -162,5 +202,7 @@ foreach ($rows as $row) {
 }
 
 print "<br style=clear:both>";
+
+print "<p>Note, this is only images that have been specificially tagged as panoramic, we have some other images that have not been specifically tagged. They dont currently show here";
 
 $smarty->display("_std_end.tpl",'test');
