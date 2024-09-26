@@ -321,7 +321,30 @@ function rehighlight(that,check) {
 	<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
 {/if}
 
+	<p><label><b>Special Flags</b></label></p>
+		<input type=checkbox name="tags[]" id="c-drone" value="from:drone"><label for="c-drone" id="l-drone">Taken from/by Drone</label>. (not a handheld camera)<br>
+		<input type=checkbox id="c-pano" onclick="show_tree('pano');document.getElementById('panoselect').selectedIndex=0"><label for="c-pano" id="l-pano">Panorama</label>. <span id="hidepano">(with field of view wider than about 60 degrees)</span>
+		<span id="showpano" style="display:none; max-width:900px;">
+		Type: <select name="tags[]" id="panoselect" onchange="document.getElementById('showvfov').style.display = (this.value == 'panorama:wideangle')?'':'none';
+			document.getElementById('showhfov').style.display = (this.value == 'panorama:photosphere')?'none':'';
+			">
+			<option value="">Please select type...</option>
+			<option value="panorama:wideangle">Wideangle (wider view angle than 'natural', but not full 360)</option>
+			<option value="panorama:360">360 degree (circular but not full height)</option>
+			<option value="panorama:photosphere">PhotoSphere (full 360, and full height)</option>
+		</select>
+		<span class=nowrap id="showvfov" style="display:none">(vfov: <input type=number step=0.01 name=vfov placeholder=120 style=width:50px;text-align:right>degrees wide)</span> 
+		<span class=nowrap id="showhfov">(hfov: <input type=number step=0.01 name=hfov placeholder=90 style=width:50px;text-align:right>degrees high)</span><br>
+		Panoramas get a special viewer so users can rotate and zoom in the scene.<br><br>
 
+		To ensure that your wide-angle panoramas, especially those exceeding 180&deg; wide, are displayed correctly, please submit a "normal angle" image here initially.<br>
+
+		If you've created a stitched panorama, you can submit one of the original images. This will provide a clear thumbnail that can be easily viewed.<br><br>
+
+		Afterward, you can upload the full-resolution panorama using the "Upload a larger version" feature.
+		(You only need to upload or release a 640px version initially, as the pano will replace the larger versions) 
+
+		</span><br>
 
 	<p><label><b>Date photo taken</b></label> {if $error.imagetaken}
 		<br/><span class="formerror">{$error.imagetaken}</span>

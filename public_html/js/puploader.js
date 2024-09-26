@@ -35,20 +35,22 @@ if (!Array.prototype.indexOf) {
 				if (thatForm.elements[ele.name+'['+name+']']) {
 					//we dont need to check for select as IE does pupulate .value - doto - byt IE6 doesnt!
 					if (ele.tagName.toLowerCase() == 'input' && (ele.type.toLowerCase() == 'checkbox' || ele.type.toLowerCase() == 'radio')) {
-						if (ele.checked) 
+						if (ele.checked)
 							thatForm.elements[ele.name+'['+name+']'].value = ele.value;
-							
 					} else {
 						thatForm.elements[ele.name+'['+name+']'].value = ele.value;
 					}
-				} else if (ele.name.indexOf('tags[]') == 0 && ele.checked) {
+				} else if (ele.name.indexOf('tags[]') == 0 && (ele.checked || ele.selectedIndex)) {
 					tags.push(ele.value);
+				} else if (ele.name == 'hfov' || ele.name == 'vfov') {
+					if (ele.value.length && parseFloat(ele.value) > 0)
+						tags.push(ele.name+':'+ele.value);
 				}
 			}
 			if (theForm.elements['imagetakenDay'] && thatForm.elements['imagetaken['+name+']']) {
 				thatForm.elements['imagetaken['+name+']'].value = pad(theForm.elements['imagetakenYear'].value,4) + '-' + pad(theForm.elements['imagetakenMonth'].value,2) + '-' + pad(theForm.elements['imagetakenDay'].value,2);
 			}
-			if (tags.length > 0 && thatForm.elements['tags['+name+']']) {
+			if (thatForm.elements['tags['+name+']']) {
 				thatForm.elements['tags['+name+']'].value = tags.join('|');
 			}
 		}
@@ -70,8 +72,9 @@ if (!Array.prototype.indexOf) {
 		}
 		for(q=0;q<theForm.elements.length;q++) {
 			var ele = theForm.elements[q];
+			var tagname = ele.tagName.toLowerCase()
+			var type = ele.type.toLowerCase();
 			if (thatForm.elements[ele.name+'['+name+']']) {
-				var tagname = ele.tagName.toLowerCase()
 				if (tagname == 'select') {
 					for(w=0;w<ele.options.length;w++)
 						if (ele.options[w].value == thatForm.elements[ele.name+'['+name+']'].value)
@@ -84,7 +87,6 @@ if (!Array.prototype.indexOf) {
 					}
 					
 				} else {
-					var type = ele.type.toLowerCase();
 					if (tagname == 'input' && type == 'radio') {
 						if (thatForm.elements[ele.name+'['+name+']'].value == ele.value)
 							ele.checked = true;
@@ -107,12 +109,38 @@ if (!Array.prototype.indexOf) {
 					}
 				}
 			} else if (ele.name.indexOf('tags[]') == 0) {
-				AttachEvent(ele,'click',parentUpdateVariables,false);
-				if (tags.indexOf(ele.value) > -1) {
-					ele.checked = true;
-					var id = ele.id.replace(/c-/,'l-');
-					document.getElementById(id).style.fontWeight=ele.checked?'bold':'normal';
-					document.getElementById(id).style.backgroundColor=ele.checked?'white':'';
+				if (type == 'checkbox') {
+					AttachEvent(ele,'click',parentUpdateVariables,false);
+					if (tags.indexOf(ele.value) > -1) {
+						ele.checked = true;
+						var id = ele.id.replace(/c-/,'l-');
+						if (document.getElementById(id)) {
+							document.getElementById(id).style.fontWeight=ele.checked?'bold':'normal';
+							document.getElementById(id).style.backgroundColor=ele.checked?'white':'';
+						}
+					}
+				} else if (tagname == 'select') {
+					AttachEvent(ele,'change',parentUpdateVariables,false);
+					for(var i=1; i<ele.options.length; i++) {
+						if (tags.indexOf(ele.options[i].value) > -1) {
+							ele.selectedIndex = i;
+						}
+					}
+					if (ele.selectedIndex > 0) {
+						if (ele.id && ele.id == 'panoselect') {
+							document.getElementById('c-pano').checked = true;
+							document.getElementById('showpano').style.display = '';
+							document.getElementById('hidepano').style.display = 'none';
+							ele.onchange(); //to sync the fov boxes!
+						}
+					}
+				}
+			} else if (ele.name == 'hfov' || ele.name == 'vfov') {
+				AttachEvent(ele,'input',parentUpdateVariables,false);
+				for(var i=1; i<tags.length; i++) {
+					bits = tags[i].split(':');
+					if (bits.length == 2 && bits[0] == ele.name)
+						ele.value = bits[1];
 				}
 			}
 		}
