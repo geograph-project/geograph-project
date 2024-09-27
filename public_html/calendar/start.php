@@ -44,6 +44,7 @@ if (!empty($_POST['ids'])) {
 
         $updates = array();
 	$updates['user_id'] = intval($USER->user_id);
+	$updates['year'] = $year; //there is a default on calendar table. But set it here, in case that is not updated!
 
 	if (count($ids) == 13) {
 		//if user uses the same image for cover, then we need to record in cover_image (gridimage_calendar, can't store repeat images!)
