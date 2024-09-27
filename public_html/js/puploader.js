@@ -30,6 +30,7 @@ if (!Array.prototype.indexOf) {
 		var theForm = document.forms['theForm'];
 		if (name != '') {
 			var tags = new Array();
+			var tagsEnabled = false; //need to track if any tags availabel
 			for(q=0;q<theForm.elements.length;q++) {
 				var ele = theForm.elements[q];
 				if (thatForm.elements[ele.name+'['+name+']']) {
@@ -40,9 +41,12 @@ if (!Array.prototype.indexOf) {
 					} else {
 						thatForm.elements[ele.name+'['+name+']'].value = ele.value;
 					}
-				} else if (ele.name.indexOf('tags[]') == 0 && (ele.checked || ele.selectedIndex)) {
-					tags.push(ele.value);
-				} else if (ele.name == 'hfov' || ele.name == 'vfov') {
+				} else if (ele.name.indexOf('tags[]') == 0) {
+					tagsEnabled = true;
+					if (ele.checked || ele.selectedIndex) //can be checkbox OR a 'select'
+						tags.push(ele.value);
+				} else if (ele.name == 'hfov' || ele.name == 'vfov') { //these are text entry, so need special treatment
+					tagsEnabled = true;
 					if (ele.value.length && parseFloat(ele.value) > 0)
 						tags.push(ele.name+':'+ele.value);
 				}
@@ -50,7 +54,7 @@ if (!Array.prototype.indexOf) {
 			if (theForm.elements['imagetakenDay'] && thatForm.elements['imagetaken['+name+']']) {
 				thatForm.elements['imagetaken['+name+']'].value = pad(theForm.elements['imagetakenYear'].value,4) + '-' + pad(theForm.elements['imagetakenMonth'].value,2) + '-' + pad(theForm.elements['imagetakenDay'].value,2);
 			}
-			if (thatForm.elements['tags['+name+']']) {
+			if (tagsEnabled && thatForm.elements['tags['+name+']']) {
 				thatForm.elements['tags['+name+']'].value = tags.join('|');
 			}
 		}

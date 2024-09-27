@@ -235,7 +235,7 @@
 function open_nearby(form) {
 	var query = 'upload_id={/literal}{$upload_id}&gr={$grid_reference|escape:'html'}{literal}';
 	for(q=0;q<form.elements['tags[]'].length;q++)
-		if (form.elements['tags[]'][q].checked)
+		if (form.elements['tags[]'][q].checked || form.elements['tags[]'][q].selectedIndex)
 			query=query+'&tags[]='+encodeURIComponent(form.elements['tags[]'][q].value);
 	if (document.getElementById('nearframe').src == 'about:blank')
 		document.getElementById('nearframe').src='/finder/used-nearby.php?'+query;
@@ -245,7 +245,7 @@ function show_tagging(form) {
 	if (form.elements['title'].value.length> 0 )
 		query=query+'&title='+encodeURIComponent(form.elements['title'].value);
 	for(q=0;q<form.elements['tags[]'].length;q++)
-		if (form.elements['tags[]'][q].checked)
+		if (form.elements['tags[]'][q].checked || form.elements['tags[]'][q].selectedIndex)
 			query=query+'&tags[]='+encodeURIComponent(form.elements['tags[]'][q].value);
 	if (form.elements['comment'].value.length> 0 )
 		query=query+'&comment='+encodeURIComponent(form.elements['comment'].value.substr(0,1500).replace(/[\n\r]/,' '));
@@ -321,9 +321,10 @@ function rehighlight(that,check) {
 	<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
 {/if}
 
+	{if $upload_id}
 	<p><label><b>Special Flags</b></label></p>
 		<input type=checkbox name="tags[]" id="c-drone" value="from:drone"><label for="c-drone" id="l-drone">Taken from/by Drone</label>. (not a handheld camera)<br>
-		<input type=checkbox id="c-pano" onclick="show_tree('pano');document.getElementById('panoselect').selectedIndex=0"><label for="c-pano" id="l-pano">Panorama</label>. <span id="hidepano">(with field of view wider than about 60 degrees)</span>
+		<input type=checkbox id="c-pano" onclick="show_tree('pano');document.getElementById('panoselect').selectedIndex=0"><label for="c-pano" id="l-pano">Panorama</label>. <span id="hidepano">(with field of view wider than about 80 degrees)</span>
 		<span id="showpano" style="display:none; max-width:900px;">
 		Type: <select name="tags[]" id="panoselect" onchange="document.getElementById('showvfov').style.display = (this.value == 'panorama:wideangle')?'':'none';
 			document.getElementById('showhfov').style.display = (this.value == 'panorama:photosphere')?'none':'';
@@ -344,7 +345,12 @@ function rehighlight(that,check) {
 		Afterward, you can upload the full-resolution panorama using the "Upload a larger version" feature.
 		(You only need to upload or release a 640px version initially, as the pano will replace the larger versions) 
 
+
+		<br><br>Read more about 
+		<a href="/article/article/Panoramas-and-Photospheres-on-Geograph" class="about" target="_blank">Panoramas and Photospheres on Geograph</a> (in new window)</div>
+
 		</span><br>
+	{/if}
 
 	<p><label><b>Date photo taken</b></label> {if $error.imagetaken}
 		<br/><span class="formerror">{$error.imagetaken}</span>
