@@ -30,9 +30,29 @@ if (empty($image) || !$image->isValid() || $image->moderation_status=='rejected'
 
 $db = $image->_getDB(true);
 
+######################
+
+$check = $db->getOne("SELECT status FROM gridimage_pending WHERE type = 'original' AND gridimage_id = {$image->gridimage_id} AND type IN ('new','open')");
+if ($check) {
+	//block display of images with a pending larger moderation.
+	// ... this is mainly so the larger image is NOT loaded via CDN(s), which risks caching the old image!
+
+	header("HTTP/1.0 503 Unavailable");
+
+	$smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF']));
+
+	print "<p>Sorry, this image is not currently viewable. The larger upload needs moderation. Please try again in a few hours. <a href=\"javascript:history.go(-1);\">Go Back</a>";
+
+	$smarty->display("_std_end.tpl");
+	exit;
+}
+
 //check tag_public in case freshly added! (plus might not be from gridiamge_search anyway)
 $image->loadTags();
 
+######################
+
+//todo, should perhaps be checking panorama: prefix, currenty we do TRY to allow non formal taged images to display!
 
 if (stripos($image->tags,"panorama") === FALSE) {
 
@@ -42,7 +62,7 @@ if (stripos($image->tags,"panorama") === FALSE) {
 
 	print "<p>this image does not appear to be marked as panorama. If your own image, see this <a href=\"/article/Panoramas-and-Photospheres-on-Geograph\">Article</a>, with more details how to enable this viewer";
 
-	$smarty->display("_std_end.tpl",'test');
+	$smarty->display("_std_end.tpl");
 
 	exit;
 }
@@ -61,12 +81,34 @@ if ($id == 5087080) {
         $image->gridimage_id = $id = 5085553;
 }
 
-
 $row2 = $db->getRow("SELECT * FROM gridimage_size WHERE gridimage_id = $id");
 $great = max($row2['width'],$row2['height'],$row2['original_width'],$row2['original_height']);
-$ratio = $row2['original_width']/$row2['original_height'];
+if ($row2['original_height'] > 0)
+	$ratio = $row2['original_width']/$row2['original_height'];
+else
+	$ratio = 0;
+$ratio2 = $row2['width']/$row2['height'];
 
-if (!empty($_GET['size']) && $_GET['size'] == 12000 && $great >= 12000) {
+######################
+
+if (stripos($image->tags,"360") || stripos($image->tags,"photosphere")) {
+	//try to catch when try viewing a 360 panorama, that hasnt beem uploaded yet.
+	//... ie the larger upload is still the normal view, not the full resoution version
+	//... dont want to view the current larger image, as risks it being cached on CDN, so wont be visible when the real image is moderated
+
+	if ($ratio2 == $ratio && $image->gridimage_id > 7000000) {
+		print "<p>This image does not appear to have the larger uploaded added yet. If you are the contributor, it will need uploading via the <a href=\"editimage.php?id={$image->gridimage_id}\">edit page</a> and moderation";
+
+		print "<p>Contact us, if you have uploaded the panorama already, and still see this!";
+
+	        $smarty->display("_std_end.tpl");
+        	exit;
+	}
+}
+
+######################
+
+if (!empty($_GET['size']) && $_GET['size'] == 12000 && $great >= 12000) { //create 'thumbnail', even if image is already 12000, as a way to 'bust' the cache
 	$path = $image->getImageFromOriginal(12000,12000);
 	$row2['original_width'] = 12000;
 	$row2['original_height'] = 12000 /$ratio;
@@ -94,7 +136,6 @@ else {
 	$path = $image->_getFullpath();
 	$ratio = $row2['width']/$row2['height'];
 }
-
 
 ######################
 
@@ -198,6 +239,12 @@ if (preg_match('/panodirection:(\d+\.?\d*)/',$image->tags,$m)) {
 		width: 1000px;   max-width:90vw;
 		text-align:center;
 		color:gray;
+	}
+	.pnlm-info-box {
+		margin:inherit;
+		width:inherit;
+		left:inherit;
+		table-layout:unset;
 	}
 
     </style>
