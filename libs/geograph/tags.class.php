@@ -61,16 +61,14 @@ class Tags
 
 	}
 
-	function getTagId($tag) {
+	function getTagId($tag, $auto_create = true) {
 		global $USER;
 
 		$db = $this->_getDB(false);
 
                 $prefix = '';
-                $andwhere = '';
                 if (strpos($tag,':') !== FALSE) {
                         list($prefix,$tag) = explode(':',$tag,2);
-                        $andwhere = " AND prefix = ".$db->Quote($prefix);
                 }
                 $u = array();
                 $u['tag'] = str_replace('\\','',$tag);
@@ -79,8 +77,7 @@ class Tags
                 $u['tag'] = trim(preg_replace('/[ _]+/',' ',$u['tag']));
                 $u['tag'] = str_replace("'",'',$u['tag']);
 
-                if (!($tag_id= $db->getOne("SELECT tag_id FROM tag WHERE tag=".$db->Quote($u['tag'])." AND prefix=".$db->Quote($u['prefix'])) ) ) {
-
+                if (!($tag_id= $db->getOne("SELECT tag_id FROM tag WHERE tag=".$db->Quote($u['tag'])." AND prefix=".$db->Quote($u['prefix'])) ) && $auto_create) {
 
                         $u['user_id'] = $USER->user_id;
 
@@ -91,8 +88,11 @@ class Tags
 		return $tag_id;
 	}
 
+#################################################
+
 	function addTag($tag,$prefix='') {
 		if (!empty($prefix)) {
+	                $prefix = trim(strtolower($prefix));
 			$tag = preg_replace('/^([\w ]+:)?/',"$prefix:",$tag);
 		}
 
@@ -124,6 +124,8 @@ class Tags
 	function addImage($gid) {
 		@$this->images[$gid]++;
 	}
+
+#################################################
 
 	function _populateTagIds($create = true) {
 		global $USER;
@@ -165,12 +167,14 @@ class Tags
 						//reuse getTagId, which WILL create the tag, if doesnt find it. Ineffient as it tries lookup up the tag AGAIN, but saves duplicating code here
 						//AND sorts out a bug, that the above optimised lookup fails when case of the tags dont match (eg some subjects)
 						//... not a big deal, because only will be called, when tag really doesnt exist OR, tag case doesnt match
-						$this->tags[$tag] = $this->getTagId($tag);
+						$this->tags[$tag] = $this->getTagId($tag, $create);
 					}
 				}
 			}
 		}
 	}
+
+#################################################
 
 	function commit($gid = 0, $public = false) { //todo, more granular control over this?
 		global $USER;
@@ -218,6 +222,32 @@ class Tags
 		return $total;
 	}
 
+#################################################
+	//adds a tag to multiple images, uses gridimage_search, so only adds to live images, as well as possible to filter to user!
+
+	function multiCommit($gids, $tag_id, $user_id, $onlymine = true, $status = 2) {
+		$db = $this->_getDB(false);
+
+		$tag_id = intval($tag_id);
+		$user_id = intval($user_id);
+		$status = intval($status);
+
+		$where = array();
+		$where[] = "gridimage_id IN (".implode(',',array_map('intval',$gids)).")";
+		if ($onlymine)
+			$where[] = "user_id = $user_id";
+
+		$where = implode(" AND ",$where);
+		$sql = "INSERT INTO gridimage_tag
+		SELECT gridimage_id,$tag_id AS tag_id,$user_id AS user_id,NOW() as created,$status AS status,NOW() AS updated
+		FROM gridimage_search WHERE $where ON DUPLICATE KEY UPDATE status = $status";
+
+		$this->db->Execute($sql);
+		return $this->db->Affected_Rows();
+	}
+
+#################################################
+
 	function promoteUploadTags($gridimage_id,$upload_id,$user_id) {
 
 		$db = $this->_getDB(false);
@@ -260,6 +290,8 @@ class Tags
 		$smarty->assign_by_ref($basename, $this->images);
 		$smarty->assign($basename.'count', count($this->images));
 	}
+
+#################################################
 
 	/**
 	 * get stored db object, creating if necessary
