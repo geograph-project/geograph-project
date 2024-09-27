@@ -25,8 +25,6 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-
-
 $smarty = new GeographPage;
 //$template = 'tags_multitagger.tpl';
 
@@ -34,6 +32,11 @@ $template = 'tags_multitagger3.tpl';
 
 if (!empty($_GET['preview'])) {
 	$template = 'tags_multitagger2.tpl';
+
+} else if (!empty($_GET['simple'])) {
+	$template = 'tags_multitagger-simple.tpl';
+	if (empty($_GET['q']))
+		$_GET['onlymine'] = 1;
 }
 
 $USER->mustHavePerm("basic");
@@ -43,8 +46,30 @@ if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
         (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
         $src = 'src';//revert back to standard non lazy loading
 }
- $smarty->assign("src",$src);
+$smarty->assign("src",$src);
 
+##############################################################
+
+if (!empty($_GET['tag'])) {
+	$smarty->assign('thetag', $_GET['tag']);
+
+	$tags = new Tags();
+
+	$tag_id = $tags->getTagId($_GET['tag'], false);
+
+	if (empty($tag_id))
+		die("Tag not found, currently will not create new tag, only add existing one");
+
+	if (!empty($_POST['yes'])) {
+		//multiCommit, will fully sanitize input, so safe to pass GET/POST etc directy
+
+		$_GET['onlymine'] = 1; //for now, FORCE this. Later we could perhaps relax this. Eg to allow setting private tags
+
+		$tags->multiCommit($_POST['yes'], $tag_id, $USER->user_id, $_GET['onlymine'], 2);
+	}
+}
+
+##############################################################
 
 if (!empty($_GET['q']) || !empty($_GET['onlynull'])) {
 	$q=trim($_GET['q']);
@@ -61,6 +86,8 @@ if (!empty($_GET['q']) || !empty($_GET['onlynull'])) {
 	//gets a cleaned up verion of the query (suitable for filename etc)
 	$cacheid = $sphinx->q.'.'.($mine?($USER->user_id):0).'.'.$nulled;
 
+//todo, thetag would need adding to cacheid?
+
 	$sphinx->pageSize = $pgsize = 50;
 
 
@@ -73,7 +100,7 @@ if (!empty($_GET['q']) || !empty($_GET['onlynull'])) {
 
 	$smarty->assign('q', $sphinx->q);
 
-	if (!$smarty->is_cached($template, $cacheid)) {
+	if (!$smarty->is_cached($template, $cacheid) || $template == 'tags_multitagger-simple.tpl') {
 
 		$filters = array();
 		if (!empty($_REQUEST['onlymine'])) {
@@ -90,7 +117,7 @@ if (!empty($_GET['q']) || !empty($_GET['onlynull'])) {
 
 		$ids = $sphinx->returnIds($pg,'_images');
 		if (!empty($ids) && count($ids)) {
-			$smarty->assign('idlist', implode(',',$ids));
+			$smarty->assign('idlist', $idstr = implode(',',$ids));
 
 			$images=new ImageList();
 			$images->getImagesByIdList($ids);
@@ -101,33 +128,52 @@ if (!empty($_GET['q']) || !empty($_GET['onlynull'])) {
 			$smarty->assign('totalcount', $sphinx->resultCount);
 
 			if ($template == 'tags_multitagger.tpl') {
-
-				$db = GeographDatabaseConnection(true);
+				if (!empty($tags) && !empty($tags->db)) {
+					$db = $tags->db;
+				} else {
+					$db = GeographDatabaseConnection(true);
+				}
 
 				$used = $db->getAll("SELECT tag_id,prefix,tag,count(distinct gridimage_id) as images FROM gridimage_tag gs INNER JOIN tag s USING (tag_id) WHERE gridimage_id IN (".implode(',',$ids).") AND (gs.user_id = {$USER->user_id}) AND gs.status > 0 GROUP BY tag_id");
 
 				$smarty->assign_by_ref('used',$used);
 			}
 
+			if (!empty($tag_id) && $template == 'tags_multitagger-simple.tpl') {
+				// importantly want to do it directly in database (as may of just modified it!!, NOT just rely cached version (even in gridimage_search, certainly not sphinx!)
+				$done= $tags->db->getCol("SELECT gridimage_id FROM tag_public WHERE tag_id = $tag_id AND gridimage_id IN ($idstr) LIMIT 1000");
+				$smarty->assign_by_ref('done',$done);
+			}
 		}
-
 	}
+
+##############################################################
 
 } elseif (!empty($_GET['onlymine'])) {
 	$cacheid = $USER->user_id;
 	$smarty->assign("onlymine",1);
 
-	if (!$smarty->is_cached($template, $cacheid)) {
+	if (!$smarty->is_cached($template, $cacheid) || $template == 'tags_multitagger-simple.tpl') {
 		$images=new ImageList();
-		$images->getImagesByUser($USER->user_id, '', 'gridimage_id desc', 50,true);
+		$images->getImagesByUser($USER->user_id, '', 'gridimage_id desc', 50,false);
 
 		$smarty->assign_by_ref('images', $images->images);
 
 		$smarty->assign('imagecount', count($images->images));
 		$smarty->assign('totalcount', '?');
 
+		if (!empty($tag_id) && $template == 'tags_multitagger-simple.tpl') {
+			$ids = array();
+			foreach ($images->images as $i => $image)
+				$ids[] = $image->gridimage_id;
+			$idstr = implode(',',$ids);
+			// importantly want to do it directly in database (as may of just modified it!!, NOT just rely cached version (even in gridimage_search, certainly not sphinx!)
+			$done= $tags->db->getCol("SELECT gridimage_id FROM tag_public WHERE tag_id = $tag_id AND gridimage_id IN ($idstr) LIMIT 1000");
+			$smarty->assign_by_ref('done',$done);
+		}
 	}
-
 }
+
+##############################################################
 
 $smarty->display($template,$cacheid);
