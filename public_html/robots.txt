@@ -243,4 +243,10 @@ Disallow: /
 User-agent: SeekportBot
 Disallow: /
 
+User-agent: serpstatbot
+Disallow: /
+
+User-agent: Qwantbot
+Disallow: /
+
 Clean-param: mobile&style
