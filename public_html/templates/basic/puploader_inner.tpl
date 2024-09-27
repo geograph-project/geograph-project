@@ -337,6 +337,7 @@ function rehighlight(that,check) {
 		<span class=nowrap id="showvfov" style="display:none">(vfov: <input type=number step=0.01 name=vfov placeholder=120 style=width:50px;text-align:right>degrees wide)</span> 
 		<span class=nowrap id="showhfov">(hfov: <input type=number step=0.01 name=hfov placeholder=90 style=width:50px;text-align:right>degrees high)</span><br>
 		Panoramas get a special viewer so users can rotate and zoom in the scene.<br><br>
+		Don't need to be accurate with the field of view, but giving even approximate (to nearest 5 or 10 degrees) should allow image to be displayed without looking stretched.<br><br>
 
 		To ensure that your wide-angle panoramas, especially those exceeding 180&deg; wide, are displayed correctly, please submit a "normal angle" image here initially.<br>
 
@@ -344,7 +345,6 @@ function rehighlight(that,check) {
 
 		Afterward, you can upload the full-resolution panorama using the "Upload a larger version" feature.
 		(You only need to upload or release a 640px version initially, as the pano will replace the larger versions) 
-
 
 		<br><br>Read more about 
 		<a href="/article/article/Panoramas-and-Photospheres-on-Geograph" class="about" target="_blank">Panoramas and Photospheres on Geograph</a> (in new window)</div>
