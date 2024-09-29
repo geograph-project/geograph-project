@@ -47,7 +47,7 @@ $db = GeographDatabaseConnection(100);
 
 
 //needs to use gridimage/gridsquare because may be pending images. but join in gridimage_search, as may already be moderated, which case have the lat/long ready to use!
-$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long
+$sql = "select gridimage_id,g.submitted,gs.grid_reference,g.title,nateastings,natnorthings,natgrlen,gs.reference_index,wgs84_lat,wgs84_long,gs.x,gs.y
 	from gridimage g
 		inner join gridsquare gs using (gridsquare_id)
 		left join gridimage_search gi using (gridimage_id)
@@ -107,7 +107,12 @@ if ($count = $recordSet->RecordCount()) {
                 $r = $recordSet->fields;
 
 		if (empty($r['wgs84_lat']) || $r['wgs84_lat'] < 1) {
-		        list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($r['nateastings'],$r['natnorthings'],$r['reference_index']);
+			if ($r['nateastings']) {
+		        	list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($r['nateastings'],$r['natnorthings'],$r['reference_index']);
+			} else {
+				// some images dont have exact location!
+				list($wgs84_lat,$wgs84_long) = $conv->internal_to_wgs84($r['x'],$r['y'],$r['reference_index']);
+			}
 		} else {
 			$wgs84_lat = $r['wgs84_lat'];
 			$wgs84_long = $r['wgs84_long'];
