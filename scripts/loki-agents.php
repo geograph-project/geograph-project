@@ -21,7 +21,8 @@
  */
 
 $param = array('debug'=>0, 'date' => '', 'extra'=>'', 'extra2'=> '+1 day', 'hours'=>0, 'minutes'=>0, 'bot'=>1, //these are handled by wrapper
- 'string'=>'', 'not'=>'', 'second'=>'', 'status'=>false, 'common'=>1, 'robots'=>1, 'duration'=>false); //custom params for this script
+ 'string'=>'', 'not'=>'', 'second'=>'', 'status'=>false, 'common'=>1, 'robots'=>1, 'duration'=>false,
+ 'min' => 0); //custom params for this script
 
 chdir(__DIR__);
 require "./_loki-wrapper.inc.php";
@@ -44,6 +45,8 @@ $param['stream'] = '';
 $query = get_base_query($param, $add_pattern = true);
 
 ############################################
+
+//TODO, we could populate $robots via a seperate query " php scripts/loki-agents.php --config=live --string=/robots.txt "
 
 $robots = array();
 
@@ -96,20 +99,33 @@ foreach ($generator as $line) {
 
 asort($stat);
 
+$stat2 = array();
 foreach($stat as $ua => $count) {
+	if ($param['min'] && $count < $param['min'])
+	        continue;
 
         $bot = '   ';
         if (isset($robots[$ua])) $bot = '???';
         if (!appearsToBePerson2($ua)) $bot = 'BOT';
 
         printf("%6d. %s %s\n",  $count, $bot, $ua);
+
+	if ($bot != 'BOT') { //skip 'known' bots!
+		$u2 = preg_replace('/[0-9]+/','9',$ua);
+		@$stat2[$u2][$ua]=1;
+	}
 }
 printf("%6d. %s (%d agents)\n", array_sum($stat), 'TOTAL', count($stat));
 //print ".\n";
 
-
-
-//TODO, we could populate $robots via a seperate query " php scripts/loki-agents.php --config=live --string=/robots.txt "
+if (!empty($stat2)) {
+	print str_repeat('-',80)."\n";
+	foreach($stat2 as $u2 => $data) {
+		if (count($data) > 2) {
+			printf("%6d. %s\n", count($data), $u2);
+		}
+	}
+}
 
 
 ##################################
