@@ -62,6 +62,7 @@ if (!empty($_POST['ids'])) {
 	$updates['calendar_id'] = $db->Insert_ID();
 	if (isset($updates['cover_image']))
 		unset($updates['cover_image']);
+	unset($updates['year']); //but it not on gridimage_calendar
 
         foreach ($ids as $id) {
 		if ($row = $db->getRow("SELECT gridimage_id,user_id,grid_reference,title,if(gi.realname!='',gi.realname,user.realname) as realname,imagetaken
