@@ -76,6 +76,7 @@ if (!empty($_GET['q']) || !empty($_GET['onlynull'])) {
 
 	$mine = !empty($_GET['onlymine']);
 	$nulled = !empty($_GET['onlynull']);
+	$exclude = !empty($_GET['exclude']);
 
 	$q = str_replace("(anything) near",'',$q);
 	$q = str_replace("near (anywhere)",'',$q);
@@ -84,7 +85,7 @@ if (!empty($_GET['q']) || !empty($_GET['onlynull'])) {
 	$sphinx = new sphinxwrapper($q);
 
 	//gets a cleaned up verion of the query (suitable for filename etc)
-	$cacheid = $sphinx->q.'.'.($mine?($USER->user_id):0).'.'.$nulled;
+	$cacheid = $sphinx->q.'.'.($mine?($USER->user_id):0).'.'.$nulled.$exclude;
 
 //todo, thetag would need adding to cacheid?
 
@@ -104,13 +105,25 @@ if (!empty($_GET['q']) || !empty($_GET['onlynull'])) {
 
 		$filters = array();
 		if (!empty($_REQUEST['onlymine'])) {
-			$filters['auser_id'] = array($USER->user_id);
+			$filters['auser_id'] = array($USER->user_id); //this is an absolute filter
+			$sphinx->q .= " @user_id ".intval($USER->user_id); //should make the query more effient
 			$smarty->assign("onlymine",1);
 		}
 		if (!empty($_REQUEST['onlynull'])) {
 			$sphinx->q .= " @tags ^null";
 			$smarty->assign("onlynull",1);
 		}
+		if (!empty($_REQUEST['exclude']) && !empty($_GET['tag'])) {
+			if (strpos($_GET['tag'],':') !== FALSE) {
+				list($prefix,$_GET['tag']) = explode(':',$_GET['tag'],2);
+
+			        $sphinx->q .= " @tags -\"__TAG__ $prefix __TAG__ {$_GET['tag']} __TAG__\"";
+			} else {
+			        $sphinx->q = " @tags -\"__TAG__ {$_GET['tag']} __TAG__\"";
+			}
+			$smarty->assign("exclude",1);
+		}
+
 		if (!empty($filters)) {
 			$sphinx->addFilters($filters);
 		}
@@ -170,6 +183,14 @@ if (!empty($_GET['q']) || !empty($_GET['onlynull'])) {
 			// importantly want to do it directly in database (as may of just modified it!!, NOT just rely cached version (even in gridimage_search, certainly not sphinx!)
 			$done= $tags->db->getCol("SELECT gridimage_id FROM tag_public WHERE tag_id = $tag_id AND gridimage_id IN ($idstr) LIMIT 1000");
 			$smarty->assign_by_ref('done',$done);
+
+			if (!empty($_REQUEST['exclude'])) {
+				foreach ($images->images as $i => $image)
+					if (in_array($image->gridimage_id,$done) !== FALSE)
+						unset($images->images[$i]);
+
+				$smarty->assign("exclude",1);
+			}
 		}
 	}
 }

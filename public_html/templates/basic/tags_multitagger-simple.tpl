@@ -30,7 +30,8 @@
 			<label for="tag">Tag</label>:  <input type="text" name="tag" id="tag" size="40"{if $thetag} value="{$thetag|escape:'html'}"{/if} oninput="clear_form(this)"/>
 			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{if $q} value="{$q|escape:'html'}"{/if} oninput="clear_form(this)"/>
 			<input type="submit" value="Search"/><br/>
-			<label for="onlymine">Only your images?</label> <input type="checkbox" name="onlymine" id="onlymine" {if $onlymine}checked{/if}/> (can only add tags to your own images anyway!)
+			<label for="onlymine"><b>Only your images?</b></label> <input type="checkbox" name="onlymine" id="onlymine" {if $onlymine}checked{/if}/> (can only add tags to your own images anyway)
+			<label for="exclude"><b>Exclude already tagged?</b></label> <input type="checkbox" name="exclude" id="exclude" {if $exclude}checked{/if}/> (may not exclude recently tagged images) 
 		</div>
 	</form>
 
