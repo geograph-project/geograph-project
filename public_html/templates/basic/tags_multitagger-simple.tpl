@@ -22,7 +22,7 @@
 {dynamic}
 <h2>Multi Tagger</h2>
 
-<p>This page allows you to run a keyword search to find images, and then add tags to the first 50 results in one go. The 50 limit may be removed later.
+<p>This page allows you to run a keyword search to find images, and then <b>add tags</b> to the first 50 results in one go. The 50 limit may be removed later.
 
 	<form action="{$script_name}" method="get">
 		<input type=hidden name=simple value=1>
@@ -43,7 +43,7 @@
 
 			  <div style="float:left; position:relative; width:100px; text-align:center">
 				<input type="checkbox" class=tag name="yes[]" value="{$image->gridimage_id}" id="c{$image->gridimage_id}"
-					{if $done && in_array($image->gridimage_id, $done)} checked{/if}
+					{if $done && in_array($image->gridimage_id, $done)} checked readonly disabled{/if}
 					><label for="c{$image->gridimage_id}">Yes</label>
 			  </div>
 
