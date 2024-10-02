@@ -86,7 +86,7 @@ if (!empty($_POST['ids'])) {
 	exit;
 }
 
-if (date('Y-m-d') > '2024-10-01' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
+if (date('Y-m-d') > '2024-10-06' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
 	die("Sorry, we are not currently accepting new orders");
 }
 
