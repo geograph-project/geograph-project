@@ -2,10 +2,19 @@
 
 <h2>Calendar Admin Page {$year}</h2>
 
+{dynamic}
+
+<form method=post>
+	Year: <b>{$date.year}</b><br>
+	Updated: {$date.updated}<br>
+	First Day: <input type=date name=start_date value="{$date.start_date}"><br>
+	Last Day: <input type=date name=end_date value="{$date.end_date}"><br>
+	<input type=submit>
+</form>
+
 <hr>
 <p>Orders marked as 'Paid' are ready to be processed. 
 
-{dynamic}
 {if $list}
 	<form method=get>
 		<input type=checkbox name=paid value=1 {if $paid} checked{/if} id=paid onclick=this.form.submit()> <label for=paid>Only show Paid orders</label>

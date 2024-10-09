@@ -44,7 +44,7 @@ if ($row['status'] == 'processed')
         die("This calendar is now processed, and can no longer be edited");
 
 
-if (date('Y-m-d') > '2024-10-06' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
+if (!$db->getOne("SELECT year FROM calendar_dates WHERE DATE(NOW()) BETWEEN start_date AND end_date")) {
         die("Sorry, we are not currently accepting new orders");
 }
 

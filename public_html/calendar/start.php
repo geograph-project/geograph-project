@@ -31,7 +31,7 @@ pageMustBeHTTPS();
 
 $year = date('Y')+1; // we currently working on next years calendar
 
-ini_set('display_errors', 1);
+$db = GeographDatabaseConnection(false);
 
 if (!empty($_POST['ids'])) {
 
@@ -40,7 +40,6 @@ if (!empty($_POST['ids'])) {
 	$done = 0;
 	$ids = explode(' ',$str);
 
-	$db = GeographDatabaseConnection(false);
 
         $updates = array();
 	$updates['user_id'] = intval($USER->user_id);
@@ -86,7 +85,7 @@ if (!empty($_POST['ids'])) {
 	exit;
 }
 
-if (date('Y-m-d') > '2024-10-06' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
+if (!$db->getOne("SELECT year FROM calendar_dates WHERE DATE(NOW()) BETWEEN start_date AND end_date")) {
 	die("Sorry, we are not currently accepting new orders");
 }
 

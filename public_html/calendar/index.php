@@ -30,15 +30,15 @@ $year = date('Y')+1; // we currently working on next years calendar
 
 $smarty->assign('year', $year);
 
-if (date('Y-m-d') > '2024-10-06' && !in_array($USER->user_id, array(3,9181,11141,135767)) ) {
+$db = GeographDatabaseConnection(false);
+
+if (!$db->getOne("SELECT year FROM calendar_dates WHERE DATE(NOW()) BETWEEN start_date AND end_date")) {
 	$smarty->assign('closed',true);
 }
 
 ####################################
 
 $USER->mustHavePerm("basic");
-
-$db = GeographDatabaseConnection(false);
 
 if (!empty($_GET['delete'])) {
 	$calendar_id = intval($_GET['delete']);

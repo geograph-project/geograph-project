@@ -30,6 +30,17 @@ $USER->user_id == 135767 || $USER->user_id == 9181 || $USER->mustHavePerm("direc
 
 $db = GeographDatabaseConnection(false);
 
+$year = date('Y')+1; // we currently working on next years calendar
+
+####################################
+
+if (!empty($_POST['start_date'])) {
+	//because now type=date, assume browser will provide right format!
+	$db->Execute("UPDATE calendar_dates SET start_date = ".$db->Quote($_POST['start_date']).", end_date = ".$db->Quote($_POST['end_date'])." WHERE year = $year");
+}
+
+$date = $db->getRow("SELECT * FROM calendar_dates WHERE year = $year");
+$smarty->assign('date',$date);
 
 ####################################
 
@@ -42,7 +53,6 @@ if (!empty($_POST['processed'])) {
 
 ####################################
 
-$year = date('Y')+1; // we currently working on next years calendar
 
 $where = '';
 if (!empty($_GET['paid']))
