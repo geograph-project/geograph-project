@@ -305,7 +305,7 @@
 				{assign var="field" value="current_`$item.field`"}
 			{/if}
 
-			{if $item.field eq "tag"}
+			{if $item.field eq "tag" or $item.field eq "snippet"}
 				{if $item.oldvalue}<span style="text-decoration: line-through;font-family:monospace">[{$item.oldhtml|default:'blank'}]</span>{/if}
 				{if $item.newvalue}<span style="font-family:monospace">[{$item.newhtml|default:'blank'}]</span>{/if}
 
@@ -328,7 +328,7 @@
 			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{/if}
 
-			{if $editable && $item.field ne "tag" && $item.newvalue == $image->$field}
+			{if $editable && $item.field ne "tag" && $item.field ne "snippet" && $item.newvalue == $image->$field}
 				<b>Changes already applied</b>
 			{/if}
 
@@ -463,7 +463,7 @@
 	<a class="tabSelected nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Image Details</a>&nbsp;
         <a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,4); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}{if $is_admin}&amp;admin=1{/if}';">Tags, Subject, Geographical Context</a>&nbsp;
 {if $isadmin || $isowner}
-        <a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';">Shared Descriptions</a>
+        <a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}{if $is_admin}&amp;admin=1{/if}';">Shared Descriptions</a>
 	<a class="tab nowrap" id="tab4" onclick="tabClick('tab','div',4,4); document.getElementById('nearframe').src='/finder/used-nearby.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';">Used Nearby</a>&nbsp;
 {/if}
 </div>
