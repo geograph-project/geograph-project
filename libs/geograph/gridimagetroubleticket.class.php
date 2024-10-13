@@ -365,8 +365,15 @@ class GridImageTroubleTicket
 			if ($fieldname=="tag")
 			{
 				$tags = new Tags();
-				$tag_id = $tags->getTagId($newvalue?$newvalue:$oldvalue, false); //create=false, because wont be right user. For tickets, the tag shoudl already be created!)
-				$this->commit_count += $tags->commitAdminTag($newvalue?2:0, $tag_id, $img->gridimage_id, $this->user_id); //sends the ticket Owner!
+				//need to cope with adding and removing at once!
+				if ($newvalue) {
+					$tag_id = $tags->getTagId($newvalue, false); //create=false, because wont be right user. For tickets, the tag shoudl already be created!)
+					$this->commit_count += $tags->commitAdminTag(2, $tag_id, $img->gridimage_id, $this->user_id); //sends the ticket Owner!
+				}
+				if ($oldvalue) {
+					$tag_id = $tags->getTagId($oldvalue, false);
+					$this->commit_count += $tags->commitAdminTag(0, $tag_id, $img->gridimage_id);
+				}
 			}
 			elseif ($fieldname=="snippet")
 			{
@@ -375,7 +382,8 @@ class GridImageTroubleTicket
 				if ($newvalue) {
 					$newvalue = intval($newvalue);
 					$db->Execute("INSERT INTO gridimage_snippet_real SET gridimage_id={$img->gridimage_id}, snippet_id=$newvalue, user_id={$this->user_id}, status=2");
-				} else {
+				}
+				if ($oldvalue) {
 					$oldvalue = intval($oldvalue);
 					//setting status to zero, to help trigger updates, rather than just deleting!
 					$db->Execute("UPDATE gridimage_snippet_real SET status=0 WHERE gridimage_id={$img->gridimage_id} AND snippet_id=$oldvalue");
@@ -951,12 +959,16 @@ class GridImageTroubleTicket
 				if ($item['oldvalue']!=$item['newvalue'])
 				{
 					if ($item['field'] == 'tag') {
-						if ($item['newvalue'])
+						if ($item['newvalue'] && $item['oldvalue'])
+							$changes.="Changed Tag [{$item['oldhtml']}] to [{$item['newhtml']}]";
+						elseif ($item['newvalue'])
 							$changes.="Added Tag [{$item['newhtml']}]";
 						else
 							$changes.="Removed Tag [{$item['oldhtml']}]";
 					} elseif ($item['field'] == 'snippet') {
-						if ($item['newvalue'])
+						if ($item['newvalue'] && $item['oldvalue'])
+							$changes.="Changed Shared Description [{$item['oldhtml']}] to [{$item['newhtml']}]";
+						elseif ($item['newvalue'])
 							$changes.="Added Shared Description [{$item['newhtml']}]";
 						else
 							$changes.="Removed Shared Description [{$item['oldhtml']}]";

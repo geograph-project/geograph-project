@@ -289,7 +289,7 @@
 				{/if}
 			{/if}
 			<label for="accept{$item.gridimage_ticket_item_id}">
-			{if $item.field eq "tag" or $item.field eq "snippet"}
+			{if $item.field eq "tag" or $item.field eq "snippet" and (!$item.newvalue || !$item.oldvalue)}
 				{if $item.newvalue}
 					Add {$item.field}
 				{else}
@@ -307,6 +307,7 @@
 
 			{if $item.field eq "tag" or $item.field eq "snippet"}
 				{if $item.oldvalue}<span style="text-decoration: line-through;font-family:monospace">[{$item.oldhtml|default:'blank'}]</span>{/if}
+				{if $item.oldvalue && $item.newvalue}to{/if}
 				{if $item.newvalue}<span style="font-family:monospace">[{$item.newhtml|default:'blank'}]</span>{/if}
 
 			{elseif $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
