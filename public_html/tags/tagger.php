@@ -30,7 +30,9 @@ $USER->mustHavePerm("basic");
 
 $usenew = $USER->getPreference('tags.tagger_new','0',true);
 
-if ($usenew) {
+if (!empty($_GET['admin']) && $USER->hasPerm('ticketmod')) { // -- its ticket mods that can edit tags!
+	$template='tags_tagger_admin.tpl';
+} elseif ($usenew) {
 	$template='tags_tagger2.tpl';
 } else {
 	$template='tags_tagger.tpl';

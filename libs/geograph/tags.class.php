@@ -247,6 +247,27 @@ class Tags
 	}
 
 #################################################
+	//this special function will blindly add/remove tag to image
+	// most functions only allow the contributor to add a tag. This is used by mods to add/remove tag
+
+	function commitAdminTag($status, $tag_id, $gridimage_id, $user_id = 0) {
+		$db = $this->_getDB(false);
+
+		if ($status) {
+			$u = array();
+			$u['tag_id'] = $tag_id;
+	                $u['user_id'] = $user_id;
+                        $u['gridimage_id'] = $gridimage_id;
+        	        $u['status'] = intval($status);
+
+			$db->Execute('INSERT INTO gridimage_tag SET created=NOW(), `'.implode('` = ?, `',array_keys($u)).'` = ?  ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
+		} else {
+			//for deleting, specifically removing public tags (whoever created it!) - ignores user_id
+			$db->Execute("UPDATE gridimage_tag SET status=0 WHERE status=2 AND gridimage_id=".intval($gridimage_id)." AND tag_id=".intval($tag_id));
+		}
+	}
+
+#################################################
 
 	function promoteUploadTags($gridimage_id,$upload_id,$user_id) {
 

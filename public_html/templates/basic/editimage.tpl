@@ -307,10 +307,16 @@
 			{/if}
 			
 			<label for="accept{$item.gridimage_ticket_item_id}">
-			{if $item.field eq "photographer_gridref"}
-			Change camera_gridref from
+			{if $item.field eq "tag" or $item.field eq "snippet"}
+				{if $item.newvalue}
+					Add {$item.field}
+				{else}
+					Remove {$item.field}
+				{/if}
+			{elseif $item.field eq "photographer_gridref"}
+				Change camera_gridref from
 			{else}
-			Change {$item.field} from
+				Change {$item.field} from
 			{/if}
 			</label>
 
@@ -320,7 +326,11 @@
 				{assign var="field" value="current_`$item.field`"}
 			{/if}
 
-			{if $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
+			{if $item.field eq "tag"}
+				{if $item.oldvalue}<span style="text-decoration: line-through;font-family:monospace">[{$item.oldhtml|default:'blank'}]</span>{/if}
+				{if $item.newvalue}<span style="font-family:monospace">[{$item.newhtml|default:'blank'}]</span>{/if}
+
+			{elseif $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
 
 				<span{if $editable && $item.oldvalue != $image->$field} style="text-decoration: line-through"{/if}>
 					{getamap gridref=$item.oldvalue|default:'blank' text=$item.oldhtml|default:'blank'}
@@ -338,7 +348,7 @@
 			  <span style="border:1px solid #dddddd">{$item.newhtml|default:'blank'}</span>
 			{/if}
 
-			{if $editable && $item.newvalue == $image->$field}
+			{if $editable && $item.field ne "tag" && $item.newvalue == $image->$field}
 				<b>Changes already applied</b>
 			{/if}
 
@@ -477,7 +487,7 @@
 
 <div class="tabHolder" style="font-size:1em">
 	<a class="tabSelected nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Image Details</a>&nbsp;
-        <a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,4); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}';">Tags, Subject, Geographical Context</a>&nbsp;
+        <a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,4); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}{if $is_admin}&amp;admin=1{/if}';">Tags, Subject, Geographical Context</a>&nbsp;
 {if $isadmin || $isowner}
         <a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';">Shared Descriptions</a>
 	<a class="tab nowrap" id="tab4" onclick="tabClick('tab','div',4,4); document.getElementById('nearframe').src='/finder/used-nearby.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';">Used Nearby</a>&nbsp;

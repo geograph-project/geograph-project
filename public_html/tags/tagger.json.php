@@ -26,7 +26,6 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-
 #header("HTTP/1.0 204 No Content");
 #header("Status: 204 No Content");
 #header("Content-Length: 0");
@@ -43,6 +42,10 @@ if (!empty($_GET['upload_id'])) {
 if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage_id']) && preg_match('/^\d+$/',$_GET['gridimage_id'])) {
 
 	$db = GeographDatabaseConnection(false);
+
+	##################################################
+	//first clean up the tag
+
 	$u = array();
 	$u['prefix'] = '';
 	$u['tag'] = str_replace('\\','',$_GET['tag']);
@@ -54,6 +57,12 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 	$u['tag'] = trim(preg_replace('/[ _]+/',' ',$u['tag']));
 	$u['tag'] = str_replace("'",'',$u['tag']);
 
+	$clean_tag = ($u['prefix']?"{$u['prefix']}:":"").$u['tag']; //we might need this for a ticket
+
+	##################################################
+	//figure out the tag_id
+	// ... we dont need the id for 'admin' requests. But cleaning it up, allows the tag to be created if nesseraily
+
 	if ($u['prefix'] == 'id' && preg_match('/^(\d+)$/',$u['tag'],$m)) {
 		$tag_id = $m[1];
 	} else {
@@ -61,35 +70,68 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 	}
 
 	if (empty($tag_id)) {
-
 		if (empty($_GET['status'])) {
 			//no need to delete a tag never created!
 			exit;
 		}
 
 		//need to create it!
-
 		$u['user_id'] = $USER->user_id;
-
 		$db->Execute('INSERT INTO tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
-
 		$tag_id = $db->Insert_ID();
 	}
+
+	##################################################
+	//now apply the change
 
 	$u = array();
 
 	$u['tag_id'] = $tag_id;
 	$u['user_id'] = $USER->user_id;
 
+	//setup to be able to apply multiple ids, not used yet!
 	$ids = array($_GET['gridimage_id']);
 
 	foreach ($ids as $gid) {
-		$u['gridimage_id'] = $gid;
+		$u['gridimage_id'] = intval($gid);
 
-		if ($_GET['status'] == 0) {
+		if (!empty($_GET['admin'])) {
+			//for admin requests, inject into gridimage_ticket_item
+			$ticket_id = $db->getOne("SELECT gridimage_ticket_id FROM gridimage_ticket
+				WHERE status IN ('pending','open') AND gridimage_id = {$u['gridimage_id']} ORDER BY gridimage_ticket_id DESC");
+
+			// may have to create a ticket first!
+			if (empty($ticket_id)) {
+				$db->Execute("INSERT INTO gridimage_ticket SET
+                                        gridimage_id={$u['gridimage_id']},
+                                        suggested=NOW(),
+                                        user_id={$USER->user_id},
+                                        updated=NOW(),
+                                        status='pending',
+                                        notes='Applying changes to Tags',
+                                        type='minor',
+                                        notify='',
+                                        public='everyone'");
+				$ticket_id = $db->Insert_ID();
+			}
+			if ($_GET['status']) { //adding
+				$oldvalue = "''";
+				$newvalue = $db->Quote($clean_tag);
+			} else { //removing
+				$oldvalue = $db->Quote($clean_tag);
+				$newvalue = "''";
+			}
+			$db->Execute("INSERT INTO gridimage_ticket_item SET
+                                gridimage_ticket_id = $ticket_id,
+                                field = 'tag',
+                                oldvalue = $oldvalue,
+                                newvalue = $newvalue,
+                                status = 'pending'");
+
+		} elseif ($_GET['status'] == 0) {
 			unset($u['status']);
 			if (isset($_GET['mod']) && $USER->hasPerm('moderator')) {
-				//mods can delete any public tag
+				//mods can delete any public tag (although SHOULD only be used for 'type:' tags!
 				unset($u['user_id']);
 				$u['status'] = 2;
 			}
@@ -116,6 +158,7 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 			if ($_GET['status'] == 2 && ($gid > 4294967296 || $db->getOne("SELECT gridimage_id FROM gridimage WHERE gridimage_id = $gid AND user_id = {$USER->user_id}"))) {
 				$u['status'] = 2;
 			} elseif (isset($_GET['mod']) && $USER->hasPerm('moderator')) {
+				//mods can add a public tag (although SHOULD only be used for 'type:' tags!
 				$u['status'] = 2;
 			}
 

@@ -318,7 +318,14 @@ class GridImageTroubleTicket
 			//make the changes right away...
 			$img=$this->_getImage();
 
-			if ($fieldname=="grid_reference")
+			if ($fieldname=="tag")
+			{
+				$tags = new Tags();
+				$tag_id = $tags->getTagId($newvalue?$newvalue:$oldvalue, false); //create=false, because wont be right user. For tickets, the tag shoudl already be created!)
+				$tags = $tags->commitAdminTag($newvalue?2:0, $tag_id, $img->gridimage_id, $this->user_id); //sends the ticket Owner!
+				$this->commit_count++;
+			}
+			elseif ($fieldname=="grid_reference")
 			{
 				$err="";
 				$ok=$img->reassignGridsquare($newvalue, $err);
@@ -886,7 +893,12 @@ class GridImageTroubleTicket
 
 				if ($item['oldvalue']!=$item['newvalue'])
 				{
-					if ($item['field'] == 'comment') {
+					if ($item['field'] == 'tag') {
+						if ($item['newvalue'])
+							$changes.="Added Tag [{$item['newhtml']}]";
+						else
+							$changes.="Removed Tag [{$item['oldhtml']}]";
+					} elseif ($item['field'] == 'comment') {
 						$changes.="{$item['field']} changed from <br>".
 							str_repeat('~',70)."<br>".nl2br($item['oldhtml'],false)."<br>".str_repeat('~',70)."<br>".
 							"{$item['field']} changed to <br>".
