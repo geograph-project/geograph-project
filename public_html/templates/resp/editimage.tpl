@@ -514,9 +514,9 @@ div#map {
 
 <div class="tabHolder" style="font-size:1em">
 	<a class="tabSelected nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Image Details</a>&nbsp;
-        <a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,4); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}{if $is_admin}&amp;admin=1{/if}';">Tags, Subject, Geographical Context</a>&nbsp;
+        <a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,4); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}{if $isadmin}&amp;admin=1{/if}';">Tags, Subject, Geographical Context</a>&nbsp;
 {if $isadmin || $isowner}
-        <a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}{if $is_admin}&amp;admin=1{/if}';">Shared Descriptions</a>
+        <a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}{if $isadmin}&amp;admin=1{/if}';">Shared Descriptions</a>
 	<a class="tab nowrap" id="tab4" onclick="tabClick('tab','div',4,4); document.getElementById('nearframe').src='/finder/used-nearby.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';">Used Nearby</a>&nbsp;
 {/if}
 </div>
