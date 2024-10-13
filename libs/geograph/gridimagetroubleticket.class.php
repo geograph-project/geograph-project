@@ -366,8 +366,21 @@ class GridImageTroubleTicket
 			{
 				$tags = new Tags();
 				$tag_id = $tags->getTagId($newvalue?$newvalue:$oldvalue, false); //create=false, because wont be right user. For tickets, the tag shoudl already be created!)
-				$tags = $tags->commitAdminTag($newvalue?2:0, $tag_id, $img->gridimage_id, $this->user_id); //sends the ticket Owner!
-				$this->commit_count++;
+				$this->commit_count += $tags->commitAdminTag($newvalue?2:0, $tag_id, $img->gridimage_id, $this->user_id); //sends the ticket Owner!
+			}
+			elseif ($fieldname=="snippet")
+			{
+				//no class for editing snippets yet
+				$db=&$this->_getDB();
+				if ($newvalue) {
+					$newvalue = intval($newvalue);
+					$db->Execute("INSERT INTO gridimage_snippet_real SET gridimage_id={$img->gridimage_id}, snippet_id=$newvalue, user_id={$this->user_id}, status=2");
+				} else {
+					$oldvalue = intval($oldvalue);
+					//setting status to zero, to help trigger updates, rather than just deleting!
+					$db->Execute("UPDATE gridimage_snippet_real SET status=0 WHERE gridimage_id={$img->gridimage_id} AND snippet_id=$oldvalue");
+				}
+				$this->commit_count+=$db->Affected_Rows();
 			}
 			elseif ($fieldname=="grid_reference")
 			{
@@ -942,6 +955,11 @@ class GridImageTroubleTicket
 							$changes.="Added Tag [{$item['newhtml']}]";
 						else
 							$changes.="Removed Tag [{$item['oldhtml']}]";
+					} elseif ($item['field'] == 'snippet') {
+						if ($item['newvalue'])
+							$changes.="Added Shared Description [{$item['newhtml']}]";
+						else
+							$changes.="Removed Shared Description [{$item['oldhtml']}]";
 					} elseif ($item['field'] == 'comment') {
 						$changes.="{$item['field']} changed from <br>".
 							str_repeat('~',70)."<br>".nl2br($item['oldhtml'],false)."<br>".str_repeat('~',70)."<br>".
@@ -1110,7 +1128,13 @@ class GridImageTroubleTicket
 							case 'view_direction':		$token->setValue("v", $row['newvalue']); break;
 						}
 					}
-					if ($row['newvalue'] != $row['oldvalue'] && !is_numeric($row['newvalue']) && !is_numeric($row['oldvalue'])) {
+					if ($row['field'] == 'snippet') {
+						if (!empty($row['oldvalue']))
+							$row['oldhtml'] = htmlentities2($db->getOne("SELECT title FROM snippet WHERE snippet_id = ".intval($row['oldvalue'])));
+						if (!empty($row['newvalue']))
+							$row['newhtml'] = htmlentities2($db->getOne("SELECT title FROM snippet WHERE snippet_id = ".intval($row['newvalue'])));
+
+					} elseif ($row['newvalue'] != $row['oldvalue'] && !is_numeric($row['newvalue']) && !is_numeric($row['oldvalue'])) {
 						require_once "3rdparty/simplediff.inc.php";
 
 						list($row['oldhtml'], $row['newhtml']) = htmlCharDiff($row['oldvalue'], $row['newvalue']); //automatically calls htmlentities2

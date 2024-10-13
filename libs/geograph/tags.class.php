@@ -265,6 +265,7 @@ class Tags
 			//for deleting, specifically removing public tags (whoever created it!) - ignores user_id
 			$db->Execute("UPDATE gridimage_tag SET status=0 WHERE status=2 AND gridimage_id=".intval($gridimage_id)." AND tag_id=".intval($tag_id));
 		}
+		return $db->Affected_Rows();
 	}
 
 #################################################

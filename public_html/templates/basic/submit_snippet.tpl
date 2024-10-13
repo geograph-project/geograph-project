@@ -1,7 +1,7 @@
 {assign var="page_title" value="Snippets"}
 {include file="_basic_begin.tpl"}
 {dynamic}
-<form method="post" action="{$script_name}?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}" style="background-color:#f0f0f0;" name="theForm">
+<form method="post" action="{$script_name}?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}{if $admin}&amp;admin=1{/if}" style="background-color:#f0f0f0;" name="theForm">
 <input type="hidden" name="gridimage_id" value="{$gridimage_id}" />
 <input type="hidden" name="gr" value="{$gr|escape:'html'}" />
 
@@ -65,7 +65,12 @@ to a grid square or another image.<br/>For a web link just enter directly like: 
 	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; These Shared Descriptions can operate in addition to <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}
 
 	{if $gridimage_id < 4294967296}
-		<br/>&middot; <b>Changes made here apply immediately and don't go though the change request system.</b>
+		{if $admin}
+			<br/>&middot; NOTE: This is a <b>special admin version</b> available for Suggestion Moderators.
+			<br/>&middot; A new suggestion will be created if there are no open tickets. <a href="javascript:void(parent.history.go(0))">Reload Parent</a> to see new ticket
+		{else}
+			<br/>&middot; <b>Changes made here apply immediately and don't go though the change request system.</b>
+		{/if}
 	{/if}
 </div>
 {if $used}
@@ -96,11 +101,11 @@ to a grid square or another image.<br/>For a web link just enter directly like: 
 
 <div style="font-size:0.7em;color:green;border-top:2px solid gray;padding:2px">&nbsp;<b>Shared Descriptions available</b>:
 {if $tab eq 'recent'}
-	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=search">Search/Local Filter</a> / <b style=color:black>My Recently used</b> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
+	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=search{if $admin}&amp;admin=1{/if}">Search/Local Filter</a> / <b style=color:black>My Recently used</b> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions{if $admin}&amp;admin=1{/if}" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
 {elseif $tab eq 'suggestions'}
-	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=search">Search/Local Filter</a> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My recently used</a> / <b style=color:black>Suggestions</b> )</div>
+	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=search{if $admin}&amp;admin=1{/if}">Search/Local Filter</a> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent{if $admin}&amp;admin=1{/if}">My recently used</a> / <b style=color:black>Suggestions</b> )</div>
 {else}
-	( <b style=color:black>Search/Local Filter</b> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My recently used</a> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
+	( <b style=color:black>Search/Local Filter</b> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent{if $admin}&amp;admin=1{/if}">My recently used</a> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions{if $admin}&amp;admin=1{/if}" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
 
 <div class="interestBox" style="margin:4px;margin-left:24px">
 

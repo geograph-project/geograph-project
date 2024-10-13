@@ -70,6 +70,8 @@ if (empty($_REQUEST['tab']) && !empty($_POST['find'])) {
 	$_REQUEST['tab'] = 'search';
 }
 
+################################################
+
 if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comment'])) ) {
 
 	split_timer('snippet'); //starts the timer
@@ -134,6 +136,8 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 
 	split_timer('snippet','create',$gid); //logs the wall time
 
+################################################
+
 } elseif ($gid && !empty($_POST['remove'])) {
 
 	split_timer('snippet'); //starts the timer
@@ -144,7 +148,9 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 	$affected = 0;
 	foreach ($_POST['remove'] as $id => $text) {
 		if (!empty($_GET['admin'])) {
-			
+			$ticket=new GridImageTroubleTicket();
+			$ticket_id = $ticket->getOpenOrNewTricket($gid, 'Applying changes to Shared Description', 'minor');
+			$ticket->quickAddItem($ticket_id, 'snippet', $id, '');
 
 		} else {
 			$criteria['snippet_id'] = $id;
@@ -166,6 +172,8 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 
 	split_timer('snippet','remove',$gid); //logs the wall time
 
+################################################
+
 } elseif ($gid && !empty($_POST['add'])) {
 
 	split_timer('add'); //starts the timer
@@ -174,17 +182,24 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 	$updates['gridimage_id'] = $gid;
 	$updates['user_id'] = $USER->user_id;
 
+	$affected = 0;
 	foreach ($_POST['add'] as $id => $text) {
+		if (!empty($_GET['admin'])) {
+			$ticket=new GridImageTroubleTicket();
+			$ticket_id = $ticket->getOpenOrNewTricket($gid, 'Applying changes to Shared Description', 'minor');
+			$ticket->quickAddItem($ticket_id, 'snippet', '', $id);
 
-		$updates['snippet_id'] = $id;
+		} else {
+			$updates['snippet_id'] = $id;
 
-		$db->Execute('INSERT INTO gridimage_snippet_real SET `'.implode('` = ?, `',array_keys($updates)).'` = ? ON DUPLICATE KEY UPDATE status=2',array_values($updates));
+			$db->Execute('INSERT INTO gridimage_snippet_real SET `'.implode('` = ?, `',array_keys($updates)).'` = ? ON DUPLICATE KEY UPDATE status=2',array_values($updates));
+			$affected += $db->Affected_Rows();
 
-		$_SESSION['last_snippet'] = intval($id);
-
+			$_SESSION['last_snippet'] = intval($id);
+		}
 	}
 
-	if ($gid < 4294967296) {
+	if ($gid < 4294967296 && $affected) {
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
@@ -197,6 +212,7 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 	split_timer('snippet','remove',$gid); //logs the wall time
 }
 
+################################################
 
 if ($gid) {
 	split_timer('snippet'); //starts the timer
@@ -527,9 +543,9 @@ if (!empty($CONF['sphinx_host'])) {
 if (!empty($_GET['create'])) {
 	$smarty->assign('create',1);
 }
-
-
-
+if (!empty($_GET['admin'])) {
+	$smarty->assign('admin',1);
+}
 
 
 
