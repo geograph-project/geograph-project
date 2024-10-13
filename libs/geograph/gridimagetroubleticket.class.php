@@ -192,6 +192,50 @@ class GridImageTroubleTicket
 		}
 	}
 
+	function getOpenOrNewTricket($gridimage_id, $notes, $type='minor') {
+		global $USER;
+
+		//for admin requests, inject into gridimage_ticket_item
+
+		$db=&$this->_getDB();
+
+                $ticket_id = $db->getOne("SELECT gridimage_ticket_id FROM gridimage_ticket
+                        WHERE status IN ('pending','open') AND gridimage_id = {$gridimage_id} ORDER BY gridimage_ticket_id DESC");
+
+                // may have to create a ticket first!
+                if (empty($ticket_id)) {
+			$notes = $db->Quote($notes);
+			$type = $db->Quote($type);
+                        $db->Execute("INSERT INTO gridimage_ticket SET
+                                gridimage_id={$gridimage_id},
+                                suggested=NOW(),
+                                user_id={$USER->user_id},
+                                updated=NOW(),
+                                status='pending',
+                                notes=$notes,
+                                type=$type,
+                                notify='',
+                                public='everyone'");
+                        $ticket_id = $db->Insert_ID();
+                }
+		return $ticket_id;
+	}
+	//special quick version to add items
+	function quickAddItem($ticket_id,$field,$oldvalue,$newvalue) {
+		$db=&$this->_getDB();
+
+                $field = $db->Quote($field);
+                $oldvalue = $db->Quote($oldvalue);
+                $newvalue = $db->Quote($newvalue);
+
+                $db->Execute("INSERT INTO gridimage_ticket_item SET
+                                gridimage_ticket_id = $ticket_id,
+                                field = $field,
+                                oldvalue = $oldvalue,
+                                newvalue = $newvalue,
+                                status = 'pending'");
+	}
+
 	/**
 	* Clears the instance in preparation for a new ticket
 	* @access private

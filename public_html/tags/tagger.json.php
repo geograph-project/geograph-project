@@ -97,36 +97,16 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 
 		if (!empty($_GET['admin'])) {
 			//for admin requests, inject into gridimage_ticket_item
-			$ticket_id = $db->getOne("SELECT gridimage_ticket_id FROM gridimage_ticket
-				WHERE status IN ('pending','open') AND gridimage_id = {$u['gridimage_id']} ORDER BY gridimage_ticket_id DESC");
 
-			// may have to create a ticket first!
-			if (empty($ticket_id)) {
-				$db->Execute("INSERT INTO gridimage_ticket SET
-                                        gridimage_id={$u['gridimage_id']},
-                                        suggested=NOW(),
-                                        user_id={$USER->user_id},
-                                        updated=NOW(),
-                                        status='pending',
-                                        notes='Applying changes to Tags',
-                                        type='minor',
-                                        notify='',
-                                        public='everyone'");
-				$ticket_id = $db->Insert_ID();
-			}
+			$ticket=new GridImageTroubleTicket();
+
+			$ticket_id = $ticket->getOpenOrNewTricket($u['gridimage_id'], 'Applying changes to Tags', 'minor');
+
 			if ($_GET['status']) { //adding
-				$oldvalue = "''";
-				$newvalue = $db->Quote($clean_tag);
+				$ticket->quickAddItem($ticket_id,'tag', '', $clean_tag);
 			} else { //removing
-				$oldvalue = $db->Quote($clean_tag);
-				$newvalue = "''";
+				$ticket->quickAddItem($ticket_id,'tag', $clean_tag, '');
 			}
-			$db->Execute("INSERT INTO gridimage_ticket_item SET
-                                gridimage_ticket_id = $ticket_id,
-                                field = 'tag',
-                                oldvalue = $oldvalue,
-                                newvalue = $newvalue,
-                                status = 'pending'");
 
 		} elseif ($_GET['status'] == 0) {
 			unset($u['status']);

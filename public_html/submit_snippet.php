@@ -141,14 +141,20 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 	$criteria = array();
 	$criteria['gridimage_id'] = $gid;
 
+	$affected = 0;
 	foreach ($_POST['remove'] as $id => $text) {
+		if (!empty($_GET['admin'])) {
+			
 
-		$criteria['snippet_id'] = $id;
+		} else {
+			$criteria['snippet_id'] = $id;
 
-		$db->Execute('UPDATE gridimage_snippet_real SET status = 0 WHERE `'.implode('` = ? AND `',array_keys($criteria)).'` = ?',array_values($criteria));
+			$db->Execute('UPDATE gridimage_snippet_real SET status = 0 WHERE `'.implode('` = ? AND `',array_keys($criteria)).'` = ?',array_values($criteria));
+			$affected += $db->Affected_Rows();
+		}
 	}
 
-	if ($gid < 4294967296) {
+	if ($gid < 4294967296 && $affected) {
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
