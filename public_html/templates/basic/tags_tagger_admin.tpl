@@ -131,11 +131,13 @@ body {
 
 		<div style="font-size:0.8em;padding-right:20px;padding-top:10px">
 			&middot; NOTE: This is a <b>special admin version</b> available for Suggestion Moderators, for modifing PUBLIC Tags on images.<br/><br/>
-			&middot; When remove, or add a tag via this interface, it's <b>added an item to the most recent open Suggestion</b><br/><br/>
-			&middot; A new suggestion will be created if there are no open tickets. <a href="javascript:void(parent.history.go(0))">Reload Parent</a> to see new ticket<br/><br/>
+			&middot; When remove, or add a tag via this interface, it's <b>added an item to the most recent open Suggestion</b><br/>
+			&middot; A new suggestion will be created if there are no open tickets.<br/><br/>
+			&middot; Make all required changes here, then <a href="javascript:void(parent.history.go(0))">Reload Main Window</a> to see updated ticket<br/><br/>
 			&middot; In general this should only be used to correct mistakes, where the wrong tag is attached to an image.<br/><br/>
 			&middot; <i>Wide scale to change tags for multiple images (eg to correct a typo in the tag itself) should be done via seperate interface.</i><br/><br/>
 			<hr><br>
+			&middot; Start typing in the white box above, to get a list of tag suggestions.<br/><br/>
 			&middot; Having typed a tag, to start another, just type a comma or semicolon.<br/><br/>
 			&middot; Tags should ONLY contain letters, numbers, spaces, and/or hyphens. (other charactors not recommended)<br/><br/>
 		</div>

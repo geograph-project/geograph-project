@@ -333,6 +333,8 @@ if ($gid) {
 	if (!empty($used)) {
 		$text = array();
 		foreach ($used as $row) {
+			if (!empty($_GET['admin']) && $row['prefix']=='type')
+				continue; //only really matters on admin, other tagging boxes WONT affect type: tags anyway (as not owned by contributor)
 			$text[] = ($row['prefix'])?"{$row['prefix']}:{$row['tag']}":$row['tag'];
 		}
 		$smarty->assign('usedtext',implode(';',$text));

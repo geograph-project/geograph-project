@@ -67,7 +67,8 @@ to a grid square or another image.<br/>For a web link just enter directly like: 
 	{if $gridimage_id < 4294967296}
 		{if $admin}
 			<br/>&middot; NOTE: This is a <b>special admin version</b> available for Suggestion Moderators.
-			<br/>&middot; A new suggestion will be created if there are no open tickets. <a href="javascript:void(parent.history.go(0))">Reload Parent</a> to see new ticket
+			<br/>&middot; When remove, or add a SD via this interface, it's <b>added an item to the most recent open Suggestion</b>
+			<br/>&middot; A new suggestion will be created if there are no open tickets. <a href="javascript:void(parent.history.go(0))">Reload Main Window</a> to see updated ticket
 		{else}
 			<br/>&middot; <b>Changes made here apply immediately and don't go though the change request system.</b>
 		{/if}
