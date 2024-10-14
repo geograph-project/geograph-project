@@ -24,8 +24,10 @@
 if (empty($_SERVER['HTTP_USER_AGENT'])
  || ($_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter")
  || (strpos($_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE)
+ || (@$_SERVER['HTTP_REFERER'] == 'https://google.com')
  || (strpos($_SERVER["REQUEST_URI"], 'f20e868609')!==FALSE) ) {
 	header('HTTP/1.0 403 Forbidden');
+	header('Vary: User-Agent'); //really we blocking specific user-agents only
 	header("Cache-Control: max-age=360000");
 	exit;
 }

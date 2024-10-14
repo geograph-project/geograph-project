@@ -21,6 +21,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (empty($_SERVER['HTTP_USER_AGENT'])
+  || ($_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter")
+  || (@$_SERVER['HTTP_REFERER'] == 'https://google.com')) {
+        header('HTTP/1.0 403 Forbidden');
+        header('Vary: User-Agent'); //really we blocking specific user-agents only
+        header("Cache-Control: max-age=360000");
+        exit;
+}
+
+
 #if (strlen($_SERVER['HTTP_USER_AGENT']) < 4 && strlen($_SERVER['HTTP_REFERER']) < 4) {
 #	header("HTTP/1.0 401 Forbidden");
 #	print "Forbidden";
