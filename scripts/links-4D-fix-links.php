@@ -77,6 +77,7 @@ while (!$recordSet->EOF) {
 
                 $sqls[] = "INSERT INTO gridimage_ticket SET
                                                                 gridimage_id={$row['gridimage_id']},
+								moderator_id=0,
                                                                 suggested=NOW(),
                                                                 user_id=$user_id,
                                                                 updated=NOW(),

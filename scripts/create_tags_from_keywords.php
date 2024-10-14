@@ -110,6 +110,7 @@ $a = array();
 
 				$db_write->Execute("INSERT INTO gridimage_ticket SET 
 					gridimage_id={$row['gridimage_id']},
+					moderator_id=0,
 					suggested=NOW(),
 					user_id=3,
 					updated=NOW(),

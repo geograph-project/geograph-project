@@ -208,6 +208,7 @@ class GridImageTroubleTicket
 			$type = $db->Quote($type);
                         $db->Execute("INSERT INTO gridimage_ticket SET
                                 gridimage_id={$gridimage_id},
+				moderator_id=0,
                                 suggested=NOW(),
                                 user_id={$USER->user_id},
                                 updated=NOW(),

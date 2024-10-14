@@ -101,6 +101,7 @@ while (!$recordSet->EOF)
 		//store these up, because they need to be applied in strict order, so the LAST_INSERT_ID function works
                 $tickets[$r['gridimage_id']] = "INSERT INTO gridimage_ticket SET
                                                                 gridimage_id={$r['gridimage_id']},
+								moderator_id=0,
                                                                 suggested=NOW(),
                                                                 user_id=$user_id,
                                                                 updated=NOW(),
