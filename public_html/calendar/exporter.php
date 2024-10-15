@@ -39,7 +39,7 @@ customNoCacheHeader();
 
 $year = date('Y')+1; // we currently working on next years calendar
 
-$sql = "SELECT calendar_id,user_id,alpha,realname,created,quantity,delivery_name,delivery_email,delivery_address,delivery_line1,delivery_line2,delivery_line3,delivery_line4,delivery_postcode,status,paid,ordered
+$sql = "SELECT calendar_id,user_id,alpha,realname,created,quantity,delivery_name,email,delivery_line1,delivery_line2,delivery_line3,delivery_line4,delivery_postcode,status,paid,ordered
 FROM calendar c LEFT JOIN user USING (user_id) WHERE ordered > '2000-01-01' and status != 'deleted' and year = '$year' ORDER BY ordered,calendar_id";
 
 

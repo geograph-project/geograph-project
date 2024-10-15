@@ -69,6 +69,8 @@
 {/if}
 {/dynamic}
 
+<a href="exporter.php">Export CSV</a>
+
 {literal}
 <style>
 input:checked + label {
