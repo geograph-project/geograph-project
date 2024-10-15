@@ -136,6 +136,11 @@ server {
   client_max_body_size 32M;
 
   ###################################
+
+  # this is just a test IP!
+  deny 176.62.168.66/32;
+
+  ###################################
   # special setup for staging (dont use a seperate 'server' block as most of the rules below are common to all hosts) 
 
   if ($http_host ~ staging) {		rewrite ^/robots.txt /robots-staging.txt last;  }
