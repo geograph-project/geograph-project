@@ -28,8 +28,10 @@ customExpiresHeader(3600*24);
 
 $db = GeographDatabaseConnection(true);
 
-$query = "SELECT 'top' as `prefix`, top AS tag, grouping
+$query = "SELECT `prefix`, top AS tag, grouping, tag_id
 		FROM category_primary
+		INNER JOIN tag ON (prefix = 'top' AND top=tag)
+		WHERE status = 1
 		ORDER BY sort_order";
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
