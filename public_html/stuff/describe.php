@@ -55,7 +55,10 @@ if (!preg_match('/^\w+$/',$_GET['index']))
 
 $index = $_GET['index'];
 
-$sph = GeographSphinxConnection('sphinxql',false);
+if (!empty($_GET['rt'])) {
+	$sph = GeographSphinxConnection('manticorert',false);
+} else
+	$sph = GeographSphinxConnection('sphinxql',false);
 
 $try = 1;
 while ($try < 3) {
@@ -72,6 +75,22 @@ while ($try < 3) {
 	if (!empty($rows)) {
 		//$example = $sph->getRow("SELECT * FROM $index WHERE id = 5267473");
 		$example = $sph->getRow("SELECT * FROM $index LIMIT 1");
+
+		if ($index == 'sample8') {
+			$example2 = $sph->getRow("SELECT * FROM sample8A WHERE MATCH('_SEP_ -Unknown') AND original > 1024 LIMIT 1"); //find an example with lots of tags/mvas! (also include larger, so get a nice larger example
+
+			//loop the few fields that are NOT stored as attributes. (could synthersize user and larger from the index, but not the others)
+			if (!empty($example2['id'])) {
+				$db = GeographDatabaseConnection(true);
+				$example2 += $db->getRow("SELECT comment,
+CONCAT('ftf',gi.ftf) AS ftf,
+CONCAT('user',gi.user_id) as user, 
+concat( if(greatest(original_width,original_height) >= 3000,'3000 ',''), if(greatest(original_width,original_height) >= 1600,'1600 ',''), if(greatest(original_width,original_height) >= 1024,'1024 ',''), if(greatest(original_width,original_height) >= 800,'800 ',''), if(greatest(original_width,original_height) >= 640,'641 ','') ) AS larger
+FROM gridimage_search gi
+LEFT JOIN gridimage_size USING (gridimage_id)
+WHERE gridimage_id = {$example2['id']}");
+			}
+		}
 	} else {
 		if ($try == 1) {
 			//rconnect to tea and try again
@@ -84,6 +103,9 @@ while ($try < 3) {
 	$try++;
 }
 
+if (!empty($_GET['rt'])) {
+	$indexes = array(); $_GET['all']=1;
+} else
 $indexes = array(
 	'sample8'=>array('sample6','New Images','Most fully featured index. Conceived for the Browser, but now used by many site features,
 			like the Image Facet API, the new Simple Search, and Related Images sidebar'),
@@ -105,6 +127,22 @@ $indexes = array(
 	//'snippet'=>array('',''),
 
 );
+
+if (!empty($_GET['all'])) {
+	$all = $sph->getAssoc("SHOW TABLES");
+	foreach ($all as $table => $row) {
+		if (preg_match('/_(main|delta)$/',$table)) //main/delta, accessed via distributed index!
+			continue;
+		if (preg_match('/\d[A-Z]$/',$table)) //the sample8 index is sharded!
+			continue;
+		if (preg_match('/_master$/',$table)) //the master indexes are special empty indexes used to update keys on master/slave servers
+			continue;
+		if (isset($indexes[$table]))
+			continue;
+		$indexes[$table] = array($table,$table,$table);
+	}
+}
+
 print "<h2>Main Sphinx Indexes used by Geograph</h2>";
 print "<table>";
 foreach ($indexes as $idx => $row) {
@@ -127,6 +165,25 @@ Can use them with field syntax in the keywords search box (eg [<tt>@title words<
 if (!empty($title))
 	print "<h3>$title</h3>";
 
+############################
+
+$filters = array('All','Fields','Attributes');
+if(empty($_GET['filter'])) $_GET['filter'] = 'All';
+
+print "<p>Filter "; $sep = ":";
+foreach($filters as $filter) {
+	if ($filter == $_GET['filter'])
+		print " $sep <b>$filter</b>";
+	else
+		print " $sep <a href=\"?index=$index&filter=$filter\">$filter</a>";
+	$sep = "/";
+}
+if ($_GET['filter'] == 'Fields') print " - <b>Fields may be used in the full text query</b> (unless also an attribute can't be retrieved/filtered/grouped or ordered by)";
+if ($_GET['filter'] == 'Attributes') print " - may be <b>retrieved, filtered, grouped and/or ordered by</b> (unless also a field can't be used in full-text query)";
+print "</p>";
+
+############################
+
 function cmp($a, $b) {
     return strcasecmp($a['Field'], $b['Field']);
 }
@@ -135,6 +192,14 @@ uasort($rows, "cmp");
 $data = array();
 $alltypes = array('field'=>1); //fields should be first column!
 foreach ($rows as $row) {
+	if ($row['Type'] == 'text' && strpos($row['Properties'],'stored') !== FALSE) { //newer text type can be stored (it not a true atrtibute, by can be selected)
+		$data[$row['Field']]['stored'] = 1;
+		$alltypes['stored']=1;
+	}
+	if ($row['Type'] == 'text' && strpos($row['Properties'],'indexed') !== FALSE) //newer versions of manticore, call fields 'text' now.
+		$row['Type'] = 'field';
+	//technically can have a 'text' field, that is NOT indexed, dont think we have them, but they will get left as 'text' and WONT be marked as Field anyway)
+
 	if (!empty($_GET['c']) && (preg_match('/^a(\w+)/',$row['Field'],$m) || $row['Field'] == 'classcrc')) {
 		//there is a attribute, by different name!
 		$name = $m[1];
@@ -150,15 +215,23 @@ foreach ($rows as $row) {
 	}
 	$alltypes[$row['Type']] = 1;
 }
+
+############################
+
 print "<table border=1 cellspacing=0 cellpadding=3><tr>";
 print "<th>Field";
 foreach($alltypes as $type=>$dummy)
 	print "<th>$type";
 print "<th>Example";
+if (!empty($example2))
+	print "<th>Example2";
 foreach ($data as $field => $types) {
+	if ($_GET['filter'] == 'Fields' && empty($types['field'])) continue;
+	if ($_GET['filter'] == 'Attributes' && !empty($types['field']) && count($types)==1) continue; //only hide if ONLY a field, if any other type, must be attribute too!
+
 	$style= (isset($types['field']))?' style="font-weight:bold;background-color:#ffffcc"':'';
 	print "<tr $style>";
-	print "<td>$field";
+	print "<td style=font-size:x-large;font-family:monospace>$field";
 	foreach($alltypes as $type=>$dummy) {
 		if (!empty($types[$type])) {
 			print "<td>".htmlentities($type)."</td>";
@@ -170,7 +243,7 @@ foreach ($data as $field => $types) {
 	if (!empty($example[$field])) {
 		print "<td>".htmlentities($example[$field]);
 	} else {
-		print "<td style=color:gray><i>unable to show example</i>";
+		print "<td style=color:silver><i>unable to show example</i>";
 	}
 	if (!empty($example2[$field])) {
 		print "<td>".htmlentities($example2[$field]);
