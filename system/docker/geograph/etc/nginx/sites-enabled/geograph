@@ -137,6 +137,8 @@ server {
 
   ###################################
 
+  real_ip_header X-Real-IP;
+
   # this is just a test IP!
   deny 176.62.168.66/32;
 
