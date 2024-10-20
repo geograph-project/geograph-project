@@ -274,7 +274,6 @@ body {
   flex-basis: 0;
 }
 
-
 {*forum thread views*}
 
 .forum-post-title {
@@ -461,3 +460,94 @@ body {
   max-width: 200px;
   box-sizing: border-box;
 }
+
+{*forum thread views*}
+
+.forum-thread-grid {
+  display: grid;
+  grid-template-areas:
+    'forum-thread-icon forum-thread-topic forum-thread-views forum-thread-replies forum-thread-author forum-thread-lastpost'
+    'forum-thread-icon forum-thread-pages forum-thread-views forum-thread-replies forum-thread-author forum-thread-lastpost';
+  grid-template-rows: max-content max-content;  
+  grid-template-columns: 35px 1fr 4ch 4ch 15ch 15ch;
+  grid-row-gap: 2px;
+  grid-column-gap: 5px;
+  margin: 0;
+  border: solid white;
+  background: #E9EFF4;
+}
+
+@media all and (max-width: 800px) {
+  .forum-thread-grid {
+  grid-template-areas: 
+      "forum-thread-topic forum-thread-topic"
+      "forum-thread-views forum-thread-replies"
+      "forum-thread-author forum-thread-lastpost"
+      "forum-thread-pages forum-thread-pages";
+  grid-template-rows: max-content max-content max-content max-content;
+  grid-template-columns: 1fr 1fr;
+  }
+  .forum-thread-icon {
+  display: none;
+  }
+}
+
+.forum-thread-icon {
+  grid-area: forum-thread-icon;
+  padding: 5px;
+  margin: auto;
+  text-align: center;
+}
+.forum-thread-topic {
+  grid-area: forum-thread-topic;
+  padding: 5px;
+}
+.forum-thread-pages {
+  grid-area: forum-thread-pages;
+  padding: 5px;
+  text-align: right;
+}
+.forum-thread-topic a {
+  text-decoration: none;
+}
+.forum-thread-views {
+  grid-area: forum-thread-views;
+  padding: 5px;
+  text-align: center;
+  margin: auto;
+  font-size: 0.9em;
+}
+.forum-thread-replies {
+  grid-area: forum-thread-replies;
+  padding: 5px;
+  text-align: center;
+  margin: auto;
+  font-size: 0.9em;
+}
+.forum-thread-author {
+  grid-area: forum-thread-author;
+  padding: 5px;
+  text-align: center;
+  margin: auto;
+}
+.forum-thread-lastpost {
+  grid-area: forum-thread-lastpost;
+  padding: 5px;
+  text-align: center;
+  margin: auto;
+}
+  
+@media all and (max-width: 700px) {
+  .forum-post-role {
+    text-align: right;
+  }
+  .forum-post-username {
+    margin-bottom: 0px;
+  }
+}
+.forum-thread-author {
+  
+}
+.forum-thread-posttime {
+  font-size: 0.75em;
+}  
