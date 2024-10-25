@@ -269,7 +269,12 @@ class SearchCriteria
 				case 'random':
 					$sql_order = ' crc32(concat("'.($this->crt_timestamp_ts).'",gi.gridimage_id)) ';
 					$this->sphinx['compatible_order'] = 0;
-					$this->sphinx['sort'] = "@random";
+					if (!empty($this->groupby)) {
+						//groups can not be sorted by @random
+						$this->sphinx['sort'] = "sequence DESC"; //not truly random, but should certainly be 'mixed' up!
+					} else {
+						$this->sphinx['sort'] = "@random";
+					}
 					break;
 				case 'dist_sqd':
 					break;
