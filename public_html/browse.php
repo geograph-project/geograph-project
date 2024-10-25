@@ -40,6 +40,12 @@ require_once('geograph/map.class.php');
 require_once('geograph/mapmosaic.class.php');
 require_once('geograph/rastermap.class.php');
 
+//block bots from going crazy crawling lots of pages
+if (!preg_match('/^\/gridref\/\w{1,2}\d{4}$/',$_SERVER['REQUEST_URI']) //we let bots crawl simple 4fig GRs
+&& !appearsToBePerson()) { //this will only catch identiable bots
+	rate_limiting('browse.php', 5, true);
+}
+
 if (!empty($_POST['style'])) {
 	session_cache_limiter('private_no_expire'); //this is just to override the default no-store that gets added (so user can use backbutton)
 

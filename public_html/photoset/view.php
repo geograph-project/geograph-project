@@ -22,6 +22,12 @@
  */
 
 require_once('geograph/global.inc.php');
+
+//block bots from going crazy crawling lots of pages
+if (!appearsToBePerson()) { //this will only catch identiable bots
+       rate_limiting('photoset.php', 5, true);
+}
+
 init_session();
 
 $smarty = new GeographPage;

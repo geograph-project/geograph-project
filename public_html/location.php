@@ -40,6 +40,11 @@ require_once('geograph/map.class.php');
 require_once('geograph/mapmosaic.class.php');
 require_once('geograph/rastermap.class.php');
 
+//block bots from going crazy crawling lots of pages
+if (!appearsToBePerson()) { //this will only catch identiable bots
+       rate_limiting('browse.php', 5, true); //lets share the quota with browse.php!
+}
+
 init_session();
 
 

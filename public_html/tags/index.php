@@ -25,6 +25,12 @@ if (empty($_SERVER['HTTP_USER_AGENT']))
 
 require_once('geograph/global.inc.php');
 
+//block bots from going crazy crawling lots of pages
+if (!appearsToBePerson()) { //this will only catch identiable bots
+       rate_limiting('tags.php', 5, true);
+}
+
+
 $redirect = array(
 'Lowland landscapes'=>'Lowlands',
 'Upland landscapes'=>'Uplands',
