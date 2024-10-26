@@ -60,6 +60,7 @@ if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_i
         	$topic_reverse = "<a href=\"{$indexphp}action=vthread&amp;forum={$forum}&amp;topic={$topic}\">&#x1f535;</a>&nbsp;";
         }
       /*old image URLS:
+      $dot = ($cols[11])?'topic_muted.gif?v2':'topic_updated.gif';
        <img src=\"{$static_url}/img/$dot\" align=middle border=0 alt=\"Updated Since Last Visit\" height=\"10\" width=\"10\">
        <img src=\"{$static_url}/img/topic_new.gif\" align=middle border=0 alt=\"New Since Last Visit\" height=\"6\" width=\"10\">
        */
