@@ -331,6 +331,10 @@ class EventProcessor
 				//have had a pop at it...
 				$processed=$this->db->GetAssoc("select class_name, 1 as flag from event_handled_by where event_id=$event_id");
 
+				if (function_exists('memory_get_peak_usage'))
+					$this->trace(memory_get_peak_usage()." Peak Memory at start");
+
+
 				//locate interesting classes
 
 				//assume success and prove otherwise - note that an event with
@@ -385,6 +389,8 @@ class EventProcessor
 							$this->error("Event handler $classname failed for event $event_id");
 							$success=false;
 						}
+						if (function_exists('memory_get_peak_usage'))
+							$this->trace(memory_get_peak_usage()." Peak Memory after $filename");
 						if ($event_name == 'every_day')
 						{
 							$this->trace("Sleeping for 5 minutes...");
