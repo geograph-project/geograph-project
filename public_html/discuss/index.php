@@ -334,25 +334,30 @@ elseif($action=='mute') {
 		if ($cols[9]) {
 			print "<title>Updated Since Last Visit</title>";
 			print '<meta name="viewport" content="width=device-width, user-scalable=no">';
-			print "<b>Updated Since Last Visit</b>";
-			print " - <a href=\"{$main_url}/\">Visit Forum</a>";
+      print "<h1>Geograph Discuss</h1>";
+			print "<div style=\"width: 100%; background: lightpink; padding: 20px;\"><b>Updated Since Last Visit</b>";
+			print " - <a href=\"{$main_url}/\">Visit Forum</a></div>";
 			exit;
 		} elseif (is_null($cols[9])) {
 			print "<title>New Thread Since Last Visit</title>";
 			print '<meta name="viewport" content="width=device-width, user-scalable=no">';
-			print "<b>New Thread Since Last Visit</b>";
-			print " - <a href=\"{$main_url}/\">Visit Forum</a>";
+      print "<h1>Geograph Discuss</h1>";
+			print "<div style=\"width: 100%; background: lightskyblue; padding: 20px;\"><b>New Thread Since Last Visit</b>";
+			print " - <a href=\"{$main_url}/\">Visit Forum</a></div>";
 			exit;
 		}
 	}
 	print "<title>Geograph - No new Posts</title>";
+  print '<meta name="viewport" content="width=device-width, user-scalable=no">';
 	$countdown = intval($_GET['countdown']);
 	if ($countdown>1) {
 		$countdown--;
-		print "<META HTTP-EQUIV=\"refresh\" content=\"60;URL={$main_url}/{$indexphp}action=wait&amp;countdown=$countdown\"/>"; 
-		print "<b>No new Posts</b> - will check once a minute, this message will change if something is posted.";
+		print "<META HTTP-EQUIV=\"refresh\" content=\"60;URL={$main_url}/{$indexphp}action=wait&amp;countdown=$countdown\"/>";
+    print "<h1>Geograph Discuss</h1>";
+		print "<div style=\"width: 100%; background: palegreen; padding: 20px;\"><b>No new Posts</b> - will check once a minute, this message will change if something is posted.</div>";
 	} else {
-		print "<b>No new Posts</b> - nothing posted for a while, given up checking. <a href=\"{$main_url}/{$indexphp}action=wait&amp;countdown=100\">Start checking again</a>";
+    print "<h1>Geograph Discuss</h1>";
+		print "<div style=\"width: 100%; background: yellow; padding: 20px;\"><b>No new Posts</b> - nothing posted for a while, given up checking. <a href=\"{$main_url}/{$indexphp}action=wait&amp;countdown=100\">Start checking again</a></div>";
 	}
 
 	print "<br/><br/><br/><a href=\"/\">homepage</a> | <a href=\"{$main_url}/\">discuss</a>";
