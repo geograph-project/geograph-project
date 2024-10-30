@@ -59,6 +59,8 @@ class CreateThumbnail extends EventHandler
 
 		//might as as well create the vision thumbnail too (we probably already downloaded the fullsize)
 		if (isset($image->cached_size[0]) && ($image->cached_size[0] < 224 || $image->cached_size[1] < 224) && $image->original_width > 224) {
+			if ($image->original_width > 18000 || $image->original_height > 18000)
+				return true; //such panos, will be processed by vipsthumbnail using smartcrop. The cron server doesnt have enough memory!
 			$image->getSquareThumbnail(224,224,'path', true, '_original');
                 } else {
 			$image->getSquareThumbnail(224,224,'path');

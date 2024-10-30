@@ -1444,7 +1444,7 @@ split_timer('gridimage'); //starts the timer
 				$cmd = array();
 				$cmd[] = "vipsthumbnail";
 				$cmd[] = "%s --iprofile /var/www/geograph/libs/3rdparty/cmyk.icm";
-                                $cmd[] = "--smartcrop attention -s $maxw";
+                                $cmd[] = "--smartcrop attention -s $maxw"; //todo, disable smartcrop if width is over say 18000 (uses too much memory!) - needs testing (would need a alternative crop)
 				$cmd[] = "--interpolator bicubic"; //the default is bilinear
                                 //$cmd[] = "--eprofile /usr/share/color/icc/sRGB.icc --delete"; //fails on monocrome!
                                 $cmd[] = "-o %d.jpg[strip,Q=87]";
