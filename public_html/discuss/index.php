@@ -329,20 +329,21 @@ elseif($action=='mute') {
 		$filterIds = "($showIds)";
 	}
 	print '<link rel="apple-touch-icon" href="'.$CONF['SELF_HOST'].'/apple-touch-icon.png"/>';
+  print '<link rel="stylesheet" type="text/css" title="Monitor" href="/discuss/bb_default_style.css" media="screen" />';
 
 	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','(muted = 0 OR muted IS NULL) AND forum_id',$filterCrit,$filterIds,$orderBy,1)){
 		if ($cols[9]) {
 			print "<title>Updated Since Last Visit</title>";
 			print '<meta name="viewport" content="width=device-width, user-scalable=no">';
       print "<h1>Geograph Discuss</h1>";
-			print "<div style=\"width: 100%; background: lightpink; padding: 20px;\"><b>Updated Since Last Visit</b>";
+			print "<div class=\"forum-watch-updated\"><b>Updated Since Last Visit</b>";
 			print " - <a href=\"{$main_url}/\">Visit Forum</a></div>";
 			exit;
 		} elseif (is_null($cols[9])) {
 			print "<title>New Thread Since Last Visit</title>";
 			print '<meta name="viewport" content="width=device-width, user-scalable=no">';
       print "<h1>Geograph Discuss</h1>";
-			print "<div style=\"width: 100%; background: lightskyblue; padding: 20px;\"><b>New Thread Since Last Visit</b>";
+			print "<div class=\"forum-watch-newthread\"><b>New Thread Since Last Visit</b>";
 			print " - <a href=\"{$main_url}/\">Visit Forum</a></div>";
 			exit;
 		}
@@ -354,10 +355,10 @@ elseif($action=='mute') {
 		$countdown--;
 		print "<META HTTP-EQUIV=\"refresh\" content=\"60;URL={$main_url}/{$indexphp}action=wait&amp;countdown=$countdown\"/>";
     print "<h1>Geograph Discuss</h1>";
-		print "<div style=\"width: 100%; background: palegreen; padding: 20px;\"><b>No new Posts</b> - will check once a minute, this message will change if something is posted.</div>";
+		print "<div class=\"forum-watch-checking\"><b>No new Posts</b> - will check once a minute, this message will change if something is posted.</div>";
 	} else {
     print "<h1>Geograph Discuss</h1>";
-		print "<div style=\"width: 100%; background: yellow; padding: 20px;\"><b>No new Posts</b> - nothing posted for a while, given up checking. <a href=\"{$main_url}/{$indexphp}action=wait&amp;countdown=100\">Start checking again</a></div>";
+		print "<div class=\"forum-watch-finished\"><b>No new Posts</b> - nothing posted for a while, given up checking. <a href=\"{$main_url}/{$indexphp}action=wait&amp;countdown=100\">Start checking again</a></div>";
 	}
 
 	print "<br/><br/><br/><a href=\"/\">homepage</a> | <a href=\"{$main_url}/\">discuss</a>";
