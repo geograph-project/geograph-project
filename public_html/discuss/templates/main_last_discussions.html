@@ -1,31 +1,29 @@
 <br>
-<div align=center>
 
-<table class=tbTransparent>
-<tr>
-<td class=tbTransparent width="50%" valign=top><span class=txtNr><b>{$l_lastDiscussions}</b></span> <a title="RSS Feed for {$l_lastDiscussions}" href="/discuss/syndicator.php?sortBy={$sortBy}" class="xml-rss">RSS</a>
-</td>
-<td class=tbTransparent width="50%" align=right valign=top><nobr><span class=txtSm>{$l_sortedBy}&nbsp;{$sortedByT}.&nbsp;<a title="Change sort order" href="{$main_url}/{$indexphp}sortBy={$sortByNew}">{$l_sortBy}&nbsp;{$sortByT}</a></span></nobr></td>
-</tr>
-</table>
+<div class="forum-recent-grid">
 
-<table class=forums>
-<tr>
-<td width="25" class=caption4><img src="{$static_url}/img/!pix.gif" width=25 height=1 alt=""></td>
-<td width="60%" class=caption4>{$l_topic}</td>
-<td width="5%" align=center class=caption4>&nbsp;{$l_replies}&nbsp;</td>
-<td width="5%" align=center class=caption4>&nbsp;{$l_views}&nbsp;</td>
-<td width="15%" align=center class=caption4>{$l_author}</td>
-<td width="15%" align=center class=caption4>{$l_lastAuthor}</td>
-</tr>
+<div class="forum-recent-topics">{$l_lastDiscussions}</div>
+<div class="forum-recent-rss"><a title="RSS Feed for {$l_lastDiscussions}" href="/discuss/syndicator.php?sortBy={$sortBy}" class="xml-rss">RSS</a></div>
+<div class="forum-recent-sorted">{$l_sortedBy}&nbsp;{$sortedByT}</div>
+<div class="forum-recent-reorder"><a title="Change sort order" href="{$main_url}/{$indexphp}sortBy={$sortByNew}">{$l_sortBy}&nbsp;{$sortByT}</a></div>
 
-</table>
 </div>
 
-<!--Moved outside of above table. Table above needs deleting at some point-->
+<div class="forum-thread-grid" style="background:#000066; color: white;">
+
+<div class="forum-thread-icon"><img src="{$static_url}/img/!pix.gif" width=25 height=1 alt=""></div>
+<div class="forum-thread-topic">{$l_topic}</div>
+<div class="forum-thread-pages"></div>
+<div class="forum-thread-views">{$l_views}</div>
+<div class="forum-thread-replies">{$l_replies}</div>
+<div class="forum-thread-author">{$l_author}</div>
+<div class="forum-thread-lastpost">{$l_lastAuthor}</div>
+
+</div>
+
 {$listTopics}
 
 
-
+<!--Fix me-->
 <div style="float:right"><a href="/discuss/syndicator.php?first=1" class="xml-rss">New Topics RSS</a> <a href="/discuss/syndicator.php" class="xml-rss">Recent Discussion RSS</a> <a href="/discuss/syndicator.php?sortBy=1" class="xml-rss">Recent Topics RSS</a></div>
-<!--p><a href="/discuss/promoted.php?order=a.created">Upcoming Promoted Posts</a> (<a href="/discuss/promoted.php?read=1">All</a>)</p-->
+<!--<p><a href="/discuss/promoted.php?order=a.created">Upcoming Promoted Posts</a> (<a href="/discuss/promoted.php?read=1">All</a>)</p-->
