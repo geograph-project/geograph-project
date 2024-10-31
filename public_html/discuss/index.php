@@ -457,10 +457,10 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		echo load_header();
                 print "<div style=\"float:left\"><a href=\"index.php\">Reload</a></div>";
  		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">Watch</a></div>";
-		print "<div style=\"text-align:center\">View <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum=5\">Recent Grid Square Discussions</a></div>";
+		print "<div style=\"text-align:center\"><a href=\"index.php?forums=1\">Show Forum List</a></div>";
 		
 		print "<form style=\"display:inline\">";
-		print "<div class=interestBox style=\"padding:2px;margin-top:4px;vertical-align:middle;font-size:0.8em;background-color:#f9f9f9;width:100%\">";
+		print "<div class=\"forum-forums-compactlist\">";
 		print "<div style=\"float:right;display:none\" id=\"updatebutton\"><input type=submit value=Update /></div> Show:";
 		
 		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id',' NOT IN ','(11,7,20)','forum_order')){
@@ -524,7 +524,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		} else {
 			if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions'));
 		}
-		print "<div style=\"text-align:center\">Show: ";
+		print "<div class=\"forum-number-recent\">Show: ";
 		foreach (array(5,10,20,30,40,80,100) as $n) {
 			if ($viewlastdiscussions == $n) {
 				print "<b>$n</b> ";
