@@ -323,8 +323,7 @@ function smarty_function_gridimage($params)
 
 	$html='<div class="photoguide">';
 
-	$html.='<div style="float:left;width:213px">';
-
+	$html.='<div class="inner">';
 		$title=$image->grid_reference.' : '.htmlentities2($image->title).' by '.htmlentities2($image->realname);
 
 		$html.='<a title="'.$title.' - click to view full size image" href="'.$host.'/photo/'.$image->gridimage_id.'">';
@@ -337,7 +336,7 @@ function smarty_function_gridimage($params)
 		if ($params['extra'] == '{description}') {
 			if (!empty($image->comment)) {
 				$comment2 = preg_replace("/[\n\r]+/",' ',nl2br(htmlentities2($image->comment)));
-				$desc = GeographLinks($comment2).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
+				$desc = GeographLinks($comment2).'<div class="attrib">by '.htmlentities2($image->realname).'</a></div>';
 
 				$desc = preg_replace('/\b(more sizes)\b/i',"<a href=\"$host/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
 			} else {
@@ -350,7 +349,7 @@ function smarty_function_gridimage($params)
 					require_once("smarty/libs/plugins/modifier.truncate.php");
 				}
 
-				$desc .= "<div style=\"text-align:left\"><i>Shared Description".($image->snippet_count>1?'s':'')."</i>".($image->snippets_as_ref?'<ol':'<ul')." style=\"margin:0\">";
+				$desc .= "<div class=\"sdblock\"><i>Shared Description".($image->snippet_count>1?'s':'')."</i>".($image->snippets_as_ref?'<ol>':'<ul>');
 				foreach ($image->snippets as $snippet) {
 					$desc .= "<li><a href=\"$host/snippet/{$snippet['snippet_id']}\" title=\"".htmlentities2(smarty_modifier_truncate($snippet['comment'],90,"... more"))."\">". ($snippet['title']?htmlentities2($snippet['title']):'untitled')."</a></li>";
 				}
@@ -360,7 +359,7 @@ function smarty_function_gridimage($params)
 			$desc = htmlentities2($params['extra']);
 		}
 		if (!empty($desc)) {
-			$html.='<div style="float:left;padding-left:20px; width:400px;">'.$desc.'</div>';
+			$html.='<div class="desc">'.$desc.'</div>';
 		}
 	}
 

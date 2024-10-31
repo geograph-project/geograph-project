@@ -772,6 +772,25 @@ div.photoguide
 	margin:10px;
 	position:relative;
 }
+div.photoguide .inner {
+	float:left;
+	width:213px;
+}
+div.photoguide .attrib {
+	text-align:right;
+	font-size:0.8em;
+}
+div.photoguide .sdblock {
+	text-align:left;
+}
+div.photoguide ol, div.photoguide ul {
+	margin:0;
+}
+div.photoguide .desc {
+	float:left;
+	padding-left:20px;
+	width:400px;
+}
 
 
 /*---------------------------------------------------------------*
