@@ -272,17 +272,19 @@ table.forums div.photoguide {
 
 {*forum thread views*}
 
-.forum-post-title {
-  position: -webkit-sticky;
+.forum-post-sticky {
   position: sticky;
   top: 0;
+  width: 100%;
+  background: cornsilk;
+}
+.forum-post-title {
   width: 100%;
   font-size: 1.5em;
   padding-top: 15px;
   padding-bottom: 15px;
   text-indent: 15px;
   font-weight: bold;
-  background: cornsilk;
 }
 .forum-post-breadcrumbs {
   width: 100%;
@@ -684,4 +686,29 @@ table.forums div.photoguide {
   width: 100%;
   background: yellow;
   padding: 20px;
+}
+{*Forum Footer RSS*}
+
+.forum-footer-rss {
+  width: 100%;
+  text-align: right;
+}
+{*Forum List Compact*}
+
+.forum-forums-compactlist {
+  padding-top:10px;
+  padding-bottom:10px;
+  margin-top:10px;
+  background-color:#f9f9f9;
+  width: 100%;
+}
+{*Forum show recent count*}
+
+.forum-number-recent {
+  padding-top:10px;
+  padding-bottom:10px;
+  margin-top:10px;
+  background-color:#f9f9f9;
+  width: 100%;
+  text-align: center;
 }
