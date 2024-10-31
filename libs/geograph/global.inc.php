@@ -919,7 +919,7 @@ $str[] = "
         	if (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 ==1 || !empty($_GET['links']))
                 	$str[] = '<script src="'.smarty_modifier_revision("/js/links.js").'" defer="defer"></script>';
 
-		if (preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m)) {
+		if (preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m) && $GLOBALS['image']->isValid()) { //so dont display on 404/rejected (in case still cached on CDN!)
 			$cached = $memcache->name_get('reljs',$m[1]);
 			if (strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot')!==FALSE || strpos($_SERVER['HTTP_USER_AGENT'], 'GoogleOther')!==FALSE || $cached) { //if created, might as well use it!
 				if ($cached) {
