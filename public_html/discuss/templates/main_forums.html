@@ -1,9 +1,24 @@
-<div align=center>
-
 {$user_logging}
-<br>
+
+
+<div style="float:left"><a href="index.php">Reload</a></div>
+<div style="float:right"><a href="index.php?action=wait&amp;countdown=100">Watch</a></div>
+<br style="clear:both"/><br/>
+
+<div class="forum-forums-grid" style="background:#000066; color: white;">
+
+<div class="forum-forums-icon"><img src="{$static_url}/img/!pix.gif" width=25 height=1 alt=""></div>
+<div class="forum-forums-forum">{$l_forum}</div>
+<div class="forum-forums-details"></div>
+<div class="forum-forums-show">Show?</div>
+<div class="forum-forums-topics">{$l_num_topics}</div>
+<div class="forum-forums-posts">{$l_replies}</div>
+  
+</div>
 
 <form>
+  
+<!--
 <table class=forums>
 <tr>
 <td width="25" class=caption4><img src="{$static_url}/img/!pix.gif" width=25 height=1 alt=""></td>
@@ -11,14 +26,16 @@
 <td align=center width="40" class=caption4>{$l_num_topics}</td>
 <td align=center width="40" class=caption4>{$l_replies}</td>
 </tr>
-{$list_forums}
-<tr style="display:none" id="updaterow">
+
+<tr style="display:none">
 <td width="25" class=caption4></td>
-<td width="100%" class=caption4><div style="float:right"><input type=submit value=Update style="font-size:0.8em"/></div></td>
+<td width="100%" class=caption4></td>
 <td align=center width="40" class=caption4></td>
 <td align=center width="40" class=caption4></td>
 </tr>
 </table>
+-->
+<div id="updaterow" style="display:none; width:100%; text-align:right;"><input type=submit value=Update style="font-size:1.0em; min-width:200px;"/></div>
+{$list_forums}
 </form>
 
-</div>
