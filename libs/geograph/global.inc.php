@@ -102,7 +102,7 @@ if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'
 	#################################################
 
 	if (isset($_GET['ddev']) && is_numeric($_GET['ddev'])) {
-		setcookie('ddev', intval($_GET['ddev']), time()+3600, '/', null, true, true);
+		setcookie('ddev', intval($_GET['ddev']), time()+3600*24, '/', null, true, true);
 
 	} elseif (empty($_COOKIE['ddev']) && strpos($_SERVER['CONF_DB_DB'],'staging') !== FALSE && strpos($_SERVER['HTTP_USER_AGENT'],'monitoring-plugins') === FALSE && strpos($_SERVER['HTTP_HOST'],'t0.') === FALSE) {
 		header('HTTP/1.0 429 Too Many Requests');
@@ -458,29 +458,49 @@ if ($ip == '128.86.236.164' || $ip == '194.66.232.85' || $ip == '207.241.232.185
 	if ($CONF['curtail_level'] > 3) {
 		  //heritrix doesn't understand 503 errors - so lets cause it to timeout.... (uses a socket timeout of 20000ms)
                         sleep(30);
-		header("HTTP/1.1 503 Service Unavailable");
-		die("server busy, please try later");
-	}
-	$CONF['template']='archive';
-	$CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
-	$CONF['forums'] = false;
+
+                header("HTTP/1.1 503 Service Unavailable");
+                die("server busy, please try later");
+        }
+        $CONF['template']='archive';
+        $CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
+        $CONF['forums'] = false;
 }
 
-if (false && function_exists('apc_store') && !preg_match('/(iPad|iPhone|Chrome|MSIE|Firefox|Safari|Opera|PLAYSTATION)/',$_SERVER['HTTP_USER_AGENT'])
-	&& $_SERVER['HTTP_USER_AGENT'] != "geograph-cron"
-	&& !preg_match('/(w\.google\.com\/bot|HostTracker.com|Yahoo! Slurp|YandexBot|Baiduspider|Ezooms|msnbot|Pingdom.com_bot|Exabot|Blekkobot|MJ12bot|AhrefsBot|bingbot|BingPreview)/',$_SERVER['HTTP_USER_AGENT'])) {
 
-	$count = apc_fetch($_SERVER['HTTP_USER_AGENT']);
+function visitor_header() {
+	global $db,$USER;
+
+	if (empty($db) || !empty($db->readonly))
+		$db = GeographDatabaseConnection(false);
+
+	$updates = array();
+	$updates[] = 'request_id = '.$db->Quote(uniqid(posix_getpid(),true));
+	$updates[] = 'useragent = '.$db->Quote($_SERVER['HTTP_USER_AGENT']);
+	$updates[] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
+	if (!empty($USER) && !empty($USER->user_id))
+		$updates[] = 'user_id = '.intval($USER->user_id);
+
+	foreach (getallheaders() as $k => $v) {
+		$updates['k'] = 'header = '.$db->Quote($k);
+		$updates['v'] = 'value = '.$db->Quote($v);
+		$db->Execute("INSERT INTO visitor_header SET ".implode(', ',$updates));
+	}
+}
+
+if (false && function_exists('apc_store')) {
+	$key = md5($_SERVER['HTTP_USER_AGENT']);
+	$count = apc_fetch($key);
 
 	if (empty($count)) {
-		apc_store($_SERVER['HTTP_USER_AGENT'],1,600);
+		apc_store($key,1,600);
 	} else {
-		apc_store($_SERVER['HTTP_USER_AGENT'],$count+1,600);
+		apc_store($key,$count+1,600);
 	}
-	if ($count == 50) {
-                debug_message('[Geograph Useragent] '.$_SERVER['HTTP_USER_AGENT'],'');
-	} elseif ($count == 100) {
-                debug_message('[Geograph USERAGENT] '.$_SERVER['HTTP_USER_AGENT'],'');
+// in general only more prolific useragents are logged
+	if ($count == 50 || $count == 100 || $count == 1000) {
+                //debug_message('[Geograph Useragent] '.$_SERVER['HTTP_USER_AGENT'],'');
+		register_shutdown_function('visitor_header');
 	}
 }
 
@@ -614,10 +634,6 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 		//for now ignore this on welsh pages!
 		} elseif (!empty($_GET['responsive'])) {
 		        $_GET['mobile'] = 0; //just prevents homepage redirecting!
-		       	if ($_GET['responsive'] == 1)
-		                $CONF['template'] = 'new';
-	        	if ($_GET['responsive'] == 2)
-               			$CONF['template'] = 'new2';
 		        if ($_GET['responsive'] == 3 || $_GET['responsive'] == 4)
                 		$CONF['template'] = 'resp';
 		}
@@ -697,10 +713,6 @@ function init_session()
 		if (!empty($_SESSION['responsive'])) {
 			if ($_SESSION['responsive'] == 0 && $_SERVER['HTTP_HOST'] == 'www.geograph.org.uk')
 				$CONF['template'] = 'basic';
-			if ($_SESSION['responsive'] == 1)
-				$CONF['template'] = 'new';
-			if ($_SESSION['responsive'] == 2)
-				$CONF['template'] = 'new2';
 			if ($_SESSION['responsive'] == 3 || $_SESSION['responsive'] == 4)
 				$CONF['template'] = 'resp';
 		}
@@ -841,13 +853,14 @@ if (!empty($_GET['ddddd']))
 
 function smarty_function_pageheader() {
 
+/*
 	if (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 == 0 || !empty($_GET['timing'])) { //&& appearsToBePerson?
 		//should be inlined to avoid an extra HTTP request!
 		return "<script>".file_get_contents($_SERVER['DOCUMENT_ROOT']."/js/cwv.js")."</script>";
 
 		//return '<script src="'.smarty_modifier_revision("/js/cwv.js").'"></script>';
 	}
-
+*/
 }
 
 #################################################
