@@ -243,10 +243,6 @@ table.forums div.photoguide {
 	font-size:1.1em;
 }
 
-body {
-	/* fix broken :hover in IEx, see http://www.kavoir.com/2009/01/css-table-hover-effects-for-tr-and-td.html */
-	behavior:url("/js/csshover3.htc");
-}
 .caption1 .inapp {
 	display:none;
 	float:right;
