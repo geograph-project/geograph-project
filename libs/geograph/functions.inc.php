@@ -336,7 +336,7 @@ function smarty_function_gridimage($params)
 		if ($params['extra'] == '{description}') {
 			if (!empty($image->comment)) {
 				$comment2 = preg_replace("/[\n\r]+/",' ',nl2br(htmlentities2($image->comment)));
-				$desc = GeographLinks($comment2).'<div class="attrib">by '.htmlentities2($image->realname).'</a></div>';
+				$desc = GeographLinks($comment2).'<div class="attrib">by '.htmlentities2($image->realname).'</div>';
 
 				$desc = preg_replace('/\b(more sizes)\b/i',"<a href=\"$host/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
 			} else {
