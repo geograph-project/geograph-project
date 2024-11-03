@@ -289,8 +289,7 @@ table.forums div.photoguide {
 .forum-post-breadcrumbs {
   width: 100%;
   padding: 5px;
-  margin: 5px;
-  white-space: nowrap;   
+  margin: 5px; 
 }
 .forum-post-pages {
   width: 100%;
@@ -668,22 +667,26 @@ table.forums div.photoguide {
 {*Forum Watch*}
 
 .forum-watch-updated {
-  width: 100%;
+  width: 90%;
+  max-width: 90%;
   background: lightpink;
   padding: 20px;
 }
 .forum-watch-newthread {
-  width: 100%;
+  width: 90%;
+  max-width: 90%;
   background: lightskyblue;
   padding: 20px;
 }
 .forum-watch-checking {
-  width: 100%;
+  width: 90%;
+  max-width: 90%;
   background: palegreen;
   padding: 20px;
 }
 .forum-watch-finished {
-  width: 100%;
+  width: 90%;
+  max-width: 90%;
   background: yellow;
   padding: 20px;
 }
