@@ -348,6 +348,8 @@ table.forums div.photoguide {
   padding: 0.5em;
   background: #F6F9FB; 
   text-align: left;
+  max-width: 100%;
+  overflow-x: auto;
 }
 .forum-post-footer {
   grid-area: forum-post-footer;
@@ -714,4 +716,13 @@ table.forums div.photoguide {
   background-color:#f9f9f9;
   width: 100%;
   text-align: center;
+}
+
+{*Forum post limits*}
+.forum-post-post img {
+  max-width:100%;
+}
+.forum-post-post pre {
+  max-width:100%;
+  overflow-x: auto;
 }
