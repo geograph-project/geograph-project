@@ -270,14 +270,24 @@ table.forums div.photoguide {
   flex-basis: 0;
 }
 
-{*forum thread views*}
+{*forum thread header*}
 
-.forum-post-sticky {
+.forum-post-titlebox {
+  width: 100%;
+  border: solid orangered;
+}
+
+@media all and (min-height: 400px) and (max-width: 800px) {
+  .forum-post-titlebox {
   position: sticky;
   top: 0;
-  width: 100%;
+  z-index: 1;
   background: cornsilk;
+  }
 }
+
+{*forum post views*}
+
 .forum-post-title {
   width: 100%;
   font-size: 1.5em;
@@ -295,7 +305,6 @@ table.forums div.photoguide {
   width: 100%;
   padding: 5px;
   text-align: right;
-  margin: 5px;
   white-space: nowrap;   
 }
 .forum-post-continued {
@@ -365,6 +374,7 @@ table.forums div.photoguide {
   text-align: left;
   font-size: 0.8em;
   margin-bottom: 5px;
+  overflow-wrap: break-word;
 }
 .forum-post-postid {
   text-align: right;
@@ -446,21 +456,24 @@ table.forums div.photoguide {
 .forum-post-reply-submit {
   background-color: #b7e1cd;
   font-weight:bold;
-  width: 30vw;
+  width: 30%;
+  min-width: 13ch;
   max-width: 200px;
   box-sizing: border-box;
 }
 .forum-post-reply-preview {
   background-color: powderblue;
   font-weight:bold;
-  width: 30vw;
+  width: 30%;
+  min-width: 8ch;
   max-width: 200px;
   box-sizing: border-box;
 }
 .forum-post-reply-reset {
   background-color: #f4c7c3;
   font-weight:bold;
-  width: 30vw;
+  width: 30%;
+  min-width: 6ch;
   max-width: 200px;
   box-sizing: border-box;
 }
