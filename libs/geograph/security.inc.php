@@ -254,7 +254,7 @@ function appearsToBePerson() {
 	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Preview')===FALSE) &&
             (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'curl')===FALSE) &&
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'python-requests')===FALSE) &&
+            (stripos($_SERVER['HTTP_USER_AGENT'], 'python')===FALSE) && //python-requests + Python-urllib
             (strpos($_SERVER['HTTP_USER_AGENT'], 'LWP::Simple')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'Siege')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'HTTrack')===FALSE) &&

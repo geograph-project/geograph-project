@@ -372,7 +372,7 @@ function appearsToBePerson2($user_agent) {
             (strpos($user_agent, 'Preview')===FALSE) &&
             (stripos($user_agent, 'Magnus')===FALSE) &&
             (strpos($user_agent, 'curl')===FALSE) &&
-            (strpos($user_agent, 'python-requests')===FALSE) &&
+	    (stripos($user_agent, 'python')===FALSE) && //python-requests + Python-urllib
             (strpos($user_agent, 'LWP::Simple')===FALSE) &&
             (strpos($user_agent, 'Siege')===FALSE) &&
             (strpos($user_agent, 'HTTrack')===FALSE) &&
