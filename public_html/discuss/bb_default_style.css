@@ -778,6 +778,7 @@ table.forums div.photoguide {
 .forum-post-post pre {
   max-width:100%;
   overflow-x: auto;
+  padding: 10px;
 }
 {*forum recent headers*}
 
@@ -785,6 +786,7 @@ table.forums div.photoguide {
   display: grid;
   grid-template-areas:
     'forum-topics-topic forum-topics-topic'
+    'forum-topics-breadcrumbs forum-topics-breadcrumbs'
     'forum-topics-description forum-topics-description'
     'forum-topics-pages forum-topics-sorting';  
   grid-template-rows: max-content;  
@@ -800,6 +802,7 @@ table.forums div.photoguide {
   grid-template-areas: 
     'forum-topics-topic'
     'forum-topics-description'
+    'forum-topics-breadcrumbs'
     'forum-topics-pages'
     'forum-topics-sorting';
   grid-template-rows: max-content max-content max-content max-content;
@@ -813,6 +816,11 @@ table.forums div.photoguide {
   font-weight: bold;
   padding: 5px;
   #border: solid yellow;
+}
+.forum-topics-breadcrumbs {
+  grid-area: forum-topics-breadcrumbs;
+  text-align: left;
+  padding: 5px;
 }
 .forum-topics-description {
   grid-area: forum-topics-description;
