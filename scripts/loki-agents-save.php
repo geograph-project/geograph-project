@@ -376,6 +376,7 @@ function appearsToBePerson2($user_agent) {
             (strpos($user_agent, 'LWP::Simple')===FALSE) &&
             (strpos($user_agent, 'Siege')===FALSE) &&
             (strpos($user_agent, 'HTTrack')===FALSE) &&
+            (strpos($user_agent, 'CyotekWebCopy')===FALSE) &&
             (strpos($user_agent, 'HeadlessChrome')===FALSE) &&
             (strpos($user_agent, 'InspectionTool')===FALSE) &&
             (strpos($user_agent, 'The Knowledge AI')===FALSE) &&

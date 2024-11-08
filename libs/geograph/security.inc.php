@@ -257,6 +257,8 @@ function appearsToBePerson() {
             (strpos($_SERVER['HTTP_USER_AGENT'], 'python-requests')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'LWP::Simple')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'Siege')===FALSE) &&
+            (strpos($_SERVER['HTTP_USER_AGENT'], 'HTTrack')===FALSE) &&
+            (strpos($_SERVER['HTTP_USER_AGENT'], 'CyotekWebCopy')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'HeadlessChrome')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'InspectionTool')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'The Knowledge AI')===FALSE) &&
