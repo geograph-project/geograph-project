@@ -22,3 +22,7 @@
 
 
 27     *       * * *  /usr/bin/php /var/www/geograph/scripts/update_duplication_stat.php --count=100
+
+
+19     2       * * *  /usr/bin/php /var/www/geograph/scripts/loki-agents-save.php --min=100
+
