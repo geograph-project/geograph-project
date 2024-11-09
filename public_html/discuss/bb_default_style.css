@@ -269,8 +269,10 @@ table.forums div.photoguide {
   flex-grow: 1;
   flex-basis: 0;
 }
-
-
+.forum-dropdown-topics {  
+  text-align: right;
+  max-width:100%;
+}
 .forum-hidden {
   display: none;
 }
@@ -875,4 +877,95 @@ table.forums div.photoguide {
 .forum-markedimages-count {
   grid-area: forum-markedimages-count;
   text-align: left;
+}
+{*Forum buttons*}
+.forum-button-buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  justify-content: space-between;
+  margin: 16px auto;
+  padding: 5px;
+  gap: 6px;
+}
+.forum-button-mute {
+  background-color: #E9EFF4;
+  border-radius: 10px;
+  padding: 4px;
+  border: 0;
+  color: blue;
+  cursor: pointer;
+  text-align: center;
+  min-width: 150px;
+}
+.forum-button-muted {
+  background-color: #CD853F;
+  border-radius: 10px;
+  padding: 4px;
+  border: 0;
+  color: blue;
+  cursor: pointer;
+  text-align: center;
+  min-width: 150px;
+}
+.forum-button-close {
+  background-color: #E9EFF4;
+  border-radius: 10px;
+  padding: 4px;
+  border: 0;
+  color: blue;
+  cursor: pointer;
+  text-align: center;
+  min-width: 150px;
+}
+.forum-button-unlock {
+  background-color: #98FB98;
+  border-radius: 10px;
+  padding: 4px;
+  border: 0;
+  color: blue;
+  cursor: pointer;
+  text-align: center;
+  min-width: 150px;
+}
+.forum-button-sticky {
+  background-color: #E9EFF4;
+  border-radius: 10px;
+  padding: 4px;
+  border: 0;
+  color: blue;
+  cursor: pointer;
+  text-align: center;
+  min-width: 150px;
+}
+.forum-button-unsticky {
+  background-color: #FFD700;
+  border-radius: 10px;
+  padding: 4px;
+  border: 0;
+  color: blue;
+  cursor: pointer;
+  text-align: center;
+  min-width: 150px;
+}
+.forum-button-move {
+  background-color: #E9EFF4;
+  border-radius: 10px;
+  padding: 4px;
+  border: 0;
+  color: blue;
+  cursor: pointer;
+  text-align: center;
+  min-width: 150px;
+}
+.forum-button-subscriptions {
+  background-color: #E9EFF4;
+  border-radius: 10px;
+  padding: 4px;
+  border: 0;
+  color: blue;
+  cursor: pointer;
+  text-align: center;
+  min-width: 150px;
 }
