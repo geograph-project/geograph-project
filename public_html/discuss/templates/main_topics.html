@@ -69,6 +69,10 @@ return false;
 </form>
 
 {$forumsList}
+<!--Hides submit button if Javascript working from above ForumsList-->
+<script>
+document.getElementById('smtButton').style.display = 'none';
+</script>
 
 <p align=right><a title="RSS Feed for this Forum" href="/discuss/syndicator.php?forum={$forum}" class="xml-rss">RSS</a></p>
 
