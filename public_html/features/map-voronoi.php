@@ -8,32 +8,24 @@ if (!empty($_GET['csv'])) {
 	$db = GeographDatabaseConnection(true);
 
 	$where = array();
-	$where[] = "original_width > 640";
-	$where[] = "prefix = 'panorama'";
+	$where[] = "feature_type_id = 3"; //harcdoed for now
+	$where[] = "status = 1";
+	$where[] = "wgs84_lat > 1"; //excludes accident zeros too!
+
 	$limit = 20;
 	if (!empty($_GET['limit']))
-		$limit = min(100,intval($_GET['limit']));
-
-	if (!empty($_GET['tag']) && $_GET['tag'] == 360)
-		$where[] = "tag IN ('360','photosphere')"; //photosphere are still 360!
-	elseif (!empty($_GET['tag']) && preg_match('/^\w+$/',$_GET['tag']))
-		$where[] = "tag = ".$db->Quote($_GET['tag']);
-
-	if (!empty($_GET['user_id']))
-		$where[] = "g.user_id = ".intval($_GET['user_id']);
-
+		$limit = min(30000,intval($_GET['limit']));
 
 	$where = implode(' AND ',$where);
 
+	//substring_index(category,',',1) as type -- but there are lots of varients!
+
 	$rows = $db->getAll($sql = "
-	select distinct gridimage_id as id, vlat as latitude, vlong as longitude, concat(title,' by ',realname) as name, tag as type
-	 from gridimage_size s inner join gridimage_search g using (gridimage_id) inner join tag_public t using (gridimage_id)
-	 where $where
-	 order by imagetaken desc limit $limit
-	");
+	select feature_item_id as id, wgs84_lat as latitude, wgs84_long as longitude, name, 'hill' as type
+	from feature_item where $where limit $limit");
 
 	header("Content-type: application/octet-stream");
-	header("Content-Disposition: attachment; filename=\"pano.csv\"");
+	header("Content-Disposition: attachment; filename=\"map-voronoi.csv\"");
         $f = fopen("php://output", "w");
 
 	fputcsv($f, array('id','latitude','longitude','name','type','color','url'));
@@ -43,8 +35,10 @@ if (!empty($_GET['csv'])) {
 
 	foreach ($rows as $row) {
 
-		$row['color']  = $colors[array_search($row['type'],$tags)];
-		$row['url'] = "/pano.php?id={$row['id']}";
+		//$row['color']  = $colors[array_search($row['type'],$tags)];
+		$row['color'] = $colors[0]; //tood need to make dynamic
+
+		$row['url'] = "/"; //todo?!
 
 		fputcsv($f, $row);
 	}
@@ -76,7 +70,7 @@ if (!empty($_GET['csv'])) {
   <div id='loading'>
   </div>
   <div id='selected'>
-    <h1>Panos</h1>
+    <h1></h1>
   </div>
   <div id='about'>
     <a href='#' class="show">About</a>
@@ -95,7 +89,7 @@ if (!empty($_GET['csv'])) {
       .fitBounds([[59.355596 , -9.052734], [49.894634 , 3.515625]]);
 
     url = '?csv=1&<? echo str_replace('&amp;','&',htmlentities($_SERVER['QUERY_STRING'])); ?>';
-    initialSelection = d3.set(['photosphere','360','wideangle']);
+    initialSelection = d3.set(['Ma']);
     voronoiMap(map, url, initialSelection);
 
     map.fire('ready'); //seems leaflet doesnt fire automatically
