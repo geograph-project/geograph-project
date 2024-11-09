@@ -332,10 +332,10 @@ $mainPostArea=ParseTpl($mainPostArea);
 
 	if (db_is_muted($user_id, $topic)) {
 		//muted, so need to be able to unmute!
-		$muteTopic = "$l_sepr <a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=0\">Unmute Topic</a>";
+		$muteTopic = "<div class=forum-button-muted><a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=0\">Unmute Topic</a></div>";
 	} else {
 		//link to mute the thread;
-		$muteTopic = "$l_sepr <a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=1\" title=\"Muted topics show a Gray rather than Red dot when updated\">Mute Topic</a>";
+		$muteTopic = "<div class=forum-button-mute><a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=1\" title=\"Muted topics show a brown rather than Red dot when updated\">Mute Topic</a></div>";
 	}
 
 #############
@@ -344,23 +344,23 @@ if ($logged_admin==1 or $isMod==1) {
 
 //$deleteTopic="$l_sepr <a href=\"JavaScript:confirmDelete({$topic},1)\" onMouseOver=\"window.status='{$l_deleteTopic}'; return true;\" onMouseOut=\"window.status=''; return true;\">$l_deleteTopic</a>";
 
-$moveTopic="$l_sepr <a href=\"{$main_url}/{$indexphp}action=movetopic&amp;forum=$forum&amp;topic=$topic&amp;page=$page\">$l_moveTopic</a>";
+$moveTopic="<div class=forum-button-move><a href=\"{$main_url}/{$indexphp}action=movetopic&amp;forum=$forum&amp;topic=$topic&amp;page=$page\">$l_moveTopic</a></div>";
 
-if ($topicStatus==0) { $chstat=1; $cT=$l_closeTopic; }
-else { $chstat=0; $cT=$l_unlockTopic; }
-$closeTopic="$l_sepr <a href=\"{$main_url}/{$indexphp}action=locktopic&amp;forum=$forum&amp;topic=$topic&amp;chstat=$chstat\">$cT</a>";
+if ($topicStatus==0) { $chstat=1; $cT=$l_closeTopic; $cTc=close; }
+else { $chstat=0; $cT=$l_unlockTopic; $cTc=unlock;  }
+$closeTopic="<div class=forum-button-$cTc><a href=\"{$main_url}/{$indexphp}action=locktopic&amp;forum=$forum&amp;topic=$topic&amp;chstat=$chstat\">$cT</a></div>";
 
-if ($topicSticky==0) { $chstat=1; $cT=$l_makeSticky; }
-else { $chstat=0; $cT=$l_makeUnsticky; }
-$stickyTopic="$l_sepr <a href=\"{$main_url}/{$indexphp}action=unsticky&amp;forum=$forum&amp;topic=$topic&amp;chstat=$chstat\">$cT</a>";
+if ($topicSticky==0) { $chstat=1; $cT=$l_makeSticky; $cTc=sticky; }
+else { $chstat=0; $cT=$l_makeUnsticky; $cTc=unsticky; }
+$stickyTopic="<div class=forum-button-$cTc><a href=\"{$main_url}/{$indexphp}action=unsticky&amp;forum=$forum&amp;topic=$topic&amp;chstat=$chstat\">$cT</a></div>";
 
 $extra=1;
-if ($logged_admin==1 and $cnt=db_simpleSelect(0,$Ts,'count(*)','topic_id','=',$topic) and $cnt[0]>0) $subsTopic="$l_sepr <a href=\"{$bb_admin}action=viewsubs&amp;topic=$topic\">$l_subscriptions</a>"; else $subsTopic='';
+if ($logged_admin==1 and $cnt=db_simpleSelect(0,$Ts,'count(*)','topic_id','=',$topic) and $cnt[0]>0) $subsTopic="<div class=forum-button-subscriptions><a href=\"{$bb_admin}action=viewsubs&amp;topic=$topic\">$l_subscriptions</a></div>"; else $subsTopic='';
 }
 
 elseif (($user_id==$topicPoster and $user_id!=0 and $user_id!=1) and $topicSticky!=1) {
-if ($topicStatus==0) $closeTopic="<a href=\"{$main_url}/{$indexphp}action=locktopic&amp;forum=$forum&amp;topic=$topic&amp;chstat=1\">$l_closeTopic</a>";
-elseif($topicStatus==1 and $userUnlock==1) $closeTopic="<a href=\"{$main_url}/{$indexphp}action=locktopic&amp;forum=$forum&amp;topic=$topic&amp;chstat=0\">$l_unlockTopic</a>";
+if ($topicStatus==0) $closeTopic="<div class=forum-button-close><a href=\"{$main_url}/{$indexphp}action=locktopic&amp;forum=$forum&amp;topic=$topic&amp;chstat=1\">$l_closeTopic</a></div>";
+elseif($topicStatus==1 and $userUnlock==1) $closeTopic="<div class=forum-button-unlock><a href=\"{$main_url}/{$indexphp}action=locktopic&amp;forum=$forum&amp;topic=$topic&amp;chstat=0\">$l_unlockTopic</a></div>";
 else $closeTopic='';
 }
 
