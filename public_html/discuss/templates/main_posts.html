@@ -39,17 +39,19 @@ document.location='{$main_url}/{$indexphp}'+url;
 
 //-->
 </script>
+<a name="pagetop">
 
 <!--Forum topic name and breadcrumbs-->
 
-<div class="forum-post-titlebox">
-<div class="forum-post-title">{$topic_reverse}{$topicName}</div>
+<div class="forum-post-titlebox-grid">
+<div class="forum-post-titlebox-title">{$topic_reverse}{$topicName}</div>
 
 
-<div class="forum-post-breadcrumbs"><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt="">&nbsp;&nbsp;<a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a> &gt; <a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></div>
+<div class="forum-post-titlebox-breadcrumbs"><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt="">&nbsp;&nbsp;<a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a> &gt; <a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></div>
 
-<div class="forum-post-pages">{$pageNav}</div>
-
+<div class="forum-post-titlebox-pages">{$pageNav}</div>
+  
+  <div class="forum-post-titlebox-navigation"><a href="#pagetop">&#x21e7;</a>&nbsp;<a href="#newreply">&#x21e9;</a></div>
 
 </div>
 
@@ -79,7 +81,7 @@ document.location='{$main_url}/{$indexphp}'+url;
 {$forumsList}
 
 
-<div align=right><a title="RSS Feed for this Topic" href="/discuss/syndicator.php?topic={$topic}" class="xml-rss">RSS</a></div>
+<div align=right style="float:right"><a title="RSS Feed for this Topic" href="/discuss/syndicator.php?topic={$topic}" class="xml-rss">RSS</a></div>
 
 <script language="JavaScript">
 function prevThis(){
