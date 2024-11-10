@@ -1,18 +1,13 @@
-<div align=center>
-<form action="{$bb_admin}" method=post class=formStyle>
-<table class=tbTransparent>
-<tr>
-<td class=tbTransparent>
+<div style="max-width:100ch">
+
+<h1>Ban user or IP address</h1>
+<div>{$l_enterIP}:</div>
 <div class=warning><b>{$warning}</b></div>
+<form action="{$bb_admin}" method=post>
+<input type=text maxlength=50 size=30 name=banip value="{$banip}" style="max-width:100%; min-width:300px;">
 <br>
-<span class=txtNr>{$l_enterIP}:</span>
-<br>
-<input type=text maxlength=50 size=30 name=banip value="{$banip}" class=textForm>
 <input type=hidden name=action value=banUsr2>
-<br><br>
-<input type=submit value="{$l_ban}" class=inputButton>
-</td>
-</tr>
-</table>
+<br>
+<input type=submit value="{$l_ban}" style="max-width:100%; min-width:300px;">
 </form>
 </div>
