@@ -647,13 +647,13 @@ $topicTitle=$tt[0];
 $listSubs='';
 
 if ($row=db_simpleSelect(0,"$Ts,$Tu","$Ts.id,$Ts.user_id,$Tu.{$dbUserSheme['username'][1]},$Tu.{$dbUserSheme['user_email'][1]}",'topic_id','=',$topic,'','',"$Ts.user_id",'=',"$Tu.$dbUserId")){
-$listSubs="<form action=\"$bb_admin\" method=post class=formStyle><input type=hidden name=action value=\"viewsubs2\">
+$listSubs="<form action=\"$bb_admin\" method=post><input type=hidden name=action value=\"viewsubs2\">
 <input type=hidden name=topic value=\"$topic\">";
 do {
-$listSubs.="<br><input type=checkbox name=selsub[] value={$row[0]}><span class=txtSm><a href=\"{$main_url}/{$indexphp}action=userinfo&user={$row[1]}\">{$row[2]}</a> (<a href=\"mailto:{$row[3]}\">{$row[3]}</a>)</span>\n";
+$listSubs.="<div class=\"forum-admin-subscribed\"><input type=checkbox name=selsub[] value={$row[0]}><a href=\"{$main_url}/{$indexphp}action=userinfo&user={$row[1]}\">{$row[2]}</a> (<a href=\"mailto:{$row[3]}\">{$row[3]}</a>)</div>\n";
 }
 while ($row=db_simpleSelect(1));
-$listSubs.="<p><input type=submit value=\"$l_deletePost\" class=inputButton></form>\n";
+$listSubs.="<p><input type=submit value=\"$l_deletePost\"></form>\n";
 }
 
 $text2=ParseTpl(makeUp('admin_viewsubs'));
