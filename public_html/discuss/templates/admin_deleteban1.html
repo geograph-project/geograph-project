@@ -1,17 +1,13 @@
-<div align=center>
-<form action="{$bb_admin}" method=post class=formStyle>
-<table class=tbTransparent>
-<tr>
-<td>
+<div style="max-width:100ch">
+<h1>Remove user or IP address from banned list</h1>
+<form action="{$bb_admin}" method=post>
 
 <div class=warning><b>{$warning}</b></div>
 {$bannedIPs}
-<input type=hidden name=action value=deleteban2>
+<input type=hidden name=action value=deleteban2 style="max-width:100%; min-width:300px;">
 <br>
-<input type=submit value="{$l_unsetBan}" class=inputButton>
+<input type=submit value="{$l_unsetBan}" style="max-width:100%; min-width:300px;">
 
-</td>
-</tr>
-</table>
+
 </form>
 </div>
