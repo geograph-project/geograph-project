@@ -532,7 +532,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 				print "<a href=\"index.php?latest=$n\">$n</a> ";
 			}
 		}
-		print " Recent Topics</div>";
+		print " topics</div>";
 	}
 }
 else require($pathToFiles.'bb_func_vtopic.php');
