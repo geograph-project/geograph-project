@@ -107,6 +107,9 @@
 		//if the cross grid button submit tag (it may of been auto selected) 
 		if (document.getElementById('cross'+gridimage_id).className.indexOf('on') > -1)
 			submitModTag(gridimage_id,"type:Cross Grid",2);
+		//similarly, aerial might of been auto selected due to drone tag
+		if (document.getElementById('aerial'+gridimage_id).className.indexOf('on') > -1)
+			submitModTag(gridimage_id,"type:Aerial",2);
 
 		if (!status)
 			status = getStatus(gridimage_id);
@@ -298,7 +301,7 @@
 		  <input class="toggle{if !$remoderate && in_array('type:Close Look',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Close Look" id="close{$image->gridimage_id}" onclick="toggleButton(this)"/>
 		  <input class="toggle{if !$remoderate && in_array('type:Inside',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Inside" id="inside{$image->gridimage_id}" onclick="toggleButton(this)"/>
 		  <input class="toggle{if !$remoderate && in_array('type:Extra',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Extra" id="extra{$image->gridimage_id}" onclick="toggleButton(this)"/>
-		  <input class="toggle{if !$remoderate && in_array('type:Aerial',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Aerial" id="aerial{$image->gridimage_id}" onclick="toggleButton(this)"/>
+		  <input class="toggle{if $image->from_drone || (!$remoderate && in_array('type:Aerial',$image->tags))} on{assign var="button" value="Accept"}{/if}" type="button" value="Aerial" id="aerial{$image->gridimage_id}" onclick="toggleButton(this)"/>
 		  <input class="toggle{if $image->different_square_true || (!$remoderate && in_array('type:Cross Grid',$image->tags))} on{assign var="button" value="Accept"}{/if}" type="button" id="cross{$image->gridimage_id}" value="Cross Grid" onclick="return false; toggleButton(this)"/>
 		  <br/>
 
@@ -307,6 +310,9 @@
 
 		  &nbsp;
 		  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateWrapper({$image->gridimage_id}, 'rejected')" {if $image->user_status == 'rejected'} style="border-bottom:2px solid black"{/if}/>
+		  {if $image->from_drone}
+			<div style=background-color:yellow;color:red;padding:5px">(image marked <tt>[from:Drone]</tt> - most likly should be <tt>[type:Aerial]</tt>, but not necessarily)</div>
+		  {/if}
 		  {if $image->user_status}
 			<span style=background-color:yellow;color:red;padding:5px">(user suggests: {$image->user_status})</span>
 		  {/if}

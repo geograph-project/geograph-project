@@ -356,7 +356,7 @@ if (isset($_GET['review'])) {
 	$smarty->assign('remoderate', 1);
 } elseif (isset($_GET['remoderate'])) {
 	$sql_where = "moderation_status > 2 and moderator_id != {$USER->user_id}";
-	if ($_SERVER['HTTP_HOST'] != 'staging.geograph.org.uk')
+	if (strpos($_SERVER['CONF_DB_DB'],'staging') === FALSE)
 		$sql_where .= " and submitted > date_sub(now(),interval 10 day) ";
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
@@ -499,17 +499,23 @@ foreach ($images->images as $i => $image) {
 //might as well do this after unlock
 if (!empty($image_ids)) {
 
-	$tagdata = $db->getAll("SELECT gridimage_id, group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags
+	$tagdata = $db->getAll($sql = "SELECT gridimage_id, group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags
 	        FROM tag_public
 		WHERE gridimage_id IN (".implode(',',array_keys($image_ids)).")
-		AND prefix = 'type'
+		AND prefix IN ('from','type','pano')
 		GROUP BY gridimage_id ORDER BY NULL"); // we only NEED the type tags!
 
 	if (!empty($tagdata)) // can be empty!
 	foreach ($tagdata as $row) {
 		$i = $image_ids[$row['gridimage_id']];
-		if (!empty($images->images[$i]))
+		if (!empty($images->images[$i])) {
 			$images->images[$i]->tags = explode("?",$row['tags']);
+
+			foreach(explode("?",$row['tags']) as $tag) { //already prefixed!
+				if (strtolower($tag) == 'from:drone')
+					$images->images[$i]->from_drone = true;
+			}
+		}
 	}
 }
 
