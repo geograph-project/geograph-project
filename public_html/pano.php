@@ -153,8 +153,8 @@ $json = array(
 
 $type='photosphere'; //default for pannellum too!
 
-if (strpos($image->tags,"sphere") === FALSE  && strpos($row['comment'],"photosynth") === FALSE
-        && (strpos($image->tags,"360") !== FALSE || strpos($row['title'],"360") !== FALSE || strpos($row['comment'],"360") !== FALSE)) {
+if (strpos($image->tags,"sphere") === FALSE  && strpos($image->comment,"photosynth") === FALSE
+        && (strpos($image->tags,"360") !== FALSE || strpos($image->title,"360") !== FALSE || strpos($image->comment,"360") !== FALSE)) {
         //todo, maybe make this dynamic? maybe a [vfov:50] tag? or based on $ratio
 	$type='360';
 }
