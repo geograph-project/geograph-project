@@ -3,6 +3,21 @@
 {include file="_std_begin.tpl"}
 
 {literal}
+<script>
+document.addEventListener("visibilitychange", function(enent) {
+	if ('sendBeacon' in navigator)
+		navigator.sendBeacon("/stuff/record_state.php", JSON.stringify({"status": document.visibilityState}) );
+});
+document.addEventListener("DOMContentLoaded", function(event) {
+	if ('sendBeacon' in navigator)
+		navigator.sendBeacon("/stuff/record_state.php", JSON.stringify({"status": 'loaded'}) );
+});
+window.addEventListener("pagehide", function(event) {
+        if ('sendBeacon' in navigator)
+                navigator.sendBeacon("/stuff/record_state.php", JSON.stringify({"status": 'pagehide'}) );
+});
+
+</script>
 <style>
 #maincontent *{
 	box-sizing:border-box;
