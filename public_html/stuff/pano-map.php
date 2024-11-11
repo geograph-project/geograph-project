@@ -10,6 +10,7 @@ if (!empty($_GET['csv'])) {
 	$where = array();
 	$where[] = "original_width > 640";
 	$where[] = "prefix = 'panorama'";
+	$where[] = "vlat > 1";
 	$limit = 20;
 	if (!empty($_GET['limit']))
 		$limit = min(100,intval($_GET['limit']));

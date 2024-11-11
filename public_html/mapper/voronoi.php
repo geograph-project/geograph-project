@@ -9,6 +9,7 @@ if (!empty($_GET['csv'])) {
 	$db = GeographDatabaseConnection(true);
 
 	$where = array();
+	$where[] = "vlat > 1";
 	$limit = 20;
 
 	if (!empty($_GET['mine'])) {
