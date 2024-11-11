@@ -104,7 +104,7 @@ if ($page) {
 $rev = (isset($_GET['rev']))?'desc':'';
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'pending';
-$modifer = (isset($_GET['modifer']) && preg_match('/^\w+$/' , $_GET['modifer']))?$_GET['modifer']:'recent';
+$modifer = (isset($_GET['modifer']) && preg_match('/^\w+$/' , $_GET['modifer']))?$_GET['modifer']:'all';
 $theme = (isset($_GET['theme']) && preg_match('/^\w+$/' , $_GET['theme']))?$_GET['theme']:'any';
 $variation = (isset($_GET['variation']) && preg_match('/^\w+$/' , $_GET['variation']))?$_GET['variation']:'any';
 
@@ -192,7 +192,7 @@ if (!empty($_GET['q'])) {
 # available values
 
 $types = array('pending'=>'New Suggestions','open'=>"Open Suggestions",'closed'=>"Closed Suggestions",'ongoing'=>'New or Open');
-$modifers = array('recent'=>'All','24'=>"over 24 hours old",'7'=>"over 7 days old");
+$modifers = array('all'=>'All','recent'=>'Created in last 2 months','24'=>"over 24 hours old",'7'=>"over 7 days old",'60'=>"over 2 months old");
 $themes = array('any'=>'Any','owned'=>"Exclude owned by others",'tmod'=>"on suggestions owned by me",'mod'=>"on images I moderated",'comment'=>"suggestions I have commented on",'suggest'=>"suggestions I suggested",'all'=>'any involvement');
 $variations = array('any'=>'Any','own'=>"suggested on own images",'comment'=>"has left comment");
 
@@ -251,8 +251,14 @@ if ($modifer == '24') {
 } elseif ($modifer == '7') {
 	$sql_where .= " and suggested < date_sub(NOW(),INTERVAL 7 DAY)";
 
+} elseif ($modifer == '60') {
+	$sql_where .= " and suggested < date_sub(NOW(),INTERVAL 60 DAY)";
+
+} elseif ($modifer == 'recent') {
+	$sql_where .= " and suggested > date_sub(NOW(),INTERVAL 60 DAY)";
+
 } else {
-	$modifer = 'recent';
+	$modifer = 'all';
 }
 
 #################
