@@ -68,7 +68,7 @@ $l_mysql_error='There was a database error. Please report this problem (what you
 
 $l_adminpanel='Admin panel';
 
-$l_fastforumspreview='Fast preview (forums will be ordered this way on the first page):';
+$l_fastforumspreview='Fast preview';
 
 $l_forumUpdated='Forum updated';
 
