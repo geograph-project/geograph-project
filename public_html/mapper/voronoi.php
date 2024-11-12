@@ -24,6 +24,13 @@ if (!empty($_GET['csv'])) {
 			$limit = min(10000,intval($_GET['limit']));
 	}
 
+	if (!empty($_GET['personal']))
+		 $where[] = "ftf > 0";
+	elseif (!empty($_GET['first']))
+		 $where[] = "ftf = 1";
+	if (!empty($_GET['tpoint']))
+		 $where[] = "points = 'tpoint'";
+
 	if (empty($where)) $where[] = 1;
 	$where = implode(' AND ',$where);
 
