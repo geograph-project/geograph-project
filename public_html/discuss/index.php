@@ -474,7 +474,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 				
 				print "<input type=checkbox name=\"show[]\" value=\"$forum\" title=\"{$forum_title}\" $checked onclick=\"document.getElementById('updatebutton').style.display='';\">";
 				print "<a href=\"index.php?action=vtopic&amp;forum={$forum}\">";
-				print "<img src=\"{$static_url}/img/forum_icons/{$forum_icon}\" width=16 height=16 border=0 alt=\"{$forum_title}\" title=\"{$forum_title}\"/>";
+				print "<img src=\"img/forum_icons/{$forum_icon}\" class=\"forum-icons\" alt=\"{$forum_title}\" title=\"{$forum_title}\"/>";
 				print "</a>&nbsp;";
 
 
@@ -494,7 +494,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 			$save = false;
 	}
 
-	if ($USER->user_id == 3 || $USER->user_id==93) { // && $GLOBALS['memcache']->valid) {
+	if ($USER->user_id == 3 || $USER->user_id==93 || $USER->user_id==1469) { // && $GLOBALS['memcache']->valid) {
 		$poster_id = $bbdb->getOne("select max(poster_id) from geobb_posts");;
 		$mkey = "forum_first_post:".$USER->user_id;
 		$last_id = $GLOBALS['memcache']->get($mkey);
