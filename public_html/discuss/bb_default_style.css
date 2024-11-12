@@ -276,6 +276,12 @@ table.forums div.photoguide {
 .forum-hidden {
   display: none;
 }
+img.forum-icons {
+  border: 0;
+  max-width: 32px;
+  height: auto;
+  vertical-align: text-bottom;
+}
 
 /*forum post views*/
 
