@@ -292,7 +292,7 @@ img.forum-icons {
     'forum-post-titlebox-breadcrumbs forum-post-titlebox-breadcrumbs'
     'forum-post-titlebox-pages forum-post-titlebox-pages';
   grid-template-rows: max-content max-content max-content;  
-  grid-template-columns: 1fr 8ch;
+  grid-template-columns: 1fr max-content;
   grid-row-gap: 2px;
   grid-column-gap: 5px;
   margin: 0;
@@ -342,12 +342,10 @@ img.forum-icons {
   grid-area: forum-post-titlebox-navigation;
   box-sizing: border-box;
   width: 100%;
-  padding: 5px;
+  padding: 0px;
   text-align: right;
   white-space: nowrap;
-  font-size: 1.5em;
-  text-decoration: underline overline;
-  font-weight: bold;
+  text-decoration: none;
   #border: solid brown;
 }
 .forum-post-pages {
