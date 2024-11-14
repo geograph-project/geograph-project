@@ -31,6 +31,7 @@ div.thumbs div.thumb {
 	width:393px;
         height:300px;
 	margin:5px;
+	height:304px;
 }
 div.thumbs div.image {
 	position:absolute;

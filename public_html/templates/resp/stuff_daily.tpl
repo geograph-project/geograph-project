@@ -33,6 +33,7 @@ div.thumbs div.thumb {
 	width:393px;
 	max-width:100%;
 	margin:5px;
+	height:304px;
 }
 div.thumbs div.thumb img {
 	max-width:100%;
