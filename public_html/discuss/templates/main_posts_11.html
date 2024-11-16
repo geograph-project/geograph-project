@@ -39,90 +39,73 @@ document.location='{$main_url}/{$indexphp}'+url;
 
 //-->
 </script>
+<a name="pagetop">
 
-<div align=center>
-<table class=forums>
-<tr>
-<td width=25 align=center class=caption3><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""></td>
-<td width="100%" class=caption3><b><a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></b> / <b>{$topic_reverse}{$topicName}</b></td>
-</tr>
-</table>
+<!--Forum topic name and breadcrumbs-->
 
-<table class=tbTransparent>
-<tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
-</table>
+<div class="forum-post-titlebox-grid">
+<div class="forum-post-titlebox-title">{$topic_reverse}{$topicName}</div>
 
-{$gridThumbs}
 
-<table class=forums>
-<tr>
-<td width="15%" class=caption4>{$l_author}</td>
-<td width="85%" class=caption4>{$l_message}</td>
-</tr>
+<div class="forum-post-titlebox-breadcrumbs"><img src="img/forum_icons/{$forumIcon}" class="forum-icons" alt="">&nbsp;&nbsp;<a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a> &gt; <a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></div>
 
-{$listPosts}
+<div class="forum-post-titlebox-pages">{$pageNav}</div>
+  
+<div class="forum-post-titlebox-navigation"><a href="#pagetop"><img src="img/arrowup.jpg" class="forum-icons" alt="Up arrrow" title="Go to top"></a>&nbsp;<a href="#newreply"><img src="img/arrowdown.jpg" class="forum-icons" alt="Down arrrow" title="Go to end"></a></div>
 
-</table>
-
-<br/>
-<table class=forums>
-<tr>
-<td width=25 align=center class=caption3><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""></td>
-<td width="100%" class=caption3><b><a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></b> / <b>{$topic_reverse}{$topicName}</b></td>
-</tr>
-</table>
-
-<table class=tbTransparent>
-<tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
-</table>
-<br/>
 </div>
 
 
-<p align=right>
-<select onchange="window.open(this.value)" style="width:200px">
-	<option>View images in search</option>
-	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=full">Full details</option>
-	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=thumbs">Thumbnails</option>
-	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=thumbsmore">Thumbnails + links</option>
-	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=bigger">Thumbnails - bigger</option>
-	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=grid">Thumbnails grid</option>
-	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=slide">Slideshow</option>
-	<option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=map">Map</option>
-  <option value="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=black">Georiver</option>
-</select>  
+{$gridThumbs}
+
   
- 
-- <a title="View these images in Google Earth" href="/search.php?do=1&amp;orderby=post_id,seq_id&amp;topic_id={$topic}&amp;kml" class="xml-kml">KML</a>
-- <a title="RSS Feed for images" href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;reverse_order_ind=1&amp;rss" class="xml-rss">photo RSS</a>
-- <a title="RSS Feed for this Topic" href="/discuss/syndicator.php?topic={$topic}" class="xml-rss">gallery RSS</a>
+<!--Pulls in main_posts_cell.html -->
+<div class="forum-post-posts">{$listPosts}</div>
+
+<div class="forum-post-pages">{$pageNav}</div>
+
+<ul class="buttonbar">
+
+<div class="buttonbar-dropdown">
+  <button>View images in the search &#9660;</button>
+  <div class="buttonbar-dropdown-content">
+    <b>Recent submissions</b>
+				<a href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=full">Full details</a>
+        <a href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=thumbs">Thumbnails</a>
+        <a href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=thumbsmore">Thumbnails + links</a>
+        <a href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=bigger">Thumbnails - bigger</a>
+        <a href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=grid">Thumbnails grid</a>
+        <a href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=slide">Slideshow</a>
+        <a href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=map">Map</a>
+        <a href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;displayclass=black">Georiver</a>
+  </div>
+</div>
+</ul>
+
+<p align="right"><a title="View these images in Google Earth" href="/search.php?do=1&amp;orderby=post_id,seq_id&amp;topic_id={$topic}&amp;kml" class="xml-kml">KML</a>
+<a title="RSS Feed for images" href="/search.php?do=1&amp;topic_id={$topic}&amp;orderby=post_id,seq_id&amp;reverse_order_ind=1&amp;rss" class="xml-rss">photo RSS</a>
+<a title="RSS Feed for this Topic" href="/discuss/syndicator.php?topic={$topic}" class="xml-rss">gallery RSS</a>
 </p>
+
 
 
 <a name=newreply></a>
 
-{$mainPostArea}
-
-<div align=center>
-<table class=tbTransparent>
-<tr>
-<td class=tbTransparent>{$muteTopic} {$closeTopic} {$moveTopic} {$deleteTopic} {$stickyTopic} {$subsTopic}&nbsp;</td>
-</tr>
-</table>
+<!--Pulls in main_post_area.html (and within it main_post_form.html)-->
+<div class="forum-post-reply">{$mainPostArea}</div>
 
 
 
-<table class=forums>
-<tr>
-<td class=caption3 align=center>
+
+<div class="forum-button-buttons">
+{$muteTopic} {$closeTopic} {$moveTopic} {$deleteTopic} {$stickyTopic} {$subsTopic}
+</div>
+
 
 {$forumsList}
 
-</td>
-</tr>
-</table>
 
-</div>
+<div align=right style="float:right"><a title="RSS Feed for this Topic" href="/discuss/syndicator.php?topic={$topic}" class="xml-rss">RSS</a></div>
 
 <script language="JavaScript">
 function prevThis(){
@@ -132,7 +115,7 @@ if(document.forms['postMsg'].elements['topicTitle']) tT=document.forms['postMsg'
 else if(document.forms['postMsg'].elements['postTopic']) tT=document.forms['postMsg'].elements['postTopic'].value;
 else tT='';
 if(document.forms['postMsg'].elements['disbbcode'].checked) cT=1; else cT=0;
-window.open('', 'cWin2', 'resizable=yes, scrollbars=yes, width=750, height=300, top=0, left=100');
+window.open('', 'cWin2', 'resizable=yes, scrollbars=yes, width=850, height=300, top=0, left=100');
 document.forms['postMsgPrev'].elements['topicTitle'].value=tT;
 document.forms['postMsgPrev'].elements['postText'].value=pT;
 document.forms['postMsgPrev'].elements['disbbcode'].value=cT;
