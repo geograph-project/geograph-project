@@ -581,16 +581,14 @@ img.forum-icons {
 @media all and (max-width: 800px) {
   .forum-thread-grid {
   grid-template-areas: 
-      "forum-thread-topic forum-thread-topic"
-      "forum-thread-author forum-thread-lastpost"
-      "forum-thread-pages forum-thread-pages"
-      "forum-thread-views forum-thread-replies";
+      "forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic"
+      "forum-thread-author forum-thread-author forum-thread-lastpost forum-thread-lastpost"
+      "forum-thread-pages forum-thread-pages forum-thread-pages forum-thread-pages"
+      "forum-thread-icon forum-thread-views forum-thread-replies forum-thread-replies";
   grid-template-rows: max-content max-content max-content max-content;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 40px 1fr 1fr 40px;
   }
-  .forum-thread-icon {
-  display: none;
-  }
+
 }
 
 .forum-thread-icon {
@@ -1017,4 +1015,30 @@ img.forum-icons {
   border: 0;
   max-width: 32px;
   height: auto;
+}
+/*Warning messages*/
+.forum-warning-grid {
+  display: grid;
+  grid-template-areas:
+    'forum-warning-icon forum-warning-message';
+  grid-template-rows: max-content;  
+  grid-template-columns: max-content 1fr;
+  grid-row-gap: 2px;
+  grid-column-gap: 5px;
+  margin: 0;
+  background-color:pink;
+  padding: 10px;
+}
+
+.forum-warning-icon {
+  grid-area: forum-warning-icon;
+  text-align: left;
+  font-size: 2em;
+  padding:10px;
+  font-weight: bold;
+}
+.forum-warning-message {
+  grid-area: forum-warning-message;
+  text-align: left;
+  
 }
