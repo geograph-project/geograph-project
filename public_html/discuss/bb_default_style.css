@@ -560,6 +560,38 @@ img.forum-icons {
   text-align: right;
 }
 
+.forum-search-grid {
+  display: grid;
+  grid-template-areas:
+    'forum-search-search forum-search-rss';
+  grid-template-rows: max-content;  
+  grid-template-columns: 1fr 1fr;
+  grid-row-gap: 2px;
+  grid-column-gap: 5px;
+  margin: 0;
+}
+
+.forum-search-search {
+  grid-area: forum-search-search;
+  text-align: left;
+  margin: auto;
+  width: 100%;
+}
+.forum-search-rss {
+  grid-area: forum-search-rss;
+  text-align: right;
+  margin: auto;
+  width: 100%;
+}
+@media all and (max-width: 800px) {
+  .forum-search-grid {
+  grid-template-areas: 
+      'forum-search-search'
+      'forum-search-rss';
+  grid-template-rows: max-content max-content;
+  grid-template-columns: 1fr;
+  }
+}
 
 /*forum thread views*/
 
