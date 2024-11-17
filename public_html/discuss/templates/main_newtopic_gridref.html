@@ -8,45 +8,46 @@ return false;
 //-->
 </script>
 
-<div align=center>
+<div class="forum-post-titlebox-grid">
+<div class="forum-post-titlebox-title">Create gridsquare discussion for {$gridref}</div>
 
-<table class=forums>
-<tr>
-<td width=25 class=caption3 align=center><img src="{$static_url}/img/!pix.gif" width=4 height=1 alt=""><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""><img src="{$static_url}/img/!pix.gif" width=5 height=1 alt=""></td>
-<td valign=top class=caption3><b><a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b>{$forumName}</b> / {$gridref}</td>
-</tr>
-</table>
+
+<div class="forum-post-titlebox-breadcrumbs"><img src="img/forum_icons/{$forumIcon}" class="forum-icons" alt="">&nbsp;&nbsp;<a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a> &gt; <a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></div>
+  
+<div class="forum-post-titlebox-navigation"><a href="#pagetop"><img src="img/arrowup.jpg" class="forum-icons" alt="Up arrrow" title="Go to top"></a>&nbsp;<a href="#newreply"><img src="img/arrowdown.jpg" class="forum-icons" alt="Down arrrow" title="Go to end"></a></div>
+
+</div>
+<br style="clear:both"/>
 
 {$gridThumbs}
 
 <a name=newtopic></a>
 <form action="{$main_url}/{$indexphp}" name=postMsg method=post class=formStyle>
+
 <input type="hidden" name="action" value="ptopic"/>
 <input type="hidden" name="forum" value="{$forum}"/>
-<input type="hidden" name="topicTitle" value="{$gridref}"/>
 
-<table class=forums>
-<tr>
-<td class=caption3 style="background-color:pink;">
-<img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> <b>This discussion is tied to a location, not a particular image.</b>
-You might need to refer to a particular image in your message,
-for example by using the 'Insert: Thumbnail' link under an image above. <br/><br/>
-If you think the description, classification or location of a picture (including your own) is incorrect or could be improved, please use the <span class="nowrap">'Suggest an Update to this Image'</span> link instead on the main photo page. This will ensure that a moderator and the submitter (if this is not you) will be notified of your suggestion or query.
-</td>
-</tr>
+<input type="hidden" id="topicTitle" name="topicTitle" value="{$gridref}" />
+
 
 {$mainPostForm}
 
-<tr>
-<td class=caption5>
-<INPUT TYPE=SUBMIT VALUE="{$l_sub_post_tpc}" class=inputButton tabindex=5>
-<input type=button value="Preview" class=inputButton onClick="prevThis();">
-</td>
-</tr>
-</table>
+<div class="forum-warning-grid">
+<div class="forum-warning-icon">&#x26A0;</div>
+<div class="forum-warning-message"><b>This discussion is tied to a location, not a particular image.</b>
+You might need to refer to a particular image in your message,
+for example by using the 'Insert: Thumbnail' link under an image above. <br/><br/>
+If you think the description, classification or location of a picture (including your own) is incorrect or could be improved, please use the <i>'Suggest an Update to this Image'</i> link instead on the main photo page. This will ensure that a moderator and the submitter (if this is not you) will be notified of your suggestion or query.</div>
+</div>
+<br style="clear:both"/>
+
+<div class="forum-post-reply-buttons">
+<INPUT TYPE=RESET class="forum-post-reply-reset" onclick="return confirm('Are you sure you wish to discard the post?')">
+<input type=button value="Preview" class="forum-post-reply-preview" onClick="prevThis();">
+<INPUT TYPE=SUBMIT VALUE="{$l_sub_post_msg}" class="forum-post-reply-submit" tabindex=55 ONCLICK="return checkHotlink(this.form)">
+&nbsp;</div>
 <br>
 </form>
-</div>
 
 <p align=right><a title="RSS Feed for this Forum" href="/discuss/syndicator.php?forum={$forum}" class="xml-rss">RSS</a></p>
 
