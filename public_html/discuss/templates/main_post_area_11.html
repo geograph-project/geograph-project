@@ -1,22 +1,44 @@
-<div align=center>
 <form name=postMsg action="{$main_url}/{$indexphp}" method=post class=formStyle>
-<table class=forums>
-<tr>
-<td class=caption3 style="background-color:pink;">
-<img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="15" height="15" align="left" style="margin-right:5px"/> Public Image Collections - as these are public, extra care should be taken to keep content relevant.
-</td>
-</tr>
+
+<!--Pulls in main_post_form.html-->
 {$mainPostForm}
 
-<tr>
-<td class=caption5><INPUT TYPE=SUBMIT VALUE="{$l_sub_post_msg}" class=inputButton tabindex=5>
-<input type=button value="Preview" class=inputButton onClick="prevThis();">
-</td>
-</tr>
-</table>
+<div class="forum-warning-grid">
+<div class="forum-warning-icon">&#x26A0;</div>
+<div class="forum-warning-message">Public Image Collections - as these are public, extra care should be taken to keep content relevant.</div>
+</div>
+<br style="clear:both"/>
+<div class="forum-post-reply-buttons">
+<INPUT TYPE=RESET class="forum-post-reply-reset" onclick="return confirm('Are you sure you wish to discard the post?')">
+<input type=button value="Preview" class="forum-post-reply-preview" onClick="prevThis();">
+<INPUT TYPE=SUBMIT VALUE="{$l_sub_post_msg}" class="forum-post-reply-submit" tabindex=55 ONCLICK="return checkHotlink(this.form)">
+&nbsp;</div>
+
 <INPUT TYPE=HIDDEN NAME=action VALUE="pthread">
 <INPUT TYPE=HIDDEN NAME=forum VALUE="{$forum}">
 <INPUT TYPE=HIDDEN NAME=topic VALUE="{$topic}">
 <INPUT TYPE=HIDDEN NAME=anchor VALUE="{$anchor}">
 </form>
-</div>
+
+
+<script language="JavaScript">
+
+function checkHotlink(form) {
+        var text = form.elements['postText'].value;
+        var ok = true;
+        if (arr = text.match(/\[img\]http:\/\/[\w\.-]+/g)) {
+            for(q=0;q<arr.length;q++) {
+                 if (one = arr[q].match(/\[img\]http:\/\/([\w\.-]+)/)) {
+                     domain = one[1];
+                     if (domain.indexOf('.geograph.org.uk') ==-1) {
+                         ok = confirm("You appear to be hotlinking an image from '"+domain+"'. Do you have permission to do so? Using images direct from other websites without permission is rude. Ideally you should also include a credit.");
+                     } else if (domain.indexOf('s0.geograph.org.uk') == 0) {
+                         ok = confirm("You appear to be using a Geograph image directly. Have you included a credit to the Contributor? (as required by the Creative Commons Licence)");
+                     }
+                 }
+            }
+        }
+        return ok;
+}
+
+</script>
