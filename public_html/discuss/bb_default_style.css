@@ -709,14 +709,11 @@ img.forum-icons {
 @media all and (max-width: 800px) {
   .forum-forums-grid {
   grid-template-areas: 
-      "forum-forums-forum forum-forums-forum forum-forums-forum"
-      "forum-forums-details forum-forums-details forum-forums-details"
-      "forum-forums-topics forum-forums-posts forum-forums-show";
+      "forum-forums-forum forum-forums-forum forum-forums-forum forum-forums-forum"
+      "forum-forums-details forum-forums-details forum-forums-details forum-forums-details"
+      "forum-forums-icon forum-forums-topics forum-forums-posts forum-forums-show";
   grid-template-rows: max-content max-content max-content;
-  grid-template-columns: 1fr 1fr 1fr;
-  }
-  .forum-forums-icon {
-  display: none;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
 
@@ -1072,5 +1069,4 @@ img.forum-icons {
 .forum-warning-message {
   grid-area: forum-warning-message;
   text-align: left;
-  
 }
