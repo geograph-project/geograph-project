@@ -695,10 +695,10 @@ img.forum-icons {
 .forum-forums-grid {
   display: grid;
   grid-template-areas:
-    'forum-forums-icon forum-forums-forum forum-forums-show forum-forums-topics forum-forums-posts'
-    'forum-forums-icon forum-forums-details forum-forums-show forum-forums-topics forum-forums-posts';
+    'forum-forums-icon forum-forums-forum forum-forums-topics forum-forums-posts forum-forums-show'
+    'forum-forums-icon forum-forums-details forum-forums-topics forum-forums-posts forum-forums-show';
   grid-template-rows: max-content max-content;  
-  grid-template-columns: 35px 1fr 5ch 6ch 6ch;
+  grid-template-columns: 35px 1fr 6ch 6ch 6ch;
   grid-row-gap: 2px;
   grid-column-gap: 5px;
   margin: 0;
