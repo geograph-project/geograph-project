@@ -77,15 +77,15 @@
 
 <div style="display: inline-block; vertical-align: middle; width:250px; max-width:40%; margin:5px;">
 <label for="when">Date (optional):</label>
-<input type="text" name="when" size="16" id="when" value="{$when}" style="width: 200px; max-width: 100%"/>
+<input type="text" name="when" size="16" id="when" value="{$when}" style="width: 200px; max-width: 100%;"/>
 </div>
 
 <div style="display: inline-block; vertical-align: middle; width:250px; max-width:40%; margin:5px;">
-<input type="button" value="Preview" onclick="window.open('/?potd='+this.form.addimage.value);" style="width: 200px; max-width: 100%" />
+<input type="button" value="Preview" onclick="window.open('/?potd='+this.form.addimage.value);" style="width: 200px; max-width: 100%; background-color: powderblue;" />
 </div>
 
 <div style="display: inline-block; vertical-align: middle; width:250px; max-width:40%; margin:5px;">
-<input type="submit" name="add" value="Add" style="width: 200px; max-width: 100%"/>
+<input type="submit" name="add" value="Add" style="width: 200px; max-width: 100%; background-color: #b7e1cd;"/>
 </div>
 
 </div>
