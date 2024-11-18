@@ -59,7 +59,7 @@ function myquote($in) {
 if ($debug)
 	print "q=$query\n";
 
-$c = 0; $d = 0;
+$hours_total = 0; $affected_total = 0;
 foreach (range(-14,-1) as $offset) {
 	$d = date('Y-m-d',strtotime($offset.' day'));
 
@@ -98,7 +98,7 @@ foreach (range(-14,-1) as $offset) {
 			continue;
 		}
 
-		$c++;
+		$hours_total++;
 		$rows = array();
 		foreach($stat as $ua => $count) {
 		        if ($param['min'] && $count < $param['min'])
@@ -118,12 +118,12 @@ foreach (range(-14,-1) as $offset) {
                 }
 		$db->Execute($str);
 		$affected = $db->Affected_Rows();
-		$d =+ $affected;
+		$affected_total =+ $affected;
 		print "$key = $affected\n";
 	}
 }
 
-print "Saved $c hours with $d row\n";
+print "Saved $hours_total hours with $affected_total row\n";
 
 ########################################
 // this creates NEW useragents.
