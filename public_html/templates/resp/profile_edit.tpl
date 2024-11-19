@@ -432,7 +432,7 @@ display:none;
 	<label for="website" class="nowrap">Your website:</label>
 	<input type="text" id="website" name="website" value="{$profile->website|escape:'html'}" size="50"/>
 
-	<div class="fieldnotes">Display the URL of your of a personal 
+	<div class="fieldnotes">Display the URL of a personal 
 	website or blog on your public profile page. </div>
 	
 	
