@@ -560,38 +560,6 @@ img.forum-icons {
   text-align: right;
 }
 
-.forum-search-grid {
-  display: grid;
-  grid-template-areas:
-    'forum-search-search forum-search-rss';
-  grid-template-rows: max-content;  
-  grid-template-columns: 1fr 1fr;
-  grid-row-gap: 2px;
-  grid-column-gap: 5px;
-  margin: 0;
-}
-
-.forum-search-search {
-  grid-area: forum-search-search;
-  text-align: left;
-  margin: auto;
-  width: 100%;
-}
-.forum-search-rss {
-  grid-area: forum-search-rss;
-  text-align: right;
-  margin: auto;
-  width: 100%;
-}
-@media all and (max-width: 800px) {
-  .forum-search-grid {
-  grid-template-areas: 
-      'forum-search-search'
-      'forum-search-rss';
-  grid-template-rows: max-content max-content;
-  grid-template-columns: 1fr;
-  }
-}
 
 /*forum thread views*/
 
@@ -613,12 +581,12 @@ img.forum-icons {
 @media all and (max-width: 800px) {
   .forum-thread-grid {
   grid-template-areas: 
-      "forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic"
-      "forum-thread-author forum-thread-author forum-thread-lastpost forum-thread-lastpost"
-      "forum-thread-pages forum-thread-pages forum-thread-pages forum-thread-pages"
-      "forum-thread-icon forum-thread-views forum-thread-replies forum-thread-replies";
+      "forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic"
+      "forum-thread-author forum-thread-author forum-thread-author forum-thread-lastpost forum-thread-lastpost forum-thread-lastpost"
+      "forum-thread-icon forum-thread-icon forum-thread-views forum-thread-views forum-thread-replies forum-thread-replies"
+      "forum-thread-pages forum-thread-pages forum-thread-pages forum-thread-pages forum-thread-pages forum-thread-pages";
   grid-template-rows: max-content max-content max-content max-content;
-  grid-template-columns: 40px 1fr 1fr 40px;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   }
 
 }
@@ -695,10 +663,10 @@ img.forum-icons {
 .forum-forums-grid {
   display: grid;
   grid-template-areas:
-    'forum-forums-icon forum-forums-forum forum-forums-topics forum-forums-posts forum-forums-show'
-    'forum-forums-icon forum-forums-details forum-forums-topics forum-forums-posts forum-forums-show';
+    'forum-forums-icon forum-forums-forum forum-forums-show forum-forums-topics forum-forums-posts'
+    'forum-forums-icon forum-forums-details forum-forums-show forum-forums-topics forum-forums-posts';
   grid-template-rows: max-content max-content;  
-  grid-template-columns: 35px 1fr 6ch 6ch 6ch;
+  grid-template-columns: 35px 1fr 5ch 6ch 6ch;
   grid-row-gap: 2px;
   grid-column-gap: 5px;
   margin: 0;
@@ -709,11 +677,14 @@ img.forum-icons {
 @media all and (max-width: 800px) {
   .forum-forums-grid {
   grid-template-areas: 
-      "forum-forums-forum forum-forums-forum forum-forums-forum forum-forums-forum"
-      "forum-forums-details forum-forums-details forum-forums-details forum-forums-details"
-      "forum-forums-icon forum-forums-topics forum-forums-posts forum-forums-show";
+      "forum-forums-forum forum-forums-forum forum-forums-forum"
+      "forum-forums-details forum-forums-details forum-forums-details"
+      "forum-forums-topics forum-forums-posts forum-forums-show";
   grid-template-rows: max-content max-content max-content;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  }
+  .forum-forums-icon {
+  display: none;
   }
 }
 
@@ -1044,29 +1015,4 @@ img.forum-icons {
   border: 0;
   max-width: 32px;
   height: auto;
-}
-/*Warning messages*/
-.forum-warning-grid {
-  display: grid;
-  grid-template-areas:
-    'forum-warning-icon forum-warning-message';
-  grid-template-rows: max-content;  
-  grid-template-columns: max-content 1fr;
-  grid-row-gap: 2px;
-  grid-column-gap: 5px;
-  margin: 0;
-  background-color:pink;
-  padding: 10px;
-}
-
-.forum-warning-icon {
-  grid-area: forum-warning-icon;
-  text-align: left;
-  font-size: 2em;
-  padding:10px;
-  font-weight: bold;
-}
-.forum-warning-message {
-  grid-area: forum-warning-message;
-  text-align: left;
 }
