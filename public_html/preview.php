@@ -63,8 +63,8 @@ if (!empty($_POST))
 		}
 	}
 
-	$image->title = strip_tags(trim(stripslashes($_POST['title'])));
-	$image->comment = strip_tags(trim(stripslashes($_POST['comment'])));
+	$image->title = trim(stripslashes($_POST['title']));
+	$image->comment = trim(stripslashes($_POST['comment']));
 
 	if (!empty($_POST['imageclass'])) {
 		$image->imageclass=strip_tags(trim(stripslashes($_POST['imageclass'])));
