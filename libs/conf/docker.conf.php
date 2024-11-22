@@ -16,8 +16,9 @@ foreach ($_SERVER as $key => $value) {
 		elseif (preg_match('/_HOST$/',$key) && strpos($value,'http')===0) //these have special handling, and are explicitly upper case
 			$CONF[$m[1]] = preg_replace('/^https?:\/\//',$CONF['PROTOCOL'],$value);
 		else {
-			if (preg_match('/^[\[\{].*[\}\]]$/',$value))
-				$value = json_decode($value,true);
+			if (preg_match('/^[\[\{].*[\}\]]$/',$value)) {
+				$value = json_decode($value,true) ?? $_SERVER[$key]; //there are some values that might look like json, but are NOT valid json!
+			}
 
 			$CONF[strtolower($m[1])] = $value;
 		}
