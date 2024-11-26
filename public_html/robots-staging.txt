@@ -27,3 +27,5 @@ Disallow: /
 User-agent: meta-externalagent
 Disallow: /
 
+User-agent: Timpibot
+Disallow: /

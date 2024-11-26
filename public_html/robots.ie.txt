@@ -246,4 +246,7 @@ Disallow: /
 User-agent: Qwantbot
 Disallow: /
 
+User-agent: Timpibot
+Disallow: /
+
 Clean-param: mobile&style
