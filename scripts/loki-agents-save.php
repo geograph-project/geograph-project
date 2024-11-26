@@ -159,7 +159,7 @@ if (!empty($rows))
 print "Updated Bots = $c\n";
 
 ########################################
-// set rotbots
+// set robots (checks last 24 hours - not the time last request)
 
 $robots = array();
         //todo perhaps look over last 48 hours?? (not use start/end)
@@ -185,7 +185,7 @@ if (!empty($robots))
 print "Updated RoBots = $c\n";
 
 ########################################
-// set potmel
+// set potmel (checks last 24 hours - not the time last request)
 
 $robots = array();
         $generator = getgroups($CONF['loki_query']." |= \" /potmel.php \" | $pattern", $grouper, 'count_over_time', $period = '1h',
@@ -205,7 +205,7 @@ if (!empty($robots))
 print "Updated PotMel = $c\n";
 
 ########################################
-// set potmelb
+// set potmelb (checks last 24 hours - not the time last request)
 
 $robots = array();
         $generator = getgroups($CONF['loki_query']." |= \" /export.potmel.php \" | $pattern", $grouper, 'count_over_time', $period = '1h',
@@ -225,7 +225,7 @@ if (!empty($robots))
 print "Updated PotMelB = $c\n";
 
 ########################################
-// lookup if used by users
+// lookup if used by users (checks 48 hours upto last_hour of the row!)
 
 $sql = "SELECT last_hour,useragent FROM agents_all_time WHERE users IS NULL AND bot=0 AND useragent != '-' LIMIT 250";
 $rows = $db->getAll($sql);
@@ -286,7 +286,8 @@ if (!empty($rows))
 print "Updated Users = $c\n";
 
 ########################################
-//lookup the hostname for each agent - needs grouping by IP (so also counts ips!) 
+//lookup the hostname for each agent (checks 48 hours upto last_hour of the row!)
+// - uses grouping by IP (so also counts ips in 48 hours!)
 
 //use LAST hour, the first hour, might still been ramped up! ??
 $sql = "SELECT last_hour,useragent FROM agents_all_time WHERE hostname IS NULL AND useragent != '-' LIMIT 250";

@@ -69,7 +69,7 @@ if ($param['robots']) {
 
 ############################################
 
-print "q=$query\n";
+print "q=$query\n\n";
 
 $stat = array();
 /* https://grafana.com/blog/2021/01/11/how-to-use-logql-range-aggregations-in-loki/
