@@ -158,7 +158,7 @@ if (!empty($_GET['debug']))
 		select gridimage_id,title,same_title,same_serial,serial from duplication_stat inner join gridimage_search using (gridimage_id)
 		 where grid_reference = 'NX1898' and title = 'Girvan Harbour Jetty' and serial is not null limit 10;
 
-		if ($this->gridimage_id > 7500000 && ($serial = $this->db->getOne("SELECT serial FROM duplication_stat WHERE same_serial > 1 AND gridimage_id = ".intval($this->gridimage_id)))) {
+		if ($this->gridimage_id > 6000000 && ($serial = $this->db->getOne("SELECT serial FROM duplication_stat WHERE same_serial > 1 AND gridimage_id = ".intval($this->gridimage_id)))) {
                         $extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$this->grid_square->reference_index]}/photoset/{$this->grid_square->grid_reference}/{$serial}\" />";
                 }
 		*/

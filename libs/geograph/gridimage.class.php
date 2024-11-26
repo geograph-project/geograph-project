@@ -557,7 +557,7 @@ split_timer('gridimage'); //starts the timer
 
 		$extra_meta = array();
 
-		if ($this->gridimage_id > 7500000 && ($serial = $this->db->getOne("SELECT serial FROM duplication_stat WHERE same_serial > 1 AND gridimage_id = ".intval($this->gridimage_id)))) {
+		if ($this->gridimage_id > 6000000 && ($serial = $this->db->getOne("SELECT serial FROM duplication_stat WHERE same_serial > 1 AND gridimage_id = ".intval($this->gridimage_id)))) {
 			$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$this->grid_square->reference_index]}/photoset/{$this->grid_square->grid_reference}/{$serial}\" />";
 		} else {
 			$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$this->grid_square->reference_index]}/photo/{$this->gridimage_id}\" />";
@@ -1749,6 +1749,20 @@ split_timer('gridimage'); //starts the timer
 	                        $memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long*4);
 			}
 		}
+
+//todo, if ($params['maxh'] > $full(height) && empty($source) && !tag['panorama:360']
+	//$source = _original
+//... when asking for a thumbnail that is taller then the fullsize image (only really common on panoramas)
+//the point is to avoid images being upscaled. see
+// https://s1.geograph.org.uk/geophotos/07/34/75/7347569_84e30e69_393x300.jpg as am example. the 'full' image is only 253px high, so UPscaled to 300px!
+/* we do thiswith get square thumb on export - want the same principe!
+if (isset($row['width']) && ($row['width'] < 224 || $row['height'] < 224) && $row['original'] > 224) {
+                                $path = $image->getSquareThumbnail(224,224,'path', true, '_original');
+                        } else {
+                                $path = $image->getSquareThumbnail(224,224,'path');
+                        }
+*/
+
 
 		if ($size) {
 			if (empty($this->title) && empty($this->realname)) //if we dont have these, we not creating proper html anyway
