@@ -183,7 +183,7 @@ geographing</a> first.</p>
 
 	<b>Tips for locationing photos:</b>
 	<ul>
-		<li>If the image already has location attached (in EXIF), eg taken from a smartphone, GPS-Enabled camera, or geolocated via {external href="https://piclocata.inchworks.com/" text="PicLocata"} 
+		<li>If the image already has location attached (in EXIF), eg taken from a smartphone, GPS-Enabled camera, or geolocated via {external href="https://media.geograph.org.uk/public.php?profile=352" text="PicLocata"} 
 		and similar GPS-Log correlation software - then use the 'GeoTagged Image' option. 
 		(you upload the image first, and the location data is extracted) <br/><br/><ul>
 
