@@ -82,7 +82,12 @@ update os_gaz_250_new set country = 'Wales' where country = 'England' and full_c
 
 update os_gaz_250_new set country = 'England' where country = 'Wales' and full_county = 'SHROPSHIRE';
 
+#############################
+# comparing the area of the island to the radius (which is based on the area in the rspb dataaset) seems a good way to find when matched a really big island!) 
 
+select ROUND(ST_AREA(WKT),0),country_region.NAME,hectares,auto_id,feature_item_id,feature_item.name,category,radius,ROUND(ST_AREA(WKT)/radius,0),if(feature_item.name = 'unst' OR feature_item.name = 'gerva_stacks_off_unst' OR  feature_item.name like '%ukni_mainland' OR feature_item.name = 'eilean_buidhe', 'sus','') as sus from geograph_staging.country_region inner join feature_item using (feature_item_id) where ST_AREA(WKT)/radius > 80000  order by hectares desc limit 100;
+
+update geograph_staging.country_region inner join feature_item using (feature_item_id) set geograph_staging.country_region.feature_item_id = 0 where ST_AREA(WKT)/radius > 100000;
 
 #############################
 

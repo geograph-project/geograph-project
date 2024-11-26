@@ -42,6 +42,9 @@ insert ignore into label_to_tag_id
 insert into label_to_tag_id
  select 'subjectlabel' as model, label, tag_id, prefix from label_to_tag_id where model = 'subject';
 
+insert into label_to_tag_id
+ select 'subjectv2' as model, label, tag_id, prefix from label_to_tag_id where model = 'subject';
+
 
 alter table label_to_tag_id modify label varchar(512) not null;
 alter table label_to_tag_id add index(label,model);
