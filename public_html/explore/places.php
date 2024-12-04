@@ -24,6 +24,10 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+
+pageMustBeHTTPS();
+
+
 ###############################################
 
 $_GET['preview'] = 1;
