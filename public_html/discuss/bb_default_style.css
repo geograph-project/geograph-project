@@ -626,51 +626,39 @@ img.forum-icons {
   padding: 5px;
   margin: auto;
   text-align: center;
-  #border: solid red;
 }
 .forum-thread-topic {
   grid-area: forum-thread-topic;
   padding: 5px;
-  #border: solid yellow;
 }
 .forum-thread-pages {
   grid-area: forum-thread-pages;
-  #padding: 5px;
   text-align: right;
-  #border: solid green;
 }
 .forum-thread-topic a {
   text-decoration: none;
 }
 .forum-thread-views {
   grid-area: forum-thread-views;
-  #padding: 5px;
   text-align: center;
   margin: auto;
   font-size: 0.9em;
-  #border: solid orange;
 }
 .forum-thread-replies {
   grid-area: forum-thread-replies;
-  #padding: 5px;
   text-align: center;
   margin: auto;
   font-size: 0.9em;
-  #border: solid pink;
 }
 .forum-thread-author {
   grid-area: forum-thread-author;
-  #padding: 5px;
   text-align: center;
   margin: auto;
-  #border: solid purple;
 }
 .forum-thread-lastpost {
   grid-area: forum-thread-lastpost;
-  #padding: 5px;
   text-align: center;
   margin: auto;
-  #border: solid brown;
 }
   
 @media all and (max-width: 700px) {
@@ -760,31 +748,26 @@ img.forum-icons {
   grid-column-gap: 5px;
   margin: 0;
   padding: 2px;
-  #border: solid red;
 }
 .forum-recent-topics {
   grid-area: forum-recent-topics;
   text-align: left;
   font-size: 1.1em;
   font-weight: bold;
-  #border: solid red;
 }
 .forum-recent-sorted {
   grid-area: forum-recent-sorted;
   text-align: right;
   font-size: 0.9em;
-  #border: solid red;
 }
 .forum-recent-reorder {
   grid-area: forum-recent-reorder;
   text-align: right;
   font-size: 0.9em;
-  #border: solid red;
 }
 .forum-recent-rss {
   grid-area: forum-recent-rss;
   text-align: left;
-  #border: solid red;
 }
 
 /*Forum Watch*/
@@ -863,7 +846,6 @@ img.forum-icons {
   grid-column-gap: 5px;
   margin: 0;
   padding: 2px;
-  #border: solid red;
 }
 @media all and (max-width: 800px) {
   .forum-topics-grid {
@@ -883,7 +865,6 @@ img.forum-icons {
   font-size: 1.5em;
   font-weight: bold;
   padding: 5px;
-  #border: solid yellow;
 }
 .forum-topics-breadcrumbs {
   grid-area: forum-topics-breadcrumbs;
@@ -894,18 +875,15 @@ img.forum-icons {
   grid-area: forum-topics-description;
   text-align: left;
   padding: 5px;
-  #border: solid green;
 }
 .forum-topics-pages {
   grid-area: forum-topics-pages;
   text-align: left;
   padding: 5px;
-  #border: solid purple;
 }
 .forum-topics-sorting {
   grid-area: forum-topics-sorting;
   text-align: left;
-  #border: solid purple;
   text-align: right;
 }
 .forum-topics-newtopic {
