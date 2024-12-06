@@ -55,6 +55,7 @@
 .forum-finder-images {
   grid-area: forum-finder-images;
   width: 100%;
+  min-height:500px;
 }
 </style>
 
