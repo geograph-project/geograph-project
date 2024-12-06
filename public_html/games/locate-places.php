@@ -49,17 +49,17 @@ $db = GeographDatabaseConnection(true);
 <div class=interestBox>
 <p style=font-size:x-large>&middot; <a href="locate-places-play.php">Play Now</a> - play as long as you like, come back to see your ongoing score</p>
 
-<p><i>If playing will all places is too hard, can try <a href="locate-places-play.php?city=1">just with Cities</a></i>
+<p><i>If playing with all places is too hard, can try <a href="locate-places-play.php?city=1">just with Cities</a></i>
 </div>
 
 
 <? if ($USER->registered) {
-	print "<p>As a registered user, you guesses will be stored on your profile and will provide a score below. The data will be remembered long term, and play over multiple sessions.";
+	print "<p>As a registered user, you guesses will be stored on your profile and will provide a score below. The data will be remembered long term, and can play over multiple sessions.";
 
 	$where = "user_id = ".$USER->user_id;
 
 } else {
-	print "<p>The score will only be tracked for this session. <a href=?login=1>Login</a> to save your score on your profile";
+	print "<p>The score will only be tracked for this session. <a href=?login=1>Login First</a> to save your score on your profile";
 
 	$where = "session = ".$db->Quote(session_id());
 }
@@ -163,7 +163,7 @@ if (empty($rows)) {
 </ul>
 
 Note: We are are only including places that seem to be unabigious, excludes where there are multiple places with the same name.
-We only using a random sample of small places, otherwise would be swamped with small places. The total playable dataset is currently 3013 places!
+We only using a random sample of small places, otherwise would be swamped with small places. The total playable dataset is currently 2,852 places!
 <?
 
 
