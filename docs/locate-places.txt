@@ -1,0 +1,54 @@
+
+
+Add from gaz
+create table gaz_locate as select seq,km_ref,def_nam,full_county,tile_ref,1 as reference_index,east,north,f_code,has_dup from os_gaz where f_code = 'C' and has_dup=0; 
+insert into gaz_locate select seq,km_ref,def_nam,full_county,tile_ref,1 as reference_index,east,north,f_code,has_dup from os_gaz where f_code = 'T' and has_dup=0;
+insert into gaz_locate select seq,km_ref,def_nam,full_county,tile_ref,1 as reference_index,east,north,f_code,has_dup from os_gaz where f_code = 'O' and has_dup=0 order by rand() limit 1000;
+
+
+##############################
+
+... the origional has_dup column only found exact matches but actully there is a place "Winchester/Venta" which isnt marked as dup!
+... so we can update it in our copy!
+create table gaz_dup as select count(*) c,group_concat(distinct has_dup),substring_index(def_nam,'/',1) as stem,group_concat(distinct def_nam) cc,avg(has_dup) from os_gaz
+ group by substring_index(def_nam,'/',1) having cc like '%/%' and c > 1;
+update gaz_locate inner join gaz_dup on (substring_index(def_nam,'/',1) = stem) set has_dup=2 where c>1;
+
+
+##############################
+... actully need to group by last substring too!
+
+create table gaz_dup2 select count(*) c,group_concat(distinct has_dup),substring_index(def_nam,'/',-1) as stem,group_concat(distinct def_nam) cc,avg(has_dup) from os_gaz
+ group by substring_index(def_nam,'/',-1) having cc like '%/%' and c > 1;
+update gaz_locate inner join gaz_dup on (substring_index(def_nam,'/',-1) = stem) set has_dup=3 where c>1;
+
+##############################
+
+alter table gaz_locate modify `full_county` varchar(128) not null, modify f_code varchar(32) not null;
+
+insert into gaz_locate select id as seq, '' as km_ref, name as def_nam, county as full_county, '' as tile_ref, 2 as reference_index, e as east, n as north, town_class as f_code, 0 as has_dup from ie_open_data order by rand() limit 1000;
+##############################
+
+-- use scripts/make-fake-places.php!!
+
+##############################
+
+-- might also be some cross grid dups!
+Primary.geograph_live>create table tmp_os_gaz_names select distinct substring_index(o.def_nam,'/',1) as def_nam from os_gaz o;
+Query OK, 194121 rows affected (1.174 sec)
+Records: 194121  Duplicates: 0  Warnings: 0
+
+Primary.geograph_live>alter table tmp_os_gaz_names add unique(def_nam);
+Query OK, 0 rows affected (0.418 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+Primary.geograph_live>update gaz_locate  l inner join tmp_os_gaz_names using (def_nam) set l.has_dup=4 where reference_index = 2 and l.has_dup=0;
+Query OK, 122 rows affected (0.030 sec)
+Rows matched: 122  Changed: 122  Warnings: 0
+
+##############################
+
+-- and the other way!
+
+update gaz_locate l inner join ie_open_data on (def_nam = name) set l.has_dup=5 where reference_index = 1 and l.has_dup=0;
+
