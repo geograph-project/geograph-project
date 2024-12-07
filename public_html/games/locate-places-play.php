@@ -110,7 +110,7 @@ print "<script src=".smarty_modifier_revision("/mapper/geotools2.js")."></script
 <style>
 form#side {
 	float:left;
-	height:900px;  max-height:70vh;
+	height:900px;  max-height:80vh;
 	width:300px;  max-width:30vw;
 	max-width:100%;
 	background-color:#eee;
@@ -118,9 +118,14 @@ form#side {
 }
 div#map {
 	float:left;
-	width:800px; height:900px; max-height:70vh; max-width:50vw;
+	width:800px; height:900px; max-height:100vh; max-width:50vw;
 	margin-bottom: 50vh ;
 }
+
+div.leaflet-tile-pane  {
+        filter: brightness(120%) contrast(180%);
+}
+
 </style>
 
 <script type="text/javascript">
