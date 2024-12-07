@@ -26,6 +26,7 @@
 
 <div id="message">Search images above</div>
 
+<div id="output"></div>
 
    <br/><br/>
 
@@ -34,17 +35,126 @@
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
 	<script src="{"/mapper/geotools2.js"|revision}"></script>
 
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+
 <script>{literal}
 
-var images = []; //will contain loaded images!
+var images = {}; //will contain loaded images! (they key is the image id)
+var ids = []; //will contain a simple array of image ids. Good for loops, but also will be used to find the image ie, from the idx in delaunay map
+
 var image = null; //the current image
+var map;
+var delaunay;
+
+//renders a single image
+function renderImage(imageIdx) {
+	let image = images[ids[imageIdx]];
+	let neighbors = delaunay.neighbors(imageIdx);
+
+	 $('#output').empty();
+
+	//todo, if the point is at the 'boundary' of the current map, should run a new search to 'extend' the map
+	//maybe get the convexthull, and then find it the point (or its neigbours!) are 'on' the boundary. 
+	//perhaps can be done directy with indeges bt not sure how work!) 
+
+	neighbors.forEach(function(nIdx) {
+		let nImage = images[ids[nIdx]];
+
+		let $a = $('<a>').attr('href','javascript:renderImage('+nIdx+')').attr('title',image.title+' by '+image.realname);
+		let $img = $('<img>').attr('src',nImage.thumbnail);
+
+		$('#output').append($a.append($img));
+	});
+
+	$('#output').append('<hr>');
+
+
+	let $a = $('<a>').attr('href','/photo/'+image.gridimage_id).text(image.title);
+	let $a2 = $('<a>').attr('href','/profile/'+image.user_id).text(image.realname);
+
+	let $img = $('<img>').attr('src',image.img).attr('width',image.width).attr('height',image.height);
+	$('#output').append($img);
+	$('#output').append('<br>');
+	$('#output').append($a);
+	$('#output').append(' by ');
+	$('#output').append($a2);
+}
+	
 
 function updateInternalMap() {
-	//this is the main workhorse
 
-	var ids = Object.keys(images);
+	ids = Object.keys(images); //recreate it every time!
+
+	if (ids.length < 2) {
+		$('#message').html('Only '+ids.length+' images loaded. Not enough to function');
+		return;
+	}
+
 	$('#message').html(ids.length+' images loaded');
 
+	let points = []; //simply array of points - passed direct to Delaunay triangualtor
+        let keys = {}; //assoc array of locations (to find duplicates!) 
+        let bounds = L.latLngBounds();
+	for(i=0;i<ids.length;i++) {
+		let image = images[ids[i]];
+		bounds.extend([image.lat, image.lng]);		
+
+		//delaunay doesnt do so well with points in same place, so shuffle them!
+		var key = image.lat.toFixed(6)+' '+image.lng.toFixed(6);
+		if (keys[key]) {
+			keys[key]=keys[key]+1;
+			image.lat += (Math.random()-0.5)/100000;
+			image.lng += (Math.random()-0.5)/100000;
+		} else {
+			keys[key]=1;
+		}
+		points.push([image.lat, image.lng]);
+	}	
+
+	delaunay = d3.Delaunay.from(points);
+
+//////////////////////
+
+	//quick way to get middle of the points!
+	let center = bounds.getCenter();
+	let bestDist = Infinity;
+	let bestIdx = null;
+        for(i=0;i<ids.length;i++) {
+		let image = images[ids[i]];
+		let dist = center.distanceTo([image.lat, image.lng]);
+		if (dist < bestDist) {
+			bestDist = dist;
+			bestIdx = i;
+		}
+	}
+
+	//should never fail
+	renderImage(bestIdx);
+	
+//////////////////////
+// this map putput is jsut for debug purposes!
+
+	if (!map) {
+		$("#output").after('<div id=mapid style="width:500px;height:500px"></div>');
+
+	        map = L.map('mapid');//.setView([51.505, -0.09], 13);
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+		    }).addTo(map);
+	}
+	map.fitBounds(bounds,{maxZoom:15});
+
+    var polygons = delaunay.trianglePolygons();
+    polygons.forEach(function(polygon) {
+      if (polygon) {
+        L.polygon(polygon).addTo(map);
+      }
+    });
+
+//////////////////////
 }
 
 
@@ -76,6 +186,10 @@ function submitSearch(form, skip_pop) {
  /////////////
  // is a location centered search
 
+//TODO, if there isnt a location, we should do a pre-query, to find a 'central' image, as a starting point!
+// myabe SELECT lat,lng FROM ... ORDER BY sequence ASC LIMIT 1!
+
+
   if (location && location.length > 5) {
      if (gridref = location.toUpperCase().match(/(^|\/)\s*(\w{1,2}\d{2,10})/)) {
   
@@ -105,8 +219,6 @@ function submitSearch(form, skip_pop) {
      }
   }
 
-console.log(query,geo);
-
   /////////////
   // finally general search results 
 
@@ -124,6 +236,8 @@ function fetchImages(query,geo,order) {
 
   var geoprefix = "wgs84_"; //set to 'v' to use viewpoint. Todo would be to filter to only images with a photographer location!
 
+geoprefix = 'v';
+
   var data = {
      select: "id,title,grid_reference,realname,hash,user_id,takenday,"+geoprefix+"lat,"+geoprefix+"long,original,width,height,format",
      match: query,
@@ -133,6 +247,8 @@ function fetchImages(query,geo,order) {
   if (geo) {
      data.geo = geo;
   }
+  if (geoprefix == 'v')
+     data.where = "vgrlen>0";
 
     if (page && page > 1) {
       data.offset=((page-1)*data.limit);
@@ -167,16 +283,19 @@ function fetchImages(query,geo,order) {
     'serveCallback',
     function(data) {
      if (data && data.rows) {
+        //todo, if rows < 50 then increase the distance?
 
         $("#message").html("Processing Images...");
 
         $.each(data.rows,function(index,value) {
+          if (images[value.id])
+            return;
           value.gridimage_id = value.id;
           value.thumbnail = getGeographUrl(value.id, value.hash, 'small');
           value.img = getGeographUrl(value.id, value.hash, 'full');
 	  value.lat = rad2deg(value[geoprefix+'lat'])          
 	  value.lng = rad2deg(value[geoprefix+'long'])          
-          images[value.id] = value;
+          images[value.id] = value; //assoc array, to deduplcate!
         });
 
 	updateInternalMap();
