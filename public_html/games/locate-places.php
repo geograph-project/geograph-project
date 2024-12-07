@@ -87,10 +87,10 @@ if (empty($rows)) {
 	$stat = array('points'=>0,'total'=>0);
 	foreach ($rows as $row) {
 		$points = 0;
-		if ($row['f_code'] == 'F') {
+		if ($row['f_code'] == 'R') {
 			if ($row['guess'] == 'bogus') {
 				$points = 4;
-			} elseif ($row['guess'] == 'heard') {
+			} elseif ($row['guess'] == 'heard' || $row['guess'] == '') { //blank means they clicked on the map!
 				$points = -1; //eeek!
 			}
 		//} if guess = 'heard' and guess='never' doesnt get any score!
