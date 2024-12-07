@@ -10,14 +10,22 @@
 	<div style="position:relative;" class="interestBox">
 		<div style="position:relative;float:left;width:400px">
 			<label for="searchq" style="line-height:1.8em"><b>Search For</b>:</label> <a href="/article/Searching-on-Geograph" class="about" title="More details about Keyword Searching">About</a><br/>
-			<input id="qqq" type="text" name="q" value="{$searchtext|escape:"html"}" placeholder="(anything)" size="30" style="font-size:1.3em" />
+			<input id="qqq" type="search" name="q" value="{$searchtext|escape:"html"}" placeholder="(anything)" size="30"/>
 		</div>
 		<div style="position:relative;float:left;width:400px">
-			<label for="searchlocation" style="line-height:1.8em">and a <b>Placename, Postcode, Grid Reference</b>:</label> <span id="placeMessage"></span> <br/>
-			<input id="searchlocation" type="text" name="location" value="{$searchlocation|escape:"html"}" placeholder="(anywhere)" size="30" style="font-size:1.3em"/>&nbsp;&nbsp;&nbsp;
+			<label for="searchlocation" style="line-height:1.8em">and/or a <b>Placename, Postcode, Grid Reference</b>:</label> <span id="placeMessage"></span> <br/>
+			<input id="searchlocation" type="search" name="location" value="{$searchlocation|escape:"html"}" placeholder="(anywhere)" size="30"/>&nbsp;&nbsp;&nbsp;
 		</div>
 		<br style="clear:both">
-		<input id="searchgo" type="submit" name="go" value="Search..." style="font-size:1.3em"/>
+		<input id="searchgo" type="submit" name="go" value="Search..."/>
+		Just:
+		{if $user_id}
+			<input type=checkbox value="user{$user_id}" onclick="updateTerms(this)" id="cb1"><label for=cb1>Your Images</label> &middot;
+		{/if}
+		<input type=checkbox value="ftf1" onclick="updateTerms(this)" id="cb2"><label for=cb2>First Images</label> &middot;
+		<input type=checkbox value="-ftf0" onclick="updateTerms(this)" id="cb3"><label for=cb3>Personal Point Images</label> &middot;
+		<input type=checkbox value="2010s|2020s" onclick="updateTerms(this)" id="cb4"><label for=cb4>Recent Images</label> &middot;
+		<input type=checkbox value="-2010s -2020s" onclick="updateTerms(this)" id="cb5"><label for=cb5>Older Images</label> &middot;
 
 	</div>
 </form>
@@ -45,44 +53,286 @@
 var images = {}; //will contain loaded images! (they key is the image id)
 var ids = []; //will contain a simple array of image ids. Good for loops, but also will be used to find the image ie, from the idx in delaunay map
 
-var image = null; //the current image
+var currentImage = null; //the current image id - store the id, not idx, as needs to survive reloads. Which can reindex, the ids array!
 var map;
+var layer;
 var delaunay;
+var marker;
+
+var timer;
+var prevX = 0, prevY = 0;
+
+function clearResults() {
+	images = {};
+	ids = [];
+	currentImage = null;
+	$('#output').empty();
+}
 
 //renders a single image
 function renderImage(imageIdx) {
 	let image = images[ids[imageIdx]];
 	let neighbors = delaunay.neighbors(imageIdx);
 
-	 $('#output').empty();
+	let prevCenter = null;
+	if (currentImage !== null) {
+		for(i=0;i<ids.length;i++) {
+	                let pImage = images[ids[i]];
+			if (pImage.id === currentImage) {
+				prevCenter = L.latLng([pImage.lat, pImage.lng]);
+				break;
+			}
+		}
+	}
+	
+	currentImage = ids[imageIdx];
+
+	let $output = $('#output').empty();
+	$output.css({width:'900px', height:'900px', position:'relative'});
+
+	let $clear = $('<a>').text('Clear Results').attr('href','#');
+	$output.append($clear);
+	$clear.on('click',clearResults);
+
 
 	//todo, if the point is at the 'boundary' of the current map, should run a new search to 'extend' the map
 	//maybe get the convexthull, and then find it the point (or its neigbours!) are 'on' the boundary. 
 	//perhaps can be done directy with indeges bt not sure how work!) 
 
+
+	////////////////////////////
+	// the main image
+
+	let $img = $('<img>').attr('src',image.img).attr('width',image.width).attr('height',image.height);
+	$img.css({position:'absolute',
+		left: ( ($output.width() /2) - (image.width /2) ) + 'px',
+		top:  ( ($output.height()/2) - (image.height/2) ) + 'px',
+		borderRadius: '10px'
+	});
+	$output.append($img);
+	$img.on('mouseover',function() {
+		$img.css({zIndex:10000});
+		if (image.original && image.original != '0') {
+			if (timer)
+				clearTimeout(timer);
+			timer = setTimeout(function() {
+				showLargeImage(image)			
+			}, 4000);
+		}
+	}).on('mouseleave',function() {
+		$img.css({zIndex:'inherit'});		
+		if (timer)
+			clearTimeout(timer);
+	});
+
+	let $div = $('<div/>');
+	$div.append($('<a/>').attr('href','/photo/'+image.gridimage_id).text(image.title));
+	$div.append(' by ');
+	$div.append($('<a/>').attr('href','/profile/'+image.user_id).text(image.realname));
+	$div.append(' in ');
+	$div.append($('<a/>').attr('href','/gridref/'+image.grid_reference).text(image.grid_reference));
+	$div.append('<br>');
+
+	if (image.takenday && image.takenday > '1000') {
+		$div.append(' taken '+space_date(image.takenday)+' ');
+		image.date = new Date(space_date(image.takenday).replace(/-00/g,'-01'));
+	}
+
+	if (image.place)
+		$div.append(' near '+image.place+' ');
+
+	if (image.original && image.original != '0') {
+		var $a = $('<a/>').attr('href','/more.php?id='+image.gridimage_id).text(image.original+' px available');
+		$div.append($a);
+		$a.on('mouseover',function() {
+			if (timer)
+                                clearTimeout(timer);
+                        timer = setTimeout(function() {
+                                showLargeImage(image)
+                        }, 1000);
+		}).on('mouseleave',function() {
+			if (timer)
+				clearTimeout(timer);
+		});
+	}
+
+	//if (image.format == 'portrait') {
+	//	//todo!?
+	//} else {
+		$div.css({position:'absolute',
+			left: ( ($output.width() /2) - (image.width /2) ) + 'px',
+	                top:  ( ($output.height()/2) + (image.height/2) + 10 ) + 'px',
+			width: image.width + 'px',
+			textAlign:'center'
+		});
+	//}
+	$output.append($div);
+
+	var center = L.latLng([image.lat, image.lng]);
+
+	if (marker)
+		marker.setLatLng(center);
+	if (map) {
+		if (prevCenter) {
+			 let bounds = L.latLngBounds();
+	                bounds.extend(prevCenter);
+	                bounds.extend(center);
+			map.fitBounds(bounds.pad(0.2),{maxZoom:18});
+		} else {
+			map.panInside(center); //only moves map, if not visible!
+		}
+	}
+		
+	//$('#searchlocation').val(image.grid_reference); //ideally, we would set higher resolution (eg centi)  - which can do from lat/lng!
+                        wgs84=new GT_WGS84();
+                        wgs84.setDegrees(center.lat, center.lng);
+                        if (wgs84.isIreland2()) {
+                                //convert to Irish
+                                var grid=wgs84.getIrish(true);
+                        } else if (wgs84.isGreatBritain()) {
+                                //convert to OSGB
+                                var grid=wgs84.getOSGB();
+                        }
+                        var gridref = grid.getGridRef(3).replace(/ /g,'');
+	$('#searchlocation').val(gridref);
+
+	////////////////////////////
+	// the neighbors
+
 	neighbors.forEach(function(nIdx) {
 		let nImage = images[ids[nIdx]];
 
-		let $a = $('<a>').attr('href','javascript:renderImage('+nIdx+')').attr('title',image.title+' by '+image.realname);
+		let $a = $('<a>').attr('href','javascript:renderImage('+nIdx+')').attr('title',nImage.title+' by '+nImage.realname);
 		let $img = $('<img>').attr('src',nImage.thumbnail);
 
-		$('#output').append($a.append($img));
+		var point = L.latLng([nImage.lat, nImage.lng]);
+		var angle = calcAngle(center, point);
+
+		var pos = {
+			left: Math.cos(deg2rad(angle+90)) * 400,
+			top:  Math.sin(deg2rad(angle+90)) * 400
+		}
+//		$a.append(angle);
+
+		$a.css({position:'absolute',
+			left: ( ($output.width() /2) - pos.left - (nImage.thb_width /2) ) + 'px',
+	                top:  ( ($output.height()/2) - pos.top  - (nImage.thb_height/2) ) + 'px'
+		});
+		if (nImage.takenday && nImage.takenday > '1000' && image.date) {
+			$a.attr('title', $a.attr('title')+' Taken '+space_date(nImage.takenday));
+			nImage.date = new Date(space_date(nImage.takenday).replace(/-00/g,'-01'));
+			var diff = nImage.date.getTime() - image.date.getTime();
+			if (Math.abs(diff) > (1000 * 3600 * 24 * 365 * 10)) { //10 years
+				$img.addClass('diffDate');
+			}
+		}
+
+		$output.append($a.append($img));
+		var $large = $('<img/>');
+		$a.on('mouseover',function(e) {
+			if (prevX == e.screenX && prevY == e.screenY) //if there is no movement, then skip (because its a thumbnaiul that appeared under the cursor, rather than as real movement!
+				return;
+			prevX = e.screenX;
+			prevY = e.screenY;
+			$large.attr('src',nImage.img);
+			$large.css({position:'absolute',
+				left: ( ($output.width() /2) - (nImage.width /2) ) + 'px',
+				top:  ( ($output.height()/2) - (nImage.height/2) ) + 'px',
+				borderRadius: '20px'
+			});
+			$output.append($large);
+		}).on('mouseleave',function() {
+			$large.remove();
+		}).on('mousemove',function(e) {
+			prevX = e.screenX;
+			prevY = e.screenY;
+		});
+
+		let dist = center.distanceTo(point);
+		if (dist > 30) { //small distances are just random variations?
+			let $dist = $('<div/>').addClass('dist');
+			if (dist < 950) {
+				$dist.text(Math.round(dist)+' m');
+			} else {
+				$dist.text((dist/1000).toFixed(1)+' km');
+			}
+
+			$dist.attr('title','Angle: '+angle);
+
+			$dist.css({position:'absolute',
+				left: ( ($output.width() /2) - pos.left - (nImage.thb_width /2) ) + 'px',
+		            //    top:  ( ($output.height()/2) - pos.top  + (nImage.thb_height/2) + 5) + 'px',
+                                top: ( ($output.height()/2) - pos.top - 5 ) + 'px',
+				width: nImage.thb_width + 'px',
+			});
+			$output.append($dist);
+		}
 	});
 
-	$('#output').append('<hr>');
+	////////////////////////////
+	// direction marker
 
+	if (image.direction && image.direction != 'Unknown') {
+		var angle = parseInt(image.direction,10);
 
-	let $a = $('<a>').attr('href','/photo/'+image.gridimage_id).text(image.title);
-	let $a2 = $('<a>').attr('href','/profile/'+image.user_id).text(image.realname);
+		let $m = $('<div>').attr('title','View Direction: approx '+angle+' Degrees');
+		var pos = {
+                        left: Math.cos(deg2rad(angle+90)) * 450,
+                        top:  Math.sin(deg2rad(angle+90)) * 450
+                }
 
-	let $img = $('<img>').attr('src',image.img).attr('width',image.width).attr('height',image.height);
-	$('#output').append($img);
-	$('#output').append('<br>');
-	$('#output').append($a);
-	$('#output').append(' by ');
-	$('#output').append($a2);
+                $m.css({position:'absolute',
+                        left: ( ($output.width() /2) - pos.left - 10 ) + 'px',
+                        top:  ( ($output.height()/2) - pos.top  - 10 ) + 'px',
+			width: '20px',
+			height: '20px',
+			backgroundColor:'red',
+			borderRadius: '10px'
+                });
+                $output.append($m);
+	
+	}
+}
+function deg2rad(a) {
+	return a  / 180 * Math.PI;
 }
 	
+function calcAngle(p1, p2) {
+    var lat1 = p1.lat / 180 * Math.PI;
+    var lat2 = p2.lat / 180 * Math.PI;
+    var lng1 = p1.lng / 180 * Math.PI;
+    var lng2 = p2.lng / 180 * Math.PI;
+    var y = Math.sin(lng2-lng1) * Math.cos(lat2);
+    var x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(lng2-lng1);
+
+    var brng = (Math.atan2(y, x) * 180 / Math.PI + 360).toFixed(0);
+    return (brng % 360);
+}
+
+function showLargeImage(image) {
+	var original = parseInt(image.original,10);
+	var winsize = Math.min(window.clientWidth,window.clientHeight);
+	if (original < winsize || original <= 1024) {
+		var url = getGeographUrl(image.id, image.hash, 'original');
+	} else {
+		var url = getGeographUrl(image.id, image.hash, '1024');
+	}
+	var $large = $('<div/>');
+	$large.css({position:'fixed',
+		top:0, left:0, right:0, bottom:0,
+		backgroundImage: 'url('+url+')',
+		backgroundRepeat: 'no-repeat',
+		backgroundSize: 'contain',
+		backgroundPosition: 'center center',
+		zIndex: 10000
+	});
+	$(document.body).append($large);
+	$large.on('mousemove click',function() {
+		 $large.remove();
+	});
+}
+
+//////////////////////////////////////////////////////////////////
 
 function updateInternalMap() {
 
@@ -122,12 +372,24 @@ function updateInternalMap() {
 	let center = bounds.getCenter();
 	let bestDist = Infinity;
 	let bestIdx = null;
-        for(i=0;i<ids.length;i++) {
-		let image = images[ids[i]];
-		let dist = center.distanceTo([image.lat, image.lng]);
-		if (dist < bestDist) {
-			bestDist = dist;
-			bestIdx = i;
+	if (currentImage) {
+		//find the image in the current/new array!
+	        for(i=0;i<ids.length;i++) {
+			let image = images[ids[i]];
+			if (currentImage == image.id) {
+				 bestIdx = i;
+				break;
+			}
+		}
+	}
+	if (bestIdx === null) { //might be 0!
+	        for(i=0;i<ids.length;i++) {
+			let image = images[ids[i]];
+			let dist = center.distanceTo([image.lat, image.lng]);
+			if (dist < bestDist) {
+				bestDist = dist;
+				bestIdx = i;
+			}
 		}
 	}
 
@@ -138,7 +400,7 @@ function updateInternalMap() {
 // this map putput is jsut for debug purposes!
 
 	if (!map) {
-		$("#output").after('<div id=mapid style="width:500px;height:500px"></div>');
+		$("#output").after('<div id=mapid></div>');
 
 	        map = L.map('mapid');//.setView([51.505, -0.09], 13);
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -147,16 +409,47 @@ function updateInternalMap() {
 	}
 	map.fitBounds(bounds,{maxZoom:15});
 
+	if (layer) {
+		layer.removeFrom(map);
+	}
+        layer = L.featureGroup();
     var polygons = delaunay.trianglePolygons();
     polygons.forEach(function(polygon) {
       if (polygon) {
-        L.polygon(polygon).addTo(map);
+        L.polygon(polygon, {weight:1, fill:false, interactive:false}).addTo(layer);
       }
     });
+	for(i=0;i<ids.length;i++) {
+		let image = images[ids[i]];
+		createCMarker([image.lat, image.lng], i).addTo(layer);
+	}
+
+	if (bestIdx) {
+		let image = images[ids[bestIdx]];
+		marker = createMarker([image.lat, image.lng]).addTo(layer);
+	}	
+	layer.addTo(map);
 
 //////////////////////
 }
 
+function createMarker(point) {
+        var marker = L.marker(point, {draggable:true});
+	//trick so can drag the marker out of the way (to see under it) but it snapps back!
+	marker.on('dragend',function() {
+		marker.setLatLng(point);
+	});
+        return marker;
+}
+function createCMarker(point, idx) {
+        var marker = L.circleMarker(point, {radius: 2});
+	if (idx) {
+		marker.on('click',function() {
+			renderImage(idx);
+		});
+	}
+        return marker;
+}
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -164,8 +457,8 @@ var endpoint = "https://api.geograph.org.uk/api-facetql.php";
 
 //function _call_cors_api(endpoint,data,uniquename,success,error) {
 
-var perpage = 12;
-var distance = 5000;
+var perpage = 1000;
+var distance = 10000;
 
 /////////////////////////////////////////////////////////
 
@@ -186,11 +479,7 @@ function submitSearch(form, skip_pop) {
  /////////////
  // is a location centered search
 
-//TODO, if there isnt a location, we should do a pre-query, to find a 'central' image, as a starting point!
-// myabe SELECT lat,lng FROM ... ORDER BY sequence ASC LIMIT 1!
-
-
-  if (location && location.length > 5) {
+  if (location && location.length > 4) {
      if (gridref = location.toUpperCase().match(/(^|\/)\s*(\w{1,2}\d{2,10})/)) {
   
 	var grid=new GT_OSGB();
@@ -217,6 +506,36 @@ function submitSearch(form, skip_pop) {
             geo=parseFloat(wgs84.latitude).toFixed(6)+","+parseFloat(wgs84.longitude).toFixed(6)+","+distance;
         }
      }
+  } else {
+     //we really want a location, so find one!
+
+     var data = {
+	     select: "grid_reference",
+	     match: query,
+	     limit: 1,
+             order: 'sequence asc'
+	  };
+
+	 _call_cors_api(
+	    endpoint,
+	    data,
+	    'serveCallback',
+	    function(data) {
+              if (data && data.meta && data.meta.total_found && data.meta.total_found < 1000) {
+		//if less than 1000, acully could just continue the plain search, as will be showing ALL results anyway!
+		fetchImages(query, null); //continue the original search
+              } else if (data && data.rows) {
+                $('#searchlocation').val(data.rows[0].grid_reference);
+		submitSearch(form, skip_pop); //go again!
+              } else {
+                fetchImages(query, null); //continue the original search
+              }
+	    }, function() {
+              fetchImages(query, null); //continue the original search
+            }
+	);
+
+     return false;
   }
 
   /////////////
@@ -239,7 +558,7 @@ function fetchImages(query,geo,order) {
 geoprefix = 'v';
 
   var data = {
-     select: "id,title,grid_reference,realname,hash,user_id,takenday,"+geoprefix+"lat,"+geoprefix+"long,original,width,height,format",
+     select: "id,title,grid_reference,realname,hash,user_id,takenday,place,"+geoprefix+"lat,"+geoprefix+"long,original,width,height,format,direction",
      match: query,
      limit: perpage,
   };
@@ -256,7 +575,7 @@ geoprefix = 'v';
       var page = 1;
     }
 
-  if (!query && geo && typeof order === 'undefined')
+  if (geo && typeof order === 'undefined')
      order = 'distance';
 
   if (order) {
@@ -293,8 +612,20 @@ geoprefix = 'v';
           value.gridimage_id = value.id;
           value.thumbnail = getGeographUrl(value.id, value.hash, 'small');
           value.img = getGeographUrl(value.id, value.hash, 'full');
-	  value.lat = rad2deg(value[geoprefix+'lat'])          
-	  value.lng = rad2deg(value[geoprefix+'long'])          
+	  value.lat = rad2deg(value[geoprefix+'lat'])
+	  value.lng = rad2deg(value[geoprefix+'long'])
+
+	  value.width = parseInt(value.width,10);
+	  value.height = parseInt(value.height,10);
+	  var aspect = value.width/value.height;
+	  if (aspect > 1) { //wide (original is the width)
+		value.thb_width = 120;
+		value.thb_height = 120/aspect;
+	  } else {
+		value.thb_width = 120*aspect;
+		value.thb_height = 120;
+	  }
+
           images[value.id] = value; //assoc array, to deduplcate!
         });
 
@@ -395,6 +726,8 @@ function getGeographUrl(gridimage_id, hash, size) {
 	
 	switch(size) { 
 		case 'full': return "https://s0.geograph.org.uk"+fullpath+".jpg"; break; 
+		case 'original': return "https://s0.geograph.org.uk"+fullpath+"_original.jpg"; break; 
+		case '1024': return "https://s0.geograph.org.uk"+fullpath+"_1024x1024.jpg"; break; 
 		case 'med': return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_213x160.jpg"; break; 
 		case 'small': 
 		default: return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_120x120.jpg"; 
@@ -473,6 +806,24 @@ function _call_cors_api(endpoint,data,uniquename,success,error) {
         function htmlentities(input) {
                 return $('<div />').text(input).html()
         }
+
+function updateTerms(that) {
+	var term = that.value;
+	var form = that.form;
+	var ele = that.form.elements['q'];
+	if (that.checked) {
+		if (ele.value.indexOf(term) == -1)
+			ele.value = ele.value + ' '+term;
+	} else {
+		if (term.match(/^\w/))
+			term = '\\b'+term;
+		if (term.match(/\w$/))
+			term = term+'\\b';
+		term = term.replace(/\|/g,'\\|'); //just enough regex quoting
+
+		ele.value = ele.value.replace(new RegExp(term,'g'),' ').replace(/\s+/g,' ').replace(/^\s+|\s+$/g,'');
+	}
+}
 
 function getTextQuery() {
     var raw = $('#qqq').attr('value');
@@ -577,6 +928,35 @@ function getTextQuery() {
     return query;
 }
 
-</script>{/literal}
+</script>
+<style>
+div.dist {
+	text-align:center;
+	text-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
+	color: white;
+	opacity:0.7;
+	pointer-events: none;
+}
+div#mapid {
+	width:500px;
+	height:500px;
+}
+img.diffDate {
+	border-radius:20px;
+}
+@media (min-width: 1400px) {
+	div#mapid {
+		position:fixed;
+		top:0;
+		right:0;
+		bottom:0;
+		height:95vh;
+	}
+
+}
+</style>
+
+
+{/literal}
 
 {include file="_std_end.tpl"}

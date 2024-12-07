@@ -29,6 +29,21 @@ init_session();
 $smarty = new GeographPage;
 
 
+//todo, just something to start - really this should be read from _GET
+if (strpos($_SERVER['CONF_DB_DB'],'staging') !== FALSE) {
+	$smarty->assign('searchtext', 'test');
+	$smarty->assign('searchlocation', 'SH7045 Blaenau Ffestiniog');
+}
+
+if (!empty($_GET['q'])) {
+	$smarty->assign('searchtext', $_GET['q']);
+}
+if (!empty($_GET['location'])) {
+	$smarty->assign('searchlocation', $_GET['location']);
+}
+if ($USER->user_id) { //todo, check stats?
+	$smarty->assign('user_id', $USER->user_id);
+}
 
 $smarty->display('finder_triangulation.tpl');
 
