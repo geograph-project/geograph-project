@@ -256,6 +256,11 @@ table.forums div.photoguide {
 
 /*Forum responsive layout - dsp 2024*/
 
+@media only screen and (max-width: 712px) {
+input#search_toggle:checked ~ #search_block {
+  min-height:initial !important;
+}
+}
 
 /*Forum general functions*/
 
