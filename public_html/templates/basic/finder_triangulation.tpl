@@ -6,7 +6,7 @@
 <p><b>{$errormsg}</b></p>
 {/if}
 
-<form method="get" action="/search.php" onsubmit="return submitSearch(this)">
+<form method="get" name=theForm action="/search.php" onsubmit="return submitSearch(this)">
 	<div style="position:relative;" class="interestBox">
 		<div style="position:relative;float:left;width:400px">
 			<label for="searchq" style="line-height:1.8em"><b>Search For</b>:</label> <a href="/article/Searching-on-Geograph" class="about" title="More details about Keyword Searching">About</a><br/>
@@ -194,7 +194,7 @@ function renderImage(imageIdx) {
                                 var grid=wgs84.getOSGB();
                         }
                         var gridref = grid.getGridRef(3).replace(/ /g,'');
-	$('#searchlocation').val(gridref);
+	$('#searchlocation').val(gridref); //set directly, not with setLocationBox because that clears current iamge!
 
 	////////////////////////////
 	// the neighbors
@@ -207,10 +207,13 @@ function renderImage(imageIdx) {
 
 		var point = L.latLng([nImage.lat, nImage.lng]);
 		var angle = calcAngle(center, point);
+		let dist = center.distanceTo(point);
 
+		var radius = 400;
+		//radius = Math.log(dist)*50; //todo, experiemnt. One issue, is thumbs 'within' the main image are inaccesible (due to mouseover zindex)
 		var pos = {
-			left: Math.cos(deg2rad(angle+90)) * 400,
-			top:  Math.sin(deg2rad(angle+90)) * 400
+			left: Math.cos(deg2rad(angle+90)) * radius,
+			top:  Math.sin(deg2rad(angle+90)) * radius
 		}
 //		$a.append(angle);
 
@@ -248,7 +251,6 @@ function renderImage(imageIdx) {
 			prevY = e.screenY;
 		});
 
-		let dist = center.distanceTo(point);
 		if (dist > 30) { //small distances are just random variations?
 			let $dist = $('<div/>').addClass('dist');
 			if (dist < 950) {
@@ -350,7 +352,8 @@ function updateInternalMap() {
         let bounds = L.latLngBounds();
 	for(i=0;i<ids.length;i++) {
 		let image = images[ids[i]];
-		bounds.extend([image.lat, image.lng]);		
+                if (image.latest) //only extend on the latest images loaded!
+			bounds.extend([image.lat, image.lng]);		
 
 		//delaunay doesnt do so well with points in same place, so shuffle them!
 		var key = image.lat.toFixed(6)+' '+image.lng.toFixed(6);
@@ -369,6 +372,8 @@ function updateInternalMap() {
 //////////////////////
 
 	//quick way to get middle of the points!
+		//todo, ratehr than finding center of bounds, should perhaps use search location - if available!
+		//eg double clicking the map, can give disconcerting jump to different location than where was clicked!
 	let center = bounds.getCenter();
 	let bestDist = Infinity;
 	let bestIdx = null;
@@ -406,6 +411,24 @@ function updateInternalMap() {
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		    }).addTo(map);
+
+		map.on('dblclick', function(e) {
+                        wgs84=new GT_WGS84();
+                        wgs84.setDegrees(e.latlng.lat, e.latlng.lng);
+                        if (wgs84.isIreland2()) {
+                                //convert to Irish
+                                var grid=wgs84.getIrish(true);
+                        } else if (wgs84.isGreatBritain()) {
+                                //convert to OSGB
+                                var grid=wgs84.getOSGB();
+                        }
+			if (grid) {
+	                        var gridref = grid.getGridRef(3).replace(/ /g,'');
+				setLocationBox(gridref);
+				submitSearch(document.forms['theForm']);
+			}
+		});
+
 	}
 	map.fitBounds(bounds,{maxZoom:15});
 
@@ -509,14 +532,22 @@ function submitSearch(form, skip_pop) {
   } else {
      //we really want a location, so find one!
 
-     var data = {
+        if (false) { //todo, test!
+		//... or we could just load an initial selection. 
+		// just have the issue dont know if loaded them all. There may be gaps!
+
+	     fetchImages(query, null, 'spread');
+	     return false;
+        }
+
+	var data = {
 	     select: "grid_reference",
 	     match: query,
 	     limit: 1,
              order: 'sequence asc'
 	  };
 
-	 _call_cors_api(
+	_call_cors_api(
 	    endpoint,
 	    data,
 	    'serveCallback',
@@ -567,7 +598,8 @@ geoprefix = 'v';
      data.geo = geo;
   }
   if (geoprefix == 'v')
-     data.where = "vgrlen>0";
+     data.where = "vgrlen>0 and vlat > 0.1";  //turns out there are some images that have vgrlen set, but no e/n saved. HEnce no lat/lng!!?
+  //note, dont need to filter with grlen, as all images have a subject. Although MAY want to consider exclude 4fig GRs, as very imprecisely located. 
 
     if (page && page > 1) {
       data.offset=((page-1)*data.limit);
@@ -607,8 +639,10 @@ geoprefix = 'v';
         $("#message").html("Processing Images...");
 
         $.each(data.rows,function(index,value) {
-          if (images[value.id])
+          if (images[value.id]) {
+            images[value.id].latest = true;
             return;
+          }
           value.gridimage_id = value.id;
           value.thumbnail = getGeographUrl(value.id, value.hash, 'small');
           value.img = getGeographUrl(value.id, value.hash, 'full');
@@ -625,7 +659,7 @@ geoprefix = 'v';
 		value.thb_width = 120*aspect;
 		value.thb_height = 120;
 	  }
-
+          value.latest = true;
           images[value.id] = value; //assoc array, to deduplcate!
         });
 
@@ -635,11 +669,19 @@ geoprefix = 'v';
         $("#message").html("No Results Found");
     }
   });
+
+  if (ids.length) { //if already have some images, mark them as non-latest
+    for(i=0;i<ids.length;i++) {
+      let image = images[ids[i]];
+      image.latest = false;
+    }
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 	function setLocationBox(value,wgs84,skipautoload) {
+		currentImage = null; //do this, so when search new location, we actully jump ther (dont just say on curent image)
 		 $("#searchlocation").val(value);
 	}
 
