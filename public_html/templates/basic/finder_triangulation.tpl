@@ -526,9 +526,17 @@ function submitSearch(form, skip_pop) {
 		//convert to a wgs84 coordinate
 		wgs84 = grid.getWGS84(true);
 
-            geo=parseFloat(wgs84.latitude).toFixed(6)+","+parseFloat(wgs84.longitude).toFixed(6)+","+distance;
+		geo=parseFloat(wgs84.latitude).toFixed(6)+","+parseFloat(wgs84.longitude).toFixed(6)+","+distance;
+
+	} else if (!confirm('unable to decode the GR, Click ok to continue anyway (and run a keyword search only), or Cancel so can try editing the location')) {
+		return;
         }
+
+     } else if (!confirm('Unable to read Grid Reference from location box, Click ok to continue anyway (and run a keyword search only), or Cancel so can try editing the location. Currently only use Grid-References to search, use the autocomplete to lookup the GR for a place or postcode')) {
+		$("#searchlocation").autocomplete("search");
+		return false;
      }
+
   } else {
      //we really want a location, so find one!
 
