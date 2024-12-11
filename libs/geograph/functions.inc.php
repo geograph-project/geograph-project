@@ -769,8 +769,7 @@ function pageMustBeHTTPS($status = 301) {
 	if (!empty($_SERVER['HTTPS']))
 		return; //page is already HTTPS!
 
-//	if (!empty($CONF['server_ip']) && strpos($_SERVER['REMOTE_ADDR'],$CONF['server_ip']) === 0 //checks that we the request is from local proxy
-if (true
+	if (!empty($CONF['server_ip']) && strpos($_SERVER['REMOTE_ADDR'],$CONF['server_ip']) === 0 //checks that we the request is from local proxy
 		&& !empty($_SERVER['HTTP_X_FORWARDED_FOR']) //checks its a forwarded request!
 		&& !empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') //checks it really is a https request
 		return; //page is already HTTPS via proxy!

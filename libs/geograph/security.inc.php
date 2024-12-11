@@ -236,8 +236,7 @@ function isLocalIPAddress()
 		//is from self
 		return true;
 	} 
-//	elseif (!empty($CONF['server_ip']) && strpos($_SERVER['REMOTE_ADDR'],$CONF['server_ip']) === 0 && strpos(getRemoteIP(),$CONF['server_ip']) === 0) 
-	elseif (strpos(getRemoteIP(),$CONF['server_ip']) === 0) 
+	elseif (!empty($CONF['server_ip']) && strpos($_SERVER['REMOTE_ADDR'],$CONF['server_ip']) === 0 && strpos(getRemoteIP(),$CONF['server_ip']) === 0) 
 	{
 		//its our server calling direct/our gateway is forwarding for our server
 		return true;
