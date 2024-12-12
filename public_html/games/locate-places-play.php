@@ -52,9 +52,11 @@ if ($USER->registered) {
         $where = "session = ".$db->Quote(session_id());
 }
 
-$filter = "has_dup = 0";
 if (!empty($_GET['city']))
-	$filter .= " AND f_code IN ('C','City')";
+	$filter = "f_code IN ('C','City') AND def_nam != 'Bangor' "; //city on both grids! (only dup city!)
+else
+	$filter = "has_dup = 0";
+
 
 $places = $db->getAll($sql = "SELECT g.id,substring_index(def_nam,'/',1) as def_nam, east, north, reference_index as ri
  FROM gaz_locate g
