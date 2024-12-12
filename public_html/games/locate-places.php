@@ -66,33 +66,115 @@ $db = GeographDatabaseConnection(true);
 
 print "<hr>";
 
-if (!empty($_GET['all'])) {
-	$where = "1";
-	print "<a href=\"?\">Your Scores</a> / <b>Everybody</b>";
+if (!empty($_GET['detail'])) {
+	$rows = $db->getAll("SELECT id,guess,distance,lat,def_nam,full_county,f_code FROM locate_log INNER JOIN gaz_locate USING (id) WHERE $where ORDER BY response_id DESC LIMIT 100");
 
-	print "<p>Note that while showing everyones score in aggregate here, we wont share individual scores. If interest might produce a scoreboard to see score of others, but it will be opt in";
+	if (empty($rows)) {
+		print "<p>No scores yet";
+	} else {
+		print "<h3>Your Last 100 Answers</h3>";
+		print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=#eee>";
+		foreach($rows as $row) {
+			print "<tr>";
+			print "<td>".htmlentities($row['def_nam']);
+			print "<td>".get_name($row['f_code']);
+			if (!empty($row['distance'])) {
+				printf("<td align=right>%d km",$row['distance']/1000);
+			} else {
+				print "<td align=center>".$row['guess'];
+			}
+			$points = get_points($row);
+			print "<td align=center>$points point".($points==1?'':'s');
+		}
+		print "</table>";
+	}
 
-	$label = "Total Points";
 } else {
-	print "<b>Your Scores</b> / <a href=\"?all=1\">Everybody</a>";
+	if (!empty($_GET['all'])) {
+		$where = "1";
+		print "<a href=\"?\">Your Scores</a> / <b>Everybodies Scores</b>";
 
-	$label = "Your Points";
+		print "<p>Note that while showing everyones score in aggregate here, we wont share individual scores. If interest might produce a scoreboard to see score of others, but it will be opt in";
+
+		$label = "Total Points";
+	} else {
+		print "<b>Your Scores</b> / <a href=\"?detail=1\">Recent Answers</a> / <a href=\"?all=1\">Everybodies Scores</a>";
+
+		$label = "Your Points";
+	}
+
+	$rows = $db->getAll("SELECT guess,distance,f_code,IF(user_id > 0,user_id,session) AS iden FROM locate_log INNER JOIN gaz_locate USING (id) WHERE $where");
+
+	if (empty($rows)) {
+		print "<p>No scores yet";
+	} else {
+		$stat = array('points'=>0,'total'=>0,'users'=>array());
+		foreach ($rows as $row) {
+			$points = get_points($row);
+
+			$stat['points']+=$points;
+			$stat['total']+=3; //its out of 4?
+			$stat['users'][$row['iden']]=1;
+
+			$name = get_name($row['f_code']);
+
+			@$stat[$name]['points']+=$points;
+			@$stat[$name]['total']+=3;
+			@$stat[$name]['users'][$row['iden']]=1;
+
+		}
+
+		printf('<h3>%s: %d points from %d guesses. About <b>%.1f%%</b> overall%s</h3>',$label, $stat['points'],  $stat['total']/4, $stat['points']/$stat['total']*100,
+			count($stat['users'])>1?". From ".count($stat['users'])." players":'');
+
+		if (!empty($stat)) {
+			ksort($stat);
+			print "<ul>";
+	 		foreach($stat as $key => $value) {
+				if (is_array($value) && $key != 'users') {
+					printf('<li><b>%s</b>: %d points from %d guesses. About <b>%.1f%%</b> overall%s',$key, $value['points'],  $value['total']/3, $value['points']/$value['total']*100,
+						count($value['users'])>1?". From ".count($value['users'])." players":'');
+					print "<br><br>";
+				}
+			}
+			print "</ul>";
+		}
+	}
 }
 
-$rows = $db->getAll("SELECT id,guess,distance,lat,def_nam,full_county,f_code FROM locate_log INNER JOIN gaz_locate USING (id) WHERE $where");
+?>
+<hr>
+<h3>Points</h3>
+<ul>
+	<li>Guess within 10km: 4 points!
+	<li>Guess within 50km: 3 points
+	<li>Guess within 100km: 2 points
+	<li>Guess within 200km: 1 points
+	<li>Correctly identifing a fake place as bogus: 3 points!
+	<li>Offering a Guess for a fake place: -1 points!
+	<li>Suggesting a real place is fake: -1 points!
+	<li>Unable to offer a guess: 0 points
+</ul>
+<p>The percentage, calculated is out of 3 points per place. So 100% score is managing to get within 50km of all places, if you manage to get within 10km can get over 100%.</p>
+<hr>
+<p>Note: We are are only including places that seem to be unabigious, excludes where there are multiple places with the same name.
+We only using a random sample of small places, otherwise would be swamped with small places. The total playable dataset is currently 2,852 places!
+<?
 
-if (empty($rows)) {
-	print "<p>No scores yet";
-} else {
-	$stat = array('points'=>0,'total'=>0);
-	foreach ($rows as $row) {
+
+$smarty->display('_std_end.tpl');
+
+
+function get_points($row) {
 		$points = 0;
 		if ($row['f_code'] == 'R') {
 			if ($row['guess'] == 'bogus') {
-				$points = 4;
+				$points = 3;
 			} elseif ($row['guess'] == 'heard' || $row['guess'] == '') { //blank means they clicked on the map!
 				$points = -1; //eeek!
 			}
+		} elseif ($row['guess'] == 'bogus') { //cant be a fake place!
+			$points = -1;
 		//} if guess = 'heard' and guess='never' doesnt get any score!
 		} elseif (!empty($row['distance'])) {
 			if ($row['distance'] < 10000)
@@ -104,10 +186,10 @@ if (empty($rows)) {
 			elseif ($row['distance'] < 200000)
 				$points = 1;
 		}
-		$stat['points']+=$points;
-		$stat['total']+=4; //its out of 4?
+	return $points;
+}
 
-		$key = $row['f_code'];
+function get_name($key) {
 			if ($key == 'C')
 				$name = 'GB Cities';
 			elseif ($key == 'T')
@@ -128,45 +210,5 @@ if (empty($rows)) {
 			} else {
 				$name = 'Other Places';
 			}
-
-
-		@$stat[$name]['points']+=$points;
-		@$stat[$name]['total']+=4;
-	}
-
-	printf('<h3>%s: %d points from %d guesses. About <b>%.1f%%</b> overall</h3>',$label, $stat['points'],  $stat['total']/4, $stat['points']/$stat['total']*100);
-
-	if (!empty($stat)) {
-		ksort($stat);
-		print "<ul>";
- 		foreach($stat as $key => $value) {
-			if (is_array($value)) {
-				printf('<li><b>%s</b>: %d points from %d guesses. About <b>%.1f%%</b> overall',$key, $value['points'],  $value['total']/4, $value['points']/$value['total']*100);
-				print "<br><br>";
-			}
-		}
-		print "</ul>";
-	}
+	return $name;
 }
-
-?>
-<hr>
-<h3>Points</h3>
-<ul>
-	<li>Guess within 10km: 4 points!
-	<li>Guess within 50km: 3 points
-	<li>Guess within 100km: 2 points
-	<li>Guess within 200km: 1 points
-	<li>Correctly identifing a fake place as bogus: 4 points!
-	<li>Offering a Guess for a fake place: -1 points!
-	<li>Unable to offer a guess: 0 points
-</ul>
-
-Note: We are are only including places that seem to be unabigious, excludes where there are multiple places with the same name.
-We only using a random sample of small places, otherwise would be swamped with small places. The total playable dataset is currently 2,852 places!
-<?
-
-
-$smarty->display('_std_end.tpl');
-
-

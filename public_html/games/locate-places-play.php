@@ -79,7 +79,7 @@ print "<script src=".smarty_modifier_revision("/mapper/geotools2.js")."></script
 
 ?>
 
-<div class=interestBox id="outputMsg">Lets Go! <b>Please don't cheat!</b></div>
+<div class=interestBox id="outputMsg">Lets Go! <b>Please don't cheat!</b> - the aim is try to drop the pin within about 50km of the place (not expecting pinpoint accuracy)</div>
 <div style="position:relative">
 	<form id="side" onsubmit="return checkSub(this)">
 		<h3></h3>
@@ -110,15 +110,15 @@ print "<script src=".smarty_modifier_revision("/mapper/geotools2.js")."></script
 <style>
 form#side {
 	float:left;
-	height:900px;  max-height:80vh;
-	width:300px;  max-width:30vw;
+	height:900px;
+	width:300px;
 	max-width:100%;
 	background-color:#eee;
 	padding:10px;
 }
 div#map {
 	float:left;
-	width:800px; height:900px; max-height:100vh; max-width:50vw;
+	width:800px; height:900px;
 	margin-bottom: 50vh ;
 }
 
