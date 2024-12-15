@@ -212,7 +212,7 @@ function get_name($key) {
 				$name = 'Ireland Cities';
 			elseif ($key == '' || $key == 'District')
 				$name = 'Ireland Places';
-			elseif (preg_match('/Town[_-](\d+)/',$key,$m)) {
+			elseif (preg_match('/To[wn]+[_-](\d+)/',$key,$m)) {
 				if (intval($m[1]) < 4)
 					$name = 'Ireland Towns';
 				else
