@@ -150,6 +150,7 @@ if (!empty($_GET['detail'])) {
 }
 
 ?>
+<p>Note: We dont currently have a definitive list of Towns in Ireland (both Northern Ireland and Republic of Ireland), so the ones currently classed as a Town, is just a guess. There are probably some towns in the 'Places' list as well. For Great Britain, do have a definitive list.
 <hr>
 <h3>Points</h3>
 <ul>
@@ -165,7 +166,7 @@ if (!empty($_GET['detail'])) {
 <p>The percentage, calculated is out of <? echo POINTSFORSCORE; ?> points per place. So 100% score is managing to get within 50km of all places, if you manage to get within 10km can get over 100%.</p>
 <hr>
 <p>Note: We are are only including places that seem to be unabigious, excludes where there are multiple places with the same name.
-We only using a random sample of small places, otherwise would be swamped with small places. The total playable dataset is currently 2,852 places!
+We only using a random sample of villages (and towns in Ireland), otherwise would be swamped with small places. The total playable dataset is currently 2,855 places!
 
 </div>
 
