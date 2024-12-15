@@ -26,6 +26,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+define("POINTSFORSCORE",3); //getting this number of points = 100% (so if set to 3, getting 4/3 points owuld be 133%)
+
 //alow the user to login!
 if (isset($_REQUEST['login']) && !$USER->hasPerm('basic')) {
         $USER->login(false);
@@ -42,9 +44,11 @@ $db = GeographDatabaseConnection(true);
 
 ?>
 
-<h2>Can you locate this place on the map?</h2>
+<div style="max-width:940px">
 
-<p>This is a simple game, where you try to see how many places from around the British Isles you can locate on a map</p>
+<h2>Mystery Places. Can you locate this place on the map?</h2>
+
+<p>This is a simple game, where you try to see how many places from around the British Isles you can locate on a national map.</p>
 
 <div class=interestBox>
 <p style=font-size:x-large>&middot; <a href="locate-places-play.php">Play Now</a> - play as long as you like, come back to see your ongoing score</p>
@@ -59,14 +63,18 @@ $db = GeographDatabaseConnection(true);
 	$where = "user_id = ".$USER->user_id;
 
 } else {
-	print "<p>The score will only be tracked for this session. <a href=?login=1>Login First</a> to save your score on your profile";
+	print "<p><b>The score will only be tracked for this session</b>. <a href=?login=1>Login First</a> to save your score on your profile.";
 
 	$where = "session = ".$db->Quote(session_id());
 }
 
+print "<br>";
+print "<br>";
 print "<hr>";
 
 if (!empty($_GET['detail'])) {
+	print "<a href=\"?\">Your Scores</a> / <b>Recent Answers</b> / <a href=\"?all=1\">Everybodies Scores</a>";
+
 	$rows = $db->getAll("SELECT id,guess,distance,lat,def_nam,full_county,f_code FROM locate_log INNER JOIN gaz_locate USING (id) WHERE $where ORDER BY response_id DESC LIMIT 100");
 
 	if (empty($rows)) {
@@ -92,7 +100,7 @@ if (!empty($_GET['detail'])) {
 } else {
 	if (!empty($_GET['all'])) {
 		$where = "1";
-		print "<a href=\"?\">Your Scores</a> / <b>Everybodies Scores</b>";
+		print "<a href=\"?\">Your Scores</a> / <a href=\"?detail=1\">Recent Answers</a> / <b>Everybodies Scores</b>";
 
 		print "<p>Note that while showing everyones score in aggregate here, we wont share individual scores. If interest might produce a scoreboard to see score of others, but it will be opt in";
 
@@ -113,18 +121,17 @@ if (!empty($_GET['detail'])) {
 			$points = get_points($row);
 
 			$stat['points']+=$points;
-			$stat['total']+=3; //its out of 4?
+			$stat['total']+=POINTSFORSCORE;
 			$stat['users'][$row['iden']]=1;
 
 			$name = get_name($row['f_code']);
 
 			@$stat[$name]['points']+=$points;
-			@$stat[$name]['total']+=3;
+			@$stat[$name]['total']+=POINTSFORSCORE;
 			@$stat[$name]['users'][$row['iden']]=1;
-
 		}
 
-		printf('<h3>%s: %d points from %d guesses. About <b>%.1f%%</b> overall%s</h3>',$label, $stat['points'],  $stat['total']/4, $stat['points']/$stat['total']*100,
+		printf('<h3>%s: %d points from %d guesses. About <b>%.1f%%</b> overall%s</h3>',$label, $stat['points'],  $stat['total']/POINTSFORSCORE, $stat['points']/$stat['total']*100,
 			count($stat['users'])>1?". From ".count($stat['users'])." players":'');
 
 		if (!empty($stat)) {
@@ -132,7 +139,7 @@ if (!empty($_GET['detail'])) {
 			print "<ul>";
 	 		foreach($stat as $key => $value) {
 				if (is_array($value) && $key != 'users') {
-					printf('<li><b>%s</b>: %d points from %d guesses. About <b>%.1f%%</b> overall%s',$key, $value['points'],  $value['total']/3, $value['points']/$value['total']*100,
+					printf('<li><b>%s</b>: %d points from %d guesses. About <b>%.1f%%</b> overall%s',$key, $value['points'],  $value['total']/POINTSFORSCORE, $value['points']/$value['total']*100,
 						count($value['users'])>1?". From ".count($value['users'])." players":'');
 					print "<br><br>";
 				}
@@ -155,10 +162,13 @@ if (!empty($_GET['detail'])) {
 	<li>Suggesting a real place is fake: -1 points!
 	<li>Unable to offer a guess: 0 points
 </ul>
-<p>The percentage, calculated is out of 3 points per place. So 100% score is managing to get within 50km of all places, if you manage to get within 10km can get over 100%.</p>
+<p>The percentage, calculated is out of <? echo POINTSFORSCORE; ?> points per place. So 100% score is managing to get within 50km of all places, if you manage to get within 10km can get over 100%.</p>
 <hr>
 <p>Note: We are are only including places that seem to be unabigious, excludes where there are multiple places with the same name.
 We only using a random sample of small places, otherwise would be swamped with small places. The total playable dataset is currently 2,852 places!
+
+</div>
+
 <?
 
 

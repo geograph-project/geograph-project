@@ -8,6 +8,8 @@ function showHide(id,show) {
 </script>
 {/literal}
 
+<div style="max-width:940px">
+
 {dynamic}
 {if $user->registered}
 
@@ -81,7 +83,7 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>games section</h
 
 
 <div  class="interestBox" style="width:45%; float:left; height:350px; ">
-<h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Place Memory (beta) <sup style="color:pink">New!</sup></h3>
+<h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Place Memory</h3>
 
 <p>Earn hamster tokens by locating the grid Square of a photo. A single round consists of playing 10 images.</p>
 
@@ -114,14 +116,16 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>games section</h
 
 <br style="clear:both"/>
 
-<div class="interestBox" style="margin: 20px; padding:10px; width:260px; float:right; text-align:center">
-
-More games coming soon...
-</div>
-
 <p>Just for fun, <a href="/games/statistics.php">some overview statistics</a>.</p>
 
 <br style="clear:both"/>
+
+<hr>
+
+We also have a new game in development: <a href="/games/locate-places.php">Mystery Places</a> - where you try to see how many places from around the British Isles you can locate on a national map.
+It's not fully complete yet, there is no scoreboard (although it does track your own score), but its mostly playable as is. 
+
+</div>
 
 {include file="_std_end.tpl"}
 
