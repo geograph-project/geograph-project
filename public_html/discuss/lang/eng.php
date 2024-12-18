@@ -102,7 +102,7 @@ $l_sortedBy='Sorted by:';
 
 $l_lastDiscussions='Recent Topics';
 
-$l_topic_closed='This topic is closed. You can`t post a reply.';
+$l_topic_closed='This topic is closed. You can\'t post a reply.';
 
 $l_closeTopic='Lock topic';
 $l_deleteTopic='Delete topic';
