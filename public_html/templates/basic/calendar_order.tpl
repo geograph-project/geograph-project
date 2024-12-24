@@ -1,5 +1,6 @@
 {include file="_std_begin.tpl"}
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
 <h2>Step 3. Order Geograph Calendar</h2>
 
@@ -15,11 +16,19 @@
         {if $errors.title}<div class="formerror"><p class="error">{$errors.title}</p>{/if}
 
         <label for="title">Title:</label>
-        <input type="text" name="calendar_title" value="{$calendar.title|escape:"html"}" style="font-size:1.1em" maxlength="64" size="47"/>
+        <input type="text" name="calendar_title" id="calendar_title" value="{$calendar.title|escape:"html"}" style="font-size:1.1em" maxlength="64" size="47"/>
 
 	<div class="fieldnotes">Optional title. {if !$images}For your reference only{/if}</div>
 
         {if $errors.title}</div>{/if}
+
+	<script>{literal}
+	$(function() {
+		$('input#calendar_title').on('keyup input change blur paste', function() {
+			$('span#previewtitle').text(this.value);
+		});
+	});
+	{/literal}</script>
 </div>
 
 {if $images}
@@ -52,11 +61,25 @@
 <hr>
 
 <div class="field">
-        <label for="images">Selected Images:</label>
-
 	<br>
 	{foreach from=$images key=index item=image}
-		{$image->getThumbnail(120,120)}
+		{if $image->sort_order == 0}
+			Cover Preview (only a low resolution preview to show approximate location of text, the final version will be done by hand)<br><br>
+			<div style='position:relative;width:640px;height:453px; color: #000066;
+background-image:url("{$image->_getFullPath(true,true)}");background-size:cover;
+--background-image: url("https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Calendar2024_cover1.jpg")
+'>
+				<img style="position:absolute; top:20px; left:7px; width:177px; height:49px; border:6px solid #000066;"
+					src="https://s1.geograph.org.uk/templates/basic/img/xmaslogo.gif">
+				<span id="previewtitle" style="position:absolute; top:28px; left:200px; font-size:20px;font-weight:bold;width:280px;text-align:center; font-style:italic">{$calendar.title|escape:"html"|default:"Your Title Here"}</span>
+				<span style="position:absolute; top:60px; left:200px; font-size:16px;font-weight:bold;width:280px;text-align:center">Photography by {$cover_name|escape:'html'}</span>
+				<span style="position:absolute; top:23px; left:494px; font-size:27px;font-weight:bold;text-align:right">Calendar<br>{$year}</span>
+			
+			</div>
+			Selected Images:
+		{else}
+			{$image->getThumbnail(120,120)}
+		{/if}
 		{if $image->sort_order == 0 || $image->sort_order == 4 || $image->sort_order == 8}
 			<br/>
 		{/if}
@@ -136,7 +159,6 @@
 
 </form>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script>{literal}
 //prevent enter submitting the form (which will be an arbitary move button!) 
 $('form input').keydown(function (e) {
