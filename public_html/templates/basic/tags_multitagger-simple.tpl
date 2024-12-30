@@ -28,7 +28,7 @@
 		<input type=hidden name=simple value=1>
 		<div class="interestBox">
 			<label for="tag">Tag</label>:  <input type="text" name="tag" id="tag" size="40"{if $thetag} value="{$thetag|escape:'html'}"{/if} oninput="clear_form(this)"/>
-			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{if $q} value="{$q|escape:'html'}"{/if} oninput="clear_form(this)"/>
+			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{if $q} value="{$q|escape:'html'}"{/if} oninput="clear_form(this)" title="Tip: if trying to exclude false matches, use negative phrases, not words. E.g. if searching [drone], but getting lots of [Drone Hill] results that not interested in; Then search [drone -&quot;drone hill&quot;] rather than just [drone -hill], so you get other mentions of drone, so can still get [Drone flying on Hoad Hill]"/>
 			<input type="submit" value="Search"/><br/>
 			<label for="onlymine"><b>Only your images?</b></label> <input type="checkbox" name="onlymine" id="onlymine" {if $onlymine}checked{/if}/> (can only add tags to your own images anyway)
 			<label for="exclude"><b>Exclude already tagged?</b></label> <input type="checkbox" name="exclude" id="exclude" {if $exclude}checked{/if}/> (may not exclude recently tagged images) 
