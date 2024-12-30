@@ -43,7 +43,7 @@ exit;
 
 #############################################
 
-//$db = GeographDatabaseConnection(false);
+$db = GeographDatabaseConnection(false);
 
 //probably easier to define in PHP (so that later can convert to database)
 $themes = array(
@@ -63,9 +63,33 @@ $themes = array(
 
 <script>
 let themes= <? echo json_encode($themes); ?>;
-function update(that) {
+function update_theme(that) {
 	let theme = that.value;
 	let row = themes[theme];
+	update(theme,row);
+}
+function update_subject(that) {
+	let subject = that.value;
+	let row = {
+		search: '[subject:'+subject+']',
+		browser: '[subject:'+subject+']',
+		tag: 'subject:'+subject+'',
+	};
+	update(subject,row);
+}
+function update_label(that) {
+	let label = that.value;
+	let row = {
+		browser: label,
+		label: label,
+		tag: 'label:'+label+'',
+	};
+	update(label,row);
+}
+
+
+
+function update(theme,row) {
 	let search = encodeURIComponent(row['search']);
 	let browser = encodeURIComponent(row['browser']);
 	let $div = $('#output').empty();
@@ -84,6 +108,12 @@ function update(that) {
 		let tag = encodeURIComponent(row['tag']);
 		add($div, 'Submit', 'Upload Image', 'https://www.geograph.org.uk/submit.php#'+search);
 		add($div, 'Submit', 'Copy from Classic', 'https://www.geograph.org.uk/tags/multitagger.php?simple=1&tag='+tag+'&q='+search+'&onlymine=1');
+	}
+	if (row['label']) {
+		let label = encodeURIComponent(row['label']);
+		add($div, 'Education', 'Viewer', 'https://www.geograph.org.uk/curated/sample.php?group=&label='+label+'&region=&decade=');
+		add($div, 'Education', 'Map', 'https://t0.geograph.org.uk/tile-coveragethumb.png.php?label='+label+'&fudge=3&scale=5');
+		add($div, 'Education', 'Add Images', 'https://www.geograph.org.uk/curated/collecter.php?&label='+label+'&by=myriad');
 	}
 }
 let last = '';
@@ -106,12 +136,36 @@ function add($div, section, title, href) {
 
 <body>
 <form onsubmit="return false">
-<select name=theme onchange="update(this);">
+Theme: <select name=theme onchange="update_theme(this);">
 	<option>Select...</option>
 	<? foreach ($themes as $theme => $row) {
 		printf('<option>%s</option>',$theme);
 	} ?>
+</select><br>
+or Subject: <select name=subject onchange="update_subject(this);">
+	<option>Select...</option>
+	<? $subjects = $db->getCol("SELECT tagtext FROM  tag_stat where tagtext like 'subject:%' and count > 100");
+	foreach ($subjects as $subject) {
+		$bits = explode(':',$subject,2);
+		printf('<option>%s</option>',$bits[1]);
+	} ?>
+</select><br>
+or Topic: <select name=label onchange="update_label(this);">
+	<option>Select...</option>
+
+	<? $labels = $db->getAssoc("SELECT name,label from curated_label  inner join curated1_stat using (label)  where label != '' and examples != '' and images > 10");
+	foreach ($labels as $name => $label) {
+		printf('<option value="%s">%s</option>',$label, $name);
+	} ?>
+
+	<option></option>
+
+	<? $labels = $db->getCol("SELECT label FROM curated1_stat where images > 10");
+	foreach ($labels as $label) {
+		printf('<option>%s</option>',$label);
+	} ?>
 </select>
+
 
 <div id="output">
 
