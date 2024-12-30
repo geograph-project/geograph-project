@@ -49,7 +49,7 @@ exit;
 $themes = array(
 	//'Castles' => array('search'=>'','browser'=>'','gridref'=>''),
 	'Castles' => array('search'=>'Castle','browser'=>'Castle','gridref'=>''),
-	'Geographical Interest' => array('search'=>'[top:Geological Interest]','browser'=>'[top:Geological Interest]','gridref'=>''),
+	'Geological Interest' => array('search'=>'[top:Geological Interest]','browser'=>'[top:Geological Interest]','gridref'=>''),
 );
 
 #############################################
@@ -75,7 +75,7 @@ function update(that) {
 	if (row['search']) {
 		add($div, 'Search', 'Search', 'https://www.geograph.org.uk/of/'+search);
 		add($div, 'Collections','About '+theme, 'https://www.geograph.org.uk/content/?q='+search);
-		add($div, 'Statistics','Image Leaderboard', 'https://www.geograph.org.uk/statistics/groupby.php?distinct=takendays&groupby=auser_id&q='+search+'&ri=0&less=on&more=on');
+		add($div, 'Statistics','Image Leaderboard', 'https://www.geograph.org.uk/statistics/groupby.php?distinct=takendays&groupby=auser_id&q='+search+'&ri=0&less=on&more=on#reportlist');
 	}
 }
 let last = '';
