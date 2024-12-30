@@ -71,9 +71,11 @@ function update(that) {
 	if (row['browser']) {
 		add($div, 'Browser','Thumbnails', 'https://www.geograph.org.uk/browser/#!/q='+browser);
 		add($div, 'Browser','Coverage Map', 'https://www.geograph.org.uk/browser/#!/q='+browser+'/display=map_dots');
+		add($div, 'Browser','By County', 'https://www.geograph.org.uk/browser/#!/q='+browser+'/display=group/group=county/n=4/gorder=alpha%20asc');
 	}
 	if (row['search']) {
 		add($div, 'Search', 'Search', 'https://www.geograph.org.uk/of/'+search);
+		add($div, 'Search', 'GeoRiver', 'https://www.geograph.org.uk/search.php?searchtext='+search+'&orderby=sequence&displayclass=black&do=1')'
 		add($div, 'Collections','About '+theme, 'https://www.geograph.org.uk/content/?q='+search);
 		add($div, 'Statistics','Image Leaderboard', 'https://www.geograph.org.uk/statistics/groupby.php?distinct=takendays&groupby=auser_id&q='+search+'&ri=0&less=on&more=on#reportlist');
 	}
