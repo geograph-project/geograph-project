@@ -48,8 +48,8 @@ exit;
 //probably easier to define in PHP (so that later can convert to database)
 $themes = array(
 	//'Castles' => array('search'=>'','browser'=>'','gridref'=>''),
-	'Castles' => array('search'=>'Castle','browser'=>'Castle','gridref'=>''),
-	'Geological Interest' => array('search'=>'[top:Geological Interest]','browser'=>'[top:Geological Interest]','gridref'=>''),
+	'Castles' => array('search'=>'Castle','browser'=>'Castle','gridref'=>'','tag'=>'Castle'),
+	'Geological Interest' => array('search'=>'[top:Geological Interest]','browser'=>'[top:Geological Interest]','gridref'=>'','tag'=>'top:Geological Interest'),
 );
 
 #############################################
@@ -76,6 +76,11 @@ function update(that) {
 		add($div, 'Search', 'Search', 'https://www.geograph.org.uk/of/'+search);
 		add($div, 'Collections','About '+theme, 'https://www.geograph.org.uk/content/?q='+search);
 		add($div, 'Statistics','Image Leaderboard', 'https://www.geograph.org.uk/statistics/groupby.php?distinct=takendays&groupby=auser_id&q='+search+'&ri=0&less=on&more=on#reportlist');
+	}
+	if (row['tag']) {
+		let tag = encodeURIComponent(row['tag']);
+		add($div, 'Submit', 'Upload Image', 'https://www.geograph.org.uk/submit.php#'+search);
+		add($div, 'Submit', 'Copy from Classic', 'https://www.geograph.org.uk/tags/multitagger.php?simple=1&tag='+tag+'&q='+search+'&onlymine=1');
 	}
 }
 let last = '';
