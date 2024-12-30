@@ -32,7 +32,7 @@ $USER->mustHavePerm("basic");
 
 if (empty($_GET) && empty($_POST)) {
 ?>
-<title>content grouper</title>
+<title>Themes</title>
 <frameset cols="250,*">
 <frame src="/themes.php?sidebar=1">
 <frame src="about:blank" name="mainframe">
@@ -99,9 +99,13 @@ function update(theme,row) {
 		add($div, 'Browser','By County', 'https://www.geograph.org.uk/browser/#!/q='+browser+'/display=group/group=county/n=4/gorder=alpha%20asc');
 	}
 	if (row['search']) {
+		let simple = search;
+		if (m = row['search'].match(/\[\w+:([^\]]+)\]/)) {
+			simple = encodeURIComponent(m[1]);
+		}
 		add($div, 'Search', 'Search', 'https://www.geograph.org.uk/of/'+search);
 		add($div, 'Search', 'GeoRiver', 'https://www.geograph.org.uk/search.php?searchtext='+search+'&orderby=sequence&displayclass=black&do=1');
-		add($div, 'Collections','About '+theme, 'https://www.geograph.org.uk/content/?q='+search);
+		add($div, 'Collections','About '+theme, 'https://www.geograph.org.uk/content/?q='+simple);
 		add($div, 'Statistics','Image Leaderboard', 'https://www.geograph.org.uk/statistics/groupby.php?distinct=takendays&groupby=auser_id&q='+search+'&ri=0&less=on&more=on#reportlist');
 	}
 	if (row['tag']) {
