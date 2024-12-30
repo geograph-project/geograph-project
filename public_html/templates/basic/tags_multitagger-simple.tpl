@@ -37,6 +37,7 @@
 
 {if $images}
 	<br><br>
+	Tick the box(es) against the image(s) you wish to add the [{$thetag|escape:'html'}] tag to. Tick as few or as many as apply.
 	<form method="post" id="resultForm">
 		{foreach from=$images item=image}
 			 <div style="border-top: 1px solid lightgrey; padding-top:1px;" id="result{$image->gridimage_id}">
