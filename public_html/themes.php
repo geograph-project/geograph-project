@@ -94,7 +94,7 @@ function update(theme,row) {
 	let browser = encodeURIComponent(row['browser']);
 	let $div = $('#output').empty();
 	if (row['browser']) {
-		add($div, 'Browser','Thumbnails', 'https://www.geograph.org.uk/browser/#!/q='+browser);
+		add($div, 'Browser','Thumbnails', 'https://www.geograph.org.uk/browser/#!/q='+browser+'/display=plus'); //need display, so that it changes from map view!
 		add($div, 'Browser','Coverage Map', 'https://www.geograph.org.uk/browser/#!/q='+browser+'/display=map_dots');
 		add($div, 'Browser','By County', 'https://www.geograph.org.uk/browser/#!/q='+browser+'/display=group/group=county/n=4/gorder=alpha%20asc');
 	}
@@ -112,7 +112,7 @@ function update(theme,row) {
 	if (row['label']) {
 		let label = encodeURIComponent(row['label']);
 		add($div, 'Education', 'Viewer', 'https://www.geograph.org.uk/curated/sample.php?group=&label='+label+'&region=&decade=');
-		add($div, 'Education', 'Map', 'https://t0.geograph.org.uk/tile-coveragethumb.png.php?label='+label+'&fudge=3&scale=5');
+		add($div, 'Education', 'Map', 'https://www.geograph.org.uk/tile-coveragethumb.png.php?label='+label+'&fudge=3&scale=5');
 		add($div, 'Education', 'Add Images', 'https://www.geograph.org.uk/curated/collecter.php?&label='+label+'&by=myriad');
 	}
 }
