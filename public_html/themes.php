@@ -50,6 +50,7 @@ $themes = array(
 	//'Castles' => array('search'=>'','browser'=>'','gridref'=>''),
 	'Castles' => array('search'=>'Castle','browser'=>'Castle','gridref'=>'','tag'=>'Castle'),
 	'Geological Interest' => array('search'=>'[top:Geological Interest]','browser'=>'[top:Geological Interest]','gridref'=>'','tag'=>'top:Geological Interest'),
+	'Sea Walls' => array('search'=>'"Sea Walls"','browser'=>'"Sea Walls"')
 );
 
 #############################################
