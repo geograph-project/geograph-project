@@ -93,7 +93,7 @@ if (!empty($_GET['choose'])) {
 	print "</ul>";
 	print "Can also get a <a href='?alltime=1'>All Time Selection</a> - also available in <a href='your-year-shard.php?alltime=1'>Alternative</a> version (and <a href='/mapper/quick.php?q=user$user_id'>map</a>).";
 
-	print "<p>These selections created, ".$db->getOne("select date(UPDATE_TIME) from information_schema.tables where table_name = 'year_review'")." (except the original 2013 selection, which isnt updated)</p>";
+	print "<p>Selections last updated: ".$db->getOne("select date(UPDATE_TIME) from information_schema.tables where table_name = 'year_review' and table_schema = DATABASE()")." (except the original 2013 selection, which isnt updated)</p>";
 
 	print "<hr/>";
 	print "Can also get a <a href='/browser/#!/q=user$user_id/display=group/group=takenyear/n=10/gorder=alpha%20desc/sort=score'>yearly breakdown via the browser</a>,";
