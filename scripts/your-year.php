@@ -3,7 +3,8 @@
 //these are the arguments we expect
 $param=array(
 	'build' => 1,
-	'year' => date('Y')-1
+	'year' => date('Y')-1,
+	'years' => false,
 );
 
 $HELP = <<<ENDHELP
@@ -18,6 +19,17 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 set_time_limit(3600*24);
 
+
+#####################
+
+if (!empty($param['years'])) {
+	foreach(range(date('Y'),date('Y')-$param['years']) as $year) {
+		//def dont add build=2 as would erase each time
+		$cmd = "php {$argv[0]} --config={$param['config']} --year=$year";
+		print "$cmd\n";
+	}
+	exit;
+}
 
 #####################
 
