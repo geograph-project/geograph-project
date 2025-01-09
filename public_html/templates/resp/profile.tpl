@@ -504,7 +504,7 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 			{/if}
 
 			{if !$seperator || $image->moderation_status eq "rejected"}
-				{$seperator} {if $image->moderation_status eq "accepted"}<i style=color:gray>not yet allocated</i>{else}{$image->moderation_status|ucfirst}{/if}
+				{$seperator} {$image->moderation_status|ucfirst}
 			{/if}
 		</td>
 		<td data-title="Points">
