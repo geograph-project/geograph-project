@@ -54,6 +54,8 @@ if (!empty($param['rebuild'])) {
         fwrite(STDERR,date('H:i:s ')."Dropping tables\n");
 	$sqls[] = "DROP TABLE IF EXISTS sphinx_tags";
 	$sqls[] = "DROP TABLE IF EXISTS sphinx_terms";
+	//we DONT drop the sphinx_placenames, as dont typically need to regenerate it
+	//... the delta script can update it!
 
         foreach ($sqls as $sql) {
                 fwrite(STDERR,date('H:i:s ')." $sql\n\n");
@@ -62,6 +64,7 @@ if (!empty($param['rebuild'])) {
 }
 
 #####################################################
+//build the sphinx_tags table
 
 if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 	$sqls = array();
@@ -97,7 +100,8 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 		$db->Execute($sql);
 	}
 
-	#####################################################
+#####################################################
+//add add fake subject tags
 
 	$sqls = array();
 
@@ -147,6 +151,7 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_tags'")) {
 }
 
 #####################################################
+//build the sphinx_terms table
 
 if (!$db->getOne("SHOW TABLES LIKE 'sphinx_terms'")) {
 	$sqls = array();
@@ -189,6 +194,7 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_terms'")) {
 }
 
 #####################################################
+//build the sphinx_placenames table
 
 if (!$db->getOne("SHOW TABLES LIKE 'sphinx_placenames'")) {
 
@@ -280,12 +286,29 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_placenames'")) {
 }
 
 #####################################################
+// if we rebuild the above tables, should trigger recreation of the main indexes!
+
+if (!empty($param['rebuild'])) {
+	//14 day, so only finds 'active' indexes (eg might have downscaled)
+	//but 1 hour, as no point rediring 8E anyway
+	$sql = "UPDATE sph_server_index SET triggered = 1 WHERE index_name like 'sample8%' and last_indexed > date_sub(now(),interval 14 day) and last_indexed < date_sub(now(),interval 1 hour)";
+
+        fwrite(STDERR,date('H:i:s ')." $sql\n\n");
+        $db->Execute($sql);
+}
+
+#####################################################
+// below is/was an experiement, at creating a mysql VIEW to mimik the sphinx index (also useful to test the above tables!)
+// but this isnt used, other for testing, so not run automatically.
 
 if (empty($param['schema']) && empty($param['view'])) {
         fwrite(STDERR,date('H:i:s ')."ALL DONE\n");
 	exit();
 }
 
+
+//this statement, should match the query in sphinx.conf.d/sample6.conf 
+// ... but it may not be maintained, and now outed
 $sql = "
 SELECT 
 	gi.gridimage_id AS id, 
@@ -358,6 +381,7 @@ FROM gridimage_search gi
 
 
 ####################################################
+// create a fake view
 
 if (!empty($param['view'])) {
 	if ($param['view'] > 1) {
@@ -374,6 +398,7 @@ if (!empty($param['view'])) {
 }
 
 ####################################################
+// create schema for a plain table (was originally used to create the large index)
 
 fwrite(STDERR,date('H:i:s ')."Getting Schema...\n");
 

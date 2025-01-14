@@ -46,6 +46,7 @@ $db->Execute("INSERT INTO event_log SET
 
 $status = $db->getAssoc("SHOW TABLE STATUS LIKE 'sphinx_%'");
 
+// build the sph_delta_ids table
 if (isset($status['sphinx_tags'])) {
 
 	$sqls = array();
@@ -86,6 +87,7 @@ $db->Execute("DROP TABLE IF EXISTS sph_delta_ids");
 
 #####################################################
 
+//rebuild sphinx_tags
 if (isset($status['sphinx_tags'])) {
 
 	#####################################################
@@ -173,6 +175,7 @@ if (isset($status['sphinx_tags'])) {
 
 #####################################################
 
+//rebuild sphinx_terms
 if (isset($status['sphinx_terms'])) {
 
 	$db->Execute("DROP TABLE IF EXISTS sphinx_terms_tmp");
@@ -223,6 +226,7 @@ if (isset($status['sphinx_terms'])) {
 
 #####################################################
 
+//rebuild sphinx_placenames (technically just updates some columns in existing table
 if (isset($status['sphinx_placename'])) {
 
   $sqls = array();
