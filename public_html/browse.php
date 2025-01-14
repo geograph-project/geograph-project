@@ -622,7 +622,7 @@ $sql = "SELECT $columns,serial,same_serial FROM gridimage_search LEFT JOIN dupli
 			$breakdowns[] = array('type'=>'submittedyear','name'=>'Year Submitted','count'=>$row['submittedyear'].' Years');
 
 			if (@$square->last_grouped > '2000') {
-				$c = $db->getOne("select count(distinct label) from gridimage_group_stat where grid_reference = '{$square->grid_reference}'");
+				$c = $db->getOne("select count(distinct label) from gridimage_group_stat where grid_reference = '{$square->grid_reference}' and label NOT like '% #'");
 				if ($c > 1) {
 					array_unshift($breakdowns,array('type'=>'cluster','name'=>'Automatic Cluster','count'=>$c.' Groups'));
 				}
@@ -704,6 +704,7 @@ $sql = "SELECT $columns,serial,same_serial FROM gridimage_search LEFT JOIN dupli
 				FROM gridimage gi $gridimage_join
 				INNER JOIN gridimage_group gg ON (gi.gridimage_id = gg.gridimage_id)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND label NOT like '% #'
 				AND $user_crit $custom_where
 				GROUP BY label");
 				$start = rand(0,max(0,count($all)-20));

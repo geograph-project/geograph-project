@@ -156,8 +156,8 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_terms'")) {
 	$sqls[] = "DROP TABLE IF EXISTS sphinx_terms";
 	$sql = "
 			SELECT m.gridimage_id,
-				GROUP_CONCAT(DISTINCT label ORDER BY CRC32(label) SEPARATOR ';') AS groups,
-				GROUP_CONCAT(DISTINCT CRC32(label) ORDER BY CRC32(label) SEPARATOR ',') AS group_ids,
+				GROUP_CONCAT(DISTINCT label ORDER BY CRC32(CONCAT(m.grid_reference,label)) SEPARATOR ';') AS groups,
+				GROUP_CONCAT(DISTINCT CRC32(CONCAT(m.grid_reference,label)) ORDER BY CRC32(CONCAT(m.grid_reference,label)) SEPARATOR ',') AS group_ids,
 				GROUP_CONCAT(DISTINCT term ORDER BY CRC32(term) SEPARATOR ';') AS terms,
 				GROUP_CONCAT(DISTINCT CRC32(term) ORDER BY CRC32(term) SEPARATOR ',') AS term_ids,
 				GROUP_CONCAT(DISTINCT s.title ORDER BY snippet_id SEPARATOR ';') AS snippets,
@@ -165,7 +165,7 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_terms'")) {
 				GROUP_CONCAT(DISTINCT REPLACE(w.tag,'_',' ') ORDER BY CRC32(w.tag) SEPARATOR ';') AS wikis,
 				GROUP_CONCAT(DISTINCT CRC32(w.tag) ORDER BY CRC32(w.tag) SEPARATOR ',') AS wiki_ids
 			FROM gridimage_search m
-				LEFT JOIN gridimage_group g ON (g.gridimage_id = m.gridimage_id AND label NOT LIKE '%other%')
+				LEFT JOIN gridimage_group g ON (g.gridimage_id = m.gridimage_id AND label NOT LIKE '%other%' AND g.source = 'carrot2')
 				LEFT JOIN gridimage_term t ON (t.gridimage_id = m.gridimage_id)
 				LEFT JOIN gridimage_snippet gs ON (gs.gridimage_id = m.gridimage_id) LEFT JOIN snippet s USING (snippet_id)
 				LEFT JOIN gridimage_wiki w ON (w.gridimage_id = m.gridimage_id)
