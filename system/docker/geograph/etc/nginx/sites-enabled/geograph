@@ -2309,6 +2309,16 @@ server {
 
   root /var/www/geograph/public_html;
 
+  ###################################
+
+  ##blocking cloud providers - these do a lot of scraping!
+  ## this is using from the 'geo' block
+  if ($not_allowed) {
+    return 403 "";
+  }
+
+  ###################################
+
   if ($http_host ~ staging) {		rewrite ^/robots.txt /robots-staging.txt last;  }
   if ($http_host ~ dev) {		rewrite ^/robots.txt /robots-staging.txt last;  }
 
@@ -2422,10 +2432,9 @@ server {
   ###################################
 
   ##blocking cloud providers - these do a lot of scraping!
-  location / {
-        if ($not_allowed) {
-            return 403 "";
-        }
+  ## this is using from the 'geo' block
+  if ($not_allowed) {
+    return 403 "";
   }
 
   ###################################
