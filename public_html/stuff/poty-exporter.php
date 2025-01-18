@@ -44,7 +44,7 @@ $ids[] = 17;
 if (!empty($_GET['archive']))
 	$ids[] = 7;
 
-$sql = "select t.forum_id,topic_id,topic_title,topic_time,post_id,seq_id,type,gridimage_id,user_id,realname,title
+$sql = "select t.forum_id,topic_id,topic_title,topic_time,post_id,seq_id,type,gridimage_id,user_id,realname,title,wgs84_lat,wgs84_long,grid_reference,imagetaken
 from gridimage_post gp inner join geobb_topics t using (topic_id) left join gridimage_search using (gridimage_id) where t.forum_id in (".implode(',',$ids).")";
 
 if (!empty($_GET['sample']))
