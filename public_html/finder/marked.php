@@ -63,4 +63,6 @@ if (isset($_COOKIE['markedImages']) && !empty($_COOKIE['markedImages'])) {
 
 $smarty->display($template, $cacheid);
 
+// This tries to force the page to reload, when user presses back, mimicking the old behaviour of Cache-Control:no-store which no longer works for BFCache
+enforceNoStoreBFCache();
 

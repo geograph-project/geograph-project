@@ -760,6 +760,10 @@ else
 
 $smarty->display($template, $cacheid);
 
+// This tries to force the page to reload, when user presses back, mimicking the old behaviour of Cache-Control:no-store which no longer works for BFCache
+enforceNoStoreBFCache();
+
+
 function smarty_function_votestars($params) {
     global $CONF;
     static $last;

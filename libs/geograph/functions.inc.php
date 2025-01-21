@@ -1068,6 +1068,35 @@ function customExpiresHeader($diff,$public = false,$overwrite = false) {
 	//	header("Cache-Control: public",false);
 }
 
+/* Historically browsers, would take Cache-Control: no-store, to mean dont cache the page - incluuding when navigating back/forward
+... in early 2025, Chrome started ignoring "no-store" and caching pages anyway. Which broke some functionality around the site (eg red-dots wouldnt update)
+... this function adds code to 'force' the page to reload, if loaded from 'bfcache' - restoring how 'no-store' worked.
+... use on pages consider high priority to reload automatically on 'back' navigation. */
+function enforceNoStoreBFCache() {
+	$nostore = false;
+	foreach (headers_list() as $value) {
+		if (preg_match('/^cache-control:.*(no-store)/i',$value))
+			$nostore = true;
+	}
+	//only do this if no-store is present in header (either added, by customNoCacheHeader, or auto-session_cache_limiter etc)
+	if ($nostore) {
+		print "\n<script>
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted) {
+    // Page was restored from bfcache, force reload (so mimiking behavior proir to bfcache)
+    if (window.location.replace) {
+      //in theory, this is closer to reloading the page, without reloading resources
+      window.location.replace(window.location.href);
+    } else {
+      history.reload();
+    }
+  }
+});
+</script>\n";
+	}
+}
+
+
 function getEncoding() {
 	global $encoding;
 	if (false && !empty($_SERVER['HTTP_ACCEPT_ENCODING'])) {

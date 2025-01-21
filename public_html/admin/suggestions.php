@@ -412,3 +412,5 @@ $template = (!empty($_GET['sidebar']))?'admin_suggestions_sidebar.tpl':'admin_su
 $smarty->display($template);
 
 
+// This tries to force the page to reload, when user presses back, mimicking the old behaviour of Cache-Control:no-store which no longer works for BFCache
+enforceNoStoreBFCache();

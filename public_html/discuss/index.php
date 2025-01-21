@@ -574,6 +574,10 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 if(isset($includeFooter)) include($includeFooter); else echo ParseTpl(makeUp('main_footer'));
 
 
+//The forums use the Geograph default of 'Cache-Control:no-store' to make sure pages always updated
+// this got broke with a Chrome update, so need to specifically add code to reload the page (rather than using from cache)
+enforceNoStoreBFCache();
+
 //the forum doesnt use smarty to render template, so need to call this directly.
 recordVisitor();
 

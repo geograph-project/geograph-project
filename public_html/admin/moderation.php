@@ -537,6 +537,8 @@ $_SESSION['second'] = true;
 
 $smarty->display('admin_moderation.tpl',$style);
 
+// This tries to force the page to reload, when user presses back, mimicking the old behaviour of Cache-Control:no-store which no longer works for BFCache
+enforceNoStoreBFCache();
 
 
 
