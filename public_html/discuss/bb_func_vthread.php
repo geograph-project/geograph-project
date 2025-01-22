@@ -346,12 +346,12 @@ if ($logged_admin==1 or $isMod==1) {
 
 $moveTopic="<div class=forum-button-move><a href=\"{$main_url}/{$indexphp}action=movetopic&amp;forum=$forum&amp;topic=$topic&amp;page=$page\">$l_moveTopic</a></div>";
 
-if ($topicStatus==0) { $chstat=1; $cT=$l_closeTopic; $cTc=close; }
-else { $chstat=0; $cT=$l_unlockTopic; $cTc=unlock;  }
+if ($topicStatus==0) { $chstat=1; $cT=$l_closeTopic; $cTc="close"; }
+else { $chstat=0; $cT=$l_unlockTopic; $cTc="unlock";  }
 $closeTopic="<div class=forum-button-$cTc><a href=\"{$main_url}/{$indexphp}action=locktopic&amp;forum=$forum&amp;topic=$topic&amp;chstat=$chstat\">$cT</a></div>";
 
-if ($topicSticky==0) { $chstat=1; $cT=$l_makeSticky; $cTc=sticky; }
-else { $chstat=0; $cT=$l_makeUnsticky; $cTc=unsticky; }
+if ($topicSticky==0) { $chstat=1; $cT=$l_makeSticky; $cTc="sticky"; }
+else { $chstat=0; $cT=$l_makeUnsticky; $cTc="unsticky"; }
 $stickyTopic="<div class=forum-button-$cTc><a href=\"{$main_url}/{$indexphp}action=unsticky&amp;forum=$forum&amp;topic=$topic&amp;chstat=$chstat\">$cT</a></div>";
 
 $extra=1;
