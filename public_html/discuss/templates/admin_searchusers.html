@@ -1,29 +1,47 @@
-<div align=center>
+<div style="max-width:100ch">
+<h2>Admin: Search users</h2>
+
 <form action="{$bb_admin}" method=get name=searchForm>
-<table class=tbTransparent>
-<tr>
-<td class=tbTransparent>
 {$warning}
+
+
 <br>
-<span class=txtSm><b>{$pageNav}</b></span>
-<br><br>
 <input type=hidden name=action value=searchusers2>
-<input type=text name=whatus size=25 maxlength=30 class=textForm value="{$whatus}">
-<br><br>
-{$whatDropDown}
-<br><br>
-<input type=submit value="{$l_searchUsers}" class=inputButton>
-<br><br>
+  
+  
+<h3>Search what?</h3>
 
-<ul>
+{$whatDropDown}
+<br> 
+
+<h3>Search term</h3>
+<input type=text name=whatus size=25 maxlength=30 value="{$whatus}">
+
+<input type=submit value="{$l_searchUsers}">
+<br><br>
+  
+
+{$pageNav}
+<br/><br/>
+
+<table class="report width700 sortable" id="photolist" style="clear:none;background-color:white;position:relative">
+	<thead><tr style="position:sticky;top:0; color:yellow;">
+		<th sorted="asc">UID</td>
+		<th>Name</td>
+		<th>Registration date</td>
+		<th>Email</td>
+		<th>Latest reply</td>
+	</tr></thead>
+	<tbody>
+
 {$Results}
-</ul>
+
+	</tbody>
+</table>
 
 <br>
-<span class=txtSm><b>{$pageNav}</b></span>
-</td>
-</tr>
-</table>
+{$pageNav}
+
 </form>
 </div>
 

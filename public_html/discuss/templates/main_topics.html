@@ -8,85 +8,73 @@ return false;
 //-->
 </script>
 
-<div align=center>
 
-<table class=forums>
-<tr>
-<td width=25 class=caption3 align=center><img src="{$static_url}/img/!pix.gif" width=4 height=1 alt=""><img src="{$static_url}/img/forum_icons/{$forumIcon}" width=16 height=16 alt=""><img src="{$static_url}/img/!pix.gif" width=5 height=1 alt=""></td>
-<td valign=top class=caption3><b><a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b>{$forumName}</b></td>
-<td align=right valign=top width="40%" class=caption3><span class=txtSm>{$l_sortedBy}&nbsp;{$sortedByT}.&nbsp;<a title="Change sort order" href="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}&amp;sortBy={$sortByNew}">{$l_sortBy}&nbsp;{$sortByT}</a></span></td>
-</tr>
-</table>
-{$forumDesc}
-<table class=tbTransparent>
-<tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
-</table>
+<div class="forum-topics-grid">
 
-<table class=forums>
-<tr>
-<td width="25" class=caption4><img src="{$static_url}/img/!pix.gif" width=25 height=1 alt=""></td>
-<td width="70%" class=caption4>{$l_topic}</td>
-<td width="40" align=center class=caption4>{$l_replies}</td>
-<td width="40" align=center class=caption4>&nbsp;{$l_views}&nbsp;</td>
-<td width="15%" align=center class=caption4>{$l_author}</td>
-<td width="15%" align=center class=caption4>{$l_lastAuthor}</td>
-</tr>
+<div class="forum-topics-topic">{$forumName}</div>
+<div class="forum-topics-breadcrumbs"><a title="Forum Listing" href="{$main_url}/{$indexphp}">{$sitename}</a> | {$forumName}&nbsp;<img src="img/forum_icons/{$forumIcon}" class="forum-icons" alt=""></div>
+<div class="forum-topics-description">{$forumDesc}</div>
+<div class="forum-topics-sorting">{$l_sortedBy}&nbsp;{$sortedByT}<br/><a title="Change sort order" href="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}&amp;sortBy={$sortByNew}">{$l_sortBy}&nbsp;{$sortByT}</a></div>
+<div class="forum-topics-pages">{$pageNav}</div>
 
+</div>
+
+<div class="forum-thread-grid" style="background:#000066; color: white;">
+
+<div class="forum-thread-icon"></div>
+<div class="forum-thread-topic">{$l_topic}</div>
+<div class="forum-thread-pages"></div>
+<div class="forum-thread-views">{$l_views}</div>
+<div class="forum-thread-replies">{$l_replies}</div>
+<div class="forum-thread-author">{$l_author}</div>
+<div class="forum-thread-lastpost">{$l_lastAuthor}</div>
+
+</div>
+
+
+  
 {$list_topics}
 
-</table>
-
-<table class=tbTransparent>
-<tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
-</table>
-
+  
+<br/>
+<b>{$pageNav}</b>
+<br style="clear:both;"/><br/>
 <a name=newtopic></a>
+<div class="forum-warning-grid" style="background-color:yellow">
+<div class="forum-warning-icon">&#x26A0;</div>
+<div class="forum-warning-message">If you have a problem with the layout of the website on www.geograph.org.uk, please use this thread:<ul><li><a href="/discuss/?action=vthread&forum=4&topic=33205">Feedback/Issues with the New Site Design</a></li></ul></div>
+</div>
+<br style="clear:both"/>
+
 <form action="{$main_url}/{$indexphp}" name=postMsg method=post class=formStyle>
-<table class=forums>
-<tr>
-<td class=caption2>{$l_new_topic}</td>
-</tr>
-<tr>
-<td class="caption5">
+
+<div class="forum-topics-newtopic">{$l_new_topic}</div>  
+
 <input type="hidden" name="action" value="ptopic"/>
 <input type="hidden" name="forum" value="{$forum}"/>
-<label for="topicTitle">Topic Title</label> <input type="text" id="topicTitle" name="topicTitle" size="30" maxlength="100" class="textForm" tabindex="1" style="width:400px;" value="{$gridref}" required spellcheck="true"/>
-</td>
-</tr>
 
-<tr>
-<td class=caption3 style="background-color:yellow; font-size:1em; line-height:1.2em;">
-<img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="20" height="20" align="left" style="margin-right:5px"/>
-If have a problem is with the layout of the website on www.geograph.org.uk, please use this thread: <a href="/discuss/?action=vthread&forum=4&topic=33205">Feedback/Issues with the New Site Design</a>
-</td>
-</tr>
-
+<div>
+<div class="forum-post-reply-header">Topic title<label for="topicTitle" style="display:none;">Topic Title</label></div>  
+<input type="text" id="topicTitle" name="topicTitle" size="30" maxlength="100" value="{$gridref}" required spellcheck="true" style="padding: 8px; width:100%; max-width:100%; box-sizing: border-box;"/>
+</div>
+  
+  
 {$mainPostForm}
-
-<tr>
-<td class=caption5>
-<INPUT TYPE=SUBMIT VALUE="{$l_sub_post_tpc}" class=inputButton tabindex=5 ONCLICK="return checkHotlink(this.form)">
-<input type=button value="Preview" class=inputButton onClick="prevThis();">
-</td>
-</tr>
-</table>
+<div class="forum-post-reply-buttons">
+<INPUT TYPE=RESET class="forum-post-reply-reset" onclick="return confirm('Are you sure you wish to discard the post?')">
+<input type=button value="Preview" class="forum-post-reply-preview" onClick="prevThis();">
+<INPUT TYPE=SUBMIT VALUE="{$l_sub_post_msg}" class="forum-post-reply-submit" tabindex=55 ONCLICK="return checkHotlink(this.form)">
+&nbsp;</div>
 <br>
 </form>
-</div>
-
-<div align=center>
-<table class=forums>
-<tr>
-<td class=caption3>
 
 {$forumsList}
+<!--Hides submit button if Javascript working from above ForumsList-->
+<script>
+document.getElementById('smtButton').style.display = 'none';
+</script>
 
-</td>
-</tr>
-</table>
-</div>
-
-<p align=right><a title="RSS Feed for this Forum" href="/discuss/syndicator.php?forum={$forum}" class="xml-rss">RSS</a></p>
+<div align=right style="float:right"><a title="RSS Feed for this Forum" href="/discuss/syndicator.php?forum={$forum}" class="xml-rss">RSS</a></div>
 
 <script language="JavaScript">
 
@@ -115,7 +103,7 @@ if(document.forms['postMsg'].elements['topicTitle']) tT=document.forms['postMsg'
 else if(document.forms['postMsg'].elements['postTopic']) tT=document.forms['postMsg'].elements['postTopic'].value;
 else tT='';
 if(document.forms['postMsg'].elements['disbbcode'].checked) cT=1; else cT=0;
-window.open('', 'cWin2', 'resizable=yes, scrollbars=yes, width=750, height=300, top=0, left=100');
+window.open('', 'cWin2', 'resizable=yes, scrollbars=yes, width=850, height=400, top=0, left=100');
 document.forms['postMsgPrev'].elements['topicTitle'].value=tT;
 document.forms['postMsgPrev'].elements['postText'].value=pT;
 document.forms['postMsgPrev'].elements['disbbcode'].value=cT;

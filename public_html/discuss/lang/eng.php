@@ -68,7 +68,7 @@ $l_mysql_error='There was a database error. Please report this problem (what you
 
 $l_adminpanel='Admin panel';
 
-$l_fastforumspreview='Fast preview (forums will be ordered this way on the first page):';
+$l_fastforumspreview='Fast preview';
 
 $l_forumUpdated='Forum updated';
 
@@ -102,7 +102,7 @@ $l_sortedBy='Sorted by:';
 
 $l_lastDiscussions='Recent Topics';
 
-$l_topic_closed='This topic is closed. You can`t post a reply.';
+$l_topic_closed='This topic is closed. You can\'t post a reply.';
 
 $l_closeTopic='Lock topic';
 $l_deleteTopic='Delete topic';
@@ -125,7 +125,7 @@ $l_postsDeleted='Replies deleted: ';
 $l_emptyPost='Your post contains empty field, that is incorrect!';
 
 $l_forumIcon='Forum icon';
-$l_forumIconDesc='Forum icons are displayed near forum titles in the forums table. They are placed in "/img/forum_icons" directory. Icon should be .GIF or .JPG with the size of 16x16 pixels. Here you just need to type filename of the image WITHOUT any directory name. For better choose, click on icons <b>on the right side</b> (they all are presented in forum_icons directory). If no image specified, default.gif is loaded.';
+$l_forumIconDesc='Forum icons are displayed alongside the forum name and appear in place of names when the forum list is hidden. Additional icons should be placed in "/img/forum_icons" directory. Icon should be .GIF or .JPG and have equal height and length. Icons will be downsized to a max of 32 pixels wide. All icons in the directory are displayed below, click on the desired icon for the name to be set in the box below. If no image is specified, default.gif is loaded.';
 
 $l_error_addforumicon='Forum was not added, because the following image doesn`t exist: ';
 

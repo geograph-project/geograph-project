@@ -67,11 +67,12 @@ if($handle=@opendir($GLOBALS['pathToFiles'].'img/forum_icons')) {
 $ss=0;
 while (($file=readdir($handle))!==false) {
 if ($file != '.' && $file != '..' and (substr(strtolower($file),-3)=='gif' OR substr(strtolower($file),-3)=='jpg' OR substr(strtolower($file),-4)=='jpeg')) {
-$iconList.="<a href=\"#\" onclick=\"return paste_strinL('{$file}')\" onMouseOver=\"window.status='{$GLOBALS['l_forumIcon']}: {$file}'; return true\"><img src=\"{$GLOBALS['main_url']}/img/forum_icons/{$file}\" border=0 alt=\"{$file}\"></a>&nbsp;&nbsp;";
+$iconList.="<a href=\"#\" onclick=\"return paste_strinL('{$file}')\" onMouseOver=\"window.status='{$GLOBALS['l_forumIcon']}: {$file}'; return true\"><img src=\"{$GLOBALS['main_url']}/img/forum_icons/{$file}\" alt=\"{$file}\" class=\"forum-admin-icons\"></a>&nbsp;&nbsp;";
 $ss++;
 if ($ss==5) {
 $ss=0;
-$iconList.="<br>\n";
+$iconList.="\n";
+//$iconList.="<br>\n"; edited line above from
 }
 }
 }
@@ -127,7 +128,7 @@ include ($pathToFiles."lang/$lang.php");
 
 if($logged_admin==1){
 
-$l_adminpanel_link="<p><a href=\"$bb_admin\">".$l_adminpanel."</a></p>";
+$l_adminpanel_link='<li>Forum Admin<ul><li><a title="MiniBB Admin Panel" href="'.$bb_admin.'">'.$l_adminpanel.'</a></li></ul></li>';
 
 switch ($action) {
 case 'addforum1':
@@ -647,13 +648,13 @@ $topicTitle=$tt[0];
 $listSubs='';
 
 if ($row=db_simpleSelect(0,"$Ts,$Tu","$Ts.id,$Ts.user_id,$Tu.{$dbUserSheme['username'][1]},$Tu.{$dbUserSheme['user_email'][1]}",'topic_id','=',$topic,'','',"$Ts.user_id",'=',"$Tu.$dbUserId")){
-$listSubs="<form action=\"$bb_admin\" method=post class=formStyle><input type=hidden name=action value=\"viewsubs2\">
+$listSubs="<form action=\"$bb_admin\" method=post><input type=hidden name=action value=\"viewsubs2\">
 <input type=hidden name=topic value=\"$topic\">";
 do {
-$listSubs.="<br><input type=checkbox name=selsub[] value={$row[0]}><span class=txtSm><a href=\"{$main_url}/{$indexphp}action=userinfo&user={$row[1]}\">{$row[2]}</a> (<a href=\"mailto:{$row[3]}\">{$row[3]}</a>)</span>\n";
+$listSubs.="<div class=\"forum-admin-subscribed\"><input type=checkbox name=selsub[] value={$row[0]}><a href=\"{$main_url}/{$indexphp}action=userinfo&user={$row[1]}\">{$row[2]}</a> (<a href=\"mailto:{$row[3]}\">{$row[3]}</a>)</div>\n";
 }
 while ($row=db_simpleSelect(1));
-$listSubs.="<p><input type=submit value=\"$l_deletePost\" class=inputButton></form>\n";
+$listSubs.="<p><input type=submit value=\"$l_deletePost\"></form>\n";
 }
 
 $text2=ParseTpl(makeUp('admin_viewsubs'));

@@ -1,6 +1,19 @@
+<!--
 <tr class="{$bg}">
 <td width="5%" valign="middle" class="caption1" align="center"><a href="{$linkToForums}"><img src="{$static_url}/img/forum_icons/{$forum_icon}" width=16 height=16 border=0 alt="{$forum_title}" title="{$forum_title}"/></a></td>
 <td width="75%" class="caption1"><div style="float:right"><input type=checkbox name="show[]" value="{$forum}" title="{$forum_title}" {$checked} onclick="document.getElementById('updaterow').style.display='';"></div><b><a title="View or post in '{$forum_title}'" href="{$linkToForums}">{$forum_title}</a></b><br>{$forum_desc}</td>
 <td align="center" width="10%" class="caption1">{$numTopics}</td>
 <td align="center" width="10%" class="caption1">{$numPosts}</td>
 </tr>
+-->
+
+<div class="forum-forums-grid">
+
+<div class="forum-forums-icon"><a href="{$linkToForums}"><img src="img/forum_icons/{$forum_icon}" class="forum-icons" alt="{$forum_title}" title="{$forum_title}"/></a></div>
+<div class="forum-forums-forum"><a title="View or post in '{$forum_title}'" href="{$linkToForums}">{$forum_title}</a></div>
+<div class="forum-forums-details">{$forum_desc}</div>
+<div class="forum-forums-show"><input type=checkbox name="show[]" value="{$forum}" title="{$forum_title}" {$checked} onclick="document.getElementById('updaterow').style.display='';"></div>
+<div class="forum-forums-topics">{$numTopics} <wbr>&#x1f4da;</div>
+<div class="forum-forums-posts">{$numPosts} <wbr>&#x21a9;</div>
+  
+</div>

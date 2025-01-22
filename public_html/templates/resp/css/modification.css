@@ -62,10 +62,6 @@ div.photo66
 {
   max-width:90%;
 }
-div.photoguide
-{
-  max-width:90%;
-}
 
 /* some general new styling, mainly used for the photo page, overrides stuff in basic.css */
 
@@ -276,4 +272,48 @@ input[type="text"][name="title"] {
 }
 textarea[name="comment"] {
         font-family: Georgia, Verdana, Arial, serif;
+}
+
+
+/*div.photoguide modifications*/
+div.photoguide
+{
+	max-width:90%;
+  width:auto;
+  display: grid;
+  grid-template-areas:
+    'photoguide-inner photoguide-desc';
+  grid-template-rows: max-content;  
+  grid-template-columns: 213px 1fr;
+  grid-row-gap: 2px;
+  grid-column-gap: 5px;
+  margin: 0;
+  margin-bottom: 5px;
+}
+@media all and (max-width: 800px) {
+  div.photoguide {
+  grid-template-areas: 
+    'photoguide-inner'
+    'photoguide-desc';
+  grid-template-rows: max-content max-content;
+  grid-template-columns: 1fr;
+  }
+}
+div.photoguide .inner {
+	float:none;
+  width:auto;
+  grid-area: photoguide-inner;
+}
+div.photoguide .desc {
+	float:none;
+	max-width:90%;
+  width:auto;
+  grid-area: photoguide-desc;
+}
+div.photoguide .sdblock {	
+  font-size: 0.8em;
+}
+div.photoguide .caption {	
+  font-size: 0.8em;
+  margin-bottom: 2px;
 }

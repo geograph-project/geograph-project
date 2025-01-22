@@ -200,7 +200,7 @@ echo ParseTpl(makeUp('protect_forums')); exit;
 if(!isset($logged_admin)) $logged_admin=0;
 
 if ($logged_admin==1) {
-$l_adminpanel_link='<span class=txtNr><a href="'.$bb_admin.'">'.$l_adminpanel.'</a></span><br>';
+$l_adminpanel_link='<li>Forum Admin<ul><li><a title="MiniBB Admin Panel" href="'.$bb_admin.'">'.$l_adminpanel.'</a></li></ul></li>';
 }
 else $l_adminpanel_link='';
 
@@ -329,30 +329,36 @@ elseif($action=='mute') {
 		$filterIds = "($showIds)";
 	}
 	print '<link rel="apple-touch-icon" href="'.$CONF['SELF_HOST'].'/apple-touch-icon.png"/>';
+  print '<link rel="stylesheet" type="text/css" title="Monitor" href="/discuss/bb_default_style.css" media="screen" />';
 
 	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','(muted = 0 OR muted IS NULL) AND forum_id',$filterCrit,$filterIds,$orderBy,1)){
 		if ($cols[9]) {
 			print "<title>Updated Since Last Visit</title>";
 			print '<meta name="viewport" content="width=device-width, user-scalable=no">';
-			print "<b>Updated Since Last Visit</b>";
-			print " - <a href=\"{$main_url}/\">Visit Forum</a>";
+      print "<h1>Geograph Discuss</h1>";
+			print "<div class=\"forum-watch-updated\"><b>Updated Since Last Visit</b>";
+			print " - <a href=\"{$main_url}/\">Visit Forum</a></div>";
 			exit;
 		} elseif (is_null($cols[9])) {
 			print "<title>New Thread Since Last Visit</title>";
 			print '<meta name="viewport" content="width=device-width, user-scalable=no">';
-			print "<b>New Thread Since Last Visit</b>";
-			print " - <a href=\"{$main_url}/\">Visit Forum</a>";
+      print "<h1>Geograph Discuss</h1>";
+			print "<div class=\"forum-watch-newthread\"><b>New Thread Since Last Visit</b>";
+			print " - <a href=\"{$main_url}/\">Visit Forum</a></div>";
 			exit;
 		}
 	}
 	print "<title>Geograph - No new Posts</title>";
+  print '<meta name="viewport" content="width=device-width, user-scalable=no">';
 	$countdown = intval($_GET['countdown']);
 	if ($countdown>1) {
 		$countdown--;
-		print "<META HTTP-EQUIV=\"refresh\" content=\"60;URL={$main_url}/{$indexphp}action=wait&amp;countdown=$countdown\"/>"; 
-		print "<b>No new Posts</b> - will check once a minute, this message will change if something is posted.";
+		print "<META HTTP-EQUIV=\"refresh\" content=\"60;URL={$main_url}/{$indexphp}action=wait&amp;countdown=$countdown\"/>";
+    print "<h1>Geograph Discuss</h1>";
+		print "<div class=\"forum-watch-checking\"><b>No new Posts</b> - will check once a minute, this message will change if something is posted.</div>";
 	} else {
-		print "<b>No new Posts</b> - nothing posted for a while, given up checking. <a href=\"{$main_url}/{$indexphp}action=wait&amp;countdown=100\">Start checking again</a>";
+    print "<h1>Geograph Discuss</h1>";
+		print "<div class=\"forum-watch-finished\"><b>No new Posts</b> - nothing posted for a while, given up checking. <a href=\"{$main_url}/{$indexphp}action=wait&amp;countdown=100\">Start checking again</a></div>";
 	}
 
 	print "<br/><br/><br/><a href=\"/\">homepage</a> | <a href=\"{$main_url}/\">discuss</a>";
@@ -451,10 +457,10 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		echo load_header();
                 print "<div style=\"float:left\"><a href=\"index.php\">Reload</a></div>";
  		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">Watch</a></div>";
-		print "<div style=\"text-align:center\">View <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum=5\">Recent Grid Square Discussions</a></div>";
+		print "<div style=\"text-align:center\"><a href=\"index.php?forums=1\">Show Forum List</a></div>";
 		
 		print "<form style=\"display:inline\">";
-		print "<div class=interestBox style=\"padding:2px;margin-top:4px;vertical-align:middle;font-size:0.8em;background-color:#f9f9f9;width:100%\">";
+		print "<div class=\"forum-forums-compactlist\">";
 		print "<div style=\"float:right;display:none\" id=\"updatebutton\"><input type=submit value=Update /></div> Show:";
 		
 		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id',' NOT IN ','(11,7,20)','forum_order')){
@@ -468,7 +474,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 				
 				print "<input type=checkbox name=\"show[]\" value=\"$forum\" title=\"{$forum_title}\" $checked onclick=\"document.getElementById('updatebutton').style.display='';\">";
 				print "<a href=\"index.php?action=vtopic&amp;forum={$forum}\">";
-				print "<img src=\"{$static_url}/img/forum_icons/{$forum_icon}\" width=16 height=16 border=0 alt=\"{$forum_title}\" title=\"{$forum_title}\"/>";
+				print "<img src=\"img/forum_icons/{$forum_icon}\" class=\"forum-icons\" alt=\"{$forum_title}\" title=\"{$forum_title}\"/>";
 				print "</a>&nbsp;";
 
 
@@ -488,7 +494,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 			$save = false;
 	}
 
-	if ($USER->user_id == 3 || $USER->user_id==93) { // && $GLOBALS['memcache']->valid) {
+	if ($USER->user_id == 3 || $USER->user_id==93 || $USER->user_id==1469) { // && $GLOBALS['memcache']->valid) {
 		$poster_id = $bbdb->getOne("select max(poster_id) from geobb_posts");;
 		$mkey = "forum_first_post:".$USER->user_id;
 		$last_id = $GLOBALS['memcache']->get($mkey);
@@ -518,7 +524,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		} else {
 			if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions'));
 		}
-		print "<div style=\"text-align:center\">Show: ";
+		print "<div class=\"forum-number-recent\">Show: ";
 		foreach (array(5,10,20,30,40,80,100) as $n) {
 			if ($viewlastdiscussions == $n) {
 				print "<b>$n</b> ";
@@ -526,7 +532,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 				print "<a href=\"index.php?latest=$n\">$n</a> ";
 			}
 		}
-		print " Recent Topics</div>";
+		print " topics</div>";
 	}
 }
 else require($pathToFiles.'bb_func_vtopic.php');
