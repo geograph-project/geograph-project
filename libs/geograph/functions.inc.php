@@ -1039,7 +1039,7 @@ function customNoCacheHeader($type = 'nocache',$disable_auto = false) {
 		header("Cache-Control: post-check=0, pre-check=0", false); 
 		header("Pragma: no-cache"); 
 		customExpiresHeader(-1);
-	} 	
+	}
 	if ($disable_auto) {
 		//call to disable the auto session one, could then call another here if needbe
 		session_cache_limiter('none');
@@ -1058,19 +1058,19 @@ function customExpiresHeader($diff,$public = false,$overwrite = false) {
 			header("Pragma:"); //sessions by default set this
 		}
 	} else {
-		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past
 		header("Cache-Control: max-age=0$private",$overwrite);
 	}
-	//via http://redbot.org - 
+	//via http://redbot.org -
 	// Therefore, SSL-protected or HTTP-authenticated (NOT cookie-authenticated) resources may have use for public to improve cacheability, if used judiciously.
 	// However, other responses do not need to contain public ; it does not make the response "more cacheable", and only makes the headers larger.
 	//if ($public)
 	//	header("Cache-Control: public",false);
 }
 
-/* Historically browsers, would take Cache-Control: no-store, to mean dont cache the page - incluuding when navigating back/forward
+/* Historically browsers, would take Cache-Control: no-store, to mean not to cache the page - incluuding when navigating back/forward
 ... in early 2025, Chrome started ignoring "no-store" and caching pages anyway. Which broke some functionality around the site (eg red-dots wouldnt update)
-... this function adds code to 'force' the page to reload, if loaded from 'bfcache' - restoring how 'no-store' worked.
+... this function adds code to 'force' the page to reload, if loaded from 'bfcache' - restoring roughly how 'no-store' worked.
 ... use on pages consider high priority to reload automatically on 'back' navigation. */
 function enforceNoStoreBFCache() {
 	$nostore = false;
@@ -1078,9 +1078,10 @@ function enforceNoStoreBFCache() {
 		if (preg_match('/^cache-control:.*(no-store)/i',$value))
 			$nostore = true;
 	}
-	//only do this if no-store is present in header (either added, by customNoCacheHeader, or auto-session_cache_limiter etc)
+	//only do this if no-store is present in headers (either added, by customNoCacheHeader, or session_cache_limiter etc)
 	if ($nostore) {
 		print "\n<script>
+//this is added because the page has 'Cache-Control:no-store'
 window.addEventListener('pageshow', function(event) {
   if (event.persisted) {
     // Page was restored from bfcache, force reload (so mimiking behavior proir to bfcache)
