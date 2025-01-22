@@ -179,6 +179,25 @@ if (isset($_REQUEST['id']))
 		}
 
                 $image->imagetakenString = getFormattedDate($image->imagetaken);
+
+
+		/////////////////////////
+		// stuff from more.php
+
+                $image->loadTags(true); //want array version to get prefix_stat
+
+		$image->isLandscape(); //quick way to load size!
+
+                $image->altUrl = $image->_getOriginalpath(true,true,'_640x640');
+
+                $image->originalPath = $image->_getOriginalpath(true,false);
+
+		if (empty($filesystem))
+	                $filesystem = GeographFileSystem();
+
+                $image->originalSize = $filesystem->filesize($_SERVER['DOCUMENT_ROOT'].$image->originalPath);
+
+		/////////////////////////
 	}
 	$smarty->assign_by_ref('image', $image);
 	$smarty->assign('tile_host', $CONF['TILE_HOST']);
