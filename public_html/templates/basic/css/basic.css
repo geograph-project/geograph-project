@@ -1132,9 +1132,9 @@ div.map div.inner img
 }
 
 .pageNav {
-	background-color:#DDDDDD;
+	#background-color:#DDDDDD;
 	padding: 5px;
-	font-size: 1.1em;
+	#font-size: 1.1em;
 	margin: 2px;
 }
 

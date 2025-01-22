@@ -17,7 +17,7 @@ $l_usersIPs=$l_usersIPs." ".$postip;
 if ($row=db_simpleSelect(0,$Tp,'DISTINCT poster_name, poster_id','poster_ip','=',$postip,'poster_name')) {
 $listUsers.="<ul>";
 do {
-$star=($row[1]!=0?"<a href=\"{$main_url}/{$indexphp}action=userinfo&user={$row[1]}\">*</a>":"");
+$star=($row[1]!=0?"&nbsp;<a href=\"{$main_url}/{$indexphp}action=userinfo&user={$row[1]}\">(Profile)</a>":"");
 $listUsers.="<li><p>{$row[0]}{$star}";
 }
 while($row=db_simpleSelect(1));

@@ -1,18 +1,16 @@
-<div align=center>
+<div style="max-width:100ch">
+<h2>Admin: Edit forum</h2>
 <form action="{$bb_admin}" method=post class=formStyle>
-<table class=tbTransparent>
-<tr>
-<td class=tbTransparent>
+
 <div class=warning><b>{$warning}</b></div>
-<p><b>{$l_chooseeditforum}:</b></p>
-<select name=forumID class=textForm>
+<h3>{$l_chooseeditforum}</h3>
+<select name=forumID>
 {$forums_to_edit}
 </select>
 <input type=hidden name=action value=editforum2>
-<br><br>
-<input type=submit value="{$l_editforum}" class=inputButton>
-</td>
-</tr>
-</table>
+
+<input type=submit value="{$l_editforum}">
+
 </form>
+<br/><br/><br/>
 </div>

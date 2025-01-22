@@ -1,8 +1,10 @@
-<form action="{$main_url}/{$indexphp}" method=get class=formStyle>
-View Different Forum:
+<div class="forum-dropdown-topics">
+<form action="{$main_url}/{$indexphp}" method="get" class="formStyle">
 <input type=hidden name=action value=vtopic>
-<select name=forum class=selectTxt>
+<select name="forum" onchange="this.form.submit()">
+<option value="1" style="background-color:#000066; color:#FFFFFF;">View another forum...</option>
 {$listForums}
 </select>
-<input type=submit value="{$l_chooseForum}" class=inputButton>
+<input type=submit value="{$l_chooseForum}" id="smtButton">
 </form>
+</div>
