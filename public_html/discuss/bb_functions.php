@@ -135,10 +135,10 @@ function pageNav($page,$numRows,$url,$viewMax,$navCell){
 		$end=$iVal;
 		if(!$navCell || true) $start=0; else $start=1; //always start at page 1 (in theoyr cound start with page 2)
 		if($page>0&&!$navCell) $pageNav.=' <a href="'.$url.($page-1).$mr.'" class="pageNav">&lt;&lt; Prev</a>';
-		if($navCell&&$end>4){ $end=3;$pageNav.=' '; }
-		elseif($page<9&&$end>9){ $end=9;$pageNav.=' '; }
-		elseif($page>=9&&$end>9){
-			$start=intval($page/9)*9-1;$end=$start+10;
+		if($navCell&&$end>3){ $end=2;$pageNav.=' '; }
+		elseif($page<4&&$end>4){ $end=4;$pageNav.=' '; }
+		elseif($page>=4&&$end>4){
+			$start=intval($page/4)*4-1;$end=$start+5;
 			if($end>$iVal) $end=$iVal;
 			$pageNav.=' <a href="'.$url.'0'.$mr.'" class="pageNav">1</a> ...';
 		}
@@ -151,8 +151,8 @@ function pageNav($page,$numRows,$url,$viewMax,$navCell){
 					$pageNav.=' - <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">Last</a> ';
 			}
 		}
-		if((($navCell&&$iVal>4)||($iVal>9&&$start<=$iVal-10))){
-			if($navCell&&$iVal<6); else $pageNav.='..';
+		if((($navCell&&$iVal>3)||($iVal>4&&$start<=$iVal-5))){
+			if($navCell&&$iVal<5); else $pageNav.='..';
 			for($n=$iVal-1;$n<=$iVal;$n++){
 				if($n>=$i) {
 					$pageNav.=' <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">'.($n+1).'</a> ';
