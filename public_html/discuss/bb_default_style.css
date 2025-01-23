@@ -255,9 +255,10 @@ table.forums div.photoguide {
 
 
 /*Forum responsive layout - dsp 2024*/
+
 @media only screen and (max-width: 712px) {
 input#search_toggle:checked ~ #search_block {
-min-height:initial !important;
+  min-height:initial !important;
 }
 }
 
@@ -301,6 +302,7 @@ img.forum-icons {
   grid-column-gap: 5px;
   margin: 0;
   width: 100%;
+  #border: solid orangered;
 }
 
 @media all and (min-height: 400px) and (max-width: 800px) {
@@ -321,6 +323,7 @@ img.forum-icons {
   padding-bottom: 5px;
   text-indent: 15px;
   font-weight: bold;
+  #border: solid green;
 }
 .forum-post-titlebox-breadcrumbs {
   grid-area: forum-post-titlebox-breadcrumbs;
@@ -329,6 +332,7 @@ img.forum-icons {
   box-sizing: border-box;
   width: 100%;
   padding: 5px;
+  #border: solid blue;
 }
 .forum-post-titlebox-pages {
   grid-area: forum-post-titlebox-pages;
@@ -337,6 +341,7 @@ img.forum-icons {
   padding: 5px;
   text-align: right;
   white-space: nowrap;
+  #border: solid purple;
 }
 .forum-post-titlebox-navigation {
   grid-area: forum-post-titlebox-navigation;
@@ -346,6 +351,7 @@ img.forum-icons {
   text-align: right;
   white-space: nowrap;
   text-decoration: none;
+  #border: solid brown;
 }
 .forum-post-pages {
   width: 100%;
@@ -431,6 +437,7 @@ img.forum-icons {
   min-width: 15ch;
   text-align: left;
   margin-bottom: 5px;
+  font-weight: bold;
 }
 .forum-post-role {
   text-align: left;
@@ -448,6 +455,10 @@ img.forum-icons {
 .forum-post-reportpost {
   text-align: right;
   font-size: 0.875em;
+}
+.forum-post-index-link {
+  text-align: left;
+  padding-bottom: 5px;
 }
   
 @media all and (max-width: 800px) {
@@ -505,7 +516,6 @@ img.forum-icons {
 }
 .forum-post-reply-submit {
   background-color: #b7e1cd;
-  color: black;
   font-weight:bold;
   width: 30%;
   min-width: 13ch;
@@ -513,7 +523,6 @@ img.forum-icons {
 }
 .forum-post-reply-preview {
   background-color: powderblue;
-  color: black;
   font-weight:bold;
   width: 30%;
   min-width: 8ch;
@@ -521,7 +530,6 @@ img.forum-icons {
 }
 .forum-post-reply-reset {
   background-color: #f4c7c3;
-  color: black;
   font-weight:bold;
   width: 30%;
   min-width: 6ch;
@@ -603,7 +611,7 @@ img.forum-icons {
     'forum-thread-icon forum-thread-topic forum-thread-views forum-thread-replies forum-thread-author forum-thread-lastpost'
     'forum-thread-icon forum-thread-pages forum-thread-views forum-thread-replies forum-thread-author forum-thread-lastpost';
   grid-template-rows: max-content max-content;  
-  grid-template-columns: 35px 1fr 6ch 6ch 15ch 15ch;
+  grid-template-columns: 35px 1fr 4ch 4ch 15ch 15ch;
   grid-row-gap: 2px;
   grid-column-gap: 5px;
   margin: 0;
@@ -635,7 +643,6 @@ img.forum-icons {
 }
 .forum-thread-pages {
   grid-area: forum-thread-pages;
-  #padding: 5px;
   text-align: right;
 }
 .forum-thread-topic a {
@@ -643,27 +650,23 @@ img.forum-icons {
 }
 .forum-thread-views {
   grid-area: forum-thread-views;
-  #padding: 5px;
   text-align: center;
   margin: auto;
   font-size: 0.9em;
 }
 .forum-thread-replies {
   grid-area: forum-thread-replies;
-  #padding: 5px;
   text-align: center;
   margin: auto;
   font-size: 0.9em;
 }
 .forum-thread-author {
   grid-area: forum-thread-author;
-  #padding: 5px;
   text-align: center;
   margin: auto;
 }
 .forum-thread-lastpost {
   grid-area: forum-thread-lastpost;
-  #padding: 5px;
   text-align: center;
   margin: auto;
 }
