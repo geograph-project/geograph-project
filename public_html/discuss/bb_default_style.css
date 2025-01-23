@@ -105,6 +105,7 @@ color: #000000;
 
 .textForm {
 font-family: Georgia, Verdana, Arial;
+font-size: 1em;
 background: #FFFFFF;
 border-bottom: #CCCCCC 1px solid;
 border-left: #CCCCCC 1px solid;
@@ -509,31 +510,30 @@ img.forum-icons {
   margin: 2px;
   box-sizing: border-box;
 }
-.forum-post-reply-submit {
-  background-color: #b7e1cd;
+.forum-post-reply-buttons input {
   font-weight:bold;
   color: black;
   width: 30%;
   min-width: 13ch;
   max-width: 200px;
+  line-height:2em;
+}
+.forum-post-reply-buttons input:active { /*shows that the button is being clicked*/
+  box-shadow: 2px 2px 5px #fc894d;
+}
+
+.forum-post-reply-submit {
+  background-color: #b7e1cd;
 }
 .forum-post-reply-preview {
   background-color: powderblue;
-  font-weight:bold;
-  color: black;
-  width: 30%;
-  min-width: 8ch;
-  max-width: 200px;
 }
 .forum-post-reply-reset {
   background-color: #f4c7c3;
-  font-weight:bold;
-  color: black;
-  width: 30%;
-  min-width: 6ch;
-  max-width: 200px;
 }
-
+#maincontent form label {
+  font-size:1em; /*main site reduces size, revert that now trying to avoid small text */
+}
 
 .forum-post-reply-icons-grid {
   display: grid;
@@ -819,8 +819,10 @@ img.forum-icons {
   background-color:#f9f9f9;
   width: 100%;
 }
-.forum-forums-compactlist img.forum-icons {
-  max-width:24px;
+@media only screen and (min-width: 712px) {
+	.forum-forums-compactlist img.forum-icons {
+	  max-width:24px;
+	}
 }
 /*Forum show recent count*/
 
