@@ -92,17 +92,6 @@ customGZipHandlerStart();
 $smarty = new GeographPage;
 
 $template='view.tpl';
-
-if (!empty($_GET['preview'])) {
-	        require_once('geograph/imagelist.class.php');
-
-	$smarty->assign('right_block','_block_recent.tpl');
-
-        //lets find some recent photos
-        new RecentImageList($smarty);
-}
-
-
 $cacheid=0;
 
 if ($smarty->caching) {
@@ -113,9 +102,11 @@ if ($smarty->caching) {
 $image=new GridImage;
 
 if (isset($_GET['id']))
-{
 	$image->loadFromId(intval($_GET['id']));
 
+//do we have a valid image?
+if ($image->isValid())
+{
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$ismoderator=($USER->hasPerm('moderator')||$USER->hasPerm('director'))?1:0;
 
@@ -155,7 +146,7 @@ if (isset($_GET['id']))
 	}
 }
 
-//do we have a valid image?
+//do we have a valid image? - check again, because a rejected image may become invalid!
 if ($image->isValid())
 {
 	if ($image->grid_square->reference_index == 1
