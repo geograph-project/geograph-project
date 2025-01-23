@@ -1,7 +1,7 @@
 <?php
 $REVISIONS = array();
 $REVISIONS['/admin/moderation.js']=1;
-$REVISIONS['/discuss/bb_default_style.css']=57783434;
+$REVISIONS['/discuss/bb_default_style.css']=39606313;
 $REVISIONS['/games/markit.js']=8179;
 $REVISIONS['/games/place-memory.js']=3997;
 $REVISIONS['/geotrips/geotrips.css']=7809;
@@ -79,14 +79,14 @@ $REVISIONS['/prototype.js']=2600;
 $REVISIONS['/showcase/jquery.geolocation.js']=90849162;
 $REVISIONS['/slideshow.js']=20622790;
 $REVISIONS['/sorttable.js']=62961456;
-$REVISIONS['/templates/basic/css/basic.css']=97389477;
+$REVISIONS['/templates/basic/css/basic.css']=40208051;
 $REVISIONS['/templates/basic/css/basicp.css']=236;
 $REVISIONS['/templates/basic/css/mapper.css']=3798;
 $REVISIONS['/templates/charcoal/css/charcoal.css']=39697973;
 $REVISIONS['/templates/ireland/css/basic.css']=32672144;
 $REVISIONS['/js/jquery.storage.js']=111;
 $REVISIONS['/templates/resp/css/responsive.css']=72015581;
-$REVISIONS['/templates/resp/css/modification.css']=97389477;
+$REVISIONS['/templates/resp/css/modification.css']=87017422;
 $REVISIONS['/js/anyascii.js']=69351707;
 $REVISIONS['/features/view.js']=65689534;
 $REVISIONS['/js/cwv.js']=77315308;
