@@ -45,6 +45,21 @@ div:target {
 	font-family:times;
 }
 
+.imagePreview {
+	max-width:650px;
+	margin:auto;
+	text-align:center;
+}
+.imagePreview img {
+	max-width:100%;
+	height:auto;
+}
+
+#wikipedia span.nowrap { /* has some external links, that automatically nowrap links! */
+	white-space: normal;
+	word-break: normal;
+}
+
 {/literal}
 </style>
 <a name="top"></a>
@@ -94,6 +109,7 @@ div:target {
 	</p>
 	<br>
 
+	<div class="imagePreview">
 	{$image->getFull()}<br>
 
 	{if $image->original_width}
@@ -124,6 +140,7 @@ div:target {
 		<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download</a>
 		(<b>{$image->cached_size.0}</b>x<b>{$image->cached_size.1}</b>px jpeg)
 	{/if}
+	</div>
 
 </div>
 <div style="position:relative;{if $tab != 2}display:none{/if};margin:auto;max-width:940px" class="interestBox" id="div2">
@@ -188,12 +205,17 @@ div:target {
 	(right click image below and select 'Save As...' to download)
 	</form>
 
+	<div class="imagePreview">
+
 	<a href="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&download=1" id="stamp_link"><img
             src="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}"
             loading="lazy" id="stamp_preview" style="max-width:100%" crossorigin onload="this.style.opacity=1;" onerror="retryCross(this)"></a>
 	{if  $image->original_width}
 	<br>Note: if the image is high resolution, the text may be too small to see in this preview, but should be in the full version when download.
 	{/if}
+
+	</div>
+
 </div>
 
 <br><br>
@@ -203,7 +225,7 @@ div:target {
 	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img
 	alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" align="left" /></a>
 	<b>&nbsp; &copy; Copyright <a title="View profile" href="{$self_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and  
-	licensed for reuse under <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">creativecommons.org/licenses/by-sa/2.0</a></b>
+	licensed for reuse under <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" style="word-break: break-all">creativecommons.org/licenses/by-sa/2.0</a></b>
 	</div>
 
 
@@ -241,7 +263,7 @@ div:target {
 DON'T! We have proper <a href="/help/api">APIs</a> if you want to download images.
 Automated access to this page is likly to be blocked, not to mention unreliable.</li>
 
-<li>ideally include a link to our photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}">{$self_host}/photo/{$image->gridimage_id}</a>, where the latest information will be available.</li>
+<li>ideally include a link to our photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a>, where the latest information will be available.</li>
 
 </ul>
 
