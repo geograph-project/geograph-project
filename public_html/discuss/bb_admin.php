@@ -280,6 +280,8 @@ $text2=ParseTpl(makeUp('admin_editforum2'));
 }
 else {
 
+die('disabled for safety reasons');
+
 $aff=0;
 
 if($rrr=db_simpleSelect(0,"$Tt,$Ts","$Tt.topic_id","$Tt.forum_id",'=',$forumID,'','',"$Tt.topic_id",'=',"$Ts.topic_id")){
