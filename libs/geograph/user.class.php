@@ -235,7 +235,6 @@ class GeographUser
 		$db = $this->_getDB();
 
 		$db->Execute("update geobb_users set user_$name = '$value' where user_id='{$this->user_id}'");
-		$this->default_style = $style;
 	}
 	
 	function getForumOption($name,$def = '',$save = true) {
