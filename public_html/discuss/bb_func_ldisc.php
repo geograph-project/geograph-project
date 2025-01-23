@@ -68,7 +68,7 @@ if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_i
         $topic_title=$cols[1];
         if(isset($pVals[$topic][0])) $lastPosterID=$pVals[$topic][0]; else $lastPosterID='N/A';
         if(isset($pVals[$topic][1])) $lastPoster=$pVals[$topic][1]; else $lastPoster='N/A';
-        if(isset($pVals[$topic][2])) $lastPostDate=convert_date($pVals[$topic][2]); else $lastPostDate='N/A';
+        if(isset($pVals[$topic][2])) $lastPostDate=convert_date($pVals[$topic][2], true); else $lastPostDate='N/A';
         
         if($cols[3]=='') $cols[3]=$l_anonymous;
         $topicAuthor=$cols[3];
@@ -82,7 +82,7 @@ if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_i
         if(isset($mod_rewrite) and $mod_rewrite) $urlp="{$main_url}/{$forum}_{$topic}_"; else $urlp="{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&amp;topic=$topic&amp;page=";
         $pageNavCell=pageNav(0,$numReplies+1,$urlp,($forum == 6 || $forum == 11)?10:$viewmaxreplys,TRUE);
         
-        $whenPosted=convert_date($cols[4]);
+        $whenPosted=convert_date($cols[4], true);
         if(trim($cols[1])=='') $cols[1]=$l_emptyTopic;
         
         //Forum icon

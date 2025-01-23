@@ -94,14 +94,19 @@ return $finalIP;
 }
 
 //--------------->
-function convert_date($dateR){
-$engMon=array('January','February','March','April','May','June','July','August','September','October','November','December',' ');
-$months=explode (':', $GLOBALS['l_months']);
-$months[]='&nbsp;';
-if(isset($GLOBALS['timeDiff']) and $GLOBALS['timeDiff']!=0) $dateR=date($GLOBALS['dateFormat'],strtotime($dateR)+$GLOBALS['timeDiff']);
-else $dateR=date($GLOBALS['dateFormat'],strtotime($dateR));
-$dateR=str_replace($engMon,$months,$dateR);
-return $dateR;
+function convert_date($dateR, $truncate = false){
+	$dateFormat = $GLOBALS['dateFormat'];
+	$timeR = strtotime($dateR);
+	if ($truncate && $timeR < time()-60*60*24*365)
+		$dateFormat = "F Y";
+	elseif ($truncate && $timeR < time()-60*60*72)
+		$dateFormat = "j F Y";
+	$engMon=array('January','February','March','April','May','June','July','August','September','October','November','December',' ');
+	$months=explode(':', $GLOBALS['l_months']);
+	$months[]='&nbsp;';
+	if(isset($GLOBALS['timeDiff']) and $GLOBALS['timeDiff']!=0) $timeR = $timeR+$GLOBALS['timeDiff'];
+	$dateR=date($dateFormat,$timeR);
+	return str_replace($engMon,$months,$dateR);
 }
 
 //--------------->

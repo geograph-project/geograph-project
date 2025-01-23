@@ -816,6 +816,9 @@ img.forum-icons {
   background-color:#f9f9f9;
   width: 100%;
 }
+.forum-forums-compactlist img.forum-icons {
+  max-width:24px;
+}
 /*Forum show recent count*/
 
 .forum-number-recent {
@@ -1051,3 +1054,4 @@ img.forum-icons {
   grid-area: forum-warning-message;
   text-align: left;
 }
+

@@ -79,11 +79,11 @@ if(isset($_GET['h']) and $_GET['h']==$topic) $topicTitle='&raquo; '.$topicTitle;
 
 $numReplies=$cols[6]; if($numReplies>=1) $numReplies-=1;
 if ($cols[3]=='') $cols[3]=$l_anonymous; $topicAuthor=$cols[3];
-$whenPosted=convert_date($cols[4]);
+$whenPosted=convert_date($cols[4], true);
 
 if(isset($pVals[$topic][0])) $lastPosterID=$pVals[$topic][0]; else $lastPosterID='N/A';
 if(isset($pVals[$topic][1])) $lastPoster=$pVals[$topic][1]; else $lastPoster='N/A';
-if(isset($pVals[$topic][2])) $lastPostDate=convert_date($pVals[$topic][2]); else $lastPostDate='N/A';
+if(isset($pVals[$topic][2])) $lastPostDate=convert_date($pVals[$topic][2], true); else $lastPostDate='N/A';
 
 if(isset($mod_rewrite) and $mod_rewrite) $urlp="{$main_url}/{$forum}_{$topic}_"; else $urlp="{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&amp;topic=$topic&amp;page=";
 
