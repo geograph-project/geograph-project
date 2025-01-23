@@ -819,11 +819,12 @@ img.forum-icons {
   background-color:#f9f9f9;
   width: 100%;
 }
-@media only screen and (min-width: 712px) {
+@media only screen and (pointer:fine) {
 	.forum-forums-compactlist img.forum-icons {
 	  max-width:24px;
 	}
 }
+
 /*Forum show recent count*/
 
 .forum-number-recent {
