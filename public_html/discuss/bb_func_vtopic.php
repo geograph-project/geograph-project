@@ -68,10 +68,10 @@ $topic_views=$cols[8];
 if(isset($themeDesc) and in_array($topic,$themeDesc)) $topic_reverse="<img src=\"{$static_url}/img/topic_reverse.gif\" align=middle border=0 alt=\"\">&nbsp;";
 
 if ($cols[9]) {
-	$dot = ($cols[11])?'&#x1f7e4;':'&#x1f534;';
-	$topic_reverse = "<a href=\"{$indexphp}action=vpost&amp;forum={$forum}&amp;topic={$topic}&amp;post={$cols[10]}\">$dot</a>&nbsp;";
+	$dot = ($cols[11])?'&#x25CB;':'&#x1f534;';
+	$topic_reverse = "<a href=\"{$indexphp}action=vpost&amp;forum={$forum}&amp;topic={$topic}&amp;post={$cols[10]}\" title=\"Updated Since Last Visit\">$dot</a>&nbsp;";
 } elseif (is_null($cols[9])) {
-	$topic_reverse = "<a href=\"{$indexphp}action=vthread&amp;forum={$forum}&amp;topic={$topic}\">&#x1f7e6;</a>&nbsp;";
+	$topic_reverse = "<a href=\"{$indexphp}action=vthread&amp;forum={$forum}&amp;topic={$topic}\" title=\"New Since Last Visit\">&#x1f7e6;</a>&nbsp;";
 }   
 
 $topicTitle=$cols[1]; if (trim($topicTitle)=='') $topicTitle=$l_emptyTopic;
