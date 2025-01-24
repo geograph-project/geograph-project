@@ -15,6 +15,8 @@
 
 #maincontent div.photoguide {
 	min-width: 920px;	
+	max-width: 100%;
+	display:block; /* undo grid in modification.css */
 	font-size:0.85em;text-align:left;width:inherit;
 }
 .photoleft {
