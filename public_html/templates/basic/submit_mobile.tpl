@@ -33,7 +33,7 @@
 	<script src="{"/js/Leaflet.GeographRecentUploads.js"|revision}"></script>
 
 <script src="{"/js/to-title-case.js"|revision}"></script>
-<script type="text/javascript" src="https://m.geograph.org.uk/s/exif-js/exif.js"></script>
+<script type="text/javascript" src="/viewer/exif.js"></script>
 
 <style>{literal}
 
@@ -864,7 +864,12 @@ $(function() {
  
 //http://blogs.microsoft.co.il/ranw/2015/01/07/reading-gps-data-using-exif-js/
 function toDecimal(number) {
-       return number[0].numerator + number[1].numerator /
+        //oddly exif.js returns signed rationals as a plain number, but unsigned as a 'Number' object with numerator/denominator so need to cope with EITHER
+        // some old files seem to have lat/long in signed format (even tough the number wont be negative)
+        if (typeof number[0] == 'number')
+                return number[0] + (number[1]/60.0) + (number[2]/3600);
+
+	return number[0].numerator + number[1].numerator /
            (60 * number[1].denominator) + number[2].numerator / (3600 * number[2].denominator);
 }    
 

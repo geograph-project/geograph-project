@@ -569,19 +569,24 @@
             entryOffset = dirStart + i*12 + 2;
             tag = strings[file.getUint16(entryOffset, !bigEnd)];
             if (!tag && debug) console.log("Unknown tag: " + file.getUint16(entryOffset, !bigEnd));
-            tags[tag] = readTagValue(file, entryOffset, tiffStart, dirStart, bigEnd);
+            tags[tag] = readTagValue(file, entryOffset, tiffStart, dirStart, bigEnd, tag);
         }
         return tags;
     }
 
 
-    function readTagValue(file, entryOffset, tiffStart, dirStart, bigEnd) {
+    function readTagValue(file, entryOffset, tiffStart, dirStart, bigEnd, tag) {
         var type = file.getUint16(entryOffset+2, !bigEnd),
             numValues = file.getUint32(entryOffset+4, !bigEnd),
             valueOffset = file.getUint32(entryOffset+8, !bigEnd) + tiffStart,
             offset,
             vals, val, n,
             numerator, denominator;
+
+//dont know WHY, but some files, seems numValues=1, which when passed to getStringFromDB reads empty string (as does numValues-1)
+//'normal' files, seem to have numValues=2, which reads as one byte. (probably including a null terminator byte
+ if (tag && (tag == 'GPSLatitudeRef' || tag == 'GPSLongitudeRef') && numValues==1)
+    numValues=2;
 
         switch (type) {
             case 1: // byte, 8-bit unsigned int
