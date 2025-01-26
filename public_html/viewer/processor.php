@@ -11,14 +11,16 @@ $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
-//cant use a template, as the fake jquery geograph.js creates, as conflicts with imagehas
+//cant use a template, as the fake jquery geograph.js creates, as conflicts with imagehash
 //$smarty->display('_std_begin.tpl');
 
 $images = array();
 
+$user_id = intval($USER->user_id);
+
 //include user_id just to make fastInit easy
 $sql = "select s.*,user_id from gridimage_search inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
- where user_id = {$USER->user_id} and auto_id is null limit 50";
+ where user_id = {$user_id} and auto_id is null limit 50";
 
 $data = $db->getAll($sql);
 
@@ -91,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		result['gridimage_id'] = current['gridimage_id'];
 		result['source'] = current['source'];
 
+		//we dont current use all the hashes, but for now lets compute them anyway
 		ahash(img, 8).then(hash => {
 			result['ahash'] = hash.toHexString();
 		});

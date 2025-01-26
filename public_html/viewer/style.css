@@ -1,0 +1,115 @@
+body {
+	margin:0;
+	padding:0;
+	background-color:black;
+	color:white;
+	font-family:Georgia;
+}
+form {
+	background-color:silver;
+	border-radius:10px;
+	padding:10px;
+	margin:2px;
+}
+a {
+	color:cyan;
+}
+form input[type="number"] {
+	width:86px;
+}
+form span {
+	font-size:0.8em;
+	max-width:940px;
+	display:inline-block;
+}
+form span span {
+	color:gray;
+}
+form span b {
+	color:black;
+}
+#output ul {
+	max-width:940px;
+}
+#output li {
+	padding:5px;
+}
+/* -- -- -- general images - used by ALL outputs */
+
+#output img {
+	max-width:120px;
+	height:auto;
+}
+
+#output img.square {
+	width:120px;height:120px;background-size:cover;background-position:center;background-repeat:no-repeat;
+}
+
+.already-submitted {
+	opacity:0.6;
+}
+
+/* -- -- -- square block - used by ALL outputs */
+
+#output .gridref { /* may be a td, or a div! */
+	background-color:silver;
+	color:black;
+	padding:5px;
+}
+
+#output .gridref h3 {
+	margin-top:2px;
+	margin-bottom:6px;
+}
+#output .gridref a {
+	color:blue;
+}
+
+/* -- -- -- table output  */
+
+#output table {
+}
+#output span {
+	white-space:nowrap;
+}
+#output table thead th {
+        background-color:gray;
+	color:white;
+}
+#output table td.divider {
+	background-color:#333;
+}
+#output table td {
+	max-width:940px;
+}
+
+/* -- -- -- grid output */
+
+#output div.gridref {
+	margin-top:10px;
+	margin-bottom:2px;
+}
+
+#output div.grid {
+	display:grid;
+	grid-template-columns: repeat(auto-fill, 120px);
+	grid-gap: 18px;
+	grid-row-gap: 20px;
+}
+
+/* -- -- -- map output */
+
+#output #map {
+	width:100%;
+	height:calc(100vh - 110px);
+}
+#output #map div.leaflet-popup-content img {
+	max-width:min(640px, 80vw);
+}
+
+/* -- -- -- */
+div#preview {
+	position:fixed;
+	right:0;
+	bottom:0;
+}
