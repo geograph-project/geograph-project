@@ -86,11 +86,15 @@ list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4
 <meta name="theme-color" content="#000066" />
 </head>
 <body>
-
+<?
 
 $url = "/submit2.php?transfer_id={$upload_id}&gridref=$photographer_gridref"; //gr is NOT used, but submit it incase!
 
 print "<a href=\"$url\"\>Continue with submit v2</a>";
+
+print " -or- ";
+
+print "<a href=\"$url&amp;display=tabs\"\>Continue with submit v2 (Tabs)</a>";
 
 ?>
 
@@ -105,6 +109,5 @@ print "<a href=\"$url\"\>Continue with submit v2</a>";
          <input type="hidden" name="transfer_id" value="<? echo $upload_id; ?>">
 
          <input type="submit" value="continue with v1 &gt;">
-
 </form>
 
