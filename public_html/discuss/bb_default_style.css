@@ -319,14 +319,14 @@ img.forum-icons {
   box-sizing: border-box;
   width: 100%;
   font-size: 1.4em;
-  padding-top: 15px;
+  #padding-top: 15px;
   padding-bottom: 5px;
-  text-indent: 15px;
+  #text-indent: 15px;
   font-weight: bold;
 }
 .forum-post-titlebox-breadcrumbs {
   grid-area: forum-post-titlebox-breadcrumbs;
-  text-indent: 15px;
+  #text-indent: 15px;
   font-size: 1.0em;
   box-sizing: border-box;
   width: 100%;
@@ -494,6 +494,13 @@ img.forum-icons {
   text-align: left;
   width:100%;
 }
+.forum-post-reply-formatting span#example-text {
+	color:gray;
+}
+.forum-post-reply-formatting span#example-text span { /*the bbcode gets a span so it can be highlighted */
+	color:blue;
+}
+
 .forum-post-reply-help {
   float: right;
   font-weight: bold;
@@ -501,7 +508,7 @@ img.forum-icons {
   
 }
 .forum-post-reply-textbox textarea {
-  max-width: 100%;
+  max-width: min(99%, 80ch);
   width:100%;
 }
 .forum-post-reply-buttons {
@@ -878,17 +885,17 @@ img.forum-icons {
   text-align: left;
   font-size: 1.5em;
   font-weight: bold;
-  padding: 5px;
+  #padding: 5px;
 }
 .forum-topics-breadcrumbs {
   grid-area: forum-topics-breadcrumbs;
   text-align: left;
-  padding: 5px;
+  padding: 5px 0px;
 }
 .forum-topics-description {
   grid-area: forum-topics-description;
   text-align: left;
-  padding: 5px;
+  padding: 5px 0px;
 }
 .forum-topics-pages {
   grid-area: forum-topics-pages;

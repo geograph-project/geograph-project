@@ -297,6 +297,9 @@ if ($USER->registered) {
 unset($result);unset($countRes);
 
 $l_messageABC=($forum==11)?$l_sub_answer11:$l_sub_answer;
+
+$l_messageABC="Reply to &quot;".$topicName."&quot;";
+
 if ($topicStatus!=1) {
 $emailCheckBox=emailCheckBox();
 

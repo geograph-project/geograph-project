@@ -11,33 +11,33 @@
 <div class="forum-post-reply-icons-grid">
 <div class="forum-post-reply-icons-group1">
   
-<a title="Insert bold tags" href="#" onclick="return paste_strinL('[b][/b]',0)" onMouseOver="window.status='Bold Style'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_bold.jpg" class="forum-icons" alt="Bold style"></a>
+<a title="Insert bold tags" href="#" onclick="return paste_strinL('[b][/b]',0,'text [b]<b>bold text</b>[/b] more')"><img src="img/compose_bold.jpg" class="forum-icons" alt="Bold style"></a>
 
-<a title="Insert italic tags"  href="#" onclick="return paste_strinL('[i][/i]',0)" onMouseOver="window.status='Italic Style'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_italics.jpg" class="forum-icons" alt="Italic style"></a>
+<a title="Insert italic tags"  href="#" onclick="return paste_strinL('[i][/i]',0,'text [b]<i>italic text</i>[/b] more')"><img src="img/compose_italics.jpg" class="forum-icons" alt="Italic style"></a>
 
-<a title="Insert underline tags" href="#" onclick="return paste_strinL('[u][/u]',0)" onMouseOver="window.status='Underlined Style'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_underline.jpg" class="forum-icons" alt="Underlined Style"></a>
+<a title="Insert underline tags" href="#" onclick="return paste_strinL('[u][/u]',0,'text [b]<u>underlined text</u>[/b] more')"><img src="img/compose_underline.jpg" class="forum-icons" alt="Underlined Style"></a>
 
-<a title="Insert blockquote" href="#" onclick="return paste_strinL('[blockquote][/blockquote]',0)" onMouseOver="window.status='Insert blockquote'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_blockquote.jpg" class="forum-icons" alt="Insert blockquote link"></a>
+<a title="Insert blockquote" href="#" onclick="return paste_strinL('[blockquote][/blockquote]',0,'text [blockquote]indented block<br>another<br>more lines[/blockquote] more')"><img src="img/compose_blockquote.jpg" class="forum-icons" alt="Insert blockquote link"></a>
   
-<a title="Insert code block" href="#" onclick="return paste_strinL('[code][/code]',0)" onMouseOver="window.status='Insert code snippet'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_code.jpg" class="forum-icons" alt="Insert code snippet link"></a>
+<a title="Insert code block" href="#" onclick="return paste_strinL('[code][/code]',0,'text [code]<pre>monospace text block<br>1  2   3  4<br>5      3  4</pre>[/code] more')"><img src="img/compose_code.jpg" class="forum-icons" alt="Insert code snippet link"></a>
 
 </div>
 <div class="forum-post-reply-icons-group2">  
   
-<a title="Insert Geograph image thumbnail" href="#" onclick="return paste_strinL('[[[]]]',0)" onMouseOver="window.status='Geograph thumbnail link'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_image_small.jpg" class="forum-icons" alt="Geograph thumbnail link"></a>
+<a title="Insert Geograph image thumbnail" href="#" onclick="return paste_strinL('[[[]]]',0,'text [[[<b>1234</b>]]] more')"><img src="img/compose_image_small.jpg" class="forum-icons" alt="Geograph thumbnail link"></a>
 
-<a title="Insert Geograph image large thumbnail" href="#" onclick="return paste_strinL('[image id=]',0)" onMouseOver="window.status='Geograph large thumbnail link'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_image_large.jpg" class="forum-icons" alt="Geograph large thumb link"></a>
+<a title="Insert Geograph image large thumbnail" href="#" onclick="return paste_strinL('[image id=]',0,'text [image id=<b>1234</b>] more')"><img src="img/compose_image_large.jpg" class="forum-icons" alt="Geograph large thumb link"></a>
 
-<a title="Insert Geograph image or grid reference link" href="#" onclick="return paste_strinL('[[]]',0)" onMouseOver="window.status='Geograph image or gridref link'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_twobracket.jpg" class="forum-icons" alt="Grid reference or image Link"></a>
+<a title="Insert Geograph image or grid reference link" href="#" onclick="return paste_strinL('[[]]',0,'text [[[<b>TQ7040</b>]]] more')"><img src="img/compose_twobracket.jpg" class="forum-icons" alt="Grid reference or image Link"></a>
 
-<a title="Insert URL link tags" href="#" onclick="return paste_strinL('[url=][/url]',0)" onMouseOver="window.status='Insert URL'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_hyperlink.jpg" class="forum-icons" alt="Insert URL"></a>
+<a title="Insert URL link tags" href="#" onclick="return paste_strinL('[url=][/url]',0,'text [url=<tt>https://example.com/</tt>]<u>text to display</u>[/url] more')"><img src="img/compose_hyperlink.jpg" class="forum-icons" alt="Insert URL"></a>
 
-<a title="Insert email link tags" href="#" onclick="return paste_strinL('[email=][/email]',0)" onMouseOver="window.status='Email Link'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_emailaddress.jpg" class="forum-icons" alt="Email link"></a>
-  
-<a title="Insert image link tags" href="#" onclick="return paste_strinL('[img][/img]',0)" onMouseOver="window.status='External image link'; return true" onMouseOut="window.status=''; return true"><img src="img/compose_image_ext.jpg" class="forum-icons" alt="External image link"></a>
+<a title="Insert image link tags" href="#" onclick="return paste_strinL('[img][/img]',0,'text [img]<u>https://example.com/image.png</u>[/img] more')"><img src="img/compose_image_ext.jpg" class="forum-icons" alt="External image link"></a>
 
 </div>
-<div class="forum-post-reply-icons-noformatting"><div class="forum-hidden">
+<div class="forum-post-reply-icons-noformatting">
+<span id="example-text"></span>
+<div class="forum-hidden">
 <input type="checkbox" name="disbbcode" id="disbbcode" value="on"><label for="disbbcode">{$l_disableBbCode}</label>
 </div>
 </div>
@@ -46,19 +46,23 @@
 
 <br/>
 
-
+<div id="marked-block"></div>
 
 <script type="text/javascript">
-var current = readCookie('markedImages')
-if (current && current != '') {
-	var splited = current.commatrim().split(',');
-	var html_links = '<div class="forum-markedimages-grid"><div class="forum-markedimages-header">Marked Images</div>';
-	html_links = html_links + '<div class="forum-markedimages-images"><a title="Insert marked image list" href="#" onclick="return paste_strinL(returnMarkedImages(),0)"><img src="img/compose_image_small.jpg" class="forum-icons" alt="Geograph thumbnail link"></a>';
-	if (splited.length<=5)
-		html_links = html_links + ' <a title="Insert as large thumbnail(s)" href="#" onclick="return pasteBigImages()" onMouseOver="window.status=\'Insert marked image list\'; return true" onMouseOut="window.status=\'\'; return true"><img src="img/compose_image_large.jpg" class="forum-icons" alt="Geograph thumbnail link"></a>';
-	html_links = html_links + '</div><div class="forum-markedimages-count">['+(splited.length+0)+']&nbsp;&nbsp;<a href="javascript:void(clearMarkedImages())" style="color:red">Clear list</a></div></div>';
-	document.write(html_links);
+function setupMarkedList() {
+	var current = readCookie('markedImages')
+	if (current && current != '') {
+		var splited = current.commatrim().split(',');
+		var html_links = '<div class="forum-markedimages-grid"><div class="forum-markedimages-header">Marked Images</div>';
+		html_links = html_links + '<div class="forum-markedimages-images"><a title="Insert marked image list" href="#" onclick="return paste_strinL(returnMarkedImages(),0)"><img src="img/compose_image_small.jpg" class="forum-icons" alt="Geograph thumbnail link"></a>';
+		if (splited.length<=5)
+			html_links = html_links + ' <a title="Insert as large thumbnail(s)" href="#" onclick="return pasteBigImages()" onMouseOver="window.status=\'Insert marked image list\'; return true" onMouseOut="window.status=\'\'; return true"><img src="img/compose_image_large.jpg" class="forum-icons" alt="Geograph thumbnail link"></a>';
+		html_links = html_links + '</div><div class="forum-markedimages-count">['+(splited.length+0)+']&nbsp;&nbsp;<a href="javascript:void(clearMarkedImages())" style="color:red">Clear list</a></div></div>';
+		document.getElementById('marked-block').innerHTML = html_links;
+	}
 }
+AttachEvent(window,'load',setupMarkedList,false);
+
 function pasteBigImages() {
 	var newstr = returnMarkedImages();
 	newstr = newstr.replace(/ /g,"\n").replace(/\[\[\[/g,'[image id=').replace(/\]\]\]/g,']');

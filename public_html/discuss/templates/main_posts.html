@@ -1,23 +1,37 @@
 <script type="text/javascript">
 <!--
 
-function paste_strinL(strinL,isQuote){
-if(strinL=='' && isQuote==1) alert('First highlight the text you wish to quote, then click the \'quote\' link');
-else{
-if (isQuote==1) {
-strinL='[i]'+strinL+'[/i]'+'\n';
-}
-if (isQuote==2) {
-strinL='[b]'+strinL+'[/b]'+'\n';
-}
-var isForm=document.forms["postMsg"];
-if (isForm) {
-var input=document.forms["postMsg"].elements["postText"];
-input.value=input.value+strinL;
-}
-else alert('{$l_accessDenied}');
-}
-return false;
+var eTimer = null;
+function paste_strinL(strinL,isQuote,exampleText){
+	if(strinL=='' && isQuote==1) alert('First highlight the text you wish to quote, then click the \'quote\' link');
+	else{
+		if (isQuote==1) {
+			strinL='[i]'+strinL+'[/i]'+'\n';
+		}
+		if (isQuote==2) {
+			strinL='[b]'+strinL+'[/b]'+'\n';
+		}
+		var isForm=document.forms["postMsg"];
+		if (isForm) {
+			var input=document.forms["postMsg"].elements["postText"];
+			input.value=input.value+strinL;
+
+			if (exampleText) {
+				var ele = document.getElementById('example-text');
+				if (ele) {
+					ele.innerHTML = "Example: "+exampleText.replace(/(\[\/?\w+[\w ]+[=\]])/g,'<span>$1').replace(/(]+)/g,'$1</span>');
+					if (eTimer)
+						clearTimeout(eTimer);
+					eTimer = setTimeout(function() {
+						ele.innerHTML = '';
+						eTimer = null;
+					},10000);
+				}
+			}
+		}
+		else alert('{$l_accessDenied}');
+	}
+	return false;
 }
 
 document.addEventListener('selectionchange', function (event) {
@@ -31,10 +45,10 @@ function getQuotation() {
 }
 
 function confirmDelete(id,what){
-var mes,url='forum={$forum}&topic={$topic}&';
-if(what==0) { mes='{$l_areYouSureDeletePost}'; url=url+'action=delmsg&page={$page}&post='+id; } else { mes='{$l_areYouSureDeleteTopic}'; url=url+'action=deltopic'; }
-if(confirm(mes))
-document.location='{$main_url}/{$indexphp}'+url;
+	var mes,url='forum={$forum}&topic={$topic}&';
+	if(what==0) { mes='{$l_areYouSureDeletePost}'; url=url+'action=delmsg&page={$page}&post='+id; } else { mes='{$l_areYouSureDeleteTopic}'; url=url+'action=deltopic'; }
+	if(confirm(mes))
+		document.location='{$main_url}/{$indexphp}'+url;
 }
 
 //-->
@@ -64,7 +78,7 @@ document.location='{$main_url}/{$indexphp}'+url;
 
 <div class="forum-post-pages">{$pageNav}</div>
 
-<div class="forum-post-index-link"><a href="/discuss/" title="Return to forum index">&lt;&lt; Forum index</a></div>
+<div class="forum-post-index-link"><a href="/discuss/" title="Return to forum index">&lt;&lt; Forum index</a> &gt; <a title="Topic listing for {$forumName}" href="{$linkToForums}">{$forumName}</a></div>
 
 <a name=newreply></a>
 

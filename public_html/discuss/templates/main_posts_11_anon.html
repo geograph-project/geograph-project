@@ -25,47 +25,7 @@
   display: none;
   }
 </style>
-<script type="text/javascript">
-<!--
 
-function paste_strinL(strinL,isQuote){
-if(strinL=='' && isQuote==1) alert('First highlight the text you wish to quote, then click the \'quote\' link');
-else{
-if (isQuote==1) {
-strinL='[i]'+strinL+'[/i]'+'\n';
-}
-if (isQuote==2) {
-strinL='[b]'+strinL+'[/b]'+'\n';
-}
-var isForm=document.forms["postMsg"];
-if (isForm) {
-var input=document.forms["postMsg"].elements["postText"];
-input.value=input.value+strinL;
-}
-else alert('{$l_accessDenied}');
-}
-return false;
-}
-
-document.addEventListener('selectionchange', function (event) {
-	 window.selection=document.getSelection();
-});
-
-function getQuotation() {
-	if (document.getSelection) {
-		document.writeln('<a href="#" onclick="return paste_strinL(window.selection,1)">{$l_quoting}<'+'/a>');
-	}
-}
-
-function confirmDelete(id,what){
-var mes,url='forum={$forum}&topic={$topic}&';
-if(what==0) { mes='{$l_areYouSureDeletePost}'; url=url+'action=delmsg&page={$page}&post='+id; } else { mes='{$l_areYouSureDeleteTopic}'; url=url+'action=deltopic'; }
-if(confirm(mes))
-document.location='{$main_url}/{$indexphp}'+url;
-}
-
-//-->
-</script>
 <a name="pagetop">
 
 <!--Forum topic name and breadcrumbs-->
