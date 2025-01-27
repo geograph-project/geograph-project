@@ -33,7 +33,9 @@ input#search_toggle, label#search_label {
 	left:inherit;
 	right:8em;
 }
-
+#login span.sep {
+	padding: 0 7px;
+}
 
 .longLinks a {
 	white-space:nowrap;

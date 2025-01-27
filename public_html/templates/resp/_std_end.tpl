@@ -151,6 +151,7 @@
 	  <a title="Log out" href="/logout.php">logout</a>
   {else}
 	  You are not logged in
+	  <span class="sep">|</span>
 	  <a title="Already registered? Login in here" href="/login.php">login</a>
 		<span class="sep">|</span></span>
 	  <a title="Register to upload photos" href="/register.php">register</a>
