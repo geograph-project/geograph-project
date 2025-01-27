@@ -85,9 +85,13 @@ $REVISIONS['/templates/basic/css/mapper.css']=3798;
 $REVISIONS['/templates/charcoal/css/charcoal.css']=39697973;
 $REVISIONS['/templates/ireland/css/basic.css']=32672144;
 $REVISIONS['/js/jquery.storage.js']=111;
-$REVISIONS['/templates/resp/css/responsive.css']=72015581;
-$REVISIONS['/templates/resp/css/modification.css']=87017422;
+$REVISIONS['/templates/resp/css/responsive.css']=59345905;
+$REVISIONS['/templates/resp/css/modification.css']=59345905;
 $REVISIONS['/js/anyascii.js']=69351707;
 $REVISIONS['/features/view.js']=65689534;
 $REVISIONS['/js/cwv.js']=77315308;
+$REVISIONS['/viewer/files.js']=43561893;
+$REVISIONS['/viewer/viewer.js']=43561893;
+$REVISIONS['/viewer/style.css']=43561893;
+$REVISIONS['/viewer/exif.js']=48373910;
 ?>
