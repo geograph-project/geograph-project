@@ -2447,7 +2447,7 @@ geo $not_allowed {
 }
 # /geo
 
-log_format custom '$http_x_forwarded_for - $upstream_http_x_geograph_id [$time_local] "$request" "$host" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_time $http_x_forwarded_proto $upstream_http_x_session_id';
+log_format custom '$http_x_forwarded_for - $upstream_http_x_geograph_id [$time_local] "$request" "$host" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_time $http_x_forwarded_proto $upstream_http_x_session_id $http_sec_purpose';
 
 # disable default internal logs, to save cluttering disk space (individual server blocks may add their own!)
 error_log off;
