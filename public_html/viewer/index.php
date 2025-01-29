@@ -50,7 +50,7 @@ concept can find copies regardless of resolution.
 	<div class=interestBox><a href="processor.php" target="processor">Click here to open the processor</a><br>
 	(<b>just open it once</b>, opening multiple windows won't make it go faster!)<br><br>
 
-	With about <? echo number_format($count,0); ?> images, will probably take about <? echo $time; ?></div>
+	With about <? echo number_format($count,0); ?> images, will probably take about <? echo $time; ?>. Once it completes, <a href="?">click here</a>.</div>
 
 	<p>In theory just leave this open in a tab/window, and let it process. If the tab isn't in front, I think it will still process, just slower.
 	Takes about 20 seconds per 50 images in my testing.

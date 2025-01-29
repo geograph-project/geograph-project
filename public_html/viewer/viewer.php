@@ -72,6 +72,7 @@ let hashes_url = <? echo json_encode($hashesUrl); ?>;
 
 			Mode: <select name="mode" onchange="updateViewer()">
 				<option value="table">Table</option>
+				<option value="black">GeoRiver</option>
 				<option value="thumbs">Thumbnails</option>
 				<option value="map">Map</option>
 			</select>
@@ -98,6 +99,14 @@ let hashes_url = <? echo json_encode($hashesUrl); ?>;
 			<label><input type=checkbox name=break10s onclick="updateViewer()">10s</label>
 
 			<label>(<input type=checkbox name=square onclick="updateViewer()">Square Image)</label>
+
+			<select name=method style="max-width:100px">
+				<option value="">Choose Method Later</option>
+				<option value="submit">Submit v1</option>
+				<option value="submit2">Submit v2</option>
+				<option value="submit2_tabs">Submit v2 (tabs)</option>
+				<option value="close">Upload only (Submit Later)</option>
+			</select>
 
 			<div id="locations" style="display:none">
 			<input type=button value="Guess Location" onclick="if (guessLocations()) {updateViewer(true);}"> - Add Locations for images without location, by picking closest in time.

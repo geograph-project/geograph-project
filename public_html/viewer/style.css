@@ -34,6 +34,12 @@ form span b {
 #output li {
 	padding:5px;
 }
+#output .nowrap {
+	white-space:nowrap;
+}
+#output a.nowrap {
+	padding-left:8px;
+}
 /* -- -- -- general images - used by ALL outputs */
 
 #output img {
@@ -47,6 +53,13 @@ form span b {
 
 .already-submitted {
 	opacity:0.6;
+}
+.not-submitted {
+	color:yellow;
+}
+input.submit {
+	background-color:yellow;
+	margin:3px;
 }
 
 /* -- -- -- square block - used by ALL outputs */
@@ -63,6 +76,7 @@ form span b {
 }
 #output .gridref a {
 	color:blue;
+	font-family:arial,monospace;
 }
 
 /* -- -- -- table output  */
@@ -81,6 +95,26 @@ form span b {
 }
 #output table td {
 	max-width:940px;
+}
+
+/* -- -- -- georiver output */
+
+#output table.black img { 
+	max-width:320px;
+}
+
+#output table.black div.name {
+	font-size:1.2em;
+	font-family:monospace;
+	margin-bottom:3px;
+}
+
+#output table.black div.gridref {
+	border:1px solid silver;
+	padding:2px;
+	border-radius:5px;
+	font-family:arial,monospace;
+	display:inline-block
 }
 
 /* -- -- -- grid output */
