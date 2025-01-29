@@ -64,7 +64,29 @@ if ($uploadmanager->_isJpeg($temp_file)) {
 	die("only submission of jpegs allowed");
 }
 
-//tod0, store the taken+lat+long somewhere. maybe write then to EXIF (incase not there!) 
+//todo, store the taken+lat+long somewhere? maybe write then to EXIF (incase not there!)
+
+######################################
+
+$url = "/submit2.php?transfer_id={$upload_id}";
+
+if (!empty($_POST['auto'])) {
+        if ($_POST['auto'] == 'submit2') {
+                header("Location: $url");
+                exit;
+
+        } elseif ($_POST['auto'] == 'submit2_tabs') {
+                header("Location: $url&display=tabs");
+                exit;
+
+        } elseif ($_POST['auto'] == 'close') { ?>
+		<script>
+			window.close();
+		</script>
+		<?
+		//for now, lets just still display page, in case it fails!
+        }
+}
 
 ######################################
 
@@ -76,9 +98,6 @@ list($e,$n,$reference_index) = $conv->wgs84_to_national($_POST['lat'],$_POST['ln
 list ($photographer_gridref,$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
 list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
 
-
-//print "Subject: $grid_reference. Photographer: $photographer_gridref.<hr>";
-
 ?>
 <html>
 <head>
@@ -86,21 +105,28 @@ list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4
 <meta name="theme-color" content="#000066" />
 </head>
 <body>
+
+<p>The image has been saved temporarily. You can either:
+
+<ul>
+	<li>Submit it later: Use the <a href="/submit-multi.php?tab=submit">Multiple Image Submission</a> feature when you're ready. Can close this window now.<br><br>
+
+	<li>Submit it now:
+
 <?
 
-$url = "/submit2.php?transfer_id={$upload_id}&gridref=$photographer_gridref"; //gr is NOT used, but submit it incase!
+$url .= "&amp;gridref=$photographer_gridref"; //gr is NOT used, but submit it incase!
 
-print "<a href=\"$url\"\>Continue with submit v2</a>";
+print "<a href=\"$url\"\>with Submit v2</a>";
 
 print " -or- ";
 
-print "<a href=\"$url&amp;display=tabs\"\>Continue with submit v2 (Tabs)</a>";
+print "<a href=\"$url&amp;display=tabs\"\>with Submit v2 (Tabs)</a>";
 
-?>
+?><br><br>
 
-- or - <br><br>
-
-<form action="/submit.php" method="post" target="_blank" style="margin:0; background-color:lightgrey; padding:5px">
+	<li>
+<form action="/submit.php" name=theForm method="post" target="_blank" style="margin:0; background-color:lightgrey; padding:5px">
          Subject GR: <input type="text" name="grid_reference" size="10" value="<? echo $grid_reference; ?>"/> <br/>
          Camera: <input type="text" name="photographer_gridref" size="10" value="<? echo $photographer_gridref; ?>"/><br/>
 
@@ -108,6 +134,14 @@ print "<a href=\"$url&amp;display=tabs\"\>Continue with submit v2 (Tabs)</a>";
 
          <input type="hidden" name="transfer_id" value="<? echo $upload_id; ?>">
 
-         <input type="submit" value="continue with v1 &gt;">
+         <input type="submit" value="Continue with Submit v1 &gt;">
 </form>
+
+<?
+
+if (!empty($_POST['auto']) && $_POST['auto'] == 'submit') { ?>
+	<script>
+		document.forms['theForm'].submit();
+	</script>
+<? }
 
