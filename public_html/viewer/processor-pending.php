@@ -18,44 +18,30 @@ $images = array();
 
 $user_id = intval($USER->user_id);
 
-//include user_id just to make fastInit easy
-$sql = "select s.*,user_id from gridimage_search inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
- where user_id = {$user_id} and auto_id is null limit 50";
+$uploadmanager=new UploadManager;
 
-$data = $db->getAll($sql);
+$data = $uploadmanager->getUploadedFiles();
 
 if (empty($data))
 	die('No images to process - yay! - can close this window.');
 
+$done = $db->getAssoc("SELECT gridimage_id,auto_id FROM gridimage_hash WHERE source = 'pending'"); //uhh, can't filter by user_id!
+
 foreach($data as $row) {
-	$image = new GridImage();
-        $image->fastInit($row);
-//| gridimage_id | width | height | original_width | original_height | original_diff | user_id |
 
-	$path = $image->_getFullpath(false, true);
+        $gid = crc32($row['transfer_id'])+4294967296;
+        $gid += $USER->user_id * 4294967296;
 
-	$images[] = array('gridimage_id'=>$row['gridimage_id'], 'source'=>'full', 'path'=> $path);
+	if ($done[$gid])
+		continue;
 
-	//we only bother with larger if 'diff' (otherwise the larger would just be same image - full CAME from original!
-	if ($row['original_width'] && $row['original_diff'] == 'yes') {
-		//... this is when we KNOW it different
+	$path = "/submit.php?preview=".$row['transfer_id'];
 
-		$path = $image->getImageFromOriginal(640,640, true);
-		$images[] = array('gridimage_id'=>$row['gridimage_id'], 'source'=>'640px', 'path'=> $path);
-
-	//this is where DONT know, so the hashing we about to do will help know!
-	} elseif ($row['original_width'] && $row['original_diff'] == 'unknown') {
-		// complication is DONT want to go ahead and CREATE a 640px thumb, as its presence is a tell
-		$great = max($row['original_width'],$row['original_height']);
-		if ($great > 800) {
-			$path = $image->getImageFromOriginal(800,800, true);
-			$images[] = array('gridimage_id'=>$row['gridimage_id'], 'source'=>'800px', 'path'=> $path);
-		} else {
-			$path = $image->_getOriginalpath(false, true);
-			$images[] = array('gridimage_id'=>$row['gridimage_id'], 'source'=>'original', 'path'=> $path);
-		}
-	}
+	$images[] = array('gridimage_id'=>$gid, 'source'=>'pending', 'path'=> $path);
 }
+
+if (empty($images))
+	die('No images to process - yay! - can close this window.');
 
 print "<p id=msg>Found ".count($images)." image(s) to process...</p><hr>";
 
