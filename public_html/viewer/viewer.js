@@ -398,7 +398,8 @@ function render_black($output, order) {
 			let $div = jQuery('<div class=submit>').append('Already uploaded as ');
 			let bits = image.done.split(' ');
 			$div.append(jQuery('<a>').text(image.done).attr('href','https://www.geograph.org.uk/photo/'+bits[0]).attr('target','_blank'));
-			td.append($div);
+			$td.append($div);
+
 		} else if (image.close) {
 			$tr.addClass('already-submitted');
 
