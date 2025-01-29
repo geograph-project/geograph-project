@@ -25,14 +25,14 @@ $data = $uploadmanager->getUploadedFiles();
 if (empty($data))
 	die('No images to process - yay! - can close this window.');
 
-$done = $db->getAssoc("SELECT gridimage_id,auto_id FROM gridimage_hash WHERE source = 'pending'"); //uhh, can't filter by user_id!
+$done = $db->getAssoc("SELECT gridimage_id,1 FROM gridimage_hash WHERE source = 'pending' AND user_id = $user_id");
 
 foreach($data as $row) {
 
         $gid = crc32($row['transfer_id'])+4294967296;
         $gid += $USER->user_id * 4294967296;
 
-	if ($done[$gid])
+	if (!empty($done[$gid]))
 		continue;
 
 	$path = "/submit.php?preview=".$row['transfer_id'];
@@ -47,6 +47,7 @@ print "<p id=msg>Found ".count($images)." image(s) to process...</p><hr>";
 
 	print "<script>\n";
 	print "var images = ".json_encode($images, JSON_PARTIAL_OUTPUT_ON_ERROR).";\n";
+	print "var user_id = ".intval($USER->user_id).";\n";
 	print "delete window.$;\n"; //need to delete the fake jquery geograph.js creates, as conflicts with imagehash
 	print "window['$'] = undefined;\n";
 	print "</script>";
@@ -78,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		let result = {};
 		result['gridimage_id'] = current['gridimage_id'];
 		result['source'] = current['source'];
+		result['user_id'] = user_id;
 
 		//we dont current use all the hashes, but for now lets compute them anyway
 		ahash(img, 8).then(hash => {

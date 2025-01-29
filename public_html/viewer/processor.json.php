@@ -44,7 +44,7 @@ foreach($decode as $row) {
 
 	//todo, replace with REPLACE INTO - but only if create a UNIQUE(gridiamge,source)
 	$ins = "INSERT INTO gridimage_hash SET gridimage_id = ".intval($row['gridimage_id']);
-	foreach(array('source','ahash','dhash','phash','whash','chash') as $key)
+	foreach(array('source','ahash','dhash','phash','whash','chash','user_id') as $key)
 		if (!empty($row[$key]))
 			$ins .= ", `$key` = ".$db->Quote($row[$key]);
 

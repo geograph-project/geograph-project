@@ -12,8 +12,6 @@ customNoCacheHeader();
 
 //todo, check user_stat, if no images, pointless even trying to do custmization
 
-$CONF['API_HOST'] = "https://development.geograph.org.uk"; //live=1
-
 $hashesUrl = $CONF['API_HOST']."/viewer/hashes.json.php";
 
 $token=new Token;

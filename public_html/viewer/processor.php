@@ -19,8 +19,8 @@ $images = array();
 $user_id = intval($USER->user_id);
 
 //include user_id just to make fastInit easy
-$sql = "select s.*,user_id from gridimage_search inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
- where user_id = {$user_id} and auto_id is null limit 50";
+$sql = "select s.*,gi.user_id from gridimage_search gi inner join gridimage_size s using (gridimage_id) left join gridimage_hash using (gridimage_id)
+ where gi.user_id = {$user_id} and auto_id is null limit 50";
 
 $data = $db->getAll($sql);
 
@@ -61,6 +61,7 @@ print "<p id=msg>Found ".count($images)." image(s) to process...</p><hr>";
 
 	print "<script>\n";
 	print "var images = ".json_encode($images, JSON_PARTIAL_OUTPUT_ON_ERROR).";\n";
+	print "var user_id = ".intval($USER->user_id).";\n";
 	print "delete window.$;\n"; //need to delete the fake jquery geograph.js creates, as conflicts with imagehash
 	print "window['$'] = undefined;\n";
 	print "</script>";
@@ -91,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	img.onload = function (event) {
 		let result = {};
 		result['gridimage_id'] = current['gridimage_id'];
+		result['user_id'] = user_id;
 		result['source'] = current['source'];
 
 		//we dont current use all the hashes, but for now lets compute them anyway

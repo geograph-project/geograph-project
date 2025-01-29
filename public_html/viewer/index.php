@@ -18,7 +18,7 @@ $images = array();
 
 $user_id = intval($USER->user_id);
 
-$count = $db->getOne("select count(*) from gridimage_search left join gridimage_hash using (gridimage_id) where user_id = $user_id and gridimage_hash.gridimage_id is null");
+$count = $db->getOne("select count(*) from gridimage_search gi left join gridimage_hash using (gridimage_id) where gi.user_id = $user_id and gridimage_hash.gridimage_id is null");
 
 if (empty($count)) {
 	header("Location: /viewer/viewer.php");
