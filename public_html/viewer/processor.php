@@ -61,9 +61,9 @@ print "<p id=msg>Found ".count($images)." image(s) to process...</p><hr>";
 
 	print "<script>\n";
 	print "var images = ".json_encode($images, JSON_PARTIAL_OUTPUT_ON_ERROR).";\n";
-	print "var user_id = ".intval($USER->user_id).";\n";
-	print "delete window.$;\n"; //need to delete the fake jquery geograph.js creates, as conflicts with imagehash
-	print "window['$'] = undefined;\n";
+	print "var user_id = ".intval($user_id).";\n";
+//	print "delete window.$;\n"; //need to delete the fake jquery geograph.js creates, as conflicts with imagehash
+//	print "window['$'] = undefined;\n";
 	print "</script>";
 
 ?>
@@ -76,7 +76,6 @@ var img = null;
 var current = [];
 var results = [];
 
-
 function retryCross(that) {
 	//this function allows retry of tags with crossorigin. Note the query string doesnt do anything on the server, its just to bust the local browser cache (that might have the non-cors image cached)
         if (that.src.indexOf('crossorigin') == -1 && that.hasAttribute('crossorigin')) {
@@ -88,6 +87,24 @@ function retryCross(that) {
 
 document.addEventListener("DOMContentLoaded", function() {
 	img = document.getElementById('img');
+
+	img.onerror = function (event) {
+		//still need to do retryCross!
+		if (this.src.indexOf('crossorigin') == -1 && this.hasAttribute('crossorigin')) {
+			retryCross(this);
+		} else {
+			let result = {};
+	                result['gridimage_id'] = current['gridimage_id'];
+	                result['user_id'] = user_id;
+	                result['source'] = current['source'];
+
+			//console.log(event);//doesnt seem to return anything useful? (eg to tell 404 diffent to a 'currupted' image for example)
+			result['ahash'] = 'failed'; //using ahash is arbiary!
+			results.push(result);
+
+			next_image();
+		}
+	}
 
 	img.onload = function (event) {
 		let result = {};
@@ -116,33 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}); */
 
 		results.push(result);
-
-		if (images.length) {
-			document.getElementById('msg').innerHTML = images.length+' remain to process';
-
-			current = images.shift();
-			img.src = current.path;
-		} else {
-			//NOTE, we CANT use jqyery here, conflicts with imagehash (both use $)
-			if ('sendBeacon' in navigator) {
-				document.getElementById('msg').innerHTML = 'Done all in current batch. Submitting...';
-				setTimeout(function() {
-					done = navigator.sendBeacon("/viewer/processor.json.php", JSON.stringify(results));
-					if (done) {
-						//with beacon, dont have to wait - should be queued, even if not sent immidately. 
-						//.. but we should wait, so it has been processed, otherwise will get the same images again!
-						setTimeout(function() {
-							window.location.reload();
-						}, 5000);
-					} else {
-						alert('unable to save results. please contact us!');
-					}
-				}, 1000); //should use await, but for now just to make sure results come back for last limage. 
-
-			} else {
-				alert('unable to save results. please contact us!');
-			}
-		}
+		next_image();
 	}
 
 	if (images.length) {
@@ -153,10 +144,38 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 });
 
+function next_image() {
+	if (images.length) {
+		document.getElementById('msg').innerHTML = images.length+' remain to process';
+
+		current = images.shift();
+		img.src = current.path;
+	} else {
+		//NOTE, we CANT use jqyery here, conflicts with imagehash (both use $)
+		if ('sendBeacon' in navigator) {
+			document.getElementById('msg').innerHTML = 'Done all in current batch. Submitting...';
+			setTimeout(function() {
+				done = navigator.sendBeacon("/viewer/processor.json.php", JSON.stringify(results));
+				if (done) {
+					//with beacon, dont have to wait - should be queued, even if not sent immidately. 
+					//.. but we should wait, so it has been processed, otherwise will get the same images again!
+					setTimeout(function() {
+						window.location.reload();
+					}, 5000);
+				} else {
+					alert('unable to save results. please contact us!');
+				}
+			}, 1000); //should use await, but for now just to make sure results come back for last limage.
+
+		} else {
+			alert('unable to save results. please contact us!');
+		}
+	}
+}
+
 </script>
 
 <?
-
 
 //$smarty->display('_std_end.tpl',md($_SERVER['PHP_SELF']));
 
