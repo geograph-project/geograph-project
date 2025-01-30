@@ -24,7 +24,7 @@ $sql = array();
 	$sql['tables'][] = 'inner join gridimage_search gi using (gridimage_id)';
 
 	$sql['wheres'] = array();
-	$sql['wheres'][] = "gi.user_id = $id"; //currently only returning live images - todo, would be to include the temp area images (plus pending?)
+	$sql['wheres'][] = "gi.user_id = $id";
 	$sql['wheres'][] = "$hash != ''";
 
         $sql['columns'] = 'gridimage_id,substr(source,1,1),phash,grid_reference,imagetaken,title';

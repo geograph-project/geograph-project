@@ -1,5 +1,7 @@
 <?
 
+die('disabled');
+
 require_once('geograph/global.inc.php');
 init_session();
 
@@ -25,7 +27,7 @@ $data = $uploadmanager->getUploadedFiles();
 if (empty($data))
 	die('No images to process - yay! - can close this window.');
 
-$done = $db->getAssoc("SELECT gridimage_id,1 FROM gridimage_hash WHERE source = 'pending' AND user_id = $user_id");
+$done = $db->getAssoc("SELECT gridimage_id,1 FROM gridimage_hash WHERE source = 'tmp' AND user_id = $user_id");
 
 foreach($data as $row) {
 
@@ -37,7 +39,7 @@ foreach($data as $row) {
 
 	$path = "/submit.php?preview=".$row['transfer_id'];
 
-	$images[] = array('gridimage_id'=>$gid, 'source'=>'pending', 'path'=> $path);
+	$images[] = array('gridimage_id'=>$gid, 'source'=>'tmp', 'path'=> $path);
 }
 
 if (empty($images))
