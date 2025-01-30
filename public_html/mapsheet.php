@@ -32,6 +32,11 @@ init_session();
 
 $smarty = new GeographPage;
 
+rate_limiting('mapsheet.php', 5, true);
+
+$USER->mustHavePerm("basic");
+
+
 customGZipHandlerStart();
 customExpiresHeader(360,false,true);
 
