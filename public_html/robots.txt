@@ -68,6 +68,7 @@ Disallow: /tags/
 Disallow: /tagged/*exclude=
 Disallow: /tagged/*photo=
 Disallow: /faq-
+Disallow: /*/1000$
 
 
 User-Agent: Googlebot
@@ -153,6 +154,15 @@ Disallow: /tags/
 Disallow: /tagged/*exclude=
 Disallow: /tagged/*photo=
 Disallow: /faq-
+Disallow: /*/1000$
+Disallow: /blog/?when=*&u=
+Disallow: /chwilio/?loc=
+Disallow: /stuff/list.php?title=
+Disallow: /tagged/*?exact
+Disallow: /tagged/milestoneid
+Disallow: /*feed/recent.gpx
+Disallow: /tags/*output=
+Disallow: /explore/calendar.php
 Allow: /tags/$
 Allow: /tags/prefix.php
 Allow: /tags/primary.php
