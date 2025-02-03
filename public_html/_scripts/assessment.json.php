@@ -65,14 +65,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$w[] = "model = 'assessment'";
 		$w[] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
 
-		$offset = $db->getOne("SELECT offset FROM labeler_agent WHERE ".implode(' AND ',$w)." AND updated > date_sub(now(),interval 24 hour)");
+		$offset = $db->getOne("SELECT `offset` FROM labeler_agent WHERE ".implode(' AND ',$w)." AND updated > date_sub(now(),interval 24 hour)");
 		if (is_null($offset) || strlen($offset) == 0) { //offset="0" is a valid offset!
-			$offsets = explode(',',$db->getOne("SELECT GROUP_CONCAT(offset) FROM labeler_agent WHERE ".implode(' AND NOT ',$w)." AND updated > date_sub(now(),interval 24 hour)"));
+			$offsets = explode(',',$db->getOne("SELECT GROUP_CONCAT(`offset`) FROM labeler_agent WHERE ".implode(' AND NOT ',$w)." AND updated > date_sub(now(),interval 24 hour)"));
 			$offset = 0;
 			while (in_array("$offset",$offsets,true))
 				$offset+=100;
-			$w[] = "offset = $offset";
-			$db->Execute($sql = "INSERT INTO labeler_agent SET ".implode(',',$w)." ON DUPLICATE KEY UPDATE ".array_pop($w));
+			$w[] = "`offset` = $offset";
+			$db->Execute($sql = "INSERT INTO labeler_agent SET ".implode(',',$w)." ON DUPLICATE KEY UPDATE ".array_pop($w).", updated = NOW()");
 
 		}
 		$limit = "$offset,$limit";
