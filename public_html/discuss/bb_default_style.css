@@ -312,6 +312,11 @@ img.forum-icons {
   z-index: 1;
   background: cornsilk;
   }
+
+  a:target { /* needed to push down target links (past the sticky header) */
+	scroll-margin-top:180px;
+        border:1px solid orange;
+  }
 }
 
 .forum-post-titlebox-title {
@@ -372,6 +377,7 @@ img.forum-icons {
   grid-row-gap: 2px;
   grid-column-gap: 5px;
   margin: 0;
+  margin-bottom:4px;
 }
 
 @media all and (max-width: 800px) {
@@ -389,12 +395,10 @@ img.forum-icons {
 .forum-post-header {
   grid-area: forum-post-header;
   padding: 0.5em;
-  background: #000066;
-  color: #FFFFFF;
+  background: #e6e1ff;
   line-height: 1.5;
 }
 .forum-post-header a:link, .forum-post-header a:visited {
-  color:white;
 }
 .forum-post-user {
   grid-area: forum-post-user;
@@ -621,7 +625,7 @@ img.forum-icons {
   grid-column-gap: 5px;
   margin: 0;
   padding: 2px;
-  border: solid white;
+  margin-bottom:6px;
   background: #E9EFF4;
 }
 
