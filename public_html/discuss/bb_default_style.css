@@ -844,10 +844,13 @@ img.forum-icons {
   margin-top:10px;
   background-color:#f9f9f9;
   width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
 }
 @media only screen and (pointer:fine) {
 	.forum-forums-compactlist img.forum-icons {
 	  max-width:24px;
+    white-space: normal;
 	}
 }
 
