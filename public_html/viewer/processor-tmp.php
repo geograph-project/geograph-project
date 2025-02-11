@@ -1,7 +1,5 @@
 <?
 
-die('disabled');
-
 require_once('geograph/global.inc.php');
 init_session();
 
