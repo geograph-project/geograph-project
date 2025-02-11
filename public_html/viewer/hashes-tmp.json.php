@@ -31,7 +31,7 @@ if (empty($data))
 
 $done = $db->getAssoc("SELECT gridimage_id,1 FROM gridimage_hash WHERE source = 'tmp' AND user_id = $user_id");
 
-	$fields = array('gid','transfer_id','uploaded','gridref');
+	$fields = array('gid','phash','transfer_id','uploaded','gridref');
         print $sep.json_encode($fields,JSON_PARTIAL_OUTPUT_ON_ERROR);
         $sep = ",\n";
 
@@ -44,7 +44,7 @@ foreach($data as $row) {
         if (empty($done[$gid]))
                 continue;
 
-	$row = array($gid, $row['transfer_id'], $row['uploaded'], @$row['grid_reference']);
+	$row = array($gid, $done[$gid], $row['transfer_id'], $row['uploaded'], @$row['grid_reference']);
         print $sep.json_encode($row,JSON_PARTIAL_OUTPUT_ON_ERROR);
 }
 
