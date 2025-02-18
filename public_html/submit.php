@@ -22,7 +22,7 @@
  */
 
 foreach(array('setpos','setpos2','grid_reference','gridref','eastings','northings','gridsquare') as $key)
-	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w \.>]*$/',$_REQUEST[$key])) {
+	if (!empty($_REQUEST[$key]) && !preg_match('/^[\w \.>]*$/',$_REQUEST[$key]) && !preg_match("/^\s*\b(-?\d+\.?\d*)\xB0?\s*[NS]*\s*[, ]+(-?\d+\.?\d*)\xB0?\s*([EW]*)\s*$/i",$_REQUEST[$key])) {	//specifcally allow lat/long in grid_reference.
 	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
 	     exit;
 	}
