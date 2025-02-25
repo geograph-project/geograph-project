@@ -101,6 +101,69 @@
 {/if}
 {/dynamic}
 </ul>
+
+{if $loadSearchesAsync}
+<div id="recent-searches">
+    <h3>Recent Searches</h3>
+    <div id="searches-loading">Loading recent searches...</div>
+    <ul id="searches-list" style="display:none">
+    </ul>
+    <div id="show-more" style="display:none">
+        <a href="#" onclick="loadSearches(true); return false;">Show all searches</a>
+    </div>
+</div>
+
+<script>
+let searchesLoaded = false;
+
+function loadSearches(all = false) {
+    const list = document.getElementById('searches-list');
+    const loading = document.getElementById('searches-loading');
+    const showMore = document.getElementById('show-more');
+    
+    loading.style.display = 'block';
+    list.style.display = 'none';
+    
+    fetch('/get_searches.php' + (all ? '?all=1' : ''), {
+        headers: searchesLoaded ? {
+            'If-Modified-Since': lastLoadTime
+        } : {}
+    })
+    .then(response => {
+        if (response.status === 304) {
+            loading.style.display = 'none';
+            list.style.display = 'block';
+            return;
+        }
+        lastLoadTime = response.headers.get('Last-Modified');
+        return response.json();
+    })
+    .then(searches => {
+        if (!searches) return;
+        
+        list.innerHTML = searches.map(search => `
+            <li>
+                <a href="/search.php?i=${search.id}">${search.searchdesc}</a>
+                ${search.favorite === 'Y' ? '⭐' : ''}
+                ${search.edit ? '[<a href="/search.php?i=${search.id}&amp;edit=1">edit</a>]' : ''}
+            </li>
+        `).join('');
+        
+        loading.style.display = 'none';
+        list.style.display = 'block';
+        showMore.style.display = all ? 'none' : 'block';
+        searchesLoaded = true;
+    });
+}
+
+// Load searches when page loads
+loadSearches();
+
+// Refresh periodically
+setInterval(() => loadSearches(), 60000);
+</script>
+{/if}
+
 <div class="interestBox">
 <ul class="lessIndent" style="margin-top:5px">
 
