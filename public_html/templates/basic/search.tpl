@@ -124,7 +124,7 @@ function loadSearches(all = false) {
     loading.style.display = 'block';
     list.style.display = 'none';
     
-    fetch('/get_searches.php' + (all ? '?all=1' : ''), {
+    fetch('/searches.json.php' + (all ? '?all=1' : ''), {
         headers: searchesLoaded ? {
             'If-Modified-Since': lastLoadTime
         } : {}
