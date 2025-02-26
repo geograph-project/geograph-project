@@ -1056,49 +1056,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign_by_ref('featured',$arr2);
 	}
 	if ($USER->registered) {
-		if (!$db) {
-			$db=NewADOConnection($GLOBALS['DSN']);
-			if (!$db) die('Database connection failed');
-		}
-		if (isset($_GET['all'])) {
-			$flimit = "";
-			$nlimit = "";
-			$smarty->assign('all',1);
-		} elseif (isset($_GET['more'])) {
-			$flimit = "";
-			$nlimit = "limit 40";
-			$smarty->assign('more',1);
-		} else {
-			$flimit = "limit 12";
-			$nlimit = "limit 12";
-		}
-		#group by searchdesc,searchq,displayclass,resultsperpage
-		$recentsearchs = $db->GetAssoc("
-			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries
-			left join queries_count using (id)
-			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'
-			order by use_timestamp desc,id desc	$nlimit)
-		UNION
-			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries
-			left join queries_count using (id)
-			where user_id = {$USER->user_id} and favorite = 'Y' and searchuse = 'search'
-			order by use_timestamp desc,id desc	$flimit)
-		order by use_timestamp desc,id desc	");
-
-		$a = array();
-		foreach ($recentsearchs as $i => $row) {
-			if ($a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"]) {
-				unset($recentsearchs[$i]);
-			} else {
-				$a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"] = 1;
-				if ($row['searchq'] == "inner join gridimage_query using (gridimage_id) where query_id = $i") {
-					$recentsearchs[$i]['edit'] = 1;
-				}
-			}
-		}
-		unset($a);
-
-		$smarty->assign_by_ref('recentsearchs',$recentsearchs);
+		$smarty->assign('loadSearchesAsync', true);
 	}
 
 	require_once('geograph/imagelist.class.php');
