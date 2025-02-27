@@ -315,7 +315,10 @@ img.forum-icons {
 
   a:target { /* needed to push down target links (past the sticky header) */
 	scroll-margin-top:180px;
-        border:1px solid orange;
+  }
+  div.forum-post-user:has(a:target) {
+    background-color:cornsilk;
+    border:1px solid orange;
   }
 }
 
@@ -425,9 +428,14 @@ img.forum-icons {
 }
 .forum-post-ip {
   text-align: left;
-  font-size: 0.8em;
+  font-size: 0.65em;
   margin-bottom: 5px;
   overflow-wrap: break-word;
+}
+.forum-post-ip a {
+  color:brown;
+  text-decoration:none;
+  font-family:monospace;
 }
 .forum-post-postid {
   text-align: right;
@@ -528,9 +536,16 @@ img.forum-icons {
   min-width: 13ch;
   max-width: 200px;
   line-height:2em;
+  cursor: pointer;
+}
+.forum-post-reply-buttons input:hover,
+.forum-post-reply-buttons input:focus {
+  border:2px solid gray;
 }
 .forum-post-reply-buttons input:active { /*shows that the button is being clicked*/
-  box-shadow: 2px 2px 5px #fc894d;
+    box-shadow: inset 2px 2px 5px #fc894d;
+    text-shadow: 2px 2px 2px gray;
+    transform: translateX(3px) translate3(4px);
 }
 
 .forum-post-reply-submit {
