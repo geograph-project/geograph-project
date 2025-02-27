@@ -99,7 +99,6 @@
 {else}
 	<li><i><a href="/login.php">Login</a> to see your recent and favorite searches.</i><br/></li>
 {/if}
-{/dynamic}
 </ul>
 
 {if $loadSearchesAsync}
@@ -168,6 +167,8 @@ setInterval(() => loadSearches(), 60000);
 </script>
 {/literal}
 {/if}
+
+{/dynamic}
 
 <div class="interestBox">
 <ul class="lessIndent" style="margin-top:5px">
