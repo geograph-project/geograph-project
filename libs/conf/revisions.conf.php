@@ -1,7 +1,7 @@
 <?php
 $REVISIONS = array();
 $REVISIONS['/admin/moderation.js']=1;
-$REVISIONS['/discuss/bb_default_style.css']=50731983;
+$REVISIONS['/discuss/bb_default_style.css']=43150302;
 $REVISIONS['/games/markit.js']=8179;
 $REVISIONS['/games/place-memory.js']=3997;
 $REVISIONS['/geotrips/geotrips.css']=7809;
