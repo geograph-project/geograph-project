@@ -106,8 +106,11 @@ if (!empty($_POST['style']) && !empty($_GET['i'])) {
 	}
 	header("Location: /search.php");
 	exit;
-} else {
+} elseif (!empty($_GET)) {
+	//mainly so caches search results
 	init_session_or_cache(3600, 900); //cache publically, and privately
+} else {
+	init_session();
 }
 
 
@@ -169,11 +172,11 @@ if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_le
 if (isset($_GET['fav']) && $i) {
 
 	$db=GeographDatabaseConnection(false);
-	
+
 	$fav = ($_GET['fav'])?'Y':'N';
 	$db->query("UPDATE queries SET favorite = '$fav' WHERE id = $i AND user_id = {$USER->user_id}");
-	
-	sleep(2);//fake delay to allow replication to catch up - ekk!
+
+	sleep(1);//fake delay to allow replication to catch up - ekk!
 	header("Location:/search.php?d=".time());
 	exit;
 
