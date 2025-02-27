@@ -109,12 +109,14 @@
     <ul id="searches-list" style="display:none">
     </ul>
     <div id="show-more" style="display:none">
-        <a href="#" onclick="loadSearches(true); return false;">Show all searches</a>
+        <a href="#" onclick="loadSearches(true); return false;">Show more searches</a>
     </div>
 </div>
 
+{literal}
 <script>
 let searchesLoaded = false;
+let lastLoadTime = [];
 
 function loadSearches(all = false) {
     const list = document.getElementById('searches-list');
@@ -126,7 +128,7 @@ function loadSearches(all = false) {
     
     fetch('/searches.json.php' + (all ? '?all=1' : ''), {
         headers: searchesLoaded ? {
-            'If-Modified-Since': lastLoadTime
+            'If-Modified-Since': lastLoadTime[all]
         } : {}
     })
     .then(response => {
@@ -135,7 +137,7 @@ function loadSearches(all = false) {
             list.style.display = 'block';
             return;
         }
-        lastLoadTime = response.headers.get('Last-Modified');
+        lastLoadTime[all] = response.headers.get('Last-Modified');
         return response.json();
     })
     .then(searches => {
@@ -144,8 +146,9 @@ function loadSearches(all = false) {
         list.innerHTML = searches.map(search => `
             <li>
                 <a href="/search.php?i=${search.id}">${search.searchdesc}</a>
-                ${search.favorite === 'Y' ? '⭐' : ''}
-                ${search.edit ? '[<a href="/search.php?i=${search.id}&amp;edit=1">edit</a>]' : ''}
+                ${search.favorite === 'Y' ? '&#11088;' : ''}
+		${search.count ? `[${search.count}]`:''}
+                ${search.edit ? `[<a href="/search.php?i=${search.id}&amp;edit=1" style="color:red">edit</a>]` : ''}
             </li>
         `).join('');
         
@@ -162,6 +165,7 @@ loadSearches();
 // Refresh periodically
 setInterval(() => loadSearches(), 60000);
 </script>
+{/literal}
 {/if}
 
 <div class="interestBox">
