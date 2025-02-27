@@ -106,11 +106,12 @@
 <div id="recent-searches">
     <h3>Recent Searches</h3>
     <div id="searches-loading">Loading recent searches...</div>
-    <ul id="searches-list" style="display:none">
+    <ul id="searches-list" style="display:none;list-style-type:none">
     </ul>
     <div id="show-more" style="display:none">
         <a href="#" onclick="loadSearches(true); return false;">Show more searches</a>
     </div>
+	<br>
 </div>
 
 {literal}
@@ -145,8 +146,8 @@ function loadSearches(all = false) {
         
         list.innerHTML = searches.map(search => `
             <li>
+                <a href="/search.php?i=${search.id}&amp;fav=${search.favorite === 'Y'?'N':'Y'}" title="toggle favorite" style=text-decoration:none>${search.favorite === 'Y' ? '&#10030;' : '&#10032;'}</a>
                 <a href="/search.php?i=${search.id}">${search.searchdesc}</a>
-                ${search.favorite === 'Y' ? '&#11088;' : ''}
 		${search.count ? `[${search.count}]`:''}
                 ${search.edit ? `[<a href="/search.php?i=${search.id}&amp;edit=1" style="color:red">edit</a>]` : ''}
             </li>
