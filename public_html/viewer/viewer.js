@@ -264,7 +264,7 @@ function render_table($output, order) {
 		let $tr = jQuery('<tr>');
 		$tr.append(jQuery('<th>').text('Thumb'));
 		$tr.append(jQuery('<th>').text('Name'));
-//		$tr.append(jQuery('<th>').text('Size'));
+		$tr.append(jQuery('<th>').text('Size'));
 		$tr.append(jQuery('<th>').text('Date/Time'));
 		$tr.append(jQuery('<th>').text('Square'));
 		$tr.append(jQuery('<th>').text('Submit'));
@@ -289,7 +289,7 @@ function render_table($output, order) {
 
 		$tr.append(jQuery('<td>').append(get_imagejQuery(image)));
 		$tr.append(jQuery('<td>').text(image.name));
-//		$tr.append(jQuery('<td>').text(image.size));
+		$tr.append(jQuery('<td>').text(image.size));
 
 		let $td1 = jQuery('<td>');
 		if (image.dateraw) {
@@ -643,18 +643,16 @@ function submit_image(image) {
 
 		//if too big, need to first size to under 8Mb!
 		if (image.size > 8388608) {
-			alert('image is too big to submit right now. We hope to add support for resizing soon!');
-			return;
 
-			var img = document.createElement("img");
-			//NOTE, while we know a easy way to resize using canvas, it WONT retain EXIF.
-			// https://github.com/nodeca/pica (already in imagehash)
-			// + https://github.com/nodeca/image-blob-reduce might be a solution!
-			img.onload = function (event) {
-				//jQuery('#message form input[name="src"]').val(e.target.result);
-				//form.submit(); //..so user doesnt actlly have to press the button!
-			}
-			img.src = e.target.result;
+			jQuery('#message').append("image is too big and needs to be downsized before submission. Please wait... ");
+
+			resizeImage(e.target.result, function(data_url) {
+				//currently, because the EXIF is lost, only support v1 - which works with the lat/long we pass above!
+				jQuery('#message form input[name="auto"]').val('submit');
+				jQuery('#message form input[name="src"]').val(data_url);
+
+				$form.trigger("submit"); //..so user doesnt actlly have to press the button!
+			})
 
 		//otherwise can send directly (although probably too big for GET, so needs a post!
 		} else {
@@ -662,10 +660,10 @@ function submit_image(image) {
 			jQuery('#message form input[name="src"]').val(e.target.result);
 
 			$form.trigger("submit"); //..so user doesnt actlly have to press the button!
-			$form.hide();
 		}
 
-		$form.append('<button type=submit>Submit to Geograph</button>');
+		$form.hide();
+//		$form.append('<button type=submit>Submit to Geograph</button>');
 	};
 	reader.readAsDataURL(image._file);
 }

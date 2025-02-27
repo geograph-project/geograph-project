@@ -146,3 +146,64 @@ jQuery(function() {
         });
 });
 
+////////////////////////////////
+// resize image to under 8mb
+// based on code from Gemini: https://g.co/gemini/share/35c75ecb4cb4
+
+function resizeImage(imageDataUrl, callback) {
+	const img = new Image();
+	img.onload = function() {
+		let canvas = document.createElement('canvas');
+		let ctx = canvas.getContext('2d');
+		let width = img.width;
+		let height = img.height;
+
+		canvas.width = width;
+		canvas.height = height;
+		ctx.drawImage(img, 0, 0, width, height);
+
+		let quality = 0.96; // Initial quality
+		let resizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+		let resizedBlob = dataURLtoBlob(resizedDataUrl);
+
+//console.log("trying, ",width,height,' ',quality,' = ',resizedBlob.size, resizedBlob.size > 8 * 1024 * 1024);
+
+		while (resizedBlob.size > 8 * 1024 * 1024) { // 8MB
+			//first try reducing quality
+			if (quality > 0.7) {
+				quality *= 0.9;
+			} else if (width > 3000 && height > 3000){
+				width *= 0.9;
+				height *= 0.9;
+				quality = 0.87; //reset quality, when downsize!
+			} else {
+				alert("Could not resize image under 8MB");
+				return;
+			}
+
+			canvas.width = width;
+			canvas.height = height;
+			ctx.drawImage(img, 0, 0, width, height);
+			resizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+			resizedBlob = dataURLtoBlob(resizedDataUrl);
+
+//console.log("trying, ",width,height,' ',quality,' = ',resizedBlob.size, resizedBlob.size > 8 * 1024 * 1024);
+		}
+		alert('Image has been resized to '+width+'x'+height+' and saved at '+(quality*100)+'% quality setting, resulting in a new image of '+resizedBlob.size+' bytes. \n Note: EXIF has been lost, so submission can only continue using Submit v1 currently');
+
+		callback(resizedDataUrl);
+	};
+	img.src = imageDataUrl;
+}
+
+function dataURLtoBlob(dataURL) {
+	const parts = dataURL.split(';base64,');
+	const contentType = parts[0].split(':')[1];
+	const raw = window.atob(parts[1]);
+	const rawLength = raw.length;
+	const uInt8Array = new Uint8Array(rawLength);
+	for (let i = 0; i < rawLength; ++i) {
+		uInt8Array[i] = raw.charCodeAt(i);
+	}
+	return new Blob([uInt8Array], { type: contentType });
+}
