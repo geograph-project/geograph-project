@@ -11,8 +11,8 @@ $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');
 
 // Get last modified time of searches
-$lastMod = $db->GetOne("SELECT MAX(use_timestamp) 
-    FROM queries 
+$lastMod = $db->GetOne("SELECT UNIX_TIMESTAMP(MAX(use_timestamp))
+    FROM queries
     WHERE user_id = {$USER->user_id}");
 
 // Check if-modified-since header
@@ -27,9 +27,9 @@ if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
 // Set last modified header
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', $lastMod).' GMT');
 
-$limit = isset($_GET['all']) ? "" : "limit 12";
+$limit = isset($_GET['all']) ? "limit 1000" : "limit 12";
 
-$recentsearchs = $db->GetAssoc("
+$recentsearchs = $db->GetAll("
     SELECT queries.id,favorite,searchdesc,`count`,use_timestamp,
            searchclass,searchq,displayclass,resultsperpage 
     FROM queries
@@ -46,11 +46,13 @@ foreach ($recentsearchs as $i => $row) {
         unset($recentsearchs[$i]);
     } else {
         $seen[$key] = true;
-        if ($row['searchq'] == "inner join gridimage_query using (gridimage_id) where query_id = $i") {
+	//emulate {$obj.searchdesc|escape:"html"|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}
+	$recentsearchs[$i]['searchdesc'] = latin1_to_utf8(preg_replace('/(, in [\w ]+ order)/','</a><small>\1</small>', preg_replace('/^, /','', htmlentities($row['searchdesc']))));
+        if ($row['searchq'] == "inner join gridimage_query using (gridimage_id) where query_id = ".$row['id']) {
             $recentsearchs[$i]['edit'] = 1;
         }
     }
 }
 
 header('Content-Type: application/json');
-echo json_encode(array_values($recentsearchs));
+echo json_encode(array_values($recentsearchs), JSON_PARTIAL_OUTPUT_ON_ERROR);
