@@ -220,6 +220,8 @@ div.caption {
 				<summary>Share...</summary>
 				<div>
 					<a href="https://twitter.com/intent/tweet?text={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Twitter</a><br>
+					<a href="https://bsky.app/intent/compose?text={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Bluesky</a><br>
+					<a href="https://mastodon.social/share?text={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Mastodon</a><br>
 					<a href="https://www.facebook.com/sharer/sharer.php?u={$self_host}/photo/{$image->gridimage_id}">Share this photo via Facebook</a><br>
 					<a href="https://www.pinterest.com/pin/create/button/?media={$imageurl}&amp;url={$self_host}/photo/{$image->gridimage_id}&amp;description={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}">Share this photo via Pinterest</a><br>
 					<a href="https://share.flipboard.com/bookmarklet/popout?v=2&amp;title={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Flipboard</a><br>
