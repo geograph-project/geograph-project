@@ -145,7 +145,7 @@ function loadSearches(all = false) {
         
         list.innerHTML = searches.map(search => `
             <li>
-                <a href="/search.php?i=${search.id}&amp;fav=${search.favorite === 'Y'?'N':'Y'}" title="toggle favorite" style=text-decoration:none>${search.favorite === 'Y' ? '&#10030;' : '&#10032;'}</a>
+                <a href="/search.php?i=${search.id}&amp;fav=${search.favorite === 'Y'?'0':'1'}" title="toggle favorite" style=text-decoration:none>${search.favorite === 'Y' ? '&#10030;' : '&#10032;'}</a>
                 <a href="/search.php?i=${search.id}">${search.searchdesc}</a>
 		${search.count ? `[${search.count}]`:''}
                 ${search.edit ? `[<a href="/search.php?i=${search.id}&amp;edit=1" style="color:red">edit</a>]` : ''}
