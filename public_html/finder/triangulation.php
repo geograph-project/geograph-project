@@ -43,6 +43,9 @@ if (!empty($_GET['location'])) {
 }
 if ($USER->user_id) { //todo, check stats?
 	$smarty->assign('user_id', $USER->user_id);
+	if (!empty($_GET['mine'])) {
+		$smarty->assign('searchtext', 'user'.$USER->user_id);
+	}
 }
 
 $smarty->display('finder_triangulation.tpl');
