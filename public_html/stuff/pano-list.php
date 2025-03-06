@@ -141,6 +141,11 @@ foreach ($rows as $row) {
 	else
 	        $json["vaov"] = 360 / $ratio;
 
+	if (preg_match('/pitch:(-?\d+\.?\d*)/',$image->tags,$m))
+		$json["horizonPitch"] = floatval($m[1]);
+	if (preg_match('/roll:(-?\d+\.?\d*)/',$image->tags,$m))
+		$json["horizonRoll"] = floatval($m[1]);
+
 	################
 
 	if ($great > 2000)
