@@ -55,6 +55,8 @@ if (!empty($param['disk'])) {
 	$cluster = $rt->getRow("SHOW STATUS LIKE 'cluster%indexes'");
 	$list = @explode(',',$cluster['Value']);
 
+	print "Index\t\t\tType\t\tCluster\t\tDisk Bytes\tRam Bytes\tMem Limit\n";
+
 	$usage = array();
 	$largest = 0;
 	foreach ($indexes as $index => $type) {
