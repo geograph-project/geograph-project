@@ -190,14 +190,28 @@ elseif (!empty($json["haov"])) //use same aspect ratio as image
 else
 	$json["vaov"] = 360 / $ratio;
 
+//horizonPitch and horizonRoll (number)
+if (!empty($_GET['pitch']))
+        $json["horizonPitch"] = floatval($_GET['pitch']);
+elseif (preg_match('/pitch:(\d+\.?\d*)/',$image->tags,$m))
+	$json["horizonPitch"] = floatval($m[1]);
+
+if (!empty($_GET['roll']))
+        $json["horizonRoll"] = floatval($_GET['roll']);
+elseif (preg_match('/roll:(\d+\.?\d*)/',$image->tags,$m))
+	$json["horizonPoll"] = floatval($m[1]);
 
 //provide the tags for easy copy/paste
 if (!empty($_GET['v']) || !empty($_GET['h']) || !empty($_GET['d'])) {
 	print "Copy these Tags: <tt>panorama:$type";
 	if (!empty($json['haov']))
-		print ";vfov:{$json['vaov']}";
+		  print ";vfov:{$json['vaov']}";
 	if (!empty($json['haov']))
-		print ";hfov:{$json['haov']}";
+		  print ";hfov:{$json['haov']}";
+	if (!empty($json['pitch']))
+		  print ";pitch:{$json['horizonPitch']}";
+	if (!empty($json['roll']))
+		  print ";roll:{$json['horizonRoll']}";
 	print "</tt><hr>";
 }
 
@@ -297,8 +311,17 @@ if (empty($json["haov"]) || $json["vaov"] == 360) { ?>
 
 <div id="panorama"></div>
 <script>
-pannellum.viewer('panorama', <? print json_encode($json); ?>);
+let pano = pannellum.viewer('panorama', <? print json_encode($json); ?>);
+function updH(that,method,id) {
+	pano[method](that.value);
+	document.getElementById(id).innerHTML = that.value;
+}
 </script>
+
+<? if (!empty($_GET['set'])) { ?>
+<input type=range name=roll style="width:400px" min=-180 max=180 onchange="updH(this,'setHorizonRoll','poutroll')"><span id="poutroll">Roll</span><br>
+<input type=range name=pitch style="width:400px" min=-180 max=180 onchange="updH(this,'setHorizonPitch','poutpitch')"><span id="poutpitch">Pitch</span><br>
+<? } ?>
 
 <? if (!empty($json["compass"]) || $type=='photosphere') { ?>
 	<p class=compassnote><i>Note: The compass is only accurate if the photographer set the view direction of the center of the panorama</i></p>
