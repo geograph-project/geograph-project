@@ -35,6 +35,8 @@ $.noConflict();
 
 		<script src="https://s1.geograph.org.uk/js/jquery.storage.v111.js"></script>
 		<script src="exif.js"></script>
+		<script src="ExifRestorer.js"></script>
+
 		<script type="text/javascript" src="https://s1.geograph.org.uk/mapper/geotools2.v7300.js"></script>
 
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />

@@ -647,8 +647,6 @@ function submit_image(image) {
 			jQuery('#message').append("image is too big and needs to be downsized before submission. Please wait... ");
 
 			resizeImage(e.target.result, function(data_url) {
-				//currently, because the EXIF is lost, only support v1 - which works with the lat/long we pass above!
-				jQuery('#message form input[name="auto"]').val('submit');
 				jQuery('#message form input[name="src"]').val(data_url);
 
 				$form.trigger("submit"); //..so user doesnt actlly have to press the button!

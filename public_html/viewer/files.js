@@ -164,6 +164,8 @@ function resizeImage(imageDataUrl, callback) {
 
 		let quality = 0.96; // Initial quality
 		let resizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+		resizedDataUrl = 'data:image/jpeg;base64,'+ExifRestorer.restore(imageDataUrl,resizedDataUrl);
+
 		let resizedBlob = dataURLtoBlob(resizedDataUrl);
 
 //console.log("trying, ",width,height,' ',quality,' = ',resizedBlob.size, resizedBlob.size > 8 * 1024 * 1024);
@@ -185,6 +187,8 @@ function resizeImage(imageDataUrl, callback) {
 			canvas.height = height;
 			ctx.drawImage(img, 0, 0, width, height);
 			resizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+			resizedDataUrl = 'data:image/jpeg;base64,'+ExifRestorer.restore(imageDataUrl,resizedDataUrl);
+
 			resizedBlob = dataURLtoBlob(resizedDataUrl);
 
 //console.log("trying, ",width,height,' ',quality,' = ',resizedBlob.size, resizedBlob.size > 8 * 1024 * 1024);
