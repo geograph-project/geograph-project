@@ -199,7 +199,7 @@ elseif (preg_match('/pitch:(-?\d+\.?\d*)/',$image->tags,$m))
 if (!empty($_GET['roll']))
         $json["horizonRoll"] = floatval($_GET['roll']);
 elseif (preg_match('/roll:(-?\d+\.?\d*)/',$image->tags,$m))
-	$json["horizonPoll"] = floatval($m[1]);
+	$json["horizonRoll"] = floatval($m[1]);
 
 
 //provide the tags for easy copy/paste
@@ -209,9 +209,9 @@ if (!empty($_GET['v']) || !empty($_GET['h']) || !empty($_GET['d'])) {
 		  print ";vfov:{$json['vaov']}";
 	if (!empty($json['haov']))
 		  print ";hfov:{$json['haov']}";
-	if (!empty($json['pitch']))
+	if (!empty($json['horizonPitch']))
 		  print ";pitch:{$json['horizonPitch']}";
-	if (!empty($json['roll']))
+	if (!empty($json['horizonRoll']))
 		  print ";roll:{$json['horizonRoll']}";
 	print "</tt><hr>";
 }
