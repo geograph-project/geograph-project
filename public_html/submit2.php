@@ -117,6 +117,17 @@ if (isset($_FILES['jpeg_exif']))
 			break;
 	}
 
+} elseif (!empty($_POST['jpeg_data'])) {
+	$uploadmanager=new UploadManager;
+	if ($uploadmanager->processDataURL($_POST['jpeg_data'])) {
+		$upload_to_process=true;
+		$smarty->assign('success', 1);
+
+        } else {
+                $smarty->assign('error', $uploadmanager->errormsg);
+                $uploadmanager->errormsg = '';
+        }
+
 } elseif (!empty($_POST['jpeg_url'])) {
         $uploadmanager=new UploadManager;
 

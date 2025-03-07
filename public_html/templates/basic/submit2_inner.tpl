@@ -115,20 +115,6 @@
 		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em" onclick="return check_jpeg(this.form.jpeg_exif)"/> (while file is sending can continue on the steps below)<br/>
 		</div>
 
-	{literal}<script>
-        document.getElementById("jpeg_exif").onchange = function(e) {
-            var file = e.target.files[0];
-            if (file && file.size && file.size > 8388608) {
-                alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
-	    } else if (file && file.type && file.type != "image/jpeg" && file.type != "image/heic") {
-                alert('File appears to not be a JPEG image. We only accept .jpg files or .heic files');
-            } else if (file && file.size && file.size < 10000) {
-		alert('File appears to be '+file.size+' bytes, which is rather small. Please check selected right image.');
-            }
-        }
-	</script>{/literal}
-
-
 		<br/>
 		<div><i>Optionally</i> upload an image with Locational information attached <a href="/article/Uploading-Tagged-Images" class="about" target="_blank">About</a><br/>
 		<ul>
@@ -147,14 +133,9 @@
 
 {/dynamic}
 <script type="text/javascript" src="{"/js/puploader.js"|revision}"></script>
+<script type="text/javascript" src="{"/js/submission_utils.js"|revision}"></script>
+<script type="text/javascript" src="{"/viewer/ExifRestorer.js"|revision}"></script>
 <script type="text/javascript">
-{literal}
-function check_jpeg(ele) {
-	if (ele && ele.value && ele.value.length > 0 && !ele.value.match(/.(jpe?g|heic)$/i)) {
-		return confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel");
-	}
-}
-{/literal}
 {dynamic}
 	{literal}
 	AttachEvent(window,'load', function() {
