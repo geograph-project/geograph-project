@@ -57,6 +57,7 @@ $(function() {
 		// Specify what files to browse for
 		filters : [
 			{title : "JPG files", extensions : "jpg,jpeg"},
+			{title : "HEIF files", extensions : "heic"}
 		],
 
 		//the actual 'resize' operation runs in the 'UploadFile' event, so we can't insert anything between 'resizing' and actully uploading :(

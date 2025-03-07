@@ -130,10 +130,10 @@ geographing</a> first.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
-		<p><label for="jpeg_exif"><b>Upload an image with locational information attached</b></label> <br/>
+		<p><label for="jpeg_exif"><b>Upload an image with locational information attached (accepts JPEG or HEIC files)</b></label> <br/>
 
 		<input type="hidden" name="MAX_FILE_SIZE" value="8388608" />
-		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" accept="image/jpeg"/>
+		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" accept="image/jpeg, image/heic, image/png, image/x-ms-bmp, image/webp, image/tiff, image/jp2"/>
 
 		<input type="submit" name="setpos" value="Next &gt;" onclick="return check_jpeg(this.form.jpeg_exif)"/> <br/>
 
@@ -155,8 +155,8 @@ geographing</a> first.</p>
 	<script type="text/javascript">
 	{literal}
 	function check_jpeg(ele) {
-	    if (ele && ele.value && ele.value.length > 0 && !ele.value.match(/.jpe?g$/i)) {
-		if (!confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel"))
+	    if (ele && ele.value && ele.value.length > 0 && !ele.value.match(/\.(jpe?g|heic)$/i)) {
+		if (!confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG/HEIC images. To upload anyway, press OK. To select a different file click Cancel"))
 			return false;
 	    }
 
@@ -165,8 +165,8 @@ geographing</a> first.</p>
             if (file && file.size && file.size > 8388608) {
                 alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
 		return false;
-            } else if (file && file.type && file.type != "image/jpeg") {
-                alert('File appears to not be a JPEG image. We only accept .jpg files');
+            } else if (file && file.type && file.type != "image/jpeg" &&  file.type != "image/heic") {
+                alert('File appears to not be a JPEG image. We only accept .jpg/.heic files');
 		return false;
             } else if (file && file.size && file.size < 10000) {
                 return confirm('File appears to be '+file.size+' bytes, which is rather small. Please check selected right image.');
@@ -299,16 +299,16 @@ geographing</a> first.</p>
 		<input id="jpeg_url" name="jpeg_url" type="text" size="40" value="{$jpeg_url|escape:"html"}"/>
 		{else}
 		<input type="hidden" name="MAX_FILE_SIZE" value="8388608" />
-		<label for="jpeg"><b>JPEG Image File</b></label>
-		<input id="jpeg" name="jpeg" type="file" accept="image/jpeg"/>
+		<label for="jpeg"><b>JPEG/HEIC Image File</b></label>
+		<input id="jpeg" name="jpeg" type="file" accept="image/jpeg, image/heic"/>
 
         {literal}<script>
         document.getElementById("jpeg").onchange = function(e) {
             var file = e.target.files[0];
             if (file && file.size && file.size > 8388608) {
                 alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
-            } else if (file && file.type && file.type != "image/jpeg") {
-                alert('File appears to not be a JPEG image. We only accept .jpg files');
+            } else if (file && file.type && file.type != "image/jpeg" && file.type != "image/heic") {
+                alert('File appears to not be a JPEG image. We only accept .jpg/.heic files');
             } else if (file && file.size && file.size < 10000) {
                 alert('File appears to be '+file.size+' bytes, which is rather small. Please check selected right image.');
             }

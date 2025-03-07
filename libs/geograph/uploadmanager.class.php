@@ -442,18 +442,52 @@ class UploadManager
 	}
 
 	/**
-	* See if file is a JPEG
+	* See if file is a JPEG (checks content, not the filename)
+	*
+	* Note: it MAY overwriting the file, so should use is_uploaded_file BEFORE calling _isJpeg
 	*/
-	function _isJpeg($file)
+	function _isJpeg($file, $convert = false)
 	{
+		global $CONF;
+
 		$is_jpeg=false;
 
 		//use built in mime_content_type if available...
 		if (function_exists('mime_content_type'))
 		{
-			$is_jpeg= mime_content_type($file)=='image/jpeg';
+			$type = mime_content_type($file);
+			switch($type) {
+				case 'image/jpeg':
+					return true;
 
-			if (!$is_jpeg) {
+				case 'image/heic':
+				case 'image/png':
+				case 'image/x-ms-bmp':
+				case 'image/webp':
+				case 'image/tiff':
+				case 'image/jp2': //jpeg2000
+					if (!$convert)
+						return false;
+					//convert to jpeg, it should maintain exif (at least for heic files)
+
+					$tmp = tempnam('/tmp/','conv');
+					//note this command seems to automatically do -auto-orient (at least for heic) which should be a GOOD thing,
+					// just need to to be aware, because imagemagick is inconsistent is applying it!
+					$cmd = $CONF['imagemagick_path']."convert $file -quality 87 jpeg:$tmp";
+
+if (filesize($file) > 4000000) {
+//bodge, but convert uses to much memory for big images. Maybe should be checking pixel size, (eg if width*height*4 > 200M or somethign)
+ $cmd = preg_replace('/(^|\/)convert"?/','$0 -limit memory 100M',$cmd);
+}
+					passthru($cmd);
+					if (filesize($tmp) > 10)
+						rename($tmp,$file); //this is overwriting the file!
+
+					//check again!
+					$type = mime_content_type($file);
+					return ($type == 'image/jpeg');
+
+				default:
                                         ob_start();
                                         print_r(mime_content_type($file));print "\n";
 					print_r($_FILES);
@@ -461,11 +495,10 @@ class UploadManager
                                         $con = ob_get_clean();
                                         debug_message('[Geograph] JPEG Detection Failed',$con);
 			}
-
 		}
 		else
 		{
-			//basic home grown version
+			//basic home grown version (wont detect other image types, so dont support auto-convert)
 			$fp=fopen($file, 'rb');
 			if ($fp)
 			{
@@ -565,19 +598,18 @@ class UploadManager
 
 	split_timer('upload'); //starts the timer
 
-		if ($this->_isJpeg($upload_file))
+		//we need to check this BEFORE _isJpeg, as it may CONVERT the file to a jpeg (in which case copy_uploaded_file now fails)
+		$was_uploaded_file = is_uploaded_file($upload_file);
+
+		if ($this->_isJpeg($upload_file,true)) //if not a jpeg, then convert it
 		{
 			//generate a unique "upload id" - we use this to hold the image until
 			//they've confirmed they want to submit
 			$upload_id=md5(uniqid('upload'));
 
-			if ($all_non_upload)
+			if ($all_non_upload || $was_uploaded_file)
 			{
-				$ok = $this->_processFile($upload_id,$upload_file,false);
-			}
-			elseif (is_uploaded_file($upload_file))
-			{
-				$ok = $this->_processFile($upload_id,$upload_file,true);
+				$ok = $this->_processFile($upload_id,$upload_file,false); //set is_upload to false, as _isJpeg COULD of rewritten the file, we HAVE used is_upload_file()!
 			}
 			else
 			{
@@ -678,7 +710,7 @@ class UploadManager
 
 		} else {
 			//put the file in the right place...
-			if ($is_upload == 'upload') {
+			if ($is_upload) {
 				move_uploaded_file($upload_file,$pendingfile);
 			} else {
 				rename($upload_file,$pendingfile);
