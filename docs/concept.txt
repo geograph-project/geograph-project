@@ -1,0 +1,13 @@
+can you group these terms by physical geography areas: abattoir,abbey,academy,accident,accommodation,activity,advertisement,aerial (antenna),aerial cableway,aggregate,aggregates 
+terminal,agricultural business,agriculture,aircraft,airfield,airport,alleyway,allotment,ambulance,ambulance depot,amphitheatre,anchor,anchor points,ancient site,animal,animal 
+feeder,animal home,animal traces,apartment block,aquarium,aqueduct,arcade,arch,archaeology,archery,arena,army base,army vehicle,art,artefact,attraction,avenue
+
+
+echo "select subject from subjects" | mysql geograph_live > subjects.txt
+
+Can you group the full list from the file, similar to the original list above
+
+then copied the response to subjects2.txt!
+
+
+
