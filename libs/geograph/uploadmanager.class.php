@@ -542,27 +542,61 @@ if (filesize($file) > 4000000) {
 		}
 		return false;
 	}
+	function validate_valid_url($url, $flags=null) {
+		if (empty($flags))
+			$flags = FILTER_FLAG_NO_RES_RANGE | FILTER_FLAG_NO_PRIV_RANGE;
+
+		if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+			return false; // Basic URL validation failed
+		}
+
+		$host = parse_url($url, PHP_URL_HOST);
+
+		if ($host === false) {
+			return false; // Could not parse host
+		}
+
+		// Check if the host is an IP address, and if so, validate it with the flags.
+		if (filter_var($host, FILTER_VALIDATE_IP, $flags) !== false) {
+			//If the host is a valid IP, and it passes the flags, return true.
+			return true;
+		}
+
+		// If the host is not an IP, attempt to resolve it to an IP address.
+		$ip = gethostbyname($host);
+
+		if ($ip === $host) {
+			// gethostbyname failed to resolve the hostname.
+			return false;
+		}
+
+		// Validate the resolved IP address.
+		if (filter_var($ip, FILTER_VALIDATE_IP, $flags) === false) {
+			return false; // Resolved IP is invalid.
+		}
+
+		return true;
+	}
 
 	function processURL($url)
 	{
-		global $USER,$CONF;
 		$ok=false;
 
 	split_timer('upload'); //starts the timer
 
-		//generate a unique "upload id" - we use this to hold the image until
-		//they've confirmed they want to submit
-		$upload_id=md5(uniqid('upload'));
+		if (!$this->validate_valid_url($url)) {
+			 $this->error("Does not appear like a valid URL");
 
-		$temp_file = tempnam("/tmp",'upload');
-
-		if (preg_match('/^https?:\/\/[\w\.-]+\/[\w\.\/~-]+\.jpg$/',$url)
+		} elseif (preg_match('/^https?:\/\/[\w\.-]+\/[\w\.\/~-]+\.jpg$/',$url)
 		 || preg_match('/^https?:\/\/www\.picnik\.com\/file\/\d+$/',$url)
 		 || preg_match('/^https?:\/\/cdn\.filestackcontent\.com\/\w+$/',$url)
 		 || preg_match('/^https?:\/\/ucarecdn.com\/\w[\w-]+\//',$url)
                  || preg_match('/^https:\/\/lh3.googleusercontent.com\//',$url)
 		 || preg_match('/^https?:\/\/www\.filepicker\.io\//',$url))
 		{
+			$upload_id=md5(uniqid('upload'));
+			$temp_file = tempnam("/tmp",'upload');
+
 			if ($this->fetch_remote_file($url, $temp_file))
 			{
 				if ($this->_isJpeg($temp_file))
@@ -591,9 +625,38 @@ if (filesize($file) > 4000000) {
 		return $ok;
 	}
 
+	//accept a data URL specifically
+	function processDataURL($url) {
+		$ok = false;
+
+		//todo, we could allow other submissions, because _isJpeg will now convert some other formats TO jpeg!
+		if (strpos($url, "data:image/jpeg;base64,") !== 0) {
+			$this->error("We only accept JPEG images (base64 encoded) - your upload did not appear to be a valid JPEG file");
+			return false;
+		}
+
+		$upload_id=md5(uniqid('upload'));
+		$temp_file = tempnam("/tmp",'upload');
+
+		file_put_contents($temp_file, $url);
+
+		if (!filesize($temp_file)) {
+			$this->error("Was not able to decode file");
+
+		} elseif ($this->_isJpeg($temp_file)) {
+                        $ok = $this->_processFile($upload_id,$temp_file,false);
+
+			if (file_exists($temp_file)) //it SHOULD of been moved!;
+		                unlink($temp_file);
+                } else {
+			@unlink($temp_file);
+			$this->error("We only accept JPEG images - your upload did not appear to be a valid JPEG file");
+		}
+		return $ok;
+	}
+
 	function processUpload($upload_file,$all_non_upload = false)
 	{
-		global $USER,$CONF;
 		$ok=false;
 
 	split_timer('upload'); //starts the timer

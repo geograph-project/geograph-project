@@ -36,32 +36,15 @@ $uploadmanager=new UploadManager;
 
 ######################################
 
-if (strpos($_POST['src'], "data:image/jpeg;base64,") !== 0)
-	die("Only submission of jpegs allowed");
-
-######################################
-
-//ideally would be a $um->processDataURL Or processLocalFile
-
-$upload_id=md5(uniqid('upload'));
-$temp_file = tempnam("/tmp",'upload');
-
-$bits = explode(',',$_POST['src'],2);
-$encodedData = str_replace(' ','+', $bits[1]); //https://stackoverflow.com/questions/6735414/php-data-uri-to-file
-unset($bits); //can be quite big!
-file_put_contents($temp_file, base64_decode($encodedData));
-unset($encodedData);
-
-if ($uploadmanager->_isJpeg($temp_file)) {
-         $ok = $uploadmanager->_processFile($upload_id,$temp_file,false);
-
-	if (file_exists($temp_file)) //it SHOULD of been moved!;
-		unlink($temp_file);
-
+if (empty($_POST['src'])) {
+	die("no file provided");
 } else {
-	@unlink($temp_file);
-
-	die("only submission of jpegs allowed");
+	$ok = $uploadmanager->processDataURL($_POST['src']);
+	if ($ok) {
+		$upload_id = $uploadmanager->upload_id;
+	} else {
+		die(htmlentities($uploadmanager->errormsg));
+	}
 }
 
 //todo, store the taken+lat+long somewhere? maybe write then to EXIF (incase not there!)
