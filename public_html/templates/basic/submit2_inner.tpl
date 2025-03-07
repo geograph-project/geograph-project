@@ -107,13 +107,6 @@
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
 
-	{if $filepicker}
-
-		<input type="filepicker-dragdrop" id="jpeg_url" name="jpeg_url" data-fp-apikey="AWbx7KpSUTJ-4fLh3i4TEz" data-fp-option-container="modal" data-fp-option-maxsize="8388608" data-fp-option-services="BOX,COMPUTER,DROPBOX,FACEBOOK,GITHUB,GOOGLE_DRIVE,FLICKR,GMAIL,INSTAGRAM" onchange="this.value = event.files[0].url;">
-		<div>
-		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em" /> (while file is sending can continue on the steps below)<br/>
-		</div>
-
 	{else}
 		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto {if $small_upload}<b>5Mb</b>{else}8Mb{/if} filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8388608"/></div>
@@ -203,19 +196,6 @@ function check_jpeg(ele) {
 
 </script>
 </form>
-
-
-        {if $filepicker}
-                <script type="text/javascript" src="//api.filepicker.io/v0/filepicker.js"></script>
-		<script type="text/javascript">
-	        {literal}
-		function setupFilePicker() {
-			filepicker.constructWidget(document.getElementById('jpeg_url'));
-		}
-		AttachEvent(window,'load',setupFilePicker,false);
-	        {/literal}
-		</script>
-	{/if}
 
 {/dynamic}
 

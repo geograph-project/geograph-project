@@ -468,10 +468,6 @@ if (empty($CONF['os_licence']) || $CONF['os_licence'] == 'XXXXXXXX') {
 	warn('$CONF[\'os_licence\'] does not appear to have been configured. Only a problem if Geograph British Isles/Britain and Ireland');
 }
 
-if (empty($CONF['picnik_api_key'])) {
-	warn('$CONF[\'picnik_api_key\'] does not appear to have been configured. RECOMMENDED but not required (code may need changing to take account of this)');
-}
-
 /////////////////////////////////////////////////////////////
 // server setup
 

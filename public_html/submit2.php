@@ -370,8 +370,6 @@ if (isset($_REQUEST['inner'])) {
 		$smarty->assign_by_ref('data',$data);
 	} else {
 		$step = 1;
-		if (!empty($_GET['filepicker']))
-			$smarty->assign('filepicker',1);
 	}
 
 	$smarty->assign('step', $step);
@@ -388,7 +386,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && $step !== 0 && empty($CONF['submissio
 if (!empty($_REQUEST['multi'])) {
 	$smarty->assign('multi', 1);
 }
-	
+
 if ($template=='puploader_success.tpl' && !$smarty->is_cached($template, $cacheid)) {
 
         if ($CONF['forums']) {

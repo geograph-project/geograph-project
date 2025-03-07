@@ -37,73 +37,7 @@ dieIfReadOnly();
 
 pageMustBeHTTPS();
 
-if (!empty($_POST) && !empty($_POST['urls'])) {
-	print ' <meta name="viewport" content="width=device-width, initial-scale=1"> ';
-
-	$ids = array();
-	if (preg_match_all('/https\:\/\/ucarecdn.com\/(\w[\w-]+)~(\d+)/',$_POST['urls'],$m)) {
-		foreach ($m[1] as $idx => $uuid) {
-			$num = $m[2][$idx];
-			foreach (range(0,$num-1) as $i) {
-				$url = "https://ucarecdn.com/{$uuid}~{$num}/nth/{$i}/.jpg"; //fake extension just to allow it via processURL
-
-				if (!empty($_POST['debug']))
-					print "<pre>$url</pre>";
-
-		                print "<h3>".htmlentities("$uuid ".($i+1)."/$num")."</h3>";
-		                $uploadmanager=new UploadManager;
-
-		                if ($uploadmanager->processURL($url)) {
-                		        print "<p>Copied successfully</p>";
-					$ids[] = $uploadmanager->upload_id;
-		                } else {
-                		        print "<p>Error: {$uploadmanager->errormsg}</p>";
-		                }
-			}
-		}
-
-	} else foreach (explode("\n",str_replace("\r","",$_POST['urls'])) as $line) {
-		list($filename,$url,$handle) = explode('|',$line);
-		if (empty($url))
-			continue;
-
-		print "<h3>".htmlentities($filename)."</h3>";
-	        $uploadmanager=new UploadManager;
-
-	        if ($uploadmanager->processURL($url)) {
-        	        print "<p>Copied successfully</p>";
-			$ids[] = $uploadmanager->upload_id;
-		} else {
-        	        print "<p>Error: {$uploadmanager->errormsg}</p>";
-        	}
-
-		//todo, use $handle to REMOVE the fiule from storage!
-	}
-
-	$id = array_shift($ids);
-	$url = "/submit2.php?transfer_id={$id}";
-
-	if (!empty($_REQUEST['auto'])) {
-		header("Location: $url");
-		print "<script>window.location.href='$url';</script>";
-		//use a script tag, because header might not work!
-	}
-
-	print " <a href=\"/submit-multi.php?tab=submit\">Continue with v1</a> ";
-	print " <a href=\"/submit2.php?multi=true\">Continue with v2</a> (<a href=$url>Direct with FIRST image)</a>";
-
-	if (!empty($_GET['mobile'])) {
-		print "<p>Tip: Can also open these URLs on desktop browser, and continue the submission there.</p>";
-		$url = "https://{$_SERVER['HTTP_HOST']}/submit-multi.php?tab=submit";
-		print "<p>v1: <a href=$url>$url</a></p>";
-		$url = "https://{$_SERVER['HTTP_HOST']}/submit2.php?multi=true";
-		print "<p>v2: <a href=$url>$url</a></p>";
-		print "or just goto the 'multi' submission method, the files are uploaded to general upload area";
-	}
-
-	exit;
-
-} elseif (!empty($_POST) && !empty($_POST['name'])) {
+if (!empty($_POST) && !empty($_POST['name'])) {
 	// HTTP headers for no cache etc
 	header('Content-type: text/plain; charset=UTF-8');
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
