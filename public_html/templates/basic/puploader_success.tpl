@@ -16,6 +16,9 @@
 	<dt>{$filenames.$key|escape:"html"}</dt>
 	{if strpos($result,'ok:') === 0}
 		<dd>Your photo has identification number [<a href="/photo/{$result|replace:'ok:':''}">{$result|replace:'ok:':''}</a>]</dd>
+		{if $need_larger}
+			<dd>If you need to now add a larger upload do so here: <a href="resubmit.php?id={$result|replace:'ok:':''}"">Upload Larger</a></dd>
+		{/if}
 <div id="points{$result|replace:'ok:':''}"></div>
 
 {literal}

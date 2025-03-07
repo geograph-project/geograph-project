@@ -180,6 +180,10 @@ if (isset($_FILES['jpeg_exif']))
 				} else {
 					$uploadmanager->setTags(explode('|',$_POST['tags'][$key]));
 				}
+				foreach($uploadmanager->tags as $tag) {
+					if (preg_match('/^panorama:/',$tag)) //todo && $_POST['largestsize'][$key] == '640' ??
+						$smarty->assign('need_larger',1);
+				}
 			}
 			if (!empty($_POST['subject'][$key])) {
 				$uploadmanager->setSubject($_POST['subject'][$key]);
