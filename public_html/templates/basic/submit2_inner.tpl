@@ -107,7 +107,7 @@
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
 
-	{else}
+
 		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto {if $small_upload}<b>5Mb</b>{else}8Mb{/if} filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8388608"/></div>
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white" accept="image/jpeg, image/heic"/>
@@ -128,8 +128,6 @@
         }
 	</script>{/literal}
 
-
-	{/if}
 
 		<br/>
 		<div><i>Optionally</i> upload an image with Locational information attached <a href="/article/Uploading-Tagged-Images" class="about" target="_blank">About</a><br/>
