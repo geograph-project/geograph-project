@@ -63,6 +63,7 @@ for($i=1; $i<count($_SERVER['argv']); $i++) {
 }
 
 if ($param['help']) {
+print_r($param);
 	echo <<<ENDHELP
 ---------------------------------------------------------------------
 php backup_geograph_db-new.php
@@ -157,6 +158,11 @@ if ($param['dry'] && $param['dry'] !== '2') {
 #login-path setup via mysql_config_editor on TEA, see http://stackoverflow.com/questions/20751352/suppress-warning-messages-using-mysql-from-within-terminal-but-password-written
 
 ##############################
+
+//default to factor=1 if dumping ALL tables
+if (empty($param['days']) && empty($param['type']) && empty($param['size']) &&  empty($param['table']) && $param['factor']===false) { //means could do factor=0 to disable!
+	$param['factor']=1;
+}
 
 if (!empty($param['factor'])) {
 	$sql = "UPDATE _tables SET factor=factor/2, updated=updated";
