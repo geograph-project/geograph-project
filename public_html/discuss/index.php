@@ -445,11 +445,12 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		$showIds = explode(',',trim(preg_replace('/[^\d,]+/','',$_GET['show'])));
 	}
 
-	
 	if (!$showforums) {
-		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_icon')){
+		$fIcon = $fTitle = array();
+		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_icon, forum_name')){
 			do{
 				$fIcon[$cols[0]]=$cols[1];
+				$fTitle[$cols[0]]=$cols[2];
 			}
 			while($cols=db_simpleSelect(1));
 		}
@@ -484,7 +485,6 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		
 		print "</div>";
 		print "</form>";
-		
 	} else {
 		require($pathToFiles.'bb_func_vforum.php');
 	}
