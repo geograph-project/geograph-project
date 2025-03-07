@@ -12,7 +12,7 @@
 	{foreach from=$list key=index item=type}
 		<tr>
 			<td><b><a href="/features/view.php?id={$type.feature_type_id}" 
-				style="color:yellow">{$type.title|escape:'html'|regex_replace:'/(Images|Photos|Photographs) of/':'</b>$1 of<b>'|regex_replace:'/(in )?(Great Britain|GB|Ireland|British|Irish|UK)/':'</b>$1<i>$2</i><b>'}</b></td>
+				style="color:yellow">{$type.title|escape:'html'|regex_replace:'/(Images|Photos|Photographs) of/':'</b>$1 of<b>'|regex_replace:'/(in )?(Great Britain|GB|Ireland|British|Irish|UK|England|Britain|Wales|Scotland|IoM|Isle of Man)/':'</b>$1<i>$2</i><b>'}</b></td>
 			<td align=right>{$type.rows|thousends} features</td>
 			<td align=right>{$type.percent}% photographed</td>
 		</tr>
