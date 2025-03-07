@@ -110,6 +110,10 @@ div:target {
 	<br>
 
 	<div class="imagePreview">
+		{if basename($image->altUrl) != "error.jpg"}
+			We have two versions for this image... <br>
+		{/if}
+
 	{$image->getFull()}<br>
 
 	{if $image->original_width}
@@ -117,22 +121,27 @@ div:target {
 		{assign var="original_width" value=$image->original_width}
 		{assign var="original_height" value=$image->original_height}
 		<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><b>{$image->cached_size.0}</b>x<b>{$image->cached_size.1}</b>px jpeg</a>
+
 		{if basename($image->altUrl) != "error.jpg"}
-			&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=640">640</a>
+			<br><br>
+			<img src="{$image->altUrl}" crossorigin onerror="retryCross(this)"/><br>
+			
+			&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=640">max 640px</a>
 		{/if}
 		{if $original_width > 800 || $original_height > 800}
-			&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=800">800</a>
+			&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=800">max 800px</a>
 		{/if}
 		{if $original_width > 1024 || $original_height > 1024}
-			&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=1024">1024</a>
+			&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=1024">max 1024px</a>
 		{/if}
 		{if $original_width > 1600 || $original_height > 1600}
-			&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=1600">1600</a>
+			&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=1600">max 1600px</a>
 		{/if}
 		{if $original_width > 3000 || $original_height > 3000}
-			&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=3000">3000</a>
+			&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=3000">max 3000px</a>
 		{/if}
 		{if $image->originalSize}
+			<br>
 			&middot; <b><a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original">FullSize ({$original_width}x{$original_height} px)</a></b>
 			(Filesize: {$image->originalSize|thousends} bytes)
 		{/if}
