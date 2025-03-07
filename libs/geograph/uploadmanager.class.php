@@ -638,7 +638,7 @@ if (filesize($file) > 4000000) {
 		$upload_id=md5(uniqid('upload'));
 		$temp_file = tempnam("/tmp",'upload');
 
-		file_put_contents($temp_file, $url);
+		file_put_contents($temp_file, file_get_contents($url)); //php has a data: stream wrapper
 
 		if (!filesize($temp_file)) {
 			$this->error("Was not able to decode file");
