@@ -3,15 +3,29 @@
 {dynamic}
 
 <h2>API Key Request</h2>
+
+<ul>
+	<li>Our APIs are best suited for retrieving information on a small scale. For example grabbing details for a handful of sample images near a specific location to display on a webpage.<br><br>
+
+	<li> For larger-scale needs (thousands of images or more), especially one-time jobs, downloading pre-compiled data dumps might be a better option.<ul>
+		<li>You can find these dumps at  <a href="https://data.geograph.org.uk/">https://data.geograph.org.uk/</a>.  Note that some datasets are actively maintained, while others are not. 
+	</ul><br>
+
+	<li>Looking for data with pixel information? We have that too! These datasets are ideal for tasks like AI classification. <ul>
+		<li> Check out our pre-compiled options here: <a href="https://data.geograph.org.uk/datasets.html">https://data.geograph.org.uk/datasets.html</a>
+	</ul><br>
+
+	<li>Need something even more specific? <a href="https://docs.google.com/forms/d/e/1FAIpQLSdhtlmb7OGM_QrLKtJLbeg1-eVIErCzQrTDJQL7NXJTz45UfA/viewform">Fill out this form</a> to request a custom dataset.<br><br>
+</ul>
+
+
 <p>Use this page to request a key to use one of the Geograph APIs...</p>
-    
-{if $message}
-	<div style="border:1px solid red; padding:20px;margin:20px;">{$message}</div>
-{/if}
-    
+
+ {if $message}
+	<div style="border:1px solid red; padding:20px;margin:20px;">{$message}</div> {/if}
 	
-	<form action="{$script_name}" method="post">
-	<input type="hidden" name="id" value="{$id}">
+<form action="{$script_name}" method="post"> <input type="hidden" name="id" value="{$id}">
+
 		<table cellpadding="3" cellspacing="0">
 		  <tr>
 			 <td><b>your name</b></td>
