@@ -72,11 +72,15 @@ function resizeFileWorker(file, max_size, callback) {
 	const message = document.createElement("div");
         message.setAttribute("id", "messageDiv");
 	message.style.position = 'fixed';
+	message.style.zIndex = 1000;
 	message.style.top = '100px';
 	message.style.left = '100px';
 	message.style.right = '100px';
 	message.style.backgroundColor = 'white';
 	message.style.fontSize = '2em';
+	message.style.padding = '1em';
+	message.style.border = '2px solid gray';
+	message.style.borderRadius = '3px';
 	message.innerText = "Reading image...";
 	document.body.after(message);
 
