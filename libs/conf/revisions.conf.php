@@ -94,5 +94,6 @@ $REVISIONS['/viewer/files.js']=47585305;
 $REVISIONS['/viewer/viewer.js']=58500288;
 $REVISIONS['/viewer/style.css']=43561893;
 $REVISIONS['/viewer/exif.js']=48373910;
-$REVISIONS['/js/submission_utils.js']=64663764;
+$REVISIONS['/js/submission_utils.js']=25178959;
+$REVISIONS['/js/resizeWorker.js']=25178959;
 ?>
