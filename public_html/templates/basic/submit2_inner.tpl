@@ -108,8 +108,8 @@
 		{/if}
 
 
-		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto {if $small_upload}<b>5Mb</b>{else}8Mb{/if} filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/>
-		<input type="hidden" name="MAX_FILE_SIZE" value="8388608"/></div>
+		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (JPEG/HEIC files, can upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>, if larger than 8Mb, will be downsized before upload)<br/>
+		<input type="hidden" name="MAX_FILE_SIZE" value="8388608"/><br></div>
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white" accept="image/jpeg, image/heic"/>
 		<div>
 		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em" onclick="return check_jpeg(this.form.jpeg_exif)"/> (while file is sending can continue on the steps below)<br/>
