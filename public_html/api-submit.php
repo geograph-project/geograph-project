@@ -33,7 +33,7 @@ $db = GeographDatabaseConnection(false);
 
 
 function failMessage($text) {
-	print "<p>$text</p>";
+	print "<p>".htmlentities($text)."</p>";
 	exit;
 }
 
@@ -42,7 +42,7 @@ function failMessage($text) {
 
 
 	$gs->setByFullGridRef($_POST['grid_reference']);
-	if ($gs->errormsg != "") {
+	if (!empty($gs->errormsg)) {
 		failMessage($gs->errormsg);
 	}
 
@@ -56,7 +56,8 @@ function failMessage($text) {
 
 	$um->setSquare($gs);
 	$um->setViewpoint($_POST['photographer_gridref']);
-	$um->setUse6fig(stripslashes($_POST['use6fig']));
+	if (!empty($_POST['use6fig']))
+		$um->setUse6fig(stripslashes($_POST['use6fig']));
 	$um->setDirection($_POST['view_direction']);
 	$um->setTaken(date('Y-m-d',$takendate));
 	$um->setTitle($_POST['title']);
@@ -87,17 +88,18 @@ function failMessage($text) {
 
 	$um->setLargestSize($_POST['largestsize']);
 
-	if (!empty($_POST['jpeg_url'])) {
+	if (!empty($_POST['jpeg_data'])) {
+		$um->processDataURL($_POST['jpeg_data']);
+	} elseif (!empty($_POST['jpeg_url'])) {
 		$um->processURL($_POST['jpeg_url']);
 	} elseif (!empty($_FILES['jpeg_exif']['tmp_name'])) {
 		$um->processUpload($_FILES['jpeg_exif']['tmp_name']);
 	}
 
 	// where there any errors back from the image processing?
-	// if so, JUppy needs to know...
 
-	if ($um->error != "") {
-		failMessage($um->error);
+	if (!empty($um->errormsg)) {
+		failMessage($um->errormsg);
 	} else {
 		// so far so good... can we commit the submission?
 		$method = 'api';

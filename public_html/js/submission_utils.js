@@ -126,19 +126,32 @@ function resizeFile(file, max_size, callback) {
 // resize image to under 8mb
 // based on code from Gemini: https://g.co/gemini/share/35c75ecb4cb4
 
-function resizeImage(imageDataUrl, max_size, callback) {
+function resizeImage(imageDataUrl, max_size, callback, max_dimension) {
 	const img = new Image();
 	img.onload = function() {
 		let canvas = document.createElement('canvas');
 		let ctx = canvas.getContext('2d');
 		let width = img.width;
 		let height = img.height;
+		let quality = 0.96; // Initial quality
+
+		//we can also explicity downsize (meaning it very unlikly to be over max_size anyway!)
+		if (max_dimension && (width>max_dimension || height>max_dimension)) {
+			var aspect = width/height;
+			if (aspect > 1) { //wide (original is the width)
+				width  = max_dimension;
+				height = Math.floor(max_dimension / aspect);
+			} else {
+				width  = Math.floor(max_dimension / aspect);
+				height = max_dimension;
+			}
+			quality = 0.87;
+		}
 
 		canvas.width = width;
 		canvas.height = height;
 		ctx.drawImage(img, 0, 0, width, height);
 
-		let quality = 0.96; // Initial quality
 		let resizedDataUrl = canvas.toDataURL('image/jpeg', quality);
 		resizedDataUrl = 'data:image/jpeg;base64,'+ExifRestorer.restore(imageDataUrl,resizedDataUrl);
 		let resizedBlob = dataURLtoBlob(resizedDataUrl);

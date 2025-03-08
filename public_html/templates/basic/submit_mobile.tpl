@@ -34,6 +34,8 @@
 
 <script src="{"/js/to-title-case.js"|revision}"></script>
 <script type="text/javascript" src="/viewer/exif.js"></script>
+<script type="text/javascript" src="{"/js/submission_utils.js"|revision}"></script>
+<script type="text/javascript" src="{"/viewer/ExifRestorer.js"|revision}"></script>
 
 <style>{literal}
 
@@ -231,24 +233,61 @@ function cancelMess() {
 function checkMultiFormSubmission() {
 	var form = document.forms['theForm'];
 
-
-	if (form.elements['jpeg_exif'].value.length < 2) {
-		selectTab(1);		
-		alert("Please select an image to submit");
-		return false;
-	}
-        if (form.elements['jpeg_exif'].files && form.elements['jpeg_exif'].files[0]) {
-            var file = form.elements['jpeg_exif'].files[0];
-            if (file && file.size && file.size > 8388608) {
-                alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize image to be under 8 Megabytes');
-		return false;
-            }
-            if (file && file.type && file.type != "image/jpeg") {
-                alert('File appears to not be a JPEG image. We only accept .jpg files');
-		return false;
-            }
+	if (form.elements['jpeg_data']) {
+		//this should already be good!
+	} else {
+		if (form.elements['jpeg_exif'].value.length < 2) {
+			selectTab(1);		
+			alert("Please select an image to submit");
+			return false;
+		}
+		if (form.elements['jpeg_exif'].files && form.elements['jpeg_exif'].files[0]) {
+		    var file = form.elements['jpeg_exif'].files[0];
+	            if (file && file.size && file.size > 8388608) {
+		        alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize image to be under 8 Megabytes');
+		        return false;
+                    }
+                    if (file && file.type && file.type != "image/jpeg" && file.type != 'image/heic') {
+                        alert('File appears to not be a JPEG image. We only accept .jpg files');
+	                return false;
+                    }
+                }
         }
 
+	if (form.elements['largestsize'] && form.elements['largestsize'].value != 65536) {
+                var max_size = 8388608; //we still need to pass this, even if now specifing a dimension!
+		var max_dimension = form.elements['largestsize'].value;	
+
+		if ($('#previewImage').prop('naturalWidth') > max_dimension || $('#previewImage').prop('naturalHeight') > max_dimension) {
+
+			//note we CANT use the worker version here, but probably dont need it anyway, should be a single resize operation!
+	                resizeImage($('#previewImage').attr('src'), max_size, function(dataUrl, final_size) {
+	                        if (dataUrl) {
+					if (!document.getElementById('jpeg_data')) { //might already exist, if was a really large downsized image!
+						let element = document.createElement("input");
+						element.setAttribute("id", "jpeg_data");
+						element.setAttribute("type", "hidden");
+						element.setAttribute("name", "jpeg_data");
+						//element.setAttribute("value", dataUrl);
+
+				                var ele = form.elements['jpeg_exif'];
+						ele.after(element); //add the new input inplace of the original element.
+		                                ele.remove(); //and remove the <input type=file> (we now submitting data url!)
+					}
+
+					//seems to be more stable setting the value directly rather than on the in memory version!
+	                                document.getElementById('jpeg_data').value = dataUrl;
+
+	                                //note the form was not submitted, so needs sumitting again!
+
+					form.elements['largestsize'].selectedIndex = form.elements['largestsize'].options.length-1; //otherwise will be resized AGAIN!
+					form.elements['finalise'].click();
+				}
+			}, max_dimension);
+			
+			return false;
+		}
+	}
 
 	if (form.elements['grid_reference'].value.length < 5) {
 		selectTab(2);
@@ -876,79 +915,123 @@ function toDecimal(number) {
 $(function() {
 	document.getElementById("jpeg_exif").onchange = function(e) {
             var file = e.target.files[0];
-	    if (file && file.size && file.size > 8388608) {
-		$('#jpeg_exif').after('<div class=toobig><b>File appears to be '+file.size+' bytes, which is too big for final submission</b>. Please downsize the image to be under 8 Megabytes</div>');
-	    } else {
-		$('.toobig').remove();
+            var max_size = 8388608;
+	    if (file && file.size && file.size > max_size) {
+		//$('#jpeg_exif').after('<div class=toobig><b>File appears to be '+file.size+' bytes, which is too big for final submission</b>. Please downsize the image to be under 8 Megabytes</div>');
+		
+		alert('File appears to be '+file.size.toLocaleString()+' bytes, which is too big for final submission. We will now attempt to downsize the file automatically... (please wait)');
+
+		EXIF.getData(file, gotExif); //--might be best to just read exif from the original (only wanting to get date/geo anyway) 
+
+		var ele = e.target;
+		resizeFileWorker(file, max_size, function(dataUrl, final_size) {
+			if (dataUrl) {
+				let element = document.createElement("input");
+				element.setAttribute("id", "jpeg_data");
+				element.setAttribute("type", "hidden");
+				element.setAttribute("name", "jpeg_data");
+				//element.setAttribute("value", dataUrl);
+				ele.after(element); //add the new input inplace of the original element.
+
+				//seems to be more stable setting the value directly rather than on the in memory version!
+				document.getElementById('jpeg_data').value = dataUrl;
+
+				//show some text, so user still sees something!
+				let element2 = document.createElement("span");
+				element2.innerText = 'Resized image ('+(final_size)+' bytes) - to choose different image, will have to reload the page';
+				ele.after(element2);
+
+				//note the form was not submitted, so needs sumitting again!
+				ele.remove(); //and remove the original (we now submitting data url!)
+				
+				gotDataUrl(dataUrl);
+
+				setTimeout(function() {
+					$('#messageDiv').remove();
+				}, 4500);
+			}
+		});
+
+		return;
+
+	//  } else {
+	//	$('.toobig').remove();
 	    }
 	    if (file && file.type && file.type != "image/jpeg") {
 		$('#jpeg_exif').after('<div class=nonjpeg>File appears to not be a JPEG image. We only accept .jpg files</div>');
+		//todo, could use resizeImage, as it can technically convert GIF, PNG, WebP, and AVIF to JPEG (these formats commonly supported by browsers) 
+		//note, could also support HEIF (the server can convert!) - but WE can't display proeview as most browsers cant read HEIC files
+
             } else if (file && file.name) {
                 if (file && file.size && file.size < 10000) {
 			$('#jpeg_exif').after('<div class=toobig>File appears to be '+file.size+' bytes, which is rather small. Please check selected right image.</div>');
 		}
 		$('.nonjpeg').remove();
-                EXIF.getData(file, function() {
-		////////////////////////			
 
-			var dateraw = EXIF.getTag(this, 'DateTimeOriginal') || EXIF.getTag(this, 'DateTimeDigitized') || EXIF.getTag(this, 'DateTime');
-			if (dateraw) {
-				$('input#imagetaken').val(dateraw.substr(0,10).replace(/:/g,'-'));
-			}
+                EXIF.getData(file, gotExif);
 
-		////////////////////////			
-
-			var long = EXIF.getTag(this, 'GPSLongitude');		
-			var lat = EXIF.getTag(this, 'GPSLatitude');
-			if (long&&lat) {
-				long = toDecimal(long);
-				lat = toDecimal(lat);
-
-				if (long > 180) long = long - 360.0; //some apps (like geosetter) encode longitude as E 0-360 - but >180 is W
-				if (EXIF.getTag(this, 'GPSLongitudeRef') == 'W') long = long * -1;
-				if (EXIF.getTag(this, 'GPSLatitudeRef') == 'S') lat = lat * -1;
-
-				//console.log('F',long,lat);
-
-				setLatLong(lat, long, 'photographer_gridref','EXIF');
-
-
-			}
-
-		////////////////////////
-                });
-
-		/////////////////////////
-			//https://stackoverflow.com/questions/12368910/html-display-image-after-selecting-filename
-		    var reader = new FileReader();
-
-	            reader.onload = function (e) {
-			$('#preview').show();
-			setupMess();
-
-			$('#previewImage').on('load',function() {
-				//need to do this 'async' to get the actual size
-				var size = $('#previewImage').prop('naturalWidth')+"px "+$('#previewImage').prop('naturalHeight')+"px";
-				$('#previewImage2').css({backgroundSize:size});			
-			});
-
-		        $('#previewImage').css({maxWidth:'100%',maxHeight:'60vh'})
-	                    .attr('src', e.target.result);
-
-			//want the background to be the natural size, not resized
-			var size = $('#previewImage').prop('naturalWidth')+"px "+$('#previewImage').prop('naturalHeight')+"px";
-
-			// https://stackoverflow.com/questions/17090571/is-there-a-way-to-set-background-image-as-a-base64-encoded-image
-			$('#previewImage2').css({width:'100%', height:'400px', boxShadow:'0 0 8px 8px silver inset', borderRadius:'20px',
-				backgroundImage:"url('"+e.target.result.replace(/[\r\n]/g, "")+"')",
-				backgroundSize:size, backgroundRepeat:'no-repeat', backgroundPosition:'center'});
-		    };
-
-	            reader.readAsDataURL(file);
-		/////////////////////////
+		//https://stackoverflow.com/questions/12368910/html-display-image-after-selecting-filename
+		var reader = new FileReader();
+	        reader.onload = function (e) {
+			gotDataUrl(e.target.result);
+		};
+	        reader.readAsDataURL(file);
             }
         }
 });
+
+/******************************************************************************
+ callbacks */
+
+//the exif data is attached to 'this'
+function gotExif() {
+	var dateraw = EXIF.getTag(this, 'DateTimeOriginal') || EXIF.getTag(this, 'DateTimeDigitized') || EXIF.getTag(this, 'DateTime');
+	if (dateraw) {
+		$('input#imagetaken').val(dateraw.substr(0,10).replace(/:/g,'-'));
+	}
+
+	var long = EXIF.getTag(this, 'GPSLongitude');		
+	var lat = EXIF.getTag(this, 'GPSLatitude');
+	if (long&&lat) {
+		long = toDecimal(long);
+		lat = toDecimal(lat);
+
+		if (long > 180) long = long - 360.0; //some apps (like geosetter) encode longitude as E 0-360 - but >180 is W
+		if (EXIF.getTag(this, 'GPSLongitudeRef') == 'W') long = long * -1;
+		if (EXIF.getTag(this, 'GPSLatitudeRef') == 'S') lat = lat * -1;
+
+		//console.log('F',long,lat);
+
+		setLatLong(lat, long, 'photographer_gridref','EXIF');
+	}
+}
+
+////////////////////////			
+
+function gotDataUrl(dataUrl) {
+
+	$('#preview').show();
+	setupMess();
+
+	$('#previewImage').on('load',function() {
+		//need to do this 'async' to get the actual size
+		var size = $('#previewImage').prop('naturalWidth')+"px "+$('#previewImage').prop('naturalHeight')+"px";
+		$('#previewImage2').css({backgroundSize:size});			
+	});
+
+        $('#previewImage').css({maxWidth:'100%',maxHeight:'60vh'})
+            .attr('src', dataUrl);
+
+	//want the background to be the natural size, not resized
+	var size = $('#previewImage').prop('naturalWidth')+"px "+$('#previewImage').prop('naturalHeight')+"px";
+
+	// https://stackoverflow.com/questions/17090571/is-there-a-way-to-set-background-image-as-a-base64-encoded-image
+	$('#previewImage2').css({width:'100%', height:'400px', boxShadow:'0 0 8px 8px silver inset', borderRadius:'20px',
+		backgroundImage:"url('"+dataUrl.replace(/[\r\n]/g, "")+"')",
+		backgroundSize:size, backgroundRepeat:'no-repeat', backgroundPosition:'center'});
+
+}
+
 
 {/literal}
 </script>
@@ -1007,7 +1090,7 @@ $(function() {
                 <option value="65536"{if $user->upload_size > 65530} selected{/if}>As uploaded</option>
 	        </select>
 
-		<p id="note">NOTE: Currently the image is uploaded at FULL resolution, and later downsized (not resized on device first!) - so beware of data charges!</p>
+		<p id="note">If select a smaller size, the image will be resized before upload - saving on data transfered.</p>
 
 
 		<hr>
