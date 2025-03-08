@@ -193,7 +193,7 @@ function resizeImage(imageDataUrl, callback) {
 
 //console.log("trying, ",width,height,' ',quality,' = ',resizedBlob.size, resizedBlob.size > 8 * 1024 * 1024);
 		}
-		alert('Image has been resized to '+width+'x'+height+' and saved at '+(quality*100)+'% quality setting, resulting in a new image of '+resizedBlob.size+' bytes. \n Note: EXIF has been lost, so submission can only continue using Submit v1 currently');
+		alert('Image has been resized to '+width+'x'+height+' and saved at '+(quality*100)+'% quality setting, resulting in a new image of '+resizedBlob.size+' bytes. (EXIF is maintained)');
 
 		callback(resizedDataUrl);
 	};
