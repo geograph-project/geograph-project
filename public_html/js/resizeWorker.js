@@ -23,6 +23,7 @@ self.addEventListener('message', async function(event) {
 
 		self.postMessage({message: 'Attempt '+attempt+': Saving as '+(quality*100)+'% ...'});
 		let resizedBlob = await canvas.convertToBlob({ type: 'image/jpeg', quality: quality });
+		let resizedDataUrl;
 
 		if (resizedBlob.size < maxSize) { //no point addding exif, if already too big!
 			self.postMessage({message: 'Attempt '+attempt+': Converting ...'});

@@ -84,7 +84,7 @@ function resizeFileWorker(file, max_size, callback) {
 	message.innerText = "Reading image...";
 	document.body.after(message);
 
-	const myWorker = new Worker("/js/resizeWorker.js?v=15");
+	const myWorker = new Worker("/js/resizeWorker.js?v=16");
 	myWorker.onmessage = function(event) {
 		if (event.data.error) {
 			alert(event.data.error);
