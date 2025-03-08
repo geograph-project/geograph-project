@@ -919,7 +919,7 @@ $(function() {
 	    if (file && file.size && file.size > max_size) {
 		//$('#jpeg_exif').after('<div class=toobig><b>File appears to be '+file.size+' bytes, which is too big for final submission</b>. Please downsize the image to be under 8 Megabytes</div>');
 		
-		alert('File appears to be '+file.size.toLocaleString()+' bytes, which is too big for final submission. We will now attempt to downsize the file automatically... (please wait)');
+		alert('File appears to be '+file.size.toLocaleString()+' bytes, which is too big for final submission. We will now attempt to downsize the file automatically... (please wait, a few attempts may be needed to find the right settings)');
 
 		EXIF.getData(file, gotExif); //--might be best to just read exif from the original (only wanting to get date/geo anyway) 
 

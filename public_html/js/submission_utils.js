@@ -16,7 +16,7 @@ function check_jpeg(ele, max_size) {
             var file = ele.files[0];
             if (file && file.size && file.size > max_size) {
                 //alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
-		alert('File appears to be '+file.size.toLocaleString()+' bytes, which is too big for final submission. We will now attempt to downsize the file automatically... (please wait)');
+		alert('File appears to be '+file.size.toLocaleString()+' bytes, which is too big for final submission. We will now attempt to downsize the file automatically... (please wait, a few attempts may be needed to find the right settings)');
 		let form = ele.form;
 		resizeFileWorker(file, max_size, function(dataurl, final_size) {
 			if (dataurl) {
