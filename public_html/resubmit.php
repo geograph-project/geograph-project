@@ -116,13 +116,26 @@ if (isset($_REQUEST['id']))
 			$smarty->assign('step',-1);
 
 		} elseif (isset($_POST['next'])) {
+			$upload_to_process=false;
 
-			if (!filesize($_FILES['jpeg']['tmp_name']))
-			{
+			if (!empty($_POST['jpeg_data'])) {
+				if ($uploadmanager->processDataURL($_POST['jpeg_data']) ) {
+					$upload_to_process=true;
+				} else {
+					$smarty->assign('error', $uploadmanager->errormsg);
+				}
+
+			} elseif (!filesize($_FILES['jpeg']['tmp_name'])) {
 				$smarty->assign('error', 'Sorry, no file was received - please try again');
+
+			} elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name'])) {
+				$upload_to_process=true;
+
+			} else {
+				$smarty->assign('error', $uploadmanager->errormsg);
 			}
-			elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
-			{
+
+			if ($upload_to_process) {
 				$smarty->assign('upload_id', $uploadmanager->upload_id);
 				$smarty->assign('transfer_id', $uploadmanager->upload_id);
 				if ($uploadmanager->hasoriginal) {
@@ -142,11 +155,10 @@ if (isset($_REQUEST['id']))
 				$smarty->assign('preview_url', "/resubmit.php?preview=".$uploadmanager->upload_id);
 				$smarty->assign('preview_width', $uploadmanager->upload_width);
 				$smarty->assign('preview_height', $uploadmanager->upload_height);
-			} else {
-				$smarty->assign('error', $uploadmanager->errormsg);
+
+				$smarty->assign('step',2);
 			}
 
-			$smarty->assign('step',2);
 		} else {
 			$db=GeographDatabaseConnection(false);
 
@@ -161,7 +173,7 @@ if (isset($_REQUEST['id']))
 			if (!empty($exif)) {
 				$exif2 = array();
 
-				if (preg_match('/(\w+\.jpg)/i',$exif['EXIF']['MakerNote'],$m)) {
+				if (!empty($exif['EXIF']['MakerNote']) && preg_match('/(\w+\.jpg)/i',$exif['EXIF']['MakerNote'],$m)) {
 					$exif2['filename'] = $m[1];
 				}
 				if (!empty($exif['IFD0']['DocumentName'])) {

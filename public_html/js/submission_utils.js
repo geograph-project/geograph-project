@@ -1,8 +1,11 @@
 //extracted from submission process. (then extended to do clients ide downsizing
 
-function check_jpeg(ele) {
+function check_jpeg(ele, max_size) {
     if (!ele)
 	return true; //just in case the element is removed! (eg after resizing!)
+    if (!max_size)
+	max_size = 8 * 1024 * 1024;
+    //max_size_mb = max_size / (1024 * 1024);
 
     if (ele && ele.value && ele.value.length > 0 && !ele.value.match(/\.(jpe?g|heic)$/i)) {
 	if (!confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG/HEIC images. To upload anyway, press OK. To select a different file click Cancel"))
@@ -11,11 +14,11 @@ function check_jpeg(ele) {
 
     if (ele && ele.files) {
             var file = ele.files[0];
-            if (file && file.size && file.size > 8388608) {
+            if (file && file.size && file.size > max_size) {
                 //alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
-		alert('File appears to be '+file.size+' bytes, which is too big for final submission. We will now attempt to downsize the file automatically... (please wait)');
+		alert('File appears to be '+file.size.toLocaleString()+' bytes, which is too big for final submission. We will now attempt to downsize the file automatically... (please wait)');
 		let form = ele.form;
-		resizeFile(file, function(dataurl) {
+		resizeFile(file, max_size, function(dataurl) {
 			if (dataurl) {
 				let element = document.createElement("input");
 				element.setAttribute("id", "jpeg_data");
@@ -34,12 +37,18 @@ function check_jpeg(ele) {
 
 				//note the form was not submitted, so needs sumitting again!
 				ele.remove(); //and remove the original (we now submitting data url!)
-				form.elements['sendfile'].value = 'submitting, please wait';
+				if (form.elements['sendfile'])
+					form.elements['sendfile'].value = 'submitting, please wait';
 				form.submit();
 			}
 		});
 
-		form.elements['sendfile'].value = 'resizing file, please wait';
+		if (form.elements['sendfile']) {
+			form.elements['sendfile'].value = 'resizing file, please wait';
+			let loading = document.createElement("img");
+			loading.setAttribute("src", '/plupload/examples/img/throbber.gif');
+			form.elements['sendfile'].after(loading);
+		}
 
 		//resizeFile is async, so can't submit the form now!
 		return false;
@@ -56,10 +65,10 @@ function check_jpeg(ele) {
 }
 
 //needed so can call on file object, which needs first converting to a dataURL
-function resizeFile(file, callback) {
+function resizeFile(file, max_size, callback) {
 	var reader = new FileReader();
 	reader.onload = function (e) {
-		resizeImage(e.target.result, callback);
+		resizeImage(e.target.result, max_size, callback);
 	};
         reader.readAsDataURL(file);
 }
@@ -68,7 +77,7 @@ function resizeFile(file, callback) {
 // resize image to under 8mb
 // based on code from Gemini: https://g.co/gemini/share/35c75ecb4cb4
 
-function resizeImage(imageDataUrl, callback) {
+function resizeImage(imageDataUrl, max_size, callback) {
 	const img = new Image();
 	img.onload = function() {
 		let canvas = document.createElement('canvas');
@@ -86,7 +95,7 @@ function resizeImage(imageDataUrl, callback) {
 
 		let resizedBlob = dataURLtoBlob(resizedDataUrl);
 
-		while (resizedBlob.size > 8 * 1024 * 1024) { // 8MB
+		while (resizedBlob.size > max_size) {
 			//first try reducing quality
 			if (quality > 0.7) {
 				quality *= 0.9;
@@ -95,7 +104,7 @@ function resizeImage(imageDataUrl, callback) {
 				height *= 0.9;
 				quality = 0.87; //reset quality, when downsize!
 			} else {
-				alert("Could not resize image under 8MB");
+				alert("Could not resize image under "+max_size);
 				return;
 			}
 
@@ -107,7 +116,7 @@ function resizeImage(imageDataUrl, callback) {
 
 			resizedBlob = dataURLtoBlob(resizedDataUrl);
 		}
-		alert('Image has been resized to '+width+'x'+height+' and saved at '+(quality*100)+'% quality setting, resulting in a new image of '+resizedBlob.size+' bytes. (EXIF is maintained)');
+		alert('Image has been resized to '+width+'x'+height+' and saved at '+Math.floor(quality*100)+'% quality setting, resulting in a new image of '+resizedBlob.size.toLocaleString()+' bytes. (EXIF is maintained)');
 
 		callback(resizedDataUrl);
 	};
