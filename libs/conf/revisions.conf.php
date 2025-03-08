@@ -90,8 +90,9 @@ $REVISIONS['/templates/resp/css/modification.css']=59345905;
 $REVISIONS['/js/anyascii.js']=69351707;
 $REVISIONS['/features/view.js']=65689534;
 $REVISIONS['/js/cwv.js']=77315308;
-$REVISIONS['/viewer/files.js']=43561893;
-$REVISIONS['/viewer/viewer.js']=43561893;
+$REVISIONS['/viewer/files.js']=47585305;
+$REVISIONS['/viewer/viewer.js']=58500288;
 $REVISIONS['/viewer/style.css']=43561893;
 $REVISIONS['/viewer/exif.js']=48373910;
+$REVISIONS['/js/submission_utils.js']=64663764;
 ?>
