@@ -61,7 +61,7 @@ function check_jpeg(ele, max_size) {
                 return confirm('File appears to be '+file.size+' bytes, which is rather small. Please check selected right image.');
             }
     }
-
+    return true;
 }
 
 function resizeFileWorker(file, max_size, callback) {
@@ -84,7 +84,7 @@ function resizeFileWorker(file, max_size, callback) {
 	message.innerText = "Reading image...";
 	document.body.after(message);
 
-	const myWorker = new Worker("/js/resizeWorker.js?v=16");
+	const myWorker = new Worker("/js/resizeWorker.js?v=18");
 	myWorker.onmessage = function(event) {
 		if (event.data.error) {
 			alert(event.data.error);

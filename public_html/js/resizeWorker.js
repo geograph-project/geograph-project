@@ -27,7 +27,7 @@ self.addEventListener('message', async function(event) {
 
 		if (resizedBlob.size < maxSize) { //no point addding exif, if already too big!
 			self.postMessage({message: 'Attempt '+attempt+': Converting ...'});
-			let resizedDataUrl = await readDataURL(resizedBlob);
+			resizedDataUrl = await readDataURL(resizedBlob);
 
 			self.postMessage({message: 'Attempt '+attempt+': Restoring EXIF ... ('+resizedBlob.size+' bytes without EXIF)'});
 			resizedDataUrl = 'data:image/jpeg;base64,' + ExifRestorer.restore(dataUrl, resizedDataUrl);
@@ -60,6 +60,7 @@ self.addEventListener('message', async function(event) {
 			resizedBlob = await canvas.convertToBlob({ type: 'image/jpeg', quality: quality });
 
 			if (resizedBlob.size < maxSize) { //no point adding exif, if already too big!
+				self.postMessage({message: 'Attempt '+attempt+': Converting ...'});
 		                resizedDataUrl = await readDataURL(resizedBlob);
 
 				self.postMessage({message: 'Attempt '+attempt+': Restoring EXIF ... ('+resizedBlob.size+' bytes without EXIF)'});
