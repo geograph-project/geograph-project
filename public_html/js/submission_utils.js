@@ -18,7 +18,7 @@ function check_jpeg(ele, max_size) {
                 //alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize the image to be under 8 Megabytes.');
 		alert('File appears to be '+file.size.toLocaleString()+' bytes, which is too big for final submission. We will now attempt to downsize the file automatically... (please wait)');
 		let form = ele.form;
-		resizeFile(file, max_size, function(dataurl) {
+		resizeFileWorker(file, max_size, function(dataurl, final_size) {
 			if (dataurl) {
 				let element = document.createElement("input");
 				element.setAttribute("id", "jpeg_data");
@@ -32,7 +32,7 @@ function check_jpeg(ele, max_size) {
 
 				//show some text, so user still sees something!
 				let element2 = document.createElement("span");
-				element2.innerText = 'Resized image ('+dataurl.length+' bytes)';
+				element2.innerText = 'Resized image ('+(final_size)+' bytes)';
 				ele.after(element2);
 
 				//note the form was not submitted, so needs sumitting again!
@@ -64,15 +64,60 @@ function check_jpeg(ele, max_size) {
 
 }
 
+function resizeFileWorker(file, max_size, callback) {
+	if (!window.Worker || !OffscreenCanvas || !createImageBitmap || !window.fetch) { //fallback! the webworker version needs more advanced APIs
+		return resizeFile(file, max_size, callback);
+	}
+
+	const message = document.createElement("div");
+        message.setAttribute("id", "messageDiv");
+	message.style.position = 'fixed';
+	message.style.top = '100px';
+	message.style.left = '100px';
+	message.style.right = '100px';
+	message.style.backgroundColor = 'white';
+	message.style.fontSize = '2em';
+	message.innerText = "Reading image...";
+	document.body.after(message);
+
+	const myWorker = new Worker("/js/resizeWorker.js?v=15");
+	myWorker.onmessage = function(event) {
+		if (event.data.error) {
+			alert(event.data.error);
+		}
+		if (event.data.message) {
+			message.innerText = event.data.message;
+		}
+		if (event.data.resizedDataUrl) {
+			const { resizedDataUrl, width, height, quality, size } = event.data;
+			message.innerText = 'Image has been resized to ' + width + 'x' + height + ' and saved at ' + Math.floor(quality * 100) + '% quality setting, resulting in a new image of ' + size.toLocaleString() + ' bytes. (EXIF is maintained)';
+			callback(resizedDataUrl, size);
+		}
+	};
+
+	const reader = new FileReader();
+	reader.onload = function (e) {
+		message.innerText = "Loading image...";
+
+		myWorker.postMessage({ dataUrl: e.target.result, maxSize: max_size});
+        }
+        reader.readAsDataURL(file);
+}
+
+////////////////////////////////
+
 //needed so can call on file object, which needs first converting to a dataURL
 function resizeFile(file, max_size, callback) {
+	if (!FileReader || !Blob) {
+		alert('Sorry your browser doesnt seem to support client-size resizing');
+		return;
+	}
 	var reader = new FileReader();
 	reader.onload = function (e) {
 		resizeImage(e.target.result, max_size, callback);
 	};
         reader.readAsDataURL(file);
 }
-
 ////////////////////////////////
 // resize image to under 8mb
 // based on code from Gemini: https://g.co/gemini/share/35c75ecb4cb4
@@ -92,16 +137,15 @@ function resizeImage(imageDataUrl, max_size, callback) {
 		let quality = 0.96; // Initial quality
 		let resizedDataUrl = canvas.toDataURL('image/jpeg', quality);
 		resizedDataUrl = 'data:image/jpeg;base64,'+ExifRestorer.restore(imageDataUrl,resizedDataUrl);
-
 		let resizedBlob = dataURLtoBlob(resizedDataUrl);
 
 		while (resizedBlob.size > max_size) {
 			//first try reducing quality
 			if (quality > 0.7) {
-				quality *= 0.9;
+				quality = (quality*0.9).toFixed(2);
 			} else if (width > 3000 && height > 3000){
-				width *= 0.9;
-				height *= 0.9;
+				width = Math.floor(width*0.9);
+				height = Math.floor(height*0.9);
 				quality = 0.87; //reset quality, when downsize!
 			} else {
 				alert("Could not resize image under "+max_size);
@@ -118,7 +162,7 @@ function resizeImage(imageDataUrl, max_size, callback) {
 		}
 		alert('Image has been resized to '+width+'x'+height+' and saved at '+Math.floor(quality*100)+'% quality setting, resulting in a new image of '+resizedBlob.size.toLocaleString()+' bytes. (EXIF is maintained)');
 
-		callback(resizedDataUrl);
+		callback(resizedDataUrl, resizedBlob.size);
 	};
 	img.src = imageDataUrl;
 }
