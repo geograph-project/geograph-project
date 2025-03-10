@@ -25,9 +25,6 @@
 	<li><a href="/admin/moderation.php">Moderate</a> new photo submissions (<span><a href="/admin/moderation.php?review=1" style="color:gray">Review</a>)</span><br/>
 	<b>[{$images_pending.count} pending, {$images_pending_available} available to moderate, oldest is {$images_pending.age/3600|thousends} hours]</b></li>
 
-<li style=color:red>Note: If find a broken or missing image, please in the first instance report it via <a href="/stuff/image_report_form.php">Image Report Form</a>. (this form can be posted publically for anyone to use, not just for moderators)</li>
-
-
 	{if $ci_pending}
 		<li>There are <b>{$ci_pending}</b> <a href="http://www.geograph.org.gg/admin/">pending images on Geograph Channel Islands</a> (note this message is cached for an hour, so may be slightly outdated) </li>
 	{/if}
@@ -123,7 +120,6 @@
 	Please don't correct 2 'firsts' in a square with this tool (or otherwise) - we will correct them automatically shortly.
 </div> 
 
-
 <form method="get" action="/search.php" style="display:inline">
 Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}"/>
@@ -135,7 +131,14 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <input type="hidden" name="resultsperpage" value="100"/>
 </form></li>
 {/if}
+
+<li style=color:red>Note: If find a broken or missing image, please in the first instance report it via <a href="/stuff/image_report_form.php">Image Report Form</a>. (this form can be posted publically for anyone to use, not just for moderators)</li>
+
+<li><a href="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Manual_Version2_2025_final.pdf" target="_blank">Moderation Manual (2025)</a> (opens in new tab)
+
+<li><a href="/tags/report.php?admin=1">Report Tag Issues</a> / <a href="/tags/report.php?approver=1">Approver</a>
 </ul>
+
 
 {if $is_director}
 <br/><br/>
@@ -161,6 +164,12 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <br/><br/>
 <h2>Admin Tools - use with care</h2>
 <ul>
+
+<li style=color:red>Note: If find a broken or missing image, please in the first instance report it via <a href="/stuff/image_report_form.php">Image Report Form</a>. (this form can be posted publically for anyone to use, not just for moderators)</li>
+
+<li><a href="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Manual_Version2_2025_final.pdf" target="_blank">Moderation Manual (2025)</a> (opens in new tab)
+
+<li><a href="/tags/report.php?admin=1">Report Tag Issues</a>   / <a href="/tags/report.php?approver=1">Approver</a>
 
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
    organise the user submitted categories</li>

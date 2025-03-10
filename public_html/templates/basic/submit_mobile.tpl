@@ -1081,16 +1081,16 @@ function gotDataUrl(dataUrl) {
 			(may only display a part of image, so can check image is in focus etc)
 		</div>
 
-		<label for=largestsize>Size to release: (pixels)</label>
+		<label for=largestsize>Maximum Size to release: (pixels)</label>
 		<select name="largestsize">
                 <option value="640"{if $user->upload_size == 640} selected{/if}>640 x 640 (the minimum size)</option>
                 <option value="800"{if $user->upload_size == 800} selected{/if}>800 x 800</option>
-                <option value="1024"{if $user->upload_size == 1024 || !$user->upload_size} selected{/if}>1024 x 1024</option>
+                <option value="1024"{if $user->upload_size == 1024 || !$user->upload_size} selected{/if}>1024 x 1024 (recommended, if don't want to release full)</option>
                 <option value="1600"{if $user->upload_size == 1600} selected{/if}>1600 x 1600</aoption>
-                <option value="65536"{if $user->upload_size > 65530} selected{/if}>As uploaded</option>
+                <option value="65536"{if $user->upload_size > 65530} selected{/if}>As uploaded (release full resolution)</option>
 	        </select>
 
-		<p id="note">If select a smaller size, the image will be resized before upload - saving on data transfered.</p>
+		<p id="note">You don't have to release the full resolution, can only release a smaller version if want. If select a smaller size, the image will be resized before upload - saving on data transfered.</p>
 
 
 		<hr>
