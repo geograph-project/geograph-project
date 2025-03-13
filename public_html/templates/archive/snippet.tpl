@@ -37,9 +37,11 @@
 {/if}
 
 	{foreach from=$results item=image}
-	  <div style="float:left;position:relative; width:130px; height:130px">
+	  <div style="float:left;position:relative; width:130px; height:150px">
 	  <div align="center">
-	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="{if $image->gridimage_id < 1498791}javascript:void(loadimage({$image->gridimage_id}));{else}/photo/{$image->gridimage_id}{/if}">{$image->getThumbnail(120,120,false,true)}</a></div>
+	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="{if $image->gridimage_id < 1498791}javascript:void(loadimage({$image->gridimage_id}));{else}/photo/{$image->gridimage_id}{/if}">{$image->getThumbnail(120,120,false,true)}</a>
+          {if $image->year and $image->year != '0000'}<br>{$image->year}{/if}
+	  </div>
 	  </div>
 	{foreachelse}
 		<p><i>no images to display{if $images}, this could be because still pending and/or recently rejected{/if}</i></p>

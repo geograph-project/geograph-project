@@ -75,9 +75,18 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			if ($data['images'] > 25 && $data['images'] <=50)
 				$limit = 50;
 
-			$sql = "SELECT gridimage_id,gi.user_id,realname,credit_realname,gi.title,imageclass,grid_reference,reference_index FROM gridimage_snippet gs INNER JOIN gridimage_search gi USING (gridimage_id) WHERE snippet_id = $snippet_id AND gridimage_id < 4294967296 ORDER BY crc32(concat(gridimage_id,yearweek(now()))) LIMIT $limit";
+			$sql = "SELECT gridimage_id,gi.user_id,realname,credit_realname,gi.title,imageclass,grid_reference,reference_index,year(imagetaken) as year FROM gridimage_snippet gs INNER JOIN gridimage_search gi USING (gridimage_id) WHERE snippet_id = $snippet_id AND gridimage_id < 4294967296 ORDER BY crc32(concat(gridimage_id,yearweek(now()))) LIMIT $limit";
 
 			$imagelist->_getImagesBySql($sql);
+			$stats = array();
+			foreach($imagelist->images as $row)
+				@$stats[$row->year]++;
+			if (count($stats) == 1) { //all the same year!
+				$smarty->assign('year',$row->year);
+				foreach($imagelist->images as $idx => $row)
+					unset($imagelist->images[$idx]->year);
+			}
+
 			$smarty->assign_by_ref('results', $imagelist->images);
 			$smarty->assign_by_ref('results_count', count($imagelist->images));
 
