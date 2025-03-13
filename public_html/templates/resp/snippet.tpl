@@ -46,7 +46,7 @@
 <br style="clear:both"/>
 
 {if $images}
-	{if $images > 25}
+	{if $images > $results_count}
 		<p><b><a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">{$images} images</a> use this description. Preview sample shown below:</b></p>
 	{else}
 		<p><b>{$images} image{if $images == 1} uses{else}s use{/if} this description:</b></p>
@@ -63,8 +63,8 @@
 	{/foreach}
 	<br style="clear:both"/>
 
-	{if $images > 25}
-		... and {$images-25} more images.
+	{if $images > $results_count}
+		... and {$images-$results_count} more images.
 	{/if}
 
 

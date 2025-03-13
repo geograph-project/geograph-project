@@ -79,6 +79,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 			$imagelist->_getImagesBySql($sql);
 			$smarty->assign_by_ref('results', $imagelist->images);
+			$smarty->assign_by_ref('results_count', count($imagelist->images));
 
 			if ($data['images'] <= 10) {
 				$smarty->assign('thumbw',213);
