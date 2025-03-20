@@ -460,7 +460,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		group by user_id
 		$sql_having_having
 		order by imgcount desc $sql_orderby,last asc limit $limit2
-	) t2 inner join user u using (user_id) ");
+	) t2 STRAIGHT_JOIN user u using (user_id) ");
 
 	if (isset($_GET['debug']))
 		print $sql;
