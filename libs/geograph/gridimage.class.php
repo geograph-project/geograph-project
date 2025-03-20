@@ -2533,7 +2533,7 @@ split_timer('gridimage'); //starts the timer
 			}
 			if (!$square)
 				die("ERROR: no square known in updateCachedTables");
-			if ($square->nateastings) {
+			if ($square->nateastings) { //NOTE, nateastings is unsigned, so rockall fails eastings is stored as 0!
 				list($lat,$long) = $conv->national_to_wgs84($square->nateastings,$square->natnorthings,$square->reference_index);
 			} else {
 				list($lat,$long) = $conv->internal_to_wgs84($square->x,$square->y,$square->reference_index);
