@@ -59,6 +59,11 @@ function myquote($in) {
 if ($debug)
 	print "q=$query\n";
 
+############################################
+// first we just go though all recent hours, and check if got data. If not do a basic group by query on 'agent'
+// and then save any that have made over $min (nominally 100) requests in that hour.
+// the saved 'hits' is any request, no matter the HTTP response/status.
+
 $hours_total = 0; $affected_total = 0;
 foreach (range(-14,-1) as $offset) {
 	$d = date('Y-m-d',strtotime($offset.' day'));
@@ -373,6 +378,7 @@ function appearsToBePerson2($user_agent) {
             (strpos($user_agent, 'Preview')===FALSE) &&
             (stripos($user_agent, 'Magnus')===FALSE) &&
             (strpos($user_agent, 'curl')===FALSE) &&
+            (strpos($user_agent, 'oembed')===FALSE) &&
 	    (stripos($user_agent, 'python')===FALSE) && //python-requests + Python-urllib
             (strpos($user_agent, 'LWP::Simple')===FALSE) &&
             (strpos($user_agent, 'Siege')===FALSE) &&

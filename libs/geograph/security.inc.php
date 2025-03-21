@@ -248,11 +248,16 @@ function appearsToBePerson() {
 	global $CONF;
 	if (empty($_SERVER['HTTP_USER_AGENT']))
 		return false;
+	if (!empty($_SERVER['HTTP_SEC_PURPOSE']) && strpos($_SERVER['HTTP_SEC_PURPOSE'],'prefetch') !==FALSE) //new chrome prefetch proxy
+		return false;
+	if (!empty($_SERVER['HTTP_X_PURPOSE']) || !empty($_SERVER['HTTP_PURPOSE']) || !empty($_SERVER['HTTP_X_MOZ']))  //'prefetch' and 'preview' requests
+		return false;
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
 	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Preview')===FALSE) &&
             (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'curl')===FALSE) &&
+            (strpos($_SERVER['HTTP_USER_AGENT'], 'oembed')===FALSE) &&
             (stripos($_SERVER['HTTP_USER_AGENT'], 'python')===FALSE) && //python-requests + Python-urllib
             (strpos($_SERVER['HTTP_USER_AGENT'], 'LWP::Simple')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'Siege')===FALSE) &&
@@ -262,7 +267,6 @@ function appearsToBePerson() {
             (strpos($_SERVER['HTTP_USER_AGENT'], 'InspectionTool')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'The Knowledge AI')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'GoogleOther')===FALSE) &&
-	    empty($_SERVER['HTTP_X_PURPOSE']) && empty($_SERVER['HTTP_PURPOSE']) && empty($_SERVER['HTTP_X_MOZ']) &&  //'prefetch' and 'preview' requests
 	    $CONF['template']!='archive')
 		return true;
 
