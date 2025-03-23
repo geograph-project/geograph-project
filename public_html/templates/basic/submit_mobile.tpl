@@ -15,6 +15,8 @@
         <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
         <link rel="stylesheet" type="text/css" href="{"/js/mappingLeaflet.css"|revision}" />
 
+<link rel="stylesheet" href="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.css" />
+
         <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
@@ -22,13 +24,15 @@
         <script type="text/javascript" src="{"/js/Leaflet.MetricGrid.js"|revision}"></script>
         <script type="text/javascript" src="{"/js/mappingLeaflet.js"|revision}"></script>
 
-
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.67.0/dist/L.Control.Locate.min.css" />
 	<link rel="stylesheet" href="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.css" />
 
 	<script src="https://www.geograph.org/leaflet/L.Control.Locate.js"></script>
 	<script src="https://unpkg.com/leaflet-geotag-photo@0.5.1/dist/Leaflet.GeotagPhoto.min.js"></script>
+
+<script src="https://www.geograph.org/leaflet/leaflet-search-master/src/leaflet-search.js"></script>
+<script src="https://www.geograph.org/leaflet/Leaflet.GeographGeocoder.js"></script>
 
 	<script src="{"/js/Leaflet.GeographRecentUploads.js"|revision}"></script>
 
