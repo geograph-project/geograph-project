@@ -57,6 +57,7 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 			'<option value="contributor">Same Contributor</option>'+
 			'<option value="centisquare">Same Centisquare</option>'+
 			'<option value="grid_reference">Same Grid-Square</option>'+
+			'<option value="hectad">Same Hectad</option>'+
 			'</select></form>');
 
 		$('#related').append('<div class="thumbs shadow" style="padding:5px">Loading...</div>');
@@ -87,6 +88,7 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 function renderRelatedImage() {
 	if (related && related.row) {
 		processImage(related.row);
+		return;
 	}
 	var data = {
 		select: 'myriad,hectad,grid_reference,takenyear,takenmonth,takenday,groups,tags,types,contexts,snippets,subjects,place,county,country,scenti,user_id,realname,imageclass',
@@ -118,11 +120,18 @@ function processImage(row) {
 	if (!row)
 		return;
 
+	if (!row.scenti || row.scenti.match(/0{9}/)) {
+		//if the scenti is unknown, wont be able to filter by scenti anyway!
+		$('#related select option[value="centisquare"]').remove(); //attr('disabled',true);
+	}
+
 	var mode = $('#related select').val();
 
 	var required = [];
 	var optional = [];
-	if (mode == 'grid_reference') {
+	if (mode == 'hectad') {
+		required.push(row.hectad);
+	} else if (mode == 'grid_reference') {
 		required.push(row.grid_reference);
 	} else {
 		required.push(row.myriad);
@@ -215,7 +224,7 @@ function renderThumbs(row,data,match) {
 				if (row.takenday == value.takenday)						caption.push("taken same Day");
 				else if (row.takenmonth == value.takenmonth)					caption.push("taken same Month");
 				else if (row.takenyear == value.takenyear)					caption.push("taken same Year");
-				if (row.scenti == value.scenti)							caption.push("same Centisquare");
+				if (row.scenti == value.scenti && !value.scenti.match(/0{9}/))			caption.push("same Centisquare");
 				else if (row.grid_reference == value.grid_reference)				caption.push("same 1km Square");
 				else if (row.hectad == value.hectad)						caption.push("same Hectad");
 				else if (row.myriad == value.myriad)						caption.push("same Myriad");
