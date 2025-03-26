@@ -177,6 +177,13 @@ if (!empty($_GET['debug']))
 		$title = "images in cluster ".utf8_to_latin1($_GET['label']);
 		$q = '@groups "_SEP_ '.$_GET['label'].' _SEP_"';
 
+
+		if (!empty($_GET['gridref']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gridref'])) {
+			$reference_index = (strlen($_GET['gridref'])==6)?1:2;
+			$url = $CONF['canonical_domain'][$reference_index]."/stuff/list.php?label=".urlencode($_GET['label'])."&amp;gridref=".strtoupper(urlencode($_GET['gridref']));
+			$smarty->assign('extra_meta',"<link rel=\"canonical\" href=\"$url\" />");
+		}
+
 	} elseif (!empty($_GET['q'])) {
 		if (mb_detect_encoding($_GET['q'], 'UTF-8, ISO-8859-1') == "ISO-8859-1") {
 			//manticore is already utf8 so in general lets do processing in utf8
