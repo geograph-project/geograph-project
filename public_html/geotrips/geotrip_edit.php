@@ -88,6 +88,7 @@ coordinates etc.), those changes will take up to a week before they make it thro
                 <option value="rail"<?php if ($trip['type']=='rail') print('selected="selected"'); ?>>train journey</option>
                 <option value="boat"<?php if ($trip['type']=='boat') print('selected="selected"'); ?>>boat trip</option>
                 <option value="bus"<?php if ($trip['type']=='bus') print('selected="selected"'); ?>>scheduled public transport</option>
+                <option value="air"<?php if ($trip['type']=='air') print('selected="selected"'); ?>>from the air</option>
               </select>
             </p>
             <hr style="color:#992233">

@@ -50,7 +50,17 @@ $db = GeographDatabaseConnection(false);
 
 $updated = $db->GetOne("SELECT MAX(updated) FROM geotrips WHERE $where")+1;
 
-customCacheControl($updated,$updated);
+//customCacheControl($updated,$updated);
+
+$colors = array(
+	'walk'=>'blue',
+	'bike'=>'red',
+	'boat'=>'magenta',
+	'rail'=>'orange',
+	'road'=>'green',
+	'bus'=>'brown',
+	'air'=>'gray',
+	);
 
 
 $smarty->assign('page_title', 'Overview map :: Geo-Trips');
@@ -233,8 +243,9 @@ $conv = new Conversions;
 	print "createMarker([$wgs84_lat,$wgs84_long],'{$track['type']}', content);\n";
 
       // Link multi-day trips
-      if ($track['contfrom'] && ($prevbbox=$trks[$track['contfrom']])) {
-        $prevbbox=explode(' ',$prevbbox['bbox']);
+      if ($track['contfrom'] && !empty($trks[$track['contfrom']])) {
+        
+        $prevbbox=explode(' ',$trks[$track['contfrom']]['bbox']);
         $pcen[0]=(int)(($prevbbox[0]+$prevbbox[2])/2);
         $pcen[1]=(int)(($prevbbox[1]+$prevbbox[3])/2);
 ?>
@@ -254,17 +265,9 @@ $conv = new Conversions;
 ?>
   }  //loadmap
 
-	 var icons = [];
+	 var colours = <? echo json_encode($colors); ?>;
 	 function createMarker(point,icon,html) {
-                if (!icons[icon]) {
-	                icons[icon] = L.icon({
-        	            iconUrl: static_host+"/geotrips/"+icon+".png",
-	                    iconSize:     [9, 9], // size of the icon
-        	            iconAnchor:   [5, 5], // point of the icon which will correspond to marker's location
-                	    popupAnchor:  [0, -5] // point from which the popup should open relative to the iconAnchor
-	                });
-		}
-                var marker = L.marker(point, {icon: icons[icon], draggable: false}).addTo(map);
+                var marker = L.circleMarker(point, {radius:3, weight:2, color:colours[icon], draggable: false}).addTo(map);
 		if (html)
 			marker.bindPopup(html);
       		return marker;
@@ -300,7 +303,7 @@ You can also <a href="geotrip_edit.php">edit your existing Geo-Trips</a>.
   </p>
   <?php } ?>
   <p>
-Please note that up until recently Geo-Trips currently only worked in England, Scotland, Wales and the Isle of Man, hence why not many trips in Ireland, however Ireland is now supported.
+Please note originally Geo-Trips only worked in England, Scotland, Wales and the Isle of Man, hence why not many trips in Ireland, however Ireland is now supported.
   </p>
 
 <form method=get action="/content/" class="panel" style="padding:10px;margin:10px">
@@ -308,24 +311,26 @@ Please note that up until recently Geo-Trips currently only worked in England, S
 <input type=hidden name="scope[]" value="trip"/>
 </form>
 
-  <table class="ruled"><tr>
+  <table><tr>
     <td><b>Legend:</b></td>
-    <td><a href="?type=walk"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/walk.png" alt="" title="Fig.: Walk symbol"></a> Walk</td><td></td>
-    <td><a href="?type=bike"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/bike.png" alt="" title="Fig.: Bike symbol"></a> Cycle ride</td><td></td>
-    <td><a href="?type=boat"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/boat.png" alt="" title="Fig.: Boat symbol"></a> Boat trip</td><td></td>
-    <td><a href="?type=rail"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/rail.png" alt="" title="Fig.: Rail symbol"></a> Train ride</td><td></td>
-    <td><a href="?type=road"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/road.png" alt="" title="Fig.: Road symbol"></a> Drive</td><td></td>
-    <td><a href="?type=bus"><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/bus.png"  alt="" title="Fig.: Bus symbol"></a>  Scheduled public transport</td>
+    <td><a href="?type=walk" style="color: blue;">&#x25CF; Walk</a></td><td></td>
+    <td><a href="?type=bike" style="color: red;">&#x25CF; Cycle ride</a></td><td></td>
+    <td><a href="?type=boat" style="color: magenta;">&#x25CF; Boat trip</td><td></td>
+    <td><a href="?type=rail" style="color: orange;">&#x25CF; Train ride</td><td></td>
+    <td><a href="?type=road" style="color: green;">&#x25CF; Drive</td><td></td>
+    <td><a href="?type=bus" style="color: brown;">&#x25CF; Scheduled public transport</td>
+    <td><a href="?type=air" style="color: gray;">&#x25CF; From the Air</td>
   </td></tr></table>
   <div id="map" class="inner" style="width:798px;height:1300px"></div>
-  <table class="ruled"><tr>
+  <table><tr>
     <td><b>Legend:</b></td>
-    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/walk.png" alt="" title="Fig.: Walk symbol"> Walk</td><td></td>
-    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/bike.png" alt="" title="Fig.: Bike symbol"> Cycle ride</td><td></td>
-    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/boat.png" alt="" title="Fig.: Boat symbol"> Boat trip</td><td></td>
-    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/rail.png" alt="" title="Fig.: Rail symbol"> Train ride</td><td></td>
-    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/road.png" alt="" title="Fig.: Road symbol"> Drive</td><td></td>
-    <td><img src="<? echo $CONF['STATIC_HOST']; ?>/geotrips/bus.png"  alt="" title="Fig.: Bus symbol">  Scheduled public transport</td>
+    <td><a href="?type=walk" style="color: blue;">&#x25CF; Walk</a></td><td></td>
+    <td><a href="?type=bike" style="color: red;">&#x25CF; Cycle ride</a></td><td></td>
+    <td><a href="?type=boat" style="color: magenta;">&#x25CF; Boat trip</td><td></td>
+    <td><a href="?type=rail" style="color: orange;">&#x25CF; Train ride</td><td></td>
+    <td><a href="?type=road" style="color: green;">&#x25CF; Drive</td><td></td>
+    <td><a href="?type=bus" style="color: brown;">&#x25CF; Scheduled public transport</td>
+    <td><a href="?type=air" style="color: gray;">&#x25CF; From the Air</td>
   </td></tr></table>
   <p>
 In the spirit if not the scope of Geo-Trips, here's <b>Thomas Nugent</b>'s

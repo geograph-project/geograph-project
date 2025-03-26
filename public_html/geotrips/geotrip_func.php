@@ -7,6 +7,7 @@ function whichtype($type) {
   elseif ($type=='rail') return 'train ride';
   elseif ($type=='boat') return 'boat trip';
   elseif ($type=='bus')  return 'journey by scheduled public transport';
+  elseif ($type=='air')  return 'from the air';
   else                   return 'trip';
 }
 

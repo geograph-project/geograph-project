@@ -82,6 +82,7 @@ print "<h2><a href=\"./\">Geo-Trips</a> :: Submission Form</h2>";
               <option value="rail">train journey</option>
               <option value="boat">boat trip</option>
               <option value="bus">scheduled public transport</option>
+              <option value="air">from the air</option>
             </select>
           </p>
           <ul>
