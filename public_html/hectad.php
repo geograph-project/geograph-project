@@ -122,20 +122,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('myriad',preg_replace('/\d+/','',$hectad));
 
 
-
-        $ctx = stream_context_create(array(
-            'http' => array(
-                'timeout' => 3
-                )
-            )
-        );
-
 	//calling our own API is ugly, but better than replicating all the code here?
-	ini_set("user_agent","Internal Request");
-        $remote = file_get_contents("https://api.geograph.org.uk/finder/bytag.json.php?q=hectad:$hectad",0, $ctx);
+
+        $remote = get_internal_url($CONF['API_HOST']."/finder/bytag.json.php?q=hectad:$hectad&ddev=1&live=1", 3);
 
         if (!empty($remote) && strlen($remote) > 110) {
-		require_once '3rdparty/JSON.php';
 		$tags = json_decode($remote);
 
 		$str = $sep = '';

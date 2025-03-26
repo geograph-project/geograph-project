@@ -1509,3 +1509,67 @@ function debug_message($subject,$body, $hours=null) {
 	mail_wrapper($CONF['developer_email'] ?? $CONF['contact_email'],$subject,$body."\n\n".$con);
 }
 
+#########################################
+// make an internal request, deliberately bypassing external proxies. (eg cloudflare)
+
+function get_internal_url($url, $timeout = 3) {
+
+	ini_set("user_agent","Internal Request");
+
+	//this currently only works with http:// anyway!
+	$url = str_replace('https://','http://',$url);
+
+	//technically only needed, if the page, uses pageMustBeHTTPS (we can't specify a https:// as internal ngxin doesnt do SSL!)
+	$context_options = [
+		'http' => [
+			'header' => [
+				"X-Forwarded-For: internal", //need something as pageMustBeHTTPS checks for it!
+				"X-Forwarded-Proto: https", //this should fool pageMustBeHTTPS
+				//https_request_with_ip_override will add 'Host'!
+			]
+		]
+	];
+
+	if (!empty($timeout))
+		$context_options['http']['timeout'] = $timeout;
+
+	if (!empty($_SERVER['CONF_PROFILE'])) {
+		//this should get the Service within the current namespace
+		$override_ip = gethostbyname("geograph");
+		return https_request_with_ip_override($url, $override_ip, $context_options);
+
+	} else {
+		//todo, would be some way to find the internal DNS name. (eg so could go direct to backend, bypassing external proxies)
+		return file_get_contents($url, false, $context_options);
+	}
+}
+
+#########################################
+//https://g.co/gemini/share/f0fee7f979a1
+
+function https_request_with_ip_override(string $url, string $override_ip, array $context_options = []) {
+//	global $http_response_header;
+
+    // Parse the URL to get the host
+    $parsed_url = parse_url($url);
+    if (!$parsed_url || !isset($parsed_url['host'])) {
+        return false; // Invalid URL
+    }
+    $host = $parsed_url['host'];
+
+    // Override the host with the IP address in the Host header
+    $context_options['http']['header'] = isset($context_options['http']['header'])
+        ? (is_array($context_options['http']['header']) ? $context_options['http']['header'] : explode("\r\n", $context_options['http']['header']))
+        : [];
+
+    $context_options['http']['header'][] = "Host: " . $host;
+
+    // Create the stream context
+    $context = stream_context_create($context_options);
+
+    // Replace the original host with the IP address for the stream
+    $url = str_replace($host, $override_ip, $url);
+
+    return file_get_contents($url, false, $context);
+}
+

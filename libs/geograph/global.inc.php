@@ -104,7 +104,7 @@ if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'
 	if (isset($_GET['ddev']) && is_numeric($_GET['ddev'])) {
 		setcookie('ddev', intval($_GET['ddev']), time()+3600*24, '/', null, true, true);
 
-	} elseif (empty($_COOKIE['ddev']) && strpos($_SERVER['CONF_DB_DB'],'staging') !== FALSE && strpos($_SERVER['HTTP_USER_AGENT'],'monitoring-plugins') === FALSE && strpos($_SERVER['HTTP_HOST'],'t0.') === FALSE) {
+	} elseif (empty($_COOKIE['ddev']) && strpos($_SERVER['CONF_DB_DB'],'staging') !== FALSE && strpos($_SERVER['HTTP_USER_AGENT'],'monitoring-plugins') === FALSE && strpos($_SERVER['HTTP_USER_AGENT'],'Internal Request') === FALSE && strpos($_SERVER['HTTP_HOST'],'t0.') === FALSE) {
 		header('HTTP/1.0 429 Too Many Requests');
 		die("not public");
 	}
@@ -933,12 +933,11 @@ $str[] = "
 				}
 				if (empty($content)) {
 					$url = "{$CONF['CONTENT_HOST']}/stuff/related.json.php?id={$m[1]}";
-					ini_set("user_agent","Internal Request");
-					$content = file_get_contents($url);
+					$content = get_internal_url($url);
 				}
 				if (strlen($content) > 5) {
 					$str[] = '<script>var related = '.$content.';</script>';
-					$one = 1; //its passed by reference"
+					$one = 1; //its passed by reference
 					$memcache->name_set('reljs',$m[1],$one,false,$memcache->period_long);
 				}
 			}
