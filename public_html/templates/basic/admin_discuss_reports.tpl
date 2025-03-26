@@ -45,7 +45,7 @@
 	{foreach from=$data item=row}
 		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 		<tr bgcolor="{$bgcolor}">
-			<td>{$row.created|escape:'html'}</td>
+			<td class=nowrap>{$row.created|escape:'html'}</td>
 
 			{if $row.forum_id1}
 				<td><a href="/discuss/?action=vthread&forum={$row.forum_id1}&topic={$row.topic_id}"><b>{$row.thread|escape:'html'|default:$row.topic_id}</b></a><small> [{$row.posts_count}]
@@ -101,8 +101,8 @@
 				</select></td>
 		</tr>
 		{if $row.comment}
-			<tr bgcolor="{$bgcolor}">
-				<td class="small" colspan="6">{$row.comment|escape:'html'}</td>
+			<tr bgcolor11="{$bgcolor}">
+				<td colspan="6">{$row.comment|escape:'html'}</td>
 			</tr>
 		{/if}
 		{foreach from=$logs item=log}
