@@ -191,7 +191,7 @@
 /////////////////////////////////////////////////////
 
 	var mapOptions =  {
-                center: [54.4266, -3.1557], zoom: 13,
+                center: [56.317, -2.769], zoom: 5,
                 minZoom: 5, maxZoom: 18
         };
 	var clickOptions = {};
@@ -200,11 +200,15 @@
 {dynamic}
 
 	{if $gridref}
-		 var wgs84=new GT_WGS84();
-                 wgs84 = wgs84.parseGridRef('{$gridref}'); //technically a factory method
+		var wgs84=new GT_WGS84();
+                wgs84 = wgs84.parseGridRef('{$gridref}'); //technically a factory method
 
-                 if (wgs84)
-                          mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
+		{literal}
+                if (wgs84) {
+                        mapOptions.center = L.latLng( wgs84.latitude, wgs84.longitude );
+			mapOptions.zoom = 13;
+		}
+		{/literal}
 	{elseif $ireland}
 		mapOptions.center = [53.416,-7.877];
 		mapOptions.zoom = 7;
@@ -260,7 +264,7 @@
 	}
 	if ($.localStorage) {
 		map.on('baselayerchange', function(e) {
-		  	$.localStorage('LeafletBaseMap', e.name);
+			$.localStorage('LeafletBaseMap', e.name);
 			reinstateOS = false;
 		});
 	}
