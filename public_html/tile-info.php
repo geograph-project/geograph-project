@@ -23,6 +23,15 @@
 
 define('ALLOW_FRAMED',1); //HAVE to be CAREFUL to taint all input!
 
+
+if (empty($_SERVER['HTTP_REFERER']) || !preg_match('/^https?:\/\/(www|m|schools)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER']) ) {
+
+        header("HTTP/1.0 401 Forbidden");
+        print "<h3>Access Denied</h3>" ;
+	exit;
+}
+
+
 require_once('geograph/global.inc.php');
 
 
