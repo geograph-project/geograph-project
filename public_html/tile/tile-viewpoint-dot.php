@@ -11,7 +11,12 @@ if ($_GET['z'] < 10 && empty($_GET['match'])) {
 }
 
 
-define('SPHINX_INDEX',"viewpoint");
+if (!empty($_GET['new'])) {
+	//sample8 now has the vlat columns (as added to gridimage_search) - just behind a param for testing purposes
+        define('SPHINX_INDEX',"sample8");
+} else {
+	define('SPHINX_INDEX',"viewpoint");
+}
 
 //https://github.com/LaurensRietveld/HeatMap/blob/master/googleMapUtility.php
 require_once ('3rdparty/googleMapUtility.php');

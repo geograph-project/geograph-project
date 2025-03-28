@@ -14,6 +14,9 @@ if (!empty($_GET['gg'])) {
         define('SPHINX_INDEX',"germany");
 } elseif (!empty($_GET['is'])) {
         define('SPHINX_INDEX',"islands");
+} elseif (!empty($_GET['new'])) {
+        //sample8 now has the vlat columns (as added to gridimage_search) - just behind a param for testing purposes
+        define('SPHINX_INDEX',"sample8");
 } else
 	define('SPHINX_INDEX',"viewpoint");
 
