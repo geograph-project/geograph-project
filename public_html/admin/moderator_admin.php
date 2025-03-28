@@ -31,6 +31,8 @@ $smarty = new GeographPage;
 $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');
 
+################################################
+
 if (isset($_GET['revoke'])) {
 	$u = new GeographUser(intval($_GET['revoke']));
 	if ($u->registered) {
@@ -70,6 +72,19 @@ if (isset($_GET['revoke'])) {
 	}
 }
 
+################################################
+
+$done = $db->getOne("select date_add(coalesce(UPDATE_TIME,CREATE_TIME),interval 48 hour) > now() from information_schema.tables where table_schema = DATABASE() and table_name = 'moderation_log_dummy_stat'");
+
+if (!$done) {
+	$db->Execute("DROP TABLE IF EXISTS moderation_log_dummy_stat");
+	$db->Execute("create table moderation_log_dummy_stat (primary key(user_id)) as
+		select user_id,count(*) as total,sum(new_status=old_status) as matching, min(created) as first,max(created) as last
+		from moderation_log where type = 'dummy' group by user_id");
+}
+
+################################################
+
 if (!empty($_GET['q']) && trim($_GET['q'])) {
 	$q=$db->Quote('%'.$_GET['q'].'%');
 	$sql_where = " or (user.user_id LIKE $q) or (realname LIKE $q) or (nickname LIKE $q)";
@@ -87,25 +102,28 @@ if (!empty($_GET['show_role'])) {
 } elseif(!empty($_GET['right'])) {
 	$sql_where .= " and rights like ".$db->quote("%".$_GET['right']."%");
 } else {
-	 $sql_where .= " and (ml.created IS NOT NULL OR role != '')";
+	 $sql_where .= " and (ml.total IS NOT NULL OR role != '')";
 }
 if (isset($_GET['stats'])) {
 	$user = $db->Quote($_GET['stats']);
 	$sql_where .= " and user.user_id = $user";
 }
 
+################################################
+
 $moderators = $db->GetAll("
 select
 	user.user_id,user.realname,user.nickname,user.rights,role,substring(user.signup_date,1,10) as signup_date,
-	count(distinct moderation_log_id) as log_count,
-	substring(max(ml.created),1,10) as last_log,
-	max(ml.created) as last_log_time
+	ml.total as log_count,
+	substring(ml.last,1,10) as last_log,
+	ml.last as last_log_time
 from user
-	left join moderation_log ml on (ml.user_id = user.user_id AND ml.type = 'dummy')
+	left join moderation_log_dummy_stat ml USING (user_id)
 where length(rights) > 0 AND (rights != 'basic' OR role != '') $sql_where
 group by user.user_id
 order by last_log_time desc,user.user_id");
 
+################################################
 
 if (isset($_GET['stats'])) {
 	$moderatorstats = $db->GetRow("
@@ -128,6 +146,8 @@ if (isset($_GET['stats'])) {
 		$moderators[] = $moderatorstats;
 	$smarty->assign('stats', $_GET['stats']);
 }
+
+################################################
 
 $smarty->assign_by_ref('moderators', $moderators);
 
