@@ -99,7 +99,7 @@ format, YYYY-MM-DD - but can omit the day, by using 00, eg 2013-03-00
 
 </ul>
 
-<li><b>role</b> - another tricky field. it contains a custom label for some users with extra rights. probably dont need to change this, except, if 1) the user was a moderator, and/or 2) there is already a custom label in the box. If either of these true enter exactly Member in the box. This has the effect of adding them to the bottom of the team page. 
+<li><b>role</b> - another tricky field. it contains a custom label for some users with extra rights. probably dont need to change this, except, if 1) the user was a moderator, and/or 2) there is already a custom label in the box.
 
 </ul>
 
