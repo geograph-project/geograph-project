@@ -21,6 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+//TODO, this should also check 'added' larger uploads, via 'gridimage_pending' table! (once moderated!)
+
 ############################################
 
 $param = array('start'=>'auto', 'end'=>'auto', 'verbose'=>0, 'log'=>0, 'progress'=>posix_isatty(STDOUT));
@@ -57,7 +59,7 @@ if ( $param['start'] == 'auto') {
 }
 
 if ( $param['end'] == 'auto') {
-	$end = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+	$end = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage");
 } else {
 	$end = $param['end'];
 }
@@ -154,7 +156,7 @@ if ($param['start'] == 'auto' && $param['end'] == 'auto') {
 
 	//the table has a unique key on 'md5sum', so reinsertions of hte same dup should be silently ignored.
 	/// ... but does mean will miss adding a new image to a previousp duplication!
-	$sql = "INSERT IGNORE INTO full_dup SELECT $key as md5sum,COUNT(*) cnt,'new',0,NOW(),NOW() FROM full_md5 WHERE $key != '' AND class != 'upload' GROUP BY $key HAVING cnt > 1 ORDER BY NULL";
+	$sql = "INSERT IGNORE INTO full_dup SELECT $key as md5sum,COUNT(*) cnt,'new',0,NOW(),max(s3_date) as updated FROM full_md5 WHERE $key != '' AND class != 'upload' GROUP BY $key HAVING cnt > 1  AND updated > date_sub(now(),interval 7 day) ORDER BY NULL";
 
 	print "$sql;\n";
 
