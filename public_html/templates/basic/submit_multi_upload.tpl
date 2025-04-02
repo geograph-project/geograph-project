@@ -30,6 +30,7 @@
 
 {literal}
 <script type="text/javascript">
+var aborted = false; var confirmed = false;
 // Convert divs to queue widgets when the DOM is ready
 $(function() {
 	$("#uploader").plupload({
@@ -37,7 +38,7 @@ $(function() {
 		runtimes : 'html5,html4',
 		url : '{/literal}{$script_name}{literal}',
 		max_file_size : '24mb', //we will catch >8M seperately and force use of resize option!
-		max_file_count: 100, // user can add no more then 100 files at a time
+
 	//	chunk_size : '1mb',
 		unique_names : true,
 		multiple_queues : true,
@@ -77,6 +78,21 @@ $(function() {
 				}
 		        });
 	            },
+		    BeforeUpload: function(up, file) {
+			if (aborted)
+				return false;
+			if (up.files.length > 50 && !confirmed) {
+				if (confirm('Please confirm you wish to upload all '+up.files.length+' selected files. While there\'s no limit, we want to ensure you intended to upload this many.')) {
+					confirmed = true;
+					setTimeout(function() { confirmed = false; }, 5000);
+					return true;
+				} else {
+					aborted = true;
+					setTimeout(function() { aborted = false; }, 5000);
+					return false;
+				}
+			}
+		    }
 		}
 	});
 
@@ -120,9 +136,10 @@ function setResize(that) {
 {/literal}
 
 		<form method="post" action="{$script_name}?tab=submit" id="form">
+			<br>
 
 			<fieldset>
-				<legend>Upload Dimensions</legend>
+				<legend>Upload Dimensions (resize before upload)</legend>
 				<span id="noResize">
 				<input type="radio" name="size" value="65536" checked onclick="setResize(this)"/> No Resize |
 				</span>
@@ -133,20 +150,28 @@ function setResize(that) {
 				<input type="radio" name="size" value="1024" onclick="setResize(this)"/> 1024 pixels |
 				<input type="radio" name="size" value="800" onclick="setResize(this)"/> 800 pixels |
 				<input type="radio" name="size" value="640" onclick="setResize(this)"/> 640 pixels<br/>
-				images are resized in your browser before being sent to Geograph - EXIF data <i>may</i> be stripped<br>
-				<i>Note: If image is smaller than requested dimension, it will still be opened and resaved with 87% JPEG quality setting before upload (but not resized).</i>
+				images are resized in your browser before being sent to Geograph - <b>EXIF data probably stripped</b><br><br>
+
+				Note: while this uploader can resize images before upload, it does not maintain the EXIF data (so might have to reenter the location/date).<br>
+				&middot; the <a href="/submit2.php">Normal submission processes</a> can now directly resize image before upload - although will only do it if the jpeg image is over 8Mb.<br>
+				&middot; and <a href="/submit-mobile.php">Mobile submission process</a>, can additiaonly downsize image before upload with customizable resolution (i.e. if only want to release smaller image). <br>
+				&middot; Resizing image client side - before upload - results in much faster uploads.
 			</fieldset>
+			<br>
 
 			<div id="uploader">
-				<p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p>
+				<p>You browser doesn't have HTML5 support.</p>
 			</div>
 
 			<ol>
-				<li>Choose what size image you want to upload. (By resizing the image using the provided resize option, you save time and bandwidth. But EXIF data will probably not be available to the Geograph website)</li>
+				<li>Choose what size image you want to upload. (By resizing the image using the provided resize option, you save time and bandwidth. But EXIF data will probably not be available to the Geograph website)<ul>
+					<li>To maintain EXIF, now recommended to use <a href="/submit2.php">Normal submission processes</a> can now directly resize large image before upload.
+				</ul></li>
 				<li>Click "<b>Add Files</b>" and select image(<b>s</b>) you want to upload. <b>Maximum filesize 8Mb</b>.<ul>
-					<li style=background-color:yellow>Note, however can now select file upto 24Mb. But it will be resized before upload, can choose the max dimension. Note that even if file is smaller than requested dimension,  it will still be opened and resaved with 87% JPEG quality setting before upload.</li> 
+					<li style=background-color:yellow>Note, however can now select <b>JPEG file upto 24Mb</b>. But it will be resized before upload, can choose the max dimension. Note that even if file is smaller than requested dimension,  it will still be opened and resaved with 87% JPEG quality setting before upload.</li> 
+					<li>You can also <b>upload .heic files</b> (HEIF format) via this tool, although will <i>not</i> be resized before upload (so 8Mb limit still applies!) 
 					<li>Tip: In some browsers can also drag and drop images onto the white area above<br/> (you will see a message to that affect if your browser supports it)</li></ul></li>
-				<li>Once you have selected all files (can repeat step 2. to select upto 100 files) - click "<b>Start Upload</b>"</li>
+				<li>Once you have selected all files (can repeat step 2. to select more files) - click "<b>Start Upload</b>"</li>
 				<li>When all files are uploaded, click one of "<b>Submit Images</b>" tabs to continue to next stage using your favorite submission method</li>
 			</ol>
 		</form>
