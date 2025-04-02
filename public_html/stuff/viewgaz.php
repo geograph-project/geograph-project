@@ -44,9 +44,9 @@ print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
 
 
 if (!empty($_GET['all'])) {
-	$tables = explode(',','placename_index,sphinx_placenames,loc_abgaz,loc_counties,loc_counties_pre74,loc_placenames,loc_towns,os_open_names,os_gaz,os_gaz_250,os_gaz_old');
+	$tables = explode(',','placename_index,sphinx_placenames,loc_abgaz,loc_counties,loc_counties_pre74,os_gaz_county,loc_placenames,loc_towns,os_open_names,os_gaz,os_gaz_250,os_gaz_old');
 } else {
-	$tables = explode(',','sphinx_placenames,loc_abgaz,loc_counties,loc_counties_pre74,loc_placenames,loc_towns,os_open_names,os_gaz,os_gaz_250');
+	$tables = explode(',',                'sphinx_placenames,loc_abgaz,loc_counties,loc_counties_pre74,os_gaz_county,loc_placenames,loc_towns,os_open_names,os_gaz,os_gaz_250');
 }
 
 foreach ($tables as $table) {
@@ -93,7 +93,7 @@ foreach ($tables as $table) {
 
 
 function dump_sql_table($sql,$title = '') {
-	global $db;
+	global $db, $CONF;
 
 	$recordSet = $db->Execute($sql) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
@@ -145,17 +145,17 @@ function dump_sql_table($sql,$title = '') {
 				}
 			}
 
-
 			if (!empty($e)) {
 				list($lat,$long) = $conv->national_to_wgs84($e,$n,$ri);
 			}
 
-
 			if (!empty($lat)) {
-				$coord = "$lat,$long";
-				print "<img src=\"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid|$coord&zoom=13&key={$CONF['google_maps_api3_key']}&size=300x300&maptype=terrain\">";
+				$lat = round($lat,5);
+				$long = round($long,5);
+				$url = $CONF['TILE_HOST']."/tile-static.php?source=OSM&lat=$lat&lon=$long&z=13&w=300&h=300";
+				$url .= "&mlat0=$lat&mlon0=$long";
+				print "<img src=\"$url\">";
 			}
-
                 }
 
 		$recordSet->MoveNext();
