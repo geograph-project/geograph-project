@@ -88,10 +88,10 @@ AttachEvent(window,'load',focusBox,false);
 	<small style="color:gray">{$item.excerpt|replace:'<br>':' '} <span class="nowrap">[post by <a href="/profile/{$item.poster_id}">{$item.poster_name|escape:'html'}</a>]</span></small>
 	{if $item.results}
 		<div id="hide{$key}" class="hidediv">... and <a href="javascript:void(show_tree({$key}));">{$item.result_count} more results from this thread.</a></div>
-		<div id="show{$key}" style="display:none">
+		<div id="show{$key}"{if count($results) > 1} style="display:none"{/if}>
 			<ol type="i" class="inner">
 			{foreach from=$item.results item=item2 key=key2}
-				<li><div style="float:right">{$item2.post_time|date_format:"%a, %e %b %Y"}</div><small style="color:gray">[<a href="/discuss/?action=vpost&forum={$item2.forum_id}&amp;topic={$item2.topic_id}&amp;post={$item2.id}">view post</a>] {$item2.excerpt|replace:'<br>':' '} <span class="nowrap">[post by <a href="/profile/{$item2.poster_id}">{$item2.poster_name|escape:'html'}</a>]</span></small></li>
+				<li><div style="float:right">{$item2.post_time|date_format:"%a, %e %b %Y"}</div><small style="color:gray">[<a href="/discuss/?action=vpost&forum={$item2.forum_id}&amp;topic={$item2.topic_id}&amp;post={$item2.id}">view post</a>] <span style="color:black">{$item2.excerpt|replace:'<br>':' '}</a> <span class="nowrap">[post by <a href="/profile/{$item2.poster_id}">{$item2.poster_name|escape:'html'}</a>]</span></small></li>
 			{/foreach}
 			</ol>
 		</div>
