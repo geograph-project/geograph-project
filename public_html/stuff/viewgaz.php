@@ -152,8 +152,7 @@ function dump_sql_table($sql,$title = '') {
 			if (!empty($lat)) {
 				$lat = round($lat,5);
 				$long = round($long,5);
-				$url = $CONF['TILE_HOST']."/tile-static.php?source=OSM&lat=$lat&lon=$long&z=13&w=300&h=300";
-				$url .= "&mlat0=$lat&mlon0=$long";
+				$url = $CONF['TILE_HOST']."/tile-static.php?source=OSM&mlat=$lat&mlon=$long&z=13&w=300&h=300";
 				print "<img src=\"$url\">";
 			}
                 }

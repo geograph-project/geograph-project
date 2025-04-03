@@ -1150,6 +1150,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$smarty->assign_by_ref('google_maps_api3_key', $CONF['google_maps_api3_key']);
 		if (!empty($CONF['os_api_key']))
 		        $smarty->assign('os_api_key', $CONF['os_api_key']);
+		$smarty->assign('tile_host', $CONF['TILE_HOST']);
 
 		$smarty->register_function("searchbreak", "smarty_function_searchbreak");
 

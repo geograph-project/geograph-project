@@ -32,7 +32,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $rows = $db->getAll("SELECT grouping,top FROM category_primary ORDER BY sort_order");
 $smarty->assign('groups',json_encode($rows));
 
-$smarty->assign('google_maps_api3_key',$CONF['google_maps_api3_key']);
+$smarty->assign('tile_host', $CONF['TILE_HOST']);
 
 $smarty->display('explore_sample.tpl');
 

@@ -111,7 +111,7 @@
 <script type="text/javascript">
         function showMap(geo) {
                 bits = geo.split(/ /);
-                url = "https://maps.googleapis.com/maps/api/staticmap?markers=size:med|"+bits[0]+","+bits[1]+"&zoom=7&size=200x200&style=feature:administrative.country%7Celement:labels%7Cvisibility:off&key={/literal}{$google_maps_api3_key}{literal}";
+		url = "{/literal}{$tile_host}{literal}/tile-static.php?source=OSM&mlat="+bits[0]+"&mlon="+bits[1]+"&z=7&w=250&h=250";
 
                 document.images['map'].src= url;
                 document.getElementById("mapdiv").style.display = '';

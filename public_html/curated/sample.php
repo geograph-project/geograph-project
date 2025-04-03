@@ -35,6 +35,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $count = $db->getOne("SELECT SUM(larger) FROM curated1_stat");
 $smarty->assign('imagecount', $count);
 
+$smarty->assign('tile_host', $CONF['TILE_HOST']);
 
 if (!empty($_GET['dev'])) {
 	$smarty->display('curated_sample_dev.tpl');

@@ -167,9 +167,9 @@ $(function() {
 	});
 	if (0)
 	$('#thumbnails').on('mouseover','a',function() {
-		var ll = $(this).data('latlong');
+		var ll = $(this).data('latlong').split(/,/);
 		if (ll) {
-			var url = "https://maps.googleapis.com/maps/api/staticmap?markers=size:med|"+ll+"&zoom=7&size=640x640&scale=2&key={/literal}{$google_maps_api3_key}{literal}";
+			var url = "{/literal}{$tile_host}{literal}/tile-static.php?source=OSM&mlat="+ll[0]+"&mlon="+ll[1]+"&z=7&w=640&h=640";
 			$('body').css({
 				'background-image':'url('+url+')',
 				'background-size':'cover',
