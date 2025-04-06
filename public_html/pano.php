@@ -138,6 +138,13 @@ else {
 }
 
 ######################
+//ugly fix, because cloudflare (well R2) has old image cahced!
+
+if ($image->gridimage_id == 8012390) {
+	$CONF['STATIC_HOST'] = 'https://s3.eu-west-1.amazonaws.com/photos.geograph.org.uk';
+}
+
+######################
 
 //do this in PHP as easier to make dynamic!
 $json = array(
