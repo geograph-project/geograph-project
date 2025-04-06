@@ -30,7 +30,7 @@
 
 {literal}
 <script type="text/javascript">
-var aborted = false; var confirmed = false;
+var aborted = 0; var confirmed = 0;
 // Convert divs to queue widgets when the DOM is ready
 $(function() {
 	$("#uploader").plupload({
@@ -79,19 +79,22 @@ $(function() {
 		        });
 	            },
 		    BeforeUpload: function(up, file) {
-			if (aborted)
+			if (aborted) {
+				aborted = aborted-1;
 				return false;
+			}
 			if (up.files.length > 50 && !confirmed) {
 				if (confirm('Please confirm you wish to upload all '+up.files.length+' selected files. While there\'s no limit, we want to ensure you intended to upload this many.')) {
-					confirmed = true;
-					setTimeout(function() { confirmed = false; }, 5000);
+					confirmed = up.files.length-1;
 					return true;
 				} else {
-					aborted = true;
-					setTimeout(function() { aborted = false; }, 5000);
+					aborted = up.files.length-1;
+					setTimeout(function() { aborted = 0; }, 5000); //seems the upload is aborted completely, and doesnt continue anyway
 					return false;
 				}
 			}
+			confirmed = confirmed-1;
+			return true;
 		    }
 		}
 	});
