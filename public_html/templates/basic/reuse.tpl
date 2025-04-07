@@ -247,7 +247,7 @@ licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0
 <div class="interestBox" style="padding:10px">
 <img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 Wikimedia Commons has recently undertaken to upload Geograph images in bulk, so please make sure the image hasn't already been uploaded. 
-<b>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=insource%3A%22geograph+`$image->gridimage_id`%22&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been"}</b>.</div>
+<b>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=geograph+`$image->gridimage_id`&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been"}</b>.</div>
 <br/>
 
 {capture name=wikitext}== {literal}{{int:filedesc}}{/literal} ==
