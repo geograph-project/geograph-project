@@ -1,0 +1,146 @@
+This is a list of tasks to 'replace' GNS for Ireland. 
+
+Its mainly to replace use of loc_placenames (which was created by importing GNS!) 
+
+... and replace with ie_open_data (which is OSI and OSNI 'open data')
+
+(for GB, now using os_gaz OR os250_gaz DIRECTLY rather than loc_placenames, although it still has GB locations in it!)
+
+
+###############################################
+
+Todo:
+
+[ ] - PHP - Update findByNational function
+		(Note, DOES now use ie_open_data for nearby line, but needs updating to use it for buildplacename_id.php)
+
+[ ] - PHP - Update findListByNational function (used by submit_popup.php)
+
+[ ] - PHP - Update findPlacename function (searching by placename)
+
+[ ] - DB - Recreate placename_index material view (used by gaz sphinx index)
+
+	[ ] - Sphinx - Recreate 'gaz' index 
+
+[ ] - DB - Update gridsquare.placename_id (mainly for search joining) - use buildplacename_id.php
+
+	[ ] - DB - Update dblock table (has a materialized placename_id column)
+
+	[ ] - DB/PHP - Recreate sphinx_placenames material view (mainly used for sample8, search and stats) - update createsphinx-new.php
+
+		[ ] - Sphinx - Recreate sphinx indexes (mainly 'sample8' and 'gaznew')
+
+[Not Used] - DB - Update gridimage.placename_id (not currently used for anything!)
+		(was considered too much work to keep updated)
+
+###############################################
+
+Audit of gazetteer.class.php
+
+
+Current, CONF_USE_GAZETTEER: OS250
+
+
+//only really used by 'submit_popup.php' 
+
+	function findListByNational($reference_index,$e,$n,$radius = 1005) {
+		if (($CONF['use_gazetteer'] == 'OS' || $CONF['use_gazetteer'] == 'OS250') && $reference_index == 1) {
+			//even for 250k gaz, lets use the 50k as we want the detailed list
+			FROM os_gaz
+		} else {
+			FROM loc_placenames
+		}
+	}
+
+//reverse geocoder - for 'near to' line (but may also be used to populate placename_id - which specifically requests 'OS') 
+
+	function findByNational($reference_index,$e,$n,$radius = 25005,$f_codes = null,$gazetteer = '') {
+		if ($gazetteer == 'OS250' && $reference_index == 1) {
+			if (!empty($CONF['manticorert_host'])) { //index:os_gaz_250
+				FROM os_gaz_250
+			} else {
+				FROM os_gaz_250
+			}
+			$placeradius = 5005;
+			if (!empty($places) && sqrt($places['distance']) > $placeradius) {
+				if (!empty($CONF['manticorert_host'])) { //index:os_gaz
+			                FROM os_gaz
+                        	} else {
+					FROM os_gaz
+				}
+			}
+		} elseif ($gazetteer == 'OS' && $reference_index == 1) {
+			FROM os_gaz
+		} else if ($gazetteer == 'open' && $reference_index == 1) {
+			FROM os_open_names2
+		} else if ($gazetteer == 'hist' && $reference_index == 1) {
+			FROM loc_abgaz
+		} else if ($gazetteer == 'towns' && $reference_index == 1) {
+			FROM loc_towns
+		} else if (($gazetteer == 'open' || $gazetteer == '' || $gazetteer == 'OS250')&& $reference_index == 2) { //todo maybe should just be !='geonames' && != 'OS' (speciing 'OS' is what buildplacename_id, which wants geonames for ireland!
+		        FROM  ie_open_data
+                } else {
+                        if (!empty($CONF['manticorert_host'])) { //index:loc_placenames
+                                FROM loc_placenames
+			} else {
+				FROM loc_placenames
+				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
+			}
+			//if found very close then lookup mutliple
+			if (isset($places['distance']) && $places['distance'] < $d) {
+	                        if (!empty($CONF['manticorert_host'])) { //index:loc_placenames
+        	        	        FROM loc_placenames
+        	        	} else {
+					FROM loc_placenames
+				}
+			}
+		}
+	}
+
+//forward geocoder mainly search
+(although often the placename_index/sphinx_placename tables may be used DIRECTLY instead or via the sphinx indexes!)
+
+	function findPlacename($placename) {
+		if (is_numeric($placename)) {
+			if ($placename > 1000000) {
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where seq=".$db->Quote($placename-1000000));
+			} else {
+				$places = $db->GetAll("select full_name,dsg,e,n,loc_placenames.reference_index,loc_adm1.name as adm1_name from loc_placenames left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country) where id=".$db->Quote($placename));
+			}
+		} elseif (!$ismore) {
+			if (!empty($county)) {
+				FROM os_gaz inner join os_gaz_code using (f_code) where (def_nam=".$db->Quote($placename)." OR def_nam LIKE ".$db->Quote($placename."/%").") and (full_county = $qcount OR hcounty = $qcount)");
+			} else {
+				FROM os_gaz inner join os_gaz_code using (f_code) where $sql_where");
+				+ 
+				FROM loc_placenames inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) where $sql_where2 AND reference_index = 2"; 
+			}
+		}
+
+		if (count($places) == 1) {
+			#we done!
+		} else {
+			FROM os_gaz inner join os_gaz_code using (f_code)
+			UNION
+			FROM loc_placenames
+				inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
+				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
+			if (count($places) < 10 || $ismore) {
+				//sounds like (OS)
+				FROM os_gaz inner join os_gaz_code using (f_code)
+			}
+			if (count($places) < 10 || $ismore) {
+				//contains (OS)
+				FROM os_gaz inner join os_gaz_code using (f_code)
+			}
+			
+			if (count($places) < 10 || $ismore) {
+				//search the widest possible
+				FROM os_gaz inner join os_gaz_code using (f_code)
+				UNION
+				FROM loc_placenames inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
+			}
+		}
+	}
+
+
