@@ -29,6 +29,23 @@ $smarty = new GeographPage;
 $db = NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');
 
+if (!empty($_GET['review'])) {
+	$USER->mustHavePerm("director");
+
+	print "<p>NOTE: <b>The links below are not clickable, as there is a high chance the site is no longer safe, and should be treated with caution</b>.<hr>";
+
+	print "<p>Also note, that haven't yet got button on ths page to automatically block links based on reports (needs doing manually in databae for now)<hr>";
+
+	dump_sql_table("select * from link_report where status != 'rejected' group by url,pattern",
+		"Link Reports");
+
+	dump_sql_table("select first_used,updated,substring_index(url,'/',3) as domain,count(*) as count,sum(length(archive_url)>10) as archived,url as example from links_blocked group by substring_index(url,'/',3)",
+		"Currently Blocked");
+
+	print "<p>The achived count column shows how many of the links have a known archive version. In which case the Archive Link is shown instead. ";
+	print "<p>If the number is lower than count column, means there are links that are not currently being hidden (as have no alternative link to show!)";
+	exit;
+}
 
 if (!empty($_POST['url'])) {
 
@@ -161,4 +178,40 @@ URL: <input type=url name=url size=100 placeholder="enter full URL here, and cli
 
 <?
 $smarty->display('_std_end.tpl');
+
+
+
+
+function dump_sql_table($sql, $title='', $autoorderlimit = false) {
+	global $db;
+
+	$result = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
+
+	if (!empty($title))
+		print "<H3>$title</H3>";
+
+	if ($result->EOF) {
+		print "<i>empty</i>";
+		return;
+	}
+
+	$row =& $result->fields;
+
+	print "<TABLE border='1' cellspacing='0' cellpadding='2' bordercolor=#eee><TR>";
+	foreach ($row as $key => $value) {
+		print "<TH>$key</TH>";
+	}
+	print "</TR>";
+	do {
+		$row =& $result->fields;
+		print "<TR>";
+		foreach ($row as $key => $value) {
+			print "<TD>$value</TD>";
+		}
+		print "</TR>";
+		$result->MoveNext();
+	} while (!$result->EOF);
+
+	print "</TR></TABLE>";
+}
 
