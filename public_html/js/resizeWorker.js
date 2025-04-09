@@ -43,6 +43,24 @@ self.addEventListener('message', async function(event) {
 				quality = (quality*0.9).toFixed(2);
 				self.postMessage({message: 'Attempt '+attempt+': Saving as '+(quality*100)+'% ...'});
 
+			//for really large images, try an even lower quality
+                        } else if (width > 16384 && quality > 0.6) {
+				quality = (quality*0.9).toFixed(2);
+                                self.postMessage({message: 'Attempt '+attempt+': Saving as '+(quality*100)+'% (as large)...'});
+
+                        //special version that tries to align with powers of 2, esp for pano viewer!
+                        } else if (width > 16384 && width*0.9 < 16384) {
+                                let aspect = width/height;
+                                width = 16384;
+                                height = Math.round(width/aspect);
+
+                                if (height != 8192 && Math.abs(height-8192) < 3)
+                                        height = 8192; //deal with rounding error, specifically to keep the clean power of two height - for photospheres! (particully to avoid it being just over)
+
+				self.postMessage({message: 'Attempt '+attempt+': Resizing image to '+width+' x '+height+' (powers of two)...'});
+                                quality = 0.87; //reset quality, when downsize!
+
+			// otherwise try downsizing by 10%
 			} else if (width > 3000 && height > 3000) {
 				width = Math.floor(width*0.9);
 				height = Math.floor(height*0.9);
