@@ -21,6 +21,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (strlen(`whereis xz`) < 5) die("xz is not installed\n");
+if (strlen(`whereis gpg`) < 6) die("gpg is not installed\n");
+if (!preg_match('/Geograph <secure@geograph.org.uk>/',`gpg --list-keys`))
+	die("gpg key not installed");
+if (strlen(`whereis mysqldump`) < 12) die("mysqldump is not installed\n");
+if (!extension_loaded('mysqli')) die("mysqli extension not available\n");
+
+
 //these are the arguments we expect
 $param=array(
 	'dir'=>'/var/www/geograph',		//base installation dir
@@ -184,7 +192,11 @@ foreach ($status as $table => $s) {
 					$dumped++;
 				}
 			}
-			if (!$dumped) {
+			if ($dumped) {
+				//the test at the end expects file to be the full path. whereas above its just the filename
+				//todo, the test shoudl really be updated to check ALL files, not just the last (and update 'bytes written')
+				$file = $dir.$file;
+			} else {
 				print "$gray#Note, No updated shards for $table$white\n";
 				continue;
 			}
