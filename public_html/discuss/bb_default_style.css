@@ -313,11 +313,13 @@ a:target { /* needed to push down target links (past the sticky header) */
 	scroll-margin-top:180px;
 }
 
-div.forum-post-user:has(a:target) {
-  background-color:cornsilk;
-  border:1px solid orange;
+div.forum-post-header:has(a:target) {
+  background-color:#000066;
+  color:white;
 }
-
+div.forum-post-header:has(a:target) a {
+  color:white;
+}
 
 .forum-post-titlebox-title {
   grid-area: forum-post-titlebox-title;
