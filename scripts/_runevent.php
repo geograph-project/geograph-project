@@ -73,6 +73,14 @@ if (!empty($param['param'])) {
 
 $handler=new $param['entry'];
 
+#########
+// Some handlers, need the processor (eg to call trace() )
+$processor = new EventProcessor();
+$handler->_setDB($processor->db);
+$handler->_setProcessor($processor);
+#########
+// we still call the processEvent directly, rathrer than do it via EventProcessor
+
 if ($handler->processEvent($event))
 {
 	if ($param['verbosity']>2)
@@ -84,3 +92,7 @@ else
 }
 
 
+print "peak = ";
+$peak = memory_get_peak_usage();
+var_dump($peak);
+print "\n";

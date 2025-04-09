@@ -120,11 +120,11 @@ if ($param['dest'] == 'full_md5') {
 		}
 	}
 
-	if (!empty($done)) {
+	if (!empty($done) && $param['mtime'] > 1000) {
 		print "deleting ".count($done)."\n";
 		//anything left in $done, was not found on disk!
 		foreach ($done as $key => $dummy) {
-			$sql = "UPDATE {$param['dest']} SET status = 0 WHERE preview_key = '$key'";
+			$sql = "UPDATE {$param['dest']} SET status = 0,deleted = NOW() WHERE preview_key = '$key'";
 			$db->Execute($sql) or die("$sql\n\n".$db->ErrorMsg()."\n");
 		}
 	}

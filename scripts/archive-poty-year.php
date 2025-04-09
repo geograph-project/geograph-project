@@ -21,13 +21,13 @@ $to = 7; //archive
 
 $sql = array();
 
-$sql[] = "select topic_id,regexp_replace(topic_title,'^poty ($year)?[\.:,; ]*Week','PotY $year, Week') from geobb_topics where forum_id = $from order by topic_id";
+$sql[] = "select topic_id,regexp_replace(topic_title,'^poty ($year)?[\.:,; ]*Week','PotY $year, Week') from geobb_topics where forum_id = $from and topic_title like '%$year%' order by topic_id";
 
-$sql[] = "update geobb_topics set topic_title = regexp_replace(topic_title,'^poty ($year)?[\.:,; ]*Week','PotY $year, Week') where forum_id = $from";
+$sql[] = "update geobb_topics set topic_title = regexp_replace(topic_title,'^poty ($year)?[\.:,; ]*Week','PotY $year, Week') where forum_id = $from and topic_title like '%$year%'";
 
 $sql[] = "update geobb_posts inner join geobb_topics using (topic_id)
 set geobb_posts.forum_id = $to, geobb_topics.forum_id = $to
-where topic_title like 'poty $year%' and geobb_topics.forum_id = $from";
+where topic_title like '%poty $year%' and geobb_topics.forum_id = $from";
 
 
 

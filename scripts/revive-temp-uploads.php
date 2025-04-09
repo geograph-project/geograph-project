@@ -28,11 +28,12 @@ $param=array(
         'execute'=>false, //set to true to actully execute. otherwise a dry run!
         'single'=>true, //only process one image, kinda like hardcoded limt
         'start'=>6618237, //when doing scan, start from here. ignored when spefigin 'id'
-        'limit'=>50, //max to process 
+        'limit'=>50, //max to process
         'user_id'=>false, //optionallt filter to a single user
 	'mode'=>'larger', //larger means look for images that appear to be uploaded with a larger image, but none found
-        'clear'=>false, //clear memcache and gridimage_size
+        'clear'=>false, //clear memcache and gridimage_size (will be done automatically if run fixes, this param allows running even if no fixes)
         'id'=>false, //look for a single image
+		'preview_key'=>false, //special case, to revive from a specific (different) preview_key to that in submission_method (eg to revive from a duplicate!)
         'old'=>true, //look in old folder as well?
         'size'=>false, //report on the size, but note may cache the current (incorrect? value to memcache!)
 );
@@ -67,17 +68,22 @@ if ($param['user_id'])
 
 
 //$rows = $db->getAll("select * from submission_method where gridimage_id > 6618237 limit 50");
-$rows = $db->getAll("
+$rows = $db->getAll($sql = "
 select gridimage_id,preview_key,largestsize,user_id from submission_method
  inner join gridimage gi using (gridimage_id)
   left join gridimage_size using (gridimage_id)
  where {$where} limit {$param['limit']}");
+
+print "$sql\n";
 
 $GLOBALS['USER'] = new GeographUser; //just to shutup a notice from the class. it expects USER to be defined! We only use _downsizeFile which doesnt need a USER
 
 $up = new UploadManager();
 
 foreach ($rows as $row) {
+	if (!empty($param['id']) && !empty($param['preview_key']))
+		$row['preview_key'] = $param['preview_key'];
+
         print implode(', ',$row)."\n";
         if (empty($row['user_id'])) {
                 $a = '?';
@@ -101,7 +107,7 @@ foreach ($rows as $row) {
         $cmd .= " 2> /dev/null"; //silence warnings about non existing files!
 
 
-        //print "$cmd  ##for {$row['gridimage_id']}\n";
+        print "$cmd  ##for {$row['gridimage_id']}\n";
 
         $image = null;
         $fixes=0;
@@ -112,6 +118,9 @@ foreach ($rows as $row) {
                 if (strpos($filename,'.exif')) { //ignore these for now, but probably have been saved.
                 } elseif (preg_match('/\.\d+\.jpeg$/',$filename)) { //these are previous resized images, ignroe them
                 } elseif (strpos($filename,'.original.jpeg')) {
+			if (filesize($filename) <100) //dont want to copy bad files!
+                                continue;
+
                         if (empty($image))
                                 $image = new Gridimage($row['gridimage_id']);
 
@@ -177,6 +186,8 @@ foreach ($rows as $row) {
                         }
 
                 } else {
+			if (filesize($filename) <100) //dont want to copy bad files!
+                                continue;
                         if (empty($image))
                                 $image = new Gridimage($row['gridimage_id']);
 

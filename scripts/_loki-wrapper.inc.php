@@ -162,7 +162,7 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
 
 ############################################
 
-function getgroups($query, $grouper, $funct = 'rate', $period = '10m',  $fp = null, $start = null, $end = null) {
+function getgroups($query, $grouper, $funct = 'rate', $period = '10m',  $fp = null, $start = null, $end = null, $as_array = false) {
 	global $server, $param, $CONF;
 
 	//convenience function to hide some common bots
@@ -181,7 +181,6 @@ function getgroups($query, $grouper, $funct = 'rate', $period = '10m',  $fp = nu
 		if ($count == 0)
 			$query .= ' | json | stream="'.$param['stream'].'"';
 	}
-
 
 	$query = "sum by ($grouper) ($funct($query [$period]))";
 
@@ -213,12 +212,15 @@ function getgroups($query, $grouper, $funct = 'rate', $period = '10m',  $fp = nu
 	if (!empty($json['data']) && !empty($json['data']['result'])) {
 		//split into multiple streams
 		foreach ($json['data']['result'] as $idx => $result) {
-
-if (!isset( $result['metric'][$grouper])) {
-	print_r($result);
-}
-
-			$group = $result['metric'][$grouper];
+			if ($as_array) {
+				//dont 'flatten' and just return the whole array (may be a multi-group?)
+				$group = $result['metric'];
+			} else {
+				if (!isset( $result['metric'][$grouper])) {
+					print_r($result);
+				}
+				$group = $result['metric'][$grouper];
+			}
                         foreach ($result['values'] as $line) {
 				//todo, this it outputing one line per value, maybe should be one line per group?
                                 //$str = $group.','.implode(",",$line);
