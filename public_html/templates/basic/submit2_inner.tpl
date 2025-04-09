@@ -107,8 +107,9 @@
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
 
+		<div><label for="jpeg_exif"><b>Select an Image (JPEG or HEIC)</b></label>. Photos larger than 640px are accepted <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>. JPEG files over 8Mb will be automatically downsized. HEIC files have an 8Mb size limit.
 
-		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (JPEG/HEIC files, can upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>, if larger than 8Mb, will be downsized before upload)<br/>
+		<br/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8388608"/><br></div>
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white" accept="image/jpeg, image/heic"/>
 		<div>
