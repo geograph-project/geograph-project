@@ -21,6 +21,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (empty($_SERVER['HTTP_USER_AGENT'])
+|| strpos($_SERVER['HTTP_USER_AGENT'], 'img2dataset')!==FALSE
+|| strpos($_SERVER['HTTP_USER_AGENT'], 'python-requests')!==FALSE
+|| strpos($_SERVER['HTTP_USER_AGENT'], 'Presto/')!==FALSE
+) {
+        header("HTTP/1.0 401 Forbidden");
+        header("Status: 401 Forbidden");
+        exit;
+}
+
 require_once('geograph/global.inc.php');
 
 if (empty($_POST)) {
