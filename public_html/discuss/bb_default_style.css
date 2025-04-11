@@ -671,7 +671,7 @@ div.forum-post-header:has(a:target) a {
     'forum-thread-icon forum-thread-topic forum-thread-views forum-thread-replies forum-thread-author forum-thread-lastpost'
     'forum-thread-icon forum-thread-pages forum-thread-views forum-thread-replies forum-thread-author forum-thread-lastpost';
   grid-template-rows: max-content max-content;  
-  grid-template-columns: 35px 1fr 6ch 6ch 15ch 15ch;
+  grid-template-columns: 35px 1fr 8ch 6ch 15ch 15ch;
   grid-row-gap: 2px;
   grid-column-gap: 5px;
   margin: 0;
@@ -680,7 +680,7 @@ div.forum-post-header:has(a:target) a {
   background: #E9EFF4;
 }
 
-@media all and (max-width: 800px) {
+@media all and (max-width: 900px) {
   .forum-thread-grid {
   grid-template-areas: 
       "forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic"
