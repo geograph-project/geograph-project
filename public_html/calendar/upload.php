@@ -50,11 +50,6 @@ $smarty = new GeographPage;
 //you must be logged in to request changes
 $USER->mustHavePerm("basic");
 
-if (isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTTP_X_PSS_LOOP'] == 'pagespeed_proxy') {
-	$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:6px solid red;padding:20px;margin:20px;font-size:1.1em;">geograph.org.uk is currently in reduced functionality mode - to deal with traffic levels. <b>The maximum filesize that can be uploaded is now 5Mb.</b> To upload a larger image, please use <a href="http://www.geograph.ie/submit2.php">www.geograph.ie</a> or <a href="http://schools.geograph.org.uk/submit2.php" onclick="location.host = \'schools.geograph.org.uk\'; return false">schools.geograph.org.uk</a> <small>(they upload to the same database)</small></div>');
-	$smarty->assign("small_upload",1);
-}
-
 $template='calendar_upload.tpl';
 $cacheid='';
 
@@ -86,7 +81,7 @@ if (isset($_REQUEST['id']))
 			{
 				$db=GeographDatabaseConnection(false);
 
-				$db->Execute($sql = "UPDATE gridimage_calendar SET upload_id = ".$db->Quote($_POST['upload_id'])."
+				$db->Execute($sql = "UPDATE gridimage_calendar SET upload_id = ".$db->Quote($_POST['upload_id']).", copied = 0
 					WHERE calendar_id = ".intval($_GET['cid'])."
 					AND gridimage_id = {$image->gridimage_id}");
 

@@ -36,7 +36,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $data = $db->getAll("
 select calendar_id, gridimage_id, calendar.user_id, upload_id
 from calendar inner join gridimage_calendar using (calendar_id) where
-ordered > '1000-01-01' and upload_id != ''
+ordered > '1000-01-01' and upload_id != '' and copied = 0
 "); //using calendar.user_id, as that is the user that will have done the upload, although tye should only upload their own images anyway!
 
 //in THIS case can CANT use uploadmanager, as it may it someone elses image!
@@ -66,7 +66,7 @@ foreach ($data as $row) {
 
         print "{$row['calendar_id']}: {$row['gridimage_id']}: $orginalfile\n";
 
-
+	$done = 1;
         if (!file_exists($orginalfile)) {
                 //print "$orginalfile #NOT FOUND!\n";
                 $oldfile = str_replace('upload_tmp_dir','upload_tmp_dir_old',$orginalfile);
@@ -74,12 +74,18 @@ foreach ($data as $row) {
                         print "$oldfile #NOT FOUND!\n";
                 } else {
                         print "cp -p $oldfile $copy\n";
-                        if ($param['execute'])
+                        if ($param['execute']) {
                                 copy($oldfile,$copy);
+				$done = 2;
+			}
                 }
         } else {
                 print "cp -p $orginalfile $copy\n";
-                if ($param['execute'])
+                if ($param['execute']) {
                         copy($orginalfile,$copy);
+			$done = 2;
+		}
         }
+	if ($param['execute'])
+		$db->Execute("update gridimage_calendar set copied = $done where calendar_id = {$row['calendar_id']} and gridimage_id = {$row['gridimage_id']}");
 }
