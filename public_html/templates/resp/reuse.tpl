@@ -19,7 +19,6 @@ textarea {
   margin: auto;
   display: block;
   width: 90%;
-  height: max-content;
 	padding: 5px;
   font-size: 0.9em;
   background-color: white;
@@ -187,6 +186,23 @@ div:target {
   border: 1px solid silver;
   max-width: 700px;
   margin: auto;
+  padding: 10px;
+}
+.reuse-hotlink-warning {
+  background-color: #f4c7c3;
+  border-radius: 10px;
+  padding: 2px;
+  h3 {
+    text-align: center;
+  }
+}
+.reuse-wikipedia-warning {
+  background-color: yellow;
+  border-radius: 10px;
+  padding: 2px;
+  h3 {
+    text-align: center;
+  }
 }
 
 /*Accordion*/
@@ -210,7 +226,8 @@ label {
 }
 
 label:hover {
-    background: #4E8774;
+    background: #000066;
+    color: white;
 }
 
 label::after {
@@ -361,19 +378,24 @@ details[open] summary {
 
 <p>This page provides examples of credits for images which are compliant with the terms of the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons License</a>. You may choose the form which best suits your usage of the photo. You may also find the 'stamped image' tab useful, where you can download versions of this photo with a credit directly added to the image.</p>
 
-<p>You may copy and paste any of the text credits below and use them with or without the hyperlinks. You may also wish to use the <a href="https://creativecommons.org/mission/downloads/">Creative Commons badges</a> to go alongside the copyright text.</p>
+<ul>
+<li>You may copy and paste any of the text credits below and use them with or without the hyperlinks.</li>
+<li>We would encourage that you include a link to the photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a> when reusing the image.</li>
+<li>You may also wish to use the <a href="https://creativecommons.org/mission/downloads/">Creative Commons badges</a> to go alongside the copyright text.</li>
+</ul>
+
 
 <h4>Creative Commons</h4>
 <div class="reuse-credit-example">
-<b>&copy; Copyright <a title="View profile" href="{$self_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a></b> and licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a> Creative Commons Licence.
+<b><a href="{$self_host}/photo/{$image->gridimage_id}">Photo</a> &copy; Copyright <a title="View profile" href="{$self_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a></b> and licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a> Creative Commons Licence.
 </div>
 
 <h4>With title and date</h4>
 
 <div class="reuse-credit-example">
-<b>{$image->title|escape:'html'}</b>{if $image->imagetakenString}, taken {$image->imagetakenString}{/if}<br>
-<a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a> - <b>&copy; <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></b> -
-<a href="{$self_host}/photo/{$image->gridimage_id}">geograph.org.uk/p/{$image->gridimage_id}</a>
+<b>&copy; <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></b> (<a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a>)
+<a href="{$self_host}/photo/{$image->gridimage_id}">geograph.org.uk/p/{$image->gridimage_id}</a><br/>
+{$image->title|escape:'html'}</b>{if $image->imagetakenString}, taken {$image->imagetakenString}{/if}
 </div>
 
 <h4>Minimalist<h4>
@@ -510,6 +532,28 @@ Note that we have two versions for this image, which differ slightly. This is li
 <div style="{if $tab != 5}display:none{/if};" class="reuse-tabs" id="div5">
 <h3>Reuse</h3>
 
+<ul>
+<li>We would encourage that you include a link to the photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a> when reusing the image.</li>
+</ul>
+
+
+<div class="reuse-hotlink-warning">
+<h3>&#x26A0; Hotlinking and bulk downloads &#x26A0;</h3>
+
+<ul class="checklist">
+
+<li><b>We do ask you to be polite and not abuse the Geograph website resources.</b></li>
+<li><b>{external href="http://en.wikipedia.org/wiki/Inline_linking" text="Hotlinking"}</b> the image directly off our servers will trigger automatic watermarks and may be blocked</li>
+
+<li><b>Don't bulk download images from here</b> - Automated access to this page is likly to be blocked (and unreliable). We have proper <a href="/help/api">APIs</a> if you want to bulk download images.</li>
+
+
+</ul>
+
+</div>
+
+<br/><br/>
+
 <div class="input-toggle-accordion">
 
 <input type="checkbox" id="accordion1" />
@@ -517,36 +561,16 @@ Note that we have two versions for this image, which differ slightly. This is li
 
 <div class="content" id="html">
 
-<p><b>Web based project?</b></p>
-
-<ul class="checklist" style="list-style-type: &quot;\26A0&quot;">
-
-<li><b>We do ask you to be polite and not abuse the Geograph website resources.</b> <br/><br>
-{external href="http://en.wikipedia.org/wiki/Inline_linking" text="Hotlinking"} the image directly off our servers will trigger automatic watermarks and may be blocked
-</li>
-
-<li>Reading this page wanting to figure how to scrape images? 
-DON'T! We have proper <a href="/help/api">APIs</a> if you want to download images.
-Automated access to this page is likly to be blocked, not to mention unreliable.</li>
-
-<li>ideally include a link to our photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a>, where the latest information will be available.</li>
-
-</ul>
-
-<br/><br/>
-<div style="text-align:center;">Thank you for your attention in this matter.</div>
-<br/><br/>
 
 
 <h4>Example HTML snippet, for use on a website</h4>
 
 <div class="reuse-codepreview">
-<div style="font-size:0.9em; text-align:center;">
-{$image->getFull(true,true,false)}
-<br>
-<div>Photo &copy; <a href="https://dev1.geograph.org.uk/profile/6729">DS Pugh</a></div>
-<a href="https://dev1.geograph.org.uk/photo/197626">Nitrogen bubbler</a>, Thursday,  3 October, 2024
-<div style="text-align:right; font-size:0.9em">Available for reuse under this <a href="https://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a></div>
+<div style="text-align:center; max-width: 100%;">
+<div>{$image->getFull(true,true,false)}</div>
+<div><a href="{$self_host}/photo/{$image->gridimage_id}">Photo</a> &copy; <a href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> (<a href="https://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a>)</div>
+<div>{$image->title|escape:'html'}{if $image->imagetakenString}, {$image->imagetakenString}{/if}</div>
+<div style="font-size:0.9em;">Photo available for reuse under this <a href="https://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a>.</div>
 </div>
 </div>
 
@@ -554,16 +578,15 @@ Automated access to this page is likly to be blocked, not to mention unreliable.
 
 <form>
 <textarea rows="8">
-<div style="display:inline-block; font-size:0.9em">
-&lt;img src&#61;&quot;geograph-{$image->gridimage_id}-by-{$image->realname|escape:'html'|replace:' ':'-'}.jpg" alt="{$image->title|escape:'html'}, by {$image->realname|escape:'html'}" width="{$image->cached_size.0}" height="{$image->cached_size.1}"&gt;
-<br>
-<div style="float:right;">Photo &amp;copy; <a href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
-<a href="{$self_host}/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
-{if $image->imagetakenString}, {$image->imagetakenString}{/if}
-<div style="text-align:right; font-size:0.9em">Available for reuse under this <a href="https://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a></div>
+<div style="text-align:center; max-width: 100%;">
+<div>&lt;img src&#61;&quot;geograph-{$image->gridimage_id}-by-{$image->realname|escape:'html'|replace:' ':'-'}.jpg" alt="{$image->title|escape:'html'}, by {$image->realname|escape:'html'}" width="{$image->cached_size.0}" height="{$image->cached_size.1}" style="height: auto; max-width:95%;"&gt;</div>
+<div><a href="{$self_host}/photo/{$image->gridimage_id}">Photo</a> &amp;copy; <a href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> (<a href="https://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a>)</div>
+<div>{$image->title|escape:'html'}{if $image->imagetakenString}, {$image->imagetakenString}{/if}</div>
+<div style="font-size:0.9em;">Photo available for reuse under this <a href="https://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a>.</div>
 </textarea>
 </form>
-(please remember to <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download</a> and host your own copy of the image, rather than hotlinking it from Geograph servers)
+
+<p>Please remember to <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download</a> and host your own copy of the image, rather than hotlinking it from Geograph servers.</p>
 
 </div>
 
@@ -929,10 +952,11 @@ licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0
 <a name="wikipedia"></a>
 <h3>Wikipedia Template for image page.</h3>
 
-<div class="interestBox" style="padding:10px">
-<img loading="lazy" src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-Wikimedia Commons has recently undertaken to upload Geograph images in bulk, so please make sure the image hasn't already been uploaded. 
-<b>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=geograph+`$image->gridimage_id`&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been"}</b>.</div>
+<div class="reuse-wikipedia-warning">
+<h3>&#x26A0; Does Wikimedia already have the image? &#x26A0;</h3>
+<p>Wikimedia Commons has recently undertaken to upload Geograph images in bulk, so please make sure the image hasn't already been uploaded.</p>
+<p><b>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=geograph+`$image->gridimage_id`&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been"}</b>.</p>
+</div>
 <br/>
 
 {capture name=wikitext}== {literal}{{int:filedesc}}{/literal} ==
