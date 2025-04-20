@@ -99,13 +99,53 @@ div:target {
 .reuse-header-copyright {
   grid-area: reuse-header-copyright;
 }
-.reuse-donate {
+
+/*reuse donate sticky grid*/
+.reuse-donate-grid {
+  display: grid;
+  grid-template-areas:
+    'reuse-donate-button reuse-donate-message reuse-donate-link';
+  grid-template-rows: max-content;  
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-row-gap: 2px;
+  grid-column-gap: 5px;
+  margin-bottom: 5px;
   background-color: #3AD271;
   padding:10px;
   text-align:center;
   position: -webkit-sticky;
   position: sticky;
   bottom: 0;
+  
+  a {
+  color: purple;
+  }
+}
+@media all and (max-width: 800px) {
+  .reuse-donate-grid {
+  grid-template-areas: 
+    'reuse-donate-message';
+  grid-template-rows: max-content max-content max-content;
+  grid-template-columns: 1fr;
+  }
+.reuse-donate-button {
+  display: none;
+  }
+.reuse-donate-link {
+  display: none;
+  }
+}
+.reuse-donate-button {
+  grid-area: reuse-donate-button;
+  align-self: center;
+}
+.reuse-donate-message {
+  grid-area: reuse-donate-message;
+  align-self: center;
+}
+.reuse-donate-link {
+  grid-area: reuse-donate-link;
+  align-self: center;
 }
 .reuse-ccbox-grid {
   display: grid;
@@ -172,6 +212,14 @@ div:target {
   background-color: gold;
   border-radius: 10px;
   padding: 10px;
+}
+.reuse-reminders {
+  background-color: #e6e1ff;
+  border-radius: 10px;
+  padding: 2px;
+  h3 {
+    text-align: center;
+  }
 }
 .reuse-copyright-warning {
   background-color: #f4c7c3;
@@ -412,6 +460,13 @@ details[open] summary {
 
 <p>Links are provided below to download the image previewed above. Any images downloaded need to be displayed alongside an appropriate image credit in order to comply with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</p>
 
+<div class="reuse-reminders">
+<ul>
+<li>When displaying this photo, your <b>must include the copyright attribution</b> in line with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</li>
+<li>We would encourage that you include a link to the photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a> when reusing the image.</li>
+</ul>
+</div>
+
 {if basename($image->altUrl) != "error.jpg"}
 <div class="reuse-diffimage">
 Note that we have two versions for this image, which differ slightly. This is likely to have arisen from submission of the image at a smaller size, and a larger version has subsequently been uploaded with minor differences. The initial set of download links are provided for the larger image. A preview for the image which was originally submitted is then shown, along with a download link for this version.</div>
@@ -436,11 +491,14 @@ Note that we have two versions for this image, which differ slightly. This is li
 
 
 {if basename($image->altUrl) != "error.jpg"}<img src="{$image->altUrl}" crossorigin onerror="retryCross(this)"/><br>
-&middot; <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=640">max 640 px</a>{/if}    
+<ul>
+<li><a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=640">max 640 px</a>{/if}</li>
+</ul>
 
-{else} 
-<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download</a>
-(<b>{$image->cached_size.0}</b> &#x00d7; <b>{$image->cached_size.1}</b> px jpeg)
+{else}
+<ul>
+<li><a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">{$image->cached_size.0} &#x00d7; {$image->cached_size.1} px</a></li>
+</ul>
 {/if}
 
 
@@ -530,12 +588,17 @@ Note that we have two versions for this image, which differ slightly. This is li
 
 {*Reuse tab*}
 <div style="{if $tab != 5}display:none{/if};" class="reuse-tabs" id="div5">
-<h3>Reuse</h3>
+<h3>Obtain code for use</h3>
 
+<p>This page provides preformatted code which can be used to display this image on websites with attribution which is compliant with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</p>
+
+<div class="reuse-reminders">
 <ul>
+<li>When displaying this photo, your <b>must include the copyright attribution</b> in line with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</li>
 <li>We would encourage that you include a link to the photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a> when reusing the image.</li>
 </ul>
-
+</div>
+<br/>
 
 <div class="reuse-hotlink-warning">
 <h3>&#x26A0; Hotlinking and bulk downloads &#x26A0;</h3>
@@ -1013,10 +1076,12 @@ This template includes the {external href="http://commons.wikimedia.org/wiki/Tem
 
 {*Sticky footer*}
 <br/><br/>
-<div class="reuse-donate">
-Found Geograph useful? Please consider <a href="https://www.geograph.org.uk/help/donate">donating</a> to support the Geograph Project!
-<br>
-<a href="https://cafdonate.cafonline.org/18714" target="_blank" title="Donate to us (Link opens in a new window)">Make a donation via Charities Aid Foundation</a>
+
+
+<div class="reuse-donate-grid">
+<div class="reuse-donate-button"><a href="/help/donate" style="background-color:purple;color:white;text-decoration:none;font-size:1.1em;padding:4px;margin:5px;border-radius:4px">Donate/Support Us</a></div>
+<div class="reuse-donate-message">Found Geograph useful? Please consider <a href="https://www.geograph.org.uk/help/donate">donating</a> to support the Geograph Project!</div>
+<div class="reuse-donate-link"><a href="https://cafdonate.cafonline.org/18714" target="_blank" title="Donate to us (Link opens in a new window)">Make a donation via Charities Aid Foundation</a></div>
 </div>
 
 {/dynamic}
