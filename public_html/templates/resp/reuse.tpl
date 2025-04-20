@@ -197,7 +197,7 @@ div:target {
   }
 }
 .reuse-wikipedia-warning {
-  background-color: yellow;
+  background-color: #ffff66;
   border-radius: 10px;
   padding: 2px;
   h3 {
@@ -545,7 +545,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 <li><b>We do ask you to be polite and not abuse the Geograph website resources.</b></li>
 <li><b>{external href="http://en.wikipedia.org/wiki/Inline_linking" text="Hotlinking"}</b> the image directly off our servers will trigger automatic watermarks and may be blocked</li>
 
-<li><b>Don't bulk download images from here</b> - Automated access to this page is likly to be blocked (and unreliable). We have proper <a href="/help/api">APIs</a> if you want to bulk download images.</li>
+<li><b>Don't bulk download images from this page</b> - Automated access to this page is likly to be blocked (and unreliable). We have proper <a href="/help/api">APIs</a> if you want to bulk download images.</li>
 
 
 </ul>
@@ -617,10 +617,18 @@ licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0
 <div class="content" id="wikipedia">
 <h4>Wikipedia Template for image page.</h4>
 
-<div class="interestBox" style="padding:10px">
-<img loading="lazy" src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-Wikimedia Commons has recently undertaken to upload Geograph images in bulk, so please make sure the image hasn't already been uploaded. 
-<b>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=geograph+`$image->gridimage_id`&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been"}</b>.</div>
+<p>You can {external href="https://commons.wikimedia.org/wiki/Special:Upload?`$smarty.capture.wikiuploadparams`"|escape:'html' text="directly upload this image to Wikimedia Commons"}.  You will need to add some categories, but that link will automatically fill in the <a href="{$smarty.capture.wikiurl|escape:'html'}">download link</a> and the file description template below.</p>
+
+<div class="reuse-wikipedia-warning">
+<h3>&#x26A0; Does Wikimedia already have the image? &#x26A0;</h3>
+
+<ul class="checklist">
+<li>Wikimedia Commons has carried out uploading of Geograph images to their servers in bulk.</li>
+<li>Please make sure the image hasn't already been uploaded.</li>
+<li>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=geograph+`$image->gridimage_id`&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been uploaded"}.</li>
+</ul>
+</div>
+
 <br/>
 
 {capture name=wikitext}== {literal}{{int:filedesc}}{/literal} ==
@@ -650,7 +658,6 @@ Wikimedia Commons has recently undertaken to upload Geograph images in bulk, so 
 {capture name=wikiurl}{$self_host}{$script_name}?id={$image->gridimage_id}&download={$image->_getAntiLeechHash()}{if $image->original_width}&size=original{/if}{/capture}
 {capture name=wikiuploadparams}wpSourceType=url&wpUploadFileURL={$smarty.capture.wikiurl|escape:url}&wpUploadDescription={$smarty.capture.wikitext|escape:'url'}&wpDestFile={$image->title|escape:'url'}%20(geograph%20{$image->gridimage_id}).jpg{/capture}
 
-You can {external href="https://commons.wikimedia.org/wiki/Special:Upload?`$smarty.capture.wikiuploadparams`"|escape:'html' text="directly upload this image to Wikimedia Commons"}.  You will need to add some categories, but that link will automatically fill in the <a href="{$smarty.capture.wikiurl|escape:'html'}">download link</a> and the file description template below.<br/><br/>
 
 <form><textarea rows="17" id="wikitext">{$smarty.capture.wikitext|escape:'html'}</textarea><br/>
 This template includes the {external href="http://commons.wikimedia.org/wiki/Template:Information" text="information box"} with the relevent data (title, links and licence), {external href="http://commons.wikimedia.org/wiki/Template:Location" text="geotags the image"}, as well as the specific {external href="http://commons.wikimedia.org/wiki/Template:Geograph" text="Geograph Template"}</form>
