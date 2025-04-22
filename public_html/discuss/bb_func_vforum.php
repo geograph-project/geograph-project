@@ -39,6 +39,7 @@ $forum_title=$cols[1];
 $forum_desc=$cols[2];
 $forum_icon=$cols[3];
 $fIcon[$forum]=$cols[3];
+$fTitle[$forum]=$cols[1];
 $numTopics=$cols[4];
 $numPosts=$cols[5];
 $numPosts=$numPosts-$numTopics;
@@ -70,4 +71,4 @@ unset($result);unset($countRes);
 }
 $title=$sitename;
 echo load_header(); echo ParseTpl(makeUp('main_forums'));
-?>
+
