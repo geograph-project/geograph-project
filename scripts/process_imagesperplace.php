@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-	$param = array('table'=>'os_open_places', 'debug'=>1, 'limit'=>10, 'ri'=>1, 'd'=>250, 'views'=>false);
+	$param = array('table'=>'os_open_places', 'debug'=>1, 'limit'=>10, 'ri'=>1, 'd'=>250, 'views'=>false, 'before'=>false);
 
 	chdir(__DIR__);
 	require "./_scripts.inc.php";
@@ -75,8 +75,9 @@ function queryExecute($sql,$debug) {
 
 if (!empty($param['views'])) {
 	foreach (array('gb'=>1,'ie'=>2) as $key => $ri) {
+		$where = ($param['before'])?sprintf(' and gridimage_id < %d',$param['before']):'';
 		queryExecute("DROP TABLE IF EXISTS {$key}_images",true);
-		queryExecute($sql = "create table {$key}_images select gridimage_id,user_id,imagetaken,nateastings,natnorthings from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri and nateastings > 0 and moderation_status in ('geograph')",true);
+		queryExecute($sql = "create table {$key}_images select gridimage_id,user_id,imagetaken,nateastings,natnorthings from gridimage inner join gridsquare using (gridsquare_id) where reference_index = $ri and nateastings > 0 and moderation_status in ('geograph')$where",true);
 
 		queryExecute("alter table {$key}_images add primary key(gridimage_id), add index(natnorthings), comment=".$db->Quote($sql),true);
 	}
@@ -98,6 +99,7 @@ if (empty($col))
 $where = array();
 //$where[] = "first IS NULL"; //this allows us to 'prime' the table, later will be something like 'images_updated < date_sub(now(),interval 30 day)";
 //$where[] = "first =0 ";
+//$where[] = "images_in_2022 IS NULL";
 
 $where[] = "images_updated < date_sub(now(),interval 30 day)";
 
@@ -136,6 +138,9 @@ if ($recordSet->RecordCount()) {
 	if (isset($columns['first']))		$cols[] = 'MIN(gridimage_id) as first';
 	if (isset($columns['last']))		$cols[] = 'MAX(gridimage_id) as last';
 	if (isset($columns['recent']))		$cols[] = 'MAX(imagetaken) as recent';
+	if (isset($columns['images_in_2022']))	$cols[] = "sum(imagetaken like '2022%') as images_in_2022";
+	if (isset($columns['images_in_2023']))	$cols[] = "sum(imagetaken like '2023%') as images_in_2023";
+	if (isset($columns['images_in_2024']))	$cols[] = "sum(imagetaken like '2024%') as images_in_2024";
 	if (isset($columns['users']))		$cols[] = 'COUNT(DISTINCT user_id) as users';
 	if (isset($columns['centis']))		$cols[] = 'COUNT(DISTINCT nateastings DIV 100, natnorthings DIV 100) as centis';
 	$cols = implode(', ',$cols);
