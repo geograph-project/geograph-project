@@ -109,6 +109,44 @@ if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'
 		die("not public");
 	}
 
+	if ($_SERVER['HTTP_HOST'] == 'schools.geograph.org.uk' && !empty($_SERVER['HTTP_CF_IPCOUNTRY']) && !in_array($_SERVER['HTTP_CF_IPCOUNTRY'],array('GB','IE'))) {
+		silly_captcha($_SERVER['HTTP_CF_IPCOUNTRY']);
+	}
+}
+
+function silly_captcha($token) {
+
+	$hash = substr(hash_hmac('md5', $token.date('Y-m-d'), $_SERVER['CONF_SITEMAP_SECRET']),0,8)."=f";
+
+	if (!empty($_COOKIE['cp']) && $_COOKIE['cp'] == $hash)
+		return true;
+
+	if (!empty($_POST['cp']) && $_POST['cp'] == $hash) {
+		setcookie('cp', $hash, time()+3600*24, '/', null, true, true);
+		return true;
+	}
+
+	header('HTTP/1.0 406 Not Acceptable');
+	?>
+	<form method=post style="padding:50px">
+		We have lots of bots trying to crawl this site. Please tick box to continue:
+		<hr>
+		<input type=checkbox disabled id="cc" onmouseover="en()" onfocus="en()"> <label for="cc" onmouseover="en()" onkeydown="en(1)" onfocus="en()" tabindex="0">I am not a robot</label>
+		<hr>
+		<input type=submit>
+	</form>
+	<script>
+	function en(one) {
+		var f = document.forms[0];
+		var e = f.elements[0];
+		e.disabled = false;
+		e.name = 'cp';
+		e.value = atob(<? echo json_encode(base64_encode($hash)); ?>);
+		if (one) e.checked = true;
+	}
+	</script>
+	<?
+	exit;
 }
 
 //todo, maybe just check whole of QUERY_STRING
