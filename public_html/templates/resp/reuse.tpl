@@ -75,7 +75,7 @@ div:target {
 2. Make image responsive
 3. Use large image if available (2 must be true for 3 to be true) 
 *}
-<a href="/photo/{$image->gridimage_id}">{$image->getFull(true,true,false)}</a>
+<a href="/photo/{$image->gridimage_id}"{if $image->original_width} title="Scroll down for high resolution version"{/if}>{$image->getFull(true,true,false)}</a>
 </div>
 
 <div class="reuse-ccbox-grid">
@@ -313,7 +313,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 <div class="reuse-stampingopt-grid">
 <div class="reuse-stampingopt-param"><label for=link>Hide geograph link</label></div>
 <div class="reuse-stampingopt-input"><input type=checkbox name=link id=link value=0></div>
-<div class="reuse-stampingopt-desc">Include a link to the photo page on Geograph.</div>
+<div class="reuse-stampingopt-desc">Remove the link to the photo page on Geograph.</div>
 </div>
 {if $image->grid_square->reference_index == 2}
 <br/>
@@ -341,7 +341,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 <div class="reuse-stampingopt-grid">
 <div class="reuse-stampingopt-param"><label for=gravity>Text location</label></div>
 <div class="reuse-stampingopt-input">
-<select name=gravity><option></option><option value="Center">Center</option><option value="East">East</option><option value="NorthEast">NorthEast</option><option value="North">North</option><option value="NorthWest">NorthWest</option><option value="SouthEast">SouthEast</option><option value="South" selected>South</option><option value="SouthWest">SouthWest</option><option value="West">West</option><option value="left">left</option><option value="right">right</option></select>
+<select name=gravity><option></option><optgroup label="Horizontal text"><option value="Center">Center</option><option value="East">East</option><option value="NorthEast">NorthEast</option><option value="North">North</option><option value="NorthWest">NorthWest</option><option value="SouthEast">SouthEast</option><option value="South" selected>South</option><option value="SouthWest">SouthWest</option><option value="West">West</option></optgroup><optgroup label="Vertical Text"><option value="left">left</option><option value="right">right</option></optgroup></select>
 </div>
 <div class="reuse-stampingopt-desc">Select the location on the photo for the label to appear.</div>
 </div>
@@ -349,7 +349,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 <div class="reuse-stampingopt-grid">
 <div class="reuse-stampingopt-param"><label for=pointsize>Type size</label></div>
 <div class="reuse-stampingopt-input">
-<select name=pointsize><option></option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="48">48</option><option value="64">64</option><option value="96">96</option><option value="128">128</option></select>
+<select name=pointsize><option></option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="48">48</option><option value="64">64</option><option value="96">96</option><option value="128">128</option></select> pt
 </div>
 <div class="reuse-stampingopt-desc">Select the type size in points for the label.</div>
 </div>
