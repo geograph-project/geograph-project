@@ -101,7 +101,7 @@ div:target {
 
 {*Licence tab*}
 <div style="{if $tab != 1}display:none{/if};" class="reuse-tabs" id="div1">
-<h3>Image license</h3>
+<div class="interestBox"><h3>Image license</h3></div>
 
 <p>All photos on Geograph are <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licensed</a>. In general, as long as you credit the photographer when you use the image, you can use it for most purposes.</p>
 
@@ -129,7 +129,7 @@ div:target {
 
 </div>
 
-<p>Examples of good wording for compliant use of the creative commons licensing can be found in the 'Credits' tab. There are also examples of code to copy and paste for reuse online in the 'Reusable code' box.</p>
+<p>Examples of good wording for compliant use of the creative commons licensing can be found in the <a href="#" onclick=" tabClick('tab','div',2,5);return false; ">'Credits' tab</a>. There are also examples of code to copy and paste for reuse online in the 'Reusable code' box.</p>
 
 
 
@@ -137,9 +137,9 @@ div:target {
 
 {*Crediting tab*}
 <div style="{if $tab != 2}display:none{/if};" class="reuse-tabs" id="div2">
-<h3>Crediting images</h3>
+<div class="interestBox"><h3>Crediting images</h3></div>
 
-<p>This page provides examples of credits for images which are compliant with the terms of the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons License</a>. You may choose the form which best suits your usage of the photo. You may also find the 'stamped image' tab useful, where you can download versions of this photo with a credit directly added to the image.</p>
+<p>This page provides examples of credits for images which are compliant with the terms of the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons License</a>. You may choose the form which best suits your usage of the photo. You may also find the <a href="#" onclick=" tabClick('tab','div',4,5);return false; ">'stamped image'</a> tab useful, where you can download versions of this photo with a credit directly added to the image.</p>
 
 <ul>
 <li>You may copy and paste any of the text credits below and use them with or without the hyperlinks.</li>
@@ -171,7 +171,7 @@ div:target {
 
 {*Download tab*}
 <div style="{if $tab != 3}display:none{/if};" class="reuse-tabs" id="div3">
-<h3>Download</h3>
+<div class="interestBox"><h3>Download</h3></div>
 
 <p>Links are provided below to download the image previewed above. Any images downloaded need to be displayed alongside an appropriate image credit in order to comply with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</p>
 
@@ -218,16 +218,18 @@ Note that we have two versions for this image, which differ slightly. This is li
 
 
 
-<p>We also offer images where the required attribution has been added to the image. See the 'stamped images' tab to obtain an image with the attribution displayed on the image.</p>
+<p>We also offer images where the required attribution has been added to the image. See the <a href="#" onclick=" tabClick('tab','div',4,5);return false; ">'stamped images'</a> tab to obtain an image with the attribution displayed on the image.</p>
 
 </div>
 
 {*Stamped tab*}
 <div style="{if $tab != 4}display:none{/if};" class="reuse-tabs" id="div4">
 
-<h3>Stamped images</h3>
+<div class="interestBox"><h3>Stamped images</h3></div>
 
 <p>You can download versions of this image with the required attribution directly placed onto the image. These image files comply with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a>, provided that the attribution is visible and isn't removed from the image (eg through cropping).</p>
+
+<p>The image displayed below has the default attribution settings applied. These can be configured further down the page.</p>
 
 <div class="reuse-stamped-image">
 <h3>Stamped image preview</h3>
@@ -245,7 +247,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 </ul>
 
 </div>
-
+<br/>
 <div class="reuse-stamping-options">
 <h3>Stamping options</h3>
 
@@ -369,7 +371,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 
 {*Reuse tab*}
 <div style="{if $tab != 5}display:none{/if};" class="reuse-tabs" id="div5">
-<h3>Obtain code for use</h3>
+<div class="interestBox"><h3>Obtain code for use</h3></div>
 
 <p>This page provides preformatted code which can be used to display this image on websites with attribution which is compliant with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</p>
 
@@ -430,7 +432,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 </textarea>
 </form>
 
-<p>Please remember to <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download ({$image->cached_size.0} &#x00d7; {$image->cached_size.1} px)</a> and host your own copy of the image, rather than hotlinking it from Geograph servers. {if $original_width}Additional image sizes are available from the download tab.{/if}</p>
+<p>Please remember to <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download ({$image->cached_size.0} &#x00d7; {$image->cached_size.1} px)</a> and host your own copy of the image, rather than hotlinking it from Geograph servers. {if $original_width}Additional image sizes are available from the <a href="#" onclick=" tabClick('tab','div',3,5);return false; ">'download' tab</a>.{/if}</p>
 </div>
 
 
@@ -460,20 +462,6 @@ licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0
 <div class="content" id="wikipedia">
 <h4>Wikipedia Template for image page.</h4>
 
-<p>You can {external href="https://commons.wikimedia.org/wiki/Special:Upload?`$smarty.capture.wikiuploadparams`"|escape:'html' text="directly upload this image to Wikimedia Commons"}.  You will need to add some categories, but that link will automatically fill in the <a href="{$smarty.capture.wikiurl|escape:'html'}">download link</a> and the file description template below.</p>
-
-<div class="reuse-wikipedia-warning">
-<h3>&#x26A0; Does Wikimedia already have the image? &#x26A0;</h3>
-
-<ul class="checklist">
-<li>Wikimedia Commons has carried out uploading of Geograph images to their servers in bulk.</li>
-<li>Please make sure the image hasn't already been uploaded.</li>
-<li>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=geograph+`$image->gridimage_id`&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been uploaded"}.</li>
-</ul>
-</div>
-
-<br/>
-
 {capture name=wikitext}== {literal}{{int:filedesc}}{/literal} ==
 {literal}{{{/literal}Information
 |Description={literal}{{{/literal}en|1={$image->title}{literal}}}{/literal}
@@ -500,6 +488,20 @@ licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0
 {literal}{{{/literal}geograph|{$image->gridimage_id}|{$image->realname}{literal}}}{/literal}{/capture}
 {capture name=wikiurl}{$self_host}{$script_name}?id={$image->gridimage_id}&download={$image->_getAntiLeechHash()}{if $image->original_width}&size=original{/if}{/capture}
 {capture name=wikiuploadparams}wpSourceType=url&wpUploadFileURL={$smarty.capture.wikiurl|escape:url}&wpUploadDescription={$smarty.capture.wikitext|escape:'url'}&wpDestFile={$image->title|escape:'url'}%20(geograph%20{$image->gridimage_id}).jpg{/capture}
+
+<p>You can {external href="https://commons.wikimedia.org/wiki/Special:Upload?`$smarty.capture.wikiuploadparams`"|escape:'html' text="directly upload this image to Wikimedia Commons"}.  You will need to add some categories, but that link will automatically fill in the <a href="{$smarty.capture.wikiurl|escape:'html'}">download link</a> and the file description template below.</p>
+
+<div class="reuse-wikipedia-warning">
+<h3>&#x26A0; Does Wikimedia already have the image? &#x26A0;</h3>
+
+<ul class="checklist">
+<li>Wikimedia Commons has carried out uploading of Geograph images to their servers in bulk.</li>
+<li>Please make sure the image hasn't already been uploaded.</li>
+<li>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=geograph+`$image->gridimage_id`&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been uploaded"}.</li>
+</ul>
+</div>
+
+<br/>
 
 
 <form><textarea rows="17" id="wikitext">{$smarty.capture.wikitext|escape:'html'}</textarea><br/>
