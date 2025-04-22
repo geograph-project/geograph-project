@@ -163,7 +163,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 </div>
 
 	<?
-	$smarty->display("_std_end.tpl",'test');
+	$smarty->display("_std_end.tpl",md5($_SERVER['PHP_SELF']));
 
 	exit;
 }
