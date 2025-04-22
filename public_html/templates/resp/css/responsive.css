@@ -644,6 +644,11 @@ details[open] summary {
     text-align: center;
   }
 }
+.reuse-stamping-options {
+  background-color: #E9EFF4;
+  border-radius: 10px;
+  padding: 10px;
+}
 .reuse-stampingopt-grid {
   display: grid;
   grid-template-areas:
@@ -661,7 +666,7 @@ details[open] summary {
     'reuse-stampingopt-desc reuse-stampingopt-desc';
   grid-template-rows: max-content max-content;
   grid-template-columns: 1fr 1fr;
-  background-color: #E9EFF4;
+  /*background-color: #F6F9FB;*/
   padding: 2px;
   }
 }
