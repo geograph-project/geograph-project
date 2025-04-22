@@ -618,12 +618,24 @@ if ($GLOBALS['page']['url'] == "About-Geograph-page") {
 	}
 
 	if (count($pages) > 1) {
-		$smarty->assign('pagesString', pagesString($thispage,$numberOfPages,"/article/{$GLOBALS['page']['url']}/"));
-		if ($numberOfPages > $thispage) {
-			if (strlen($pages[$offset+1]) > 1) {
-				$smarty->assign('nextString', "<a href=\"/article/{$GLOBALS['page']['url']}/".($thispage+1)."\" rel=\"next\">Next page: <b>".htmlentities2(substr($pages[$offset+1],1))."</b>...</a>");
-			} else {
-				$smarty->assign('nextString', "<a href=\"/article/{$GLOBALS['page']['url']}/".($thispage+1)."\" rel=\"next\">Continued on next page...</a>");
+		if ($_GET['url'] == 'preview') {
+			$url = "javascript:void(alert('Link not functional in preview. To view preview of another page, go back to edit screen and change the number and click Preview button again.'))+";
+			$smarty->assign('pagesString', pagesString($thispage,$numberOfPages,$url));
+			if ($numberOfPages > $thispage) {
+				if (strlen($pages[$offset+1]) > 1) {
+					$smarty->assign('nextString', "<a href=\"{$url}0\" rel=\"next\">Next page: <b>".htmlentities2(substr($pages[$offset+1],1))."</b>...</a>");
+				} else {
+					$smarty->assign('nextString', "<a href=\"{$url}0\" rel=\"next\">Continued on next page...</a>");
+				}
+			}
+		} else {
+			$smarty->assign('pagesString', pagesString($thispage,$numberOfPages,"/article/{$GLOBALS['page']['url']}/"));
+			if ($numberOfPages > $thispage) {
+				if (strlen($pages[$offset+1]) > 1) {
+					$smarty->assign('nextString', "<a href=\"/article/{$GLOBALS['page']['url']}/".($thispage+1)."\" rel=\"next\">Next page: <b>".htmlentities2(substr($pages[$offset+1],1))."</b>...</a>");
+				} else {
+					$smarty->assign('nextString', "<a href=\"/article/{$GLOBALS['page']['url']}/".($thispage+1)."\" rel=\"next\">Continued on next page...</a>");
+				}
 			}
 		}
 	}

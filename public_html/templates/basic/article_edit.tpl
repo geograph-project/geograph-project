@@ -325,9 +325,11 @@ function previewArticle() {
 	<textarea name="content" style="display:none"/></textarea>
 	<input type="hidden" name="complete"/>
 
-	<input type="submit" value="Preview Article in a new window" onclick="return previewArticle()" id="previewButton"/>
-	<label for="pagenum">Page:</label>
-	<input type="text" name="page" id="pagenum" value="1" size="2" maxlength="2"/> - if multiple, Note: page links WON'T work in the preview<br/>
+	<h4>Preview Article/Changes in a new window (before saving)</h4>
+	<input type="submit" value="Preview Changes" onclick="return previewArticle()" id="previewButton"/>
+	<label for="pagenum">Open Page:</label>
+	<input type="number" name="page" id="pagenum" value="1" size="2" min=1 max=100 maxlength="2" style="text-align:right"/> Please note: You cannot navigate to other pages within this preview.<br>
+	To view a different page, return to this screen, change the page number, and click "Preview" again.<br/>
 </form>
 
 
