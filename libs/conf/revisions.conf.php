@@ -1,7 +1,7 @@
 <?php
 $REVISIONS = array();
 $REVISIONS['/admin/moderation.js']=1;
-$REVISIONS['/discuss/bb_default_style.css']=43150302;
+$REVISIONS['/discuss/bb_default_style.css']=86461946;
 $REVISIONS['/games/markit.js']=8179;
 $REVISIONS['/games/place-memory.js']=3997;
 $REVISIONS['/geotrips/geotrips.css']=7809;
@@ -85,7 +85,7 @@ $REVISIONS['/templates/basic/css/mapper.css']=3798;
 $REVISIONS['/templates/charcoal/css/charcoal.css']=39697973;
 $REVISIONS['/templates/ireland/css/basic.css']=32672144;
 $REVISIONS['/js/jquery.storage.js']=111;
-$REVISIONS['/templates/resp/css/responsive.css']=59345905;
+$REVISIONS['/templates/resp/css/responsive.css']=99327866;
 $REVISIONS['/templates/resp/css/modification.css']=59345905;
 $REVISIONS['/js/anyascii.js']=69351707;
 $REVISIONS['/features/view.js']=65689534;
