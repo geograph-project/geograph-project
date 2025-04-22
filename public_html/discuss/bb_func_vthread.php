@@ -146,12 +146,11 @@ if ($cols[5]==0) {
 $editedBy='';
 }
 else {
-$editedBy="<br/>$l_editedBy";
-if($cols[5]==2) $we="<a href=\"{$main_url}/{$indexphp}action=userinfo&amp;user=1\">{$l_admin}</a>";
-elseif($cols[5]==1) $we=$cols[1];
-elseif($cols[5]==3) $we="<a href=\"{$main_url}/{$indexphp}action=stats#mods\">{$l_moderator}</a>";
-else $we='N/A';
-$editedBy.=$we;
+$editedBy="$l_editedBy";
+if($cols[5]==2) $editedBy=" $l_editedBy <a href=\"{$main_url}/{$indexphp}action=userinfo&amp;user=1\">{$l_admin}</a>";
+elseif($cols[5]==1) $editedBy=" (edited)";
+elseif($cols[5]==3) $editedBy=" $l_editedBy <a href=\"{$main_url}/{$indexphp}action=stats#mods\">{$l_moderator}</a>";
+else $editedBy='';
 }
 
 if ($cols[0]!=0) {
@@ -297,8 +296,6 @@ if ($USER->registered) {
 unset($result);unset($countRes);
 
 $l_messageABC=($forum==11)?$l_sub_answer11:$l_sub_answer;
-
-$l_messageABC="Reply to &quot;".$topicName."&quot;";
 
 if ($topicStatus!=1) {
 $emailCheckBox=emailCheckBox();

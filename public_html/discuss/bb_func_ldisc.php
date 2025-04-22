@@ -87,6 +87,7 @@ if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_i
         
         //Forum icon
         if(isset($fIcon[$forum])) $forumIcon=$fIcon[$forum]; else $forumIcon='default.gif';
+	if(isset($fTitle[$forum])) $forumTitle=$fTitle[$forum]; else $forumTitle='';
         
         if(isset($mod_rewrite) and $mod_rewrite) $linkToTopic="{$main_url}/{$forum}_{$topic}_0.html"; else $linkToTopic="{$main_url}/{$indexphp}action=vthread&amp;forum={$forum}&amp;topic={$topic}";
         
@@ -97,4 +98,4 @@ if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_i
     while($cols=db_simpleSelect(1));
     unset($result);
 }
-?>
+

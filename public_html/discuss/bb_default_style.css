@@ -303,23 +303,22 @@ img.forum-icons {
   grid-column-gap: 5px;
   margin: 0;
   width: 100%;
-}
-
-@media all and (min-height: 400px) and (max-width: 800px) {
-  .forum-post-titlebox-grid {
   position: sticky;
   top: 0;
   z-index: 1;
   background: cornsilk;
-  }
+}
 
-  a:target { /* needed to push down target links (past the sticky header) */
+a:target { /* needed to push down target links (past the sticky header) */
 	scroll-margin-top:180px;
-  }
-  div.forum-post-user:has(a:target) {
-    background-color:cornsilk;
-    border:1px solid orange;
-  }
+}
+
+div.forum-post-header:has(a:target) {
+  background-color:#000066;
+  color:white;
+}
+div.forum-post-header:has(a:target) a {
+  color:white;
 }
 
 .forum-post-titlebox-title {
@@ -357,6 +356,41 @@ img.forum-icons {
   white-space: nowrap;
   text-decoration: none;
 }
+
+.forum-post-footernav-grid {
+  display: grid;
+  grid-template-areas:
+    'forum-post-footernav-breadcrumbs forum-post-footernav-navigation';
+  grid-template-rows: max-content;  
+  grid-template-columns: 1fr max-content;
+  grid-row-gap: 2px;
+  grid-column-gap: 5px;
+  margin: 10px 0px 0px 10px;
+  width: 100%;
+}
+@media all and (min-height: 400px) and (max-width: 800px) {
+  .forum-post-footernav-grid {
+  display: none;
+  }
+}
+
+.forum-post-footernav-breadcrumbs {
+  grid-area: forum-post-footernav-breadcrumbs;
+  font-size: 1.0em;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 5px;
+}
+.forum-post-footernav-navigation {
+  grid-area: forum-post-footernav-navigation;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0px;
+  text-align: right;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
 .forum-post-pages {
   width: 100%;
   padding: 5px;
@@ -368,6 +402,7 @@ img.forum-icons {
   text-align: right;
   font-weight: bold;
   padding-bottom: 5px;
+  color: #000066;
 }
 .forum-post-grid {
   display: grid;
@@ -420,11 +455,14 @@ img.forum-icons {
   grid-area: forum-post-footer;
   background: #E9EFF4;
   padding: 0.3em;
+  font-size: 0.875em;
 }
 
 .forum-post-datetime {
-  font-size: 1.0em;
   text-align: left;
+}
+.forum-post-editedby {
+  text-align: center;
 }
 .forum-post-ip {
   text-align: left;
@@ -439,7 +477,6 @@ img.forum-icons {
 }
 .forum-post-postid {
   text-align: right;
-  font-size: 1.0em;
 }
 .forum-post-username {
   min-width: 15ch;
@@ -454,16 +491,15 @@ img.forum-icons {
   margin-bottom: 5px;
 }
 .forum-post-quote {
-  text-align: left;
-  font-size: 0.875em;  
+  text-align: left; 
 }
 .forum-post-editpost {
   text-align: center;
 }
 .forum-post-reportpost {
   text-align: right;
-  font-size: 0.875em;
 }
+{*Expect to be redundant!*}
 .forum-post-index-link {
   text-align: left;
   padding-bottom: 5px;
@@ -635,7 +671,7 @@ img.forum-icons {
     'forum-thread-icon forum-thread-topic forum-thread-views forum-thread-replies forum-thread-author forum-thread-lastpost'
     'forum-thread-icon forum-thread-pages forum-thread-views forum-thread-replies forum-thread-author forum-thread-lastpost';
   grid-template-rows: max-content max-content;  
-  grid-template-columns: 35px 1fr 6ch 6ch 15ch 15ch;
+  grid-template-columns: 35px 1fr 8ch 6ch 15ch 15ch;
   grid-row-gap: 2px;
   grid-column-gap: 5px;
   margin: 0;
@@ -644,7 +680,7 @@ img.forum-icons {
   background: #E9EFF4;
 }
 
-@media all and (max-width: 800px) {
+@media all and (max-width: 900px) {
   .forum-thread-grid {
   grid-template-areas: 
       "forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic forum-thread-topic"
@@ -844,10 +880,13 @@ img.forum-icons {
   margin-top:10px;
   background-color:#f9f9f9;
   width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
 }
 @media only screen and (pointer:fine) {
 	.forum-forums-compactlist img.forum-icons {
 	  max-width:24px;
+    white-space: normal;
 	}
 }
 
