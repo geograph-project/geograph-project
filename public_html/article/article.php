@@ -424,7 +424,13 @@ function smarty_function_articletext($input) {
 					foreach ($matches[1] as $i => $level) {
 						$hash = getUniqueHash($matches[2][$i]);
 						if (empty($singlePageContents) || $singlePageContents == $offset) {
-							$list[] = "<li class=\"h$level\"$style><a href=\"$url#$hash\">{$matches[2][$i]}</a></li>";
+							if ($_GET['url'] == 'preview' && !empty($url)) {
+					                        $url = "javascript:void(alert('Link not functional in preview'))";
+								//can't add the hash on the end of javascript link!
+								$list[] = "<li class=\"h$level\"$style><a href=\"$url\">{$matches[2][$i]}</a></li>";
+							} else {
+								$list[] = "<li class=\"h$level\"$style><a href=\"$url#$hash\">{$matches[2][$i]}</a></li>";
+							}
 							$lengths[] = strlen($matches[2][$i]);
 						}
 						$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
