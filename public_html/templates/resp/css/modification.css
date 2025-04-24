@@ -1,6 +1,4 @@
-#header h1 {
-    background: url(/img/geograph-logo.svg) no-repeat 10px center/94%;
-}
+/* modifies basic.css, for use with resp template - used even when page isn't enabled for responsive */
 
 input#nav_toggle, label#nav_label {
 	display:none;
