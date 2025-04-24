@@ -167,7 +167,7 @@ if (!empty($_GET['q'])) {
 	}
 
 	$domains = "site:geograph.ie";
-	if ($_SERVER['HTTP_HOST'] != 'www.geograph.ie')
+	if ($CONF['template'] != 'ireland')
 		$domains .= "+OR+site:geograph.org.uk";
 	else
 		print "<div class=interestBox>This search will mainly show images from Ireland - however some Great Britain may be included. Add the keyword &quot;<tt>Ireland</tt>&quot; to focus the results even more.</div>";
@@ -337,12 +337,12 @@ if (!empty($_GET['q'])) {
 		//$option = ", ranker=expr('sum(lcs*lccs*user_weight)*1000+bm25')";
 		$option = "";
 
-		if (empty($_GET['place']) && (preg_match('/^\w+\s+\w+[\w\s]*$/',$sphinx->q) || $_SERVER['HTTP_HOST'] == 'www.geograph.ie')) {
+		if (empty($_GET['place']) && (preg_match('/^\w+\s+\w+[\w\s]*$/',$sphinx->q) || $CONF['template'] == 'ireland')) {
 			//todo - restructure this to use MAYBE!
 			$bits = array();
 			//todo, if a great many (over 30?) then switch to high quorum?
 			$bits[] = '('.$sphinx->q.')';
-			if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
+			if ($CONF['template'] == 'ireland') {
 		                $bits[] = '('.$sphinx->q.' @country Ireland )';
 			}
 			if (preg_match('/^\w+\s+\w+[\w\s]*$/',$sphinx->q)) {
@@ -744,7 +744,7 @@ if (!empty($final) && empty($words) && count($final) != @count($rows['single']) 
 
 	print "<p>Enter a search above, for example: ";
 
-	if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
+	if ($CONF['template'] == 'ireland') {
 		print '&middot; <a href="/of/castle">castles</a> ';
 		print '&middot; <a href="/of/dublin">dublin</a> ';
 		print '&middot; <a href="/of/canals">canals</a> ';

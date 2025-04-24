@@ -157,7 +157,7 @@ if ($image->isValid())
 		header("Status: 301 Moved Permanently");
 		header("Location: ".$CONF['canonical_domain'][1]."/photo/".intval($_GET['id']));
 		exit;
-	} elseif ($image->grid_square->reference_index == 2 && $_SERVER['HTTP_HOST'] != 'www.geograph.ie' && $CONF['template']!='archive') {
+	} elseif ($image->grid_square->reference_index == 2 && $CONF['template']!='ireland' && $CONF['template']!='archive') {
 		$smarty->assign("ireland_prompt",1);
 	}
 

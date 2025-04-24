@@ -106,7 +106,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 			Options:
 			<input type=checkbox name=title id=title/><label for=title>Include image title</label>,
 			<input type=checkbox name=link id=link value=0 /><label for=link>Hide geograph link</label>,
-			<input type=checkbox name=ie id=ie value=1 <? if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') { ?> checked<? } ?>/><label for=ie>.ie link</label>
+			<input type=checkbox name=ie id=ie value=1 <? if ($CONF['template'] == 'ireland') { ?> checked<? } ?>/><label for=ie>.ie link</label>
 			<hr/>
 	<?
 		foreach ($attribs as $list) {
