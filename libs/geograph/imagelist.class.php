@@ -285,7 +285,7 @@ split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 	*  (so can get image direct from index, rather than getting ids only from sphinx, and fetching rest from database)
 	*/
 	function getImagesBySphinxQL($sql,$new = true, $query = null, $tags_as_array = true) {
-		$sph = GeographSphinxConnection('sphinxql', $new);
+		$sph = $this->_getSph($new);
 
 		if (!is_null($query) && stripos($sql,'MATCH(?)') !== FALSE) // we offer to do the quoting, as we have the sphinxQL connection!
 			$sql = str_ireplace('MATCH(?)', 'MATCH('.$sph->Quote($query).')', $sql);
@@ -340,6 +340,13 @@ split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 		$recordSet->Close();
 		}
 		$this->meta = $sph->getAssoc("SHOW META");
+		//provide the same API that SearchEngine has after calling Execute
+		$this->resultCount = $this->meta['total_found'];
+		if (preg_match('/\bLIMIT\s+(\d+,\s*)?(\d+)/i',$sql,$m))
+			$this->numberOfPages = ceil($this->meta['total']/intval($m[2]));
+		} else {
+			$this->numberOfPages = ceil($this->meta['total']/$i); //using $i is a bit of a fudge!
+		}
 		return $i;
 	}
 
@@ -661,6 +668,15 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 		$this->db=$db;
 	}
 
+	function &_getSph($new = true) {
+		if (empty($this->sph) || !is_object($this->sph))
+			$this->sph=GeographSphinxConnection('sphinxql', $new);
+		return $this->sph;
+	}
+
+	function _setSph(&$sph) {
+		$this->sph = $sph;
+	}
 }
 
 

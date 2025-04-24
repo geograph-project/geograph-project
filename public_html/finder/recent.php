@@ -37,8 +37,6 @@ pageMustBeHTTPS();
 
 $extra = array();
 
-$src = 'loading="lazy" src'; //experimenting with moving to it permentanty!
-
 if (true) {
 	if (!empty($_GET['q'])) {
 		$q=trim($_GET['q']);
@@ -58,7 +56,7 @@ if (true) {
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	if (empty($pg) || $pg < 1) {$pg = 1;}
 
-	$cacheid .=".".$pg; //.$src;
+	$cacheid .=".".$pg;
 
 	if (isset($_REQUEST['inner'])) {
 		$cacheid .= '.iframe';
@@ -77,82 +75,54 @@ if (true) {
 
 	if (!$smarty->is_cached($template, $cacheid)) {
 
-		$sphinx->processQuery();
+		$imagelist=new ImageList();
+		$sph = $imagelist->_getSph();
+		$index = (strpos($_SERVER['CONF_DB_DB'],'staging') !== FALSE)?'sample8':'sample8E,sample8D';
 
-		$client = $sphinx->_getClient();
-
-		$db = GeographDatabaseConnection(true);
-
-		$filter = 124913;
-		if ($filter) {
-			$rr = $db->getRow("SELECT gridimage_id FROM gridimage_search WHERE user_id != $filter ORDER BY gridimage_id DESC LIMIT 1099,1");
-			$min = $rr['gridimage_id']; // GetOne annoyingly blindy adds LIMIT 1 to end, even if already a LIMIT :( - getRow does NOT!
-
-			//$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search WHERE user_id != 124913"); DOESNT USE INDEX!
-			$max = $db->getOne("SELECT gridimage_id FROM gridimage_search WHERE user_id != $filter ORDER BY gridimage_id DESC"); //LIMIT 1
-		} else {
-			$max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
-			$min = $max-1100;
+		$filter = "user_id != 124913";
+		if ($CONF['template'] == 'ireland') {
+			$filter .= " AND scenti >= 2000000000";
 		}
-		$client->SetIDRange($min,$max+10);
+
+		if ($filter) {
+			$rr = $sph->getRow("SELECT id FROM $index WHERE $filter ORDER BY id DESC LIMIT 999,1");
+		} else {
+			$rr = $sph->getRow("SELECT id FROM $index ORDER BY id DESC LIMIT 999,1");
+		}
+                $min = $rr['id']; // GetOne annoyingly blindy adds LIMIT 1 to end, even if already a LIMIT :( - getRow does NOT!
 
 			$bits = array();
-			$bits[] = "uniqueserial(atakenyear)";
 			$bits[] = "uniqueserial(takendays)";
-			$bits[] = "uniqueserial(ahectad)";
-			$bits[] = "uniqueserial(classcrc)";
+			$bits[] = "uniqueserial(placename_id)";
 			$bits[] = "uniqueserial(scenti)";
-			$bits[] = "uniqueserial(uint(agridsquare))";
+			$bits[] = "uniqueserial(viewsquare)";
 			if (!preg_match('/user_id/',$q)) {
-				$bits[] = "uniqueserial(auser_id)";
-			}
-			$client->setSelect(implode('+',$bits)." as myint");
-			$sphinx->sort = "myint ASC,sequence ASC";
-
-		if ($filter) {
-			$client->SetFilter('auser_id', array($filter), true);
-		}
-
-		$ids = $sphinx->returnIds($pg,'_images');
-
-		if (!empty($ids)) {
-			$where = "gridimage_id IN(".join(",",$ids).")";
-
-
-			$limit = $pgsize;
-
-			$prev_fetch_mode = $ADODB_FETCH_MODE;
-			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-			$rows = $db->getAssoc("
-			select gridimage_id,realname,user_id,title,grid_reference,imagetaken,reference_index
-			from gridimage_search
-			where $where
-			limit $limit");
-
-			$results = array();
-			foreach ($ids as $c => $id) {
-				$row = $rows[$id];
-				$row['gridimage_id'] = $id;
-				$row['canonical_domain'] = $CONF['canonical_domain'][$row['reference_index']];
-				$gridimage = new GridImage;
-                                $gridimage->fastInit($row);
-				$results[] = $gridimage;
+				$bits[] = "uniqueserial(user_id)";
 			}
 
-			$smarty->assign_by_ref('results', $results);
-			$smarty->assign("query_info",$sphinx->query_info);
+		$col = implode('+',$bits)." as myint";
+		$sqlpage = ($pg -1)* $sphinx->pageSize;
 
-			if ($sphinx->numberOfPages > 1) {
-				$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?".implode('&amp;',$extra)."&amp;page=") );
-				$smarty->assign("offset",(($pg -1)* $sphinx->pageSize)+1);
-			}
-			$ADODB_FETCH_MODE = $prev_fetch_mode;
+		$sql = "
+		select id,realname,user_id,title,grid_reference,takenday,scenti, $col
+		from $index
+		where $filter
+		order by myint ASC,sequence ASC
+		limit $sqlpage,{$sphinx->pageSize}";
+
+		$imagelist->getImagesBySphinxQL($sql, true, $sphinx->q);
+
+		$smarty->assign_by_ref('results', $imagelist->images);
+
+		if ($imagelist->numberOfPages > 1) {
+			$smarty->assign('pagesString', pagesString($pg,$imagelist->numberOfPages,$_SERVER['PHP_SELF']."?".implode('&amp;',$extra)."&amp;page=") );
+			$smarty->assign("offset",(($pg -1)* $sphinx->pageSize)+1);
 		}
 	}
 
 	if (!empty($sphinx->qclean))
 		$smarty->assign("q",$sphinx->qclean);
-	$smarty->assign("src",$src);
+
         $smarty->assign("yesterday",date('Y-m-d',time()-3600*24));
 }
 
