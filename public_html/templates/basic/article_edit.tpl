@@ -305,7 +305,7 @@ function previewArticle() {
 		}
 	}
 
-	window.open('','_preview');//forces a new window rather than tab?
+	window.open('about:blank','_preview');//forces a new window rather than tab?
 
 	return true;
 }

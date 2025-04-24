@@ -30,6 +30,11 @@ Todo:
 
 		[ ] - Sphinx - Recreate sphinx indexes (mainly 'sample8' and 'gaznew')
 
+[ ] - PHP - Update /explore/places.php to use the NEW sphinx_placenames for both grids, rahter tan just updating Ireland to use ie_open_places
+		(means can STOP maintaining gridimage_os_gaz/gridimage_loc_placenames material views!!!) 
+
+
+
 [Not Used] - DB - Update gridimage.placename_id (not currently used for anything!)
 		(was considered too much work to keep updated)
 

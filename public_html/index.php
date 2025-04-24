@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'HEAD' || strpos('monit',@$_SERVER['HTTP_USER_
 
 
 if (!empty($_GET)) {
-	$allowed = array('lang','potd','preview');//only ones allowed
+	$allowed = array('lang','potd','preview','fbclid','ddev');//only ones allowed
 	if (array_diff(array_keys($_GET),$allowed)) {
 		header('HTTP/1.0 400 Bad Request');
         	exit;
