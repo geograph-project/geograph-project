@@ -342,7 +342,7 @@ split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 		$this->meta = $sph->getAssoc("SHOW META");
 		//provide the same API that SearchEngine has after calling Execute
 		$this->resultCount = $this->meta['total_found'];
-		if (preg_match('/\bLIMIT\s+(\d+,\s*)?(\d+)/i',$sql,$m))
+		if (preg_match('/\bLIMIT\s+(\d+,\s*)?(\d+)/i',$sql,$m)) {
 			$this->numberOfPages = ceil($this->meta['total']/intval($m[2]));
 		} else {
 			$this->numberOfPages = ceil($this->meta['total']/$i); //using $i is a bit of a fudge!
