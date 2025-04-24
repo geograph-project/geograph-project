@@ -280,6 +280,10 @@ split_timer('imagelist','getImagesByIdList',count($ids)); //logs the wall time
 	}
 
 
+	/**
+	* get image list for sphinxql query - main complication is converting sample8 formating, back to standard format ued by gridimage class and gridimage_search
+	*  (so can get image direct from index, rather than getting ids only from sphinx, and fetching rest from database)
+	*/
 	function getImagesBySphinxQL($sql,$new = true, $query = null, $tags_as_array = true) {
 		$sph = GeographSphinxConnection('sphinxql', $new);
 
@@ -670,7 +674,7 @@ class RecentImageList extends ImageList {
 	/**
 	* constructor - used to build a basic list (See getImages)
 	*/
-	function RecentImageList(&$smarty,$reference_index = 0) {
+	function RecentImageList(&$smarty,$reference_index = 0, $adv = false) {
 		global $memcache;
 
 		$mkey = rand(1,10).'.'.$reference_index;
@@ -681,37 +685,60 @@ class RecentImageList extends ImageList {
 			return;
 		}
 
-		$db=$this->_getDB(true);
+	############################
+
+		if ($adv) {
 
 split_timer('imagelist'); //starts the timer
 
-		//carefully construct a query, that 1) uses indexes (ie primary key) and 2) avoids temporaly table, and/or filesort
-		if ($reference_index == 2) {
-			$crit = "- 2500 and reference_index = $reference_index and rand()>0.9";
-		} elseif ($reference_index) {
-			$crit = "- 500 and reference_index = $reference_index and rand()>0.9";
+			//using sample8 directly, shotcuts a lot of work!
+
+			$cols = "id,title,realname,user_id,grid_reference,takenday,imageclass";
+
+			//todo, make the section more dynamic
+			if ($reference_index)
+				$sql = "SELECT $cols FROM sample8E,sample8D WHERE scenti >= 2000000000 LIMIT 20";
+			else
+				$sql = "SELECT $cols FROM sample8E,sample8D LIMIT 20";
+
+			$i = $this->getImagesBySphinxQL($sql);
+
+	############################
+
 		} else {
-			$crit = "- 250 and rand()>0.96";
+			$db=$this->_getDB(true);
+
+split_timer('imagelist'); //starts the timer
+
+			//carefully construct a query, that 1) uses indexes (ie primary key) and 2) avoids temporaly table, and/or filesort
+			if ($reference_index == 2) {
+				$crit = "- 2500 and reference_index = $reference_index and rand()>0.9";
+			} elseif ($reference_index) {
+				$crit = "- 500 and reference_index = $reference_index and rand()>0.9";
+			} else {
+				$crit = "- 250 and rand()>0.96";
+			}
+
+			$recordSet = $db->Execute("select {$this->cols} from gridimage_search
+				where moderation_status = 'geograph' and gridimage_id > (select max(gridimage_id) from gridimage_search) $crit limit 5");
+
+			$this->images=array();
+			$i=0;
+			if ($recordSet && $recordSet->numRows()) {
+			while (!$recordSet->EOF) {
+				$this->images[$i]=new GridImage;
+				$this->images[$i]->fastInit($recordSet->fields);
+				$recordSet->MoveNext();
+				$i++;
+			}
+			$recordSet->Close();
+			}
+
+			shuffle($this->images);
 		}
-
-		$recordSet = $db->Execute("select {$this->cols} from gridimage_search
-			where moderation_status = 'geograph' and gridimage_id > (select max(gridimage_id) from gridimage_search) $crit limit 5");
-
-		$this->images=array();
-		$i=0;
-		if ($recordSet && $recordSet->numRows()) {
-		while (!$recordSet->EOF) {
-			$this->images[$i]=new GridImage;
-			$this->images[$i]->fastInit($recordSet->fields);
-			$recordSet->MoveNext();
-			$i++;
-		}
-		$recordSet->Close();
-		}
-
-		shuffle($this->images);
-
 split_timer('imagelist','RecentImageList',$reference_index); //logs the wall time
+
+	############################
 
 		$this->assignSmarty($smarty, 'recent');
 

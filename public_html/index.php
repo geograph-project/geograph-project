@@ -34,6 +34,19 @@ if (!empty($_SERVER['PATH_INFO'])) {
         exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] == 'HEAD' || strpos('monit',@$_SERVER['HTTP_USER_AGENT']) !== FALSE || !empty($_GET['test'])) {
+	require_once('geograph/global.inc.php');
+	if ($memcache && $memcache->valid && $memcache->redis && $memcache->redis->info())
+		print "OK";
+	else {
+		header("HTTP/1.1 503 Service Unavailable");
+		print "NOK";
+	}
+	exit;
+}
+
+
+
 if (!empty($_GET)) {
 	$allowed = array('lang','potd','preview');//only ones allowed
 	if (array_diff(array_keys($_GET),$allowed)) {
@@ -45,11 +58,6 @@ if (!empty($_GET)) {
 if (empty($smarty)) {
 	require_once('geograph/global.inc.php');
 	init_session();
-
-	//forward the homepage right now!
-	if ($CONF['template']=='basic') { //if welsh, the template will aready be changed, so checking current value is safest way!
-		$CONF['template'] = 'resp';
-	}
 
 	$smarty = new GeographPage;
 }
@@ -90,9 +98,10 @@ if (!$smarty->is_cached($template, $cacheid))
 /////////////////////////////
 // overview map
 
-	if ($CONF['template'] == 'ireland' && !isset($_GET['preview']))
+	if ($CONF['template'] == 'ireland' && !isset($_GET['preview'])) {
+		$smarty->assign('responsive', 1);
 		$preset = 'overview_ireland';
-	elseif ($CONF['template'] == 'resp')
+	} elseif ($CONF['template'] == 'resp')
 		$preset = 'overview_plain';
 	else
 		$preset = 'overview_charcoal'; //used even for basic template!
@@ -120,7 +129,7 @@ if (!$smarty->is_cached($template, $cacheid))
 /////////////////////////////
 // lets find some recent photos
 	if ($CONF['template']=='ireland') {
-		new RecentImageList($smarty,2);
+		new RecentImageList($smarty,2, $adv = true);
 		 $discuss_where = ' and t.topic_id not in (11663)';
 	} else {
 		$smarty->assign('marker', $overview->getSquarePoint($potd->image->grid_square));

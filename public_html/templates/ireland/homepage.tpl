@@ -1,4 +1,3 @@
-{assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
 <h2>Welcome to Geograph Ireland</h2>
@@ -7,8 +6,6 @@
 <p>The Geograph project aims to collect geographically
 representative photographs and information for every square kilometre of 
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</p>
-
-
 
 <h3>Getting started...</h3>
 <ul>
@@ -69,6 +66,26 @@ we hope you'll enjoy being a part of this great project
 	kilter, but we still welcome any <a href="/contact.php">feedback</a>.</p>
 </div>
 <br/>
+
+{if $overview}
+	<h3>Overview Map</h3>
+	<div class="map" style="margin-left:20px;border:2px solid black; height:{$overview_height}px;width:{$overview_width}px">
+
+	<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
+
+	{foreach from=$overview key=y item=maprow}
+	        <div>
+	        {foreach from=$maprow key=x item=mapcell}
+	        <a href="/mapbrowse.php?new=1&amp;o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
+	        alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+	        {/foreach}
+	        </div>
+	{/foreach}
+	</div>
+	</div>
+{/if}
+
+
 &middot; Geograph on: {external href="https://twitter.com/geograph_bi" text="Twitter"}, {external href="https://www.facebook.com/geograph.org.uk" text="Facebook"}<br/>
 <br>
 <a href="/help/donate" style="background-color:purple;color:white;text-decoration:none;font-size:1.1em;padding:4px;margin:5px;border-radius:4px">Donate/Support Us</a>
@@ -92,7 +109,35 @@ Recently completed hectads:
 
 
 <br style="clear:both"/>
-&nbsp;
+
+{if $recentcount}
+        <div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px" id="photo_block">
+                <div class="interestBox" style="border-radius: 6px;margin-bottom:8px">
+                        <div style="position:relative;float:right">
+                                <a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
+                                <a href="/finder/recent.php" title="Show the most recent submissions"><b>see more</b> &gt;</a>
+                        </div>
+                        <h3 style="margin:0">Recent Photos</h3>
+                </div>
+
+                {foreach from=$recent item=image}
+
+                <div class="shadow" style="text-align:center;padding-bottom:1em;width:150px;float:left;font-size:0.8em;">
+                        <div style="height:126px">
+                                <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+                        </div>
+
+                        <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
+                        <span class="nowrap">by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></span>
+                        <span class="nowrap">for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
+
+                </div>
+
+                {/foreach}
+                <br style="clear:both"/>
+        </div>
+{/if}
+
 
 
 <div class="interestBox">
