@@ -91,6 +91,8 @@ if (true) {
 		}
                 $min = $rr['id']; // GetOne annoyingly blindy adds LIMIT 1 to end, even if already a LIMIT :( - getRow does NOT!
 
+		$filter .= " AND id >= $min";
+
 			$bits = array();
 			$bits[] = "uniqueserial(takendays)";
 			$bits[] = "uniqueserial(placename_id)";
