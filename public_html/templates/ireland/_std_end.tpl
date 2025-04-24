@@ -1,5 +1,7 @@
 </div>
 </div>
+<input type=checkbox id="nav_toggle">
+<label id="nav_label" for="nav_toggle">&#9776;</label>
 <div id="nav_block" class="no_print">
  <div class="nav">
   <ul id="treemenu1" class="treeview">
@@ -135,7 +137,11 @@
 {/if}
   </div>
 </div>
-<div id="search_block" class="no_print">
+
+<input type=checkbox id="search_toggle">
+<label id="search_label" for="search_toggle">&#128269;</label>
+
+<div id="search_block" class="no_print" style="min-height:inherit">
   <div id="search">
     <div id="searchform">
     <form method="get" action="/search.php">
@@ -146,7 +152,8 @@
     </form>
     </div>
   </div>
-  <div id="login"><span class="nowrap">
+</div>
+  <div id="login" class="no_print"><span class="nowrap">
   {dynamic}
   {if $user->registered}
   	  Logged in as {$user->realname|escape:'html'}
@@ -161,7 +168,6 @@
 	  <a title="Register to upload photos" href="/register.php">register</a>
   {/if}
   {/dynamic}
-  </div>
 </div>
 {if $right_block}
 	{include file=$right_block}
