@@ -1329,6 +1329,23 @@ class GeographPage extends Smarty
 
 		if($resource_type == 'file')
 		{
+			global $CONF;
+
+			//for ireland, first try to use respsonsive template
+			if ($CONF['template']=='ireland') {
+				$resp=$_SERVER['DOCUMENT_ROOT'].'/templates/resp/'.$resource_name;
+				if (is_readable($resp)) {
+					$template_source=file_get_contents($resp);
+					$template_timestamp=filemtime($resp);
+
+					//if loaded from resp, explicitly resposnive!
+					if (strpos($resource_name,'_') !== 0) //only do for main files, not included files
+						$smarty_obj->assign('responsive',true);
+
+					return true;
+				}
+			}
+
 			$basic=$_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$resource_name;
 			if (is_readable($basic))
 			{
@@ -1337,24 +1354,15 @@ class GeographPage extends Smarty
 
 				 split_timer('smarty','loader',$resource_name); //logs the wall time
 
-				global $CONF;
 				if ($CONF['template']=='resp' && @$_SESSION['responsive'] != 4 && @$_GET['responsive'] != 4)
 					if (strpos($resource_name,'_') !== 0) //only do for main files, not included files
 						$smarty_obj->assign('responsive',false);
 
 				 return true;
 			}
-			else
-			{
-				//no such template
-				return false;
-			}
-		} 
-		else
-		{
-			// not a file
-			return false;
 		}
+
+		return false;
 	}
 
 }
