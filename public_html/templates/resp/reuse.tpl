@@ -72,7 +72,7 @@ div:target {
 {$image->getFull($returnfull,$responsive,$larger)}
 
 1. Always pass true to the first param in a smarty template. 
-2. Make image responsive
+2. Make image responsive (Note use 'basic' if NOT in the /resp/ template!)
 3. Use large image if available (2 must be true for 3 to be true) 
 *}
 <a href="/photo/{$image->gridimage_id}"{if $image->original_width} title="Scroll down for high resolution version"{/if}>{$image->getFull(true,true,false)}</a>
