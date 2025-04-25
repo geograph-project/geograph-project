@@ -1291,7 +1291,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 		$html="<img alt=\"$title\" src=\"$fullpath\" crossorigin {$size[3]}$srcset onerror=\"retryCross(this)\"/>";
 
 		//then add responsive sizing
-		if (!empty($simple) && $CONF['template'] == 'resp' && $responsive) {
+		if (!empty($simple) && $responsive !== 'basic' && $responsive) {
 			//now there is css min() function can set mutliple max-widths at once, rather than needing to nest!
 
 			$simple[] = "100%";
@@ -1306,7 +1306,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 		} elseif (!empty($maxwidth) && $responsive) {
 			$mins = array();
 
-			if ($CONF['template'] != 'resp') { //the new reponsive template specifically supports small screens.
+			if ($responsive === 'basic') { //the new reponsive template specifically supports small screens.
 				//non-responisve templates still want to prevent too small, as page will zoom out,
 
 				//if (...) // todo could also prevent this one on really tall thin images.
@@ -1342,7 +1342,7 @@ $mins[] = "height:auto"; //already in css, but worth making sure! (browser shoul
 				//constrain the main div too, so whole image gets reduced width based on height of window
 				//this allows us to still define a width (rather than auto), to avoid a CLS!
 
-				if ($CONF['template'] == 'resp') {
+				if ($responsive !== 'basic') {
 					$html = "<div style=\"max-width:calc(94vh / $ratio); margin-left:auto; margin-right:auto;\">$html</div>";
 				} else {
 					//the repeat of the min-width; is just to keep the image centered;
