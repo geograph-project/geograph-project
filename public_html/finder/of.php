@@ -132,10 +132,33 @@ if (!empty($_GET['q'])) {
 	}
 
 	$smarty->assign("page_title",'Photos of '.preg_replace('/^title:/','',$_GET['q']));
-	if (!empty($_GET['place']))
-		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/place/$qu2\"/>");
-	else
+	if (!empty($_GET['place'])) {
+		//todo, really should detect ireland places!
+		//but as we look upi scenti (to get ri), might as well lookup county too!
+		if (empty($sph))
+			$sph = GeographSphinxConnection('sphinxql',true);
+
+		//select scenti,placename_id from sample8 where match('@place Bournemouth') limit 1;
+		$where = "match(".$sph->Quote($sphinx->q).")";
+		$place = $sph->getRow("select scenti,place,county,country,placename_id from sample8 where $where limit 1");
+		if (!empty($place)) {
+			$ri = substr($place['scenti'],0,1);
+			$qu2 = urlencode2($place['place']); //just to make sure it really consistent!
+
+			$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['canonical_domain'][$ri]}/place/$qu2\"/>");
+
+			if (!empty($place['county']) != '' && $place['county'] != $place['place'] && $place['county'] != 'Unknown') {
+				$place['county'] = str_replace(' (general)','', $place['county']);
+				$smarty->assign("page_title",'Photos of '.$place['place'].', '.$place['county']);
+			} elseif (!empty($place['country']) != '' && $place['country'] != $place['place'] && $place['country'] != 'Unknown') {
+				$smarty->assign("page_title",'Photos of '.$place['place'].', '.$place['country']);
+			} else {
+				$smarty->assign("page_title",'Photos of '.$place['place']);
+			}
+		}
+	} else
 		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/of/$qu2\"/>");
+
 	$smarty->display("_std_begin.tpl",md5($_SERVER['PHP_SELF'].$_GET['q']));
 
 	if ($memcache->valid) {
@@ -246,8 +269,8 @@ if (!empty($_GET['q'])) {
 
 
 	$limit = 50;
-
-		$sph = GeographSphinxConnection('sphinxql',true);
+		if (empty($sph))
+			$sph = GeographSphinxConnection('sphinxql',true);
 
                 $prev_fetch_mode = $ADODB_FETCH_MODE;
                 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
