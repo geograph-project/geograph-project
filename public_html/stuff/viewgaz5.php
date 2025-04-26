@@ -65,6 +65,8 @@ print "<hr>";
 	if (!empty($_GET['alpha'])) {
 		$where = implode(" AND ",$where);
 		$data = $db->getAll("select def_nam,east as e,north as n,has_dup,km_ref,f_code from os_gaz WHERE full_county = 'Isle of Man' AND $where ORDER BY def_nam");
+
+		$codes = $db->getAssoc("select * from os_gaz_code");
 	} else {
 		$data = $db->getAll("select def_nam,postcode,e,n,f_code,on250,images,has_dup,km_ref from iom_open_places order by postcode, def_nam");
 		print "<p>Note: This is only listing City, Town and Villages, not smaller settlements</p>";
@@ -98,6 +100,10 @@ print "<div style=\"columns: auto 24em\">";
 			print "<li><b><a href=\"$url\" title=\"{$row['f_code']}\">$name</a></b>";
 		} else
 			print "<li><a href=\"$url\">$name</a>";
+
+		if (!empty($row['f_code']) && !empty($codes[$row['f_code']]))
+			print " <i style=color:gray>{$codes[$row['f_code']]}</i>";
+
 		if (!empty($row['images']))
 			print " (".number_format($row['images'],0)." images)";
 	}
