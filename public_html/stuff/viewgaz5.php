@@ -105,12 +105,12 @@ print "<div style=\"columns: auto 24em\">";
 			print " <i style=color:gray>{$codes[$row['f_code']]}</i>";
 
 
-		if (!empty($row['images']))
+		if (!empty($row['images'])) {
 			print " (".number_format($row['images'],0)." images";
 			if (!empty($row['recent']) && $row['recent'] > '1000')
 				print ", last in ".substr( $row['recent'],0,4);
 			print ")";
-
+		}
 	}
 
 	if ($last) print "</ul></div>";
