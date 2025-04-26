@@ -46,7 +46,7 @@ print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
 if (!empty($_GET['all'])) {
 	$tables = explode(',','placename_index,sphinx_placenames,loc_abgaz,loc_counties,loc_counties_pre74,os_gaz_county,loc_placenames,loc_towns,os_open_names,os_gaz,os_gaz_250,os_gaz_old');
 } else {
-	$tables = explode(',',                'sphinx_placenames,loc_abgaz,loc_counties,loc_counties_pre74,os_gaz_county,loc_placenames,loc_towns,os_open_names,os_gaz,os_gaz_250');
+	$tables = explode(',',                'sphinx_placenames,loc_abgaz,loc_counties,loc_counties_pre74,os_gaz_county,loc_placenames,loc_towns,os_open_names,os_gaz,os_gaz_250,ie_open_data'); //ie_open_places is a copy of _data! (adds 'images' column etc)
 }
 
 foreach ($tables as $table) {

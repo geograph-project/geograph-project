@@ -64,7 +64,7 @@ print "<hr>";
 
 	if (!empty($_GET['alpha'])) {
 		$where = implode(" AND ",$where);
-		$data = $db->getAll("select def_nam,east as e,north as n,has_dup,km_ref from os_gaz WHERE full_county = 'Isle of Man' AND $where ORDER BY def_nam");
+		$data = $db->getAll("select def_nam,east as e,north as n,has_dup,km_ref,f_code from os_gaz WHERE full_county = 'Isle of Man' AND $where ORDER BY def_nam");
 	} else {
 		$data = $db->getAll("select def_nam,postcode,e,n,f_code,on250,images,has_dup,km_ref from iom_open_places order by postcode, def_nam");
 		print "<p>Note: This is only listing City, Town and Villages, not smaller settlements</p>";

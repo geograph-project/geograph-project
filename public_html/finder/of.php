@@ -192,7 +192,7 @@ if (!empty($_GET['q'])) {
 	$domains = "site:geograph.ie";
 	if ($CONF['template'] != 'ireland')
 		$domains .= "+OR+site:geograph.org.uk";
-	else
+	elseif (empty($_GET['place']))
 		print "<div class=interestBox>This search will mainly show images from Ireland - however some Great Britain may be included. Add the keyword &quot;<tt>Ireland</tt>&quot; to focus the results even more.</div>";
 
 } else {

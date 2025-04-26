@@ -36,7 +36,10 @@ if (!empty($_GET['gallery'])) {
 	$_GET['tab'] = 'gallery';
 }
 if (empty($_GET['tab']) || !preg_match('/^\w+$/',$_GET['tab'])) {
-	$_GET['tab'] = 'potd';
+	if ($CONF['template'] == 'ireland')
+		$_GET['tab'] = 'ireland';
+	else
+		$_GET['tab'] = 'potd';
 }
 
 
@@ -68,13 +71,14 @@ if (!$smarty->is_cached($template, $cacheid)) {
         $q['top'] = "SELECT $gi_columns,NULL AS showday FROM gridimage_search inner join gallery_ids on (id=gridimage_id) WHERE moderation_status = 'geograph' AND gallery_ids.baysian > 4 ORDER BY gallery_ids.baysian DESC"; //gi also has gallery_ids, but use gallery_ids like an index
 	$q['weekly'] = "SELECT $gi_columns,NULL AS showday FROM gridimage_search inner join gallery_ids on (id=gridimage_id) WHERE fetched > date_sub(now(),interval 10 day) and moderation_status = 'geograph' ORDER BY gallery_ids.baysian DESC";
         $q['potd'] = "SELECT $gi_columns,showday FROM gridimage_search inner join gridimage_daily using (gridimage_id) WHERE showday <= date(now()) ORDER BY showday DESC";
+        $q['ireland'] = "SELECT $gi_columns,showday FROM gridimage_search inner join gridimage_daily using (gridimage_id) WHERE reference_index = 2 AND showday <= date(now()) ORDER BY showday DESC";
 	$q['user'] = "SELECT DISTINCT $gi_columns,NULL AS showday FROM gridimage_search inner join gridimage_post using (gridimage_id) WHERE topic_id = 17652 ORDER BY post_id DESC";
 	$q['poty2014'] = "SELECT DISTINCT $gi_columns,imagetaken AS showday FROM gridimage_search WHERE gridimage_id IN (3831340,3857309,3873725,3933193,4010306,4035293,4066025,4145642,4185695,4226895,4235832,4277690)";
         $q['more'] = "SELECT $gi_columns, NULL AS showday FROM gridimage_search inner join gridimage_daily using (gridimage_id) WHERE showday IS NULL AND updated < DATE_SUB(NOW(),INTERVAL 5 YEAR) ORDER BY RAND(YEARWEEK(NOW())) DESC";
 
 	if (isset($q[$_GET['tab']])) {
                 //todo, can only - for now, do if not using UNION
-                if ($_GET['tab'] == 'potd') {
+                if ($_GET['tab'] == 'potd' || $_GET['tab'] == 'ireland') {
 			$q['potd'] = str_replace(' FROM ',',brightness FROM ',$q['potd']);
                 }
 
