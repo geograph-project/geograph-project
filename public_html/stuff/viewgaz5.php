@@ -68,7 +68,7 @@ print "<hr>";
 
 		$codes = $db->getAssoc("select * from os_gaz_code");
 	} else {
-		$data = $db->getAll("select def_nam,postcode,e,n,f_code,on250,images,has_dup,km_ref from iom_open_places order by postcode, def_nam");
+		$data = $db->getAll("select def_nam,postcode,e,n,f_code,on250,images,has_dup,km_ref,recent from iom_open_places order by postcode, def_nam");
 		print "<p>Note: This is only listing City, Town and Villages, not smaller settlements</p>";
 	}
 
@@ -104,8 +104,13 @@ print "<div style=\"columns: auto 24em\">";
 		if (!empty($row['f_code']) && !empty($codes[$row['f_code']]))
 			print " <i style=color:gray>{$codes[$row['f_code']]}</i>";
 
+
 		if (!empty($row['images']))
-			print " (".number_format($row['images'],0)." images)";
+			print " (".number_format($row['images'],0)." images";
+			if (!empty($row['recent']) && $row['recent'] > '1000')
+				print ", last in ".substr( $row['recent'],0,4);
+			print ")";
+
 	}
 
 	if ($last) print "</ul></div>";
