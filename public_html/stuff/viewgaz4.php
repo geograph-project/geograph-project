@@ -109,7 +109,7 @@ print "<div style=\"columns: auto 24em\">";
 			print "<h4>$name</h4>";
 			print "<ul>";
 		}
-		if (!empty($_GET['county'])) {
+		if (!empty($_GET['county']) && empty($_GET['alpha'])) {
 			if ($alpha != substr($row['name1'],0,1)) {
 				if ($alpha || $last) print "</ul></div>";
 
