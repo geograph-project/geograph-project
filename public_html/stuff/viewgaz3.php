@@ -33,6 +33,20 @@ $reference_index = 2;
 
 $smarty->display('_std_begin.tpl');
 
+$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man');
+
+print "&middot; ";
+foreach ($links as $link => $name) {
+	if ($link == basename($_SERVER['PHP_SELF'])) {
+		print "<b>$name</b>";
+	} else {
+		print "<a href=$link>$name</a>";
+	}
+	print " &middot; ";
+}
+print "<hr>";
+
+##################################################
 $ni = 0;
 
 if (!empty($_GET['alpha'])) {
@@ -124,6 +138,9 @@ print "<div style=\"columns: auto 24em\">";
 
 		$url = urlencode2($row['name']);
 		$url = "/near/$url/$gridref?dist=2000";
+		if (empty($row['images']))
+		        $url .= "0"; //extend the distance!
+
 		$name = htmlentities(to_title_case(strtolower($row['name'])));
 
 		if (preg_match('/(\d+)/',$row['town_class'],$m) && $m[1] <= 3) {

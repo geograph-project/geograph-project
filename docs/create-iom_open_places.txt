@@ -1,0 +1,47 @@
+create table iom_open_places 
+select seq,o.def_nam,km_ref,tile_ref,has_dup,f_code,o.full_county,1 as reference_index,o.east,o.north,c as images
+ from os_gaz o left join gridimage_os_gaz on (placename_id = seq + 1000000) where full_county = 'isle of man' and f_code in ('C','T','O') order by o.def_nam;
+
+
+alter table iom_open_places add primary key(seq), add index(def_nam), add index(north);
+
+
+alter table iom_open_places add postcode varchar(10) default null;
+update iom_open_places inner join sphinx_placenames on (placename_id = seq + 1000000) set iom_open_places.postcode = sphinx_placenames.postcode;
+
+
+select p.*,t.east,t.north,sqrt(pow(cast(p.east as signed)-cast(t.east as signed),2)+pow(cast(p.north as signed)-cast(t.north as signed),2)) as dist from iom_open_places p left join os_gaz_250 t using (def_nam,full_county);
+
+select p.*,t.east,t.north,sqrt(pow(cast(p.east as signed)-cast(t.east as signed),2)+pow(cast(p.north as signed)-cast(t.north as signed),2)) as dist
+ from iom_open_places p left join os_gaz_250 t using (def_nam,full_county);
+
+select p.*,t.east,t.north,sqrt(pow(cast(p.east as signed)-cast(t.east as signed),2)+pow(cast(p.north as signed)-cast(t.north as signed),2)) as dist
+ from iom_open_places p left join os_gaz_250 t on (t.def_nam = p.def_nam and t.full_county = p.full_county
+	 and sqrt(pow(cast(p.east as signed)-cast(t.east as signed),2)+pow(cast(p.north as signed)-cast(t.north as signed),2)) < 1000);
+
+
+alter table iom_open_places add on250 enum('U','') default null;
+
+update iom_open_places p inner join os_gaz_250 t on (t.def_nam = p.def_nam and t.full_county = p.full_county
+         and sqrt(pow(cast(p.east as signed)-cast(t.east as signed),2)+pow(cast(p.north as signed)-cast(t.north as signed),2)) < 1000)
+	set on250 = IF(UPPER(t.def_nam) = binary t.def_nam,'U',''), p.north = t.north, p.east = t.east;
+
+
+//from ie_open_places
+alter table iom_open_places add  `images_updated` datetime NOT NULL,
+add  `first` int(10) unsigned DEFAULT NULL,
+add  `last` int(10) unsigned NOT NULL,
+add  `recent` date NOT NULL,
+add  `users` mediumint(8) unsigned NOT NULL,
+add  `centis` mediumint(8) unsigned NOT NULL;
+
+
+//going to be easier to user with 'perplace'
+alter table iom_open_places 
+change `east` e mediumint(6) unsigned NOT NULL,
+change `north` n mediumint(7) unsigned NOT NULL;
+
+
+php scripts/process_imagesperplace.php --config=live --table=iom_open_places --debug=1 --limit=10000 --ri=1 --d=750
+
+

@@ -33,6 +33,21 @@ $reference_index = 1;
 
 $smarty->display('_std_begin.tpl');
 
+$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man');
+
+print "&middot; ";
+foreach ($links as $link => $name) {
+	if ($link == basename($_SERVER['PHP_SELF'])) {
+		print "<b>$name</b>";
+	} else {
+		print "<a href=$link>$name</a>";
+	}
+	print " &middot; ";
+}
+print "<hr>";
+
+##################################################
+
 if (!empty($_GET['alpha']) || !empty($_GET['region']) || !empty($_GET['county'])) {
 	$where = array();
 	$extra = array();
