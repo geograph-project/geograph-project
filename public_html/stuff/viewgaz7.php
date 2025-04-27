@@ -38,10 +38,13 @@ $all = array();
 
 $codes = $db->getAssoc("select * from os_gaz_code");
 
+	$_GET['adm1'] = 'Isle_of_Man';
+
 ##################################################
 //original - from places.php
+ //actully this one is not used any more in places.php (so hide by default to avoid confusion)
 
-	$_GET['adm1'] = 'Isle_of_Man';
+if (!empty($_GET['old'])) {
 
 				if (preg_match('/^\w+/',$_GET['adm1'])) {
                                         $sql = "SELECT co_code,name as adm1_name FROM os_gaz_county WHERE name LIKE ".$db->Quote($_GET['adm1'])." LIMIT 1";
@@ -50,11 +53,7 @@ $codes = $db->getAssoc("select * from os_gaz_code");
                                         die("adm1 error");
                                 }
 
-                                $smarty->assign_by_ref('adm1_name', $placename['adm1_name']);
-                                if ($placename['adm1_name'] != "Isle of Man")
-                                        $smarty->assign('parttitle', "in County");
-
-                                $sql = "SELECT placename_id,full_name,c,gridimage_id, f_code, km_ref
+                                $sql = "SELECT placename_id,full_name,c,gridimage_id, f_code, km_ref, has_dup
                                 FROM gridimage_os_gaz left join os_gaz on (seq = placename_id - 1000000)
                                 WHERE gridimage_os_gaz.co_code = '{$placename['co_code']}'";
 
@@ -65,13 +64,36 @@ $codes = $db->getAssoc("select * from os_gaz_code");
 	$counts = $db->GetAssoc($sql);
 
 	foreach ($counts as $id => $row) {
-		$name = $row['full_name'];
                 $url = urlencode2($row['full_name']);
 		$url = "/near/$url/".$row['km_ref'];
+
+		$name = $row['full_name'];
 		$all[$name]['orig'] = "<a href=\"$url\">".$codes[$row['f_code']]." (".$row['c'].")</a>";
 	}
 	$all['__Total']['orig'] = count($counts);
 
+}
+##################################################
+// 'preview' in places! (its now enabled by default!)
+
+	$ri = $reference_index;
+
+                                        $filter = "county LIKE ".$db->Quote($_GET['adm1']); //underscores already work as wildcards
+
+                                $sql = "SELECT placename_id,Place as full_name,images as c,  f_code
+                                FROM sphinx_placenames left join os_gaz on (seq = placename_id - 1000000)
+				 where reference_index = $ri AND images > 0 AND sphinx_placenames.$filter ORDER BY Place";
+
+	$counts = $db->GetAssoc($sql);
+
+	foreach ($counts as $id => $row) {
+                $url = urlencode2($row['full_name']);
+		$url = "/place/$url"; //dont add gr, we know it 'unique', or has already had the gridref added!
+
+		$name = preg_replace('#/[A-Z]{2}\d{4}#','',$row['full_name']);
+		$all[$name]['pre'] = "<a href=\"$url\">".$codes[$row['f_code']]." (".$row['c'].")</a>";
+	}
+	$all['__Total']['pre'] = count($counts);
 
 ##################################################
 //new iom_open_places
@@ -145,6 +167,9 @@ $codes = $db->getAssoc("select * from os_gaz_code");
                 $url = "/near/$url/$gridref?dist=2000";
 
 		$name = $row['name'];
+
+$name = preg_replace('/^The (.*)/','$1, The', $name); //to make consistent is OS!
+
 		$all[$name]['osm'] = "<a href=\"$url\">".$row['type']." (".$row['images'].")</a>";
 	}
 	$all['__Total']['osm'] = count($data);
@@ -156,14 +181,23 @@ ksort($all);
 print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee>";
 print "<tr>";
 	print "<td>";
+	if (!empty($_GET['old']))
+		print "<th>Old";
 	print "<th>Original";
 	print "<th>Revamped";
 	print "<th>OSM";
 foreach ($all as $name => $data) {
 	print "<tr>";
 	print "<th>".htmlentities($name);
+if (!empty($_GET['old'])) {
 	if (isset($data['orig'])) {
 		print "<td align=right>".$data['orig'];
+	} else {
+		print "<td style=background-color:#eee>-";
+	}
+}
+	if (isset($data['pre'])) {
+		print "<td align=right>".$data['pre'];
 	} else {
 		print "<td style=background-color:#eee>-";
 	}
