@@ -91,6 +91,9 @@ if (!empty($_GET['old'])) {
 		$url = "/place/$url"; //dont add gr, we know it 'unique', or has already had the gridref added!
 
 		$name = preg_replace('#/[A-Z]{2}\d{4}#','',$row['full_name']);
+
+$name = preg_replace("/'s$/",'s',$name); //st johns/etc
+
 		$all[$name]['pre'] = "<a href=\"$url\">".$codes[$row['f_code']]." (".$row['c'].")</a>";
 	}
 	$all['__Total']['pre'] = count($counts);
@@ -127,6 +130,9 @@ if (!empty($_GET['old'])) {
                 $url = "/near/$url/$gridref?dist=2000";
 
 		$name = $row['def_nam'];
+
+$name = preg_replace("/'s$/",'s',$name); //st johns/etc
+
 		$all[$name]['places'] = "<a href=\"$url\">".$codes[$row['f_code']]." (".$row['images'].")</a>";
 	}
 	$all['__Total']['places'] = count($data);
@@ -169,6 +175,8 @@ if (!empty($_GET['old'])) {
 		$name = $row['name'];
 
 $name = preg_replace('/^The (.*)/','$1, The', $name); //to make consistent is OS!
+$name = preg_replace("/'s$/",'s',$name); //st johns/etc
+$name = preg_replace("/^Saint /",'St ',$name); //for consistent with OS!
 
 		$all[$name]['osm'] = "<a href=\"$url\">".$row['type']." (".$row['images'].")</a>";
 	}
