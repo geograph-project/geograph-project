@@ -1,0 +1,20 @@
+https://osmnames.org/download/
+
+zcat planet-latest_geonames.tsv.gz | awk -F '\t' -v OFS='\t' 'NR == 1 || $16 == "im"' > planet.im.tsv
+
+
+php scripts/import_tsv.php --config=live --file=/mnt/efs/os-data/planet.im.tsv --table=planet_im --execute --limit=1000000
+
+alter table planet_im add primary key(osm_id);
+
+alter table planet_im add  `images_updated` datetime NOT NULL,
+add  `images` int(10) unsigned DEFAULT NULL,
+add  `first` int(10) unsigned DEFAULT NULL,
+add  `last` int(10) unsigned NOT NULL,
+add  `recent` date NOT NULL,
+add  `users` mediumint(8) unsigned NOT NULL,
+add  `centis` mediumint(8) unsigned NOT NULL;
+
+
+php scripts/process_imagesperplace.php --config=live --table=planet_im --latlon --debug=1 --limit=10000 --ri=1 --d=750
+

@@ -69,7 +69,7 @@ if (!empty($_GET['alpha']) || !empty($_GET['region']) || !empty($_GET['county'])
 	}
 
 	if (!empty($_GET['alpha'])) {
-		$name[] = htmlentities($_GET['alpha']);
+		$name[] = "Beginning with ".htmlentities($_GET['alpha']);
 		$where[] = "name1 LIKE ".$db->Quote($_GET['alpha']."%");
 	}
 

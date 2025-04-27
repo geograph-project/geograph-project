@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-	$param = array('table'=>'os_open_places', 'debug'=>1, 'limit'=>10, 'ri'=>1, 'd'=>250, 'views'=>false, 'before'=>false);
+	$param = array('table'=>'os_open_places', 'latlon'=> false, 'debug'=>1, 'limit'=>10, 'ri'=>1, 'd'=>250, 'views'=>false, 'before'=>false);
 
 	chdir(__DIR__);
 	require "./_scripts.inc.php";
@@ -107,7 +107,11 @@ if (isset($columns['reference_index']))
 	$where[] = "reference_index = {$param['ri']}";
 
 $c=0;
-if (empty($columns['mbr_ymax'])) {
+
+if ($param['latlon']) {
+	$sql = "SELECT $col,lat,lon,importance FROM {$param['table']} WHERE ".implode(" AND ",$where)." LIMIT {$param['limit']}";
+
+} elseif (empty($columns['mbr_ymax'])) {
 	$d = $param['d'];
 
 	$sql = "SELECT $col,n-$d AS mbr_ymin,n+$d AS mbr_ymax,e-$d AS mbr_xmin,e+$d AS mbr_xmax FROM {$param['table']}
@@ -122,6 +126,10 @@ if (!empty($param['debug']))
 	print "$sql\n";
 
 ##########################################
+
+if ($param['latlon'])
+	$conv = new ConversionsLatLong;
+
 
 $recordSet = $db->Execute($sql) or die("$sql\n".$db->ErrorMsg()."\n\n");
 if ($recordSet->RecordCount()) {
@@ -149,6 +157,23 @@ if ($recordSet->RecordCount()) {
 
 	while (!$recordSet->EOF) {
 		$r = $recordSet->fields;
+		if ($param['latlon']) {
+		        list($e,$n,$reference_index) = $conv->wgs84_to_national($r['lat'],$r['lon'],true);
+        	        if ($reference_index != $param['ri']) {
+	                        $recordSet->MoveNext();
+        	                continue;
+	                }
+        	        //$d = intval(sqrt($r['mhwsarea_h']))*100; //hectars? we want m!
+			if (!empty($r['importance'])) {
+				$d = intval($r['importance'] * 1000);
+			} else
+				$d = $param['d'];
+
+	                $r['mbr_ymin'] = $n - $d;
+                	$r['mbr_ymax'] = $n + $d;
+        	        $r['mbr_xmin'] = $e - $d;
+	                $r['mbr_xmax'] = $e + $d;
+		}
 
 		$updates = $db->getRow($sql = "SELECT $cols from $iamges_table where natnorthings between {$r['mbr_ymin']} and {$r['mbr_ymax']} AND nateastings between {$r['mbr_xmin']} and {$r['mbr_xmax']}");
 		if (empty($updates['first']))
