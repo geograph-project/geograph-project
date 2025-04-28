@@ -56,31 +56,6 @@ if (empty($_SERVER['HTTP_USER_AGENT'])
 
 ###########################
 
-if ( (empty($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == '-' || !empty($_POST['number'])) && !empty($_GET) && empty($_COOKIE['autologin']) && strpos(@$_SERVER['HTTP_USER_AGENT'], 'Googlebot') === FALSE) {
-	$secret = md5($_SERVER['MANTICORERT_BALANCER_SVC_PORT']);
-
-	if (isset($_POST['number']) && is_numeric($_POST['number']) && $_POST['number'] === "2") {
-		setcookie('refsecret', hash_hmac('md5', $_SERVER['HTTP_X_FORWARDED_FOR'], $secret), time()+3600*24, '/', $_SERVER['HTTP_HOST'], true, true);
-
-		//turn back to get (otherwise code below might interpret as a creating a new serach)
-		$_SERVER['REQUEST_METHOD'] = 'GET';
-		$_POST = array();
-
-	} elseif (empty($_COOKIE['refsecret']) || $_COOKIE['refsecret'] != hash_hmac('md5', $_SERVER['HTTP_X_FORWARDED_FOR'], $secret)) {
-		header('HTTP/1.0 429 Too Many Requests');
-		?>
-		<form method=post style="background-color:silver;padding:20px">
-			<p>We are having problems with lots of bots crawling this search. Please enter the number of 'g' letters in the word "geograph" in the box below to prove you a human!</p>
-
-			<p>Letters: <input type=number name=number size=3 style="width:50px"> <input type=submit name=continue value="Continue...">
-		</form>
-		<?
-		exit;
-	}
-}
-
-###########################
-
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 
