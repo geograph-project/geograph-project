@@ -6,10 +6,16 @@ Allow: /*responsive=4
 Allow: /js/*.js?
 Allow: /templates/*.css?
 
+User-agent: PetalBot
+Disallow: /
+
 User-agent: GPTBot
 Disallow: /
 
 User-agent: Google-Extended
+Disallow: /
+
+User-agent: Applebot-Extended
 Disallow: /
 
 User-agent: anthropic-ai
@@ -22,6 +28,9 @@ User-agent: ClaudeBot
 Disallow: /
 
 User-agent: PerplexityBot
+Disallow: /
+
+User-agent: GoogleOther
 Disallow: /
 
 User-agent: meta-externalagent

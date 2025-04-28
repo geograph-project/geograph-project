@@ -18,6 +18,9 @@ Disallow: /
 User-agent: Google-Extended
 Disallow: /
 
+User-agent: Applebot-Extended
+Disallow: /
+
 User-agent: anthropic-ai
 Disallow: /
 
@@ -36,8 +39,12 @@ Disallow: /
 User-agent: Bytespider
 Disallow: /
 
+User-agent: GoogleOther
+Disallow: /
+
 User-agent: meta-externalagent
 Disallow: /
 
 User-agent: Timpibot
 Disallow: /
+
