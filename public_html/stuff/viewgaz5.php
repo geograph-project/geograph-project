@@ -33,7 +33,6 @@ $reference_index = 1;
 
 $smarty->display('_std_begin.tpl');
 
-
 $links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man', '/finder/places.php'=>'Search', '/mapper/combined.php'=>'Map');
 
 print '<div class="tabHolder" style="max-width:940px">Places in: ';
@@ -45,19 +44,6 @@ foreach ($links as $link => $name) {
 	}
 }
 print '</div>';
-
-$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man');
-
-print "&middot; ";
-foreach ($links as $link => $name) {
-	if ($link == basename($_SERVER['PHP_SELF'])) {
-		print "<b>$name</b>";
-	} else {
-		print "<a href=$link>$name</a>";
-	}
-	print " &middot; ";
-}
-print "<hr>";
 
 ##################################################
 
