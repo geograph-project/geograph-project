@@ -33,18 +33,17 @@ $reference_index = 1;
 
 $smarty->display('_std_begin.tpl');
 
-$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz6.php' => 'Isle of Man');
+$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz6.php' => 'Isle of Man', '/finder/places.php'=>'Search', '/mapper/combined.php'=>'Map');
 
-print "&middot; ";
+print '<div class="tabHolder" style="max-width:940px">Places in: ';
 foreach ($links as $link => $name) {
 	if ($link == basename($_SERVER['PHP_SELF'])) {
-		print "<b>$name</b>";
+		print "<a class=tabSelected>$name</a> ";
 	} else {
-		print "<a href=$link>$name</a>";
+		print "<a class=tab href=$link>$name</a> ";
 	}
-	print " &middot; ";
 }
-print "<hr>";
+print '</div>';
 
 ##################################################
 
@@ -60,8 +59,9 @@ print "<hr>";
 	}
 
 	$name = implode(", ",$name);
+	print '<div class="interestBox">';
 	print "<h2>Places in $name</h2>";
-
+	print '</div>';
 
 	if (!empty($_GET['alpha'])) {
 		$where[] = "class != 'boundary'";
@@ -78,7 +78,7 @@ print "<hr>";
 		//the group by is because tehre are some duplicate names, adding lat/lon is just case any far! (for place's that fine)
 
 
-print "<div style=\"columns: auto 24em\">";
+	print "<div style=\"columns: auto 24em\">";
 
 	$last = null;
 	$alpha = null;
@@ -122,7 +122,7 @@ print "<div style=\"columns: auto 24em\">";
 
 	if ($last) print "</ul></div>";
 
-print "</div>";
+	print "</div>";
 
 //	if ($more) {
 	        print "<br><hr>";

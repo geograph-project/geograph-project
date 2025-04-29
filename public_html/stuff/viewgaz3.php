@@ -33,18 +33,17 @@ $reference_index = 2;
 
 $smarty->display('_std_begin.tpl');
 
-$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man');
+$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man', '/finder/places.php'=>'Search', '/mapper/combined.php'=>'Map');
 
-print "&middot; ";
+print '<div class="tabHolder" style="max-width:940px">Places in: ';
 foreach ($links as $link => $name) {
 	if ($link == basename($_SERVER['PHP_SELF'])) {
-		print "<b>$name</b>";
+		print "<a class=tabSelected>$name</a> ";
 	} else {
-		print "<a href=$link>$name</a>";
+		print "<a class=tab href=$link>$name</a> ";
 	}
-	print " &middot; ";
 }
-print "<hr>";
+print '</div>';
 
 ##################################################
 $ni = 0;
@@ -59,9 +58,11 @@ if (!empty($_GET['alpha'])) {
 	$data = $db->getAll("select name,town_class,images,e,n,country,county
 		 from ie_open_places where $where order by country desc,county,name");
 
+	print '<div class="interestBox">';
 	print "<h2>Places beginning with $name</h2>";
+	print '</div>';
 
-print "<div style=\"columns: auto 24em\">";
+	print "<div style=\"columns: auto 24em\">";
 
 	$last = null;
 	foreach($data as $row) {
@@ -92,7 +93,7 @@ print "<div style=\"columns: auto 24em\">";
 
 	if ($last) print "</ul></div>";
 
-print "</div>";
+	print "</div>";
 
 } elseif (!empty($_GET['county'])) {
 	$where = array();
@@ -113,7 +114,9 @@ print "</div>";
 	$data = $db->getAll("select name,town_class,images,e,n, country
 		 from ie_open_places where $where order by name");
 
+	print '<div class="interestBox">';
 	print "<h2>Places in $name</h2>";
+	print '</div>';
 
 	foreach($data as $row) {
 		if (empty($row['images'])) {
@@ -122,7 +125,7 @@ print "</div>";
 		}
 	}
 
-print "<div style=\"columns: auto 24em\">";
+	print "<div style=\"columns: auto 24em\">";
 
 	$last = null;
 	foreach($data as $row) {
@@ -154,7 +157,7 @@ print "<div style=\"columns: auto 24em\">";
 
 	if ($last) print "</ul>";
 
-print "</div>";
+	print "</div>";
 
 } else {
 	$data = $db->getAll("select country,county,island_name,name,e,n,count(*) as places, sum(images) as images, sum(images>0)/count(*)*100 as percent
@@ -166,9 +169,13 @@ print "</div>";
 			$islands[$row['county']]=1;
 
 
-	print "<h2>Places Directory for Ireland</h2>";
+	print '<div class="interestBox">';
+	print "<h2>Populated Place Directory for Ireland</h2>";
+	print '</div>';
 
-print "<div style=\"columns: auto 36em\">";
+	print "<p>First click a County, note the name in brackets the Island name (where we have identified non-mainland places)</p>";
+
+	print "<div style=\"columns: auto 36em\">";
 
 	$country = null;
 
@@ -199,16 +206,18 @@ print "<div style=\"columns: auto 36em\">";
 
 		print "<li><b><a href=\"$url\">$name</a></b>";
 
-		print " (".number_format($row['places'],0)." places, ".floatval(round($row['percent'],1))."% photographed";
+		print " (".number_format($row['places'],0)." places";
+		if (!empty($row['percent']) && $row['percent'] < 100)
+			print ", ".floatval(round($row['percent'],1))."% photographed";
 		if (!empty($row['images']))
-			print ", ".number_format($row['images'],0)." images)";
+			print ", around ".number_format($row['images'],0)." images)";
 		else
 			print ")";
 	}
 
 	if ($country) print "</ul>";
 	$ni = 1;
-print "</div>";
+	print "</div>";
 
 	print "<br><hr>";
 	print "If don't know the county, try the first letter of the name: ";
@@ -218,6 +227,6 @@ print "</div>";
 }
 
 if (!empty($ni))
-	print "<hr>Note: for Northern Ireland, using a list of places on 250k mapping, so may miss some smaller places";
+	print "<hr>Note: for Northern Ireland, using a list of places on 250k mapping, so may miss some smaller places. Might still find them via <a href=\"search.php\">Search</a>, or <a href=\"/mapper/combined.php\">Zoomable Map</a>";
 
 $smarty->display('_std_end.tpl');

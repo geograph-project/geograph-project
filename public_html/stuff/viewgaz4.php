@@ -33,18 +33,17 @@ $reference_index = 1;
 
 $smarty->display('_std_begin.tpl');
 
-$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man');
+$links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'viewgaz5.php' => 'Isle of Man', '/finder/places.php'=>'Search', '/mapper/combined.php'=>'Map');
 
-print "&middot; ";
+print '<div class="tabHolder" style="max-width:940px">Places in: ';
 foreach ($links as $link => $name) {
 	if ($link == basename($_SERVER['PHP_SELF'])) {
-		print "<b>$name</b>";
+		print "<a class=tabSelected>$name</a> ";
 	} else {
-		print "<a href=$link>$name</a>";
+		print "<a class=tab href=$link>$name</a> ";
 	}
-	print " &middot; ";
 }
-print "<hr>";
+print '</div>';
 
 ##################################################
 
@@ -86,12 +85,14 @@ if (!empty($_GET['alpha']) || !empty($_GET['region']) || !empty($_GET['county'])
 		 geometry_x as e, geometry_y as n, local_type in ('City','Town','Village') as b
 		 from os_open_places where $where order by country,county_unitary,name1 limit 1000");
 
+	print '<div class="interestBox">';
 	print "<h2>Places in $name</h2>";
+	print '</div>';
 	if ($more)
 		print "<p>Note: This is only listing City, Town and Villages, not smaller settlements. See links at bottom for more</p>";
 
 
-print "<div style=\"columns: auto 24em\">";
+	print "<div style=\"columns: auto 24em\">";
 
 	$last = null;
 	$alpha = null;
@@ -136,7 +137,7 @@ print "<div style=\"columns: auto 24em\">";
 
 	if ($last) print "</ul></div>";
 
-print "</div>";
+	print "</div>";
 
 	if ($more) {
 	        print "<br><hr>";
@@ -154,11 +155,13 @@ print "</div>";
 		 geometry_x as e, geometry_y as n
 		from os_open_places where local_type in ('City','Town','Village') group by country,county_unitary");
 
+	print '<div class="interestBox">';
 	print "<h2>Places Directory for Great Britain</h2>";
+	print '</div>';
 
 	print "Note: This is only counting City, Town and Villages, not smaller settlements";
 
-print "<div style=\"columns: auto 28em\">";
+	print "<div style=\"columns: auto 28em\">";
 
 	$country = null;
 
@@ -196,7 +199,7 @@ print "<div style=\"columns: auto 28em\">";
 	}
 
 	if ($country) print "</ul>";
-print "</div>";
+	print "</div>";
 
 	print "<br><hr>";
 	print "If don't know the county, try the first letter of the name (by region): ";
