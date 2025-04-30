@@ -38,7 +38,11 @@ $links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'v
 print '<div class="tabHolder" style="max-width:940px">Places in: ';
 foreach ($links as $link => $name) {
 	if ($link == basename($_SERVER['PHP_SELF'])) {
-		print "<a class=tabSelected>$name</a> ";
+		if (!empty($_GET)) { //having the link is useful to return to "homepage"
+			print "<a class=tabSelected  href=$link>$name</a> ";
+		} else {
+			print "<a class=tabSelected>$name</a> ";
+		}
 	} else {
 		print "<a class=tab href=$link>$name</a> ";
 	}
