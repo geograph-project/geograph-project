@@ -9,10 +9,11 @@
     'ie-homepage-map'
     'ie-homepage-recent'
     'ie-homepage-start'
+    'ie-homepage-mobiletools'
     'ie-homepage-stats'
     'ie-homepage-support'
     'ie-homepage-projects';
-  grid-template-rows: max-content max-content max-content max-content max-content max-content max-content max-content;
+  grid-template-rows: max-content max-content max-content max-content max-content max-content max-content max-content max-content;
   grid-template-columns: 1fr;
   grid-row-gap: 10px;
   grid-column-gap: 10px;
@@ -35,9 +36,9 @@
     'ie-homepage-header ie-homepage-header ie-homepage-header'
     'ie-homepage-what ie-homepage-map ie-homepage-start'
     'ie-homepage-recent ie-homepage-recent ie-homepage-recent'
-    'ie-homepage-stats ie-homepage-support ie-homepage-projects';
+    'ie-homepage-support ie-homepage-stats ie-homepage-projects';
   grid-template-rows: max-content max-content max-content max-content;  
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 2fr 3fr 2fr;
   }
 }
 div.ie-homepage-header {
@@ -63,9 +64,19 @@ div.ie-homepage-stats {
 }
 div.ie-homepage-support {
   grid-area: ie-homepage-support;
+  text-align: center;
 }
 div.ie-homepage-projects {
   grid-area: ie-homepage-projects;
+}
+div.ie-homepage-mobiletools {
+  grid-area: ie-homepage-mobiletools;
+  background-color: #e4e4fc;
+}
+@media all and (min-width: 850px) {
+  div.ie-homepage-mobiletools {
+    display: none;
+  }
 }
 
 .ie-homepage-map-grid {
@@ -76,7 +87,7 @@ div.ie-homepage-projects {
   grid-template-rows: max-content max-content;  
   grid-template-columns: 1fr;
   grid-row-gap: 2px;
-  grid-column-gap: 5px;
+  grid-column-gap: 10px;
   margin: auto;
 }
 @media all and (min-width: 400px) {
@@ -218,9 +229,9 @@ representative photographs and information for every square kilometre of
 <div class="ie-homepage-map-right">
 
 <p>The Irish Grid System provides Ireland with a coordinate system. The country is split into 1 &#x00d7; 1 km grid squares, and the Geograph Project aims to capture geographically representative images for every square.</p>
-<p>The grid is formed from 25 100 &#x00d7; 100 km areas known as myriads which are labelled with a letter, with land in 18 of these. Each myriad is then divided into 100 10 &#x00d7; 10 km blocks known as hectads which use a numeric coodinate system from 0 to 9 with eastings, then northings, for example <a href="/gridref/h47">H47</a> covers Omagh. These hectads are then divided futher into the 1 km grid squares, which can then be divided further into centisquares (100 &#x00d7; 100 m). This subdivision can be continued into incresingly smaller blocks by adding additional digits.</p>
+<!--<p>The grid is formed from 25 100 &#x00d7; 100 km areas known as myriads which are labelled with a letter, with land in 18 of these. Each myriad is then divided into 100 10 &#x00d7; 10 km blocks known as hectads which use a numeric coodinate system from 0 to 9 with eastings, then northings, for example <a href="/gridref/h47">H47</a> covers Omagh. These hectads are then divided futher into the 1 km grid squares, which can then be divided further into centisquares (100 &#x00d7; 100 m). This subdivision can be continued into incresingly smaller blocks by adding additional digits.</p>
 
-<p>Stuff to explain Irish grid, myriads, hectads, gridsquares</p>
+<p>Stuff to explain Irish grid, myriads, hectads, gridsquares</p>-->
 
 </div>
 
@@ -230,22 +241,21 @@ representative photographs and information for every square kilometre of
 
 <div class="ie-homepage-start">
 
-<h3>How do I get started?</h3>
+<h3>Start exploring</h3>
 
-
-<p style="margin-top:0;"><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how 
-many grid squares you can claim first!</p>
-
-<p>Read the <a title="Frequently Asked Questions" href="/faq.php">FAQ</a>, then get submitting -
-we hope you'll enjoy being a part of this great project.</p>
-
-<h3>Getting started...</h3>
 <ul>
-	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
-	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
-	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
-	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
+  <li><a title="Explore places in the directory" href="/stuff/viewgaz3.php">Explore Ireland using our places directory</a></li>
+  <li><a title="Visit the showcase gallery" href="/gallery.php">Visit our showcase gallery</a></li>
+  <li><a title="Find photographs using the search" href="/search.php">Search for photographs</a></li>
+	<li><a title="Browse by Map" href="/mapbrowse.php">Browse images on our map</a></li>
 </ul>
+
+
+
+<h3>Join our project</h3>
+
+<p><a title="register now" href="/register.php">Registration</a> is free so come and join us. <a title="Submit a photograph" href="/submit.php">Submit your photos</a> and see how 
+many grid squares you can contribute your photos to. Or join in the <a title="Discussion forums" href="/discuss/">discussions on our forums</a>.</p>
 
 
 </div>
@@ -281,7 +291,7 @@ we hope you'll enjoy being a part of this great project.</p>
 
 
 <div class="ie-homepage-stats">
-
+<h3>Statistics</h3>
 Since 2005, <b>{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span>covering <b class="nowrap">{$stats.squares|thousends} grid squares</b> in Ireland, or <b>{$stats.percentage}%</b> of the total</span>.<br/>
 
 Recently completed hectads: 
@@ -297,61 +307,55 @@ Recently completed hectads:
 
 
 <div class="ie-homepage-support">
-<a href="/help/donate" style="background-color:purple;color:white;text-decoration:none;font-size:1.1em;padding:4px;margin:5px;border-radius:4px">Donate/Support Us</a>
+<h3>Support Geograph</h3>
+<p>The Geograph Project relies on donations to fund the website.</p>
+
+<a href="/help/donate" style="background-color:purple;color:white;text-decoration:none;font-size:1.1em;padding:4px;margin:5px;border-radius:4px">Donate/Support Us</a><br/>
 
 </div>
 
 
 <div class="ie-homepage-projects">
+<h3>Geograph Britain and Ireland</h3>
+<p><b>Geograph Ireland</b> is a currently sub-project of {external href="https://www.geograph.org.uk/" text="Geograph Britain and Ireland"}, the two sites share a common database. Photos submitted to one will be available on the other.</p>
+<p>Geograph on: {external href="https://twitter.com/geograph_bi" text="Twitter"}, {external href="https://www.facebook.com/geograph.org.uk" text="Facebook"}</p>
+</div>
 
-<b>Geograph Ireland</b> is a currently sub-project of {external href="https://www.geograph.org.uk/" text="Geograph Britain and Ireland"}, the two sites share a common database. Photos submitted to one will be available on the other.
+<div class="ie-homepage-mobiletools">
+<h3>Tools for mobile devices</h3>
+
+<ul class="buttonbar">
+  <li><a href="https://m.geograph.org.uk/nearest">Nearest image</li></a>
+  <li><a href="/mapper/combined.php">Coverage map</li></a>
+  <li><a href="/submit-mobile.php">Submit image</li></a>
+  <li><a href="https://m.geograph.org.uk/radar/">Geograph radar</li></a>
+  <li><a href="https://m.geograph.org.uk/s/new.php">Recreate camera</li></a>
+</ul>
+</div>
 
 </div>
 
 
-
-</div>
-
-
-<br/><hr/>
+<br/>
 
 
 <div class="ie-homepage-thirdsgrid">
 <div class="ie-homepage-left">
 
 
-<h3>Exploring in more depth...</h3>
-<ul>
-	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
-	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
-	<li><a title="Photo Gallery" href="/discuss/?action=vtopic&amp;forum=11">view some <b>themed galleries</b></a></li>
-</ul>
-
 </div>
 
 
 <div class="ie-homepage-center">
 
-<h3>Interacting with other software...</h3>
-<ul>
-	<li><a title="Google Earth Export" href="/kml.php">view images in <b>Google Earth</b> or <b>Maps</b></a> <a title="Recent Images in Google Earth" href="/feed/recent.kml" class="xml-kml">KML</a></li>
-	<li><a title="RSS Feeds" href="/faq.php#rss">get <b>RSS feeds</b> of images</a> <a title="RSS Feed of Recent Images" href="/feed/results/5165.rss" rel="RSS" class="xml-rss">RSS</a></li>
-	<li><a title="Memory Map Export" href="/memorymap.php">view squares in <b>Memory Map</b></a></li>
-	<li><a title="GPX File Export" href="/gpx.php">download squares in <b>GPX Format</b></a> <a title="GPX File of Recent Images" href="/feed/recent.gpx" rel="RSS" class="xml-gpx">GPX</a></li>
-</ul>
 
-&middot; Geograph on: {external href="https://twitter.com/geograph_bi" text="Twitter"}, {external href="https://www.facebook.com/geograph.org.uk" text="Facebook"}
 
 </div>
 
 
 <div class="ie-homepage-right">
 
-<p>We are still developing geograph.ie, and tailoring it to the Geograph Ireland project.</p>
-	
-	<p>While we make the transition, this beta site
-	may show some pages with elements a little out of
-	kilter, but we still welcome any <a href="/contact.php">feedback</a>.</p>
+
 
 </div>
 
