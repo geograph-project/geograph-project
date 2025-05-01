@@ -325,11 +325,11 @@ Recently completed hectads:
 <h3>Tools for mobile devices</h3>
 
 <ul class="buttonbar">
-  <li><a href="https://m.geograph.org.uk/nearest">Nearest image</li></a>
-  <li><a href="/mapper/combined.php">Coverage map</li></a>
-  <li><a href="/submit-mobile.php">Submit image</li></a>
-  <li><a href="https://m.geograph.org.uk/radar/">Geograph radar</li></a>
-  <li><a href="https://m.geograph.org.uk/s/new.php">Recreate camera</li></a>
+  <li><a href="https://m.geograph.org.uk/nearest">Nearest image</a></li>
+  <li><a href="/mapper/combined.php">Coverage map</a></li>
+  <li><a href="/submit-mobile.php">Submit image</a></li>
+  <li><a href="https://m.geograph.org.uk/radar/">Geograph radar</a></li>
+  <li><a href="https://m.geograph.org.uk/s/new.php">Recreate camera</a></li>
 </ul>
 </div>
 
