@@ -118,6 +118,13 @@ if (!empty($_GET['q'])) {
         $sphinx = new sphinxwrapper(trim($_GET['q']), true);
 
 	if (!empty($_GET['place'])) {
+
+		//sample8 still doesnt have proper charset_table for encoding placenames, so bodge it for now
+		//$_GET['q'] = str_replace(urldecode('%E0'),';', $_GET['q']);
+		//just one example: https://www.geograph.org.uk/place/Blackh%E0ugh
+		//well really should run audit of sphinx_placenames, which results in ...
+		$sphinx->q = str_replace(explode(' ',urldecode('%C0 %C8 %CC %CE %D2 %D9 %E0 %E1 %E2 %E8 %E9 %EA %EC %EE %F2 %F4 %F9 %FB')), ' ', $sphinx->q);
+
 		$sphinx->q = $sphinx->exact_field_match($sphinx->q,'place');
 	}
 
