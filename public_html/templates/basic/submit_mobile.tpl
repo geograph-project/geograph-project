@@ -212,7 +212,7 @@ $.ajaxSetup({
 
 		$('div.tabs a').removeClass('done');
 		var form = document.forms['theForm'];
-		if (form.elements['jpeg_exif'].value.length > 2) {
+		if (form.elements['jpeg_exif'] && form.elements['jpeg_exif'].value.length > 2) {
 			if (form.elements['jpeg_exif'].files && form.elements['jpeg_exif'].files[0]) {
 				var file = form.elements['jpeg_exif'].files[0];
 				if (file.size > 10000 && file.size <= 8388608 && file.type && file.type == "image/jpeg")
