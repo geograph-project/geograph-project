@@ -157,7 +157,7 @@ function setResize(that) {
 
 				Note: while this uploader can resize images before upload, it does not maintain the EXIF data (so might have to reenter the location/date).<br>
 				&middot; the <a href="/submit2.php">Normal submission processes</a> can now directly resize image before upload - although will only do it if the jpeg image is over 8Mb.<br>
-				&middot; and <a href="/submit-mobile.php">Mobile submission process</a>, can additiaonly downsize image before upload with customizable resolution (i.e. if only want to release smaller image). <br>
+				&middot; and <a href="/submit-mobile.php">Mobile submission process</a>, can additionally downsize image before upload with customizable resolution (i.e. if only want to release smaller image). <br>
 				&middot; Resizing image client side - before upload - results in much faster uploads.
 			</fieldset>
 			<br>

@@ -105,7 +105,7 @@ div:target {
 
 <p>All photos on Geograph are <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licensed</a>. In general, as long as you credit the photographer when you use the image, you can use it for most purposes.</p>
 
-<div class="reuse-copyright-warning">Using this image requires you comply with the Licence requirements, unless <b>explicit</b> permission has been obtained from the copyright holder.</div>
+<div class="reuse-copyright-warning">Using this image requires you to comply with the Licence requirements, unless <b>explicit</b> permission has been obtained from the copyright holder.</div>
 
 <br/>
 
@@ -129,7 +129,7 @@ div:target {
 
 </div>
 
-<p>Examples of good wording for compliant use of the creative commons licensing can be found in the <a href="#" onclick=" tabClick('tab','div',2,5);return false; ">'Credits' tab</a>. There are also examples of code to copy and paste for reuse online in the 'Reusable code' box.</p>
+<p>Examples of good wording for compliant use of the creative commons licensing can be found in the <a href="#" onclick=" tabClick('tab','div',2,5);return false; ">Crediting tab</a>. There are also examples of code to copy and paste for reuse online in the 'Reusable code' box.</p>
 
 
 
@@ -139,11 +139,11 @@ div:target {
 <div style="{if $tab != 2}display:none{/if};" class="reuse-tabs" id="div2">
 <div class="interestBox"><h3>Crediting images</h3></div>
 
-<p>This page provides examples of credits for images which are compliant with the terms of the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons License</a>. You may choose the form which best suits your usage of the photo. You may also find the <a href="#" onclick=" tabClick('tab','div',4,5);return false; ">'stamped image'</a> tab useful, where you can download versions of this photo with a credit directly added to the image.</p>
+<p>This page provides examples of credits for images which are compliant with the terms of the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons License</a>. You may choose the form which best suits your usage of the photo. You may also find the <a href="#" onclick=" tabClick('tab','div',4,5);return false; ">stamped image</a> tab useful, where you can download versions of this photo with a credit stamped on the image.</p>
 
 <ul>
 <li>You may copy and paste any of the text credits below and use them with or without the hyperlinks.</li>
-<li>We would encourage that you include a link to the photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a> when reusing the image.</li>
+<li>We would encourage you to include a link to the photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a> when reusing the image.</li>
 <li>You may also wish to use the <a href="https://creativecommons.org/mission/downloads/">Creative Commons badges</a> to go alongside the copyright text.</li>
 </ul>
 
@@ -158,10 +158,10 @@ div:target {
 <div class="reuse-credit-example">
 <b>&copy; <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></b> (<a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a>)
 <a href="{$self_host}/photo/{$image->gridimage_id}">geograph.org.uk/p/{$image->gridimage_id}</a><br/>
-{$image->title|escape:'html'}</b>{if $image->imagetakenString}, taken {$image->imagetakenString}{/if}
+{$image->title|escape:'html'}{if $image->imagetakenString}, taken {$image->imagetakenString}{/if}
 </div>
 
-<h4>Minimalist<h4>
+<h4>Minimalist</h4>
 
 <div class="reuse-credit-example">
 <a href="{$self_host}/photo/{$image->gridimage_id}">Photo</a> <b>&copy; <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></b> (<a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a>)
@@ -173,12 +173,12 @@ div:target {
 <div style="{if $tab != 3}display:none{/if};" class="reuse-tabs" id="div3">
 <div class="interestBox"><h3>Download</h3></div>
 
-<p>Links are provided below to download the image previewed above. Any images downloaded need to be displayed alongside an appropriate image credit in order to comply with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</p>
+<p>Links are provided below to download the image previewed above{if $image->original_width} at different sizes{/if}. Any images downloaded need to be displayed alongside an appropriate image credit in order to comply with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</p>
 
 <div class="reuse-reminders">
 <ul>
 <li>When displaying this photo, your <b>must include the copyright attribution</b> in line with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</li>
-<li>We would encourage that you include a link to the photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a> when reusing the image.</li>
+<li>We would encourage you to include a link to the photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a> when reusing the image.</li>
 </ul>
 </div>
 
@@ -218,7 +218,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 
 
 
-<p>We also offer images where the required attribution has been added to the image. See the <a href="#" onclick=" tabClick('tab','div',4,5);return false; ">'stamped images'</a> tab to obtain an image with the attribution displayed on the image.</p>
+<p>We also offer images where the required attribution has been added to the image. See the <a href="#" onclick=" tabClick('tab','div',4,5);return false; ">stamped image</a> tab to obtain an image with the attribution displayed on the image.</p>
 
 </div>
 
@@ -309,7 +309,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 <div class="reuse-stampingopt-grid">
 <div class="reuse-stampingopt-param"><label for=title>Include image title</label></div>
 <div class="reuse-stampingopt-input"><input type=checkbox name=title id=title{if $image->cached_size.0 > 500} checked{/if}></div>
-<div class="reuse-stampingopt-desc">Select whether the image title appears in the watermark.</div>
+<div class="reuse-stampingopt-desc">Select whether the image title appears in the attribution.</div>
 </div>
 <br/>
 <div class="reuse-stampingopt-grid">
@@ -335,7 +335,22 @@ Note that we have two versions for this image, which differ slightly. This is li
 <div class="reuse-stampingopt-grid">
 <div class="reuse-stampingopt-param"><label for=font>Font</label></div>
 <div class="reuse-stampingopt-input">
-<select name=font><option></option><option value="Bookman-Demi">Bookman-Demi</option><option value="Bookman-Light">Bookman-Light</option><option value="Courier">Courier</option><option value="fixed">fixed</option><option value="Helvetica">Helvetica</option><option value="Helvetica-Narrow">Helvetica-Narrow</option><option value="Times-Roman">Times-Roman</option><option value="Century-Schoolbook-L-Roman">Century-Schoolbook-L-Roman</option><option value="DejaVu-Sans">DejaVu-Sans</option><option value="DejaVu-Sans-Mono">DejaVu-Sans-Mono</option><option value="URW-Bookman-L-Light">URW-Bookman-L-Light</option><option value="URW-Gothic-L-Book">URW-Gothic-L-Book</option><option value="URW-Gothic-L-Demi">URW-Gothic-L-Demi</option><option value="URW-Palladio-L-Roman">URW-Palladio-L-Roman</option></select>
+<select name=font>
+<option value="Bookman-Demi">Bookman-Demi</option>
+<option value="Bookman-Light">Bookman-Light</option>
+<option value="Courier">Courier</option>
+<option value="fixed">fixed</option>
+<option value="Helvetica" selected>Helvetica</option>
+<option value="Helvetica-Narrow">Helvetica-Narrow</option>
+<option value="Times-Roman">Times-Roman</option>
+<option value="Century-Schoolbook-L-Roman">Century-Schoolbook-L-Roman</option>
+<option value="DejaVu-Sans">DejaVu-Sans</option>
+<option value="DejaVu-Sans-Mono">DejaVu-Sans-Mono</option>
+<option value="URW-Bookman-L-Light">URW-Bookman-L-Light</option>
+<option value="URW-Gothic-L-Book">URW-Gothic-L-Book</option>
+<option value="URW-Gothic-L-Demi">URW-Gothic-L-Demi</option>
+<option value="URW-Palladio-L-Roman">URW-Palladio-L-Roman</option>
+</select>
 </div>
 <div class="reuse-stampingopt-desc">Select the font to be used for the label.</div>
 </div>
@@ -343,7 +358,23 @@ Note that we have two versions for this image, which differ slightly. This is li
 <div class="reuse-stampingopt-grid">
 <div class="reuse-stampingopt-param"><label for=gravity>Text location</label></div>
 <div class="reuse-stampingopt-input">
-<select name=gravity><option></option><optgroup label="Horizontal text"><option value="Center">Center</option><option value="East">East</option><option value="NorthEast">NorthEast</option><option value="North">North</option><option value="NorthWest">NorthWest</option><option value="SouthEast">SouthEast</option><option value="South" selected>South</option><option value="SouthWest">SouthWest</option><option value="West">West</option></optgroup><optgroup label="Vertical Text"><option value="left">left</option><option value="right">right</option></optgroup></select>
+<select name=gravity>
+<optgroup label="Horizontal text">
+<option value="North">Top centre</option>
+<option value="NorthWest">Top left</option>
+<option value="NorthEast">Top right</option>
+<option value="South">Bottom centre</option>
+<option value="SouthWest">Bottom left</option>
+<option value="SouthEast" selected>Bottom right</option>
+<option value="Center">Centre</option>
+<option value="West">Centre left</option>
+<option value="East">Centre right</option>
+</optgroup>
+<optgroup label="Vertical Text">
+<option value="left">Left edge</option>
+<option value="right">Right edge</option>
+</optgroup>
+</select>
 </div>
 <div class="reuse-stampingopt-desc">Select the location on the photo for the label to appear.</div>
 </div>
@@ -351,7 +382,41 @@ Note that we have two versions for this image, which differ slightly. This is li
 <div class="reuse-stampingopt-grid">
 <div class="reuse-stampingopt-param"><label for=pointsize>Type size</label></div>
 <div class="reuse-stampingopt-input">
-<select name=pointsize><option></option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="48">48</option><option value="64">64</option><option value="96">96</option><option value="128">128</option></select> pt
+<select name=pointsize>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+<option value="11">11</option>
+<option value="12" selected>12</option>
+<option value="13">13</option>
+<option value="14">14</option>
+<option value="15">15</option>
+<option value="16">16</option>
+<option value="17">17</option>
+<option value="18">18</option>
+<option value="19">19</option>
+<option value="20">20</option>
+<option value="21">21</option>
+<option value="22">22</option>
+<option value="23">23</option>
+<option value="24">24</option>
+<option value="25">25</option>
+<option value="26">26</option>
+<option value="27">27</option>
+<option value="28">28</option>
+<option value="29">29</option>
+<option value="30">30</option>
+<option value="31">31</option>
+<option value="32">32</option>
+<option value="33">33</option>
+<option value="34">34</option>
+<option value="35">35</option>
+<option value="36">36</option>
+<option value="48">48</option>
+<option value="64">64</option>
+<option value="96">96</option>
+<option value="128">128</option>
+</select> pt
 </div>
 <div class="reuse-stampingopt-desc">Select the type size in points for the label.</div>
 </div>
@@ -377,8 +442,8 @@ Note that we have two versions for this image, which differ slightly. This is li
 
 <div class="reuse-reminders">
 <ul>
-<li>When displaying this photo, your <b>must include the copyright attribution</b> in line with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</li>
-<li>We would encourage that you include a link to the photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a> when reusing the image.</li>
+<li>When displaying this photo, you <b>must include the copyright attribution</b> in line with the <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</li>
+<li>We would encourage that you to include a link to the photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}" style="word-break: break-all">{$self_host}/photo/{$image->gridimage_id}</a> when reusing the image.</li>
 </ul>
 </div>
 <br/>
@@ -391,7 +456,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 <li><b>We do ask you to be polite and not abuse the Geograph website resources.</b></li>
 <li><b>{external href="http://en.wikipedia.org/wiki/Inline_linking" text="Hotlinking"}</b> the image directly off our servers will trigger automatic watermarks and may be blocked</li>
 
-<li><b>Don't bulk download images from this page</b> - Automated access to this page is likly to be blocked (and unreliable). We have proper <a href="/help/api">APIs</a> if you want to bulk download images.</li>
+<li><b>Don't bulk download images from this page</b> - Automated access to this page is likely to be blocked (and unreliable). We have proper <a href="/help/api">APIs</a> if you want to bulk download images.</li>
 
 
 </ul>
@@ -432,7 +497,7 @@ Note that we have two versions for this image, which differ slightly. This is li
 </textarea>
 </form>
 
-<p>Please remember to <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download ({$image->cached_size.0} &#x00d7; {$image->cached_size.1} px)</a> and host your own copy of the image, rather than hotlinking it from Geograph servers. {if $original_width}Additional image sizes are available from the <a href="#" onclick=" tabClick('tab','div',3,5);return false; ">'download' tab</a>.{/if}</p>
+<p>Please remember to <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download ({$image->cached_size.0} &#x00d7; {$image->cached_size.1} px)</a> and host your own copy of the image, rather than hotlinking it from Geograph servers. {if $original_width}Additional image sizes are available from the <a href="#" onclick=" tabClick('tab','div',3,5);return false; ">download tab</a>.{/if}</p>
 </div>
 
 
