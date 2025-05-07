@@ -83,6 +83,8 @@ if (isset($_GET['potd'])) {
 
 if (isset($_GET['preview'])) {
 	$template='homepage-new.tpl';
+} elseif ($CONF['template'] == 'ireland') {
+	$smarty->assign('responsive', 1);
 }
 
 //regenerate?
@@ -98,10 +100,9 @@ if (!$smarty->is_cached($template, $cacheid))
 /////////////////////////////
 // overview map
 
-	if ($CONF['template'] == 'ireland' && !isset($_GET['preview'])) {
-		$smarty->assign('responsive', 1);
+	if ($CONF['template'] == 'ireland' && !isset($_GET['preview']))
 		$preset = 'overview_ireland';
-	} elseif ($CONF['template'] == 'resp')
+	elseif ($CONF['template'] == 'resp')
 		$preset = 'overview_plain';
 	else
 		$preset = 'overview_charcoal'; //used even for basic template!
