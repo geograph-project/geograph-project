@@ -38,7 +38,7 @@ php scripts/spatial_join.php --execute limit=10000
 # loop until done!
 
 ###################
-# 4. add the island_name (already added feature_item_id to country_region - which is islands from geograph_live.feature_item!!
+# 4. add the island_name (already added feature_item_id to country_region - which is islands from geograph_live.feature_item!! - done with QGIS!) 
 
 alter table os_gaz_250_new add island_name varchar(128) default null;
 

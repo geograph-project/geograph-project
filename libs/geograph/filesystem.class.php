@@ -369,6 +369,8 @@ if (!empty($_GET['debug']))
 		        }
 		}
 
+		//todo, should be invalidating against r2+cloudflare, too! (not just cloudfront)
+
 		//temporty bodge. We can't send invalidations to R3 currently, so keep a log, so can do it later!
 		$db=&$this->_getDB(true);
 		foreach($filenames as $filename) {

@@ -150,6 +150,8 @@ if ($filename) {
 				//the copy command maps, DOCUMENT_ROOT to bucket, but _invalidate maps the bucket name to cloudfront (we just happen to know s3_photos_bucket_path is always root of bucket)
 				$filesystem->_invalidate(trim($CONF['s3_photos_bucket_path'],'/'), $destination);
 
+				//todo need to invalidate in r2 TOO!
+
                        	        $memcache->name_set('fs_full',$destination,$upload,false,$memcache->period_long);
 			}
 		} else {
