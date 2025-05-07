@@ -16,7 +16,11 @@
 	<meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 	{$extra_meta}
 	<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
-	<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/ireland/css/ireland.css"|revision}" media="screen" />
+<style>{literal}
+#header h1 {
+	background: url('/templates/ireland/img/logo.gif');
+}
+{/literal}</style>
 	<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/resp/css/modification.css"|revision}" media="screen" />
 	{dynamic}{if $responsive}
 		<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/resp/css/responsive.css"|revision}" media="screen" />
