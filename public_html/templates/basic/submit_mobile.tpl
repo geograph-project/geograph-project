@@ -55,6 +55,28 @@ img, #previewImage2 {
 #preview {
 	text-align:center;
 }
+
+#previewImage.rot90 {
+	transform:rotate(90deg);
+	margin-top: 15vh;
+	margin-bottom: 15vh;
+}
+#previewImage2.rot90 {
+	transform:rotate(90deg);
+	width:400px !important; /* so square, and rotates nicely! */
+	margin:auto;
+}
+#previewImage.rot270 {
+	transform:rotate(270deg);
+	margin-top: 15vh;
+	margin-bottom: 15vh;
+}
+#previewImage2.rot270 {
+	transform:rotate(270deg);
+	width:400px !important; /* so square, and rotates nicely! */
+	margin:auto;
+}
+
 .tabs {
 	white-space:nowrap;
 	overflow:hidden;
@@ -233,7 +255,9 @@ function cancelMess() {
 			}
 			//AttachEvent(window,'load',updateAttribDivs,false);
 
-
+/* --------------------------------------
+* This function is called when final 'I Agree' is clicked. 
+*/
 function checkMultiFormSubmission() {
 	var form = document.forms['theForm'];
 
@@ -248,6 +272,7 @@ function checkMultiFormSubmission() {
 		if (form.elements['jpeg_exif'].files && form.elements['jpeg_exif'].files[0]) {
 		    var file = form.elements['jpeg_exif'].files[0];
 	            if (file && file.size && file.size > 8388608) {
+				//note this is should in general never fire, because if was over 8M, it should have already been downsized!
 		        alert('File appears to be '+file.size+' bytes, which is too big for final submission. Please downsize image to be under 8 Megabytes');
 		        return false;
                     }
@@ -258,6 +283,7 @@ function checkMultiFormSubmission() {
                 }
         }
 
+	//if user wanted to release a small image, do the final downsize here
 	if (form.elements['largestsize'] && form.elements['largestsize'].value != 65536) {
                 var max_size = 8388608; //we still need to pass this, even if now specifing a dimension!
 		var max_dimension = form.elements['largestsize'].value;	
@@ -917,10 +943,11 @@ function toDecimal(number) {
 }    
 
 $(function() {
+	//when user selects image file, check if too big
 	document.getElementById("jpeg_exif").onchange = function(e) {
             var file = e.target.files[0];
             var max_size = 8388608;
-	    if (file && file.size && file.size > max_size) {
+	    if (file && file.size && file.size > max_size) { //todo, OR 'AVIF' file (can be converted by browser, not by server)
 		//$('#jpeg_exif').after('<div class=toobig><b>File appears to be '+file.size+' bytes, which is too big for final submission</b>. Please downsize the image to be under 8 Megabytes</div>');
 		
 		alert('File appears to be '+file.size.toLocaleString()+' bytes, which is too big for final submission. We will now attempt to downsize the file automatically... (please wait, a few attempts may be needed to find the right settings)');
@@ -1008,6 +1035,16 @@ function gotExif() {
 
 		setLatLong(lat, long, 'photographer_gridref','EXIF');
 	}
+
+	var orientation = EXIF.getTag(this, 'Orientation');
+	if (orientation && orientation != '1') {
+		var text = "This image has EXIF 'Orientation' flag set ("+orientation+"). Please make sure the image displays correctly in the preview. If it doesn't then use the option under the preview to rotate the image. Even if it displays correctly, its recommended to use the option to remove EXIF rotation flag (as it incorrect!)";
+		$('#preview').prepend("<big>"+text+"</big><br><hr><br>");
+		alert(text);
+		//in fact lets auto set this...
+		$('select[name="orientation"]').val("0");
+	}
+
 }
 
 ////////////////////////			
@@ -1036,6 +1073,15 @@ function gotDataUrl(dataUrl) {
 
 }
 
+function orientationChanged() {
+	var orientation = $('select[name="orientation"]').val();
+	$('#previewImage').removeClass('rot90').removeClass('rot270');
+	$('#previewImage2').removeClass('rot90').removeClass('rot270');
+	if (orientation.length) {
+		$('#previewImage').addClass('rot'+orientation);
+		$('#previewImage2').addClass('rot'+orientation);
+	}
+}
 
 {/literal}
 </script>
@@ -1084,6 +1130,14 @@ function gotDataUrl(dataUrl) {
 			<div id="previewImage2"/></div>
 			(may only display a part of image, so can check image is in focus etc)
 		</div>
+
+		<label for=orientation>Orientation (if image needs rotating!)</label>
+		<select name="orientation" onchange="orientationChanged()">
+			<option value="">Unchanged</option>
+			<option value="0">Remove Exif Flag - no rotate</option>
+			<option value="90">Rotate Right</option>
+			<option value="270">Rotate Left</option>
+		</select>
 
 		<label for=largestsize>Maximum Size to release: (pixels)</label>
 		<select name="largestsize">

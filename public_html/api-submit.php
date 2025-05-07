@@ -89,11 +89,26 @@ function failMessage($text) {
 	$um->setLargestSize($_POST['largestsize']);
 
 	if (!empty($_POST['jpeg_data'])) {
-		$um->processDataURL($_POST['jpeg_data']);
+		$ok = $um->processDataURL($_POST['jpeg_data']);
 	} elseif (!empty($_POST['jpeg_url'])) {
-		$um->processURL($_POST['jpeg_url']);
+		$ok = $um->processURL($_POST['jpeg_url']);
 	} elseif (!empty($_FILES['jpeg_exif']['tmp_name'])) {
-		$um->processUpload($_FILES['jpeg_exif']['tmp_name']);
+		$ok = $um->processUpload($_FILES['jpeg_exif']['tmp_name']);
+	}
+
+	if ($ok && isset($_POST['orientation']) && strlen($_POST['orientation'])) { //note it can be '0'!
+		if ($_POST['orientation'] === '0') {
+			//special flag to indicate just reset exif flag!
+			$result = $um->resetOrientation($um->upload_id);
+			//resetOrientation doesnt give a new id, updates in place!
+		} else {
+			$result = $um->rotateUpload($um->upload_id,intval($_POST['orientation']), 1);
+			if (!empty($result['upload_id'])) {
+				//returns the new upload_id, rotateUpload works like a static method!
+				$um->upload_id = $result['upload_id'];
+				//$uploadmanager->upload_width= ... commit doesnt NEED these!
+			}
+		}
 	}
 
 	// where there any errors back from the image processing?

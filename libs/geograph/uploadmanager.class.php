@@ -359,12 +359,38 @@ class UploadManager
                 		$gid2 = crc32($upload_id)+4294967296;
 		                $gid2 += $USER->user_id * 4294967296;
                 		$gid2 = sprintf('%0.0f',$gid2);
-
 			        $this->db->Execute($sql = "UPDATE gridimage_snippet SET gridimage_id = $gid2 WHERE gridimage_id = ".$gid1);
 			        $this->db->Execute($sql = "UPDATE gridimage_tag SET gridimage_id = $gid2 WHERE gridimage_id = ".$gid1);
 
 			$size = getimagesize($uploadfile2);
                         return array('upload_id'=>$upload_id,'width'=>$size[0],'height'=>$size[1],'lossy'=>$lossy);
+		}
+	}
+
+	/**
+	* allows the resetting of the Orientation - use instead of passing 0 to rotateImage
+	*/
+	function resetOrientation($id) {
+		global $CONF,$USER;
+
+		if($this->validUploadId($id))
+                {
+                        $uploadfile = $this->_pendingJPEG($id);
+			$orginalfile = $this->_originalJPEG($id);
+
+			if (file_exists($uploadfile)) {
+				$orient = `exiftool -Orientation -n $uploadfile`;
+				if (strpos($orient,'Orientation') !== FALSE && strpos($orient,'1') === FALSE)
+					`exiftool -Orientation=1 -n -overwrite_original $uploadfile`;
+			}
+			if (file_exists($orginalfile)) {
+				$orient = `exiftool -Orientation -n $orginalfile`;
+				if (strpos($orient,'Orientation') !== FALSE && strpos($orient,'1') === FALSE)
+					`exiftool -Orientation=1 -n -overwrite_original $orginalfile`;
+			}
+
+			$size = getimagesize($uploadfile);
+                        return array('upload_id'=>$id,'width'=>$size[0],'height'=>$size[1],'lossy'=>false);
 		}
 	}
 
