@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-	$param = array('table'=>'os_open_places', 'latlon'=> false, 'debug'=>1, 'limit'=>10, 'ri'=>1, 'd'=>250, 'views'=>false, 'before'=>false);
+	$param = array('table'=>'os_open_places', 'latlon'=> false, 'debug'=>1, 'limit'=>10, 'ri'=>1, 'd'=>250, 'views'=>false, 'before'=>false, 'days'=>30);
 
 	chdir(__DIR__);
 	require "./_scripts.inc.php";
@@ -101,7 +101,7 @@ $where = array();
 //$where[] = "first =0 ";
 //$where[] = "images_in_2022 IS NULL";
 
-$where[] = "images_updated < date_sub(now(),interval 30 day)";
+$where[] = "images_updated < date_sub(now(),interval {$param['days']} day)";
 
 if (isset($columns['reference_index']))
 	$where[] = "reference_index = {$param['ri']}";

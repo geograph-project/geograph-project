@@ -2906,3 +2906,9 @@ alter table gridimage_calendar add copied tinyint unsigned not null default 0;
 update table set copied = 1 where upload_id != '';
 
 
+#################################################
+
+alter table ie_open_places add irish varchar(128) not null after town_class;
+update  ie_open_places inner join ie_open_data using (id) set ie_open_places.irish = ie_open_data.irish;
+
+

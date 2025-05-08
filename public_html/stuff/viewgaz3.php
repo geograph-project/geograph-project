@@ -50,21 +50,54 @@ foreach ($links as $link => $name) {
 print '</div>';
 
 ##################################################
+
+$column = 'name'; //as display_name
+
+function display_swithcer() {
+	global $column;
+	if (empty($_GET['name']))
+		$_GET['name'] = 'english';
+
+	if ($_GET['name'] == 'irish') {
+		$column = "if(irish='',name,irish)";
+	} elseif ($_GET['name'] == 'enie') {
+		$column = "if(irish='',name,concat(name,' / ',irish))";
+	} elseif ($_GET['name'] == 'ieen') {
+		$column = "if(irish='',name,concat(irish,' / ',name))";
+	}
+
+	$options = array('english'=>'English','irish'=>'Irish','enie'=>'English/Irish','ieen'=>'Irish/English'); //,''=>'',
+	$url = htmlentities("?".http_build_query($_GET));
+	print "Names: &middot; ";
+	foreach ($options as $link => $name) {
+		if ($_GET['name'] == $link) {
+			print "<b>$name</b> ";
+		} else {
+			print "<a href=$url&amp;name=$link>$name</a> ";
+		}
+		print " &middot; ";
+	}
+}
+
+##################################################
+//list places starting with alpha
+
 $ni = 0;
 
 if (!empty($_GET['alpha'])) {
 	$where = array();
 
-	$where[] = "name LIKE ".$db->Quote($_GET['alpha']."%");
+	$where[] = "(name LIKE ".$db->Quote($_GET['alpha']."%")." OR irish LIKE ".$db->Quote($_GET['alpha']."%").")";
 	$name = htmlentities($_GET['alpha']);
-
-	$where = implode(" AND ",$where);
-	$data = $db->getAll("select name,town_class,images,e,n,country,county
-		 from ie_open_places where $where order by country desc,county,name");
 
 	print '<div class="interestBox">';
 	print "<h2>Places beginning with $name</h2>";
+	display_swithcer();
 	print '</div>';
+
+	$where = implode(" AND ",$where);
+	$data = $db->getAll("select name,$column as display_name,town_class,images,recent,e,n,country,county
+		 from ie_open_places where $where order by country desc,county,display_name");
 
 	print "<div style=\"columns: auto 24em\">";
 
@@ -84,20 +117,32 @@ if (!empty($_GET['alpha'])) {
 
 		$url = urlencode2($row['name']);
 		$url = "/near/$url/$gridref?dist=2000";
-		$name = htmlentities(to_title_case(strtolower($row['name'])));
+
+		if (!preg_match('/[a-z]/',$row['name'])) {
+			$name = htmlentities(to_title_case(strtolower($row['display_name'])));
+		} else {
+			$name = htmlentities2(utf8_to_latin1($row['display_name']));
+		}
 
 		if (preg_match('/(\d+)/',$row['town_class'],$m) && $m[1] <= 3) {
 			print "<li><b><a href=\"$url\">$name</a></b>";
 		} else
 			print "<li><a href=\"$url\">$name</a>";
-		if (!empty($row['images']))
-			print " (".number_format($row['images'],0)." images)";
+		if (!empty($row['images'])) {
+			print " (".number_format($row['images'],0)." images";
+			if (!empty($row['recent']) && $row['recent'] > '1000')
+				print ", last in ".substr( $row['recent'],0,4);
+			print ")";
+		}
 		if (!empty($row['country']) && $row['country'] == 'Northern Ireland') $ni = 1;
 	}
 
 	if ($last) print "</ul></div>";
 
 	print "</div>";
+
+#########################################################
+// list places in county
 
 } elseif (!empty($_GET['county'])) {
 	$where = array();
@@ -114,13 +159,15 @@ if (!empty($_GET['alpha'])) {
 		$name .= " (".to_title_case(str_replace('_',' ',$_GET['island'])).")";
 	}
 
-	$where = implode(" AND ",$where);
-	$data = $db->getAll("select name,town_class,images,e,n, country
-		 from ie_open_places where $where order by name");
-
 	print '<div class="interestBox">';
 	print "<h2>Places in $name</h2>";
+	display_swithcer();
 	print '</div>';
+
+	$where = implode(" AND ",$where);
+	$data = $db->getAll("select name,$column as display_name,town_class,images,recent, e,n, country
+		 from ie_open_places where $where order by display_name");
+
 
 	foreach($data as $row) {
 		if (empty($row['images'])) {
@@ -129,14 +176,14 @@ if (!empty($_GET['alpha'])) {
 		}
 	}
 
-	print "<div style=\"columns: auto 24em\">";
+	print "<div style=\"columns: auto 28em\">";
 
 	$last = null;
 	foreach($data as $row) {
-		if ($last != substr($row['name'],0,1)) {
+		if ($last != substr($row['display_name'],0,1)) {
 			if ($last) print "</ul>";
 
-			$last = substr($row['name'],0,1);
+			$last = substr($row['display_name'],0,1);
 //			print "<h4>$last</h4>";
 			print "<ul>";
 		}
@@ -148,20 +195,31 @@ if (!empty($_GET['alpha'])) {
 		if (empty($row['images']))
 		        $url .= "0"; //extend the distance!
 
-		$name = htmlentities(to_title_case(strtolower($row['name'])));
+		if (!preg_match('/[a-z]/',$row['name'])) {
+			$name = htmlentities(to_title_case(strtolower($row['display_name'])));
+		} else {
+			$name = htmlentities2(utf8_to_latin1($row['display_name']));
+		}
 
 		if (preg_match('/(\d+)/',$row['town_class'],$m) && $m[1] <= 3) {
 			print "<li><b><a href=\"$url\">$name</a></b>";
 		} else
 			print "<li><a href=\"$url\">$name</a>";
-		if (!empty($row['images']))
-			print " (".number_format($row['images'],0)." images)";
+		if (!empty($row['images'])) {
+			print " (".number_format($row['images'],0)." images";
+			if (!empty($row['recent']) && $row['recent'] > '1000')
+				print ", last in ".substr( $row['recent'],0,4);
+			print ")";
+		}
 		if (!empty($row['country']) && $row['country'] == 'Northern Ireland') $ni = 1;
 	}
 
 	if ($last) print "</ul>";
 
 	print "</div>";
+
+#########################################################
+// list counties
 
 } else {
 	$data = $db->getAll("select country,county,island_name,name,e,n,count(*) as places, sum(images) as images, sum(images>0)/count(*)*100 as percent
