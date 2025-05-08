@@ -713,9 +713,12 @@ split_timer('imagelist'); //starts the timer
 
 			//todo, make the section more dynamic
 			if ($reference_index)
-				$sql = "SELECT $cols FROM sample8E,sample8D WHERE scenti >= 2000000000 LIMIT 20";
+				$sql = "SELECT $cols, uniqueserial(placename_id) AS ser FROM sample8E,sample8D WHERE scenti >= 2000000000 ORDER BY ser ASC, id DESC LIMIT 20";
 			else
-				$sql = "SELECT $cols FROM sample8E,sample8D LIMIT 20";
+				$sql = "SELECT $cols FROM sample8E,sample8D ORDER BY id DESC LIMIT 20";
+
+			//not sure if reverse_scan improves the results or not
+			$sql .= " OPTION reverse_scan=".rand(0,1);
 
 			$i = $this->getImagesBySphinxQL($sql);
 
