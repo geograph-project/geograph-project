@@ -2912,3 +2912,36 @@ alter table ie_open_places add irish varchar(128) not null after town_class;
 update  ie_open_places inner join ie_open_data using (id) set ie_open_places.irish = ie_open_data.irish;
 
 
+#################################################
+
+create table test_place select name1,name1_lang,name2,name2_lang,county_unitary,country from os_open_names where type = 'populatedPlace' group by name1_lang,name2_lang;
+
+SELECT
+    *,
+    concat_ws(
+        ' / ',
+        IF(name1_lang = '' OR name1_lang = 'eng', name1, NULL),
+        IF((name2 != '' AND name2_lang = '') OR name2_lang = 'eng', name2, NULL),
+        IF(name1_lang = 'cym', name1, NULL),
+        IF(name2_lang = 'cym', name2, NULL)
+    ) AS display_name,
+    IF(name2_lang = 'eng' AND name1_lang != 'eng', name2, name1) AS english,
+    IF(name1_lang = 'cym', name1, IF(name2_lang = 'cym', name2, '')) AS welsh,
+    IF(name1_lang != '' AND name1_lang != 'eng', name1, IF(name2_lang != '', name2, '')) AS second,
+    IF(name1_lang != '' AND name1_lang != 'eng', name1_lang, IF(name2_lang != '', name2_lang, '')) AS second_lang
+FROM
+    test_place;
+
+alter table os_open_places add   `name2_lang` varchar(3) NOT NULL after name2;
+
+update os_open_names n inner join os_open_places p using (id)
+set p.name1 = IF(n.name2_lang = 'eng' AND n.name1_lang != 'eng', n.name2, n.name1),
+    p.name2      = IF(n.name1_lang != '' AND n.name1_lang != 'eng', n.name1,      IF(n.name2_lang != '', n.name2,      '')),
+    p.name2_lang = IF(n.name1_lang != '' AND n.name1_lang != 'eng', n.name1_lang, IF(n.name2_lang != '', n.name2_lang, ''))
+
+-- this 'standardizes' name1 to be english, and the 'other' as name2 (os_open_names has name1_lang = cym!)
+-- ... but with special exception, that BOTH can be english?!?
+
+#################################################
+
+

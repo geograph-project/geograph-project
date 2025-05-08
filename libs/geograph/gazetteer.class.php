@@ -205,7 +205,6 @@ split_timer('gazetteer'); //starts the timer
 
 				if (!empty($places['full_name'])) //the new version of os_gaz_250 uses utf8, but most legacy code expects latin1
 					$places['full_name'] = utf8_to_latin1($places['full_name']);
-
 			}
 
 			$placeradius = 5005;
@@ -229,6 +228,8 @@ split_timer('gazetteer'); //starts the timer
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
 				if (!empty($CONF['manticorert_host'])) { //index:os_gaz
+					if (empty($sprt))
+						$sprt = GeographSphinxConnection('manticorert',true);
 					$places2 = $sprt->GetRow("select
                                                 `def_nam` as full_name,
                                                 CONCAT('PPL') as dsg,
@@ -394,7 +395,7 @@ split_timer('gazetteer'); //starts the timer
 			$cols = "	if(populated_place='',name1,populated_place) AS full_name,
                                         local_type as dsg,
                                         1 as reference_index,
-                                        county_unitary as adm1_name,
+                                        if(county_unitary='',district_borough,county_unitary) as adm1_name,
                                         '' as hist_county,
                                         (seq + 40000000) as pid,
 					e, n,
@@ -406,6 +407,7 @@ split_timer('gazetteer'); //starts the timer
 			$where = "	CONTAINS(
                                                 GeomFromText($rectangle),
                                                 point_en)";
+			//todo, should use district_borough when county_unitary is empty!
 
 			//first general attempt, might not find an actual place
 			$places = $db->GetRow("select $cols from os_open_names2 where $where order by distance asc limit 1");

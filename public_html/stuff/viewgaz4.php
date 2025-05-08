@@ -38,12 +38,88 @@ $links = array('viewgaz4.php' => 'Great Britain','viewgaz3.php' => 'Ireland', 'v
 print '<div class="tabHolder" style="max-width:940px">Places in: ';
 foreach ($links as $link => $name) {
 	if ($link == basename($_SERVER['PHP_SELF'])) {
-		print "<a class=tabSelected>$name</a> ";
+		print "<a class=tabSelected href=$link>$name</a> ";
 	} else {
 		print "<a class=tab href=$link>$name</a> ";
 	}
 }
 print '</div>';
+
+##################################################
+
+$column = 'name1'; //as display_name
+
+function display_swithcer_cym() {
+	global $column;
+	if (empty($_GET['name']))
+		$_GET['name'] = 'english';
+
+	//these are fragments for use within concat_ws!
+	$english = "if(name1_lang='' OR name1_lang='eng',name1,NULL), if((name2 != '' AND name2_lang='') OR name2_lang='eng',name2,NULL)";
+	$welsh = "if(name1_lang='cym',name1,NULL), if(name2_lang='cym',name2,NULL)";
+
+	//better version, now os_open_places now always has english in name1!
+	$english = "name1,IF(name2_lang='eng',name2,NULL)";
+	$welsh = "IF(name2_lang='cym',name2,NULL)";
+
+	if ($_GET['name'] == 'english') {
+		$column = "CONCAT_WS(' / ',$english)"; //can show TWO english names
+	} elseif ($_GET['name'] == 'welsh') {
+		$column = "CONCAT_WS(' / ',$welsh,if(name2_lang='' OR name2_lang='eng',name1,NULL))"; //need to make sure still pick the 'unknown' name (when no welsh!)
+	} elseif ($_GET['name'] == 'ency') {
+		$column = "CONCAT_WS(' / ',$english,$welsh)";
+	} elseif ($_GET['name'] == 'cyen') {
+		$column = "CONCAT_WS(' / ',$welsh,$english)"; //if no welsh, then english/unknown will still be shown.
+	}
+
+	$options = array('english'=>'English','welsh'=>'Welsh','ency'=>'English/Welsh','cyen'=>'Welsh/English');
+	$url = htmlentities("?".http_build_query($_GET));
+	print "Names: &middot; ";
+	foreach ($options as $link => $name) {
+		if ($_GET['name'] == $link) {
+			print "<b>$name</b> ";
+		} else {
+			print "<a href=$url&amp;name=$link>$name</a> ";
+		}
+		print " &middot; ";
+	}
+}
+
+function display_swithcer_gla() {
+	global $column;
+	if (empty($_GET['name']))
+		$_GET['name'] = 'gaelic';
+
+	//these are fragments for use within concat_ws!
+	$english = "if(name1_lang='' OR name1_lang='eng',name1,NULL), if((name2 != '' AND name2_lang='') OR name2_lang='eng',name2,NULL)";
+	$gaelic = "if(name1_lang='gla',name1,NULL), if(name2_lang='gla',name2,NULL)";
+
+	//better version, now os_open_places now always has english in name1!
+	$english = "name1,IF(name2_lang='eng',name2,NULL)";
+	$gaelic = "IF(name2_lang='gla',name2,NULL)";
+
+	if ($_GET['name'] == 'english') {
+		$column = "CONCAT_WS(' / ',$english)"; //can show TWO english names
+	} elseif ($_GET['name'] == 'gaelic') {
+		$column = "CONCAT_WS(' / ',$gaelic,if(name2_lang='' OR name2_lang='eng',name1,NULL))"; //need to make sure still pick the 'unknown' name (when no gaelic!)
+	} elseif ($_GET['name'] == 'engl') {
+		$column = "CONCAT_WS(' / ',$english,$gaelic)";
+	} elseif ($_GET['name'] == 'glen') {
+		$column = "CONCAT_WS(' / ',$gaelic,$english)"; //if no gaelic, then english/unknown will still be shown.
+	}
+
+	$options = array('english'=>'English','gaelic'=>'Gaelic','engl'=>'English/Gaelic','glen'=>'Gaelic/English');
+	$url = htmlentities("?".http_build_query($_GET));
+	print "Names: &middot; ";
+	foreach ($options as $link => $name) {
+		if ($_GET['name'] == $link) {
+			print "<b>$name</b> ";
+		} else {
+			print "<a href=$url&amp;name=$link>$name</a> ";
+		}
+		print " &middot; ";
+	}
+}
 
 ##################################################
 
@@ -62,9 +138,9 @@ if (!empty($_GET['alpha']) || !empty($_GET['region']) || !empty($_GET['county'])
 		$name[] = htmlentities($_GET['county']);
 		$extra[] = "county=".urlencode($_GET['county']);
 		if ($_GET['county'] == 'unknown')
-			$where[] = "county_unitary = ''";
+			$where[] = "full_county = ''";
 		else
-			$where[] = "county_unitary = ".$db->Quote($_GET['county']);
+			$where[] = "full_county = ".$db->Quote($_GET['county']);
 	}
 
 	if (!empty($_GET['alpha'])) {
@@ -81,16 +157,21 @@ if (!empty($_GET['alpha']) || !empty($_GET['region']) || !empty($_GET['county'])
 	$where = implode(" AND ",$where);
 	$name = implode(", ",$name);
 
-	$data = $db->getAll("select country,county_unitary as county, name1, images, local_type,
-		 geometry_x as e, geometry_y as n, local_type in ('City','Town','Village') as b
-		 from os_open_places where $where order by country,county_unitary,name1 limit 1000");
-
 	print '<div class="interestBox">';
 	print "<h2>Places in $name</h2>";
+	if (!empty($_GET['county']) && preg_match('/ - /',$_GET['county'])) {
+		display_swithcer_cym(); //sets $column for display_name
+	}
+	if (!empty($_GET['county']) && in_array($_GET['county'],array('Na h-Eileanan an Iar','East Ayrshire','Highland','Argyll and Bute'))) {
+		display_swithcer_gla(); //sets $column for display_name
+	}
 	print '</div>';
 	if ($more)
 		print "<p>Note: This is only listing City, Town and Villages, not smaller settlements. See links at bottom for more</p>";
 
+	$data = $db->getAll("select country,full_county as county, name1, $column as display_name, images, local_type,
+		 geometry_x as e, geometry_y as n, local_type in ('City','Town','Village') as b
+		 from os_open_places where $where order by country,full_county,display_name limit 1000");
 
 	print "<div style=\"columns: auto 24em\">";
 
@@ -111,10 +192,10 @@ if (!empty($_GET['alpha']) || !empty($_GET['region']) || !empty($_GET['county'])
 			print "<ul>";
 		}
 		if (!empty($_GET['county']) && empty($_GET['alpha'])) {
-			if ($alpha != substr($row['name1'],0,1)) {
+			if ($alpha != substr($row['display_name'],0,1)) {
 				if ($alpha || $last) print "</ul></div>";
 
-	                        $alpha = substr($row['name1'],0,1);
+	                        $alpha = substr($row['display_name'],0,1);
 				print "<div style=\"break-inside: avoid;\">"; //to keep the name with the list!
 	                      print "<h4>$alpha</h4>";
         	                print "<ul>";
@@ -125,7 +206,7 @@ if (!empty($_GET['alpha']) || !empty($_GET['region']) || !empty($_GET['county'])
 
 		$url = urlencode2($row['name1']);
 		$url = "/near/$url/$gridref?dist=2000";
-		$name = htmlentities($row['name1']);
+		$name = htmlentities($row['display_name']); //utf8_to_latin1 ??
 
 		if ($row['b']) {
 			print "<li><b><a href=\"$url\" title=\"{$row['local_type']}\">$name</a></b>";
@@ -151,9 +232,9 @@ if (!empty($_GET['alpha']) || !empty($_GET['region']) || !empty($_GET['county'])
 ##################################################
 
 } else {
-	$data = $db->getAll("select country,county_unitary as county,name1,count(*) as places,sum(images) as images, sum(images>0)/count(*)*100 as percent,
+	$data = $db->getAll("select country,full_county as county,name1,count(*) as places,sum(images) as images, sum(images>0)/count(*)*100 as percent,
 		 geometry_x as e, geometry_y as n
-		from os_open_places where local_type in ('City','Town','Village') group by country,county_unitary");
+		from os_open_places where local_type in ('City','Town','Village') group by country,full_county");
 
 	print '<div class="interestBox">';
 	print "<h2>Places Directory for Great Britain</h2>";

@@ -1,0 +1,34 @@
+The table was initially created as a filtered view for open names (only intereted in popullated places - os open names contains all postcodes, as well as roads so is very large!
+
+create table os_open_places select id,name1,name2,local_type,geometry_x,geometry_y,most_detail_view_res,least_detail_view_res,mbr_xmin,mbr_ymin,mbr_xmax,mbr_ymax,county_unitary,region,country from os_open_names where type = 'populatedPlace';
+
+... but then went on to be heavily modified. 
+
+1. Added images (and similar columns!) - for population by imagesperplace
+2. Turned some columns into ENUM and added some indexes
+3. switched name1 to ALWAYS be english, with name2 the other (many rows have name1=cym etc in open names) 
+4. unified county_unitary and district_borough into 'full_county'. (had to revert from being a ENUM!) - as open names populates one or other!
+
+
+Full notes... 
+
+----------------------------
+3. 
+
+alter table os_open_places add   `name2_lang` varchar(3) NOT NULL after name2;
+
+update os_open_names n inner join os_open_places p using (id)
+set p.name1 = IF(n.name2_lang = 'eng' AND n.name1_lang != 'eng', n.name2, n.name1),
+    p.name2      = IF(n.name1_lang != '' AND n.name1_lang != 'eng', n.name1,      IF(n.name2_lang != '', n.name2,      '')),
+    p.name2_lang = IF(n.name1_lang != '' AND n.name1_lang != 'eng', n.name1_lang, IF(n.name2_lang != '', n.name2_lang, ''))
+
+----------------------------
+4. 
+
+alter table os_open_places change county_unitary full_county varchar(255) not null;
+
+update os_open_names n inner join os_open_places p using (id)
+set p.full_county = n.district_borough
+where full_county = '' and n.district_borough != '';
+
+----------------------------
