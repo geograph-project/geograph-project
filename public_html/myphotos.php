@@ -152,7 +152,7 @@ if (empty($_GET['tab'])) {
 		print "<p>NOTE: We only have an accurate enough gazatteer for Great Britain. Isle of Man and Ireland, not yet included</p>";
 
 		$t = $l = '';
-		$sql = "SELECT gridimage_id,region,name1,name2,local_type,county_unitary,grid_reference,title from os_open_places inner join gridimage_search on (gridimage_id = first) where user_id = $u order by region,most_detail_view_res desc,name1";
+		$sql = "SELECT gridimage_id,region,name1,name2,local_type,full_county,grid_reference,title from os_open_places inner join gridimage_search on (gridimage_id = first) where user_id = $u order by region,most_detail_view_res desc,name1";
 
 		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
@@ -169,7 +169,7 @@ if (empty($_GET['tab'])) {
 			}
 
 			print "<li><a href=\"/photo/{$r['gridimage_id']}\">".htmlentities2($r['title'])."</a>";
-			print " in <b>".htmlentities2($r['name1'].($r['name2']?" / {$r['name2']}":'').', '.$r['county_unitary'])."</b> ({$r['local_type']})</li>";
+			print " in <b>".htmlentities2($r['name1'].($r['name2']?" / {$r['name2']}":'').', '.$r['full_county'])."</b> ({$r['local_type']})</li>";
 
 			$ids[] = $r['gridimage_id'];
 			$recordSet->MoveNext();
