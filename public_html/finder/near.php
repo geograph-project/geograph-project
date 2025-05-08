@@ -262,6 +262,7 @@ if (!empty($_GET['q'])) {
 			<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=50"><b>Map</b></a> &middot;
 		<? } ?>
 		<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/pagesize=50">Browser</a> &middot;
+		<a href="/mapper/combined.php?gridref=<? echo $gru; ?>">Coverage Map</a> &middot;
 	</div>
 	<? } ?>
 	Images near: <input type=search name=q value="<? echo $qh; ?>" size=40><input type=submit value=go><br/>
