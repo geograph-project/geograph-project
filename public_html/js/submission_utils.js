@@ -21,10 +21,10 @@ function check_jpeg(ele, max_size) {
 		resizeFileWorker(file, max_size, function(dataurl, final_size) {
 			if (dataurl) {
 				let element = document.createElement("input");
-				element.setAttribute("id", "jpeg_data");
-				element.setAttribute("type", "hidden");
-				element.setAttribute("name", "jpeg_data");
-				//element.setAttribute("value", dataurl);
+				    element.setAttribute("id", "jpeg_data");
+				    element.setAttribute("type", "hidden");
+				    element.setAttribute("name", "jpeg_data");
+				    //element.setAttribute("value", dataurl);
 				ele.after(element); //add the new input inplace of the original element.
 
 				//seems to be more stable setting the value directly rather than on the in memory version!
@@ -32,11 +32,21 @@ function check_jpeg(ele, max_size) {
 
 				//show some text, so user still sees something!
 				let element2 = document.createElement("span");
-				element2.innerText = 'Resized image ('+(final_size)+' bytes)';
+				    element2.innerText = 'Resized image ('+(final_size)+' bytes)';
 				ele.after(element2);
+
+				//also send the filename. Some contributors include grid-ref in filename!
+				if (file.name) {
+					let element3 = document.createElement("input");
+					    element3.setAttribute("type", "hidden");
+					    element3.setAttribute("name", "jpeg_filename");
+					    element3.setAttribute("value", file.name);
+					ele.after(element3);
+				}
 
 				//note the form was not submitted, so needs sumitting again!
 				ele.remove(); //and remove the original (we now submitting data url!)
+
 				if (form.elements['sendfile'])
 					form.elements['sendfile'].value = 'submitting, please wait';
 				form.submit();
@@ -142,7 +152,7 @@ function resizeImage(imageDataUrl, max_size, callback, max_dimension) {
 				width  = max_dimension;
 				height = Math.floor(max_dimension / aspect);
 			} else {
-				width  = Math.floor(max_dimension / aspect);
+				width  = Math.floor(max_dimension * aspect);
 				height = max_dimension;
 			}
 			quality = 0.87;

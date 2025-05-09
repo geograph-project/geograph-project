@@ -310,7 +310,6 @@ function checkMultiFormSubmission() {
 
 	                                //note the form was not submitted, so needs sumitting again!
 
-					form.elements['largestsize'].selectedIndex = form.elements['largestsize'].options.length-1; //otherwise will be resized AGAIN!
 					form.elements['finalise'].click();
 				}
 			}, max_dimension);
@@ -695,7 +694,7 @@ function checkOnline() {
  PLACENAMES */ 
 
 function loadplacenames() {
-        var url = "https://www.geograph.org.uk/stuff/os_open_names.json.php";
+        var url = "/stuff/os_open_names.json.php";
         $.ajax({
                 url: url,
 		data: {e:eastings1,n:northings1},
