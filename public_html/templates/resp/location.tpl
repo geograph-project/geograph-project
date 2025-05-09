@@ -48,7 +48,7 @@
 {*-------------------------Location map---------------------------*}
  {if $rastermap->enabled}
   <div class="threecolumn">
-    <h3 id="map">Location map</h3>
+    <h3 id="locmap">Location map</h3>
 	<div style="width:{$rastermap->width}px; font-size:0.8em; margin:auto">
 	{$rastermap->getImageTag($gridrefraw)}
 	<div style="color:gray"><small>{$rastermap->getFootNote()}</small></div>
