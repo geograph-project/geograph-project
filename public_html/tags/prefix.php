@@ -36,13 +36,14 @@ if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	# let the browser know what's coming
 	header("Content-type: application/octet-stream");
 	header("Content-Disposition: attachment; filename=\"".basename($_SERVER['SCRIPT_NAME'],'.php').".csv\"");
-} elseif (isset($_GET['output']) && $_GET['output'] == 'alpha') {
+} elseif (in_array($_GET['output']??'', ['alpha','ireland','gb'])) {
 	$template='tags_prefix.tpl';
 } elseif (isset($_GET['output']) && $_GET['output'] == 'context') {
 	$template='tags_prefix_subject.tpl';
 } else {
 	$template='statistics_table.tpl';
 }
+$smarty->assign('responsive', true);
 
 
 $cacheid='tags/prefix';
@@ -93,7 +94,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		} else {
 			$limit = 1500;
 		}
-		if ($template=='tags_prefix_subject.tpl') {
+		if (!empty($_GET['output']) && $_GET['output'] == 'ireland') {
+			$sql = "SELECT tag,images FROM subject_stat_by_grid where reference_index = 2 ORDER BY tag";
+
+		} elseif ($template=='tags_prefix_subject.tpl') {
 			$sql = "SELECT tag,count as images,grouping,maincontext
 			FROM tag_stat INNER JOIN tag USING (tag_id) INNER JOIN subjects ON (subject=tag) left join category_primary on (top = maincontext)
 			WHERE prefix = $q AND status = 1 ORDER BY sort_order,subject";
@@ -117,6 +121,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			case 'type': $message = '<tt>type</tt> is a special reserved prefix which we use for classifying images as per <a href="/article/Image-Type-Tags-update">Image Type Tags</a>. NOTE: Type Tags have only recently been introduced, so only recent submitted images currently have type these prefixed tags.'; break;
 			case 'bucket': $message = '<tt>bucket</tt> prefix tags where an experiment in having specially defined and listed tags. Now mostly superceded by other taggins system, note in particular that only a small selection of images have had these tags assigned. <a href="/article/Image-Buckets">Read more about Bucket Tags</a>.'; break;
 			case 'subject': $message = '<tt>subject</tt> is a special reserved prefix used to classify images by primary subject. The list of subject tags is fixed, and subject to moderation to add new ones.'; 
+				$views['ireland'] = 'In Ireland';
 				$views['context'] = 'Grouped by Context'; break;
 			case 'category': $message = '<tt>category</tt> has been used to mark <i>some</i> tags transformed from legacy category field, for the most part the prefix has no special meaning to the actual tag use.'; break;
 
@@ -126,7 +131,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (!empty($views)) {
 			$message .= '<hr>View as'; $sep = " : ";
 			foreach ($views as $key => $value) {
-				if ($_GET['output'] == $key) {
+				if (!empty($_GET['output']) && $_GET['output'] == $key) {
 					$message .= "$sep<b>$value</b>";
 				} else {
 					 $message .= "$sep<a href=\"?prefix=".urlencode($_GET['prefix'])."&output=$key\">$value</a>";
