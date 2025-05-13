@@ -258,6 +258,9 @@ function cancelMess() {
 /* --------------------------------------
 * This function is called when final 'I Agree' is clicked. 
 */
+
+var resizeDone = false;
+
 function checkMultiFormSubmission() {
 	var form = document.forms['theForm'];
 
@@ -284,7 +287,7 @@ function checkMultiFormSubmission() {
         }
 
 	//if user wanted to release a small image, do the final downsize here
-	if (form.elements['largestsize'] && form.elements['largestsize'].value != 65536) {
+	if (form.elements['largestsize'] && form.elements['largestsize'].value != 65536 && !resizeDone) {
                 var max_size = 8388608; //we still need to pass this, even if now specifing a dimension!
 		var max_dimension = form.elements['largestsize'].value;	
 
@@ -309,7 +312,8 @@ function checkMultiFormSubmission() {
 	                                document.getElementById('jpeg_data').value = dataUrl;
 
 	                                //note the form was not submitted, so needs sumitting again!
-
+					
+					resizeDone = true; //to stop a loop!
 					form.elements['finalise'].click();
 				}
 			}, max_dimension);
