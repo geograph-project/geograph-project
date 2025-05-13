@@ -40,7 +40,7 @@ $smarty = new GeographPage;
 
 $links = array('/explore/quick.php'=>'Topics','/finder/recent.php'=>'Recent',
 	'/stuff/viewgaz4.php' => 'Great Britain','/stuff/viewgaz3.php' => 'Ireland', '/stuff/viewgaz5.php' => 'Isle of Man', '/search.php'=>'Search', '/mapper/combined.php'=>'Map',
-	'/browser/' => 'Advanced Browser');
+	'/browser/' => 'Advanced Browser','/content/explore.php'=>'Collections');
 
 print '<div class="tabHolder" style="max-width:940px">';
 foreach ($links as $link => $name) {

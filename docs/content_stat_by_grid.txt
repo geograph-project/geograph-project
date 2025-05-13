@@ -1,0 +1,44 @@
+Primary.geograph_live>create table content_stat_by_grid select content_id,foreign_id,source,count(gc.gridimage_id) as images,sum(reference_index=1) as ri1,sum(reference_index=2) as ri2 from content c inner join gridimage_content gc using (content_id) inner join gridimage_search gs  on (gs.gridimage_id = gc.gridimage_id) group by content_id order by null;
+Query OK, 495 rows affected (8.146 sec)
+Records: 495  Duplicates: 0  Warnings: 0
+
+
+create table content_stat_by_grid 
+select content_id,foreign_id,source,count(gc.gridimage_id) as images,sum(reference_index=1) as ri1,sum(reference_index=2) as ri2
+ from content c inner join gridimage_content gc using (content_id) inner join gridimage_search gs  on (gs.gridimage_id = gc.gridimage_id)
+ group by content_id order by null;
+
+-- these are clearly bogus!
+delete from content_stat_by_grid where source = 'user';
+
+
+// content_id,foreign_id,source,count(gc.gridimage_id) as images,sum(reference_index=1) as ri1,sum(reference_index=2) as ri2
+// content_id,foreign_id,source,images,ri1,ri2
+
+insert into content_stat_by_grid
+select content_id,foreign_id,source,count(gp.gridimage_id) as images,sum(reference_index=1) as ri1,sum(reference_index=2) as ri2
+ from content c inner join gridimage_post gp on (gp.topic_id = c.foreign_id) inner join gridimage_search gs on (gs.gridimage_id = gp.gridimage_id)
+ where source in ('gallery','themed','gsd')
+ group by content_id order by null;
+
+
+
+select source,count(*),sum(images),sum(ri1>0),sum(ri2>0) from content_stat_by_grid group by source;
+
+
+-- note this will only ever find one image!
+insert into content_stat_by_grid
+select content_id,foreign_id,source,count(gs.gridimage_id) as images,sum(reference_index=1) as ri1,sum(reference_index=2) as ri2
+ from content c inner join geotrips t on (t.id = c.foreign_id) inner join gridimage_search gs on (gs.gridimage_id = t.img)
+ where source in ('trip')
+ group by content_id order by null;
+
+
+-- so will this!
+insert into content_stat_by_grid
+select content_id,foreign_id,source,count(gs.gridimage_id) as images,sum(reference_index=1) as ri1,sum(reference_index=2) as ri2
+ from content c inner join gridimage_search gs on (gs.gridimage_id = c.gridimage_id)
+ where source in ('blog')
+ group by content_id order by null;
+
+
