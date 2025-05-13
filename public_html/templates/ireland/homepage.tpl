@@ -247,7 +247,8 @@ representative photographs and information for every square kilometre of
   <li><a title="Explore places in the directory" href="/stuff/viewgaz3.php">Explore Ireland using our places directory</a></li>
   <li><a title="Visit the showcase gallery" href="/gallery.php">Visit our showcase gallery</a></li>
   <li><a title="Find photographs using the search" href="/search.php">Search for photographs</a></li>
-	<li><a title="Browse by Map" href="/mapbrowse.php">Browse images on our map</a></li>
+	<li><a title="Browse by Map" href="/mapper/combined.php">Browse images on our map</a></li>
+  <li><a title="View images by subject" href="/tags/prefix.php?prefix=subject&output=alpha">View images by subject</a></li>
 </ul>
 
 
