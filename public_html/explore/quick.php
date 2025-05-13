@@ -232,18 +232,24 @@ $where = $match = $browser = array();
  <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src'); ?></a>
 			<?
 		}
+		print "</div>";
 
+		$keys = array_keys($links);
+		$brower = array_pop($keys);
+
+		if ($imagelist->resultCount > 10) {
 		?>
-		</div>
 			<br><br>
 			<form style=\"background-color:#eee;padding:10px\">
 				Search <b>within</b> these images:
 				Keywords: <input type=search>
 				Near: <input type=search>
-				<input type=submit disabled value="Search...">
+				<input type=submit disabled value="Search..."><br>
+				(not functional - for now goto <a href="<? echo  $brower; ?>">Browser</a> and filter there)
 			</form>
 			<br><br>
 		<?
+		}
 
 #######################################
 
@@ -267,7 +273,6 @@ $where = $match = $browser = array();
 		print '</div>';
 
 		print "<div class=interestBox>{$s['title']}</div>";
-
 
 #######################################
 
