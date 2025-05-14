@@ -38,7 +38,7 @@ $smarty = new GeographPage;
 	$sph = GeographSphinxConnection('sphinxql',true);
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-$links = array('/explore/quick.php'=>'Topics','/finder/recent.php'=>'Recent',
+$links = array('/explore/quick.php'=>'Topics','/finder/recent.php'=>'Recent', '/explore/decades.php'=>'Decades',
 	'/stuff/viewgaz4.php' => 'Great Britain','/stuff/viewgaz3.php' => 'Ireland', '/stuff/viewgaz5.php' => 'Isle of Man', '/search.php'=>'Search', '/mapper/combined.php'=>'Map',
 	'/browser/' => 'Advanced Browser','/content/explore.php'=>'Collections');
 
@@ -113,10 +113,10 @@ $where = $match = $browser = array();
 				continue;
 			printf('<option value="%s"%s>%s [%d images]</option>'."\n", $value, ($row[$s['column']] == $_GET[$name]??'')?' selected':'', $value, $row['count']);
 			if ($row[$s['column']] == $_GET[$name]??'') {
-				$match[] = "@$name ".$row[$s['column']];
+				$match[] = "@{$s['column']} ".$row[$s['column']];
 
 				//https://www.geograph.org.uk/browser/#!/contexts+%22Housing%2C+Dwellings%22
-				$browser[] = urlencode2("$name \"".$row[$s['column']]."\"");
+				$browser[] = urlencode2("{$s['column']} \"".$row[$s['column']]."\"");
 			}
 		}
 		print "</select>\n\n";
@@ -165,7 +165,7 @@ $where = $match = $browser = array();
 		if (!empty($match))
 			$where[] = "MATCH(".$sph->Quote(implode(' ',$match)).")";
 
-//		print_r($where);
+		print_r($where);
 
 		$thumbw = 213;
                 $thumbh = 160;
@@ -251,6 +251,13 @@ $where = $match = $browser = array();
 		<?
 		}
 
+		if (!empty($_GET['subjects'])) { //hardcoded to subjects for now as a test. todo, extend to other methods!
+			$link = "/browser/#!/q=".urlencode2('"'.$_GET['subjects'].'"');
+			$html = htmlentities2($_GET['subjects']);
+			print "<p>Note, these are images specifically tagged. We may well have many more <a href=\"$link\">related images</a> (click to view) - eg with '$html' mentioned in other tags, or the title/description";
+		}
+
+
 #######################################
 
 	} elseif (!empty($list)) {
@@ -278,7 +285,25 @@ $where = $match = $browser = array();
 
 		$name = $_GET['list'];
 
-		print "<div style=\"columns: auto 18em\">";
+		$offical = array();
+		if ($name == 'subjects') {
+			if (empty($db))
+				$db = GeographDatabaseConnection(true);
+			$offical = $db->getAssoc("SELECT LOWER(subject),1 from subjects");
+
+		} elseif ($name == 'contexts') {
+			if (empty($db))
+				$db = GeographDatabaseConnection(true);
+			$offical = $db->getAssoc("SELECT LOWER(top),1 FROM category_primary");
+		}
+
+		if (count($list) > 52) {
+			print "<div style=\"columns: auto 18em\">";
+		} elseif (count($list) > 36) {
+			print "<div style=\"columns: auto 40em\">";
+		} else {
+			print "<div>";
+		}
 		if (!empty($_GET['alpha'])) {
 			$alpha = '';
 			foreach ($list as $row) {
@@ -291,13 +316,16 @@ if (empty($letter))
         	                        $alpha = $letter;
                 	                print "<div style=\"break-inside: avoid;\">"; //to keep the name with the list!
   //                      	      print "<h4>$alpha</h4>";
-                                	print "<ol style=\"padding-left:6em\">";
+                                	print "<ol style=\"padding-left:5em\">";
 	                        }
 
 				print "<li value=\"{$row['count']}\">";
 				$link = smarty_function_linktoself(array('name'=>$name,'value'=>$row[$s['column']]));
 				$value = htmlentities($row[$s['column']]);
-				print "<a href=\"$link\" style=text-decoration:none>$value</a>";
+				if (!empty($offical) && isset($offical[strtolower($row[$s['column']])])) {
+					print "<b>";
+				}
+				print "<a href=\"$link\" style=text-decoration:none>$value</a></b>";
 				print "</li>";
 			}
                         if ($alpha) print "</ol></div>";
@@ -305,12 +333,15 @@ if (empty($letter))
 #######################################
 
 		} else {
-			print "<ol style=\"padding-left:6em\">";
+			print "<ol style=\"padding-left:5em\">";
 			foreach ($list as $row) {
 				print "<li value=\"{$row['count']}\">";
 				$link = smarty_function_linktoself(array('name'=>$name,'value'=>$row[$s['column']]));
 				$value = htmlentities($row[$s['column']]);
-				print "<a href=\"$link\">$value</a>";
+				if (!empty($offical) && isset($offical[strtolower($row[$s['column']])])) {
+					print "<b>";
+				}
+				print "<a href=\"$link\">$value</a></b>";
 				print "</li>";
 			}
 			print "</ol>";
