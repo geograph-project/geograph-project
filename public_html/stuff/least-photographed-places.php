@@ -35,12 +35,44 @@ $smarty->display('_std_begin.tpl');
 
 $reference_index = 1;
 
+print "Hover over a pin to see the placename<hr>";
 
-if (!empty($_GET['ireland'])) {
+if (!empty($_GET['region'])) {
+	if (strlen($_GET['region']) == 1) {
+		print "Choose Region:<hr>\n";
+		$data = $db->getAll("select count(*) as count,region from os_open_places where recent < date(date_sub(now(),interval 5 year)) group by region");
+		foreach ($data as $row) {
+			$link = "?region=".urlencode($row['region']);
+			$name = htmlentities($row['region']);
+			print "&middot; <a href=\"$link\">$name</a> ({$row['count']} places)<br>";
+		}
+		$data = $db->getAll("select count(*) as count,country from ie_open_places where recent < date(date_sub(now(),interval 5 year)) group by country");
+		foreach ($data as $row) {
+			$link = "?region=".urlencode($row['country']);
+			$name = htmlentities($row['country']);
+			print "&middot; <a href=\"$link\">$name</a> ({$row['count']} places)<br>";
+		}
+		$smarty->display('_std_end.tpl');
+		exit;
+	}
+
+	//this dont have limit, the region/countty shoudl keep managable!
+	if (strpos($_GET['region'],'Ireland') !== FALSE) {
+		$reference_index = 2;
+		$sql = "SELECT CONCAT_WS(' / ',name,recent) AS title, e as x,n as y FROM ie_open_places WHERE recent < date(date_sub(now(),interval 5 year)) AND country = ".$db->Quote($_GET['region']);
+
+	} else {
+		$sql = "SELECT CONCAT_WS(' / ',name1,name2,recent) AS title, geometry_x as x,geometry_y as y, mbr_xmin,mbr_ymin, mbr_xmax,mbr_ymax FROM os_open_places WHERE  recent < date(date_sub(now(),interval 5 year)) AND region = ".$db->Quote($_GET['region']);
+
+	}
+
+        $desc  = "Showing places, with no images in last 5 years";
+
+} elseif (!empty($_GET['ireland'])) {
 
 	$reference_index = 2;
 	$sql = "SELECT name AS title, e as x,n as y FROM ie_open_places WHERE images =0 LIMIT 10000";
-        $desc  = "Showing squares with placenames, with <b>zero</b> images of subjects within 250m of center of settlement";
+        $desc  = "Showing squares with placenames, with <b>zero</b> images of subjects within 750m of center of settlement";
 
 } elseif (!empty($_GET['iom'])) {
 	$sql = "SELECT CONCAT(name,', ',county) AS title, geometry_x as x,geometry_y as y, mbr_xmin,mbr_ymin, mbr_xmax,mbr_ymax FROM osmnames_places WHERE images =0 LIMIT 1000";
