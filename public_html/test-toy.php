@@ -60,7 +60,7 @@ outputRow('Content-Type Test',strpos($content,"charset=ISO-8859-1")===FALSE?'err
 outputBreak("Command Line Tools");
 #########################################################################################################
 
-$list = "mogrify convert exiftool jpegexiforient jpegtran";
+$list = "mogrify convert exiftool jpegexiforient jpegtran vipsthumbnail";
 
 $found = 0; $info = array();
 foreach (explode("\n",`whereis $list`) as $line) {
@@ -322,7 +322,7 @@ if ($db) {
 
 	$value = $db->getOne("SELECT title FROM gridimage_funny WHERE gridimage_id = $id");
 
-	outputRow('latin1 data to ISO-8859-1 HTML', (urlencode(htmlentities2($value)) == $latin1)?'pass':'error', 'tests both fetchinf from database, and converting to HTML');
+	outputRow('latin1 data to ISO-8859-1 HTML', (urlencode(htmlentities2($value)) == $latin1)?'pass':'error', 'tests both fetching from database, and converting to HTML');
 
 	outputRow('latin1 data to UTF-8 HTML', (urlencode(htmlentities(latin1_to_utf8($value), ENT_COMPAT, 'UTF-8')) == $urf8)?'pass':'error');
 }
@@ -347,6 +347,7 @@ if (isset($CONF['db_read_driver'])) {
 #########################################################################################################
 outputBreak("Sphinx/Manticore");
 #########################################################################################################
+
 
 if (!empty($CONF['sphinx_host'])) {
 
@@ -397,6 +398,41 @@ if (!empty($CONF['sphinx_host'])) {
 
 } else
 	outputRow('Sphinx/Manticore','notice','not configured');
+
+
+#########################################################################################################
+
+
+if (strpos($_SERVER['HTTP_HOST'],'toy') === FALSE)
+if (!empty($CONF['manticorert_host'])) {
+
+	$index = 'gridimage_group_stat';
+
+	$sprt = GeographSphinxConnection('manticorert',true);
+
+	$result = $sprt->getAll("select * from $index where match('Tree')");
+
+	if (!empty($result) && count($result) == 20) { //the autolimit on manticore|!
+
+		//$info = $sph->ServerInfo(); //doesnt work on Sphinx! adodb doesnt have wrapper for mysqli_get_server_info
+		if ($CONF['db_driver'] == 'mysql') {
+			$info['description'] =  mysql_get_server_info();
+		} elseif ($CONF['db_driver'] == 'mysqli') {
+			$info['description'] =  mysqli_get_server_info($sprt->_connectionID);
+		} else {
+			$info['description'] =  "unknown db driver";
+		}
+		$count = count($result);
+		outputRow('Manticore RT Cluster','pass',"(quick test only!) Run query and got $count matching rows. Good. Server: ".$info['description']);
+	} else {
+		outputRow('Manticore RT Cluster','error',"didnt obtain expected results. ".$sprt->ErrorMsg());
+	}
+
+	//TODO, should test WRITING (maybe even disconnect and reconnect?) - to check 'cluster' setup!
+
+} else
+	outputRow('Manticore RT','notice','not configured');
+
 
 #########################################################################################################
 outputBreak("Redis/Memcache");
@@ -477,7 +513,7 @@ if (!empty($smarty->compile_dir)) {
 	if (is_link($smarty->compile_dir)) {
 		$dest = readlink($smarty->compile_dir);
 		$result = `df $dest`;
-		if (strpos($result,'.efs.') !== FALSE) {
+		if (strpos($result,'127.0.0.1:/') !== FALSE) {
 			$files = trim(`find $dest -type f | wc -l`);
 			outputRow('Compile Dir symlink to Amazon-EFS',$files>1?'pass':'error',"linked to $dest, appear to be mounted EFS share. Not a thorough test");
 		} else {
@@ -513,7 +549,7 @@ if (!empty($CONF['carrot2_dcs_url']) || !empty($CONF['carrot2_dcs_host'])) {
 
 	$carrot = Carrot2::createDefault(); //this automatially uses config variables
 
-	$data= $db->getAll("SELECT gridimage_id,title FROM $table LIMIT 20");
+	$data= $db->getAll("SELECT gridimage_id,title FROM $table ORDER BY gridimage_id LIMIT 20");
         foreach ($data as $row) {
                 $carrot->addDocument(
                         (string)$row['gridimage_id'],
