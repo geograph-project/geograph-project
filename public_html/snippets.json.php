@@ -30,6 +30,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && !empty($_SESSION['
 } else {
 	$db = GeographDatabaseConnection(true); //allows even large lag!
 }
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $sql = array();
 
@@ -98,6 +99,9 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
         $sql['wheres'][] = "gi.grid_reference = ".$db->Quote($_GET['gridref']);
 
 } elseif (!empty($_GET['q'])) {
+
+	if (!empty($_GET['mode']) && $_GET['mode'] == 'nearby' && $_GET['q'] == '..')
+		init_session(); // - we now need to lookup own pending!
 
 	if (!empty($CONF['sphinx_host'])) {
 		if (strpos($_REQUEST['q'],':') !== FALSE) {
@@ -209,9 +213,23 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 				$ids = $sphinx->returnIds($pg,'snippet');
 			}
 
+			//todo: prepend snippets used on pending images.
+			if ($USER->user_id && !empty($_GET['mode']) && $_GET['mode'] == 'nearby' && $_GET['q'] == '..' && !empty($_GET['gr']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gr'])) {
+				//selfrecent will find them, but should include on near results (or at least in the square!)
+
+				//we only lookup ids here!
+				$ids2 = $db->getCol($sql = "SELECT DISTINCT snippet_id FROM gridimage_snippet gs INNER JOIN gridimage g USING (gridimage_id) INNER JOIN gridsquare USING (gridsquare_id) WHERE moderation_status = 'pending' AND g.user_id = {$USER->user_id} AND grid_reference = ".$db->Quote($_GET['gr']));
+				if (!empty($ids2)) {
+					if (!empty($ids))
+						$ids = array_merge($ids2,$ids); //can't pass null as second param
+					else
+						$ids = $ids;
+				}
+			}
+
 			if (!empty($ids) && count($ids)) {
 				//todo, if dont need comment, could just return the sphinx resultset directly (it has the title as attribute!)
-	
+
 				$idstr = join(",",$ids);
 				$where = "snippet_id IN(".join(",",$ids).")";
 
@@ -249,8 +267,6 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 $query = sqlBitsToSelect($sql);
 if (!empty($_GET['deb']))
         print_r($query);
-
-$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	$data = $db->getAll($query);
 	if (!empty($data))
