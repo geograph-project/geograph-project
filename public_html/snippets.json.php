@@ -218,13 +218,10 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 				//selfrecent will find them, but should include on near results (or at least in the square!)
 
 				//we only lookup ids here!
-				$ids2 = $db->getCol($sql = "SELECT DISTINCT snippet_id FROM gridimage_snippet gs INNER JOIN gridimage g USING (gridimage_id) INNER JOIN gridsquare USING (gridsquare_id) WHERE moderation_status = 'pending' AND g.user_id = {$USER->user_id} AND grid_reference = ".$db->Quote($_GET['gr']));
-				if (!empty($ids2)) {
-					if (!empty($ids))
-						$ids = array_merge($ids2,$ids); //can't pass null as second param
-					else
-						$ids = $ids;
-				}
+				$ids2 = $db->getCol("SELECT DISTINCT snippet_id FROM gridimage_snippet gs INNER JOIN gridimage g USING (gridimage_id) INNER JOIN gridsquare USING (gridsquare_id) WHERE moderation_status = 'pending' AND g.user_id = {$USER->user_id} AND grid_reference = ".$db->Quote($_GET['gr']));
+
+				//more consise way to merge two arrays, while allowing either to be empty/null
+				$ids = array_merge($ids2 ?? array(), $ids ?? array());
 			}
 
 			if (!empty($ids) && count($ids)) {
