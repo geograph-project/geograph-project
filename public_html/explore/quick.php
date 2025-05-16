@@ -75,10 +75,9 @@ $lists = array(
 $where = $match = $browser = array();
 
 #######################################
+//the main form
 
 	print "<form style=\"background-color:#eee;padding:10px\">\n\n";
-
-#######################################
 
 	print "List: <select name=\"list\" onchange=\"this.form.submit()\">";
 	print "<option></option>";
@@ -88,6 +87,7 @@ $where = $match = $browser = array();
 	print "</select>\n\n";
 
 #######################################
+//can show a list specific dropdown (well 1000 items, its not a full search/autocomplete dropdown)
 
 	if (!empty($lists[$_GET['list']])) {
 		$name = $_GET['list'];
@@ -123,6 +123,7 @@ $where = $match = $browser = array();
 	}
 
 #######################################
+//more filters
 
 	if (true) {
 		$countries = get_list($where,$match,'country','country ASC');
@@ -159,13 +160,14 @@ $where = $match = $browser = array();
 	print "</form>";
 
 #######################################
+//general results + setup
 
 	if (!empty($where) || !empty($match)) {
 
 		if (!empty($match))
 			$where[] = "MATCH(".$sph->Quote(implode(' ',$match)).")";
 
-		print_r($where);
+//		print_r($where);
 
 		$thumbw = 213;
                 $thumbh = 160;
@@ -205,60 +207,79 @@ $where = $match = $browser = array();
 		                print "<a class=tab href=$link>$name</a> ";
 		        }
 		}
-		/* -- not implemented!
-		print " Sort by: ";
-		$links = array(
-			smarty_function_linktoself(array('name'=>'alpha','value'=>0)) =>'Images',
-			smarty_function_linktoself(array('name'=>'alpha','value'=>1)) =>'Alpha',
-		);
-		foreach ($links as $link => $name) {
-			list(,$query) = explode('?',$link);
-		        if ($query == htmlentities($_SERVER['QUERY_STRING'])) {
-	                        print "<a class=tabSelected>$name</a> ";
-		        } else {
-		                print "<a class=tab href=$link>$name</a> ";
-		        }
-		}
-		*/
 		print '</div>';
 
 #######################################
+//list of thumbnails
 
-		print "<div class=interestBox>$count of {$imagelist->resultCount} results...</div>";
+		print "<div class=interestBox>$count of ".number_format($imagelist->resultCount,0)." results...</div>";
 
 		print "<div style=\"columns: auto 213px; text-align:center;\">";
 		foreach ($imagelist->images as $i => $image) {
+			//todo, if 'sort=recent' then overlay the date onto the image??
 			?>
  <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src'); ?></a>
 			<?
 		}
 		print "</div>";
 
+#######################################
+//footer links
+
 		$keys = array_keys($links);
 		$brower = array_pop($keys);
 
 		if ($imagelist->resultCount > 10) {
 		?>
-			<br><br>
+			<p>The above is a preview of <? echo "$count of ".number_format($imagelist->resultCount,0)." results"; ?></p>
+			<hr>
+
+			<h4>Want to explore these results in more detail?</h4><blockquote>
+			<p><?
+			$links[$brower."/display=group/group=country/n=6/gorder=alpha%20asc"] = 'By Country';
+			if (!empty($_GET['subjects']))
+				$links["/stuff/tagmap.php?tag=".urlencode($_GET['subjects'])] = "Tag Map";
+
+			foreach ($links as $link => $name) {
+			        if (basename($link) == basename($_SERVER['PHP_SELF'])) {
+			        } else {
+			                print " &middot; <a href=$link>$name</a> ";
+			        }
+			} ?>
+			&middot; </p></blockquote>
+
+			<h4>Too many results?</h4><blockquote>
 			<form style=\"background-color:#eee;padding:10px\">
 				Search <b>within</b> these images:
 				Keywords: <input type=search>
 				Near: <input type=search>
 				<input type=submit disabled value="Search..."><br>
-				(not functional - for now goto <a href="<? echo  $brower; ?>">Browser</a> and filter there)
+				(not functional in prototype - for <i>now</i> goto <a href="<? echo  $brower; ?>">Browser</a> and filter there)
 			</form>
-			<br><br>
-		<?
+			</blockquote>
+			<?
 		}
 
 		if (!empty($_GET['subjects'])) { //hardcoded to subjects for now as a test. todo, extend to other methods!
+			print "<h4>Not enough results?</h4><blockquote style=max-width:900px>";
 			$link = "/browser/#!/q=".urlencode2('"'.$_GET['subjects'].'"');
 			$html = htmlentities2($_GET['subjects']);
-			print "<p>Note, these are images specifically tagged. We may well have many more <a href=\"$link\">related images</a> (click to view) - eg with '$html' mentioned in other tags, or the title/description";
+
+			$keywords = $sph->getAssoc($sql = "call keywords(".$sph->Quote($_GET['subjects']).",'sample8',1)");
+			$values = array();
+			foreach ($keywords as $row)
+				$values[] = $row['docs'];
+			$estimate = number_format(array_sum($values)/count($values),0);
+
+			//print "<p>These are images specifically tagged with '$html', we have an estimated $estimate image(s) via <a href=\"$link\">keyword search</a> (click to view in Browser) - eg with '$html' mentioned in other tags, or the title/description";
+
+			print "<p>The above images are specifically tagged subject of '$html'. An estimated <a href=\"$link\">total of $estimate images were found via keyword search</a>, encompassing those with 'construction' in their tags, title, category, or descriptions (click to view in browser)."; //suggestion via gemini!
+
+			print "</blockquote>";
 		}
 
-
 #######################################
+// list of topics
 
 	} elseif (!empty($list)) {
 
@@ -276,12 +297,12 @@ $where = $match = $browser = array();
 		                print "<a class=tab href=$link>$name</a> ";
 		        }
 		}
-
 		print '</div>';
 
 		print "<div class=interestBox>{$s['title']}</div>";
 
 #######################################
+//simple alphabetical list (highlights offical subjects/context)
 
 		$name = $_GET['list'];
 
@@ -331,6 +352,7 @@ if (empty($letter))
                         if ($alpha) print "</ol></div>";
 
 #######################################
+// simple list (probaly number order)
 
 		} else {
 			print "<ol style=\"padding-left:5em\">";
@@ -354,7 +376,8 @@ if (empty($letter))
 $smarty->display('_std_end.tpl');
 
 
-
+#######################################
+// functions
 
 function get_list_mva($where,$match,$group,$column,$order = 'count DESC') {
 	global $sph;
