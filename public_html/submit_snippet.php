@@ -510,6 +510,27 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 			$where= implode(' AND ',$where);
 
 			$results = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours $fields FROM snippet s LEFT JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gs.gridimage_id < 4294967296) LEFT JOIN gridimage_snippet ge ON (s.snippet_id = ge.snippet_id AND ge.gridimage_id = $gid) WHERE $where GROUP BY s.snippet_id $orderby LIMIT 200"); 
+
+			//the results have likly come from sphinx which only moderateed images (so will exclude newly created snippets, and also used on pending images)
+			if (empty($_REQUEST['tab']) && empty($_REQUEST['q']) && !empty($square) && !empty($square->gridsquare_id)) {
+
+				//specifically look at own pending (in the square!)
+				$results2 = $db->getAll($sql = "SELECT s.*,u.realname,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours,MAX(gs.created) AS last_used FROM snippet s LEFT JOIN user u USING (user_id) INNER JOIN gridimage_snippet gs USING (snippet_id) INNER JOIN gridimage g USING (gridimage_id) WHERE moderation_status = 'pending' AND g.user_id = {$USER->user_id} AND g.gridsquare_id = {$square->gridsquare_id} GROUP BY s.snippet_id ORDER BY last_used");
+
+				if (!empty($results2)) {
+					if (!empty($results)) {
+						//dedplicate
+						$done = array();
+						foreach($results as $row)
+							$done[$row['snippet_id']]=1;
+						foreach($results2 as $row)
+							if (empty($done[$row['snippet_id']]))
+								array_unshift($results, $row);
+					} else {
+						$results = $results2;
+					}
+				}
+			}
 		}
 
 		if (empty($results) && empty($_REQUEST['tab'])) {
