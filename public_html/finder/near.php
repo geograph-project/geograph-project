@@ -252,7 +252,9 @@ if (!empty($_GET['q'])) {
 	<? if (!empty($_GET['q'])) { ?>
 	<div style="float:right">
 		More:
-		<a href="/of/<? echo urlencode2($_GET['q']); ?>?redir=false" rel="nofollow">Keyword Search</a> &middot;
+		<? if (!preg_match('/(^Grid|Postcode)/',$_GET['q'])) { ?>
+			<a href="/of/<? echo urlencode2($_GET['q']); ?>?redir=false" rel="nofollow">Keyword Search</a> &middot;
+		<? } ?>
 		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=decade">Over Time</a> &middot;
                 <a href="/gridref/<? echo strtoupper($gru); ?>">Browse Page</a> &middot;
 		<? if (!empty($square->reference_index) && $square->reference_index == 1) { ?>
