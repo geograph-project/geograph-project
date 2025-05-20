@@ -67,7 +67,7 @@
 <div class="forum-gsd-thumbnails-none">There are no images for this gridsquare</div>
 {/if}
 </div>
-<div class="forum-gsd-count">{if count($images) > 5}Note: Only the first 500 images are shown above.{/if}</div>
+<div class="forum-gsd-count">Click the icons below the images to add to the compose window.{if count($images) > 5}<br/><b>Note: Only the first 500 images are shown above.</b>{/if}</div>
 <div class="forum-gsd-search">{if count($images) > 0}<a href="">View all images in {$gridref}</a>{/if}</div>
 
 
