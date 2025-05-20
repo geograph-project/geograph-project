@@ -788,7 +788,6 @@ div.forum-gsd-thumbnails-none {
 div.forum-gsd-count {
   grid-area: forum-gsd-count;
   margin: 10px 0px 10px 0px;
-  font-weight: bold;
 }
 div.forum-gsd-search {
   grid-area: forum-gsd-search;
