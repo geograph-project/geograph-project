@@ -110,6 +110,61 @@ class SearchEngineBuilder extends SearchEngine
 	}
 
 	/**
+	* finds if a query would be inpreted as location by buildSimpleQuery, mainly to split queries into 'for' and 'near'
+	* Note: however doesnt validate GRs etc, nor does it catch placenames
+	*
+	* ... the logic looks convoluted, as it aims to mimik buildSimpleQuery (to make easier to keep in sync)
+	*/
+	function decodeSimpleQuery($q) {
+		$has_location = preg_match('/(?<![":\[])\bnear\b/',$q);
+
+		$q = trim(strip_tags($q));
+
+		if ($has_location) {
+			$bits = preg_split('/(?<![":\[])\s*near\s+/',$q);
+			$qlocation = @$bits[1];
+		} else {
+			$qlocation = $q;
+		}
+
+	//look like a postcode
+		if (preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$qlocation,$pc)
+		&& !in_array(strtoupper($pc[1]),array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
+			//these prefixs are not postcodes but are valid gridsquares
+
+			//we dont bother making sure valid here!
+				$location = $pc[0];
+
+	//look like a Grid Reference
+		} elseif (preg_match("/^[^:]*\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$qlocation,$gr)) {
+			//we dont bother making sure valid here!
+				$location = $gr[0];
+
+	//looks like lat/long
+		} elseif (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll)) {
+			//we dont bother making sure valid here!
+				$location = $ll[0];
+		}
+
+		if (!empty($location))
+			$q = str_replace($location,'',$q);
+		$q = preg_replace('/(?<![":\[])\s*near\s*$/','',$q); //remove near from the end (where no actual placename was specified)
+		$q = trim(preg_replace('/\s+/',' ',$q));
+
+		if (!empty($location))
+			return array($q,$location);
+
+		if (preg_match('/(?<![":\[])\s*near\s+/',$q)) {
+			list($q,$placename) = preg_split('/(?<![":\[])\s*near\s+/',$q);
+		} else {
+			$placename = '';
+		}
+
+		//we dont bother making sure $placename valid here!
+		return array($q,$placename);
+	}
+
+	/**
 	* create a simple search object
 	*/
 

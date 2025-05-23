@@ -1436,7 +1436,10 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 				$smarty->assign('searchlocation', $bits[1]);
 		}
 	} else if (isset($_SESSION['searchq'])) {
-		$bits = preg_split('/\s*near\s+/',$_SESSION['searchq'],2);
+		$engineb = new SearchEngineBuilder('#');
+
+		//this will expand 'near' queries, but also catch simple location queries (eg GR!)
+		$bits = $engineb->decodeSimpleQuery($_SESSION['searchq']);
 		$smarty->assign('searchtext', $bits[0]);
 		if (!empty($bits[1]))
 			$smarty->assign('searchlocation', $bits[1]);
