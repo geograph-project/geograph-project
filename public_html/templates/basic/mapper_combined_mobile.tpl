@@ -64,6 +64,18 @@
     box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
 
+@media print {
+       .no_print {
+               display:none;
+       }
+       .leaflet-control-container .leaflet-top {
+               display:none;
+       }
+       #message {
+               display:none;
+       }
+}
+
 ul.tips li {
         margin-bottom: 5px;
 }

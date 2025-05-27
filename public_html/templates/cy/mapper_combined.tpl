@@ -1,7 +1,7 @@
 {assign var="page_title" value="Map Lluniau"}
 {include file="_std_begin.tpl"}
 
-<div style="width:800px">
+<div style="width:800px" class="no_print">
 	<div style="float:right">
 		<select id="mapLinkSelector" onchange="linkToMap(this)">
 			<option value="">Location &amp; Map Links...</option>
@@ -233,7 +233,7 @@ baseMaps["OpenStreetMap.Cymru"] = L.tileLayer(osmUrlCy, {minZoom: 5, maxZoom: 18
 	}
 	if ($.localStorage) {
 		map.on('baselayerchange', function(e) {
-		  	$.localStorage('LeafletBaseMap', e.name);
+			$.localStorage('LeafletBaseMap', e.name);
 			reinstateOS = false;
 		});
 	}
@@ -416,7 +416,7 @@ function startTour() {
 	}
 	$(function() {
 		if ($('div#maincontent').width() > 1024) {
-			$('#map').parent().after(' &middot; <a href=# onclick="return enlargeMap()" id=enlargelink>Enlarge Map</a> ');
+			$('#map').parent().after(' &middot; <a href=# onclick="return enlargeMap()" id=enlargelink class=no_print>Fwy Map</a> ');
 		}
 	});
 
@@ -424,7 +424,7 @@ function startTour() {
 {/literal}
 </script>
 
-
+<div class="no_print">
 
 <h3>Map Functions</h3>
 
@@ -479,7 +479,7 @@ function startTour() {
 	<li style="padding:3px;"><b>Coverage - Coarse</b>: Coloured by what Geograph(s) are in the 1km square. <br><span style="opacity:0.6">
 		<span style="background-color:#FF0000;padding:3px;">Recent Geographs (last 5 years)</span>
 		<span style="background-color:#FF8800;padding:3px;">Only older Geographs</span>
-	 	<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
+		<span style="background-color:#75FF65;padding:3px;">No Geograph Images</span>
 		</span> <ul>
 		<li>Note: when zoom out, changes to hectad (10km square) grid resolution, and is coloured yellow->red on the number of squares with recent (last 5 years) Geographs
 		</ul></li>
@@ -494,8 +494,28 @@ function startTour() {
 
 <h3>Other suggestions/requests?</h3>
 	<p>Let us know!</p>
+</div>
 
 <style>{literal}
+
+@media print {
+       .no_print {
+               display:none;
+       }
+       .leaflet-control-container .leaflet-top {
+               display:none;
+       }
+       #message {
+               display:none;
+       }
+       #header h1 a {
+               text-decoration:none;
+       }
+       #nav_toggle, #nav_label,
+       #search_toggle, #search_label {
+               display:none;
+       }
+}
 
 ul.tips li {
 	margin-bottom: 5px;
