@@ -1,7 +1,7 @@
 {assign var="page_title" value="Coverage Map (v4)"}
 {include file="_std_begin.tpl"}
 
-<div style="width:800px">
+<div style="width:800px" class="no_print">
 	<div style="float:right">
 		<select id="mapLinkSelector" onchange="linkToMap(this)">
 			<option value="">Location &amp; Map Links...</option>
@@ -52,7 +52,7 @@
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
 
-	<div class="tabHolder" style="width:800px;">
+	<div class="tabHolder no_print" style="width:800px;">
 		<div style="float:right;color:gray">
 			<i>More in layer switcher</i> &#11167;
 		</div>
@@ -469,7 +469,7 @@ function startTour() {
 
 
 		if ($('div#maincontent').width() > 1024) {
-			$('#map').parent().after(' &middot; <a href=# onclick="return enlargeMap()" id=enlargelink>Enlarge Map</a> ');
+			$('#map').parent().after(' &middot; <a href=# onclick="return enlargeMap()" id=enlargelink class=no_print>Enlarge Map</a> ');
 		}
 		$('input[name=enhance]').click(function() {
 			$('input[name=enhance]').each(function() {
@@ -481,6 +481,7 @@ function startTour() {
 
 {/literal}</script>
 
+<div class="no_print">
 <br><br>
 <input type=radio name="enhance" value="applyNone" checked id="enableNone"><label for=enableNone>Original / No Enhancement</label><br>
 <input type=radio name="enhance" value="applyUnsharp" id=enableUnsharp><label for=enableUnsharp>Apply 'unsharp' filter to imagery layers</label> - may help with clarity<br>
@@ -587,7 +588,28 @@ function startTour() {
 <h3>Other suggestions/requests?</h3>
 	<p>Let us know!</p>
 
+</div>
+
 <style>{literal}
+
+@media print {
+	.no_print {
+		display:none;
+	}
+	.leaflet-control-container .leaflet-top {
+	        display:none;
+	}
+	#message {
+		display:none;
+	}
+	#header h1 a {
+		text-decoration:none;
+	}
+	#nav_toggle, #nav_label,
+	#search_toggle, #search_label {
+		display:none;
+	}
+}
 
 ul.tips li {
 	margin-bottom: 5px;
