@@ -412,15 +412,18 @@ split_timer('search'); //starts the timer
 			"searchdesc = ".$db->Quote($searchdesc).",".
 			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($q);
+			
+			if (!empty($searchtext)) {
+				$sql .=",searchtext = ".$db->Quote($searchtext);
+			}
+			
 			if (!empty($_SESSION['human_id'])) {
 				$sql .= ",displayclass = 'human'";
-				if (!empty($searchtext)) {
-					$sql .=",searchtext = ".$db->Quote($searchtext);
-				}
-			} elseif (!empty($searchtext)) {
-				$sql .=",searchtext = ".$db->Quote($searchtext).
-				",displayclass = 'excerpt'";
-			}
+			elseif (!empty($USER) && !empty($USER->displayclass))
+				$sql .= ",displayclass = ".$db->Quote($USER->displayclass);
+			elseif (!empty($searchtext))
+				$sql .=",displayclass = 'excerpt'";
+			
 			if (!empty($_GET['orderby']))
 				$sql .= ",orderby = ".$db->Quote($_GET['orderby']);
 			if (!empty($_GET['groupby']))
@@ -712,6 +715,8 @@ split_timer('search'); //starts the timer
 				$sql .= ",displayclass = 'human'";
 			} elseif (isset($dataarray['displayclass'])) {
 				$sql .= ",displayclass = ".$db->Quote($dataarray['displayclass']);
+			} elseif (!empty($USER) && !empty($USER->displayclass)) {
+				$sql .= ",displayclass = ".$db->Quote($USER->displayclass);
 			} elseif (!empty($dataarray['searchtext'])) {
 				$sql .= ",displayclass = 'excerpt'";
 			}
