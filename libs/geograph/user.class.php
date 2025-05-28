@@ -93,6 +93,8 @@ class GeographUser
 
 				if (empty($this->upload_size))
 					$this->upload_size = 1024;
+				if (empty($this->displayclass))
+					$this->displayclass = '';
 
 				// get user homesquare
 				if (isset($this->home_gridsquare)) {
@@ -128,6 +130,8 @@ class GeographUser
 				}
 				if (empty($this->upload_size))
 					$this->upload_size = 1024;
+				if (empty($this->displayclass))
+					$this->displayclass = '';
 
 				// get user homesquare
 				if (isset($this->home_gridsquare)) {
@@ -1046,7 +1050,8 @@ class GeographUser
 				submission_new=%s,
 				gravatar=%s,
 				salt=%s,
-				password=%s
+				password=%s,
+				displayclass=%s
 				where user_id=%d",
 				$db->Quote($profile['realname']),
 				$db->Quote($profile['nickname']),
@@ -1069,6 +1074,7 @@ class GeographUser
 				$db->Quote(!empty($profile['gravatar_reset'])?'unknown':$this->gravatar),
 				$db->Quote($salt),
 				$db->Quote($password),
+				$db->Quote(stripslashes($profile['displayclass'])),
 				$this->user_id
 				);
 
@@ -1113,6 +1119,7 @@ class GeographUser
 				$this->submission_new=stripslashes($profile['submission_new']);
 				if (isset($profile['gravatar_reset']))
 					$this->gravatar = 'unknown';
+				$this->displayclass = stripslashes($profile['displayclass']);
 				$this->_forumUpdateProfile();
 				$this->_forumLogin();
 
