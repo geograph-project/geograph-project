@@ -44,6 +44,18 @@ if (!empty($_GET['t'])) {
 
 #################################################
 
+if (!empty($_GET['email'])) {
+	$user = new GeographUser();
+	$user->email = $_GET['email'];
+	$msg = $user->getBounceMessage();
+
+	if(!empty($msg)) {
+		print "<p style=padding:10px;background-color:orange>$msg</p><hr>";
+	}
+}
+
+#################################################
+
 if (empty($_GET))
 	$_GET['grouped'] = 1;
 
