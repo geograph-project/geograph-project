@@ -1021,6 +1021,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		advanced_form($smarty,$db);
 	} else {
 		$smarty->assign('resultsperpage', $USER->search_results ?? 15);
+		$smarty->assign('displayclass', $USER->displayclass ?? '');
 		$smarty->assign('distance', $CONF['default_search_distance']);
 
 		advanced_form($smarty,$db,true); //we can cache the blank form!
