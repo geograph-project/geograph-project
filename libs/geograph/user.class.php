@@ -94,7 +94,7 @@ class GeographUser
 				if (empty($this->upload_size))
 					$this->upload_size = 1024;
 				if (empty($this->displayclass))
-					$this->displayclass = 'full';
+					$this->displayclass = '';
 
 				// get user homesquare
 				if (isset($this->home_gridsquare)) {
@@ -131,7 +131,7 @@ class GeographUser
 				if (empty($this->upload_size))
 					$this->upload_size = 1024;
 				if (empty($this->displayclass))
-					$this->displayclass = 'full';
+					$this->displayclass = '';
 
 				// get user homesquare
 				if (isset($this->home_gridsquare)) {
