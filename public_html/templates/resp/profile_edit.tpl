@@ -397,6 +397,18 @@ display:none;
 	
 	<div class="fieldnotes">Configures the default number of search results displayed per page.</div>
 </div>
+
+<div class="field">
+	<label for="displayclass" class="nowrap">Default Search Results Format:</label>
+	<select name="displayclass" id="displayclass">
+		{foreach from=$displayclasses_options key=key item=item}
+			<option value="{$key}"{if $profile->displayclass == $key} selected="selected"{/if}>
+				{$item}
+			</option>
+		{/foreach}
+	</select>
+	<div class="fieldnotes">Sets the default display format for search result pages.</div>
+</div>
   
   
 <div class="field"> 

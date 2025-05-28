@@ -100,6 +100,25 @@ if (isset($_REQUEST['edit']))
 	'none' => 'No Initial Notifications',
 	'off' => 'No emails at all, even final notifications'));
 
+	$displayclasses =  array(
+		'full' => 'full listing',
+		'more' => 'full listing + links',
+		'thumbs' => 'thumbnails only',
+		'thumbsmore' => 'thumbnails + links',
+		'bigger' => 'thumbnails - bigger',
+		'grid' => 'thumbnail grid',
+		'excerpt' => 'highlighted keywords',
+		'map' => 'on a map',
+		'slide' => 'slideshow',
+		'slidebig' => 'slideshow - full page',
+		'reveal' => 'slideshow - map imagine',
+		'black' => 'georiver - full images + detail',
+		//'cooliris' => 'cooliris 3d wall',
+		'text' => 'text list only',
+		'spelling' => 'multi editor'
+	);
+	$smarty->assign('displayclasses_options', $displayclasses);
+
 	$profile->getStats();
 
 	if (!empty($CONF['company_magic']) && $profile->hasPerm('basic') && !$profile->hasPerm('suspicious') && ($profile->stats['images'] ?? 0) > 100 || $profile->hasPerm('member')) {

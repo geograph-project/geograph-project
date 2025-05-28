@@ -1065,6 +1065,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 	$display = $engine->getDisplayclass();
 
+	// Prioritize URL parameters for displayclass
 	if (isset($_GET['displayclass']) && preg_match('/^\w+$/',$_GET['displayclass'])) {
 		$display = $_GET['displayclass'];
 		if ($USER->registered && $USER->user_id == $engine->criteria->user_id && $_GET['displayclass'] != 'search' && $_GET['displayclass'] != 'searchtext') {
@@ -1076,9 +1077,19 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	} elseif (isset($_GET['temp_displayclass']) && preg_match('/^\w+$/',$_GET['temp_displayclass'])) {
 		$display = $_GET['temp_displayclass'];
 		$engine->temp_displayclass = $display;
+	// If no displayclass in URL, try user preference
+	} elseif (isset($USER->displayclass) && !empty($USER->displayclass) && isset($displayclasses[$USER->displayclass])) {
+		$display = $USER->displayclass;
+		// Set it on the engine as well, if applicable, similar to how URL params might.
+		// Depending on how $engine->getDisplayclass() and setDisplayclass() work,
+		// this might be $engine->setDisplayclass($USER->displayclass);
+		// or $engine->criteria->displayclass = $USER->displayclass;
+		// For consistency with the existing logic for temp_displayclass:
+		$engine->temp_displayclass = $USER->displayclass;
 	}
+
 	if (empty($display))
-		$display = 'full';
+		$display = 'full'; // Fallback to default if no preference or invalid preference
 	$engine->display = $display;
 	$template = 'search_results_'.$display.'.tpl';
 
