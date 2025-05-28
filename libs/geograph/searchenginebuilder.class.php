@@ -417,7 +417,7 @@ split_timer('search'); //starts the timer
 				$sql .=",searchtext = ".$db->Quote($searchtext);
 			}
 			
-			if (!empty($_SESSION['human_id'])) {
+			if (!empty($_SESSION['human_id']))
 				$sql .= ",displayclass = 'human'";
 			elseif (!empty($USER) && !empty($USER->displayclass))
 				$sql .= ",displayclass = ".$db->Quote($USER->displayclass);
