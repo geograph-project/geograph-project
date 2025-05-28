@@ -401,6 +401,7 @@ display:none;
 <div class="field">
 	<label for="displayclass" class="nowrap">Default Search Results Format:</label>
 	<select name="displayclass" id="displayclass">
+		<option value="">
 		{foreach from=$displayclasses_options key=key item=item}
 			<option value="{$key}"{if $profile->displayclass == $key} selected="selected"{/if}>
 				{$item}
