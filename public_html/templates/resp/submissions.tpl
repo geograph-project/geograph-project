@@ -65,7 +65,7 @@
 	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="clear:both;border-top:1px solid silver; padding:8px 0;">
 	  <div class="shadow" style="float:left; position:relative; width:226px; text-align:center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,true,$src)}</a><br/>
-		<div class="caption">{if $image->moderation_status eq "pending"}{$image->moderation_status}{/if}</div>
+		<div class="caption">Status: {$image->moderation_status} - ID: {$image->gridimage_id}</div>
 	  </div>
 	  <div style="float:left; position:relative">
 		<a name="{$image->gridimage_id}"><input type="text" name="title" size="64" value="{$image->title|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/></a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]
