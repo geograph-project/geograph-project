@@ -110,6 +110,8 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
    Organise the user submitted categories</li>
 
+<li><a href="export_gridimage_search_form.php">Export Gridimage Search Data (CSV)</a> - 
+   Export data from the gridimage_search table.</li>
 </ul>
 
 <h3>Statistics</h3>
