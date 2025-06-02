@@ -388,6 +388,49 @@ function GeographDatabaseConnection($allow_readonly = false) {
 	return $db;
 }
 
+/**
+ * Checks if there are any upcoming approved events.
+ * Uses caching to reduce database load.
+ *
+ * @return bool True if there are upcoming events, false otherwise.
+ */
+function hasUpcomingEvents() {
+    global $memcache; // Access the global memcache object
+
+    $cache_key = 'upcoming_events_status';
+    $cache_lifetime = 1800; // 30 minutes
+
+    if (isset($memcache) && $memcache->valid) {
+        $cached_status = $memcache->get($cache_key);
+        if ($cached_status !== false && $cached_status !== null) { // Check for false or null explicitly as status could be boolean false
+            return (bool)$cached_status;
+        }
+    }
+
+    $db = GeographDatabaseConnection(true);
+    if (!$db) {
+        error_log("hasUpcomingEvents: Database connection failed.");
+        return false; 
+    }
+
+    $sql = "SELECT COUNT(*) AS upcoming_event_count FROM geoevent WHERE event_time > NOW() AND approved = 1;";
+    $result = $db->GetOne($sql);
+
+    if ($result === false) {
+        error_log("hasUpcomingEvents: SQL query failed: " . $db->ErrorMsg());
+        // Do not cache on DB error, or cache a specific error indicator if preferred
+        return false;
+    }
+    
+    $status = (int)$result > 0;
+
+    if (isset($memcache) && $memcache->valid) {
+        $memcache->set($cache_key, $status, false, $cache_lifetime);
+    }
+    
+    return $status;
+}
+
 #################################################
 
 /**
@@ -1067,6 +1110,10 @@ class GeographPage extends Smarty
 
 		//base constructor
 		$this->Smarty();
+
+		// Add these lines:
+		$upcoming_events_status = hasUpcomingEvents();
+		$this->assign('has_upcoming_events', $upcoming_events_status);
 
 		//set up paths
 		$this->template_dir=$_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'];

@@ -31,7 +31,7 @@
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
      <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
      <li><a title="Blog Posts by Members" href="/blog/">Blog</a></li>
-     {dynamic}{if $user->registered}
+     {dynamic}{if $user->registered && $has_upcoming_events}
      <li><a title="Upcoming Meet/Events" href="/events/">Events</a></li>
      {/if}
     </ul></li>

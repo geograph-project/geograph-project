@@ -45,6 +45,12 @@ if ($isadmin) {
 		
 		
 		$smarty->clear_cache($template, $cacheid);
+
+		// Invalidate upcoming_events_status cache
+		global $memcache;
+		if (isset($memcache) && $memcache->valid) {
+			$memcache->delete('upcoming_events_status');
+		}
 	}
 }
 if (!$smarty->is_cached($template, $cacheid))
@@ -89,4 +95,3 @@ if (!$smarty->is_cached($template, $cacheid))
 }
 
 $smarty->display($template, $cacheid);
-

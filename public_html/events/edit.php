@@ -122,6 +122,12 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		$memcache->name_increment('ep',intval($_REQUEST['id']),1,true);
 		
 		$smarty->clear_cache('events.tpl');
+
+		// Invalidate upcoming_events_status cache
+		global $memcache;
+		if (isset($memcache) && $memcache->valid) {
+			$memcache->delete('upcoming_events_status');
+		}
 		
 		header("Location: /events/event.php?id=".intval($_REQUEST['id']));
 		exit;
@@ -135,5 +141,3 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 
 
 $smarty->display($template, $cacheid);
-
-	
