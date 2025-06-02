@@ -45,8 +45,7 @@ Thank you for your patience.<br><br>
 <p align="right">TIP: You can use <a href="https://www.google.co.uk/search?q=site:geograph.org.uk&tbm=isch">Google Image Search</a> to search a small selection of cached Geograph Images. </p>
 </div>
 <hr/>
-<p align="center"><small>Backup communications: <a href="http://groups.yahoo.com/group/GeographSidetrack/">GeographSideTrack Email Group</a> 
-and <a href="http://www.nearby.org.uk/geograph/chat/">Geograph Chat</a></small></p>
+<p align="center"><small>Backup communications: <a href="http://groups.yahoo.com/group/GeographSidetrack/">GeographSideTrack Email Group</a></small></p>
 </div>
 <p align="center">A more technical description: <tt>503 no server was available to handle the request</tt></p> 
 </body>

@@ -555,25 +555,6 @@ if ($USER->hasPerm("basic")) {
 	$user_login = ParseTpl(makeUp('main_footer_login'));
 }
 
-if (1) {
-	$irc_seen = 0;
-} elseif (function_exists('apc_fetch')) {
-	if (($irc_seen = apc_fetch('irc.seen')) === FALSE) {
-		if (filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
-			$irc_seen = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
-		} else {
-			$irc_seen = 0;
-		}
-		apc_store('irc.seen',$irc_seen,30);
-	}  
-} else {
-	if (filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
-		$irc_seen = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
-	} else {
-		$irc_seen = 0;
-	}
-}
-
 if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 	Profiler::render();
 }
