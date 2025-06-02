@@ -52,7 +52,6 @@
      <li><a title="Discuss" href="/discuss/">Discussions</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
-     <li><a title="Chat" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
      <li><a title="Find out about local Events" href="/events/">Events</a></li>
      {/if}{/dynamic}
     </ul></li>
