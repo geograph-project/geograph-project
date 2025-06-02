@@ -701,6 +701,48 @@ function rehighlight(that,check) {
 	<br/><hr/><br/>
 {/if}
 
+<script type="text/javascript">
+{literal}
+(function() {
+    const localStorageKey = 'autocloseCheckboxState';
+    const shouldAutoclose = localStorage.getItem(localStorageKey);
+
+    if (shouldAutoclose === 'true') {
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = 'Submission successful. This window will now close automatically in a few seconds.';
+        messageDiv.style.padding = '10px';
+        messageDiv.style.backgroundColor = '#e6ffe6';
+        messageDiv.style.border = '1px solid #008000';
+        messageDiv.style.textAlign = 'center';
+        messageDiv.style.marginTop = '20px';
+        
+        let insertionPoint = null;
+        const h2Elements = document.getElementsByTagName('h2');
+        for (let i = 0; i < h2Elements.length; i++) {
+            if (h2Elements[i].textContent.includes('Submission Complete!')) {
+                insertionPoint = h2Elements[i].parentNode;
+                break;
+            }
+        }
+
+        if (insertionPoint) {
+            insertionPoint.appendChild(messageDiv);
+        } else {
+            const form = document.querySelector('form[name="theForm"]');
+            if (form) {
+                form.appendChild(messageDiv);
+            } else {
+                document.body.insertBefore(messageDiv, document.body.firstChild);
+            }
+        }
+
+        setTimeout(function() {
+            window.close();
+        }, 3000); // 3 second delay
+    }
+})();
+{/literal}
+</script>
 {/if}
 
 {if $step eq 6}

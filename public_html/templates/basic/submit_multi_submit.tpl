@@ -8,6 +8,11 @@
 
 	<h2>Multiple Image Submission</h2>
 
+	<div style="margin-bottom: 10px;">
+		<input type="checkbox" id="autoclose_checkbox">
+		<label for="autoclose_checkbox">Automatically close submission window upon successful completion.</label>
+	</div>
+
 <div style="position:relative;">
 	<div class="tabHolder">
 		<a class="tab nowrap" id="tab1" href="{$script_name}">A) Add/Upload Images</a>&nbsp;
@@ -70,6 +75,31 @@
 
 	</div>
 </div>
+
+<script type="text/javascript">
+{literal}
+document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('autoclose_checkbox');
+    const localStorageKey = 'autocloseCheckboxState';
+
+    // On Page Load: Set checkbox state from localStorage
+    if (checkbox) {
+        const savedState = localStorage.getItem(localStorageKey);
+        if (savedState === 'true') {
+            checkbox.checked = true;
+        } else if (savedState === 'false') {
+            checkbox.checked = false;
+        }
+        // If not in localStorage, checkbox remains at its default HTML state (unchecked unless 'checked' attribute is present)
+
+        // On Checkbox Change: Save state to localStorage
+        checkbox.addEventListener('change', function() {
+            localStorage.setItem(localStorageKey, checkbox.checked.toString());
+        });
+    }
+});
+{/literal}
+</script>
 {literal}
 <script type="text/javascript">
         function copytoall(that) {
