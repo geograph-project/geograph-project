@@ -702,9 +702,12 @@ function rehighlight(that,check) {
 {/if}
 
 <script type="text/javascript">
+{literal}
 (function() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('autoclose') === 'true') {
+    const localStorageKey = 'autocloseCheckboxState';
+    const shouldAutoclose = localStorage.getItem(localStorageKey);
+
+    if (shouldAutoclose === 'true') {
         const messageDiv = document.createElement('div');
         messageDiv.textContent = 'Submission successful. This window will now close automatically in a few seconds.';
         messageDiv.style.padding = '10px';
@@ -713,9 +716,6 @@ function rehighlight(that,check) {
         messageDiv.style.textAlign = 'center';
         messageDiv.style.marginTop = '20px';
         
-        // Try to insert the message before the first h2, or append to the form
-        // More robustly, let's find the main container for step 5 content.
-        // The h2 "Submission Complete!" is a good marker.
         let insertionPoint = null;
         const h2Elements = document.getElementsByTagName('h2');
         for (let i = 0; i < h2Elements.length; i++) {
@@ -728,7 +728,6 @@ function rehighlight(that,check) {
         if (insertionPoint) {
             insertionPoint.appendChild(messageDiv);
         } else {
-            // Fallback: try to find the form and append there, or body as last resort
             const form = document.querySelector('form[name="theForm"]');
             if (form) {
                 form.appendChild(messageDiv);
@@ -742,6 +741,7 @@ function rehighlight(that,check) {
         }, 3000); // 3 second delay
     }
 })();
+{/literal}
 </script>
 {/if}
 
