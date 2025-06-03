@@ -13,34 +13,25 @@ tt {
 }
 
 /* Styles from inline attributes */
-form[name="theForm"] {
+form[name="theForm"] { /* Applied to most forms */
 	background-color: #f9f9f9;
 }
 
-.interestBox { /* Base style for interestBox divs */
+.interestBox { /* Base style for interestBox divs, can be enhanced */
 	border: 1px solid pink;
+    padding: 10px;
+    margin-bottom: 15px;
 }
 
-/* Specific ID styles for interestBox like #show1, #hide1 */
-/* #show1 has display:none handled by JS */
-#hide1 { /* This was floated and had specific width/position */
-	float: right;
+#hide1 { /* Specific ID from search_text.tpl */
+	float: right; /* Overrides .float-right if both are present, but #id is more specific */
 	width: 200px;
 	position: relative;
 }
 
-.form-row:first-child .form-cell.colspan-2 {
-	padding-top: 8px;
-}
-
-select[name="distance"],
-select[name="resultsperpage"] {
-	text-align: right;
-}
-
-/* Default background for form rows, if not transparent to the form background */
+/* General form row styling */
 .form-row {
-	/* background-color: #f9f9f9; */ /* Assuming transparent to form background */
+	/* display: contents; handled by grid system below */
 }
 
 .form-row:hover {
@@ -49,100 +40,172 @@ select[name="resultsperpage"] {
 
 .form-cell.section-spacer {
 	line-height: 0.1em;
+    padding: 0; /* Spacers likely don't need padding */
 }
 
-input[name="searchtext"] { /* Default width for desktop */
+/* Default widths for specific named inputs (Desktop) */
+input[name="searchtext"] {
 	width: 400px;
+    max-width: 100%;
+}
+input[name="user_name"].searchinput {
+	width: 200px;
+    max-width: 100%;
 }
 
-#keyword_help { /* Parent div for positioning context */
+/* Help text popups */
+#keyword_help, #date_help {
 	position: relative;
 }
 
-#keyword_help > div {
+#keyword_help > div, #date_help > div {
 	position: absolute;
 	line-height: 1.1em;
-	top: 0px;
-	left: 0px;
 	background-color: #FFFFCC;
 	width: 600px;
-	padding: 5px;
-	border-bottom: 3px solid black;
-	z-index: 10;
-	display: none; /* Initially hidden, JS will show it */
+	padding: 10px; /* Increased padding */
+	border: 1px solid #ccc; /* Softer border */
+	border-bottom: 2px solid #aaa; /* Slightly stronger bottom border */
+	z-index: 100; /* Ensure visibility */
+	display: none; /* JS handles display */
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
 }
+#keyword_help > div { top: 0px; left: 0px; }
+#date_help > div { top: 17px; left: 0px; }
 
-#keyword_help ul li {
+
+#keyword_help ul, #date_help ul {
+    list-style-position: inside;
+    padding-left: 0;
+}
+#keyword_help ul li, #date_help ul li {
 	padding-bottom: 5px;
 }
-
 #keyword_help i {
 	font-size: 0.8em;
 }
 
-.form-cell.section-header {
-	background-color: #dddddd;
-}
-
+/* Tag suggestions dropdown parent */
 #tagParent {
 	position: absolute;
 	top: 0px;
 	left: 0px;
 	background-color: lightgrey;
 	margin-left: 86px;
-	padding-right: 20px;
-	z-index: 10;
-	/* display: none; is set by JS $(function() { $('#tagParent').hide(); }); */
+	padding: 5px; /* Added padding */
+    border: 1px solid #aaa;
+	z-index: 100;
+	min-width: 200px; /* Give it some base width */
+	box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+	/* display: none; is set by JS */
+}
+#tagParent ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+#tagParent ul li a {
+    display: block;
+    padding: 3px 5px;
+    text-decoration: none;
+    color: #333;
+}
+#tagParent ul li a:hover {
+    background-color: #007bff;
+    color: white;
 }
 
-input[name="user_name"].searchinput { /* Default width for desktop */
-	width: 200px;
+
+/* ========== UTILITY & GENERAL CLASSES ========== */
+.error-text {
+	color: red;
+	font-weight: bold;
 }
 
-input.date-display-field { /* Default width for desktop */
-    width: 17px;
+.section-header { /* For divs acting as headers, distinct from fieldset legends */
+	background-color: #dddddd;
+	padding: 8px;
+	font-weight: bold;
+	margin-top: 10px;
+	margin-bottom: 10px;
+    grid-column: 1 / -1; /* Ensure it spans all columns in the grid */
 }
 
-#date_help { /* Parent div for positioning context */
-    position: relative;
-	display: none; /* Initially hidden, JS will show it */
+.content-padding-large {
+	padding: 20px;
 }
 
-#date_help > div {
-	position: absolute;
-	top: 17px;
-	left: 0px;
-	background-color: #FFFFCC;
-	width: 600px;
-	padding: 5px;
-	border-bottom: 3px solid black;
-	z-index: 10;
+.text-muted {
+	color: gray;
 }
 
-#date_help ul li {
-	padding-bottom: 5px;
+.disabledLabel { /* Used by search_advanced.tpl JS */
+	color: #999999;
 }
 
-/* CSS Grid Layout for Desktop */
+.font-large { font-size: 1.1em; }
+.font-small { font-size: 0.9em; }
+.font-size-xs { font-size: 0.7em; }
+
+.width-xlarge { width: 640px; max-width: 100%; }
+.width-large { width: 400px; max-width: 100%; } /* Example, if needed */
+.width-300 { width: 300px; max-width: 100%;}
+
+.float-right { float: right; margin-left: 15px; margin-bottom: 10px; }
+.clear-both { clear: both; }
+
+.warning-box {
+	background-color: pink; color: black; border: 2px solid red;
+	padding: 10px; margin-bottom: 15px; display: flex; align-items: center;
+}
+.notice-box {
+    background-color: #e6f7ff; border: 1px solid #91d5ff; color: #333;
+    padding: 10px; margin-bottom: 15px; display: flex; align-items: center;
+}
+.icon-alert { vertical-align: middle; }
+.icon-spacer-right { margin-right: 10px; }
+
+input.date-display-field {
+    width: 40px; /* Increased for MM/DD */
+    min-width: 35px;
+    text-align: center;
+    padding: 6px 3px; /* Adjust padding */
+}
+
+/* ========== FIELDSET AND LEGEND STYLING ========== */
+fieldset {
+	border: 1px solid #ccc;
+	padding: 15px;
+	margin-bottom: 20px;
+    background-color: #fdfdfd;
+}
+legend {
+	font-weight: bold; padding: 0 10px; margin-left: 5px;
+	font-size: 1.1em; color: #333;
+}
+fieldset .form-cell.section-header { margin-top: 0; }
+
+
+/* ========== CSS GRID LAYOUT ========== */
 .search-form-grid {
 	display: grid;
-	grid-template-columns: auto 1fr auto; /* Label, Input, Hint/Example */
-	gap: 8px;
-	align-items: center;
+	/* Default to 2 columns: label and main input area. Third column for hints/buttons can be added explicitly if needed by the row. */
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 10px;
+	align-items: start; /* Align items to the start of the cell for better label alignment with multi-line inputs */
+}
+/* Modifier for forms/sections that consistently use a third column for hints or buttons */
+.search-form-grid.three-columns {
+    grid-template-columns: auto minmax(0, 2fr) minmax(0, 1fr); /* Label, Input, Hint/Button */
 }
 
-.form-row {
-	display: contents;
-}
+.form-row { display: contents; } /* Children (.form-cell) become direct grid items */
 
 .form-cell {
 	padding: 4px;
+    /* border: 1px dashed #eee; */ /* For debugging grid */
 }
-
-.form-cell label {
-	display: block;
-	font-weight: bold;
-}
+.form-cell label { display: block; font-weight: bold; padding-top: 4px; }
 
 .form-cell input[type="text"],
 .form-cell input[type="password"],
@@ -151,114 +214,86 @@ input.date-display-field { /* Default width for desktop */
 	width: 100%;
 	padding: 6px;
 	box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+.form-cell input[type="checkbox"], .form-cell input[type="radio"] {
+    margin-right: 5px;
 }
 
-.form-cell.colspan-2 {
-	grid-column: span 2;
+.form-cell.colspan-2 { grid-column: span 2; }
+.form-cell.colspan-3 { grid-column: span 3; }
+/* For 2-column default grid, colspan-2 means full width */
+.search-form-grid:not(.three-columns) .form-cell.colspan-2,
+.search-form-grid:not(.three-columns) .form-cell.colspan-3 {
+    grid-column: 1 / -1;
 }
-
-.form-cell.colspan-3 {
-	grid-column: span 3;
-}
-
-/* Override width:100% for specific inputs that have their own fixed/max widths */
-input[name="searchtext"] { /* Already defined above, ensure it's what we want for grid context */
-    width: 400px; /* Max width for this field */
-    max-width: 100%; /* Ensure it doesn't overflow its cell if cell is narrower */
-}
-
-input[name="user_name"].searchinput {  /* Already defined above */
-    width: 200px; /* Max width */
-    max-width: 100%;
-}
-
-input.date-display-field { /* Already defined above */
-    width: 30px; /* Small fixed width */
-    min-width: 30px; /* Prevent it from shrinking too much if cell is small */
+/* For 3-column grid, colspan-3 means full width */
+.search-form-grid.three-columns .form-cell.colspan-3 {
+    grid-column: 1 / -1;
 }
 
 
-/* Media Query for Smaller Screens (e.g., tablets and mobiles) */
+/* Specific input overrides (mostly for desktop on a three-column grid) */
+.search-form-grid.three-columns input[name="searchtext"] { width: 400px; max-width:100%;}
+.search-form-grid.three-columns input[name="user_name"].searchinput { width: 200px; max-width:100%;}
+
+.search-form-grid input[name="x"], /* For search_admin_advanced.tpl */
+.search-form-grid input[name="y"] {
+    width: 60px; max-width: 100%;
+}
+
+/* Ensure selects for distance and resultsperpage maintain their right alignment on desktop */
+select[name="distance"], select[name="resultsperpage"] {
+	text-align: right;
+}
+
+
+/* ========== RESPONSIVE ADJUSTMENTS ========== */
 @media (max-width: 768px) {
-	.search-form-grid {
+	.search-form-grid, .search-form-grid.three-columns {
 		grid-template-columns: 1fr; /* Single column layout */
 	}
-
-	.form-cell,
-	.form-cell.colspan-2,
-	.form-cell.colspan-3 {
-		grid-column: 1 / -1; /* All cells take full width of the single column */
+	.form-cell, .form-cell.colspan-2, .form-cell.colspan-3 {
+		grid-column: 1 / -1; /* All cells take full width */
 	}
+	.form-cell label { margin-bottom: 4px; }
 
-	.form-cell label {
-		margin-bottom: 4px;
-	}
-
-    /* Inputs take full width in single column */
-    input[name="searchtext"],
-    input[name="user_name"].searchinput,
-    input.date-display-field {
+    /* All text inputs, selects become full width */
+    input[name="searchtext"], input[name="user_name"].searchinput, input.date-display-field,
+    .search-form-grid input[name="x"], .search-form-grid input[name="y"],
+    .width-xlarge, .width-large, .width-300 {
         width: 100%;
     }
+    select[name="distance"], select[name="resultsperpage"] { text-align: left; }
 
-    select[name="distance"],
-    select[name="resultsperpage"] {
-	    text-align: left; /* Reset text-align for mobile if needed */
-    }
+	.float-right { float: none; width: 100%; margin-left: 0; margin-bottom: 15px; }
 
-	/* Responsive Help Text */
-	#keyword_help > div,
-	#date_help > div {
-		width: auto;
-        left: 2.5%;
-        right: 2.5%;
-        margin-left: 0;
-        position: relative;
-        top: auto;
-        left: auto;
-        margin-top: 10px;
-        display: block; /* Ensure it's not display:none from desktop */
+	#keyword_help > div, #date_help > div {
+		width: auto; left: 2.5%; right: 2.5%; margin-left: 0;
+		position: relative; top: auto; left: auto; margin-top: 10px;
+		display: block !important; /* Override JS if it tries to hide on resize after focus */
+        box-shadow: none;
 	}
-    /* Ensure JS-controlled display:none is overridden if they should be visible by default on mobile */
-    /* However, these are typically shown on focus/hover, so JS will manage display */
-
     #tagParent {
-        margin-left: 0;
-        width: 100%;
-        position: relative;
+        margin-left: 0; width: 100%; position: relative;
+        box-shadow: none;
     }
 
-    .form-row:first-child .form-cell.colspan-2 {
-        padding-top: 0;
-    }
-    .form-row:first-child .form-cell {
-        margin-bottom: 5px;
-    }
-    .form-row:first-child .form-cell select {
-        width: 100%;
-    }
-     .form-row:first-child .form-cell.nowrap {
-        text-align: center;
-    }
-    .form-row:first-child .form-cell.nowrap input[type="submit"] {
-        width: auto;
-        padding: 10px 15px;
-    }
+    /* First row adjustments from search_text.tpl */
+    .form-row:first-child .form-cell.colspan-2 { padding-top: 0; }
+    .form-row:first-child .form-cell { margin-bottom: 5px; }
+    .form-row:first-child .form-cell select { width: 100%; }
+    .form-row:first-child .form-cell.nowrap { text-align: center; }
+    .form-row:first-child .form-cell.nowrap input[type="submit"] { width: auto; padding: 10px 15px; }
 }
 
 @media (max-width: 480px) {
-    #maincontent form label {
-        font-size: 0.9em;
-    }
-    .form-cell input[type="text"],
-    .form-cell input[type="password"],
-    .form-cell select,
-    .form-cell textarea {
-        padding: 8px;
-    }
-
-    #keyword_help > div,
-	#date_help > div {
-		font-size: 0.9em;
-	}
+    #maincontent form label { font-size: 0.9em; }
+    .form-cell input[type="text"], .form-cell input[type="password"],
+    .form-cell select, .form-cell textarea { padding: 8px; }
+    #keyword_help > div, #date_help > div { font-size: 0.9em; padding: 8px; }
+    fieldset { padding: 10px; } legend { font-size: 1em; }
+    .search-form-grid, .search-form-grid.three-columns { gap: 6px; }
+    .interestBox { padding: 8px; }
 }
