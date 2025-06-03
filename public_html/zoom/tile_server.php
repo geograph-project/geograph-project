@@ -105,7 +105,7 @@ else if ($action === 'get_tile') {
     if ($image_info === false) {
         send_error_response('Could not read image info for get_tile.', 500);
     }
-    $mime__type = $image_info['mime']; // Corrected variable name
+    $mime_type = $image_info['mime']; // Corrected variable name
     $source_image = null;
 
     switch ($mime_type) { // Corrected variable name
@@ -130,41 +130,63 @@ else if ($action === 'get_tile') {
         send_error_response('Failed to load image. It might be corrupted or an unsupported format.', 500);
     }
 
+    // --- Tile Calculation Logic (New Interpretation) ---
     $source_width = imagesx($source_image);
     $source_height = imagesy($source_image);
 
-    // Tile Calculation Logic (as in the original prompt)
-    // Higher zoom_level means more zoomed IN.
-    // zoom_level 0: 1 tile pixel = 1 source image pixel (if DEFAULT_TILE_SIZE is output size)
-    // zoom_level 1: 1 tile pixel = 0.5 source image pixels (source region is smaller, scaled up)
-    $pixels_in_source_covered_by_tile_edge = DEFAULT_TILE_SIZE / pow(2, $zoom_level);
-
-    $src_x = $tile_x * $pixels_in_source_covered_by_tile_edge;
-    $src_y = $tile_y * $pixels_in_source_covered_by_tile_edge;
-    $src_w = $pixels_in_source_covered_by_tile_edge;
-    $src_h = $pixels_in_source_covered_by_tile_edge;
-
-    // Create the destination tile image
     $dest_tile_image = imagecreatetruecolor(DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE);
-    if ($mime_type === 'image/png') { // Corrected variable name
+    if ($mime_type === 'image/png') {
         imagealphablending($dest_tile_image, false);
         imagesavealpha($dest_tile_image, true);
         $transparent_color = imagecolorallocatealpha($dest_tile_image, 0, 0, 0, 127);
         imagefill($dest_tile_image, 0, 0, $transparent_color);
-        // imagecolortransparent($dest_tile_image, $transparent_color); // Not strictly needed if alpha saved
     } else {
         $white = imagecolorallocate($dest_tile_image, 255, 255, 255);
         imagefill($dest_tile_image, 0, 0, $white);
     }
 
-    imagecopyresampled(
-        $dest_tile_image,
-        $source_image,
-        0, 0,
-        (int)round($src_x), (int)round($src_y),
-        DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE,
-        (int)round($src_w), (int)round($src_h)
-    );
+    if ($zoom_level == 0) {
+        // Zoom level 0: entire image in one tile, letterboxed
+        $scale_w = DEFAULT_TILE_SIZE / $source_width;
+        $scale_h = DEFAULT_TILE_SIZE / $source_height;
+        $scale = min($scale_w, $scale_h); // Maintain aspect ratio
+
+        $dst_w = (int)round($source_width * $scale);
+        $dst_h = (int)round($source_height * $scale);
+        $dst_x = (int)round((DEFAULT_TILE_SIZE - $dst_w) / 2);
+        $dst_y = (int)round((DEFAULT_TILE_SIZE - $dst_h) / 2);
+
+        imagecopyresampled(
+            $dest_tile_image, $source_image,
+            $dst_x, $dst_y, 0, 0,
+            $dst_w, $dst_h, $source_width, $source_height
+        );
+    } else if ($zoom_level > 0) {
+        // Zoom level > 0: image divided into 2^zoom x 2^zoom grid
+        $num_tiles_edge = pow(2, $zoom_level);
+
+        $src_region_w = $source_width / $num_tiles_edge;
+        $src_region_h = $source_height / $num_tiles_edge;
+
+        $current_src_x = $tile_x * $src_region_w;
+        $current_src_y = $tile_y * $src_region_h;
+
+        // Ensure tile_x and tile_y are within bounds for this zoom level
+        if ($tile_x < 0 || $tile_x >= $num_tiles_edge || $tile_y < 0 || $tile_y >= $num_tiles_edge) {
+            // Requested tile is out of bounds for this zoom level, send empty/error tile or handle
+            // For now, the pre-filled tile (transparent/white) will be sent.
+        } else {
+             imagecopyresampled(
+                 $dest_tile_image, $source_image,
+                 0, 0, // Destination x, y (top-left of tile)
+                 (int)round($current_src_x), (int)round($current_src_y), // Source x, y
+                 DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, // Destination width, height
+                 (int)round($src_region_w), (int)round($src_region_h)  // Source region width, height
+             );
+        }
+    } else { // Should not happen if client sends valid zoom_levels (>=0)
+        send_error_response('Invalid zoom_level: ' . $zoom_level, 400);
+    }
 
     // Output the tile
     $expires_seconds = 60 * 60 * 24 * 7; // Cache for 7 days
@@ -201,5 +223,3 @@ else if ($action === 'get_tile') {
 else {
     send_error_response('Unknown action: ' . htmlspecialchars($action));
 }
-
-?>

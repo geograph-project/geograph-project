@@ -43,7 +43,9 @@ The `tile_server.php` script is the backend engine that processes images. It is 
     *   `get_tile`: Generates and returns a specific image tile.
         *   **Parameters**:
             *   `image_path` (string, required): Filename of the image in `sample_images/`.
-            *   `zoom_level` (int, required): The current zoom level. Level 0 is the most detailed (where one source pixel can be magnified to fill a tile if `TILE_SIZE` is large enough, or where `TILE_SIZE` source pixels are shown per tile edge if `TILE_SIZE` is small like 1). Higher numbers mean more zoomed in (fewer source pixels per tile edge). Client `maxZoomLevel` corresponds to server `zoom_level` where 1 source pixel is rendered per tile edge pixel before scaling up to fill the tile.
+            *   `zoom_level` (int, required): Defines the resolution and tiling of the image.
+                *   **`zoom_level = 0`**: Returns the entire source image, scaled and letterboxed to fit within a single tile (`DEFAULT_TILE_SIZE` x `DEFAULT_TILE_SIZE`). The `tile_x` and `tile_y` parameters are effectively ignored (or should be 0).
+                *   **`zoom_level > 0`**: The source image is conceptually divided into a grid of `2^zoom_level` x `2^zoom_level` tiles. The server returns the tile specified by `tile_x` and `tile_y` from this grid, scaled to `DEFAULT_TILE_SIZE` x `DEFAULT_TILE_SIZE`. Higher zoom levels provide more detail from the source image.
             *   `tile_x` (int, required): The X-coordinate of the tile (0-indexed from left).
             *   `tile_y` (int, required): The Y-coordinate of the tile (0-indexed from top).
         *   **Response**: The raw image data (e.g., JPEG or PNG) for the requested tile. Includes `Cache-Control` headers.
@@ -59,8 +61,11 @@ The `js/viewer.js` script controls the front-end experience:
 *   **Initialization**: Fetches image dimensions from `tile_server.php` using the `get_image_info` action.
 *   **Tile Management**: Calculates which tiles are needed for the current view (based on zoom and pan) and requests them from `tile_server.php` (`get_tile` action).
 *   **Zooming**:
-    *   Handled via mouse wheel and on-screen buttons (+/-).
-    *   Zooms towards the mouse cursor position (wheel) or viewer center (buttons).
+    *   The viewer starts at `zoom = 0`, displaying the entire image within a single tile area.
+    *   Each increment in zoom level effectively doubles the detail (e.g., from 1 tile total to 2x2 tiles, then 4x4, etc., corresponding to `2^zoom_level` tiles per edge).
+    *   `maxZoomLevel` is dynamically calculated. It represents the zoom level where displaying tiles at `TILE_SIZE` results in approximately a 1:1 pixel mapping from the source image to the screen for its largest dimension.
+    *   Zooming is handled via mouse wheel, on-screen buttons (+/-), and pinch-to-zoom on touch devices.
+    *   Zooms towards the mouse cursor position (wheel/buttons) or pinch center (touch).
 *   **Panning**:
     *   Enabled by clicking and dragging the image.
 *   **Configuration**:

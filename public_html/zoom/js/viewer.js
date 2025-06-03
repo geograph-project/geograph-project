@@ -76,10 +76,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // `maxZoomLevel` on client should be where we see the image at approx 1:1 or more detail.
             // Let's say `maxZoomLevel` (client) means we are requesting `zoom_level = M` from server
             // such that `TILE_SIZE / (2^M)` is small, e.g., 1. So `M = log2(TILE_SIZE)`.
-            maxZoomLevel = Math.floor(Math.log2(Math.max(imageInfo.width, imageInfo.height))); // Max zoom where image is roughly actual size or larger
-                                                                                             // This is a common definition, where image pixels are magnified.
-                                                                                             // Let's cap it at a level where TILE_SIZE / 2^zoom is not too small.
-            maxZoomLevel = Math.max(0, Math.floor(Math.log2(TILE_SIZE))); // This ensures that at maxZoomLevel, we copy 1 source pixel to the tile and scale it up.
+            // --- NEW maxZoomLevel Calculation ---
+            // New maxZoomLevel: where tiles are 1:1 with source pixels at the highest zoom level.
+            // This means at maxZoomLevel, the number of tiles along an edge (numTilesWorldEdge = 2^maxZoomLevel)
+            // times TILE_SIZE (the screen display size of each tile) should roughly equal the image dimension.
+            // Or, more directly, server zoom_level N means source_region_width = image_width / 2^N.
+            // We want source_region_width to be TILE_SIZE for a 1:1 mapping of source pixels to tile pixels.
+            // So, image_width / 2^maxZoomLevel = TILE_SIZE  => 2^maxZoomLevel = image_width / TILE_SIZE
+            // maxZoomLevel = log2(image_width / TILE_SIZE)
+            // We use the largest dimension to ensure the whole image can achieve this 1:1.
+            const tiles_for_largest_dim = Math.max(imageInfo.width, imageInfo.height) / TILE_SIZE;
+            maxZoomLevel = Math.ceil(Math.log2(tiles_for_largest_dim > 0 ? tiles_for_largest_dim : 1));
+            maxZoomLevel = Math.max(0, maxZoomLevel); // Ensure it's not negative if image is smaller than a tile
 
             // Initial zoom: Fit image to viewer container.
             // We need to find a currentZoom (server zoom_level) such that the scaled image fits.
@@ -109,13 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Number of tiles = imageInfo.width / TILE_SIZE.
             // Total rendered width = (imageInfo.width / TILE_SIZE) * TILE_SIZE = imageInfo.width.
             // This is if tiles are displayed at their native TILE_SIZE.
-            // Calculate displayed image size at the initial zoom level (currentZoom is usually 0 here)
-            const imageDisplayWidthAtCurrentZoom = imageInfo.width / Math.pow(2, currentZoom);
-            const imageDisplayHeightAtCurrentZoom = imageInfo.height / Math.pow(2, currentZoom);
-
-            pan.x = (viewerContainer.clientWidth - imageDisplayWidthAtCurrentZoom) / 2;
-            pan.y = (viewerContainer.clientHeight - imageDisplayHeightAtCurrentZoom) / 2;
-
+            // --- NEW Initial Pan Calculation ---
+            // At zoom 0, the server provides a single tile representing the whole image, letterboxed into TILE_SIZE dimensions.
+            // We center this single TILE_SIZE x TILE_SIZE tile in the viewer.
+            pan.x = (viewerContainer.clientWidth - TILE_SIZE) / 2;
+            pan.y = (viewerContainer.clientHeight - TILE_SIZE) / 2;
 
             console.log('Image Info:', imageInfo);
             console.log('Max zoom level (client maps to server zoom_level):', maxZoomLevel);
@@ -144,60 +150,60 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-
-    // --- Touch Helper Functions ---
-    function getDistance(p1, p2) {
-        return Math.sqrt(Math.pow(p2.clientX - p1.clientX, 2) + Math.pow(p2.clientY - p1.clientY, 2));
-    }
-
-    function getMidpoint(p1, p2) {
-        return {
-            clientX: (p1.clientX + p2.clientX) / 2,
-            clientY: (p1.clientY + p2.clientY) / 2
-        };
-    }
-
     function renderTiles() {
         if (!imageInfo.width || !imageInfo.height) return;
-
         viewerContainer.innerHTML = ''; // Clear previous tiles
 
-        // sourcePixelsPerTileEdge: how many pixels from the source image are covered by one edge of a tile at the current zoom.
-        const sourcePixelsPerTileEdge = TILE_SIZE / Math.pow(2, currentZoom);
+        // Server zoom_level is the same as client currentZoom with new logic
+        const server_zoom_level = currentZoom;
 
-        // numTilesX/Y: how many tiles are needed to cover the *entire source image* at this zoom level.
-        const numTilesX = Math.ceil(imageInfo.width / sourcePixelsPerTileEdge);
-        const numTilesY = Math.ceil(imageInfo.height / sourcePixelsPerTileEdge);
+        if (currentZoom === 0) {
+            // Zoom 0: Display a single tile (0,0) which contains the whole image
+            const tile = document.createElement('img');
+            tile.src = `../tile_server.php?action=get_tile&image_path=${encodeURIComponent(SOURCE_IMAGE_PATH)}&zoom_level=0&tile_x=0&tile_y=0`;
+            tile.style.position = 'absolute';
+            tile.style.left = `${pan.x}px`;
+            tile.style.top = `${pan.y}px`;
+            tile.style.width = `${TILE_SIZE}px`;
+            tile.style.height = `${TILE_SIZE}px`;
+            tile.setAttribute('data-tile-x', 0);
+            tile.setAttribute('data-tile-y', 0);
+            viewerContainer.appendChild(tile);
+            // console.log(`Zoom 0: Pan (${pan.x.toFixed(2)}, ${pan.y.toFixed(2)})`);
+            return; // Nothing more to do for zoom 0
+        }
 
-        // startTileX/Y, endTileX/Y: indices of tiles visible in the viewport.
-        // pan.x is the offset of the image's top-left corner relative to the viewer's top-left corner.
-        // If pan.x is 0, image top-left is at viewer top-left.
-        // If pan.x is positive, image is shifted right. Tiles to the left become visible.
-        // Tile with index 0 starts at pan.x. Its left edge is pan.x.
-        // We need tiles where tile_left_edge < viewer_width AND tile_right_edge > 0
-        // tx * TILE_SIZE + pan.x < viewerContainer.clientWidth
-        // (tx + 1) * TILE_SIZE + pan.x > 0
+        // For zoom > 0
+        // World dimensions: The conceptual canvas size at this zoom level
+        // If TILE_SIZE is 256, zoom 1 world is 512x512, zoom 2 is 1024x1024 etc.
+        // This means at currentZoom=1, worldEdgeLength = 256 * 2^1 = 512.
+        const worldEdgeLength = TILE_SIZE * Math.pow(2, currentZoom);
 
-        const firstVisibleTileX = Math.floor(-pan.x / TILE_SIZE);
-        const firstVisibleTileY = Math.floor(-pan.y / TILE_SIZE);
-        const lastVisibleTileX = Math.ceil((viewerContainer.clientWidth - pan.x) / TILE_SIZE);
-        const lastVisibleTileY = Math.ceil((viewerContainer.clientHeight - pan.y) / TILE_SIZE);
+        // Number of tiles along one edge of this conceptual world
+        // At currentZoom=1, numTilesWorldEdge = 2^1 = 2. (Correct, 512px world / 256px tiles = 2 tiles)
+        const numTilesWorldEdge = Math.pow(2, currentZoom);
 
-        // console.log(`Zoom: ${currentZoom}, Pan: (${pan.x.toFixed(2)}, ${pan.y.toFixed(2)}), SourcePxPerTile: ${sourcePixelsPerTileEdge.toFixed(2)}`);
-        // console.log(`Tile Range: X[${firstVisibleTileX}-${lastVisibleTileX}), Y[${firstVisibleTileY}-${lastVisibleTileY}) from total [${numTilesX}x${numTilesY}]`);
+        // Calculate the range of tiles visible in the viewport
+        const startTileX = Math.floor(-pan.x / TILE_SIZE);
+        const startTileY = Math.floor(-pan.y / TILE_SIZE);
+        const endTileX = Math.ceil((-pan.x + viewerContainer.clientWidth) / TILE_SIZE);
+        const endTileY = Math.ceil((-pan.y + viewerContainer.clientHeight) / TILE_SIZE);
 
-        for (let ty = firstVisibleTileY; ty < lastVisibleTileY; ty++) {
-            for (let tx = firstVisibleTileX; tx < lastVisibleTileX; tx++) {
+        // console.log(`Zoom: ${currentZoom}, Pan: (${pan.x.toFixed(2)}, ${pan.y.toFixed(2)}), WorldEdge: ${worldEdgeLength}`);
+        // console.log(`Tile Range: X[${startTileX}-${endTileX}], Y[${startTileY}-${endTileY}] from total world [${numTilesWorldEdge}x${numTilesWorldEdge}]`);
 
-                if (tx < 0 || tx >= numTilesX || ty < 0 || ty >= numTilesY) {
-                    continue; // Tile is outside the bounds of the image itself
+        for (let ty = startTileY; ty < endTileY; ty++) {
+            for (let tx = startTileX; tx < endTileX; tx++) {
+                // Ensure tile indices are within the bounds of the conceptual world for this zoom level
+                if (tx < 0 || tx >= numTilesWorldEdge || ty < 0 || ty >= numTilesWorldEdge) {
+                    continue;
                 }
 
                 const tile = document.createElement('img');
-                tile.src = `../tile_server.php?action=get_tile&image_path=${encodeURIComponent(SOURCE_IMAGE_PATH)}&zoom_level=${currentZoom}&tile_x=${tx}&tile_y=${ty}`;
+                // tile_x and tile_y sent to server are the coordinates within this zoom level's grid
+                tile.src = `../tile_server.php?action=get_tile&image_path=${encodeURIComponent(SOURCE_IMAGE_PATH)}&zoom_level=${server_zoom_level}&tile_x=${tx}&tile_y=${ty}`;
                 tile.style.position = 'absolute';
-                // tile.style.left: position of the tile's left edge within the viewer.
-                // If tile tx=0, its left edge in the "world" is 0. With pan, it's pan.x.
+
                 tile.style.left = `${pan.x + tx * TILE_SIZE}px`;
                 tile.style.top = `${pan.y + ty * TILE_SIZE}px`;
                 tile.style.width = `${TILE_SIZE}px`;
