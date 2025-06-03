@@ -189,7 +189,6 @@ else if ($action === 'get_tile') {
     }
 
     // Output the tile
-    // Output the tile
     $expires_seconds = 60 * 60 * 24 * 7; // Cache for 7 days
     header('Cache-Control: public, max-age=' . $expires_seconds); // Removed extra 'public'
     header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $expires_seconds) . ' GMT');
@@ -224,5 +223,3 @@ else if ($action === 'get_tile') {
 else {
     send_error_response('Unknown action: ' . htmlspecialchars($action));
 }
-
-?>

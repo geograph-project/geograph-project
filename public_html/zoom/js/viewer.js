@@ -203,13 +203,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 // tile_x and tile_y sent to server are the coordinates within this zoom level's grid
                 tile.src = `../tile_server.php?action=get_tile&image_path=${encodeURIComponent(SOURCE_IMAGE_PATH)}&zoom_level=${server_zoom_level}&tile_x=${tx}&tile_y=${ty}`;
                 tile.style.position = 'absolute';
+
                 tile.style.left = `${pan.x + tx * TILE_SIZE}px`;
                 tile.style.top = `${pan.y + ty * TILE_SIZE}px`;
                 tile.style.width = `${TILE_SIZE}px`;
                 tile.style.height = `${TILE_SIZE}px`;
                 tile.setAttribute('data-tile-x', tx);
                 tile.setAttribute('data-tile-y', ty);
-                tile.onerror = () => { tile.alt = `Error Tile ${tx},${ty}`; };
+                tile.draggable = false; // Prevent browser's default image drag
+                tile.onerror = () => {
+                    // console.error(`Error loading tile: ${tx}, ${ty} at zoom ${currentZoom}`);
+                    tile.alt = `Error Tile ${tx},${ty} Z${currentZoom}`;
+                };
                 viewerContainer.appendChild(tile);
             }
         }
