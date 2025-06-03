@@ -1,26 +1,12 @@
 {assign var="page_title" value="Advanced Search"}
 {include file="_std_begin.tpl"}
-<style type="text/css">
-{literal}
-#maincontent form label {
-	font-size:1em;
-}
-tt {
-	border:1px solid gray;
-	padding:2px;
-}
-.selectedHighlight {
-	background-color:yellow;
-}
-{/literal}
-</style>
 
 {if $errormsg}
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
 {if $i}
 	{if $fullText}
-		<div class="interestBox" style="border:1px solid pink;display:none; " id="show1">
+		<div class="interestBox" id="show1"> {/* style="border:1px solid pink;display:none;" */}
 			This search was powered by the new <a href="/help/search_new">word search index</a>, which has different capabilities to the old database, so the options offered vary.
 			{if !$engine->criteria->sphinx.no_legacy}
 				You can access the <a href="/search.php?i={$i}&amp;form=advanced&amp;legacy=true">old advanced form here</a>.
@@ -29,21 +15,20 @@ tt {
 			<a href="javascript:void(hide_tree(1));">close</a>
 		</div>
 
-		<div class="interestBox" style="border:1px solid pink; float:right; width:200px; position:relative; " id="hide1"><b>Not seeing the page you expect?</b>
-		<a href="javascript:void(show_tree(1));">expand...</a>
-
+		<div class="interestBox" id="hide1"> {/* style="border:1px solid pink; float:right; width:200px; position:relative;" */}
+			<b>Not seeing the page you expect?</b>
+			<a href="javascript:void(show_tree(1));">expand...</a>
 		</div>
 	{/if}
 
 <h2>Advanced Photo Search</h2>
-
 
 <p>Original Search: <tt>images{$searchdesc|escape:"html"}</tt></p>
 
 {else}
 	<h2>Photograph Search <a href="/article/Searching-on-Geograph" text="More information on the Search Engine" class="about">About</a></h2>
 {/if}
-<form action="/search.php?form=text" method="post" name="theForm" onsubmit="this.imageclass.disabled=false" style="background-color:#f9f9f9">
+<form action="/search.php?form=text" method="post" name="theForm" onsubmit="this.imageclass.disabled=false"> {/* style="background-color:#f9f9f9" */}
         <input type="hidden" name="form" value="text{$i}"/>
 
 	<div class="tabHolder">
@@ -56,216 +41,231 @@ tt {
 		{/dynamic}
 		<a href="/search.php?form=first" class="tab">First Geographs</a>
 	</div>
-	<div class="interestBox">
-		<b>Centered search:</b>
-	</div>
 
+	<div class="search-form-grid">
+		<fieldset>
+			<legend>Centered Search</legend>
+			<div class="form-row">
+				<div class="form-cell colspan-2"> {/* style="padding-top:8px" */}
+					Show images within <select name="distance" id="distance" size="1"> {/* style="text-align:right" */}
+					<option value=""> </option>
+						{html_options options=$distances selected=$distance}
+					</select> of <select id="selector" onchange="showLocationBox()">
+					<option value="gridref"{if $gridref} selected{/if}>Grid reference</option>
+					<option value="postcode"{if $postcode} selected{/if}>Postcode</option>
+					<option value="placename"{if $placename} selected{/if}>Placename</option>
+					<option value="county_id"{if $county_id} selected{/if}>County</option>
+					</select>:
+				</div>
+				<div class="form-cell nowrap">&nbsp;<input type="submit" value="Find"/></div>
+			</div>
+			<div class="form-row" id="tr_gridref"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+				<div class="form-cell"><label for="gridref" id="l_gridref">grid reference</label></div>
+				<div class="form-cell"><input type="text" name="gridref" id="gridref" value="{$gridref|escape:'html'}" class="searchinput"/></div>
+				<div class="form-cell">eg <tt>TQ 7050</tt> or <tt>N2343</tt></div>
+			</div>
+			<div class="form-row" id="tr_postcode"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+				<div class="form-cell"><label for="postcode" id="l_postcode">postcode</label></div>
+				<div class="form-cell"><input type="text" name="postcode" id="postcode" value="{$postcode|escape:'html'}" class="searchinput"/></div>
+				<div class="form-cell nowrap">eg <tt>RH13 1BU</tt> (GB &amp; NI)</div>
+			</div>
+			<div class="form-row" id="tr_placename"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+				<div class="form-cell"><label for="placename" id="l_placename">placename</label></div>
+				<div class="form-cell"><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput"/></div>
+				<div class="form-cell">eg <tt>Peterborough</tt></div>
+			</div>
+			<div class="form-row" id="tr_county_id"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+				<div class="form-cell"><label for="county_id" id="l_county_id">centre of county</label></div>
+				<div class="form-cell">
+					<select name="county_id" id="county_id" size="1" class="searchinput">
+					<option value=""> </option>
+						{html_options options=$countylist selected=$county_id}
+					</select>
+				</div>
+				<div class="form-cell">&nbsp;</div>
+			</div>
+		</fieldset>
 
-		<table cellpadding="3" cellspacing="0" width="100%">
-		  <tr>
-			 <td colspan="2" style="padding-top:8px">
-				Show images within <select name="distance" id="distance" size="1" style="text-align:right">
-				  <option value=""> </option>
-					{html_options options=$distances selected=$distance}
-				</select> of <select id="selector" onchange="showLocationBox()">
-				<option value="gridref"{if $gridref} selected{/if}>Grid reference</option>
-				<option value="postcode"{if $postcode} selected{/if}>Postcode</option>
-				<option value="placename"{if $placename} selected{/if}>Placename</option>
-				<option value="county_id"{if $county_id} selected{/if}>County</option>
-				</select>:</td>
-			 <td class="nowrap">&nbsp;<input type="submit" value="Find"/></td>
-		  </tr>
-		  <tr id="tr_gridref" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="gridref" id="l_gridref">grid reference</label></td>
-			 <td><input type="text" name="gridref" id="gridref" value="{$gridref|escape:'html'}" class="searchinput"/></td>
-			 <td>eg <tt>TQ 7050</tt> or <tt>N2343</tt></td>
-		  </tr>
-		  <tr id="tr_postcode" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="postcode" id="l_postcode">postcode</label></td>
-			 <td><input type="text" name="postcode" id="postcode" value="{$postcode|escape:'html'}" class="searchinput"/></td>
-			 <td class="nowrap">eg <tt>RH13 1BU</tt> (GB &amp; NI)</td>
-		  </tr>
-		  <tr id="tr_placename" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="placename" id="l_placename">placename</label></td>
-			 <td><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput"/></td>
-			 <td>eg <tt>Peterborough</tt></td>
-		  </tr>
-		  <tr id="tr_county_id" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="county_id" id="l_county_id">centre of county</label></td>
-			 <td>
-				<select name="county_id" id="county_id" size="1" class="searchinput">
-				  <option value=""> </option>
-					{html_options options=$countylist selected=$county_id}
-				</select></td>
-			 <td>&nbsp;</td>
-		  </tr>
-		  <tr>
-			 <td colspan="3" style="line-height:0.1em">&nbsp;</td>
-		  </tr>
-		  <tr>
-		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Word match search:</b>  &nbsp;&nbsp;&nbsp; <a href="/article/Word-Searching-on-Geograph" title="open word search help" class="about">About</a></td>
-		  </tr>
-		  <tr>
-			 <td colspan="3" style="line-height:0.1em">&nbsp;</td>
-		  </tr>
-		  <tr onmouseover="this.style.background='#efefef';showMyHelpDiv('keyword',true);" onmouseout="this.style.background='#f9f9f9';showMyHelpDiv('keyword',false);">
-			 <td><label for="searchtext" id="l_searchtext">keywords</label></td>
-			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px" maxlength="250" onfocus="showMyHelpDiv('keyword',true);" onblur="showMyHelpDiv('keyword',false);"/>
-			 </td>
-			 <td>eg <tt>bridge</tt></td>
-		  </tr>
-		  <tr>
-			 <td colspan="3" style="line-height:0.1em">&nbsp;
-				<div style="position:relative; display:none" id="keyword_help">
-					<div style="position:absolute;line-height:1.1em;top:0px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
-						<ul>
-							<li style="padding-bottom:5px">Separate multiple keywords with spaces, all keywords are required (ie AND)</li>
-							<li style="padding-bottom:5px">Enter a <b>tag</b>, in [...], for example: <tt>[footpath]</tt></li>
-							<li style="padding-bottom:5px">Only matches whole words, punctuation is not searchable</li>
-							<li style="padding-bottom:5px">Not case sensitive</li>
-							<li style="padding-bottom:5px"><b>Looking for exact match?</b> <tt>=bridge</tt><br/>&nbsp; Prefix a keyword with <tt>=</tt> (<tt>bridge</tt> matches bridges, bridging etc too)</small></li>
-							<li style="padding-bottom:5px"><b>Currently searches</b><ul>
-								<li>title, description, tags, category, photographer name and Shared Description</li>
-								<li>image taken date ( <tt>20071103</tt>, <tt>200711</tt>, <tt>2007</tt> or even <tt>April</tt>)</li>
-								<li>subject grid-reference <span class="nowrap">( <tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt> )</span></li>
-							</ul><i style="font-size:0.8em">(can optionally limit matches to a particular field, see 'About' above)</i></li>
-							<li style="padding-bottom:5px">Can match phrases <tt>"road bridge" (requires words be adjacent)</tt></li>
-							<li style="padding-bottom:5px">Can use OR between keywords <span class="nowrap"><tt>bridge OR bont OR pont</tt></span></li>
-							<li style="padding-bottom:5px">Can exclude words/terms <tt>canal -river</tt> or <tt>river -"road bridge"</tt></li>
-							<li style="padding-bottom:5px">Instead run an ANY search <tt>~bridge road river</tt></li>
-							<li><i>... plus more. See 'About' just above.</i></li>
-						</ul>
+		<div class="form-row">
+			<div class="form-cell colspan-3 section-spacer">&nbsp;</div> {/* style="line-height:0.1em" */}
+		</div>
+
+		<fieldset>
+			<legend>Word Match Search <a href="/article/Word-Searching-on-Geograph" title="open word search help" class="about">About</a></legend>
+			<div class="form-row">
+				<div class="form-cell colspan-3 section-spacer">&nbsp;</div> {/* style="line-height:0.1em" */}
+			</div>
+			<div class="form-row" onmouseover="showMyHelpDiv('keyword',true);" onmouseout="showMyHelpDiv('keyword',false);"> {/* style background changes removed */}
+				<div class="form-cell"><label for="searchtext" id="l_searchtext">keywords</label></div>
+				<div class="form-cell"><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" maxlength="250" onfocus="showMyHelpDiv('keyword',true);" onblur="showMyHelpDiv('keyword',false);"/> {/* style="width:400px" */}
+				</div>
+				<div class="form-cell">eg <tt>bridge</tt></div>
+			</div>
+			<div class="form-row">
+				<div class="form-cell colspan-3 section-spacer">&nbsp; {/* style="line-height:0.1em" */}
+					<div id="keyword_help"> {/* style="position:relative; display:none" */}
+						<div> {/* style="position:absolute;line-height:1.1em;top:0px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black" */}
+							<ul>
+								<li>Separate multiple keywords with spaces, all keywords are required (ie AND)</li> {/* style="padding-bottom:5px" */}
+								<li>Enter a <b>tag</b>, in [...], for example: <tt>[footpath]</tt></li> {/* style="padding-bottom:5px" */}
+								<li>Only matches whole words, punctuation is not searchable</li> {/* style="padding-bottom:5px" */}
+								<li>Not case sensitive</li> {/* style="padding-bottom:5px" */}
+								<li><b>Looking for exact match?</b> <tt>=bridge</tt><br/>&nbsp; Prefix a keyword with <tt>=</tt> (<tt>bridge</tt> matches bridges, bridging etc too)</small></li> {/* style="padding-bottom:5px" */}
+								<li><b>Currently searches</b> {/* style="padding-bottom:5px" */}
+									<ul>
+										<li>title, description, tags, category, photographer name and Shared Description</li>
+										<li>image taken date ( <tt>20071103</tt>, <tt>200711</tt>, <tt>2007</tt> or even <tt>April</tt>)</li>
+										<li>subject grid-reference <span class="nowrap">( <tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt> )</span></li>
+									</ul>
+									<i>(can optionally limit matches to a particular field, see 'About' above)</i> {/* style="font-size:0.8em" */}
+								</li>
+								<li>Can match phrases <tt>"road bridge" (requires words be adjacent)</tt></li> {/* style="padding-bottom:5px" */}
+								<li>Can use OR between keywords <span class="nowrap"><tt>bridge OR bont OR pont</tt></span></li> {/* style="padding-bottom:5px" */}
+								<li>Can exclude words/terms <tt>canal -river</tt> or <tt>river -"road bridge"</tt></li> {/* style="padding-bottom:5px" */}
+								<li>Instead run an ANY search <tt>~bridge road river</tt></li> {/* style="padding-bottom:5px" */}
+								<li><i>... plus more. See 'About' just above.</i></li>
+							</ul>
+						</div>
 					</div>
 				</div>
-			</td>
-		  </tr>
-		  <tr>
-		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Limit results to:</b></td>
-		  </tr>
-		  <tr>
-			 <td colspan="3" style="line-height:0.1em">&nbsp;</td>
-		  </tr>
-                  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-                         <td><label for="tag">Tag</label></td>
-			 <td colspan="2">
-				Tag Finder: <input type="text" name="tag" size="30" maxlength="60" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);}{/literal}" autocomplete="off" id="tag"/>
-				<input type="button" value="Use" onclick="useTag(this.form.elements['tag'].value)"/> (tags are added to the keyword box above)<br/>
-				<div style="position:relative;">
-					<div style="position:absolute;top:0px;left:0px;background-color:lightgrey;margin-left:86px;padding-right:20px" id="tagParent">
-						<ul id="taglist">
-						</ul>
+			</div>
+		</fieldset>
+
+		<div class="form-row">
+			<div class="form-cell colspan-3 section-spacer">&nbsp;</div> {/* style="line-height:0.1em" */}
+		</div>
+
+		<fieldset>
+			<legend>Limit Results To</legend>
+			<div class="form-row">
+				<div class="form-cell colspan-3 section-header">&nbsp;</div> {/* style="background:#dddddd;" */}
+			</div>
+			<div class="form-row"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+                         <div class="form-cell"><label for="tag">Tag</label></div>
+				 <div class="form-cell colspan-2">
+					Tag Finder: <input type="text" name="tag" size="30" maxlength="60" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);}{/literal}" autocomplete="off" id="tag"/>
+					<input type="button" value="Use" onclick="useTag(this.form.elements['tag'].value)"/> (tags are added to the keyword box above)<br/>
+					<div style="position:relative;"> {/* This style might be important for #tagParent positioning */}
+						<div id="tagParent"> {/* style="position:absolute;top:0px;left:0px;background-color:lightgrey;margin-left:86px;padding-right:20px" */}
+							<ul id="taglist">
+							</ul>
+						</div>
 					</div>
-				</div>
-                        </td>
-                  </tr>
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="user_name">Contributor</label></td>
-			 <td colspan="2">
-			 	<input type="text" name="user_name" id="user_name" value="{$user_name|escape:'html'}" class="searchinput" style="width:200px"
-			 	title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"/>
-				{dynamic}
-				{if $user->registered}
-					<input type="button" value="you!" onclick="this.form.user_name.value='{$user->user_id}:{$user->realname|escape:"html"}'">
-				{/if}
-				{/dynamic}
-				&nbsp; <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
-				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"}) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <small>(NOTE: exclude <u>ONLY</u> works if enter something in keywords box above)</small></small></td>
-		  </tr>
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="moderation_status">Classification</label></td>
-			 <td>
-				| <input type="radio" name="moderation_status" value="" checked/>either
-				| {html_radios name="moderation_status" options=$imagestatuses selected=$moderation_status separator=" | "}
-				  <input type="checkbox" name="first" value="1" {if $first}checked{/if}/>first only
-			 </td>
-			 <td>&nbsp;</td>
-		  </tr>
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="imageclass">Category</label></td>
-			 <td>
-
-<script type="text/javascript" src="/categories.js.php?full=1"></script>
-
-				<select name="imageclass" id="imageclass" size="1" class="searchinput"  onfocus="prePopulateImageclass()" disabled="disabled">
-					<option value=""></option>
-					{if $imageclass}
-						<option value="{$imageclass}" selected="selected">{$imageclass}</option>
+                        </div>
+                  </div>
+			<div class="form-row"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+				<div class="form-cell"><label for="user_name">Contributor</label></div>
+				<div class="form-cell colspan-2">
+					<input type="text" name="user_name" id="user_name" value="{$user_name|escape:'html'}" class="searchinput"/> {/* style="width:200px" */}
+					title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"/>
+					{dynamic}
+					{if $user->registered}
+						<input type="button" value="you!" onclick="this.form.user_name.value='{$user->user_id}:{$user->realname|escape:"html"}'">
 					{/if}
-					<option value="Other"></option>
-				</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/></td>
-			 <td>&nbsp;</td>
-		  </tr>
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="reference_index">Country</label></td>
-			 <td>
-				| <input type="radio" name="reference_index" value="" checked/>either
-				| {html_radios name="reference_index" options=$references selected=$reference_index separator=" | "}
-			 </td>
-			 <td>&nbsp;</td>
-		  </tr>
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="gridsquare">Myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td>
-			 <td>
-				<select name="gridsquare" id="gridsquare" size="1" class="searchinput">
-				  <option value=""> </option>
-					{html_options options=$prefixes selected=$gridsquare}
-				</select></td>
-			 <td>&nbsp;</td>
-		  </tr>
-		  <tr onmouseover="this.style.background='#efefef';showMyHelpDiv('date',true);" onmouseout="this.style.background='#f9f9f9';showMyHelpDiv('date',false);">
-			 <td><label for="submitted_startDay">Date submitted</label></td>
-			 <td colspan="2">
-				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type=text style="width:17px" name="__submitted_start" value="{$submitted_start|replace:'0-0-0':''}" id="submitted_start"/>
-				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type=text style="width:17px" name="__submitted_end" value="{$submitted_end|replace:'0-0-0':''}" id="submitted_end"/>
-			 </td>
-		  </tr>
-		  <tr onmouseover="this.style.background='#efefef';showMyHelpDiv('date',true);" onmouseout="this.style.background='#f9f9f9';showMyHelpDiv('date',false);">
-			 <td><label for="taken_startDay">Date taken</label>
-
-				<div style="position:relative; display:none" id="date_help">
-					<div style="position:absolute;top:17px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
-						<ul>
-							<li style="padding-bottom:5px">You can just specify part of a date, for example just a year, or just month and year.</li>
-							<li>Setting both the start and end date to the same value allows you to find pictures during that period, eg 'Jan 2001' or even just 1988</li>
-						</ul>
+					{/dynamic}
+					&nbsp; <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
+					<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"}) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <small>(NOTE: exclude <u>ONLY</u> works if enter something in keywords box above)</small></small>
+				</div>
+			</div>
+			<div class="form-row"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+				<div class="form-cell"><label for="moderation_status">Classification</label></div>
+				<div class="form-cell">
+					| <input type="radio" name="moderation_status" value="" checked/>either
+					| {html_radios name="moderation_status" options=$imagestatuses selected=$moderation_status separator=" | "}
+					<input type="checkbox" name="first" value="1" {if $first}checked{/if}/>first only
+				</div>
+				<div class="form-cell">&nbsp;</div>
+			</div>
+			<div class="form-row"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+				<div class="form-cell"><label for="imageclass">Category</label></div>
+				<div class="form-cell">
+					<script type="text/javascript" src="/categories.js.php?full=1"></script>
+					<select name="imageclass" id="imageclass" size="1" class="searchinput"  onfocus="prePopulateImageclass()" disabled="disabled">
+						<option value=""></option>
+						{if $imageclass}
+							<option value="{$imageclass}" selected="selected">{$imageclass}</option>
+						{/if}
+						<option value="Other"></option>
+					</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/>
+				</div>
+				<div class="form-cell">&nbsp;</div>
+			</div>
+			<div class="form-row"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+				<div class="form-cell"><label for="reference_index">Country</label></div>
+				<div class="form-cell">
+					| <input type="radio" name="reference_index" value="" checked/>either
+					| {html_radios name="reference_index" options=$references selected=$reference_index separator=" | "}
+				</div>
+				<div class="form-cell">&nbsp;</div>
+			</div>
+			<div class="form-row"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+				<div class="form-cell"><label for="gridsquare">Myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></div>
+				<div class="form-cell">
+					<select name="gridsquare" id="gridsquare" size="1" class="searchinput">
+					<option value=""> </option>
+						{html_options options=$prefixes selected=$gridsquare}
+					</select>
+				</div>
+				<div class="form-cell">&nbsp;</div>
+			</div>
+			<div class="form-row" onmouseover="showMyHelpDiv('date',true);" onmouseout="showMyHelpDiv('date',false);"> {/* style background changes removed */}
+				<div class="form-cell"><label for="submitted_startDay">Date submitted</label></div>
+				<div class="form-cell colspan-2">
+					between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type="text" class="date-display-field" name="__submitted_start" value="{$submitted_start|replace:'0-0-0':''}" id="submitted_start"/> {/* style="width:17px" */}
+					and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type="text" class="date-display-field" name="__submitted_end" value="{$submitted_end|replace:'0-0-0':''}" id="submitted_end"/> {/* style="width:17px" */}
+				</div>
+			</div>
+			<div class="form-row" onmouseover="showMyHelpDiv('date',true);" onmouseout="showMyHelpDiv('date',false);"> {/* style background changes removed */}
+				<div class="form-cell"><label for="taken_startDay">Date taken</label>
+					<div id="date_help"> {/* style="position:relative; display:none" */}
+						<div> {/* style="position:absolute;top:17px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black" */}
+							<ul>
+								<li>You can just specify part of a date, for example just a year, or just month and year.</li> {/* style="padding-bottom:5px" */}
+								<li>Setting both the start and end date to the same value allows you to find pictures during that period, eg 'Jan 2001' or even just 1988</li>
+							</ul>
+						</div>
 					</div>
 				</div>
-			 </td>
-			 <td>
-				between {html_select_date prefix="taken_start" time=$taken_start start_year="1880" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type=text style="width:17px" name="__taken_start" value="{$taken_start|replace:'0-0-0':''}" id="taken_start"/>
-				and {html_select_date prefix="taken_end" time=$taken_end start_year="1880" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type=text style="width:17px" name="__taken_end" value="{$taken_end|replace:'0-0-0':''}" id="taken_end"/>
-			 </td>
-			 <td>&nbsp;<input type="submit" value="Find"/></td>
-		  </tr>
-		  <tr>
-			 <td colspan="3" style="line-height:0.1em">&nbsp;</td>
-		  </tr>
-		  <tr>
-			 <td colspan="3" style="background:#dddddd;"><b>Finally...</b></td>
-		  </tr>
-		  <tr>
-			 <td colspan="3" style="line-height:0.1em">&nbsp;</td>
-		  </tr>
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td colspan="3">I want to display a <select name="displayclass" id="displayclass" size="1">
-					{html_options options=$displayclasses selected=$displayclass}
-				</select> of <select name="resultsperpage" id="resultsperpage" style="text-align:right" size="1">
-					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
-				</select> images per page,<br/> at most {newwin href="/faq3.php?q=search#172" title="Read more" text="one"} image from each <select name="groupby" id="groupby" size="1">
-					{html_options options=$groupbys selected=$groupby}
-				</select>,<br/> would like a heading separating images by <select name="breakby" id="breakby" size="1">
-					{html_options options=$breakdowns selected=$breakby}
-				</select>,<br/> and sorted in <span class="nowrap">(<input type="checkbox" name="reverse_order_ind" {$reverse_order_checked}/> reverse)
-				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);">
-					{html_options options=$sortorders selected=$orderby}
-				</select> order.</big></td>
-		  </tr>
-		  <tr>
-			 <td colspan="2">&nbsp;</td>
-			 <td>&nbsp;<input type="submit" value="Find"/></td>
+				<div class="form-cell">
+					between {html_select_date prefix="taken_start" time=$taken_start start_year="1880" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type="text" class="date-display-field" name="__taken_start" value="{$taken_start|replace:'0-0-0':''}" id="taken_start"/> {/* style="width:17px" */}
+					and {html_select_date prefix="taken_end" time=$taken_end start_year="1880" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onchange=\"updateHiddenDate(this);\" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}<input type="text" class="date-display-field" name="__taken_end" value="{$taken_end|replace:'0-0-0':''}" id="taken_end"/> {/* style="width:17px" */}
+				</div>
+				<div class="form-cell">&nbsp;<input type="submit" value="Find"/></div>
+			</div>
+		</fieldset>
 
-		  </tr>
-		</table></form>
+		<div class="form-row">
+			<div class="form-cell colspan-3 section-spacer">&nbsp;</div> {/* style="line-height:0.1em" */}
+		</div>
+
+		<fieldset>
+			<legend>Display Options</legend>
+			<div class="form-row">
+				<div class="form-cell colspan-3 section-header">&nbsp;</div> {/* style="background:#dddddd;" */}
+			</div>
+			<div class="form-row"> {/* onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'" */}
+				<div class="form-cell colspan-3">I want to display a <select name="displayclass" id="displayclass" size="1">
+						{html_options options=$displayclasses selected=$displayclass}
+					</select> of <select name="resultsperpage" id="resultsperpage" size="1"> {/* style="text-align:right" */}
+						{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
+					</select> images per page,<br/> at most {newwin href="/faq3.php?q=search#172" title="Read more" text="one"} image from each <select name="groupby" id="groupby" size="1">
+						{html_options options=$groupbys selected=$groupby}
+					</select>,<br/> would like a heading separating images by <select name="breakby" id="breakby" size="1">
+						{html_options options=$breakdowns selected=$breakby}
+					</select>,<br/> and sorted in <span class="nowrap">(<input type="checkbox" name="reverse_order_ind" {$reverse_order_checked}/> reverse)
+					<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);">
+						{html_options options=$sortorders selected=$orderby}
+					</select> order.</big>
+				</div>
+			</div>
+		</fieldset>
+
+		<div class="form-row">
+			<div class="form-cell colspan-2">&nbsp;</div>
+			<div class="form-cell">&nbsp;<input type="submit" value="Find"/></div>
+		</div>
+	</div>
+</form>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="/js/datepicker/javascript/zebra_datepicker.js"></script>

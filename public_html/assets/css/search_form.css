@@ -1,0 +1,264 @@
+/* General styles from existing style block */
+#maincontent form label {
+	font-size: 1em;
+}
+
+tt {
+	border: 1px solid gray;
+	padding: 2px;
+}
+
+.selectedHighlight {
+	background-color: yellow;
+}
+
+/* Styles from inline attributes */
+form[name="theForm"] {
+	background-color: #f9f9f9;
+}
+
+.interestBox { /* Base style for interestBox divs */
+	border: 1px solid pink;
+}
+
+/* Specific ID styles for interestBox like #show1, #hide1 */
+/* #show1 has display:none handled by JS */
+#hide1 { /* This was floated and had specific width/position */
+	float: right;
+	width: 200px;
+	position: relative;
+}
+
+.form-row:first-child .form-cell.colspan-2 {
+	padding-top: 8px;
+}
+
+select[name="distance"],
+select[name="resultsperpage"] {
+	text-align: right;
+}
+
+/* Default background for form rows, if not transparent to the form background */
+.form-row {
+	/* background-color: #f9f9f9; */ /* Assuming transparent to form background */
+}
+
+.form-row:hover {
+	background-color: #efefef;
+}
+
+.form-cell.section-spacer {
+	line-height: 0.1em;
+}
+
+input[name="searchtext"] { /* Default width for desktop */
+	width: 400px;
+}
+
+#keyword_help { /* Parent div for positioning context */
+	position: relative;
+}
+
+#keyword_help > div {
+	position: absolute;
+	line-height: 1.1em;
+	top: 0px;
+	left: 0px;
+	background-color: #FFFFCC;
+	width: 600px;
+	padding: 5px;
+	border-bottom: 3px solid black;
+	z-index: 10;
+	display: none; /* Initially hidden, JS will show it */
+}
+
+#keyword_help ul li {
+	padding-bottom: 5px;
+}
+
+#keyword_help i {
+	font-size: 0.8em;
+}
+
+.form-cell.section-header {
+	background-color: #dddddd;
+}
+
+#tagParent {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background-color: lightgrey;
+	margin-left: 86px;
+	padding-right: 20px;
+	z-index: 10;
+	/* display: none; is set by JS $(function() { $('#tagParent').hide(); }); */
+}
+
+input[name="user_name"].searchinput { /* Default width for desktop */
+	width: 200px;
+}
+
+input.date-display-field { /* Default width for desktop */
+    width: 17px;
+}
+
+#date_help { /* Parent div for positioning context */
+    position: relative;
+	display: none; /* Initially hidden, JS will show it */
+}
+
+#date_help > div {
+	position: absolute;
+	top: 17px;
+	left: 0px;
+	background-color: #FFFFCC;
+	width: 600px;
+	padding: 5px;
+	border-bottom: 3px solid black;
+	z-index: 10;
+}
+
+#date_help ul li {
+	padding-bottom: 5px;
+}
+
+/* CSS Grid Layout for Desktop */
+.search-form-grid {
+	display: grid;
+	grid-template-columns: auto 1fr auto; /* Label, Input, Hint/Example */
+	gap: 8px;
+	align-items: center;
+}
+
+.form-row {
+	display: contents;
+}
+
+.form-cell {
+	padding: 4px;
+}
+
+.form-cell label {
+	display: block;
+	font-weight: bold;
+}
+
+.form-cell input[type="text"],
+.form-cell input[type="password"],
+.form-cell select,
+.form-cell textarea {
+	width: 100%;
+	padding: 6px;
+	box-sizing: border-box;
+}
+
+.form-cell.colspan-2 {
+	grid-column: span 2;
+}
+
+.form-cell.colspan-3 {
+	grid-column: span 3;
+}
+
+/* Override width:100% for specific inputs that have their own fixed/max widths */
+input[name="searchtext"] { /* Already defined above, ensure it's what we want for grid context */
+    width: 400px; /* Max width for this field */
+    max-width: 100%; /* Ensure it doesn't overflow its cell if cell is narrower */
+}
+
+input[name="user_name"].searchinput {  /* Already defined above */
+    width: 200px; /* Max width */
+    max-width: 100%;
+}
+
+input.date-display-field { /* Already defined above */
+    width: 30px; /* Small fixed width */
+    min-width: 30px; /* Prevent it from shrinking too much if cell is small */
+}
+
+
+/* Media Query for Smaller Screens (e.g., tablets and mobiles) */
+@media (max-width: 768px) {
+	.search-form-grid {
+		grid-template-columns: 1fr; /* Single column layout */
+	}
+
+	.form-cell,
+	.form-cell.colspan-2,
+	.form-cell.colspan-3 {
+		grid-column: 1 / -1; /* All cells take full width of the single column */
+	}
+
+	.form-cell label {
+		margin-bottom: 4px;
+	}
+
+    /* Inputs take full width in single column */
+    input[name="searchtext"],
+    input[name="user_name"].searchinput,
+    input.date-display-field {
+        width: 100%;
+    }
+
+    select[name="distance"],
+    select[name="resultsperpage"] {
+	    text-align: left; /* Reset text-align for mobile if needed */
+    }
+
+	/* Responsive Help Text */
+	#keyword_help > div,
+	#date_help > div {
+		width: auto;
+        left: 2.5%;
+        right: 2.5%;
+        margin-left: 0;
+        position: relative;
+        top: auto;
+        left: auto;
+        margin-top: 10px;
+        display: block; /* Ensure it's not display:none from desktop */
+	}
+    /* Ensure JS-controlled display:none is overridden if they should be visible by default on mobile */
+    /* However, these are typically shown on focus/hover, so JS will manage display */
+
+    #tagParent {
+        margin-left: 0;
+        width: 100%;
+        position: relative;
+    }
+
+    .form-row:first-child .form-cell.colspan-2 {
+        padding-top: 0;
+    }
+    .form-row:first-child .form-cell {
+        margin-bottom: 5px;
+    }
+    .form-row:first-child .form-cell select {
+        width: 100%;
+    }
+     .form-row:first-child .form-cell.nowrap {
+        text-align: center;
+    }
+    .form-row:first-child .form-cell.nowrap input[type="submit"] {
+        width: auto;
+        padding: 10px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    #maincontent form label {
+        font-size: 0.9em;
+    }
+    .form-cell input[type="text"],
+    .form-cell input[type="password"],
+    .form-cell select,
+    .form-cell textarea {
+        padding: 8px;
+    }
+
+    #keyword_help > div,
+	#date_help > div {
+		font-size: 0.9em;
+	}
+}

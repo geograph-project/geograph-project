@@ -12,6 +12,7 @@
 	<meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 	{$extra_meta}
 	<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
+	<link rel="stylesheet" type="text/css" href="{"/assets/css/search_form.css"|revision}" media="screen" />
 	<link rel="shortcut icon" type="image/x-icon" href="{$static_host}/favicon.ico"/>
 	{if $rss_url}
 		<link rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}"/>
