@@ -1,0 +1,43 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+    font-family: sans-serif;
+    background-color: #f0f0f0;
+}
+
+#viewer-container {
+    width: 80vw; /* Responsive width */
+    max-width: 800px; /* Max width */
+    height: 60vh; /* Responsive height */
+    max-height: 600px; /* Max height */
+    border: 2px solid #333;
+    overflow: hidden;
+    position: relative; /* For absolute positioning of tiles */
+    background-color: #fff; /* Background for area not covered by tiles */
+}
+
+#viewer-container img {
+    user-select: none; /* Prevent image selection during drag */
+    -webkit-user-drag: none; /* Prevent image dragging ghost */
+}
+
+
+#controls {
+    margin-top: 10px;
+}
+
+#controls button {
+    padding: 8px 15px;
+    font-size: 1em;
+    margin: 0 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 4px;
+}
+#controls button:hover {
+    background-color: #e9e9e9;
+}
