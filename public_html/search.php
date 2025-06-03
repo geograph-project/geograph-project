@@ -673,9 +673,18 @@ if (isset($_GET['fav']) && $i) {
 			}
 		}
 
+		// Handle the new user_name_select parameter
+		if (isset($_POST['user_name_select']) && !empty($_POST['user_name_select'])) {
+			$_POST['user_name'] = $_POST['user_name_select'];
+		}
+
 		if (!empty($_POST['first'])) {
-			$_POST['searchtext'] .= " ftf:1"; // Ensure space if searchtext is not empty
-			$_POST['searchtext'] = trim($_POST['searchtext']); // Clean up
+			// Ensure searchtext is initialized before appending
+			if (!isset($_POST['searchtext'])) {
+                $_POST['searchtext'] = '';
+            }
+			$_POST['searchtext'] .= " ftf:1";
+			$_POST['searchtext'] = trim($_POST['searchtext']);
 			unset($_POST['first']);
 		}
 	

@@ -46,8 +46,8 @@
 		<fieldset>
 			<legend>Centered Search</legend>
 			<div class="form-row">
-				<div class="form-cell colspan-2"> {/* style="padding-top:8px" */}
-					Show images within <select name="distance" id="distance" size="1"> {/* style="text-align:right" */}
+				<div class="form-cell colspan-2">
+					Show images within <select name="distance" id="distance" size="1">
 					<option value=""> </option>
 						{html_options options=$distances selected=$distance}
 					</select> of <select id="selector" onchange="showLocationBox()">
@@ -147,16 +147,13 @@
 				</div>
             </div>
 			<div class="form-row">
-				<div class="form-cell"><label for="user_name">Contributor</label></div>
+				<div class="form-cell"><label for="user_name_select">Contributor</label></div>
 				<div class="form-cell colspan-2">
-					<input type="text" name="user_name" id="user_name" value="{$user_name|escape:'html'}" class="searchinput" title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"/>
-					{dynamic}
-					{if $user->registered}
-						<input type="button" value="you!" onclick="this.form.user_name.value='{$user->user_id}:{$user->realname|escape:"html"}'">
-					{/if}
-					{/dynamic}
-					&nbsp; <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
-					<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"}) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <small>(NOTE: exclude <u>ONLY</u> works if enter something in keywords box above)</small></small>
+                    <select name="user_name_select" id="user_name_select" class="searchinput" style="width: 100%;"></select>
+                    <div style="padding-top: 5px;"> {/* Wrapper for checkbox to ensure it's on its own line or spaced nicely */}
+					    &nbsp; <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
+					    <small>(NOTE: exclude <u>ONLY</u> works if enter something in keywords box above)</small>
+                    </div>
 				</div>
 			</div>
 			<div class="form-row">
@@ -264,12 +261,6 @@
 <link rel="stylesheet" href="/js/datepicker/css/default.css" type="text/css">
 {literal}
 <script type="text/javascript">
-// Ensure Select2 CSS and JS are linked in _std_begin.tpl or similar global template
-// For example:
-// <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-// <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-// (Assuming these are added in the main page layout)
-
 var today = '{/literal}{$smarty.now|date_format:"%Y-%m-%d"}{literal}';
 
 $(document).ready(function() {
@@ -278,11 +269,7 @@ $(document).ready(function() {
             url: '/tags/tags.json.php',
             dataType: 'json',
             delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term // search term
-                };
-            },
+            data: function (params) { return { q: params.term }; },
             processResults: function (data, params) {
                 var ignoredPrefixes = ['term', 'category', 'cluster', 'wiki'];
                 return {
@@ -291,11 +278,7 @@ $(document).ready(function() {
                         if (item.prefix && $.inArray(item.prefix, ignoredPrefixes) === -1) {
                             text = item.prefix + ':' + text;
                         }
-                        // Remove any HTML tags from text, similar to original code
-                        text = text.replace(/<[^>]*>/ig, "");
-                        text = text.replace(/['"]+/ig, " ");
-
-
+                        text = text.replace(/<[^>]*>/ig, "").replace(/['"]+/ig, " ");
                         return { id: text, text: text };
                     })
                 };
@@ -304,75 +287,70 @@ $(document).ready(function() {
         },
         placeholder: 'Type to search for tags or add new ones',
         minimumInputLength: 2,
-        tags: true, // Allow creation of new tags
-        tokenSeparators: [','], // Allow creating tags on comma
+        tags: true,
+        tokenSeparators: [','],
         allowClear: true,
-        width: '100%' // Ensure it takes the cell width
+        width: '100%'
     });
 
-	/* Commented out loadTagSuggestions and useTag as they are no longer used with the select element
-	$(function() {
-		//$('#tagParent').hide(); // tagParent is removed
-	});
-
-	function loadTagSuggestions(that,event) { ... } // Removed for brevity
-	function useTag(tag) { ... } // Removed for brevity
-	*/
+    $('#user_name_select').select2({
+        ajax: {
+            url: '/contributor.json.php',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) { return { q: params.term }; },
+            processResults: function (data, params) { // data is already {results: [...]}
+                return data;
+            },
+            cache: true
+        },
+        placeholder: 'Search by name or ID',
+        minimumInputLength: 2,
+        allowClear: true,
+        tags: false, // Do not allow creating new contributors
+        width: '100%'
+    });
 
     function updateBreakBy(that) {
         var name = that.options[that.selectedIndex].value;
-        if (name == 'gridimage_id')
-            name = 'submitted';
+        if (name == 'gridimage_id') name = 'submitted';
         var ele = that.form.breakby;
         for(var q=0;q<ele.options.length;q++) {
             var enabled = (name.length && ele.options[q].value.indexOf(name) == 0) || name.length == 0;
             ele.options[q].style.color = enabled?'':'#999999';
-            if (ele.options[q].selected && !enabled)
-                ele.selectedIndex = 0;
+            if (ele.options[q].selected && !enabled) ele.selectedIndex = 0;
         }
         that.form.reverse_order_ind.disabled = (that.value == 'dist_sqd' || that.value == 'sequence' || that.value == 'random' || that.value == 'relevance' || that.value == '');
     }
-    // Attach to existing onchange, or call it if needed: updateBreakBy($('select[name="orderby"]')[0]);
+    window.updateBreakBy = updateBreakBy;
 
 
     function showLocationBox() {
         var ele = document.getElementById('selector');
         for(var q=0;q<ele.options.length;q++) {
             var trElement = document.getElementById('tr_'+ele.options[q].value);
-            if (trElement) { // Check if element exists
-                trElement.style.display = ele.options[q].selected?'':'none';
-            }
+            if (trElement) trElement.style.display = ele.options[q].selected?'':'none';
             var inputElement = document.getElementById(ele.options[q].value);
-            if (inputElement) { // Check if element exists
-                inputElement.disabled = !ele.options[q].selected;
-            }
+            if (inputElement) inputElement.disabled = !ele.options[q].selected;
         }
     }
-    // AttachEvent(window,'load',showLocationBox,false); // Already exists
+    window.showLocationBox = showLocationBox; // Make global if not already
+    AttachEvent(window,'load',showLocationBox,false); // This was already outside $(document).ready, ensure it's fine
 
     var timers = new Array();
     function showMyHelpDiv(which,show) {
-        if (timers[which]) {
-            clearTimeout(timers[which]);
-        }
+        if (timers[which]) clearTimeout(timers[which]);
         timers[which] = setTimeout(function() {
             var helpDiv = document.getElementById(which+'_help');
-            if (helpDiv) {
-                helpDiv.style.display=show?'':'none';
-            }
-            clearTimeout(timers[which]);
-            timers[which] = null;
+            if (helpDiv) helpDiv.style.display=show?'':'none';
+            clearTimeout(timers[which]); timers[which] = null;
         },400);
     }
-    // Make showMyHelpDiv globally accessible if it wasn't already
     window.showMyHelpDiv = showMyHelpDiv;
 
-
-    function clearDate(element) {
-        updateDateDropdown('','--',null,element?element:this);
-    }
+    function clearDate(element) { updateDateDropdown('','--',null,element?element:this); }
     function updateDateDropdown(date_formatted,date_raw,date_object,element) {
-        var name = $(element).prop('id'); // Use jQuery 'this' if element is not passed
+        var name = $(element).prop('id');
         var form = $(element).get(0).form;
         var bits = date_raw.split(/-/);
         setByValue(form.elements[name+'Year'],bits[0]);
@@ -380,16 +358,12 @@ $(document).ready(function() {
         setByText(form.elements[name+'Day'],bits[2]);
     }
     function setByValue(ele,value) {
-        for(var q=0;q<ele.options.length;q++)
-            if (ele[q].value == value)
-                ele.selectedIndex = q;
+        for(var q=0;q<ele.options.length;q++) if (ele[q].value == value) ele.selectedIndex = q;
     }
     function setByText(ele,value) {
-        for(var q=0;q<ele.options.length;q++)
-            if (ele[q].text == value)
-                ele.selectedIndex = q;
+        for(var q=0;q<ele.options.length;q++) if (ele[q].text == value) ele.selectedIndex = q;
     }
-    window.updateHiddenDate = function(that) { // Make it global for onchange attributes
+    window.updateHiddenDate = function(that) {
         var name = that.name.replace(/(Year|Month|Day)$/,'');
         if (that.form.elements[name+'Year'].selectedIndex == 0 && that.form.elements[name+'Month'].selectedIndex  == 0 && that.form.elements[name+'Day'].selectedIndex == 0) {
             that.form.elements['__'+name].value = '';
@@ -397,63 +371,30 @@ $(document).ready(function() {
             that.form.elements['__'+name].value = getSelText(that.form.elements[name+'Year'],today.substring(0,4))+'-'+getSelValue(that.form.elements[name+'Month'],'01')+'-'+getSelText(that.form.elements[name+'Day'],'01');
         }
     }
-    function getSelValue(ele,defa) {
-        return ele.options[ele.selectedIndex].value || defa;
-    }
-    function getSelText(ele,defa) {
-        return ele.options[ele.selectedIndex].text || defa;
-    }
-    // Make date functions globally accessible if used by inline onchange attributes
-    window.clearDate = clearDate;
-    window.updateDateDropdown = updateDateDropdown;
+    function getSelValue(ele,defa) { return ele.options[ele.selectedIndex].value || defa; }
+    function getSelText(ele,defa) { return ele.options[ele.selectedIndex].text || defa; }
+    window.clearDate = clearDate; window.updateDateDropdown = updateDateDropdown;
 
+    var datePickerSharedOptions = { zero_pad: true, onClear: clearDate, onSelect: updateDateDropdown };
+    $('#submitted_start').Zebra_DatePicker($.extend({}, datePickerSharedOptions, { direction: [false, today], pair: $('#submitted_end') }));
+    $('#submitted_end').Zebra_DatePicker($.extend({}, datePickerSharedOptions, { direction: [$('#submitted_start').val() || false, today] }));
+    $('#taken_start').Zebra_DatePicker($.extend({}, datePickerSharedOptions, { direction: [false, today], pair: $('#taken_end') }));
+    $('#taken_end').Zebra_DatePicker($.extend({}, datePickerSharedOptions, { direction: [$('#taken_start').val() || false, today] }));
 
-    var datePickerSharedOptions = {
-        zero_pad: true,
-        onClear: clearDate,
-        onSelect: updateDateDropdown
-    };
-
-    $('#submitted_start').Zebra_DatePicker($.extend({}, datePickerSharedOptions, {
-        direction: [false, today],
-        pair: $('#submitted_end')
-    }));
-    $('#submitted_end').Zebra_DatePicker($.extend({}, datePickerSharedOptions, {
-        direction: [$('#submitted_start').val() || false, today]
-    }));
-
-    $('#taken_start').Zebra_DatePicker($.extend({}, datePickerSharedOptions, {
-        direction: [false, today],
-        pair: $('#taken_end')
-    }));
-    $('#taken_end').Zebra_DatePicker($.extend({}, datePickerSharedOptions, {
-        direction: [$('#taken_start').val() || false, today]
-    }));
-
-	$('input, textarea, select').not('#tag_select').change(function() { // Exclude select2 from this highlight logic
+	$('input, textarea, select').not('#tag_select, #user_name_select').change(function() {
 		var $this = $(this);
 		if ($this.is(':checkbox') || $this.is(':radio')) {
-			if ($this.prop("checked"))
-				$this.addClass('selectedHighlight');
-			else
-				$this.removeClass('selectedHighlight');
+			if ($this.prop("checked")) $this.addClass('selectedHighlight');
+			else $this.removeClass('selectedHighlight');
 		} else if (!$this.is(':button') && !$this.is(':submit')) {
-			if ($this.val() && $this.val().length > 0)
-				$this.addClass('selectedHighlight');
-			else
-				$this.removeClass('selectedHighlight');
+			if ($this.val() && $this.val().length > 0) $this.addClass('selectedHighlight');
+			else $this.removeClass('selectedHighlight');
 		}
 	});
-	$('input, textarea, select').not('#tag_select').trigger('change'); // Exclude select2
+	$('input, textarea, select').not('#tag_select, #user_name_select').trigger('change');
 
-    // AttachEvent(window,'load',showLocationBox,false); // This is already present outside literal block
-    if (typeof showLocationBox === "function") { // Ensure it's defined
-        showLocationBox(); // Call it on document ready as well
-    }
-    if (typeof updateBreakBy === "function" && document.theForm.orderby) { // Ensure it's defined
-        updateBreakBy(document.theForm.orderby);
-    }
-
+    if (typeof showLocationBox === "function") showLocationBox();
+    if (typeof updateBreakBy === "function" && document.theForm.orderby) updateBreakBy(document.theForm.orderby);
 });
 </script>
 {/literal}
