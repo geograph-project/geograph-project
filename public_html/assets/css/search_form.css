@@ -297,3 +297,97 @@ select[name="distance"], select[name="resultsperpage"] {
     .search-form-grid, .search-form-grid.three-columns { gap: 6px; }
     .interestBox { padding: 8px; }
 }
+
+/* ========== SELECT2 PLUGIN STYLING ========== */
+.form-cell .select2-container {
+    width: 100% !important;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.select2-selection--multiple {
+    border: 1px solid #ccc !important;
+    min-height: 32px !important; /* Approx (6px padding * 2) + 1em font + (1px border * 2) */
+    line-height: normal !important; /* Prevent excessive height from line-height */
+    background-color: #fff !important;
+    padding-bottom: 0px !important; /* Padding for items is on .select2-selection__rendered */
+    cursor: text !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important; /* Center items vertically if text input is short */
+}
+
+.select2-selection--multiple .select2-search__field {
+    width: 100% !important; /* Allow it to shrink as tags are added */
+    padding: 6px 8px !important; /* Match input padding */
+    margin: 0 !important;
+    line-height: normal; /* Match input line-height */
+    border: none !important; /* Remove border from internal input */
+    outline: 0; /* Remove outline from internal input */
+}
+
+.select2-selection--multiple .select2-selection__rendered {
+    padding: 0 4px 0px 4px !important; /* Minimal padding, tags have their own margins */
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    width: 100%; /* Ensure it uses available space */
+}
+
+.select2-selection__choice {
+    background-color: #e4e4e4 !important;
+    border: 1px solid #aaa !important;
+    border-radius: 4px !important;
+    padding: 2px 5px !important;
+    margin-top: 4px !important;
+    margin-right: 5px !important;
+    font-size: 0.9em;
+    line-height: 1.3; /* Adjusted for smaller font */
+    cursor: default;
+}
+
+.select2-selection__choice__remove {
+    color: #999 !important;
+    margin-left: 4px !important;
+    font-weight: bold;
+    cursor: pointer;
+}
+.select2-selection__choice__remove:hover {
+    color: #333 !important;
+}
+
+.select2-search__field::placeholder {
+   color: #999;
+   opacity: 1;
+}
+
+.select2-dropdown {
+    border: 1px solid #ccc !important;
+    background-color: #fff !important;
+    z-index: 1051 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.select2-results__option {
+    padding: 6px 8px !important;
+}
+
+.select2-results__option--highlighted[aria-selected] { /* More specific selector for highlight */
+    background-color: #007bff !important;
+    color: white !important;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #007bff !important;
+    /* box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); */
+}
+
+@media (max-width: 768px) {
+    .select2-selection__choice {
+        font-size: 0.85em;
+        padding: 1px 4px !important;
+    }
+    .select2-selection--multiple .select2-search__field {
+        padding: 8px 8px !important; /* Match other inputs on mobile */
+    }
+}

@@ -13,6 +13,7 @@
 	{$extra_meta}
 	<link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
 	<link rel="stylesheet" type="text/css" href="{"/assets/css/search_form.css"|revision}" media="screen" />
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 	<link rel="shortcut icon" type="image/x-icon" href="{$static_host}/favicon.ico"/>
 	{if $rss_url}
 		<link rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}"/>
@@ -34,6 +35,7 @@
 	{/if}
 	<link rel="search" type="application/opensearchdescription+xml" title="Geograph Britain and Ireland search" href="/stuff/osd.xml" />
 	<script type="text/javascript" src="{"/js/geograph.js"|revision}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 </head>
 <body>
 <div id="header_block">

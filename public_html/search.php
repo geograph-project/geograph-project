@@ -634,7 +634,7 @@ if (isset($_GET['fav']) && $i) {
 
 	fallBackForm($_GET);
 
-} else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	rate_limiting('search.php');
 	// -------------------------------
@@ -656,8 +656,26 @@ if (isset($_GET['fav']) && $i) {
 		
 		$_POST['searchtext'] = $_POST['q'];
 	} else {
+		// This is the block for form=text and form=advanced from search_text.tpl
+		if (isset($_POST['tag_select']) && is_array($_POST['tag_select'])) {
+			$selected_tags_string = '';
+			foreach ($_POST['tag_select'] as $tag_value) {
+				$trimmed_tag = trim($tag_value);
+				if (!empty($trimmed_tag)) {
+					$selected_tags_string .= ' [' . $trimmed_tag . ']';
+				}
+			}
+			if (!empty($selected_tags_string)) {
+				if (!isset($_POST['searchtext'])) {
+					$_POST['searchtext'] = '';
+				}
+				$_POST['searchtext'] = trim($_POST['searchtext'] . $selected_tags_string);
+			}
+		}
+
 		if (!empty($_POST['first'])) {
-			$_POST['searchtext'] .= " ftf:1";
+			$_POST['searchtext'] .= " ftf:1"; // Ensure space if searchtext is not empty
+			$_POST['searchtext'] = trim($_POST['searchtext']); // Clean up
 			unset($_POST['first']);
 		}
 	
@@ -1776,4 +1794,3 @@ function smarty_function_searchbreak($params) {
 	}
 	$engine->breaklast = $last;
 }
-
