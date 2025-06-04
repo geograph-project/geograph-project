@@ -163,13 +163,30 @@ else if ($action === 'get_tile') {
         );
     } else if ($zoom_level > 0) {
         // Zoom level > 0: image divided into 2^zoom x 2^zoom grid
+        // Zoom level > 0: image divided into 2^zoom x 2^zoom grid based on largest dimension
         $num_tiles_edge = pow(2, $zoom_level);
 
-        $src_region_w = $source_width / $num_tiles_edge;
-        $src_region_h = $source_height / $num_tiles_edge;
+        $max_source_dim = max($source_width, $source_height);
+        $square_src_region_side = $max_source_dim / $num_tiles_edge;
 
-        $current_src_x = $tile_x * $src_region_w;
-        $current_src_y = $tile_y * $src_region_h;
+        // Calculate offsets to center the actual image within the conceptual square world
+        $image_offset_x = ($max_source_dim - $source_width) / 2;
+        $image_offset_y = ($max_source_dim - $source_height) / 2;
+
+        // Top-left of the target square region in the conceptual world coordinates
+        $conceptual_src_x = $tile_x * $square_src_region_side;
+        $conceptual_src_y = $tile_y * $square_src_region_side;
+
+        // Actual top-left coordinates on the source image
+        $current_src_x = $conceptual_src_x - $image_offset_x;
+        $current_src_y = $conceptual_src_y - $image_offset_y;
+
+        // The source width and height for imagecopyresampled must be $square_src_region_side
+        $src_copy_width = $square_src_region_side;
+        $src_copy_height = $square_src_region_side;
+
+
+
 
         // Ensure tile_x and tile_y are within bounds for this zoom level
         if ($tile_x < 0 || $tile_x >= $num_tiles_edge || $tile_y < 0 || $tile_y >= $num_tiles_edge) {
@@ -179,15 +196,16 @@ else if ($action === 'get_tile') {
              imagecopyresampled(
                  $dest_tile_image, $source_image,
                  0, 0, // Destination x, y (top-left of tile)
-                 (int)round($current_src_x), (int)round($current_src_y), // Source x, y
+                 (int)round($current_src_x), (int)round($current_src_y), // Source x, y (newly calculated)
                  DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE, // Destination width, height
-                 (int)round($src_region_w), (int)round($src_region_h)  // Source region width, height
+                 (int)round($src_copy_width), (int)round($src_copy_height)  // Source region width, height (now square)
              );
         }
     } else { // Should not happen if client sends valid zoom_levels (>=0)
         send_error_response('Invalid zoom_level: ' . $zoom_level, 400);
     }
 
+    // Output the tile
     // Output the tile
     $expires_seconds = 60 * 60 * 24 * 7; // Cache for 7 days
     header('Cache-Control: public, max-age=' . $expires_seconds); // Removed extra 'public'
@@ -223,3 +241,5 @@ else if ($action === 'get_tile') {
 else {
     send_error_response('Unknown action: ' . htmlspecialchars($action));
 }
+
+?>
