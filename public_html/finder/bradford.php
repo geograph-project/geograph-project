@@ -29,11 +29,11 @@ $smarty = new GeographPage;
 $sph = GeographSphinxConnection('sphinxql',true);
 
 $sql = "
-SELECT id,title,realname,user_id,grid_reference,takenday, place,vlat,vlong,scenti, hash, width,height
+SELECT id,title,realname,user_id,grid_reference,takenday, format,types,subjects, place,vlat,vlong,scenti, hash, width,height
 , geodist(wgs84_lat,wgs84_long,0.93925808248603,-0.030558585900733) as geodist
 FROM sample8
 WHERE takendays BETWEEN 739755 AND 739757
- AND geodist < 4000
+ AND geodist < 5000
  AND MATCH(' @hectad (SE13 | SE23)')
  AND vlat > 0.1
 LIMIT 1000
@@ -46,17 +46,40 @@ $smarty->display('_std_begin.tpl');
 
 ?>
 
+
+      <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
+        <!--script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+        <script type="text/javascript" src="<? echo smarty_modifier_revision("/js/Leaflet.MetricGrid.js"); ?>"></script-->
+        <script type="text/javascript" src="<? echo smarty_modifier_revision("/js/mappingLeaflet.js"); ?>"></script>
+
+
 <form name="theForm">
-	Order: <select onchange="order = this.value; outputTable()">
+	Vertical: <select onchange="order = this.value; outputTable()">
 		<option value="geo">Cluster (photographer location)</option>
 		<option value="grid_reference">Subject Square</option>
 		<option value="scenti">Subject Centisquare</option>
 		<option value="takenday">Day</option>
 		<option value="place">Place</option>
 	</select>
-
-	<label>Collapse: <input type=checkbox name=collapse onclick="outputTable()"></label>
 	<label>Large Clusters: <input type=checkbox name=large onclick="outputTable()"></label>
+
+	&middot;
+
+	Horizontal: <select onchange="columns = this.value; outputTable()">
+		<option value="realname">Contributor</option>
+		<option value="grid_reference">Subject Square</option>
+		<option value="scenti">Subject Centisquare</option>
+		<option value="format">Format</option>
+		<option value="types">Types</option>
+		<option value="subjects">Subjects</option>
+		<option value="takenday">Day</option>
+		<option value="place">Place</option>
+	</select>
+	<label>Collapse: <input type=checkbox name=collapse onclick="outputTable()"></label>
+
+	<input type=button onclick="outputMap()" value="Cluster Map">
+	<input type=button onclick="outputMap2()" value="CentiSquare Map">
 </form>
 
 <div id="output"></div>
@@ -66,8 +89,139 @@ $smarty->display('_std_begin.tpl');
 let images = <? echo json_encode($images); ?>;
 let order = 'geo'; //the default
 	//grid_reference/takenday also work!
+let columns = 'realname';
 
 const geoprefix = 'v';
+
+/////////////////////////////////////////////
+
+//prototype, for now assumes outputTable already called, which has set .lat etc, as well as called reorder by geo!
+function outputMap() {
+
+	const outputDiv = document.getElementById('output');
+	outputDiv.innerHTML = 'Change one of the options above, to return to table mode. <br><div id=map style="width:500px;height:500px"></div>';
+
+	setupBaseMap(); //creates the map, but does not initialize a view
+
+	let crit = document.forms['theForm'].elements['large'].checked?0.00001:0.000003;
+
+	var bounds = L.latLngBounds();
+	var layer = L.featureGroup();
+
+	let block = 1;
+	let lat = 40,lng = -20; //so start 'lands end' :)
+	let color;
+	for (let image of images) {
+
+		bounds.extend([image.lat, image.lng]);
+
+		//if (order == 'geo') {
+			if (!image.lat)
+				continue;
+
+			if (lat > 40) { //skip first point!
+				dist = Math.pow(lat-image.lat,2)+Math.pow(lng-image.lng,2); //dont need to bother with sqrt
+				let weight = 3;
+				if (dist > crit) {
+					//if (color == 'red') { //if the last one was ALSO a jump, then was a single! (so show bigger!
+				        //        layer.addLayer(L.circleMarker([lat,lng], {radius:3, color:'blue', interactive:false}));
+					//}...would interfer with th emain one, making it undclickabke
+					color = 'red';
+					weight = 1;
+					block++;
+				} else {
+					color = 'blue';
+				}
+				L.polyline([[lat,lng],[image.lat,image.lng]], {color, weight}).addTo(layer);
+
+		                //layer.addLayer(L.circleMarker([image.lat,image.lng], {radius:2, color:'blue', interactive:false}));
+		                layer.addLayer(getCircleMarker(image,2,'blue'));
+			}
+			//row = "Cl#"+block;
+                        lat = image.lat;
+                        lng = image.lng;
+		//}
+
+                //layer.addLayer(L.circleMarker([data[q].wgs84_lat, data[q].wgs84_long], {radius:2, interactive:false}));
+	}
+
+	map.fitBounds(bounds,{maxZoom:15});
+        layer.addTo(map);
+}
+
+/////////////////////////////////////////////
+//centsquaire map. (hardcoded)
+
+function outputMap2() {
+
+	const outputDiv = document.getElementById('output');
+	outputDiv.innerHTML = 'Change one of the options above, to return to table mode. <br><div id=map style="width:500px;height:500px"></div>';
+
+	setupBaseMap(); //creates the map, but does not initialize a view
+
+	let crit = document.forms['theForm'].elements['large'].checked?0.00001:0.000003;
+
+	var bounds = L.latLngBounds();
+	var layer = L.featureGroup();
+
+	let rows = {};
+	for (let image of images) {
+		let row = image['scenti'];
+		if (!rows[row]) rows[row] = [];
+
+		rows[row].push(image);
+
+		bounds.extend([image.lat, image.lng]);
+	}
+
+	let lat = 40,lng = -20; //so start 'lands end' :)
+	let color;
+	for (const row in rows) {
+                if (Object.prototype.hasOwnProperty.call(rows, row)) {
+
+			let first = true;
+			for (let image of rows[row]) {
+				if (lat > 40) { //skip first point!
+
+					if (first) {
+						color = 'red';
+						weight = 1;
+					} else {
+						color = 'blue';
+						weight = 3;
+					}
+
+					L.polyline([[lat,lng],[image.lat,image.lng]], {color, weight}).addTo(layer);
+				}
+		                layer.addLayer(getCircleMarker(image,2,'blue'));
+
+	                        lat = image.lat;
+        	                lng = image.lng;
+				first = false;
+			}
+		}
+	}
+
+	map.fitBounds(bounds,{maxZoom:15});
+        layer.addTo(map);
+}
+
+function getCircleMarker(image,radius,color) {
+				let marker = L.circleMarker([image.lat,image.lng], {radius, color});
+							let img = document.createElement('img')
+							img.loading = 'lazy';
+							img.src = image.thumbnail;
+							img.width = image.width; //setting width/height, makes scrolling better, as imags have proper size in the dom!
+							img.height = image.height;
+
+							let a = document.createElement('a')
+							a.href = "https://www.geograph.org.uk/photo/"+image.id;
+							a.target = 'photo';
+							a.title = image.grid_reference+" "+image.title+" by "+image.realname;
+							a.appendChild(img);
+				marker.bindPopup(a.outerHTML);
+	return marker;
+}
 
 /////////////////////////////////////////////
 
@@ -78,7 +232,15 @@ function outputTable() {
 	let collapse = document.forms['theForm'].elements['collapse'].checked;
 	let crit = document.forms['theForm'].elements['large'].checked?0.00001:0.000003;
 
+	if (order == columns) {
+		const outputDiv = document.getElementById('output');
+		outputDiv.innerHTML = 'Unable to use same in both directions';
+		outputDiv.appendChild(table);
+		return;
+	}
+
 	/////////////////////////////////////////////
+	//preprocess
 
 	for (let image of images) {
 		if (!image.thumbnail) {
@@ -108,11 +270,13 @@ function outputTable() {
 	}
 
 	/////////////////////////////////////////////
+	// the main pivot process
 	//SELECT  id,title,realname,user_id,grid_reference,takenday, place,vlat,vlong, hash, width,height, geodist
 
 	let block = 1;
 	let lat = 40,lng = -20; //so start 'lands end' :)
 	for (let image of images) {
+		//find the row
 		let row;
 		if (order == 'geo') {
 			if (!image.lat)
@@ -130,13 +294,17 @@ function outputTable() {
 		} else {
 			row = image[order];
 		}
-		let col = image['realname'];
 
-		if (!cols[col]) cols[col] = col;
-		if (!rows[row])	rows[row] = {};
+		//find the column(s)
+		var values = image[columns].replace(/(^\s*_SEP_\s*|\s*_SEP_\s*$)/g,'').split(/ _SEP_ /); //will still jst return one value, if no seperators!
+		for (let col of values) {
 
-		if (!rows[row][col]) rows[row][col] = []; //this is a list
-		rows[row][col].push(image);
+			if (!cols[col]) cols[col] = col;
+			if (!rows[row])	rows[row] = {};
+
+			if (!rows[row][col]) rows[row][col] = []; //this is a list
+			rows[row][col].push(image);
+		}
 	}
 
 	/////////////////////////////////////////////
@@ -151,13 +319,13 @@ function outputTable() {
 	if (!collapse) {
 		tr = document.createElement('tr');
 		cell = document.createElement('td');
-		cell.textContent = "Contributor";
+		cell.textContent = columns;
 		tr.appendChild(cell)
 
 		for (const col in cols) {
 			if (Object.prototype.hasOwnProperty.call(cols, col)) {
 				cell = document.createElement('td');
-				cell.textContent = col;
+				cell.textContent = col.replace(/_SEP_/g,'');
 				tr.appendChild(cell)
 			}
 		}
@@ -172,7 +340,7 @@ function outputTable() {
 			if (collapse) { //each row ges its own 'fixed' header ?!?!
 				tr = document.createElement('tr');
 				cell = document.createElement('td');
-				cell.textContent = "Contributor";
+				cell.textContent = columns;
 				tr.appendChild(cell)
 
 				let done = 0, total = 0;
@@ -180,7 +348,7 @@ function outputTable() {
 					if (Object.prototype.hasOwnProperty.call(cols, col)) {
 						if (rows[row][col]) {
 							cell = document.createElement('td');
-							cell.textContent = col;
+							cell.textContent = col.replace(/_SEP_/g,'');
 							tr.appendChild(cell)
 							done++;
 						}
