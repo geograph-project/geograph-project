@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Configuration ---
     let TILE_SIZE = 256; // Default, will be updated from server
-    const SOURCE_IMAGE_PATH = 'placeholder.jpg'; // Default sample image
 
     // --- State ---
     let imageInfo = {
@@ -38,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initialization ---
     async function init() {
         try {
-            const response = await fetch(`../tile_server.php?action=get_image_info&image_path=${encodeURIComponent(SOURCE_IMAGE_PATH)}`);
+            const response = await fetch(`/zoom/tile_server.php?action=get_image_info&image_path=${encodeURIComponent(SOURCE_IMAGE_PATH)}`);
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(`Failed to load image info: ${errorData.error || response.statusText}`);
@@ -160,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentZoom === 0) {
             // Zoom 0: Display a single tile (0,0) which contains the whole image
             const tile = document.createElement('img');
-            tile.src = `../tile_server.php?action=get_tile&image_path=${encodeURIComponent(SOURCE_IMAGE_PATH)}&zoom_level=0&tile_x=0&tile_y=0`;
+            tile.src = `/zoom/tile_server.php?action=get_tile&image_path=${encodeURIComponent(SOURCE_IMAGE_PATH)}&zoom_level=0&tile_x=0&tile_y=0`;
             tile.style.position = 'absolute';
             tile.style.left = `${pan.x}px`;
             tile.style.top = `${pan.y}px`;
@@ -201,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const tile = document.createElement('img');
                 // tile_x and tile_y sent to server are the coordinates within this zoom level's grid
-                tile.src = `../tile_server.php?action=get_tile&image_path=${encodeURIComponent(SOURCE_IMAGE_PATH)}&zoom_level=${server_zoom_level}&tile_x=${tx}&tile_y=${ty}`;
+                tile.src = `/zoom/tile_server.php?action=get_tile&image_path=${encodeURIComponent(SOURCE_IMAGE_PATH)}&zoom_level=${server_zoom_level}&tile_x=${tx}&tile_y=${ty}&v=2`;
                 tile.style.position = 'absolute';
                 tile.style.left = `${pan.x + tx * TILE_SIZE}px`;
                 tile.style.top = `${pan.y + ty * TILE_SIZE}px`;
@@ -252,11 +251,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Pan Logic ---
     function startPan(event) {
         // Allow panning only with the primary mouse button (usually left)
-        if (event.button !== 0) return;
+//        if (event.button !== 0) return;
         isPanning = true;
         lastPanPosition = { x: event.clientX, y: event.clientY };
         viewerContainer.style.cursor = 'grabbing';
-        event.preventDefault(); // Prevent text selection or other default drag behaviors
+	if (event.preventDefault)
+        	event.preventDefault(); // Prevent text selection or other default drag behaviors
     }
 
     function doPan(event) {
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Touch Event Handlers ---
     function handleTouchStart(event) {
         event.preventDefault();
-        // console.log("Touch start:", event.touches.length);
+         console.log("Touch start:", event.touches.length);
         if (event.touches.length === 2) {
             isPanning = false; // Stop any single-finger panning
             endPan(); // Reset pan state if it was active
