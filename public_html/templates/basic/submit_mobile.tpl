@@ -327,7 +327,17 @@ function checkMultiFormSubmission() {
 							if (confirm('During the downsizing process, the image might of had it orientation fixed automatically (only some browsers do this!). Check this preview - if appears orrientated correctly, click OK to continue.')) {
 								form.elements['finalise'].click();
 							} else {
-								alert('Please use the dorpdown to rotate so it appears correct, and return to Step 5 and click I Agree again');
+								alert('Please use the dropdown to rotate so it appears correct, and return to Step 5 and click I Agree again');
+
+								document.body.scrollTop = 1000;
+
+								form.elements['largestsize'].disabled = true; //they can nolonger change this - ALREADY resized!
+								//but include a hidden element, to ensure it still submitted!
+								let hiddenEle = document.createElement("input");
+								hiddenEle.setAttribute("name", "largestsize");
+								hiddenEle.setAttribute("type", "hidden");
+								hiddenEle.setAttribute("value", max_dimension);
+								form.elements['largestsize'].after(hiddenEle);
 							}
 						}, 400);
 						resizeDone = true; //to stop a loop! //although as we have replaced the preview, probably not needed!
