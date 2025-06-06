@@ -311,6 +311,29 @@ function checkMultiFormSubmission() {
 					//seems to be more stable setting the value directly rather than on the in memory version!
 	                                document.getElementById('jpeg_data').value = dataUrl;
 
+	// Todo, if 'rotate' is set, then in the process, the browser may have already rotated it when downsizing above!?!? (image-orientation:none doesn't work on in memory image used during resize!
+					var orientationValue = $('select[name="orientation"]').val();
+					if (orientationValue.length > 0) { //might be a zero!
+						//reset it!, because EITHER resizeImage() auto rotated it correctly, or it didnt and users needs to reselect NEW rotation. 
+						$('select[name="orientation"]').val("0"); //still want strip!
+						orientationChanged(); //remove the rotation classes
+
+						gotDataUrl(dataUrl); //sets BOTH previews!
+						document.body.scrollTop = 0;
+						selectTab(1);
+
+						//need a timeout, so that tab1 gets shown before the confirm!
+						setTimeout(function() {
+							if (confirm('During the downsizing process, the image might of had it orientation fixed automatically (only some browsers do this!). Check this preview - if appears orrientated correctly, click OK to continue.')) {
+								form.elements['finalise'].click();
+							} else {
+								alert('Please use the dorpdown to rotate so it appears correct, and return to Step 5 and click I Agree again');
+							}
+						}, 400);
+						resizeDone = true; //to stop a loop! //although as we have replaced the preview, probably not needed!
+						return false; //dont submit below!
+					}
+	//************************
 	                                //note the form was not submitted, so needs sumitting again!
 					
 					resizeDone = true; //to stop a loop!
@@ -1138,8 +1161,8 @@ function orientationChanged() {
 		<select name="orientation" onchange="orientationChanged()">
 			<option value="">Unchanged</option>
 			<option value="0">Remove Exif Flag - no rotate</option>
-			<option value="90">Rotate Right</option>
-			<option value="270">Rotate Left</option>
+			<option value="90">Rotate Right / Clockwise</option>
+			<option value="270">Rotate Left / Anti-Clockwise</option>
 		</select>
 
 		<label for=largestsize>Maximum Size to release: (pixels)</label>
