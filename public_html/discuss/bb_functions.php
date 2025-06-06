@@ -172,7 +172,7 @@ function pageNav($page,$numRows,$url,$viewMax,$navCell){
 
 	// Page link before current (page $page, 0-indexed)
 	// Show if current page is page 2 (index 1) or greater, AND this page ($page-1) is not the first page (0)
-	if ($page - 1 > 0) {
+	if ($page - 1 > 0 && $page < 1000) {
 		$pageNav.=' <a href="'.$url.($page-1).$mr.'" class="pageNav" title="Page '.$page.'">'.$page.'</a>';
 	}
 
@@ -186,7 +186,7 @@ function pageNav($page,$numRows,$url,$viewMax,$navCell){
 
 	// Page link after current (page $page+2, 0-indexed)
 	// Show if current page is $iVal-2 or less, AND this page ($page+1) is not the last page ($iVal)
-	if ($page + 1 < $iVal) {
+	if ($page + 1 < $iVal && $page < 1000) {
 		$pageNav.=' <a href="'.$url.($page+1).$mr.'" class="pageNav" title="Page '.($page+2).'">'.($page+2).'</a>';
 	}
 

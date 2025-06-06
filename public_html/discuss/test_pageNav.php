@@ -7,7 +7,7 @@ require_once 'bb_functions.php';
 
 // Setup necessary global variables
 $GLOBALS['mod_rewrite'] = true; // Default, can be overridden
-$GLOBALS['viewpagelim'] = 100;  // Default high value
+$GLOBALS['viewpagelim'] = 5000;  // Default high value
 $GLOBALS['l_menu'] = array(); // Define as an array
 $GLOBALS['indexphp'] = 'index.php';
 $GLOBALS['main_url'] = 'http://localhost';
@@ -84,6 +84,10 @@ run_test_case("5.2: 20 Pages, Page 2, navCell=true", 1, $numRows_tc5, $url_tc5, 
 run_test_case("5.3: 20 Pages, Page 10 (middle), navCell=false", 9, $numRows_tc5, $url_tc5, $viewMax_tc5, false);
 run_test_case("5.4: 20 Pages, Page 19 (second to last), navCell=true", 18, $numRows_tc5, $url_tc5, $viewMax_tc5, true);
 run_test_case("5.5: 20 Pages, Page 20 (last), navCell=false", 19, $numRows_tc5, $url_tc5, $viewMax_tc5, false);
+
+$numRows_tc5 = 15000;  $viewMax_tc5 = 10;
+run_test_case("5.9: 1500 Pages, Page 1234 (last), navCell=false", 1234, $numRows_tc5, $url_tc5, $viewMax_tc5, false);
+
 $GLOBALS['mod_rewrite'] = true; // Reset
 
 // --- Test Case 6: viewpagelim Effect ---
