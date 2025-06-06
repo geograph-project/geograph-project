@@ -324,7 +324,7 @@ function checkMultiFormSubmission() {
 
 						//need a timeout, so that tab1 gets shown before the confirm!
 						setTimeout(function() {
-							if (confirm('During the downsizing process, the image might of had it orientation fixed automatically (only some browsers do this!). Check this preview - if appears orrientated correctly, click OK to continue.')) {
+							if (confirm('When your image was downsized, its orientation might have been automatically corrected by some browsers. Please check the preview below. If the image looks correctly oriented, click "OK" to proceed.')) {
 								form.elements['finalise'].click();
 							} else {
 								alert('Please use the dropdown to rotate so it appears correct, and return to Step 5 and click I Agree again');
