@@ -712,7 +712,7 @@ if ($_GET['url'] == 'preview') {
 			$cacheid .= '|'.$USER->user_id;
 		}
 
-		if (!isset($_GET['dontcount']) && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE && appearsToBePerson()) {
+		if (!isset($_GET['dontcount']) && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE && appearsToBePerson() && empty($_SESSION['responsive'])) {
 			$db->Execute("UPDATE LOW_PRIORITY article_stat SET views=views+1 WHERE article_id = ".$page['article_id']);
 		}
 

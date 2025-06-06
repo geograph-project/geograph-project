@@ -15,7 +15,7 @@
 #maincontent h2.pageheading { margin-top:0; margin-bottom:0; background-color:gray; font-size:0.8em; color:white}
 #maincontent div.published { margin-left:30px; margin-bottom:10px; color:gray}
 
-#contents_table {  border: 1px solid lightgrey; background-color: #eeeeee; padding: 10px }
+#contents_table { float:right; border: 1px solid lightgrey; background-color: #eeeeee; padding: 10px }
 #contents_table .title { font-weight:bolder;  padding:3px; border-bottom:1px solid black; margin-bottom:5px; }
 #contents_table ul { margin-top:0;padding:0; border-bottom:1px solid black; padding-bottom: 8px; margin-bottom:5px; }
 #contents_table .h2 { margin-left:0; font-weight:bold; list-style-type:none }
@@ -25,6 +25,22 @@
 #contents_table li { color:silver }
 #contents_table a { text-decoration:none; }
 #contents_table a:hover { text-decoration:underline; }
+
+@media (max-width: 400px) {
+       #contents_table {
+               float:none;
+               margin:0 auto 16px auto;
+       }
+       a.nowrap[rel=licence] {
+               white-space: inherit;
+               word-wrap: break-word;
+       }
+}
+@media (any-pointer: coarse) {
+       #contents_table a {
+               padding: 0.8em 0.4em;
+       }
+}
 
 @media print {
 	.no_print {
@@ -72,7 +88,7 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 {/if}
 
 {if $tableContents}
-	<div style="float:right; max-width:250px; position:relative;" id="contents_table">
+	<div style="max-width:250px" id="contents_table">
 	<div class="title">Contents</div>
 	<ul>
 		{$tableContents}

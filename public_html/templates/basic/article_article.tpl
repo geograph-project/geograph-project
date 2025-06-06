@@ -21,7 +21,7 @@
 
 #maincontent table.report td { min-width:6px}
 
-#contents_table { border: 1px solid lightgrey; background-color: #eeeeee; padding: 10px}
+#contents_table { float:right; border: 1px solid lightgrey; background-color: #eeeeee; padding: 10px; position:relative}
 #contents_table .title { font-weight:bolder;  padding:3px; border-bottom:1px solid black; margin-bottom:5px}
 #contents_table ul { margin-top:0;padding:0; border-bottom:1px solid black; padding-bottom: 8px; margin-bottom:5px}
 #contents_table .h2 { margin-left:0; font-weight:bold; list-style-type:none}
@@ -31,6 +31,25 @@
 #contents_table li { color:silver}
 #contents_table a { text-decoration:none}
 #contents_table a:hover { text-decoration:underline}
+
+@media (max-width: 400px) {
+	#contents_table {
+		float:none;
+		margin:0 auto 16px auto;
+	}
+	a.nowrap[rel=license] {
+		white-space: inherit;
+		word-wrap: break-word;
+	}
+}
+@media (any-pointer: coarse) {
+	#contents_table a {
+		padding: 0.8em 0.4em;
+	}
+	a[rel=license] {
+		line-height:2em;
+	}
+}
 
 @media print {
 	.no_print {
@@ -175,7 +194,7 @@ div.breadcrumb a {
 
 <hr/><br/>
 {if $tableContents}
-	<div style="float:right; max-width:{if $avgTitleLength < 8}100px{else}250px{/if}; position:relative;" id="contents_table">
+	<div style="max-width:{if $avgTitleLength < 8}100px{else}250px{/if}" id="contents_table">
 	<div class="title">Contents</div>
 	<ul>
 		{$tableContents}
