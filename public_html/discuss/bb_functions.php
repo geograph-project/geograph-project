@@ -128,47 +128,97 @@ function pageChk($page,$numRows,$viewMax){
 // $viewMax = items per page
 // $navCell = true means its cell based, which shows 3 rather than 9 to start, and also hides Prev/Last
 function pageNav($page,$numRows,$url,$viewMax,$navCell){
-	$pageNav='Pages:';
+	$pageNav=''; // Initialize as empty
 	if(isset($GLOBALS['mod_rewrite']) and $GLOBALS['mod_rewrite'] and ($GLOBALS['action']=='vtopic' or $GLOBALS['action']=='vthread' or $GLOBALS['action']=='')) $mr='.html'; else $mr='';
 	$page=pageChk($page,$numRows,$viewMax);
-	$iVal=intval(($numRows-1)/$viewMax); //last page
-	if($iVal>$GLOBALS['viewpagelim']){
-		$iVal=$GLOBALS['viewpagelim'];
-		if($GLOBALS['viewpagelim']>=1) $iVal-=1;
+	$iVal=intval(($numRows-1)/$viewMax); //last page (0-indexed)
+
+	// If only one page or no pages, return empty string
+	if($iVal <= 0) {
+		return '';
 	}
-	if($numRows>0&&$iVal>0&&$numRows<>$viewMax){
-		$end=$iVal;
-		if(!$navCell || true) $start=0; else $start=1; //always start at page 1 (in theoyr cound start with page 2)
-		if($page>0&&!$navCell) $pageNav.=' <a href="'.$url.($page-1).$mr.'" class="pageNav">&lt;&lt; Prev</a>';
-		if($navCell&&$end>3){ $end=2;$pageNav.=' '; }
-		elseif($page<4&&$end>4){ $end=4;$pageNav.=' '; }
-		elseif($page>=4&&$end>4){
-			$start=intval($page/4)*4-1;$end=$start+5;
-			if($end>$iVal) $end=$iVal;
-			$pageNav.=' <a href="'.$url.'0'.$mr.'" class="pageNav">1</a> ...';
-		}
-		else $pageNav.=' ';
-		for($i=$start;$i<=$end;$i++){
-			if($i==$page&&!$navCell) $pageNav.=' <b class="pageNav pageNavSelected">'.($i+1).'</b> ';
-			else {
-				$pageNav.=' <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">'.($i+1).'</a> ';
-				if ($i>=$end&&$i==$iVal)
-					$pageNav.=' - <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">Last</a> ';
-			}
-		}
-		if((($navCell&&$iVal>3)||($iVal>4&&$start<=$iVal-5))){
-			if($navCell&&$iVal<5); else $pageNav.='..';
-			for($n=$iVal-1;$n<=$iVal;$n++){
-				if($n>=$i) {
-					$pageNav.=' <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">'.($n+1).'</a> ';
-					if ($n==$iVal)
-						$pageNav.=' - <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">Last</a> ';
-				}
-			}
-		}
-		if($page<$iVal&&!$navCell) $pageNav.=' <a href="'.$url.($page+1).$mr.'" class="pageNav">Next &gt;&gt;</a>';
-		return $pageNav;
+
+	// Cap $iVal by viewpagelim
+	if(isset($GLOBALS['viewpagelim']) && $iVal > $GLOBALS['viewpagelim']){
+		$iVal = $GLOBALS['viewpagelim'];
+		if($GLOBALS['viewpagelim'] >= 1) $iVal -= 1; // Adjust if viewpagelim is count based
 	}
+
+	// If, after potential capping, there's only one page, return empty
+	if($iVal <= 0) {
+		return '';
+	}
+
+	$pageNav='Pages:';
+
+	// "Prev" link
+	if($page > 0 && !$navCell) {
+		$pageNav.=' <a href="'.$url.($page-1).$mr.'" class="pageNav">&lt;&lt; Prev</a>';
+	}
+
+	// "First" page link (Page 1)
+	if($page > 0) { // Only show if not on the first page
+		$pageNav.=' <a href="'.$url.'0'.$mr.'" class="pageNav" title="Page 1">1</a>';
+	} else { // On first page
+		if (!$navCell) $pageNav.=' <b class="pageNav pageNavSelected">1</b>';
+		else $pageNav.=' <a href="'.$url.'0'.$mr.'" class="pageNav" title="Page 1">1</a>';
+	}
+
+	// Ellipsis before previous page link
+	// Show if page before current ($page-1) is not page 1 (index 0) and not page 2 (index 1)
+	if($page - 1 > 1) {
+		$pageNav.=' ...';
+	}
+
+	// Page link before current (page $page, 0-indexed)
+	// Show if current page is page 2 (index 1) or greater, AND this page ($page-1) is not the first page (0)
+	if ($page - 1 > 0) {
+		$pageNav.=' <a href="'.$url.($page-1).$mr.'" class="pageNav" title="Page '.$page.'">'.$page.'</a>';
+	}
+
+	// Current page (page $page+1, 0-indexed)
+	// Display current page if it's NOT the first page AND NOT the last page
+	// (because first and last are handled by the specific "First" and "Last" page link sections)
+	if ($page > 0 && $page < $iVal) {
+		if (!$navCell) $pageNav.=' <b class="pageNav pageNavSelected">'.($page+1).'</b>';
+		else $pageNav.=' <a href="'.$url.$page.$mr.'" class="pageNav" title="Page '.($page+1).'">'.($page+1).'</a>';
+	}
+
+	// Page link after current (page $page+2, 0-indexed)
+	// Show if current page is $iVal-2 or less, AND this page ($page+1) is not the last page ($iVal)
+	if ($page + 1 < $iVal) {
+		$pageNav.=' <a href="'.$url.($page+1).$mr.'" class="pageNav" title="Page '.($page+2).'">'.($page+2).'</a>';
+	}
+
+	// Ellipsis after next page link
+	// Show if page after current ($page+1) is less than $iVal-1 (i.e., there's at least one page between $page+1 and $iVal)
+	if ($page + 1 < $iVal - 1) {
+		$pageNav.=' ...';
+	}
+
+	// "Last" page link (Page $iVal+1)
+	// Show if current page is not the last page.
+	// If it IS the last page, it's handled by the "else" in the "First" page section (modified to be current page == $iVal)
+	if ($page < $iVal) {
+		$pageNav.=' <a href="'.$url.$iVal.$mr.'" class="pageNav" title="Page '.($iVal+1).'">'.($iVal+1).'</a>';
+	} else { // Current page is $iVal (last page)
+		// This 'else' complements the '$page > 0' for the first page link.
+		// If on last page, it should be bolded if !$navCell
+		if (!$navCell) $pageNav.=' <b class="pageNav pageNavSelected">'.($iVal+1).'</b>';
+		// If $navCell is true, it was already rendered as a link by the ($page < $iVal) block,
+		// but we need to ensure it's rendered if the ($page < $iVal) was false.
+		// The first page logic already handles $page==0. This handles $page==$iVal.
+		// The $page > 0 && $page < $iVal handles pages in between.
+		// So, if $page == $iVal and $navCell is true, it needs to be a link here.
+		else $pageNav.=' <a href="'.$url.$iVal.$mr.'" class="pageNav" title="Page '.($iVal+1).'">'.($iVal+1).'</a>';
+	}
+
+	// "Next" link
+	if($page < $iVal && !$navCell) {
+		$pageNav.=' <a href="'.$url.($page+1).$mr.'" class="pageNav">Next &gt;&gt;</a>';
+	}
+
+	return $pageNav;
 }
 
 //---------------------->
