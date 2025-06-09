@@ -1,0 +1,1 @@
+../basic/static_new_contributors.tpl
