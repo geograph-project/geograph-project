@@ -254,6 +254,7 @@ function appearsToBePerson() {
 		return false;
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
+	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Mediapartners')===FALSE) &&
 	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Preview')===FALSE) &&
             (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
             (strpos($_SERVER['HTTP_USER_AGENT'], 'curl')===FALSE) &&
