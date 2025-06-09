@@ -80,6 +80,7 @@ img, #previewImage2 {
 .tabs {
 	white-space:nowrap;
 	overflow:hidden;
+	touch-action: none;
 }
 .tabs a {
 	display:inline-block;
@@ -114,6 +115,9 @@ form {
 		padding:8px;
 	}
 }
+p.deedlink span.nowrap {
+	white-space: normal; /* needs to override wrap inside external link! */
+}
 
 .tab2, .tab3, .tab4, .tab5 {
 	display:none;
@@ -130,6 +134,11 @@ form {
 	width:100%;
 	height:400px;
 	max-height:80vh;
+}
+@media screen and (max-height: 400px) {
+	.tab3 textarea {
+	        max-height:55vh;
+	}
 }
 .tab3 #placenames {
 	text-align:right;
@@ -539,6 +548,14 @@ $(function() {
 			}
 		}
 	});
+	let doneOnce = false;
+	document.addEventListener("scroll", (event) => {
+		if(!doneOnce && document.body.scrollTop > 200 && $('div#submissionMessage:visible')) {
+			checkOnline();
+			doneOnce = true;
+		}
+	});
+
 });
 
 function centerMap(gridref) {
@@ -1107,6 +1124,7 @@ function gotDataUrl(dataUrl) {
 		backgroundImage:"url('"+dataUrl.replace(/[\r\n]/g, "")+"')",
 		backgroundSize:size, backgroundRepeat:'no-repeat', backgroundPosition:'center'});
 
+	$('#s1contine').show();
 }
 
 function orientationChanged() {
@@ -1186,6 +1204,8 @@ function orientationChanged() {
 
 		<p id="note">You don't have to release the full resolution, can only release a smaller version if want. If select a smaller size, the image will be resized before upload - saving on data transfered.</p>
 
+
+		<p style="display:none" id="s1contine">Once selected and confirmed image above, <input type=button value="Continue to Step 2 &gt;" onclick="selectTab(2)"></p>
 
 		<hr>
 		<a href="?redir=false">Choose different Submission Process</a>
