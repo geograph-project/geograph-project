@@ -20,12 +20,12 @@
 	<li>Submission Processes:<br><br><ul>
 		<li><b><a href="/article/Mobile-Submission-Process">Submission on Mobile</a></b> (new!)</li>
 
-		<li><a href="/help/submit_intro">Submission on Desktop</a><ul>
+		<li class=todo><a href="/help/submit_intro">Submission on Desktop</a><br> (currently outdated)<ul>
 				<li><a href="/faq3.php?a=49#49">Video Introduction</a></li>
 			</ul></li>
-		<li><a href=""></a>Multi-Submission (todo)</li>
+		<li class=todo><a href=""></a>Multi-Submission (todo)</li>
 
-		<li><a href=""></a>Tagging (todo)</li>
+		<li class=todo><a href=""></a>Tagging (todo)</li>
 	</ul></li>
 
 	<li><a href="/article/Geograph-or-supplemental">Geograph or Supplemental</a><ul>
@@ -34,8 +34,23 @@
 
 	<li><a href="/help/freedom">Freedom - The Geograph Manifesto</a></li>
 
-	<li><a href="/article/Geograph-Quickstart-Guide">Geograph Quickstart Guide</a> (older)</li>
-
+	<li class=todo><a href="/article/Geograph-Quickstart-Guide">Geograph Quickstart Guide</a> (older)</li>
 </ul>
+<hr>
+Much more (including a documenation search) in our <a href="/content/documentation.php">main website documentation</a> and <a href="/faq3.php?l=0">FAQ</a>.
+
+{literal}
+<style>
+.todo,.todo a {
+	color:gray;
+}
+ul.touchPadding {
+	li li:last-child {
+		padding-bottom:0;
+	}
+}
+</style>
+{/literal}
+
 
 {include file="_std_end.tpl"}
