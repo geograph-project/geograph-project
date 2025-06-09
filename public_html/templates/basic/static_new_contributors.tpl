@@ -25,12 +25,14 @@
 			</ul></li>
 		<li class=todo><a href=""></a>Multi-Submission (todo)</li>
 
-		<li class=todo><a href=""></a>Tagging (todo)</li>
+		<li class=todo><a href="/article/Geograph-Image-Tagging-Guide">Tagging Guide</a> (new!)</li>
 	</ul></li>
 
 	<li><a href="/article/Geograph-or-supplemental">Geograph or Supplemental</a><ul>
 		<li><a href="/article/Reasons-for-rejection">Reasons for Rejection</a></li>
 	</ul></li>
+
+	<li>How Points Work (todo)
 
 	<li><a href="/help/freedom">Freedom - The Geograph Manifesto</a></li>
 
