@@ -40,6 +40,24 @@ ul.infos li>small {
 ul.infos li:hover>small {
 	display:inline;
 }
+
+.csscolumns {
+	margin-top:0.5em;
+	columns: auto 25em;
+}
+.csscolumns .inner {
+	break-inside: avoid;
+}
+.csscolumns h3 {
+    margin-top:0;
+    color: black;
+    text-align: center;
+    background: silver;
+    border-radius: 10px;
+    padding: 2px;
+
+}
+
 {/literal}</style>
 
 <div class="tabHolder">
@@ -142,7 +160,7 @@ ul.infos li:hover>small {
   
 {*---------------------------Articles-------------------------*}
 
-<div class="threecolsetup">
+<div class="csscolumns">
 	{assign var="lastid" value="0"}
 	{foreach from=$list item=item}
 		{if $lastcat != $item.category_name}
@@ -151,7 +169,7 @@ ul.infos li:hover>small {
 			</div>
 			{/if}
 
-			<div class="threecolumn">
+			<div class="inner">
 				<h3>{$item.category_name}</h3>
 				<ul class="infos">
 					{assign var="lastname" value=""}
