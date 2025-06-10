@@ -190,7 +190,7 @@ a.done {
 	color:lightgreen;
 }
 #recentTags {
-	line-height:3em;
+	line-height:2.2em;
 }
 #recentTags a {
 	padding:5px;
@@ -856,6 +856,7 @@ $(function() {
 		$.each(keys,function(index,value) {
 			if(count < 16) {
 				$('<a/>').attr('href','#').text(value.capitalizeTag()).click(useTag).appendTo($tags);
+				$tags.append(' ');
 				count++;
 			}
 		});
@@ -1282,7 +1283,7 @@ function orientationChanged() {
 		<br>
 		<hr>
 
-		<div><label for=tags>Tags (and/or Subject):</label>
+		<div><label for=tags>Tags and/or Subject: (optional)</label>
 		<input type="text" name="tags" id="tags" value="" size="60" placeholder="tags (optional)" style="width:100%"></div>
 		<div id="recentTags"></div>
 		<blockquote>
