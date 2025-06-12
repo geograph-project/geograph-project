@@ -147,11 +147,16 @@ $sql['tables']['p2'] = 'LEFT JOIN geobb_posts_quar p2 ON (p2.post_id = r.post_id
 
 
 $sql['wheres'] = array();
+$sql['limit'] = 50;
 
 if (!empty($_GET['topic_id'])) {
 	$smarty->assign("title",'Reports related to topic #'.intval($_GET['topic_id']));
 	$smarty->assign('topic_id',intval($_GET['topic_id']));
 	$sql['wheres'][] = "r.`topic_id` = ".intval($_GET['topic_id']);
+} elseif (!empty($_GET['year'])) {
+	$smarty->assign("title",'All reports in last Year (no limit)');
+	unset($sql['limit']);
+	$sql['wheres'][] = "created > date_sub(now(),interval 1 year)";
 } elseif (empty($_GET['all'])) {
 	$smarty->assign("title",'New or Open reports');
 	$sql['wheres'][] = "`resolution` in ('new','open')";
@@ -167,8 +172,6 @@ if (!empty($_GET['user_id'])) {
 #$sql['group'] = 'r.topic_id';
 
 $sql['order'] = 'r.report_id desc';
-
-$sql['limit'] = 50;
 
 
 
@@ -221,5 +224,3 @@ if (!empty($_GET['topic_id'])) {
 
 $smarty->display('admin_discuss_reports.tpl');
 
-
-print_r($stat);
