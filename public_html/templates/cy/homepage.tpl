@@ -314,7 +314,7 @@ div.homepage {
 
 	<div class="interestBox homepageBox">
 
-		<span class="nowrap">Prosiect gan <a href="/article/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">Elusen Gofrestredig 
+		<span class="nowrap">Prosiect gan <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">Elusen Gofrestredig 
 		yng Nghymru a Lloegr</span>, <span class="nowrap">rhif 114562</span>, yw Geograph&reg; Prydain ac Iwerddon. <span class="nowrap">Rhif y cwmni: 7473967</span>. 
 		<br> Y swyddfa gofrestredig yw: Dept 1706, 43 Owston Road, Carcroft, Doncaster, South Yorkshire. DN6 8DA.
 

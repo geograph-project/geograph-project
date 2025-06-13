@@ -347,7 +347,7 @@ function rehighlight(that,check) {
 		(You only need to upload or release a 640px version initially, as the pano will replace the larger versions) 
 
 		<br><br>Read more about 
-		<a href="/article/article/Panoramas-and-Photospheres-on-Geograph" class="about" target="_blank">Panoramas and Photospheres on Geograph</a> (in new window)</div>
+		<a href="/article/Panoramas-and-Photospheres-on-Geograph" class="about" target="_blank">Panoramas and Photospheres on Geograph</a> (in new window)</div>
 
 		</span><br>
 	{/if}
