@@ -1213,6 +1213,13 @@ function orientationChanged() {
 
 		<div style="float:right;position:relative"><a href="/submit.php?redir=false">v1</a> / <a href="/submit2.php">v2</a> / <b>mobile</b> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a></div>
 
+		<hr>
+		<b>New here? We have a new 
+		<span class="nowrap"><a title="Help Page" href="/article/Mobile-Submission-Process" target="_blank">Help Page</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>
+		and
+		<span class="nowrap"><a title="FAQ Page" href="/article/Geograph-Frequently-Asked-Questions" target="_blank">FAQ Page</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>
+		</b>
+
 </div>
 
 <div class="tab2">
