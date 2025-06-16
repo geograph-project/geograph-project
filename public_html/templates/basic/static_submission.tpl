@@ -1,11 +1,18 @@
 {assign var="page_title" value="Submission Processes"}
 {include file="_std_begin.tpl"}
 
-<h2>Geograph Submission Processes</h2>
+<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+<img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
 
-<div style="background-color:pink; color:black; border:2px solid red; padding:10px; width:200px; float:right"><b>First time here?</b><br/> Please check the following resources: <br/>
-<a href="/help/submit_intro">Submission Introduction</a>, <br/>
-<a href="/faq.php">FAQ</a>, <a href="/article/Geograph-Introductory-letter">Introduction</a> and<br/> <a href="/article/Geograph-Quickstart-Guide">Quickstart Guide</a>.</div>
+This page is now (as about 2020) outdated. The text below is maintained only as a historical record. <b>This document may not represent current practice.</b> <br/>
+
+</div>
+<br/>
+<br/>
+<br/>
+
+
+<h2>Geograph Submission Processes</h2>
 
  <p>We have a number of ways to submit images to Geograph, a summary:</p>
 

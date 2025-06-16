@@ -40,10 +40,7 @@
         </li>
 </ul>
 
-<p><a href="/help/submission">&gt; &gt; Even more submission methods</a>, including or JUppy java client. Also includes technical details of the above methods.</p>
-
 <hr/>
-<br/>
 
 &middot; <label for="service">Preferred Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
 		<option value="Leaflet">Zoomable Maps (Combines Modern OS, OpenStreetMap, Aerial Imagery and Historic Maps)</option>
@@ -72,5 +69,10 @@ AttachEvent(window,'load',restoreService,false);
 
 </script>
 {/literal}
+
+<hr>
+
+<p><i>Looking for more submission options? Our <a href="/help/submission">submission methods</a> page has additional information, but please note it might be outdated.</i></p>
+
 
 {include file="_std_end.tpl"}
