@@ -6,8 +6,6 @@
 	ul.spaced li, ol.spaced li {
 		padding-top:10px;
 		padding-bottom:10px;
-		border-top:1px solid #eeeeee;
-		border-bottom:1px solid #eeeeee;
 	}
 	ul.spaced ul li {
 		border:none;
@@ -17,6 +15,8 @@
 
 <h2>Geograph Image Submission</h2>
 
+<div style="max-width:940px">
+
 {dynamic}
 {if !$user->registered && $submit}
    <h3>Login Required</h3>
@@ -25,12 +25,19 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 {/if}
 {/dynamic}
 
-<p>Submitting photos via Geograph is a 4-step process:</p>
+<p>Submitting photos via Geograph is a 4-step process: <i>(Note: this is our <b>desktop</b> process, on mobile we have a different process)</i></p>
 
 <ol class="spaced">
-	<li><b>Define the square</b> for your image - by entering or selecting the grid reference, searching by placename or dragging on map.</li>
-	<li><b>Select the image</b> to upload, and pinpoint its <b>location on a 1:50,000 map</b> (or road map in Ireland).</li>
-	<li>Enter the <b>title, description, category, and date</b> (which can be read direct from EXIF in the photo).</li>
+	<li><b>Define the square</b> for your image - by entering or selecting the grid reference, searching by placename or dragging on map. (see below for more tips)
+		<ul>
+			<li>Alternatively if you have a image with EXIF location, use <b>Upload a Geotagged image</b> instead of entering location in step 1
+		</ul></li>
+	<li><b>Select the image</b> to upload (if not using EXIF), and pinpoint <b>Subject and Camera location</b> on a high resolution map.
+	<li>Enter the <b>title, description, and date</b> (which can be read direct from EXIF in the photo).
+		<ul>
+			<li>We also ask you to select 1-6 "Geographical Context" tags that give a general sense of the image's subject and location. No need to be precise.
+			<li>You can also add optional free-form tags for more specific details. Advanced users might also be interested in <a href="/article/Shared-Descriptions">Shared-Descriptions</a>
+		</ul></li>
 	<li><b>Confirm the licence terms</b>, and attribution options.</li>
 </ol>
 
@@ -41,24 +48,52 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 {/dynamic}
 
 <div class="interestBox">
+	<span style=color:red>(Note links in this section may be outdated, we currently reviewing them)</span>
         Other Resources: <a href="/submit-example.php">Preview pages of the Submission Process</a> &middot; <a href="/faq3.php?a=49#49">Video Demonstation</a> &middot; 
-		<a href="/faq3.php?q=submit">FAQs</a><br/><br/>
+		<b><a href="/article/Geograph-Frequently-Asked-Questions">Contributor FAQ</a></b><br/><br/>
 	&nbsp; &nbsp; We also have a prototype <a href="http://{$http_host}/guider/submit-demo.html">Guided Demo of the First page of submission</a>.
 	<div style="text-align:right"><a href="/article/Geograph-Introductory-letter">Geograph Introductory letter</a></div>
 </div>
 
 <br/><br/>
 
-<p>As well as the above submission processes, we have the following alternatives:</p>
+<span style=color:red>(Links below this point dont currrently work (or are missing) - this page is a prototype)</span>
+<hr>
 
-<ul class="spaced">
-	<li>Upload a <b>Geotagged image</b> instead of entering location in step 1
-  <ul>
-		<li>(either Geo Extensions to the EXIF specification, or the file named with the grid reference)</li>
-	</ul>
-  </li>
-	<li>Bulk upload photos using an on <b>offline Java application</b>, locate and describe your images offline, and then upload when ready to connect to the internet (this does not include the draggable icons on map).</li>
- </ul>	
+    <h2>Tips for Adding Locations to Your Photos</h2>
+
+    <h2>Using Geotagged Images</h2>
+    <p>If your photo already includes location data (EXIF), such as those taken with a smartphone, GPS-enabled camera, or processed with software like PicLocata, use the <strong>"GeoTagged Image"</strong> option. Simply upload your image, and we'll extract the location data automatically.</p>
+
+    <p><strong>About PicLocata:</strong> For images taken with cameras without built-in GPS, PicLocata is an app that can help. It correlates a collection of your photos with a separate tracklog (recorded on a GPS device or mobile phone) to accurately add geographical coordinates to each image.</p>
+
+    <p><strong>Important Note for Mobile Users:</strong> Some mobile devices may strip location data from images before sharing them to protect your privacy. This means the "Geotagged Image" upload won't work on those devices. In such cases, you'll need to extract the location separately (for example, using an app like Investigator on an iPhone) and then enter it manually via the <strong>"Enter Grid Reference"</strong> tab before uploading your image.</p>
+
+    <h3>Manually Locating on a Map</h3>
+    <p>You can pinpoint an approximate location using our <strong>"Locate on Map"</strong> function. This interactive, zoomable map allows you to search by placename or postcode to find the correct area. Once you've found it, you can refine the location on a more detailed map.</p>
+
+    <h3>Using GPS Coordinates</h3>
+    <p>If you have WGS84 latitude and longitude coordinates (e.g., from a GPS receiver), you can enter them directly into the <strong>"Enter Grid Reference"</strong> tab. We also have a handy <a href="#">Lat/Long to Grid Reference Converter</a> if you need to convert your coordinates.</p>
+
+    <h3>On-the-Go Location Tips</h3>
+    <p>Modern smartphones can act as GPS devices to help you get Grid References while you're out and about. Consider using our <strong>'Radar' application</strong> (open <a href="http://m.geograph.org.uk">m.geograph.org.uk</a> on your device), <strong>OS Locate</strong>, or similar apps. You can also use various apps to actively record your data track.</p>
+
+    <h3>Resources for Great Britain and Ireland</h3>
+
+    <h3>Great Britain Resources</h3>
+    <ul>
+        <li><strong>OSGB (Interactive Guide):</strong> This guide covers Great Britain and the Isle of Man and uses two-letter 'Myriad' prefix letters for grid references.</li>
+        <li><strong>OS Maps Online:</strong> Provides interactive, zoomable maps and readily available Grid References.</li>
+        <li><strong>Magic Map:</strong> Offers a great selection of mapping and aerial imagery for Great Britain. You can use its 'Where am I' tool to get a 'Grid Ref' to paste into our form.</li>
+    </ul>
+
+    <h3>Ireland Resources</h3>
+    <ul>
+        <li><strong>Irish Grid (Fuller Description):</strong> This system uses single-letter 'Myriad' prefix letters.</li>
+        <li>We have a useful article: <a href="#">Locating photos - Ireland</a> with additional tips covering both Northern and Republic of Ireland.</li>
+    </ul>
+
+<hr>
 
 {dynamic}
 {if $user->registered}
@@ -67,4 +102,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
  <p>Login to access all the above submission options.</p>
 {/if}
 {/dynamic}
+
+</div>
+
 {include file="_std_end.tpl"}
