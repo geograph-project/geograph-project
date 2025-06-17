@@ -188,9 +188,12 @@ function gmap2grid(point) {
 
 	</script>
 
-<p>Use the Magnifying Glass icon on the map, to Search by placename or postcode.</p>
 
-<p>Click on the map to create a point, pick it up and drag to move to better location...</p>
+<p style="max-width:940px"> Click on the map to place a point, then drag it to fine-tune its position. For 
+now, just focus on selecting the correct subject square; you'll refine the exact location later. You can also 
+use the Magnifying Glass icon on the map to search by placename or postcode, or directly enter a grid 
+reference or decimal degrees in the designated box.
+
 
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
