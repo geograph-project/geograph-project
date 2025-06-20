@@ -8,6 +8,9 @@
 
 <h2>Contributing Photos to Geograph!</h2>
 
+<p>We have a <a href="/article/Geograph-Frequently-Asked-Questions" class=about>Frequently Asked Questions</a> about image submission.</p>
+
+
 <div class="interestBox">
 	Choose which one to use by default on <a href="/profile.php?edit=1">your profile</a> for Desktop.
 	Or for <a href="/submit-mobile.php?redir=false">here</a> for Mobile/Tablet.
@@ -16,7 +19,7 @@
 <ul>
 	<li>
 		<b style="font-size:1.2em"><a href="/submit.php?redir=false">Original Submission Method</a></b> (v1)<br/><br/>
-		The original, and longest established process - recommended for first time users. <a href="/help/submit_intro">View Introduction</a><br/><br/>
+		The original, and longest established process - recommended for first time users. <a href="/help/submit_intro" class=about>View Introduction</a><br/><br/>
 	</li>
 	<li>
 		<b style="font-size:1.2em"><a href="/submit2.php">Submission v2</a></b> <small>(<a href="/submit2.php?display=tabs">Tabs Version</a>)</small><br/><br/>
@@ -28,7 +31,7 @@
         </li>
 	<li>
 		<b style="font-size:1.2em"><a href="/submit-mobile.php">Mobile/Tablet Optimized</a></b><br/><br/>
-		New method specifically designed for small screens, and/or using 'touch' style interaction<br/><br/>
+		New method specifically designed for small screens, and/or using 'touch' style interaction. <a href="/article/Mobile-Submission-Process" class=about>Information</a><br/><br/>
         </li>
         <li>
 		<span style="font-size:1.2em">{external href="http://media.geograph.org.uk/speculative/" text="Speculative Upload"}</span><br/><br/>
