@@ -58,8 +58,24 @@ foreach ($links as $link => $name) {
 }
 print '</div>';
 
+$title = "Explore Images over time";
+$index = "sample8"; //note, can add WHERE ... on the end!
+$extra = "/display=date_slider"; //added on end of browser URL
+
+if (!empty($_GET['recent']) && $_GET['recent'] == 30) {
+	$title = "Recent Submissions (last 30 days)";
+	$index = "sample8D,sample8E WHERE submitted > ".(time()-2592000);
+	$extra = "/days=3/display=group/group=county/n=4/gorder=alpha%20asc";
+
+} elseif (!empty($_GET['recent'])) {
+	$title = "Very recent Submissions (last 3 days)";
+	$index = "sample8E WHERE submitted > ".(time()-259200);
+	$extra = "/days=3/display=group/group=county/n=4/gorder=alpha%20asc";
+}
+
+
 	print '<div class="interestBox">';
-        print "<h2>Explore Images over time</h2>";
+        print "<h2>$title</h2>";
 	print "</div>";
 
 #######################################
@@ -67,15 +83,15 @@ $where = $match = array();
 
 	if (true) {
 
-		if (!empty($match))
-			$where[] = "MATCH(".$sph->Quote(implode(' ',$match)).")";
+		//if (!empty($match))
+		//	$where[] = "MATCH(".$sph->Quote(implode(' ',$match)).")";
 
 //		print_r($where);
 
 		$thumbw = 120;
                 $thumbh = 120;
 
-			$sql = "SELECT id,user_id,title,realname,grid_reference,takenyear,decade,country,count(*) as images FROM sample8"; // WHERE ".implode(' and ',$where);
+			$sql = "SELECT id,user_id,title,realname,grid_reference,takenyear,decade,country,count(*) as images FROM $index"; // WHERE ".implode(' and ',$where);
 			$sql .= " GROUP BY decade,country limit 1000";
 
 		$imagelist = new ImageList();
@@ -109,7 +125,7 @@ $where = $match = array();
 				print "<td align=center>";
 				if (!empty($rows[$country])) {
 					$image = $rows[$country];
-					$url = "/browser/#!/decade+".urlencode('"'.str_replace('0s','tt',$decade).'"')."/country+".urlencode('"'.$country.'"')."/display=date_slider";
+					$url = "/browser/#!/decade+".urlencode('"'.str_replace('0s','tt',$decade).'"')."/country+".urlencode('"'.$country.'"').$extra;
 
 					$image->realname .= " [taken {$image->takenyear}]";
 			?>
