@@ -48,11 +48,15 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 {/dynamic}
 
 <div class="interestBox">
-	<span style=color:red>(Note links in this section may be outdated, we currently reviewing them)</span>
-        Other Resources: <a href="/submit-example.php">Preview pages of the Submission Process</a> &middot; <a href="/faq3.php?a=49#49">Video Demonstation</a> &middot;
-		<b><a href="/article/Geograph-Frequently-Asked-Questions">Contributor FAQ</a></b><br/><br/>
-	&nbsp; &nbsp; We also have a prototype <a href="http://{$http_host}/guider/submit-demo.html">Guided Demo of the First page of submission</a>.
-	<div style="text-align:right"><a href="/article/Geograph-Introductory-letter">Geograph Introductory letter</a></div>
+	More Links: 
+	<b><a href="/article/Geograph-Frequently-Asked-Questions" class=nowrap>Contributor FAQ</a></b>
+	 and <a href="/article/Geograph-Introductory-letter" class=nowrap>Geograph Introductory letter</a>
+	<hr>
+	We also have some older resources which may be slightly outdated: 
+	<span class="nowrap">&middot; <a href="/submit-example.php">Preview pages of the Submission Process</a></span>
+	<span class="nowrap">&middot; <a href="/faq3.php?a=49#49">Video Demonstation</a></span>
+	<span class="nowrap">&middot; <a href="http://{$http_host}/guider/submit-demo.html">Guided Demo of the First page of submission</a></span>
+	(we currently reviewing them to update them)
 </div>
 
 <br/><br/>
