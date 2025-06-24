@@ -1,0 +1,542 @@
+{
+  "places": [
+    {
+      "name": "Blaenau Ffestiniog",
+      "type": "Town",
+      "images": [
+        {
+          "id": 8504,
+          "relation": "depiction"
+        },
+        {
+          "id": 22048,
+          "relation": "reference"
+        },
+        {
+          "id": 28507,
+          "relation": "depiction"
+        },
+        {
+          "id": 52919,
+          "relation": "reference"
+        },
+        {
+          "id": 55240,
+          "relation": "reference"
+        },
+        {
+          "id": 55297,
+          "relation": "depiction"
+        },
+        {
+          "id": 55303,
+          "relation": "reference"
+        },
+        {
+          "id": 56440,
+          "relation": "depiction"
+        },
+        {
+          "id": 56443,
+          "relation": "depiction"
+        },
+        {
+          "id": 170583,
+          "relation": "depiction"
+        },
+        {
+          "id": 192844,
+          "relation": "reference"
+        },
+        {
+          "id": 194292,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Ffestiniog Railway",
+      "type": "Railway Line",
+      "images": [
+        {
+          "id": 8504,
+          "relation": "depiction"
+        },
+        {
+          "id": 22048,
+          "relation": "depiction"
+        },
+        {
+          "id": 45679,
+          "relation": "depiction"
+        },
+        {
+          "id": 52919,
+          "relation": "depiction"
+        },
+        {
+          "id": 55240,
+          "relation": "reference"
+        },
+        {
+          "id": 55297,
+          "relation": "depiction"
+        },
+        {
+          "id": 56438,
+          "relation": "depiction"
+        },
+        {
+          "id": 56443,
+          "relation": "depiction"
+        },
+        {
+          "id": 170583,
+          "relation": "reference"
+        },
+        {
+          "id": 190448,
+          "relation": "depiction"
+        },
+        {
+          "id": 192844,
+          "relation": "depiction"
+        },
+        {
+          "id": 194292,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Conwy Valley Line",
+      "type": "Railway Line",
+      "images": [
+        {
+          "id": 8504,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Llandudno",
+      "type": "Town",
+      "images": [
+        {
+          "id": 8504,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Dduallt",
+      "type": "Location/Hamlet",
+      "images": [
+        {
+          "id": 22048,
+          "relation": "depiction"
+        },
+        {
+          "id": 192844,
+          "relation": "depiction"
+        },
+        {
+          "id": 194292,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Lechwedd Slate Mine",
+      "type": "Mine",
+      "images": [
+        {
+          "id": 28507,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Gloddfa Ganol Slate Mine",
+      "type": "Mine",
+      "images": [
+        {
+          "id": 28507,
+          "relation": "reference"
+        },
+        {
+          "id": 55240,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Minffordd",
+      "type": "Village/Location",
+      "images": [
+        {
+          "id": 45679,
+          "relation": "depiction"
+        },
+        {
+          "id": 52919,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Cambrian Coast Line",
+      "type": "Railway Line",
+      "images": [
+        {
+          "id": 45679,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Llandecwyn",
+      "type": "Village/Parish",
+      "images": [
+        {
+          "id": 52919,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Rhiw Goch",
+      "type": "Geographical Feature",
+      "images": [
+        {
+          "id": 52919,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Porthmadog",
+      "type": "Town",
+      "images": [
+        {
+          "id": 52919,
+          "relation": "reference"
+        },
+        {
+          "id": 98861,
+          "relation": "reference"
+        },
+        {
+          "id": 192844,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Tan-y-bwlch",
+      "type": "Village/Location",
+      "images": [
+        {
+          "id": 52919,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Penrhyndeudraeth",
+      "type": "Village/Town",
+      "images": [
+        {
+          "id": 52919,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Llan Ffestiniog",
+      "type": "Village",
+      "images": [
+        {
+          "id": 64858,
+          "relation": "reference"
+        },
+        {
+          "id": 95180,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Ffestiniog (District)",
+      "type": "District/Area",
+      "images": [
+        {
+          "id": 55240,
+          "relation": "depiction"
+        },
+        {
+          "id": 55297,
+          "relation": "reference"
+        },
+        {
+          "id": 55303,
+          "relation": "reference"
+        },
+        {
+          "id": 55305,
+          "relation": "depiction"
+        },
+        {
+          "id": 98861,
+          "relation": "depiction"
+        },
+        {
+          "id": 130773,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Lletty-Gwilym",
+      "type": "Location/Hamlet",
+      "images": [
+        {
+          "id": 55240,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "B4391 Ffestiniog-Bala road",
+      "type": "Road",
+      "images": [
+        {
+          "id": 55240,
+          "relation": "reference"
+        },
+        {
+          "id": 55305,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Wrygsan",
+      "type": "Slate Quarry",
+      "images": [
+        {
+          "id": 55240,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Tanygrisiau",
+      "type": "Village",
+      "images": [
+        {
+          "id": 55240,
+          "relation": "reference"
+        },
+        {
+          "id": 55297,
+          "relation": "reference"
+        },
+        {
+          "id": 55303,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Tanygrisiau Reservoir",
+      "type": "Reservoir",
+      "images": [
+        {
+          "id": 22048,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Glanypwll",
+      "type": "Location/Hamlet",
+      "images": [
+        {
+          "id": 55297,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Sofl-y-Mynydd",
+      "type": "House",
+      "images": [
+        {
+          "id": 55305,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Moelwyn Tunnel",
+      "type": "Tunnel",
+      "images": [
+        {
+          "id": 56438,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Gwynedd",
+      "type": "County",
+      "images": [
+        {
+          "id": 56440,
+          "relation": "reference"
+        },
+        {
+          "id": 56443,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Afon Cynfal",
+      "type": "River",
+      "images": [
+        {
+          "id": 64858,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Rhaeadr Cynfal Waterfalls",
+      "type": "Waterfall",
+      "images": [
+        {
+          "id": 64858,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Ceunant Cynfal Valley",
+      "type": "Valley",
+      "images": [
+        {
+          "id": 64858,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Capel Bethal",
+      "type": "Former Chapel",
+      "images": [
+        {
+          "id": 95180,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Ysgol Bro Cynfal",
+      "type": "School",
+      "images": [
+        {
+          "id": 98861,
+          "relation": "depiction"
+        },
+        {
+          "id": 130773,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Bro Ffestiniog",
+      "type": "Area/Valley",
+      "images": [
+        {
+          "id": 98861,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Irish Sea",
+      "type": "Sea",
+      "images": [
+        {
+          "id": 98861,
+          "relation": "reference"
+        },
+        {
+          "id": 55305,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Lleyn peninsula",
+      "type": "Peninsula",
+      "images": [
+        {
+          "id": 55305,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Campbell’s Platform",
+      "type": "Railway Platform",
+      "images": [
+        {
+          "id": 190448,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Plas y Dduallt Manor House",
+      "type": "Manor House",
+      "images": [
+        {
+          "id": 190448,
+          "relation": "reference"
+        }
+      ]
+    },
+    {
+      "name": "Blaenau Ffestiniog railway station",
+      "type": "Railway Station",
+      "images": [
+        {
+          "id": 8504,
+          "relation": "depiction"
+        },
+        {
+          "id": 56443,
+          "relation": "depiction"
+        }
+      ]
+    },
+    {
+      "name": "Dduallt station",
+      "type": "Railway Station",
+      "images": [
+        {
+          "id": 192844,
+          "relation": "reference"
+        },
+        {
+          "id": 194292,
+          "relation": "depiction"
+        }
+      ]
+    }
+  ]
+}
