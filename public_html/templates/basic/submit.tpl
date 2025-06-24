@@ -29,13 +29,9 @@
 		{/if}
 
 	{if $user->stats.images > 10}
-		<div style="float:right;position:relative"><b>v1</b> / <a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">v2</a> / <a href="/submit-mobile.php">mobile</a> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a>
-		<small><br/><br/><a href="/help/submit_intro">submit help page</a></small></div>
+		<div style="float:right;position:relative"><b>v1</b> / <a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">v2</a> / <a href="/submit-mobile.php">mobile</a> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a></div>
 	{else}
-		<div style="float:right;position:relative"><a href="/help/submit">alternative submission methods</a>
-		{if $user->stats.images > 0}
-		<small><br/><br/><a href="/help/submit_intro">submit help page</a></small>
-		{/if}</div>
+		<div style="float:right;position:relative"><a href="/help/submit">alternative submission methods</a></div>
 	{/if}
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
@@ -76,6 +72,9 @@ geographing</a> first.</p>
 		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4)">Choose Square</a>&nbsp;
 		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Geotagged Image</a>&nbsp;
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'"><b>Locate on Map</b>/by Placename</a>
+
+		<div style="float:right"><a href="/help/submit_intro" class=about>Submission Help</a></div>
+
 	</div>
 
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
@@ -184,12 +183,15 @@ geographing</a> first.</p>
 	<b>Tips for locating photos:</b>
 <p>There are several ways to determine the location of your photo for Geograph:</p>
 <ul>
-    <li><strong>Geotagged Images:</strong> If your photo already has location data (e.g., from a smartphone or GPS camera), use the 'GeoTagged Image' tab. We can often extract the location automatically.</li>
+    <li><strong>Geotagged Images:</strong> If your photo already has location data (e.g., from a smartphone or GPS camera), use the 'GeoTagged Image' tab. We can often extract the location automatically.<ul>
+		<li>For images taken with cameras without built-in GPS, <a href="/help/submit_intro">PicLocata</a> is an app that can help, by cross-referencing a tracklog from a seperate GPS device, to add geotagging to images.
+	</ul></li>
     <li><strong>Manual Entry:</strong> You can directly enter a grid reference or latitude/longitude coordinates in the 'Enter Grid Reference' tab.</li>
     <li><strong>Interactive Map:</strong> Use the 'Locate on Map' tab to search by placename or postcode and pinpoint the location on a map.</li>
 </ul>
-<p>For more detailed guidance on these methods, including specific resources for Great Britain and Ireland, please see our <a href="/help/submit_intro"> comprehensive guide to adding locations</a>.</p>
+<p>For more detailed guidance on these methods, including more details how to work with Grid References, please see our <a href="/help/submit_intro">more comprehensive guide</a>.</p>
 
+	<hr><br>
 
 		<p>&middot; <label for="service">Preferred Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
 			<option value="Leaflet">Zoomable Maps (Combines Modern OS, OpenStreetMap, Aerial Imagery and Historic Maps)</option>
