@@ -41,7 +41,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 	<li><b>Confirm the licence terms</b>, and attribution options.</li>
 </ol>
 
-{dynamic} 
+{dynamic}
 {if $user->registered}
  <p>Go to the <a href="/submit.php">submit page</a> to send in your photo now!</p>
 {/if}
@@ -49,7 +49,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 
 <div class="interestBox">
 	<span style=color:red>(Note links in this section may be outdated, we currently reviewing them)</span>
-        Other Resources: <a href="/submit-example.php">Preview pages of the Submission Process</a> &middot; <a href="/faq3.php?a=49#49">Video Demonstation</a> &middot; 
+        Other Resources: <a href="/submit-example.php">Preview pages of the Submission Process</a> &middot; <a href="/faq3.php?a=49#49">Video Demonstation</a> &middot;
 		<b><a href="/article/Geograph-Frequently-Asked-Questions">Contributor FAQ</a></b><br/><br/>
 	&nbsp; &nbsp; We also have a prototype <a href="http://{$http_host}/guider/submit-demo.html">Guided Demo of the First page of submission</a>.
 	<div style="text-align:right"><a href="/article/Geograph-Introductory-letter">Geograph Introductory letter</a></div>
@@ -57,15 +57,14 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 
 <br/><br/>
 
-<span style=color:red>(Links below this point dont currrently work (or are missing) - this page is a prototype)</span>
 <hr>
 
     <h2>Tips for Adding Locations to Your Photos</h2>
 
     <h2>Using Geotagged Images</h2>
-    <p>If your photo already includes location data (EXIF), such as those taken with a smartphone, GPS-enabled camera, or processed with software like PicLocata, use the <strong>"GeoTagged Image"</strong> option. Simply upload your image, and we'll extract the location data automatically.</p>
+    <p>If your photo already includes location data (EXIF), such as those taken with a smartphone, GPS-enabled camera, or processed with software like {external href="https://media.geograph.org.uk/public.php?profile=352" text="PicLocata" target="_blank"}, use the <strong>"GeoTagged Image"</strong> option. Simply upload your image, and we'll extract the location data automatically.</p>
 
-    <p><strong>About PicLocata:</strong> For images taken with cameras without built-in GPS, PicLocata is an app that can help. It correlates a collection of your photos with a separate tracklog (recorded on a GPS device or mobile phone) to accurately add geographical coordinates to each image.</p>
+    <p><strong>About PicLocata:</strong> For images taken with cameras without built-in GPS, {external href="https://media.geograph.org.uk/public.php?profile=352" text="PicLocata" target="_blank"} is an app that can help. It correlates a collection of your photos with a separate tracklog (recorded on a GPS device or mobile phone) to accurately add geographical coordinates to each image.</p>
 
     <p><strong>Important Note for Mobile Users:</strong> Some mobile devices may strip location data from images before sharing them to protect your privacy. This means the "Geotagged Image" upload won't work on those devices. In such cases, you'll need to extract the location separately (for example, using an app like Investigator on an iPhone) and then enter it manually via the <strong>"Enter Grid Reference"</strong> tab before uploading your image.</p>
 
@@ -73,24 +72,24 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
     <p>You can pinpoint an approximate location using our <strong>"Locate on Map"</strong> function. This interactive, zoomable map allows you to search by placename or postcode to find the correct area. Once you've found it, you can refine the location on a more detailed map.</p>
 
     <h3>Using GPS Coordinates</h3>
-    <p>If you have WGS84 latitude and longitude coordinates (e.g., from a GPS receiver), you can enter them directly into the <strong>"Enter Grid Reference"</strong> tab. We also have a handy <a href="#">Lat/Long to Grid Reference Converter</a> if you need to convert your coordinates.</p>
+    <p>If you have WGS84 latitude and longitude coordinates (e.g., from a GPS receiver), you can enter them directly into the <strong>"Enter Grid Reference"</strong> tab. We also have a handy <a href="/latlong.php">Lat/Long to Grid Reference Converter</a> if you need to convert your coordinates.</p>
 
     <h3>On-the-Go Location Tips</h3>
-    <p>Modern smartphones can act as GPS devices to help you get Grid References while you're out and about. Consider using our <strong>'Radar' application</strong> (open <a href="http://m.geograph.org.uk">m.geograph.org.uk</a> on your device), <strong>OS Locate</strong>, or similar apps. You can also use various apps to actively record your data track.</p>
+    <p>Modern smartphones can act as GPS devices to help you get Grid References while you're out and about. Consider using our <strong>'Radar' application</strong> (open {external href="http://m.geograph.org.uk" text="m.geograph.org.uk" target="_blank"} on your device), {external href="https://play.google.com/store/apps/details?id=uk.co.ordnancesurvey.oslocate.android" text="OS Locate" target="_blank"}, or similar apps. You can also use various apps to actively record your data track.</p>
 
     <h3>Resources for Great Britain and Ireland</h3>
 
     <h3>Great Britain Resources</h3>
     <ul>
-        <li><strong>OSGB (Interactive Guide):</strong> This guide covers Great Britain and the Isle of Man and uses two-letter 'Myriad' prefix letters for grid references.</li>
-        <li><strong>OS Maps Online:</strong> Provides interactive, zoomable maps and readily available Grid References.</li>
-        <li><strong>Magic Map:</strong> Offers a great selection of mapping and aerial imagery for Great Britain. You can use its 'Where am I' tool to get a 'Grid Ref' to paste into our form.</li>
+        <li><strong>{external href="https://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid" text="OSGB" target="_blank"} ({external href="http://www.ordnancesurvey.co.uk/resources/maps-and-geographic-resources/the-national-grid.html" text="Interactive Guide" target="_blank"}):</strong> This guide covers Great Britain and the Isle of Man and uses two-letter 'Myriad' prefix letters for grid references.</li>
+        <li><strong>{external href="https://osmaps.ordnancesurvey.co.uk/" text="OS Maps Online" target="_blank"}:</strong> Provides interactive, zoomable maps and readily available Grid References.</li>
+        <li><strong>{external href="http://magic.gov.uk/MagicMap.aspx" text="Magic Map" target="_blank"}:</strong> Offers a great selection of mapping and aerial imagery for Great Britain. You can use its 'Where am I' tool to get a 'Grid Ref' to paste into our form.</li>
     </ul>
 
     <h3>Ireland Resources</h3>
     <ul>
-        <li><strong>Irish Grid (Fuller Description):</strong> This system uses single-letter 'Myriad' prefix letters.</li>
-        <li>We have a useful article: <a href="#">Locating photos - Ireland</a> with additional tips covering both Northern and Republic of Ireland.</li>
+        <li><strong>{external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish Grid" target="_blank"} ({external href="https://www.osi.ie/wp-content/uploads/2015/04/The-Irish-Grid-A-Description-of-the-Coordinate-Reference-System-Used-in-Ireland.pdf" text="Fuller Description" target="_blank"}):</strong> This system uses single-letter 'Myriad' prefix letters.</li>
+        <li>We have a useful article: <a href="/article/Locating-photos---Republic-of-Ireland">Locating photos - Ireland</a> with additional tips covering both Northern and Republic of Ireland.</li>
     </ul>
 
 <hr>

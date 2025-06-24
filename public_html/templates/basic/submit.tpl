@@ -181,55 +181,14 @@ geographing</a> first.</p>
 
 	<br/><br/>
 
-	<b>Tips for locationing photos:</b>
-	<ul>
-		<li>If the image already has location attached (in EXIF), eg taken from a smartphone, GPS-Enabled camera, or geolocated via {external href="https://media.geograph.org.uk/public.php?profile=352" text="PicLocata"} 
-		and similar GPS-Log correlation software - then use the 'GeoTagged Image' option. 
-		(you upload the image first, and the location data is extracted) <br/><br/><ul>
-
-			<li>We are aware that some mobile devices strip the location data from an image, before providing to a website. This is a recent privacy driven function 
-			to make it harder to accidently 'share' a photo that leaks your location. It means the 'Geotagged' upload doesn't work on such devices. At the moment, 
-			will have to extract location seperately (eg using the Investigator App on iPhone) and enter it via the 'Enter Grid Reference' tab above, then upload 
-			the image.
-
-		</ul><br/></li>
-
-		<li>Can locate the approximate location using the 'Locate on Map' function, an interactive zoomable map to zoom to the right area 
-		(includes a placename/postcode search). Once located, can refine the locations on a detailed map. <br/><br/></li>
-
-		<li>If you have a WGS84 latitude & longitude coordinate (e.g. from a GPS receiver), then see our 
-		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a>, or enter it above in the 'Enter Grid Reference' tab.<br/><br/></li>
-
-		<li>See our <a href="/map/">Overview Map</a> for the layout of the Myriad Prefix letters.<br/><br/></li> 
-
-		<li>Can while out and about use a modern SmartPhone as a GPS, and get GRs, 
-		eg using our own 'Radar' Applicaton (open <tt>m.geograph.org.uk</tt> on device), 
-		or {external href="https://play.google.com/store/apps/details?id=uk.co.ordnancesurvey.oslocate.android" text="OS Locate"}
-		or similar. Can also get the device to actively record a data track, with 
-		{external href="https://play.google.com/store/search?q=GPS%20Log%20gpx&c=apps" text="variety of apps"}<br/><br/></li>
-	</ul>
-
-	<b>Resources for Great Britain:</b>
-	<ul>
-		<li>{external href="https://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid" text="OSGB"} 
-		({external href="http://www.ordnancesurvey.co.uk/resources/maps-and-geographic-resources/the-national-grid.html" text="Interactive Guide"}) 
-		covers Great Britain, and Isle of Man and uses two letter 'Myriad' prefix letters. <br/><br/></li>
-
-		<li>{external href="https://osmaps.ordnancesurvey.co.uk/" text="OS Maps Online"} - provide interactive zoomable maps,
-		 and provides a Grid-References. <br/><br/></li>
-
-		<li>{external href="http://magic.gov.uk/MagicMap.aspx" text="Magic Map"}
-		has a nice range of mapping and aerial imagery, for Great Britian. Can get a 'Grid Ref' to paste into the above form via the 'Where am I' tool.<br/><br/></li>
-	</ul>
-
-        <b>Resources for Ireland:</b>
-        <ul>
-		<li>{external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish Grid"}
-		 ({external href="https://www.osi.ie/wp-content/uploads/2015/04/The-Irish-Grid-A-Description-of-the-Coordinate-Reference-System-Used-in-Ireland.pdf" text="Fuller Description"})
-		 uses single letter 'Myriad' prefix.<br/><br/></li>
-
-		<li>We have a useful article: <a href="/article/Locating-photos---Republic-of-Ireland">Locating photos - Ireland</a> with some further tips (covers Northern and Republic of Ireland.<br/><br/></li>
-	</ul>
+	<b>Tips for locating photos:</b>
+<p>There are several ways to determine the location of your photo for Geograph:</p>
+<ul>
+    <li><strong>Geotagged Images:</strong> If your photo already has location data (e.g., from a smartphone or GPS camera), use the 'GeoTagged Image' tab. We can often extract the location automatically.</li>
+    <li><strong>Manual Entry:</strong> You can directly enter a grid reference or latitude/longitude coordinates in the 'Enter Grid Reference' tab.</li>
+    <li><strong>Interactive Map:</strong> Use the 'Locate on Map' tab to search by placename or postcode and pinpoint the location on a map.</li>
+</ul>
+<p>For more detailed guidance on these methods, including specific resources for Great Britain and Ireland, please see our <a href="/help/submit_intro"> comprehensive guide to adding locations</a>.</p>
 
 
 		<p>&middot; <label for="service">Preferred Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
