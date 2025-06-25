@@ -30,7 +30,8 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-die("This function is offline, will need converting to work with Amazon S3");
+if (empty($_POST) && empty($_GET['force']))
+	die("This function is offline, will need converting to work with Amazon S3");
 
 
 $db = NewADOConnection($GLOBALS['DSN']);
@@ -59,7 +60,9 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 //		exit;
 	}
 
-	if (!isset($_POST['real'])) {
+	//GENERATION 2
+	if (!empty($CONF['filesystem_dsn']) && !isset($_POST['real'])) {
+		//connect once at start!
 		$filedb=NewADOConnection($CONF['filesystem_dsn']);
 		$fileroot = "/geograph_live/public_html";
 	}
@@ -94,7 +97,17 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 			$newfile=$image->_getFullpath(false);
 
 			echo "$oldfile to $newfile<br>";
-			if (isset($_POST['real'])) {
+
+			//GENERATION 3
+			if (true) { //maybe should be testing function_exists('geographfilesystem') ????
+
+				//todo,
+
+				//1. glob (will have to use getBucket directly see scripts/test-s3-glob.php!)- or maybe create a new basic glob interface in filesystem class!!
+				//2. loop as below (but will need to check (isset($_POST['real']))
+
+			//GENERATION 1 AND 2 -- actual action!
+			} elseif (isset($_POST['real'])) {
 				//could just do something like, but need to deal with orginal too
 				//$image->storeImage($_SERVER['DOCUMENT_ROOT'].$oldfile, true);
 
@@ -111,12 +124,16 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 					}
 				}
 
+			//GENERATION 1 AND 2 -- dry-run action!
 			} else {
+
 				//there is no NEED to check filesystem, but being paranoid!
 				$oldlike = str_replace('.jpg','%',$oldfile);
 				$dir = dirname($oldfile);
-				$folder_id = $filedb->getOne("SELECT folder_id FROM folder WHERE folder = '$fileroot$dir'");
-				$list = $filedb->getAssoc($sql = "SELECT filename,replica_count FROM file WHERE filename LIKE '$fileroot$oldlike' AND folder_id = $folder_id");
+				if (!empty($filedb)) {
+					$folder_id = $filedb->getOne("SELECT folder_id FROM folder WHERE folder = '$fileroot$dir'");
+					$list = $filedb->getAssoc($sql = "SELECT filename,replica_count FROM file WHERE filename LIKE '$fileroot$oldlike' AND folder_id = $folder_id");
+				}
 
 				$oldglob = str_replace('.jpg','*',$oldfile);
 				foreach (glob($_SERVER['DOCUMENT_ROOT'].$oldglob) as $file) {
@@ -128,7 +145,8 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 					} else {
 						print "copying ".basename($file)." to ".basename($newfile)."<br>";
 					}
-					unset($list[$filepath]);
+					if (!empty($list[$filepath]))
+						unset($list[$filepath]);
 				}
 
 				if (!empty($list)) {
@@ -139,6 +157,7 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 				}
 			}
 
+			//UPDATE MAIN DATABASE
 			$sqls = array();
 
 			if ($image->ftf>0 && isset($dups[$image->gridsquare_id])) {
@@ -193,7 +212,6 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 	$recordSet->Close();
 
 
-
 	$sqls = array();
 
 	if (!$db->getOne("SELECT COUNT(*) FROM gridimage WHERE user_id = $from")) {
@@ -220,7 +238,6 @@ if (isset($_POST['go']) && !empty($from) && !empty($to))
 	} else {
 		//if there are images (eg we only moved some) - then much more tricky,
 		//TODO - maybe could `touch` one of the images to trigger a recalculation??
-
 	}
 
 	print "<hr>";

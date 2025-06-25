@@ -1,0 +1,39 @@
+Geograph has two areas for storing images 
+A. upload_tmp_dir - used during submission as a temporayy scratch area
+B. final photos/ folder, that stores the images for long term storage. 
+
+
+We have had 3 generations of main file system - (used for storing image and a few other files)
+1. Just a plain POSIX filesystem (but could be NFS, raid etc)
+2. (look for $CONF['filesystem_dsn']) Geograph developed system, that provided POSIX filesystem as a frontend to a distributed system (metadata can be retrived from mysql)
+3. (look for Geograph FileSystem() class) PHP class that provides an virtual filesystem, with files actully stored on S3 (not local disk).
+
+
+Just for completeness the 'upload_tmp_dir' has also changed. has had three major genartions
+1. Just a plain POSIX filesystem (but could be NFS, raid etc)
+2. Was setup to put temporally folder on our Geograph developed system.
+3. Now back to POSIX share (implemented with Amazon EFS)
+
+
+
+
+----
+Geminis summary of abvoe!
+
+Geograph's image storage architecture has evolved through distinct phases for both temporary and permanent files.
+
+-- Permanent Storage (final photos/ folder):
+
+	1. Initially, a standard POSIX filesystem (later NFS, RAID etc) was employed.
+
+	2. This transitioned to a Geograph-developed distributed filesystem (identified by $CONF['filesystem_dsn']), offering a POSIX frontend with metadata managed in MySQL.
+
+	3. The current iteration leverages an S3-backed virtual filesystem implemented via the Geograph FileSystem() PHP class, eliminating local disk storage.
+
+-- Temporary Storage (upload_tmp_dir):
+
+	1. Started with a basic POSIX filesystem.
+
+	2. Moved to the Geograph-developed distributed system for temporary file handling. (as above) 
+
+	3. Currently utilizes a POSIX share, specifically Amazon EFS.
