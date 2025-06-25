@@ -852,6 +852,101 @@ if (preg_match('/(^|\/)convert"? /',$cmd) && filesize($tmp_src) > 5000000) {
                 return $this->db;
         }
 
+	function glob($path, $full_metadata = false) {
+		list($bucket_name, $s3_path) = $this->getBucketPath($path);
+
+		if (!$bucket_name) {
+			// Fallback to PHP's glob for local files if path doesn't map to S3
+			// This might need adjustment based on how local paths are handled elsewhere.
+			// For now, assume standard PHP glob behavior is acceptable.
+			$results = glob($path);
+			if ($full_metadata) {
+				$metadata_results = array();
+				foreach ($results as $file) {
+					// For local files, we might not have the same rich metadata as S3.
+					// Returning stat() for now, but this might need refinement.
+					$metadata_results[$file] = stat($file);
+				}
+				return $metadata_results;
+			}
+			return $results ? $results : array();
+		}
+
+		$prefix = $s3_path;
+		$suffix = '';
+
+		if (strpos($s3_path, '*') !== false) {
+			list($prefix, $suffix) = explode('*', $s3_path, 2);
+		} else {
+			// If no wildcard, we are looking for a specific file.
+			// We can use getObjectInfo to check if it exists.
+			$object_info = $this->getObjectInfo($bucket_name, $s3_path);
+			if ($object_info) {
+				if ($full_metadata) {
+					return array($s3_path => $object_info);
+				} else {
+					return array($s3_path);
+				}
+			} else {
+				return array();
+			}
+		}
+
+		// Call parent S3::getBucket with the prefix
+		// The S3::getBucket method is static, so we call it using parent::
+		$s3_objects = parent::getBucket($bucket_name, $prefix);
+
+		if ($s3_objects === false) {
+			// Error occurred while fetching from S3
+			return array();
+		}
+
+		$filtered_results = array();
+
+		foreach ($s3_objects as $object_name => $metadata) {
+			// S3::getBucket returns keys that include the prefix.
+			// We need to check if the part *after* the prefix matches the suffix.
+			if ($suffix === '' || substr($object_name, strlen($prefix)) === $suffix) {
+				if ($full_metadata) {
+					$filtered_results[$object_name] = $metadata;
+				} else {
+					$filtered_results[] = $object_name;
+				}
+			} else if ($suffix !== '') {
+				// Additional check for suffix if the object_name doesn't end with the prefix itself
+				// This handles cases like prefix = "photos/123_" and object_name = "photos/123_abc.jpg"
+				// and suffix = "b54*" (from the original example "12345_a4b54*")
+				// The requirement "After wildcard will be used for post filtering"
+				// means we should check if the part of object_name *after* the prefix *starts with* the suffix.
+				// Corrected logic for suffix filtering:
+				// The suffix is the part *after* the '*' in the pattern.
+				// The object_name from S3 already has the prefix.
+				// We need to check if the remainder of object_name (after stripping prefix)
+				// matches the pattern defined by suffix.
+				// For a simple suffix (no further wildcards in it), it's a direct check.
+				// The original request stated "After wildcard will be used for post filtering the list from getBucket"
+				// and "It only needs to accept ONE * wildcard".
+				// So, if $suffix is 'foo', we check if $object_name ends with 'foo' AND starts with $prefix.
+				// More accurately, we check if $object_name starts with $prefix AND the part of $object_name *after* $prefix starts with $suffix.
+
+				$path_after_prefix = substr($object_name, strlen($prefix));
+				if (strpos($path_after_prefix, $suffix) === 0) {
+					if ($full_metadata) {
+						$filtered_results[$object_name] = $metadata;
+					} else {
+						$filtered_results[] = $object_name;
+					}
+				}
+			}
+		}
+
+		// If not $full_metadata, ensure array keys are reset if it was associative before
+		if (!$full_metadata) {
+		    return array_values($filtered_results);
+		}
+
+		return $filtered_results;
+	}
 }
 
 
