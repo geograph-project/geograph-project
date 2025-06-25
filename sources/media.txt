@@ -1,0 +1,4 @@
+name: Media and Speculative Uploads
+
+creation: https://media.geograph.org.uk/_moderation.php
+

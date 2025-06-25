@@ -1,0 +1,14 @@
+name: Tag Descriptions
+table_name: user
+
+creation:
+SELECT  'tag_description' AS source,
+	`tag_id` AS foreign_id,
+        'creation' as event_type,
+	`created` as event_date,
+	0 as user_id,
+        CONCAT_WS(':',NULLIF(prefix,''),tag) AS title,
+        CONCAT('/tags/?tag_id=',tag_id) AS url
+FROM tag
+WHERE description != '' AND updated > date_sub(now(),interval 7 day)
+

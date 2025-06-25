@@ -1,0 +1,14 @@
+name: GeoTrips
+table_name: geotrips
+
+creation:
+SELECT  'trip' AS source,
+	`id` AS foreign_id,
+        'creation' as event_type,
+	`created` as event_date,
+	`uid` as user_id,
+        CONCAT(location,'/',title) AS title,
+        CONCAT('/geotrips/',id) AS url
+FROM geotrips
+WHERE created > date_sub(now(),interval 7 day)
+

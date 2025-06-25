@@ -1,0 +1,40 @@
+name: Blog Posts
+table_name: blog
+
+content:
+SELECT
+        NULL AS content_id,
+        blog_id AS foreign_id,
+        TRIM(title) AS title,
+        CONCAT('/blog/',blog_id) AS url,
+        user_id AS user_id,
+        gridimage_id,
+        gridsquare_id,
+        '' AS extract,
+        0 AS images,
+        0 AS wordcount,
+        views+views_archive AS views,
+        0 AS titles,
+        0 AS tags,
+        content AS words,
+        'blog' AS source,
+        'info' AS type,
+        updated,
+        created,
+        0 as wgs84_lat,
+        0 as wgs84_long,
+        null as sequence
+FROM blog
+WHERE approved = 1 AND published < NOW()
+
+creation:
+SELECT  'blog' AS source,
+	`blog_id` AS foreign_id,
+        'creation' as event_type,
+	`created` as event_date,
+	`user_id` as user_id,
+        TRIM(title) AS title,
+        CONCAT('/blog/',blog_id) AS url
+FROM blog
+WHERE approved = 1 AND created > date_sub(now(),interval 7 day)
+

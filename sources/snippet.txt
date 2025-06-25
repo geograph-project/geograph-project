@@ -1,0 +1,14 @@
+name: Shared Descriptions
+table_name: user
+
+creation:
+SELECT  'snippet' AS source,
+	`snippet_id` AS foreign_id,
+        'creation' as event_type,
+	`created` as event_date,
+	`user_id` as user_id,
+        TRIM(title) AS title,
+        CONCAT('/snippet/',snippet_id) AS url
+FROM snippet
+WHERE enabled>0 AND created > date_sub(now(),interval 7 day)
+

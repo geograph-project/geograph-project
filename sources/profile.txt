@@ -1,0 +1,14 @@
+name: User Profile
+table_name: user
+
+creation:
+SELECT  'user' AS source,
+	`user_id` AS foreign_id,
+        'creation' as event_type,
+	`signup_date` as event_date,
+	`user_id` as user_id,
+        TRIM(realname) AS title,
+        CONCAT('/profile/',user_id) AS url
+FROM user
+WHERE rights like '%basic%' AND signup_date > date_sub(now(),interval 7 day)
+

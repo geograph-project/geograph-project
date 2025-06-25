@@ -1,0 +1,14 @@
+name: Profile Website
+table_name: user
+
+creation:
+SELECT  'user_website' AS source,
+	`user_id` AS foreign_id,
+        'creation' as event_type,
+	`signup_date` as event_date,
+	`user_id` as user_id,
+        TRIM(website) AS title,
+        CONCAT('/profile/',user_id) AS url
+FROM user
+WHERE website != '' AND signup_date > date_sub(now(),interval 90 day)
+

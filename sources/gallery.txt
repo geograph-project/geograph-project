@@ -1,0 +1,28 @@
+name: Gallery
+table_name: geobb_topic
+
+creation:
+SELECT  'gallery' AS source,
+	`topic_id` AS foreign_id,
+        'creation' as event_type,
+	`topic_time` as event_date,
+	`topic_poster` as user_id,
+        TRIM(topic_title) AS title,
+        CONCAT('/gallery/_',topic_id) AS url
+FROM geobb_topics
+WHERE forum_id = 11 AND topic_time > date_sub(now(),interval 7 day)
+
+
+#todo, this is only finding the LAST reply
+
+reply:
+SELECT  'gallery' AS source,
+	`post_id` AS foreign_id,
+        'reply' as event_type,
+	`post_time` as event_date,
+	`poster_id` as user_id,
+        TRIM(topic_title) AS title,
+        CONCAT('/gallery/_',t.topic_id) AS url
+FROM geobb_topics t inner join geobb_posts on (post_id = topic_last_post_id) 
+WHERE t.forum_id = 11 AND post_time > date_sub(now(),interval 7 day)
+

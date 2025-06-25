@@ -1,0 +1,30 @@
+name: GSD
+table_name: geobb_topic
+
+# /discuss/index.php?&action=vthread&forum=5&topic=34214
+
+creation:
+SELECT  'gsd' AS source,
+	`topic_id` AS foreign_id,
+        'creation' as event_type,
+	`topic_time` as event_date,
+	`topic_poster` as user_id,
+        TRIM(topic_title) AS title,
+        CONCAT('/discuss/index.php?&action=vthread&forum=5&topic=',topic_id) AS url
+FROM geobb_topics
+WHERE forum_id = 5 AND topic_time > date_sub(now(),interval 7 day)
+
+
+#todo, this is only finding the LAST reply
+
+reply:
+SELECT  'gsd' AS source,
+	`post_id` AS foreign_id,
+        'reply' as event_type,
+	`post_time` as event_date,
+	`poster_id` as user_id,
+        TRIM(topic_title) AS title,
+        CONCAT('/discuss/index.php?&action=vthread&forum=5&topic=',t.topic_id) AS url
+FROM geobb_topics t inner join geobb_posts on (post_id = topic_last_post_id) 
+WHERE t.forum_id = 5 AND post_time > date_sub(now(),interval 7 day)
+

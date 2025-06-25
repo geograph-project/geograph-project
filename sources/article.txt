@@ -1,0 +1,43 @@
+name: Article
+table_name: article
+
+# todo - we need to track the 'publish data' might of been published long after creation! - use update_time FOR NOW!
+
+creation:
+SELECT  'article' AS source,
+	`article_id` AS foreign_id,
+        'creation' as event_type,
+	`create_time` as event_date,
+	`user_id` as user_id,
+        TRIM(title) AS title,
+        CONCAT('/article/',url) AS url
+FROM article
+WHERE approved >= 0 AND licence != 'none' AND update_time > date_sub(now(),interval 7 day)
+
+
+
+user_edit:
+SELECT  'article' AS source,
+        `article_id` AS foreign_id,
+        'user_edit' as event_type,
+        `update_time` as event_date,
+        `modifier` as user_id,
+        TRIM(title) AS title,
+        CONCAT('/article/diff.php?page=',url,'&1=-1&2=',article_revision_id) AS url
+FROM article_revisions
+WHERE approved > 0 AND licence != 'none' AND update_time > date_sub(now(),interval 7 day)
+AND modifier = user_id
+
+
+other_edit:
+SELECT  'article' AS source,
+        `article_id` AS foreign_id,
+        'user_edit' as event_type,
+        `update_time` as event_date,
+        `modifier` as user_id,
+        TRIM(title) AS title,
+        CONCAT('/article/diff.php?page=',url,'&1=-1&2=',article_revision_id) AS url
+FROM article_revisions
+WHERE approved > 0 AND licence != 'none' AND update_time > date_sub(now(),interval 7 day)
+AND modifier != user_id
+

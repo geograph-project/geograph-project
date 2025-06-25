@@ -1,0 +1,14 @@
+name: Profile About
+table_name: user
+
+creation:
+SELECT  'user_about' AS source,
+	`user_id` AS foreign_id,
+        'creation' as event_type,
+	`signup_date` as event_date,
+	`user_id` as user_id,
+        CONCAT(SUBSTRING(about_yourself,1,120), IF(LENGTH(about_yourself>120),'...','')) AS title,
+        CONCAT('/profile/',user_id) AS url
+FROM user
+WHERE about_yourself != '' AND signup_date > date_sub(now(),interval 90 day)
+
