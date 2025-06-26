@@ -22,9 +22,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$_GET['ddev'] =1;
-$_GET['live'] = 1;
-
 require_once('geograph/global.inc.php');
 
 
@@ -33,9 +30,9 @@ init_session();
 
 $smarty = new GeographPage;
 
-//customExpiresHeader(3600,false,true);
+customExpiresHeader(3600,false,true);
 
-	$smarty->assign('page_title','Labelled Images');
+	$smarty->assign('page_title','Image Data');
 	$smarty->display('_std_begin.tpl',$_SERVER['PHP_SELF']);
 
 #####################################################################
@@ -70,6 +67,10 @@ print "</div>";
 	$data['Total Images'] = $total = $db->getOne("select sum(imagecount) from gridsquare");
 	$data['With Title'] = $total;
 	$data['With Description'] = $total - $db->cacheGetOne(3600*24,"select count(*) from gridimage_search where comment = ''");
+
+	$data['With Year Taken'] = $db->getOne("select sum(images) from date_stat where month = '' and type = 'imagetaken' and reference_index = 0");
+	$data['With Day Taken'] = $db->getOne("select sum(images) from imagetaken_stat where imagetaken NOT like '%-00%'");
+
 	$data['With Category'] = $db->getOne("select sum(c) from category_stat");
 	$data['With Free-Form Tags'] = $sph->getOne("select count(*) from sample8 where match('@tags _SEP_')");
 	//$data['With Type Tags'] = $sph->getOne("select count(*) from sample8 where match('@types _SEP_')"); //this includes polyfill from moderatio_status!
@@ -79,13 +80,16 @@ print "</div>";
 	$data['With Subject (inc implied)'] = $sph->getOne("select count(*) from sample8 where match('@subjects _SEP_')"); //includes polyfill from category!!
 	$data['With Shared Descriptions'] = $sph->getOne("select count(*) from sample8 where match('@snippets _SEP_')");
 
+	$data['With 4fig Subject Loc'] = $total;
+
 $grlens = $sph->getAssoc("select natgrlen,count(*) from sample8 group by natgrlen");
 	$data['With 6fig+ Subject Loc'] = $grlens['6'] + $grlens['8'] + $grlens['10'];
 
 
 $vgrlens = $sph->getAssoc("select vgrlen,count(*) from sample8 group by vgrlen");
-	$data['With 6fig+ Photographer Loc'] = $vgrlens['6'] + $vgrlens['8'] + $vgrlens['10'];
+	$data['With 6fig+ Camera Loc'] = $vgrlens['6'] + $vgrlens['8'] + $vgrlens['10'];
 
+	$data['With View Direction'] = $total - $sph->getOne("select count(*) from sample8 where match('@direction Unknown')");
 
 		print "<table style='font-family:verdana;' cellpadding=5>";
 		foreach($data as $name => $count) {
@@ -100,8 +104,9 @@ $vgrlens = $sph->getAssoc("select vgrlen,count(*) from sample8 group by vgrlen")
 print "<br><hr><br>";
 print "<p>We have a mapping from (older) Category to (newer) Subject, so for many images with a Category can imply a Subject";
 print "<p>By 6fig+, mean a location using a 6figure or better grid-reference, hence 100m or better resolution";
+print "<p>The view direction is generally implied from Subject+Camera location, but may be supplied seperately, particully if image is very close range (cant get from GRs)";
 
-print "<p>The above is only looking at the raw data. Not generated data from processing, eg can use a reverse geocoder to guessimate a placename based on coordinates. Nor extracting placenames from title/description etc";
+print "<p>The above is only looking at the raw data, provided by contributors. Not generated data from processing, eg could use a reverse geocoder to guessimate a placename based on coordinates. Nor extracting placenames from title/description etc. Such generated data not listed here";
 
 #####################################################################
 

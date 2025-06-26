@@ -22,9 +22,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$_GET['ddev'] =1;
-$_GET['live'] = 1;
-
 require_once('geograph/global.inc.php');
 
 
@@ -33,7 +30,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-//customExpiresHeader(3600,false,true);
+customExpiresHeader(3600,false,true);
 
 	$smarty->assign('page_title','Labelled Images');
 	$smarty->display('_std_begin.tpl',$_SERVER['PHP_SELF']);
