@@ -88,6 +88,13 @@ if (strpos($_SERVER['REQUEST_URI'],'/tags/index.php') === 0
         }
 }
 
+if (!empty($_GET['tag_id'])) {
+	$db = GeographDatabaseConnection(true);
+	$row = $db->getRow("SELECT tag_id,prefix,tag FROM tag WHERE tag_id = ".intval($_GET['tag_id'])." AND status > 0");
+
+	$url = "https://www.geograph.org.uk/tagged/".urlencode2(($row['prefix']?"{$row['prefix']}:":'').$row['tag'])."&exact=1";
+}
+
 if (!empty($url)) {
         header("HTTP/1.0 301 Moved Permanently");
         header("Status: 301 Moved Permanently");
