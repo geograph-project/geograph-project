@@ -54,7 +54,9 @@ if (!empty($_POST['status'])) {
 	print "<table>";
 		print "<tr><th>".implode("</th><th>",array_map('htmlentities',array_keys($data[0])))."</th></tr>";
 	foreach($data as $row) {
-		print "<tr><td>".implode("</td><td align=right>",array_map('htmlentities',$row))."</td></tr>";
+		print "<tr><td>".implode("</td><td align=right>",array_map('htmlentities',$row))."</td>";
+		if (!empty($row['source']))
+			print "<td><a href=\"?source={$row['source']}\">view</a>";
 	}
 	print "</table><hr>";
 
@@ -62,6 +64,9 @@ if (!empty($_POST['status'])) {
 
 $where = array();
 $where['status'] = "moderation_status = 'pending'";
+
+if (!empty($_GET['source']) && preg_match('/^\w+$/',$_GET['source']))
+	$where['source'] = "source = ".$db->Quote($_GET['source']);
 
 ##############################
 
@@ -117,18 +122,21 @@ print '</div>';
 
 			print "<a href=\"".htmlentities($row['url'])."\">";
 			print "<b>".htmlentities($row['title'])."</b>";
+			print "</a>";
 			if (strpos($row['title'],'...') !== FALSE)
 				print " [TRUNCATED]";
-			print "</a>";
-			print "<span class=nowrap>";
-			if ($row['title']!=$row['realname'])
-				print " by <a href=\"/profile/{$row['user_id']}\">".htmlentities($row['realname'])."</a>";
-			if ($row['user_id'] && !$row['images']) {
-				print " [new user]";
-			} else {
-				print " [".intval($row['images'])."]";
+
+			if ($row['user_id']) {
+				print "<span class=nowrap>";
+				if ($row['title']!=$row['realname'])
+					print " by <a href=\"/profile/{$row['user_id']}\">".htmlentities($row['realname'])."</a>";
+				if (!$row['images']) {
+					print " [new user]";
+				} else {
+					print " [".intval($row['images'])."]";
+				}
+				print "</span>";
 			}
-			print "</span>";
 			print '</div>';
 
 			print '<div class="grid-item">';
@@ -137,7 +145,7 @@ print '</div>';
 				print "/".$row['event_type'];
 			if (!empty($row['media_url'])) {
 				$url = htmlentities($row['media_url']);
-				print "<a href=\"$url\">";
+				print "<br><a href=\"$url\">";
 				if (preg_match('/\.(jpe?g|gif|png|webp)$/',$row['media_url'])) {
 					print "<img src=\"$url\">";
 				} else {
@@ -250,6 +258,8 @@ function formatMySQLDateByResolution(string $mysql_datetime, string $timezone = 
     }
     // If today (same day, ignoring time): show just the time (e.g., "13:03") This check needs to be precise: same year, same month, same day
     if ($date->format('Y-m-d') === $now->format('Y-m-d')) { return $date->format('H:i')." today";
+    }
+    if ($date->format('Y-m-d') === date('Y-m-d',time()-3600*24)) { return $date->format('H:i')." yesterday";
     }
     // If this month (same year, same month): show just the day (e.g., "20") Note: This needs to be 'this month' relative to the current date, not just within a 30-day window.
     if ($date->format('Y-m') === $now->format('Y-m')) { return $date->format('jS M'); // 'j' for day without leading zeros
