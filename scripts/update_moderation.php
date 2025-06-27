@@ -21,7 +21,7 @@
  */
 
 //these are the arguments we expect
-$param=array('execute'=>false);
+$param=array('execute'=>false, 'days'=>false, 'name'=>false);
 
 
 chdir(__DIR__);
@@ -56,6 +56,14 @@ foreach(glob('../sources/*.txt') as $filename) {
 
 ##################################
 
+if (!empty($param['name'])) {
+	foreach ($sources as $name => $values) {
+		if ($name != $param['name'])
+			unset($sources[$name]);
+	}
+}
+
+
 //print_r($sources);
 
 foreach ($sources as $name => $values) {
@@ -76,7 +84,7 @@ function perform_event($name, $values) {
 	if (!empty($values[$name])) {
 		$sql = get_sql(trim($values[$name]), $values['columns']??'');
 		print "$sql;\n";
-		if ($param['execute']) {
+		if ($sql && $param['execute']) {
 			$db->Execute($sql);
 			print " -- affected: ".$db->Affected_Rows()."\n";
 		}
@@ -88,11 +96,16 @@ function perform_event($name, $values) {
 ///getrs the SQL to do insert, might not be SOURCED from mysql
 
 function get_sql($input, $columns = '') {
-	global $db;
+	global $db, $param, $CONF;
 
 	/////////////////////////////
 	// REMOTE
 	if (preg_match('/^http/',$input)) {
+		$bits = array();
+		if ($param['days'])
+			$bits[]="days=".$param['days'];
+		$bits[] = "hash=".substr(hash_hmac('md5', date('Y-m-d'), $CONF['r2_endpoint']),0,10);
+		$input .= (strpos($input,'?')?'&':'?').implode('&',$bits);
 		$raw = file_get_contents($input);
 		$decoded = json_decode($raw,'true');
 		if (empty($decoded)) //should detect even an empty array!

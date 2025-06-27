@@ -43,11 +43,21 @@ if (!empty($_POST['status'])) {
 		$result = $db->Quote($result);
 		$sql = "UPDATE moderation SET moderation_status = $result, moderator_id = $user_id, moderated = NOW() WHERE moderation_id = $moderation_id";
 		$db->Execute($sql);
+
+		if ($result == "'flagged'") {
+			$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
+			$url = "https://www.geograph.org.uk/admin/approvals.php?status=flagged&source=".urlencode($row['source'])."&moderation_id=$moderation_id";
+			$content  = $row['source']." Content has been flagged for attention by {$USER->realname}\n\n";
+			$content .= "See: $url\n\n";
+			$content .= "Reference: {$row['url']}\n\n";
+			mail_wrapper('approvals@geograph.org.uk','[Geograph] Flagged Content #'.$moderation_id, $content);
+		}
 	}
 }
 
 ##############################
 
+if (!empty($_GET['stats'])) {
 	$data = $db->getAll("select source,event_type,count(*),max(event_date)
 			,sum(moderation_status='pending') as pending,sum(moderation_status='flagged') as flagged,sum(moderation_status='approved') as approved
 		 from moderation group by source,event_type");
@@ -59,14 +69,20 @@ if (!empty($_POST['status'])) {
 			print "<td><a href=\"?source={$row['source']}\">view</a>";
 	}
 	print "</table><hr>";
+}
 
 ##############################
 
 $where = array();
 $where['status'] = "moderation_status = 'pending'";
 
+//todo, use $_GET['moderation_id'] - perhaps show all flagged at same time, or at least all with the same user_id!
+
 if (!empty($_GET['source']) && preg_match('/^\w+$/',$_GET['source']))
 	$where['source'] = "source = ".$db->Quote($_GET['source']);
+
+if (!empty($_GET['status']) && preg_match('/^\w+$/',$_GET['status']))
+	$where['status'] = "moderation_status = ".$db->Quote($_GET['status']);
 
 ##############################
 
@@ -74,15 +90,14 @@ $links = array(
 	'status=pending'=>'Pending',
 	'status=flagged'=>'Flagged',
 	'status=approved'=>'Approved',
+	'stats=1'=>'Statistics',
 );
 
 print '<div class="tabHolder" style="max-width:940px">';
 foreach ($links as $link => $name) {
         if ($link == $_SERVER['QUERY_STRING']) {
-		$where['status'] = "moderation_status = ".$db->Quote($_GET['status']);
-
                 if (!empty($_GET)) { //having the link is useful to return to "homepage"
-                        print "<a class=tabSelected  href=?$link>$name</a> ";
+                        print "<a class=tabSelected href=?$link>$name</a> ";
                 } else {
                         print "<a class=tabSelected>$name</a> ";
                 }
@@ -100,15 +115,16 @@ print '</div>';
 
 	$size = 30;
 	$where = implode(' AND ',$where);
-	$list = $db->getAll("SELECT m.*,realname, images
+	$list = $db->getAll("SELECT m.*, user.realname, images, modd.realname AS mod_realname
 	 FROM moderation m LEFT JOIN user USING (user_id) LEFT JOIN user_stat USING (user_id)
+		LEFT JOIN user modd ON (modd.user_id = moderator_id)
 	 WHERE $where ORDER BY event_date DESC LIMIT $size"); //perhaps should be asc?
 
 ##############################
 
 	if (count($list)) {
-		if (!function_exists('smarty_modifier_truncate'))
-			require_once("smarty/libs/plugins/modifier.truncate.php");
+		//if (!function_exists('smarty_modifier_truncate'))
+		//	require_once("smarty/libs/plugins/modifier.truncate.php");
 
 		print '<div class="grid-container">';
 
@@ -137,6 +153,10 @@ print '</div>';
 				}
 				print "</span>";
 			}
+			if (!empty($row['moderated'])) {
+				print "<br><br><i>{$row['moderation_status']} by ".htmlentities($row['mod_realname']).", ".formatMySQLDateByResolution($row['moderated'])."</i>";
+			}
+
 			print '</div>';
 
 			print '<div class="grid-item">';

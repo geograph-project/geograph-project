@@ -26,5 +26,5 @@ SELECT  'gsd' AS source,
         TRIM(topic_title) AS title,
         CONCAT('/discuss/index.php?&action=vthread&forum=5&topic=',t.topic_id) AS url
 FROM geobb_topics t inner join geobb_posts on (post_id = topic_last_post_id) 
-WHERE t.forum_id = 5 AND post_time > date_sub(now(),interval 7 day)
+WHERE t.forum_id = 5 AND post_time > date_sub(now(),interval 7 day) AND posts_count > 1
 
