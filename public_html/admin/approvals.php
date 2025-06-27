@@ -75,14 +75,28 @@ if (!empty($_GET['stats'])) {
 
 $where = array();
 $where['status'] = "moderation_status = 'pending'";
+$order = "event_date DESC";
+$size = 30;
 
-//todo, use $_GET['moderation_id'] - perhaps show all flagged at same time, or at least all with the same user_id!
+if (!empty($_GET['moderation_id'])) {
+	$moderation_id = intval($_GET['moderation_id']);
+	$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
+	if (!empty($row['user_id'])) {
+		//at the moment, ignore the other filters - even though present!
+		$where['status'] = "m.user_id = ".$row['user_id'];
+	} else {
+		//in unlikly event no id, just use status
+		$where['status'] = "moderation_status = ".$db->Quote($_GET['status']);
+	}
+	$order = "(moderation_id = $moderation_id) DESC, $order"; //make sure it first!
 
-if (!empty($_GET['source']) && preg_match('/^\w+$/',$_GET['source']))
-	$where['source'] = "source = ".$db->Quote($_GET['source']);
+} else {
+	if (!empty($_GET['source']) && preg_match('/^\w+$/',$_GET['source']))
+		$where['source'] = "source = ".$db->Quote($_GET['source']);
 
-if (!empty($_GET['status']) && preg_match('/^\w+$/',$_GET['status']))
-	$where['status'] = "moderation_status = ".$db->Quote($_GET['status']);
+	if (!empty($_GET['status']) && preg_match('/^\w+$/',$_GET['status']))
+		$where['status'] = "moderation_status = ".$db->Quote($_GET['status']);
+}
 
 ##############################
 
@@ -113,12 +127,11 @@ print '</div>';
         print "<h2>Content to Review</h2>";
 	print "</div>";
 
-	$size = 30;
 	$where = implode(' AND ',$where);
 	$list = $db->getAll("SELECT m.*, user.realname, images, modd.realname AS mod_realname
 	 FROM moderation m LEFT JOIN user USING (user_id) LEFT JOIN user_stat USING (user_id)
 		LEFT JOIN user modd ON (modd.user_id = moderator_id)
-	 WHERE $where ORDER BY event_date DESC LIMIT $size"); //perhaps should be asc?
+	 WHERE $where ORDER BY $order LIMIT $size"); //perhaps should be asc?
 
 ##############################
 
