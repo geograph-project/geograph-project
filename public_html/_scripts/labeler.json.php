@@ -59,6 +59,8 @@ if (empty($_GET['model'])) {
 } //todo, aos check it a valid model!
 	//select model from dataset where model = _GET[model] AND model_download != ''
 
+customNoCacheHeader(); //otherwise cloudflare might cache!
+
 ####################################
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -78,11 +80,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$updates = array();
 		$updates['gridimage_id'] = intval($image['image_id']); //remember that gridimage_id is used as (part of!) unique key
 		$updates['model'] = $_GET['model'];
-		$updates['label'] = $image['label'];
-		$updates['score'] = $image['score'];
 		$updates['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
-
-		$db->Execute('REPLACE INTO gridimage_label SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		if (!empty($image['label'])) {
+			$updates['label'] = $image['label'];
+			$updates['score'] = $image['score'];
+			$db->Execute('REPLACE INTO gridimage_label SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		} elseif (!empty($image['embeddings'])) {
+			$updates['type'] = $image['type'];
+			$updates['embeddings'] = base64_decode($image['embeddings']);
+			$db->Execute('REPLACE INTO gridimage_embedding SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		}
 		print $db->Affected_Rows();
 		print "\n";
 	}
@@ -126,7 +133,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	} else {
 		$w = array();
 		$w[] = "model = ".$db->Quote($_GET['model']);
-		$w[] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
+		$w['ip'] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
+		if (!empty($_GET['unique_number'])) {
+			$w['ip'] = "({$w['ip']} OR unique_number = ".intval($_GET['unique_number']).")";
+		}
 
 		$offset = $db->getOne("SELECT `offset` FROM labeler_agent WHERE ".implode(' AND ',$w)." AND updated > date_sub(now(),interval 24 hour)");
 		if (is_null($offset) || strlen($offset) == 0) { //offset="0" is a valid offset!
@@ -134,7 +144,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$offset = 0;
 			while (in_array("$offset",$offsets,true))
 				$offset+=200; //should be 50*number-of-clients, but chicken and egg, dont know how many clients will be
-			$w[] = "`offset` = $offset";
+			if (!empty($_GET['unique_number'])) {
+				$w['ip'] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
+				$w[] = "unique_number = ".intval($_GET['unique_number']).")";
+			}
+			$w[] = "`offset` = $offset"; //must be last itme!
 			$db->Execute($sql = "INSERT INTO labeler_agent SET ".implode(',',$w)." ON DUPLICATE KEY UPDATE ".array_pop($w).", updated = NOW()");
 
 		}
@@ -182,6 +196,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$cols .= ", title";
 	elseif (!empty($_GET['comment']))
 		$cols .= ", title, comment";
+	elseif (strpos($_GET['model'],'clip') !== FALSE)
+		$cols .= ", title, grid_reference";
 
 	####################
 
@@ -243,8 +259,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	if (count($imagelist->images)) {
 		foreach ($imagelist->images as $i => $image) {
 		//title
-			if (!empty($_GET['title']) || !empty($_GET['comment'])) {
+			if (!empty($imagelist->images[$i]->title))
         	                $imagelist->images[$i]->title = latin1_to_utf8($imagelist->images[$i]->title);
+
+		//for actual text models, do special processing
+			if (!empty($_GET['title']) || !empty($_GET['comment'])) {
 
                         	//liner doesnt actully cope with utf8 - even with a BOM - so transliterate
                                 //note we STILL convert to utf8 first, rather than detect ISO-8859-15 directly (ie more than ascii), because latin1_to_utf8 first decodes entities, which$
