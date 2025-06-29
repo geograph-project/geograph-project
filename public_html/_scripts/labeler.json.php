@@ -155,8 +155,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$limit = "$offset,$limit";
 	}
 
-	if (!empty($_GET['large'])) {
-		$cols .= ", original_width";
+	if (empty($_GET['title'])) {
+		$cols .= ", width, height, original_width";
 		$join .= "inner join gridimage_size using (gridimage_id)";
 	}
 
@@ -298,13 +298,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 		//square thumbnail (default!)
 			} elseif (empty($_GET['full'])) {
-				/* //real wide panos, that a 'thin strip' at 640px might be very low resolution
-				... need gridimage_size hoined in for this to work
-				if (isset($row['width']) && ($row['width'] < 224 || $row['height'] < 224) && $row['original'] > 224) {
-	                                $path = $image->getSquareThumbnail(224,224,'path', true, '_original');
-        	                } else { */
+				//real wide panos, that a 'thin strip' at 640px might be very low resolution
+				if (isset($image->width) && ($image->width < 224 || $image->height < 224) && $image->original_width > 224) {
+	                                $imagelist->images[$i]->fullpath = $image->getSquareThumbnail(224,224,'path', true, '_original');
+        	                } else {
 					$imagelist->images[$i]->fullpath = $image->getSquareThumbnail(224,224,'path');
-				//}
+				}
 
 				if (basename($imagelist->images[$i]->fullpath) == 'error.jpg') {
 					debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
