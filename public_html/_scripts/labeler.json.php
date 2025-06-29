@@ -255,6 +255,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$imagelist->_getImagesBySql($sql);
 
 	####################
+	// Start time tracking
+	$startTime = microtime(true);
+	$timeLimit = 15; // seconds
+
+	// Initialize an empty array to store fully processed images
+	$processedImages = [];
 
 	if (count($imagelist->images)) {
 		foreach ($imagelist->images as $i => $image) {
@@ -302,9 +308,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 				if (basename($imagelist->images[$i]->fullpath) == 'error.jpg') {
 					debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
-
-					unset($imagelist->images[$i]);
-					$deleted=1;
 					continue;
 				}
 
@@ -322,9 +325,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 				if (basename($imagelist->images[$i]->fullpath) == 'error.jpg') {
 					debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
-
-					unset($imagelist->images[$i]);
-					$deleted=1;
 					continue;
 				}
 			}
@@ -334,12 +334,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				if (empty($value))
 					unset($imagelist->images[$i]->{$key});
 			}
+
+			$processedImages[] = $imagelist->images[$i];
+
+ 			if ((microtime(true) - $startTime) >= $timeLimit) {
+ 			       error_log("Processing stopped due to timeout after " . $timeLimit . " seconds");
+   			     break; // Exit the loop
+    			}
 		}
 
-		if (!empty($deleted))
-			$imagelist->images = array_values($imagelist->images); //get sequential keys back!
-
-		$data = array('prefix'=>$CONF['STATIC_HOST'],'sleep'=>$sleep,'rows'=>$imagelist->images);
+		$data = array('prefix'=>$CONF['STATIC_HOST'],'sleep'=>$sleep,'rows'=>$processedImages);
 		outputJSON($data); //passed by ref
 	}
 }
