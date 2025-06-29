@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$updates['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
 		if (!empty($image['label'])) {
 			$updates['label'] = $image['label'];
-			$updates['score'] = $image['score'];
+			$updates['score'] = $image['score'] ?? 0;
 			$db->Execute('REPLACE INTO gridimage_label SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 		} elseif (!empty($image['embeddings'])) {
 			$updates['type'] = $image['type'];
