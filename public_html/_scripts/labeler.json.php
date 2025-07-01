@@ -144,11 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 			$w[] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
                         if (!empty($_GET['unique_number'])) {
-                                $w[] = "unique_number = ".intval($_GET['unique_number']).")";
+                                $w[] = "unique_number = ".intval($_GET['unique_number']);
                         }
 			$w[] = "`offset` = $offset"; //must be last itme!
 			$db->Execute($sql = "INSERT INTO labeler_agent SET ".implode(',',$w)." ON DUPLICATE KEY UPDATE ".array_pop($w).", updated = NOW()");
-
 		}
 		$limit = "$offset,$limit";
 	}
