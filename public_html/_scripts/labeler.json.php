@@ -133,10 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	} else {
 		$w = array();
 		$w[] = "model = ".$db->Quote($_GET['model']);
-		$w['ip'] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
-		if (!empty($_GET['unique_number'])) {
-			$w['ip'] = "({$w['ip']} OR unique_number = ".intval($_GET['unique_number']).")";
-		}
+		$w[] = "unique_key = md5(concat_ws(';',".$db->Quote(getRemoteIP()).",".intval($_GET['unique_number'] ?? 0)."))";
 
 		$offset = $db->getOne("SELECT `offset` FROM labeler_agent WHERE ".implode(' AND ',$w)." AND updated > date_sub(now(),interval 24 hour)");
 		if (is_null($offset) || strlen($offset) == 0) { //offset="0" is a valid offset!
@@ -144,10 +141,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$offset = 0;
 			while (in_array("$offset",$offsets,true))
 				$offset+=200; //should be 50*number-of-clients, but chicken and egg, dont know how many clients will be
-			if (!empty($_GET['unique_number'])) {
-				$w['ip'] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
-				$w[] = "unique_number = ".intval($_GET['unique_number']).")";
-			}
+
+			$w[] = "ipaddr = INET6_ATON('".getRemoteIP()."')";
+                        if (!empty($_GET['unique_number'])) {
+                                $w[] = "unique_number = ".intval($_GET['unique_number']).")";
+                        }
 			$w[] = "`offset` = $offset"; //must be last itme!
 			$db->Execute($sql = "INSERT INTO labeler_agent SET ".implode(',',$w)." ON DUPLICATE KEY UPDATE ".array_pop($w).", updated = NOW()");
 
