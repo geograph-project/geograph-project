@@ -37,14 +37,18 @@ $prefix = 'top';
 if (!empty($_GET['prefix']) && preg_match('/^\w+$/',$_GET['prefix']))
 	$prefix = $_GET['prefix'];
 
-$where = array();
-$where[] = "status=1";
-$where[] = "prefix = ".$db->Quote($prefix);
-if (empty($_GET['all']))
-	$where[] = "canonical = 0"; //for these offical namespaces, this only returns the 'offical' ones
-$where = implode(' AND ',$where);
-$data = $db->getCol("SELECT tag FROM tag WHERE $where");
-
+if ($prefix == 'none') {
+        $where = "tagtext not like 'top:%' AND tagtext not like 'subject:%' AND tagtext not like 'type:%' AND tagtext not like 'place:%' AND tagtext not like 'camera:%' ";
+	$data = $db->getCol("SELECT tagtext FROM tag_stat WHERE $where AND count > 500 ORDER BY count DESC LIMIT 1000");
+} else {
+	$where = array();
+	$where[] = "status=1";
+	$where[] = "prefix = ".$db->Quote($prefix);
+	if (empty($_GET['all']))
+		$where[] = "canonical = 0"; //for these offical namespaces, this only returns the 'offical' ones
+	$where = implode(' AND ',$where);
+	$data = $db->getCol("SELECT tag FROM tag WHERE $where");
+}
 
 outputJSON($data);
 

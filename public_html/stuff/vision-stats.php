@@ -36,27 +36,43 @@ $_GET['model'] = 'clip';
 $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-	print "<h2>Basic stats for model processing</h2>";
+	print "<h2>Basic stats for stored data (model: ClipTheLandscape)</h2>";
 	print "<hr>";
 
-	$number = $db->getOne("SELECT count(*) FROM gridimage_label WHERE model = ".$db->Quote($_GET['model']));
-	print "<p><b>".number_format($number,0)."</b> total image-label pairs saved.</p>";
+	$number = $db->cacheGetOne(3600,"SELECT count(*) FROM gridimage_label WHERE model = ".$db->Quote($_GET['model']));
+	print "<p><b>".number_format($number,0)."</b> total image-label pairs saved (can be multiple labels per image).</p>";
 
-	$row = $db->getRow("SELECT * FROM gridimage_label WHERE model = ".$db->Quote($_GET['model'])." ORDER BY seq_id DESC"); //limit 1 added automatically!
-	print "<p>Most Recent <b>".htmlentities($row['label'])."</b> for {$row['gridimage_id']} at {$row['updated']}.</p>";
+	$row = $db->getRow("SELECT * FROM gridimage_label WHERE model = ".$db->Quote($_GET['model'])." ORDER BY seq_id DESC"); //limit 1 added automatically by ADODB
+	print "<p>Most Recent <b>".htmlentities($row['label'])."</b> (".sprintf('%.1f',$row['score']*100)."%) for image #{$row['gridimage_id']} at <tt>{$row['updated']}</tt>.</p>";
 
 	print "<hr>";
 
-	$number = $db->getOne("SELECT count(*) FROM gridimage_embedding"); // WHERE model = ".$db->Quote($_GET['model']));
-	print "<p><b>".number_format($number,0)."</b> total embeddings saved (for image and title), so nominally ".number_format($number/2,0)." images</p>";
+//	$number = $db->getOne("SELECT count(*) FROM gridimage_embedding"); // WHERE model = ".$db->Quote($_GET['model'])); -- currently only one model saved!
+	$number = $db->getOne("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gridimage_embedding'");
+	print "<p><b>".number_format($number,0)."</b> total CLIP embeddings saved (for image and title), so nominally ".number_format($number/2,0)." images.</p>";
 
 	$row = $db->getRow("SELECT * FROM gridimage_embedding ORDER BY seq_id DESC"); //limit 1 added automatically!
-	print "<p>Most Recent for {$row['type']} {$row['gridimage_id']} of length ".(strlen($row['embeddings'])/4)." at {$row['updated']}.</p>";
+	print "<p>Most Recent embedding of <tt>".htmlentities($row['type'])."</tt> for #{$row['gridimage_id']} of length ".(strlen($row['embeddings'])/4)." at <tt>{$row['updated']}</tt>.</p>";
+
+	$number = 1000;
+	$crit = $db->getOne("SELECT DATE_SUB(NOW(),INTERVAL 1 HOUR)");
+	if ($row['updated'] > $crit) {
+		$oldest = $db->getRow("SELECT updated FROM gridimage_embedding ORDER BY seq_id DESC LIMIT ".($number-1).",1");
+		$t1 = strtotime($row['updated']);
+		$t2 = strtotime($oldest['updated']);
+		$diff_in_seconds = $t1 - $t2;
+		print "Stored $number rows in last ".round($diff_in_seconds/60,1)." minutes.";
+
+		if ($diff_in_seconds > 0) { // Avoid division by zero
+		    $rows_per_second = $number / $diff_in_seconds;
+		    print " (<i style=color:gray>Estimated " . round($rows_per_second*3600, -2) . " rows in last hour</i>)";
+		}
+	}
 
 	print "<hr>";
 
 	$number = $db->getOne("SELECT COUNT(*) FROM labeler_agent WHERE updated > date_sub(now(),interval 24 hour)");
-	 print "<p>We seen <b>".number_format($number,0)."</b> processing clients in the last 24 hours";
+	print "<p>We seen <b>".number_format($number,0)."</b> processing clients in the last 24 hours.";
 
 	$smarty->display('_std_end.tpl');
 	exit;

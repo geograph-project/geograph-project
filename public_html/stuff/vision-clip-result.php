@@ -28,6 +28,11 @@ $smarty = new GeographPage;
 
 customExpiresHeader(3600,false,true);
 
+$minimum = 0.75; //for our legacy EfficientNet models
+if (empty($_GET['model'])) {
+	$_GET['model'] = 'clip';
+}
+
 	$smarty->display('_std_begin.tpl');
 
 	$db = GeographDatabaseConnection(false);
@@ -36,12 +41,19 @@ customExpiresHeader(3600,false,true);
 
         print "<h2>Example Prediction Labels</h2>";
 
-	print "<p style=max-width:900px>This page shows some auto-detected labels produced by custom AI model (trained on Geograph data specifically). ";
+	print "<p style=max-width:900px>This page shows some auto-detected labels produced";
 
-if (empty($_GET['model'])) {
-	$_GET['model'] = 'clip';
-	print " These specific results are via a model produced by https://github.com/SpaceTimeLab/ClipTheLandscape (specifically the one using title+image - with mixup)";
+if (strpos($_GET['model'],'zero')) {
+	print " using pretrained AI model in 'zero-shot' mode";
+	$minimum = 0.4;
+} else {
+	print " by custom AI model (trained on Geograph data specifically).";
+	if ($_GET['model'] == 'clip') {
+		print " These specific results are via a model produced by https://github.com/SpaceTimeLab/ClipTheLandscape (specifically the one using title+image - with mixup)";
+		$minimum = 0.5;
+	}
 }
+$extra = "&model=".urlencode($_GET['model']);
 
 	if (true) {
                         $thumbh = 120;
@@ -55,7 +67,7 @@ if (empty($_GET['model'])) {
 			$sql['tables'][] = "inner join gridimage_label_single l using (gridimage_id)";
 		} else {
 			$sql['tables'][] = "inner join gridimage_label l using (gridimage_id)";
-			$sql['wheres'][] = 'l.score > 0.5'; //that mostly garentees one lable per image anyway!
+			$sql['wheres'][] = 'l.score > '.$minimum;
 			$sql['wheres'][] = "model not in ('type','typev2','city')";
 			$sql['wheres'][] = "label != 'None'";
 			$sql['order'] = 'seq_id desc';
@@ -74,6 +86,10 @@ if (!empty($_GET['model']) && preg_match('/^\w+$/',_GET['model'])) {
 
 		$data = $db->getAll(sqlBitsToSelect($sql));
 
+		$tagstart = "<span class=tag><span>"; //double because the inner could be <a>
+		$tagend = "</span></span>";
+
+
 		$images = $models = $labels = array();
 		if (!empty($_GET['labels'])) {
 
@@ -83,7 +99,7 @@ if (!empty($_GET['model']) && preg_match('/^\w+$/',_GET['model'])) {
 				@$images[$row['label']][$row['gridimage_id']] = $row;
 			}
 
-			print "<p><a href=?>Labels By Image</a> / <b>Images by Label</b></p>";
+			print "<p><a href=?$extra>Labels By Image</a> / <b>Images by Label</b></p>";
 
 			print "Arbitary sample of ".count($data)." images for ".count($images)." labels";
 
@@ -95,7 +111,7 @@ if (!empty($_GET['model']) && preg_match('/^\w+$/',_GET['model'])) {
 				$row = reset($rows);
 
 				print "<tr>";
-				print "<td>".htmlentities($label);
+				print "<td>$tagstart".htmlentities($label).$tagend;
 				print "<td>";
 				foreach ($rows as $row) {
 					$image = new GridImage();
@@ -115,7 +131,7 @@ if (!empty($_GET['model']) && preg_match('/^\w+$/',_GET['model'])) {
 				$models[$row['model']]=1;
 			}
 
-			print "<p><b>Labels By Image</b> / <a href=\"?labels=1\">Images by Label</a></p>";
+			print "<p><b>Labels By Image</b> / <a href=\"?labels=1$extra\">Images by Label</a></p>";
 
 			print "<table cellspacing=0 cellpadding=2 border=1 bordercolor=#eee>";
 			print "<tr><th>Example";
@@ -138,15 +154,21 @@ if (!empty($_GET['model']) && preg_match('/^\w+$/',_GET['model'])) {
 					print "<td>";
 					if (!empty($rows[$model])) {
 						$column = $tags[$row['gridimage_id']][$model];
-
-						print implode(';<br>',array_map('htmlentities',$column));
+						print $tagstart.implode("$tagend $tagstart",array_map('htmlentities',$column)).$tagend;
 					}
 				}
 	                }
 			print "</table>";
 		}
 	}
+?>
+<style>
+table span.tag span {
+	padding:3px;background-color:#90ee9091;border-radius:2px;
+}
+</style>
 
+<?
 
 
 
