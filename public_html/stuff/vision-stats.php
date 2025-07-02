@@ -40,9 +40,9 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	print "<hr>";
 
 	$number = $db->cacheGetOne(3600,"SELECT count(*) FROM gridimage_label WHERE model = ".$db->Quote($_GET['model']));
-	print "<p><b>".number_format($number,0)."</b> total image-label pairs saved (can be multiple labels per image).</p>";
+	print "<p><b>".number_format($number,0)."</b> total image-label pairs saved (can be multiple labels per image) - not updated in real time.</p>";
 
-	$row = $db->getRow("SELECT * FROM gridimage_label WHERE model = ".$db->Quote($_GET['model'])." ORDER BY seq_id DESC"); //limit 1 added automatically by ADODB
+	$row = $db->getRow("SELECT * FROM gridimage_label WHERE model = ".$db->Quote($_GET['model'])." ORDER BY seq_id DESC LIMIT 1");
 	print "<p>Most Recent <b>".htmlentities($row['label'])."</b> (".sprintf('%.1f',$row['score']*100)."%) for image #{$row['gridimage_id']} at <tt>{$row['updated']}</tt>.</p>";
 
 	print "<hr>";
@@ -51,7 +51,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$number = $db->getOne("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gridimage_embedding'");
 	print "<p><b>".number_format($number,0)."</b> total CLIP embeddings saved (for image and title), so nominally ".number_format($number/2,0)." images.</p>";
 
-	$row = $db->getRow("SELECT * FROM gridimage_embedding ORDER BY seq_id DESC"); //limit 1 added automatically!
+	$row = $db->getRow("SELECT * FROM gridimage_embedding ORDER BY seq_id DESC LIMIT 1");
 	print "<p>Most Recent embedding of <tt>".htmlentities($row['type'])."</tt> for #{$row['gridimage_id']} of length ".(strlen($row['embeddings'])/4)." at <tt>{$row['updated']}</tt>.</p>";
 
 	$number = 1000;
@@ -73,6 +73,10 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	$number = $db->getOne("SELECT COUNT(*) FROM labeler_agent WHERE updated > date_sub(now(),interval 24 hour)");
 	print "<p>We seen <b>".number_format($number,0)."</b> processing clients in the last 24 hours.";
+
+	$number = $db->getOne("SELECT COUNT(*) FROM labeler_agent WHERE ipaddr = INET6_ATON('".getRemoteIP()."') AND  updated > date_sub(now(),interval 24 hour)");
+	if ($number > 0)
+		print " (<b>$number</b> from <u>your</u> IP address)";
 
 	$smarty->display('_std_end.tpl');
 	exit;
