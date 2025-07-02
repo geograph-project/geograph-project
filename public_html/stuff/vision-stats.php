@@ -54,7 +54,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$row = $db->getRow("SELECT * FROM gridimage_embedding ORDER BY seq_id DESC LIMIT 1");
 	print "<p>Most Recent embedding of <tt>".htmlentities($row['type'])."</tt> for #{$row['gridimage_id']} of length ".(strlen($row['embeddings'])/4)." at <tt>{$row['updated']}</tt>.</p>";
 
-	$number = 1000;
+	$number = 2000;
 	$crit = $db->getOne("SELECT DATE_SUB(NOW(),INTERVAL 1 HOUR)");
 	if ($row['updated'] > $crit) {
 		$oldest = $db->getRow("SELECT updated FROM gridimage_embedding ORDER BY seq_id DESC LIMIT ".($number-1).",1");
