@@ -637,7 +637,7 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 					print '<div align="center">';
 				}
 				print '<a title="'.$image->grid_reference.' : '.htmlentities($image->title).' by '.htmlentities($image->realname).' - click to view full size image"';
-				print ' href="'.$domain.'/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true).'</a>';
+				print ' href="'.$domain.'/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src').'</a>';
 				print '</div></div>';
         	        }
 			if ($clear)
@@ -710,12 +710,15 @@ split_timer('imagelist'); //starts the timer
 			//using sample8 directly, shotcuts a lot of work!
 
 			$cols = "id,title,realname,user_id,grid_reference,takenday,imageclass";
+			$index = "sample8E";
 
 			//todo, make the section more dynamic
-			if ($reference_index)
-				$sql = "SELECT $cols, uniqueserial(placename_id) AS ser FROM sample8E,sample8D WHERE scenti >= 2000000000 ORDER BY ser ASC, id DESC LIMIT 20";
-			else
-				$sql = "SELECT $cols FROM sample8E,sample8D ORDER BY id DESC LIMIT 20";
+			if ($reference_index) {
+				if (rand(0,1) == 1)
+					$index = "sample8D,sample8E"; //E should be enough, but including D might bring more varied selections
+				$sql = "SELECT $cols, uniqueserial(placename_id) AS ser FROM $index WHERE scenti >= 2000000000 ORDER BY ser ASC, id DESC LIMIT 20";
+			} else
+				$sql = "SELECT $cols FROM $index ORDER BY id DESC LIMIT 20";
 
 			//not sure if reverse_scan improves the results or not
 			$sql .= " OPTION reverse_scan=".rand(0,1);
