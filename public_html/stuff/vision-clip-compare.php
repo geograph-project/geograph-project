@@ -21,8 +21,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$_GET['live'] = 1;
-
 require_once('geograph/global.inc.php');
 init_session();
 
@@ -68,9 +66,12 @@ if (empty($_GET['inner'])) {
 	$(function() {
 		$('form[name=theForm] select').each(function() {
 			$(this).on('change', function() {
-				var name = this.name;
-				var value = this.value;
-				$('#results').load("?inner=1&"+encodeURIComponent(name)+"="+encodeURIComponent(value));
+				var params = {'inner':1};
+				params[this.name] = this.value;
+				const urlParams = new URLSearchParams(window.location.search);
+				if (urlParams.has('neg'))
+					params['neg']=1;
+				$('#results').load("?"+$.param(params));
 				$(this).siblings('select').each(function() { //automatically only finds OTHERS
 					this.selectedIndex=0;
 				});
@@ -80,6 +81,51 @@ if (empty($_GET['inner'])) {
 		$('select[name=label]').select2({width:"600px"});
 	});
 	</script>
+
+	<style>
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 4px; /* Space between grid items */
+}
+
+.grid-item {
+  background-color: lightblue;
+  padding: 4px;
+  border: 0px solid steelblue;
+  text-align: center;
+}
+.item-header {
+  position:sticky;top:0;background-color:white;padding:2px;z-index:100;
+}
+.grid-item > div:not(.item-header) {
+	float:left;position:relative; width:<? echo ($thumbw+10); ?>px; height:<? echo ($thumbh+10); ?>px;
+	text-align: center;
+}
+
+
+@media (max-width: 968px) {
+  .grid-container {
+    grid-template-columns: 1fr; /* One column on narrow screens */
+  }
+
+  .grid-item {
+    display: inline-block; /* Make items display inline to allow horizontal scrolling */
+    height: 220px;
+    white-space: nowrap; /* Prevent items from wrapping */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-y:hidden;
+  }
+  .item-header {
+    position:inherit;
+  }
+  .grid-item > div:not(.item-header) {
+	display: inline-block;
+	float:inherit;
+  }
+}
+
+	</style>
 	<hr>
 	<?
 
@@ -116,12 +162,6 @@ if (empty($_GET['inner'])) {
 ####################################################
 //find via vector
 
-//$tesxt = $rt->getRow("SHOW STATUS LIKE 'cluster_manticore_cluster_incoming_addresses'");
-//$tesxt = $rt->getRow("SHOW STATUS LIKE 'cluster_manticore_cluster_last_applied'");
-//print_r($tesxt);
-
-
-//		print "<div style=float:left;width:450px;padding:20px>";
 		print "These images are visually similar to the term <b>".htmlentities($quoted)."</b>, but the similarity is (currently) based purely on appearance, not on the image's title or location, or other data.";
 		print " We also check if images would be found by a keyword search, and seperate them below.";
 		if (!empty($_GET['neg'])) {
@@ -129,7 +169,6 @@ if (empty($_GET['inner'])) {
 		} else {
 			print " (does not currently look for ones found by keywords, but wouldnt be via vision)<br>";
 		}
-//		print "</div>";
 		print "<hr>";
 
 		$list = unpack('g*', $binary);
@@ -140,11 +179,7 @@ if (empty($_GET['inner'])) {
 		//always needs (id,user_id, title) (ideally realname,grid_reference too)
                 $sql = "select id, user_id, realname, title, 1 as reference_index, knn_dist() as grid_reference from gridimage_embedding where knn($vector, 100, $value) limit 100";
 
-//print str_replace(", ",",<br>", $sql).";<hr>";
-//print "$sql;<hr>";
-
                 $imagelist->getImagesBySphinxQL($sql);
-                //$imagelist->outputThumbs($thumbw,$thumbh);
 
 ####################################################
 //check keywords
@@ -153,21 +188,19 @@ if (empty($_GET['inner'])) {
 		foreach($imagelist->images as $image) {
 			$ids[] = $image->gridimage_id;
 		}
-
-		$query = $sph->Quote(preg_replace('/[^\w]+/',' ',$_GET['label'])); //just to avoid operators!_
+		$query = preg_replace('/.+> (.+?)$/','$1',$_GET['label']); //onlt use last term in stack
+		$query = $sph->Quote(preg_replace('/[^\w]+/',' ',$query)); //just to avoid operators!
 		$ids = "(".implode(',',$ids).")";
 		$sql = "select id,1 as d FROM sample8 WHERE MATCH($query) AND id IN $ids LIMIT 100";
 
-	//	print str_replace(", ",",<br>", $sql).";<hr>";
 		$keywords = $sph->getAssoc($sql);
 
-####################################################
-		$width = "49%";
-		if (!empty($_GET['neg']))
-			$width = "33%";
+		print "<div class=\"grid-container\">";
 
-		print "<div style=\"width:$width; float:left;\">";
-			print "<div style=\"position:sticky;top:0;background-color:white;padding:2px;z-index:100\">";
+####################################################
+
+		print "<div class=\"grid-item\">";
+			print "<div class=\"item-header\">";
 			print "<b>Only found via Vision</b> (wouldn't be found with keywords)";
 			print "</div><br>";
                         $domain = '';
@@ -177,59 +210,69 @@ if (empty($_GET['inner'])) {
                                 if (!empty($image->reference_index))
                                         $domain = $CONF['canonical_domain'][$image->reference_index];
 
-                                print '<div style="float:left;position:relative; width:'.($thumbw+10).'px; height:'.($thumbh+10).'px">';
-                                print '<div align="center">';
+                                print '<div>';
                                 print '<a title="'.$image->grid_reference.' : '.htmlentities($image->title).' by '.htmlentities($image->realname).' - click to view full size image"';
                                 print ' href="'.$domain.'/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src').'</a>';
-                                print '</div></div>';
+                                print '</div>';
                         }
 		print "</div>";
 
-		print "<div style=\"width:$width; float:left; padding-left:4px; border-left:4px solid gray\">";
-			print "<div style=\"position:sticky;top:0;background-color:white;padding:2px;z-index:100\">";
+		print "<div class=\"grid-item\">";
+			print "<div class=\"item-header\">";
 			print "<b>Also found by keywords</b> (so found via either)";
 			print "</div>(includes title,description,tags etc)<br>";
+			if (!empty($keywords)) {
                         foreach ($imagelist->images as $idx => $image) {
 				if (!isset($keywords[$image->gridimage_id]))
 					continue;
                                 if (!empty($image->reference_index))
                                         $domain = $CONF['canonical_domain'][$image->reference_index];
 
-                                print '<div style="float:left;position:relative; width:'.($thumbw+10).'px; height:'.($thumbh+10).'px">';
-                                print '<div align="center">';
+                                print '<div>';
                                 print '<a title="'.$image->grid_reference.' : '.htmlentities($image->title).' by '.htmlentities($image->realname).' - click to view full size image"';
                                 print ' href="'.$domain.'/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src').'</a>';
-                                print '</div></div>';
+                                print '</div>';
                         }
+			} else {
+				print "<p>Not enough results in this demo. We only checked 100 vision matches, in reality could be results just not checked";
+			}
 		print "</div>";
 
 ####################################################
 
 		if (!empty($_GET['neg'])) {
-			print "<div style=\"width:$width; float:left; padding-left:4px; border-left:4px solid gray\">";
-			print "<div style=\"position:sticky;top:0;background-color:white;padding:2px;z-index:100\">";
+			print "<div class=\"grid-item\">";
+			print "<div class=\"item-header\">";
 			print "<b>Found by Keywords, but LOW vision similarity</b>";
 			print "</div><br>";
 
 			$sql = "select id, user_id, realname, title, 1 as reference_index, grid_reference, knn_dist() d from gridimage_embedding where knn($vector, 10000, $value) and match($query) limit 1000";
 			$imagelist->getImagesBySphinxQL($sql);
 
-			if (count($imagelist->images) > 20) {
+			if (count($imagelist->images) > 40) {
 				//tehre is no easy way to just get the LAST results in above query (always orders by KNN dist!)
 				$imagelist->images = array_slice($imagelist->images, -20);
-			}
 
-			$imagelist->outputThumbs($thumbw,$thumbh);
+        	                foreach ($imagelist->images as $idx => $image) {
+ 	                               if (!empty($image->reference_index))
+                                        	$domain = $CONF['canonical_domain'][$image->reference_index];
 
-			if (count($imagelist->images)) {
+                                	print '<div>';
+                        	        print '<a title="'.$image->grid_reference.' : '.htmlentities($image->title).' by '.htmlentities($image->realname).' - click to view full size image"';
+                	                print ' href="'.$domain.'/photo/'.$image->gridimage_id.'">'.$image->getThumbnail($thumbw,$thumbh,false,true,'loading=lazy src').'</a>';
+        	                        print '</div>';
+	                        }
+
 				print "<p>In theory, these results keyword match term <b>".htmlentities($quoted)."</b> (in the title only!), but are low vision matches";
+			} else {
+				print "<p>Not enough results in this demo";
 			}
 			print "</div>";
 		}
 
-		print "<br style=clear:both>";
-
 ####################################################
+
+		print "</div>";
 
 	}
 
