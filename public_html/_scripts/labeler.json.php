@@ -182,6 +182,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	if (!empty($_GET['user_id']))
 		$where[] = "gi.user_id = ".intval($_GET['user_id']);
 
+	if (!empty($_GET['id'])) { // -- intended for test purpsoes only!
+		array_shift($where); //remove the 'seq_id is null' - so get a row, even if already processed
+		$limit = 1; //remove the offset!
+		$where[] = "gi.gridimage_id = ".intval($_GET['id']);
+	}
+
 	if (empty($_GET['recent']) && empty($_GET['all'])) {
 		//only recent users!
 		$join .= "inner join user_stat using (user_id)";
@@ -194,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	elseif (!empty($_GET['comment']))
 		$cols .= ", title, comment";
 	elseif (strpos($_GET['model'],'clip') !== FALSE)
-		$cols .= ", title, grid_reference";
+		$cols .= ", title"; //grid_reference - may be useful for some models, but incompatible with 'recent' (as uses gridimage, not gridimage_search
 
 	####################
 
@@ -206,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
  			$join .= "inner join gridimage_size using (gridimage_id)"; //to help avoid failed uploads!
 			//we ottherwise still want to process pending/rejects here!
 
-		//todo, to get realname, should be joining on user table!
+		//todo, to get realname, should be joining on user table! (and credit_realname)
 		$sql = "select gi.gridimage_id,user_id $cols
 		from gridimage gi
 		$join
@@ -341,5 +347,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 		$data = array('prefix'=>$CONF['STATIC_HOST'],'sleep'=>$sleep,'rows'=>$processedImages);
 		outputJSON($data); //passed by ref
+	} else {
+		print '{"error": "no results"}';
 	}
 }
