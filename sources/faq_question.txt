@@ -1,0 +1,15 @@
+name: FAQ Question
+table_name: answer_question
+
+
+
+creation:
+SELECT  'question' AS source,
+	`question_id` AS foreign_id,
+        'creation' as event_type,
+	`created` as event_date,
+	`user_id` as user_id,
+        TRIM(question) AS title
+FROM answer_question
+WHERE status>0 AND created > date_sub(now(),interval 7 day)
+
