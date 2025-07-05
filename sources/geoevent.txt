@@ -1,0 +1,14 @@
+name: Events
+table_name: geoevent
+
+creation:
+SELECT  'geoevent' AS source,
+	`geoevent_id` AS foreign_id,
+        'creation' as event_type,
+	`created` as event_date,
+	`user_id` as user_id,
+        TRIM(title) AS title,
+        CONCAT('/events/event.php?id=',geoevent_id) AS url
+FROM geoevent
+WHERE approved>0 AND created > date_sub(now(),interval 7 day)
+

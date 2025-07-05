@@ -1,0 +1,45 @@
+name: FAQ Answer
+table_name: answer_answer
+
+content:
+SELECT
+        NULL AS content_id,
+        a.answer_id AS foreign_id,
+        TRIM(q.question) AS title,
+        CONCAT('/faq3.php?a=',a.answer_id,'#',a.answer_id) AS url,
+        a.user_id AS user_id,
+        0 AS gridimage_id,
+        0 AS gridsquare_id,
+        target AS extract,
+        0 AS images,
+        0 AS wordcount,
+        0 AS views,
+        section AS titles,
+        a.tags AS tags,
+        a.content AS words,
+        'faq' AS source,
+        'document' AS type,
+        a.updated AS updated,
+        a.created AS created,
+        0 as wgs84_lat,
+        0 as wgs84_long,
+        null as sequence
+FROM answer_answer a
+        INNER JOIN user USING (user_id)
+        INNER JOIN answer_question q USING (question_id)
+        WHERE a.status = 1 AND q.status = 1
+        GROUP BY level ASC,answer_id ASC
+
+
+
+creation:
+SELECT  'answer' AS source,
+	`answer_id` AS foreign_id,
+        'creation' as event_type,
+	`created` as event_date,
+	`user_id` as user_id,
+        TRIM(title) AS title,
+	CONCAT('/faq3.php?a=',a.answer_id,'#',a.answer_id) AS url
+FROM answer_answer a
+WHERE status>0 AND created > date_sub(now(),interval 7 day)
+
