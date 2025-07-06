@@ -190,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	if (empty($_GET['recent']) && empty($_GET['all'])) {
 		//only recent users!
-		$join .= "inner join user_stat using (user_id)";
+		$join .= " inner join user_stat using (user_id)";
 		//$where[] = "last > 7300000";
 		$where[] = "last > 5300000";
 	}
@@ -209,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 	if (!empty($_GET['recent'])) {
 		if (strpos($join,'gridimage_size') === FALSE)
- 			$join .= "inner join gridimage_size using (gridimage_id)"; //to help avoid failed uploads!
+ 			$join .= " inner join gridimage_size using (gridimage_id)"; //to help avoid failed uploads!
 			//we ottherwise still want to process pending/rejects here!
 
 		//todo, to get realname, should be joining on user table! (and credit_realname)
@@ -221,23 +221,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		order by gridimage_id desc
 		limit $limit";
 
-	} elseif ($_GET['model'] == 'typev2' && empty($_GET['large'])) {
+	} elseif ($_GET['model'] == 'clip' && empty($_GET['user_id'])) { //todo, could check for tmp_label_$model table??
 		$sql = "select t.*
-		from tmp_typev2_images t
-		left join gridimage_label l on (l.gridimage_id = t.gridimage_id and `model` = $qmod)
-		where l.seq_id IS null
-		limit $limit";
-
-	} elseif ($_GET['model'] == 'subjectlabel') {
-		$sql = "select t.*
-		from tmp_subjectlabel_images t
-		left join gridimage_label l on (l.gridimage_id = t.gridimage_id and `model` = $qmod)
-		where l.seq_id IS null
-		limit $limit";
-
-	} elseif ($_GET['model'] == 'subjectcomment') {
-		$sql = "select t.*
-		from tmp_subjectcomment_images t
+		from tmp_label_clip t
 		left join gridimage_label l on (l.gridimage_id = t.gridimage_id and `model` = $qmod)
 		where l.seq_id IS null
 		limit $limit";
