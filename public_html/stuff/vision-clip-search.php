@@ -94,12 +94,13 @@ if (empty($_GET['inner'])) {
 	}
 	print "</select> (random selection of images from current demo dataset)<br>";
 
-	$list = $db->getCol("SELECT label FROM label_embedding WHERE embeddings IS NOT NULL ORDER BY rand(42) LIMIT 1000");
-	sort($list);
+//	$list = $db->getAssoc("SELECT label,round((1-nearest_image)*100) as percent FROM label_embedding WHERE embeddings IS NOT NULL ORDER BY rand(42) LIMIT 1000");
+	//ksort($list);
+	$list = $db->getAssoc("select label,round((1-nearest_image)*100,1) as percent from label_embedding where nearest_image is not null group by floor(nearest_image*1000) order by label");
 	print "Query: <select name=label style=max-width:400px>";
 	print "<option></option>";
-	foreach($list as $label) {
-		printf('<option value="%s"%s>%s</value>', $l=htmlentities($label), (@$_GET['label'] == $label)?' selected':'', $l);
+	foreach($list as $label => $percent) {
+		printf('<option value="%s"%s>%s (%d%%)</value>', $l=htmlentities($label), (@$_GET['label'] == $label)?' selected':'', $l, $percent);
 	}
 	print "</select> (selection of terms to try)<br>";
 

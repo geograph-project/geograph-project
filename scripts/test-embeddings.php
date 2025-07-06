@@ -21,14 +21,64 @@
  */
 
 //these are the arguments we expect
-$param=array('id'=>3438350, 'type'=>'image');
+$param=array('id'=>3438350, 'type'=>'image',
+	'nearest' => false, 'limit' => 10);
 
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
 $db = GeographDatabaseConnection(true);
+
+$CONF['manticorert_host'] = "manticorert-worker-svc.dev.svc.cluster.local"; //test instance!
+
+$rt = GeographSphinxConnection('manticorert',true);
+
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+##################################
+
+if ($param['nearest']) {
+	//donmt need to fetch label!
+	$sql = "SELECT id, embeddings FROM label_embedding WHERE nearest_image IS NULL AND length(embeddings) = 2048 LIMIT {$param['limit']}";
+	$rows = $db->getAll($sql);
+	$affected = 0;
+	foreach ($rows as $row) {
+		$updates = array();
+		print "{$row['id']}: ";
+
+                $list = unpack('g*', $row['embeddings']);
+                $value = "(".implode(', ',$list).")";
+
+	        $vector = "image_vector";
+
+                $sql = "select id, knn_dist() as k from gridimage_embedding where knn($vector, 10, $value) limit 1";
+		$results = $rt->getRow($sql);
+		if (!empty($results['k']))
+			$updates['nearest_image'] = $results['k'];
+
+                $vector = "title_vector";
+
+                $sql = "select id, title, knn_dist() as k from gridimage_embedding where knn($vector, 10, $value) limit 1";
+		$results = $rt->getRow($sql);
+		if (!empty($results['k'])) 
+			$updates['nearest_title'] = $results['k'];
+		if ($results['k'] < 0.0000001) {
+			print " Title Zero with image {$results['id']} ";
+		}
+//		print_r($updates);
+		if (!empty($updates)) {
+			$sql = "UPDATE label_embedding SET updated=updated, `".implode('` = ?,`',array_keys($updates))."` = ? WHERE id = {$row['id']}";
+			$db->Execute($sql, array_values($updates)) or die("$sql\n".$db->ErrorMsg()."\n\n");
+			 $affected += $db->Affected_Rows();
+		} else {
+			print_r($row['id']);
+			exit;
+		}
+	}
+	print count($rows)." = $affected\n";
+	exit;
+}
 
 ##################################
 
