@@ -287,8 +287,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 		//square thumbnail (default!)
 			} elseif (empty($_GET['full'])) {
+				//some we know already exist
+				if (!empty($image->skip_fs)) {
+					$imagelist->images[$i]->fullpath = $image->getSquareThumbnail(224,224, 'path', false);
+
 				//real wide panos, that a 'thin strip' at 640px might be very low resolution
-				if (isset($image->width) && ($image->width < 224 || $image->height < 224) && $image->original_width > 224) {
+				} elseif (isset($image->width) && ($image->width < 224 || $image->height < 224) && $image->original_width > 224) {
 	                                $imagelist->images[$i]->fullpath = $image->getSquareThumbnail(224,224,'path', true, '_original');
         	                } else {
 					$imagelist->images[$i]->fullpath = $image->getSquareThumbnail(224,224,'path');
