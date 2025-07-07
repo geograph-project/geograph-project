@@ -102,11 +102,13 @@ $vgrlens = $sph->getAssoc("select vgrlen,count(*) from sample8 group by vgrlen")
 		print "</table>";
 
 print "<br><hr><br>";
-print "<p>We have a mapping from (older) Category to (newer) Subject, so for many images with a Category can imply a Subject";
+print "<p>We have a mapping from (older) Category to (newer) Subject, so for many images with a Category can imply a Subject. The mapping was done manually, not by algorithm.";
 print "<p>By 6fig+, mean a location using a 6figure or better grid-reference, hence 100m or better resolution";
-print "<p>The view direction is generally implied from Subject+Camera location, but may be supplied seperately, particully if image is very close range (cant get from GRs)";
+print "<p>The view direction is generally implied from Subject+Camera location, but may be supplied seperately, particully if image is very close range (cant get from GRs). So may not match what would get if compute from the final GRs.";
 
-print "<p>The above is only looking at the raw data, provided by contributors. Not generated data from processing, eg could use a reverse geocoder to guessimate a placename based on coordinates. Nor extracting placenames from title/description etc. Such generated data not listed here";
+print "<p><b>The above is only looking at the raw data, provided by the Image Contributors</b>. Not generated data from processing, eg could use a reverse geocoder to guessimate a placename based on coordinates. Nor extracting placenames from title/description etc. Nor data from AI/ML models. Such generated data <b>not</b> listed here";
+
+print "<p>However the 'Type' tags are provided by Moderators not the contributor - still done by person, although cross-grid, is assisted by computer. ";
 
 #####################################################################
 

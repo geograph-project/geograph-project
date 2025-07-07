@@ -335,6 +335,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     			}
 		}
 
+		//if configured can load thumbnails directly from r2 instead (avoids clobbering proxy cache, with lots of little used files) - Sippy still involved!
+		if (!empty($CONF['r2_dev_photo_endpoint']))
+			$CONF['STATIC_HOST'] = $CONF['r2_dev_photo_endpoint'];
+
 		$data = array('prefix'=>$CONF['STATIC_HOST'],'sleep'=>$sleep,'rows'=>$processedImages);
 		outputJSON($data); //passed by ref
 	} else {
