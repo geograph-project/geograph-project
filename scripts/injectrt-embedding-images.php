@@ -68,25 +68,15 @@ $db = GeographDatabaseConnection(false);
 
 /*
 SHOW TABLES;
-
 CREATE TABLE test ( title TEXT, image_vector FLOAT_VECTOR knn_type='hnsw' knn_dims='4' hnsw_similarity='l2' );
-
 SHOW STATUS LIKE 'cluster%';
-
 ALTER CLUSTER manticore_cluster ADD test;
-
 SELECT * FROM test;
-
 SELECT * FROM manticore_cluster:test;
-
-
 INSERT INTO manticore_cluster:test VALUES ( 1, 'yellow bag', (0.653448,0.192478,0.017971,0.339821) ), ( 2, 'white bag', (-0.148894,0.748278,0.091892,-0.095406) );
-
-
 INSERT INTO manticore_cluster:test VALUES 
 	( 1, 'yellow bag', (0.653448,0.192478,0.017971,0.339821) ),
 	( 2, 'white bag', (-0.148894,0.748278,0.091892,-0.095406) );
-
 */
 
 $sql = array();
@@ -115,10 +105,15 @@ if ($param['create']) {
 	}
 }
 
+############################################
+
 //the creates above, DONT use cluster name on index, but inserts below do!
 if (!empty($param['cluster'])) {
 	$param['index'] = "{$param['cluster']}:{$param['index']}";
 }
+
+############################################
+//execute commands so far
 
 if (!empty($param['log'])) {
 	$h = fopen("injectrt-".date('Y-m-d').'.log', 'a');
