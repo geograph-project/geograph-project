@@ -930,7 +930,7 @@ class GeographUser
 		else
 		{
 			$ok=false;
-			if (strlen($errors['nickname']))
+			if (strlen($profile['nickname']))
 				$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 			else
 				$errors['nickname']='Please enter a nickname for use on the forums';

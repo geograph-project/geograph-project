@@ -37,6 +37,9 @@ select {
 fieldset {
   border: 0px;
 }
+div.field {
+  margin-bottom:8px;
+}
 label {
   font-weight: bold;
   font-size: 1em;
@@ -61,11 +64,33 @@ display:none;
 }
 .relinquish a:link, .relinquish a:visited {
   background-color: red;
+  border-radius:8px;
   color: white;
   padding: 5px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
+}
+p.unable {
+  color:red;
+  font-weight:bold;
+}
+div.formerror {
+  border:1px solid orange;
+  border-radius:10px;
+  padding:2px;
+}
+div.formerror p {
+  font-weight: bold;
+  color:red;
+  margin-top:3px;
+  margin-bottom:10px;
+}
+div.formerror p::before {
+  content: "\26A0\0020";
+  font-weight:bold;
+  color:brown;
+  margin:5px;
 }
 {/literal}
 </style>
@@ -97,8 +122,11 @@ display:none;
 {/if}
 
 <div class="sticky">
- 	<input type="submit" name="savechanges" value="Save Changes" style="width:200px; max-width:40vw; font-weight:bold; background-color: #b7e1cd;"/>
- 	<input type="submit" name="cancel" value="Cancel" style="width:200px; max-width:40vw; font-weight:bold; background-color: #f4c7c3;"/>
+	<input type="submit" name="savechanges" value="Save Changes" style="width:200px; max-width:40vw; font-weight:bold; background-color: #b7e1cd;"/>
+	<input type="submit" name="cancel" value="Cancel" style="width:200px; max-width:40vw; font-weight:bold; background-color: #f4c7c3;"/>
+	{if $errors && !$errors.general}
+		<p class=unable>Unable to save, see messages below...</p>
+	{/if}
 </div>
 
 {*---------------------------Three col setup-------------------------*}
@@ -180,16 +208,15 @@ display:none;
     <br/><br/>
     If you change your email address, you will be sent a verification email. Your email address change will only take place once the email has been verified.
 
-		{if $company_member}
-			<br><br><b>Note: If you change your email, may want to also update in the Company Membership database.</b>
-			<a href="{$company_link|escape:'html'}" target="_blank">Follow this link to be taken to the company mini-site</a>
-			(opens in a new window)
-		{/if}
-
-
 	  </div>
 	
 	{if $errors.email}</div>{/if}
+
+		{if $company_member}
+			<p><b>Note: If you change your email, may want to also update in the Company Membership database.</b>
+			<a href="{$company_link|escape:'html'}" target="_blank">Follow this link to be taken to the company mini-site</a>
+			(opens in a new window)</p>
+		{/if}
 	
   
   <label>Email visibility:</label>
