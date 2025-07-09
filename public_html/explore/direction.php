@@ -57,12 +57,16 @@ if (!empty($_GET['snippet_id'])) {
 }
 
 // Define available fields for rows and columns
-// These could be dynamically fetched from a database or configuration if needed
+// 'type' is for validation: fields of the same non-null type might be restricted from being used together.
+// 'source_attr' indicates the actual attribute name from the Image object.
 $available_fields = [
-    'takenyear' => 'Year Taken',
-    'direction' => 'Direction',
-    'category' => 'Category', // Example additional field
-    'user_id' => 'User ID'     // Example additional field
+    'takenyear' => ['label' => 'Year Taken', 'type' => 'time_year', 'source_attr' => 'takenyear'],
+    'decade'    => ['label' => 'Decade', 'type' => 'time_decade', 'source_attr' => 'decade'], // Assumed direct Sphinx attribute
+    'takenmonth'=> ['label' => 'Month (of year)', 'type' => 'time_month', 'source_attr' => 'takenmonth'], // Assumed direct Sphinx attribute (e.g., YYYY-MM format)
+    'takenday'  => ['label' => 'Day (of month)', 'type' => 'time_day', 'source_attr' => 'takenday'],   // Assumed direct Sphinx attribute (e.g., DD format)
+    'direction' => ['label' => 'Direction', 'type' => 'spatial_direction', 'source_attr' => 'direction'],
+    'category'  => ['label' => 'Category', 'type' => 'misc_category', 'source_attr' => 'category'], // Example
+    'user_id'   => ['label' => 'User ID', 'type' => 'misc_user', 'source_attr' => 'user_id']    // Example
 ];
 
 // Get form inputs or use defaults
@@ -92,8 +96,8 @@ $rowname = $row_field;
 $colname = $col_field;
 
 // Generate dynamic title
-$title_row_label = $available_fields[$rowname] ?? $rowname;
-$title_col_label = $available_fields[$colname] ?? $colname;
+$title_row_label = isset($available_fields[$rowname]) ? $available_fields[$rowname]['label'] : $rowname;
+$title_col_label = isset($available_fields[$colname]) ? $available_fields[$colname]['label'] : $colname;
 $title = "Explore Images: " . htmlspecialchars($title_row_label) . " by " . htmlspecialchars($title_col_label);
 if (!empty($_GET['snippet_id'])) {
     // If filtering by snippet, add it to title or as a subtitle
@@ -105,14 +109,61 @@ if (!empty($_GET['snippet_id'])) {
 	print '<div class="interestBox">';
         print "<h2>$title</h2>";
 
+        // Embed $available_fields as JSON for JavaScript
+        print '<script type="text/javascript">';
+        print 'var availableFieldsData = ' . json_encode($available_fields) . ';';
+        print "\n";
+        print <<<JS
+function validateExploreForm() {
+    var rowFieldSelect = document.getElementById('row_field');
+    var colFieldSelect = document.getElementById('col_field');
+    var errorDiv = document.getElementById('explore_form_error');
+    errorDiv.innerHTML = ''; // Clear previous errors
+
+    var rowField = rowFieldSelect.value;
+    var colField = colFieldSelect.value;
+
+    // Rule 1: Row and Column fields must not be the same
+    if (rowField === colField) {
+        errorDiv.innerHTML = 'Row field and Column field cannot be the same. Please select different fields.';
+        return false;
+    }
+
+    // Rule 2: Fields of certain types cannot be used together
+    // Example: two different 'time_...' fields are incompatible
+    var rowFieldType = availableFieldsData[rowField] ? availableFieldsData[rowField].type : null;
+    var colFieldType = availableFieldsData[colField] ? availableFieldsData[colField].type : null;
+
+    if (rowFieldType && colFieldType && rowFieldType.startsWith('time_') && colFieldType.startsWith('time_')) {
+        // This condition means both are time-related. Since they are not the same field (checked by Rule 1),
+        // this implies they are different time fields (e.g., year and month).
+        // This is the scenario to prevent.
+        errorDiv.innerHTML = 'Selecting two different time-based fields (e.g., Year and Month) for Row and Column is not allowed. Please choose fields of different categories or one time-based and one non-time-based field.';
+        return false;
+    }
+
+    // Add more type conflict rules if needed, e.g.:
+    // if (rowFieldType === 'spatial_direction' && colFieldType === 'spatial_direction') {
+    //     errorDiv.innerHTML = 'Cannot use two spatial direction fields.';
+    //     return false;
+    // }
+
+    return true; // Validation passed
+}
+JS;
+        print '</script>';
+
+        // Div for error messages
+        print '<div id="explore_form_error" style="color: red; margin-bottom: 10px;"></div>';
+
         // Form for selecting row, column, and sort options
-        print '<form method="get" action="">';
+        print '<form method="get" action="" onsubmit="return validateExploreForm();">';
         print '<input type="hidden" name="snippet_id" value="' . htmlspecialchars($_GET['snippet_id'] ?? '') . '">';
 
         print '<label for="row_field">Row Field:</label>';
         print '<select name="row_field" id="row_field">';
-        foreach ($available_fields as $field_key => $field_label) {
-            print '<option value="' . $field_key . '" ' . ($row_field == $field_key ? 'selected' : '') . '>' . htmlspecialchars($field_label) . '</option>';
+        foreach ($available_fields as $field_key => $field_data) {
+            print '<option value="' . $field_key . '" ' . ($row_field == $field_key ? 'selected' : '') . '>' . htmlspecialchars($field_data['label']) . '</option>';
         }
         print '</select>';
 
@@ -134,8 +185,8 @@ if (!empty($_GET['snippet_id'])) {
 
         print '<label for="col_field">Column Field:</label>';
         print '<select name="col_field" id="col_field">';
-        foreach ($available_fields as $field_key => $field_label) {
-            print '<option value="' . $field_key . '" ' . ($col_field == $field_key ? 'selected' : '') . '>' . htmlspecialchars($field_label) . '</option>';
+        foreach ($available_fields as $field_key => $field_data) {
+            print '<option value="' . $field_key . '" ' . ($col_field == $field_key ? 'selected' : '') . '>' . htmlspecialchars($field_data['label']) . '</option>';
         }
         print '</select>';
 
@@ -221,18 +272,39 @@ $where = $match = array();
 		//use this as will create us proper image objects!
 		$count = $imagelist->getImagesBySphinxQL($sql, true);
 
+		// Get field processing info
+		$rowname_info = $available_fields[$rowname];
+		$colname_info = $available_fields[$colname];
+
 		$metrix = $columns = array();
 		foreach ($imagelist->images as $i => $image) {
-			$current_row_value = $image->{$rowname};
-			if ($rowname == 'takenyear') {
-				$current_row_value = str_replace('tt','0s',$current_row_value); //allows for decade!
-				if ($current_row_value == '0000s') continue;
-			}
-            if (empty($current_row_value) && $current_row_value !== '0') continue; // Skip if row value is empty
+			// Get row value directly from source attribute
+			$processed_row_value = $image->{$rowname_info['source_attr']};
 
-			$rowvalue = $current_row_value;
-			$colvalue = $image->{$colname};
-            if (empty($colvalue) && $colvalue !== '0') continue; // Skip if column value is empty
+			if ($rowname == 'takenyear') { // Special display handling for 'takenyear'
+				$processed_row_value = str_replace('tt','0s', (string)$processed_row_value);
+				if ($processed_row_value == '0000s') continue; // Skip invalid year
+			}
+            // Skip if row value is empty (but allow '0' or '0s')
+            if (empty($processed_row_value) && $processed_row_value !== '0' && $processed_row_value !== '0s') continue;
+
+			$rowvalue = (string)$processed_row_value;
+
+			// Get column value directly from source attribute
+			$processed_col_value = $image->{$colname_info['source_attr']};
+
+			if ($colname == 'takenyear') { // Special display handling for 'takenyear'
+                $processed_col_value = str_replace('tt','0s', (string)$processed_col_value);
+				// No 'continue' for column value, empty value will result in an empty cell
+			}
+            // Skip if column value is empty (but allow '0' or '0s')
+            // This check might be too aggressive for columns if an image can legitimately have an empty value for a chosen column field
+            // but still needs to be part of a row defined by a valid rowvalue.
+            // However, the original code had a similar skip for colvalue.
+            if (empty($processed_col_value) && $processed_col_value !== '0' && $processed_col_value !== '0s') continue;
+
+
+			$colvalue = (string)$processed_col_value;
 
 			if (!isset($metrix[$rowvalue])) {
 				$metrix[$rowvalue] = [];
@@ -310,11 +382,12 @@ $where = $match = array();
 				print "<td align=center>";
 				if (!empty($rows[$colvalue])) {
 					$image = $rows[$colvalue];
-                    $current_row_value_encoded = urlencode('"'.$rowvalue.'"');
-                    if ($rowname == 'takenyear') {
-                        // Apply specific encoding for 'takenyear' if it involves 's' for decade
-                        $current_row_value_encoded = urlencode('"'.str_replace('0s','tt',$rowvalue).'"');
+                    $current_row_value_for_url = $rowvalue;
+                    // Special encoding for URL if rowname is 'takenyear' or 'decade'
+                    if ($rowname == 'takenyear' || $rowname == 'decade') {
+                        $current_row_value_for_url = str_replace('0s','tt', $current_row_value_for_url);
                     }
+                    $current_row_value_encoded = urlencode('"'.$current_row_value_for_url.'"');
 
 					if ($image->images > 1)
 						$url = "/browser/#!/$rowname+".$current_row_value_encoded."/$colname+".urlencode('"'.$colvalue.'"').$extra;
