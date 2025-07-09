@@ -61,12 +61,17 @@ if (!empty($_GET['snippet_id'])) {
 // 'source_attr' indicates the actual attribute name from the Image object.
 $available_fields = [
     'takenyear' => ['label' => 'Year Taken', 'type' => 'time_year', 'source_attr' => 'takenyear'],
-    'decade'    => ['label' => 'Decade', 'type' => 'time_decade', 'source_attr' => 'decade'], // Assumed direct Sphinx attribute
-    'takenmonth'=> ['label' => 'Month (of year)', 'type' => 'time_month', 'source_attr' => 'takenmonth'], // Assumed direct Sphinx attribute (e.g., YYYY-MM format)
-    'takenday'  => ['label' => 'Day (of month)', 'type' => 'time_day', 'source_attr' => 'takenday'],   // Assumed direct Sphinx attribute (e.g., DD format)
+    'decade'    => ['label' => 'Decade Taken', 'type' => 'time_decade', 'source_attr' => 'decade'], // Assumed direct Sphinx attribute
+    'takenmonth'=> ['label' => 'Month Taken', 'type' => 'time_month', 'source_attr' => 'takenmonth'], // Assumed direct Sphinx attribute (e.g., YYYY-MM format)
+    'takenday'  => ['label' => 'Day Taken', 'type' => 'time_day', 'source_attr' => 'takenday'],   // Assumed direct Sphinx attribute (e.g., DD format)
+	'monthname' => ['label' => 'Month Name', 'type'=>'misc_monthname','source_attr'=>'monthname'],
     'direction' => ['label' => 'Direction', 'type' => 'spatial_direction', 'source_attr' => 'direction'],
-    'category'  => ['label' => 'Category', 'type' => 'misc_category', 'source_attr' => 'category'], // Example
-    'user_id'   => ['label' => 'User ID', 'type' => 'misc_user', 'source_attr' => 'user_id']    // Example
+    'imageclass'  => ['label' => 'Category', 'type' => 'misc_category', 'source_attr' => 'imageclass'],
+    'user_id'   => ['label' => 'User ID', 'type' => 'misc_user', 'source_attr' => 'user_id'],
+	'landcover' => ['label' => 'Landcover', 'type'=>'misc_landcover','source_attr'=>'landcover'],
+	'format' => ['label' => 'Format', 'type'=>'misc_format','source_attr'=>'format'],
+	'country' => ['label' => 'Country', 'type'=>'misc_country','source_attr'=>'country'],
+	'distance' => ['label' => 'Distance', 'type'=>'misc_distance','source_attr'=>'distance'],
 ];
 
 // Get form inputs or use defaults
@@ -102,7 +107,7 @@ $title = "Explore Images: " . htmlspecialchars($title_row_label) . " by " . html
 if (!empty($_GET['snippet_id'])) {
     // If filtering by snippet, add it to title or as a subtitle
     // For simplicity, appending to main title for now
-    // $title .= " (for Snippet ID: " . intval($_GET['snippet_id']) . ")";
+    $title .= " (for Snippet ID: " . intval($_GET['snippet_id']) . ")";
 }
 
 
@@ -228,7 +233,7 @@ function get_sort_comparison_function($sort_type, $sort_dir, $data_for_sorting =
 
         if ($sort_type == 'numeric') {
             // Direct numeric comparison of the keys
-            $cmp = floatval($val_a) <=> floatval($val_b);
+            $cmp = strnatcmp($val_a, $val_b);
         } elseif ($sort_type == 'images' && $data_for_sorting !== null) {
             // Compare based on precomputed image counts stored in $data_for_sorting
             $count_a = $data_for_sorting[$a] ?? 0;
@@ -241,7 +246,7 @@ function get_sort_comparison_function($sort_type, $sort_dir, $data_for_sorting =
             $cmp = $unique_a <=> $unique_b;
         } else { // 'alpha' / default (also fallback if $data_for_sorting is null for 'images'/'unique')
             // Default to natural string comparison of the keys
-            $cmp = strnatcmp($val_a, $val_b);
+            $cmp = strcmp($val_a, $val_b);
         }
 
         return ($sort_dir == 'desc') ? -$cmp : $cmp;
@@ -257,14 +262,7 @@ $where = $match = array();
 
 			$sql = "SELECT id,user_id,title,realname,grid_reference,takenday,$colname,$rowname,count(*) as images FROM $index"; // WHERE ".implode(' and ',$where);
 			// Make sure selected fields are in GROUP BY
-			$sql .= " GROUP BY $colname,$rowname";
-			// Add other available fields if they are not the row/col name, for potential sorting later if not aggregated
-			foreach (array_keys($available_fields) as $field) {
-				if ($field != $colname && $field != $rowname && property_exists('Image', $field) ) { // Check if field is a property of Image class
-					$sql .= ", $field";
-				}
-			}
-			$sql .= " limit 1000"; // Increased limit to allow for more comprehensive sorting
+			$sql .= " GROUP BY $colname,$rowname LIMIT 100";
 
 		$imagelist = new ImageList();
 		$imagelist->_setSph($sph);
@@ -281,28 +279,20 @@ $where = $match = array();
 			// Get row value directly from source attribute
 			$processed_row_value = $image->{$rowname_info['source_attr']};
 
-			if ($rowname == 'takenyear') { // Special display handling for 'takenyear'
+			if ($rowname == 'decade') { // Special display handling for 'decade'
 				$processed_row_value = str_replace('tt','0s', (string)$processed_row_value);
 				if ($processed_row_value == '0000s') continue; // Skip invalid year
 			}
-            // Skip if row value is empty (but allow '0' or '0s')
-            if (empty($processed_row_value) && $processed_row_value !== '0' && $processed_row_value !== '0s') continue;
 
 			$rowvalue = (string)$processed_row_value;
 
 			// Get column value directly from source attribute
 			$processed_col_value = $image->{$colname_info['source_attr']};
 
-			if ($colname == 'takenyear') { // Special display handling for 'takenyear'
-                $processed_col_value = str_replace('tt','0s', (string)$processed_col_value);
+			if ($colname == 'decade') { // Special display handling for 'decade'
+		                $processed_col_value = str_replace('tt','0s', (string)$processed_col_value);
 				// No 'continue' for column value, empty value will result in an empty cell
 			}
-            // Skip if column value is empty (but allow '0' or '0s')
-            // This check might be too aggressive for columns if an image can legitimately have an empty value for a chosen column field
-            // but still needs to be part of a row defined by a valid rowvalue.
-            // However, the original code had a similar skip for colvalue.
-            if (empty($processed_col_value) && $processed_col_value !== '0' && $processed_col_value !== '0s') continue;
-
 
 			$colvalue = (string)$processed_col_value;
 
@@ -382,9 +372,9 @@ $where = $match = array();
 				print "<td align=center>";
 				if (!empty($rows[$colvalue])) {
 					$image = $rows[$colvalue];
+
                     $current_row_value_for_url = $rowvalue;
-                    // Special encoding for URL if rowname is 'takenyear' or 'decade'
-                    if ($rowname == 'takenyear' || $rowname == 'decade') {
+                    if ($rowname == 'decade') {
                         $current_row_value_for_url = str_replace('0s','tt', $current_row_value_for_url);
                     }
                     $current_row_value_encoded = urlencode('"'.$current_row_value_for_url.'"');
