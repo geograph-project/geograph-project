@@ -70,8 +70,9 @@ $available_fields = [
     'user_id'   => ['label' => 'User ID', 'type' => 'misc_user', 'source_attr' => 'user_id'],
 	'landcover' => ['label' => 'Landcover', 'type'=>'misc_landcover','source_attr'=>'landcover'],
 	'format' => ['label' => 'Format', 'type'=>'misc_format','source_attr'=>'format'],
-	'country' => ['label' => 'Country', 'type'=>'misc_country','source_attr'=>'country'],
+	'country' => ['label' => 'Country', 'type'=>'misc_location','source_attr'=>'country'],
 	'distance' => ['label' => 'Distance', 'type'=>'misc_distance','source_attr'=>'distance'],
+    'grid_reference' => ['label' => 'Grid Square', 'type'=>'misc_location','source_attr'=>'grid_reference'],
 ];
 
 // Get form inputs or use defaults
@@ -80,7 +81,7 @@ $row_sort_type = $_GET['row_sort_type'] ?? 'alpha';
 $row_sort_dir = $_GET['row_sort_dir'] ?? 'asc';
 
 $col_field = $_GET['col_field'] ?? 'direction';
-$col_sort_type = $_GET['col_sort_type'] ?? 'alpha';
+$col_sort_type = $_GET['col_sort_type'] ?? 'numeric'; //works best with direction
 $col_sort_dir = $_GET['col_sort_dir'] ?? 'asc';
 
 // Sanitize inputs (basic example, consider more robust validation)
@@ -89,7 +90,7 @@ $col_field = array_key_exists($col_field, $available_fields) ? $col_field : 'dir
 
 $valid_sort_types = ['alpha', 'numeric', 'images', 'unique'];
 $row_sort_type = in_array($row_sort_type, $valid_sort_types) ? $row_sort_type : 'alpha';
-$col_sort_type = in_array($col_sort_type, $valid_sort_types) ? $col_sort_type : 'alpha';
+$col_sort_type = in_array($col_sort_type, $valid_sort_types) ? $col_sort_type : 'numeric';
 
 $valid_sort_dirs = ['asc', 'desc'];
 $row_sort_dir = in_array($row_sort_dir, $valid_sort_dirs) ? $row_sort_dir : 'asc';
