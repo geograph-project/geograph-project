@@ -141,7 +141,7 @@
 {/if}
   <div id="footer" class="no_print">
      <p style="color:#AAAABB;float:left">Page updated at {$smarty.now|date_format:"%H:%M"}</p>
-   <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>
+   <p><a href="/report.php" title="Report this page">Report a Concern</a>
        <span class="sep">|</span>
        <a href="/article/Use-of-Cookies-on-Geograph-Website" title="How this site uses cookies">Cookies</a>
        <span class="sep">|</span>

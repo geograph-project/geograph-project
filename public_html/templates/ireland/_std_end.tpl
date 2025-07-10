@@ -176,7 +176,7 @@
 {/if}
   <div id="footer" class="no_print">
      <p style="color:#AAAABB;float:left">Page updated at {$smarty.now|date_format:"%H:%M"}</p>
-   <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>
+   <p><a href="/report.php" title="Report this page">Report a Concern</a>
        <span class="sep">|</span>
        <a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>

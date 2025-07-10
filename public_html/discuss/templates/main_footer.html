@@ -60,8 +60,20 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
     <div id="searchform">
     <form method="get" action="/finder/discussions.php">
 	<div id="searchfield">
-	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10" onfocus="search_focus(this)" onblur="search_blur(this)" style="background-image: url('{$static_host}/templates/basic/img/searchbox-discuss.gif');"/>
-	<input id="searchbutton" type="submit" value="Find"/></div>
+	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10" placeholder="search discussions"/>
+	<input id="searchbutton" type="submit" value="Find"/>
+
+		<div id="searchoptions">
+			 What to search:<ul class="touchPadding">
+        	         <li><label><input type=radio name=mode checked value="">All Discussions</label> &nbsp;
+        	         <li><label><input type=radio name=mode value="thread:{$topic}">This Thread</label> &nbsp;
+        	         <li><label><input type=radio name=mode value="forum:{$forum}">This Forum</label> &nbsp;
+        	         <li><label><input type=radio name=mode value="gsd">Grid Square Discussions <i>(enter gridref or placename)</i></label> &nbsp;
+        	         <li><label><input type=radio name=mode value="gallery">Galleries</label> &nbsp;
+        	         <li><label><input type=radio name=mode value="photo">Photos</label> &nbsp;
+			</ul>
+		</div>
+	</div>
 	</form>
     </div>
   </div>
@@ -71,7 +83,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
   </div>
 <div class="content2" id="footer_block">
   <div id="footer" class="no_print">
-   <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>
+   <p><a href="/report.php" title="Report this page">Report a Concern</a>
        <span class="sep">|</span>
        <a href="/article/Use-of-Cookies-on-Geograph-Website" title="How this site uses cookies">Cookies</a>
        <span class="sep">|</span>
