@@ -13,8 +13,8 @@
 We'll know which page you were on when you opened this form and will review it as soon as possible. For general help questions or
 landowner concerns, please use the "Contact us" link on the main menu.</p>
 
+{literal}
 <style type="text/css">
-/* --- Report Form Styles --- */
 .report-form .form-group {
     display: flex;
     flex-wrap: wrap; /* Allows label to wrap above input on small screens */
@@ -98,20 +98,20 @@ landowner concerns, please use the "Contact us" link on the main menu.</p>
         padding-left: 0; /* Remove padding when stacked */
     }
 }
-/* --- End Report Form Styles --- */
 </style>
+{/literal}
 
 <form action="https://company.geograph.org.uk/support/open.php" method="POST" enctype="multipart/form-data" class="report-form">
-    <input type="hidden" name="topicId" value="13">
+{dynamic}
+    <input type="hidden" name="topicId" value="15">
     <input type="hidden" name="ref" value="{$referring_page|escape:'html'}"/>
     <input type="hidden" name="user_id" value="{$user->user_id}"/>
+    <input type="hidden" name="gtok" value="{$gtok}"/>
 
-{dynamic}
     <div class="form-group">
         <label for="name" class="form-label">Full Name:</label>
         <div class="input-group">
             <input type="text" id="name" name="name" size="25" value="{$user->realname|escape:'html'}" required>
-            <span class="error-marker">*</span>
         </div>
     </div>
 
@@ -119,7 +119,7 @@ landowner concerns, please use the "Contact us" link on the main menu.</p>
         <label for="email" class="form-label">Email Address:</label>
         <div class="input-group">
             <input type="email" id="email" name="email" size="25" value="{$user->email|escape:'html'}" required>
-            <span class="error-marker">*</span> <small>(using this form will reveal your email address to support representatives)</small>
+		 <small>(using this form will reveal your email address to support representatives)</small>
         </div>
     </div>
 {/dynamic}
@@ -128,7 +128,6 @@ landowner concerns, please use the "Contact us" link on the main menu.</p>
         <label for="subject" class="form-label">Subject:</label>
         <div class="input-group">
             <input type="text" id="subject" name="subject" size="35" value="Report a concern" required>
-            <span class="error-marker">*</span>
         </div>
     </div>
 
@@ -136,7 +135,6 @@ landowner concerns, please use the "Contact us" link on the main menu.</p>
         <label for="message" class="form-label">Message:</label>
         <div class="input-group">
             <textarea id="message" name="message" cols="35" rows="8" wrap="soft" placeholder="enter your message here" required></textarea>
-            {* The original table structure did not have a '*' for the message field. If one is needed, add: <span class="error-marker">*</span> *}
         </div>
     </div>
 

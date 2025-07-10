@@ -41,6 +41,9 @@ if (isset($_GET['done'])) {
 	$smarty->assign('done',intval($_GET['id']));
 }
 
+$t = time();
+$n = bin2hex(random_bytes(16));
+$smarty->assign('gtok', base64_encode("$n.$t").".".hash_hmac('sha256',$t.$n, $CONF['token_secret']));
 
 $smarty->display('report.tpl');
 

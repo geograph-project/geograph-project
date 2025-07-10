@@ -99,6 +99,10 @@ abbr {
 	color:#606060;
 }
 
+#footer p {
+	font-size: 1em;
+}
+
 /* -------------------- */
 
 .buttonbar { /* there is an existing buttonbar, which may need to check compatibltiy */
