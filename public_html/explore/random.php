@@ -86,8 +86,9 @@ function myPress(that) {
 	}, 250);
 }
 function updateValue(value) {
-    var crc = simpleHash(value)+2147483647;
-    var gid = crc % max_id;
+    var crc = simpleHash(value);
+//    var gid = crc % max_id;
+    var gid = Math.floor((crc / 0xFFFFFFFF) * (max_id + 1)); //modulus tends to shuffle a lot!
 
   var query = {
      range: gid+","+gid,
@@ -171,7 +172,8 @@ function simpleHash(str) {
     hash = ((hash << 5) - hash) + chr;
     hash |= 0; // Convert to 32bit integer
   }
-  return hash;
+  // Ensure the hash is always positive (unsigned 32-bit equivalent);
+  return (hash >>> 0); // Unsigned right shift by 0
 }
 </script>
 
