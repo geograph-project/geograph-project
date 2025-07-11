@@ -32,9 +32,9 @@ $smarty->assign('page_title','Image Randomizer');
 $smarty->display('_std_begin.tpl',md5('1'.$_SERVER['PHP_SELF']));
 ?>
 
-<h2><a href=\"/explore/\">Explore</a> :: Image Randomizer</h2>
+<h2><a href="/explore/">Explore</a> :: Image Randomizer</h2>
 
-<p>Can also <a href=\"/search.php?orderby=random&displayclass=black&do=1\">get random image slideshow</a> or just <a href=\"/stuff/browse-random.php\">jump to random square</a></p>
+<p>Can also <a href="/search.php?orderby=random&displayclass=black&do=1">get random image slideshow</a> or just <a href="/stuff/browse-random.php">jump to random square</a></p>
 
 <form name=theForm>
 	<div>
@@ -65,6 +65,7 @@ form[name=theForm] input {
 }
 #results img {
   max-width: 100%;
+  min-height:300px;
 }
 #results a {
   color:cyan;
