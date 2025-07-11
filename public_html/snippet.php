@@ -78,6 +78,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$sql = "SELECT gridimage_id,gi.user_id,realname,credit_realname,gi.title,imageclass,grid_reference,reference_index,year(imagetaken) as year FROM gridimage_snippet gs INNER JOIN gridimage_search gi USING (gridimage_id) WHERE snippet_id = $snippet_id AND gridimage_id < 4294967296 ORDER BY crc32(concat(gridimage_id,yearweek(now()))) LIMIT $limit";
 
 			$imagelist->_getImagesBySql($sql);
+			usort($imagelist->images, function($a, $b) {
+			    return strcmp($b->year, $a->year);
+			});
 			$stats = array();
 			foreach($imagelist->images as $row)
 				@$stats[$row->year]++;
