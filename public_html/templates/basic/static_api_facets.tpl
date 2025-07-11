@@ -218,13 +218,13 @@ Manticore also has a nice reference on the <a href="https://manual.manticoresear
       "id": "12345",
       "title": "A Sample Geograph Title",
       "user_id": "789",
-      "grid_reference": "SO123456"
+      "grid_reference": "SO1245"
     },
     {
       "id": "67890",
       "title": "Another Interesting Photo",
       "user_id": "101",
-      "grid_reference": "TL654321"
+      "grid_reference": "TL6532"
     }
   ],
   "meta": {
