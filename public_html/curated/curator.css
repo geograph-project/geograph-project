@@ -1,9 +1,59 @@
+/* Define CSS Variables for Light Theme */
+:root {
+    --bg-color: #f4f4f4;
+    --column-bg: #fff;
+    --text-color: #333;
+    --border-color: #ddd;
+    --results-bg: #e9e9e9;
+    --item-bg: #fff;
+    --item-text-color: #555;
+    --button-bg: #007bff;
+    --button-hover-bg: #0056b3;
+    --delete-btn-bg: #dc3545;
+    --instruction-bg: #f8f8f8;
+    --instruction-text: #444;
+}
+
+/* Dark Theme Overrides */
+body.dark-theme {
+    --bg-color: #2c2c2c;
+    --column-bg: #3c3c3c;
+    --text-color: #f0f0f0;
+    --border-color: #555;
+    --results-bg: #333;
+    --item-bg: #4c4c4c;
+    --item-text-color: #ccc;
+    --button-bg: #0099ff;
+    --button-hover-bg: #0077cc;
+    --delete-btn-bg: #ff6666;
+    --instruction-bg: #444;
+    --instruction-text: #eee;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 10px;
-    background-color: #f4f4f4;
+    background-color: var(--bg-color); /* Use variable */
+    color: var(--text-color); /* Use variable for default text */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+    overflow:hidden;
 }
+
+#themeToggle {
+    padding: 8px 15px;
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#themeToggle:hover {
+    background-color: var(--button-hover-bg);
+}
+
 
 .container {
     display: flex;
@@ -13,7 +63,7 @@ body {
 
 .column {
     flex: 1;
-    background-color: #fff;
+    background-color: var(--column-bg); /* Use variable */
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -21,45 +71,59 @@ body {
     flex-direction: column;
 }
 
+.right-column-header { /* Targeting the h2 within the right column */
+    margin-top: 0; /* Ensure no extra margin pushes content */
+    margin-bottom: 20px; /* Keep consistent spacing below header */
+    display: flex; /* Use flexbox to align text and button within h2 */
+    justify-content: space-between; /* Pushes button to the right */
+    align-items: center; /* Vertically centers text and button */
+}
+
+/* Shadow adjustment for dark theme if needed */
+body.dark-theme .column {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 h2 {
     margin-top: 0;
-    color: #333;
+    color: var(--text-color);
 }
 
 .search-box {
     display: flex;
-    gap: 50px;
+    gap: 5px;
     margin-bottom: 20px;
 }
 
 .search-box input[type="search"] {
     flex-grow: 1;
     padding: 5px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
+    background-color: var(--item-bg); /* Use item-bg for input background */
+    color: var(--item-text-color); /* Use item-text-color for input text */
 }
 
 .search-box button {
     padding: 10px 15px;
-    background-color: #007bff;
+    background-color: var(--button-bg);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .search-box button:hover {
-    background-color: #0056b3;
+    background-color: var(--button-hover-bg);
 }
 
 .search-results, .selected-images {
     flex-grow: 1;
-    border: 1px solid #eee;
     padding: 5px;
     border-radius: 4px;
     overflow-y: auto;
-    background-color: #e9e9e9;
-
+    background-color: var(--results-bg);
 
     /* Multi-column layout for search results */
     display: grid; /* Use CSS Grid */
@@ -74,9 +138,10 @@ h2 {
     /* You might want some extra padding or margin for visual separation */
     padding: 15px;
     margin-bottom: 10px; /* Space below the instructions */
-    background-color: #f8f8f8; /* Slightly different background to stand out */
+    background-color: var(--instruction-bg); /* Slightly different background to stand out */
     border-radius: 4px;
-    color: #444;
+    color: var(--instruction-text); /* Use variable */
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .search-instructions p {
@@ -94,11 +159,18 @@ h2 {
     display: flex;
     align-items: center;
     --margin-bottom: 5px;
-    background-color: #fff;
+    background-color: var(--item-bg);
     padding: 4px;
     border-radius: 4px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     position: relative; /* For the delete button positioning */
+    text-align: center;
+    cursor: grab;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-theme .image-item {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .image-item img {
@@ -112,16 +184,16 @@ h2 {
 .image-item span {
     flex-grow: 1;
     font-size: 0.9em;
-    color: #555;
+    color: var(--item-text-color); /* Use variable */
 }
 
 .image-item.ui-draggable-dragging {
     opacity: 0.7;
-    border: 2px dashed #007bff;
+    border: 2px dashed var(--button-bg); /* Use primary color for drag outline */
 }
 
 .selected-images .image-item .delete-btn {
-    background: #dc3545;
+    background: var(--delete-btn-bg); /* Use variable */
     color: white;
     border: none;
     border-radius: 50%;
@@ -153,14 +225,94 @@ h2 {
 
 .pagination button {
     padding: 8px 12px;
-    background-color: #007bff;
+    background-color: var(--button-bg);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pagination button:hover:not(:disabled) { /* Added not(:disabled) */
+    background-color: var(--button-hover-bg); /* Use variable */
 }
 
 .pagination button:disabled {
-    background-color: #ccc;
+    background-color: var(--border-color); /* Use border-color for disabled state */
     cursor: not-allowed;
+    color: var(--item-text-color); /* Make text visible on disabled button */
+}
+
+.footer {
+    margin-top:5px;
+}
+.footer a {
+    color: var(--button-hover-bg);
+}
+.footer a:hover {
+    color: var(--button-bg);
+}
+
+
+/* --- Scrollbar Styling for Dark Theme --- */
+body.dark-theme ::-webkit-scrollbar {
+    width: 10px; /* Width of the vertical scrollbar */
+    height: 10px; /* Height of the horizontal scrollbar */
+}
+
+body.dark-theme ::-webkit-scrollbar-track {
+    background: var(--column-bg); /* Use a dark background for the track */
+    border-radius: 5px;
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb {
+    background-color: var(--button-hover-bg); /* Use a button-like color for the thumb */
+    border-radius: 5px;
+    border: 2px solid var(--column-bg); /* Add a border for better contrast with track */
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--button-bg); /* Lighter color on hover */
+}
+
+
+/* --- Styling for the search input's clear button (the 'x') in dark mode --- */
+body.dark-theme input[type="search"]::-webkit-search-cancel-button {
+    /* Change its color/filter for visibility */
+    -webkit-appearance: none; /* Important: removes default styling so you can apply your own */
+
+    /* This SVG creates a simple 'X' filled with white (#FFFFFF) */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23FFFFFF" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain; /* Ensure the SVG scales within the button's dimensions */
+
+    width: 1.3em;
+    height: 1.3em;
+    cursor: pointer;
+}
+
+body.dark-theme input[type="search"]::-webkit-search-cancel-button:hover {
+    opacity: 0.8; /* Simple hover effect */
+}
+
+
+/* --- Dark Theme Focus Outline for Search Input --- */
+body.dark-theme input[type="search"]:focus {
+    /* Remove the default browser outline */
+    outline: none; 
+    
+    /* Apply your custom focus style using border or box-shadow */
+    border-color: var(--button-hover-bg); /* Change border color on focus */
+    box-shadow: 0 0 0 2px var(--button-hover-bg); /* A more prominent 'glow' outline */
+    /* Or a combination for a double outline effect (common for accessibility): */
+    /* box-shadow: 0 0 0 2px var(--button-hover-bg), 0 0 0 4px var(--column-bg-light); */
+    
+    transition: all 0.2s ease-in-out; /* Smooth transition for the focus effect */
+}
+
+/* Optional: For better accessibility, use :focus-visible (modern approach) */
+body.dark-theme input[type="search"]:focus-visible {
+    outline: none; /* Still remove default */
+    box-shadow: 0 0 0 2px var(--button-hover-bg); /* Same custom style as above */
 }

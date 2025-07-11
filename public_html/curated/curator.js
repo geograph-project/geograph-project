@@ -7,6 +7,46 @@ $(document).ready(function() {
     const CURRENT_TAG = 'Coastal';
     const pageSize = 20;
 
+    // --- Theme Toggle Logic ---
+    const themeToggleBtn = $('#themeToggle');
+    const body = $('body');
+    const DARK_THEME_CLASS = 'dark-theme';
+    const THEME_STORAGE_KEY = 'imageCuratorTheme';
+
+    // Function to set the theme
+    function setTheme(theme) {
+        if (theme === 'dark') {
+            body.addClass(DARK_THEME_CLASS);
+            themeToggleBtn.text('Toggle Light Theme');
+        } else {
+            body.removeClass(DARK_THEME_CLASS);
+            themeToggleBtn.text('Toggle Dark Theme');
+        }
+        localStorage.setItem(THEME_STORAGE_KEY, theme);
+    }
+
+    // Load theme from localStorage on startup
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // Optional: Detect OS dark mode preference if no theme is saved
+        setTheme('dark');
+    } else {
+        setTheme('light'); // Default to light if no preference and no OS preference
+    }
+
+    // Event listener for theme toggle button
+    themeToggleBtn.on('click', function() {
+        if (body.hasClass(DARK_THEME_CLASS)) {
+            setTheme('light');
+        } else {
+            setTheme('dark');
+        }
+    });
+
+    // --- End Theme Toggle Logic ---
+
     // Initialize draggable and droppable
     function initializeDragAndDrop() {
         $('.image-item').draggable({
@@ -131,7 +171,7 @@ $(document).ready(function() {
     function fetchInitialSelectedImages() {
 //        const apiUrl = `${API_DOMAIN}/query?tag=${CURRENT_TAG}`;
 	//TODO! just a demo!
-        const apiUrl = `${API_DOMAIN}/api-facetql.php?match=${CURRENT_TAG}&select=id,title,hash,realname&limit=100`;
+        const apiUrl = `${API_DOMAIN}/api-facetql.php?match=${encodeURIComponent(CURRENT_TAG)}&select=id,title,hash,realname&limit=100`;
 
         console.log(`Fetching initial selected images: ${apiUrl}`);
 
