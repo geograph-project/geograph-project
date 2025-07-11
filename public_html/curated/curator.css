@@ -71,12 +71,16 @@ body {
     flex-direction: column;
 }
 
-.right-column-header { /* Targeting the h2 within the right column */
-    margin-top: 0; /* Ensure no extra margin pushes content */
-    margin-bottom: 20px; /* Keep consistent spacing below header */
-    display: flex; /* Use flexbox to align text and button within h2 */
-    justify-content: space-between; /* Pushes button to the right */
-    align-items: center; /* Vertically centers text and button */
+.column-header {
+    display: flex; /* Makes its children (h2 and ai-enhanced-toggle) flex items */
+    justify-content: space-between; /* Pushes h2 to left, checkbox to right */
+    align-items: center; /* Vertically centers them */
+    margin-bottom: 10px; /* Space below this entire header section */
+}
+
+.column-header h2 {
+    margin-top: 0; /* Remove default top margin from h2 */
+    margin-bottom: 0; /* Remove default bottom margin from h2 */
 }
 
 /* Shadow adjustment for dark theme if needed */
@@ -316,3 +320,63 @@ body.dark-theme input[type="search"]:focus-visible {
     outline: none; /* Still remove default */
     box-shadow: 0 0 0 2px var(--button-hover-bg); /* Same custom style as above */
 }
+
+
+/* ----------------------- */
+
+.ai-enhanced-toggle {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between checkbox and label */
+    font-size: 0.95em; /* Slightly smaller text for toggle */
+    color: var(--text-color); /* Ensure label color adapts to theme */
+}
+
+/* Style for the checkbox itself if you want custom appearance */
+.ai-enhanced-toggle input[type="checkbox"] {
+    /* Basic reset to allow custom styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: var(--input-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.ai-enhanced-toggle input[type="checkbox"]:checked {
+    background-color: var(--button-bg); /* Use your theme's button color when checked */
+    border-color: var(--button-bg);
+}
+
+/* Checkmark icon using a pseudo-element */
+.ai-enhanced-toggle input[type="checkbox"]:checked::before {
+    content: '\2713'; /* Unicode checkmark character */
+    font-size: 14px;
+    color: white; /* Checkmark color */
+}
+
+/* Focus style for accessibility */
+.ai-enhanced-toggle input[type="checkbox"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--button-hover-bg);
+}
+
+/* Dark theme specific styles for checkbox */
+body.dark-theme .ai-enhanced-toggle input[type="checkbox"] {
+    background-color: var(--input-bg-dark);
+    border-color: var(--border-color-dark);
+}
+
+body.dark-theme .ai-enhanced-toggle input[type="checkbox"]:checked {
+    background-color: var(--button-bg);
+    border-color: var(--button-bg);
+}
+

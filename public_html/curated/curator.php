@@ -53,7 +53,13 @@ if ($USER->user_id) {
 <body>
     <div class="container">
         <div class="column left-column">
-            <h2 id="resultHeader">Search Results</h2>
+            <div class="column-header">
+                <h2 id="resultHeader">Search Results</h2>
+                <div class="ai-enhanced-toggle" title="NOTE: the AI search current ignores the user filter (so shows everybodies images)">
+                    <input type="checkbox" id="aiEnhancedCheckbox">
+                    <label for="aiEnhancedCheckbox">AI Enhanced Search</label>
+                </div>
+            </div>
             <div class="search-box">
                 <input type="search" id="queryInput" value="<? echo htmlentities($query); ?>" placeholder="Enter search query...">
                 <button id="searchButton">Search</button>
@@ -66,10 +72,10 @@ if ($USER->user_id) {
             </div>
         </div>
         <div class="column right-column">
-            <h2 class="right-column-header">
-                <span>Selected Images (<span id="currentTag"><? echo htmlentities($tag); ?></span>)</span>
+            <div class="column-header">
+                <h2>Selected Images (<span id="currentTag"><? echo htmlentities($tag); ?></span>)</h2>
 		<button id="themeToggle">Toggle Dark Theme</button>
-	    </h2>
+	    </div>
             <div class="selected-images" id="selectedImages"></div>
         </div>
     </div>

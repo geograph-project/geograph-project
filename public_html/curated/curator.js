@@ -48,6 +48,28 @@ $(document).ready(function() {
 
     // --- End Theme Toggle Logic ---
 
+    const aiEnhancedCheckbox = $('#aiEnhancedCheckbox');
+    const AI_ENHANCED_STORAGE_KEY = 'aiEnhancedSearch'; // For remembering state
+
+    // --- Retrieve saved state for AI Enhanced checkbox ---
+    const savedAiEnhanced = localStorage.getItem(AI_ENHANCED_STORAGE_KEY);
+    if (savedAiEnhanced === 'true') {
+        useAiEnhanced = true;
+        aiEnhancedCheckbox.prop('checked', true);
+    }
+
+    // Event listener for AI Enhanced checkbox
+    aiEnhancedCheckbox.on('change', function() {
+        let useAiEnhanced = $(this).is(':checked');
+        localStorage.setItem(AI_ENHANCED_STORAGE_KEY, useAiEnhanced); // Save state
+
+        // If there's a current query, re-run the search with the new setting
+        if (currentQuery) { // currentQuery should be initialized from input or STARTER_QUERY
+            currentPage = 1; // Reset page to 1 when changing search mode
+            fetchImages(currentQuery, currentPage);
+        }
+    });
+
     // Initialize draggable and droppable
     function initializeDragAndDrop() {
         $('#searchResults .image-item').draggable({
@@ -188,8 +210,15 @@ $(document).ready(function() {
             $('#searchResults').empty().html('<p>Please enter a search query.</p>');
             return;
         }
+
 	let pageLimit = (page-1) * pageSize;
-        const apiUrl = `${API_DOMAIN}/api-facetql.php?match=${encodeURIComponent(query)}&select=id,title,hash,realname&offset=${pageLimit}&limit=${pageSize}`;
+        let apiUrl;
+	if ($('#aiEnhancedCheckbox').is(':checked')) {
+		query = query.replace(/ user\d+/,''); //not supported on 'label' - convert to attribute/field match?
+        	apiUrl = `/api-facetql-vector.php?label=${encodeURIComponent(query)}&select=id,title,hash,realname&offset=${pageLimit}&limit=${pageSize}`;
+	} else {
+		apiUrl = `${API_DOMAIN}/api-facetql.php?match=${encodeURIComponent(query)}&select=id,title,hash,realname&offset=${pageLimit}&limit=${pageSize}`;
+	}
         console.log(`Fetching: ${apiUrl}`); // For debugging
 
         $.ajax({
