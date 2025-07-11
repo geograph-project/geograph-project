@@ -4,8 +4,9 @@ const selectedImageIds = new Set(); // Stores IDs of images currently in the 'Se
 
 $(document).ready(function() {
     const API_DOMAIN = 'https://api.geograph.org.uk';
-    const CURRENT_TAG = 'Coastal';
     const pageSize = 20;
+    let longClickTimer = null; // To store the timeout ID for long click differentiation
+    const LONG_CLICK_DELAY = 500; // Milliseconds to hold for a long click
 
     // --- Theme Toggle Logic ---
     const themeToggleBtn = $('#themeToggle');
@@ -49,7 +50,7 @@ $(document).ready(function() {
 
     // Initialize draggable and droppable
     function initializeDragAndDrop() {
-        $('.image-item').draggable({
+        $('#searchResults .image-item').draggable({
             revert: 'invalid', // When dropped outside, revert to original position
             helper: 'clone',   // Drag a clone, not the original element
             cursor: 'move',
@@ -57,40 +58,91 @@ $(document).ready(function() {
             containment: '.container', // Confine dragging within the container
             start: function(event, ui) {
                 $(this).css('opacity', '0.5'); // Make original item transparent
+                if (longClickTimer) {
+                    clearTimeout(longClickTimer);
+                    longClickTimer = null; // Reset timer ID
+                }
             },
             stop: function(event, ui) {
                 $(this).css('opacity', '1'); // Restore opacity
             }
         });
 
+        // Droppable setup
         $('#selectedImages').droppable({
             accept: '.image-item',
             drop: function(event, ui) {
                 const $draggedItem = ui.draggable;
-                const imageId = String($draggedItem.data('id')); // <--- Convert to string here (to ensure added as a string to Set)
-
-                if (!selectedImageIds.has(imageId)) {
-                    // Remove from search results if it was there
-                    $draggedItem.remove();
-
-                    // Add to selected images
-                    const $clonedItem = $draggedItem.clone();
-                    $clonedItem.find('.delete-btn').remove(); // Remove old delete button if any
-                    $clonedItem.append('<button class="delete-btn">X</button>'); // Add new delete button
-                    $clonedItem.css('opacity', '1'); // Restore opacity
-                    $('#selectedImages').prepend($clonedItem);
-                    selectedImageIds.add(imageId);
-                    submitSelectedImages([imageId], 'add'); // Submit single added image
-
-                    // Make the newly added item draggable within the selected area if needed for reordering (optional)
-                    // For now, we only allow dragging from search to selected.
-                    // If you want to reorder within selected, you'd need to make them draggable too
-                    // and potentially use jQuery UI Sortable.
-
-                    updateSearchDisplay(); // Re-render search results to ensure consistency
-                }
+                addImageToSelected($draggedItem); // Call unified function
             }
         });
+
+        $('.container').off('mousedown', '.image-item'); // Prevent multiple bindings
+        $('.container').on('mousedown', '.image-item', function() {
+            const $this = $(this);
+            const imageId = $this.data('id');
+
+            // Clear any previous timer if a quick click occurred before the previous long-click fired
+            clearTimeout(longClickTimer);
+
+            // Start a new timer
+            longClickTimer = setTimeout(function() {
+                // This simulates a mouseup on the document, which forces jQuery UI to clean up
+                // any active drag helper or revert state.
+                $('body').trigger('mouseup');
+
+                // This code runs if the mouse button is held down for LONG_CLICK_DELAY
+                window.open(`/photo/${imageId}`,'photo'); // Navigate to the photo page
+                longClickTimer = null; // Reset timer ID
+            }, LONG_CLICK_DELAY);
+        });
+
+        // --- NEW: Mouseup handler (to cancel long click for short clicks) ---
+        $('.container').off('mouseup', '.image-item'); // Prevent multiple bindings
+        $('.container').on('mouseup', '.image-item', function() {
+            // If the mouse is released before the long-click timer fires, cancel it
+            if (longClickTimer) {
+                clearTimeout(longClickTimer);
+                longClickTimer = null; // Reset timer ID
+            }
+        });
+
+        // --- Double-click handler (for selection) ---
+        // Double-click will happen even if mousedown/mouseup occurs, but `dblclick` is a distinct event.
+        // It's crucial for dblclick to cancel any pending longClickTimer.
+	// This remains delegated specifically to #searchResults
+        $('#searchResults').off('dblclick', '.image-item'); // Prevent multiple bindings
+        $('#searchResults').on('dblclick', '.image-item', function(e) {
+            clearTimeout(longClickTimer); // Crucial: Prevent the long-click action from firing
+            longClickTimer = null; // Reset timer ID
+
+            // Add image to selected
+            addImageToSelected($(this));
+            e.preventDefault(); // Prevent default dblclick behavior (e.g., text selection)
+        });
+    }
+
+    // New unified function to add an image to selected
+    function addImageToSelected($imageItem) {
+        const imageId = String($imageItem.data('id'));
+
+        if (!selectedImageIds.has(imageId)) {
+            // Remove from search results (original item)
+            $imageItem.remove();
+
+            // Clone and add to selected images
+            const $clonedItem = $imageItem.clone();
+            $clonedItem.find('.delete-btn').remove(); // Remove old delete button if any
+            $clonedItem.append('<button class="delete-btn">X</button>'); // Add new delete button
+            $clonedItem.css('opacity', '1'); // Restore opacity
+            $('#selectedImages').prepend($clonedItem); // Add to start of selected images
+            selectedImageIds.add(imageId); // Add string ID to Set
+            submitSelectedImages([imageId], 'add'); // Submit single added image
+
+	    $('#selectedImages').find('p').remove();
+
+            updateSearchDisplay(); // Re-render search results to ensure consistency
+        }
     }
 
     // Function to render images in a given container
@@ -169,9 +221,7 @@ $(document).ready(function() {
 
     // New function to fetch initially selected images
     function fetchInitialSelectedImages() {
-//        const apiUrl = `${API_DOMAIN}/query?tag=${CURRENT_TAG}`;
-	//TODO! just a demo!
-        const apiUrl = `${API_DOMAIN}/api-facetql.php?match=${encodeURIComponent(CURRENT_TAG)}&select=id,title,hash,realname&limit=100`;
+        const apiUrl = `curator.json.php?tag=${encodeURIComponent(CURRENT_TAG)}&limit=100`;
 
         console.log(`Fetching initial selected images: ${apiUrl}`);
 
@@ -195,7 +245,6 @@ $(document).ready(function() {
             }
         });
     }
-
 
     // Function to update the search display based on selected images
     function updateSearchDisplay() {
@@ -252,9 +301,9 @@ $(document).ready(function() {
         const idsParam = ids.join(',');
         let apiUrl = '';
         if (action === 'add') {
-            apiUrl = `${API_DOMAIN}/save?tag=${CURRENT_TAG}&ids=${idsParam}`;
+            apiUrl = `curator.json.php?add=1&tag=${CURRENT_TAG}&ids=${idsParam}`;
         } else if (action === 'remove') {
-            apiUrl = `${API_DOMAIN}/remove?tag=${CURRENT_TAG}&ids=${idsParam}`;
+            apiUrl = `curator.json.php?remove=1&tag=${CURRENT_TAG}&ids=${idsParam}`;
         } else {
             console.warn("Invalid action for submission.");
             return;
@@ -264,6 +313,7 @@ $(document).ready(function() {
 
         $.ajax({
             url: apiUrl,
+	    data: {'confirm':1},
             method: 'POST', // Typically POST for save/remove actions
             success: function(response) {
                 console.log(`Successfully ${action}d images:`, ids, response);
@@ -280,12 +330,13 @@ $(document).ready(function() {
     $('#currentTag').text(CURRENT_TAG);
 
     // Initial message in search results
-    $('#searchResults').html('<p>Enter a query and click "Search" to find images</p>');
+    $('#searchResults').html('<p>Enter a query and click "Search" to find images. Drag to right to select image (or can <b>double</b> click it!)</p>');
 
     // Create a container for all the instructional text
     const $instructionContainer = $('<div class="search-instructions"></div>');
 
-    if ($('#queryInput').val()) {
+    const $queryInput = $('#queryInput');
+    if ($queryInput.val()) {
         $instructionContainer.append('<p>An example query may be provided (so you can just click "Search"), but you may well need to edit it to get good results.</p>');
     }
 
@@ -293,8 +344,28 @@ $(document).ready(function() {
     $instructionContainer.append("<p>For example, for [Coastal] images try 'beach', 'lighthouse', 'bucket and spade', or 'seabird' to uncover hidden gems.</p>");
     $instructionContainer.append('<p>Experiment with different keywords to expand the collection!</p>');
 
+    $instructionContainer.append("<p>If can't find any images, or had enough, click link below to switch to new Random tag.</p>");
+
     // Append the entire instruction block to searchResults
     $('#searchResults').append($instructionContainer);
+
+    // --- NEW: Set focus and cursor position on startup ---
+    if ($queryInput.length) { // Check if the element exists
+        $queryInput.focus(); // Set focus to the search input
+
+        // Determine the position before " userX"
+        const fullQuery = STARTER_QUERY;
+        const userKeywordIndex = fullQuery.indexOf(` user${USER_ID}`);
+        let cursorPosition = fullQuery.length; // Default to end of string
+
+        if (userKeywordIndex !== -1) {
+            cursorPosition = userKeywordIndex; // Set cursor just before the space
+            if (cursorPosition < 0) cursorPosition = 0; // Ensure it's not negative
+        }
+
+        // Set the cursor position using a native DOM method
+        $queryInput[0].setSelectionRange(cursorPosition, cursorPosition);
+    }
 
     // --- IMPORTANT: Call the new function to fetch initial selected images on startup ---
     fetchInitialSelectedImages();
