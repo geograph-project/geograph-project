@@ -328,7 +328,7 @@ body.dark-theme input[type="search"]:focus-visible {
     margin-bottom: 15px;
     display: flex;
     align-items: center;
-    gap: 8px; /* Space between checkbox and label */
+    gap: 5px; /* Space between checkbox and label */
     font-size: 0.95em; /* Slightly smaller text for toggle */
     color: var(--text-color); /* Ensure label color adapts to theme */
 }
@@ -371,7 +371,7 @@ body.dark-theme input[type="search"]:focus-visible {
 
 /* Dark theme specific styles for checkbox */
 body.dark-theme .ai-enhanced-toggle input[type="checkbox"] {
-    background-color: var(--input-bg-dark);
+    background-color: #5A5A5A; /* A slightly lighter dark grey */
     border-color: var(--border-color-dark);
 }
 

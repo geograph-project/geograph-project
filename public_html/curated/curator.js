@@ -228,9 +228,15 @@ $(document).ready(function() {
                 if (response && response.rows) {
                     renderImages('searchResults', response.rows);
                     // Update pagination controls
-                    const totalFound = parseInt(response.meta.total_found);
-                    const totalPages = Math.ceil(parseInt(response.meta.total) / pageSize); //not total_found!
-
+                    let totalFound, totalPages;
+                    if ($('#aiEnhancedCheckbox').is(':checked')) {
+                        // KNN queries don't return a total, so we use a reasonable fixed large number
+                        totalFound = 1000; // Use a very large number to indicate "many" results
+                        totalPages = Math.ceil(totalFound / pageSize);
+                    } else {
+                        totalFound = parseInt(response.meta.total_found);
+                        totalPages = Math.ceil(parseInt(response.meta.total) / pageSize); // using total delibveraly, not total_found
+                    }
                     $('#resultHeader').text(`Search Results [${totalFound.toLocaleString()} images]`);
                     $('#currentPage').text(`Page ${currentPage}/${totalPages}`);
                     $('#prevPage').prop('disabled', currentPage === 1);

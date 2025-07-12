@@ -31,12 +31,31 @@ customNoCacheHeader();
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+$groups = array('top','edu');
+if (empty($_GET['group']) || !in_array($_GET['group'], $groups))
+	$_GET['group'] = $groups[0];
 
+$gurl = urlencode($_GET['group']);
+
+if ($_GET['group'] == 'top') {
 $sql = "SELECT grouping, top AS tag, COUNT(curated_id) AS images, SUM(user_id = ?) AS yours, sort_order
 	, COUNT(distinct gridimage_id) as total_images, COUNT(distinct IF(user_id = ?,gridimage_id,null)) as your_images
         FROM category_primary
         LEFT JOIN curated_tag t ON (tag = top AND status = 1)
         GROUP BY sort_order WITH ROLLUP";
+
+} elseif ($_GET['group'] == 'edu') {
+	$sql = "SELECT 'edu' as grouping, label as tag, COUNT(curated_id) AS images, SUM(user_id = ?) AS yours, id as sort_order
+	, COUNT(distinct gridimage_id) as total_images, COUNT(distinct IF(user_id = ?,gridimage_id,null)) as your_images
+	FROM label_embedding
+        LEFT JOIN curated_tag t ON (tag = label AND status = 1)
+	WHERE label LIKE '%>%>%'
+        GROUP BY id WITH ROLLUP";
+
+} else {
+	die('todo');
+}
+
 
 $rows = $db->getAll($sql, [$USER->user_id, $USER->user_id]);
 
@@ -62,10 +81,10 @@ if (!empty($rows)) {
 		print "<td align=right>".number_format($row['images'],0);
 		print "<td align=right>".number_format($row['yours'],0);
 		if ($tag = urlencode($row['tag']))
-			print "<td><a href=\"curator.php?tag=$tag\">Select some images</a>";
+			print "<td><a href=\"curator.php?tag=$tag&amp;group=$gurl\">Select some images</a>";
 
 		//the totals only really make sense in the ROLLUP Row
-		if (empty($row['sort_order'])) {
+		if (empty($row['sort_order']) && !empty($row['total_images'])) {
 			print "<tr>";
 			print "<td>Unique Images";
 			print "<td>";
@@ -75,7 +94,7 @@ if (!empty($rows)) {
 	}
 	print "</table>";
 	if ($row['your_images']) { //its the ROLLUP row!
-		print "<a href=curator-part2.php>Can also goto step 2, as have preselected some images</a> (not checked if already verified yet)";
+		print "<a href=curator-part2.php?group=$gurl>Can also goto step 2, as have preselected some images</a> (not checked if already verified yet)";
 	}
 } else {
 	die("no images found, perhaps need to select some in step 1?");
