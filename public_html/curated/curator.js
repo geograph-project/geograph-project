@@ -54,8 +54,7 @@ $(document).ready(function() {
 
     // --- Retrieve saved state for AI Enhanced checkbox ---
     const savedAiEnhanced = localStorage.getItem(AI_ENHANCED_STORAGE_KEY);
-    if (savedAiEnhanced === 'true') {
-        useAiEnhanced = true;
+    if (savedAiEnhanced === 'true' && aiEnhancedCheckbox.is(':visible')) {
         aiEnhancedCheckbox.prop('checked', true);
     }
 
@@ -247,13 +246,34 @@ $(document).ready(function() {
         }
 
 	let pageLimit = (page-1) * pageSize;
-        let apiUrl;
-	if ($('#aiEnhancedCheckbox').is(':checked')) {
-		query = query.replace(/ user\d+/,''); //not supported on 'label' - convert to attribute/field match?
-        	apiUrl = `/api-facetql-vector.php?label=${encodeURIComponent(query)}&select=id,title,hash,realname&offset=${pageLimit}&limit=${pageSize}`;
+        let apiUrl = `${API_DOMAIN}/api-facetql.php`;
+	let data = {'select': 'id,title,hash,realname'};
+
+	if (query.trim().match(/^(?:\d{6,}|(?:,\d*|\d+,|\d*,\d*)+)$/)) {
+		let ids = query.trim().split(',').filter(part => part !== '');
+		data['where'] = 'id in ('+ids.join(',')+')';
+		data['limit'] = ids.length;
+
+	} else if (m = query.match(/\[\[(\d+)\]\]/g)) {
+		let ids = [...query.matchAll(/\[\[(\d+)\]\]/g)].map(m => m[1]);
+		data['where'] = 'id in ('+ids.join(',')+')';
+		data['limit'] = ids.length;
+
+	} else if (m = query.trim().match(/photo\/(\d+)$/)) {
+		data['where'] = 'id='+m[1];
+
+	} else if ($('#aiEnhancedCheckbox').is(':checked')) {
+		apiUrl = `${API_DOMAIN}/api-facetql-vector.php`;
+		data['label'] = query.replace(/ user\d+/,''); //not supported on 'label' - convert to attribute/field match?
+		data['offset'] = pageLimit;
+		data['limit'] = pageSize;
 	} else {
-		apiUrl = `${API_DOMAIN}/api-facetql.php?match=${encodeURIComponent(query)}&select=id,title,hash,realname&offset=${pageLimit}&limit=${pageSize}`;
+		data['match'] = query;
+		data['offset'] = pageLimit;
+		data['limit'] = pageSize;
 	}
+	apiUrl += "?"+$.param(data);
+
         console.log(`Fetching: ${apiUrl}`); // For debugging
 
         $.ajax({
