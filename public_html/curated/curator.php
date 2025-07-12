@@ -80,7 +80,7 @@ if ($USER->user_id) {
         </div>
     </div>
     <div class="footer">
-	<a href="/">Back to Geograph</a> | <a href="?tag=random">Load another Random Tag</a>
+	<a href="/">Back to Geograph</a> | <a href="?tag=random">Load another Random Tag</a> | <a href="curator-stats.php">View Stats</a>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
