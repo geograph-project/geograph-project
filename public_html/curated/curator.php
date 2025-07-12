@@ -55,7 +55,7 @@ if ($USER->user_id) {
         <div class="column left-column">
             <div class="column-header">
                 <h2 id="resultHeader">Search Results</h2>
-                <div class="ai-enhanced-toggle" title="NOTE: the AI search current ignores the user filter (so shows everybodies images)">
+                <div class="ai-enhanced-toggle" style="display:none" title="NOTE: the AI search current ignores the user filter (so shows everybodies images)">
                     <input type="checkbox" id="aiEnhancedCheckbox">
                     <label for="aiEnhancedCheckbox">AI Enhanced Search</label>
                 </div>
