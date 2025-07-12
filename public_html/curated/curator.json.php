@@ -42,7 +42,16 @@ if (!empty($_POST['confirm'])) {
 	                $db->Execute('INSERT INTO curated_tag SET `'.implode('` = ?,`',array_keys($updates)).'` = ?  ON DUPLICATE KEY UPDATE status=1', array_values($updates));
         	        $done+=$db->Affected_Rows();
 	        }
-	} elseif (!empty($_GET['remove'])) {
+	} elseif (!empty($_GET['reject'])) {
+		$updates['user_id'] = $USER->user_id;
+		$updates['status'] = -1;
+		foreach (explode(',',$_GET['ids']) as $id) {
+			$updates['gridimage_id'] = intval($id);
+
+			$db->Execute('INSERT INTO curated_tag SET `'.implode('` = ?,`',array_keys($updates)).'` = ?  ON DUPLICATE KEY UPDATE status=-1', array_values($updates));
+			$done+=$db->Affected_Rows();
+	        }
+	} elseif (!empty($_GET['remove']) || !empty($_GET['unreject'])) {
 		foreach (explode(',',$_GET['ids']) as $id) {
         	        $updates['gridimage_id'] = intval($id);
 			$db->Execute('UPDATE curated_tag SET status = 0 WHERE `'.implode('` = ? AND `',array_keys($updates)).'` = ?', array_values($updates));
@@ -50,6 +59,22 @@ if (!empty($_POST['confirm'])) {
 		}
 	}
 	$data['done'] = $done;
+
+} elseif (isset($_GET['status']) && $_GET['status'] < 1) { //allow for it being zero!
+
+	$db = GeographDatabaseConnection(false);
+
+	$where = array();
+	$where[] = "tag = ".$db->Quote($_GET['tag']??'');
+	$where[] = "status = ".intval($_GET['status']);
+
+	$where = implode(' AND ', $where);
+	$sql = "select gridimage_id as id
+	 from curated_tag t
+	 where $where order by (t.user_id = $USER->user_id) DESC, curated_id DESC limit 10000";
+
+	$data['rows'] = $db->getAll($sql);
+	$data['meta'] = array('total'=>count($data['rows']));
 
 } else {
 	$imagelist=new ImageList;
@@ -62,7 +87,7 @@ if (!empty($_POST['confirm'])) {
 	$where = implode(' AND ', $where);
 	$sql = "select gridimage_id,title,realname,gi.user_id
 	 from gridimage_search gi inner join curated_tag t using (gridimage_id)
-	 where $where order by (gi.user_id = $USER->user_id) DESC, gridimage_id DESC limit 100";
+	 where $where order by (gi.user_id = $USER->user_id) DESC, gridimage_id DESC limit 1000";
 
 	$imagelist->_getImagesBySql($sql);
 

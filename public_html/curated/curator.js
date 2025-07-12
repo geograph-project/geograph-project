@@ -1,6 +1,7 @@
 let currentPage = 1;
 let currentQuery = '';
 const selectedImageIds = new Set(); // Stores IDs of images currently in the 'Selected Images' list
+const rejectedImageIds = new Set(); // NEW: To store rejected image IDs
 
 $(document).ready(function() {
     const API_DOMAIN = 'https://api.geograph.org.uk';
@@ -144,40 +145,66 @@ $(document).ready(function() {
         });
     }
 
-    // New unified function to add an image to selected
+    // --- NEW: Function to reject an image ---
+    function rejectImage($imageItem) {
+        const imageId = String($imageItem.data('id'));
+
+        if (!rejectedImageIds.has(imageId)) {
+            // Remove from search results (original item)
+            $imageItem.remove();
+            rejectedImageIds.add(imageId); // Add string ID to Set
+            submitRejectedImages([imageId], 'add'); // Submit single rejected image
+
+            // Update search display to potentially adjust 'no results' message
+            // or re-fetch to fill the gap (though remove() handles visual removal)
+            updateSearchDisplay();
+        }
+    }
+
+    // New unified function to add an image to selected (remains mostly same, just calling it out)
     function addImageToSelected($imageItem) {
         const imageId = String($imageItem.data('id'));
 
         if (!selectedImageIds.has(imageId)) {
-            // Remove from search results (original item)
-            $imageItem.remove();
+            // Important: if it was rejected, remove it from rejected before adding to selected
+            if (rejectedImageIds.has(imageId)) {
+                rejectedImageIds.delete(imageId);
+                //submitRejectedImages([imageId], 'remove'); // Tell server it's no longer rejected
+			//fornow, no point unrejecting at server, as adding will overwrite status anyway
+            }
 
-            // Clone and add to selected images
+            $imageItem.remove(); // Remove from search results (original item)
             const $clonedItem = $imageItem.clone();
-            $clonedItem.find('.delete-btn').remove(); // Remove old delete button if any
+            $clonedItem.find('.delete-btn').remove(); // Remove old delete/reject buttons if any
+            $clonedItem.find('.reject-btn').remove(); // Ensure reject button is gone
             $clonedItem.append('<button class="delete-btn">X</button>'); // Add new delete button
             $clonedItem.css('opacity', '1'); // Restore opacity
-            $('#selectedImages').prepend($clonedItem); // Add to start of selected images
-            selectedImageIds.add(imageId); // Add string ID to Set
-            submitSelectedImages([imageId], 'add'); // Submit single added image
+            $('#selectedImages').prepend($clonedItem);
+            selectedImageIds.add(imageId);
+            submitSelectedImages([imageId], 'add');
 
-	    $('#selectedImages').find('p').remove();
-
-            updateSearchDisplay(); // Re-render search results to ensure consistency
+            updateSearchDisplay();
         }
     }
 
-    // Function to render images in a given container
+    // MODIFIED: Function to render images in a given container
     function renderImages(containerId, images) {
         const $container = $(`#${containerId}`);
-	if (containerId === 'searchResults' || images.length > 0)
-	        $container.empty(); // Clear existing images
+        if (containerId === 'searchResults' || images.length > 0) {
+            $container.empty();
+        }
+
+        let renderedCount = 0; // Keep track of how many images are actually rendered
 
         images.forEach(image => {
-            // Only render if the image is not already in the selected list when rendering search results
-            if (containerId === 'searchResults' && selectedImageIds.has(String(image.id))) {
-                return;
+            // NEW: Skip rendering if already selected OR rejected
+            if (selectedImageIds.has(String(image.id))) {
+                return; // Skip rendering
             }
+            if (rejectedImageIds.has(String(image.id))) {
+                return; // Skip rendering
+            }
+
 		if (!image.thumbnail)
 			image.thumbnail = getGeographUrl(image.id, image.hash, 'small');
 
@@ -187,20 +214,28 @@ $(document).ready(function() {
                     <span>${image.title}</span>
                 </div>
             `;
-            // If rendering selected images, include the delete button from the start
+
             if (containerId === 'selectedImages') {
                 const $item = $(imageHtml);
                 $item.append('<button class="delete-btn">X</button>');
                 $container.append($item);
-            } else {
-                $container.append(imageHtml);
+                renderedCount++;
+            } else if (containerId === 'searchResults') {
+                const $item = $(imageHtml);
+                $item.prepend('<button class="reject-btn" title="permanently hide this image for this tag">X</button>'); // NEW: Add reject button
+                $container.append($item);
+                renderedCount++;
             }
         });
-        if (images.length && containerId === 'searchResults') {
-            if (!$container.find('.image-item').length) { //where results, but none rendered
-	        $container.append("<p>All results on this page are already selected.</p>");
-	    }
-            initializeDragAndDrop(); // Re-initialize draggable for new search results
+
+        if (containerId === 'searchResults') {
+            if (renderedCount === 0 && images.length > 0) { // If original response had items but none rendered
+                $container.append("<p>All results on this page are already selected or rejected.</p>");
+                //todo, if next page, could auto advance?
+            } else if (renderedCount === 0 && images.length === 0) { // If original response had no items
+                 $container.append('<p>No results found for this query.</p>');
+            }
+            initializeDragAndDrop(); // Re-initialize interactions for new elements
         }
     }
 
@@ -281,6 +316,32 @@ $(document).ready(function() {
         });
     }
 
+    // --- NEW: Function to fetch initially rejected images ---
+    function fetchInitialRejectedImages() {
+        const apiUrl = `curator.json.php?tag=${encodeURIComponent(CURRENT_TAG)}&limit=100&status=-1`;
+        console.log(`Fetching initial rejected images: ${apiUrl}`);
+
+        $.ajax({
+            url: apiUrl,
+            method: 'GET',
+            success: function(response) {
+                if (response && response.rows) {
+                    response.rows.forEach(image => {
+                        rejectedImageIds.add(String(image.id));
+                    });
+                    console.log("Initial rejected images loaded:", rejectedImageIds);
+                    // No need to render them, just keep track
+                } else {
+                    console.log("No images currently rejected for this tag.");
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("Error fetching initial rejected images:", textStatus, errorThrown);
+                // Handle error: perhaps log or show a temporary message
+            }
+        });
+    }
+
     // Function to update the search display based on selected images
     function updateSearchDisplay() {
         // Re-fetch the current query to ensure selected images are removed from results
@@ -323,11 +384,48 @@ $(document).ready(function() {
 
         selectedImageIds.delete(imageId);
         $itemToRemove.remove();
-        submitSelectedImages([imageId], 'remove'); // Submit single removed image
+        submitSelectedImages([imageId], 'remove');
 
-        // Re-render search results to potentially show the image again
         updateSearchDisplay();
     });
+
+    // --- NEW: Event listener for rejecting images from search results ---
+    $('#searchResults').on('click', '.reject-btn', function() {
+        const $itemToReject = $(this).closest('.image-item');
+        rejectImage($itemToReject);
+    });
+
+    // --- NEW: Function to submit rejected images to the API ---
+    function submitRejectedImages(ids, action) {
+        if (ids.length === 0) return;
+
+        const idsParam = ids.join(',');
+        let apiUrl = '';
+        if (action === 'add') {
+            apiUrl = `curator.json.php?reject=1&tag=${CURRENT_TAG}&ids=${idsParam}`;
+        } else if (action === 'remove') {
+            // This might be used if an image is un-rejected (e.g., added to selected)
+            apiUrl = `curator.json.php?unreject=1&tag=${CURRENT_TAG}&ids=${idsParam}`;
+        } else {
+            console.warn("Invalid action for rejected submission.");
+            return;
+        }
+
+        console.log(`Submitting ${action} rejected request: ${apiUrl}`);
+
+        $.ajax({
+            url: apiUrl,
+	    data: {'confirm':1},
+            method: 'POST',
+            success: function(response) {
+                console.log(`Successfully ${action}d rejected images:`, ids, response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error(`Error ${action}ing rejected images:`, textStatus, errorThrown);
+                // Potentially revert UI state or notify user
+            }
+        });
+    }
 
     // Function to submit selected/removed image IDs to the API
     function submitSelectedImages(ids, action) {
@@ -401,6 +499,9 @@ $(document).ready(function() {
         // Set the cursor position using a native DOM method
         $queryInput[0].setSelectionRange(cursorPosition, cursorPosition);
     }
+
+    // Fetch rejected images FIRST, as they might affect selected or search results
+    fetchInitialRejectedImages();
 
     // --- IMPORTANT: Call the new function to fetch initial selected images on startup ---
     fetchInitialSelectedImages();

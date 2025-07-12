@@ -219,6 +219,35 @@ body.dark-theme .image-item {
     opacity: 1; /* Show on hover */
 }
 
+/* Base styles for the reject button */
+.image-item .reject-btn {
+    position: absolute;
+    top: 5px;   /* Distance from top edge of image-item */
+    left: 85px;  /* Distance from left edge of image-item */
+    background-color: #dc3545; /* A standard red for 'reject' */
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-size: 0.8em;
+    cursor: pointer;
+    padding: 3px 6px;
+    opacity: 0.5; /* Slightly transparent when idle */
+    transition: opacity 0.2s, background-color 0.2s;
+    z-index: 2; /* Ensure it's above the image */
+    line-height: 1; /* For better vertical centering of X */
+    display: flex; /* Use flex to perfectly center the 'X' */
+    align-items: center;
+    justify-content: center;
+    width: 20px; /* Fixed width/height for a small button */
+    height: 20px;
+}
+
+.image-item .reject-btn:hover {
+    opacity: 1; /* Fully opaque on hover */
+    background-color: #c82333; /* Darker red on hover */
+}
+
+
 .pagination {
     display: flex;
     justify-content: center;
@@ -321,6 +350,15 @@ body.dark-theme input[type="search"]:focus-visible {
     box-shadow: 0 0 0 2px var(--button-hover-bg); /* Same custom style as above */
 }
 
+
+
+body.dark-theme .image-item .reject-btn {
+    background-color: #a00; /* A slightly softer red for dark mode */
+}
+
+body.dark-theme .image-item .reject-btn:hover {
+    background-color: #d00; /* Brighter red on hover in dark mode */
+}
 
 /* ----------------------- */
 
