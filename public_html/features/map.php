@@ -79,10 +79,12 @@ if (!empty($type_id)) {
 }
 
 
+require_once "geograph/locationselector.class.php";
+$location = new LocationSelector();
+$smarty->assign('location', $location);
+
 if (!empty($_GET['loc'])) {
 
-        require_once "geograph/locationselector.class.php";
-        $location = new LocationSelector();
         list($lat, $lng) = $location->extractLatLng($_GET['loc']);
 
         if (!empty($lat) && isset($lng)) {
@@ -116,7 +118,6 @@ if (!empty($_GET['deb']))
 		else
 			$where[] = "0";
 	}
-    $smarty->assign('location', $location);
 
 } elseif (!empty($_GET['all'])) {
 	$desc = "all rows from ".htmlentities($type_row['title'])." dataset";
@@ -209,7 +210,7 @@ foreach ($db->getAll("SELECT feature_type_id,title FROM feature_type WHERE statu
 	printf('<option value="%d"%s>%s</option>',$r['feature_type_id'],(isset($_GET['id']) && $_GET['id'] == $r['feature_type_id'])?' selected':'',htmlentities($r['title']));
 ?>
 </select><br>
-Location: <input type=search name=loc value="<? echo htmlentities(@$_GET['loc']); ?>"> (eg enter a Grid-Reference)<br>
+Location: <input type=search name=loc id=loc value="<? echo htmlentities(@$_GET['loc']); ?>"> (eg enter a Grid-Reference)<br>
 
 <? /*
 Collection(s): <select name="content_id[]" multiple id="content_ids">
@@ -303,7 +304,10 @@ print "<ul>";
 <script type="text/javascript" src="<? echo smarty_modifier_revision("/js/mappingLeaflet.js"); ?>"></script>
 <script type="text/javascript" src="<? echo smarty_modifier_revision("/mapper/geotools2.js"); ?>"></script>
 
-<? if (!empty($param['thumbs'])) { ?>
+<?
+print $location->getScripts();
+
+ if (!empty($param['thumbs'])) { ?>
         <link type="text/css" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" rel="stylesheet"/>
 	<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
 

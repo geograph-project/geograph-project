@@ -41,10 +41,11 @@ $smarty->assign('page_title', "Geography Related Curated Images");
 
 ########################################################
 
+require_once "geograph/locationselector.class.php";
+$location = new LocationSelector();
+
 if (!empty($_GET['loc'])) {
 
-	require_once "geograph/locationselector.class.php";
-	$location = new LocationSelector();
 	list($lat, $lng) = $location->extractLatLng($_GET['loc']);
 
 	if (!empty($lat) && isset($lng)) {
@@ -80,9 +81,10 @@ if (!empty($_GET['loc'])) {
 		if (!empty($data))
 			$cacheid .= sprintf('%.5f:%.5f',$lat,$lng);
 		$smarty->assign('loc',$_GET['loc']);
-		$smarty->assign('location', $location);
 	}
 }
+
+$smarty->assign('location', $location);
 
 ########################################################
 

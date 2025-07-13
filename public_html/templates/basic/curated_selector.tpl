@@ -15,9 +15,8 @@ Here are some images we have pre-selected, to be high quality and clearly show t
 
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
-{$location->getForm($loc, $regions)}
+{$location->getForm($loc, true, $regions)}
 {$location->getScripts()}
-
 <hr>
 
 <div class=list>

@@ -63,9 +63,13 @@ class LocationSelector
         return array($lat, $lng);
     }
 
-    public function getForm($loc = '', $regions = 'null')
+    public function getForm($loc = '', $auto = false, $regions = 'null')
     {
         $input = $this->getInput($loc, $regions);
+
+	if ($auto)
+		$input .= "<script>var jumpLocation = form => form.submit();</script>";
+
         return <<<HTML
 <form method=get name=locForm>
     Optional Location Focus: {$input}

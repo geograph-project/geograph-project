@@ -169,7 +169,7 @@ p.alert-danger {
 
 	{if $loc || $region || $totalimagecount>50}
 		<hr>
-		{$location->getForm($loc, $regions)}
+		{$location->getForm($loc, true)}
 		{$location->getScripts()}
 		<hr>
 	{/if}

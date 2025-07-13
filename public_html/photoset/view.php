@@ -90,6 +90,9 @@ if (!empty($_GET['id'])) {
 } elseif (!empty($_GET['label'])) {
 	$cacheid = md5($_GET['label']).filemtime(__FILE__);
 
+	require_once "geograph/locationselector.class.php";
+	$location = new LocationSelector();
+
 	$set = $db->getRow("SELECT * FROM curated_headword WHERE label = ".$db->Quote($_GET['label']));
 
 	if (empty($set))
@@ -103,8 +106,6 @@ if (!empty($_GET['id'])) {
 		$count = empty($_GET['count'])?$limit:intval($_GET['count']);
 
 		if (!empty($_GET['loc'])) {
-			require_once "geograph/locationselector.class.php";
-			$location = new LocationSelector();
 			list($lat, $lng) = $location->extractLatLng($_GET['loc']);
 
 			if (!empty($lat)) {
@@ -167,7 +168,6 @@ if (!empty($_GET['id'])) {
 		$smarty->assign("label", $_GET['label']);
 
 	} elseif (!empty($set)) {
-        $smarty->assign('location', $location);
                 $ids = $db->getCol("select gridimage_id from curated1 inner join gridimage_search gi using (gridimage_id) where label = ".$db->Quote($_GET['label'])." and active = 1 limit $limit"); //todo, add a sort order!
 		$set['label'] =  to_title_case($set['label']);
 
@@ -181,6 +181,7 @@ if (!empty($_GET['id'])) {
 
 	$set['map'] = true;
 	$smarty->assign("map", 1);
+        $smarty->assign('location', $location);
 }
 
 ######################################
