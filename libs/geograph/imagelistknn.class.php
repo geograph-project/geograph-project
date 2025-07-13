@@ -37,13 +37,14 @@ require_once('imagelist.class.php');
 class ImageListKNN extends ImageList
 {
     public $vector = 'image_vector';
-    public $knncols = 'id, user_id, realname, title, 1 as reference_index, knn_dist() as grid_reference';
+        //always needs (id,user_id, title) (ideally realname,grid_reference too)
+    public $knncols = 'id, user_id, realname, title, 1 as reference_index, grid_reference'; //focing ri=1 means always .org.uk links
 
     public function getImagesSimilarToID($id, $limit = 100)
     {
         $id = intval($id);
-        //always needs (id,user_id, title) (ideally realname,grid_reference too)
-        $sql = "select {$this->knncols} from gridimage_embedding where knn ( {$this->vector}, $limit, $id ) limit $limit";
+
+        $sql = "select {$this->knncols}, knn_dist() as k from gridimage_embedding where knn ( {$this->vector}, $limit, $id ) limit $limit";
 
         return $this->getImagesBySphinxQL($sql);
     }
@@ -55,8 +56,7 @@ class ImageListKNN extends ImageList
             return 0;
         }
 
-        //always needs (id,user_id, title) (ideally realname,grid_reference too)
-        $sql = "select {$this->knncols} from gridimage_embedding where knn({$this->vector}, $limit, $value) limit $limit";
+        $sql = "select {$this->knncols}, knn_dist() as k from gridimage_embedding where knn({$this->vector}, $limit, $value) limit $limit";
 
         return $this->getImagesBySphinxQL($sql);
     }
@@ -74,6 +74,7 @@ class ImageListKNN extends ImageList
                 return 0;
             }
             $where[] = "knn({$this->vector}, $limit, $value)";
+	    $cols .= ", knn_dist() as k";
         }
 
         $sql = "select $cols from gridimage_embedding where ".implode(' AND ', $where)." limit $limit";
@@ -143,9 +144,10 @@ class ImageListKNN extends ImageList
             return 0;
         }
 
+	$this->vector = 'plus_vector';
         $value = $this->_appendLocationToVector($binary, $lat, $lon);
 
-        $sql = "select {$this->knncols} from gridimage_embedding where knn({$this->vector}, $limit, $value) limit $limit";
+        $sql = "select {$this->knncols}, knn_dist() as k from gridimage_embedding where knn({$this->vector}, $limit, $value) limit $limit";
 
         return $this->getImagesBySphinxQL($sql);
     }
@@ -156,13 +158,15 @@ class ImageListKNN extends ImageList
         $where = [];
         $params = [];
 
-        if (!empty($criteria['lat']) && !empty($criteria['lon']) && !empty($criteria['distance'])) {
+        if (!empty($criteria['lat'])) {
             list($dist_col, $dist_where) = $this->_getGeoDistClause($criteria['lat'], $criteria['lon'], $criteria['distance']);
-            $cols .= ", $dist_col";
-            $where[] = $dist_where;
+            $cols .= ", $dist_col"; //adds the distance column
+	    if (!empty($criteria['distance']))
+            	$where[] = $dist_where;
         }
 
         if (!empty($criteria['label'])) {
+	    $cols = ", knn_dist() as k";
             $value = $this->_getLabelVectorValue($criteria['label']);
             if (!is_null($value)) {
                 $where[] = "knn({$this->vector}, $limit, $value)";
@@ -170,6 +174,7 @@ class ImageListKNN extends ImageList
         }
 
         if (!empty($criteria['keywords'])) {
+	    $cols .= ", WEIGHT() AS w";
             $where[] = "MATCH(?)";
             $params[] = $criteria['keywords'];
         }
@@ -183,4 +188,4 @@ class ImageListKNN extends ImageList
         return $this->getImagesBySphinxQL($sql, true, ...$params);
     }
 }
-?>
+

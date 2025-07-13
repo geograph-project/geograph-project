@@ -93,21 +93,19 @@ if (empty($_GET['inner'])) {
 	foreach($imagelist->images as $image) {
 		printf('<option value=%d%s>%s</value>', $image->gridimage_id, (@$_GET['id'] == $image->gridimage_id)?' selected':'', htmlentities($image->title)); //its actutty utf8 in manticore!
 	}
-	print "</select> (random selection of images from current demo dataset)<br>";
+	print "</select> (random selection of images from current demo dataset)<hr>";
 
 //	$list = $db->getAssoc("SELECT label,round((1-nearest_image)*100) as percent FROM label_embedding WHERE embeddings IS NOT NULL ORDER BY rand(42) LIMIT 1000");
 	//ksort($list);
 	$list = $db->getAssoc("select label,round((1-nearest_image)*100,1) as percent from label_embedding where nearest_image is not null group by floor(nearest_image*1000) order by label");
-	print "Query: <select name=label style=max-width:400px>";
+	print "Label: <select name=label style=max-width:400px>";
 	print "<option></option>";
 	foreach($list as $label => $percent) {
 		printf('<option value="%s"%s>%s (%d%%)</value>', $l=htmlentities($label), (@$_GET['label'] == $label)?' selected':'', $l, $percent);
 	}
-	print "</select> (selection of terms to try)<br>";
+	print "</select> (selection of terms to try)<hr>";
 
-	print "<hr>Or search by location: <input type=text name=lat placeholder=Latitude>, <input type=text name=lon placeholder=Longitude>, <input type=text name=dist placeholder=\"Distance (m)\"> <input type=submit value=Search>";
-	print "<br>Or search by location (vector append method): <input type=text name=lat placeholder=Latitude>, <input type=text name=lon placeholder=Longitude>, <input type=text name=labelv placeholder=\"Label\"> <input type=submit value=Search>";
-	print "<hr>Combined search: <input type=text name=lat placeholder=Latitude>, <input type=text name=lon placeholder=Longitude>, <input type=text name=distance placeholder=\"Distance (m)\">, <input type=text name=labelc placeholder=Label>, <input type=text name=keywords placeholder=Keywords> <input type=submit value=Search>";
+	print "And/Or search by location: <input type=text name=lat placeholder=Latitude size=8>, <input type=text name=lon placeholder=Longitude size=8>, <input type=text name=dist placeholder=\"Distance (m)\" size=4> <input type=submit value=Search>";
 
 	print "</form>";
 
@@ -116,11 +114,8 @@ if (empty($_GET['inner'])) {
 	print "<div id=\"results\">";
 }
 
-
-$host = $rt->getOne("SELECT hostname FROM test");
-print "Host = $host<hr>";
-
 ####################################################
+// simply id search
 
 	if (!empty($_GET['id'])) {
 		$id = intval($_GET['id']);
@@ -139,6 +134,56 @@ print "Host = $host<hr>";
 		$imagelist->outputThumbs($thumbw,$thumbh);
 
 ####################################################
+//push the boat out!
+
+	} elseif (!empty($_GET['keywords'])) {
+		//with keywords have to use the combined
+		$criteria = [
+			'lat' => $_GET['lat']??0,
+			'lon' => $_GET['lon']??0,
+			'distance' => $_GET['distance']??1000,
+			'label' => $_GET['label'] ??'',
+			'keywords' => $_GET['q'],
+		];
+		print "These images match the combined criteria.<br>";
+		if ($imagelist->getImagesByCriteria($criteria))
+			$imagelist->outputThumbs($thumbw, $thumbh);
+		else
+			print "no results found";
+
+####################################################
+//gerenal centered serach
+
+	} elseif (!empty($_GET['lat']) && !empty($_GET['lon']) && !empty($_GET['dist'])) {
+		$lat = $_GET['lat'];
+		$lon = $_GET['lon'];
+		$dist = $_GET['dist'];
+		$label = !empty($_GET['label']) ? $_GET['label'] : null;
+
+		print "These images are visually similar to the term <b>".htmlentities($label)."</b> and within ".htmlentities($dist)." meters of ".htmlentities($lat).", ".htmlentities($lon).".<br>";
+
+		if ($imagelist->getImagesByLocation($lat, $lon, $dist, $label))
+			$imagelist->outputThumbs($thumbw, $thumbh);
+		else
+			print "no results found";
+
+####################################################
+//new vector search
+
+	} elseif (!empty($_GET['lat']) && !empty($_GET['lon'])) {
+		$lat = $_GET['lat'];
+		$lon = $_GET['lon'];
+		$label = $_GET['label'];
+
+		print "These images are visually similar to the term <b>".htmlentities($label)."</b> and location ".htmlentities($lat).", ".htmlentities($lon).". (using vector append method)<br>";
+
+		if ($imagelist->getImagesByLocationVector($lat, $lon, $label))
+			$imagelist->outputThumbs($thumbw, $thumbh);
+		else
+			print "no results found";
+
+####################################################
+//and even a plan ol label search! (no location)
 
 	} elseif (!empty($_GET['label'])) {
 		$label = $_GET['label'];
@@ -154,43 +199,6 @@ print "Host = $host<hr>";
 
 ####################################################
 
-	} elseif (!empty($_GET['lat']) && !empty($_GET['lon']) && !empty($_GET['dist'])) {
-		$lat = $_GET['lat'];
-		$lon = $_GET['lon'];
-		$dist = $_GET['dist'];
-		$label = !empty($_GET['label']) ? $_GET['label'] : null;
-
-		print "These images are visually similar to the term <b>".htmlentities($label)."</b> and within ".htmlentities($dist)." meters of ".htmlentities($lat).", ".htmlentities($lon).".<br>";
-
-		if ($imagelist->getImagesByLocation($lat, $lon, $dist, $label))
-			$imagelist->outputThumbs($thumbw, $thumbh);
-		else
-			print "no results found";
-	} elseif (!empty($_GET['lat']) && !empty($_GET['lon']) && !empty($_GET['labelv'])) {
-		$lat = $_GET['lat'];
-		$lon = $_GET['lon'];
-		$label = $_GET['labelv'];
-		$imagelist->vector = 'plus_vector';
-
-		print "These images are visually similar to the term <b>".htmlentities($label)."</b> and location ".htmlentities($lat).", ".htmlentities($lon).". (using vector append method)<br>";
-
-		if ($imagelist->getImagesByLocationVector($lat, $lon, $label))
-			$imagelist->outputThumbs($thumbw, $thumbh);
-		else
-			print "no results found";
-	} elseif (!empty($_GET['lat']) || !empty($_GET['labelc']) || !empty($_GET['keywords'])) {
-		$criteria = [
-			'lat' => $_GET['lat'],
-			'lon' => $_GET['lon'],
-			'distance' => $_GET['distance'],
-			'label' => $_GET['labelc'],
-			'keywords' => $_GET['keywords'],
-		];
-		print "These images match the combined criteria.<br>";
-		if ($imagelist->getImagesByCriteria($criteria))
-			$imagelist->outputThumbs($thumbw, $thumbh);
-		else
-			print "no results found";
 	}
 
 if (empty($_GET['inner'])) {
