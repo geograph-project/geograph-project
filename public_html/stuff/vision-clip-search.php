@@ -105,6 +105,9 @@ if (empty($_GET['inner'])) {
 	}
 	print "</select> (selection of terms to try)<br>";
 
+	print "<hr>Or search by location: <input type=text name=lat placeholder=Latitude>, <input type=text name=lon placeholder=Longitude>, <input type=text name=dist placeholder=\"Distance (m)\"> <input type=submit value=Search>";
+	print "<br>Or search by location (vector append method): <input type=text name=lat placeholder=Latitude>, <input type=text name=lon placeholder=Longitude>, <input type=text name=labelv placeholder=\"Label\"> <input type=submit value=Search>";
+
 	print "</form>";
 
 	print "<hr>";
@@ -150,6 +153,30 @@ print "Host = $host<hr>";
 
 ####################################################
 
+	} elseif (!empty($_GET['lat']) && !empty($_GET['lon']) && !empty($_GET['dist'])) {
+		$lat = $_GET['lat'];
+		$lon = $_GET['lon'];
+		$dist = $_GET['dist'];
+		$label = !empty($_GET['label']) ? $_GET['label'] : null;
+
+		print "These images are visually similar to the term <b>".htmlentities($label)."</b> and within ".htmlentities($dist)." meters of ".htmlentities($lat).", ".htmlentities($lon).".<br>";
+
+		if ($imagelist->getImagesByLocation($lat, $lon, $dist, $label))
+			$imagelist->outputThumbs($thumbw, $thumbh);
+		else
+			print "no results found";
+	} elseif (!empty($_GET['lat']) && !empty($_GET['lon']) && !empty($_GET['labelv'])) {
+		$lat = $_GET['lat'];
+		$lon = $_GET['lon'];
+		$label = $_GET['labelv'];
+		$imagelist->vector = 'plus_vector';
+
+		print "These images are visually similar to the term <b>".htmlentities($label)."</b> and location ".htmlentities($lat).", ".htmlentities($lon).". (using vector append method)<br>";
+
+		if ($imagelist->getImagesByLocationVector($lat, $lon, $label))
+			$imagelist->outputThumbs($thumbw, $thumbh);
+		else
+			print "no results found";
 	}
 
 if (empty($_GET['inner'])) {
