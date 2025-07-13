@@ -50,16 +50,10 @@ class ImageListKNN extends ImageList
 
     public function getImagesSimilarToLabel($label, $limit = 100)
     {
-        $db = $this->_getDB();
-        $quoted = $db->Quote($label);
-        $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
-
-        if (empty($binary)) {
+        $value = $this->_getLabelVectorValue($label);
+        if (is_null($value)) {
             return 0;
         }
-
-        $list = unpack('g*', $binary);
-        $value = "(".implode(', ', $list).")";
 
         //always needs (id,user_id, title) (ideally realname,grid_reference too)
         $sql = "select {$this->knncols} from gridimage_embedding where knn({$this->vector}, $limit, $value) limit $limit";
@@ -69,27 +63,20 @@ class ImageListKNN extends ImageList
 
     public function getImagesByLocation($lat, $lon, $distance, $label = null, $limit = 100)
     {
-        $lat = deg2rad(floatval($lat));
-        $lon = deg2rad(floatval($lon));
-        $distance = intval($distance);
-
-        $where = "GEODIST(wgs84_lat, wgs84_long, $lat, $lon) < $distance";
+        $cols = $this->knncols;
+        list($dist_col, $dist_where) = $this->_getGeoDistClause($lat, $lon, $distance);
+        $cols .= ", $dist_col";
+        $where = [$dist_where];
 
         if (!is_null($label)) {
-            $db = $this->_getDB();
-            $quoted = $db->Quote($label);
-            $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
-
-            if (empty($binary)) {
+            $value = $this->_getLabelVectorValue($label);
+            if (is_null($value)) {
                 return 0;
             }
-
-            $list = unpack('g*', $binary);
-            $value = "(".implode(', ', $list).")";
-            $where .= " AND knn({$this->vector}, $limit, $value)";
+            $where[] = "knn({$this->vector}, $limit, $value)";
         }
 
-        $sql = "select {$this->knncols} from gridimage_embedding where $where limit $limit";
+        $sql = "select $cols from gridimage_embedding where ".implode(' AND ', $where)." limit $limit";
 
         return $this->getImagesBySphinxQL($sql);
     }
@@ -105,16 +92,33 @@ class ImageListKNN extends ImageList
         return ($value - $in_min) * ($out_max - $out_min) / ($in_max - $in_min) + $out_min;
     }
 
-    public function getImagesByLocationVector($lat, $lon, $label, $limit = 100)
+    private function _getLabelVectorValue($label)
     {
         $db = $this->_getDB();
         $quoted = $db->Quote($label);
         $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
 
         if (empty($binary)) {
-            return 0;
+            return null;
         }
 
+        $list = unpack('g*', $binary);
+        return "(".implode(', ', $list).")";
+    }
+
+    private function _getGeoDistClause($lat, $lon, $distance)
+    {
+        $lat_rad = deg2rad(floatval($lat));
+        $lon_rad = deg2rad(floatval($lon));
+        $dist = intval($distance);
+        return [
+            "GEODIST(wgs84_lat, wgs84_long, $lat_rad, $lon_rad) as distance",
+            "distance < $dist"
+        ];
+    }
+
+    private function _appendLocationToVector($binary, $lat, $lon)
+    {
         $range = $this->_getRange();
 
         $lat = deg2rad(floatval($lat));
@@ -126,11 +130,57 @@ class ImageListKNN extends ImageList
         );
 
         $list = unpack('g*', $binary);
-        $value = "(".implode(', ', $list).")";
+        return "(".implode(', ', $list).")";
+    }
+
+    public function getImagesByLocationVector($lat, $lon, $label, $limit = 100)
+    {
+        $db = $this->_getDB();
+        $quoted = $db->Quote($label);
+        $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
+
+        if (empty($binary)) {
+            return 0;
+        }
+
+        $value = $this->_appendLocationToVector($binary, $lat, $lon);
 
         $sql = "select {$this->knncols} from gridimage_embedding where knn({$this->vector}, $limit, $value) limit $limit";
 
         return $this->getImagesBySphinxQL($sql);
+    }
+
+    public function getImagesByCriteria(array $criteria, $limit = 100)
+    {
+        $cols = $this->knncols;
+        $where = [];
+        $params = [];
+
+        if (!empty($criteria['lat']) && !empty($criteria['lon']) && !empty($criteria['distance'])) {
+            list($dist_col, $dist_where) = $this->_getGeoDistClause($criteria['lat'], $criteria['lon'], $criteria['distance']);
+            $cols .= ", $dist_col";
+            $where[] = $dist_where;
+        }
+
+        if (!empty($criteria['label'])) {
+            $value = $this->_getLabelVectorValue($criteria['label']);
+            if (!is_null($value)) {
+                $where[] = "knn({$this->vector}, $limit, $value)";
+            }
+        }
+
+        if (!empty($criteria['keywords'])) {
+            $where[] = "MATCH(?)";
+            $params[] = $criteria['keywords'];
+        }
+
+        if (empty($where)) {
+            return 0;
+        }
+
+        $sql = "select $cols from gridimage_embedding where ".implode(' AND ', $where)." limit $limit";
+
+        return $this->getImagesBySphinxQL($sql, true, ...$params);
     }
 }
 ?>
