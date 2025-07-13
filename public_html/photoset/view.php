@@ -103,7 +103,9 @@ if (!empty($_GET['id'])) {
 		$count = empty($_GET['count'])?$limit:intval($_GET['count']);
 
 		if (!empty($_GET['loc'])) {
-			require "geograph/location-decode.inc.php";
+			require_once "geograph/locationselector.class.php";
+			$location = new LocationSelector();
+			list($lat, $lng) = $location->extractLatLng($_GET['loc']);
 
 			if (!empty($lat)) {
 				$distance = "pow(wgs84_lat - {$lat},2)+pow(wgs84_long - {$lng},2)"; //dont need to sqrt it, only ordering
@@ -165,6 +167,7 @@ if (!empty($_GET['id'])) {
 		$smarty->assign("label", $_GET['label']);
 
 	} elseif (!empty($set)) {
+        $smarty->assign('location', $location);
                 $ids = $db->getCol("select gridimage_id from curated1 inner join gridimage_search gi using (gridimage_id) where label = ".$db->Quote($_GET['label'])." and active = 1 limit $limit"); //todo, add a sort order!
 		$set['label'] =  to_title_case($set['label']);
 
@@ -425,4 +428,3 @@ function common_prefix($one,$two) {
 function getFormattedDate2($in) {
         return preg_replace('/^[A-Z]\w+, *(\d+ \w+,)/','$1',getFormattedDate($in));
 }
-
