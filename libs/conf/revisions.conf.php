@@ -29,7 +29,7 @@ $REVISIONS['/js/lazynew.js']=8536;
 $REVISIONS['/js/leaflet-bing-layer.min.js']=8861;
 $REVISIONS['/js/links.js']=50453912;
 $REVISIONS['/js/mappingG3.js']=19901317;
-$REVISIONS['/js/mappingLeaflet.js']=18291016;
+$REVISIONS['/js/mappingLeaflet.js']=59532458;
 $REVISIONS['/js/mappingLeaflet.css']=34987369;
 $REVISIONS['/js/mappingOS.js']=8455;
 $REVISIONS['/js/preview.js']=8541;
@@ -97,4 +97,7 @@ $REVISIONS['/viewer/exif.js']=48373910;
 $REVISIONS['/js/submission_utils.js']=74935531;
 $REVISIONS['/js/resizeWorker.js']=30409570;
 $REVISIONS['/templates/ireland/css/ireland.css']=11477102;
+$REVISIONS['/curated/curator.css']=71654868;
+$REVISIONS['/curated/curator.js']=29572924;
+$REVISIONS['/js/location-selector.js']=91679393;
 ?>
