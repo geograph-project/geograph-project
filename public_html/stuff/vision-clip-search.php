@@ -38,7 +38,8 @@ $smarty = new GeographPage;
 
 	$rt = GeographSphinxConnection('manticorert',true);
 
-		$imagelist=new ImageList;
+		require_once('geograph/imagelistknn.class.php');
+		$imagelist=new ImageListKNN;
 		$imagelist->_setSph($rt); //need to force it to use RT backend
 
 		$thumbw=213; $thumbh=160;
@@ -130,38 +131,22 @@ print "Host = $host<hr>";
 		$imagelist->outputThumbs($thumbw,$thumbh);
 
 
-		//always needs (id,user_id, title) (ideally realname,grid_reference too)
-		$sql = "select id, user_id, realname, title, 1 as reference_index, knn_dist() as grid_reference from gridimage_embedding where knn ( image_vector, 100, $id ) limit 100";
-
-		$imagelist->getImagesBySphinxQL($sql);
+		$imagelist->getImagesSimilarToID($id);
 		$imagelist->outputThumbs($thumbw,$thumbh);
 
 ####################################################
 
 	} elseif (!empty($_GET['label'])) {
-		$quoted= $db->Quote($_GET['label']);
-
-		$binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted"); //limit 1 added
-
-		if (empty($binary))
-			die("unknown term");
+		$label = $_GET['label'];
 
 //		print "<div style=float:left;width:450px;padding:20px>";
-		print "These images are visually similar to the term <b>".htmlentities($quoted)."</b>, but the similarity is (currently) based purely on appearance, not on the image's title or location, or other data.<br>";
+		print "These images are visually similar to the term <b>".htmlentities($label)."</b>, but the similarity is (currently) based purely on appearance, not on the image's title or location, or other data.<br>";
 //		print "</div>";
 
-		$list = unpack('g*', $binary);
-                $value = "(".implode(', ',$list).")";
-		$vector = "image_vector";
-	//	$vector = "title_vector";
-
-		//always needs (id,user_id, title) (ideally realname,grid_reference too)
-                $sql = "select id, user_id, realname, title, 1 as reference_index, knn_dist() as grid_reference from gridimage_embedding where knn($vector, 100, $value) limit 100";
-
-//print str_replace(", ",",<br>", $sql).";<hr>";
-
-                $imagelist->getImagesBySphinxQL($sql);
-                $imagelist->outputThumbs($thumbw,$thumbh);
+		if ($imagelist->getImagesSimilarToLabel($label))
+			$imagelist->outputThumbs($thumbw,$thumbh);
+		else
+			print "unknown term";
 
 ####################################################
 
