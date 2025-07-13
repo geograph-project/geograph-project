@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: xmas.php 6235 2009-12-24 12:33:07Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -81,7 +81,9 @@ if (!empty($type_id)) {
 
 if (!empty($_GET['loc'])) {
 
-        require "geograph/location-decode.inc.php";
+        require_once "geograph/locationselector.class.php";
+        $location = new LocationSelector();
+        list($lat, $lng) = $location->extractLatLng($_GET['loc']);
 
         if (!empty($lat) && isset($lng)) {
 
@@ -114,6 +116,7 @@ if (!empty($_GET['deb']))
 		else
 			$where[] = "0";
 	}
+    $smarty->assign('location', $location);
 
 } elseif (!empty($_GET['all'])) {
 	$desc = "all rows from ".htmlentities($type_row['title'])." dataset";
@@ -578,9 +581,9 @@ div#gridref {
 						current_marker = this;
 						<? if (!empty($r['feature_type_id'])) { echo "feature_type_id = {$r['feature_type_id']};\n"; } ?>
 						var near_url = "/features/near.php?q=<? echo urlencode($r['gridref']); ?>&type_id="+feature_type_id;
-                        			<? if ($r['radius'] && $r['radius']>1) { ?>
+						<? if ($r['radius'] && $r['radius']>1) { ?>
 			                                near_url = near_url + "&dist=" + Math.floor(<? echo $r['radius']; ?>*1.2);
-                        			<? } elseif ($type_row['default_radius'] && $type_row['default_radius']>1) { ?>
+						<? } elseif ($type_row['default_radius'] && $type_row['default_radius']>1) { ?>
 			                                near_url = near_url + "&dist=" + Math.floor(<? echo $type_row['default_radius']; ?>*1.2);
 			                        <? } if ($r['gridimage_id'] && $r['gridimage_id']>0) { ?>
 			                                near_url = near_url + "&img=<? echo $r['gridimage_id']; ?>";
@@ -667,7 +670,7 @@ div#gridref {
 		}
 
 	        document.getElementById('light').style.display='block';
-        	document.getElementById('fade').style.display='block';
+		document.getElementById('fade').style.display='block';
 		document.getElementById('light').style.position = 'fixed';
 		document.getElementById('iframe').src = href+"&inner=1";
 	}
@@ -751,15 +754,15 @@ div#gridref {
 	}
 	function useImage(gridimage_id) {
 	        <? if ($param['select']) { ?>
-        	        var data = {};
+		        var data = {};
 	                data['id'] = current_item_id;
 	                data['gridimage_id'] = gridimage_id;
 	                data['submit'] = 1;
-        	        $.post('edit_item.php?type_id='+feature_type_id, data, function(result) {
+		        $.post('edit_item.php?type_id='+feature_type_id, data, function(result) {
 	                        //only update table after got response!
-                        	uniqueSerial++;
-                	       // refreshData();
-        	        });
+				uniqueSerial++;
+			       // refreshData();
+		        });
 			//todo, we should also change the colour of the dot!
 			if (current_marker && gridimage_id && current_marker._icon) {
 				//tehre isnt a 'getIcon' in this version!
@@ -777,14 +780,14 @@ div#gridref {
 	 function createMarker(point,icon,title,interactive) {
                 if (!icons[icon]) {
 	                icons[icon] = L.icon({
-        	            iconUrl: static_host+"/geotrips/"+icon+".png",
+		            iconUrl: static_host+"/geotrips/"+icon+".png",
 	                    iconSize:     [9, 9], // size of the icon
-        	            iconAnchor:   [5, 5], // point of the icon which will correspond to marker's location
-                	    popupAnchor:  [0, -5] // point from which the popup should open relative to the iconAnchor
+		            iconAnchor:   [5, 5], // point of the icon which will correspond to marker's location
+			    popupAnchor:  [0, -5] // point from which the popup should open relative to the iconAnchor
 	                });
 		}
                 var marker = L.marker(point, {title: title, icon: icons[icon], draggable: false}).addTo(map);
-      		return marker;
+		return marker;
 	}
 
 	////////////////////////////////////////////////////
@@ -803,5 +806,3 @@ div#gridref {
 
 
 $smarty->display('_std_end.tpl');
-
-

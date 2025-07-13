@@ -15,7 +15,8 @@ Here are some images we have pre-selected, to be high quality and clearly show t
 
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
-{include file="_location-selector.tpl"}
+{$location->getForm($loc, $regions)}
+{$location->getScripts()}
 
 <hr>
 
