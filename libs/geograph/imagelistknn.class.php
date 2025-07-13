@@ -132,5 +132,43 @@ class ImageListKNN extends ImageList
 
         return $this->getImagesBySphinxQL($sql);
     }
+
+    public function getImagesByCriteria(array $criteria, $limit = 100)
+    {
+        $where = [];
+        $params = [];
+
+        if (!empty($criteria['lat']) && !empty($criteria['lon']) && !empty($criteria['distance'])) {
+            $lat = deg2rad(floatval($criteria['lat']));
+            $lon = deg2rad(floatval($criteria['lon']));
+            $distance = intval($criteria['distance']);
+            $where[] = "GEODIST(wgs84_lat, wgs84_long, $lat, $lon) < $distance";
+        }
+
+        if (!empty($criteria['label'])) {
+            $db = $this->_getDB();
+            $quoted = $db->Quote($criteria['label']);
+            $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
+
+            if (!empty($binary)) {
+                $list = unpack('g*', $binary);
+                $value = "(".implode(', ', $list).")";
+                $where[] = "knn({$this->vector}, $limit, $value)";
+            }
+        }
+
+        if (!empty($criteria['keywords'])) {
+            $where[] = "MATCH(?)";
+            $params[] = $criteria['keywords'];
+        }
+
+        if (empty($where)) {
+            return 0;
+        }
+
+        $sql = "select {$this->knncols} from gridimage_embedding where ".implode(' AND ', $where)." limit $limit";
+
+        return $this->getImagesBySphinxQL($sql, true, ...$params);
+    }
 }
 ?>
