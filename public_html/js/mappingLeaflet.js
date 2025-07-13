@@ -224,6 +224,22 @@ String.prototype.trim = function () {
 }
 
 function updateMapMarker(that,showmessage,dontcalcdirection) {
+	var grid=new GT_OSGB();
+	var ok = false;
+	var m;
+	if (m = that.value.match(/\b(\d+\.\d+). +(-?\d+\.\d+)/)) {
+		//  51.929331°   -3.866255°- from Google Earth
+		//note there are degree sumbols
+		//++51.929331%B0+++-3.866255%B0
+
+		grid=gmap2grid({lat:parseFloat(m[1]), lng:parseFloat(m[2])});
+		ok = (grid.eastings && grid.eastings>0);
+
+		if (event && event.inputType && event.inputType == "insertFromPaste") {
+			that.value =  grid.getGridRef(4);
+		}
+	}
+
 	if (!checkGridReference(that,showmessage)) {
 		return false;
 	}
@@ -231,24 +247,22 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		//we have no map! so we only wanted to check the GR
 		return;
 	}
-	
+
 	if (that.name == 'photographer_gridref') {
 		currentelement = marker2;
 	} else {
 		currentelement = marker1;
 	}
-	
+
 	gridref = that.value.trim().toUpperCase().replace(/ /g,'');
-	
-	var grid=new GT_OSGB();
-	var ok = false;
+
 	if (grid.parseGridRef(gridref)) {
 		ok = true;
 	} else {
 		grid=new GT_Irish();
 		ok = grid.parseGridRef(gridref)
 	}
-	
+
 	if (ok && gridref.length > 6) {
 		if (gridref.length <= 8 && grid.eastings%100 == 0 && grid.northings%100 == 0) {
 			grid.eastings = grid.eastings + 50;
