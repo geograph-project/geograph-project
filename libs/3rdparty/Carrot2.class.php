@@ -136,4 +136,19 @@ class Carrot2
     }
     return $clusters;
   }
+
+  public function isAvailable()
+  {
+    $curl = curl_init($this->baseurl);
+    curl_setopt_array($curl,
+      array(
+        CURLOPT_HEADER         => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_NOBODY         => true,
+      )
+    );
+    $response = curl_exec($curl);
+    $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    return $http_code == 200;
+  }
 }
