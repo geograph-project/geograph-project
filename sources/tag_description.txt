@@ -1,5 +1,5 @@
 name: Tag Descriptions
-table_name: user
+table_name: tag
 
 creation:
 SELECT  'tag_description' AS source,
@@ -11,4 +11,16 @@ SELECT  'tag_description' AS source,
         CONCAT('/tags/?tag_id=',tag_id) AS url
 FROM tag
 WHERE description != '' AND updated > date_sub(now(),interval 7 day)
+
+
+other_edit:
+SELECT  'tag_description' AS source,
+	`tag_id` AS foreign_id,
+        'other_edit' as event_type,
+	d.`created` as event_date,
+	d.user_id as user_id,
+        CONCAT_WS(':',NULLIF(prefix,''),tag,d.description) AS title,
+        CONCAT('/tags/?tag_id=',tag_id) AS url
+FROM tag_description_log d LEFT JOIN tag USING (tag_id)
+WHERE d.created > date_sub(now(),interval 7 day)
 

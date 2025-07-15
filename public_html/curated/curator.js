@@ -4,7 +4,6 @@ const selectedImageIds = new Set(); // Stores IDs of images currently in the 'Se
 const rejectedImageIds = new Set(); // NEW: To store rejected image IDs
 
 $(document).ready(function() {
-    const API_DOMAIN = 'https://api.geograph.org.uk';
     const pageSize = 20;
     let longClickTimer = null; // To store the timeout ID for long click differentiation
     const LONG_CLICK_DELAY = 500; // Milliseconds to hold for a long click

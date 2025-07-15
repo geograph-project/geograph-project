@@ -32,7 +32,7 @@ AND modifier = user_id
 other_edit:
 SELECT  'article' AS source,
         `article_id` AS foreign_id,
-        'user_edit' as event_type,
+        'other_edit' as event_type,
         `update_time` as event_date,
         `modifier` as user_id,
         TRIM(title) AS title,
