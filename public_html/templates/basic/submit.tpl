@@ -522,6 +522,13 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 		</div></p>
 {literal}
 <script type="text/javascript">
+function checkCanContinue() {
+	if (window.creating_snippet) {
+		alert("You have unsaved changes in the Shared Description form. Please save or cancel your changes before continuing.");
+		return false;
+	}
+	return true;
+}
 function rehighlight(that,check) {
 	if (check) {
 		var name=that.name;
@@ -580,7 +587,7 @@ function rehighlight(that,check) {
 <input type="hidden" name="upload_id" value="{$upload_id}"/>
 <input type="hidden" name="savedata" value="1"/>
 <input type="submit" name="goback" value="&lt; Back" onclick="return confirm('Please confirm you wish to go back. All details entered on this page - will be lost.');"/>
-<input type="submit" name="next" value="Next &gt;"/></p>
+<input type="submit" name="next" value="Next &gt;" onclick="return checkCanContinue()"/></p>
 
 
 {else}

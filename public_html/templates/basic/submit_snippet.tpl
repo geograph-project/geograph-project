@@ -1,7 +1,7 @@
 {assign var="page_title" value="Snippets"}
 {include file="_basic_begin.tpl"}
 {dynamic}
-<form method="post" action="{$script_name}?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}{if $admin}&amp;admin=1{/if}" style="background-color:#f0f0f0;" name="theForm">
+<form method="post" action="{$script_name}?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}{if $admin}&amp;admin=1{/if}" style="background-color:#f0f0f0;" name="theForm" onsubmit="parent.creating_snippet=false">
 <input type="hidden" name="gridimage_id" value="{$gridimage_id}" />
 <input type="hidden" name="gr" value="{$gr|escape:'html'}" />
 
@@ -12,7 +12,7 @@
 			{if $errors.title}<div class="formerror"><p class="error">{$errors.title}</p>{/if}
 
 			<label for="title"><b>Short Title</b>:</label>
-			<input type="text" id="title" name="title" size="30" maxlength="64"/>
+			<input type="text" id="title" name="title" size="30" maxlength="64" onfocus="parent.creating_snippet=true;"/>
 
 			<div class="fieldnotes" style="font-size:0.7em;color:gray">Short title for the object/location being represented</div>
 
@@ -23,7 +23,7 @@
 
 			<label for="comment"><b>Description</b>:</label>
 
-			<textarea name="comment" id="comment" rows="10" cols="60"></textarea>
+			<textarea name="comment" id="comment" rows="10" cols="60" onfocus="parent.creating_snippet=true;"></textarea>
 
 			<div class="fieldnotes" style="font-size:0.7em;color:gray">Remember this shared description may be used on multiple images - so keep it generic.<br/>
 
@@ -48,7 +48,7 @@ to a grid square or another image.<br/>For a web link just enter directly like: 
 		<input type=checkbox> Show my name when this shared description is used (but not on my own images)<br/>
 		<input type=checkbox> Show just the title, not the full description on the photo page.<br/><br/-->
 
-		<input type="submit" name="create" value="Create Shared Description"/> &nbsp; <small>[ <a href="javascript:void(hide_tree('create'))">Cancel / Close</a> ]</small>
+		<input type="submit" name="create" value="Create Shared Description"/> &nbsp; <small>[ <a href="javascript:void(hide_tree('create'));parent.creating_snippet=false;">Cancel / Close</a> ]</small>
 
 		<div class="fieldnotes" style="font-size:0.7em;color:gray">Idea: Even if you leave the description itself blank, a 'shared description' can still be used as a way to link a series of images into a 'Collection'.</div>
 

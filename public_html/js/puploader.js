@@ -162,6 +162,10 @@ if (!Array.prototype.indexOf) {
 // for puploader.tpl and submit2.tpl
 
 function checkMultiFormSubmission() {
+	if (document.getElementById('iframe3') && document.getElementById('iframe3').contentWindow && document.getElementById('iframe3').contentWindow.creating_snippet) {
+		alert("You have unsaved changes in the Shared Description form. Please save or cancel your changes before continuing.");
+		return false;
+	}
 	var theForm = document.forms['theForm'];
 	var warnings = new Array();
 	var warnings_count = 0;
