@@ -1,0 +1,4 @@
+CREATE TABLE `dictionary` (
+  `word` varchar(255) NOT NULL,
+  PRIMARY KEY (`word`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

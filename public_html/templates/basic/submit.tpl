@@ -374,6 +374,7 @@ it was taken or other interesting geographical information. <span id="styleguide
  {/if}
 
 <p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
+<div style="font-size:0.7em">Please use your browser's spell checker to check for spelling and grammar errors.</div>
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 <p style="clear:both"><label for="comment2"><b>Non-English Description/Comment</b> (optional)</label> <span class="formerror" style="display:none" id="comment2style">Possible style issue. See Guide above. <span id="comment2stylet"></span></span><br/>
 <textarea id="comment2" name="comment2" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment2',true);" onkeyup="checkstyle(this,'comment2',false);">{$comment2|escape:'html'}</textarea></p>
@@ -646,3 +647,30 @@ function showPreview(url,width,height,filename) {
 {include file="_std_end.tpl"}
 
 {/dynamic}
+<script type="text/javascript">
+function validateLinks() {
+    var comment = document.getElementById('comment').value;
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    var urls = comment.match(urlRegex);
+
+    if (urls) {
+        for (var i = 0; i < urls.length; i++) {
+            var url = urls[i];
+            var http = new XMLHttpRequest();
+            http.open('HEAD', url, false);
+            http.send();
+            if (http.status >= 400) {
+                alert('Broken link found: ' + url);
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+document.getElementsByName('theForm')[0].onsubmit = function() {
+    if (this.imageclass) this.imageclass.disabled=false;
+    return validateLinks();
+};
+</script>

@@ -523,6 +523,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 
 <p><label for="comment"><b>Description</b> {if $moderated.comment}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+<div style="font-size:0.7em">Please use your browser's spell checker to check for spelling and grammar errors.</div>
  <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span><br/></span>
 {if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
 <textarea id="comment" name="comment" rows="7" cols="80" title="Original: {$image->current_comment1|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$image->comment1|escape:'html'}</textarea>
@@ -616,3 +617,30 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 {include file="_std_end.tpl"}
 {/dynamic}
+<script type="text/javascript">
+function validateLinks() {
+    var comment = document.getElementById('comment').value;
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    var urls = comment.match(urlRegex);
+
+    if (urls) {
+        for (var i = 0; i < urls.length; i++) {
+            var url = urls[i];
+            var http = new XMLHttpRequest();
+            http.open('HEAD', url, false);
+            http.send();
+            if (http.status >= 400) {
+                alert('Broken link found: ' + url);
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+document.getElementsByName('theForm')[0].onsubmit = function() {
+    this.imageclass.disabled=false;
+    return validateLinks();
+};
+</script>
