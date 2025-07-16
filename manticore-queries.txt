@@ -1,0 +1,121 @@
+# Manticore Queries
+
+This file contains a representative sample of the Manticore queries used in the Geograph application.
+
+## Basic Keyword Search
+
+This is the most basic type of query. It searches for the given query string in the specified index.
+
+```
+SELECT * FROM <index> WHERE MATCH('<query>');
+```
+
+## Query with Filters
+
+This query uses the `getFilterString` method to add filters to the query. The `getFilterString` method constructs a string of filters based on the `$this->filters` array.
+
+```
+SELECT * FROM <index> WHERE MATCH('<query>') AND <filters>;
+```
+
+## Query with Grouping
+
+This query is used in the `groupByQuery` method. The `SetGroupBy` method is used to specify the grouping attribute and function.
+
+```
+SELECT * FROM <index> WHERE MATCH('<query>') GROUP BY <attribute>;
+```
+
+## Query with Sorting
+
+This query uses the `SetSortMode` method to specify the sorting order.
+
+```
+SELECT * FROM <index> WHERE MATCH('<query>') ORDER BY <attribute> <direction>;
+```
+
+## Query with GEODIST
+
+This query uses the `SetGeoAnchor` and `SetFilterFloatRange` methods to perform a geographical distance search.
+
+```
+SELECT * FROM <index> WHERE MATCH('<query>') AND GEODIST(<lat>, <lon>, wgs84_lat, wgs84_long) < <distance>;
+```
+
+## Query with MATCH
+
+The `MATCH` operator is used implicitly in all queries. The `prepareQuery` method constructs the `MATCH` clause based on the user's query.
+
+## UDFs
+
+The following UDFs are used in the code:
+
+*   `uniqueserial()`: This UDF is used to generate a unique serial number for each document.
+*   `withinfirstx()`: This UDF is used to check if a document is within the first X results.
+
+## Indexes
+
+*   abgaz
+*   category
+*   category2
+*   content
+*   content1
+*   content_stemmed
+*   contenttitle
+*   contextcolor
+*   curated1
+*   curated_welsh
+*   document_stemmed
+*   document_words
+*   feature_item
+*   gaz
+*   gaz_meta
+*   gaz_stemmed
+*   gaz_stopped
+*   gaz_welsh
+*   gaznew
+*   germany
+*   gi_stemmed
+*   gi_stemmed_delta
+*   gridimage_funny
+*   gridimage_master
+*   headwords
+*   islands
+*   label
+*   label_delta
+*   label_main
+*   label_master
+*   latin1_encoded
+*   latin1plus_encoded
+*   opennames
+*   os_open_names
+*   post_master
+*   post_stemmed
+*   post_stemmed_delta
+*   sample6
+*   sample8A
+*   sample8B
+*   sample8C
+*   sample8D
+*   sample8E
+*   sample_selection
+*   scenic
+*   snippet
+*   snippet_delta
+*   snippet_main
+*   snippet_master
+*   sqim
+*   suggestor
+*   tagbi
+*   tags
+*   tagsb
+*   tagsk
+*   tagsoup
+*   tagsstemmed
+*   termsstemmed
+*   tickets
+*   tickets_closed
+*   tickets_closed_archive
+*   tickets_closed_delta
+*   titles
+*   user
