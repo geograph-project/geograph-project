@@ -37,6 +37,7 @@ if (!empty($_POST['action'])) {
         $updates['user_id'] = intval($USER->user_id);
         $updates['gridimage_id'] = intval($_POST['gridimage_id']);
 
+	$plus = 0;
 	if ($_POST['action'] == 'skip') {
 		$_POST['tags'] = array('Skip');
 	} else if ($_POST['action'] == 'looksok') {
@@ -52,14 +53,14 @@ if (!empty($_POST['action'])) {
 		$plus+=$db->Affected_Rows();
 	}
 
-	print "$plus added. $minus not;";
+	print "$plus added.";
 }
 
 $sql = "SELECT gi.gridimage_id, gi.user_id, title, grid_reference, gi.tags, GROUP_CONCAT(one.tag SEPARATOR '?') as done
 FROM gridimage_search gi
 INNER JOIN curated_tag one ON (one.gridimage_id = gi.gridimage_id AND one.tag = 'Checked' AND one.status = 1)
 LEFT JOIN curated_tag two ON (two.gridimage_id = gi.gridimage_id AND two.status = 1 AND two.tag IN ('Skip','Verified','Errors'))
-WHERE two.gridimage_id IS NULL
+WHERE two.gridimage_id IS NULL AND gi.user_id != {$USER->user_id}
 GROUP BY gi.gridimage_id
 ORDER BY RAND()
 LIMIT 1";
@@ -70,11 +71,6 @@ if (!empty($row)) {
          $image->fastInit($row);
 
 	$tagarray = array();
-	//still want to preselect the existing tags
-	foreach (explode('?',$row['tags']) as $tag) {
-		if (strpos($tag,'top:') === 0) //want to be careful to only mark real top tags (not others by same name!)
-			$tagarray[str_replace('top:','',$tag)] = 1;
-	}
 	//as well as the curated ones!
 	foreach (explode('?',$row['done']) as $tag) {
 		$tagarray[str_replace('top:','',$tag)] = 1;
