@@ -38,7 +38,7 @@ function neutral($message) {
 echo "Manticore Query Test Script\n";
 echo "===========================\n\n";
 
-$queries = file_get_contents('manticore-queries.txt');
+$queries = file_get_contents('../schema/manticore-queries.txt');
 $queries = explode("\n", $queries);
 
 $sphinx = GeographSphinxConnection();
@@ -67,15 +67,14 @@ foreach ($queries as $query) {
         $query = str_replace('<distance>', '1000', $query);
 
         $start_time = microtime(true);
-        $result = $sphinx->query($query);
+        $result = $sphinx->getAll($query);
         $end_time = microtime(true);
 
         if ($result) {
-            $meta = $sphinx->query("SHOW META");
-            $meta = array_column($meta, 'Value', 'Variable_name');
+            $meta = $sphinx->getAssoc("SHOW META");
             success("Query executed successfully. Rows: " . count($result) . " Total: " . $meta['total'] . " Total found: " . $meta['total_found'] . " Time: " . round($end_time - $start_time, 4) . "s (Manticore: " . $meta['time'] . "s)");
         } else {
-            error("Query failed: " . $sphinx->GetLastError());
+            error("Query failed: " . $sphinx->ErrorMsg());
         }
     }
 }
