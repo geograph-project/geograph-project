@@ -58,10 +58,11 @@ if (!empty($_POST['action'])) {
 
 $sql = "SELECT gi.gridimage_id, gi.user_id, title, grid_reference, gi.tags, GROUP_CONCAT(one.tag SEPARATOR '?') as done
 FROM gridimage_search gi
-INNER JOIN curated_tag one ON (one.gridimage_id = gi.gridimage_id AND one.tag = 'Checked' AND one.status = 1)
+INNER JOIN curated_tag one ON (one.gridimage_id = gi.gridimage_id AND one.status = 1)
 LEFT JOIN curated_tag two ON (two.gridimage_id = gi.gridimage_id AND two.status = 1 AND two.tag IN ('Skip','Verified','Errors'))
 WHERE two.gridimage_id IS NULL AND gi.user_id != {$USER->user_id}
 GROUP BY gi.gridimage_id
+HAVING done LIKE '%Checked%'
 ORDER BY RAND()
 LIMIT 1";
 
