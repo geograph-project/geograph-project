@@ -24,10 +24,10 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-
-
-
 $smarty = new GeographPage;
+
+$USER->mustHavePerm("basic");
+
 $template = 'finder_sqim.tpl';
 
 if (!empty($_GET['q'])) {
