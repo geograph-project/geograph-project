@@ -71,5 +71,6 @@ function rehighlight(that,check) {
 </form>
 
 <p>Skip just moves to next image <i>without</i> saving anything; 'Looks Ok' will mark the image as verified, and 'Errors' will flag it for review.</p>
+<p><small>Note: When reviewing, please consider there is a lot of subjectivity in selecting the tags, so only select 'Errors' if they seem wrong (missing something major, and/or having an inappropriate tag), rather than just not exactly what you would select.</small></p>
 
 {include file="_std_end.tpl"}
