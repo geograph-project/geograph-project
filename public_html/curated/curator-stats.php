@@ -38,19 +38,41 @@ if (empty($_GET['group']) || !in_array($_GET['group'], $groups))
 $gurl = urlencode($_GET['group']);
 
 if ($_GET['group'] == 'top') {
-$sql = "SELECT grouping, top AS tag, COUNT(curated_id) AS images, SUM(user_id = ?) AS yours, sort_order
-	, COUNT(distinct gridimage_id) as total_images, COUNT(distinct IF(user_id = ?,gridimage_id,null)) as your_images
-        FROM category_primary
-        LEFT JOIN curated_tag t ON (tag = top AND status = 1)
-        GROUP BY sort_order WITH ROLLUP";
+$sql = "SELECT p.grouping, p.top AS tag, COUNT(t.curated_id) AS images, SUM(t.user_id = ?) AS yours, p.sort_order,
+       COUNT(DISTINCT t.gridimage_id) AS total_images,
+       COUNT(DISTINCT IF(t.user_id = ?, t.gridimage_id, NULL)) AS your_images,
+       SUM(c.checked_count) AS checked,
+       SUM(c.verified_count) AS verified
+FROM category_primary p
+LEFT JOIN curated_tag t ON (t.tag = p.top AND t.status = 1)
+LEFT JOIN (
+    SELECT gridimage_id,
+           SUM(IF(tag = 'Checked', 1, 0)) AS checked_count,
+           SUM(IF(tag = 'Verified', 1, 0)) AS verified_count
+    FROM curated_tag
+    WHERE status = 1
+    GROUP BY gridimage_id
+) c ON c.gridimage_id = t.gridimage_id
+GROUP BY p.sort_order WITH ROLLUP";
 
 } elseif ($_GET['group'] == 'edu') {
-	$sql = "SELECT 'edu' as grouping, label as tag, COUNT(curated_id) AS images, SUM(user_id = ?) AS yours, id as sort_order
-	, COUNT(distinct gridimage_id) as total_images, COUNT(distinct IF(user_id = ?,gridimage_id,null)) as your_images
-	FROM label_embedding
-        LEFT JOIN curated_tag t ON (tag = label AND status = 1)
-	WHERE label LIKE '%>%>%'
-        GROUP BY id WITH ROLLUP";
+	$sql = "SELECT 'edu' as grouping, l.label as tag, COUNT(t.curated_id) AS images, SUM(t.user_id = ?) AS yours, l.id as sort_order,
+	       COUNT(DISTINCT t.gridimage_id) as total_images,
+	       COUNT(DISTINCT IF(t.user_id = ?, t.gridimage_id, null)) as your_images,
+	       SUM(c.checked_count) AS checked,
+	       SUM(c.verified_count) AS verified
+	FROM label_embedding l
+        LEFT JOIN curated_tag t ON (t.tag = l.label AND t.status = 1)
+		LEFT JOIN (
+			SELECT gridimage_id,
+				   SUM(IF(tag = 'Checked', 1, 0)) AS checked_count,
+				   SUM(IF(tag = 'Verified', 1, 0)) AS verified_count
+			FROM curated_tag
+			WHERE status = 1
+			GROUP BY gridimage_id
+		) c ON c.gridimage_id = t.gridimage_id
+	WHERE l.label LIKE '%>%>%'
+    GROUP BY l.id WITH ROLLUP";
 
 } else {
 	die('todo');
@@ -70,6 +92,8 @@ if (!empty($rows)) {
 		print "<th>Tag";
 		print "<th>Images";
 		print "<th>Yours";
+		print "<th>Checked";
+		print "<th>Verified";
 	foreach($rows as $row) {
 		print "<tr>";
 		if (empty($row['sort_order'])) { //will be null
@@ -80,6 +104,8 @@ if (!empty($rows)) {
 		print "<td>".htmlentities($row['tag']);
 		print "<td align=right>".number_format($row['images'],0);
 		print "<td align=right>".number_format($row['yours'],0);
+		print "<td align=right>".number_format($row['checked'],0);
+		print "<td align=right>".number_format($row['verified'],0);
 		if ($tag = urlencode($row['tag']))
 			print "<td><a href=\"curator.php?tag=$tag&amp;group=$gurl\">Select some images</a>";
 
@@ -90,6 +116,8 @@ if (!empty($rows)) {
 			print "<td>";
 			print "<td align=right>".number_format($row['total_images'],0);
 			print "<td align=right>".number_format($row['your_images'],0);
+			print "<td>";
+			print "<td>";
 		}
 	}
 	print "</table>";
