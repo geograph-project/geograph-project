@@ -15,23 +15,46 @@ this.opr=(navigator.userAgent.toLowerCase().indexOf("opera")!=-1)?1:0;
 return this
 }
 
-function paste_strinL(strinL,isQuote){
-if(strinL=='' && isQuote==1) alert('First highlight the text you wish to quote, then click the \'quote\' link');
-else{
-if (isQuote==1) {
-strinL='[i]'+strinL+'[/i]'+'\n';
-}
-if (isQuote==2) {
-strinL='[b]'+strinL+'[/b]'+'\n';
-}
-var isForm=document.forms["postMsg"];
-if (isForm) {
-var input=document.forms["postMsg"].elements["postText"];
-input.value=input.value+strinL;
-}
-else alert('{$l_accessDenied}');
-}
-return false;
+function paste_strinL(strinL){
+	var isForm=document.forms["postMsg"];
+	if(!isForm){
+		alert('{$l_accessDenied}');
+		return false;
+	}
+	var input=document.forms["postMsg"].elements["postText"];
+	var opn=strinL;
+	var cls=strinL;
+
+	if(opn.indexOf('=')!=-1){
+		opn=opn.substring(0,opn.indexOf('='));
+	}
+
+	//IE
+	if(document.selection && document.selection.createRange().text!=''){
+		var sel=document.selection.createRange();
+		sel.text='['+strinL+']'+sel.text+'[/'+cls+']';
+		input.focus();
+	}
+	//Mozilla
+	else if(input.selectionStart || input.selectionStart == '0'){
+		var startPos = input.selectionStart;
+		var endPos = input.selectionEnd;
+		input.value = input.value.substring(0, startPos)
+			+ '['+strinL+']'
+			+ input.value.substring(startPos, endPos)
+			+ '[/'+cls+']'
+			+ input.value.substring(endPos, input.value.length);
+		input.selectionStart = startPos + strinL.length+2;
+		input.selectionEnd = endPos + strinL.length+2;
+		input.focus();
+	}
+	//Other
+	else {
+		input.value+='['+strinL+'][/'+cls+']';
+		input.focus();
+	}
+
+	return false;
 }
 
 function pasteSel() {
@@ -44,7 +67,7 @@ else window.selection='';
 function getQuotation() {
 var bw=new checkBrowser();
 if (bw.ns6 || bw.ie5 || bw.ie6 || bw.ie7 || bw.ie8 || bw.ns4 || bw.safari || bw.opr) {
-document.writeln('<a href="#" onclick="return paste_strinL(window.selection,1)" onMouseMove="pasteSel()">{$l_quoting}<'+'/a>');
+document.writeln('<a href="#" onclick="return paste_strinL(\'i\')" onMouseMove="pasteSel()">{$l_quoting}<'+'/a>');
 }
 }
 
