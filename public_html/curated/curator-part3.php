@@ -59,12 +59,26 @@ if (!empty($_POST['action'])) {
 $sql = "SELECT gi.gridimage_id, gi.user_id, title, grid_reference, gi.tags, GROUP_CONCAT(one.tag SEPARATOR '?') as done
 FROM gridimage_search gi
 INNER JOIN curated_tag one ON (one.gridimage_id = gi.gridimage_id AND one.status = 1)
-LEFT JOIN curated_tag two ON (two.gridimage_id = gi.gridimage_id AND two.status = 1 AND two.tag IN ('Skip','Verified','Errors'))
-WHERE two.gridimage_id IS NULL AND gi.user_id != {$USER->user_id}
+INNER JOIN curated_tag two ON (two.gridimage_id = gi.gridimage_id AND two.status = 1 AND tow.tag = 'Checked')
+LEFT JOIN  curated_tag thr ON (thr.gridimage_id = gi.gridimage_id AND thr.status = 1 AND thr.tag IN ('Skip','Verified','Errors'))
+WHERE thr.gridimage_id IS NULL AND gi.user_id != {$USER->user_id} AND two.user_id != {$USER->user_id}
+GROUP BY gi.gridimage_id
+ORDER BY RAND()
+LIMIT 1";
+
+if (!empty($_GET['id'])) {
+
+$sql = "SELECT gi.gridimage_id, gi.user_id, title, grid_reference, gi.tags, GROUP_CONCAT(one.tag SEPARATOR '?') as done
+FROM gridimage_search gi
+INNER JOIN curated_tag one ON (one.gridimage_id = gi.gridimage_id AND one.status = 1)
+WHERE gi.gridimage_id = ".intval($_GET['id'])."
 GROUP BY gi.gridimage_id
 HAVING done LIKE '%Checked%'
 ORDER BY RAND()
 LIMIT 1";
+
+}
+
 
 $row = $db->getRow($sql);
 if (!empty($row)) {

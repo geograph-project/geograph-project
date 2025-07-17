@@ -21,7 +21,7 @@ if ($_GET['group'] == 'top') {
 	if (!empty($_GET['tag'])) {
 		$db = GeographDatabaseConnection(true);
 		if ($_GET['tag'] == 'random') {
-			$row = $db->getRow("select top,count(*) as images,sum(t.user_id = 3) as yours
+			$row = $db->getRow("select top,count(*) as images,sum(t.user_id = {$USER->user_id}) as yours
 				 from category_primary left join curated_tag t on (tag = top and status = 1) group by top order by yours,images,rand() limit 1");
 			if (!empty($row)) {
 				//actully lets redirect, will be much nider if have the tag in URL (for logs etc)
