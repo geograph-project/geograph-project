@@ -5,7 +5,8 @@
 
 {dynamic}
 
-{$image->getFull()}
+<a href="/photo/{$image->gridimage_id}" target=_blank>{$image->getFull()}</a>
+<p>{$image->title|escape:'html'}</p>
 
 <form method=post>
 	<input type=hidden name="gridimage_id" value="{$image->gridimage_id}">
