@@ -451,6 +451,215 @@ function extract_query_from_conf(&$param, &$options, $cwdir) {
     }
 }
 
+function inject_delta_data($table, $index = null, $delta = null, $wheres = array(), $execute = false, $autodelete=false) {
+	global $param, $CONF, $db, $rt, $multis, $joineds, $db_primary;
+
+	//use $param, just so code is mostly copy/pastable
+	$param['table'] = $table;
+	$param['index'] = $index?$index:$table;
+	$param['delta'] = $delta;
+	$param['execute'] = $execute;
+
+	$table_columns = $db->getAssoc("DESCRIBE {$param['table']}");
+	$index_columns = $rt->getAssoc("DESCRIBE {$param['index']}");
+	$primary = null;
+	if ($table == 'sphinx_view')
+		$primary = 'id'; //the view, does show show primary key in DESCRIBE!
+	elseif ($table == 'gridprefix')
+		$primary = ''; //we dont have a numeric id, so rely on auto-insert-id. REPLAACE INTO fails, so need to delete, see below
+	else foreach ($table_columns as $name => $row)
+		if (strpos($row['Type'],'int(') !== FALSE)
+                        if ($row['Key'] == 'PRI')
+				$primary = $name; //todo will be confused if multiple keys. But probably not using this function for them!
+
+	$cols = array();
+	foreach ($index_columns as $name => $row) {
+		if (!empty($multis[$name]) || !empty($joineds[$name]))
+			continue;
+
+		if (isset($table_columns[$name])) {
+			$row = $table_columns[$name];
+			if ($name == 'enabled' || $name == 'status' || $name == 'approved') {
+	                        //the index should only include enabled rows!
+				if ($param['table'] == 'gridimage_tag')
+                                $wheres[] = "$name = 2";
+			        else
+		                        $wheres[] = "$name > 0";
+	                } elseif ($name == 'wgs84_lat' || $name == 'wgs84_long' || $name == 'vlat' || $name == 'vlong') {
+				$cols[] = "RADIANS($name) as $name";
+			} elseif ($row['Type'] == 'datetime' || $row['Type'] == 'timestamp') {
+				$cols[] = "UNIX_TIMESTAMP($name) AS $name";
+		        } elseif ($row['Type'] == 'date') {
+	                        $cols[] = "TO_DAYS($name) AS $name";
+			} else {
+				$cols[] = $name;
+			}
+
+		} elseif (isset($table_columns[$name.'_utf'])) {
+			if (($idx = array_search($name,$cols)) !== FALSE)
+                                $cols[$idx] = "{$name}_utf as {$name}"; //replace it!
+                        else
+                                $cols[] = "{$name}_utf as {$name}";
+		} elseif ($name == 'hectad') {
+                        $cols[] = "CONCAT(SUBSTRING(grid_reference,1,LENGTH(grid_reference)-3),SUBSTRING(grid_reference,LENGTH(grid_reference)-1,1)) AS hectad";
+		} elseif ($name == 'myriad') {
+			$cols[] = "SUBSTRING(grid_reference,1,LENGTH(grid_reference)-4) AS myriad";
+		} elseif ($name == 'id' && !empty($primary)) {
+			$cols[] = "{$primary} as id";
+		} else {
+			print "unknown $name";
+		}
+	}
+
+	#################################################
+
+	$cols = implode(", ",$cols);
+        $param['select'] = "SELECT $cols FROM {$param['table']}";
+
+        if (!empty($param['delta'])) {
+                $bits = explode('.',$CONF['manticorert_host']);
+                $param['date'] = $db_primary->getOne($sql = "SELECT last_indexed FROM sph_server_index WHERE index_name = '{$param['index']}' AND server_id = '{$bits[0]}'");
+
+                if (empty($param['date'])) {
+                        fwrite(STDERR,"#Warning: unable to find last index date - aborting replace_into_index()\n");
+			return false;
+                } else
+                        $wheres[] = "{$param['delta']} > ".$db_primary->Quote($param['date']);
+
+		if ($param['debug'])
+			fwrite(STDERR,"#IMPORTANT, does not yet delete the old rows\n"); //todo
+        }
+
+        if (!empty($wheres))
+                $param['select'] .= " WHERE ".implode(' AND ',$wheres);
+
+	#################################################
+	// actually fetch the rows
+
+	if (!empty($param['cluster'])) //the inserts need the cluster name (the select query does not!)
+		$param['index'] = "{$param['cluster']}:{$param['index']}";
+
+	if ($param['debug'])
+		print_r($param);
+
+    $result = $db->Execute($param['select']);
+    if (!$result) {
+        die("unable to run {$param['select']}\n" . $db->ErrorMsg() . "\n\n");
+    }
+
+	if ($result->RecordCount() > $param['limit'])
+		die("too many rows! ".$result->RecordCount()."\n");
+
+	if ($result->RecordCount()) {
+		//if there is a row, we first need to delete
+		if (!empty($wheres) && $autodelete) { //where needs ot be compatible with mysql AND manticore!!
+			$delete = "DELETE FROM {$param['index']} WHERE ".implode(' AND ',$wheres);
+                        if (!empty($param['execute'])) {
+                                $rt->Execute($delete);
+                        } else {
+				fwrite(STDERR,"$delete;\n");
+			}
+		}
+
+		$names=array();
+		$types=array();
+        for ($i = 0; $i < $result->FieldCount(); $i++) {
+            $field = $result->FetchField($i);
+            $names[] = $field->name;
+            switch ($field->type) {
+                case 'int':
+                case 'real':
+                case 'mva':
+                    $types[] = $field->type;
+                    break;
+                default:
+                    if (preg_match('/_ids$/', $field->name)) { //dont have a better way at the moment!
+                        $types[] = 'mva';
+                        break;
+                    }
+                    $types[] = 'other';
+                    break; //we dont actully care about the exact type, other than knowing numeric
+            }
+        }
+		foreach($multis as $name => $query)
+			$names[] = $name;
+		foreach($joineds as $name => $query)
+			$names[] = $name;
+
+		//really need to always do 'complete' inserts, as manticore expects columns in same order as EXPLAIN, which is typically diffent to create table, eg all fields first. Also 'string attribute index' then need inserting twice, by naming columns dont need to duplicate!
+		$insert = "REPLACE INTO {$param['index']} (".implode(",",$names).") VALUES\n";
+
+		$c=0; $buffer = '';
+        while (!$result->EOF) {
+            $row = array_values($result->fields);
+		        if ($param['extended'] && $c%100) { //ideally should work on length of line, but just number of lines. (so each insert fits in one packet (16M?)
+		                $sep = "),\n(";
+		        } elseif ($c) {
+				if ($buffer && !empty($param['execute'])) {
+					$buffer .= ")";
+					if ($param['debug'] === '2')
+						print "$buffer;\n";
+					$rt->Execute($buffer);
+					if ($param['debug'])
+						 fwrite(STDERR,"affected: ".$rt->Affected_Rows()."\n");
+				} else {
+					fwrite(STDERR,"$buffer;\n");
+				}
+				$buffer = '';
+		                $sep = "$insert(";
+		        } else {
+		                $sep = "$insert(";
+		        }
+			foreach($row as $idx => $value) {
+				if ($types[$idx] == 'mva') //mva's need special treatment if importing into index
+					$value = "(".$db->escape($value).")";
+				elseif (is_null($value))
+					$value = "''"; //doesnt support null!
+				elseif ($types[$idx] != 'int' && $types[$idx] != 'real') { //Don't just use 'is_numeric', as inserting a number into string attribute, silently fails!
+					$enc = mb_detect_encoding($value, 'UTF-8, ISO-8859-15, ASCII');
+					if ($enc == 'ISO-8859-15' || strpos($value,'&#')!==FALSE) //dont just blindly convert, as while MOST columns in database are latin1, not quite all!
+						$value = latin1_to_utf8($value);
+					$value = $db->Quote($value);
+				}
+				$buffer .= "$sep$value";
+				$sep = ',';
+			}
+			foreach($multis as $name => $query) {
+				$query = str_replace('$id',$row[0],$query);
+				$ids = $db->getCol($query);
+				$buffer .= "$sep(".implode(',',$ids).")";
+			}
+			foreach($joineds as $name => $query) {
+				$query = str_replace('$id',$row[0],$query);
+				$words = $db->getCol($query);
+				$buffer .= "$sep".$db->Quote(implode(' ',$words));
+			}
+			$c++; //ideally should work on length of line,
+		}
+		$buffer .= ")";
+		if ($buffer && !empty($param['execute'])) {
+			if ($param['debug'] === '2')
+				print "$buffer;\n";
+			$rt->Execute($buffer);
+			if ($param['debug'])
+				 fwrite(STDERR,"affected: ".$rt->Affected_Rows()."\n");
+		} else {
+			fwrite(STDERR,"$buffer;\n");
+		}
+	}
+
+	#################################################
+	//update the last_indexed, note will update the 'updated' even if there are no rows above :)
+
+	if (!empty($param['delta']) && !empty($param['table'])) {
+        $sql = update_last_indexed_sql($db, $db_primary, $param, $CONF);
+		if ($param['execute'] > 1)
+			$db_primary->Execute($sql);
+		else
+			fwrite(STDERR, "\nRun this on PRIMARY database: $sql;\n");
+	}
+}
+
 function update_last_indexed_sql($db, $db_primary, $param, $CONF) {
     $row = $db->getRow("SELECT {$param['delta']} FROM {$param['table']} ORDER BY {$param['delta']} desc LIMIT 1");
 
