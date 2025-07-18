@@ -29,7 +29,7 @@ $param=array(
     'date'=>false, //date filter
     'cluster'=>'manticore',
     'tmpfile'=>'/tmp/gridimage_group_stat-delta.rt',
-    'execute'=>false,
+    'execute'=>2,
 );
 
 $ABORT_GLOBAL_EARLY=1; //avoids global.inc.php auto connecteding to redis to with "$memcache" variable
@@ -144,7 +144,7 @@ $recordSet->Close();
 	//$cmd = "php fakedump/fakedump.php $crit ".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." gridimage_group_stat --schema=0 --extended=1 --complete=1 >> {$param['tmpfile']}";
 
 	$limit = 100000000; //use really high limit, rather than relying on =0 as unlimited, as that runs piecemeal, that wont work with this group by query!
-	$cmd = "php ".__DIR__."/injectrt.php --config={$param['config']} --host=$host --cluster={$param['cluster']} --select=".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." --index=gridimage_group_stat --schema=0 --limit=$limit >> {$param['tmpfile']}";
+	$cmd = "php ".__DIR__."/injectrt.php --config={$param['config']} --host=$host --cluster={$param['cluster']} --select=".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." --index=gridimage_group_stat --schema=0 --limit=$limit --execute=2";
 
 	print "$cmd\n";
 	if ($param['execute'])
@@ -165,40 +165,6 @@ if ($param['execute'] > 1)
 
 ############################################
 
-//use stderr, so if piping output to sh to execute above commands, stil doesnt run this one!
-$cmd = "cat {$param['tmpfile']} | mysql  -h{$CONF['manticorert_host']} -P{$CONF['sphinx_portql']} --default-character-set=utf8 -A";
-fwrite(STDERR, "$cmd\n");
-
-if ($param['execute'] > 1) {
-	if (strlen(`whereis mysql`) > 1000)
-		 passthru($cmd);
-	else {
-		//alas, the production pods dont have the 'mysql' binary installed (and injectrt.php can't run the commands directly yet!)
-		//luckly, we know the files have a fairly strict format. dont have to worry about ';\n' the middle of strings (as we know all encoded), and dont have to worry about comments etc in the script file!
-		$rt = GeographSphinxConnection('manticorert');
-
-		$h = fopen($param['tmpfile'],'r');
-		$buffer = '';
-		while($h && !feof($h)) {
-			$line = fgets($h);
-			if (substr_compare($line, ";\n", -2) ===0) {
-				$buffer .= rtrim($line,";\n");
-				//print "EXECUTE: ".preg_replace('/\s+/',' ',$buffer)."\n\n";
-				$rt->Execute($buffer);
-				//print "affected: ".$rt->Affected_Rows()."\n";
-				$buffer = '';
-			} else {
-				$buffer .= rtrim($line,"\n");
-			}
-		}
-		fclose($h);
-		if (!empty($buffer)) {
-			//print "EXECUTE: ".preg_replace('/\s+/',' ',$buffer)."\n\n";
-			$rt->Execute($buffer);
-			//print "affected: ".$rt->Affected_Rows()."\n";
-		}
-	}
-}
 
 ############################################
 
