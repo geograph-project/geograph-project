@@ -612,7 +612,7 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 		        }
 			foreach($row as $idx => $value) {
 				if ($types[$idx] == 'mva') //mva's need special treatment if importing into index
-					$value = "(".$db->escape($value).")";
+					$value = "(".$db->Quote($value).")";
 				elseif (is_null($value))
 					$value = "''"; //doesnt support null!
 				elseif ($types[$idx] != 'int' && $types[$idx] != 'real') { //Don't just use 'is_numeric', as inserting a number into string attribute, silently fails!

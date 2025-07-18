@@ -111,6 +111,9 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 #########################################################
 
+//function inject_delta_data($table, $index = null, $delta = null, $wheres = array(), $execute = false, $autodelete=false)
+
+
 if ($param['table'] == 'gridprefix') {
 	//harcdoded example!
 	inject_delta_data('gridprefix','gridprefix',null, array("prefix = 'TQ'"), $param['execute'], true);
