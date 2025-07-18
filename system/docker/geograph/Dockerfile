@@ -1,5 +1,5 @@
 # https://hub.docker.com/r/tigercomputing/debian-php-fpm
-FROM tigercomputing/debian-php-fpm:buster
+FROM tigercomputing/debian-php-fpm:php7.4
 
 RUN set -eux; \
   export DEBIAN_FRONTEND=noninteractive; \
@@ -13,9 +13,9 @@ RUN set -eux; \
     libjpeg-turbo-progs \
     libvips-tools icc-profiles-free \
     nginx \
-    php-bz2 \
-    php-memcache \
-    php-redis \
+    php7.4-bz2 \
+    php7.4-memcache \
+    php7.4-redis \
     procps \
   ; \
   rm -f /etc/nginx/sites-enabled/default; \
