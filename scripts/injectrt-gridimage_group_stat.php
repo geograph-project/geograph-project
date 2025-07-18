@@ -28,7 +28,7 @@ $param=array(
     'host'=>false, //override mysql host
     'cluster'=>'manticore',
     'tmpfile'=>'/tmp/gridimage_group_stat.rt',
-    'execute'=>false,
+    'execute'=>2,
 );
 
 $ABORT_GLOBAL_EARLY=1; //avoids global.inc.php auto connecteding to redis to with "$memcache" variable
@@ -136,7 +136,7 @@ foreach ($prefixes as $idx => $prefix) {
 
 	$schema = (!$idx)+0; //only on first!
 	$limit = 100000000; //use really high limit, rather than relying on =0 as unlimited, as that runs piecemeal, that wont work with this group by query!
-	$cmd = "php ".__DIR__."/injectrt.php --config={$param['config']} --host=$host --select=".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." --index=gridimage_group_stat --schema=$schema --limit=$limit --cluster=0 --drop >> {$param['tmpfile']}"; //will add to cluster at end!
+	$cmd = "php ".__DIR__."/injectrt.php --config={$param['config']} --host=$host --select=".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." --index=gridimage_group_stat --schema=$schema --limit=$limit --cluster=0 --drop --execute=2"; //will add to cluster at end!
 
 	print "$cmd\n\n";
         if ($param['execute'])
@@ -144,7 +144,7 @@ foreach ($prefixes as $idx => $prefix) {
 }
 
 if (!empty($param['cluster'])) {
-	$cmd = 'echo "ALTER CLUSTER '.$param['cluster'].' ADD gridimage_group_stat;" >> '.$param['tmpfile'];
+	$cmd = 'echo "ALTER CLUSTER '.$param['cluster'].' ADD gridimage_group_stat;" | mysql -h'.$CONF['manticorert_host'].' -P'.$CONF['sphinx_portql'];
 	print "$cmd\n\n";
         if ($param['execute'])
                 passthru($cmd);
@@ -165,11 +165,5 @@ if ($param['execute'] > 1)
 
 ############################################
 
-//use stderr, so if piping output to sh to execute above commands, stil doesnt run this one!
-$cmd = "cat {$param['tmpfile']} | mysql -h{$CONF['manticorert_host']} -P{$CONF['sphinx_portql']} --default-character-set=utf8 -A";
-fwrite(STDERR, "$cmd\n");
-
-if ($param['execute'] > 1)
-         passthru($cmd);
 
 ############################################
