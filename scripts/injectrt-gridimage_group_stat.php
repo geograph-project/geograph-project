@@ -144,10 +144,12 @@ foreach ($prefixes as $idx => $prefix) {
 }
 
 if (!empty($param['cluster'])) {
-	$cmd = 'echo "ALTER CLUSTER '.$param['cluster'].' ADD gridimage_group_stat;" | mysql -h'.$CONF['manticorert_host'].' -P'.$CONF['sphinx_portql'];
-	print "$cmd\n\n";
-        if ($param['execute'])
-                passthru($cmd);
+    $sql = "ALTER CLUSTER {$param['cluster']} ADD gridimage_group_stat";
+    print "$sql\n\n";
+    if ($param['execute']) {
+        $rt = GeographSphinxConnection('manticorert');
+        $rt->Execute($sql);
+    }
 }
 
 ############################################
