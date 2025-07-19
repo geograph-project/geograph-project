@@ -119,7 +119,7 @@ if (!empty($param['file'])) {
 // generate a SELECT directly from the table definition
 
 if (!empty($param['table'])) {
-    generate_select_from_table($param, $db, $db_primary, $CONF);
+    generate_select_from_table($param);
 	//updates $param directly
 }
 
@@ -128,7 +128,7 @@ if (!empty($param['table'])) {
 
 $schema_sql = '';
 if (!empty($param['schema'])) {
-    $schema_sql = generate_schema_sql($db, $param, $multis, $joineds, $options);
+    $schema_sql = generate_schema_sql($param, $multis, $joineds, $options);
 }
 
 if ($param['filename']) {
@@ -136,6 +136,11 @@ if ($param['filename']) {
     if (!empty($schema_sql)) {
         fwrite($file_handle, $schema_sql);
     }
+} elseif ($param['execute']) {
+    $rt = GeographSphinxConnection('manticorert');
+    $rt->Execute($schema_sql);
+} else {
+        print $schema_sql;
 }
 
 #########################################################
@@ -145,9 +150,13 @@ $data_sql = '';
 if (!empty($param['data'])) {
     if ($param['filename']) {
         $file_handle = fopen($param['filename'], 'w');
-        generate_data_sql($db, $param, $multis, $joineds, $file_handle);
+        generate_data_sql($param, $multis, $joineds, $file_handle);
     } else {
-        $data_sql = generate_data_sql($db, $param, $multis, $joineds);
+        $data_sql = generate_data_sql($param, $multis, $joineds); //note this will deal with $param['execute'] automatically!
+
+	//todo, perhaps generate_data_sql should output directly too!
+        if (!$param['execute'])
+		print "$data_sql\n";
     }
 }
 
@@ -156,54 +165,24 @@ if (!empty($param['data'])) {
 
 $update_sql = '';
 if (!empty($param['delta']) && !empty($param['table'])) {
-    $update_sql = update_last_indexed_sql($db, $db_primary, $param, $CONF);
+    $update_sql = update_last_indexed_sql($param);
+}
+
+if (!empty($update_sql)) {
+    if ($param['filename']) {
+	//actully this shoudl NOT be written to file - which is the sphixt/manticore!
+        //fwrite($file_handle, $update_sql);
+    } elseif ($param['execute']) {
+	$db_primary->Execute($update_sql);
+    } else {
+	fwrite(STDERR, "\nRun this on PRIMARY database: $update_sql;\n");
+    }
 }
 
 #########################################################
 
 if ($param['filename']) {
-
-    //$schema_sql aready done (had to be before data!)
-
-    //generate_data_sql wrote directly to file
-
-    if (!empty($update_sql)) {
-	//actully this shoudl NOT be written to file - which is the sphixt/manticore!
-        //fwrite($file_handle, $update_sql);
-	if ($param['execute']) {
-	        $db_primary->Execute($update_sql);
-	} else {
-	        fwrite(STDERR, "\nRun this on PRIMARY database: $update_sql;\n");
-	}
-    }
-
     fclose($file_handle);
-
-} elseif ($param['execute']) {
-    $rt = GeographSphinxConnection('manticorert');
-    if (!empty($schema_sql)) {
-        $rt->Execute($schema_sql);
-    }
-    if (!empty($data_sql)) {
-        $rt->Execute($data_sql);
-    }
-    if (!empty($update_sql)) {
-        $db_primary->Execute($update_sql);
-    }
-} else {
-    if (!empty($schema_sql)) {
-        print $schema_sql;
-    }
-    if (!empty($data_sql)) {
-	//todo, should reallly use generate_data_sql(..., STDOUT);
-        print $data_sql;
-    }
-    if (!empty($update_sql)) {
-        fwrite(STDERR, "\nRun this on PRIMARY database: $update_sql;\n");
-    }
 }
-
-
-#########################################################
 
 fwrite(STDERR,date('H:i:s ')."DONE!\n");

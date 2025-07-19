@@ -3,7 +3,8 @@
 //MySQL Result Row -> Sphinx CREATE TABLE
 // intended to be reasonable generic, but does have some geograph specific detections
 
-function generate_schema_sql($db, $param, $multis, $joineds, $options) {
+function generate_schema_sql($param, $multis, $joineds, $options) {
+    global $db;
     $sql = $param['select'];
 
     $result = $db->Execute("$sql LIMIT 1") or die($db->ErrorMsg());
@@ -178,7 +179,9 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
 
 // MySQL Rows -> Manticore Rows
 
-function generate_data_sql($db, $param, $multis, $joineds, $file_handle = null) {
+function generate_data_sql($param, $multis, $joineds, $file_handle = null) {
+	global $db,$rt;
+
     if (!empty($param['cluster'])) {
         $param['index'] = "{$param['cluster']}:{$param['index']}";
     }
@@ -294,6 +297,8 @@ function generate_data_sql($db, $param, $multis, $joineds, $file_handle = null) 
                 $output = $insert . implode(",\n", $rows_for_insert) . ";\n";
                 if ($file_handle) {
                     fwrite($file_handle, $output);
+	        } elseif ($param['execute']) {
+		    $rt->Execute($output);
                 } else {
                     $data_sql .= $output;
                 }
@@ -309,8 +314,8 @@ function generate_data_sql($db, $param, $multis, $joineds, $file_handle = null) 
             if ($file_handle) {
                 fwrite($file_handle, $output);
 
-	    //} elseif ($param['execute']) {
-		//maybe should execute directly - rather than returnbing them all, and executing at the end
+            } elseif ($param['execute']) {
+		$rt->Execute($output);
             } else {
                 $data_sql .= $output;
             }
@@ -331,7 +336,9 @@ function generate_data_sql($db, $param, $multis, $joineds, $file_handle = null) 
 // MySQL Table -> Select Statement
 // implements lots of Geograph Speciic 'magic' transfomations!
 
-function generate_select_from_table(&$param, $db, $db_primary, $CONF) {
+function generate_select_from_table(&$param) {
+	global $db, $db_primary, $CONF;
+
     $columns = $db->getAssoc("DESCRIBE {$param['table']}");
     $cols = $sheets = $wheres = array();
     if (!empty($param['where'])) {
@@ -721,7 +728,7 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 		//todo, should really only do this if rows WERE updated? (ie $rt->Affected_Rows() ??)
 		//so dont update flag, if failed due to error! although do want to be careful to still update, if there where geninuelly no rows
 		/// so ($rt->Affected_Rows() >= RecordCount) ? (might be more, due to REPLACE!
-		$sql = update_last_indexed_sql($db, $db_primary, $param, $CONF);
+		$sql = update_last_indexed_sql($param);
 		if ($param['execute'] > 1)
 			$db_primary->Execute($sql);
 		else
@@ -730,7 +737,8 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 	return $c ?? 0;
 }
 
-function update_last_indexed_sql($db, $db_primary, $param, $CONF) {
+function update_last_indexed_sql($param) {
+    global $db, $db_primary, $CONF;
     $row = $db->getRow("SELECT {$param['delta']} FROM {$param['table']} ORDER BY {$param['delta']} desc LIMIT 1");
 
 	$param['index'] = preg_replace('/\w+:/','',$param['index']); //the cluster added this, but dont want it here!
