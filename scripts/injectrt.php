@@ -111,6 +111,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 if (!empty($param['file'])) {
     extract_query_from_conf($param, $options, $cwdir);
+	//updates $param directly
 }
 
 #########################################################
@@ -118,29 +119,39 @@ if (!empty($param['file'])) {
 
 if (!empty($param['table'])) {
     generate_select_from_table($param, $db, $db_primary, $CONF);
+	//updates $param directly
 }
 
 #########################################################
+// SCHEMA
 
 $schema_sql = '';
 if (!empty($param['schema'])) {
     $schema_sql = generate_schema_sql($db, $param, $multis, $joineds, $options);
 }
 
+if ($param['filename']) {
+    $file_handle = fopen($param['filename'], 'a');
+    if (!empty($schema_sql)) {
+        fwrite($file_handle, $schema_sql);
+    }
+}
+
 #########################################################
+// DATA
 
 $data_sql = '';
 if (!empty($param['data'])) {
     if ($param['filename']) {
         $file_handle = fopen($param['filename'], 'w');
         generate_data_sql($db, $param, $multis, $joineds, $file_handle);
-        fclose($file_handle);
     } else {
         $data_sql = generate_data_sql($db, $param, $multis, $joineds);
     }
 }
 
 #########################################################
+// any updates for delta tracking!
 
 $update_sql = '';
 if (!empty($param['delta']) && !empty($param['table'])) {
@@ -150,21 +161,30 @@ if (!empty($param['delta']) && !empty($param['table'])) {
 #########################################################
 
 if ($param['filename']) {
-    $file_handle = fopen($param['filename'], 'a');
-    if (!empty($schema_sql)) {
-        fwrite($file_handle, $schema_sql);
-    }
+
+    //$schema_sql aready done (had to be before data!)
+
+    //generate_data_sql wrote directly to file
+
     if (!empty($update_sql)) {
-        fwrite($file_handle, $update_sql);
+	//actully this shoudl NOT be written to file - which is the sphixt/manticore!
+        //fwrite($file_handle, $update_sql);
+	if ($param['execute']) {
+	        $db_primary->Execute($update_sql);
+	} else {
+	        fwrite(STDERR, "\nRun this on PRIMARY database: $update_sql;\n");
+	}
     }
+
     fclose($file_handle);
+
 } elseif ($param['execute']) {
-    $sphinxql = new SphinxQL($CONF['manticore_host'], $CONF['manticore_port']);
+    $rt = GeographSphinxConnection('manticorert');
     if (!empty($schema_sql)) {
-        $sphinxql->query($schema_sql);
+        $rt->Execute($schema_sql);
     }
     if (!empty($data_sql)) {
-        $sphinxql->query($data_sql);
+        $rt->Execute($data_sql);
     }
     if (!empty($update_sql)) {
         $db_primary->Execute($update_sql);
@@ -174,6 +194,7 @@ if ($param['filename']) {
         print $schema_sql;
     }
     if (!empty($data_sql)) {
+	//todo, should reallly use generate_data_sql(..., STDOUT);
         print $data_sql;
     }
     if (!empty($update_sql)) {

@@ -40,16 +40,12 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
             $type = 'bigint';
         } else {
             switch ($r->type) {
-                case 'string':
-                case 253:
-                case 'blob':
-                case 252:
-                case 'mediumblob':
-                case 250:
-                case 'longblob':
-                case 251:
+                case 'string': case 253:
+                case 'blob':   case 252:
+                case 'mediumblob': case 250:
+                case 'longblob':   case 251:
                     if ($name == 'comment' || $name == 'words' || $name == 'url' || $name == 'tags' || $name == 'label') {
-                        $type = 'text';
+                        $type = 'text'; //defaults to 'indexed stored'
                     } elseif (preg_match('/s$/', $name) && array_key_exists(preg_replace('/s$/', '_ids', $name), $row)) {
                         $type = 'text';
                     } elseif (preg_match('/_ids$/', $name)) {
@@ -57,15 +53,14 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
                     } elseif (preg_match('/_json$/', $name)) {
                         $type = 'json';
                     } elseif ($name == 'user' || $name == 'larger') {
-                        $type = 'text indexed';
+                        $type = 'text indexed'; //not stored
                     } elseif ($name == 'hash' || $name == 'adm1' || strpos($name, '_lang')) {
                         $type = 'string';
                     } else {
                         $type = 'string attribute indexed';
                     }
                     break;
-                case 'binary':
-                case 254:
+                case 'binary':  case 254:
                     if (preg_match('/grlen$/', $name)) {
                         $type = 'bit(3)';
                     } elseif ($name == 'source' && array_key_exists('asource', $row)) {
@@ -73,24 +68,22 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
                     } elseif ($name == 'adm1' || strpos($name, '_lang')) {
                         $type = 'string';
                     } elseif (empty($r->binary)) {
+			//appears to be enum, comes as binary type, but not actully binary!
                         $type = 'string attribute indexed';
                     } else {
                         $type = "TODO-CHECK";
                     }
                     break;
-                case 'smallint':
-                case 2:
-                case 1:
+                case 'smallint': case 2: case 1:
                     if ($name == 'reference_index' || strpos($name, 'has_') === 0) {
                         $type = 'bit(4)';
                     } elseif ($r->unsigned) {
                         $type = 'bit(24)';
                     } else {
-                        $type = 'bigint';
+                        $type = 'bigint';  //only signed type manticore has!
                     }
                     break;
-                case 'mediumint':
-                case 9:
+                case 'mediumint': case 9:
                     if ($name == 'most_detail_view_res') {
                         $type = 'interger';
                     } elseif ($r->unsigned) {
@@ -99,8 +92,13 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
                         $type = 'bigint';
                     }
                     break;
-                case 'int':
-                case 3:
+                case 'int':      case 3:
+				if ($name == 'submitted') {
+					//print "sql_field_timestamp	= $name\n";
+				} else {
+					//todo - set bits based on $len
+					//print "sql_attr_uint		= $name\n";
+				}
                     if ($name == 'imagecount') {
                         $type = 'integer';
                     } elseif (in_array($name, array('e', 'n', 'gns_ufi')) || !$r->unsigned) {
@@ -109,8 +107,7 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
                         $type = 'integer';
                     }
                     break;
-                case 'bigint':
-                case 8:
+                case 'bigint':   case 8:
                     if (in_array($name, array('images', 'users', 'geosquares'))) {
                         $type = 'bit(16)';
                     } elseif (in_array($name, array('viewsquare', 'submitted', 'asource', 'updated', 'created', 'last_grouped', 'last_stat'))
@@ -121,13 +118,11 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
                         $type = 'bigint';
                     }
                     break;
-                case 'real':
-                case 4:
-                case 5:
+                case 'real':    case 4:
+		  case 5: //double - sphinx doesnt have!
                     $type = "float";
                     break;
-                case 'decimal':
-                case 246:
+                case 'decimal': case 246:
                     if ($r->decimals == 0) {
                         $type = 'integer';
                     } else {
@@ -145,7 +140,7 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
         $schema_sql .= "$sep\t`$name` multi";
     }
     foreach ($joineds as $name => $query) {
-        $schema_sql .= "$sep\t`$name` text indexed";
+        $schema_sql .= "$sep\t`$name` text indexed";  //dont want stored, nor attribute?
     }
 
     $schema_sql .= ")";
@@ -174,13 +169,13 @@ function generate_data_sql($db, $param, $multis, $joineds, $file_handle = null) 
     }
 
     $data_sql = "";
-    if (!$file_handle) {
-        $data_sql = "";
-    }
     $lastid = 0;
     $converted = array();
     while (true) {
+	//todo, this looping is designd for selecting FROM manticore, not really needed for selecting from DB!
+
         if (preg_match('/ LIMIT (\d+,)?(\d+)\s*$/i', $param['select'], $m)) {
+		//assume user knows what doing, and just let it run one big loop!
             $postfix = '';
             $limit = intval($m[2]) + 1;
         } elseif (!empty($param['limit'])) {
@@ -214,32 +209,26 @@ function generate_data_sql($db, $param, $multis, $joineds, $file_handle = null) 
         $fields = mysqli_fetch_fields($result);
 
         foreach ($fields as $key => $obj) {
-            $names[] = $obj->name;
-            if ($obj->name == 'embeddings') {
-                $types[] = 'vector';
-            } else {
+                $names[] = $obj->name;
                 switch ($obj->type) {
                     case MYSQLI_TYPE_INT24:
                     case MYSQLI_TYPE_LONG:
                     case MYSQLI_TYPE_LONGLONG:
                     case MYSQLI_TYPE_SHORT:
                     case MYSQLI_TYPE_TINY:
-                        $types[] = 'int';
-                        break;
+                        $types[] = 'int';   break;
                     case MYSQLI_TYPE_FLOAT:
                     case MYSQLI_TYPE_DOUBLE:
                     case MYSQLI_TYPE_DECIMAL:
-                        $types[] = 'real';
-                        break;
+                        $types[] = 'real';  break;
                     default:
                         if (preg_match('/_ids$/', $obj->name)) {
-                            $types[] = 'mva';
-                            break;
+                            $types[] = 'mva';    break;
+                        } elseif (preg_match('/(_vector|embeddings)$/', $obj->name)) { //dont have a better way at the moment!
+                            $types[] = 'vector'; break;
                         }
-                        $types[] = 'other';
-                        break;
+                        $types[] = 'other'; break;
                 }
-            }
         }
         foreach ($multis as $name => $query) {
             $names[] = $name;
@@ -285,6 +274,7 @@ function generate_data_sql($db, $param, $multis, $joineds, $file_handle = null) 
 
             $rows_for_insert[] = "(" . implode(",", $values) . ")";
 
+            //submit them as go along
             if ($param['extended'] && count($rows_for_insert) >= 100) {
                 $output = $insert . implode(",\n", $rows_for_insert) . ";\n";
                 if ($file_handle) {
@@ -297,10 +287,15 @@ function generate_data_sql($db, $param, $multis, $joineds, $file_handle = null) 
             $lastid = $row[0];
             $c++;
         }
+
+	//submit any that are left!
         if (!empty($rows_for_insert)) {
             $output = $insert . implode(",\n", $rows_for_insert) . ";\n";
             if ($file_handle) {
                 fwrite($file_handle, $output);
+
+	    //} elseif ($param['execute']) {
+		//maybe should execute directly - rather than returnbing them all, and executing at the end
             } else {
                 $data_sql .= $output;
             }
@@ -571,8 +566,6 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
             $field = $result->FetchField($i);
 	    $names[] = $field->name;
 
-print "{$field->name} : {$field->type}\n";
-
                 switch ($field->type) {
                     case MYSQLI_TYPE_INT24:
                     case MYSQLI_TYPE_LONG:
@@ -592,7 +585,7 @@ print "{$field->name} : {$field->type}\n";
                         break;
                     }
                     if (preg_match('/(_vector|embeddings)$/', $field->name)) { //dont have a better way at the moment!
-                        $types[] = 'float_vector';
+                        $types[] = 'vector';
                         break;
                     }
                     $types[] = 'other';
