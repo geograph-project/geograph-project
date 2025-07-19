@@ -33,9 +33,9 @@ $param=array(
 	'index'=>false, //specify the index name (defaults to same as table!)
 
 
-	'cluster'=>'manticore', //todo, will come from container configmap
+	'cluster'=>'manticore_cluster', //todo, will come from container configmap
 
-	'limit'=>100, //just a quick sanity check
+	'limit'=>1000, //just a quick sanity check
 	'extended'=>true,
 	'execute'=>false,
 	'debug'=>false,
@@ -113,25 +113,26 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 if ($param['table'] == 'gridprefix') {
 	//harcdoded example!
-	inject_delta_data('gridprefix','gridprefix',null, array("prefix = 'TQ'"), $param['execute'], true);
+	$c = inject_delta_data('gridprefix','gridprefix',null, array("prefix = 'TQ'"), $param['execute'], true);
 
 } elseif ($param['index'] == 'gallery_ids') { //special case that does NOT need to use delta or where for now! (its used with views, that have the where AND limit defined!)
 	$wheres = array();
 	if (!empty($param['where']))
 		$wheres[] = $param['where'];
 
-	inject_delta_data($param['table'], $param['index'], $param['delta'], $wheres, true, false);
+	$c = inject_delta_data($param['table'], $param['index'], $param['delta'], $wheres, true, false);
 
 } elseif (!empty($param['table']) && (!empty($param['delta']) || !empty($param['where'])) ) {
 	$wheres = array();
 	if (!empty($param['where']))
 		$wheres[] = $param['where'];
-	inject_delta_data($param['table'], $param['index'], $param['delta'], $wheres, $param['execute']);
+	$c = inject_delta_data($param['table'], $param['index'], $param['delta'], $wheres, $param['execute']);
 
 } else {
 	$tables = $rt->getAssoc("SHOW TABLES");
 	foreach ($tables as $table => $type) //todo, check mysql table eixsts?
 		print "--table=$table --where='{$table}_id = ...'\n";
+	exit;
 }
 
 
@@ -145,4 +146,4 @@ if ($param['table'] == 'gridprefix') {
 
 #########################################################
 
-fwrite(STDERR,date('H:i:s ')."DONE!\n");
+fwrite(STDERR,date('H:i:s ')."DONE ($c)!\n");

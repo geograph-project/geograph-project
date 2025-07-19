@@ -660,7 +660,7 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 						print "$buffer;\n";
 					$rt->Execute($buffer);
 					if ($param['debug'])
-						 fwrite(STDERR,"affected: ".$rt->Affected_Rows()."\n");
+						 fwrite(STDERR,"affected$c: ".$rt->Affected_Rows()."\n");
 				} else {
 					fwrite(STDERR,"$buffer;\n");
 				}
@@ -696,15 +696,17 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 				$words = $db->getCol($query);
 				$buffer .= "$sep".$db->Quote(implode(' ',$words));
 			}
+
+			$result->MoveNext();
 			$c++; //ideally should work on length of line,
 		}
-		$buffer .= ")";
 		if ($buffer && !empty($param['execute'])) {
+			$buffer .= ")";
 			if ($param['debug'] === '2')
 				print "$buffer;\n";
 			$rt->Execute($buffer);
 			if ($param['debug'])
-				 fwrite(STDERR,"affected: ".$rt->Affected_Rows()."\n");
+				 fwrite(STDERR,"affected-final: ".$rt->Affected_Rows()."\n");
 		} else {
 			fwrite(STDERR,"$buffer;\n");
 		}
@@ -716,16 +718,22 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 	//update the last_indexed, note will update the 'updated' even if there are no rows above :)
 
 	if (!empty($param['delta']) && !empty($param['table'])) {
+		//todo, should really only do this if rows WERE updated? (ie $rt->Affected_Rows() ??)
+		//so dont update flag, if failed due to error! although do want to be careful to still update, if there where geninuelly no rows
+		/// so ($rt->Affected_Rows() >= RecordCount) ? (might be more, due to REPLACE!
 		$sql = update_last_indexed_sql($db, $db_primary, $param, $CONF);
 		if ($param['execute'] > 1)
 			$db_primary->Execute($sql);
 		else
 			fwrite(STDERR, "\nRun this on PRIMARY database: $sql;\n");
 	}
+	return $c ?? 0;
 }
 
 function update_last_indexed_sql($db, $db_primary, $param, $CONF) {
     $row = $db->getRow("SELECT {$param['delta']} FROM {$param['table']} ORDER BY {$param['delta']} desc LIMIT 1");
+
+	$param['index'] = preg_replace('/\w+:/','',$param['index']); //the cluster added this, but dont want it here!
 
     $bits = explode('.', $CONF['manticorert_host']);
     $sql = "REPLACE INTO sph_server_index SET index_name = '{$param['index']}', server_id = '{$bits[0]}', last_indexed = '{$row[$param['delta']]}', updated=NOW()";
