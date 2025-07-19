@@ -1,5 +1,8 @@
 <?php
 
+//MySQL Result Row -> Sphinx CREATE TABLE
+// intended to be reasonable generic, but does have some geograph specific detections
+
 function generate_schema_sql($db, $param, $multis, $joineds, $options) {
     $sql = $param['select'];
 
@@ -17,22 +20,30 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
     $schema_sql .= "CREATE TABLE {$param['index']} (";
     $sep = "\n";
 
+    if (!$result->RecordCount())
+	 fwrite(STDERR, "WARNING: Query returned no rows, Schema generation wont be as reliable! (maybe avoid using delta+schema together)\n");
+
     $row =& $result->fields;
     $fields = $result->fieldCount();
-    for ($i = 1; $i < $fields; $i++) {
+    for ($i = 0; $i < $fields; $i++) {
         $r = $result->FetchField($i);
         $name  = $r->name;
+	if ($name == 'id') //dont need to inlcude the id in the CREATE - its automatic, this is more reliable than just skippinf first row!
+		continue;
 
         if ($param['debug'] === $name) {
             print_r($r);
         }
-
-        $enc = mb_detect_encoding($row[$name], 'UTF-8, ISO-8859-15, ASCII');
-        if ($enc == 'ISO-8859-15') {
-            fwrite(STDERR, "\n$name encoding = $enc\n");
-        }
+	if (!empty($row[$name])) {
+	        $enc = mb_detect_encoding($row[$name], 'UTF-8, ISO-8859-15, ASCII');
+        	if ($enc == 'ISO-8859-15') {
+	            fwrite(STDERR, "\n$name encoding = $enc\n");
+        	}
+	}
 
         $type = "text";
+
+	            fwrite(STDERR, "INFO $name = {$r->type}\n");
 
         if ($name == 'embeddings') {
             $type = "FLOAT_VECTOR knn_type='hnsw' knn_dims='512' hnsw_similarity='COSINE'";
@@ -99,7 +110,9 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
 					//todo - set bits based on $len
 					//print "sql_attr_uint		= $name\n";
 				}
-                    if ($name == 'imagecount') {
+                    if ($name == 'reference_index' || strpos($name, 'has_') === 0) {
+                        $type = 'bit(4)';
+                    } elseif ($name == 'imagecount') {
                         $type = 'integer';
                     } elseif (in_array($name, array('e', 'n', 'gns_ufi')) || !$r->unsigned) {
                         $type = 'bigint';
@@ -110,7 +123,7 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
                 case 'bigint':   case 8:
                     if (in_array($name, array('images', 'users', 'geosquares'))) {
                         $type = 'bit(16)';
-                    } elseif (in_array($name, array('viewsquare', 'submitted', 'asource', 'updated', 'created', 'last_grouped', 'last_stat'))
+                    } elseif (in_array($name, array('viewsquare', 'submitted', 'asource', 'updated', 'created', 'last_grouped', 'last_stat','last_used','stat_updated')) //UNIX_TIMESTAMP counes out as a bigint! But we dont really need signed bigint
                         || $r->unsigned || strpos($name, 'timestamp') !== false
                     ) {
                         $type = 'integer';
@@ -162,6 +175,8 @@ function generate_schema_sql($db, $param, $multis, $joineds, $options) {
 
     return $schema_sql;
 }
+
+// MySQL Rows -> Manticore Rows
 
 function generate_data_sql($db, $param, $multis, $joineds, $file_handle = null) {
     if (!empty($param['cluster'])) {
@@ -313,11 +328,19 @@ function generate_data_sql($db, $param, $multis, $joineds, $file_handle = null) 
     return $data_sql;
 }
 
+// MySQL Table -> Select Statement
+// implements lots of Geograph Speciic 'magic' transfomations!
+
 function generate_select_from_table(&$param, $db, $db_primary, $CONF) {
     $columns = $db->getAssoc("DESCRIBE {$param['table']}");
     $cols = $sheets = $wheres = array();
     if (!empty($param['where'])) {
         $wheres[] = $param['where'];
+    }
+	$keys = array(); //checking PRI on its own, doesnt catch if compound
+    foreach ($columns as $name => $row) {
+	if ($row['Key'] == 'PRI')
+		$keys[] = $name;
     }
     foreach ($columns as $name => $row) {
         if ($row['Type'] == 'point') { //its just a index for other cols
@@ -332,7 +355,7 @@ function generate_select_from_table(&$param, $db, $db_primary, $CONF) {
         if ($name == 'e_date' || $name == 'update_co') { //no point indexing the date!
             continue;
         }
-        fwrite(STDERR, "$name " . substr($row['Type'], 0, 40) . "\n");
+        fwrite(STDERR, "INFO: $name " . substr($row['Type'], 0, 40) . "\n");
 
         if ($name == 'enabled' || $name == 'status' || $name == 'approved') {
             //the index should only include enabled rows!
@@ -345,7 +368,7 @@ function generate_select_from_table(&$param, $db, $db_primary, $CONF) {
             $sheets[] = $name;
             //general ints
         } elseif (strpos($row['Type'], 'int(') !== false) {
-            if ($row['Key'] == 'PRI') {
+            if ($name == implode(',',$keys)) { //check it the ONLY primary key!
                 array_unshift($cols, "{$name} AS id");
             } //make sure it first in index, even if not first in table
             else {
@@ -376,8 +399,10 @@ function generate_select_from_table(&$param, $db, $db_primary, $CONF) {
             $cols[] = "UNIX_TIMESTAMP($name) AS $name";
         } elseif ($row['Type'] == 'date') {
             $cols[] = "TO_DAYS($name) AS $name";
+        } elseif ($row['Type'] == 'float') {
+            $cols[] = "$name";
         } else {
-            fwrite(STDERR, "$name {$row['Type']} unknown\n");
+            fwrite(STDERR, "ERROR: $name {$row['Type']} unknown\n");
         }
     }
     if (!empty($sheets)) {
@@ -409,6 +434,8 @@ function generate_select_from_table(&$param, $db, $db_primary, $CONF) {
     fwrite(STDERR, "Generated: {$param['select']};\n");
 }
 
+// Config FILE to Mysql QUERY
+
 function extract_query_from_conf(&$param, &$options, $cwdir) {
     chdir($cwdir);
     $text = file_get_contents($param['file']);
@@ -429,6 +456,18 @@ function extract_query_from_conf(&$param, &$options, $cwdir) {
         }
     }
 
+
+
+       $param['select'] = str_replace('\\$start',1,$param['select']);
+       $param['select'] = str_replace('\\$end',100,$param['select']);
+
+//first column should always be 'AS id' but often missed (optional via indexer)
+//SELECT gi.gridimage_id,
+$param['select'] = preg_replace('/SELECT (\w+\.?\w+),/',"SELECT $1 AS id,", $param['select']);
+
+
+print $param['select'].";\n\n";
+
     //todo, if sql_query_range then may need to correct the dynamic variables.
 
     //we DONT read the sql_attr* etc, just let them autodtect after running the query.
@@ -448,7 +487,9 @@ function extract_query_from_conf(&$param, &$options, $cwdir) {
 
 
 ########################################################
-// Delta Function (duplicaes functioanlty above, but is simplified) 
+// Delta Function (duplicaes functioanlty above, but is simplified)
+// .. works by checking definition of index and the source table, and working out a SQL query to select the right columns (using expresion if needed) to fit the existing index
+// in effect 'select' becomes automatic!
 
 function inject_delta_data($table, $index = null, $delta = null, $wheres = array(), $execute = false, $autodelete=false) {
 	global $param, $CONF, $db, $rt, $multis, $joineds, $db_primary;
@@ -470,6 +511,11 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 		if (strpos($row['Type'],'int(') !== FALSE)
                         if ($row['Key'] == 'PRI')
 				$primary = $name; //todo will be confused if multiple keys. But probably not using this function for them!
+
+	###############################################
+	//first generate a database query to get rows
+	//generally duplictes generate_select_from_table, but with alternate logic
+	//this works with a index that already exists (rather than assuming an idealized index of all columns)
 
 	$cols = array();
 	foreach ($index_columns as $name => $row) {
@@ -511,6 +557,7 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 	}
 
 	#################################################
+	//may need to modify the query to only fetch new rows!
 
 	$cols = implode(", ",$cols);
         $param['select'] = "SELECT $cols FROM {$param['table']}";
@@ -533,7 +580,8 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
                 $param['select'] .= " WHERE ".implode(' AND ',$wheres);
 
 	#################################################
-	// actually fetch the rows
+	// then actually fetch the rows
+	// this definitl duplicates generate_data_sql, but does NOT use a while(true) loop - just uses ONE select query - still might insert extended
 
 	if (!empty($param['cluster'])) //the inserts need the cluster name (the select query does not!)
 		$param['index'] = "{$param['cluster']}:{$param['index']}";

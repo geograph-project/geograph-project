@@ -87,6 +87,7 @@ if (strpos($param['select'], 'sphinx_view') && empty($param['file']) && empty($p
 ############################################
 //connect first to the REAL primary
 
+$db_primary = null; //only need it if ding delta
 if (!empty($param['delta'])) {
 	//we need to get the current value from primary database!
 	$db_primary = GeographDatabaseConnection(false);
