@@ -451,6 +451,10 @@ function extract_query_from_conf(&$param, &$options, $cwdir) {
     }
 }
 
+
+########################################################
+// Delta Function (duplicaes functioanlty above, but is simplified) 
+
 function inject_delta_data($table, $index = null, $delta = null, $wheres = array(), $execute = false, $autodelete=false) {
 	global $param, $CONF, $db, $rt, $multis, $joineds, $db_primary;
 
@@ -565,16 +569,30 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 		$types=array();
         for ($i = 0; $i < $result->FieldCount(); $i++) {
             $field = $result->FetchField($i);
-            $names[] = $field->name;
-            switch ($field->type) {
-                case 'int':
-                case 'real':
-                case 'mva':
-                    $types[] = $field->type;
-                    break;
+	    $names[] = $field->name;
+
+print "{$field->name} : {$field->type}\n";
+
+                switch ($field->type) {
+                    case MYSQLI_TYPE_INT24:
+                    case MYSQLI_TYPE_LONG:
+                    case MYSQLI_TYPE_LONGLONG:
+                    case MYSQLI_TYPE_SHORT:
+                    case MYSQLI_TYPE_TINY:
+                        $types[] = 'int';
+                        break;
+                    case MYSQLI_TYPE_FLOAT:
+                    case MYSQLI_TYPE_DOUBLE:
+                    case MYSQLI_TYPE_DECIMAL:
+                        $types[] = 'real';
+                        break;
                 default:
                     if (preg_match('/_ids$/', $field->name)) { //dont have a better way at the moment!
                         $types[] = 'mva';
+                        break;
+                    }
+                    if (preg_match('/(_vector|embeddings)$/', $field->name)) { //dont have a better way at the moment!
+                        $types[] = 'float_vector';
                         break;
                     }
                     $types[] = 'other';
@@ -611,7 +629,10 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 		                $sep = "$insert(";
 		        }
 			foreach($row as $idx => $value) {
-				if ($types[$idx] == 'mva') //mva's need special treatment if importing into index
+		                if ($types[$idx] == 'vector') {
+                		    $list = unpack('f*', $value);
+		                    $value = "(" . implode(', ', $list) . ")";
+				} elseif ($types[$idx] == 'mva') //mva's need special treatment if importing into index
 					$value = "(".$db->escape($value).")";
 				elseif (is_null($value))
 					$value = "''"; //doesnt support null!
@@ -646,13 +667,15 @@ function inject_delta_data($table, $index = null, $delta = null, $wheres = array
 		} else {
 			fwrite(STDERR,"$buffer;\n");
 		}
+	} elseif ($param['debug']) {
+		print "-- No records\n";
 	}
 
 	#################################################
 	//update the last_indexed, note will update the 'updated' even if there are no rows above :)
 
 	if (!empty($param['delta']) && !empty($param['table'])) {
-        $sql = update_last_indexed_sql($db, $db_primary, $param, $CONF);
+		$sql = update_last_indexed_sql($db, $db_primary, $param, $CONF);
 		if ($param['execute'] > 1)
 			$db_primary->Execute($sql);
 		else
