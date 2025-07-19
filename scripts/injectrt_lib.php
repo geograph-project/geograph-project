@@ -294,13 +294,13 @@ function generate_data_sql($param, $multis, $joineds, $file_handle = null) {
 
             //submit them as go along
             if ($param['extended'] && count($rows_for_insert) >= 100) {
-                $output = $insert . implode(",\n", $rows_for_insert) . ";\n";
+                $output = $insert . implode(",\n", $rows_for_insert);
                 if ($file_handle) {
-                    fwrite($file_handle, $output);
+                    fwrite($file_handle, $output . ";\n");
 	        } elseif ($param['execute']) {
 		    $rt->Execute($output);
                 } else {
-                    $data_sql .= $output;
+                    $data_sql .= $output . ";\n";
                 }
                 $rows_for_insert = [];
             }
@@ -310,14 +310,14 @@ function generate_data_sql($param, $multis, $joineds, $file_handle = null) {
 
 	//submit any that are left!
         if (!empty($rows_for_insert)) {
-            $output = $insert . implode(",\n", $rows_for_insert) . ";\n";
+            $output = $insert . implode(",\n", $rows_for_insert);
             if ($file_handle) {
-                fwrite($file_handle, $output);
+                fwrite($file_handle, $output . ";\n");
 
             } elseif ($param['execute']) {
 		$rt->Execute($output);
             } else {
-                $data_sql .= $output;
+                $data_sql .= $output . ";\n";
             }
         }
 

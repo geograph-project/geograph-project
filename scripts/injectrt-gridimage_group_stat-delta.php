@@ -27,9 +27,8 @@
 $param=array(
     'host'=>false, //override mysql host
     'date'=>false, //date filter
-    'cluster'=>'manticore',
-    'tmpfile'=>'/tmp/gridimage_group_stat-delta.rt',
-    'execute'=>2,
+    'cluster'=>'manticore_cluster',
+    'execute'=>false,
 );
 
 $ABORT_GLOBAL_EARLY=1; //avoids global.inc.php auto connecteding to redis to with "$memcache" variable
@@ -82,12 +81,12 @@ $DSN_READ = str_replace($CONF['db_connect'],$host,$DSN);
 //we've setup $DSN_READ, using $param[host] even if isn't a db_read_connect
 $db = GeographDatabaseConnection(true);
 
-$crit = "-h$host -u{$CONF['db_user']} -p{$CONF['db_pwd']} {$CONF['db_db']}";
-
 ############################################
 
+		//injectrt.php no longer requires that the first column be id, copes without it!
+
 		$sql = '
-		select \'\' as id, grid_reference, label
+		select grid_reference, label
 			, count(*) as images, count(distinct user_id) as users
 			, group_concat(gridimage_id) as image_ids
 		from gridimage_group inner join gridimage_search using (gridimage_id) inner join gridsquare using (grid_reference)
@@ -98,7 +97,7 @@ $crit = "-h$host -u{$CONF['db_user']} -p{$CONF['db_pwd']} {$CONF['db_db']}";
 		//the opitimzer is choosig to run gridimage_group first, but its where caluse is not very selective. Its more efficent to full scan gridsquare!
 			//for 21k rows, takes just over 2 minutes for the above query, using STRAIGHT_JOIN about 12 seconds!
                 $sql = '
-                select \'\' as id, grid_reference, label
+                select  grid_reference, label
                         , count(*) as images, count(distinct user_id) as users
                         , group_concat(gridimage_id) as image_ids
                 from gridsquare STRAIGHT_JOIN gridimage_search USING (grid_reference) STRAIGHT_JOIN gridimage_group using (gridimage_id)
@@ -106,33 +105,38 @@ $crit = "-h$host -u{$CONF['db_user']} -p{$CONF['db_pwd']} {$CONF['db_db']}";
                 group by grid_reference, label having images > 1 order by null';
 
 ############################################
-// delete the old data
+// delete the old data (we do that ourselves)
 
 print "# Checking for records since {$param['date']}\n";
 $recordSet = $db->Execute("select grid_reference from gridsquare where last_grouped > '{$param['date']}'");
 if (!$recordSet->RecordCount()) {
 	die("# Nothing to do. No new squares available\n");
 }
+
+//we delete, because need to deelte all the labels in the squares, they may not get reinserted!
 if ($param['execute']) {
+	$rt = GeographSphinxConnection('manticorert');
 	$c = 0;
-	$h = fopen($param['tmpfile'], 'w');
+	$sql_query = "";
 	while (!$recordSet->EOF) {
         	$row =& $recordSet->fields;
 		if (!($c%100)) {
-			if ($c)
-				fwrite($h, ");\n");
+			if ($c) {
+				$rt->Execute($sql_query.')');
+			}
 			$sep = "DELETE FROM ".($param['cluster']?"{$param['cluster']}:":'')."gridimage_group_stat WHERE grid_reference IN (";
+			$sql_query = "";
 		}
-		fwrite($h, $sep.$db->Quote($recordSet->fields['grid_reference']));
+		$sql_query .= $sep.$db->Quote($recordSet->fields['grid_reference']);
 
         	$recordSet->MoveNext();
 		$sep = ",";
 		$c++;
 	}
-	fwrite($h, ");\n\n");
-	fclose($h);
+	if (!empty($sql_query))
+		$rt->Execute($sql_query.')');
 } else {
-	print "#would write DELETE commands to {$param['tmpfile']}, deleting ".$recordSet->RecordCount()." squares\n\n";
+	print "#would execute DELETE cmmands, deleting ".$recordSet->RecordCount()." squares\n\n";
 }
 $recordSet->Close();
 
@@ -141,6 +145,7 @@ $recordSet->Close();
 
 	$query = preg_replace_callback('/\{\$(\w+)\}/', function($m) use ($param) { return $param[$m[1]]; }, $sql);
 
+	//fakedump is actully creating mysql, which is not tailored to manticore, although might mostly work!
 	//$cmd = "php fakedump/fakedump.php $crit ".escapeshellarg(trim(preg_replace('/\s+/',' ',$query)))." gridimage_group_stat --schema=0 --extended=1 --complete=1 >> {$param['tmpfile']}";
 
 	$limit = 100000000; //use really high limit, rather than relying on =0 as unlimited, as that runs piecemeal, that wont work with this group by query!
@@ -151,6 +156,7 @@ $recordSet->Close();
 		passthru($cmd);
 
 ############################################
+//todo, refactor to use function in inject_lib.php
 
 //get the last date from database we connected to... (eg it could be a lagging replica!)
 $row = $db->getRow("SELECT grid_reference, last_grouped FROM gridsquare ORDER BY last_grouped desc LIMIT 1");
@@ -160,11 +166,9 @@ $sql = "REPLACE INTO sph_server_index SET index_name = 'gridimage_group_stat', s
 fwrite(STDERR, "\nRun this on the database: $sql;\n");
 //we dont run it here, as it probably should be run on the primary, not the slave read above!
 
+//todo, should CHECK that tehre was somehting updated, OR that nothing failed - ie dont update on error!
 if ($param['execute'] > 1)
 	$db_primary->Execute($sql);
-
-############################################
-
 
 ############################################
 

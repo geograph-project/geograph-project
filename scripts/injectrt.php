@@ -138,7 +138,9 @@ if ($param['filename']) {
     }
 } elseif ($param['execute']) {
     $rt = GeographSphinxConnection('manticorert');
-    $rt->Execute($schema_sql);
+    if (!empty($schema_sql)) {
+	$rt->Execute($schema_sql);
+    }
 } else {
         print $schema_sql;
 }
