@@ -56,7 +56,7 @@ class ImageListKNN extends ImageList
             return 0;
         }
 
-        $sql = "select {$this->knncols}, knn_dist() as k from gridimage_embedding where knn({$this->vector}, $limit, $value) limit $limit";
+        $this->sql = $sql = "select {$this->knncols}, knn_dist() as k from gridimage_embedding where knn({$this->vector}, $limit, $value) limit $limit";
 
         return $this->getImagesBySphinxQL($sql);
     }
@@ -73,17 +73,22 @@ class ImageListKNN extends ImageList
             if (is_null($value)) {
                 return 0;
             }
-            $where[] = "knn({$this->vector}, $limit, $value)";
+            $where[] = "knn({$this->vector}, 1000, $value)"; //need to deliberatly oversample for now!
 	    $cols .= ", knn_dist() as k";
         }
 
-        $sql = "select $cols from gridimage_embedding where ".implode(' AND ', $where)." limit $limit";
+        $this->sql = $sql = "select $cols from gridimage_embedding where ".implode(' AND ', $where)." limit $limit";
 
         return $this->getImagesBySphinxQL($sql);
     }
 
-    private function _getRange()
+    private function _getRange($cached = true)
     {
+	if ($cached) {
+		//partly for speed, but also should be set to what the index actully uses, to prevent creep!
+		//radians, as what manticore uses!
+		return array ('mnlt' => '0.87028730','mnln' => '-0.23890854','mxlt' => '1.06221426','mxln' => '0.03133320');
+	}
         $sph = $this->_getSph();
         return $sph->getRow("select min(wgs84_lat) as mnlt,min(wgs84_long) as mnln,max(wgs84_lat) as mxlt,max(wgs84_long) as mxln from sample8");
     }
@@ -134,7 +139,7 @@ class ImageListKNN extends ImageList
         return "(".implode(', ', $list).")";
     }
 
-    public function getImagesByLocationVector($lat, $lon, $label, $limit = 100)
+    public function getImagesByLocationVector($lat, $lon, $label, $limit = 100, $incgeodist = false)
     {
         $db = $this->_getDB();
         $quoted = $db->Quote($label);
@@ -143,11 +148,16 @@ class ImageListKNN extends ImageList
         if (empty($binary)) {
             return 0;
         }
+	if ($incgeodist) {
+		list($dist_col, $dist_where) = $this->_getGeoDistClause($lat, $lon, 0);
+		$this->knncols.= ", $dist_col"; //adds the distance column
+		//ignoring the $where here, the whole point is to test using plus_vector! not to filter
+	}
 
 	$this->vector = 'plus_vector';
         $value = $this->_appendLocationToVector($binary, $lat, $lon);
 
-        $sql = "select {$this->knncols}, knn_dist() as k from gridimage_embedding where knn({$this->vector}, $limit, $value) limit $limit";
+        $this->sql = $sql = "select {$this->knncols}, knn_dist() as k from gridimage_embedding where knn({$this->vector}, $limit, $value) limit $limit";
 
         return $this->getImagesBySphinxQL($sql);
     }
@@ -183,7 +193,7 @@ class ImageListKNN extends ImageList
             return 0;
         }
 
-        $sql = "select $cols from gridimage_embedding where ".implode(' AND ', $where)." limit $limit";
+        $this->sql = $sql = "select $cols from gridimage_embedding where ".implode(' AND ', $where)." limit $limit";
 
         return $this->getImagesBySphinxQL($sql, true, ...$params);
     }
