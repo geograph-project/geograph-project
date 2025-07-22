@@ -69,6 +69,10 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		}
 	}
 
+	$a = $db->getRow("SELECT floor(avg(gridimage_id)) as id,count(t.gridimage_id) as total, count(l.gridimage_id) as done
+		 FROM `tmp_label_clip` t left join gridimage_label l using (gridimage_id)");
+	printf('<p>Processing of current batch of %d images, centered around %d, is %.1f%% done. (should see this fluctuating)', $a['total'], $a['id'], $a['done']/$a['total']*100);
+
 	print "<hr>";
 
 	$number = $db->getOne("SELECT COUNT(*) FROM labeler_agent WHERE updated > date_sub(now(),interval 24 hour)");
