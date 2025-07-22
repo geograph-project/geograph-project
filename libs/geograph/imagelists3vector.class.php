@@ -26,6 +26,41 @@ require_once('imagelist.class.php');
 
 include "3rdparty/s3vectors.inc.php";
 
+//
+function get_text_embeddings($inputText) {
+	$apiUrl = 'http://python-embed.dev.svc.cluster.local:8000/text';
+
+	// The data to send in the request body as a JSON string
+	$postData = json_encode(['text' => $inputText]);
+
+	// Initialize a cURL session
+	$ch = curl_init();
+
+	// Set cURL options
+	curl_setopt($ch, CURLOPT_URL, $apiUrl); // Set the URL
+	curl_setopt($ch, CURLOPT_POST, 1); // Set the request method to POST
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $postData); // Set the POST data
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string instead of outputting it
+	curl_setopt($ch, CURLOPT_HTTPHEADER, [
+	    'Content-Type: application/json',
+	    'Content-Length: ' . strlen($postData) // Set Content-Length header
+	]);
+
+	// Execute the cURL request
+	$response = curl_exec($ch);
+
+	// Check for cURL errors
+	if (curl_errno($ch)) {
+	    echo 'cURL error: ' . curl_error($ch);
+	} else {
+	    // Decode the JSON response
+	    return json_decode($response, true);
+	}
+
+	// Close the cURL session
+	curl_close($ch);
+}
+
 /**
 * Provides the ImageListKNN class
 *
@@ -118,14 +153,8 @@ class ImageListS3Vector extends ImageList
 	    if (!empty($param['lat'])) {
 		$delta = $this->calculateDegreesFromMeters($param['dist'], $param['lat']);
 
-//	        $parts[] = array('slat' => array('$gte' => $param['lat']- $delta['lat'], '$lte' => $param['lat']+ $delta['lat']));
-
-		$parts[] = array('slat' => array('$gte' => $param['lat']- $delta['lat']));
-		$parts[] = array('slat' => array('$lte' => $param['lat']+ $delta['lat']));
-
-//##	        $parts[] = array('slng' => array('$gte' => $param['lng']- $delta['lon'], '$lte' => $param['lng']+ $delta['lon']));
-		$parts[] = array('slng' => array('$gte' => $param['lng']- $delta['lon']));
-		$parts[] = array('slng' => array('$lte' => $param['lng']+ $delta['lon']));
+	        $parts[] = array('slat' => array('$gte' => $param['lat']- $delta['lat'], '$lte' => $param['lat']+ $delta['lat']));
+	        $parts[] = array('slng' => array('$gte' => $param['lng']- $delta['lon'], '$lte' => $param['lng']+ $delta['lon']));
 	    }
 
 	    if (!empty($param['user_id']))
@@ -161,6 +190,14 @@ class ImageListS3Vector extends ImageList
         $db = $this->_getDB();
         $quoted = $db->Quote($label);
         $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
+
+	if (empty($binary)) {
+		$r = get_text_embeddings($label);
+		if (!empty($r) && count($r) == 512)
+			return $r;
+
+		die("Unable to encode query. Please try later");
+	}
 
         if (empty($binary)) {
             return null;
