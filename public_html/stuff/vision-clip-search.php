@@ -36,14 +36,35 @@ $smarty = new GeographPage;
 	$db = GeographDatabaseConnection(false);
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-	$rt = GeographSphinxConnection('manticorert',true);
+//currently this demo repurposed for testing s3vectors, ratther than the manticore index!
+$_GET['s3'] = 1;
+if (empty($_GET['dist']))
+	$_GET['dist'] = 5000;
+
+	if (!empty($_GET['s3'])) {
+
+		$orig = $memcache;
+		$memcache = false; //need to disable memcache with FileSystem!
+
+		$filesystem = new FileSystem(); //sets up configuation automagically
+		//the vector lip needs S3 class setup already!
+
+		require_once('geograph/imagelists3vector.class.php');
+		$imagelist=new ImageListS3Vector;
+
+		$memcache = $orig;
+	} else {
+		$rt = GeographSphinxConnection('manticorert',true);
 
 		require_once('geograph/imagelistknn.class.php');
 		$imagelist=new ImageListKNN;
 		$imagelist->_setSph($rt); //need to force it to use RT backend
+	}
 
-		$thumbw=213; $thumbh=160;
+	$thumbw=213; $thumbh=160;
 
+        require_once "geograph/locationselector.class.php";
+        $location = new LocationSelector();
 
 if (empty($_GET['inner'])) {
 	$smarty->display('_std_begin.tpl');
@@ -52,30 +73,55 @@ if (empty($_GET['inner'])) {
 
         <h2>CLIP-based Similarity Search (Demo Dataset)</h2>
 
-	<p style=max-width:900px>Currently this demo uses a small and rather limited image 
+<? if (!empty($_GET['s3'])) { ?>
+	<p style=max-width:900px;font-size:0.9em>Currently this demo uses a sample of about <b>650k
+	images</b>, you might notice that while the initial results are visually similar, the quality 
+	quickly declines as it displays 30 images without filtering for relevance. While the 
+	initial results are often good, the quality of the matches can quickly decline.
+
+<? } else { ?>
+	<p style=max-width:900px;font-size:0.9em>Currently this demo uses a small and rather limited image 
 	sample, you might notice that while the initial results are visually similar, the quality 
 	quickly declines as it displays 100 images without filtering for relevance. While the 
 	initial results are often good, the quality of the matches can quickly decline.
+<? } ?>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<link href="<? echo smarty_modifier_revision("/js/select2-3.3.2/select2.css"); ?>" rel="stylesheet"/>
 	<script src="<? echo smarty_modifier_revision("/js/select2-3.3.2/select2.js"); ?>"></script>
 
+	<? echo $location->getScripts(); ?>
 	<script>
+	var mapOpened = false;
+	function quickFetch() {
+		let query = $('form[name=theForm]').serialize();
+		$('#results').load("?inner=1&"+query)
+		if (mapOpened)
+			openMap(); //no way to turn it off!
+	}
+	function openMap() {
+		mapOpened = true;
+		let query = $('form[name=theForm]').serialize();
+		window.open('?inner=2&map=1&'+query, 'maptab');
+	}
 	$(function() {
+		//this enforces the dropdowns to be mutually exclusive!
 		$('form[name=theForm] select').each(function() {
 			$(this).on('change', function() {
-				var name = this.name;
-				var value = this.value;
-				$('#results').load("?inner=1&"+encodeURIComponent(name)+"="+encodeURIComponent(value));
 				$(this).siblings('select').each(function() { //automatically only finds OTHERS
 					this.selectedIndex=0;
 				});
+				quickFetch();
 			});
 		});
 
 		$('select[name=label]').select2({width:"600px"});
 	});
+
+function jumpLocation(form) {
+      //form.submit();
+	quickFetch();
+}
 	</script>
 	<hr>
 	<?
@@ -83,30 +129,60 @@ if (empty($_GET['inner'])) {
 ####################################################
 
 	print "<form method=get name=theForm>";
-//	$sql = "select id, user_id, title from gridimage_embedding"; //tends to be domindated by images from dave hitchborne!
-//	$sql = "select id,realname,title from gridimage_embedding where id > 2519432 order by rand() limit 100 option rand_seed=3";
-	$sql = "select id, user_id, title from gridimage_embedding where user_id != 4330"; //tends to be domindated by images from dave hitchborne! (titles dont work as have placenames!) 
+	/////////////////////
 
-	$imagelist->getImagesBySphinxQL($sql);
-	print "Base Image: <select name=id style=max-width:400px>";
+	//use the RT backend if possible!
+	if (!empty($rt)) {
+
+	//	$sql = "select id, user_id, title from gridimage_embedding"; //tends to be domindated by images from dave hitchborne!
+	//	$sql = "select id,realname,title from gridimage_embedding where id > 2519432 order by rand() limit 100 option rand_seed=3";
+		$sql = "select id, user_id, title from gridimage_embedding where user_id != 4330"; //tends to be domindated by images from dave hitchborne! (titles dont work as have placenames!) 
+		$imagelist->getImagesBySphinxQL($sql);
+	} else {
+		$sql = "select gridimage_id, user_id, title from gridimage_embedding inner join gridimage_search using (gridimage_id) where type = 'image' limit 30";
+		$imagelist->_getImagesBySql($sql);
+	}
+
+	print "<b>Base Image</b>: (random selection of images from current demo dataset)<br>";
+	print "<select name=id style=max-width:400px>";
 	print "<option></option>";
 	foreach($imagelist->images as $image) {
 		printf('<option value=%d%s>%s</value>', $image->gridimage_id, (@$_GET['id'] == $image->gridimage_id)?' selected':'', htmlentities($image->title)); //its actutty utf8 in manticore!
 	}
-	print "</select> (random selection of images from current demo dataset)<hr>";
+	print "</select><hr>";
 
-//	$list = $db->getAssoc("SELECT label,round((1-nearest_image)*100) as percent FROM label_embedding WHERE embeddings IS NOT NULL ORDER BY rand(42) LIMIT 1000");
-	//ksort($list);
-	$list = $db->getAssoc("select label,round((1-nearest_image)*100,1) as percent from label_embedding where nearest_image is not null group by floor(nearest_image*1000) order by label");
-	print "Label: <select name=label style=max-width:400px>";
+	/////////////////////
+
+	$list = $db->getAssoc("select label,round((1-nearest_image)*100,1) as percent from label_embedding where nearest_image is not null group by floor(nearest_image*100000) order by label");
+	print "<b>Label</b>: (selection of terms to try, arbitary input not supported yet)<br>";
+	print " <select name=label style=max-width:400px>";
 	print "<option></option>";
+	if (!empty($_GET['label']) && !isset($list[$_GET['label']]))
+		$list[$_GET['label']] = '50';
+
 	foreach($list as $label => $percent) {
 		printf('<option value="%s"%s>%s (%d%%)</value>', $l=htmlentities($label), (@$_GET['label'] == $label)?' selected':'', $l, $percent);
 	}
-	print "</select> (selection of terms to try)<hr>";
+	print "</select><hr>";
 
-	print "And/Or search by location: <input type=text name=lat placeholder=Latitude size=8>, <input type=text name=lon placeholder=Longitude size=8>, <input type=text name=dist placeholder=\"Distance (m)\" size=4> <input type=submit value=Search>";
+	/////////////////////
 
+	print "<b>Optional Location</b>: (works with Label only)<br>";
+	print $location->getInput($_GET['loc']??'');
+	print "<br><b>Distance</b>: <input type=number min=0 max=100000 step=1000 name=dist value=\"".htmlentities($_GET['dist'])."\">m";
+	if (!empty($_GET['s3'])) {
+		print " (enter distance to get a radius search)";
+	} else {
+		print " (optional, enter distance to get a radius search, otherwise gets a fused simialrity/location ordering)";
+	}
+	print "<hr>";
+	print "<input type=button onclick=quickFetch() value=Update>";
+
+	if (empty($_GET['s3']))
+		print " <input type=button value='Open Map' onclick='openMap()'>";
+
+	print " - Note: if select a Base image, the Label/Location are currently ignored";
+	/////////////////////
 	print "</form>";
 
 	print "<hr>";
@@ -114,22 +190,48 @@ if (empty($_GET['inner'])) {
 	print "<div id=\"results\">";
 }
 
+
+####################################################
+
+if (!empty($_GET['loc'])) {
+        list($lat, $lng) = $location->extractLatLng($_GET['loc']);
+
+        if (!empty($lat) && isset($lng)) { //lng COULD be e
+		$_GET['lat'] = $lat;
+		$_GET['lon'] = $lng;
+        }
+}
+if (!empty($_GET['map'])) {
+	$imagelist->knncols .= ",wgs84_lat,wgs84_long";
+
+	//bodge. for now the map is always opened in new window, but then lacks the template
+	//todo, use _basic_begin??
+	print "<script src=/js/geograph.js></script>";
+}
+
+//print htmlentities(print_r($_GET,true));
+
 ####################################################
 // simply id search
 
 	if (!empty($_GET['id'])) {
 		$id = intval($_GET['id']);
 
-		$sql = "select id, user_id, realname, title, 1 as reference_index, grid_reference from gridimage_embedding where id = $id";
 
+		//..its clearer to show the actual source image, natuallt excluded from the KNN query!
 		print "<div style=float:left;width:450px;padding:20px>";
 		print "These images are visually similar to the source image, but the similarity is based purely on appearance, not on the image's title or location. For instance, you'll see other churches, but not necessarily the same church from a different angle.";
 		//print "The results are showing images visually similar to this, <b>not based on the image title</b>. This similarity index is NOT location aware. So for example wont be the same Church, just Churches in general.";
 		print "</div>";
-		$imagelist->getImagesBySphinxQL($sql);
+		if (!empty($rt)) { //might as well use it!
+			$sql = "select id, user_id, realname, title, 1 as reference_index, grid_reference from gridimage_embedding where id = $id";
+			$imagelist->getImagesBySphinxQL($sql);
+		} else {
+			$imagelist->getImagesByIdList(array($id));
+		}
 		$imagelist->outputThumbs($thumbw,$thumbh);
 
-
+		// get results
 		$imagelist->getImagesSimilarToID($id);
 		$imagelist->outputThumbs($thumbw,$thumbh);
 
@@ -141,7 +243,7 @@ if (empty($_GET['inner'])) {
 		$criteria = [
 			'lat' => $_GET['lat']??0,
 			'lon' => $_GET['lon']??0,
-			'distance' => $_GET['distance']??1000,
+			'distance' => $_GET['dist']??1000,
 			'label' => $_GET['label'] ??'',
 			'keywords' => $_GET['q'],
 		];
@@ -160,26 +262,37 @@ if (empty($_GET['inner'])) {
 		$dist = $_GET['dist'];
 		$label = !empty($_GET['label']) ? $_GET['label'] : null;
 
-		print "These images are visually similar to the term <b>".htmlentities($label)."</b> and within ".htmlentities($dist)." meters of ".htmlentities($lat).", ".htmlentities($lon).".<br>";
+		print "These images are visually similar to the term <b>".htmlentities($label)."</b> and within ".round($dist/1000,1)."km of ".round($lat,6).", ".round($lon,6).".<br>";
 
-		if ($imagelist->getImagesByLocation($lat, $lon, $dist, $label))
-			$imagelist->outputThumbs($thumbw, $thumbh);
-		else
+		if ($imagelist->getImagesByLocation($lat, $lon, $dist, $label)) {
+			if (!empty($_GET['map'])) {
+				$imagelist->outputMap(true);
+			} else {
+				$imagelist->outputThumbs($thumbw, $thumbh);
+			}
+		} else
 			print "no results found";
 
 ####################################################
 //new vector search
 
 	} elseif (!empty($_GET['lat']) && !empty($_GET['lon'])) {
+		if (!empty($_GET['s3'])) {
+			die("this search method isnt yet supported, specify a distance above");
+		}
 		$lat = $_GET['lat'];
 		$lon = $_GET['lon'];
 		$label = $_GET['label'];
 
-		print "These images are visually similar to the term <b>".htmlentities($label)."</b> and location ".htmlentities($lat).", ".htmlentities($lon).". (using vector append method)<br>";
+		print "These images are visually similar to the term <b>".htmlentities($label)."</b> and location ".round($lat,6).", ".round($lon,6).". (using experimental vector append method)<br>";
 
-		if ($imagelist->getImagesByLocationVector($lat, $lon, $label))
-			$imagelist->outputThumbs($thumbw, $thumbh);
-		else
+		if ($imagelist->getImagesByLocationVector($lat, $lon, $label)) {
+			if (!empty($_GET['map'])) {
+				$imagelist->outputMap(true);
+			} else {
+				$imagelist->outputThumbs($thumbw, $thumbh);
+			}
+		} else
 			print "no results found";
 
 ####################################################

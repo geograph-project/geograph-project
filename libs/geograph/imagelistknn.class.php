@@ -40,6 +40,7 @@ class ImageListKNN extends ImageList
         //always needs (id,user_id, title) (ideally realname,grid_reference too)
     public $knncols = 'id, user_id, realname, title, 1 as reference_index, grid_reference'; //focing ri=1 means always .org.uk links
 
+        //to an image id
     public function getImagesSimilarToID($id, $limit = 100)
     {
         $id = intval($id);
@@ -49,6 +50,7 @@ class ImageListKNN extends ImageList
         return $this->getImagesBySphinxQL($sql);
     }
 
+       //just label
     public function getImagesSimilarToLabel($label, $limit = 100)
     {
         $value = $this->_getLabelVectorValue($label);
@@ -61,6 +63,7 @@ class ImageListKNN extends ImageList
         return $this->getImagesBySphinxQL($sql);
     }
 
+	//label + lat/long using geodist
     public function getImagesByLocation($lat, $lon, $distance, $label = null, $limit = 100)
     {
         $cols = $this->knncols;
@@ -139,6 +142,7 @@ class ImageListKNN extends ImageList
         return "(".implode(', ', $list).")";
     }
 
+	//label + lat,lon using plus_vector
     public function getImagesByLocationVector($lat, $lon, $label, $limit = 100, $incgeodist = false)
     {
         $db = $this->_getDB();

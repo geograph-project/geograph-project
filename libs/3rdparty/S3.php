@@ -58,7 +58,7 @@ class S3
 	 * @access private
 	 * @static
 	 */
-	private static $__accessKey = null;
+	public static $__accessKey = null;
 
 	/**
 	 * AWS Secret Key
@@ -67,7 +67,7 @@ class S3
 	 * @access private
 	 * @static
 	 */
-	private static $__secretKey = null;
+	public static $__secretKey = null;
 
 	/**
 	 * SSL Client key
