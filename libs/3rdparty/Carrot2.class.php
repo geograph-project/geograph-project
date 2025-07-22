@@ -149,6 +149,6 @@ class Carrot2
     );
     $response = curl_exec($curl);
     $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    return $http_code == 200;
+    return $http_code == 400; //this isn't valid request as such, really checking that connect.. If wasnt really DCS, would likly be some other status!
   }
 }

@@ -43,7 +43,7 @@ echo "Testing AWS IAM Role...\n";
 if (!empty($_SERVER['AWS_WEB_IDENTITY_TOKEN_FILE'])) {
     neutral("AWS_WEB_IDENTITY_TOKEN_FILE is set.");
     $fs = new FileSystem();
-    if ($fs->accessKey) {
+    if (S3::$securityToken) {
         success("Successfully assumed IAM role.");
     } else {
         error("Failed to assume IAM role.");
@@ -58,7 +58,8 @@ echo "Testing MariaDB Connection...\n";
 $db = GeographDatabaseConnection();
 if ($db) {
     $version = $db->GetOne("SELECT VERSION()");
-    success("Successfully connected to MariaDB. Version: $version");
+    success("Successfully connected to MariaDB.");
+    print "  Version: $version\n";
 } else {
     error("Failed to connect to MariaDB.");
 }
@@ -70,7 +71,8 @@ if (!empty($CONF['db_read_connect'])) {
     $db_slave = GeographDatabaseConnection(true);
     if ($db_slave && $db_slave->readonly) {
         $version = $db_slave->GetOne("SELECT VERSION()");
-        success("Successfully connected to MariaDB slave. Version: $version");
+        success("Successfully connected to MariaDB slave.");
+	print "  Version: $version\n";
     } else {
         error("Failed to connect to MariaDB slave.");
     }
@@ -142,8 +144,12 @@ if (!empty($CONF['memcache']['app'])) {
     $stats = $memcache->getStats();
     if ($stats) {
         success("Successfully connected to Memcache.");
-        foreach ($stats as $server => $data) {
-            echo "  Server: $server, Version: {$data['version']}\n";
+	if (!empty($stats['redis_version'])) {
+		print "  Redis Server: {$stats['redis_version']}  Role: {$stats['role']}  Slaves: {$stats['connected_slaves']}\n";
+	} else {
+	        foreach ($stats as $server => $data) {
+        	    echo "  Server: $server, Version: {$data['version']}\n";
+		}
         }
     } else {
         error("Failed to connect to Memcache.");
@@ -155,9 +161,9 @@ echo "\n";
 
 // Test Carrot2 DCS Connection
 echo "Testing Carrot2 DCS Connection...\n";
-if (!empty($CONF['carrot2_host'])) {
+if (!empty($CONF['carrot2_dcs_host'])) {
     require_once '3rdparty/Carrot2.class.php';
-    $carrot2 = new Carrot2($CONF['carrot2_host']);
+    $carrot2 = Carrot2::createDefault();
     if ($carrot2->isAvailable()) {
         success("Successfully connected to Carrot2 DCS.");
     } else {
