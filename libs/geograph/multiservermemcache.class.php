@@ -91,6 +91,15 @@ class MultiServerMemcache extends Memcache {
 		split_timer('memcache','connect'); //logs the wall time
 	}
 
+	//the client will have to with different format if redis
+	function getStats() {
+		if (!$this->valid) return false;
+		if ($this->redis) {
+			return $this->redis->info();
+		}
+		return parent::getStats();
+	}
+
 	//extended to allow quick exit if memcache not in use
 	// and to have a global simple namespace;
 	function set($key, &$val, $flag = false, $expire = 0) {
