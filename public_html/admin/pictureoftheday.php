@@ -204,7 +204,7 @@ if (empty($assigned)) {
 	ksort($coming_up);
 	$smarty->assign_by_ref("coming_up", $coming_up);
 	//$smarty->assign_by_ref("pending", $pending);
-	//$smarty->assign_by_ref("pendingcount", count($pending));
+	//$smarty->assign("pendingcount", count($pending));
 }
 
 $smarty->display($template,$cacheid);

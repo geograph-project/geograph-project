@@ -108,7 +108,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				unlink($t1);
 				unlink($t2);
 			} else
-				$smarty->assign_by_ref('output', diff2table($a1,$a2));
+				$smarty->assign('output', diff2table($a1,$a2));
 		}
 	} else {
 		header("HTTP/1.0 404 Not Found");

@@ -142,7 +142,7 @@ elseif (isset($_GET['gridref']))
 	}
 	else
 	{
-		$smarty->assign_by_ref('gridref', strip_tags($_GET['gridref']));
+		$smarty->assign('gridref', strip_tags($_GET['gridref']));
 		$smarty->assign('gridref_error', "Bad grid reference");
 	}
 
