@@ -56,7 +56,7 @@ if (isset($_COOKIE['markedImages']) && !empty($_COOKIE['markedImages'])) {
 	if ($ids) {
 		$imagelist->getImagesByIdList($ids);
 		$smarty->assign_by_ref('results', $imagelist->images);
-		$smarty->assign_by_ref('ids', implode(',',$ids));
+		$smarty->assign('ids', implode(',',$ids));
 	}
 }
 

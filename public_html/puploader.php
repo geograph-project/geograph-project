@@ -333,7 +333,7 @@ if (isset($_GET['success'])) {
 	$xh->setXmlData(stripslashes($_POST['rss']));
 	$pData = $xh->xmlParse();
 
-	$smarty->assign_by_ref('pData', array_slice($pData,0,10));
+	$smarty->assign('pData', array_slice($pData,0,10));
 
 } else {
 	$template = "puploader_login.tpl";

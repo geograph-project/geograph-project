@@ -49,6 +49,7 @@ $cacheid .= md5(serialize($GET));
 $template = 'content.tpl';
 
 $db = GeographDatabaseConnection(true);
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $data = $db->getRow("show table status like 'content'");
 
@@ -369,8 +370,6 @@ if (!empty($_GET['ddd']))
 		$having = '';
 	}
 
-	$prev_fetch_mode = $ADODB_FETCH_MODE;
-	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll($sql = "
 	select content.content_id,content.user_id,url,title,extract,unix_timestamp(replace(content.$datecolumn,'-00','-01')) as $datecolumn,realname,content.source,content.gridimage_id,
 		(content.views+coalesce(article_stat.views,0)+coalesce(topic_views,0)) as views,
@@ -418,11 +417,9 @@ if (!empty($_GET['ddd']))
 			$list[$i][$datecolumn] = sprintf("%d minutes ago",$diff/60);
 		}
 	}
-	
-	$ADODB_FETCH_MODE = $prev_fetch_mode;
-	
-	$smarty->assign_by_ref('resultCount', $resultCount);
-	$smarty->assign_by_ref('shown', count($list));
+
+	$smarty->assign('resultCount', $resultCount);
+	$smarty->assign('shown', count($list));
 	$smarty->assign_by_ref('list', $list);
 	$smarty->assign_by_ref('title', $title);
 	$smarty->assign("order",$order);

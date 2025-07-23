@@ -146,7 +146,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				list($country,$adm1) = explode('-',$_GET['adm1']);
 				if ($adm1) {
 					$sql = "SELECT name FROM loc_adm1 WHERE country = ".$db->Quote($country)." AND adm1 = ".$db->Quote($adm1);
-					$smarty->assign_by_ref('adm1_name', $db->GetOne($sql));
+					$smarty->assign('adm1_name', $db->GetOne($sql));
 					$smarty->assign('parttitle', "in County");
 				} else {
 					$smarty->assign('adm1_name', "Northern Ireland");

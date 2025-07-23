@@ -44,11 +44,11 @@ $from_email=isset($_POST['from_email'])?stripslashes($_POST['from_email']):$USER
 $to_name=isset($_POST['to_name'])?stripslashes($_POST['to_name']):'';
 $to_email=isset($_POST['to_email'])?stripslashes($_POST['to_email']):'';
 
-$smarty->assign_by_ref('from_name', $from_name);
-$smarty->assign_by_ref('from_email', $from_email);
+$smarty->assign('from_name', $from_name);
+$smarty->assign('from_email', $from_email);
 
-$smarty->assign_by_ref('to_name', $to_name);
-$smarty->assign_by_ref('to_email', $to_email);
+$smarty->assign('to_name', $to_name);
+$smarty->assign('to_email', $to_email);
 
 $db=GeographDatabaseConnection(false);
 if (empty($db)) die('Database connection failed');
@@ -129,7 +129,7 @@ if (!$throttle && isset($_POST['msg']))
 	}
 	$smarty->assign_by_ref('errors', $errors);
 
-	$smarty->assign_by_ref('msg', html_entity_decode($msg)); //will be re-htmlentities'ed when output
+	$smarty->assign('msg', html_entity_decode($msg)); //will be re-htmlentities'ed when output
 
 	//still ok?
 	if ($ok && !isset($_POST['edit']))
@@ -162,7 +162,7 @@ if (!$throttle && isset($_POST['msg']))
 
 ############################################
 
-		$smarty->assign_by_ref('htmlmsg', nl2br($msg));
+		$smarty->assign('htmlmsg', nl2br($msg));
 
 
 		$body=$smarty->fetch('email_ecard.tpl');
