@@ -56,7 +56,8 @@ function rehighlight(that,check) {
 
 {if $tagarray}
 	{foreach from=$tagarray key=key item=row}
-		rehighlight(document.getElementById("c-{$key|escape:'url'}"));
+		if (document.getElementById("c-{$key|escape:'url'}"))
+			rehighlight(document.getElementById("c-{$key|escape:'url'}"));
 	{/foreach}
 {/if}
 
