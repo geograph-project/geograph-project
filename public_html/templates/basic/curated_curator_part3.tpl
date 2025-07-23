@@ -49,6 +49,7 @@ function rehighlight(that,check) {
 	}
 	var id = that.id.replace(/c-/,'l-');
 	document.getElementById(id).style.fontWeight=that.checked?'bold':'normal';
+	document.getElementById(id).style.color=that.checked?'blue':'black';
 	document.getElementById(id).style.backgroundColor=that.checked?'white':'';
 
 }
