@@ -59,7 +59,7 @@ if (!empty($_POST['action'])) {
 $sql = "SELECT gi.gridimage_id, gi.user_id, title, grid_reference, gi.tags, GROUP_CONCAT(one.tag SEPARATOR '?') as done
 FROM gridimage_search gi
 INNER JOIN curated_tag one ON (one.gridimage_id = gi.gridimage_id AND one.status = 1)
-INNER JOIN curated_tag two ON (two.gridimage_id = gi.gridimage_id AND two.status = 1 AND tow.tag = 'Checked')
+INNER JOIN curated_tag two ON (two.gridimage_id = gi.gridimage_id AND two.status = 1 AND two.tag = 'Checked')
 LEFT JOIN  curated_tag thr ON (thr.gridimage_id = gi.gridimage_id AND thr.status = 1 AND thr.tag IN ('Skip','Verified','Errors'))
 WHERE thr.gridimage_id IS NULL AND gi.user_id != {$USER->user_id} AND two.user_id != {$USER->user_id}
 GROUP BY gi.gridimage_id
@@ -98,7 +98,7 @@ if (!empty($row)) {
 	$tags->assignPrimarySmarty($smarty);
 
 } else {
-	die("no images found, perhaps need to select some in step 1?");
+	die("no images found, there are non waiting to be verified");
 }
 
 $smarty->display('curated_curator_part3.tpl');
