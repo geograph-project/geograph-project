@@ -63,6 +63,12 @@ if (!empty($_POST['action'])) {
 	print "$plus added. $minus not;";
 }
 
+if (rand(3) > 2) {
+	//this should be a backend process!
+	$db->Execute("update curated_tag set status = 0 where status = 1 and tag = 'saved' and created < date_sub(now(),interval 24 hour) and updated < date_sub(now(),interval 24 hour)");
+}
+
+
 $sql = "SELECT gi.gridimage_id, gi.user_id, title, grid_reference, gi.tags, GROUP_CONCAT(one.tag SEPARATOR '?') as done
 	FROM gridimage_search gi
 	INNER JOIN curated_tag one USING (gridimage_id)
