@@ -61,14 +61,30 @@ if (!empty($_GET['stats'])) {
 	$data = $db->getAll("select source,event_type,count(*),max(event_date)
 			,sum(moderation_status='pending') as pending,sum(moderation_status='flagged') as flagged,sum(moderation_status='approved') as approved
 		 from moderation group by source,event_type");
-	print "<table>";
+
+	print "<h2>Monitored Content</h2>";
+	print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=#eee>";
 		print "<tr><th>".implode("</th><th>",array_map('htmlentities',array_keys($data[0])))."</th></tr>";
 	foreach($data as $row) {
-		print "<tr><td>".implode("</td><td align=right>",array_map('htmlentities',$row))."</td>";
-		if (!empty($row['source']))
-			print "<td><a href=\"?source={$row['source']}\">view</a>";
+		//print "<tr><td>".implode("</td><td align=right>",array_map('htmlentities',$row))."</td>";
+		print "<tr>";
+		foreach($row as $key => $value) {
+			if ($key == 'pending' || $key == 'flagged' || $key == 'approved') {
+				if ($value)
+					print "<td align=right><a href=\"?source={$row['source']}&status=$key\">$value</a>";
+				else
+					print "<td>";
+			} elseif (is_numeric($value)) {
+				print "<td align=right>".floatval($value);
+			} else {
+				print "<td>".htmlentities($value);
+			}
+		}
 	}
-	print "</table><hr>";
+	print "</table>";
+
+	$smarty->display('_std_end.tpl');
+	exit;
 }
 
 ##############################
@@ -107,6 +123,7 @@ $links = array(
 	'stats=1'=>'Statistics',
 );
 
+
 print '<div class="tabHolder" style="max-width:940px">';
 foreach ($links as $link => $name) {
         if ($link == $_SERVER['QUERY_STRING']) {
@@ -119,13 +136,23 @@ foreach ($links as $link => $name) {
                 print "<a class=tab href=?$link>$name</a> ";
         }
 }
+
+print "<a href=\"https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Additional_pages_moderation_testing_July_2025.pdf\" class=about target=_blank>Help Document</a>";
+
+
 print '</div>';
 
 ##############################
 
 	print "<div class=interestBox>";
-        print "<h2>Content to Review</h2>";
+	if (!empty($_GET['status']) && $_GET['status'] != 'pending') {
+	        print "<h2>Additional Content, Status = ".htmlentities($_GET['status'])."</h2>";
+	} else {
+	        print "<h2>Additional Content to Review</h2>";
+	}
+	print "<i>Note: there is no need to process in any particular order</i>";
 	print "</div>";
+	print "<br>";
 
 	$where = implode(' AND ',$where);
 	$list = $db->getAll("SELECT m.*, user.realname, images, modd.realname AS mod_realname
@@ -197,10 +224,11 @@ print '</div>';
                 }
 		print '</div>';
 
+		/*
 		if (count($list) == $size) {
 			$offset+=$size;
 			print "<div class=interestBox><a href=?o=$offset>More...</a></div>";
-		}
+		}*/
 
 	} else {
 		print "Nothing to display.";
