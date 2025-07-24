@@ -134,7 +134,7 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 
 <li style=color:red>Note: If find a broken or missing image, please in the first instance report it via <a href="/stuff/image_report_form.php">Image Report Form</a>. (this form can be posted publically for anyone to use, not just for moderators)</li>
 
-<li><a href="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Manual_Version2_2025_final.pdf" target="_blank">Moderation Manual (2025)</a> (opens in new tab)
+<li><a href="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Manual_Version2.1_2025.pdf" target="_blank">Moderation Manual (v2.1 2025)</a> (opens in new tab)
 
 <li><a href="/tags/report.php?admin=1">Report Tag Issues</a> / <a href="/tags/report.php?approver=1">Approver</a>
 </ul>
@@ -167,7 +167,7 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 
 <li style=color:red>Note: If find a broken or missing image, please in the first instance report it via <a href="/stuff/image_report_form.php">Image Report Form</a>. (this form can be posted publically for anyone to use, not just for moderators)</li>
 
-<li><a href="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Manual_Version2_2025_final.pdf" target="_blank">Moderation Manual (2025)</a> (opens in new tab)
+<li><a href="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Manual_Version2.1_2025.pdf" target="_blank">Moderation Manual (v2.1 2025)</a> (opens in new tab)
 
 <li><a href="/tags/report.php?admin=1">Report Tag Issues</a>   / <a href="/tags/report.php?approver=1">Approver</a>
 
