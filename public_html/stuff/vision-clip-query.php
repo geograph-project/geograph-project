@@ -26,14 +26,13 @@ init_session();
 
 $smarty = new GeographPage;
 
-// customExpiresHeader(3600,false,true);
+//allow cloudflare to cache
+customExpiresHeader(3600*6, !empty($_GET['inner']), true);
 
 
 	$db = GeographDatabaseConnection(false);
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-//currently this demo repurposed for testing s3vectors, ratther than the manticore index!
-$_GET['s3'] = 1;
 if (empty($_GET['dist']))
 	$_GET['dist'] = 5000;
 
@@ -62,15 +61,42 @@ if (empty($_GET['inner'])) {
 
         <h2>CLIP-based Similarity Search (Demo Dataset)</h2>
 
-	<p style=max-width:900px;font-size:0.9em> This demo uses a sample of about 800,000 images. While initial results are 
-	often visually similar, the quality tends to decline quickly as it displays 30 images without further relevance 
-	filtering. This is a visual similarity search, so it cannot search for specific names or places like 'Harlech Castle'. 
-	Instead, search for a general term like 'castle' and then use the location filter to center your search around Harlech.
+	<div style="max-width:900px;font-size:0.9em">
+	<? if (rand(0,2) > 1) { ?>
 
-	<p style=max-width:900px;font-size:0.9em> A neat feature is the ability to combine concepts in your search! Try queries 
-	like "castle and red sunset", "headland from the sea", "high street without people", "red cottages with a blue sky" or 
-	"cars driving in the rain". Just be aware that you might not get perfectly precise matches, the system aims to show the 
-	most visually similar results, even if the resemblance isn't exact.
+		<p>This demo draws from a sample of about 1 million images. While initial results are often visually strong, 
+		their quality tends to decline quickly as the system displays 30 images without further relevance filtering. This 
+		isn't a named entity search. You can't search for specific proper names or landmarks like 'Giant's Causeway' or 
+		'Harlech Castle'. Instead, look for a general visual term like 'basalt columns' or 'coastal cliffs', or just 
+		'castle' then use the location filter to center your search on a specific place.
+
+		<p>The system's strength lies in combining visual concepts. Feel free to try queries such as: "castle and red 
+		sunset" "headland from the sea", "high street without people", "red cottages with a blue sky" or "cars 
+		driving in the rain".
+
+		<p>The underlying model is general-purpose. While it understands broad concepts (e.g., 'rock formations' 
+		or 'flowers'), it hasn't been trained to identify or distinguish exact species or specific geological 
+		features (e.g., it recognizes a cliff but not the unique basalt columns of the Giant's Causeway). 
+		Therefore, while better matches should generally float to the top, expect some mismatches; the system 
+		prioritizes showing the most visually similar images, even if the resemblance isn't exact.
+
+	 <? } else { ?>
+
+		<p> This demo uses a sample of about 1 million images. While initial results are often visually similar, the 
+		quality tends to decline quickly as it displays 30 images without further relevance filtering. This is a visual 
+		similarity search, so it cannot search for specific names or places like 'Harlech Castle'. Instead, search for a 
+		general term like 'castle' and then use the location filter to center your search around Harlech.
+
+		<p> A neat feature is the ability to combine concepts in your search! Try queries like "castle and red sunset", 
+		"headland from the sea", "high street without people", "red cottages with a blue sky" or "cars driving in the 
+		rain". Just be aware that you might not get perfectly precise matches, the system sorts the results, such that 
+		better matches should float to the top, even if the resemblance isn't exact.
+
+		<p> The underlying model is designed for general-purpose visual similarity. While it understands concepts like 
+		'rock formations' in general, it hasn't been trained to identify or distinguish exact geological features (e.g., 
+		it knows what a cliff looks like but not the specific basalt columns of the Giant's Causeway).
+	<? } ?>
+	</div>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
@@ -267,9 +293,8 @@ if (!empty($_GET['loc'])) {
 //new vector search
 
 	} elseif (!empty($_GET['lat']) && !empty($_GET['lon'])) {
-		if (!empty($_GET['s3'])) {
-			die("this search method isnt yet supported, specify a distance above");
-		}
+		die("this search method isnt yet supported, specify a distance above");
+
 		$lat = $_GET['lat'];
 		$lon = $_GET['lon'];
 		$label = $_GET['query'];
