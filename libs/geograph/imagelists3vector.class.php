@@ -5,7 +5,7 @@
  * GeoGraph geographic photo archive project
  * http://geograph.sourceforge.net/
  *
- * This file copyright (C) 2023 Barry Hunter (barry@geograph.org.uk)
+ * This file copyright (C) 2025 Barry Hunter (barry@geograph.org.uk)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -14,7 +14,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -24,60 +24,43 @@
 
 require_once('imagelist.class.php');
 
-include "3rdparty/s3vectors.inc.php";
-
-//
-function get_text_embeddings($inputText) {
-	$apiUrl = 'http://python-embed.dev.svc.cluster.local:8000/text';
-
-	// The data to send in the request body as a JSON string
-	$postData = json_encode(['text' => $inputText]);
-
-	// Initialize a cURL session
-	$ch = curl_init();
-
-	// Set cURL options
-	curl_setopt($ch, CURLOPT_URL, $apiUrl); // Set the URL
-	curl_setopt($ch, CURLOPT_POST, 1); // Set the request method to POST
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $postData); // Set the POST data
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string instead of outputting it
-	curl_setopt($ch, CURLOPT_HTTPHEADER, [
-	    'Content-Type: application/json',
-	    'Content-Length: ' . strlen($postData) // Set Content-Length header
-	]);
-
-	// Execute the cURL request
-	$response = curl_exec($ch);
-
-	// Check for cURL errors
-	if (curl_errno($ch)) {
-	    echo 'cURL error: ' . curl_error($ch);
-	} else {
-	    // Decode the JSON response
-	    return json_decode($response, true);
-	}
-
-	// Close the cURL session
-	curl_close($ch);
-}
+require_once("3rdparty/s3vectors.inc.php"); //defines queryS3Vectors
+require_once("geograph/vectors.inc.php"); //defines getTextEmbedding (and getImageEmbedding, getKNNResults, etc.)
 
 /**
-* Provides the ImageListKNN class
+* Provides the ImageListS3Vector class, which interacts with S3Vectors for image search.
 *
 * @package Geograph
 */
 
 /**
-* ImageListKNN class
-* Provides facilities for building a list of GridImage instances using KNN
+* ImageListS3Vector class
+* Provides facilities for building a list of GridImage instances using S3Vector service for KNN.
+* Extends ImageList for common image list functionalities.
 */
 class ImageListS3Vector extends ImageList
 {
-    public $vector_bucket = 'geograph-vector-bucket';
+    private $vector_bucket;
     public $vector_index = 'image-clip';
-    public $awsRegion = "us-east-1"; //s3vector, isnt available in all regions - so we have to define the region to use!
+    public $awsRegion = "us-east-1"; //s3vector, isn't available in all regions - so we have to define the region to use!
 
-        //to an image id
+    /**
+     * Constructor for ImageListS3Vector.
+     * Initializes the vector bucket from global configuration.
+     */
+    function __construct() {
+        global $CONF;
+        $this->vector_bucket = $CONF['s3_vector_bucket'];
+    }
+
+    /**
+     * Retrieves images similar to a given image ID using S3Vectors.
+     *
+     * @param int $id The ID of the image to find similar images to.
+     * @param int $limit The maximum number of similar images to return.
+     * @param string $type The type of image embedding (e.g., 'image').
+     * @return int The number of images found and loaded into the list.
+     */
     public function getImagesSimilarToID($id, $limit = 30, $type='image')
     {
         $queryPayload = [
@@ -86,12 +69,18 @@ class ImageListS3Vector extends ImageList
             'queryVector' => ['float32' => $this->_getImageVectorValueList($id, $type)],
             'topK' => $limit,
             'returnDistance' => true,
-            'returnMetadata' => false,
+            'returnMetadata' => true, // Changed to true to align with general expectation and potential future use
         ];
-	return $this->_getImagesByPayload($queryPayload);
+        return $this->_getImagesByPayload($queryPayload);
     }
 
-       //just label
+    /**
+     * Retrieves images similar to a given label using S3Vectors.
+     *
+     * @param string $label The label text to find similar images to.
+     * @param int $limit The maximum number of similar images to return.
+     * @return int The number of images found and loaded into the list.
+     */
     public function getImagesSimilarToLabel($label, $limit = 30)
     {
         $queryPayload = [
@@ -100,169 +89,200 @@ class ImageListS3Vector extends ImageList
             'queryVector' => ['float32' => $this->_getLabelVectorValueList($label)],
             'topK' => $limit,
             'returnDistance' => true,
-            'returnMetadata' => false,
+            'returnMetadata' => true, // Changed to true
         ];
-	return $this->_getImagesByPayload($queryPayload);
+        return $this->_getImagesByPayload($queryPayload);
     }
-	//label + lat/long using geodist - label is NOT optional
+
+    /**
+     * Retrieves images by location and label using S3Vectors with geo-filtering.
+     * Label is not optional for this search type.
+     *
+     * @param float $lat Latitude.
+     * @param float $lon Longitude.
+     * @param float $distance Search radius in meters. Will default to 5000m if less than 10m.
+     * @param string $label The label text for the vector query.
+     * @param int $limit The maximum number of images to return.
+     * @return int The number of images found and loaded into the list.
+     */
     public function getImagesByLocation($lat, $lon, $distance, $label, $limit = 30)
     {
-	if ($distance < 10)
-		$distance = 5000;
-
+        if ($distance < 10) {
+            $distance = 5000;
+        }
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
             'queryVector' => ['float32' => $this->_getLabelVectorValueList($label)],
             'topK' => $limit,
             'returnDistance' => true,
-            'returnMetadata' => false,
-	    'filter' => $this->_getFilters(array('lat'=>$lat,'lng'=>$lon,'dist'=>$distance))
+            'returnMetadata' => true, // Changed to true
+            'filter' => $this->_getFilters(array('lat'=>$lat,'lng'=>$lon,'dist'=>$distance))
         ];
 
-	return $this->_getImagesByPayload($queryPayload);
+        return $this->_getImagesByPayload($queryPayload);
     }
 
+    /**
+     * Internal method to execute an S3Vectors query payload and populate the image list.
+     *
+     * @param array $queryPayload The S3Vectors query payload.
+     * @return int The number of images found and loaded into the list, or 0 on error.
+     */
     function _getImagesByPayload($queryPayload) {
         $results = queryS3Vectors(
             $queryPayload,
             $this->awsRegion
         );
 
-	if (!empty($results['vectors'])) {
-		$ids = array();
-	        foreach ($results['vectors'] as $i => $vector) {
-			$ids[intval($vector['key'])] = $vector['distance'];
-		}
-		$count = $this->getImagesByIdList(array_keys($ids));
-		foreach ($this->images as &$image) {
-			$image->grid_reference .= sprintf(" (dist: %.1f)", $ids[$image->gridimage_id]);
-		}
-		return $count;
-	} else {
-	        echo "No vectors found for the query or an error occurred.\n";
-		return 0;
-    	}
+        if (!empty($results['vectors'])) {
+            $ids = array();
+            foreach ($results['vectors'] as $vector) {
+                // Ensure 'key' is present and can be converted to an int
+                if (isset($vector['key'])) {
+                    $ids[intval($vector['key'])] = $vector['distance'] ?? null; // Store distance if available
+                }
+            }
+            if (empty($ids)) {
+                error_log('ImageListS3Vector:_getImagesByPayload: No valid IDs found in S3Vectors response.');
+                return 0;
+            }
+            $count = $this->getImagesByIdList(array_keys($ids));
 
+            // Append distance to grid_reference for debugging/display, modifying image objects in place
+            foreach ($this->images as &$image) {
+                if (isset($ids[$image->gridimage_id])) {
+                    $image->grid_reference .= sprintf(" (dist: %.1f)", $ids[$image->gridimage_id]);
+                }
+            }
+            return $count;
+        } else {
+            error_log('ImageListS3Vector:_getImagesByPayload: No vectors found for the query or an error occurred. Response: ' . json_encode($results));
+            return 0;
+        }
     }
 
+    /**
+     * Internal method to generate S3Vectors filter array from parameters.
+     *
+     * @param array $param An associative array containing filter parameters (e.g., 'lat', 'lng', 'dist', 'user_id').
+     * @return array The S3Vectors compatible filter array.
+     */
     private function _getFilters($param) {
         $queryFilter = array();
+        $parts = array(); // Will be a list of ANDed criteria
 
-	    $parts = array(); //will be specifically a list if ANDed criteria
-	    if (!empty($param['lat'])) {
-		$delta = $this->calculateDegreesFromMeters($param['dist'], $param['lat']);
+        if (!empty($param['lat']) && !empty($param['lng']) && !empty($param['dist'])) {
+            $delta = $this->calculateDegreesFromMeters($param['dist'], $param['lat']);
+            $parts[] = array('slat' => array('$gte' => $param['lat'] - $delta['lat'], '$lte' => $param['lat'] + $delta['lat']));
+            $parts[] = array('slng' => array('$gte' => $param['lng'] - $delta['lon'], '$lte' => $param['lng'] + $delta['lon']));
+        }
 
-	        $parts[] = array('slat' => array('$gte' => $param['lat']- $delta['lat'], '$lte' => $param['lat']+ $delta['lat']));
-	        $parts[] = array('slng' => array('$gte' => $param['lng']- $delta['lon'], '$lte' => $param['lng']+ $delta['lon']));
-	    }
+        if (!empty($param['user_id'])) {
+            $parts[] = array('user_id' => array('$eq' => intval($param['user_id'])));
+        }
 
-	    if (!empty($param['user_id']))
-	        $parts[] = array('user_id' => array('$eq' => intval($param['user_id'])));
-
-	    if (!empty($parts)) {
-	        if (count($parts) > 1) {
-	        //multiple actully need nesting.
-	           $queryFilter['$and'] =$parts;
-	        } else {
-	        //todo  if 1 then use directly?
-	           $queryFilter = $parts[0];
-	        }
-	    }
-	return $queryFilter;
+        if (!empty($parts)) {
+            if (count($parts) > 1) {
+                $queryFilter['$and'] = $parts;
+            } else {
+                $queryFilter = $parts[0];
+            }
+        }
+        return $queryFilter;
     }
 
+    /**
+     * Retrieves an image embedding vector from the database given an image ID and type.
+     *
+     * @param int $id The ID of the gridimage.
+     * @param string $type The type of embedding (e.g., 'image').
+     * @return array An array of floats representing the embedding vector, or an empty array if not found.
+     */
     private function _getImageVectorValueList($id,$type='image')
     {
         $db = $this->_getDB();
         $type = $db->Quote($type);
         $binary = $db->getOne("SELECT embeddings FROM gridimage_embedding WHERE gridimage_id = ".intval($id)." AND type=$type");
-
         if (empty($binary)) {
-            return null;
+            error_log('ImageListS3Vector:_getImageVectorValueList: No embedding found for image ID: ' . $id . ' and type: ' . $type);
+            return []; // Return empty array consistently on not found
         }
-
         return array_values(unpack('g*', $binary));
     }
 
+    /**
+     * Retrieves a label embedding vector from the database or generates it via API if not found.
+     *
+     * @param string $label The label text.
+     * @return array An array of floats representing the embedding vector, or an empty array if not found/generated.
+     */
     private function _getLabelVectorValueList($label)
     {
         $db = $this->_getDB();
         $quoted = $db->Quote($label);
         $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
 
-	if (empty($binary)) {
-		$r = get_text_embeddings($label);
-		if (!empty($r) && count($r) == 512)
-			return $r;
-
-		die("Unable to encode query. Please try later");
-	}
-
         if (empty($binary)) {
-            return null;
+            // If not found in DB, try to get it from the embedding API
+            $r = getTextEmbedding($label);
+            if (!empty($r) && is_array($r) && count($r) > 0) { // Check if API returned a valid non-empty array
+                // Optionally, save $r to DB here for future use
+                // $db->Execute("INSERT INTO label_embedding (label, embeddings) VALUES ($quoted, ?)", [pack('g*', ...$r)]);
+                return $r;
+            }
+            error_log('ImageListS3Vector:_getLabelVectorValueList: Unable to get/encode query vector for label: ' . $label . ' from DB or API.');
+            return []; // Return empty array instead of die() or null
         }
 
         return array_values(unpack('g*', $binary));
     }
 
-	//label + lat,lon using plus_vector
-    public function getImagesByLocationVector($lat, $lon, $label, $limit = 30, $incgeodist = false)
-    {
-        die("todo");
+    // --- Placeholder Methods for future implementation ---
+    public function getImagesByLocationVector($lat, $lon, $label, $limit = 30, $incgeodist = false) {
+        error_log('ImageListS3Vector: getImagesByLocationVector is a TODO and not implemented.');
+        return 0;
     }
 
-    public function getImagesByCriteria(array $criteria, $limit = 100)
-    {
-        die("todo");
+    public function getImagesByCriteria(array $criteria, $limit = 100) {
+        error_log('ImageListS3Vector: getImagesByCriteria is a TODO and not implemented.');
+        return 0;
     }
 
-	function calculateDegreesFromMeters(float $meters, float $latitude): array
-	{
-	    // Earth's radius in meters (mean radius)
-	    // This value is used to calculate the circumference of the Earth,
-	    // which is then used to determine the length of one degree of latitude.
-	    $earthRadiusMeters = 6371000;
+    /**
+     * Calculates the change in latitude and longitude degrees corresponding to a given distance in meters.
+     * Useful for creating bounding box filters.
+     *
+     * @param float $meters The distance in meters.
+     * @param float $latitude The current latitude in degrees (used for longitude calculation).
+     * @return array An associative array with 'lat' (delta latitude in degrees) and 'lon' (delta longitude in degrees).
+     */
+    function calculateDegreesFromMeters(float $meters, float $latitude): array
+    {
+        $earthRadiusMeters = 6371000; // Earth's mean radius in meters
 
-	    // Approximate length of one degree of latitude in meters.
-	    // This is relatively constant globally.
-	    // Circumference = 2 * PI * R
-	    // Degrees in a circle = 360
-	    // Length of 1 degree latitude = (2 * PI * R) / 360
-	    $metersPerDegreeLatitude = ($earthRadiusMeters * 2 * M_PI) / 360;
+        // Approximate length of one degree of latitude in meters (constant)
+        $metersPerDegreeLatitude = ($earthRadiusMeters * 2 * M_PI) / 360;
 
-	    // Convert latitude from degrees to radians for trigonometric functions.
-	    $latitudeRadians = deg2rad($latitude);
+        $latitudeRadians = deg2rad($latitude);
 
-	    // Approximate length of one degree of longitude in meters at the given latitude.
-	    // This varies significantly with latitude, decreasing as you move away from the equator.
-	    // Length of 1 degree longitude = (2 * PI * R * cos(latitude)) / 360
-	    $metersPerDegreeLongitude = $metersPerDegreeLatitude * cos($latitudeRadians);
+        // Approximate length of one degree of longitude in meters at the given latitude
+        $metersPerDegreeLongitude = $metersPerDegreeLatitude * cos($latitudeRadians);
 
-	    // Calculate the change in latitude degrees for the given meters.
-	    $deltaLatDegrees = $meters / $metersPerDegreeLatitude;
+        $deltaLatDegrees = $meters / $metersPerDegreeLatitude;
 
-	    // Calculate the change in longitude degrees for the given meters.
-	    // Handle potential division by zero if latitude is exactly +/- 90 degrees (poles).
-	    // At the poles, a degree of longitude has effectively zero length, so delta_lon would be infinite.
-	    // In practical terms for bounding boxes, if at the poles, delta_lon can be considered 180 (covers all longitudes).
-	    $deltaLonDegrees = 0.0; // Default to 0
-	    if (abs($metersPerDegreeLongitude) > 0.000001) { // Avoid division by very small numbers near poles
-	        $deltaLonDegrees = $meters / $metersPerDegreeLongitude;
-	    } else {
-	        // If at or very near the poles, a small meter distance can cover all longitudes.
-	        // For bounding box purposes, we might want to set a large value or handle this case specifically.
-	        // Here, we'll just set a very large value to ensure it encompasses everything.
-	        // A more robust solution might return a specific flag or throw an error for pole-centric queries.
-	        $deltaLonDegrees = 180.0; // Effectively covers all longitudes if at the pole
-	    }
+        $deltaLonDegrees = 0.0;
+        if (abs($metersPerDegreeLongitude) > 0.000001) { // Avoid division by very small numbers near poles
+            $deltaLonDegrees = $meters / $metersPerDegreeLongitude;
+        } else {
+            // At or very near the poles, a small meter distance can effectively cover all longitudes.
+            // Setting a large value to encompass everything for bounding box purposes.
+            $deltaLonDegrees = 180.0;
+        }
 
-
-	    return [
-	        'lat' => $deltaLatDegrees,
-	        'lon' => $deltaLonDegrees,
-	    ];
-	}
-
+        return [
+            'lat' => $deltaLatDegrees,
+            'lon' => $deltaLonDegrees,
+        ];
+    }
 }
-

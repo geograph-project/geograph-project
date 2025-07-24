@@ -1,0 +1,19 @@
+-- The original table was created without recording the source!
+
+
+UPDATE label_embedding l INNER JOIN subjects ON (label = subject) SET l.src = 'subject',l.updated=l.updated WHERE l.src IS NULL;
+
+UPDATE label_embedding l INNER JOIN category_primary ON (label = top) SET l.src = 'top',l.updated=l.updated WHERE l.src IS NULL;
+
+
+UPDATE label_embedding l INNER JOIN tag ON (tag = label and prefix = 'type' and canonical = 0) SET l.src = 'type',l.updated=l.updated WHERE l.src IS NULL;
+
+UPDATE label_embedding l INNER JOIN tag_stat ON (tagtext = label) SET l.src = 'tag',l.updated=l.updated WHERE l.src IS NULL;
+
+UPDATE label_embedding l INNER JOIN tag ON (tag = label and prefix = 'bucket' and canonical = 0) SET l.src = 'bucket',l.updated=l.updated WHERE l.src IS NULL;
+
+
+UPDATE label_embedding l INNER JOIN curated_label ON (concat_ws(' > ',stack,name) = l.label) SET l.src = 'curated',l.updated=l.updated WHERE l.src IS NULL;
+UPDATE label_embedding l INNER JOIN curated_label ON (name = l.label) SET l.src = 'curated',l.updated=l.updated WHERE l.src IS NULL;
+
+

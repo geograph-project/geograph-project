@@ -8,6 +8,10 @@ import os # Import the os module to access environment variables
 from decimal import Decimal # Import Decimal type
 import math # Import math for ceil
 import time # Import time for sleep
+import requests
+import json
+
+
 
 # --- Configuration ---
 PUT_BATCH_LIMIT = 500 # S3Vectors PutVectors API limit per call
@@ -31,6 +35,47 @@ def get_embedding(text: str) -> list[float]:
     )
     response_body = json.loads(response['body'].read())
     return response_body['embedding']
+
+def get_text_embeddings(input_text):
+    """
+    Connects to an API to get text embeddings.
+
+    Args:
+        input_text (str): The text for which to get embeddings.
+
+    Returns:
+        dict or None: The JSON response from the API as a dictionary, or None if an error occurs.
+    """
+    api_url = 'http://python-embed.dev.svc.cluster.local:8000/text'
+
+    # The data to send in the request body as a JSON string
+    post_data = {'text': input_text}
+
+    try:
+        # Make the POST request
+        response = requests.post(api_url, json=post_data)
+
+        # Raise an HTTPError for bad responses (4xx or 5xx)
+        response.raise_for_status()
+
+        # Decode the JSON response
+        return response.json()
+
+    except requests.exceptions.HTTPError as errh:
+        print(f"Http Error: {errh}")
+        return None
+    except requests.exceptions.ConnectionError as errc:
+        print(f"Error Connecting: {errc}")
+        return None
+    except requests.exceptions.Timeout as errt:
+        print(f"Timeout Error: {errt}")
+        return None
+    except requests.exceptions.RequestException as err:
+        print(f"Something went wrong: {err}")
+        return None
+    except json.JSONDecodeError as errj:
+        print(f"JSON Decode Error: {errj}")
+        return None
 
 def insert_data(vector_bucket_name: str, index_name: str, data_file: str):
     """
@@ -60,7 +105,8 @@ def insert_data(vector_bucket_name: str, index_name: str, data_file: str):
             continue
 
         try:
-            embedding = get_embedding(text)
+            #embedding = get_embedding(text) --- this is fetching from bedrock, with a different model
+            embedding = get_text_embeddings(text) # this is actully using CLIP!
             metadata = {"id": item_id, "source_text": text}
             if genre:
                 metadata["genre"] = genre
@@ -396,7 +442,8 @@ def run_query(vector_bucket_name: str, index_name: str, query_text: str, top_k: 
     """
     print(f"Generating embedding for query: '{query_text}'...")
     try:
-        query_embedding = get_embedding(query_text) # get_embedding now includes dimensions
+        #query_embedding = get_embedding(query_text) --- this is fetching from bedrock, with a different model
+        query_embedding = get_text_embeddings(query_text) # this is actully using CLIP!
     except Exception as e:
         print(f"Error generating embedding for query: {e}")
         sys.exit(1)

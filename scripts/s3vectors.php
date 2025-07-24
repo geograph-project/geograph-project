@@ -29,8 +29,24 @@ chdir(__DIR__);
 require "./_scripts.inc.php";
 
 ##################################
+//
 
-if (!empty($param['insert'])) {
+if (!empty($param['insert']) && $param['index'] == 'label-clip') {
+
+	$cmd = array();
+	$cmd[] = "python3";
+	$cmd[] = "vector-cmd6.py"; //has batching
+	$cmd[] = "--index ".$param['index'];
+	$cmd[] = "insert-mysql";
+	$cmd[] = "-D".$CONF['db_db']; //need to send this, so matches $param['config'] (rest is auto-detected)
+	$cmd[] = '-t"label_embedding"';
+	$cmd[] = '-s'.escapeshellarg("id, label, src, embeddings");
+	$cmd[] = '-w'.escapeshellarg("length(embeddings)=2048 LIMIT 10"); //just in case!
+	print implode(' ',$cmd)."\n";
+	exit;
+
+} elseif (!empty($param['insert'])) { //&& index==image-clip - not chceked so can still insert into test-index too!
+
 	//for now, rather than encoding the injection process in PHP, use the python script!
 	$cmd = array();
 	$cmd[] = "python3";
@@ -43,33 +59,39 @@ if (!empty($param['insert'])) {
 	//the ROUND() is just to ensure it numeric, "vector-cmd4.py" can already deal with the DECIMAL from wgs84_lat etc
 	$cmd[] = '-s'.escapeshellarg("gridimage_id AS id, user_id, grid_reference as gridref, round(replace(imagetaken,'-','')) AS taken, wgs84_lat as slat, wgs84_long as slng, embeddings");
 
-if ($param['insert'] > 1) {
-	$db = GeographDatabaseConnection(false);
-	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	//create table tmp_emdedding_stat select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id from gridimage_embedding where type='image' group by substring(updated,1,10) order by null;
-	$data = $db->getAll("SELECT * FROM tmp_emdedding_stat WHERE done IS NULL");
-	foreach ($data as $row) {
-		$where = "type='image' AND seq_id BETWEEN {$row['min_id']} AND {$row['max_id']} AND updated LIKE '{$row['day']}%'"; //dont know if filtering by day helps or not!
-		$where = '-w'.escapeshellarg($where);
-		print implode(' ',$cmd)." $where\n";
-		if ($param['insert'] > 2) {
-			putenv('PYTHONUNBUFFERED=1');
+	if ($param['insert'] > 1) {
+		$db = GeographDatabaseConnection(false);
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		//create table tmp_emdedding_stat select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id from gridimage_embedding where type='image' group by substring(updated,1,10) order by null;
+		//alter table tmp_emdedding_stat add done datetime default null
+		//alter table tmp_emdedding_stat add primary key(day);
+		//replace into tmp_emdedding_stat select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id,null as done from gridimage_embedding where type='image' and seq_id >= (select max(min_id) from tmp_emdedding_stat) group by substring(updated,1,10);
+		//note, this replace will add any new days, but it WILL also replace the last day, usuaully a good thing, as it may have more images
+		//... its just htat it ALWAYS replaces last day (resetting done!), even if unnessary. could use max(max_id) as the crit, but then count(*)/min_id will be WRONG for the day, will be replaced with only NEW rows, not all rows. 
+		//but see vision-stat.php, which has a even better INSERT ... ON DUPLICATE KEY UPDATE ..., which only counts new rows
+		$data = $db->getAll("SELECT * FROM tmp_emdedding_stat WHERE done IS NULL AND `day` < date(now())");
+		foreach ($data as $row) {
+			$where = "type='image' AND seq_id BETWEEN {$row['min_id']} AND {$row['max_id']} AND updated LIKE '{$row['day']}%'"; //dont know if filtering by day helps or not!
+			$where = '-w'.escapeshellarg($where);
+			print implode(' ',$cmd)." $where\n";
+			if ($param['insert'] > 2) {
+				putenv('PYTHONUNBUFFERED=1');
 
-			passthru(implode(' ',$cmd)." $where");
+				passthru(implode(' ',$cmd)." $where");
+			}
+
+			$sql = "UPDATE tmp_emdedding_stat SET done=NOW() WHERE min_id = {$row['min_id']}";
+			print "# $sql;\n\n";
+			if ($param['insert'] > 2) {
+				//the connection might of closed!
+				$db = GeographDatabaseConnection(false);
+				$db->Execute($sql);
+
+				exit;
+			}
 		}
-
-		$sql = "UPDATE tmp_emdedding_stat SET done=NOW() WHERE min_id = {$row['min_id']}";
-		print "# $sql;\n\n";
-		if ($param['insert'] > 2) {
-			//the connection might of closed!
-			$db = GeographDatabaseConnection(false);
-			$db->Execute($sql);
-
-exit;
-		}
+		exit;
 	}
-	exit;
-}
 
 	$cmd[] = '-w'.escapeshellarg("type='image' LIMIT 10");
 	print implode(' ',$cmd)."\n";
