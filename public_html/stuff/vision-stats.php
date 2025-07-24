@@ -39,8 +39,9 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	print "<h2>Basic stats for stored data (model: ClipTheLandscape)</h2>";
 	print "<hr>";
 
-	$number = $db->cacheGetOne(3600,"SELECT count(*) FROM gridimage_label WHERE model = ".$db->Quote($_GET['model']));
-	print "<p><b>".number_format($number,0)."</b> total image-label pairs saved (can be multiple labels per image) - not updated in real time.</p>";
+	$number =  $db->cacheGetOne(3600*6, "SELECT count(*) FROM gridimage_label         WHERE model = ".$db->Quote($_GET['model']));
+	$number += $db->cacheGetOne(3600*24,"SELECT count(*) FROM gridimage_label_archive WHERE model = ".$db->Quote($_GET['model']));
+	print "<p style=color:gray>At least <b>".number_format($number,0)."</b> total image-label pairs saved (can be multiple labels per image) - not updated in real time.</p>";
 
 	$row = $db->getRow("SELECT * FROM gridimage_label WHERE model = ".$db->Quote($_GET['model'])." ORDER BY seq_id DESC LIMIT 1");
 	print "<p>Most Recent <b>".htmlentities($row['label'])."</b> (".sprintf('%.1f',$row['score']*100)."%) for image #{$row['gridimage_id']} at <tt>{$row['updated']}</tt>.</p>";
@@ -48,7 +49,14 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	print "<hr>";
 
 //	$number = $db->getOne("SELECT count(*) FROM gridimage_embedding"); // WHERE model = ".$db->Quote($_GET['model'])); -- currently only one model saved!
-	$number = $db->getOne("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gridimage_embedding'");
+//	$number = $db->getOne("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'gridimage_embedding'");
+	//TABLE_ROWS is very inaccurate!
+
+	if (empty($db->readonly)) //by running this, we can actully get accurate stat!
+		$db->Execute("replace into tmp_emdedding_stat select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id,null as done from gridimage_embedding where type='image' and seq_id >= (select max(min_id) from tmp_emdedding_stat) group by substring(updated,1,10)");
+
+	$number = $db->getOne("select SUM(count)*2 from tmp_emdedding_stat"); //only counts type=image
+
 	print "<p><b>".number_format($number,0)."</b> total CLIP embeddings saved (for image and title), so nominally ".number_format($number/2,0)." images.</p>";
 
 	$row = $db->getRow("SELECT * FROM gridimage_embedding ORDER BY seq_id DESC LIMIT 1");
