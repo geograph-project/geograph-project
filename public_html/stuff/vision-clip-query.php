@@ -64,11 +64,11 @@ if (empty($_GET['inner'])) {
 	<div style="max-width:900px;font-size:0.9em">
 	<? if (rand(0,2) > 1) { ?>
 
-		<p>This demo draws from a sample of about 1 million images. While initial results are often visually strong, 
-		their quality tends to decline quickly as the system displays 30 images without further relevance filtering. This 
-		isn't a named entity search. You can't search for specific proper names or landmarks like 'Giant's Causeway' or 
-		'Harlech Castle'. Instead, look for a general visual term like 'basalt columns' or 'coastal cliffs', or just 
-		'castle' then use the location filter to center your search on a specific place.
+		<p>This demo draws from a sample of about 1 million images. While initial results are often visually strong, their 
+		quality tends to decline quickly as the system displays 30 images without further relevance filtering. This isn't 
+		a named entity search. You can't search for specific proper names or landmarks like 'Giant's Causeway' or 'Harlech 
+		Castle', or even places like 'Newcastle'. Instead, look for a general visual term like 'basalt columns' or 
+		'coastal cliffs', or just 'castle' then use the location filter to center your search on a specific place.
 
 		<p>The system's strength lies in combining visual concepts. Feel free to try queries such as: "castle and red 
 		sunset" "headland from the sea", "high street without people", "red cottages with a blue sky" or "cars 
@@ -84,8 +84,9 @@ if (empty($_GET['inner'])) {
 
 		<p> This demo uses a sample of about 1 million images. While initial results are often visually similar, the 
 		quality tends to decline quickly as it displays 30 images without further relevance filtering. This is a visual 
-		similarity search, so it cannot search for specific names or places like 'Harlech Castle'. Instead, search for a 
-		general term like 'castle' and then use the location filter to center your search around Harlech.
+		similarity search, so it cannot search for specific names or places like 'Harlech Castle' or 'Newcastle'. Instead, 
+		search for a general term like 'castle' and then use the location filter to center your search around Harlech 
+		using the dedicated Location box.
 
 		<p> A neat feature is the ability to combine concepts in your search! Try queries like "castle and red sunset", 
 		"headland from the sea", "high street without people", "red cottages with a blue sky" or "cars driving in the 
@@ -164,6 +165,46 @@ function restoreForm(queryString) {
     });
 }
 
+function openSearch(open) {
+	let query = $('#query').val();
+	let loc = $('#loc').val();
+	let dist = parseInt($('#dist').val(),10);
+	let url = '/of/';
+	//todo, use 'urlplus()'
+	if (loc && loc.length) {
+		if (m = loc.match(/^([A-Z]{1,2}\d{4}) (.+)/)) {
+			url = '/near/'+encodeURIComponent(m[2])+'/'+encodeURIComponent(m[1]);
+		} else {
+			url = '/near/'+encodeURIComponent(loc);
+		}
+		let bits = [];
+		if (query && query.length)
+			bits.push("filter="+encodeURIComponent(query));
+		if (dist && dist > 0)
+			bits.push("dist="+dist);
+		if (bits.length)
+			url = url + '?' + bits.join('&');
+	} else {
+		url = '/of/'+encodeURIComponent(query);
+	}
+	if (open) {
+		window.open(url,'_blank');
+		return false;
+	} else {
+		return url;
+	}
+}
+function openMap(open) {
+	var url = "/mapper/clip-query.php";
+	let query = $('#query').val();
+	url = url + '?query='+encodeURIComponent(query);
+	if (open) {
+		window.open(url,'_blank');
+		return false;
+	} else {
+		return url;
+	}
+}
 	</script>
 
     <style>
@@ -235,10 +276,15 @@ function restoreForm(queryString) {
         <label for="loc">Optional Location:</label>
 	<? print $location->getInput($_GET['loc']??''); ?>
 
-        <label for="dist">Distance:</label>
+        <label for="dist">Max Distance:</label>
         <div>
             <input type="number" min="0" max="100000" step="1000" name="dist" id="dist" value="<?php echo htmlentities($_GET['dist'])??''; ?>">m
             <span style="font-size: 0.9em; color: #666;"> (max=100000m)</span>
+
+		<div style="float:right;font-size:small">
+			<a href="#" onclick="return openSearch(true)" onmouseover="this.href = openSearch(false);" title="reminder: the keyword search might not understand a 'similarity' query!">Open in keyword searcher</a> 
+			or <a href="#" onclick="return openMap(true)" onmouseover="this.href = openMap(false);">Map</a>
+		</div>
 
             <input type="button" onclick="quickFetch()" value="Update">
         </div>

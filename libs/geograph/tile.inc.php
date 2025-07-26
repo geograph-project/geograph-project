@@ -64,3 +64,24 @@ function getStaticColorKey(&$img) {
         return $colour;
 }
 
+
+function doBoundingBoxesIntersect(string $bbox1_str, string $bbox2_str): bool
+{
+    // Parse the first bounding box string
+    list($xmin1, $ymin1, $xmax1, $ymax1) = array_map('floatval', explode(',', $bbox1_str));
+
+    // Parse the second bounding box string
+    list($xmin2, $ymin2, $xmax2, $ymax2) = array_map('floatval', explode(',', $bbox2_str));
+
+    // Check for intersection
+    if ($xmin1 > $xmax2 || $xmax1 < $xmin2) {
+        return false;
+    }
+
+    if ($ymin1 > $ymax2 || $ymax1 < $ymin2) {
+        return false;
+    }
+
+    return true;
+}
+
