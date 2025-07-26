@@ -222,8 +222,15 @@ function getKNNResults(array $vector, int $limit = 30, string $index_name = 'lab
  * Format: Array('http_code' => int, 'vectors' => Array(0 => Array('key' => ..., 'metadata' => ..., 'distance' => ...), ...))
  * Returns a default empty structure on failure.
  */
-function getZeroShotLabels($image, $limit = 30) {
-    global $CONF;
+function getZeroShotLabels($image, $limit = 30, $src = false) {
+    global $CONF, $memcache;
+
+	$mkey = $image->gridimage_id.$src??'';
+	$results = $memcache->name_get('zero',$mkey);
+        if (is_array($results)) { //could be empty array!
+		return $results;
+	}
+
 
     // 1. Get image embedding using the dedicated function
     $vector = getImageEmbedding($image);
@@ -245,6 +252,8 @@ function getZeroShotLabels($image, $limit = 30) {
             'returnDistance' => true,
             'returnMetadata' => true, // Changed to true to get metadata from S3Vectors as per expected output
         ];
+	if ($src)
+		$queryPayload['filter'] = array('src'=>$src);
 
         // Ensure queryS3Vectors function is defined and handles its own errors
         if (function_exists('queryS3Vectors')) {
@@ -265,6 +274,10 @@ function getZeroShotLabels($image, $limit = 30) {
         $results = getKNNResults($vector, $limit);
     }
 
+    if ($results['http_code'] == 200) {
+         $memcache->name_set('zero',$mkey,$results,$memcache->compress,$memcache->period_med);
+    }
+
     // 3. The $results variable should now hold the data in the desired S3Vector-like format.
     return $results;
 }
@@ -277,22 +290,18 @@ function getZeroShotLabels($image, $limit = 30) {
  */
 function dumpVectors($results) {
     echo "\n--- Final Results Summary ---\n";
-    echo "HTTP Status Code: " . ($results['http_code'] ?? 'N/A') . "\n";
+    echo "HTTP Status Code: " . ($results['http_code'] ?? '??') . "\n";
 
     if (!empty($results['vectors']) && is_array($results['vectors'])) {
         echo "Parsed Results:\n";
         foreach ($results['vectors'] as $i => $vector) {
             echo "Result " . ($i + 1) . ":\n";
-            echo "  Key: " . ($vector['key'] ?? 'N/A') . "\n";
+            echo "  Key: " . ($vector['key']) . "\n";
             if (isset($vector['distance'])) {
                 echo "  Distance: " . $vector['distance'] . "\n";
-            } else {
-                echo "  Distance: N/A\n";
             }
             if (!empty($vector['metadata'])) {
 	            echo "  Metadata: " . json_encode($vector['metadata']) . "\n";
-            } else {
-                echo "  Metadata: N/A\n";
             }
             echo "---\n";
         }
