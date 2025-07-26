@@ -441,9 +441,9 @@ function enlargeMap() {
 			{mapLetter: 't', maxZoom: 18, attribution: '<a href=https://www.thunderforest.com/>thunderforest.com</a>, '+osmAttrib});
 */
 
-		baseMaps['MapBox Imagery'] = new L.TileLayer('https://api.mapbox.com/styles/v1/geograph/cjh8zse9f2lq32spb7s5vmvbk/tiles/256/{z}/{x}/{y}?access_token={accessToken}',
-			{mapLetter: 'h', maxZoom: 18, attribution: 'Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>',
-				accessToken: 'pk.eyJ1IjoiZ2VvZ3JhcGgiLCJhIjoiY2lteXI3cmlpMDBmenY5bTF5dHFqMnh0NiJ9.sPXF2s1niWNNEfqGjs2HGw'});
+		baseMaps["ESRI LiteGray"] = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+		    attribution: 'Tiles &copy; Esri &mdash; Sources: Esri, DeLorme, HERE, TomTom, Intermap, increment P Corp, GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+		});
 
 		baseMaps["ESRI Imagery"] = new L.TileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
 			minZoom: 1, maxZoom: 18,
