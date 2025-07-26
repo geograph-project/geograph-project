@@ -106,6 +106,23 @@ if (!empty($results['vectors'])) {
 		map.fitBounds(bounds,{maxZoom:15});
 
 		var hash = new L.Hash(map);
+
+
+        // --- New: Add click event to map to show lat/long in a popup ---
+        map.on('click', function(e) {
+            const lat = e.latlng.lat.toFixed(6); // Format to 6 decimal places
+            const lng = e.latlng.lng.toFixed(6); // Format to 6 decimal places
+
+		var p1 = map.containerPointToLatLng([window.innerWidth/2, window.innerHeight/2]);
+		var p2 = map.containerPointToLatLng([(window.innerWidth/2) + 40, (window.innerHeight/2) + 40]);
+		var dist = p1.distanceTo(p2).toFixed(0);
+
+            L.popup()
+                .setLatLng(e.latlng)
+                .setContent(`<a href="/stuff/vision-clip-query.php?query=<? echo urlencode($_GET['query']); ?>&amp;loc=${lat},${lng}&amp;dist=${dist}" target="_blank">View Thumbnail Results</a>`)
+                .openOn(map);
+        });
+
         }
         AttachEvent(window,'load',loadmap,false);
         </script>
