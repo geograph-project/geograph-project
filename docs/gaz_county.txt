@@ -1,0 +1,93 @@
+Primary.geograph_live>create table country_gaz as select seq,full_county,island_name,country,count(*) as places,1 as reference_index,min(east) as mbr_xmin,min(north) as mbr_ymin,max(east) as mbr_xmax,max(north) as mbr_ymax,'os_gaz_250' as source_table from os_gaz_250 where country != '' group by full_county,island_name with rollup;
+Query OK, 479 rows affected, 1 warning (0.123 sec)
+Records: 479  Duplicates: 0  Warnings: 1
+
+Primary.geograph_live>alter table country_gaz comment = "select seq,full_county,island_name,country,count(*) as places,1 as reference_index,min(east) as mbr_xmin,min(north) as mbr_ymin,max(east) as mbr_xmax,max(north) as mbr_ymax,'os_gaz_250' as source_table from os_gaz_250 where country != '' group by full_county,island_name with rollup";
+Query OK, 0 rows affected (0.026 sec)
+
+--- dont want the overall rollup row (its NOT a nullable colum!)
+Primary.geograph_live>delete from country_gaz where full_county = '';
+Query OK, 0 rows affected (0.005 sec)
+
+NOTE: this DIDNT WORK. There are rows with blank and null in the table, so NULL does NOT identify the rollup!
+
+#############################################
+#... so second attempt... (dont think '' VS null actully signify anything (Maybe vs known mainland vs unknonw?) 
+
+drop table country_gaz;
+
+create table country_gaz (island_name varchar(128) default null) as 
+SELECT seq,full_county,island_name,country,count(*) as places,1 as reference_index,min(east) as mbr_xmin,min(north) as mbr_ymin,max(east) as mbr_xmax,max(north) as mbr_ymax
+, 'os_gaz_250' as source_table
+FROM (SELECT seq,full_county,ifnull(island_name,'') as island_name,country,east,north from os_gaz_250 where country != '') t2
+group by full_county,island_name with rollup;
+
+#############################################
+# and ireland!
+
+--remember the ifnull is to hide thefact that table has both NULL and '' in islandmame, but want null to mean 
+
+Primary.geograph_live>select id as seq,county as full_county,ifnull(island_name,'') as island_name,country,e,n from ie_open_places  limit 10;
+
+insert into country_gaz
+SELECT seq,full_county,island_name,country,count(*) as places,2 as reference_index,min(e) as mbr_xmin,min(n) as mbr_ymin,max(e) as mbr_xmax,max(n) as mbr_ymax
+, 'ie_open_places' as source_table
+FROM (select id as seq,county as full_county,ifnull(island_name,'') as island_name,country,e,n from ie_open_places) t2
+group by full_county,island_name with rollup;
+
+#############################################
+# and iom
+
+Primary.geograph_live>select seq,full_county,'Isle of Man' as country,east,north from os_gaz where full_county = 'Isle of Man' limit 10;
+
+SELECT seq,full_county,island_name,country,count(*) as places,1 as reference_index,min(east) as mbr_xmin,min(north) as mbr_ymin,max(east) as mbr_xmax,max(north) as mbr_ymax
+, 'os_gaz' as source_table
+FROM (select seq,full_county,'' as island_name,'Isle of Man' as country,east,north from os_gaz where full_county = 'Isle of Man') t2
+group by full_county,island_name;
+-- no point bothering with rollup, as only one county, and island_name not supproted!
+
+UPDATE country_gaz SET island_name = NULL where island_name = '' and full_county = 'Isle of Man';
+
+#############################################
+# cleanup rollup rows!
+
+delete from country_gaz where full_county = '';
+
+-- delete the 'mainland' row, where here are no islands. (so only counties will island(s) have the row!)
+DELETE one.* 
+FROM country_gaz one
+LEFT JOIN country_gaz two ON (one.full_county = two.full_county AND one.country = two.country AND length(two.island_name)>1 )
+WHERE one.island_name = ''
+AND two.full_county IS NULL;
+
+-- so the ones left must be mainland (the 'all rows' are null!)
+UPDATE country_gaz SET island_name = '(mainland)' where island_name = '';
+
+
+
+
+
+
+Primary.geograph_live>create table tmp_os_open_regions select region,count(*) as points,country,name1,auto_id,populated_place,district_borough,county_unitary,min(mbr_xmin),min(mbr_ymin),max(mbr_xmax),max(mbr_ymax) from os_open_names group by region;
+Query OK, 11 rows affected (4.633 sec)
+Records: 11  Duplicates: 0  Warnings: 0
+
+
+create table tmp_os_open_regions 
+select region,count(*) as points,country,name1,auto_id,district_borough,county_unitary,min(mbr_xmin+0),min(mbr_ymin+0),max(mbr_xmax+0),max(mbr_ymax+0)
+ from os_open_names where mbr_xmin+0 > 10 and mbr_ymin+0 > 10 group by region;
+
+INSERT INTO country_gaz
+select auto_id as seq,            
+concat(region, if(country != region and region NOT like 'York%', CONCAT(' (',country,')'),'')) as full_county,    
+null as island_name,    
+country,        
+points as places,         
+1 as reference_index,
+`min(mbr_xmin+0)` as mbr_xmin,       
+`min(mbr_ymin+0)` as mbr_ymin,       
+`max(mbr_xmax+0)` as mbr_xmax,       
+`max(mbr_ymax+0)` as mbr_ymax,       
+'os_open_regions' as source_table   
+from tmp_os_open_regions;
+
