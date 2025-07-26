@@ -277,6 +277,8 @@ class ImageListKNN extends ImageList
             }
         }
 
+        //todo  if (!empty($criteria['bbox'])
+
         if (!empty($criteria['label'])) {
             $value = $this->_getLabelVectorValue($criteria['label']);
             if (!is_null($value)) {
@@ -293,11 +295,23 @@ class ImageListKNN extends ImageList
             $params[] = $criteria['keywords'];
         }
 
+
+	if (!empty($param['user_id'])) {
+            $where[] = "user_id = ".intval($param['user_id']);
+	}
+
         if (empty($where)) {
             return 0;
         }
 
         $this->sql = $sql = "SELECT $cols FROM gridimage_embedding WHERE ".implode(' AND ', $where)." LIMIT $limit";
         return $this->getImagesBySphinxQL($sql, true, ...$params);
+    }
+
+
+    public function getRawVectorsByCriteria(array $criteria, $limit = 30, $metadata=false) {
+	die("todo getRawVectorsByCriteria");
+	//call getKNNResults directly (rather than $this->getImagesBySphinxQL) as it already mimiks the s3vector output??
+	//return getKNNResults(...);
     }
 }

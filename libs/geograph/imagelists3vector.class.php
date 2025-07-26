@@ -178,6 +178,13 @@ class ImageListS3Vector extends ImageList
             $parts[] = array('slng' => array('$gte' => $param['lng'] - $delta['lon'], '$lte' => $param['lng'] + $delta['lon']));
         }
 
+	if (!empty($param['bbox'])) {
+	    //xmin,ymin,xmax,ymax - same format as olbounds
+	    list($xmin,$ymin,$xmax,$ymax) = explode(',', $param['bbox']);
+            $parts[] = array('slat' => array('$gte' => floatval($ymin), '$lte' => floatval($ymax)));
+            $parts[] = array('slng' => array('$gte' => floatval($xmin), '$lte' => floatval($xmax)));
+	}
+
         if (!empty($param['user_id'])) {
             $parts[] = array('user_id' => array('$eq' => intval($param['user_id'])));
         }
@@ -244,10 +251,44 @@ class ImageListS3Vector extends ImageList
         return 0;
     }
 
-    public function getImagesByCriteria(array $criteria, $limit = 100) {
-        error_log('ImageListS3Vector: getImagesByCriteria is a TODO and not implemented.');
-        return 0;
+    // --- just pass critiera directly!
+    public function getImagesByCriteria(array $criteria, $limit = 30, $metadata=false) {
+
+        $queryPayload = [
+            'vectorBucketName' => $this->vector_bucket,
+            'indexName' => $this->vector_index,
+            'queryVector' => ['float32' => $this->_getLabelVectorValueList($criteria['label'])],
+            'topK' => $limit,
+            'returnDistance' => true,
+            'returnMetadata' => $metadata,
+        ];
+	$filter = $this->_getFilters($criteria);
+	if (!empty($filter)) //might end up a empty array, which s3 does not like!
+		$queryPayload['filter'] = $filter;
+
+        return $this->_getImagesByPayload($queryPayload);
     }
+
+    public function getRawVectorsByCriteria(array $criteria, $limit = 30, $metadata=false) {
+
+        $queryPayload = [
+            'vectorBucketName' => $this->vector_bucket,
+            'indexName' => $this->vector_index,
+            'queryVector' => ['float32' => $this->_getLabelVectorValueList($criteria['label'])],
+            'topK' => $limit,
+            'returnDistance' => true,
+            'returnMetadata' => $metadata,
+        ];
+	$filter = $this->_getFilters($criteria);
+	if (!empty($filter)) //might end up a empty array, which s3 does not like!
+		$queryPayload['filter'] = $filter;
+
+        return queryS3Vectors(
+            $queryPayload,
+            $this->awsRegion
+        );
+    }
+
 
     /**
      * Calculates the change in latitude and longitude degrees corresponding to a given distance in meters.
