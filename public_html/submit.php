@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: submit.php 8842 2018-09-17 17:54:55Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -44,6 +44,7 @@ if (isset($_GET['preview'])) {
 }
 
 require_once('geograph/uploadmanager.class.php');
+require_once('geograph/submissionhelper.class.php');
 
 init_session();
 
@@ -121,81 +122,27 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 {
 	//Submit Step 1a..
 
-	switch($_FILES['jpeg_exif']['error'])
+	$smarty = SubmissionHelper::handleFileUpload($_FILES['jpeg_exif']);
+	if ($smarty->get_template_vars('error')) {
+		// error handled
+	}
+	elseif ($uploadmanager->processUpload($_FILES['jpeg_exif']['tmp_name']))
 	{
-		case 0:
-			if (!filesize($_FILES['jpeg_exif']['tmp_name']))
-			{
-				$smarty->assign('error', 'Sorry, no file was received - please try again');
-			}
-			elseif ($uploadmanager->processUpload($_FILES['jpeg_exif']['tmp_name']))
-			{
-				$smarty->assign('upload_id', $uploadmanager->upload_id);
-				$smarty->assign('transfer_id', $uploadmanager->upload_id);
+		$smarty->assign('upload_id', $uploadmanager->upload_id);
+		$smarty->assign('transfer_id', $uploadmanager->upload_id);
 
-				$smarty->assign('preview_url', "/submit.php?preview=".$uploadmanager->upload_id);
-				$smarty->assign('preview_width', $uploadmanager->upload_width);
-				$smarty->assign('preview_height', $uploadmanager->upload_height);
+		$smarty->assign('preview_url', "/submit.php?preview=".$uploadmanager->upload_id);
+		$smarty->assign('preview_width', $uploadmanager->upload_width);
+		$smarty->assign('preview_height', $uploadmanager->upload_height);
 
-				$exif = $uploadmanager->rawExifData;
+		$post = SubmissionHelper::processExifAndFilename($uploadmanager, $_FILES['jpeg_exif']['name']);
+		$_POST = array_merge($_POST, $post);
 
-				if (!empty($exif['GPS']) && !empty($exif['GPS']['GPSLatitude']) && !empty($exif['GPS']['GPSLongitude'])) {
-					$conv = new Conversions;
-
-					list($e,$n,$reference_index) = ExifToNational($exif);
-
-					list ($_POST['photographer_gridref'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
-
-					list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
-
-					$_POST['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$_POST['grid_reference']);
-
-
-				} elseif (preg_match("/(_|\b)([a-zA-Z]{1,3})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
-					if (strlen($m[3]) != strlen($m[4])) {
-						if (preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
-							$_POST['gridsquare'] = $m[2];
-	                                                $_POST['grid_reference'] = $m[2].$m[3];
-						}
-					} else {
-						$_POST['gridsquare'] = $m[2];
-						$_POST['grid_reference'] = $m[2].$m[3].$m[4];
-					}
-
-				} elseif (!empty($exif['COMMENT']) && preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",implode(' ',$exif['COMMENT']),$m)) {
-					$_POST['gridsquare'] = $m[2];
-					$_POST['grid_reference'] = $m[2].$m[3].$m[4];
-				}
-
-				$_POST['eastings'] = '';
-				$selectedtab =3;
-			} else {
-				$smarty->assign('error', $uploadmanager->errormsg);
-				$uploadmanager->errormsg = '';
-			}
-			break;
-		case UPLOAD_ERR_INI_SIZE:
-		case UPLOAD_ERR_FORM_SIZE:
-			$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
-			break;
-		case UPLOAD_ERR_PARTIAL:
-			$smarty->assign('error', 'Your file was only partially uploaded - please try again');
-			break;
-		case UPLOAD_ERR_NO_FILE:
-			$smarty->assign('error', 'No file was uploaded - please try again');
-			break;
-		case UPLOAD_ERR_NO_TMP_DIR:
-			$smarty->assign('error', 'System Error: Folder missing - please let us know');
-			break;
-		case UPLOAD_ERR_CANT_WRITE:
-			$smarty->assign('error', 'System Error: Can not write file - please let us know');
-			break;
-		case UPLOAD_ERR_EXTENSION:
-			$smarty->assign('error', 'System Error: Upload Blocked - please let us know');
-			break;
-		default:
-			$smarty->assign('error', 'We were unable to process your upload - please try again');
-			break;
+		$_POST['eastings'] = '';
+		$selectedtab =3;
+	} else {
+		$smarty->assign('error', $uploadmanager->errormsg);
+		$uploadmanager->errormsg = '';
 	}
 }
 
@@ -224,15 +171,7 @@ if (isset($_POST['gridsquare']))
 			$selectedtab =1;
 		}
 
-			if ($ok && $square->natgrlen > 4 && !preg_match('/^[A-Z]/',$_POST['grid_reference'])) {
-				//setByFullGridRef will now accept lat/long, which need to convert back to a GR
-				$conv = new Conversions('');
-				list($_POST['grid_reference'],$len) = $conv->national_to_gridref(
-					$square->getNatEastings(),
-					$square->getNatNorthings(),
-					$square->natgrlen,
-					$square->reference_index,false);
-			}
+			$_POST['grid_reference'] = SubmissionHelper::normaliseGridReference($_POST['grid_reference']);
 
 		if (!empty($_POST['location_type']) && $_POST['location_type'] == 'viewpoint') {
 			//shift the location into phtographer! (kinda like we do with exif!
@@ -297,15 +236,11 @@ if (isset($_POST['gridsquare']))
 		}
 		elseif (isset($_POST['transfer_id']))
 		{
-			//preserve the upload id
-			if($uploadmanager->validUploadId($_POST['transfer_id'])) {
-				$smarty->assign('upload_id', $_POST['transfer_id']);
-				$smarty->assign('transfer_id', $_POST['transfer_id']);
-				$uploadmanager->setUploadId($_POST['transfer_id']);
-				$uploadmanager->reReadExifFile();
-				$smarty->assign('preview_url', "/submit.php?preview=".$uploadmanager->upload_id);
-				$smarty->assign('preview_width', $uploadmanager->upload_width);
-				$smarty->assign('preview_height', $uploadmanager->upload_height);
+			$smarty_vars = SubmissionHelper::handleTransferId($_POST['transfer_id']);
+			if ($smarty_vars) {
+				foreach ($smarty_vars as $key => $value) {
+					$smarty->assign($key, $value);
+				}
 				//we ok to continue
 				if (isset($_POST['photographer_gridref']) && isset($_POST['view_direction'])) {
 					$step=3;
@@ -338,55 +273,27 @@ if (isset($_POST['gridsquare']))
 			//Submit Step 2..
 
 			$step=2;
-			switch($_FILES['jpeg']['error'])
-			{
-				case 0:
-					if (!filesize($_FILES['jpeg']['tmp_name']))
-					{
-						$smarty->assign('error', 'Sorry, no file was received - please try again');
-					}
-					elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
-					{
-						$smarty->assign('upload_id', $uploadmanager->upload_id);
-						//we ok to continue
-						$step=3;
-					} else {
-						$smarty->assign('error', $uploadmanager->errormsg);
-						$uploadmanager->errormsg = '';
-					}
-
-					$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg']['name'])));
-
-					break;
-				case UPLOAD_ERR_INI_SIZE:
-				case UPLOAD_ERR_FORM_SIZE:
-					$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
-					break;
-				case UPLOAD_ERR_PARTIAL:
-					$smarty->assign('error', 'Your file was only partially uploaded - please try again');
-					break;
-				case UPLOAD_ERR_NO_FILE:
-					$smarty->assign('error', 'No file was uploaded - please try again');
-					break;
-				case UPLOAD_ERR_NO_TMP_DIR:
-					$smarty->assign('error', 'System Error: Folder missing - please let us know');
-					break;
-				case UPLOAD_ERR_CANT_WRITE:
-					$smarty->assign('error', 'System Error: Can not write file - please let us know');
-					break;
-				case UPLOAD_ERR_EXTENSION:
-					$smarty->assign('error', 'System Error: Upload Blocked - please let us know');
-					break;
-				default:
-					$smarty->assign('error', 'We were unable to process your upload - please try again');
-					break;
+			$smarty = SubmissionHelper::handleFileUpload($_FILES['jpeg']);
+			if ($smarty->get_template_vars('error')) {
+				// error handled
 			}
+			elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
+			{
+				$smarty->assign('upload_id', $uploadmanager->upload_id);
+				//we ok to continue
+				$step=3;
+			} else {
+				$smarty->assign('error', $uploadmanager->errormsg);
+				$uploadmanager->errormsg = '';
+			}
+
+			$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg']['name'])));
 		}
 		//user likes the image, lets have them agree to our terms
 		elseif (isset($_POST['savedata']))
 		{
 			//Submit Step 3..
-			
+
 			if (isset($_POST['goback']))
 			{
 				$step=2;
@@ -472,52 +379,14 @@ if (isset($_POST['gridsquare']))
 			//create the image record
 			if($uploadmanager->setUploadId($_POST['upload_id']))
 			{
-				$uploadmanager->setTitle(stripslashes(trim($_POST['title'])));
-				$uploadmanager->setComment(stripslashes(trim($_POST['comment'])));
-				$uploadmanager->setTaken(stripslashes($_POST['imagetaken']));
-				if (!empty($_POST['tags']))
-					$uploadmanager->setTags(explode('|',stripslashes(trim($_POST['tags']))));
-				if (!empty($_POST['subject']))
-					$uploadmanager->setSubject(stripslashes(trim($_POST['subject'])));
-				if (!empty($_POST['imageclass']))
-					$uploadmanager->setClass(stripslashes(trim($_POST['imageclass'])));
-				$uploadmanager->setViewpoint(stripslashes($_POST['photographer_gridref']));
-				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
-				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
-				if (!empty($_POST['user_status']))
-					$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
-				if (!empty($_POST['largestsize']))
-					$uploadmanager->setLargestSize($_POST['largestsize']);
-
-				if ($_POST['pattrib'] == 'other') {
-					$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
-					$smarty->assign('credit_realname',$_POST['pattrib_name']);
-				} elseif ($_POST['pattrib'] == 'self') {
-					$uploadmanager->setCredit('');
-				}
-				if (!empty($_POST['pattrib_default'])) {
-					$USER->setCreditDefault(($_POST['pattrib'] == 'other')?stripslashes($_POST['pattrib_name']):'');
-				}
-				
-				
-				$err = $uploadmanager->commit('submit',true); //we will call cleanup later. 
-				
-				if ($_POST['imagetaken'] != '0000-00-00') {
-					$_SESSION['last_imagetaken'] = $_POST['imagetaken'];
-				}
-				if (!empty($_POST['grid_reference']) && $square->natgrlen > 4) {
-					$_SESSION['last_grid_reference'] = $_POST['grid_reference'];
-				}
-				if (!empty($_POST['photographer_gridref'])) {
-					$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
-				}
-				
+				$err = SubmissionHelper::finaliseSubmission($uploadmanager, $_POST, $square);
+				SubmissionHelper::setLastSubmissionDetails($_POST, $square);
 				$clear_cache = 1;
-				
+
 				if (!$err)
 					$smarty->assign('gridimage_id', $uploadmanager->gridimage_id);
 			}
-			
+
 			$step=($err)?7:5;
 		}
 		elseif (isset($_POST['abandon']))
@@ -527,24 +396,24 @@ if (isset($_POST['gridsquare']))
 			{
 				$uploadmanager->cleanUp();
 			}
-			
+
 			$step=6;
 		}
 		elseif (isset($_POST['goback3']))
 		{
 			$uploadmanager->setUploadId($_POST['upload_id']);
-			
+
 			$smarty->assign('upload_id', $_POST['upload_id']);
-			
+
 			$step = 3;
 		}
-		
-		
+
+
 		if ($step == 1) {
 			//init smarty
 			$smarty->assign('prefixes', $square->getGridPrefixes());
 			$smarty->assign('kmlist', $square->getKMList());
-			
+
 			$USER->getStats();
 		} elseif ($step == 3) {
 			$smarty->assign('title', stripslashes($_POST['title']));
@@ -566,11 +435,11 @@ if (isset($_POST['gridsquare']))
 			if (!empty($_POST['imageclass']))
 				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 			$smarty->assign('user_status', stripslashes($_POST['user_status']));
-			
+
 			list($usec, $sec) = explode(' ',microtime());
 			$endtime = ((float)$usec + (float)$sec);
 			$timetaken = $endtime - $STARTTIME;
-			
+
 			if ($timetaken > 15) {
 				//mysql might of closed the connection in the meantime
 				unset($square->db);
@@ -584,9 +453,9 @@ if (isset($_POST['gridsquare']))
 
 			if (!empty($square)) {
 	                        $sphinx = new sphinxwrapper();
-        	                foreach ($sphinx->countKeywords($square->grid_reference, 'snippet') as $row) {
-                	                $smarty->assign('snippets',$row['docs']);
-                        	}
+		                foreach ($sphinx->countKeywords($square->grid_reference, 'snippet') as $row) {
+			                $smarty->assign('snippets',$row['docs']);
+				}
 			}
 
 			//find a possible place within 25km
@@ -598,16 +467,7 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('preview_height', $uploadmanager->upload_height);
 
 
-			if (!empty($uploadmanager->rawExifData) && !empty($uploadmanager->rawExifData['IFD0']['Orientation']) && $uploadmanager->rawExifData['IFD0']['Orientation']!==1) {
-				//actully, we need to check the file itself. Because it could of been rotated - the exif data (in the .exif file) is NOT updated when rotate the image!
-				$uploadfile = $uploadmanager->_pendingJPEG($uploadmanager->upload_id);
-               		        $orginalfile = $uploadmanager->_originalJPEG($uploadmanager->upload_id);
-
-				$to = file_exists($orginalfile)?$orginalfile: $uploadfile;
-				$orient = `exiftool -Orientation -n $to`;
-	                        if (strpos($orient,'Orientation') !== FALSE && strpos($orient,'1') === FALSE)
-					 $smarty->assign('rotation_warning', true);
-			}
+			SubmissionHelper::fixOrientation($uploadmanager, $smarty);
 
 			if (max($uploadmanager->upload_width,$uploadmanager->upload_height) < 500)
 				$smarty->assign('smallimage', 1);
@@ -633,17 +493,17 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('today_imagetaken', date("Y-m-d"));
 		} elseif ($step == 4) {
 			$USER->getStats();
-			
+
 			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
 			$smarty->assign('preview_url', $preview_url);
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
 			$smarty->assign('preview_height', $uploadmanager->upload_height);
-			
+
 			if ($uploadmanager->initOriginalUploadSize() && $uploadmanager->hasoriginal) {
 				$smarty->assign('original_width', $uploadmanager->original_width);
 				$smarty->assign('original_height', $uploadmanager->original_height);
 			}
-			
+
 		} elseif ($step == 2) {
 			require_once('geograph/rastermap.class.php');
 
@@ -679,73 +539,35 @@ if (isset($_POST['gridsquare']))
 			list($lat,$long) = $conv->gridsquare_to_wgs84($square);
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
-			
+
 			$rastermap->addLatLong($lat,$long);
 
 			$images=$square->getImages($USER->user_id,'',"order by submitted desc limit 6");
 			$square->totalimagecount = count($images);
-			
+
 			$smarty->assign('shownimagecount', $square->totalimagecount);
-			
+
 			if ($square->totalimagecount == 6) {
 				$square->totalimagecount = $square->getImageCount($USER->user_id);
-			}			
-			
+			}
+
 			$smarty->assign('totalimagecount', $square->totalimagecount);
-				
+
 			if ($square->totalimagecount > 0) {
 				$smarty->assign_by_ref('images', $images);
 			}
-			
-			$dirs = array (-1 => '');
-			$jump = 360/16; $jump2 = 360/32;
-			for($q = 0; $q< 360; $q+=$jump) {
-				$s = ($q%90==0)?strtoupper(heading_string($q)):ucwords(heading_string($q));
-				$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
-					str_pad($s,16,chr(160)),
-					$q,
-					($q == 0?$q+360-$jump2:$q-$jump2),
-					$q+$jump2);
-			}
-			$dirs['00'] = $dirs[0];
-			$smarty->assign_by_ref('dirs', $dirs);
+
+			$smarty->assign('dirs', SubmissionHelper::getDirections());
 		} elseif ($step == 5) {
-
-        if ($CONF['forums']) {
-                if (empty($db))
-                        $db=GeographDatabaseConnection(false);
-
-                //let's find recent posts in the announcements forum made by administrators
-                $sql="select t.topic_title,p.post_text,t.topic_id,t.topic_time, DATEDIFF(NOW(),t.topic_time) as days
-                        from geobb_topics as t
-                        inner join geobb_posts as p on(t.topic_id=p.topic_id)
-                        inner join user as u on (t.topic_poster=u.user_id)
-                        where (find_in_set('director',u.rights)>0) and
-			topic_time > DATE_SUB(NOW(),INTERVAL 1 MONTH) and
-                        abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
-                        t.forum_id=1
-                        group by t.topic_id desc limit 5";
-                $news=$db->CacheGetAll(3600,$sql);
-                if ($news)
-                {
-                        foreach($news as $idx=>$item)
-                        {
-                                $news[$idx]['post_text']=strip_tags($news[$idx]['post_text']);
-                        }
-                        $smarty->assign_by_ref('news', $news);
-                }
-
-        }
+			$news = SubmissionHelper::getNews();
+			if ($news) {
+				$smarty->assign_by_ref('news', $news);
+			}
 
 		}
-		if (isset($_SESSION['last_imagetaken'])) {
-			$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
-		}
-		if (isset($_SESSION['last_grid_reference'])) {
-			$smarty->assign('last_grid_reference', $_SESSION['last_grid_reference']);
-		}
-		if (isset($_SESSION['last_photographer_gridref'])) {
-			$smarty->assign('last_photographer_gridref', $_SESSION['last_photographer_gridref']);
+		$last_submission = SubmissionHelper::getLastSubmissionDetails();
+		foreach ($last_submission as $key => $value) {
+			$smarty->assign($key, $value);
 		}
 	}
 	else
@@ -788,18 +610,7 @@ else
 			$smarty->assign('northings', $square->northings);
 			$smarty->assign('gridref', $square->grid_reference);
 
-			if ($square->natgrlen > 4) {
-				$conv = new Conversions('');
-				list($grid_reference,$len) = $conv->national_to_gridref(
-					$square->getNatEastings(),
-					$square->getNatNorthings(),
-					$square->natgrlen,
-					$square->reference_index,false);
-			} else {
-				$grid_reference = $square->grid_reference;
-			}
-
-			$smarty->assign('grid_reference', $grid_reference);
+			$smarty->assign('grid_reference', SubmissionHelper::normaliseGridReference($_GET['grid_reference']));
 		}
 	} elseif (!empty($_SESSION['gridsquare'])) {
 		//just starting - use remembered values
@@ -832,7 +643,7 @@ else
 			        switch($_POST['choose']) {
 			                case 'multi': $url = "/submit-multi.php?tab=upload&mobile=1"; break;
 			                case 'v1': $smarty->assign("mobile_browser", 0); break; // just stay on this page! (doesn't have a mobile template anyway!)
-        			        case 'v2': $url = "/submit2.php?display=mobile&redir=false"; break;
+				        case 'v2': $url = "/submit2.php?display=mobile&redir=false"; break;
 					default: $url = "/submit-mobile.php"; break;
 			        }
 
@@ -894,7 +705,7 @@ if (!empty($clear_cache)) {
 	//clear user profile
 	$ab=floor($USER->user_id/10000);
 	$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
-		
+
 	if ($memcache->valid) {
 		//the submit list
 		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
@@ -903,10 +714,7 @@ if (!empty($clear_cache)) {
 		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by if(ftf between 1 and 4,ftf,5),gridimage_id");
 		$memcache->name_delete('gi',$mkey);
 	}
-	
+
 	if (!$err)
 		$uploadmanager->cleanUp();
 }
-
-
-

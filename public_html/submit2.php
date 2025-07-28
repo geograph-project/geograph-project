@@ -21,6 +21,7 @@
  **/
 
 require_once('geograph/global.inc.php');
+require_once('geograph/submissionhelper.class.php');
 
 if (isset($_POST['finalise'])) {
 	//so the back button works.
@@ -68,47 +69,20 @@ if (isset($_FILES['jpeg_exif']))
 {
 	$uploadmanager=new UploadManager;
 
-	switch($_FILES['jpeg_exif']['error'])
+	$smarty = SubmissionHelper::handleFileUpload($_FILES['jpeg_exif']);
+	if ($smarty->get_template_vars('error')) {
+		// error handled
+	}
+	elseif ($uploadmanager->processUpload($_FILES['jpeg_exif']['tmp_name']))
 	{
-		case 0:
-			if (!filesize($_FILES['jpeg_exif']['tmp_name']))
-			{
-				$smarty->assign('error', 'Sorry, no file was received - please try again');
-			}
-			elseif ($uploadmanager->processUpload($_FILES['jpeg_exif']['tmp_name']))
-			{
-				$upload_to_process=true;
+		$upload_to_process=true;
 
-				$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg_exif']['name'])));
+		$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg_exif']['name'])));
 
-				$smarty->assign('success', 1);
-			} else {
-				$smarty->assign('error', $uploadmanager->errormsg);
-				$uploadmanager->errormsg = '';
-			}
-			break;
-		case UPLOAD_ERR_INI_SIZE:
-		case UPLOAD_ERR_FORM_SIZE:
-			$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
-			break;
-		case UPLOAD_ERR_PARTIAL:
-			$smarty->assign('error', 'Your file was only partially uploaded - please try again');
-			break;
-		case UPLOAD_ERR_NO_FILE:
-			$smarty->assign('error', 'No file was uploaded - please try again');
-			break;
-		case UPLOAD_ERR_NO_TMP_DIR:
-			$smarty->assign('error', 'System Error: Folder missing - please let us know');
-			break;
-		case UPLOAD_ERR_CANT_WRITE:
-			$smarty->assign('error', 'System Error: Can not write file - please let us know');
-			break;
-		case UPLOAD_ERR_EXTENSION:
-			$smarty->assign('error', 'System Error: Upload Blocked - please let us know');
-			break;
-		default:
-			$smarty->assign('error', 'We were unable to process your upload - please try again');
-			break;
+		$smarty->assign('success', 1);
+	} else {
+		$smarty->assign('error', $uploadmanager->errormsg);
+		$uploadmanager->errormsg = '';
 	}
 
 } elseif (!empty($_POST['jpeg_data'])) {
@@ -158,54 +132,26 @@ if (isset($_FILES['jpeg_exif']))
 
 		$ok = $square->setByFullGridRef($grid_reference = $_POST['grid_reference'][$key]);
 		if ($ok) {
-			// set up attributes from uploaded data
-			$uploadmanager->setSquare($square);
-			$uploadmanager->setViewpoint($_POST['photographer_gridref'][$key]);
-			$uploadmanager->setDirection($_POST['view_direction'][$key]);
-			$uploadmanager->setUse6fig(stripslashes($_POST['use6fig'][$key]));
-			$uploadmanager->setTaken($_POST['imagetaken'][$key]);
-			$uploadmanager->setTitle($_POST['title'][$key]);
-			$uploadmanager->setLargestSize($_POST['largestsize'][$key]);
-			if ($_POST['comment'][$key] != "comment[$key]") {
-				//bug? in Picasa sends the name in the value if blank, useful! (but only seems to apply to textareas)
-				$uploadmanager->setComment($_POST['comment'][$key]);
-			}
-			if (!empty($_POST['imageclass'])) {
-				if (($_POST['imageclass'][$key] == 'Other' || empty($_POST['imageclass'][$key])) && !empty($_POST['imageclassother'][$key])) {
-					$imageclass = stripslashes($_POST['imageclassother'][$key]);
-				} else if ($_POST['imageclass'] != 'Other') {
-					$imageclass =  stripslashes($_POST['imageclass'][$key]);
-				}
-				$uploadmanager->setClass($imageclass);
-			}
-			
-			if (!empty($_POST['tags'][$key])) {
-				if (is_array($_POST['tags'][$key])) {
-					$uploadmanager->setTags($_POST['tags'][$key]);
-				} else {
-					$uploadmanager->setTags(explode('|',$_POST['tags'][$key]));
-				}
-				foreach($uploadmanager->tags as $tag) {
-					if (preg_match('/^panorama:/',$tag)) //todo && $_POST['largestsize'][$key] == '640' ??
-						$smarty->assign('need_larger',1);
-				}
-			}
-			if (!empty($_POST['subject'][$key])) {
-				$uploadmanager->setSubject($_POST['subject'][$key]);
-			}
-			
-
-			if ($_POST['pattrib'] == 'other') {
-				$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
-				$smarty->assign('credit_realname',$_POST['pattrib_name']);
-			} elseif ($_POST['pattrib'] == 'self') {
-				$uploadmanager->setCredit('');
-			}
+			$postData = array(
+				'title' => $_POST['title'][$key],
+				'comment' => $_POST['comment'][$key],
+				'imagetaken' => $_POST['imagetaken'][$key],
+				'tags' => $_POST['tags'][$key],
+				'subject' => $_POST['subject'][$key],
+				'imageclass' => $_POST['imageclass'][$key],
+				'photographer_gridref' => $_POST['photographer_gridref'][$key],
+				'view_direction' => $_POST['view_direction'][$key],
+				'use6fig' => $_POST['use6fig'][$key],
+				'user_status' => $_POST['user_status'][$key],
+				'largestsize' => $_POST['largestsize'][$key],
+				'pattrib' => $_POST['pattrib'],
+				'pattrib_name' => $_POST['pattrib_name'],
+			);
 
 			$ok = $uploadmanager->setUploadId($_POST['upload_id'][$key]);
 
 			if ($ok) {
-				$err = $uploadmanager->commit(isset($_GET['nofrills'])?'nofrills':'submit2');
+				$err = SubmissionHelper::finaliseSubmission($uploadmanager, $postData, $square);
 
 				if (empty($err)) {
 					$status[$key] = "ok:".$uploadmanager->gridimage_id;
@@ -218,15 +164,7 @@ if (isset($_FILES['jpeg_exif']))
 		} else {
 			$status[$key] = "Subject Grid Reference: ".$square->errormsg;
 		}
-		if ($_POST['imagetaken'][$key] != '0000-00-00') {
-			$_SESSION['last_imagetaken'] = $_POST['imagetaken'][$key];
-		}
-		if (!empty($_POST['grid_reference']) && $square->natgrlen > 4) {
-			$_SESSION['last_grid_reference'] = $_POST['grid_reference'];
-		}
-		if (!empty($_POST['photographer_gridref'])) {
-			$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
-		}
+		SubmissionHelper::setLastSubmissionDetails($_POST, $square);
 
                 $smarty->assign_by_ref('uploadmanager',$uploadmanager);
 
@@ -246,16 +184,12 @@ if (isset($_FILES['jpeg_exif']))
 	$smarty->assign('grid_reference', $grid_reference);
 
 } elseif (isset($_GET['transfer_id'])) {
-	$uploadmanager=new UploadManager;
-		
-	if($uploadmanager->validUploadId($_GET['transfer_id'])) {
-		
-		$uploadmanager->setUploadId($_GET['transfer_id']);
-		$uploadmanager->reReadExifFile();
-		$uploadmanager->initOriginalUploadSize();
-		
-		$upload_to_process=true;
-		
+	$smarty_vars = SubmissionHelper::handleTransferId($_GET['transfer_id']);
+	if ($smarty_vars) {
+		foreach ($smarty_vars as $key => $value) {
+			$smarty->assign($key, $value);
+		}
+		$upload_to_process = true;
 		$smarty->assign('success', 1);
 	} else {
 		die("invalid id");
@@ -264,64 +198,12 @@ if (isset($_FILES['jpeg_exif']))
 
 if (!empty($upload_to_process) && !empty($uploadmanager) && $uploadmanager->upload_id) {
 
-	$smarty->assign('upload_id', $uploadmanager->upload_id);
-	$smarty->assign('transfer_id', $uploadmanager->upload_id);
-	if ($uploadmanager->hasoriginal) {
-		$smarty->assign('original_width', $uploadmanager->original_width);
-		$smarty->assign('original_height', $uploadmanager->original_height);
+	$post = SubmissionHelper::processExifAndFilename($uploadmanager, $_FILES['jpeg_exif']['name']);
+	foreach ($post as $key => $value) {
+		$smarty->assign($key, $value);
 	}
 
-	$smarty->assign('preview_url', "/submit.php?preview=".$uploadmanager->upload_id);
-	$smarty->assign('preview_width', $uploadmanager->upload_width);
-	$smarty->assign('preview_height', $uploadmanager->upload_height);
-
-	$exif = $uploadmanager->rawExifData;
-
-	if (!empty($exif['GPS']) && !empty($exif['GPS']['GPSLatitude']) && !empty($exif['GPS']['GPSLongitude'])) {
-		$conv = new Conversions;
-
-		list($e,$n,$reference_index) = ExifToNational($exif);
-
-		list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
-
-		$smarty->assign('photographer_gridref',$grid_reference);
-
-		list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
-
-		$smarty->assign('grid_reference', $grid_reference);
-	}
-
-	if (!empty($_FILES['jpeg_exif']['name']) && preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
-		if (strlen($m[3]) != strlen($m[4])) {
-			if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{4,10})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
-				if (strlen($m[3])%2==0) {
-					$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3]);
-				}
-			}
-		} else {
-			$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3].$m[4]);
-		}
-
-	} elseif (!empty($exif['COMMENT']) && preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
-		if (strlen($m[3]) == strlen($m[4]) || (strlen($m[3])+strlen($m[4]))%2==0) {
-			$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3].$m[4]);
-		}
-	}
-
-	if (!empty($exif['IFD0']['Orientation']) && $exif['IFD0']['Orientation']!==1) {
-		if (!empty($_GET['transfer_id'])) {
-			//actully, we need to check the file itself. Because it could of been rotated (the exif data (in the .exif file) is NOT updated when rotate the image!
-			$uploadfile = $uploadmanager->_pendingJPEG($uploadmanager->upload_id);
-                        $orginalfile = $uploadmanager->_originalJPEG($uploadmanager->upload_id);
-
-			$to = file_exists($orginalfile)?$orginalfile: $uploadfile;
-			$orient = `exiftool -Orientation -n $to`;
-                        if (strpos($orient,'Orientation') !== FALSE && strpos($orient,'1') === FALSE)
-				 $smarty->assign('rotation_warning', true);
-		} else 
-			//otherwise should be ok to rely on the original exif data
-			$smarty->assign('rotation_warning', true);
-	}
+	SubmissionHelper::fixOrientation($uploadmanager, $smarty);
 
 	if (isset($uploadmanager->exifdate)) {
 		$smarty->assign('imagetaken', $uploadmanager->exifdate);
@@ -340,15 +222,7 @@ if (isset($_REQUEST['inner'])) {
 		$ok= $square->setByFullGridRef($_REQUEST['grid_reference']);
 
 		if ($ok) {
-			if ($ok && $square->natgrlen > 4 && !preg_match('/^[A-Z]/',$_REQUEST['grid_reference'])) {
-				//setByFullGridRef will now accept lat/long, which need to convert back to a GR
-				$conv = new Conversions('');
-				list($_REQUEST['grid_reference'],$len) = $conv->national_to_gridref(
-					$square->getNatEastings(),
-					$square->getNatNorthings(),
-					$square->natgrlen,
-					$square->reference_index,false);
-			}
+			$_REQUEST['grid_reference'] = SubmissionHelper::normaliseGridReference($_REQUEST['grid_reference']);
 
 			$smarty->assign('grid_reference', $grid_reference = $_REQUEST['grid_reference']);
 
@@ -362,8 +236,8 @@ if (isset($_REQUEST['inner'])) {
 		$uploadmanager=new UploadManager;
 
 	        if (!empty($_GET['delete']) && $uploadmanager->validUploadId($_GET['delete']) ) {
-                	$uploadmanager->setUploadId($_GET['delete'],false);
-        	        $uploadmanager->cleanUp();
+			$uploadmanager->setUploadId($_GET['delete'],false);
+		        $uploadmanager->cleanUp();
 	        }
 		$data = $uploadmanager->getUploadedFiles();
 
@@ -393,32 +267,10 @@ if (!empty($_REQUEST['multi'])) {
 }
 
 if ($template=='puploader_success.tpl' && !$smarty->is_cached($template, $cacheid)) {
-
-        if ($CONF['forums']) {
-                if (empty($db))
-                        $db=GeographDatabaseConnection(false);
-
-                //let's find recent posts in the announcements forum made by administrators
-                $sql="select t.topic_title,p.post_text,t.topic_id,t.topic_time, DATEDIFF(NOW(),t.topic_time) as days
-                        from geobb_topics as t
-                        inner join geobb_posts as p on(t.topic_id=p.topic_id)
-                        inner join user as u on (t.topic_poster=u.user_id)
-                        where (find_in_set('director',u.rights)>0) and
-			topic_time > DATE_SUB(NOW(),INTERVAL 1 MONTH) and
-                        abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
-                        t.forum_id=1
-                        group by t.topic_id desc limit 5";
-                $news=$db->CacheGetAll(3600,$sql);
-                if ($news)
-                {
-                        foreach($news as $idx=>$item)
-                        {
-                                $news[$idx]['post_text']=strip_tags($news[$idx]['post_text']);
-                        }
-                        $smarty->assign_by_ref('news', $news);
-                }
-
-        }
+	$news = SubmissionHelper::getNews();
+	if ($news) {
+		$smarty->assign_by_ref('news', $news);
+	}
 }
 
 
@@ -451,5 +303,3 @@ if (!empty($clear_cache) && count($clear_cache)) {
 
 
 }
-
-
