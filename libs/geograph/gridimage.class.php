@@ -1414,6 +1414,18 @@ split_timer('gridimage'); //starts the timer
 		if (!$check_exists && $return == 'path')
 			return $thumbpath;
 
+		if (!empty($CONF['enable_cluster'])) {
+			$server= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
+		} else {
+			$server= $CONF['CONTENT_HOST'];
+		}
+		$server = str_replace('http://','https://',$server);
+
+		if (!$check_exists && $return == 'fullpath') {
+
+			return $server.$thumbpath;
+		}
+
 		$filesystem = GeographFileSystem();
 
 		if (!$filesystem->file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath, true)) //use_get because we about to read it anyway (for size)
@@ -1537,13 +1549,6 @@ split_timer('gridimage'); //starts the timer
 		}
 		else
 		{
-			if (!empty($CONF['enable_cluster'])) {
-				$server= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
-			} else {
-				$server= $CONF['CONTENT_HOST'];
-			}
-			$server = str_replace('http://','https://',$server);
-
 			if ($return == 'fullpath')
 				return $server.$thumbpath;
 
@@ -1557,6 +1562,36 @@ split_timer('gridimage'); //starts the timer
 split_timer('gridimage','getSquareThumbnail'.(isset($srcw)?'-create':''),$thumbpath); //logs the wall time
 
 		return $html;
+	}
+
+	/**
+	* returns a resized image, intended for AI inference. Its bit convoluted, because creating thumbnail from a small base image doesnt crop well
+	* ... the extra params are so can pass the size if already known (Eg loaded from gridimage_size with a join) for effiency!
+	*/
+	function getAIThumbnail($return = 'html', $check_exists=true, $width = null, $original_width = null)
+	{
+		if (empty($this->gridimage_id) || empty($this->user_id))
+			die("unable to use getAIThumbnail without minimal details");
+
+		if (!$check_exists) { //if not checking existince, can avoid the overhead of size tests
+			return $this->getSquareThumbnail(224,224,$return, $check_exists);
+		}
+
+		if (!empty($width)) {
+			if (empty($this->cached_size))
+				 $this->cached_size = array();
+			$this->cached_size[0] = $width;
+			if (empty($this->original_width))
+				$this->original_width = $original_width ?? 0;
+
+		} elseif (!isset($this->cached_size[0])) {
+			$this->_getFullSize();
+		}
+		if (isset($this->cached_size[0]) && ($this->cached_size[0] < 224 || $this->cached_size[1] < 224) && $this->original_width > 224) {
+			return $this->getSquareThumbnail(224,224,$return, $check_exists, '_original');
+		} else {
+			return $this->getSquareThumbnail(224,224,$return, $check_exists);
+		}
 	}
 
 	/**

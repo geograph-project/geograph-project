@@ -218,7 +218,7 @@ $names = array(
 				$row['gridimage_id'] = $row['id'];
 		                $image->fastInit($row);
 
-				print $image->getSquareThumbnail(224,224);
+				print $image->getAIThumbnail();
 			}
 		}
 	}
@@ -249,7 +249,7 @@ $names = array(
 		print "<tr><td>$c Tags/Classes";
 		$t = $row['sum(count)'];
 		print "<tr><td>Total Image-Tag Pairs<td align=right>".number_format($t,0);
-		print "<tr><td colspan=2>Note: A lot of the tags are duplicate (mutliple people created similar tag for same concept) which if consonsolidated first, give more images in combined listing";
+		print "<tr><td colspan=3>Note: A lot of the tags are duplicate (mutliple people created similar tag for same concept) which if consolidated first, could give better training data";
 	}
 
 	print "</table>";
@@ -289,7 +289,7 @@ $names = array(
 				$row['gridimage_id'] = $row['id'];
 	                $image->fastInit($row);
 
-			print "<td>".($html = $image->getSquareThumbnail(224,224))."</td>";
+			print "<td>".($html = $image->getAIThumbnail())."</td>";
 
 			$list = explode(' _SEP_ ',preg_replace('/(top|subject):/','',preg_replace('/(^\s*_SEP_\s*|\s*_SEP_\s*$)/','', $row[$column])));
 			$list = array_map('htmlentities',$list);
