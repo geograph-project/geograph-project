@@ -1,5 +1,5 @@
 # https://hub.docker.com/r/tigercomputing/debian-php-fpm
-FROM tigercomputing/debian-php-fpm:php7.4
+FROM harbor.cloud.geograph.org.uk/docker.io/tigercomputing/debian-php-fpm:php7.4
 
 RUN set -eux; \
   export DEBIAN_FRONTEND=noninteractive; \
@@ -39,6 +39,8 @@ COPY system/docker/geograph/entrypoint.d/ /entrypoint.d/
 COPY libs/        /var/www/geograph/libs/
 COPY public_html/ /var/www/geograph/public_html/
 COPY scripts/     /var/www/geograph/scripts/
+COPY ai-schema/   /var/www/geograph/ai-schema/
+COPY sources/     /var/www/geograph/sources/
 
 RUN ln -s /var/www/geograph/scripts /scripts
 
