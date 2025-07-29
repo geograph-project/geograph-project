@@ -396,6 +396,10 @@ GT_WGS84.prototype.parseString = function(text)
 
 	//N 51° 53.947 W 000° 10.018
 
+	// 53Â° 9'17.92"N 0Â°25'7.18"W
+
+	//  52.280226Â°   -2.553179Â°
+
 	var pattern = /([ns])\s*(\d+)[°\s]+(\d+\.\d+)\s+([we])\s*(\d+)[°\s]+(\d+\.\d+)/i;
 	var matches=str.match(pattern);
 	if (matches)
@@ -470,6 +474,20 @@ GT_WGS84.prototype.isIreland2 = function()
 	}
 	return oddNodes;
 }
+
+//get either
+GT_WGS84.prototype.getGrid = function()
+{
+    var grid = false;
+    if (this.isIreland2()) {
+            return this.getIrish(true);
+    } else if (this.isGreatBritain()) {
+            return this.getOSGB();
+    }
+    return false;
+}
+
+
 
 
 GT_WGS84.prototype.getIrish = function(uselevel2)
