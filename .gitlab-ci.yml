@@ -39,7 +39,7 @@ build/memgator:
 
 # Template for deployments
 .k8s_deploy:
-  image: quay.io/skopeo/stable:latest
+  image: harbor.cloud.geograph.org.uk/quay.io/skopeo/stable:latest
   environment:
     name: $CI_JOB_NAME
   script:
