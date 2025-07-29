@@ -14,6 +14,9 @@ stages:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
+  variables:
+     KANIKO_REGISTRY_MIRROR: harbor.cloud.geograph.org.uk/docker.io
+     KANIKO_REGISTRY_MAP: quay.io=harbor.cloud.geograph.org.uk/quay.io
   script:
     - ash ci-build/kaniko.sh
 

@@ -1,5 +1,5 @@
 # https://hub.docker.com/r/tigercomputing/debian-php-fpm
-FROM harbor.cloud.geograph.org.uk/docker.io/tigercomputing/debian-php-fpm:php7.4
+FROM tigercomputing/debian-php-fpm:php7.4
 
 RUN set -eux; \
   export DEBIAN_FRONTEND=noninteractive; \
