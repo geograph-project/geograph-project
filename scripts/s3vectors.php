@@ -74,15 +74,22 @@ if (!empty($param['insert']) && $param['index'] == 'label-clip') {
 			$where = "type='image' AND seq_id BETWEEN {$row['min_id']} AND {$row['max_id']} AND updated LIKE '{$row['day']}%'"; //dont know if filtering by day helps or not!
 			$where = '-w'.escapeshellarg($where);
 			print implode(' ',$cmd)." $where\n";
+
+			$return_status = 0; // Initialize the variable
 			if ($param['insert'] > 2) {
 				putenv('PYTHONUNBUFFERED=1');
 
-				passthru(implode(' ',$cmd)." $where");
+				passthru(implode(' ',$cmd)." $where", $return_status);
+
+				if ($return_status !== 0) {
+					print "apt install pip && pip install requests boto3 mysql_connector numpy\n";
+				}
+
 			}
 
 			$sql = "UPDATE tmp_emdedding_stat SET done=NOW() WHERE min_id = {$row['min_id']}";
 			print "# $sql;\n\n";
-			if ($param['insert'] > 2) {
+			if ($param['insert'] > 2 && $return_status === 0) {
 				//the connection might of closed!
 				$db = GeographDatabaseConnection(false);
 				$db->Execute($sql);
