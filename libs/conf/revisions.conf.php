@@ -53,7 +53,7 @@ $REVISIONS['/js/ui/jquery.ui.sortable.js']=7385;
 $REVISIONS['/js/ui/jquery.ui.widget.js']=7385;
 $REVISIONS['/mapper/OGBGraticule.js']=5236;
 $REVISIONS['/mapper/OpenLayers.js']=3778;
-$REVISIONS['/mapper/geotools2.js']=13826913;
+$REVISIONS['/mapper/geotools2.js']=63102619;
 $REVISIONS['/mapper/mapper.js']=5759;
 $REVISIONS['/mapper/theme/default/style.css']=3569;
 $REVISIONS['/mapping.js']=8455;
@@ -98,6 +98,6 @@ $REVISIONS['/js/submission_utils.js']=74935531;
 $REVISIONS['/js/resizeWorker.js']=30409570;
 $REVISIONS['/templates/ireland/css/ireland.css']=11477102;
 $REVISIONS['/curated/curator.css']=71654868;
-$REVISIONS['/curated/curator.js']=69051975;
+$REVISIONS['/curated/curator.js']=84762632;
 $REVISIONS['/js/location-selector.js']=91679393;
 ?>
