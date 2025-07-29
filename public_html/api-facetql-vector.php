@@ -13,8 +13,10 @@ $CONF['manticorert_host'] = "manticorert-worker-svc.dev.svc.cluster.local"; //te
 
 require_once('3rdparty/facet-functions.php');
 
-if (!defined('SPHINX_INDEX')) {
-        define('SPHINX_INDEX',"gridimage_embedding");
+if (defined('SPHINX_INDEX')) {
+	$SPHINX_INDEX = SPHINX_INDEX;
+} else {
+        $SPHINX_INDEX = "gridimage_embedding";
 }
 
 
@@ -30,13 +32,91 @@ if (!headers_sent())
 	$res = array();
 
 ###########################################
-#initialize query
+# this is where tricky, we now do the KNN via s3vectors.
+# But if the query can't be forfilled by s3vector metadata, we now grab data from manticore, not manticorert
 
-	$obj = GeographSphinxConnection('manticorert',true);
-	$db = $obj->_connectionID; //using old fashioned mysqli_ functions here!
+if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { //todo, where may be doable via metadata filter?
+	//can be done via s3vectors
+	//1. get embedding
+
+	$criteria = array();
+	$criteria['label'] = $_GET['label'];
+
+		 $filesystem = new FileSystem(); //sets up configuation automagically
+		 //the vector lib needs S3 class setup already!
+
+	require_once('geograph/imagelists3vector.class.php');
+	$imagelist=new ImageListS3Vector;
+
+	$metadata = false;
+	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id))+$/',$_GET['select']) && $_GET['select'] != 'id')
+		$metadata = true;
+
+	//2. get results
+
+	$start = microtime(true);
+	$results = $imagelist->getRawVectorsByCriteria($criteria, 30, $metadata);
+	$end = microtime(true);
+
+	//3. output or fetch further data from local index
+	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id))+$/',$_GET['select'])) {
+		//can be fufilled entrirely by metadata!
+
+		$res['rows'] = array();
+		//$res['rows'][] ...
+		foreach ($results['vectors'] as $i => $vector) {
+			$row = array('id'=>intval($vector['key']));
+			if (isset($vector['distance'])) {
+				$row['k'] = $vector['distance'];
+			}
+			if (!empty($vector['metadata'])) {
+				foreach($vector['metadata'] as $key => $value) {
+					if ($key == 'slat')
+						$row['wgs84_lat'] = deg2rad($value);
+					elseif ($key == 'slng')
+						$row['wgs84_long'] = deg2rad($value);
+					else
+						$row[$key] = $value;
+				}
+			}
+			$res['rows'][] = $row;
+	        }
+
+		$res['meta'] = array('total_found'=>count($res['rows']), 'total'=>count($res['rows']), 'time' => $end-$start); //always 30 (or less), no paging!
+
+	} else {
+		//will have to lookup ids, from s3vectors, then load from sample8!
+		$ids = array();
+		foreach ($results['vectors'] as $i => $vector) {
+			$ids[intval($vector['key'])] = floatval($vector['distance']);
+		}
+
+		$idstr = implode(',',array_keys($ids));
+
+		$SPHINX_INDEX = 'sample8';
+		$_GET['label'] = ""; //already done KNN lookup, dont need to do it again!
+		$_GET['where'] = "id IN ($idstr)";
+
+//TODO save diustances to add to rows too??
+//... also use the s3vectors time for final meta?
+
+		$sph = GeographSphinxConnection('sphinxql',true);
+		$db = $sph->_connectionID; //using old fashioned mysqli_ functions here!
+	}
+} else {
+	//this will need to be done on the RT index directly
+
+	$rt = GeographSphinxConnection('manticorert',true);
+	$db = $rt->_connectionID; //using old fashioned mysqli_ functions here!
+}
+
+###########################################
+#initialize (normal) query
+
+if (empty($res)) { //filled directly above!!!
 
 	if (!empty($_GET['describe'])) {
-		$res['rows'] = getAll("DESCRIBE ".SPHINX_INDEX);
+		$res['rows'] = getAll("DESCRIBE $SPHINX_INDEX");
 		if (!empty($res['rows']) && !empty($res['rows'][0]['Agent']) && $res['rows'][0]['Type'] == 'local') {
 			//in the case of distributed index, sphinx tells us the component indexes, lets instead return result for the compoentn index.
 			// Users care about teh fields/attributes available, not how its built by the server
@@ -106,7 +186,7 @@ if (!headers_sent())
 
 		$q = array();
 		$q[] = "SELECT $select";
-		$q[] = "FROM ".SPHINX_INDEX;
+		$q[] = "FROM $SPHINX_INDEX";
 		if (!empty($where))
 			$q[] = "WHERE ".implode(' AND ',$where);
 		if (!empty($group))
@@ -136,6 +216,7 @@ if ($order == 'RAND()' && empty($_GET['rnd'])) {
 	} else {
 		die("no");
 	}
+}
 
 ###########################################
 

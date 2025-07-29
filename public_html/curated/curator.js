@@ -4,7 +4,7 @@ const selectedImageIds = new Set(); // Stores IDs of images currently in the 'Se
 const rejectedImageIds = new Set(); // NEW: To store rejected image IDs
 
 $(document).ready(function() {
-    const pageSize = 20;
+    let pageSize = 20;
     let longClickTimer = null; // To store the timeout ID for long click differentiation
     const LONG_CLICK_DELAY = 500; // Milliseconds to hold for a long click
 
@@ -264,8 +264,10 @@ $(document).ready(function() {
 	} else if ($('#aiEnhancedCheckbox').is(':checked')) {
 		apiUrl = `${API_DOMAIN}/api-facetql-vector.php`;
 		data['label'] = query.replace(/ user\d+/,''); //not supported on 'label' - convert to attribute/field match?
-		data['offset'] = pageLimit;
-		data['limit'] = pageSize;
+		//data['offset'] = pageLimit;
+		//data['limit'] = pageSize;
+		pageSize = 30; //if getting 30, might as well use thenm rather than having 20+10.
+		data['limit'] = 30; //fixed for s3vectors - but need to override the defult mantyciore of 20!
 	} else {
 		data['match'] = query;
 		data['offset'] = pageLimit;
@@ -285,7 +287,10 @@ $(document).ready(function() {
                     let totalFound, totalPages;
                     if ($('#aiEnhancedCheckbox').is(':checked')) {
                         // KNN queries don't return a total, so we use a reasonable fixed large number
-                        totalFound = 1000; // Use a very large number to indicate "many" results
+                        //totalFound = 1000; // Use a very large number to indicate "many" results
+
+			totalFound = parseInt(response.meta.total); //actully for now, s3vectors returns only 30. But it could be less if filtering!
+
                         totalPages = Math.ceil(totalFound / pageSize);
                     } else {
                         totalFound = parseInt(response.meta.total_found);
