@@ -49,8 +49,25 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 	$imagelist=new ImageListS3Vector;
 
 	$metadata = false;
-	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id))+$/',$_GET['select']) && $_GET['select'] != 'id')
+	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id|takenday|grid_reference))+$/',$_GET['select']) && $_GET['select'] != 'id')
 		$metadata = true;
+
+	//convert this to an actual filter;
+	if (preg_match('/\suser(\d+)\s*$/',$criteria['label'],$m)) {
+		$criteria['user_id'] = intval($m[1]);
+		$criteria['label'] = str_replace($m[0],'',$criteria['label']);
+	}
+
+	if (!empty($_GET['geo'])) {
+                $bits = explode(',',$_GET['geo']);
+		$criteria['lat'] = floatval($bits[0]);
+		$criteria['lng'] = floatval($bits[1]);
+		$criteria['dist'] = intval($bits[2]);
+	}
+
+	if (!empty($_GET['olbounds'])) {
+		$criteria['bbox'] = trim($_GET['olbounds']);
+	}
 
 	//2. get results
 
@@ -59,7 +76,7 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 	$end = microtime(true);
 
 	//3. output or fetch further data from local index
-	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id))+$/',$_GET['select'])) {
+	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id|takenday|grid_reference))+$/',$_GET['select'])) {
 		//can be fufilled entrirely by metadata!
 
 		$res['rows'] = array();
@@ -70,11 +87,16 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 				$row['k'] = $vector['distance'];
 			}
 			if (!empty($vector['metadata'])) {
+				//map the row, to use the same keys as our manticore indexes uses!
 				foreach($vector['metadata'] as $key => $value) {
 					if ($key == 'slat')
 						$row['wgs84_lat'] = deg2rad($value);
 					elseif ($key == 'slng')
 						$row['wgs84_long'] = deg2rad($value);
+					elseif ($key == 'taken')
+						$row['takenday'] = $value;
+					elseif ($key == 'gridref')
+						$row['grid_reference'] = $value;
 					else
 						$row[$key] = $value;
 				}
@@ -97,14 +119,26 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 		$_GET['label'] = ""; //already done KNN lookup, dont need to do it again!
 		$_GET['where'] = "id IN ($idstr)";
 
-//TODO save diustances to add to rows too??
-//... also use the s3vectors time for final meta?
+//TODO use the s3vectors time for final meta?
 
 		$sph = GeographSphinxConnection('sphinxql',true);
 		$db = $sph->_connectionID; //using old fashioned mysqli_ functions here!
 	}
 } else {
 	//this will need to be done on the RT index directly
+
+	//convert this to 'where'
+	if (preg_match('/\suser(\d+)\s*$/',$_GET['label'],$m)) {
+		if (!empty($_GET['where'])) {
+			if (!is_array($_GET['where']))
+				$_GET['where'] = array($_GET['where']);
+			$_GET['where'][] = "user_id=".intval($m[1]);
+		} else {
+			$_GET['where'] = "user_id=".intval($m[1]);
+		}
+		$_GET['label'] = str_replace($m[0],'',$_GET['label']);
+	}
+
 
 	$rt = GeographSphinxConnection('manticorert',true);
 	$db = $rt->_connectionID; //using old fashioned mysqli_ functions here!
@@ -148,6 +182,8 @@ if (empty($res)) { //filled directly above!!!
 		}
 		if (!empty($_GET['label'])) { //currently only specific labels supported!
 			//todo! ideally this shoudl use the manticore index but label isnt attribute, and for now can't garentee all been loaded!
+			//... also note, that if intecepted by s3vectors above, then arbitary query is supproted, so really this should be updated too!
+			//this code will currently be unused!
 			$ddb = GeographDatabaseConnection(false);
 		        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
@@ -180,6 +216,12 @@ if (empty($res)) { //filled directly above!!!
 
 		$option[] = "max_query_time = 10000";
 //		$option[] = 'max_matches=3000';
+
+###########################################
+# geo filter helpers
+
+	//for now only accept 'geo' but done BEFORE sending to S3vectors
+	//would have to reimplement it here to query manticore
 
 ###########################################
 # the run the actual query
@@ -252,6 +294,7 @@ if (empty($res['meta'])) {
 
 function getAllWithUTF($query) {
 	global $db;
+	global $ids;
 	if (!($result = mysqli_query($db, $query))) {
 		return FALSE; //SHOW META in sphinx will report the error
 	}
@@ -267,6 +310,8 @@ function getAllWithUTF($query) {
 		                        $row['title'] = manticore_to_utf8($row['title']);
 		                if (!empty($row['realname']))
                 		        $row['realname'] = manticore_to_utf8($row['realname']);
+				if (!empty($ids) && !empty($ids[intval($row['id'])]))
+					$row['k'] = $ids[intval($row['id'])];
 				$a[] = $row;
 			}
 			return $a;
@@ -285,6 +330,13 @@ function getAllWithUTF($query) {
                         $row['realname'] = utf8_encode($row['realname']);
                 if (!empty($row['place']))
                         $row['place'] = utf8_encode($row['place']);
+		if (!empty($ids) && !empty($ids[intval($row['id'])]))
+			$row['k'] = $ids[intval($row['id'])];
+
+		if (!empty($_GET['thumb']) && !empty($row['hash'])) {
+			$row['thumb'] = getGeographUrl($row['id'],$row['hash'],'med');
+		}
+
 		$a[] = $row;
 	}
 	return $a;
@@ -314,3 +366,23 @@ function getAssoc($query) {
 	return $a;
 }
 
+
+function getGeographUrl($gridimage_id,$hash,$size ='small') {
+       $yz=sprintf("%02d", floor($gridimage_id/1000000));
+       $ab=sprintf("%02d", floor(($gridimage_id%1000000)/10000));
+       $cd=sprintf("%02d", floor(($gridimage_id%10000)/100));
+       $abcdef=sprintf("%06d", $gridimage_id);
+        if ($yz == '00') {
+                $fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}";
+        } else {
+                $fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}";
+        }
+       $server =  "https://s".($gridimage_id%4).".geograph.org.uk";
+       switch($size) {
+               case 'full': return "https://s0.geograph.org.uk $fullpath.jpg"; break;
+               case 'med': return "$server{$fullpath}_213x160.jpg"; break;
+               case 'small':
+               default: return "$server{$fullpath}_120x120.jpg";
+       }
+
+}

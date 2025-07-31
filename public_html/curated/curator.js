@@ -263,7 +263,6 @@ $(document).ready(function() {
 
 	} else if ($('#aiEnhancedCheckbox').is(':checked')) {
 		apiUrl = `${API_DOMAIN}/api-facetql-vector.php`;
-		data['label'] = query.replace(/ user\d+/,''); //not supported on 'label' - convert to attribute/field match?
 		//data['offset'] = pageLimit;
 		//data['limit'] = pageSize;
 		pageSize = 30; //if getting 30, might as well use thenm rather than having 20+10.
