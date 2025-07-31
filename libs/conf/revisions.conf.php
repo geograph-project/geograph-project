@@ -98,6 +98,6 @@ $REVISIONS['/js/submission_utils.js']=74935531;
 $REVISIONS['/js/resizeWorker.js']=30409570;
 $REVISIONS['/templates/ireland/css/ireland.css']=11477102;
 $REVISIONS['/curated/curator.css']=71654868;
-$REVISIONS['/curated/curator.js']=84762632;
+$REVISIONS['/curated/curator.js']=12141202;
 $REVISIONS['/js/location-selector.js']=91679393;
 ?>
