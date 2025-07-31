@@ -226,6 +226,10 @@ class ImageListS3Vector extends ImageList
      */
     private function _getLabelVectorValueList($label)
     {
+	if (preg_match('/^id:(\d+)$/',$label,$m) || preg_match('/\//photo\/(\d+)$/',$label,$m)) {
+		//todo, in concept we COULD do both, and use vector->add() ?
+		return $this->_getImageVectorValueList(intval($m[1]));
+	}
         $db = $this->_getDB();
         $quoted = $db->Quote($label);
         $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");

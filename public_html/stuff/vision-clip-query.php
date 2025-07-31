@@ -118,6 +118,14 @@ if (empty($_GET['inner'])) {
 				quickFetch();
 				timer = null;
 			},500);
+		}).on('drop',function(event) {
+			var droppedData = event.originalEvent.dataTransfer.getData('text/plain');
+			//intercept photo URLs, and transform it into our ID syntax
+			if (m = droppedData.match(/\/photo\/(\d+)/)) {
+				this.value = "id:"+m[1];
+				event.preventDefault();
+				quickFetch(); //update right away
+			}
 		});
 	});
 
@@ -320,9 +328,37 @@ if (!empty($_GET['loc'])) {
 }
 
 ####################################################
+// simple id search
+
+        if (preg_match('/id:(\d+)/',$_GET['query'],$m) && empty($_GET['lat'])) { //getImagesSimilarToID doesnt actully support geofiltering!
+		//note that imagelist class natively understands id: queries now. This is left as a demo, but is not strictly needed :)
+                $id = intval($m[1]);
+
+		//..its clearer to show the actual source image, natuallt excluded from the KNN query!
+		//... but note, manticore excludes it, but s3vectors does NOT!
+		print "<div style=float:left;width:450px;padding:20px>";
+		print "These images are visually similar to the source image, but the similarity is based purely on appearance, not on the image's title or location. For instance, you'll see other churches, but not necessarily the same church from a different angle.";
+		//print "The results are showing images visually similar to this, <b>not based on the image title</b>. This similarity index is NOT location aware. So for example wont be the same Church, just Churches in general.";
+		print "</div>";
+		if (!empty($rt)) { //might as well use it!
+			$sql = "select id, user_id, realname, title, 1 as reference_index, grid_reference from gridimage_embedding where id = $id";
+			$imagelist->getImagesBySphinxQL($sql);
+		} else {
+			$imagelist->getImagesByIdList(array($id));
+		}
+		$imagelist->outputThumbs($thumbw,$thumbh);
+
+		// get results
+		$imagelist->getImagesSimilarToID($id);
+		if ($imagelist->images[0]->gridimage_id == $id) {
+			unset($imagelist->images[0]);
+		}
+		$imagelist->outputThumbs($thumbw,$thumbh);
+
+#####################################################
 //gerenal centered serach
 
-	if (!empty($_GET['lat']) && !empty($_GET['lon']) && !empty($_GET['dist'])) {
+	} elseif (!empty($_GET['lat']) && !empty($_GET['lon']) && !empty($_GET['dist'])) {
 		$lat = $_GET['lat'];
 		$lon = $_GET['lon'];
 		$dist = $_GET['dist'];
