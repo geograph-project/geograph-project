@@ -21,47 +21,22 @@ function getTextEmbeddingFromQuery(string $query): array
 
     $finalVector = null;
 
-    // Process positive part
-    if (!empty($positivePart)) {
-        // Check for image IDs
-        if (preg_match('/id:(\d+)/', $positivePart, $matches)) {
-            $imageId = (int)$matches[1];
-            $imageVector = new EmbeddingVector(getImageEmbeddingById($imageId));
-
-            // Remove the ID part from the string
-            $textPart = trim(str_replace($matches[0], '', $positivePart));
-
-            if (!empty($textPart)) {
-                $textVector = new EmbeddingVector(getTextEmbedding($textPart));
-                $finalVector = $imageVector->add($textVector);
-            } else {
-                $finalVector = $imageVector;
-            }
+        // Process positive part
+        if (!empty($positivePart)) {
+            $finalVector = processVectorPart($positivePart);
         } else {
-            $finalVector = new EmbeddingVector(getTextEmbedding($positivePart));
-        }
-    }
+		//not sure, but seems we could support JUST negative!
+		$finalVector = new EmbeddingVector(array_fill(0, 512, 0.0)); //???
+	}
 
-    // Process negative part
-    if (!empty($negativePart) && $finalVector !== null) {
-        // Check for image IDs in negative part
-        if (preg_match('/id:(\d+)/', $negativePart, $matches)) {
-            $imageId = (int)$matches[1];
-            $imageVector = new EmbeddingVector(getImageEmbeddingById($imageId));
-
-            // Remove the ID part from the string
-            $textPart = trim(str_replace($matches[0], '', $negativePart));
-
-            $negativeVector = $imageVector;
-            if (!empty($textPart)) {
-                $textVector = new EmbeddingVector(getTextEmbedding($textPart));
-                $negativeVector = $negativeVector->add($textVector);
+        // Process negative part
+        if (!empty($negativePart) && $finalVector !== null) {
+            $negativeVector = processVectorPart($negativePart);
+            if ($negativeVector) {
+                $finalVector = $finalVector->subtract($negativeVector);
             }
-        } else {
-            $negativeVector = new EmbeddingVector(getTextEmbedding($negativePart));
         }
-        $finalVector = $finalVector->subtract($negativeVector);
-    }
+
 	if (!empty($finalVector)) {
 		//return raw float array!
 		return $finalVector->getNormalizedVector();
@@ -69,6 +44,52 @@ function getTextEmbeddingFromQuery(string $query): array
 
     return $finalVector;
 }
+
+    /**
+     * Processes a single part of the query (positive or negative) to create a vector.
+     * This is a helper method to avoid code duplication in parseQueryAndGetVector.
+     *
+     * @param string $part The query string part.
+     * @return EmbeddingVector|null The resulting vector object or null on failure.
+     */
+    function processVectorPart(string $part): ?EmbeddingVector
+    {
+        $vector = null;
+
+        // Use preg_match_all to find all image IDs
+        preg_match_all('/id:(\d+)/', $part, $matches, PREG_SET_ORDER);
+
+        // Aggregate vectors for all found images
+        if (!empty($matches)) {
+            foreach ($matches as $match) {
+                $imageId = (int)$match[1];
+                $imageVector = new EmbeddingVector(getImageEmbeddingById($imageId));
+
+                if ($vector === null) {
+                    $vector = $imageVector;
+                } else {
+                    $vector = $vector->add($imageVector);
+                }
+            }
+
+            // Remove all 'id:...' parts from the string to get the remaining text
+            $textPart = trim(preg_replace('/id:(\d+)/', '', $part));
+            if (!empty($textPart)) {
+                $textVector = new EmbeddingVector(getTextEmbedding($textPart));
+                if ($vector === null) {
+                    $vector = $textVector;
+                } else {
+                    $vector = $vector->add($textVector);
+                }
+            }
+        } else {
+            // No image IDs found, process the entire part as text
+            if (!empty($part)) {
+                $vector = new EmbeddingVector(getTextEmbedding($part));
+            }
+        }
+        return $vector;
+    }
 
 //copied from _getLabelVectorValueList
 function getTextEmbeddingWrapper($label) {
