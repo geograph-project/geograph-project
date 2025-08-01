@@ -66,7 +66,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => $this->_getImageVectorValueList($id, $type)],
+            'queryVector' => ['float32' => getImageEmbeddingById($id,$type, $this->_getDB(false)) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => true, // Changed to true to align with general expectation and potential future use
@@ -86,7 +86,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => $this->_getLabelVectorValueList($label)],
+            'queryVector' => ['float32' => getTextEmbeddingWrapper($label, $this->_getDB(false)) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => true, // Changed to true
@@ -113,7 +113,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => $this->_getLabelVectorValueList($label)],
+            'queryVector' => ['float32' => getTextEmbeddingWrapper($label, $this->_getDB(false)) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => true, // Changed to true
@@ -199,56 +199,6 @@ class ImageListS3Vector extends ImageList
         return $queryFilter;
     }
 
-    /**
-     * Retrieves an image embedding vector from the database given an image ID and type.
-     *
-     * @param int $id The ID of the gridimage.
-     * @param string $type The type of embedding (e.g., 'image').
-     * @return array An array of floats representing the embedding vector, or an empty array if not found.
-     */
-    private function _getImageVectorValueList($id,$type='image')
-    {
-        $db = $this->_getDB();
-        $type = $db->Quote($type);
-        $binary = $db->getOne("SELECT embeddings FROM gridimage_embedding WHERE gridimage_id = ".intval($id)." AND type=$type");
-        if (empty($binary)) {
-            error_log('ImageListS3Vector:_getImageVectorValueList: No embedding found for image ID: ' . $id . ' and type: ' . $type);
-            return []; // Return empty array consistently on not found
-        }
-        return array_values(unpack('g*', $binary));
-    }
-
-    /**
-     * Retrieves a label embedding vector from the database or generates it via API if not found.
-     *
-     * @param string $label The label text.
-     * @return array An array of floats representing the embedding vector, or an empty array if not found/generated.
-     */
-    private function _getLabelVectorValueList($label)
-    {
-	if (preg_match('/^id:(\d+)$/',$label,$m) || preg_match('/\/photo\/(\d+)$/',$label,$m)) {
-		//todo, in concept we COULD do both, and use vector->add() ?
-		return $this->_getImageVectorValueList(intval($m[1]));
-	}
-        $db = $this->_getDB();
-        $quoted = $db->Quote($label);
-        $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
-
-        if (empty($binary)) {
-            // If not found in DB, try to get it from the embedding API
-            $r = getTextEmbedding($label);
-            if (!empty($r) && is_array($r) && count($r) > 0) { // Check if API returned a valid non-empty array
-                // Optionally, save $r to DB here for future use
-                // $db->Execute("INSERT INTO label_embedding (label, embeddings) VALUES ($quoted, ?)", [pack('g*', ...$r)]);
-                return $r;
-            }
-            error_log('ImageListS3Vector:_getLabelVectorValueList: Unable to get/encode query vector for label: ' . $label . ' from DB or API.');
-            return []; // Return empty array instead of die() or null
-        }
-
-        return array_values(unpack('g*', $binary));
-    }
-
     // --- Placeholder Methods for future implementation ---
     public function getImagesByLocationVector($lat, $lon, $label, $limit = 30, $incgeodist = false) {
         error_log('ImageListS3Vector: getImagesByLocationVector is a TODO and not implemented.');
@@ -261,7 +211,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => $this->_getLabelVectorValueList($criteria['label'])],
+            'queryVector' => ['float32' => getTextEmbeddingWrapper($label, $this->_getDB(false)) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => $metadata,
@@ -278,7 +228,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => $this->_getLabelVectorValueList($criteria['label'])],
+            'queryVector' => ['float32' => getTextEmbeddingWrapper($label, $this->_getDB(false)) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => $metadata,

@@ -51,6 +51,7 @@ class ImageListKNN extends ImageList
      */
     public function getImagesSimilarToID($id, $limit = 100)
     {
+	//note, we dont need to use _getImageVectorValue/getImageEmbeddingById as manticore can do it directly!
         $id = intval($id);
         $sql = "SELECT {$this->knncols}, knn_dist() AS k FROM gridimage_embedding WHERE KNN ( {$this->vector}, $limit, $id ) LIMIT $limit";
 
@@ -155,24 +156,11 @@ class ImageListKNN extends ImageList
      */
     private function _getLabelVectorValue($label)
     {
-        $db = $this->_getDB();
-        $quoted = $db->Quote($label);
-        $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
-        
-        if (empty($binary)) {
-            // If not found in DB, try to get it from the embedding API
-            $vector_array = getTextEmbedding($label);
-            if (!empty($vector_array) && is_array($vector_array) && count($vector_array) > 0) {
-                // Optionally, save $vector_array to DB here for future use
-                // $db->Execute("INSERT INTO label_embedding (label, embeddings) VALUES ($quoted, ?)", [pack('g*', ...$vector_array)]);
-                return "(" . implode(', ', $vector_array) . ")";
-            }
-            error_log('ImageListKNN:_getLabelVectorValue: Unable to get/encode query vector for label: ' . $label . ' from DB or API.');
-            return null; // Return null consistently if not found/generated
-        }
-        
-        $list = unpack('g*', $binary);
-        return "(" . implode(', ', $list) . ")";
+	$vector = getTextEmbeddingWrapper($label, $this->_getDB(false));
+	if (empty($vector)) {
+		return null;
+	}
+        return "(" . implode(', ', $vector) . ")";
     }
 
     /**
@@ -230,18 +218,15 @@ class ImageListKNN extends ImageList
     public function getImagesByLocationVector($lat, $lon, $label, $limit = 100, $incgeodist = false)
     {
         $db = $this->_getDB();
-        $quoted = $db->Quote($label);
-        $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
-        if (empty($binary)) {
-            // Attempt to get from API if not in DB
-            $vector_array = getTextEmbedding($label);
-            if (!empty($vector_array) && is_array($vector_array) && count($vector_array) > 0) {
-                 $binary = pack('g*', ...$vector_array);
-            } else {
-                error_log('ImageListKNN:getImagesByLocationVector: Label vector not found for label: ' . $label . ' from DB or API.');
-                return 0;
-            }
+
+        $vector_array = getTextEmbeddingWrapper($label, $db);
+        if (!empty($vector_array) && is_array($vector_array) && count($vector_array) > 0) {
+            $binary = pack('g*', ...$vector_array);
+        } else {
+            error_log('ImageListKNN:getImagesByLocationVector: Label vector not found for label: ' . $label . ' from DB or API.');
+            return 0;
         }
+
         if ($incgeodist) {
             list($dist_col, $dist_where) = $this->_getGeoDistClause($lat, $lon, 0);
             $this->knncols .= ", $dist_col"; //adds the distance column

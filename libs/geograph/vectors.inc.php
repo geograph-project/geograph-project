@@ -8,6 +8,121 @@ $CONF['s3_vector_bucket'] = 'geograph-vector-bucket';
 
 //for now leave the indexName hardcoded (similarly the manticore index name!)
 
+###################################################
+
+//parse a custom syntax, return a single vector for the query
+function getTextEmbeddingFromQuery(string $query): array
+{
+	require_once("3rdparty/vector.class.php"); //provides EmbeddingVector - needed for vector math
+
+    $parts = explode('-', $query, 2);
+    $positivePart = trim($parts[0]);
+    $negativePart = isset($parts[1]) ? trim($parts[1]) : '';
+
+    $finalVector = null;
+
+    // Process positive part
+    if (!empty($positivePart)) {
+        // Check for image IDs
+        if (preg_match('/id:(\d+)/', $positivePart, $matches)) {
+            $imageId = (int)$matches[1];
+            $imageVector = new EmbeddingVector(getImageEmbeddingById($imageId));
+
+            // Remove the ID part from the string
+            $textPart = trim(str_replace($matches[0], '', $positivePart));
+
+            if (!empty($textPart)) {
+                $textVector = new EmbeddingVector(getTextEmbedding($textPart));
+                $finalVector = $imageVector->add($textVector);
+            } else {
+                $finalVector = $imageVector;
+            }
+        } else {
+            $finalVector = new EmbeddingVector(getTextEmbedding($positivePart));
+        }
+    }
+
+    // Process negative part
+    if (!empty($negativePart) && $finalVector !== null) {
+        // Check for image IDs in negative part
+        if (preg_match('/id:(\d+)/', $negativePart, $matches)) {
+            $imageId = (int)$matches[1];
+            $imageVector = new EmbeddingVector(getImageEmbeddingById($imageId));
+
+            // Remove the ID part from the string
+            $textPart = trim(str_replace($matches[0], '', $negativePart));
+
+            $negativeVector = $imageVector;
+            if (!empty($textPart)) {
+                $textVector = new EmbeddingVector(getTextEmbedding($textPart));
+                $negativeVector = $negativeVector->add($textVector);
+            }
+        } else {
+            $negativeVector = new EmbeddingVector(getTextEmbedding($negativePart));
+        }
+        $finalVector = $finalVector->subtract($negativeVector);
+    }
+	if (!empty($finalVector)) {
+		//return raw float array!
+		return $finalVector->getVector();
+	}
+
+    return $finalVector;
+}
+
+//copied from _getLabelVectorValueList
+function getTextEmbeddingWrapper($label, $db = null) {
+	if (empty($db))
+		$db = $GLOBALS['db'];
+        //$db = $this->_getDB();
+
+        if (preg_match('/^id:(\d+)$/',$label,$m) || preg_match('/\/photo\/(\d+)$/',$label,$m)) {
+                //todo, in concept we COULD do both, and use vector->add() ?
+                return getImageEmbeddingById(intval($m[1]));
+        }
+        $quoted = $db->Quote($label);
+        $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
+
+        if (empty($binary)) {
+            // If not found in DB, try to get it from the embedding API
+            $r = getTextEmbedding($label);
+            if (!empty($r) && is_array($r) && count($r) > 0) { // Check if API returned a valid non-empty array
+                // Optionally, save $r to DB here for future use
+                // $db->Execute("INSERT INTO label_embedding (label, embeddings) VALUES ($quoted, ?)", [pack('g*', ...$r)]);
+                return $r;
+            }
+            error_log('Unable to get/encode query vector for label: ' . $label . ' from DB or API.');
+            return []; // Return empty array instead of die() or null
+        }
+
+        return array_values(unpack('g*', $binary));
+}
+
+//copied from _getImageVectorValueList - really should be here (not specific to imagelist)
+// in general should be used in preference to getImageEmbedding, as that wont use gridimage_embedding table!
+function getImageEmbeddingById($id, $type = 'image', $db = null) {
+	if (empty($db))
+		$db = $GLOBALS['db'];
+
+        $type = $db->Quote($type);
+        $binary = $db->getOne("SELECT embeddings FROM gridimage_embedding WHERE gridimage_id = ".intval($id)." AND type=$type");
+        if (empty($binary)) {
+		//todo call getImageEmbedding!
+		$image=new GridImage($id, true);
+		if ($image->isValid() || $image->moderation_status != 'rejected') {
+			$vector = getImageEmbedding($image);
+			if ($vector) {
+				//todo, save to gridimage_embedding!
+				return $vector;
+			}
+		}
+
+            error_log('No embedding found for image ID: ' . $id . ' and type: ' . $type);
+            return []; // Return empty array consistently on not found
+        }
+        return array_values(unpack('g*', $binary));
+}
+
 /**
  * Retrieves text embeddings from an API.
  * Encapsulates the cURL logic for calling the text embedding service.
@@ -27,20 +142,26 @@ function getTextEmbedding($inputText) {
         return [];
     }
 
+static $ch;
+
+if (empty($ch)) {
+
     // Initialize a cURL session
     $ch = curl_init();
 
     // Set cURL options
     curl_setopt($ch, CURLOPT_URL, $apiUrl);
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+}
+
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
         'Content-Length: ' . strlen($postData)
     ]);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 
     // Execute the cURL request
     $response = curl_exec($ch);
@@ -69,7 +190,7 @@ function getTextEmbedding($inputText) {
     }
 
     // Close the cURL session
-    curl_close($ch);
+//    curl_close($ch); -- keep it as now stored statically for reuse
     return $embedding_vector;
 }
 
@@ -111,20 +232,26 @@ function getImageEmbedding($image, $use_ai_thumb = false, $check_exists = false)
         return [];
     }
 
+static $ch;
+
+if (empty($ch)) {
+
     // Initialize a cURL session
     $ch = curl_init();
 
     // Set cURL options
     curl_setopt($ch, CURLOPT_URL, $apiUrl);
     curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+}
+
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
         'Content-Length: ' . strlen($postData)
     ]);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 
     // Execute the cURL request
     $response = curl_exec($ch);
@@ -151,7 +278,7 @@ function getImageEmbedding($image, $use_ai_thumb = false, $check_exists = false)
     }
 
     // Close the cURL session
-    curl_close($ch);
+//    curl_close($ch);-- keep it as now stored statically for reuse
     return $vector;
 }
 
