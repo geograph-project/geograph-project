@@ -48,6 +48,57 @@ if (empty($_GET['dist']))
 
 		$memcache = $orig;
 
+#######################################
+// experiment at asking tranditiaonl search to compute a vector!
+
+if (!empty($_GET['ask']) && !empty($_GET['query'])) {
+	$results = $imagelist->getImagesBySphinx($_GET['query'], 100, 1, true);
+	if ($results) {
+		require_once('3rdparty/vector.class.php');
+		$ids = array();
+		foreach($imagelist->images as $image) {
+			$ids[] = $image->gridimage_id;
+		}
+		$idstr = implode(',',$ids);
+		$db=$imagelist->_getDB(false);
+		$rows = $db->getAll("SELECT * FROM gridimage_embedding WHERE type='image' AND gridimage_id IN ($idstr)");
+		if (empty($rows)) { //it could happen, particlly as not all images processed! this is jus a demo
+			die("sorry, unable to run this now!");
+		}
+		$list = array();
+		foreach($rows as $row) {
+			$list[] = new EmbeddingVector($row['embeddings']);
+		}
+		if (count($list) > 30) {
+			$average = EmbeddingVector::robustAverage($list, 0.8, true);
+		} else {
+			$average = EmbeddingVector::average($list, true);
+		}
+		$bytes = $average->getBytes();
+		$label = "[".md5($bytes)."]"; //create a fake label!
+
+		//it might technically alrady exist! todo, chance of hash collision??
+		$db->Execute("INSERT IGNORE INTO label_embedding (label, model, embeddings) VALUES (?, ?, ?)", [$label, 'clip', $bytes]);
+
+		$_GET['query'] = $label;
+		unset($_GET['ask']);
+		$url = "?".http_build_query($_GET); //preserve other values!
+
+		header("Location: $url");
+		exit;
+
+		print "<pre>";
+		print_r($ids);
+		print_r($label);
+		print_r($url);
+		exit;
+	} else {
+		die("query returned no results");
+	}
+}
+
+#######################################
+
 
 	$thumbw=213; $thumbh=160;
 
@@ -55,16 +106,17 @@ if (empty($_GET['dist']))
         $location = new LocationSelector();
 
 if (empty($_GET['inner'])) {
-	$smarty->display('_std_begin.tpl');
+	$smarty->assign('page_title','Concept Search Demo');
+	$smarty->display('_std_begin.tpl',$_SERVER['PHP_SELF']);
 
 	?>
 
-        <h2>CLIP-based Similarity Search (Demo Dataset)</h2>
+        <h2>Concept Search Demo (CLIP-based Similarity Search)</h2>
 
 	<div style="max-width:900px;font-size:0.9em">
 	<? if (rand(0,2) > 1) { ?>
 
-		<p>This demo draws from a sample of about 1 million images. While initial results are often visually strong, their 
+		<p>This demo draws from a sample of <b>about 1.6 million images</b>. While initial results are often visually strong, their 
 		quality tends to decline quickly as the system displays 30 images without further relevance filtering. This isn't 
 		a named entity search. You can't search for specific proper names or landmarks like 'Giant's Causeway' or 'Harlech 
 		Castle', or even places like 'Newcastle'. Instead, look for a general visual term like 'basalt columns' or 
@@ -82,7 +134,7 @@ if (empty($_GET['inner'])) {
 
 	 <? } else { ?>
 
-		<p> This demo uses a sample of about 1 million images. While initial results are often visually similar, the 
+		<p> This demo uses a sample of about <b>1.6 million images</b>. While initial results are often visually similar, the 
 		quality tends to decline quickly as it displays 30 images without further relevance filtering. This is a visual 
 		similarity search, so it cannot search for specific names or places like 'Harlech Castle' or 'Newcastle'. Instead, 
 		search for a general term like 'castle' and then use the location filter to center your search around Harlech 
@@ -295,6 +347,7 @@ function openMap(open) {
 		</div>
 
             <input type="button" onclick="quickFetch()" value="Update">
+		<input type=submit name=ask value="Ask keywords" style=font-size:small title="Enter a KEYWORDS search above, this then runs that search and gets results most samantically similar to the results">
         </div>
     </div>
 </form>

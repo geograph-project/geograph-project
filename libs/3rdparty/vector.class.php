@@ -78,6 +78,21 @@ class EmbeddingVector
     }
 
     /**
+     * Returns a compact binary string representation of the vector.
+     *
+     * This is useful for storing the vector efficiently in a database
+     * or other storage system, and can be read back by the constructor.
+     * The `pack` format 'g*' is used for single-precision floats (32-bit)
+     * in little-endian byte order.
+     *
+     * @return string The packed binary string.
+     */
+    public function getBytes(): string
+    {
+        return pack('g*', ...$this->vector);
+    }
+
+    /**
      * Returns a new array representing the L2-normalized version of the internal vector.
      *
      * This is useful for chaining operations where an intermediate vector (e.g., from subtract or average)
@@ -267,6 +282,59 @@ class EmbeddingVector
 
         return new EmbeddingVector($averageVector, $normalize);
     }
+
+    /**
+     * Computes a robust average of a list of vectors by first removing outliers.
+     *
+     * This method first calculates a standard average, then identifies and removes
+     * the vectors that are farthest from this average. It then calculates a new
+     * average from the remaining, closer vectors, resulting in a more robust and
+     * representative central vector.
+     *
+     * @param array<EmbeddingVector> $vectors An array containing EmbeddingVector objects.
+     * @param float $percentile The percentile of vectors to keep, as a float between 0 and 1 (e.g., 0.8 for 80%).
+     * @return EmbeddingVector A new EmbeddingVector instance representing the robust average.
+     * @throws InvalidArgumentException If the input list is empty, contains non-EmbeddingVector elements,
+     * or if the percentile is out of a valid range.
+     */
+    public static function robustAverage(array $vectors, float $percentile = 0.8, $normalize = false): EmbeddingVector
+    {
+        if (empty($vectors)) {
+            throw new InvalidArgumentException("Cannot compute robust average of an empty list of vectors.");
+        }
+        if ($percentile <= 0.0 || $percentile > 1.0) {
+            throw new InvalidArgumentException("Percentile must be a float between 0 (exclusive) and 1 (inclusive).");
+        }
+
+        // 1. Calculate an initial average of all vectors.
+        $initialAverage = self::average($vectors, true); //normalize - needed for below distances!
+
+        // 2. Calculate the distance of each vector to the initial average.
+        $distances = [];
+        foreach ($vectors as $key => $vector) {
+            if (!($vector instanceof EmbeddingVector)) {
+                throw new InvalidArgumentException("All elements in the list must be EmbeddingVector instances.");
+            }
+            $distances[$key] = $vector->distance($initialAverage);
+        }
+
+        // 3. Sort the distances to find the closest vectors.
+        asort($distances);
+
+        // 4. Determine how many vectors to keep based on the percentile.
+        $numToKeep = (int) ceil(count($vectors) * $percentile);
+        $keysToKeep = array_slice(array_keys($distances), 0, $numToKeep);
+
+        // 5. Create a new list with only the closest vectors.
+        $filteredVectors = [];
+        foreach ($keysToKeep as $key) {
+            $filteredVectors[] = $vectors[$key];
+        }
+
+        // 6. Calculate the final average from the filtered list.
+        return self::average($filteredVectors, $normalize);
+    }
+
 
     /**
      * Performs a K-Nearest Neighbors (KNN) search.
