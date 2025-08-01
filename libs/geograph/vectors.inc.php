@@ -64,7 +64,7 @@ function getTextEmbeddingFromQuery(string $query): array
     }
 	if (!empty($finalVector)) {
 		//return raw float array!
-		return $finalVector->getVector();
+		return $finalVector->getNormalizedVector();
 	}
 
     return $finalVector;
