@@ -23,7 +23,7 @@
 //these are the arguments we expect
 $param=array('verbose'=>false, 'index'=>'test-index', 'query'=>'road', 'insert'=>false, 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false);
 
-$ABORT_GLOBAL_EARLY = true; //this stops connecting to memcache, so FileSystem will get a fresh STS token! (not from memcache!) 
+$ABORT_GLOBAL_EARLY = true; //this stops connecting to memcache, so FileSystem will get a fresh STS token! (not from memcache!)
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -84,7 +84,6 @@ if (!empty($param['insert']) && $param['index'] == 'label-clip') {
 				if ($return_status !== 0) {
 					print "apt install pip && pip install requests boto3 mysql_connector numpy\n";
 				}
-
 			}
 
 			$sql = "UPDATE tmp_emdedding_stat SET done=NOW() WHERE min_id = {$row['min_id']}";
@@ -157,8 +156,7 @@ include "3rdparty/s3vectors.inc.php";
            $queryFilter = $parts[0];
 	}
     }
-        print json_encode($queryFilter)."\n";
-
+    print json_encode($queryFilter)."\n";
 
 ##################################
 

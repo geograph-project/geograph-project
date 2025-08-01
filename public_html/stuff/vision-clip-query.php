@@ -51,7 +51,8 @@ if (empty($_GET['dist']))
 #######################################
 // experiment at asking tranditiaonl search to compute a vector!
 
-if (!empty($_GET['ask']) && !empty($_GET['query'])) {
+if (!empty($_GET['ask']) && !empty($_GET['query']) && !preg_match('/id:\d/',$_GET['query'])) { //id is not an field in sphinx, maybe we could find title or location?
+
 	$results = $imagelist->getImagesBySphinx($_GET['query'], 100, 1, true);
 	if ($results) {
 		require_once('3rdparty/vector.class.php');
