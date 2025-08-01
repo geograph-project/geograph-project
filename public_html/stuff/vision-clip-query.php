@@ -166,7 +166,7 @@ if (empty($_GET['inner'])) {
 	$(function() {
 		$('#query').on('keyup',function() {
 			if(timer)
-				clearTimeout($timer);
+				clearTimeout(timer);
 			timer = setTimeout(function() {
 				quickFetch();
 				timer = null;
@@ -384,7 +384,7 @@ if (!empty($_GET['loc'])) {
 ####################################################
 // simple id search
 
-        if (preg_match('/id:(\d+)/',$_GET['query'],$m) && empty($_GET['lat'])) { //getImagesSimilarToID doesnt actully support geofiltering!
+        if (preg_match('/^id:(\d+)$/',$_GET['query'],$m) && empty($_GET['lat'])) { //getImagesSimilarToID doesnt actully support geofiltering!
 		//note that imagelist class natively understands id: queries now. This is left as a demo, but is not strictly needed :)
                 $id = intval($m[1]);
 
