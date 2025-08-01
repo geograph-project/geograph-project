@@ -71,10 +71,10 @@ function getTextEmbeddingFromQuery(string $query): array
 }
 
 //copied from _getLabelVectorValueList
-function getTextEmbeddingWrapper($label, $db = null) {
+function getTextEmbeddingWrapper($label) {
+	global $db;
 	if (empty($db))
-		$db = $GLOBALS['db'];
-        //$db = $this->_getDB();
+		$db = GeographDatabaseConnection(false);
 
         if (preg_match('/^id:(\d+)$/',$label,$m) || preg_match('/\/photo\/(\d+)$/',$label,$m)) {
                 //todo, in concept we COULD do both, and use vector->add() ?
@@ -88,6 +88,7 @@ function getTextEmbeddingWrapper($label, $db = null) {
             $r = getTextEmbedding($label);
             if (!empty($r) && is_array($r) && count($r) > 0) { // Check if API returned a valid non-empty array
                 // Optionally, save $r to DB here for future use
+		//remember to check $db->readonly
                 // $db->Execute("INSERT INTO label_embedding (label, embeddings) VALUES ($quoted, ?)", [pack('g*', ...$r)]);
                 return $r;
             }
@@ -100,9 +101,10 @@ function getTextEmbeddingWrapper($label, $db = null) {
 
 //copied from _getImageVectorValueList - really should be here (not specific to imagelist)
 // in general should be used in preference to getImageEmbedding, as that wont use gridimage_embedding table!
-function getImageEmbeddingById($id, $type = 'image', $db = null) {
+function getImageEmbeddingById($id, $type = 'image') {
+	global $db;
 	if (empty($db))
-		$db = $GLOBALS['db'];
+		$db = GeographDatabaseConnection(false);
 
         $type = $db->Quote($type);
         $binary = $db->getOne("SELECT embeddings FROM gridimage_embedding WHERE gridimage_id = ".intval($id)." AND type=$type");
@@ -113,6 +115,7 @@ function getImageEmbeddingById($id, $type = 'image', $db = null) {
 			$vector = getImageEmbedding($image);
 			if ($vector) {
 				//todo, save to gridimage_embedding!
+				//remember to check $db->readonly
 				return $vector;
 			}
 		}

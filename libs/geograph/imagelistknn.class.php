@@ -156,7 +156,7 @@ class ImageListKNN extends ImageList
      */
     private function _getLabelVectorValue($label)
     {
-	$vector = getTextEmbeddingWrapper($label, $this->_getDB(false));
+	$vector = getTextEmbeddingWrapper($label);
 	if (empty($vector)) {
 		return null;
 	}
@@ -217,9 +217,7 @@ class ImageListKNN extends ImageList
      */
     public function getImagesByLocationVector($lat, $lon, $label, $limit = 100, $incgeodist = false)
     {
-        $db = $this->_getDB();
-
-        $vector_array = getTextEmbeddingWrapper($label, $db);
+        $vector_array = getTextEmbeddingWrapper($label);
         if (!empty($vector_array) && is_array($vector_array) && count($vector_array) > 0) {
             $binary = pack('g*', ...$vector_array);
         } else {
