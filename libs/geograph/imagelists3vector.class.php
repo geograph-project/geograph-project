@@ -69,7 +69,7 @@ class ImageListS3Vector extends ImageList
             'queryVector' => ['float32' => getImageEmbeddingById($id,$type) ],
             'topK' => $limit,
             'returnDistance' => true,
-            'returnMetadata' => true, // Changed to true to align with general expectation and potential future use
+            'returnMetadata' => false,
         ];
         return $this->_getImagesByPayload($queryPayload);
     }
@@ -89,7 +89,7 @@ class ImageListS3Vector extends ImageList
             'queryVector' => ['float32' => getTextEmbeddingWrapper($label) ],
             'topK' => $limit,
             'returnDistance' => true,
-            'returnMetadata' => true, // Changed to true
+            'returnMetadata' => false,
         ];
         return $this->_getImagesByPayload($queryPayload);
     }
@@ -116,7 +116,7 @@ class ImageListS3Vector extends ImageList
             'queryVector' => ['float32' => getTextEmbeddingWrapper($label) ],
             'topK' => $limit,
             'returnDistance' => true,
-            'returnMetadata' => true, // Changed to true
+            'returnMetadata' => false,
             'filter' => $this->_getFilters(array('lat'=>$lat,'lng'=>$lon,'dist'=>$distance))
         ];
 
@@ -206,7 +206,7 @@ class ImageListS3Vector extends ImageList
     }
 
     // --- just pass critiera directly!
-    public function getImagesByCriteria(array $criteria, $limit = 30, $metadata=false) {
+    public function getImagesByCriteria(array $criteria, $limit = 30) {
 
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
@@ -214,7 +214,7 @@ class ImageListS3Vector extends ImageList
             'queryVector' => ['float32' => getTextEmbeddingWrapper($label) ],
             'topK' => $limit,
             'returnDistance' => true,
-            'returnMetadata' => $metadata,
+            'returnMetadata' => false,
         ];
 	$filter = $this->_getFilters($criteria);
 	if (!empty($filter)) //might end up a empty array, which s3 does not like!
