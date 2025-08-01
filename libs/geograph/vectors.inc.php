@@ -24,15 +24,16 @@ function getTextEmbeddingFromQuery(string $query): array
         // Process positive part
         if (!empty($positivePart)) {
             $finalVector = processVectorPart($positivePart);
-        } else {
-		//not sure, but seems we could support JUST negative!
-		$finalVector = new EmbeddingVector(array_fill(0, 512, 0.0)); //???
 	}
 
         // Process negative part
-        if (!empty($negativePart) && $finalVector !== null) {
+        if (!empty($negativePart)) {
             $negativeVector = processVectorPart($negativePart);
             if ($negativeVector) {
+		if (empty($finalVector)) {
+			//not sure, but seems we could support JUST negative!
+	                $finalVector = new EmbeddingVector(array_fill(0, 512, 0.0));
+		}
                 $finalVector = $finalVector->subtract($negativeVector);
             }
         }
