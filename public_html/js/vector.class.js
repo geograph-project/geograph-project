@@ -70,9 +70,10 @@ class EmbeddingVector {
   /**
    * Adds another vector to this vector.
    * @param {EmbeddingVector} otherVector - The vector to add.
+   * @param {boolean} [normalize=true] - Whether to normalize the resulting vector.
    * @returns {EmbeddingVector} A new vector that is the sum of the two vectors.
    */
-  add(otherVector) {
+  add(otherVector, normalize = true) {
     if (this.dimension !== otherVector.dimension) {
       throw new Error('Vectors must have the same dimension for addition.');
     }
@@ -80,15 +81,17 @@ class EmbeddingVector {
     for (let i = 0; i < this.dimension; i++) {
       newVector[i] = this.vector[i] + otherVector.vector[i];
     }
-    return new EmbeddingVector(newVector);
+    const resultVector = new EmbeddingVector(newVector);
+    return normalize ? resultVector.normalize() : resultVector;
   }
 
   /**
    * Subtracts another vector from this vector.
    * @param {EmbeddingVector} otherVector - The vector to subtract.
+   * @param {boolean} [normalize=true] - Whether to normalize the resulting vector.
    * @returns {EmbeddingVector} A new vector that is the difference of the two vectors.
    */
-  subtract(otherVector) {
+  subtract(otherVector, normalize = true) {
     if (this.dimension !== otherVector.dimension) {
       throw new Error('Vectors must have the same dimension for subtraction.');
     }
@@ -96,15 +99,17 @@ class EmbeddingVector {
     for (let i = 0; i < this.dimension; i++) {
       newVector[i] = this.vector[i] - otherVector.vector[i];
     }
-    return new EmbeddingVector(newVector);
+    const resultVector = new EmbeddingVector(newVector);
+    return normalize ? resultVector.normalize() : resultVector;
   }
 
   /**
    * Computes the average of a list of vectors.
    * @param {Array<EmbeddingVector>} vectors - The list of vectors to average.
+   * @param {boolean} [normalize=true] - Whether to normalize the resulting vector.
    * @returns {EmbeddingVector} A new vector representing the average.
    */
-  static average(vectors) {
+  static average(vectors, normalize = true) {
     if (vectors.length === 0) {
       throw new Error('Input array cannot be empty.');
     }
@@ -126,7 +131,50 @@ class EmbeddingVector {
       averageVector[i] = sumVector[i] / vectors.length;
     }
 
-    return new EmbeddingVector(averageVector);
+    const resultVector = new EmbeddingVector(averageVector);
+    return normalize ? resultVector.normalize() : resultVector;
+  }
+
+  /**
+   * Computes a robust average of a list of vectors by mitigating outliers.
+   * It first computes a general average, then uses KNN to select the 80th percentile
+   * of closest vectors, and finally computes a new average from that subset.
+   * @param {Array<EmbeddingVector>} vectors - The list of vectors to average.
+   * @param {number} [percentage=0.80] - The percentile of closest vectors to include in the final average.
+   * @returns {EmbeddingVector} A new vector representing the robust average.
+   */
+  static robustAverage(vectors, percentage = 0.80) {
+    // Handle edge cases
+    if (vectors.length === 0) {
+      throw new Error('Input array cannot be empty.');
+    }
+    if (vectors.length < 5) {
+      console.warn('Robust average requires a larger dataset for meaningful results. Returning a regular average.');
+      return this.average(vectors);
+    }
+    if (percentage <= 0 || percentage > 1) {
+      throw new Error('Percentage must be a value between 0 and 1.');
+    }
+
+    // 1. Compute initial average to act as a centroid
+    // Don't normalize the initial average so it reflects the raw data position
+    const initialAverage = this.average(vectors, false);
+
+    // 2. Create candidate map for KNN search
+    const candidates = {};
+    for (let i = 0; i < vectors.length; i++) {
+      candidates[i] = vectors[i];
+    }
+
+    // 3. Use KNN to find the closest 'k' vectors
+    const k = Math.floor(vectors.length * percentage);
+    const nearestNeighbors = initialAverage.knn(candidates, k);
+
+    // 4. Create a new list of vectors from the filtered KNN results
+    const filteredVectors = nearestNeighbors.map(neighbor => vectors[neighbor.key]);
+
+    // 5. Compute the final average from the filtered list and normalize it
+    return this.average(filteredVectors, true);
   }
 
   /**
@@ -298,7 +346,6 @@ class EmbeddingVector {
     let hasChanged = true;
 
     while (hasChanged && iterations < maxIterations) {
-      // 1. Assignment Step: Assign each vector to the nearest centroid
       const newClusters = Array.from({ length: k }, () => []);
       for (let i = 0; i < candidates.length; i++) {
         const vector = candidates[i];
@@ -312,13 +359,11 @@ class EmbeddingVector {
             closestCentroidIndex = j;
           }
         }
-        newClusters[closestCentroidIndex].push(i); // Store the index of the vector
+        newClusters[closestCentroidIndex].push(i);
       }
 
-      // Check for changes in cluster assignments
       hasChanged = false;
       for (let i = 0; i < k; i++) {
-        // Simple change check: if a cluster's content is different, a change occurred.
         if (newClusters[i].length !== clusters[i].length || !newClusters[i].every(index => clusters[i].includes(index))) {
             hasChanged = true;
             break;
@@ -326,15 +371,13 @@ class EmbeddingVector {
       }
       if (!hasChanged) {
         clusters = newClusters;
-        break; // Convergence reached
+        break;
       }
       clusters = newClusters;
 
-      // 2. Update Step: Recalculate centroids
       const newCentroids = [];
       for (let i = 0; i < k; i++) {
         if (clusters[i].length > 0) {
-          // Calculate the average vector for the cluster
           const sumVector = new Float32Array(candidates[0].dimension).fill(0);
           for (const index of clusters[i]) {
             const vector = candidates[index].vector;
@@ -348,12 +391,9 @@ class EmbeddingVector {
             newCentroidVector[j] = sumVector[j] / clusters[i].length;
           }
 
-          // Important: Normalize the new centroid
           const newCentroid = new EmbeddingVector(newCentroidVector);
           newCentroids.push(newCentroid.normalize());
         } else {
-          // Handle empty clusters (re-initialize or just use a zero vector)
-          // For simplicity, we'll just push a new random vector
           newCentroids.push(new EmbeddingVector(new Float32Array(candidates[0].dimension).fill(0)).normalize());
         }
       }
@@ -366,6 +406,7 @@ class EmbeddingVector {
       indices: indices
     }));
   }
+
 }
 
 // -----------------------------------------------------------------------------
@@ -405,13 +446,13 @@ function runExamples() {
   const vectorFromArray = new EmbeddingVector(plainArray);
   console.log('Vector from plain array (first 4 elements):', vectorFromArray.vector.slice(0, 4));
 
-  // 2. Demonstrate the new distance method
+  // 2. Demonstrate the distance method
   const vector1 = createRandomVector();
   const vector2 = createRandomVector();
   const dist = vector1.distance(vector2);
   console.log('\nDistance between two random vectors:', dist);
 
-  // 3. Demonstrate KNN using the new distance method
+  // 3. Demonstrate KNN
   const queryVector = createRandomVector();
   const candidateVectors = {};
 
@@ -457,13 +498,12 @@ function runExamples() {
   const traversalResult = EmbeddingVector.farthestFirstTraversal(traversalCandidates);
   console.log('Traversal order (indices):', traversalResult);
 
-  // 6. Demonstrate the new kmeans method
+  // 6. Demonstrate the kmeans method
   console.log('\nK-means Clustering Example:');
   const numClusters = 3;
-  const numVectors = 150;
+  const numVectors = 60;
   const kmeansCandidates = [];
 
-  // Create a clustered dataset
   const seed1 = createRandomVector();
   const seed2 = createRandomVector();
   const seed3 = createRandomVector();
@@ -478,8 +518,50 @@ function runExamples() {
   console.log(`Clustering result for ${numVectors} vectors into ${numClusters} clusters:`);
   clusteringResult.forEach((cluster, index) => {
     console.log(`- Cluster ${index + 1}: contains ${cluster.indices.length} vectors. Centroid (first 4 elements): [${cluster.centroid.vector[0].toFixed(2)}, ${cluster.centroid.vector[1].toFixed(2)}, ${cluster.centroid.vector[2].toFixed(2)}, ${cluster.centroid.vector[3].toFixed(2)}]`);
-    // Uncomment the next line to see the indices of the vectors in each cluster
-    // console.log('  Indices:', cluster.indices);
   });
+
+  // 7. Demonstrate the average method
+  console.log('\nAverage Method Example:');
+  const vectorsToAverage = [
+    new EmbeddingVector([10, 20, ...new Array(510).fill(0)]),
+    new EmbeddingVector([20, 30, ...new Array(510).fill(0)]),
+    new EmbeddingVector([30, 40, ...new Array(510).fill(0)]),
+  ];
+  const averagedVectorNormalized = EmbeddingVector.average(vectorsToAverage, true);
+  const averagedVectorNotNormalized = EmbeddingVector.average(vectorsToAverage, false);
+  console.log('Original vectors (first 2 elements):');
+  vectorsToAverage.forEach(v => console.log(`[${v.vector[0]}, ${v.vector[1]}]`));
+  console.log('Averaged vector (normalized):');
+  console.log(`[${averagedVectorNormalized.vector[0].toFixed(2)}, ${averagedVectorNormalized.vector[1].toFixed(2)}]`);
+  console.log('Averaged vector (not normalized):');
+  console.log(`[${averagedVectorNotNormalized.vector[0].toFixed(2)}, ${averagedVectorNotNormalized.vector[1].toFixed(2)}]`);
+
+  // 8. Demonstrate the new add method with and without normalization
+  console.log('\nAdd Method with Normalization Example:');
+  const vectorAdd1 = new EmbeddingVector([10, 0, ...new Array(510).fill(0)]);
+  const vectorAdd2 = new EmbeddingVector([0, 10, ...new Array(510).fill(0)]);
+  const addedVectorNormalized = vectorAdd1.add(vectorAdd2, true);
+  const addedVectorNotNormalized = vectorAdd1.add(vectorAdd2, false);
+  console.log('Original vectors (first 2 elements):');
+  console.log(`Vector 1: [${vectorAdd1.vector[0]}, ${vectorAdd1.vector[1]}]`);
+  console.log(`Vector 2: [${vectorAdd2.vector[0]}, ${vectorAdd2.vector[1]}]`);
+  console.log('Added vector (normalized):');
+  console.log(`[${addedVectorNormalized.vector[0].toFixed(2)}, ${addedVectorNormalized.vector[1].toFixed(2)}]`);
+  console.log('Added vector (not normalized):');
+  console.log(`[${addedVectorNotNormalized.vector[0].toFixed(2)}, ${addedVectorNotNormalized.vector[1].toFixed(2)}]`);
+
+  // 9. Demonstrate the new subtract method with and without normalization
+  console.log('\nSubtract Method with Normalization Example:');
+  const vectorSub1 = new EmbeddingVector([20, 20, ...new Array(510).fill(0)]);
+  const vectorSub2 = new EmbeddingVector([10, 10, ...new Array(510).fill(0)]);
+  const subtractedVectorNormalized = vectorSub1.subtract(vectorSub2, true);
+  const subtractedVectorNotNormalized = vectorSub1.subtract(vectorSub2, false);
+  console.log('Original vectors (first 2 elements):');
+  console.log(`Vector 1: [${vectorSub1.vector[0]}, ${vectorSub1.vector[1]}]`);
+  console.log(`Vector 2: [${vectorSub2.vector[0]}, ${vectorSub2.vector[1]}]`);
+  console.log('Subtracted vector (normalized):');
+  console.log(`[${subtractedVectorNormalized.vector[0].toFixed(2)}, ${subtractedVectorNormalized.vector[1].toFixed(2)}]`);
+  console.log('Subtracted vector (not normalized):');
+  console.log(`[${subtractedVectorNotNormalized.vector[0].toFixed(2)}, ${subtractedVectorNotNormalized.vector[1].toFixed(2)}]`);
 }
 
