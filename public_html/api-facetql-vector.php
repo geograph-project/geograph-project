@@ -70,9 +70,11 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 	}
 
 	//2. get results
+	$limit = empty($_GET['limit'])?10:intval($_GET['limit']);
+	$limit = min($limit, 30);
 
 	$start = microtime(true);
-	$results = $imagelist->getRawVectorsByCriteria($criteria, 30, $metadata);
+	$results = $imagelist->getRawVectorsByCriteria($criteria, $limit, $metadata);
 	$end = microtime(true);
 
 	//3. output or fetch further data from local index
@@ -118,6 +120,7 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 		$SPHINX_INDEX = 'sample8';
 		$_GET['label'] = ""; //already done KNN lookup, dont need to do it again!
 		$_GET['where'] = "id IN ($idstr)";
+		$_GET['select'] = str_replace(",image_vector",",1 as image_vector", $_GET['select']); //this attribute doesnt exist, will have to fetch from database later!
 
 //TODO use the s3vectors time for final meta?
 
@@ -260,9 +263,9 @@ if ($order == 'RAND()' && empty($_GET['rnd'])) {
             $image_ids = array_map(function($row) { return $row['id']; }, $res['rows']);
             $id_list = implode(',', $image_ids);
 
-            $ddb = GeographDatabaseConnection(false);
+            $ddb = GeographDatabaseConnection(true);
             $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-            $vector_rows = $ddb->GetAll("SELECT gridimage_id, embeddings FROM gridimage_embedding WHERE gridimage_id IN ($id_list)");
+            $vector_rows = $ddb->GetAll("SELECT gridimage_id, embeddings FROM gridimage_embedding WHERE gridimage_id IN ($id_list) AND type='image'");
 
             $vectors_map = [];
             foreach ($vector_rows as $row) {

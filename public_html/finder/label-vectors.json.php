@@ -1,16 +1,13 @@
 <?php
 // api-label-vectors.php
 
-// Basic setup
-if (!isset($ABORT_GLOBAL_EARLY)) {
-    $ABORT_GLOBAL_EARLY = true;
-}
-require_once('../libs/geograph/global.inc.php');
-require_once(ROOT_PATH . '/libs/geograph/vectors.inc.php');
+require_once('geograph/global.inc.php');
+require_once('geograph/vectors.inc.php');
 
 // Set headers for JSON response and CORS
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+//header('Access-Control-Allow-Origin: *');
+customExpiresHeader(3600*24);
 
 // Get labels from the 'labels' GET parameter
 $labels_str = isset($_GET['labels']) ? trim($_GET['labels']) : '';

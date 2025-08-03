@@ -32,13 +32,13 @@ $db = GeographDatabaseConnection(true);
 
 $CONF['manticorert_host'] = "manticorert-worker-svc.dev.svc.cluster.local"; //test instance!
 
-$rt = GeographSphinxConnection('manticorert',true);
-
-$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ##################################
 
 if ($param['nearest']) {
+	$rt = GeographSphinxConnection('manticorert',true);
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
 	//donmt need to fetch label!
 	$sql = "SELECT id, embeddings FROM label_embedding WHERE nearest_image IS NULL AND length(embeddings) = 2048 LIMIT {$param['limit']}";
 	$rows = $db->getAll($sql);
@@ -101,3 +101,14 @@ echo "Embedding successfully retrieved and decoded for image_id: " . $row['gridi
 echo "Number of dimensions (floats): " . count($phpFloatArray) . "\n";
 echo "First 10 values of the decoded embedding:\n";
 print_r(array_slice($phpFloatArray, 0, 10));
+
+$outofrange =0;
+foreach ($phpFloatArray as $number) {
+	if ($number > 1 || $number < -1) {
+		$outofrange++;
+		print "$number\n";
+	}
+
+}
+print "outofrange: $outofrange\n";
+

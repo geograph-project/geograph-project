@@ -36,9 +36,9 @@ $(document).ready(function() {
                 // Request the vector ('image_vector') and other useful fields
                 data: {
                     label: query,
-                    select: 'id,hash,title,image_vector',
-                    thumb: 1, // To get thumbnail URL components
-                    limit: 50 // Get a reasonable number of images
+                    select: 'id,hash,grid_reference,realname,title,image_vector',
+                    long: 1,
+                    limit: 30
                 },
                 dataType: 'json'
             })
@@ -58,7 +58,7 @@ $(document).ready(function() {
             for (const label in labelVectorsData) {
                 if (labelVectorsData[label]) {
                     try {
-                        labelVectors[label] = new EmbeddingVector(labelVectorsData[label]);
+                        labelVectors[label] = new EmbeddingVector(labelVectorsData[label]).normalize();
                     } catch (e) {
                         console.error(`Could not create vector for label "${label}":`, e);
                     }
@@ -79,7 +79,7 @@ $(document).ready(function() {
             imageResults.rows.forEach(function(image) {
                 if (image.image_vector) {
                     try {
-                        const imageVector = new EmbeddingVector(image.image_vector);
+                        const imageVector = new EmbeddingVector(image.image_vector).normalize();
 
                         // Find the nearest label using KNN (with k=1)
                         const nearest = imageVector.knn(labelVectors, 1);
@@ -128,8 +128,8 @@ $(document).ready(function() {
                     const imageUrl = getGeographUrl(image.id, image.hash, 'med');
                     const $item = $(`
                         <div class="image-item">
-                            <a href="https://www.geograph.org.uk/photo/${image.id}" target="_blank">
-                                <img src="${imageUrl}" alt="${escapeHtml(image.title)}" title="${escapeHtml(image.title)}">
+                            <a href="https://www.geograph.org.uk/photo/${image.id}" target="_blank" title="${image.grid_reference} ${escapeHtml(image.title)} by ${escapeHtml(image.realname)}">
+                                <img src="${imageUrl}" alt="${escapeHtml(image.title)}">
                             </a>
                             <p>${escapeHtml(image.title)}</p>
                         </div>
