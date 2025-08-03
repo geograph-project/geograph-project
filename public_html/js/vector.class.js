@@ -100,6 +100,36 @@ class EmbeddingVector {
   }
 
   /**
+   * Computes the average of a list of vectors.
+   * @param {Array<EmbeddingVector>} vectors - The list of vectors to average.
+   * @returns {EmbeddingVector} A new vector representing the average.
+   */
+  static average(vectors) {
+    if (vectors.length === 0) {
+      throw new Error('Input array cannot be empty.');
+    }
+
+    const dimension = vectors[0].dimension;
+    const sumVector = new Float32Array(dimension).fill(0);
+
+    for (const vector of vectors) {
+      if (vector.dimension !== dimension) {
+        throw new Error('All vectors must have the same dimension.');
+      }
+      for (let i = 0; i < dimension; i++) {
+        sumVector[i] += vector.vector[i];
+      }
+    }
+
+    const averageVector = new Float32Array(dimension);
+    for (let i = 0; i < dimension; i++) {
+      averageVector[i] = sumVector[i] / vectors.length;
+    }
+
+    return new EmbeddingVector(averageVector);
+  }
+
+  /**
    * Normalizes the vector to a unit vector (length 1).
    * @returns {EmbeddingVector} A new normalized vector.
    */
@@ -187,60 +217,269 @@ class EmbeddingVector {
 
     return distances.slice(0, k);
   }
-}
 
-// Example Usage:
+  /**
+   * Performs a Farthest First Traversal on a list of vectors.
+   * This algorithm greedily selects the vector that is farthest from all
+   * previously selected vectors, starting with the first vector in the input list.
+   * @param {Array<EmbeddingVector>} candidates - A list of vectors to traverse.
+   * @returns {Array<number>} The sorted list of indices from the original `candidates` array.
+   */
+  static farthestFirstTraversal(candidates) {
+    if (candidates.length === 0) {
+      return [];
+    }
 
-// Helper function to create a random 512-dim vector for demonstration
-const createRandomVector = () => {
-  const arr = new Float32Array(512);
-  for (let i = 0; i < 512; i++) {
-    arr[i] = Math.random() * 2 - 1; // Values between -1 and 1
+    // Use a copy to avoid modifying the original array
+    const remaining = candidates.map((vector, index) => ({ vector, index }));
+    const resultIndices = [];
+
+    // The first vector in the list is the starting point.
+    const startVector = remaining.shift();
+    resultIndices.push(startVector.index);
+
+    while (remaining.length > 0) {
+      let maxMinDistance = -Infinity;
+      let farthestIndexInRemaining = -1;
+      let farthestVectorInRemaining = null;
+
+      // Find the vector in `remaining` that has the maximum minimum distance to any vector already selected.
+      for (let i = 0; i < remaining.length; i++) {
+        const candidate = remaining[i];
+        let minDistance = Infinity;
+
+        // Calculate the minimum distance from the current candidate to the result set.
+        for (const resultIndex of resultIndices) {
+          const selected = candidates[resultIndex];
+          const distance = candidate.vector.distance(selected);
+          if (distance < minDistance) {
+            minDistance = distance;
+          }
+        }
+
+        // If this minimum distance is the greatest so far, mark it as the farthest.
+        if (minDistance > maxMinDistance) {
+          maxMinDistance = minDistance;
+          farthestVectorInRemaining = candidate;
+          farthestIndexInRemaining = i;
+        }
+      }
+
+      // Add the farthest vector's index to the result and remove it from the remaining candidates.
+      if (farthestVectorInRemaining) {
+        resultIndices.push(farthestVectorInRemaining.index);
+        remaining.splice(farthestIndexInRemaining, 1);
+      }
+    }
+
+    return resultIndices;
   }
-  return new EmbeddingVector(arr);
-};
 
-// 1. Create a vector from a plain array of numbers
-const plainArray = [1.0, 2.0, 3.0, 4.0, ...new Array(508).fill(0)];
-const vectorFromArray = new EmbeddingVector(plainArray);
-console.log('Vector from plain array (first 4 elements):', vectorFromArray.vector.slice(0, 4));
+  /**
+   * Performs K-means clustering on a list of vectors.
+   * It uses the Farthest First Traversal algorithm to initialize the centroids.
+   * @param {Array<EmbeddingVector>} candidates - The list of vectors to cluster.
+   * @param {number} k - The number of clusters to form.
+   * @param {number} [maxIterations=100] - The maximum number of iterations.
+   * @returns {Array<Object>} An array of clusters, each containing a `centroid` vector
+   * and the `indices` of the vectors belonging to that cluster.
+   */
+  static kmeans(candidates, k, maxIterations = 100) {
+    if (k > candidates.length || k <= 0) {
+      throw new Error('Invalid value for k. k must be greater than 0 and less than or equal to the number of candidates.');
+    }
 
-// 2. Demonstrate the new distance method
-const vector1 = createRandomVector();
-const vector2 = createRandomVector();
-const dist = vector1.distance(vector2);
-console.log('\nDistance between two random vectors:', dist);
+    // Use Farthest First Traversal to get initial centroids
+    const initialCentroidIndices = this.farthestFirstTraversal(candidates).slice(0, k);
+    let centroids = initialCentroidIndices.map(index => candidates[index]);
 
-// 3. Demonstrate KNN using the new distance method
-const queryVector = createRandomVector();
-const candidateVectors = {};
+    let clusters = Array.from({ length: k }, () => []);
+    let iterations = 0;
+    let hasChanged = true;
 
-// Create 100 random candidate vectors
-for (let i = 0; i < 100; i++) {
-  candidateVectors[`id_${i}`] = createRandomVector();
+    while (hasChanged && iterations < maxIterations) {
+      // 1. Assignment Step: Assign each vector to the nearest centroid
+      const newClusters = Array.from({ length: k }, () => []);
+      for (let i = 0; i < candidates.length; i++) {
+        const vector = candidates[i];
+        let minDistance = Infinity;
+        let closestCentroidIndex = -1;
+
+        for (let j = 0; j < k; j++) {
+          const distance = vector.distance(centroids[j]);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestCentroidIndex = j;
+          }
+        }
+        newClusters[closestCentroidIndex].push(i); // Store the index of the vector
+      }
+
+      // Check for changes in cluster assignments
+      hasChanged = false;
+      for (let i = 0; i < k; i++) {
+        // Simple change check: if a cluster's content is different, a change occurred.
+        if (newClusters[i].length !== clusters[i].length || !newClusters[i].every(index => clusters[i].includes(index))) {
+            hasChanged = true;
+            break;
+        }
+      }
+      if (!hasChanged) {
+        clusters = newClusters;
+        break; // Convergence reached
+      }
+      clusters = newClusters;
+
+      // 2. Update Step: Recalculate centroids
+      const newCentroids = [];
+      for (let i = 0; i < k; i++) {
+        if (clusters[i].length > 0) {
+          // Calculate the average vector for the cluster
+          const sumVector = new Float32Array(candidates[0].dimension).fill(0);
+          for (const index of clusters[i]) {
+            const vector = candidates[index].vector;
+            for (let j = 0; j < vector.length; j++) {
+              sumVector[j] += vector[j];
+            }
+          }
+
+          const newCentroidVector = new Float32Array(candidates[0].dimension);
+          for (let j = 0; j < sumVector.length; j++) {
+            newCentroidVector[j] = sumVector[j] / clusters[i].length;
+          }
+
+          // Important: Normalize the new centroid
+          const newCentroid = new EmbeddingVector(newCentroidVector);
+          newCentroids.push(newCentroid.normalize());
+        } else {
+          // Handle empty clusters (re-initialize or just use a zero vector)
+          // For simplicity, we'll just push a new random vector
+          newCentroids.push(new EmbeddingVector(new Float32Array(candidates[0].dimension).fill(0)).normalize());
+        }
+      }
+      centroids = newCentroids;
+      iterations++;
+    }
+
+    return clusters.map((indices, i) => ({
+      centroid: centroids[i],
+      indices: indices
+    }));
+  }
 }
 
-// Add a vector that is very similar to the query vector
-const verySimilarVector = new EmbeddingVector(queryVector.vector.map(val => val + (Math.random() * 0.01 - 0.005)));
-candidateVectors['very_similar_id'] = verySimilarVector;
+// -----------------------------------------------------------------------------
+// EXAMPLE USAGE: This function contains demonstration code for the class.
+// It will not run automatically. To run the examples, call runExamples()
+// from your browser's developer console or another script.
+// -----------------------------------------------------------------------------
+function runExamples() {
+  /**
+   * Helper function to create a random 512-dim vector for demonstration.
+   * @returns {EmbeddingVector} A new EmbeddingVector instance.
+   */
+  const createRandomVector = () => {
+    const arr = new Float32Array(512);
+    for (let i = 0; i < 512; i++) {
+      arr[i] = Math.random() * 2 - 1; // Values between -1 and 1
+    }
+    return new EmbeddingVector(arr);
+  };
 
-const k = 5;
-const nearestNeighbors = queryVector.knn(candidateVectors, k);
-console.log(`\n${k} Nearest Neighbors for the query vector:`);
-console.log(nearestNeighbors);
+  /**
+   * Helper function to create a vector near a specific "seed" vector.
+   * @param {EmbeddingVector} seedVector - The vector to base the new vector on.
+   * @param {number} noise - The amount of random noise to add.
+   * @returns {EmbeddingVector} A new EmbeddingVector instance.
+   */
+  const createVectorNearSeed = (seedVector, noise) => {
+    const arr = new Float32Array(seedVector.dimension);
+    for (let i = 0; i < seedVector.dimension; i++) {
+      arr[i] = seedVector.vector[i] + (Math.random() * noise * 2 - noise);
+    }
+    return new EmbeddingVector(arr).normalize();
+  };
 
-// 4. Demonstrate compatibility with base64 decoding (using a simple mock)
-const originalVector = new EmbeddingVector(new Float32Array([1.0, 2.0, 3.0, 4.0, ...new Array(508).fill(0)]));
-const floatArray = originalVector.vector;
-const byteBuffer = new ArrayBuffer(floatArray.length * 4);
-const dataView = new DataView(byteBuffer);
-for (let i = 0; i < floatArray.length; i++) {
-    dataView.setFloat32(i * 4, floatArray[i], true); // true for little-endian
+  // 1. Create a vector from a plain array of numbers
+  const plainArray = [1.0, 2.0, 3.0, 4.0, ...new Array(508).fill(0)];
+  const vectorFromArray = new EmbeddingVector(plainArray);
+  console.log('Vector from plain array (first 4 elements):', vectorFromArray.vector.slice(0, 4));
+
+  // 2. Demonstrate the new distance method
+  const vector1 = createRandomVector();
+  const vector2 = createRandomVector();
+  const dist = vector1.distance(vector2);
+  console.log('\nDistance between two random vectors:', dist);
+
+  // 3. Demonstrate KNN using the new distance method
+  const queryVector = createRandomVector();
+  const candidateVectors = {};
+
+  // Create 100 random candidate vectors
+  for (let i = 0; i < 100; i++) {
+    candidateVectors[`id_${i}`] = createRandomVector();
+  }
+
+  // Add a vector that is very similar to the query vector
+  const verySimilarVector = new EmbeddingVector(queryVector.vector.map(val => val + (Math.random() * 0.01 - 0.005)));
+  candidateVectors['very_similar_id'] = verySimilarVector;
+
+  const k = 5;
+  const nearestNeighbors = queryVector.knn(candidateVectors, k);
+  console.log(`\n${k} Nearest Neighbors for the query vector:`);
+  console.log(nearestNeighbors);
+
+  // 4. Demonstrate compatibility with base64 decoding (using a simple mock)
+  const originalVector = new EmbeddingVector(new Float32Array([1.0, 2.0, 3.0, 4.0, ...new Array(508).fill(0)]));
+  const floatArray = originalVector.vector;
+  const byteBuffer = new ArrayBuffer(floatArray.length * 4);
+  const dataView = new DataView(byteBuffer);
+  for (let i = 0; i < floatArray.length; i++) {
+      dataView.setFloat32(i * 4, floatArray[i], true); // true for little-endian
+  }
+  const binaryString = Array.from(new Uint8Array(byteBuffer)).map(byte => String.fromCharCode(byte)).join('');
+  const base64String = btoa(binaryString);
+
+  console.log('\nBase64 encoded string:', base64String);
+  const decodedVector = new EmbeddingVector(base64String);
+  console.log('Vector decoded from base64:', decodedVector.vector.slice(0, 4));
+  console.log('Original and decoded vectors are equal:', originalVector.vector[0] === decodedVector.vector[0] && originalVector.vector[1] === decodedVector.vector[1]);
+
+  // 5. Demonstrate the farthestFirstTraversal method
+  const traversalCandidates = [
+    new EmbeddingVector([1, 0, ...new Array(510).fill(0)]),
+    new EmbeddingVector([-1, 0, ...new Array(510).fill(0)]),
+    new EmbeddingVector([0, 1, ...new Array(510).fill(0)]),
+    new EmbeddingVector([0.5, 0, ...new Array(510).fill(0)]),
+    new EmbeddingVector([-0.5, 0, ...new Array(510).fill(0)]),
+  ];
+  console.log('\nFarthest First Traversal Example:');
+  const traversalResult = EmbeddingVector.farthestFirstTraversal(traversalCandidates);
+  console.log('Traversal order (indices):', traversalResult);
+
+  // 6. Demonstrate the new kmeans method
+  console.log('\nK-means Clustering Example:');
+  const numClusters = 3;
+  const numVectors = 150;
+  const kmeansCandidates = [];
+
+  // Create a clustered dataset
+  const seed1 = createRandomVector();
+  const seed2 = createRandomVector();
+  const seed3 = createRandomVector();
+
+  for (let i = 0; i < numVectors / numClusters; i++) {
+    kmeansCandidates.push(createVectorNearSeed(seed1, 0.1));
+    kmeansCandidates.push(createVectorNearSeed(seed2, 0.1));
+    kmeansCandidates.push(createVectorNearSeed(seed3, 0.1));
+  }
+  
+  const clusteringResult = EmbeddingVector.kmeans(kmeansCandidates, numClusters);
+  console.log(`Clustering result for ${numVectors} vectors into ${numClusters} clusters:`);
+  clusteringResult.forEach((cluster, index) => {
+    console.log(`- Cluster ${index + 1}: contains ${cluster.indices.length} vectors. Centroid (first 4 elements): [${cluster.centroid.vector[0].toFixed(2)}, ${cluster.centroid.vector[1].toFixed(2)}, ${cluster.centroid.vector[2].toFixed(2)}, ${cluster.centroid.vector[3].toFixed(2)}]`);
+    // Uncomment the next line to see the indices of the vectors in each cluster
+    // console.log('  Indices:', cluster.indices);
+  });
 }
-const binaryString = Array.from(new Uint8Array(byteBuffer)).map(byte => String.fromCharCode(byte)).join('');
-const base64String = btoa(binaryString);
 
-console.log('\nBase64 encoded string:', base64String);
-const decodedVector = new EmbeddingVector(base64String);
-console.log('Vector decoded from base64:', decodedVector.vector.slice(0, 4));
-console.log('Original and decoded vectors are equal:', originalVector.vector[0] === decodedVector.vector[0] && originalVector.vector[1] === decodedVector.vector[1]);
