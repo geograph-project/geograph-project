@@ -255,6 +255,31 @@ if ($order == 'RAND()' && empty($_GET['rnd'])) {
                         'meta' => getAssoc('SHOW META')
                 );
 
+        // If we requested the image_vector, we need to fetch it from the database now
+        if (strpos($_GET['select'], 'image_vector') !== false && !empty($res['rows'])) {
+            $image_ids = array_map(function($row) { return $row['id']; }, $res['rows']);
+            $id_list = implode(',', $image_ids);
+
+            $ddb = GeographDatabaseConnection(false);
+            $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+            $vector_rows = $ddb->GetAll("SELECT gridimage_id, embeddings FROM gridimage_embedding WHERE gridimage_id IN ($id_list)");
+
+            $vectors_map = [];
+            foreach ($vector_rows as $row) {
+                $vectors_map[$row['gridimage_id']] = base64_encode($row['embeddings']);
+            }
+
+            foreach ($res['rows'] as &$row) {
+                if (isset($vectors_map[$row['id']])) {
+                    $row['image_vector'] = $vectors_map[$row['id']];
+                } else {
+                    $row['image_vector'] = null;
+                }
+            }
+            unset($row); // Unset the reference
+        }
+
+
 	} else {
 		die("no");
 	}
