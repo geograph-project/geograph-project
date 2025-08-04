@@ -121,6 +121,9 @@ function get_sql($input, $columns = '') {
 	/////////////////////////////
 	// SQL
 	} else {
+		if (!empty($param['days']))
+			$input = str_replace('interval 7 day',"interval {$param['days']} day",$input);
+
 		if (!empty($columns)) {
 			$columns = explode(',', $columns);
 		} else {
