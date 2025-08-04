@@ -57,6 +57,39 @@ if (!empty($_POST['status'])) {
 
 ##############################
 
+if (!empty($_GET['preview_user'])) {
+	$user = $db->getRow("SELECT * FROM user LEFT JOIN user_stat USING (user_id) WHERE user_id = ".intval($_GET['preview_user']));
+
+	print "<h3>Preview for user - links are not clickable</h3>";
+	print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee>";
+	$keys = explode(',', 'user_id,realname,nickname,email,rights,website,about_yourself,message_sig,signup_date,images');
+	foreach ($keys as $key) {
+		print "<tr><th>$key</th>";
+		print "<td>";
+		if ($key == 'email') {
+			if ($user['public_email'])
+				print htmlentities($user[$key])." <i>- Displayed publicallly!</i>";
+			else
+				print "<span style=color:gray>".htmlentities(preg_replace('/(\w{3})\w+/','$1...',$user[$key]))." <i>- address not displayed</i></span>";
+		} elseif ($key == 'about_yourself') {
+			if (!$user['public_about'])
+				print "<i>NOT displayed publically</i><span style=color:gray>";
+			print "<pre>".htmlentities($user[$key])."</pre>";
+		} else {
+			print htmlentities($user[$key]);
+		}
+	}
+
+	print "</table>";
+	if (empty($user['images']) && (!empty($user['website']) || !empty($user['about_yourself'])))
+		print "<i>No images submitted - profile will not display link or the about text</p>";
+
+	$smarty->display('_std_end.tpl');
+	exit;
+}
+
+##############################
+
 if (!empty($_GET['stats'])) {
 	$data = $db->getAll("select source,event_type,count(*),max(event_date)
 			,sum(moderation_status='pending') as pending,sum(moderation_status='flagged') as flagged,sum(moderation_status='approved') as approved
@@ -175,8 +208,9 @@ print '</div>';
 				print '<div class="date">';
 				print formatMySQLDateByResolution($row['event_date']);
 				print '</div>';
-
-			print "<a href=\"".htmlentities($row['url'])."\">";
+			if (preg_match('/^user/',$row['source']) && !empty($row['user_id']))
+				$row['url'] = "?preview_user=".intval($row['user_id']); //the actual profile may not show all details!
+			print "<a href=\"".htmlentities($row['url'])."\" target=preview-window>";
 			print "<b>".htmlentities($row['title'])."</b>";
 			print "</a>";
 			if (strpos($row['title'],'...') !== FALSE)
@@ -185,7 +219,7 @@ print '</div>';
 			if ($row['user_id']) {
 				print "<span class=nowrap>";
 				if ($row['title']!=$row['realname'])
-					print " by <a href=\"/profile/{$row['user_id']}\">".htmlentities($row['realname'])."</a>";
+					print " by <a href=\"/profile/{$row['user_id']}\" target=preview-window>".htmlentities($row['realname'])."</a>";
 				if (!$row['images']) {
 					print " [new user]";
 				} else {
@@ -205,7 +239,7 @@ print '</div>';
 				print "/".$row['event_type'];
 			if (!empty($row['media_url'])) {
 				$url = htmlentities($row['media_url']);
-				print "<br><a href=\"$url\">";
+				print "<br><a href=\"$url\" target=preview-window>";
 				if (preg_match('/\.(jpe?g|gif|png|webp)$/',$row['media_url'])) {
 					print "<img src=\"$url\">";
 				} else {
@@ -255,8 +289,8 @@ print '</div>';
 
 .grid-item {
     background-color: #f9f9f9;
-    padding: 10px;
-    border: 1px solid #ddd; /* Inner borders for cells */
+    padding: 6px;
+    border-bottom: 1px solid #ddd; /* Inner borders for cells */
     text-align: center;
 }
 
