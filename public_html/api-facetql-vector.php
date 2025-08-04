@@ -120,15 +120,28 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 		$SPHINX_INDEX = 'sample8';
 		$_GET['label'] = ""; //already done KNN lookup, dont need to do it again!
 		$_GET['where'] = "id IN ($idstr)";
-		$_GET['select'] = str_replace(",image_vector",",1 as image_vector", $_GET['select']); //this attribute doesnt exist, will have to fetch from database later!
+		$_GET['select'] = str_replace(",image_vector",",0 as image_vector", $_GET['select']); //this attribute doesnt exist, will have to fetch from database later!
 
 //TODO use the s3vectors time for final meta?
 
 		$sph = GeographSphinxConnection('sphinxql',true);
 		$db = $sph->_connectionID; //using old fashioned mysqli_ functions here!
 	}
+
+} elseif (!empty($_GET['match'])) {
+	//this is tricky, if making a match query, must be trying to use this scripts ability to fetch image_vector
+	//but dont have a index available yet, use sample8 and add missing detail later!
+
+	$SPHINX_INDEX = 'sample8';
+	$_GET['select'] = str_replace(",image_vector",",0 as image_vector", $_GET['select']); //this attribute doesnt exist, will have to fetch from database later!
+
+
+	$sph = GeographSphinxConnection('sphinxql',true);
+	$db = $sph->_connectionID; //using old fashioned mysqli_ functions here!
+
 } else {
 	//this will need to be done on the RT index directly
+	//... the orioginal purpose of this file was wrapper around the 'gridimage_embedding' index, but later evoved to testing S3Vector, and fetching image_vector
 
 	//convert this to 'where'
 	if (preg_match('/\suser(\d+)\s*$/',$_GET['label'],$m)) {

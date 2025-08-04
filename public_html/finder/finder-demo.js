@@ -1,5 +1,4 @@
-$(document).ready(function() {
-    $('#search-button').on('click', function() {
+function runSearch() {
         const query = $('#search-query').val().trim();
         const labelsStr = $('#search-labels').val().trim();
 
@@ -20,6 +19,8 @@ $(document).ready(function() {
         $loading.show();
         $resultsContainer.empty();
 
+	let paramname = $('input[name=type]:checked').val();
+
         // Perform two AJAX requests in parallel
         $.when(
             // 1. Fetch vectors for the labels
@@ -35,10 +36,10 @@ $(document).ready(function() {
                 method: 'GET',
                 // Request the vector ('image_vector') and other useful fields
                 data: {
-                    label: query,
+                    [paramname]: query,
                     select: 'id,hash,grid_reference,realname,title,image_vector',
                     long: 1,
-                    limit: 30
+                    limit: (paramname=='match')?100:30
                 },
                 dataType: 'json'
             })
@@ -75,6 +76,7 @@ $(document).ready(function() {
             labels.forEach(label => {
                 groupedResults[label] = [];
             });
+	    const unprocessed = [];
 
             imageResults.rows.forEach(function(image) {
                 if (image.image_vector) {
@@ -91,34 +93,46 @@ $(document).ready(function() {
                     } catch(e) {
                         console.error(`Could not process vector for image ID ${image.id}:`, e);
                     }
+                } else {
+                    unprocessed.push(image);
                 }
             });
 
+            const sortedGroups = Object.entries(groupedResults);
+
+            // Sort the array in descending order based on the number of images
+            sortedGroups.sort((a, b) => b[1].length - a[1].length);
+
+            if (unprocessed.length) {
+                sortedGroups.push(['unprocessed', unprocessed]);
+            }
+
             // --- Render the results (handled in the next step, but called here) ---
-            renderResults(groupedResults);
+            renderResults(sortedGroups);
 
         }).fail(function() {
             $resultsContainer.html('<p>An error occurred while fetching the search results. Please check the browser console for details.</p>');
         }).always(function() {
             $loading.hide();
         });
-    });
+
+}
+
 
     /**
      * Renders the grouped image results into the results container.
-     * @param {Object} groupedResults - An object where keys are labels and values are arrays of image objects.
+     * @param {Array} sortedResults - sorted list of labels and images
      */
-    function renderResults(groupedResults) {
+    function renderResults(sortedResults) {
         const $resultsContainer = $('#results-container');
         $resultsContainer.empty();
 
-        if (Object.values(groupedResults).every(arr => arr.length === 0)) {
+        if (Object.values(sortedResults).every(([label, images]) => images.length === 0)) {
             $resultsContainer.html('<p>No images could be classified. Try a different search query or labels.</p>');
             return;
         }
 
-        for (const label in groupedResults) {
-            const images = groupedResults[label];
+	sortedResults.forEach(([label, images]) => {
             if (images.length > 0) {
                 const $group = $('<div class="label-group"></div>');
                 $group.append(`<h2>${escapeHtml(label)} (${images.length})</h2>`);
@@ -129,7 +143,7 @@ $(document).ready(function() {
                     const $item = $(`
                         <div class="image-item">
                             <a href="https://www.geograph.org.uk/photo/${image.id}" target="_blank" title="${image.grid_reference} ${escapeHtml(image.title)} by ${escapeHtml(image.realname)}">
-                                <img src="${imageUrl}" alt="${escapeHtml(image.title)}">
+                                <img src="${imageUrl}" alt="${escapeHtml(image.title)}" loading="lazy">
                             </a>
                             <p>${escapeHtml(image.title)}</p>
                         </div>
@@ -140,7 +154,7 @@ $(document).ready(function() {
                 $group.append($imageContainer);
                 $resultsContainer.append($group);
             }
-        }
+        });
     }
 
     /**
@@ -182,4 +196,3 @@ $(document).ready(function() {
         if (!str) return '';
         return $('<div>').text(str).html();
     }
-});
