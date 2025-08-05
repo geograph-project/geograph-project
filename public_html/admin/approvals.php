@@ -41,18 +41,32 @@ if (!empty($_POST['status'])) {
 	foreach($_POST['status'] as $moderation_id => $result) {
 		$moderation_id = intval($moderation_id);
 		$result = $db->Quote($result);
+
+		//check BEFORE update, if there has been recent reports - so can skip sending multiple reports for the same user.
+		if ($result == "'flagged'") {
+			$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
+
+			if (!empty($row['user_id']))
+				$recent = $db->getOne("SELECT COUNT(*) FROM moderation
+					WHERE moderation_status = 'flagged' AND user_id = {$row['user_id']} AND moderated > DATE_SUB(NOW(), INTERVAL 1 HOUR)");
+		}
+
 		$sql = "UPDATE moderation SET moderation_status = $result, moderator_id = $user_id, moderated = NOW() WHERE moderation_id = $moderation_id";
 		$db->Execute($sql);
 
-		if ($result == "'flagged'") {
-			$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
+		if ($result == "'flagged'" && empty($recent)) {
 			$url = "https://www.geograph.org.uk/admin/approvals.php?status=flagged&source=".urlencode($row['source'])."&moderation_id=$moderation_id";
 			$content  = $row['source']." Content has been flagged for attention by {$USER->realname}\n\n";
 			$content .= "See: $url\n\n";
 			$content .= "Reference: {$row['url']}\n\n";
+
+			$content .= "Title: {$row['title']}\n\n";
+			if (!empty($row['content']))
+				$content .= "Content: {$row['content']}\n\n";
 			mail_wrapper('approvals@geograph.org.uk','[Geograph] Flagged Content #'.$moderation_id, $content);
 		}
 	}
+
 	if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
 		header("HTTP/1.0 204 No Content");
 		header("Status: 204 No Content");
@@ -140,6 +154,7 @@ if (!empty($_GET['moderation_id'])) {
 	$moderation_id = intval($_GET['moderation_id']);
 	$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
 	if (!empty($row['user_id'])) {
+		print "<h2>Note: Showing all reports for user_id #".intval($row['user_id'])."</h2>";
 		//at the moment, ignore the other filters - even though present!
 		$where['status'] = "m.user_id = ".$row['user_id'];
 	} else {

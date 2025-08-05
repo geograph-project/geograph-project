@@ -106,7 +106,7 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 		<li><b>Nickname</b>: {$profile->nickname|escape:'html'}</li>
 	{/if}
 
-	{if $profile->website && !$profile->hasPerm('suspicious',true)}
+	{if $profile->website && !$profile->hasPerm('suspicious',true) && ($userimages || $user->user_id eq $profile->user_id)}
 		{if $userimages}
 			<li><b>Website</b>: {external href=$profile->website}</li>
 		{else}
@@ -117,7 +117,7 @@ This is your <b>public profile</b> and appears as it will to site visitors. For 
 	{if $profile->hasPerm('dormant',true)}
 		<!--<li><i>We do not hold contact details for this user.</i></li>-->
 	{elseif $user->user_id ne $profile->user_id}
-		{if $profile->public_email eq 1}
+		{if $profile->public_email eq 1 && $userimages}
 			<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}</li>
 		{/if}
 		<li><a title="Contact {$profile->realname|escape:'html'}" href="/usermsg.php?to={$profile->user_id}">Send message{if !$profile->deceased_date} to {$profile->realname|escape:'html'}{/if}</a></li>

@@ -28,7 +28,7 @@
 		<li><b>Nickname</b>:{$profile->nickname|escape:'html'}</li>
 	{/if}
 
-	{if $profile->website}
+	{if $profile->website && $userimages}
 		<li><b>Website</b>:{external href=$profile->website}</li>
 	{/if}
  
@@ -46,7 +46,7 @@
 	{/if}
 </ul>
 
-{if $profile->about_yourself && $profile->public_about}
+{if $profile->about_yourself && $profile->public_about && $userimages}
 	<div class="caption" style="clear:both">
 	{if !$profile->deceased_date}
 		<div class="interestBox" style="border-radius: 10px;">
