@@ -318,11 +318,11 @@ if (empty($ch)) {
  * @return array An array structured like the S3Vectors API response, or a default empty structure on failure.
  * Format: Array('http_code' => int, 'vectors' => Array(0 => Array('key' => ..., 'metadata' => ..., 'distance' => ...), ...))
  */
-function getKNNResults(array $vector, int $limit = 30, string $index_name = 'label_embedding', string $vector_name = 'label_vector'): array {
+function getManticoreKNNResults(array $vector, int $limit = 30, string $index_name = 'label_embedding', string $vector_name = 'label_vector'): array {
     global $rt; // Assuming $rt is a global Manticore client object
 
     if (!isset($rt) || !is_object($rt) || !method_exists($rt, 'getAll')) {
-        error_log('getKNNResults: Manticore client ($rt) is not properly initialized.');
+        error_log('getManticoreKNNResults: Manticore client ($rt) is not properly initialized.');
         return ['http_code' => 500, 'vectors' => []];
     }
 
@@ -351,19 +351,37 @@ function getKNNResults(array $vector, int $limit = 30, string $index_name = 'lab
                         'distance' => (float)$row['distance'],
                     ];
                 } else {
-                    error_log('getKNNResults: Manticore row missing expected keys (id, label, distance): ' . json_encode($row));
+                    error_log('getManticoreKNNResults: Manticore row missing expected keys (id, label, distance): ' . json_encode($row));
                 }
             }
         } else {
-            error_log('getKNNResults: Manticore getAll did not return an array.');
+            error_log('getManticoreKNNResults: Manticore getAll did not return an array.');
             $results = ['http_code' => 500, 'vectors' => []];
         }
     } catch (Exception $e) {
-        error_log('getKNNResults: Manticore query error: ' . $e->getMessage());
+        error_log('getManticoreKNNResults: Manticore query error: ' . $e->getMessage());
         $results = ['http_code' => 500, 'vectors' => []];
     }
 
     return $results;
+}
+
+function getKNNResults(array $vector, int $limit = 30, string $index_name = 'label_embedding', string $vector_name = 'label_vector'): array {
+    global $CONF;
+
+    if (!empty($CONF['s3_vector_bucket'])) {
+        $queryPayload = [
+            'vectorBucketName' => $CONF['s3_vector_bucket'],
+            'indexName' => 'label-clip', // Hardcoded for now
+            'queryVector' => ['float32' => $vector],
+            'topK' => $limit,
+            'returnDistance' => true,
+            'returnMetadata' => true,
+        ];
+        return queryS3Vectors($queryPayload);
+    } else {
+        return getManticoreKNNResults($vector, $limit, $index_name, $vector_name);
+    }
 }
 
 
@@ -399,36 +417,7 @@ function getZeroShotLabels($image, $limit = 30, $src = false) {
     $results = [];
 
     // 2. Decide whether to use S3Vectors or Manticore (KNN) based on configuration
-    if (!empty($CONF['s3_vector_bucket'])) {
-        $queryPayload = [
-            'vectorBucketName' => $CONF['s3_vector_bucket'],
-            'indexName' => 'label-clip', // Hardcoded index name for S3Vectors
-            'queryVector' => ['float32' => $vector],
-            'topK' => $limit,
-            'returnDistance' => true,
-            'returnMetadata' => true, // Changed to true to get metadata from S3Vectors as per expected output
-        ];
-	if ($src)
-		$queryPayload['filter'] = array('src'=>$src);
-
-        // Ensure queryS3Vectors function is defined and handles its own errors
-        if (function_exists('queryS3Vectors')) {
-            $s3vec_raw_response = queryS3Vectors($queryPayload);
-            // Validate S3Vector response format to ensure consistency
-            if (isset($s3vec_raw_response['http_code']) && is_array($s3vec_raw_response['vectors'])) {
-                $results = $s3vec_raw_response;
-            } else {
-                error_log('getZeroShotLabels: S3Vectors query failed or returned malformed response.');
-                $results = ['http_code' => 500, 'vectors' => []];
-            }
-        } else {
-            error_log('getZeroShotLabels: queryS3Vectors function is not defined.');
-            $results = ['http_code' => 500, 'vectors' => []];
-        }
-    } else {
-        // Use the getKNNResults function for Manticore if S3 bucket is not configured
-        $results = getKNNResults($vector, $limit);
-    }
+    $results = getKNNResults($vector, $limit);
 
     if ($results['http_code'] == 200) {
          $memcache->name_set('zero',$mkey,$results,$memcache->compress,$memcache->period_med);
