@@ -162,21 +162,25 @@ if (!empty($_GET['moderation_id'])) {
 		$where['status'] = "moderation_status = ".$db->Quote($_GET['status']);
 	}
 	$order = "(moderation_id = $moderation_id) DESC, $order"; //make sure it first!
+	$size = 300;
 
 } else {
 	if (!empty($_GET['source']) && preg_match('/^\w+$/',$_GET['source']))
 		$where['source'] = "source = ".$db->Quote($_GET['source']);
 
-	if (!empty($_GET['status']) && preg_match('/^\w+$/',$_GET['status']))
+	if (!empty($_GET['status']) && preg_match('/^\w+$/',$_GET['status'])) {
 		$where['status'] = "moderation_status = ".$db->Quote($_GET['status']);
+		if ($_GET['status'] != 'pending')
+			$size = 300;
+	}
 }
 
 ##############################
 
 $links = array(
-	'status=pending'=>'Pending',
+	'status=pending'=>'Pending by Date',
 	'status=pending&order=user'=>'Pending by User',
-	'status=flagged'=>'Flagged',
+	'status=flagged&order=user'=>'Flagged',
 	'status=approved'=>'Approved',
 	'stats=1'=>'Statistics',
 );
@@ -291,7 +295,7 @@ $offset = 0;
                 }
 		print '</div>';
 
-		if (count($list) == $size) {
+		if (count($list) == $size && (empty($_GET['status']) || $_GET['status'] == 'pending')) {
 			$_GET['offset'] = $offset+$size;
 			$query = htmlentities(http_build_query($_GET));
 			print "<div class=interestBox><a href=?$query>More...</a></div>";
