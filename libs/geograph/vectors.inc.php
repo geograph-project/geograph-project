@@ -215,7 +215,7 @@ function getLabelVectors(array $labels, $is_id = null): array
             $packedVector = pack('g*', ...$vector);
             if (isset($map_text_label_to_id[$text_label])) {
                 // UPDATE
-                $db->Execute("UPDATE label_embedding SET embeddings = ? WHERE id = ?", [$packedVector, $map_text_label_to_id[$text_label]]);
+                //$db->Execute("UPDATE label_embedding SET embeddings = ? WHERE id = ?", [$packedVector, $map_text_label_to_id[$text_label]]);
             } else {
                 // INSERT
                 $db->Execute("INSERT INTO label_embedding (label, embeddings) VALUES (?, ?)", [$text_label, $packedVector]);
@@ -419,32 +419,39 @@ if (empty($ch)) {
  * @param array $vector The query vector (array of floats).
  * @param int $limit The maximum number of nearest neighbors to return.
  * @param string $index_name The name of the Manticore index to query (default: 'label_embedding').
- * @param string $vector_name The name of the vector attribute in the Manticore index (default: 'label_vector').
  * @return array An array structured like the S3Vectors API response, or a default empty structure on failure.
  * Format: Array('http_code' => int, 'vectors' => Array(0 => Array('key' => ..., 'metadata' => ..., 'distance' => ...), ...))
  */
-function getManticoreKNNResults(array $vector, int $limit = 30, string $index_name = 'label_embedding', string $vector_name = 'label_vector'): array {
+function getManticoreKNNResults(array $vector, int $limit = 30, string $index_name = 'label_embedding', array $where = []): array {
     global $rt; // Assuming $rt is a global Manticore client object
+
+    $results = ['http_code' => 500, 'vectors' => []];
 
     if (!isset($rt) || !is_object($rt) || !method_exists($rt, 'getAll')) {
         error_log('getManticoreKNNResults: Manticore client ($rt) is not properly initialized.');
-        return ['http_code' => 500, 'vectors' => []];
+        return $results;
     }
-
-    $results = ['http_code' => 200, 'vectors' => []];
 
     // Convert the vector array to a comma-separated string for SQL
     // Ensure the vector is flat, numeric array
     $str = "(" . implode(',', array_map('floatval', $vector)) . ")";
+	$vector_name = 'label_vector';
+
+	if (empty($where))
+		$where = array();
+
+    $where[] = "KNN($vector_name, $limit, $str)";
 
     // Manticore SQL query to get KNN results.
     // 'id' and 'label' are assumed to be columns in your specified index.
     // KNN_DIST() is the distance, lower is better.
-    $sql = "SELECT id, label, KNN_DIST() AS distance FROM $index_name WHERE KNN($vector_name, $limit, $str) LIMIT $limit";
+    $where = implode(' AND ', $where);
+    $sql = "SELECT id, label, KNN_DIST() AS distance FROM $index_name WHERE $where LIMIT $limit";
 
     try {
         $manticore_raw_results = $rt->getAll($sql);
         if (is_array($manticore_raw_results)) {
+            $results['http_code'] = 200;
             foreach ($manticore_raw_results as $row) {
                 // Ensure required keys exist from the SQL query result
                 if (isset($row['id']) && isset($row['label']) && isset($row['distance'])) {
@@ -461,20 +468,25 @@ function getManticoreKNNResults(array $vector, int $limit = 30, string $index_na
             }
         } else {
             error_log('getManticoreKNNResults: Manticore getAll did not return an array.');
-            $results = ['http_code' => 500, 'vectors' => []];
         }
     } catch (Exception $e) {
         error_log('getManticoreKNNResults: Manticore query error: ' . $e->getMessage());
-        $results = ['http_code' => 500, 'vectors' => []];
     }
 
     return $results;
 }
 
-function getKNNResults(array $vector, int $limit = 30, string $index_name = 'label_embedding', string $vector_name = 'label_vector'): array {
+function getKNNResults(array $vector, int $limit = 30, string $index_name = 'label_embedding', $src = false): array {
     global $CONF;
+    if ($index_name != 'label_embedding') //lots still hardcoded for looking up labels so far. (looking up images in generally handled by imagelist class instead!)
+	die("only label_embedding supported so far");
 
     if (!empty($CONF['s3_vector_bucket'])) {
+	global $filesystem;
+
+	if (empty($filesystem))
+		$filesystem = new FileSystem(); //sets up S3 configuation automagically - needed for s3Vectors!
+
         $queryPayload = [
             'vectorBucketName' => $CONF['s3_vector_bucket'],
             'indexName' => 'label-clip', // Hardcoded for now
@@ -483,9 +495,16 @@ function getKNNResults(array $vector, int $limit = 30, string $index_name = 'lab
             'returnDistance' => true,
             'returnMetadata' => true,
         ];
+        if (!empty($src))
+		$queryPayload['filter'] = array('src'=>$src);
         return queryS3Vectors($queryPayload);
     } else {
-        return getManticoreKNNResults($vector, $limit, $index_name, $vector_name);
+	$where = array();
+	if (!empty($src) && ctype_alpha($src)) {
+		$limit *= 5; //need to oversample!
+		$where[] = "src = '$src'";
+	}
+        return getManticoreKNNResults($vector, $limit, $index_name, $where);
     }
 }
 
@@ -522,7 +541,7 @@ function getZeroShotLabels($image, $limit = 30, $src = false) {
     $results = [];
 
     // 2. Decide whether to use S3Vectors or Manticore (KNN) based on configuration
-    $results = getKNNResults($vector, $limit);
+    $results = getKNNResults($vector, $limit, 'label_embedding', $src);
 
     if ($results['http_code'] == 200) {
          $memcache->name_set('zero',$mkey,$results,$memcache->compress,$memcache->period_med);

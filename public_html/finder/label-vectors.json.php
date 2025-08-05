@@ -15,6 +15,7 @@ $vector_base64 = $_GET['vector'] ?? null;
 $image_id = isset($_GET['image_id']) ? intval($_GET['image_id']) : null;
 $text_label = $_GET['text_label'] ?? null;
 $k = isset($_GET['k']) ? intval($_GET['k']) : 10;
+$src = isset($_GET['src']) ? trim($_GET['src']) : '';
 $return_vector = isset($_GET['return_vector']) ? filter_var($_GET['return_vector'], FILTER_VALIDATE_BOOLEAN) : false;
 
 #########################################################################
@@ -78,7 +79,7 @@ if (empty($query_vector)) {
 #########################################################################
 // At this point, $query_vector holds the vector to be used for the KNN search.
 
-$knn_results = getKNNResults($query_vector, $k, 'label_embedding');
+$knn_results = getKNNResults($query_vector, $k, 'label_embedding', $src);
 
 if ($knn_results['http_code'] != 200) {
     echo json_encode(['error' => 'KNN search failed.', 'details' => $knn_results]);
@@ -98,6 +99,8 @@ foreach ($knn_results['vectors'] as $result) {
 
     if ($return_vector) {
         // Fetch and encode the vector for this label
+	// todo, fetching the vector via getTextEmbeddingWrapper, is ineffient (one label at a time) in a loop can just query label_embedding directly, although mantiucore could even return as 'metadata'!
+	// for now we likly to use k=1, so ok.
         $vector = getTextEmbeddingWrapper($label);
         if (!empty($vector)) {
             $binary_vector = pack('g*', ...$vector);
