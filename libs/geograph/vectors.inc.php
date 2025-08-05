@@ -121,6 +121,111 @@ function getTextEmbeddingWrapper($label) {
         return array_values(unpack('g*', $binary));
 }
 
+/**
+ * Retrieves text embeddings for a bulk of labels.
+ *
+ * This function fetches embeddings for a given list of labels (either IDs or text strings).
+ * It first attempts to retrieve the embeddings from the local `label_embedding` table.
+ * For any labels not found or without an embedding, it falls back to the `getTextEmbedding()`
+ * function to fetch them from a remote API. New embeddings are then stored in the database
+ * for future use.
+ *
+ * @param array $labels An array of label IDs (int) or text labels (string).
+ * @param bool|null $is_id A boolean to explicitly specify if `$labels` are IDs. If null, autodetects.
+ * @return array An associative array mapping each label/ID to its embedding vector (array of floats).
+ *               Labels for which an embedding could not be found will have an empty array.
+ */
+function getLabelVectors(array $labels, $is_id = null): array
+{
+    global $db;
+    if (empty($db)) {
+        $db = GeographDatabaseConnection(false);
+    }
+
+    if (empty($labels)) {
+        return [];
+    }
+
+    if ($is_id === null) {
+        $is_id = is_numeric(reset($labels));
+    }
+
+    $results = array_fill_keys($labels, []);
+    $column_to_query = $is_id ? 'id' : 'label';
+
+    $placeholders = implode(',', array_fill(0, count($labels), '?'));
+    $sql = "SELECT id, label, embeddings FROM label_embedding WHERE $column_to_query IN ($placeholders)";
+
+    $rs = $db->Execute($sql, $labels);
+
+    $db_results = [];
+    if ($rs) {
+        while (!$rs->EOF) {
+            $db_results[] = $rs->fields;
+            $rs->MoveNext();
+        }
+    }
+
+    $text_labels_to_fetch_api = [];
+    $map_text_label_to_id = [];
+
+    foreach ($db_results as $row) {
+        $id = $row['id'];
+        $text_label = $row['label'];
+        $map_text_label_to_id[$text_label] = $id;
+
+        $key = $is_id ? $id : $text_label;
+
+        if (!empty($row['embeddings'])) {
+            $results[$key] = array_values(unpack('g*', $row['embeddings']));
+        } else {
+            $text_labels_to_fetch_api[] = $text_label;
+        }
+    }
+
+    if (!$is_id) {
+        $found_text_labels = array_column($db_results, 'label');
+        $missing_text_labels = array_diff($labels, $found_text_labels);
+        $text_labels_to_fetch_api = array_merge($text_labels_to_fetch_api, $missing_text_labels);
+    }
+
+    $text_labels_to_fetch_api = array_unique($text_labels_to_fetch_api);
+
+    foreach ($text_labels_to_fetch_api as $text_label) {
+        $vector = getTextEmbedding($text_label);
+
+        if (empty($vector)) {
+            continue;
+        }
+
+        // Update results array
+        if ($is_id) {
+            if (isset($map_text_label_to_id[$text_label])) {
+                $id = $map_text_label_to_id[$text_label];
+                if (isset($results[$id])) {
+                    $results[$id] = $vector;
+                }
+            }
+        } else {
+            $results[$text_label] = $vector;
+        }
+
+        // Update database
+        if (!$db->readonly) {
+            $packedVector = pack('g*', ...$vector);
+            if (isset($map_text_label_to_id[$text_label])) {
+                // UPDATE
+                $db->Execute("UPDATE label_embedding SET embeddings = ? WHERE id = ?", [$packedVector, $map_text_label_to_id[$text_label]]);
+            } else {
+                // INSERT
+                $db->Execute("INSERT INTO label_embedding (label, embeddings) VALUES (?, ?)", [$text_label, $packedVector]);
+            }
+        }
+    }
+
+    return $results;
+}
+
 //copied from _getImageVectorValueList - really should be here (not specific to imagelist)
 // in general should be used in preference to getImageEmbedding, as that wont use gridimage_embedding table!
 function getImageEmbeddingById($id, $type = 'image') {
