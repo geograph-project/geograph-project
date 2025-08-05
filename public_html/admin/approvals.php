@@ -53,6 +53,12 @@ if (!empty($_POST['status'])) {
 			mail_wrapper('approvals@geograph.org.uk','[Geograph] Flagged Content #'.$moderation_id, $content);
 		}
 	}
+	if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+		header("HTTP/1.0 204 No Content");
+		header("Status: 204 No Content");
+		header("Content-Length: 0");
+		exit;
+	}
 }
 
 ##############################
@@ -61,7 +67,7 @@ if (!empty($_GET['preview_user'])) {
 	$user = $db->getRow("SELECT * FROM user LEFT JOIN user_stat USING (user_id) WHERE user_id = ".intval($_GET['preview_user']));
 
 	print "<h3>Preview for user - links are not clickable</h3>";
-	print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee>";
+	print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee style=max-width:60em>";
 	$keys = explode(',', 'user_id,realname,nickname,email,rights,website,about_yourself,message_sig,signup_date,images');
 	foreach ($keys as $key) {
 		print "<tr><th>$key</th>";
@@ -74,7 +80,7 @@ if (!empty($_GET['preview_user'])) {
 		} elseif ($key == 'about_yourself') {
 			if (!$user['public_about'])
 				print "<i>NOT displayed publically</i><span style=color:gray>";
-			print "<pre>".htmlentities($user[$key])."</pre>";
+			print "<pre style=\"white-space:pre-wrap;\">".htmlentities($user[$key])."</pre>";
 		} else {
 			print htmlentities($user[$key]);
 		}
@@ -127,6 +133,9 @@ $where['status'] = "moderation_status = 'pending'";
 $order = "event_date DESC";
 $size = 30;
 
+if (!empty($_GET['order']))
+	$order = "user_id desc";
+
 if (!empty($_GET['moderation_id'])) {
 	$moderation_id = intval($_GET['moderation_id']);
 	$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
@@ -151,6 +160,7 @@ if (!empty($_GET['moderation_id'])) {
 
 $links = array(
 	'status=pending'=>'Pending',
+	'status=pending&order=user'=>'Pending by User',
 	'status=flagged'=>'Flagged',
 	'status=approved'=>'Approved',
 	'stats=1'=>'Statistics',
@@ -177,6 +187,8 @@ print '</div>';
 
 ##############################
 
+$offset = 0;
+
 	print "<div class=interestBox>";
 	if (!empty($_GET['status']) && $_GET['status'] != 'pending') {
 	        print "<h2>Additional Content, Status = ".htmlentities($_GET['status'])."</h2>";
@@ -191,7 +203,7 @@ print '</div>';
 	$list = $db->getAll("SELECT m.*, user.realname, images, modd.realname AS mod_realname
 	 FROM moderation m LEFT JOIN user USING (user_id) LEFT JOIN user_stat USING (user_id)
 		LEFT JOIN user modd ON (modd.user_id = moderator_id)
-	 WHERE $where ORDER BY $order LIMIT $size"); //perhaps should be asc?
+	 WHERE $where ORDER BY $order LIMIT $size");
 
 ##############################
 
@@ -201,10 +213,16 @@ print '</div>';
 
 		print '<div class="grid-container">';
 
-		//<div class="grid-item header">Header 1</div>
-
+		$last = null;
                 foreach ($list as $idx => $row) {
-			print '<div class="grid-item">';
+			if (!empty($_GET['order']) && $row['user_id'] != $last) {
+				print "<div class=\"grid-item header\">".htmlentities($row['realname'])."</div>";
+
+				$last = $row['user_id'];
+			}
+			$className = "row{$row['moderation_id']}";
+
+			print "<div class=\"grid-item main-cell $className\">";
 				print '<div class="date">';
 				print formatMySQLDateByResolution($row['event_date']);
 				print '</div>';
@@ -233,7 +251,7 @@ print '</div>';
 
 			print '</div>';
 
-			print '<div class="grid-item">';
+			print "<div class=\"grid-item $className\">";
 			print $row['source'];
 			if ($row['event_type'] != 'creation')
 				print "/".$row['event_type'];
@@ -249,8 +267,8 @@ print '</div>';
 			}
 			print '</div>';
 
-			print '<div class="grid-item">';
-				print "<form method=post>"; //for now each is a seperate form submission!
+			print "<div class=\"grid-item $className\">";
+				print "<form method=post class=\"ajax-form $className\">"; //for now each is a seperate form submission!
 			print "<button type=submit name=status[{$row['moderation_id']}] value=approved>Looks Safe</button>";
 			print "<button type=submit name=status[{$row['moderation_id']}] value=flagged>Flag!</button>";
 				print "</form>";
@@ -258,11 +276,11 @@ print '</div>';
                 }
 		print '</div>';
 
-		/*
 		if (count($list) == $size) {
-			$offset+=$size;
-			print "<div class=interestBox><a href=?o=$offset>More...</a></div>";
-		}*/
+			$_GET['offset'] = $offset+$size;
+			$query = htmlentities(http_build_query($_GET));
+			print "<div class=interestBox><a href=?$query>More...</a></div>";
+		}
 
 	} else {
 		print "Nothing to display.";
@@ -295,6 +313,7 @@ print '</div>';
 }
 
 .grid-item.header {
+    grid-column: 1 / -1;
     background-color: #e0e0e0;
     font-weight: bold;
     padding: 10px;
@@ -302,7 +321,7 @@ print '</div>';
 }
 
 /* Make the first column (1st, 4th, 7th, 10th... grid item) left-aligned */
-.grid-item:nth-child(3n + 1) {
+.grid-item.main-cell {
     text-align: left;
 }
 
@@ -330,6 +349,64 @@ print '</div>';
 
 </style>
 
+<script>
+const forms = document.querySelectorAll('.ajax-form');
+
+forms.forEach(form => {
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+
+    // Get the button that was clicked to submit the form
+    const submitter = event.submitter;
+
+    // Add the submitter's name and value to the FormData
+    if (submitter && submitter.name && submitter.value) {
+        formData.append(submitter.name, submitter.value);
+    }
+
+    let classNameToRemove = '';
+    // Iterate through the list of classes on the form
+    form.classList.forEach(className => {
+      // Find the class that isn't 'ajax-form'
+      if (className !== 'ajax-form') {
+        classNameToRemove = className;
+        return;
+      }
+    });
+
+    // Send the request with the updated formData
+    fetch(form.action, {
+      method: form.method,
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      if (response.status === 204) {
+
+        if (classNameToRemove) {
+          const elementsToRemove = document.querySelectorAll('.' + classNameToRemove);
+          elementsToRemove.forEach(element => {
+            element.remove();
+          });
+        }
+
+      } else if (response.ok) {
+        return response.json();
+      } else {
+        console.error('Submission failed with status:', response.status);
+      }
+    })
+    .catch(error => {
+      console.error('An error occurred:', error);
+    });
+  });
+});
+
+</script>
 <?
 
 $smarty->display('_std_end.tpl');
