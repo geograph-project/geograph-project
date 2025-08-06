@@ -21,6 +21,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (empty($_SERVER['HTTP_REFERER']) || strpos($_SERVER['HTTP_REFERER'],$_SERVER['HTTP_HOST']) === FALSE) {
+        header("HTTP/1.0 401 Forbidden");
+       	print "<h3>Access Denied</h3>" ;
+
+} elseif (strpos($_SERVER['HTTP_USER_AGENT'],'http:') > -1) {
+        header("HTTP/1.0 401 Forbidden");
+        print "401 forbidden";
+        exit;
+}
+
+
 require_once('geograph/global.inc.php');
 init_session();
 
