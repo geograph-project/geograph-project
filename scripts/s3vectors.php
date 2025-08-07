@@ -41,7 +41,7 @@ if (!empty($param['insert']) && $param['index'] == 'label-clip') {
 	$cmd[] = "-D".$CONF['db_db']; //need to send this, so matches $param['config'] (rest is auto-detected)
 	$cmd[] = '-t"label_embedding"';
 	$cmd[] = '-s'.escapeshellarg("id, label, src, embeddings");
-	$cmd[] = '-w'.escapeshellarg("length(embeddings)=2048 LIMIT 10"); //just in case!
+	$cmd[] = '-w'.escapeshellarg("length(embeddings)=2048 AND id < 100"); //just in case!
 	print implode(' ',$cmd)."\n";
 	exit;
 
@@ -99,7 +99,7 @@ if (!empty($param['insert']) && $param['index'] == 'label-clip') {
 		exit;
 	}
 
-	$cmd[] = '-w'.escapeshellarg("type='image' LIMIT 10");
+	$cmd[] = '-w'.escapeshellarg("type='image' AND seq_id < 100");
 	print implode(' ',$cmd)."\n";
 	exit;
 }
