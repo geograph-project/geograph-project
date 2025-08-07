@@ -191,7 +191,7 @@ def insert_from_mysql(
             user=mysql_user,
             password=mysql_password,
             database=mysql_db,
-            buffered=False
+##            buffered=False
         )
         cursor = conn.cursor(dictionary=True)
 
@@ -269,14 +269,6 @@ def insert_from_mysql(
                         continue
                     embedding_list = embedding # Already a list
 
-                    # Populate metadata, excluding 'id' and 'input_text'
-                    for col_name, col_value in row.items():
-                        if col_name.lower() not in ['id', 'input_text']:
-                            if isinstance(col_value, Decimal):
-                                metadata[col_name] = float(col_value)
-                            else:
-                                metadata[col_name] = col_value
-
                 else: # Pre-computed embeddings mode
                     # --- Mode 2: Use Pre-computed 'embeddings' ---
                     embeddings_bytes = row.get("embeddings")
@@ -290,13 +282,20 @@ def insert_from_mysql(
                         continue
                     embedding_list = embedding_np.tolist()
 
-                    # Populate metadata, excluding 'id' and 'embeddings'
-                    for col_name, col_value in row.items():
-                        if col_name.lower() not in ['id', 'embeddings']:
-                            if isinstance(col_value, Decimal):
-                                metadata[col_name] = float(col_value)
+                # Populate metadata, excluding 'id' and 'embeddings'
+                for col_name, col_value in row.items():
+                    if col_name.lower() not in ['id', 'embeddings', 'input_text']:
+                        if col_value is None:
+                            if col_name.lower() == 'images':
+                                metadata[col_name] = 0  ##will make 'filter' in S3 easier?
                             else:
-                                metadata[col_name] = col_value
+                                continue # Skip None values for other columns
+                        elif isinstance(col_value, Decimal):
+                            metadata[col_name] = float(col_value)
+                        elif isinstance(col_value, bytearray):
+                            metadata[col_name] = col_value.decode('utf-8')
+                        else:
+                            metadata[col_name] = col_value
 
                 if embedding_list:
                     all_vectors.append({
@@ -450,6 +449,28 @@ def truncate_index(vector_bucket_name: str, index_name: str):
     print(f"\nSuccessfully truncated index '{index_name}'. Deleted a total of {total_deleted} vectors.")
 
 
+def run_get_embedding(text: str, model: str):
+    """
+    Gets the embedding for a given text and prints it as JSON.
+    """
+    #print(f"Generating embedding for text: '{text}' using model: {model}...")
+    try:
+        embedding = None
+        if model == "titan":
+            embedding = get_embedding(text)
+        else: # default to clip
+            embedding = get_text_embeddings(text)
+
+        if embedding is None:
+            print("Error: Could not generate embedding for the text.", file=sys.stderr)
+            sys.exit(1)
+
+        print(json.dumps(embedding))
+
+    except Exception as e:
+        print(f"Error generating embedding: {e}", file=sys.stderr)
+        sys.exit(1)
+
 
 def run_query(vector_bucket_name: str, index_name: str, query_text: str, top_k: int, model: str, query_filter: str = None):
     """
@@ -602,7 +623,13 @@ def main():
         help="Required to confirm truncation. This action deletes all vectors and is irreversible."
     )
 
-
+    # Subparser for getting an embedding
+    get_embedding_parser = subparsers.add_parser("get-embedding", help="Get the embedding for a given text.")
+    get_embedding_parser.add_argument(
+        "-t", "--text",
+        required=True,
+        help="The text to get the embedding for."
+    )
 
     # Subparser for running queries
     query_parser = subparsers.add_parser("query", help="Run a search query against the S3Vectors index.")
@@ -641,6 +668,8 @@ def main():
         )
     elif args.command == "query":
         run_query(args.bucket, args.index, args.text, args.top_k, args.model, args.filter)
+    elif args.command == "get-embedding":
+        run_get_embedding(args.text, args.model)
     elif args.command == "delete-keys":
         delete_vectors_by_keys(args.bucket, args.index, args.keys)
     elif args.command == "truncate":
