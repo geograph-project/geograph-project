@@ -40,21 +40,21 @@ if (!empty($_POST['status'])) {
 	$user_id = intval($USER->user_id);
 	foreach($_POST['status'] as $moderation_id => $result) {
 		$moderation_id = intval($moderation_id);
-		$result = $db->Quote($result);
+
+		$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
 
 		//check BEFORE update, if there has been recent reports - so can skip sending multiple reports for the same user.
-		if ($result == "'flagged'") {
-			$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
-
+		if ($result == 'flagged') {
 			if (!empty($row['user_id']))
 				$recent = $db->getOne("SELECT COUNT(*) FROM moderation
 					WHERE moderation_status = 'flagged' AND user_id = {$row['user_id']} AND moderated > DATE_SUB(NOW(), INTERVAL 1 HOUR)");
 		}
 
-		$sql = "UPDATE moderation SET moderation_status = $result, moderator_id = $user_id, moderated = NOW() WHERE moderation_id = $moderation_id";
+		$qresult = $db->Quote($result);
+		$sql = "UPDATE moderation SET moderation_status = $qresult, moderator_id = $user_id, moderated = NOW() WHERE moderation_id = $moderation_id";
 		$db->Execute($sql);
 
-		if ($result == "'flagged'" && empty($recent)) {
+		if ($result == 'flagged' && empty($recent)) {
 			$url = "https://www.geograph.org.uk/admin/approvals.php?status=flagged&source=".urlencode($row['source'])."&moderation_id=$moderation_id";
 			$content  = $row['source']." Content has been flagged for attention by {$USER->realname}\n\n";
 			$content .= "See: $url\n\n";
@@ -64,6 +64,23 @@ if (!empty($_POST['status'])) {
 			if (!empty($row['content']))
 				$content .= "Content: {$row['content']}\n\n";
 			mail_wrapper('approvals@geograph.org.uk','[Geograph] Flagged Content #'.$moderation_id, $content);
+		}
+
+		//TODO this should be dynamic from 'sources/' - but hardcoded to test.
+		//note this sends ALL results, upto them what they do with it!
+		if ($row['source'] == 'media' || $row['source'] == 'speculative') {
+			//_moderation.php?source=$source&foreign_id=$foreign_id&event_type=$event_type&event_date=$event_date&moderation_status=$moderation_status
+	                $bits = array();
+			$bits['source'] = $row['source'];
+			$bits['foreign_id'] = $row['foreign_id'];
+			$bits['event_type'] = $row['event_type'];
+			$bits['event_date'] = $row['event_date'];
+			$bits['moderation_status'] = $result;
+                	$bits['hash'] = substr(hash_hmac('md5', date('Y-m-d'), $CONF['r2_endpoint']),0,10);
+        	        $raw = file_get_contents("https://media.geograph.org.uk/_moderation.php?".http_build_query($bits));
+			if (trim($raw) != 'ok') {
+				die("WARNING: Unable to sync request with remote server");
+			}
 		}
 	}
 
@@ -199,7 +216,7 @@ foreach ($links as $link => $name) {
         }
 }
 
-print "<a href=\"https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Additional_pages_moderation_testing_July_2025.pdf\" class=about target=_blank>Help Document</a>";
+print "<a href=\"https://media.geograph.org.uk/files/b3e3e393c77e35a4a3f3cbd1e429b5dc/Additional_pages_moderation_testing_5_Aug_2025.pdf\" class=about target=_blank>Help Document</a>";
 
 
 print '</div>';
@@ -241,12 +258,15 @@ $offset = 0;
 			}
 			$className = "row{$row['moderation_id']}";
 
+			#############################################################
+
 			print "<div class=\"grid-item main-cell $className\">";
 				print '<div class="date">';
 				print formatMySQLDateByResolution($row['event_date']);
 				print '</div>';
 			if (preg_match('/^user/',$row['source']) && !empty($row['user_id']))
 				$row['url'] = "?preview_user=".intval($row['user_id']); //the actual profile may not show all details!
+			$row['url'] = str_replace('view.php?','view.php?login=true&',$row['url']); //encourage media server to request login!
 			print "<a href=\"".htmlentities($row['url'])."\" target=preview-window>";
 			print "<b>".htmlentities($row['title'])."</b>";
 			print "</a>";
@@ -270,6 +290,8 @@ $offset = 0;
 
 			print '</div>';
 
+			#############################################################
+
 			print "<div class=\"grid-item $className\">";
 			print $row['source'];
 			if ($row['event_type'] != 'creation')
@@ -286,12 +308,16 @@ $offset = 0;
 			}
 			print '</div>';
 
+			#############################################################
+
 			print "<div class=\"grid-item $className\">";
 				print "<form method=post class=\"ajax-form $className\">"; //for now each is a seperate form submission!
 			print "<button type=submit name=status[{$row['moderation_id']}] value=approved>Looks Safe</button>";
 			print "<button type=submit name=status[{$row['moderation_id']}] value=flagged>Flag!</button>";
 				print "</form>";
 			print '</div>';
+
+			#############################################################
                 }
 		print '</div>';
 
