@@ -77,7 +77,7 @@ def get_text_embeddings(input_text):
         print(f"JSON Decode Error: {errj}")
         return None
 
-def insert_data(vector_bucket_name: str, index_name: str, data_file: str):
+def insert_data(vector_bucket_name: str, index_name: str, data_file: str, model: str):
     """
     Inserts data from a JSON file into the S3Vectors index, with batching.
     Data is expected to be a JSON file containing a list of objects,
@@ -105,8 +105,16 @@ def insert_data(vector_bucket_name: str, index_name: str, data_file: str):
             continue
 
         try:
-            #embedding = get_embedding(text) --- this is fetching from bedrock, with a different model
-            embedding = get_text_embeddings(text) # this is actully using CLIP!
+            embedding = None
+            if model == "titan":
+                embedding = get_embedding(text)
+            else: # default to clip
+                embedding = get_text_embeddings(text)
+
+            if embedding is None:
+                print(f"Skipping item ID {item_id} due to embedding generation failure.")
+                continue
+
             metadata = {"id": item_id, "source_text": text}
             if genre:
                 metadata["genre"] = genre
@@ -165,11 +173,14 @@ def insert_from_mysql(
     mysql_db: str,
     mysql_table: str,
     mysql_select_cols: str,
+    model: str,
     mysql_where: str = None
 ):
     """
-    Connects to MySQL, fetches data from the specified table,
-    converts binary embeddings back to float lists, and inserts them into S3Vectors with batching.
+    Connects to MySQL, fetches data, and inserts it into S3Vectors.
+    Supports two modes:
+    1.  Generates embeddings if 'input_text' is in the SELECT columns.
+    2.  Uses pre-computed embeddings if 'embeddings' is in the SELECT columns.
     """
     conn = None
     cursor = None
@@ -180,50 +191,43 @@ def insert_from_mysql(
             user=mysql_user,
             password=mysql_password,
             database=mysql_db,
-
-            # Use buffered=False for unbuffered cursor to process row by row
-            # This prevents loading the entire result set into memory.
-            # dictionary=True is still supported with unbuffered cursors.
             buffered=False
         )
-        cursor = conn.cursor(dictionary=True) # Use dictionary=True to access columns by name
+        cursor = conn.cursor(dictionary=True)
 
-        # Parse selected columns to find aliases for 'id' and 'embeddings'
-        parsed_select_cols = []
-        id_col_alias = None
-        embeddings_col_alias = None
+        # --- Column Parsing and Mode Detection ---
+        parsed_select_cols = [col.strip() for col in mysql_select_cols.split(',')]
         
         found_id_col = False
+        found_input_text_col = False
         found_embeddings_col = False
 
-        for part in [col.strip() for col in mysql_select_cols.split(',')]:
+        for part in parsed_select_cols:
+            col_name = part
             if ' AS ' in part.upper():
-                original_name, alias_name = part.upper().split(' AS ')
-                original_name = original_name.strip()
-                alias_name = alias_name.strip()
-                parsed_select_cols.append(part)
-                
-                if alias_name.lower() == 'id':
-                    id_col_alias = 'id'
-                    found_id_col = True
-                elif alias_name.lower() == 'embeddings':
-                    embeddings_col_alias = 'embeddings'
-                    found_embeddings_col = True
-            else:
-                parsed_select_cols.append(part)
-                if part.lower() == 'id':
-                    id_col_alias = 'id'
-                    found_id_col = True
-                elif part.lower() == 'embeddings':
-                    embeddings_col_alias = 'embeddings'
-                    found_embeddings_col = True
+                _, alias_name = part.upper().split(' AS ')
+                col_name = alias_name.strip()
+
+            if col_name.lower() == 'id':
+                found_id_col = True
+            elif col_name.lower() == 'input_text':
+                found_input_text_col = True
+            elif col_name.lower() == 'embeddings':
+                found_embeddings_col = True
 
         if not found_id_col:
-            print("Error: A column aliased as 'id' or named 'id' must be included in --select option.")
+            print("Error: A column aliased as 'id' or named 'id' must be included in the --select option.")
             sys.exit(1)
-        if not found_embeddings_col:
-            print("Error: A column aliased as 'embeddings' or named 'embeddings' must be included in --select option.")
+
+        if not found_input_text_col and not found_embeddings_col:
+            print("Error: You must include either a column named/aliased as 'input_text' (for embedding generation) or 'embeddings' (for pre-computed vectors) in the --select option.")
             sys.exit(1)
+
+        if found_input_text_col and found_embeddings_col:
+            print("Warning: Both 'input_text' and 'embeddings' columns found. 'input_text' will be used for generating new embeddings.")
+
+        # Determine mode
+        generate_embeddings_mode = found_input_text_col
 
         query = f"SELECT {mysql_select_cols} FROM {mysql_table}"
         if mysql_where:
@@ -233,98 +237,110 @@ def insert_from_mysql(
         cursor.execute(query)
 
         all_vectors = []
-        i = 0;
+        batch_num = 1
         rows_processed = 0
         total_inserted = 0
+
         for row in cursor:
             row_id = row.get("id")
-            embeddings_bytes = row.get("embeddings")
-            
             if row_id is None:
-                print(f"Skipping row due to missing 'id' column in selected data: {row}")
-                continue
-
-            if embeddings_bytes is None:
-                print(f"Skipping row ID {row_id}: 'embeddings' column is NULL.")
+                print(f"Skipping row due to missing 'id' column: {row}")
                 continue
 
             try:
-                # Convert bytes back to numpy array (assuming float32)
-                embedding_np = np.frombuffer(embeddings_bytes, dtype=np.float32)
-                # Ensure the embedding has the expected dimensions (e.g., 512)
-                if embedding_np.shape[0] != 512:
-                     print(f"Warning: Embedding for ID {row_id} has unexpected dimensions ({embedding_np.shape[0]}). Expected 512. Skipping.")
-                     continue
-                embedding_list = embedding_np.tolist()
-
+                embedding_list = None
                 metadata = {}
-                for col_name, col_value in row.items():
-                    if col_name not in ['id', 'embeddings']:
-                        if isinstance(col_value, Decimal):
-                            metadata[col_name] = float(col_value)
-                        else:
-                            metadata[col_name] = col_value
 
-                all_vectors.append({
-                    "key": f"{row_id}",
-                    "data": {"float32": embedding_list},
-                    "metadata": metadata
-                })
-                rows_processed += 1
+                if generate_embeddings_mode:
+                    # --- Mode 1: Generate Embeddings from 'input_text' ---
+                    input_text = row.get("input_text")
+                    if input_text is None:
+                        print(f"Skipping row ID {row_id}: 'input_text' column is NULL.")
+                        continue
 
-                ## actully should really just submit them as go
+                    embedding = None
+                    if model == "titan":
+                        embedding = get_embedding(input_text)
+                    else: # default to clip
+                        embedding = get_text_embeddings(input_text)
+
+                    if embedding is None:
+                        print(f"Skipping row ID {row_id} due to embedding generation failure.")
+                        continue
+                    embedding_list = embedding # Already a list
+
+                    # Populate metadata, excluding 'id' and 'input_text'
+                    for col_name, col_value in row.items():
+                        if col_name.lower() not in ['id', 'input_text']:
+                            if isinstance(col_value, Decimal):
+                                metadata[col_name] = float(col_value)
+                            else:
+                                metadata[col_name] = col_value
+
+                else: # Pre-computed embeddings mode
+                    # --- Mode 2: Use Pre-computed 'embeddings' ---
+                    embeddings_bytes = row.get("embeddings")
+                    if embeddings_bytes is None:
+                        print(f"Skipping row ID {row_id}: 'embeddings' column is NULL.")
+                        continue
+
+                    embedding_np = np.frombuffer(embeddings_bytes, dtype=np.float32)
+                    if embedding_np.shape[0] != 512:
+                        print(f"Warning: Embedding for ID {row_id} has unexpected dimensions ({embedding_np.shape[0]}). Expected 512. Skipping.")
+                        continue
+                    embedding_list = embedding_np.tolist()
+
+                    # Populate metadata, excluding 'id' and 'embeddings'
+                    for col_name, col_value in row.items():
+                        if col_name.lower() not in ['id', 'embeddings']:
+                            if isinstance(col_value, Decimal):
+                                metadata[col_name] = float(col_value)
+                            else:
+                                metadata[col_name] = col_value
+
+                if embedding_list:
+                    all_vectors.append({
+                        "key": str(row_id),
+                        "data": {"float32": embedding_list},
+                        "metadata": metadata
+                    })
+                    rows_processed += 1
+
+                # Batch insert logic
                 if len(all_vectors) == PUT_BATCH_LIMIT:
                     s3vectors.put_vectors(
                         vectorBucketName=vector_bucket_name,
                         indexName=index_name,
                         vectors=all_vectors,
                     )
-
                     total_inserted += len(all_vectors)
-                    print(f"  Batch {i + 1} successful. Inserted {len(all_vectors)} vectors.")
-                    time.sleep(0.5) # Small delay to respect rate limits
+                    print(f"  Batch {batch_num} successful. Inserted {len(all_vectors)} vectors.")
+                    time.sleep(0.5)
                     all_vectors = []
-                    i += 1
+                    batch_num += 1
 
-                if rows_processed % 1000 == 0:
+                if rows_processed % 1000 == 0 and rows_processed > 0:
                     print(f"  Processed {rows_processed} rows from MySQL...")
 
             except Exception as e:
                 print(f"Error processing row ID {row_id} from MySQL: {e}")
                 continue
 
-        if not all_vectors:
-            print("No rows left to insert.")
-            return
-
-        #this can cope with large results (doing the batching, but if submitted as go, not needed, so will always be just one batch anyway!
-
-        num_vectors = len(all_vectors)
-        num_batches = math.ceil(num_vectors / PUT_BATCH_LIMIT)
-
-        print(f"Attempting to insert {num_vectors} vectors from MySQL in {num_batches} batches (batch size: {PUT_BATCH_LIMIT})...")
-
-        for i in range(num_batches):
-            start_index = i * PUT_BATCH_LIMIT
-            end_index = min((i + 1) * PUT_BATCH_LIMIT, num_vectors)
-            current_batch = all_vectors[start_index:end_index]
-
-            print(f"  Processing batch {i + 1}/{num_batches} (vectors {start_index} to {end_index - 1})...")
+        # Insert any remaining vectors
+        if all_vectors:
+            print(f"  Processing final batch ({len(all_vectors)} vectors)...")
             try:
                 s3vectors.put_vectors(
                     vectorBucketName=vector_bucket_name,
                     indexName=index_name,
-                    vectors=current_batch,
+                    vectors=all_vectors,
                 )
-                total_inserted += len(current_batch)
-                print(f"  Batch {i + 1} successful. Inserted {len(current_batch)} vectors.")
-                time.sleep(0.5) # Small delay to respect rate limits
+                total_inserted += len(all_vectors)
+                print(f"  Final batch successful. Inserted {len(all_vectors)} vectors.")
             except Exception as e:
-                print(f"  Error inserting batch {i + 1} into S3Vectors: {e}")
-                print("  Attempting to continue with next batch...")
-                continue # Continue to next batch even if one fails
+                print(f"  Error inserting final batch into S3Vectors: {e}")
 
-        print(f"Successfully inserted {total_inserted} vectors from MySQL into '{index_name}' in '{vector_bucket_name}'.")
+        print(f"\nSuccessfully inserted a total of {total_inserted} vectors from MySQL into '{index_name}' in '{vector_bucket_name}'.")
 
     except mysql.connector.Error as err:
         print(f"MySQL Error: {err}")
@@ -435,15 +451,23 @@ def truncate_index(vector_bucket_name: str, index_name: str):
 
 
 
-def run_query(vector_bucket_name: str, index_name: str, query_text: str, top_k: int, query_filter: str = None):
+def run_query(vector_bucket_name: str, index_name: str, query_text: str, top_k: int, model: str, query_filter: str = None):
     """
     Runs a similarity query against the S3Vectors index.
     Accepts a text query, top_k results, and an optional JSON filter string.
     """
-    print(f"Generating embedding for query: '{query_text}'...")
+    print(f"Generating embedding for query: '{query_text}' using model: {model}...")
     try:
-        #query_embedding = get_embedding(query_text) --- this is fetching from bedrock, with a different model
-        query_embedding = get_text_embeddings(query_text) # this is actully using CLIP!
+        query_embedding = None
+        if model == "titan":
+            query_embedding = get_embedding(query_text)
+        else: # default to clip
+            query_embedding = get_text_embeddings(query_text)
+
+        if query_embedding is None:
+            print("Error: Could not generate embedding for the query.")
+            sys.exit(1)
+
     except Exception as e:
         print(f"Error generating embedding for query: {e}")
         sys.exit(1)
@@ -505,6 +529,12 @@ def main():
         default= "test-index",
         help="The name of the S3Vectors index within the bucket."
     )
+    parser.add_argument(
+        "-m", "--model",
+        default="clip",
+        choices=["clip", "titan"],
+        help="The embedding model to use: 'clip' (default) or 'titan'."
+    )
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
@@ -546,9 +576,11 @@ def main():
 
     insert_mysql_parser.add_argument(
         "-s", "--select",
-        default="id, label, embeddings", # Default columns
-        help="Comma-separated list of columns to fetch. 'id' and 'embeddings' are required. "
-             "Other columns will be added as metadata. (default: 'id, label, embeddings')"
+        required=True,
+        help="Comma-separated list of columns to fetch. Must include a column named or aliased as 'id'. "
+             "For embedding generation, include a column named/aliased as 'input_text'. "
+             "Alternatively, for pre-computed vectors, include a column named/aliased as 'embeddings'. "
+             "Other columns are treated as metadata."
     )
     insert_mysql_parser.add_argument("-w", "--where", help="Optional WHERE clause for the MySQL query (e.g., 'genre=\"scifi\"').")
 
@@ -593,7 +625,7 @@ def main():
     args = parser.parse_args()
 
     if args.command == "insert-file":
-        insert_data(args.bucket, args.index, args.file)
+        insert_data(args.bucket, args.index, args.file, args.model)
     elif args.command == "insert-mysql":
         insert_from_mysql(
             args.bucket,
@@ -604,10 +636,11 @@ def main():
             args.db,
             args.table,
             args.select,
+            args.model,
             args.where
         )
     elif args.command == "query":
-        run_query(args.bucket, args.index, args.text, args.top_k, args.filter)
+        run_query(args.bucket, args.index, args.text, args.top_k, args.model, args.filter)
     elif args.command == "delete-keys":
         delete_vectors_by_keys(args.bucket, args.index, args.keys)
     elif args.command == "truncate":
