@@ -1,11 +1,6 @@
 <?php
-define('GEOGRAPH_IS_FRONTEND', 1);
-if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-    //running via proxy
-    $_SERVER['REMOTE_ADDR']=$_SERVER['HTTP_X_FORWARDED_FOR'];
-}
-chdir(dirname(__FILE__).'/../'); //so that paths are relative to public_html
-require_once 'libs/geograph/global.inc.php';
+
+require_once 'geograph/global.inc.php';
 
 
 // Get a database connection
