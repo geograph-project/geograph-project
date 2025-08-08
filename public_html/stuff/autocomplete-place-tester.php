@@ -39,7 +39,8 @@ $smarty = new GeographPage;
 <p>Note: Only use this page for testing searching for <b>placenames</b>. (while generally we support searching grid-reference, postcodes, lat/long, that doesn't really work in this demo.)
 
 <form method=get onsubmit="return false" style="background-color:#eee;padding:10px;font-size:1.4em">
-<input name="model" type=radio value="Nexus" id="mNexus" checked><label for="mNexus">Nexus</label>
+<input name="model" type=radio value="Keystone" id="mKeystone" checked><label for="mKeystone">Keystone</label>
+<input name="model" type=radio value="Nexus" id="mNexus"><label for="mNexus">Nexus</label>
 <input name="model" type=radio value="Echo" id="mEcho"><label for="mEcho">Echo</label>
 <input name="model" type=radio value="Cipher" id="mCipher"><label for="mCipher">Cipher</label>
 <input name="model" type=radio value="Sieve" id="mSieve"><label for="mSieve">Sieve</label>
@@ -87,6 +88,9 @@ $(function () {
 			if (model == 'Nexus') {
 	                        var url = "https://development.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&vector=1";
 
+			} else if (model == 'Keystone') {
+	                        var url = "https://development.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&vector=1&rerank=1";
+
 			} else if (model == 'Cipher') {
 	                        var url = "https://api.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"";
 
@@ -133,6 +137,7 @@ $(function () {
         })
         .data( "autocomplete" )._renderItem = function( ul, item ) {
                 var re=new RegExp('('+$("#loc").val()+')','gi');
+		if (item.gr && item.label.endsWith(item.gr)) item.gr = ''; //hide the duplicate gr, leave the big one - as it more important!
                 if (!item.title) item.title = '';
                 return $( "<li></li>" )
                         .data( "item.autocomplete", item )

@@ -176,14 +176,15 @@ if (!empty($_GET['q'])) {
 		if (!empty($raw)) {
 			$vector = json_decode($raw, TRUE);
 			if (!empty($vector) && count($vector) == 512) {
-				$limit = 20;
+
+				$limit = min(intval($_GET['limit'] ?? 20), 30);
 
 			        $queryPayload = [
 			            'vectorBucketName' => $CONF['s3_vector_bucket'],
 			            'indexName' => 'place-titan', // Hardcoded for now
 			            'queryVector' => ['float32' => $vector],
 			            'topK' => $limit,
-			            'returnDistance' => false,
+			            'returnDistance' => !empty($_GET['rerank']),
 			            'returnMetadata' => true,
 			        ];
 
@@ -198,10 +199,48 @@ if (!empty($_GET['q'])) {
 					$row['name'] = $r['metadata']['Place'];
 					$row['localities'] = $r['metadata']['County'].", ".$r['metadata']['Country'];
 					$row['gr'] = $r['metadata']['km_ref'];
+					if (!empty($r['distance']))
+                                        	$row['distance'] = floatval($r['distance']);
 
 					$results['items'][] = $row;
 				}
-				$results['total_found'] = count($result['vectors']); //can't providle a real totla!
+
+				if (!empty($_GET['rerank'])) {
+					$input = strtolower(trim($_GET['q'])); //so can be case insensitive
+					$query_len = strlen($input);
+
+					foreach($results['items'] as $idx => &$row) {
+						$bits = explode('/',strtolower($row['name'])); //just name, not country/country
+
+						//see if any part is an exact match - evem bilingual, we want to promote exact matches, over prefix matches
+						if (in_array($input, $bits)) {
+							$row['pdist'] = 0; // Perfect match
+							continue;
+						}
+
+						$row['pdist'] = 1+levenshtein($input, substr($bits[0].', '.strtolower($row['localities']), 0, $query_len));
+						//bilingual name like "Ammanford/Rhydaman"
+						if (isset($bits[1]) && $bits[1] != strtolower($row['gr'])) {
+							$row['pdist'] = min($row['pdist'],
+								1+levenshtein($input, substr($bits[1].', '.strtolower($row['localities']), 0, $query_len))
+							);
+						}
+					}
+					unset($row);
+
+				    // Sort by 'pdist' (Levenshtein distance) ascending, then by 'distance' ascending
+				    usort($results['items'], function($a, $b) {
+					$pdist_cmp = $a['pdist'] <=> $b['pdist'];
+
+					if ($pdist_cmp === 0) {
+					    return $a['distance'] <=> $b['distance'];
+					}
+
+					return $pdist_cmp;
+				    });
+				}
+
+				$results['total_found'] = count($result['vectors']); //can't providle a real total for vector search
 				$time = sprintf('%.3f',$end-$start);
 				$results['query_info'] = "Query '".preg_replace('/[^\w ]+/',' ',$_GET['q'])."' retrieved {$results['total_found']} of ? matches in $time sec.\n";
 
