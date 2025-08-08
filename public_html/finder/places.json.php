@@ -160,6 +160,57 @@ if (!empty($_GET['q'])) {
 		$results['copyright'] = "Great Britain results (c) Crown copyright Ordnance Survey. All Rights Reserved. 100045616";
 
 		$ADODB_FETCH_MODE = $prev_fetch_mode;
+
+        } elseif (!empty($_GET['vector'])) {
+
+		require_once("geograph/vectors.inc.php");
+
+        	if (empty($filesystem))
+                	$filesystem = new FileSystem(); //sets up S3 configuation automagically - needed for s3Vectors!
+
+		##########################
+		// TODO, temporary bodge!!
+
+		$cmd = "python3 /var/www/geograph/scripts/vector-cmd6.py -m titan get-embedding --text ".escapeshellarg($_GET['q']);
+		$raw = `$cmd`;
+		if (!empty($raw)) {
+			$vector = json_decode($raw, TRUE);
+			if (!empty($vector) && count($vector) == 512) {
+				$limit = 20;
+
+			        $queryPayload = [
+			            'vectorBucketName' => $CONF['s3_vector_bucket'],
+			            'indexName' => 'place-titan', // Hardcoded for now
+			            'queryVector' => ['float32' => $vector],
+			            'topK' => $limit,
+			            'returnDistance' => false,
+			            'returnMetadata' => true,
+			        ];
+
+				$start  = microtime(true);
+			        $result = queryS3Vectors($queryPayload);
+				$end    = microtime(true);
+
+				$results['items'] = array();
+				foreach ($result['vectors'] as $idx => $r) {
+					$row = array();
+					$row['id'] = intval($r['key']);
+					$row['name'] = $r['metadata']['Place'];
+					$row['localities'] = $r['metadata']['County'].", ".$r['metadata']['Country'];
+					$row['gr'] = $r['metadata']['km_ref'];
+
+					$results['items'][] = $row;
+				}
+				$results['total_found'] = count($result['vectors']); //can't providle a real totla!
+				$time = sprintf('%.3f',$end-$start);
+				$results['query_info'] = "Query '".preg_replace('/[^\w ]+/',' ',$_GET['q'])."' retrieved {$results['total_found']} of ? matches in $time sec.\n";
+
+				//$results['query_info'] = $sphinx->query_info;
+				$results['copyright'] = "Great Britain results (c) Crown copyright Ordnance Survey. All Rights Reserved. 100045616";
+			}
+		}
+
+		##########################
 	}
 
 	if (empty($results)) {
