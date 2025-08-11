@@ -31,7 +31,7 @@ require "./_scripts.inc.php";
 ##################################
 //
 
-if (!empty($param['insert']) && preg_match('/^(label|user|tags|doc|place|image)-(\w+)/',$param['index'], $m)) {
+if (!empty($param['insert']) && preg_match('/^(label|user|tags|doc|place|thread|image)-(\w+)/',$param['index'], $m)) {
 	$source = $m[1];
 	$model = $m[2];
 
@@ -73,6 +73,13 @@ if (!empty($param['insert']) && preg_match('/^(label|user|tags|doc|place|image)-
 	    $cmd[] = "-t " . escapeshellarg("sphinx_placenames");
 	    $cmd[] = "-s " . escapeshellarg("placename_id as id, CONCAT_WS(', ', Place,NULLIF(County,'Unknown'),NULLIF(Country,'Unknown'),postcode) as input_text, Place,County,Country, km_ref, postcode, images");
 	    //$cmd[] = "-w " . escapeshellarg("placename_id > 100000");
+
+    } elseif ($source == 'thread') {
+	//specically threads, not posts!
+
+	    $cmd[] = "-t " . escapeshellarg("geobb_topics");
+	    $cmd[] = "-s " . escapeshellarg("topic_id AS id, topic_title AS input_text, topic_title as title, forum_id, topic_poster_name as name, date(topic_time) as day");
+	    $cmd[] = "-w " . escapeshellarg("topic_poster>0");
 
 
     } elseif ($source == 'image') {
