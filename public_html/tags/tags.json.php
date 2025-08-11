@@ -74,7 +74,72 @@ if (isset($_GET['term'])) {
 	$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='category' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
 }
 
-if ($_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
+
+if (!empty($_GET['vector'])) {
+		//dont use mode to signify vector, because vector itselt supports different modes!
+
+		require_once("geograph/vectors.inc.php");
+
+        	if (empty($filesystem))
+                	$filesystem = new FileSystem(); //sets up S3 configuation automagically - needed for s3Vectors!
+
+		##########################
+
+		$vector = getTextEmbedding($_GET['q'], 'mpnet');
+
+			if (!empty($vector) && count($vector) == 768) { //for mpnet!
+
+				$limit = min(intval($_GET['limit'] ?? 20), 30);
+
+			        $queryPayload = [
+			            'vectorBucketName' => $CONF['s3_vector_bucket'],
+			            'indexName' => 'tags-mpnet', // Hardcoded for now
+			            'queryVector' => ['float32' => $vector],
+			            'topK' => $limit,
+			            'returnDistance' => !empty($_GET['rerank']),
+			            'returnMetadata' => true,
+			        ];
+				if (!empty($_GET['mode']) && preg_match('/^(tag|subject|type|top|bucket)$/',$_GET['mode']))
+					$queryPayload['filter'] = array('src'=>$_GET['mode']);
+
+				$start  = microtime(true);
+			        $result = queryS3Vectors($queryPayload);
+				$end    = microtime(true);
+
+				$data = array();
+				foreach ($result['vectors'] as $idx => $r) {
+					$row = array();
+					$row['id'] = intval($r['key']);
+					$bits = explode(':',$r['metadata']['tagtext'],2);
+					if (!empty($bits[1])) {
+						$row['prefix'] = $bits[0];
+						$row['tag'] = $bits[1];
+					} else {
+						$row['tag'] = $bits[0];
+					}
+					if (!empty($r['distance']))
+                                        	$row['distance'] = floatval($r['distance']);
+
+					$data[] = $row;
+				}
+
+				if (!empty($_GET['rerank'])) {
+					rerank_items($data, 'tag', $_GET['q']); //passed by reference
+				}
+
+				//$results['total_found'] = count($result['vectors']); //can't providle a real total for vector search
+				//$time = sprintf('%.3f',$end-$start);
+				//$results['query_info'] = "Query '".preg_replace('/[^\w ]+/',' ',$_GET['q'])."' retrieved {$results['total_found']} of ? matches in $time sec.\n";
+			} else {
+				$data = array('error'=>'unable to lookup vector');
+			}
+
+		##########################
+
+	outputJSON($data);
+	exit;
+
+} elseif ($_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
 	init_session();
 	customExpiresHeader(30,false,true);
 

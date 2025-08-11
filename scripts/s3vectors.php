@@ -31,7 +31,7 @@ require "./_scripts.inc.php";
 ##################################
 //
 
-if (!empty($param['insert']) && preg_match('/^(label|user|tag|doc|place|image)-(\w+)/',$param['index'], $m)) {
+if (!empty($param['insert']) && preg_match('/^(label|user|tags|doc|place|image)-(\w+)/',$param['index'], $m)) {
 	$source = $m[1];
 	$model = $m[2];
 
@@ -55,7 +55,7 @@ if (!empty($param['insert']) && preg_match('/^(label|user|tag|doc|place|image)-(
 	    $cmd[] = "-s " . escapeshellarg("user_id AS id, CONCAT_WS(', ',realname, NULLIF(nickname,'')) AS input_text, realname, nickname, images");
 	    $cmd[] = "-w " . escapeshellarg("images > 0");
 
-    } elseif ($source == 'tag') {
+    } elseif ($source == 'tags') { //the existing index has 's' on it!
 				//canonical=0 only picks offical prefixed tags
 	    $cmd[] = "-t " . escapeshellarg("tag_stat inner join tag using (tag_id)");
 	    $cmd[] = "-s " . escapeshellarg("tag_id as id, if(prefix in ('top','type','subject','bucket') and canonical =0,tag,tagtext) as input_text,".

@@ -3,7 +3,7 @@
 require_once("3rdparty/s3vectors.inc.php"); //defines queryS3Vectors
 
 //todo, move to global config!
-$CONF['embed_api'] = 'http://python-embed.dev.svc.cluster.local:8000';
+$CONF['embed_api'] = 'http://python-embed13.dev.svc.cluster.local:8000';
 $CONF['s3_vector_bucket'] = 'geograph-vector-bucket';
 
 //for now leave the indexName hardcoded (similarly the manticore index name!)
@@ -280,7 +280,7 @@ function getTextEmbedding($inputText, $model = 'clip') {
 
 
     // The data to send in the request body as a JSON string
-    $postData = json_encode(['text' => $inputText, $model => $model]);
+    $postData = json_encode(['text' => $inputText, "model" => $model]);
     if ($postData === false) {
         error_log('get_text_embeddings: Failed to JSON encode postData.');
         return [];
@@ -641,12 +641,14 @@ function rerank_items(&$items, $key, $query) {
         $query_len = strlen($input);
 
         foreach($items as $idx => &$row) {
+		$row['idx'] = $idx; //todo weight?
+
 		$lower = strtolower($row[$key]);
 		if ($lower == $input) {
+			$row['pdist'] = 0;
                         continue;
                 }
                 $row['pdist'] = 1+levenshtein($input, substr($lower, 0, $query_len));
-		$row['idx'] = $idx; //todo weight?
         }
         unset($row);
 

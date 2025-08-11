@@ -36,23 +36,18 @@ $smarty = new GeographPage;
 ?>
 <h2>Testing Tag Autocomplete</h2>
 
-<p>Note: Only use this page for testing searching for <b>tags</b>.</p>
-
 <form method=get onsubmit="return false" style="background-color:#eee;padding:10px;font-size:1.4em">
 <fieldset>
-<legend>API Model</legend>
+<legend>Matching Model</legend>
 <input name="model" type=radio value="Keystone" id="mKeystone" checked><label for="mKeystone">Keystone</label>
 <input name="model" type=radio value="Nexus" id="mNexus"><label for="mNexus">Nexus</label>
 <input name="model" type=radio value="Echo" id="mEcho"><label for="mEcho">Echo</label>
-<input name="model" type=radio value="Cipher" id="mCipher"><label for="mCipher">Cipher</label>
-<input name="model" type=radio value="Sieve" id="mSieve"><label for="mSieve">Sieve</label>
 </fieldset>
 <fieldset>
 <legend>Filter</legend>
-<input name="filter" type=radio value="" id="fAll" checked><label for="fAll">All</label>
-<input name="filter" type=radio value="context" id="fContext"><label for="fContext">Context</label>
-<input name="filter" type=radio value="subject" id="fSubject"><label for="fSubject">Subject</label>
-<input name="filter" type=radio value="freeform" id="fFreeform"><label for="fFreeform">Freeform</label>
+<input name="filter" type=radio value="top" id="fContext"><label for="fContext">Context</label>
+<input name="filter" type=radio value="subject" id="fSubject" checked><label for="fSubject">Subject</label>
+<input name="filter" type=radio value="tag" id="fFreeform"><label for="fFreeform">Freeform Tags</label>
 </fieldset>
 <br>
 <input type="search" name="loc" value="" placeholder="(enter tag)" id="loc" size=50 style="font-size:1.1em"><br> <span id="placeMessage"></span>
@@ -96,23 +91,17 @@ $(function () {
 			var filter = $('input[name=filter]:checked').val();
                         var url = "/tags/tags.json.php?q="+encodeURIComponent(request.term);
 
+			if (model == 'Nexus' || model == 'Keystone') {
+				url += "&vector=1";
+				if (model == 'Keystone') {
+					url += "&rerank=1";
+				}
+			}
+
 			if (filter) {
-				url += "&scope="+filter;
+				url += "&mode="+filter; // mode=tag will helpfully be ignored by non-vector search
 			}
-/*
-			if (model == 'Nexus') {
-	                        var url = "https://development.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&vector=1";
 
-			} else if (model == 'Keystone') {
-	                        var url = "https://development.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&vector=1&rerank=1";
-
-			} else if (model == 'Cipher') {
-	                        var url = "https://api.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"";
-
-			} else if (model == 'Sieve') {
-	                        var url = "https://api.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&legacy=1";
-			}
-*/
                         $.ajax({
                                 url: url,
                                 dataType: 'jsonp',
@@ -120,7 +109,7 @@ $(function () {
                                 cache: true,
                                 success: function(data) {
 
-                                        if (!data || !data.items || data.items.length < 1) {
+                                        if (!data || data.length < 1) {
                                                 $("#message").html("No tags found matching '"+request.term+"'");
                                                 $("#placeMessage").show().html("No tags found matching '"+request.term+"'");
 					            $("#loc").autocomplete("close"); //close, it incase it open from another (when switch!)
@@ -128,8 +117,10 @@ $(function () {
                                                 return;
                                         }
                                         var results = [];
-                                        $.each(data.items, function(i,item){
-						results.push({value:item.tag, label:item.tag, title:item.scope});
+                                        $.each(data, function(i,item){
+						if (item.prefix)
+							item.tag = item.prefix+':'+item.tag;
+						results.push({value:item.tag, label:item.tag});
                                         });
 					if (data.query_info)
 	                                        results.push({value:'',label:'',title:data.query_info});
@@ -141,8 +132,6 @@ $(function () {
                 },
                 select: function(event,ui) {
                         $("#loc").val(ui.item.value);
-			if (typeof jumpLocation !== 'undefined')
-	                        jumpLocation($("#loc").parent('form')[0]);
                         return false;
                 }
         })
