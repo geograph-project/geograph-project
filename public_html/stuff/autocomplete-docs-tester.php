@@ -107,7 +107,7 @@ $(function () {
                                         var results = [];
                                         $.each(data, function(i,item){
 						if(item.title) {
-							results.push({value:item.url, label:item.title, title:item.extract});
+							results.push({value:item.url, label:item.title, title:item.extract, url:item.url});
 						} else if (item.query_info) {
 							results.push({value:'',label:'',title:item.query_info});
 						}
@@ -128,7 +128,7 @@ $(function () {
                 if (!item.title) item.title = '';
                 return $( "<li></li>" )
                         .data( "item.autocomplete", item )
-                        .append( "<a>" + item.label.replace(re,'<b>$1</b>') + (item.title?("<br><small>&middot; " + item.title.replace(re,'<b>$1</b>') + "</small></a>"):'') )
+                        .append( "<a title='"+item.url+"'>" + item.label.replace(re,'<b>$1</b>') + (item.title?("<br><small>&middot; " + item.title.replace(re,'<b>$1</b>') + "</small></a>"):'') )
                         .appendTo( ul );
         };
 
