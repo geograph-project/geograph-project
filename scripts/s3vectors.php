@@ -45,6 +45,45 @@ if (!empty($param['insert']) && $param['index'] == 'label-clip') {
 	print implode(' ',$cmd)."\n";
 	exit;
 
+} elseif (!empty($param['insert']) && $param['index'] == 'users-mpnet') {
+    $cmd = array();
+    $cmd[] = "python3";
+    $cmd[] = "vector-cmd6.py";
+    $cmd[] = "--index " . escapeshellarg($param['index']);
+    $cmd[] = "--model mpnet";
+    $cmd[] = "insert-mysql";
+    $cmd[] = "-D " . escapeshellarg($CONF['db_db']);
+    $cmd[] = "-t " . escapeshellarg("user");
+    $cmd[] = "-s " . escapeshellarg("user_id AS id, nickname AS input_text");
+    $cmd[] = "-w " . escapeshellarg("state = 'active' AND nickname IS NOT NULL AND nickname != ''");
+    print implode(' ', $cmd) . "\n";
+    exit;
+} elseif (!empty($param['insert']) && $param['index'] == 'tags-mpnet') {
+    $cmd = array();
+    $cmd[] = "python3";
+    $cmd[] = "vector-cmd6.py";
+    $cmd[] = "--index " . escapeshellarg($param['index']);
+    $cmd[] = "--model mpnet";
+    $cmd[] = "insert-mysql";
+    $cmd[] = "-D " . escapeshellarg($CONF['db_db']);
+    $cmd[] = "-t " . escapeshellarg("tag");
+    $cmd[] = "-s " . escapeshellarg("tag_id AS id, tag AS input_text");
+    $cmd[] = "-w " . escapeshellarg("status = 1 AND tag IS NOT NULL AND tag != ''");
+    print implode(' ', $cmd) . "\n";
+    exit;
+} elseif (!empty($param['insert']) && $param['index'] == 'docs-mpnet') {
+    $cmd = array();
+    $cmd[] = "python3";
+    $cmd[] = "vector-cmd6.py";
+    $cmd[] = "--index " . escapeshellarg($param['index']);
+    $cmd[] = "--model mpnet";
+    $cmd[] = "insert-mysql";
+    $cmd[] = "-D " . escapeshellarg($CONF['db_db']);
+    $cmd[] = "-t " . escapeshellarg("content");
+    $cmd[] = "-s " . escapeshellarg("content_id AS id, title AS input_text, url");
+    $cmd[] = "-w " . escapeshellarg("url IS NOT NULL AND title IS NOT NULL AND title != ''");
+    print implode(' ', $cmd) . "\n";
+    exit;
 } elseif (!empty($param['insert'])) { //&& index==image-clip - not chceked so can still insert into test-index too!
 
 	//for now, rather than encoding the injection process in PHP, use the python script!
