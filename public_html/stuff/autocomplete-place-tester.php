@@ -39,6 +39,7 @@ $smarty = new GeographPage;
 <p>Note: Only use this page for testing searching for <b>placenames</b>. (while generally we support searching grid-reference, postcodes, lat/long, that doesn't really work in this demo.)
 
 <form method=get onsubmit="return false" style="background-color:#eee;padding:10px;font-size:1.4em">
+<input name="model" type=radio value="Fusion" id="mFusion"><label for="mFusion">Fusion</label>
 <input name="model" type=radio value="Keystone" id="mKeystone" checked><label for="mKeystone">Keystone</label>
 <input name="model" type=radio value="Nexus" id="mNexus"><label for="mNexus">Nexus</label>
 <input name="model" type=radio value="Echo" id="mEcho"><label for="mEcho">Echo</label>
@@ -74,60 +75,117 @@ $(function () {
         }
     });
 
-        $( "#loc" ).autocomplete({
-                minLength: 3,
-                source: function( request, response ) {
 
-			if (request.term.length < 3) {
-				response([]);
-                                return;
-                        }
-			var model = $('input[name=model]:checked').val();
-                        var url = "https://api.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&new=1";
 
-			if (model == 'Nexus') {
-	                        var url = "https://development.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&vector=1";
+$( "#loc" ).autocomplete({
+    minLength: 3,
+    source: async function(request, response) {
+        const term = request.term;
+        if (term.length < 3) {
+            response([]);
+            return;
+        }
 
-			} else if (model == 'Keystone') {
-	                        var url = "https://development.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&vector=1&rerank=1";
+        const model = $('input[name=model]:checked').val();
+        let url = `https://api.geograph.org.uk/finder/places.json.php?q=${encodeURIComponent(term)}&new=1`;
+        let fallbackUrl = null;
 
-			} else if (model == 'Cipher') {
-	                        var url = "https://api.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"";
+        // Determine the base URL and potential fallback URL
+        switch (model) {
+            case 'Nexus':
+                url = `https://development.geograph.org.uk/finder/places.json.php?q=${encodeURIComponent(term)}&vector=1`;
+                break;
+            case 'Keystone':
+                url = `https://development.geograph.org.uk/finder/places.json.php?q=${encodeURIComponent(term)}&vector=1&rerank=1`;
+                break;
+            case 'Cipher':
+                url = `https://api.geograph.org.uk/finder/places.json.php?q=${encodeURIComponent(term)}`;
+                break;
+            case 'Sieve':
+                url = `https://api.geograph.org.uk/finder/places.json.php?q=${encodeURIComponent(term)}&legacy=1`;
+                break;
+            case 'Fusion':
+                // Fusion model uses the first URL and a specific fallback
+                url = `https://api.geograph.org.uk/finder/places.json.php?q=${encodeURIComponent(term)}&new=1`;
+                fallbackUrl = `https://development.geograph.org.uk/finder/places.json.php?q=${encodeURIComponent(term)}&vector=1&rerank=1&limit=15`;
+                break;
+        }
 
-			} else if (model == 'Sieve') {
-	                        var url = "https://api.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&legacy=1";
-			}
+        let results = [];
+        let found_str = 0;
 
-                        $.ajax({
-                                url: url,
-                                dataType: 'jsonp',
-                                jsonpCallback: 'serveCallback',
-                                cache: true,
-                                success: function(data) {
+        const fetchData = async (requestUrl) => {
+            const data = await $.ajax({
+                url: requestUrl,
+                dataType: 'json',
+                cache: true
+            });
+            return data;
+        };
 
-                                        if (!data || !data.items || data.items.length < 1) {
-                                                $("#message").html("No places found matching '"+request.term+"'");
-                                                $("#placeMessage").show().html("No places found matching '"+request.term+"'");
-					            $("#loc").autocomplete("close"); //close, it incase it open from another (when switch!) 
-                                                setTimeout('$("#placeMessage").hide()',3500);
-                                                return;
-                                        }
-                                        var results = [];
-                                        $.each(data.items, function(i,item){
-						if (item.full_name) {
-							results.push({value:item.gridref+' '+item.full_name, label:item.full_name, gr:item.gridref, title:item.reference_index==2?'Ireland':'Great Britain'});
-						} else {
-	                                                results.push({value:item.gr+' '+item.name, label:item.name, gr:item.gr, title:item.localities});
-						}
-                                        });
-					if (data.query_info)
-	                                        results.push({value:'',label:'',title:data.query_info});
-					if (data.copyright)
-	                                        results.push({value:'',label:'',title:data.copyright});
-                                        response(results);
-                                }
-                        });
-                },
+        try {
+            // First API call
+            const data = await fetchData(url);
+
+            // Process the initial results
+            if (data && data.items && data.items.length > 0) {
+                const escapedVal = $.ui.autocomplete.escapeRegex(term);
+                const re = new RegExp('(' + escapedVal + ')', 'gi');
+
+                results = data.items.map(item => {
+                    const label = item.full_name || item.name;
+                    if (label.match(re)) {
+                        found_str++;
+                    }
+                    let title = item.localities ?? '';
+                    if (!title && item.reference_index !== undefined)
+                        title = (item.reference_index == 2) ? 'Ireland' : 'Great Britain';
+                    return {
+                        value: (item.gridref || item.gr) + ' ' + label,
+                        label: label,
+                        gr: item.gridref || item.gr,
+			title: title
+                    };
+                });
+            }
+
+            // Fallback logic for Fusion model
+            if (fallbackUrl && results.length < 5 && found_str === 0) {
+                const fallbackData = await fetchData(fallbackUrl);
+                if (fallbackData && fallbackData.items) {
+                    const fallbackResults = fallbackData.items.map(item => ({
+                        value: item.gr + ' ' + item.name,
+                        label: item.name,
+                        gr: item.gr,
+                        title: item.localities ?? ''
+                    }));
+                    results = results.concat(fallbackResults);
+                }
+            } else if (!data || !data.items || data.items.length < 1) {
+		    $("#message").html("No places found matching '"+request.term+"'");
+                    $("#placeMessage").show().html("No places found matching '"+request.term+"'");
+                         $("#loc").autocomplete("close"); //close, it incase it open from another (when switch!)
+                    setTimeout('$("#placeMessage").hide()',3500);
+		//no return as want to still call response!
+	    }
+
+            // Append additional info if available
+            if (data.query_info) {
+                results.push({value: '', label: '', title: data.query_info});
+            }
+            if (data.copyright) {
+                results.push({value: '', label: '', title: data.copyright});
+            }
+
+            response(results);
+        } catch (e) {
+            $("#placeMessage").show().html("An error occurred. Please try again.");
+console.log(e);
+            setTimeout(() => $("#placeMessage").hide(), 3500);
+            response([]);
+        }
+    },
+
                 select: function(event,ui) {
                         $("#loc").val(ui.item.value);
 			if (typeof jumpLocation !== 'undefined')
@@ -136,24 +194,27 @@ $(function () {
                 }
         })
         .data( "autocomplete" )._renderItem = function( ul, item ) {
-                var re=new RegExp('('+$("#loc").val()+')','gi');
+		var escapedVal = $.ui.autocomplete.escapeRegex( $("#loc").val() );
+                var re=new RegExp('('+escapedVal+')','gi');
 		if (item.gr && item.label.endsWith(item.gr)) item.gr = ''; //hide the duplicate gr, leave the big one - as it more important!
                 if (!item.title) item.title = '';
                 return $( "<li></li>" )
                         .data( "item.autocomplete", item )
-                        .append( "<a>" + item.label.replace(re,'<b>$1</b>') + " <small> " + (item.gr||'') + "<br>" + item.title.replace(re,'<b>$1</b>') + "</small></a>" )
+                        .append( "<a>" + item.label.replace(re,'<b>$1</b>') + " <small> " + (item.gr||'') + " &middot; " + item.title.replace(re,'<b>$1</b>') + "</small></a>" )
                         .appendTo( ul );
         };
 
 });
 
-
-
-
-
-
-
 </script>
+<style>
+
+.ui-menu .ui-menu-item {
+	padding-left: 2em;
+    text-indent: -2em;
+}
+
+</style>
 <?
 
 	$smarty->display('_std_end.tpl');
