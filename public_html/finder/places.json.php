@@ -171,10 +171,8 @@ if (!empty($_GET['q'])) {
 		##########################
 		// TODO, temporary bodge!!
 
-		$cmd = "python3 /var/www/geograph/scripts/vector-cmd6.py -m titan get-embedding --text ".escapeshellarg($_GET['q']);
-		$raw = `$cmd`;
-		if (!empty($raw)) {
-			$vector = json_decode($raw, TRUE);
+		$vector = getTextEmbedding($_GET['q'], 'titan'); //now able to fetch from titan - will migrate to local mpnet
+
 			if (!empty($vector) && count($vector) == 512) {
 
 				$limit = min(intval($_GET['limit'] ?? 20), 30);
@@ -206,38 +204,7 @@ if (!empty($_GET['q'])) {
 				}
 
 				if (!empty($_GET['rerank'])) {
-					$input = strtolower(trim($_GET['q'])); //so can be case insensitive
-					$query_len = strlen($input);
-
-					foreach($results['items'] as $idx => &$row) {
-						$bits = explode('/',strtolower($row['name'])); //just name, not country/country
-
-						//see if any part is an exact match - evem bilingual, we want to promote exact matches, over prefix matches
-						if (in_array($input, $bits)) {
-							$row['pdist'] = 0; // Perfect match
-							continue;
-						}
-
-						$row['pdist'] = 1+levenshtein($input, substr($bits[0].', '.strtolower($row['localities']), 0, $query_len));
-						//bilingual name like "Ammanford/Rhydaman"
-						if (isset($bits[1]) && $bits[1] != strtolower($row['gr'])) {
-							$row['pdist'] = min($row['pdist'],
-								1+levenshtein($input, substr($bits[1].', '.strtolower($row['localities']), 0, $query_len))
-							);
-						}
-					}
-					unset($row);
-
-				    // Sort by 'pdist' (Levenshtein distance) ascending, then by 'distance' ascending
-				    usort($results['items'], function($a, $b) {
-					$pdist_cmp = $a['pdist'] <=> $b['pdist'];
-
-					if ($pdist_cmp === 0) {
-					    return $a['distance'] <=> $b['distance'];
-					}
-
-					return $pdist_cmp;
-				    });
+					rerank_places($results['items'], $_GET['q']); //passed by reference
 				}
 
 				$results['total_found'] = count($result['vectors']); //can't providle a real total for vector search
@@ -247,7 +214,6 @@ if (!empty($_GET['q'])) {
 				//$results['query_info'] = $sphinx->query_info;
 				$results['copyright'] = "Great Britain results (c) Crown copyright Ordnance Survey. All Rights Reserved. 100045616";
 			}
-		}
 
 		##########################
 	}

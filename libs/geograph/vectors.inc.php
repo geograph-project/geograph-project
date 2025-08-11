@@ -261,12 +261,26 @@ function getImageEmbeddingById($id, $type = 'image') {
  * @return array An array of floats representing the text embedding vector on success,
  * or an empty array on failure (e.g., API error, invalid response).
  */
-function getTextEmbedding($inputText) {
+function getTextEmbedding($inputText, $model = 'clip') {
     global $CONF;
     $apiUrl = $CONF['embed_api'].'/text';
 
+// TODO, temporary bodge!!
+	//titan is a AWS bedrock model, while have python able to use it, we dont have PHP yet. Nor have it wrapped in our embed API
+	if ($model == 'titan') {
+                $cmd = "python3 /var/www/geograph/scripts/vector-cmd6.py -m titan get-embedding --text ".escapeshellarg($inputText);
+                $raw = `$cmd`;
+                if (!empty($raw)) {
+                        $vector = json_decode($raw, TRUE);
+                        if (!empty($vector) && count($vector) == 512) {
+				return $vector;
+			}
+		}
+	}
+
+
     // The data to send in the request body as a JSON string
-    $postData = json_encode(['text' => $inputText]);
+    $postData = json_encode(['text' => $inputText, $model => $model]);
     if ($postData === false) {
         error_log('get_text_embeddings: Failed to JSON encode postData.');
         return [];
@@ -578,3 +592,75 @@ function dumpVectors($results) {
         echo "No vectors found for the query or an error occurred.\n";
     }
 }
+
+
+
+
+//not specific to vectors really, but mostly used with fectors for now!
+
+function rerank_places(&$items, $query) {
+
+        $input = strtolower(trim($query)); //so can be case insensitive
+        $query_len = strlen($input);
+
+        foreach($items as $idx => &$row) {
+                $bits = explode('/',strtolower($row['name'])); //just name, not country/country
+
+                //see if any part is an exact match - evem bilingual, we want to promote exact matches, over prefix matches
+                if (in_array($input, $bits)) {
+                        $row['pdist'] = 0; // Perfect match
+                        continue;
+                }
+
+                $row['pdist'] = 1+levenshtein($input, substr($bits[0].', '.strtolower($row['localities']), 0, $query_len));
+                //bilingual name like "Ammanford/Rhydaman"
+                if (isset($bits[1]) && $bits[1] != strtolower($row['gr'])) {
+                        $row['pdist'] = min($row['pdist'],
+                                1+levenshtein($input, substr($bits[1].', '.strtolower($row['localities']), 0, $query_len))
+                        );
+                }
+        }
+        unset($row);
+
+    // Sort by 'pdist' (Levenshtein distance) ascending, then by 'distance' ascending
+    usort($items, function($a, $b) {
+        $pdist_cmp = $a['pdist'] <=> $b['pdist'];
+
+        if ($pdist_cmp === 0) {
+            return $a['distance'] <=> $b['distance'];
+        }
+
+        return $pdist_cmp;
+    });
+
+}
+
+function rerank_items(&$items, $key, $query) {
+
+        $input = strtolower(trim($query)); //so can be case insensitive
+        $query_len = strlen($input);
+
+        foreach($items as $idx => &$row) {
+		$lower = strtolower($row[$key]);
+		if ($lower == $input) {
+                        continue;
+                }
+                $row['pdist'] = 1+levenshtein($input, substr($lower, 0, $query_len));
+		$row['idx'] = $idx; //todo weight?
+        }
+        unset($row);
+
+    // Sort by 'pdist' (Levenshtein distance) ascending, then by original order
+    usort($items, function($a, $b) {
+        $pdist_cmp = $a['pdist'] <=> $b['pdist'];
+
+        if ($pdist_cmp === 0) {
+		 return $a['idx'] <=> $b['idx'];
+        }
+
+        return $pdist_cmp;
+    });
+
+}
+
+//todo, gemini suggests RRF sorting, not tried yet!
