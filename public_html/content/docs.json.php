@@ -40,6 +40,66 @@ if (isset($_GET['q'])) {
 
 	customExpiresHeader(3600);
 
+	if (!empty($_GET['vector'])) {
+		$results = array();
+
+		//dont use mode to signify vector, because vector itselt supports different modes!
+
+		require_once("geograph/vectors.inc.php");
+
+        	if (empty($filesystem))
+                	$filesystem = new FileSystem(); //sets up S3 configuation automagically - needed for s3Vectors!
+
+		##########################
+
+		$vector = getTextEmbedding($_GET['q'], 'mpnet');
+
+			if (!empty($vector) && count($vector) == 768) { //for mpnet!
+
+				$limit = min(intval($_GET['limit'] ?? 20), 30);
+
+			        $queryPayload = [
+			            'vectorBucketName' => $CONF['s3_vector_bucket'],
+			            'indexName' => 'doc-mpnet', // Hardcoded for now
+			            'queryVector' => ['float32' => $vector],
+			            'topK' => $limit,
+			            'returnDistance' => !empty($_GET['rerank']),
+			            'returnMetadata' => true,
+			        ];
+
+				$start  = microtime(true);
+			        $result = queryS3Vectors($queryPayload);
+				$end    = microtime(true);
+
+				foreach ($result['vectors'] as $idx => $r) {
+					$row = $r['metadata'];
+					$row['content_id'] = intval($r['key']);
+					if (!empty($r['distance']))
+                                        	$row['distance'] = floatval($r['distance']);
+
+					$results[] = $row;
+				}
+
+				if (!empty($_GET['rerank'])) {
+					rerank_items($results, 'title', $_GET['q']); //results passed by reference
+				}
+
+				$results[] = array('total_found' => count($result['vectors'])); //can't providle a real total for vector search
+				$time = sprintf('%.3f',$end-$start);
+				$results[] = array('query_info' => "Query '".preg_replace('/[^\w ]+/',' ',$_GET['q'])."' retrieved {$results['total_found']} of ? matches in $time sec.\n");
+			} else {
+				$results = array('error'=>'unable to lookup vector');
+			}
+
+		##########################
+
+		outputJSON($results);
+		exit;
+
+	}
+
+
+
 	if (!empty($CONF['sphinx_host'])) {
 
                 $q = trim(preg_replace('/[^\w]+/',' ',str_replace("'",'',$_REQUEST['q'])));
