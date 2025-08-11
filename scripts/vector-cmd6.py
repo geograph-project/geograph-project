@@ -11,14 +11,16 @@ import time # Import time for sleep
 import requests
 import json
 
-
-
 # --- Configuration ---
 PUT_BATCH_LIMIT = 500 # S3Vectors PutVectors API limit per call
 
+# Our local encoding API - todo, should be detected from CONF
+api_url = 'http://python-embed13.dev.svc.cluster.local:8000/text'
+
 # Initialize Bedrock and S3Vectors clients globally with the new region
-bedrock = boto3.client("bedrock-runtime", region_name="us-east-1") # Changed region to us-east-1
-s3vectors = boto3.client('s3vectors', region_name='us-east-1') # Changed region to us-east-1
+bedrock = boto3.client("bedrock-runtime", region_name="eu-west-1") # this is available in local region
+s3vectors = boto3.client('s3vectors', region_name='us-east-1') # Changed region to us-east-1 (not available in all regions yet)
+
 
 def get_embedding(text: str) -> list[float]:
     """
@@ -36,20 +38,20 @@ def get_embedding(text: str) -> list[float]:
     response_body = json.loads(response['body'].read())
     return response_body['embedding']
 
-def get_text_embeddings(input_text):
+def get_text_embeddings(input_text, model = "clip"):
     """
     Connects to an API to get text embeddings.
 
     Args:
         input_text (str): The text for which to get embeddings.
+        model (str): The model to use, eg clip (default), bgesmall
 
     Returns:
         dict or None: The JSON response from the API as a dictionary, or None if an error occurs.
     """
-    api_url = 'http://python-embed.dev.svc.cluster.local:8000/text'
 
     # The data to send in the request body as a JSON string
-    post_data = {'text': input_text}
+    post_data = {'text': input_text, 'model': model}
 
     try:
         # Make the POST request
@@ -108,8 +110,8 @@ def insert_data(vector_bucket_name: str, index_name: str, data_file: str, model:
             embedding = None
             if model == "titan":
                 embedding = get_embedding(text)
-            else: # default to clip
-                embedding = get_text_embeddings(text)
+            else:
+                embedding = get_text_embeddings(text, model)
 
             if embedding is None:
                 print(f"Skipping item ID {item_id} due to embedding generation failure.")
@@ -118,7 +120,7 @@ def insert_data(vector_bucket_name: str, index_name: str, data_file: str, model:
             metadata = {"id": item_id, "source_text": text}
             if genre:
                 metadata["genre"] = genre
-            
+
             vectors_for_s3.append({
                 "key": str(item_id), # Ensure key is string
                 "data": {"float32": embedding},
@@ -206,15 +208,14 @@ def insert_from_mysql(
             id_column_name = part.lower().split(' as id')[0].strip()
             break
 
-    batch_size = PUT_BATCH_LIMIT  # Align MySQL fetch size with S3 vectors limit
-    last_id = 0
-    total_inserted = 0
+    ##########################################
 
-    while True:
-        conn = None
-        cursor = None
+    def get_db_connection():
+        """
+        Nests a function to establish or re-establish a database connection.
+        """
+        nonlocal conn, cursor
         try:
-            print(f"\n--- Processing new batch from id > {last_id} ---")
             print(f"Connecting to MySQL database '{mysql_db}' on '{mysql_host}'...")
             conn = mysql.connector.connect(
                 host=mysql_host,
@@ -223,6 +224,31 @@ def insert_from_mysql(
                 database=mysql_db
             )
             cursor = conn.cursor(dictionary=True)
+            return conn, cursor
+        except mysql.connector.Error as err:
+            print(f"Error connecting to database: {err}")
+            return None, None
+
+    conn, cursor = get_db_connection()
+
+    ##########################################
+
+    batch_size = PUT_BATCH_LIMIT  # Align MySQL fetch size with S3 vectors limit
+    last_id = 0
+    total_inserted = 0
+
+    while True:
+        try:
+            print(f"\n--- Processing new batch from id > {last_id} with {model} ---")
+
+            # Check if connection is valid; reconnect if not.
+            if conn is None or not conn.is_connected():
+                print("Connection lost. Attempting to reconnect...")
+                conn, cursor = get_db_connection()
+                if conn is None:
+                    print("Reconnection failed. Waiting before retrying...")
+                    time.sleep(30)
+                    continue
 
             base_query = f"SELECT {mysql_select_cols} FROM {mysql_table}"
 
@@ -240,17 +266,25 @@ def insert_from_mysql(
                 print("No more rows to process from MySQL. Finishing.")
                 break
 
+            print("Beginning Processing...")
             all_vectors = []
+            counter = 0;
             for row in rows:
                 row_id = row.get("id")
                 if row_id is None:
                     print(f"Skipping row due to missing 'id' column: {row}")
                     continue
+                if not last_id:
+                    print(row)
+
                 last_id = row_id
 
                 try:
                     embedding_list = None
                     metadata = {}
+
+                    if counter % 100 == 0:
+                         print(f"Processing item {counter}...", end="\r", flush=True)
 
                     if generate_embeddings_mode:
                         input_text = row.get("input_text")
@@ -258,7 +292,7 @@ def insert_from_mysql(
                             print(f"Skipping row ID {row_id}: 'input_text' column is NULL.")
                             continue
 
-                        embedding = get_text_embeddings(input_text) if model == 'clip' else get_embedding(input_text)
+                        embedding = get_embedding(input_text) if model == 'titan' else get_text_embeddings(input_text, model)
                         if embedding is None:
                             print(f"Skipping row ID {row_id} due to embedding generation failure.")
                             continue
@@ -288,6 +322,8 @@ def insert_from_mysql(
                             "metadata": metadata
                         })
 
+                    counter += 1
+
                 except Exception as e:
                     print(f"Error processing row ID {row_id}: {e}")
                     continue
@@ -302,17 +338,30 @@ def insert_from_mysql(
                 total_inserted += len(all_vectors)
                 print(f"Successfully inserted batch. Total inserted so far: {total_inserted}")
 
+            # Check if the number of rows is less than the batch size
+            # This indicates that we've processed the final chunk of data.
+            if len(rows) < batch_size:
+                print(f"  .... Final batch processed with {len(rows)} rows. Breaking loop.")
+                break
+
         except mysql.connector.Error as err:
             print(f"MySQL Error: {err}. Retrying in 10 seconds...")
+            # Close the connection and set to None to force a reconnect on the next iteration.
+            if conn and conn.is_connected():
+                conn.close()
+            conn = None
+            cursor = None
             time.sleep(10)
             continue # Retry the batch
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
             break # Exit on other errors
-        finally:
-            if cursor: cursor.close()
-            if conn: conn.close()
-            print("MySQL connection for batch closed.")
+
+    # Final cleanup
+    if cursor:
+        cursor.close()
+    if conn:
+        conn.close()
 
     print(f"\nSuccessfully inserted a total of {total_inserted} vectors from MySQL into '{index_name}' in '{vector_bucket_name}'.")
 
@@ -420,8 +469,8 @@ def run_get_embedding(text: str, model: str):
         embedding = None
         if model == "titan":
             embedding = get_embedding(text)
-        else: # default to clip
-            embedding = get_text_embeddings(text)
+        else:
+            embedding = get_text_embeddings(text, model)
 
         if embedding is None:
             print("Error: Could not generate embedding for the text.", file=sys.stderr)
@@ -444,8 +493,8 @@ def run_query(vector_bucket_name: str, index_name: str, query_text: str, top_k: 
         query_embedding = None
         if model == "titan":
             query_embedding = get_embedding(query_text)
-        else: # default to clip
-            query_embedding = get_text_embeddings(query_text)
+        else:
+            query_embedding = get_text_embeddings(query_text, model)
 
         if query_embedding is None:
             print("Error: Could not generate embedding for the query.")
@@ -515,7 +564,7 @@ def main():
     parser.add_argument(
         "-m", "--model",
         default="clip",
-        choices=["clip", "titan"],
+        choices=["clip", "titan", "mpnet", "minilm", "bgesmall"],
         help="The embedding model to use: 'clip' (default) or 'titan'."
     )
 

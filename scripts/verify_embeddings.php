@@ -5,9 +5,19 @@
 
 $param = array();
 $param['limit'] = 10;
+$param['v2'] = false;
 
 require_once(dirname(__FILE__) . '/_scripts.inc.php');
 require_once('geograph/vectors.inc.php');
+
+###############################################
+
+if (!empty($param['v2'])) {
+	$CONF['embed_api'] = 'http://python-embed13.dev.svc.cluster.local:8000';
+}
+print "API: {$CONF['embed_api']}\n";
+
+###############################################
 
  $db = GeographDatabaseConnection();
 
@@ -30,6 +40,8 @@ $sql = "
 ";
 
 $result = $db->GetAll($sql);
+
+###############################################
 
 $total_checked = 0;
 $mismatches = 0;
@@ -89,3 +101,9 @@ echo "Total embeddings checked: $total_checked\n";
 echo "Matches: " . ($total_checked - $mismatches) . "\n";
 echo "Mismatches: $mismatches\n";
 
+if (!empty($stat)) {
+	print_r($stat);
+	foreach ($stat as $key => $data) {
+		printf('%40s %7d %.3f'."\n", $key, $data['count'], $data['total']/$data['count']);
+	}
+}

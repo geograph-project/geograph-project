@@ -31,73 +31,60 @@ require "./_scripts.inc.php";
 ##################################
 //
 
-if (!empty($param['insert']) && $param['index'] == 'label-clip') {
+if (!empty($param['insert']) && preg_match('/^(label|user|tag|doc|place|image)-(\w+)/',$param['index'], $m)) {
+	$source = $m[1];
+	$model = $m[2];
 
-	$cmd = array();
-	$cmd[] = "python3";
-	$cmd[] = "vector-cmd6.py"; //has batching
-	$cmd[] = "--index ".$param['index'];
-	$cmd[] = "insert-mysql";
-	$cmd[] = "-D".$CONF['db_db']; //need to send this, so matches $param['config'] (rest is auto-detected)
+	//for now, rather than encoding the injection process in PHP, use the python script!
+    $cmd = array();
+    $cmd[] = "python3";
+    $cmd[] = "vector-cmd6.py";
+    $cmd[] = "--index " . escapeshellarg($param['index']);
+    $cmd[] = "--model $model";
+    $cmd[] = "insert-mysql";
+    $cmd[] = "-D " . escapeshellarg($CONF['db_db']);
+
+    //these largely mimic how original sphinx index would of been built, so replicate the queries in sphinx.conf.d/
+    if ($source == 'label') {
 	$cmd[] = '-t"label_embedding"';
 	$cmd[] = '-s'.escapeshellarg("id, label, src, embeddings");
 	$cmd[] = '-w'.escapeshellarg("length(embeddings)=2048 AND id < 100"); //just in case!
-	print implode(' ',$cmd)."\n";
-	exit;
 
-} elseif (!empty($param['insert']) && $param['index'] == 'users-mpnet') {
-    $cmd = array();
-    $cmd[] = "python3";
-    $cmd[] = "vector-cmd6.py";
-    $cmd[] = "--index " . escapeshellarg($param['index']);
-    $cmd[] = "--model mpnet";
-    $cmd[] = "insert-mysql";
-    $cmd[] = "-D " . escapeshellarg($CONF['db_db']);
-    $cmd[] = "-t " . escapeshellarg("user");
-    $cmd[] = "-s " . escapeshellarg("user_id AS id, nickname AS input_text");
-    $cmd[] = "-w " . escapeshellarg("state = 'active' AND nickname IS NOT NULL AND nickname != ''");
-    print implode(' ', $cmd) . "\n";
-    exit;
-} elseif (!empty($param['insert']) && $param['index'] == 'tags-mpnet') {
-    $cmd = array();
-    $cmd[] = "python3";
-    $cmd[] = "vector-cmd6.py";
-    $cmd[] = "--index " . escapeshellarg($param['index']);
-    $cmd[] = "--model mpnet";
-    $cmd[] = "insert-mysql";
-    $cmd[] = "-D " . escapeshellarg($CONF['db_db']);
-    $cmd[] = "-t " . escapeshellarg("tag");
-    $cmd[] = "-s " . escapeshellarg("tag_id AS id, tag AS input_text");
-    $cmd[] = "-w " . escapeshellarg("status = 1 AND tag IS NOT NULL AND tag != ''");
-    print implode(' ', $cmd) . "\n";
-    exit;
-} elseif (!empty($param['insert']) && $param['index'] == 'docs-mpnet') {
-    $cmd = array();
-    $cmd[] = "python3";
-    $cmd[] = "vector-cmd6.py";
-    $cmd[] = "--index " . escapeshellarg($param['index']);
-    $cmd[] = "--model mpnet";
-    $cmd[] = "insert-mysql";
-    $cmd[] = "-D " . escapeshellarg($CONF['db_db']);
-    $cmd[] = "-t " . escapeshellarg("content");
-    $cmd[] = "-s " . escapeshellarg("content_id AS id, title AS input_text, url");
-    $cmd[] = "-w " . escapeshellarg("url IS NOT NULL AND title IS NOT NULL AND title != ''");
-    print implode(' ', $cmd) . "\n";
-    exit;
-} elseif (!empty($param['insert'])) { //&& index==image-clip - not chceked so can still insert into test-index too!
+    } elseif ($source == 'user') {
+	    $cmd[] = "-t " . escapeshellarg("user inner join user_stat using (user_id)");
+	    $cmd[] = "-s " . escapeshellarg("user_id AS id, CONCAT_WS(', ',realname, NULLIF(nickname,'')) AS input_text, realname, nickname, images");
+	    $cmd[] = "-w " . escapeshellarg("images > 0");
 
-	//for now, rather than encoding the injection process in PHP, use the python script!
-	$cmd = array();
-	$cmd[] = "python3";
-	$cmd[] = "vector-cmd6.py"; //has batching
-	$cmd[] = "--index ".$param['index'];
-	$cmd[] = "insert-mysql";
-	$cmd[] = "-D".$CONF['db_db']; //need to send this, so matches $param['config'] (rest is auto-detected)
-	$cmd[] = '-t"gridimage_embedding INNER JOIN gridimage_search USING (gridimage_id)"';
+    } elseif ($source == 'tag') {
+				//canonical=0 only picks offical prefixed tags
+	    $cmd[] = "-t " . escapeshellarg("tag_stat inner join tag using (tag_id)");
+	    $cmd[] = "-s " . escapeshellarg("tag_id as id, if(prefix in ('top','type','subject','bucket') and canonical =0,tag,tagtext) as input_text,".
+					    " tagtext, count as images, users, if(prefix in ('top','type','subject','bucket') and canonical=0,prefix,'tag') as src");
+	    $cmd[] = "-w " . escapeshellarg("tag_id = final_id and status = 1 and count>0");
+
+    } elseif ($source == 'doc') {
+
+	    $cmd[] = "-t " . escapeshellarg("content");
+	    $cmd[] = "-s " . escapeshellarg("content_id AS id, CONCAT_WS(', ',title,NULLIF(extract,'')) AS input_text, title, extract, url, source");
+	    $cmd[] = "-w " . escapeshellarg("type='document'");
+
+    } elseif ($source == 'place') {
+
+	    $cmd[] = "-t " . escapeshellarg("sphinx_placenames");
+	    $cmd[] = "-s " . escapeshellarg("placename_id as id, CONCAT_WS(', ', Place,NULLIF(County,'Unknown'),NULLIF(Country,'Unknown'),postcode) as input_text, Place,County,Country, km_ref, postcode, images");
+	    //$cmd[] = "-w " . escapeshellarg("placename_id > 100000");
+
+
+    } elseif ($source == 'image') {
+        $cmd[] = '-t"gridimage_embedding USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)"';
+               //forcing the PRIMARY, is because the 'tmp_emdedding_stat' sharding is designed to work work on the primary
+               //on its own the optimizer chooses gridimage index, because it ends up using ORDER BY id for its own batching (500 a a time, so it loops in id order)
+               //the double level of sharding, picks the wrong index!
 
 	//the ROUND() is just to ensure it numeric, "vector-cmd4.py" can already deal with the DECIMAL from wgs84_lat etc
 	$cmd[] = '-s'.escapeshellarg("gridimage_id AS id, user_id, grid_reference as gridref, round(replace(imagetaken,'-','')) AS taken, wgs84_lat as slat, wgs84_long as slng, embeddings");
 
+	//actully for images we have a special way of doing it incrementally, because data is still being compliled!
 	if ($param['insert'] > 1) {
 		$db = GeographDatabaseConnection(false);
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -139,6 +126,8 @@ if (!empty($param['insert']) && $param['index'] == 'label-clip') {
 	}
 
 	$cmd[] = '-w'.escapeshellarg("type='image' AND seq_id < 100");
+    }
+
 	print implode(' ',$cmd)."\n";
 	exit;
 }
