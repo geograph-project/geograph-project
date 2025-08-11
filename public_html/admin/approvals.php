@@ -192,6 +192,11 @@ if (!empty($_GET['moderation_id'])) {
 	}
 }
 
+if (!empty($_GET['limit'])) {
+	$size = min(1000, intval($_GET['limit']));
+}
+
+
 ##############################
 
 $links = array(
