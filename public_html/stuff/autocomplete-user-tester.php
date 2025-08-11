@@ -22,8 +22,6 @@
  */
 
 require_once('geograph/global.inc.php');
-
-
 init_session();
 
 
@@ -36,13 +34,10 @@ $smarty = new GeographPage;
 ?>
 <h2>Testing Contributor Autocomplete</h2>
 
-<p>Note: Only use this page for testing searching for <b>Contributor Names</b>.</p>
-
 <form method=get onsubmit="return false" style="background-color:#eee;padding:10px;font-size:1.4em">
-<input name="model" type=radio value="Keystone" id="mKeystone" checked><label for="mKeystone">Keystone</label>
+<input name="model" type=radio value="Keystone" id="mKeystone"><label for="mKeystone">Keystone</label>
 <input name="model" type=radio value="Nexus" id="mNexus"><label for="mNexus">Nexus</label>
-<input name="model" type=radio value="Echo" id="mEcho"><label for="mEcho">Echo</label>
-<input name="model" type=radio value="Cipher" id="mCipher"><label for="mCipher">Cipher</label>
+<input name="model" type=radio value="Echo" id="mEcho" checked><label for="mEcho">Echo</label>
 <input name="model" type=radio value="Sieve" id="mSieve"><label for="mSieve">Sieve</label>
 <br>
 <input type="search" name="loc" value="" placeholder="(enter contributor name)" id="loc" size=50 style="font-size:1.1em"><br> <span id="placeMessage"></span>
@@ -84,20 +79,17 @@ $(function () {
                         }
 			var model = $('input[name=model]:checked').val();
                         var url = "/finder/contributors.json.php?q="+encodeURIComponent(request.term);
-/*
+
 			if (model == 'Nexus') {
-	                        var url = "https://development.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&vector=1";
+	                        url += "&vector=1";
 
 			} else if (model == 'Keystone') {
-	                        var url = "https://development.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&vector=1&rerank=1";
+	                        url += "&vector=1&rerank=1";
 
-			} else if (model == 'Cipher') {
-	                        var url = "https://api.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"";
-
-			} else if (model == 'Sieve') {
-	                        var url = "https://api.geograph.org.uk/finder/places.json.php?q="+encodeURIComponent(request.term)+"&legacy=1";
+			} else if (model == 'Echo') {
+	                        url += "&new=1";
 			}
-*/
+
                         $.ajax({
                                 url: url,
                                 dataType: 'jsonp',
@@ -114,7 +106,8 @@ $(function () {
                                         }
                                         var results = [];
                                         $.each(data.items, function(i,item){
-						results.push({value:item.nickname, label:item.nickname, title:item.realname});
+						results.push({value:item.user_id+' '+item.realname, label:item.realname,
+							 title:(item.nickname || '')+' ['+item.images+' images] id#'+item.user_id});
                                         });
 					if (data.query_info)
 	                                        results.push({value:'',label:'',title:data.query_info});
@@ -142,13 +135,14 @@ $(function () {
 
 });
 
-
-
-
-
-
-
 </script>
+
+<style>
+.ui-menu-item b {
+	background-color:#e9e9c2;
+}
+</style>
+
 <?
 
 	$smarty->display('_std_end.tpl');

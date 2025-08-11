@@ -25,26 +25,99 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $q = isset($_GET['q']) ? trim($_GET['q']) : '';
-$callback = isset($_GET['callback']) ? $_GET['callback'] : 'serveCallback';
 
 if (empty($q)) {
     header('Content-Type: application/javascript');
-    echo $callback . '({"error": "Query parameter is missing."})';
+    $data = array("error" => "Query parameter is missing.");
+	outputJSON($data);
     exit;
+}
+
+
+if (!empty($_GET['vector'])) {
+	$results = array();
+
+		//dont use mode to signify vector, because vector itselt supports different modes!
+
+		require_once("geograph/vectors.inc.php");
+
+        	if (empty($filesystem))
+                	$filesystem = new FileSystem(); //sets up S3 configuation automagically - needed for s3Vectors!
+
+		##########################
+
+		$vector = getTextEmbedding($_GET['q'], 'mpnet');
+
+			if (!empty($vector) && count($vector) == 768) { //for mpnet!
+
+				$limit = min(intval($_GET['limit'] ?? 20), 30);
+
+			        $queryPayload = [
+			            'vectorBucketName' => $CONF['s3_vector_bucket'],
+			            'indexName' => 'user-mpnet', // Hardcoded for now
+			            'queryVector' => ['float32' => $vector],
+			            'topK' => $limit,
+			            'returnDistance' => !empty($_GET['rerank']),
+			            'returnMetadata' => true,
+			        ];
+
+				$start  = microtime(true);
+			        $result = queryS3Vectors($queryPayload);
+				$end    = microtime(true);
+
+				foreach ($result['vectors'] as $idx => $r) {
+					$row = $r['metadata'];
+					$row['user_id'] = intval($r['key']);
+					if (!empty($r['distance']))
+                                        	$row['distance'] = floatval($r['distance']);
+
+					$results['items'][] = $row;
+				}
+
+				if (!empty($_GET['rerank'])) {
+					rerank_items($results['items'], 'realname', $_GET['q']); //results passed by reference
+				}
+
+				$results['total_found'] = count($result['vectors']); //can't providle a real total for vector search
+				$time = sprintf('%.3f',$end-$start);
+				$results['query_info'] = "Query '".preg_replace('/[^\w ]+/',' ',$_GET['q'])."' retrieved {$results['total_found']} of ? matches in $time sec.\n";
+			} else {
+				$results = array('error'=>'unable to lookup vector');
+			}
+
+		##########################
+
+	outputJSON($results);
+	exit;
+
 }
 
 $sphinx = new sphinxwrapper($q);
 $sphinx->pageSize = 15;
 $sphinx->processQuery();
+if (!empty($_GET['new'])) {
+	$client = $sphinx->_getClient();
+	$client->SetRankingMode(SPH_RANK_SPH04); // this should be enough for simple queries. shouldnt need to manipulate the query like do for tags
+}
 $ids = $sphinx->returnIds(1, 'user');
-
 $results = array();
-if (!empty($ids)) {
+
+if (!empty($ids) && !empty($sphinx->res['matches'])) { //should be able extract the metedata from attributes!
+
+	foreach($sphinx->res['matches'] as $id => $result) {
+            $results[] = array(
+                'user_id' => $id,
+                'nickname' => $result['attrs']['nickname'],
+                'realname' => $result['attrs']['realname'],
+                'images' => $result['attrs']['images'],
+            );
+	}
+
+} elseif (!empty($ids)) {
     $where = "user_id IN(" . join(",", $ids) . ")";
     $db = GeographDatabaseConnection(true);
     $limit = 25;
 
-    $prev_fetch_mode = $ADODB_FETCH_MODE;
     $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
     $rows = $db->getAssoc("
         SELECT user.user_id, nickname, realname, images
@@ -52,7 +125,6 @@ if (!empty($ids)) {
         LEFT JOIN user_stat USING (user_id)
         WHERE $where
         LIMIT $limit");
-    $ADODB_FETCH_MODE = $prev_fetch_mode;
 
     foreach ($ids as $id) {
         if (isset($rows[$id])) {
@@ -72,5 +144,5 @@ $output = array(
     'copyright' => 'Geograph Project & contributors',
 );
 
-header('Content-Type: application/javascript');
-echo $callback . '(' . json_encode($output) . ');';
+	outputJSON($output);
+
