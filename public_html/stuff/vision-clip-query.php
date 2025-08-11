@@ -163,14 +163,31 @@ if (empty($_GET['inner'])) {
 		history.pushState({query:query}, '', "?"+query);
 	}
 	var timer=null;
+        let lastSearchQuery = <? echo json_encode($_GET['query']??''); ?>;
+
 	$(function() {
-		$('#query').on('keyup',function() {
+		$('#query').on('keypress',function(event) {
+
+			if (event.keyCode === 13) {
+				// Prevent the default form submission action
+				event.preventDefault();
+				return; //should have already ititiated a search before enter pressed! (skips resetting timer)
+			}
+
+			//prevent needless searches when just add a space (the new search will come when actually add a word!
+			const trimmedQuery = $('#query').val().trim();
+			if (trimmedQuery === lastSearchQuery) {
+				return;
+			}
+
 			if(timer)
 				clearTimeout(timer);
 			timer = setTimeout(function() {
 				quickFetch();
+				lastSearchQuery = trimmedQuery;
 				timer = null;
 			},500);
+
 		}).on('drop',function(event) {
 			var droppedData = event.originalEvent.dataTransfer.getData('text/plain');
 			//intercept photo URLs, and transform it into our ID syntax
@@ -222,6 +239,8 @@ function restoreForm(queryString) {
         if (input.length) {
             // For text/number/search inputs
             input.val(value);
+            if (name == "query")
+                lastSearchQuery = value;
         }
     });
 }
