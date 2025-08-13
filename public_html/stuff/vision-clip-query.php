@@ -110,6 +110,13 @@ if (empty($_GET['inner'])) {
 	$smarty->assign('page_title','Concept Search Demo');
 	$smarty->display('_std_begin.tpl',$_SERVER['PHP_SELF']);
 
+
+	if (!empty($db)) {
+		$count = $db->getOne("select sum(count) from tmp_emdedding_stat where done is not null");
+		$count = formatApproximateNumber($count);
+	} else {
+		$count = "1.6 million";
+	}
 	?>
 
         <h2>Concept Search Demo (CLIP-based Similarity Search)</h2>
@@ -117,8 +124,8 @@ if (empty($_GET['inner'])) {
 	<div style="max-width:900px;font-size:0.9em">
 	<? if (rand(0,2) > 1) { ?>
 
-		<p>This demo draws from a sample of <b>about 1.6 million images</b>. While initial results are often visually strong, their 
-		quality tends to decline quickly as the system displays 30 images without further relevance filtering. This isn't 
+		<p>This demo draws from a sample of <b><? echo $count; ?> images</b>. While initial results are often visually strong, their 
+		quality can decline quickly as the system displays 30 images without further relevance filtering. This isn't 
 		a named entity search. You can't search for specific proper names or landmarks like 'Giant's Causeway' or 'Harlech 
 		Castle', or even places like 'Newcastle'. Instead, look for a general visual term like 'basalt columns' or 
 		'coastal cliffs', or just 'castle' then use the location filter to center your search on a specific place.
@@ -135,8 +142,8 @@ if (empty($_GET['inner'])) {
 
 	 <? } else { ?>
 
-		<p> This demo uses a sample of about <b>1.6 million images</b>. While initial results are often visually similar, the 
-		quality tends to decline quickly as it displays 30 images without further relevance filtering. This is a visual 
+		<p>This demo uses a sample of about <b><? echo $count; ?> images</b>. While initial results are often visually similar, the 
+		quality can decline quickly as it displays 30 images without further relevance filtering. This is a visual 
 		similarity search, so it cannot search for specific names or places like 'Harlech Castle' or 'Newcastle'. Instead, 
 		search for a general term like 'castle' and then use the location filter to center your search around Harlech 
 		using the dedicated Location box.
@@ -484,4 +491,34 @@ if (empty($_GET['inner'])) {
 	print "</div>"; //#results
 
 	$smarty->display('_std_end.tpl');
+}
+
+
+
+
+
+function formatApproximateNumber($number) {
+    if (!is_numeric($number)) {
+        return $number;
+    }
+
+    $units = ['', 'K', 'M', 'B', 'T'];
+    $unitIndex = 0;
+
+    // Determine the appropriate unit
+    while ($number >= 1000 && $unitIndex < count($units) - 1) {
+        $number /= 1000;
+        $unitIndex++;
+    }
+
+    // Round the number to one decimal place
+    $formattedNumber = round($number, 1);
+
+    // If the number is a whole number (e.g., 2.0), remove the .0
+    if ($formattedNumber == round($formattedNumber)) {
+        $formattedNumber = round($formattedNumber);
+    }
+
+    // Construct the final string
+    return 'about ' . $formattedNumber . $units[$unitIndex];
 }
