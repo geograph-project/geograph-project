@@ -100,7 +100,7 @@ svg.svgFilter {
     background-color: #eee;
     padding: 5px;
     border: 1px solid #ccc;
-    border-bottom: none;
+    --border-bottom: none;
 }
 .tabHolder a.tabSelected {
     background-color: #e4e4fc;
@@ -449,12 +449,6 @@ svg.svgFilter {
 
 		opacityButton.addTo(map);
 
-        L.Control.fileLayerLoad({
-            layerOptions: {style: {color:'red'}},
-            addToMap: true,
-            fileSizeLimit: 1024,
-            formats: ['.geojson','.kml','.gpx']
-        }).addTo(map);
 
 	//needs calling AFTER updating overlayMaps
         addOurControls(map);
@@ -538,12 +532,12 @@ svg.svgFilter {
 
 <h3>Quick Mode</h3>
 <div class="tabHolder">
-	<a class="tab{if !$filter}Selected{/if}" data-layer="Coverage - Standard">Coverage</a><br>
+	<a class="tab{if !$filter}Selected{/if}" data-layer="Coverage - Standard">Coverage</a> 
 	{if $stats && $stats.images}
-	<a class="tab{if $filter}Selected{/if}" data-layer="(Personalize Coverage)">Personalized</a><br>
+	<a class="tab{if $filter}Selected{/if}" data-layer="(Personalize Coverage)">Personalized</a> 
 	{/if}
-	<a class="tab" data-layer="Photo Subjects">Subjects</a><br>
-	<a class="tab" data-layer="Photo Viewpoints">Viewpoints</a><br>
+	<a class="tab" data-layer="Photo Subjects">Subjects</a> 
+	<a class="tab" data-layer="Photo Viewpoints">Viewpoints</a> 
 	<a class="tab" data-layer="Photo Thumbnails">Thumbnails</a>
 </div>
 
