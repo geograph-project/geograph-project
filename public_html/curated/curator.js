@@ -185,7 +185,7 @@ $(document).ready(function() {
         }
     }
 
-    // MODIFIED: Function to render images in a given container
+    // Function to render images in a given container
     function renderImages(containerId, images) {
         const $container = $(`#${containerId}`);
         if (containerId === 'searchResults' || images.length > 0) {
@@ -196,10 +196,10 @@ $(document).ready(function() {
 
         images.forEach(image => {
             // NEW: Skip rendering if already selected OR rejected
-            if (selectedImageIds.has(String(image.id))) {
+            if (containerId === 'searchResults' && selectedImageIds.has(String(image.id))) {
                 return; // Skip rendering
             }
-            if (rejectedImageIds.has(String(image.id))) {
+            if (containerId === 'selectedImages' && rejectedImageIds.has(String(image.id))) {
                 return; // Skip rendering
             }
 
@@ -220,7 +220,7 @@ $(document).ready(function() {
                 renderedCount++;
             } else if (containerId === 'searchResults') {
                 const $item = $(imageHtml);
-                $item.prepend('<button class="reject-btn" title="permanently hide this image for this tag">X</button>'); // NEW: Add reject button
+                $item.prepend('<button class="reject-btn" title="permanently hide this image for this tag">X</button>');
                 $container.append($item);
                 renderedCount++;
             }

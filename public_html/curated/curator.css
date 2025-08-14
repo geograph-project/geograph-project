@@ -235,16 +235,21 @@ body.dark-theme .image-item {
     transition: opacity 0.2s, background-color 0.2s;
     z-index: 2; /* Ensure it's above the image */
     line-height: 1; /* For better vertical centering of X */
-    display: flex; /* Use flex to perfectly center the 'X' */
+    --display: flex; /* Use flex to perfectly center the 'X' */
     align-items: center;
     justify-content: center;
     width: 20px; /* Fixed width/height for a small button */
     height: 20px;
+display:none;
 }
 
 .image-item .reject-btn:hover {
     opacity: 1; /* Fully opaque on hover */
     background-color: #c82333; /* Darker red on hover */
+}
+
+.image-item:hover .reject-btn {
+    display:flex;
 }
 
 
