@@ -100,7 +100,7 @@
     </div>
 
     <!-- Hidden file input on the parent page -->
-    <input type="file" id="parent-file-input" class="hidden">
+    <input type="file" id="parent-file-input" class="hidden" accept="image/jpeg">
 
     <script>
         // Get references to the iframe and all navigation buttons
