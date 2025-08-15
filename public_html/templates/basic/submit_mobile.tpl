@@ -1063,7 +1063,43 @@ $(function() {
 	        reader.readAsDataURL(file);
             }
         }
+	//trigger automatically
+	if (window.location.search.length && window.location.search.match(/auto/)) {
+		document.getElementById("jpeg_exif").click();
+	}
 });
+
+
+            // Listen for messages from the parent page
+            window.addEventListener('message', (event) => {
+                // Ensure the message is from a trusted source (optional but good practice)
+		if (event.origin !== window.location.protocol + '//' + window.location.hostname) return;
+
+                // Check if the message contains image data
+                if (event.data && event.data.type === 'image_data') {
+			gotDataUrl(event.data.data);
+
+					//todo, this should be refactored into gotDataUrl!
+					var form = document.forms['theForm'];
+                                        if (!document.getElementById('jpeg_data')) { //might already exist, if was a really large downsized image!
+                                                let element = document.createElement("input");
+                                                element.setAttribute("id", "jpeg_data");
+                                                element.setAttribute("type", "hidden");
+                                                element.setAttribute("name", "jpeg_data");
+                                                //element.setAttribute("value", dataUrl);
+
+                                                var ele = form.elements['jpeg_exif'];
+                                                ele.after(element); //add the new input inplace of the original element.
+                                                ele.remove(); //and remove the <input type=file> (we now submitting data url!)
+                                        }
+
+                                        //seems to be more stable setting the value directly rather than on the in memory version!
+                                        document.getElementById('jpeg_data').value = event.data.data;
+
+
+                }
+            });
+
 
 /******************************************************************************
  callbacks */
