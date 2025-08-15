@@ -1079,6 +1079,10 @@ $(function() {
                 if (event.data && event.data.type === 'image_data') {
 			gotDataUrl(event.data.data);
 
+			//tofix, would need to call this, not sure if actully accepts a URL
+			//apart from geo, key point would be to detect orientation!
+			//EXIF.getData(event.data.data, gotExif)
+
 					//todo, this should be refactored into gotDataUrl!
 					var form = document.forms['theForm'];
                                         if (!document.getElementById('jpeg_data')) { //might already exist, if was a really large downsized image!
@@ -1095,7 +1099,6 @@ $(function() {
 
                                         //seems to be more stable setting the value directly rather than on the in memory version!
                                         document.getElementById('jpeg_data').value = event.data.data;
-
 
                 }
             });
