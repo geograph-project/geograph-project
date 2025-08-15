@@ -31,7 +31,10 @@ pageMustBeHTTPS();
 
 dieIfReadOnly();
 
-if (!empty($_POST['choose'])) {
+if (!empty($_GET['auto'])) {
+	$_POST['choose'] = 'mobile'; //force to mobile, without changing default
+
+} elseif (!empty($_POST['choose'])) {
 	if (!empty($_POST['save'])) {
 		$USER->setPreference('submit.mobile',$_POST['choose'],true);
 	}
