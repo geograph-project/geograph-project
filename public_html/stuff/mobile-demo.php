@@ -13,15 +13,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            min-height: 100dvh;
             font-family: 'Georgia', sans-serif;
         }
 
         .mobile-container {
             width: 100%;
             max-width: 390px; /* Standard mobile width */
-            height: 844px; /* Standard mobile height */
-		max-height: 100dvh;
+            height: 844px; /* Fixed height for desktop preview */
+            max-height: 100dvh; /* Dynamic viewport height to account for address bars */
             background-color: #fff;
             border-radius: 2.5rem; /* Rounded corners to look like a phone */
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* Large shadow */
@@ -38,7 +38,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+<body class="bg-gray-100 flex items-center justify-center">
     <div class="mobile-container">
 
         <!-- Header Bar -->
