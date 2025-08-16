@@ -1,0 +1,28 @@
+-- This schema defines the 'map_origins' table.
+-- This table stores configuration data related to different map coordinate systems
+-- (e.g., for Great Britain, Ireland) used in the project. It abstracts
+-- hardcoded configuration from the application logic into the database.
+
+-- Drop the table if it already exists, to allow for clean re-creation.
+DROP TABLE IF EXISTS `map_origins`;
+
+-- Create the table structure.
+CREATE TABLE `map_origins` (
+  `reference_index` tinyint(4) NOT NULL,
+  `origin_x` int(11) NOT NULL,
+  `origin_y` int(11) NOT NULL,
+  `letterlength` tinyint(4) NOT NULL,
+  PRIMARY KEY (`reference_index`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Populate the table with the known map origin data.
+-- The data comes from the configuration previously found in the
+-- 'RebuildAHectadUserStat.class.php' script.
+--
+-- reference_index: The identifier for the coordinate system.
+-- origin_x, origin_y: The coordinate offset for calculating hectads.
+-- letterlength: A value used in string manipulation to derive hectad names from grid references.
+--
+INSERT INTO `map_origins` (`reference_index`, `origin_x`, `origin_y`, `letterlength`) VALUES
+(1, 206, 0, 2),
+(2, 10, 149, 1);
