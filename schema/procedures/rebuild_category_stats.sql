@@ -1,3 +1,8 @@
+-- @@TEST_METADATA@@
+-- TARGET_TABLE: category_stat
+-- PRIMARY_KEY: category_id
+-- @@END_TEST_METADATA@@
+--
 -- This stored procedure rebuilds the 'category_stat' table from scratch.
 -- This table contains summary statistics for each 'imageclass'.
 -- It is designed to be run daily as a scheduled event.

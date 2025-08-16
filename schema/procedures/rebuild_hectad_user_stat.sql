@@ -1,3 +1,8 @@
+-- @@TEST_METADATA@@
+-- TARGET_TABLE: hectad_user_stat
+-- PRIMARY_KEY: hectad,user_id
+-- @@END_TEST_METADATA@@
+--
 -- This stored procedure rebuilds the 'hectad_user_stat' table from scratch.
 -- This table contains summary statistics of each user's activity within each
 -- "hectad" (a 10km x 10km grid area).

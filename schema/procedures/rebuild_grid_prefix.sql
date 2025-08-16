@@ -1,3 +1,8 @@
+-- @@TEST_METADATA@@
+-- TARGET_TABLE: gridprefix
+-- PRIMARY_KEY: prefix
+-- @@END_TEST_METADATA@@
+--
 -- This stored procedure recalculates and updates summary statistics for each grid prefix.
 -- It is intended to be run daily as a scheduled event, replacing the old PHP handler.
 --
