@@ -93,6 +93,7 @@ function getTextEmbeddingFromQuery(string $query): array
     }
 
 //copied from _getLabelVectorValueList
+// NOTE only supports clip, and intended for use with known labels
 function getTextEmbeddingWrapper($label) {
 	global $db;
 	if (empty($db))
@@ -226,9 +227,11 @@ function getLabelVectors(array $labels, $is_id = null): array
     return $results;
 }
 
+##################################################
+
 //copied from _getImageVectorValueList - really should be here (not specific to imagelist)
 // in general should be used in preference to getImageEmbedding, as that wont use gridimage_embedding table!
-function getImageEmbeddingById($id, $type = 'image') {
+function getImageEmbeddingById($id, $type = 'image') { //todo, $model = 'clip'
 	global $db;
 	if (empty($db))
 		$db = GeographDatabaseConnection(false);
@@ -239,7 +242,10 @@ function getImageEmbeddingById($id, $type = 'image') {
 		//todo call getImageEmbedding!
 		$image=new GridImage($id, true);
 		if ($image->isValid() || $image->moderation_status != 'rejected') {
-			$vector = getImageEmbedding($image);
+			if ($type == 'image')
+				$vector = getImageEmbedding($image);
+			else
+				$vector = getTextEmbedding($image->title, 'clip'); //default model anyway, but make sure, getImageEmbeddingById only supports clip anyway - as what gridimage_embedding will contain.
 			if ($vector) {
 				//todo, save to gridimage_embedding!
 				//remember to check $db->readonly
@@ -426,6 +432,8 @@ if (empty($ch)) {
     return $vector;
 }
 
+##################################################
+
 /**
  * Fetches K-Nearest Neighbors (KNN) results from a Manticore Search index.
  * Results are formatted to mimic the S3Vectors API response structure.
@@ -492,10 +500,20 @@ function getManticoreKNNResults(array $vector, int $limit = 30, string $index_na
 
 function getKNNResults(array $vector, int $limit = 30, string $index_name = 'label_embedding', $src = false): array {
     global $CONF;
-    if ($index_name != 'label_embedding') //lots still hardcoded for looking up labels so far. (looking up images in generally handled by imagelist class instead!)
-	die("only label_embedding supported so far");
 
-    if (!empty($CONF['s3_vector_bucket'])) {
+	//convert manticore index to s3index
+	$mapped = array( // Hardcoded for now
+		'image_embedding' => 'image-clip', //although s3 idnex is 'image' only! (not the title of the image)
+		'label_embedding' => 'label-clip',
+		'label_embedding_mpnet' => 'label-mpnet',
+		'tags_embedding' => 'tags-clip',
+		'tags_embedding_mpnet' => 'tags-mpnet',
+	);
+
+    if (empty($mapped[$index_name]))
+	die("unknown index");
+
+    if (!empty($CONF['s3_vector_bucket'])) { //or maybe chould checked $mapped
 	global $filesystem;
 
 	if (empty($filesystem))
@@ -503,7 +521,7 @@ function getKNNResults(array $vector, int $limit = 30, string $index_name = 'lab
 
         $queryPayload = [
             'vectorBucketName' => $CONF['s3_vector_bucket'],
-            'indexName' => 'label-clip', // Hardcoded for now
+            'indexName' => $mapped[$index_name],
             'queryVector' => ['float32' => $vector],
             'topK' => $limit,
             'returnDistance' => true,
@@ -512,6 +530,7 @@ function getKNNResults(array $vector, int $limit = 30, string $index_name = 'lab
         if (!empty($src))
 		$queryPayload['filter'] = array('src'=>$src);
         return queryS3Vectors($queryPayload);
+
     } else {
 	$where = array();
 	if (!empty($src) && ctype_alpha($src)) {
@@ -522,6 +541,7 @@ function getKNNResults(array $vector, int $limit = 30, string $index_name = 'lab
     }
 }
 
+#######################################
 
 /**
  * Retrieves zero-shot labels for a given image.
@@ -534,6 +554,8 @@ function getKNNResults(array $vector, int $limit = 30, string $index_name = 'lab
  * Format: Array('http_code' => int, 'vectors' => Array(0 => Array('key' => ..., 'metadata' => ..., 'distance' => ...), ...))
  * Returns a default empty structure on failure.
  */
+
+//NOTE! this is really just a test function, should probably use getZeroShotTags now.
 function getZeroShotLabels($image, $limit = 30, $src = false) {
     global $CONF, $memcache;
 
@@ -564,6 +586,72 @@ function getZeroShotLabels($image, $limit = 30, $src = false) {
     // 3. The $results variable should now hold the data in the desired S3Vector-like format.
     return $results;
 }
+
+/**
+ * Generates a list of zero-shot tags for an image using a specified embedding model.
+ *
+ * This function takes an image and generates a list of relevant tags based on a zero-shot model.
+ * It allows for customization of the input source, the model used, and the namespace for the tags.
+ *
+ * @param object $image the image to analyze.
+ * @param int $limit The maximum number of tags to return. Defaults to 10.
+ * @param string $input The source of the vector ('image', 'title', or 'comment'). Determines the
+ * input context for the embedding model. Defaults to 'title'.
+ * @param string $model The embedding model to use for generating the tags. Defaults to 'clip'.
+ * @param string $prefix The tag namespace or prefix to be used for the returned tags. Defaults to 'top'.
+ * @return array A list of zero-shot tags, formatted as S3Vector resultset (even if not using s3vector index).
+ */
+function getZeroShotTags($image, $limit = 10, $input = 'title', $model = 'clip', $prefix = 'top') {
+
+	//clipthelandscape uses precomputed lables
+	if ($model == 'clipthelandscape') {
+		if ($input != 'image')
+			die("CLIPthelandscape can currently computed for image as input to the model. Text is possible but not implemented");
+
+		if ($prefix != 'top')
+			die("CLIPthelandscape can only predict top/context tags");
+
+		//... note using 'clip' is deliberate - the 'CLIP' processor that is ALSO using clipthelandscape to create labels.
+		$rows = $db->getAll("SELECT label,score FROM gridimage_label WHERE model='clip' AND gridimage_id = {$image->gridimage_id}");
+
+		$results = array('vectors' => array());
+
+		foreach ($rows as $idx => $row) {
+                    $results['vectors'][] = [
+                        'key' => (string)$idx, //fake id!
+                        'metadata' => [
+                            'label' => (string)$row['label'],
+                        ],
+                        'distance' => 1-$row['score'], //score is inverse of distance
+                    ];
+		}
+
+	} elseif ($model == 'clip') {
+		if (!in_array($input, array('image', 'title'))) //technically COULD use comment/description, but unlikly to work!
+			die("input not supported for CLIP");
+
+		$vector = getImageEmbeddingById($image->gridimage_id, $input); //supprts both image and title
+
+			//src works as top/subject/prefix anyway!
+		$results = getKNNResults($vector, $limit, 'tags_embedding', $prefix);
+
+	} elseif ($model == 'mpnet') {
+		if (!in_array($input, array('title', 'comment')))
+			die("input not supported for mpnet");
+
+			//not using using getTextEmbeddingWrapper as for clip only
+		$vector = getTextEmbedding($image->{$input}, $model); // can do other models
+
+			//getKNNResults can now do other models, automatically knows what s3vectors index to use!
+		$results = getKNNResults($vector, $limit, 'tags_embedding_mpnet', $prefix);
+	} else {
+		die("unknown model");
+	}
+
+	return $results;
+}
+
+###########################################
 
 /**
  * Dumps a summary of vector search results for debugging purposes.
