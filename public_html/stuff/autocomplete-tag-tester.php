@@ -46,6 +46,7 @@ $smarty = new GeographPage;
 <input name="filter" type=radio value="top" id="fContext"><label for="fContext">Context</label>
 <input name="filter" type=radio value="subject" id="fSubject" checked><label for="fSubject">Subject</label>
 <input name="filter" type=radio value="tag" id="fFreeform"><label for="fFreeform">Freeform Tags</label>
+<input name="filter" type=radio value="all" id="fAll"><label for="fAll">All Combined</label>
 </fieldset>
 <br>
 <input type="search" name="loc" value="" placeholder="(enter tag)" id="loc" size=50 style="font-size:1.1em"><br> <span id="placeMessage"></span>
@@ -96,8 +97,9 @@ $(function () {
 				}
 			}
 
-			if (filter) {
-				url += "&mode="+filter; // mode=tag will helpfully be ignored by non-vector search
+			if (filter) { //omitting filter, would give different results, as the defaults are currently different!
+				url += "&mode="+filter; // mode=tag will helpfully be ignored by non-vector search while still excluding top/subject!
+				//need mode=all to specifically get all on original (default 'ranked' excludes subject), but also helpfully ignored with vector!
 			}
 
                         $.ajax({
