@@ -25,9 +25,8 @@
     </div>
 
     <div class="interestBox">
-        <span id="votediv{$tagInfo.tag_id}">Vote for "<b>{$tagInfo.tag|escape}</b>": {votestars type='tagzeroclip' id=$tagInfo.tag_id}</span>
+        <span id="votediv{$tagInfo.tag_id}">Vote for "<b>{$tagInfo.tag|escape}</b>": {votestars type='tagzeroclip' id=$tagInfo.tag_id nohelp=1} - {$notes}</span>
         <a href="?" style="margin-left: 20px; padding: 5px 10px; background-color: #ccc; text-decoration: none; border: 1px solid #ccc; border-radius: 5px;">Next</a>
-	- {$notes}
     </div>
 
     <div id='thumbnails'> Loading - please wait! </div>
@@ -38,8 +37,14 @@
     $(function() {
         $('#thumbnails').load('/stuff/vision-clip-query.php?inner=1&query={/literal}{$tagInfo.tag|rawurlencode}{literal}');
     });
-    {/literal}
     </script>
+	<style>
+		div.interestBox img {
+			padding-left:4px;
+			padding-right:4px;
+		}
+	</style>
+    {/literal}
 {else}
     <p>Could not find a tag to rate.</p>
 {/if}
