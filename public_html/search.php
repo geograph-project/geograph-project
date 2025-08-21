@@ -598,9 +598,39 @@ if (isset($_GET['fav']) && $i) {
 	if (!empty($_GET['searchtext']) && is_array($_GET['searchtext'])) {
 		$_GET['searchtext'] = implode(' ',$_GET['searchtext']);
 	}
+	if (!empty($_GET['q2'])) {
+		$_GET['searchtext'] = implode(' ',array_filter(array($_GET['searchtext']??'',$_GET['q2'])));
+	}
 	if (!empty($_GET['gridsquare']) && isset($_GET['eastings']) && isset($_GET['centin'])) {
 		$_GET['gridref'] = sprintf("%s%02d%1d%02d%1d",$_GET['gridsquare'], $_GET['eastings'], $_GET['centie'], $_GET['northings'],$_GET['centin']);
 		unset($_GET['gridsquare']);
+	}
+	if (!empty($_GET['displayclass']) && preg_match('/^browser/',$_GET['displayclass'])) {
+		//TODO! - its the snippet page, that has started using a dedicated display class!
+		$bits = array('');
+		if (!empty($_GET['searchtext'])) {
+			$_GET['searchtext'] = str_replace('snippet_title:','snippets:',$_GET['searchtext']); //todo, COULD convert this to a filter
+			$_GET['searchtext'] = str_replace('snippet_id:','snippetId:',$_GET['searchtext']); //todo, this DOES need converting to a filter!
+
+			$bits[] = "q=".urlencode($_GET['searchtext']);
+		}
+		//if ($_GET['q2'] starts with " then so sournding squares??! (decode it a bit!)
+		if (!empty($_GET['location'])) {
+			if ($_GET['distance'] === '1') {//TODO check really is a 4fig GR!
+				$bits[] = "grid_reference+%22".urlencode($_GET['location'])."%22";
+			} else {
+				#http://www.geograph.org.uk/browser/#!/loc=TQ5050/dist=2000
+				$bits[] = "loc=".urlencode($_GET['location']);
+				if (!empty($_GET['distance']))
+					$bits[] = "dist=".($_GET['distance']*1000);
+			}
+		}
+		//todo $_GET['orderby']
+		if ($_GET['displayclass'] == 'browser-map')
+			$bits[] = "display=map";
+		$url = "/browser/#!".implode('/',$bits);
+		header("Location: $url");
+		exit;
 	}
 
 	if (!empty($_GET['submit']) && $_GET['submit'] == 'Browser') {
