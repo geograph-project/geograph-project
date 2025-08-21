@@ -389,12 +389,14 @@ function smarty_function_place($params) {
 			$t .= heading_string_short($place['direction'])." of ";
 		else
 			$t .= "from ";
+//	} elseif (!empty($place['distance']) && $place['distance'] < 2 && !preg_match('/[a-z]/',$place['full_name'])) {
+//		$t .= "{$place['distance']} in ";
 	} elseif (empty($place['isin']))
 		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
 
 	$t .= "<span itemprop=\"contentLocation\" itemscope itemtype=\"http://schema.org/Place\"><span itemprop=\"name\">";
 	//placename
-	if (!ctype_lower($place['full_name'])) {
+	if (!preg_match('/[a-z]/',$place['full_name'])) {
 		$t .= "<b>".recaps($place['full_name'])."</b><small><i>";
 	} else {
 		$t .= "<b>{$place['full_name']}</b><small><i>";
