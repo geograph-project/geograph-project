@@ -1117,7 +1117,6 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$smarty->clear_cache($template, $cacheid);
 	}
 
-	$smarty->register_function("votestars", "smarty_function_votestars");
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3,'search_unavailable.tpl');
 
@@ -1672,22 +1671,6 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 		$smarty->display($template, $is_cachable);
 	}
-
-function smarty_function_votestars($params) {
-	global $CONF;
-	static $last;
-	
-	$type = $params['type'];
-	$id = $params['id'];
-	$names = array('','Hmm','Below average','So So','Good','Excellent');
-	foreach (range(1,5) as $i) {
-		print "<a href=\"javascript:void(record_vote('$type',$id,$i));\" title=\"{$names[$i]}\"><img src=\"{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
-	}
-	if ($last != $type) {
-		print " (<a href=\"/help/voting\">about</a>)";
-	} 
-	$last = $type;
-}
 
 function smarty_function_searchbreak($params) {
 	global $engine;

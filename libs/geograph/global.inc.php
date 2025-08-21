@@ -1123,6 +1123,7 @@ class GeographPage extends Smarty
 
 		//handy function for linking to getamap
 		$this->register_function("getamap", "smarty_function_getamap");
+		$this->register_function("votestars", "smarty_function_votestars");
 
 		//external site linker...
 		$this->register_function("external", "smarty_function_external");
