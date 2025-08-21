@@ -31,7 +31,8 @@ $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $tagInfo = $db->getRow("select tag_id,tag from tag where prefix = 'subject' and status = 1 order by rand() limit 1");
+$smarty->assign('notes', "Checking that the images depict a <b>primary subject</b> of [".htmlentities($tagInfo['tag'])."]");
 
 $smarty->assign('tagInfo', $tagInfo);
 
-$smarty->display('basic/stuff_tag-zeroclip-vote.tpl');
+$smarty->display('stuff_tag-zeroclip-vote.tpl');
