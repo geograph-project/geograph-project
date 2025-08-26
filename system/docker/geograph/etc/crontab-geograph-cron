@@ -24,7 +24,7 @@
 ##############################
 # Misc scripts
 
-18      *       * * *   /usr/bin/php /var/www/geograph/scripts/update_moderation.php --config=live --execute --days=2
+18      *       * * *   /usr/bin/php /var/www/geograph/scripts/update_moderation.php --execute --days=2
 
 55	7-22	* * *	/usr/bin/php /var/www/geograph/scripts/scan-s3-hashes.php
 47	*	* * *   /usr/bin/php /var/www/geograph/scripts/remove-temp-uploads.php --limit=250 --execute=true
