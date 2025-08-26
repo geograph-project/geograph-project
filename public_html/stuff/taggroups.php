@@ -30,22 +30,37 @@ $smarty = new GeographPage;
 	$where = '';
 	$andwhere = '';
 
-$_GET['prefix'] = 'subject';
+	if (empty($_GET['prefix']) && empty($_GET['c'])) //dont really want ot list ALL tags!
+		$_GET['prefix'] = 'subject';
 
-	if (isset($_GET['prefix'])) {
-
-		$andwhere = " AND prefix = ".$db->Quote($_GET['prefix']);
+	if (!empty($_GET['prefix'])) {
+		if ($_GET['prefix'] == 'none') {
+			$andwhere = " AND prefix = ''";
+		} else {
+			$andwhere = " AND prefix = ".$db->Quote($_GET['prefix']);
+		}
 		$smarty->assign('theprefix', $_GET['prefix']);
 	}
+
+	if (!empty($_GET['c'])) {
+		$andwhere .= " AND classification = ".$db->Quote($_GET['c']);
+	} elseif (!empty($_GET['n'])) {
+		$andwhere .= " AND (classification LIKE 'named%' OR classification IN ('related-to','branded-object'))"; //maybe branded-object shoudl of been 'named-brand'
+	}
+
+	if (!empty($_GET['o'])) {
+		$andwhere .= " AND canonical=0"; //only really works in specific prefixes!
+	}
+
 
 $smarty->display('_std_begin.tpl');
 
 print "<h2>Categorized Tags</h2>";
 print "<div style=max-width:60em>";
 
-$tags = $db->getAll("SELECT tag_id,canonical=0 as offical,prefix,tag,count,classification FROM tag_stat INNER JOIN tag USING (tag_id) WHERE classification IS NOT NULL 
+$tags = $db->getAll("SELECT tag_id,canonical=0 as offical,prefix,tag,count,classification FROM tag_stat INNER JOIN tag USING (tag_id) WHERE classification IS NOT NULL
 	$andwhere
-	ORDER BY classification, tag, count desc");
+	ORDER BY classification, tag, count desc LIMIT 10000");
 
 $last = "";
 foreach($tags as $row) {
