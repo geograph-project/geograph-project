@@ -210,6 +210,7 @@ $links = array(
 	'status=pending'=>'Pending by Date',
 	'status=pending&order=user'=>'Pending by User',
 	'status=flagged&order=user'=>'Flagged',
+	'status=flagged&limit=1000&summary=1'=>'Flagged by User',
 	'status=approved'=>'Approved',
 	'stats=1'=>'Statistics',
 );
@@ -256,6 +257,60 @@ $offset = 0;
 ##############################
 
 	if (count($list)) {
+		if (!empty($_GET['summary'])) {
+			$mat = array();
+			$cols = array();
+			$rows = array();
+			foreach($list as $idx => $row) {
+				if ($uid = $row['user_id']) {
+					@$mat[$uid][$row['source']] = $row['moderation_status'];
+					$rows[$uid] = $row;
+					@$cols[$row['source']]++;
+				}
+			}
+			print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee style=\"position:relative\">";
+				print "<tr style=\"position:sticky;top:0;background-color:#eee\">";
+				print "<td>";
+				print "<td>";
+				print "<td>";
+				foreach($cols as $source => $count) {
+					print "<th>$source";
+				}
+			foreach($mat as $uid => $data) {
+				$row = $rows[$uid];
+				print "<tr>";
+                                $row['url'] = "?preview_user=".intval($row['user_id']); //the actual profile may not show all details!
+
+				print "<td><a name=\"uid{$row['user_id']}\">{$row['user_id']}";
+				print "<td><a href=\"{$row['url']}\" target=preview-window>".htmlentities($row['realname'])."</a>";
+
+				print "<td>";
+					if (strpos($row['rights'],'basic') !== FALSE) {
+						print "<form method=post action=\"#uid{$row['user_id']}\">";
+						print "<input type=hidden name=delete_user value=".intval($row['user_id']).">";
+						print "<button type=submit name=delete>DELETE USER</button>";
+						print "</form>";
+					} else {
+						print "user deleted";
+					}
+
+				foreach($cols as $source => $count) {
+					print "<td align=center>";
+					if (!empty($data[$source])) {
+						print htmlentities($data[$source]);
+					}
+				}
+				if (!empty($row['moderated'])) {
+					print "<td><i>{$row['moderation_status']} by ".htmlentities($row['mod_realname']).", ".formatMySQLDateByResolution($row['moderated'])."</i>";
+				}
+			}
+			print "</table>";
+			$smarty->display('_std_end.tpl');
+
+			exit;
+		}
+
+
 		//if (!function_exists('smarty_modifier_truncate'))
 		//	require_once("smarty/libs/plugins/modifier.truncate.php");
 
@@ -304,7 +359,6 @@ $offset = 0;
 			}
 			if ($row['source'] == 'user' && $row['user_id'] && $row['moderation_status'] == 'flagged') {
 				if (strpos($row['rights'],'basic') !== FALSE) {
-	//				print "<br>&middot; <a href=?delete_user=".intval($row['user_id'])." style=\"color:red\">DELETE USER</a>";
 					print "<form method=post action=\"#uid{$row['user_id']}\">";
 					print "<input type=hidden name=delete_user value=".intval($row['user_id']).">";
 					print "<button type=submit name=delete>DELETE USER</button>";
