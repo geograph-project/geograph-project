@@ -302,7 +302,7 @@ $offset = 0;
 			if (!empty($row['moderated'])) {
 				print "<br><br><i>{$row['moderation_status']} by ".htmlentities($row['mod_realname']).", ".formatMySQLDateByResolution($row['moderated'])."</i>";
 			}
-			if ($row['source'] == 'user' && $row['user_id']) {
+			if ($row['source'] == 'user' && $row['user_id'] && $row['moderation_status'] == 'flagged') {
 				if (strpos($row['rights'],'basic') !== FALSE) {
 	//				print "<br>&middot; <a href=?delete_user=".intval($row['user_id'])." style=\"color:red\">DELETE USER</a>";
 					print "<form method=post action=\"#uid{$row['user_id']}\">";
