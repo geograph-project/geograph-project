@@ -166,6 +166,50 @@ if (!empty($_GET['stats'])) {
 
 ##############################
 
+if (!empty($_GET['deleted'])) {
+
+	$data = $db->getAll("
+SELECT
+  u.user_id, u.realname,
+  SUM(gi.moderation_status != 'rejected') AS images,
+  SUM(a.approved > 0) AS articles,
+  SUM(s.enabled > 0) AS snippets,
+  SUM(b.approved > 0) AS blog,
+  SUM(t.id>0) AS trips,
+  SUM(p.post_id>0) AS posts,
+  SUM(m.moderation_status != 'flagged') AS media
+FROM user u
+LEFT JOIN gridimage gi USING (user_id)
+LEFT JOIN article a USING (user_id)
+LEFT JOIN snippet s USING (user_id)
+LEFT JOIN blog b USING (user_id)
+LEFT JOIN geotrips t ON (t.uid = u.user_id)
+LEFT JOIN geobb_posts p ON (p.poster_id = u.user_id)
+LEFT JOIN moderation m ON (m.user_id = u.user_id AND m.source IN ('media', 'speculative'))
+WHERE FIND_IN_SET('deleted', u.rights)
+GROUP BY u.user_id
+ORDER BY NULL
+LIMIT 100");
+
+	print "<h2>Deleted users - checking for NON-taken down content</h2>";
+	print "<p>A zero would show they DO have items, but they ARE all taken down. blank means none. Zero or blank is GOOD";
+	print "<p>To be clear this is checking the actual content, not counting reports";
+	print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=#eee>";
+		print "<tr><th>".implode("</th><th>",array_map('htmlentities',array_keys($data[0])))."</th></tr>";
+	foreach($data as $row) {
+		print "<tr><td>".implode("</td><td align=right>",array_map('htmlentities',$row))."</td>";
+	}
+	print "</table>";
+
+	print "<p>Note: 'posts' counts all forum posts, including GSD and gallery posts. 'media' counts both media, and speciualtive, rather than two colums";
+	print "<p>For technical reasons sitemap links, and faq items not currently included in this table";
+
+	$smarty->display('_std_end.tpl');
+	exit;
+}
+
+##############################
+
 $where = array();
 $where['status'] = "moderation_status = 'pending'";
 $order = "event_date DESC";
