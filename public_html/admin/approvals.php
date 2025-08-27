@@ -305,6 +305,7 @@ $offset = 0;
 				$url = htmlentities($row['media_url']);
 				print "<br><a href=\"$url\" target=preview-window>";
 				if (preg_match('/\.(jpe?g|gif|png|webp)$/',$row['media_url'])) {
+					$url = str_replace(".org.uk/",".org.uk/preview.php/",$url); //needs to be able to see the preview!
 					print "<img src=\"$url\">";
 				} else {
 					print htmlentities(basename($row['media_url']));
