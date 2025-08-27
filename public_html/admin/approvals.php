@@ -36,6 +36,13 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ##############################
 
+if (!empty($_POST['delete_user'])) {
+	$sql = "UPDATE user SET rights = REPLACE(rights,'basic','deleted') WHERE user_id = ".intval($_POST['delete_user']);
+	$db->Execute($sql);
+}
+
+##############################
+
 if (!empty($_POST['status'])) {
 	$user_id = intval($USER->user_id);
 	foreach($_POST['status'] as $moderation_id => $result) {
@@ -241,7 +248,7 @@ $offset = 0;
 	print "<br>";
 
 	$where = implode(' AND ',$where);
-	$list = $db->getAll("SELECT m.*, user.realname, images, modd.realname AS mod_realname
+	$list = $db->getAll("SELECT m.*, user.realname, images, modd.realname AS mod_realname, user.rights
 	 FROM moderation m LEFT JOIN user USING (user_id) LEFT JOIN user_stat USING (user_id)
 		LEFT JOIN user modd ON (modd.user_id = moderator_id)
 	 WHERE $where ORDER BY $order LIMIT $size");
@@ -257,7 +264,7 @@ $offset = 0;
 		$last = null;
                 foreach ($list as $idx => $row) {
 			if (!empty($_GET['order']) && $row['user_id'] != $last) {
-				print "<div class=\"grid-item header\">".htmlentities($row['realname'])."</div>";
+				print "<div class=\"grid-item header\"><a name=\"uid{$row['user_id']}\">".htmlentities($row['realname'])."</div>";
 
 				$last = $row['user_id'];
 			}
@@ -287,10 +294,22 @@ $offset = 0;
 				} else {
 					print " [".intval($row['images'])."]";
 				}
+				if (strpos($row['rights'],'basic') === FALSE) {
+					print "<span style=color:brown>&middot <b>User deleted</b>.</span>";
+				}
 				print "</span>";
 			}
 			if (!empty($row['moderated'])) {
 				print "<br><br><i>{$row['moderation_status']} by ".htmlentities($row['mod_realname']).", ".formatMySQLDateByResolution($row['moderated'])."</i>";
+			}
+			if ($row['source'] == 'user' && $row['user_id']) {
+				if (strpos($row['rights'],'basic') !== FALSE) {
+	//				print "<br>&middot; <a href=?delete_user=".intval($row['user_id'])." style=\"color:red\">DELETE USER</a>";
+					print "<form method=post action=\"#uid{$row['user_id']}\">";
+					print "<input type=hidden name=delete_user value=".intval($row['user_id']).">";
+					print "<button type=submit name=delete>DELETE USER</button>";
+					print "</form>";
+				}
 			}
 
 			print '</div>';
@@ -395,6 +414,9 @@ $offset = 0;
 	background-color:lightgreen;
 }
 .grid-container button[value=flagged] {
+	background-color:pink;
+}
+.grid-container button[name=delete] {
 	background-color:pink;
 }
 

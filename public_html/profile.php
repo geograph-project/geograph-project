@@ -313,6 +313,14 @@ if ($template=='profile.tpl')
 			exit;
 		}
 
+		if (strpos($profile->rights,'deleted') !== FALSE)
+		{
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
+			$smarty->display('static_404.tpl');
+			exit;
+		}
+
 		$profile->getStats(!empty($_GET['id']) && isset($_GET['more']));
 
 		if ($uid==$USER->user_id && empty($_GET['id'])) {
