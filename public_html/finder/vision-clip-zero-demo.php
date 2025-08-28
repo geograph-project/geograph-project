@@ -62,6 +62,12 @@
         <label for="search-labels">Classification Labels (comma-separated):</label>
         <textarea id="search-labels" rows="3" placeholder="e.g., stone, ruin, modern, interior">stone, ruin, modern, interior</textarea>
 
+        <div class="radio-options">
+            <label>
+                <input type="checkbox" id="group-by-place" name="group-by-place" value="1">Group by place
+            </label>
+        </div>
+
         <button id="search-button">Search and Classify</button>
     </div>
 
