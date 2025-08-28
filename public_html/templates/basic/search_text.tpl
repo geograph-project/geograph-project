@@ -23,7 +23,11 @@ tt {
 		<div class="interestBox" style="border:1px solid pink;display:none; " id="show1">
 			This search was powered by the new <a href="/help/search_new">word search index</a>, which has different capabilities to the old database, so the options offered vary.
 			{if !$engine->criteria->sphinx.no_legacy}
-				You can access the <a href="/search.php?i={$i}&amp;form=advanced&amp;legacy=true">old advanced form here</a>.
+				<form method="get" action="/search.php">
+					<input type=hidden name=i value={$i}>
+					<input type=hidden name=form value=advanced>
+					You can access the <button type=button onclick="this.type='submit';this.click()" name=legacy value=true>old advanced form here</button>.
+				</form>
 			{/if}
 			<br/><br/>
 			<a href="javascript:void(hide_tree(1));">close</a>
