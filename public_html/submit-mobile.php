@@ -31,7 +31,7 @@ pageMustBeHTTPS();
 
 dieIfReadOnly();
 
-if (!empty($_GET['auto'])) {
+if (!empty($_GET['auto']) || !empty($_GET['inner'])) {
 	$_POST['choose'] = 'mobile'; //force to mobile, without changing default
 
 } elseif (!empty($_POST['choose'])) {
@@ -60,7 +60,14 @@ if (!empty($_POST['choose']) && empty($_GET['redir'])) {
 	        $smarty->assign("status_message",$CONF['submission_message']);
 	}
 
-	$smarty->display('submit_mobile.tpl');
+	if (!empty($_GET['inner'])) {
+		$smarty->assign("inner",1);
+		$cacheid = 'inner';
+	} else {
+		$smarty->assign("inner",0);
+		$cacheid = '';
+	}
+	$smarty->display('submit_mobile.tpl', $cacheid);
 
 } else {
 

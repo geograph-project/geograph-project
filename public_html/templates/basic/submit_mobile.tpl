@@ -95,6 +95,7 @@ img, #previewImage2 {
 .tabs a.selected {
 	background-color:#e4e4fc;
 	color:black;
+	font-weight:bold;
 }
 .tabs a span {
 	display:none;
@@ -200,6 +201,21 @@ a.done {
 	margin-right:10px;
 	white-space:nowrap;
 }
+
+{/literal}
+{if $inner} 
+{literal}
+
+	.tabs {
+		position:fixed;
+		top:0;
+	}
+	form[name=theForm] {
+		margin-top:2.4em;
+	}
+{/literal}
+{/if}
+{literal}
 </style>
 
 <script>
@@ -1182,9 +1198,11 @@ function orientationChanged() {
 </head>
 <body style="background-color:white">
 
+{if !$inner}
 <div style="background-color:#000066">
 	<a target="_top" href="/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
 </div>
+{/if}
 
 <div class=tabs>
 	<a href=# class=selected onclick="return selectTab(1);">1<span>-Image</span>
@@ -1247,10 +1265,12 @@ function orientationChanged() {
 
 		<p style="display:none" id="s1contine">Once selected and confirmed image above, <input type=button value="Continue to Step 2 &gt;" onclick="selectTab(2)"></p>
 
+{if !$inner}
 		<hr>
 		<a href="?redir=false">Choose different Submission Process</a>
 
 		<div style="float:right;position:relative"><a href="/submit.php?redir=false">v1</a> / <a href="/submit2.php">v2</a> / <b>mobile</b> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a></div>
+{/if}
 
 		<hr style=clear:both><br>
 		<b>New here? We have a new 
