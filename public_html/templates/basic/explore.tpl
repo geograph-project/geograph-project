@@ -122,14 +122,7 @@
 	</form></li>
 
 {if $enable_forums}
-	<li><form method="get" action="/search.php" style="display:inline">
-	<label for="topic_id">Search by <b>Discussion Topic</b></label>: 
-	<input type="hidden" name="do" value="1"/>
-	<select name="topic_id" id="topic_id" size="1" class="searchinput"> 
-	  <option value=""> </option> 
-		{html_options options=$topiclist selected=$topic_id}
-	</select> <input id="searchgo" type="submit" name="go" value="Find"/>
-	</form></li>
+	<li>Use the <a href="/search.php?form=advanced&legacy=true">Advanced Search</a> to search by  <b>Discussion Topic</b></li>
 {/if}
 
 </ul>
