@@ -60,6 +60,10 @@ $cacheid="user$ab|{$USER->user_id}|{$max_gridimage_id}";
 $src = 'loading="lazy" src';
 //$cacheid .=".$src";
 
+if (!empty($_GET['mobile'])) {
+	$template='submissions_mobile.tpl';
+}
+
 if (!empty($_GET['inner'])) {
 	$smarty->assign('inner', 1);
 	$cacheid .=".inner";
