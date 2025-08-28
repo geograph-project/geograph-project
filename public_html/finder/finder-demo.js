@@ -213,22 +213,22 @@ function runSearch() {
         if (totalClassifiedImages === 0) {
             $resultsContainer.html('<p>No images could be classified into places. Try a different search query or labels.</p>');
         } else {
-            const $table = $('<table border="1" style="border-collapse: collapse; margin-top: 20px; width: 100%;"></table>');
+            const $table = $('<table border="1" style="border-collapse: collapse; margin-top: 20px; width: 100%; position:relative;"></table>');
             const $thead = $('<thead></thead>');
             const $tbody = $('<tbody></tbody>');
 
             // Header row
-            const $headerRow = $('<tr></tr>');
+            const $headerRow = $('<tr style="position:sticky;top:0;background-color:#eee"></tr>');
             $headerRow.append('<th style="width: 100px;">Label</th>');
             places.forEach(place => {
-                $headerRow.append(`<th>${escapeHtml(place)}</th>`);
+                $headerRow.append(`<th style="vertical-align: top; padding: 5px">${escapeHtml(place)}</th>`);
             });
             $thead.append($headerRow);
 
             // Body rows
             labels.forEach(label => {
                 const $row = $('<tr></tr>');
-                $row.append(`<td style="vertical-align: top; padding: 5px;"><b>${escapeHtml(label)}</b></td>`);
+                $row.append(`<td style="vertical-align: top; padding: 8px;background-color:#eee"><b>${escapeHtml(label)}</b></td>`);
 
                 places.forEach(place => {
                     const $cell = $('<td style="vertical-align: top; padding: 5px;"></td>');

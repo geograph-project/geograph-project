@@ -64,7 +64,7 @@
 
         <div class="radio-options">
             <label>
-                <input type="checkbox" id="group-by-place" name="group-by-place" value="1">Group by place
+                <input type="checkbox" id="group-by-place" name="group-by-place" value="1">Also Group by Place
             </label>
         </div>
 
