@@ -134,7 +134,7 @@ while (true) {
 
     $tags_to_classify = [];
     while (!$rs->EOF) {
-        $tags_to_classify[] = ['tag_id' => $rs->fields['tag_id'], 'tag' => preg_replace('/ s\b/', 's', $rs->fields['tagtext'])];
+        $tags_to_classify[] = ['tag_id' => $rs->fields['tag_id'], 'tag' => latin1_to_utf8(preg_replace('/ s\b/', 's', $rs->fields['tagtext']))];
         $rs->MoveNext();
     }
 
