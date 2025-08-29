@@ -1,0 +1,4 @@
+ALTER TABLE `calendar_dates`
+ADD COLUMN `price` DECIMAL(10, 2) NOT NULL DEFAULT '9.00',
+ADD COLUMN `postage_cost` DECIMAL(10, 2) NOT NULL DEFAULT '5.00',
+ADD COLUMN `minimum_order` INT NOT NULL DEFAULT '2';

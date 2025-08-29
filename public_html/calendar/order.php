@@ -44,9 +44,11 @@ if ($row['status'] == 'processed')
         die("This calendar is now processed, and can no longer be edited");
 
 
-if (!$db->getOne("SELECT year FROM calendar_dates WHERE DATE(NOW()) BETWEEN start_date AND end_date")) {
+$date = $db->getRow("SELECT * FROM calendar_dates WHERE DATE(NOW()) BETWEEN start_date AND end_date");
+if (!$date) {
         die("Sorry, we are not currently accepting new orders");
 }
+$smarty->assign('date',$date);
 
 if (empty($row['alpha'])) {
 	$ids = $db->getCol("SELECT calendar_id FROM calendar WHERE user_id = {$row['user_id']} AND ordered > '1000-00-00' AND year = '$year' ORDER BY ordered");
@@ -101,7 +103,7 @@ if (!empty($_POST)) {
 			//this needs converting to IGN. The return URL doesnt contain in any identifiers
 			$_SESSION['calendar_id'] = $row['calendar_id'];
 
-			$cost = (9.00 * $row['quantity']) + 5.00;
+			$cost = ($date['price'] * $row['quantity']) + $date['postage_cost'];
 
 			$token=new Token;
 			$token->setValue("i", $row['calendar_id']);
