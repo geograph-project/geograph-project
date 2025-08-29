@@ -29,6 +29,8 @@ $param=array(
 
 	'bucket'=>false, //note, that while empty here, defaults are defined dynamically using config
 	'path'=>false,
+	'filter'=>false,
+	'move'=>true, //function upload, defaults to move for legacy rason
 
 	'fatal'=>true,
 	'table'=>false,
@@ -61,9 +63,11 @@ if (method_exists($r2,'setSignatureVersion'))
 if (empty($param['bucket']))
 	$param['bucket'] = $CONF['r2_backup_bucket'];
 
-if (!empty($param['table'])) {
+if (!empty($param['table']) && empty($param['path'])) {
 	$param['path'] = 'backups/by-table/'.$param['table']."/";
 }
+if (empty($param['filter']))
+	$param['filter'] = '*.sql.*'; //want to avoid the latest.md5 files!
 
 #####################
 
@@ -108,7 +112,8 @@ if ($param['function'] == 'getbucket') {
 #####################
 
 if ($param['function'] == 'list') {
-	$list = $r2->getBucket($param['bucket'], $param['path']);
+	print "bucket = {$param['bucket']}\n";
+	$list = $r2->getBucket($param['bucket'], $param['path'], null, 1000, '/', true);
 	ksort($list, SORT_NATURAL);
 
 	$total = 0;
@@ -129,6 +134,9 @@ if ($param['function'] == 'list') {
 #####################
 
 if ($param['function'] == 'upload') {
+	// ******************************************
+	// WARNING will automatically delete the local file after upload - 'move' is basically on by default
+	// ******************************************
 	chdir($current);
 
 	if (empty($param['path'])) {
@@ -140,12 +148,13 @@ if ($param['function'] == 'upload') {
 
 	print count($list)." files found\n";
 	//print_r($list);
-	sleep(5);
+	if (count($list) > 100)
+		sleep(5);
 
 	$source = $param['path'];
 	$dest = $source; //its used as bucket key anyway!
 
-	$h = popen("find $source -follow -type f -name '*.sql.*'", 'r'); //want to avoid the latest.md5 files!
+	$h = popen("find $source -follow -type f -name ".escapeshellarg($param['filter']), 'r'); //need to avoid shell expansion!
 	while($h && !feof($h)) {
 		$line = trim(fgets($h));
 		if (empty($line))
@@ -155,13 +164,17 @@ if ($param['function'] == 'upload') {
 		$destination = str_replace($source, $dest, $line);
 
 		if (isset($list[$destination])) {
-			$stat = $list[$destination];
+			if ($param['move']) {
+				$stat = $list[$destination];
 
-			if ($stat['hash'] == md5_file($local)) { //&&$param['move'] ??
-				print "#delete $destination (hash match!)\n";
-				unlink($local);
+				if ($stat['hash'] == md5_file($local)) { //&&$param['move'] ??
+					print "#delete $destination (hash match!)\n";
+					unlink($local);
+				} else {
+					print "#skipping $destination (mismatch)\n";
+				}
 			} else {
-				print "#skipping $destination (mismatch)\n";
+				print "#$filename already done!\n";
 			}
 			continue;
 		}

@@ -21,19 +21,29 @@
  */
 
 //these are the arguments we expect
-$param=array('verbose'=>false, 'index'=>'test-index', 'query'=>'road', 'insert'=>false, 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false);
+$param=array('verbose'=>false, 'index'=>'test-index', 'query'=>'road', 'insert'=>false, 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false, 'test'=>false);
 
 $ABORT_GLOBAL_EARLY = true; //this stops connecting to memcache, so FileSystem will get a fresh STS token! (not from memcache!)
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-##################################
-//
+   $awsRegion = "us-east-1"; //s3vector, isnt available in all regions - so we have to define the region to use!
 
-if (!empty($param['insert']) && preg_match('/^(label|user|tags|doc|place|thread|image)-(\w+)/',$param['index'], $m)) {
+##################################
+// Form commands for inserting rows into S3Vector index
+// note, only prints the command, although for image specifically, it can auto-execute sharded inserts using tmp_emdedding_stat
+
+if (!empty($param['insert'])) {
+
+    if (preg_match('/^(label|user|tags|doc|place|thread|image)-(\w+)/',$param['index'], $m)) {
 	$source = $m[1];
-	$model = $m[2];
+	$model = $m[2]; //todo, could validate the model, but the vector-cmd6.py will do that anyway.
+    } else {
+	//basically the default for the test-index!
+        $source = 'image';
+	$model = 'clip';
+    }
 
 	//for now, rather than encoding the injection process in PHP, use the python script!
     $cmd = array();
@@ -88,8 +98,8 @@ if (!empty($param['insert']) && preg_match('/^(label|user|tags|doc|place|thread|
                //on its own the optimizer chooses gridimage index, because it ends up using ORDER BY id for its own batching (500 a a time, so it loops in id order)
                //the double level of sharding, picks the wrong index!
 
-	//the ROUND() is just to ensure it numeric, "vector-cmd4.py" can already deal with the DECIMAL from wgs84_lat etc
-	$cmd[] = '-s'.escapeshellarg("gridimage_id AS id, user_id, grid_reference as gridref, round(replace(imagetaken,'-','')) AS taken, wgs84_lat as slat, wgs84_long as slng, embeddings");
+	//the CAST() is just to ensure it numeric - better than ROUND which stiull produces a float, "vector-cmd" can already deal with the DECIMAL from wgs84_lat etc
+	$cmd[] = '-s'.escapeshellarg("gridimage_id AS id, user_id, grid_reference as gridref, CAST(REPLACE(imagetaken,'-','') AS UNSIGNED) AS taken, wgs84_lat as slat, wgs84_long as slng, embeddings");
 
 	//actully for images we have a special way of doing it incrementally, because data is still being compliled!
 	if ($param['insert'] > 1) {
@@ -121,7 +131,7 @@ if (!empty($param['insert']) && preg_match('/^(label|user|tags|doc|place|thread|
 
 			$sql = "UPDATE tmp_emdedding_stat SET done=NOW() WHERE min_id = {$row['min_id']}";
 			print "# $sql;\n\n";
-			if ($param['insert'] > 2 && $return_status === 0) {
+			if ($param['insert'] > 2 && $return_status === 0 && $param['index'] == 'image-clip') { //shouldnt really be marking as done, unless it the real index!
 				//the connection might of closed!
 				$db = GeographDatabaseConnection(false);
 				$db->Execute($sql);
@@ -152,8 +162,48 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 include "3rdparty/s3vectors.inc.php";
 
 ##################################
+// Function to test index, although hardcoded for testing an 'image-clip' index!
 
-   $awsRegion = "us-east-1"; //s3vector, isnt available in all regions - so we have to define the region to use!
+if ($param['test']) {
+	$topK = 30; // might as well!
+
+	$rows = $db->getAll("SELECT * FROM tmp_emdedding_stat INNER JOIN gridimage_embedding ON (seq_id = max_id)");
+	foreach ($rows as $idx => $row) {
+		$queryEmbedding = array_values(unpack('g*', $row['embeddings']));
+		$needle = $row['gridimage_id'];
+
+		print "$idx. looking for $needle for {$row['day']}\n";
+
+		    $queryPayload = [
+		        'vectorBucketName' => 'geograph-vector-bucket',
+		        'indexName' => $param['index'],
+		        'queryVector' => ['float32' => $queryEmbedding],
+		        'topK' => $topK,
+		        'returnDistance' => true,
+		        'returnMetadata' => false,
+		    ];
+
+		    $results = queryS3Vectors(
+		        $queryPayload,
+		        $awsRegion,
+		        $param['verbose']
+		    );
+
+		$found = false;
+	        foreach ($results['vectors'] as $i => $vector) {
+			if ($vector['key'] == $needle) {
+				print "  Found $needle as $i and {$vector['distance']}\n";
+				$found = true;
+			}
+	        }
+		if (!$found)
+			print "  Not Found\n";
+	}
+	exit;
+}
+
+##################################
+
 
    if (!empty($param['query'])) {
 	$row = $db->getRow("SELECT * FROM label_embedding WHERE label = ".$db->Quote($param['query']));
