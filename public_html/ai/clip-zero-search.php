@@ -80,7 +80,7 @@
     <!-- JavaScript libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="/js/vector.class.js"></script>
-    <script src="/finder/finder-demo.js?<? echo filemtime('finder-demo.js'); ?>"></script>
+    <script src="finder-demo.js?<? echo filemtime('finder-demo.js'); ?>"></script>
 
     <script>
     $(document).ready(function() {
