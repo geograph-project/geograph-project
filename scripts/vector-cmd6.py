@@ -10,6 +10,7 @@ import math # Import math for ceil
 import time # Import time for sleep
 import requests
 import json
+import datetime
 
 # --- Configuration ---
 PUT_BATCH_LIMIT = 500 # S3Vectors PutVectors API limit per call
@@ -267,6 +268,18 @@ def insert_from_mysql(
                 break
 
             print("Beginning Processing...")
+
+            # Preview the first row, if it's the first batch
+            if not last_id and rows:
+                preview_row = dict(rows[0])  # Create a copy of the first row
+
+                # Truncate the 'embeddings' column if it exists and is a bytearray
+                if 'embeddings' in preview_row and isinstance(preview_row['embeddings'], bytearray):
+                    truncated_bytes = preview_row['embeddings'][:24]
+                    preview_row['embeddings'] = f"{truncated_bytes!r} ... (truncated)"
+
+                print("Example:", preview_row)
+
             all_vectors = []
             counter = 0;
             for row in rows:
@@ -274,8 +287,6 @@ def insert_from_mysql(
                 if row_id is None:
                     print(f"Skipping row due to missing 'id' column: {row}")
                     continue
-                if not last_id:
-                    print(row)
 
                 last_id = row_id
 
@@ -283,7 +294,7 @@ def insert_from_mysql(
                     embedding_list = None
                     metadata = {}
 
-                    if counter % 100 == 0:
+                    if counter % 10 == 0:
                          print(f"Processing item {counter}...", end="\r", flush=True)
 
                     if generate_embeddings_mode:
@@ -309,9 +320,10 @@ def insert_from_mysql(
 
                     for col_name, col_value in row.items():
                         if col_name.lower() not in ['id', 'embeddings', 'input_text']:
-                            if col_value is None and col_name.lower() == 'images': metadata[col_name] = 0
+                            if col_value is None and col_name == 'images': metadata[col_name] = 0
                             elif col_value is not None:
                                 if isinstance(col_value, Decimal): metadata[col_name] = float(col_value)
+                                elif isinstance(col_value, datetime.date): metadata[col_name] = col_value.strftime("%Y-%m-%d")
                                 elif isinstance(col_value, bytearray): metadata[col_name] = col_value.decode('utf-8')
                                 else: metadata[col_name] = col_value
 
