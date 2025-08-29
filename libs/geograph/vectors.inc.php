@@ -511,7 +511,7 @@ function getKNNResults(array $vector, int $limit = 30, string $index_name = 'lab
 	);
 
     if (empty($mapped[$index_name]))
-	die("unknown index");
+	die("unknown index for $index_name");
 
     if (!empty($CONF['s3_vector_bucket'])) { //or maybe chould checked $mapped
 	global $filesystem;
@@ -602,6 +602,8 @@ function getZeroShotLabels($image, $limit = 30, $src = false) {
  * @return array A list of zero-shot tags, formatted as S3Vector resultset (even if not using s3vector index).
  */
 function getZeroShotTags($image, $limit = 10, $input = 'title', $model = 'clip', $prefix = 'top') {
+	global $db;
+	$results = array('vectors' => array());
 
 	//clipthelandscape uses precomputed lables
 	if ($model == 'clipthelandscape') {
@@ -612,17 +614,27 @@ function getZeroShotTags($image, $limit = 10, $input = 'title', $model = 'clip',
 			die("CLIPthelandscape can only predict top/context tags");
 
 		//... note using 'clip' is deliberate - the 'CLIP' processor that is ALSO using clipthelandscape to create labels.
-		$rows = $db->getAll("SELECT label,score FROM gridimage_label WHERE model='clip' AND gridimage_id = {$image->gridimage_id}");
-
-		$results = array('vectors' => array());
-
+		$rows = $db->getAll($sql = "SELECT label,score FROM gridimage_label WHERE model='clip' AND gridimage_id = {$image->gridimage_id}");
 		foreach ($rows as $idx => $row) {
                     $results['vectors'][] = [
                         'key' => (string)$idx, //fake id!
                         'metadata' => [
-                            'label' => (string)$row['label'],
+                            'tagtext' => (string)$row['label'],
                         ],
                         'distance' => 1-$row['score'], //score is inverse of distance
+                    ];
+		}
+
+	//just make easy to compare orginal tags with zero shot!
+	} elseif ($model == 'original') {
+
+		$rows = $db->getAll("SELECT tag_id,tag FROM tag_public WHERE prefix='$prefix' AND gridimage_id = {$image->gridimage_id}");
+		foreach ($rows as $idx => $row) {
+                    $results['vectors'][] = [
+                        'key' => (string)$row['tag_id'],
+                        'metadata' => [
+                            'tagtext' => (string)$row['tag'],
+                        ]
                     ];
 		}
 
@@ -644,6 +656,7 @@ function getZeroShotTags($image, $limit = 10, $input = 'title', $model = 'clip',
 
 			//getKNNResults can now do other models, automatically knows what s3vectors index to use!
 		$results = getKNNResults($vector, $limit, 'tags_embedding_mpnet', $prefix);
+
 	} else {
 		die("unknown model");
 	}
