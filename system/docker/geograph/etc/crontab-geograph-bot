@@ -26,5 +26,5 @@
 19     2       * * *   /usr/bin/php /var/www/geograph/scripts/loki-agents-save.php --min=100
 
 
-17     *       * * *   /usr/bin/php /var/www/geograph/scripts/vision-rotate-ids.php --execute --model=clip 
+17     *       * * *   /usr/bin/php /var/www/geograph/scripts/ai-clip-rotate-ids.php --execute --model=clip 
 

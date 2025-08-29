@@ -58,7 +58,17 @@ $results = $imagelist->getRawVectorsByCriteria($criteria, 30, false); //dont nee
 
 if (!empty($results['vectors'])) {
 	$last = count($results['vectors'])-1;
-	$extra .= "&max=".round(sqrt($results['vectors'][$last]['distance']),7);
+	$dist = $results['vectors'][$last]['distance'];
+	if (!empty($_GET['sq'])) {
+		$dist = sqrt($dist);
+	} elseif (!empty($_GET['pw'])) {
+		$dist = pow($dist,2);
+	}
+	$dist = round($dist,5);
+
+	$extra .= "&max=$dist";
+	print "<p>Query: <b>".htmlentities($_GET['query'])."</b>. Max Distance: $dist</p>";
+
 } else {
 	die("no results - vector query posisibly failed");
 }
@@ -119,7 +129,7 @@ if (!empty($results['vectors'])) {
 
             L.popup()
                 .setLatLng(e.latlng)
-                .setContent(`<a href="/stuff/vision-clip-query.php?query=<? echo urlencode($_GET['query']); ?>&amp;loc=${lat},${lng}&amp;dist=${dist}" target="_blank">View Thumbnail Results</a>`)
+                .setContent(`<a href="/ai/clip-query.php?query=<? echo urlencode($_GET['query']); ?>&amp;loc=${lat},${lng}&amp;dist=${dist}" target="_blank">View Thumbnail Results</a>`)
                 .openOn(map);
         });
 

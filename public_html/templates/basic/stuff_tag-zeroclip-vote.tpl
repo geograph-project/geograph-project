@@ -35,7 +35,7 @@
     <script>
     {literal}
     $(function() {
-        $('#thumbnails').load('/stuff/vision-clip-query.php?inner=1&query={/literal}{$tagInfo.tag|rawurlencode}{literal}');
+        $('#thumbnails').load('/ai/clip-query.php?inner=1&query={/literal}{$tagInfo.tag|rawurlencode}{literal}');
     });
     </script>
 	<style>
