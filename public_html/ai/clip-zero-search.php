@@ -20,10 +20,6 @@
         .label-group h2 { margin: 0; }
         .image-container { display: flex; --flex-wrap: wrap; gap: 2px; min-width:150px; min-height:200px }
         .image-item { text-align: center; }
-        .image-item img {
-            max-width: 150px;
-            height: auto;
-        }
         .image-item p { font-size: 0.9em; margin: 5px 0 0 0; }
         #loading-indicator { display: none; font-size: 1.2em; }
 
