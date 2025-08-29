@@ -1,3 +1,4 @@
+<?php
 
 ######################################
 
@@ -7,13 +8,13 @@ function getLLMResponse($prompt, $user, $provider = 'cloudflare') {
                 return callCloudflare($prompt, $user);
 
         } elseif ($provider=='open') {
-                return callOpenRouter($prompt, $user, $max_tokens = 2048*2);
+                return callOpenRouter($prompt, $user, /* $max_tokens = */ 2048*2);
 
         } elseif ($provider=='lmstudio') {
 		return callLMStudio($prompt, $user);
 
         } else {
-                return getLLMLocalResponse($prompt, $user, $model = 'gemma270m');
+                return getLLMLocalResponse($prompt, $user, /* $model = */ 'gemma270m');
         }
 }
 
@@ -102,6 +103,7 @@ function callCloudflare($prompt, $user = null) {
     $url = "https://api.cloudflare.com/client/v4/accounts/{$accountId}/ai/run/{$modelName}";
 
     $data = ['input' => $prompt . ($user ?? '')];
+
     $payload = json_encode($data);
 
     $ch = curl_init();
@@ -211,6 +213,32 @@ function callOpenRouter($prompt, $user = null, $maxTokens = 2048) {
             curl_close($ch);
             return null;
         }
+    }
+}
+
+function callOpenRouterKey() {
+    global $CONF;
+    $apiKey = $CONF['OPENROUTER_API_KEY'];
+
+    $url = "https://openrouter.ai/api/v1/key";
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $headers = [
+        'Authorization: Bearer ' . $apiKey,
+    ];
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        echo 'cURL Error: ' . curl_error($ch);
+        curl_close($ch);
+        return null;
+    } else {
+        return json_decode($response, true);
     }
 }
 
