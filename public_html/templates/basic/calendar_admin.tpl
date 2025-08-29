@@ -4,11 +4,11 @@
 
 {dynamic}
 
-<form method=post>
+<form method=post style=background-color:#eee;padding:10px>
 	Year: <b>{$date.year}</b><br>
 	Updated: {$date.updated}<br>
-	First Day: <input type=date name=start_date value="{$date.start_date}"><br>
-	Last Day: <input type=date name=end_date value="{$date.end_date}"><br>
+	First Day: <input type=date name=start_date value="{$date.start_date}"> {if $date.start_date < '1000'} <b>Add a date to open the order process from that day.</b>{/if}<br>
+	Last Day: <input type=date name=end_date value="{$date.end_date}"> (this is the last day orders will be accepted)<br>
 	Price: &pound;<input type=text name=price value="{$date.price|string_format:"%.2f"}" size=4><br>
 	Postage: &pound;<input type=text name=postage_cost value="{$date.postage_cost|string_format:"%.2f"}" size=4><br>
 	Minimum Order: <input type=text name=minimum_order value="{$date.minimum_order}" size=2><br>

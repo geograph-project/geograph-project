@@ -41,6 +41,10 @@ if (!empty($_POST['start_date'])) {
 }
 
 $date = $db->getRow("SELECT * FROM calendar_dates WHERE year = $year");
+if (empty($date)) {
+	$db->Execute("insert into calendar_dates set year=$year"); //prices will get default, but without dates, orders wont automatically open
+	$date = $db->getRow("SELECT * FROM calendar_dates WHERE year = $year");
+}
 $smarty->assign('date',$date);
 
 ####################################

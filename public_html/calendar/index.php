@@ -32,9 +32,11 @@ $smarty->assign('year', $year);
 
 $db = GeographDatabaseConnection(false);
 
-if (!$db->getOne("SELECT year FROM calendar_dates WHERE DATE(NOW()) BETWEEN start_date AND end_date")) {
+$date = $db->getRow("SELECT * FROM calendar_dates WHERE DATE(NOW()) BETWEEN start_date AND end_date");
+if (!$date) {
 	$smarty->assign('closed',true);
 }
+$smarty->assign('date',$date);
 
 ####################################
 

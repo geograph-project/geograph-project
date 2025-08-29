@@ -78,13 +78,16 @@ overrun the panel. Individual photographer names will appear on the appropriate 
 
 <p>You have the option to have a calendar title which will appear on the front cover.
 
-<p><b>Calendars are priced at &pound;9.00 each, which includes a donation to Geograph funds. There is a separate postage and packing charge of &pound;5.00 per order.</b> There is a 
-minimum quantity of 2 calendars per person, which can include more than one version (two orders of 1 calendar each).
-<br><br>
+{if $date}
+	<p><b>Calendars are priced at &pound;{$date.price|string_format:"%.2f"} each, which includes a donation to Geograph funds.
+	There is a separate postage and packing charge of &pound;{$date.postage_cost|string_format:"%.2f"} per order.</b>
+	There is a minimum quantity of {$date.minimum_order} calendars per person, which can include more than one version (two orders of 1 calendar each).
+	<br><br>
+{/if}
 
 <p>
 {dynamic}{if $closed}
-	<h1>Sorry, we are no longer accepting new orders</h1>
+	<h1>Sorry, we are not currently accepting new orders</h1>
 {else}
 	<a href="start.php" style="font-size:large;background-color:#000066;color:yellow;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a>
 
