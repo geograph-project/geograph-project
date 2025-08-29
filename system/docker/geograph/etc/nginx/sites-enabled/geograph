@@ -6747,6 +6747,7 @@ server {
   rewrite ^/profile/(\d+)/more/?$ /profile.php?id=$1&more=1 last;
   rewrite ^/profile/(\d+)/?$ /profile.php?id=$1 last;
 
+  rewrite ^/tagged/(\w[\w-]*):$ /tags/prefix.php?prefix=$1 last;
   rewrite ^/tagged/(.*) /tags/index.php?tag=$1 last;
   rewrite ^/of/(.*) /finder/of.php?q=$1 last;
   rewrite ^/place/(.*) /finder/of.php?q=$1&place=1 last;
