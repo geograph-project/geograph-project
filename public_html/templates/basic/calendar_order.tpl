@@ -95,7 +95,7 @@ background-image:url("{$image->_getFullPath(true,true)}");background-size:cover;
 
         <label for="title">Quantity Required:</label>
         <input type="number" name="quantity" value="{$calendar.quantity|escape:"html"}" style="font-size:1.3em" size=2 min="1" max="255" step="1"/>*
-	(minimum order is 2 calendars, can be split over multiple orders)
+	(minimum order is {$date.minimum_order} calendars, can be split over multiple orders)
 
         {if $errors.quantity}</div>{/if}
 </div>
@@ -103,6 +103,9 @@ background-image:url("{$image->_getFullPath(true,true)}");background-size:cover;
 {/if}
 
 <hr>
+
+Price per calendar: &pound;{$date.price|string_format:"%.2f"}<br>
+Postage &amp; Packing: &pound;{$date.postage_cost|string_format:"%.2f"}<br>
 
 <div class="field">
         {if $errors.delivery_name}<div class="formerror"><p class="error">{$errors.delivery_name}</p>{/if}

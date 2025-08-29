@@ -36,7 +36,8 @@ $year = date('Y')+1; // we currently working on next years calendar
 
 if (!empty($_POST['start_date'])) {
 	//because now type=date, assume browser will provide right format!
-	$db->Execute("UPDATE calendar_dates SET start_date = ".$db->Quote($_POST['start_date']).", end_date = ".$db->Quote($_POST['end_date'])." WHERE year = $year");
+	$db->Execute("UPDATE calendar_dates SET start_date = ".$db->Quote($_POST['start_date']).", end_date = ".$db->Quote($_POST['end_date']).
+		", price = ".floatval($_POST['price']).", postage_cost = ".floatval($_POST['postage_cost']).", minimum_order = ".intval($_POST['minimum_order'])." WHERE year = $year");
 }
 
 $date = $db->getRow("SELECT * FROM calendar_dates WHERE year = $year");
