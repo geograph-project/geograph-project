@@ -71,7 +71,7 @@ print "<p>Query: <b>".htmlentities($_GET['query'])."</b>. <span id=countPrompt><
 
 //        document.getElementById('query-display').innerText = query;
 
-        var url = `/api-facetql.php?match=${encodeURIComponent(query)}&order=sequence+asc&limit=50&select=id,title,wgs84_lat,wgs84_long,hash`;
+        var url = `/api-facetql.php?match=${encodeURIComponent(query)}&order=sequence+asc&limit=50&select=id,title,realname,wgs84_lat,wgs84_long,hash`;
 
         if (polygonStr) {
             var latlngs = polygonStr.split(' ').map(function(coord) {
