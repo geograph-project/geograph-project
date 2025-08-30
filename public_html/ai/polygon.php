@@ -87,9 +87,6 @@
                     <span id="file-label">Choose a file...</span>
                     <input type="file" id="fileInput" class="hidden" accept=".kml,.gml,.geojson,.json,.kmz,.gpx" />
                 </label>
-                <button id="processBtn" class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                    Process Selected Feature
-                </button>
             </div>
             
             <div id="loading-spinner" class="mt-4 hidden text-center">
@@ -144,7 +141,6 @@
             const messageBox = document.getElementById('messageBox');
             const messageText = document.getElementById('messageText');
             const closeMessageButton = document.getElementById('closeMessage');
-            const processBtn = document.getElementById('processBtn');
             
             // Feature group to store drawn shapes
             const drawnItems = new L.FeatureGroup();
@@ -152,16 +148,6 @@
 
             // Keep track of the currently selected layer
             let selectedLayer = null;
-
-            // Highlight and store selected layer
-            drawnItems.on('click', (e) => {
-                if (selectedLayer) {
-                    selectedLayer.setStyle({ color: '#2563eb' }); // Reset previous selection color
-                }
-                selectedLayer = e.layer;
-                selectedLayer.setStyle({ color: '#ff7800' }); // Highlight selected layer
-                processBtn.disabled = false;
-            });
             
             // Initialize Leaflet.draw control
             const drawControl = new L.Control.Draw({
@@ -178,25 +164,17 @@
                 }
             });
             map.addControl(drawControl);
+
+            // Listen for a click on any layer in the drawnItems group
+            drawnItems.on('click', async (e) => {
+                const feature = e.layer.toGeoJSON();
+                await processAndDisplayFeature(feature);
+            });
             
             // Listen for the 'draw:created' event
             map.on(L.Draw.Event.CREATED, function (event) {
                 const layer = event.layer;
                 drawnItems.addLayer(layer);
-                processBtn.disabled = true; // Disable button while drawing
-            });
-
-            // Re-enable button on draw stop
-            map.on(L.Draw.Event.DRAWSTOP, () => {
-                processBtn.disabled = false;
-            });
-
-            processBtn.addEventListener('click', async () => {
-                if (selectedLayer) {
-                    await processAndDisplayFeature(selectedLayer.toGeoJSON());
-                } else {
-                    showMessage('Please select a feature on the map to process.');
-                }
             });
 
             function showMessage(text) {
@@ -256,7 +234,7 @@
                 fileLabel.textContent = file.name;
 
                 // Clear existing features in the drawnItems layer group
-                drawnItems.clearLayers();
+                //drawnItems.clearLayers();
 
                 const reader = new FileReader();
                 reader.onload = async (e) => {
@@ -459,7 +437,7 @@
                 let numPoints = turf.coordAll(originalPolygon).length;
                 let tolerance = 0.001; // Initial tolerance
 
-                const maxSimplifyIterations = 10;
+                const maxSimplifyIterations = 20;
                 let iterations = 0;
                 while (numPoints > 100 && iterations < maxSimplifyIterations) {
                     simplifiedPolygon = turf.simplify(simplifiedPolygon, { tolerance: tolerance, highQuality: false });
@@ -471,7 +449,7 @@
                 // Buffer the simplified polygon to cover the original
                 let bufferedPolygon = null;
                 let bufferDistance = 0.001;
-                const maxBufferIterations = 10;
+                const maxBufferIterations = 20;
                 iterations = 0;
 
                 while (!bufferedPolygon && iterations < maxBufferIterations) {
@@ -495,7 +473,7 @@
                 numPoints = turf.coordAll(bufferedPolygon).length;
                 tolerance = 0.0001; // Start with a very small tolerance
 
-                const maxFinalSimplifyIterations = 15;
+                const maxFinalSimplifyIterations = 25;
                 iterations = 0;
                 while (numPoints > 100 && iterations < maxFinalSimplifyIterations) {
                     const tempSimplified = turf.simplify(finalPolygon, { tolerance: tolerance, highQuality: false });
@@ -513,8 +491,8 @@
 
             function processPolyline(originalPolyline) {
                 let finalPolygon = null;
-                let bufferDistance = 0.001;
-                const maxAttempts = 10;
+                let bufferDistance = 0.5;
+                const maxAttempts = 20;
                 let attempts = 0;
 
                 while (!finalPolygon && attempts < maxAttempts) {
@@ -523,7 +501,7 @@
                     let numPoints = turf.coordAll(simplifiedPolygon).length;
                     let simplifyTolerance = 0.0001;
 
-                    const maxSimplifyIterations = 15;
+                    const maxSimplifyIterations = 25;
                     let simplifyAttempts = 0;
 
                     // Simplify until we are under 100 points or hit max iterations
