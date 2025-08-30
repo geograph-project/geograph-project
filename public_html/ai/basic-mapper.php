@@ -66,7 +66,7 @@ print "<p>Query: <b>".htmlentities($_GET['query'])."</b>.</p>";
 		var hash = new L.Hash(map);
 
         var query = '<?php echo urlencode($_GET['query']); ?>';
-        var url = `/api-facetql.php?match=${query}&order=sequence+asc&limit=50&select=id,title,wgs84_lat,wgs84_long,hash`;
+        var url = `/api-facetql.php?match=${query}&order=sequence+asc&limit=50&select=id,realname,title,wgs84_lat,wgs84_long,hash`;
 
         fetch(url)
             .then(response => response.json())
@@ -75,11 +75,11 @@ print "<p>Query: <b>".htmlentities($_GET['query'])."</b>.</p>";
                     var markerBounds = L.latLngBounds();
                     data.rows.forEach(row => {
                         if (row.wgs84_lat && row.wgs84_long) {
-                            var latLng = L.latLng(row.wgs84_lat, row.wgs84_long);
+                            var latLng = L.latLng(rad2deg(row.wgs84_lat), rad2deg(row.wgs84_long));
                             var marker = L.marker(latLng).addTo(map);
                             var popupContent = `<a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">` +
-                                               `<img src="${getGeographImageUrl(row.id, row.hash)}" width="120" height="120"><br>` +
-                                               `${row.title}</a>`;
+                                               `<img src="${getGeographUrl(row.id, row.hash, 'med')}"><br>` +
+                                               `${escapeHtml(row.title)}</a> by ${escapeHtml(row.realname)}`;
                             marker.bindPopup(popupContent);
                             marker.bindTooltip(row.title);
                             markerBounds.extend(latLng);
@@ -92,12 +92,50 @@ print "<p>Query: <b>".htmlentities($_GET['query'])."</b>.</p>";
             });
         }
 
-        function getGeographImageUrl(id, hash) {
-            var abcdef = ('000000' + id).slice(-6);
-            var ab = abcdef.substring(0, 2);
-            var cd = abcdef.substring(2, 4);
-            return `https://s${id % 4}.geograph.org.uk/photos/${ab}/${cd}/${abcdef}_${hash}_120x120.jpg`;
+function rad2deg (angle) {
+    return angle * 57.29577951308232; // angle / Math.PI * 180
+}
+
+function getGeographUrl(gridimage_id, hash, size) {
+
+        yz=zeroFill(Math.floor(gridimage_id/1000000),2);
+        ab=zeroFill(Math.floor((gridimage_id%1000000)/10000),2);
+        cd=zeroFill(Math.floor((gridimage_id%10000)/100),2);
+        abcdef=zeroFill(gridimage_id,6);
+
+        if (yz == '00') {
+                fullpath="/photos/"+ab+"/"+cd+"/"+abcdef+"_"+hash;
+        } else {
+                fullpath="/geophotos/"+yz+"/"+ab+"/"+cd+"/"+abcdef+"_"+hash;
         }
+
+        switch(size) {
+                case 'full': return "https://s0.geograph.org.uk"+fullpath+".jpg"; break;
+                case 'med': return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_213x160.jpg"; break;
+                case 'small':
+                default: return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_120x120.jpg";
+        }
+}
+
+function zeroFill(number, width) {
+        width -= number.toString().length;
+        if (width > 0) {
+                return new Array(width + (/\./.test(number)?2:1)).join('0') + number;
+        }
+        return number + "";
+}
+
+function escapeHtml(unsafe) {
+    if (unsafe === null || unsafe === undefined) {
+        return '';
+    }
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
         AttachEvent(window,'load',loadmap,false);
         </script>
