@@ -76,14 +76,14 @@
     <div class="container bg-white rounded-lg shadow-xl p-8 my-8">
         <header class="text-center mb-6">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Geospatial Operations</h1>
-            <p class="text-gray-600">Upload a KML, GML, or GeoJSON file and click on features to generate new, simplified polygons.</p>
+            <p class="text-gray-600">Upload a KML, GML, GeoJSON, or GPX file and click on features to generate new, simplified polygons.</p>
         </header>
 
         <main>
             <div class="file-input-container">
                 <label for="fileInput" class="input-label">
                     <span id="file-label">Choose a file...</span>
-                    <input type="file" id="fileInput" class="hidden" accept=".kml,.gml,.geojson,.json,.kmz" />
+                    <input type="file" id="fileInput" class="hidden" accept=".kml,.gml,.geojson,.json,.kmz,.gpx" />
                 </label>
             </div>
             
@@ -118,7 +118,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
     <!-- JSZip for KMZ files -->
     <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
-    <!-- ToGeoJSON for KML and GML parsing -->
+    <!-- ToGeoJSON for KML and GPX parsing -->
     <script src="https://unpkg.com/@mapbox/togeojson@0.16.0/togeojson.js"></script>
 
     <script>
@@ -169,18 +169,33 @@
 
                     try {
                         const fileExtension = file.name.split('.').pop().toLowerCase();
+                        
+                        // Decode ArrayBuffer to string for XML-based files
+                        const decoder = new TextDecoder('utf-8');
+                        let fileString = '';
+                        if (fileExtension !== 'geojson' && fileExtension !== 'json') {
+                           fileString = decoder.decode(fileContent);
+                        } else {
+                            // GeoJSON/JSON can be parsed directly from the ArrayBuffer
+                            fileString = fileContent;
+                        }
+
                         if (fileExtension === 'geojson' || fileExtension === 'json') {
-                            geojsonData = JSON.parse(fileContent);
+                            geojsonData = JSON.parse(fileString);
                         } else if (fileExtension === 'kml') {
-                            const kml = new DOMParser().parseFromString(fileContent, 'text/xml');
+                            const kml = new DOMParser().parseFromString(fileString, 'text/xml');
                             geojsonData = toGeoJSON.kml(kml);
                             // Fallback to manual parsing if toGeoJSON fails to find features
                             if (!geojsonData || !geojsonData.features || geojsonData.features.length === 0) {
                                 geojsonData = parseKmlCoordinates(kml);
                             }
                         } else if (fileExtension === 'gml') {
-                            const gml = new DOMParser().parseFromString(fileContent, 'text/xml');
-                            geojsonData = toGeoJSON.gml(gml);
+                            const gml = new DOMParser().parseFromString(fileString, 'text/xml');
+                            // Directly use the custom GML parser
+                            geojsonData = parseGmlCoordinates(gml);
+                        } else if (fileExtension === 'gpx') {
+                            const gpx = new DOMParser().parseFromString(fileString, 'text/xml');
+                            geojsonData = toGeoJSON.gpx(gpx);
                         } else if (fileExtension === 'kmz') {
                             const zip = await JSZip.loadAsync(fileContent);
                             const kmlFile = zip.file(/\.kml$/i)[0];
@@ -274,7 +289,49 @@
                 reader.readAsArrayBuffer(file);
             });
             
-            // Custom KML parser for coordinates
+            // Custom parser for GML files
+            function parseGmlCoordinates(xmlDoc) {
+                const features = [];
+                // Search for a <posList> within a <LinearRing>
+                const posListText = xmlDoc.querySelector('gml\\:LinearRing gml\\:posList, LinearRing posList')?.textContent;
+
+                if (posListText) {
+                    // Coordinates in GML posList are typically lat, lon, height
+                    // We need to parse them and reverse the order to lon, lat for GeoJSON
+                    const coords = posListText.trim().split(/\s+/).map((c, i, arr) => {
+                        // GML posList can have different coordinate orders. This assumes lat lon.
+                        // We will need to check the srsName to be sure, but a common format is lat lon
+                        if (i % 2 === 0) {
+                            return [parseFloat(arr[i + 1]), parseFloat(c)];
+                        }
+                        return null;
+                    }).filter(c => c !== null);
+                    
+                    if (coords.length > 0) {
+                        // The GeoJSON specification requires the first and last points of a polygon to be the same
+                        // GML LinearRing doesn't always have this. We ensure it here.
+                        if (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]) {
+                            coords.push(coords[0]);
+                        }
+                        
+                        features.push({
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Polygon',
+                                coordinates: [coords]
+                            },
+                            properties: {}
+                        });
+                    }
+                }
+                
+                return {
+                    type: 'FeatureCollection',
+                    features: features
+                };
+            }
+            
+            // Custom KML parser for coordinates (as a fallback)
             function parseKmlCoordinates(xmlDoc) {
                 const features = [];
                 const coordinatesText = xmlDoc.querySelector('Polygon LinearRing coordinates, LineString coordinates')?.textContent;
@@ -304,14 +361,14 @@
             }
 
             function processPolygon(originalPolygon) {
-                // Simplify the polygon to get to under 100 points
+                // Simplify the original polygon to get to under 100 points
                 let simplifiedPolygon = originalPolygon;
                 let numPoints = turf.coordAll(originalPolygon).length;
                 let tolerance = 0.001; // Initial tolerance
 
-                const maxIterations = 10;
+                const maxSimplifyIterations = 20;
                 let iterations = 0;
-                while (numPoints > 100 && iterations < maxIterations) {
+                while (numPoints > 100 && iterations < maxSimplifyIterations) {
                     simplifiedPolygon = turf.simplify(simplifiedPolygon, { tolerance: tolerance, highQuality: false });
                     numPoints = turf.coordAll(simplifiedPolygon).length;
                     tolerance *= 1.5; // Increase tolerance for next try
@@ -321,7 +378,7 @@
                 // Buffer the simplified polygon to cover the original
                 let bufferedPolygon = null;
                 let bufferDistance = 0.001;
-                const maxBufferIterations = 10;
+                const maxBufferIterations = 20;
                 iterations = 0;
 
                 while (!bufferedPolygon && iterations < maxBufferIterations) {
@@ -340,31 +397,79 @@
                     bufferedPolygon = turf.buffer(simplifiedPolygon, 0.02);
                 }
 
-                return bufferedPolygon;
+                // Final simplification of the buffered polygon to ensure < 100 points
+                let finalPolygon = bufferedPolygon;
+                numPoints = turf.coordAll(bufferedPolygon).length;
+                tolerance = 0.0001; // Start with a very small tolerance
+
+                const maxFinalSimplifyIterations = 25;
+                iterations = 0;
+                while (numPoints > 100 && iterations < maxFinalSimplifyIterations) {
+                    const tempSimplified = turf.simplify(finalPolygon, { tolerance: tolerance, highQuality: false });
+                    // Only use the simplified version if it still contains the original
+                    if (turf.booleanContains(tempSimplified, originalPolygon)) {
+                        finalPolygon = tempSimplified;
+                        numPoints = turf.coordAll(finalPolygon).length;
+                    }
+                    tolerance *= 1.5;
+                    iterations++;
+                }
+
+console.log('result final', turf.coordAll(finalPolygon).length);
+
+                
+                return finalPolygon;
             }
 
             function processPolyline(originalPolyline) {
-                // Buffer the polyline to create a polygon
-                const bufferedPolyline = turf.buffer(originalPolyline, 0.01);
-                
-                // Check if simplification is needed
-                let numPoints = turf.coordAll(bufferedPolyline).length;
-                if (numPoints > 100) {
-                    let simplifiedPolyline = bufferedPolyline;
-                    let tolerance = 0.001;
-                    const maxIterations = 10;
-                    let iterations = 0;
-                    while (numPoints > 100 && iterations < maxIterations) {
-                        simplifiedPolyline = turf.simplify(simplifiedPolyline, { tolerance: tolerance, highQuality: false });
-                        numPoints = turf.coordAll(simplifiedPolyline).length;
-                        tolerance *= 1.5;
-                        iterations++;
-                    }
-                    return simplifiedPolyline;
-                }
+                let finalPolygon = null;
+                let bufferDistance = 0.5;
+                const maxAttempts = 10;
+                let attempts = 0;
 
-                return bufferedPolyline;
+                while (!finalPolygon && attempts < maxAttempts) {
+                    const bufferedPolygon = turf.buffer(originalPolyline, bufferDistance);
+                    let simplifiedPolygon = bufferedPolygon;
+                    let numPoints = turf.coordAll(simplifiedPolygon).length;
+                    let simplifyTolerance = 0.0001;
+
+console.log('simplified', turf.coordAll(simplifiedPolygon).length);
+
+                    const maxSimplifyIterations = 15;
+                    let simplifyAttempts = 0;
+
+                    // Simplify until we are under 100 points or hit max iterations
+                    while (numPoints > 100 && simplifyAttempts < maxSimplifyIterations) {
+                        const tempSimplified = turf.simplify(simplifiedPolygon, { tolerance: simplifyTolerance, highQuality: false });
+
+console.log('tempsimplified', turf.coordAll(tempSimplified).length);
+
+                        // Check if the simplified version still contains the original line
+                        if (turf.booleanContains(tempSimplified, originalPolyline)) {
+                            simplifiedPolygon = tempSimplified;
+                            numPoints = turf.coordAll(simplifiedPolygon).length;
+                        } else {
+                            // If it doesn't, we can't simplify further, so we break
+                            break;
+                        }
+                        simplifyTolerance *= 1.5;
+                        simplifyAttempts++;
+                    }
+
+                    // Check if the simplified polygon is under the point limit and contains the original line
+                    if (numPoints <= 100 && turf.booleanContains(simplifiedPolygon, originalPolyline)) {
+                        finalPolygon = simplifiedPolygon;
+                    } else {
+                        // If not, increase the buffer distance and try again
+                        bufferDistance *= 1.5;
+                    }
+                    attempts++;
+                }
+console.log('result final', turf.coordAll(finalPolygon).length);
+
+                return finalPolygon;
             }
+
         });
     </script>
 </body>
