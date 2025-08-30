@@ -41,7 +41,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$class = $_GET['c'];
 	$class = $db->Quote($class);
 	$data = $db->getAll("
-		SELECT tag_id,tagtext,count AS images FROM tag INNER JOIN tag_stat USING (tag_id) WHERE classification = $class ORDER BY tagtext LIMIT 100");
+		SELECT tag_id,tagtext,count AS images FROM tag INNER JOIN tag_stat USING (tag_id) WHERE classification = $class ORDER BY tagtext LIMIT 500");
 
 	print "<h2>Flagged Tags</h2>";
 	print "<p>These are tags flagged by AI as <b>potential</b> issue. They might be fine, this page is to confirm the ones that need further attention.";
