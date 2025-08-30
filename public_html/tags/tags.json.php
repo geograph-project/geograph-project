@@ -99,7 +99,7 @@ if (!empty($_GET['vector'])) {
 			            'returnDistance' => !empty($_GET['rerank']),
 			            'returnMetadata' => true,
 			        ];
-				if (!empty($_GET['mode']) && preg_match('/^(tag|subject|type|top|bucket)$/',$_GET['mode']))
+				if (!empty($_GET['mode']) && preg_match('/^(tag|subject|type|top|bucket|named)$/',$_GET['mode']))
 					$queryPayload['filter'] = array('src'=>$_GET['mode']);
 
 				$start  = microtime(true);

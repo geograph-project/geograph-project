@@ -46,6 +46,7 @@ $smarty = new GeographPage;
 <input name="filter" type=radio value="top" id="fContext"><label for="fContext">Context</label>
 <input name="filter" type=radio value="subject" id="fSubject" checked><label for="fSubject">Subject</label>
 <input name="filter" type=radio value="tag" id="fFreeform"><label for="fFreeform">Freeform Tags</label>
+<input name="filter" type=radio value="named" id="fNamed"><label for="fNamed">Named Tags</label>
 <input name="filter" type=radio value="all" id="fAll"><label for="fAll">All Combined</label>
 </fieldset>
 <br>
@@ -138,6 +139,10 @@ $(function () {
         .data( "autocomplete" )._renderItem = function( ul, item ) {
                 var re=new RegExp('('+$("#loc").val()+')','gi');
                 if (!item.title) item.title = '';
+		//if (m = item.label.match(/^subject:(.*)/))
+		//	item.title = "- image is marked as primary subject of "+m[1];
+		//if (m = item.label.match(/^top:(.*)/))
+		//	item.title = "- image has the general context";
                 return $( "<li></li>" )
                         .data( "item.autocomplete", item )
                         .append( "<a>" + item.label.replace(re,'<b>$1</b>') + " <small>" + item.title.replace(re,'<b>$1</b>') + "</small></a>" )
