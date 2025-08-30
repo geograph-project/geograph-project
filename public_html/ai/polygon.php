@@ -87,6 +87,9 @@
                     <span id="file-label">Choose a file...</span>
                     <input type="file" id="fileInput" class="hidden" accept=".kml,.gml,.geojson,.json,.kmz,.gpx" />
                 </label>
+                <button id="processBtn" class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    Process Selected Feature
+                </button>
             </div>
             
             <div id="loading-spinner" class="mt-4 hidden text-center">
@@ -129,7 +132,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Set the map's initial view to the UK
             const map = L.map('map').setView([54.0, -2.0], 6);
-            let originalLayer = null;
 
             // Add a base map tile layer
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -142,10 +144,24 @@
             const messageBox = document.getElementById('messageBox');
             const messageText = document.getElementById('messageText');
             const closeMessageButton = document.getElementById('closeMessage');
+            const processBtn = document.getElementById('processBtn');
             
             // Feature group to store drawn shapes
             const drawnItems = new L.FeatureGroup();
             map.addLayer(drawnItems);
+
+            // Keep track of the currently selected layer
+            let selectedLayer = null;
+
+            // Highlight and store selected layer
+            drawnItems.on('click', (e) => {
+                if (selectedLayer) {
+                    selectedLayer.setStyle({ color: '#2563eb' }); // Reset previous selection color
+                }
+                selectedLayer = e.layer;
+                selectedLayer.setStyle({ color: '#ff7800' }); // Highlight selected layer
+                processBtn.disabled = false;
+            });
             
             // Initialize Leaflet.draw control
             const drawControl = new L.Control.Draw({
@@ -167,12 +183,20 @@
             map.on(L.Draw.Event.CREATED, function (event) {
                 const layer = event.layer;
                 drawnItems.addLayer(layer);
-                
-                // Add click listener to the newly drawn feature
-                layer.on('click', async (e) => {
-                    const feature = layer.toGeoJSON();
-                    await processAndDisplayFeature(feature);
-                });
+                processBtn.disabled = true; // Disable button while drawing
+            });
+
+            // Re-enable button on draw stop
+            map.on(L.Draw.Event.DRAWSTOP, () => {
+                processBtn.disabled = false;
+            });
+
+            processBtn.addEventListener('click', async () => {
+                if (selectedLayer) {
+                    await processAndDisplayFeature(selectedLayer.toGeoJSON());
+                } else {
+                    showMessage('Please select a feature on the map to process.');
+                }
             });
 
             function showMessage(text) {
@@ -215,7 +239,7 @@
                     newLayer.on('click', (e) => {
                         map.removeLayer(e.target);
                     });
-
+                    
                     map.fitBounds(newLayer.getBounds());
                 } else {
                     showMessage('Could not process feature.');
@@ -231,10 +255,8 @@
                 loadingSpinner.classList.remove('hidden');
                 fileLabel.textContent = file.name;
 
-                // Clear previous layers
-                if (originalLayer) {
-                    map.removeLayer(originalLayer);
-                }
+                // Clear existing features in the drawnItems layer group
+                drawnItems.clearLayers();
 
                 const reader = new FileReader();
                 reader.onload = async (e) => {
@@ -294,36 +316,61 @@
                         loadingSpinner.classList.add('hidden');
                         return;
                     }
-
-                    originalLayer = L.geoJSON(geojsonData, {
-                        style: (feature) => {
-                            const geomType = feature.geometry.type;
-                            if (geomType === 'Polygon' || geomType === 'MultiPolygon') {
-                                return {
-                                    fillColor: '#60a5fa', // blue-400
-                                    color: '#2563eb',    // blue-600
-                                    weight: 2,
-                                    opacity: 0.8,
-                                    fillOpacity: 0.5,
-                                    fill: true
-                                };
-                            } else if (geomType === 'LineString' || geomType === 'MultiLineString') {
-                                return {
-                                    color: '#1d4ed8', // blue-700
-                                    weight: 4,
-                                    opacity: 0.7
-                                };
+                    
+                    // Add imported features to the drawnItems layer group and fit bounds
+                    if (geojsonData.type === 'FeatureCollection' && geojsonData.features) {
+                        L.geoJSON(geojsonData, {
+                            style: (feature) => {
+                                const geomType = feature.geometry.type;
+                                if (geomType === 'Polygon' || geomType === 'MultiPolygon') {
+                                    return {
+                                        fillColor: '#60a5fa', // blue-400
+                                        color: '#2563eb',    // blue-600
+                                        weight: 2,
+                                        opacity: 0.8,
+                                        fillOpacity: 0.5,
+                                        fill: true
+                                    };
+                                } else if (geomType === 'LineString' || geomType === 'MultiLineString') {
+                                    return {
+                                        color: '#1d4ed8', // blue-700
+                                        weight: 4,
+                                        opacity: 0.7
+                                    };
+                                }
+                                return {};
                             }
-                            return {};
-                        },
-                        onEachFeature: (feature, layer) => {
-                            layer.on('click', async (e) => {
-                                await processAndDisplayFeature(feature);
-                            });
-                        }
-                    }).addTo(map);
-
-                    map.fitBounds(originalLayer.getBounds());
+                        }).eachLayer(layer => {
+                            drawnItems.addLayer(layer);
+                        });
+                    } else if (geojsonData.type === 'Feature') {
+                        L.geoJSON(geojsonData, {
+                            style: (feature) => {
+                                const geomType = feature.geometry.type;
+                                if (geomType === 'Polygon' || geomType === 'MultiPolygon') {
+                                    return {
+                                        fillColor: '#60a5fa', // blue-400
+                                        color: '#2563eb',    // blue-600
+                                        weight: 2,
+                                        opacity: 0.8,
+                                        fillOpacity: 0.5,
+                                        fill: true
+                                    };
+                                } else if (geomType === 'LineString' || geomType === 'MultiLineString') {
+                                    return {
+                                        color: '#1d4ed8', // blue-700
+                                        weight: 4,
+                                        opacity: 0.7
+                                    };
+                                }
+                                return {};
+                            }
+                        }).eachLayer(layer => {
+                            drawnItems.addLayer(layer);
+                        });
+                    }
+                    
+                    map.fitBounds(drawnItems.getBounds());
                     loadingSpinner.classList.add('hidden');
                 };
 
@@ -412,7 +459,7 @@
                 let numPoints = turf.coordAll(originalPolygon).length;
                 let tolerance = 0.001; // Initial tolerance
 
-                const maxSimplifyIterations = 20;
+                const maxSimplifyIterations = 10;
                 let iterations = 0;
                 while (numPoints > 100 && iterations < maxSimplifyIterations) {
                     simplifiedPolygon = turf.simplify(simplifiedPolygon, { tolerance: tolerance, highQuality: false });
@@ -424,7 +471,7 @@
                 // Buffer the simplified polygon to cover the original
                 let bufferedPolygon = null;
                 let bufferDistance = 0.001;
-                const maxBufferIterations = 20;
+                const maxBufferIterations = 10;
                 iterations = 0;
 
                 while (!bufferedPolygon && iterations < maxBufferIterations) {
@@ -448,7 +495,7 @@
                 numPoints = turf.coordAll(bufferedPolygon).length;
                 tolerance = 0.0001; // Start with a very small tolerance
 
-                const maxFinalSimplifyIterations = 25;
+                const maxFinalSimplifyIterations = 15;
                 iterations = 0;
                 while (numPoints > 100 && iterations < maxFinalSimplifyIterations) {
                     const tempSimplified = turf.simplify(finalPolygon, { tolerance: tolerance, highQuality: false });
@@ -466,8 +513,8 @@
 
             function processPolyline(originalPolyline) {
                 let finalPolygon = null;
-                let bufferDistance = 0.5;
-                const maxAttempts = 20;
+                let bufferDistance = 0.001;
+                const maxAttempts = 10;
                 let attempts = 0;
 
                 while (!finalPolygon && attempts < maxAttempts) {
@@ -476,7 +523,7 @@
                     let numPoints = turf.coordAll(simplifiedPolygon).length;
                     let simplifyTolerance = 0.0001;
 
-                    const maxSimplifyIterations = 25;
+                    const maxSimplifyIterations = 15;
                     let simplifyAttempts = 0;
 
                     // Simplify until we are under 100 points or hit max iterations
