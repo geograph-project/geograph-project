@@ -213,11 +213,41 @@
                         }
                     }).addTo(map);
 
-                    // Add click event to the new red layer to remove it
+                    // Add a click event to the new red layer to generate the URL
                     newLayer.on('click', (e) => {
+                        const clickedLayer = e.target;
+                        const geojson = clickedLayer.toGeoJSON();
+                        
+                        // Handle both Feature and FeatureCollection types
+                        const featureToProcess = geojson.type === 'FeatureCollection' ? geojson.features[0] : geojson;
+                        
+                        if (!featureToProcess || !featureToProcess.geometry) return;
+
+                        const coordinates = featureToProcess.geometry.coordinates;
+                        let formattedCoords = '';
+
+                        if (featureToProcess.geometry.type === 'Polygon') {
+                            // For a simple Polygon, coordinates is an array of rings. We take the first one.
+                            formattedCoords = coordinates[0].map(coord => {
+                                return `${coord[0].toFixed(5)},${coord[1].toFixed(5)}`;
+                            }).join('+');
+                        } else if (featureToProcess.geometry.type === 'MultiPolygon') {
+                            // For a MultiPolygon, coordinates is an array of polygons, each containing an array of rings.
+                            // We need to flatten this structure to get all coordinate pairs.
+                            const allCoords = coordinates.flat(2);
+                            formattedCoords = allCoords.map(coord => {
+                                return `${coord[0].toFixed(5)},${coord[1].toFixed(5)}`;
+                            }).join('+');
+                        }
+
+                        if (formattedCoords) {
+                            // Construct the URL and open in a new tab
+                            const url = `basic-mapper.php?polygon=${formattedCoords}`;
+                            window.open(url, '_blank');
+                        }
                         map.removeLayer(e.target);
                     });
-                    
+
                     map.fitBounds(newLayer.getBounds());
                 } else {
                     showMessage('Could not process feature.');
@@ -367,16 +397,21 @@
                 const posListText = xmlDoc.querySelector('gml\\:LinearRing gml\\:posList, LinearRing posList')?.textContent;
 
                 if (posListText) {
-                    // Coordinates in GML posList are typically lat, lon, height
-                    // We need to parse them and reverse the order to lon, lat for GeoJSON
-                    const coords = posListText.trim().split(/\s+/).map((c, i, arr) => {
-                        // GML posList can have different coordinate orders. This assumes lat lon.
-                        // We will need to check the srsName to be sure, but a common format is lat lon
-                        if (i % 2 === 0) {
-                            return [parseFloat(arr[i + 1]), parseFloat(c)];
+                    // Split the string by whitespace to get all coordinate components
+                    const coordsArray = posListText.trim().split(/\s+/);
+                    const coords = [];
+
+                    // The GML file uses a 3D coordinate list: lat lon alt
+                    // We need to iterate and correctly pair lat and lon, ignoring altitude
+                    for (let i = 0; i < coordsArray.length; i += 3) {
+                        const lat = parseFloat(coordsArray[i]);
+                        const lon = parseFloat(coordsArray[i+1]);
+                        
+                        // Push the [lon, lat] pair, which is the standard for GeoJSON
+                        if (!isNaN(lon) && !isNaN(lat)) {
+                            coords.push([lon, lat]);
                         }
-                        return null;
-                    }).filter(c => c !== null);
+                    }
                     
                     if (coords.length > 0) {
                         // The GeoJSON specification requires the first and last points of a polygon to be the same
@@ -437,6 +472,8 @@
                 let numPoints = turf.coordAll(originalPolygon).length;
                 let tolerance = 0.001; // Initial tolerance
 
+console.log('numPoints',numPoints);
+
                 const maxSimplifyIterations = 20;
                 let iterations = 0;
                 while (numPoints > 100 && iterations < maxSimplifyIterations) {
@@ -485,7 +522,9 @@
                     tolerance *= 1.5;
                     iterations++;
                 }
-                
+
+console.log('numPoints Final',numPoints);
+
                 return finalPolygon;
             }
 

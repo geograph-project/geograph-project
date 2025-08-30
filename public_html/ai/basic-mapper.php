@@ -29,12 +29,12 @@ $smarty = new GeographPage;
 $smarty->display('_std_begin.tpl');
 
 if (empty($_GET['query']))
-	$_GET['query'] = 'bridge';
+	$_GET['query'] = 'geograph';
 
 //simplify the query a bit, in the vague hope of increasing cachablity of tiles!
 $_GET['query'] = strtolower(trim(preg_replace('/\s+/',' ',$_GET['query'])));
 
-print "<p>Query: <b>".htmlentities($_GET['query'])."</b>.</p>";
+print "<p>Query: <b>".htmlentities($_GET['query'])."</b>. <span id=countPrompt></span></p>";
 
 ?>
 
@@ -65,8 +65,32 @@ print "<p>Query: <b>".htmlentities($_GET['query'])."</b>.</p>";
 
 		var hash = new L.Hash(map);
 
-        var query = '<?php echo urlencode($_GET['query']); ?>';
-        var url = `/api-facetql.php?match=${query}&order=sequence+asc&limit=50&select=id,realname,title,wgs84_lat,wgs84_long,hash`;
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('query') || 'geograph';
+        const polygonStr = urlParams.get('polygon');
+
+//        document.getElementById('query-display').innerText = query;
+
+        var url = `/api-facetql.php?match=${encodeURIComponent(query)}&order=sequence+asc&limit=50&select=id,title,wgs84_lat,wgs84_long,hash`;
+
+        if (polygonStr) {
+            var latlngs = polygonStr.split(' ').map(function(coord) {
+                var pair = coord.split(',');
+                return L.latLng(parseFloat(pair[1]), parseFloat(pair[0]));
+            });
+            L.polygon(latlngs, {color: 'red', stroke:0, opacity: 0.2, fillOpacity: 0.2}).addTo(map);
+
+            var radianCoords = latlngs.map(function(latlng) {
+                var lngRad = (latlng.lng * Math.PI / 180).toFixed(6);
+                var latRad = (latlng.lat * Math.PI / 180).toFixed(6);
+                return [lngRad, latRad];
+            });
+            var radianList = radianCoords.flat().join(',');
+            var where = `CONTAINS(GEOPOLY2D(${radianList}),wgs84_long,wgs84_lat)`;
+            //url += `&where=${encodeURIComponent(where)}`;
+            //wreirdly sphinx/manticore, cant do the expressons direct in where!, need adding to select!
+	    url += `,${encodeURIComponent(where)}+as+inside&where=${encodeURIComponent('inside=1')}`;
+        }
 
         fetch(url)
             .then(response => response.json())
@@ -88,6 +112,8 @@ print "<p>Query: <b>".htmlentities($_GET['query'])."</b>.</p>";
                     if (markerBounds.isValid()) {
                         map.fitBounds(markerBounds);
                     }
+                    if (data.meta && data.meta.total_found)
+			document.getElementById('countPrompt').innerText = "Showing "+data.rows.length+" of "+data.meta.total_found;
                 }
             });
         }
