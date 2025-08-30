@@ -282,7 +282,7 @@ function openSearch(open) {
 	}
 }
 function openMap(open) {
-	var url = "/mapper/clip-query.php";
+	var url = "/ai/clip-mapper.php";
 	let query = $('#query').val();
 	url = url + '?query='+encodeURIComponent(query);
 	if (open) {
