@@ -6,6 +6,8 @@
     <title>Geospatial Operations</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <!-- Leaflet.draw CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -76,7 +78,7 @@
     <div class="container bg-white rounded-lg shadow-xl p-8 my-8">
         <header class="text-center mb-6">
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Geospatial Operations</h1>
-            <p class="text-gray-600">Upload a KML, GML, GeoJSON, or GPX file and click on features to generate new, simplified polygons.</p>
+            <p class="text-gray-600">Upload a KML, GML, GeoJSON, or GPX file, or draw directly on the map to create new, simplified polygons.</p>
         </header>
 
         <main>
@@ -114,6 +116,8 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet.draw JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <!-- Turf.js for geospatial operations -->
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
     <!-- JSZip for KMZ files -->
@@ -123,7 +127,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const map = L.map('map').setView([0, 0], 2);
+            // Set the map's initial view to the UK
+            const map = L.map('map').setView([54.0, -2.0], 6);
             let originalLayer = null;
 
             // Add a base map tile layer
@@ -137,6 +142,38 @@
             const messageBox = document.getElementById('messageBox');
             const messageText = document.getElementById('messageText');
             const closeMessageButton = document.getElementById('closeMessage');
+            
+            // Feature group to store drawn shapes
+            const drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+            
+            // Initialize Leaflet.draw control
+            const drawControl = new L.Control.Draw({
+                edit: {
+                    featureGroup: drawnItems
+                },
+                draw: {
+                    polygon: true,
+                    polyline: true,
+                    rectangle: false,
+                    circle: false,
+                    circlemarker: false,
+                    marker: false,
+                }
+            });
+            map.addControl(drawControl);
+            
+            // Listen for the 'draw:created' event
+            map.on(L.Draw.Event.CREATED, function (event) {
+                const layer = event.layer;
+                drawnItems.addLayer(layer);
+                
+                // Add click listener to the newly drawn feature
+                layer.on('click', async (e) => {
+                    const feature = layer.toGeoJSON();
+                    await processAndDisplayFeature(feature);
+                });
+            });
 
             function showMessage(text) {
                 messageText.textContent = text;
@@ -148,6 +185,43 @@
             }
             
             closeMessageButton.addEventListener('click', hideMessage);
+            
+            async function processAndDisplayFeature(feature) {
+                loadingSpinner.classList.remove('hidden');
+                await new Promise(resolve => setTimeout(resolve, 10));
+                
+                let newFeature = null;
+                const geomType = feature.geometry.type;
+
+                if (geomType === 'Polygon' || geomType === 'MultiPolygon') {
+                    newFeature = processPolygon(feature);
+                } else if (geomType === 'LineString' || geomType === 'MultiLineString') {
+                    newFeature = processPolyline(feature);
+                }
+
+                if (newFeature) {
+                    const newLayer = L.geoJSON(newFeature, {
+                        style: {
+                            fillColor: '#f87171', // red-400
+                            color: '#dc2626',    // red-600
+                            weight: 3,
+                            opacity: 0.8,
+                            fillOpacity: 0.7,
+                            fill: true
+                        }
+                    }).addTo(map);
+
+                    // Add click event to the new red layer to remove it
+                    newLayer.on('click', (e) => {
+                        map.removeLayer(e.target);
+                    });
+
+                    map.fitBounds(newLayer.getBounds());
+                } else {
+                    showMessage('Could not process feature.');
+                }
+                loadingSpinner.classList.add('hidden');
+            }
 
             fileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
@@ -244,35 +318,7 @@
                         },
                         onEachFeature: (feature, layer) => {
                             layer.on('click', async (e) => {
-                                loadingSpinner.classList.remove('hidden');
-                                await new Promise(resolve => setTimeout(resolve, 10)); // Allow UI to update
-                                const geomType = feature.geometry.type;
-                                let newFeature = null;
-                                
-                                if (geomType === 'Polygon' || geomType === 'MultiPolygon') {
-                                    newFeature = processPolygon(feature);
-                                } else if (geomType === 'LineString' || geomType === 'MultiLineString') {
-                                    newFeature = processPolyline(feature);
-                                }
-
-                                if (newFeature) {
-                                    const newLayer = L.geoJSON(newFeature, {
-                                        style: {
-                                            fillColor: '#f87171', // red-400
-                                            color: '#dc2626',    // red-600
-                                            weight: 3,
-                                            opacity: 0.8,
-                                            fillOpacity: 0.7,
-                                            fill: true
-                                        }
-                                    }).addTo(map);
-                                    
-                                    // Make sure the new layer is visible
-                                    map.fitBounds(newLayer.getBounds());
-                                } else {
-                                    showMessage('Could not process feature.');
-                                }
-                                loadingSpinner.classList.add('hidden');
+                                await processAndDisplayFeature(feature);
                             });
                         }
                     }).addTo(map);
@@ -414,9 +460,6 @@
                     tolerance *= 1.5;
                     iterations++;
                 }
-
-console.log('result final', turf.coordAll(finalPolygon).length);
-
                 
                 return finalPolygon;
             }
@@ -424,7 +467,7 @@ console.log('result final', turf.coordAll(finalPolygon).length);
             function processPolyline(originalPolyline) {
                 let finalPolygon = null;
                 let bufferDistance = 0.5;
-                const maxAttempts = 10;
+                const maxAttempts = 20;
                 let attempts = 0;
 
                 while (!finalPolygon && attempts < maxAttempts) {
@@ -433,16 +476,12 @@ console.log('result final', turf.coordAll(finalPolygon).length);
                     let numPoints = turf.coordAll(simplifiedPolygon).length;
                     let simplifyTolerance = 0.0001;
 
-console.log('simplified', turf.coordAll(simplifiedPolygon).length);
-
-                    const maxSimplifyIterations = 15;
+                    const maxSimplifyIterations = 25;
                     let simplifyAttempts = 0;
 
                     // Simplify until we are under 100 points or hit max iterations
                     while (numPoints > 100 && simplifyAttempts < maxSimplifyIterations) {
                         const tempSimplified = turf.simplify(simplifiedPolygon, { tolerance: simplifyTolerance, highQuality: false });
-
-console.log('tempsimplified', turf.coordAll(tempSimplified).length);
 
                         // Check if the simplified version still contains the original line
                         if (turf.booleanContains(tempSimplified, originalPolyline)) {
@@ -465,11 +504,9 @@ console.log('tempsimplified', turf.coordAll(tempSimplified).length);
                     }
                     attempts++;
                 }
-console.log('result final', turf.coordAll(finalPolygon).length);
 
                 return finalPolygon;
             }
-
         });
     </script>
 </body>
