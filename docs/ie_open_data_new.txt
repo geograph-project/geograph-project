@@ -6,11 +6,15 @@
 # OSNI Open Data - Placename Gazetteer LPS Open Government Data Licence.
 # https://www.data.gov.uk/dataset/25ac7a78-af01-4727-b8b7-265ba8ee96b4/osni-open-data-gazetteer-place-names
 
-
 #using a (no longer available) script that originally imported from 117e5c3d0f0b41208d1caec1ddbd1330_1.kml and a608be9bebfb41668096d00cd0e0f8b0_2.kml
 # ... being careful to extract the IG coordinates for the OSi dataset. 
 
+
+# ... ie_open_places was an earlier attempt, that wasnt as good; ie_open_data is the second (more succesfull) attempt!
+
 ################################
+
+create table ie_open_data select ... from ie_open_places;
 
 alter table ie_open_data add country varchar(64) not null, add island_name varchar(64) default null;
 

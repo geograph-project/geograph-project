@@ -26,7 +26,8 @@ update gaz_locate inner join gaz_dup on (substring_index(def_nam,'/',-1) = stem)
 
 alter table gaz_locate modify `full_county` varchar(128) not null, modify f_code varchar(32) not null;
 
-insert into gaz_locate select id as seq, '' as km_ref, name as def_nam, county as full_county, '' as tile_ref, 2 as reference_index, e as east, n as north, town_class as f_code, 0 as has_dup from ie_open_data order by rand() limit 1000;
+insert into gaz_locate select id as seq, '' as km_ref, name as def_nam,
+ county as full_county, '' as tile_ref, 2 as reference_index, e as east, n as north, town_class as f_code, 0 as has_dup from ie_open_data order by rand() limit 1000;
 ##############################
 
 -- use scripts/make-fake-places.php!!
@@ -51,4 +52,15 @@ Rows matched: 122  Changed: 122  Warnings: 0
 -- and the other way!
 
 update gaz_locate l inner join ie_open_data on (def_nam = name) set l.has_dup=5 where reference_index = 1 and l.has_dup=0;
+
+##############################
+
+-- in hindsight, should add ALL cities, so they can be played on their own, which doesnt matter if a smaller place by same name!
+-- when playing the any game, explicity excludes dups
+-- (only Bangor is the only  'city' dup)
+
+insert into gaz_locate select NULL as id,seq,km_ref,def_nam,full_county,tile_ref,1 as reference_index,east,north,f_code,has_dup from os_gaz where f_code = 'C' and has_dup=1;
+
+-- also make sure add the missing ireland cities!
+insert into gaz_locate select NULL as id, id as seq, '' as km_ref, name as def_nam, county as full_county, '' as tile_ref, 2 as reference_index, e as east, n as north, 'City' as f_code, 0 as has_dup from ie_open_data  where name = 'Armagh' OR name = 'waterford';
 

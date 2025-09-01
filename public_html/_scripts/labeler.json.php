@@ -285,7 +285,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 					unset($imagelist->images[$i]->comment);
 				}
 
-		//square thumbnail (default!)
+		//square 'AI' thumbnail (default!)
 			} elseif (empty($_GET['full'])) {
 				//some we know already exist
 				if (!empty($image->skip_fs)) {
@@ -299,6 +299,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 				}
 
 				if (basename($imagelist->images[$i]->fullpath) == 'error.jpg') {
+					//insert a row, otherwise will just keep happening!
+					$db->Execute('REPLACE INTO gridimage_label SET gridimage_id=?, model=?, label=?, score=0', array($image->gridimage_id, $_GET['model'], 'Error') );
+
 					debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
 					continue;
 				}
