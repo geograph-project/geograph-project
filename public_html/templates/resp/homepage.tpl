@@ -156,15 +156,10 @@ div.homepage {
 		class="nowrap">{$stats.images|thousends} images</b> covering <b span="nowrap">{$stats.squares|thousends} grid squares</b>, or <b 
 		class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
 
-	<div class="interestBox homepageBox" style="vertical-align:middle">
-		Watch our Geograph Intro video, on YouTube: 
-		<a href="https://www.youtube.com/watch?v=Y6QNJDEQ58Y">
-		 <img alt="Geograph Britain and Ireland - Intro" style="vertical-align:middle;border:1px solid gray;border-radius:6px" src="https://i3.ytimg.com/vi/Y6QNJDEQ58Y/mqdefault.jpg" width=100 height=56></a>
-		</a>
-	</div>
-
         {if $prompt}
-                <p style="text-align:center">{$prompt}</p>
+		<div class="interestBox homepageBox" style="background-color:#e4e4fc;">
+	                {$prompt}
+		</div>
         {/if}
 
 	<div class="pictureOfTheDay">
@@ -228,6 +223,14 @@ div.homepage {
 
 	</div>
 	<br>
+
+	<div class="interestBox homepageBox" style="vertical-align:middle">
+		Watch our Geograph Intro video, on YouTube: 
+		<a href="https://www.youtube.com/watch?v=Y6QNJDEQ58Y">
+		 <img alt="Geograph Britain and Ireland - Intro" style="vertical-align:middle;border:1px solid gray;border-radius:6px" src="https://i3.ytimg.com/vi/Y6QNJDEQ58Y/mqdefault.jpg" width=100 height=56></a>
+		</a>
+	</div>
+	<br><br>
 
 	{if $recentcount}
 	        <div id="photo_block">
