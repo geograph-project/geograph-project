@@ -9,7 +9,7 @@
 <h2>Your personalised Geograph Calendar for {$year}</h2>
 
 <div style="clear:both;float:right;width:360px;margin-right:20px;line-height:0.6;background-color:#e4e4fc;padding:10px;text-align:center">
-	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Calendar2024_cover1.jpg" width=360><br><br><br>
+	<img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/cal_cover_2026.jpg" width=360><br><br><br>
        <img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Imagethumb2023.jpg" width=360><br><br>
        <img src="https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Start_Monththumb2023.jpg" width=360><br><br>
 	(the actual calendar will display year <b>{$year}</b>)<br><br>
@@ -90,6 +90,12 @@ overrun the panel. Individual photographer names will appear on the appropriate 
 	<h1>Sorry, we are not currently accepting new orders</h1>
 {else}
 	<a href="start.php" style="font-size:large;background-color:#000066;color:yellow;padding:10px;border-radius:10px">Create a new Calendar Now &gt; &gt;</a>
+	{if $date && $date.end_date && $date.end_date > '2000'}<br><br>
+		Final deadline for orders 23:59 on <b>{$date.end_date|date_format:"%A %e %B %Y"}</b>.
+	{/if}
+
+
+
 
 	<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
 	<p>{newwin href="/calendar/tips.php" text="Tips Page"} (in new window)</p>
