@@ -14,12 +14,16 @@ representative photographs and information for every square kilometre of <a href
 
 <div style="text-align:center; padding:10px">Since 2005, <b class="nowrap">{$stats.users|thousends} contributors</b> have submitted <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
 
+	{if $prompt}
+		<p style="text-align:center;">{$prompt}</p>
+	{/if}
+
 	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<div style="position:relative;float:right;margin-right:10px">
 				<a href="/stuff/daily.php" style="color:white;font-size:0.9em;text-decoration:underline gray" title="Previous Photos of the Day">view previous &gt;</a>
 			</div>
-			<h3 style="margin-top:0;margin-bottom:8px">{$ptitles.$ptitle}</h3>
+			<h3 style="margin-top:0;margin-bottom:8px">{$ptitle}</h3>
 
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
@@ -33,7 +37,7 @@ representative photographs and information for every square kilometre of <a href
 						<div>
 						{foreach from=$maprow key=x item=mapcell}
 						<a href="/mapbrowse.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
-						alt="Clickable map" ismap="ismap" title="{$messages.$m}" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+						alt="Clickable map" ismap="ismap" title="{$message}" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 						{/foreach}
 
 						{if $marker}

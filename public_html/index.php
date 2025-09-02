@@ -234,23 +234,30 @@ if (!$smarty->is_cached($template, $cacheid))
 // misc
 	$smarty->assign('rss_url','/discuss/syndicator.php?forum=1&amp;first=1');
 
-	$smarty->assign('messages', array(
-		0=>'click map to zoom in',
-		1=>'click me and explore!',
-		2=>'I\'m zoomable - click me',
-		3=>'click to explore map',
-		4=>'click to see bigger map',
-		5=>'click for more detail'));
-	$smarty->assign('m',rand(0,5));
+	$messages = array(
+		'click map to zoom in',
+		'click me and explore!',
+		'I\'m zoomable - click me',
+		'click to explore map',
+		'click to see bigger map',
+		'click for more detail');
+	$smarty->assign('message',$messages[array_rand($messages)]);
 
-	$smarty->assign('ptitles', array(
-		0=>'Photograph of the day',
-		1=>'Photograph for today',
-		2=>'Featured photograph',
-		3=>"Today's photo",
-		4=>'One photo',
-		5=>'Selected photograph'));
-	$smarty->assign('ptitle',rand(0,5));
+	$ptitles = array(
+		'Photograph of the day',
+		'Photograph for today',
+		'Featured photograph',
+		"Today's photo",
+		'One photo',
+		'Selected photograph');
+	$smarty->assign('ptitle',$ptitles[array_rand($ptitles)]);
+
+	$prompts = array(
+		"Order your own <a href=\"/calendar/\">unique 2026 calendar</a>!<br> We've just opened orders for custom-printed calendars featuring images from Geograph.",
+		"Create a one-of-a-kind 2026 calendar with your favorite images from Geograph. We've just <a href=\"/calendar/\">opened orders</a> for custom printing!",
+		"<a href=\"/calendar/\">Custom 2026 Calendars</a> are now available! Create your own unique calendar with images from Geograph today.",
+	);
+	$smarty->assign('prompt',$prompts[array_rand($prompts)]);
 
 /////////////////////////////
 // featured collection

@@ -163,13 +163,17 @@ div.homepage {
 		</a>
 	</div>
 
+        {if $prompt}
+                <p style="text-align:center">{$prompt}</p>
+        {/if}
+
 	<div class="pictureOfTheDay">
 		<div class="imageContainer shadow">
 		        <div class="interestBox titleBox">
 		                <div class="rightLinks">
 		                        <a href="/stuff/daily.php" title="Previous Photos of the Day">view previous &gt;</a>
 		                </div>
-		                <h3>{$ptitles.$ptitle}</h3>
+		                <h3>{$ptitle}</h3>
 		        </div>
 
 	                <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a><br>
@@ -191,7 +195,7 @@ div.homepage {
                                                 <div>
                                                 {foreach from=$maprow key=x item=mapcell}
                                                 <a href="/mapbrowse.php?new=1&amp;o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
-                                                alt="Clickable map" ismap="ismap" title="{$messages.$m}" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+                                                alt="Clickable map" ismap="ismap" title="{$message}" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
                                                 {/foreach}
 
                                                 {if $marker}
