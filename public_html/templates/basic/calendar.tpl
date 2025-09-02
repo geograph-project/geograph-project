@@ -79,10 +79,12 @@ overrun the panel. Individual photographer names will appear on the appropriate 
 <p>You have the option to have a calendar title which will appear on the front cover.
 
 {if $date}
-	<p><b>Calendars are priced at &pound;{$date.price|string_format:"%.2f"} each, which includes a donation to Geograph funds.
-	There is a separate postage and packing charge of &pound;{$date.postage_cost|string_format:"%.2f"} per order.</b>
-	There is a minimum quantity of {$date.minimum_order} calendars per person, which can include more than one version (two orders of 1 calendar each).
-	<br><br>
+	<ul>
+		<li><b>Calendars are priced at &pound;{$date.price|string_format:"%.2f"} each</b>, which includes a donation to Geograph funds.</li>
+		<li>There is a separate <b>postage and packing charge of &pound;{$date.postage_cost|string_format:"%.2f"} per delivery.</b></li>
+		<li>You will only be changed postage and packing once for multiple <b>order/deliveries to the same address</b> (new this year).</li>
+		<li>There is a <b>minimum quantity of {$date.minimum_order} calendars per person</b>, which can include more than one version (two orders of 1 calendar each).</li>
+	</ul>
 {/if}
 
 <p>
@@ -94,12 +96,8 @@ overrun the panel. Individual photographer names will appear on the appropriate 
 		Final deadline for orders 23:59 on <b>{$date.end_date|date_format:"%A %e %B %Y"}</b>.
 	{/if}
 
-
-
-
-	<p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
-	<p>{newwin href="/calendar/tips.php" text="Tips Page"} (in new window)</p>
-	<br><br>
+	<p>{newwin href="/calendar/help.php" text="Open Help Page"} &amp;
+	{newwin href="/calendar/tips.php" text="Tips Page"} (in new window)</p>
 {/if}
 
 {if $list}
@@ -118,7 +116,6 @@ overrun the panel. Individual photographer names will appear on the appropriate 
 	</table>
 
 	<p>You will be able to edit the order right up to the time the order is has been processed (even after payment). Processing however may happen at any time after payment, once processed, will no longer be able to edit.
-
 {/if}
 {/dynamic}
 

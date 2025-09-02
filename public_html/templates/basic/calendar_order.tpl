@@ -6,7 +6,7 @@
 
 <p>{newwin href="/calendar/help.php" text="Open Help Page"} (in new window)</p>
 
-<form method=post>
+<form method=post name="theForm">
 
 <fieldset style="background-color:#eee">
 	<legend>Edit Calendar</legend>
@@ -106,6 +106,30 @@ background-image:url("{$image->_getFullPath(true,true)}");background-size:cover;
 
 Price per calendar: &pound;{$date.price|string_format:"%.2f"}<br>
 Postage &amp; Packing: &pound;{$date.postage_cost|string_format:"%.2f"}<br>
+
+{if $previous}
+	Note: If deliver to: 
+		{foreach from=$previous item=row}
+			<a href=# onclick="return useAddress({$row.json|escape:"html"})">{$row.delivery_name|escape:"html"}, {$row.delivery_line1|escape:"html"}, {$row.delivery_postcode|escape:"html"}</a>
+		{/foreach}
+
+	Can get free postage &amp; packaging. (click to use address below)
+	<hr>
+	<br>
+	<script>{literal}
+	function useAddress(obj) {
+		let keys = Object.keys(obj);
+		let form = document.forms['theForm'];
+		for(let q=0;q<keys.length;q++) {
+			let key = keys[q];
+			if (form.elements[key])
+				form.elements[key].value = obj[key];
+		}
+		return false;
+	}
+	</script>{/literal}
+{/if}
+
 
 <div class="field">
         {if $errors.delivery_name}<div class="formerror"><p class="error">{$errors.delivery_name}</p>{/if}

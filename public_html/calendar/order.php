@@ -58,6 +58,10 @@ if (empty($row['alpha'])) {
 	$row['alpha'] = chr(65+$idx); //starting at A
 }
 
+$previous = $db->getAll("SELECT delivery_name,delivery_line1,delivery_line2,delivery_line3,delivery_line4,delivery_postcode
+FROM calendar WHERE user_id = {$USER->user_id} AND year = $year AND calendar_id != {$row['calendar_id']} AND paid > '2000-01-01' ");
+
+
 ####################################
 
 if (!empty($_POST)) {
@@ -103,6 +107,19 @@ if (!empty($_POST)) {
 			//this needs converting to IGN. The return URL doesnt contain in any identifiers
 			$_SESSION['calendar_id'] = $row['calendar_id'];
 
+
+if (!empty($previous)) {
+        foreach ($previous as $prow) {
+		$match = true; //assume yes, because if any mismatch, needs to fail!
+		foreach ($prow as $key => $value)
+			if ($_POST[$key] != $value)
+				$match = false;
+		if ($match) {
+			$date['postage_cost'] = 0;
+		}
+	}
+}
+
 			$cost = ($date['price'] * $row['quantity']) + $date['postage_cost'];
 
 			$token=new Token;
@@ -112,7 +129,7 @@ if (!empty($_POST)) {
 
 		?>
 
-Proceeding to payment...
+Proceeding to payment of &pound;<? echo $cost; ?>...
 
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_xclick">
@@ -178,6 +195,13 @@ $smarty->assign('cover_name',$cover_name);
 
 
 $smarty->assign_by_ref('images', $imagelist->images);
+
+if (!empty($previous)) {
+	foreach ($previous as &$prow)
+		$prow['json'] = json_encode($prow);
+	unset($prow);
+	$smarty->assign('previous', $previous);
+}
 
 $smarty->assign('year', $year);
 
