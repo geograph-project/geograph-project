@@ -19,25 +19,26 @@ if (!empty($_GET['inner'])) { ?>
 	</head>
 	<body style="font-family: 'Georgia', sans-serif;">
 
-	Welcome to our new streamlined mobile app, <br>or can return to <a href="/" target="_top">the normal website</a>.
+<div class="container">
+    <h1>The new Geograph app is here!</h1>
+    <p>We've streamlined the experience to help you get things done quickly from your phone.</p>
+    <p>Use the app to:</p>
+    <ul>
+        <li><strong>Contribute effortlessly:</strong> Submit images while you're out in the field.</li>
+        <li><strong>Navigate with ease:</strong> Use the local map to find what you need.</li>
+        <li><strong>Stay current:</strong> Review the latest submissions.</li>
+    </ul>
+    
+    <div class="links">
+        <p>For more information, visit our help pages:</p>
+        <ul>
+            <li><a href="https://www.geograph.org.uk/article/Geograph-Introductory-letter">Geograph Introductory letter</a></li>
+            <li><a href="https://www.geograph.org.uk/article/Geograph-Frequently-Asked-Questions">Contributors FAQ</a></li>
+        </ul>
+        <p>To access the full range of features, visit our <a href="https://www.geograph.org.uk/">main website</a>.</p>
+    </div>
+</div>
 
-	<ul class="touchPadding">
-		<li class=review><a href="/article/Geograph-Introductory-letter">Geograph Introductory letter</a></li>
-
-		<li><b><a href="/article/Geograph-Frequently-Asked-Questions">Contributors FAQ</a></b></li>
-
-		<li>Submission Processes:<br><br><ul>
-			<li><b><a href="/article/Mobile-Submission-Process">Submission on Mobile</a></b></li>
-
-			<li><a href="/article/Geograph-Image-Tagging-Guide">Tagging Guide</a> (new!)</li>
-		</ul></li>
-
-		<li><a href="/article/Geograph-or-supplemental">Geograph or Supplemental</a><ul>
-			<li><a href="/article/Reasons-for-rejection">Reasons for Rejection</a></li>
-		</ul></li>
-
-		<li><a href="/help/freedom">Freedom - The Geograph Manifesto</a></li>
-	</ul>
 
 	</body>
 	<? exit;
@@ -171,6 +172,8 @@ if (!empty($_GET['search'])) { ?>
         <main class="flex-grow">
             <!-- The iframe will load different URLs based on the footer icons -->
             <iframe id="main-content-frame" class="content-frame" src="?inner=1" allow="geolocation"></iframe>
+            <iframe id="submit-frame" class="content-frame" style="display:none" allow="geolocation"></iframe>
+            <iframe id="map-frame"    class="content-frame" style="display:none" allow="geolocation"></iframe>
         </main>
 
         <!-- Bottom Navigation Bar -->
@@ -182,13 +185,13 @@ if (!empty($_GET['search'])) { ?>
             </button-->
 
             <!-- Submit Icon -->
-            <button class="nav-icon flex flex-col items-center p-2 rounded-lg hover:bg-gray-100" data-tab="submit" data-url="/submit-mobile.php?auto=1&inner=1">
+            <button class="nav-icon flex flex-col items-center p-2 rounded-lg hover:bg-gray-100" data-tab="submit" data-url="/submit-mobile.php?inner=1">
 		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
                 <span class="text-xs mt-1">Submit</span>
             </button>
 
             <!-- Take Photo Icon (New) -->
-            <button class="nav-icon flex flex-col items-center p-2 rounded-lg hover:bg-gray-100" data-tab="take-photo" data-url="/submit-mobile.php?auto=1&inner=1">
+            <button class="nav-icon flex flex-col items-center p-2 rounded-lg hover:bg-gray-100" data-tab="take-photo" data-url="/submit-mobile.php?inner=1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                 <span class="text-xs mt-1">Take Photo</span>
             </button>
@@ -200,7 +203,7 @@ if (!empty($_GET['search'])) { ?>
             </button>
 
             <!-- Map Icon -->
-            <button class="nav-icon flex flex-col items-center p-2 rounded-lg hover:bg-gray-100" data-url="/mapper/combined.php?mobile=1">
+            <button class="nav-icon flex flex-col items-center p-2 rounded-lg hover:bg-gray-100" data-tab="map" data-url="/mapper/combined.php?mobile=1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map"><path d="M14.1 6.5a2 2 0 1 0-2.2-2.2l-6.8 6.8a2 2 0 1 0-2.2-2.2l6.8-6.8z"/><path d="m14 14-6 6-4-4"/><path d="M12 12a2 2 0 1 0-2-2l-6 6-4-4z"/><path d="M16 16l4-4a2 2 0 1 0-2-2l-4 4z"/></svg>
                 <span class="text-xs mt-1">Map</span>
             </button>
@@ -213,9 +216,14 @@ if (!empty($_GET['search'])) { ?>
 
     <script>
         // Get references to the iframe and all navigation buttons
-        const iframe = document.getElementById('main-content-frame');
+        const iframeMain = document.getElementById('main-content-frame');
+        const iframeSubmit = document.getElementById('submit-frame');
+        const iframeMap = document.getElementById('map-frame');
         const navIcons = document.querySelectorAll('button[data-url]');
         const fileInput = document.getElementById('parent-file-input');
+
+	var submitLoaded = false;
+	var mapLoaded = false;
 
         // Add a click event listener to each nav button
         navIcons.forEach(icon => {
@@ -224,26 +232,49 @@ if (!empty($_GET['search'])) { ?>
                 const url = event.currentTarget.getAttribute('data-url');
 		const tab = event.currentTarget.getAttribute('data-tab');
 
-		if (url.match(/auto/)) {
-                    // Handle the file input after the iframe has loaded
-                    iframe.onload = () => {
-                        // Clear the onload handler to prevent it from firing multiple times
-                        iframe.onload = null;
-                        
-                        // Dynamically set the file input attributes based on the button clicked
-                        if (tab === 'submit') {
-                            fileInput.removeAttribute('capture');
-                        } else if (tab === 'take-photo') {
-                            fileInput.setAttribute('capture', 'camera');
-                        }
-                        
-                        // Programmatically click the file input
-                        fileInput.click();
-                    };
-		}
+		if (tab === 'submit' || tab === 'take-photo') {
 
-                // Update the iframe's src attribute
-                iframe.src = url;
+		    if (tab !== 'submit' || !submitLoaded) { //dont overwrite a 'active' submission. submit tab only!
+
+                        // Handle the file input after the iframe has loaded
+                        iframeSubmit.onload = () => {
+                            // Clear the onload handler to prevent it from firing multiple times
+                            iframeSubmit.onload = null;
+
+                            // Dynamically set the file input attributes based on the button clicked
+                            if (tab === 'submit') {
+                                fileInput.removeAttribute('capture');
+                            } else if (tab === 'take-photo') {
+                                fileInput.setAttribute('capture', 'camera');
+                            }
+
+                            // Programmatically click the file input
+                            fileInput.click();
+                        };
+
+		        iframeSubmit.src = url;
+			submitLoaded = true;  //todo, would to have submission reset submitLoaded on 'thank you' page!
+		    }
+
+		    iframeMain.style.display = "none";
+		    iframeSubmit.style.display = "";
+		    iframeMap.style.display = "none";
+
+		} else if (tab === 'map') {
+		    if (!mapLoaded) { //only the first time!
+		        iframeMap.src = url;
+			mapLoaded = true;
+		    }
+		    iframeMain.style.display = "none";
+		    iframeSubmit.style.display = "none";
+		    iframeMap.style.display = "";
+
+		} else {
+	            iframeMain.src = url;
+		    iframeMain.style.display = "";
+		    iframeSubmit.style.display = "none";
+		    iframeMap.style.display = "none";
+		}
             });
         });
 
@@ -257,7 +288,7 @@ if (!empty($_GET['search'])) { ?>
                     //iframe.src = `submit-view.html?image=${encodeURIComponent(e.target.result)}`;
 
                     // Post the data URI as a message to the iframe
-                    iframe.contentWindow.postMessage({ type: 'image_data', data: e.target.result }, '*');
+                    iframeSubmit.contentWindow.postMessage({ type: 'image_data', data: e.target.result }, '*');
                 };
                 reader.readAsDataURL(file);
             }
