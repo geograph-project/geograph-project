@@ -57,6 +57,8 @@ $select = '';
 $order = "score desc"; //this is the 'within' order!!
 
 $where[] = "user_id = ".$USER->user_id;
+$smarty->assign('user_id',intval($USER->user_id));
+
 
 if (!empty($_GET['recent'])) {
 	$db = GeographDatabaseConnection(true);

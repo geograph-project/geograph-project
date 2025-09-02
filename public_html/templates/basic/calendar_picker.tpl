@@ -14,10 +14,12 @@
 	<h2>Image Selections - by Month Taken</h2>
 </div>
 
-<p>This page presents a selection of your images, broken down by the month taken. It's not a requirement that the photos in the calendar be taken in the same month, but it might be a fun target to aim towards</p>
-<p>Use the Mark button to note the image. At the bottom see a breakdown of current select (to see if you have selected something for each month)</p>
-
 {dynamic}
+
+<p>This page presents a selection of your images, broken down by the month taken. It's not a requirement that the photos in the calendar be taken in the a specific month, but it might be a fun target to aim towards.</p>
+<p>Use the Mark button to note the image. At the bottom see a breakdown of current marked images (to see if you have selected something for each month).
+ Can also view a <a href="/browser/#!/q=monthname:-unknown/user+%22user{$user_id}%22/display=group/group=monthname/n=4/gorder=alpha%20asc/sort=larger">similar selection in Browser</a></p>
+
 <table cellspacing="0" cellpadding="5" border="1" bordercolor=#eee>
 
 {assign var="last" value=""}
@@ -45,13 +47,14 @@
 	{foreach from=$stats item=row}
 		{$row.monthname} = {$row.images},
 	{/foreach}
+	&middot; <a href="/browser/#!/marked=1/display=group/group=monthname/n=6/gorder=alpha%20asc/sort=larger">View Visually in Browser</a>
 {else}
 	None Selected
 {/if}
 <p><a href="?{$selected}&#stats" onclick="history.go(0)">Refresh</a> (use after selecting images above) or <a href="/finder/marked.php">View seperately</a></p>
 
 {if $marked_count && $marked_count>=12}
-	<a href="order.php">Proceed to Calendar Order Process</a>
+	<a href="start.php">Proceed to Calendar Order Process</a>
 {/if}
 
 {/dynamic}
