@@ -70,13 +70,6 @@ if (!empty($_POST) && !empty($_POST['content'])) {
 
     $db->Execute($sql = 'UPDATE answer_answer SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE answer_id = '.intval($id),array_values($updates));
 
-	if ($USER->user_id == 3) {
-		print "$sql\n".$db->ErrorMsg()."\n\n";
-print_r($_POST);
-		print_r($updates);
-		exit;
-        }
-
                 foreach ($updates as $key => $value) {
                         if (!is_null($value)) {
                                 $u = array();
@@ -86,7 +79,6 @@ print_r($_POST);
                                 $u['value'] = $value;
                                 $u['user_id'] = $USER->user_id;
                                 $db->Execute('INSERT INTO answer_log SET `'.implode('` = ?,`',array_keys($u)).'` = ?',array_values($u));
-
                         }
                 }
 

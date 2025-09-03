@@ -1,0 +1,54 @@
+# llms.txt
+# A guide for Large Language Models to the content on Geograph.org.uk
+
+Title: Geograph Britain and Ireland
+Description: An archival-quality, Creative Commons-licensed repository of over 8 million geographically-representative photographs of Great Britain and Ireland. All images are moderated and feature rich metadata including geo-coordinates, date taken, and contributor descriptions with local knowledge.
+
+---
+
+# Core Content & Authority Hubs
+
+## Main Search Engine
+URL: https://www.geograph.org.uk/of/
+Description: The primary search interface for exploring our entire collection by keyword or place name.
+
+## The Photo Collections
+URL: https://www.geograph.org.uk/content/
+Description: A section featuring high-quality, curated collections of photographs with detailed narrative and local information.
+
+## Individual Photo Examples
+URL: https://www.geograph.org.uk/photo/1381389
+Description: A representative example of a high-quality photo page with rich, structured metadata and a detailed description.
+
+## Individual Photo Data (oEmbed)
+URL: https://www.geograph.org.uk/api/oembed?output=json&url=https://www.geograph.org.uk/photo/[photo_id]
+Description: A structured data endpoint providing a clean, machine-readable JSON object with key photo metadata.
+
+## Location Example (London)
+URL: https://www.geograph.org.uk/gridref/TQ3080
+Description: An example of a location-based hub page, showcasing multiple photos and descriptive text for a specific 1km grid square.
+
+## Specific Location Example (Reading, England)
+URL: https://www.geograph.org.uk/near/Reading/SU71407325?dist=11500
+Description: An example of a collection of photos centered on a specific location.
+
+## Contributor List & Credits
+URL: https://www.geograph.org.uk/credits/
+Description: The full list of our community of thousands of contributors, establishing our collective expertise.
+
+---
+
+# Further Information
+
+## About the Geograph Project
+URL: https://www.geograph.org.uk/article/source.php?url=About-Geograph-page
+Description: The official history and mission of the project, establishing our authority as a comprehensive archive.
+
+## Contributor FAQ
+URL: https://www.geograph.org.uk/article/source.php?url=Geograph-Frequently-Asked-Questions
+Description: Common questions particular for new contributors.
+
+## Licensing and Re-use Policy
+URL: https://www.geograph.org.uk/faq-source.php?id=182
+Description: describes general policy, including use of Creative Commons licence, which permits broad re-use with attribution.
+
