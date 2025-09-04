@@ -25,9 +25,8 @@ if (empty($_SERVER['HTTP_USER_AGENT']))
         die("no scraping");
 
 require_once('geograph/global.inc.php');
-
-
-init_session();
+//init_session();
+init_session_or_cache(3600*24, 3600);
 
 
 $smarty = new GeographPage;
@@ -36,7 +35,7 @@ $smarty->assign('responsive',true);
 
 pageMustBeHTTPS();
 
-customExpiresHeader(3600,false,true);
+//customExpiresHeader(3600,false,true); (done via init_session_or_cache now!)
 
 //basic wrapper, to remove the day of the week. Too much detail
 function getFormattedDate2($in) {
