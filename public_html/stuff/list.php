@@ -226,7 +226,7 @@ if (!empty($_GET['debug']))
 		print "<div style=float:right;color:gray>Showing most recent first, in descending order</div>";
 	print "<h2>".htmlentities2($title)."</h2>";
 	if (!empty($_GET['label'])) {
-		print "<p style=color:gray><i>Image clustering - assigning images labels - is an automated process, based on the image title/description. It's not totally accurate, and can sometimes assign images to odd clusters</i></p>";
+		print "<p style=color:gray><i>Image labeling via automated title/description analysis is not always accurate and can produce odd clusters.</i></p>";
 	}
 
 	if (count($imagelist->images)) {
