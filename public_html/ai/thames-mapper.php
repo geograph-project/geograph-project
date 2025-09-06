@@ -111,7 +111,13 @@ function loadmap() {
 	});
 	//make sure the labels fetch is FIRST
 	fetchPromises.unshift(
-	    fetch('/finder/label-vectors.json.php?labels=river,boat,canal+scene,water,building,other,road,people').then(response => response.json())
+	    fetch('/finder/label-vectors.json.php?labels=river,boat,canal+scene,water,building,other,road,people,aerial').then(response => response.json())
+	);
+	var query = '"River Thames" aerial SU|TQ';
+	fetchPromises.push(
+	    fetch(
+		`https://api.geograph.org.uk/api-facetql-vector.php?long=1&match=${encodeURIComponent(query)}&order=sequence+asc&limit=50&select=id,title,realname,image_vector,wgs84_lat,wgs84_long,hash,takenday`
+	    ).then(response => response.json())
 	);
 
         let markerBounds = L.latLngBounds();
@@ -127,6 +133,7 @@ function loadmap() {
                         	    var latLng = L.latLng(rad2deg(row.wgs84_lat), rad2deg(row.wgs84_long));
 				    var dir = 'up'; //points up, so image below!
 				    var len = 80;
+				    var closestLabel;
 				    if (Math.random() > 0.5)
 					len=180;
 				    if (row.image_vector) {
@@ -135,6 +142,8 @@ function loadmap() {
 						dir = 'down'; //ie puts above!
 					if (closestLabel == 'aerial')
 						len = 280;
+					else if (!row.inside) //means it not a polygon match! (must be the aerial query!
+					   return; //skip!
 				    }
 
 				    var marker = L.lineMarker(latLng, {img: getGeographUrl(row.id, row.hash, 'small'), dir:dir, title:row.title, imgSize: 80, lineLength:len}).addTo(map);
@@ -143,7 +152,8 @@ function loadmap() {
                                                `${escapeHtml(row.title)}</a> by ${escapeHtml(row.realname)}`;
                 	            marker.bindPopup(popupContent);
                         	    //marker.bindTooltip(row.title);
-	                            markerBounds.extend(latLng);
+				    if (closestLabel && closestLabel != 'aerial')
+		                            markerBounds.extend(latLng);
         	                }
                 	    });
 			    total += data.rows.length;
