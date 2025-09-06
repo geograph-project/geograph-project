@@ -32,6 +32,8 @@ $smarty->display('_std_begin.tpl');
 
 <h2>Images along the Thames</h2>
 
+<p>Images above the river, generally depict the river itself. Whereas the ones below the river are scenes seen alongside the river. The exact selection is done by AI and not may be totally accurate.
+
 <div id="map" style="width:1200px; height:800px; max-height:90vh; max-width:80vw;"></div>
 <div id="countPrompt"></div>
 
@@ -162,7 +164,7 @@ if (Math.random() > 0.5)
 	                    map.fitBounds(markerBounds);
          	}
 	        if (total_found)
-		    document.getElementById('countPrompt').innerText = "Showing "+total+" of "+total_found;
+		    document.getElementById('countPrompt').innerText = "Showing "+total+" of "+total_found+", effectively at random to give a selection of images";
             });
 }
 
