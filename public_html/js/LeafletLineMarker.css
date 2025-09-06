@@ -1,0 +1,34 @@
+/* All shared marker styles */
+.thumbnail-marker {
+    display: flex;
+    align-items: center;
+}
+
+.thumbnail-marker img {
+    width: var(--img-size) !important;
+    height: var(--img-size) !important;
+    object-fit: cover; /* ADDED */
+    border: 2px solid black;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.thumbnail-marker .line {
+    background-color: black;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    width:2px;
+}
+
+/* Vertical Markers (default & upward) */
+.thumbnail-marker:not(.horizontal) {
+    flex-direction: column;
+}
+
+/* Horizontal Markers */
+.thumbnail-marker.horizontal {
+    flex-direction: row;
+}
+
+.thumbnail-marker.horizontal .line {
+    height: 2px;
+}
