@@ -126,14 +126,17 @@ function loadmap() {
                 	        if (row.wgs84_lat && row.wgs84_long) {
                         	    var latLng = L.latLng(rad2deg(row.wgs84_lat), rad2deg(row.wgs84_long));
 				    var dir = 'up'; //points up, so image below!
-					if (row.image_vector) {
-						dir = getDirection(row.image_vector);
-					} else {
-						closestLabel = 'none';
-					}
-len = 80;
-if (Math.random() > 0.5)
-	len=180;
+				    var len = 80;
+				    if (Math.random() > 0.5)
+					len=180;
+				    if (row.image_vector) {
+					closestLabel = getClosestLabel(row.image_vector);
+					if (closestLabel == 'river' || closestLabel == 'boat' || closestLabel == 'water' || closestLabel == 'canal scene')
+						dir = 'down'; //ie puts above!
+					if (closestLabel == 'aerial')
+						len = 280;
+				    }
+
 				    var marker = L.lineMarker(latLng, {img: getGeographUrl(row.id, row.hash, 'small'), dir:dir, title:row.title, imgSize: 80, lineLength:len}).addTo(map);
         	                    var popupContent = `<a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">` +
                                                `<img src="${getGeographUrl(row.id, row.hash, 'full')}"><br>` +
@@ -170,22 +173,17 @@ if (Math.random() > 0.5)
 
 //////////////////////////////////////////
 
-let closestLabel;
-function getDirection(image_vector) {
-	closestLabel = 'unknown';
+function getClosestLabel(image_vector) {
                         try {
                             const imageVector = new EmbeddingVector(image_vector).normalize();
                             const nearest = imageVector.knn(labels, 1);
-
                             if (nearest.length > 0) {
-                                closestLabel = nearest[0].key;
-				if (closestLabel == 'river' || closestLabel == 'boat' || closestLabel == 'water' || closestLabel == 'canal scene')
-					return 'down';
+                                return nearest[0].key;
                             }
                         } catch(e) {
                             console.error(`Could not process vector:`, e);
                         }
-	return 'up';
+	return 'unknown';
 }
 
 //////////////////////////////////////////
