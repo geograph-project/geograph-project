@@ -163,7 +163,7 @@ if (empty($_GET['inner'])) {
 
 		<p>The underlying model is designed for general-purpose visual similarity. While it understands concepts like 
 		'rock formations' in general, it hasn't been trained to identify or distinguish exact geological features (e.g., 
-		it knows what a cliff looks like but not the specific basalt columns of the Giant's Causeway).
+		it knows what a cliff looks like but not the specific types of Igneous intrusion).
 
 	<? } ?>
 	</div>
