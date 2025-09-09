@@ -124,11 +124,18 @@ if (empty($_GET['inner'])) {
 	<div style="max-width:900px;font-size:0.9em">
 	<? if (rand(0,2) > 1) { ?>
 
-		<p>This demo draws from a sample of <b><? echo $count; ?> images</b>. While initial results are often visually strong, their 
-		quality can decline quickly as the system displays 30 images without further relevance filtering. This isn't 
-		a named entity search. You can't search for specific proper names or landmarks like 'Giant's Causeway' or 'Harlech 
-		Castle', or even places like 'Newcastle'. Instead, look for a general visual term like 'basalt columns' or 
-		'coastal cliffs', or just 'castle' then use the location filter to center your search on a specific place.
+		<p>This demo draws from a sample of <b><? echo $count; ?> images</b>. While initial results are often 
+		visually strong, their quality can decline quickly as the system displays 30 images without further 
+		relevance filtering.
+
+		<p>This isn't a named entity search. While the model has a broad understanding of the world and can 
+		recognize many prominent landmarks like the Giant's Causeway or Harlech Castle, it won't recognize every 
+		specific place. For example, it likely won't know a small, specific landmark like a particular church in 
+		Crawley.
+
+		<p>To get the best results, use general visual concepts rather than specific names. For instance, instead 
+		of searching for "the cathedral in Chichester", try "Gothic cathedral". You can then use the location 
+		filter to refine your search.
 
 		<p>The system's strength lies in combining visual concepts. Feel free to try queries such as: "castle and red 
 		sunset" "headland from the sea", "high street without people", "red cottages with a blue sky" or "cars 
@@ -142,20 +149,22 @@ if (empty($_GET['inner'])) {
 
 	 <? } else { ?>
 
-		<p>This demo uses a sample of about <b><? echo $count; ?> images</b>. While initial results are often visually similar, the 
-		quality can decline quickly as it displays 30 images without further relevance filtering. This is a visual 
-		similarity search, so it cannot search for specific names or places like 'Harlech Castle' or 'Newcastle'. Instead, 
-		search for a general term like 'castle' and then use the location filter to center your search around Harlech 
-		using the dedicated Location box.
+		<p>This demo uses a sample of about <b><? echo $count; ?> images</b>. While initial results are often 
+		visually similar, the quality can decline quickly as it displays 30 images without further relevance 
+		filtering. This is a visual similarity search, so it cannot search for specific names or places (although 
+		might work for notable places like 'Harlech Castle' or 'Newcastle'). Instead, search for a general term like 
+		'castle' and then use the location filter to center your search around Harlech using the dedicated Location 
+		box.
 
-		<p> A neat feature is the ability to combine concepts in your search! Try queries like "castle and red sunset", 
+		<p>A neat feature is the ability to combine concepts in your search! Try queries like "castle and red sunset", 
 		"headland from the sea", "high street without people", "red cottages with a blue sky" or "cars driving in the 
 		rain". Just be aware that you might not get perfectly precise matches, the system sorts the results, such that 
 		better matches should float to the top, even if the resemblance isn't exact.
 
-		<p> The underlying model is designed for general-purpose visual similarity. While it understands concepts like 
+		<p>The underlying model is designed for general-purpose visual similarity. While it understands concepts like 
 		'rock formations' in general, it hasn't been trained to identify or distinguish exact geological features (e.g., 
 		it knows what a cliff looks like but not the specific basalt columns of the Giant's Causeway).
+
 	<? } ?>
 	</div>
 
