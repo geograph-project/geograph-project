@@ -254,7 +254,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$prompts = array(
 		"Order your own <a href=\"/calendar/\">unique 2026 calendar</a>!<br> We've just opened orders for custom-printed calendars featuring images from Geograph.",
-		"Create a one-of-a-kind 2026 calendar with your favorite images from Geograph. We've just <a href=\"/calendar/\">opened orders</a> for custom printing!",
+		"Create a one-of-a-kind 2026 calendar with your favourite images from Geograph. We've just <a href=\"/calendar/\">opened orders</a> for custom printing!",
 		"<a href=\"/calendar/\">Custom 2026 Calendars</a> are now available!<br> Create your own unique calendar with images from Geograph today.",
 	);
 	$smarty->assign('prompt',$prompts[array_rand($prompts)]);
