@@ -49,12 +49,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('finder-form').addEventListener('submit', function(event) {
         event.preventDefault();
-        const query = document.querySelector('input[name="q"]').value;
-        performSearch(query);
+        performSearch();
     });
+
+    handleUrlQuery();
 });
 
-function performSearch(query) {
+window.addEventListener('popstate', handleUrlQuery);
+
+function searchAndRender() {
+    const query = document.querySelector('input[name="q"]').value;
+    const loc = document.querySelector('input[name="loc"]').value;
+
     const base = "https://www.geograph.org.uk/api-facetql.php";
     const data = {
         long: 1,
@@ -65,9 +71,42 @@ function performSearch(query) {
     if (query) {
         data['match'] = getTextQuery(query);
     }
+    if (loc) {
+        data['location'] = loc;
+    }
 
     const url = base + '?' + objectToUrlParams(data);
     renderAPIResults(url, 'results', 'results-count');
+}
+
+function performSearch() {
+    searchAndRender();
+
+    const query = document.querySelector('input[name="q"]').value;
+    const loc = document.querySelector('input[name="loc"]').value;
+    const params = new URLSearchParams();
+    if (query) {
+        params.append('q', query);
+    }
+    if (loc) {
+        params.append('loc', loc);
+    }
+
+    const newUrl = window.location.pathname + '?' + params.toString();
+    history.pushState({query: query, loc: loc}, '', newUrl);
+}
+
+function handleUrlQuery() {
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('q');
+    const loc = params.get('loc');
+
+    document.querySelector('input[name="q"]').value = query ?? '';
+    document.querySelector('input[name="loc"]').value = loc ?? '';
+
+    if (query || loc) {
+        searchAndRender();
+    }
 }
 </script>
 
