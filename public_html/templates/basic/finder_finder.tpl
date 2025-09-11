@@ -31,7 +31,8 @@
     --padding: 4px;
 }
 .results-box {
-    background-color: #ddd;
+    border: 5px solid #ddd;
+	border-radius:10px;
     padding: 5px;
 }
 .filter-box {
@@ -78,7 +79,7 @@
     border-bottom: 1px solid #ccc;
 }
 .display-details .details-item-thumb {
-    width: 120px;
+    width: 213px;
     text-align: center;
 }
 .display-details .details-item-info {
@@ -106,10 +107,10 @@
 <div class="finder-container">
 	<div class="tabHolder">
 		<a class="tabSelected nowrap">Quick Results</a>
-		<a class="tab nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}">Original Search</a>
-		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist=2000">Image Browser</a>
-		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist=2000&amp;display=map">Browser Map</a>
-		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist=2000&amp;display=group&amp;group=decade&amp;n=4&amp;gorder=alpha%20desc">Grouped Results</a>
+		<a class="tab nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distance={distance}">Original Search</a>
+		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}">Image Browser</a>
+		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=map">Browser Map</a>
+		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=group&amp;group=decade&amp;n=4&amp;gorder=alpha%20desc">Grouped Results</a>
 		<a class="tab nowrap" data-template="/content/?q={q}">Collections</a>
 {/literal}
 		{if $enable_forums}
@@ -124,7 +125,10 @@
 		</div>
 		<div class="form-column">
 			And/or Near:
-			<input type=search id="loc" name="loc" size="30" placeholder="(enter location)">
+			<input type=search id="loc" name="loc" size="30" placeholder="(enter location)"><br>
+			<label for="distance">Distance (m):</label> <input type="text" id="distance" name="distance" value="2000" size="5">
+
+			<div id="location-disambiguation"></div>
 		</div>
 
 		<div id="date-filter-box" class="form-column hidden">
@@ -153,8 +157,8 @@
 		<a href="#" class="tab nowrap" data-display="details">Details</a>
 		<a href="#" class="tab nowrap" data-display="river">GeoRiver</a>
 {literal}
-		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist=2000&amp;display=map">Map</a>
-		<a class="nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}">more...</a>
+		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=map">Map</a>
+		<a class="nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distance={distance}">more...</a>
 {/literal}
 	</div>
 	<div id="results" class="results-box display-large">
@@ -164,8 +168,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/themes/ui-lightness/jquery-ui.css" rel="stylesheet"/>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
-<script type="text/javascript" src="/js/location-selector.js"></script>
-<script type="text/javascript" src="/js/contributor-selector.js"></script>
+<script src="{"/mapper/geotools2.js"|revision}"></script>
+<script type="text/javascript" src="{"/js/location-selector.js"|revision}"></script>
+<script type="text/javascript" src="{"/js/contributor-selector.js"|revision}"></script>
 <script type="text/javascript" src="/js/geograph-api-libs.js?"></script>
 {literal}
 <script>
@@ -255,7 +260,7 @@ function renderFinderResults(url, divId, countDivId) {
                             htmlContent = `
                                 <div class="details-item-thumb">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
-                                        <img src="${getGeographUrl(row.id, row.hash, 'small')}" alt="${escapeHtml(row.title)}" loading="lazy">
+                                        <img src="${getGeographUrl(row.id, row.hash, 'med')}" alt="${escapeHtml(row.title)}" loading="lazy">
                                     </a>
                                 </div>
                                 <div class="details-item-info">
@@ -298,7 +303,7 @@ function renderFinderResults(url, divId, countDivId) {
 }
 
 function searchAndRender() {
-    const query = document.querySelector('input[name="q"]').value;
+    let query = document.querySelector('input[name="q"]').value;
     const loc = document.querySelector('input[name="loc"]').value;
     const type = document.querySelector('input[name="type"]:checked').value;
     const date_start = document.querySelector('input[name="date_start"]').value;
@@ -306,7 +311,7 @@ function searchAndRender() {
     const contributor = document.querySelector('input[name="contributor"]').value;
     const display = document.getElementById('display-mode').value;
 
-    const base = "https://www.geograph.org.uk/api-facetql.php";
+    let base = "https://www.geograph.org.uk/api-facetql.php";
     const data = {
         long: 1,
         select: "id,user_id,realname,grid_reference,title,hash,takenday,width,height",
@@ -315,20 +320,49 @@ function searchAndRender() {
         display: display
     };
 
-    if (query) {
-        data['match'] = getTextQuery(query);
-    }
-    if (loc) {
-        data['location'] = loc;
-    }
-    if (date_start) {
-        data['date_start'] = date_start;
-    }
-    if (date_end) {
-        data['date_end'] = date_end;
-    }
     if (contributor) {
-        data['contributor'] = contributor;
+	if (m = contributor.match(/^(\d+)\s/)) {
+	     query += " user"+m[1];
+        }
+    }
+
+    if (type == 'similarity') {
+        base = "https://www.geograph.org.uk/api-facetql-vector.php"; //for now, requires a different API endpoint
+	data['label'] = query;
+    } else {
+	    //todo, detect if user enters a list of ids!
+
+	    if (query) {
+		data['match'] = getTextQuery(query);
+	    }
+    }
+
+    if (loc) {
+	if (m = loc.match(/^([A-Z]{1,2}\d+)\s/)) {
+                let distance = parseInt(document.getElementById('distance').value,10) || 2000;
+		wgs84 = gridref2wgs(m[1]); //should automaticalyl 'fudge' 4fig GRs
+                data.geo=parseFloat(wgs84.latitude).toFixed(6)+","+parseFloat(wgs84.longitude).toFixed(6)+","+distance;
+
+                if (type == 'keywords')
+			data.order = 'geodist asc';
+
+	} else {
+		//this is where gets tricky.
+		//here we should call places.json.php ourself, and extract a list of possible names. 
+		// and then render a dropdown (below the search box!) that lets them pick from options!
+		lookForLocationMatches(loc, 'loc');
+	}
+    }
+
+    if (date_start) {
+        if (date_end) {
+            data['filterrange[takendays]'] = "to_days("+date_start+"),to_days("+date_end+")";
+        } else {
+	    const futureDate = getFutureDateString();
+            data['filterrange[takendays]'] = "to_days("+date_start+"),to_days("+futureDate+")";
+        }
+    } else if (date_end) {
+        data['filterrange[takendays]'] = "to_days(1800-01-01),to_days("+date_end+")";
     }
 
     const url = base + '?' + objectToUrlParams(data);
@@ -432,6 +466,7 @@ function updateTabLinks() {
     const params = {
         q: document.querySelector('input[name="q"]').value,
         loc: document.querySelector('input[name="loc"]').value,
+        distance: document.querySelector('input[name="distance"]').value,
         type: document.querySelector('input[name="type"]:checked').value,
         date_start: document.querySelector('input[name="date_start"]').value,
         date_end: document.querySelector('input[name="date_end"]').value,
@@ -446,6 +481,72 @@ function updateTabLinks() {
         tab.href = url;
     });
 }
+
+function getFutureDateString() {
+    const futureTimestampInSeconds = (Math.ceil(new Date().getTime() / 3600000) * 3600) + 604800;
+    const futureDate = new Date(futureTimestampInSeconds * 1000);
+    const year = futureDate.getFullYear();
+    const month = String(futureDate.getMonth() + 1).padStart(2, '0');
+    const day = String(futureDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function lookForLocationMatches(loc) {
+    const container = document.getElementById('location-disambiguation');
+    container.innerHTML = 'Searching for location...';
+
+    window.serveCallback = function(data) {
+        container.innerHTML = ''; // Clear 'Searching...'
+        if (data && data.total_found > 1) {
+            const label = document.createElement('label');
+            label.textContent = 'Did you mean: ';
+            container.appendChild(label);
+
+            const select = document.createElement('select');
+            
+            const defaultOption = document.createElement('option');
+            defaultOption.textContent = 'Choose Location';
+            defaultOption.value = '';
+            select.appendChild(defaultOption);
+
+            data.items.forEach(function(item) {
+                const option = document.createElement('option');
+                const valueText = item.name.indexOf(item.gr) === -1 ? `${item.name}/${item.gr}` : item.name;
+                option.value = valueText;
+                option.textContent = `${item.name.replace(new RegExp('/' + item.gr, 'g'), ' - ' + item.gr)}${item.localities ? ', ' + item.localities : ''}`;
+                select.appendChild(option);
+            });
+
+            select.addEventListener('change', function(event) {
+                if (event.target.value) {
+                    document.getElementById('loc').value = event.target.value;
+                    performSearch();
+                    container.innerHTML = ''; // Clear the dropdown
+                }
+            });
+
+            container.appendChild(select);
+
+        } else if (data && data.total_found == 1) {
+            // If only one result, just use it directly
+            document.getElementById('loc').value = `${data.items[0].gr} ${data.items[0].name}`;
+            performSearch();
+        } else {
+            container.innerHTML = 'No locations found.';
+        }
+    };
+
+    const script = document.createElement('script');
+    script.src = `/finder/places.json.php?q=${encodeURIComponent(loc)}&new=1&callback=serveCallback`;
+    
+    script.onload = () => document.body.removeChild(script);
+    script.onerror = () => {
+        container.innerHTML = 'Error searching for location.';
+        document.body.removeChild(script);
+    };
+    document.body.appendChild(script);
+}
+
 </script>
 {/literal}
 
