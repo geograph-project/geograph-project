@@ -148,6 +148,7 @@
 <link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/themes/ui-lightness/jquery-ui.css" rel="stylesheet"/>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/js/location-selector.js"></script>
+<script type="text/javascript" src="/js/contributor-selector.js"></script>
 <script type="text/javascript" src="/js/geograph-api-libs.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
