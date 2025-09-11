@@ -468,6 +468,9 @@ split_timer('search','mulitple1',$searchdesc); //logs the wall time
 
 split_timer('search'); //starts the timer
 
+		if (!empty($dataarray['distancem']) && $dataarray['distancem'] < $CONF['default_search_distance']*1000) {
+			$dataarray['distance'] = $dataarray['distancem']/1000;
+		}
 		if (empty($dataarray['distance'])) {
 			$dataarray['distance'] = $CONF['default_search_distance'];
 		}
@@ -890,8 +893,13 @@ split_timer('search'); //starts the timer
 				$searchdesc .= ", on route ".$topic_name;
 			}
 
-			if (!isset($dataarray['orderby']))
+			if (empty($dataarray['orderby']))
 				$dataarray['orderby'] = '';
+			elseif (preg_match('/ (ASC|DESC)$/',$dataarray['orderby'],$m)) {
+				if ($m[1] == 'DESC')
+					$dataarray['reverse_order_ind'] = 1;
+				$dataarray['orderby'] = str_replace($m[0],'',$dataarray['orderby']);
+			}
 			switch ($dataarray['orderby']) {
 				case "":
 					if ($searchclass == 'All') {

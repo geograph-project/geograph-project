@@ -122,7 +122,7 @@
 <div class="finder-container">
 	<div class="tabHolder">
 		<a class="tabSelected nowrap">Quick Results</a>
-		<a class="tab nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distance={distance}">Original Search</a>
+		<a class="tab nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">Original Search</a>
 		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}">Image Browser</a>
 		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=map">Browser Map</a>
 		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=group&amp;group=decade&amp;n=4&amp;gorder=alpha%20desc">Grouped Results</a>
@@ -175,7 +175,7 @@
 		<a href="#" class="tab nowrap" data-display="details">Details</a>
 		<a href="#" class="tab nowrap" data-display="river">GeoRiver</a>
 		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=map">Map</a>
-		<a class="nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distance={distance}">more...</a>
+		<a class="nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">more...</a>
 	</div>
 	<div id="results" class="results-box display-large">
 	</div>
@@ -183,7 +183,7 @@
 	<div id="more-results-prompt" class="hidden" style="text-align: center; padding: 20px;">
 		<span id="results-count2"></span>
 		Continue in: 
-		<a href="#" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distance={distance}">Original Search</a>
+		<a href="#" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">Original Search</a>
 		or
 		<a href="#" data-template="/browser/redirect.php?q={q}&loc={loc}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Image Browser</a>
 	</div>

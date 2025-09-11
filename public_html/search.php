@@ -33,7 +33,7 @@ foreach(array('orderby','groupby','breakby','displayclass','moderation_status','
 	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
 	     exit;
 	}
-foreach(array('distance','reference_index','first','resultsperpage','reverse_order_ind','topic_id','page') as $key) //todo, could check all the Day/Month/Year values are numberic too!
+foreach(array('distance','distancem','reference_index','first','resultsperpage','reverse_order_ind','topic_id','page') as $key) //todo, could check all the Day/Month/Year values are numberic too!
 	if (!empty($_REQUEST[$key]) && !is_numeric($_REQUEST[$key]) && $_REQUEST[$key] !== 'on') {
 	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
 	     exit;
@@ -621,6 +621,8 @@ if (isset($_GET['fav']) && $i) {
 			} else {
 				#http://www.geograph.org.uk/browser/#!/loc=TQ5050/dist=2000
 				$bits[] = "loc=".urlencode($_GET['location']);
+				if (!empty($_GET['distancem']))
+					$bits[] = "dist=".intval($_GET['distancem']);
 				if (!empty($_GET['distance']))
 					$bits[] = "dist=".($_GET['distance']*1000);
 			}
@@ -644,6 +646,8 @@ if (isset($_GET['fav']) && $i) {
 			} else {
 				#http://www.geograph.org.uk/browser/#!/loc=TQ5050/dist=2000
 				$bits[] = "loc=".urlencode($_GET['location']);
+				if (!empty($_GET['distancem']))
+					$bits[] = "dist=".intval($_GET['distancem']);
 				if (!empty($_GET['distance']))
 					$bits[] = "dist=".($_GET['distance']*1000);
 			}
@@ -774,6 +778,8 @@ if (isset($_GET['fav']) && $i) {
                         } else {
                                 ##http://www.geograph.org.uk/browser/#!/loc=TQ5050/dist=2000
                                 $bits[] = "loc=".urlencode($_GET['location']);
+				if (!empty($_GET['distancem']))
+					$bits[] = "dist=".intval($_GET['distancem']);
                                 if (!empty($_GET['distance']))
                                         $bits[] = "dist=".($_GET['distance']*1000);
                         }
@@ -840,6 +846,8 @@ if (isset($_GET['fav']) && $i) {
  	}
 
         $distance = $CONF['default_search_distance'];
+        if (!empty($_GET['distancem']) && $_GET['distancem'] < $CONF['default_search_distance']*1000)
+                $distance = floatval($_GET['distancem']/1000);
         if (!empty($_GET['distance']) && $_GET['distance'] < $CONF['default_search_distance'])
                 $distance = floatval($_GET['distance']);
 
@@ -856,6 +864,8 @@ if (isset($_GET['fav']) && $i) {
 
 		//query failed!
 		if (isset($engine->criteria) && $engine->criteria->is_multiple) {
+		        if (!empty($_GET['distancem']) && $_GET['distancem'] < $CONF['default_search_distance']*1000)
+				$_GET['distance'] = $_GET['distancem']/1000;
 			if (empty($_GET['distance']))
 				$_GET['distance'] = $CONF['default_search_distance'];
 
