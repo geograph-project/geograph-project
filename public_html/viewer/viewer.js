@@ -622,10 +622,30 @@ function get_imagejQuery(image) {
 	if (image.square)	title = title + " " + image.square;
 	if (jQuery('input[name="square"]:checked').length) {
 		//blank alt, is just because will be displayed as text, if no src!
-		return jQuery('<img class="square" alt="">').css('background-image','url('+image.data+')').attr('title',title);
+		return jQuery('<img class="square" alt="">').css('background-image','url('+image.data+')').attr('title',title).on('dblclick',function() { open_in_new_window(image) });
 	} else {
-		return jQuery('<img>').attr('src',image.data).attr('title',title).attr('width',image.width).attr('height',image.height); //width/height are the size of origiona, but we setting because want to allow aspect-ratio, see will display much smaller!
+		return jQuery('<img>').attr('src',image.data).attr('title',title).attr('width',image.width).attr('height',image.height).on('dblclick',function() { open_in_new_window(image) }); //width/height are the size of origiona, but we setting because want to allow aspect-ratio, see will display much smaller!
 	}
+}
+
+function open_in_new_window(image) {
+       var reader = new FileReader();
+        reader.onload = function (e) {
+        	var new_window = window.open(); // Open a new blank window
+	        // Check if the window was successfully opened
+        	if (new_window) {
+		    let title = image.path?image.path:image.name;
+
+	            // Write the HTML content directly to the new window's document
+	            new_window.document.write('<!DOCTYPE html><html><head><title>'+escapeHtml(title)+'</title></head><body>');
+	            new_window.document.write('<img src="' + e.target.result + '">');
+	            new_window.document.write('</body></html>');
+	            new_window.document.close(); // Close the document stream
+	        } else {
+	            console.error("Popup window was blocked by the browser.");
+	        }
+        };
+        reader.readAsDataURL(image._file);
 }
 
 function submit_image(image) {
@@ -787,3 +807,12 @@ function wgs2gridref(lat, long, len) {
 	return null;
 }
 
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
