@@ -13,7 +13,7 @@
 			<a class="tab nowrap" id="tab8">Discussions</a>
 		{/if}
 	</div>
-	<form method="get" style="background-color:#ddd;padding:10px;">
+	<form id="finder-form" method="get" style="background-color:#ddd;padding:10px;">
 		<div style="float:left; width:300px">
 			Search For: <input type=search name=q size="30" value="bailey bridge"> <br>
 			<label><input type=radio name=type checked>Keywords Match</label>
@@ -31,7 +31,7 @@
 	</form>
 	<br>
 	<div class="tabHolder" style="text-align:right;font-size:0.9em">
-		Display: 
+		Display:
 		<a class="tab{if !$display || $display == 'small'}Selected{/if} nowrap">Small Thumbs</a>
 		<a class="tab{if $display == 'large'}Selected{/if} nowrap">Large Thumbs</a>
 		<a class="tab{if $display == 'details'}Selected{/if} nowrap">Details</a>
@@ -39,10 +39,36 @@
 		<a class="tab{if $display == 'map'}Selected{/if} nowrap">Map</a>
 		<a class="nowrap">more...</a>
 	</div>
-	<div style="background-color:#ddd;padding:32px">
-		results here
+	<div id="results-count" style="text-align:right;padding:4px"></div>
+	<div id="results" style="background-color:#ddd;padding:32px">
 	</div>
 </div>
 
-{include file="_std_end.tpl"}
+<script type="text/javascript" src="/js/geograph-api-libs.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('finder-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const query = document.querySelector('input[name="q"]').value;
+        performSearch(query);
+    });
+});
 
+function performSearch(query) {
+    const base = "https://www.geograph.org.uk/api-facetql.php";
+    const data = {
+        long: 1,
+        select: "id,user_id,realname,grid_reference,title,hash",
+        limit: 30
+    };
+
+    if (query) {
+        data['match'] = getTextQuery(query);
+    }
+
+    const url = base + '?' + objectToUrlParams(data);
+    renderAPIResults(url, 'results', 'results-count');
+}
+</script>
+
+{include file="_std_end.tpl"}
