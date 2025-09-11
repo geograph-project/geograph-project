@@ -20,7 +20,6 @@ $(function () {
                         jsonpCallback: 'serveCallback',
                         cache: true,
                         success: function(data) {
-
                                 if (!data || !data.items || data.items.length < 1) {
                                     response([]);
                                     return;
@@ -43,10 +42,8 @@ $(function () {
             },
             select: function(event,ui) {
                     $("#contributor").val(ui.item.value);
-                    // In the context of finder_finder.tpl, we want to trigger a search on select.
-                    // This can be done by overriding this callback.
-                    if (typeof performSearch === 'function') {
-                        performSearch();
+                    if (typeof jumpContributor === 'function') {
+                        jumpContributor($("#loc").parent('form')[0]);
                     }
                     return false;
             }

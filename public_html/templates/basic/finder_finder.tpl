@@ -1,13 +1,14 @@
 {assign var="page_title" value="Finder"}
 {include file="_std_begin.tpl"}
 
+{literal}
 <style type="text/css">
 .hidden {
     display: none;
 }
 .finder-container {
     position: relative;
-    height: 800px;
+    min-height: 800px;
 }
 .finder-form {
     background-color: #ddd;
@@ -19,25 +20,27 @@
 }
 .form-clear {
     clear: both;
-    text-align: center;
+    --text-align: center;
 }
 .display-options {
     text-align: right;
     font-size: 0.9em;
 }
 .results-count {
-    text-align: right;
-    padding: 4px;
+    float:left;
+    --padding: 4px;
 }
 .results-box {
     background-color: #ddd;
-    padding: 32px;
+    padding: 5px;
 }
 .filter-box {
     background-color: #eee;
     padding: 10px;
     margin-top: 10px;
 }
+/* ----------------------- */
+
 .display-large {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(213px, 1fr));
@@ -50,6 +53,8 @@
 .display-large div a:first-child {
     display: block;
 }
+/* ----------------------- */
+
 .display-small {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -62,6 +67,9 @@
 .display-small div a:first-child {
     display: block;
 }
+
+/* ----------------------- */
+
 .display-details .details-item {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -69,12 +77,16 @@
     padding: 5px;
     border-bottom: 1px solid #ccc;
 }
-.display-details .details-item-thumb img {
-    max-width: 120px;
+.display-details .details-item-thumb {
+    width: 120px;
+    text-align: center;
 }
 .display-details .details-item-info {
     text-align: left;
 }
+
+/* ----------------------- */
+
 .display-river .river-item {
     display: grid;
     grid-template-columns: 640px 1fr;
@@ -82,11 +94,12 @@
     padding: 5px;
     border-bottom: 1px solid #ccc;
 }
-.display-river .river-item-thumb img {
-    width: 100%;
+.display-river .river-item-thumb {
+    text-align: right;
 }
 .display-river .river-item-info {
     text-align: left;
+    font-size:1.2em;
 }
 </style>
 
@@ -98,6 +111,7 @@
 		<a class="tab nowrap">Browser Map</a>
 		<a class="tab nowrap">Grouped Results</a>
 		<a class="tab nowrap">Collections</a>
+{/literal}
 		{if $enable_forums}
 			<a class="tab nowrap" id="tab8">Discussions</a>
 		{/if}
@@ -106,30 +120,32 @@
 		<div class="form-column">
 			Search For: <input type=search name=q size="30" value="bailey bridge"> <br>
 			<label><input type=radio name=type value="keywords" checked>Keywords Match</label>
-			<label><input type=radio name=type value="similarity">Similarity Match</label><br><br>
-			<button>Update</button>
+			<label><input type=radio name=type value="similarity">Similarity Match</label>
 		</div>
 		<div class="form-column">
 			And/or Near:
-			<input type=search id="loc" name="loc" size="30" placeholder="(enter location)"> <br>
-			<br>
+			<input type=search id="loc" name="loc" size="30" placeholder="(enter location)">
+		</div>
+
+		<div id="date-filter-box" class="form-column hidden">
+			<label for="date_start">Start Date:</label>
+			<input type="date" id="date_start" name="date_start">
+			<label for="date_end">End Date:</label>
+			<input type="date" id="date_end" name="date_end">
+		</div>
+		<div id="contributor-filter-box" class="form-column hidden">
+			<label for="contributor">Contributor:</label>
+			<input type="text" id="contributor" name="contributor" placeholder="Enter contributor name">
+		</div>
+
+		<div class="form-clear">
+			<button type="submit">Update</button>
 			<a href="#" id="add-date-filter">Add Date Filter</a> <a href="#" id="add-contributor-filter">Add Contributor Filter</a>
 		</div>
-		<div class="form-clear">
-		</div>
+		<input type="hidden" id="display-mode" name="display" value="small">
 	</form>
-	<div id="date-filter-box" class="filter-box hidden">
-		<label for="date_start">Start Date:</label>
-		<input type="date" id="date_start" name="date_start">
-		<label for="date_end">End Date:</label>
-		<input type="date" id="date_end" name="date_end">
-	</div>
-	<div id="contributor-filter-box" class="filter-box hidden">
-		<label for="contributor">Contributor:</label>
-		<input type="text" id="contributor" name="contributor" placeholder="Enter contributor name">
-	</div>
 	<br>
-	<input type="hidden" id="display-mode" name="display" value="small">
+	<div id="results-count" class="results-count"></div>
 	<div id="display-tabs" class="tabHolder display-options">
 		Display:
 		<a href="#" class="tab tabSelected nowrap" data-display="small">Small Thumbs</a>
@@ -139,7 +155,6 @@
 		<a href="#" class="tab nowrap" data-display="map">Map</a>
 		<a class="nowrap">more...</a>
 	</div>
-	<div id="results-count" class="results-count"></div>
 	<div id="results" class="results-box display-large">
 	</div>
 </div>
@@ -150,6 +165,7 @@
 <script type="text/javascript" src="/js/location-selector.js"></script>
 <script type="text/javascript" src="/js/contributor-selector.js"></script>
 <script type="text/javascript" src="/js/geograph-api-libs.js"></script>
+{literal}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('finder-form').addEventListener('submit', function(event) {
@@ -160,11 +176,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-date-filter').addEventListener('click', function(event) {
         event.preventDefault();
         document.getElementById('date-filter-box').classList.toggle('hidden');
+	document.getElementById('add-date-filter').classList.toggle('hidden');
     });
 
     document.getElementById('add-contributor-filter').addEventListener('click', function(event) {
         event.preventDefault();
         document.getElementById('contributor-filter-box').classList.toggle('hidden');
+	document.getElementById('add-contributor-filter').classList.toggle('hidden');
     });
 
     handleUrlQuery();
@@ -177,10 +195,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('display-mode').value = event.target.dataset.display;
 
             // Update selected class
-            this.querySelectorAll('.tab').forEach(function(tab) {
+            this.querySelectorAll('.tabSelected').forEach(function(tab) {
                 tab.classList.remove('tabSelected');
+                tab.classList.add('tab');
             });
             event.target.classList.add('tabSelected');
+            event.target.classList.remove('tab');
 
             // Re-run search
             performSearch();
@@ -216,7 +236,7 @@ function renderFinderResults(url, divId, countDivId) {
                             htmlContent = `
                                 <div class="river-item-thumb">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
-                                        <img src="${getGeographUrl(row.id, row.hash, 'full')}" alt="${escapeHtml(row.title)}" loading="lazy">
+                                        <img src="${getGeographUrl(row.id, row.hash, 'full')}" alt="${escapeHtml(row.title)}" width="${row.width}" height="${row.height}" loading="lazy">
                                     </a>
                                 </div>
                                 <div class="river-item-info">
@@ -285,7 +305,7 @@ function searchAndRender() {
     const base = "https://www.geograph.org.uk/api-facetql.php";
     const data = {
         long: 1,
-        select: "id,user_id,realname,grid_reference,title,hash",
+        select: "id,user_id,realname,grid_reference,title,hash,width,height",
         limit: 30,
         type: type,
         display: display
@@ -309,6 +329,14 @@ function searchAndRender() {
 
     const url = base + '?' + objectToUrlParams(data);
     renderFinderResults(url, 'results', 'results-count');
+}
+
+//callback for location-selector.js
+function jumpLocation(form) {
+    performSearch();
+}
+function jumpContributor(form) {
+    performSearch();
 }
 
 function performSearch() {
@@ -375,15 +403,18 @@ function handleUrlQuery() {
         tab.classList.remove('tabSelected');
         if (tab.dataset.display === display) {
             tab.classList.add('tabSelected');
+            tab.classList.remove('tab');
         }
     });
 
     if (date_start || date_end) {
         document.getElementById('date-filter-box').classList.remove('hidden');
+	document.getElementById('add-date-filter').classList.add('hidden');
     }
 
     if (contributor) {
         document.getElementById('contributor-filter-box').classList.remove('hidden');
+	document.getElementById('add-contributor-filter').classList.add('hidden');
     }
 
     if (query || loc || type || date_start || date_end || contributor) {
@@ -412,5 +443,6 @@ function updateTabLinks() {
     });
 }
 </script>
+{/literal}
 
 {include file="_std_end.tpl"}
