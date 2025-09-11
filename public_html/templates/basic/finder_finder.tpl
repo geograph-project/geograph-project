@@ -122,13 +122,14 @@
 	</form>
 	<div id="date-filter-box" class="filter-box hidden">
 		<label for="date_start">Start Date:</label>
-		<input type="date" id="date_start" name="date_start">
+		<input type="date" id="date_start" name="date_start" min="1800-01-01">
 		<label for="date_end">End Date:</label>
-		<input type="date" id="date_end" name="date_end">
+		<input type="date" id="date_end" name="date_end" min="1800-01-01">
+		<button type="button" id="clear-dates-btn">Clear Dates</button>
 	</div>
 	<div id="contributor-filter-box" class="filter-box hidden">
 		<label for="contributor">Contributor:</label>
-		<input type="text" id="contributor" name="contributor" placeholder="Enter contributor name">
+		<input type="search" id="contributor" name="contributor" placeholder="Enter contributor name">
 	</div>
 	<div id="location-disambiguation"></div>
 	<br>
@@ -144,6 +145,12 @@
 	</div>
 	<div id="results-count" class="results-count"></div>
 	<div id="results" class="results-box display-large">
+	</div>
+	<div id="more-results-prompt" class="hidden" style="text-align: center; padding: 20px;">
+		Continue in:
+		<a href="#" data-template="/search.php?q={q}&loc={loc}&type={type}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Original Search</a>
+		or
+		<a href="#" data-template="/browser/redirect.php?q={q}&loc={loc}&type={type}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Image Browser</a>
 	</div>
 </div>
 
@@ -171,6 +178,12 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('contributor-filter-box').classList.toggle('hidden');
     });
 
+    document.getElementById('clear-dates-btn').addEventListener('click', function(event) {
+        document.getElementById('date_start').value = '';
+        document.getElementById('date_end').value = '';
+        performSearch();
+    });
+
     handleUrlQuery();
 
     document.getElementById('display-tabs').addEventListener('click', function(event) {
@@ -190,6 +203,10 @@ document.addEventListener('DOMContentLoaded', function() {
             performSearch();
         }
     });
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date_start').max = today;
+    document.getElementById('date_end').max = today;
 });
 
 window.addEventListener('popstate', handleUrlQuery);
@@ -271,6 +288,15 @@ function renderFinderResults(url, divId, countDivId) {
 
                 if (data.meta && data.meta.total_found && countDivElement) {
                     countDivElement.textContent = `Showing ${data.rows.length} of ${data.meta.total_found} results.`;
+                }
+
+                // Handle 'More Results' prompt
+                const moreResultsPrompt = document.getElementById('more-results-prompt');
+                if (data.meta && data.meta.total_found > data.rows.length) {
+                    updateTabLinks(); // Reuse existing function to update all templated links
+                    moreResultsPrompt.classList.remove('hidden');
+                } else {
+                    moreResultsPrompt.classList.add('hidden');
                 }
             }
         })
