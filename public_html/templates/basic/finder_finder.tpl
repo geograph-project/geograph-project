@@ -111,7 +111,7 @@
 		</div>
 		<div class="form-column">
 			And/or Near:
-			<input type=search name=loc size="30" placeholder="(enter location)"> <br>
+			<input type=search id="loc" name="loc" size="30" placeholder="(enter location)"> <br>
 			<br>
 			<a href="#" id="add-date-filter">Add Date Filter</a> <a href="#" id="add-contributor-filter">Add Contributor Filter</a>
 		</div>
@@ -144,6 +144,10 @@
 	</div>
 </div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/themes/ui-lightness/jquery-ui.css" rel="stylesheet"/>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/location-selector.js"></script>
 <script type="text/javascript" src="/js/geograph-api-libs.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -184,44 +188,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 window.addEventListener('popstate', handleUrlQuery);
-
-function searchAndRender() {
-    const query = document.querySelector('input[name="q"]').value;
-    const loc = document.querySelector('input[name="loc"]').value;
-    const type = document.querySelector('input[name="type"]:checked').value;
-    const date_start = document.querySelector('input[name="date_start"]').value;
-    const date_end = document.querySelector('input[name="date_end"]').value;
-    const contributor = document.querySelector('input[name="contributor"]').value;
-    const display = document.getElementById('display-mode').value;
-
-    const base = "https://www.geograph.org.uk/api-facetql.php";
-    const data = {
-        long: 1,
-        select: "id,user_id,realname,grid_reference,title,hash",
-        limit: 30,
-        type: type,
-        display: display
-    };
-
-    if (query) {
-        data['match'] = getTextQuery(query);
-    }
-    if (loc) {
-        data['location'] = loc;
-    }
-    if (date_start) {
-        data['date_start'] = date_start;
-    }
-    if (date_end) {
-        data['date_end'] = date_end;
-    }
-    if (contributor) {
-        data['contributor'] = contributor;
-    }
-
-    const url = base + '?' + objectToUrlParams(data);
-    renderFinderResults(url, 'results', 'results-count');
-}
 
 function renderFinderResults(url, divId, countDivId) {
     const divElement = document.getElementById(divId);
@@ -304,6 +270,44 @@ function renderFinderResults(url, divId, countDivId) {
             }
         })
         .catch(error => console.error('Error fetching data:', error));
+}
+
+function searchAndRender() {
+    const query = document.querySelector('input[name="q"]').value;
+    const loc = document.querySelector('input[name="loc"]').value;
+    const type = document.querySelector('input[name="type"]:checked').value;
+    const date_start = document.querySelector('input[name="date_start"]').value;
+    const date_end = document.querySelector('input[name="date_end"]').value;
+    const contributor = document.querySelector('input[name="contributor"]').value;
+    const display = document.getElementById('display-mode').value;
+
+    const base = "https://www.geograph.org.uk/api-facetql.php";
+    const data = {
+        long: 1,
+        select: "id,user_id,realname,grid_reference,title,hash",
+        limit: 30,
+        type: type,
+        display: display
+    };
+
+    if (query) {
+        data['match'] = getTextQuery(query);
+    }
+    if (loc) {
+        data['location'] = loc;
+    }
+    if (date_start) {
+        data['date_start'] = date_start;
+    }
+    if (date_end) {
+        data['date_end'] = date_end;
+    }
+    if (contributor) {
+        data['contributor'] = contributor;
+    }
+
+    const url = base + '?' + objectToUrlParams(data);
+    renderFinderResults(url, 'results', 'results-count');
 }
 
 function performSearch() {
