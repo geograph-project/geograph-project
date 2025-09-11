@@ -88,6 +88,19 @@
 .display-river .river-item-info {
     text-align: left;
 }
+.distance-header {
+    clear: left;
+    font-size: 0.8em;
+    padding: 2px;
+    background-color: #eee;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+.display-large .distance-header,
+.display-small .distance-header {
+    grid-column: 1 / -1;
+}
 </style>
 
 <div class="finder-container">
@@ -121,11 +134,22 @@
 		</div>
 	</form>
 	<div id="date-filter-box" class="filter-box hidden">
-		<label for="date_start">Start Date:</label>
-		<input type="date" id="date_start" name="date_start" min="1800-01-01">
-		<label for="date_end">End Date:</label>
-		<input type="date" id="date_end" name="date_end" min="1800-01-01">
-		<button type="button" id="clear-dates-btn">Clear Dates</button>
+		<div id="date-panel">
+			<label for="date_start">Start Date:</label>
+			<input type="date" id="date_start" name="date_start" min="1800-01-01">
+			<label for="date_end">End Date:</label>
+			<input type="date" id="date_end" name="date_end" min="1800-01-01">
+			<button type="button" id="clear-dates-btn">Clear Dates</button>
+		</div>
+		<div id="year-panel" class="hidden">
+			<label for="year_start">Start Year:</label>
+			<input type="number" id="year_start" name="year_start" min="1800" max="2025" placeholder="YYYY">
+			<label for="year_end">End Year:</label>
+			<input type="number" id="year_end" name="year_end" min="1800" max="2025" placeholder="YYYY">
+		</div>
+		<hr>
+		<a href="#" id="toggle-date-mode">Switch to Year Range</a>
+		<input type="hidden" id="date-mode" value="date">
 	</div>
 	<div id="contributor-filter-box" class="filter-box hidden">
 		<label for="contributor">Contributor:</label>
@@ -178,6 +202,25 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('contributor-filter-box').classList.toggle('hidden');
     });
 
+    document.getElementById('toggle-date-mode').addEventListener('click', function(event) {
+        event.preventDefault();
+        const datePanel = document.getElementById('date-panel');
+        const yearPanel = document.getElementById('year-panel');
+        const dateModeInput = document.getElementById('date-mode');
+
+        if (dateModeInput.value === 'date') {
+            datePanel.classList.add('hidden');
+            yearPanel.classList.remove('hidden');
+            dateModeInput.value = 'year';
+            this.textContent = 'Switch to Full Date Range';
+        } else {
+            yearPanel.classList.add('hidden');
+            datePanel.classList.remove('hidden');
+            dateModeInput.value = 'date';
+            this.textContent = 'Switch to Year Range';
+        }
+    });
+
     document.getElementById('clear-dates-btn').addEventListener('click', function(event) {
         document.getElementById('date_start').value = '';
         document.getElementById('date_end').value = '';
@@ -217,7 +260,7 @@ function renderFinderResults(url, divId, countDivId) {
     const display = document.getElementById('display-mode').value;
 
     // Switch display class
-    divElement.classList.remove('display-large', 'display-small', 'display-details', 'display-river'); // Add other classes here as they are created
+    divElement.classList.remove('display-large', 'display-small', 'display-details', 'display-river');
     divElement.classList.add('display-' + display);
 
     fetch(url)
@@ -226,8 +269,21 @@ function renderFinderResults(url, divId, countDivId) {
             if (data.rows) {
                 // Clear previous results
                 divElement.innerHTML = '';
+                let lastDistanceGroup = null;
 
                 data.rows.forEach(row => {
+                    // Check for distance headers
+                    if (typeof row.geodist !== 'undefined') {
+                        const currentGroup = getDistanceGroup(row.geodist);
+                        if (lastDistanceGroup !== currentGroup) {
+                            const headerDiv = document.createElement('div');
+                            headerDiv.className = 'distance-header';
+                            headerDiv.innerHTML = `Within <b>${currentGroup}</b> km`;
+                            divElement.appendChild(headerDiv);
+                            lastDistanceGroup = currentGroup;
+                        }
+                    }
+
                     let htmlContent = '';
                     let newDiv;
                     switch (display) {
@@ -347,15 +403,34 @@ function searchAndRender() {
             return; // Stop processing this search until user disambiguates
         }
     }
-    if (date_start) {
-        if (date_end) {
-            data['filterrange[takendays]'] = `to_days(${date_start}),to_days(${date_end})`;
-        } else {
-            const futureDate = getFutureDateString();
-            data['filterrange[takendays]'] = `to_days(${date_start}),to_days(${futureDate})`;
+    const date_mode = document.getElementById('date-mode').value;
+    if (date_mode === 'year') {
+        const year_start = document.querySelector('input[name="year_start"]').value;
+        const year_end = document.querySelector('input[name="year_end"]').value;
+        if (year_start) {
+            const from_date = `${year_start}-01-01`;
+            if (year_end) {
+                const to_date = `${year_end}-12-31`;
+                data['filterrange[takendays]'] = `to_days(${from_date}),to_days(${to_date})`;
+            } else {
+                const futureDate = getFutureDateString();
+                data['filterrange[takendays]'] = `to_days(${from_date}),to_days(${futureDate})`;
+            }
+        } else if (year_end) {
+            const to_date = `${year_end}-12-31`;
+            data['filterrange[takendays]'] = `to_days(1800-01-01),to_days(${to_date})`;
         }
-    } else if (date_end) {
-        data['filterrange[takendays]'] = `to_days(1800-01-01),to_days(${date_end})`;
+    } else { // 'date' mode
+        if (date_start) {
+            if (date_end) {
+                data['filterrange[takendays]'] = `to_days(${date_start}),to_days(${date_end})`;
+            } else {
+                const futureDate = getFutureDateString();
+                data['filterrange[takendays]'] = `to_days(${date_start}),to_days(${futureDate})`;
+            }
+        } else if (date_end) {
+            data['filterrange[takendays]'] = `to_days(1800-01-01),to_days(${date_end})`;
+        }
     }
 
     const url = base + '?' + objectToUrlParams(data);
@@ -373,6 +448,10 @@ function performSearch() {
     const contributor = document.querySelector('input[name="contributor"]').value;
     const display = document.getElementById('display-mode').value;
     const distance = document.getElementById('distance').value;
+    const date_mode = document.getElementById('date-mode').value;
+    const year_start = document.querySelector('input[name="year_start"]').value;
+    const year_end = document.querySelector('input[name="year_end"]').value;
+
     const params = new URLSearchParams();
     if (query) {
         params.append('q', query);
@@ -383,12 +462,17 @@ function performSearch() {
     if (type) {
         params.append('type', type);
     }
-    if (date_start) {
-        params.append('date_start', date_start);
+    if (date_mode === 'date') {
+        if (date_start) params.append('date_start', date_start);
+        if (date_end) params.append('date_end', date_end);
+    } else {
+        if (year_start) params.append('year_start', year_start);
+        if (year_end) params.append('year_end', year_end);
     }
-    if (date_end) {
-        params.append('date_end', date_end);
+    if (date_mode !== 'date') {
+        params.append('date_mode', date_mode);
     }
+
     if (contributor) {
         params.append('contributor', contributor);
     }
@@ -400,7 +484,12 @@ function performSearch() {
     }
 
     const newUrl = window.location.pathname + '?' + params.toString();
-    history.pushState({query: query, loc: loc, type: type, date_start: date_start, date_end: date_end, contributor: contributor, display: display, distance: distance}, '', newUrl);
+    history.pushState({
+        query: query, loc: loc, type: type,
+        date_start: date_start, date_end: date_end,
+        contributor: contributor, display: display, distance: distance,
+        date_mode: date_mode, year_start: year_start, year_end: year_end
+    }, '', newUrl);
 
     updateTabLinks();
 }
@@ -415,13 +504,19 @@ function handleUrlQuery() {
     const contributor = params.get('contributor');
     const display = params.get('display') || 'small';
     const distance = params.get('distance');
+    const date_mode = params.get('date_mode') || 'date';
+    const year_start = params.get('year_start');
+    const year_end = params.get('year_end');
 
     document.querySelector('input[name="q"]').value = query ?? '';
     document.querySelector('input[name="loc"]').value = loc ?? '';
     document.querySelector('input[name="date_start"]').value = date_start ?? '';
     document.querySelector('input[name="date_end"]').value = date_end ?? '';
+    document.querySelector('input[name="year_start"]').value = year_start ?? '';
+    document.querySelector('input[name="year_end"]').value = year_end ?? '';
     document.querySelector('input[name="contributor"]').value = contributor ?? '';
     document.getElementById('display-mode').value = display;
+    document.getElementById('date-mode').value = date_mode;
     if (distance) {
         document.getElementById('distance').value = distance;
     }
@@ -437,15 +532,21 @@ function handleUrlQuery() {
         }
     });
 
-    if (date_start || date_end) {
+    if (date_start || date_end || year_start || year_end) {
         document.getElementById('date-filter-box').classList.remove('hidden');
+    }
+
+    if (date_mode === 'year') {
+        document.getElementById('date-panel').classList.add('hidden');
+        document.getElementById('year-panel').classList.remove('hidden');
+        document.getElementById('toggle-date-mode').textContent = 'Switch to Full Date Range';
     }
 
     if (contributor) {
         document.getElementById('contributor-filter-box').classList.remove('hidden');
     }
 
-    if (query || loc || type || date_start || date_end || contributor) {
+    if (query || loc || type || date_start || date_end || contributor || year_start || year_end) {
         searchAndRender();
     }
 
@@ -478,6 +579,28 @@ function getFutureDateString() {
     const month = String(futureDate.getMonth() + 1).padStart(2, '0');
     const day = String(futureDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+}
+
+function getDistanceGroup(distance) {
+    if (distance === null || typeof distance === 'undefined') {
+        return null;
+    }
+    let d2;
+    if (distance < 800) {
+        if (distance < 10) {
+            d2 = 0.01;
+            return d2.toFixed(2);
+        } else if (distance < 100) {
+            d2 = 0.1;
+            return d2.toFixed(1);
+        } else {
+            d2 = (Math.floor(distance / 300) / 3) + 0.3;
+            return d2.toFixed(1);
+        }
+    } else {
+        d2 = Math.floor(distance / 1000) + 1;
+        return d2.toFixed(0);
+    }
 }
 
 function lookForLocationMatches(loc) {
