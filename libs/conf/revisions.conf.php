@@ -103,6 +103,6 @@ $REVISIONS['/js/location-selector.js']=91679393;
 $REVISIONS['/js/geograph-api-libs.js']=18826655;
 $REVISIONS['/js/LeafletLineMarker.js']=76950387;
 $REVISIONS['/js/LeafletLineMarker.css']=76950387;
-$REVISIONS['/js/contributor-selector.js']=47534753;
+$REVISIONS['/js/contributor-selector.js']=46780965;
 $REVISIONS['/ai/finder-demo.js']=54638517;
 ?>
