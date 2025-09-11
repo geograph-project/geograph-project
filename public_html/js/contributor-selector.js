@@ -27,7 +27,7 @@ $(function () {
                                 var results = [];
                                 $.each(data.items, function(i,item){
                                     results.push({
-                                        value: item.realname,
+                                        value: item.user_id+' '+item.realname,
                                         label: item.realname,
                                         title: (item.nickname || '')+' ['+item.images+' images] id#'+item.user_id
                                     });
