@@ -146,7 +146,7 @@
 		<div class="form-column">
 			And/or Near:
 			<input type=search id="loc" name="loc" size="30" placeholder="Enter location"><br>
-			<label for="distance">Distance (m):</label> <input type="text" id="distance" name="distance" value="2000" size="5">
+			<label for="distance">Within Distance:</label> <input type="number" id="distance" name="distance" value="2000" style="width:80px;text-align:right" step=100 min=100 max="100000">m
 
 			<div id="location-disambiguation"></div>
 		</div>
@@ -431,6 +431,9 @@ function searchAndRender() {
 
     let wgs84;
     if (loc) {
+        if (type == 'keywords' && distance > 50000)
+            distance = 50000;
+		
 	if (m = loc.match(/^([A-Z]{1,2}\d+)\s/)) {
 		wgs84 = gridref2wgs(m[1]); //should automaticalyl 'fudge' 4fig GRs
                 data.geo=parseFloat(wgs84.latitude).toFixed(6)+","+parseFloat(wgs84.longitude).toFixed(6)+","+distance;
@@ -489,7 +492,11 @@ function searchAndRender() {
                 }
                 if (wgs84 && wgs84.latitude) {
                         L.circleMarker([wgs84.latitude, wgs84.longitude], {radius:6}).addTo(layerGroup);
-			L.circle([wgs84.latitude, wgs84.longitude], {radius: distance, stroke:0, fillOpacity:0.1}).addTo(layerGroup);
+			if (type == 'similarity' && query_len) {
+				createRectangleFromRadius([wgs84.latitude, wgs84.longitude], distance, {stroke:0, fillOpacity:0.1}).addTo(layerGroup);
+			} else {
+				L.circle([wgs84.latitude, wgs84.longitude], {radius: distance, stroke:0, fillOpacity:0.1}).addTo(layerGroup);
+			}
                 }
                 mapAPIResults(base+'?'+$.param(data), layerGroup, true, 'results-count'); //pass the layergroup, so markers are added to the group!
 
@@ -530,6 +537,7 @@ function performSearch() {
 
     const query = document.querySelector('input[name="q"]').value;
     const loc = document.querySelector('input[name="loc"]').value;
+    const distance = document.querySelector('input[name="distance"]').value;
     const type = document.querySelector('input[name="type"]:checked').value;
     const date_start = document.querySelector('input[name="date_start"]').value;
     const date_end = document.querySelector('input[name="date_end"]').value;
@@ -541,6 +549,7 @@ function performSearch() {
     }
     if (loc) {
         params.append('loc', loc);
+        params.append('distance', distance);
     }
     if (type) {
         params.append('type', type);
@@ -568,6 +577,7 @@ function handleUrlQuery() {
     const params = new URLSearchParams(window.location.search);
     const query = params.get('q');
     const loc = params.get('loc');
+    const distance = params.get('distance');
     const type = params.get('type');
     const date_start = params.get('date_start');
     const date_end = params.get('date_end');
@@ -576,6 +586,7 @@ function handleUrlQuery() {
 
     document.querySelector('input[name="q"]').value = query ?? '';
     document.querySelector('input[name="loc"]').value = loc ?? '';
+    document.querySelector('input[name="distance"]').value = distance ?? 2000;
     document.querySelector('input[name="date_start"]').value = date_start ?? '';
     document.querySelector('input[name="date_end"]').value = date_end ?? '';
     document.querySelector('input[name="contributor"]').value = contributor ?? '';
@@ -715,7 +726,8 @@ function lookForLocationMatches(loc,originalElement) {
 		document.querySelector('input[name="q"]').value = '';
             performSearch();
         } else {
-            container.innerHTML = 'No locations found.';
+            if (originalElement && originalElement == 'loc')
+                container.innerHTML = 'No locations found.';
         }
     };
 
@@ -729,6 +741,32 @@ function lookForLocationMatches(loc,originalElement) {
     };
     document.body.appendChild(script);
 }
+
+
+    /**
+     * Creates and returns a Leaflet rectangle centered on a point with a given radius.
+     * The height and width of the rectangle will be equal to the diameter (radius * 2).
+     * @param {L.LatLng} center The center point for the rectangle.
+     * @param {number} radius The radius in meters.
+     * @returns {L.Rectangle} The Leaflet rectangle object.
+     */
+    function createRectangleFromRadius(center, radius, options) {
+        // Step 1: Create a temporary circle at the center point with the given radius.
+        // We don't need to add this circle to the map, we just need its bounds.
+        var tempCircle = L.circle(center, { radius: radius }).addTo(map);
+
+        // Step 2: Get the bounding box (LatLngBounds) of the temporary circle.
+        // This gives us the southwest and northeast corners of the box.
+        var bounds = tempCircle.getBounds();
+
+        // Step 3: Create a rectangle using the calculated bounds.
+        var rectangle = L.rectangle(bounds, options);
+        
+	tempCircle.removeFrom(map);
+
+        // Return the final rectangle object.
+        return rectangle;
+    }
 
 </script>
 {/literal}
