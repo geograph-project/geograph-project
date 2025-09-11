@@ -117,6 +117,11 @@
     grid-column: 1 / -1;
     min-height:1em;
 }
+
+        #results.leaflet-container {
+                height:calc( 100dvh - 300px );
+        }
+
 </style>
 
 <div class="finder-container">
@@ -174,7 +179,7 @@
 		<a href="#" class="tab nowrap" data-display="large">Large Thumbs</a>
 		<a href="#" class="tab nowrap" data-display="details">Details</a>
 		<a href="#" class="tab nowrap" data-display="river">GeoRiver</a>
-		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=map">Map</a>
+		<a href="#" class="tab nowrap" data-display="map">Map</a>
 		<a class="nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">more...</a>
 	</div>
 	<div id="results" class="results-box display-large">
@@ -191,6 +196,10 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
+
 <link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/themes/ui-lightness/jquery-ui.css" rel="stylesheet"/>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
 <script src="{"/mapper/geotools2.js"|revision}"></script>
@@ -199,6 +208,10 @@
 <script type="text/javascript" src="/js/geograph-api-libs.js?"></script>
 {literal}
 <script>
+
+let map = null;
+let layerGroup = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('finder-form').addEventListener('submit', function(event) {
         event.preventDefault();
@@ -374,7 +387,9 @@ function renderFinderResults(url, divId, countDivId) {
 
 function searchAndRender() {
     let query = document.querySelector('input[name="q"]').value;
+    let query_len = query.length; //grab before we modify below!
     const loc = document.querySelector('input[name="loc"]').value;
+    let distance = parseInt(document.getElementById('distance').value,10) || 2000;
     const type = document.querySelector('input[name="type"]:checked').value;
     const date_start = document.querySelector('input[name="date_start"]').value;
     const date_end = document.querySelector('input[name="date_end"]').value;
@@ -385,9 +400,7 @@ function searchAndRender() {
     const data = {
         long: 1,
         select: "id,user_id,realname,grid_reference,title,hash,takenday,width,height",
-        limit: 30,
-        type: type,
-        display: display
+        limit: 30
     };
 
     if (query && query.match(/^\d+(,\d+)*$/)) {
@@ -407,20 +420,18 @@ function searchAndRender() {
         }
     }
 
-    if (type == 'similarity') {
+    if (type == 'similarity' && query_len) { //no point doing similarity, if no query
         base = "https://www.geograph.org.uk/api-facetql-vector.php"; //for now, requires a different API endpoint
 	data['label'] = query;
     } else {
-	    //todo, detect if user enters a list of ids!
-
-	    if (query) {
-		data['match'] = getTextQuery(query);
-	    }
+	if (query) {
+	    data['match'] = getTextQuery(query);
+	}
     }
 
+    let wgs84;
     if (loc) {
 	if (m = loc.match(/^([A-Z]{1,2}\d+)\s/)) {
-                let distance = parseInt(document.getElementById('distance').value,10) || 2000;
 		wgs84 = gridref2wgs(m[1]); //should automaticalyl 'fudge' 4fig GRs
                 data.geo=parseFloat(wgs84.latitude).toFixed(6)+","+parseFloat(wgs84.longitude).toFixed(6)+","+distance;
 
@@ -447,13 +458,60 @@ function searchAndRender() {
     }
 
     const correction_prompt =  document.getElementById('correction-prompt');
-    if (!query && !loc && !date_end) {
+    if (!query_len && !loc && !date_end) {
         correction_prompt.textContent = "Defaulting to showing recent submissions...";
         data.order = 'id desc';
     } else {
         if (correction_prompt.textContent == "Defaulting to showing recent submissions...")
 	    correction_prompt.textContent = '';
     }
+
+    ////////////////////////////////////////////////////////
+
+    if (display == 'map') {
+        data.select += ",wgs84_lat,wgs84_long";
+        //todo if (!data.order) data.order = 'sequence asc'; maybe??
+	
+                if (map && layerGroup) {
+                    layerGroup.clearLayers();
+                } else {
+                        $('#results').empty().get(0).className = ''; //remove all classes
+
+                    // Set the map's initial view to the UK
+                    map = L.map('results').setView([54.0, -2.0], 6);
+
+                    // Add a base map tile layer
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+
+                    layerGroup = L.layerGroup().addTo(map);
+                }
+                if (wgs84 && wgs84.latitude) {
+                        L.circleMarker([wgs84.latitude, wgs84.longitude], {radius:6}).addTo(layerGroup);
+			L.circle([wgs84.latitude, wgs84.longitude], {radius: distance, stroke:0, fillOpacity:0.1}).addTo(layerGroup);
+                }
+                mapAPIResults(base+'?'+$.param(data), layerGroup, true, 'results-count'); //pass the layergroup, so markers are added to the group!
+
+            if (type == 'keywords')
+		    correction_prompt.textContent = 'This is only a basic map. Use the [Browser Map] link above to explore the results in more detail.';
+
+	return;
+    }
+
+
+                if (map) { //first need to destroy the map!
+                        map.remove();
+                        map = null;
+                        document.getElementById('results').className = ''; //remove all!
+                }
+
+    if (correction_prompt.textContent == 'This is only a basic map. Use the [Browser Map] link above to explore the results in more detail.')
+	correction_prompt.textContent = '';
+
+    $('#results').addClass('results-box');
+
+    ////////////////////////////////////////////////////////
 
     const url = base + '?' + objectToUrlParams(data);
     renderFinderResults(url, 'results', 'results-count');
