@@ -244,6 +244,7 @@ function renderFinderResults(url, divId, countDivId) {
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
                                     by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
                                     Grid Reference: ${row.grid_reference}
+                                    ${row.geodist ? `<br>Distance: ${(row.geodist / 1000).toFixed(1)} km` : ''}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
                             break;
@@ -260,6 +261,7 @@ function renderFinderResults(url, divId, countDivId) {
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
                                     by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
                                     Grid Reference: ${row.grid_reference}
+                                    ${row.geodist ? `<br>Distance: ${(row.geodist / 1000).toFixed(1)} km` : ''}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
                             break;
