@@ -101,6 +101,21 @@
 .display-river .river-item-info {
     text-align: left;
     font-size:1.2em;
+    line-height:1.5em;
+}
+
+/* ----------------------- */
+
+.distance-header {
+    padding: 2px;
+    background-color: #eee;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+.display-small div.distance-header, .display-large div.distance-header {
+    grid-column: 1 / -1;
+    min-height:1em;
 }
 </style>
 
@@ -119,13 +134,13 @@
 	</div>
 	<form id="finder-form" method="get" class="finder-form">
 		<div class="form-column">
-			Search For: <input type=search name=q size="30" value="bailey bridge"> <br>
+			Search For: <input type=search name=q size="30" placeholder="Enter Search Query"> <br>
 			<label><input type=radio name=type value="keywords" checked>Keywords Match</label>
 			<label><input type=radio name=type value="similarity">Similarity Match</label>
 		</div>
 		<div class="form-column">
 			And/or Near:
-			<input type=search id="loc" name="loc" size="30" placeholder="(enter location)"><br>
+			<input type=search id="loc" name="loc" size="30" placeholder="Enter location"><br>
 			<label for="distance">Distance (m):</label> <input type="text" id="distance" name="distance" value="2000" size="5">
 
 			<div id="location-disambiguation"></div>
@@ -168,9 +183,9 @@
 	<div id="more-results-prompt" class="hidden" style="text-align: center; padding: 20px;">
 		<span id="results-count2"></span>
 		Continue in: 
-		<a href="#" data-template="/search.php?q={q}&loc={loc}&type={type}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Original Search</a>
+		<a href="#" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distance={distance}">Original Search</a>
 		or
-		<a href="#" data-template="/browser/redirect.php?q={q}&loc={loc}&type={type}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Image Browser</a>
+		<a href="#" data-template="/browser/redirect.php?q={q}&loc={loc}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Image Browser</a>
 	</div>
 {/literal}
 </div>
@@ -259,8 +274,21 @@ function renderFinderResults(url, divId, countDivId) {
             if (data.rows) {
                 // Clear previous results
                 divElement.innerHTML = '';
+                let lastDistanceGroup = null;
 
                 data.rows.forEach(row => {
+                    // Check for distance headers
+                    if (typeof row.geodist !== 'undefined') {
+                        const currentGroup = getDistanceGroup(row.geodist);
+                        if (lastDistanceGroup !== currentGroup) {
+                            const headerDiv = document.createElement('div');
+                            headerDiv.className = 'distance-header';
+                            headerDiv.innerHTML = `Within <b>${currentGroup}</b> km`;
+                            divElement.appendChild(headerDiv);
+                            lastDistanceGroup = currentGroup;
+                        }
+                    }
+
                     let htmlContent = '';
                     let newDiv;
                     switch (display) {
@@ -277,7 +305,8 @@ function renderFinderResults(url, divId, countDivId) {
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
                                     by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
 				    Taken: ${space_date(row.takenday)}<br>
-                                    Grid Reference: ${row.grid_reference}
+                                    Grid Reference: ${row.grid_reference}<br>
+                                    ${row.geodist ? `<br>Distance: ${(row.geodist / 1000).toFixed(1)} km` : ''}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
                             break;
@@ -294,7 +323,8 @@ function renderFinderResults(url, divId, countDivId) {
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
                                     by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
 				    Taken: ${space_date(row.takenday)}<br>
-                                    Grid Reference: ${row.grid_reference}
+                                    Grid Reference: ${row.grid_reference}<br>
+                                    ${row.geodist ? `<br>Distance: ${(row.geodist / 1000).toFixed(1)} km` : ''}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
                             break;
@@ -549,6 +579,31 @@ function getFutureDateString() {
     const month = String(futureDate.getMonth() + 1).padStart(2, '0');
     const day = String(futureDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+}
+
+function getDistanceGroup(distance) {
+    if (distance === null || typeof distance === 'undefined') {
+        return null;
+    }
+    let d2;
+    let len = 4;
+    const loc = document.querySelector('input[name="loc"]').value;
+    if (loc && (m = loc.match(/^[A-Z]{1,2}(\d+)\s/))) {
+        len = m[1].length;
+    }
+
+    if (distance < 800 && len > 4) {
+        if (distance < 10 && len > 6) {
+            d2 = 0.01;
+        } else if (distance < 100) {
+            d2 = 0.1;
+        } else {
+            d2 = (Math.floor(distance / 300) / 3) + 0.3;
+        }
+    } else {
+        d2 = Math.floor(distance / 1000) + 1;
+    }
+    return d2.toFixed(2);
 }
 
 function lookForLocationMatches(loc,originalElement) {
