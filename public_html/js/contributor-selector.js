@@ -28,7 +28,7 @@ $(function () {
                                 var results = [];
                                 $.each(data.items, function(i,item){
                                     results.push({
-                                        value: item.realname,
+                                        value: item.user_id + ' ' + item.realname,
                                         label: item.realname,
                                         title: (item.nickname || '')+' ['+item.images+' images] id#'+item.user_id
                                     });
@@ -44,7 +44,6 @@ $(function () {
             select: function(event,ui) {
                     $("#contributor").val(ui.item.value);
                     // In the context of finder_finder.tpl, we want to trigger a search on select.
-                    // This can be done by overriding this callback.
                     if (typeof performSearch === 'function') {
                         performSearch();
                     }

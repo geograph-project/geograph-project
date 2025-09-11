@@ -111,7 +111,9 @@
 		</div>
 		<div class="form-column">
 			And/or Near:
-			<input type=search id="loc" name="loc" size="30" placeholder="(enter location)"> <br>
+			<input type=search id="loc" name="loc" size="30" placeholder="(enter location)">
+			<label for="distance">Distance (m):</label> <input type="text" id="distance" name="distance" value="2000" size="5">
+			<br>
 			<br>
 			<a href="#" id="add-date-filter">Add Date Filter</a> <a href="#" id="add-contributor-filter">Add Contributor Filter</a>
 		</div>
@@ -128,6 +130,7 @@
 		<label for="contributor">Contributor:</label>
 		<input type="text" id="contributor" name="contributor" placeholder="Enter contributor name">
 	</div>
+	<div id="location-disambiguation"></div>
 	<br>
 	<input type="hidden" id="display-mode" name="display" value="small">
 	<div id="display-tabs" class="tabHolder display-options">
@@ -149,6 +152,7 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/js/location-selector.js"></script>
 <script type="text/javascript" src="/js/contributor-selector.js"></script>
+<script type="text/javascript" src="/mapper/geotools2.js"></script>
 <script type="text/javascript" src="/js/geograph-api-libs.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -274,7 +278,7 @@ function renderFinderResults(url, divId, countDivId) {
 }
 
 function searchAndRender() {
-    const query = document.querySelector('input[name="q"]').value;
+    let query = document.querySelector('input[name="q"]').value;
     const loc = document.querySelector('input[name="loc"]').value;
     const type = document.querySelector('input[name="type"]:checked').value;
     const date_start = document.querySelector('input[name="date_start"]').value;
@@ -291,20 +295,39 @@ function searchAndRender() {
         display: display
     };
 
+    if (contributor) {
+        const match = contributor.match(/^(\d+)\s/);
+        if (match) {
+            query += " user" + match[1];
+        }
+    }
+
     if (query) {
         data['match'] = getTextQuery(query);
     }
     if (loc) {
-        data['location'] = loc;
+        const match = loc.match(/([A-Z]{1,2}\d+)/i); // More flexible regex
+        if (match) {
+            let distance = parseInt(document.getElementById('distance').value, 10) || 2000;
+            const gridRef = match[1];
+            const wgs84 = gridref2wgs(gridRef);
+            if (wgs84 && wgs84.latitude && wgs84.longitude) {
+                data.geo = parseFloat(wgs84.latitude).toFixed(6) + "," + parseFloat(wgs84.longitude).toFixed(6) + "," + distance;
+            }
+        } else {
+            lookForLocationMatches(loc);
+            return; // Stop processing this search until user disambiguates
+        }
     }
     if (date_start) {
-        data['date_start'] = date_start;
-    }
-    if (date_end) {
-        data['date_end'] = date_end;
-    }
-    if (contributor) {
-        data['contributor'] = contributor;
+        if (date_end) {
+            data['filterrange[takendays]'] = `to_days(${date_start}),to_days(${date_end})`;
+        } else {
+            const futureDate = getFutureDateString();
+            data['filterrange[takendays]'] = `to_days(${date_start}),to_days(${futureDate})`;
+        }
+    } else if (date_end) {
+        data['filterrange[takendays]'] = `to_days(1800-01-01),to_days(${date_end})`;
     }
 
     const url = base + '?' + objectToUrlParams(data);
@@ -321,6 +344,7 @@ function performSearch() {
     const date_end = document.querySelector('input[name="date_end"]').value;
     const contributor = document.querySelector('input[name="contributor"]').value;
     const display = document.getElementById('display-mode').value;
+    const distance = document.getElementById('distance').value;
     const params = new URLSearchParams();
     if (query) {
         params.append('q', query);
@@ -343,9 +367,12 @@ function performSearch() {
     if (display) {
         params.append('display', display);
     }
+    if (distance && distance !== '2000') { // Only add if not default
+        params.append('distance', distance);
+    }
 
     const newUrl = window.location.pathname + '?' + params.toString();
-    history.pushState({query: query, loc: loc, type: type, date_start: date_start, date_end: date_end, contributor: contributor, display: display}, '', newUrl);
+    history.pushState({query: query, loc: loc, type: type, date_start: date_start, date_end: date_end, contributor: contributor, display: display, distance: distance}, '', newUrl);
 
     updateTabLinks();
 }
@@ -359,6 +386,7 @@ function handleUrlQuery() {
     const date_end = params.get('date_end');
     const contributor = params.get('contributor');
     const display = params.get('display') || 'small';
+    const distance = params.get('distance');
 
     document.querySelector('input[name="q"]').value = query ?? '';
     document.querySelector('input[name="loc"]').value = loc ?? '';
@@ -366,6 +394,9 @@ function handleUrlQuery() {
     document.querySelector('input[name="date_end"]').value = date_end ?? '';
     document.querySelector('input[name="contributor"]').value = contributor ?? '';
     document.getElementById('display-mode').value = display;
+    if (distance) {
+        document.getElementById('distance').value = distance;
+    }
 
     if (type) {
         document.querySelector(`input[name="type"][value="${type}"]`).checked = true;
@@ -410,6 +441,72 @@ function updateTabLinks() {
         }
         tab.href = url;
     });
+}
+
+function getFutureDateString() {
+    const futureTimestampInSeconds = (Math.ceil(new Date().getTime() / 3600000) * 3600) + 604800;
+    const futureDate = new Date(futureTimestampInSeconds * 1000);
+    const year = futureDate.getFullYear();
+    const month = String(futureDate.getMonth() + 1).padStart(2, '0');
+    const day = String(futureDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function lookForLocationMatches(loc) {
+    const container = document.getElementById('location-disambiguation');
+    container.innerHTML = 'Searching for location...';
+
+    window.serveCallback = function(data) {
+        container.innerHTML = ''; // Clear 'Searching...'
+
+        if (data && data.total_found > 1) {
+            const label = document.createElement('label');
+            label.textContent = 'Did you mean: ';
+            container.appendChild(label);
+
+            const select = document.createElement('select');
+
+            const defaultOption = document.createElement('option');
+            defaultOption.textContent = 'Choose Location';
+            defaultOption.value = '';
+            select.appendChild(defaultOption);
+
+            data.items.forEach(function(item) {
+                const option = document.createElement('option');
+                const valueText = item.name.indexOf(item.gr) === -1 ? `${item.name}/${item.gr}` : item.name;
+                option.value = valueText;
+                option.textContent = `${item.name.replace(new RegExp('/' + item.gr, 'g'), ' - ' + item.gr)}${item.localities ? ', ' + item.localities : ''}`;
+                select.appendChild(option);
+            });
+
+            select.addEventListener('change', function(event) {
+                if (event.target.value) {
+                    document.getElementById('loc').value = event.target.value;
+                    performSearch();
+                    container.innerHTML = ''; // Clear the dropdown
+                }
+            });
+
+            container.appendChild(select);
+        } else if (data && data.total_found === 1) {
+            // If only one result, just use it directly
+            const valueText = data.items[0].name.indexOf(data.items[0].gr) === -1 ? `${data.items[0].name}/${data.items[0].gr}` : data.items[0].name;
+            document.getElementById('loc').value = valueText;
+            performSearch();
+        } else {
+            container.innerHTML = 'No locations found.';
+        }
+    };
+
+    const script = document.createElement('script');
+    script.src = `/finder/places.json.php?q=${encodeURIComponent(loc)}&new=1&callback=serveCallback`;
+
+    script.onload = () => document.body.removeChild(script);
+    script.onerror = () => {
+        container.innerHTML = 'Error searching for location.';
+        document.body.removeChild(script);
+    };
+    document.body.appendChild(script);
 }
 </script>
 
