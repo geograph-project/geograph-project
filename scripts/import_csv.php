@@ -15,8 +15,14 @@ function myquote($in) {
 		return $in;
 	global $db;
 	//if (str_starts_with($in,'MULTILINESTRING')) //not purfect, but ok for now!
-	if (preg_match('/^(MULTI)?(LINESTRING|POLYGON|POINT) /',$in))
+	if (preg_match('/^(MULTI)?(LINESTRING|POLYGON|POINT) /',$in)) {
+		//mariadb, doesnt support 3D geometry!
+		if (strpos($in,' Z ')) {
+			$in = str_replace(' Z ',' ',$in);
+			$in = preg_replace('/ \d+(\.\d+)?([,)])/','$2',$in); //remove the last element of each coordinate tuple)
+		}
 		return "ST_GeomFromText(".$db->Quote($in).")";
+	}
 	return $db->Quote($in);
 }
 
@@ -40,6 +46,10 @@ if ($param['create']) {
 			fseek($h, 3);
 
 		$head = fgetcsv($h);
+		foreach($head as &$value)
+			if ($value == 'geometry')
+				$value = 'WKT';
+		unset($value);
 
 		while($h && !feof($h)) {
 			$line = fgetcsv($h);
@@ -93,13 +103,17 @@ if ($param['create']) {
 	if (!empty($param['auto_id'])) {
 		$str .= "$sep `auto_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY\n";
 	}
-	$str .=")";
+	$str .=") comment='created from {$param['file']}'";
 
 	print "$str;\n";
 
 	if ($param['execute']) {
-		if ($param['drop'] && $param['split']) //help prevent accidental use TODO is only allow dropping created tables?
-			$db->Execute("DROP TABLE IF EXISTS `{$param['table']}`");
+		if ($param['drop']) { //help prevent accidental use TODO is only allow dropping created tables?
+			$bits = $db->getRow("SHOW CREATE TABLE {$param['table']}");
+			$create = array_pop($bits);
+			if (preg_match('/created from /',$create))
+				$db->Execute("DROP TABLE IF EXISTS `{$param['table']}`");
+		}
 		$db->Execute($str);
 	}
 }
@@ -115,6 +129,10 @@ foreach(explode(',',$param['file']) as $filename) {
 		fseek($h, 0);
 
 	$head = fgetcsv($h); //we already read it, do again just to move to next line
+		foreach($head as &$value)
+			if ($value == 'geometry')
+				$value = 'WKT'; //for now, we like the geometry column being called WKT!
+		unset($value);
 
 	$db->Execute("SET NAMES utf8"); //dont know if this really enough!
 
@@ -131,11 +149,14 @@ foreach(explode(',',$param['file']) as $filename) {
 	while($h && !feof($h)) {
 		$line = fgetcsv($h);
 		if ($param['split']) {
+			$key = array_search('WKT',$head,true);
+			if ($key === FALSE) die("no WKT found! ($filename:$c)\n");
+
 					//filter all three brackets, as want to split on double brackets only. Polygones also mutli-value! (holes!)
-			$line[0] = preg_replace('/^MULTIPOLYGON \(\(\(/','',$line[0]);
-			$line[0] = preg_replace('/\)\)\)$/','',$line[0]);
-			foreach(explode(')),((',$line[0]) as $bit) {
-				$line[0] = "POLYGON ((".$bit."))"; //still wants double brackets
+			$line[$key] = preg_replace('/^MULTIPOLYGON \(\(\(/','',$line[$key]);
+			$line[$key] = preg_replace('/\)\)\)$/','',$line[$key]);
+			foreach(preg_split('/\)\),\s*\(\(/',$line[$key]) as $bit) {
+				$line[$key] = "POLYGON ((".$bit."))"; //still wants double brackets
 				$str .= $sep.'('.implode(',',array_map('myquote',$line)).')';
 				$sep = ",\n";
 
