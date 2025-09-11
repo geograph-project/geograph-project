@@ -62,6 +62,32 @@
 .display-small div a:first-child {
     display: block;
 }
+.display-details .details-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+}
+.display-details .details-item-thumb img {
+    max-width: 120px;
+}
+.display-details .details-item-info {
+    text-align: left;
+}
+.display-river .river-item {
+    display: grid;
+    grid-template-columns: 640px 1fr;
+    gap: 10px;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+}
+.display-river .river-item-thumb img {
+    width: 100%;
+}
+.display-river .river-item-info {
+    text-align: left;
+}
 </style>
 
 <div class="finder-container">
@@ -203,7 +229,7 @@ function renderFinderResults(url, divId, countDivId) {
     const display = document.getElementById('display-mode').value;
 
     // Switch display class
-    divElement.classList.remove('display-large', 'display-small'); // Add other classes here as they are created
+    divElement.classList.remove('display-large', 'display-small', 'display-details', 'display-river'); // Add other classes here as they are created
     divElement.classList.add('display-' + display);
 
     fetch(url)
@@ -215,26 +241,60 @@ function renderFinderResults(url, divId, countDivId) {
 
                 data.rows.forEach(row => {
                     let htmlContent = '';
+                    let newDiv;
                     switch (display) {
+                        case 'river':
+                            newDiv = document.createElement('div');
+                            newDiv.className = 'river-item';
+                            htmlContent = `
+                                <div class="river-item-thumb">
+                                    <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
+                                        <img src="${getGeographUrl(row.id, row.hash, 'full')}" alt="${escapeHtml(row.title)}" loading="lazy">
+                                    </a>
+                                </div>
+                                <div class="river-item-info">
+                                    <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
+                                    by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
+                                    Grid Reference: ${row.grid_reference}
+                                </div>`;
+                            newDiv.innerHTML = htmlContent;
+                            break;
+                        case 'details':
+                            newDiv = document.createElement('div');
+                            newDiv.className = 'details-item';
+                            htmlContent = `
+                                <div class="details-item-thumb">
+                                    <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
+                                        <img src="${getGeographUrl(row.id, row.hash, 'small')}" alt="${escapeHtml(row.title)}" loading="lazy">
+                                    </a>
+                                </div>
+                                <div class="details-item-info">
+                                    <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
+                                    by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
+                                    Grid Reference: ${row.grid_reference}
+                                </div>`;
+                            newDiv.innerHTML = htmlContent;
+                            break;
                         case 'small':
+                            newDiv = document.createElement('div');
                             htmlContent = `
                                 <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
                                     <img src="${getGeographUrl(row.id, row.hash, 'small')}" alt="${escapeHtml(row.title)}" loading="lazy">
                                 </a>`;
+                            newDiv.innerHTML = htmlContent;
                             break;
                         case 'large':
                         default:
+                            newDiv = document.createElement('div');
                             htmlContent = `
                                 <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
                                     <img src="${getGeographUrl(row.id, row.hash, 'med')}" alt="${escapeHtml(row.title)}" loading="lazy">
                                 </a>
                                 <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">${escapeHtml(row.title)}</a>
                                 <span class="nowrap">by ${escapeHtml(row.realname)}</span>`;
+                            newDiv.innerHTML = htmlContent;
                             break;
                     }
-
-                    const newDiv = document.createElement('div');
-                    newDiv.innerHTML = htmlContent;
                     divElement.appendChild(newDiv);
                 });
 
