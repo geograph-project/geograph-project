@@ -24,11 +24,21 @@
 			And/or Near:
 			<input type=search name=loc size="30" placeholder="(enter location)"> <br>
 			<br>
-			<a href="#">Add Date Filter</a> <a href="#">Add Contributor Filter</a>
+			<a href="#" id="add-date-filter">Add Date Filter</a> <a href="#" id="add-contributor-filter">Add Contributor Filter</a>
 		</div>
 		<div style="clear:both;text-align:center">
 		</div>
 	</form>
+	<div id="date-filter-box" style="display: none; background-color: #eee; padding: 10px; margin-top: 10px;">
+		<label for="date_start">Start Date:</label>
+		<input type="date" id="date_start" name="date_start">
+		<label for="date_end">End Date:</label>
+		<input type="date" id="date_end" name="date_end">
+	</div>
+	<div id="contributor-filter-box" style="display: none; background-color: #eee; padding: 10px; margin-top: 10px;">
+		<label for="contributor">Contributor:</label>
+		<input type="text" id="contributor" name="contributor" placeholder="Enter contributor name">
+	</div>
 	<br>
 	<div class="tabHolder" style="text-align:right;font-size:0.9em">
 		Display:
@@ -52,6 +62,26 @@ document.addEventListener('DOMContentLoaded', function() {
         performSearch();
     });
 
+    document.getElementById('add-date-filter').addEventListener('click', function(event) {
+        event.preventDefault();
+        const dateFilterBox = document.getElementById('date-filter-box');
+        if (dateFilterBox.style.display === 'none') {
+            dateFilterBox.style.display = 'block';
+        } else {
+            dateFilterBox.style.display = 'none';
+        }
+    });
+
+    document.getElementById('add-contributor-filter').addEventListener('click', function(event) {
+        event.preventDefault();
+        const contributorFilterBox = document.getElementById('contributor-filter-box');
+        if (contributorFilterBox.style.display === 'none') {
+            contributorFilterBox.style.display = 'block';
+        } else {
+            contributorFilterBox.style.display = 'none';
+        }
+    });
+
     handleUrlQuery();
 });
 
@@ -61,6 +91,9 @@ function searchAndRender() {
     const query = document.querySelector('input[name="q"]').value;
     const loc = document.querySelector('input[name="loc"]').value;
     const type = document.querySelector('input[name="type"]:checked').value;
+    const date_start = document.querySelector('input[name="date_start"]').value;
+    const date_end = document.querySelector('input[name="date_end"]').value;
+    const contributor = document.querySelector('input[name="contributor"]').value;
 
     const base = "https://www.geograph.org.uk/api-facetql.php";
     const data = {
@@ -76,6 +109,15 @@ function searchAndRender() {
     if (loc) {
         data['location'] = loc;
     }
+    if (date_start) {
+        data['date_start'] = date_start;
+    }
+    if (date_end) {
+        data['date_end'] = date_end;
+    }
+    if (contributor) {
+        data['contributor'] = contributor;
+    }
 
     const url = base + '?' + objectToUrlParams(data);
     renderAPIResults(url, 'results', 'results-count');
@@ -87,6 +129,9 @@ function performSearch() {
     const query = document.querySelector('input[name="q"]').value;
     const loc = document.querySelector('input[name="loc"]').value;
     const type = document.querySelector('input[name="type"]:checked').value;
+    const date_start = document.querySelector('input[name="date_start"]').value;
+    const date_end = document.querySelector('input[name="date_end"]').value;
+    const contributor = document.querySelector('input[name="contributor"]').value;
     const params = new URLSearchParams();
     if (query) {
         params.append('q', query);
@@ -97,9 +142,18 @@ function performSearch() {
     if (type) {
         params.append('type', type);
     }
+    if (date_start) {
+        params.append('date_start', date_start);
+    }
+    if (date_end) {
+        params.append('date_end', date_end);
+    }
+    if (contributor) {
+        params.append('contributor', contributor);
+    }
 
     const newUrl = window.location.pathname + '?' + params.toString();
-    history.pushState({query: query, loc: loc, type: type}, '', newUrl);
+    history.pushState({query: query, loc: loc, type: type, date_start: date_start, date_end: date_end, contributor: contributor}, '', newUrl);
 }
 
 function handleUrlQuery() {
@@ -107,15 +161,29 @@ function handleUrlQuery() {
     const query = params.get('q');
     const loc = params.get('loc');
     const type = params.get('type');
+    const date_start = params.get('date_start');
+    const date_end = params.get('date_end');
+    const contributor = params.get('contributor');
 
     document.querySelector('input[name="q"]').value = query ?? '';
     document.querySelector('input[name="loc"]').value = loc ?? '';
+    document.querySelector('input[name="date_start"]').value = date_start ?? '';
+    document.querySelector('input[name="date_end"]').value = date_end ?? '';
+    document.querySelector('input[name="contributor"]').value = contributor ?? '';
 
     if (type) {
         document.querySelector(`input[name="type"][value="${type}"]`).checked = true;
     }
 
-    if (query || loc || type) {
+    if (date_start || date_end) {
+        document.getElementById('date-filter-box').style.display = 'block';
+    }
+
+    if (contributor) {
+        document.getElementById('contributor-filter-box').style.display = 'block';
+    }
+
+    if (query || loc || type || date_start || date_end || contributor) {
         searchAndRender();
     }
 }
