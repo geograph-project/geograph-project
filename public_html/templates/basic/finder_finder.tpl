@@ -133,13 +133,14 @@
 
 		<div id="date-filter-box" class="form-column hidden">
 			<label for="date_start">Start Date:</label>
-			<input type="date" id="date_start" name="date_start">
+			<input type="date" id="date_start" name="date_start" min="1800-01-01"><br>
 			<label for="date_end">End Date:</label>
-			<input type="date" id="date_end" name="date_end">
+			<input type="date" id="date_end" name="date_end" min="1800-01-01">
+			<button type="button" id="clear-dates-btn">Clear Dates</button>
 		</div>
 		<div id="contributor-filter-box" class="form-column hidden">
 			<label for="contributor">Contributor:</label>
-			<input type="text" id="contributor" name="contributor" placeholder="Enter contributor name">
+			<input type="search" id="contributor" name="contributor" placeholder="Enter contributor name">
 		</div>
 
 		<div class="form-clear">
@@ -148,7 +149,9 @@
 		</div>
 		<input type="hidden" id="display-mode" name="display" value="small">
 	</form>
+	<div id="correction-prompt"></div>
 	<br>
+{literal}
 	<div id="results-count" class="results-count"></div>
 	<div id="display-tabs" class="tabHolder display-options">
 		Display:
@@ -156,13 +159,20 @@
 		<a href="#" class="tab nowrap" data-display="large">Large Thumbs</a>
 		<a href="#" class="tab nowrap" data-display="details">Details</a>
 		<a href="#" class="tab nowrap" data-display="river">GeoRiver</a>
-{literal}
 		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=map">Map</a>
 		<a class="nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distance={distance}">more...</a>
-{/literal}
 	</div>
 	<div id="results" class="results-box display-large">
 	</div>
+
+	<div id="more-results-prompt" class="hidden" style="text-align: center; padding: 20px;">
+		<span id="results-count2"></span>
+		Continue in: 
+		<a href="#" data-template="/search.php?q={q}&loc={loc}&type={type}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Original Search</a>
+		or
+		<a href="#" data-template="/browser/redirect.php?q={q}&loc={loc}&type={type}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Image Browser</a>
+	</div>
+{/literal}
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -193,6 +203,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     handleUrlQuery();
+    //only do this on page load for now!
+    const query = document.querySelector('input[name="q"]').value;
+    const loc = document.querySelector('input[name="loc"]').value;
+    if (query && !loc) {
+        lookForLocationMatches(query,'q');
+    }
 
     document.getElementById('display-tabs').addEventListener('click', function(event) {
         if (event.target.dataset.display) {
@@ -213,6 +229,16 @@ document.addEventListener('DOMContentLoaded', function() {
             performSearch();
         }
     });
+
+    document.getElementById('clear-dates-btn').addEventListener('click', function(event) {
+        document.getElementById('date_start').value = '';
+        document.getElementById('date_end').value = '';
+        performSearch();
+    });
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date_start').max = today;
+    document.getElementById('date_end').max = today;
 });
 
 window.addEventListener('popstate', handleUrlQuery);
@@ -220,6 +246,7 @@ window.addEventListener('popstate', handleUrlQuery);
 function renderFinderResults(url, divId, countDivId) {
     const divElement = document.getElementById(divId);
     const countDivElement = document.getElementById(countDivId);
+    const moreResultsPrompt = document.getElementById('more-results-prompt');
     const display = document.getElementById('display-mode').value;
 
     // Switch display class
@@ -249,7 +276,7 @@ function renderFinderResults(url, divId, countDivId) {
                                 <div class="river-item-info">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
                                     by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
-				    Taken ${space_date(row.takenday)}<br>
+				    Taken: ${space_date(row.takenday)}<br>
                                     Grid Reference: ${row.grid_reference}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
@@ -266,7 +293,7 @@ function renderFinderResults(url, divId, countDivId) {
                                 <div class="details-item-info">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
                                     by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
-				    Taken ${space_date(row.takenday)}<br>
+				    Taken: ${space_date(row.takenday)}<br>
                                     Grid Reference: ${row.grid_reference}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
@@ -274,7 +301,7 @@ function renderFinderResults(url, divId, countDivId) {
                         case 'small':
                             newDiv = document.createElement('div');
                             htmlContent = `
-                                <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
+                                <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank" title="${escapeHtml(row.title)} by ${escapeHtml(row.realname)}">
                                     <img src="${getGeographUrl(row.id, row.hash, 'small')}" alt="${escapeHtml(row.title)}" loading="lazy">
                                 </a>`;
                             newDiv.innerHTML = htmlContent;
@@ -283,7 +310,7 @@ function renderFinderResults(url, divId, countDivId) {
                         default:
                             newDiv = document.createElement('div');
                             htmlContent = `
-                                <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
+                                <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank" title="${escapeHtml(row.title)} by ${escapeHtml(row.realname)}">
                                     <img src="${getGeographUrl(row.id, row.hash, 'med')}" alt="${escapeHtml(row.title)}" loading="lazy">
                                 </a>
                                 <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">${escapeHtml(row.title)}</a>
@@ -295,8 +322,21 @@ function renderFinderResults(url, divId, countDivId) {
                 });
 
                 if (data.meta && data.meta.total_found && countDivElement) {
+                    countDivElement.classList.remove('hidden');
                     countDivElement.textContent = `Showing ${data.rows.length} of ${data.meta.total_found} results.`;
                 }
+
+                // Handle 'More Results' prompt
+                if (data.meta && data.meta.total_found > data.rows.length) {
+		    document.getElementById('results-count2').textContent = `Showing ${data.rows.length} of ${data.meta.total_found} results.`;
+                    moreResultsPrompt.classList.remove('hidden');
+                } else {
+                    moreResultsPrompt.classList.add('hidden');
+                }
+            } else {
+                divElement.innerHTML = 'No Results';
+                countDivElement.classList.add('hidden');
+                moreResultsPrompt.classList.add('hidden');                
             }
         })
         .catch(error => console.error('Error fetching data:', error));
@@ -491,13 +531,19 @@ function getFutureDateString() {
     return `${year}-${month}-${day}`;
 }
 
-function lookForLocationMatches(loc) {
+function lookForLocationMatches(loc,originalElement) {
     const container = document.getElementById('location-disambiguation');
+    const correction_prompt =  document.getElementById('correction-prompt');
     container.innerHTML = 'Searching for location...';
 
     window.serveCallback = function(data) {
         container.innerHTML = ''; // Clear 'Searching...'
         if (data && data.total_found > 1) {
+            if (originalElement && originalElement == 'q') {
+		correction_prompt.textContent = "There are a number of places matching your query. Below are combined keyword results. Use the dropdown above to pick a specific place.";
+		//todo, inlcude a link to finder/groups.php?
+            }
+
             const label = document.createElement('label');
             label.textContent = 'Did you mean: ';
             container.appendChild(label);
@@ -511,8 +557,7 @@ function lookForLocationMatches(loc) {
 
             data.items.forEach(function(item) {
                 const option = document.createElement('option');
-                const valueText = item.name.indexOf(item.gr) === -1 ? `${item.name}/${item.gr}` : item.name;
-                option.value = valueText;
+                option.value = `${item.gr} ${item.name}`;
                 option.textContent = `${item.name.replace(new RegExp('/' + item.gr, 'g'), ' - ' + item.gr)}${item.localities ? ', ' + item.localities : ''}`;
                 select.appendChild(option);
             });
@@ -520,8 +565,11 @@ function lookForLocationMatches(loc) {
             select.addEventListener('change', function(event) {
                 if (event.target.value) {
                     document.getElementById('loc').value = event.target.value;
+                    if (originalElement && originalElement == 'q')
+			document.querySelector('input[name="q"]').value = '';
                     performSearch();
                     container.innerHTML = ''; // Clear the dropdown
+                    correction_prompt.innerHTML = '';
                 }
             });
 
@@ -530,6 +578,8 @@ function lookForLocationMatches(loc) {
         } else if (data && data.total_found == 1) {
             // If only one result, just use it directly
             document.getElementById('loc').value = `${data.items[0].gr} ${data.items[0].name}`;
+            if (originalElement && originalElement == 'q')
+		document.querySelector('input[name="q"]').value = '';
             performSearch();
         } else {
             container.innerHTML = 'No locations found.';
