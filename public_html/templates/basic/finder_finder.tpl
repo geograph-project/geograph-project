@@ -360,6 +360,17 @@ function searchAndRender() {
         display: display
     };
 
+    if (query && query.match(/^\d+(,\d+)*$/)) {
+	//special handler for a list of ids!
+        data['where'] = "id in ("+query+")";
+
+        //todo, certainly doesnt make sense to filter by query, but might want to keep other filters?
+
+        const url = base + '?' + objectToUrlParams(data);
+        renderFinderResults(url, 'results', 'results-count');
+        return;
+    }
+
     if (contributor) {
 	if (m = contributor.match(/^(\d+)\s/)) {
 	     query += " user"+m[1];
@@ -403,6 +414,15 @@ function searchAndRender() {
         }
     } else if (date_end) {
         data['filterrange[takendays]'] = "to_days(1800-01-01),to_days("+date_end+")";
+    }
+
+    const correction_prompt =  document.getElementById('correction-prompt');
+    if (!query && !loc && !date_end) {
+        correction_prompt.textContent = "Defaulting to showing recent submissions...";
+        data.order = 'id desc';
+    } else {
+        if (correction_prompt.textContent == "Defaulting to showing recent submissions...")
+	    correction_prompt.textContent = '';
     }
 
     const url = base + '?' + objectToUrlParams(data);
