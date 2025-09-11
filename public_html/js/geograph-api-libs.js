@@ -151,6 +151,13 @@ function zeroFill(number, width) {
         return number + "";
 }
 
+
+function space_date(datestr) {
+    if (datestr && datestr.length == 8)
+       return datestr.substring(0,4)+'-'+datestr.substring(4,6)+'-'+datestr.substring(6,8);
+    return datestr;
+}
+
 function escapeHtml(unsafe) {
     if (unsafe === null || unsafe === undefined) {
         return '';
@@ -316,4 +323,51 @@ function getPolygonFilter(polygonStr) {
 
     // 4. Return the formatted filter string
     return `CONTAINS(GEOPOLY2D(${radianList}),wgs84_long,wgs84_lat)`;
+}
+
+//////////////////////////////////////////////////////////
+
+/**
+ * A JavaScript implementation of MySQL's TO_DAYS() function.
+ *
+ * This function calculates the number of days since year 0 (a theoretical
+ * date used by MySQL). It works by using a known anchor point in time
+ * ('1970-01-01') and the corresponding TO_DAYS() value from MySQL, then
+ * calculating the number of days between the anchor and the input date.
+ *
+ * The function uses UTC to avoid timezone issues that could affect the
+ * day count.
+ *
+ * @param {string} dateString The date to convert, in 'YYYY-MM-DD' format.
+ * @returns {number} The number of days since year 0. Returns 0 for invalid dates.
+ */
+function toDays(dateString) {
+  // Milliseconds in a day.
+  const millisecondsPerDay = 1000 * 60 * 60 * 24;
+
+  // MySQL's TO_DAYS() value for the Unix Epoch start date (1970-01-01).
+  // We use this as our known anchor point.
+  const mysqlEpochOffset = 719528;
+
+  // Create a Date object from the input string. By appending 'T00:00:00Z',
+  // we force the date to be interpreted as UTC, which is crucial for
+  // consistent day calculations regardless of the user's timezone.
+  const inputDate = new Date(`${dateString}T00:00:00Z`);
+
+  // Check if the date is valid. If not, return 0 as MySQL does for '0000-00-00'.
+  if (isNaN(inputDate.getTime())) {
+    console.error(`Invalid date format: ${dateString}. Please use 'YYYY-MM-DD'.`);
+    return 0;
+  }
+
+  // Calculate the number of days since the Unix Epoch (January 1, 1970).
+  // The getTime() method returns milliseconds since the epoch, so we divide
+  // by the number of milliseconds in a day. We use Math.floor() to get a
+  // whole number of days.
+  const daysSinceEpoch = Math.floor(inputDate.getTime() / millisecondsPerDay);
+
+  // Add the MySQL epoch offset to get the final TO_DAYS() value.
+  const result = mysqlEpochOffset + daysSinceEpoch;
+
+  return result;
 }
