@@ -38,16 +38,28 @@
     padding: 10px;
     margin-top: 10px;
 }
-.grid-container {
+.display-large {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(213px, 1fr));
     gap: 2px;
 }
-.grid-container div {
+.display-large div {
     text-align: center;
     min-height: 160px;
 }
-.grid-container div a:first-child {
+.display-large div a:first-child {
+    display: block;
+}
+.display-small {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 2px;
+}
+.display-small div {
+    text-align: center;
+    min-height: 120px;
+}
+.display-small div a:first-child {
     display: block;
 }
 </style>
@@ -102,7 +114,7 @@
 		<a class="nowrap">more...</a>
 	</div>
 	<div id="results-count" class="results-count"></div>
-	<div id="results" class="results-box grid-container">
+	<div id="results" class="results-box display-large">
 	</div>
 </div>
 
@@ -182,7 +194,56 @@ function searchAndRender() {
     }
 
     const url = base + '?' + objectToUrlParams(data);
-    renderAPIResults(url, 'results', 'results-count');
+    renderFinderResults(url, 'results', 'results-count');
+}
+
+function renderFinderResults(url, divId, countDivId) {
+    const divElement = document.getElementById(divId);
+    const countDivElement = document.getElementById(countDivId);
+    const display = document.getElementById('display-mode').value;
+
+    // Switch display class
+    divElement.classList.remove('display-large', 'display-small'); // Add other classes here as they are created
+    divElement.classList.add('display-' + display);
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.rows) {
+                // Clear previous results
+                divElement.innerHTML = '';
+
+                data.rows.forEach(row => {
+                    let htmlContent = '';
+                    switch (display) {
+                        case 'small':
+                            htmlContent = `
+                                <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
+                                    <img src="${getGeographUrl(row.id, row.hash, 'small')}" alt="${escapeHtml(row.title)}" loading="lazy">
+                                </a>`;
+                            break;
+                        case 'large':
+                        default:
+                            htmlContent = `
+                                <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">
+                                    <img src="${getGeographUrl(row.id, row.hash, 'med')}" alt="${escapeHtml(row.title)}" loading="lazy">
+                                </a>
+                                <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">${escapeHtml(row.title)}</a>
+                                <span class="nowrap">by ${escapeHtml(row.realname)}</span>`;
+                            break;
+                    }
+
+                    const newDiv = document.createElement('div');
+                    newDiv.innerHTML = htmlContent;
+                    divElement.appendChild(newDiv);
+                });
+
+                if (data.meta && data.meta.total_found && countDivElement) {
+                    countDivElement.textContent = `Showing ${data.rows.length} of ${data.meta.total_found} results.`;
+                }
+            }
+        })
+        .catch(error => console.error('Error fetching data:', error));
 }
 
 function performSearch() {
