@@ -4,8 +4,8 @@
 <div style="position:relative;height:800px;">
 	<div class="tabHolder">
 		<a class="tabSelected nowrap">Quick Results</a>
-		<a class="tab nowrap">Original Search</a>
-		<a class="tab nowrap">Image Browser</a>
+		<a class="tab nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}">Original Search</a>
+		<a class="tab nowrap" data-template="/browser/browser-redirect.php?q={q}&amp;loc={loc}">Image Browser</a>
 		<a class="tab nowrap">Browser Map</a>
 		<a class="tab nowrap">Grouped Results</a>
 		<a class="tab nowrap">Collections</a>
@@ -154,6 +154,8 @@ function performSearch() {
 
     const newUrl = window.location.pathname + '?' + params.toString();
     history.pushState({query: query, loc: loc, type: type, date_start: date_start, date_end: date_end, contributor: contributor}, '', newUrl);
+
+    updateTabLinks();
 }
 
 function handleUrlQuery() {
@@ -186,6 +188,27 @@ function handleUrlQuery() {
     if (query || loc || type || date_start || date_end || contributor) {
         searchAndRender();
     }
+
+    updateTabLinks();
+}
+
+function updateTabLinks() {
+    const params = {
+        q: document.querySelector('input[name="q"]').value,
+        loc: document.querySelector('input[name="loc"]').value,
+        type: document.querySelector('input[name="type"]:checked').value,
+        date_start: document.querySelector('input[name="date_start"]').value,
+        date_end: document.querySelector('input[name="date_end"]').value,
+        contributor: document.querySelector('input[name="contributor"]').value
+    };
+
+    document.querySelectorAll('a[data-template]').forEach(function(tab) {
+        let url = tab.dataset.template;
+        for (const key in params) {
+            url = url.replace(`{${key}}`, encodeURIComponent(params[key]));
+        }
+        tab.href = url;
+    });
 }
 </script>
 
