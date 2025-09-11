@@ -107,13 +107,13 @@
 	<div class="tabHolder">
 		<a class="tabSelected nowrap">Quick Results</a>
 		<a class="tab nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}">Original Search</a>
-		<a class="tab nowrap" data-template="/browser/browser-redirect.php?q={q}&amp;loc={loc}">Image Browser</a>
-		<a class="tab nowrap">Browser Map</a>
-		<a class="tab nowrap">Grouped Results</a>
-		<a class="tab nowrap">Collections</a>
+		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist=2000">Image Browser</a>
+		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist=2000&amp;display=map">Browser Map</a>
+		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist=2000&amp;display=group&amp;group=decade&amp;n=4&amp;gorder=alpha%20desc">Grouped Results</a>
+		<a class="tab nowrap" data-template="/content/?q={q}">Collections</a>
 {/literal}
 		{if $enable_forums}
-			<a class="tab nowrap" id="tab8">Discussions</a>
+			<a class="tab nowrap" data-template="/finder/discussions.php?q={literal}{q}{/literal}">Discussions</a>
 		{/if}
 	</div>
 	<form id="finder-form" method="get" class="finder-form">
@@ -152,8 +152,10 @@
 		<a href="#" class="tab nowrap" data-display="large">Large Thumbs</a>
 		<a href="#" class="tab nowrap" data-display="details">Details</a>
 		<a href="#" class="tab nowrap" data-display="river">GeoRiver</a>
-		<a href="#" class="tab nowrap" data-display="map">Map</a>
-		<a class="nowrap">more...</a>
+{literal}
+		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist=2000&amp;display=map">Map</a>
+		<a class="nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}">more...</a>
+{/literal}
 	</div>
 	<div id="results" class="results-box display-large">
 	</div>
@@ -164,7 +166,7 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/js/location-selector.js"></script>
 <script type="text/javascript" src="/js/contributor-selector.js"></script>
-<script type="text/javascript" src="/js/geograph-api-libs.js"></script>
+<script type="text/javascript" src="/js/geograph-api-libs.js?"></script>
 {literal}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -242,6 +244,7 @@ function renderFinderResults(url, divId, countDivId) {
                                 <div class="river-item-info">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
                                     by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
+				    Taken ${space_date(row.takenday)}<br>
                                     Grid Reference: ${row.grid_reference}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
@@ -258,6 +261,7 @@ function renderFinderResults(url, divId, countDivId) {
                                 <div class="details-item-info">
                                     <a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank"><strong>${escapeHtml(row.title)}</strong></a><br>
                                     by <a href="/profile/${row.user_id}">${escapeHtml(row.realname)}</a><br>
+				    Taken ${space_date(row.takenday)}<br>
                                     Grid Reference: ${row.grid_reference}
                                 </div>`;
                             newDiv.innerHTML = htmlContent;
@@ -305,7 +309,7 @@ function searchAndRender() {
     const base = "https://www.geograph.org.uk/api-facetql.php";
     const data = {
         long: 1,
-        select: "id,user_id,realname,grid_reference,title,hash,width,height",
+        select: "id,user_id,realname,grid_reference,title,hash,takenday,width,height",
         limit: 30,
         type: type,
         display: display
