@@ -91,13 +91,14 @@
 		<input type="text" id="contributor" name="contributor" placeholder="Enter contributor name">
 	</div>
 	<br>
-	<div class="tabHolder display-options">
+	<input type="hidden" id="display-mode" name="display" value="small">
+	<div id="display-tabs" class="tabHolder display-options">
 		Display:
-		<a class="tab{if !$display || $display == 'small'}Selected{/if} nowrap">Small Thumbs</a>
-		<a class="tab{if $display == 'large'}Selected{/if} nowrap">Large Thumbs</a>
-		<a class="tab{if $display == 'details'}Selected{/if} nowrap">Details</a>
-		<a class="tab{if $display == 'river'}Selected{/if} nowrap">GeoRiver</a>
-		<a class="tab{if $display == 'map'}Selected{/if} nowrap">Map</a>
+		<a href="#" class="tab tabSelected nowrap" data-display="small">Small Thumbs</a>
+		<a href="#" class="tab nowrap" data-display="large">Large Thumbs</a>
+		<a href="#" class="tab nowrap" data-display="details">Details</a>
+		<a href="#" class="tab nowrap" data-display="river">GeoRiver</a>
+		<a href="#" class="tab nowrap" data-display="map">Map</a>
 		<a class="nowrap">more...</a>
 	</div>
 	<div id="results-count" class="results-count"></div>
@@ -124,6 +125,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     handleUrlQuery();
+
+    document.getElementById('display-tabs').addEventListener('click', function(event) {
+        if (event.target.dataset.display) {
+            event.preventDefault();
+
+            // Update hidden input
+            document.getElementById('display-mode').value = event.target.dataset.display;
+
+            // Update selected class
+            this.querySelectorAll('.tab').forEach(function(tab) {
+                tab.classList.remove('tabSelected');
+            });
+            event.target.classList.add('tabSelected');
+
+            // Re-run search
+            performSearch();
+        }
+    });
 });
 
 window.addEventListener('popstate', handleUrlQuery);
@@ -135,13 +154,15 @@ function searchAndRender() {
     const date_start = document.querySelector('input[name="date_start"]').value;
     const date_end = document.querySelector('input[name="date_end"]').value;
     const contributor = document.querySelector('input[name="contributor"]').value;
+    const display = document.getElementById('display-mode').value;
 
     const base = "https://www.geograph.org.uk/api-facetql.php";
     const data = {
         long: 1,
         select: "id,user_id,realname,grid_reference,title,hash",
         limit: 30,
-        type: type
+        type: type,
+        display: display
     };
 
     if (query) {
@@ -173,6 +194,7 @@ function performSearch() {
     const date_start = document.querySelector('input[name="date_start"]').value;
     const date_end = document.querySelector('input[name="date_end"]').value;
     const contributor = document.querySelector('input[name="contributor"]').value;
+    const display = document.getElementById('display-mode').value;
     const params = new URLSearchParams();
     if (query) {
         params.append('q', query);
@@ -192,9 +214,12 @@ function performSearch() {
     if (contributor) {
         params.append('contributor', contributor);
     }
+    if (display) {
+        params.append('display', display);
+    }
 
     const newUrl = window.location.pathname + '?' + params.toString();
-    history.pushState({query: query, loc: loc, type: type, date_start: date_start, date_end: date_end, contributor: contributor}, '', newUrl);
+    history.pushState({query: query, loc: loc, type: type, date_start: date_start, date_end: date_end, contributor: contributor, display: display}, '', newUrl);
 
     updateTabLinks();
 }
@@ -207,16 +232,25 @@ function handleUrlQuery() {
     const date_start = params.get('date_start');
     const date_end = params.get('date_end');
     const contributor = params.get('contributor');
+    const display = params.get('display') || 'small';
 
     document.querySelector('input[name="q"]').value = query ?? '';
     document.querySelector('input[name="loc"]').value = loc ?? '';
     document.querySelector('input[name="date_start"]').value = date_start ?? '';
     document.querySelector('input[name="date_end"]').value = date_end ?? '';
     document.querySelector('input[name="contributor"]').value = contributor ?? '';
+    document.getElementById('display-mode').value = display;
 
     if (type) {
         document.querySelector(`input[name="type"][value="${type}"]`).checked = true;
     }
+
+    document.querySelectorAll('#display-tabs .tab').forEach(function(tab) {
+        tab.classList.remove('tabSelected');
+        if (tab.dataset.display === display) {
+            tab.classList.add('tabSelected');
+        }
+    });
 
     if (date_start || date_end) {
         document.getElementById('date-filter-box').classList.remove('hidden');
