@@ -16,8 +16,8 @@
 	<form id="finder-form" method="get" style="background-color:#ddd;padding:10px;">
 		<div style="float:left; width:300px">
 			Search For: <input type=search name=q size="30" value="bailey bridge"> <br>
-			<label><input type=radio name=type checked>Keywords Match</label>
-			<label><input type=radio name=type>Similarity Match</label><br><br>
+			<label><input type=radio name=type value="keywords" checked>Keywords Match</label>
+			<label><input type=radio name=type value="similarity">Similarity Match</label><br><br>
 			<button>Update</button>
 		</div>
 		<div style="float:left; width:300px">
@@ -60,12 +60,14 @@ window.addEventListener('popstate', handleUrlQuery);
 function searchAndRender() {
     const query = document.querySelector('input[name="q"]').value;
     const loc = document.querySelector('input[name="loc"]').value;
+    const type = document.querySelector('input[name="type"]:checked').value;
 
     const base = "https://www.geograph.org.uk/api-facetql.php";
     const data = {
         long: 1,
         select: "id,user_id,realname,grid_reference,title,hash",
-        limit: 30
+        limit: 30,
+        type: type
     };
 
     if (query) {
@@ -84,6 +86,7 @@ function performSearch() {
 
     const query = document.querySelector('input[name="q"]').value;
     const loc = document.querySelector('input[name="loc"]').value;
+    const type = document.querySelector('input[name="type"]:checked').value;
     const params = new URLSearchParams();
     if (query) {
         params.append('q', query);
@@ -91,20 +94,28 @@ function performSearch() {
     if (loc) {
         params.append('loc', loc);
     }
+    if (type) {
+        params.append('type', type);
+    }
 
     const newUrl = window.location.pathname + '?' + params.toString();
-    history.pushState({query: query, loc: loc}, '', newUrl);
+    history.pushState({query: query, loc: loc, type: type}, '', newUrl);
 }
 
 function handleUrlQuery() {
     const params = new URLSearchParams(window.location.search);
     const query = params.get('q');
     const loc = params.get('loc');
+    const type = params.get('type');
 
     document.querySelector('input[name="q"]').value = query ?? '';
     document.querySelector('input[name="loc"]').value = loc ?? '';
 
-    if (query || loc) {
+    if (type) {
+        document.querySelector(`input[name="type"][value="${type}"]`).checked = true;
+    }
+
+    if (query || loc || type) {
         searchAndRender();
     }
 }
