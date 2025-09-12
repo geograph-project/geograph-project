@@ -632,11 +632,15 @@ function handleUrlQuery() {
     document.getElementById('display-mode').value = display;
 
     if (type) {
-        document.querySelector(`input[name="type"][value="${type}"]`).checked = true;
+        document.querySelectorAll('#finder-form input[name="type"]').forEach(function(input) {
+            if (input.value === type)
+                input.checked = true;
+        });
     }
 
-    document.querySelectorAll('#display-tabs .tab').forEach(function(tab) {
+    document.querySelectorAll('#display-tabs .tab, #display-tabs .tabSelected').forEach(function(tab) {
         tab.classList.remove('tabSelected');
+        tab.classList.add('tab');
         if (tab.dataset.display === display) {
             tab.classList.add('tabSelected');
             tab.classList.remove('tab');
