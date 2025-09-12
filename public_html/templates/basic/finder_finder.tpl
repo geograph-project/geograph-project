@@ -1,4 +1,4 @@
-{assign var="page_title" value="Finder"}
+{assign var="page_title" value="Geograph Quick Search"}
 {include file="_std_begin.tpl"}
 
 {literal}
@@ -20,11 +20,11 @@
 }
 .form-clear {
     clear: both;
+    padding-top:6px;
     --text-align: center;
 }
 .display-options {
     text-align: right;
-    font-size: 0.9em;
 }
 .results-count {
     float:left;
@@ -39,6 +39,10 @@
     background-color: #eee;
     padding: 10px;
     margin-top: 10px;
+}
+
+.results-box p {
+    max-width:60em;
 }
 /* ----------------------- */
 
@@ -139,13 +143,13 @@
 	</div>
 	<form id="finder-form" method="get" class="finder-form">
 		<div class="form-column">
-			Search For: <input type=search name=q size="30" placeholder="Enter Search Query"> <br>
-			<label><input type=radio name=type value="keywords" checked>Keywords Match</label>
-			<label><input type=radio name=type value="similarity">Similarity Match</label>
+			Search For: <input type=search name=q size="36" placeholder="Enter Search Query"> <br>
+			<label><input type=radio name=type value="keywords" checked>Keywords</label> /
+			<label><input type=radio name=type value="similarity">&quot;Looks Like&quot;</label> Mode <a href="#" onclick="restoreInitialHelp();return false;">?</a>
 		</div>
 		<div class="form-column">
-			And/or Near:
-			<input type=search id="loc" name="loc" size="30" placeholder="Enter location"><br>
+			And/or Near:   &nbsp; (<a href="#" onclick="getLocation(performSearch);return false;">My Location</a>)
+			<input type=search id="loc" name="loc" size="36" placeholder="Enter location"><br>
 			<label for="distance">Within Distance:</label> <input type="number" id="distance" name="distance" value="2000" style="width:80px;text-align:right" step=100 min=100 max="100000">m
 
 			<div id="location-disambiguation"></div>
@@ -182,7 +186,27 @@
 		<a href="#" class="tab nowrap" data-display="map">Map</a>
 		<a class="nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">more...</a>
 	</div>
-	<div id="results" class="results-box display-large">
+	<div id="results" class="results-box">
+		<p>Just click Update above to see recent images.</p>
+
+		<h3>Keywords Mode</h3>
+
+		<p>This traditional search finds images based on the words you type, using their descriptions and other 
+		metadata. While it's great for finding specific text, be aware of possible false matches, for example, an image's 
+		description might mention a place it doesn't actually show. For more advanced search techniques, you can explore
+		<a href="https://www.geograph.org.uk/article/Keyword-Searching-in-the-Browser">the full syntax.</a>
+
+		<h3>Looks Like Mode</h3>
+
+		<p>This AI-powered search finds images that are visually similar to what you're looking for, bypassing text 
+		descriptions. The system works best with general visual concepts, like "Gothic cathedral" or "castle at 
+		sunset", rather than specific names or landmarks. The quality of results may decline as you scroll, and the 
+		model might not recognize very specific places or species. However, its strength lies in combining visual 
+		ideas, leading to unique and creative results. To search for a specific location, try using a general 
+		description and then refining your search with the "Near to" option.
+
+		<p>More Details: <a href="https://www.geograph.org.uk/article/Using-Looks-Like-Search">Using &quot;Looks Like&quot; Search</a>
+
 	</div>
 
 	<div id="more-results-prompt" class="hidden" style="text-align: center; padding: 20px;">
@@ -211,6 +235,19 @@
 
 let map = null;
 let layerGroup = null;
+let initialHelp = null;
+
+function restoreInitialHelp() {
+	const resultDiv = document.getElementById("results")
+
+                if (map) { //first need to destroy the map!
+                        map.remove();
+                        map = null;
+                }
+
+        resultDiv.className = 'results-box'; //remove all!
+	resultDiv.innerHTML = initialHelp.replace(/see recent images/,'your results');
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('finder-form').addEventListener('submit', function(event) {
@@ -229,6 +266,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('contributor-filter-box').classList.toggle('hidden');
 	document.getElementById('add-contributor-filter').classList.toggle('hidden');
     });
+
+    initialHelp = document.getElementById("results").innerHTML;
 
     handleUrlQuery();
     //only do this on page load for now!
@@ -614,7 +653,7 @@ function handleUrlQuery() {
 	document.getElementById('add-contributor-filter').classList.add('hidden');
     }
 
-    if (query || loc || type || date_start || date_end || contributor) {
+    if (query || loc || date_start || date_end || contributor) {
         searchAndRender();
     }
 
