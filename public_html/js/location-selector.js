@@ -19,10 +19,19 @@
 
 var regions = null;
 
-function getLocation() {
+function getLocation(callback) {
 		$.getScript( "https://m.geograph.org.uk/js/jquery.geolocation.js" ).done(function( script, textStatus ) {
 			$.geolocation.get({success: function(position) {
 				$('#loc').val(position.coords.latitude + "," + position.coords.longitude);
+				let gridref;
+				if (typeof wgs2gridref !== 'undefined' && typeof GT_OSGB !== 'undefined') {
+					gridref = wgs2gridref(position.coords.latitude,position.coords.longitude,8);
+					if (gridref)
+						$('#loc').val(gridref + " / from " + position.coords.latitude + "," + position.coords.longitude);
+				}
+				if (typeof callback !== 'undefined')
+					callback(position.coords.latitude, position.coords.longitude, gridref);
+
 			}, fail:function() {
 				alert('Unable to load location');
 			}});
