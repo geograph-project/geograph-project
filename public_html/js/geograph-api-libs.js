@@ -136,7 +136,7 @@ function getGeographUrl(gridimage_id, hash, size) {
         }
 
         switch(size) {
-                case 'full': return "https://s0.geograph.org.uk"+fullpath+".jpg"; break;
+                case 'full': return "https://s0.geograph.org.uk"+fullpath+".jpg"; break; // dont forget: <img src=... style="image-orientation: none" loading="lazy" crossorigin onerror="retryCross(this)">
                 case 'med': return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_213x160.jpg"; break;
                 case 'small':
                 default: return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_120x120.jpg";
@@ -168,6 +168,15 @@ function escapeHtml(unsafe) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+function retryCross(that) {
+        //this function allows retry of tags with crossorigin. Note the query string doesnt do anything on the server, its just to bust the local browser cache (that might have the non-cors image cached)
+        if (that.src.indexOf('crossorigin') == -1 && that.hasAttribute('crossorigin')) {
+                that.src = that.src + '?crossorigin';
+                if (that.hasAttribute('srcset'))
+                        that.srcset = that.srcset.replace(/\.jpg/g,'.jpg?crossorigin');
+        }
 }
 
 function getTextQuery(raw) {
@@ -371,3 +380,4 @@ function toDays(dateString) {
 
   return result;
 }
+

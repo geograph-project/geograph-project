@@ -481,7 +481,7 @@ function loadImage() {
             'Yn sgw&acirc;r <a href="/gridref/'+value.grid_reference+'" target="_blank" id="gridref">'+value.grid_reference+"</a>, wedi'i dynnu ar <b>"+space_date(value.takenday || value.imagetaken)+'</b></span></div>')
 
     //IMAGE
-    $part1.append('<div style="min-height:300px"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' gan '+value.realname+'"><img src="'+value.full+'" id="full"/></a></div>')
+    $part1.append('<div style="min-height:300px"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' gan '+value.realname+'"><img src="'+value.full+'" id="full" crossorigin onerror="retryCross(this)"/></a></div>')
 
     //CC MESSAGE
     $part1.append('<div class="ccmessage"><a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons Licence [Some Rights Reserved]" src="https://creativecommons.org/images/public/somerights20.gif"></a> &copy; Copyright <a title="View profile" href="/profile/'+value.user_id+'" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL dct:creator">'+value.realname+'</a>  ac wedi\'i drwyddedu ar gyfer cael ei <a href="/reuse.php?id='+value.gridimage_id+'">ail-ddefnyddio</a> o dan <a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/" about="'+value.full+'" title="Creative Commons Attribution-Share Alike 2.0 Licence">Drwydded Creative Commons</a>.</div>')

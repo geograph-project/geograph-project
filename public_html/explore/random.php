@@ -107,7 +107,7 @@ function updateValue(value) {
           image.attrs.thumbnail = getGeographUrl(image.id, image.attrs.hash, 'small');
           image.attrs.full = getGeographUrl(image.id, image.attrs.hash, 'full');
 
-  ele.append('<a href="/photo/'+image.gridimage_id+'" target="_blank"><img src="'+image.attrs.full+'"/></a>');
+  ele.append('<a href="/photo/'+image.gridimage_id+'" target="_blank"><img src="'+image.attrs.full+'" crossorigin onerror="retryCross(this)"/></a>');
   ele.append('<p><a href="/photo/'+image.gridimage_id+'" target="_blank">'+image.attrs.title+'</a> by <a href="/profile/'+image.attrs.user_id+'">'+image.attrs.realname+'</a></p>');
   ele.append('<p>For <a href="/gridref/'+image.attrs.grid_reference+'" target="_blank">'+image.attrs.grid_reference+'</a>, taken '+space_date(image.attrs.takenday)+'</p>');
 

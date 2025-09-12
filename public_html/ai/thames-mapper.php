@@ -148,7 +148,7 @@ function loadmap() {
 
 				    var marker = L.lineMarker(latLng, {img: getGeographUrl(row.id, row.hash, 'small'), dir:dir, title:row.title, imgSize: 80, lineLength:len}).addTo(map);
         	                    var popupContent = `<a href="https://www.geograph.org.uk/photo/${row.id}" target="_blank">` +
-                                               `<img src="${getGeographUrl(row.id, row.hash, 'full')}"><br>` +
+                                               `<img src="${getGeographUrl(row.id, row.hash, 'full')}" crossorigin onerror="retryCross(this)"><br>` +
                                                `${escapeHtml(row.title)}</a> by ${escapeHtml(row.realname)}`;
                 	            marker.bindPopup(popupContent);
                         	    //marker.bindTooltip(row.title);
