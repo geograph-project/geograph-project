@@ -144,7 +144,7 @@
 <div class="copyrightmessage">&copy; Copyright <b><a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></b> and licensed for reuse under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a></div>
 
 {if $image->imagetaken > 1}
-<div class="takendate">Image taken: {$image->imagetakenString}</div>
+<div class="takendate">Image taken: {$image->imagetakenString|default:$image->imagetaken}</div>
 {/if}
 
 <div id="votediv{$image->gridimage_id}" class=votediv>Rate this image: {votestars id=$image->gridimage_id type="i`$i`"}</div>

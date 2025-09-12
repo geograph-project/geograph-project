@@ -60,11 +60,11 @@
         <td valign="middle" align="center" class="shadow shadow_large"><a href="/photo/{$image->gridimage_id}" title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string}{if $image->count} - {$image->count|thousends} images in group{/if}" onmouseover="showMap('{$image->wgs84_lat} {$image->wgs84_long}')" onmouseout="hideMap()">{$image->getFull()}</a></td>
         <td valign="middle" align="center">
             <a href="/photo/{$image->gridimage_id}" class=title>{$image->title|escape:'html'}</a>{if $image->imagetaken > 1 && $image->imagetaken < 2020}<span class="year lighter" title="year taken" style="color:gray;font-size:1.5em"> {$image->imagetaken|truncate:4:''}</span>{/if}<br/>
-            {if $image->comment}
+            {if $image->comment && $image->comment != $image->title}
                 <br/><small>{$image->comment|escape:'html'|nl2br|geographlinks}</small>
             {/if}
 	    {if $image->imagetaken > 1}
-		<br/><small><br/>Image taken: {$image->imagetakenString}</small>
+		<br/><small><br/>Image taken: {$image->imagetakenString|default:$image->imagetaken}</small>
             {/if}
             <br/><br/>
             <div>&copy; Copyright <b><a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></b> and licensed for reuse under <a href="http://creativecommons.org/licenses/by-sa/2.0/">a Creative Commons licence</a> </div>

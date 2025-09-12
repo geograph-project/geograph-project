@@ -155,7 +155,7 @@ a.title:hover {
 <div style="float:right" class="likemenu"><img src="{$static_host}/img/thumbs.png"/>
 <div class="likemenu-content">
   <div id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));">Like image</a></div>
-  {if $image->comment}<div id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));">Like description</a></div>{/if}
+  {if $image->comment && $image->comment != $image->title}<div id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));">Like description</a></div>{/if}
   </div></div>
 
 <div class="shadow"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull(true,true,true)|replace:'src=':"name=image`$smarty.foreach.results.iteration` src="}</a></div>
@@ -172,7 +172,7 @@ a.title:hover {
 
 
 
-{if $image->comment}
+{if $image->comment && $image->comment != $image->title}
 <div class="comment">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
 {/if}
 
@@ -181,7 +181,7 @@ a.title:hover {
 <div class="copyrightmessage">&copy; Copyright <b><a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></b> and licensed for reuse under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a></div>
 
 {if $image->imagetaken > 1}
-<div class="takendate">Image taken: {$image->imagetakenString}</div>
+<div class="takendate">Image taken: {$image->imagetakenString|default:$image->imagetaken}</div>
 {/if}
 
 <div class="mark">[<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]</div>

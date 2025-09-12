@@ -140,7 +140,7 @@
 
 
 
-{if $image->comment}
+{if $image->comment && $image->comment != $image->title}
 <div class="comment">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
 {/if}
 
@@ -149,7 +149,7 @@
 <div class="copyrightmessage">&copy; Copyright <b><a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></b> and licensed for reuse under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a></div>
 
 {if $image->imagetaken > 1}
-<div class="takendate">Image taken: {$image->imagetakenString}</div>
+<div class="takendate">Image taken: {$image->imagetakenString|default:$image->imagetaken}</div>
 {/if}
 
 <div class="mark">[<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]</div>
