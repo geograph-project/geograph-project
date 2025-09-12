@@ -532,18 +532,16 @@ body>#nav_block {width:128px;}
 /* form styles */
 #maincontent form label
 {
-	font-size:0.8em;
 }
 
 span.formerror
 {
-	font-size:0.8em;
 	color:red;
 }
 
 div.copyright
 {
-	font-size:0.7em; 
+	font-size:0.8em; 
 	color: gray;
 	text-align:center;
 	font-style:italic;
@@ -1152,6 +1150,7 @@ div.map div.inner img
 
 .tabHolder {
 	line-height:1.4em;
+	touch-action: none;
 }
 
 .tabSelected {
