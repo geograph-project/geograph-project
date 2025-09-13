@@ -2,25 +2,44 @@
 
 //https://gemini.google.com/app/c2f2eb6bf37784c0
 
-/**
- * Queries the S3Vectors service with a given payload.
- *
- * @param array $queryPayload The associative array for the request body.
- * @param string $awsAccessKeyId Your AWS Access Key ID.
- * @param string $awsSecretAccessKey Your AWS Secret Access Key.
- * @param string|null $awsSecurityToken Optional AWS Security Token for STS credentials.
- * @param string $awsRegion The AWS region (e.g., 'us-east-1').
- * @param string $service The AWS service name (e.g., 's3vectors').
- * @param string $canonicalUri The canonical URI (e.g., '/QueryVectors').
- * @param string $amzTarget The X-Amz-Target header value (e.g., 'S3Vectors.QueryVectors').
- * @return array An associative array containing 'http_code' and 'vectors' data.
- * @throws Exception If cURL fails or JSON encoding/decoding errors occur.
- */
 function queryS3Vectors(
     array $queryPayload,
     string $awsRegion = 'us-east-1',
     $verbose = false
 ): array {
+
+    $canonicalUri = '/QueryVectors';
+    $amzTarget = "S3Vectors.QueryVectors"; // The X-Amz-Target header for this API - probbaly ooptional!
+
+    list($httpCode, $response) = s3vectorRequest($canonicalUri, $amzTarget, $queryPayload, $awsRegion, $verbose);
+
+    $vectorsData = [];
+    if ($httpCode >= 200 && $httpCode < 300) {
+        $responseData = json_decode($response, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            $vectorsData = $responseData['vectors'] ?? [];
+        } else {
+            echo "Failed to parse JSON response.\n";
+        }
+    } else {
+        echo "API call failed with status code " . $httpCode . ".\n";
+    }
+
+    return [
+        'http_code' => $httpCode,
+        'vectors' => $vectorsData
+    ];
+}
+
+/**
+ * Queries the S3Vectors service with a given payload.
+ *
+ * @param string $canonicalUri The canonical URI (e.g., '/QueryVectors').
+ * @param string $amzTarget The X-Amz-Target header value (e.g., 'S3Vectors.QueryVectors').
+ * @param array $queryPayload The associative array for the request body.
+ * @throws Exception If cURL fails or JSON encoding/decoding errors occur.
+ */
+function s3vectorRequest($canonicalUri, $amzTarget, $queryPayload, $awsRegion = 'us-east-1', $verbose = false) {
 
     //string $awsAccessKeyId,
     //string $awsSecretAccessKey,
@@ -31,10 +50,6 @@ function queryS3Vectors(
 	$awsSecurityToken = S3::$securityToken;
 
     $service = 's3vectors';
-    $canonicalUri = '/QueryVectors';
-    $amzTarget = "S3Vectors.QueryVectors"; // The X-Amz-Target header for this API - probbaly ooptional!
-
-
     $requestBody = json_encode($queryPayload);
 
     if ($requestBody === false) {
@@ -105,24 +120,8 @@ function queryS3Vectors(
         echo "Response Body: " . $response . "\n";
     }
 
-    $vectorsData = [];
-    if ($httpCode >= 200 && $httpCode < 300) {
-        $responseData = json_decode($response, true);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            $vectorsData = $responseData['vectors'] ?? [];
-        } else {
-            echo "Failed to parse JSON response.\n";
-        }
-    } else {
-        echo "API call failed with status code " . $httpCode . ".\n";
-    }
-
-    return [
-        'http_code' => $httpCode,
-        'vectors' => $vectorsData
-    ];
+    return array($httpCode, $response);
 }
-
 
 
 /**
