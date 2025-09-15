@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet Thumbnail Marker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+
+/* Container for the entire custom marker */
+.thumbnail-marker {
+    width: 100px; /* Adjust thumbnail size */
+    height: 220px; /* NEW: Increase height to accommodate the longer line */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* The thumbnail image */
+.thumbnail-marker img {
+    width: 100% !important; /* needed to to override width:auto from leaflet styles */
+    height: auto;
+    border: 2px solid black;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* NEW: The line element itself */
+.thumbnail-marker .line {
+    width: 2px;
+    height: 100px; /* NEW: This is the line length */
+    background-color: black;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* The pointing triangle at the end of the line */
+.22thumbnail-marker .line::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    margin-top: -1px; /* Overlap to hide the gap */
+    
+    /* Create a downward-pointing triangle */
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 20px solid white; /* This forms the visible triangle */
+    
+    /* Add a subtle shadow to the pointer */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+
+/* Container for the entire custom marker that goes UP */
+.thumbnail-marker.upward {
+    width: 100px;
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* The thumbnail image at the top */
+.thumbnail-marker.upward img {
+    width: 100%;
+    height: auto;
+    border: 2px solid black;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* The line element itself */
+.thumbnail-marker.upward .line {
+    width: 2px;
+    height: 100px; /* This is the line length */
+    background-color: black;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* The pointing triangle at the TOP */
+.22thumbnail-marker.upward .line::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    margin-bottom: -1px; /* Overlap to hide the gap */
+    
+    /* Create an upward-pointing triangle */
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid white; /* This forms the visible triangle */
+    
+    /* Add a subtle shadow to the pointer */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+
+// Initialize the map
+const map = L.map('map').setView([51.505, -0.09], 13);
+
+// Add a tile layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+// --- MARKER VERSION 1: THUMBNAIL BELOW ---
+
+// Define the custom icon
+const thumbnailIconBelow = L.divIcon({
+    className: 'thumbnail-marker',
+    html: '<img src="https://s3.geograph.org.uk/geophotos/08/10/13/8101387_577141dd_60XX60.jpg" alt="Thumbnail"><div class="line"></div>',
+    
+    // NEW: The total height is now 200px (100px img + 100px line)
+    iconSize: [100, 200],
+    
+    // NEW: The anchor is now at the very bottom of the 200px tall marker
+    iconAnchor: [50, 200]
+});
+
+// Create and add the marker to the map
+L.marker([51.505, -0.09], { icon: thumbnailIconBelow }).addTo(map)
+    .bindPopup("<b>Marker Below</b><br>This one shows the thumbnail below.");
+
+L.circleMarker([51.505, -0.09], {radius:3, color: 'blue'}).addTo(map);
+
+// --- MARKER VERSION 2: THUMBNAIL ABOVE ---
+
+// Define the custom icon
+const thumbnailIconUpward = L.divIcon({
+    className: 'thumbnail-marker upward',
+    html: '<div class="line"></div><img src="https://s3.geograph.org.uk/geophotos/08/10/13/8101387_577141dd_60XX60.jpg" alt="Thumbnail">',
+    
+    // Total height is still 200px
+    iconSize: [100, 200],
+    
+    // Anchor remains at the very top (y-coordinate 0)
+    iconAnchor: [50, 0]
+});
+
+// Create and add the second marker to the map
+L.marker([51.505, -0.099], { icon: thumbnailIconUpward }).addTo(map)
+    .bindPopup("<b>Marker Above</b><br>This one shows the thumbnail above.");
+
+L.circleMarker([51.505, -0.099], {radius:3, color: 'blue'}).addTo(map);
+
+</script>
+
+</body>
+</html>
