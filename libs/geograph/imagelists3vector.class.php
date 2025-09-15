@@ -186,7 +186,12 @@ class ImageListS3Vector extends ImageList
 	}
 
         if (!empty($param['user_id'])) {
-            $parts[] = array('user_id' => array('$eq' => intval($param['user_id'])));
+	    if (is_array($param['user_id'])) {
+                // a range of user_id's, perhaps doesn't sound useful, but can be used for sharding
+                $parts[] = array('user_id' => array('$gte' => intval($param['user_id'][0]), '$lte' => intval($param['user_id'][1])));
+            } else {
+                $parts[] = array('user_id' => array('$eq' => intval($param['user_id'])));
+            }
         }
 
         if (!empty($parts)) {
