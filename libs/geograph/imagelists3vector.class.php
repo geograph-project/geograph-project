@@ -194,6 +194,15 @@ class ImageListS3Vector extends ImageList
             }
         }
 
+	if (!empty($param['taken'])) {
+	    if (is_array($param['taken'])) {
+                $parts[] = array('taken' => array('$gte' => intval($param['taken'][0]), '$lte' => intval($param['taken'][1])));
+            } else {
+		//while here, might as well accept a single day
+                $parts[] = array('taken' => array('$eq' => intval($param['taken'])));
+            }
+        }
+
         if (!empty($parts)) {
             if (count($parts) > 1) {
                 $queryFilter['$and'] = $parts;

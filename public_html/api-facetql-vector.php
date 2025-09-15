@@ -52,8 +52,11 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id|takenday|grid_reference))+$/',$_GET['select']) && $_GET['select'] != 'id')
 		$metadata = true;
 
+	if (!empty($_GET['user_id'])) {
+		$criteria['user_id'] = intval($_GET['user_id']);
+
 	//convert this to an actual filter;
-	if (preg_match('/\suser(\d+)\s*$/',$criteria['label'],$m)) {
+	} elseif (preg_match('/\suser(\d+)\s*$/',$criteria['label'],$m)) {
 		$criteria['user_id'] = intval($m[1]);
 		$criteria['label'] = str_replace($m[0],'',$criteria['label']);
 	}
@@ -67,6 +70,25 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 	if (!empty($_GET['olbounds'])) {
 		$criteria['bbox'] = trim($_GET['olbounds']);
+	}
+
+	//&filterrange%5Btakendays%5D=to_days%282025-01-01%29%2Cto_days%282025-07-20%29
+	if (!empty($_GET['filterrange'])) {
+                foreach ($_GET['filterrange'] as $key => $value) {
+                        if (preg_match('/^\d+,\d+$/',$value)) {
+                                $bits = explode(',',$value);
+                                $key = preg_replace('/_(\d+)$/','',$key);
+                                //$where[] = "$key BETWEEN ".intval($bits[0])." AND ".intval($bits[1]);
+				if ($key == 'user_id') //only one suported by getRawVectorsByCriteria!
+					$criteria['user_id'] = $bits;
+                        } elseif (preg_match("/to_days\('?([\d-]+)'?\),to_days\('?([\d-]+)'?\)/i",$value,$m)) {
+				//s3vector has a 'simple' interger
+				$criteria['taken'] = array(
+					intval(str_replace('-','',$m[1])),
+					intval(str_replace('-','',$m[2])),
+				);
+			}
+		}
 	}
 
 	//2. get results
@@ -83,6 +105,7 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 		$res['rows'] = array();
 		//$res['rows'][] ...
+		if (!empty($results['vectors']))
 		foreach ($results['vectors'] as $i => $vector) {
 			$row = array('id'=>intval($vector['key']));
 			if (isset($vector['distance'])) {
@@ -108,7 +131,8 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 		$res['meta'] = array('total_found'=>count($res['rows']), 'total'=>count($res['rows']), 'time' => $end-$start); //always 30 (or less), no paging!
 
-	} else {
+	} elseif (!empty($results['vectors'])) {
+
 		//will have to lookup ids, from s3vectors, then load from sample8!
 		$ids = array();
 		foreach ($results['vectors'] as $i => $vector) {
@@ -126,6 +150,12 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 		$sph = GeographSphinxConnection('sphinxql',true);
 		$db = $sph->_connectionID; //using old fashioned mysqli_ functions here!
+
+	} else {
+		//no results
+
+		$res['rows'] = false;
+		$res['meta'] = array('total_found'=>0, 'total'=>0, 'time' => $end-$start);
 	}
 
 } elseif (!empty($_GET['match'])) {
