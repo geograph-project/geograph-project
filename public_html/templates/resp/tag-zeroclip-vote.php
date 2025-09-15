@@ -1,0 +1,1 @@
+../basic/tag-zeroclip-vote.php
