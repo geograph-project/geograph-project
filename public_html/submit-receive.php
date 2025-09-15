@@ -100,7 +100,7 @@ list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4
 
 $url .= "&amp;gridref=$photographer_gridref"; //gr is NOT used, but submit it incase!
 
-print "<a href=\"$url\"\>with Submit v2</a>";
+print "<b><a href=\"$url\"\>with Submit v2</a></b>";
 
 print " -or- ";
 
