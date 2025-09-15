@@ -23,6 +23,11 @@
     padding-top:6px;
     --text-align: center;
 }
+
+label:has(input:checked) {
+    font-weight: bold;
+}}
+
 .display-options {
     text-align: right;
 }
@@ -143,12 +148,12 @@
 	</div>
 	<form id="finder-form" method="get" class="finder-form">
 		<div class="form-column">
-			Search For: <input type=search name=q size="36" placeholder="Enter Search Query"> <br>
+			<b>Search For</b>: <input type=search name=q size="36" placeholder="Enter Search Query"> <br>
 			<label><input type=radio name=type value="keywords" checked>Keywords</label> /
 			<label><input type=radio name=type value="similarity">&quot;Looks Like&quot;</label> Mode <a href="#" onclick="restoreInitialHelp();return false;">?</a>
 		</div>
 		<div class="form-column">
-			And/or Near:   &nbsp; (<a href="#" onclick="getLocation(performSearch);return false;">My Location</a>)
+			And/or <b>Near</b>:   &nbsp; (<a href="#" onclick="getLocation(performSearch);return false;">My Location</a>)
 			<input type=search id="loc" name="loc" size="36" placeholder="Enter location"><br>
 			<label for="distance">Within Distance:</label> <input type="number" id="distance" name="distance" value="2000" style="width:80px;text-align:right" step=100 min=100 max="100000">m
 
@@ -156,14 +161,14 @@
 		</div>
 
 		<div id="date-filter-box" class="form-column hidden">
-			<label for="date_start">Start Date:</label>
+			<label for="date_start">Start <b>Date</b>:</label>
 			<input type="date" id="date_start" name="date_start" min="1800-01-01"><br>
 			<label for="date_end">End Date:</label>
 			<input type="date" id="date_end" name="date_end" min="1800-01-01">
 			<button type="button" id="clear-dates-btn">Clear Dates</button>
 		</div>
 		<div id="contributor-filter-box" class="form-column hidden">
-			<label for="contributor">Contributor:</label>
+			<label for="contributor"><b>Contributor</b>:</label>
 			<input type="search" id="contributor" name="contributor" placeholder="Enter contributor name">
 		</div>
 
@@ -321,6 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (m = droppedData.match(/\/photo\/(\d+)/)) {
                 this.value = "id:"+m[1];
                 event.preventDefault();
+		document.querySelector('#finder-form input[name="type"][value="similarity"').checked = true;
                 performSearch(); //update right away
         }
     });
