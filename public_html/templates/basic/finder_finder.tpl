@@ -49,6 +49,9 @@ label:has(input:checked) {
 .results-box p {
     max-width:60em;
 }
+#date-filter-box {
+    line-height:1.9em;
+}
 /* ----------------------- */
 
 .display-large {
@@ -147,10 +150,12 @@ label:has(input:checked) {
 		{/if}
 	</div>
 	<form id="finder-form" method="get" class="finder-form">
-		<div class="form-column">
+		<div class="form-column drop-container">
 			<b>Search For</b>: <input type=search name=q size="36" placeholder="Enter Search Query"> <br>
-			<label><input type=radio name=type value="keywords" checked>Keywords</label> /
-			<label><input type=radio name=type value="similarity">&quot;Looks Like&quot;</label> Mode <a href="#" onclick="restoreInitialHelp();return false;">?</a>
+			<label title="This traditional search finds images based on the words you enter, using their descriptions and other metadata.">
+				<input type=radio name=type value="keywords" checked>Keywords</label> /
+			<label title="This AI-powered search finds images that are visually similar to what you're looking for, instead of text descriptions. The system works best with general visual concepts, like 'gothic cathedral' or 'castle at sunset', rather than specific names or landmarks.">
+				<input type=radio name=type value="similarity">&quot;Looks Like&quot;</label> Mode <a href="#" onclick="restoreInitialHelp();return false;">?</a>
 		</div>
 		<div class="form-column">
 			And/or <b>Near</b>:   &nbsp; (<a href="#" onclick="getLocation(performSearch);return false;">My Location</a>)
@@ -165,7 +170,9 @@ label:has(input:checked) {
 			<input type="date" id="date_start" name="date_start" min="1800-01-01"><br>
 			<label for="date_end">End Date:</label>
 			<input type="date" id="date_end" name="date_end" min="1800-01-01">
-			<button type="button" id="clear-dates-btn">Clear Dates</button>
+			<button type="button" id="clear-dates-btn">Clear Dates</button><br>
+			Quick: <button onclick="return setDateRange('-5 year','');">Last 5</button> or 
+			<button onclick="return setDateRange('','-20 year');">Older than 20</button> years
 		</div>
 		<div id="contributor-filter-box" class="form-column hidden">
 			<label for="contributor"><b>Contributor</b>:</label>
@@ -173,8 +180,8 @@ label:has(input:checked) {
 		</div>
 
 		<div class="form-clear">
-			<button type="submit">Update</button>
-			<a href="#" id="add-date-filter">Add Date Filter</a> <a href="#" id="add-contributor-filter">Add Contributor Filter</a>
+			<button type="submit" style="font-weight:bold;font-size:1.1em">Update</button> &nbsp;
+			<button id="add-date-filter">Add Date Filter</button> <button id="add-contributor-filter">Add Contributor Filter</button>
 		</div>
 		<input type="hidden" id="display-mode" name="display" value="small">
 	</form>
@@ -322,17 +329,33 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('date_start').max = today;
     document.getElementById('date_end').max = today;
 
-    document.querySelector('input[name="q"]').addEventListener('drop', function(event) {
-        var droppedData = event.dataTransfer.getData('text/plain');
+    // Get the container and input elements
+	const dropContainer = document.querySelector('.drop-container');
+	const inputElement = document.querySelector('.drop-container input[name="q"]');
 
-        //intercept photo URLs, and transform it into our ID syntax
-        if (m = droppedData.match(/\/photo\/(\d+)/)) {
-                this.value = "id:"+m[1];
-                event.preventDefault();
-		document.querySelector('#finder-form input[name="type"][value="similarity"').checked = true;
-                performSearch(); //update right away
-        }
-    });
+	// Add a dragover event listener
+	dropContainer.addEventListener('dragover', function(event) {
+	    // Prevent the default browser behavior
+	    event.preventDefault();
+	    // Set the cursor to a copy icon
+	    event.dataTransfer.dropEffect = 'copy';
+	});
+
+	// Add a drop event listener
+	dropContainer.addEventListener('drop', function(event) {
+	    event.preventDefault();
+	    const droppedData = event.dataTransfer.getData('text/plain');
+
+	    if (m = droppedData.match(/\/photo\/(\d+)/)) {
+	        // Set the value of the input element within the container
+	        inputElement.value = "id:" + m[1];
+	        document.querySelector('#finder-form input[name="type"][value="similarity"]').checked = true;
+	        performSearch();
+	    }
+
+	    // Reset the cursor
+	    event.dataTransfer.dropEffect = 'none';
+	});
 
 });
 
@@ -727,6 +750,25 @@ function getFutureDateString() {
     const day = String(futureDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
+function setDateRange(date_start,date_end) {
+	if (m = date_start.match(/-(\d+) year/)) {
+		const today = new Date();
+		today.setFullYear(today.getFullYear() - parseInt(m[1],10));
+		date_start = today.toISOString().split('T')[0];
+	}
+	if (m = date_end.match(/-(\d+) year/)) {
+		const today = new Date();
+		today.setFullYear(today.getFullYear() - parseInt(m[1],10));
+		date_end = today.toISOString().split('T')[0];
+	}
+        document.querySelector('input[name="date_start"]').value = date_start ?? '';
+        document.querySelector('input[name="date_end"]').value = date_end ?? '';
+
+	performSearch();
+	return false;
+}
+
 
 function getDistanceGroup(distance) {
     if (distance === null || typeof distance === 'undefined') {
