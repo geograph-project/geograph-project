@@ -189,23 +189,30 @@
 	<div id="results" class="results-box">
 		<p>Just click Update above to see recent images.</p>
 
+		When searching we have offer two differnet styles of search... (<i>either can be combined with a location, date or contributor filter, more advanced filtering available via Original Search or Browser above</i>)
+
 		<h3>Keywords Mode</h3>
 
-		<p>This traditional search finds images based on the words you type, using their descriptions and other 
-		metadata. While it's great for finding specific text, be aware of possible false matches, for example, an image's 
-		description might mention a place it doesn't actually show. For more advanced search techniques, you can explore
-		<a href="https://www.geograph.org.uk/article/Keyword-Searching-in-the-Browser">the full syntax.</a>
+		<p>This traditional search finds images based on the words you enter, using their <b>descriptions and other 
+		metadata</b>.</p> 
+
+		<p style="padding-left:20px"><i>While it's great for finding specific text, be aware of possible false 
+		matches, for example, an image's description might mention a place it doesn't actually show. For more 
+		advanced search techniques, you can explore <a 
+		href="https://www.geograph.org.uk/article/Keyword-Searching-in-the-Browser">the full syntax.</a></i><p>
 
 		<h3>Looks Like Mode</h3>
 
-		<p>This AI-powered search finds images that are visually similar to what you're looking for, bypassing text 
-		descriptions. The system works best with general visual concepts, like "Gothic cathedral" or "castle at 
-		sunset", rather than specific names or landmarks. The quality of results may decline as you scroll, and the 
-		model might not recognize very specific places or species. However, its strength lies in combining visual 
-		ideas, leading to unique and creative results. To search for a specific location, try using a general 
-		description and then refining your search with the "Near to" option.
+		<p>This AI-powered search finds images that are <b>visually similar</b> to what you're looking for, instead 
+		of text descriptions. The system works best with general visual concepts, like "gothic cathedral" or 
+		"castle at sunset", rather than specific names or landmarks.</p>
 
-		<p>More Details: <a href="https://www.geograph.org.uk/article/Using-Looks-Like-Search">Using &quot;Looks Like&quot; Search</a>
+		<p style="padding-left:20px"><i>The quality of results may decline as you scroll, and the model might not 
+		recognize very specific places or species. However, its strength lies in combining visual ideas eg "forest 
+		on a sunny day", leading to unique and creative results. To search for a specific location, try using a 
+		general description and then refining your search with the "Near" option. For more details: <a 
+		href="https://www.geograph.org.uk/article/Using-Looks-Like-Search">Using &quot;Looks Like&quot; 
+		Search</a>.</i></p>
 
 	</div>
 
@@ -246,7 +253,7 @@ function restoreInitialHelp() {
                 }
 
         resultDiv.className = 'results-box'; //remove all!
-	resultDiv.innerHTML = initialHelp.replace(/see recent images/,'your results');
+	resultDiv.innerHTML = initialHelp.replace(/see recent images/,'return to your results');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
