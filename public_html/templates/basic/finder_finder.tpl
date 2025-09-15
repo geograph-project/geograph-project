@@ -228,6 +228,9 @@ label:has(input:checked) {
 		or
 		<a href="#" data-template="/browser/redirect.php?q={q}&loc={loc}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Image Browser</a>
 	</div>
+	<div id="similarity-prompt" class="hidden" style="text-align: center; padding: 20px;">
+		Tip: Drag a image thumbnail into the 'Search For' box, to look for visually similar images. This is a great away to look for more images.
+	</div>
 {/literal}
 </div>
 
@@ -339,7 +342,9 @@ function renderFinderResults(url, divId, countDivId) {
     const divElement = document.getElementById(divId);
     const countDivElement = document.getElementById(countDivId);
     const moreResultsPrompt = document.getElementById('more-results-prompt');
+    const similarityPrompt = document.getElementById('similarity-prompt');
     const display = document.getElementById('display-mode').value;
+    const type = document.querySelector('input[name="type"]:checked').value;
 
     // Switch display class
     divElement.classList.remove('display-large', 'display-small', 'display-details', 'display-river'); // Add other classes here as they are created
@@ -439,6 +444,11 @@ function renderFinderResults(url, divId, countDivId) {
                     moreResultsPrompt.classList.remove('hidden');
                 } else {
                     moreResultsPrompt.classList.add('hidden');
+                }
+		if (type == 'similarity') {
+		    similarityPrompt.classList.remove('hidden');
+                } else {
+                    similarityPrompt.classList.add('hidden');
                 }
             } else {
                 divElement.innerHTML = 'No Results';
