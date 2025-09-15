@@ -306,6 +306,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date_start').max = today;
     document.getElementById('date_end').max = today;
+
+    document.querySelector('input[name="q"]').addEventListener('drop', function(event) {
+        var droppedData = event.dataTransfer.getData('text/plain');
+
+        //intercept photo URLs, and transform it into our ID syntax
+        if (m = droppedData.match(/\/photo\/(\d+)/)) {
+                this.value = "id:"+m[1];
+                event.preventDefault();
+                performSearch(); //update right away
+        }
+    });
+
 });
 
 window.addEventListener('popstate', handleUrlQuery);
