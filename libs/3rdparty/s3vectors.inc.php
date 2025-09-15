@@ -2,11 +2,7 @@
 
 //https://gemini.google.com/app/c2f2eb6bf37784c0
 
-function queryS3Vectors(
-    array $queryPayload,
-    string $awsRegion = 'us-east-1',
-    $verbose = false
-): array {
+function queryS3Vectors(array $queryPayload, string $awsRegion = 'us-east-1', $verbose = false): array {
 
     $canonicalUri = '/QueryVectors';
     $amzTarget = "S3Vectors.QueryVectors"; // The X-Amz-Target header for this API - probbaly ooptional!
@@ -30,6 +26,69 @@ function queryS3Vectors(
         'vectors' => $vectorsData
     ];
 }
+
+function putVectors(string $vectorBucketName, string $indexName, array $documents, string $awsRegion = 'us-east-1', bool $verbose = false): array {
+
+    $vectors = [];
+    foreach ($documents as $doc) {
+        if (!isset($doc['id']) || !isset($doc['vector'])) {
+            error_log("Document missing 'id' or 'vector' key. Skipping.");
+            continue;
+        }
+
+        $vectorEntry = [
+            'key' => (string) $doc['id'],
+            'data' => [
+                'float32' => $doc['vector']
+            ]
+        ];
+
+        // Capture all other key-value pairs as metadata
+        $metadata = [];
+        foreach ($doc as $key => $value) {
+            if ($key !== 'id' && $key !== 'vector') {
+                $metadata[$key] = $value;
+            }
+        }
+        if (!empty($metadata)) {
+            $vectorEntry['metadata'] = $metadata;
+        }
+
+        $vectors[] = $vectorEntry;
+    }
+
+    if (empty($vectors)) {
+        return ['http_code' => 400, 'message' => 'No valid vectors to upload.'];
+    }
+
+    $payload = [
+        'vectorBucketName' => $vectorBucketName,
+        'indexName' => $indexName,
+        'vectors' => $vectors
+    ];
+
+    $canonicalUri = '/PutVectors';
+    $amzTarget = "S3Vectors.PutVectors";
+
+    list($httpCode, $response) = s3vectorRequest($canonicalUri, $amzTarget, $payload, $awsRegion, $verbose);
+
+    if ($httpCode >= 200 && $httpCode < 300) {
+        $message = "Successfully uploaded " . count($vectors) . " vectors.";
+    } else {
+        $message = "API call failed with status code " . $httpCode . ".";
+        if ($response) {
+            $message .= " Response: " . $response;
+        }
+    }
+
+    return [
+        'http_code' => $httpCode,
+        'message' => $message,
+        'uploaded_count' => count($vectors)
+    ];
+}
+
+###########################################################
 
 /**
  * Queries the S3Vectors service with a given payload.

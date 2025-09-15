@@ -21,18 +21,23 @@
  */
 
 //these are the arguments we expect
-$param=array('verbose'=>false, 'index'=>'test-index', 'query'=>'road', 'insert'=>false, 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false, 'test'=>false);
+$param=array('verbose'=>false, 'index'=>'test-index', 'query'=>'road', 'insert'=>false, 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false, 'delta'=>false, 'test'=>false);
 
 $ABORT_GLOBAL_EARLY = true; //this stops connecting to memcache, so FileSystem will get a fresh STS token! (not from memcache!)
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
+   $s3VectorBucketName = 'geograph-vector-bucket';
    $awsRegion = "us-east-1"; //s3vector, isnt available in all regions - so we have to define the region to use!
 
 ##################################
 // Form commands for inserting rows into S3Vector index
 // note, only prints the command, although for image specifically, it can auto-execute sharded inserts using tmp_emdedding_stat
+
+// NOTE: this function is used for 'initial' commissining of indexes, using the python client to do the bulk insert,
+//  ... partly used the python clien, so can use the boto API clinet, but also because it may need to call titen embedding fro bedrock.
+// there is now a seperate pure PHP implemwntaion further down, intended for 'delta' use, but much more basis. Mainly just enougn to add new images to main image-clip index. 
 
 if (!empty($param['insert'])) {
 
@@ -64,6 +69,19 @@ if (!empty($param['insert'])) {
 	    $cmd[] = "-t " . escapeshellarg("user inner join user_stat using (user_id)");
 	    $cmd[] = "-s " . escapeshellarg("user_id AS id, CONCAT_WS(', ',realname, NULLIF(nickname,'')) AS input_text, realname, nickname, images");
 	    $cmd[] = "-w " . escapeshellarg("images > 0");
+
+    } elseif ($source == 'tags') { //the existing index has 's' on it!
+
+
+///this is a TEST - used to overwrite the 'named' tags.
+//TODO -- really this would need 'merging into th emain one below!!
+
+	    $cmd[] = "-t " . escapeshellarg("tag_stat inner join tag using (tag_id)");
+	    $cmd[] = "-s " . escapeshellarg("tag_id as id, if(prefix in ('top','type','subject','bucket') and canonical =0,tag,tagtext) as input_text,".
+					    " tagtext, count as images, users, 'named' as src");
+	    $cmd[] = "-w " . escapeshellarg("tag_id = final_id and status = 1 and count>0 and (classification like 'named%' or classification = 'related-to')");
+
+
 
     } elseif ($source == 'tags') { //the existing index has 's' on it!
 				//canonical=0 only picks offical prefixed tags
@@ -105,6 +123,12 @@ if (!empty($param['insert'])) {
 	if ($param['insert'] > 1) {
 		$db = GeographDatabaseConnection(false);
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+
+		if (empty($db->readonly)) //by running this, we can actully get accurate stat!
+			$db->Execute("INSERT INTO tmp_emdedding_stat (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM tmp_emdedding_stat)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = tmp_emdedding_stat.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+
+
 		//create table tmp_emdedding_stat select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id from gridimage_embedding where type='image' group by substring(updated,1,10) order by null;
 		//alter table tmp_emdedding_stat add done datetime default null
 		//alter table tmp_emdedding_stat add primary key(day);
@@ -114,7 +138,11 @@ if (!empty($param['insert'])) {
 		//but see vision-stat.php, which has a even better INSERT ... ON DUPLICATE KEY UPDATE ..., which only counts new rows
 		$data = $db->getAll("SELECT * FROM tmp_emdedding_stat WHERE done IS NULL AND `day` < date(now())");
 		foreach ($data as $row) {
-			$where = "type='image' AND seq_id BETWEEN {$row['min_id']} AND {$row['max_id']} AND updated LIKE '{$row['day']}%'"; //dont know if filtering by day helps or not!
+			//todo
+			$min = max($row['min_id'], $row['delta_max']);
+			// as that is now updated by delta! delta_max is the max id that was already inserted, techncally should be +1 (but inserting one document again is not a big deal
+
+			$where = "type='image' AND seq_id BETWEEN $min AND {$row['max_id']} AND updated LIKE '{$row['day']}%'"; //dont know if filtering by day helps or not!
 			$where = '-w'.escapeshellarg($where);
 			print implode(' ',$cmd)." $where\n";
 
@@ -162,12 +190,128 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 include "3rdparty/s3vectors.inc.php";
 
 ##################################
+// this is seperate implentaiton of insert, not as flexible as the full one, but good enough for now
+
+if (!empty($param['delta'])) {
+
+	list($type, $model) = explode('-', $param['index'], 2);
+
+	if (empty($type) || empty($model)) {
+	    die("Invalid index name format. Use '{type}-{model}'.\n");
+	}
+
+	// Determine the SQL query based on the index type
+	if ($type === 'tags') {
+	    echo "Fetching and inserting 'tags' data for model '$model'...\n";
+	    $sql = 'SELECT tag_id as id, tagtext, images FROM tags LIMIT 10'; //TODO!
+
+		//in partcilar this is going to need to know have a way of keeping track of progress. 
+
+	} elseif ($type === 'test' || $type == 'image') {
+	    echo "Fetching and inserting 'image' data into '{$param['index']}'...\n";
+
+		$sql = "SELECT gridimage_id AS id, user_id, grid_reference as gridref, CAST(REPLACE(imagetaken,'-','') AS UNSIGNED) AS taken, wgs84_lat as slat, wgs84_long as slng, embeddings, seq_id
+		FROM gridimage_embedding USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)
+		WHERE type = 'image'";
+
+            if ($type == 'image') {
+		if ($model != 'clip') die("only clip supported for now");
+
+		if (empty($db->readonly)) //by running this, we can actully get accurate stat!
+			$db->Execute("INSERT INTO tmp_emdedding_stat (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM tmp_emdedding_stat)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = tmp_emdedding_stat.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+
+		//keep track with tmp_emdedding_stat. the 'done' column is updated by the main one, we have our own delta_max to keep track!
+		// note, if update above, finds new rows, it resets done, which means we can carry on...
+
+		$data = $db->getRow("SELECT * FROM tmp_emdedding_stat WHERE done IS NULL AND (delta_max is null OR delta_max < max_id) LIMIT 1");
+		if (empty($data))
+			die("nothing to add\n");
+
+		print_r($data);
+		$min = max($data['min_id'], $data['delta_max']);
+		$max = $data['max_id'];
+		$sql .= " AND seq_id BETWEEN $min AND $max ORDER BY seq_id"; //limit 500 - note order is IMPORTANT
+
+	    } else {
+	        $sql .= " LIMIT 10";
+	    }
+
+	} else {
+	    die("Unsupported index type '$type'.\n");
+	}
+
+	// Process data in batches
+	$batchSize = 500; //s3vector limit!
+	$documentsBatch = [];
+	$recordsProcessed = 0;
+
+	$rs = $db->Execute($sql);
+	if ($rs) {
+            $count = $rs->RecordCount();
+		print "Fount $count\n";
+
+	    while (!$rs->EOF) {
+		$recordsProcessed++;
+
+		$document = [];
+		foreach ($rs->fields as $columnName => $value) {
+		    if ($columnName === 'tagtext') { //maybe shouldnt be hardcoded?
+			$document['vector'] = getTextEmbedding($value, $model);
+			$document[$columnName] = $value;
+		    } elseif ($columnName === 'embeddings') {
+			$document['vector'] = array_values(unpack('g*', $value));
+		    } elseif ($columnName === 'seq_id') {
+			$last_id = $value; //just used for tracking, not actully updated!
+		    } else {
+			$document[$columnName] = $value;
+		    }
+		}
+		$documentsBatch[] = $document;
+
+		// If the batch is full, insert the vectors and clear the batch
+		if (count($documentsBatch) >= $batchSize) {
+		    echo "Inserting batch of " . count($documentsBatch) . " vectors ($recordsProcessed total)...\n";
+		    $result = putVectors($s3VectorBucketName, $param['index'], $documentsBatch, $awsRegion);
+		    echo "  Batch result: " . $result['message'] . "\n";
+		    $documentsBatch = []; // Reset the batch
+		}
+
+		$rs->MoveNext();
+	    }
+	} else {
+           die("query error\n");
+        }
+
+	// Insert any remaining vectors in the final batch
+	if (!empty($documentsBatch)) {
+	    echo "Inserting final batch of " . count($documentsBatch) . " vectors...\n";
+	    $result = putVectors($s3VectorBucketName, $param['index'], $documentsBatch, $awsRegion);
+	    echo "Final batch result: " . $result['message'] . "\n\n";
+	}
+
+	if (!empty($last_id) && !empty($data)) {
+		$updates = array();
+		$updates[] = "delta_max = $last_id";
+//todo, if ($last_id == $data['max_id']) SET done=now();
+// in theory the update should still 'reset' done, if more rows are added!
+		if ($last_id == $data['max_id'])
+			$updates[] = "done=now()";
+
+	    $sql = "UPDATE tmp_emdedding_stat SET ".implode(', ',$updates)." WHERE day = '{$data['day']}'";
+
+	    print "$sql\n";
+	    $db->Execute($sql);
+	}
+	exit;
+}
+
+##################################
 // Function to test index, although hardcoded for testing an 'image-clip' index!
 
 if ($param['test']) {
 	$topK = 30; // might as well!
 
-	$rows = $db->getAll("SELECT * FROM tmp_emdedding_stat INNER JOIN gridimage_embedding ON (seq_id = max_id)");
+	$rows = $db->getAll("SELECT * FROM tmp_emdedding_stat INNER JOIN gridimage_embedding ON (seq_id = max_id) ORDER BY day DESC limit 5");
 	foreach ($rows as $idx => $row) {
 		$queryEmbedding = array_values(unpack('g*', $row['embeddings']));
 		$needle = $row['gridimage_id'];
@@ -175,7 +319,7 @@ if ($param['test']) {
 		print "$idx. looking for $needle for {$row['day']}\n";
 
 		    $queryPayload = [
-		        'vectorBucketName' => 'geograph-vector-bucket',
+		        'vectorBucketName' => $s3VectorBucketName,
 		        'indexName' => $param['index'],
 		        'queryVector' => ['float32' => $queryEmbedding],
 		        'topK' => $topK,
@@ -246,7 +390,7 @@ if ($param['test']) {
 ##################################
 
     $queryPayload = [
-        'vectorBucketName' => 'geograph-vector-bucket',
+        'vectorBucketName' => $s3VectorBucketName,
         'indexName' => $param['index'],
         'queryVector' => ['float32' => $queryEmbedding],
         'topK' => $topK,
