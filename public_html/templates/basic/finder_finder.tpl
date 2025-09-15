@@ -467,7 +467,7 @@ function searchAndRender() {
         limit: 30
     };
 
-    if (query && query.match(/^(id:)?\d+(,\d+)*$/)) {
+    if (query && query.match(/^(id:)?\d+(,\d+)*$/) && type == 'keywords') {
 	//special handler for a list of ids!
         data['where'] = "id in ("+query.replace(/id:/g,'')+")";
 
