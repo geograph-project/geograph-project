@@ -467,9 +467,9 @@ function searchAndRender() {
         limit: 30
     };
 
-    if (query && query.match(/^\d+(,\d+)*$/)) {
+    if (query && query.match(/^(id:)?\d+(,\d+)*$/)) {
 	//special handler for a list of ids!
-        data['where'] = "id in ("+query+")";
+        data['where'] = "id in ("+query.replace(/id:/g,'')+")";
 
         //todo, certainly doesnt make sense to filter by query, but might want to keep other filters?
 
