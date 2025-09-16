@@ -24,9 +24,9 @@
     --text-align: center;
 }
 
-label:has(input:checked) {
+.finder-form label:has(input:checked) {
     font-weight: bold;
-}}
+}
 
 .display-options {
     text-align: right;
@@ -139,14 +139,14 @@ label:has(input:checked) {
 <div class="finder-container">
 	<div class="tabHolder">
 		<a class="tabSelected nowrap">Quick Results</a>
-		<a class="tab nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">Original Search</a>
-		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}">Image Browser</a>
-		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=map">Browser Map</a>
-		<a class="tab nowrap" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=group&amp;group=decade&amp;n=4&amp;gorder=alpha%20desc">Grouped Results</a>
-		<a class="tab nowrap" data-template="/content/?q={q}">Collections</a>
+		<a class="tab nowrap keywords-only" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">Original Search</a>
+		<a class="tab nowrap keywords-only" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}">Image Browser</a>
+		<a class="tab nowrap keywords-only" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=map">Browser Map</a>
+		<a class="tab nowrap keywords-only" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}&amp;display=group&amp;group=decade&amp;n=4&amp;gorder=alpha%20desc">Grouped Results</a>
+		<a class="tab nowrap keywords-only" data-template="/content/?q={q}">Collections</a>
 {/literal}
 		{if $enable_forums}
-			<a class="tab nowrap" data-template="/finder/discussions.php?q={literal}{q}{/literal}">Discussions</a>
+			<a class="tab nowrap keywords-only" data-template="/finder/discussions.php?q={literal}{q}{/literal}">Discussions</a>
 		{/if}
 	</div>
 	<form id="finder-form" method="get" class="finder-form">
@@ -166,9 +166,9 @@ label:has(input:checked) {
 		</div>
 
 		<div id="date-filter-box" class="form-column hidden">
-			<label for="date_start">Start <b>Date</b>:</label>
+			<label for="date_start"><b>Start Date</b>:</label>
 			<input type="date" id="date_start" name="date_start" min="1800-01-01"><br>
-			<label for="date_end">End Date:</label>
+			<label for="date_end"><b>End Date</b>:</label>
 			<input type="date" id="date_end" name="date_end" min="1800-01-01">
 			<button type="button" id="clear-dates-btn">Clear Dates</button><br>
 			Quick: <button onclick="return setDateRange('-5 year','');">Last 5</button> or 
@@ -196,7 +196,7 @@ label:has(input:checked) {
 		<a href="#" class="tab nowrap" data-display="details">Details</a>
 		<a href="#" class="tab nowrap" data-display="river">GeoRiver</a>
 		<a href="#" class="tab nowrap" data-display="map">Map</a>
-		<a class="nowrap" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">more...</a>
+		<a class="nowrap keywords-only" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">more...</a>
 	</div>
 	<div id="results" class="results-box">
 		<p>Just click Update above to see recent images.</p>
@@ -235,7 +235,7 @@ label:has(input:checked) {
 		or
 		<a href="#" data-template="/browser/redirect.php?q={q}&loc={loc}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Image Browser</a>
 	</div>
-	<div id="similarity-prompt" class="hidden" style="text-align: center; padding: 20px;">
+	<div class="similarity-only hidden" style="text-align: center; padding: 20px;">
 		Tip: Drag a image thumbnail into the 'Search For' box, to look for visually similar images. This is a great away to look for more images.
 	</div>
 {/literal}
@@ -251,7 +251,7 @@ label:has(input:checked) {
 <script src="{"/mapper/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/location-selector.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/contributor-selector.js"|revision}"></script>
-<script type="text/javascript" src="/js/geograph-api-libs.js?"></script>
+<script type="text/javascript" src="{"/js/geograph-api-libs.js"|revision}"></script>
 {literal}
 <script>
 
@@ -365,16 +365,20 @@ function renderFinderResults(url, divId, countDivId) {
     const divElement = document.getElementById(divId);
     const countDivElement = document.getElementById(countDivId);
     const moreResultsPrompt = document.getElementById('more-results-prompt');
-    const similarityPrompt = document.getElementById('similarity-prompt');
     const display = document.getElementById('display-mode').value;
-    const type = document.querySelector('input[name="type"]:checked').value;
 
     // Switch display class
     divElement.classList.remove('display-large', 'display-small', 'display-details', 'display-river'); // Add other classes here as they are created
     divElement.classList.add('display-' + display);
 
     fetch(url)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                // Throw an error for non-200 status codes (e.g., 503, 404, 500)
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.rows) {
                 // Clear previous results
@@ -468,18 +472,44 @@ function renderFinderResults(url, divId, countDivId) {
                 } else {
                     moreResultsPrompt.classList.add('hidden');
                 }
-		if (type == 'similarity') {
-		    similarityPrompt.classList.remove('hidden');
-                } else {
-                    similarityPrompt.classList.add('hidden');
-                }
             } else {
                 divElement.innerHTML = 'No Results';
+
+                let query = document.querySelector('input[name="q"]').value;
+		const type = document.querySelector('input[name="type"]:checked').value;
+		if (type == 'keywords' && query && query.length > 6 && query.match(/ \w/)) {
+	                divElement.innerHTML += '. can try: ';
+
+			query = '"'+query.replace(/[^\w]+/g,' ').trim()+'"/1';
+                        newBtn = document.createElement('button');
+                        newBtn.innerHTML = 'Try a <b>Match-Any</b> query<br> (matching any words)';
+			newBtn.addEventListener('click', function() {
+				document.querySelector('input[name="q"]').value = query;
+				performSearch();
+			});
+                        divElement.appendChild(newBtn);
+
+                        newBtn = document.createElement('button');
+                        newBtn.innerHTML = 'Try a <b>Looks-Like</b> Query<br> (just does best to match)';
+			newBtn.addEventListener('click', function() {
+				document.querySelector('input[name="type"][value=similarity]').checked=true;
+				performSearch();
+			});
+                        divElement.appendChild(newBtn);
+                }
+
                 countDivElement.classList.add('hidden');
                 moreResultsPrompt.classList.add('hidden');                
             }
-        })
-        .catch(error => console.error('Error fetching data:', error));
+
+        }).catch(function(error) {
+		if (error == "Error: HTTP error! Status: 503") {
+			countDivElement.innerHTML = "Service unavailable. Try again later.";
+		} else {
+			countDivElement.innerHTML = "An unknown error occurred. Please try again.";
+		}
+		console.error('Error fetching data:', error);
+	});
 }
 
 function searchAndRender() {
@@ -585,6 +615,27 @@ function searchAndRender() {
                         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     }).addTo(map);
 
+			// Add a click event listener to the map
+			map.on('click', function(e) {
+			    // e.latlng contains the coordinates of the clicked point
+			    const lat = e.latlng.lat;
+			    const lng = e.latlng.lng;
+
+			    const gridref = wgs2gridref(lat, lng, convertNumber(map.getZoom()));
+
+			    const gridrefHtml = gridref ? `<br><br>Grid Reference: <b>${gridref}</b><br>
+				<a href="#" onclick="jumpLocation('${gridref}'); map.closePopup(); return false;">Search This location</a>` : '';
+
+			    // Create a new popup with dynamic content
+			    const popupContent = `<p>You clicked the map at:<br>Lat/Long: ${lat.toFixed(6)}, ${lng.toFixed(6)} (WGS84)${gridrefHtml}</p>`;
+
+			    L.popup()
+			        .setLatLng(e.latlng) // Use the clicked coordinates to position the popup
+			        .setContent(popupContent)
+			        .openOn(map);
+			});
+
+
                     layerGroup = L.layerGroup().addTo(map);
                 }
                 if (wgs84 && wgs84.latitude) {
@@ -623,6 +674,9 @@ function searchAndRender() {
 
 //callback for location-selector.js
 function jumpLocation(form) {
+    //we accept the form, or a string 
+    if (form && typeof form === 'string')
+	document.getElementById('loc').value = form;
     performSearch();
 }
 function jumpContributor(form) {
@@ -732,6 +786,23 @@ function updateTabLinks() {
         date_end: document.querySelector('input[name="date_end"]').value,
         contributor: document.querySelector('input[name="contributor"]').value
     };
+
+	const modeMap = {};
+	document.querySelectorAll('input[type="radio"][name="type"]').forEach(function(input) {
+	    modeMap[input.value] = `.${input.value}-only`;
+	});
+
+	// Hide all elements that match the dynamically generated selectors
+	document.querySelectorAll(Object.values(modeMap).join(', ')).forEach(element => {
+	    element.classList.add('hidden');
+	});
+
+        // Now, you can use the map to show only the selected type
+	if (modeMap[params.type]) {
+	    document.querySelectorAll(modeMap[params.type]).forEach(element => {
+	        element.classList.remove('hidden');
+	    });
+	}
 
     document.querySelectorAll('a[data-template]').forEach(function(tab) {
         let url = tab.dataset.template;
@@ -887,6 +958,14 @@ function lookForLocationMatches(loc,originalElement) {
         // Return the final rectangle object.
         return rectangle;
     }
+
+//basic function to convert a zoom level to grid-reference length!
+function convertNumber(num) {
+  const clampedNum = Math.max(5, Math.min(18, num));
+  const mappedNum = 4 + (clampedNum - 5) * (6 / 13);
+  const roundedNum = Math.round(mappedNum / 2) * 2;
+  return Math.max(4, Math.min(10, roundedNum));
+}
 
 </script>
 {/literal}
