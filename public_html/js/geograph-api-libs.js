@@ -99,7 +99,7 @@
                         } else {
                             if (countDivElement)
                                 countDivElement.textContent = "No Results";
-                            if (wgs84 && wgs84.latitude) {
+                            if (typeof wgs84 !== 'undefined' && wgs84 && wgs84.latitude) {
                                 L.popup()
                                 .setLatLng([wgs84.latitude, wgs84.longitude])
                                 .setContent("No Results")
