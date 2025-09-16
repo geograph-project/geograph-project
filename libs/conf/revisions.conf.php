@@ -100,9 +100,10 @@ $REVISIONS['/templates/ireland/css/ireland.css']=11477102;
 $REVISIONS['/curated/curator.css']=71654868;
 $REVISIONS['/curated/curator.js']=12141202;
 $REVISIONS['/js/location-selector.js']=82453674;
-$REVISIONS['/js/geograph-api-libs.js']=95918685;
+$REVISIONS['/js/geograph-api-libs.js']=27474854;
 $REVISIONS['/js/LeafletLineMarker.js']=76950387;
 $REVISIONS['/js/LeafletLineMarker.css']=76950387;
 $REVISIONS['/js/contributor-selector.js']=46780965;
 $REVISIONS['/ai/finder-demo.js']=54638517;
+$REVISIONS['/viewer/zoomer.js']=61635280;
 ?>
