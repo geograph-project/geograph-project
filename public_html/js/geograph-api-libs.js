@@ -74,6 +74,7 @@
 	            .then(response => response.json())
 	            .then(data => {
 	                if (data.rows) {
+                            map.closePopup();
 	                    var markerBounds = L.latLngBounds();
 	                    data.rows.forEach(row => {
 	                        if (row.wgs84_lat && row.wgs84_long) {
@@ -95,6 +96,15 @@
 	                    }
 	                    if (data.meta && data.meta.total_found && countDivElement)
 	                        countDivElement.textContent = "Showing "+data.rows.length+" of "+data.meta.total_found;
+                        } else {
+                            if (countDivElement)
+                                countDivElement.textContent = "No Results";
+                            if (wgs84 && wgs84.latitude) {
+                                L.popup()
+                                .setLatLng([wgs84.latitude, wgs84.longitude])
+                                .setContent("No Results")
+                                .openOn(map);
+                            }
 	                }
 	            });
         }
