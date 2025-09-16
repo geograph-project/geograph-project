@@ -13,7 +13,8 @@
             const data = {
                 long: 1,
                 select: "id,user_id,realname,grid_reference,title,hash",
-                limit: 30
+                limit: 30,
+		utf: 1 //request utf8
             };
 
             if (query) {

@@ -527,7 +527,8 @@ function searchAndRender() {
     const data = {
         long: 1,
         select: "id,user_id,realname,grid_reference,title,hash,takenday,width,height",
-        limit: 30
+        limit: 30,
+	utf: 1
     };
 
     if (query && query.match(/^(id:)?\d+(,\d+)*$/) && type == 'keywords') {
@@ -621,7 +622,7 @@ function searchAndRender() {
 			    const lat = e.latlng.lat;
 			    const lng = e.latlng.lng;
 
-			    const gridref = wgs2gridref(lat, lng, convertNumber(map.getZoom()));
+			    const gridref = wgs2gridref(lat, lng, convertZoomtoLen(map.getZoom()));
 
 			    const gridrefHtml = gridref ? `<br><br>Grid Reference: <b>${gridref}</b><br>
 				<a href="#" onclick="jumpLocation('${gridref}'); map.closePopup(); return false;">Search This location</a>` : '';
@@ -769,7 +770,7 @@ function handleUrlQuery() {
 	document.getElementById('add-contributor-filter').classList.add('hidden');
     }
 
-    if (query || loc || date_start || date_end || contributor) {
+    if (query || loc || date_start || date_end || contributor || display == 'map') {
         searchAndRender();
     }
 
@@ -960,7 +961,7 @@ function lookForLocationMatches(loc,originalElement) {
     }
 
 //basic function to convert a zoom level to grid-reference length!
-function convertNumber(num) {
+function convertZoomtoLen(num) {
   const clampedNum = Math.max(5, Math.min(18, num));
   const mappedNum = 4 + (clampedNum - 5) * (6 / 13);
   const roundedNum = Math.round(mappedNum / 2) * 2;

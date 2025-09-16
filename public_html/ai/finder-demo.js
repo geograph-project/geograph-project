@@ -40,6 +40,7 @@ function runSearch() {
                     [paramname]: query,
                     select: 'id,hash,grid_reference,realname,title,image_vector,place',
                     long: 1,
+		    utf: 1,
                     limit: (paramname=='match')?100:30
                 },
                 dataType: 'json'
