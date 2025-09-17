@@ -725,3 +725,106 @@ details[open] summary {
     text-align: center;
   }
 }
+.forum-gsd-grid {
+  display: grid;
+  grid-template-areas:
+    'forum-gsd-gr forum-gsd-location'
+    'forum-gsd-thumbnails forum-gsd-thumbnails'
+    'forum-gsd-count forum-gsd-search';
+  grid-template-rows: max-content max-content max-content;  
+  grid-template-columns: 1fr 1fr;
+  grid-row-gap: 2px;
+  grid-column-gap: 5px;
+  margin: 10px 0px 0px 10px;
+  width: 100%;
+}
+.forum-gsd-grid > div {
+  min-width: 0px;
+}
+@media all and (max-width: 800px) {
+  .forum-gsd-grid {
+  grid-template-areas:
+    'forum-gsd-gr'
+    'forum-gsd-location'
+    'forum-gsd-thumbnails'
+    'forum-gsd-search'
+    'forum-gsd-count';
+  grid-template-rows: max-content max-content max-content max-content max-content;  
+  grid-template-columns: 1fr;
+  grid-row-gap: 2px;
+  grid-column-gap: 5px;
+  margin: 10px 0px 0px 10px;
+  width: 100%;
+  }
+}
+
+div.forum-gsd-gr {
+  grid-area: forum-gsd-gr;
+  h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+div.forum-gsd-location {
+  grid-area: forum-gsd-location;
+  text-align: right;
+}
+@media all and (max-width: 800px) {
+  div.forum-gsd-location {
+    text-align: left;
+  }
+}
+div.forum-gsd-thumbnails {
+  grid-area: forum-gsd-thumbnails;
+  text-align: center;
+}
+div.forum-gsd-thumbnails-none {
+  background-color: indigo;
+  color: white;
+  border-radius: 10px;
+  padding: 5px;
+  min-width: 0px;
+}
+div.forum-gsd-count {
+  grid-area: forum-gsd-count;
+  margin: 10px 0px 10px 0px;
+}
+div.forum-gsd-search {
+  grid-area: forum-gsd-search;
+  text-align: right;
+  margin: 10px 0px 10px 0px;
+}
+
+
+
+.forum-gsd-thumbs-flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  height: 512px;
+  overflow-x: auto;
+}
+@media all and (max-width: 850px) {
+  .forum-gsd-thumbs-flex-container {
+    flex-wrap: nowrap;
+    overflow-y: auto;
+    height: auto;
+    overflow-x: none;
+  }
+}
+.forum-gsd-thumbs-flex-photo {
+  display: flex;
+  flex-wrap: wrap;
+  text-align:center;
+  padding-bottom:1em;
+  width:150px;
+  font-size:0.8em;
+  padding: 5px;
+  margin: 5px;
+  border: silver 1px solid;
+}
+.forum-gsd-thumbs-attribution
+{
+  text-align: center;
+  width: 100%
+}
