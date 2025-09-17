@@ -874,7 +874,7 @@ class GeographMapMosaic
 		switch ($this->pixels_per_km) {
 			case 0.13:
 			case 0.3: $zoom = 5; break;
-			case 1: $zoom = 7; break;
+			case 1: $zoom = 8; break;
 			case 4: $zoom = 9; break;
 			case 40:
 			case 80: $zoom = 12;
