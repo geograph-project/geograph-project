@@ -123,13 +123,21 @@ $(function () {
 	var model = 'Keystone';
 	var filter = 'subject';
 
+    const datalistItems = [];
+    $("#subjects option").each(function() {
+        datalistItems.push($(this).val());
+    });
+
         $( "#loc" ).autocomplete({
-                minLength: 3,
+                minLength: 0,
                 source: function( request, response ) {
 
 			if (request.term.length < 3) {
-				response([]);
-                                return;
+				const filteredItems = $.ui.autocomplete.filter(datalistItems, request.term);
+				if (filteredItems.length > 5) { //if no matches, still allow fallback to server search
+					response(filteredItems);
+        	                        return;
+				}
                         }
 
                         var url = "/tags/tags.json.php?q="+encodeURIComponent(request.term);
@@ -178,7 +186,12 @@ $(function () {
                         $("#loc").val(ui.item.value);
                         return false;
                 }
-        })
+        }).on("focus", function() {
+	    // Check if the input is empty to avoid showing a full list when a value is already present
+	    if ($(this).val() === "") {
+	        $(this).autocomplete("search", "");
+	    }
+	})
         .data( "autocomplete" )._renderItem = function( ul, item ) {
                 var re=new RegExp('('+$("#loc").val()+')','gi');
                 if (!item.title) item.title = '';
@@ -195,6 +208,13 @@ $(function () {
 });
 
 </script>
+<style>
+.ui-autocomplete {
+    max-height: 300px; /* Adjust the height as needed */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+</style>
 <?
 
 	$smarty->display('_std_end.tpl');
