@@ -357,6 +357,30 @@ document.addEventListener('DOMContentLoaded', function() {
 	    event.dataTransfer.dropEffect = 'none';
 	});
 
+	document.body.addEventListener('dragover', function(event) {
+	    // Check if the user is dragging an item
+	    if (event.dataTransfer && event.dataTransfer.types.includes('text/plain')) {
+
+	        // Get the current vertical position of the cursor
+	        const mouseY = event.clientY;
+
+	        // Define a "scroll zone" at the top of the viewport
+	        const scrollZoneHeight = 50; // In pixels
+
+	        // Get the current scroll position
+	        const currentScrollY = window.scrollY;
+
+	        // If the cursor is in the scroll zone, scroll the page up
+	        if (mouseY < scrollZoneHeight) {
+	            // Scroll up at a rate proportional to how close the cursor is to the top
+	            const scrollSpeed = 8;
+	            window.scrollBy(0, -scrollSpeed);
+	        } else {
+	            // Optional: You could add logic here for scrolling down if needed
+	        }
+	    }
+	});
+
 });
 
 window.addEventListener('popstate', handleUrlQuery);
