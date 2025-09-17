@@ -132,12 +132,82 @@
 
         #results.leaflet-container {
                 height:calc( 100dvh - 300px );
+		min-height: 300px;
         }
+
+@media only screen and (max-width: 960px) {
+	a[data-display="river"] {
+		--display:none;
+	}
+	.display-options a:last-child {
+		display:none;
+	}
+
+    .display-river .river-item {
+        grid-template-columns: 1fr;
+    }
+    .display-river .river-item-thumb {
+	text-align:center;
+    }
+    .display-river .river-item-thumb img {
+	border-radius:4px;
+	box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+        max-width:100%;
+	height: auto; /* just to make sure */
+    }
+    .display-river .river-item-info {
+	text-align:center;
+        margin-bottom:20px;
+    }
+}
+
+@media only screen and (max-width: 612px) {
+	.content2 {
+		padding:0px;
+		padding-top:6px;
+	}
+	.results-box {
+		border:0;
+		border-top:2px solid #ddd;
+		border-bottom:2px solid #ddd;
+		padding:1px;
+		padding-top:4px;
+	}
+	.finder-form input[type=search] {
+		max-width:100%;
+	}
+	.finder-form select {
+		max-width:100%;
+
+	}
+	.finder-form .form-column {
+		float:none;
+		width:inherit;
+		padding-bottom:2px;
+		border-bottom:1px solid silver;
+		margin-bottom:2px;
+	}
+	#correction-prompt {
+		padding:0 4px;
+	}
+
+.scroll-container {
+  /* This is the container for your tabs */
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
+  position: relative; /* Essential for positioning the pseudo-elements */
+touch-action:inherit;
+  margin-top:-2px;
+}
+
+
+}
 
 </style>
 
 <div class="finder-container">
-	<div class="tabHolder">
+	<div class="tabHolder scroll-container">
 		<a class="tabSelected nowrap">Quick Results</a>
 		<a class="tab nowrap keywords-only" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">Original Search</a>
 		<a class="tab nowrap keywords-only" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}">Image Browser</a>
@@ -194,7 +264,7 @@
 		<a href="#" class="tab tabSelected nowrap" data-display="small">Small Thumbs</a>
 		<a href="#" class="tab nowrap" data-display="large">Large Thumbs</a>
 		<a href="#" class="tab nowrap" data-display="details">Details</a>
-		<a href="#" class="tab nowrap" data-display="river">GeoRiver</a>
+		<a href="#" class="tab nowrap" data-display="river" title="our own format that displays a large image with details">GeoRiver</a>
 		<a href="#" class="tab nowrap" data-display="map">Map</a>
 		<a class="nowrap keywords-only" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">more...</a>
 	</div>
@@ -230,10 +300,10 @@
 
 	<div id="more-results-prompt" class="hidden" style="text-align: center; padding: 20px;">
 		<span id="results-count2"></span>
-		Continue in: 
+		<span class="nowrap">Continue in: 
 		<a href="#" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">Original Search</a>
 		or
-		<a href="#" data-template="/browser/redirect.php?q={q}&loc={loc}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Image Browser</a>
+		<a href="#" data-template="/browser/redirect.php?q={q}&loc={loc}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Image Browser</a></span>
 	</div>
 	<div class="similarity-only hidden" style="text-align: center; padding: 20px;">
 		Tip: Drag a image thumbnail into the 'Search For' box, to look for visually similar images. This is a great away to look for more images.
@@ -486,7 +556,7 @@ function renderFinderResults(url, divId, countDivId) {
 
                 if (data.meta && data.meta.total_found && countDivElement) {
                     countDivElement.classList.remove('hidden');
-                    countDivElement.textContent = `Showing ${data.rows.length} of ${data.meta.total_found} results.`;
+                    countDivElement.innerHTML = `Showing <b>${data.rows.length} of ${data.meta.total_found}</b> results.`;
                 }
 
                 // Handle 'More Results' prompt
@@ -905,13 +975,13 @@ function lookForLocationMatches(loc,originalElement) {
             }
 
             const label = document.createElement('label');
-            label.textContent = 'Did you mean: ';
+            label.innerHTML = '<b>Did you mean</b>:';
             container.appendChild(label);
 
             const select = document.createElement('select');
             
             const defaultOption = document.createElement('option');
-            defaultOption.textContent = 'Choose Location';
+            defaultOption.textContent = 'Choose Location (possible matches)';
             defaultOption.value = '';
             select.appendChild(defaultOption);
 
