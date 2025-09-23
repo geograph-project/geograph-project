@@ -27,9 +27,6 @@ Disallow: /
 User-agent: ClaudeBot
 Disallow: /
 
-User-agent: PerplexityBot
-Disallow: /
-
 User-agent: GoogleOther
 Disallow: /
 
