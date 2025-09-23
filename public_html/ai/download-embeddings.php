@@ -95,6 +95,18 @@ if (!empty($_POST['format'])) {
 	if (empty($where)) $where[] = 1;
 	if (!empty($group)) $group = "GROUP BY $group ORDER BY NULL";
 
+	if (!empty($_POST['tags']) && in_array($_POST['tags'],array('subject','top','type'))) {
+		//actully for now, lets use a sample table to get a more varied selection
+
+	$sql = "SELECT e.gridimage_id,grid_reference,title,realname,imagetaken, tag, embeddings
+		 FROM gridimage_sample2 STRAIGHT_JOIN gridimage_embedding e USING (gridimage_id) STRAIGHT_JOIN gridimage_search gi USING (gridimage_id)
+		 STRAIGHT_JOIN gridimage_tag USING (gridimage_id) STRAIGHT_JOIN tag USING (tag_id)
+		 WHERE gridimage_sample2.{$_POST['tags']} = 1 AND ".implode(" AND ",$where)."
+                $group
+                LIMIT $limit";
+
+	} else {
+
 	$sql = "SELECT $cols, embeddings
 		FROM gridimage_embedding e
 		INNER JOIN gridimage_search gi USING (gridimage_id)
@@ -102,6 +114,7 @@ if (!empty($_POST['format'])) {
 		WHERE ".implode(" AND ",$where)."
 		$group
 		LIMIT $limit";
+	}
 
 	if ($_POST['format'] == 'csv') {
 
@@ -159,8 +172,6 @@ if (!empty($_POST['format'])) {
 
 	$smarty->display('_std_begin.tpl');
 
-$_GET['model'] = 'clip';
-
 ?>
 <h2>Download CLIP Embedding Prototype</h2>
 
@@ -169,11 +180,60 @@ $_GET['model'] = 'clip';
 	<p>This page only downloads a TINY sample of data, for testing as a proof of concept. Can use to make sure can decode the embeddings ok.
 	Later will will share this data in bulk (will be datafiles about 47Gb in size for full 8M images)
 	<ul>
-		<li>We can also supply a file that only includes images already tagged with specific tags, intended to be used for training AI models.
 		<li>The precomputed CLIP embeddings are intended for downstream use, without having to process the raw images yourself.
-		<li>If want embeddings via other encoding models, we will have to work something out.
+		<li>This data is <b>just the Embedding (a 512 dimension vector) + metadata</b>, not the images themselves.
+		<li>We can also supply a file that only includes images already tagged with specific tags, intended to be used for training AI models.
+		<li>Note the samples, arent garenteed to be representative samples, may end up with very few tags.
 	</ul>
 
+<?
+
+################################
+
+if (empty($_GET['custom'])) {
+
+	$types = array(
+		'top' => array('<b>Images with [context] tag(s).</b> Could for example be used to train a model to predict our Top Level Context tags. 49 tags that describe the general area of the image',5700000),
+		'subject' => array('<b>Images with a [subject] tag.</b> This images where the contributor has choosen from a list of about 1000 tags that depict the primary subject of the image',1600000),
+		'type' => array('<b>Images with [type] tag(s).</b> Moderators choose from a short list of Type tags to classify non-geograph images. Could be used to see if a model could do similar prediction',3200000),
+		'' => array('All Images. Just download the clip embeddings, regardless of the tags',8100000),
+	);
+
+$base = array(
+'model' => 'clip',
+'type' => 'image',
+'format' => 'jsonl',
+'meta' => 'on',
+'tags' => 'subject',
+'limit' => 10000,
+);
+
+	print "<table cellspacing=0 cellpadding=20 border=1 bordercolor=#eee>";
+	foreach($types as $type => $data) {
+		list($desc, $count) = $data;
+		print "<tr>";
+		print "<td>".$desc;
+		print "<td>";
+		print "<form method=post>";
+		$base['tags'] = $type;
+		foreach($base as $key => $value)
+			print "<input type=hidden name=$key value=$value>";
+		print "<button type=submit>Download {$base['limit']} Sample</button>";
+		print "</form>";
+		print "<td><button disabled>Download ".formatApproximateNumber($count)." images</button><br>";
+		print "<i>Coming soon</i>";
+	}
+	print "<tr>";
+		print "<td colspan=3 align=center>Note: If there are multiple tags for the same image, will get multiples rows, one row per tag;<br> so the gridimage_id column is not unique)<br>About 30Mb for 10000 rows. Formatted as JSONL file.";
+	print "</table>";
+	print "<a href=?custom=1>Custom Download</a> (more options)";
+
+
+} else {
+
+################################
+
+?>
 	<div style="border:1px solid silver; border-radius:10px; padding:10px">
 	<h3 style=margin-top:0>Model</h3>
 	<input type=radio name=model value=clip checked>CLIP ViT-B/32 - only model available currently<br><br>
@@ -226,6 +286,12 @@ $_GET['model'] = 'clip';
 
 </form>
 	<br>
+
+<? }
+
+################################
+
+ ?>
 
 <p style=font-weight:bold;background-color:orange;padding:10px;>
 Copyright 2025 Geograph Project Limited.<br><br>
@@ -295,3 +361,28 @@ print(df.head())
 	$smarty->display('_std_end.tpl');
 	exit;
 
+function formatApproximateNumber($number) {
+    if (!is_numeric($number)) {
+        return $number;
+    }
+
+    $units = ['', 'K', 'M', 'B', 'T'];
+    $unitIndex = 0;
+
+    // Determine the appropriate unit
+    while ($number >= 1000 && $unitIndex < count($units) - 1) {
+        $number /= 1000;
+        $unitIndex++;
+    }
+
+    // Round the number to one decimal place
+    $formattedNumber = round($number, 1);
+
+    // If the number is a whole number (e.g., 2.0), remove the .0
+    if ($formattedNumber == round($formattedNumber)) {
+        $formattedNumber = round($formattedNumber);
+    }
+
+    // Construct the final string
+    return 'about ' . $formattedNumber . $units[$unitIndex];
+}
