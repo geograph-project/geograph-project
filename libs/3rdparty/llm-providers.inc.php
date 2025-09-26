@@ -99,7 +99,7 @@ function callCloudflare($prompt, $user = null) {
     $accountId = $CONF['CLOUDFLARE_ACCOUNT_ID'];
     $apiToken = $CONF['CLOUDFLARE_API_TOKEN'];
     $modelName = '@cf/openai/gpt-oss-120b';
-    print "Using Model $modelName\n";
+    print "Using Model $modelName (via Cloudflare)\n";
     $url = "https://api.cloudflare.com/client/v4/accounts/{$accountId}/ai/run/{$modelName}";
 
     $data = ['input' => $prompt . ($user ?? '')];
@@ -157,7 +157,7 @@ function callOpenRouter($prompt, $user = null, $maxTokens = 2048) {
 
     $modelName = 'openai/gpt-oss-120b';
 
-    print "Using Model $modelName\n";
+    print "Using Model $modelName (via OpenRouter)\n";
     $url = "https://openrouter.ai/api/v1/chat/completions";
 
     $messages = [
@@ -310,3 +310,201 @@ function callLMStudio($prompt, $user = null) {
 }
 
 
+
+
+
+######################################
+
+/**
+ * Sends a batch of tags and few-shot examples to the LLM microservice.
+ *
+ * @param array $tags An array of tags to classify, where each element is ['tag_id' => int, 'tag' => string].
+ * @return array An array of classified tags, or an empty array on failure.
+ */
+function classify_tags_batch($tags, $provider = 'open', $print = false) {
+
+    if (empty($tags)) {
+        return [];
+    }
+
+    // Define few-shot examples and classification rules for the LLM prompt.
+    $prompt_examples = [
+        ["tag" => "London", "class" => "[named-place]"],
+        ["tag" => "South Downs Way", "class" => "[named-path]"],
+        ["tag" => "National Cycle Route 5", "class" => "[named-cyclepath]"],
+        ["tag" => "St Peters Church", "class" => "[named-poi]"],
+        ["tag" => "View to Nant Gwrtheyrn", "class" => "[related-to]"],
+        ["tag" => "Lake District National Park", "class" => "[named-area]"],
+        ["tag" => "York Street (Belfast)", "class" => "[named-feature]"],
+        ["tag" => "place:Frinkley Lane", "class" => "[named-feature]"],
+        ["tag" => "Meredith", "class" => "[named-person]"],
+        ["tag" => "Bayliss Engine", "class" => "[branded-object]"],
+        ["tag" => "Art-Deco", "class" => "[architectural-style]"],
+        ["tag" => "petrifying well", "class" => "[geographical]"],
+        ["tag" => "farm", "class" => "[geographical]"],
+        ["tag" => "hotel", "class" => "[geographical]"],
+        ["tag" => "national park", "class" => "[geographical]"],
+        ["tag" => "greenspace", "class" => "[geographical]"],
+        ["tag" => "Steam Engine", "class" => "[object]"],
+        ["tag" => "cart", "class" => "[object]"],
+        ["tag" => "flower", "class" => "[object]"],
+        ["tag" => "autumn", "class" => "[temporal]"],
+        ["tag" => "snowscene", "class" => "[temporal]"],
+        ["tag" => "sunset", "class" => "[temporal]"],
+        ["tag" => "1978", "class" => "[date]"],
+        ["tag" => "nudists", "class" => "[unsafe]"],
+        ["tag" => "close", "class" => "[ambiguous]"],
+        ["tag" => "Bunn s Lane footpath", "class" => "[typo]"],
+        ["tag" => "fly tipping", "class" => "[other]"],
+    ];
+
+    // Build the prompt string for the LLM.
+    $prompt = "You are a professional tag classifier. Your task is to classify a list of given tags into one of the following categories:\n\n";
+    $prompt .= "- [unsafe]: Potentially sensitive, or not suitable for children and/or specifically adult themed (This category overrules others).\n";
+    $prompt .= "- [named-place]: An actual, named settlement or place (not named road, even if in a specific place).\n";
+    $prompt .= "- [named-feature]: A named feature like a river, lake, road, or hill.\n";
+    $prompt .= "- [named-path]: A specific, named walking path.\n";
+    $prompt .= "- [named-cyclepath]: A numbered or named cycle route.\n";
+    $prompt .= "- [named-area]: A named area, national park, SSNI or similar.\n";
+    $prompt .= "- [named-poi]: A specific named building, company, or point of interest (e.g., 'St Peters Church', **not** general 'farm' or 'hotel').\n";
+    $prompt .= "- [named-person]: The tag refers to a specific person, e.g. architect.\n";
+    $prompt .= "- [architectural-style]: The tag refers to a specifically named architectural style or period.\n";
+    $prompt .= "- [related-to]: A tag that notes a **named** place/feature but is not the place itself.\n";
+    $prompt .= "- [event]: The tag relates to a specific event (e.g. 'Geograph Meetup').\n";
+    $prompt .= "- [geographical]: A general geographical term or feature that is not a named place.\n";
+    $prompt .= "- [branded-object]: A specicaly named branded object, that mentions a company or similar brand.\n";
+    $prompt .= "- [object]: A movable object, or item not tied to specific location.\n";
+    $prompt .= "- [date]: The tag appears to be a specific date or year.\n";
+    $prompt .= "- [temporal]: The tag relates to a time, period, season or weather condition. When the photo taken, other than a specific date.\n";
+    $prompt .= "- [ambiguous]: Could mean different things depending on context (tag alone does not indentify what it represents).\n";
+    $prompt .= "- [typo]: Looks like the tag contains a typo or spelling mistake (This category overrules others).\n";
+    $prompt .= "- [other]: Anything else that doesn't fit the above categories.\n\n";
+    $prompt .= "The capitalization of the tag is not definitive, not all named entities are capitalized.\n\n";
+    $prompt .= "Here are some examples of tag classifications:\n";
+    foreach ($prompt_examples as $example) {
+        $prompt .= "Tag: \"{$example['tag']}\", class: \"{$example['class']}\"\n";
+    }
+
+    $prompt .= "You can ignore a 'place:' prefix on a tag, and still try to classify as you otherwise would. The user may not been very precise, and included the prefix on different types of tag.\n";
+
+//if ($param['provider']=='open')
+//	$prompt .= 'Provide your reasoning in a brief, one-sentence summary.\n\n';
+
+//Todo (need testing!) but perhaps could try JSON Lines, to be less fragile in decoding.
+//"Your response must be a series of JSON objects, one per line, conforming to this schema: { "tag": "string", "class": "string" }. Do not include any other text, comments, or explanations before or after the JSON."
+
+
+    $prompt .= 'Your response must be a single JSON array, conforming to this schema: [ { "tag": "string", "class": "string" } ].
+Do not include any other text, comments, or explanations before or after the JSON.'."\n";
+    $user = "Tags to classify:\n";
+    foreach ($tags as $tag_item) {
+        $user .= "- \"{$tag_item['tag']}\"\n";
+    }
+
+    if (!empty($print)) {
+        print "$prompt$user\n";
+        exit;
+    }
+
+    return getLLMResponse($prompt, $user, $provider);
+}
+
+################################
+
+
+function classify_query_batch($queries, $provider = 'open', $print = false) {
+
+    if (empty($queries)) {
+        return [];
+    }
+
+$prompt = <<<'EOD'
+You are a professional classifier. Your task is to classify a list of given search queries with one or more of the following labels:
+
+- [branded]: specifically mentions geograph project by name.
+- [navigational]: they likly looking for a webpage, not content directly, example 'geograph search' is looking for search page, rather than content from geograph.
+- [location]: appears to be looking for a specific location, rather than actual photos (eg "wembley stadium postcode" or "directions to ...").
+
+- [named-place]: they are likly looking for a specific named place (ie singular place that that could be identified on a map).
+- [named-feature]: A named natural feature like a river, lake, or hill.
+- [named-area]: they are likly looking for a specific named area (like a county, island, national park, or similar, could be informal area/region like "southern england").
+- [named-poi]: they are looking (for images of) a specific named point of interest (that is not a settlement), eg a castle, church or specific road.
+- [named-path]: A specific, named walking path.
+- [named-cyclepath]: A numbered or named cycle route.
+
+- [something]: they are looking for something (could be that looking for something at a place (like "loch aslaich bothy" is looking for "bothy" at "loch aslaich") - or just looking for soemthing in general (for example "bridges" is an item).
+- [item-at-location]: looking for a specific something in a specific place.
+
+- [named-person]: looking for photos related to a specific named person like an artitect.
+- [photographer]: looking for photos taken by a specific named contributor/photographer.
+- [event]: photos related to specific event like a social gathering, meet, or other named event.
+- [temporal]: looking for images on some data based criteral (like a specific year, or season, or historic/older images).
+- [weather]: looking for images in speciifc weather condistions (eg snow, fog, rain etc)
+- [mapped-feature]: looking for a something what likly is marked on maps (eg looking for cliffs in general).
+- [architectural-style]: refers to a specifically named architectural style or period.
+
+- [unsafe]: Potentially sensitive, or not suitable for children and/or specifically adult themed. Might provide misleading results (because the actual images have already been moderated, so dont have any unsafe images, but the query could still provide unsafe results.
+- [extra-words]: contains word(s) that don't contribute to meaning (ie the site is specifically listing photos, so in query like "photos of llandudno", the  "photos" and "of" are extra words, and hence wouldnt actulyl be needed to by the search engine).
+- [ambiguous]: Could mean different things depending on context (query alone does not indentify what it really looking for).
+- [typo]: Looks like the query contains a typo or spelling mistake.
+- [other]: Anything else that doesn't fit the above categories.
+
+Here are some examples of labels:
+[
+	{"query":"geograph", "labels":["branded","navigational"]},
+	{"query":"forest lodge windsor great park", "labels":["named-poi","named-area"]},
+	{"query":"forest lodge windsor", "labels":["named-poi","named-place"]},
+	{"query":"geograph uk", "labels":["branded","navigational"]},
+	{"query":"jeremy beadle grave", "labels":["named-person","specific-item"]},
+	{"query":"east gate piece hall", "labels":["named-poi","named-place"]},
+	{"query":"frogs end farm hargrave", "labels":["named-poi","named-place"]},
+	{"query":"river witham", "labels":["named-feature"]},
+	{"query":"aldi galashiels", "labels":["named-poi","named-place"]},
+	{"query":"photos by ben brooksbank", "labels":["photographer","extra-words"]},
+	{"query":"rivers beginning with a", "labels":["navigational","other"]},
+        {"query":"limestone outcrop", "labels":["specific-item"]},
+	{"query":"house of gray dundee", "labels":["named-poi","named-place"]},
+	{"query":"ore stone", "labels":["specific-item"]},
+	{"query":"great wall of deerness", "labels":["named-poi","named-place"]},
+	{"query":"gate 4 principality stadium", "labels":["named-poi","named-place","specific-item"]},
+	{"query":"strangers gate norwich", "labels":["named-poi","named-place","item-at-location"]},
+	{"query":"peakirk wildlife park", "labels":["named-poi","named-place"]},
+	{"query":"bridleway", "labels":["something","map-feature"]},
+	{"query":"capel egryn", "labels":["named-poi"]},
+	{"query":"winter photos", "labels":["temporal","extra-words"]},
+	{"query":"captains pool kidderminster", "labels":["named-feature","named-place"]},
+	{"query":"birchen clough bridge car park", "labels":["named-poi","named-place"]}
+]
+
+Your response must be a single JSON array, conforming to this schema:
+{
+  "type":"array",
+  "items":{
+    "type":"object",
+    "properties":{
+      "query": {"type":"string", "description":"The search query"},
+      "labels": {"type":"array", "minItems":1, "items":{"type":"string"}, "description":"A list of labels associated with the query"}
+    },
+    "required":[
+      "query",
+      "labels"
+    ]
+  }
+}
+
+Do not include any other text, comments, or explanations before or after the JSON.
+
+EOD;
+
+    $user = "Queries to classify:\n";
+    foreach ($queries as $item) {
+        $user .= "- \"{$item['query']}\"\n";
+    }
+
+    if (!empty($print)) {
+        print "$prompt$user\n";
+        exit;
+    }
+
+    return getLLMResponse($prompt, $user, $provider);
+}
