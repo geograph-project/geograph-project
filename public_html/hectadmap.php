@@ -65,11 +65,17 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$tables = '';
 
-	if ($w == 10) {
+	if ($w == 22) {
+//		$columns = 'if(max_dist=0,0, 100-(max_dist*100))*3 as percentage,';
+		$columns = 'if(max_dist=0,0, (0.85 - max_dist) * (100 / 0.15)) as percentage,';
+		$tables = " left join hectad_query on (hectad_stat.hectad = hectad_query.hectad and query = 'evergreen trees')";
+
+	} elseif ($w == 10) {
 		$columns = 'if(hectad_assignment_id is null,0,100) as percentage,';
 		$tables = " left join hectad_assignment on (hectad_stat.hectad = hectad_assignment.hectad and status = 'accepted')";
+
 	} elseif ($u) {
-		$columns = '0 as geosquares,0 as percentage,';
+		$columns = '0 as geosquares,0 as percentage,'; //will be filled in by a second query
 	} elseif ($w == 6) {
 		$columns = 'images as geosquares, least(sqrt(images)/1.5,100) as percentage, ';
 	} else {
@@ -171,6 +177,7 @@ if (!empty($_GET['dd'])) {
 		case '5':
 		case '4': $w = "greensquares"; break;
 		case '3': $w = "landsquares"; break;
+		case '22':
 		case '10':
 		case '6':
 		case '2': $w = "percentage"; break;
