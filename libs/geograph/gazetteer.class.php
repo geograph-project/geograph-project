@@ -71,6 +71,9 @@ split_timer('gazetteer'); //starts the timer
 
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
+		//todo, should perhaps use placename_index, or sphinx_placenames?
+
+
 		if (($CONF['use_gazetteer'] == 'OS' || $CONF['use_gazetteer'] == 'OS250') && $reference_index == 1) {
 			//even for 250k gaz, lets use the 50k as we want the detailed list
 
@@ -91,6 +94,24 @@ split_timer('gazetteer'); //starts the timer
 						GeomFromText($rectangle),
 						point_en)
 				order by distance asc,f_code+0,def_nam");
+
+		} elseif (($CONF['use_gazetteer'] == 'OS' || $CONF['use_gazetteer'] == 'OS250') && $reference_index == 2) {
+			$places = $db->GetAll("select
+					name as full_name,
+					km_ref as grid_reference,
+					town_class,
+					2 as reference_index,
+					county as adm1_name,
+					id+3000000 as pid,
+					pow(e-{$e},2)+pow(n-{$n},2) as distance
+				from
+					ie_open_data
+				where
+					CONTAINS(
+						GeomFromText($rectangle),
+						point_en)
+				order by distance asc");
+
 		} else {
 			$places = $db->GetAll("select
 					full_name,
@@ -467,7 +488,8 @@ split_timer('gazetteer'); //starts the timer
 						point_en) AND
 					reference_index = {$reference_index}
 				order by distance asc limit 1");
-		} else if (($gazetteer == 'open' || $gazetteer == '' || $gazetteer == 'OS250')&& $reference_index == 2) { //todo maybe should just be !='geonames' && != 'OS' (speciing 'OS' is what buildplacename_id, which wants geonames for ireland!
+
+		} else if (($gazetteer == 'open' || $gazetteer == 'OS' || $gazetteer == '' || $gazetteer == 'OS250')&& $reference_index == 2) { //todo maybe should just be !='geonames' (note buildplacename_id.php now wans ie_open_data!
 			//no index yet!
 			$places = $db->GetRow("select
                                         name as full_name,
@@ -611,68 +633,97 @@ split_timer('gazetteer','findByNational',$mkey); //logs the wall time
 		global $places; //only way to get the array into the compare functions
 		global $USER;
 		global $CONF,$memcache;
-		
-		$mkey = strtolower(trim($placename)).'.v5';//need to invalidate the whole cache. 
+
+		$mkey = strtolower(trim($placename)).'.v5';//need to invalidate the whole cache.
 		//fails quickly if not using memcached!
 		$places = $memcache->name_get('g',$mkey);
 		if ($places)
 			return $places;
 
 split_timer('gazetteer'); //starts the timer
-		
+
 		$db = $this->_getDB();
 
 		$ismore = 0;
 		$placename = str_replace('?','',$placename,$ismore);
 		$places = array();
-		
+
+	//numeric ID
 		if (is_numeric($placename)) {
-			if ($placename > 1000000) {
-				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where seq=".$db->Quote($placename-1000000));
+			if ($placename > 3000000) {
+				$where = "id=".$db->Quote($placename-3000000);
+				$places = $db->GetAll("select name as full_name,e,n,2 as reference_index,(id+3000000) as id,county as dsg_name from ie_open_data where $where");
+			} elseif ($placename > 1000000) {
+				$where = "seq=".$db->Quote($placename-1000000);
+				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where $where");
 			} else {
-				$places = $db->GetAll("select full_name,dsg,e,n,loc_placenames.reference_index,loc_adm1.name as adm1_name from loc_placenames left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country) where id=".$db->Quote($placename));
+				$where = "id=".$db->Quote($placename);
+				$places = $db->GetAll("select full_name,dsg,e,n,loc_placenames.reference_index,loc_adm1.name as adm1_name from loc_placenames left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country) where $where");
 			}
+
+	//try for a single
 		} elseif (!$ismore) {
 			if (strpos($placename,',') !== FALSE)
 				list($placename,$county) = preg_split('/\s*,\s*/',$placename);
 			else
 				$county = null;
 
+		//with a comma county
 			if (!empty($county)) {
 				$qcount = $db->Quote($county);
 
-				$places = $db->GetAll($sql = "select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name,code_name as dsg_name,(seq + 1000000) as id,km_ref as gridref from os_gaz inner join os_gaz_code using (f_code) where (def_nam=".$db->Quote($placename)." OR def_nam LIKE ".$db->Quote($placename."/%").") and (full_county = $qcount OR hcounty = $qcount)");
+				$where= "(def_nam=".$db->Quote($placename)." OR def_nam LIKE ".$db->Quote($placename."/%").") and (full_county = $qcount OR hcounty = $qcount)";
+				$places = $db->GetAll($sql = "select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name,code_name as dsg_name,(seq + 1000000) as id,km_ref as gridref from os_gaz inner join os_gaz_code using (f_code) where $where");
+
+				$where= "name=".$db->Quote($placename)." and county = $qcount";
+				$places = array_merge($places,$db->GetAll($sql = "select name as full_name,e,n,2 as reference_index,(id+3000000) as id,county as dsg_name from ie_open_data where $where"));
+
 				if (isset($_GET['debug']))
 	                                print "<pre>$sql</pre>".__LINE__.", count = ".count($places)."<hr>";
 			} else {
 				$qplacename = $db->Quote($placename);
 				$sql_where  = "def_nam=$qplacename";
+				$sql_where1  = "name=$qplacename";
 				$sql_where2  = "full_name=$qplacename";
+
+		//try county at end
 				if (strpos($placename,' ') !== FALSE) {
-					$county = $db->getOne("select `name` from os_gaz_county where $qplacename LIKE CONCAT('%',name)");
+					$county = $db->getOne($sql = "select `name` from os_gaz_county where $qplacename LIKE CONCAT('%',name)");
+					if (empty($county))
+						$county = $db->getOne($sql = "select county from ie_open_data where $qplacename LIKE CONCAT('%',county)");
+					if (isset($_GET['debug']))
+		                                print "<pre>$sql</pre>".__LINE__.", county = $county<hr>";
 					if (!empty($county)) {
 						$qcount = $db->Quote($county);
 
-						$placename = preg_replace("/\s+$county/i",'',$placename);
+						$placename = preg_replace("/[\s,;]+$county/i",'',$placename);
 						$qplacename = $db->Quote($placename);
 
 						$sql_where .= " or (def_nam=$qplacename and full_county = $qcount)";
+						$sql_where1 .= " or (name=$qplacename and county = $qcount)";
 						$sql_where2 .= " or full_name=$qplacename"; //we cant search easily on county here!
 					}
 				}
 				$sql_where .= " or def_nam LIKE ".$db->Quote($placename."/%");
 
+		//os_gaz
 				//need to 'union'  with other gazetterr! (as if one match in each then will no work!)
 				$places = $db->GetAll($sql = "select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name,code_name as dsg_name,(seq + 1000000) as id,km_ref as gridref from os_gaz inner join os_gaz_code using (f_code) where $sql_where");
 				if (isset($_GET['debug']))
 	                                print "<pre>$sql</pre>".__LINE__.", count = ".count($places)."<hr>";
 
-				if (count($places))
-					$sql_where2 .= " AND reference_index = 2"; //only load places from Ireland
-				$places = array_merge($places,$db->GetAll($sql = "select full_name,dsg,e,n,reference_index,id,loc_dsg.name as dsg_name from loc_placenames inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) where $sql_where2"));
+		//ie_open_names
+				$places = array_merge($places,$db->GetAll($sql = "select name as full_name,e,n,2 as reference_index,(id+3000000) as id,county as dsg_name,km_ref as gridref from ie_open_data where $sql_where1"));
 				if (isset($_GET['debug']))
 	                                print "<pre>$sql</pre>".__LINE__.", count = ".count($places)."<hr>";
 
+		//loc_placenames
+				if (empty($places))
+					$places = array_merge($places,$db->GetAll($sql = "select full_name,dsg,e,n,reference_index,id,loc_dsg.name as dsg_name from loc_placenames inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) where $sql_where2"));
+				if (isset($_GET['debug']))
+	                                print "<pre>$sql</pre>".__LINE__.", count = ".count($places)."<hr>";
+
+		//add gridref if needed
 				if (count($places)) {
 					require_once('geograph/conversions.class.php');
 					$conv = new Conversions;
@@ -706,30 +757,27 @@ split_timer('gazetteer'); //starts the timer
 				`full_county` as adm1_name,
 				`hcounty` as hist_county,
 				km_ref as gridref
-			from 
+			from
 				os_gaz
 				inner join os_gaz_code using (f_code)
 			where
 				os_gaz.f_code IN ('C','T','O') AND
 				`def_nam` LIKE ".$db->Quote($placename.'%')."
 			limit $limit) UNION
-			(select 
-				id, 
-				full_name,
-				dsg,e,n,
-				loc_dsg.name as dsg_name,
-				loc_placenames.reference_index,
-				loc_adm1.name as adm1_name,
+			(select
+                                id+3000000 as id,
+                                name as full_name,
+				'PPL' as dsg, e,n,
+                                town_class as dsg_name,
+                                2 as reference_index,
+                                county as adm1_name,
 				'' as hist_county,
-				'' as gridref
-			from 
-				loc_placenames
-				inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
-				left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
-			where
-				dsg LIKE 'PPL%' AND loc_placenames.reference_index != 1 AND
-				full_name LIKE ".$db->Quote($placename.'%')."
-			group by gns_ufi
+                                '' as gridref
+                        from
+                                ie_open_data
+                        where
+				name  LIKE ".$db->Quote($placename.'%')."
+				OR irish LIKE ".$db->Quote($placename.'%')."
 			LIMIT $limit)");
 			if (isset($_GET['debug']))
 				print "<pre>$sql</pre>".__LINE__.", count = ".count($places)."<hr>";
@@ -752,7 +800,7 @@ split_timer('gazetteer'); //starts the timer
 					`full_county` as adm1_name,
 					`hcounty` as hist_county,
 					km_ref as gridref
-				from 
+				from
 					os_gaz
 					inner join os_gaz_code using (f_code)
 				where
@@ -763,7 +811,7 @@ split_timer('gazetteer'); //starts the timer
 				if (isset($_GET['debug']))
 					print "<pre>$sql</pre>".__LINE__.", count = ".count($places)."<hr>";
 			}
-			
+
 			if (count($places) < 10 || $ismore) {
 				//contains (OS)
 				$places = array_merge($places,$db->GetAll($sql = "
@@ -776,7 +824,7 @@ split_timer('gazetteer'); //starts the timer
 					`full_county` as adm1_name,
 					`hcounty` as hist_county,
 					km_ref as gridref
-				from 
+				from
 					os_gaz
 					inner join os_gaz_code using (f_code)
 				where
@@ -787,7 +835,7 @@ split_timer('gazetteer'); //starts the timer
 				if (isset($_GET['debug']))
 					print "$limi2<pre>$sql</pre>".__LINE__.", count = ".count($places)."<hr>";
 			}
-			
+
 			if (count($places) < 10 || $ismore) {
 				//search the widest possible
 				$places2 = $db->GetAll($sql = "
@@ -800,37 +848,34 @@ split_timer('gazetteer'); //starts the timer
 					`full_county` as adm1_name,
 					`hcounty` as hist_county,
 					km_ref as gridref
-				from 
+				from
 					os_gaz
 					inner join os_gaz_code using (f_code)
 				where
 					os_gaz.f_code NOT IN ('C','T','O') AND
 					( `def_nam` LIKE ".$db->Quote('%'.$placename.'%')."
 					OR def_nam_soundex = SOUNDEX(".$db->Quote($placename).") )
-				order by 
+				order by
 					def_nam = ".$db->Quote($placename)." desc,
 					def_nam_soundex = SOUNDEX(".$db->Quote($placename).") desc
 				limit $limi2) UNION
-				(select 
-					id, 
-					full_name,
-					dsg,e,n,
-					loc_dsg.name as dsg_name,
-					loc_placenames.reference_index,
-					loc_adm1.name as adm1_name,
+				(select
+        	                        id+3000000 as id,
+	                                name as full_name,
+					'PPL' as dsg, e,n,
+	                                town_class as dsg_name,
+                        	        2 as reference_index,
+                	                county as adm1_name,
 					'' as hist_county,
-					'' as gridref
-				from 
-					loc_placenames
-					inner join loc_dsg on (loc_placenames.dsg = loc_dsg.code) 
-					left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country)
+	                                '' as gridref
+				from
+					ie_open_data
 				where
-					full_name LIKE ".$db->Quote('%'.$placename.'%')."
-					OR full_name_soundex = SOUNDEX(".$db->Quote($placename).")
-				group by gns_ufi
-				order by 
-					full_name = ".$db->Quote($placename)." desc,
-					full_name_soundex = SOUNDEX(".$db->Quote($placename).") desc
+					name LIKE ".$db->Quote('%'.$placename.'%')."
+					OR name_soundex = SOUNDEX(".$db->Quote($placename).")
+				order by
+					name = ".$db->Quote($placename)." desc,
+					name_soundex = SOUNDEX(".$db->Quote($placename).") desc
 				LIMIT $limi2)");
 				if (isset($_GET['debug']))
 					print "<pre>$sql</pre>".__LINE__.", count2 = ".count($places2)."<hr>";
@@ -839,13 +884,13 @@ split_timer('gazetteer'); //starts the timer
 						foreach ($places2 as $i2 => $place2) {
 							$found = 0; $look = str_replace("-",' ',$place2['full_name']);
 							foreach ($places as $i => $place) {
-								if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index'] && 
-										($d = pow($place['e']-$place2['e'],2)+pow($place['n']-$place2['n'],2)) && 
+								if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index'] &&
+										($d = pow($place['e']-$place2['e'],2)+pow($place['n']-$place2['n'],2)) &&
 										($d < 5000*5000) ) {
 									$found = 1; break;
 								}
 							}
-							if (!$found) 
+							if (!$found)
 								array_push($places,$place2);
 						}
 					} else {
@@ -898,7 +943,7 @@ split_timer('gazetteer','findPlacename',$mkey); //logs the wall time
 	{
 		if (!is_object($this->db))
 			$this->db=GeographDatabaseConnection(true);
-		if (!$this->db) die('Database connection failed');  
+		if (!$this->db) die('Database connection failed');
 		return $this->db;
 	}
 
@@ -915,14 +960,14 @@ split_timer('gazetteer','findPlacename',$mkey); //logs the wall time
 	{
 		echo "$msg<br/>";
 		flush();
-	}	
+	}
+
 	function _err($msg)
 	{
 		echo "<p><b>Error:</b> $msg</p>";
 		flush();
 	}
-	
-	
+
 	/**
 	* store error message
 	*/
@@ -930,7 +975,6 @@ split_timer('gazetteer','findPlacename',$mkey); //logs the wall time
 	{
 		$this->errormsg=$msg;
 	}
-	
 }
 
 
