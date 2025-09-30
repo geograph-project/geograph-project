@@ -252,6 +252,17 @@ function appearsToBePerson() {
 		return false;
 	if (!empty($_SERVER['HTTP_X_PURPOSE']) || !empty($_SERVER['HTTP_PURPOSE']) || !empty($_SERVER['HTTP_X_MOZ']))  //'prefetch' and 'preview' requests
 		return false;
+
+	//list of agents from NLWeb
+	$agents = array(
+	    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+	    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+	    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/121.0.0.0 Safari/537.36',
+	    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
+	);
+	if (in_array($_SERVER['HTTP_USER_AGENT'], $agents))
+		return false;
+
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
 	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Mediapartners')===FALSE) &&
