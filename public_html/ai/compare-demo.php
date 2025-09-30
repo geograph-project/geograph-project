@@ -8,7 +8,7 @@
  *
  */
 
-require_once('../../geograph/global.inc.php');
+require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
@@ -18,25 +18,38 @@ $smarty->display('_std_begin.tpl');
 
 <h2>AI Comparison Demo</h2>
 
-<div class="main-layout">
+<div class="main-layout2">
     <form id="queryForm" class="sidebar" onsubmit="return false;">
-        <b>Query:</b><br>
-        <input type="text" name="query" id="queryInput" placeholder="Enter your query" style="width: 200px;">
-        <input type="submit" value="Search">
+	<div class="results-container">
+            <div class="column">
+        	<b>Subject:</b> (this page assumes entering a subject)<br>
+	        <input type="text" name="query1" id="queryInput1" placeholder="Enter your query" style="width: 200px;">
+        	<input type="submit" value="Search">
+	    </div>
+            <div class="column">
+        	<b>AI Query:</b><br>
+	        <input type="text" name="query2" id="queryInput2" placeholder="Enter your query" style="width: 200px;">
+        	<input type="submit" value="Search">
+	    </div>
+	</div>
     </form>
     <div class="results-container">
         <div class="column">
-            <h3>Results A</h3>
+            <h3>Results A - tagged</h3>
             <div id="results1" class="grid-container"></div>
         </div>
         <div class="column">
-            <h3>Results B</h3>
+            <h3>Results B - similarity search</h3>
             <div id="results2" class="grid-container"></div>
         </div>
     </div>
 </div>
 
 <style>
+    form.sidebar {
+	background-color:#ccc;
+	padding:10px;
+    }
     .main-layout {
         display: grid;
         grid-template-columns: 250px 1fr;
@@ -47,6 +60,17 @@ $smarty->display('_std_begin.tpl');
         grid-template-columns: 1fr 1fr;
         gap: 20px;
     }
+.results-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(50% - 1px); /* Centers the divider in the gap */
+    width: 2px; /* The width of the divider */
+    background-color: #ccc; /* The color of the divider */
+    pointer-events: none; /* Prevents the pseudo-element from blocking clicks */
+}
+
     .grid-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(213px, 1fr));
@@ -66,12 +90,14 @@ $smarty->display('_std_begin.tpl');
 
 <script>
 $(function() {
-    $('#queryForm').on('submit', function(e) {
-        e.preventDefault();
-        var query = $('#queryInput').val();
-        if (!query) {
+     function runSearch() {
+        var query1 = $('#queryInput1').val();
+        var query2 = $('#queryInput2').val();
+        if (!query1 || !query2) {
             return;
         }
+
+	$('#results1, #results2').empty();
 
         // --- Column 1: Standard Search ---
         var data1 = {
@@ -79,7 +105,7 @@ $(function() {
             select: "id,user_id,realname,grid_reference,title,hash",
             limit: 15,
             utf: 1,
-            match: getTextQuery(query)
+            match: getTextQuery('[subject:'+query1+']')
         };
         var url1 = "https://www.geograph.org.uk/api-facetql.php?" + $.param(data1);
         renderAPIResults(url1, 'results1');
@@ -90,14 +116,30 @@ $(function() {
             select: "id,user_id,realname,grid_reference,title,hash",
             limit: 15,
             utf: 1,
-            match: getTextQuery('@title ' + query)
+            label: query2
         };
-        var url2 = "https://www.geograph.org.uk/api-facetql.php?" + $.param(data2);
+        var url2 = "https://www.geograph.org.uk/api-facetql-vector.php?" + $.param(data2);
         renderAPIResults(url2, 'results2');
+    }
+
+    $('#queryForm').on('submit', function(e) {
+        e.preventDefault();
+        runSearch();
     });
+    $('#queryInput1').on('input change', function(e) {
+	var query1 = $('#queryInput1').val();
+	$('#queryInput2').val(query1);
+    });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('query');
+    if (queryParam) {
+        $('#queryInput1').val(queryParam);
+        $('#queryInput2').val(queryParam);
+        runSearch();
+    }
 });
 </script>
 
 <?php
 $smarty->display('_std_end.tpl');
-?>
