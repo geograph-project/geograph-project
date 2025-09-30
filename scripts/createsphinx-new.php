@@ -196,6 +196,10 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_terms'")) {
 #####################################################
 //build the sphinx_placenames table
 
+// NOTE, while this code id create the table originally, its since been modified. More columns added, and hence this is no longer ideal way to create table
+// ... also loc_placenames has been replaced with ie_open_data for Ireland!!?!
+// ... use scripts/populate_placename_index-ie_open_data.php to replace loc_placenames with ie_open_data!
+
 if (!$db->getOne("SHOW TABLES LIKE 'sphinx_placenames'")) {
 
 	fwrite(STDERR,date('H:i:s ')."Building Placename Table...\n");

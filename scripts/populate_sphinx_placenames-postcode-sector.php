@@ -40,10 +40,10 @@ $db = GeographDatabaseConnection(false);
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-		//we need to join on os_gaz to get east/north
-	$sql = "select placename_id,full_name,e,n,p.km_ref
-	from sphinx_placenames p inner join loc_placenames l on (placename_id = id)
-	where p.reference_index = {$param['ri']} and l.country = 'uk' and postcode is null
+		//we need to join on ie_open_data to get east/north
+	$sql = "select placename_id,Place,e,n,p.km_ref
+	from sphinx_placenames p inner join ie_open_data l on (placename_id = id+3000000)
+	where p.reference_index = {$param['ri']} and l.country = 'Northern Ireland' and postcode is null
 	limit {$param['limit']}";
 	$recordSet = $db->Execute($sql);
 
@@ -65,24 +65,21 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$col = "pow(e-{$r['e']},2)+pow(n-{$r['n']},2) as dist_sq"; //we only sorting, so dont need to bother with sqrt
 		$row = $db->getRow($sql = "SELECT code,$col FROM loc_postcodes WHERE ".implode(" AND ",$where)." ORDER BY dist_sq");
 
+		$updates = array();
 		if (!empty($row)) {
 			//print_r($row);
-			$updates = array();
-			if (!empty($row['seq']))
-				$updates['open_id'] = $row['seq'];
 			$updates['postcode'] = preg_replace('/ .*/','',$row['code']); //drop the after space
-			$where = "placename_id = ".$r['placename_id'];
-			$db->Execute($sql = 'UPDATE sphinx_placenames SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE $where", array_values($updates));
-
-			print "Found {$row['code']} for {$r['full_name']}\n";
+			print "Found {$row['code']} for {$r['Place']}\n";
 			//print_r($updates);
 			//print "$sql\n\n";
 		} else {
-			//SET open_id = 0 as nnone?
+			$updates['postcode'] = '';
 			print "Nothing found for ".implode(', ',$r)."\n";
 			print " $sql;\n\n";
-
 		}
+
+		$where = "placename_id = ".$r['placename_id'];
+		$db->Execute($sql = 'UPDATE sphinx_placenames SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE $where", array_values($updates));
 
 		$recordSet->MoveNext();
 	}
