@@ -4,7 +4,7 @@
  
 <h2><a href="/explore/places/">Places Directory</a> &gt; {$references.$ri}</h2>
 
-<p>{if $ri == 2}At this point we don't have data to be able to offer a breakdown for Northern Ireland, so it appears as one entry. {/if}If there is only one place in the division you will be taken direct to an image search, otherwise click to view a list of places</p>
+<p>If there is only one place in the division you will be taken direct to an image search, otherwise click to view a list of places</p>
 
 {if $ri == 1}<h4>Local Authorities of {$references.$ri} in alphabetical order:</h4>{/if}
 
@@ -26,7 +26,7 @@
 		{assign var="last" value=$line.country}
 		<ul>
 	{/if}
-	<li>{if $line.places == 1}<a href="/search.php?placename={$line.placename_id}&amp;do=1" title="Place: {$line.full_name}">{else}<a href="/explore/places/{$ri}/{$adm1}/"  title="EXAMPLE Place: {$line.full_name}">{/if}<b>{$line.name}</b></a> [{$line.places} Places, {$line.images} Images]</li>
+	<li>{if $line.places == 1}<a href="/search.php?placename={$line.placename_id}&amp;do=1" title="Place: {$line.full_name}">{else}<a href="/explore/places/{$ri}/{$adm1}/"  title="EXAMPLE Place: {$line.full_name}">{/if}<b>{$line.name}</b></a> [{$line.places|number_format:0} Places with about <span style=color:blue>{$line.images|number_format:0} Images</span>]</li>
 {/foreach}
 </ul>
 
