@@ -157,7 +157,7 @@ div.homepage {
 		class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
 
         {if $prompt}
-		<div class="interestBox homepageBox" style="background-color:#e4e4fc;">
+		<div class="interestBox homepageBox" style="background-color:yellow;">
 	                {$prompt}
 		</div>
         {/if}
@@ -175,8 +175,8 @@ div.homepage {
 
 	                <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->title}</a>
 	                <span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname}</a></span>
-	                <span class="nowrap">for square <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></span>,
-	                <span class="no-wrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
+	                <span class="nowrap">for square <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></span>{if $pictureoftheday.image->imagetaken > '1000'},
+	                <span class="no-wrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>{/if}
 	        </div>
 
 		<div class="mapContainer">
