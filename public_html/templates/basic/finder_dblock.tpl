@@ -114,7 +114,7 @@
 	<ul>
 		{foreach from=$comments item=image}
 			<li>{$image->comment|escape:'html'|truncate:300:"... (<u>more</u>)"|geographlinks}
-			on <a href="/photo/{$image->title}">{$image->title|escape:'html'}</a> by <a href="{$image->profile_link}">{$image->realname|escape:'html'}</a>
+			on <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> by <a href="{$image->profile_link}">{$image->realname|escape:'html'}</a>
 			</li>
 		{/foreach}
 	</ul>
