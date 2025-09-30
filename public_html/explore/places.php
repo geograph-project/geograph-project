@@ -59,6 +59,25 @@ if (!empty($_GET['ri'])) {
 			header("Location: /explore/places/{$ri}/{$adm1}/");
 			exit;
 		}
+		if (preg_match('/(\w{2})-(\d{2})/',$_GET['adm1'],$m)) {
+			$db = GeographDatabaseConnection(true);
+
+			$where = "country = ".$db->Quote($m[1])." AND adm1 = ".$db->Quote($m[2]);
+			$sql = "SELECT * FROM loc_adm1 WHERE $where ";
+//TODO - should check it a valid count in ie_open_data! - this work, but could be optimized!
+			$sql = "SELECT * FROM loc_adm1 a INNER JOIN ie_open_data i ON (a.name = i.county) WHERE a.$where LIMIT 1";
+			$row = $db->GetRow($sql);
+			if (!empty($row)) {
+			//and as its the old table - lets redirect...
+				$ri = intval($_GET['ri']);
+				$adm1 = preg_replace('/[^A-Za-z]/','_',recaps($row['name']));
+
+				header("HTTP/1.0 301 Moved Permanently");
+				header("Status: 301 Moved Permanently");
+				header("Location: /explore/places/{$ri}/{$adm1}/");
+				exit;
+			}
+		}
 		if (!empty($_GET['preview'])) {
 			$template='explore_places_adm1_preview.tpl';
 		} else {
@@ -80,7 +99,7 @@ if (!empty($_GET['ri'])) {
 
 $smarty = new GeographPage;
 
-$smarty->caching = 2; // lifetime is per cache
+$smarty->caching = 1; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 
@@ -109,40 +128,32 @@ if (!$smarty->is_cached($template, $cacheid))
 
 			###############################################
 			// list places - works for BOTH grids!
+			// new version that just uses sphinx_placenames always
 
-			if (!empty($_GET['preview'])) {
+			if (!empty($_GET['preview']) && !preg_match('/(\w{2})-(\d{2})/',$_GET['adm1'],$m)) { //old style counties, dont work with sphinx_placenames any more
 				$ri = intval($_GET['ri']);
 
 				//although needs some magic to lookup the county name!
 				if ($_GET['ri'] == 2) {
-					list($country,$adm1) = explode('-',$_GET['adm1']);
-					if ($adm1) {
-						$county = $db->GetOne("SELECT name FROM loc_adm1 WHERE country = ".$db->Quote($country)." AND adm1 = ".$db->Quote($adm1));
-						$smarty->assign_by_ref('adm1_name', $county);
-						$smarty->assign('parttitle', "in County");
-						$filter = "county LIKE ".$db->Quote($county);
-					} else {
-						$smarty->assign('adm1_name', "Northern Ireland");
-						$filter = "country = 'Northern Ireland'";
-					}
+					$sql = "SELECT county as adm1_name FROM ie_open_data WHERE county LIKE ".$db->Quote($_GET['adm1'])." LIMIT 1";
 				} else {
 					$sql = "SELECT co_code,name as adm1_name FROM os_gaz_county WHERE name LIKE ".$db->Quote($_GET['adm1'])." LIMIT 1";
-					$placename = $db->GetRow($sql);
-
-					$smarty->assign_by_ref('adm1_name', $placename['adm1_name']);
-					if ($placename['adm1_name'] != "Isle of Man")
-						$smarty->assign('parttitle', "in County");
-
-					$filter = "county LIKE ".$db->Quote($_GET['adm1']); //underscores already work as wildcards
 				}
+				$placename = $db->GetRow($sql);
+
+				$smarty->assign_by_ref('adm1_name', recaps($placename['adm1_name']));
+				if ($placename['adm1_name'] != "Isle of Man")
+					$smarty->assign('parttitle', "in County");
+
+				$filter = "county LIKE ".$db->Quote($_GET['adm1']); //underscores already work as wildcards
 
 				$sql = "SELECT placename_id,Place as full_name,images as c
-				FROM sphinx_placenames where reference_index = $ri AND images > 0 AND $filter ORDER BY Place";
+				FROM sphinx_placenames WHERE reference_index = $ri AND images > 0 AND $filter ORDER BY Place";
 
 			###############################################
-			// list places in Ireland
+			// list places in Ireland (old table!)
 
-			} elseif ($_GET['ri'] == 2) {
+			} elseif ($_GET['ri'] == 2 && preg_match('/(\w{2})-(\d{2})/',$_GET['adm1'],$m)) {
 				list($country,$adm1) = explode('-',$_GET['adm1']);
 				if ($adm1) {
 					$sql = "SELECT name FROM loc_adm1 WHERE country = ".$db->Quote($country)." AND adm1 = ".$db->Quote($adm1);
@@ -154,6 +165,16 @@ if (!$smarty->is_cached($template, $cacheid))
 				$sql = "SELECT placename_id,full_name,c,gridimage_id
 				FROM gridimage_loc_placenames
 				WHERE reference_index = ".$db->Quote($_GET['ri'])." AND country = ".$db->Quote($country)." AND adm1 = ".$db->Quote($adm1);
+
+			###############################################
+			// list places in Ireland (do not use!, dont have a count or image, although perhaps join via gridsquare??!)
+
+			} elseif ($_GET['ri'] == 2) {
+
+				//tofix, could just use sphinx_placenames!?
+				$sql = "SELECT id+3000000,name,c,gridimage_id
+				FROM ie_open_data
+				WHERE county LIKE ".$db->Quote($adm1);
 
 			###############################################
 			// list places in Great Britain
@@ -207,6 +228,19 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		###############################################
 		//list counties in Ireland
+
+		} elseif ($_GET['ri'] == 2) {
+
+			$sql = "SELECT county as adm1, county as name, placename_id, Place as full_name, country, SUM(images) as images, COUNT(*) as places,
+			0 as gridimage_id from sphinx_placenames where reference_index = 2 group by country, county";
+			$counts = $db->GetAssoc($sql);
+
+			//todo, load an example image/ Not somehting sphinx_placenames has on its own!
+
+			$smarty->assign_by_ref('counts', $counts);
+
+		###############################################
+		//list counties (do not use!)
 
 		} else {
 			$sql = "SELECT concat(gridimage_loc_placenames.country,'-',gridimage_loc_placenames.adm1) as adm1,coalesce(loc_adm1.name,'Northern Ireland') as name,
