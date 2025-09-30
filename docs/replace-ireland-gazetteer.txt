@@ -66,6 +66,18 @@ php scripts/populate_sphinx_placenames-has_dup.php --execute --limit=1000
 
 ###############################################
 
+-- doesnt like creating key on empty column, so set values first...
+
+alter table ie_open_data add point_en  point NOT NULL DEFAULT '';
+update ie_open_data set point_en = ST_GEOMFROMTEXT(CONCAT('POINT(',e,' ',n,')'));
+alter table ie_open_data add spatial key (point_en);
+
+alter table ie_open_data add name_soundex varchar(32) NOT NULL DEFAULT '';
+update ie_open_data set name_soundex = SOUNDEX(name);
+alter table ie_open_data add index(name_soundex);
+
+###############################################
+
 >select id,count(*) from placename_index group by id div 1000000;
 >select placename_id,count(*) from sphinx_placenames group by placename_id div 1000000;
 >select placename_id,count(*) from gridsquare where placename_id>0  group by placename_id div 1000000;

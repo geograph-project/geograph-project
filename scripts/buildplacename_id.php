@@ -26,6 +26,7 @@ $param=array(
 	'radius'=>100000,
 	'limit'=>1000,
 	'table'=>'gridsquare',  # gridsquare/gridimage for now
+	'ri'=>0,
 );
 
 
@@ -69,6 +70,9 @@ $db->Execute("INSERT INTO event_log SET
 
 	} else {
 		$crit = "placename_id = 0 AND imagecount > 0"; //todo maybe landcount>0 instead
+		$crit = "placename_id = 0 AND (imagecount > 0 or percent_land>0)";
+		if (!empty($param['ri']))
+			$crit .= " AND reference_index = ".intval($param['ri']);
 
 		$sql = "SELECT * FROM $table WHERE {$crit} LIMIT {$param['limit']}";
 	}
@@ -80,33 +84,32 @@ $db->Execute("INSERT INTO event_log SET
 	{
 		$pid = null;
 
-			$gid = $recordSet->fields["{$table}_id"];
+		$gid = $recordSet->fields["{$table}_id"];
 
-				$square=new GridSquare;
-				#$square->_initFromArray($recordSet->fields);
-				//store cols as members
-				foreach($recordSet->fields as $name=>$value) {
-					if (!is_numeric($name))
-						$square->$name=$value;
-				}
-				$square->_storeGridRef($square->grid_reference);
+		$square=new GridSquare;
+		#$square->_initFromArray($recordSet->fields);
+		//store cols as members
+		foreach($recordSet->fields as $name=>$value) {
+			if (!is_numeric($name))
+				$square->$name=$value;
+		}
+		$square->_storeGridRef($square->grid_reference);
 
-
-				if (empty($square->nateastings)) {
-					if (!empty($square->placename_id)) {
-						$pid = $square->placename_id; //if have one from square, can use it
-					} else {
-						//figure out one from for the center of the square
-						$square->getNatEastings();
-					}
-				}
-
-			if (empty($pid)) { //we may of set one from the source squery. (eg on photos, that DONT have a nateastings, can fallback and use one from gridsquare
-
-				$places = $square->findNearestPlace($param['radius'],'OS'); //we need explicitly OS gaz, as that what placename_id is based on!
-				if (!empty($places['pid']))
-					$pid = $places['pid'];
+		if (empty($square->nateastings)) {
+			if (!empty($square->placename_id)) {
+				$pid = $square->placename_id; //if have one from square, can use it
+			} else {
+				//figure out one from for the center of the square
+				$square->getNatEastings();
 			}
+		}
+
+		if (empty($pid)) { //we may of set one from the source squery. (eg on photos, that DONT have a nateastings, can fallback and use one from gridsquare
+
+			$places = $square->findNearestPlace($param['radius'],'OS'); //we need explicitly OS gaz, as that what placename_id is based on!
+			if (!empty($places['pid']))
+				$pid = $places['pid'];
+		}
 
 		if (!empty($pid)) {
 
