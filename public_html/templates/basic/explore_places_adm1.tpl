@@ -14,12 +14,11 @@
 </div>
 {/if}
 
-<table><tr>
+<div style="columns: auto 24em;line-height:1.7em">
 {foreach name=repeat from=$counts key=pid item=line}
-<td>&middot; {if $line.gridimage_id}<a href="/photo/{$line.gridimage_id}">{else}<a href="/place/{$line.full_name|escape:'urlplus'}">{/if}<b>{$line.full_name|escape:'html'}</b></a> [{$line.c}]</td>
-{if $smarty.foreach.repeat.iteration %3 == 0}</tr><tr>{/if}
+&middot; {if $line.gridimage_id}<a href="/photo/{$line.gridimage_id}">{else}<a href="/place/{$line.full_name|escape:'urlplus'}">{/if}<b>{$line.full_name|escape:'html'}</b></a> [{$line.c}]<br>
 {/foreach}
-</tr></table>
+</div>
 
 <br style="clear:both"/>
 
