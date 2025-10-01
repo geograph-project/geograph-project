@@ -6,7 +6,7 @@
 
 <p>Please choose the country in which you wish to find images:</p>
 
-<ul>
+<ul class=touchPadding>
 {foreach from=$counts key=ri item=count}
 <li><a href="/explore/places/{$ri}/"><b>{$references.$ri}</b></a> [{$count} images]</li>
 {/foreach}

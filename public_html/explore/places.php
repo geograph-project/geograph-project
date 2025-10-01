@@ -24,13 +24,9 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-
 pageMustBeHTTPS();
 
-
 ###############################################
-
-$_GET['preview'] = 1;
 
 //grid specified
 if (!empty($_GET['ri'])) {
@@ -78,11 +74,7 @@ if (!empty($_GET['ri'])) {
 				exit;
 			}
 		}
-		if (!empty($_GET['preview'])) {
-			$template='explore_places_adm1_preview.tpl';
-		} else {
-			$template='explore_places_adm1.tpl';
-		}
+		$template='explore_places_adm1.tpl';
 		$cacheid='places|'.$_GET['ri'].'.'.$_GET['adm1'];
 	//county selector
 	} else {
@@ -99,7 +91,7 @@ if (!empty($_GET['ri'])) {
 
 $smarty = new GeographPage;
 
-$smarty->caching = 1; // lifetime is per cache
+$smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 
@@ -130,7 +122,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			// list places - works for BOTH grids!
 			// new version that just uses sphinx_placenames always
 
-			if (!empty($_GET['preview']) && !preg_match('/(\w{2})-(\d{2})/',$_GET['adm1'],$m)) { //old style counties, dont work with sphinx_placenames any more
+			if (!preg_match('/^(\w{2})-(\d{2})?/',$_GET['adm1'],$m)) { //old style counties, dont work with sphinx_placenames any more
 				$ri = intval($_GET['ri']);
 
 				//although needs some magic to lookup the county name!
@@ -153,7 +145,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			###############################################
 			// list places in Ireland (old table!)
 
-			} elseif ($_GET['ri'] == 2 && preg_match('/(\w{2})-(\d{2})/',$_GET['adm1'],$m)) {
+			} elseif ($_GET['ri'] == 2 && preg_match('/^(\w{2})-(\d{2})?/',$_GET['adm1'],$m)) {
 				list($country,$adm1) = explode('-',$_GET['adm1']);
 				if ($adm1) {
 					$sql = "SELECT name FROM loc_adm1 WHERE country = ".$db->Quote($country)." AND adm1 = ".$db->Quote($adm1);
@@ -240,7 +232,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign_by_ref('counts', $counts);
 
 		###############################################
-		//list counties (do not use!)
+		//list counties (old version, not used any more)
 
 		} else {
 			$sql = "SELECT concat(gridimage_loc_placenames.country,'-',gridimage_loc_placenames.adm1) as adm1,coalesce(loc_adm1.name,'Northern Ireland') as name,
