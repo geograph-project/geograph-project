@@ -251,7 +251,10 @@ $.ajaxSetup({
 		if (form.elements['contexts[]'].value) $('div.tabs a').eq(3).addClass('done');
 
 		if (idx == 3 && eastings1 && form.elements['grid_reference'].value.match(/^[A-Z]{2}/)) {
-			$('#placenames').html('<a href="#" onclick="loadplacenames()">Load Placenames</a>');
+			$('#placenames').html('<a href="#" onclick="loadgbplacenames();return false">Load Nearby Placenames</a>');
+		}
+		if (idx == 3 && eastings1 && form.elements['grid_reference'].value.match(/^[A-Z]{1}\s*\d/)) {
+			$('#placenames').html('<a href="#" onclick="loadieplacenames();return false">Load Nearby Placenames</a>');
 		}
 
 		return false;
@@ -763,7 +766,7 @@ function checkOnline() {
 /******************************************************************************
  PLACENAMES */ 
 
-function loadplacenames() {
+function loadgbplacenames() {
         var url = "/stuff/os_open_names.json.php";
         $.ajax({
                 url: url,
@@ -772,13 +775,46 @@ function loadplacenames() {
                 cache: true,
                 success: function(data) {
 			var $ele = $('#placenames').empty();
-			if (data && data.rows) {
+			if (data && data.rows && data.rows.length) {
 				$.each(data.rows, function(index,value) {
 					var $link = $('<a href="#"/>');
 					$link.text(value['name1'] || value['name2']).attr('title',value['local_type']);
 					$ele.append($link);
+					$ele.append(" ");
 				});
 				$ele.find('a').click(useplacename);
+			} else {
+				$ele.text('none found');
+			}
+		}
+	});
+}
+function loadieplacenames() {
+        var url = "/stuff/ie_open_data.json.php";
+        $.ajax({
+                url: url,
+		data: {e:eastings1,n:northings1},
+                dataType: 'json',
+                cache: true,
+                success: function(data) {
+			var $ele = $('#placenames').empty().append("Click to use: ");
+			if (data && data.rows && data.rows.length) {
+				$.each(data.rows, function(index,value) {
+					var $link = $('<a href="#"/>');
+					$link.text(value['name']).attr('title',value['town_class']);
+					$ele.append($link);
+
+					if (value['irish']) {
+						var $link = $('<a href="#"/>');
+						$link.text(value['irish']).attr('title',value['town_class']);
+						$ele.append('/');
+						$ele.append($link);
+					}
+					$ele.append(" "); //to allow wrap!
+				});
+				$ele.find('a').click(useplacename);
+			} else {
+				$ele.text('none found');
 			}
 		}
 	});
