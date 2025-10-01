@@ -153,7 +153,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
                         format(sum(images),0) as 'Total Photos'
 		from sphinx_placenames
 		where reference_index = 2
-		group by County
+		group by Country, County
 		" );
 
 		$table['total'] = count($table['table']);
