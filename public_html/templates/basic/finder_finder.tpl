@@ -596,6 +596,8 @@ function renderFinderResults(url, divId, countDivId) {
                 moreResultsPrompt.classList.add('hidden');                
             }
 
+            //todo, could consider checking if there are matches for 'loc' in the 'place' attribute, and offere to convert to a 'nearest' query??
+
         }).catch(function(error) {
 		if (error == "Error: HTTP error! Status: 503") {
 			countDivElement.innerHTML = "Service unavailable. Try again later.";
@@ -662,6 +664,8 @@ function searchAndRender() {
 
                 if (type == 'keywords')
 			data.order = 'geodist asc';
+
+	//todo, also look for gridref on the END '/finder/finder.php?loc=Abbeytown/C3411' - we may get them, particully via /place/ URLs!
 
 	} else {
 		//this is where gets tricky.
@@ -973,6 +977,9 @@ function lookForLocationMatches(loc,originalElement) {
 		correction_prompt.textContent = "There are a number of places matching your query. Below are combined keyword results. Use the dropdown above to pick a specific place.";
 		//todo, inlcude a link to finder/groups.php?
             }
+		//todo if originalElement == 'loc'
+		// ... should still say 'There are a number of places matching your query.' (but note the results are NOT 'combined'. its still likly a query without location!
+		//
 
             const label = document.createElement('label');
             label.innerHTML = '<b>Did you mean</b>:';
@@ -1014,6 +1021,7 @@ function lookForLocationMatches(loc,originalElement) {
         } else {
             if (originalElement && originalElement == 'loc')
                 container.innerHTML = 'No locations found.';
+		//todo, should make clear, the results are NOT filtered by location
         }
     };
 

@@ -596,6 +596,51 @@ if (!empty($_GET['d']))
 # handler for no results
 
 	if (empty($final) && !empty($_GET['place'])) {
+
+		//we can perhaps still redirect to near search
+		// the most likly route got here, a /place/ URL from OLD gazetter, that has no matches in new gazetter (ie not in sample8.place)
+		//for ireland, used to use loc_placenames, but now use ie_open_data, which doesnt match exactly.
+		// but we can probably still run a near query...
+
+			$location = "/near/".urlencode2($_GET['q']);
+			if (preg_match('/\/[A-Z]{1,2}\d{4}$/', $_GET['q'], $m)) {
+				//as have a GR, can redirect direct to near?
+				header("Location: $location");
+
+				print "No images found nearest this place. <a href=\"$location\">Click here to view images taken near this location</a>";
+				exit;
+			} else {
+				if (empty($db))
+					$db = GeographDatabaseConnection(true);
+		                $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+				$lookup = $db->getRow("SELECT * FROM loc_placenames WHERE full_name = ".$db->Quote($_GET['q']));
+				if (!empty($lookup)) {
+
+					if ($lookup['has_dup']) {
+						// just have to hope going to be matches in new gazetteer!
+						header("Location: $location");
+						print "No exact place found. <a href=\"$location\">Click here to choose location</a>";
+						exit;
+					}
+
+				        require_once('geograph/conversions.class.php');
+				        $conv = new Conversions;
+
+					list ($gridref,) = $conv->national_to_gridref($lookup['e'],$lookup['n'],4,$lookup['reference_index']);
+					$location .= "/$gridref"; //we need to add the gridref, because this placename probably isnt in new gazetteer!
+
+					header("Location: $location");
+
+					print "No images found nearest this place. <a href=\"$location\">Click here to view images taken near $gridref</a>";
+					exit;
+				}
+			}
+
+		//might be too late, but might as well try!
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+
 		print "<p>No exact place found. ";
 
 		print "<div id=\"location_list\"></div>"; $need_client = true;
