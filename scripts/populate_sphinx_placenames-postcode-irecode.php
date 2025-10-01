@@ -169,6 +169,9 @@ function read_kml($file,&$areas) {
 			$idx++;
 		}
 	}
+	if (empty($areas)) {
+		die("No areas found!\n");
+	}
 }
 
 

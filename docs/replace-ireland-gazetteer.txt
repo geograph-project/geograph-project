@@ -9,7 +9,7 @@ Its mainly to replace use of loc_placenames (which was created by importing GNS!
 
 ###############################################
 
-Todo:
+Todo: (in no particualr order)
 
 [y] - PHP - Update findByNational function
 		(Note, DOES now use ie_open_data for nearby line, but needs updating to use it for buildplacename_id.php)
@@ -46,11 +46,14 @@ Todo:
 
 Commands IN ORDER...
 
+// php scripts/backup_geograph_db-new.php --dry=0 --config=live --r2=0 --table=gridimage_loc_placenames
+
+
 php scripts/populate_placename_index-ie_open_data.php
-	.. run DELETE  FROM placename_index WHERE id < 1000000 AND length(gr) = 5;
+	.. run DELETE FROM placename_index WHERE id < 1000000 AND length(gr) = 5;
 
 php scripts/populate_sphinx_placenames-ie_open_data.php
- .. run DELETE FROM sphinx_placenames WHERE id < 1000000 AND reference_index = 2;!
+ .. run DELETE FROM sphinx_placenames WHERE placename_id < 1000000 AND reference_index = 2;
 
 php scripts/populate_sphinx_placenames-postcode-sector.php --limit=1000
 	php scripts/populate_sphinx_placenames-postcode-sector.php --limit=1000 --d=10000 // - to catch a few further ones
@@ -67,6 +70,11 @@ php scripts/populate_sphinx_placenames-has_dup.php --execute --limit=1000
 
 UPDATE sph_server_index SET triggered = 1,updated=updated WHERE index_name like 'gaz%' AND index_name != 'gaz_welsh';
 UPDATE sph_server_index SET triggered = 1,updated=updated WHERE index_name like 'sample8%' and last_indexed > date_sub(now(),interval 14 day) and last_indexed < date_sub(now(),interval 1 hour);
+
+#turns out only 'active' indexes can be triggered
+update sph_index set active = 1 where index_name like 'gaz%' and index_name != 'gaz_welsh';
+# then need to reset (so they dont jsut then regernate every 15 mibnutes!)
+update sph_index set active = 0 where index_name like 'gaz%' and index_name != 'gaz_welsh';
 
 ###############################################
 
@@ -85,6 +93,7 @@ alter table ie_open_data add index(name_soundex);
 >select id,count(*) from placename_index group by id div 1000000;
 >select placename_id,count(*) from sphinx_placenames group by placename_id div 1000000;
 >select placename_id,count(*) from gridsquare where placename_id>0  group by placename_id div 1000000;
+>select placename_id,count(*) from gridsquare where reference_index = 2 group by placename_id>0,placename_id div 1000000;
 >select placename_id,count(*) from gridimage where placename_id>0  group by placename_id div 1000000;
 
 ###############################################
@@ -92,10 +101,18 @@ alter table ie_open_data add index(name_soundex);
 #  rewrite ^/explore/places/([0-9]?)/?([\w-]*)/? /explore/places.php?ri=$1&adm1=$2 last;
 
 
-https://www.geograph.org.uk/explore/places/2/ie-00/
-https://www.geograph.org.uk/explore/places/2/ie-01/
+https://www.geograph.org.uk/explore/places/2/ie-00/ -- will be unable to redirect (so for now keep it running?
+https://www.geograph.org.uk/explore/places/2/uk-00/ -- maybe redirect back to /2/
+https://www.geograph.org.uk/explore/places/2/uk-/ -- maybe redirect back to /2/ ? (meant to be NI list!)
+https://www.geograph.org.uk/explore/places/2/ie-01/ -- should redirect to new county
+https://www.geograph.org.uk/explore/places/2/ie-13/ -- should redirect to new county
 
-https://www.geograph.org.uk/place/Corgreagh/H7008
+https://www.geograph.org.uk/place/Aeaun+Bridge -- place that existed in old gazeteer, not new. Needs to check it redirects ok. 
+					(in concept will redirect to a /near/ URL with a **added** GR)
+
+https://www.geograph.org.uk/place/Corgreagh/H7008 -- also existed in old, not in new. can just redirect to /near/ as has GR :)
+
+https://www.geograph.org.uk/place/Abbeyshrule - still exists in new, so should continue to work!
 
 ###############################################
 

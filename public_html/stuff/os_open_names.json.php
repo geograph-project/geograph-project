@@ -21,6 +21,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+//This file 'duplicates' the function of $gazetter->findListByNational(..) but is a simpler streamlined implemantion, using a direct Sphinx Index.
+	//... its not a actual 'fulltext search', just that sphinx still works well for a attribute lookups, full-table scans are in memory
+
 require_once('geograph/global.inc.php');
 
 //header('Access-Control-Allow-Origin: *');
@@ -37,6 +40,8 @@ $sql['wheres'][] = "mbr_xmin < $x and mbr_xmax > $x";
 
 $y = intval($_GET['n']);
 $sql['wheres'][] = "mbr_ymin < $y and mbr_ymax > $y";
+
+//todo, add ri = 1/2 (because we about to add ireland to the index!!)
 
 if (empty($error)) {
 

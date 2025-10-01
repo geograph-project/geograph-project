@@ -66,7 +66,7 @@ if (!empty($_GET['ri'])) {
 			if (!empty($row)) {
 			//and as its the old table - lets redirect...
 				$ri = intval($_GET['ri']);
-				$adm1 = preg_replace('/[^A-Za-z]/','_',recaps($row['name']));
+				$adm1 = preg_replace('/[^A-Za-z]/','_',recaps($row['county'])); //the county from ie_open_data
 
 				header("HTTP/1.0 301 Moved Permanently");
 				header("Status: 301 Moved Permanently");
@@ -272,7 +272,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 
 	$smarty->assign_by_ref('references',$CONF['references']);
+
+	if (empty($counts)) {
+		//lets try to help clear out old indexes!
+                header("HTTP/1.0 404 Not Found");
+                header("Status: 404 Not Found");
+	}
 }
+//not sure how to retrive that should be 404 from cache??
 
 $smarty->display($template, $cacheid);
 
