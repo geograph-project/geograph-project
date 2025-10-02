@@ -254,7 +254,7 @@ if (count($ids) == 2) {
 ... typically would reject the RIGHT one (as shown in id order, the first image will usually be the one kept) but can work either way
 
 <p>If the other image has a 'larger' upload, then can copy the image from the rejected image to the remaining image<br>
-<b>Important: If the two images are only 'close' (eg a slightly differnet crop of the same base image) and NOT identical, then be sure to tick the 'Close Enough' tickbox!!</b>
+<b>Important: If the two images are only 'close' (eg a slightly different crop of the same base image) and NOT identical, then be sure to tick the 'Close Enough' tickbox!!</b>
   
 	<ul>
 	<li>Minor tweaking of contrast, brightness etc is fine - even for "Identical"</li>

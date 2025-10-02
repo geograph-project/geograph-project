@@ -277,7 +277,7 @@ touch-action:inherit;
 	<div id="results" class="results-box">
 		<p>Just click Update above to see recent images.</p>
 
-		When searching we have offer two differnet styles of search... (<i>either can be combined with a location, date or contributor filter, more advanced filtering available via Original Search or Browser above</i>)
+		When searching we have offer two different styles of search... (<i>either can be combined with a location, date or contributor filter, more advanced filtering available via Original Search or Browser above</i>)
 
 		<h3>Keywords Mode</h3>
 
