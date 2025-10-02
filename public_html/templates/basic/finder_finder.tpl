@@ -248,10 +248,16 @@ touch-action:inherit;
 			<label for="contributor"><b>Contributor</b>:</label>
 			<input type="search" id="contributor" name="contributor" placeholder="Enter contributor name">
 		</div>
+		<div id="tags-filter-box" class="form-column hidden">
+			<label for="contributor"><b>Tag(s)</b>:</label>  (ignored in Looks Like mode)
+			<input type="search" id="tags" name="tags" placeholder="Enter tag(s) here" size=40>
+		</div>
 
 		<div class="form-clear">
 			<button type="submit" style="font-weight:bold;font-size:1.1em">Update</button> &nbsp;
-			<button id="add-date-filter">Add Date Filter</button> <button id="add-contributor-filter">Add Contributor Filter</button>
+			<button id="add-date-filter">Add Date Filter</button>
+			<button id="add-contributor-filter">Add Contributor Filter</button>
+			<button id="add-tags-filter">Add Tag Filter</button>
 		</div>
 		<input type="hidden" id="display-mode" name="display" value="small">
 	</form>
@@ -327,6 +333,7 @@ touch-action:inherit;
 <script src="{"/mapper/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/location-selector.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/contributor-selector.js"|revision}"></script>
+<script type="text/javascript" src="{"/js/tags-selector.js?v=2"|revision}"></script>
 <script type="text/javascript" src="{"/js/geograph-api-libs.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/Leaflet.ExpandControl.js"|revision}"></script>
 {literal}
@@ -364,6 +371,12 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         document.getElementById('contributor-filter-box').classList.toggle('hidden');
 	document.getElementById('add-contributor-filter').classList.toggle('hidden');
+    });
+
+    document.getElementById('add-tags-filter').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('tags-filter-box').classList.toggle('hidden');
+	document.getElementById('add-tags-filter').classList.toggle('hidden');
     });
 
     initialHelp = document.getElementById("results").innerHTML;
@@ -624,6 +637,7 @@ function searchAndRender() {
     const date_start = document.querySelector('input[name="date_start"]').value;
     const date_end = document.querySelector('input[name="date_end"]').value;
     const contributor = document.querySelector('input[name="contributor"]').value;
+    const tags = document.querySelector('input[name="tags"]').value;
     const display = document.getElementById('display-mode').value;
 
     let base = "https://www.geograph.org.uk/api-facetql.php";
@@ -657,6 +671,15 @@ function searchAndRender() {
     } else {
 	if (query) {
 	    data['match'] = getTextQuery(query);
+	}
+
+	if (tags) {
+		data.match = (data.match)?(data.match+' '):'';
+		/*
+		    const tagList = getSelectedTags(tags.replace(/:/g,' '))
+		    data.match += '@tags "'+tagList.join('" "')+'"';
+		*/
+		data.match += getTextQuery(tags); //will automatically convert to right format! (in particular knows about special prefixes) 
 	}
     }
 
@@ -809,6 +832,7 @@ function performSearch() {
     const date_start = document.querySelector('input[name="date_start"]').value;
     const date_end = document.querySelector('input[name="date_end"]').value;
     const contributor = document.querySelector('input[name="contributor"]').value;
+    const tags = document.querySelector('input[name="tags"]').value;
     const display = document.getElementById('display-mode').value;
     const params = new URLSearchParams();
     if (query) {
@@ -830,12 +854,15 @@ function performSearch() {
     if (contributor) {
         params.append('contributor', contributor);
     }
+    if (tags) {
+        params.append('tags', tags);
+    }
     if (display) {
         params.append('display', display);
     }
 
     const newUrl = window.location.pathname + '?' + params.toString();
-    history.pushState({query: query, loc: loc, type: type, date_start: date_start, date_end: date_end, contributor: contributor, display: display}, '', newUrl);
+    history.pushState({query: query, loc: loc, type: type, date_start: date_start, date_end: date_end, contributor: contributor, tags:tags, display: display}, '', newUrl);
 
     updateTabLinks();
 }
@@ -849,6 +876,7 @@ function handleUrlQuery() {
     const date_start = params.get('date_start');
     const date_end = params.get('date_end');
     const contributor = params.get('contributor');
+    const tags = params.get('tags');
     const display = params.get('display') || 'small';
 
 	if (query && !loc && query.match(/(.*) near (.+)/)) {
@@ -863,6 +891,7 @@ function handleUrlQuery() {
     document.querySelector('input[name="date_start"]').value = date_start ?? '';
     document.querySelector('input[name="date_end"]').value = date_end ?? '';
     document.querySelector('input[name="contributor"]').value = contributor ?? '';
+    document.querySelector('input[name="tags"]').value = tags ?? '';
     document.getElementById('display-mode').value = display;
 
     if (type) {
@@ -891,7 +920,12 @@ function handleUrlQuery() {
 	document.getElementById('add-contributor-filter').classList.add('hidden');
     }
 
-    if (query || loc || date_start || date_end || contributor || display == 'map') {
+    if (tags) {
+        document.getElementById('tags-filter-box').classList.remove('hidden');
+	document.getElementById('add-tags-filter').classList.add('hidden');
+    }
+
+    if (query || loc || date_start || date_end || contributor || tags || display == 'map') {
         searchAndRender();
     }
 
@@ -906,8 +940,11 @@ function updateTabLinks() {
         type: document.querySelector('input[name="type"]:checked').value,
         date_start: document.querySelector('input[name="date_start"]').value,
         date_end: document.querySelector('input[name="date_end"]').value,
-        contributor: document.querySelector('input[name="contributor"]').value
+        contributor: document.querySelector('input[name="contributor"]').value,
+        tags: document.querySelector('input[name="tags"]').value
     };
+
+//todo, add tags to 'q'??
 
 	const modeMap = {};
 	document.querySelectorAll('input[type="radio"][name="type"]').forEach(function(input) {
