@@ -106,4 +106,5 @@ $REVISIONS['/js/LeafletLineMarker.css']=76950387;
 $REVISIONS['/js/contributor-selector.js']=46780965;
 $REVISIONS['/ai/finder-demo.js']=85093851;
 $REVISIONS['/viewer/zoomer.js']=61635280;
+$REVISIONS['/js/Leaflet.ExpandControl.js']=90513379;
 ?>
