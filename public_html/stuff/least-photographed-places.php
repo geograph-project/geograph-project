@@ -70,6 +70,14 @@ if (!empty($_GET['region'])) {
 
 } elseif (!empty($_GET['ireland'])) {
 
+	//we need to use ie_open_data to get e/n (not in sphinx_placenames, but means can just get latitude/longitude directly!
+	$reference_index = 2;
+	$sql = "select latitude,longitude,CONCAT(name,', ',county) as title,sum(imagecount) as images
+	 from gridsquare inner join ie_open_data on (id = placename_id-3000000) where reference_index = 2 and placename_id > 0 group by placename_id having images = 0";
+        $desc  = "Showing squares with placenames, with no images nearby";
+
+} elseif (!empty($_GET['ireland2'])) {
+
 	$reference_index = 2;
 	$sql = "SELECT name AS title, e as x,n as y FROM ie_open_places WHERE images =0 LIMIT 10000";
         $desc  = "Showing squares with placenames, with <b>zero</b> images of subjects within 750m of center of settlement";
@@ -215,7 +223,13 @@ if ($count = $recordSet->RecordCount()) {
 			print "L.rectangle( [[$wgs84_lat1,$wgs84_long1], [$wgs84_lat2,$wgs84_long2]],  {color: '#ff7800', weight: 1, interactive:false }).addTo(map);\n";
 		}
 
-	        list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($r['x'],$r['y'],$reference_index);
+		if (!empty($r['latitude'])) { //have to be careful, longintude COULD be zero!
+			$wgs84_lat = floatval($r['latitude']);
+			$wgs84_long = floatval($r['longitude']);
+		} else {
+			//x,y is actully easting/northings, not our internal x,y!
+		        list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($r['x'],$r['y'],$reference_index);
+		}
 
 		$title = json_encode($r['title']);
 		if (empty($title)) $title= "''";

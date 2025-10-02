@@ -21,6 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+die("placename_index now contains ie_open_data, not loc_placenames\n");
 
 ############################################
 

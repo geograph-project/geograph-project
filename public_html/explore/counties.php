@@ -49,6 +49,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$counties = $db->GetAll("select * from loc_counties where n > 0 order by reference_index,n");
 		
+	} elseif ($type == 'ireland') {
+		$smarty->assign("page_title", "County Center Points - Ireland");
+
+		$counties = $db->GetAll("SELECT county as name,floor(avg(e)) as e, floor(avg(n)) as n, 2 as reference_index FROM ie_open_data GROUP BY country,county");
+
 	} elseif ($type == 'pre74') {
 		$smarty->assign("page_title", "Historic County (Pre 1974) Centre Points");
 		$smarty->assign("start_info", "These are approximate centres for counties pre 1974 re-shuffle");
@@ -100,7 +105,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 	}
 
-	$smarty->assign_by_ref("results", $results);	
+	$smarty->assign_by_ref("results", $results);
 	$smarty->assign_by_ref("unfilled", $unfilled);
 	$smarty->assign_by_ref("nonland", $nonland);
 }
@@ -108,5 +113,3 @@ if (!$smarty->is_cached($template, $cacheid))
 
 $smarty->display($template, $cacheid);
 
-	
-?>
