@@ -20,15 +20,73 @@ function getSelectedTags(term) {
     return tags ? tags.map(tag => tag.slice(1, -1).trim()) : []; // Remove brackets and trim
 }
 
+const MAX_TAGS = 20;
+const STORAGE_KEY = 'recentTagsHistory';
+/**
+ * Retrieves the recent tags from localStorage.
+ * @returns {Array<string>} An array of recent tag strings.
+ */
+function getRecentTags() {
+    try {
+        const storedTags = localStorage.getItem(STORAGE_KEY);
+        return storedTags ? JSON.parse(storedTags) : [];
+    } catch (e) {
+        console.error("Error reading localStorage:", e);
+        return [];
+    }
+}
+
+/**
+ * Adds a new tag to the recent tags list in localStorage,
+ * keeping it to a maximum of MAX_TAGS.
+ * @param {string} tag - The tag to add.
+ */
+function addTagToHistory(tag) {
+    let tags = getRecentTags();
+
+    // 1. Remove the tag if it already exists to move it to the front
+    tags = tags.filter(t => t.toLowerCase() !== tag.toLowerCase());
+
+    // 2. Add the new tag to the beginning
+    tags.unshift(tag);
+
+    // 3. Trim the list to MAX_TAGS
+    if (tags.length > MAX_TAGS) {
+        tags = tags.slice(0, MAX_TAGS);
+    }
+
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tags));
+    } catch (e) {
+        console.error("Error writing to localStorage:", e);
+    }
+}
+
+// --- Autocomplete Setup ---
+
 $( "#tags" ).autocomplete({
-    minLength: 1,
+    minLength: 0,
     source: function( request, response ) {
         // 1. Get the term the user is currently typing
+        var fullTerms = request.term;
         var currentTerm = extractLast(request.term);
 
-        // 2. Check if the current term is empty, if so, don't search/show dropdown
+        // CASE 1: Current term is empty (input just focused/clicked) -> SHOW RECENT TAGS
         if (currentTerm === '') {
-            return response([]);
+            // Get tags from history and format them for the autocomplete response
+            const recentTags = getRecentTags();
+            const existingTags = getSelectedTags(fullTerms);
+
+            const results = recentTags
+                .filter(tag => existingTags.indexOf(tag) === -1) // Filter out already selected tags
+                .map(tag => ({
+                    value: tag,
+                    label: tag,
+                    title: "Recently Used Tag" // Add a title to distinguish
+                }));
+
+            response(results);
+            return;
         }
 
         // 3. Make the AJAX call using the current search term
@@ -75,8 +133,8 @@ $( "#tags" ).autocomplete({
             }
         });
     },
-    focus: function() {
-        // prevent value inserted on focus
+    focus: function(event, ui) {
+        // Prevent value inserted on focus
         return false;
     },
 
@@ -85,6 +143,10 @@ $( "#tags" ).autocomplete({
             return false;
         }
 
+        // 1. ADD selected tag to localStorage history
+        addTagToHistory(ui.item.value);
+
+        // 2. Append the selected tag to the input (multiple-select logic)
         var terms = this.value;
         var currentTerm = extractLast(terms);
 
@@ -99,7 +161,14 @@ $( "#tags" ).autocomplete({
         return false;
     }
 
-}).data( "autocomplete" )._renderItem = function( ul, item ) {
+})
+.on("focus", function() {
+            // Check if the input is empty to avoid showing a full list when a value is already present
+            if ($(this).val() === "") {
+                $(this).autocomplete("search", "");
+            }
+})
+.data( "autocomplete" )._renderItem = function( ul, item ) {
 
     var currentSearchTerm = extractLast($("#tags").val()); // Use #tags for the value
     var re = new RegExp('(' + $.ui.autocomplete.escapeRegex(currentSearchTerm) + ')', 'gi');

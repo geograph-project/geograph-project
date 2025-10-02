@@ -333,7 +333,7 @@ touch-action:inherit;
 <script src="{"/mapper/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/location-selector.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/contributor-selector.js"|revision}"></script>
-<script type="text/javascript" src="{"/js/tags-selector.js?v=2"|revision}"></script>
+<script type="text/javascript" src="{"/js/tags-selector.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/geograph-api-libs.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/Leaflet.ExpandControl.js"|revision}"></script>
 {literal}
