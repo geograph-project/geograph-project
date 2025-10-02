@@ -276,8 +276,10 @@
 
 	{if $views}
 	        map.addLayer(overlayMaps["Photo Viewpoints"]);
+		setTimeout(() => $('a[data-layer="Photo Viewpoints"]').click(), 100); //to highlight the right tab!
 	{elseif $dots}
 	        map.addLayer(overlayMaps["Photo Subjects"]);
+		setTimeout(() => $('a[data-layer="Photo Subjects"]').click(), 100);
 	{else}
 	        map.addLayer(overlayMaps["Coverage - Standard"]);
 	{/if}

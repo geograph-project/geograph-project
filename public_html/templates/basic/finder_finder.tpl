@@ -296,6 +296,12 @@ touch-action:inherit;
 		href="https://www.geograph.org.uk/article/Using-Looks-Like-Search">Using &quot;Looks Like&quot; 
 		Search</a>.</i></p>
 
+		<h3>More</h3>
+
+		<p>Or maybe looking for original <a href="/search.php?form=text">Advanced Search</a>? Note however for 
+		many queries the <a href="https://development.geograph.org.uk/browser/#!start">Image Browser</a> 
+		offers even more options.</p>
+
 	</div>
 
 	<div id="more-results-prompt" class="hidden" style="text-align: center; padding: 20px;">
@@ -322,6 +328,7 @@ touch-action:inherit;
 <script type="text/javascript" src="{"/js/location-selector.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/contributor-selector.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/geograph-api-libs.js"|revision}"></script>
+<script type="text/javascript" src="{"/js/Leaflet.ExpandControl.js"|revision}"></script>
 {literal}
 <script>
 
@@ -666,6 +673,12 @@ function searchAndRender() {
 			data.order = 'geodist asc';
 
 	//todo, also look for gridref on the END '/finder/finder.php?loc=Abbeytown/C3411' - we may get them, particully via /place/ URLs!
+	} else if (m = loc.match(/\/([A-Z]{1,2})(\d{2}|\d{4}|\d{6}|\d{8}|\d{10})$/)) {
+		wgs84 = gridref2wgs(m[1]+m[2]);
+                data.geo=parseFloat(wgs84.latitude).toFixed(6)+","+parseFloat(wgs84.longitude).toFixed(6)+","+distance;
+
+                if (type == 'keywords')
+			data.order = 'geodist asc';
 
 	} else {
 		//this is where gets tricky.
@@ -736,6 +749,10 @@ function searchAndRender() {
 
 
                     layerGroup = L.layerGroup().addTo(map);
+
+		    if (L.control && L.control.expandButton) {
+			L.control.expandButton().addTo(map);
+		    }
                 }
                 if (wgs84 && wgs84.latitude) {
                         L.circleMarker([wgs84.latitude, wgs84.longitude], {radius:6}).addTo(layerGroup);
@@ -748,7 +765,7 @@ function searchAndRender() {
                 mapAPIResults(base+'?'+$.param(data), layerGroup, true, 'results-count'); //pass the layergroup, so markers are added to the group!
 
             if (type == 'keywords')
-		    correction_prompt.textContent = 'This is only a basic map. Use the [Browser Map] link above to explore the results in more detail.';
+		    correction_prompt.textContent = 'This is only a basic map. Use the [Browser Map] link above (or expand button on map) to explore the results in more detail.';
 
 	return;
     }
@@ -825,14 +842,20 @@ function performSearch() {
 
 function handleUrlQuery() {
     const params = new URLSearchParams(window.location.search);
-    const query = params.get('q');
-    const loc = params.get('loc');
+    let query = params.get('q');
+    let loc = params.get('loc');
     const distance = params.get('distance');
     const type = params.get('type');
     const date_start = params.get('date_start');
     const date_end = params.get('date_end');
     const contributor = params.get('contributor');
     const display = params.get('display') || 'small';
+
+	if (query && !loc && query.match(/(.*) near (.+)/)) {
+	    const parts = query.split(' near ', 2);
+	    query = parts[0].trim(); 
+	    loc = parts[1].trim(); 
+	}
 
     document.querySelector('input[name="q"]').value = query ?? '';
     document.querySelector('input[name="loc"]').value = loc ?? '';
@@ -908,6 +931,8 @@ function updateTabLinks() {
         for (const key in params) {
             url = url.replace(`{${key}}`, encodeURIComponent(params[key]));
         }
+	if (!params.q && !params.loc && !params.date_start && !params.date_end && !params.contributor)
+		url = url.replace(/do=1/,''); //when no query, just goto the form
         tab.href = url;
     });
 }
@@ -1011,6 +1036,12 @@ function lookForLocationMatches(loc,originalElement) {
             });
 
             container.appendChild(select);
+
+		if (originalElement && originalElement == 'loc') {
+			const note = document.createElement('div');
+			note.innerHTML = 'Note, below results are not yet filtered by location';
+			container.appendChild(note);
+		}
 
         } else if (data && data.total_found == 1) {
             // If only one result, just use it directly

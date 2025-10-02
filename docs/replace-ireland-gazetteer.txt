@@ -69,7 +69,7 @@ php scripts/populate_sphinx_placenames-has_dup.php --execute --limit=1000
 
 
 UPDATE sph_server_index SET triggered = 1,updated=updated WHERE index_name like 'gaz%' AND index_name != 'gaz_welsh';
-UPDATE sph_server_index SET triggered = 1,updated=updated WHERE index_name like 'sample8%' and last_indexed > date_sub(now(),interval 14 day) and last_indexed < date_sub(now(),interval 1 hour);
+UPDATE sph_server_index SET triggered = 1,updated=updated WHERE index_name like 'sample8A' and last_indexed > date_sub(now(),interval 14 day) and last_indexed < date_sub(now(),interval 1 hour);
 
 #turns out only 'active' indexes can be triggered
 update sph_index set active = 1 where index_name like 'gaz%' and index_name != 'gaz_welsh';
