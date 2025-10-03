@@ -12,11 +12,12 @@
 }
 .finder-form {
     background-color: #ddd;
-    padding: 10px;
+    padding: 6px;
 }
 .form-column {
     float: left;
     width: 300px;
+    padding-top: 4px;
 }
 .form-clear {
     clear: both;
@@ -246,6 +247,10 @@ touch-action:inherit;
 		</div>
 		<div id="contributor-filter-box" class="form-column hidden">
 			<label for="contributor"><b>Contributor</b>:</label>
+				{dynamic}{if $user && $user->user_id}
+				(<a href="#" id="you-button" data-contributor="{$user->user_id} {$user->realname|escape:'html'}">You!</a>)
+				{/if}{/dynamic}
+				<a href="#" id="invert-button">Invert</a>
 			<input type="search" id="contributor" name="contributor" placeholder="Enter contributor name">
 		</div>
 		<div id="tags-filter-box" class="form-column hidden">
@@ -254,7 +259,7 @@ touch-action:inherit;
 		</div>
 
 		<div class="form-clear">
-			<button type="submit" style="font-weight:bold;font-size:1.1em">Update</button> &nbsp;
+			<button type="submit" style="font-weight:bold;font-size:1.1em">Update</button> &nbsp; &nbsp; &nbsp; &nbsp;
 			<button id="add-date-filter">Add Date Filter</button>
 			<button id="add-contributor-filter">Add Contributor Filter</button>
 			<button id="add-tags-filter">Add Tag Filter</button>
@@ -377,6 +382,25 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         document.getElementById('tags-filter-box').classList.toggle('hidden');
 	document.getElementById('add-tags-filter').classList.toggle('hidden');
+    });
+
+
+    document.getElementById('invert-button').addEventListener('click', function(event) {
+        event.preventDefault();
+	const element =  document.getElementById('contributor');
+	if (element.value.indexOf('-') == 0) {
+		element.value = element.value.replace(/^-+/,'');
+	} else {
+		element.value = '-' + element.value;
+        }
+	performSearch();
+    });
+
+    document.getElementById('you-button').addEventListener('click', function(event) {
+        event.preventDefault();
+	const element =  document.getElementById('contributor');
+	element.value = event.target.dataset.contributor;
+	performSearch();
     });
 
     initialHelp = document.getElementById("results").innerHTML;
@@ -662,6 +686,9 @@ function searchAndRender() {
     if (contributor) {
 	if (m = contributor.match(/^(\d+)\s/)) {
 	     query += " user"+m[1];
+        }
+	if (m = contributor.match(/^-(\d+)\s/)) {
+	     query += " -user"+m[1];
         }
     }
 

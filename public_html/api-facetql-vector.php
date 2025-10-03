@@ -59,6 +59,10 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 	} elseif (preg_match('/\suser(\d+)\s*$/',$criteria['label'],$m)) {
 		$criteria['user_id'] = intval($m[1]);
 		$criteria['label'] = str_replace($m[0],'',$criteria['label']);
+
+	} elseif (preg_match('/\s-user(\d+)\s*$/',$criteria['label'],$m)) {
+		$criteria['user_id'] = intval($m[1])*-1;
+		$criteria['label'] = str_replace($m[0],'',$criteria['label']);
 	}
 
 	if (!empty($_GET['geo'])) {
@@ -153,6 +157,7 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 	} else {
 		//no results
+		//todo, if due to error, add customExpiresHeader(10,true); //maybe? (to REDUCE the caching)
 
 		$res['rows'] = false;
 		$res['meta'] = array('total_found'=>0, 'total'=>0, 'time' => $end-$start);

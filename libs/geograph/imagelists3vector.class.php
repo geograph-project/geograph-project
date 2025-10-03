@@ -189,6 +189,8 @@ class ImageListS3Vector extends ImageList
 	    if (is_array($param['user_id'])) {
                 // a range of user_id's, perhaps doesn't sound useful, but can be used for sharding
                 $parts[] = array('user_id' => array('$gte' => intval($param['user_id'][0]), '$lte' => intval($param['user_id'][1])));
+            } elseif ($param['user_id'] < 0) {
+                $parts[] = array('user_id' => array('$ne' => intval(abs($param['user_id']))));
             } else {
                 $parts[] = array('user_id' => array('$eq' => intval($param['user_id'])));
             }
@@ -242,7 +244,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => getTextEmbeddingFromQuery($criteria['label']) ],
+            'queryVector' => ['float32' => $criteria['vector'] ?? getTextEmbeddingFromQuery($criteria['label']) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => $metadata,
