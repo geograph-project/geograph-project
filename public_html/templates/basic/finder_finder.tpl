@@ -253,7 +253,7 @@ touch-action:inherit;
 				<a href="#" id="invert-button">Invert</a>
 			<input type="search" id="contributor" name="contributor" placeholder="Enter contributor name">
 		</div>
-		<div id="tags-filter-box" class="form-column hidden">
+		<div id="tags-filter-box" class="form-column hidden">  <!-- cant add "keywords-only"  because will get shown when toggle mode -->
 			<label for="contributor"><b>Tag(s)</b>:</label>  (ignored in Looks Like mode)
 			<input type="search" id="tags" name="tags" placeholder="Enter tag(s) here" size=40>
 		</div>
@@ -971,7 +971,12 @@ function updateTabLinks() {
         tags: document.querySelector('input[name="tags"]').value
     };
 
-//todo, add tags to 'q'??
+        if (tags) {
+		//this is a stopgap, in particular for browser, shoudl be converted to 'attribute' filters, or maybe just let redirect.php handle it!
+		// also need to figure how to exclude tags from the collections/discussions links??
+                params.q = (params.q)?(params.q+' '):'';
+                params.q += params.tags; //no special formatting!
+        }
 
 	const modeMap = {};
 	document.querySelectorAll('input[type="radio"][name="type"]').forEach(function(input) {
