@@ -1,3 +1,117 @@
+<?
+
+require_once('geograph/global.inc.php');
+init_session();
+
+
+$smarty = new GeographPage;
+
+
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
+
+$u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
+
+$date = (isset($_GET['date']) && ctype_lower($_GET['date']))?$_GET['date']:'submitted';
+
+$myriad = (isset($_GET['myriad']) && ctype_upper($_GET['myriad']))?$_GET['myriad']:'';
+
+$year = isset($_GET['year']);
+
+
+
+        $title = ($date == 'taken')?'Taken':'Submitted';
+        $title = "Breakdown of Images by $title Date";
+
+        $where = array();
+
+
+
+        $db = GeographDatabaseConnection(true);
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+
+	if (!empty($_GET['mine'])) {
+		$table=$db->GetAll("select imagetaken, length(title) as len FROM gridimage_search WHERE user_id = 3");
+
+	} elseif (!empty($_GET['users'])) {
+
+	        $column = 'signup_date';
+	        if (isset($_GET['week'])) {
+	                $from_date = "date(min($column))";
+	                $group_date = "yearweek($column,1)";
+	        } else {
+	                $length = isset($_GET['month'])?10:7;  //month=0 means daily ;-0
+			if ($year)
+				$length=4;
+
+	                $from_date = "substring( $column, 1, $length )";
+	                $group_date = "substring( $column, 1, $length )";
+	        }
+
+	        $title = "Breakdown of User Signups over Time";
+
+	        $table=$db->GetAll("
+	        select
+	        $from_date as `Date` ,
+	        count(*) as `Signups`,
+	        sum(user_stat.images>0) as `Who later Contribute`
+	        from user
+	        left join user_stat using (user_id)
+	        where rights <> ''
+	        group by $group_date
+	        " );
+
+	} else {
+	        $column = ($date == 'taken')?'imagetaken':'submitted';
+
+                //always, filter by $ri, even 0!
+                $where[] = "reference_index=".$ri;
+                $where[] = "type = ".$db->Quote($column);
+
+		if ($year) {
+			$where[] = "month = ''"; //to just get years!
+			$xcol = "year";
+		} else {
+	                if ($date == 'taken') {
+        	                $where[] = "month not like '%-00'"; //can be images with year, no month
+                	}
+
+	                $where[] = "month not like ''"; //the table is built with rollup, so has 'yearly' rows too!
+			$xcol = "month";
+		}
+
+                $where_sql = " WHERE ".join(' AND ',$where);
+
+                $table=$db->GetAll($sql = "SELECT
+                $xcol AS `Date`,
+                images AS `Images`,
+                geographs AS `Geographs`,
+                tpoints AS `TPoints`,
+                points AS `First Points`,
+                visitors AS `AllPoints`,
+                personals AS `Personal Points`,
+                images / squares AS `Depth`,
+                squares AS `Different Gridsquares`,
+                myriads as `Different Myriads`,
+                hectads as `Different Hectads`,
+                users as `Different Contributors`
+                FROM `date_stat` WHERE ".join(' AND ',$where)."
+                ORDER BY month");
+	}
+
+	$xkey = 'Date'; //todo, would be to auto-dtect
+
+	$keys = array_keys($table[0]);
+	$xkey = $keys[0];
+
+
+////////////////////////////////////////////////////////
+//currently only two lines changed!
+
+//        const initialRawData = < ? echo json_encode($table); ? >;
+//            xKey: '< ? echo $xkey; ? >',
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,6 +147,7 @@
             height: 80vh; /* Default height */
             transition: height 0.3s ease;
         }
+        /* Full Screen Wrapper Styles: takes over the entire viewport */
         .is-fullscreen {
             position: fixed;
             top: 0;
@@ -43,20 +158,52 @@
             padding: 0;
             margin: 0;
             background-color: #f7f7f7;
-            overflow: auto;
+            overflow: hidden; /* Hide scrollbars */
         }
+        /* Chart container fills the whole wrapper */
         .is-fullscreen .chart-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
             height: 100vh;
+            width: 100vw;
+            border-radius: 0;
+        }
+        /* Hide all non-essential UI in full screen */
+        .is-fullscreen .hide-on-fullscreen {
+            display: none !important;
+        }
+        /* Float the exit button in the corner */
+        .floating-button-wrapper {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1001; /* Above the chart */
         }
     </style>
 </head>
 <body class="bg-gray-100 p-4 sm:p-8">
 
     <div id="app-wrapper" class="max-w-7xl mx-auto bg-white rounded-xl shadow-2xl p-6 sm:p-10 transition-all duration-300">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Interactive Data Visualization Tool</h1>
+        
+        <!-- Header, hidden in full screen -->
+        <h1 id="app-header" class="text-3xl font-bold text-gray-800 mb-6 hide-on-fullscreen"><? echo $title; ?></h1>
 
-        <!-- Configuration Panel -->
-        <div id="config-panel" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8 p-4 bg-gray-50 rounded-lg shadow-inner">
+        <!-- Full Screen Button - Isolated for floating functionality -->
+        <div id="fullScreenToggleWrapper" class="flex justify-end mb-4">
+            <button id="fullScreenToggle" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-200 flex items-center justify-center text-sm">
+                <span id="fullscreen-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize-2 mr-2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><path d="M21 3 14 10"/><path d="M3 21 10 14"/></svg>
+                </span>
+                Full Screen
+            </button>
+        </div>
+
+        <!-- Configuration Panel - Hidden in full screen -->
+        <div id="config-panel" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8 p-4 bg-gray-50 rounded-lg shadow-inner hide-on-fullscreen">
 
             <!-- Chart Type Selector -->
             <div>
@@ -76,7 +223,6 @@
                 <select id="stackMode" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
                     <option value="none">None</option>
                     <option value="stack">Stack (Bars & Area)</option>
-                    <!-- Plotly handles streamgraph-like behavior for 'area' traces when 'stack' is enabled -->
                 </select>
             </div>
 
@@ -89,7 +235,7 @@
                 </select>
             </div>
             
-            <!-- NEW: X-Axis Spacing -->
+            <!-- X-Axis Spacing -->
             <div>
                 <label for="xAxisType" class="block text-xs font-medium text-gray-500 mb-1">X-Axis Spacing</label>
                 <select id="xAxisType" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
@@ -109,16 +255,6 @@
                 </select>
             </div>
 
-            <!-- Full Screen Button -->
-            <div class="col-span-1 flex items-end">
-                <button id="fullScreenToggle" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-200 flex items-center justify-center text-sm">
-                    <span id="fullscreen-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize-2 mr-2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><path d="M21 3 14 10"/><path d="M3 21 10 14"/></svg>
-                    </span>
-                    Full Screen
-                </button>
-            </div>
-            
             <!-- Show/Hide Grid Toggle -->
             <div class="col-span-1 flex items-end">
                 <button id="gridToggle" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-200 flex items-center justify-center text-sm">
@@ -129,8 +265,8 @@
 
         </div>
 
-        <!-- Y-Series Toggles (populated dynamically) -->
-        <div id="y-series-toggles" class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg shadow-md">
+        <!-- Y-Series Toggles - Hidden in full screen -->
+        <div id="y-series-toggles" class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg shadow-md hide-on-fullscreen">
             <p class="text-sm font-semibold text-yellow-800 mb-2">Y-Axis Series (Select to Plot):</p>
             <div id="toggle-container" class="flex flex-wrap gap-3">
                 <!-- Checkboxes will be inserted here -->
@@ -146,28 +282,14 @@
         // --- CHARTING CORE LOGIC ---
 
         // 1. Initial Sample Data (Mimics adodb ->getAll query result with json_encode())
-        const initialRawData = [
-            // Daily data: Full Date X-Axis
-            { day: "2024-04-10", views: 500, clicks: 10, users: 5 },
-            { day: "2024-04-11", views: 750, clicks: 12, users: 6 },
-            { day: "2024-04-12", views: 1200, clicks: 25, users: 8 },
-            { day: "2024-04-13", views: 200, clicks: 5, users: 2 }, // Sparse day
-            { day: "2024-04-14", views: 1500, clicks: 35, users: 10 },
-            // Monthly/Yearly data: Mixed date formats
-            { day: "2024-03", views: 10000, clicks: 50, users: 20 },
-            { day: "2023", views: 50000, clicks: 200, users: 50 },
-            // Categorical X-Axis example (for testing non-date/numeric sort)
-            { day: "Alpha", views: 900, clicks: 22, users: 7 },
-            { day: "Gamma", views: 100, clicks: 1, users: 1 },
-            { day: "Beta", views: 300, clicks: 8, users: 3 },
-        ];
+        const initialRawData = <?php echo json_encode($table); ?>;
 
         // Configuration state
         const config = {
             data: initialRawData,
-            xKey: 'day', // The first column name from the query
-            yKeys: [],    // Populated dynamically from data keys (excluding xKey)
-            activeYKeys: [], // Which Y-series are currently selected
+            xKey: '<? echo $xkey; ?>',
+            yKeys: [],
+            activeYKeys: [],
             chartType: 'scatter',
             chartMode: 'lines',
             stackMode: 'none',
@@ -175,8 +297,7 @@
             xSort: 'original',
             showGrid: true,
             isFullScreen: false,
-            // NEW: Configuration for X-Axis type/spacing
-            xAxisType: 'auto', // 'auto' for continuous, 'category' for compact
+            xAxisType: 'auto',
         };
 
         // UI Element References
@@ -184,10 +305,11 @@
         const chartTypeSelect = document.getElementById('chartType');
         const stackModeSelect = document.getElementById('stackMode');
         const yScaleSelect = document.getElementById('yScale');
-        const xAxisTypeSelect = document.getElementById('xAxisType'); // NEW REFERENCE
+        const xAxisTypeSelect = document.getElementById('xAxisType');
         const xSortSelect = document.getElementById('xSort');
         const toggleContainer = document.getElementById('toggle-container');
         const appWrapper = document.getElementById('app-wrapper');
+        const fullScreenToggleWrapper = document.getElementById('fullScreenToggleWrapper');
 
         // 2. Initialization: Determine Y-Keys and build UI toggles
         function initializeUI() {
@@ -232,14 +354,32 @@
             renderChart();
         }
 
-        // 3. Data Sorting and Transformation
+        // 3. Data Sorting and Transformation (same as previous version)
         function preprocessData() {
             let sortedData = [...config.data];
 
             const sortValue = xSortSelect.value;
             const isYSort = sortValue.startsWith('y_');
-            const sortKey = isYSort ? sortValue.substring(sortValue.indexOf('_') + 1) : config.xKey;
-            const isAsc = sortValue.endsWith('_asc') || sortValue === 'x_asc' || sortValue === 'original';
+
+            // --- FIX: Robustly determine sortKey and isAsc based on sortValue format ---
+            let sortKey = config.xKey;
+            let isAsc = true; // Default for 'original' and 'x_asc'
+
+            if (sortValue === 'original' || sortValue === 'x_asc') {
+                sortKey = config.xKey;
+                isAsc = true;
+            } else if (sortValue === 'x_desc') {
+                sortKey = config.xKey;
+                isAsc = false;
+            } else if (sortValue.startsWith('y_')) {
+                // Y-Sort format: 'y_asc_key' or 'y_desc_key'
+                const parts = sortValue.split('_'); 
+                const direction = parts[1]; // 'asc' or 'desc'
+                // Join the rest of the parts to get the original key name (e.g., 'series_A')
+                sortKey = parts.slice(2).join('_');
+                isAsc = (direction === 'asc');
+            }
+            // --- END FIX ---
 
             if (sortValue === 'original') {
                 // Do nothing, already a copy
@@ -248,62 +388,56 @@
                     let valA = a[sortKey];
                     let valB = b[sortKey];
 
-                    // Numeric/Date parsing for X or Y sorting
                     if (!isNaN(Date.parse(valA)) && !isNaN(Date.parse(valB)) && sortKey === config.xKey) {
-                        // Date comparison for X-axis
                         valA = Date.parse(valA);
                         valB = Date.parse(valB);
                     } else if (!isNaN(valA) && !isNaN(valB)) {
-                        // Numeric comparison
                         valA = Number(valA);
                         valB = Number(valB);
                     } else if (typeof valA === 'string' && typeof valB === 'string') {
-                        // Alphabetical comparison
                         return isAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
                     }
                     
-                    // Default comparison (numeric or date)
                     if (valA < valB) return isAsc ? -1 : 1;
                     if (valA > valB) return isAsc ? 1 : -1;
                     return 0;
                 });
             }
 
-            // Transform data into Plotly's structure (arrays of X and Y values)
+console.log(sortedData);
+
+
             const xValues = sortedData.map(d => d[config.xKey]);
             
             const plotlyTraces = config.yKeys
-                .filter(key => config.activeYKeys.includes(key)) // Filter by active Y keys
+                .filter(key => config.activeYKeys.includes(key))
                 .map(key => {
                     const yValues = sortedData.map(d => d[key]);
                     
                     let trace = {
                         x: xValues,
                         y: yValues,
-                        name: key.charAt(0).toUpperCase() + key.slice(1), // Title case for legend
-                        // Determine base type: 'scatter' for line/dots/area, or 'bar'
+                        name: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '),
                         type: config.chartType === 'area' ? 'scatter' : config.chartType, 
                     };
 
-                    // Only add scatter-specific properties if it's not a bar chart
                     if (config.chartType !== 'bar') {
                         trace.mode = chartTypeSelect.options[chartTypeSelect.selectedIndex].getAttribute('data-mode');
-                        trace.line = { shape: 'spline' }; // Smooth lines for a nicer look
+                        trace.line = { shape: 'spline' };
                         trace.marker = { size: 8, opacity: 0.8, line: { width: 1, color: 'white' } };
                     }
 
-
                     if (config.chartType === 'area') {
-                        // Configure for Streamgraph-like Area Stack
                         trace.fill = 'tonexty';
-                        trace.stackgroup = 'one';
-                        // Line shape is already set above
+                        if (config.stackMode === 'stack') {
+                            trace.stackgroup = 'one';
+                        } else {
+                            delete trace.stackgroup;
+                        }
                     }
 
                     if (config.chartType === 'bar') {
-                        // Bar-specific marker style
                         trace.marker = { opacity: 0.8 };
-                        // Note: Stacking is handled by the layout barmode setting
                     }
 
                     return trace;
@@ -312,38 +446,36 @@
             return plotlyTraces;
         }
 
-        // 4. Render Chart Function
+        // 4. Render Chart Function (same as previous version, ensures dynamic sizing)
         function renderChart() {
             const data = preprocessData();
             
             const isStacked = config.stackMode === 'stack';
-            const isBar = config.chartType === 'bar';
 
             const layout = {
                 title: `Analysis: ${config.xKey} vs. ${config.activeYKeys.join(', ')}`,
                 autosize: true,
+                // Crucial for fullscreen: set height dynamically
                 height: config.isFullScreen ? window.innerHeight : 500,
                 margin: { l: 60, r: 20, t: 80, b: 60 },
-                hovermode: 'x unified', // Excellent for showing all series values at one X-point
-                // This is where bar stacking is controlled
-                barmode: (isBar && isStacked) ? 'stack' : 'group',
+                hovermode: 'x unified',
+                barmode: (config.chartType === 'bar' && isStacked) ? 'stack' : 'group',
                 
                 xaxis: {
                     title: config.xKey.charAt(0).toUpperCase() + config.xKey.slice(1),
                     gridcolor: config.showGrid ? '#e0e0e0' : 'transparent',
                     zerolinecolor: config.showGrid ? '#e0e0e0' : 'transparent',
                     automargin: true,
-                    // Apply X-Axis Spacing setting: 'auto' for continuous, 'category' for compact list
                     type: config.xAxisType, 
                 },
                 
                 yaxis: {
                     title: 'Value',
-                    type: config.yScale, // 'linear' or 'log'
+                    type: config.yScale,
                     gridcolor: config.showGrid ? '#e0e0e0' : 'transparent',
                     zerolinecolor: config.showGrid ? '#e0e0e0' : 'transparent',
                     automargin: true,
-                    rangemode: 'tozero' // Start from zero for linear scale
+                    rangemode: 'tozero'
                 },
                 legend: {
                     orientation: "h",
@@ -351,15 +483,15 @@
                     x: 0.5,
                     y: 1.05
                 },
-                paper_bgcolor: '#ffffff',
+                paper_bgcolor: config.isFullScreen ? '#f7f7f7' : '#ffffff', // Use body color for full screen background
                 plot_bgcolor: '#ffffff',
             };
 
             const plotOptions = {
                 responsive: true,
-                displayModeBar: true, // Allows native Plotly tools (zoom, pan, download)
+                displayModeBar: true,
                 modeBarButtonsToRemove: ['sendDataToCloud'],
-                scrollZoom: true // Enable zoom on mouse scroll
+                scrollZoom: true
             };
 
             Plotly.react(chartDiv, data, layout, plotOptions);
@@ -385,7 +517,40 @@
             renderChart();
         }
 
-        // Listener setup
+        // Full Screen Toggle Handler (Updated to hide all surrounding UI)
+        document.getElementById('fullScreenToggle').addEventListener('click', () => {
+            config.isFullScreen = !config.isFullScreen;
+            const icon = document.getElementById('fullscreen-icon');
+            const buttonText = document.getElementById('fullScreenToggle').lastChild;
+            
+            if (config.isFullScreen) {
+                appWrapper.classList.add('is-fullscreen');
+                
+                // Float the button over the chart
+                fullScreenToggleWrapper.classList.add('floating-button-wrapper');
+                fullScreenToggleWrapper.classList.remove('mb-4');
+                
+                // Update icon and text to Exit
+                icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minimize-2 mr-2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><path d="M10 14 21 3"/><path d="M3 21 14 10"/></svg>`;
+                buttonText.textContent = 'Exit Full Screen';
+            } else {
+                appWrapper.classList.remove('is-fullscreen');
+                
+                // Restore button position
+                fullScreenToggleWrapper.classList.remove('floating-button-wrapper');
+                fullScreenToggleWrapper.classList.add('mb-4');
+
+                // Update icon and text to Maximize
+                icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize-2 mr-2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><path d="M21 3 14 10"/><path d="M3 21 10 14"/></svg>`;
+                buttonText.textContent = 'Full Screen';
+            }
+            
+            // Re-render to adjust the chart size for the new container dimensions
+            // A slight delay ensures the CSS updates take effect before Plotly recalculates dimensions.
+            setTimeout(renderChart, 10);
+        });
+
+        // Listener setup for configuration controls
         chartTypeSelect.addEventListener('change', (e) => {
             const selectedOption = e.target.options[e.target.selectedIndex];
             updateConfig('chartType', selectedOption.value);
@@ -394,7 +559,7 @@
 
         stackModeSelect.addEventListener('change', (e) => updateConfig('stackMode', e.target.value));
         yScaleSelect.addEventListener('change', (e) => updateConfig('yScale', e.target.value));
-        xAxisTypeSelect.addEventListener('change', (e) => updateConfig('xAxisType', e.target.value)); // NEW LISTENER
+        xAxisTypeSelect.addEventListener('change', (e) => updateConfig('xAxisType', e.target.value));
         xSortSelect.addEventListener('change', () => renderChart());
 
         document.getElementById('gridToggle').addEventListener('click', () => {
@@ -403,23 +568,6 @@
             renderChart();
         });
 
-        document.getElementById('fullScreenToggle').addEventListener('click', () => {
-            config.isFullScreen = !config.isFullScreen;
-            const icon = document.getElementById('fullscreen-icon');
-            const buttonText = document.getElementById('fullScreenToggle');
-            
-            if (config.isFullScreen) {
-                appWrapper.classList.add('is-fullscreen');
-                icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minimize-2 mr-2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><path d="M10 14 21 3"/><path d="M3 21 14 10"/></svg>`;
-                buttonText.lastChild.textContent = 'Exit Full Screen';
-            } else {
-                appWrapper.classList.remove('is-fullscreen');
-                icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize-2 mr-2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><path d="M21 3 14 10"/><path d="M3 21 10 14"/></svg>`;
-                buttonText.lastChild.textContent = 'Full Screen';
-            }
-            // Re-render to adjust the chart size for the new container dimensions
-            setTimeout(renderChart, 10);
-        });
         
         // Handle resizing (important for responsive charts)
         window.addEventListener('resize', () => {
@@ -428,6 +576,7 @@
                 renderChart();
             } else {
                 // Otherwise, use Plotly's built-in resize function
+                // Note: Plotly.react/relayout usually handles this if autosize:true is set
                 Plotly.relayout(chartDiv, { autosize: true, height: 500 });
             }
         });
