@@ -1,47 +1,51 @@
 function runSearch() {
-        const query = $('#search-query').val().trim();
-        const labelsStr = $('#search-labels').val().trim();
-        const groupByPlace = $('#group-by-place').is(':checked');
+    const query = $('#search-query').val().trim();
+    const mode = $('input[name="mode"]:checked').val();
+    const groupByPlace = $('#group-by-place').is(':checked');
 
-        if (!query || !labelsStr) {
-            alert('Please provide both a search query and labels.');
+    if (!query) {
+        alert('Please provide a search query.');
+        return;
+    }
+
+    const $loading = $('#loading-indicator');
+    const $resultsContainer = $('#results-container');
+    $loading.show();
+    $resultsContainer.empty();
+
+    let paramname = $('input[name=type]:checked').val();
+
+    if (mode === 'classify') {
+        const labelsStr = $('#search-labels').val().trim();
+        if (!labelsStr) {
+            alert('Please provide classification labels.');
+            $loading.hide();
             return;
         }
-
         const labels = labelsStr.split(',').map(s => s.trim()).filter(Boolean);
         if (labels.length === 0) {
             alert('Please provide valid, comma-separated labels.');
+            $loading.hide();
             return;
         }
 
-        const $loading = $('#loading-indicator');
-        const $resultsContainer = $('#results-container');
-
-        $loading.show();
-        $resultsContainer.empty();
-
-	let paramname = $('input[name=type]:checked').val();
-
-        // Perform two AJAX requests in parallel
+        // --- Classification Mode ---
         $.when(
-            // 1. Fetch vectors for the labels
             $.ajax({
                 url: '/finder/label-vectors.json.php',
                 method: 'GET',
                 data: { labels: labels.join(',') },
                 dataType: 'json'
             }),
-            // 2. Fetch images for the search query
             $.ajax({
                 url: '/api-facetql-vector.php',
                 method: 'GET',
-                // Request the vector ('image_vector') and other useful fields
                 data: {
                     [paramname]: query,
                     select: 'id,hash,grid_reference,realname,title,image_vector,place',
                     long: 1,
-		    utf: 1,
-                    limit: (paramname=='match')?100:30
+                    utf: 1,
+                    limit: (paramname == 'match') ? 100 : 30
                 },
                 dataType: 'json'
             })
@@ -49,107 +53,184 @@ function runSearch() {
             const labelVectorsData = labelsResponse[0];
             const imageResults = imagesResponse[0];
 
-            if (!labelVectorsData || !imageResults || !imageResults.rows) {
-                $resultsContainer.html('<p>Error: Could not fetch data from the server.</p>');
-                return;
-            }
-
             // --- Classification Logic ---
-
-            // 1. Create EmbeddingVector objects for each label
-            const labelVectors = {};
-            for (const label in labelVectorsData) {
-                if (labelVectorsData[label]) {
-                    try {
-                        labelVectors[label] = new EmbeddingVector(labelVectorsData[label]).normalize();
-                    } catch (e) {
-                        console.error(`Could not create vector for label "${label}":`, e);
-                    }
-                }
-            }
-
-            if (Object.keys(labelVectors).length === 0) {
-                $resultsContainer.html('<p>Could not process any of the provided labels.</p>');
-                return;
-            }
-
-            // 2. Group images by their nearest label (and optionally by place)
-            if (groupByPlace) {
-                const groupedResults2D = {};
-                const places = new Set();
-                const unprocessed = [];
-
-                labels.forEach(label => {
-                    groupedResults2D[label] = {};
-                });
-
-                imageResults.rows.forEach(function(image) {
-                    if (image.image_vector) {
-                        try {
-                            const imageVector = new EmbeddingVector(image.image_vector).normalize();
-                            const nearest = imageVector.knn(labelVectors, 1);
-
-                            if (nearest.length > 0) {
-                                const closestLabel = nearest[0].key;
-                                const place = image.place || 'Unknown';
-                                places.add(place);
-
-                                if (!groupedResults2D[closestLabel][place]) {
-                                    groupedResults2D[closestLabel][place] = [];
-                                }
-                                groupedResults2D[closestLabel][place].push(image);
-                            }
-                        } catch(e) {
-                            console.error(`Could not process vector for image ID ${image.id}:`, e);
-                        }
-                    } else {
-                        unprocessed.push(image);
-                    }
-                });
-
-                const sortedPlaces = Array.from(places).sort();
-                render2DResults(groupedResults2D, sortedPlaces, labels, unprocessed);
-
-            } else {
-                const groupedResults = {};
-                labels.forEach(label => {
-                    groupedResults[label] = [];
-                });
-                const unprocessed = [];
-
-                imageResults.rows.forEach(function(image) {
-                    if (image.image_vector) {
-                        try {
-                            const imageVector = new EmbeddingVector(image.image_vector).normalize();
-                            const nearest = imageVector.knn(labelVectors, 1);
-
-                            if (nearest.length > 0) {
-                                const closestLabel = nearest[0].key;
-                                groupedResults[closestLabel].push(image);
-                            }
-                        } catch(e) {
-                            console.error(`Could not process vector for image ID ${image.id}:`, e);
-                        }
-                    } else {
-                        unprocessed.push(image);
-                    }
-                });
-
-                const sortedGroups = Object.entries(groupedResults);
-                sortedGroups.sort((a, b) => b[1].length - a[1].length);
-
-                if (unprocessed.length) {
-                    sortedGroups.push(['unprocessed', unprocessed]);
-                }
-                render1DResults(sortedGroups);
-            }
+            // (The existing classification logic goes here)
+            classifyImages(labelVectorsData, imageResults, labels, groupByPlace, $resultsContainer);
 
         }).fail(function() {
-            $resultsContainer.html('<p>An error occurred while fetching the search results. Please check the browser console for details.</p>');
+            $resultsContainer.html('<p>An error occurred during classification. Please check the console.</p>');
         }).always(function() {
             $loading.hide();
         });
 
+    } else if (mode === 'cluster') {
+        const numClusters = parseInt($('#num-clusters').val(), 10);
+        if (isNaN(numClusters) || numClusters < 2) {
+            alert('Please enter a valid number of clusters (at least 2).');
+            $loading.hide();
+            return;
+        } else if (numClusters > 100) {
+            alert('100 is the maxiumn number of clusters.');
+            $loading.hide();
+            return;
+        }
+
+        // --- Clustering Mode ---
+        $.ajax({
+            url: '/api-facetql-vector.php',
+            method: 'GET',
+            data: {
+                [paramname]: query,
+                select: 'id,hash,grid_reference,realname,title,image_vector,place',
+                long: 1,
+                utf: 1,
+                limit: 100
+            },
+            dataType: 'json'
+        }).done(function(imageResults) {
+            if (!imageResults || !imageResults.rows || imageResults.rows.length === 0) {
+                $resultsContainer.html('<p>No images found for the given query.</p>');
+                return;
+            }
+
+            const imageVectors = [];
+            const imageData = [];
+            const unprocessed = [];
+
+            imageResults.rows.forEach(function(image) {
+                if (image.image_vector) {
+                    try {
+                        imageVectors.push(new EmbeddingVector(image.image_vector).normalize());
+                        imageData.push(image);
+                    } catch (e) {
+                        console.error(`Could not process vector for image ID ${image.id}:`, e);
+                        unprocessed.push(image);
+                    }
+                } else {
+                    unprocessed.push(image);
+                }
+            });
+
+            if (imageVectors.length < numClusters) {
+                $resultsContainer.html('<p>Not enough images with vector data to perform clustering. Try a broader search query.</p>');
+                return;
+            }
+
+            // Perform K-means clustering
+            const clusters = EmbeddingVector.kmeans(imageVectors, numClusters);
+
+            // Group images based on cluster results
+            const groupedResults = {};
+            clusters.forEach((cluster, i) => {
+                const clusterName = `Cluster #${i + 1}`;
+                groupedResults[clusterName] = cluster.indices.map(index => imageData[index]);
+            });
+
+            const sortedGroups = Object.entries(groupedResults);
+            sortedGroups.sort((a, b) => b[1].length - a[1].length);
+
+            if (unprocessed.length) {
+                sortedGroups.push(['Unprocessed', unprocessed]);
+            }
+
+            render1DResults(sortedGroups);
+
+        }).fail(function() {
+            $resultsContainer.html('<p>An error occurred while fetching data for clustering. Please check the console.</p>');
+        }).always(function() {
+            $loading.hide();
+        });
+    }
+}
+
+function classifyImages(labelVectorsData, imageResults, labels, groupByPlace, $resultsContainer) {
+    // 1. Create EmbeddingVector objects for each label
+    const labelVectors = {};
+    for (const label in labelVectorsData) {
+        if (labelVectorsData[label]) {
+            try {
+                labelVectors[label] = new EmbeddingVector(labelVectorsData[label]).normalize();
+            } catch (e) {
+                console.error(`Could not create vector for label "${label}":`, e);
+            }
+        }
+    }
+
+    if (Object.keys(labelVectors).length === 0) {
+        $resultsContainer.html('<p>Could not process any of the provided labels.</p>');
+        return;
+    }
+
+    // 2. Group images by their nearest label (and optionally by place)
+    if (groupByPlace) {
+        const groupedResults2D = {};
+        const places = new Set();
+        const unprocessed = [];
+
+        labels.forEach(label => {
+            groupedResults2D[label] = {};
+        });
+
+        imageResults.rows.forEach(function(image) {
+            if (image.image_vector) {
+                try {
+                    const imageVector = new EmbeddingVector(image.image_vector).normalize();
+                    const nearest = imageVector.knn(labelVectors, 1);
+
+                    if (nearest.length > 0) {
+                        const closestLabel = nearest[0].key;
+                        const place = image.place || 'Unknown';
+                        places.add(place);
+
+                        if (!groupedResults2D[closestLabel][place]) {
+                            groupedResults2D[closestLabel][place] = [];
+                        }
+                        groupedResults2D[closestLabel][place].push(image);
+                    }
+                } catch(e) {
+                    console.error(`Could not process vector for image ID ${image.id}:`, e);
+                }
+            } else {
+                unprocessed.push(image);
+            }
+        });
+
+        const sortedPlaces = Array.from(places).sort();
+        render2DResults(groupedResults2D, sortedPlaces, labels, unprocessed);
+
+    } else {
+        const groupedResults = {};
+        labels.forEach(label => {
+            groupedResults[label] = [];
+        });
+        const unprocessed = [];
+
+        imageResults.rows.forEach(function(image) {
+            if (image.image_vector) {
+                try {
+                    const imageVector = new EmbeddingVector(image.image_vector).normalize();
+                    const nearest = imageVector.knn(labelVectors, 1);
+
+                    if (nearest.length > 0) {
+                        const closestLabel = nearest[0].key;
+                        groupedResults[closestLabel].push(image);
+                    }
+                } catch(e) {
+                    console.error(`Could not process vector for image ID ${image.id}:`, e);
+                }
+            } else {
+                unprocessed.push(image);
+            }
+        });
+
+        const sortedGroups = Object.entries(groupedResults);
+        sortedGroups.sort((a, b) => b[1].length - a[1].length);
+
+        if (unprocessed.length) {
+            sortedGroups.push(['unprocessed', unprocessed]);
+        }
+        render1DResults(sortedGroups);
+    }
 }
 
 
@@ -169,7 +250,7 @@ function runSearch() {
 	sortedResults.forEach(([label, images]) => {
             if (images.length > 0) {
                 const $group = $('<div class="label-group"></div>');
-                $group.append(`<h2>${escapeHtml(label)} (${images.length})</h2>`);
+                $group.append(`<h2>${escapeHtml(label)} (${images.length} images)</h2>`);
 
                 const $imageContainer = $('<div class="image-container"></div>');
                 images.forEach(function(image) {
