@@ -156,11 +156,6 @@ div.homepage {
 		class="nowrap">{$stats.images|thousends} images</b> covering <b span="nowrap">{$stats.squares|thousends} grid squares</b>, or <b 
 		class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
 
-        {if $prompt}
-		<div class="interestBox homepageBox" style="background-color:yellow;">
-	                {$prompt}
-		</div>
-        {/if}
 
 	<div class="pictureOfTheDay">
 		<div class="imageContainer shadow">
