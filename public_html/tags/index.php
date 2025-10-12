@@ -92,7 +92,7 @@ if (!empty($_GET['tag_id'])) {
 	$db = GeographDatabaseConnection(true);
 	$row = $db->getRow("SELECT tag_id,prefix,tag FROM tag WHERE tag_id = ".intval($_GET['tag_id'])." AND status > 0");
 
-	$url = "https://www.geograph.org.uk/tagged/".urlencode2(($row['prefix']?"{$row['prefix']}:":'').$row['tag'])."&exact=1";
+	$url = "https://www.geograph.org.uk/tagged/".urlencode2(($row['prefix']?"{$row['prefix']}:":'').$row['tag'])."?exact=1";
 }
 
 if (!empty($url)) {

@@ -1,0 +1,17 @@
+name: Rejected Images
+table_name: gridimage
+
+creation:
+SELECT  'rejected_image' AS source,
+	`gridimage_id` AS foreign_id,
+        'rejection' as event_type,
+	`moderated` as event_date,
+	`user_id` as user_id,
+	`moderator_id`,
+        TRIM(title) AS title,
+        CONCAT('/editimage.php?id=',gridimage_id) AS url
+FROM gridimage
+LEFT JOIN user_stat USING (user_id)
+WHERE moderation_status = 'rejected' AND user_stat.user_id IS NULL
+ AND submitted > date_sub(now(),interval 7 day)
+
