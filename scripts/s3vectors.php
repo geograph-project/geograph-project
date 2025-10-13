@@ -31,13 +31,26 @@ require "./_scripts.inc.php";
    $s3VectorBucketName = 'geograph-vector-bucket';
    $awsRegion = "us-east-1"; //s3vector, isnt available in all regions - so we have to define the region to use!
 
+   //this is just for the 'image' index (our main one!)
+   //up here, because uysed by mulitple modes, insert, delta and test mode!
+
+	//for CLIP
+	$table_embedding = "gridimage_embedding";
+	$table_progress = "embedding_progress_clip";
+
+	//Perception Encoder
+	if (preg_match('/-pe$/',$param['index'])) {
+		$table_embedding = "gridimage_embedding_1024";
+		$table_progress = "embedding_progress_pe";
+	}
+
 ##################################
 // Form commands for inserting rows into S3Vector index
 // note, only prints the command, although for image specifically, it can auto-execute sharded inserts using embedding_progress_clip
 
 // NOTE: this function is used for 'initial' commissining of indexes, using the python client to do the bulk insert,
 //  ... partly used the python clien, so can use the boto API clinet, but also because it may need to call titen embedding fro bedrock.
-// there is now a seperate pure PHP implemwntaion further down, intended for 'delta' use, but much more basis. Mainly just enougn to add new images to main image-clip index. 
+// there is now a seperate pure PHP implemwntaion further down, intended for 'delta' use, but much more basis. Mainly just enougn to add new images to main image-clip index.
 
 if (!empty($param['insert'])) {
 
@@ -111,7 +124,9 @@ if (!empty($param['insert'])) {
 
 
     } elseif ($source == 'image') {
-        $cmd[] = '-t"gridimage_embedding USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)"';
+	if ($model != 'clip' && $model != 'pe') die("only clip/pe supported for now");
+
+        $cmd[] = '-t"'.$table_embedding.' USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)"';
                //forcing the PRIMARY, is because the 'embedding_progress_clip' sharding is designed to work work on the primary
                //on its own the optimizer chooses gridimage index, because it ends up using ORDER BY id for its own batching (500 a a time, so it loops in id order)
                //the double level of sharding, picks the wrong index!
@@ -124,9 +139,8 @@ if (!empty($param['insert'])) {
 		$db = GeographDatabaseConnection(false);
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-
 		if (empty($db->readonly)) //by running this, we can actully get accurate stat!
-			$db->Execute("INSERT INTO embedding_progress_clip (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM embedding_progress_clip)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = embedding_progress_clip.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+			$db->Execute("INSERT INTO $table_progress (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     $table_embedding WHERE     type = 'image' AND model = '$model'    AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM $table_progress)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = $table_progress.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
 
 
 		//create table embedding_progress_clip select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id from gridimage_embedding where type='image' group by substring(updated,1,10) order by null;
@@ -136,13 +150,13 @@ if (!empty($param['insert'])) {
 		//note, this replace will add any new days, but it WILL also replace the last day, usuaully a good thing, as it may have more images
 		//... its just htat it ALWAYS replaces last day (resetting done!), even if unnessary. could use max(max_id) as the crit, but then count(*)/min_id will be WRONG for the day, will be replaced with only NEW rows, not all rows. 
 		//but see vision-stat.php, which has a even better INSERT ... ON DUPLICATE KEY UPDATE ..., which only counts new rows
-		$data = $db->getAll("SELECT * FROM embedding_progress_clip WHERE done IS NULL AND `day` < date(now())");
+		$data = $db->getAll("SELECT * FROM $table_progress WHERE done IS NULL AND `day` < date(now())");
 		foreach ($data as $row) {
 			//todo
 			$min = max($row['min_id'], $row['delta_max']);
 			// as that is now updated by delta! delta_max is the max id that was already inserted, techncally should be +1 (but inserting one document again is not a big deal
 
-			$where = "type='image' AND seq_id BETWEEN $min AND {$row['max_id']} AND updated LIKE '{$row['day']}%'"; //dont know if filtering by day helps or not!
+			$where = "type='image' AND model = '$model' AND seq_id BETWEEN $min AND {$row['max_id']} AND updated LIKE '{$row['day']}%'"; //dont know if filtering by day helps or not!
 			$where = '-w'.escapeshellarg($where);
 			print implode(' ',$cmd)." $where\n";
 
@@ -157,20 +171,21 @@ if (!empty($param['insert'])) {
 				}
 			}
 
-			$sql = "UPDATE embedding_progress_clip SET done=NOW() WHERE min_id = {$row['min_id']}";
+			$sql = "UPDATE $table_progress SET done=NOW() WHERE min_id = {$row['min_id']}";
 			print "# $sql;\n\n";
-			if ($param['insert'] > 2 && $return_status === 0 && $param['index'] == 'image-clip') { //shouldnt really be marking as done, unless it the real index!
+			if ($param['insert'] > 2 && $return_status === 0 && preg_match('/^image-',$param['index'])) { //should only really be marking as done, for the real index!
 				//the connection might of closed!
 				$db = GeographDatabaseConnection(false);
 				$db->Execute($sql);
 
+				//for now only do one shard at a time!
 				exit;
 			}
 		}
 		exit;
 	}
 
-	$cmd[] = '-w'.escapeshellarg("type='image' AND seq_id < 100");
+	$cmd[] = '-w'.escapeshellarg("type='image' AND model = '$model' AND seq_id < 100");
     }
 
 	print implode(' ',$cmd)."\n";
@@ -205,25 +220,25 @@ if (!empty($param['delta'])) {
 	    echo "Fetching and inserting 'tags' data for model '$model'...\n";
 	    $sql = 'SELECT tag_id as id, tagtext, images FROM tags LIMIT 10'; //TODO!
 
-		//in partcilar this is going to need to know have a way of keeping track of progress. 
+		//in partcilar this is going to need to know have a way of keeping track of progress.
 
 	} elseif ($type === 'test' || $type == 'image') {
 	    echo "Fetching and inserting 'image' data into '{$param['index']}'...\n";
 
 		$sql = "SELECT gridimage_id AS id, user_id, grid_reference as gridref, CAST(REPLACE(imagetaken,'-','') AS UNSIGNED) AS taken, wgs84_lat as slat, wgs84_long as slng, embeddings, seq_id
-		FROM gridimage_embedding USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)
-		WHERE type = 'image'";
+		FROM $table_embedding USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)
+		WHERE type = 'image' AND model = '$model'";
 
             if ($type == 'image') {
-		if ($model != 'clip') die("only clip supported for now");
+		if ($model != 'clip' && $model != 'pe') die("only clip/pe supported for now");
 
 		if (empty($db->readonly)) //by running this, we can actully get accurate stat!
-			$db->Execute("INSERT INTO embedding_progress_clip (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM embedding_progress_clip)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = embedding_progress_clip.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+			$db->Execute("INSERT INTO $table_progress (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     $table_embedding WHERE     type = 'image' AND model = '$model'    AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM $table_progress)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = $table_progress.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
 
 		//keep track with embedding_progress_clip. the 'done' column is updated by the main one, we have our own delta_max to keep track!
 		// note, if update above, finds new rows, it resets done, which means we can carry on...
 
-		$data = $db->getRow("SELECT * FROM embedding_progress_clip WHERE done IS NULL AND (delta_max is null OR delta_max < max_id) LIMIT 1");
+		$data = $db->getRow("SELECT * FROM $table_progress WHERE done IS NULL AND (delta_max is null OR delta_max < max_id) LIMIT 1");
 		if (empty($data))
 			die("nothing to add\n");
 
@@ -297,7 +312,7 @@ if (!empty($param['delta'])) {
 		if ($last_id == $data['max_id'])
 			$updates[] = "done=now()";
 
-	    $sql = "UPDATE embedding_progress_clip SET ".implode(', ',$updates)." WHERE day = '{$data['day']}'";
+	    $sql = "UPDATE $table_progress SET ".implode(', ',$updates)." WHERE day = '{$data['day']}'";
 
 	    print "$sql\n";
 	    $db->Execute($sql);
@@ -311,7 +326,7 @@ if (!empty($param['delta'])) {
 if ($param['test']) {
 	$topK = 30; // might as well!
 
-	$rows = $db->getAll("SELECT * FROM embedding_progress_clip INNER JOIN gridimage_embedding ON (seq_id = max_id) ORDER BY day DESC limit 5");
+	$rows = $db->getAll("SELECT * FROM $table_progress INNER JOIN $table_embedding ON (seq_id = max_id) ORDER BY day DESC limit 5");
 	foreach ($rows as $idx => $row) {
 		$queryEmbedding = array_values(unpack('g*', $row['embeddings']));
 		$needle = $row['gridimage_id'];

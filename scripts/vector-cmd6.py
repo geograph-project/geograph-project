@@ -576,7 +576,7 @@ def main():
     parser.add_argument(
         "-m", "--model",
         default="clip",
-        choices=["clip", "titan", "mpnet", "minilm", "bgesmall"],
+        choices=["clip", "pe", "titan", "mpnet", "minilm", "bgesmall"],
         help="The embedding model to use: 'clip' (default) or 'titan'."
     )
 
