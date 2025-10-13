@@ -1,0 +1,78 @@
+Testing out using Perception Enocder model, rather than CLIP
+
+
+
+main 'issue' is embeddings are 1024 rather than 512
+
+
+1. create gridimage_embedding_1024 to hold longer enbedding. (although held in varbinary anyway, so perhaps dont need seperate table!
+
+2. update scripts/ai-clip-rotate-ids.php to create table for 'pe' model
+	... the main issue is using gridimage_embedding_1024 to track progress, rather than from gridimage_label
+
+3. update _scripts/labeller.json.php to use different model,
+	... the main issue is using gridimage_embedding_1024 to track progress, rather than from gridimage_label
+
+4. Create a new colab script to do processing (embeding only dont need clipthelandscape) 
+
+5. Update api-facetql.php to return embeddings from gridimage_embedding_1024
+
+------
+
+6. Update s3vectors.php to inject into a new 'images-pe' vector index
+
+... also need to create a copy of tmp_emdedding_stat!
+
+7. Update embed-processor docker image, to do on-demand PE embedding - particllu for text
+
+8. Update api-facetql.php to **query** new images-pe vector index
+
+9. update imagelists3vector.class.php to work on new index
+
+10. Update any front end search functions to use new index. 
+	... clip-zero-search.php can already use it for the zero/clustering, not for searching
+
+11. Create new pe-processor docker image, to do the buik processing. 
+
+
+
+
+
+------
+
+RENAME TABLE tmp_emdedding_stat TO embedding_progress_clip;
+
+replace tmp_emdedding_stat embedding_progress_clip -- public_html/ai/clip-stats.php public_html/ai/clip-query.php public_html/ai/clip-progress.php scripts/s3vectors.php
+
+
+CREATE TABLE embedding_progress_pe LIKE embedding_progress_clip;
+
+
+
+{
+	model: "clip",
+	dimensions: 512,
+	hf_path: "openai/clip-vit-base-patch32", #can be used with transformers library
+	clip_model: "ViT-B/32", #for use with the openai CLIP library
+	embeddings: "gridimage_embedding WHERE model = 'clip'",
+	progress: "embedding_progress_clip",
+	s3vectors: "image-clip",
+	manticore: none,
+	labels: "gridimage_label" #via clipthelandscape submodel)
+},
+{
+	model: "pe",
+	dimensions: 1024,
+	hf_path: "facebook/PE-Core-B16-224", #can be not yet be used with transformers library?
+	pe_model: "PE-Core-B16-224", #for use with the dedicaed PE 'vision_encoder' libary
+	embeddings: "gridimage_embedding_1024 WHERE model = 'pe'",
+	progress: "embedding_progress_pe",
+	s3vectors: "image-pe",
+	manticore: none,
+	labels: none,
+}
+
+
+
+
+

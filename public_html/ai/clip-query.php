@@ -112,7 +112,7 @@ if (empty($_GET['inner'])) {
 
 
 	if (!empty($db)) {
-		$count = $db->getOne("select sum(count) from tmp_emdedding_stat where done is not null");
+		$count = $db->getOne("select sum(count) from embedding_progress_clip where done is not null");
 		$count = formatApproximateNumber($count);
 	} else {
 		$count = "1.6 million";

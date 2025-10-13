@@ -22,6 +22,7 @@
 
 //these are the arguments we expect
 $param=array('model'=>'clip','table'=>'tmp_label_clip','minimum'=>100000, 'start'=>8000000, 'end'=>9000000,
+	'dest_table'=>'gridimage_label', //some models may inject rows into other tables
 	'execute'=>false, 'purge'=>false, 'check'=>false, 'redo'=>false);
 
 
@@ -41,7 +42,7 @@ if ($param['redo']) {
 	$param['end'] = $row['last'];
 
 	//delete the failed records, otherwise, wont get injected into tmp_label_clip
-	$query = "DELETE FROM gridimage_label WHERE model = 'clip' AND label = 'Failed' AND gridimage_id BETWEEN {$param['start']} AND {$param['end']}";
+	$query = "DELETE FROM {$param['dest_table']} WHERE model = '{$param['model']}' AND label = 'Failed' AND gridimage_id BETWEEN {$param['start']} AND {$param['end']}";
 	print "$query;\n";
 		if ($param['execute'])
 			$db->Execute($query);
@@ -65,8 +66,8 @@ if ($param['check']) {
 	$sql = "select gi.gridimage_id div 50000 as shard, min(gi.gridimage_id) as first, max(gi.gridimage_id) as last, count(distinct gi.gridimage_id) as count
 	 ,count(distinct l.gridimage_id) as l_count, count(distinct e.gridimage_id) as e_count, count(distinct if(l.label = 'Failed',l.gridimage_id,NULL)) as failed
 	from gridimage_search gi
-	 left join gridimage_label l on (l.gridimage_id = gi.gridimage_id and l.model = 'clip')
-         left join gridimage_embedding e on (e.gridimage_id = gi.gridimage_id and e.model = 'clip' and e.type='image')
+	 left join gridimage_label l on (l.gridimage_id = gi.gridimage_id and l.model = '{$param['model']}')
+         left join gridimage_embedding e on (e.gridimage_id = gi.gridimage_id and e.model = '{$param['model']}' and e.type='image')
 	where gi.gridimage_id between \$start and \$end group by gridimage_id div 50000";
 
 	//create table tmp_embedding_check (primary key (shard))
@@ -98,7 +99,7 @@ if ($param['purge']) {
 
 	for($start = 1; $start < $max_id; $start+=20000) {
 		$end = $start + 20000 - 1;
-		$sql = "delete l.* from  gridimage_label l left join gridimage_embedding e using (gridimage_id) where l.model = 'clip' and e.gridimage_id is null and l.gridimage_id between $start and $end";
+		$sql = "delete l.* from  gridimage_label l left join gridimage_embedding e using (gridimage_id) where l.model = '{$param['model']}' and e.gridimage_id is null and l.gridimage_id between $start and $end";
 		print "$sql; ";
 		if ($param['execute']) {
 			$db->Execute($sql);
@@ -119,7 +120,7 @@ $minimum = intval($param['minimum']);
 
 $deleted = $added = null;
 if ($db->getOne("SHOW TABLES LIKE '$table'")) {
-	$sql = "delete t.* from $table t inner join gridimage_label using (gridimage_id) where model = $model";
+	$sql = "delete t.* from $table t inner join {$param['dest_table']} using (gridimage_id) where model = $model";
 
 	if ($param['execute']) {
 		$db->Execute($sql);
@@ -135,14 +136,16 @@ if ($count < $minimum) {
 
 //todo, figure out a way to make {$param['start'] dynamic
 // ... something like select MAX(gridimage_id) from gridimage_label where model = 'clip'
-// but might need to allow for out of order processing? 
+// but might need to allow for out of order processing?
 
 
-	$sql.= " select gi.gridimage_id, user_id ,realname, width, height, original_width, title, grid_reference, if(ii.gridimage_id is null, 0, 1) as skip_fs
+	$sql.= " select distinct gi.gridimage_id, user_id ,realname, width, height, original_width, title, grid_reference, if(ii.gridimage_id is null, 0, 1) as skip_fs
 	 from gridimage_search gi inner join gridimage_size using (gridimage_id)
-	 left join gridimage_label l on (l.gridimage_id = gi.gridimage_id and `model` = $model)
-	 left join images_with_224 ii on (ii.gridimage_id = gi.gridimage_id)
+	 left join {$param['dest_table']} l on (l.gridimage_id = gi.gridimage_id and `model` = $model)
+	 left join gridimage_embedding ii on (ii.gridimage_id = gi.gridimage_id)
 	 where l.gridimage_id is null and gi.gridimage_id between {$param['start']} and {$param['end']} limit $minimum";
+
+	//use gridimage_embedding, ratehr than images_with_224 as that shows which ones created 224, during the first processing run!
 
 	if ($param['execute']) {
 //print "$sql;\n";

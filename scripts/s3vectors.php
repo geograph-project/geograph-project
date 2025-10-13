@@ -33,7 +33,7 @@ require "./_scripts.inc.php";
 
 ##################################
 // Form commands for inserting rows into S3Vector index
-// note, only prints the command, although for image specifically, it can auto-execute sharded inserts using tmp_emdedding_stat
+// note, only prints the command, although for image specifically, it can auto-execute sharded inserts using embedding_progress_clip
 
 // NOTE: this function is used for 'initial' commissining of indexes, using the python client to do the bulk insert,
 //  ... partly used the python clien, so can use the boto API clinet, but also because it may need to call titen embedding fro bedrock.
@@ -112,7 +112,7 @@ if (!empty($param['insert'])) {
 
     } elseif ($source == 'image') {
         $cmd[] = '-t"gridimage_embedding USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)"';
-               //forcing the PRIMARY, is because the 'tmp_emdedding_stat' sharding is designed to work work on the primary
+               //forcing the PRIMARY, is because the 'embedding_progress_clip' sharding is designed to work work on the primary
                //on its own the optimizer chooses gridimage index, because it ends up using ORDER BY id for its own batching (500 a a time, so it loops in id order)
                //the double level of sharding, picks the wrong index!
 
@@ -126,17 +126,17 @@ if (!empty($param['insert'])) {
 
 
 		if (empty($db->readonly)) //by running this, we can actully get accurate stat!
-			$db->Execute("INSERT INTO tmp_emdedding_stat (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM tmp_emdedding_stat)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = tmp_emdedding_stat.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+			$db->Execute("INSERT INTO embedding_progress_clip (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM embedding_progress_clip)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = embedding_progress_clip.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
 
 
-		//create table tmp_emdedding_stat select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id from gridimage_embedding where type='image' group by substring(updated,1,10) order by null;
-		//alter table tmp_emdedding_stat add done datetime default null
-		//alter table tmp_emdedding_stat add primary key(day);
-		//replace into tmp_emdedding_stat select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id,null as done from gridimage_embedding where type='image' and seq_id >= (select max(min_id) from tmp_emdedding_stat) group by substring(updated,1,10);
+		//create table embedding_progress_clip select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id from gridimage_embedding where type='image' group by substring(updated,1,10) order by null;
+		//alter table embedding_progress_clip add done datetime default null
+		//alter table embedding_progress_clip add primary key(day);
+		//replace into embedding_progress_clip select substring(updated,1,10) as day,count(*) as count,min(seq_id) as min_id,max(seq_id) as max_id,null as done from gridimage_embedding where type='image' and seq_id >= (select max(min_id) from embedding_progress_clip) group by substring(updated,1,10);
 		//note, this replace will add any new days, but it WILL also replace the last day, usuaully a good thing, as it may have more images
 		//... its just htat it ALWAYS replaces last day (resetting done!), even if unnessary. could use max(max_id) as the crit, but then count(*)/min_id will be WRONG for the day, will be replaced with only NEW rows, not all rows. 
 		//but see vision-stat.php, which has a even better INSERT ... ON DUPLICATE KEY UPDATE ..., which only counts new rows
-		$data = $db->getAll("SELECT * FROM tmp_emdedding_stat WHERE done IS NULL AND `day` < date(now())");
+		$data = $db->getAll("SELECT * FROM embedding_progress_clip WHERE done IS NULL AND `day` < date(now())");
 		foreach ($data as $row) {
 			//todo
 			$min = max($row['min_id'], $row['delta_max']);
@@ -157,7 +157,7 @@ if (!empty($param['insert'])) {
 				}
 			}
 
-			$sql = "UPDATE tmp_emdedding_stat SET done=NOW() WHERE min_id = {$row['min_id']}";
+			$sql = "UPDATE embedding_progress_clip SET done=NOW() WHERE min_id = {$row['min_id']}";
 			print "# $sql;\n\n";
 			if ($param['insert'] > 2 && $return_status === 0 && $param['index'] == 'image-clip') { //shouldnt really be marking as done, unless it the real index!
 				//the connection might of closed!
@@ -218,12 +218,12 @@ if (!empty($param['delta'])) {
 		if ($model != 'clip') die("only clip supported for now");
 
 		if (empty($db->readonly)) //by running this, we can actully get accurate stat!
-			$db->Execute("INSERT INTO tmp_emdedding_stat (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM tmp_emdedding_stat)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = tmp_emdedding_stat.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+			$db->Execute("INSERT INTO embedding_progress_clip (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM embedding_progress_clip)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = embedding_progress_clip.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
 
-		//keep track with tmp_emdedding_stat. the 'done' column is updated by the main one, we have our own delta_max to keep track!
+		//keep track with embedding_progress_clip. the 'done' column is updated by the main one, we have our own delta_max to keep track!
 		// note, if update above, finds new rows, it resets done, which means we can carry on...
 
-		$data = $db->getRow("SELECT * FROM tmp_emdedding_stat WHERE done IS NULL AND (delta_max is null OR delta_max < max_id) LIMIT 1");
+		$data = $db->getRow("SELECT * FROM embedding_progress_clip WHERE done IS NULL AND (delta_max is null OR delta_max < max_id) LIMIT 1");
 		if (empty($data))
 			die("nothing to add\n");
 
@@ -297,7 +297,7 @@ if (!empty($param['delta'])) {
 		if ($last_id == $data['max_id'])
 			$updates[] = "done=now()";
 
-	    $sql = "UPDATE tmp_emdedding_stat SET ".implode(', ',$updates)." WHERE day = '{$data['day']}'";
+	    $sql = "UPDATE embedding_progress_clip SET ".implode(', ',$updates)." WHERE day = '{$data['day']}'";
 
 	    print "$sql\n";
 	    $db->Execute($sql);
@@ -311,7 +311,7 @@ if (!empty($param['delta'])) {
 if ($param['test']) {
 	$topK = 30; // might as well!
 
-	$rows = $db->getAll("SELECT * FROM tmp_emdedding_stat INNER JOIN gridimage_embedding ON (seq_id = max_id) ORDER BY day DESC limit 5");
+	$rows = $db->getAll("SELECT * FROM embedding_progress_clip INNER JOIN gridimage_embedding ON (seq_id = max_id) ORDER BY day DESC limit 5");
 	foreach ($rows as $idx => $row) {
 		$queryEmbedding = array_values(unpack('g*', $row['embeddings']));
 		$needle = $row['gridimage_id'];

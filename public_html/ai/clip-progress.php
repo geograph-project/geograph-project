@@ -7,7 +7,7 @@ require_once 'geograph/global.inc.php';
 $db = GeographDatabaseConnection();
 
 // Fetch daily stats
-$dailyStatsQuery = "SELECT `day`, `count` FROM `tmp_emdedding_stat` ORDER BY `day`";
+$dailyStatsQuery = "SELECT `day`, `count` FROM `embedding_progress_clip` ORDER BY `day`";
 $dailyStats = $db->GetAll($dailyStatsQuery);
 
 // Fetch total images
@@ -124,6 +124,7 @@ if ($n > 1) {
             options: {
                 scales: {
                     y: {
+			min: 0,
                         beginAtZero: true
                     }
                 }

@@ -53,9 +53,9 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	//TABLE_ROWS is very inaccurate!
 
 	if (empty($db->readonly)) //by running this, we can actully get accurate stat!
-		$db->Execute("INSERT INTO tmp_emdedding_stat (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM tmp_emdedding_stat)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = tmp_emdedding_stat.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
+		$db->Execute("INSERT INTO embedding_progress_clip (day, count, min_id, max_id, done) SELECT     substring(updated, 1, 10) AS day,     COUNT(*) AS new_count,     MIN(seq_id) AS new_min_id,     MAX(seq_id) AS new_max_id,     NULL AS done FROM     gridimage_embedding WHERE     type = 'image'     AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM embedding_progress_clip)  GROUP BY  day ON DUPLICATE KEY UPDATE     count = embedding_progress_clip.count + VALUES(count),      max_id = VALUES(max_id), `done`=NULL");
 
-	$number = $db->getOne("select SUM(count)*2 from tmp_emdedding_stat"); //only counts type=image
+	$number = $db->getOne("select SUM(count)*2 from embedding_progress_clip"); //only counts type=image
 
 	print "<p><b>".number_format($number,0)."</b> total CLIP embeddings saved (for image and title), so nominally ".number_format($number/2,0)." images.</p>";
 
@@ -81,8 +81,8 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		 FROM `tmp_label_clip` t left join gridimage_label l using (gridimage_id)");
 	printf('<p>Processing of current batch of %d images, centered around %d, is %.1f%% done. (should see this fluctuating)', $a['total'], $a['id'], $a['done']/$a['total']*100);
 
-	//in fact as have tmp_emdedding_stat can use it!
-	$rows = $db->getAll("SELECT * FROM tmp_emdedding_stat ORDER BY `day` DESC LIMIT 5");
+	//in fact as have embedding_progress_clip can use it!
+	$rows = $db->getAll("SELECT * FROM embedding_progress_clip ORDER BY `day` DESC LIMIT 5");
 	print "<p>Last 5 days: ";
 	foreach ($rows as $row)
 		print "{$row['day']}: {$row['count']} images, ";
