@@ -47,6 +47,8 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 	require_once('geograph/imagelists3vector.class.php');
 	$imagelist=new ImageListS3Vector;
+	if (!empty($_GET['model']) && $_GET['model'] == 'pe')
+		$imagelist->setModel('pe');
 
 	$metadata = false;
 	if (preg_match('/^(,?(id|wgs84_lat|wgs84_long|user_id|takenday|grid_reference))+$/',$_GET['select']) && $_GET['select'] != 'id')
@@ -162,6 +164,8 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 		$res['rows'] = false;
 		$res['meta'] = array('total_found'=>0, 'total'=>0, 'time' => $end-$start);
 	}
+
+###########################################
 
 } elseif (!empty($_GET['match'])) {
 	//this is tricky, if making a match query, must be trying to use this scripts ability to fetch image_vector
@@ -308,21 +312,20 @@ if ($order == 'RAND()' && empty($_GET['rnd'])) {
 
         // If we requested the image_vector, we need to fetch it from the database now
         if (strpos($_GET['select'], 'image_vector') !== false && !empty($res['rows'])) {
-            $image_ids = array_map(function($row) { return $row['id']; }, $res['rows']);
+            $image_ids = array_column($res['rows'], 'id');
             $id_list = implode(',', $image_ids);
 
             $ddb = GeographDatabaseConnection(true);
             $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-            $vector_rows = $ddb->GetAll("SELECT gridimage_id, embeddings FROM gridimage_embedding WHERE gridimage_id IN ($id_list) AND type='image'");
-
-            $vectors_map = [];
-            foreach ($vector_rows as $row) {
-                $vectors_map[$row['gridimage_id']] = base64_encode($row['embeddings']);
-            }
+		if (!empty($_GET['model']) && $_GET['model'] == 'pe') {
+            $vectors_map = $ddb->GetAssoc("SELECT gridimage_id, embeddings FROM gridimage_embedding_1024 WHERE gridimage_id IN ($id_list) AND type='image' AND model='pe'");
+		} else {
+            $vectors_map = $ddb->GetAssoc("SELECT gridimage_id, embeddings FROM gridimage_embedding WHERE gridimage_id IN ($id_list) AND type='image'"); //AND model='clip'
+		}
 
             foreach ($res['rows'] as &$row) {
                 if (isset($vectors_map[$row['id']])) {
-                    $row['image_vector'] = $vectors_map[$row['id']];
+                    $row['image_vector'] = base64_encode($vectors_map[$row['id']]);
                 } else {
                     $row['image_vector'] = null;
                 }

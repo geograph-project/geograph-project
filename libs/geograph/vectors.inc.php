@@ -3,7 +3,7 @@
 require_once("3rdparty/s3vectors.inc.php"); //defines queryS3Vectors
 
 //todo, move to global config!
-$CONF['embed_api'] = 'http://python-embed13.dev.svc.cluster.local:8000';
+$CONF['embed_api'] = 'http://python-embed16.dev.svc.cluster.local:8000';
 $CONF['s3_vector_bucket'] = 'geograph-vector-bucket';
 
 //for now leave the indexName hardcoded (similarly the manticore index name!)
@@ -11,7 +11,7 @@ $CONF['s3_vector_bucket'] = 'geograph-vector-bucket';
 ###################################################
 
 //parse a custom syntax, return a single vector for the query
-function getTextEmbeddingFromQuery(string $query): array
+function getTextEmbeddingFromQuery(string $query, $model = 'clip'): array
 {
 	require_once("3rdparty/vector.class.php"); //provides EmbeddingVector - needed for vector math
 
@@ -23,12 +23,12 @@ function getTextEmbeddingFromQuery(string $query): array
 
         // Process positive part
         if (!empty($positivePart)) {
-            $finalVector = processVectorPart($positivePart);
+            $finalVector = processVectorPart($positivePart, $model);
 	}
 
         // Process negative part
         if (!empty($negativePart)) {
-            $negativeVector = processVectorPart($negativePart);
+            $negativeVector = processVectorPart($negativePart, $model);
             if ($negativeVector) {
 		if (empty($finalVector)) {
 			//not sure, but seems we could support JUST negative!
@@ -53,7 +53,7 @@ function getTextEmbeddingFromQuery(string $query): array
      * @param string $part The query string part.
      * @return EmbeddingVector|null The resulting vector object or null on failure.
      */
-    function processVectorPart(string $part): ?EmbeddingVector
+    function processVectorPart(string $part, $model = 'clip'): ?EmbeddingVector
     {
         $vector = null;
 
@@ -64,7 +64,7 @@ function getTextEmbeddingFromQuery(string $query): array
         if (!empty($matches)) {
             foreach ($matches as $match) {
                 $imageId = (int)$match[1];
-                $imageVector = new EmbeddingVector(getImageEmbeddingById($imageId));
+                $imageVector = new EmbeddingVector(getImageEmbeddingById($imageId, 'image', $model));
 
                 if ($vector === null) {
                     $vector = $imageVector;
@@ -76,7 +76,7 @@ function getTextEmbeddingFromQuery(string $query): array
             // Remove all 'id:...' parts from the string to get the remaining text
             $textPart = trim(preg_replace('/id:(\d+)/', '', $part));
             if (!empty($textPart)) {
-                $textVector = new EmbeddingVector(getTextEmbedding($textPart));
+                $textVector = new EmbeddingVector(getTextEmbedding($textPart, $model));
                 if ($vector === null) {
                     $vector = $textVector;
                 } else {
@@ -86,7 +86,7 @@ function getTextEmbeddingFromQuery(string $query): array
         } else {
             // No image IDs found, process the entire part as text
             if (!empty($part)) {
-                $vector = new EmbeddingVector(getTextEmbedding($part));
+                $vector = new EmbeddingVector(getTextEmbedding($part, $model));
             }
         }
         return $vector;
@@ -94,21 +94,21 @@ function getTextEmbeddingFromQuery(string $query): array
 
 //copied from _getLabelVectorValueList
 // NOTE only supports clip, and intended for use with known labels
-function getTextEmbeddingWrapper($label) {
+function getTextEmbeddingWrapper($label, $model = 'clip') {
 	global $db;
 	if (empty($db))
 		$db = GeographDatabaseConnection(false);
 
         if (preg_match('/^id:(\d+)$/',$label,$m) || preg_match('/\/photo\/(\d+)$/',$label,$m)) {
                 //todo, in concept we COULD do both, and use vector->add() ?
-                return getImageEmbeddingById(intval($m[1]));
+                return getImageEmbeddingById(intval($m[1]), 'image', $model);
         }
         $quoted = $db->Quote($label);
-        $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted");
+        $binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted AND model = '$model'");
 
         if (empty($binary)) {
             // If not found in DB, try to get it from the embedding API
-            $r = getTextEmbedding($label);
+            $r = getTextEmbedding($label, $model);
             if (!empty($r) && is_array($r) && count($r) > 0) { // Check if API returned a valid non-empty array
                 // Optionally, save $r to DB here for future use
 		//remember to check $db->readonly
@@ -136,7 +136,7 @@ function getTextEmbeddingWrapper($label) {
  * @return array An associative array mapping each label/ID to its embedding vector (array of floats).
  *               Labels for which an embedding could not be found will have an empty array.
  */
-function getLabelVectors(array $labels, $is_id = null): array
+function getLabelVectors(array $labels, $is_id = null, $model = 'clip'): array
 {
     global $db;
     if (empty($db)) {
@@ -155,7 +155,7 @@ function getLabelVectors(array $labels, $is_id = null): array
     $column_to_query = $is_id ? 'id' : 'label';
 
     $placeholders = implode(',', array_fill(0, count($labels), '?'));
-    $sql = "SELECT id, label, embeddings FROM label_embedding WHERE $column_to_query IN ($placeholders)";
+    $sql = "SELECT id, label, embeddings FROM label_embedding WHERE $column_to_query IN ($placeholders) AND model = '$model'";
 
     $rs = $db->Execute($sql, $labels);
 
@@ -193,7 +193,7 @@ function getLabelVectors(array $labels, $is_id = null): array
     $text_labels_to_fetch_api = array_unique($text_labels_to_fetch_api);
 
     foreach ($text_labels_to_fetch_api as $text_label) {
-        $vector = getTextEmbedding($text_label);
+        $vector = getTextEmbedding($text_label, $model);
 
         if (empty($vector)) {
             continue;
@@ -219,7 +219,7 @@ function getLabelVectors(array $labels, $is_id = null): array
                 //$db->Execute("UPDATE label_embedding SET embeddings = ? WHERE id = ?", [$packedVector, $map_text_label_to_id[$text_label]]);
             } else {
                 // INSERT
-                $db->Execute("INSERT INTO label_embedding (label, embeddings) VALUES (?, ?)", [$text_label, $packedVector]);
+                $db->Execute("INSERT INTO label_embedding (label, embeddings, $model) VALUES (?, ?)", [$text_label, $packedVector, $model]);
             }
         }
     }
@@ -231,21 +231,25 @@ function getLabelVectors(array $labels, $is_id = null): array
 
 //copied from _getImageVectorValueList - really should be here (not specific to imagelist)
 // in general should be used in preference to getImageEmbedding, as that wont use gridimage_embedding table!
-function getImageEmbeddingById($id, $type = 'image') { //todo, $model = 'clip'
+function getImageEmbeddingById($id, $type = 'image', $model = 'clip') {
 	global $db;
 	if (empty($db))
 		$db = GeographDatabaseConnection(false);
 
         $type = $db->Quote($type);
-        $binary = $db->getOne("SELECT embeddings FROM gridimage_embedding WHERE gridimage_id = ".intval($id)." AND type=$type");
+	if ($model == 'pe') {
+		$binary = $db->getOne("SELECT embeddings FROM gridimage_embedding_1024 WHERE gridimage_id = ".intval($id)." AND type=$type AND model = '$model'");
+	} else {
+	        $binary = $db->getOne("SELECT embeddings FROM gridimage_embedding WHERE gridimage_id = ".intval($id)." AND type=$type AND model = '$model'");
+	}
         if (empty($binary)) {
 		//todo call getImageEmbedding!
 		$image=new GridImage($id, true);
 		if ($image->isValid() || $image->moderation_status != 'rejected') {
 			if ($type == 'image')
-				$vector = getImageEmbedding($image);
+				$vector = getImageEmbedding($image, false, false, $model);
 			else
-				$vector = getTextEmbedding($image->title, 'clip'); //default model anyway, but make sure, getImageEmbeddingById only supports clip anyway - as what gridimage_embedding will contain.
+				$vector = getTextEmbedding($image->title, $model);
 			if ($vector) {
 				//todo, save to gridimage_embedding!
 				//remember to check $db->readonly
@@ -352,7 +356,7 @@ if (empty($ch)) {
  * @return array An array of floats representing the image embedding vector on success,
  * or an empty array on failure (e.g., download error, API error, invalid response).
  */
-function getImageEmbedding($image, $use_ai_thumb = false, $check_exists = false) {
+function getImageEmbedding($image, $use_ai_thumb = false, $check_exists = false, $model = 'clip') {
     // 1. Get image URL and grab the .jpg
     if ($use_ai_thumb) {
         $url = $image->getAIThumbnail('fullpath', $check_exists);
@@ -376,7 +380,7 @@ function getImageEmbedding($image, $use_ai_thumb = false, $check_exists = false)
     $apiUrl = $CONF['embed_api'].'/image';
 
     // The data to send in the request body as a JSON string
-    $postData = json_encode(['image' => base64_encode($image_bytes)]);
+    $postData = json_encode(['image' => base64_encode($image_bytes), 'model'=>$model]);
     if ($postData === false) {
         error_log('get_image_embedding: Failed to JSON encode postData.');
         return [];
@@ -504,9 +508,11 @@ function getKNNResults(array $vector, int $limit = 30, string $index_name = 'lab
 	//convert manticore index to s3index
 	$mapped = array( // Hardcoded for now
 		'image_embedding' => 'image-clip', //although s3 idnex is 'image' only! (not the title of the image)
+		'image_embedding_1024' => 'image-pe',
 		'label_embedding' => 'label-clip',
 		'label_embedding_mpnet' => 'label-mpnet',
 		'tags_embedding' => 'tags-clip',
+		'tags_embedding_pe' => 'tags-pe',
 		'tags_embedding_mpnet' => 'tags-mpnet',
 	);
 
@@ -556,7 +562,7 @@ function getKNNResults(array $vector, int $limit = 30, string $index_name = 'lab
  */
 
 //NOTE! this is really just a test function, should probably use getZeroShotTags now.
-function getZeroShotLabels($image, $limit = 30, $src = false) {
+function getZeroShotLabels($image, $limit = 30, $src = false, $model = 'clip') {
     global $CONF, $memcache;
 
 	$mkey = $image->gridimage_id.$src??'';
@@ -577,7 +583,11 @@ function getZeroShotLabels($image, $limit = 30, $src = false) {
     $results = [];
 
     // 2. Decide whether to use S3Vectors or Manticore (KNN) based on configuration
-    $results = getKNNResults($vector, $limit, 'label_embedding', $src);
+	if ($model == 'pe') {
+	    $results = getKNNResults($vector, $limit, 'label_embedding_1024', $src);
+	} else {
+	    $results = getKNNResults($vector, $limit, 'label_embedding', $src);
+	}
 
     if ($results['http_code'] == 200) {
          $memcache->name_set('zero',$mkey,$results,$memcache->compress,$memcache->period_med);
@@ -642,10 +652,19 @@ function getZeroShotTags($image, $limit = 10, $input = 'title', $model = 'clip',
 		if (!in_array($input, array('image', 'title'))) //technically COULD use comment/description, but unlikly to work!
 			die("input not supported for CLIP");
 
-		$vector = getImageEmbeddingById($image->gridimage_id, $input); //supprts both image and title
+		$vector = getImageEmbeddingById($image->gridimage_id, $input, $model); //supprts both image and title
 
 			//src works as top/subject/prefix anyway!
 		$results = getKNNResults($vector, $limit, 'tags_embedding', $prefix);
+
+	} elseif ($model == 'pe') {
+		if (!in_array($input, array('image', 'title'))) //technically COULD use comment/description, but unlikly to work!
+			die("input not supported for PE");
+
+		$vector = getImageEmbeddingById($image->gridimage_id, $input, $model); //supprts both image and title
+
+			//src works as top/subject/prefix anyway!
+		$results = getKNNResults($vector, $limit, 'tags_embedding_pe', $prefix);
 
 	} elseif ($model == 'mpnet') {
 		if (!in_array($input, array('title', 'comment')))

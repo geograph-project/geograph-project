@@ -255,6 +255,8 @@ if (!empty($param['delta'])) {
 	    die("Unsupported index type '$type'.\n");
 	}
 
+print "$sql;\n\n";
+
 	// Process data in batches
 	$batchSize = 500; //s3vector limit!
 	$documentsBatch = [];
@@ -277,6 +279,14 @@ if (!empty($param['delta'])) {
 			$document['vector'] = array_values(unpack('g*', $value));
 		    } elseif ($columnName === 'seq_id') {
 			$last_id = $value; //just used for tracking, not actully updated!
+
+//todo, this should be auto-detected
+		    } elseif ($columnName === 'slat' || $columnName === 'slng') {
+			$document[$columnName] = floatval($value);
+		    } elseif ($columnName === 'taken' || $columnName === 'user_id') {
+			$document[$columnName] = intval($value);
+
+
 		    } else {
 			$document[$columnName] = $value;
 		    }
@@ -326,7 +336,7 @@ if (!empty($param['delta'])) {
 if ($param['test']) {
 	$topK = 30; // might as well!
 
-	$rows = $db->getAll("SELECT * FROM $table_progress INNER JOIN $table_embedding ON (seq_id = max_id) ORDER BY day DESC limit 5");
+	$rows = $db->getAll("SELECT * FROM $table_progress INNER JOIN $table_embedding ON (seq_id = min_id) ORDER BY day DESC limit 5");
 	foreach ($rows as $idx => $row) {
 		$queryEmbedding = array_values(unpack('g*', $row['embeddings']));
 		$needle = $row['gridimage_id'];

@@ -88,7 +88,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		} elseif (!empty($image['embeddings'])) {
 			$updates['type'] = $image['type'];
 			$updates['embeddings'] = base64_decode($image['embeddings']);
-			$db->Execute('REPLACE INTO gridimage_embedding SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+			if (strlen($updates['embeddings']) == 4096) { // each float is 4 bytes
+				$db->Execute('REPLACE INTO gridimage_embedding_1024 SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+			} else {
+				$db->Execute('REPLACE INTO gridimage_embedding SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+			}
 		}
 		print $db->Affected_Rows();
 		print "\n";
@@ -199,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$cols .= ", title";
 	elseif (!empty($_GET['comment']))
 		$cols .= ", title, comment";
-	elseif (strpos($_GET['model'],'clip') !== FALSE)
+	elseif (strpos($_GET['model'],'clip') !== FALSE || strpos($_GET['model'],'pe') !== FALSE)
 		$cols .= ", title"; //grid_reference - may be useful for some models, but incompatible with 'recent' (as uses gridimage, not gridimage_search
 
 	####################
@@ -207,7 +211,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$qmod = $db->Quote($_GET['model']);
 	$where = implode(" AND ",$where);
 
-	if (!empty($_GET['recent'])) {
+	if ($_GET['model'] == 'pe') {
+		//its not actylly submitting labels, only embeddings!
+
+		$sql = "select gi.gridimage_id,user_id $cols
+		from gridimage gi
+		$join
+		left join gridimage_embedding_1024 l on (l.gridimage_id = gi.gridimage_id and `model` = $qmod)
+		where $where
+		limit $limit";
+
+
+		$sql = "select t.*
+		from tmp_label_pe t
+		left join gridimage_embedding_1024 l on (l.gridimage_id = t.gridimage_id and `model` = $qmod)
+		where l.seq_id IS null
+		limit $limit";
+
+
+	} elseif (!empty($_GET['recent'])) {
 		if (strpos($join,'gridimage_size') === FALSE)
  			$join .= " inner join gridimage_size using (gridimage_id)"; //to help avoid failed uploads!
 			//we ottherwise still want to process pending/rejects here!
@@ -219,6 +241,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		left join gridimage_label l on (l.gridimage_id = gi.gridimage_id and `model` = $qmod)
 		where $where
 		order by gridimage_id desc
+		limit $limit";
+
+	} elseif(!empty($_GET['failed'])) {
+		$sql = "select gi.gridimage_id,user_id $cols
+		from gridimage_search gi
+		inner join gridimage_size using (gridimage_id)
+		inner join gridimage_label l on (l.gridimage_id = gi.gridimage_id and `model` = $qmod)
+		where label = 'Failed' AND gi.gridimage_id between 525285 and 555116
 		limit $limit";
 
 	} elseif ($_GET['model'] == 'clip' && empty($_GET['user_id'])) { //todo, could check for tmp_label_$model table??

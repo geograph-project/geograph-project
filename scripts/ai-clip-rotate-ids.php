@@ -35,6 +35,8 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 ##################################
 
 if ($param['redo']) {
+	if ($param['model'] == 'pe') die("not supported for pe yet\n");
+
 	$row = $db->getRow("SELECT * FROM tmp_embedding_check WHERE failed > 0 LIMIT 1");
 	if (empty($row))
 		die("noen\n");
@@ -60,6 +62,8 @@ if ($param['redo']) {
 }
 
 if ($param['check']) {
+	if ($param['model'] == 'pe') die("not supported for pe yet\n");
+
         $max_id = $db->getOne("SELECT max(gridimage_id) FROM gridimage_search");
         $total = 0;
 
@@ -94,6 +98,8 @@ if ($param['check']) {
 //this should be a ONE OFF process. jsut here, as want to do it as a series of little queries rather than one big one!
 
 if ($param['purge']) {
+	if ($param['model'] == 'pe') die("not supported for pe (not appliable)\n");
+
 	$max_id = $db->getOne("SELECT max(gridimage_id) FROM gridimage_label");
 	$total = 0;
 

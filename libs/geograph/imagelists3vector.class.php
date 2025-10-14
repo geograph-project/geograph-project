@@ -42,6 +42,7 @@ class ImageListS3Vector extends ImageList
 {
     private $vector_bucket;
     public $vector_index = 'image-clip';
+    public $model = 'clip';
     public $awsRegion = "us-east-1"; //s3vector, isn't available in all regions - so we have to define the region to use!
 
     /**
@@ -51,6 +52,13 @@ class ImageListS3Vector extends ImageList
     function __construct() {
         global $CONF;
         $this->vector_bucket = $CONF['s3_vector_bucket'];
+    }
+
+    function setModel($model) {
+	if (in_array($model,array('clip','pe'))) {
+		$this->model = $model;
+		$this->vector_index = "image-$model";
+	}
     }
 
     /**
@@ -66,7 +74,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => getImageEmbeddingById($id,$type) ],
+            'queryVector' => ['float32' => getImageEmbeddingById($id,$type, $this->model) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => false,
@@ -86,7 +94,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => getTextEmbeddingFromQuery($label) ],
+            'queryVector' => ['float32' => getTextEmbeddingFromQuery($label, $this->model) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => false,
@@ -113,7 +121,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => getTextEmbeddingFromQuery($label) ],
+            'queryVector' => ['float32' => getTextEmbeddingFromQuery($label, $this->model) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => false,
@@ -130,6 +138,7 @@ class ImageListS3Vector extends ImageList
      * @return int The number of images found and loaded into the list, or 0 on error.
      */
     function _getImagesByPayload($queryPayload) {
+
         $results = queryS3Vectors(
             $queryPayload,
             $this->awsRegion
@@ -227,7 +236,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => getTextEmbeddingFromQuery($criteria['label']) ],
+            'queryVector' => ['float32' => getTextEmbeddingFromQuery($criteria['label'], $this->model) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => false,
@@ -244,7 +253,7 @@ class ImageListS3Vector extends ImageList
         $queryPayload = [
             'vectorBucketName' => $this->vector_bucket,
             'indexName' => $this->vector_index,
-            'queryVector' => ['float32' => $criteria['vector'] ?? getTextEmbeddingFromQuery($criteria['label']) ],
+            'queryVector' => ['float32' => $criteria['vector'] ?? getTextEmbeddingFromQuery($criteria['label'], $this->model) ],
             'topK' => $limit,
             'returnDistance' => true,
             'returnMetadata' => $metadata,
