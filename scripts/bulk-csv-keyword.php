@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-$param = array('sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_railway_images', 'start'=>0,
+$param = array('sleep'=>0, 'folder'=>'/mnt/efs/data/','filename'=>'geograph_railway_images', 'start'=>0, 'limit'=>0,
 	 'keyword' => '@(tags,contexts) "_SEP_ railway _SEP_"', 'geo'=>false, 'prefix'=>'', 'original'=>false, '1024'=>true);
 
 chdir(__DIR__);
@@ -31,8 +31,15 @@ require "./_scripts.inc.php";
 
 $sph = GeographSphinxConnection('sphinxql',true);
 
-$cols = "id as gridimage_id,realname,title,takenday,user_id,wgs84_lat,wgs84_long,submitted,original";
-$pop = 2; //remove two cols! from the CSV
+$cols = "id as gridimage_id,realname,title,takenday,user_id,wgs84_lat,wgs84_long,types"; //this is what gets output to the csv!
+$pop = 0;
+
+if ($param['original']) {
+	$cols .= ",original"; //only needed to find out if a 'larger' (or 1024) is available!
+	$pop = 1; //remove 1 col(s) from the CSV
+}
+
+######################################################################################################################################################
 
 if (!empty($param['geo'])) {
         require_once('3rdparty/facet-functions.php');
@@ -65,6 +72,16 @@ if (!empty($param['geo'])) {
 
 	$pop++; //remove the dist too!
 
+} elseif ($param['limit']) { //limit implies rand, but do note it is limit per index, not overall!
+	$match = $sph->Quote($param['keyword']);
+	$filter = '';
+
+	//$cols .=",grid_reference,place,county,country";
+
+	$sql = "select $cols FROM sample8 WHERE MATCH($match) \$and $filter ORDER BY RAND() LIMIT {$param['limit']} OPTION ranker=none";
+	if ($param['limit']> 1000)
+		$sql .= ", max_matches = {$param['limit']}";
+
 } else {
 	$match = $sph->Quote($param['keyword']);
 	$filter = '';
@@ -88,6 +105,7 @@ $h = fopen($param['folder'].'/'.$param['filename'].'.metadata.csv','wb'); //we w
 
 $loop = 1;
 $c = 0;
+$i = array();
 
 //in theory is MUCH quicker to loop though shards one at a time....
 foreach (array('sample8A','sample8B','sample8C','sample8D','sample8E') as $index) {
@@ -111,7 +129,7 @@ foreach (array('sample8A','sample8B','sample8C','sample8D','sample8E') as $index
 
 		if ($loop == 1) {
 			$keys = array_keys($recordSet->fields);
-			array_unshift($keys,'filename'); foreach(range(1,$pop) as $l) { array_pop($keys); } //remove not needed
+			array_unshift($keys,'filename'); if ($pop) foreach(range(1,$pop) as $l) { array_pop($keys); } //remove not needed
 			fputcsv($h,$keys);
 		}
 
@@ -127,11 +145,14 @@ foreach (array('sample8A','sample8B','sample8C','sample8D','sample8E') as $index
 					//in theory should use getImageFromOriginal, but _getOriginalpath is simpler
 					// - just at risk of returning a path that doesnt exist (ie the 1024 hasnt actully been created yet) - it WONT be created.
 					$path = $image->_getOriginalpath(FALSE, false, '_1024x1024');
+					@$i['1024']++;
 				} else {
 					$path = $image->_getOriginalpath(false, false);
+					@$i['original']++;
 				}
 			} else {
-				$path = $image->_getFullpath(false, false); //we dont check existinence, but if did then use $use_get=2 so that it downloads it, rather than just using HEAD
+				$path = $image->_getFullpath(false, false); //we dont check existinence, but if did only $use_get=2 so that it downloads it, rather than just using HEAD - if you need the file!
+				@$i['full']++;
 			}
 
 			//sphinx/manticore is already utf8
@@ -139,8 +160,11 @@ foreach (array('sample8A','sample8B','sample8C','sample8D','sample8E') as $index
 			//$row['realname'] = latin1_to_utf8($row['realname']);
 			$row['wgs84_lat'] = round(rad2deg($row['wgs84_lat']),6);
 			$row['wgs84_long'] = round(rad2deg($row['wgs84_long']),6);
+			if (!empty($row['types']))
+				$row['types'] = trim(str_replace('_SEP_',';',$row['types']),' ;');
 
-			foreach(range(1,$pop) as $l) { array_pop($row); } //remove not needed
+			if ($pop)
+				foreach(range(1,$pop) as $l) { array_pop($row); } //remove not needed
 
 			fputcsv($h,array($param['prefix'].$path)+$row);
 
@@ -150,14 +174,22 @@ foreach (array('sample8A','sample8B','sample8C','sample8D','sample8E') as $index
 		}
 		$recordSet->Close();
 
-
 		if (!empty($param['sleep']))
 			sleep($param['sleep']);
+
 		$loop++;
+
+		if (!empty($param['limit'])) //with a limit only do one loop!
+			break;
 	}
 }
 print "\n\n";
 
 ##################################
 
+print $param['folder'].'/'.$param['filename'].'.metadata.csv'."\n";
+print "Stats: ";print_r($i);
+print "\n\n";
+passthru("head {$param['folder']}/{$param['filename']}.metadata.csv");
+print "\n\n";
 
