@@ -24,7 +24,7 @@ $smarty->display('_std_begin.tpl');
             <div class="column">
 		<b>Coverage:</b><br>
 		<select id="coverage" name="coverage" style="width: 215px;">
-		    <option value="valeofffestiniog" selected>Vale of Ffestiniog</option>
+		    <option value="valeofffestiniog" selected>Vale of Ffestiniog (SH64 and SH74)</option>
 		    <option value="myriadsh">Myriad SH</option>
 		    <option value="national">National</option>
 		</select>
