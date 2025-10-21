@@ -20,8 +20,7 @@ $smarty->display('_std_begin.tpl');
 
 <div class="main-layout2">
     <form id="queryForm" class="sidebar" onsubmit="return false;">
-	<div class="results-container">
-            <div class="column">
+            <div class="colum">
 		<b>Coverage:</b><br>
 		<select id="coverage" name="coverage" style="width: 215px;">
 		    <option value="valeofffestiniog" selected>Vale of Ffestiniog (SH64 and SH74)</option>
@@ -29,6 +28,7 @@ $smarty->display('_std_begin.tpl');
 		    <option value="national">National</option>
 		</select>
 	    </div>
+	<div class="results-container">
             <div class="column">
         	<b>AI Query 1:</b><br>
 	        <input type="text" name="query1" id="queryInput1" placeholder="Enter your query" style="width: 200px;">
