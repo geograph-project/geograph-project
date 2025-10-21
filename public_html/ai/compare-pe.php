@@ -115,7 +115,7 @@ $(function() {
                 olbounds = "-4.0846952743236,52.93908175401,-3.7909739060408,53.033777228772";
                 break;
             case 'myriadsh':
-                olbounds = "PLACEHOLDER"; // Placeholder as requested
+                olbounds = "-4.9520110590438,52.560977841629,-3.5085777898973,53.487176816288";
                 break;
             case 'national':
                 // No bounds
