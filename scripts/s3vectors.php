@@ -21,7 +21,7 @@
  */
 
 //these are the arguments we expect
-$param=array('verbose'=>false, 'index'=>'test-index', 'query'=>'road', 'insert'=>false, 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false, 'delta'=>false, 'test'=>false);
+$param=array('verbose'=>false, 'index'=>'test-index', 'query'=>'road', 'insert'=>false, 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false, 'delta'=>false, 'test'=>false, 'limit'=>20000);
 
 $ABORT_GLOBAL_EARLY = true; //this stops connecting to memcache, so FileSystem will get a fresh STS token! (not from memcache!)
 
@@ -246,6 +246,8 @@ if (!empty($param['delta'])) {
 		$min = max($data['min_id'], $data['delta_max']);
 		$max = $data['max_id'];
 		$sql .= " AND seq_id BETWEEN $min AND $max ORDER BY seq_id"; //limit 500 - note order is IMPORTANT
+
+$sql .= " LIMIT ".$param['limit'];
 
 	    } else {
 	        $sql .= " LIMIT 10";
