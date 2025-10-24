@@ -73,7 +73,9 @@ function putVectors(string $vectorBucketName, string $indexName, array $document
     list($httpCode, $response) = s3vectorRequest($canonicalUri, $amzTarget, $payload, $awsRegion, $verbose);
 
     if ($httpCode >= 200 && $httpCode < 300) {
-        $message = "Successfully uploaded " . count($vectors) . " vectors.";
+		$str =  json_encode($payload);
+
+        $message = "Successfully uploaded " . count($vectors) . " vectors (".strlen($str)." bytes).";
     } else {
         $message = "API call failed with status code " . $httpCode . ".";
         if ($response) {
