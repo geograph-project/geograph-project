@@ -6,8 +6,12 @@ require_once 'geograph/global.inc.php';
 // Get a database connection
 $db = GeographDatabaseConnection();
 
+$model = 'clip';
+if (!empty($_GET['model']) && preg_match('/^w+$/',$_GET['model']))
+	$model = $_GET['model'];
+
 // Fetch daily stats
-$dailyStatsQuery = "SELECT `day`, `count` FROM `embedding_progress_clip` ORDER BY `day`";
+$dailyStatsQuery = "SELECT `day`, `count` FROM `embedding_progress_$model` ORDER BY `day`";
 $dailyStats = $db->GetAll($dailyStatsQuery);
 
 // Fetch total images
