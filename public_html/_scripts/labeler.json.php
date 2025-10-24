@@ -85,6 +85,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$updates['label'] = $image['label'];
 			$updates['score'] = $image['score'] ?? 0;
 			$db->Execute('REPLACE INTO gridimage_label SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+
+			if ($_GET['model'] == 'pe' && $image['label'] == 'Failed') {
+				//the original clip actully used gridimage_label to track process, but pe only uses gridimage_embedding_1024, so need to insert there too!
+				unset($updates['label']);
+				unset($updates['score']);
+				$updates['embeddings'] = null;
+				$db->Execute('REPLACE INTO gridimage_embedding_1024 SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+			}
+
 		} elseif (!empty($image['embeddings'])) {
 			$updates['type'] = $image['type'];
 			$updates['embeddings'] = base64_decode($image['embeddings']);
@@ -371,6 +380,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		//if configured can load thumbnails directly from r2 instead (avoids clobbering proxy cache, with lots of little used files) - Sippy still involved!
 		if (!empty($CONF['r2_dev_photo_endpoint']))
 			$CONF['STATIC_HOST'] = $CONF['r2_dev_photo_endpoint'];
+
+//for now, to get most out of paid instances
+$sleep = 1;
 
 		$data = array('prefix'=>$CONF['STATIC_HOST'],'sleep'=>$sleep,'rows'=>$processedImages);
 		outputJSON($data); //passed by ref
