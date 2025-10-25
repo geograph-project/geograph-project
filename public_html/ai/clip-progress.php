@@ -7,7 +7,7 @@ require_once 'geograph/global.inc.php';
 $db = GeographDatabaseConnection();
 
 $model = 'clip';
-if (!empty($_GET['model']) && preg_match('/^w+$/',$_GET['model']))
+if (!empty($_GET['model']) && preg_match('/^\w+$/',$_GET['model']))
 	$model = $_GET['model'];
 
 // Fetch daily stats
@@ -57,7 +57,7 @@ if ($n > 1) {
     }
 
     // Predict completion date
-    if ($slope > 0) {
+    if ($slope > 0 && $cumulativeTotal < $totalImages) {
         $remainingImages = $totalImages - $cumulativeTotal;
         $daysToCompletion = $remainingImages / $slope;
         $lastDate = new DateTime(end($labels));
