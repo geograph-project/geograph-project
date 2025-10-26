@@ -341,6 +341,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 					//insert a row, otherwise will just keep happening!
 					$db->Execute('REPLACE INTO gridimage_label SET gridimage_id=?, model=?, label=?, score=0', array($image->gridimage_id, $_GET['model'], 'Error') );
 
+					if ($_GET['model'] == 'pe') {
+						//the original clip actully used gridimage_label to track process, but pe only uses gridimage_embedding_1024, so need to insert there too!
+						$db->Execute('REPLACE INTO gridimage_embedding_1024 SET gridimage_id=?, model=?, embeddings=NULL', array($image->gridimage_id, $_GET['model']) );
+					}
+
 					debug_message('[Geograph] MISSING IMAGE '.$image->gridimage_id,print_r($image,true));
 					continue;
 				}
