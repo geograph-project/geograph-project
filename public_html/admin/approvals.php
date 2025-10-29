@@ -58,6 +58,8 @@ if (!empty($_POST['status'])) {
 		}
 
 		$qresult = $db->Quote($result);
+		if (!empty($_POST['extreme']))
+			$qresult .= ", `extreme` = ".$db->Quote($_POST['extreme']);
 		$sql = "UPDATE moderation SET moderation_status = $qresult, moderator_id = $user_id, moderated = NOW() WHERE moderation_id = $moderation_id";
 		$db->Execute($sql);
 
@@ -167,12 +169,30 @@ if (!empty($_GET['stats'])) {
 ##############################
 
 if (!empty($_GET['ai'])) {
+
+	$where = array("ai_class is not null");
+
+	if (!empty($_GET['source']) && preg_match('/^\w+$/',$_GET['source']))
+		$where['source'] = "source = ".$db->Quote($_GET['source']);
+	else
+		$where['source'] = "source = 'user_about'";
+
+	if (!empty($_GET['miss']))
+		$where['miss'] = "moderation_status != ai_class";
+
+	if (!empty($_GET['status']) && preg_match('/^\w+$/',$_GET['status']))
+		$where['status'] = "moderation_status = ".$db->Quote($_GET['status']);
+
+	if (!empty($_GET['class']) && preg_match('/^\w+$/',$_GET['class']))
+		$where['ai'] = "ai_class = ".$db->Quote($_GET['class']);
+
+	$where = implode(' AND ',$where);
 	$data = $db->getAll("
-	select user_id,moderation_status as status,ai_class,title as content from moderation where ai_class is not null order by ai_class limit 100
+	select user_id,moderation_status as status,ai_class,title as content from moderation where $where order by ai_class limit 250
 	");
 
 	print "<h2>AI Reviwewed Content (sample)</h2>";
-	print "<p>status is 'human' status, the 'ai_class' is the AI prediction. Can click column headers to reorder table";
+	print "<p>The <tt>status</tt> is human reviewer result, the <tt>ai_class</tt> is the AI prediction. Can click column headers to reorder rows. Sample of upto 250 results";
 
 	print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
 
@@ -486,6 +506,13 @@ $offset = 0;
 	}
 ?>
 
+
+<div id="custom-dialog" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); padding:20px; background:white; border:1px solid #ccc; z-index:1000;">
+    <p>Is this item reporting of **extreme nature** (requires censorship)?</p>
+    <button id="btn-yes">Yes</button>
+    <button id="btn-no">No</button>
+</div>
+
 <style>
 
 
@@ -555,7 +582,7 @@ $offset = 0;
 const forms = document.querySelectorAll('.ajax-form');
 
 forms.forEach(form => {
-  form.addEventListener('submit', function(event) {
+  form.addEventListener('submit', async function(event) { //Must be 'async'
     event.preventDefault();
 
     const formData = new FormData(form);
@@ -566,6 +593,12 @@ forms.forEach(form => {
     // Add the submitter's name and value to the FormData
     if (submitter && submitter.name && submitter.value) {
         formData.append(submitter.name, submitter.value);
+
+	if (submitter.value === 'flagged') {
+		// EXECUTION PAUSES HERE until the user clicks 'Yes' or 'No'
+	        const extremeValue = await askForExtremeConfirmation(); 
+	        formData.set('extreme', extremeValue); // Will be 'Y' or 'N'
+	}
     }
 
     let classNameToRemove = '';
@@ -607,6 +640,37 @@ forms.forEach(form => {
     });
   });
 });
+
+/**
+ * Displays a custom dialog and returns a Promise that resolves 
+ * with the user's choice ('Y' or 'N').
+ */
+function askForExtremeConfirmation() {
+    const dialog = document.getElementById('custom-dialog');
+    const btnYes = document.getElementById('btn-yes');
+    const btnNo = document.getElementById('btn-no');
+
+    // Show the dialog
+    dialog.style.display = 'block';
+
+    return new Promise(resolve => {
+        // Function to close the dialog
+        const cleanupAndResolve = (value) => {
+            dialog.style.display = 'none';
+            btnYes.removeEventListener('click', handleYes);
+            btnNo.removeEventListener('click', handleNo);
+            resolve(value);
+        };
+
+        // Event handlers for the buttons
+        const handleYes = () => cleanupAndResolve('Y');
+        const handleNo = () => cleanupAndResolve('N');
+
+        // Attach listeners (ensure they are only attached once per prompt)
+        btnYes.addEventListener('click', handleYes);
+        btnNo.addEventListener('click', handleNo);
+    });
+}
 
 </script>
 <?
