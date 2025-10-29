@@ -166,6 +166,37 @@ if (!empty($_GET['stats'])) {
 
 ##############################
 
+if (!empty($_GET['ai'])) {
+	$data = $db->getAll("
+	select user_id,moderation_status as status,ai_class,title as content from moderation where ai_class is not null order by ai_class limit 100
+	");
+
+	print "<h2>AI Reviwewed Content (sample)</h2>";
+	print "<p>status is 'human' status, the 'ai_class' is the AI prediction. Can click column headers to reorder table";
+
+	print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
+
+	print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=#eee class=\"report sortable\" id=\"photolist\"><THEAD>";
+		print "<tr><th>".implode("</th><th>",array_map('htmlentities',array_keys($data[0])))."</th></tr>";
+	print "</THEAD><TBODY>";
+	foreach($data as $row) {
+		print "<tr>";
+		foreach($row as $key => $value) {
+			if (is_numeric($value)) {
+				print "<td align=right>".floatval($value);
+			} else {
+				print "<td>".htmlentities($value);
+			}
+		}
+	}
+	print "</table>";
+
+	$smarty->display('_std_end.tpl');
+	exit;
+}
+
+##############################
+
 if (!empty($_GET['deleted'])) {
 
 	$data = $db->getAll("
