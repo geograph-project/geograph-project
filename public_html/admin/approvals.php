@@ -48,6 +48,11 @@ if (!empty($_POST['status'])) {
 	foreach($_POST['status'] as $moderation_id => $result) {
 		$moderation_id = intval($moderation_id);
 
+		if ($result == 'extreme') {
+			$result = 'flagged';
+			$_POST['extreme'] = true;
+		}
+
 		$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
 
 		//check BEFORE update, if there has been recent reports - so can skip sending multiple reports for the same user.
@@ -488,6 +493,7 @@ $offset = 0;
 				print "<form method=post class=\"ajax-form $className\">"; //for now each is a seperate form submission!
 			print "<button type=submit name=status[{$row['moderation_id']}] value=approved>Looks Safe</button>";
 			print "<button type=submit name=status[{$row['moderation_id']}] value=flagged>Flag!</button>";
+			print "<button type=submit name=status[{$row['moderation_id']}] value=extreme>Alarm!</button>";
 				print "</form>";
 			print '</div>';
 
@@ -505,13 +511,6 @@ $offset = 0;
 		print "Nothing to display.";
 	}
 ?>
-
-
-<div id="custom-dialog" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); padding:20px; background:white; border:1px solid #ccc; z-index:1000;">
-    <p>Is this item reporting of **extreme nature** (requires censorship)?</p>
-    <button id="btn-yes">Yes</button>
-    <button id="btn-no">No</button>
-</div>
 
 <style>
 
@@ -572,6 +571,10 @@ $offset = 0;
 .grid-container button[value=flagged] {
 	background-color:pink;
 }
+.grid-container button[value=extreme] {
+	background-color:red;
+	color:white;
+}
 .grid-container button[name=delete] {
 	background-color:pink;
 }
@@ -593,12 +596,6 @@ forms.forEach(form => {
     // Add the submitter's name and value to the FormData
     if (submitter && submitter.name && submitter.value) {
         formData.append(submitter.name, submitter.value);
-
-	if (submitter.value === 'flagged') {
-		// EXECUTION PAUSES HERE until the user clicks 'Yes' or 'No'
-	        const extremeValue = await askForExtremeConfirmation(); 
-	        formData.set('extreme', extremeValue); // Will be 'Y' or 'N'
-	}
     }
 
     let classNameToRemove = '';
@@ -640,37 +637,6 @@ forms.forEach(form => {
     });
   });
 });
-
-/**
- * Displays a custom dialog and returns a Promise that resolves 
- * with the user's choice ('Y' or 'N').
- */
-function askForExtremeConfirmation() {
-    const dialog = document.getElementById('custom-dialog');
-    const btnYes = document.getElementById('btn-yes');
-    const btnNo = document.getElementById('btn-no');
-
-    // Show the dialog
-    dialog.style.display = 'block';
-
-    return new Promise(resolve => {
-        // Function to close the dialog
-        const cleanupAndResolve = (value) => {
-            dialog.style.display = 'none';
-            btnYes.removeEventListener('click', handleYes);
-            btnNo.removeEventListener('click', handleNo);
-            resolve(value);
-        };
-
-        // Event handlers for the buttons
-        const handleYes = () => cleanupAndResolve('Y');
-        const handleNo = () => cleanupAndResolve('N');
-
-        // Attach listeners (ensure they are only attached once per prompt)
-        btnYes.addEventListener('click', handleYes);
-        btnNo.addEventListener('click', handleNo);
-    });
-}
 
 </script>
 <?
