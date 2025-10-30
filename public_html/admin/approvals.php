@@ -222,6 +222,55 @@ if (!empty($_GET['ai'])) {
 
 ##############################
 
+if (!empty($_GET['ai2'])) {
+
+	$where = array("ai_assessment is not null");
+
+	if (!empty($_GET['source']) && preg_match('/^\w+$/',$_GET['source']))
+		$where['source'] = "source = ".$db->Quote($_GET['source']);
+	else
+		$where['source'] = "source = 'user_website'";
+
+	if (!empty($_GET['miss']))
+		$where['miss'] = "moderation_status != ai_class";
+
+	if (!empty($_GET['status']) && preg_match('/^\w+$/',$_GET['status']))
+		$where['status'] = "moderation_status = ".$db->Quote($_GET['status']);
+
+	if (!empty($_GET['class']) && preg_match('/^\w+$/',$_GET['class']))
+		$where['ai'] = "ai_assessment = ".$db->Quote($_GET['class']);
+
+	$where = implode(' AND ',$where);
+	$data = $db->getAll("
+	select user_id,moderation_status as status,ai_class,ai_assessment,title as content from moderation_all where $where order by ai_class limit 250
+	");
+
+	print "<h2>AI Reviwewed Content (sample)</h2>";
+	print "<p>The <tt>status</tt> is human reviewer result, the <tt>ai_assessment</tt> is the AI assessment of the CONTENT of the URL. Can click column headers to reorder rows. Sample of upto 250 results";
+
+	print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
+
+	print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=#eee class=\"report sortable\" id=\"photolist\"><THEAD>";
+		print "<tr><th>".implode("</th><th>",array_map('htmlentities',array_keys($data[0])))."</th></tr>";
+	print "</THEAD><TBODY>";
+	foreach($data as $row) {
+		print "<tr>";
+		foreach($row as $key => $value) {
+			if (is_numeric($value)) {
+				print "<td align=right>".floatval($value);
+			} else {
+				print "<td>".htmlentities($value);
+			}
+		}
+	}
+	print "</table>";
+
+	$smarty->display('_std_end.tpl');
+	exit;
+}
+
+##############################
+
 if (!empty($_GET['deleted'])) {
 
 	$data = $db->getAll("
