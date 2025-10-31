@@ -224,11 +224,38 @@ if (!empty($_GET['ai'])) {
 
 if (!empty($_GET['ai2'])) {
 
+$comments = array(
+    'normal'      => 'A **safe and potentially relevant** link.',
+    'personal'    => 'A **safe, personal** website (e.g., a hobby blog).',
+    'unrelated'   => '**Safe**, but the topic is **not related** to Geograph or the location.',
+    'unsafe'      => 'Site appears **unsafe** (e.g., explicit content, security risk, or malware).',
+    'mismatch'    => 'Content **doesn\'t match the URL** (likely a domain was bought by spammers).',
+    'holding'     => 'The page is now a **static placeholder** (e.g., "Coming Soon" or a parked domain).',
+    'spam'        => 'Site appears to be **low-quality marketing or link-dropping spam**.',
+    'gone'        => 'The **specific page no longer exists** (returns a "Not Found" error).',
+    'unknown'     => 'Unable to determine (e.g., site unclear, or got blocked).',
+    'failed'      => 'The **website is completely offline** (server refusal or timeout).',
+    '' => 'pending',
+);
+
+	$rows = $db->getAssoc("select ai_assessment,count(*),title as example from moderation_all inner join user_stat using (user_id) group by ai_assessment");
+	print "<table cellspacing=0 cellpadding=4 border=1>";
+	foreach ($comments as $key => $value) {
+		print "<tr>";
+		print "<td>$key";
+		print "<td>".str_replace('**','',$value);
+		print "<td>$key";
+		if (!empty($rows[$key]))
+			print "<td align=right>".implode("<td>",array_map('htmlentities',$rows[$key]))."</td>";
+	}
+	print "</table><br><br>";
+
+
 	$where = array("ai_assessment is not null");
 
 	if (!empty($_GET['source']) && preg_match('/^\w+$/',$_GET['source']))
 		$where['source'] = "source = ".$db->Quote($_GET['source']);
-	else
+	elseif (empty($_GET['table']))
 		$where['source'] = "source = 'user_website'";
 
 	if (!empty($_GET['miss']))
@@ -241,11 +268,22 @@ if (!empty($_GET['ai2'])) {
 		$where['ai'] = "ai_assessment = ".$db->Quote($_GET['class']);
 
 	$where = implode(' AND ',$where);
+
+	if (!empty($_GET['table']) && $_GET['table'] == 'gridimage_link') {
+
+	$data = $db->getAll("
+	select gridimage_id,content_id,ai_assessment,HTTP_Status,url as content from gridimage_link where $where limit 250
+	");
+
+	} else {
+
 	$data = $db->getAll("
 	select user_id,moderation_status as status,ai_class,ai_assessment,title as content from moderation_all where $where order by ai_class limit 250
 	");
 
-	print "<h2>AI Reviwewed Content (sample)</h2>";
+	}
+
+	print "<h2>AI Reviewed <u>Content</u> (sample)</h2>";
 	print "<p>The <tt>status</tt> is human reviewer result, the <tt>ai_assessment</tt> is the AI assessment of the CONTENT of the URL. Can click column headers to reorder rows. Sample of upto 250 results";
 
 	print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
@@ -258,6 +296,15 @@ if (!empty($_GET['ai2'])) {
 		foreach($row as $key => $value) {
 			if (is_numeric($value)) {
 				print "<td align=right>".floatval($value);
+			} elseif ($key == 'ai_assessment') {
+				$color = 'gray';
+				if ($value == 'unsafe' || $value == 'spam' || $value == 'mismatch')
+					$color = 'red;font-weight:bold';
+				elseif ($value == 'personal' || $value == 'normal')
+					$color = 'green';
+				elseif ($value == 'unrelated')
+					$color = 'black';
+				print "<td style=color:$color>".htmlentities($value);
 			} else {
 				print "<td>".htmlentities($value);
 			}
