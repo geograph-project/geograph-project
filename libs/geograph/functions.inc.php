@@ -867,6 +867,8 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 		exit;
 	} elseif (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
 
+$input = $threshold;
+
 		//fudge it a bit - our servers are generally busier
 		$threshold *= 2; 
 		$threshold += 2;
@@ -880,10 +882,24 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 
 		if ($load>$threshold)
 		{
+			//we should explicitly log these (just looking for 503's doesnt log the actual load, but is also mized wit 503s from other reason!)
+			trigger_error(implode("\t", array(
+				'dieUnderHighLoad',
+				"i=$input",
+				"t=$threshold",
+				"l=$load",
+				`hostname`,
+				$_SERVER['HTTP_HOST'],
+				$_SERVER['REQUEST_URI'],
+				$_SERVER['HTTP_REFERER'],
+				$_SERVER['HTTP_USER_AGENT'],
+			)), E_USER_NOTICE);
+
 			if ($CONF['template']=='archive') {
 				//heritrix doesn't understand 503 errors - so lets cause it to timeout.... (uses a socket timeout of 20000ms)
 				sleep(30);
 			}
+
 			header("HTTP/1.1 503 Service Unavailable");
 			if (!empty($_GET['q']))
 				$smarty->assign('searchq',stripslashes($_GET['q']));
