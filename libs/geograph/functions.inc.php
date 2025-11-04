@@ -891,8 +891,8 @@ $input = $threshold;
 				`hostname`,
 				$_SERVER['HTTP_HOST'],
 				$_SERVER['REQUEST_URI'],
-				$_SERVER['HTTP_REFERER'],
-				$_SERVER['HTTP_USER_AGENT'],
+				@$_SERVER['HTTP_REFERER'],
+				@$_SERVER['HTTP_USER_AGENT'],
 			)), E_USER_NOTICE);
 
 			if ($CONF['template']=='archive') {

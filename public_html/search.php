@@ -949,8 +949,11 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		$engine = new SearchEngine($i);
 
 		if (empty($engine->criteria)) {
-			dieUnderHighLoad(0,'search_unavailable.tpl');
-			die("Invalid Search Parameter");
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
+			$template = "static_404.tpl";
+			$smarty->display($template);
+			exit;
 		}
 		
 		if ($_GET['form'] == 'advanced' && empty($_GET['legacy'])) {
@@ -1090,8 +1093,11 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	$engine = new SearchEngine($i);
 
 	if (empty($engine->criteria)) {
-		dieUnderHighLoad(0,'search_unavailable.tpl');
-		die("Invalid Search Parameter");
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+		$template = "static_404.tpl";
+		$smarty->display($template);
+		exit;
 	}
 
 	if (!empty($engine->criteria) && !empty($engine->criteria->searchtext)) {
@@ -1468,8 +1474,11 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		require_once('geograph/searchcriteria.class.php');
 		$engine = new SearchEngine($i);
 		if (empty($engine->criteria)) {
-			dieUnderHighLoad(0,'search_unavailable.tpl');
-			die("Invalid Search Parameter");
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
+			$template = "static_404.tpl";
+			$smarty->display($template);
+			exit;
 		}
 		$query = $engine->criteria;
 		if ($query->searchclass != 'Special') {
