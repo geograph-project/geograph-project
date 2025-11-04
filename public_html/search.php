@@ -1092,11 +1092,13 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 	$engine = new SearchEngine($i);
 
-	if (empty($engine->criteria)) {
+	if (empty($engine->criteria)) { //check if not a valid result
 		header("HTTP/1.0 404 Not Found");
 		header("Status: 404 Not Found");
 		$template = "static_404.tpl";
-		$smarty->display($template);
+		if ($_SERVER['REQUEST_METHOD'] !== 'HEAD') {
+			$smarty->display($template);
+		}
 		exit;
 	}
 
@@ -1104,12 +1106,19 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		$smarty->assign('welsh_url',"/chwilio/?q=".urlencode($engine->criteria->searchtext)."&lang=cy");
 	}
 
-	if (isset($_GET['legacy']) 
+	if (isset($_GET['legacy'])
 		&& (!empty($engine->criteria->searchq) || !empty($engine->criteria->searchtext) || !empty($engine->criteria->x) )
 		&& empty($engine->criteria->limit6) && empty($engine->criteria->limit1) ) {
 		header("HTTP/1.1 503 Service Unavailable");
 		$smarty->assign('searchq',stripslashes($_GET['q']));
 		$smarty->display('function_disabled.tpl');
+		exit;
+	}
+
+	if ($_SERVER['REQUEST_METHOD'] === 'HEAD') {
+		//as a HEAD, no point contining and doing any processing, will get a implicit 200 OK.
+		//technically will return 200 even if the search currently return no results, but we dont return 404 for GETs either like that.
+		//we only return 404 above, if not a valid i= number
 		exit;
 	}
 
