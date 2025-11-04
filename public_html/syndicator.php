@@ -342,6 +342,23 @@ if (!empty($q) && preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$q,$ll) && 
 
 	$images = new SearchEngine($_GET['i']);
 
+	if (empty($images->criteria)) { //check if not a valid result
+                header("HTTP/1.0 404 Not Found");
+                header("Status: 404 Not Found");
+
+		//so, the result should be roughly in the right format!
+		$item = new FeedItem();
+		$item->title = "Results Not Available";
+		$item->description = "This particular Query can no longer be run";
+		$item->date = time();
+		$item->author = $rss->title;
+
+		$rss->addItem($item);
+		$rss->saveFeed($format, $rssfile);
+		exit;
+	}
+
+
 	$rss->description = "Images".$images->criteria->searchdesc;
 	$rss->syndicationURL = $baselink."feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".$format_extension";
 
@@ -359,6 +376,7 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 
 	if (!empty($images->error)) {
 
+		//so, the result should be roughly in the right format!
 		$item = new FeedItem();
 		$item->title = $images->error;
 		$item->description = "Unfortunatly it doesn't appear the search was processed, this is most likly a invalid combination of search terms.";
@@ -369,9 +387,7 @@ if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 		$item->author = $rss->title;
 
 		$rss->addItem($item);
-
 		$rss->saveFeed($format, $rssfile);
-
 		exit;
 	}
 
