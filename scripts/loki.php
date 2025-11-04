@@ -52,6 +52,7 @@ $param=array(
 	'string'=>false, //extra filter to apply
 	'second'=>false, //extra filter to apply
 	'not'=>false, //extra not filter (only works in single string mode)
+	'not2'=>false, //extra not filter (only works in single string mode)
 	'status'=>false, //limit resuts to specifc https status (not compatible with json/stream filter!)
 	'duration'=>false, //extra duration filter
 	'hours'=>false, //specify a number of hours to use with 'string' query. Defaults to one hour!
@@ -117,7 +118,9 @@ if (empty($CONF['loki_address']))
 			if (!is_dir($source))
 				mkdir($source);
 
-			$cmd = "php ".__DIR__."/loki.php --filename=$source$base --date=$d --limit=5000 --all=1 --compress=1 --config={$param['config']}";
+			if ($param['limit'] < 100) //the normal default is 10, so this has 5k as default in auto
+				$param['limit'] = 5000;
+			$cmd = "php ".__DIR__."/loki.php --filename=$source$base --date=$d --limit={$param['limit']} --all=1 --compress=1 --config={$param['config']}";
 
 			if ($param['auto'] == 'ingress')
 				//{job="tcl-ingress/ingress-nginx", stream="stdout"} |= "production-geograph-http"
@@ -196,7 +199,7 @@ if (empty($CONF['loki_address']))
 		while (1) {
 			// getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) {
 			$r = getlogs($query, $fp, $param['limit'], $start, $end);
-			if (posix_isatty(STDOUT))
+			if (posix_isatty(STDOUT) || $param['stats'])
 				printf("%d, count:%d, max:%s, last:%s\n", $c, $r['count'], $r['max'], $r['max']?date('r',$r['max']/1000000000):'');
 
 			//todo if ($r['status'] != 'success') continue; //to retry the last, possibly after a long sleep!
@@ -304,13 +307,21 @@ function getlogs($query, $fp = null, $limit = 5000, $start = null, $end = null) 
 	if (!empty($param['second']))
                 $query .= ' |= "'.str_replace('"','\"',$param['second']).'"';
 
+	if (!empty($param['not2']))
+		$query .= ' != "'.str_replace('"','\"',$param['not2']).'"';
+
 	if (!empty($param['duration']) && strpos($param['base'],'manticore"'))
 		$query .= ' | regexp `\] (?P<duration>\\d+\.\\d+) sec \\d+\\.\\d+ sec ` | duration > '.$param['duration'];
 	if (!empty($param['duration']) && strpos($param['base'],'nginx"'))
 		$query .= ' | regexp `" (?P<duration>\\d+\.\\d+) http` | duration > '.$param['duration'];
 
 	if (!empty($param['status'])) {
-		$pattern = 'pattern `<_> - <_> <_> "<_> <path> <_>" "<_>" <status> <_> "<_>" "<agent>"`';
+		if (strpos($query,'ingress-nginx') !== FALSE) { //already has $base added
+			$pattern = 'pattern `<_> - <_> <_> "<_> <path> <_>" <status> <_> "<_>" "<agent>"`';
+		} else {
+			//our own nginx logs has hostname added (between path and status)
+			$pattern = 'pattern `<_> - <_> <_> "<_> <path> <_>" "<_>" <status> <_> "<_>" "<agent>"`';
+		}
 		$query .= " | $pattern";
 		$query .= " | status=\"{$param['status']}\"";
 	}
