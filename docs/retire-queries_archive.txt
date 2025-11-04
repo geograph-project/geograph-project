@@ -1,0 +1,113 @@
+database: geograph_live
+################################################################################
+queries_archive Search Queries Performed (Historic)     primary_archive Y       Y       InnoDB  153002427       43932139520     4405035008      2025-11-04 11:57:40
+Max: 214927770 = 7 = 10000000
+USE geograph_live;
+CREATE TABLE queries_part LIKE queries;
+ALTER TABLE queries_part ENGINE InnoDB PARTITION BY RANGE(id) (
+PARTITION p0 VALUES LESS THAN (10000000),
+PARTITION p1 VALUES LESS THAN (20000000),
+PARTITION p2 VALUES LESS THAN (30000000),
+PARTITION p3 VALUES LESS THAN (40000000),
+PARTITION p4 VALUES LESS THAN (50000000),
+PARTITION p5 VALUES LESS THAN (60000000),
+PARTITION p6 VALUES LESS THAN (70000000),
+PARTITION p7 VALUES LESS THAN (80000000),
+PARTITION p8 VALUES LESS THAN (90000000),
+PARTITION p9 VALUES LESS THAN (100000000),
+PARTITION p10 VALUES LESS THAN (110000000),
+PARTITION p11 VALUES LESS THAN (120000000),
+PARTITION p12 VALUES LESS THAN (130000000),
+PARTITION p13 VALUES LESS THAN (140000000),
+PARTITION p14 VALUES LESS THAN (150000000),
+PARTITION p15 VALUES LESS THAN (160000000),
+PARTITION p16 VALUES LESS THAN (170000000),
+PARTITION p17 VALUES LESS THAN (180000000),
+PARTITION p18 VALUES LESS THAN (190000000),
+PARTITION p19 VALUES LESS THAN (200000000),
+PARTITION p20 VALUES LESS THAN (210000000),
+PARTITION p21 VALUES LESS THAN (220000000),
+PARTITION p22 VALUES LESS THAN MAXVALUE
+);
+INSERT INTO queries_part SELECT * FROM queries_archive WHERE (user_id > 0 AND use_timestamp > DATE_SUB(NOW(),INTERVAL 10 YEAR))
+OR favorite = 'Y'
+OR use_timestamp > DATE_SUB(NOW(),INTERVAL 1 YEAR);
+REPLACE INTO queries_part SELECT * FROM queries WHERE (user_id > 0 AND use_timestamp > DATE_SUB(NOW(),INTERVAL 10 YEAR))
+OR favorite = 'Y'
+OR use_timestamp > DATE_SUB(NOW(),INTERVAL 1 YEAR);
+SET autocommit = 0;
+LOCK TABLES queries WRITE, queries_archive WRITE, queries_part WRITE;
+REPLACE INTO queries_part SELECT * FROM queries WHERE id > 214927770;
+REPLACE INTO queries_part SELECT * FROM queries WHERE use_timestamp > DATE_SUB(NOW(),INTERVAL 1 HOUR);
+UNLOCK TABLES;
+RENAME TABLE queries_archive TO queries_archive_old , queries TO queries_old, queries_part TO queries;
+COMMIT;
+Execute? y
+CREATE TABLE queries_part LIKE queries;
+Tue, 04 Nov 2025 12:01:16 +0000, took 0.024 seconds, 0 affected rows.
+
+ALTER TABLE queries_part ENGINE InnoDB PARTITION BY RANGE(id) (
+PARTITION p0 VALUES LESS THAN (10000000),
+PARTITION p1 VALUES LESS THAN (20000000),
+PARTITION p2 VALUES LESS THAN (30000000),
+PARTITION p3 VALUES LESS THAN (40000000),
+PARTITION p4 VALUES LESS THAN (50000000),
+PARTITION p5 VALUES LESS THAN (60000000),
+PARTITION p6 VALUES LESS THAN (70000000),
+PARTITION p7 VALUES LESS THAN (80000000),
+PARTITION p8 VALUES LESS THAN (90000000),
+PARTITION p9 VALUES LESS THAN (100000000),
+PARTITION p10 VALUES LESS THAN (110000000),
+PARTITION p11 VALUES LESS THAN (120000000),
+PARTITION p12 VALUES LESS THAN (130000000),
+PARTITION p13 VALUES LESS THAN (140000000),
+PARTITION p14 VALUES LESS THAN (150000000),
+PARTITION p15 VALUES LESS THAN (160000000),
+PARTITION p16 VALUES LESS THAN (170000000),
+PARTITION p17 VALUES LESS THAN (180000000),
+PARTITION p18 VALUES LESS THAN (190000000),
+PARTITION p19 VALUES LESS THAN (200000000),
+PARTITION p20 VALUES LESS THAN (210000000),
+PARTITION p21 VALUES LESS THAN (220000000),
+PARTITION p22 VALUES LESS THAN MAXVALUE
+);
+Tue, 04 Nov 2025 12:01:16 +0000, took 0.276 seconds, 0 affected rows.
+
+INSERT INTO queries_part SELECT * FROM queries_archive WHERE (user_id > 0 AND use_timestamp > DATE_SUB(NOW(),INTERVAL 10 YEAR))
+OR favorite = 'Y'
+OR use_timestamp > DATE_SUB(NOW(),INTERVAL 1 YEAR);
+Tue, 04 Nov 2025 12:31:38 +0000, took 1822.412 seconds, 754051 affected rows.
+
+REPLACE INTO queries_part SELECT * FROM queries WHERE (user_id > 0 AND use_timestamp > DATE_SUB(NOW(),INTERVAL 10 YEAR))
+OR favorite = 'Y'
+OR searchclass = 'Special'
+OR use_timestamp > DATE_SUB(NOW(),INTERVAL 1 YEAR);
+command terminated with exit code 137
+
+
+
+REPLACE INTO queries_part SELECT * FROM queries WHERE searchclass = 'Special';
+INSERT IGNORE INTO queries SELECT * FROM queries_archive_old WHERE searchclass = 'Special';
+
+
+# should keep ones we have linked to!
+
+create table links_to_queries select gridimage_link_id,gridimage_id,content_id,url,HTTP_Status_final,next_check FROM links_full where url like 'h%://www.geograph.%/search.php?i=%';
+alter table links_to_queries add `id` int(10) unsigned NOT NULL;
+update links_to_queries set id = substring_index(substring_index(url,'&',1),'=',-1);
+
+alter ignore table links_to_queries add unique(id);
+
+Primary.geograph_live>explain select * from links_to_queries inner join queries_archive_old using (id) limit 10;
++------+-------------+---------------------+--------+---------------+---------+---------+-----------------------------------+------+-------+
+| id   | select_type | table               | type   | possible_keys | key     | key_len | ref                               | rows | Extra |
++------+-------------+---------------------+--------+---------------+---------+---------+-----------------------------------+------+-------+
+|    1 | SIMPLE      | links_to_queries    | ALL    | id            | NULL    | NULL    | NULL                              | 8333 |       |
+|    1 | SIMPLE      | queries_archive_old | eq_ref | PRIMARY       | PRIMARY | 4       | geograph_live.links_to_queries.id | 1    |       |
++------+-------------+---------------------+--------+---------------+---------+---------+-----------------------------------+------+-------+
+2 rows in set (0.001 sec)
+
+INSERT IGNORE INTO queries SELECT a.* FROM links_to_queries inner join queries_archive_old a using (id);
+
+Query OK, 1610 rows affected, 173 warnings (4.098 sec)
+Records: 1783  Duplicates: 173  Warnings: 173

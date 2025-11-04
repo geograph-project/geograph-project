@@ -388,8 +388,11 @@ if (isset($_GET['fav']) && $i) {
 		$data = array();
 
 		if (empty($engine->criteria)) {
-			dieUnderHighLoad(0,'search_unavailable.tpl');
-			die("Invalid Search Parameter");
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
+			$template = "static_404.tpl";
+			$smarty->display($template);
+			exit;
 		}
 
 		$query = $engine->criteria;

@@ -26,8 +26,11 @@
 //these are the arguments we expect
 $param=array(
 	'host'=>'',
+
 	'rows'=>0,
-	's' => 'MRG_MyISAM',
+
+	'table'=>'',
+
 	'd' => 'InnoDB',
 );
 
@@ -54,8 +57,14 @@ print "database: $database\n";
 
 $where = array();
 $where[] = "table_schema = DATABASE()";
-$where[] = "table_name like '%\\_archive'";
 
+
+if (!empty($param['table'])) {
+	$where[] = "table_name = ".$db->Quote($param['table']);
+
+} else {
+	$where[] = "table_name like '%\\_archive'";
+}
 
 ############################################
 
@@ -79,7 +88,16 @@ foreach ($rows as $row) {
 		print "SKIPPING {$row['table_name']}\n\n";
 		continue;
 	}
+	$table = $row['table_name'];
 
+	if ($db->getOne("SHOW TABLES LIKE '{$table}_old'"))
+		die("{$table}_old already exists!\n");
+	if ($db->getOne("SHOW TABLES LIKE '{$table}_archive_old'"))
+		die("{$table}_archive_old already exists!\n");
+	if ($db->getOne("SHOW TABLES LIKE '{$table}_part'"))
+		print("{$table}_part already exists - will be deleted!\n");
+
+	#################################################################
 
 	$sql = "select TABLE_NAME,INDEX_NAME,SEQ_IN_INDEX,COLUMN_NAME,INDEX_TYPE,CARDINALITY,DATA_TYPE 
 	from information_schema.STATISTICS inner join information_schema.columns using (TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME) 
@@ -108,16 +126,16 @@ foreach ($rows as $row) {
 
 	#################################################################
 
-	$table = $row['table_name'];
 
-	$count = $db->getOne("SELECT COUNT(*) FROM {$table}")+$db->getOne("SELECT COUNT(*) FROM {$table}_archive");
-	$log = floor(log10($count));
+//	$count = $db->getOne("SELECT COUNT(*) FROM {$table}")+$db->getOne("SELECT COUNT(*) FROM {$table}_archive");
+	$max_id = max($db->getOne("SELECT MAX($pkey) FROM {$table}"),$db->getOne("SELECT MAX($pkey) FROM {$table}_archive"));
+	$log = floor(log10($max_id))-1;
 	$div = pow(10,$log);
 
-print "$count = $log = $div\n";
+print "Max: $max_id = $log = $div\n";
 
 	$bits = array();
-	foreach (range(0,ceil($count/$div)) as $p) {
+	foreach (range(0,ceil($max_id/$div)) as $p) {
 		$max = ($p+1)*$div;
 		$bits[] = "PARTITION p$p VALUES LESS THAN ($max)";
 	}
@@ -127,28 +145,51 @@ print "$count = $log = $div\n";
 	if ($db->getOne("SHOW TABLES LIKE '{$table}_part'"))
 		$sqls[] = "DROP TABLE {$table}_part";
 
+	#################################################################
+	//copy data first, may be really slow!
+
 	print "USE $database;\n"; //just to make sure if copy/pasting!
 	$sqls[] = "CREATE TABLE {$table}_part LIKE {$table}";
-	$sqls[] = "ALTER TABLE {$table}_part ENGINE {$param['d']} PARTITION BY RANGE($pkey) (\n".implode(",\n",$bits).")";
+	$sqls[] = "ALTER TABLE {$table}_part ENGINE {$param['d']} PARTITION BY RANGE($pkey) (\n".implode(",\n",$bits)."\n)";
 
+
+
+
+$where = "WHERE (user_id > 0 AND use_timestamp > DATE_SUB(NOW(),INTERVAL 10 YEAR))
+OR favorite = 'Y'
+OR searchclass = 'Special'
+OR use_timestamp > DATE_SUB(NOW(),INTERVAL 1 YEAR)";
+//keep 'special' as they are the ones that join on gridimage_query
+
+	$sqls[] = "INSERT INTO {$table}_part SELECT * FROM {$table}_archive $where";
+	$sqls[] = "REPLACE INTO {$table}_part SELECT * FROM {$table} $where";
+
+	#################################################################
+	//then do the final reorg
 
 	//The correct way to use LOCK TABLES and UNLOCK TABLES with transactional tables, such as InnoDB tables, is to begin a transaction with SET autocommit = 0 (not START TRANSACTION) followed by LOCK TABLES, and to not call UNLOCK TABLES until you commit the transaction explicitly.
 
+
+
 	$sqls[] = "SET autocommit = 0";
+
+
 	if ($db->getOne("SHOW TABLES LIKE '{$table}_merge'")) {
 		$sqls[] = "LOCK TABLES {$table} WRITE, {$table}_archive WRITE, {$table}_part WRITE, {$table}_merge WRITE";
 		$sqls[] = "RENAME TABLE {$table}_merge TO {$table}_merge_old";
 	} else
 		$sqls[] = "LOCK TABLES {$table} WRITE, {$table}_archive WRITE, {$table}_part WRITE";
 
-	$sqls[] = "INSERT INTO {$table}_part SELECT * FROM {$table}_archive";
-	$sqls[] = "INSERT INTO {$table}_part SELECT * FROM {$table}";
+	//might be slow but unavoidable?
+	$sqls[] = "REPLACE INTO {$table}_part SELECT * FROM {$table} WHERE $pkey > $max_id";
+	$sqls[] = "REPLACE INTO {$table}_part SELECT * FROM {$table} WHERE use_timestamp > DATE_SUB(NOW(),INTERVAL 1 HOUR)";
 
-	$sqls[] = "RENAME TABLE {$table}_archive TO {$table}_archive_old";
-	$sqls[] = "RENAME TABLE {$table} TO {$table}_old";
-	$sqls[] = "RENAME TABLE {$table}_part TO {$table}";
+	$sqls[] = "UNLOCK TABLES"; //but cant rename while have the table lock!
+
+	$sqls[] = "RENAME TABLE {$table}_archive TO {$table}_archive_old "
+			. ", {$table} TO {$table}_old"
+			. ", {$table}_part TO {$table}";
 	$sqls[] = "COMMIT";
-	$sqls[] = "UNLOCK TABLES";
 
 	#################################################################
 
