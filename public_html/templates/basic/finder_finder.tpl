@@ -208,7 +208,7 @@ touch-action:inherit;
 </style>
 
 <div class="finder-container">
-	<div class="tabHolder scroll-container">
+	<div class="tabHolder scroll-container full-version">
 		<a class="tabSelected nowrap">Quick Results</a>
 		<a class="tab nowrap keywords-only" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">Original Search</a>
 		<a class="tab nowrap keywords-only" data-template="/browser/redirect.php?q={q}&amp;loc={loc}&amp;dist={distance}">Image Browser</a>
@@ -277,12 +277,12 @@ touch-action:inherit;
 		<a href="#" class="tab nowrap" data-display="details">Details</a>
 		<a href="#" class="tab nowrap" data-display="river" title="our own format that displays a large image with details">GeoRiver</a>
 		<a href="#" class="tab nowrap" data-display="map">Map</a>
-		<a class="nowrap keywords-only" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">more...</a>
+		<a class="nowrap keywords-only full-version" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">more...</a>
 	</div>
 	<div id="results" class="results-box">
 		<p>Just click Update above to see recent images.</p>
 
-		When searching we have offer two different styles of search... (<i>either can be combined with a location, date or contributor filter, more advanced filtering available via Original Search or Browser above</i>)
+		When searching we have offer two different styles of search... (<i>either can be combined with a location, date or contributor filter<span class="full-version">, more advanced filtering available via Original Search or Browser above</span></i>)
 
 		<h3>Keywords Mode</h3>
 
@@ -307,9 +307,9 @@ touch-action:inherit;
 		href="https://www.geograph.org.uk/article/Using-Looks-Like-Search">Using &quot;Looks Like&quot; 
 		Search</a>.</i></p>
 
-		<h3>More</h3>
+		<h3 class="full-version">More</h3>
 
-		<p>Or maybe looking for original <a href="/search.php?form=text">Advanced Search</a>? Note however for 
+		<p class="full-version">Or maybe looking for original <a href="/search.php?form=text">Advanced Search</a>? Note however for 
 		many queries the <a href="https://development.geograph.org.uk/browser/#!start">Image Browser</a> 
 		offers even more options.</p>
 
@@ -317,7 +317,7 @@ touch-action:inherit;
 
 	<div id="more-results-prompt" class="hidden" style="text-align: center; padding: 20px;">
 		<span id="results-count2"></span>
-		<span class="nowrap">Continue in: 
+		<span class="nowrap full-version">Continue in: 
 		<a href="#" data-template="/search.php?do=1&searchtext={q}&amp;location={loc}&amp;distancem={distance}">Original Search</a>
 		or
 		<a href="#" data-template="/browser/redirect.php?q={q}&loc={loc}&date_start={date_start}&date_end={date_end}&contributor={contributor}&distance={distance}">Image Browser</a></span>
@@ -361,6 +361,15 @@ function restoreInitialHelp() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('standalone') === 'true') {
+        document.querySelectorAll('.full-version').forEach(function(element) {
+            //doing both, to try to make sure stays hidden, eg some code maniputates classes, otehrs change the style directly
+            element.style.display = 'none';
+            element.classList.add('hidden');
+        });
+    }
+
     document.getElementById('finder-form').addEventListener('submit', function(event) {
         event.preventDefault();
         performSearch();
@@ -396,6 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	performSearch();
     });
 
+    if (document.getElementById('you-button'))
     document.getElementById('you-button').addEventListener('click', function(event) {
         event.preventDefault();
 	const element =  document.getElementById('contributor');
