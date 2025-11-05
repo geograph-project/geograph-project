@@ -80,7 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$updates = array();
 		$updates['gridimage_id'] = intval($image['image_id']); //remember that gridimage_id is used as (part of!) unique key
 		$updates['model'] = $_GET['model'];
-		$updates['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
 		if (!empty($image['label'])) {
 			$updates['label'] = $image['label'];
 			$updates['score'] = $image['score'] ?? 0;

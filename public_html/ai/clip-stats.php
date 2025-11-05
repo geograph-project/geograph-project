@@ -40,7 +40,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	print "<hr>";
 
 	$number =  $db->cacheGetOne(3600*6, "SELECT count(*) FROM gridimage_label         WHERE model = ".$db->Quote($_GET['model']));
-	$number += $db->cacheGetOne(3600*24,"SELECT count(*) FROM gridimage_label_archive WHERE model = ".$db->Quote($_GET['model']));
+//	$number += $db->cacheGetOne(3600*24,"SELECT count(*) FROM gridimage_label_archive WHERE model = ".$db->Quote($_GET['model']));
 	print "<p style=color:gray>At least <b>".number_format($number,0)."</b> total image-label pairs saved (can be multiple labels per image) - not updated in real time.</p>";
 
 	$row = $db->getRow("SELECT * FROM gridimage_label WHERE model = ".$db->Quote($_GET['model'])." ORDER BY seq_id DESC LIMIT 1");
