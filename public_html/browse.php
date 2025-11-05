@@ -43,6 +43,11 @@ require_once('geograph/rastermap.class.php');
 //block bots from going crazy crawling lots of pages
 if (!preg_match('/^\/gridref\/\w{1,2}\d{4}$/',$_SERVER['REQUEST_URI']) //we let bots crawl simple 4fig GRs
 && !appearsToBePerson()) { //this will only catch identiable bots
+
+	if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'Baiduspider')!==FALSE) {
+	        header('HTTP/1.0 403 Forbidden');
+	        exit;
+	}
 	rate_limiting('browse.php', 5, true);
 }
 

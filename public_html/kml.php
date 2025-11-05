@@ -32,9 +32,16 @@ if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE) {
      header('HTTP/1.0 403 Forbidden');
      exit;
 }
+if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'Baiduspider')!==FALSE) {
+        header('HTTP/1.0 403 Forbidden');
+        exit;
+}
 
 
 if (isset($_GET['id']))  {
+
+	rate_limiting('photo.kml', 5, true);
+
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	$image=new GridImage;

@@ -24,6 +24,11 @@
 if (empty($_SERVER['HTTP_USER_AGENT']))
         die("no scraping");
 
+if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'Baiduspider')!==FALSE && empty($_GET['label'])) {
+        header('HTTP/1.0 403 Forbidden');
+        exit;
+}
+
 require_once('geograph/global.inc.php');
 //init_session();
 init_session_or_cache(3600*24, 3600);
