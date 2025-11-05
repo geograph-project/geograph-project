@@ -133,7 +133,7 @@ if (!empty($_GET['preview_user'])) {
 
 	print "</table>";
 	if (empty($user['images']) && (!empty($user['website']) || !empty($user['about_yourself'])))
-		print "<i>No images submitted - profile will not display link or the about text</p>";
+		print "<i>No images submitted - profile <b>will not display</b> email, link or the about text</p>";
 
 	$smarty->display('_std_end.tpl');
 	exit;
@@ -220,7 +220,89 @@ if (!empty($_GET['ai'])) {
 	exit;
 }
 
-##############################
+############################################################
+
+if (!empty($_GET['ai_all'])) {
+
+$comments = array(
+    'unsafe'      => 'apparently unsafe',
+    'negative'      => 'negative sentiment',
+    'marketing'      => 'clearly seems marketting',
+    'spam'      => 'low quality spam',
+    'personal'      => 'benign personal message',
+    'other'      => 'not covered above',
+
+    '' => 'pending',
+);
+
+	$rows = $db->getAssoc("select ai_class,count(*),title as example from moderation_all inner join user_stat using (user_id) where source = 'user_about' group by ai_class");
+	print "<table cellspacing=0 cellpadding=4 border=1>";
+	foreach ($comments as $key => $value) {
+		print "<tr>";
+		print "<td>$key";
+		print "<td>".str_replace('**','',$value);
+		print "<td>$key";
+		if (!empty($rows[$key]))
+			print "<td align=right>".implode("<td>",array_map('htmlentities',$rows[$key]))."</td>";
+	}
+	print "</table><br><br>";
+
+
+	$where = array("ai_class is not null");
+
+	if (!empty($_GET['source']) && preg_match('/^\w+$/',$_GET['source']))
+		$where['source'] = "source = ".$db->Quote($_GET['source']);
+	else
+		$where['source'] = "source = 'user_about'";
+
+	if (!empty($_GET['status']) && preg_match('/^\w+$/',$_GET['status']))
+		$where['status'] = "moderation_status = ".$db->Quote($_GET['status']);
+
+	if (!empty($_GET['class']) && preg_match('/^\w+$/',$_GET['class']))
+		$where['ai'] = "ai_class = ".$db->Quote($_GET['class']);
+	else
+		$where['ai'] = "ai_class != 'personal'";
+
+	$where = implode(' AND ',$where);
+
+	$data = $db->getAll("
+	select user_id,moderation_status as status,ai_class,title as content from moderation_all inner join user_stat using (user_id) where $where order by ai_class limit 250
+	");
+
+	print "<h2>AI Reviewed <u>Content</u> (sample)</h2>";
+	print "<p>The <tt>status</tt> is human reviewer result, the <tt>ai_class</tt> is the AI result. Can click column headers to reorder rows. Sample of upto 250 results";
+
+	print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
+
+	print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=#eee class=\"report sortable\" id=\"photolist\"><THEAD>";
+		print "<tr><th>".implode("</th><th>",array_map('htmlentities',array_keys($data[0])))."</th></tr>";
+	print "</THEAD><TBODY>";
+	foreach($data as $row) {
+		print "<tr>";
+		foreach($row as $key => $value) {
+			if (is_numeric($value)) {
+				print "<td align=right>".floatval($value);
+			} elseif ($key == 'ai_class') {
+				$color = 'gray';
+				if ($value == 'unsafe' || $value == 'spam' || $value == 'negative')
+					$color = 'red;font-weight:bold';
+				elseif ($value == 'personal' || $value == 'normal')
+					$color = 'green';
+				elseif ($value == 'other')
+					$color = 'black';
+				print "<td style=color:$color>".htmlentities($value);
+			} else {
+				print "<td>".htmlentities($value);
+			}
+		}
+	}
+	print "</table>";
+
+	$smarty->display('_std_end.tpl');
+	exit;
+}
+
+############################################################
 
 if (!empty($_GET['ai2'])) {
 
