@@ -12,3 +12,19 @@ SELECT  'user' AS source,
 FROM user
 WHERE rights like '%basic%' AND signup_date > date_sub(now(),interval 7 day)
 
+
+flagged:
+SELECT  'user' AS source,
+	user.`user_id` AS foreign_id,
+        'flagged' as event_type,
+	`signup_date` as event_date,
+	user.`user_id` as user_id,
+        TRIM(realname) AS title,
+        CONCAT('/profile/',user.user_id) AS url,
+	CONCAT('from: ',one.source, ' [',one.moderation_id,']') as content
+FROM user
+	INNER JOIN moderation one USING (user_id)
+	LEFT JOIN moderation two ON (two.user_id = one.user_id AND two.source = 'user')
+WHERE one.moderation_status = 'flagged' AND one.source != 'user'
+
+
