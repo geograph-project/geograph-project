@@ -70,7 +70,10 @@ if (!empty($_POST['status'])) {
 
 		if ($result == 'flagged' && empty($recent)) {
 			$url = "https://www.geograph.org.uk/admin/approvals.php?status=flagged&source=".urlencode($row['source'])."&moderation_id=$moderation_id";
-			$content  = $row['source']." Content has been flagged for attention by {$USER->realname}\n\n";
+			if (!empty($_POST['extreme']))
+				$content  = $row['source']." Content has been marked as ALARM by {$USER->realname}\n\n";
+			else
+				$content  = $row['source']." Content has been flagged for attention by {$USER->realname}\n\n";
 			$content .= "See: $url\n\n";
 			$content .= "Reference: {$row['url']}\n\n";
 
@@ -111,6 +114,10 @@ if (!empty($_POST['status'])) {
 if (!empty($_GET['preview_user'])) {
 	$user = $db->getRow("SELECT * FROM user LEFT JOIN user_stat USING (user_id) WHERE user_id = ".intval($_GET['preview_user']));
 
+	if (empty($user))
+		die("No record found for this ID");
+
+
 	print "<h3>Preview for user - links are not clickable</h3>";
 	print "<table cellspacing=0 cellpadding=3 border=1 bordercolor=#eee style=max-width:60em>";
 	$keys = explode(',', 'user_id,realname,nickname,email,rights,website,about_yourself,message_sig,signup_date,images');
@@ -133,10 +140,12 @@ if (!empty($_GET['preview_user'])) {
 
 	print "</table>";
 	if (empty($user['images']) && (!empty($user['website']) || !empty($user['about_yourself'])))
-		print "<i>No images submitted - profile <b>will not display</b> email, link or the about text</p>";
+		print "<p><big><i>No images submitted - profile <b>will not display</b> email, link or the about text</i></big></p>";
 
-	$smarty->display('_std_end.tpl');
-	exit;
+	//$smarty->display('_std_end.tpl');
+	//exit;
+	print "<br><hr><br>";
+	$_GET['user_id'] = $_GET['preview_user']; //so displays reports for this user!
 }
 
 ##############################
@@ -452,11 +461,17 @@ $size = 30;
 if (!empty($_GET['order']))
 	$order = "user_id desc";
 
-if (!empty($_GET['moderation_id'])) {
+if (!empty($_GET['user_id'])) {
+	$user_id = intval($_GET['user_id']);
+	print "<h2 style=\"color:red\">Note: Showing all reports for user_id #".intval($user_id)." (if any!)</h2>";
+	//at the moment, ignore the other filters - even though present!
+	$where['status'] = "m.user_id = ".$user_id;
+
+} elseif (!empty($_GET['moderation_id'])) {
 	$moderation_id = intval($_GET['moderation_id']);
 	$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
 	if (!empty($row['user_id'])) {
-		print "<h2>Note: Showing all reports for user_id #".intval($row['user_id'])."</h2>";
+		print "<h2 style=\"color:red\">Note: Showing all reports for user_id #".intval($row['user_id'])."</h2>";
 		//at the moment, ignore the other filters - even though present!
 		$where['status'] = "m.user_id = ".$row['user_id'];
 	} else {
@@ -612,7 +627,13 @@ $offset = 0;
 			if (preg_match('/^user/',$row['source']) && !empty($row['user_id']))
 				$row['url'] = "?preview_user=".intval($row['user_id']); //the actual profile may not show all details!
 			$row['url'] = str_replace('view.php?','view.php?login=true&',$row['url']); //encourage media server to request login!
-			print "<a href=\"".htmlentities($row['url'])."\" target=preview-window>";
+
+
+			$confirm = '';
+			if (!empty($row['extreme'])) {
+				$confirm = " onclick=\"return confirm('Marked as ALARM, are you sure wish to view?');\"";
+			}
+			print "<a href=\"".htmlentities($row['url'])."\" target=preview-window $confirm>";
 			print "<b>".htmlentities($row['title'])."</b>";
 			print "</a>";
 			if (strpos($row['title'],'...') !== FALSE)
@@ -622,6 +643,11 @@ $offset = 0;
 				print "<span class=nowrap>";
 				if ($row['title']!=$row['realname'])
 					print " by <a href=\"/profile/{$row['user_id']}\" target=preview-window>".htmlentities($row['realname'])."</a>";
+				if (!preg_match('/^user/',$row['source']) && !empty($row['user_id'])) {
+					$row['url'] = "?preview_user=".intval($row['user_id']); //the actual profile may not show all details!
+					print " (<a href=\"".htmlentities($row['url'])."\" target=preview-window style=color:brown>";
+					print "all reports</a>)";
+				}
 				if (!$row['images']) {
 					print " [new user]";
 				} else {
@@ -631,6 +657,9 @@ $offset = 0;
 					print "<span style=color:brown>&middot <b>User deleted</b>.</span>";
 				}
 				print "</span>";
+			}
+			if (!empty($row['extreme'])) {
+				print "<br><br><b style=background-color:yellow>Marked as ALARM - view with extreme caution</b>";
 			}
 			if (!empty($row['moderated'])) {
 				print "<br><br><i>{$row['moderation_status']} by ".htmlentities($row['mod_realname']).", ".formatMySQLDateByResolution($row['moderated'])."</i>";
@@ -652,7 +681,7 @@ $offset = 0;
 			print $row['source'];
 			if ($row['event_type'] != 'creation')
 				print "/".$row['event_type'];
-			if (!empty($row['media_url'])) {
+			if (!empty($row['media_url']) && empty($row['extreme'])) {
 				$url = htmlentities($row['media_url']);
 				print "<br><a href=\"$url\" target=preview-window>";
 				if (preg_match('/\.(jpe?g|gif|png|webp)$/',$row['media_url'])) {
