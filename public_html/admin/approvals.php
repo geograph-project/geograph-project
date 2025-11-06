@@ -144,9 +144,35 @@ if (!empty($_GET['preview_user'])) {
 
 	//$smarty->display('_std_end.tpl');
 	//exit;
-	print "<br><hr><br>";
+	print "<br><br>";
 	$_GET['user_id'] = $_GET['preview_user']; //so displays reports for this user!
 }
+
+##############################
+
+$links = array(
+	'status=pending'=>'Pending by Date',
+	'status=pending&order=user'=>'Pending by User',
+	'status=flagged&order=user'=>'Flagged',
+	'status=flagged&limit=1000&summary=1'=>'Flagged by User',
+	'status=approved'=>'Approved',
+	'stats=1'=>'Statistics',
+);
+
+print '<div class="tabHolder" style="max-width:940px">';
+foreach ($links as $link => $name) {
+        if ($link == $_SERVER['QUERY_STRING']) {
+                if (!empty($_GET)) { //having the link is useful to return to "homepage"
+                        print "<a class=tabSelected href=?$link>$name</a> ";
+                } else {
+                        print "<a class=tabSelected>$name</a> ";
+                }
+        } else {
+                print "<a class=tab href=?$link>$name</a> ";
+        }
+}
+print "<a href=\"https://media.geograph.org.uk/files/b3e3e393c77e35a4a3f3cbd1e429b5dc/Additional_pages_moderation_testing_5_Aug_2025.pdf\" class=about target=_blank>Help Document</a>";
+print '</div>';
 
 ##############################
 
@@ -155,7 +181,10 @@ if (!empty($_GET['stats'])) {
 			,sum(moderation_status='pending') as pending,sum(moderation_status='flagged') as flagged,sum(moderation_status='approved') as approved
 		 from moderation group by source,event_type");
 
+	print "<div class=interestBox>";
 	print "<h2>Monitored Content</h2>";
+	print "</div>";
+
 	print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=#eee>";
 		print "<tr><th>".implode("</th><th>",array_map('htmlentities',array_keys($data[0])))."</th></tr>";
 	foreach($data as $row) {
@@ -207,7 +236,10 @@ GROUP BY u.user_id
 ORDER BY NULL
 LIMIT 100");
 
+	print "<div class=interestBox>";
 	print "<h2>Deleted users - checking for NON-taken down content</h2>";
+	print "</div>";
+
 	print "<p>A zero would show they DO have items, but they ARE all taken down. blank means none. Zero or blank is GOOD";
 	print "<p>To be clear this is checking the actual content, not counting reports";
 	print "<table cellspacing=0 cellpadding=4 border=1 bordercolor=#eee>";
@@ -236,7 +268,6 @@ if (!empty($_GET['order']))
 
 if (!empty($_GET['user_id'])) {
 	$user_id = intval($_GET['user_id']);
-	print "<h2 style=\"color:red\">Note: Showing all reports for user_id #".intval($user_id)." (if any!)</h2>";
 	//at the moment, ignore the other filters - even though present!
 	$where['status'] = "m.user_id = ".$user_id;
 
@@ -244,7 +275,7 @@ if (!empty($_GET['user_id'])) {
 	$moderation_id = intval($_GET['moderation_id']);
 	$row = $db->getRow("SELECT * FROM moderation WHERE moderation_id = $moderation_id");
 	if (!empty($row['user_id'])) {
-		print "<h2 style=\"color:red\">Note: Showing all reports for user_id #".intval($row['user_id'])."</h2>";
+		$_GET['user_id'] = $row['user_id'];
 		//at the moment, ignore the other filters - even though present!
 		$where['status'] = "m.user_id = ".$row['user_id'];
 	} else {
@@ -269,37 +300,6 @@ if (!empty($_GET['limit'])) {
 	$size = min(1000, intval($_GET['limit']));
 }
 
-
-##############################
-
-$links = array(
-	'status=pending'=>'Pending by Date',
-	'status=pending&order=user'=>'Pending by User',
-	'status=flagged&order=user'=>'Flagged',
-	'status=flagged&limit=1000&summary=1'=>'Flagged by User',
-	'status=approved'=>'Approved',
-	'stats=1'=>'Statistics',
-);
-
-
-print '<div class="tabHolder" style="max-width:940px">';
-foreach ($links as $link => $name) {
-        if ($link == $_SERVER['QUERY_STRING']) {
-                if (!empty($_GET)) { //having the link is useful to return to "homepage"
-                        print "<a class=tabSelected href=?$link>$name</a> ";
-                } else {
-                        print "<a class=tabSelected>$name</a> ";
-                }
-        } else {
-                print "<a class=tab href=?$link>$name</a> ";
-        }
-}
-
-print "<a href=\"https://media.geograph.org.uk/files/b3e3e393c77e35a4a3f3cbd1e429b5dc/Additional_pages_moderation_testing_5_Aug_2025.pdf\" class=about target=_blank>Help Document</a>";
-
-
-print '</div>';
-
 ##############################
 
 $offset = 0;
@@ -323,6 +323,11 @@ $offset = 0;
 ##############################
 
 	if (count($list)) {
+		if (!empty($_GET['user_id'])) {
+			$user_id = intval($_GET['user_id']);
+			print "<h2 style=\"color:red\">Note: Showing all reports for user_id #".intval($user_id)."</h2>";
+		}
+
 		if (!empty($_GET['summary'])) {
 			$mat = array();
 			$cols = array();
