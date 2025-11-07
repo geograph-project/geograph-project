@@ -1,20 +1,26 @@
 <?php
 
+//NOTE: This code was hardcoded to use openai/gpt-oss-120b
+//... but then openai/gpt-oss-safeguard-20b was released, which we want to try!
+//... so for now, the model override, is basic, and assumes openai for now!
+//... also no check is made to see if the model is available by each provider, (but know OpenRouter has the new model already)
+
+
 ######################################
 
-function getLLMResponse($prompt, $user, $provider = 'cloudflare') {
+function getLLMResponse($prompt, $user, $provider = 'cloudflare', $model = 'gpt-oss-120b') {
 
         if ($provider=='cloudflare') {
-                return callCloudflare($prompt, $user);
+                return callCloudflare($prompt, $user, $model);
 
         } elseif ($provider=='open') {
-                return callOpenRouter($prompt, $user, /* $max_tokens = */ 2048*2);
+                return callOpenRouter($prompt, $user, /* $max_tokens = */ 2048*2, $model);
 
         } elseif ($provider=='lmstudio') {
-		return callLMStudio($prompt, $user);
+		return callLMStudio($prompt, $user, $model);
 
         } else {
-                return getLLMLocalResponse($prompt, $user, /* $model = */ 'gemma270m');
+                return getLLMLocalResponse($prompt, $user, /* $model = */ 'gemma270m'); //for now, doesnt support other models anyway!
         }
 }
 
@@ -94,12 +100,13 @@ if (empty($ch)) {
  * @param string $user The user's input.
  * @return string The generated text from the LLM.
  */
-function callCloudflare($prompt, $user = null) {
+function callCloudflare($prompt, $user = null, $model = 'gpt-oss-120b') {
     global $CONF;
     $accountId = $CONF['CLOUDFLARE_ACCOUNT_ID'];
     $apiToken = $CONF['CLOUDFLARE_API_TOKEN'];
-    $modelName = '@cf/openai/gpt-oss-120b';
-    print "Using Model $modelName (via Cloudflare)\n";
+    $modelName = '@cf/openai/'.$model; //currently assumes openai models!
+	if (!defined('QUIET'))
+	    print "Using Model $modelName (via Cloudflare)\n";
     $url = "https://api.cloudflare.com/client/v4/accounts/{$accountId}/ai/run/{$modelName}";
 
     $data = ['input' => $prompt . ($user ?? '')];
@@ -151,13 +158,14 @@ function callCloudflare($prompt, $user = null) {
  * @param string $user The user's input.
  * @return string The generated text from the LLM.
  */
-function callOpenRouter($prompt, $user = null, $maxTokens = 2048) {
+function callOpenRouter($prompt, $user = null, $maxTokens = 2048, $model = 'gpt-oss-120b') {
     global $CONF;
     $apiKey = $CONF['OPENROUTER_API_KEY'];
 
-    $modelName = 'openai/gpt-oss-120b';
+    $modelName = 'openai/'.$model; //currently assumes openai models!
 
-    print "Using Model $modelName (via OpenRouter)\n";
+	if (!defined('QUIET'))
+	    print "Using Model $modelName (via OpenRouter)\n";
     $url = "https://openrouter.ai/api/v1/chat/completions";
 
     $messages = [
@@ -202,6 +210,10 @@ function callOpenRouter($prompt, $user = null, $maxTokens = 2048) {
         return null;
     } else {
         $responseData = json_decode($response, true);
+
+        if (isset($responseData['choices'][0]['message']['reasoning'])) {
+		$GLOBALS['reasoning'] = $responseData['choices'][0]['message']['reasoning'];
+	}
 
         // OpenRouter's API response structure is different
         if (isset($responseData['choices'][0]['message']['content'])) {
@@ -251,12 +263,11 @@ function callOpenRouterKey() {
  * @param string $user The user's input.
  * @return string The generated text from the LLM, or null on failure.
  */
-function callLMStudio($prompt, $user = null) {
+function callLMStudio($prompt, $user = null, $modelName = 'gpt-oss-120b') {
     // LM Studio's default API endpoint
     $url = "http://localhost:1234/v1/chat/completions";
     // The model name is a local identifier, typically found in LM Studio.
     // Replace 'gpt-oss-120b' with the actual model name you've loaded in LM Studio.
-    $modelName = 'gpt-oss-120b';
 
     echo "Using Local Model via LM Studio at {$url}\n";
 
@@ -508,3 +519,94 @@ EOD;
 
     return getLLMResponse($prompt, $user, $provider);
 }
+
+
+/**
+ * Fetches content from the r.jina.ai API for a given URL, handling
+ * HTTP errors and API-specific JSON error messages gracefully.
+ *
+ * @param string $targetUrl The URL of the page to extract content from (e.g., 'https://www.google.com').
+ * @return array Returns an associative array with keys 'success' (bool), 'content' (string), or 'error' (string).
+ */
+function fetchJinaContent(string $targetUrl): array
+{
+    // 1. Build the full Jina API endpoint URL
+    //$jinaApiUrl = "https://r.jina.ai/" . urlencode($targetUrl);
+    $jinaApiUrl = "https://r.jina.ai/" . $targetUrl;
+
+    // 2. Initialize cURL session
+    $ch = curl_init();
+
+    // 3. Set cURL options
+    curl_setopt($ch, CURLOPT_URL, $jinaApiUrl);
+    // Return the transfer as a string instead of outputting it directly
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // Allow redirects (important for robust fetching)
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    // Set a reasonable timeout
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    // Optionally: Set user-agent to mimic a browser
+    curl_setopt($ch, CURLOPT_USERAGENT, 'PHP JinaAI Client/1.0');
+
+    // 4. Execute the cURL request and get the response body
+    $responseBody = curl_exec($ch);
+
+    // 5. Check for cURL connection errors (e.g., DNS failure, timeout)
+    if (curl_errno($ch)) {
+        $errorMessage = 'cURL Error: ' . curl_error($ch);
+        curl_close($ch);
+        return [
+            'success' => false,
+            'error' => $errorMessage
+        ];
+    }
+
+    // 6. Get the HTTP status code
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    // 7. Close the cURL session
+    curl_close($ch);
+
+    // 8. Handle successful response (200 OK)
+    if ($httpCode === 200) {
+        return [
+            'success' => true,
+            'content' => $responseBody
+        ];
+    }
+
+    // 9. Handle non-200 HTTP status codes (errors)
+    
+    // Attempt to decode the response body as JSON (Jina returns JSON errors)
+    $errorData = json_decode($responseBody, true);
+
+    if (json_last_error() === JSON_ERROR_NONE && 
+        isset($errorData['message']) && 
+        isset($errorData['code'])) {
+        
+        // This is a structured Jina API error (e.g., 400 ParamValidationError)
+        $errorMessage = sprintf(
+            "Jina API Error (HTTP %d, Code %d): %s",
+            $httpCode,
+            $errorData['code'],
+            $errorData['message']
+        );
+        
+        return [
+            'success' => false,
+            'error' => $errorMessage,
+            // You can return the full error data for debugging if needed
+            'api_data' => $errorData
+        ];
+    }
+
+    // Fallback for non-200 status codes that don't match the expected JSON format
+    $errorMessage = sprintf("HTTP Error %d: The API returned an unexpected non-200 status code.", $httpCode);
+    
+    return [
+        'success' => false,
+        'error' => $errorMessage,
+        'response_body' => $responseBody
+    ];
+}
+
