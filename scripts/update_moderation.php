@@ -72,6 +72,7 @@ foreach ($sources as $name => $values) {
 	if (!empty($values['creation'])) perform_event('creation', $values);
 	if (!empty($values['user_edit'])) perform_event('user_edit', $values);
 	if (!empty($values['other_edit'])) perform_event('other_edit', $values);
+	if (!empty($values['flagged'])) perform_event('flagged', $values);
 	if (!empty($values['reply'])) perform_event('reply', $values);
 
 	print "\n";
