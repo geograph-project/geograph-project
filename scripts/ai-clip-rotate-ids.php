@@ -120,6 +120,19 @@ if ($param['purge']) {
 }
 
 ##################################
+
+//we should work though all 'incomplete' shards. Interestingly this should still include the 'current' active shard (recent submissions!)
+// although 99000 is and arbitary cutoff alows for 1000 rejects, but might need to mop up the few remaining ones!
+// this does assume embedding_progress_pe_by_id is being updated!
+if ($param['model'] == 'pe' && $param['start'] == 8000000 && $param['end'] == 9000000) {
+	$rr = $db->getRow("select * from embedding_progress_pe_by_id where count < 99000 order by rand() limit 1");
+	if (!empty($rr)) {
+		$param['start'] = intval($rr['shard'])*100000;
+		$param['end'] = $param['start'] + 99999;
+	}
+}
+
+##################################
 $table = $param['table'];
 $model = $db->Quote($param['model']);
 $minimum = intval($param['minimum']);
