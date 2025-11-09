@@ -108,4 +108,5 @@ $REVISIONS['/ai/finder-demo.js']=85093851;
 $REVISIONS['/viewer/zoomer.js']=61635280;
 $REVISIONS['/js/Leaflet.ExpandControl.js']=90513379;
 $REVISIONS['/js/tags-selector.js']=25257510;
+$REVISIONS['/js/survey.js']=46351503;
 ?>
