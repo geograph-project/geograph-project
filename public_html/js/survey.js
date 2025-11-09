@@ -1,6 +1,6 @@
 /**
- * Executes the callback immediately if the DOM is ready, 
- * or attaches it to the 'DOMContentLoaded' event otherwise 
+ * Executes the callback immediately if the DOM is ready,
+ * or attaches it to the 'DOMContentLoaded' event otherwise
  * (to handle late code injection, like jQuery's ready handler).
  */
 function onDomReady(callback) {
@@ -64,7 +64,7 @@ onDomReady(function() {
     const mainContentBlock = document.getElementById('maincontent_block');
 
     if (mainContentBlock) {
-        const survey_url = window.registered_user_servey 
+        const survey_url = registered_user_servey
            ? "https://forms.gle/qQNhdzPGYL9rnFHA6" // Value if TRUE
            : "https://forms.gle/7QysivC6JBJCi2PU8"; // Value if FALSE
 
@@ -82,11 +82,11 @@ onDomReady(function() {
 
         if (closerLink && appealBlock) {
             closerLink.addEventListener('click', function(event) {
-                event.preventDefault(); 
-                
+                event.preventDefault();
+
                 // Hide the element
-                appealBlock.style.display = 'none'; 
-                
+                appealBlock.style.display = 'none';
+
                 // Use your existing createCookie function to set a 7-day cookie
                 createCookie("survey", 1, 7);
             });
