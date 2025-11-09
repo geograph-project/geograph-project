@@ -1009,7 +1009,12 @@ $str[] = "
 		// if (strpos($_SERVER["REQUEST_URI"],'/article/') === 0 && strpos($_SERVER["REQUEST_URI"],'.php') === FALSE && $GLOBALS['template'] != 'article_article2.tpl') {
 	}
 
-	if ((!empty($_GET['appeal']) || !empty($_GET['ads']))
+	//require A cookie, so doesnt appear on first view! But allow it to be idden with the explicit cookie!
+	if (!empty($_SERVER['HTTP_COOKIE']) && empty($_COOKIE['survey']) && !empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],'https://www.geograph.') === 0 ) {
+		$_GET['survey'] = 1;
+	}
+
+	if ((!empty($_GET['appeal']) || !empty($_GET['ads']) || !empty($_GET['survey']))
 		&& empty($USER->is_login_form) //catch inline logins!
 		&& $_SERVER["PHP_SELF"] != '/login.php'
 		&& $_SERVER["PHP_SELF"] != '/register.php'
@@ -1024,7 +1029,11 @@ $str[] = "
 		&& $CONF['template']!='charcoal' && $CONF['template']!='archive' && $CONF['template']!='charcoal_cy'
 		&& $_SERVER['HTTP_HOST'] != 'schools.geograph.org.uk'
 	) {
-		if (!empty($_GET['appeal'])) {
+		if (!empty($_GET['survey'])) {
+			if (!empty($USER) && $USER->registered)
+				$str[] = '<script>const registered_user_servey = true;</script>';
+		        $str[] = '<script src="'.smarty_modifier_revision("/js/survey.js").'"></script>';
+		} elseif (!empty($_GET['appeal'])) {
 		        $str[] = '<script src="'.smarty_modifier_revision("/js/appeal.js").'"></script>';
 		} elseif (!empty($_GET['ads'])) {
 			if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk')
