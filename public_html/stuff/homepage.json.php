@@ -27,6 +27,9 @@ require_once('geograph/global.inc.php');
         require_once('geograph/imagelist.class.php');
 
 
+if (strpos($_SERVER['HTTP_USER_AGENT'], 'monitoring')!==FALSE)
+	customNoCacheHeader(); //prevent caching in cloudflare
+
 $smarty = new GeographPage;
 
 $data = array();
