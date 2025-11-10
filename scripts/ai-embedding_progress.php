@@ -28,6 +28,7 @@ $param=array(
 	'type'=>'image',
 	'model'=>'pe',
 	'group'=>'SUBSTRING(updated, 1, 10) AS day',
+	'execute'=>false,
 );
 
 chdir(__DIR__);
@@ -60,6 +61,8 @@ function upsertEmbeddingProgress(
     string $model,
     string $groupByExpr = 'SUBSTRING(updated, 1, 10) AS day'
 ): bool {
+	global $param;
+
     // 1. Determine the column name from the GROUP BY expression for the INSERT list and PK
     // Safely parse the column name/alias from the expression.
     $upperExpr = strtoupper($groupByExpr);
@@ -92,12 +95,11 @@ function upsertEmbeddingProgress(
             max_id BIGINT UNSIGNED NOT NULL,
             done TINYINT(1) NULL DEFAULT NULL,
             PRIMARY KEY (`$groupByCol`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='FROM $sourceTable WHERE type=$type AND model=$model GROUP BY $groupByExpr';
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='FROM $sourceTable WHERE type=$type AND model=$model GROUP BY $groupByExpr'
     ";
 	//the ocmment isnt valid SQL, just aiming to recoud the source!
 	print_r("$createTableSql;\n");
 
-    
     if (!$db->Execute($createTableSql)) {
         error_log("Failed to create table $progressTable: " . $db->ErrorMsg());
         return false;
@@ -142,6 +144,8 @@ if (empty($param['execute'])) {
         error_log("Failed to execute UPSERT query: " . $db->ErrorMsg());
         return false;
     }
+
+    print "  -- Affected: ".$db->Affected_Rows();
 
     return true;
 }

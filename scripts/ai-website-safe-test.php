@@ -23,8 +23,9 @@ $pkey = "moderation_id"; //primary key
 
 //$query, NEEDS `$pkey`, `website` (other columns optional)
 $query = "SELECT $pkey, user.website AS website, user_id, moderation_status FROM $table inner join user using (user_id)
-	 inner join user_stat using (user_id)
-	  WHERE source = 'user_website' AND ai_assessment IS NULL ORDER BY user_id DESC LIMIT ".$param['limit'];
+                  LEFT JOIN fetch_domain fd ON (domain = substring_index(website,'/',3))
+	 WHERE source = 'user_website' AND ai_assessment IS NULL AND ( fd.domain IS NULL OR fd.last < DATE_SUB(NOW(), INTERVAL 1 DAY) )
+	 ORDER BY user_id DESC LIMIT ".$param['limit'];
 
 ####################
 
@@ -34,7 +35,8 @@ if ($param['table'] == 'gridimage_link') {
 
 	$query = "SELECT $pkey, url AS website FROM $table
 		  LEFT JOIN fetch_domain fd ON (domain = substring_index(url,'/',3))
-		WHERE `parent_link_id` = 0 and `next_check` < '2040-01-01' AND HTTP_Status_final IN (200) AND is_internal = 0
+		WHERE `parent_link_id` = 0 and `next_check` < '2040-01-01' AND HTTP_Status_final IN (200)
+		  AND url NOT regexp '^https?://www.geograph.'  AND is_internal = 0
 		  AND ai_assessment IS NULL AND ( fd.domain IS NULL OR fd.last < DATE_SUB(NOW(), INTERVAL 1 DAY) )
 		ORDER BY $pkey DESC
 		LIMIT ".$param['limit'];
@@ -84,6 +86,7 @@ foreach ($results as $row) {
 		print_r($result); //for debug
 
 		$result = 'failed';
+		$update = "UPDATE $table SET ai_assessment=? , updated=updated WHERE $pkey = ?";
 		$db->Execute($update, array($result, $row[$pkey]));
 		continue;
 	}

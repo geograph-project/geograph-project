@@ -29,8 +29,7 @@
 
 23     *       * * *   /usr/bin/php /var/www/geograph/scripts/s3vectors.php --delta --index=image-clip
 
-
-27     *       * * *   /usr/bin/php /var/www/geograph/scripts/ai-clip-rotate-ids.php --model=pe --table=tmp_label_pe --dest_table=gridimage_embedding_1024 --execute --start=6000000
+27     *       * * *   /usr/bin/php /var/www/geograph/scripts/ai-clip-rotate-ids.php --model=pe --table=tmp_label_pe --dest_table=gridimage_embedding_1024 --execute 
 
 33     *       * * *   /usr/bin/php /var/www/geograph/scripts/s3vectors.php --delta --index=image-pe --limit=1000
 
