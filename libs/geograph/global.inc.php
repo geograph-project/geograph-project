@@ -1032,6 +1032,8 @@ $str[] = "
 		if (!empty($_GET['survey'])) {
 			if (!empty($USER) && $USER->registered)
 				$str[] = '<script>const registered_user_servey = true;</script>';
+			else
+				$str[] = '<script>const registered_user_servey = false;</script>';
 		        $str[] = '<script src="'.smarty_modifier_revision("/js/survey.js").'"></script>';
 		} elseif (!empty($_GET['appeal'])) {
 		        $str[] = '<script src="'.smarty_modifier_revision("/js/appeal.js").'"></script>';
