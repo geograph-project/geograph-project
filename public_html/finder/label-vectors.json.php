@@ -11,6 +11,7 @@ customExpiresHeader(3600*24);
 
 // Input parameters
 $labels_str = isset($_GET['labels']) ? trim($_GET['labels']) : '';
+$model = $_GET['model'] ?? 'clip';
 $vector_base64 = $_GET['vector'] ?? null;
 $image_id = isset($_GET['image_id']) ? intval($_GET['image_id']) : null;
 $text_label = $_GET['text_label'] ?? null;
@@ -32,7 +33,7 @@ if (!empty($labels_str)) {
 
     $response = [];
     foreach ($labels as $label) {
-        $vector = getTextEmbeddingWrapper($label);
+        $vector = getTextEmbeddingWrapper($label, $model);
         if (!empty($vector)) {
             $binary_vector = pack('g*', ...$vector);
             $response[$label] = base64_encode($binary_vector);
@@ -60,9 +61,9 @@ if (!empty($vector_base64)) {
         exit;
     }
 } elseif (!empty($image_id)) {
-    $query_vector = getImageEmbeddingById($image_id);
+    $query_vector = getImageEmbeddingById($image_id, 'image', $model);
 } elseif (!empty($text_label)) {
-    $query_vector = getTextEmbeddingWrapper($text_label);
+    $query_vector = getTextEmbeddingWrapper($text_label, $model);
 }
 
 // If no query vector could be determined, exit
@@ -101,7 +102,7 @@ foreach ($knn_results['vectors'] as $result) {
         // Fetch and encode the vector for this label
 	// todo, fetching the vector via getTextEmbeddingWrapper, is ineffient (one label at a time) in a loop can just query label_embedding directly, although mantiucore could even return as 'metadata'!
 	// for now we likly to use k=1, so ok.
-        $vector = getTextEmbeddingWrapper($label);
+        $vector = getTextEmbeddingWrapper($label, $model);
         if (!empty($vector)) {
             $binary_vector = pack('g*', ...$vector);
             $item['vector'] = base64_encode($binary_vector);
