@@ -244,12 +244,11 @@ if (empty($res)) { //filled directly above!!!
 
 			$quoted= $ddb->Quote($_GET['label']);
 
-			if (!empty($_GET['model']) && $_GET['model'] == 'pe') {
-				// Untested prototype code, label_embedding_1024 does not exist yet
-				$binary = $ddb->getOne("SELECT embeddings FROM label_embedding_1024 WHERE label = $quoted AND model='pe'");
-			} else {
-				$binary = $ddb->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted"); //limit 1 added
-			}
+			$model = (!empty($_GET['model']) && in_array($_GET['model'],array('pe','clip')))?$_GET['model']:'clip';
+			$binary = $ddb->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted AND model = '$model'"); //limit 1 added
+
+			//toodo, if $model!=clip, may need to seelet a different index!
+
 			if (!empty($binary)) {
 	                	$list = unpack('g*', $binary);
         		        $value = "(".implode(', ',$list).")";

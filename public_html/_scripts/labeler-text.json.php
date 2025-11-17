@@ -120,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	####################
 
 	$qmod = $db->Quote($_GET['model']);
+	$where[] = "model = $qmod";
 	$where = implode(" AND ",$where);
 
 	$sql = "select id,label

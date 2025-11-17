@@ -40,7 +40,7 @@ if ($param['nearest']) {
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	//donmt need to fetch label!
-	$sql = "SELECT id, embeddings FROM label_embedding WHERE nearest_image IS NULL AND length(embeddings) = 2048 LIMIT {$param['limit']}";
+	$sql = "SELECT id, embeddings FROM label_embedding WHERE nearest_image IS NULL AND length(embeddings) = 2048 LIMIT {$param['limit']}"; //length selects CLIP!
 	$rows = $db->getAll($sql);
 	$affected = 0;
 	foreach ($rows as $row) {

@@ -76,7 +76,7 @@ if (!empty($param['insert'])) {
     if ($source == 'label') {
 	$cmd[] = '-t"label_embedding"';
 	$cmd[] = '-s'.escapeshellarg("id, label, src, embeddings");
-	$cmd[] = '-w'.escapeshellarg("length(embeddings)=2048 AND id < 100"); //just in case!
+	$cmd[] = '-w'.escapeshellarg("length(embeddings)=2048 AND id < 100"); //just in case! (length selects CLIP!)
 
     } elseif ($source == 'user') {
 	    $cmd[] = "-t " . escapeshellarg("user inner join user_stat using (user_id)");
@@ -84,23 +84,10 @@ if (!empty($param['insert'])) {
 	    $cmd[] = "-w " . escapeshellarg("images > 0");
 
     } elseif ($source == 'tags') { //the existing index has 's' on it!
-
-
-///this is a TEST - used to overwrite the 'named' tags.
-//TODO -- really this would need 'merging into th emain one below!!
-
-	    $cmd[] = "-t " . escapeshellarg("tag_stat inner join tag using (tag_id)");
-	    $cmd[] = "-s " . escapeshellarg("tag_id as id, if(prefix in ('top','type','subject','bucket') and canonical =0,tag,tagtext) as input_text,".
-					    " tagtext, count as images, users, 'named' as src");
-	    $cmd[] = "-w " . escapeshellarg("tag_id = final_id and status = 1 and count>0 and (classification like 'named%' or classification = 'related-to')");
-
-
-
-    } elseif ($source == 'tags') { //the existing index has 's' on it!
 				//canonical=0 only picks offical prefixed tags
 	    $cmd[] = "-t " . escapeshellarg("tag_stat inner join tag using (tag_id)");
 	    $cmd[] = "-s " . escapeshellarg("tag_id as id, if(prefix in ('top','type','subject','bucket') and canonical =0,tag,tagtext) as input_text,".
-					    " tagtext, count as images, users, if(prefix in ('top','type','subject','bucket') and canonical=0,prefix,'tag') as src");
+					    " tagtext, count as images, users, if(prefix in ('top','type','subject','bucket') and canonical=0, prefix, if(classification like 'named%' or classification = 'related-to', 'named', 'tag')) as src");
 	    $cmd[] = "-w " . escapeshellarg("tag_id = final_id and status = 1 and count>0");
 
     } elseif ($source == 'doc') {
@@ -212,7 +199,8 @@ if (!empty($param['delta'])) {
 	list($type, $model) = explode('-', $param['index'], 2);
 
 	if (empty($type) || empty($model)) {
-	    die("Invalid index name format. Use '{type}-{model}'.\n");
+	    print "Invalid index name format. Use '{type}-{model}'.\n";
+	    die(1);
 	}
 
 	// Determine the SQL query based on the index type
@@ -239,8 +227,10 @@ if (!empty($param['delta'])) {
 		// note, if update above, finds new rows, it resets done, which means we can carry on...
 
 		$data = $db->getRow("SELECT * FROM $table_progress WHERE done IS NULL AND (delta_max is null OR delta_max < max_id) LIMIT 1");
-		if (empty($data))
-			die("nothing to add\n");
+		if (empty($data)) {
+		    print "nothing to add\n";
+		    die(3);
+		}
 
 		print_r($data);
 		$min = max($data['min_id'], $data['delta_max']);
@@ -254,7 +244,8 @@ $sql .= " LIMIT ".$param['limit'];
 	    }
 
 	} else {
-	    die("Unsupported index type '$type'.\n");
+	    print "Unsupported index type '$type'.\n" ;
+	    die(1);
 	}
 
 print "$sql;\n\n";
@@ -267,7 +258,7 @@ print "$sql;\n\n";
 	$rs = $db->Execute($sql);
 	if ($rs) {
             $count = $rs->RecordCount();
-		print "Fount $count\n";
+		print "Found $count\n";
 
 	    while (!$rs->EOF) {
 		$recordsProcessed++;
@@ -306,7 +297,8 @@ print "$sql;\n\n";
 		$rs->MoveNext();
 	    }
 	} else {
-           die("query error\n");
+            print "query error\n";
+	    die(2);
         }
 
 	// Insert any remaining vectors in the final batch
@@ -333,7 +325,7 @@ print "$sql;\n\n";
 }
 
 ##################################
-// Function to test index, although hardcoded for testing an 'image-clip' index!
+// Function to test index, although hardcoded for testing an 'image' index!
 
 if ($param['test']) {
 	$topK = 30; // might as well!
@@ -377,7 +369,7 @@ if ($param['test']) {
 
 
    if (!empty($param['query'])) {
-	$row = $db->getRow("SELECT * FROM label_embedding WHERE label = ".$db->Quote($param['query']));
+	$row = $db->getRow("SELECT * FROM label_embedding WHERE label = ".$db->Quote($param['query'])." AND model='clip'");
         if (!empty($row))
 		$queryEmbedding = array_values(unpack('g*', $row['embeddings']));
    } else {

@@ -133,9 +133,9 @@ if (empty($_GET['inner'])) {
 
 	print "<form method=get name=theForm>";
 
-//	$list = $db->getCol("SELECT label FROM label_embedding WHERE embeddings IS NOT NULL ORDER BY rand(42) LIMIT 1000");
+//	$list = $db->getCol("SELECT label FROM label_embedding WHERE embeddings IS NOT NULL AND model = 'clip' ORDER BY rand(42) LIMIT 1000");
 //	sort($list);
-	$list = $db->getAssoc("select label,round((1-nearest_image)*100,1) as percent from label_embedding where nearest_image is not null group by floor(nearest_image*1000) order by label");
+	$list = $db->getAssoc("select label,round((1-nearest_image)*100,1) as percent from label_embedding where nearest_image is not null AND model = 'clip' group by floor(nearest_image*1000) order by label");
 	print "Query: <select name=label style=max-width:400px>";
 	print "<option></option>";
 	foreach($list as $label => $percent) {
@@ -155,7 +155,7 @@ if (empty($_GET['inner'])) {
 	if (!empty($_GET['label'])) {
 		$quoted= $db->Quote($_GET['label']);
 
-		$binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted"); //limit 1 added
+		$binary = $db->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted AND model = 'clip'"); //limit 1 added
 
 		if (empty($binary))
 			die("unknown term");

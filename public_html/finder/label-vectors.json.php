@@ -80,6 +80,7 @@ if (empty($query_vector)) {
 #########################################################################
 // At this point, $query_vector holds the vector to be used for the KNN search.
 
+//todo - this hasnt been updated to support the $model param, assuming a suitable index is createed!
 $knn_results = getKNNResults($query_vector, $k, 'label_embedding', $src);
 
 if ($knn_results['http_code'] != 200) {

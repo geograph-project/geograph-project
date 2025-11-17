@@ -49,7 +49,7 @@ if ($_GET['group'] == 'top') {
 	if (!empty($_GET['tag'])) {
 		$db = GeographDatabaseConnection(true);
 		if ($_GET['tag'] == 'random') {
-			$row = $db->getRow("select label from label_embedding where label like '%>%' ORDER BY RAND() LIMIT 1"); //no attempt to find unphotographed one yet!
+			$row = $db->getRow("select label from label_embedding where label like '%>%' AND model = 'clip' ORDER BY RAND() LIMIT 1"); //no attempt to find unphotographed one yet!
 			if (!empty($row)) {
 				//actully lets redirect, will be much nider if have the tag in URL (for logs etc)
 				customNoCacheHeader();
@@ -60,7 +60,7 @@ if ($_GET['group'] == 'top') {
 			}
 
 		//just a place holder. Needs better logic! - for no new we need the embedding!
-		} else	if ($db->getOne("SELECT label FROM label_embedding WHERE label = ".$db->Quote($_GET['tag']))) {
+		} else	if ($db->getOne("SELECT label FROM label_embedding WHERE label = ".$db->Quote($_GET['tag'])." AND model='clip'")) {
 			$tag = $query = $_GET['tag'];
 		}
 	}

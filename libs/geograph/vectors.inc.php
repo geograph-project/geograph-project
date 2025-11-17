@@ -112,7 +112,7 @@ function getTextEmbeddingWrapper($label, $model = 'clip') {
             if (!empty($r) && is_array($r) && count($r) > 0) { // Check if API returned a valid non-empty array
                 // Optionally, save $r to DB here for future use
 		//remember to check $db->readonly
-                // $db->Execute("INSERT INTO label_embedding (label, embeddings) VALUES ($quoted, ?)", [pack('g*', ...$r)]);
+                // $db->Execute("INSERT INTO label_embedding (label, model, embeddings) VALUES ($quoted, ?, ?)", [$model, pack('g*', ...$r)]);
                 return $r;
             }
             error_log('Unable to get/encode query vector for label: ' . $label . ' from DB or API.');

@@ -153,7 +153,7 @@ function jumpLocation(form) {
 
 	/////////////////////
 
-	$list = $db->getAssoc("select label,round((1-nearest_image)*100,1) as percent from label_embedding where nearest_image is not null group by floor(nearest_image*100000) order by label");
+	$list = $db->getAssoc("select label,round((1-nearest_image)*100,1) as percent from label_embedding where nearest_image is not null and model = 'clip' group by floor(nearest_image*100000) order by label");
 	print "<b>Label</b>: (selection of terms to try, arbitary input not supported yet)<br>";
 	print " <select name=label style=max-width:400px>";
 	print "<option></option>";

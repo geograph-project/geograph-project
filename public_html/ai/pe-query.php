@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: conversion.php 5502 2009-05-13 14:18:23Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 BArry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -45,6 +45,7 @@ if (empty($_GET['dist']))
 
 		require_once('geograph/imagelists3vector.class.php');
 		$imagelist=new ImageListS3Vector;
+		$imagelist->setModel('pe');
 
 		$memcache = $orig;
 
@@ -79,7 +80,7 @@ if (!empty($_GET['ask']) && !empty($_GET['query']) && !preg_match('/id:\d/',$_GE
 		$label = "[".md5($bytes)."]"; //create a fake label!
 
 		//it might technically alrady exist! todo, chance of hash collision??
-		$db->Execute("INSERT IGNORE INTO label_embedding (label, model, embeddings) VALUES (?, ?, ?)", [$label, 'clip', $bytes]);
+		$db->Execute("INSERT IGNORE INTO label_embedding (label, model, embeddings) VALUES (?, ?, ?)", [$label, 'pe', $bytes]);
 
 		$_GET['query'] = $label;
 		unset($_GET['ask']);
@@ -112,57 +113,57 @@ if (empty($_GET['inner'])) {
 
 
 	if (!empty($db)) {
-		$count = $db->getOne("select sum(count) from embedding_progress_clip where done is not null");
+		$count = $db->getOne("select sum(count) from embedding_progress_pe where done is not null");
 		$count = formatApproximateNumber($count);
 	} else {
 		$count = "1.6 million";
 	}
 	?>
 
-        <h2>Concept Search Demo (CLIP-based Similarity Search)</h2>
+        <h2>Concept Search Demo (PE-based Similarity Search)</h2>
 
 	<div style="max-width:900px;font-size:0.9em">
 	<? if (rand(0,2) > 1) { ?>
 
-		<p>This demo draws from a sample of <b><? echo $count; ?> images</b>. While initial results are often 
-		visually strong, their quality can decline quickly as the system displays 30 images without further 
+		<p>This demo draws from a sample of <b><? echo $count; ?> images</b>. While initial results are often
+		visually strong, their quality can decline quickly as the system displays 30 images without further
 		relevance filtering.
 
-		<p>This isn't a named entity search. While the model has a broad understanding of the world and can 
-		recognize many prominent landmarks like the Giant's Causeway or Harlech Castle, it won't recognize every 
-		specific place. For example, it likely won't know a small, specific landmark like a particular church in 
+		<p>This isn't a named entity search. While the model has a broad understanding of the world and can
+		recognize many prominent landmarks like the Giant's Causeway or Harlech Castle, it won't recognize every
+		specific place. For example, it likely won't know a small, specific landmark like a particular church in
 		Crawley.
 
-		<p>To get the best results, use general visual concepts rather than specific names. For instance, instead 
-		of searching for "the cathedral in Chichester", try "Gothic cathedral". You can then use the location 
+		<p>To get the best results, use general visual concepts rather than specific names. For instance, instead
+		of searching for "the cathedral in Chichester", try "Gothic cathedral". You can then use the location
 		filter to refine your search.
 
-		<p>The system's strength lies in combining visual concepts. Feel free to try queries such as: "castle and red 
-		sunset" "headland from the sea", "high street without people", "red cottages with a blue sky" or "cars 
+		<p>The system's strength lies in combining visual concepts. Feel free to try queries such as: "castle and red
+		sunset" "headland from the sea", "high street without people", "red cottages with a blue sky" or "cars
 		driving in the rain".
 
-		<p>The underlying model is general-purpose. While it understands broad concepts (e.g., 'rock formations' 
-		or 'flowers'), it hasn't been trained to identify or distinguish exact species or specific geological 
-		features (e.g., it recognizes a cliff but not the unique basalt columns of the Giant's Causeway). 
-		Therefore, while better matches should generally float to the top, expect some mismatches; the system 
+		<p>The underlying model is general-purpose. While it understands broad concepts (e.g., 'rock formations'
+		or 'flowers'), it hasn't been trained to identify or distinguish exact species or specific geological
+		features (e.g., it recognizes a cliff but not the unique basalt columns of the Giant's Causeway).
+		Therefore, while better matches should generally float to the top, expect some mismatches; the system
 		prioritizes showing the most visually similar images, even if the resemblance isn't exact.
 
 	 <? } else { ?>
 
-		<p>This demo uses a sample of about <b><? echo $count; ?> images</b>. While initial results are often 
-		visually similar, the quality can decline quickly as it displays 30 images without further relevance 
-		filtering. This is a visual similarity search, so it cannot search for specific names or places (although 
-		might work for notable places like 'Harlech Castle' or 'Newcastle'). Instead, search for a general term like 
-		'castle' and then use the location filter to center your search around Harlech using the dedicated Location 
+		<p>This demo uses a sample of about <b><? echo $count; ?> images</b>. While initial results are often
+		visually similar, the quality can decline quickly as it displays 30 images without further relevance
+		filtering. This is a visual similarity search, so it cannot search for specific names or places (although
+		might work for notable places like 'Harlech Castle' or 'Newcastle'). Instead, search for a general term like
+		'castle' and then use the location filter to center your search around Harlech using the dedicated Location
 		box.
 
-		<p>A neat feature is the ability to combine concepts in your search! Try queries like "castle and red sunset", 
-		"headland from the sea", "high street without people", "red cottages with a blue sky" or "cars driving in the 
-		rain". Just be aware that you might not get perfectly precise matches, the system sorts the results, such that 
+		<p>A neat feature is the ability to combine concepts in your search! Try queries like "castle and red sunset",
+		"headland from the sea", "high street without people", "red cottages with a blue sky" or "cars driving in the
+		rain". Just be aware that you might not get perfectly precise matches, the system sorts the results, such that
 		better matches should float to the top, even if the resemblance isn't exact.
 
-		<p>The underlying model is designed for general-purpose visual similarity. While it understands concepts like 
-		'rock formations' in general, it hasn't been trained to identify or distinguish exact geological features (e.g., 
+		<p>The underlying model is designed for general-purpose visual similarity. While it understands concepts like
+		'rock formations' in general, it hasn't been trained to identify or distinguish exact geological features (e.g.,
 		it knows what a cliff looks like but not the specific types of Igneous intrusion).
 
 	<? } ?>
@@ -291,7 +292,7 @@ function openSearch(open) {
 	}
 }
 function openMap(open) {
-	var url = "/ai/clip-mapper.php";
+	var url = "/ai/pe-mapper.php";
 	let query = $('#query').val();
 	url = url + '?query='+encodeURIComponent(query);
 	if (open) {
@@ -378,7 +379,7 @@ function openMap(open) {
             <span style="font-size: 0.9em; color: #666;"> (max=100000m)</span>
 
 		<div style="float:right;font-size:small">
-			<a href="#" onclick="return openSearch(true)" onmouseover="this.href = openSearch(false);" title="reminder: the keyword search might not understand a 'similarity' query!">Open in keyword searcher</a> 
+			<a href="#" onclick="return openSearch(true)" onmouseover="this.href = openSearch(false);" title="reminder: the keyword search might not understand a 'similarity' query!">Open in keyword searcher</a>
 			or <a href="#" onclick="return openMap(true)" onmouseover="this.href = openMap(false);">Map</a>
 		</div>
 
@@ -392,7 +393,7 @@ function openMap(open) {
 
 ####################################################
 
-	$list = $db->getAssoc("select label,round((1-nearest_image)*100,1) as percent from label_embedding where nearest_image is not null and model = 'clip' group by floor(nearest_image*1000) order by label");
+	$list = $db->getAssoc("select label,round((1-nearest_image)*100,1) as percent from label_embedding where nearest_image is not null and model='pe' group by floor(nearest_image*1000) order by label");
 	print " <datalist id=\"examples\">";
 	if (!empty($_GET['label']) && !isset($list[$_GET['label']]))
 		$list[$_GET['label']] = '50';
