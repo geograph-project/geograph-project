@@ -95,6 +95,9 @@ elseif (isset($_POST['name']))
 		}
         }
 
+	if ($ok && (preg_match('/reddy.*anna/i',$_POST['name']) || preg_match('/reddy.*anna/i',$_POST['email'])) )
+		dieUnderHighLoad(0); //always die!
+
 	if ($ok)
 		$ok=$USER->register($_POST, $errors);
 

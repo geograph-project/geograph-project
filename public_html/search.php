@@ -157,7 +157,7 @@ if (isset($_GET['fav']) && $i) {
 	exit;
 
 } else if (!empty($_GET['first']) || !empty($_GET['blank']) || !empty($_GET['glue']) || (!empty($_GET['my_squares']) &&  intval($_GET['user_id'])) ) {
-	dieUnderHighLoad(2,'search_unavailable.tpl');
+	dieUnderHighLoad(4,'search_unavailable.tpl');
 	rate_limiting('search.php');
 
 	// -------------------------------
@@ -277,7 +277,7 @@ if (isset($_GET['fav']) && $i) {
 		exit;
 	}
 
-	dieUnderHighLoad(2,'search_unavailable.tpl');
+	dieUnderHighLoad(10,'search_unavailable.tpl');
 	rate_limiting('search.php');
 	// -------------------------------
 	//  special handler to build a special query for marked list.
@@ -313,7 +313,7 @@ if (isset($_GET['fav']) && $i) {
 	fallBackForm($data);
 
 } else if (!empty($_GET['article_id']) || !empty($_GET['profile_id'])) { //
-	dieUnderHighLoad(2,'search_unavailable.tpl');
+	dieUnderHighLoad(10,'search_unavailable.tpl');
 	rate_limiting('search.php');
 	// -------------------------------
 	//  special handler to build a search from an article
@@ -500,7 +500,7 @@ if (isset($_GET['fav']) && $i) {
 	fallBackForm($data);
 	
 } else if (isset($_GET['cluster2'])) {
-	dieUnderHighLoad(2,'search_unavailable.tpl');
+	dieUnderHighLoad(10,'search_unavailable.tpl');
 	rate_limiting('search.php');
 	// -------------------------------
 	//  special handler to build a advanced query experimental cluster 
@@ -581,7 +581,7 @@ if (isset($_GET['fav']) && $i) {
 	fallBackForm($_GET);
 		
 } else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
-	dieUnderHighLoad(2,'search_unavailable.tpl');
+	dieUnderHighLoad(10,'search_unavailable.tpl');
 	rate_limiting('search.php');
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.
@@ -673,7 +673,7 @@ if (isset($_GET['fav']) && $i) {
 	fallBackForm($_GET);
 
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	dieUnderHighLoad(2,'search_unavailable.tpl');
+	dieUnderHighLoad(10,'search_unavailable.tpl');
 	rate_limiting('search.php');
 	// -------------------------------
 	//  Build advacned query
@@ -724,7 +724,7 @@ if (isset($_GET['fav']) && $i) {
 		fallBackForm($_POST);
 	}
 } elseif ((!empty($_GET['q']) && $_GET['q'] != '(anything)') || !empty($_GET['text']) || (!empty($_GET['location']) && $_GET['location'] != '(anywhere)')) {
-	dieUnderHighLoad(2,'search_unavailable.tpl');
+	dieUnderHighLoad(10,'search_unavailable.tpl');
 	rate_limiting('search.php');
 
 	// -------------------------------
@@ -931,7 +931,7 @@ if (!empty($engine->criteria->searchq)) {
 } 
 
 if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'text' || $_GET['form'] == 'first' || $_GET['form'] == 'check' || $_GET['form'] == 'cluster2')) {
-	dieUnderHighLoad(1.5,'search_unavailable.tpl');
+	dieUnderHighLoad(10,'search_unavailable.tpl');
 	// -------------------------------
 	//  Advanced Form
 	// -------------------------------
@@ -1177,7 +1177,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	}
 
 	if (!$smarty->is_cached($template, $cacheid)) {
-		dieUnderHighLoad(3,'search_unavailable.tpl');
+		dieUnderHighLoad(6,'search_unavailable.tpl');
 
 		if (!empty($CONF['google_maps_api_key']))
 			$smarty->assign_by_ref('google_maps_api_key', $CONF['google_maps_api_key']);
@@ -1467,7 +1467,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 
 } else {
-	dieUnderHighLoad(2,'search_unavailable.tpl');
+	dieUnderHighLoad(6,'search_unavailable.tpl');
 	// -------------------------------
 	//  Simple Form
 	// -------------------------------
