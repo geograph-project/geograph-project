@@ -11,7 +11,7 @@ customExpiresHeader(3600*24);
 
 // Input parameters
 $labels_str = isset($_GET['labels']) ? trim($_GET['labels']) : '';
-$model = $_GET['model'] ?? null;
+$model = $_GET['model'] ?? 'clip';
 $vector_base64 = $_GET['vector'] ?? null;
 $image_id = isset($_GET['image_id']) ? intval($_GET['image_id']) : null;
 $text_label = $_GET['text_label'] ?? null;
