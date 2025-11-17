@@ -15,7 +15,7 @@ function getTextEmbeddingFromQuery(string $query, $model = 'clip'): array
 {
 	require_once("3rdparty/vector.class.php"); //provides EmbeddingVector - needed for vector math
 
-    $parts = explode('-', $query, 2);
+    $parts = explode(' - ', $query, 2);
     $positivePart = trim($parts[0]);
     $negativePart = isset($parts[1]) ? trim($parts[1]) : '';
 
