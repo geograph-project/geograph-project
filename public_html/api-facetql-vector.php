@@ -245,6 +245,7 @@ if (empty($res)) { //filled directly above!!!
 			$quoted= $ddb->Quote($_GET['label']);
 
 			if (!empty($_GET['model']) && $_GET['model'] == 'pe') {
+				// Untested prototype code, label_embedding_1024 does not exist yet
 				$binary = $ddb->getOne("SELECT embeddings FROM label_embedding_1024 WHERE label = $quoted AND model='pe'");
 			} else {
 				$binary = $ddb->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted"); //limit 1 added

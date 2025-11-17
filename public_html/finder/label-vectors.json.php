@@ -61,7 +61,7 @@ if (!empty($vector_base64)) {
         exit;
     }
 } elseif (!empty($image_id)) {
-    $query_vector = getImageEmbeddingById($image_id);
+    $query_vector = getImageEmbeddingById($image_id, 'image', $model);
 } elseif (!empty($text_label)) {
     $query_vector = getTextEmbeddingWrapper($text_label, $model);
 }
