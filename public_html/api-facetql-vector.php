@@ -244,7 +244,11 @@ if (empty($res)) { //filled directly above!!!
 
 			$quoted= $ddb->Quote($_GET['label']);
 
-	                $binary = $ddb->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted"); //limit 1 added
+			if (!empty($_GET['model']) && $_GET['model'] == 'pe') {
+				$binary = $ddb->getOne("SELECT embeddings FROM label_embedding_1024 WHERE label = $quoted AND model='pe'");
+			} else {
+				$binary = $ddb->getOne("SELECT embeddings FROM label_embedding WHERE label = $quoted"); //limit 1 added
+			}
 			if (!empty($binary)) {
 	                	$list = unpack('g*', $binary);
         		        $value = "(".implode(', ',$list).")";

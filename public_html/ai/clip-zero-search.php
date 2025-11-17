@@ -47,6 +47,15 @@
     <p>Search for images and then classify them against a list of labels, or group the images into a arbitary number of clusters.</p>
 
     <div id="search-form">
+        <label>AI Model:</label>
+        <div class="radio-options">
+            <label>
+                <input type="radio" name="model" value="clip" checked> CLIP
+            </label>
+            <label>
+                <input type="radio" name="model" value="pe"> Perception Encoder
+            </label>
+        </div>
         <label for="search-query">Search Query:</label>
         <div class="radio-options">
             <label>
@@ -98,7 +107,8 @@
             labels: 'zeroShotSearchLabels',
             type: 'zeroShotSearchType',
             mode: 'zeroShotSearchMode',
-            clusters: 'zeroShotSearchClusters'
+            clusters: 'zeroShotSearchClusters',
+            model: 'zeroShotSearchModel'
         };
 
         // --- Core Functions ---
@@ -146,6 +156,12 @@
             const selectedMode = modeFromUrl || modeFromStorage || 'classify';
             $(`input[name="mode"][value="${selectedMode}"]`).prop('checked', true);
 
+            // Model
+            const modelFromUrl = params.get('model');
+            const modelFromStorage = localStorage.getItem(storageKeys.model);
+            const selectedModel = modelFromUrl || modelFromStorage || 'clip';
+            $(`input[name="model"][value="${selectedModel}"]`).prop('checked', true);
+
             toggleInputs();
         }
 
@@ -156,6 +172,7 @@
             localStorage.setItem(storageKeys.type, $('input[name="type"]:checked').val());
             localStorage.setItem(storageKeys.mode, $('input[name="mode"]:checked').val());
             localStorage.setItem(storageKeys.clusters, $('#num-clusters').val());
+            localStorage.setItem(storageKeys.model, $('input[name="model"]:checked').val());
         }
 
         // Updates the URL with current form values
@@ -165,6 +182,7 @@
             params.set('query', $('#search-query').val());
             params.set('type', $('input[name="type"]:checked').val());
             params.set('mode', $('input[name="mode"]:checked').val());
+            params.set('model', $('input[name="model"]:checked').val());
 
             if ($('input[name="mode"]:checked').val() === 'classify') {
                 params.set('labels', $('#search-labels').val());

@@ -2,6 +2,7 @@ function runSearch() {
     const query = $('#search-query').val().trim();
     const mode = $('input[name="mode"]:checked').val();
     const groupByPlace = $('#group-by-place').is(':checked');
+    const model = $('input[name="model"]:checked').val();
 
     if (!query) {
         alert('Please provide a search query.');
@@ -34,7 +35,10 @@ function runSearch() {
             $.ajax({
                 url: '/finder/label-vectors.json.php',
                 method: 'GET',
-                data: { labels: labels.join(',') },
+                data: {
+                    labels: labels.join(','),
+                    model: model
+                },
                 dataType: 'json'
             }),
             $.ajax({
@@ -45,7 +49,8 @@ function runSearch() {
                     select: 'id,hash,grid_reference,realname,title,image_vector,place',
                     long: 1,
                     utf: 1,
-                    limit: (paramname == 'match') ? 100 : 30
+                    limit: (paramname == 'match') ? 100 : 30,
+                    model: model
                 },
                 dataType: 'json'
             })
@@ -84,7 +89,8 @@ function runSearch() {
                 select: 'id,hash,grid_reference,realname,title,image_vector,place',
                 long: 1,
                 utf: 1,
-                limit: 100
+                limit: 100,
+                model: model
             },
             dataType: 'json'
         }).done(function(imageResults) {
