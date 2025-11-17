@@ -215,7 +215,7 @@ if (empty($res)) { //filled directly above!!!
 
 		$threads = getAssoc("SHOW THREADS"); //alas no quick way to just get count.
 		//todo, maybe put this in apc cache??
-		if (count($threads) > 10) {
+		if (count($threads) > 70) {
 		        customExpiresHeader(60,true,true);
 			header("HTTP/1.1 503 Service Unavailable");
 			header('Content-type: application/json');
