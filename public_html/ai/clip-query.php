@@ -453,6 +453,13 @@ if (!empty($_GET['loc'])) {
 		$dist = $_GET['dist'];
 		$label = !empty($_GET['query']) ? $_GET['query'] : null;
 
+		$parts = explode(' - ', $label, 2);
+		$positivePart = trim($parts[0]);
+		$negativePart = isset($parts[1]) ? trim($parts[1]) : '';
+		if (!empty($negativePart)) {
+			$label = "'$positivePart' while less similar to '$negativePart'";
+		}
+
 		print "<p>These images are visually similar to the term <b>".htmlentities($label)."</b> and within ".round($dist/1000,1)."km of ".round($lat,6).", ".round($lon,6).".<br>";
 
 		if ($imagelist->getImagesByLocation($lat, $lon, $dist, $label)) {
@@ -470,6 +477,13 @@ if (!empty($_GET['loc'])) {
 		$lon = $_GET['lon'];
 		$label = $_GET['query'];
 
+		$parts = explode(' - ', $label, 2);
+		$positivePart = trim($parts[0]);
+		$negativePart = isset($parts[1]) ? trim($parts[1]) : '';
+		if (!empty($negativePart)) {
+			$label = "'$positivePart' while less similar to '$negativePart'";
+		}
+
 		print "<p>These images are visually similar to the term <b>".htmlentities($label)."</b> and location ".round($lat,6).", ".round($lon,6).". (using experimental vector append method)<br>";
 
 		if ($imagelist->getImagesByLocationVector($lat, $lon, $label)) {
@@ -482,6 +496,13 @@ if (!empty($_GET['loc'])) {
 
 	} elseif (!empty($_GET['query'])) {
 		$label = $_GET['query'];
+
+		$parts = explode(' - ', $label, 2);
+		$positivePart = trim($parts[0]);
+		$negativePart = isset($parts[1]) ? trim($parts[1]) : '';
+		if (!empty($negativePart)) {
+			$label = "'$positivePart' while less similar to '$negativePart'";
+		}
 
 //		print "<div style=float:left;width:450px;padding:20px>";
 		print "<p>These images are visually similar to the term <b>".htmlentities($label)."</b>, but the similarity is (currently) based purely on appearance, not on the image's title or location, or other data.<br>";
