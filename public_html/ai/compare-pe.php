@@ -162,6 +162,10 @@ $(function() {
     });
 
     const urlParams = new URLSearchParams(window.location.search);
+    const coverParam = urlParams.get('coverage');
+    if (coverParam)
+        $('#coverage').val(coverParam);
+
     const queryParam = urlParams.get('query');
     if (queryParam) {
         $('#queryInput1').val(queryParam);
