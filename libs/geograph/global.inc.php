@@ -960,7 +960,7 @@ $str[] = "
 		if (preg_match('/photo\/(\d+)/',$_SERVER["REQUEST_URI"],$m) && $GLOBALS['image']->isValid()) { //so dont display on 404/rejected (in case still cached on CDN!)
 			$cached = $memcache->name_get('reljs',$m[1]);
 			//bots that known to use 'rendering'
-			if (preg_match('/Googlebot|GoogleOther|Bingbot|Baiduspider/') || $cached) { //if created, might as well use it!
+			if (preg_match('/Googlebot|GoogleOther|Bingbot|Baiduspider/', @$_SERVER['HTTP_USER_AGENT']) || $cached) { //if created, might as well use it!
 				if ($cached) {
 					//as we know it already in cached, might as well read directly, avoiding a self API call!
 					global $filesystem;
