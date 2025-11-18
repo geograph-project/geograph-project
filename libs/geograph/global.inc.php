@@ -34,7 +34,7 @@
 if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ) { //mainly so only checking 'web' requests!
 
 	//temporary bodge, need some condiutional code included for pod specific rules
-	if (file_exist(__DIR__."/hook.inc.php"))
+	if (file_exists(__DIR__."/hook.inc.php"))
 		include __DIR__."/hook.inc.php";
 
         //this is does not seem to be the legitmiate faceboook
