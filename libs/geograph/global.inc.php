@@ -37,6 +37,12 @@ if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'
 	if (file_exists(__DIR__."/hook.inc.php"))
 		include __DIR__."/hook.inc.php";
 
+	if (preg_match('/\.$/',$_SERVER['HTTP_HOST'])) {
+	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
+		print "If you see this, use remove the last dot from the domain name";
+		exit;
+	}
+
         //this is does not seem to be the legitmiate faceboook
 	if ($_SERVER['HTTP_USER_AGENT'] == "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)") {
 	     header('HTTP/1.0 451 Unavailable For Legal Reasons');
