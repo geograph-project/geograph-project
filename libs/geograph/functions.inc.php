@@ -888,7 +888,7 @@ $input = $threshold;
 				"i=$input",
 				"t=$threshold",
 				"l=$load",
-				`hostname`,
+				trim(`hostname`),
 				$_SERVER['HTTP_HOST'],
 				$_SERVER['REQUEST_URI'],
 				@$_SERVER['HTTP_REFERER'],
@@ -1327,6 +1327,8 @@ function sqlBitsToSelect($sql) {
 	}
 	if (!empty($sql['wheres'])) {
 		$query .= " WHERE ".join(' AND ',$sql['wheres']);
+	} elseif (!empty($sql['where'])) {
+		$query .= " WHERE ".$sql['where'];
 	}
 	if (isset($sql['group'])) {
 		$query .= " GROUP BY {$sql['group']}";
