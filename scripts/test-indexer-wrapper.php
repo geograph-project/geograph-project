@@ -1,6 +1,6 @@
-<?
+<?php
 
-$param = array('execute'=>0,'single'=>1,'debug'=>1,'prime'=>0, 'server_id'=>false);
+$param = array('execute'=>0,'single'=>1,'debug'=>1,'prime'=>0, 'server_id'=>false, 'compare'=>1);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -13,6 +13,38 @@ if (!empty($param['server_id']))
 else
 	$server_id = $db->Quote(trim(`hostname`));
 $pid = getmypid();
+
+#####################################################
+
+if ($param['compare']) {
+	$sph = GeographSphinxConnection('sphinxql',true);
+	$sphinx = $sph->getAssoc("SHOW TABLES");
+	$metadata = $db->getAssoc("SELECT * FROM sph_index");
+	foreach($sphinx as $index => $data)
+		if ($data == 'local')
+			@$both[$index]++;
+	foreach($metadata as $index => $data)
+		@$both[$index]++;
+	foreach ($both as $index => $count) {
+		printf("%3d %30s %10s %s\n", $count, $index, @$sphinx[$index], @$metadata[$index]['active']);
+		if (empty($sphinx[$index]) && @$metadata[$index]['active'] > -1)
+			print "UPDATE sph_index SET active=-1 WHERE index_name = '$index';\n";
+		if (empty($metadata[$index]))
+			print "INSERT INTO sph_index SET  index_name = '$index', created=NOW(), active=0;\n"; //dont want make it auto build every 15 minuts!
+	}
+	exit;
+}
+
+#####################################################
+
+if (is_dir("/var/lib/manticore/data/")) {
+	$indexes = glob("/var/lib/manticore/data/"."*.sph");
+	if (empty($indexes)) {
+		$sql = "DELETE FROM sph_server_index WHERE server_id = $server_id";
+		print "$sql;\n";
+		//no execute, because wouldnt want to run this accidently!
+	}
+}
 
 #####################################################
 
@@ -39,11 +71,13 @@ if (!empty($param['prime'])) {
 
 #####################################################
 
+$hour = date('G');
 
 $indexes = $db->getAll("
 SELECT sph_index.index_name, preindex, postindex, posttrigger, server_id, last_indexed, criteria
 FROM sph_index LEFT JOIN sph_server_index ON (sph_index.index_name = sph_server_index.index_name AND server_id = $server_id)
-WHERE (DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() OR triggered > 0) AND active = 1 ORDER BY type+0");
+WHERE (active=0 AND last_indexed IS NULL) OR triggered > 0 OR (active = 1 AND DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() AND minhour <= $hour)
+ORDER BY type+0, index_name");
 
 if (empty($indexes))
 	exit;
@@ -108,11 +142,14 @@ function process_list($list, $log = null) {
 #####################################################
 # run each index as a seperate process
 
+# NOTE: We generally prefer using single mode, because it allows searchd to be restarted as go, which means dont need diskspace to hold ALL the rebuilt temporary indexes at once!
+
 if (!empty($param['single'])) {
 	foreach ($indexes as $row) {
 		if (!empty($done[$row['index_name']])) //may of been done as pre/post on previous run!
 			continue;
 
+		//this is/was a test, seeing if could have a query that detects IF the index needs rebuilding, rather than just doing periodically!
 		if (!empty($row['criteria']) && strpos($row['criteria'],'#') !== 0) { //just so can 'comment out' the query
 			$query = str_replace("'\$server_id'",$server_id,$row['criteria']);
 
@@ -141,12 +178,15 @@ if (!empty($param['single'])) {
 		if (!empty($row['posttrigger']))
 			$trigger[$row['posttrigger']]=1;
 
+#this is just a more compact output for testing, than allowing process_list to run!
 print implode(' ',array_keys($list))."\n";
 foreach ($list as $index => $dummy) $done[$index]=1;
 continue;
 
 		process_list($list, $row['index_name']);
 	}
+
+print_r($trigger);
 	exit;
 }
 
@@ -174,7 +214,7 @@ process_list($list);
 /*
 CREATE TABLE `sph_index` (
   `index_name` varchar(64) NOT NULL,
-  `active` tinyint unsigned not null default 1,
+  `active` tinyint not null default 0,
   `minutes` MEDIUMINT not null default 15,
   `preindex` varchar(64) NOT NULL,
   `postindex` varchar(64) NOT NULL,

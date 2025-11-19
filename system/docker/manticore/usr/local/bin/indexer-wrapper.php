@@ -25,7 +25,8 @@ for($i=1; $i<count($_SERVER['argv']); $i++) {
 
 $db = mysqli_connect($_SERVER['MYSQL_HOST'],$_SERVER['MYSQL_USER'],$_SERVER['CONF_DB_PWD'],$_SERVER['MYSQL_DATABASE']);
 if (mysqli_connect_errno()) {
-    throw new RuntimeException('mysqli connection error: ' . mysqli_connect_error());
+        error_log('FATAL ERROR, mysqli connection error: ' . mysqli_connect_error());
+        exit(1);
 }
 
 function db_Quote($in) {
@@ -79,16 +80,39 @@ if (!empty($param['prime'])) {
 
 #####################################################
 
+$lockwait = 60; //when called routinely from cron, just die if can't get lock, will go again in 5 minutes anyway
+
+if (is_dir("/var/lib/manticore/data/") && is_writable("/var/lib/manticore/data/")) {
+	//if the folder is empty (no indexes) - then it probably means its a brand new instance.
+	// just to be safe delete any metadata records, just incase there was some activity in past, but the peristant volumn was not maintained
+	// if we inherit a old volume, then the normal process, should rebuild any indexes anyway!
+	$indexes = glob("/var/lib/manticore/data/"."*.sph");
+	if (empty($indexes)) {
+		$sql = "DELETE FROM sph_server_index WHERE server_id = $server_id";
+		print "$sql;\n";
+		db_Execute($sql);
+		$lockwait = 3600; //when running in the init-container, we should wait for the lock!
+	}
+} else {
+        error_log("FATAL ERROR, unable to access /var/lib/manticore/data/");
+        exit(1);
+}
+
+#####################################################
+
 //this is deliberately a GLOBAL lock, so that no two instances (even staging!) are indexing at the same time!
 if (!empty($param['lock']))
-	if (!db_getOne("SELECT GET_LOCK('indexer_active',60)"))
- 	       die("unable to get a lock;\n");
+	if (!db_getOne("SELECT GET_LOCK('indexer_active',$lockwait)")) {
+ 		print("FATAL ERROR: unable to get a lock;\n");
+		exit(2);
+	}
 
 $hour = date('G');
 $indexes = db_getAll("
 SELECT sph_index.index_name, preindex, postindex, posttrigger, server_id, last_indexed
 FROM sph_index LEFT JOIN sph_server_index ON (sph_index.index_name = sph_server_index.index_name AND server_id = $server_id)
-WHERE (DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() OR triggered > 0) AND minhour <= $hour AND (active = 1 OR triggered > 0) ORDER BY type+0");
+WHERE (active=0 AND last_indexed IS NULL) OR triggered > 0 OR (active = 1 AND DATE_ADD(coalesce(last_indexed,'2000-01-01 00:00:00'), interval `minutes` minute) < NOW() AND minhour <= $hour)
+ORDER BY type+0, index_name");
 
 if (empty($indexes)) {
 	if (!empty($param['lock']))
