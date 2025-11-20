@@ -108,6 +108,8 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/so
 	{/if}
 
 	</div>
+{else if $item.link}
+	<b><a href="{$item.link}">{$item.title|escape:'html'}</a> - click to explore these images more (including over a wider area)</b><hr>
 {/if}
 
 	{foreach from=$item.images item=image}

@@ -74,7 +74,7 @@ function getTextEmbeddingFromQuery(string $query, $model = 'clip'): array
             }
 
             // Remove all 'id:...' parts from the string to get the remaining text
-            $textPart = trim(preg_replace('/id:(\d+)/', '', $part));
+            $textPart = trim(preg_replace('/\[*id:(\d+)\]*/', '', $part));
             if (!empty($textPart)) {
                 $textVector = new EmbeddingVector(getTextEmbedding($textPart, $model));
                 if ($vector === null) {
@@ -99,7 +99,7 @@ function getTextEmbeddingWrapper($label, $model = 'clip') {
 	if (empty($db))
 		$db = GeographDatabaseConnection(false);
 
-        if (preg_match('/^id:(\d+)$/',$label,$m) || preg_match('/\/photo\/(\d+)$/',$label,$m)) {
+        if (preg_match('/^\[*id:(\d+)\]*$/',$label,$m) || preg_match('/\/photo\/(\d+)$/',$label,$m)) {
                 //todo, in concept we COULD do both, and use vector->add() ?
                 return getImageEmbeddingById(intval($m[1]), 'image', $model);
         }

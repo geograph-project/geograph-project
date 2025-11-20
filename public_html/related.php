@@ -106,6 +106,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
                                 $row = array();
                                 $row['title'] = "Images visually similar within {$dist}km";
                                 $row['images'] = $imagelist->images;
+				$row['link'] = "/finder/finder.php?q=%5Bid%3A{$image->gridimage_id}%5D&loc={$criteria['lat']},{$criteria['lng']}&amp;distance={$criteria['dist']}&amp;type=similarity&amp;display=large";
                                 $row['resultCount'] = count($imagelist->images); //wont get a total count anyway!
 
 				$results[] = $row;
