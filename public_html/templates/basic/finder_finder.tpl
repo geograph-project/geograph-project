@@ -242,8 +242,8 @@ touch-action:inherit;
 			<label for="date_end"><b>End Date</b>:</label>
 			<input type="date" id="date_end" name="date_end" min="1800-01-01">
 			<button type="button" id="clear-dates-btn">Clear Dates</button><br>
-			Quick: <button onclick="return setDateRange('-5 year','');">Last 5</button> or 
-			<button onclick="return setDateRange('','-20 year');">Older than 20</button> years
+			Quick: <button type="button" onclick="return setDateRange('-5 year','');">Last 5</button> or 
+			<button type="button" onclick="return setDateRange('','-20 year');">Older than 20</button> years
 		</div>
 		<div id="contributor-filter-box" class="form-column hidden">
 			<label for="contributor"><b>Contributor</b>:</label>
@@ -260,9 +260,9 @@ touch-action:inherit;
 
 		<div class="form-clear">
 			<button type="submit" style="font-weight:bold;font-size:1.1em">Update</button> &nbsp; &nbsp; &nbsp; &nbsp;
-			<button id="add-date-filter">Add Date Filter</button>
-			<button id="add-contributor-filter">Add Contributor Filter</button>
-			<button id="add-tags-filter">Add Tag Filter</button>
+			<button type="button" id="add-date-filter">Add Date Filter</button>
+			<button type="button" id="add-contributor-filter">Add Contributor Filter</button>
+			<button type="button" id="add-tags-filter">Add Tag Filter</button>
 		</div>
 		<input type="hidden" id="display-mode" name="display" value="small">
 	</form>
