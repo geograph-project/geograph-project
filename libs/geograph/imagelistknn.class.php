@@ -241,7 +241,7 @@ class ImageListKNN extends ImageList
     /**
      * Retrieves images by various criteria including location, label, and keywords using Manticore.
      *
-     * @param array $criteria An associative array of search criteria (e.g., 'lat', 'lon', 'distance', 'label', 'keywords').
+     * @param array $criteria An associative array of search criteria (e.g., 'lat', 'lng', 'dist', 'label', 'keywords').
      * @param int $limit The maximum number of images to return.
      * @return int The number of images found and loaded into the list.
      */
@@ -251,8 +251,8 @@ class ImageListKNN extends ImageList
         $where = [];
         $params = [];
 
-        if (!empty($criteria['lat']) && isset($criteria['distance'])) {
-            list($dist_col, $dist_where) = $this->_getGeoDistClause($criteria['lat'], $criteria['lon'], $criteria['distance']);
+        if (!empty($criteria['lat']) && isset($criteria['dist'])) {
+            list($dist_col, $dist_where) = $this->_getGeoDistClause($criteria['lat'], $criteria['lng'], $criteria['dist']);
             $cols .= ", $dist_col"; //adds the distance column
             // only add to where clause if distance is explicitly set (can be 0)
 	    if (!empty($criteria['distance'])) {

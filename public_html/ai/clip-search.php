@@ -242,8 +242,8 @@ if (!empty($_GET['map'])) {
 		//with keywords have to use the combined
 		$criteria = [
 			'lat' => $_GET['lat']??0,
-			'lon' => $_GET['lon']??0,
-			'distance' => $_GET['dist']??1000,
+			'lng' => $_GET['lon']??0,
+			'dist' => $_GET['dist']??1000,
 			'label' => $_GET['label'] ??'',
 			'keywords' => $_GET['q'],
 		];
