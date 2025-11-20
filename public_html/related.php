@@ -44,13 +44,18 @@ if (!empty($_GET['method']) && preg_match('/^\w+$/',$_GET['method'])) {
 } else {
 	$_GET['method'] = '';//cheap hack so can do comparisions below without undefined warnigns
 }
+			if (!empty($_GET['dist'])) {
+				$dist = min(50000,max(200, floatval($_GET['dist'])));
+				$cacheid .= $dist;
+			}
+
 
 if (!$smarty->is_cached($template, $cacheid)) {
 
 	if (!empty($_GET['id'])) {
 
 		$image=new GridImage();
-		$ok = $image->loadFromId($_REQUEST['id']);
+		$ok = $image->loadFromId($_REQUEST['id'], true); //so will have the lat long from gridimage_search!
 
 		if (!$ok || $image->moderation_status=='rejected') {
 			//clear the image
@@ -58,6 +63,56 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			header("HTTP/1.0 410 Gone");
 			header("Status: 410 Gone");
 			$template = "static_404.tpl";
+
+/////////////////////////////////////
+// ai mode
+
+		} elseif ($_GET['method'] == 'aiclip') {
+			$results = array();
+
+
+	                $orig = $memcache;
+        	        $memcache = false; //need to disable memcache with FileSystem!
+
+	                $filesystem = new FileSystem(); //sets up configuation automagically
+        	        //the vector lip needs S3 class setup already!
+
+	                require_once('geograph/imagelists3vector.class.php');
+        	        $imagelist=new ImageListS3Vector;
+
+	                $memcache = $orig;
+
+			//////////////////////////////
+
+			$dist = 1; //km
+
+			if (!empty($_GET['dist']))
+				$dist = min(50000,max(200, floatval($_GET['dist'])));
+
+	                $criteria = [
+	                        'lat' => floatval($image->wgs84_lat),
+        	                'lng' => floatval($image->wgs84_long),
+	                        'dist' => $dist*1000,
+        	                'label' => "[id:{$image->gridimage_id}]", //calls getTextEmbeddingFromQuery which can lookup by id!
+        	        ];
+
+	                if ($imagelist->getImagesByCriteria($criteria)) {
+
+				foreach ($imagelist->images as $idx => $gridimage) {
+					if ($image->gridimage_id == $gridimage->gridimage_id)
+						unset($imagelist->images[$idx]);
+				}
+
+                                $row = array();
+                                $row['title'] = "Images visually similar within {$dist}km";
+                                $row['images'] = $imagelist->images;
+                                $row['resultCount'] = count($imagelist->images); //wont get a total count anyway!
+
+				$results[] = $row;
+			}
+
+                        $smarty->assign_by_ref('results', $results);
+                        $smarty->assign('method','aiclip');
 
 /////////////////////////////////////
 //sample/quick
@@ -453,7 +508,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$image->image_taken=$image->getFormattedTakenDate();
 		$smarty->assign_by_ref('image', $image);
 
-		$methods = array('split'=>'Breakdown','combined'=>'Combined Results','quick'=>'Quick Results');
+		$methods = array('split'=>'Breakdown','combined'=>'Combined Results','quick'=>'Quick Results','aiclip'=>'Visual Similarity');
 		$smarty->assign_by_ref('methods', $methods);
 
 		                       $smarty->assign('thumbw',120);
