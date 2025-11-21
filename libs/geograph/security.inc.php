@@ -263,7 +263,7 @@ function appearsToBePerson() {
 	if (in_array($_SERVER['HTTP_USER_AGENT'], $agents))
 		return false;
 
-	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
+	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) && //catches Google-Read-Aloud as includes a URL
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
 	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Mediapartners')===FALSE) &&
 	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Preview')===FALSE) &&
