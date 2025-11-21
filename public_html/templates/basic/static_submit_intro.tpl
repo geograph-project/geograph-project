@@ -49,7 +49,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 
 <div class="interestBox">
 	More Links: 
-	<b><a href="/article/Geograph-Frequently-Asked-Questions" class=nowrap>Contributor FAQ</a></b>
+	<b><a href="/faq3.php?l=0#60" class=nowrap>Contributor FAQ</a></b>
 	 and <a href="/article/Geograph-Introductory-letter" class=nowrap>Geograph Introductory letter</a>
 	<hr>
 	We also have some older resources which may be slightly outdated: 

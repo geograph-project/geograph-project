@@ -8,7 +8,7 @@
 
 <h2>Contributing Photos to Geograph!</h2>
 
-<p>We have a <a href="/article/Geograph-Frequently-Asked-Questions" class=about>Frequently Asked Questions</a> about image submission.</p>
+<p>We have a <a href="/faq3.php?l=0#60" class=about>Frequently Asked Questions</a> about image submission.</p>
 
 
 <div class="interestBox">

@@ -121,11 +121,14 @@ h3 b {
 }
 h4 {
     margin:0;
-    font-size:0.8em;
+    font-size:1.1em;
     margin-top:6px;
     padding-top:3px;
     margin-left:-5px;
     border-top:1px solid #e5e5e5;
+    background-color:silver;
+    padding:4px;
+    border-radius:4px;
 }
 .tags {
     line-height:1.8em;
@@ -152,6 +155,8 @@ dt {
     background-color:#f9f9f9;
     --font-weight:bold;
     color:#333333;
+    padding:2px;
+    border-radius:20px;
 }
 dt b {
     font-weight:bolder;
@@ -167,9 +172,9 @@ dt a.close {
 }
 dd {
     margin-top:5px;
-    font-size:0.9em;
     margin-bottom:20px;
     margin-left:20px;
+    max-width:60em;
 }
 dd div.linkbar {
     margin-top:20px;

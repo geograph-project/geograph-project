@@ -1312,7 +1312,7 @@ function orientationChanged() {
 		<b>New here? We have a new 
 		<span class="nowrap"><a title="Help Page" href="/article/Mobile-Submission-Process" target="_blank">Help Page</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>
 		and
-		<span class="nowrap"><a title="FAQ Page" href="/article/Geograph-Frequently-Asked-Questions" target="_blank">Contributors FAQ</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>
+		<span class="nowrap"><a title="FAQ Page" href="/faq3.php?l=0#60" target="_blank">Contributors FAQ</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="https://s1.geograph.org.uk/img/newwin.png" width="10" height="10"/></span>
 		</b>
 
 </div>

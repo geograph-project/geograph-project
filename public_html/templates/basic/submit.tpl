@@ -74,7 +74,7 @@ geographing</a> first.</p>
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'"><b>Locate on Map</b>/by Placename</a>
 
 
-		<div style="float:right"><a href="/article/Geograph-Frequently-Asked-Questions" class=about>Frequently Asked Questions</a>
+		<div style="float:right"><a href="/faq3.php?l=0#60" class=about>Frequently Asked Questions</a>
 		<a href="/help/submit_intro" class=about>Submission Help</a></div>
 
 	</div>

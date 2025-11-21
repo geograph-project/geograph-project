@@ -33,7 +33,7 @@ if (!empty($_GET['inner'])) { ?>
         <p>For more information, visit our help pages:</p>
         <ul>
             <li><a href="https://www.geograph.org.uk/article/Geograph-Introductory-letter">Geograph Introductory letter</a></li>
-            <li><a href="https://www.geograph.org.uk/article/Geograph-Frequently-Asked-Questions">Contributors FAQ</a></li>
+            <li><a href="https://www.geograph.org.uk/faq3.php?l=0#60">Contributors FAQ</a></li>
         </ul>
         <p>To access the full range of features, visit our <a href="https://www.geograph.org.uk/">main website</a>.</p>
     </div>

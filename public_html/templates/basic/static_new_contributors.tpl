@@ -15,7 +15,7 @@
 <ul class="touchPadding">
 	<li class=review><a href="/article/Geograph-Introductory-letter">Geograph Introductory letter</a> (under review)</li>
 
-	<li><b><a href="/article/Geograph-Frequently-Asked-Questions">Contributors FAQ</a></b> (new!)</li>
+	<li><b><a href="/faq3.php?l=0#60">Contributors FAQ</a></b> (new!)</li>
 	
 	<li>Submission Processes:<br><br><ul>
 		<li><b><a href="/article/Mobile-Submission-Process">Submission on Mobile</a></b> (new!)</li>
