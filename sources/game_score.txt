@@ -1,0 +1,13 @@
+name: Game Score Usernames
+table_name: game_score
+
+creation:
+SELECT  'game_score' AS source,
+	`game_score_id` AS foreign_id,
+        'creation' as event_type,
+	`created` as event_date,
+	`user_id` as user_id,
+        TRIM(username) AS title
+FROM game_score
+WHERE username != '' AND approved>=0 AND created > date_sub(now(),interval 7 day)
+
