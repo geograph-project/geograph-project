@@ -859,7 +859,85 @@ function jumpContributor(form) {
     performSearch();
 }
 
+function fetchAndProcessImageForKeywords(imageId) {
+    const data = {
+        select: 'myriad,hectad,grid_reference,takenyear,takenmonth,takenday,groups,tags,types,contexts,snippets,subjects,place,county,country,scenti,user_id,realname,imageclass',
+        where: 'id=' + imageId,
+        long: 1,
+        utf: 1
+    };
+    const url = 'https://www.geograph.org.uk/api-facetql.php?' + objectToUrlParams(data);
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.rows && data.rows[0]) {
+                processImageForKeywords(data.rows[0]);
+            }
+        });
+}
+
+function processImageForKeywords(row) {
+    if (!row) return;
+
+    let required = [];
+    let optional = [];
+
+    if (row.grid_reference) {
+        required.push(row.grid_reference);
+    } else if (row.hectad) {
+        required.push(row.hectad);
+    } else if (row.myriad) {
+        required.push(row.myriad);
+    }
+
+    if (row.takenday) optional.push(row.takenday);
+    if (row.takenmonth) optional.push(row.takenmonth);
+    if (row.takenyear > '1' && row.takenyear < 2010) optional.push(row.takenyear);
+
+    const splits = ['contexts', 'groups', 'tags', 'snippets', 'subjects'];
+    splits.forEach(key => {
+        if (row[key] && row[key].length > 5) {
+            const list = row[key].replace(/(^\s*_SEP_\s*|\s*_SEP_\s*$)/g, '').replace(/(top|subject):/g, '').split(/ _SEP_ /);
+            list.forEach(item => {
+                if (row['tags'] && row['tags'].length > 5 && (item === 'Farm, Fishery, Market Gardening' || item === 'Roads, Road transport' || item === 'Wild Animals, Plants and Mushrooms')) {
+                    // skip noisy tags
+                } else {
+                    optional.push('"' + item.replace(/ and /g, ' * ') + '"');
+                }
+            });
+        }
+    });
+
+    if (row.place && row.place.length > 2) optional.push('"' + row.place + '"');
+    if (row.user_id) optional.push("user" + row.user_id);
+    if (row.imageclass) optional.push('"' + row.imageclass + '"');
+
+    let match = required.join(" ");
+    if (optional.length) {
+        match += " (" + optional.join("|") + ")";
+    }
+
+    if (match) {
+        document.querySelector('input[name="q"]').value = match;
+        document.querySelector('input[name="type"][value="keywords"]').checked = true;
+        performSearch();
+    }
+}
+
 function performSearch() {
+    const queryInput = document.querySelector('input[name="q"]');
+    const type = document.querySelector('input[name="type"]:checked').value;
+
+    if (type === 'keywords') {
+        const idMatch = queryInput.value.match(/^\[*id:(\d+)\]*$/);
+        if (idMatch) {
+            const imageId = idMatch[1];
+            fetchAndProcessImageForKeywords(imageId);
+            return;
+        }
+    }
+
     searchAndRender();
 
     const query = document.querySelector('input[name="q"]').value;
