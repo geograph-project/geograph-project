@@ -2,5 +2,5 @@ name: Media and Speculative Uploads
 
 creation: https://media.geograph.org.uk/_moderation.php
 
-result: https://media.geograph.org.uk/_moderation.php?source=$source&foreign_id=$foreign_id&event_type=$event_type&event_date=$event_date&moderation_status=$moderation_status
+result: https://media.geograph.org.uk/_moderation.php
 

@@ -2,3 +2,4 @@ name: Sitemap Links
 
 creation: https://www.geograph.org/links/_moderation.php
 
+result: https://www.geograph.org/links/_moderation.php

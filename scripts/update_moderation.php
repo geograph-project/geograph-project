@@ -35,6 +35,8 @@ $sources = array();
 // quick file parser!
 
 foreach(glob('../sources/*.txt') as $filename) {
+	if (!is_file($filename)) //can now contain symlinks!
+		continue;
 	$h = fopen($filename,'r');
 	$key = null;
 	$values = array();

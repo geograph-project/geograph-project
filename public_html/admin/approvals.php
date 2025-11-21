@@ -83,10 +83,27 @@ if (!empty($_POST['status'])) {
 			mail_wrapper('approvals@geograph.org.uk','[Geograph] Flagged Content #'.$moderation_id, $content);
 		}
 
-		//TODO this should be dynamic from 'sources/' - but hardcoded to test.
+		$filename = $_SERVER['DOCUMENT_ROOT'].'/../sources/'.$row['source'].'.txt';
+	        $values = array();
+		if (file_exists($filename)) {
+		        $h = fopen($filename,'r');
+		        $key = null;
+		        while($h && !feof($h)) {
+		                $line = trim(fgets($h));
+		                if (preg_match('/^(\w+):(.*)/',$line,$m)) {
+		                        $key = $m[1];
+		                        $values[$key] = $m[2]??'';
+		                } elseif(preg_match('/^#/',$line)) {
+		                        continue; //comment line!
+		                } elseif(!empty($line)) {
+		                        $values[$key] .= " ".$line; //space because of the trim!
+		                }
+		        }
+		        fclose($h);
+		}
+
 		//note this sends ALL results, upto them what they do with it!
-		if ($row['source'] == 'media' || $row['source'] == 'speculative') {
-			//_moderation.php?source=$source&foreign_id=$foreign_id&event_type=$event_type&event_date=$event_date&moderation_status=$moderation_status
+		if (!empty($values['result']) && preg_match('/^http/',trim($values['result']))) {
 	                $bits = array();
 			$bits['source'] = $row['source'];
 			$bits['foreign_id'] = $row['foreign_id'];
@@ -94,7 +111,8 @@ if (!empty($_POST['status'])) {
 			$bits['event_date'] = $row['event_date'];
 			$bits['moderation_status'] = $result;
                 	$bits['hash'] = substr(hash_hmac('md5', date('Y-m-d'), $CONF['r2_endpoint']),0,10);
-        	        $raw = file_get_contents("https://media.geograph.org.uk/_moderation.php?".http_build_query($bits));
+
+        	        $raw = file_get_contents(trim($values['result'])."?".http_build_query($bits));
 			if (trim($raw) != 'ok') {
 				die("WARNING: Unable to sync request with remote server");
 			}
