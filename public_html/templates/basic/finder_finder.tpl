@@ -515,10 +515,6 @@ function renderFinderResults(url, divId, countDivId) {
     const moreResultsPrompt = document.getElementById('more-results-prompt');
     const display = document.getElementById('display-mode').value;
 
-    // Switch display class
-    divElement.classList.remove('display-large', 'display-small', 'display-details', 'display-river'); // Add other classes here as they are created
-    divElement.classList.add('display-' + display);
-
     fetch(url)
         .then(response => {
             if (!response.ok) {
@@ -528,6 +524,10 @@ function renderFinderResults(url, divId, countDivId) {
             return response.json();
         })
         .then(data => {
+	    // Switch display class
+	    divElement.classList.remove('display-large', 'display-small', 'display-details', 'display-river'); // Add other classes here as they are created
+	    divElement.classList.add('display-' + display);
+
             if (data.rows) {
                 // Clear previous results
                 divElement.innerHTML = '';
@@ -674,6 +674,16 @@ function searchAndRender() {
     const tags = document.querySelector('input[name="tags"]').value;
     const display = document.getElementById('display-mode').value;
 
+    //in keywords mode, catch a single ID: query - works as related image mode. In similarity mode, implemented server side!
+    if (type === 'keywords') {
+        const idMatch = query.match(/^\[*id:(\d+)\]*$/);
+        if (idMatch) {
+            const imageId = idMatch[1];
+            fetchAndProcessImageForKeywords(imageId);
+            return;
+        }
+    }
+
     let base = "https://www.geograph.org.uk/api-facetql.php";
     const data = {
         long: 1,
@@ -682,8 +692,8 @@ function searchAndRender() {
 	utf: 1
     };
 
+    //special handler for a list of ids!
     if (query && query.match(/^(id:)?\d+(,\d+)*$/) && type == 'keywords') {
-	//special handler for a list of ids!
         data['where'] = "id in ("+query.replace(/id:/g,'')+")";
 
         //todo, certainly doesnt make sense to filter by query, but might want to keep other filters?
@@ -926,17 +936,6 @@ function processImageForKeywords(row) {
 }
 
 function performSearch() {
-    const queryInput = document.querySelector('input[name="q"]');
-    const type = document.querySelector('input[name="type"]:checked').value;
-
-    if (type === 'keywords') {
-        const idMatch = queryInput.value.match(/^\[*id:(\d+)\]*$/);
-        if (idMatch) {
-            const imageId = idMatch[1];
-            fetchAndProcessImageForKeywords(imageId);
-            return;
-        }
-    }
 
     searchAndRender();
 
