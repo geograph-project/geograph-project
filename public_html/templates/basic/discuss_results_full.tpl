@@ -9,7 +9,7 @@
 	<br/>( Page {$engine->pagesString()}) [<a href="/discuss/search.php?i={$i}&amp;form=simple">search again</a>]
 	</p>
 
-<p align="center"><i>perform text search for <a href="/discuss/index.php?action=search&searchForum=0&days=60&searchWhere=0&searchHow=0&searchFor=+{$engine->criteria->searchq|escape:"url"}+&go=Find">{$engine->criteria->searchq|escape:"html"}</a></i></p>
+<p align="center"><i>perform text search for <a href="/finder/discussions.php?q=+{$engine->criteria->searchq|escape:"url"}+">{$engine->criteria->searchq|escape:"html"}</a></i></p>
 
 	{foreach from=$engine->results item=image}
 	  <div style="clear:both">

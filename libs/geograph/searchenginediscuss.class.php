@@ -42,6 +42,12 @@ class SearchEngineDiscuss extends SearchEngineBuilder
 {
 	var $page = "discuss/search.php";
 	var $searchuse = "discuss";
+
+	//there is now an option to set a default class, but the discussion search only has one class!
+	function getDisplayclass() {
+		return 'full';
+	}
+
 	
 	function Execute($pg) 
 	{
@@ -72,7 +78,7 @@ $sql = <<<END
 		FROM geobb_topics AS gi INNER JOIN gridsquare AS gs ON(topic_title = grid_reference)
 			 $sql_from
 		WHERE 
-			forum_id = 5 AND $sql_where 
+			gi.forum_id = 5 AND $sql_where 
 END;
 		$this->resultCount = $db->GetOne($sql);
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
@@ -90,7 +96,7 @@ $sql = <<<END
 		INNER JOIN user ON(gi.topic_poster=user.user_id)
 			 $sql_from
 		WHERE 
-			forum_id = 5 AND $sql_where
+			gi.forum_id = 5 AND $sql_where
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;
@@ -125,4 +131,3 @@ if (!empty($_GET['debug']))
 
 
 
-?>
