@@ -493,6 +493,14 @@ $offset = 0;
 			#############################################################
 
 			print "<div class=\"grid-item $className\">";
+
+if (!empty($row['ai_class']) && $row['ai_class'] != 'approved' && $row['ai_class'] != 'personal') {
+	print "AI Suggests: <b>{$row['ai_class']}</b>. <br><br>";
+}
+if (!empty($row['ai_assessment'])) { //todo, could exclude normal/personal?
+	print "AI Assessment: <b>{$row['ai_assessment']}</b>. <br>";
+}
+
 				print "<form method=post class=\"ajax-form $className\">"; //for now each is a seperate form submission!
 			print "<button type=submit name=status[{$row['moderation_id']}] value=approved>Looks Safe</button>";
 			print "<button type=submit name=status[{$row['moderation_id']}] value=flagged>Flag!</button>";
