@@ -44,6 +44,13 @@ foreach(array('do','form') as $key)
 	     exit;
 	}
 
+//a do request should never have it in the referer.
+if (!empty($_GET['do']) && !empty($_SERVER['HTTP_REFERER']) && preg_match('/do=1$/',$_SERVER['HTTP_REFERER'])) {
+	header('HTTP/1.0 403 Forbidden');
+	die("Blocked as a suspicious request");
+}
+
+
 if (empty($_SERVER['HTTP_USER_AGENT'])
 || (strpos($_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE)
 || ($_SERVER['HTTP_USER_AGENT'] == "Opera/9.80 (X11; Linux i686; U; pl) Presto/2.6.30 Version/10.61")
