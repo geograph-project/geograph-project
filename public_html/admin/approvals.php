@@ -455,10 +455,20 @@ $offset = 0;
 				print "</span>";
 			}
 			if (!empty($row['extreme'])) {
-				print "<br><br><b style=background-color:yellow>Marked as ALARM - view with extreme caution</b>";
+				print "<div><b style=background-color:yellow>Marked as ALARM - view with extreme caution</b></div>";
 			}
+
+			if ($row['moderation_status'] != 'pending') {
+				if (!empty($row['ai_class']) && $row['ai_class'] != 'approved' && $row['ai_class'] != 'personal') {
+					print "<div style=color:gray>AI Suggests: <b>{$row['ai_class']}</b>.</div>";
+				}
+				if (!empty($row['ai_assessment'])) { //todo, could exclude normal/personal?
+					print "<div style=color:gray>AI Assessment: <b>{$row['ai_assessment']}</b>.</div>";
+				}
+			}
+
 			if (!empty($row['moderated'])) {
-				print "<br><br><i>{$row['moderation_status']} by ".htmlentities($row['mod_realname']).", ".formatMySQLDateByResolution($row['moderated'])."</i>";
+				print "<br><div><i>{$row['moderation_status']} by ".htmlentities($row['mod_realname']).", ".formatMySQLDateByResolution($row['moderated'])."</i></div>";
 			}
 			if ($row['source'] == 'user' && $row['user_id'] && $row['moderation_status'] == 'flagged') {
 				if (strpos($row['rights'],'basic') !== FALSE) {
@@ -494,12 +504,14 @@ $offset = 0;
 
 			print "<div class=\"grid-item $className\">";
 
-if (!empty($row['ai_class']) && $row['ai_class'] != 'approved' && $row['ai_class'] != 'personal') {
-	print "AI Suggests: <b>{$row['ai_class']}</b>. <br><br>";
-}
-if (!empty($row['ai_assessment'])) { //todo, could exclude normal/personal?
-	print "AI Assessment: <b>{$row['ai_assessment']}</b>. <br>";
-}
+			if ($row['moderation_status'] == 'pending') {
+				if (!empty($row['ai_class']) && $row['ai_class'] != 'approved' && $row['ai_class'] != 'personal') {
+					print "AI Suggests: <b>{$row['ai_class']}</b>. <br><br>";
+				}
+				if (!empty($row['ai_assessment'])) { //todo, could exclude normal/personal?
+					print "AI Assessment: <b>{$row['ai_assessment']}</b>. <br>";
+				}
+			}
 
 				print "<form method=post class=\"ajax-form $className\">"; //for now each is a seperate form submission!
 			print "<button type=submit name=status[{$row['moderation_id']}] value=approved>Looks Safe</button>";
