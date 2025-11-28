@@ -124,6 +124,9 @@ $extended = '\xC0-\xD6\xD8-\xF6\xF8-\xFF\xB4\x92\x91\x60';
 			//remove any strange chars at end
 		$q = trim(preg_replace('/[@^=\(~-]+$/','',$q));
 
+			//a lone hyphen is mistaken as a negative filter for the next word
+		$q = str_replace(' - ',' ',$q);
+
 			//change back to right case
 		$q = preg_replace('/\bnotnear\//','NOTNEAR/',$q);
 		$q = preg_replace('/\bnear\//','NEAR/',$q);
