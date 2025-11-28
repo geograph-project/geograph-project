@@ -101,32 +101,32 @@
   <button>In the search &#9660;</button>
   <div class="buttonbar-dropdown-content">
     <b>Most recent first</b>
-				<a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=full&amp;do=1">Full details</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</a>
+				<a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</a>
     <b>Oldest first</b>
-				<a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=full&amp;do=1">Full details</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=slide&amp;do=1">Slideshow</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=map&amp;do=1">Map</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=black&amp;do=1">Georiver</a>
+				<a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=black&amp;do=1">Georiver</a>
     <b>One image per</b>
-				<a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</a>
-        <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</a>
+				<a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</a>
+        <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</a>
   </div>
 </div> 
 
 
-<li><a href="/browser/#!/snippets+%22{$title|escape:'url'}%22">In the Browser</a></li>
+<li><a href="/browser/#!/snippets+%22{$title|deoperatorize|escape:'url'}%22">In the Browser</a></li>
 </ul>
 {/if}
 
@@ -176,30 +176,30 @@
   <button>In the search &#9660;</button>
   <div class="buttonbar-dropdown-content">
     <b>Most recent first</b>
-				<a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=full&amp;do=1">Full details</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</a>
+				<a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=black&amp;do=1">Georiver</a>
     <b>Oldest first</b>
-				<a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=full&amp;do=1">Full details</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=slide&amp;do=1">Slideshow</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=map&amp;do=1">Map</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;orderby=submitted&amp;displayclass=black&amp;do=1">Georiver</a>
+				<a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=full&amp;do=1">Full details</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=thumbs&amp;do=1">Thumbnails</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=thumbsmore&amp;do=1">Thumbnails + links</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=bigger&amp;do=1">Thumbnails - bigger</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=grid&amp;do=1">Thumbnails grid</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=slide&amp;do=1">Slideshow</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=map&amp;do=1">Map</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;orderby=submitted&amp;displayclass=black&amp;do=1">Georiver</a>
     <b>One image per</b>
-				<a href="/search.php?searchtext={$title|escape:'url'}&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</a>
-        <a href="/search.php?searchtext={$title|escape:'url'}&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</a>
+				<a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;displayclass=full&amp;groupby=takendays&amp;breakby=imagetaken&amp;orderby=imagetaken&amp;do=1">Day taken</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;displayclass=full&amp;groupby=auser_id&amp;breakby=user_id&amp;do=1">Contributor</a>
+        <a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;displayclass=full&amp;groupby=scenti&amp;do=1">Centisquare</a>
   </div>
 </div> 
-<li><a href="/browser/#!/q={$title|escape:'url'}/">In the Browser</a></li>
+<li><a href="/browser/#!/q={$title|deoperatorize|escape:'url'}/">In the Browser</a></li>
 </ul>
 {/if}
 
