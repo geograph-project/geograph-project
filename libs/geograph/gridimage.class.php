@@ -1184,6 +1184,7 @@ split_timer('gridimage','_getFullSize',$this->gridimage_id); //logs the wall tim
 
 	/**
 	* returns the largest photo visible via photo page - mimics the srcset in getFull()
+	* NOTE: expects _getFullSize to have already been called (to set $this->original_width)
 	*/
 	function getLargestPhotoPath($returntotalpath = true) {
 

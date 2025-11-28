@@ -97,13 +97,27 @@ if (isset($_REQUEST['id']))
 				exit;
 			}
 
+			$filepath = '';
 			switch($_REQUEST['size'] ?? 'full') {
 				//case 640: -- actully no, want to be careful to not create a 640px preview
 				case 800:
 				case 1024:
 				case 1600:
-					$filepath = $image->getImageFromOriginal(intval($_REQUEST['size']),intval($_REQUEST['size']));
-					break;
+		                        $image->_getFullSize(); //sets cached_size & original_width/height - from cache if possible!
+		                        if (empty($image->original_width)) {
+						$filepath = $image->_getFullpath();
+		                                break;
+                		        }
+
+					$max = max($image->original_width,$image->original_height);
+		                        //we dont want o create a 800px version if the original is already 800px!
+                		        if ($max > $_GET['size'])
+						$filepath = $image->getImageFromOriginal(intval($_REQUEST['size']),intval($_REQUEST['size']));
+
+					if (strlen($filepath) > 20 && basename($filepath)!="error.jpg")
+		                                break; //got a resized verson
+
+					//falls though...
 				case 'largest':
 					$filepath = $image->_getOriginalpath();
 					if ($filepath=="/photos/error.jpg") {

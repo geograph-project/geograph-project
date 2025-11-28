@@ -170,6 +170,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 
 
 if (!empty($_GET['large'])) {
+	$file = '';
 	switch($_GET['large']) {
 		case 213: $thumb = $image->getThumbnail(213,160,2);
 			$file = $_SERVER['DOCUMENT_ROOT'].$thumb['url']; break; //url, is actulyl just the path, without server
@@ -181,11 +182,20 @@ if (!empty($_GET['large'])) {
                 case 800:
                 case 1024:
                 case 1600:
-                        $file = $_SERVER['DOCUMENT_ROOT'].$image->getImageFromOriginal(intval($_GET['large']),intval($_GET['large']));
-			if (strlen($file) < 20 || basename($file)=="error.jpg") {
-				$file = $_SERVER['DOCUMENT_ROOT'].$image->_getOriginalpath();
+			$image->_getFullSize(); //sets cached_size & original_width/height - from cache if possible!
+			if (empty($image->original_width)) {
+				//will load full image below
+				break;
 			}
-                        break;
+			$max = max($image->original_width,$image->original_height);
+			//we dont want o create a 800px version if the original is already 800px!
+			if ($max > $_GET['large'])
+	                        $file = $_SERVER['DOCUMENT_ROOT'].$image->getImageFromOriginal(intval($_GET['large']),intval($_GET['large']));
+
+			if (strlen($file) > 20 && basename($file)!="error.jpg")
+				break; //got a resized verson
+
+			//falls though...
 		default:
 			$file = $_SERVER['DOCUMENT_ROOT'].$image->_getOriginalpath();
 			break;
