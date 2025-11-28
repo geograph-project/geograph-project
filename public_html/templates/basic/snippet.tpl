@@ -104,9 +104,9 @@
 	{if $images && $images <= 1000}
 		{if $title}
 
-			<li class="interestBox"><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1"><b>View all images</b> using "{$title|escape:'html'}" Shared Description(s)</a>
+			<li class="interestBox"><a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;do=1"><b>View all images</b> using "{$title|escape:'html'}" Shared Description(s)</a>
 			{if $images < 15}
-				| <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1&displayclass=map">On a <b>Map</b></a>
+				| <a href="/search.php?searchtext=snippet_title%3A{$title|deoperatorize|escape:'url'}&amp;do=1&displayclass=map">On a <b>Map</b></a>
 			{/if}
 			| (<a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">Just <i>this</i> shared description</a>)
 			</li>
@@ -117,7 +117,7 @@
 	{if $grid_reference}
 		<li class="interestBox">This description is located in {$grid_reference}, <a href="/gridref/{$grid_reference}/links"><img src="{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | <a href="/gridref/{$grid_reference}"><b>Photos</b> for {$grid_reference}</a></li>
 	{/if}
-	{if $title}<li class="interestBox"><a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find {if $grid_reference}nearby{/if} images <b>mentioning the words [ {$title|escape:'html'} ]</b></a> | (<a href="/browser/#!/q={$title|escape:'url'}/">in the Browser</a>) </li>{/if}
+	{if $title}<li class="interestBox"><a href="/search.php?searchtext={$title|deoperatorize|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find {if $grid_reference}nearby{/if} images <b>mentioning the words [ {$title|escape:'html'} ]</b></a> | (<a href="/browser/#!/q={$title|deoperatorize|escape:'url'}/">in the Browser</a>) </li>{/if}
 </ul>
 
 <br/>
