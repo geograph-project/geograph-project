@@ -139,13 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (parentLink) {
             const linkUrl = parentLink.href;
 
-            contextMenu.appendChild(createMenuItem('Open Link', () => { 
-                window.open(linkUrl, '_self'); 
+            contextMenu.appendChild(createMenuItem('Open Link', () => {
+                window.open(linkUrl, '_self');
             }));
-            contextMenu.appendChild(createMenuItem('Open Link in New Tab', () => { 
-                window.open(linkUrl, '_blank'); 
+            contextMenu.appendChild(createMenuItem('Open Link in New Tab', () => {
+                window.open(linkUrl, '_blank');
             }));
-            contextMenu.appendChild(createMenuItem('Copy Link Location', () => { 
+            contextMenu.appendChild(createMenuItem('Copy Link Location', () => {
                 navigator.clipboard.writeText(linkUrl);
             }));
             addDivider();
@@ -156,26 +156,31 @@ document.addEventListener('DOMContentLoaded', () => {
             contextMenu.appendChild(createMenuItem('Open Photo Page in New Tab', () => {
                 window.open(`/photo/{imageId}`, '_blank');
             }));
-            contextMenu.appendChild(createMenuItem('Copy Photo Page URL', () => { 
-                navigator.clipboard.writeText(window.location.origin+`/photo/{imageId}`);
+            contextMenu.appendChild(createMenuItem('Copy Photo Page URL', () => {
+                navigator.clipboard.writeText(window.location.origin+`/photo/${imageId}`);
             }));
+	} else {
+	    // B. Standard Image Options
+            contextMenu.appendChild(createMenuItem('Open Image in New Tab', () => {
+	        window.open(imageSrc, '_blank');
+            }));
+	    contextMenu.appendChild(createMenuItem('Copy Image Location', () => {
+               navigator.clipboard.writeText(imageSrc);
+	    }));
+
+            //todo, if we updated our search to accept a image url?
 	}
 
-/*
+/* -- in general these dont work, but opening the THUMBNAIL, doesnt seem useful anyway! Focus on better options below!
+ // todo, although we could still show some, if NOT a geographMatch?
+// ... in particlar, because if no parentLink, and not a geographMatch, then have nothing!
 
-        // B. Standard Image Options
-        contextMenu.appendChild(createMenuItem('Open Image in New Tab', () => { 
-            window.open(imageSrc, '_blank'); 
-        }));
-        contextMenu.appendChild(createMenuItem('Copy Image Location', () => { 
-            navigator.clipboard.writeText(imageSrc);
-        }));
-        contextMenu.appendChild(createMenuItem('Copy Image (Best Effort)', () => { 
+        contextMenu.appendChild(createMenuItem('Copy Image (Best Effort)', () => {
              // Note: Copying binary data is complex. This opens the image for user to copy.
             window.open(imageSrc, '_blank');
             alert('Please right-click and copy the image from the new tab.');
         }));
-        contextMenu.appendChild(createMenuItem('Save Image As (Opens in new tab)', () => { 
+        contextMenu.appendChild(createMenuItem('Save Image As (Opens in new tab)', () => {
             window.open(imageSrc, '_blank');
         }));
 */
@@ -185,9 +190,44 @@ document.addEventListener('DOMContentLoaded', () => {
         if (geographMatch) {
             const imageId = geographMatch[1];
 
-            const searchUrl = `https://www.geograph.org.uk/finder/finder.php?q=id%3A${imageId}`;
+            if (typeof readCookie === 'function' && typeof markImage === 'function') {
+                let menuItemText = 'Mark Image'; // Default text is 'Mark Image'
+                let isMarked = false;
+
+                const currentMarked = readCookie('markedImages');
+                if (currentMarked) {
+                    const markedIds = currentMarked.commatrim.split(',');
+
+                    if (markedIds.indexOf(imageId) > -1) {
+                        menuItemText = 'Unmark Image'; // Set text if ID is found
+                        isMarked = true;
+                    }
+                }
+
+                // 3. Create the Mark/Unmark menu item
+                contextMenu.appendChild(createMenuItem(menuItemText, () => {
+                    // Call the markImage function (which should handle the toggle logic)
+                    markImage(imageId);
+
+                    // Optional: Provide feedback or dynamically update the UI after marking/unmarking
+                    //alert(`${isMarked ? 'Unmarked' : 'Marked'} Image ID: ${imageId}`);
+                }));
+            }
+
+            const searchUrl = `/finder/finder.php?q=id%3A${imageId}&type=similarity`;
             contextMenu.appendChild(createMenuItem('Search Similar Images', () => {
-                window.open(searchUrl, '_blank');
+                const searchInput = document.querySelector('input[name="q"]');
+                const similarityRadio = document.querySelector('input[name="type"][value="similarity"]');
+                const performSearchFunction = typeof performSearch === 'function';
+
+                // Execute Search INLINE
+                if (performSearchFunction && searchInput && similarityRadio) {
+                    searchInput.value = `id:${imageId}`;
+                    similarityRadio.checked = true;
+                    performSearch();
+                } else {
+                    window.open(searchUrl, '_blank');
+                }
             }));
 
             contextMenu.appendChild(createMenuItem('View Licencing and Download Options', () => {
@@ -198,33 +238,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.open(`https://t0.geograph.org.uk/stamp.php?id=${imageId}&large=1024&download=true`, '_blank');
             }));
 
-
             addDivider();
 
+            const searchNearbyUrl = `/finder/finder.php?loc=id:${imageId}&distance=2000`;
             contextMenu.appendChild(createMenuItem('Search Nearby Images', () => {
-		//todo, search will need updating to understand id: syntax. Or maybe do in places.json.php!
-                window.open(`/finder/finder.php?loc=id:${imageId}&distance=2000`, '_blank');
-            }));
+                const locInput = document.querySelector('input[name="loc"]');
+                const distanceInput = document.querySelector('input[name="distance"]');
+                const performSearchFunction = typeof performSearch === 'function';
 
+                // Check for inline execution possibility
+                if (performSearchFunction && locInput && distanceInput) {
+                    locInput.value = `id:${imageId}`;
+                    const currentDistance = distanceInput.value.trim();
+                    if (!currentDistance || currentDistance < 1) {
+                        distanceInput.value = '2000'; // Set default distance
+                    }
+                    performSearch();
+                } else {
+  		    //todo, search will need updating to understand id: syntax. Or maybe do in places.json.php!
+                    window.open(searchNearbyUrl, '_blank');
+                }
+            }));
         }
-        
+
+        const googleLensUrl = `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(imageSrc)}&sa=X`;
+        contextMenu.appendChild(createMenuItem('Search Image with Google Lens', () => {
+            window.open(googleLensUrl, '_blank');
+        }));
+
         // --- 5. Display and Positioning Logic (Handles Upward Opening) ---
-        
+
         // Make visible for accurate dimension calculation
         contextMenu.style.display = 'block';
 
         if (viewportWidth > MOBILE_BREAKPOINT) {
             // --- DESKTOP Positioning (Absolute + Upward/Downward) ---
-            
+
             const menuHeight = contextMenu.offsetHeight;
-            const clickY = e.clientY; 
+            const clickY = e.clientY;
 
             // Horizontal position
             contextMenu.style.left = `${e.pageX}px`;
 
             // Vertical position: Open Upwards if insufficient space below
             const spaceBelow = viewportHeight - clickY;
-            
+
             if (spaceBelow < menuHeight && clickY > menuHeight) {
                 contextMenu.style.top = `${e.pageY - menuHeight}px`;
             } else {
@@ -234,9 +292,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- MOBILE Positioning (Fixed Full-Screen - CSS handles most of it) ---
 
             // On mobile, we don't need to calculate precise top/left, as CSS sets it fixed 0/0.
-            contextMenu.style.top = '0px'; 
-            contextMenu.style.left = '0px'; 
-            
+            contextMenu.style.top = '0px';
+            contextMenu.style.left = '0px';
+
             // Add a "Cancel" or "Close" button for a better mobile experience
             addDivider();
             contextMenu.appendChild(createMenuItem('Close Menu', hideMenu));
@@ -281,11 +339,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Store the target and the touch coordinates
             currentTarget = touchTarget;
             const touch = e.touches[0];
-            
+
             // Start the timer
             longPressTimer = setTimeout(() => {
                 // When timer expires, trigger the menu and prevent default browser action
-                e.preventDefault(); 
+                e.preventDefault();
                 buildMenu({
                     pageX: touch.pageX,
                     pageY: touch.pageY,
@@ -301,8 +359,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. touchend, touchmove: Clear the timer (cancels the long press)
     document.addEventListener('touchend', clearPressTimer);
-    document.addEventListener('touchmove', clearPressTimer); 
-    
+    document.addEventListener('touchmove', clearPressTimer);
+
     // C. General Click Handler to Hide Menu
     document.addEventListener('click', (e) => {
         // Only hide if the click is outside the menu
