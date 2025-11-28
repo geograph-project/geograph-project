@@ -225,8 +225,13 @@ if (!empty($_GET['ddeb']))
 	//remove any charactor that COULD be a sphinx extended query, intended for use when wanting to turn an image title (for example) into a search query
 	//NOTE: This removes them, rather than escaping them, for simplicity.
 	// but it also has special handling to maintain hyphens or single quotes in middle of words (our special operators!)
+	// also converts HTML entities, which is preparing to to work with sphinx too (which is generally UTF8 capable now!)
 	public function deoperatorize($input) {
-	        $out = preg_replace('/[\\/\\\\()!@^$~"=|]+/',' ',$input);
+
+		// 1. Decode HTML entities to UTF-8. This converts &#375; (ŵ) to its proper character.
+		$out = html_entity_decode($input, ENT_QUOTES, 'UTF-8');
+
+	        $out = preg_replace('/[\\/\\\\()!@^$~"=|]+/',' ',$out);
 	        $out = preg_replace('/(?<!\w)-|-(?!\w)/',' ',$out);
 	        $out = preg_replace("/(?<!\w)'|'(?!\w)/",' ',$out);
 	        return trim(preg_replace('/\s+/',' ',$out));
