@@ -222,6 +222,16 @@ if (!empty($_GET['ddeb']))
 		$this->q = $q;
 	}
 
+	//remove any charactor that COULD be a sphinx extended query, intended for use when wanting to turn an image title (for example) into a search query
+	//NOTE: This removes them, rather than escaping them, for simplicity.
+	// but it also has special handling to maintain hyphens or single quotes in middle of words (our special operators!)
+	public function deoperatorize($input) {
+	        $out = preg_replace('/[\\/\\\\()!@^$~"=|]+/',' ',$input);
+	        $out = preg_replace('/(?<!\w)-|-(?!\w)/',' ',$out);
+	        $out = preg_replace("/(?<!\w)'|'(?!\w)/",' ',$out);
+	        return trim(preg_replace('/\s+/',' ',$out));
+	}
+
 	public function processQuery() {
 		$q = $this->q;
 

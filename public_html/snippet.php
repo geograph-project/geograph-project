@@ -329,6 +329,9 @@ $client->setFilter('images',array(0),true);
 	$smarty->assign('snippet_id',$snippet_id);
 }
 
+if (empty($sphinx))
+	$sphinx = new sphinxwrapper();
+$smarty->register_modifier("deoperatorize", array($sphinx, "deoperatorize"));
 
 $smarty->display($template, $cacheid);
 
