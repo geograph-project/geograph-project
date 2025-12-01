@@ -36,6 +36,60 @@ function shutdown() {
 
 	print "</table><hr>. Page Generated: ".date('r')." by ".`hostname`;
 }
+
+
+#########################################################################################################
+outputBreak("AI Tools");
+#########################################################################################################
+
+include "geograph/vectors.inc.php";
+
+if (!empty($CONF['embed_api'])) {
+	$vector = getTextEmbedding('beach','clip');
+
+	if (empty($vector) || !is_array($vector)) {
+		outputRow('Embed API','error','getTextEmbedding failed');
+	} elseif (count($vector) != 512) {
+		outputRow('Embed API','error','vector length wrrong');
+	} else {
+		$correct = array(0.021402, 0.127891, -0.180579, -0.196463, 0.037941, -0.245453, -0.196404, -1.129590, 0.246336, 0.237758);
+		$diff = 0;
+		foreach($correct as $idx => $value) {
+			$diff += abs($value - $vector[$idx]);
+		}
+
+		outputRow('Embed API',($diff < 0.000005)?'pass':'error','Worked. diff = '.sprintf('%.10f',$diff));
+	}
+
+
+                 $filesystem = new FileSystem(); //sets up configuation automagically
+                 //the vector lib needs S3 class setup already!
+
+	//using the image list, is easiest way, as contains all the config
+        require_once('geograph/imagelists3vector.class.php');
+        $imagelist=new ImageListS3Vector;
+
+	$criteria = array('vector' => $vector);
+	$results = $imagelist->getRawVectorsByCriteria($criteria, 3, false);
+
+	if (empty($results)) {
+		outputRow('S3Vectors','error','no reply');
+	} elseif ($results['http_code'] != 200) {
+		outputRow('S3Vectors','error','non-200 reply, code='.$results['http_code']);
+	} elseif (count($results['vectors']) != 3) {
+		outputRow('S3Vectors','error','wrong number of results = '.count($results['vectors']));
+	} else {
+		outputRow('S3Vectors','pass','query vector index worked');
+	}
+
+} else {
+	outputRow('Embed API','notice','not configured');
+}
+
+//	exit;
+
+#########################################################################################################
+
 register_shutdown_function('shutdown');
 
 #########################################################################################################
@@ -470,33 +524,111 @@ if (!empty($CONF['redis_host'])) {
 	outputRow('Redis Daemon','notice','redis not configured');
 
 #############################
+//memcache
 
-if (!empty($CONF['memcache']['app'])) {
-	$title = isset($CONF['memcache']['app']['redis'])?'Memcache Interface to Redis':'Memcache Daemon(s)';
+if ($memcache->valid) {
+    $conf_section = $CONF['memcache']['app'] ?? [];
 
-	$mkey = "timestamp";
-	$value = $memcache->name_get('test.php',$mkey);
+    // --- Case 1: Redis Interface (New or Legacy) ---
+    if ($memcache->redis) {
+        $title = 'Cache: Memcache Interface to Redis (DB '.($conf_section['db'] ?? $conf_section['redis'] ?? 'unknown').')';
 
-	if ($value && $value > (time()-604800) && $value < time()) {
-		outputRow($title,'pass','read a recent timestamp: '.$value);
-	} else {
-		$time = time(); //the content param is passed by reference
-		$memcache->name_set('test.php',$mkey, $time);
-		sleep(1);
-		$value = $memcache->name_get('test.php',$mkey);
-		if ($value && $value > (time()-3) && $value < time()) {
-			outputRow($title,'pass','tested writing and reading: '.$value);
-		} else {
-			outputRow($title,'error','not able to read via memcache');
-		}
-	}
+        $mkey = "timestamp";
+        // Perform a single read/write test against the single Redis instance
+        $value = $memcache->name_get('test.php', $mkey);
 
-	//set for next time!
-	$time = time();
-	$memcache->name_set('test.php',$mkey, $time);
-} else
-	outputRow('MemCache Daemon','notice','memcache not configured');
+        if ($value && $value > (time() - 604800) && $value < time()) {
+            outputRow($title, 'pass', 'Read a recent timestamp: ' . $value);
+        } else {
+            $time = time();
+            $memcache->name_set('test.php', $mkey, $time, 0, 10); // Set with 10s expiry
+            sleep(1);
+            $value = $memcache->name_get('test.php', $mkey);
 
+            if ($value && $value > (time() - 3) && $value < time()) {
+                outputRow($title, 'pass', 'Tested writing and reading: ' . $value);
+                $memcache->name_delete('test.php', $mkey);
+            } else {
+                outputRow($title, 'error', 'Not able to read/write via Redis interface.');
+            }
+        }
+    }
+    // --- Case 2: Native Multi-Server Memcache ---
+    else {
+        $title = 'Cache: Native Memcache Daemon(s)';
+
+        // 2a. Run the general read/write test (which uses consistent hashing)
+        $mkey_general = "timestamp_general";
+        $value_general = $memcache->name_get('test.php', $mkey_general);
+
+        if ($value_general && $value_general > (time() - 604800) && $value_general < time()) {
+            outputRow($title, 'pass', 'General key (consistent hash) read: ' . $value_general);
+        } else {
+            $time = time();
+            $memcache->name_set('test.php', $mkey_general, $time);
+            sleep(1);
+            $value_general = $memcache->name_get('test.php', $mkey_general);
+
+            if ($value_general && $value_general > (time() - 3) && $value_general < time()) {
+                outputRow($title, 'pass', 'General key (consistent hash) tested writing and reading: ' . $value_general);
+            } else {
+                outputRow($title, 'error', 'General key (consistent hash) not working.');
+            }
+        }
+
+        // 2b. Test each individual server defined in the configuration
+        $servers = $conf_section['servers'] ?? $CONF['memcache']['servers'] ?? [];
+
+        if (!empty($servers)) {
+            outputRow('---','notice','Testing individual servers...');
+            $mkey_server = "server_test_";
+
+            foreach ($servers as $index => $server_config) {
+                $host = $server_config[0] ?? 'UNKNOWN';
+                $port = $server_config[1] ?? 11211;
+
+                // Skip if no host is defined (e.g., malformed config entry)
+                if (!$host) {
+                    outputRow("Server #{$index} (Malformed Config)", 'error', 'Host configuration is missing.');
+                    continue;
+                }
+
+                $server_id = "{$host}:{$port}";
+                $test_key = $mkey_server . $index;
+                $test_time = time();
+
+                // To test a specific server, you MUST bypass the MultiServerMemcache object.
+                // We attempt to connect directly for a low-level status check.
+                // NOTE: This requires temporary creation of a new Memcache object, which is inefficient 
+                // but necessary to force connection to a specific endpoint without key hashing.
+                $test_client = new Memcache();
+
+                if (@$test_client->connect($host, $port)) {
+                    // Test read/write on this specific server
+                    $test_client->set($test_key, $test_time, 0, 10); // Set with 10s expiry
+                    $read_value = $test_client->get($test_key);
+                    $test_client->delete($test_key);
+
+                    if ($read_value == $test_time) {
+                        outputRow("Server #{$index} ({$server_id})", 'pass', 'Individual server test (R/W/D) successful.');
+                    } else {
+                        outputRow("Server #{$index} ({$server_id})", 'error', 'Individual server test: Failed to read back data.');
+                    }
+                } else {
+                    outputRow("Server #{$index} ({$server_id})", 'error', 'Individual server test: Connection failed.');
+                }
+            }
+        }
+    }
+    
+    // Final action: set for next general check
+    $time = time();
+    $memcache->name_set('test.php', $mkey, $time);
+
+} else {
+    // Case 3: Not Configured or NullMemcache
+    outputRow('Cache Daemon','notice','Cache not configured or NullMemcache returned.');
+}
 
 #########################################################################################################
 outputBreak("Smarty Templating");
