@@ -46,49 +46,65 @@ class MultiServerMemcache extends Memcache {
 	var $db=null;
 	var $redis=null;
 
-	function __construct(&$conf,$debug = false) {
 
-		if (isset($conf['redis'])) {
-			//kind of a hack, but functional enough.
-			global $CONF;
-			$this->redis = new Redis();
-			$this->redis->connect($CONF['redis_host'], $CONF['redis_port']);
-			if (is_numeric($conf['redis']))
-				$this->redis->select($conf['redis']);
-			$this->prefix = isset($conf['p'])?($conf['p'].'~'):'';
-			//if ($this->redis->ping())
-				$this->valid = true;
-			return;
-		}
+	function __construct(&$conf, $section_key, $debug = false) {
+	    if (empty($conf[$section_key]))
+		return;
 
-		if (empty($conf['host']) && empty($conf['host1']))
-			return;
+            $conf_section = $conf[$section_key];
 
-		//parent::__construct();
+            // --- 1. LEGACY SUPPORT TRANSLATION ---
+            // Checks for the old 'redis': N format and converts it to the new 'type'/'db' format.
+            if (isset($conf_section['redis']) && is_numeric($conf_section['redis'])) {
+                $conf_section['type'] = 'redis';
+                $conf_section['db'] = $conf_section['redis'];
+                // Note: We don't remove $conf_section['redis'] to avoid modifying the configuration
+                // array that was passed by reference, just in case other parts of the system rely on it.
+            }
 
-		split_timer('memcache'); //starts the timer
+            // --- 2. Handle Explicit Redis Connection
+	    if (isset($conf_section['type']) && $conf_section['type'] === 'redis') {
+	        // This part remains largely the same, connecting to a single Redis instance
+	        global $CONF;
+	        $this->redis = new Redis();
+	        $this->redis->connect($CONF['redis_host'], $CONF['redis_port']);
+	        if (isset($conf_section['db']) && is_numeric($conf_section['db'])) {
+	            $this->redis->select($conf_section['db']);
+	        }
+	        $this->prefix = isset($conf_section['prefix']) ? ($conf_section['prefix']) : '';
+	        $this->valid = true;
+	        return;
+	    }
 
-		$valid = false;
-		if (!empty($conf['host'])) {
-			if (@$this->connect($conf['host'], $conf['port']))
-				$valid = true;
-			elseif ($debug)
-				die(" Can't connect to memcache server on: {$conf['host']}, {$conf['port']}<br>\n");
-		}
+	    $servers = $conf_section['servers'] ?? $conf['servers'] ?? [];
 
-		foreach (array('1','2','3','4') as $b)
-			if (!empty($conf['host'.$b])) {
-				if (@$this->addServer($conf['host'.$b], $conf['port'.$b]))
-					$valid = true;
-				elseif ($debug)
-					die(" Can't connect to memcache server on: ".$conf['host'.$b].", ".$conf['port'.$b]."<br>\n");
-			}
+	    if (empty($servers)) {
+	        return;
+	    }
 
-		if ($this->valid = $valid) {
-			$this->prefix = isset($conf['p'])?($conf['p'].'~'):'';
-		}
+	    split_timer('memcache'); // Starts the timer
 
-		split_timer('memcache','connect'); //logs the wall time
+	    $valid = false;
+	    foreach ($servers as $server_config) {
+	        $host = $server_config[0] ?? null;
+	        $port = $server_config[1] ?? 11211;
+	        $weight = $server_config[2] ?? 1;
+
+	        if ($host) {
+	            // Using the new, concise server array format [host, port, weight]
+	            if (@$this->addServer($host, $port, true, $weight)) {
+	                $valid = true;
+	            } elseif ($debug) {
+	                die("Can't connect to memcache server on: $host, $port<br>\n");
+	            }
+	        }
+	    }
+
+	    if ($this->valid = $valid) {
+	        $this->prefix = isset($conf_section['prefix']) ? ($conf_section['prefix']) : '';
+	    }
+
+	    split_timer('memcache', 'connect'); // Logs the wall time
 	}
 
 	//the client will have to with different format if redis

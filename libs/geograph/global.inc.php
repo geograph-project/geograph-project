@@ -453,39 +453,69 @@ if (!empty($ABORT_GLOBAL_EARLY))
 
 #################################################
 
-if (!empty($CONF['memcache']['app'])) {
-	
+/**
+ * Retrieves a MultiServerMemcache instance based on the configuration key.
+ * Implements implicit reuse: if a section's config matches the 'app' config,
+ * the 'app' instance is reused (assuming 'app' is loaded first).
+ *
+ * @param string $key The configuration key (e.g., 'app', 'smarty').
+ * @return MultiServerMemcache|null Returns the cache object or null if not configured.
+ */
+function get_memcache_ob(string $key): ?MultiServerMemcache
+{
+    global $CONF;
+    static $instances = [];
+    static $app_config_hash = null;
+
+    if (isset($instances[$key])) {
+        return $instances[$key];
+    }
+
+    if (empty($CONF['memcache'][$key])) {
+        if ($key == 'app') {
+		//for the APP, we return a fake object that does nothing
+		return new NullMemcache();
+        }
+	//others return null
+        return null;
+    }
+
+        //check this AFTER setting returning NullMemcache, as
 	if (!function_exists('memcache_pconnect')) {
+		//we could perhaps just return  NullMemcache;
+	        if ($key == 'app') {
+			return new NullMemcache();
+		}
 		die(" Memcache module PECL extension not found!<br>\n");
-		return;
 	}
 
-	$memcache = new MultiServerMemcache($CONF['memcache']['app']);
+    $conf_section = $CONF['memcache'][$key];
+    $conf_key_hash = md5(json_encode($conf_section, JSON_THROW_ON_ERROR));
 
-	if ($CONF['curtail_level'] > 0) {
+    if ($key === 'app') {
+        $app_config_hash = $conf_key_hash;
+    } elseif ($app_config_hash !== null && $conf_key_hash === $app_config_hash && isset($instances['app'])) {
+        $instances[$key] = $instances['app']; // Store alias for future lookups
+        return $instances['app'];
+    }
+
+    // Create the new MultiServerMemcache instance.
+    $instance = new MultiServerMemcache($CONF['memcache'], $key);
+
+    $instances[$key] = $instance;
+    return $instance;
+}
+
+//note we ALWAYS call this, even if not using memcache, because lots of code just call $memcache->get(), which want to fail fast, without having check if memcache is used!
+// will return special NullMemcache if not valid!
+$memcache = get_memcache_ob('app');
+
+if ($memcache->valid && $CONF['curtail_level'] > 0) {
 		$level = $memcache->get('curtail_level');
 		if ($level) {
 			$CONF['real_curtail_level'] = $CONF['curtail_level'];
 			$CONF['curtail_level'] = $level-1;
 		}
-	}
-} else {
-	//need lightweight fake object that does nothing!
-	class fakeObject {
-		function set($key, &$val, $flag = false, $expire = 0) {return false;}
-		function get($key) {return false;}
-		function delete($key, $timeout = 0) {return false;}
-		function increment($key, $value = 1,$create = false) {return false;}
-		function decrement($key, $value = 1,$create = false) {return false;}
-		function name_set($namespace, $key, &$val, $flag = false, $expire = 0) {return false;}
-		function name_get($namespace, $key) {return false;}
-		function name_delete($namespace, $key, $timeout = 0) {return false;}
-		function name_increment($namespace, $key, $value = 1,$create = false) {return false;}
-		function name_decrement($namespace, $key, $value = 1,$create = false) {return false;}
-	}
-	
-	$memcache = new fakeObject();
-	$memcache->valid = false;
 }
 
 #################################################
@@ -553,30 +583,28 @@ if (false && function_exists('apc_store')) {
 }
 
 #################################################
+//adodb
 
 if (!empty($CONF['memcache']['adodb'])) {
-	if ($CONF['memcache']['adodb'] != $CONF['memcache']['app']) {
-		$ADODB_MEMCACHE_OBJECT = new MultiServerMemcache($CONF['memcache']['adodb']);
-	} elseif (isset($memcache)) {
-		$ADODB_MEMCACHE_OBJECT =& $memcache;
-	}
+	$ADODB_MEMCACHE_OBJECT = get_memcache_ob('adodb');
 }
 
-if (!empty($CONF['redis_host'])) {
-	require "3rdparty/RedisSessions.php";
-	
-	redis_session_install();
-	
-} elseif (!empty($CONF['memcache']['sessions'])) {
+#################################################
+//sessions
 
-	if ($CONF['memcache']['sessions'] != $CONF['memcache']['app']) {
-		$memcachesession = new MultiServerMemcache($CONF['memcache']['sessions']);
-	} elseif (isset($memcache)) {
-		$memcachesession =& $memcache;
-	}
+if (!empty($CONF['redis_host'])) {
+	//note, we have found  the dedicated, redis session handler is slightly bettern than using memcache (even redirected to redis!)
+
+	require "3rdparty/RedisSessions.php"; // knows to use $CONF['redis_session_db'];
+	redis_session_install();
+
+} elseif (!empty($CONF['memcache']['sessions'])) {
+	$memcachesession = get_memcache_ob('sessions');
+
 	require('geograph/memcachesessions.inc.php');
-	
+
 	$memcachesession->period = ini_get("session.gc_maxlifetime");
+
 } elseif (isset($CONF['db_driver2'])) {
 	//adodb session configuration - we use second database if possible
 	$ADODB_SESSION_DRIVER=$CONF['db_driver2'];
@@ -1109,15 +1137,12 @@ class GeographPage extends Smarty
 
 		
 		if (!empty($CONF['memcache']['smarty'])) {
+
 			$this->compile_dir=$this->template_dir."/compiled-mnt"; ##this seems to fix a bug
-		
+
 			global $memcached_res,$memcache;
-			if ($CONF['memcache']['smarty'] != $CONF['memcache']['app']) {
-				$GLOBALS['memcached_res'] = new MultiServerMemcache($CONF['memcache']['smarty']);
-			} elseif (isset($memcache)) {
-				$GLOBALS['memcached_res'] =& $memcache;
-			}
-			
+			$GLOBALS['memcached_res'] = get_memcache_ob('smarty');
+
 			require_once('3rdparty/memcache_cache_handler.inc.php');
 			$this->cache_handler_func = 'memcache_cache_handler';
 		} else {
