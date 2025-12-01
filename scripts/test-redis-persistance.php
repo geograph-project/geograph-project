@@ -51,15 +51,15 @@ $namespace = 'test';
 $mkey = $_SERVER['PHP_SELF'];
 $payload = 'test';
 
-$memcache = new MultiServerMemcache($CONF['memcache']['app']);
+$memcache = new MultiServerMemcache($CONF['memcache'], 'app');
 
-$period = $memcache->period_long;
+$period = $memcache->period_short;
 
 ############################################
 
 //keep looping foever, 
 while (1) {
-	$sleep = rand(180,3600*6);
+	$sleep = rand(18,36);
 
 	print date('r')." Writing Key (should last $period seconds, testing every $sleep seconds)...\n";
 	$start = time();
@@ -72,7 +72,7 @@ while (1) {
 		if ($str == $payload) {
 			sleep($sleep);
 			//create a new object, beause we been asleep!
-			$memcache = new MultiServerMemcache($CONF['memcache']['app']);
+			$memcache = new MultiServerMemcache($CONF['memcache'], 'app');
 		} else {
 			$diff = $end-$start;
 			print date('r')." Key Gone at $diff seconds!\n";

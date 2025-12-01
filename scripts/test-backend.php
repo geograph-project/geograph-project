@@ -140,7 +140,7 @@ echo "\n";
 // Test Memcache Connection
 echo "Testing Memcache Connection...\n";
 if (!empty($CONF['memcache']['app'])) {
-    $memcache = new MultiServerMemcache($CONF['memcache']['app']);
+    $memcache = new MultiServerMemcache($CONF['memcache'], 'app');
     $stats = $memcache->getStats();
     if ($stats) {
         success("Successfully connected to Memcache.");
