@@ -23,6 +23,13 @@
         .image-item p { font-size: 0.9em; margin: 5px 0 0 0; }
         #loading-indicator { display: none; font-size: 1.2em; }
 
+	#search-form #predefined-buttons button {
+		font-size: 0.7em;
+	}
+	#search-form button#search-button {
+		font-weight:bold;
+	}
+
         .radio-options {
             display: flex;
             align-items: center;
@@ -78,6 +85,24 @@
         </div>
 
         <textarea id="search-labels" rows="3" placeholder="e.g., stone, ruin, modern, interior">stone, ruin, modern, interior</textarea>
+	<div id="predefined-buttons">Predefined:
+		<button data-list="Mountain Landscape, Forest/Woodland, Riverside, Coastal/Harbor, Natural Scenery, General Building, Housing, Commercial Buildings, Office Buildings, Skyscrapers, Retail/Shopfronts, Parking Structure, Historic Ruins, Churches/Steeples, Roads/Highways, Railroad Tracks, Bridges, Power Lines, Bus Stops/Stations, Traffic Lights, Pedestrian Crossings, Subway/Metro, Various Objects, Vehicles, Signage/Maps, Local Produce, Statues/Monuments, Trash Cans/Bins, Public Benches, Fire Hydrants, Human Activity, People Working, Local Festival, Recreation/Leisure, Crowded Street, Outdoor Dining, Nightlife Scene, Parks/Plazas, Street Art/Graffiti, Panoramic View, Close-up, Aerial Shot, Street Level, Sunny Day, Overcast Day, Night Time, Sunset, Indoor, Outdoor, Residential Area, Industrial Zone, Miscellaneous/Unrelated">General List</button>
+		<button data-list="Seashore, Beach, Ocean View, Harbor/Port, Estuary Mudflats, Island View, Small Islands/Ait, Flat Plains, Rolling Fields, Valley Floor, Highland Moor, Rocky Plateau, Mountain Summit, Hillside, Cliff Face, Rock Formation, Boulder Field, Scree Slope, Geological Outcrop, Calm Lake, Wetland Marsh, Peat Bog, Flowing River, Winding Stream, Drainage Ditch, Open Grassland, Dry Heathland, Dense Scrub, Deciduous Forest, Conifer Forest, Dense Woods, Wild Animal, Wild Flower, Mushroom/Fungi, Wild Bird, Water Reservoir, Water Tower, Dam Structure, Wind Turbine, Solar Panel Array, Power Station/Plant, Radio Tower, Cellular Antenna, Satellite Dish, Fencing/Barrier, Farmhouse, Arable Field, Fishing Boat, Greenhouse/Nursery, Open-Pit Quarry, Mine Entrance/Shaft, Industrial Excavator, Factory Building, Construction Site, Abandoned Structure, Derelict Machinery, City Skyline, Urban Street, Village Square, Residential Street, Historic Estate, Mansion House, Town Hall/Public Building, Library, Museum, Shopfront/Retail, Office Building, Sports Field, Playground Equipment, Golf Course, Public Park, Formal Garden, Residential House, Apartment Block, School/University, Hospital/Clinic, Church/Chapel, Historic Ruin, Clear Blue Sky, Storm Clouds, Heavy Rain, Snow/Ice, Aircraft/Airplane, Train/Railway, Motor Vehicle, Canal Barge/Boat, People in a Crowd, Outdoor Event/Gathering, Miscellaneous/Unrelated Image">Context List</button>
+		<button data-list="Skyscrapers, Office Buildings, Retail/Shopfronts, Apartment Block, Historic Facade, Modern Glass Tower, Industrial Loft, Parking Structure, Traffic Lights, Pedestrian Crossings, Subway/Metro Entrance, Bus Stop Shelter, Street Signage, Paved Roadway, Overhead Power Lines, Public Plaza, City Park, Street Art/Graffiti, Outdoor Dining Area, Nightlife Scene, Public Fountain, Statue/Monument, Crowded Street, Commuters, Street Performer, Bicyclist, Delivery Vehicle, Vehicular Traffic, People Working, City Skyline, High-Angle View, Close-up Detail, Bright Sunlight, Night Time View, Farmhouse, Mountain Summit, Calm Lake, Wild Animal, Miscellaneous/Unrelated">City Center</button>
+		<button data-list="Arable Field, Grain Crop, Hay Bales, Irrigation System, Vineyard/Orchard, Ploughed Soil, Harvested Field, Cows/Cattle, Sheep/Flock, Poultry/Chickens, Horses, Tractor/Combine, Farm Vehicle, Farmhouse, Barn/Shed, Silo, Greenhouse/Nursery, Windmill/Water Pump, Wooden Fencing, Stone Wall Boundary, Rolling Hills, Open Pasture, Rural Stream, Forest Edge, Dirt Road, Cloudy Sky, Sunrise/Sunset, Farmer Working, Animal Grazing, Haying/Planting, Farm Produce, Rural Event, Skyscrapers, Traffic Lights, Retail/Shopfronts, Subway/Metro Entrance, Miscellaneous/Unrelated">Farmland</button>
+		<button data-list="Ocean Waves, Calm Sea, Tidal Pool, Breaking Surf, Open Water, High Tide, Low Tide, Sandy Beach, Rocky Shore, Cliff Face, Coastal Dunes, Seabirds, Driftwood/Debris, Seagrass, Lighthouse, Pier/Jetty, Docks/Quay, Harbor Wall, Coastal Fortification, Beach Hut/Chalet, Coastal Path, Fishing Boat, Sailboat/Yacht, Cargo Ship, Buoy/Marker, Ferry, Speedboat, Sunset over Ocean, Fog/Mist, Stormy Sea, Clear Horizon, Tractor/Combine, Office Buildings, Silo, Greenhouse/Nursery, Miscellaneous/Unrelated">Coastal Images</button>
+		<button data-list="Folded Rock Strata, Fault Line, Erosion Gully, Canyon/Gorge, Alluvial Fan, Arete/Ridge, U-Shaped Valley, Meandering River, River Delta, Oxbow Lake, Sand Bar, Sea Stack, Arch Rock, Abrasion Platform, Glacial Moraine, Drumlin, Kettle Lake, Glacier Ice, Snowfield, Cirque/Corrie, Volcanic Cone, Lava Flow, Crater Lake, Geothermal Vent, Basalt Column, Limestone Pavement, Cave Entrance, Sand Dune, Salt Pan, Desert Oasis, Office Building, Tractor/Combine, Crowded Street, Subway Entrance, Miscellaneous/Unrelated">Geomorphology</button>
+		<button data-list="Granite Outcrop, Basalt Columns, Pumice Rock, Volcanic Ash, Obsidian Specimen, Layered Sandstone, Shale/Siltstone, Conglomerate Rock, Fossilized Shells, Coal Seam, Marble Slab, Slate Quarry, Gneiss Banding, Quartzite, Crystal Structure, Geode Interior, Mineral Vein, Rock Hammer/Tool, Rock Cleavage, Weathered Surface, Clay Soil, Gravel Bed, River Silt, Peat Sample, Bedrock Exposed, Geologist Sampling, Close-up Rock Texture, Rock Sample Label, Hand Holding Sample, Field Notes/Map, Grocery Store, Playground Equipment, Dining Table, Apartment Block, Soccer Field, Miscellaneous/Unrelated">Geology</button>
+		<button data-list="Water Cascade, Waterfall, Rapids/Whitewater, Dam Overflow, Irrigation Canal, Floodwater, Mirror Reflection on Water, Water Reservoir, Marsh Vegetation, Swampy Ground, Pond/Pool, Dew/Moisture, Tide Coming In, Ripples on Water, Breaking Waves, Ocean Mist, Salty Sea Spray, Eroding Bank, Frozen Lake, Icy Surface, Glacial Meltwater, Snow-covered River, Iceberg, Water Turbidity, Water Measurement Gauge, Hydroelectric Plant, Bridge over Water, Waterfowl, Boats/Canoes, Fisherman Casting, Riverbank Vegetation, Wetland Boardwork, Historic Church, Mountain Summit, Factory Building, Shopping Mall, School Bus, Miscellaneous/Unrelated">Hydrology</button>
+		<button data-list="Limestone Pavement, Arch Rock, Sand Bar, Bay View, Sandy Beach, Shingle Beach, Sea Cave, Sea Cliff, Tidal Creek, Headland, Lagoon, Mudflats, Offshore Bar, Raised Beach, Salt Marsh, Sand Dunes, Coastal Spit, Recurved Spit, Sea Stack, Storm Beach, Sea Stump, Tombolo, Wavecut Platform, Dune Regeneration, Gabions, Wooden Groyne, Stone Groyne, Offshore Breakwater, Wooden Revetments, Rock Armour, Sea Wall, Aqueduct, Channel Straightening, River Confluence, Dam Structure, River Delta, Flood Defenses, Flood Plain, Flooded Area, River Gorge, Earthen Levee, River Meander, Ox-bow Lake, Water Reservoir, River Channel, River Cliff, River Slip-off Slope, River Source, Water Spring/Source, V-shape Valley, Waterfall, Arête/Ridge, Glacial Cirque, Glacial Corrie, Glacial Drumlin, Dry Valley, Glacial Erratics, Glacial Trough, Hanging Valley, Kame Terrace, Glacial Moraine, Pingo, Pyramid Peak, Ribbon Lake, Scree Slope, Tarn Lake, Truncated Spur, U-shaped Valley, Fog/Mist, Weather Station, Hail Shower, Falling Snow, Cirrus Clouds, Cumulus Clouds, Cumulonimbus Clouds, Igneous Rock, Chalk Cliff, Limestone Rock, Sedimentary Rock, Tor Rock Formation, Education Centre, Footpath Erosion, Holiday Village, Seaside Town, Theme Park, Commercial Forestry, Fishing Vessel, Mining Operation, Farming Land, Retail Park, Industrial Estate, Science Park, Hamlet, Village, Town Centre, Central Business District, Suburbs, Terraced Housing, Semi-detached House, Detached House, Apartment Flats, Tower Block, Corner Shop, Shopping Parade, Shopping Mall">Geography</button>
+		<button data-list="Limestone Pavement, Arch Rock, Sand Bar, Bay View, Sandy Beach, Shingle Beach, Sea Cave, Sea Cliff, Tidal Creek, Headland, Lagoon, Mudflats, Offshore Bar, Raised Beach, Salt Marsh, Sand Dunes, Coastal Spit, Recurved Spit, Sea Stack, Storm Beach, Sea Stump, Tombolo, Wavecut Platform, Dune Regeneration, Gabions, Wooden Groyne, Stone Groyne, Offshore Breakwater, Wooden Revetments, Rock Armour, Sea Wall, Aqueduct, Channel Straightening, River Confluence, Dam Structure, River Delta, Flood Defenses, Flood Plain, Flooded Area, River Gorge, Earthen Levee, River Meander, River Meander with Cut-off Loop, Ox-Bow Lake in a Floodplain, Crescent-shaped body of still water, Water Reservoir, River Channel, River Cliff, River Slip-off Slope, River Source, Water Spring/Source, V-shape Valley, Waterfall, Arête/Ridge, Glacial Cirque, Glacial Corrie, Glacial Drumlin, Dry Valley, Glacial Erratics, Glacial Trough, Hanging Valley, Kame Terrace, Glacial Moraine, Pingo, Pyramid Peak, Ribbon Lake, Scree Slope, Tarn Lake, Truncated Spur, U-shaped Valley, Fog/Mist, Weather Station, Hail Shower, Falling Snow, Cirrus Clouds, Cumulus Clouds, Cumulonimbus Clouds, Igneous Rock, Chalk Cliff, Limestone Rock, Sedimentary Rock, Tor Rock Formation, Education Centre, Footpath Erosion, Holiday Village, Seaside Town, Theme Park, Commercial Forestry, Fishing Vessel, Mining Operation, Farming Land, Retail Park, Industrial Estate, Science Park, Hamlet, Village, Town Centre, Central Business District, Suburbs, Terraced Housing, Semi-detached House, Detached House, Apartment Flats, Tower Block, Corner Shop, Shopping Parade, Shopping Mall">Geography 2</button>
+
+		<!--
+		<button data-list=""></button>
+		<button data-list=""></button>
+		-->
+	</div>
+
         <input type="number" id="num-clusters" value="8" min="2" max="50" style="display: none;">
 
         <div id="group-tickbox" class="radio-options">
@@ -118,12 +143,15 @@
             const mode = $('input[name="mode"]:checked').val();
             if (mode === 'classify') {
                 $('#search-labels, #group-tickbox').show();
+		$('#predefined-buttons').show();
                 $('#num-clusters').hide();
             } else {
                 $('#search-labels, #group-tickbox').hide();
+		$('#predefined-buttons').hide();
                 $('#num-clusters').show();
             }
         }
+
 
         // Reads values from the URL and Local Storage, then populates the form.
         function loadFormState() {
@@ -225,6 +253,35 @@
 	    if (window.location.search)
 	        runSearch();
         });
+
+
+	// Function to handle the predefined label button clicks
+
+	    const targetTextarea = $('#search-labels');
+	    // Attach event listener to all buttons within the 'Predefined' section
+	    $('button[data-list]').on('click', function() {
+	        // Get the label list from the data-list attribute
+	        const newList = $(this).data('list');
+	        
+	        // Get the current labels for comparison
+	        const currentLabels = targetTextarea.val().trim();
+	        
+	        // Check if the current labels are different AND not empty
+	        if (currentLabels.length > 0 && currentLabels !== newList) {
+	            // Prompt user for confirmation
+	            if (!confirm('Are you sure you wish to overwrite your current custom labels?')) {
+	                return; // Stop if the user cancels
+	            }
+	        }
+	        
+	        // Overwrite the textarea value
+	        targetTextarea.val(newList);
+	        
+	        // Optional: Save the new labels to local storage immediately
+	        //saveToLocalStorage(); 
+	    });
+
+
     });
     </script>
 
