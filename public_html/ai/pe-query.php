@@ -377,7 +377,7 @@ function openMap(open) {
         <div>
             <input type="number" min="0" max="100000" step="1000" name="dist" id="dist" value="<?php echo htmlentities($_GET['dist'])??''; ?>">m
             <span style="font-size: 0.9em; color: #666;"> (max=100000m)</span>
-	    <input type=checkbox name=longer id=longer value=1 <?php if (!empty($_GET['longer'])) echo 'checked'; ?>> <label for=longer>Longer results</label>
+	    <input type="checkbox" name="longer" id="longer" value="1" <?php if (!empty($_GET['longer'])) echo 'checked'; ?>> <label for="longer">Longer results</label>
 
 		<div style="float:right;font-size:small">
 			<a href="#" onclick="return openSearch(true)" onmouseover="this.href = openSearch(false);" title="reminder: the keyword search might not understand a 'similarity' query!">Open in keyword searcher</a>
