@@ -3,6 +3,7 @@ function runSearch() {
     const mode = $('input[name="mode"]:checked').val();
     const groupByPlace = $('#group-by-place').is(':checked');
     const model = $('input[name="model"]:checked').val();
+    const longerResults = $('#longer-results').is(':checked');
 
     if (!query) {
         alert('Please provide a search query.');
@@ -49,7 +50,7 @@ function runSearch() {
                     select: 'id,hash,grid_reference,realname,title,image_vector,place',
                     long: 1,
                     utf: 1,
-                    limit: (paramname == 'match') ? 100 : 30,
+                    limit: longerResults ? 100 : 30,
                     model: model
                 },
                 dataType: 'json'
@@ -89,7 +90,7 @@ function runSearch() {
                 select: 'id,hash,grid_reference,realname,title,image_vector,place',
                 long: 1,
                 utf: 1,
-                limit: 100,
+                limit: longerResults ? 100 : 30,
                 model: model
             },
             dataType: 'json'

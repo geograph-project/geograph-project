@@ -111,6 +111,12 @@
             </label>
         </div>
 
+        <div class="radio-options">
+            <label>
+                <input type="checkbox" id="longer-results" name="longer-results" value="1">Longer Results
+            </label>
+        </div>
+
         <button id="search-button">Search and Process</button>
     </div>
 
