@@ -370,12 +370,13 @@ function openMap(open) {
         <input type="search" name="query" id="query" value="<?php echo htmlentities($_GET['query']??'') ?>" placeholder="describe what want to see" list="examples">
 
         <label for="loc">Optional Location:</label>
-	<? print $location->getInput($_GET['loc']??''); ?>
+	<?php print $location->getInput($_GET['loc']??''); ?>
 
         <label for="dist">Max Distance:</label>
         <div>
             <input type="number" min="0" max="100000" step="1000" name="dist" id="dist" value="<?php echo htmlentities($_GET['dist'])??''; ?>">m
             <span style="font-size: 0.9em; color: #666;"> (max=100000m)</span>
+	    <input type="checkbox" name="longer" id="longer" value="1" <?php if (!empty($_GET['longer'])) echo 'checked'; ?>> <label for="longer">Longer results</label>
 
 		<div style="float:right;font-size:small">
 			<a href="#" onclick="return openSearch(true)" onmouseover="this.href = openSearch(false);" title="reminder: the keyword search might not understand a 'similarity' query!">Open in keyword searcher</a> 
@@ -388,7 +389,7 @@ function openMap(open) {
     </div>
 </form>
 
-	<?
+	<?php
 
 ####################################################
 
@@ -416,6 +417,8 @@ if (!empty($_GET['loc'])) {
         }
 }
 
+$limit = !empty($_GET['longer']) ? 100 : 30;
+
 ####################################################
 // simple id search
 
@@ -438,7 +441,7 @@ if (!empty($_GET['loc'])) {
 		$imagelist->outputThumbs($thumbw,$thumbh);
 
 		// get results
-		$imagelist->getImagesSimilarToID($id);
+		$imagelist->getImagesSimilarToID($id, $limit);
 		if ($imagelist->images[0]->gridimage_id == $id) {
 			unset($imagelist->images[0]);
 		}
@@ -462,7 +465,7 @@ if (!empty($_GET['loc'])) {
 
 		print "<p>These images are visually similar to the term <b>".htmlentities($label)."</b> and within ".round($dist/1000,1)."km of ".round($lat,6).", ".round($lon,6).".<br>";
 
-		if ($imagelist->getImagesByLocation($lat, $lon, $dist, $label)) {
+		if ($imagelist->getImagesByLocation($lat, $lon, $dist, $label, $limit)) {
 			$imagelist->outputThumbs($thumbw, $thumbh);
 		} else
 			print "no results found";
@@ -508,7 +511,7 @@ if (!empty($_GET['loc'])) {
 		print "<p>These images are visually similar to the term <b>".htmlentities($label)."</b>, but the similarity is (currently) based purely on appearance, not on the image's title or location, or other data.<br>";
 //		print "</div>";
 
-		if ($imagelist->getImagesSimilarToLabel($label))
+		if ($imagelist->getImagesSimilarToLabel($label, $limit))
 			$imagelist->outputThumbs($thumbw,$thumbh);
 		else
 			print "unknown term";

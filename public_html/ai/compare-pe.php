@@ -28,6 +28,10 @@ $smarty->display('_std_begin.tpl');
 		    <option value="national">National</option>
 		</select>
 	    </div>
+	    <div>
+		<input type="checkbox" id="longer" name="longer">
+		<label for="longer">Longer Results</label>
+	    </div>
 	<div class="results-container">
             <div class="column">
         	<b>AI Query 1:</b><br>
@@ -122,11 +126,13 @@ $(function() {
                 break;
         }
 
+        var limit = $('#longer').is(':checked') ? 75 : 25;
+
         // --- Column 1: Standard Search ---
         var data1 = {
             long: 1,
             select: "id,user_id,realname,grid_reference,title,hash",
-            limit: 25,
+            limit: limit,
             utf: 1,
             label: query1
         };
@@ -140,7 +146,7 @@ $(function() {
         var data2 = {
             long: 1,
             select: "id,user_id,realname,grid_reference,title,hash",
-            limit: 25,
+            limit: limit,
             utf: 1,
             label: query2,
 	    model: 'pe'
