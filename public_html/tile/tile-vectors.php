@@ -75,7 +75,7 @@ if (!empty($_GET['user_id']))
   //                      $imagelist->outputThumbs($thumbw, $thumbh);
 
 //actully using getImagesByCriteria will get use actual image object (which is wasteful, we can use s3vector metadata directly!
-$results = $imagelist->getRawVectorsByCriteria($criteria, 30, true);
+$results = $imagelist->getRawVectorsByCriteria($criteria, 100, true);
 
 ########################################################################
 //render tile

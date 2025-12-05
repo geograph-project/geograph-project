@@ -7,7 +7,7 @@ require_once('geograph/vectors.inc.php');
 // Set headers for JSON response and CORS
 header('Content-Type: application/json');
 //header('Access-Control-Allow-Origin: *');
-customExpiresHeader(3600*24);
+customExpiresHeader(3600*24*7);
 
 // Input parameters
 $labels_str = isset($_GET['labels']) ? trim($_GET['labels']) : '';
