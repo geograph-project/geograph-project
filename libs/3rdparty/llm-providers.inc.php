@@ -102,8 +102,8 @@ if (empty($ch)) {
  */
 function callCloudflare($prompt, $user = null, $model = 'gpt-oss-120b') {
     global $CONF;
-    $accountId = $CONF['CLOUDFLARE_ACCOUNT_ID'];
-    $apiToken = $CONF['CLOUDFLARE_API_TOKEN'];
+    $accountId = $CONF['cloudflare_account_id'];
+    $apiToken = $CONF['cloudflare_api_token'];
     $modelName = '@cf/openai/'.$model; //currently assumes openai models!
 	if (!defined('QUIET'))
 	    print "Using Model $modelName (via Cloudflare)\n";
@@ -160,7 +160,7 @@ function callCloudflare($prompt, $user = null, $model = 'gpt-oss-120b') {
  */
 function callOpenRouter($prompt, $user = null, $maxTokens = 2048, $model = 'gpt-oss-120b') {
     global $CONF;
-    $apiKey = $CONF['OPENROUTER_API_KEY'];
+    $apiKey = $CONF['openrouter_api_key'];
 
     $modelName = 'openai/'.$model; //currently assumes openai models!
 
@@ -228,11 +228,10 @@ function callOpenRouter($prompt, $user = null, $maxTokens = 2048, $model = 'gpt-
     }
 }
 
-function callOpenRouterKey() {
+//make this a generial function for calling OpenRouter API (without input) - chat/completions has its own function above!
+function callOpenRouterKey($url = "https://openrouter.ai/api/v1/key") {
     global $CONF;
-    $apiKey = $CONF['OPENROUTER_API_KEY'];
-
-    $url = "https://openrouter.ai/api/v1/key";
+    $apiKey = $CONF['openrouter_api_key'];
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
