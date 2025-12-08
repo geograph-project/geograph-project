@@ -1,13 +1,8 @@
 <?php
 
-// Refactored and tidied script for tag classification using Cloudflare's Workers AI with the gpt-oss-120b model.
-// This version removes redundant code and focuses solely on the specified model.
-
-// Script parameters
 $param = array('provider'=>'open', 'table'=>'moderation_all', 'limit'=>10, 'sleep'=>0);
 
 chdir(__DIR__);
-// Required files and database connection
 require "./_scripts.inc.php";
 
 require_once "3rdparty/llm-providers.inc.php"; // Provides getLLMResponse and other functions
@@ -47,7 +42,8 @@ print "Got ".count($results)." from $table\n";
 
 define('QUIET', 1); //llm-providers by default outputs some text!
 
-$prompt = file_get_contents("../ai-schema/website-content-summary.txt");
+$prompt = $db->getOne("SELECT content FROM ai_prompt WHERE active=1 AND prompt_name = 'website-content-summary'");
+
 
 foreach ($results as $row) {
 

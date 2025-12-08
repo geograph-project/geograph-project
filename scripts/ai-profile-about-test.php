@@ -5,6 +5,9 @@ $param = array('provider'=>'open', 'limit'=> 10, "table" => "moderation");
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
+if ($param['provider'] == 'open' && empty($CONF['OPENROUTER_API_KEY']))
+	exit; //silently die for now
+
 require_once "3rdparty/llm-providers.inc.php"; // Provides getLLMResponse and other functions
 
 $db = GeographDatabaseConnection(false);

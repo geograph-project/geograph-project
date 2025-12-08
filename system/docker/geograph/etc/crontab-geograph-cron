@@ -69,9 +69,19 @@
 25	*       * * *   /usr/bin/php /var/www/geograph/scripts/injectrt-delta-function.php --table=gallery_view_delta --index=gallery_ids  --execute=2
 
 ##############################
+
+51	*	* * *   /usr/bin/php /var/www/geograph/scripts/ai-profile-about-test.php
+52      *       * * *   /usr/bin/php /var/www/geograph/scripts/ai-profile-name-test.php
+53      *       * * *   /usr/bin/php /var/www/geograph/scripts/ai-profile-website-test.php
+
+##indepth check!
+54      *       * * *   /usr/bin/php /var/www/geograph/scripts/ai-website-safe-test.php --table=moderation
+
+##############################
 # And some for the Gallery
 
 */15  *       * * * /usr/bin/php /var/www/geograph/public_html/showcase/gallery.cron.php
 37    */6     * * * /usr/bin/php /var/www/geograph/public_html/showcase/gallery.sync.php
 
 ##############################
+

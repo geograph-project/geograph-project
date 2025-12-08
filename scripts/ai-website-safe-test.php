@@ -1,14 +1,12 @@
 <?php
 
-// Refactored and tidied script for tag classification using Cloudflare's Workers AI with the gpt-oss-120b model.
-// This version removes redundant code and focuses solely on the specified model.
-
-// Script parameters
-$param = array('provider'=>'open', 'table'=>'moderation_all', 'limit'=>10, 'sleep'=>0);
+$param = array('provider'=>'open', 'table'=>'moderation', 'limit'=>10, 'sleep'=>0);
 
 chdir(__DIR__);
-// Required files and database connection
 require "./_scripts.inc.php";
+
+if ($param['provider'] == 'open' && empty($CONF['OPENROUTER_API_KEY']))
+	exit; //silently die for now
 
 require_once "3rdparty/llm-providers.inc.php"; // Provides getLLMResponse and other functions
 
@@ -27,16 +25,22 @@ $query = "SELECT $pkey, user.website AS website, user_id, moderation_status FROM
 	 WHERE source = 'user_website' AND ai_assessment IS NULL AND ( fd.domain IS NULL OR fd.last < DATE_SUB(NOW(), INTERVAL 1 DAY) )
 	 ORDER BY user_id DESC LIMIT ".$param['limit'];
 
+
+$query = "($query) UNION ALL (select $pkey, media_url as website, user_id, moderation_status  from moderation
+	where source = 'link' and ai_assessment IS NULL LIMIT {$param['limit']})";
+
 ####################
 
 if ($param['table'] == 'gridimage_link') {
 	$table = "gridimage_link"; //table with ai_assessment
 	$pkey = "gridimage_link_id"; //primary key
 
+	$regexp = $db->Quote("^https?://(www|schools|media)\.geograph\.(org\.uk|ie)/");
+	$db->Execute("update gridimage_link set is_internal = 1, updated=updated where is_internal=0 and url regexp $regexp");
+
 	$query = "SELECT $pkey, url AS website FROM $table
 		  LEFT JOIN fetch_domain fd ON (domain = substring_index(url,'/',3))
-		WHERE `parent_link_id` = 0 and `next_check` < '2040-01-01' AND HTTP_Status_final IN (200)
-		  AND url NOT regexp '^https?://www.geograph.'  AND is_internal = 0
+		WHERE `parent_link_id` = 0 and `next_check` < '2040-01-01' AND HTTP_Status_final IN (200)  AND is_internal = 0
 		  AND ai_assessment IS NULL AND ( fd.domain IS NULL OR fd.last < DATE_SUB(NOW(), INTERVAL 1 DAY) )
 		ORDER BY $pkey DESC
 		LIMIT ".$param['limit'];
@@ -56,8 +60,9 @@ print "Got ".count($results)." from $table\n";
 
 define('QUIET', 1); //llm-providers by default outputs some text!
 
-$assess_prompt = file_get_contents("../ai-schema/website-safe-test.txt");
-$content_prompt = file_get_contents("../ai-schema/website-content-summary.txt");
+$assess_prompt = $db->getOne("SELECT content FROM ai_prompt WHERE active=1 AND prompt_name = 'website-safe-test'");
+$content_prompt = $db->getOne("SELECT content FROM ai_prompt WHERE active=1 AND prompt_name = 'website-content-summary'");
+
 
 foreach ($results as $row) {
 
@@ -104,6 +109,7 @@ foreach ($results as $row) {
 	////////////////////
 	// Grab summary of the content
 
+if ($table != 'moderation') {
 	print "Summary: ";
 	$result = getLLMResponse($content_prompt, $user, $param['provider'], $model = 'gpt-oss-20b');
 	print "$result\n";
@@ -121,7 +127,7 @@ foreach ($results as $row) {
                 $updates['site_desc'] = $json['site-description'];
                 $updates['comment'] = $json['comment'];
         }
-
+}
 	////////////////////
 	// give an assessment
 
