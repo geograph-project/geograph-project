@@ -146,33 +146,10 @@ if (!empty($_GET['vector'])) {
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	if ($USER->registered) {
 
-		$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
+		$sql['tables'] = array('lt' => 'user_recent_tags tag'); //this table has everything! still use alias tag, as $columns uses 'tag.prefix' etc)
+		$sql['wheres'][] = "user_id = {$USER->user_id}";
 
-		$sql['wheres'][] = "gt.user_id = {$USER->user_id}";
-		$sql['wheres'][] = "prefix != 'top'";
-		$sql['wheres'][] = "prefix != 'type'";
-		$sql['wheres'][] = "prefix != 'milestoneid'";
-		$sql['wheres'][] = "gridimage_id < 4294967296";
-
-		if ($USER->user_id == 2639) {
-
-			//this user deletes a lot of tags
-			$sql['wheres'][] = "gt.status = 2";
-			$sql['order'] = 'gt.updated DESC';
-			$sql['limit'] = 500;
-
-			//if there are lots of tags, this turns out most effient way to 'group' it. A real group, groups all rows, order then limits.
-			$sql = array(
-				'columns' => 'DISTINCT *',
-				'tables' => array("(".sqlBitsToSelect($sql).") AS t2"),
-			);
-
-		} else {
-			$sql['columns'] .= ",MAX(gt.created) AS last_used";
-
-			$sql['group'] = 'tag.tag_id';
-			$sql['order'] = 'last_used DESC';
-		}
+		$sql['order'] = 'last_used DESC';
 
 		$sql['limit'] = 59;
 	}

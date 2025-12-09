@@ -421,11 +421,8 @@ if ($template=='tags_tagger.tpl' && $USER->registered) {
 	if (empty($db2))
                 $db2 = GeographDatabaseConnection(true);
 
-	if ($USER->user_id == 2639) {
-		$recent = $db2->getAll("SELECT DISTINCT * FROM (SELECT tag,prefix FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' AND prefix != 'type' AND prefix != 'milestoneid' ORDER BY gt.updated DESC LIMIT 500) t2 LIMIT 30");
-	} else {
-		$recent = $db2->getAll("SELECT tag,prefix,MAX(gt.created) AS last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' AND prefix != 'type' AND prefix != 'milestoneid' GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 20");
-	}
+	$recent = $db2->getAll("SELECT * FROM user_recent_tags WHERE user_id = {$USER->user_id} ORDER BY last_used DESC LIMIT 20");
+
 	if (count($used) && count($recent)) {
 		$list = array();
 		foreach ($used as $row) $list[$row['tag']]=1;

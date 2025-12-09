@@ -1,0 +1,47 @@
+-- one off script to create the table, and populate it
+
+
+CREATE TABLE user_recent_tags (
+	`user_id` int(10) unsigned NOT NULL,
+	`tag_id` int(10) unsigned NOT NULL ,
+	`last_used` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+
+	`tag` varchar(72) NOT NULL,  -- table will be denoramlized so includes copy of tag/prefix
+	`prefix` varchar(32) NOT NULL,
+
+	PRIMARY KEY (`user_id`,`tag_id`),
+	INDEX `idx_user_used` (`user_id`, `last_used` DESC) -- For fast SELECT and Trimming
+);
+
+ 
+INSERT INTO user_recent_tags (user_id, tag_id, last_used, tag, prefix)
+SELECT
+    t2.user_id,
+    t2.tag_id,
+    t2.last_used,
+    t3.tag,
+    t3.prefix
+FROM (
+    SELECT
+        gt.user_id,
+        gt.tag_id,
+        MAX(gt.created) AS last_used,
+        -- Ranks the tags by most recent usage, restarting the rank for each user
+        ROW_NUMBER() OVER (
+            PARTITION BY gt.user_id 
+            ORDER BY MAX(gt.created) DESC
+        ) as rn
+    FROM
+        gridimage_tag gt
+    WHERE 
+        gt.status >= 1
+        AND gt.created > DATE_SUB(NOW(), INTERVAL 3 MONTH) -- Only focus on recently active users
+    GROUP BY
+        gt.user_id, gt.tag_id
+) AS t2
+JOIN 
+    tag t3 ON t2.tag_id = t3.tag_id
+WHERE
+    t2.rn <= 60 -- Keeps only the top 60 most recently used tags per user
+    AND t3.status = 1
+    AND t3.prefix NOT IN ('top', 'type', 'milestoneid');

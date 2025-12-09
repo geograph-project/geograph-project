@@ -195,7 +195,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		} else {
 		$taglist[] = array(
 			'title' => 'Recent Tags',
-			'tags' => $db->CacheGetAll(3600*rand(1,5),"SELECT prefix,tag,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix != 'top' AND prefix != 'type' AND prefix != 'milestoneid' ORDER BY last_used DESC LIMIT 50")
+			'tags' => $db->getAll("select prefix,tag,max(last_used) from user_recent_tags group by tag_id order by last_used desc limit 50")
 		);
 		}
 		$taglist[] = array(
