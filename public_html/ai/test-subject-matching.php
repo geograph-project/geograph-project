@@ -30,6 +30,41 @@
             background-color: #f2f2f2;
         }
         #loading-indicator { display: none; }
+        .panels-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .panel {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-width: 0; /* Prevents flexbox overflow */
+        }
+        .panel h2 {
+            margin-top: 0;
+            font-size: 1.1em;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-height: 400px; /* Limit height */
+            overflow-y: auto; /* Allow scrolling */
+        }
+        .image-item {
+            text-align: center;
+        }
+        .image-item img {
+            width: 100px; /* Fixed width */
+            height: 100px; /* Fixed height */
+            object-fit: cover; /* Prevents distortion */
+        }
+        .image-item p {
+            font-size: 0.8em;
+            margin: 3px 0 0 0;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
@@ -38,6 +73,12 @@
     <p>Select a subject to see how well its text embedding matches the embeddings of images tagged with that subject.</p>
 
     <div id="form-container">
+        <label for="model-select">Choose an AI Model:</label>
+        <select id="model-select">
+            <option value="clip">CLIP</option>
+            <option value="pe">Perception Encoder</option>
+        </select>
+
         <label for="subject-select">Choose a Subject:</label>
         <select id="subject-select">
             <option value="">Loading subjects...</option>
@@ -66,15 +107,29 @@
         </tbody>
     </table>
 
+    <div class="panels-container">
+        <div class="panel" id="tagged-images-panel">
+            <h2>Images Tagged with Subject</h2>
+            <div class="image-container" id="tagged-images-container"></div>
+        </div>
+        <div class="panel" id="similarity-images-panel">
+            <h2>Similarity Search Results</h2>
+            <div class="image-container" id="similarity-images-container"></div>
+        </div>
+    </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="/js/vector.class.js"></script>
     <script>
     $(document).ready(function() {
+        const $modelSelect = $('#model-select');
         const $subjectSelect = $('#subject-select');
         const $queryText = $('#query-text');
         const $runButton = $('#run-button');
         const $resultsTableBody = $('#results-table tbody');
         const $loadingIndicator = $('#loading-indicator');
+        const $taggedImagesContainer = $('#tagged-images-container');
+        const $similarityImagesContainer = $('#similarity-images-container');
 
         // --- Core Functions ---
 
@@ -109,72 +164,120 @@
             });
         }
 
+        function getGeographUrl(gridimageId, hash, size = 'small') {
+            const yz = String(Math.floor(gridimageId / 1000000)).padStart(2, '0');
+            const ab = String(Math.floor((gridimageId % 1000000) / 10000)).padStart(2, '0');
+            const cd = String(Math.floor((gridimageId % 10000) / 100)).padStart(2, '0');
+            const abcdef = String(gridimageId).padStart(6, '0');
+
+            let fullpath;
+            if (yz === '00') {
+                fullpath = `/photos/${ab}/${cd}/${abcdef}_${hash}`;
+            } else {
+                fullpath = `/geophotos/${yz}/${ab}/${cd}/${abcdef}_${hash}`;
+            }
+
+            const server = `https://s${gridimageId % 4}.geograph.org.uk`;
+
+            switch (size) {
+                case 'full': return `https://s0.geograph.org.uk${fullpath}.jpg`;
+                case 'med': return `${server}${fullpath}_213x160.jpg`;
+                case 'small':
+                default: return `${server}${fullpath}_120x120.jpg`;
+            }
+        }
+
         function runAnalysis(query, subject) {
+            const model = $modelSelect.val();
             $loadingIndicator.show();
+            $taggedImagesContainer.empty();
+            $similarityImagesContainer.empty();
 
             const matchQuery = `@subjects "_SEP_ ${subject.replace(/[^\w]+/g, ' ')} _SEP_"`;
 
+            // Perform all three API calls in parallel
             $.when(
+                // 1. Get the vector for the input query text
                 $.ajax({
                     url: '/finder/label-vectors.json.php',
                     method: 'GET',
-                    data: { labels: query, model: 'clip' },
+                    data: { labels: query, model: model },
                     dataType: 'json'
                 }),
+                // 2. Get images tagged with the original subject
                 $.ajax({
                     url: '/api-facetql-vector.php',
                     method: 'GET',
                     data: {
                         match: matchQuery,
-                        select: 'id,image_vector',
-                        limit: 200, // Fetch a good number of images for meaningful stats
-                        model: 'clip'
+                        select: 'id,hash,grid_reference,realname,title,image_vector',
+                        limit: 100, // Fetch up to 100 for stats, but we'll display 20
+                        model: model
+                    },
+                    dataType: 'json'
+                }),
+                // 3. Get images via similarity search on the new query
+                $.ajax({
+                    url: '/api-facetql-vector.php',
+                    method: 'GET',
+                    data: {
+                        label: query,
+                        select: 'id,hash,grid_reference,realname,title',
+                        limit: 20, // Only need the top 20 for display
+                        model: model
                     },
                     dataType: 'json'
                 })
-            ).done(function(labelResponse, imagesResponse) {
+            ).done(function(labelResponse, taggedImagesResponse, similarityImagesResponse) {
                 const labelData = labelResponse[0];
-                const imagesData = imagesResponse[0];
+                const taggedImagesData = taggedImagesResponse[0];
+                const similarityImagesData = similarityImagesResponse[0];
 
+                // --- Render Similarity Search Results ---
+                if (similarityImagesData && similarityImagesData.rows) {
+                    renderThumbnails($similarityImagesContainer, similarityImagesData.rows);
+                }
+
+                // --- Calculate and Display Statistics ---
                 if (!labelData || !labelData[query]) {
                     alert(`Could not find a vector for the query: "${query}"`);
                     return;
                 }
-                if (!imagesData || !imagesData.rows || imagesData.rows.length === 0) {
+                if (!taggedImagesData || !taggedImagesData.rows || taggedImagesData.rows.length === 0) {
                     alert(`No images found for the subject: "${subject}"`);
+                    // Still render the similarity results
+                    renderThumbnails($taggedImagesContainer, []);
                     return;
                 }
+
+                // Display tagged images
+                renderThumbnails($taggedImagesContainer, taggedImagesData.rows.slice(0, 20));
 
                 try {
                     const textVector = new EmbeddingVector(labelData[query]).normalize();
                     const distances = [];
 
-                    imagesData.rows.forEach(image => {
+                    taggedImagesData.rows.forEach(image => {
                         if (image.image_vector) {
                             const imageVector = new EmbeddingVector(image.image_vector).normalize();
-                            const distance = textVector.distance(imageVector);
-                            distances.push(distance);
+                            distances.push(textVector.distance(imageVector));
                         }
                     });
 
-                    if (distances.length === 0) {
-                        alert('No valid image vectors could be processed.');
-                        return;
+                    if (distances.length > 0) {
+                        const stats = calculateStats(distances);
+                        addResultRow(query, stats);
+                    } else {
+                         alert('No valid image vectors could be processed for stats.');
                     }
-
-                    // Calculate statistics
-                    const stats = calculateStats(distances);
-
-                    // Add results to the table
-                    addResultRow(query, stats);
-
                 } catch (e) {
-                    alert('An error occurred during vector processing. Check the console.');
+                    alert('An error during vector processing. Check console.');
                     console.error(e);
                 }
 
-            }).fail(function() {
-                alert('An error occurred while fetching data from the APIs.');
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                alert('An error occurred while fetching data from the APIs. Check console for details.');
+                console.error("API call failed:", textStatus, errorThrown);
             }).always(function() {
                 $loadingIndicator.hide();
             });
@@ -213,20 +316,42 @@
             return $('<div>').text(str).html();
         }
 
+        function renderThumbnails($container, images) {
+            $container.empty();
+            if (!images || images.length === 0) {
+                $container.html('<p>No images to display.</p>');
+                return;
+            }
+
+            images.forEach(function(image) {
+                const imageUrl = getGeographUrl(image.id, image.hash, 'small');
+                const $item = $(`
+                    <div class="image-item">
+                        <a href="https://www.geograph.org.uk/photo/${image.id}" target="_blank" title="${escapeHtml(image.title)} by ${escapeHtml(image.realname)}">
+                            <img src="${imageUrl}" alt="${escapeHtml(image.title)}" loading="lazy">
+                        </a>
+                    </div>
+                `);
+                $container.append($item);
+            });
+        }
         // --- Event Handlers ---
 
         // 1. Populate subjects when the page is ready
         loadSubjects();
 
-        // 2. When a subject is selected from the dropdown
-        $subjectSelect.on('change', function() {
-            const selectedSubject = $(this).val();
+        function handleAnalysisTrigger() {
+            const selectedSubject = $subjectSelect.val();
             if (selectedSubject) {
                 $queryText.val(selectedSubject);
-                $resultsTableBody.empty(); // Clear previous results
+                $resultsTableBody.empty();
                 runAnalysis(selectedSubject, selectedSubject);
             }
-        });
+        }
+
+        // 2. When a subject is selected from the dropdown
+        $subjectSelect.on('change', handleAnalysisTrigger);
+
 
         // 3. When the 'Run Analysis' button is clicked
         $runButton.on('click', function() {
@@ -241,6 +366,7 @@
                 alert('Please enter a query.');
                 return;
             }
+            // Do not clear results here, to allow comparison
             runAnalysis(query, subject);
         });
 
