@@ -111,6 +111,8 @@ if (!empty($param['insert'])) {
 
 
     } elseif ($source == 'image') {
+	die("For now please use delta mode, which adds more metadata fields, this old code is now redundant");
+
 	if ($model != 'clip' && $model != 'pe') die("only clip/pe supported for now");
 
         $cmd[] = '-t"'.$table_embedding.' USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)"';
@@ -119,6 +121,7 @@ if (!empty($param['insert'])) {
                //the double level of sharding, picks the wrong index!
 
 	//the CAST() is just to ensure it numeric - better than ROUND which stiull produces a float, "vector-cmd" can already deal with the DECIMAL from wgs84_lat etc
+	//todo, this would need updating to compute myriad, largest, and country as the delta does below (as query is passed over command line to python, need to be more careful of query getting complicated
 	$cmd[] = '-s'.escapeshellarg("gridimage_id AS id, user_id, grid_reference as gridref, CAST(REPLACE(imagetaken,'-','') AS UNSIGNED) AS taken, wgs84_lat as slat, wgs84_long as slng, embeddings");
 
 	//actully for images we have a special way of doing it incrementally, because data is still being compliled!
@@ -213,8 +216,18 @@ if (!empty($param['delta'])) {
 	} elseif ($type === 'test' || $type == 'image') {
 	    echo "Fetching and inserting 'image' data into '{$param['index']}'...\n";
 
-		$sql = "SELECT gridimage_id AS id, user_id, grid_reference as gridref, CAST(REPLACE(imagetaken,'-','') AS UNSIGNED) AS taken, wgs84_lat as slat, wgs84_long as slng, embeddings, seq_id
-		FROM $table_embedding USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)
+		$sql = "SELECT gridimage_id AS id, user_id,
+			grid_reference AS gridref, SUBSTRING(grid_reference,1,LENGTH(grid_reference)-4) AS myriad,
+			CAST(REPLACE(imagetaken,'-','') AS UNSIGNED) AS taken,
+			wgs84_lat AS slat, wgs84_long AS slng, embeddings, seq_id,
+			get_largest_tier(GREATEST(width,height,original_width,original_height)) AS largest,
+			Region as region,
+			Country as country
+		FROM $table_embedding USE INDEX (PRIMARY)
+		INNER JOIN gridimage_search USING (gridimage_id)
+		LEFT JOIN gridimage_size s USING (gridimage_id)
+		LEFT JOIN gridsquare USING (grid_reference)
+		LEFT JOIN sphinx_placenames USING (placename_id)
 		WHERE type = 'image' AND model = '$model'";
 
             if ($type == 'image') {
