@@ -21,7 +21,8 @@
  */
 
 //these are the arguments we expect
-$param=array('verbose'=>false, 'index'=>'test-index', 'query'=>'road', 'insert'=>false, 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false, 'delta'=>false, 'test'=>false, 'limit'=>20000);
+$param=array('verbose'=>false, 'index'=>'test-index', 'insert'=>false, 'delta'=>false, 'test'=>false, 'limit'=>20000,
+ 'query'=>'road', 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false, 'largest'=>false, 'region'=>false); //--filters for testing queries
 
 $ABORT_GLOBAL_EARLY = true; //this stops connecting to memcache, so FileSystem will get a fresh STS token! (not from memcache!)
 
@@ -37,11 +38,13 @@ require "./_scripts.inc.php";
 	//for CLIP
 	$table_embedding = "gridimage_embedding";
 	$table_progress = "embedding_progress_clip";
+	$model = 'clip';
 
 	//Perception Encoder
 	if (preg_match('/-pe$/',$param['index'])) {
 		$table_embedding = "gridimage_embedding_1024";
 		$table_progress = "embedding_progress_pe";
+		$model = 'pe';
 	}
 
 ##################################
@@ -289,7 +292,7 @@ print "$sql;\n\n";
 //todo, this should be auto-detected
 		    } elseif ($columnName === 'slat' || $columnName === 'slng') {
 			$document[$columnName] = floatval($value);
-		    } elseif ($columnName === 'taken' || $columnName === 'user_id') {
+		    } elseif ($columnName === 'taken' || $columnName === 'user_id' || $columnName == 'largest') { //even though numberic in mysql, we still have a string via adodb
 			$document[$columnName] = intval($value);
 
 
@@ -382,9 +385,16 @@ if ($param['test']) {
 
 
    if (!empty($param['query'])) {
-	$row = $db->getRow("SELECT * FROM label_embedding WHERE label = ".$db->Quote($param['query'])." AND model='clip'");
+	//this table sometimes have a enginered prompt, which we want to use
+	$row = $db->getRow("SELECT * FROM label_embedding WHERE label = ".$db->Quote($param['query'])." AND model='$model'");
         if (!empty($row))
 		$queryEmbedding = array_values(unpack('g*', $row['embeddings']));
+	else {
+		//otherwise lookup via our API!
+
+		require_once('geograph/vectors.inc.php');
+		$queryEmbedding = getTextEmbedding($param['query'], $model);
+	}
    } else {
        $queryEmbedding = example_vector();
    }
@@ -406,6 +416,22 @@ if ($param['test']) {
     }
     if ($param['user_id'])
 	$parts[] = array('user_id' => array('$eq' => intval($param['user_id'])));
+
+    if ($param['region']) {
+        if (preg_match('/-([\w ]+)/',$param['region'],$m)) {
+		$parts[] = array('region' => array('$ne' => $m[1]));
+	} else {
+		$parts[] = array('region' => array('$eq' => $param['region']));
+	}
+    }
+
+    if ($param['largest']) {
+        if (preg_match('/(\d+)\+/',$param['largest'],$m)) {
+		$parts[] = array('largest' => array('$gte' => intval($m[1])));
+	} else {
+		$parts[] = array('largest' => array('$eq' => intval($param['largest'])));
+	}
+    }
 
     if (!empty($parts)) {
         if (count($parts) > 1) {
