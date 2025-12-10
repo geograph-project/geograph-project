@@ -166,9 +166,11 @@ LIMIT $limit";
 
 //JSON_VALUE(Message,'$.mail.commonHeaders.replyTo[0]') as `reply`,
 
+print "<p style=max-width:60em> If a message is marked <b>OnAccountSuppressionList</b>, the email was blocked due to a previous, permanent bounce. The address was added to the
+suppression list to prevent future failed send attempts. Click the link to see the preceding bounce(s) that likely led to the suppression.";
 
 
-$count = dump_sql_table($sql,"recent bounces/complaints");
+$count = dump_sql_table($sql,"Recent Bounce and/or Complaints");
 
 if ($count == $limit) {
 	print "Last $limit Results";
@@ -207,7 +209,11 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 		$align = "left";
 		foreach ($row as $key => $value) {
 			$align = is_numeric($value)?"right":"left";
-			if ($key != 'diagnosticCode' && $key != 'subject')
+			if ($key == 'type') {
+				//provide a link to view the preceding one!
+				$value = str_replace('OnAccountSuppressionList', "<a href=\"?email=".urlencode($row['to'])."&amp;SubType=%21OnAccountSuppressionList\">OnAccountSuppressionList</a>", $value);
+				print "<td>$value";
+			} elseif ($key != 'diagnosticCode' && $key != 'subject')
 				print "<TD ALIGN=$align>".htmlentities($value)."</TD>";
 		}
 		print "<td><a href=\"?t={$row['TimeStamp']}\">View</a> / <a href=\"?email=".urlencode($row['to'])."\">Others</a></td>";
@@ -217,7 +223,7 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 			print "<tr><td colspan=9>".htmlentities($row['subject']);
 
 		if (!empty($row['diagnosticCode']))
-			print "<tr><td colspan=9 style=font-size:0.8em>".htmlentities($row['diagnosticCode']);
+			print "<tr><td colspan=9 style=font-size:0.8em;color:brown>".htmlentities($row['diagnosticCode']);
 
 		$recordSet->MoveNext();
 	}
