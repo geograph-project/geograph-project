@@ -419,7 +419,7 @@ if ($param['test']) {
 
     if ($param['region']) {
         if (preg_match('/-([\w ]+)/',$param['region'],$m)) {
-		$parts[] = array('region' => array('$ne' => $m[1]));
+		$parts[] = array('region' => array('$ne' => $m[1], '$exists'=>true));
 	} else {
 		$parts[] = array('region' => array('$eq' => $param['region']));
 	}
