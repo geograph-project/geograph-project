@@ -1,0 +1,44 @@
+DELIMITER //
+
+CREATE FUNCTION get_largest_tier(
+    p_max_size INT UNSIGNED
+)
+RETURNS INT UNSIGNED
+DETERMINISTIC
+BEGIN
+    -- Apply the tiered logic using the single maximum value
+    RETURN CASE
+        -- Highest Tiers
+        WHEN p_max_size >= 8192 THEN 8192
+        WHEN p_max_size >= 3000 THEN 3000
+        WHEN p_max_size >= 1600 THEN 1600
+        WHEN p_max_size >= 1024 THEN 1024
+        WHEN p_max_size >= 800  THEN 800
+        
+        -- Special case around 640, want to know if bigger, or explicitly just 640
+        WHEN p_max_size > 640  THEN 641
+        WHEN p_max_size = 640  THEN 640
+        
+        -- Lower Tiers 
+        WHEN p_max_size >= 480 THEN 480
+        WHEN p_max_size >= 320 THEN 320
+
+        -- Final Fallback
+        ELSE 96
+    END;
+END //
+
+DELIMITER ;
+
+
+
+Ye, bit odd, but think works. This view will ultimatelly be inserted into S3Vector index as metadata. 
+If want to filter to explictly ones available only 640, then can use (largest $eq 640)
+but if want available at 640 will have to use (largest $in [640,641])
+
+Although its reall use, is checking if (for example) there is a 1024 available, will need to list the larger ones too
+(largest $in [1024,1600,3000,8192])
+
+although I think if can make to store this largest as numeric in JSON metadata, then CAN do
+(largest $gre 1024)
+

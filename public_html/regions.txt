@@ -35,37 +35,3 @@ SET Region =
 WHERE Country = 'Scotland';
 
 
-
--- as is typical with AI, it missed a few!
-
-
--- UPDATE for the 14 missed English Counties
-UPDATE sphinx_placenames
-SET Region =
-    CASE County
-        WHEN 'City of Brighton and Hove' THEN 'South East' -- Was missed from South East list
-        WHEN 'City of Bristol' THEN 'South West'           -- Was missed from South West list
-        WHEN 'City of Kingston upon Hull' THEN 'Yorkshire and the Humber' -- Was missed from Y&H list
-        WHEN 'City of Peterborough' THEN 'East of England'  -- Was missed from East of England list
-        WHEN 'City of Plymouth' THEN 'South West'         -- Was missed from South West list
-        WHEN 'City of Portsmouth' THEN 'South East'         -- Was missed from South East list
-        WHEN 'City of Southampton' THEN 'South East'        -- Was missed from South East list
-        WHEN 'City of Stoke-on-Trent' THEN 'West Midlands'  -- Was missed from West Midlands list
-        WHEN 'City of Westminster' THEN 'London'            -- Was missed from London list
-        WHEN 'City of Wolverhampton' THEN 'West Midlands'   -- Was missed from West Midlands list
-        WHEN 'Darlington' THEN 'North East'               -- Was missed from North East list
-        WHEN 'Isles of Scilly' THEN 'South West'          -- Was missed from South West list
-        WHEN 'Royal Borough of Kensington & Chelsea' THEN 'London' -- Was missed from London list
-        WHEN 'West Berkshire' THEN 'South East'           -- Was missed from South East list
-        ELSE Region -- Fall back to existing Region if somehow a match fails
-    END
-WHERE Country = 'England' AND Region = 'England'; -- Only target the fallback group
-
-
--- UPDATE for the 1 missed Scottish Council Area
-UPDATE sphinx_placenames
-SET Region = 'Central & West Scotland'
-WHERE County = 'East Lothian' AND Country = 'Scotland' AND Region = 'Scotland';
-
-
-

@@ -204,20 +204,96 @@ function captureSubmit(form) {
 
 var grouper;
 var button_id;
-function runQuery(id,type,group) {
-	$('#tabs button').css('backgroundColor','');
-	button_id = id;
 
-	var data = $('#theForm').serialize();
-	data = data.replace(/\w+=(&|$)/g,'$1').replace(/&{2,}/g,'&');
-	history.pushState(data,null,"?"+data);
+function runQuery(id, type, group) {
+    // 1. Clear previous button highlighting
+    $('#tabs button').css('backgroundColor', '');
+    button_id = id;
 
-	data = data+"&json="+type;
-	if (group) {
-		grouper = group;
-		data = data+"&group="+group;
-	}
-	$.getJSON("?"+data, render);
+    // 2. Prepare data and history state (unchanged)
+    var data = $('#theForm').serialize();
+    data = data.replace(/\w+=(&|$)/g, '$1').replace(/&{2,}/g, '&');
+    history.pushState(data, null, "?" + data);
+
+    // Prepare final data for the server
+    var ajaxData = data + "&json=" + type;
+    if (group) {
+        grouper = group;
+        ajaxData = ajaxData + "&group=" + group;
+    }
+
+    // 3. Use $.ajax() for better control
+    $.ajax({
+        url: '?', // Sends the request to the current page URL
+        method: 'GET',
+        data: ajaxData,
+        dataType: 'json', // Expects a JSON response
+        timeout: 20000, // **Set a timeout (e.g., 20 seconds)**
+
+        // 4. Before Send: Show Loading Indicator & Disable Button
+        beforeSend: function() {
+            var $button = $('#tabs button#' + button_id);
+            // ONLY store the original text if it hasn't been stored yet
+            if (!$button.data('originalText')) {
+		$button.data('originalText', $button.text());
+
+	        // Corrected: Set min-width and max-width to fix the size
+	        // Use outerWidth() to account for padding/border
+	        var currentWidth = $button.outerWidth();
+	        $button.css({
+                    'white-space': 'nowrap',
+	            'min-width': currentWidth, // Ensures button doesn't shrink
+	            'max-width': currentWidth  // Ensures button doesn't grow
+	        });
+            }
+            $button.text('Loading...').prop('disabled', true).css('backgroundColor', 'yellow');
+        },
+
+        // 5. Success: Call your render function (if successful)
+        success: render,
+
+        // 6. Error: Handle failure (timeout, server error, etc.)
+        error: function(jqXHR, textStatus, errorThrown) {
+            handleError(jqXHR, textStatus, errorThrown);
+        },
+
+        // 7. Complete: Re-enable the button regardless of success/failure
+        complete: function() {
+            var $button = $('#tabs button#' + button_id);
+            var originalText = $button.data('originalText');
+            if (originalText) {
+                $button.text(originalText);
+            }
+            // Restore original button text (you might need to store it or use a data attribute)
+            // For now, let's just re-enable it.
+            $button.prop('disabled', false);
+        }
+    });
+}
+
+function handleError(jqXHR, textStatus, errorThrown) {
+    var $button = $('#tabs button#' + button_id);
+    var $table = $('table#results').empty();
+    
+    // 1. Visually indicate failure
+    $button.css('backgroundColor', 'red').text('Query Failed');
+
+    // 2. Construct the technical error message
+    var errorMessage = 'Query failed! Status: **' + textStatus + '**';
+
+    if (textStatus === 'timeout') {
+        errorMessage += ' (The request took too long to complete.)';
+    } else if (errorThrown) {
+        errorMessage += ' Server Response Error: **' + errorThrown + '**';
+    } else if (jqXHR.status !== 0) {
+        // Handle explicit HTTP error codes (e.g., 404, 500)
+        errorMessage += ' HTTP Status Code: **' + jqXHR.status + '**';
+    } else {
+        errorMessage += ' (Possibly a network connection issue or request aborted.)';
+    }
+
+    // 3. Display the error message prominently
+    $table.append('<tr><td colspan="10"><div style="color: red; padding: 10px; border: 1px solid red;">' + errorMessage + '</div></td></tr>');
 }
 
 function render(data) {

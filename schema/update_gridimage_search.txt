@@ -1,0 +1,88 @@
+-- this updates the gridimage_search.tags value, for tag changes made after moderation. 
+-- as an alternative to scripts/update_tags.php - in theory trigger should be better. 
+
+DELIMITER //
+
+CREATE OR REPLACE TRIGGER update_search_tags_after_insert
+AFTER INSERT ON gridimage_tag_real
+FOR EACH ROW
+BEGIN
+    DECLARE v_tags TEXT; 
+
+    -- Trigger only on status 2 (active)
+    IF NEW.status = 2 THEN
+        
+        -- 1. Aggregate all *active* tags for the image.
+        SELECT 
+            COALESCE(
+                GROUP_CONCAT(
+                    DISTINCT IF(t.prefix != '', CONCAT(t.prefix, ':', t.tag), t.tag) 
+                    ORDER BY t.prefix = 'top' DESC, t.tag SEPARATOR '?'
+                ),
+                ''
+            )
+        INTO v_tags
+        FROM 
+            gridimage_tag_real AS gt 
+        INNER JOIN 
+            tag AS t ON(t.tag_id = gt.tag_id) -- NO t.status=1 CHECK HERE YET, just joining
+        WHERE 
+            gt.gridimage_id = NEW.gridimage_id
+            AND gt.status = 2  -- Association must be ACTIVE
+            AND t.status = 1;  -- Tag must be PUBLIC/ACTIVE
+        
+        -- 2. Update the tags column in the materialized view (allow this to update upd_timestamp!)
+        UPDATE 
+            gridimage_search 
+        SET 
+            tags = v_tags
+        WHERE 
+            gridimage_id = NEW.gridimage_id;
+
+    END IF;
+END;
+//
+
+CREATE OR REPLACE TRIGGER update_search_tags_after_update
+AFTER UPDATE ON gridimage_tag
+FOR EACH ROW
+BEGIN
+    DECLARE v_tags TEXT; 
+
+    -- Trigger only if the NEW status is 0 or 2.
+    -- This covers deactivation (2->0) and reactivation (0->2) or general updates.
+    IF NEW.status = 2 OR NEW.status = 0 THEN
+        
+        -- 1. Aggregate all *active* tags for the image (OLD.gridimage_id).
+        -- NOTE: We must look up the current state of active tags (status=2) on the table.
+        SELECT 
+            COALESCE(
+                GROUP_CONCAT(
+                    DISTINCT IF(t.prefix != '', CONCAT(t.prefix, ':', t.tag), t.tag) 
+                    ORDER BY t.prefix = 'top' DESC, t.tag SEPARATOR '?'
+                ),
+                ''
+            )
+        INTO v_tags
+        FROM 
+            gridimage_tag_real AS gt 
+        INNER JOIN 
+            tag AS t ON(t.tag_id = gt.tag_id)
+        WHERE 
+            gt.gridimage_id = OLD.gridimage_id
+            AND gt.status = 2  -- Association must be ACTIVE
+            AND t.status = 1;  -- Tag must be PUBLIC/ACTIVE
+        
+        -- 2. Update the tags column in the materialized view (allow this to update upd_timestamp!)
+        UPDATE 
+            gridimage_search 
+        SET 
+            tags = v_tags
+        WHERE 
+            gridimage_id = OLD.gridimage_id;
+
+    END IF;
+END;
+//
+
+-- there isnt a delete trigger, because in theory rows are not deleted from gridimage_tag anyway, just the status set to 0 (which does fire the update trigger)
