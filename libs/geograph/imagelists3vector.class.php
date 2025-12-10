@@ -161,7 +161,10 @@ class ImageListS3Vector extends ImageList
             // Append distance to grid_reference for debugging/display, modifying image objects in place
             foreach ($this->images as &$image) {
                 if (isset($ids[$image->gridimage_id])) {
-                    $image->grid_reference .= sprintf(" (dist: %.1f)", $ids[$image->gridimage_id]);
+                    //$image->grid_reference .= sprintf(" (%.2f%% Match)", (1-$ids[$image->gridimage_id])*100); //convert cosine dist to similarity percentage?
+		    //better range conversion...
+		    $similarity = $this->map($ids[$image->gridimage_id], 0.93, 0.60, 0, 100, false); //range determined expermentatlly, and might still be subject to change
+		    $image->grid_reference .= sprintf(" (%.1f%% Match)", $similarity);
                 }
             }
             return $count;
@@ -211,6 +214,26 @@ class ImageListS3Vector extends ImageList
             } else {
 		//while here, might as well accept a single day
                 $parts[] = array('taken' => array('$eq' => intval($param['taken'])));
+            }
+        }
+
+        if (!empty($param['largest'])) {
+            if (preg_match('/(\d+)\+/', $param['largest'], $m)) {
+                // Match "1024+", using $gte (greater than or equal to)
+                $parts[] = array('largest' => array('$gte' => intval($m[1])));
+            } else {
+                // Match "1024", using $eq (exact match)
+                $parts[] = array('largest' => array('$eq' => intval($param['largest'])));
+            }
+        }
+
+        foreach (['myriad', 'country', 'region', 'gridref'] as $field) {
+            if (!empty($param[$field])) {
+	        if (preg_match('/-([\w ]+)/',$param[$field],$m)) {
+	                $parts[] = array($field => array('$ne' => $m[1], '$exists'=>true));
+	        } else {
+	                $parts[] = array($field => array('$eq' => $param[$field]));
+	        }
             }
         }
 
@@ -305,4 +328,35 @@ class ImageListS3Vector extends ImageList
             'lon' => $deltaLonDegrees,
         ];
     }
+
+	/**
+	 * Re-maps a number from one range to another.
+	 *
+	 * @param float $value The incoming value to be converted.
+	 * @param float $start1 The lower bound of the value's current range.
+	 * @param float $stop1 The upper bound of the value's current range.
+	 * @param float $start2 The lower bound of the value's target range.
+	 * @param float $stop2 The upper bound of the value's target range.
+	 * @param bool $constrain If true, the resulting value will be clamped
+	 * to stay within $start2 and $stop2. Defaults to true.
+	 * @return float The converted and potentially constrained value.
+	 */
+	function map(float $value, float $start1, float $stop1, float $start2, float $stop2, bool $constrain = true): float {
+	    // 1. Calculate the scaled value (same formula as before)
+	    $normalized = ($value - $start1) / ($stop1 - $start1);
+	    $scaled = $start2 + ($stop2 - $start2) * $normalized;
+	    
+	    // 2. Apply constraint if requested
+	    if ($constrain) {
+	        // Determine the actual minimum and maximum bounds of the target range
+	        $min = min($start2, $stop2);
+	        $max = max($start2, $stop2);
+	        
+	        // Clamp the scaled value to the determined bounds
+	        $scaled = max($min, min($max, $scaled));
+	    }
+	    
+	    return $scaled;
+	}
+
 }
