@@ -13,12 +13,18 @@ CREATE TABLE user_recent_tags (
 	INDEX `idx_user_used` (`user_id`, `last_used` DESC) -- For fast SELECT and Trimming
 );
 
+
+-- decided to add this too (query below modfied to calculate it)
+ALTER TABLE user_recent_tags
+ADD COLUMN `usage_count` INT UNSIGNED NOT NULL DEFAULT 1 AFTER last_used;
+
  
 INSERT INTO user_recent_tags (user_id, tag_id, last_used, tag, prefix)
 SELECT
     t2.user_id,
     t2.tag_id,
     t2.last_used,
+    t2.usage_count,
     t3.tag,
     t3.prefix
 FROM (
@@ -26,6 +32,7 @@ FROM (
         gt.user_id,
         gt.tag_id,
         MAX(gt.created) AS last_used,
+	COUNT(*) AS usage_count,
         -- Ranks the tags by most recent usage, restarting the rank for each user
         ROW_NUMBER() OVER (
             PARTITION BY gt.user_id 
@@ -45,3 +52,4 @@ WHERE
     t2.rn <= 60 -- Keeps only the top 60 most recently used tags per user
     AND t3.status = 1
     AND t3.prefix NOT IN ('top', 'type', 'milestoneid');
+
