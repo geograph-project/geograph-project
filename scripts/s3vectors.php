@@ -21,7 +21,7 @@
  */
 
 //these are the arguments we expect
-$param=array('verbose'=>false, 'index'=>'test-index', 'insert'=>false, 'delta'=>false, 'test'=>false, 'limit'=>20000,
+$param=array('verbose'=>false, 'index'=>'test-index', 'insert'=>false, 'delta'=>false, 'test'=>false, 'limit'=>20000, 'local'=>false,
  'query'=>'road', 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false, 'largest'=>false, 'region'=>false); //--filters for testing queries
 
 $ABORT_GLOBAL_EARLY = true; //this stops connecting to memcache, so FileSystem will get a fresh STS token! (not from memcache!)
@@ -46,6 +46,11 @@ require "./_scripts.inc.php";
 		$table_progress = "embedding_progress_pe";
 		$model = 'pe';
 	}
+
+ //can now test local region - and image-pe as been moved!
+if ($param['local'] || $index['index'] == 'image-pe' )
+	$awsRegion = "eu-west-1"; //todo, should be using $CONF['s3_region'] !?!
+
 
 ##################################
 // Form commands for inserting rows into S3Vector index
@@ -114,7 +119,7 @@ if (!empty($param['insert'])) {
 
 
     } elseif ($source == 'image') {
-	die("For now please use delta mode, which adds more metadata fields, this old code is now redundant");
+	die("For now please use delta mode, which adds more metadata fields, this old code is now redundant (and vector-cmd6.py might be wrong region)\n");
 
 	if ($model != 'clip' && $model != 'pe') die("only clip/pe supported for now");
 
