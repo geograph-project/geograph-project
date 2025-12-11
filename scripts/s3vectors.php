@@ -29,8 +29,16 @@ $ABORT_GLOBAL_EARLY = true; //this stops connecting to memcache, so FileSystem w
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
+##################################
+
    $s3VectorBucketName = 'geograph-vector-bucket';
-   $awsRegion = "us-east-1"; //s3vector, isnt available in all regions - so we have to define the region to use!
+   $awsRegion = "us-east-1"; //s3vectors, was only available in US region during preview, so we use that as default, most indexes remain there.
+
+   //but as now available in our local region start testing it - and image-pe (which will be our main index) as been moved!
+   if ($param['local'] || $param['index'] == 'image-pe')
+       // Override the region to the application's primary S3 region configuration.
+       $awsRegion = $CONF['s3_region'] ?? "eu-west-1";
+
 
    //this is just for the 'image' index (our main one!)
    //up here, because uysed by mulitple modes, insert, delta and test mode!
@@ -46,11 +54,6 @@ require "./_scripts.inc.php";
 		$table_progress = "embedding_progress_pe";
 		$model = 'pe';
 	}
-
- //can now test local region - and image-pe as been moved!
-if ($param['local'] || $index['index'] == 'image-pe' )
-	$awsRegion = "eu-west-1"; //todo, should be using $CONF['s3_region'] !?!
-
 
 ##################################
 // Form commands for inserting rows into S3Vector index
