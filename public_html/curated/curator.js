@@ -126,6 +126,31 @@ $(document).ready(function() {
             }
         });
 
+        $('#queryInput').droppable({
+            accept: '.image-item',
+            over: function(event, ui) {
+                $(this).addClass('query-drag-over');
+            },
+            out: function(event, ui) {
+                $(this).removeClass('query-drag-over');
+            },
+            drop: function(event, ui) {
+                $(this).removeClass('query-drag-over');
+                const $draggedItem = ui.draggable;
+                const imageId = $draggedItem.data('id');
+                const newQuery = `id:${imageId}`;
+
+                $('#queryInput').val(newQuery);
+                currentQuery = newQuery;
+
+                if (!$('#aiEnhancedCheckbox').is(':checked')) {
+                    $('#aiEnhancedCheckbox').prop('checked', true);
+                }
+
+                $('#searchButton').click();
+            }
+        });
+
         $('.container').off('mousedown', '.image-item'); // Prevent multiple bindings
         $('.container').on('mousedown', '.image-item', function() {
             const $this = $(this);
