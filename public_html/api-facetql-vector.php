@@ -68,7 +68,7 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 	}
 
        if (!empty($_GET['larger']) && preg_match('/^\d+\+?$/',$_GET['larger']))
-               $criteria['largest'] = $_GET['larger']; //not is called largest in the vector index.
+               $criteria['largest'] = $_GET['larger']; //note is called largest in the vector index.
 
 	if (!empty($_GET['geo'])) {
                 $bits = explode(',',$_GET['geo']);
@@ -102,7 +102,7 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 
 	//2. get results
 	$limit = empty($_GET['limit'])?10:intval($_GET['limit']);
-	$limit = min($limit, 30);
+	$limit = min($limit, 100);
 
 	$start = microtime(true);
 	$results = $imagelist->getRawVectorsByCriteria($criteria, $limit, $metadata);
