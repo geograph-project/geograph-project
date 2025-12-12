@@ -2108,12 +2108,41 @@ if (!empty($_GET['ddd'])) {
 		$params['bevel']=false;
 		$params['unsharp']=false;
 
-		if (!empty($this->brightness) && $this->brightness > 45)
-			$params['attribname'] = 'style="filter: brightness(90%) contrast(130%);" src';
+		//if initialized via gridimage_daily, may have some extra metrics set, can use to 'enhance' the image'
+		if (!empty($this->brightness)) {
+			$cssFilter = '';
+
+			// Case 1: Overexposed
+			if ($this->highlight_sat > 3) {
+				$cssFilter = 'brightness(90%) contrast(90%)';
+
+			// Case 2: Underexposed (Only check if not overexposed)
+			} elseif ($this->shadow_sat > 5 || ($this->brightness < 50 && $this->highlight_sat < 1)) {
+
+				// Sub-Case: Critically Dark (B < 35, like the waterfall image B=29.11)
+				if ($this->brightness < 35) {
+					$cssFilter = 'brightness(115%) contrast(120%)';
+				} else {
+					// Moderately Dark (35 <= B < 50, like the chapel image B=47.7)
+					//$cssFilter = 'brightness(110%) contrast(115%)';
+					$cssFilter = 'brightness(105%) contrast(105%) hue-rotate(0deg)';
+				}
+
+			// Case 3: Dull/Low Contrast (Only check if not over/underexposed)
+			} elseif ($this->brightness > 30 && $this->brightness < 70) {
+				// Apply a mild enhancement to mid-range images
+				$cssFilter = 'contrast(110%) saturate(105%)';
+			}
+
+			if (!empty($cssFilter)) {
+				$params['attribname'] = 'style="filter: ' . $cssFilter . ';" src';
+			}
+		}
 
 		$resized=$this->_getResized($params);
 
-		$resized['html'] = str_replace("<img", "<img crossorigin onerror=\"retryCross(this)\"", $resized['html']);
+		if (!empty($resized['html']))
+			$resized['html'] = str_replace("<img", "<img crossorigin onerror=\"retryCross(this)\"", $resized['html']);
 
 		if (!empty($urlonly)) {
 			if ($urlonly === 2)

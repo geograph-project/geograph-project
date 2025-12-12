@@ -34,15 +34,17 @@ $gi_columns = "gridimage_id,user_id"; //,realname,title,grid_reference,credit_re
 
 $q = array();
 //select * from gridimage_daily inner join gridimage_thumbsize using (gridimage_id) where showday is null and vote_baysian > 3.5 and maxw = 393 limit 10;
-$sql = "SELECT $gi_columns,showday FROM gridimage_search inner join gridimage_daily using (gridimage_id) inner join gridimage_thumbsize using (gridimage_id) where showday is null and vote_baysian > 3 and maxw = 393";
-$sql = "SELECT $gi_columns,showday FROM gridimage_search inner join gridimage_daily using (gridimage_id) where showday is null and vote_baysian > 2.7";
-$sql .= " AND brightness IS null";
+//$sql = "SELECT $gi_columns,showday FROM gridimage_search inner join gridimage_daily using (gridimage_id) inner join gridimage_thumbsize using (gridimage_id) where showday is null and vote_baysian > 3 and maxw = 393";
+
+$sql = "SELECT $gi_columns,showday FROM gridimage_search inner join gridimage_daily using (gridimage_id) where 1"; //showday is null and vote_baysian > 2.7";
+// Update query to check if ANY of the new metric columns are NULL
+$sql .= " AND (brightness IS NULL OR highlight_sat IS NULL OR shadow_sat IS NULL)";
 
 $imagelist = new ImageList();
-$imagelist->_getImagesBySql($sql." LIMIT 24");
+$imagelist->_getImagesBySql($sql." LIMIT 24"); // Limiting to 24 images per run
 
 if (empty($imagelist->images))
-	die();
+    die(); //silent, as not error for cron.
 
 $db = GeographDatabaseConnection(false);
 $filesystem = GeographFileSystem();
@@ -51,21 +53,112 @@ $filesystem = GeographFileSystem();
 
 $c = 0;
 foreach ($imagelist->images as $image) {
-	$resized = $image->getFixedThumbnail(393,300, 2);
-	$filename = $resized['url'];
+    // 2. Load Image Thumbnail
+    $resized = $image->getFixedThumbnail(393, 300, 2); 
+    $filename = $resized['url'];
 
-	$fullimg = $filesystem->imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$filename);
+    // Load the GD resource using the custom filesystem function
+    $fullimg = $filesystem->imagecreatefromjpeg($_SERVER['DOCUMENT_ROOT'].$filename);
 
-	$b = getBrightness($fullimg);
+    // 3. Calculate All Metrics
+    // Use the updated function that returns an array
+    $metrics = getExposureMetrics($fullimg);
 
-	print "$filename -> $b\n";
+    $b = $metrics['brightness'];
+    $hs = $metrics['highlight_sat'];
+    $ss = $metrics['shadow_sat'];
 
-	if (is_numeric($b) && !is_nan($b))
-		$db->Execute("UPDATE gridimage_daily SET brightness = $b, updated=updated WHERE gridimage_id = {$image->gridimage_id}");
+    print "{$filename} -> Brightness: {$b}, Highlights: {$hs}%, Shadows: {$ss}%\n";
 
-	$c++;
-	if ($c == $param['limit'])
-		exit;
+    // 4. Update Database
+    // Ensure all values are numeric and valid before update
+    if (is_numeric($b) && is_numeric($hs) && is_numeric($ss)) {
+        // Use a prepared statement or proper escaping (e.g., $db->qstr()) for production code
+        // Simple interpolation used here for demonstration, assume $b, $hs, $ss are safe (numeric)
+        $db->Execute(
+            "UPDATE gridimage_daily 
+             SET brightness = {$b}, 
+                 highlight_sat = {$hs}, 
+                 shadow_sat = {$ss}, 
+                 updated=updated 
+             WHERE gridimage_id = {$image->gridimage_id}"
+        );
+    } else {
+        error_log("Failed to calculate valid metrics for image ID: {$image->gridimage_id}");
+    }
+
+    $c++;
+    if ($c == $param['limit'])
+        exit("Limit reached.");
+}
+
+############################################
+/*
+ALTER TABLE gridimage_daily
+ADD COLUMN highlight_sat FLOAT DEFAULT NULL
+AFTER brightness;
+
+ALTER TABLE gridimage_daily
+ADD COLUMN shadow_sat FLOAT DEFAULT NULL
+AFTER highlight_sat;
+*/
+
+/**
+ * Calculates brightness (Luminance), highlight saturation, and shadow saturation.
+ * Returns an array: ['brightness', 'highlight_sat', 'shadow_sat']
+ */
+function getExposureMetrics($gdHandle) {
+    if (!is_resource($gdHandle)) {
+        return ['brightness' => null, 'highlight_sat' => null, 'shadow_sat' => null];
+    }
+    
+    $width = imagesx($gdHandle);
+    $height = imagesy($gdHandle);
+    $totalPixels = $width * $height;
+    
+    $totalLuminance = 0;
+    $highlightCount = 0; 
+    $shadowCount = 0;    
+
+    for ($x = 0; $x < $width; $x++) {
+        for ($y = 0; $y < $height; $y++) {
+            $rgb = imagecolorat($gdHandle, $x, $y);
+
+            $red = ($rgb >> 16) & 0xFF;
+            $green = ($rgb >> 8) & 0xFF;
+            $blue = $rgb & 0xFF;
+            
+            // Standard Luminance calculation: Y = 0.299R + 0.587G + 0.114B
+            $luminance = 0.299 * $red + 0.587 * $green + 0.114 * $blue;
+
+            $totalLuminance += $luminance;
+
+            // Check for clipped highlights (near 255)
+            if ($luminance > 250) {
+                $highlightCount++;
+            }
+            // Check for crushed shadows (near 0)
+            if ($luminance < 5) {
+                $shadowCount++;
+            }
+        }
+    }
+    
+    // Clean up GD resource
+    imagedestroy($gdHandle);
+
+    // Normalize brightness to 0-100 scale (dividing by 255 and multiplying by 100)
+    $avg_brightness = ($totalLuminance / $totalPixels) / 2.55; 
+    
+    // Calculate highlight/shadow percentage
+    $highlight_perc = ($highlightCount / $totalPixels) * 100;
+    $shadow_perc = ($shadowCount / $totalPixels) * 100;
+
+    return [
+        'brightness' => round($avg_brightness, 2),
+        'highlight_sat' => round($highlight_perc, 2),
+        'shadow_sat' => round($shadow_perc, 2),
+    ];
 }
 
 ############################################
