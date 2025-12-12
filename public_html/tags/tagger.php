@@ -421,7 +421,7 @@ if ($template=='tags_tagger.tpl' && $USER->registered) {
 	if (empty($db2))
                 $db2 = GeographDatabaseConnection(true);
 
-	$recent = $db2->getAll("SELECT * FROM user_recent_tags WHERE user_id = {$USER->user_id} ORDER BY last_used DESC LIMIT 20");
+	$recent = $db2->getAll("SELECT * FROM user_recent_tags WHERE user_id = {$USER->user_id} ORDER BY (usage_count * 1000) + UNIX_TIMESTAMP(last_used) DESC LIMIT 60");
 
 	if (count($used) && count($recent)) {
 		$list = array();

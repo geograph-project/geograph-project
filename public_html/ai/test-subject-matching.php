@@ -201,12 +201,12 @@
                 $.ajax({
                     url: '/finder/label-vectors.json.php',
                     method: 'GET',
-                    data: { labels: query, model: model },
+                    data: { labels: query.replace(/,/g,';'), model: model }, //comma is used to seperate tags in this api!
                     dataType: 'json'
                 }),
                 // 2. Get images tagged with the original subject
                 $.ajax({
-                    url: '/api-facetql-vector.php',
+                    url: 'https://www.geograph.org.uk/api-facetql-vector.php',
                     method: 'GET',
                     data: {
                         match: matchQuery,

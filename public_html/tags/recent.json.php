@@ -32,7 +32,7 @@ init_session();
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 if ($USER->registered) {
-	$data = $db->getAll("SELECT tag,prefix,last_used FROM user_recent_tags WHERE user_id = {$USER->user_id} ORDER BY last_used DESC LIMIT 30");
+	$data = $db->getAll("SELECT tag,prefix,last_used FROM user_recent_tags WHERE user_id = {$USER->user_id} ORDER BY (usage_count * 1000) + UNIX_TIMESTAMP(last_used) DESC LIMIT 30");
 } else {
 	$data = array();
 }

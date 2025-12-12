@@ -1,0 +1,55 @@
+-- one off script to create the table, and populate it
+
+
+CREATE TABLE user_recent_snippets (
+    `user_id` INT UNSIGNED NOT NULL,
+    `snippet_id` INT UNSIGNED NOT NULL,
+    `last_used` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+    `usage_count` INT UNSIGNED NOT NULL DEFAULT 1,
+    -- Denormalize key snippet data for fast lookup
+    `title` VARCHAR(255) NOT NULL,
+    `comment` TEXT,
+    `grid_reference` CHAR(10),
+    
+    PRIMARY KEY (`user_id`, `snippet_id`),
+    INDEX `idx_user_used` (`user_id`, `last_used` DESC),
+    INDEX `idx_user_score` (`user_id`, `usage_count` DESC, `last_used` DESC) -- For stable sorting
+);
+
+
+
+INSERT IGNORE INTO user_recent_snippets 
+    (user_id, snippet_id, last_used, usage_count, title, comment, grid_reference)
+SELECT
+    t2.user_id,
+    t2.snippet_id,
+    t2.last_used,
+    t2.usage_count,
+    s.title,
+    s.comment,
+    s.grid_reference
+FROM (
+    -- Subquery t2: Calculates recency, count, and rank for each user/snippet pair
+    SELECT
+        gs.user_id,
+        gs.snippet_id,
+        MAX(gs.created) AS last_used,
+        COUNT(*) AS usage_count,
+        -- Ranks the snippets by most recent usage, restarting the rank for each user
+        ROW_NUMBER() OVER (
+            PARTITION BY gs.user_id
+            ORDER BY MAX(gs.created) DESC
+        ) as rn
+    FROM
+        gridimage_snippet_real gs
+    WHERE
+        gs.status = 2 
+        AND gs.created > DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    GROUP BY
+        gs.user_id, gs.snippet_id
+) AS t2
+-- Join the snippet table (s) to denormalize description fields
+JOIN
+    snippet s ON t2.snippet_id = s.snippet_id
+WHERE
+    t2.rn <= 60; -- Keeps only the top 60 most recently used snippets per user

@@ -1,0 +1,71 @@
+-- add Region to sphinx_placemane (material) view
+
+ALTER TABLE sphinx_placenames ADD Region varchar(32) default null;
+
+UPDATE sphinx_placenames SET Region = Country;
+
+-- This update provides better granularity for Scotland's vast area by grouping the council areas into 5 logical regions.
+UPDATE sphinx_placenames
+SET Region = 
+    CASE
+        WHEN County IN ('Northumberland', 'Durham', 'Gateshead', 'Hartlepool', 'Middlesbrough', 'Newcastle upon Tyne', 'North Tyneside', 'Redcar & Cleveland', 'South Tyneside', 'Stockton on Tees', 'Sunderland') THEN 'North East'
+        WHEN County IN ('Cumbria', 'Cheshire', 'Halton', 'Lancashire', 'Warrington', 'Blackburn with Darwen', 'Blackpool', 'Bolton', 'Bury', 'Knowsley', 'Liverpool', 'Manchester', 'Oldham', 'Rochdale', 'Salford', 'Sefton', 'St Helens', 'Stockport', 'Tameside', 'Trafford', 'Wigan', 'Wirral') THEN 'North West'
+        WHEN County IN ('Derbyshire', 'Leicestershire', 'Lincolnshire', 'Northamptonshire', 'Nottinghamshire', 'Rutland', 'City of Derby', 'City of Leicester', 'City of Nottingham', 'North East Lincolnshire', 'North Lincolnshire') THEN 'East Midlands'
+        WHEN County IN ('East Riding of Yorkshire', 'North Yorkshire', 'South Yorkshire', 'West Yorkshire', 'York', 'Barnsley', 'Bradford', 'Calderdale', 'Doncaster', 'Kirklees', 'Leeds', 'Rotherham', 'Sheffield', 'Wakefield', 'Kingston upon Hull') THEN 'Yorkshire and the Humber'
+        WHEN County IN ('Herefordshire', 'Shropshire', 'Staffordshire', 'Warwickshire', 'Worcestershire', 'Birmingham', 'Coventry', 'Dudley', 'Sandwell', 'Solihull', 'Stoke-on-Trent', 'Telford and Wrekin', 'Walsall', 'Wolverhampton') THEN 'West Midlands'
+        WHEN County IN ('Buckinghamshire', 'East Sussex', 'Essex', 'Hampshire', 'Hertfordshire', 'Isle of Wight', 'Kent', 'Oxfordshire', 'Surrey', 'West Sussex', 'Medway', 'Milton Keynes', 'Portsmouth', 'Southampton', 'Southend-on-Sea', 'Slough', 'Reading', 'Bracknell Forest', 'Windsor and Maidenhead', 'Wokingham', 'Brighton and Hove') THEN 'South East'
+        WHEN County IN ('Bedfordshire', 'Cambridgeshire', 'Norfolk', 'Suffolk', 'Luton', 'Peterborough', 'Thurrock') THEN 'East of England'
+        WHEN County IN ('Cornwall', 'Devon', 'Dorset', 'Gloucestershire', 'Somerset', 'Wiltshire', 'Bath and North East Somerset', 'Bristol', 'Plymouth', 'Poole', 'Bournemouth', 'Torbay', 'North Somerset', 'South Gloucestershire', 'Swindon') THEN 'South West'
+        WHEN County IN ('City of London', 'Barking & Dagenham', 'Barnet', 'Bexley', 'Brent', 'Bromley', 'Camden', 'Croydon', 'Ealing', 'Enfield', 'Greenwich', 'Hackney', 'Hammersmith &Fulham', 'Haringey', 'Harrow', 'Havering', 'Hillingdon', 'Hounslow', 'Islington', 'Kensington & Chelsea', 'Kingston upon Thames', 'Lambeth', 'Lewisham', 'Merton', 'Newham', 'Redbridge', 'Richmond upon Thames', 'Southwark', 'Sutton', 'Tower Hamlets', 'Waltham Forest', 'Wandsworth', 'Westminster') THEN 'London'
+        ELSE Country -- Should fall back to 'England' for any unmatched/new Counties
+    END
+WHERE Country = 'England';
+
+-- This update provides better granularity for Scotland's vast area by grouping the council areas into 5 logical regions.
+UPDATE sphinx_placenames
+SET Region = 
+    CASE
+        WHEN County IN ('Highland', 'Argyll and Bute', 'Na h-Eileanan an Iar', 'Orkney Islands', 'Shetland Islands') THEN 'Highlands and Islands'
+        WHEN County IN ('Aberdeenshire', 'Aberdeen City', 'Moray') THEN 'North East Scotland'
+        WHEN County IN ('Angus', 'Dundee City', 'Fife', 'Perth and Kinross') THEN 'East Scotland'
+        WHEN County IN ('City of Edinburgh', 'Clackmannanshire', 'East Dunbartonshire', 'East Renfrewshire', 'Falkirk', 'Glasgow City', 'Inverclyde', 'Midlothian', 'North Ayrshire', 'North Lanarkshire', 'Renfrewshire', 'South Lanarkshire', 'Stirling', 'West Dunbartonshire', 'West Lothian', 'East Ayrshire', 'South Ayrshire') THEN 'Central & West Scotland'
+        WHEN County IN ('Dumfries and Galloway', 'Scottish Borders') THEN 'South Scotland'
+        ELSE Country -- Should fall back to 'Scotland' for any unmatched/new Council Areas
+    END
+WHERE Country = 'Scotland';
+
+
+
+-- as is typical with AI, it missed a few!
+
+
+-- UPDATE for the 14 missed English Counties
+UPDATE sphinx_placenames
+SET Region =
+    CASE County
+        WHEN 'City of Brighton and Hove' THEN 'South East' -- Was missed from South East list
+        WHEN 'City of Bristol' THEN 'South West'           -- Was missed from South West list
+        WHEN 'City of Kingston upon Hull' THEN 'Yorkshire and the Humber' -- Was missed from Y&H list
+        WHEN 'City of Peterborough' THEN 'East of England'  -- Was missed from East of England list
+        WHEN 'City of Plymouth' THEN 'South West'         -- Was missed from South West list
+        WHEN 'City of Portsmouth' THEN 'South East'         -- Was missed from South East list
+        WHEN 'City of Southampton' THEN 'South East'        -- Was missed from South East list
+        WHEN 'City of Stoke-on-Trent' THEN 'West Midlands'  -- Was missed from West Midlands list
+        WHEN 'City of Westminster' THEN 'London'            -- Was missed from London list
+        WHEN 'City of Wolverhampton' THEN 'West Midlands'   -- Was missed from West Midlands list
+        WHEN 'Darlington' THEN 'North East'               -- Was missed from North East list
+        WHEN 'Isles of Scilly' THEN 'South West'          -- Was missed from South West list
+        WHEN 'Royal Borough of Kensington & Chelsea' THEN 'London' -- Was missed from London list
+        WHEN 'West Berkshire' THEN 'South East'           -- Was missed from South East list
+        ELSE Region -- Fall back to existing Region if somehow a match fails
+    END
+WHERE Country = 'England' AND Region = 'England'; -- Only target the fallback group
+
+
+-- UPDATE for the 1 missed Scottish Council Area
+UPDATE sphinx_placenames
+SET Region = 'Central & West Scotland'
+WHERE County = 'East Lothian' AND Country = 'Scotland' AND Region = 'Scotland';
+
+
+

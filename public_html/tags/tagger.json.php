@@ -92,10 +92,11 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 		//update stats
 		$db->Execute('INSERT INTO user_recent_tags (user_id, tag_id, tag, prefix, last_used)
 			VALUES (?, ?, ?, ?, NOW())
-			ON DUPLICATE KEY UPDATE last_used = NOW()', array($user_id, $tag_id, $u['tag'], $u['prefix']));
+			ON DUPLICATE KEY UPDATE last_used = NOW(), usage_count = usage_count + 1', array($user_id, $tag_id, $u['tag'], $u['prefix']));
 
 		//do occasional cleanup (no need to do it every time!)
 		if (rand(1,10) > 8) {
+			//note still sort by last_used only here, not usage_count, so that tags stopped been used decay quickly
 			$db->Execute("
 				DELETE FROM user_recent_tags
 				WHERE user_id = ?

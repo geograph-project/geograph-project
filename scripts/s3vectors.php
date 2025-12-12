@@ -21,15 +21,24 @@
  */
 
 //these are the arguments we expect
-$param=array('verbose'=>false, 'index'=>'test-index', 'query'=>'road', 'insert'=>false, 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false, 'delta'=>false, 'test'=>false, 'limit'=>20000);
+$param=array('verbose'=>false, 'index'=>'test-index', 'insert'=>false, 'delta'=>false, 'test'=>false, 'limit'=>20000, 'local'=>false,
+ 'query'=>'road', 'lat'=>false,'lng'=>false,'d'=>0.1, 'user_id'=>false, 'largest'=>false, 'region'=>false); //--filters for testing queries
 
 $ABORT_GLOBAL_EARLY = true; //this stops connecting to memcache, so FileSystem will get a fresh STS token! (not from memcache!)
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
+##################################
+
    $s3VectorBucketName = 'geograph-vector-bucket';
-   $awsRegion = "us-east-1"; //s3vector, isnt available in all regions - so we have to define the region to use!
+   $awsRegion = "us-east-1"; //s3vectors, was only available in US region during preview, so we use that as default, most indexes remain there.
+
+   //but as now available in our local region start testing it - and image-pe (which will be our main index) as been moved!
+   if ($param['local'] || $param['index'] == 'image-pe')
+       // Override the region to the application's primary S3 region configuration.
+       $awsRegion = $CONF['s3_region'] ?? "eu-west-1";
+
 
    //this is just for the 'image' index (our main one!)
    //up here, because uysed by mulitple modes, insert, delta and test mode!
@@ -37,11 +46,13 @@ require "./_scripts.inc.php";
 	//for CLIP
 	$table_embedding = "gridimage_embedding";
 	$table_progress = "embedding_progress_clip";
+	$model = 'clip';
 
 	//Perception Encoder
 	if (preg_match('/-pe$/',$param['index'])) {
 		$table_embedding = "gridimage_embedding_1024";
 		$table_progress = "embedding_progress_pe";
+		$model = 'pe';
 	}
 
 ##################################
@@ -111,6 +122,8 @@ if (!empty($param['insert'])) {
 
 
     } elseif ($source == 'image') {
+	die("For now please use delta mode, which adds more metadata fields, this old code is now redundant (and vector-cmd6.py might be wrong region)\n");
+
 	if ($model != 'clip' && $model != 'pe') die("only clip/pe supported for now");
 
         $cmd[] = '-t"'.$table_embedding.' USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)"';
@@ -119,6 +132,7 @@ if (!empty($param['insert'])) {
                //the double level of sharding, picks the wrong index!
 
 	//the CAST() is just to ensure it numeric - better than ROUND which stiull produces a float, "vector-cmd" can already deal with the DECIMAL from wgs84_lat etc
+	//todo, this would need updating to compute myriad, largest, and country as the delta does below (as query is passed over command line to python, need to be more careful of query getting complicated
 	$cmd[] = '-s'.escapeshellarg("gridimage_id AS id, user_id, grid_reference as gridref, CAST(REPLACE(imagetaken,'-','') AS UNSIGNED) AS taken, wgs84_lat as slat, wgs84_long as slng, embeddings");
 
 	//actully for images we have a special way of doing it incrementally, because data is still being compliled!
@@ -213,8 +227,18 @@ if (!empty($param['delta'])) {
 	} elseif ($type === 'test' || $type == 'image') {
 	    echo "Fetching and inserting 'image' data into '{$param['index']}'...\n";
 
-		$sql = "SELECT gridimage_id AS id, user_id, grid_reference as gridref, CAST(REPLACE(imagetaken,'-','') AS UNSIGNED) AS taken, wgs84_lat as slat, wgs84_long as slng, embeddings, seq_id
-		FROM $table_embedding USE INDEX (PRIMARY) INNER JOIN gridimage_search USING (gridimage_id)
+		$sql = "SELECT gridimage_id AS id, user_id,
+			grid_reference AS gridref, SUBSTRING(grid_reference,1,LENGTH(grid_reference)-4) AS myriad,
+			CAST(REPLACE(imagetaken,'-','') AS UNSIGNED) AS taken,
+			wgs84_lat AS slat, wgs84_long AS slng, embeddings, seq_id,
+			get_largest_tier(GREATEST(width,height,original_width,original_height)) AS largest,
+			Region as region,
+			Country as country
+		FROM $table_embedding USE INDEX (PRIMARY)
+		INNER JOIN gridimage_search USING (gridimage_id)
+		LEFT JOIN gridimage_size s USING (gridimage_id)
+		LEFT JOIN gridsquare USING (grid_reference)
+		LEFT JOIN sphinx_placenames USING (placename_id)
 		WHERE type = 'image' AND model = '$model'";
 
             if ($type == 'image') {
@@ -276,7 +300,7 @@ print "$sql;\n\n";
 //todo, this should be auto-detected
 		    } elseif ($columnName === 'slat' || $columnName === 'slng') {
 			$document[$columnName] = floatval($value);
-		    } elseif ($columnName === 'taken' || $columnName === 'user_id') {
+		    } elseif ($columnName === 'taken' || $columnName === 'user_id' || $columnName == 'largest') { //even though numberic in mysql, we still have a string via adodb
 			$document[$columnName] = intval($value);
 
 
@@ -369,9 +393,16 @@ if ($param['test']) {
 
 
    if (!empty($param['query'])) {
-	$row = $db->getRow("SELECT * FROM label_embedding WHERE label = ".$db->Quote($param['query'])." AND model='clip'");
+	//this table sometimes have a enginered prompt, which we want to use
+	$row = $db->getRow("SELECT * FROM label_embedding WHERE label = ".$db->Quote($param['query'])." AND model='$model'");
         if (!empty($row))
 		$queryEmbedding = array_values(unpack('g*', $row['embeddings']));
+	else {
+		//otherwise lookup via our API!
+
+		require_once('geograph/vectors.inc.php');
+		$queryEmbedding = getTextEmbedding($param['query'], $model);
+	}
    } else {
        $queryEmbedding = example_vector();
    }
@@ -393,6 +424,22 @@ if ($param['test']) {
     }
     if ($param['user_id'])
 	$parts[] = array('user_id' => array('$eq' => intval($param['user_id'])));
+
+    if ($param['region']) {
+        if (preg_match('/-([\w ]+)/',$param['region'],$m)) {
+		$parts[] = array('region' => array('$ne' => $m[1], '$exists'=>true));
+	} else {
+		$parts[] = array('region' => array('$eq' => $param['region']));
+	}
+    }
+
+    if ($param['largest']) {
+        if (preg_match('/(\d+)\+/',$param['largest'],$m)) {
+		$parts[] = array('largest' => array('$gte' => intval($m[1])));
+	} else {
+		$parts[] = array('largest' => array('$eq' => intval($param['largest'])));
+	}
+    }
 
     if (!empty($parts)) {
         if (count($parts) > 1) {

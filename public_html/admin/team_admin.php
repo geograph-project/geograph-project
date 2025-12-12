@@ -61,7 +61,7 @@ $data = $db->getAll("
 
 select                 user.user_id,user.realname,user.nickname,user.rights,role,email,gravatar,deceased_date
  from user   
- where ( length(rights)>5 AND length(replace(replace(replace(replace(rights,'dormant',''),'basic',''),'member',''),'traineemod','')) > 3 OR role != '' $where)
+ where ( length(rights)>5 AND length(replace(replace(replace(replace(replace(rights,'deleted',''),'dormant',''),'basic',''),'member',''),'traineemod','')) > 3 OR role != '' $where)
 AND rights NOT LIKE '%suspicious%' 
           group by user.user_id
 ");

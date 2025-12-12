@@ -149,9 +149,11 @@ if (!empty($_GET['vector'])) {
 		$sql['tables'] = array('lt' => 'user_recent_tags tag'); //this table has everything! still use alias tag, as $columns uses 'tag.prefix' etc)
 		$sql['wheres'][] = "user_id = {$USER->user_id}";
 
-		$sql['order'] = 'last_used DESC';
+		$sql['order'] = '(usage_count * 1000) + UNIX_TIMESTAMP(last_used) DESC';
 
 		$sql['limit'] = 59;
+	} else {
+		$sql['limit'] = 0;
 	}
 
 } elseif (!empty($_GET['gridimage_id'])) {

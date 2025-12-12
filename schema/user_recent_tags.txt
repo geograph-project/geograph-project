@@ -13,12 +13,18 @@ CREATE TABLE user_recent_tags (
 	INDEX `idx_user_used` (`user_id`, `last_used` DESC) -- For fast SELECT and Trimming
 );
 
+
+-- decided to add this too (query below modfied to calculate it)
+ALTER TABLE user_recent_tags
+ADD COLUMN `usage_count` INT UNSIGNED NOT NULL DEFAULT 1 AFTER last_used;
+
  
-INSERT INTO user_recent_tags (user_id, tag_id, last_used, tag, prefix)
+INSERT INTO user_recent_tags (user_id, tag_id, last_used, usage_count, tag, prefix)
 SELECT
     t2.user_id,
     t2.tag_id,
     t2.last_used,
+    t2.usage_count,
     t3.tag,
     t3.prefix
 FROM (
@@ -26,6 +32,7 @@ FROM (
         gt.user_id,
         gt.tag_id,
         MAX(gt.created) AS last_used,
+	COUNT(*) AS usage_count,
         -- Ranks the tags by most recent usage, restarting the rank for each user
         ROW_NUMBER() OVER (
             PARTITION BY gt.user_id 
@@ -44,4 +51,43 @@ JOIN
 WHERE
     t2.rn <= 60 -- Keeps only the top 60 most recently used tags per user
     AND t3.status = 1
-    AND t3.prefix NOT IN ('top', 'type', 'milestoneid');
+    AND t3.prefix NOT IN ('top', 'type');
+
+
+-- --------------------------
+
+DELIMITER //
+
+CREATE TRIGGER cache_user_recent_tag
+AFTER INSERT ON gridimage_tag
+FOR EACH ROW
+BEGIN
+    -- Only update the cache if the tag association is active (status > 0)
+    IF NEW.status > 0 THEN
+        
+        -- Insert or Update the user_recent_tags cache table.
+        INSERT INTO user_recent_tags 
+            (user_id, tag_id, tag, prefix, usage_count, last_used)
+        SELECT
+            NEW.user_id, 
+            NEW.tag_id, 
+            t.tag, 
+            t.prefix, 
+            1, 
+            NOW()
+        FROM
+            tag t
+        WHERE
+            t.tag_id = NEW.tag_id
+            -- EXCLUSION: Skip tags with 'top', 'type', or 'milestoneid' prefixes (very noisey prefixes)
+            AND t.prefix NOT IN ('top', 'type', 'image')
+        ON DUPLICATE KEY UPDATE 
+            usage_count = usage_count + 1, 
+            last_used = NOW();
+            
+    END IF;
+END;
+//
+
+DELIMITER ;
+

@@ -486,7 +486,3 @@ body.dark-theme .settings-panel {
     width: 100%; /* Make button full width of panel */
     margin-top: 10px; /* Add some space above it */
 }
-
-.query-drag-over {
-    background-color: lightblue !important;
-}
