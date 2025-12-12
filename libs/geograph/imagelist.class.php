@@ -618,6 +618,7 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 		global $CONF;
        		if (count($this->images)) {
 			$domain = '';
+			$show_low = false;
 	                foreach ($this->images as $idx => $row) {
 
 				if (is_array($row)) {
@@ -626,6 +627,21 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 				} else {
 					$image = $row;
 				}
+
+//this is just a test - the AI class puts the similarity into the GR!
+if (!$show_low && preg_match('/(\d+\.?\d*)% Match/',$image->grid_reference, $m)) {
+	if (floatval($m[1]) <= 50) {
+		print "<p style=clear:both;padding:2px;background-color:pink>";
+		if ($idx == 0) { //first result!
+			print "All results returned currently have a low similarity match score (below 50%). Please note that these matches may not be relevant to your query.";
+		} else {
+			print "The following items represent a significant drop in matching quality. Results from this point onward have similarity scores under the 50% threshold.";
+		}
+		//print "<p style=clear:both;padding:2px;background-color:pink>Note: Results below have dropped to below 50% match score, and so may not be good matches</p>";
+		print "</p>";
+		$show_low = true;
+	}
+}
 
 				if (!empty($image->reference_index))
 					$domain = $CONF['canonical_domain'][$image->reference_index];
@@ -643,6 +659,109 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 			if ($clear)
 		                print "<br style=\"clear:both\"/>";
        		}
+	}
+
+	//again not really a full production feature, but intended as a useful too to visualize results
+	//assumes that images hage wgs84_lat/long loaded (cant convert from e/n etc yet)
+	function outputMap($dots = true, $thumbs = false, $line = false) {
+		global $CONF;
+
+//print "<script src=/js/geograph.js></script>";
+
+		require_once('geograph/conversions.class.php');
+		$conv = new ConversionsLatLong;
+
+		$count = count($this->images); //at some point we could use masklayer to render large number of unclickable
+?>
+
+<div id="results"><? echo $count; if ($count > 1000) { echo " (NON CLICKABLE!)"; } ?> results</div>
+<div style="position:relative">
+	<div id="map"></div>
+	<div id="gridref" style="z-index:10000;position:absolute;top:0;right:180px;background-color:white;font-size:1em;font-family:sans-serif;opacity:0.8;padding:1px;"></div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" type="text/javascript"></script>
+<script type="text/javascript" src="<? echo smarty_modifier_revision("/js/mappingLeaflet.js"); ?>"></script>
+
+<style>
+div#map {
+	width:800px; height:700px; max-height:90vh; max-width:80vw;
+	margin-bottom: 50vh ;
+}
+</style>
+
+<script type="text/javascript">
+        var map = null ;
+        var issubmit = false;
+	var static_host = '<? echo $CONF['STATIC_HOST']; ?>';
+
+	var bounds;
+	var photoLayer;
+
+	////////////////////////////////////////////////////
+
+        function loadmap() {
+		setupBaseMap(); //creates the map, but does not initialize a view
+		bounds = L.latLngBounds();
+		<?
+		if ($dots) {
+			foreach ($this->images as $image) {
+				$title = json_encode($image->title);
+				$icon = 'bike';
+				print "createMarker([{$image->wgs84_lat},{$image->wgs84_long}], null, $title, '/photo/{$image->gridimage_id}')\n";
+				print "bounds.extend([{$image->wgs84_lat},{$image->wgs84_long}]);\n\n";
+			}
+		}
+		//if ($thumbs) -- need to decide if going to use clustering
+		if ($line) {
+			$latlngs = array();
+			foreach ($this->images as $image) {
+				//list($wgs84_lat,$wgs84_long) = $conv->national_to_wgs84($r['nateastings'],$r['natnorthings'],$r['reference_index']);
+				$latlngs[] = "[{$image->wgs84_lat},{$image->wgs84_long}]";
+				print "bounds.extend([{$image->wgs84_lat},{$image->wgs84_long}]);\n\n";
+		        }
+			$latlngs = "[".implode(',',$latlngs)."]";
+			$color = "red";
+			print "L.polyline($latlngs, {color: '$color'}).addTo(map);\n";
+		}
+		?>
+
+		map.fitBounds(bounds,{maxZoom:15});
+        }
+
+	////////////////////////////////////////////////////
+        var icons = [];
+        function createMarker(point,icon,title,url,html) {
+		if (icon) {
+               	    if (!icons[icon]) {
+                        icons[icon] = L.icon({
+                            iconUrl: static_host+"/geotrips/"+icon+".png",
+                            iconSize:     [9, 9], // size of the icon
+                            iconAnchor:   [5, 5], // point of the icon which will correspond to marker's location
+                            popupAnchor:  [0, -5] // point from which the popup should open relative to the iconAnchor
+                        });
+                    }
+                    var marker = L.marker(point, {title: title, icon: icons[icon], draggable: false}).addTo(map);
+                } else {
+		    var marker = L.circleMarker(point, {radius: 6, title: title, color:'blue'}).addTo(map);
+		}
+
+		if (url)
+                	marker.on('click',function() {
+                        	window.open(url,'pnboto');
+                	});
+		if (html)
+                        marker.bindPopup(html);
+                return marker;
+        }
+
+	////////////////////////////////////////////////////
+        AttachEvent(window,'load',loadmap,false);
+</script>
+
+	<?
 	}
 
 
