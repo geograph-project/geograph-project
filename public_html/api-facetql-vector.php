@@ -67,6 +67,9 @@ if (!empty($_GET['label']) && empty($_GET['match']) && empty($_GET['where'])) { 
 		$criteria['label'] = str_replace($m[0],'',$criteria['label']);
 	}
 
+       if (!empty($_GET['larger']) && preg_match('/^\d+\+?$/',$_GET['larger']))
+               $criteria['largest'] = $_GET['larger']; //not is called largest in the vector index.
+
 	if (!empty($_GET['geo'])) {
                 $bits = explode(',',$_GET['geo']);
 		$criteria['lat'] = floatval($bits[0]);
