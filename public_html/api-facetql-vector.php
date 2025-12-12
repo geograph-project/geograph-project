@@ -310,7 +310,7 @@ if ($order == 'RAND()' && empty($_GET['rnd'])) {
 			$q[] = "OPTION ".implode(', ',$option);
 
 		if (!empty($_GET['debug']))
-        		die(implode(' ',$q));
+        		die(htmlentities(implode(' ',$q)));
 
                 $res = array(
                         'rows' => getAllWithUTF(implode(' ',$q)), //special version that can convert some known text fields in the the resultset

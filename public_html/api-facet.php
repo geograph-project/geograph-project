@@ -249,8 +249,8 @@ if (!empty($_GET['bounds'])) {
 		#
 			if (!empty($_GET['debug'])) {
 				print "<pre>";
-				print_r($cl);
-				print_r($res);
+				print htmlentities(print_r($cl, true));
+				print htmlentities(print_r($res, true));
 				exit;
 			}
 		###########

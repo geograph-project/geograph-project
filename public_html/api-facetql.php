@@ -115,6 +115,8 @@ Example Queries:
 			} else
 				$where[] = $_GET['where'];
 		}
+		if (!empty($_GET['user_id']))
+			$where[] = "user_id=".intval($_GET['user_id']);
 		$group = empty($_GET['group'])?'':$_GET['group'];
 		$n = empty($_GET['n'])?'':intval($_GET['n']);
 		$order = empty($_GET['order'])?'':$_GET['order'];
@@ -318,20 +320,20 @@ if ($order == 'RAND()' && empty($_GET['rnd'])) {
 
 
 		if (!empty($_GET['debug']))
-        		die(implode(' ',$q));
-
+        		die(htmlentities(implode(' ',$q)));
 
                 $res = array(
-                        'rows' => getAll(implode(' ',$q)),
+                        'rows' => getAllWithUTF(implode(' ',$q)), //special version that can convert some known text fields in the the resultset
                         'meta' => getAssoc('SHOW META')
                 );
+
 	} elseif (!empty($_GET['q'])) {
 		$q = trim($_GET['q']);
 		if (empty($q) || !preg_match('/ FROM '.SPHINX_INDEX.' /',$q) || !preg_match('/^SELECT /',$q) || preg_match('/;/',$q)) {
 			die("sorry");
 		}
 		$res = array(
-			'rows' => getAll($q),
+			'rows' => getAllWithUTF($q),
 			'meta' => getAssoc('SHOW META')
 		);
 	} else {
@@ -392,7 +394,7 @@ if (empty($res['meta'])) {
 ###########################################
 
 
-function getAll($query) {
+function getAllWithUTF($query) {
 	global $db;
 	if (!($result = mysqli_query($db, $query))) {
 		return FALSE; //SHOW META in sphinx will report the error
