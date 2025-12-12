@@ -257,12 +257,22 @@ touch-action:inherit;
 			<label for="contributor"><b>Tag(s)</b>:</label>  (ignored in Looks Like mode)
 			<input type="search" id="tags" name="tags" placeholder="Enter tag(s) here" size=40>
 		</div>
+		<div id="resolution-filter-box" class="form-column hidden">
+			<label for="resolution"><b>Minimum Resolution</b>:</label>
+			<select id="resolution" name="resolution">
+				<option value="">None</option>
+				<option value="800">800</option>
+				<option value="1024">1024</option>
+				<option value="3000">3000</option>
+			</select>
+		</div>
 
 		<div class="form-clear">
 			<button type="submit" style="font-weight:bold;font-size:1.1em">Update</button> &nbsp; &nbsp; &nbsp; &nbsp;
 			<button type="button" id="add-date-filter">Add Date Filter</button>
 			<button type="button" id="add-contributor-filter">Add Contributor Filter</button>
 			<button type="button" id="add-tags-filter">Add Tag Filter</button>
+			<button type="button" id="add-resolution-filter">Add Resolution Filter</button>
 		</div>
 		<input type="hidden" id="display-mode" name="display" value="small">
 	</form>
@@ -391,6 +401,12 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         document.getElementById('tags-filter-box').classList.toggle('hidden');
 	document.getElementById('add-tags-filter').classList.toggle('hidden');
+    });
+
+    document.getElementById('add-resolution-filter').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('resolution-filter-box').classList.toggle('hidden');
+        document.getElementById('add-resolution-filter').classList.toggle('hidden');
     });
 
 
@@ -668,11 +684,14 @@ function searchAndRender() {
     const loc = document.querySelector('input[name="loc"]').value;
     let distance = parseInt(document.getElementById('distance').value,10) || 2000;
     const type = document.querySelector('input[name="type"]:checked').value;
+    const urlParams = new URLSearchParams(window.location.search);
+    const model = urlParams.get('model');
     const date_start = document.querySelector('input[name="date_start"]').value;
     const date_end = document.querySelector('input[name="date_end"]').value;
     const contributor = document.querySelector('input[name="contributor"]').value;
     const tags = document.querySelector('input[name="tags"]').value;
     const display = document.getElementById('display-mode').value;
+    const resolution = document.getElementById('resolution').value;
 
     //in keywords mode, catch a single ID: query - works as related image mode. In similarity mode, implemented server side!
     if (type === 'keywords') {
@@ -715,9 +734,19 @@ function searchAndRender() {
     if (type == 'similarity' && query_len) { //no point doing similarity, if no query
         base = "https://www.geograph.org.uk/api-facetql-vector.php"; //for now, requires a different API endpoint
 	data['label'] = query;
+        if (model) {
+            data['model'] = model;
+        }
+        if (resolution) {
+            data['larger'] = resolution + '+';
+        }
     } else {
-	if (query) {
-	    data['match'] = getTextQuery(query);
+	let matchQuery = query;
+	if (resolution) {
+		matchQuery += ` @larger ${resolution}`;
+	}
+	if (matchQuery) {
+	    data['match'] = getTextQuery(matchQuery);
 	}
 
 	if (tags) {
@@ -948,6 +977,9 @@ function performSearch() {
     const contributor = document.querySelector('input[name="contributor"]').value;
     const tags = document.querySelector('input[name="tags"]').value;
     const display = document.getElementById('display-mode').value;
+    const resolution = document.getElementById('resolution').value;
+    const urlParams = new URLSearchParams(window.location.search);
+    const model = urlParams.get('model');
     const params = new URLSearchParams();
     if (query) {
         params.append('q', query);
@@ -974,6 +1006,12 @@ function performSearch() {
     if (display) {
         params.append('display', display);
     }
+    if (model) {
+        params.append('model', model);
+    }
+    if (resolution) {
+        params.append('resolution', resolution);
+    }
 
     const newUrl = window.location.pathname + '?' + params.toString();
     history.pushState({query: query, loc: loc, type: type, date_start: date_start, date_end: date_end, contributor: contributor, tags:tags, display: display}, '', newUrl);
@@ -992,6 +1030,7 @@ function handleUrlQuery() {
     const contributor = params.get('contributor');
     const tags = params.get('tags');
     const display = params.get('display') || 'small';
+    const resolution = params.get('resolution');
 
 	if (query && !loc && query.match(/(.*) near (.+)/)) {
 	    const parts = query.split(' near ', 2);
@@ -1007,6 +1046,7 @@ function handleUrlQuery() {
     document.querySelector('input[name="contributor"]').value = contributor ?? '';
     document.querySelector('input[name="tags"]').value = tags ?? '';
     document.getElementById('display-mode').value = display;
+    document.getElementById('resolution').value = resolution ?? '';
 
     if (type) {
         document.querySelectorAll('#finder-form input[name="type"]').forEach(function(input) {
@@ -1037,6 +1077,11 @@ function handleUrlQuery() {
     if (tags) {
         document.getElementById('tags-filter-box').classList.remove('hidden');
 	document.getElementById('add-tags-filter').classList.add('hidden');
+    }
+
+    if (resolution) {
+        document.getElementById('resolution-filter-box').classList.remove('hidden');
+        document.getElementById('add-resolution-filter').classList.add('hidden');
     }
 
     if (query || loc || date_start || date_end || contributor || tags || display == 'map') {
