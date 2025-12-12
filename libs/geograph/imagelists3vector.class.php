@@ -55,9 +55,14 @@ class ImageListS3Vector extends ImageList
     }
 
     function setModel($model) {
+	global $CONF;
 	if (in_array($model,array('clip','pe'))) {
 		$this->model = $model;
 		$this->vector_index = "image-$model";
+		if ($model == 'pe') //image-pe model is now moved to the local zone, no longer need to use the US preview
+			$this->awsRegion = $CONF['s3_region'] ?? "eu-west-1";
+		else
+			$this->awsRegion = "us-east-1"; 
 	}
     }
 
