@@ -4,6 +4,34 @@ const selectedImageIds = new Set(); // Stores IDs of images currently in the 'Se
 const rejectedImageIds = new Set(); // NEW: To store rejected image IDs
 
 $(document).ready(function() {
+    // --- Settings Panel Logic ---
+    const settingsToggleBtn = $('#settingsToggle');
+    const settingsPanel = $('#settingsPanel');
+
+    settingsToggleBtn.on('click', function(event) {
+        event.stopPropagation(); // Prevent the click from immediately closing the panel
+        settingsPanel.slideToggle('fast');
+    });
+
+    // Close the panel if clicking outside of it
+    $(document).on('click', function(event) {
+        if (!settingsPanel.is(event.target) && settingsPanel.has(event.target).length === 0 && !settingsToggleBtn.is(event.target)) {
+            if (settingsPanel.is(':visible')) {
+                settingsPanel.slideUp('fast');
+            }
+        }
+    });
+    // --- End Settings Panel Logic ---
+
+    // --- Settings Change Logic ---
+    $('input[name="aiModel"], input[name="minResolution"]').on('change', function() {
+        if (currentQuery) {
+            currentPage = 1;
+            fetchImages(currentQuery, currentPage);
+        }
+    });
+    // --- End Settings Change Logic ---
+
     let pageSize = 20;
     let longClickTimer = null; // To store the timeout ID for long click differentiation
     const LONG_CLICK_DELAY = 500; // Milliseconds to hold for a long click
@@ -95,6 +123,31 @@ $(document).ready(function() {
             drop: function(event, ui) {
                 const $draggedItem = ui.draggable;
                 addImageToSelected($draggedItem); // Call unified function
+            }
+        });
+
+        $('#queryInput').droppable({
+            accept: '.image-item',
+            over: function(event, ui) {
+                $(this).addClass('query-drag-over');
+            },
+            out: function(event, ui) {
+                $(this).removeClass('query-drag-over');
+            },
+            drop: function(event, ui) {
+                $(this).removeClass('query-drag-over');
+                const $draggedItem = ui.draggable;
+                const imageId = $draggedItem.data('id');
+                const newQuery = `id:${imageId}`;
+
+                $('#queryInput').val(newQuery);
+                currentQuery = newQuery;
+
+                if (!$('#aiEnhancedCheckbox').is(':checked')) {
+                    $('#aiEnhancedCheckbox').prop('checked', true);
+                }
+
+                $('#searchButton').click();
             }
         });
 
@@ -244,36 +297,48 @@ $(document).ready(function() {
             return;
         }
 
-	let pageLimit = (page-1) * pageSize;
+        // Get filter values from the settings panel
+        const selectedModel = $('input[name="aiModel"]:checked').val();
+        const minResolution = $('input[name="minResolution"]:checked').val();
+
+        let pageLimit = (page - 1) * pageSize;
         let apiUrl = `${API_DOMAIN}/api-facetql.php`;
-	let data = {'select': 'id,title,hash,realname'};
+        let data = { 'select': 'id,title,hash,realname' };
 
-	if (query.trim().match(/^(?:\d{6,}|(?:,\d*|\d+,|\d*,\d*)+)$/)) {
-		let ids = query.trim().split(',').filter(part => part !== '');
-		data['where'] = 'id in ('+ids.join(',')+')';
-		data['limit'] = ids.length;
+        if (query.trim().match(/^(?:\d{6,}|(?:,\d*|\d+,|\d*,\d*)+)$/)) {
+            let ids = query.trim().split(',').filter(part => part !== '');
+            data['where'] = 'id in (' + ids.join(',') + ')';
+            data['limit'] = ids.length;
 
-	} else if (m = query.match(/\[\[(\d+)\]\]/g)) {
-		let ids = [...query.matchAll(/\[\[(\d+)\]\]/g)].map(m => m[1]);
-		data['where'] = 'id in ('+ids.join(',')+')';
-		data['limit'] = ids.length;
+        } else if (m = query.match(/\[\[(\d+)\]\]/g)) {
+            let ids = [...query.matchAll(/\[\[(\d+)\]\]/g)].map(m => m[1]);
+            data['where'] = 'id in (' + ids.join(',') + ')';
+            data['limit'] = ids.length;
 
-	} else if (m = query.trim().match(/photo\/(\d+)$/)) {
-		data['where'] = 'id='+m[1];
+        } else if (m = query.trim().match(/photo\/(\d+)$/)) {
+            data['where'] = 'id=' + m[1];
 
-	} else if ($('#aiEnhancedCheckbox').is(':checked')) {
-		apiUrl = `${API_DOMAIN}/api-facetql-vector.php`;
-		data['label'] = query;
-		//data['offset'] = pageLimit;
-		//data['limit'] = pageSize;
-		pageSize = 30; //if getting 30, might as well use thenm rather than having 20+10.
-		data['limit'] = 30; //fixed for s3vectors - but need to override the defult mantyciore of 20!
-	} else {
-		data['match'] = query;
-		data['offset'] = pageLimit;
-		data['limit'] = pageSize;
-	}
-	apiUrl += "?"+$.param(data);
+        } else if ($('#aiEnhancedCheckbox').is(':checked')) {
+            apiUrl = `${API_DOMAIN}/api-facetql-vector.php`;
+            data['label'] = query;
+            if (selectedModel) {
+                data['model'] = selectedModel;
+            }
+            if (minResolution !== 'none') {
+                data['larger'] = `${minResolution}+`;
+            }
+            pageSize = 30;
+            data['limit'] = 30;
+        } else {
+            let matchQuery = query;
+            if (minResolution !== 'none') {
+                matchQuery += ` @larger ${minResolution}`;
+            }
+            data['match'] = matchQuery;
+            data['offset'] = pageLimit;
+            data['limit'] = pageSize;
+        }
+        apiUrl += "?" + $.param(data);
 
         console.log(`Fetching: ${apiUrl}`); // For debugging
 
