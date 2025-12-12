@@ -92,6 +92,28 @@ if ($_GET['group'] == 'top') {
                     <input type="checkbox" id="aiEnhancedCheckbox">
                     <label for="aiEnhancedCheckbox">AI Enhanced Search</label>
                 </div>
+                <div class="settings-container">
+                    <button id="settingsToggle">Settings</button>
+                    <div id="settingsPanel" class="settings-panel" style="display: none;">
+                        <? if ($ai) { ?>
+                        <div class="setting-group" id="aiModelSettings">
+                            <strong>AI Model</strong>
+                            <label><input type="radio" name="aiModel" value="clip" checked> CLIP</label>
+                            <label><input type="radio" name="aiModel" value="pe"> Perception Encoder</label>
+                        </div>
+                        <? } ?>
+                        <div class="setting-group">
+                            <strong>Minimum Resolution</strong>
+                            <label><input type="radio" name="minResolution" value="none" checked> None</label>
+                            <label><input type="radio" name="minResolution" value="800"> 800px</label>
+                            <label><input type="radio" name="minResolution" value="1024"> 1024px</label>
+                            <label><input type="radio" name="minResolution" value="3000"> 3000px</label>
+                        </div>
+                        <div class="setting-group">
+                            <button id="themeToggle">Toggle Dark Theme</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="search-box">
                 <input type="search" id="queryInput" value="<? echo htmlentities($query); ?>" placeholder="Enter search query...">
@@ -107,7 +129,6 @@ if ($_GET['group'] == 'top') {
         <div class="column right-column">
             <div class="column-header">
                 <h2>Selected Images (<span id="currentTag"><? echo htmlentities($tag); ?></span>)</h2>
-		<button id="themeToggle">Toggle Dark Theme</button>
 	    </div>
             <div class="selected-images" id="selectedImages"></div>
         </div>
