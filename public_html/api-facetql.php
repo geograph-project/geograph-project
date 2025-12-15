@@ -115,8 +115,6 @@ Example Queries:
 			} else
 				$where[] = $_GET['where'];
 		}
-		if (!empty($_GET['user_id']))
-			$where[] = "user_id=".intval($_GET['user_id']);
 		$group = empty($_GET['group'])?'':$_GET['group'];
 		$n = empty($_GET['n'])?'':intval($_GET['n']);
 		$order = empty($_GET['order'])?'':$_GET['order'];
