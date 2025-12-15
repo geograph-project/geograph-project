@@ -38,6 +38,7 @@ if (empty($_GET['group']) || !in_array($_GET['group'], $groups))
 $gurl = urlencode($_GET['group']);
 
 if ($_GET['group'] == 'top') {
+	//checks if there isa  'checked'/'verified' tag on te image, 
 $sql = "SELECT p.grouping, p.top AS tag, COUNT(t.curated_id) AS images, SUM(t.user_id = ?) AS yours, p.sort_order,
        COUNT(DISTINCT t.gridimage_id) AS total_images,
        COUNT(DISTINCT IF(t.user_id = ?, t.gridimage_id, NULL)) AS your_images,
@@ -56,6 +57,7 @@ LEFT JOIN (
 GROUP BY p.sort_order WITH ROLLUP";
 
 } elseif ($_GET['group'] == 'edu') {
+	//checked/verified, checks if such a tag exists for teh image, but really only works on hte 'top' group, not edu!
 	$sql = "SELECT 'edu' as grouping, l.label as tag, COUNT(t.curated_id) AS images, SUM(t.user_id = ?) AS yours, l.id as sort_order,
 	       COUNT(DISTINCT t.gridimage_id) as total_images,
 	       COUNT(DISTINCT IF(t.user_id = ?, t.gridimage_id, null)) as your_images,
