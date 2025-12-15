@@ -113,7 +113,7 @@ function submitTabClick(tabname,divname,num,count) {
 <tr>
 <td>&nbsp;</td>
 <td><a href="{$self_host}/"><img height="74" src=
-"{$self_host}/templates/basic/img/logo.gif" width="257" border="0" /></a></td>
+"{$self_host}/templates/basic/img/xmaslogo.gif" width="257" border="0" /></a></td>
 <td valign="top" align="center"><a href="{$self_host}/" class=
 "c1">{$http_host}</a><br />
 <i>The Geograph Britain and Ireland project aims to collect a geographically

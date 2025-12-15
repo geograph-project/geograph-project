@@ -29,7 +29,7 @@
 	}
 	#header h1 {
 	    margin: 0px;
-	    background-image: url(https://s1.geograph.org.uk/templates/basic/img/logo.gif);
+	    background-image: url(https://s1.geograph.org.uk/templates/basic/img/xmaslogo.gif);
 	    height: 74px;
 	    width: 257px;
 	    cursor: pointer;
@@ -528,7 +528,7 @@ svg.svgFilter {
 
 <div id="sidebar">
 
-<a href="/"><img src="https://s1.geograph.org.uk/templates/basic/img/logo.gif"></a>
+<a href="/"><img src="https://s1.geograph.org.uk/templates/basic/img/xmaslogo.gif"></a>
 
 <h3>Quick Mode</h3>
 <div class="tabHolder">
