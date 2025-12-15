@@ -1,0 +1,25 @@
+
+replace templates/basic/img/logo.gif templates/basic/img/xmaslogo.gif -- public_html/templates/*/*.tpl
+
+## git commit - the above files need committing (tehre are many!)
+
+  M public_html/templates/basic/cards.tpl
+  M public_html/templates/basic/contact.tpl
+    public_html/templates/basic/css/basic.css
+  M public_html/templates/basic/email_ecard.tpl
+  M public_html/templates/basic/mapper_combined_mobile.tpl
+  M public_html/templates/basic/submit_mobile.tpl
+  M public_html/templates/basic/puploader.tpl
+  M public_html/templates/basic/puploader_login.tpl
+  M public_html/templates/basic/search_results_mobile.tpl
+  M public_html/templates/basic/_mobile_begin.tpl
+  M public_html/templates/basic/submit2_mobile.tpl
+  M public_html/templates/basic/calendar_order.tpl
+  M public_html/templates/basic/submit_mobile_chooser.tpl
+
+
+replace /img/geograph-logo.svg /img/geograph-logo-xmas.svg -- public_html/templates/basic/css/basic.css
+
+
+git commit -m"xmas logo" public_html/templates/basic/css/basic.css
+
