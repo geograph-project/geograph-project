@@ -253,6 +253,10 @@ function appearsToBePerson() {
 	if (!empty($_SERVER['HTTP_X_PURPOSE']) || !empty($_SERVER['HTTP_PURPOSE']) || !empty($_SERVER['HTTP_X_MOZ']))  //'prefetch' and 'preview' requests
 		return false;
 
+	//if we have directed them to our archive template already know non-human.
+	if ($CONF['template'] == 'archive')
+		return false;
+
 	//list of agents from NLWeb
 	$agents = array(
 	    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
@@ -263,26 +267,22 @@ function appearsToBePerson() {
 	if (in_array($_SERVER['HTTP_USER_AGENT'], $agents))
 		return false;
 
-	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) && //catches Google-Read-Aloud as includes a URL
-	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
-	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Mediapartners')===FALSE) &&
-	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Preview')===FALSE) &&
-            (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'curl')===FALSE) &&
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'oembed')===FALSE) &&
-            (stripos($_SERVER['HTTP_USER_AGENT'], 'python')===FALSE) && //python-requests + Python-urllib
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'LWP::Simple')===FALSE) &&
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'Siege')===FALSE) &&
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'HTTrack')===FALSE) &&
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'CyotekWebCopy')===FALSE) &&
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'HeadlessChrome')===FALSE) &&
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'InspectionTool')===FALSE) &&
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'The Knowledge AI')===FALSE) &&
-            (strpos($_SERVER['HTTP_USER_AGENT'], 'GoogleOther')===FALSE) &&
-	    $CONF['template']!='archive')
-		return true;
+	//check for common bots, and/or likly to be non-human
+	$ua = strtolower($_SERVER['HTTP_USER_AGENT']);
+		//note, catches Google-Read-Aloud as includes a URL (with http)
+	$forbidden = [
+		'http', 'bot', 'mediapartners', 'preview', 'magnus', 'curl',
+		'oembed', 'go-http-client', 'java/', 'python', 'lwp::simple',
+		'siege', 'httrack', 'cyotekwebcopy', 'headlesschrome',
+		'inspectiontool', 'the knowledge ai', 'googleother'
+	];
+	foreach ($forbidden as $term) {
+		if (strpos($ua, $term) !== false) {
+			return false;
+		}
+	}
 
-	return false;
+	return true;
 }
 
 

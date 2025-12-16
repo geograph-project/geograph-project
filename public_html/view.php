@@ -202,7 +202,10 @@ if ($image->isValid())
 	}
 
 	if (appearsToBePerson() && empty($_SESSION['responsive']) && empty($_GET['responsive'])) {
-		if (empty($_SESSION['photos'][$image->gridimage_id])) {
+		if (empty($_SESSION['photos'][$image->gridimage_id])
+		 && preg_match('/^\/photo\/[1-9]\d*(\?(_pmch|__cf_chl_tk|utm_source|utm_medium|fbclid)=[\w\.-]+(&[\w\.-]+=[\w\.-]*)*)?$/', $_SERVER['REQUEST_URI'])) { //only record direct hits.
+			//note, this does NOT include 'mobile=' nor 'style=', these are long deprecated, so any accesses to them are likly bots now anyway.
+
 			if (empty($db) || $db->readonly)
 				$db = GeographDatabaseConnection(false);
 
