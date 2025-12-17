@@ -1,3 +1,103 @@
+<?
+
+if (isset($_GET['update_candidate'])) {
+    require_once('geograph/global.inc.php');
+    $db = GeographDatabaseConnection(false);
+
+    $subject = $_POST['subject'] ?? '';
+    $query   = $_POST['query'] ?? '';
+    $model   = $_POST['model'] ?? '';
+    $action  = $_POST['action'] ?? '';
+
+// Map actions to your integer flags
+    $flag = ($action === 'no-match') ? -1 : 1;
+
+    $sql = "UPDATE subject_embedding
+            SET is_candidate = ?
+            WHERE subject_id = (SELECT subject_id FROM subjects WHERE subject = ?)
+              AND model = ?
+              AND query = ?";
+
+    $result = $db->Execute($sql, [$flag, $subject, $model, $query]);
+
+    if ($result) {
+        echo json_encode(['status' => 'success', 'flag' => $flag]);
+    } else {
+        header("HTTP/1.1 500 Internal Server Error");
+        echo $db->ErrorMsg();
+    }
+    exit;
+}
+
+if (!empty($_POST)) {
+
+	require_once('geograph/global.inc.php');
+	init_session();
+
+	$db = GeographDatabaseConnection(false);
+
+	// Get data from the POST request
+	$subject_name = $_POST['subject'] ?? '';
+	$stats        = $_POST['stats'] ?? [];
+
+	if (!$subject_name || empty($stats)) {
+	    header("HTTP/1.1 400 Bad Request");
+	    exit("Missing required data");
+	}
+
+	// 1. Resolve subject_id from the subjects table
+	$subject_id = $db->GetOne("SELECT subject_id FROM subjects WHERE subject = ?", [$subject_name]);
+
+	if (!$subject_id) {
+	    header("HTTP/1.1 404 Not Found");
+	    exit("Subject not found");
+	}
+
+	// 2. Prepare data for the existing table structure
+	//note, with Replace function, there is no auto-quoting
+	$record = [
+	    'subject_id' => (int)$subject_id,
+	    'model'      => $db->Quote($_POST['model'] ?? ''),
+	    'query'      => $db->Quote($_POST['query'] ?? ''),
+	    'cosine_cnt' => (int)$stats['count'],
+	    'cosine_min' => (float)$stats['min'],
+	    'cosine_max' => (float)$stats['max'],
+	    'cosine_avg' => (float)$stats['avg'],
+	    'cosine_std' => (float)$stats['stdDev'],
+	    'user_id'    => (int)$USER->user_id
+	];
+
+	//$result = $db->AutoExecute('subject_embedding', $record, 'INSERT');
+	$result = $db->Replace('subject_embedding', $record, ['subject_id', 'model', 'query']);
+
+	if ($result) {
+	    echo json_encode(['status' => 'success', 'operation' => ($result == 1 ? 'updated' : 'inserted') ]);
+	} else {
+	    header("HTTP/1.1 500 Internal Server Error");
+	    echo $db->ErrorMsg();
+	}
+	exit;
+
+/*
+alter table subject_embedding add query varchar(255) default null after model;
+alter table subject_embedding add user_id int unsigned default null, add created timestamp not null default current_timestamp();
+ UPDATE subject_embedding SET query = '' WHERE query IS NULL;
+ ALTER TABLE subject_embedding
+      MODIFY query VARCHAR(255) NOT NULL DEFAULT '',
+      DROP INDEX uk_model_subject,
+      ADD UNIQUE KEY `uk_subject_model_query` (`subject_id`, `model`, `query`);
+
+... actully should reset these, its when the column is added not, when oriiginally creatd, could instead of added the coolumn without default, then altered to add the default
+update subject_embedding set created = 0 where created = '2025-12-17 14:22:13';
+
+ALTER TABLE subject_embedding 
+ADD COLUMN updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+*/
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +120,7 @@
             max-width: 800px;
             border-collapse: collapse;
             margin-top: 20px;
+		white-space:nowrap;
         }
         #results-table th, #results-table td {
             border: 1px solid #ddd;
@@ -272,6 +373,8 @@
                     if (distances.length > 0) {
                         const stats = calculateStats(distances);
                         addResultRow(subject, query, stats);
+			saveResultToServer(subject, query, stats, model);
+
                     } else {
                          alert('No valid image vectors could be processed for stats.');
                     }
@@ -288,11 +391,25 @@
             });
         }
 
+	function saveResultToServer(subject, query, stats, model) {
+	    $.post('?save=true', {
+	        subject: subject,
+	        query: query,
+	        model: model, // Useful to distinguish which AI you used
+	        stats: stats
+	    }).done(function(response) {
+	        console.log("Result saved successfully");
+	    }).fail(function() {
+	        console.error("Failed to save result");
+	    });
+	}
+
         function calculateStats(numbers) {
             if (numbers.length === 0) {
                 return { min: 0, max: 0, avg: 0, stdDev: 0 };
             }
 
+            const count = numbers.length;
             const min = Math.min(...numbers);
             const max = Math.max(...numbers);
             const sum = numbers.reduce((acc, val) => acc + val, 0);
@@ -302,24 +419,95 @@
             const avgSquaredDiff = squaredDiffs.reduce((acc, val) => acc + val, 0) / numbers.length;
             const stdDev = Math.sqrt(avgSquaredDiff);
 
-            return { min, max, avg, stdDev };
+            return { count, min, max, avg, stdDev };
         }
 
-        function addResultRow(subject, query, stats) {
-            // Check if the subject and query are identical
-            const isMatch = subject === query;
-            const bgColor = isMatch ? ' class="highlight-match"' : '';
+	// 1. Create a persistent store for baseline stats
+	const baselineStatsStore = {};
 
-            const newRow = `<tr${bgColor}>
-                <td>${escapeHtml(subject)}</td>
-                <td>${escapeHtml(query)}</td>
-                <td>${stats.min.toFixed(4)}</td>
-                <td>${stats.max.toFixed(4)}</td>
-                <td>${stats.avg.toFixed(4)}</td>
-                <td>${stats.stdDev.toFixed(4)}</td>
-            </tr>`;
-            $resultsTableBody.append(newRow);
-        }
+	function addResultRow(subject, query, stats) {
+	    const isMatch = subject === query;
+	    let statsHtml = {};
+
+	    const model = $modelSelect.val();
+	    const dataAttrs = ` data-subject="${escapeHtml(subject)}" data-query="${escapeHtml(query)}" data-model="${escapeHtml(model)}"`;
+            let btnText = '';
+
+	    if (isMatch) {
+	        // 2. Save baseline for future comparisons
+	        baselineStatsStore[subject] = stats;
+
+	        // Identity row: just format the numbers
+	        ['min', 'max', 'avg', 'stdDev'].forEach(key => {
+	            statsHtml[key] = stats[key].toFixed(4);
+	        });
+
+		// Baseline row gets "Looks OK" and "No Visual Matches"
+                btnText = `<button class="btn-action" data-action="looks-ok"${dataAttrs}>Looks OK</button> 
+                           <button class="btn-action" data-action="no-match"${dataAttrs}>No Visual Matches</button>`;
+
+	    } else {
+	        const baseline = baselineStatsStore[subject];
+
+	        ['min', 'max', 'avg', 'stdDev'].forEach(key => {
+	            const currentVal = stats[key];
+	            let displayStr = currentVal.toFixed(4);
+
+	            if (baseline) {
+	                const baseVal = baseline[key];
+	                // 3. Calculate % change
+	                const percentChange = ((currentVal / baseVal) - 1) * 100;
+	                const sign = percentChange > 0 ? '+' : '';
+	                const color = percentChange > 0 ? 'color: #d9534f' : 'color: #5cb85c'; // Red for worse, Green for better
+
+	                displayStr += ` <small style="${color}; font-weight: bold;">(${sign}${percentChange.toFixed(1)}%)</small>`;
+	            }
+	            statsHtml[key] = displayStr;
+	        });
+
+		// Engineered rows get "Suggest Good"
+                btnText = `<button class="btn-action" data-action="suggest-good"${dataAttrs}>Suggest Good</button>`;
+	    }
+
+	    const rowClass = isMatch ? ' class="highlight-match"' : '';
+
+	    const newRow = `<tr${rowClass}>
+	        <td>${escapeHtml(subject)}</td>
+	        <td>${escapeHtml(query)}</td>
+	        <td>${statsHtml.min}</td>
+	        <td>${statsHtml.max}</td>
+	        <td>${statsHtml.avg}</td>
+	        <td>${statsHtml.stdDev}</td>
+	        <td>${btnText}</td>
+	    </tr>`;
+
+	    $resultsTableBody.append(newRow);
+	}
+
+	$resultsTableBody.on('click', '.btn-action', function() {
+	    const btn = $(this);
+	    const action = btn.data('action'); // looks-ok, no-match, or suggest-good
+	    const data = {
+	        subject: btn.data('subject'),
+	        query: btn.data('query'),
+	        model: btn.data('model'),
+	        action: action
+	    };
+
+	    // Disable button to prevent double clicks
+	    btn.prop('disabled', true).text('Saving...');
+
+	    $.post('?update_candidate=true', data)
+	        .done(function(response) {
+	            btn.text('Saved!').css('background-color', '#5cb85c').css('color', 'white');
+	            console.log("Action saved:", action, response);
+	        })
+	        .fail(function() {
+	            btn.prop('disabled', false).text('Retry');
+	            alert("Failed to save action");
+	        });
+	});
+
 
         function escapeHtml(str) {
             if (!str) return '';
