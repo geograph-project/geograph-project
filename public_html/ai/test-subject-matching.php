@@ -65,6 +65,9 @@
             margin: 3px 0 0 0;
             word-wrap: break-word;
         }
+	.highlight-match {
+	    background-color: #f0f0f0;
+	}
     </style>
 </head>
 <body>
@@ -76,7 +79,7 @@
         <label for="model-select">Choose an AI Model:</label>
         <select id="model-select">
             <option value="clip">CLIP</option>
-            <option value="pe">Perception Encoder</option>
+            <option value="pe" selected>Perception Encoder</option>
         </select>
 
         <label for="subject-select">Choose a Subject:</label>
@@ -95,6 +98,7 @@
     <table id="results-table">
         <thead>
             <tr>
+                <th>Subject</th>
                 <th>Query</th>
                 <th>Min Distance</th>
                 <th>Max Distance</th>
@@ -136,7 +140,8 @@
         // Fetches subjects and populates the dropdown
         function loadSubjects() {
             $.ajax({
-                url: '/tags/tags.json.php',
+                //url: '/tags/tags.json.php', -- doesnt have a easy way to ensure only pick 'offical' subjects
+		url: '/tags/subject.json.php', //will ignore url params anyway
                 data: {
                     mode: 'subject',
                     q: '.',
@@ -266,7 +271,7 @@
 
                     if (distances.length > 0) {
                         const stats = calculateStats(distances);
-                        addResultRow(query, stats);
+                        addResultRow(subject, query, stats);
                     } else {
                          alert('No valid image vectors could be processed for stats.');
                     }
@@ -300,8 +305,13 @@
             return { min, max, avg, stdDev };
         }
 
-        function addResultRow(query, stats) {
-            const newRow = `<tr>
+        function addResultRow(subject, query, stats) {
+            // Check if the subject and query are identical
+            const isMatch = subject === query;
+            const bgColor = isMatch ? ' class="highlight-match"' : '';
+
+            const newRow = `<tr${bgColor}>
+                <td>${escapeHtml(subject)}</td>
                 <td>${escapeHtml(query)}</td>
                 <td>${stats.min.toFixed(4)}</td>
                 <td>${stats.max.toFixed(4)}</td>
@@ -344,7 +354,7 @@
             const selectedSubject = $subjectSelect.val();
             if (selectedSubject) {
                 $queryText.val(selectedSubject);
-                $resultsTableBody.empty();
+                //$resultsTableBody.empty();
                 runAnalysis(selectedSubject, selectedSubject);
             }
         }
@@ -357,6 +367,11 @@
         $runButton.on('click', function() {
             const query = $queryText.val().trim();
             const subject = $subjectSelect.val();
+
+	    if (query == subject) { //selecting the subject should run the 'initial' query, dont need to run it explicitly
+                alert('Please edit the query to try a different prompt');
+                return;
+            }
 
             if (!subject) {
                 alert('Please select a subject first.');
