@@ -359,6 +359,18 @@ if (!empty($_GET['q'])) {
 				$s = (count($rows['single'])>1)?'s':'';
 				print "<p><i>Including image$s with ID$s: ".implode(', ',$m[1]).".</i></p>";
 			}
+
+		//wikipedia URLs!
+		} elseif (preg_match('/_geograph\.org\.uk_-_(\d+)/',$_GET['q'],$m)) {
+			$rows['single'] = $sph->getAll($sql = "
+                                select id,realname,user_id,title,grid_reference
+                                from sample8
+                                where id = ".intval($m[1])." limit 1");
+			if (!empty($_GET['d']))
+				print "$sql;<hr>";
+			if (!empty($rows['single'])) {
+				print "<p><i>Including image with ID: ".intval($m[1]).".</i></p>";
+			}
 		}
 
 #########################################
@@ -406,7 +418,7 @@ if (!empty($_GET['q'])) {
 			, cutoff=1000000 $option ");
 
 if (!empty($_GET['d']))
-	print "$sql;<hr>";
+	print htmlentities($sql).";<hr>";
 
 		if (empty($data))
 			$data = $sph->getAssoc("SHOW META");
@@ -426,7 +438,7 @@ if (!empty($_GET['d']))
 				option field_weights=(place=8,county=6,country=4,title=12,tags=10,imageclass=5)
 				, max_query_time=800 $option");
 if (!empty($_GET['d']))
-	print "$sql;<hr>";
+	print htmlentities($sql).";<hr>";
 
 				if (empty($data) && !empty($rows['score']))
 					$data = $sph->getAssoc("SHOW META");
@@ -512,7 +524,7 @@ if (!empty($_GET['d']))
 					}
 				}
 if (!empty($_GET['d']))
-	print "$sql;<hr>";
+	print htmlentities($sql).";<hr>";
 
 				print "<h4>Partial Matches...</h4>";
 			}
