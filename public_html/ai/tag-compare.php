@@ -1,12 +1,9 @@
 <?php
 
 require_once('geograph/global.inc.php');
-
 init_session();
 
-
 $smarty = new GeographPage;
-
 
 	$smarty->display('_std_begin.tpl');
 
@@ -99,11 +96,50 @@ $modelB_name = $keys[1]; // The other one
         <div style="margin-top: 20px;">
             <button type="submit" name="choice" value="tie" class="secondary">It's a Tie</button>
             <button type="submit" name="choice" value="both_bad" class="danger">Both are Bad</button>
+	<button type="submit" name="choice" value="broken" 
+            style="background: #e67e22; margin-left: 20px;" 
+            onclick="return confirm('Flag this record as broken/truncated?')">
+        Flag as Broken</button> (use if either side dont appear to be proper list of tags)
+
         </div>
     </form>
 
-    <div class="meta">ID: <?= $row['gridimage_id'] ?></div>
+    <div class="meta">ID: <?= $row['gridimage_id'] ?>, by <? echo htmlentities2($image->realname); ?></div>
 </div>
+
+<div class="shortcuts" style="margin-top: 15px; color: #888; font-size: 0.85em; font-style: italic;">
+    <strong>Keyboard Shortcuts:</strong> 
+    [1] A is Better &bull; 
+    [2] B is Better &bull; 
+    [3] Tie &bull; 
+    [4] Both Bad &bull; 
+    [5] Broken
+</div>
+
+<script>
+document.addEventListener('keydown', function(event) {
+    // Don't trigger if the user is typing in an input/textarea (if you add any later)
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+
+    const map = {
+        '1': 'button[value="<?= $modelA_name ?>"]',
+        '2': 'button[value="<?= $modelB_name ?>"]',
+        '3': 'button[value="tie"]',
+        '4': 'button[value="both_bad"]',
+        '5': 'button[value="broken"]'
+    };
+    
+    if (map[event.key]) {
+        const btn = document.querySelector(map[event.key]);
+        if (btn) {
+            // If it's the 'broken' button, we might want to skip the confirm() 
+            // when using a keyboard shortcut for speed, or keep it for safety.
+            // This triggers the click just like a mouse would.
+            btn.click();
+        }
+    }
+});
+</script>
 
 <?
 

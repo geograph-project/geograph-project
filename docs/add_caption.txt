@@ -1,0 +1,6 @@
+php scripts/injectrt.php --config=live --index=caption --select="select gridimage_id as id,title,user_id,caption,grid_reference,tags from gridimage_search inner join gridimage_caption using (gridimage_id) where type='normal'" --execute --schema --limit=0 --cluster=0 --drop
+
+
+php scripts/injectrt.php --config=live --index=caption --select="select gridimage_id as id,title,user_id,realname,group_concat(if(type='normal',caption,null)) as caption,group_concat(if(type='tags',caption,null)) as labels,grid_reference,tags from gridimage_search inner join gridimage_caption using (gridimage_id) where type in ('normal','tags') group by gridimage_id" --cluster=manticore_cluster --execute --debug --schema --drop
+
+php scripts/injectrt.php --config=live --index=caption --select="select gridimage_id as id,title,user_id,realname,group_concat(if(type='normal',caption,null)) as caption,group_concat(if(type='tags',caption,null)) as labels,grid_reference,tags from gridimage_search inner join gridimage_caption using (gridimage_id) where type in ('normal','tags') group by gridimage_id limit 20000" --limit=0 --cluster=manticore_cluster --execute --debug
