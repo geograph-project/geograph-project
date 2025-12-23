@@ -10,27 +10,42 @@ $smarty = new GeographPage;
 $db = GeographDatabaseConnection(true);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+##########################################
+
 // Handle the Vote Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int)$_POST['gridimage_id'];
     $choice = $_POST['choice']; // 'caption', 'vision', 'tie', or 'both_bad'
-    
-    $db->Execute("UPDATE joined_tags SET evaluation_result = ? WHERE gridimage_id = ?", [$choice, $id]);
-    header("Location: " . $_SERVER['PHP_SELF']); // Refresh for next pair
-    exit;
+
+    if ($choice !== 'skip')
+        $db->Execute("UPDATE joined_tags SET evaluation_result = ? WHERE gridimage_id = ?", [$choice, $id]);
+
+    if (!empty($_GET['id']))
+	unset($_GET['id']); //just to make sure a new random one is selected (now a redirect)
 }
 
-if (!empty($_GET['id'])) { //just for testing, so can load a consistent id!
+##########################################
+
+if (!empty($_GET['id'])) {
 	$row = $db->GetRow("SELECT * FROM joined_tags WHERE gridimage_id = ".intval($_GET['id']));
+	if (!$row) {
+	    echo "<h2>Image Not Found</h2>";
+	    exit;
+	}
 } else {
 	// Fetch one random row that hasn't been evaluated yet
-	$row = $db->GetRow("SELECT * FROM joined_tags WHERE evaluation_result IS NULL ORDER BY RAND() LIMIT 1");
+	$row = $db->GetRow("SELECT gridimage_id FROM joined_tags WHERE evaluation_result IS NULL ORDER BY RAND() LIMIT 1");
+
+	if (!$row) {
+	    echo "<h2>All caught up! No more tags to evaluate.</h2>";
+	    exit;
+	}
+        header("Location: " . $_SERVER['PHP_SELF']."?id={$row['gridimage_id']}"); //redirect so the new id is in the URL
+	exit;
 }
 
-if (!$row) {
-    echo "<h2>All caught up! No more tags to evaluate.</h2>";
-    exit;
-}
+##########################################
+
 
 //caption is LLM based, so sometimes, messy, clean up when json etc
 	$row['caption'] = normalize_tags($row['caption']); //specifically decodes json!
@@ -96,10 +111,15 @@ $modelB_name = $keys[1]; // The other one
         <div style="margin-top: 20px;">
             <button type="submit" name="choice" value="tie" class="secondary">It's a Tie</button>
             <button type="submit" name="choice" value="both_bad" class="danger">Both are Bad</button>
+
+            <button type="submit" name="choice" value="skip" style="background: #95a5a6; margin-left: 20px;">
+                 Skip (Unsure)
+            </button>
+
 	<button type="submit" name="choice" value="broken" 
             style="background: #e67e22; margin-left: 20px;" 
             onclick="return confirm('Flag this record as broken/truncated?')">
-        Flag as Broken</button> (use if either side dont appear to be proper list of tags)
+        Tag list(s) are Broken</button>
 
         </div>
     </form>
@@ -113,7 +133,8 @@ $modelB_name = $keys[1]; // The other one
     [2] B is Better &bull; 
     [3] Tie &bull; 
     [4] Both Bad &bull; 
-    [5] Broken
+    [5] Broken &bull; 
+    [0] Skip
 </div>
 
 <script>
@@ -126,7 +147,8 @@ document.addEventListener('keydown', function(event) {
         '2': 'button[value="<?= $modelB_name ?>"]',
         '3': 'button[value="tie"]',
         '4': 'button[value="both_bad"]',
-        '5': 'button[value="broken"]'
+        '5': 'button[value="broken"]',
+        '0': 'button[value="skip"]'
     };
     
     if (map[event.key]) {
