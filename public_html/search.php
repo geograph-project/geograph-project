@@ -44,6 +44,12 @@ foreach(array('do','form') as $key)
 	     exit;
 	}
 
+if (!empty($_GET['displayclass']) && $_GET['displayclass'] == 'map' && empty($_SERVER['HTTP_REFERER']) && preg_match('/m\.geograph\.org\.uk\/search.php/',$_SERVER['HTTP_REFERER'])) {
+             header('HTTP/1.0 451 Unavailable For Legal Reasons');
+	die("Blocked as a suspicious request");
+             exit;
+}
+
 //a do request should never have it in the referer.
 if (!empty($_GET['do']) && !empty($_SERVER['HTTP_REFERER']) && preg_match('/do=1$/',$_SERVER['HTTP_REFERER'])) {
 	header('HTTP/1.0 403 Forbidden');
