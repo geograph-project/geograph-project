@@ -106,6 +106,8 @@ if ($distance > 20000) $distance = 20000;
 
 
 $qh = $qu = ''; $qfiltbrow = ''; $qfiltmain = '';
+$displaysearch = true; //show a link to search.php
+
 if (!empty($_GET['q'])) {
 
 	if (mb_detect_encoding($_GET['q'], 'UTF-8, ISO-8859-1') == "UTF-8") {
@@ -125,7 +127,12 @@ if (!empty($_GET['q'])) {
 		$sphinxq = $sphinx->q;
 		$mkey = md5($sphinxq.'.'.$mkey);
 		$qfiltbrow = "/q=".urlencode($sphinxq);
-		$qfiltmain = "&searchtext=".urlencode($sphinxq);
+
+		//not ideal, but can blacklist some queries we know wont work via search.php (as uses a different index)
+		if (preg_match('/(_SEP|@(terms|groups|buckets|subjects|contexts|snippets))/i',$sphinxq))
+			$displaysearch = false;
+		else
+			$qfiltmain = "&searchtext=".urlencode($sphinxq);
 	}
 
 	$smarty->assign("page_title",'Photos near '.$_GET['q']);
@@ -257,7 +264,7 @@ if (!empty($_GET['q'])) {
 		<? } ?>
 		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=decade">Over Time</a> &middot;
                 <a href="/gridref/<? echo strtoupper($gru); ?>">Browse Page</a> &middot;
-		<? if (!empty($square->reference_index) && $square->reference_index == 1) { ?>
+		<? if (!empty($square->reference_index) && $square->reference_index == 1 && $displaysearch) { ?>
 		        <a href="/search.php?do=1&gridref=<? echo $gru.$qfiltmain; ?>&amp;displayclass=map">OS Map</a> &middot;
 		        <a href="/finder/dblock.php?gridref=<? echo $gru; ?>">D-block</a> &middot;
 		<? } else { ?>
@@ -456,7 +463,7 @@ if (!empty($_GET['d']))
 
         print "<br style=clear:both>";
 
-if (!empty($_GET['d']) && !empty($final)) {
+if (!empty($_GET['d']) && !empty($final) && $displaysearch) {
 	print "<p><a href=\"/search.php?displayclass=map&marked=1&markedImages=".implode(',',array_keys($final))."$qfiltmain\">View on Map</a></p>";
 }
 
@@ -549,7 +556,7 @@ if (!empty($final)) {
 ?>
 	Explore these images more: <b><a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>" style=color:yellow>in the Browser</a>
 	(<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=100" style=color:yellow>On Map</a>)
-	<? if (!preg_match('/(_SEP|%40terms|%40groups)/',$qfiltmain)) {  //not ideal, but can blacklist some functions we know wont work!
+	<? if ($displaysearch) {  //not ideal, but can blacklist some functions we know wont work!
 	?>
 	or <a href="/search.php?do=1&gridref=<? echo $gru.$qfiltmain; ?>" style=color:yellow>in the standard search</a>.
 	<? } ?>
@@ -661,8 +668,7 @@ if (!empty($final) && !empty($data['total_found']) && $data['total_found'] > 20)
 ?>
 	Explore these images more: <b><a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>" style=color:yellow>in the Browser</a>
 	(<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=100" style=color:yellow>On Map</a>)
-	<? if (!preg_match('/(_SEP|%40terms|%40groups)/',$qfiltmain)) {  //not ideal, but can blacklist some functions we know wont work!
-	?>
+	<? if ($displaysearch) { ?>
 	or <a href="/search.php?do=1&gridref=<? echo $gru.$qfiltmain; ?>" style=color:yellow>in the standard search</a>.
 	<? } ?>
 	</b></div>
