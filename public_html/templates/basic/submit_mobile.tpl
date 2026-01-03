@@ -1236,7 +1236,7 @@ function orientationChanged() {
 
 {if !$inner}
 <div style="background-color:#000066">
-	<a target="_top" href="/"><img src="{$static_host}/templates/basic/img/xmaslogo.gif" height="50"></a>
+	<a target="_top" href="/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
 </div>
 {/if}
 

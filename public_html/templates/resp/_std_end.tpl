@@ -36,7 +36,6 @@
      {/if}
     </ul></li>
     <li>Contributors<ul>
-     <li><a title="Order Calendar" href="/calendar/">2026 Calendar</a></li>
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
      {if $user->registered && $user->stats.images}
      <li><a title="Your most recent submissions" href="/submissions.php">Recent Uploads</a></li>

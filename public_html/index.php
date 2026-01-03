@@ -252,12 +252,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		'Selected photograph');
 	$smarty->assign('ptitle',$ptitles[array_rand($ptitles)]);
 
+	//todo, this should be driven by the calender_dates table!
 	$prompts = array(
 		"Order your own <a href=\"/calendar/\">unique 2026 calendar</a>!<br> Last few days to order custom-printed calendars featuring images from Geograph.",
 		"Create a one-of-a-kind 2026 calendar with your favourite images from Geograph. Last few days to <a href=\"/calendar/\">order</a> your custom printing!",
 		"<a href=\"/calendar/\">Custom 2026 Calendars</a> - Last few days to order!<br> Create your own unique calendar with images from Geograph today.",
 	);
-	$smarty->assign('prompt',$prompts[array_rand($prompts)]);
+	//$smarty->assign('prompt',$prompts[array_rand($prompts)]);
 
 /////////////////////////////
 // featured collection

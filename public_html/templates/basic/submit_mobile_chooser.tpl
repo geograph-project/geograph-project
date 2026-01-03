@@ -24,7 +24,7 @@
 <body style="background-color:#e4e4fc">
 
 <div style="background-color:#000066">
-<a target="_top" href="https://www.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/xmaslogo.gif" height="50"></a>
+<a target="_top" href="https://www.geograph.org.uk/"><img src="{$static_host}/templates/basic/img/logo.gif" height="50"></a>
 </div>
 
 	{dynamic}

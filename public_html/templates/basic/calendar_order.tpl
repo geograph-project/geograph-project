@@ -70,7 +70,7 @@ background-image:url("{$image->_getFullPath(true,true)}");background-size:cover;
 --background-image: url("https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Calendar2024_cover1.jpg")
 '>
 				<img style="position:absolute; top:20px; left:7px; width:177px; height:49px; border:6px solid #000066;"
-					src="https://s1.geograph.org.uk/templates/basic/img/xmaslogo.gif">
+					src="https://s1.geograph.org.uk/templates/basic/img/logo.gif">
 				<span id="previewtitle" style="position:absolute; top:28px; left:200px; font-size:20px;font-weight:bold;width:280px;text-align:center; font-style:italic">{$calendar.title|escape:"html"|default:"Your Title Here"}</span>
 				<span style="position:absolute; top:60px; left:200px; font-size:16px;font-weight:bold;width:280px;text-align:center">Photography by {$cover_name|escape:'html'}</span>
 				<span style="position:absolute; top:23px; left:494px; font-size:27px;font-weight:bold;text-align:right">Calendar<br>{$year}</span>
