@@ -496,16 +496,18 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 	}
 
 	if ($USER->user_id == 3 || $USER->user_id==93 || $USER->user_id==1469) { // && $GLOBALS['memcache']->valid) {
-		$poster_id = $bbdb->getOne("select max(poster_id) from geobb_posts");;
+		$poster_id = $bbdb->getOne("select max(poster_id) from geobb_posts");
 		$mkey = "forum_first_post:".$USER->user_id;
 		$last_id = $GLOBALS['memcache']->get($mkey);
 		if ($last_id != $poster_id) {
-			$rows = $bbdb->getAll("SELECT * FROM geobb_posts WHERE poster_id = $poster_id");
+			$rows = $bbdb->getAll("SELECT * FROM geobb_posts WHERE poster_id = $poster_id and post_time > date_sub(now(),interval 14 day)");
+			if (!empty($rows)) {
 			print "<h4>New Poster!</h4><ul>";
 			foreach ($rows as $row) {
 				print "<li><a href=\"?action=vpost&topic={$row['topic_id']}&forum={$row['forum_id']}&post={$row['post_id']}\">".htmlentities($row['poster_name'])."</a> : ".htmlentities($row['post_text'])."</li>";
 			}
 			print "</ul><p><a href=\"/admin/latestposts.php\">All Latest Users</a></p>";
+			}
 			$GLOBALS['memcache']->set($mkey, $poster_id, false, 3600*24*7);
 		}
 
