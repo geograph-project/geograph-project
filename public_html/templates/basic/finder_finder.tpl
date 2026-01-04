@@ -325,6 +325,10 @@ touch-action:inherit;
 
 	</div>
 
+	<div id="load-more-container" class="hidden" style="text-align: center; padding: 10px;">
+		<button id="load-more-btn">Load More Results</button>
+	</div>
+
 	<div id="more-results-prompt" class="hidden" style="text-align: center; padding: 20px;">
 		<span id="results-count2"></span>
 		<span class="nowrap full-version">Continue in: 
@@ -357,6 +361,7 @@ touch-action:inherit;
 let map = null;
 let layerGroup = null;
 let initialHelp = null;
+let currentLimit = 30;
 
 function restoreInitialHelp() {
 	const resultDiv = document.getElementById("results")
@@ -383,6 +388,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('finder-form').addEventListener('submit', function(event) {
         event.preventDefault();
         performSearch();
+    });
+
+    document.getElementById('load-more-btn').addEventListener('click', function(event) {
+        event.preventDefault();
+        currentLimit = 100;
+        searchAndRender();
     });
 
     document.getElementById('add-date-filter').addEventListener('click', function(event) {
@@ -529,7 +540,10 @@ function renderFinderResults(url, divId, countDivId) {
     const divElement = document.getElementById(divId);
     const countDivElement = document.getElementById(countDivId);
     const moreResultsPrompt = document.getElementById('more-results-prompt');
+    const loadMoreContainer = document.getElementById('load-more-container');
     const display = document.getElementById('display-mode').value;
+
+    loadMoreContainer.classList.add('hidden');
 
     fetch(url)
         .then(response => {
@@ -630,7 +644,9 @@ function renderFinderResults(url, divId, countDivId) {
                 }
 
                 // Handle 'More Results' prompt
-                if (data.meta && data.meta.total_found > data.rows.length) {
+                if (data.rows.length === 30 && currentLimit === 30) {
+                    loadMoreContainer.classList.remove('hidden');
+                } else if (data.meta && data.meta.total_found > data.rows.length) {
 		    document.getElementById('results-count2').textContent = `Showing ${data.rows.length} of ${data.meta.total_found} results.`;
                     moreResultsPrompt.classList.remove('hidden');
                 } else {
@@ -707,7 +723,7 @@ function searchAndRender() {
     const data = {
         long: 1,
         select: "id,user_id,realname,grid_reference,title,hash,takenday,width,height",
-        limit: 30,
+        limit: currentLimit,
 	utf: 1
     };
 
@@ -734,6 +750,7 @@ function searchAndRender() {
     if (type == 'similarity' && query_len) { //no point doing similarity, if no query
         base = "https://www.geograph.org.uk/api-facetql-vector.php"; //for now, requires a different API endpoint
 	data['label'] = query;
+        data['limit'] = currentLimit;
         if (model) {
             data['model'] = model;
         }
@@ -965,7 +982,7 @@ function processImageForKeywords(row) {
 }
 
 function performSearch() {
-
+    currentLimit = 30;
     searchAndRender();
 
     const query = document.querySelector('input[name="q"]').value;
