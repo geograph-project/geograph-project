@@ -646,7 +646,8 @@ function renderFinderResults(url, divId, countDivId) {
                 // Handle 'More Results' prompt
                 if (data.rows.length === 30 && currentLimit === 30) {
                     loadMoreContainer.classList.remove('hidden');
-                } else if (data.meta && data.meta.total_found > data.rows.length) {
+                } 
+                if (data.meta && data.meta.total_found > data.rows.length) {
 		    document.getElementById('results-count2').textContent = `Showing ${data.rows.length} of ${data.meta.total_found} results.`;
                     moreResultsPrompt.classList.remove('hidden');
                 } else {
