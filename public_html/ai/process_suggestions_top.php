@@ -16,30 +16,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_tags'])) {
     $image_ids_on_page = isset($_POST['image_ids']) ? explode(',', $_POST['image_ids']) : [];
 
     if (!empty($image_ids_on_page)) {
-        // Process tag additions
-        foreach ($submitted_tags as $gridimage_id => $tags_to_add) {
-            if (!empty($tags_to_add)) {
-                $tags = new Tags;
-                $tags->addTags($tags_to_add, 'top');
-                $tags->commit($gridimage_id, true);
-            }
-        }
-
-        // Mark all images on the page as processed
         $db->begin_transaction();
         try {
-            $update_sql = "UPDATE clipthelandscape SET processed = NOW() WHERE gridimage_id IN (?" . str_repeat(",?", count($image_ids_on_page) - 1) . ")";
+            // Process tag additions
+            foreach ($submitted_tags as $gridimage_id => $tags_to_add) {
+                if (!empty($tags_to_add)) {
+                    $tags = new Tags;
+                    $tags->addTags($tags_to_add, 'top');
+                    $tags->commit($gridimage_id, true);
+                }
+            }
+
+            // Mark all images on the page as processed
+            $update_sql = "UPDATE clipthelandscape SET processed = NOW() WHERE user_id = ? AND gridimage_id IN (?" . str_repeat(",?", count($image_ids_on_page) - 1) . ")";
             $update_stmt = $db->prepare($update_sql);
 
-            $types = str_repeat('i', count($image_ids_on_page));
-            $update_stmt->bind_param($types, ...$image_ids_on_page);
+            $types = 'i' . str_repeat('i', count($image_ids_on_page));
+            $params = array_merge([$USER->user_id], $image_ids_on_page);
+            $update_stmt->bind_param($types, ...$params);
 
             $update_stmt->execute();
             $update_stmt->close();
+
             $db->commit();
         } catch (Exception $e) {
             $db->rollback();
-            error_log("Failed to update processed status: " . $e->getMessage());
+            error_log("Failed to process tags submission: " . $e->getMessage());
         }
     }
 
@@ -66,8 +68,19 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
+// --- FETCH ALL TAGS FOR JAVASCRIPT ---
+$all_tags_sql = "SELECT grouping, top FROM category_primary ORDER BY sort_order";
+$all_tags_result = $db->query($all_tags_sql);
+$all_tags = [];
+while ($tag_row = $all_tags_result->fetch_assoc()) {
+    $all_tags[] = $tag_row;
+}
+$all_tags_result->close();
+
+
 // --- DISPLAY LOGIC ---
 if (!empty($images)) {
+    echo '<script>const allTags = ' . json_encode($all_tags) . ';</script>';
     echo '<h2>Suggested Tags for Your Images</h2>';
     echo '<p>Review the suggested tags and uncheck any you do not want to add. Click "Submit" at the bottom to process the checked tags.</p>';
     echo '<form method="POST" action="">';
@@ -89,6 +102,7 @@ if (!empty($images)) {
         echo '</td>';
 
         echo '<td>';
+        echo '<div id="tags-container-' . $image->gridimage_id . '">';
         $tags = explode(';', $row['labels']);
         foreach ($tags as $tag) {
             $tag = trim($tag);
@@ -99,6 +113,8 @@ if (!empty($images)) {
                 echo '</label>';
             }
         }
+        echo '</div>';
+        echo '<button type="button" class="toggle-tags-btn" data-imageid="' . $image->gridimage_id . '">Expand</button>';
         echo '</td>';
         echo '</tr>';
     }
@@ -115,7 +131,80 @@ if (!empty($images)) {
     echo '<p>No more images with tag suggestions found.</p>';
 }
 
+?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.toggle-tags-btn');
 
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            const imageId = this.dataset.imageid;
+            const container = document.getElementById('tags-container-' + imageId);
+            const isExpanded = this.textContent === 'Collapse';
+
+            // Get currently checked tags
+            const checkedTags = new Set();
+            container.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                checkedTags.add(cb.value);
+            });
+
+            // Clear the container
+            container.innerHTML = '';
+
+            if (isExpanded) {
+                // Collapse logic
+                this.textContent = 'Expand';
+                checkedTags.forEach(tagValue => {
+                    const label = document.createElement('label');
+                    label.style.display = 'block';
+                    label.style.margin = '2px';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = `tags[${imageId}][]`;
+                    checkbox.value = tagValue;
+                    checkbox.checked = true;
+
+                    label.appendChild(checkbox);
+                    label.append(' ' + tagValue);
+                    container.appendChild(label);
+                });
+            } else {
+                // Expand logic
+                this.textContent = 'Collapse';
+                let currentGrouping = '';
+                allTags.forEach(tagData => {
+                    if (tagData.grouping !== currentGrouping) {
+                        currentGrouping = tagData.grouping;
+                        const heading = document.createElement('h4');
+                        heading.textContent = currentGrouping;
+                        heading.style.marginTop = '10px';
+                        heading.style.marginBottom = '5px';
+                        container.appendChild(heading);
+                    }
+
+                    const tagValue = tagData.top;
+                    const label = document.createElement('label');
+                    label.style.display = 'block';
+                    label.style.margin = '2px';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = `tags[${imageId}][]`;
+                    checkbox.value = tagValue;
+                    if (checkedTags.has(tagValue)) {
+                        checkbox.checked = true;
+                    }
+
+                    label.appendChild(checkbox);
+                    label.append(' ' + tagValue);
+                    container.appendChild(label);
+                });
+            }
+        });
+    });
+});
+</script>
+<?php
 $smarty->display('_std_end.tpl');
-
 ?>
