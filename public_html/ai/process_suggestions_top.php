@@ -16,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_tags'])) {
     $image_ids_on_page = isset($_POST['image_ids']) ? explode(',', $_POST['image_ids']) : [];
 
     if (!empty($image_ids_on_page)) {
-        $db->begin_transaction();
         try {
             // Process tag additions
             foreach ($submitted_tags as $gridimage_id => $tags_to_add) {
@@ -29,18 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_tags'])) {
 
             // Mark all images on the page as processed
             $update_sql = "UPDATE clipthelandscape SET processed = NOW() WHERE user_id = ? AND gridimage_id IN (?" . str_repeat(",?", count($image_ids_on_page) - 1) . ")";
-            $update_stmt = $db->prepare($update_sql);
-
-            $types = 'i' . str_repeat('i', count($image_ids_on_page));
             $params = array_merge([$USER->user_id], $image_ids_on_page);
-            $update_stmt->bind_param($types, ...$params);
+            $db->execute($update_sql, $params);
 
-            $update_stmt->execute();
-            $update_stmt->close();
-
-            $db->commit();
         } catch (Exception $e) {
-            $db->rollback();
             error_log("Failed to process tags submission: " . $e->getMessage());
         }
     }
@@ -52,11 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_tags'])) {
 
 // --- DATA FETCHING LOGIC ---
 $user_id = $USER->user_id;
-$sql = "SELECT c.gridimage_id, c.user_id, gs.title, gs.grid_reference, gs.realname, c.labels " .
+$sql = "SELECT c.gridimage_id, c.user_id, gs.title, gs.grid_reference, gs.realname, imagetaken, c.labels " .
        "FROM clipthelandscape c " .
        "INNER JOIN gridimage_search gs USING (gridimage_id, user_id) " .
        "WHERE c.processed IS NULL AND c.tops = 0 AND c.user_id = ? " .
-       "LIMIT 10";
+       "LIMIT 20";
 
 $images = $db->getAll($sql, array($user_id));
 
@@ -69,9 +60,9 @@ $all_tags = $db->getAll($all_tags_sql);
 if (!empty($images)) {
     echo '<script>const allTags = ' . json_encode($all_tags) . ';</script>';
     echo '<h2>Suggested Tags for Your Images</h2>';
-    echo '<p>Review the suggested tags and uncheck any you do not want to add. Click "Submit" at the bottom to process the checked tags.</p>';
+    echo '<p>Review the suggested tags and uncheck any you do not want to add. Click "Submit" at the bottom to process the checked tags. Click an Expand button to get the full Context list to select from</p>';
     echo '<form method="POST" action="">';
-    echo '<table border="1" cellpadding="5" cellspacing="0">';
+    echo '<table border="1" cellpadding="5" cellspacing="0" border=1 bordercolor="#eee">';
     echo '<thead><tr><th>Thumbnail</th><th>Suggested Tags</th></tr></thead>';
     echo '<tbody>';
 
@@ -82,14 +73,18 @@ if (!empty($images)) {
         $image_ids_on_page[] = $image->gridimage_id;
 
         echo '<tr>';
-        echo '<td style="width: 130px; text-align: center;">';
-        echo '<a title="' . htmlspecialchars($image->grid_reference . ' : ' . $image->title . ' by ' . $image->realname) . '" href="/photo/' . $image->gridimage_id . '">';
-        echo $image->getThumbnail(120, 120, false, true);
+        echo '<td style="width: 222px; text-align: center;">';
+        echo '<a title="' . htmlentities2($image->grid_reference . ' : ' . $image->title . ' by ' . $image->realname) . '" href="/photo/' . $image->gridimage_id . '">';
+        echo $image->getThumbnail(213, 160, false, true);
         echo '</a>';
         echo '</td>';
 
         echo '<td>';
-        echo '<div id="tags-container-' . $image->gridimage_id . '">';
+       echo "<b>".htmlentities2($image->title)."</b>";
+       if (!empty($row['imagetaken']) && $row['imagetaken'] > 1000)
+               print ", ".substr($row['imagetaken'],0,4);
+       print "<hr>";
+        echo '<div id="tags-container-' . $image->gridimage_id . '" style="margin-bottom:8px">';
         $tags = explode(';', $row['labels']);
         foreach ($tags as $tag) {
             $tag = trim($tag);
@@ -101,7 +96,7 @@ if (!empty($images)) {
             }
         }
         echo '</div>';
-        echo '<button type="button" class="toggle-tags-btn" data-imageid="' . $image->gridimage_id . '">Expand</button>';
+        echo '<button type="button" class="toggle-tags-btn" data-imageid="' . $image->gridimage_id . '">Expand &gt;</button>';
         echo '</td>';
         echo '</tr>';
     }
@@ -140,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (isExpanded) {
                 // Collapse logic
-                this.textContent = 'Expand';
+                this.textContent = 'Expand >';
                 checkedTags.forEach(tagValue => {
                     const label = document.createElement('label');
                     label.style.display = 'block';
@@ -168,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         groupContainer = document.createElement('div');
                         groupContainer.style.float = 'left';
+                        groupContainer.style.maxWidth = '200px';
                         groupContainer.style.marginRight = '20px';
                         container.appendChild(groupContainer);
 
