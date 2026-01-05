@@ -1,6 +1,6 @@
 <?php
 
-require_once('../geograph/global.inc.php');
+require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
@@ -58,24 +58,11 @@ $sql = "SELECT c.gridimage_id, c.user_id, gs.title, gs.grid_reference, gs.realna
        "WHERE c.processed IS NULL AND c.tops = 0 AND c.user_id = ? " .
        "LIMIT 10";
 
-$stmt = $db->prepare($sql);
-$stmt->bind_param('i', $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$images = [];
-while ($row = $result->fetch_assoc()) {
-    $images[] = $row;
-}
-$stmt->close();
+$images = $db->getAll($sql, array($user_id));
 
 // --- FETCH ALL TAGS FOR JAVASCRIPT ---
 $all_tags_sql = "SELECT grouping, top FROM category_primary ORDER BY sort_order";
-$all_tags_result = $db->query($all_tags_sql);
-$all_tags = [];
-while ($tag_row = $all_tags_result->fetch_assoc()) {
-    $all_tags[] = $tag_row;
-}
-$all_tags_result->close();
+$all_tags = $db->getAll($all_tags_sql);
 
 
 // --- DISPLAY LOGIC ---
@@ -173,14 +160,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Expand logic
                 this.textContent = 'Collapse';
                 let currentGrouping = '';
+                let groupContainer = null;
+
                 allTags.forEach(tagData => {
                     if (tagData.grouping !== currentGrouping) {
                         currentGrouping = tagData.grouping;
+
+                        groupContainer = document.createElement('div');
+                        groupContainer.style.float = 'left';
+                        groupContainer.style.marginRight = '20px';
+                        container.appendChild(groupContainer);
+
                         const heading = document.createElement('h4');
                         heading.textContent = currentGrouping;
                         heading.style.marginTop = '10px';
                         heading.style.marginBottom = '5px';
-                        container.appendChild(heading);
+                        groupContainer.appendChild(heading);
                     }
 
                     const tagValue = tagData.top;
@@ -198,8 +193,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     label.appendChild(checkbox);
                     label.append(' ' + tagValue);
-                    container.appendChild(label);
+                    groupContainer.appendChild(label);
                 });
+
+                const clearer = document.createElement('div');
+                clearer.style.clear = 'both';
+                container.appendChild(clearer);
             }
         });
     });
@@ -207,4 +206,3 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 <?php
 $smarty->display('_std_end.tpl');
-?>
