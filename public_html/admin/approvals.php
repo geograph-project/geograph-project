@@ -189,7 +189,7 @@ foreach ($links as $link => $name) {
                 print "<a class=tab href=?$link>$name</a> ";
         }
 }
-print "<a href=\"https://media.geograph.org.uk/files/b3e3e393c77e35a4a3f3cbd1e429b5dc/Additional_pages_moderation_testing_5_Aug_2025.pdf\" class=about target=_blank>Help Document</a>";
+print "<a href=\"https://media.geograph.org.uk/files/c81e728d9d4c2f636f067f89cc14862c/Additional_pages_moderation_guide_5_Jan_26.pdf\" class=about target=_blank>Help Document</a>";
 print '</div>';
 
 ##############################
