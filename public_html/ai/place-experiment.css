@@ -1,0 +1,66 @@
+/* Shared Styles */
+.image-thumbnail { height: 150px; flex: 0 0 auto; } 
+.image-thumbnail img { height: 150px; width: auto; display: block; object-fit: cover; cursor: inherit; } 
+
+/* FILMSTRIP VIEW (Grouped) */
+.image-entry {
+    position: relative; width: 100%; display: flex; height: 150px;
+    overflow-x: auto; overflow-y: hidden; white-space: nowrap; 
+    background: #000; cursor: grab; scroll-behavior: smooth;
+    mask-image: linear-gradient(to right, black 90%, rgba(0,0,0,0.4) 100%); 
+    -webkit-mask-image: linear-gradient(to right, black 90%, rgba(0,0,0,0.4) 100%);
+}
+.image-entry:hover { mask-image: none; -webkit-mask-image: none; } 
+
+.image-entry h3 {
+    position: absolute; bottom: 10px; right: 35px; z-index: 10;
+    color: rgba(255, 255, 255, 0.8); pointer-events: none; user-select: none; 
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7); 
+}
+
+.md3-mode .image-entry h3 {
+    font-size: 1.7em;
+    text-transform: capitalize; 
+letter-spacing: -0.02em; /* Tighter tracking looks better at large sizes */
+}
+
+/* WALL VIEW (Grid) */
+.image-wall { display: flex; flex-wrap: wrap; background: #000; } 
+.image-wall .image-thumbnail { flex-grow: 1; flex-basis: auto; } 
+.image-wall .image-thumbnail:hover img { transform: scale(1.05); z-index: 10; position: relative; } 
+.image-wall::after { content: ""; flex-grow: 999; } 
+
+/* SHOW MORE CARD */
+.show-more-card { 
+    width: 150px; background: linear-gradient(45deg, #222, #444); 
+    display: flex !important; align-items: center; justify-content: center; 
+}
+.show-more-card a { 
+    color: #fff; text-decoration: none; font-weight: bold; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center; 
+}
+
+
+.place-switcher {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+}
+.place-switcher a {
+    padding: 8px 15px;
+    margin-right: 5px;
+    text-decoration: none;
+    color: #aaa;
+    border-radius: 4px;
+    background: #222;
+    font-size: 0.9rem;
+}
+.place-switcher a.active {
+    background: #00d2ff;
+    color: #000;
+    font-weight: bold;
+}
+.place-switcher a:hover:not(.active) {
+    background: #333;
+    color: #fff;
+}
