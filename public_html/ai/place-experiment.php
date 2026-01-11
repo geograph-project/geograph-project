@@ -79,7 +79,7 @@ if (true) {
 	list ($gridref,) = $conv->national_to_gridref($mbr['geometry_x'],$mbr['geometry_y'],4,$mbr['reference_index']);
 	$cols .= ", ".$db->Quote($gridref)." AS km_ref";
 
-	$join_tables .= " INNER JOIN gb_images USING(gridimage_id)";
+	$join_tables .= " INNER JOIN gb_images FORCE INDEX (natnorthings) USING(gridimage_id)"; //force index is very imporant particuly for the tag_public join
 
 	$spatial_where = "nateastings BETWEEN {$mbr['mbr_xmin']} AND {$mbr['mbr_xmax']}
                      AND natnorthings BETWEEN {$mbr['mbr_ymin']} AND {$mbr['mbr_ymax']}";
@@ -218,10 +218,10 @@ else {
             } else
                 @$grouped[$t][] = $image;
             if ($image->km_ref == $image->grid_reference) @$stat[$t]++;
-            if ($image->imagetaken > "1000" && $image->imagetaken < "2000") {
+        }
+        if ($image->imagetaken > "1000" && $image->imagetaken < "2000") {
 		$t = ($image->imagetaken < "1970")?"Pre 1970":"Pre 2000";
 	        @$grouped[$t][] = $image;
-            }
         }
     }
 
@@ -252,6 +252,12 @@ foreach ($grouped as $tag => $images) {
         }
     }
 }
+
+    //noticed, in particular this category can end up looking very similar to others (eg Roads, because most housing are taken from road)
+    //todo could also do with City Center and Businss/Retail, as have so much overlap too!
+    if (isset($grouped['Housing, Dwellings']))
+        shuffle($grouped['Housing, Dwellings']);
+
 
     $stat2 = $stat;
     if (isset($stat['City, Town centre']))   $stat2['City, Town centre'] *= 4; //fudge to show very highly!
