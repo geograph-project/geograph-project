@@ -14,7 +14,7 @@
 
 .image-entry h3 {
     position: absolute; bottom: 10px; right: 35px; z-index: 10;
-    color: rgba(255, 255, 255, 0.8); pointer-events: none; user-select: none; 
+    color: lightgreen; pointer-events: none; user-select: none; 
     text-shadow: 2px 2px 4px rgba(0,0,0,0.7); 
 }
 
@@ -64,3 +64,26 @@ letter-spacing: -0.02em; /* Tighter tracking looks better at large sizes */
     background: #333;
     color: #fff;
 }
+
+.truncation-warning {
+    clear: both;
+    margin: 40px 0;
+    padding: 20px;
+    background: #222;
+    border: 1px solid #444;
+    text-align: center;
+    border-radius: 8px;
+    color:white;
+}
+
+.truncation-warning a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: #007bff;
+    color: #fff !important;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+

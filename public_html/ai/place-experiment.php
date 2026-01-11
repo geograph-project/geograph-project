@@ -60,18 +60,48 @@ echo '</div>';
 
 
 // 2. Build SQL
-$town_quote = $db->Quote($town);
+##################################################################
+
+$cols = "gridimage_id, grid_reference, gi.user_id, title, realname, gi.imagetaken";
+$join_tables = " INNER JOIN gridimage_search gi USING(gridimage_id)";
+$spatial_where = '';
+
+if (true) {
+	$mbr = $db->getRow("SELECT mbr_xmin, mbr_ymin, mbr_xmax, mbr_ymax, geometry_x, geometry_y, 1 as reference_index
+                   FROM os_open_places
+                   WHERE name1 = " . $db->Quote(substring_index($town,'/',1)) . " LIMIT 1");
+
+        require_once('geograph/conversions.class.php');
+        $conv = new Conversions;
+
+	list ($gridref,) = $conv->national_to_gridref($mbr['geometry_x'],$mbr['geometry_y'],4,$mbr['reference_index']);
+	$cols .= ", ".$db->Quote($gridref)." AS km_ref";
+
+	$join_tables .= " INNER JOIN gb_images USING(gridimage_id)";
+
+	$spatial_where = "nateastings BETWEEN {$mbr['mbr_xmin']} AND {$mbr['mbr_xmax']}
+                     AND natnorthings BETWEEN {$mbr['mbr_ymin']} AND {$mbr['mbr_ymax']}";
+} else {
+	$cols .= ", km_ref"; //from sphinx_placenames
+
+	$join_tables .= " INNER JOIN gridsquare USING (grid_reference)";
+        $join_tables .= " INNER JOIN sphinx_placenames USING (placename_id)";
+
+	$spatial_where = "place = ".$db->Quote($town);
+}
+
+if (preg_match('/^Pre (\d+)/',$tag,$m)) {
+    $spatial_where .= " AND gi.imagetaken > '1000-01-01' AND gi.imagetaken < '{$m[1]}-00-00'";
+    $tag = ''; //can't filter below by it. So remove the filter.
+}
 
 ##################################################################
 if ($type == 'clip') {
 
     // We fetch all images for the town that contain the tag anywhere in their labels string
-    $sql = "SELECT gridimage_id, grid_reference, km_ref, gi.user_id, title, realname, labels
-            FROM clipthelandscape 
-            INNER JOIN gridimage_search gi USING(gridimage_id)
-            INNER JOIN gridsquare USING (grid_reference) 
-            INNER JOIN sphinx_placenames USING (placename_id)
-            WHERE place = $town_quote";
+    $sql = "SELECT $cols, labels
+            FROM clipthelandscape
+	    $join_tables WHERE $spatial_where";
 
     if (!empty($tag)) {
         // Use LIKE to find images that contain this specific tag in the labels list
@@ -82,10 +112,10 @@ if ($type == 'clip') {
 ##################################################################
 
 } elseif ($type == 'top' || $type == 'subject') {
-    $sql = "SELECT gridimage_id, grid_reference, km_ref, gi.user_id, title, realname, group_concat(tag separator '; ') as labels
-            FROM tag_public INNER JOIN gridimage_search gi USING(gridimage_id)
-            INNER JOIN gridsquare USING (grid_reference) INNER JOIN sphinx_placenames USING (placename_id)
-            WHERE prefix = " . $db->Quote($type). " AND place = $town_quote";
+    $sql = "SELECT $cols, group_concat(tag separator '; ') as labels
+            FROM tag_public
+            $join_tables WHERE $spatial_where AND prefix = " . $db->Quote($type);
+
     if (!empty($tag)) {
         if ($type == 'subject') {
                 //subject prefix will have to revert a wall, as only one subject tag!
@@ -94,45 +124,39 @@ if ($type == 'clip') {
                 $sql .= " GROUP BY gridimage_id HAVING labels LIKE " . $db->Quote("%$tag%")." LIMIT 1000";
         }
     } else {
-        $sql .= " GROUP BY gridimage_id LIMIT 4000";
+        $sql .= " GROUP BY gridimage_id LIMIT 2000";
     }
 
 ##################################################################
 
 } elseif ($type == 'cluster') {
-    $sql = "SELECT gridimage_id, grid_reference, km_ref, gi.user_id, title, realname, 
-                   GROUP_CONCAT(label SEPARATOR '; ') AS labels
-            FROM gridimage_group INNER JOIN gridimage_search gi USING(gridimage_id)
-            INNER JOIN gridsquare USING (grid_reference) 
-            INNER JOIN sphinx_placenames USING (placename_id)
-            WHERE place = $town_quote";
+    $sql = "SELECT $cols, GROUP_CONCAT(label SEPARATOR '; ') AS labels
+            FROM gridimage_group
+            $join_tables WHERE $spatial_where";
             //AND label NOT IN ('(Other)', 'Other Topics') -- we dont hard filter them, in case the image only has one group, and would be excluded!
 
     if (!empty($tag)) {
         // Drill-down filmstrip for specific group label
         $sql .= " GROUP BY gridimage_id HAVING labels LIKE " . $db->Quote("%$tag%") . " LIMIT 1000";
     } else {
-        $sql .= " GROUP BY gridimage_id LIMIT 4000";
+        $sql .= " GROUP BY gridimage_id LIMIT 2000";
     }
 
 ##################################################################
 
 } elseif ($type == 'md3') {
 
-    $sql = "SELECT gridimage_id, grid_reference, km_ref, gi.user_id, title, realname, caption
-            FROM gridimage_caption c INNER JOIN gridimage_search gi USING(gridimage_id)
-            INNER JOIN gridsquare USING (grid_reference)
-            INNER JOIN sphinx_placenames USING (placename_id)
-            WHERE place = $town_quote AND c.type = 'tags'";
+    $sql = "SELECT $cols, caption
+            FROM gridimage_caption c
+            $join_tables WHERE $spatial_where AND c.type = 'tags'";
 
     if (!empty($tag)) {
         // Normalizing search: we search the raw text for the tag
         $sql .= " AND caption LIKE " . $db->Quote("%$tag%") . " LIMIT 1000";
     } else {
-        $sql .= " LIMIT 4000";
+        $sql .= " LIMIT 2000";
     }
 }
-
 
 ##################################################################
 
@@ -144,10 +168,10 @@ $imagelist->_getImagesBySql($sql);
 print "<div style=float:right>Found ".count($imagelist->images)." Images</div>";
 
 echo "<h2>Images of " . htmlentities($town)."*";
-if (!empty($tag)) {
+if (!empty($_GET['tag'])) {
     // Generate a URL that keeps the town and type but drops the tag filter
     $reset_url = "?" . http_build_query(['type' => $type, 'town' => $town]);
-    echo ", and matching [<tt>" . htmlentities($tag) . "</tt>] ";
+    echo ", and matching [<tt>" . htmlentities($_GET['tag']) . "</tt>] ";
     echo "<a href='$reset_url' class='remove-filter'>Remove filter</a>";
 }
 echo "</h2>";
@@ -166,6 +190,8 @@ if (!empty($wall) && !empty($tag)) { //tags now display grouped!
     echo '</div>';
 }
 
+##################################################################
+
 // 5. DISPLAY VIEW: "The Filmstrip" (Grouped View)
 else {
     $grouped = [];
@@ -183,18 +209,23 @@ else {
             $t = trim($t, '[]", ');
             if (!empty($tag) && $t == $tag) {
                 if (count($list) == 1) // if the ONLY tag on the image, still need to add it.
-		    $grouped[$t][] = $image;
+		    @$grouped[$t][] = $image;
             } elseif ($t == '(Other)' || $t == 'Other Topics') {
                 if (count($list) == 1) // simially only use the 'other' groups, if its the ONLY category. otehrwise the images that strugged to be classfied, would never be shown?
-		    $grouped[$t][] = $image;
+		    @$grouped[$t][] = $image;
             } else
-                $grouped[$t][] = $image;
+                @$grouped[$t][] = $image;
             if ($image->km_ref == $image->grid_reference) @$stat[$t]++;
-break;
+            if ($image->imagetaken > "1000" && $image->imagetaken < "2000") {
+		$t = ($image->imagetaken < "1970")?"Pre 1970":"Pre 2000";
+	        @$grouped[$t][] = $image;
+            }
         }
     }
 
-// 1. Create a map of "Image Set Fingerprints"
+##################################################################
+
+//1. Create a map of "Image Set Fingerprints"
 //... carrot2 in particular can create duplicate groups
 $fingerprints = [];
 foreach ($grouped as $tag => $images) {
@@ -222,9 +253,11 @@ foreach ($grouped as $tag => $images) {
 
     $stat2 = $stat;
     if (isset($stat['City, Town centre']))   $stat2['City, Town centre'] *= 4; //fudge to show very highly!
-    foreach(array('urban scene', 'town', 'buildings', 'street scene', 'high street', 'town center', 'town hall', 'village hall', 'market square') as $tag)
-        if (isset($stat[$tag]))  	$stat2[$tag] *= 3;
+    foreach(array('urban scene', 'town', 'buildings', 'street scene', 'high street', 'town center', 'town centre', 'town hall', 'village hall', 'market square', 'Pre 1970','Pre 2000') as $tag)
+	if (isset($stat[$tag]))  	$stat2[$tag] *= 3;
 
+    $town2 = substring_index($town,'/',1);
+    if (isset($stat["$town2 Landmark"]))  	$stat2["$town2 Landmark"] *= 4;
 
 
     // Sort using your custom uksort logic
@@ -232,6 +265,8 @@ foreach ($grouped as $tag => $images) {
         $comparison = ($stat2[$b] ?? 0) <=> ($stat2[$a] ?? 0);
         return ($comparison === 0) ? count($grouped[$b]) <=> count($grouped[$a]) : $comparison;
     });
+
+##################################################################
 
     $shown = array();
     foreach ($grouped as $t => $images) {
@@ -245,6 +280,10 @@ foreach ($grouped as $tag => $images) {
              }
              if (!$unique)
 		continue;
+        }
+        if (empty($_GET['more']) && count($shown) > 700) {
+            $truncated = true;
+	    break;
         }
         echo '<div class="image-entry">';
         echo '<h3>' . htmlentities($t) . ' <small>' . (isset($stat[$t]) ? sprintf('%d+%d', $stat[$t], count($images)-$stat[$t]) : "+".count($images)) . '</small></h3>';
@@ -262,6 +301,16 @@ foreach ($grouped as $tag => $images) {
         echo '</div>';
     }
 
+	if (!empty($truncated)) {
+	    // Merge existing GET params and add more=1
+	    $url = "?" . http_build_query(array_merge($_GET, ['more' => 1]));
+	    echo "<div class='truncation-warning'>";
+	    echo "Showing the about 700 images across the top groups. ";
+	    echo "<a href=\"$url\" rel=\"nofollow\">View all " . count($grouped) . " groups</a>";
+	    echo "</div>";
+	}
+
+##################################################################
 
 ?>
 <script>
@@ -294,15 +343,12 @@ document.querySelectorAll('.image-entry').forEach(slider => {
 
     slider.addEventListener('mousemove', (e) => {
         if (!isDown) return;
-        
         const x = e.pageX - slider.offsetLeft;
         const walk = (x - startX) * 2;
-        
         // If the mouse moves more than 5 pixels, consider it a drag
         if (Math.abs(x - startX) > 5) {
             moved = true;
         }
-        
         slider.scrollLeft = scrollLeft - walk;
     });
 
@@ -336,4 +382,10 @@ function renderThumbnail($image) {
 }
 
 $smarty->display('_std_end.tpl');
+
+	function substring_index($url,$delimiter,$count) {
+	        $segments = explode($delimiter, $url, $count+1);
+        	$extracted_segments = array_slice($segments, 0, $count);
+	        return implode($delimiter, $extracted_segments);
+	}
 
