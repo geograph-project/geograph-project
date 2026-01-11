@@ -50,7 +50,7 @@ foreach ($towns as $t) {
 }
 echo '</div>';
 
-$available_types = ['top' => 'Context Tags', 'subject' => 'Subject', 'cluster' => 'Auto Clusters', 'clip' => 'AI Context', 'md3'=>'AI Tags'];
+$available_types = ['top' => 'Context Tags', 'subject' => 'Subject', 'cluster' => 'Auto Clusters', 'clip' => 'AI Context', 'clipzero'=>'AI Labels', 'md3'=>'AI Tags'];
 echo '<div class="place-switcher">';
 foreach ($available_types as $t_key => $t_label) {
     $active = ($t_key === $type) ? 'class="active"' : '';
@@ -64,7 +64,7 @@ echo '</div>';
 // 2. Build SQL
 ##################################################################
 
-$cols = "gridimage_id, grid_reference, gi.user_id, title, realname, gi.imagetaken";
+$cols = "gridimage_id, gi.grid_reference, gi.user_id, gi.title, realname, gi.imagetaken";
 $join_tables = " INNER JOIN gridimage_search gi USING(gridimage_id)";
 $spatial_where = '';
 
@@ -98,11 +98,27 @@ if (preg_match('/^Pre (\d+)/',$tag,$m)) {
 }
 
 ##################################################################
+
 if ($type == 'clip') {
 
     // We fetch all images for the town that contain the tag anywhere in their labels string
     $sql = "SELECT $cols, labels
             FROM clipthelandscape
+	    $join_tables WHERE $spatial_where";
+
+    if (!empty($tag)) {
+        // Use LIKE to find images that contain this specific tag in the labels list
+        $sql .= " AND labels LIKE " . $db->Quote("%" . $tag . "%");
+    }
+    $sql .= " LIMIT 4000";
+
+##################################################################
+
+} elseif ($type == 'clipzero') {
+
+    // We fetch all images for the town that contain the tag anywhere in their labels string
+    $sql = "SELECT $cols, labels
+            FROM clipzero
 	    $join_tables WHERE $spatial_where";
 
     if (!empty($tag)) {
