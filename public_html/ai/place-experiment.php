@@ -25,6 +25,8 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+ customExpiresHeader(3600,false,true);
+
 $smarty = new GeographPage;
 $smarty->display('_std_begin.tpl');
 $db = GeographDatabaseConnection(true);
