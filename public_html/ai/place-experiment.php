@@ -185,7 +185,7 @@ $imagelist->_getImagesBySql($sql);
 
 print "<div style=float:right>Found ".count($imagelist->images)." Images</div>";
 
-echo "<h2>Images of " . htmlentities($town)."*";
+echo "<h2>Images of " . htmlentities($town)." <a href=#cite title=\"* and the immediate surrounding area\">*</a>";
 if (!empty($_GET['tag'])) {
     // Generate a URL that keeps the town and type but drops the tag filter
     $reset_url = "?" . http_build_query(['type' => $type, 'town' => $town]);
@@ -392,7 +392,7 @@ document.querySelectorAll('.image-entry').forEach(slider => {
 }
 print "</div>";
 
-print "* and the immediate surrounding area";
+print "<p><a name=cite>* and the immediate surrounding area</a></p>";
 
 // Helper to keep the loop code clean
 function renderThumbnail($image) {
