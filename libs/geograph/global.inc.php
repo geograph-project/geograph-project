@@ -1048,9 +1048,9 @@ $str[] = "
 	}
 
 	//require A cookie, so doesnt appear on first view! But allow it to be idden with the explicit cookie!
-	if (!empty($_SERVER['HTTP_COOKIE']) && empty($_COOKIE['survey']) && !empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],'https://www.geograph.') === 0 ) {
-		$_GET['survey'] = 1;
-	}
+	//if (!empty($_SERVER['HTTP_COOKIE']) && empty($_COOKIE['survey']) && !empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'],'https://www.geograph.') === 0 ) {
+	//	$_GET['survey'] = 1;
+	//}
 
 	if ((!empty($_GET['appeal']) || !empty($_GET['ads']) || !empty($_GET['survey']))
 		&& empty($USER->is_login_form) //catch inline logins!
