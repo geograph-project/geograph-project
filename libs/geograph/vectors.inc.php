@@ -93,9 +93,9 @@ function getTextEmbeddingFromQuery(string $query, $model = 'clip'): array
     }
 
 //copied from _getLabelVectorValueList
-// NOTE only supports clip, and intended for use with known labels
-function getTextEmbeddingWrapper($label, $model = 'clip') {
-	global $db;
+// NOTE only supports clip (PE in different table, mpnet differente dimesnion), and intended for use with known labels as uses a Cache
+function getTextEmbeddingWrapper($label, $model = 'clip', $save = false) { //save defaults to false for legacy reasons
+ 	global $db;
 	if (empty($db))
 		$db = GeographDatabaseConnection(false);
 
@@ -111,8 +111,8 @@ function getTextEmbeddingWrapper($label, $model = 'clip') {
             $r = getTextEmbedding($label, $model);
             if (!empty($r) && is_array($r) && count($r) > 0) { // Check if API returned a valid non-empty array
                 // Optionally, save $r to DB here for future use
-		//remember to check $db->readonly
-                // $db->Execute("INSERT INTO label_embedding (label, model, embeddings) VALUES ($quoted, ?, ?)", [$model, pack('g*', ...$r)]);
+		if ($save && empty($db->readonly))
+                	$db->Execute("INSERT INTO label_embedding (label, model, embeddings) VALUES ($quoted, ?, ?)", [$model, pack('g*', ...$r)]);
                 return $r;
             }
             error_log('Unable to get/encode query vector for label: ' . $label . ' from DB or API.');
