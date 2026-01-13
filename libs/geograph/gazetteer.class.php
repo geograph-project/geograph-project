@@ -934,6 +934,23 @@ split_timer('gazetteer','findPlacename',$mkey); //logs the wall time
 		return $places;
 	}
 
+	function getCoordinatesById($placename_id, $reference_index) { //todo, could make reference_index optional
+		$db = $this->_getDB();
+		$row = array();
+
+                      //annoyingly sphinx_placenames, does not have eastings/northing, so have to goto source gazetters
+                        if ($place['reference_index'] == 1) {
+                                $row = $db->getRow("SELECT east as e, north as n,1 as reference_index FROM os_gaz WHERE seq = {$placename_id} - 1000000");
+                        } elseif ($reference_index == 2) {
+                                $row = $db->getRow("SELECT e,n,2 as reference_index FROM ie_open_data WHERE id = {$placename_id} - 3000000");
+                        }
+
+                        if (empty($row)) { //shouoldnt happen, but could be a old placename from GNS data)
+                                $row = $db->getRow("SELECT e,n,reference_index FROM loc_placenames WHERE id = {$placename_id}");
+                        }
+
+		return $row;
+	}
 
 	/**
 	 * get stored db object, creating if necessary

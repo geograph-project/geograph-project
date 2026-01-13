@@ -37,7 +37,9 @@ $town = $_GET['town'] ?? 'East Grinstead';
 $tag = $_GET['tag'] ?? '';
 
 $towns = array('East Grinstead', 'Fort William/An Gearasdan', 'Abergavenny/Y Fenni', 'Bicester');
-if (!in_array($town, $towns)) $town = 'East Grinstead';
+//if (!in_array($town, $towns)) $town = 'East Grinstead';
+if (!preg_match('/^[A-Z][\w -]+(\/[\w -]+)?$/',$town))  $town = 'East Grinstead'; //very basic check it a simple name. Will need fixing to deal with special chars etc
+
 
 ?> <link rel="stylesheet" href="place-experiment.css?<? echo filemtime('place-experiment.css'); ?>"> <?
 
@@ -68,29 +70,138 @@ $cols = "gridimage_id, gi.grid_reference, gi.user_id, gi.title, realname, gi.ima
 $join_tables = " INNER JOIN gridimage_search gi USING(gridimage_id)";
 $spatial_where = '';
 
-if (true) {
-	$mbr = $db->getRow("SELECT mbr_xmin, mbr_ymin, mbr_xmax, mbr_ymax, geometry_x, geometry_y, 1 as reference_index
-                   FROM os_open_places
-                   WHERE name1 = " . $db->Quote(substring_index($town,'/',1)) . " LIMIT 1");
+$conv = new Conversions;
+$conv->_setDB($db);
 
-        require_once('geograph/conversions.class.php');
-        $conv = new Conversions;
+$gaz = new Gazetteer();
+$gaz->_setDB($db);
 
+#############################
+
+$place = $db->getRow("SELECT placename_id,Place,images,km_ref,has_dup,reference_index
+         FROM sphinx_placenames
+         WHERE place = " . $db->Quote($town) . " LIMIT 1");
+
+if (empty($place)) {
+	die("unknown place - for now only names exactly as defined in our gazetter work");
+}
+
+#############################
+
+if ($place['reference_index'] == 1) { //ireland will fall though and use sphinx_placenames for the actual lookup - if possible
+
+    // 1. Get ALL OS MBRs with this name
+    $clean_name = substring_index($town, '/', 1);
+    $mbr_options = $db->getAll("SELECT mbr_xmin, mbr_ymin, mbr_xmax, mbr_ymax, geometry_x, geometry_y, 1 as reference_index
+		FROM os_open_places WHERE name1 = " . $db->Quote($clean_name));
+
+    //if one, simple!
+    if (count($mbr_options) === 1) {
+        $mbr = $mbr_options[0];
+
+    } elseif (count($mbr_options) > 1) {
+        // 2. We have a duplicate! Use coordinates from sphinx_placenames to find the closest one
+        // We can get rough E/N from the km_ref we already have in $place
+        //list($target_e, $target_n) = $conv->gridref_to_national($place['km_ref']); -- alas doesnt exist
+	$row = $gaz->getCoordinatesById($place['placename_id'], $place['reference_index']);
+	$target_e = $row['e'];
+	$target_n = $row['n'];
+
+        $best_dist = 999999999;
+        foreach ($mbr_options as $option) {
+            // Calculate Pythagorean distance
+            $dx = $target_e - $option['geometry_x'];
+            $dy = $target_n - $option['geometry_y'];
+            $dist = ($dx * $dx) + $dy * $dy; // No need for sqrt for simple comparison
+
+            if ($dist < $best_dist) {
+                $best_dist = $dist;
+                $mbr = $option;
+            }
+        }
+    }
+}
+
+//use a nice MBR from OS Open Names - where possible (alas some mismatch between gazetters)
+if (!empty($mbr)) {
 	list ($gridref,) = $conv->national_to_gridref($mbr['geometry_x'],$mbr['geometry_y'],4,$mbr['reference_index']);
 	$cols .= ", ".$db->Quote($gridref)." AS km_ref";
 
 	$join_tables .= " INNER JOIN gb_images FORCE INDEX (natnorthings) USING(gridimage_id)"; //force index is very imporant particuly for the tag_public join
 
 	$spatial_where = "nateastings BETWEEN {$mbr['mbr_xmin']} AND {$mbr['mbr_xmax']}
-                     AND natnorthings BETWEEN {$mbr['mbr_ymin']} AND {$mbr['mbr_ymax']}";
+               	     AND natnorthings BETWEEN {$mbr['mbr_ymin']} AND {$mbr['mbr_ymax']}";
+
+	$message = "Images are selected from a rectangle coveraging the general town area";
 } else {
-	$cols .= ", km_ref"; //from sphinx_placenames
 
-	$join_tables .= " INNER JOIN gridsquare USING (grid_reference)";
-        $join_tables .= " INNER JOIN sphinx_placenames USING (placename_id)";
+#############################
 
-	$spatial_where = "place = ".$db->Quote($town);
+	//for large places, cheat and get a sample from manticore
+	if (!empty($place['images']) && $place['images'] > 1500) {
+		$cols .= ", ".$db->Quote($place['km_ref'])." AS km_ref";
+
+		$sph = GeographSphinxConnection('sphinxql',true);
+		$ids = $sph->getCol("SELECT id FROM sample8 WHERE MATCH('@place ^$town$') ORDER BY sequence ASC LIMIT 1500 OPTION max_matches=1500");
+
+		if (!empty($ids)) {
+			$id_list = implode(',', $ids);
+			$spatial_where = "gridimage_id IN ($id_list)";
+
+			//can use this to tell user, but will still need to a way to let users view more images (eg link to our 'image browser' which has facetted browsing)
+			$message = "Showing a sample of about ".count($ids)." images from this from the place and its immediate surrounds.";
+		}
+
+	//sphinx_placenames.images is a materialized count done via the precomputed gridsquare.placename_id value
+	} elseif (!empty($place['images'])) { // ?images > 10 ?? (maybe places with few images, would be better just using centered search (incasd the voroni area was very small)
+		$cols .= ", km_ref"; //from sphinx_placenames
+
+		$join_tables .= " INNER JOIN gridsquare USING (grid_reference)";
+        	$join_tables .= " INNER JOIN sphinx_placenames USING (placename_id)";
+
+		$spatial_where = "place = ".$db->Quote($town);
+		$message = "Images selected based on the nearest recorded place name.";
+	}
+
+#############################
+
+	//otherwise a generic centered search
+	if (empty($spatial_where)) {
+		if (!empty($place['placename_id'])) {
+			$row = $gaz->getCoordinatesById($place['placename_id'], $place['reference_index']);
+		}
+
+		if (!empty($row)) {
+		        $dist = 1000; // Default 1km radius (2km box)
+		        $mbr = [
+	        	    'mbr_xmin' => $row['e'] - $dist,
+		            'mbr_xmax' => $row['e'] + $dist,
+		            'mbr_ymin' => $row['n'] - $dist,
+        		    'mbr_ymax' => $row['n'] + $dist
+		        ];
+
+			if (!empty($place['km_ref'])) {
+				$cols .= ", ".$db->Quote($place['km_ref'])." AS km_ref";
+			} else {
+				list ($gridref,) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
+				$cols .= ", ".$db->Quote($gridref)." AS km_ref";
+			}
+
+			$table = ($row['reference_index'] == 1)?'gb_images':'ie_images';
+			$join_tables .= " INNER JOIN $table FORCE INDEX (natnorthings) USING(gridimage_id)"; //force index is very imporant particuly for the tag_public join
+
+			$spatial_where = "nateastings BETWEEN {$mbr['mbr_xmin']} AND {$mbr['mbr_xmax']}
+        		       	     AND natnorthings BETWEEN {$mbr['mbr_ymin']} AND {$mbr['mbr_ymax']}";
+
+			$message = "Images within 1km of center of ".($place['km_ref'] ?? $gridref);
+		} else {
+			//todo, need some sort of fallback, if it not a match from our gazetters?
+			die("unknown placename");
+		}
+	}
 }
+
+#############################
 
 if (preg_match('/^Pre (\d+)/',$tag,$m)) {
     $spatial_where .= " AND gi.imagetaken > '1000-01-01' AND gi.imagetaken < '{$m[1]}-00-00'";
@@ -185,7 +296,7 @@ $imagelist->_getImagesBySql($sql);
 
 print "<div style=float:right>Found ".count($imagelist->images)." Images</div>";
 
-echo "<h2>Images of " . htmlentities($town)." <a href=#cite title=\"* and the immediate surrounding area\">*</a>";
+echo "<h2>Geograph Images of <span style=color:blue>" . htmlentities($town)."</span> area <a href=#cite title=\"* and the immediate surrounding area\">*</a>";
 if (!empty($_GET['tag'])) {
     // Generate a URL that keeps the town and type but drops the tag filter
     $reset_url = "?" . http_build_query(['type' => $type, 'town' => $town]);
@@ -392,7 +503,7 @@ document.querySelectorAll('.image-entry').forEach(slider => {
 }
 print "</div>";
 
-print "<p><a name=cite>* and the immediate surrounding area</a></p>";
+print "<p><a name=cite>* typically includes the immediate surrounding area</a>, note: $message</p>";
 
 // Helper to keep the loop code clean
 function renderThumbnail($image) {
