@@ -939,7 +939,7 @@ split_timer('gazetteer','findPlacename',$mkey); //logs the wall time
 		$row = array();
 
                       //annoyingly sphinx_placenames, does not have eastings/northing, so have to goto source gazetters
-                        if ($place['reference_index'] == 1) {
+                        if ($reference_index == 1) {
                                 $row = $db->getRow("SELECT east as e, north as n,1 as reference_index FROM os_gaz WHERE seq = {$placename_id} - 1000000");
                         } elseif ($reference_index == 2) {
                                 $row = $db->getRow("SELECT e,n,2 as reference_index FROM ie_open_data WHERE id = {$placename_id} - 3000000");
@@ -950,6 +950,89 @@ split_timer('gazetteer','findPlacename',$mkey); //logs the wall time
                         }
 
 		return $row;
+	}
+
+	/**
+	 * Calculates a Minimum Bounding Box (MBR) for a given place.
+	 *
+	 * Attempts to retrieve an official MBR from OS Open Names for GB locations. 
+	 * If multiple matches exist, it reconciles the correct one using proximity to 
+	 * the known gazetteer coordinates. Falls back to generating a "fake" MBR 
+	 * (square box) around a central point for Irish locations or missing GB data.
+	 *
+	 * @param array $place {
+	 * @var string $Place           The unique place name (e.g., "Bangor/SH5771").
+	 * @var int    $placename_id    Primary key from the gazetteer.
+	 * @var int    $reference_index 1 for GB (OS), 2 for Ireland (IE).
+	 * }
+	 * @param int $dist The radius in meters to use for fallback boxes (default 1000m).
+	 * @return array|false {
+	 * @var float $mbr_xmin        Minimum Easting.
+	 * @var float $mbr_xmax        Maximum Easting.
+	 * @var float $mbr_ymin        Minimum Northing.
+	 * @var float $mbr_ymax        Maximum Northing.
+	 * @var float $geometry_x|e    Center Easting (geometry_x for real MBR, e for fake).
+	 * @var float $geometry_y|n    Center Northing (geometry_y for real MBR, n for fake).
+	 * @var int   $reference_index Coordinate system identifier.
+	 * }
+	 */
+	function getMBRFromPlace($place, $dist = 1000) {
+	    $mbr = false;
+	    $mbr_options = array();
+	    $db = $this->_getDB();
+
+	    if ($place['reference_index'] == 1) {
+	        // 1. Get ALL OS MBRs with this name (although hopes that the name from os_gaz matches OPen Names, alas not always true!
+	        $clean_name = explode('/',$place['Place'])[0];
+	        $mbr_options = $db->getAll("SELECT mbr_xmin, mbr_ymin, mbr_xmax, mbr_ymax, geometry_x, geometry_y, 1 as reference_index
+	            FROM os_open_places WHERE name1 = " . $db->Quote($clean_name));
+	    }
+	    //TODO, we should figure out a MBR for ireland gazertter, (using OSM Names??)
+
+	    //if one, simple!
+	    if (count($mbr_options) === 1) {
+	        $mbr = $mbr_options[0];
+
+	    } elseif (count($mbr_options) > 1) {
+	        // 2. We have a duplicate! Use coordinates from sphinx_placenames to find the closest one
+	        // We can get rough E/N from the km_ref we already have in $place
+	        //list($target_e, $target_n) = $conv->gridref_to_national($place['km_ref']); -- alas doesnt exist
+	        $row = $this->getCoordinatesById($place['placename_id'], $place['reference_index']);
+	        if ($row) {
+	            $target_e = $row['e'];
+	            $target_n = $row['n'];
+
+	            $best_dist = 999999999;
+	            foreach ($mbr_options as $option) {
+	                // Calculate Pythagorean distance
+	                $dx = $target_e - $option['geometry_x'];
+	                $dy = $target_n - $option['geometry_y'];
+	                $d2 = ($dx * $dx) + ($dy * $dy);
+
+	                if ($d2 < $best_dist) {
+	                    $best_dist = $d2;
+	                    $mbr = $option;
+	                }
+	            }
+                }
+	    }
+
+	    if (empty($mbr)) {
+	        //failed to create one from os_open_places
+
+	        $row = $this->getCoordinatesById($place['placename_id'], $place['reference_index']);
+
+	        $mbr = [
+	            'mbr_xmin' => $row['e'] - $dist,
+	            'mbr_xmax' => $row['e'] + $dist,
+	            'mbr_ymin' => $row['n'] - $dist,
+	            'mbr_ymax' => $row['n'] + $dist,
+	            'e' => $row['e'],
+	            'n' => $row['n'],
+	            'reference_index' => $place['reference_index']
+	        ];
+	    }
+	    return $mbr;
 	}
 
 	/**

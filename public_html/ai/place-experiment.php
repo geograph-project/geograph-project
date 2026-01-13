@@ -53,6 +53,16 @@ foreach ($towns as $t) {
 echo '</div>';
 
 $available_types = ['top' => 'Context Tags', 'subject' => 'Subject', 'cluster' => 'Auto Clusters', 'clip' => 'AI Context', 'clipzero'=>'AI Labels', 'md3'=>'AI Tags'];
+
+$sources = array(
+    'top'     => 'Human Ground Truth (Context Tags)',
+    'subject' => 'Human Labels (Subject Tags)',
+    'cluster' => 'Lingo/Carrot2 (Thematic Clustering)',
+    'clip'    => 'CLIP the Landscape (Ilyankou et al., 2026): Automated tagging of crowdsourced landscape images. Remote Sensing Applications: Society and Environment, 41. <a href="https://doi.org/10.1016/j.rsase.2025.101824">DOI: 10.1016/j.rsase.2025.101824</a>',
+    'clipzero'=> 'CLIP Zero-Shot (Custom prompts)',
+    'md3'     => 'Moondream3 generated tags (VLM Preview)',
+);
+
 echo '<div class="place-switcher">';
 foreach ($available_types as $t_key => $t_label) {
     $active = ($t_key === $type) ? 'class="active"' : '';
@@ -78,7 +88,7 @@ $gaz->_setDB($db);
 
 #############################
 
-$place = $db->getRow("SELECT placename_id,Place,images,km_ref,has_dup,reference_index
+$place = $db->getRow("SELECT placename_id,Place,County,Country,images,km_ref,has_dup,reference_index
          FROM sphinx_placenames
          WHERE place = " . $db->Quote($town) . " LIMIT 1");
 
@@ -88,42 +98,11 @@ if (empty($place)) {
 
 #############################
 
-if ($place['reference_index'] == 1) { //ireland will fall though and use sphinx_placenames for the actual lookup - if possible
+$mbr = $gaz->getMBRFromPlace($place, 1000); //dist for the fake mbr!
 
-    // 1. Get ALL OS MBRs with this name
-    $clean_name = substring_index($town, '/', 1);
-    $mbr_options = $db->getAll("SELECT mbr_xmin, mbr_ymin, mbr_xmax, mbr_ymax, geometry_x, geometry_y, 1 as reference_index
-		FROM os_open_places WHERE name1 = " . $db->Quote($clean_name));
-
-    //if one, simple!
-    if (count($mbr_options) === 1) {
-        $mbr = $mbr_options[0];
-
-    } elseif (count($mbr_options) > 1) {
-        // 2. We have a duplicate! Use coordinates from sphinx_placenames to find the closest one
-        // We can get rough E/N from the km_ref we already have in $place
-        //list($target_e, $target_n) = $conv->gridref_to_national($place['km_ref']); -- alas doesnt exist
-	$row = $gaz->getCoordinatesById($place['placename_id'], $place['reference_index']);
-	$target_e = $row['e'];
-	$target_n = $row['n'];
-
-        $best_dist = 999999999;
-        foreach ($mbr_options as $option) {
-            // Calculate Pythagorean distance
-            $dx = $target_e - $option['geometry_x'];
-            $dy = $target_n - $option['geometry_y'];
-            $dist = ($dx * $dx) + $dy * $dy; // No need for sqrt for simple comparison
-
-            if ($dist < $best_dist) {
-                $best_dist = $dist;
-                $mbr = $option;
-            }
-        }
-    }
-}
-
-//use a nice MBR from OS Open Names - where possible (alas some mismatch between gazetters)
-if (!empty($mbr)) {
+//use a nice MBR from Gazetters - may not always be available
+if (!empty($mbr) && !empty($mbr['geometry_x'])) { //geometry_x comes from gazetter, so signifies it a 'proper' MBR
+	//note, we deliberately use the geometry_x to calcuate km_ref, rather than using the one from sphinx_placenames
 	list ($gridref,) = $conv->national_to_gridref($mbr['geometry_x'],$mbr['geometry_y'],4,$mbr['reference_index']);
 	$cols .= ", ".$db->Quote($gridref)." AS km_ref";
 
@@ -165,29 +144,20 @@ if (!empty($mbr)) {
 
 #############################
 
-	//otherwise a generic centered search
+	//otherwise a generic centered search (MBR, will have already been provided!
 	if (empty($spatial_where)) {
-		if (!empty($place['placename_id'])) {
-			$row = $gaz->getCoordinatesById($place['placename_id'], $place['reference_index']);
-		}
 
-		if (!empty($row)) {
-		        $dist = 1000; // Default 1km radius (2km box)
-		        $mbr = [
-	        	    'mbr_xmin' => $row['e'] - $dist,
-		            'mbr_xmax' => $row['e'] + $dist,
-		            'mbr_ymin' => $row['n'] - $dist,
-        		    'mbr_ymax' => $row['n'] + $dist
-		        ];
+		if (!empty($mbr['e'])) { //signifies ita  fake MBR
 
+			//might as well use the one fro sphinx_placenames
 			if (!empty($place['km_ref'])) {
 				$cols .= ", ".$db->Quote($place['km_ref'])." AS km_ref";
 			} else {
-				list ($gridref,) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
+				list ($gridref,) = $conv->national_to_gridref($mbr['e'],$mbr['n'],4,$place['reference_index']);
 				$cols .= ", ".$db->Quote($gridref)." AS km_ref";
 			}
 
-			$table = ($row['reference_index'] == 1)?'gb_images':'ie_images';
+			$table = ($place['reference_index'] == 1)?'gb_images':'ie_images';
 			$join_tables .= " INNER JOIN $table FORCE INDEX (natnorthings) USING(gridimage_id)"; //force index is very imporant particuly for the tag_public join
 
 			$spatial_where = "nateastings BETWEEN {$mbr['mbr_xmin']} AND {$mbr['mbr_xmax']}
@@ -287,6 +257,9 @@ if ($type == 'clip') {
     }
 }
 
+if (!empty($_GET['print']))
+	print_r($sql);
+
 ##################################################################
 
 // 3. Fetch Images
@@ -296,7 +269,9 @@ $imagelist->_getImagesBySql($sql);
 
 print "<div style=float:right>Found ".count($imagelist->images)." Images</div>";
 
-echo "<h2>Geograph Images of <span style=color:blue>" . htmlentities($town)."</span> area <a href=#cite title=\"* and the immediate surrounding area\">*</a>";
+echo "<h2>Geograph Images of <span style=color:blue>" . htmlentities($town)."</span> area <a href=#cite title=\"* and the immediate surrounding area\" style=text-decoration:none>*</a>";
+if (!empty($place['Country']) && $place['Country'] != 'Unknown')
+	print ", <span style=color:gray>".htmlentities($place['Country'])."</span>";
 if (!empty($_GET['tag'])) {
     // Generate a URL that keeps the town and type but drops the tag filter
     $reset_url = "?" . http_build_query(['type' => $type, 'town' => $town]);
@@ -504,6 +479,9 @@ document.querySelectorAll('.image-entry').forEach(slider => {
 print "</div>";
 
 print "<p><a name=cite>* typically includes the immediate surrounding area</a>, note: $message</p>";
+
+if (!empty($sources[$type]))
+	print "<p>Data Source: {$sources[$type]}";
 
 // Helper to keep the loop code clean
 function renderThumbnail($image) {
