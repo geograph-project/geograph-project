@@ -29,6 +29,12 @@ if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'Baiduspider')!==FALSE && empty($_GET['
         exit;
 }
 
+if (!empty($_GET['amp;gridref'])) {
+        header('HTTP/1.0 400 Bad Request');
+	print "400 Bad Request";
+        exit;
+}
+
 require_once('geograph/global.inc.php');
 //init_session();
 init_session_or_cache(3600*24, 3600);
@@ -146,6 +152,7 @@ if (!empty($_GET['debug']))
 			$q = '@title "^'.$prefix.'"';
 		} elseif (substr($_GET['title'],-1) == ' ') { //the space would already invalidate the field end modifier, but can give it a nice page title!
 			$title = "Image titles starting with: ".utf8_to_latin1($_GET['title']);
+//todo, should call deoperatorize (which will remove conflicting hyphens for example, that may negate the search)
 			$q = '@title "^'.$_GET['title'].'"';
 		} else {
 			$title = "Images titled: ".utf8_to_latin1($_GET['title']);

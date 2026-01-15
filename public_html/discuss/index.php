@@ -3,6 +3,12 @@
 This file is part of miniBB. miniBB is free discussion forums/message board software, without any warranty. See COPYING file for more details. Copyright (C) 2004 Paul Puzyrev, Sergei Larionov. www.minibb.net
 */
 
+if (!empty($_GET['amp;topic'])) {
+        header('HTTP/1.0 400 Bad Request');
+        print "400 Bad Request";
+        exit;
+}
+
 //use our own authentication first...
 require_once('geograph/global.inc.php');
 init_session();
@@ -10,7 +16,7 @@ init_session();
 if (empty($CONF['forums'])) {
 	$smarty = new GeographPage;
         $smarty->display('static_404.tpl');
-        exit;	
+        exit;
 }
 
 if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 9 ) {

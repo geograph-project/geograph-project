@@ -21,6 +21,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
+if (!empty($_GET['amp;u'])) {
+        header('HTTP/1.0 400 Bad Request');
+        print "400 Bad Request";
+        exit;
+}
+
+
 require_once('geograph/global.inc.php');
 
 if (empty($CONF['forums'])) {
