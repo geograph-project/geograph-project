@@ -250,20 +250,20 @@ $(document).ready(function() {
         let renderedCount = 0; // Keep track of how many images are actually rendered
 
         images.forEach(image => {
+	    const idStr = String(image.id);
             // NEW: Skip rendering if already selected OR rejected
-            if (containerId === 'searchResults' && selectedImageIds.has(String(image.id))) {
-                return; // Skip rendering
-            }
-            if (containerId === 'selectedImages' && rejectedImageIds.has(String(image.id))) {
+            if (containerId === 'searchResults' && selectedImageIds.has(idStr) || rejectedImageIds.has(idStr)) {
                 return; // Skip rendering
             }
 
 		if (!image.thumbnail)
-			image.thumbnail = getGeographUrl(image.id, image.hash, 'small');
+			image.thumbnail = getGeographUrl(image.id, image.hash, 'med');
 
             const imageHtml = `
                 <div class="image-item" data-id="${image.id}" data-title="${image.title}">
+                    <a href="/photo/${idStr}" target="_blank">
                     <img src="${image.thumbnail}" alt="${image.title}" loading="lazy">
+                    </a>
                     <span>${image.title}</span>
                 </div>
             `;

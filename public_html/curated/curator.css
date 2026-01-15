@@ -160,17 +160,17 @@ h2 {
 }
 
 .image-item {
-    display: flex;
-    align-items: center;
-    --margin-bottom: 5px;
+    display: block; /* Changed from flex */
+    position: relative; /* Necessary to position the span absolutely */
+    margin-bottom: 5px;
     background-color: var(--item-bg);
-    padding: 4px;
+    padding: 0; /* Removed padding so image hits the edges */
     border-radius: 4px;
+    overflow: hidden; /* Keeps the title within the rounded corners */
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    position: relative; /* For the delete button positioning */
-    text-align: center;
     cursor: grab;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease;
+min-height: 120px;
 }
 
 body.dark-theme .image-item {
@@ -178,17 +178,31 @@ body.dark-theme .image-item {
 }
 
 .image-item img {
-    width: 80px;
-    height: 80px;
-    margin-right: 8px;
-    border-radius: 4px;
-    object-fit: cover;
+    width: 100%; /* Full width of container */
+    max-width: 213px;
+    max-height: 160px; /* max resolution of image anyway */
+    height: auto;
+    display: block; /* Removes bottom whitespace in some browsers */
+    object-fit: contain;
 }
 
 .image-item span {
-    flex-grow: 1;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.6); /* Dark shadow/overlay for readability */
+    color: #fff; /* Ensure text is white against dark bg */
     font-size: 0.9em;
-    color: var(--item-text-color); /* Use variable */
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* Allows clicks to pass through to the image/container */
+}
+
+/* Hover State */
+.image-item:hover span {
+    opacity: 1; /* Show title on hover */
 }
 
 .image-item.ui-draggable-dragging {

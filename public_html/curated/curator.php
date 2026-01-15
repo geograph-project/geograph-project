@@ -18,6 +18,7 @@ $ai = false;
 
 if ($_GET['group'] == 'top') {
 
+	$ai = false;
 	if (!empty($_GET['tag'])) {
 		$db = GeographDatabaseConnection(true);
 		if ($_GET['tag'] == 'random') {
@@ -35,14 +36,18 @@ if ($_GET['group'] == 'top') {
 		//just a place holder. Needs better logic!
 		} else	if ($db->getOne("SELECT tag_id FROM tag WHERE tag = ".$db->Quote($_GET['tag']))) {
 			$tag = $query = $_GET['tag'];
+
+		//this is a fake tag used for AI training
+		} elseif ($_GET['tag'] == 'From Above') {
+			$ai = true;
+			$tag = $query = $_GET['tag'];
 		}
 	}
 
 	if ($USER->user_id) {
-		//special keyword in the sphinx index
+		//special keyword in the sphinx index (and works in AI mode too!)
 		$query .=" user{$USER->user_id}";
 	}
-	$ai = false;
 
 } elseif ($_GET['group'] == 'edu') {
 
