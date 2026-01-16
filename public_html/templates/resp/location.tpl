@@ -252,6 +252,7 @@
 		<li>{external href="https://streetmap.co.uk/map?X=`$square->nateastings`&Y=`$square->natnorthings`&amp;A=Y&amp;Z=110`" text="streetmap.co.uk"}</li> 
 		{/if}
     <li>{external href="https://explore.osmaps.com/?lat=$lat&amp;lon=$long&amp;zoom=14" text="OS Maps"}</li>
+    <li>{external href="https://maps.apple.com/frame?center=$lat&#x2c;$long&amp;span=0.05" text="Apple Maps"}</li>
     <li>{external href="https://www.geograph.org/leaflet/all.php#16/$lat/$long" text="Images from All Geograph Projects"}</li>
     </ul>
   </div>
