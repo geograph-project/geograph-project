@@ -248,7 +248,7 @@
     <ul>
     <li>{if $id}{external href="https://www.bing.com/maps?v=2&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1&amp;mapurl=`$self_host`/photo/`$id`.kml" text="Bing Maps" title="detailed aerial photography from bing.com"}{else}{external href="https://www.bing.com/maps?v=2&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1" text="Bing Maps" title="detailed aerial photography from bing.com"}{/if}</li>
     {if $square->reference_index eq 1}
-				<li>{external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&amp;xygridref=`$square->nateastings`,`$square->natnorthings`&amp;startscale=10000" text="magic.defra.gov.uk"}{if $gridref6} ({external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&xygridref=`$square->nateastings`,`$square->natnorthings`&startscale=5000" text="closer"}){/if}</li> 
+				<li>{external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&amp;xygridref=`$square->nateastings`,`$square->natnorthings`&amp;startscale=10000" text="magic.defra.gov.uk"}{if $gridref6} ({external href="https://magic.defra.gov.uk/MagicMap.html?sqgridref=$gridref6" text="Magic Maps (6 fig GR)"}){/if}</li> 
 		<li>{external href="https://streetmap.co.uk/map?X=`$square->nateastings`&Y=`$square->natnorthings`&amp;A=Y&amp;Z=110`" text="streetmap.co.uk"}</li> 
 		{/if}
     <li>{external href="https://explore.osmaps.com/?lat=$lat&amp;lon=$long&amp;zoom=14" text="OS Maps"}</li>
