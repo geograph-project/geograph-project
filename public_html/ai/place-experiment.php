@@ -36,7 +36,7 @@ $type = $_GET['type'] ?? 'clip';
 $town = $_GET['town'] ?? 'East Grinstead';
 $tag = $_GET['tag'] ?? '';
 
-$towns = array('East Grinstead', 'Fort William/An Gearasdan', 'Abergavenny/Y Fenni', 'Bicester');
+$towns = array('East Grinstead', 'Fort William/An Gearasdan', 'Abergavenny/Y Fenni', 'Bicester', 'Durham');
 //if (!in_array($town, $towns)) $town = 'East Grinstead';
 if (!preg_match('/^[A-Z][\w -]+(\/[\w -]+)?$/',$town))  $town = 'East Grinstead'; //very basic check it a simple name. Will need fixing to deal with special chars etc
 
@@ -349,7 +349,7 @@ else {
 					$list[] = $label;
 		} else {
 			//ai_result is from types_dataset, so is still specifically list of (predicted) types.
-			$image->ai_result = str_replace(' (low)','',$image->ai_result); //ignore for now!
+			$image->ai_result = str_replace(' (unsure)','',$image->ai_result); //ignore for now!
 			foreach(explode('; ', $image->ai_result) as $label) {
 				if ($label == 'Cross Far')
 					$list[] = "Cross Grid"; //use our normal label
