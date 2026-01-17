@@ -310,7 +310,7 @@ echo "</h2>";
 
 ##################################################################
 
-print "<div class=\"{$type}-mode\">";
+print "<div class=\"{$type}-mode flex-container\">";
 
 // 4. DISPLAY VIEW: "The Wall" (Specific Tag Search)
 if (!empty($wall) && !empty($tag)) { //tags now display grouped!
@@ -447,7 +447,13 @@ foreach ($grouped as $tag => $images) {
             $truncated = true;
 	    break;
         }
-        echo '<div class="image-entry">';
+        echo '<div class="image-entry';
+	if (count($images) < 7) {
+		//allow small groups to 'tile', rather than using whole width
+		$max = count($images)*215;
+		print " image-compact\" style=\"max-width:{$max}px;flex:0 0 {$max}px;";
+	}
+	echo '">';
         echo '<h3>' . htmlentities($t) . ' <small>' . (isset($stat[$t]) ? sprintf('%d+%d', $stat[$t], count($images)-$stat[$t]) : "+".count($images)) . '</small></h3>';
 
         foreach (array_slice($images, 0, 20) as $image) {
