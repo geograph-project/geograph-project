@@ -101,12 +101,16 @@ if (empty($place)) {
 $mbr = $gaz->getMBRFromPlace($place, 1000); //dist for the fake mbr!
 
 //use a nice MBR from Gazetters - may not always be available
-if (!empty($mbr) && !empty($mbr['geometry_x'])) { //geometry_x comes from gazetter, so signifies it a 'proper' MBR
+if (!empty($mbr) && !empty($mbr['geometry_x']) && $type!='type') { //geometry_x comes from gazetter, so signifies it a 'proper' MBR
 	//note, we deliberately use the geometry_x to calcuate km_ref, rather than using the one from sphinx_placenames
 	list ($gridref,) = $conv->national_to_gridref($mbr['geometry_x'],$mbr['geometry_y'],4,$mbr['reference_index']);
 	$cols .= ", ".$db->Quote($gridref)." AS km_ref";
 
-	$join_tables .= " INNER JOIN gb_images FORCE INDEX (natnorthings) USING(gridimage_id)"; //force index is very imporant particuly for the tag_public join
+	$table = ($mbr['reference_index'] == 1)?'gb_images':'ie_images';
+	if (in_array($town, $towns))
+		$table = "gb_images_town"; //special version that includes non-geo, gb_images inadvertly is pre filtered
+
+	$join_tables .= " INNER JOIN $table FORCE INDEX (natnorthings) USING(gridimage_id)"; //force index is very imporant particuly for the tag_public join
 
 	$spatial_where = "nateastings BETWEEN {$mbr['mbr_xmin']} AND {$mbr['mbr_xmax']}
                	     AND natnorthings BETWEEN {$mbr['mbr_ymin']} AND {$mbr['mbr_ymax']}";
@@ -182,14 +186,38 @@ if (preg_match('/^Pre (\d+)/',$tag,$m)) {
 
 if ($type == 'clip') {
 
+    //	clipthelandscape.labels contains the labels, the  clipthelandscape model predictied, which mimik our 'top' tags
+    // types_dataset_1 contains the manual moderation in .types (ie just an easy way to find them
+	// and .ai_results contains the predicted 'type' tags by another model. 
+
+
     // We fetch all images for the town that contain the tag anywhere in their labels string
-    $sql = "SELECT $cols, labels
+    $sql = "SELECT $cols, labels, types, ai_result
             FROM clipthelandscape
-	    $join_tables WHERE $spatial_where";
+	    $join_tables
+	    LEFT JOIN types_dataset_1 USING (gridimage_id)
+	    WHERE $spatial_where";
 
     if (!empty($tag)) {
         // Use LIKE to find images that contain this specific tag in the labels list
-        $sql .= " AND labels LIKE " . $db->Quote("%" . $tag . "%");
+
+	//these are all the offical tags in 'types' and MOSTLY what is in ai_result
+	$classes = ["Aerial", "Close Look", "Cross Grid", "Extra", "Geograph", "Inside", "From Drone"];
+	if ($tag == "From Drone") { //actully for now, we can only match this from types; in ai_result, its 'means' more general "From Above" (which dont want!)
+		 $sql .= " AND labels LIKE " . $db->Quote("%$tag%");
+
+	} elseif (in_array($tag,$classes)) {
+		$tag2 = $tag;
+		if ($tag2 == 'Cross Grid') $tag2 = 'Cross'; //needs to match Cross Near + Cross Far!!
+		$sql .= " AND (types LIKE " . $db->Quote("%$tag%")." OR ai_result LIKE " . $db->Quote("%$tag2%").")";
+
+	} elseif ($tag == 'From Above') { //'Above' really just means our AI though it looked like Drone!, 
+		$sql .= " AND ai_result LIKE " . $db->Quote("%From Drone%");
+
+	} else {
+		//otherwise it more normal 'labels' match
+	        $sql .= " AND labels LIKE " . $db->Quote("%$tag%");
+	}
     }
     $sql .= " LIMIT 4000";
 
@@ -210,7 +238,7 @@ if ($type == 'clip') {
 
 ##################################################################
 
-} elseif ($type == 'top' || $type == 'subject') {
+} elseif ($type == 'top' || $type == 'subject' || $type == 'type') {
     $sql = "SELECT $cols, group_concat(tag separator '; ') as labels
             FROM tag_public
             $join_tables WHERE $spatial_where AND prefix = " . $db->Quote($type);
@@ -309,6 +337,30 @@ else {
 		//labels is genareted by GROUP_CONCAT(, so clean
 	        $list = explode(';', $image->labels);
 	}
+	if (!empty($_GET['only'])) //just for testing the types filtering!
+		$list = [];
+	if (!empty($image->types) || !empty($image->ai_result)) {
+		// --- perhaps a 'todo', couidl consider removing other labels for some non-geo. Ie if it Close Look, or inside (for exmaple) maybe DONT want to include in the normal breakdown, and ONLY in its own breakdown???
+
+		//prefer human tags if available!
+		if (!empty($image->types)) {
+			foreach(explode(',', $image->types) as $label)
+				if ($label != 'Geograph' && $label != "Cross Grid")
+					$list[] = $label;
+		} else {
+			//ai_result is from types_dataset, so is still specifically list of (predicted) types.
+			$image->ai_result = str_replace(' (low)','',$image->ai_result); //ignore for now!
+			foreach(explode('; ', $image->ai_result) as $label) {
+				if ($label == 'Cross Far')
+					$list[] = "Cross Grid"; //use our normal label
+				elseif ($label == 'From Drone') //was meant to catch POENTIAL drones, but not reliable, so in general is a looking down image
+					$list[] = "From Above";
+                                elseif ($label != 'Geograph' && $label != 'Cross Near' && $label != 'None') //Cross Near isnt particulyl useful, as it not visually distinctive group
+                                        $list[] = $label;
+				//will allow Geograph to just be broken down by the Context Tags directly.
+			}
+		}
+        }
         foreach ($list as $t) {
             $t = trim($t, '[]", ');
             if (!empty($tag) && $t == $tag) {
