@@ -37,6 +37,36 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+############################
+
+// 1. Query the table comment from the schema
+$checkSql = "SELECT TABLE_COMMENT
+             FROM information_schema.TABLES
+             WHERE TABLE_SCHEMA = DATABASE()
+             AND TABLE_NAME = ?";
+
+$comment = $db->GetOne($checkSql, [$param['table']]);
+
+if (!empty($comment)) {
+    // Regex breakdown:
+    // FROM (.*?)      -> Captures source table
+    // WHERE type=(.*?) -> Captures type (even if empty)
+    // AND model=(.*?)  -> Captures model
+    // GROUP BY (.*)    -> Captures the rest of the string as the group expression
+    $pattern = "/FROM (.*?) WHERE type=(.*?) AND model=(.*?) GROUP BY (.*)/i";
+
+    if (preg_match($pattern, $comment, $matches)) {
+        // Need to set values, to override the defaults in config array! (does mean can't accidently (by specifing on command line) use different settings with an existing table :)
+        $param['source'] = trim($matches[1]);
+        $param['type']   = trim($matches[2]);
+        $param['model']  = trim($matches[3]);
+        $param['group']  = trim($matches[4]);
+
+        print "INFO: Auto-configured from table comment:\n";
+        print "      Source: {$param['source']} | Model: {$param['model']} | Type: '{$param['type']}' | Group: '{$param['group']}'\n";
+    }
+}
+############################
 
 upsertEmbeddingProgress($db, $param['source'], $param['table'], $param['type'], $param['model'], $param['group']);
 
@@ -106,6 +136,22 @@ function upsertEmbeddingProgress(
     }
 
     // 3. Prepare the main UPSERT statement
+
+    //Handle Model (Always exists)
+    $whereClauses = ["model = ?"];
+    $params = [$model];
+
+    //Handle Type (Optional)
+    if (!empty($type)) {
+        $whereClauses[] = "type = ?";
+        $params[] = $type;
+    }
+
+    //Handle Static Filter (No '?' here, so no param added)
+    $whereClauses[] = "seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM `$progressTable`)";
+
+    $whereSql = implode(" AND ", $whereClauses);
+
     $sql = "
         INSERT INTO `$progressTable`
             (`$groupByCol`, count, min_id, max_id, done)
@@ -118,9 +164,7 @@ function upsertEmbeddingProgress(
         FROM
             `$sourceTable`
         WHERE
-            type = ?
-            AND model = ?
-            AND seq_id > (SELECT COALESCE(MAX(max_id), 0) FROM `$progressTable`)
+            $whereSql
         GROUP BY
             `$groupByCol`
         ON DUPLICATE KEY UPDATE
@@ -128,11 +172,6 @@ function upsertEmbeddingProgress(
             max_id = VALUES(max_id),
             `done` = NULL;
     ";
-    // 4. Execute the statement with ADODB's parameter array
-    $params = [
-        $type,  // corresponds to the first '?' (type)
-        $model  // corresponds to the second '?' (model)
-    ];
 
 if (empty($param['execute'])) {
 	print_r(emulate_adodb_query_for_debug($db, $sql,$params).";\n");
@@ -145,7 +184,7 @@ if (empty($param['execute'])) {
         return false;
     }
 
-    print "  -- Affected: ".$db->Affected_Rows();
+    print "  -- Affected: ".$db->Affected_Rows()."\n";
 
     return true;
 }
