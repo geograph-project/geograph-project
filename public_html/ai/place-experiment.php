@@ -223,6 +223,23 @@ if ($type == 'clip') {
 
 ##################################################################
 
+} elseif ($type == 'types') {
+	//clip mode, can include the AI suggestions (but it still proirities tags over ai results) 
+	// ... this mode ONLY shows AI type tags!
+	//also note, it shows the raw tags, rather than converting them to 'normal' type tags!
+
+    $sql = "SELECT $cols, replace(ai_result,',',';') as labels
+            FROM types_dataset_1
+            $join_tables
+            WHERE $spatial_where AND ai_result IS NOT NULL";
+
+    if (!empty($tag)) {
+        // Use LIKE to find images that contain this specific tag in the labels list
+        $sql .= " AND ai_result LIKE " . $db->Quote("%" . $tag . "%");
+    }
+
+##################################################################
+
 } elseif ($type == 'clipzero') {
 
     // We fetch all images for the town that contain the tag anywhere in their labels string
@@ -448,10 +465,10 @@ foreach ($grouped as $tag => $images) {
 	    break;
         }
         echo '<div class="image-entry';
-	if (count($images) < 7) {
+	if (count($images) < 10) {
 		//allow small groups to 'tile', rather than using whole width
 		$max = count($images)*215;
-		print " image-compact\" style=\"max-width:{$max}px;flex:0 0 {$max}px;";
+		print " image-compact\" style=\"flex:0 0 content;border-left:1px solid silver;padding-left:3px;max-width:100%";
 	}
 	echo '">';
         echo '<h3>' . htmlentities($t) . ' <small>' . (isset($stat[$t]) ? sprintf('%d+%d', $stat[$t], count($images)-$stat[$t]) : "+".count($images)) . '</small></h3>';
