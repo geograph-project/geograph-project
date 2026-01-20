@@ -46,7 +46,7 @@ $template='snippet.tpl';
 
 $snippet_id = intval($_REQUEST['id']);
 
-$cacheid = $snippet_id;
+$cacheid = $snippet_id."|".$USER->registered;
 
 //what style should we use?
 $style = $USER->getStyle();

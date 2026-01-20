@@ -372,7 +372,19 @@ if (!empty($_GET['debug']))
 
 		//... actully for now, lets do the simpler query, as the above query is using lots of IO
 		$others = $db->getAll("SELECT label,images AS count FROM gridimage_group_stat WHERE grid_reference = $gr AND label NOT like '% #' ORDER BY images DESC LIMIT 100");
-		if (!empty($others)) {
+		if (!empty($others) && !$USER->registered && empty($_COOKIE['cf_clearance'])) {
+			print "<hr>";
+			$sep = "<p>Other clusters include: ";
+			foreach ($others as $row) {
+				if ($row['label'] == 'Other Topics' || $row['label'] == $_GET['label'])
+					continue;
+				print "$sep ".htmlentities2(utf8_to_latin1($row['label']));
+				$sep = ",";
+			}
+			print ". <b>Log in to see more details</b>.";
+			print "</p>";
+
+		} elseif (!empty($others)) {
 			print "<hr>";
 			print "<p>Other Automatic clusters in ".htmlentities($_GET['gridref'])."</p>";
 			print "<ol>";
@@ -399,7 +411,7 @@ if (!empty($_GET['debug']))
 			}
 		}
 
-	} elseif (!empty($_GET['title']) && !empty($_GET['gridref'])) {
+	} elseif (!empty($_GET['title']) && !empty($_GET['gridref']) && $USER->registered) {
 		//$labeled = $db->getOne("select count(*) from gridimage_group inner join gridimage_search using (gridimage_id)
 		$labeled = $db->getOne("select images from gridimage_group_stat
 				where grid_reference = ".$db->Quote($_GET['gridref'])." and label = ".$db->Quote($_GET['title']));

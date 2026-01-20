@@ -93,7 +93,7 @@
 <div class="threecolumn">
 <h3>Explore images</h3>
   
-{if $title && ($images || $has_dup > 1)}
+{if $title && ($images || $has_dup > 1) && $user->registered}
 	<h4>View images using {if $has_dup==1}this{/if} "{$title|escape:'html'}" Shared Description{if $has_dup>1}s{/if}</h4>
 	<ul class="buttonbar">
   
@@ -130,7 +130,7 @@
 </ul>
 {/if}
 
-{if $images && ($has_dup > 1 || !$title)}
+{if $images && ($has_dup > 1 || !$title) && $user->registered}
 	<h4>View images using just this shared description</h4>
 	There are multiple descriptions with the same title
 	<ul class="buttonbar">
@@ -169,7 +169,7 @@
 </ul>
 {/if}
 
-{if $title}
+{if $title && $user->registered}
 	<h4>View images mentioning the words [{$title|escape:'html'}] anywhere in text</h4>
 	<ul class="buttonbar">
 <div class="buttonbar-dropdown">
@@ -203,7 +203,7 @@
 </ul>
 {/if}
 
-{if $grid_reference}
+{if $grid_reference && $user->registered}
 	<br>
 	<h3>Links for {$grid_reference}</h3>
 	<p>This description is located in {$grid_reference}.</p>
@@ -242,8 +242,9 @@
 <li><a href="/browser/#!/q={$grid_reference}/display=map_dots">In the Browser</a></li>
 <li><a href="/gridref/{$grid_reference}/links"><img src="{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> <a href="/gridref/{$grid_reference}/links">More links for {$grid_reference}</a></li>
 </ul>
+{elseif !$user->registered}
+	<a href="/login.php">Log in</a> to view extended navigation and 'Explore' links.
 {/if}
-
 
 
 
