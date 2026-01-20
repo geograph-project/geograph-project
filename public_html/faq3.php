@@ -246,7 +246,7 @@ $smarty->display('_doc_search.tpl');
 
 ################################################
 
-if (!empty($tagdata)) {
+if (!empty($tagdata) && $USER->registered) {
         $tags = array();
         foreach ($tagdata as $idx => $row) {
                 if (!empty($row['tags'])) {

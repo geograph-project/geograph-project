@@ -245,6 +245,7 @@ function renderThumbs(row,data,match) {
 					attrib = 'data-src';
 			});
 
+			if ($('a[href="/logout.php"]').length)
 			window.requestAnimationFrame(function() {
 			$('#related .thumbs').append('<br style=clear:both>');
 

@@ -144,6 +144,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	$smarty->assign_by_ref('list', $list);
 
+	if ($USER->registered || !empty($_GET['tag'])) {
 	$rows = $db->getCol("SELECT tags FROM blog WHERE (approved = 1 AND published < NOW()) $where");
 	$tags = array();
 	foreach ($rows as $row) {
@@ -155,6 +156,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	unset($tags['']);
 	ksort($tags);
 	$smarty->assign_by_ref('tags', $tags);
+	}
 }
 
 $smarty->display($template, $cacheid);
