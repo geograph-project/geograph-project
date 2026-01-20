@@ -22,15 +22,20 @@
  */
 
 
+
 if (isset($_GET['mine'])) {
 	require_once('geograph/global.inc.php');
 	init_session();
 
-	$smarty = new GeographPage;
 	$USER->mustHavePerm("basic");
 
 	$_GET['@user'] = "user".$USER->user_id;
 	unset($_GET['mine']);
+} else {
+	require_once('geograph/global.inc.php');
+	init_session();
+
+	$USER->mustHavePerm("basic");
 }
 
 

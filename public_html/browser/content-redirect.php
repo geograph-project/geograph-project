@@ -34,6 +34,10 @@ if (empty($_GET['id']) || !ctype_digit($_GET['id']) || empty($_GET['source']) ||
 
 require_once('geograph/global.inc.php');
 
+init_session();
+$USER->mustHavePerm("basic");
+
+
 $db = GeographDatabaseConnection(true);
 
 $postfix = "";

@@ -47,10 +47,14 @@ init_session_or_cache($seconds, 900); //cache publically, and privately
 
 customGZipHandlerStart();
 
+$USER->mustHavePerm("basic");
+
+
 ############
 
 if (!empty($_GET['_escaped_fragment_'])) {
-	include __DIR__."/_fake-browser.php";
+	header("HTTP/1.0 503 Unavailable");
+	//include __DIR__."/_fake-browser.php";
 	exit;
 }
 
