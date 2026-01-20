@@ -48,6 +48,9 @@ div:target {
 	word-break: normal;
 }
 
+.tabHolder a {
+        white-space:nowrap;
+}
 
 {/literal}
 </style>
@@ -92,12 +95,46 @@ div:target {
 {*Setup tabs*}
 {assign var="tab" value="1"}
 <div class="tabHolder" style="margin:auto;max-width:940px">
-<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,5)">License</a>
-<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,5)">Crediting</a>
-<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,5)">Download original</a>
-<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,5)">Stamped image</a>
-<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,5)">Reusable code</a>
+<a class="tab{if $tab == 1}Selected{/if}" id="tab1" onclick="tabClick('tab','div',1,5); window.location.hash='licence';">License</a>
+<a class="tab{if $tab == 2}Selected{/if}" id="tab2" onclick="tabClick('tab','div',2,5); window.location.hash='credit';">Crediting</a>
+<a class="tab{if $tab == 3}Selected{/if}" id="tab3" onclick="tabClick('tab','div',3,5); window.location.hash='download';">Download original</a>
+<a class="tab{if $tab == 4}Selected{/if}" id="tab4" onclick="tabClick('tab','div',4,5); window.location.hash='stamp';">Stamped image</a>
+<a class="tab{if $tab == 5}Selected{/if}" id="tab5" onclick="tabClick('tab','div',5,5); window.location.hash='code';">Reusable code</a>
 </div>
+
+{literal}
+<script>
+
+function setupTabs() {
+    // Strip the '#' so URLSearchParams can read it properly
+    const hashString = window.location.hash.substring(1);
+    const params = new URLSearchParams(hashString);
+
+    if (params.has("licence") || hashString == '')  { tabClick('tab', 'div', 1, 5); }
+    if (params.has("credit")) {   tabClick('tab', 'div', 2, 5); }
+    if (params.has("download")) { tabClick('tab', 'div', 3, 5); }
+    if (params.has("stamp")) {    tabClick('tab', 'div', 4, 5); }
+    if (params.has("code")) {     tabClick('tab', 'div', 5, 5); }
+
+    if (params.has("wiki")) { //select tab and jump to specific block
+        tabClick('tab', 'div', 5, 5);
+        
+        const accordion = document.getElementById('accordion3');
+        if (accordion) {
+            accordion.checked = true;
+            setTimeout(function() {
+                //scrolling to the 'input' doesnt work, better to scroll to the div#wikipedia anyway
+                document.getElementById('wikipedia').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+    }
+}
+
+AttachEvent(window,window.addEventListener?'DOMContentLoaded':'load',setupTabs,false);
+window.addEventListener('hashchange', setupTabs);
+</script>
+{/literal}
+
 
 {*Licence tab*}
 <div style="{if $tab != 1}display:none{/if};" class="reuse-tabs" id="div1">

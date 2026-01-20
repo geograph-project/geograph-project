@@ -205,12 +205,11 @@ div.caption {
 	{if $image->gridimage_id}
 		{if $user->user_id ne $image->user_id}
 			<li><a href="/reuse.php?id={$image->gridimage_id}">Licensing</a>
-
-			<li><a href="/{if $image->original_width}more{else}reuse{/if}.php?id={$image->gridimage_id}">Download</a>
+			<li><a href="/reuse.php?id={$image->gridimage_id}#download">Download</a>
 		{/if}
 
 		{if $image->original_width}
-			<li><a href="/more.php?id={$image->gridimage_id}">More Sizes</a></li>
+			<li><a href="/reuse.php?id={$image->gridimage_id}#download">More Sizes</a></li>
 		{elseif $user->user_id eq $image->user_id}
 			<li><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></li>
 		{/if}
@@ -226,7 +225,7 @@ div.caption {
 					<a href="https://www.pinterest.com/pin/create/button/?media={$imageurl}&amp;url={$self_host}/photo/{$image->gridimage_id}&amp;description={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}">Share this photo via Pinterest</a><br>
 					<a href="https://share.flipboard.com/bookmarklet/popout?v=2&amp;title={$image->title_utf8|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&amp;url={$self_host}/photo/{$image->gridimage_id}">Share this photo via Flipboard</a><br>
 					<a href="/ecard.php?image={$image->gridimage_id}">Share this photo via email/e-card</a><br>
-					<a href="/stamp.php?id={$image->gridimage_id}">Grab a Stamped/Watermarked Image</a>
+					<a href="/reuse.php?id={$image->gridimage_id}#stamp">Grab a Stamped/Watermarked Image</a>
 				</div>
 			</details></li>
 		{/if}

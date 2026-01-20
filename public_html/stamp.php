@@ -55,6 +55,15 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
                                 $_GET['ie'] = true;
 		}
 } else {
+
+	if ($CONF['template'] == 'resp' || $CONF['template'] == 'ireland') { //need to avoid any template still using reuse.tpl from basic template
+	        //the 'stamp' page is now moved a 'tab' in resp/reuse.tpl
+	        $id = intval($_GET['id']);
+	        header("Location: /reuse.php?id=$id#stamp", true, 301);
+	        print "<a href=\"/reuse.php?id=$id#stamp\">Click Here</a>";
+	        exit;
+	}
+
 	init_session();
 
 	rate_limiting('stamp.php');
