@@ -19,9 +19,21 @@ function popupOSMap(gridref,gridref2)
         var wLeft = Math.round(0.5 * (screen.availWidth - wWidth));
         var wTop = Math.round(0.5 * (screen.availHeight - wHeight)) - 20;
         if (gridref.length > 0) {
-		var newWin = window.open('/showmap.php?gridref='+gridref, 
-		'gam',
-		'left='+wLeft+',screenX='+wLeft+',top='+wTop+',screenY='+wTop+',width='+wWidth+',height='+wHeight+',status,scrolling=no');
+		var url = '/showmap.php?gridref=' + gridref;
+	        var windowName = 'gam';
+	        var windowFeatures = 'left=' + wLeft + ',screenX=' + wLeft + ',top=' + wTop + ',screenY=' + wTop + ',width=' + wWidth + ',height=' + wHeight + ',status,scrolling=no';
+
+	        // Attempt to open as a popup
+	        var newWin = window.open(url, windowName, windowFeatures);
+
+	        // Check if the popup was blocked
+	        if (!newWin || newWin.closed || typeof newWin.closed == 'undefined') {
+	            // FALLBACK: Open in a new tab instead
+	            window.open(url, '_blank');
+	        } else {
+	            // Success - focus the popup if it already existed
+	            newWin.focus();
+	        }
 	}
 }
 

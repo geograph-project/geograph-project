@@ -212,7 +212,7 @@ function smarty_function_getamap($params)
 			$title="1:25,000 OS Maps for $gridref4";
 #return "<a href=\"/gridref/$gridref6/links?getamap\" target=\"gam\">$text</a>";
 #return "<a href=\"http://www.getamap.ordnancesurveyleisure.co.uk/\" target=\"gam\">$text</a>";
-		return "<a title=\"$title\" href=\"/showmap.php?gridref=$gridref4\" onclick=\"popupOSMap('$gridref4',''); return false;\">$text</a>$icon";
+		return "<a title=\"$title\" href=\"#\" onclick=\"popupOSMap('$gridref4',''); return false;\">$text</a>$icon";
 	}
 	else if (empty($gridref4))
 	{
