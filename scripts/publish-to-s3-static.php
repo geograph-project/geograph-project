@@ -23,7 +23,7 @@
 
 ############################################
 
-$param = array('verbose'=>0, 'log'=>0, 'headers'=>0, 'execute'=>0);
+$param = array('verbose'=>0, 'log'=>0, 'headers'=>0, 'execute'=>0, 'overwrite'=>0, 'path'=>'');
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -52,13 +52,16 @@ chdir($_SERVER['DOCUMENT_ROOT']);
 
 
 
-$h = popen('find -xdev -type f -name "*.png" -or -name "*.gif" -or -name "*.jpg" -or -name "blank.html" -or -name "*.bmp" -or -name "*.ico" -or -name "*.svg"','r');
+$h = popen('find '.$param['path'].' -xdev -type f -name "*.png" -or -name "*.gif" -or -name "*.jpg" -or -name "blank.html" -or -name "*.bmp" -or -name "*.ico" -or -name "*.svg"','r');
 
 $last = '';
 while ($h && !feof($h)) {
 	$filename = preg_replace('/^\.\//','',trim(fgets($h))); //want filename without the initial slash.
 	if (empty($filename))
 		break; //get a newline at the end!
+
+	if (strpos($filename,'maps/detail') ===0)
+		continue;
 
 	$dir = dirname($filename);
 	$destination = "/".$filename; //but want one with slash sometimes
@@ -69,6 +72,8 @@ while ($h && !feof($h)) {
 		} else {
 		        list($bucket,$prefix) = $filesystem->getBucketPath($_SERVER['DOCUMENT_ROOT']."/".$dir."/");
 		}
+		if (empty($last))
+			print "## Uploading to Bucket: $bucket\n";
 		if (!empty($bucket)) {
 		        // public static function getBucket($bucket, $prefix = null, $marker = null, $maxKeys = null, $delimiter = null, $returnCommonPrefixes = fa$
 
@@ -133,6 +138,9 @@ while ($h && !feof($h)) {
 		//todo, check if changed? (compare md5 ?)
 		if (empty($param['execute']))
 			print " already exists ";
+
+		if (empty($upload) && $param['overwrite'])
+			$upload = "overwrite";
 	}
 
 	############################################
