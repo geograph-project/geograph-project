@@ -81,6 +81,12 @@ foreach ($filters as $name => $rows) {
 	}
 }
 
+$checked = empty($_GET['single'])?'':'checked';
+print "<label><input type=checkbox name=single $checked onclick=this.form.submit()>Single Column</label>";
+
+$checked = empty($_GET['prompt'])?'':'checked';
+print "<label><input type=checkbox name=prompt $checked onclick=this.form.submit()>AI Classification Prompt</label>";
+
 print "</form>";
 
 if (count($where) > 1 && $limit == 250)
@@ -91,7 +97,9 @@ if (count($where) > 1 && $limit == 250)
 if (empty($where)) $where[] = 1;
 
 
-$sql = "select src_table, typeofuser, howoften, src_col, sentiment, type, phrase
+$cols = (empty($_GET['single']) && empty($_GET['prompt']))?' src_table, typeofuser, howoften, src_col, sentiment, type, phrase, auto_id as rowid':'phrase';
+
+$sql = "select $cols
 from survey_parsed p
 	INNER JOIN survey_combined USING (auto_id, src_table)
 where ".implode(" AND ",$where)."
@@ -102,17 +110,31 @@ LIMIT $limit";
 
 #################################################
 
-
-$count = dump_sql_table($sql,"Results");
-
-if ($count == $limit) {
-	print "Last $limit Results";
+if (!empty($_GET['prompt'])) {
+	print "Sample prompt:<br><br>";
+	print "<textarea wrap=off rows=40 cols=120 style='width:100%'>";
+	print "You are an expert sentiment analysis and structured data extraction AI.\n";
+	print "Please analyse these phrases, and extract the common subjects, clustering where multiple comments refer to the same underlying issue.\n";
+	print "Seperately list out the phrases that are too anbigious to understand and group with others.\n\n";
+	$data = $db->getCol($sql);
+	foreach($data as $value)
+		print "* ".htmlentities($value)."\n";
+	print "</textarea>";
+	exit;
 } else {
-	print "All $count Results";
+
+	$count = dump_sql_table($sql,"Results");
+
+	if ($count == $limit) {
+		print "Last $limit Results";
+	} else {
+		print "All $count Results";
+	}
 }
 
 $smarty->display('_std_end.tpl');
 
+#################################################
 
 
 function dump_sql_table($sql,$title) {
