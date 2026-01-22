@@ -45,3 +45,6 @@ Disallow: /
 User-agent: Timpibot
 Disallow: /
 
+User-agent: Amazonbot
+Disallow: /
+
