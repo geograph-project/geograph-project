@@ -47,7 +47,7 @@ init_session_or_cache($seconds, 900); //cache publically, and privately
 
 customGZipHandlerStart();
 
-$USER->mustHavePerm("basic");
+//$USER->mustHavePerm("basic");
 
 
 ############

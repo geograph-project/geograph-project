@@ -30,7 +30,7 @@ if (strpos($_SERVER['QUERY_STRING'],'&amp%3B') !== FALSE) {
 require_once('geograph/global.inc.php');
 init_session();
 
-$USER->mustHavePerm("basic");
+//$USER->mustHavePerm("basic");
 
 customNoCacheHeader(); //because we performing a user redirect.
 

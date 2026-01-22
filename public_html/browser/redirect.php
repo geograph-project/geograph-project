@@ -32,10 +32,10 @@ if (isset($_GET['mine'])) {
 	$_GET['@user'] = "user".$USER->user_id;
 	unset($_GET['mine']);
 } else {
-	require_once('geograph/global.inc.php');
-	init_session();
+//	require_once('geograph/global.inc.php');
+//	init_session();
 
-	$USER->mustHavePerm("basic");
+//	$USER->mustHavePerm("basic");
 }
 
 
