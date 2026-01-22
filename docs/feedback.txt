@@ -1,0 +1,66 @@
+php scripts/import_csv.php --table=survey_unreguser --file=user-survey-2025-11-14.csv --bom=0 --auto_id=1 --limit=1000 --execute --config=live
+
+php scripts/ai-feedback1.php --config=live --table=survey_unreguser --column=moreabout
+php scripts/ai-feedback1.php --config=live --table=survey_unreguser --column=anythingelse
+
+
+
+php scripts/import_csv.php --table=survey_reguser --file=reg-survey-2025-11-14.csv --bom=0 --auto_id=1 --limit=1000 --execute --config=live
+
+
+php scripts/ai-feedback1.php --config=live --table=survey_reguser --column=moreabout
+php scripts/ai-feedback1.php --config=live --table=survey_reguser --column=anythingelse
+
+
+
+
+-- Annoyingly they ended up with differen schemas!
+
+CREATE VIEW survey_combined AS 
+SELECT created, auto_id, 'survey_unreguser' as src_table, 'Unregistered' as typeofuser, typeofuser as howoften, deviceused,usemobile FROM survey_unreguser
+UNION ALL
+SELECT `datestamp` as created, auto_id, 'survey_reguser' as src_table, typeofuser, howoften, deviceused,usemobile FROM survey_reguser;
+
+
+CREATE VIEW survey_combined AS
+SELECT created, auto_id, 'survey_unreguser' as src_table, 'Unregistered' as typeofuser, typeofuser as howoften, deviceused,usemobile,moreabout,anythingelse FROM survey_unreguser
+UNION ALL
+SELECT `datestamp` as created, auto_id, 'survey_reguser' as src_table, typeofuser, howoften, deviceused,usemobile,moreabout,anythingelse FROM survey_reguser;
+
+
+
+---------------------------------------------------------
+
+Now need to add new rows. 
+
+-- NOTE auto_id=0 is delibertate so can easily insert to existing table with key conflicts
+-- want to be carefult NOT change the auto_id of rows. although this new table shoudl just be NEW rows, existing rows unchanged!
+
+php scripts/import_csv.php --table=survey_unreguser2 --file=user-survey-2026-01-12.csv --bom=0 --auto_id=0 --limit=10000 --execute --config=live
+php scripts/import_csv.php --table=survey_reguser2 --file=reg-survey-2026-01-12.csv --bom=0 --auto_id=0 --limit=10000 --execute --config=live
+
+
+Primary.geograph_live>select auto_id,created,count(*) c from survey_unreguser group by created having c > 1 limit 10;
+Empty set (0.001 sec)
+
+Primary.geograph_live>select auto_id,datestamp,count(*) c from survey_reguser group by datestamp having c > 1 limit 10;
+Empty set (0.000 sec)
+
+then 
+alter table survey_unreguser add unique(created);
+alter table survey_reguser   add unique(datestamp);
+
+
+
+Primary.geograph_live>insert ignore into survey_unreguser select *,NULL AS auto_id from survey_unreguser2;
+Query OK, 194 rows affected, 71 warnings (0.030 sec)
+Records: 239  Duplicates: 45  Warnings: 71
+
+Primary.geograph_live>insert ignore into survey_reguser   select *,NULL AS auto_id from survey_reguser2;
+Query OK, 194 rows affected, 571 warnings (0.035 sec)
+Records: 763  Duplicates: 569  Warnings: 571
+
+
+-- blank type confuses the viewer page (offers as option in dropdown, which can't be seperated from 'non-selected' (ie show all) 
+update survey_parsed set type = 'OTH' where type='';
+

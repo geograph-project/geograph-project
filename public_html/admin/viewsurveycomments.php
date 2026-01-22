@@ -39,7 +39,7 @@ print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
 
 $where = array();
 
-$limit = 250;
+$limit = 2500;
 if (!empty($_GET['limit']))
 	$limit = intval($_GET['limit']);
 
@@ -81,27 +81,40 @@ foreach ($filters as $name => $rows) {
 	}
 }
 
+$checked = empty($_GET['orig'])?'':'checked';
+print "<label><input type=checkbox name=orig $checked onclick=this.form.submit()>Full Comments</label>";
+
 $checked = empty($_GET['single'])?'':'checked';
-print "<label><input type=checkbox name=single $checked onclick=this.form.submit()>Single Column</label>";
+print "<label><input type=checkbox name=single $checked onclick=this.form.submit()>Just Comments</label>";
 
 $checked = empty($_GET['prompt'])?'':'checked';
 print "<label><input type=checkbox name=prompt $checked onclick=this.form.submit()>AI Classification Prompt</label>";
 
 print "</form>";
 
-if (count($where) > 1 && $limit == 250)
-	$limit=1000;
+if (count($where) > 1 && $limit == 1000)
+	$limit=10000;
 
 #################################################
 
 if (empty($where)) $where[] = 1;
 
 
-$cols = (empty($_GET['single']) && empty($_GET['prompt']))?' src_table, typeofuser, howoften, src_col, sentiment, type, phrase, auto_id as rowid':'phrase';
+if (!empty($_GET['single']) || !empty($_GET['prompt'])) {
+	if (!empty($_GET['orig']))
+		$cols = "CONCAT_WS('; ',moreabout,anythingelse) as comments";
+	else
+		$cols = "phrase";
+} else {
+	$col = "phrase";
+	if (!empty($_GET['orig']))
+		$col = "moreabout,anythingelse";
+	$cols = "src_table, typeofuser, howoften, src_col, sentiment, type, $col, auto_id as rowid";
+}
 
-$sql = "select $cols
+$sql = "select distinct $cols
 from survey_parsed p
-	INNER JOIN survey_combined USING (auto_id, src_table)
+	INNER JOIN survey_combined2 USING (auto_id, src_table)
 where ".implode(" AND ",$where)."
 order by auto_id
 LIMIT $limit";
@@ -111,7 +124,7 @@ LIMIT $limit";
 #################################################
 
 if (!empty($_GET['prompt'])) {
-	print "Sample prompt:<br><br>";
+	print "Sample prompt (for testing, maybe a more refined prompt would work?):<br><br>";
 	print "<textarea wrap=off rows=40 cols=120 style='width:100%'>";
 	print "You are an expert sentiment analysis and structured data extraction AI.\n";
 	print "Please analyse these phrases, and extract the common subjects, clustering where multiple comments refer to the same underlying issue.\n";
