@@ -22,13 +22,21 @@
  */
 
 $param=array(
-        'mode'=>'unknown',
+	'source'=>'types_dataset_1',
+        'col'=>'types',
+	'cols' => "split, types, coalesce(distance,'0') as distance, weight",
+
+        //'mode'=>'unknown',
 	'format' => 'jsonl',
 	'model' => 'clip',
 	'limit' => 100,
 	'type' => 'image',
+
 	'paths'=>false, //setting to true trigges showing 'unclassfied images' (types IS NULL)
 	'status'=>'accepted', //status for the unclassified images only
+
+	'file'=>'dataset.jsonl',
+	'execute'=>false,
 );
 
 
@@ -75,27 +83,46 @@ $_REQUEST = $param; //so code copied from web pae, can be used as is!
         $join = '';
         $group = '';
 
-$join = "inner join types_dataset_1 using (gridimage_id)";
-$cols .= ", split, types, coalesce(distance,'0') as distance";
+	$join = "inner join {$param['source']} force index(v) using (gridimage_id)";
+	$cols .= ", {$param['cols']}";
 
-if ($param['paths']) {
-	//lookinf for unclassified
-	$where[] = "types IS NULL";
-	$cols .= ", gi.user_id, gi.moderation_status"; //needed for path
+	//just the 'offical' subjects tags
+	if (strpos($cols, 'subject_id') !== FALSE) {
+		$join .= " inner join subjects using (subject)";
+	}
 
-	$cols .= ", IF(gi.moderation_status = 'accepted' AND g2.nateastings>0 AND viewpoint_eastings>0 AND (g2.nateastings DIV 1000 != viewpoint_eastings DIV 1000 OR g2.natnorthings DIV 1000 != viewpoint_northings DIV 1000),'crossgrid','') as grid";
-	$join .= " INNER JOIN gridimage g2 USING (gridimage_id)";
+	if ($param['paths']) {
+		//lookinf for unclassified
+		$where[] = "{$param['col']} IS NULL"; //or maybe rely on v=100?
 
-} else {
-	$where[] = "v = 1";
-	$where[] = "types IS NOT NULL";
-}
-if (!empty($param['status'])) {
-	$where[] = "gi.moderation_status = ".$db->Quote($param['status']);
-}
+		$cols .= ", gi.user_id, gi.moderation_status"; //needed for path
+	        if (empty($_REQUEST['meta']))
+			$cols .= ", title, realname"; //still include these - for CC credit!
+
+		if ($param['col'] == 'types') { //types processing needs to know cross-grid
+			$cols .= ", IF(gi.moderation_status = 'accepted' AND g2.nateastings>0 AND viewpoint_eastings>0 AND (g2.nateastings DIV 1000 != viewpoint_eastings DIV 1000 OR g2.natnorthings DIV 1000 != viewpoint_northings DIV 1000),'crossgrid','') as grid";
+			$join .= " INNER JOIN gridimage g2 USING (gridimage_id)";
+		}
+
+	//	$where[] = "gi.title like '%drone%'";
+		$where[] = "v =100"; //the test set of unlabled!
+
+	} else {
+		//this works to only include the tags we are interested in (although v=1 has already mostly done tha!)
+		if (strpos($param['source'], 'places') !== FALSE || strpos($cols, 'classification') !== FALSE) {
+			$join .= " inner join tag_named_stat USING (tag_id)";
+			$where[] = "COALESCE(classification2, '') NOT IN ('other', 'geographical-generic')";
+		}
+
+		$where[] = "v in (1,2)"; //now v1+v2!
+		$where[] = "{$param['col']} IS NOT NULL";
+	}
+	if (!empty($param['status'])) {
+		$where[] = "gi.moderation_status = ".$db->Quote($param['status']);
+	}
 
         if (!empty($_REQUEST['meta']))
-                $cols = "e.gridimage_id,grid_reference,title,realname,imagetaken";
+                $cols .= ",grid_reference,title,realname,imagetaken";
         if (!empty($_REQUEST['ll']))
                 $cols .= ",wgs84_lat,wgs84_long";
 
@@ -114,27 +141,52 @@ if (!empty($param['status'])) {
         if (empty($where)) $where[] = 1;
         if (!empty($group)) $group = "GROUP BY $group ORDER BY NULL";
 
-        $sql = "SELECT $cols, embeddings
-                FROM $table_embedding e
-                INNER JOIN gridimage_search gi USING (gridimage_id)
-                $join
-                WHERE ".implode(" AND ",$where)."
-                $group
-                LIMIT $limit";
+#########################################
 
-        if ($_REQUEST['format'] == 'jsonl') {
+	$h = fopen($param['file'],'w');
+
+	//types_dataset_1 is already in $join
+
+	$max = $db->getOne("SELECT max(gridimage_id) from {$param['source']}");
+	$shard = 100000;
+
+	if ($limit <= 1000 || $param['paths'])
+		$shard = "1000000";
+
+	$c=0;
+	for($start=0; $start<$max; $start+=$shard) {
+		print "\n$start, ";
+		//use a str so always update the same row
+		$where['filter'] = sprintf("gridimage_id BETWEEN %d AND %d", $start, $start+$shard-1);
+
+	        $sql = "SELECT $cols, embeddings
+	                FROM $table_embedding e
+	                INNER JOIN gridimage_search gi USING (gridimage_id)
+	                $join
+	                WHERE ".implode(" AND ",$where)."
+	                $group
+			LIMIT $limit";
+
+		if (empty($param['execute'])) {
+			$sql = str_replace(', embeddings',', LENGTH(embeddings) as embeddings_len', $sql); //make it easy to copy and paste for debug!
+			print "\n$sql;\n";
+			exit;
+		}
 
                 $recordSet = $db->Execute($sql);
 
-                header("Content-type: application/octet-stream");
-                header("Content-Disposition: attachment; filename=\"geograph-embeddings-".date('Y-m-d').".jsonl\"");
-
-		$h = fopen('dataset.jsonl','w');
-
-                $c=1;
-                while (!$recordSet->EOF) {
-                        $recordSet->fields['gridimage_id'] = intval($recordSet->fields['gridimage_id']);
-                        //we dont bother with floatval on lat/long as what will add more decimal places!
+		while (!$recordSet->EOF) {
+			//ots generally best to make numeric columns in json (come as string from mysql)
+                        foreach ($recordSet->fields as $key => $value) {
+                                if (is_numeric($value) && $key != 'title') {
+                                        $num = $value + 0;
+                                        // If it's a coordinate, pin it to 6 decimal places
+                                        if ($key === 'wgs84_lat' || $key === 'wgs84_long' || $key == 'lat' || $key == 'lng') {
+                                                $num = round((float)$num, 6);
+                                        }
+                                        $recordSet->fields[$key] = $num;
+                                }
+			}
                         if (!empty($recordSet->fields['title'])) {
                                 $recordSet->fields['title'] = latin1_to_utf8($recordSet->fields['title']);
                                 $recordSet->fields['realname'] = utf8_encode($recordSet->fields['realname']);
@@ -144,7 +196,7 @@ if (!empty($param['status'])) {
 if ($param['paths']) {
 	$image = new GridImage();
         $image->fastInit($recordSet->fields);
-	$recordSet->fields['path'] = $image->_getFullpath(false, false); //we dont check existinence, 
+	$recordSet->fields['path'] = $image->_getFullpath(false, false); //we dont check existinence,
 }
 
                         fwrite($h, json_encode($recordSet->fields)."\n");
@@ -155,4 +207,4 @@ if ($param['paths']) {
                 }
         }
 
-	print "; $c to dataset.jsonl\n";
+	print "; $c to {$param['file']}\n";
