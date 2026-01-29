@@ -48,8 +48,10 @@ if (!empty($_GET['limit']))
 $filters = array();
 $filters['src_table'] = 'list';
 $filters['src_col'] = 'list';
+$filters['deviceused'] = 'list';
 $filters['sentiment'] = 'list';
 $filters['type'] = 'list';
+$filters['feature'] = 'list';
 
 //$filters[''] = array('','');
 
@@ -63,14 +65,18 @@ foreach ($filters as $name => $rows) {
 	} else {
 		print "<select name=$name onchange=this.form.submit() title=$name placeholder=$name>";
 		print "<option value=\"\" style=\"color:grey\">$name</option>";
-
-		$rows = $db->getAll("SELECT $name, COUNT(*) AS c FROM survey_parsed GROUP BY $name");
+		if ($name == 'deviceused')
+			$rows = $db->getAll("select substring_index(deviceused,'(',1) as deviceused,count(*) as c from survey_combined group by substring_index(deviceused,'(',1)");
+		else
+			$rows = $db->getAll("SELECT $name, COUNT(*) AS c FROM survey_parsed GROUP BY $name");
 
 		foreach ($rows as $row) {
 			$value = $row[$name];
 			printf('<option value="%s"%s>%s [%d]</option>',$value, (@$_GET[$name] == $value)?' selected':'', $value, $row['c']);
 			if(@$_GET[$name] == $value) {
-				if (preg_match('/^!(\w+)/',$value,$m)) {
+				if ($name == 'deviceused') {
+					$where[] = "deviceused LIKE ".$db->Quote($_GET[$name]."%");
+				} elseif (preg_match('/^!(\w+)/',$value,$m)) {
 					$where[] = "p.$name != ".$db->Quote($_GET[$name]);
 				} else {
 					$where[] = "p.$name = ".$db->Quote($_GET[$name]);
@@ -80,15 +86,16 @@ foreach ($filters as $name => $rows) {
 		print "</select>";
 	}
 }
+print "<br>";
 
 $checked = empty($_GET['orig'])?'':'checked';
-print "<label><input type=checkbox name=orig $checked onclick=this.form.submit()>Full Comments</label>";
+print "<label class=nowrap><input type=checkbox name=orig $checked onclick=this.form.submit()>Full Comments</label>";
 
 $checked = empty($_GET['single'])?'':'checked';
-print "<label><input type=checkbox name=single $checked onclick=this.form.submit()>Just Comments</label>";
+print "<label class=nowrap><input type=checkbox name=single $checked onclick=this.form.submit()>Just Comments</label>";
 
 $checked = empty($_GET['prompt'])?'':'checked';
-print "<label><input type=checkbox name=prompt $checked onclick=this.form.submit()>AI Classification Prompt</label>";
+print "<label class=nowrap><input type=checkbox name=prompt $checked onclick=this.form.submit()>AI Classification Prompt</label>";
 
 print "</form>";
 
@@ -119,7 +126,8 @@ where ".implode(" AND ",$where)."
 order by auto_id
 LIMIT $limit";
 
-//print "$sql;";
+if (!empty($_GET['debug']))
+	print htmlentities($sql).";";
 
 #################################################
 
