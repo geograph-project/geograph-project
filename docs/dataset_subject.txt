@@ -1,0 +1,216 @@
+##################
+-- create the table
+
+create table subjects_dataset_1 (primary key(gridimage_id))
+select gi.gridimage_id,gi.moderation_status,GROUP_CONCAT(distinct tag limit 1) as subject, gi.imageclass,
+IF(natnorthings>0 AND viewpoint_eastings>0,
+pow(2,floor(log2(SQRT(
+pow(cast(nateastings as signed)-cast(viewpoint_eastings as signed),2)
++pow(cast(natnorthings as signed)-cast(viewpoint_northings as signed),2)
+))))
+,'Unknown') AS distance,RAND() as rnd,RAND() as rnd2
+from gridimage_search gi
+inner join gridimage g using (gridimage_id)
+left join tag_public t on (t.gridimage_id = gi.gridimage_id and t.prefix = 'subject' and canonical =0)
+group by gridimage_id;
+
+##################
+-- define the splits
+
+alter table subjects_dataset_1 add split enum('tra','val','tes') default null, add v tinyint unsigned default 0, add index(v);
+
+update subjects_dataset_1 set split = 'tra' where rnd between 0 and 0.8;
+update subjects_dataset_1 set split = 'val' where rnd between 0.8 and 0.9;
+update subjects_dataset_1 set split = 'tes' where rnd between 0.9 and 1;
+
+
+-- create the basic v0 dataset! (at the moment dont try to balance the classes!)
+update subjects_dataset_1 set v=1 where v=0 order by rnd2 limit 1000;
+
+##################
+-- backfill tentative subjects
+
+alter table subjects_dataset_1 add imageclass varchar(64) default null after subject, add weight float not null default 1.0 after imageclass;
+
+select gridimage_id,  gi.imageclass, m.subject, if(s.subject is null and m.subject != '', m.subject, s.subject), if (m.subject is not null and m.subject != '', 0.5, 1) as weight
+ from subjects_dataset_1 s inner join gridimage_search gi using (gridimage_id) inner join category_mapping m on (m.imageclass = gi.imageclass) where gi.imageclass!='' limit 40;
+
+
+update subjects_dataset_1 s inner join gridimage_search gi using (gridimage_id) inner join category_mapping m on (m.imageclass = gi.imageclass)
+set s.imageclass = gi.imageclass -- always set
+, s.subject = if(s.subject is null and m.subject != '', m.subject, s.subject) -- only set the subject if there isnt one, if no mapping, still sets NULL!
+, weight = if(m.subject is not null and m.subject != '', 0.5, weight) -- if a mapped subject lower the weight! (note do this even if already subject tag as it likly came from mapping!)
+where gi.imageclass != '';
+
+##################
+
+##output the final dataset (v IN(1,2)
+php scripts/export_dataset.php --config=live --source=subjects_dataset_1 --col=subject --cols="split, subject, subject_id, coalesce(distance,'0') as distance, weight" --execute --status="" 
+
+update subjects_dataset_1 set v=100 where v=0 and subject is null order by rnd2 limit 300;
+update subjects_dataset_1 set split = 'tes' where v=100;
+
+##outpue the test dataset (v=100) using --paths to include a thumbnail url
+php scripts/export_dataset.php --config=live --source=subjects_dataset_1 --col=subject --cols="split, subject, coalesce(distance,'0') as distance, weight" --execute --status="" --paths
+
+##################
+
+Primary.geograph_live>UPDATE subjects_dataset_1 SET v = 0 WHERE v = 1;
+Query OK, 1000 rows affected (1.506 sec)
+Rows matched: 1000  Changed: 1000  Warnings: 0
+
+Primary.geograph_live>UPDATE subjects_dataset_1
+    -> JOIN (
+    ->     SELECT gridimage_id,
+    ->            ROW_NUMBER() OVER (PARTITION BY subject ORDER BY rnd2) as rank_idx
+    ->     FROM subjects_dataset_1
+    ->     WHERE subject IS NOT NULL
+    -> ) AS sampled ON subjects_dataset_1.gridimage_id = sampled.gridimage_id
+    -> SET v = 1
+    -> WHERE sampled.rank_idx <= 100;
+Query OK, 88170 rows affected (54.729 sec)
+Rows matched: 88170  Changed: 88170  Warnings: 0
+
+
+-- slightly better version, orders by weight too (which deporisites subject infered from category!) 
+-- while also filtering by v!
+Primary.geograph_live>UPDATE subjects_dataset_1  JOIN (     SELECT gridimage_id,             ROW_NUMBER() OVER (PARTITION BY subject ORDER BY (weight > 0.9) DESC, rnd2) as rank_idx     FROM
+subjects_dataset_1     WHERE subject IS NOT NULL AND v IN (0,1)) AS sampled ON subjects_dataset_1.gridimage_id = sampled.gridimage_id SET v = 1 WHERE sampled.rank_idx <= 100;
+
+
+UPDATE subjects_dataset_1  JOIN (     SELECT gridimage_id,             ROW_NUMBER() OVER (PARTITION BY subject ORDER BY (weight > 0.9) DESC, rnd2) as rank_idx     FROM
+subjects_dataset_1     WHERE subject IS NOT NULL AND v IN (0)) AS sampled ON subjects_dataset_1.gridimage_id = sampled.gridimage_id SET v = 1 WHERE sampled.rank_idx <= 100;
+
+######################################
+
+
+UPDATE subjects_dataset_1 
+SET v=99
+WHERE subject IN (
+    SELECT subject 
+    FROM subjects_dataset_1 
+    WHERE v=1
+    GROUP BY subject 
+    HAVING COUNT(*) < 3
+);
+
+create temporary table subject_dataset_stat select subject,count(*) as images,sum(split='tra') as tra,sum(split='val') as val,sum(split='tes') as tes
+ from subjects_dataset_1 where v=1 group by subject;
+
+//To make this instant, you want to avoid the IN clause and use a JOIN or EXISTS instead
+UPDATE subjects_dataset_1 
+SET v=99
+WHERE subject IN (
+	SELECT subject from subject_dataset_stat WHERE images < 3
+);
+
+Primary.geograph_live>UPDATE subjects_dataset_1 s
+    -> JOIN subject_dataset_stat stat ON s.subject = stat.subject
+    -> SET s.v = 99
+    -> WHERE stat.images < 3;
+Query OK, 16 rows affected (0.008 sec)
+
+
+
+
+UPDATE subjects_dataset_1 s
+JOIN (
+    SELECT gridimage_id, 
+           ROW_NUMBER() OVER (PARTITION BY subject ORDER BY rnd2 ASC) as rn
+    FROM subjects_dataset_1
+    WHERE v = 1 AND split = 'tra'
+    AND subject IN (SELECT subject FROM subject_dataset_stat WHERE images >= 5 AND val = 0)
+) AS sub ON s.gridimage_id = sub.gridimage_id
+SET s.split = 'val'
+WHERE sub.rn = 1;
+
+-- Move one to 'test' for subjects that have at least 5 total but 0 in test
+--  using the "back" of the random order (so dont just poach the one val image!)
+
+UPDATE subjects_dataset_1 s
+JOIN (
+    SELECT gridimage_id, 
+           ROW_NUMBER() OVER (PARTITION BY subject ORDER BY rnd2 DESC) as rn
+    FROM subjects_dataset_1
+    WHERE v = 1 AND split = 'tra' -- Only poach from remaining 'tra' rows
+    AND subject IN (SELECT subject FROM subject_dataset_stat WHERE images >= 5 AND tes = 0)
+) AS sub ON s.gridimage_id = sub.gridimage_id
+SET s.split = 'tes'
+WHERE sub.rn = 1;
+
+
+###
+
+-- re-export v1 now it been 'balanaced' and filtered a bit (same command as above)
+
+###################
+
+## now, much later after having built the model, import the results back into the dataset table, mainly so can do easy comparsions
+#(the dataset table is a convient record of what the subject was before model run, but also if the image was actully in training data) 
+# ( because at some point contributor might start using the AI suggested tags to add them their historic images!)
+
+alter table subjects_dataset_1 add ai_result varchar(1024) default null;
+
+
+create table subjects_ai_result (primary key(gridimage_id))
+select gridimage_id, max(score) as max_score
+,coalesce(group_concat(if(score > 0.4,label,null) order by score desc separator '; '), group_concat(label order by score desc limit 1)) as ai_result
+from gridimage_label where model = 'subjects' and gridimage_id < 1000 group by gridimage_id ;
+
+
+update types_dataset_1 d inner join types_ai_result r using (gridimage_id) set d.ai_result = if(max_score < 0.5,concat(r.ai_result,' (unsure)'),r.ai_result);
+
+
+create table subjects_ai_result (primary key(gridimage_id))
+select gridimage_id, max(score) as max_score, group_concat(label order by score desc limit 1) as top1,
+group_concat(concat(label,' ',round(score*100),'%') order by score desc separator '; ') as ai_result,
+max(seq_id) as max_seq_id
+from gridimage_label where model = 'subjects' group by gridimage_id ;
+
+-- Can call many times to add new records - while processing is running
+{
+	select @max := max(max_seq_id) from subjects_ai_result;
+
+	insert ignore into subjects_ai_result
+	select gridimage_id, 0 as user_id, max(score) as max_score, group_concat(label order by score desc limit 1) as top1,
+	group_concat(concat(label,' ',round(score*100),'%') order by score desc separator '; ') as ai_result,
+	max(seq_id) as max_seq_id
+	from gridimage_label where model = 'subjects' and seq_id > @max_id group by gridimage_id 
+
+ON DUPLICATE KEY UPDATE 
+    max_score = VALUES(max_score),
+    top1 = VALUES(top1),
+    ai_result = VALUES(ai_result),
+    max_seq_id = VALUES(max_seq_id);
+
+	update subjects_ai_result a inner join gridimage_search gi using (gridimage_id) set a.user_id = gi.user_id where a.user_id = 0;
+}
+
+
+alter table subjects_ai_result add user_id int unsigned not null after gridimage_id;
+update subjects_ai_result a inner join gridimage_search gi using (gridimage_id) set a.user_id = gi.user_id;
+alter table subjects_ai_result add index(user_id);
+
+
+alter table subjects_ai_result add processed datetime default null; 
+
+###################
+
+
+Shuffled order to test a VLM!
+
+create table subjects_ai_shuffled (primary key(gridimage_id))
+select gridimage_id, max(score) as max_score
+group_concat(label order by rand() separator '; ') as ai_result,
+from gridimage_label where model = 'subjects' and gridimage_id between 2735508 and 2834390  group by gridimage_id ;
+
+
+####################
+
+create table subject_top1 select s.gridimage_id, tag, top1, count(*) as images, sum(v=1 and split='tra')/count(*)*100 in_training,sum(v=1 and split='val')/count(*)*100 in_val FROM subjects_ai_result s  INNER JOIN gridimage_tag gt ON s.gridimage_id = gt.gridimage_id  INNER JOIN tag t ON (gt.tag_id = t.tag_id AND t.prefix = 'subject') inner join subjects_dataset_1 d on (d.gridimage_id = s.gridimage_id) GROUP BY tag, top1;
+
+
+create table subject_top1_split select s.gridimage_id, tag, top1, count(*) as images, sum(v=1 and split='tra')/count(*)*100 in_training,sum(v=1 and split='val')/count(*)*100 in_val FROM subjects_ai_result s  INNER JOIN gridimage_tag gt ON s.gridimage_id = gt.gridimage_id  INNER JOIN tag t ON (gt.tag_id = t.tag_id AND t.prefix = 'subject') inner join subjects_dataset_1 d on (d.gridimage_id = s.gridimage_id) where split = 'tes' and v=1 GROUP BY tag,
+top1;
+Query OK, 990 rows affected (3.884 sec)
+
