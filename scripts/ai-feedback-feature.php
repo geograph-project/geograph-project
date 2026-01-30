@@ -1,6 +1,6 @@
 <?php
 
-$param = array('provider'=>'open', 'table'=>'moderation_all', 'column'=>'moreabout', 'limit'=>25, 'sleep'=>0, 'translit'=>false);
+$param = array('provider'=>'open', 'limit'=>25, 'sleep'=>0, 'translit'=>false);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
@@ -66,13 +66,14 @@ if (true) { //make while!
 	print "Result: ";
 	$result = getLLMResponse($prompt, $user, $param['provider'], $model = 'gpt-oss-safeguard-20b'); //not stricky a safeguarding task, but it does quite well for classfication, as trained to only provide answer (reasoning, is in the dedidated reasoning reply!
 
-
-if (!empty($GLOBALS['reasoning']))
-        print "Reasoning: {$GLOBALS['reasoning']}\n";
+	if (!empty($GLOBALS['reasoning']))
+        	print "Reasoning: {$GLOBALS['reasoning']}\n";
 
 	print "$result\n";
 
 	$json = json_decode(trim($result,"`json \t\n\r"), TRUE);
+	if (empty($json))
+		die("unable to parse json\n");
 
 	//should be: [ { "phrase": "...", "feature": "..." }, ]
 
