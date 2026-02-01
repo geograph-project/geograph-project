@@ -8,7 +8,7 @@ $USER->mustHavePerm("basic");
 
 $smarty->display('_std_begin.tpl');
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 
 // --- FORM SUBMISSION LOGIC ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_tags'])) {

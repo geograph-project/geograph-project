@@ -29,7 +29,7 @@ $param=array('model'=>'clip','table'=>'tmp_label_clip','minimum'=>100000, 'start
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ##################################
@@ -122,9 +122,12 @@ if ($param['purge']) {
 ##################################
 
 //we should work though all 'incomplete' shards. Interestingly this should still include the 'current' active shard (recent submissions!)
-// although 99000 is and arbitary cutoff alows for 1000 rejects, but might need to mop up the few remaining ones!
+// although 99000 is an arbitary cutoff allows for 1000 rejects, but might need to mop up the few remaining ones!
 // this does assume embedding_progress_pe_by_id is being updated!
 if ($param['model'] == 'pe' && $param['start'] == 8000000 && $param['end'] == 9000000) {
+
+	//php scripts/ai-embedding_progress.php --table=embedding_progress_pe_by_id --model=pe --group="gridimage_id div 100000 as shard" --execute
+
 	$rr = $db->getRow("select * from embedding_progress_pe_by_id where count < 99000 order by rand() limit 1");
 	if (!empty($rr)) {
 		$param['start'] = intval($rr['shard'])*100000;
@@ -157,14 +160,36 @@ if ($count < $minimum) {
 // ... something like select MAX(gridimage_id) from gridimage_label where model = 'clip'
 // but might need to allow for out of order processing?
 
+        if ($param['model'] == 'types') {
+		//this model uses CLIP embeddings as input, so desnt need all the image columns!
+		// will still join embeddings later
 
-	$sql.= " select distinct gi.gridimage_id, user_id ,realname, width, height, original_width, title, grid_reference, if(ii.gridimage_id is null, 0, 1) as skip_fs
-	 from gridimage_search gi inner join gridimage_size using (gridimage_id)
-	 left join {$param['dest_table']} l on (l.gridimage_id = gi.gridimage_id and `model` = $model)
-	 left join gridimage_embedding ii on (ii.gridimage_id = gi.gridimage_id)
-	 where l.gridimage_id is null and gi.gridimage_id between {$param['start']} and {$param['end']} limit $minimum";
+		$sql .= " select d.* from types_dataset_1 d
+		 left join {$param['dest_table']} l on (l.gridimage_id = d.gridimage_id and `model` = $model)
+		 where l.gridimage_id is null and types IS NULL and d.gridimage_id between {$param['start']} and {$param['end']} limit $minimum";
 
-	//use gridimage_embedding, ratehr than images_with_224 as that shows which ones created 224, during the first processing run!
+	} elseif ($param['model'] == 'subjects') {
+		//this model uses CLIP embeddings as input, so desnt need all the image columns!
+		// will still join embeddings later
+
+$where = "subject IS NULL"; //normal unlabelled
+$where = "v=1"; //redo the training set, for test purposes
+$where .= " and split = 'tes'"; //and specifically the test set!
+##$where = "v=0 and subject IS NOT NULL"; //do some of the labelled images of that NOT in dataset, hence us a bigger 'test' set!
+print "WHERE=$where\n";
+
+		$sql .= " select d.* from subjects_dataset_1 d
+		 left join {$param['dest_table']} l on (l.gridimage_id = d.gridimage_id and `model` = $model)
+		 where l.gridimage_id is null and $where and d.gridimage_id between {$param['start']} and {$param['end']} limit $minimum";
+
+	} else {
+		$sql.= " select distinct gi.gridimage_id, user_id ,realname, width, height, original_width, title, grid_reference, if(ii.gridimage_id is null, 0, 1) as skip_fs
+		 from gridimage_search gi inner join gridimage_size using (gridimage_id)
+		 left join {$param['dest_table']} l on (l.gridimage_id = gi.gridimage_id and `model` = $model)
+		 left join gridimage_embedding ii on (ii.gridimage_id = gi.gridimage_id)
+		 where l.gridimage_id is null and gi.gridimage_id between {$param['start']} and {$param['end']} limit $minimum";
+ 		//use gridimage_embedding, ratehr than images_with_224 as that shows which ones created 224, during the first processing run!
+	}
 
 	if ($param['execute']) {
 //print "$sql;\n";

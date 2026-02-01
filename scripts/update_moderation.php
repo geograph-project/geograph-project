@@ -27,8 +27,12 @@ $param=array('execute'=>false, 'days'=>false, 'name'=>false);
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+if (!empty($db->readonly))
+	die("ERROR: contected to readonly replica\n");
+
 
 $sources = array();
 ##################################

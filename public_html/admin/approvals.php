@@ -31,7 +31,7 @@ $USER->hasPerm("director") || $USER->mustHavePerm("moderator");
 
 $smarty->display('_std_begin.tpl');
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ##############################

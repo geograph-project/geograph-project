@@ -28,7 +28,7 @@ $param=array('id'=>3438350, 'type'=>'image',
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 
 $CONF['manticorert_host'] = "manticorert-worker-svc.dev.svc.cluster.local"; //test instance!
 
