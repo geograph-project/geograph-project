@@ -28,7 +28,7 @@ $current = getcwd();
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 ##################################

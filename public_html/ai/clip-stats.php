@@ -33,7 +33,7 @@ $smarty = new GeographPage;
 
 $_GET['model'] = 'clip';
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	print "<h2>Basic stats for stored data (model: ClipTheLandscape)</h2>";

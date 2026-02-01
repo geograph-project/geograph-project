@@ -8,7 +8,7 @@ $USER->mustHavePerm("basic");
 
 $smarty->display('_std_begin.tpl');
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 
 // --- FORM SUBMISSION LOGIC ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_tags'])) {
@@ -74,7 +74,7 @@ if (!empty($images)) {
 
         echo '<tr>';
         echo '<td style="width: 222px; text-align: center;">';
-        echo '<a title="' . htmlentities2($image->grid_reference . ' : ' . $image->title . ' by ' . $image->realname) . '" href="/photo/' . $image->gridimage_id . '">';
+        echo '<a title="' . htmlentities2($image->grid_reference . ' : ' . $image->title . ' by ' . $image->realname) . '" href="/photo/' . $image->gridimage_id . '" target="_blank">';
         echo $image->getThumbnail(213, 160, false, true);
         echo '</a>';
         echo '</td>';

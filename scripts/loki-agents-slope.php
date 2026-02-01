@@ -32,7 +32,7 @@ $debug = (posix_isatty(STDOUT) || $param['debug']);
 
 ############################################
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 
 function myquote($in) {
         if (is_numeric($in))

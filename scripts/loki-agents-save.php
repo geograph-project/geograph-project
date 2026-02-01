@@ -47,7 +47,7 @@ $query = get_base_query($param, $add_pattern = true);
 
 ############################################
 
-$db = GeographDatabaseConnection(true);
+$db = GeographDatabaseConnection(false);
 
 function myquote($in) {
         if (is_numeric($in))
