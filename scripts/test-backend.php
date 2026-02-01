@@ -60,6 +60,10 @@ if ($db) {
     $version = $db->GetOne("SELECT VERSION()");
     success("Successfully connected to MariaDB.");
     print "  Version: $version\n";
+    if (!empty($CONF['db_read_connect'])) {
+        $row = $db->getRow("SHOW MASTER STATUS");
+        $master = $row['File'].'|'.$row['Position'];
+    }
 } else {
     error("Failed to connect to MariaDB.");
 }
@@ -73,6 +77,41 @@ if (!empty($CONF['db_read_connect'])) {
         $version = $db_slave->GetOne("SELECT VERSION()");
         success("Successfully connected to MariaDB slave.");
 	print "  Version: $version\n";
+
+	$row = $db_slave->getRow("SHOW SLAVE STATUS");
+
+	if ($row['Slave_IO_Running'] !== 'Yes' || $row['Slave_SQL_Running'] !== 'Yes') {
+	    print "  CRITICAL: Replication Threads Stopped\n";
+	    print "  IO: {$row['Slave_IO_Running']} | SQL: {$row['Slave_SQL_Running']}\n";
+	}
+
+                $slave = $row['Master_Log_File'].'|'.$row['Read_Master_Log_Pos'];
+                if ($slave != $master) {
+                        print "  Slave Read Failure?\n";
+                        print "  Master: $master\n  Slave: $slave\n";
+                }
+
+                $slave = $row['Master_Log_File'].'|'.$row['Exec_Master_Log_Pos'];
+                if ($slave != $master) {
+                        print "  ERROR: Slave Execute Failure?\n";
+                        print "  Master: $master\n  Slave: $slave\n";
+                }
+                if ($row['Last_Error']) {
+                        print "  Last Error: {$row['Last_Error']}\n";
+                }
+		if ($row['Last_SQL_Error']) {
+			print "  SQL Error Detail: {$row['Last_SQL_Error']}\n";
+		}
+
+	if (is_null($row['Seconds_Behind_Master'])) {
+	    print "  CRITICAL: Seconds_Behind_Master is NULL (Slave is stopped)\n";
+	} elseif ($row['Seconds_Behind_Master'] > 30) {
+	    // Give it a 30s grace period for heavy writes
+	    print "  WARNING: High Replication Lag: {$row['Seconds_Behind_Master']}s\n";
+	} else {
+            //showing the actual number could be still reassuring, even when ok!
+	    print "  Replication Lag: {$row['Seconds_Behind_Master']}\n";
+        }
     } else {
         error("Failed to connect to MariaDB slave.");
     }
@@ -139,23 +178,33 @@ echo "\n";
 
 // Test Memcache Connection
 echo "Testing Memcache Connection...\n";
-if (!empty($CONF['memcache']['app'])) {
-    $memcache = new MultiServerMemcache($CONF['memcache'], 'app');
-    $stats = $memcache->getStats();
-    if ($stats) {
-        success("Successfully connected to Memcache.");
-	if (!empty($stats['redis_version'])) {
-		print "  Redis Server: {$stats['redis_version']}  Role: {$stats['role']}  Slaves: {$stats['connected_slaves']}\n";
-	} else {
-	        foreach ($stats as $server => $data) {
-        	    echo "  Server: $server, Version: {$data['version']}\n";
-		}
+if ($memcache->valid) {
+    if ($memcache->redis) {
+        $stats = $memcache->getStats(); // Get stats from the single Redis endpoint
+        success("Successfully connected to Redis via Memcache interface.");
+
+        if (!empty($stats['redis_version'])) {
+            print "  Redis Server: {$stats['redis_version']}  Role: {$stats['role']}  Slaves: {$stats['connected_slaves']}\n";
         }
     } else {
-        error("Failed to connect to Memcache.");
+        $stats = $memcache->getExtendedStats();
+
+        // Check connection success based on getting stats (since $memcache->valid is already true)
+        if ($stats) {
+            success("Successfully connected to Multi-Server Memcache.");
+            foreach ($stats as $server => $data) {
+                // If the server failed to respond, $data might be 'false', so check it.
+                $version = is_array($data) ? $data['version'] : 'UNKNOWN/DOWN';
+		$uptime = $data['uptime'] ?? '??';
+                echo "  Server: $server, Version: $version, Uptime: $uptime\n";
+            }
+        } else {
+             // This case is unlikely if $memcache->valid is true, but acts as a final safeguard.
+             error("Failed to retrieve statistics from Memcache pool.");
+        }
     }
 } else {
-    neutral("Memcache is not configured. Skipping test.");
+    neutral("Cache is not configured (Null Object returned). Skipping connectivity test.");
 }
 echo "\n";
 

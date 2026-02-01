@@ -39,13 +39,6 @@ customGZipHandlerStart();
 if (!empty($_GET['tab'])) {
 	//need to connect before outputing HTML , as may need to add a HTTP headers
 
-	if (!empty($CONF['db_read_connect2'])) {
-	        if (!empty($DSN_READ))
-	                $DSN_READ = str_replace($CONF['db_read_connect'],$CONF['db_read_connect2'],$DSN_READ);
-	        if (!empty($CONF['db_read_connect']))
-	                $CONF['db_read_connect'] = $CONF['db_read_connect2'];
-	}
-
 	$db = GeographDatabaseConnection(true);
 	if ($db && (empty($CONF['db_read_driver']) || $db->readonly)) {//if Not readonly, then its just an error message
 		customExpiresHeader(3600*23,false,true);

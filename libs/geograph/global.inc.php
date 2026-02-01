@@ -258,11 +258,11 @@ if (isset($CONF['db_driver2'])) {
 }
 
 //optional slave and read only database
-if (isset($CONF['db_read_driver'])) {
-	$DSN_READ = $CONF['db_read_driver'].'://'.
-		$CONF['db_read_user'].':'.$CONF['db_read_pwd'].
+if (isset($CONF['db_read_connect'])) {
+	$DSN_READ = ($CONF['db_read_driver'] ?? $CONF['db_driver']).'://'.
+		($CONF['db_read_user'] ?? $CONF['db_user']).':'.($CONF['db_read_pwd'] ?? $CONF['db_pwd']) .
 		'@'.$CONF['db_read_connect'].
-		'/'.$CONF['db_read_db'].$CONF['db_read_persist'];
+		'/'.($CONF['db_read_db'] ?? $CONF['db_db']).($CONF['db_read_persist'] ?? $CONF['db_persist']);
 } else {
 	#$DSN_READ = $DSN;
 }

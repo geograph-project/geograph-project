@@ -39,7 +39,7 @@ if ($_GET['db'] == 'master') {
 		$data['connected'] = true;
 
 } elseif ($_GET['db'] == 'slave') {
-	if (empty($CONF['db_read_driver'])) {
+	if (empty($CONF['db_read_connect'])) {
 		$data['error'] = 'undefined';
 	} else {
 		$db = GeographDatabaseConnection(true);

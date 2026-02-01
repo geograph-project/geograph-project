@@ -383,7 +383,7 @@ if ($db) {
 
 ###################################
 
-if (isset($CONF['db_read_driver'])) {
+if (isset($CONF['db_read_connect'])) {
 	$read = GeographDatabaseConnection(10); //say we allow 10 second of lag!
 	if (!$read) {
 		 outputRow('MySQL/Slave','error','not connected to slave');
