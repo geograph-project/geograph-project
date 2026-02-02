@@ -85,6 +85,12 @@ if (!empty($_POST['style'])) {
 	init_session_or_cache(3600, 0); //cache publically, and privately
 }
 
+if (is_internet_archive()) {
+        $CONF['template']='archive';
+        $CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
+        $CONF['forums'] = false;
+}
+
 
 
 customGZipHandlerStart();

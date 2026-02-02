@@ -57,6 +57,48 @@ function validateGooglebot() {
 	}
 }
 
+/**
+ * Detects if a request is coming from known Internet Archive netblocks.
+ * Supports IPv4 /20 and IPv6 /48 ranges.
+ */
+function is_internet_archive($ip = null) {
+    if (!$ip) {
+        $ip = getRemoteIP();
+    }
+
+    // 1. Handle IPv4 (207.241.224.0/20)
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        $ip_long = ip2long($ip);
+        $range_min = ip2long('207.241.224.0');
+        $range_max = ip2long('207.241.239.255');
+        return ($ip_long >= $range_min && $ip_long <= $range_max);
+    }
+
+    // 2. Handle IPv6 (2620:0:9c0::/48)
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        $addr_bin = inet_pton($ip);
+        $prefix_bin = inet_pton('2620:0:9c0::');
+        // Check if both exist and compare the first 48 bits (6 bytes)
+        if ($addr_bin !== false && $prefix_bin !== false) {
+            return (substr($addr_bin, 0, 6) === substr($prefix_bin, 0, 6));
+        }
+    }
+    return false;
+
+/*
+    // Check for the IA IPv6 Prefix (2620:0:9c0)
+    if (str_contains($ip, ':')) {
+        // Expand and check first 14 characters (approx 2620:0:9c0:)
+        return (str_starts_with($ip, '2620:0:9c0:'));
+    }
+    // Check for the IA IPv4 Prefix (207.241.224.0/20)
+    if (str_starts_with($ip, '207.241.')) {
+        $octet3 = (int)explode('.', $ip)[2];
+        return ($octet3 >= 224 && $octet3 <= 239);
+    }
+    return false;
+*/
+}
 
 function rate_limiting($slug, $per_minute = 5, $enforce = false) {
 	global $USER, $memcache;

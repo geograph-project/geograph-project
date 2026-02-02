@@ -31,6 +31,49 @@ if (!appearsToBePerson()) { //this will only catch identiable bots
 }
 
 
+//if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE && !empty($_GET['tag'])) {
+	$prefix = '';
+	if (strpos($_GET['tag'],':') !== FALSE) {
+                list($prefix,$_GET['tag']) = explode(':',$_GET['tag'],2);
+	}
+	//special prefixes in the manticore index
+	if ($prefix == 'subject' || $prefix == 'type') {
+		$query = "@{$prefix}s ".$_GET['tag'];
+	} elseif ($prefix == 'top') {
+		$query = "@contexts ".$_GET['tag'];
+	} elseif ($prefix) {
+		$query = "@tags \"_SEP_ $prefix:".$_GET['tag'].'"';
+	} else {
+		$query = "@tags ".$_GET['tag'];
+	}
+
+	$imagelist=new ImageList;
+
+	$sql = "SELECT id,title,realname FROM sample8 WHERE MATCH(?) ORDER BY id DESC LIMIT 100";
+	$imagelist->getImagesBySphinxQL($sql, true, $query); // getImagesBySphinxQL has a basic implementation of prepared query!
+
+	if (empty($imagelist->images)) {
+		header("HTTP/1.0 404 Not Found");
+	} else {
+		header("Vary: User-Agent");
+		customExpiresHeader(3600*6, true); //allow cloudflare to cache
+		$CONF['template'] = 'archive';
+		$smarty = new GeographPage;
+		$smarty->display('_std_begin.tpl');
+		print "<h2>Recently Tagged Images</h2>";
+		print "<ul>";
+		foreach ($imagelist->images as $image) {
+			$url = "/photo/{$image->gridimage_id}";
+			$title = htmlentities2($image->title);
+			$realname = htmlentities($image->realname);
+			print "<li><a href=\"$url\">$title</a> by {$realname}</a></li>\n";
+		}
+		print "</ul>";
+		$smarty->display('_std_end.tpl');
+	}
+	exit;
+//}
+
 $redirect = array(
 'Lowland landscapes'=>'Lowlands',
 'Upland landscapes'=>'Uplands',

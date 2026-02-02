@@ -526,7 +526,7 @@ require_once('geograph/security.inc.php');
 #################################################
 
 // a 'Hack' so that webarchive.org.uk can come crawling... (but lets do the same for
-
+/* non functional, webarchive.org.uk is offline, and detect wayback machine directly 
 $ip = getRemoteIP();
 if ($ip == '128.86.236.164' || $ip == '194.66.232.85' || $ip == '207.241.232.185' || (isset($_SERVER['HTTP_USER_AGENT']) && (
 	(strpos($_SERVER['HTTP_USER_AGENT'], 'bl.uk_')!==FALSE) ||
@@ -544,7 +544,7 @@ if ($ip == '128.86.236.164' || $ip == '194.66.232.85' || $ip == '207.241.232.185
         $CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
         $CONF['forums'] = false;
 }
-
+*/
 
 function visitor_header() {
 	global $db,$USER;
@@ -1026,7 +1026,7 @@ $str[] = "
 
 	####################################################
 
-	if (!empty($USER) && empty($USER->registered) && appearsToBePerson()) {
+	if (!empty($USER) && empty($USER->registered) && appearsToBePerson() && $CONF['template'] != 'archive') {
 		//if (empty($_COOKIE['appeal']) && !empty($_SERVER['HTTP_REFERER']) && preg_match('/^https?:\/\/(\w+)\.geograph\.(org\.uk|ie)\//',$_SERVER['HTTP_REFERER']))
 		//        $_GET['appeal'] = 1;
 		//else
