@@ -31,7 +31,7 @@ if (!appearsToBePerson()) { //this will only catch identiable bots
 }
 
 
-//if (strpos(@$_SERVER['HTTP_USER_AGENT'], 'archive.org_bot')!==FALSE && !empty($_GET['tag'])) {
+if (is_internet_archive() && !empty($_GET['tag'])) {
 	$prefix = '';
 	if (strpos($_GET['tag'],':') !== FALSE) {
                 list($prefix,$_GET['tag']) = explode(':',$_GET['tag'],2);
@@ -49,7 +49,7 @@ if (!appearsToBePerson()) { //this will only catch identiable bots
 
 	$imagelist=new ImageList;
 
-	$sql = "SELECT id,title,realname FROM sample8 WHERE MATCH(?) ORDER BY id DESC LIMIT 100";
+	$sql = "SELECT id,title,realname FROM sample8 WHERE MATCH(?) ORDER BY id DESC LIMIT 100 OPTION ranker=none";
 	$imagelist->getImagesBySphinxQL($sql, true, $query); // getImagesBySphinxQL has a basic implementation of prepared query!
 
 	if (empty($imagelist->images)) {
@@ -72,7 +72,7 @@ if (!appearsToBePerson()) { //this will only catch identiable bots
 		$smarty->display('_std_end.tpl');
 	}
 	exit;
-//}
+}
 
 $redirect = array(
 'Lowland landscapes'=>'Lowlands',
